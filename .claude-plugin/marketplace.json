@@ -1,0 +1,31 @@
+{
+  "name": "jluo41-tools",
+  "description": "Personal Claude Code skill plugins for LogSeq, academic research, and email chronicle",
+  "owner": {
+    "name": "Junjie Luo",
+    "url": "https://github.com/jluo41"
+  },
+  "plugins": [
+    {
+      "name": "logseq",
+      "description": "Claude Skills for LogSeq - block-based markdown, Datalog queries, templates, whiteboards, and session logging",
+      "version": "1.0.0",
+      "source": "./plugins/logseq",
+      "category": "productivity"
+    },
+    {
+      "name": "research",
+      "description": "Claude Skills for Academic Research - code review, evaluation display, notebook pipelines, and paper incubation",
+      "version": "1.0.0",
+      "source": "./plugins/research",
+      "category": "development"
+    },
+    {
+      "name": "chronicle",
+      "description": "Claude Skills for Email Chronicle - index emails from MS365 Outlook into organized markdown",
+      "version": "1.0.0",
+      "source": "./plugins/chronicle",
+      "category": "productivity"
+    }
+  ]
+}

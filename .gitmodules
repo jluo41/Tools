@@ -1,0 +1,9 @@
+[submodule "plugins/logseq"]
+	path = plugins/logseq
+	url = git@github.com:jluo41/logseq-skills.git
+[submodule "plugins/research"]
+	path = plugins/research
+	url = git@github.com:jluo41/research-skills.git
+[submodule "plugins/chronicle"]
+	path = plugins/chronicle
+	url = git@github.com:jluo41/chronicle-skills.git
