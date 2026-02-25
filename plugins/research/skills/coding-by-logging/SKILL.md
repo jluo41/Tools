@@ -40,6 +40,43 @@ When to Use
 
 ---
 
+Filename Convention
+===================
+
+All discussion logs created with this skill use the `di_` prefix.
+
+Format (single hour):   di_{YYMMDD}_h{HH}_{emoji}_{topic-slug}_{author}.md
+Format (multi-hour):    di_{YYMMDD}_h{HH}t{HH}_{emoji}_{topic-slug}_{author}.md
+
+  di_      — Fixed prefix for discussion/planning logs.
+               ls di_*.md           all discussion logs
+               ls di_260222*.md     all logs from one day
+
+  YYMMDD   — Date the session started (2-digit year).
+               Example: 2026-02-25  →  260225
+
+  h{HH}    — Hour started (zero-padded). Use h{HH}t{HH} if multi-hour.
+               Examples:  h10  (single hour)   h03t15  (multi-hour)
+
+  {emoji}  — One emoji representing the topic.
+               🗺️  planning / roadmap        🔧  engineering / building
+               🧠  design / architecture     🐛  bug fixing
+               📋  review / decisions        🔬  ML / science
+
+  {slug}   — 3-5 word kebab-case topic description.
+
+  {author} — System username (e.g., jluo).
+
+Full examples:
+  di_260225_h17_🗺️_cvs-weight-predict-plan_jluo.md
+  di_260222_h10_🔧_casefn-multiwindow-review_jluo.md
+
+**Prefix distinction**:
+  di_  →  discussion / planning / review log    (this skill)
+  cc_  →  session export / transcript            (cc-session-summary skill)
+
+---
+
 File Structure
 ==============
 

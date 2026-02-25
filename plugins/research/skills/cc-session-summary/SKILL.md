@@ -181,11 +181,16 @@ Choose a filename that identifies this session at a glance.
 Format (single hour):   cc_{YYMMDD}_h{HH}_{emoji}_{topic-slug}_{author}.md
 Format (multi-hour):    cc_{YYMMDD}_h{HH}t{HH}_{emoji}_{topic-slug}_{author}.md
 
+**Prefix distinction**:
+  cc_  →  session export / transcript            (this skill — cc-session-summary)
+  di_  →  discussion / planning / review log     (coding-by-logging skill)
+Do NOT use cc_* for discussion docs. Keep them separate.
+
 Rules:
 
-  cc_          — Fixed prefix. Lets you find all session logs instantly:
-                   ls cc_*.md           all sessions
-                   ls cc_260222*.md     all sessions from one day
+  cc_          — Fixed prefix for session exports. Lets you find all logs instantly:
+                   ls cc_*.md           all session exports
+                   ls cc_260222*.md     all exports from one day
 
   YYMMDD       — Local date of the FIRST user message (2-digit year).
                  Example: 2026-02-22  →  260222
