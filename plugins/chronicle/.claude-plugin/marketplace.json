@@ -1,0 +1,15 @@
+{
+  "name": "chronicle-skills",
+  "owner": {
+    "name": "Junjie Luo",
+    "url": "https://github.com/jluo41"
+  },
+  "plugins": [
+    {
+      "name": "chronicle",
+      "source": "./",
+      "description": "Claude Skills for Email Chronicle",
+      "version": "1.0.0"
+    }
+  ]
+}

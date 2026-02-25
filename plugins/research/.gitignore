@@ -1,0 +1,7 @@
+# Auto-generated skill preview files
+nblm/
+**/nblm.txt
+
+# macOS
+.DS_Store
+**/.DS_Store

@@ -1,0 +1,58 @@
+% -----------------------------------------------------------------------------
+% TEMPLATE: Single display entry — append to 00-incubator-display.tex
+% Replace [PLACEHOLDERS] with actual content.
+% Add \clearpage before this block (except for the very first display).
+% -----------------------------------------------------------------------------
+
+\clearpage
+\subsection{Display [N]: [Title] ([Figure/Table ID])}
+% -----------------------------------------------------------------------------
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{0-display/Figure/[filename].pdf}
+\caption{[Caption describing the display]}
+\end{figure}
+
+% For tables, use instead:
+% \begin{table}[H]
+% \small
+% \input{0-display/Table/[filename].tex}
+% \caption{[Caption]}
+% \end{table}
+
+\vspace{0.3cm}
+% . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+\subsubsection*{Deep Analysis: [Topic]}
+
+\textbf{Generation Methodology:}
+\begin{itemize}[nosep]
+\item [How this display was produced]
+\item [Selection criteria, filters, or aggregation approach]
+\item [Key parameters or configuration from 1-config.yaml]
+\end{itemize}
+
+\textbf{CRITICAL INSIGHT \#1: [Title]}
+
+[Analysis paragraph. Be specific with numbers.]
+
+\textbf{CRITICAL INSIGHT \#2: [Title]}
+
+[Analysis paragraph.]
+
+\textbf{What This Actually Shows:}
+\begin{enumerate}[nosep]
+\item \textbf{[Point title]:} [Honest interpretation]
+\item \textbf{[Point title]:} [Honest interpretation]
+\end{enumerate}
+
+\textbf{Methodological Transparency:}
+[Caveats, selection bias, limitations. What the display does NOT show.]
+
+\textbf{Connections to Other Displays:}
+$\rightarrow$ \textbf{Display [M]:} [How this display relates to Display M]\\
+$\rightarrow$ \textbf{Display [K]:} [How this display relates to Display K]
+
+\textbf{Source:} \texttt{evaluation/results/[script-output-dir]/[filename]}\\
+\textbf{Current:} \texttt{0-display/[Figure or Table]/[filename]}\\
+\textbf{Script:} \texttt{evaluation/scripts/[script-name].py}

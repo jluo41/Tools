@@ -1,0 +1,20 @@
+{
+  "name": "research",
+  "version": "1.0.0",
+  "description": "Skills for academic research workflows including coding review, evaluation display, notebook pipelines, and paper incubation in LaTeX.",
+  "author": {
+    "name": "Junjie Luo",
+    "url": "https://github.com/jluo41"
+  },
+  "license": "MIT",
+  "keywords": [
+    "research",
+    "academic",
+    "paper",
+    "latex",
+    "notebook",
+    "evaluation",
+    "coding",
+    "incubator"
+  ]
+}

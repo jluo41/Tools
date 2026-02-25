@@ -1,0 +1,15 @@
+{
+  "name": "logseq-skills",
+  "owner": {
+    "name": "Jiaming Luo",
+    "url": "https://github.com/jluo"
+  },
+  "plugins": [
+    {
+      "name": "logseq",
+      "source": "./",
+      "description": "Claude Skills for LogSeq",
+      "version": "1.0.0"
+    }
+  ]
+}

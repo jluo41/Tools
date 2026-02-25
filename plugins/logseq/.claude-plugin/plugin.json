@@ -1,0 +1,20 @@
+{
+  "name": "logseq",
+  "version": "1.0.0",
+  "description": "Create and edit LogSeq graph files including block-based markdown, advanced Datalog queries, and templates. Use when working with .md files in a LogSeq graph.",
+  "author": {
+    "name": "Jiaming Luo",
+    "url": "https://github.com/jluo"
+  },
+  "license": "MIT",
+  "keywords": [
+    "logseq",
+    "markdown",
+    "queries",
+    "datalog",
+    "templates",
+    "pkm",
+    "notes",
+    "outliner"
+  ]
+}

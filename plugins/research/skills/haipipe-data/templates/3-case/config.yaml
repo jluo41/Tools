@@ -1,0 +1,142 @@
+# ==============================================================================
+# Case Pipeline Configuration Template
+# ==============================================================================
+# Converts a RecordSet into event-triggered cases (CaseSet).
+# A Trigger identifies time points; CaseFn extracts features at each trigger.
+#
+# Replace all <Placeholders> with actual values.
+#
+# Usage:
+#   source .venv/bin/activate
+#   source env.sh
+#   haistep-case --config <this_file>.yaml
+#
+# Or via test script:
+#   python test/test_haistep/test_3_case/test_case.py --config <this_file>.yaml
+#
+# Output structure (all files at ROOT level, NO subdirectory):
+#   _WorkSpace/3-CaseStore/{RecSetName}/@v{N}CaseSet-{TriggerFolderName}/
+#     +-- df_case.parquet              Base case data
+#     +-- df_lts.parquet               LTS segments (optional)
+#     +-- df_Human_Info.parquet        Entity metadata (optional)
+#     +-- @<CaseFnName1>.parquet       CaseFn features (at ROOT)
+#     +-- @<CaseFnName2>.parquet       CaseFn features (at ROOT)
+#     +-- cf_to_cfvocab.json           Vocabulary per CaseFn
+#     +-- manifest.json
+# ==============================================================================
+
+# External data version
+external_version: "@v1215"
+
+# -------------------------------------------------------------------
+# record_set_name: Name of the input RecordSet
+#   Must match an existing RecordSet in _WorkSpace/2-RecStore/
+#
+#   To find available RecordSets:
+#     ls _WorkSpace/2-RecStore/
+# -------------------------------------------------------------------
+record_set_name: "<RecordSetName>"
+
+CaseArgs:
+  # -------------------------------------------------------------------
+  # Case_Args: List of operation blocks (trigger, filter, feature stages)
+  #   - Trigger operation:  {'TriggerName': str, 'TriggerArgs': dict}
+  #   - Filter operation:   {'FilterName': str, 'FilterArgs': dict}  (optional)
+  #   - Feature stage:      {'CaseFnName': str, 'CaseFnList': list, 'CaseFnArgs': dict}
+  # -------------------------------------------------------------------
+  Case_Args:
+
+    # Stage 1: Trigger -- identifies WHEN cases happen
+    # To find registered TriggerFns: ls code/haifn/fn_case/fn_trigger/
+    - TriggerName: '<TriggerFnName>'
+      TriggerArgs:
+
+        TriggerFolderName: "<TriggerFolder>"
+
+        # Case ID columns (what uniquely identifies each case)
+        case_id_columns:
+          - '<EntityID>'
+          - '<ObsDT>'
+        case_raw_id_columns:
+          - '<RawEntityID>'
+          - '<ObsDT>'
+        HumanID_list:
+          - '<EntityID>'
+        ObsDT: '<ObsDT>'
+
+        # -----------------------------------------------------------
+        # ROName_to_RONameArgs: Record Object specification
+        #   Keys: 'h{HumanFn}.r{RecordFn}'
+        #   attribute_columns: Which columns to load
+        #   RecDT: Datetime column for temporal alignment
+        #
+        #   To find registered HumanFns: ls code/haifn/fn_record/human/
+        #   To find registered RecordFns: ls code/haifn/fn_record/record/
+        # -----------------------------------------------------------
+        ROName_to_RONameArgs:
+          'h<HumanFnName>.r<RecordFnName>':
+            attribute_columns:
+              - '<EntityID>'
+              - '<RawEntityID>'
+              - '<DatetimeCol>'
+              - '<ValueCol>'
+            RecDT: '<DatetimeCol>'
+
+        # -----------------------------------------------------------
+        # Patient/entity split info (for train/test splitting)
+        #   If path specified but file MISSING -> ERROR
+        #   If set to null -> defaults: split='unsplit', phase='all'
+        # -----------------------------------------------------------
+        patient_info_path: null
+
+        # -----------------------------------------------------------
+        # Trigger-specific args (vary by TriggerFn type):
+        # For LTS-style triggers:
+        #   min_segment_length: minimum segment length in time units
+        #   stride: sampling frequency (null = 1 per segment)
+        #   buffer_start/end: skip N points at segment edges
+        # -----------------------------------------------------------
+        # min_segment_length: 288
+        # stride: 12
+        # buffer_start: 240
+        # buffer_end: 240
+
+    # Stage 2 (optional): Filter -- removes cases by condition
+    # - FilterName: '<FilterName>'
+    #   FilterArgs:
+    #     condition: ['<col>', '>=', <threshold>]
+
+    # Stage 3: Feature extraction -- WHAT features to extract at each trigger
+    # To find registered CaseFns: ls code/haifn/fn_case/case_casefn/
+    - CaseFnName: <GroupLabel>
+      CaseFnList:
+          - <CaseFnName1>
+          - <CaseFnName2>
+      CaseFnArgs: {}
+
+  # -------------------------------------------------------------------
+  # CaseFn_list: Also accepted at CaseArgs level (alternative to CaseFnList above)
+  #   Must be registered CaseFn names from code/haifn/fn_case/case_casefn/
+  # -------------------------------------------------------------------
+  CaseFn_list: ['<CaseFnName1>', '<CaseFnName2>']
+
+  # -------------------------------------------------------------------
+  # case_set_version: Version number for the output CaseSet
+  #   Output path: @v{N}CaseSet-{TriggerFolderName}/
+  # -------------------------------------------------------------------
+  case_set_version: 0
+
+  # Processing options
+  use_cache: false
+
+
+# ==============================================================================
+# Output: _WorkSpace/3-CaseStore/{RecSetName}/@v{N}CaseSet-{TriggerFolderName}/
+#
+# To discover available TriggerFns and CaseFns:
+#   ls code/haifn/fn_case/fn_trigger/     # registered TriggerFns
+#   ls code/haifn/fn_case/case_casefn/    # registered CaseFns
+#
+# CaseFn return keys are SUFFIX-ONLY (e.g., '--tid').
+# Pipeline auto-prefixes with CaseFnName: <CaseFnName>--tid
+# ==============================================================================

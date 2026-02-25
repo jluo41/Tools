@@ -1,0 +1,15 @@
+{
+  "name": "research-skills",
+  "owner": {
+    "name": "Junjie Luo",
+    "url": "https://github.com/jluo41"
+  },
+  "plugins": [
+    {
+      "name": "research",
+      "source": "./",
+      "description": "Claude Skills for Academic Research",
+      "version": "1.0.0"
+    }
+  ]
+}

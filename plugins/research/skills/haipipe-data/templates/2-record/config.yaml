@@ -1,0 +1,91 @@
+# ==============================================================================
+# Record Pipeline Configuration Template
+# ==============================================================================
+# Converts a SourceSet into temporally-aligned structured records (RecordSet).
+#
+# Replace all <Placeholders> with actual values for your cohort.
+#
+# Usage:
+#   source .venv/bin/activate
+#   source env.sh
+#   haistep-record --config <this_file>.yaml
+#
+# Or via test script:
+#   python test/test_haistep/test_2_record/test_record.py --config <this_file>.yaml
+# ==============================================================================
+
+# External data version (from env.sh)
+external_version: "@v1215"
+
+# -------------------------------------------------------------------
+# source_set_name: Name of the input SourceSet
+#   Format: "<CohortName>/@<SourceFnName>"
+#   Must match an existing SourceSet in _WorkSpace/1-SourceStore/
+#
+#   To find available SourceSets:
+#     ls _WorkSpace/1-SourceStore/
+#
+#   Example (illustrative): "OhioT1DM/@OhioT1DMxmlv250302"
+# -------------------------------------------------------------------
+source_set_name: "<CohortName>/@<SourceFnName>"
+
+RecordArgs:
+
+  # -----------------------------------------------------------------
+  # HumanRecords: Maps HumanFn name to list of RecordFn names
+  #   - HumanFn creates the entity wrapper (demographics)
+  #   - RecordFns process each data type from the SourceSet
+  #
+  #   To see what HumanFns and RecordFns are available:
+  #     ls code/haifn/fn_record/human/    # HumanFns
+  #     ls code/haifn/fn_record/record/   # RecordFns
+  #
+  #   The mapping is fully domain-configurable.
+  #   Include only the RecordFns relevant to your task.
+  #
+  #   Example (illustrative -- actual names depend on what is registered):
+  #     HmPtt: ['Ptt', 'CGM5Min', 'Diet5Min', 'Exercise5Min', 'Med5Min']
+  # -----------------------------------------------------------------
+  HumanRecords:
+    <HumanFnName>:
+      - <RecordFnName1>
+      - <RecordFnName2>
+
+  # -----------------------------------------------------------------
+  # record_set_version: Version number for the output RecordSet
+  #   Output name is auto-generated: <CohortName>_v<N>RecSet
+  #   Default: 0
+  # -----------------------------------------------------------------
+  record_set_version: 0
+
+  # -----------------------------------------------------------------
+  # record_set_label: Integer label for record ID generation
+  #   Each cohort should use a unique label to avoid ID collisions
+  #   when merging multiple cohorts.
+  #   Default: 1
+  # -----------------------------------------------------------------
+  record_set_label: 1
+
+  # -----------------------------------------------------------------
+  # Cache options
+  #   use_cache: Load from cache if already processed (default: false)
+  #   save_cache: Save processed output to cache (default: true)
+  # -----------------------------------------------------------------
+  use_cache: false
+  save_cache: true
+
+
+# ==============================================================================
+# Output: _WorkSpace/2-RecStore/<CohortName>_v<N>RecSet/
+#
+# The RecordSet has a FLAT directory structure:
+#   Human-<HumanFnName>/                <- Human-{HumanName}/
+#     df_Human.parquet
+#     schema.json
+#   Record-<HumanFnName>.<RecordFnName>/  <- Record-{HumanName}.{RecordName}/
+#     df_RecAttr.parquet
+#     df_RecIndex.parquet
+#   manifest.json
+#
+# NOTE: Structure is FLAT, NOT hierarchical (not HumanFn/<EntityID>/RecordFn/)
+# ==============================================================================

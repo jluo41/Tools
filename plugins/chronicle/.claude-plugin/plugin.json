@@ -1,0 +1,19 @@
+{
+  "name": "chronicle",
+  "version": "1.0.0",
+  "description": "Chronicle and index emails from MS365 Outlook into organized markdown indexes. Use when working with email archival and indexing workflows.",
+  "author": {
+    "name": "Junjie Luo",
+    "url": "https://github.com/jluo41"
+  },
+  "license": "MIT",
+  "keywords": [
+    "email",
+    "chronicle",
+    "outlook",
+    "ms365",
+    "index",
+    "archive",
+    "organization"
+  ]
+}
