@@ -20,6 +20,9 @@ Commands
 
   /haipipe-data                              -> dashboard: _WorkSpace status at all stages
   /haipipe-data dashboard                    -> same as above
+  /haipipe-data dashboard [1-source etc.]    -> dashboard filtered to one stage only
+  /haipipe-data dashboard 0-rawdata          -> raw data store files (no manifest check)
+  /haipipe-data dashboard rawdata            -> alias for 0-rawdata
   /haipipe-data load [1-source etc.]         -> load and inspect existing Set
   /haipipe-data cook [1-source etc.]         -> run Pipeline with config
   /haipipe-data design-chef [1-source etc.]  -> create new Fn via builder
@@ -43,6 +46,12 @@ Tools/plugins/research/skills/haipipe-data/:
   Invocation                    Ref file(s)                                Function file
   ----------------------------  -----------------------------------------  ----------------------
   (no arg) / dashboard          ref/0-overview.md                          fn/fn-0-dashboard.md
+  dashboard 0-rawdata           ref/0-overview.md                          fn/fn-0-dashboard.md
+  dashboard rawdata             ref/0-overview.md                          fn/fn-0-dashboard.md
+  dashboard 1-source            ref/1-source.md                            fn/fn-0-dashboard.md
+  dashboard 2-record            ref/2-record.md                            fn/fn-0-dashboard.md
+  dashboard 3-case              ref/3-case.md                              fn/fn-0-dashboard.md
+  dashboard 4-aidata            ref/4-aidata.md                            fn/fn-0-dashboard.md
   load (no stage)               ref/0-overview.md                          fn/fn-1-load.md
   load 1-source                 ref/1-source.md                            fn/fn-1-load.md
   load 2-record                 ref/2-record.md                            fn/fn-1-load.md
@@ -101,6 +110,13 @@ Step 1: Parse the args after "/haipipe-data".
           stage     in { 0-overview, 1-source, 2-record, 3-case, 4-aidata, (none) }
         If no args -> dashboard mode.
         If only stage arg -> ref-only mode (load ref file, no fn file).
+
+        Normalize stage aliases before lookup:
+          rawdata  -> 0-rawdata
+          source   -> 1-source
+          record   -> 2-record
+          case     -> 3-case
+          aidata   -> 4-aidata
 
 Step 2: Read the ref file AND the function file from the dispatch table.
         Both files MUST be read before executing. Do not proceed from memory.

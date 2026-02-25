@@ -25,6 +25,88 @@ It orients you to both what is available (Fns) and what has been produced
 
 ---
 
+Stage-Filtered Mode
+====================
+
+If invoked with a stage qualifier (e.g., "dashboard 1-source"):
+
+  - Run ONLY the Panel A step for that stage (e.g., A1 for 1-source)
+  - Run ONLY the Panel B row for that stage directory
+  - Run ONLY the Panel C detail for that stage (if PRESENT)
+  - Skip all other stages entirely
+
+This is the fast path. Use it when you already know which stage to inspect.
+
+  dashboard 0-rawdata ->  Panel 0 only (raw files, no manifest check)
+  dashboard 1-source  ->  A1 + B(SourceStore only)  + C1
+  dashboard 2-record  ->  A2 + B(RecStore only)      + C2
+  dashboard 3-case    ->  A3 + B(CaseStore only)     + C3
+  dashboard 4-aidata  ->  A4 + B(AIDataStore only)   + C4
+
+Full dashboard (no stage) still runs all panels in order.
+Stage-filtered dashboard is always fast -- no confirmation needed.
+
+---
+
+Full-Dashboard Confirmation Gate
+==================================
+
+When invoked WITHOUT a stage qualifier (full dashboard), STOP before running
+any commands and do the following:
+
+Step G1: Check for cached results.
+
+```bash
+ls _WorkSpace/.haipipe_dashboard_cache.md 2>/dev/null
+```
+
+If cache exists, read the first 3 lines (metadata: timestamp, scope).
+
+Step G2: Ask the user ONE of these prompts depending on cache state:
+
+  If cache EXISTS:
+    "Full dashboard scans all 5 stages (0-rawdata through 4-aidata) and may
+     take a while. A cached version exists from <timestamp> (scope=<scope>).
+     Options:
+       1. load-cache  -- show cached results instantly
+       2. yes         -- run fresh full scan (overwrites cache)
+       3. <stage>     -- e.g. '1-source' to check one stage only (fast)"
+
+  If cache MISSING:
+    "Full dashboard scans all 5 stages and may take a while.
+     Tip: use 'dashboard 1-source' etc. for a single stage (much faster).
+     Run full scan now? (yes / <stage name>)"
+
+Step G3: Wait for user response before proceeding.
+  - "load-cache" or "cache" -> load and display cache file, stop
+  - "yes" or "full"         -> proceed with full scan
+  - stage name              -> switch to stage-filtered mode for that stage
+  - anything else           -> ask again
+
+Skip this gate entirely when a stage qualifier is given.
+
+---
+
+Cache
+=====
+
+After completing ANY dashboard run (full or stage-filtered), save output to:
+
+  _WorkSpace/.haipipe_dashboard_cache.md
+
+Format:
+
+  # Dashboard Cache
+  # Generated: <ISO datetime e.g. 2026-02-25T14:32:00>
+  # Scope: full | 0-rawdata | 1-source | 2-record | 3-case | 4-aidata
+  <full dashboard output text below this line>
+
+When loading from cache, prepend this line to the output:
+
+  [Cached: <timestamp>, scope=<scope>. To refresh: run dashboard and confirm 'yes'.]
+
+---
+
 The Three Panels
 ================
 
@@ -49,6 +131,54 @@ The Three Panels
   case functions, split sizes, config settings. Goes deeper than Panel B.
 
   Answers: "What is inside this asset?" and "Does it match expectations?"
+
+---
+
+Panel 0: RawDataStore Scan
+==========================
+
+Lists what raw cohort data is available before any pipeline processing.
+RawDataStore has no manifest.json -- status is PRESENT (files exist) or
+MISSING (no directory). No EMPTY state.
+
+Step P0: Scan cohorts and files.
+
+```bash
+ls _WorkSpace/0-RawDataStore/
+```
+
+For each cohort found:
+
+```bash
+# Directory structure (depth 2)
+ls _WorkSpace/0-RawDataStore/<CohortName>/
+ls _WorkSpace/0-RawDataStore/<CohortName>/Source/
+
+# Total file count
+find "_WorkSpace/0-RawDataStore/<CohortName>" -type f | wc -l
+
+# File format breakdown
+find "_WorkSpace/0-RawDataStore/<CohortName>" -type f | sed 's/.*\.//' | sort | uniq -c
+```
+
+Cross-reference each cohort against SourceStore:
+
+```bash
+ls _WorkSpace/1-SourceStore/<CohortName>/ 2>/dev/null
+```
+
+Output format:
+
+```
+PANEL 0 -- RawDataStore
+========================
+Cohort: <CohortName>
+  Structure:     Source/<subdir>/...
+  Total files:   <N>
+  Formats:       .xml (N)  |  .csv (N)  |  .parquet (N)
+  SourceFn:      <SourceFnName> (registered) / NONE
+  SourceSet:     PRESENT (@<SourceFnName>) / MISSING
+```
 
 ---
 
@@ -461,6 +591,9 @@ Full Dashboard Output Order
 Run and report in this order:
 
 ```
+0. Panel 0 -- RawDataStore Scan
+   P0. Cohort list, file counts, format breakdown, cross-ref to SourceStore
+
 1. Panel A -- Registered Fn Inventory
    A1. Stage 1 SourceFns  (ProcName list + column schemas)
    A2. Stage 2 HumanFns + RecordFns  (entity ID, attr_cols)
@@ -468,7 +601,7 @@ Run and report in this order:
    A4. Stage 4 TfmFns + SplitFns  (names only)
 
 2. Panel B -- Asset Status Table
-   B1. Scan _WorkSpace/ at all 4 stages
+   B1. Scan _WorkSpace/ at all 4 stages (1-4)
    B2. Print status table (PRESENT / EMPTY / MISSING)
    B3. Gap analysis + next recommended action
 
@@ -477,6 +610,8 @@ Run and report in this order:
    C2. Record detail  (entity count + record columns)
    C3. Case detail    (trigger cols, CaseFn list, suffixes, vocab)
    C4. AIData detail  (split sizes, input_method, casefn_list, vocab)
+
+4. Save results to _WorkSpace/.haipipe_dashboard_cache.md
 ```
 
 Panel C only runs for assets with status PRESENT in Panel B. Skip EMPTY
@@ -487,15 +622,17 @@ and MISSING assets in Panel C (nothing to inspect).
 MUST DO
 =======
 
-1. Run Panel A before Panel B -- know what is registered before checking assets
+1. Run Panel 0 first (RawDataStore), then Panel A, B, C in order
 2. Always activate .venv and source env.sh before any Python inspection
    NOTE: source .venv/bin/activate does NOT persist across Bash tool calls.
    Always chain: source .venv/bin/activate && source env.sh && python -c "..."
 3. Run ls _WorkSpace/ first; if missing, stop and report workspace not initialized
 4. For Stage 3, look for @-prefixed .parquet files at ROOT (NOT in subdirectory)
 5. For Stage 4, check cf_to_cfvocab.json and feat_vocab.json at ROOT (NOT in vocab/)
-6. Present all three panels in order before making recommendations
+6. Present all panels in order before making recommendations
 7. Report BOTH registered Fn counts AND asset counts at the top of the output
+8. After completing ANY dashboard run, save output to _WorkSpace/.haipipe_dashboard_cache.md
+9. For full dashboard (no stage): ALWAYS run the Confirmation Gate first -- never skip
 
 ---
 

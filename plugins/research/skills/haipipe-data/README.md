@@ -209,6 +209,45 @@ Use Cases
 
 ---
 
+How to Request Changes to This Skill
+--------------------------------------
+
+You do not need to edit the skill files manually. Describe what you want
+in plain language -- Claude will assess feasibility and make the changes.
+
+Workflow:
+
+  1. Describe your requirement in natural language
+       e.g. "I want to see raw data file counts in the dashboard"
+            "Can we add a shortcut for reviewing case functions?"
+            "The cook command is slow -- can we add a dry-run mode?"
+
+  2. Claude runs two checks and reports back:
+
+       Check 1 -- Capability: can Claude Code technically do this?
+         (file I/O, bash, Python -- yes; background daemons, external APIs -- no)
+
+       Check 2 -- Skill coverage: does the current skill support this?
+         New command?        -> needs dispatch table + fn file change
+         New behavior?       -> needs fn/*.md change only
+         New knowledge?      -> needs ref/*.md change only
+         Combination?        -> Claude lists all files to touch
+
+  3. If the requirement is unclear or out of scope, Claude will ask
+     clarifying questions or suggest a scoped alternative.
+
+  4. Claude proposes a plan. You approve. Claude edits the files.
+
+What makes a good requirement:
+
+  - Describe the situation ("I only want to see source stage info")
+  - Describe the expected output ("just show file counts, not columns")
+  - Mention what triggered the need ("the full dashboard is too slow")
+
+You do NOT need to know which files to edit or how the dispatch table works.
+
+---
+
 Key Files (codebase)
 --------------------
 
