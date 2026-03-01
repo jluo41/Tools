@@ -123,6 +123,19 @@ OutputArgs:
     label_rule: 'binary'
 ```
 
+**REQUIRED: output_casefn_list must declare every CaseFn whose --val column the OutputTfmFn reads.**
+
+```
+Rule:  if output_method reads 'WeightAf1M--val'  →  list 'WeightAf1M' here
+       if output_method reads 'OutcomeEngagement--val'  →  list 'OutcomeEngagement' here
+
+Why:   human readers need to know where the output data comes from
+       (data loading uses all CaseFns regardless, but the list is the semantic contract)
+
+Empty list is only valid for transforms that derive output entirely from
+InputArgs features already declared in input_casefn_list.
+```
+
 ---
 
 Concrete Code
