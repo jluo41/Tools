@@ -522,3 +522,365 @@ Before running stage N+1, verify stage N output exists:
 
 If a manifest.json is missing, the asset was not saved cleanly.
 Re-run the stage that produced it before proceeding.
+
+
+
+
+ Option B 完整设计                                                                                
+                                                                                                   
+  总体架构                                                                                         
+                                            
+  Stage 3 CaseSet (已完成，3569 cases)
+    每个 case 有 39 个 CaseFn 的 --val 列
+      ↓
+  Stage 4 AIData (要建)
+    ├─ Split:   RandomByPatient (80/20)
+    ├─ Input:   InputValFlatMultiCF   → 33个 feature CaseFn → feat-val (float32[~175])
+    └─ Output:  OutputWeightLabel     → WeightAf1M--val → weight_loss_pct (float)
+      ↓
+  AIDataSet 输出 (每个 horizon 一份，共 6 份):
+    train/ 和 test/ 各有:
+      feat-val:          [0.55, 65.0, 2.0, 170.5, ..., 8200, ...]   ← 175维 float32
+      weight_loss_pct:   4.2  (或 NaN 表示无效)                      ← 1维 float
+      split:             "train" / "test"
+      PID, ObsDT:        metadata
+      ↓
+  Stage 5 Model (以后建)
+    读取 AIDataSet
+    df = df[df['weight_loss_pct'].notna()]      # 过滤无效
+    df['label'] = (df['weight_loss_pct'] > 4.0)  # 阈值二值化
+    XGBoost.fit(X=feat-val, y=label)
+
+  ---
+  Thing 1: InputValFlatMultiCF
+
+  作用：把 33 个 feature CaseFn 的 --val dict 拍平成一个 numpy array。
+
+  参考对象：CatInputMultiCFSparse.py — 它把 --idx/--wgt 拼成 sparse vector。我们把 --val dict 拼成
+  dense float vector。
+
+  两个函数：
+
+  def build_vocab_fn(InputArgs, CF_to_CFVocab):
+      """
+      从 config 的 input_val_keys 构建特征列表。
+   
+      InputArgs['input_val_keys'] = {
+          'PDemoBase': ['gender', 'age', 'disease_type'],
+          'HeightBase': ['height', 'days_since'],
+          'RecNumBf1d': ['cgm_count', 'diet_count', ...],
+          ...
+      }
+      """
+      input_val_keys = InputArgs['input_val_keys']
+      CF_list = InputArgs['input_casefn_list']    # 33 个 CaseFn, 决定顺序
+
+      feat_columns = []        # [(CF, key), (CF, key), ...]
+      column_names = []        # ['PDemoBase:gender', 'PDemoBase:age', ...]
+
+      for cf in CF_list:
+          keys = input_val_keys.get(cf, [])
+          for key in keys:
+              feat_columns.append((cf, key))
+              column_names.append(f"{cf}:{key}")
+
+      return {
+          'feat-val': {
+              'feat_columns': feat_columns,
+              'column_names': column_names,
+              'n_features': len(feat_columns),
+          }
+      }
+
+  def tfm_fn(case_features, InputArgs, CF_to_CFVocab, feat_vocab):
+      """
+      每个 case → 一个 float32 array。
+   
+      case_features['PDemoBase--val'] = {'gender': 1, 'age': 55, 'disease_type': 2}
+      case_features['HeightBase--val'] = {'height': 170.5, 'days_since': 30}
+      ...
+   
+      → feat-val: np.array([1.0, 55.0, 2.0, 170.5, 30.0, ...], dtype=float32)
+      """
+      feat_columns = feat_vocab['feat-val']['feat_columns']
+      values = []
+
+      for cf, key in feat_columns:
+          val_col = f"{cf}--val"
+          val_dict = case_features.get(val_col, {})
+
+          # HuggingFace Dataset 可能把 dict 存成 JSON string
+          if isinstance(val_dict, str):
+              import json
+              val_dict = json.loads(val_dict)
+
+          if isinstance(val_dict, dict):
+              v = val_dict.get(key, float('nan'))
+          else:
+              v = float('nan')
+
+          values.append(float(v) if v is not None else float('nan'))
+
+      return {'feat-val': np.array(values, dtype=np.float32)}
+
+  特点：
+  - 用 feat_vocab 保存特征顺序 → 模型训练和推理时知道每一维是什么
+  - 缺失值 → NaN（XGBoost 原生支持 NaN）
+  - 不需要 tokenization，不需要 vocab offset — 直接 float
+
+  ---
+  Thing 2: OutputWeightLabel
+
+  作用：从 label CaseFn 的 --val dict 提取 raw weight_loss_pct。
+
+  参考对象：OutputSingleLabel.py — 它输出 {'label': np.int64(0/1)}。我们输出 {'weight_loss_pct':
+  float}。
+
+  def tfm_fn(case_features, OutputArgs):
+      """
+      提取 raw weight_loss_pct, 不做二值化。
+   
+      case_features['WeightAf1M--val'] = {
+          'weight_loss_pct': 4.2,
+          'no_future_weight': 0,
+          'current_weight': 220.0,
+          'future_weight': 210.8
+      }
+   
+      → {'weight_loss_pct': 4.2}
+      → 无效时: {'weight_loss_pct': NaN}
+      """
+      output_args = OutputArgs.get('output_args', {})
+      weight_outcome_col = output_args['weight_outcome_col']   # 'WeightAf1M--val'
+
+      val_dict = case_features.get(weight_outcome_col, {})
+
+      if isinstance(val_dict, str):
+          import json
+          val_dict = json.loads(val_dict)
+
+      if not isinstance(val_dict, dict):
+          return {'weight_loss_pct': float('nan')}
+
+      no_future = val_dict.get('no_future_weight', 1)
+      if no_future == 1:
+          return {'weight_loss_pct': float('nan')}
+
+      pct = val_dict.get('weight_loss_pct', float('nan'))
+      return {'weight_loss_pct': float(pct) if pct is not None else float('nan')}
+
+  关键：只有一个输出列 weight_loss_pct，NaN 表示该 case 无效（没有未来体重）。
+
+  ---
+  Thing 3: Config YAML
+
+  先做 Af1M 一个 horizon：
+
+  # 4_aidata_welldoc2023cvsderx_af1m.yaml
+
+  record_set_name: "WellDoc2023CVSDeRx_v0RecSet"
+  case_set_name: "WellDoc2023CVSDeRx_v0RecSet/@v0CaseSet-WeightDayEntry"
+
+  aidata_set_version: 0
+  aidata_set_suffix: "WeightAf1M"
+
+  SplitArgs:
+    SplitMethod: RandomByPatient
+    Split_Part:
+      SplitRatio:
+        train: 0.8
+        valid: 0.0
+        test: 0.2
+        random_state: 42
+    Split_to_Selection:
+      train:
+        Rules: [["split", "==", "train"]]
+      test:
+        Rules: [["split", "==", "test"]]
+
+  InputArgs:
+    input_method: InputValFlatMultiCF
+    input_casefn_list:        # 33 个 feature CaseFn (决定特征顺序)
+      - PDemoBase
+      - HeightBase
+      - WeightBf1d
+      - WeightBf7d
+      - WeightBf14d
+      - WeightBf30d
+      - WeightBf90d
+      - CGMStatsBf1d
+      - CGMStatsBf7d
+      - CGMStatsBf14d
+      - CGMStatsBf30d
+      - CGMStatsBf60d
+      - CGMStatsBf90d
+      - DietStatsBf1d
+      - DietStatsBf7d
+      - DietStatsBf30d
+      - DietStatsBf90d
+      - ExerciseStatsBf1d
+      - ExerciseStatsBf7d
+      - ExerciseStatsBf30d
+      - ExerciseStatsBf90d
+      - MedStatsBf1d
+      - MedStatsBf7d
+      - MedStatsBf30d
+      - MedStatsBf90d
+      - StepStatsBf7d
+      - StepStatsBf30d
+      - StepStatsBf90d
+      - SleepStatsBf7d
+      - SleepStatsBf30d
+      - SleepStatsBf90d
+      - RecNumBf1d
+      - RecNumBf30d
+    input_val_keys:
+      PDemoBase:        [gender, age, disease_type]
+      HeightBase:       [height, days_since]
+      WeightBf1d:       [weight_last, weight_mean, weight_std, weight_trend, n_days, days_since]
+      WeightBf7d:       [weight_last, weight_mean, weight_std, weight_trend, n_days, days_since]
+      WeightBf14d:      [weight_last, weight_mean, weight_std, weight_trend, n_days, days_since]
+      WeightBf30d:      [weight_last, weight_mean, weight_std, weight_trend, n_days, days_since]
+      WeightBf90d:      [weight_last, weight_mean, weight_std, weight_trend, n_days, days_since]
+      CGMStatsBf1d:     [mean, std, cv, tir, tar, tbr, n_readings]
+      CGMStatsBf7d:     [mean, std, cv, tir, tar, tbr, n_readings]
+      CGMStatsBf14d:    [mean, std, cv, tir, tar, tbr, n_readings]
+      CGMStatsBf30d:    [mean, std, cv, tir, tar, tbr, n_readings]
+      CGMStatsBf60d:    [mean, std, cv, tir, tar, tbr, n_readings]
+      CGMStatsBf90d:    [mean, std, cv, tir, tar, tbr, n_readings]
+      DietStatsBf1d:    [n_events, carbs_per_day, calories_per_day, protein_per_day, fat_per_day,
+  fiber_per_day]
+      DietStatsBf7d:    [n_events, carbs_per_day, calories_per_day, protein_per_day, fat_per_day,
+  fiber_per_day]
+      DietStatsBf30d:   [n_events, carbs_per_day, calories_per_day, protein_per_day, fat_per_day,
+  fiber_per_day]
+      DietStatsBf90d:   [n_events, carbs_per_day, calories_per_day, protein_per_day, fat_per_day,
+  fiber_per_day]
+      ExerciseStatsBf1d:  [n_events, n_active_days, duration_mean, calories_burned_mean,
+  active_day_rate]
+      ExerciseStatsBf7d:  [n_events, n_active_days, duration_mean, calories_burned_mean,
+  active_day_rate]
+      ExerciseStatsBf30d: [n_events, n_active_days, duration_mean, calories_burned_mean,
+  active_day_rate]
+      ExerciseStatsBf90d: [n_events, n_active_days, duration_mean, calories_burned_mean,
+  active_day_rate]
+      MedStatsBf1d:     [n_events, dose_total, dose_per_day, dose_mean_per_event]
+      MedStatsBf7d:     [n_events, dose_total, dose_per_day, dose_mean_per_event]
+      MedStatsBf30d:    [n_events, dose_total, dose_per_day, dose_mean_per_event]
+      MedStatsBf90d:    [n_events, dose_total, dose_per_day, dose_mean_per_event]
+      StepStatsBf7d:    [n_active_days, steps_mean, steps_per_day, active_day_rate]
+      StepStatsBf30d:   [n_active_days, steps_mean, steps_per_day, active_day_rate]
+      StepStatsBf90d:   [n_active_days, steps_mean, steps_per_day, active_day_rate]
+      SleepStatsBf7d:   [n_sleep_sessions, sleep_mean, sleep_per_day, active_night_rate]
+      SleepStatsBf30d:  [n_sleep_sessions, sleep_mean, sleep_per_day, active_night_rate]
+      SleepStatsBf90d:  [n_sleep_sessions, sleep_mean, sleep_per_day, active_night_rate]
+      RecNumBf1d:       [cgm_count, diet_count, exercise_count, med_count, sleep_count, step_count,
+   weight_count]
+      RecNumBf30d:      [cgm_count, diet_count, exercise_count, med_count, sleep_count, step_count,
+   weight_count]
+
+  OutputArgs:
+    output_method: OutputWeightLabel
+    output_args:
+      weight_outcome_col: WeightAf1M--val
+
+  做其他 horizon 时，只改两个地方：
+  - aidata_set_suffix: "WeightAf0p5M"
+  - weight_outcome_col: WeightAf0p5M--val
+
+  ---
+  特征数量确认
+
+  ┌──────────────────┬──────┬───────────┬──────┐
+  │   CaseFn 类型    │ 数量 │ 每个 keys │ 小计 │
+  ├──────────────────┼──────┼───────────┼──────┤
+  │ PDemoBase        │ 1    │ 3         │ 3    │
+  ├──────────────────┼──────┼───────────┼──────┤
+  │ HeightBase       │ 1    │ 2         │ 2    │
+  ├──────────────────┼──────┼───────────┼──────┤
+  │ WeightBf*        │ 5    │ 6         │ 30   │
+  ├──────────────────┼──────┼───────────┼──────┤
+  │ CGMStatsBf*      │ 6    │ 7         │ 42   │
+  ├──────────────────┼──────┼───────────┼──────┤
+  │ DietStatsBf*     │ 4    │ 6         │ 24   │
+  ├──────────────────┼──────┼───────────┼──────┤
+  │ ExerciseStatsBf* │ 4    │ 5         │ 20   │
+  ├──────────────────┼──────┼───────────┼──────┤
+  │ MedStatsBf*      │ 4    │ 4         │ 16   │
+  ├──────────────────┼──────┼───────────┼──────┤
+  │ StepStatsBf*     │ 3    │ 4         │ 12   │
+  ├──────────────────┼──────┼───────────┼──────┤
+  │ SleepStatsBf*    │ 3    │ 4         │ 12   │
+  ├──────────────────┼──────┼───────────┼──────┤
+  │ RecNumBf*        │ 2    │ 7         │ 14   │
+  ├──────────────────┼──────┼───────────┼──────┤
+  │ 合计             │ 33   │           │ 175  │
+  └──────────────────┴──────┴───────────┴──────┘
+
+  feat-val 是一个 175 维的 float32 array。
+
+  ---
+  AIDataSet 最终输出长什么样
+
+  存储路径：_WorkSpace/4-AIDataStore/WellDoc2023CVSDeRx_WeightDayEntry/@v0AIData-WeightAf1M/
+
+  dataset_dict/
+    train/    (~2855 rows, 80%)
+    test/     (~714 rows, 20%)
+
+  每行的列:
+    PID:               "patient_001"          # metadata
+    ObsDT:             "2023-05-15 08:30"     # metadata
+    split:             "train"                # from RandomByPatient
+    feat-val:          [1.0, 55.0, 2.0, ...]  # 175-dim float32 array (input)
+    weight_loss_pct:   4.2                    # raw float (output), NaN=无效
+
+  cf_to_cfvocab.json   # 每个 CaseFn 的 vocab (我们的 CaseFn 用不上，但格式要有)
+  feat_vocab.json      # feat_columns 的顺序和命名 → 训练时可查每维是什么
+  manifest.json        # 血统追溯
+
+  ---
+  Stage 5 使用方式（以后写，现在只是示意）
+
+  # 加载 AIDataSet
+  aidata = AIDataSet.load_from_disk('WellDoc2023CVSDeRx_WeightDayEntry/@v0AIData-WeightAf1M')
+  df_train = aidata['train'].to_pandas()
+  df_test  = aidata['test'].to_pandas()
+
+  # 过滤无效 case
+  df_train = df_train[df_train['weight_loss_pct'].notna()]
+  df_test  = df_test[df_test['weight_loss_pct'].notna()]
+
+  # 对于 threshold=4.0 的模型
+  threshold = 4.0
+  y_train = (df_train['weight_loss_pct'] > threshold).astype(int)
+  y_test  = (df_test['weight_loss_pct'] > threshold).astype(int)
+
+  # 特征
+  X_train = np.stack(df_train['feat-val'].values)  # shape: (n, 175)
+  X_test  = np.stack(df_test['feat-val'].values)
+
+  # 训练
+  model = xgb.XGBClassifier()
+  model.fit(X_train, y_train)
+
+  改 threshold 只是改一个数字，不需要重跑 Stage 4。
+
+  ---
+  要建的 builder 文件
+
+  ┌─────────────────────────────────────────────────────────┬──────────────────────────────────┐
+  │                          文件                           │               产出               │
+  ├─────────────────────────────────────────────────────────┼──────────────────────────────────┤
+  │ code-dev/1-PIPELINE/4-AIData-WorkSpace/c8_build_input_v │ → code/haifn/fn_aidata/entryinpu │
+  │ alflatmulticf.py                                        │ t/InputValFlatMultiCF.py         │
+  ├─────────────────────────────────────────────────────────┼──────────────────────────────────┤
+  │ code-dev/1-PIPELINE/4-AIData-WorkSpace/c9_build_output_ │ → code/haifn/fn_aidata/entryoutp │
+  │ weightlabel.py                                          │ ut/OutputWeightLabel.py          │
+  ├─────────────────────────────────────────────────────────┼──────────────────────────────────┤
+  │ (手写) examples/ProjC-Model-WeightPredict/1-hainn-data/ │ Config                           │
+  │ config/4_aidata_welldoc2023cvsderx_af1m.yaml            │                                  │
+  └─────────────────────────────────────────────────────────┴──────────────────────────────────┘
+
+  ---
+  这就是 Option B 的完整设计。要开始写 builder 吗？
