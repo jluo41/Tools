@@ -273,6 +273,8 @@ MUST NOT
 4. NEVER assume a `vocab/` subdirectory exists (files are at ROOT)
 5. NEVER mix up input `tfm_fn` (4 params) with output `tfm_fn` (2 params)
 6. NEVER assume SplitFn returns split DataFrames -- it adds `split_ai` column to df_tag
+7. NEVER use `idx2tkn` in InputFn vocab lookups -- always use `tid2tkn` (project standard)
+8. NEVER discard `--wgt` values from CaseFns -- InputFn must read and pass through real numeric weights
 
 ---
 

@@ -167,11 +167,37 @@ CaseFn Output Suffixes
 
 ```
 --tid    token ID list
---wgt    weight list
+--wgt    weight list (real numeric values, NOT just 1.0)
 --val    value dict/list
 --str    string/JSON
 (none)   raw scalar
 ```
+
+COVocab Naming Convention
+--------------------------
+
+**MANDATORY:** Use `tid2tkn` / `tkn2tid` for vocabulary key names. Never use `idx2tkn` / `tkn2idx`.
+
+```python
+# CORRECT:
+COVocab = {'tid2tkn': ['weight_last', 'weight_mean', 'weight_std'], 'vocab_size': 3}
+COVocab = {'tid2tkn': ['<pad>', 'gender-M', 'gender-F'], 'tkn2tid': {'<pad>': 0, 'gender-M': 1, 'gender-F': 2}}
+
+# WRONG:
+COVocab = {'idx2tkn': ['weight_last', 'weight_mean', 'weight_std'], 'vocab_size': 3}
+```
+
+**--wgt must carry real numeric values** for numeric CaseFns (not just 1.0):
+
+```python
+# CORRECT: numeric CaseFn returns real values in --wgt
+return {'--tid': [0, 1, 2], '--wgt': [194.5, 192.3, 3.2], '--val': val_dict}
+
+# WRONG: always returning 1.0 loses numeric information
+return {'--tid': [0, 1, 2], '--wgt': [1, 1, 1], '--val': val_dict}
+```
+
+For categorical CaseFns (e.g., PDemoBase), `--wgt` may be omitted (InputFn defaults to 1.0).
 
 
 Ckpd_to_CkpdObsConfig Common Configurations
@@ -213,6 +239,8 @@ Or call venv python directly: `.venv/bin/python script.py`
 8.  Include `MetaDict` at end of CaseFn module
 9.  Include `HumanRecords` mapping Human -> Record list
 10. Present plan and get approval before code changes
+11. Use `tid2tkn` / `tkn2tid` for COVocab keys (NEVER `idx2tkn` / `tkn2idx`)
+12. Return real numeric values in `--wgt` for numeric CaseFns (not just 1.0)
 
 
 MUST NOT

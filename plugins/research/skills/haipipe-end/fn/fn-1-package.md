@@ -91,6 +91,30 @@ deployment_config:
 
 ---
 
+Step 4.5: MANDATORY — Show YAML and Get User Confirmation
+============================================================
+
+CRITICAL RULE: Before running ANY haistep-endpoint command, you MUST:
+
+1. Show the FULL YAML config content to the user (read it out).
+2. Walk through each section step by step:
+   - endpoint_name, endpoint_version
+   - modelinstance_name, modelinstance_version (verify model exists)
+   - MetaFn, TrigFn, PostFn, Src2InputFn, Input2SrcFn names
+   - InferenceArgs, deployment_config
+3. ALWAYS challenge the YAML — assume it could be wrong:
+   - Does the modelinstance_version match what's in _WorkSpace?
+   - Are all 5 inference Fn names registered and importable?
+   - Do the InferenceArgs match what the model expects?
+4. Ask the user: "Is this YAML correct? Should I proceed?"
+5. WAIT for explicit user confirmation.
+6. Only AFTER the user says yes, proceed to Step 5.
+
+DO NOT skip this step. DO NOT assume the YAML is correct.
+DO NOT run the pipeline without user sign-off on the config.
+
+---
+
 Step 5: Run the Pipeline
 ==========================
 

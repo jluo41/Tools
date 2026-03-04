@@ -88,6 +88,53 @@ Stage-Independent Steps
   Or copy an existing config from config/ and modify it.
   See Per-Stage Reference below for required config keys per stage.
 
+**Step 3.5: MANDATORY — Show YAML and Get User Confirmation (ALL Pipeline Commands)**
+
+  CRITICAL RULE: Before running ANY pipeline command — haistep-*, haicli-process,
+  Python API call, or any other runner — you MUST walk through the config with
+  the user. This is not a haistep-only rule. It applies to everything.
+
+  Universal protocol (4 steps, no exceptions):
+
+  1. Show the FULL YAML config to the user (read the file out, display it verbatim).
+  2. Walk through every section, one by one:
+
+     --- For haistep-* configs (single-stage, single-cohort): ---
+       - record_set_name / case_set_name / aidata_name / aidata_version
+       - SplitArgs: SplitMethod, ratios, Split_to_Selection rules
+       - InputArgs: input_method, input_casefn_list
+       - OutputArgs: output_method, output_casefn_list, output_args
+
+     --- For haicli-process configs (multi-stage, multi-cohort): ---
+       - PipelineArgs: which stages are enabled (run_source/record/case/aidata)
+       - RawDataArgs: cohort names, partition counts per cohort
+       - PreFnArgs.RecordArgs: SourceFnName, HumanRecords, record_set_version
+       - PreFnArgs.CaseArgs: TriggerName, CaseFn_list, case_set_version
+       - PreFnArgs.AIDataArgs: aidata_name, aidata_version, input_method,
+           input_casefn_list, output_method, SplitArgs, OutputArgs
+
+  3. Challenge the config — assume it could be wrong:
+     - Do all Fn names (SourceFn, RecordFn, TriggerFn, CaseFn, TfmFn, SplitFn)
+       exist in their respective code/haifn/... directories?
+     - Does the input_method match the project convention?
+     - Does the aidata_version match what is expected in _WorkSpace?
+     - Are selection rules referencing the correct column names?
+     - Are all label names consistent with the output CaseFn?
+     - For haicli-process: do partition counts match cohort sizes?
+     - For haicli-process: is record_set_version correct for new vs. existing RecordSets?
+
+  4. Ask: "Is this config correct? Should I proceed?"
+     WAIT for explicit user confirmation.
+     Only AFTER the user says yes, proceed to Step 4.
+
+  DO NOT skip this step. DO NOT assume the config is correct.
+  DO NOT run the pipeline without user sign-off.
+
+  Multi-config shortcut: If running multiple configs that are nearly identical
+  (e.g., 6 horizon variants), show the golden template in full, then summarize
+  what differs across the rest ("all 5 others identical except horizon name:
+  WeightAf0p5M, WeightAf1p5M, ..."). Get one confirmation for the full set.
+
 **Step 4: Run the Pipeline**
 
   CLI (recommended for one-off runs):

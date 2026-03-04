@@ -12,6 +12,33 @@ ALL test scripts (L1 through L4) follow this same 7-step structure.
 Only the labels for Steps 5-6 differ by layer (see table below).
 
 ```
+Step 0: MANDATORY — Show YAML and Get User Confirmation
+
+        CRITICAL RULE: Before running ANY haistep-model command or test script,
+        you MUST:
+
+        1. Show the FULL YAML config content to the user (read it out).
+        2. Walk through each section step by step:
+           - ModelInstanceClass, modelinstance_version
+           - aidata_name, aidata_version (verify AIData exists)
+           - model_tuner_name, ModelArgs (hyperparams, n_trials, label list)
+           - TrainingArgs, InferenceArgs
+        3. ALWAYS challenge the YAML — assume it could be wrong:
+           - Does the aidata_version match what's in _WorkSpace?
+           - Do the label column names match the AIData columns?
+           - Is the model_tuner_name a registered tuner?
+           - Are hyperparameter ranges reasonable?
+        4. Ask the user: "Is this YAML correct? Should I proceed?"
+        5. WAIT for explicit user confirmation.
+        6. Only AFTER the user says yes, proceed to Step 1.
+
+        DO NOT skip this step. DO NOT assume the YAML is correct.
+        DO NOT run the pipeline without user sign-off on the config.
+
+        If running multiple configs (e.g., 6 horizon variants), show at least
+        the golden template config in full AND summarize what differs across
+        the other configs. Get confirmation once for the set.
+
 Step 1: Load config
         display_df with key architecture params
         (vocab_size, seq_len, model_class, n_estimators, etc.)

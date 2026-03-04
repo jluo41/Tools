@@ -129,6 +129,16 @@ Step 3: Execute the function.
         Apply MUST DO and MUST NOT checklists from the ref file line by line,
         not from memory.
 
+        UNIVERSAL PRE-EXECUTION RULE — applies to ALL functions, ALL tools:
+        Before running any pipeline command — haistep-*, haicli-process,
+        Python API, or any future runner — ALWAYS:
+          1. Display the complete YAML config to the user.
+          2. Walk through every section (one by one, out loud).
+          3. Ask: "Is this config correct? Should I proceed?"
+          4. WAIT for explicit user confirmation.
+        No exceptions. A pipeline started without user sign-off on its config
+        is a wasted run. See fn/fn-2-cook.md Step 3.5 for the full protocol.
+
 ---
 
 Always-On Context
