@@ -130,10 +130,10 @@ Changes Made
 Unsolved Items
 --------------
 
-| # | Issue | Status | Notes |
-|---|-------|--------|-------|
-| 3 | {title} | DEFERRED | {reason} |
-| 5 | {title} | TODO | {user note} |
+| #   | Issue   | Status   | Notes       |
+|-----|---------|----------|-------------|
+| 3   | {title} | DEFERRED | {reason}    |
+| 5   | {title} | TODO     | {user note} |
 
 Session 2: {Description} ({YYYY-MM-DD HH:MM})
 ===============================================

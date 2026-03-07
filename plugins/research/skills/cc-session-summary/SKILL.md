@@ -318,10 +318,10 @@ Paste this and fill in:
 Topics at a Glance
 ------------------
 
-| # | Topic | Time | Messages |
-|---|---|---|---|
-| 1 | <topic> | <start>–<end> | 1–N |
-| 2 | <topic> | <start>–<end> | N–M |
+| #   | Topic   | Time          | Messages |
+|-----|---------|---------------|----------|
+| 1   | <topic> | <start>–<end> | 1–N      |
+| 2   | <topic> | <start>–<end> | N–M      |
 
 
 ---
@@ -384,10 +384,10 @@ User Messages
 📁 Files Created This Session
 ==============================
 
-| File | Type | Description |
-|---|---|---|
-| path/to/file.py | Builder | <what it does> |
-| ... | ... | ... |
+| File              | Type    | Description      |
+|-------------------|---------|------------------|
+| path/to/file.py   | Builder | <what it does>   |
+| ...               | ...     | ...              |
 
 
 ---
@@ -396,10 +396,10 @@ User Messages
 🔜 Next Steps
 =============
 
-| Priority | Task |
-|---|---|
-| 1 | <highest priority next action> |
-| 2 | ... |
+| Priority | Task                           |
+|----------|--------------------------------|
+| 1        | <highest priority next action> |
+| 2        | ...                            |
 
 
 ---

@@ -275,6 +275,10 @@ ModelTuner. Use this when adding a new input channel to an existing Tuner.
 ```
 ModelTuner (ABC)
   └── TSCLMTuner            (tuner_ts_clm.py)         domain = "ts_clm"
+        └── TSCLMTknTuner   (tuner_ts_clm_tkn.py)     domain = "ts_clm_tkn"
+              (token-aligned variant, UNK=10, CrossEntropy, perplexity)
+        └── TSCLMNumTuner   (tuner_ts_clm_num.py)     domain = "ts_clm_num"
+              (numeric float regression, MSE, RMSE/MAE, min_real_value masking)
   └── TECLMTuner            (tuner_te_clm_event.py)   domain = "te_clm"
         └── TECLMEventTuner (same file)                domain = "te_clm"
         └── TECLMToDTuner   (tuner_ts_clm_tod.py)     domain = "te_clm_tod"
@@ -315,6 +319,9 @@ incrementally:
 ```
 nn.Module
   └── TSCLMAlgorithm              (algorithm_ts_clm.py)
+        └── TSCLMNumAlgorithm     (algorithm_ts_clm_num.py)
+              (replaces token embedding+lm_head with Linear(1,H)+Linear(H,1);
+               uses inputs_embeds; MSE next-step loss; NumRegressionOutput)
         └── TSCLMWithToDAlgorithm (algorithm_ts_clm_tod.py)
               └── TECLMAlgorithm  (algorithm_te_clm_event.py)
 ```
@@ -343,6 +350,36 @@ def transform_fn_tod(data, TfmArgs): # suffix for ToD variant
 ```
 
 The base is always named `transform_fn`. Variants use `transform_fn_<suffix>`.
+
+---
+
+Known Patterns (te_clm family)
+==============================
+
+**min_real_value masking (TSCLMNumTuner):**
+
+In numeric mode, special/missing CGM values (0-10 mg/dL) must be excluded from
+loss and attention. The convention mirrors `num_special_tokens=11` in the token model:
+
+```python
+# In TfmArgs YAML:
+min_real_value: 11.0    # values < 11 are special/missing (mirrors num_special_tokens=11)
+
+# In transform_fn:
+if min_real_value is not None:
+    attention_mask = [1 if v >= min_real_value else 0 for v in vals]
+else:
+    attention_mask = [1 if i < n_real else 0 for i in range(max_seq_length)]
+```
+
+- End-padding (0.0) and intra-sequence missing (10.0) are both masked by one rule.
+- `min_real_value` MUST be saved in `tuner_config.json` and restored in `load_model()`.
+- If `min_real_value` is None, fallback is positional masking based on sequence length.
+
+**Registry requirement:**
+
+Every new te_clm Tuner MUST be added to `MODEL_TUNER_REGISTRY` in
+`code/hainn/tefm/instance_tefm.py`. Missing entry → ValueError at `instance.init()`.
 
 ---
 
@@ -412,6 +449,11 @@ MLPredictor tuners:       code/hainn/mlpredictor/models/
 
 TEFM tuners:              code/hainn/tefm/models/
   hfntp/:                 HFNTPTuner (HuggingFace causal language modeling)
+  te_clm/:                TSCLMTuner        (token CLM base)
+                          TSCLMTknTuner     (token-aligned, UNK=10)
+                          TSCLMNumTuner     (numeric float regression)
+                          TECLMTuner / TECLMEventTuner / TECLMToDTuner
+  Registry: instance_tefm.py MODEL_TUNER_REGISTRY — add new tuners here
 ```
 
 ---
