@@ -26,14 +26,14 @@ Every model in this pipeline follows the same 4-layer separation:
 │  Layer 3: Instance                                              │
 │  Thin orchestrator. Manages one or more Tuners.                 │
 │  HuggingFace-style save/load. Config class. Registry.           │
-│  Files: code/hainn/<model_family>/instance_*.py                 │
+│  Files: code/hainn/instance/<model_family>/instance_*.py        │
 ├─────────────────────────────────────────────────────────────────┤
 │  Layer 2: Tuner (Train / Optuna)                                │
 │  Wraps ONE algorithm. Handles data conversion, training,        │
 │  inference, serialization. The ONLY layer that imports           │
 │  external libraries.                                            │
-│  Files: code/hainn/<model_family>/models/tuner_*.py             │
-│  Custom nn.Module: also algorithm_*.py (see ref/layer-1-algorithm.md)     │
+│  Files: code/hainn/tuner/<model_family>/tuner_*.py              │
+│  Custom nn.Module: code/hainn/algo/<family>/algorithm_*.py      │
 ├─────────────────────────────────────────────────────────────────┤
 │  Layer 1: Algorithm                                             │
 │  Two forms:                                                     │
@@ -81,7 +81,7 @@ START: I have an algorithm (e.g., diffusion model, LLM, tree model)
 │     shape (one model per arm). However, the bandit family does NOT
 │     use the canonical base class — no config class, different __init__
 │     signature, no model_base dict. If you are adding a bandit-style
-│     model, follow code/hainn/bandit/ directly rather than this tree.
+│     model, follow code/hainn/instance/bandit/ directly rather than this tree.
 │     For a new canonical implementation, prefer Multi-Tuner pattern
 │     with one tuner per arm registered in model_base.
 │
@@ -132,11 +132,11 @@ Step 1: Algorithm (Layer 1)
    [ ] This library is NEVER imported above the Tuner layer
    [ ] Pure external library (XGBoost, sklearn, Nixtla): no file to create here
    [ ] Custom nn.Module (adds embeddings, fusion, etc.): create
-       code/hainn/<family>/models/algorithm_<name>.py
+       code/hainn/algo/<family>/algorithm_<name>.py
        See ref/layer-1-algorithm.md for the algorithm_*.py pattern.
 
 Step 2: Tuner (Layer 2)
-   [ ] Create file: code/hainn/<family>/models/tuner_<name>.py
+   [ ] Create file: code/hainn/tuner/<family>/tuner_<name>.py
    [ ] Define standalone transform_fn() at TOP of file
    [ ] Create class inheriting from ModelTuner
    [ ] Set domain_format class attribute
@@ -149,7 +149,7 @@ Step 2: Tuner (Layer 2)
    [ ] Import algorithm library ONLY in this file
 
 Step 3: Instance (Layer 3)
-   [ ] Create file: code/hainn/<family>/instance_<name>.py
+   [ ] Create file: code/hainn/instance/<family>/instance_<name>.py
    [ ] Create class inheriting from ModelInstance
    [ ] Set MODEL_TYPE class attribute (string for metadata.json)
    [ ] Create MODEL_TUNER_REGISTRY dict mapping name → module path
@@ -159,15 +159,15 @@ Step 3: Instance (Layer 3)
        - infer(dataset)          → delegate to Tuner(s)
        - _save_model_base(dir)   → call tuner.save_model() for each
        - _load_model_base(dir)   → init() then tuner.load_model() for each
-   [ ] Create @dataclass Config: code/hainn/<family>/configuration_<name>.py
+   [ ] Create @dataclass Config: code/hainn/instance/<family>/configuration_<name>.py
        - Inherit from ModelInstanceConfig
        - Include: ModelArgs, TrainingArgs, InferenceArgs, EvaluationArgs (all Dict)
        - Implement from_aidata_set() factory classmethod
        - Implement from_yaml() factory classmethod (base raises NotImplementedError)
    [ ] Register in code/hainn/model_registry.py:
        elif model_instance_type in ('MyModel', 'MyModelInstance'):
-           from hainn.<family>.instance_<name> import MyModelInstance
-           from hainn.<family>.configuration_<name> import MyModelConfig
+           from hainn.instance.<family>.instance_<name> import MyModelInstance
+           from hainn.instance.<family>.configuration_<name> import MyModelConfig
            return MyModelInstance, MyModelConfig
 
 Step 4: ModelSet / Pipeline (Layer 4)
@@ -189,7 +189,7 @@ cat code/hainn/model_registry.py
 ls code/hainn/
 ```
 
-Snapshot (as of 2026-02-21 -- always verify with commands above):
+Snapshot (as of 2026-03-06 -- always verify with commands above):
 (file: code/hainn/model_registry.py)
 
 ```
@@ -200,26 +200,29 @@ Type String(s)                          Instance Class                  Config C
   alias: 'MLSLearnerPredictorInstance'
 'MLTLearnerPredictor'                   MLTLearnerPredictorInstance     MLTLearnerConfig          mlpredictor
   alias: 'MLTLearnerPredictorInstance'
-'TSDecoderInstance'                     TSDecoderInstance               TSDecoderConfig           tsfm
-  alias: 'TSDecoder'              *** NON-FUNCTIONAL: import targets do not exist on disk ***
+'MLBasePredictorInstance'               MLBasePredictorInstance         MLBasePredictorConfig     mlpredictor
+  alias: 'MLBasePredictor'
+'MLMultiLabelPredictorInstance'         MLMultiLabelPredictorInstance   MLMultiLabelPredictorConfig  mlpredictor
+  alias: 'MLMultiLabelPredictor'
 'TEFMInstance'                          TEFMInstance                    TEFMConfig                tefm
   alias: 'TEFM'
-'TEFMForecastInstance'                  TEFMForecastInstance            TEFMForecastConfig        tsforecast
-  alias: 'TEFMForecast'           *** NON-FUNCTIONAL: import targets do not exist on disk ***
 'TSForecastInstance'                    TSForecastInstance              TSForecastConfig          tsforecast
   aliases: 'DLForecastInstance',
            'TSForecast'
+'TEDiffusion'                           TEDiffusionInstance             TEDiffusionConfig         tediffusion
+  alias: 'TEDiffusionInstance'
+'TSDecoderInstance'                     TSDecoderInstance               TSDecoderConfig           tsfm
+  alias: 'TSDecoder'              *** NON-FUNCTIONAL: import path stale ***
 ```
 
 **When writing YAML configs:** Use any of the type strings listed above as
 the value for ModelInstanceClass. The registry resolves aliases automatically.
 
-**ACTION REQUIRED -- NON-FUNCTIONAL entries:** TSDecoderInstance and
-TEFMForecastInstance are registered but their import targets do not exist on disk.
-They will throw ImportError at runtime if anyone tries to load them.
-Before removing: verify no production config references 'TSDecoder', 'TSDecoderInstance',
-'TEFMForecast', or 'TEFMForecastInstance' as ModelInstanceClass. Then delete the
-corresponding elif blocks from code/hainn/model_registry.py.
+**ACTION REQUIRED -- NON-FUNCTIONAL entry:** TSDecoderInstance is registered
+but its import path (`hainn.tsfm.tsdecoder.*`) does not exist in the new structure.
+It will throw ImportError at runtime. Before removing: verify no production config
+references 'TSDecoder' or 'TSDecoderInstance' as ModelInstanceClass. Then delete
+the corresponding elif block from code/hainn/model_registry.py.
 
 ---
 
@@ -364,10 +367,10 @@ Existing Model Families: Summary
 Snapshot (discover current families at runtime):
 
 ```bash
-ls code/hainn/
+ls code/hainn/algo/ code/hainn/tuner/ code/hainn/instance/
 ```
 
-Snapshot (as of 2026-02-21 -- verify with ls above):
+Snapshot (as of 2026-03-06 -- verify with ls above):
 
 ```
 ┌──────────────┬───────────────────────────────────────────────────────────┐
@@ -376,26 +379,26 @@ Snapshot (as of 2026-02-21 -- verify with ls above):
 │ tsforecast   │ Time-series forecasting. 15+ Tuners via dict registry.  │
 │              │ Clean 4-layer separation. THE REFERENCE IMPLEMENTATION.  │
 │              │ Models: PatchTST, NBEATS, NHITS, XGBoost, ARIMA, LLM... │
-│              │ Files: code/hainn/tsforecast/                            │
+│              │ Files: algo/tsforecast/ tuner/tsforecast/ instance/tsforecast/ │
 ├──────────────┼───────────────────────────────────────────────────────────┤
 │ tefm         │ Time-Event Foundation Model. Multi-modal (timeseries +  │
 │              │ events + static). Dual-mode: Tuner-based (HFNTPTuner)   │
 │              │ or direct architecture (early_fusion, clip, diffusion).  │
 │              │ Direct mode has torch imports in Instance (deviation).   │
-│              │ Files: code/hainn/tefm/                                  │
+│              │ Files: algo/tefm_*/ tuner/tefm/ instance/tefm/          │
 ├──────────────┼───────────────────────────────────────────────────────────┤
 │ mlpredictor  │ Treatment effect estimation. S-Learner (single model,   │
 │              │ treatment as feature) and T-Learner (separate models).   │
 │              │ Non-canonical pattern: doesn't follow base class          │
 │              │ conventions but still actively used in production.        │
-│              │ Files: code/hainn/mlpredictor/                           │
+│              │ Files: algo/mlpredictor/ tuner/mlpredictor/ instance/mlpredictor/ │
+├──────────────┼───────────────────────────────────────────────────────────┤
+│ tediffusion  │ Conditional diffusion model for glucose generation.      │
+│              │ Files: algo/tefm_diffusion/ tuner/tediffusion/ instance/tediffusion/ │
 ├──────────────┼───────────────────────────────────────────────────────────┤
 │ bandit       │ Multi-arm bandit. Thompson sampling. No config class.    │
 │              │ Different __init__ signature (no config object).         │
-│              │ Files: code/hainn/bandit/                                │
-├──────────────┼───────────────────────────────────────────────────────────┤
-│ tsfm         │ Time-Series Foundation Model (decoder). TSDecoder.      │
-│              │ Files: code/hainn/tsfm/tsdecoder/                       │
+│              │ Files: algo/bandit/ tuner/bandit/ instance/bandit/       │
 └──────────────┴───────────────────────────────────────────────────────────┘
 ```
 
@@ -427,26 +430,26 @@ Key File Locations
 
 ```
 Base classes:
-  ModelTuner:           code/hainn/model_tuner.py
-  ModelInstance:        code/hainn/model_instance.py
-  ModelInstanceConfig:  code/hainn/model_configuration.py
+  ModelTuner:           code/hainn/tuner/model_tuner.py
+  ModelInstance:        code/hainn/instance/model_instance.py
+  ModelInstanceConfig:  code/hainn/instance/model_configuration.py
   Model Registry:       code/hainn/model_registry.py
 
 Pipeline (Layer 4):
   ModelInstance_Set:      code/haipipe/model_base/modelinstance_set.py
   ModelInstance_Pipeline: code/haipipe/model_base/modelinstance_pipeline.py
-  PreFnPipeline:         code/hainn/prefn_pipeline.py
+  PreFnPipeline:         code/hainn/instance/prefn_pipeline.py
   Asset base class:      code/haipipe/assets.py
 
 AutoModelInstance:
-  code/hainn/model_instance.py (AutoModelInstance class)
+  code/hainn/instance/model_instance.py (AutoModelInstance class)
 
-Existing families:
-  tsforecast:    code/hainn/tsforecast/
-  tefm:          code/hainn/tefm/
-  mlpredictor:   code/hainn/mlpredictor/
-  bandit:        code/hainn/bandit/
-  tsfm:          code/hainn/tsfm/
+Existing families (split across algo/tuner/instance):
+  tsforecast:    code/hainn/{algo,tuner,instance}/tsforecast/
+  tefm:          code/hainn/{algo,tuner,instance}/tefm/
+  mlpredictor:   code/hainn/{algo,tuner,instance}/mlpredictor/
+  tediffusion:   code/hainn/{algo,tuner,instance}/tediffusion/
+  bandit:        code/hainn/{algo,tuner,instance}/bandit/
 ```
 
 ---
@@ -460,36 +463,40 @@ Every model family has a `test-modeling-<name>/` directory with test scripts
 **Base model: full 4-layer test suite**
 
 ```
-test-modeling-ts_clm/              # base ts_clm model -- full suite
-├── config_ts_clm_from_scratch.yaml
-├── scripts/
-│   ├── test_ts_clm_1_algorithm.py   # Layer 1: raw Algorithm
-│   ├── test_ts_clm_2_tuner.py       # Layer 2: Tuner + transform_fn
-│   ├── test_ts_clm_3_instance.py    # Layer 3: Instance orchestration
-│   └── test_ts_clm_4_modelset.py    # Layer 4: ModelInstance_Set packaging
-└── notebooks/                        # Auto-generated from scripts (all 4)
+test-modeling-<name>/                        # flat directory -- no scripts/ subfolder
+├── config_<name>_smoke.yaml                 # test config
+├── test_<name>_1_algorithm.py               # Layer 1: raw Algorithm
+├── test_<name>_1_algorithm.ipynb            # auto-generated notebook
+├── test_<name>_2_tuner.py                   # Layer 2: Tuner + transform_fn
+├── test_<name>_2_tuner.ipynb
+├── test_<name>_3_instance.py                # Layer 3: Instance orchestration
+├── test_<name>_3_instance.ipynb
+├── test_<name>_4_modelset.py                # Layer 4: ModelInstance_Set packaging
+└── test_<name>_4_modelset.ipynb
 ```
 
 **Variant model: Layer 1+2 only (shares L3/L4 with base via same Instance)**
 
 ```
-test-modeling-te_clm_event/        # event variant -- new components only
-├── config_te_clm_event_from_scratch.yaml
-├── scripts/
-│   ├── test_te_clm_event_1_algorithm.py  # Layer 1: new Algorithm
-│   └── test_te_clm_event_2_tuner.py      # Layer 2: new Tuner
-└── notebooks/                             # 2 notebooks
+test-modeling-<variant>/
+├── config_<variant>_smoke.yaml
+├── test_<variant>_1_algorithm.py            # Layer 1: new Algorithm
+├── test_<variant>_1_algorithm.ipynb
+├── test_<variant>_2_tuner.py                # Layer 2: new Tuner
+└── test_<variant>_2_tuner.ipynb
 ```
 
 **External-algorithm model: no Layer 1 script needed**
 
 ```
-test-modeling-mlpredictor-slearner-xgboost/  # mlpredictor -- XGBoost wraps
-├── config_mlpredictor_slearner_xgboost.yaml  # external library, no L1 file
-├── scripts/
-│   ├── test_mlpredictor_slearner_xgboost_3_instance_realdata.py  # L3 real-data
-│   └── test_mlpredictor_slearner_xgboost_4_modelset.py           # L4 packaging
-└── notebooks/                                                      # auto-generated
+test-modeling-<name>/
+├── config_<name>.yaml
+├── test_<name>_2_tuner.py                   # L2 (or skip if trivial wrapper)
+├── test_<name>_2_tuner.ipynb
+├── test_<name>_3_instance.py                # L3 (may have _realdata suffix)
+├── test_<name>_3_instance.ipynb
+├── test_<name>_4_modelset.py                # L4 packaging
+└── test_<name>_4_modelset.ipynb
 ```
 
 **Pattern summary:**
@@ -593,7 +600,8 @@ Never /tmp/.
 **Notebook regeneration** (after any script change):
 
 ```bash
+# Convert a single script to notebook (in the same directory):
 python code/scripts/convert_to_notebooks.py \
-    --dir <model>/test-modeling-<name>/scripts/ \
-    -o <model>/test-modeling-<name>/notebooks/
+    test-modeling-<name>/test_<name>_2_tuner.py \
+    -o test-modeling-<name>/test_<name>_2_tuner.ipynb
 ```

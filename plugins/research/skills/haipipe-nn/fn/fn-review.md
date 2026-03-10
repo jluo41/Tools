@@ -15,12 +15,12 @@ the dashboard. Run fn-dashboard first to fill in the slots below.
 ```
 FAMILY             = "..."    # e.g., tsforecast, mlpredictor, tefm
 MODEL_TYPE_STRING  = "..."    # MODEL_TYPE value in Instance class
-INSTANCE_FILE      = "code/hainn/<family>/instance_<name>.py"
-CONFIG_FILE        = "code/hainn/<family>/configuration_<name>.py"
-TUNER_FILE         = "code/hainn/<family>/models/tuner_<name>.py"
-ALGORITHM_FILE     = "code/hainn/<family>/models/algorithm_<name>.py"  # or N/A
+INSTANCE_FILE      = "code/hainn/instance/<family>/instance_<name>.py"
+CONFIG_FILE        = "code/hainn/instance/<family>/configuration_<name>.py"
+TUNER_FILE         = "code/hainn/tuner/<family>/tuner_<name>.py"
+ALGORITHM_FILE     = "code/hainn/algo/<family>/algorithm_<name>.py"  # or N/A
 YAML_FILE          = "config/.../my_model.yaml"
-TEST_DIR           = "code/hainn/<family>/test-modeling-<name>/"
+TEST_DIR           = "code/hainn/tuner/<family>/test-modeling-<name>/"
 ```
 
 ---
@@ -117,7 +117,7 @@ from_aidata_set() and from_yaml() requirements.
 ```bash
 # Quick import + from_yaml smoke test:
 python -c "
-from hainn.<family>.configuration_<name> import <ConfigClass>
+from hainn.instance.<family>.configuration_<name> import <ConfigClass>
 config = <ConfigClass>.from_yaml('<YAML_FILE>')
 print('ModelArgs:', config.ModelArgs)
 print('model_tuner_name:', config.ModelArgs.get('model_tuner_name'))
@@ -169,7 +169,7 @@ print('Config:  ', cfg.__name__)
 
 ```bash
 python -c "
-from hainn.<family>.instance_<name> import MODEL_TUNER_REGISTRY
+from hainn.instance.<family>.instance_<name> import MODEL_TUNER_REGISTRY
 tuner_name = '<model_tuner_name_from_yaml>'
 module_path = MODEL_TUNER_REGISTRY[tuner_name]
 import importlib
@@ -224,16 +224,16 @@ Or call venv Python directly: .venv/bin/python script.py
 
 ```bash
 # (optional) Layer 1 -- only for custom nn.Module
-source .venv/bin/activate && source env.sh && python <TEST_DIR>/scripts/test_<name>_1_algorithm.py
+source .venv/bin/activate && source env.sh && python <TEST_DIR>/test_<name>_1_algorithm.py
 
 # Layer 2 -- Tuner in isolation
-source .venv/bin/activate && source env.sh && python <TEST_DIR>/scripts/test_<name>_2_tuner.py
+source .venv/bin/activate && source env.sh && python <TEST_DIR>/test_<name>_2_tuner.py
 
 # Layer 3 -- Instance orchestration
-source .venv/bin/activate && source env.sh && python <TEST_DIR>/scripts/test_<name>_3_instance.py
+source .venv/bin/activate && source env.sh && python <TEST_DIR>/test_<name>_3_instance.py
 
 # Layer 4 -- Full ModelInstance_Set packaging
-source .venv/bin/activate && source env.sh && python <TEST_DIR>/scripts/test_<name>_4_modelset.py
+source .venv/bin/activate && source env.sh && python <TEST_DIR>/test_<name>_4_modelset.py
 ```
 
 For test structure details, read:

@@ -151,7 +151,8 @@ Concrete Code From the Repo
 Discover actual Tuner files at runtime:
 
 ```bash
-ls code/hainn/<family>/models/    # e.g., ls code/hainn/tsforecast/models/
+ls code/hainn/algo/<family>/      # algorithm files (custom nn.Module only)
+ls code/hainn/tuner/<family>/     # tuner files that wrap algorithms
 ```
 
 **xgboost** (illustrative -- from mlpredictor/models/tuner_xgboost.py):
@@ -201,7 +202,7 @@ You do NOT write code at Layer 1. Install the library and wrap it in a Tuner.
    pip install new-algorithm-lib
 
 2. Create a Tuner file:
-   code/hainn/<family>/models/tuner_<name>.py
+   code/hainn/tuner/<family>/tuner_<name>.py
 
 3. Import the algorithm ONLY in that file
 
@@ -216,14 +217,14 @@ You DO write Layer 1 code. Create an algorithm file alongside the Tuner.
 
 ```
 1. Create the Algorithm file (Layer 1):
-   code/hainn/<family>/models/algorithm_<name>.py
+   code/hainn/algo/<family>/algorithm_<name>.py
    - Contains only nn.Module subclass(es)
    - Imports: torch, torch.nn, other algorithm_*.py files only
    - No training logic, no pipeline imports
 
 2. Create the Tuner file (Layer 2):
-   code/hainn/<family>/models/tuner_<name>.py
-   - Imports Algorithm: from .algorithm_<name> import MyAlgorithm
+   code/hainn/tuner/<family>/tuner_<name>.py
+   - Imports Algorithm: from hainn.algo.<family>.algorithm_<name> import MyAlgorithm
    - Tuner instantiates Algorithm inside _ensure_model_loaded() or fit()
 
 3. Implement the Tuner interface (see ref/layer-2-tuner.md)
@@ -326,16 +327,19 @@ Key File Locations
 ==================
 
 ```bash
-ls code/hainn/                          # all model families
-ls code/hainn/<family>/models/          # tuner files for a family
-cat code/hainn/model_tuner.py           # base class contract
+ls code/hainn/algo/                     # all algorithm families
+ls code/hainn/tuner/                    # all tuner families
+ls code/hainn/algo/<family>/            # algorithm files for a family
+ls code/hainn/tuner/<family>/           # tuner files for a family
+cat code/hainn/tuner/model_tuner.py     # base class contract
 ```
 
 Fixed locations:
 
 ```
-Tuner base class:       code/hainn/model_tuner.py
-Tuners (discover):      code/hainn/<family>/models/    <- ls to find
+Tuner base class:       code/hainn/tuner/model_tuner.py
+Algorithms (discover):  code/hainn/algo/<family>/     <- ls to find
+Tuners (discover):      code/hainn/tuner/<family>/    <- ls to find
 ```
 
 ---

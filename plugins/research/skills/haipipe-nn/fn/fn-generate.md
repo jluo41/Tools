@@ -50,7 +50,7 @@ embeddings, fusion layers, or a specialized forward pass on top of HuggingFace).
 **WHERE to write:**
 
 ```
-code/hainn/<family>/models/<variant>/algorithm_<name>.py
+code/hainn/algo/<family>/<variant>/algorithm_<name>.py
 ```
 
 **WHAT to write (per ref/layer-1-algorithm.md):**
@@ -63,8 +63,8 @@ code/hainn/<family>/models/<variant>/algorithm_<name>.py
 
 **Reference:** ref/layer-1-algorithm.md "When You Write Custom Layer 1 Code"
 **Example to read first:**
-  code/hainn/tefm/models/te_clm/algorithm_ts_clm.py
-  code/hainn/tefm/models/te_clm/algorithm_ts_clm_tod.py
+  code/hainn/algo/tefm/te_clm/algorithm_ts_clm.py
+  code/hainn/algo/tefm/te_clm/algorithm_ts_clm_tod.py
 
 ---
 
@@ -74,12 +74,12 @@ Layer 2: Tuner File
 **WHERE to write:**
 
 ```
-code/hainn/<family>/models/<variant>/tuner_<name>.py   (tefm, tsforecast-variant families)
-code/hainn/<family>/models/tuner_<name>.py             (mlpredictor -- no variant subdirectory)
+code/hainn/tuner/<family>/<variant>/tuner_<name>.py   (tefm, tsforecast-variant families)
+code/hainn/tuner/<family>/tuner_<name>.py             (mlpredictor -- no variant subdirectory)
 ```
 
 NOTE: mlpredictor Tuners live directly under models/ with no variant subdirectory
-(e.g., code/hainn/mlpredictor/models/tuner_xgboost.py). Only tefm and similar
+(e.g., code/hainn/tuner/mlpredictor/tuner_xgboost.py). Only tefm and similar
 families use a variant sublevel (e.g., models/te_clm/tuner_ts_clm.py).
 
 **WHAT to write (per ref/layer-2-tuner.md):**
@@ -108,12 +108,12 @@ Key conventions to get right:
 
 **Reference:** ref/layer-2-tuner.md -- read MUST DO + MUST NOT + standalone transform_fn
 **Example to read first:**
-  code/hainn/mlpredictor/models/tuner_xgboost.py
-  code/hainn/tsforecast/models/neuralforecast/modeling_nixtla_nhits.py  (if tsforecast)
+  code/hainn/tuner/mlpredictor/tuner_xgboost.py
+  code/hainn/tuner/tsforecast/neuralforecast/modeling_nixtla_nhits.py  (if tsforecast)
 
 WARNING: tsforecast model files use the naming convention modeling_nixtla_<name>.py,
 NOT tuner_<name>.py. Check actual files with:
-  Glob: code/hainn/tsforecast/models/**/*.py
+  Glob: code/hainn/tuner/tsforecast/**/*.py
 
 ---
 
@@ -123,7 +123,7 @@ Layer 3a: Instance File
 **WHERE to write:**
 
 ```
-code/hainn/<family>/instance_<name>.py
+code/hainn/instance/<family>/instance_<name>.py
 ```
 
 **WHAT to write (per ref/layer-3-instance.md):**
@@ -140,7 +140,7 @@ Required class attribute:
 
 Tuner registry -- use Style A (dict) for simple cases:
   MODEL_TUNER_REGISTRY = {
-      "XGBoostTuner": "hainn.<family>.models.tuner_xgboost",
+      "XGBoostTuner": "hainn.tuner.<family>.tuner_xgboost",
   }
 
 infer() routing contract:
@@ -151,7 +151,8 @@ Critical: _load_model_base must call self.init() BEFORE tuner.load_model()
 
 **Reference:** ref/layer-3-instance.md -- all sections
 **Example to read first:**
-  code/hainn/mlpredictor/instance_slearner.py
+  code/hainn/instance/mlpredictor/instance_slearner.py
+
 
 ---
 
@@ -161,7 +162,7 @@ Layer 3b: Configuration File
 **WHERE to write:**
 
 ```
-code/hainn/<family>/configuration_<name>.py
+code/hainn/instance/<family>/configuration_<name>.py
 ```
 
 **WHAT to write (per ref/layer-3-instance.md "Config Class Contract"):**
@@ -185,7 +186,7 @@ from_aidata_set must build:
 
 **Reference:** ref/layer-3-instance.md "Config Class Contract" + from_aidata_set() section
 **Example to read first:**
-  code/hainn/mlpredictor/configuration_slearner.py
+  code/hainn/instance/mlpredictor/configuration_slearner.py
 
 ---
 
@@ -202,8 +203,8 @@ Add an elif branch inside load_model_instance_class():
 
 ```python
 elif model_type == "<MODEL_TYPE_STRING>":
-    from hainn.<family>.instance_<name> import <InstanceClass>
-    from hainn.<family>.configuration_<name> import <ConfigClass>
+    from hainn.instance.<family>.instance_<name> import <InstanceClass>
+    from hainn.instance.<family>.configuration_<name> import <ConfigClass>
     return <InstanceClass>, <ConfigClass>
 ```
 
@@ -219,14 +220,12 @@ Test Scripts (All Layers)
 **WHERE to write:**
 
 ```
-code/hainn/<family>/models/test-modeling-<name>/
-  scripts/
-    test_<name>_1_algorithm.py    (only if custom algorithm)
-    test_<name>_2_tuner.py
-    test_<name>_3_instance.py
-    test_<name>_4_modelset.py
-  config/
-    config_<name>_smoke.yaml      (minimal config for tests)
+code/hainn/tuner/<family>/test-modeling-<name>/
+  config_<name>_smoke.yaml            (minimal config for tests)
+  test_<name>_1_algorithm.py          (only if custom algorithm)
+  test_<name>_2_tuner.py
+  test_<name>_3_instance.py
+  test_<name>_4_modelset.py
 ```
 
 **WHAT each test script must contain:**
@@ -284,32 +283,6 @@ Always write in this order (each layer depends on the one below):
 
 Run tests bottom-up: L2 first, then L3, then L4. Fix each layer before
 moving up. If L2 fails, do not proceed to L3.
-
----
-
-MANDATORY — Show YAML and Get User Confirmation Before Running
-===============================================================
-
-CRITICAL RULE: Before running ANY haistep-model command or test script
-with a YAML config, you MUST:
-
-1. Show the FULL YAML config content to the user (read it out).
-2. Walk through each section step by step:
-   - ModelInstanceClass, modelinstance_version
-   - aidata_name, aidata_version (verify AIData exists)
-   - model_tuner_name, ModelArgs (hyperparams, n_trials, label list)
-   - TrainingArgs, InferenceArgs
-3. ALWAYS challenge the YAML — assume it could be wrong:
-   - Does the aidata_version match what's in _WorkSpace?
-   - Do the label column names match the AIData columns?
-   - Is the model_tuner_name a registered tuner?
-   - Are hyperparameter ranges reasonable?
-4. Ask the user: "Is this YAML correct? Should I proceed?"
-5. WAIT for explicit user confirmation.
-6. Only AFTER the user says yes, proceed to run.
-
-DO NOT skip this step. DO NOT assume the YAML is correct.
-DO NOT run the pipeline without user sign-off on the config.
 
 ---
 

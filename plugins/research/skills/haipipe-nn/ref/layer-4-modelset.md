@@ -386,7 +386,7 @@ modelinstance_set = ModelInstance_Set.load_asset('MyModel/v0001', SPACE)
 model = modelinstance_set.get_model_instance()
 
 # Via AutoModelInstance (HuggingFace API)
-from hainn.model_instance import AutoModelInstance
+from hainn.instance.model_instance import AutoModelInstance
 model = AutoModelInstance.from_pretrained('path/to/model', SPACE)
 
 # Internal flow:
@@ -490,7 +490,7 @@ Key File Locations
 ModelInstance_Set:       code/haipipe/model_base/modelinstance_set.py
 ModelInstance_Pipeline:  code/haipipe/model_base/modelinstance_pipeline.py
 Asset base class:        code/haipipe/assets.py
-PreFnPipeline:           code/hainn/prefn_pipeline.py
+PreFnPipeline:           code/hainn/instance/prefn_pipeline.py
 Model registry:          code/hainn/model_registry.py
 ```
 
@@ -558,8 +558,9 @@ Step 7: Package + save/load roundtrip
 - Sub-steps (7a/7b/7c/7d) keep the 7 main steps clean while preserving detail.
 - Use `instance.infer()` -- the canonical method name (not `inference()`).
 
-**Reference:**
+**Reference:** Find a Layer 4 test to study:
 
 ```bash
-cat code/hainn/tefm/models/te_clm/test-modeling-ts_clm/scripts/test_te_clm_4_modelset.py
+# Discover L4 test scripts:
+Glob: code/hainn/tuner/**/test_*_4_modelset.py
 ```

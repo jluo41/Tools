@@ -27,7 +27,7 @@ Layer 1: Algorithm            Raw external library.
 The Contract
 ============
 
-**File:** code/hainn/model_instance.py
+**File:** code/hainn/instance/model_instance.py
 
 Every Instance MUST provide these 5 methods:
 
@@ -72,7 +72,7 @@ attaches to the Instance before saving. At Layer 3, you only carry the
 field -- you do not implement or call it yourself. Layer 4 sets it via
 `instance.prefn_pipeline = PreFnPipeline(...)` and save_pretrained() /
 from_pretrained() persist it automatically as `prefn_*.json`.
-See code/hainn/prefn_pipeline.py for the implementation.
+See code/hainn/instance/prefn_pipeline.py for the implementation.
 
 ---
 
@@ -151,10 +151,10 @@ This avoids importing algorithm libraries until they're needed.
 ```python
 # At top of instance file
 MODEL_TUNER_REGISTRY = {
-    'NixtlaPatchTSTTuner':        'hainn.tsforecast.models.neuralforecast.modeling_nixtla_patchtst',
-    'NixtlaXGBoostForecastTuner': 'hainn.tsforecast.models.mlforecast.modeling_nixtla_xgboost',
-    'NixtlaARIMATuner':           'hainn.tsforecast.models.statsforecast.modeling_nixtla_arima',
-    'HFNTPTuner':                 'hainn.tefm.models.hfntp.modeling_hfntp',
+    'NixtlaPatchTSTTuner':        'hainn.tuner.tsforecast.neuralforecast.modeling_nixtla_patchtst',
+    'NixtlaXGBoostForecastTuner': 'hainn.tuner.tsforecast.mlforecast.modeling_nixtla_xgboost',
+    'NixtlaARIMATuner':           'hainn.tuner.tsforecast.statsforecast.modeling_nixtla_arima',
+    'HFNTPTuner':                 'hainn.tuner.tefm.hfntp.modeling_hfntp',
     # ... add new tuners here
 }
 
@@ -170,10 +170,10 @@ def get_model_tuner_class(model_tuner_name):
 def init(self, ModelArgs=None):
     model_tuner_name = ModelArgs['model_tuner_name']
     if model_tuner_name == 'XGBoostTuner':
-        from .models.tuner_xgboost import XGBoostTuner
+        from hainn.tuner.mlpredictor.tuner_xgboost import XGBoostTuner
         tuner = XGBoostTuner(**args)
     elif model_tuner_name == 'LightGBMTuner':
-        from .models.tuner_lightgbm import LightGBMTuner
+        from hainn.tuner.mlpredictor.tuner_lightgbm import LightGBMTuner
         tuner = LightGBMTuner(**args)
 ```
 
@@ -215,7 +215,7 @@ class MyModelConfig(ModelInstanceConfig):     # MUST inherit base
     SPACE: Optional[Dict[str, str]] = None
 ```
 
-**Config base class** (code/hainn/model_configuration.py) provides:
+**Config base class** (code/hainn/instance/model_configuration.py) provides:
 - to_dict() / from_dict()
 - to_json() / from_json()
 - from_pretrained(model_dir) -- loads config.json
@@ -284,8 +284,8 @@ Every Instance type must be registered in code/hainn/model_registry.py:
 def load_model_instance_class(model_instance_type):
     # Pattern: map type string(s) to (InstanceClass, ConfigClass)
     if model_instance_type in ('TSForecast', 'TSForecastInstance', 'DLForecastInstance'):
-        from hainn.tsforecast.instance_tsforecast import TSForecastInstance
-        from hainn.tsforecast.configuration_tsforecast import TSForecastConfig
+        from hainn.instance.tsforecast.instance_tsforecast import TSForecastInstance
+        from hainn.instance.tsforecast.configuration_tsforecast import TSForecastConfig
         return TSForecastInstance, TSForecastConfig
     # ... more types ...
     else:
@@ -349,7 +349,7 @@ Phase 1 + 2 will find it automatically. No override needed.
 **AutoModelInstance** (like HuggingFace's AutoModel):
 
 ```python
-from hainn.model_instance import AutoModelInstance
+from hainn.instance.model_instance import AutoModelInstance
 model = AutoModelInstance.from_pretrained('path/to/model', SPACE)
 # Reads metadata.json, resolves MODEL_TYPE via registry, loads correct class.
 # IMPORTANT: Returns a CONCRETE class instance (e.g., TSForecastInstance),
@@ -422,7 +422,7 @@ Models read TrainingArgs from `self.config` when the parameter is None.
 Concrete Example: Clean Pattern (TSForecastInstance)
 ====================================================
 
-**File:** code/hainn/tsforecast/instance_tsforecast.py
+**File:** code/hainn/instance/tsforecast/instance_tsforecast.py
 
 ```python
 class TSForecastInstance(ModelInstance):
@@ -533,33 +533,32 @@ Key File Locations
 ==================
 
 ```
-Base class:             code/hainn/model_instance.py
-Config base class:      code/hainn/model_configuration.py
+Base class:             code/hainn/instance/model_instance.py
+Config base class:      code/hainn/instance/model_configuration.py
 Model registry:         code/hainn/model_registry.py
-AutoModelInstance:      code/hainn/model_instance.py (AutoModelInstance class)
+AutoModelInstance:      code/hainn/instance/model_instance.py (AutoModelInstance class)
 
 TSForecast:
-  Instance:             code/hainn/tsforecast/instance_tsforecast.py
-  Config:               code/hainn/tsforecast/configuration_tsforecast.py
+  Instance:             code/hainn/instance/tsforecast/instance_tsforecast.py
+  Config:               code/hainn/instance/tsforecast/configuration_tsforecast.py
 
 MLPredictor (S-Learner):
-  Instance:             code/hainn/mlpredictor/instance_slearner.py
-  Config:               code/hainn/mlpredictor/configuration_slearner.py
+  Instance:             code/hainn/instance/mlpredictor/instance_slearner.py
+  Config:               code/hainn/instance/mlpredictor/configuration_slearner.py
 
 MLPredictor (T-Learner):
-  Instance:             code/hainn/mlpredictor/instance_tlearner.py
-  Config:               code/hainn/mlpredictor/configuration_tlearner.py
+  Instance:             code/hainn/instance/mlpredictor/instance_tlearner.py
+  Config:               code/hainn/instance/mlpredictor/configuration_tlearner.py
 
 TEFM:
-  Instance:             code/hainn/tefm/instance_tefm.py
-  Config:               code/hainn/tefm/configuration_tefm.py
+  Instance:             code/hainn/instance/tefm/instance_tefm.py
+  Config:               code/hainn/instance/tefm/configuration_tefm.py
 
 Bandit:
-  Instance:             code/hainn/bandit/instance_bandit.py
+  Instance:             code/hainn/instance/bandit/instance_bandit.py
 
-TSDecoder:  *** NON-FUNCTIONAL: files do not exist on disk ***
-  Instance:             code/hainn/tsfm/tsdecoder/instance_decoder.py
-  Config:               code/hainn/tsfm/tsdecoder/configuration_decoder.py
+TSDecoder:  *** NON-FUNCTIONAL: registry entry exists but files do not ***
+  (stale entry in model_registry.py -- needs cleanup or implementation)
 ```
 
 ---
@@ -621,8 +620,9 @@ Step 7: save_pretrained / from_pretrained roundtrip
 - Step 7 tests HuggingFace-style save/load. Print the saved directory
   structure and verify config/metadata/weights roundtrip.
 
-**Reference:**
+**Reference:** Find a Layer 3 test to study:
 
 ```bash
-cat code/hainn/tefm/models/te_clm/test-modeling-ts_clm/scripts/test_te_clm_3_instance.py
+# Discover L3 test scripts:
+Glob: code/hainn/tuner/**/test_*_3_instance*.py
 ```

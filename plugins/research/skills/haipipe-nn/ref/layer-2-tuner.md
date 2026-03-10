@@ -28,7 +28,7 @@ Layer 1: Algorithm            Raw external library.
 The Contract
 ============
 
-**File:** code/hainn/model_tuner.py
+**File:** code/hainn/tuner/model_tuner.py
 
 Every Tuner MUST provide these 5 methods:
 
@@ -81,7 +81,7 @@ Every Tuner file follows this layout:
 # --- Layer 1 import (ONLY HERE) ---
 import my_algorithm_lib
 
-from hainn.model_tuner import ModelTuner
+from hainn.tuner.model_tuner import ModelTuner
 
 # --- 1. Standalone transform_fn at TOP ---
 def transform_fn(data, TfmArgs):
@@ -379,7 +379,7 @@ else:
 **Registry requirement:**
 
 Every new te_clm Tuner MUST be added to `MODEL_TUNER_REGISTRY` in
-`code/hainn/tefm/instance_tefm.py`. Missing entry → ValueError at `instance.init()`.
+`code/hainn/instance/tefm/instance_tefm.py`. Missing entry → ValueError at `instance.init()`.
 
 ---
 
@@ -436,18 +436,18 @@ Key File Locations
 ==================
 
 ```
-Base class:               code/hainn/model_tuner.py
+Base class:               code/hainn/tuner/model_tuner.py
 
-TSForecast tuners:        code/hainn/tsforecast/models/
+TSForecast tuners:        code/hainn/tuner/tsforecast/
   neuralforecast/:        PatchTST, NBEATS, NHITS, Autoformer, DLinear, TFT
   mlforecast/:            XGBoost, LightGBM, CatBoost, Linear
   statsforecast/:         ARIMA, AutoETS, Naive
   api/:                   LLMAPITuner, NixtlaAPITuner (TimeGPT)
 
-MLPredictor tuners:       code/hainn/mlpredictor/models/
+MLPredictor tuners:       code/hainn/tuner/mlpredictor/
   XGBoost, LightGBM, CatBoost, RandomForest, GradientBoosting, Logistic, DeepFM
 
-TEFM tuners:              code/hainn/tefm/models/
+TEFM tuners:              code/hainn/tuner/tefm/
   hfntp/:                 HFNTPTuner (HuggingFace causal language modeling)
   te_clm/:                TSCLMTuner        (token CLM base)
                           TSCLMTknTuner     (token-aligned, UNK=10)
@@ -529,8 +529,9 @@ Step 7: Save/load roundtrip
       print(f"  {k}: {v}")
   ```
 
-**Reference:**
+**Reference:** Find a Layer 2 test to study:
 
 ```bash
-cat code/hainn/tefm/models/te_clm/test-modeling-ts_clm/scripts/test_te_clm_2_tuner.py
+# Discover L2 test scripts:
+Glob: code/hainn/tuner/**/test_*_2_tuner.py
 ```

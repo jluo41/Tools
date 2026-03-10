@@ -129,6 +129,23 @@ attr_cols = ['<IDCol>', '<DatetimeCol>', '<ValueCol>', ...]
 def get_RawRecProc_for_HumanGroup(df_RawRec_for_HumanGroup, OneRecord_Args, df_Human): ...
 ```
 
+**RecordFn Naming Convention:**
+
+RecordFn names MUST include a time-frequency suffix that reflects the temporal
+resolution of the underlying data. This keeps RecordFn names self-documenting and
+consistent with the CGM-domain convention (e.g., `CGM5Min`, `BPDay`).
+
+```
+Suffix   Meaning              Examples
+------   -------              --------
+Min      Minute-resolution    MimicAdmissionMin, MimicLabEventMin, MimicChartEventMin
+Day      Day-resolution       MimicProcedureICDDay, MimicOMRVitalDay, MimicHcpcsEventDay
+Hour     Hour-resolution      (use when applicable)
+```
+
+The suffix must match the `DT_s` alignment granularity of the RecordFn output.
+Never use a bare name like `MimicAdmission` — always `MimicAdmissionMin`.
+
 
 Fn Type Overview
 ----------------

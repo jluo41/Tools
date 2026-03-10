@@ -61,13 +61,14 @@ File Map
 Key Files (codebase)
 --------------------
 
-  ModelTuner base:         code/hainn/model_tuner.py
-  ModelInstance base:      code/hainn/model_instance.py
-  ModelInstanceConfig:     code/hainn/model_configuration.py
+  ModelTuner base:         code/hainn/tuner/model_tuner.py
+  ModelInstance base:      code/hainn/instance/model_instance.py
+  ModelInstanceConfig:     code/hainn/instance/model_configuration.py
   Model registry:          code/hainn/model_registry.py
   ModelInstance_Set:       code/haipipe/model_base/modelinstance_set.py
   ModelInstance_Pipeline:  code/haipipe/model_base/modelinstance_pipeline.py
-  PreFnPipeline:           code/hainn/prefn_pipeline.py
+  PreFnPipeline:           code/hainn/instance/prefn_pipeline.py
 
   Reference implementation (follow this for new models):
-    code/hainn/tsforecast/
+    code/hainn/tuner/tsforecast/       (tuners)
+    code/hainn/instance/tsforecast/    (instance + config)

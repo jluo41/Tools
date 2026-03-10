@@ -12,33 +12,6 @@ ALL test scripts (L1 through L4) follow this same 7-step structure.
 Only the labels for Steps 5-6 differ by layer (see table below).
 
 ```
-Step 0: MANDATORY — Show YAML and Get User Confirmation
-
-        CRITICAL RULE: Before running ANY haistep-model command or test script,
-        you MUST:
-
-        1. Show the FULL YAML config content to the user (read it out).
-        2. Walk through each section step by step:
-           - ModelInstanceClass, modelinstance_version
-           - aidata_name, aidata_version (verify AIData exists)
-           - model_tuner_name, ModelArgs (hyperparams, n_trials, label list)
-           - TrainingArgs, InferenceArgs
-        3. ALWAYS challenge the YAML — assume it could be wrong:
-           - Does the aidata_version match what's in _WorkSpace?
-           - Do the label column names match the AIData columns?
-           - Is the model_tuner_name a registered tuner?
-           - Are hyperparameter ranges reasonable?
-        4. Ask the user: "Is this YAML correct? Should I proceed?"
-        5. WAIT for explicit user confirmation.
-        6. Only AFTER the user says yes, proceed to Step 1.
-
-        DO NOT skip this step. DO NOT assume the YAML is correct.
-        DO NOT run the pipeline without user sign-off on the config.
-
-        If running multiple configs (e.g., 6 horizon variants), show at least
-        the golden template config in full AND summarize what differs across
-        the other configs. Get confirmation once for the set.
-
 Step 1: Load config
         display_df with key architecture params
         (vocab_size, seq_len, model_class, n_estimators, etc.)
@@ -142,7 +115,7 @@ test_<model_name>_4_modelset.py    -- Layer 4
 ```
 
 The number in the filename is what fn-dashboard's Signal 1 detects with:
-  Glob: `PATH/scripts/*_[1234]_*.py`
+  Glob: `PATH/*_[1234]_*.py`
 
 If you name a file `test_foo_instance.py` (no number), it won't appear
 in Signal 1 and the directory will look like "L1/L2 ONLY".
@@ -153,14 +126,16 @@ Where Test Scripts Live
 ========================
 
 ```
-code/hainn/<family>/models/test-modeling-<name>/
-  scripts/
-    test_<name>_1_algorithm.py
-    test_<name>_2_tuner.py
-    test_<name>_3_instance.py      (or test_<name>_3_instance_realdata.py)
-    test_<name>_4_modelset.py
-  config/
-    config_<name>_smoke.yaml       (minimal YAML for the test run)
+code/hainn/tuner/<family>/test-modeling-<name>/
+  config_<name>_smoke.yaml                  (minimal YAML for the test run)
+  test_<name>_1_algorithm.py                (only if custom algorithm)
+  test_<name>_1_algorithm.ipynb             (auto-generated notebook)
+  test_<name>_2_tuner.py
+  test_<name>_2_tuner.ipynb
+  test_<name>_3_instance.py                 (or test_<name>_3_instance_realdata.py)
+  test_<name>_3_instance.ipynb
+  test_<name>_4_modelset.py
+  test_<name>_4_modelset.ipynb
 ```
 
 For config path: use a relative path or env-var-based path so the test
@@ -183,12 +158,12 @@ Or call venv Python directly: .venv/bin/python script.py
 
 ```bash
 # Run a single layer
-source .venv/bin/activate && source env.sh && python code/hainn/<family>/models/test-modeling-<name>/scripts/test_<name>_2_tuner.py
+source .venv/bin/activate && source env.sh && python code/hainn/tuner/<family>/test-modeling-<name>/test_<name>_2_tuner.py
 
 # Run all layers in sequence (bottom-up)
-source .venv/bin/activate && source env.sh && python code/hainn/<family>/models/test-modeling-<name>/scripts/test_<name>_2_tuner.py
-source .venv/bin/activate && source env.sh && python code/hainn/<family>/models/test-modeling-<name>/scripts/test_<name>_3_instance.py
-source .venv/bin/activate && source env.sh && python code/hainn/<family>/models/test-modeling-<name>/scripts/test_<name>_4_modelset.py
+source .venv/bin/activate && source env.sh && python code/hainn/tuner/<family>/test-modeling-<name>/test_<name>_2_tuner.py
+source .venv/bin/activate && source env.sh && python code/hainn/tuner/<family>/test-modeling-<name>/test_<name>_3_instance.py
+source .venv/bin/activate && source env.sh && python code/hainn/tuner/<family>/test-modeling-<name>/test_<name>_4_modelset.py
 ```
 
 Fix L2 failures before running L3. Fix L3 failures before running L4.

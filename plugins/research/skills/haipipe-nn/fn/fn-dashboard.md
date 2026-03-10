@@ -39,26 +39,26 @@ the path immediately after `code/hainn/`):
 For each directory PATH found above:
 
   Signal 1 -- Layers present
-    Glob: `PATH/scripts/*_[1234]_*.py`
+    Glob: `PATH/*_[1234]_*.py`
     Count distinct layer numbers (1, 2, 3, 4) present in filenames.
     Result: e.g. "L1-L4" (all four) or "L1-L2" (only first two)
 
     IMPORTANT: Some older test directories use non-numbered script names
     (e.g., test_nhits_algorithm.py, test_nhits_tuner.py) that do NOT match
     the glob pattern. For these directories, also check for keyword patterns:
-      Glob: `PATH/scripts/*algorithm*.py`  -> present means L1 exists
-      Glob: `PATH/scripts/*tuner*.py`      -> present means L2 exists
+      Glob: `PATH/*algorithm*.py`  -> present means L1 exists
+      Glob: `PATH/*tuner*.py`      -> present means L2 exists
     If numbered scripts are missing but keyword scripts exist, record
     the layer set from keyword detection and flag the directory as having
     a naming gap (scripts need to be renamed to *_1_*, *_2_*, etc.).
 
   Signal 2 -- Summary format
-    Grep for the string `key_metric` anywhere inside `PATH/scripts/`
-    Found in >=1 file  ->  4-col  (canonical)
-    Not found          ->  2-col  (needs update)
+    Grep for the string `key_metric` anywhere inside `PATH/`
+    Found in >=1 .py file  ->  4-col  (canonical)
+    Not found              ->  2-col  (needs update)
 
   Signal 3 -- Data source
-    Grep for `AIDataSet|load_from_disk` in `PATH/scripts/`
+    Grep for `AIDataSet|load_from_disk` in `PATH/*.py`
     Found  ->  AIData  (correct)
     Not found, but grep finds `RecStore|read_parquet`  ->  RecStore  (gap)
     Neither found  ->  Unknown (scripts may not load data at L1/L2)
@@ -125,67 +125,67 @@ can click to open it directly:
 PATHS
 ─────
 mlpredictor / SLearner XGBoost
-  code/hainn/mlpredictor/models/test-modeling-mlpredictor-slearner-xgboost/
+  code/hainn/tuner/mlpredictor/test-modeling-mlpredictor-slearner-xgboost/
 
 mlpredictor / TLearner XGBoost
-  code/hainn/mlpredictor/models/test-modeling-mlpredictor-tlearner-xgboost/
+  code/hainn/tuner/mlpredictor/test-modeling-mlpredictor-tlearner-xgboost/
 
 mlpredictor / BasePredictor XGBoost
-  code/hainn/mlpredictor/models/test-modeling-mlpredictor-basepredictor-xgboost/
+  code/hainn/tuner/mlpredictor/test-modeling-mlpredictor-basepredictor-xgboost/
 
 tefm / TE-CLM
-  code/hainn/tefm/models/te_clm/test-modeling-ts_clm/
+  code/hainn/tuner/tefm/te_clm/test-modeling-ts_clm/
 
 tefm / TE-MLM
-  code/hainn/tefm/models/te_mlm/test-modeling_te_mlm/
+  code/hainn/tuner/tefm/te_mlm/test-modeling_te_mlm/
 
 tefm / TE-CLM-tod
-  code/hainn/tefm/models/te_clm/test-modeling-ts_clm_tod/
+  code/hainn/tuner/tefm/te_clm/test-modeling-ts_clm_tod/
 
 tefm / TE-CLM-num
-  code/hainn/tefm/models/te_clm/test-modeling-ts_clm_num/
+  code/hainn/tuner/tefm/te_clm/test-modeling-ts_clm_num/
 
 tefm / TE-CLM-event
-  code/hainn/tefm/models/te_clm/test-modeling-te_clm_event/
+  code/hainn/tuner/tefm/te_clm/test-modeling-te_clm_event/
 
 tefm / TE-MM
-  code/hainn/tefm/models/te_mm/test-modeling-ts_mm/
+  code/hainn/tuner/tefm/te_mm/test-modeling-ts_mm/
 
 tefm / TE-CTEP
-  code/hainn/tefm/models/te_ctep/test-modeling-ctep/
+  code/hainn/tuner/tefm/te_ctep/test-modeling-ctep/
 
 tsforecast / MLForecast XGBoost
-  code/hainn/tsforecast/models/mlforecast/test-modeling-nixtla_xgboost/
+  code/hainn/tuner/tsforecast/mlforecast/test-modeling-nixtla_xgboost/
 
 tsforecast / MLForecast LightGBM
-  code/hainn/tsforecast/models/mlforecast/test-modeling-nixtla_lightgbm/
+  code/hainn/tuner/tsforecast/mlforecast/test-modeling-nixtla_lightgbm/
 
 tsforecast / NeuralForecast NHits
-  code/hainn/tsforecast/models/neuralforecast/test-modeling-nixtla_nhits/
+  code/hainn/tuner/tsforecast/neuralforecast/test-modeling-nixtla_nhits/
 
 tsforecast / NeuralForecast NBeats
-  code/hainn/tsforecast/models/neuralforecast/test-modeling-nixtla_nbeats/
+  code/hainn/tuner/tsforecast/neuralforecast/test-modeling-nixtla_nbeats/
 
 tsforecast / NeuralForecast Autoformer
-  code/hainn/tsforecast/models/neuralforecast/test-modeling-nixtla_autoformer/
+  code/hainn/tuner/tsforecast/neuralforecast/test-modeling-nixtla_autoformer/
 
 tsforecast / NeuralForecast DLinear
-  code/hainn/tsforecast/models/neuralforecast/test-modeling-nixtla_dlinear/
+  code/hainn/tuner/tsforecast/neuralforecast/test-modeling-nixtla_dlinear/
 
 tsforecast / NeuralForecast PatchTST
-  code/hainn/tsforecast/models/neuralforecast/test-modeling-nixtla_patchtst/
+  code/hainn/tuner/tsforecast/neuralforecast/test-modeling-nixtla_patchtst/
 
 tsforecast / NeuralForecast TFT
-  code/hainn/tsforecast/models/neuralforecast/test-modeling-nixtla_tft/
+  code/hainn/tuner/tsforecast/neuralforecast/test-modeling-nixtla_tft/
 
 tsforecast / NeuralForecast VanillaTransformer
-  code/hainn/tsforecast/models/neuralforecast/test-modeling-nixtla_vanillatransformer/
+  code/hainn/tuner/tsforecast/neuralforecast/test-modeling-nixtla_vanillatransformer/
 
 tediffusion / GlucoStatCond
-  code/hainn/tediffusion/models/glucostaticonddiffusion/test-modeling-glucostaticonddiffusion/
+  code/hainn/tuner/tediffusion/glucostaticonddiffusion/test-modeling-glucostaticonddiffusion/
 
 bandit / BanditV1
-  code/hainn/bandit/test-modeling-bandit/
+  code/hainn/tuner/bandit/test-modeling-bandit/
 ```
 
 **0f. Suggest the next action**
@@ -208,10 +208,10 @@ All steps in fn-review.md use these:
 ```
 FAMILY             = "..."    # e.g., tsforecast, mlpredictor, tefm
 MODEL_TYPE_STRING  = "..."    # MODEL_TYPE value in Instance class
-INSTANCE_FILE      = "code/hainn/<family>/instance_<name>.py"
-CONFIG_FILE        = "code/hainn/<family>/configuration_<name>.py"
-TUNER_FILE         = "code/hainn/<family>/models/tuner_<name>.py"
-ALGORITHM_FILE     = "code/hainn/<family>/models/algorithm_<name>.py"  # or N/A
+INSTANCE_FILE      = "code/hainn/instance/<family>/instance_<name>.py"
+CONFIG_FILE        = "code/hainn/instance/<family>/configuration_<name>.py"
+TUNER_FILE         = "code/hainn/tuner/<family>/tuner_<name>.py"
+ALGORITHM_FILE     = "code/hainn/algo/<family>/algorithm_<name>.py"  # or N/A
 YAML_FILE          = "config/.../my_model.yaml"
-TEST_DIR           = "code/hainn/<family>/test-modeling-<name>/"
+TEST_DIR           = "code/hainn/tuner/<family>/test-modeling-<name>/"
 ```
