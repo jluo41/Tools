@@ -328,6 +328,25 @@ Next steps:
 
 ---
 
+Checkpoints
+-----------
+
+Print these at the end of Step 4 (verbatim — no extra analysis needed):
+
+  [CH-2] scripts/INDEX.md in sync?
+  "Quick check: does scripts/INDEX.md have an entry for every .py/.sh in
+   scripts/? Are all status values (stub / wip / done) current?"
+
+  [CH-4] code/INDEX.md updated?
+  "Quick check: if new Track A stubs were created, confirm code/INDEX.md has
+   stub-status rows for them (so future projects can find them for reuse)."
+
+  [CH-5] YAML placeholders filled?
+  "Quick check: search config/ for any remaining TODO_ values — all placeholder
+   class names must be replaced before running the pipeline."
+
+---
+
 MUST NOT
 ---------
 

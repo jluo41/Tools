@@ -1,6 +1,6 @@
 ---
 name: haipipe-project
-description: "Standardize new project creation, review, and summary in the haipipe workspace. Use when the user wants to create a new project under examples/, review an existing project's structure, check script-result alignment, or generate a post-development summary. Also use when the user mentions /haipipe-project, project scaffold, new experiment, project review, or project summary."
+description: "Standardize new project creation, review, summary, organization, and routing in the haipipe workspace. Use when the user wants to create a new project under examples/, review an existing project's structure, check script-result alignment, generate a post-development summary, reorganize project files, verify imports after file moves, or ask what subskill to use. Also use when the user mentions /haipipe-project, project scaffold, new experiment, project review, project summary, organize project, reorganize files, or what should I do next."
 ---
 
 Skill: haipipe-project
@@ -32,11 +32,16 @@ Default (no arg): show command menu and ask what the user wants to do.
 Commands
 --------
 
-  /haipipe-project new              -> scaffold a new project (both tracks)
-  /haipipe-project review           -> gap analysis + generate docs: auto-detect current project
-  /haipipe-project review [path]    -> gap analysis + generate docs for the project at [path]
-  /haipipe-project summarize        -> post-development summary + flow chart (auto-detect)
-  /haipipe-project summarize [path] -> summary for the project at [path]
+  /haipipe-project new                    -> scaffold a new project (both tracks)
+  /haipipe-project review                 -> gap analysis + generate docs: auto-detect current project
+  /haipipe-project review [path]          -> gap analysis + generate docs for the project at [path]
+  /haipipe-project summarize              -> post-development summary + flow chart (auto-detect)
+  /haipipe-project summarize [path]       -> summary for the project at [path]
+  /haipipe-project organize               -> file inventory + propose reorganization (auto-detect)
+  /haipipe-project organize [path]        -> file inventory + propose reorganization for [path]
+  /haipipe-project organize verify        -> verify imports/paths after manual reorganization (auto-detect)
+  /haipipe-project organize verify [path] -> verify imports/paths for [path]
+  /haipipe-project help [question]        -> route a natural-language request to the right subskill + step
 
 ---
 
@@ -50,6 +55,11 @@ Dispatch Table
   review [path]            ref/project-structure.md + ref/code-structure.md  fn/fn-review.md
   summarize (no path)      ref/project-structure.md                          fn/fn-summarize.md
   summarize [path]         ref/project-structure.md                          fn/fn-summarize.md
+  organize (no path)       ref/project-structure.md                          fn/fn-organize.md
+  organize [path]          ref/project-structure.md                          fn/fn-organize.md
+  organize verify          ref/project-structure.md                          fn/fn-organize.md
+  organize verify [path]   ref/project-structure.md                          fn/fn-organize.md
+  help [question]          (none — intent routing only)                      fn/fn-help.md
   (no arg)                 (none)                                            (show menu below)
 
 ---
@@ -63,14 +73,19 @@ Step 0: Parse the command.
     "new"              -> fn-new mode
     "review"           -> fn-review mode (path optional)
     "summarize"        -> fn-summarize mode (path optional)
-    (no arg or help)   -> print the command menu and ask what user wants
+    "organize"         -> fn-organize mode (path optional; "verify" sub-arg triggers Phase 3 only)
+    "help"             -> fn-help mode (natural-language question follows; no ref files needed)
+    (no arg)           -> print the command menu and ask what user wants
 
   If no arg, print:
 
     haipipe-project commands:
-      new                -> create a new project (both tracks)
-      review [path]      -> check an existing project for structural gaps
-      summarize [path]   -> generate post-development summary + flow chart
+      new                       -> create a new project (both tracks)
+      review [path]             -> check an existing project for structural gaps
+      summarize [path]          -> generate post-development summary + flow chart
+      organize [path]           -> file inventory + propose reorganization
+      organize verify [path]    -> verify imports/paths after reorganization
+      help [question]           -> describe what you want in plain English; I'll route you
 
     Which would you like to do?
 
@@ -81,8 +96,11 @@ Step 1: Read ref files FIRST.
       Tools/plugins/research/skills/haipipe-project/ref/project-structure.md
       Tools/plugins/research/skills/haipipe-project/ref/code-structure.md
 
-  For summarize:
+  For summarize / organize:
     Read ref/project-structure.md only.
+
+  For help:
+    Read NO ref files — intent routing only, no project files needed.
 
   This is MANDATORY. Do not proceed to Step 2 until all required ref files
   are in context. They contain the naming convention, four-part layout,
@@ -96,8 +114,41 @@ Step 2: Read the function file.
     new        ->  fn/fn-new.md
     review     ->  fn/fn-review.md
     summarize  ->  fn/fn-summarize.md
+    organize   ->  fn/fn-organize.md
+    help       ->  fn/fn-help.md  (no ref files needed — intent routing only)
 
   Follow the steps in the fn file exactly.
+
+---
+
+Checkpoint Hints (pre-written — print verbatim, no extra analysis)
+--------------------------------------------------------------------
+
+  CH-1  docs/ files updated?
+        "Quick check: open docs/ and confirm all generated files look correct
+         (TODO.md, data-map.md, dependency-report.md). Did anything come out empty?"
+
+  CH-2  scripts/INDEX.md in sync?
+        "Quick check: does scripts/INDEX.md have an entry for every .py/.sh in
+         scripts/? Are all status values (stub / wip / done) current?"
+
+  CH-3  file paths valid?
+        "Quick check: any scripts that reference config/, results/, or docs/ paths —
+         confirm those paths still exist relative to the project root."
+
+  CH-4  code/INDEX.md updated?
+        "Quick check: if new Track A stubs were created, confirm code/INDEX.md has
+         stub-status rows for them (so future projects can find them for reuse)."
+
+  CH-5  YAML placeholders filled?
+        "Quick check: search config/ for any remaining TODO_ values — all placeholder
+         class names must be replaced before running the pipeline."
+
+  CH-6  reorganization pending verification?
+        "Reminder: if you moved or renamed files manually, run
+         /haipipe-project organize verify to confirm imports and paths still work."
+
+Each fn file lists which hints to print at the end of its execution chain.
 
 ---
 
@@ -152,3 +203,5 @@ File Map
   fn/fn-new.md                <- scaffold new project (interactive, both tracks)
   fn/fn-review.md             <- gap analysis + proposed actions (both tracks)
   fn/fn-summarize.md          <- post-development summary + flow chart
+  fn/fn-organize.md           <- file inventory + reorganization proposal + verification
+  fn/fn-help.md               <- intent routing: natural-language -> subskill + step suggestion

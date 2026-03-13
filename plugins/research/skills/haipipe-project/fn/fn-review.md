@@ -7,11 +7,29 @@ Outputs a gap report with severity tags AND generates/updates docs/ and
 scripts/INDEX.md so the project is brought to standard automatically.
 
 Write access policy:
-  ALLOWED    docs/              (create folder, generate TODO.md, project-summary stub)
+  ALLOWED    docs/              (TODO.md, data-map.md, dependency-report.md)
   ALLOWED    scripts/INDEX.md   (create if missing, update entries from existing scripts)
   BLOCKED    config/            (read only — never modify pipeline configs)
   BLOCKED    code/              (read only — never modify generated or library code)
   BLOCKED    code-dev/          (read only — never modify builders)
+
+Execution checklist (track progress through the steps):
+  [ ] Step 0   identify target project
+  [ ] Step 1   validate project naming
+  [ ] Step 2   check five-part folder structure
+  [ ] Step 3   review cc-archive/
+  [ ] Step 4   review config/ — set DECLARED_STAGES
+  [ ] Step 4b  generate / update docs/TODO.md
+  [ ] Step 4c  generate docs/data-map.md
+  [ ] Step 4d  generate docs/dependency-report.md
+  [ ] Step 5   check scripts/ and results/ alignment
+  [ ] Step 5b  generate / update scripts/INDEX.md
+  [ ] Step 6   check results/ for heavy files
+  [ ] Step 7a  config -> code/haifn/ FnClass resolution
+  [ ] Step 7b  config -> code/hainn/ model resolution
+  [ ] Step 7c  code-dev/ builder <-> code/haifn/ sync
+  [ ] Step 7d  scripts/ import resolution
+  [ ] Step 8   output gap report + checkpoints
 
 ---
 
@@ -570,6 +588,21 @@ Proposed Actions
 ```
 
 If zero issues: print "All checks PASSED. Project is conformant."
+
+---
+
+Checkpoints
+-----------
+
+Print these at the end of Step 8 (verbatim — no extra analysis needed):
+
+  [CH-1] docs/ files updated?
+  "Quick check: open docs/ and confirm all generated files look correct
+   (TODO.md, data-map.md, dependency-report.md). Did anything come out empty?"
+
+  [CH-2] scripts/INDEX.md in sync?
+  "Quick check: does scripts/INDEX.md have an entry for every .py/.sh in
+   scripts/? Are all status values (stub / wip / done) current?"
 
 ---
 

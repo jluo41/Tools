@@ -53,7 +53,23 @@ Read the following in parallel. Collect facts into named slots.
 
 ---
 
-Step 2: Write the Summary
+Step 2: Sync scripts/INDEX.md Status
+=======================================
+
+Before writing the summary, scan results/ for completed result folders so the
+Scripts section of the summary reflects current statuses.
+
+For each script in INDEX.md where Status = "wip" or "stub":
+  If a matching results/{script_basename}/ folder exists with report.md or metrics.json:
+    Update Status to "done" in INDEX.md.
+
+Do NOT downgrade any "done" entries. Only upgrade stub/wip -> done.
+
+Report: "Synced {N} script status(es) to done in INDEX.md."
+
+---
+
+Step 3: Write the Summary
 ===========================
 
 Write examples/{PROJECT_ID}/docs/project-summary.md with this structure:
@@ -145,20 +161,6 @@ How to Pick Up This Project
 
 ---
 
-Step 3: Update scripts/INDEX.md Status
-=========================================
-
-After writing the summary, scan results/ for completed result folders.
-For each script in INDEX.md where Status = "wip" or "stub":
-  If a matching results/{script_basename}/ folder exists with report.md or metrics.json:
-    Update Status to "done" in INDEX.md.
-
-Do NOT downgrade any "done" entries. Only upgrade stub/wip -> done.
-
-Report: "Updated {N} script statuses to done in INDEX.md."
-
----
-
 Step 4: Confirm Output
 ========================
 
@@ -169,6 +171,21 @@ Print:
 
   To share this summary:
     cat examples/{PROJECT_ID}/docs/project-summary.md
+
+---
+
+Checkpoints
+-----------
+
+Print these after Step 4 (verbatim — no extra analysis needed, Step 2 already synced INDEX.md):
+
+  [CH-1] docs/ files updated?
+  "Quick check: open docs/project-summary.md and confirm the flow chart
+   reflects the active stages and Key Results has real numbers (not empty)."
+
+  [CH-2] scripts/INDEX.md in sync?
+  "Quick check: does scripts/INDEX.md have an entry for every .py/.sh in
+   scripts/? Are all status values (stub / wip / done) current?"
 
 ---
 
