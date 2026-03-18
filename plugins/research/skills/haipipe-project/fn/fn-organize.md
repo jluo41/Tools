@@ -55,7 +55,7 @@ all files that belong to or are used by this project.
 
   Walk examples/{PROJECT_ID}/ recursively.
   Group files by top-level folder (cc-archive/, config/, scripts/,
-  results/, docs/, and any extra dirs).
+  results/, docs/, nb/, and any extra dirs).
   For each file record: relative path, file type/extension, size if large (> 100KB).
 
 **Step 1b — Inventory related files outside the project:**
@@ -113,6 +113,10 @@ all files that belong to or are used by this project.
       {filename}  [{ext}]
       ...
 
+    nb/   [optional]
+      {filename}  [{ext}]
+      ...
+
     {extra_dir}/   [non-standard]
       {filename}  [{ext}]
       ...
@@ -166,17 +170,101 @@ touching any files.
         (code files, notebooks, CSVs are not planning docs)
         -> propose: move to the appropriate standard folder
 
+  nb/ issues:
+    [ ] .ipynb files found outside nb/ (in scripts/, cc-archive/, project root, etc.)
+        -> propose: move to nb/
+    [ ] nb/ exists but nb/INDEX.md is missing
+        -> propose: create nb/INDEX.md (see ref/project-structure.md for format)
+    [ ] nb/ does not exist but .ipynb files were found anywhere in the project
+        -> propose: create nb/ and move all .ipynb files there
+
   Script naming issues (scripts/ only):
     [ ] Scripts not following {seq}_{YYMMDD}_{desc}.{ext} pattern
         -> propose: rename to conform, preserving the original description
     [ ] seq values not 3-digit zero-padded (e.g., "1_" instead of "001_")
         -> propose: rename with zero-padded seq
     [ ] .ipynb files in scripts/
-        -> propose: move to cc-archive/ or a nb/ folder if the project uses notebooks
+        -> propose: move to nb/
 
   Results alignment issues:
     [ ] Result folder name does not match any script (after accounting for renames above)
         -> flag: "orphaned result folder — check if its script was renamed or deleted"
+
+**Step 2e — Notebook Coverage Check:**
+
+  Goal: check whether nb/ contains demo notebooks that cover the pipeline stages
+  used by this project. This is an advisory check — it produces recommendations,
+  not file moves.
+
+  Determine which stages are active:
+    Prefer docs/data-map.md if it exists — it already has the declared stages
+    and FnClass names resolved; no re-scan needed.
+    Fallback: read config/ YAML filenames if docs/data-map.md is absent.
+    Active stage pairs: for each adjacent active pair (e.g., S1+S2 -> S1→S2 segment),
+    a demo notebook is recommended.
+
+  Read nb/INDEX.md if it exists:
+    For each active stage-pair segment (S1→S2, S2→S3, S3→S4, S4→S5, S5→S6):
+      [ ] nb/INDEX.md has a row covering this segment with status != deprecated
+          -> COVERED
+      [ ] nb/INDEX.md has a row for this segment with status=planned
+          -> PLANNED (note: not yet created)
+      [ ] No row covers this segment
+          -> GAP: recommend adding a planned row and notebook
+
+  If nb/ does not exist at all:
+    Flag all active stage-pair segments as GAP.
+    Recommend: create nb/ + nb/INDEX.md with planned rows for each segment.
+
+  Collect all PLANNED rows and GAP items as advisory recommendations.
+  These do NOT appear in the file-move proposal table (Step 2b).
+  They are written to organize-report.md as a separate section.
+
+  Append to docs/organize-report.md:
+
+  ```
+  Section 2b — Notebook Coverage
+  ================================
+
+  Active stages (from config/): {list of active stage numbers}
+  Active segments requiring demo coverage: {e.g., S1→S2, S2→S3, S3→S4}
+
+  | Segment | Status | Notebook | Notes |
+  |---------|--------|----------|-------|
+  | S1→S2   | COVERED  | 001_260315_demo_s1_to_s2.ipynb | |
+  | S2→S3   | PLANNED  | (planned) | nb/INDEX.md row exists; notebook not yet created |
+  | S3→S4   | GAP      | (none)    | No entry in nb/INDEX.md |
+
+  Recommendations:
+    {For each PLANNED row:}
+      - Create the planned notebook for {segment}: {suggested filename}
+    {For each GAP:}
+      - Add a planned row to nb/INDEX.md for {segment}, then create the notebook
+    {If nb/ missing entirely:}
+      - Create nb/ and nb/INDEX.md; add planned rows for all active segments
+  ```
+
+  If all segments are COVERED: print "Notebook coverage: all active segments covered."
+
+  If any GAP or PLANNED segments were found, after writing Section 2b, ask:
+
+    ```
+    Found {N} segment(s) needing notebooks ({list of SEGMENT_KEYs}).
+    Create notebooks now?
+      yes      -> run /haipipe-project nb for each segment in sequence
+      pick     -> list segments and let user choose which to create now
+      no       -> skip; run /haipipe-project nb [path] later per segment
+    ```
+
+    If yes or pick:
+      For each selected segment: execute fn-nb.md Steps 3–7 in full.
+      Project is already identified (Step 0); pass SEGMENT_KEY directly to
+      fn-nb Step 1 (skip the "ask which segment" prompt).
+      On completing each notebook, continue to the next selected segment.
+
+    If no:
+      Print: "Run /haipipe-project nb {PROJECT_PATH} to create notebooks
+              for: {list of SEGMENT_KEYs}"
 
 **Step 2b — Build proposal table:**
 
@@ -382,3 +470,5 @@ MUST NOT
 - Do NOT run any pipeline commands (haistep-*, train, evaluate).
 - Do NOT modify YAML configs during reorganization.
 - Do NOT create new scripts or stub files — organize only moves existing files.
+- Do NOT create .ipynb notebook files — Step 2e produces recommendations only; the user creates the notebooks.
+- DO create nb/INDEX.md if nb/ exists but INDEX.md is missing (INDEX.md is structural, not a notebook).

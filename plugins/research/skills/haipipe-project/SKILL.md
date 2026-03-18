@@ -41,6 +41,8 @@ Commands
   /haipipe-project organize [path]        -> file inventory + propose reorganization for [path]
   /haipipe-project organize verify        -> verify imports/paths after manual reorganization (auto-detect)
   /haipipe-project organize verify [path] -> verify imports/paths for [path]
+  /haipipe-project nb                     -> create a demo notebook for a pipeline stage segment (auto-detect)
+  /haipipe-project nb [path]             -> create a demo notebook for the project at [path]
   /haipipe-project help [question]        -> route a natural-language request to the right subskill + step
 
 ---
@@ -59,6 +61,8 @@ Dispatch Table
   organize [path]          ref/project-structure.md                          fn/fn-organize.md
   organize verify          ref/project-structure.md                          fn/fn-organize.md
   organize verify [path]   ref/project-structure.md                          fn/fn-organize.md
+  nb (no path)             ref/project-structure.md                          fn/fn-nb.md
+  nb [path]                ref/project-structure.md                          fn/fn-nb.md
   help [question]          (none — intent routing only)                      fn/fn-help.md
   (no arg)                 (none)                                            (show menu below)
 
@@ -74,6 +78,7 @@ Step 0: Parse the command.
     "review"           -> fn-review mode (path optional)
     "summarize"        -> fn-summarize mode (path optional)
     "organize"         -> fn-organize mode (path optional; "verify" sub-arg triggers Phase 3 only)
+    "nb"               -> fn-nb mode (path optional)
     "help"             -> fn-help mode (natural-language question follows; no ref files needed)
     (no arg)           -> print the command menu and ask what user wants
 
@@ -85,6 +90,7 @@ Step 0: Parse the command.
       summarize [path]          -> generate post-development summary + flow chart
       organize [path]           -> file inventory + propose reorganization
       organize verify [path]    -> verify imports/paths after reorganization
+      nb [path]                 -> create a demo notebook for a pipeline stage segment
       help [question]           -> describe what you want in plain English; I'll route you
 
     Which would you like to do?
@@ -96,7 +102,7 @@ Step 1: Read ref files FIRST.
       Tools/plugins/research/skills/haipipe-project/ref/project-structure.md
       Tools/plugins/research/skills/haipipe-project/ref/code-structure.md
 
-  For summarize / organize:
+  For summarize / organize / nb:
     Read ref/project-structure.md only.
 
   For help:
@@ -115,6 +121,7 @@ Step 2: Read the function file.
     review     ->  fn/fn-review.md
     summarize  ->  fn/fn-summarize.md
     organize   ->  fn/fn-organize.md
+    nb         ->  fn/fn-nb.md
     help       ->  fn/fn-help.md  (no ref files needed — intent routing only)
 
   Follow the steps in the fn file exactly.
@@ -204,4 +211,5 @@ File Map
   fn/fn-review.md             <- gap analysis + proposed actions (both tracks)
   fn/fn-summarize.md          <- post-development summary + flow chart
   fn/fn-organize.md           <- file inventory + reorganization proposal + verification
+  fn/fn-nb.md                 <- guided demo notebook creation + nb/INDEX.md management
   fn/fn-help.md               <- intent routing: natural-language -> subskill + step suggestion

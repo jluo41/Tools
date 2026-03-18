@@ -13,13 +13,17 @@ Every project lives under:
 
   examples/Proj{Series}-{Category}-{Num}-{Name}/
 
-The five-part layout is mandatory for all new projects:
+The five mandatory folders for all new projects:
 
   cc-archive/      <- Claude Code session history
   config/          <- YAML pipeline configs
   scripts/         <- All executable scripts (py + sh)
   results/         <- Light summaries only (committed to git)
   docs/            <- Project planning and summary documents
+
+One optional-but-standard folder (add when demo notebooks exist):
+
+  nb/              <- Pipeline stage demo notebooks + INDEX.md
 
 Heavy outputs (model weights, full metrics, large tensors) go to
 _WorkSpace/ — NOT results/. The _WorkSpace/ paths are declared in
@@ -53,8 +57,8 @@ Full examples:
 
 ---
 
-Standard Four-Part Layout
-==========================
+Standard Layout (five mandatory + optional nb/)
+================================================
 
 ```
 examples/Proj{Series}-{Category}-{Num}-{Name}/
@@ -87,8 +91,13 @@ examples/Proj{Series}-{Category}-{Num}-{Name}/
 |       +-- metrics.json
 |
 +-- docs/                               <- Project planning and summary documents
-    +-- TODO.md                         <- Pipeline progress tracker (created at scaffold)
-    +-- project-summary.md              <- Post-development summary + flow chart
+|   +-- TODO.md                         <- Pipeline progress tracker (created at scaffold)
+|   +-- project-summary.md              <- Post-development summary + flow chart
+|   +-- nb-plan.md                      <- Demo notebook planning reference (created by /haipipe-project nb)
+|
++-- nb/                                 <- Demo notebooks (optional; add when demos exist)
+    +-- INDEX.md                        <- MANDATORY if nb/ exists: notebook coverage index
+    +-- 001_{YYMMDD}_{desc}.ipynb       <- Demo notebook (pipeline stage demo)
 ```
 
 
@@ -270,6 +279,13 @@ docs/ Rules
                        Human-readable summary + ASCII flow chart + key metrics.
                        Designed to be readable by someone with zero prior context.
 
+  nb-plan.md           Created and updated by fn-nb.md (/haipipe-project nb).
+                       One section per demo notebook in nb/.
+                       Linked from every notebook's opening markdown cell so
+                       the user and Claude always have a reference for what
+                       each notebook should demonstrate.
+                       Format: see fn/fn-nb.md Step 4 for section template.
+
 - Additional docs (design notes, meeting notes, references) may be added here
   as plain .md files. No strict naming convention for extras.
 
@@ -291,6 +307,8 @@ docs/TODO.md Template:
 | scripts/001_{YYMMDD}_{desc}.py | todo | First experiment script |
 | results/001_{YYMMDD}_{desc}/ | todo | Created after first run |
 | docs/project-summary.md | todo | Run /haipipe-project summarize |
+| docs/nb-plan.md | n/a | Created by /haipipe-project nb when first demo notebook is added |
+| nb/INDEX.md | n/a | Create nb/ + INDEX.md when demo notebooks are added |
 
 ## Track A Stubs
 
@@ -325,6 +343,52 @@ Light / Heavy Boundary Summary
   cc-archive/          CC session md files               YES
   config/              YAML configs                      YES
   scripts/             .py, .sh, .sbatch scripts         YES
+  nb/                  demo notebooks (.ipynb)           YES
+
+
+---
+
+nb/ Rules (optional folder)
+===========================
+
+- nb/ is optional. Create it only when demo notebooks exist or are planned.
+- Once nb/ exists, nb/INDEX.md is MANDATORY — same principle as scripts/INDEX.md.
+- Only .ipynb files. No .py, .yaml, or .md files other than INDEX.md.
+- Naming: {seq}_{YYMMDD}_{desc}.ipynb
+    seq      3-digit zero-padded integer (001, 002, ...)
+    YYMMDD   Date the notebook was written
+    desc     Snake_case description of what the notebook demos
+  Example: 001_260315_demo_source_to_record.ipynb
+
+nb/INDEX.md Rules (MANDATORY when nb/ exists)
+----------------------------------------------
+
+- Purpose: documents what portion of the pipeline each notebook covers,
+  and tracks planned-but-not-yet-created notebooks.
+- Claude reads nb/INDEX.md in fn-organize Phase 2e to detect coverage gaps.
+- Created when nb/ is first created. Updated whenever a notebook is added or changes status.
+
+Format:
+
+  # nb/INDEX.md — {PROJECT_ID}
+  # Last updated: {YYMMDD}
+  # Purpose: track pipeline demo notebooks by stages covered, input, and output.
+
+  | Notebook | Stages | Input | Output | Status |
+  |----------|--------|-------|--------|--------|
+  | 001_260315_demo_s1_to_s2.ipynb | S1→S2 | raw visit records | RecordStore | done |
+  | 002_260320_demo_case_build.ipynb | S2→S3 | RecordStore | CaseStore | wip |
+  | (planned) | S3→S4 | CaseStore | AIDataStore | planned |
+
+  Column definitions:
+    Notebook   Filename (without path); use "(planned)" for not-yet-created entries
+    Stages     Pipeline stages covered: S1→S2, S2→S3, S3→S4, S4→S5, S5→S6, etc.
+    Input      Description of the input data or asset the notebook starts from
+    Output     Description of the output data or intermediate result produced
+    Status     planned | wip | done | deprecated
+
+  Rows with status=planned represent intended demos not yet implemented.
+  fn-organize Phase 2e flags all planned rows and uncovered stage transitions.
 
 
 ---
@@ -359,13 +423,20 @@ Review Checklist (used by fn-review.md)
   [ ] INDEX.md has no entries for scripts that no longer exist
   [ ] All scripts follow {seq}_{YYMMDD}_{desc}.{ext} naming
   [ ] seq values are 3-digit zero-padded (001, not 1)
-  [ ] No notebooks (.ipynb) in scripts/ (notebooks belong in cc-archive or separate nb/ folder)
+  [ ] No notebooks (.ipynb) in scripts/ (notebooks belong in nb/)
   [ ] Every Track A stub has a paired example_{name}.py script
 
 **results/ checks:**
   [ ] Each result folder name matches a script name (without extension)
   [ ] No heavy files present (.pt, .pth, .ckpt, .safetensors, .npy > 1MB)
   [ ] Each result folder contains at least a report.md or metrics.json
+
+**nb/ checks (if nb/ exists):**
+  [ ] nb/INDEX.md exists (mandatory when nb/ exists)
+  [ ] INDEX.md has an entry for every .ipynb in nb/
+  [ ] No non-.ipynb files in nb/ other than INDEX.md
+  [ ] All notebooks follow {seq}_{YYMMDD}_{desc}.ipynb naming
+  [ ] No planned rows remain indefinitely (flag if status=planned for > 2 stages)
 
 **script-result alignment:**
   [ ] Every script has a corresponding result folder

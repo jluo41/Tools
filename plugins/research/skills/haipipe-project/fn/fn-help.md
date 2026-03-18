@@ -73,6 +73,19 @@ INFORMATION — user wants to READ or UNDERSTAND something
        rephrase:  "Generate or update scripts/INDEX.md for {PROJECT_ID} and
                   show me all scripts with their data, functionality, and status."
 
+  What demo notebooks exist / what pipeline stages have notebooks
+    -> subskill:  organize
+       portion:   Phase 2e (notebook coverage check)
+       rephrase:  "Run the notebook coverage check for {PROJECT_ID}: read nb/INDEX.md,
+                  cross-reference active stages from config/, and report which segments
+                  are COVERED, PLANNED, or missing (GAP)."
+
+  Do I have a notebook for stage N / is stage N→N+1 covered by a demo
+    -> subskill:  organize
+       portion:   Phase 2e (notebook coverage check)
+       rephrase:  "Check notebook coverage for the S{N}→S{N+1} segment in {PROJECT_ID}:
+                  look at nb/INDEX.md and report whether a demo notebook exists or is planned."
+
   What results do we have / what metrics were recorded
     -> subskill:  summarize
        portion:   Step 1d (results/ scan) + Step 2 (Key Results table)
@@ -93,9 +106,10 @@ INFORMATION — user wants to READ or UNDERSTAND something
 
   What is the structure of this project / does the folder layout look right
     -> subskill:  review
-       portion:   Step 2 (four-part structure check)
+       portion:   Step 2 (structure check)
        rephrase:  "Check whether {PROJECT_ID} has all five mandatory folders
-                  (cc-archive, config, scripts, results, docs) and flag any deviations."
+                  (cc-archive, config, scripts, results, docs), and if nb/ exists,
+                  check that nb/INDEX.md is present. Flag any deviations."
 
 -----------------------------------------------------------------------
 PROGRESS / STATUS — user wants to know how far along the project is
@@ -159,9 +173,10 @@ ORGANIZATION / CLEANUP — user wants to tidy or restructure files
 
   Clean up or reorganize the project / files are in the wrong place
     -> subskill:  organize
-       portion:   Phase 1 (inventory) + Phase 2 (proposed moves)
-       rephrase:  "Inventory all files in {PROJECT_ID}, then propose a reorganization
-                  to bring the project to the standard five-part layout."
+       portion:   Phase 1 (inventory) + Phase 2 (proposed moves) + Phase 2e (notebook coverage)
+       rephrase:  "Inventory all files in {PROJECT_ID}, propose a reorganization to bring
+                  the project to the standard layout (five mandatory folders + nb/ if demos
+                  exist), and check notebook coverage against active pipeline stages."
 
   Rename scripts to follow naming convention
     -> subskill:  organize
@@ -204,6 +219,22 @@ CREATION / SCAFFOLDING — user wants to set up something new
        portion:   Track A A2 (Step 3, ML model stubs)
        rephrase:  "Add Track A ML model stubs (algorithm, tuner, instance) to an
                   existing project, and auto-generate the paired example script."
+
+  Set up demo notebooks / add nb/ to a project / create nb/INDEX.md
+    -> subskill:  nb
+       portion:   (full flow — Steps 0-6)
+       rephrase:  "Create a demo notebook for {PROJECT_ID}: set up nb/ and nb/INDEX.md
+                  if they don't exist, then guide me through creating a notebook for
+                  the {SEGMENT_KEY} pipeline segment."
+
+  Create a notebook for a specific stage transition
+    -> subskill:  nb
+       portion:   (full flow — Steps 0-6)
+       rephrase:  "Create a demo notebook for the S{N}→S{N+1} segment in {PROJECT_ID},
+                  and update nb/INDEX.md to track it."
+
+  Note: /haipipe-project nb creates the .ipynb stub and manages nb/INDEX.md.
+  The full notebook content template is pending (TODO in fn-nb.md Step 4).
 
 -----------------------------------------------------------------------
 DOCUMENTATION — user wants to generate or update docs

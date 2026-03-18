@@ -138,6 +138,29 @@ Create a .gitkeep in results/ so the folder is tracked by git:
 
   examples/{PROJECT_ID}/results/.gitkeep
 
+Do NOT create nb/ at scaffold time — it is optional and created only when the user
+adds a demo notebook. However, if the user explicitly requests demo notebooks during
+Q5 (scope), create nb/ and nb/INDEX.md now:
+
+  examples/{PROJECT_ID}/nb/INDEX.md
+
+Content for nb/INDEX.md (when created at scaffold):
+
+```markdown
+# nb/INDEX.md — {PROJECT_ID}
+# Last updated: {YYMMDD}
+# Purpose: track pipeline demo notebooks by stages covered, input, and output.
+# Claude reads this in fn-organize Phase 2e to detect coverage gaps.
+
+| Notebook | Stages | Input | Output | Status |
+|----------|--------|-------|--------|--------|
+| (planned) | S1→S2 | {dataset} source records | RecordStore | planned |
+```
+
+Replace the placeholder row(s) with entries matching the stages selected in Q5.
+Add one planned row per adjacent stage pair the project will use.
+If no demo notebooks are requested, skip nb/ entirely.
+
 ---
 
 Step 3: Create Track A — Code Stubs (if needed)
@@ -312,6 +335,7 @@ Track B — examples/
   examples/{PROJECT_ID}/results/                       [created]
   examples/{PROJECT_ID}/docs/                          [created]
     TODO.md                                            [created, pre-filled]
+  examples/{PROJECT_ID}/nb/                            [created with INDEX.md] or [skipped — add when demos needed]
 
 Track A — code/ (if applicable)
   code-dev/1-PIPELINE/...                              [stubs created] or [skipped]
@@ -354,4 +378,4 @@ MUST NOT
 - Do NOT generate actual implementation in stub files — stubs only.
 - Do NOT run any pipeline commands during scaffolding.
 - Do NOT create CLAUDE.md inside the project folder (not part of the standard).
-- Do NOT create notebooks (.ipynb) inside scripts/ — they go in cc-archive or a separate nb/ folder if needed.
+- Do NOT create notebooks (.ipynb) inside scripts/ — they belong in nb/ (not cc-archive).
