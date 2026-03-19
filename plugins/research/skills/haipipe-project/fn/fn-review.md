@@ -97,8 +97,15 @@ Verify each mandatory directory exists:
   [ ] {PROJECT_PATH}/cc-archive/     missing -> [BLOCK]
   [ ] {PROJECT_PATH}/config/         missing -> [BLOCK]
   [ ] {PROJECT_PATH}/scripts/        missing -> [WARN]
-  [ ] {PROJECT_PATH}/results/        missing -> [WARN]
   [ ] {PROJECT_PATH}/docs/           missing -> [WARN]
+
+Note: there is NO top-level results/ directory. Results live inside task folders
+at scripts/{task}/results/. A top-level results/ is a legacy layout that should
+be flagged for migration, not treated as compliant structure.
+
+  [ ] {PROJECT_PATH}/results/        present -> [NOTE] "Legacy top-level results/ found.
+                                                Consider migrating to task-folder layout.
+                                                Run /haipipe-project organize."
 
 Report any extra top-level directories not in the standard four:
   Extra dirs (e.g., workspace/, materials/, notebooks/) -> [NOTE]
@@ -312,78 +319,103 @@ Report: "[GENERATED] docs/dependency-report.md"
 
 ---
 
-Step 5: Review scripts/ and results/ Alignment
-================================================
+Step 5: Review scripts/ Task Structure and Run-Result Alignment
+================================================================
 
-Collect all files in scripts/ (excluding .gitkeep and sbatch/ contents):
+**Check scripts/ global structure:**
 
-  SCRIPTS = [basename without extension for each file in scripts/]
+  [ ] scripts/INDEX.md exists (global task index)
+      Missing -> [WARN] "scripts/INDEX.md missing. Run /haipipe-project review to generate."
 
-Collect all directories in results/ (excluding .gitkeep):
+  [ ] No flat .py or .sh files directly in scripts/ (outside task subfolders or sbatch/)
+      Flat files found -> [WARN] "Flat scripts found in scripts/. These should be inside a
+                                   task subfolder. Run /haipipe-project organize to migrate."
 
-  RESULTS = [dirname for each directory in results/]
+**For each task subfolder in scripts/ (excluding sbatch/):**
 
-Check alignment:
+  TASKS = [subdirectory names in scripts/ except sbatch/]
 
-  For each s in SCRIPTS:
-    [ ] results/{s}/ exists           missing -> [ERROR] "Script has no result folder."
+  For each task in TASKS:
+    [ ] scripts/{task}/INDEX.md exists
+        Missing -> [WARN] "Task {task} has no INDEX.md (run inventory)."
+    [ ] scripts/{task}/{task}.py exists
+        Missing -> [WARN] "Task {task} has no matching Python file ({task}.py)."
+    [ ] scripts/{task}/runs/ exists and contains at least one .sh
+        Missing -> [NOTE] "Task {task} has no run scripts in runs/."
 
-  For each r in RESULTS:
-    [ ] scripts/{r}.* exists (any ext) missing -> [ERROR] "Result folder has no matching script."
+**Run-result alignment (per task):**
 
-Check script naming convention {seq}_{YYMMDD}_{desc}.{ext}:
+  For each task in TASKS:
+    RUNS    = [basename without .sh for each .sh in scripts/{task}/runs/]
+    RESULTS = [dirname for each dir in scripts/{task}/results/]
 
-  [ ] seq is exactly 3 digits, zero-padded       non-conforming -> [WARN]
-  [ ] YYMMDD is a 6-digit date                   non-conforming -> [WARN]
-  [ ] desc uses underscores (no spaces or dashes) non-conforming -> [NOTE]
+    For each run in RUNS:
+      [ ] scripts/{task}/results/{run}/ exists
+          Missing -> [ERROR] "Run {task}/runs/{run}.sh has no matching result folder."
+
+    For each result in RESULTS:
+      [ ] scripts/{task}/runs/{result}.sh exists
+          Missing -> [ERROR] "Result folder {task}/results/{result}/ has no matching run script."
+
+**Track A example check:**
+  [ ] Every Track A stub has a paired example_{name}/ task folder in scripts/
+      Missing -> [WARN] "Track A stub {stub} has no paired example task folder."
 
 ---
 
 Step 5b: Generate / Update scripts/INDEX.md
 =============================================
 
-This step has WRITE ACCESS to scripts/INDEX.md only.
+This step has WRITE ACCESS to scripts/INDEX.md and {task}/INDEX.md only.
 
-**If scripts/INDEX.md does not exist — generate it:**
-  Scan all files in scripts/ (excluding .gitkeep, sbatch/ contents).
-  For each script file, infer:
-    Data          from filename desc (e.g. "ohio" -> OhioT1DM) or mark as "unknown"
-    Functionality from filename desc (snake_case words after YYMMDD)
-    Stage         from filename desc or config/ YAML names (best-effort inference)
-    Status        "done" if a matching results/{basename}/ folder exists, else "wip"
+**If scripts/INDEX.md does not exist — generate it (global task index):**
+  Scan all subdirectories in scripts/ (excluding sbatch/).
+  For each task subfolder, infer:
+    Data        from the task name or config/ YAML names (best-effort)
+    Stage       from the task name or config/ YAML names (best-effort)
+    Description from the task name words (snake_case -> human-readable)
+    Status      "done" if all runs in {task}/runs/ have matching {task}/results/ folders
+                "wip"  if at least one run exists but some results are missing
+                "stub" if the task folder exists but has no run scripts yet
   Write scripts/INDEX.md with the inferred table.
-  Report: "[GENERATED] scripts/INDEX.md — {N} scripts indexed."
+  Report: "[GENERATED] scripts/INDEX.md — {N} tasks indexed."
 
 **If scripts/INDEX.md exists — sync it:**
-  [ ] Every .py/.sh in scripts/ has an entry    missing -> add row, Status="wip"
-  [ ] Every entry has a matching file            orphan  -> mark row with [ORPHAN] note
-  [ ] Scripts with results/ folder but Status != "done" -> upgrade to "done"
+  [ ] Every task subfolder in scripts/ has a row     missing -> add row, Status="stub"
+  [ ] Every row has a matching task subfolder        orphan  -> mark row with [ORPHAN] note
+  [ ] Tasks where all runs have results but Status != "done" -> upgrade to "done"
   Write updated INDEX.md back.
   Report: "[UPDATED] scripts/INDEX.md — {N} rows added/updated."
 
-**Track A example check (read-only):**
-  [ ] Every Track A stub has a paired example_{name}.py
-      Missing -> [WARN] "Track A stub {stub} has no paired example script."
+**Per-task INDEX.md sync:**
+  For each task in TASKS that has a {task}/INDEX.md:
+    [ ] Every .sh in {task}/runs/ has a row in {task}/INDEX.md
+        Missing -> add row, Status="planned" or "wip"
+    [ ] Rows where {task}/results/{variant}/ exists but Status != "done" -> upgrade to "done"
+  For tasks missing {task}/INDEX.md: create it with rows inferred from runs/ contents.
 
 ---
 
-Step 6: Check results/ for Heavy Files
-========================================
+Step 6: Check Task Results for Heavy Files
+===========================================
 
-Scan results/ recursively for file extensions associated with heavy outputs:
+Scan all task result folders recursively: scripts/*/results/
 
   Heavy extensions:
     .pt, .pth, .ckpt, .safetensors    <- model weights
     .npy, .npz                         <- large arrays (check size)
     .pkl, .pickle                      <- pickled objects (check size)
-    bin, .h5, .hdf5                    <- binary data
+    .bin, .h5, .hdf5                   <- binary data
 
   Any heavy file found -> [ERROR]
-    "Heavy file {filename} found in results/. Move to _WorkSpace/."
+    "Heavy file {filename} found in {task}/results/. Move to _WorkSpace/."
 
 Check that each result folder contains at least one of:
   report.md, metrics.json, *.md, *.json
-  Empty result folder -> [WARN] "Result folder has no summary files."
+  Empty result folder -> [WARN] "Result folder {task}/results/{variant}/ has no summary files."
+
+Also flag if a top-level results/ directory still exists at project root:
+  -> [NOTE] "Legacy top-level results/ found — see Step 2 note."
 
 ---
 
@@ -489,8 +521,8 @@ For each stage in DECLARED_STAGES (stages 1-4 only):
 Step 7d — scripts/ import resolution
 --------------------------------------
 
-Scan all .py files in scripts/ for haipipe imports:
-  grep -n "from haifn\|from hainn\|import haifn\|import hainn" scripts/*.py
+Scan all .py files in scripts/ for haipipe imports (recursive):
+  grep -rn "from haifn\|from hainn\|import haifn\|import hainn" scripts/
 
 For each imported class name found:
   [ ] Class exists in code/haifn/ or code/hainn/
@@ -520,8 +552,8 @@ Structure
   [status]  cc-archive/
   [status]  config/
   [status]  scripts/
-  [status]  results/
   [status]  docs/
+  [note]    results/ (top-level) — should not exist; results live in scripts/{task}/results/
 
 docs
 ----
@@ -539,17 +571,22 @@ config
 
 scripts / INDEX.md
 ------------------
-  [status]  INDEX.md present
-  [status]  All scripts indexed
-  [status]  All Track A stubs have paired examples
+  [status]  scripts/INDEX.md present (global task index)
+  [status]  All task subfolders indexed
+  [status]  All Track A stubs have paired example_{name}/ task folders
 
-scripts / results alignment
----------------------------
-  [status]  Script-result pairs
+scripts / task structure
+------------------------
+  [status]  No flat .py/.sh files directly in scripts/
+  [status]  Each task folder has INDEX.md, {task}.py, and runs/
+
+run-result alignment (per task)
+--------------------------------
+  [status]  Run-result pairs per task
   [list of mismatches if any]
 
-results (heavy file check)
---------------------------
+results heavy file check (scripts/*/results/)
+----------------------------------------------
   [status]  ...
 
 Code Sync
@@ -601,8 +638,9 @@ Print these at the end of Step 8 (verbatim — no extra analysis needed):
    (TODO.md, data-map.md, dependency-report.md). Did anything come out empty?"
 
   [CH-2] scripts/INDEX.md in sync?
-  "Quick check: does scripts/INDEX.md have an entry for every .py/.sh in
-   scripts/? Are all status values (stub / wip / done) current?"
+  "Quick check: (1) scripts/INDEX.md has a row for every task subfolder;
+   (2) each {task}/INDEX.md has a row for every .sh in {task}/runs/ and the
+   matching result folder in {task}/results/. Update any stale entries."
 
 ---
 

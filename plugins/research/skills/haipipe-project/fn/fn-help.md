@@ -88,9 +88,9 @@ INFORMATION — user wants to READ or UNDERSTAND something
 
   What results do we have / what metrics were recorded
     -> subskill:  summarize
-       portion:   Step 1d (results/ scan) + Step 2 (Key Results table)
+       portion:   Step 1d (task results scan) + Step 2 (Key Results table)
        rephrase:  "Summarize the results for {PROJECT_ID}, extracting key metrics
-                  from results/*/metrics.json and the top findings from reports."
+                  from scripts/*/results/*/metrics.json and the top findings from reports."
 
   Show me the data flow / how does data move through this project
     -> subskill:  summarize
@@ -107,9 +107,10 @@ INFORMATION — user wants to READ or UNDERSTAND something
   What is the structure of this project / does the folder layout look right
     -> subskill:  review
        portion:   Step 2 (structure check)
-       rephrase:  "Check whether {PROJECT_ID} has all five mandatory folders
-                  (cc-archive, config, scripts, results, docs), and if nb/ exists,
-                  check that nb/INDEX.md is present. Flag any deviations."
+       rephrase:  "Check whether {PROJECT_ID} has all four mandatory folders
+                  (cc-archive, config, scripts, docs), whether scripts/ uses the
+                  task-folder layout, and if nb/ exists, whether nb/INDEX.md is
+                  present. Flag any deviations including legacy top-level results/."
 
 -----------------------------------------------------------------------
 PROGRESS / STATUS — user wants to know how far along the project is
@@ -128,11 +129,12 @@ PROGRESS / STATUS — user wants to know how far along the project is
                   which stages are fully implemented (YAML + FnClass found) and
                   update the Pipeline Progress table in docs/TODO.md."
 
-  Are all scripts done / which scripts still have missing results
+  Are all tasks done / which runs still have missing results
     -> subskill:  review
-       portion:   Step 5 (scripts/results alignment) + Step 5b (INDEX.md sync)
-       rephrase:  "Check script-result alignment for {PROJECT_ID} — flag any
-                  scripts without a matching results/ folder and update INDEX.md status."
+       portion:   Step 5 (task structure + run-result alignment) + Step 5b (INDEX.md sync)
+       rephrase:  "Check task run-result alignment for {PROJECT_ID} — flag any run scripts
+                  in {task}/runs/ without a matching {task}/results/{variant}/ folder,
+                  and update scripts/INDEX.md and task INDEX.md statuses."
 
   What is missing from this project / full gap report
     -> subskill:  review
@@ -168,6 +170,36 @@ PROGRESS / STATUS — user wants to know how far along the project is
                   regenerate docs/data-map.md only — skip all other review steps."
 
 -----------------------------------------------------------------------
+ONBOARDING — user wants to bring an existing project up to standard
+-----------------------------------------------------------------------
+
+  I have an existing project / how do I set it up / bring it to standard /
+  what should I run first
+    -> subskill:  organize then review (two-step sequence)
+       portion:   (full organize flow, then full review flow)
+       rephrase:  "Run the standard onboarding sequence for {PROJECT_ID}:
+                  Step 1 — /haipipe-project organize: inventory all files and
+                  restructure to the task-folder layout (scripts/{task}/ with
+                  runs/ and results/). Step 2 — /haipipe-project review: generate
+                  all docs (data-map.md, TODO.md, dependency-report.md, INDEX.md
+                  files) and verify code sync. Run organize first, then review."
+
+  Output for this intent: print the two suggestions in sequence:
+
+    "For an existing project, run these two commands in order:
+
+     1. Please call `/haipipe-project organize {path}`
+        to restructure files to the standard task-folder layout and verify
+        imports after moves.
+
+     2. Please call `/haipipe-project review {path}`
+        to generate docs/data-map.md, docs/TODO.md, docs/dependency-report.md,
+        scripts/INDEX.md, and per-task INDEX.md files, and to check code sync.
+
+     Start with organize — review's doc generation depends on files being
+     in the right locations."
+
+-----------------------------------------------------------------------
 ORGANIZATION / CLEANUP — user wants to tidy or restructure files
 -----------------------------------------------------------------------
 
@@ -175,14 +207,16 @@ ORGANIZATION / CLEANUP — user wants to tidy or restructure files
     -> subskill:  organize
        portion:   Phase 1 (inventory) + Phase 2 (proposed moves) + Phase 2e (notebook coverage)
        rephrase:  "Inventory all files in {PROJECT_ID}, propose a reorganization to bring
-                  the project to the standard layout (five mandatory folders + nb/ if demos
-                  exist), and check notebook coverage against active pipeline stages."
+                  the project to the standard layout (four mandatory folders + task-folder
+                  scripts/ layout + nb/ if demos exist), and check notebook coverage against
+                  active pipeline stages."
 
-  Rename scripts to follow naming convention
+  Migrate flat scripts into task folders / files are not in task subfolders
     -> subskill:  organize
-       portion:   Phase 2 (script naming issues)
-       rephrase:  "Propose renames for scripts in {PROJECT_ID}/scripts/ that do not
-                  follow the {seq}_{YYMMDD}_{desc}.{ext} convention."
+       portion:   Phase 2 (scripts/ layout issues)
+       rephrase:  "Identify any flat .py or .sh files directly in {PROJECT_ID}/scripts/
+                  and propose migrating each into a task subfolder following the
+                  task-folder convention (scripts/{task}/{task}.py + runs/ + results/)."
 
   Check if imports and paths still work after moving files
     -> subskill:  organize

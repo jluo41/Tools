@@ -54,7 +54,7 @@ Create the four mandatory directories:
   examples/{PROJECT_ID}/cc-archive/
   examples/{PROJECT_ID}/config/
   examples/{PROJECT_ID}/scripts/
-  examples/{PROJECT_ID}/results/
+  examples/{PROJECT_ID}/docs/
 
 Create one placeholder file in cc-archive/ to mark the session:
 
@@ -117,7 +117,7 @@ Populate TODO.md using the template from ref/project-structure.md,
 filling in PROJECT_ID, YYMMDD, dataset names, stage selections from Q5-Q9,
 and marking stages not selected as n/a.
 
-Create scripts/INDEX.md — the mandatory script index for this project:
+Create scripts/INDEX.md — the mandatory global task index for this project:
 
   examples/{PROJECT_ID}/scripts/INDEX.md
 
@@ -126,17 +126,13 @@ Content:
 ```markdown
 # scripts/INDEX.md — {PROJECT_ID}
 # Last updated: {YYMMDD}
-# Purpose: index all scripts by data, functionality, and stage.
-# Claude reads this before creating any new script to check for reuse.
+# Purpose: global task index. Claude reads this before creating any new task
+# folder to check for reuse. One row per task subfolder in scripts/.
 
-| Script | Data | Functionality | Stage | Status |
-|--------|------|---------------|-------|--------|
-| (scripts will be added here as they are created) | | | | |
+| Task | Data | Stage | Description | Status |
+|------|------|-------|-------------|--------|
+| (task folders will be added here as they are created) | | | | |
 ```
-
-Create a .gitkeep in results/ so the folder is tracked by git:
-
-  examples/{PROJECT_ID}/results/.gitkeep
 
 Do NOT create nb/ at scaffold time — it is optional and created only when the user
 adds a demo notebook. However, if the user explicitly requests demo notebooks during
@@ -194,9 +190,11 @@ Builder stub content (same pattern for all):
 # Command: /haipipe-data design-chef {stage}
 ```
 
-Auto-generated example script for Stage N Fn:
-  Assign seq = next available number in scripts/
-  File: examples/{PROJECT_ID}/scripts/{seq}_{YYMMDD}_example_{dataset}_stage{N}_fn.py
+Auto-generated example task for Stage N Fn:
+  Task name: example_{dataset}_stage{N}_fn
+  Dir:  examples/{PROJECT_ID}/scripts/example_{dataset}_stage{N}_fn/
+  File: examples/{PROJECT_ID}/scripts/example_{dataset}_stage{N}_fn/example_{dataset}_stage{N}_fn.py
+  Also create: runs/ and results/ subdirectories inside the task folder.
 
 ```python
 # Example: {dataset} Stage {N} Fn — {PROJECT_ID}
@@ -221,9 +219,9 @@ SPACE = setup_workspace()
 # print(output)
 ```
 
-Add this example script to scripts/INDEX.md:
+Add this task to scripts/INDEX.md:
 
-  | {seq}_{YYMMDD}_example_{dataset}_stage{N}_fn.py | {dataset} | Example usage of Stage {N} Fn | {N} | stub |
+  | example_{dataset}_stage{N}_fn | {dataset} | {N} | Example usage of Stage {N} Fn | stub |
 
 Check code/INDEX.md (read it first if it exists):
   - Search the Pipeline Functions table for any FnClass that works with {dataset} at Stage {N}.
@@ -269,8 +267,11 @@ class {NameCamelCase}Instance:
     MODEL_TYPE = "TODO_{name}"
 ```
 
-Auto-generated example script for the new model:
-  File: examples/{PROJECT_ID}/scripts/{seq}_{YYMMDD}_example_{name}_model.py
+Auto-generated example task for the new model:
+  Task name: example_{name}_model
+  Dir:  examples/{PROJECT_ID}/scripts/example_{name}_model/
+  File: examples/{PROJECT_ID}/scripts/example_{name}_model/example_{name}_model.py
+  Also create: runs/ and results/ subdirectories inside the task folder.
 
 ```python
 # Example: {name} model — {PROJECT_ID}
@@ -301,9 +302,9 @@ SPACE = setup_workspace()
 # print(results)
 ```
 
-Add this example script to scripts/INDEX.md:
+Add this task to scripts/INDEX.md:
 
-  | {seq}_{YYMMDD}_example_{name}_model.py | {dataset} | Example usage of {name} model | 5 | stub |
+  | example_{name}_model | {dataset} | 5 | Example usage of {name} model | stub |
 
 Check code/INDEX.md ML Models table for any existing model in the same {family}
 that works with {dataset}:
@@ -329,10 +330,12 @@ Track B — examples/
   examples/{PROJECT_ID}/config/                        [created]
     1_source_{dataset}.yaml                            [skeleton]
     ...
-  examples/{PROJECT_ID}/scripts/                       [created, flat]
-    INDEX.md                                           [created, {N} entries]
-    {seq}_{YYMMDD}_example_{name}.py                   [auto-generated per stub]
-  examples/{PROJECT_ID}/results/                       [created]
+  examples/{PROJECT_ID}/scripts/                       [created, task-folder layout]
+    INDEX.md                                           [created, global task index]
+    example_{name}/                                    [auto-generated task per stub]
+      example_{name}.py
+      runs/
+      results/
   examples/{PROJECT_ID}/docs/                          [created]
     TODO.md                                            [created, pre-filled]
   examples/{PROJECT_ID}/nb/                            [created with INDEX.md] or [skipped — add when demos needed]
@@ -358,8 +361,9 @@ Checkpoints
 Print these at the end of Step 4 (verbatim — no extra analysis needed):
 
   [CH-2] scripts/INDEX.md in sync?
-  "Quick check: does scripts/INDEX.md have an entry for every .py/.sh in
-   scripts/? Are all status values (stub / wip / done) current?"
+  "Quick check: does scripts/INDEX.md have a row for every task subfolder?
+   Does each {task}/INDEX.md exist with at least a stub row? Are all status
+   values (stub / wip / done) current?"
 
   [CH-4] code/INDEX.md updated?
   "Quick check: if new Track A stubs were created, confirm code/INDEX.md has

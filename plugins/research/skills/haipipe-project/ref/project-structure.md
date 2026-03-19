@@ -13,12 +13,11 @@ Every project lives under:
 
   examples/Proj{Series}-{Category}-{Num}-{Name}/
 
-The five mandatory folders for all new projects:
+The four mandatory folders for all new projects:
 
   cc-archive/      <- Claude Code session history
   config/          <- YAML pipeline configs
-  scripts/         <- All executable scripts (py + sh)
-  results/         <- Light summaries only (committed to git)
+  scripts/         <- Task folders (each self-contained: .py + runs/ + results/)
   docs/            <- Project planning and summary documents
 
 One optional-but-standard folder (add when demo notebooks exist):
@@ -26,8 +25,11 @@ One optional-but-standard folder (add when demo notebooks exist):
   nb/              <- Pipeline stage demo notebooks + INDEX.md
 
 Heavy outputs (model weights, full metrics, large tensors) go to
-_WorkSpace/ — NOT results/. The _WorkSpace/ paths are declared in
-env.sh, NOT in the project folder.
+_WorkSpace/ — NOT inside task result folders. The _WorkSpace/ paths are
+declared in env.sh, NOT in the project folder.
+
+Note: there is no top-level results/ folder. Light result summaries live
+inside each task folder at scripts/{task}/results/.
 
 
 ---
@@ -57,7 +59,7 @@ Full examples:
 
 ---
 
-Standard Layout (five mandatory + optional nb/)
+Standard Layout (four mandatory + optional nb/)
 ================================================
 
 ```
@@ -74,21 +76,20 @@ examples/Proj{Series}-{Category}-{Num}-{Name}/
 |   +-- 4_aidata_{dataset}.yaml         <- Stage 4 (if used)
 |   +-- 5_model_{name}.yaml             <- Stage 5 (if used)
 |
-+-- scripts/                            <- All executable scripts (FLAT layout)
-|   +-- INDEX.md                        <- MANDATORY: script index for reuse scanning
-|   +-- 001_{YYMMDD}_{desc}.py          <- Python script
-|   +-- 002_{YYMMDD}_{desc}.sh          <- Shell/bash script
-|   +-- 003_{YYMMDD}_example_{name}.py  <- Auto-generated example for Track A stubs
-|   +-- sbatch/                         <- Optional: SLURM job scripts
-|       +-- 001_{YYMMDD}_{desc}.sh
-|
-+-- results/                            <- Light summaries only (in git)
-|   +-- 001_{YYMMDD}_{desc}/           <- Mirrors script name exactly
-|   |   +-- report.md
-|   |   +-- metrics.json
-|   +-- 002_{YYMMDD}_{desc}/
-|       +-- report.md
-|       +-- metrics.json
++-- scripts/                            <- Task-folder layout (one subfolder per task)
+|   +-- INDEX.md                        <- MANDATORY: global task index
+|   +-- {task_name}/                    <- One folder per task (clean snake_case name)
+|   |   +-- INDEX.md                    <- MANDATORY: run inventory for this task
+|   |   +-- {task_name}.py             <- Python logic (no seq/date prefix)
+|   |   +-- runs/                       <- Bash/shell run scripts
+|   |   |   +-- {variant}.sh           <- Named by variant (e.g., phase1_gpu0.sh)
+|   |   +-- results/                   <- Light summaries for this task's runs
+|   |       +-- {variant}/             <- Mirrors run script name (without .sh)
+|   |           +-- report.md
+|   |           +-- metrics.json
+|   +-- sbatch/                         <- Cross-task SLURM scripts (shared)
+|       +-- submit_{name}.sh            <- Calls multiple task Python scripts
+|       +-- env.sh                      <- Optional: shared env setup
 |
 +-- docs/                               <- Project planning and summary documents
 |   +-- TODO.md                         <- Pipeline progress tracker (created at scaffold)
@@ -138,62 +139,96 @@ config/ Rules
 scripts/ Rules
 ==============
 
-- All executable scripts live here, regardless of type. Layout is FLAT:
-    .py      Main Python logic (training, evaluation, analysis)
-    .sh      Shell scripts (env setup, data prep)
-    .sbatch  SLURM batch submission scripts
-- If there are many SLURM scripts, use an sbatch/ subdirectory (only exception).
-- Rule: a script triggers execution. Its output goes to results/ (light)
-  or _WorkSpace/ (heavy).
-- Naming format: {seq}_{YYMMDD}_{desc}.{ext}
-    seq      3-digit zero-padded integer (001, 002, ...)
-             Represents the logical execution order, not creation order.
-    YYMMDD   Date the script was written (YY = 2-digit year)
-    desc     Snake_case description of what the script does
-  Examples:
-    001_260310_train_baseline.py
-    002_260310_eval_results.sh
-    003_260315_example_glucose_source_fn.py   <- auto-generated for Track A stub
+Layout: task-folder paradigm. scripts/ contains one subfolder per logical task.
+There are no flat .py or .sh files directly in scripts/ (except sbatch/).
 
-scripts/INDEX.md Rules (MANDATORY)
-====================================
+Task folder rules:
+  - Name: clean snake_case descriptor only. No seq number, no date prefix.
+      Good: train_num, eval_all, gen_phase2_epoch_yamls
+      Bad:  001_260310_train_num, train-num
+  - Contents: one .py file + runs/ + results/ subdirectories + INDEX.md
+  - The .py filename matches the folder name exactly: train_num/train_num.py
 
-- INDEX.md is a required file in every project's scripts/ directory.
-- Purpose: allows Claude to scan for existing scripts BEFORE creating new ones,
-  to maximize code reuse and avoid duplication.
-- Created by fn-new.md at scaffold time. Updated whenever a script is added or changes status.
-- Claude MUST read scripts/INDEX.md before creating any new script in a project.
+runs/ rules (inside each task folder):
+  - Contains bash scripts only (.sh). No Python here.
+  - Each script represents one execution variant (device, phase, ablation, etc.)
+  - Naming: {variant}.sh — named by what makes it distinct, not by date.
+      Good: phase1_gpu0.sh, ablation_cpu.sh, eval_phase1.sh
+      Bad:  run_train_num.sh, 001_train.sh
+
+results/ rules (inside each task folder):
+  - Light summaries only. Committed to git.
+  - Each subfolder mirrors a run script name (without .sh extension):
+      runs/phase1_gpu0.sh  <->  results/phase1_gpu0/
+  - Contents: report.md, metrics.json, plots/ (small PNGs < 1 MB), config_used.yaml
+  - Heavy outputs (weights, checkpoints, large arrays) go to _WorkSpace/ instead.
+
+sbatch/ rules (inside scripts/, shared across tasks):
+  - Use for bash/SLURM scripts that call multiple task Python scripts.
+  - Also use for shared env setup scripts (env.sh, submit wrappers).
+  - A script belongs here if it is cross-task (calls train_num.py AND train_tkn.py, etc.)
+  - SLURM log directories (logs/) generated at runtime should be in .gitignore.
+
+scripts/INDEX.md Rules (MANDATORY — global task index)
+=======================================================
+
+- Required at scripts/INDEX.md in every project.
+- Purpose: global task list — allows Claude to scan for existing tasks before
+  creating new ones. Claude MUST read this before creating any new task folder.
+- Created by fn-new.md at scaffold time. Updated whenever a task is added.
 
 Format:
 
   # scripts/INDEX.md — {PROJECT_ID}
   # Last updated: {YYMMDD}
 
-  | Script | Data | Functionality | Stage | Status |
-  |--------|------|---------------|-------|--------|
-  | 001_260310_train_baseline.py | OhioT1DM | Train baseline TE-CLM model | 5 | done |
-  | 002_260310_eval_results.sh   | OhioT1DM | Evaluate and export metrics  | 5 | done |
-  | 003_260315_example_source_fn.py | OhioT1DM | Example usage of GlucoseSourceFn | 1 | stub |
+  | Task | Data | Stage | Description | Status |
+  |------|------|-------|-------------|--------|
+  | train_num  | OhioT1DM | 5 | Train TE-CLM num-token model | done |
+  | train_tkn  | OhioT1DM | 5 | Train TE-CLM token model     | done |
+  | eval_all   | OhioT1DM | 5 | Evaluate all trained models  | wip  |
 
   Column definitions:
-    Script        Filename (without path)
-    Data          Dataset(s) the script operates on
-    Functionality Short description of what the script does
+    Task          Task folder name (same as scripts/{task}/)
+    Data          Dataset(s) the task operates on
     Stage         Pipeline stage(s): 1 / 2 / 3 / 4 / 5 / 6 / all
+    Description   Short description of what the task does
     Status        stub | wip | done | deprecated
+
+scripts/{task}/INDEX.md Rules (MANDATORY — per-task run inventory)
+===================================================================
+
+- Required at scripts/{task}/INDEX.md in every task folder.
+- Purpose: run inventory — maps each run script to its result folder and records outcome.
+- Created when the task folder is created. Updated after each run.
+
+Format:
+
+  # {task}/INDEX.md — {PROJECT_ID}
+  # Last updated: {YYMMDD}
+
+  | Run Script | Variant | Result Dir | Status | Notes |
+  |------------|---------|------------|--------|-------|
+  | phase1_gpu0.sh | Phase 1, GPU 0 | results/phase1_gpu0/ | done | loss 0.42 |
+  | phase2_gpu0.sh | Phase 2, GPU 0 | results/phase2_gpu0/ | wip  | running   |
+
+  Column definitions:
+    Run Script   Filename in runs/ (without path)
+    Variant      Human-readable description of what distinguishes this run
+    Result Dir   Relative path to the result folder (results/{variant}/)
+    Status       planned | wip | done | failed | deprecated
+    Notes        Key outcome, loss, or short note (optional)
 
 Auto-Example Rule
 ==================
 
 - Every new Track A stub (pipeline Fn builder or ML model stub) MUST have a
-  paired example script automatically created in scripts/.
-- Purpose: makes it easy to examine and test the new code immediately.
-- Naming: {seq}_{YYMMDD}_example_{fn_or_model_name}.py
-- The example script is created by fn-new.md at scaffold time alongside the stub.
-- Contents: minimal working example showing how to load and call the Fn or model.
-- Status in INDEX.md: "stub" (upgrades to "wip" or "done" as implementation progresses).
+  paired example task automatically created in scripts/.
+- Place in: scripts/example_{fn_or_model_name}/example_{fn_or_model_name}.py
+- The task folder follows the same task-folder structure as any other task.
+- Status in scripts/INDEX.md: "stub" (upgrades to "wip" or "done" as implementation progresses).
 
-Example script content template:
+Example task Python file template:
 
 ```python
 # Example: {FnClassName} — {PROJECT_ID}
@@ -224,22 +259,28 @@ SPACE = setup_workspace()
 results/ Rules
 ==============
 
-- Light summaries only. Committed to git.
-- What belongs here:
+There is NO top-level results/ folder. Results live inside each task folder:
+
+  scripts/{task}/results/{variant}/
+
+Light/heavy boundary (applies inside every task's results/):
+  LIGHT — commit to git:
     report.md        Markdown summary of the run
     metrics.json     Key numbers (loss, accuracy, F1, etc.)
     plots/           Small PNGs or SVGs (< 1 MB each)
     config_used.yaml Copy of the config that produced this result
-- What does NOT belong here (goes to _WorkSpace/ instead):
+  HEAVY — goes to _WorkSpace/ instead (do NOT put in results/):
     Model weights (.pt, .pth, .ckpt, .safetensors)
     Full prediction arrays (.npy, .pkl for large tensors)
     Checkpoint directories
     Anything > a few MB
-- Naming: each result folder mirrors its script name exactly:
-    scripts/001_260310_train_baseline.py  <->  results/001_260310_train_baseline/
-    scripts/002_260310_eval_results.sh    <->  results/002_260310_eval_results/
-- A script without a result folder is incomplete work (flagged by review).
-- A result folder without a matching script is orphaned (flagged by review).
+
+Run-result pairing: each result subfolder mirrors a run script name (no extension):
+  scripts/train_num/runs/phase1_gpu0.sh  <->  scripts/train_num/results/phase1_gpu0/
+  scripts/train_num/runs/phase2_gpu0.sh  <->  scripts/train_num/results/phase2_gpu0/
+
+A run script without a result folder is incomplete work (flagged by review).
+A result folder without a matching run script is orphaned (flagged by review).
 
 
 ---
@@ -304,8 +345,11 @@ docs/TODO.md Template:
 | config/1_source_{dataset}.yaml | todo | Fill in SourceFnClass and args |
 | config/2_record_{dataset}.yaml | todo | Fill after Stage 1 done |
 | scripts/INDEX.md | done | Created at scaffold |
-| scripts/001_{YYMMDD}_{desc}.py | todo | First experiment script |
-| results/001_{YYMMDD}_{desc}/ | todo | Created after first run |
+| scripts/{task_name}/ | todo | First task folder |
+| scripts/{task_name}/INDEX.md | todo | Run inventory for first task |
+| scripts/{task_name}/{task_name}.py | todo | First experiment script |
+| scripts/{task_name}/runs/{variant}.sh | todo | First run script |
+| scripts/{task_name}/results/{variant}/ | todo | Created after first run |
 | docs/project-summary.md | todo | Run /haipipe-project summarize |
 | docs/nb-plan.md | n/a | Created by /haipipe-project nb when first demo notebook is added |
 | nb/INDEX.md | n/a | Create nb/ + INDEX.md when demo notebooks are added |
@@ -336,14 +380,15 @@ Status values: todo | wip | done | n/a
 Light / Heavy Boundary Summary
 ================================
 
-  Location             What goes here                    In git?
-  -------------------  --------------------------------  -------
-  results/             report.md, metrics.json, plots    YES
-  _WorkSpace/          weights, checkpoints, arrays      NO
-  cc-archive/          CC session md files               YES
-  config/              YAML configs                      YES
-  scripts/             .py, .sh, .sbatch scripts         YES
-  nb/                  demo notebooks (.ipynb)           YES
+  Location                        What goes here                    In git?
+  ------------------------------  --------------------------------  -------
+  scripts/{task}/results/         report.md, metrics.json, plots    YES
+  _WorkSpace/                     weights, checkpoints, arrays      NO
+  cc-archive/                     CC session md files               YES
+  config/                         YAML configs                      YES
+  scripts/{task}/{task}.py        Python logic                      YES
+  scripts/{task}/runs/*.sh        Run scripts                       YES
+  nb/                             demo notebooks (.ipynb)           YES
 
 
 ---
@@ -418,18 +463,20 @@ Review Checklist (used by fn-review.md)
   [ ] YAML filenames start with stage number prefix (1_, 2_, 3_, 4_, 5_)
 
 **scripts/ checks:**
-  [ ] scripts/INDEX.md exists
-  [ ] INDEX.md has an entry for every script in scripts/ (no orphan scripts)
-  [ ] INDEX.md has no entries for scripts that no longer exist
-  [ ] All scripts follow {seq}_{YYMMDD}_{desc}.{ext} naming
-  [ ] seq values are 3-digit zero-padded (001, not 1)
+  [ ] scripts/INDEX.md exists (global task index)
+  [ ] INDEX.md has a row for every task subfolder (no orphan tasks)
+  [ ] No flat .py or .sh files directly in scripts/ (only sbatch/ and task subfolders)
   [ ] No notebooks (.ipynb) in scripts/ (notebooks belong in nb/)
-  [ ] Every Track A stub has a paired example_{name}.py script
+  [ ] Every Track A stub has a paired example_{name}/ task folder
 
-**results/ checks:**
-  [ ] Each result folder name matches a script name (without extension)
-  [ ] No heavy files present (.pt, .pth, .ckpt, .safetensors, .npy > 1MB)
-  [ ] Each result folder contains at least a report.md or metrics.json
+**Per-task checks (for each scripts/{task}/ folder):**
+  [ ] {task}/INDEX.md exists (run inventory)
+  [ ] {task}/{task}.py exists (Python logic file)
+  [ ] {task}/runs/ exists and contains at least one .sh file
+  [ ] {task}/INDEX.md has an entry for every run script in {task}/runs/
+  [ ] Every {task}/runs/{variant}.sh has a matching {task}/results/{variant}/ folder
+  [ ] No heavy files in {task}/results/ (.pt, .pth, .ckpt, .safetensors, .npy > 1MB)
+  [ ] Each {task}/results/{variant}/ contains at least a report.md or metrics.json
 
 **nb/ checks (if nb/ exists):**
   [ ] nb/INDEX.md exists (mandatory when nb/ exists)

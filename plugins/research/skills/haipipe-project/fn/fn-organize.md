@@ -178,17 +178,36 @@ touching any files.
     [ ] nb/ does not exist but .ipynb files were found anywhere in the project
         -> propose: create nb/ and move all .ipynb files there
 
-  Script naming issues (scripts/ only):
-    [ ] Scripts not following {seq}_{YYMMDD}_{desc}.{ext} pattern
-        -> propose: rename to conform, preserving the original description
-    [ ] seq values not 3-digit zero-padded (e.g., "1_" instead of "001_")
-        -> propose: rename with zero-padded seq
+  scripts/ layout issues:
+    [ ] Flat .py or .sh files directly in scripts/ (not in a task subfolder or sbatch/)
+        -> propose: create a task folder scripts/{task_name}/ and move the file there;
+           also create runs/ and results/ subdirectories within the task folder
     [ ] .ipynb files in scripts/
         -> propose: move to nb/
+    [ ] scripts/INDEX.md missing
+        -> propose: create scripts/INDEX.md (global task index format per ref)
 
-  Results alignment issues:
-    [ ] Result folder name does not match any script (after accounting for renames above)
-        -> flag: "orphaned result folder — check if its script was renamed or deleted"
+  Per-task folder issues (for each scripts/{task}/ found):
+    [ ] Task folder is missing INDEX.md
+        -> propose: create {task}/INDEX.md (run inventory format per ref)
+    [ ] Task folder has no {task}.py file
+        -> propose: create {task}/{task}.py stub (or flag if .py was given a different name)
+    [ ] Task folder has bash scripts at the task root (not inside runs/)
+        -> propose: move them into {task}/runs/
+    [ ] Task folder has result folders at the task root (not inside results/)
+        -> propose: move them into {task}/results/
+
+  Top-level results/ issues (legacy layout):
+    [ ] Project has a top-level results/ folder with result subfolders
+        -> propose: migrate each result subfolder into the matching task folder:
+             results/{task_desc}/  ->  scripts/{task_name}/results/{variant}/
+           Ask user to confirm the task mapping before moving.
+
+  Run-result alignment issues (per task):
+    [ ] A run script in {task}/runs/ has no matching folder in {task}/results/
+        -> flag: "run without results — may be pending or failed"
+    [ ] A result folder in {task}/results/ has no matching run script in {task}/runs/
+        -> flag: "orphaned result folder — check if its run script was renamed or deleted"
 
 **Step 2e — Notebook Coverage Check:**
 
@@ -381,14 +400,23 @@ after any file moves. Runs immediately after Phase 2d (or on demand via
 
 **Step 3c — Relative path check:**
 
-  Scan all .py files in scripts/ for references to project-relative paths
-  (e.g., open("config/..."), os.path.join("results/..."), pathlib references):
-    grep -n "config/\|results/\|docs/\|cc-archive/" scripts/*.py
+  Scan all .py files for project-relative path references:
+    grep -rn "config/\|results/\|docs/\|cc-archive/" scripts/**/*.py
+
+  Also scan all .sh files in task runs/ for Python script path references
+  (these commonly reference $PROJ/scripts/{task}/{task}.py):
+    grep -rn "scripts/" scripts/**/runs/*.sh
 
   For each referenced path:
     [ ] The referenced file/folder exists at that path relative to where the
-        script is expected to be run from (project root).
-        Not found -> [WARN] "Script {script} references '{path}' which does not exist."
+        script is expected to be run from (project root or $PROJ).
+        Not found -> [WARN] "{script} references '{path}' which does not exist."
+
+  Common issues after task-folder reorganization:
+    - Run scripts that previously called $PROJ/scripts/train_num.py
+      must now call $PROJ/scripts/train_num/train_num.py
+    - Any hardcoded results/ at project root should now point to
+      scripts/{task}/results/ instead.
 
 **Step 3d — Write verification results to docs/organize-report.md:**
 
@@ -438,8 +466,9 @@ Print these after Phase 3 completes (verbatim — no extra analysis needed):
    confirm those paths still exist relative to the project root."
 
   [CH-2] scripts/INDEX.md in sync?
-  "Quick check: if any scripts were renamed during reorganization, confirm
-   scripts/INDEX.md entries were updated to match the new filenames."
+  "Quick check: (1) scripts/INDEX.md lists every task subfolder; (2) each
+   {task}/INDEX.md has a row for every .sh in {task}/runs/ and the matching
+   result folder in {task}/results/. Update any entries affected by moves."
 
 ---
 

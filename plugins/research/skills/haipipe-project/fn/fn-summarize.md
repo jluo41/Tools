@@ -38,10 +38,10 @@ Read the following in parallel. Collect facts into named slots.
       -> DATASETS: dataset names from YAML filenames
       -> MODEL_NAME: from 5_model_{name}.yaml (if present)
 
-  (d) results/ directory:
-      -> RESULT_FOLDERS: list of result folder names
-      -> KEY_METRICS: read each results/*/metrics.json, extract top metrics
-      -> KEY_REPORTS: read each results/*/report.md, extract first paragraph only
+  (d) task results (inside scripts/*/results/):
+      -> RESULT_FOLDERS: list of {task}/{variant} result folder names
+      -> KEY_METRICS: read each scripts/*/results/*/metrics.json, extract top metrics
+      -> KEY_REPORTS: read each scripts/*/results/*/report.md, extract first paragraph only
 
   (e) cc-archive/ directory:
       -> SESSION_COUNT: count of cc_*.md + di_*.md files
@@ -56,16 +56,20 @@ Read the following in parallel. Collect facts into named slots.
 Step 2: Sync scripts/INDEX.md Status
 =======================================
 
-Before writing the summary, scan results/ for completed result folders so the
-Scripts section of the summary reflects current statuses.
+Before writing the summary, scan task result folders to update statuses.
 
-For each script in INDEX.md where Status = "wip" or "stub":
-  If a matching results/{script_basename}/ folder exists with report.md or metrics.json:
-    Update Status to "done" in INDEX.md.
+For each task in scripts/INDEX.md where Status = "wip" or "stub":
+  If scripts/{task}/results/ contains at least one subfolder with report.md or metrics.json:
+    Update Status to "done" in scripts/INDEX.md.
+
+Also sync each scripts/{task}/INDEX.md:
+  For each run row where Status != "done":
+    If scripts/{task}/results/{variant}/ exists with report.md or metrics.json:
+      Update Status to "done".
 
 Do NOT downgrade any "done" entries. Only upgrade stub/wip -> done.
 
-Report: "Synced {N} script status(es) to done in INDEX.md."
+Report: "Synced {N} task/run status(es) to done in INDEX.md files."
 
 ---
 
@@ -108,20 +112,20 @@ Key Results
 [Pull from results/*/metrics.json. Show only the 3-5 most important numbers.
 Use a simple table. If no metrics found, write "Results pending."]
 
-  Script / Run                   | Key Metric      | Value
+  Task / Run                     | Key Metric      | Value
   -------------------------------|-----------------|-------
-  001_260310_train_baseline      | MAE (test)      | 12.3
-  001_260310_train_baseline      | RMSE (test)     | 18.1
-  002_260315_ablation_dropout    | MAE (test)      | 11.8
+  train_num / phase1_gpu0        | MAE (test)      | 12.3
+  train_num / phase1_gpu0        | RMSE (test)     | 18.1
+  train_num / phase2_gpu0        | MAE (test)      | 11.8
 
-Scripts
--------
-[Copy the INDEX.md table here, condensed to done/wip scripts only.]
+Tasks
+-----
+[Copy the scripts/INDEX.md table here, condensed to done/wip tasks only.]
 
-  Script | Functionality | Status
-  -------|---------------|-------
-  001_260310_train_baseline.py | Train TE-CLM baseline | done
-  002_260315_ablation_dropout.py | Dropout ablation | wip
+  Task | Description | Stage | Status
+  -----|-------------|-------|-------
+  train_num | Train TE-CLM num-token model | 5 | done
+  train_tkn | Train TE-CLM token model     | 5 | wip
 
 Flow Chart
 ----------
@@ -184,8 +188,9 @@ Print these after Step 4 (verbatim — no extra analysis needed, Step 2 already 
    reflects the active stages and Key Results has real numbers (not empty)."
 
   [CH-2] scripts/INDEX.md in sync?
-  "Quick check: does scripts/INDEX.md have an entry for every .py/.sh in
-   scripts/? Are all status values (stub / wip / done) current?"
+  "Quick check: (1) scripts/INDEX.md has a row for every task subfolder;
+   (2) each {task}/INDEX.md has a row for every run in {task}/runs/;
+   (3) all status values (stub / wip / done) were just synced in Step 2."
 
 ---
 

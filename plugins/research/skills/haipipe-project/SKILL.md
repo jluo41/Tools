@@ -86,12 +86,16 @@ Step 0: Parse the command.
 
     haipipe-project commands:
       new                       -> create a new project (both tracks)
-      review [path]             -> check an existing project for structural gaps
+      organize [path]           -> restructure files to standard layout (run FIRST on existing projects)
+      review [path]             -> generate all docs + check code sync (run AFTER organize)
       summarize [path]          -> generate post-development summary + flow chart
-      organize [path]           -> file inventory + propose reorganization
       organize verify [path]    -> verify imports/paths after reorganization
       nb [path]                 -> create a demo notebook for a pipeline stage segment
       help [question]           -> describe what you want in plain English; I'll route you
+
+    Typical sequence for an existing project:
+      1. organize [path]   <- move files into standard layout
+      2. review [path]     <- generate docs (data-map, TODO, dependency-report, INDEX.md)
 
     Which would you like to do?
 
@@ -165,12 +169,15 @@ Key Conventions (quick reference)
 Project naming:   Proj{Series}-{Category}-{Num}-{Name}
   e.g.            ProjC-Model-2-GlucoseTransformer
 
-Five-part layout (Track B):
+Four-part layout (Track B):
   cc-archive/     CC session history (cc_*.md, di_*.md)
   config/         YAML configs named {N}_{stage}_{dataset}.yaml
-  scripts/        Flat executables + INDEX.md (named {seq}_{YYMMDD}_{desc}.{ext})
-  results/        Light summaries only; mirrors script names
+  scripts/        Task-folder layout: scripts/{task}/ contains {task}.py + runs/ + results/
+                  scripts/INDEX.md = global task list; {task}/INDEX.md = run inventory
+                  scripts/sbatch/ = cross-task SLURM scripts only
   docs/           Planning + summary docs (TODO.md, project-summary.md)
+
+  Note: no top-level results/ folder. Results live inside each task folder.
 
 code/INDEX.md (codebase-wide, shared across all projects):
   Indexes ALL implemented Fns (code/haifn/) and ML models (code/hainn/).
@@ -187,8 +194,8 @@ Auto-example rule:
   Every Track A stub (new Fn or model) generates a paired example script.
   Script name: {seq}_{YYMMDD}_example_{fn_or_model_name}.py
 
-Script-result pairing:
-  scripts/001_260310_train_baseline.py  <->  results/001_260310_train_baseline/
+Run-result pairing (within each task folder):
+  scripts/train_num/runs/phase1_gpu0.sh  <->  scripts/train_num/results/phase1_gpu0/
 
 _WorkSpace paths:
   Declared in env.sh. Read by setup_workspace() in code/haipipe/base.py.
