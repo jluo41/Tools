@@ -472,6 +472,92 @@ Print these after Phase 3 completes (verbatim — no extra analysis needed):
 
 ---
 
+Phase 4: Project Diagram
+=========================
+
+Goal: generate a draw.io diagram of the final project structure and save it
+to docs/project-diagram.png and docs/project-diagram.drawio.
+
+Requires the drawio MCP server to be installed:
+  claude mcp add drawio -- npx @next-ai-drawio/mcp-server@latest
+
+If the drawio MCP tools are NOT available, skip Phase 4 and print:
+  "Skipping diagram — drawio MCP not installed.
+   Run: claude mcp add drawio -- npx @next-ai-drawio/mcp-server@latest"
+
+**Step 4a — Build the mxGraphModel XML:**
+
+  Construct an mxGraphModel XML diagram that shows the project's folder
+  structure. Use the file inventory from Phase 1 Section 1 as the source.
+
+  Layout rules:
+    - Root node: project folder name (PROJECT_ID), large rounded rectangle,
+      fill=#dae8fc (light blue), at center-top.
+    - Four mandatory folder nodes beneath root: cc-archive/, config/,
+      scripts/, docs/ — rounded rectangles, fill=#d5e8d4 (light green).
+    - scripts/ expands to show each task subfolder as a child node,
+      fill=#fff2cc (yellow). Each task node shows: "{task_name}" with a
+      sub-label listing run script count and result status.
+    - config/ shows a single summary node: "Stage 5 YAMLs (N configs)"
+      or lists config groups if <= 5 groups total.
+    - docs/ shows its files as small notes: TODO.md, data-map.md,
+      dependency-report.md, organize-report.md, project-diagram.png.
+    - cc-archive/ shows file count: "N session files".
+    - Extra non-standard folders (materials/, paper/, etc.) shown as grey
+      nodes, fill=#f5f5f5, connected to root with dashed edge.
+    - sbatch/ shown as a child of scripts/ with fill=#ffe6cc (orange).
+    - All edges: style=edgeStyle=orthogonalEdgeStyle.
+    - Diagram size: fit to content, roughly 1200x900 px.
+
+  Cell ID convention: use short unique IDs (p1, cc1, cfg1, s1, s_task1, …).
+
+  Example skeleton (adapt to actual project):
+
+  ```xml
+  <mxGraphModel>
+    <root>
+      <mxCell id="0"/><mxCell id="1" parent="0"/>
+      <!-- root project node -->
+      <mxCell id="p1" value="ProjC-Model-1-ScalingLaw" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+        <mxGeometry x="400" y="20" width="280" height="50" as="geometry"/>
+      </mxCell>
+      <!-- folder nodes -->
+      <mxCell id="cc1" value="cc-archive/&#xa;8 session files" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+        <mxGeometry x="60" y="140" width="160" height="50" as="geometry"/>
+      </mxCell>
+      <!-- edge: root -> cc-archive -->
+      <mxCell id="e_cc" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p1" target="cc1" parent="1">
+        <mxGeometry relative="1" as="geometry"/>
+      </mxCell>
+      <!-- ... remaining nodes ... -->
+    </root>
+  </mxGraphModel>
+  ```
+
+**Step 4b — Call MCP tools:**
+
+  1. Call start_session  (opens browser with live preview)
+  2. Call create_new_diagram with the XML from Step 4a
+  3. Call export_diagram:
+       path:   {PROJECT_PATH}/docs/project-diagram.drawio
+       format: drawio
+  4. Call export_diagram:
+       path:   {PROJECT_PATH}/docs/project-diagram.png
+       format: png
+
+  After export, print:
+    "Diagram saved:
+       docs/project-diagram.drawio
+       docs/project-diagram.png"
+
+  Append to docs/organize-report.md:
+    "Phase 4 — Diagram
+     Generated: {YYMMDD}
+     docs/project-diagram.drawio
+     docs/project-diagram.png"
+
+---
+
 `organize verify` — Standalone Verification
 =============================================
 

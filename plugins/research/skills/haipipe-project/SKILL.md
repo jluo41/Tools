@@ -57,8 +57,8 @@ Dispatch Table
   review [path]            ref/project-structure.md + ref/code-structure.md  fn/fn-review.md
   summarize (no path)      ref/project-structure.md                          fn/fn-summarize.md
   summarize [path]         ref/project-structure.md                          fn/fn-summarize.md
-  organize (no path)       ref/project-structure.md                          fn/fn-organize.md
-  organize [path]          ref/project-structure.md                          fn/fn-organize.md
+  organize (no path)       ref/project-structure.md                          fn/fn-organize.md  (+ Phase 4 diagram)
+  organize [path]          ref/project-structure.md                          fn/fn-organize.md  (+ Phase 4 diagram)
   organize verify          ref/project-structure.md                          fn/fn-organize.md
   organize verify [path]   ref/project-structure.md                          fn/fn-organize.md
   nb (no path)             ref/project-structure.md                          fn/fn-nb.md
@@ -86,7 +86,7 @@ Step 0: Parse the command.
 
     haipipe-project commands:
       new                       -> create a new project (both tracks)
-      organize [path]           -> restructure files to standard layout (run FIRST on existing projects)
+      organize [path]           -> restructure files to standard layout + generate project-diagram.png (run FIRST on existing projects)
       review [path]             -> generate all docs + check code sync (run AFTER organize)
       summarize [path]          -> generate post-development summary + flow chart
       organize verify [path]    -> verify imports/paths after reorganization
