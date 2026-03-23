@@ -340,13 +340,14 @@ that new logic — not just polish the old sentences.
 **Annotation format (compile-ready):**
 
 The proposed text is ACTIVE (uncommented, compiles in LaTeX).
-The original text is COMMENTED OUT (preserved for reference).
+The original text is COMMENTED OUT with single `%` prefix.
 This way the file always compiles with the latest proposed changes.
 
 ```latex
 %
 %% ---- P1.S1 ----
-%% Original: Original sentence text here.
+% Original sentence text here.
+%% Proposed:
 Revised sentence text here.
 %% Changes:
 %%   (1) "old phrase" → "new phrase"
@@ -357,10 +358,11 @@ Revised sentence text here.
 %% Author:
 ```
 
-**KEY CONVENTION:** The proposed/revised text is the ACTIVE line (no `%%`
-prefix). The original is on a `%% Original:` line. This means the file
-compiles with proposed changes immediately, and the author can see
-what changed by reading the `%% Original:` and `%% Changes:` lines.
+**KEY CONVENTION:** The original sentence is commented out with a single
+`%` prefix. The `%% Proposed:` label sits on its own line. The revised
+text follows as the ACTIVE line (no prefix, compiles in LaTeX).
+Metadata lines (`%% Changes:`, `%% Reason:`, `%% Comments:`, `%% Author:`)
+use `%%` prefix as before.
 
 **The `%% Comments:` lines** contain copy-pasteable `\ra{}` and `\jl{}`
 macros. The author can copy these directly into Overleaf where they
@@ -386,17 +388,17 @@ DELETE — sentence should be removed:
 ```latex
 %
 %% ---- P1.S4 [DELETE] ----
-%% Original: Original sentence to be deleted.
+% Original sentence to be deleted.
 ```
 
-DELETE blocks are **minimal**: just the tag and the original (as a `%%`
-comment). No active text. No `%% Reason:` or `%% Author:` lines.
+DELETE blocks are **minimal**: just the tag and the original (commented
+with single `%`). No active text. No `%% Reason:` or `%% Author:` lines.
 Only add `%% Comments:` lines when a reviewer comment is relevant:
 
 ```latex
 %
 %% ---- P1.S6 [DELETE] ----
-%% Original: This approach has generated valuable interventions, but faces a...
+% This approach has generated valuable interventions, but faces a...
 %% Comments: \ra{C\#7: Reader wants evidence -- not just opinion.}
 %% Comments: \jl{C\#7: Deleted. Now supported empirically in RQ3 results.}
 ```
@@ -410,28 +412,29 @@ Original sentence that is fine.
 %% Author:
 ```
 
-For KEEP, the original stays as the active text. No `%% Original:` line
+For KEEP, the original stays as the active text. No commented-out line
 needed since the active text IS the original.
 
 NEW — adding a sentence that doesn't exist in the original:
 ```latex
 %
 %% ---- P1.S4 [NEW] ----
+%% Proposed:
 The next design cycle then restarts from intuition rather than building on accumulated experimental evidence.
 %% Source: Adapted from old P2.S3 / written fresh per revision plan.
 %% Reason: Needed to complete the one-shot argument in new P1.
 %% Author:
 ```
 
-For NEW sentences, the new text is the active line. `%% Source:` explains
-where the content comes from (pulled from another paragraph, adapted,
-or written fresh). No `%% Original:` line since there is no original.
+For NEW sentences, `%% Proposed:` on its own line, then the new text
+as the active line. `%% Source:` explains where the content comes from.
 
 Complete rewrite:
 ```latex
 %
 %% ---- P1.S3 ----
-%% Original: Original sentence here.
+% Original sentence here.
+%% Proposed:
 Completely different sentence here.
 %% Changes:
 %%   (1) Complete rewrite — refocused from X to Y
