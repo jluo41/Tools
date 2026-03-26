@@ -90,7 +90,7 @@ Stage-Independent Steps
 
 **Step 3.5: MANDATORY — Show YAML and Get User Confirmation (ALL Pipeline Commands)**
 
-  CRITICAL RULE: Before running ANY pipeline command — haistep-*, haicli-process,
+  CRITICAL RULE: Before running ANY pipeline command — haistep-*,
   Python API call, or any other runner — you MUST walk through the config with
   the user. This is not a haistep-only rule. It applies to everything.
 
@@ -105,14 +105,6 @@ Stage-Independent Steps
        - InputArgs: input_method, input_casefn_list
        - OutputArgs: output_method, output_casefn_list, output_args
 
-     --- For haicli-process configs (multi-stage, multi-cohort): ---
-       - PipelineArgs: which stages are enabled (run_source/record/case/aidata)
-       - RawDataArgs: cohort names, partition counts per cohort
-       - PreFnArgs.RecordArgs: SourceFnName, HumanRecords, record_set_version
-       - PreFnArgs.CaseArgs: TriggerName, CaseFn_list, case_set_version
-       - PreFnArgs.AIDataArgs: aidata_name, aidata_version, input_method,
-           input_casefn_list, output_method, SplitArgs, OutputArgs
-
   3. Challenge the config — assume it could be wrong:
      - Do all Fn names (SourceFn, RecordFn, TriggerFn, CaseFn, TfmFn, SplitFn)
        exist in their respective code/haifn/... directories?
@@ -120,8 +112,6 @@ Stage-Independent Steps
      - Does the aidata_version match what is expected in _WorkSpace?
      - Are selection rules referencing the correct column names?
      - Are all label names consistent with the output CaseFn?
-     - For haicli-process: do partition counts match cohort sizes?
-     - For haicli-process: is record_set_version correct for new vs. existing RecordSets?
 
   4. Ask: "Is this config correct? Should I proceed?"
      WAIT for explicit user confirmation.

@@ -130,7 +130,7 @@ Step 3: Execute the function.
         not from memory.
 
         UNIVERSAL PRE-EXECUTION RULE — applies to ALL functions, ALL tools:
-        Before running any pipeline command — haistep-*, haicli-process,
+        Before running any pipeline command — haistep-*,
         Python API, or any future runner — ALWAYS:
           1. Display the complete YAML config to the user.
           2. Walk through every section (one by one, out loud).
