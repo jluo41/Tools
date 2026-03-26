@@ -337,6 +337,14 @@ After paragraph-level agreement on the logic, annotate each sentence.
 If the author agreed to a new logic, the annotations should reflect
 that new logic — not just polish the old sentences.
 
+**CRITICAL: One sentence per annotation block.** Every `%% ---- PX.SY ----`
+block must contain exactly ONE sentence as the active text. If a proposed
+change produces multiple sentences, split them into separate annotation
+blocks (P1.S1, P1.S2, P1.S3, etc.). Never combine multiple sentences
+into a single annotation block — this makes it impossible for the author
+to review, accept, or reject individual sentences. When splitting multi-
+sentence originals, each new block gets its own `%% ---- PX.SY ----` tag.
+
 **Annotation format (compile-ready):**
 
 The proposed text is ACTIVE (uncommented, compiles in LaTeX).
@@ -347,7 +355,7 @@ This way the file always compiles with the latest proposed changes.
 %
 %% ---- P1.S1 ----
 % Original sentence text here.
-%% Proposed:
+%% Proposed: %%
 Revised sentence text here.
 %% Changes:
 %%   (1) "old phrase" → "new phrase"
@@ -419,7 +427,7 @@ NEW — adding a sentence that doesn't exist in the original:
 ```latex
 %
 %% ---- P1.S4 [NEW] ----
-%% Proposed:
+%% Proposed: %%
 The next design cycle then restarts from intuition rather than building on accumulated experimental evidence.
 %% Source: Adapted from old P2.S3 / written fresh per revision plan.
 %% Reason: Needed to complete the one-shot argument in new P1.
@@ -434,7 +442,7 @@ Complete rewrite:
 %
 %% ---- P1.S3 ----
 % Original sentence here.
-%% Proposed:
+%% Proposed: %%
 Completely different sentence here.
 %% Changes:
 %%   (1) Complete rewrite — refocused from X to Y
