@@ -17,8 +17,8 @@ Usage
 Examples:
 ```
 /paper-revise 0-sections/01_introduction.tex
-/paper-revise 0-sections/01_introduction.tex "Focus on reviewer comments about evidence gaps. I want the opening to land the one-shot evaluation problem faster."
-/paper-revise 0-sections/03_method.tex "Make the DIKW explanation less jargon-heavy. Reviewer C#11 is right that the IT analogy is forced."
+/paper-revise 0-sections/03_method.tex "Reviewer 2 says the notation is inconsistent with Section 4. Tighten the problem setup."
+/paper-revise 0-sections/05_results.tex "Subgroup analysis needs more statistical rigor per R1. Also cut redundancy with the appendix."
 /paper-revise 0-sections/01_introduction.tex apply
 ```
 
@@ -64,39 +64,50 @@ Phase 1: Section-Level Review
 Read the target file. Detect structure automatically:
 - Paragraphs = blocks of text separated by blank lines
 - Subsections = `\subsection{}` or similar LaTeX commands
-- Reviewer comments = `\ra{}`, `\rahigh{}`, or any comment patterns
+- Reviewer comment macros = auto-detect from the file (common patterns:
+  `\ra{}`, `\rev{}`, `\todo{}`, `\comment{}`, `\RC{}`, or custom macros
+  defined in the preamble). Note the convention for use in `%% Comments:`
+  lines later.
 - Existing annotations = `%% Proposed:`, `%% Diff:`, or similar
 - Figure/table blocks = `\begin{figure}` ... `\end{figure}` (skip these)
+- Algorithm/listing blocks = `\begin{algorithm}` ... `\end{algorithm}` (skip)
 
 Number paragraphs sequentially: P1, P2, P3, ... based on order of
 appearance. If subsections exist, note them: P1 (under §2.1), etc.
+
+**Detect the paper's comment conventions early.** Look for:
+- Custom macros in the preamble (e.g., `\newcommand{\ra}`, `\newcommand{\rev}`)
+- Inline comments using `% TODO:`, `% FIXME:`, or similar
+- Color-coded macros (e.g., `\textcolor{red}{...}`)
+Record what you find — use these same macros in `%% Comments:` lines
+so annotations are consistent with the paper's existing workflow.
 
 ### Step 2: Present Section Map
 
 Show the author a **readable section map** — NOT raw LaTeX:
 
 ```
-Section: Introduction (01_introduction.tex)
-============================================
+Section: [Title] ([filename])
+===============================
 
 Structure:
-  P1  Context — [topic summary from first sentence]          [N sentences]
-  P2  Gap — [topic summary]                                   [N sentences]
-  --  Figure 1 placement
-  P3  Opportunity — [topic summary]                            [N sentences]
-  P4  Challenge — [topic summary]                              [N sentences]
-  §Research Questions
-    P5  RQ intro                                               [N sentences]
-    P6  RQ1 — [topic]                                          [N sentences]
-    P7  RQ2 — [topic]                                          [N sentences]
+  P1  [Role] — [topic summary from first sentence]            [N sentences]
+  P2  [Role] — [topic summary]                                 [N sentences]
+  --  Figure/Table placement
+  P3  [Role] — [topic summary]                                 [N sentences]
+  §[Subsection Title]
+    P4  [Role] — [topic summary]                               [N sentences]
+    P5  [Role] — [topic summary]                               [N sentences]
   ...
+
+Comment macros detected: [e.g., \ra{}, \rev{}, \todo{}, or none found]
 
 Reviewer Comments:
   [list any reviewer comments found, grouped by paragraph]
 
 [If author provided comments, address them here:]
-Author's Direction: "Focus on reviewer comments about evidence gaps..."
-  → This affects P1 (S3-S6 lack citations) and P3 (scale claims unsupported)
+Author's Direction: "[quoted author comments]"
+  → This affects [specific paragraphs and why]
 
 Overall Assessment:
   - [CC's analysis of section flow and structure]
@@ -164,8 +175,8 @@ Total: ~XX sentences, ~Y pages
 ```
 
 Include a comparison table showing current vs. proposed sentence counts
-per subsection. If a reference paper (e.g., Chen & Chan) was used as
-a size benchmark, compare against it.
+per subsection. If the author has identified a reference paper at the
+target venue as a size benchmark, compare against it.
 
 **Wait for author response.** The author should confirm the structure
 before any annotation begins. This prevents wasted work if the author
@@ -201,7 +212,7 @@ CC and the author can reference during paragraph-by-paragraph work.
 %%
 %% STRUCTURAL CHANGES:
 %%   - [e.g., "Merge old P1-P9 into 4 paragraphs"]
-%%   - [e.g., "Remove IT paradox framing entirely"]
+%%   - [e.g., "Remove framing X, replace with framing Y"]
 %%   - [e.g., "Move Figure 1 to after P4"]
 %%
 %% ------------------------------------------------------------
@@ -361,8 +372,8 @@ Revised sentence text here.
 %%   (1) "old phrase" → "new phrase"
 %%   (2) "another old" → "another new"
 %% Reason: Why this change serves the agreed paragraph topic.
-%% Comments: \ra{C\#7: Reader wants evidence -- not just opinion.}
-%% Comments: \jl{C\#7: Added citations. Removed unsupported claim.}
+%% Comments: [reviewer macro]{R1.Q3: Needs stronger statistical support.}
+%% Comments: [author macro]{R1.Q3: Added significance tests and CIs.}
 %% Author:
 ```
 
@@ -372,19 +383,31 @@ text follows as the ACTIVE line (no prefix, compiles in LaTeX).
 Metadata lines (`%% Changes:`, `%% Reason:`, `%% Comments:`, `%% Author:`)
 use `%%` prefix as before.
 
-**The `%% Comments:` lines** contain copy-pasteable `\ra{}` and `\jl{}`
-macros. The author can copy these directly into Overleaf where they
-compile with the paper's existing comment macros. This ensures:
-- Ritu's original comment is preserved alongside the change
+**The `%% Comments:` lines** use whatever comment macros the paper
+defines (detected in Phase 1 Step 1). Common patterns:
+- `\ra{}`/`\jl{}` — reviewer/author initials
+- `\rev{}`/`\resp{}` — reviewer comment/response
+- `\RC{}`/`\AR{}` — reviewer comment/author response
+- `\todo{}` — general action items
+
+The author can copy these directly into Overleaf where they compile
+with the paper's existing macros. This ensures:
+- The reviewer's original comment is preserved alongside the change
 - The author's reply explains what was done
-- Coauthors on Overleaf see the full discussion trail
+- Coauthors see the full discussion trail
+
+If no comment macros are detected, use plain text:
+```latex
+%% Comments: [R1.Q3] Needs stronger statistical support.
+%% Comments: [Response] Added significance tests and CIs.
+```
 
 Multiple reviewer comments stack on separate lines:
 ```latex
-%% Comments: \ra{C\#11: IT value analogy feels contrived.}
-%% Comments: \jl{C\#11: Removed IT paradox framing per revision plan.}
-%% Comments: \ra{C\#13: Again, said before. REDUNDANT.}
-%% Comments: \jl{C\#13: Stated once in P2, removed elsewhere.}
+%% Comments: [reviewer macro]{R2.W1: Claim unsupported by evidence.}
+%% Comments: [author macro]{R2.W1: Added three citations and quantitative comparison.}
+%% Comments: [reviewer macro]{R3.W2: Redundant with Section 4.}
+%% Comments: [author macro]{R3.W2: Removed here, kept in Section 4 only.}
 ```
 
 Only add `%% Comments:` lines when a reviewer comment is relevant to
@@ -406,9 +429,9 @@ Only add `%% Comments:` lines when a reviewer comment is relevant:
 ```latex
 %
 %% ---- P1.S6 [DELETE] ----
-% This approach has generated valuable interventions, but faces a...
-%% Comments: \ra{C\#7: Reader wants evidence -- not just opinion.}
-%% Comments: \jl{C\#7: Deleted. Now supported empirically in RQ3 results.}
+% This approach has generated valuable results, but faces a...
+%% Comments: [reviewer macro]{R1.W2: Claim unsupported at this point.}
+%% Comments: [author macro]{R1.W2: Deleted. Evidence now in Results section.}
 ```
 
 KEEP — no changes needed:
@@ -428,9 +451,9 @@ NEW — adding a sentence that doesn't exist in the original:
 %
 %% ---- P1.S4 [NEW] ----
 %% Proposed: %%
-The next design cycle then restarts from intuition rather than building on accumulated experimental evidence.
+New sentence text written per the revision plan.
 %% Source: Adapted from old P2.S3 / written fresh per revision plan.
-%% Reason: Needed to complete the one-shot argument in new P1.
+%% Reason: Needed to complete the argument in new P1.
 %% Author:
 ```
 
@@ -459,8 +482,8 @@ Paragraph P1 — Summary
 ========================
 
   S1: REVISE — simplify phrasing
-  S2: REVISE — remove "gold standard", consolidate citations
-  S3: REWRITE — refocus on one-shot evaluation gap
+  S2: REVISE — consolidate citations, remove vague claim
+  S3: REWRITE — refocus on the core argument
   S4: DELETE — interrupts the argument
   S5: DELETE — belongs elsewhere
   ...
@@ -504,7 +527,8 @@ When apply IS invoked:
    - `DELETE` → comment out the original sentence, remove annotations
    - `<proposed text>` → replace original with proposed, remove annotations
 3. Remove all separator lines and annotation comments
-4. Keep reviewer macros (`\ra{}`, etc.)
+4. Keep any reviewer/response macros in the active text (these are
+   part of the paper's review workflow, not CC annotations)
 5. Present summary of all changes
 
 ---
@@ -542,14 +566,14 @@ Discussion Style
 CC is an **active collaborator**:
 
 - **Ask questions** — "This paragraph mixes two topics. Split or keep?"
-- **Offer analysis** — "The reviewer is right that S7-S9 are unsupported
-  this early. Want to move them or cut them?"
+- **Offer analysis** — "S7-S9 make claims before the evidence is
+  presented. Want to move them to Discussion or cut them?"
 - **Ask for raw input** — "What do you want this paragraph to say in
   your own words? I'll help turn it into formal text."
 - **Flag inconsistencies** — "The abstract says X but this says Y."
 - **Suggest alternatives** — "Instead of deleting, we could move to P5."
-- **Connect to author's comments** — "You said you wanted to emphasize
-  the one-shot gap. S3 is the right place for that."
+- **Connect to author's comments** — "You said you wanted to strengthen
+  the motivation. S3 is the right place for that."
 - **Respect author authority** — Author has final say. If they disagree,
   record their reasoning in `%% Author:` and move on.
 - **Write like a human researcher** — Proposed text should read like it
@@ -565,11 +589,14 @@ Cross-Section Consistency
 
 When revising one section, check what other sections say about the same
 topics. Common consistency issues:
-- Terminology changes (e.g., removing "IT paradox") must propagate
-- Content moved between sections (e.g., interpretation from Results to
-  Discussion) must not be duplicated
-- RQ framing in intro must match RQ references in Results and Discussion
-- Contribution claims in Discussion must match intro's RQ structure
+- Terminology changes must propagate (if you rename a concept in one
+  section, grep for the old name across all sections)
+- Content moved between sections must not be duplicated (e.g.,
+  interpretation moved from Results to Discussion)
+- Claims in Introduction must match what Results actually show
+- Contribution list in Introduction/Conclusion must stay aligned
+- Notation introduced in Method must be used consistently in Results
+- Abstract claims must reflect the revised content, not the old version
 
 After annotating, do a quick consistency check and flag any cross-section
 issues for the author.
@@ -582,7 +609,8 @@ Self-Review Step
 After completing annotations for a section, review your own work:
 - Did you follow the annotation format consistently?
 - Are all relevant reviewer comments addressed with `%% Comments:` lines?
-- Are `%% Comments:` lines copy-pasteable `\ra{}` and `\jl{}` macros?
+- Do `%% Comments:` lines use the paper's own comment macros (detected
+  in Phase 1)?
 - Does proposed text avoid em dashes, promotional language, AI-sounding prose?
 - Are there cross-section inconsistencies?
 
@@ -596,18 +624,21 @@ Size Benchmarking
 
 When revising a section, compare the proposed size against:
 1. The current version (how much are we cutting/adding?)
-2. A reference paper at the target venue (e.g., Chen & Chan 2024 for MS)
+2. A reference paper at the target venue (if the author names one)
+3. Typical page limits for the venue (if known)
 
 Present a comparison table:
 ```
-| Section | Current | Proposed | Reference paper |
-|---|---|---|---|
-| Intro | ~70 sentences | ~48 sentences | ~47 sentences |
-| Lit review | ~43 sentences | ~34 sentences | ~38 sentences |
+| Section      | Current       | Proposed      | Reference (if any) |
+|--------------|---------------|---------------|---------------------|
+| Introduction | ~70 sentences | ~48 sentences | ~47 sentences       |
+| Method       | ~55 sentences | ~50 sentences | ~52 sentences       |
+| Results      | ~43 sentences | ~38 sentences | ~40 sentences       |
 ```
 
 This helps the author gauge whether the revision is too aggressive or
-too conservative.
+too conservative. If no reference paper is available, comparing current
+vs. proposed is still valuable for tracking scope changes.
 
 ---
 
