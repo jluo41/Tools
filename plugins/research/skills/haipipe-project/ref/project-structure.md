@@ -98,7 +98,8 @@ examples/Proj{Series}-{Category}-{Num}-{Name}/
 |
 +-- nb/                                 <- Demo notebooks (optional; add when demos exist)
     +-- INDEX.md                        <- MANDATORY if nb/ exists: notebook coverage index
-    +-- 001_{YYMMDD}_{desc}.ipynb       <- Demo notebook (pipeline stage demo)
+    +-- 001_{YYMMDD}_{desc}.py          <- Cell-wise Python script (source of truth)
+    +-- 001_{YYMMDD}_{desc}.ipynb       <- Converted notebook (derived from .py)
 ```
 
 
@@ -388,7 +389,7 @@ Light / Heavy Boundary Summary
   config/                         YAML configs                      YES
   scripts/{task}/{task}.py        Python logic                      YES
   scripts/{task}/runs/*.sh        Run scripts                       YES
-  nb/                             demo notebooks (.ipynb)           YES
+  nb/                             demo notebooks (.py + .ipynb)     YES
 
 
 ---
@@ -398,12 +399,15 @@ nb/ Rules (optional folder)
 
 - nb/ is optional. Create it only when demo notebooks exist or are planned.
 - Once nb/ exists, nb/INDEX.md is MANDATORY — same principle as scripts/INDEX.md.
-- Only .ipynb files. No .py, .yaml, or .md files other than INDEX.md.
-- Naming: {seq}_{YYMMDD}_{desc}.ipynb
+- Python-first workflow: .py is source of truth, .ipynb is derived.
+  Edit the .py, then convert: jupytext --to notebook {name}.py -o {name}.ipynb
+  See: Tools/plugins/research/skills/notebook-cell-python/SKILL.md for conventions.
+- Allowed files: .py (cell-wise scripts), .ipynb (converted), INDEX.md. No .yaml.
+- Naming: {seq}_{YYMMDD}_{desc}.py  +  {seq}_{YYMMDD}_{desc}.ipynb (same stem)
     seq      3-digit zero-padded integer (001, 002, ...)
     YYMMDD   Date the notebook was written
     desc     Snake_case description of what the notebook demos
-  Example: 001_260315_demo_source_to_record.ipynb
+  Example: 001_260315_demo_source_to_record.py  /  .ipynb
 
 nb/INDEX.md Rules (MANDATORY when nb/ exists)
 ----------------------------------------------
@@ -419,14 +423,15 @@ Format:
   # Last updated: {YYMMDD}
   # Purpose: track pipeline demo notebooks by stages covered, input, and output.
 
-  | Notebook | Stages | Input | Output | Status |
-  |----------|--------|-------|--------|--------|
-  | 001_260315_demo_s1_to_s2.ipynb | S1→S2 | raw visit records | RecordStore | done |
-  | 002_260320_demo_case_build.ipynb | S2→S3 | RecordStore | CaseStore | wip |
-  | (planned) | S3→S4 | CaseStore | AIDataStore | planned |
+  | Script (.py) | Notebook (.ipynb) | Stages | Input | Output | Status |
+  |--------------|-------------------|--------|-------|--------|--------|
+  | 001_260315_demo_s1_to_s2.py | .ipynb | S1→S2 | raw visit records | RecordStore | done |
+  | 002_260320_demo_case_build.py | .ipynb | S2→S3 | RecordStore | CaseStore | wip |
+  | (planned) | — | S3→S4 | CaseStore | AIDataStore | planned |
 
   Column definitions:
-    Notebook   Filename (without path); use "(planned)" for not-yet-created entries
+    Script     .py filename (source of truth); use "(planned)" for not-yet-created entries
+    Notebook   .ipynb filename (derived); use "—" if not yet converted
     Stages     Pipeline stages covered: S1→S2, S2→S3, S3→S4, S4→S5, S5→S6, etc.
     Input      Description of the input data or asset the notebook starts from
     Output     Description of the output data or intermediate result produced
@@ -446,8 +451,8 @@ Review Checklist (used by fn-review.md)
   [ ] cc-archive/ directory exists
   [ ] config/ directory exists
   [ ] scripts/ directory exists
-  [ ] results/ directory exists
   [ ] docs/ directory exists
+  [ ] No top-level results/ directory (results live in scripts/{task}/results/)
 
 **docs/ checks:**
   [ ] docs/TODO.md exists
@@ -480,12 +485,12 @@ Review Checklist (used by fn-review.md)
 
 **nb/ checks (if nb/ exists):**
   [ ] nb/INDEX.md exists (mandatory when nb/ exists)
-  [ ] INDEX.md has an entry for every .ipynb in nb/
-  [ ] No non-.ipynb files in nb/ other than INDEX.md
-  [ ] All notebooks follow {seq}_{YYMMDD}_{desc}.ipynb naming
+  [ ] INDEX.md has an entry for every .py in nb/
+  [ ] Every .py has a matching .ipynb (converted); flag if .ipynb is missing
+  [ ] No files in nb/ other than .py, .ipynb, and INDEX.md
+  [ ] All files follow {seq}_{YYMMDD}_{desc}.py / .ipynb naming (same stem)
   [ ] No planned rows remain indefinitely (flag if status=planned for > 2 stages)
 
-**script-result alignment:**
-  [ ] Every script has a corresponding result folder
-  [ ] Every result folder has a corresponding script
-  [ ] seq numbers are consistent between scripts/ and results/
+**script-result alignment (per task):**
+  [ ] Every {task}/runs/{variant}.sh has a matching {task}/results/{variant}/ folder
+  [ ] Every {task}/results/{variant}/ has a matching run script in {task}/runs/

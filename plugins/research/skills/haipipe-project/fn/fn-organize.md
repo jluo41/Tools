@@ -55,7 +55,7 @@ all files that belong to or are used by this project.
 
   Walk examples/{PROJECT_ID}/ recursively.
   Group files by top-level folder (cc-archive/, config/, scripts/,
-  results/, docs/, nb/, and any extra dirs).
+  docs/, nb/, and any extra dirs — including results/ if it exists as legacy).
   For each file record: relative path, file type/extension, size if large (> 100KB).
 
 **Step 1b — Inventory related files outside the project:**
@@ -144,7 +144,7 @@ all files that belong to or are used by this project.
 Phase 2: Proposed Reorganization
 ==================================
 
-Goal: compare the current layout to the standard 5-part structure and propose
+Goal: compare the current layout to the standard 4-part structure and propose
 specific moves. Present the proposal to the user and wait for approval before
 touching any files.
 
@@ -153,9 +153,9 @@ touching any files.
   Check the following against the standard in ref/project-structure.md:
 
   Folder-level issues:
-    [ ] Missing mandatory folders (cc-archive/, config/, scripts/, results/, docs/)
+    [ ] Missing mandatory folders (cc-archive/, config/, scripts/, docs/)
         -> propose: create the missing folder
-    [ ] Extra top-level folders not in the standard five
+    [ ] Extra top-level folders not in the standard four
         -> propose: migrate contents to the nearest matching standard folder,
            or flag for user decision if the content is ambiguous
 
@@ -171,18 +171,22 @@ touching any files.
         -> propose: move to the appropriate standard folder
 
   nb/ issues:
-    [ ] .ipynb files found outside nb/ (in scripts/, cc-archive/, project root, etc.)
+    [ ] .ipynb or cell-wise .py files found outside nb/ (in scripts/, cc-archive/, project root)
         -> propose: move to nb/
     [ ] nb/ exists but nb/INDEX.md is missing
         -> propose: create nb/INDEX.md (see ref/project-structure.md for format)
-    [ ] nb/ does not exist but .ipynb files were found anywhere in the project
-        -> propose: create nb/ and move all .ipynb files there
+    [ ] nb/ does not exist but .ipynb or demo .py files were found anywhere in the project
+        -> propose: create nb/ and move them there
+    [ ] .ipynb exists in nb/ without a matching .py (source of truth missing)
+        -> flag: ".py source missing — consider recreating from .ipynb or adding .py"
+    [ ] .py exists in nb/ without a matching .ipynb (conversion needed)
+        -> propose: convert with jupytext --to notebook {name}.py -o {name}.ipynb
 
   scripts/ layout issues:
     [ ] Flat .py or .sh files directly in scripts/ (not in a task subfolder or sbatch/)
         -> propose: create a task folder scripts/{task_name}/ and move the file there;
            also create runs/ and results/ subdirectories within the task folder
-    [ ] .ipynb files in scripts/
+    [ ] .ipynb or demo .py files in scripts/ (not task scripts)
         -> propose: move to nb/
     [ ] scripts/INDEX.md missing
         -> propose: create scripts/INDEX.md (global task index format per ref)
@@ -248,17 +252,17 @@ touching any files.
   Active stages (from config/): {list of active stage numbers}
   Active segments requiring demo coverage: {e.g., S1→S2, S2→S3, S3→S4}
 
-  | Segment | Status | Notebook | Notes |
-  |---------|--------|----------|-------|
-  | S1→S2   | COVERED  | 001_260315_demo_s1_to_s2.ipynb | |
-  | S2→S3   | PLANNED  | (planned) | nb/INDEX.md row exists; notebook not yet created |
-  | S3→S4   | GAP      | (none)    | No entry in nb/INDEX.md |
+  | Segment | Status | Script (.py) | Notebook (.ipynb) | Notes |
+  |---------|--------|--------------|-------------------|-------|
+  | S1→S2   | COVERED  | 001_260315_demo_s1_to_s2.py | .ipynb | |
+  | S2→S3   | PLANNED  | (planned) | — | nb/INDEX.md row exists; not yet created |
+  | S3→S4   | GAP      | (none) | — | No entry in nb/INDEX.md |
 
   Recommendations:
     {For each PLANNED row:}
-      - Create the planned notebook for {segment}: {suggested filename}
+      - Create the planned .py script for {segment}: {suggested filename}
     {For each GAP:}
-      - Add a planned row to nb/INDEX.md for {segment}, then create the notebook
+      - Add a planned row to nb/INDEX.md for {segment}, then create the .py + .ipynb
     {If nb/ missing entirely:}
       - Create nb/ and nb/INDEX.md; add planned rows for all active segments
   ```
@@ -305,7 +309,7 @@ touching any files.
   | # | Current Path (relative to project root) | Proposed Path | Reason |
   |---|----------------------------------------|---------------|--------|
   | 1 | train_model.py                          | scripts/001_{YYMMDD}_train_model.py | .py at root -> scripts/ |
-  | 2 | notes.ipynb                             | cc-archive/notes.ipynb | notebook outside scripts/ |
+  | 2 | notes.ipynb                             | nb/notes.ipynb | notebook outside nb/ |
   | 3 | workspace/outputs/                      | (flag) contents -> _WorkSpace/ or results/ | non-standard folder |
   ...
 
@@ -363,7 +367,7 @@ touching any files.
   Applied Changes
   ---------------
     [1] moved: train_model.py  ->  scripts/001_{YYMMDD}_train_model.py
-    [2] moved: notes.ipynb  ->  cc-archive/notes.ipynb
+    [2] moved: notes.ipynb  ->  nb/notes.ipynb
     ...
     Total: {N} file(s) moved/renamed.
   ```
@@ -585,5 +589,6 @@ MUST NOT
 - Do NOT run any pipeline commands (haistep-*, train, evaluate).
 - Do NOT modify YAML configs during reorganization.
 - Do NOT create new scripts or stub files — organize only moves existing files.
-- Do NOT create .ipynb notebook files — Step 2e produces recommendations only; the user creates the notebooks.
+- Do NOT create .py or .ipynb notebook files — Step 2e produces recommendations only; the user creates them via /haipipe-project nb.
 - DO create nb/INDEX.md if nb/ exists but INDEX.md is missing (INDEX.md is structural, not a notebook).
+- DO flag .ipynb files in nb/ that lack a matching .py source (Python-first workflow).

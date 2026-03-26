@@ -88,13 +88,13 @@ INFORMATION — user wants to READ or UNDERSTAND something
 
   What results do we have / what metrics were recorded
     -> subskill:  summarize
-       portion:   Step 1d (task results scan) + Step 2 (Key Results table)
+       portion:   Step 1 item (d) (task results scan) + Step 3 (Key Results table)
        rephrase:  "Summarize the results for {PROJECT_ID}, extracting key metrics
                   from scripts/*/results/*/metrics.json and the top findings from reports."
 
   Show me the data flow / how does data move through this project
     -> subskill:  summarize
-       portion:   Step 2 (Flow Chart section)
+       portion:   Step 3 (Flow Chart section within the summary)
        rephrase:  "Generate the ASCII pipeline flow chart for {PROJECT_ID}
                   showing all active stages from data source through to results."
 
@@ -256,19 +256,19 @@ CREATION / SCAFFOLDING — user wants to set up something new
 
   Set up demo notebooks / add nb/ to a project / create nb/INDEX.md
     -> subskill:  nb
-       portion:   (full flow — Steps 0-6)
+       portion:   (full flow — Steps 0-8)
        rephrase:  "Create a demo notebook for {PROJECT_ID}: set up nb/ and nb/INDEX.md
                   if they don't exist, then guide me through creating a notebook for
                   the {SEGMENT_KEY} pipeline segment."
 
   Create a notebook for a specific stage transition
     -> subskill:  nb
-       portion:   (full flow — Steps 0-6)
+       portion:   (full flow — Steps 0-8)
        rephrase:  "Create a demo notebook for the S{N}→S{N+1} segment in {PROJECT_ID},
                   and update nb/INDEX.md to track it."
 
-  Note: /haipipe-project nb creates the .ipynb stub and manages nb/INDEX.md.
-  The full notebook content template is pending (TODO in fn-nb.md Step 4).
+  Note: /haipipe-project nb creates a cell-wise .py script (source of truth),
+  converts it to .ipynb, and manages nb/INDEX.md + docs/nb-plan.md.
 
 -----------------------------------------------------------------------
 DOCUMENTATION — user wants to generate or update docs
@@ -409,5 +409,5 @@ MUST NOT
   the user's description alone, unless the project path is needed to fill in
   PROJECT_ID in the rephrase (in which case, only read the folder name).
 - Do NOT ask more than one clarifying question before making a suggestion.
-- Do NOT produce suggestions for tasks outside the five subskills
-  (new / review / summarize / organize / help).
+- Do NOT produce suggestions for tasks outside the six subskills
+  (new / review / summarize / organize / nb / help).

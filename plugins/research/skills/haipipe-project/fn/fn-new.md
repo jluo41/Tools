@@ -143,14 +143,16 @@ Q5 (scope), create nb/ and nb/INDEX.md now:
 Content for nb/INDEX.md (when created at scaffold):
 
 ```markdown
-# nb/INDEX.md — {PROJECT_ID}
+# nb/INDEX.md -- {PROJECT_ID}
 # Last updated: {YYMMDD}
 # Purpose: track pipeline demo notebooks by stages covered, input, and output.
 # Claude reads this in fn-organize Phase 2e to detect coverage gaps.
+# Plan doc: docs/nb-plan.md
+# Workflow: .py (source) -> .ipynb (interactive). The .py is the source of truth.
 
-| Notebook | Stages | Input | Output | Status |
-|----------|--------|-------|--------|--------|
-| (planned) | S1→S2 | {dataset} source records | RecordStore | planned |
+| Script (.py) | Notebook (.ipynb) | Stages | Input | Output | Status |
+|--------------|-------------------|--------|-------|--------|--------|
+| (planned) | -- | S1→S2 | {dataset} source records | RecordStore | planned |
 ```
 
 Replace the placeholder row(s) with entries matching the stages selected in Q5.

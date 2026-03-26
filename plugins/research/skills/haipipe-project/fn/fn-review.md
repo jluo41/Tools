@@ -16,7 +16,7 @@ Write access policy:
 Execution checklist (track progress through the steps):
   [ ] Step 0   identify target project
   [ ] Step 1   validate project naming
-  [ ] Step 2   check five-part folder structure
+  [ ] Step 2   check four-part folder structure
   [ ] Step 3   review cc-archive/
   [ ] Step 4   review config/ — set DECLARED_STAGES
   [ ] Step 4b  generate / update docs/TODO.md

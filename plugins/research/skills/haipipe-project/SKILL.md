@@ -41,8 +41,8 @@ Commands
   /haipipe-project organize [path]        -> file inventory + propose reorganization for [path]
   /haipipe-project organize verify        -> verify imports/paths after manual reorganization (auto-detect)
   /haipipe-project organize verify [path] -> verify imports/paths for [path]
-  /haipipe-project nb                     -> create a demo notebook for a pipeline stage segment (auto-detect)
-  /haipipe-project nb [path]             -> create a demo notebook for the project at [path]
+  /haipipe-project nb                     -> create a demo notebook (.py first, then .ipynb) (auto-detect)
+  /haipipe-project nb [path]             -> create a demo notebook (.py first, then .ipynb) for [path]
   /haipipe-project help [question]        -> route a natural-language request to the right subskill + step
 
 ---
@@ -90,7 +90,7 @@ Step 0: Parse the command.
       review [path]             -> generate all docs + check code sync (run AFTER organize)
       summarize [path]          -> generate post-development summary + flow chart
       organize verify [path]    -> verify imports/paths after reorganization
-      nb [path]                 -> create a demo notebook for a pipeline stage segment
+      nb [path]                 -> create a demo notebook (.py source -> .ipynb converted)
       help [question]           -> describe what you want in plain English; I'll route you
 
     Typical sequence for an existing project:
@@ -132,16 +132,16 @@ Step 2: Read the function file.
 
 ---
 
-Checkpoint Hints (pre-written — print verbatim, no extra analysis)
---------------------------------------------------------------------
+Checkpoint Hints (defaults — fn files may customize wording per context)
+------------------------------------------------------------------------
 
   CH-1  docs/ files updated?
         "Quick check: open docs/ and confirm all generated files look correct
          (TODO.md, data-map.md, dependency-report.md). Did anything come out empty?"
 
   CH-2  scripts/INDEX.md in sync?
-        "Quick check: does scripts/INDEX.md have an entry for every .py/.sh in
-         scripts/? Are all status values (stub / wip / done) current?"
+        "Quick check: does scripts/INDEX.md have a row for every task subfolder?
+         Does each {task}/INDEX.md exist? Are all status values (stub / wip / done) current?"
 
   CH-3  file paths valid?
         "Quick check: any scripts that reference config/, results/, or docs/ paths —
@@ -175,7 +175,7 @@ Four-part layout (Track B):
   scripts/        Task-folder layout: scripts/{task}/ contains {task}.py + runs/ + results/
                   scripts/INDEX.md = global task list; {task}/INDEX.md = run inventory
                   scripts/sbatch/ = cross-task SLURM scripts only
-  docs/           Planning + summary docs (TODO.md, project-summary.md)
+  docs/           Planning + summary docs (TODO.md, project-summary.md, nb-plan.md)
 
   Note: no top-level results/ folder. Results live inside each task folder.
 
@@ -188,11 +188,11 @@ code/INDEX.md (codebase-wide, shared across all projects):
 scripts/INDEX.md (per-project):
   Required in every project. Indexes scripts by data, functionality, stage.
   Claude reads this BEFORE creating any new script — to check for reuse first.
-  Format: table with columns: Script | Data | Functionality | Stage | Status
+  Format: table with columns: Task | Data | Stage | Description | Status
 
 Auto-example rule:
-  Every Track A stub (new Fn or model) generates a paired example script.
-  Script name: {seq}_{YYMMDD}_example_{fn_or_model_name}.py
+  Every Track A stub (new Fn or model) generates a paired example task folder.
+  Task folder: scripts/example_{fn_or_model_name}/example_{fn_or_model_name}.py
 
 Run-result pairing (within each task folder):
   scripts/train_num/runs/phase1_gpu0.sh  <->  scripts/train_num/results/phase1_gpu0/
@@ -218,5 +218,5 @@ File Map
   fn/fn-review.md             <- gap analysis + proposed actions (both tracks)
   fn/fn-summarize.md          <- post-development summary + flow chart
   fn/fn-organize.md           <- file inventory + reorganization proposal + verification
-  fn/fn-nb.md                 <- guided demo notebook creation + nb/INDEX.md management
+  fn/fn-nb.md                 <- guided demo notebook creation (.py-first + convert to .ipynb)
   fn/fn-help.md               <- intent routing: natural-language -> subskill + step suggestion
