@@ -169,7 +169,7 @@ the entire codebase. Claude reads this BEFORE creating any new Fn or model
 to check whether an existing implementation can be reused — even from a
 different project. Reuse across projects is the goal.
 
-This is separate from scripts/INDEX.md (which is per-project, indexes scripts).
+This is separate from tasks/INDEX.md (which is per-project, indexes tasks).
 code/INDEX.md is shared across ALL projects.
 
 Format:

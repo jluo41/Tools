@@ -29,7 +29,7 @@ Wait for user answers before moving to Step 2.
 
   Q5. Which pipeline stages does this project use?
       (1=Source, 2=Record, 3=Case, 4=AIData, 5=Model, 6=Endpoint — list all that apply)
-  Q6. What dataset(s) are involved? (used for config/ YAML naming)
+  Q6. What dataset(s) are involved? (used for config YAML naming)
   Q7. Does this project need a NEW pipeline function (new dataset/modality)?
       (YES -> Track A stubs for relevant stages; NO -> skip Track A for pipeline)
   Q8. Does this project need a NEW ML model architecture?
@@ -49,18 +49,52 @@ Step 2: Create Track B — examples/ Folder
 
 Base path: examples/{PROJECT_ID}/
 
-Create the four mandatory directories:
+Create the mandatory top-level directories:
 
-  examples/{PROJECT_ID}/cc-archive/
-  examples/{PROJECT_ID}/config/
-  examples/{PROJECT_ID}/scripts/
-  examples/{PROJECT_ID}/docs/
+  examples/{PROJECT_ID}/tasks/
+  examples/{PROJECT_ID}/paper/
 
-Create one placeholder file in cc-archive/ to mark the session:
+Optionally created later (not at scaffold time unless user requests):
 
-  examples/{PROJECT_ID}/cc-archive/.gitkeep
+  examples/{PROJECT_ID}/docs/       (optional — project-level documentation)
+  examples/{PROJECT_ID}/cc-archive/ (optional — Claude Code session logs)
 
-Generate YAML skeleton files in config/ for each selected stage.
+Create one placeholder in paper/ to mark it:
+
+  examples/{PROJECT_ID}/paper/.gitkeep
+
+Create tasks/INDEX.md — the mandatory global task index for this project:
+
+  examples/{PROJECT_ID}/tasks/INDEX.md
+
+Content:
+
+```markdown
+# tasks/INDEX.md — {PROJECT_ID}
+# Last updated: {YYMMDD}
+# Purpose: global task index. Claude reads this before creating any new task
+# folder to check for reuse. One row per task subfolder in tasks/.
+
+| Task | Data | Stage | Description | Status |
+|------|------|-------|-------------|--------|
+| (task folders will be added here as they are created) | | | | |
+```
+
+Create the first task folder to hold pipeline config YAML files.
+Task name: use clean snake_case — no sequence numbers, no date prefix.
+Pick a name that reflects the first thing the project will do, e.g.
+cook_source, cook_record, cook_modelinstance, etc.
+
+First task folder structure (example: cook_modelinstance):
+
+  examples/{PROJECT_ID}/tasks/cook_modelinstance/
+  examples/{PROJECT_ID}/tasks/cook_modelinstance/cook_modelinstance.py
+  examples/{PROJECT_ID}/tasks/cook_modelinstance/config/
+  examples/{PROJECT_ID}/tasks/cook_modelinstance/runs/
+  examples/{PROJECT_ID}/tasks/cook_modelinstance/results/
+  examples/{PROJECT_ID}/tasks/cook_modelinstance/INDEX.md
+
+Generate YAML skeleton files in that task's config/ for each selected stage.
 Use the templates below. Replace {dataset} with the dataset name from Q6,
 {name} with the model name from Q9.
 
@@ -109,55 +143,30 @@ EvaluationArgs:
   # TODO: evaluation settings
 ```
 
-Create the docs/ directory and TODO.md planning tracker:
+When additional tasks are created later and need the same configs, they
+symlink back to the owning task rather than duplicating files:
 
-  examples/{PROJECT_ID}/docs/TODO.md
+  cd examples/{PROJECT_ID}/tasks/eval_main_table/
+  ln -s ../cook_modelinstance/config config
 
-Populate TODO.md using the template from ref/project-structure.md,
-filling in PROJECT_ID, YYMMDD, dataset names, stage selections from Q5-Q9,
-and marking stages not selected as n/a.
+Create the task-level INDEX.md inside the first task folder:
 
-Create scripts/INDEX.md — the mandatory global task index for this project:
-
-  examples/{PROJECT_ID}/scripts/INDEX.md
+  examples/{PROJECT_ID}/tasks/cook_modelinstance/INDEX.md
 
 Content:
 
 ```markdown
-# scripts/INDEX.md — {PROJECT_ID}
+# cook_modelinstance/INDEX.md — {PROJECT_ID}
 # Last updated: {YYMMDD}
-# Purpose: global task index. Claude reads this before creating any new task
-# folder to check for reuse. One row per task subfolder in scripts/.
 
-| Task | Data | Stage | Description | Status |
-|------|------|-------|-------------|--------|
-| (task folders will be added here as they are created) | | | | |
+| File | Description | Status |
+|------|-------------|--------|
+| cook_modelinstance.py | Main task script | stub |
 ```
 
-Do NOT create nb/ at scaffold time — it is optional and created only when the user
-adds a demo notebook. However, if the user explicitly requests demo notebooks during
-Q5 (scope), create nb/ and nb/INDEX.md now:
+Add a row for this task to tasks/INDEX.md:
 
-  examples/{PROJECT_ID}/nb/INDEX.md
-
-Content for nb/INDEX.md (when created at scaffold):
-
-```markdown
-# nb/INDEX.md -- {PROJECT_ID}
-# Last updated: {YYMMDD}
-# Purpose: track pipeline demo notebooks by stages covered, input, and output.
-# Claude reads this in fn-organize Phase 2e to detect coverage gaps.
-# Plan doc: docs/nb-plan.md
-# Workflow: .py (source) -> .ipynb (interactive). The .py is the source of truth.
-
-| Script (.py) | Notebook (.ipynb) | Stages | Input | Output | Status |
-|--------------|-------------------|--------|-------|--------|--------|
-| (planned) | -- | S1→S2 | {dataset} source records | RecordStore | planned |
-```
-
-Replace the placeholder row(s) with entries matching the stages selected in Q5.
-Add one planned row per adjacent stage pair the project will use.
-If no demo notebooks are requested, skip nb/ entirely.
+  | cook_modelinstance | {dataset} | 5 | Cook model instance for {name} | stub |
 
 ---
 
@@ -170,7 +179,7 @@ Skip this step entirely if both Q7 and Q8 answered NO.
 
 For each stage the user flagged as needing a new Fn, create TWO things:
   (a) a stub builder in code-dev/
-  (b) a paired example script in examples/{PROJECT_ID}/scripts/
+  (b) a paired example task in examples/{PROJECT_ID}/tasks/
 
 Builder stubs:
 
@@ -193,10 +202,15 @@ Builder stub content (same pattern for all):
 ```
 
 Auto-generated example task for Stage N Fn:
-  Task name: example_{dataset}_stage{N}_fn
-  Dir:  examples/{PROJECT_ID}/scripts/example_{dataset}_stage{N}_fn/
-  File: examples/{PROJECT_ID}/scripts/example_{dataset}_stage{N}_fn/example_{dataset}_stage{N}_fn.py
-  Also create: runs/ and results/ subdirectories inside the task folder.
+  Task name: example_{dataset}_stage{N}_fn   (clean snake_case, no seq numbers)
+  Dir:  examples/{PROJECT_ID}/tasks/example_{dataset}_stage{N}_fn/
+  Files inside the task folder:
+    example_{dataset}_stage{N}_fn.py          (main task script)
+    INDEX.md                                  (task-level index)
+    config/                                   -> symlink to owning task if configs already exist,
+                                                 otherwise create config/ with relevant YAML
+    runs/                                     (parameterized notebook runs)
+    results/                                  (output artifacts)
 
 ```python
 # Example: {dataset} Stage {N} Fn — {PROJECT_ID}
@@ -221,7 +235,7 @@ SPACE = setup_workspace()
 # print(output)
 ```
 
-Add this task to scripts/INDEX.md:
+Add this task to tasks/INDEX.md:
 
   | example_{dataset}_stage{N}_fn | {dataset} | {N} | Example usage of Stage {N} Fn | stub |
 
@@ -235,7 +249,7 @@ Check code/INDEX.md (read it first if it exists):
 
 **A2 — ML model stubs (if Q8 = YES)**
 
-Create stub files in code/hainn/ AND a paired example script:
+Create stub files in code/hainn/ AND a paired example task:
 
   code/hainn/algo/{family}/algorithm_{name}.py
   code/hainn/tuner/{family}/tuner_{name}.py
@@ -270,10 +284,15 @@ class {NameCamelCase}Instance:
 ```
 
 Auto-generated example task for the new model:
-  Task name: example_{name}_model
-  Dir:  examples/{PROJECT_ID}/scripts/example_{name}_model/
-  File: examples/{PROJECT_ID}/scripts/example_{name}_model/example_{name}_model.py
-  Also create: runs/ and results/ subdirectories inside the task folder.
+  Task name: example_{name}_model   (clean snake_case, no seq numbers)
+  Dir:  examples/{PROJECT_ID}/tasks/example_{name}_model/
+  Files inside the task folder:
+    example_{name}_model.py                   (main task script)
+    INDEX.md                                  (task-level index)
+    config/                                   -> symlink to owning task if configs already exist,
+                                                 otherwise create config/ with relevant YAML
+    runs/                                     (parameterized notebook runs)
+    results/                                  (output artifacts)
 
 ```python
 # Example: {name} model — {PROJECT_ID}
@@ -304,7 +323,7 @@ SPACE = setup_workspace()
 # print(results)
 ```
 
-Add this task to scripts/INDEX.md:
+Add this task to tasks/INDEX.md:
 
   | example_{name}_model | {dataset} | 5 | Example usage of {name} model | stub |
 
@@ -328,30 +347,44 @@ Project Created: {PROJECT_ID}
 ========================
 
 Track B — examples/
-  examples/{PROJECT_ID}/cc-archive/                    [created]
-  examples/{PROJECT_ID}/config/                        [created]
-    1_source_{dataset}.yaml                            [skeleton]
-    ...
-  examples/{PROJECT_ID}/scripts/                       [created, task-folder layout]
-    INDEX.md                                           [created, global task index]
-    example_{name}/                                    [auto-generated task per stub]
-      example_{name}.py
+  examples/{PROJECT_ID}/tasks/                       [created, task-folder layout]
+    INDEX.md                                         [created, global task index]
+    cook_modelinstance/                              [first task — owns config YAMLs]
+      cook_modelinstance.py                          [stub]
+      config/                                        [YAML skeletons for selected stages]
+        1_source_{dataset}.yaml                      [skeleton]
+        ...
+      runs/                                          [for parameterized .ipynb runs]
+      results/                                       [output artifacts]
+      INDEX.md                                       [task-level index]
+    example_{name}/                                  [auto-generated task per stub]
+      example_{name}.py                              [stub]
+      config/  -> ../cook_modelinstance/config       [symlink to owning task]
       runs/
       results/
-  examples/{PROJECT_ID}/docs/                          [created]
-    TODO.md                                            [created, pre-filled]
-  examples/{PROJECT_ID}/nb/                            [created with INDEX.md] or [skipped — add when demos needed]
+      INDEX.md
+  examples/{PROJECT_ID}/paper/                       [created, mandatory]
+  examples/{PROJECT_ID}/docs/                        [created] or [skipped — add when needed]
+  examples/{PROJECT_ID}/cc-archive/                  [created] or [skipped — add when needed]
 
 Track A — code/ (if applicable)
-  code-dev/1-PIPELINE/...                              [stubs created] or [skipped]
-  code/hainn/...                                       [stubs created] or [skipped]
+  code-dev/1-PIPELINE/...                            [stubs created] or [skipped]
+  code/hainn/...                                     [stubs created] or [skipped]
+
+Task folder layout (each task in tasks/):
+  {task}.py          main script (source of truth)
+  {task}.ipynb       optional demo notebook
+  config/            YAML configs (owned or symlinked)
+  runs/              parameterized runs as {variant}.ipynb
+  results/           output artifacts
+  INDEX.md           task-level file index
 
 Next steps:
   1. Fill in the TODO fields in config/ YAML files.
-  2. Open scripts/INDEX.md to see all auto-generated example scripts.
+  2. Open tasks/INDEX.md to see all auto-generated example tasks.
   3. Run /haipipe-data design-chef {stage} to implement pipeline Fns (if Track A).
   4. Run /haipipe-nn to implement ML model (if Track A A2).
-  5. Update example scripts from "stub" to "wip" as implementation progresses.
+  5. Update example tasks from "stub" to "wip" as implementation progresses.
   6. Save this session with /cc-session-summary -> cc-archive/.
 ```
 
@@ -362,8 +395,8 @@ Checkpoints
 
 Print these at the end of Step 4 (verbatim — no extra analysis needed):
 
-  [CH-2] scripts/INDEX.md in sync?
-  "Quick check: does scripts/INDEX.md have a row for every task subfolder?
+  [CH-2] tasks/INDEX.md in sync?
+  "Quick check: does tasks/INDEX.md have a row for every task subfolder?
    Does each {task}/INDEX.md exist with at least a stub row? Are all status
    values (stub / wip / done) current?"
 
@@ -384,4 +417,5 @@ MUST NOT
 - Do NOT generate actual implementation in stub files — stubs only.
 - Do NOT run any pipeline commands during scaffolding.
 - Do NOT create CLAUDE.md inside the project folder (not part of the standard).
-- Do NOT create notebooks (.ipynb) inside scripts/ — they belong in nb/ (not cc-archive).
+- Do NOT create notebooks (.ipynb) at scaffold time — they are added later
+  as {task}.ipynb (demo) or runs/{variant}.ipynb (parameterized) inside task folders.

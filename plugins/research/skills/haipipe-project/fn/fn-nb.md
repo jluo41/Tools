@@ -1,423 +1,101 @@
-fn-nb: Guided Demo Notebook Creation (Python-First)
-=====================================================
+fn-nb: Create Notebook Inside a Task Folder
+=============================================
 
-Creates a demo notebook for a specific pipeline stage segment using the
-**Python-first** workflow: write a cell-wise .py script (source of truth),
-then convert to .ipynb for interactive use.
+Creates a notebook for a specific task within a project. Notebooks live
+**inside task folders**, not in a separate nb/ directory. The .py script
+is ALWAYS the source of truth; .ipynb is derived from it via jupytext.
 
-This follows the notebook-cell-python skill pattern:
-  .py (source) -> .ipynb (interactive) -> .md (optional export)
-See: Tools/plugins/research/skills/notebook-cell-python/SKILL.md
+Two notebook types:
 
-The notebook demonstrates one segment of the data flow end-to-end:
-load the input asset from the previous stage's store, run the relevant
-pipeline Fn(s), and inspect the output before it moves to the next stage.
+  **Demo notebook** -- {task}.ipynb at the task root.
+    Derived from {task}.py. Same logic, just interactive.
+    One per task. Demonstrates the task end-to-end.
+
+  **Parameterized run notebook** -- runs/{variant}.ipynb inside the task folder.
+    Has specific config/params baked in for a particular experiment variant.
+    Multiple allowed per task. Each lives under {task}/runs/.
+
+Conversion command (always):
+  jupytext --to notebook {task}.py -o {task}.ipynb
 
 Writes to:
-  ALLOWED    nb/                          (create folder if missing)
-  ALLOWED    nb/INDEX.md                  (create or update)
-  ALLOWED    nb/{name}.py                 (create — source of truth)
-  ALLOWED    nb/{name}.ipynb              (convert from .py)
-  ALLOWED    docs/nb-plan.md              (create or append section)
-  BLOCKED    config/                      (read only)
-  BLOCKED    code/                        (read only)
-  BLOCKED    scripts/                     (read only — nb is separate from scripts)
+  ALLOWED    {task}/{task}.ipynb              (demo notebook, converted from .py)
+  ALLOWED    {task}/runs/{variant}.py         (parameterized run script)
+  ALLOWED    {task}/runs/{variant}.ipynb      (converted from run .py)
+  ALLOWED    {task}/INDEX.md                  (update if run notebook created)
+  BLOCKED    config/                          (read only)
+  BLOCKED    code/                            (read only)
 
 ---
 
-Step 0: Identify the Target Project
-=====================================
+Step 1: Identify the Target Task
+==================================
 
-Use the same auto-detection logic as fn-review.md Step 0:
-  1. Check git status for recently modified files under examples/
-  2. Find most recently modified project if ambiguous
-  3. List all Proj* directories and ask user to pick if still unclear
+Auto-detect or accept user specification:
+
+  1. If the user names a task explicitly, use it.
+  2. Otherwise, check git status for recently modified files under examples/.
+     Look for task folders (directories containing a .py script of the same name).
+  3. If ambiguous, list candidate task folders and ask the user to pick.
 
 Set:
   PROJECT_PATH = examples/{PROJECT_ID}/
-  PROJECT_ID   = basename of that path
+  TASK_PATH    = path to the task folder (e.g., examples/{PROJECT_ID}/{task}/)
+  TASK_NAME    = basename of the task folder
+
+Confirm the task folder contains {TASK_NAME}.py (the source script).
+If it does not exist, stop and report:
+  "No {TASK_NAME}.py found in {TASK_PATH}. The .py script must exist first."
 
 ---
 
-Step 1: Identify the Target Segment
+Step 2: Determine Notebook Type
+=================================
+
+Ask the user which type of notebook to create:
+
+  "What kind of notebook for task '{TASK_NAME}'?
+   (a) **Demo notebook** -- {TASK_NAME}.ipynb at task root (from {TASK_NAME}.py)
+   (b) **Parameterized run** -- runs/{variant}.ipynb with specific config baked in"
+
+If the user says "demo" or (a):
+  Set: NB_TYPE = demo
+  Set: SOURCE_PY   = {TASK_PATH}/{TASK_NAME}.py
+  Set: TARGET_IPYNB = {TASK_PATH}/{TASK_NAME}.ipynb
+
+If the user says "run" or (b):
+  Ask for a variant name and the specific params/config to bake in.
+  Set: NB_TYPE = run
+  Set: VARIANT = user-provided name (e.g., "baseline_lr1e3", "ablation_no_fair")
+  Set: SOURCE_PY   = {TASK_PATH}/runs/{VARIANT}.py
+  Set: TARGET_IPYNB = {TASK_PATH}/runs/{VARIANT}.ipynb
+
+If a demo .ipynb already exists at the target path:
+  Warn: "{TARGET_IPYNB} already exists. Overwrite? (yes/no)"
+  Proceed only if the user confirms.
+
+---
+
+Step 3: Create the Notebook (Demo)
 =====================================
 
-Determine active stages (no re-scan):
-  Check docs/data-map.md first — it lists declared stages and FnClasses.
-  Fallback: read config/ YAML filenames if docs/data-map.md is absent.
+For NB_TYPE = demo:
 
-Ask the user which pipeline segment the notebook should cover:
-
-  "Which stage transition should this notebook demo?
-   Active stages: {list from data-map.md or config/}
-   Options: {e.g., S1→S2, S2→S3, S3→S4, S4→S5}
-   Or: cover multiple adjacent stages in one notebook."
-
-If the user specifies a segment (e.g., "S2 to S3"), parse it as:
-  SEGMENT_IN  = S{N}   (the stage whose output is the notebook's input)
-  SEGMENT_OUT = S{N+1} (the stage the notebook runs or demonstrates)
-  SEGMENT_KEY = S{N}→S{N+1}
-  DATASET     = inferred from config/ YAML filenames for SEGMENT_OUT
-
-Check nb/INDEX.md (if it exists) for an existing or planned row matching
-this segment:
-  - Existing done/wip row -> warn: "A notebook for this segment already
-    exists ({filename}, status={status}). Create another? (yes/no)"
-  - Planned row -> proceed: this flow creates the planned notebook.
-  - No row -> proceed: new notebook.
-
----
-
-Step 2: Ensure nb/ and nb/INDEX.md Exist
-==========================================
-
-If nb/ does not exist:
-  Create: examples/{PROJECT_ID}/nb/
-
-If nb/INDEX.md does not exist:
-  Create nb/INDEX.md with the standard header and an empty table:
-
-  ```markdown
-  # nb/INDEX.md -- {PROJECT_ID}
-  # Last updated: {YYMMDD}
-  # Purpose: track pipeline demo notebooks by stages covered, input, and output.
-  # Claude reads this in fn-organize Phase 2e to detect coverage gaps.
-  # Plan doc: docs/nb-plan.md
-  # Workflow: .py (source) -> .ipynb (interactive). The .py is the source of truth.
-
-  | Script (.py) | Notebook (.ipynb) | Stages | Input | Output | Status |
-  |--------------|-------------------|--------|-------|--------|--------|
-  ```
-
----
-
-Step 3: Determine Filenames
-=====================================
-
-Assign seq = next available 3-digit number in nb/ (scan existing .py and .ipynb filenames).
-Compose the base stem, then derive both filenames:
-
-  STEM = {seq}_{YYMMDD}_demo_s{N}_to_s{N+1}_{dataset}
-
-  SCRIPT_FILE   = {STEM}.py       <- source of truth
-  NOTEBOOK_FILE = {STEM}.ipynb    <- converted from .py
-
-  Examples:
-    001_260315_demo_s1_to_s2_cvs2023.py   / .ipynb
-    002_260320_demo_s2_to_s3_cvs2023.py   / .ipynb
-
-Ask the user to confirm or provide a custom name before creating.
-
-Set: STEM, SCRIPT_FILE, NOTEBOOK_FILE
-
----
-
-Step 4: Create/Update docs/nb-plan.md
-========================================
-
-docs/nb-plan.md is the shared planning reference for all demo notebooks
-in this project. It is linked from every notebook's opening cell so the
-user and Claude always have a structured reference for what each notebook
-should demonstrate.
-
-Collect the following information without re-scanning the codebase.
-Use this priority order -- stop at the first source that provides the field:
-
-  Priority 1 -- docs/data-map.md (if it exists):
-    Read it for: declared stages, FnClass names per stage, input/output
-    asset names and store keys. This doc is generated by fn-review.md and
-    is the authoritative resolved reference -- prefer it over config/ YAMLs.
-
-  Priority 2 -- docs/dependency-report.md (if it exists):
-    Read it for: FnClass details, cross-project reuse notes, any known
-    implementation gaps flagged during review.
-
-  Priority 3 -- docs/nb-plan.md (if it exists and has a section for SEGMENT_KEY):
-    If a section already exists for this segment, read it as the baseline
-    and only ask the user about fields marked TODO or missing.
-
-  Priority 4 -- config/ YAMLs (fallback only if the above docs are absent):
-    Read the YAML for SEGMENT_OUT stage to extract FnClass name and args.
-
-  Ask the user only for fields that could not be resolved from any of the
-  above sources:
-
-  PURPOSE          What this notebook is meant to show
-  INPUT_ASSET      Which store/asset is loaded as input (name, version pattern)
-  INPUT_SCHEMA     Key columns and data types expected in the input
-  OUTPUT_ASSET     Which store/asset is produced (name, version pattern)
-  OUTPUT_SCHEMA    Key columns and data types expected in the output
-  FN_CLASSES       FnClass name(s) applied in this segment
-  KEY_OBSERVATIONS What the user should look for in the output
-  EXPECTED_PLOTS   What visualizations are expected if output is not tabular
-  NOTES            Any caveats, known issues, or TODOs
-
-If docs/nb-plan.md does not exist, create it with a header:
-
-  ```markdown
-  # nb-plan -- {PROJECT_ID}
-  # Last updated: {YYMMDD}
-  # Purpose: planning reference for all pipeline demo notebooks in this project.
-  # Each section corresponds to one notebook in nb/.
-  ```
-
-Append a new section for this notebook (or update the existing section if
-one already exists for SEGMENT_KEY):
-
-  ```markdown
-  ---
-
-  ## {SEGMENT_KEY} -- {STEM}
-  Created: {YYMMDD}
-  Dataset: {DATASET}
-
-  **Purpose**
-  {PURPOSE}
-
-  **Input**
-  - Asset: {INPUT_ASSET}
-  - Key columns: {INPUT_SCHEMA}
-
-  **Output**
-  - Asset: {OUTPUT_ASSET}
-  - Key columns: {OUTPUT_SCHEMA}
-
-  **Functions applied**
-  - {FN_CLASSES}  (from config/{stage_yaml})
-
-  **Key things to observe**
-  {KEY_OBSERVATIONS}
-
-  **Expected visualizations**
-  {EXPECTED_PLOTS}
-
-  **Notes / TODO**
-  {NOTES}
-  ```
-
-Report: "docs/nb-plan.md updated with section for {SEGMENT_KEY}."
-
----
-
-Step 5: Generate the Cell-Wise Python Script
-==============================================
-
-Create nb/{SCRIPT_FILE} as a cell-wise Python script using `# %%` markers.
-This is the **source of truth** -- the .ipynb is derived from it.
-
-Follow the notebook-cell-python skill conventions:
-  - `# %%` for code cells
-  - `# %% [markdown]` for markdown cells (content as `# ` prefixed lines)
-  - Script must be runnable standalone: `python nb/{SCRIPT_FILE}`
-  - No notebook-specific magic commands
-
----------------------------------------------------------------------
-Cell 1  [markdown]  -- Title + Plan Reference
----------------------------------------------------------------------
-
-  # %% [markdown]
-  # # Demo: {SEGMENT_KEY} -- {PROJECT_ID}
-  # **Dataset:** {DATASET}
-  # **Created:** {YYMMDD}
-  #
-  # **Plan doc:** docs/nb-plan.md -- {SEGMENT_KEY} section
-  #
-  # This notebook demonstrates the {SEGMENT_KEY} pipeline segment end-to-end:
-  # load {INPUT_ASSET}, apply {FN_CLASSES}, and inspect {OUTPUT_ASSET}.
-
----------------------------------------------------------------------
-Cell 2  [code]  -- Imports, Domain Variables, Environment Check
----------------------------------------------------------------------
-
-  # %% Imports, Domain Variables, Environment Check
-  import os
-  import pandas as pd
-  import matplotlib.pyplot as plt
-  from haipipe.base import setup_workspace
-  # from haifn.fn_{layer}.{fn_module} import {FnClassName}  # uncomment after builder runs
-
-  # Domain variables
-  DATASET   = '{DATASET}'
-  SEGMENT   = '{SEGMENT_KEY}'
-  VERSION   = '@v0001-{DATASET}'   # adjust if using a different version
-
-  # Workspace paths
-  SPACE = setup_workspace()
-  print("Workspace paths:")
-  for k, v in SPACE.items():
-      print(f"  {k}: {v}")
-
-  # Confirm input store exists
-  INPUT_STORE = SPACE['{input_store_key}']
-  assert os.path.exists(INPUT_STORE), f"Input store not found: {INPUT_STORE}"
-  print(f"\nInput store confirmed: {INPUT_STORE}")
-
-  # Config reference
-  import yaml
-  with open('../config/{stage_yaml}') as f:
-      cfg = yaml.safe_load(f)
-  print(f"\nConfig ({stage_yaml}):")
-  for k, v in cfg.items():
-      print(f"  {k}: {v}")
-
----------------------------------------------------------------------
-Cell 3  [code]  -- Load Input Data
----------------------------------------------------------------------
-
-  # %% Load Input Data
-  # Load {INPUT_ASSET} from {SEGMENT_IN} store
-  # Use sample=True / n_rows=1000 for exploration; set False for full load
-  # {InputSetClass} = the Set class for stage {N} output
-
-  # input_set = {InputSetClass}.load_asset(SPACE, name=DATASET, version=VERSION)
-  # df_input = input_set.to_dataframe()   # or equivalent accessor
-
-  print(f"Loaded: {len(df_input):,} rows x {df_input.shape[1]} columns")
-
----------------------------------------------------------------------
-Cell 4  [code]  -- Display Table Sample
----------------------------------------------------------------------
-
-  # %% Display Table Sample
-  # Show a representative sample of the input
-  df_input.head(10)
-
----------------------------------------------------------------------
-Cell 5  [code]  -- Describe Input Data
----------------------------------------------------------------------
-
-  # %% Describe Input Data
-  print("=== Shape ===")
-  print(df_input.shape)
-
-  print("\n=== Columns & dtypes ===")
-  print(df_input.dtypes)
-
-  print("\n=== Null counts ===")
-  print(df_input.isnull().sum())
-
-  print("\n=== Basic stats ===")
-  df_input.describe(include='all')
-
----------------------------------------------------------------------
-Cell 6  [markdown]  -- Applying Pipeline Functions
----------------------------------------------------------------------
-
-  # %% [markdown]
-  # ## Applying {FN_CLASSES}
-  #
-  # This cell runs the {SEGMENT_OUT} stage Fn on the input data.
-  # See plan doc for expected output schema and key things to observe.
-
----------------------------------------------------------------------
-Cell 7  [code]  -- Apply Pipeline Fn(s)
----------------------------------------------------------------------
-
-  # %% Apply Pipeline Fn(s)
-  # fn = {FnClassName}()
-  # output_set = fn.run(input_set)
-  # df_output = output_set.to_dataframe()   # or equivalent accessor
-
-  print(f"Output: {len(df_output):,} rows x {df_output.shape[1]} columns")
-
----------------------------------------------------------------------
-Cell 8  [code]  -- Display Output
----------------------------------------------------------------------
-
-  # %% Display Output
-  # If output is tabular and meaningful as a table:
-  df_output.head(10)
-
-  # If output is distributional or not directly readable as a table,
-  # use plots instead:
-  #
-  # fig, axes = plt.subplots(1, 2, figsize=(12, 4))
-  # df_output['{key_column}'].hist(ax=axes[0], bins=30)
-  # axes[0].set_title('{key_column} distribution')
-  # df_output['{other_column}'].value_counts().plot(kind='bar', ax=axes[1])
-  # axes[1].set_title('{other_column} counts')
-  # plt.tight_layout()
-  # plt.show()
-
----------------------------------------------------------------------
-Cell 9  [code]  -- Sanity Checks
----------------------------------------------------------------------
-
-  # %% Sanity Checks
-  # Basic invariants -- adjust thresholds to match expected output
-  assert len(df_output) > 0, "Output is empty"
-  assert '{expected_key_column}' in df_output.columns, "Missing expected column"
-  assert df_output['{expected_key_column}'].isnull().sum() == 0, \
-      "Nulls found in key column"
-
-  print("Sanity checks passed.")
-
----------------------------------------------------------------------
-Cell 10  [code]  -- Store Output and Save Figures
----------------------------------------------------------------------
-
-  # %% Store Output and Save Figures
-  # Store the output set following pipeline conventions
-  # output_set.save_asset(SPACE, name=DATASET, version=VERSION)
-  # print(f"Saved: {output_set.asset_path(SPACE, name=DATASET, version=VERSION)}")
-
-  # Save any figures produced in Cell 8
-  # fig.savefig(f"../results/{STEM}/{key_column}_dist.png", dpi=150)
-
----------------------------------------------------------------------
-Cell 11  [code]  -- Verify Saved Output
----------------------------------------------------------------------
-
-  # %% Verify Saved Output
-  # Confirm the saved asset is readable
-  # reloaded = {OutputSetClass}.load_asset(SPACE, name=DATASET, version=VERSION)
-  # print(f"Verified: {len(reloaded.to_dataframe()):,} rows reloaded from store")
-  # print(f"Asset path: {reloaded.asset_path(SPACE, name=DATASET, version=VERSION)}")
-
----------------------------------------------------------------------
-Cell 12  [markdown]  -- Summary
----------------------------------------------------------------------
-
-  # %% [markdown]
-  # ## Summary
-  #
-  # **Input:**  {INPUT_ASSET} -- {row count} rows, {col count} columns
-  # **Output:** {OUTPUT_ASSET} -- {row count} rows, {col count} columns
-  #
-  # **Observations:**
-  # - (fill in after running)
-  #
-  # **Next stage:** {SEGMENT_OUT+1 or "end of pipeline"}
-  # See: nb/INDEX.md for all demo notebooks in this project.
-
----
-
-Fill in all {placeholders} using the values collected in Step 4 and the
-config/ YAMLs. Leave commented-out code blocks as-is -- the user fills them
-in after the relevant Fns are implemented.
-
----
-
-Step 6: Convert .py to .ipynb
-================================
-
-Convert nb/{SCRIPT_FILE} to nb/{NOTEBOOK_FILE} using jupytext.
-
-Preferred method (jupytext):
+The source script {TASK_NAME}.py already exists -- it IS the source of truth.
+Convert it directly to .ipynb:
 
   ```bash
   source .venv/bin/activate
-  jupytext --to notebook nb/{SCRIPT_FILE} -o nb/{NOTEBOOK_FILE}
+  jupytext --to notebook {SOURCE_PY} -o {TARGET_IPYNB}
   ```
 
 If jupytext is not installed, fall back to the NotebookEdit tool:
-  Use the NotebookEdit tool to create the .ipynb by reading each `# %%`
-  cell from the .py and writing corresponding notebook cells.
+  Read each `# %%` cell from the .py and write corresponding notebook cells.
 
 After conversion, verify:
 
   ```bash
-  python -c "import json; nb=json.load(open('nb/{NOTEBOOK_FILE}')); print(f'Cells: {len(nb[\"cells\"])}')"
+  python -c "import json; nb=json.load(open('{TARGET_IPYNB}')); print(f'Cells: {len(nb[\"cells\"])}')"
   ```
 
 The .py remains the source of truth. If edits are needed later, edit the
@@ -425,58 +103,151 @@ The .py remains the source of truth. If edits are needed later, edit the
 
 ---
 
-Step 7: Update nb/INDEX.md
-============================
+Step 4: Create the Notebook (Parameterized Run)
+=================================================
 
-Add or update the row for this notebook in nb/INDEX.md.
+For NB_TYPE = run:
 
-If a planned row for this segment already exists: update in place,
-replacing "(planned)" with the filenames and status with "wip".
+4a. Ensure the runs/ directory exists:
+  Create {TASK_PATH}/runs/ if it does not exist.
 
-If no row exists: append:
+4b. Create the parameterized .py script:
+  Create {SOURCE_PY} as a cell-wise Python script using `# %%` markers.
+  Base it on {TASK_NAME}.py but with specific params/config baked in.
 
-  | {SCRIPT_FILE} | {NOTEBOOK_FILE} | {SEGMENT_KEY} | {INPUT_ASSET} | {OUTPUT_ASSET} | wip |
+  The script should:
+  - Import the same modules as the parent task script
+  - Override specific config values with the baked-in params
+  - Be runnable standalone: `python {SOURCE_PY}`
+  - Follow the notebook-cell-python skill conventions:
+      `# %%` for code cells
+      `# %% [markdown]` for markdown cells (content as `# ` prefixed lines)
 
-Sensible defaults for Input/Output if not explicit in config/:
-  S1 input  -> raw source data / ExternalStore
-  S1 output -> SourceStore
-  S2 input  -> SourceStore
-  S2 output -> RecordStore
-  S3 input  -> RecordStore
-  S3 output -> CaseStore
-  S4 input  -> CaseStore
-  S4 output -> AIDataStore
-  S5 input  -> AIDataStore
-  S5 output -> ModelInstance / predictions
+  Typical cell structure:
+
+  ---------------------------------------------------------------------
+  Cell 1  [markdown]  -- Title + Variant Description
+  ---------------------------------------------------------------------
+
+    # %% [markdown]
+    # # Run: {VARIANT} -- {TASK_NAME}
+    # **Project:** {PROJECT_ID}
+    # **Created:** {YYMMDD}
+    #
+    # **Variant description:** {user-provided description}
+    # **Key params:** {param1}={val1}, {param2}={val2}, ...
+    #
+    # Based on: ../{TASK_NAME}.py
+
+  ---------------------------------------------------------------------
+  Cell 2  [code]  -- Config Overrides
+  ---------------------------------------------------------------------
+
+    # %% Config Overrides
+    # These params differ from the default {TASK_NAME}.py
+    {PARAM_1} = {VALUE_1}
+    {PARAM_2} = {VALUE_2}
+    # ... (all baked-in overrides listed explicitly)
+
+  ---------------------------------------------------------------------
+  Remaining cells  -- Adapted from {TASK_NAME}.py
+  ---------------------------------------------------------------------
+
+    Copy the relevant logic from {TASK_NAME}.py, substituting the
+    overridden params where they appear. Keep the same cell structure
+    but with the specific config values applied.
+
+  Fill in all {placeholders} using the values collected from the user
+  and from the parent task script.
+
+4c. Convert the .py to .ipynb:
+
+  ```bash
+  source .venv/bin/activate
+  jupytext --to notebook {SOURCE_PY} -o {TARGET_IPYNB}
+  ```
+
+  If jupytext is not installed, fall back to the NotebookEdit tool.
+
+4d. Verify:
+
+  ```bash
+  python -c "import json; nb=json.load(open('{TARGET_IPYNB}')); print(f'Cells: {len(nb[\"cells\"])}')"
+  ```
 
 ---
 
-Step 8: Report to User
+Step 5: Update Task INDEX.md (Run Notebooks Only)
+===================================================
+
+If NB_TYPE = run, update {TASK_PATH}/INDEX.md to record the new run notebook.
+
+If {TASK_PATH}/INDEX.md does not exist, skip this step (do not create one
+just for a run notebook -- INDEX.md is managed by other flows).
+
+If it exists, append or update a line in the runs section:
+
+  | runs/{VARIANT}.py | runs/{VARIANT}.ipynb | {description} | {YYMMDD} | wip |
+
+If NB_TYPE = demo, no INDEX.md update is needed -- the demo notebook is
+a direct derivative of the task script and needs no separate tracking.
+
+---
+
+Step 6: Report to User
 ========================
 
-Print:
+For NB_TYPE = demo, print:
 
   ```
-  Notebook Created: {STEM}
+  Demo Notebook Created
   ===================================
-  Project:   {PROJECT_ID}
-  Segment:   {SEGMENT_KEY}
-  Script:    nb/{SCRIPT_FILE}     (source of truth)
-  Notebook:  nb/{NOTEBOOK_FILE}   (converted from .py)
-  Plan doc:  docs/nb-plan.md      (section: {SEGMENT_KEY})
-
-  nb/INDEX.md:    row added/updated for {SEGMENT_KEY}
-  docs/nb-plan.md: section added/updated for {SEGMENT_KEY}
+  Project:     {PROJECT_ID}
+  Task:        {TASK_NAME}
+  Source:      {SOURCE_PY}          (source of truth)
+  Notebook:    {TARGET_IPYNB}       (converted from .py)
 
   Next steps:
-    1. Read docs/nb-plan.md #{SEGMENT_KEY} for what to implement.
-    2. Edit nb/{SCRIPT_FILE} and fill in the commented-out code cells.
-    3. Re-convert: jupytext --to notebook nb/{SCRIPT_FILE} -o nb/{NOTEBOOK_FILE}
-    4. Open nb/{NOTEBOOK_FILE} and run all cells top-to-bottom.
-    5. Fix any assertion failures in the Sanity Checks cell.
-    6. Update nb/INDEX.md status from 'wip' to 'done' when complete.
-    7. Run /haipipe-project organize to verify full notebook coverage.
+    1. Open {TARGET_IPYNB} and run all cells top-to-bottom.
+    2. If edits are needed, edit {SOURCE_PY} and re-convert:
+       jupytext --to notebook {SOURCE_PY} -o {TARGET_IPYNB}
+    3. Never edit the .ipynb directly.
   ```
+
+For NB_TYPE = run, print:
+
+  ```
+  Parameterized Run Notebook Created
+  ===================================
+  Project:     {PROJECT_ID}
+  Task:        {TASK_NAME}
+  Variant:     {VARIANT}
+  Source:      {SOURCE_PY}          (source of truth)
+  Notebook:    {TARGET_IPYNB}       (converted from .py)
+  Key params:  {param1}={val1}, {param2}={val2}, ...
+
+  Task INDEX.md: {updated / not present, skipped}
+
+  Next steps:
+    1. Review {SOURCE_PY} to confirm baked-in params are correct.
+    2. Open {TARGET_IPYNB} and run all cells top-to-bottom.
+    3. If edits are needed, edit {SOURCE_PY} and re-convert:
+       jupytext --to notebook {SOURCE_PY} -o {TARGET_IPYNB}
+    4. Never edit the .ipynb directly.
+  ```
+
+---
+
+CHECKPOINT HINTS
+-----------------
+
+After completing this flow, the agent should be able to answer:
+
+  [x] Which task folder was targeted?
+  [x] What type of notebook was created (demo or parameterized run)?
+  [x] Where does the .py source live? Where does the .ipynb live?
+  [x] For runs: what params were baked in? Is the variant recorded in INDEX.md?
+  [x] Is the .ipynb valid JSON with the expected number of cells?
 
 ---
 
@@ -484,8 +255,8 @@ MUST NOT
 ---------
 
 - Do NOT edit the .ipynb directly -- edit the .py and re-convert.
-- Do NOT move or modify files in config/, code/, or scripts/.
+- Do NOT create notebooks in a separate nb/ folder -- they live in task folders.
+- Do NOT move or modify files in config/ or code/.
 - Do NOT run any pipeline commands (haistep-*, train, evaluate).
-- Do NOT create results/ entries for notebooks -- notebooks are demos, not experiments.
 - Do NOT fill in implementation details in commented-out code cells --
-  leave them as stubs for the user to complete after the Fn is implemented.
+  leave them as stubs for the user to complete.

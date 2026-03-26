@@ -19,13 +19,13 @@ Step 0: Parse the User's Request
 
 Read the user's request. Identify:
 
-  TOPIC      — what domain the request is about
+  TOPIC      -- what domain the request is about
                (files, structure, progress, code sync, organization, creation, summary)
 
-  ACTION     — what they want to do or know
+  ACTION     -- what they want to do or know
                (see, check, fix, create, organize, verify, summarize, understand)
 
-  SCOPE      — how broad is the request
+  SCOPE      -- how broad is the request
                (specific file, specific stage, whole project, cross-project)
 
 Then look up TOPIC + ACTION in the Intent Map below.
@@ -39,7 +39,7 @@ Each row maps a class of user requests to a subskill + the specific step or
 portion to target, plus guidance on how to rephrase the request.
 
 -----------------------------------------------------------------------
-INFORMATION — user wants to READ or UNDERSTAND something
+INFORMATION -- user wants to READ or UNDERSTAND something
 -----------------------------------------------------------------------
 
   What files are in this project / show me all project files
@@ -50,8 +50,8 @@ INFORMATION — user wants to READ or UNDERSTAND something
 
   What pipeline stages does this project use / what YAMLs are configured
     -> subskill:  review
-       portion:   Step 4 (config/ review) + Step 4c (data-map)
-       rephrase:  "Review the config/ folder for {PROJECT_ID} and generate
+       portion:   Step 4 (task-level config/ review) + Step 4c (data-map)
+       rephrase:  "Review the task-level config/ folders for {PROJECT_ID} and generate
                   docs/data-map.md showing which stages are declared and their
                   FnClass names."
 
@@ -67,30 +67,17 @@ INFORMATION — user wants to READ or UNDERSTAND something
        rephrase:  "Check which other projects share the Fns and models used by
                   {PROJECT_ID} via the code sync check."
 
-  What scripts are in this project / what is the script index
+  What tasks are in this project / what is the task index
     -> subskill:  review
-       portion:   Step 5b (scripts/INDEX.md sync)
-       rephrase:  "Generate or update scripts/INDEX.md for {PROJECT_ID} and
-                  show me all scripts with their data, functionality, and status."
-
-  What demo notebooks exist / what pipeline stages have notebooks
-    -> subskill:  organize
-       portion:   Phase 2e (notebook coverage check)
-       rephrase:  "Run the notebook coverage check for {PROJECT_ID}: read nb/INDEX.md,
-                  cross-reference active stages from config/, and report which segments
-                  are COVERED, PLANNED, or missing (GAP)."
-
-  Do I have a notebook for stage N / is stage N→N+1 covered by a demo
-    -> subskill:  organize
-       portion:   Phase 2e (notebook coverage check)
-       rephrase:  "Check notebook coverage for the S{N}→S{N+1} segment in {PROJECT_ID}:
-                  look at nb/INDEX.md and report whether a demo notebook exists or is planned."
+       portion:   Step 5b (tasks/INDEX.md sync)
+       rephrase:  "Generate or update tasks/INDEX.md for {PROJECT_ID} and
+                  show me all tasks with their data, functionality, and status."
 
   What results do we have / what metrics were recorded
     -> subskill:  summarize
        portion:   Step 1 item (d) (task results scan) + Step 3 (Key Results table)
        rephrase:  "Summarize the results for {PROJECT_ID}, extracting key metrics
-                  from scripts/*/results/*/metrics.json and the top findings from reports."
+                  from tasks/*/results/*/metrics.json and the top findings from reports."
 
   Show me the data flow / how does data move through this project
     -> subskill:  summarize
@@ -101,19 +88,19 @@ INFORMATION — user wants to READ or UNDERSTAND something
   What is in cc-archive / what sessions have been recorded
     -> subskill:  review
        portion:   Step 3 (cc-archive/ review)
-       rephrase:  "Review the cc-archive/ folder for {PROJECT_ID} — list session
+       rephrase:  "Review the cc-archive/ folder for {PROJECT_ID} -- list session
                   files and flag any naming or content issues."
 
   What is the structure of this project / does the folder layout look right
     -> subskill:  review
        portion:   Step 2 (structure check)
-       rephrase:  "Check whether {PROJECT_ID} has all four mandatory folders
-                  (cc-archive, config, scripts, docs), whether scripts/ uses the
-                  task-folder layout, and if nb/ exists, whether nb/INDEX.md is
-                  present. Flag any deviations including legacy top-level results/."
+       rephrase:  "Check whether {PROJECT_ID} has all mandatory folders
+                  (tasks, docs, paper) and optional folders (cc-archive),
+                  whether tasks/ uses the task-folder layout with config inside
+                  each task folder, and flag any deviations."
 
 -----------------------------------------------------------------------
-PROGRESS / STATUS — user wants to know how far along the project is
+PROGRESS / STATUS -- user wants to know how far along the project is
 -----------------------------------------------------------------------
 
   What is the current progress / how far along is this project
@@ -125,22 +112,22 @@ PROGRESS / STATUS — user wants to know how far along the project is
   Which pipeline stages are implemented / what is done vs. todo
     -> subskill:  review
        portion:   Step 4 (config check) + Step 7 (code sync) + Step 4b (TODO.md)
-       rephrase:  "Review config/ and code sync for {PROJECT_ID} to determine
+       rephrase:  "Review task-level config/ and code sync for {PROJECT_ID} to determine
                   which stages are fully implemented (YAML + FnClass found) and
                   update the Pipeline Progress table in docs/TODO.md."
 
   Are all tasks done / which runs still have missing results
     -> subskill:  review
        portion:   Step 5 (task structure + run-result alignment) + Step 5b (INDEX.md sync)
-       rephrase:  "Check task run-result alignment for {PROJECT_ID} — flag any run scripts
+       rephrase:  "Check task run-result alignment for {PROJECT_ID} -- flag any run scripts
                   in {task}/runs/ without a matching {task}/results/{variant}/ folder,
-                  and update scripts/INDEX.md and task INDEX.md statuses."
+                  and update tasks/INDEX.md and task INDEX.md statuses."
 
   What is missing from this project / full gap report
     -> subskill:  review
-       portion:   (full review — all steps)
+       portion:   (full review -- all steps)
        rephrase:  "Run a full gap analysis on {PROJECT_ID} and produce the complete
-                  gap report covering structure, docs, config, scripts, results,
+                  gap report covering structure, docs, tasks, results,
                   and code sync."
 
   Is the implementation complete / are all Fns and models implemented
@@ -148,29 +135,29 @@ PROGRESS / STATUS — user wants to know how far along the project is
        portion:   Step 7 (full code sync: 7a + 7b + 7c + 7d)
        rephrase:  "Run the full code sync check for {PROJECT_ID}: verify all
                   FnClasses in config/ resolve to real classes, all builders have
-                  generated output, and all script imports are valid."
+                  generated output, and all task imports are valid."
 
-  Are there any broken imports or missing classes in the scripts
+  Are there any broken imports or missing classes in the tasks
     -> subskill:  review
-       portion:   Step 7d (scripts/ import resolution)
-       rephrase:  "Scan all scripts in {PROJECT_ID}/scripts/ and verify every
+       portion:   Step 7d (tasks/ import resolution)
+       rephrase:  "Scan all task scripts in {PROJECT_ID}/tasks/ and verify every
                   imported class exists in code/haifn/ or code/hainn/."
 
   What should I do next / what is the next step for this project
     -> subskill:  review
-       portion:   Step 4b (TODO.md sync) — reads current Pipeline Progress table
+       portion:   Step 4b (TODO.md sync) -- reads current Pipeline Progress table
        rephrase:  "Update docs/TODO.md for {PROJECT_ID} and tell me the first
                   incomplete item across Required Files, Track A Stubs, and
                   Pipeline Progress tables."
 
   Regenerate just the data-map / show the pipeline flow without a full review
     -> subskill:  review
-       portion:   Step 4 (read config/ for DECLARED_STAGES) + Step 4c (data-map only)
-       rephrase:  "Read config/ for {PROJECT_ID} to identify declared stages, then
-                  regenerate docs/data-map.md only — skip all other review steps."
+       portion:   Step 4 (read task-level config/ for DECLARED_STAGES) + Step 4c (data-map only)
+       rephrase:  "Read task-level config/ for {PROJECT_ID} to identify declared stages, then
+                  regenerate docs/data-map.md only -- skip all other review steps."
 
 -----------------------------------------------------------------------
-ONBOARDING — user wants to bring an existing project up to standard
+ONBOARDING -- user wants to bring an existing project up to standard
 -----------------------------------------------------------------------
 
   I have an existing project / how do I set it up / bring it to standard /
@@ -178,11 +165,12 @@ ONBOARDING — user wants to bring an existing project up to standard
     -> subskill:  organize then review (two-step sequence)
        portion:   (full organize flow, then full review flow)
        rephrase:  "Run the standard onboarding sequence for {PROJECT_ID}:
-                  Step 1 — /haipipe-project organize: inventory all files and
-                  restructure to the task-folder layout (scripts/{task}/ with
-                  runs/ and results/). Step 2 — /haipipe-project review: generate
-                  all docs (data-map.md, TODO.md, dependency-report.md, INDEX.md
-                  files) and verify code sync. Run organize first, then review."
+                  Step 1 -- /haipipe-project organize: inventory all files and
+                  restructure to the task-folder layout (tasks/{task}/ with
+                  config/, runs/, results/, and notebook inside each task folder).
+                  Step 2 -- /haipipe-project review: generate all docs
+                  (data-map.md, TODO.md, dependency-report.md, INDEX.md files)
+                  and verify code sync. Run organize first, then review."
 
   Output for this intent: print the two suggestions in sequence:
 
@@ -194,50 +182,50 @@ ONBOARDING — user wants to bring an existing project up to standard
 
      2. Please call `/haipipe-project review {path}`
         to generate docs/data-map.md, docs/TODO.md, docs/dependency-report.md,
-        scripts/INDEX.md, and per-task INDEX.md files, and to check code sync.
+        tasks/INDEX.md, and per-task INDEX.md files, and to check code sync.
 
-     Start with organize — review's doc generation depends on files being
+     Start with organize -- review's doc generation depends on files being
      in the right locations."
 
 -----------------------------------------------------------------------
-ORGANIZATION / CLEANUP — user wants to tidy or restructure files
+ORGANIZATION / CLEANUP -- user wants to tidy or restructure files
 -----------------------------------------------------------------------
 
   Clean up or reorganize the project / files are in the wrong place
     -> subskill:  organize
-       portion:   Phase 1 (inventory) + Phase 2 (proposed moves) + Phase 2e (notebook coverage)
+       portion:   Phase 1 (inventory) + Phase 2 (proposed moves)
        rephrase:  "Inventory all files in {PROJECT_ID}, propose a reorganization to bring
-                  the project to the standard layout (four mandatory folders + task-folder
-                  scripts/ layout + nb/ if demos exist), and check notebook coverage against
-                  active pipeline stages."
+                  the project to the standard layout (mandatory folders: tasks, docs, paper;
+                  optional folders: cc-archive, docs; task-folder layout with config inside
+                  each task folder)."
 
   Migrate flat scripts into task folders / files are not in task subfolders
     -> subskill:  organize
-       portion:   Phase 2 (scripts/ layout issues)
-       rephrase:  "Identify any flat .py or .sh files directly in {PROJECT_ID}/scripts/
+       portion:   Phase 2 (tasks/ layout issues)
+       rephrase:  "Identify any flat .py or .sh files directly in {PROJECT_ID}/tasks/
                   and propose migrating each into a task subfolder following the
-                  task-folder convention (scripts/{task}/{task}.py + runs/ + results/)."
+                  task-folder convention (tasks/{task}/{task}.py + config/ + runs/ + results/)."
 
   Check if imports and paths still work after moving files
     -> subskill:  organize
        portion:   Phase 3 / organize verify
-       rephrase:  "Verify that all imports and path references in {PROJECT_ID}/scripts/
+       rephrase:  "Verify that all imports and path references in {PROJECT_ID}/tasks/
                   are still valid after the recent reorganization."
 
   Just show me what files exist without proposing changes
     -> subskill:  organize
        portion:   Phase 1 only (stop after inventory, do not proceed to Phase 2)
-       rephrase:  "Generate the file inventory for {PROJECT_ID} (Phase 1 only) —
+       rephrase:  "Generate the file inventory for {PROJECT_ID} (Phase 1 only) --
                   list all project files and related external files, and stop
                   before proposing any reorganization."
 
 -----------------------------------------------------------------------
-CREATION / SCAFFOLDING — user wants to set up something new
+CREATION / SCAFFOLDING -- user wants to set up something new
 -----------------------------------------------------------------------
 
   Start a new project / create a new experiment folder
     -> subskill:  new
-       portion:   (full flow — both Track A and Track B)
+       portion:   (full flow -- both Track A and Track B)
        rephrase:  "Create a new haipipe project, walking me through the project
                   naming, pipeline stages, dataset, and whether new Fns or models
                   are needed."
@@ -246,44 +234,28 @@ CREATION / SCAFFOLDING — user wants to set up something new
     -> subskill:  new
        portion:   Track A A1 (Step 3, pipeline Fn stubs)
        rephrase:  "Add Track A pipeline Fn stubs for a new dataset to an existing
-                  project, and auto-generate the paired example scripts."
+                  project, and auto-generate the paired example task scripts."
 
   Add a new ML model stub
     -> subskill:  new
        portion:   Track A A2 (Step 3, ML model stubs)
        rephrase:  "Add Track A ML model stubs (algorithm, tuner, instance) to an
-                  existing project, and auto-generate the paired example script."
-
-  Set up demo notebooks / add nb/ to a project / create nb/INDEX.md
-    -> subskill:  nb
-       portion:   (full flow — Steps 0-8)
-       rephrase:  "Create a demo notebook for {PROJECT_ID}: set up nb/ and nb/INDEX.md
-                  if they don't exist, then guide me through creating a notebook for
-                  the {SEGMENT_KEY} pipeline segment."
-
-  Create a notebook for a specific stage transition
-    -> subskill:  nb
-       portion:   (full flow — Steps 0-8)
-       rephrase:  "Create a demo notebook for the S{N}→S{N+1} segment in {PROJECT_ID},
-                  and update nb/INDEX.md to track it."
-
-  Note: /haipipe-project nb creates a cell-wise .py script (source of truth),
-  converts it to .ipynb, and manages nb/INDEX.md + docs/nb-plan.md.
+                  existing project, and auto-generate the paired example task script."
 
 -----------------------------------------------------------------------
-DOCUMENTATION — user wants to generate or update docs
+DOCUMENTATION -- user wants to generate or update docs
 -----------------------------------------------------------------------
 
   Generate a project summary / write a summary for this project
     -> subskill:  summarize
-       portion:   (full flow — Step 1 + Step 2 + Step 3)
+       portion:   (full flow -- Step 1 + Step 2 + Step 3)
        rephrase:  "Generate docs/project-summary.md for {PROJECT_ID} with the
                   pipeline stages used, key metrics from results/, and an ASCII
                   flow chart."
 
   Update TODO.md / refresh the planning tracker
     -> subskill:  review
-       portion:   Step 4b (docs/ generation — TODO.md update)
+       portion:   Step 4b (docs/ generation -- TODO.md update)
        rephrase:  "Update docs/TODO.md for {PROJECT_ID}: sync Pipeline Progress
                   rows against current config/ YAML presence and mark completed stages."
 
@@ -292,7 +264,7 @@ DOCUMENTATION — user wants to generate or update docs
        portion:   Step 4c (data-map generation)
        rephrase:  "Generate docs/data-map.md for {PROJECT_ID} showing the full
                   pipeline flow from raw data through to results, derived from
-                  config/ YAML files."
+                  task-level config/ YAML files."
 
   Generate the dependency report / what Fns and models does this project need
     -> subskill:  review
@@ -302,7 +274,7 @@ DOCUMENTATION — user wants to generate or update docs
                   and any cross-project reuse."
 
 -----------------------------------------------------------------------
-AMBIGUOUS — multiple intents possible
+AMBIGUOUS -- multiple intents possible
 -----------------------------------------------------------------------
 
   If TOPIC = "check" or "look at" with no clear ACTION:
@@ -321,7 +293,7 @@ AMBIGUOUS — multiple intents possible
 
   If TOPIC = "everything" or "full check":
     Ask: "Should I run a full gap analysis (review) or generate a human-readable
-          summary (summarize) — or both?"
+          summary (summarize) -- or both?"
     Both -> run review first, then summarize
 
 ---
@@ -345,7 +317,7 @@ Examples of well-formed suggestions:
 
   Please call `/haipipe-project review` specifying Step 7 (code sync check)
   and ask "Run the full code sync check for ProjC-Model-2-GlucoseTransformer:
-  verify all FnClasses in config/ resolve to real classes and all script imports
+  verify all FnClasses in config/ resolve to real classes and all task imports
   are valid."
 
   Please call `/haipipe-project organize` specifying Phase 1 only (file inventory,
@@ -404,10 +376,10 @@ to implement a model, run a pipeline, write a script):
 MUST NOT
 ---------
 
-- Do NOT execute any subskill — only suggest which one to call and how.
-- Do NOT read project files during help — the suggestion should be based on
+- Do NOT execute any subskill -- only suggest which one to call and how.
+- Do NOT read project files during help -- the suggestion should be based on
   the user's description alone, unless the project path is needed to fill in
   PROJECT_ID in the rephrase (in which case, only read the folder name).
 - Do NOT ask more than one clarifying question before making a suggestion.
-- Do NOT produce suggestions for tasks outside the six subskills
-  (new / review / summarize / organize / nb / help).
+- Do NOT produce suggestions for tasks outside the five subskills
+  (new / review / summarize / organize / help).

@@ -8,21 +8,25 @@ Skill: haipipe-project
 
 Covers project-level structure across TWO tracks simultaneously:
 
-  Track B  ->  examples/{PROJECT_ID}/    experiment configs, scripts, results
+  Track B  ->  examples/{PROJECT_ID}/    tasks, configs, runs, results, paper
   Track A  ->  code-dev/ + code/hainn/   pipeline Fn builders, ML model stubs
 
 The user never needs to specify which track. Both are handled automatically.
 
 Two structural rules that govern all projects:
 
-  Rule 1 — Flat scripts with INDEX.md:
-    scripts/ stays flat (no subfolders except sbatch/).
-    scripts/INDEX.md is MANDATORY — indexes every script by data, functionality,
-    and pipeline stage so Claude can scan for reuse before creating new scripts.
+  Rule 1 -- Self-contained grouped tasks:
+    tasks/ uses the task-folder paradigm with letter-number grouping.
+    Each task is named {G}{N}_{name} (e.g., B1_train_stats) where the
+    letter groups related tasks and the number gives sequence within
+    the group. Each task subfolder contains everything needed to
+    understand and run the task: logic (.py), demo notebook (.ipynb),
+    config/ (only configs this task uses), runs/, results/, and INDEX.md.
+    No flat files directly in tasks/ (except sbatch/).
 
-  Rule 2 — Code always has a paired example:
+  Rule 2 -- Code always has a paired example:
     Every new pipeline Fn stub or ML model stub created in Track A
-    AUTOMATICALLY generates a paired example script in scripts/.
+    AUTOMATICALLY generates a paired example task in tasks/.
     No Track A code without a Track B example.
 
 Default (no arg): show command menu and ask what the user wants to do.
@@ -41,8 +45,8 @@ Commands
   /haipipe-project organize [path]        -> file inventory + propose reorganization for [path]
   /haipipe-project organize verify        -> verify imports/paths after manual reorganization (auto-detect)
   /haipipe-project organize verify [path] -> verify imports/paths for [path]
-  /haipipe-project nb                     -> create a demo notebook (.py first, then .ipynb) (auto-detect)
-  /haipipe-project nb [path]             -> create a demo notebook (.py first, then .ipynb) for [path]
+  /haipipe-project nb                     -> create a demo notebook for a task (auto-detect)
+  /haipipe-project nb [path]              -> create a demo notebook for a task at [path]
   /haipipe-project help [question]        -> route a natural-language request to the right subskill + step
 
 ---
@@ -57,13 +61,13 @@ Dispatch Table
   review [path]            ref/project-structure.md + ref/code-structure.md  fn/fn-review.md
   summarize (no path)      ref/project-structure.md                          fn/fn-summarize.md
   summarize [path]         ref/project-structure.md                          fn/fn-summarize.md
-  organize (no path)       ref/project-structure.md                          fn/fn-organize.md  (+ Phase 4 diagram)
-  organize [path]          ref/project-structure.md                          fn/fn-organize.md  (+ Phase 4 diagram)
+  organize (no path)       ref/project-structure.md                          fn/fn-organize.md
+  organize [path]          ref/project-structure.md                          fn/fn-organize.md
   organize verify          ref/project-structure.md                          fn/fn-organize.md
   organize verify [path]   ref/project-structure.md                          fn/fn-organize.md
   nb (no path)             ref/project-structure.md                          fn/fn-nb.md
   nb [path]                ref/project-structure.md                          fn/fn-nb.md
-  help [question]          (none — intent routing only)                      fn/fn-help.md
+  help [question]          (none -- intent routing only)                     fn/fn-help.md
   (no arg)                 (none)                                            (show menu below)
 
 ---
@@ -86,16 +90,16 @@ Step 0: Parse the command.
 
     haipipe-project commands:
       new                       -> create a new project (both tracks)
-      organize [path]           -> restructure files to standard layout + generate project-diagram.png (run FIRST on existing projects)
+      organize [path]           -> restructure files to standard layout (run FIRST on existing projects)
       review [path]             -> generate all docs + check code sync (run AFTER organize)
       summarize [path]          -> generate post-development summary + flow chart
       organize verify [path]    -> verify imports/paths after reorganization
-      nb [path]                 -> create a demo notebook (.py source -> .ipynb converted)
+      nb [path]                 -> create a demo notebook for a task
       help [question]           -> describe what you want in plain English; I'll route you
 
     Typical sequence for an existing project:
       1. organize [path]   <- move files into standard layout
-      2. review [path]     <- generate docs (data-map, TODO, dependency-report, INDEX.md)
+      2. review [path]     <- generate docs (TODO, dependency-report, INDEX.md)
 
     Which would you like to do?
 
@@ -110,11 +114,11 @@ Step 1: Read ref files FIRST.
     Read ref/project-structure.md only.
 
   For help:
-    Read NO ref files — intent routing only, no project files needed.
+    Read NO ref files -- intent routing only, no project files needed.
 
   This is MANDATORY. Do not proceed to Step 2 until all required ref files
-  are in context. They contain the naming convention, four-part layout,
-  light/heavy boundary, INDEX.md format, and Track A conventions.
+  are in context. They contain the naming convention, task-folder layout,
+  config sharing rules, and Track A conventions.
 
   Confirm by stating:
     "Loaded: [ref files]. Executing: [subcommand]."
@@ -126,38 +130,42 @@ Step 2: Read the function file.
     summarize  ->  fn/fn-summarize.md
     organize   ->  fn/fn-organize.md
     nb         ->  fn/fn-nb.md
-    help       ->  fn/fn-help.md  (no ref files needed — intent routing only)
+    help       ->  fn/fn-help.md  (no ref files needed -- intent routing only)
 
   Follow the steps in the fn file exactly.
 
 ---
 
-Checkpoint Hints (defaults — fn files may customize wording per context)
+Checkpoint Hints (defaults -- fn files may customize wording per context)
 ------------------------------------------------------------------------
 
   CH-1  docs/ files updated?
         "Quick check: open docs/ and confirm all generated files look correct
-         (TODO.md, data-map.md, dependency-report.md). Did anything come out empty?"
+         (TODO.md, dependency-report.md). Did anything come out empty?"
 
-  CH-2  scripts/INDEX.md in sync?
-        "Quick check: does scripts/INDEX.md have a row for every task subfolder?
-         Does each {task}/INDEX.md exist? Are all status values (stub / wip / done) current?"
+  CH-2  tasks/INDEX.md in sync?
+        "Quick check: does tasks/INDEX.md have a row for every task subfolder?
+         Does each {task}/INDEX.md exist? Are all status values current?"
 
   CH-3  file paths valid?
-        "Quick check: any scripts that reference config/, results/, or docs/ paths —
-         confirm those paths still exist relative to the project root."
+        "Quick check: any scripts that reference config/, results/, or docs/ paths --
+         confirm those paths still exist relative to the task folder."
 
   CH-4  code/INDEX.md updated?
         "Quick check: if new Track A stubs were created, confirm code/INDEX.md has
          stub-status rows for them (so future projects can find them for reuse)."
 
   CH-5  YAML placeholders filled?
-        "Quick check: search config/ for any remaining TODO_ values — all placeholder
+        "Quick check: search config/ for any remaining TODO_ values -- all placeholder
          class names must be replaced before running the pipeline."
 
   CH-6  reorganization pending verification?
         "Reminder: if you moved or renamed files manually, run
          /haipipe-project organize verify to confirm imports and paths still work."
+
+  CH-7  config symlinks valid?
+        "Quick check: verify config/ symlinks in each task resolve to existing targets.
+         Run: find tasks/ -name config -type l -exec test ! -e {} \\; -print"
 
 Each fn file lists which hints to print at the end of its execution chain.
 
@@ -169,33 +177,43 @@ Key Conventions (quick reference)
 Project naming:   Proj{Series}-{Category}-{Num}-{Name}
   e.g.            ProjC-Model-2-GlucoseTransformer
 
-Four-part layout (Track B):
-  cc-archive/     CC session history (cc_*.md, di_*.md)
-  config/         YAML configs named {N}_{stage}_{dataset}.yaml
-  scripts/        Task-folder layout: scripts/{task}/ contains {task}.py + runs/ + results/
-                  scripts/INDEX.md = global task list; {task}/INDEX.md = run inventory
-                  scripts/sbatch/ = cross-task SLURM scripts only
-  docs/           Planning + summary docs (TODO.md, project-summary.md, nb-plan.md)
+Standard layout (Track B):
+  tasks/          Self-contained task folders (logic + config + runs + results)
+                  tasks/INDEX.md = global task list; {task}/INDEX.md = run inventory
+                  tasks/sbatch/ = cross-task SLURM scripts only
+  paper/          Manuscripts and figures (often a git submodule)
+  docs/           Planning + summary docs (optional: TODO.md, project-summary.md)
+  cc-archive/     CC session history (optional)
+  _old/           Archived legacy files (optional)
 
-  Note: no top-level results/ folder. Results live inside each task folder.
+  Note: no top-level config/ or results/ folder.
+  Configs live inside task folders (with symlinks for sharing).
+  Results live inside each task's results/ subfolder.
+
+Task naming: {G}{N}_{task_name}
+  G = uppercase letter (A-Z), groups related tasks by category
+  N = digit (0-9), sequence within the group
+  task_name = snake_case descriptor
+  Example: B1_train_stats, C2_eval_main_table, D1_demo_modeltuner
+  The project decides what each letter means (not prescribed by the skill).
+
+Task folder contents:
+  {task}.py       Logic (source of truth, # %% cell format)
+  {task}.ipynb    Demo notebook (optional, derived from .py)
+  config/         YAML configs (only configs this task uses — no shared dumps)
+  runs/           Self-contained .sh scripts (no args — bash it and done)
+  results/        Light summaries (run name = result folder name)
+  INDEX.md        Run inventory
+
+Config sharing: one task owns real config files, others symlink.
+  cd tasks/D2_demo_modelinstance && ln -s ../D1_demo_modeltuner/config config
 
 code/INDEX.md (codebase-wide, shared across all projects):
   Indexes ALL implemented Fns (code/haifn/) and ML models (code/hainn/).
-  Claude reads this BEFORE creating any new Fn or model — reuse across projects first.
-  Updated by fn-new.md (stub entries) and by haipipe-data/haipipe-nn (done entries).
-  Format: two tables — Pipeline Functions | ML Models
-
-scripts/INDEX.md (per-project):
-  Required in every project. Indexes scripts by data, functionality, stage.
-  Claude reads this BEFORE creating any new script — to check for reuse first.
-  Format: table with columns: Task | Data | Stage | Description | Status
+  Claude reads this BEFORE creating any new Fn or model -- reuse first.
 
 Auto-example rule:
-  Every Track A stub (new Fn or model) generates a paired example task folder.
-  Task folder: scripts/example_{fn_or_model_name}/example_{fn_or_model_name}.py
-
-Run-result pairing (within each task folder):
-  scripts/train_num/runs/phase1_gpu0.sh  <->  scripts/train_num/results/phase1_gpu0/
+  Every Track A stub generates a paired example task in tasks/.
 
 _WorkSpace paths:
   Declared in env.sh. Read by setup_workspace() in code/haipipe/base.py.
@@ -212,11 +230,11 @@ File Map
 --------
 
   SKILL.md                    <- you are here (router + dispatch table)
-  ref/project-structure.md    <- Track B standard layout, naming, INDEX.md, rules
+  ref/project-structure.md    <- Track B standard layout, naming, task-folder, config sharing
   ref/code-structure.md       <- Track A code-dev/ + hainn/ conventions
   fn/fn-new.md                <- scaffold new project (interactive, both tracks)
   fn/fn-review.md             <- gap analysis + proposed actions (both tracks)
   fn/fn-summarize.md          <- post-development summary + flow chart
   fn/fn-organize.md           <- file inventory + reorganization proposal + verification
-  fn/fn-nb.md                 <- guided demo notebook creation (.py-first + convert to .ipynb)
+  fn/fn-nb.md                 <- create demo notebook inside a task folder
   fn/fn-help.md               <- intent routing: natural-language -> subskill + step suggestion

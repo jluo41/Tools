@@ -30,41 +30,41 @@ Read the following in parallel. Collect facts into named slots.
       PROJECT_ID = folder name
       SERIES, CATEGORY, NUM, NAME from parsing the folder name
 
-  (b) scripts/INDEX.md (if exists):
-      -> SCRIPTS_TABLE: all scripts, their data, functionality, stage, status
+  (b) tasks/INDEX.md (if exists):
+      -> TASKS_TABLE: all tasks, their data, functionality, stage, status
 
-  (c) config/ directory:
+  (c) task-level config/ files (inside each tasks/{task}/config/):
       -> DECLARED_STAGES: list of stage numbers from YAML filenames
       -> DATASETS: dataset names from YAML filenames
       -> MODEL_NAME: from 5_model_{name}.yaml (if present)
 
-  (d) task results (inside scripts/*/results/):
+  (d) task results (inside tasks/*/results/):
       -> RESULT_FOLDERS: list of {task}/{variant} result folder names
-      -> KEY_METRICS: read each scripts/*/results/*/metrics.json, extract top metrics
-      -> KEY_REPORTS: read each scripts/*/results/*/report.md, extract first paragraph only
+      -> KEY_METRICS: read each tasks/*/results/*/metrics.json, extract top metrics
+      -> KEY_REPORTS: read each tasks/*/results/*/report.md, extract first paragraph only
 
-  (e) cc-archive/ directory:
+  (e) cc-archive/ directory (if exists):
       -> SESSION_COUNT: count of cc_*.md + di_*.md files
       -> DATE_RANGE: earliest and latest YYMMDD from filenames
 
-  (f) config/5_model_*.yaml (if exists):
+  (f) model config (tasks/*/config/5_model_*.yaml if exists):
       -> MODEL_CLASS: ModelInstanceClass value
       -> MODEL_VERSION: modelinstance_version value
 
 ---
 
-Step 2: Sync scripts/INDEX.md Status
-=======================================
+Step 2: Sync tasks/INDEX.md Status
+====================================
 
 Before writing the summary, scan task result folders to update statuses.
 
-For each task in scripts/INDEX.md where Status = "wip" or "stub":
-  If scripts/{task}/results/ contains at least one subfolder with report.md or metrics.json:
-    Update Status to "done" in scripts/INDEX.md.
+For each task in tasks/INDEX.md where Status = "wip" or "stub":
+  If tasks/{task}/results/ contains at least one subfolder with report.md or metrics.json:
+    Update Status to "done" in tasks/INDEX.md.
 
-Also sync each scripts/{task}/INDEX.md:
+Also sync each tasks/{task}/INDEX.md:
   For each run row where Status != "done":
-    If scripts/{task}/results/{variant}/ exists with report.md or metrics.json:
+    If tasks/{task}/results/{variant}/ exists with report.md or metrics.json:
       Update Status to "done".
 
 Do NOT downgrade any "done" entries. Only upgrade stub/wip -> done.
@@ -99,7 +99,7 @@ Pipeline Stages Used
   [list only the stages used, one line each]
   Stage 1 (Source):  {dataset} via {SourceFnClass or "existing Fn"}
   Stage 2 (Record):  {dataset} via {RecordFnClass or "existing Fn"}
-  Stage 4 (AIData):  {dataset} — {split_strategy if known}
+  Stage 4 (AIData):  {dataset} -- {split_strategy if known}
   Stage 5 (Model):   {MODEL_CLASS} v{MODEL_VERSION}
 
 Data
@@ -120,7 +120,7 @@ Use a simple table. If no metrics found, write "Results pending."]
 
 Tasks
 -----
-[Copy the scripts/INDEX.md table here, condensed to done/wip tasks only.]
+[Copy the tasks/INDEX.md table here, condensed to done/wip tasks only.]
 
   Task | Description | Stage | Status
   -----|-------------|-------|-------
@@ -158,9 +158,9 @@ How to Pick Up This Project
 [3 bullet points max. What does someone need to do to continue this work?]
 
   - Run: source .venv/bin/activate && source env.sh
-  - Check scripts/INDEX.md for script status
-  - Review results/project-summary.md (this file) for context
-  - Next: {first TODO item from scripts/INDEX.md where Status != done}
+  - Check tasks/INDEX.md for task status
+  - Review docs/project-summary.md (this file) for context
+  - Next: {first TODO item from tasks/INDEX.md where Status != done}
 ```
 
 ---
@@ -181,14 +181,14 @@ Print:
 Checkpoints
 -----------
 
-Print these after Step 4 (verbatim — no extra analysis needed, Step 2 already synced INDEX.md):
+Print these after Step 4 (verbatim -- no extra analysis needed, Step 2 already synced INDEX.md):
 
   [CH-1] docs/ files updated?
   "Quick check: open docs/project-summary.md and confirm the flow chart
    reflects the active stages and Key Results has real numbers (not empty)."
 
-  [CH-2] scripts/INDEX.md in sync?
-  "Quick check: (1) scripts/INDEX.md has a row for every task subfolder;
+  [CH-2] tasks/INDEX.md in sync?
+  "Quick check: (1) tasks/INDEX.md has a row for every task subfolder;
    (2) each {task}/INDEX.md has a row for every run in {task}/runs/;
    (3) all status values (stub / wip / done) were just synced in Step 2."
 
@@ -197,9 +197,9 @@ Print these after Step 4 (verbatim — no extra analysis needed, Step 2 already 
 MUST NOT
 ---------
 
-- Do NOT modify config/ YAMLs or scripts/ during summarize — read only (except INDEX.md status).
+- Do NOT modify task-level config/ or task scripts during summarize -- read only (except INDEX.md status).
 - Do NOT run any pipeline commands.
 - Do NOT write to cc-archive/ (that is for CC session exports, not summaries).
-- Do NOT write to results/ — planning and summary docs go to docs/ only.
+- Do NOT write to results/ -- planning and summary docs go to docs/ only.
 - Keep the summary SHORT. If results are not available yet, say so in one line.
   Do not pad with speculation.

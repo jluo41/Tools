@@ -13,23 +13,24 @@ Every project lives under:
 
   examples/Proj{Series}-{Category}-{Num}-{Name}/
 
-The four mandatory folders for all new projects:
+Two mandatory folders:
 
-  cc-archive/      <- Claude Code session history
-  config/          <- YAML pipeline configs
-  scripts/         <- Task folders (each self-contained: .py + runs/ + results/)
+  tasks/           <- Self-contained task folders (logic + config + runs + results)
+  paper/           <- Manuscripts, figures, LaTeX (often a git submodule)
+
+Three optional folders:
+
   docs/            <- Project planning and summary documents
-
-One optional-but-standard folder (add when demo notebooks exist):
-
-  nb/              <- Pipeline stage demo notebooks + INDEX.md
+  cc-archive/      <- Claude Code session history
+  _old/            <- Archived legacy files (safe to ignore)
 
 Heavy outputs (model weights, full metrics, large tensors) go to
-_WorkSpace/ — NOT inside task result folders. The _WorkSpace/ paths are
+_WorkSpace/ -- NOT inside task result folders. The _WorkSpace/ paths are
 declared in env.sh, NOT in the project folder.
 
-Note: there is no top-level results/ folder. Light result summaries live
-inside each task folder at scripts/{task}/results/.
+Note: there is NO top-level config/ or results/ folder. Configs live inside
+task folders (with symlinks for sharing). Results live inside each task's
+results/ subfolder.
 
 
 ---
@@ -59,180 +60,262 @@ Full examples:
 
 ---
 
-Standard Layout (four mandatory + optional nb/)
-================================================
+Standard Layout
+================
 
 ```
 examples/Proj{Series}-{Category}-{Num}-{Name}/
 |
-+-- cc-archive/                         <- Claude Code session history
-|   +-- cc_YYMMDD_h{HH}_*.md           <- session exports (/cc-session-summary)
-|   +-- di_YYMMDD_h{HH}_*.md           <- discussion logs (/coding-by-logging)
++-- tasks/                                <- MANDATORY: all work lives here
+|   +-- INDEX.md                          <- MANDATORY: global task index
+|   +-- {G}{N}_{task_name}/               <- Task folder: group letter + seq + snake_case
+|   |   +-- {G}{N}_{task_name}.py         <- Python logic (source of truth)
+|   |   +-- {G}{N}_{task_name}.ipynb      <- Demo notebook (optional, derived from .py)
+|   |   +-- config/                       <- YAML configs (real files or symlinks)
+|   |   |   +-- {name}.yaml              <- Pipeline/model configs for this task
+|   |   +-- runs/                         <- Execution variants
+|   |   |   +-- {variant}.sh             <- Batch run (e.g., phase1_gpu0.sh)
+|   |   |   +-- {variant}.ipynb          <- Parameterized notebook run (optional)
+|   |   +-- results/                      <- Light summaries for this task's runs
+|   |   |   +-- {variant}/               <- Mirrors run name (without extension)
+|   |   |       +-- report.md
+|   |   |       +-- metrics.json
+|   |   +-- INDEX.md                      <- Run inventory for this task
+|   +-- sbatch/                           <- Cross-task SLURM scripts (shared)
+|       +-- submit_{name}.sh
 |
-+-- config/                             <- YAML pipeline configs
-|   +-- 1_source_{dataset}.yaml         <- Stage 1 (if used)
-|   +-- 2_record_{dataset}.yaml         <- Stage 2 (if used)
-|   +-- 3_case_{dataset}.yaml           <- Stage 3 (if used)
-|   +-- 4_aidata_{dataset}.yaml         <- Stage 4 (if used)
-|   +-- 5_model_{name}.yaml             <- Stage 5 (if used)
++-- paper/                                <- MANDATORY: manuscripts + figures
+|   +-- Paper-{Name}-{venue}/             <- One subfolder per submission
+|       +-- (LaTeX files, figures, etc.)  <- Often its own git repo/submodule
 |
-+-- scripts/                            <- Task-folder layout (one subfolder per task)
-|   +-- INDEX.md                        <- MANDATORY: global task index
-|   +-- {task_name}/                    <- One folder per task (clean snake_case name)
-|   |   +-- INDEX.md                    <- MANDATORY: run inventory for this task
-|   |   +-- {task_name}.py             <- Python logic (no seq/date prefix)
-|   |   +-- runs/                       <- Bash/shell run scripts
-|   |   |   +-- {variant}.sh           <- Named by variant (e.g., phase1_gpu0.sh)
-|   |   +-- results/                   <- Light summaries for this task's runs
-|   |       +-- {variant}/             <- Mirrors run script name (without .sh)
-|   |           +-- report.md
-|   |           +-- metrics.json
-|   +-- sbatch/                         <- Cross-task SLURM scripts (shared)
-|       +-- submit_{name}.sh            <- Calls multiple task Python scripts
-|       +-- env.sh                      <- Optional: shared env setup
++-- docs/                                 <- OPTIONAL: planning + summary docs
+|   +-- TODO.md                           <- Pipeline progress tracker
+|   +-- project-summary.md                <- Post-development summary
 |
-+-- docs/                               <- Project planning and summary documents
-|   +-- TODO.md                         <- Pipeline progress tracker (created at scaffold)
-|   +-- project-summary.md              <- Post-development summary + flow chart
-|   +-- nb-plan.md                      <- Demo notebook planning reference (created by /haipipe-project nb)
++-- cc-archive/                           <- OPTIONAL: Claude Code session history
+|   +-- cc_YYMMDD_h{HH}_*.md             <- Session exports (/cc-session-summary)
+|   +-- di_YYMMDD_h{HH}_*.md             <- Discussion logs (/coding-by-logging)
 |
-+-- nb/                                 <- Demo notebooks (optional; add when demos exist)
-    +-- INDEX.md                        <- MANDATORY if nb/ exists: notebook coverage index
-    +-- 001_{YYMMDD}_{desc}.py          <- Cell-wise Python script (source of truth)
-    +-- 001_{YYMMDD}_{desc}.ipynb       <- Converted notebook (derived from .py)
++-- _old/                                 <- OPTIONAL: archived legacy files
+    +-- (anything that was superseded)
 ```
 
 
 ---
 
-cc-archive/ Rules
-=================
-
-- Stores ALL Claude Code session context for this project.
-- Two file types:
-    cc_*.md    Session exports produced by /cc-session-summary
-    di_*.md    Discussion/design logs produced by /coding-by-logging
-- Naming format: {type}_{YYMMDD}_h{HH}_{emoji}_{topic}_{author}.md
-    Example: di_260310_h16_map_haipipe-project-skill-design_jluo.md
-- Do NOT put CLAUDE.md, README.md, or config files here.
-- These files record WHY decisions were made, complementing the config/ YAMLs.
-
-
----
-
-config/ Rules
+tasks/ Rules
 =============
 
-- Only YAML files. No Python, no notebooks, no scripts.
-- Named by stage number + dataset or model name:
-    1_source_{dataset}.yaml
-    2_record_{dataset}.yaml
-    3_case_{dataset}.yaml
-    4_aidata_{dataset}.yaml
-    5_model_{name}.yaml
-- One YAML per stage per dataset/model combination.
-- Stages not used by this project are simply absent (no placeholder files).
-- These YAMLs are the Recipe in the cooking metaphor. They drive the pipeline.
+tasks/ is the heart of the project. Every piece of active work lives here.
+Each subfolder is a self-contained task with its own logic, config, runs,
+and results.
+
+**Global rules:**
+  - tasks/INDEX.md is MANDATORY.
+  - No flat .py or .sh files directly in tasks/ (only task subfolders + sbatch/).
+  - Each task folder is self-contained: you should be able to understand
+    and run the task by looking only at its folder.
+
+
+Task Group Naming Convention
+-----------------------------
+
+Tasks are named with a group-letter + sequence-number prefix:
+
+  {G}{N}_{task_name}
+
+  G           Single uppercase letter (A-Z). Groups related tasks by category.
+              The project decides what each letter means. Common patterns:
+                A = data pipeline, B = training, C = evaluation, D = demo
+              But this is not prescribed -- any grouping that makes the project
+              clear is valid.
+
+  N           Single digit (0-9). Sequence within the group.
+              0 is often reserved for cross-group utilities (e.g., B0_batch_evaluate).
+
+  task_name   snake_case descriptor of what the task does.
+
+  Examples:
+    B1_train_stats          B3_train_neural         C2_eval_main_table
+    B2_train_ml             B4_run_api              D1_demo_modeltuner
+
+  The .py filename matches the folder name exactly:
+    B1_train_stats/B1_train_stats.py
+
+Tasks within a group sort naturally by the number prefix. Groups sort by letter.
+tasks/INDEX.md uses one section per group (see INDEX.md rules below).
+
+
+**Task folder contents in detail:**
+
+  {G}{N}_{task_name}.py -- Main logic file (MANDATORY)
+    - Source of truth for the task's logic.
+    - Uses # %% cell markers for notebook compatibility (jupytext format).
+    - Parameterized via --config or argparse arguments.
+
+  {G}{N}_{task_name}.ipynb -- Demo notebook (OPTIONAL)
+    - Derived from the .py file: jupytext --to notebook {name}.py -o {name}.ipynb
+    - Same logic as the .py, just interactive. For walkthrough/documentation.
+    - The .py is always the source of truth. Edit .py first, then convert.
+
+  config/ — Task configs (OPTIONAL)
+    - YAML files that parameterize the task.
+    - Can be real files (if configs are unique to this task) or symlinks
+      (if shared with other tasks).
+    - Naming is flexible — use descriptive names that match the project's
+      domain (e.g., fairglucose-per6h-h288l24-noevent-neural-patchtst.yaml).
+    - Subdirectory structure within config/ is allowed for organization
+      (e.g., config/demo/, config/fairglucose/neural/).
+
+  runs/ — Execution variants (OPTIONAL)
+    - Each .sh script is SELF-CONTAINED: all parameters, paths, and config
+      references are hardcoded inside the script. No command-line arguments.
+      Run with: bash runs/{name}.sh — that's it.
+    - .sh files: batch execution. Each script is a complete, standalone run.
+        Naming: {name}.sh — descriptive of what this specific run does.
+        Good: build_v0003_per6h.sh, train_patchtst_noevent.sh
+        Bad:  run.sh, 001_train.sh
+    - .ipynb files: interactive parameterized runs (optional).
+        Same principle — all parameters baked in, no external args needed.
+    - No Python scripts (.py) in runs/ — logic stays in {task_name}.py.
+    - The .py file contains the FUNCTIONS (logic). The .sh file calls them
+      with hardcoded arguments. Different runs = different .sh files,
+      not different arguments to the same .sh.
+
+  results/ — Light summaries (OPTIONAL)
+    - **Run name = result folder name** (drop the extension):
+        runs/build_v0003_per6h.sh  <->  results/build_v0003_per6h/
+        runs/train_patchtst.sh     <->  results/train_patchtst/
+    - The .sh script writes output to its matching results/ folder.
+    - Contents: report.md, metrics.json, plots/ (small PNGs), config_used.yaml
+    - LIGHT only. Heavy outputs go to _WorkSpace/.
+
+  INDEX.md — Run inventory (MANDATORY if runs/ exists)
+    - Maps each run to its result folder and records outcome.
 
 
 ---
 
-scripts/ Rules
-==============
+Config Sharing via Symlinks
+============================
 
-Layout: task-folder paradigm. scripts/ contains one subfolder per logical task.
-There are no flat .py or .sh files directly in scripts/ (except sbatch/).
+When multiple tasks use the same config files, ONE task holds the real
+files and other tasks symlink to them.
 
-Task folder rules:
-  - Name: clean snake_case descriptor only. No seq number, no date prefix.
-      Good: train_num, eval_all, gen_phase2_epoch_yamls
-      Bad:  001_260310_train_num, train-num
-  - Contents: one .py file + runs/ + results/ subdirectories + INDEX.md
-  - The .py filename matches the folder name exactly: train_num/train_num.py
+Convention:
+  - The task that is the most central or complete "owns" the real configs.
+  - Other tasks symlink the entire config/ directory or specific subdirs.
+  - Always use RELATIVE symlinks for git portability.
 
-runs/ rules (inside each task folder):
-  - Contains bash scripts only (.sh). No Python here.
-  - Each script represents one execution variant (device, phase, ablation, etc.)
-  - Naming: {variant}.sh — named by what makes it distinct, not by date.
-      Good: phase1_gpu0.sh, ablation_cpu.sh, eval_phase1.sh
-      Bad:  run_train_num.sh, 001_train.sh
+Example — FairGlucose project:
 
-results/ rules (inside each task folder):
-  - Light summaries only. Committed to git.
-  - Each subfolder mirrors a run script name (without .sh extension):
-      runs/phase1_gpu0.sh  <->  results/phase1_gpu0/
-  - Contents: report.md, metrics.json, plots/ (small PNGs < 1 MB), config_used.yaml
-  - Heavy outputs (weights, checkpoints, large arrays) go to _WorkSpace/ instead.
+  tasks/cook_modelinstance/config/           <- REAL files (owner)
+    demo/demo-neural-patchtst.yaml
+    fairglucose/neural/per6h-h288l24-noevent/...
 
-sbatch/ rules (inside scripts/, shared across tasks):
-  - Use for bash/SLURM scripts that call multiple task Python scripts.
-  - Also use for shared env setup scripts (env.sh, submit wrappers).
-  - A script belongs here if it is cross-task (calls train_num.py AND train_tkn.py, etc.)
-  - SLURM log directories (logs/) generated at runtime should be in .gitignore.
+  tasks/cook_modeltuner/config               <- SYMLINK
+    -> ../cook_modelinstance/config
 
-scripts/INDEX.md Rules (MANDATORY — global task index)
-=======================================================
+  tasks/cook_modelpipeline/config            <- SYMLINK
+    -> ../cook_modelinstance/config
 
-- Required at scripts/INDEX.md in every project.
-- Purpose: global task list — allows Claude to scan for existing tasks before
+  tasks/batch_evaluate/config                <- SYMLINK
+    -> ../cook_modelinstance/config
+
+Creating symlinks:
+  cd tasks/cook_modeltuner
+  ln -s ../cook_modelinstance/config config
+
+Git stores symlinks as text (the relative target path). Works on Linux/Mac.
+Windows needs core.symlinks=true.
+
+
+---
+
+tasks/INDEX.md Rules (MANDATORY -- global task index)
+=====================================================
+
+- Required at tasks/INDEX.md in every project.
+- Purpose: global task list -- allows Claude to scan for existing tasks before
   creating new ones. Claude MUST read this before creating any new task folder.
 - Created by fn-new.md at scaffold time. Updated whenever a task is added.
 
-Format:
+Format — one section per task group:
 
-  # scripts/INDEX.md — {PROJECT_ID}
+  # tasks/INDEX.md -- {PROJECT_ID}
   # Last updated: {YYMMDD}
+
+  ## {G} -- {Group Description}
 
   | Task | Data | Stage | Description | Status |
   |------|------|-------|-------------|--------|
-  | train_num  | OhioT1DM | 5 | Train TE-CLM num-token model | done |
-  | train_tkn  | OhioT1DM | 5 | Train TE-CLM token model     | done |
-  | eval_all   | OhioT1DM | 5 | Evaluate all trained models  | wip  |
+  | {G}{N}_{name} | {dataset} | {stage} | {description} | {status} |
+
+  Example:
+
+  ## B -- Model Training & Inference
+
+  | Task | Data | Stage | Description | Status |
+  |------|------|-------|-------------|--------|
+  | B1_train_stats  | FairGlucose | 5 | Train stats models (naive, arima, autoets) | done |
+  | B2_train_ml     | FairGlucose | 5 | Train ML models (xgboost, catboost, ...)   | done |
+  | B3_train_neural | FairGlucose | 5 | Train neural models (patchtst, tft, ...)   | done |
+  | B4_run_api      | FairGlucose | 5 | Run API/LLM models (claude, gpt, ...)      | done |
+
+  ## C -- Evaluation & Paper Analysis
+
+  | Task | Data | Stage | Description | Status |
+  |------|------|-------|-------------|--------|
+  | C1_eval_main_table | FairGlucose | eval | Generate main results table | done |
 
   Column definitions:
-    Task          Task folder name (same as scripts/{task}/)
+    Task          Task folder name (same as tasks/{G}{N}_{name}/)
     Data          Dataset(s) the task operates on
-    Stage         Pipeline stage(s): 1 / 2 / 3 / 4 / 5 / 6 / all
+    Stage         Pipeline stage(s): 1 / 2 / 3 / 4 / 5 / 6 / eval / all
     Description   Short description of what the task does
     Status        stub | wip | done | deprecated
 
-scripts/{task}/INDEX.md Rules (MANDATORY — per-task run inventory)
-===================================================================
 
-- Required at scripts/{task}/INDEX.md in every task folder.
-- Purpose: run inventory — maps each run script to its result folder and records outcome.
+tasks/{task}/INDEX.md Rules (MANDATORY when runs/ exists)
+==========================================================
+
+- Required at tasks/{task}/INDEX.md in every task folder that has runs/.
+- Purpose: run inventory -- maps each run to its result folder and outcome.
 - Created when the task folder is created. Updated after each run.
 
 Format:
 
-  # {task}/INDEX.md — {PROJECT_ID}
+  # {task}/INDEX.md -- {PROJECT_ID}
   # Last updated: {YYMMDD}
 
-  | Run Script | Variant | Result Dir | Status | Notes |
-  |------------|---------|------------|--------|-------|
+  | Run | Variant | Result Dir | Status | Notes |
+  |-----|---------|------------|--------|-------|
   | phase1_gpu0.sh | Phase 1, GPU 0 | results/phase1_gpu0/ | done | loss 0.42 |
-  | phase2_gpu0.sh | Phase 2, GPU 0 | results/phase2_gpu0/ | wip  | running   |
+  | explore_patchtst.ipynb | Interactive PatchTST | results/explore_patchtst/ | done | |
 
   Column definitions:
-    Run Script   Filename in runs/ (without path)
+    Run          Filename in runs/ (with extension)
     Variant      Human-readable description of what distinguishes this run
-    Result Dir   Relative path to the result folder (results/{variant}/)
+    Result Dir   Relative path to the result folder
     Status       planned | wip | done | failed | deprecated
     Notes        Key outcome, loss, or short note (optional)
+
+
+---
 
 Auto-Example Rule
 ==================
 
 - Every new Track A stub (pipeline Fn builder or ML model stub) MUST have a
-  paired example task automatically created in scripts/.
-- Place in: scripts/example_{fn_or_model_name}/example_{fn_or_model_name}.py
+  paired example task automatically created in tasks/.
+- Use the D group (demo/utility) by default: tasks/D{N}_example_{fn_or_model_name}/
 - The task folder follows the same task-folder structure as any other task.
-- Status in scripts/INDEX.md: "stub" (upgrades to "wip" or "done" as implementation progresses).
+- Status in tasks/INDEX.md: "stub" (upgrades to "wip" or "done" as implementation progresses).
 
 Example task Python file template:
 
 ```python
-# Example: {FnClassName} — {PROJECT_ID}
+# Example: {FnClassName} -- {PROJECT_ID}
 # Stage: {N}
 # Data: {dataset}
 # Created: {YYMMDD}
@@ -257,31 +340,55 @@ SPACE = setup_workspace()
 
 ---
 
+paper/ Rules
+=============
+
+- Contains manuscript source files (LaTeX, figures, tables, .bib).
+- Often a separate git repository added as a submodule.
+- Each submission gets its own subfolder:
+    paper/Paper-{Name}-{venue}/
+    Example: paper/Paper-FairGlucose-icml2026/
+- Paper repos have their own lifecycle (branches for revisions, rebuttals, etc.)
+  independent of the main project workflow.
+- Evaluation scripts that generate paper figures/tables live in tasks/
+  (e.g., tasks/eval_main_table/), NOT inside paper/. The paper/ folder
+  only contains the final outputs that go into the manuscript.
+- Large binary files (PDFs, compiled papers) follow the paper repo's own
+  .gitignore rules.
+
+
+---
+
 results/ Rules
-==============
+===============
 
 There is NO top-level results/ folder. Results live inside each task folder:
 
-  scripts/{task}/results/{variant}/
+  tasks/{task}/results/{variant}/
 
 Light/heavy boundary (applies inside every task's results/):
-  LIGHT — commit to git:
+  LIGHT -- commit to git:
     report.md        Markdown summary of the run
     metrics.json     Key numbers (loss, accuracy, F1, etc.)
     plots/           Small PNGs or SVGs (< 1 MB each)
     config_used.yaml Copy of the config that produced this result
-  HEAVY — goes to _WorkSpace/ instead (do NOT put in results/):
+    *.csv            Small summary tables
+    *.tex            LaTeX table outputs
+  HEAVY -- goes to _WorkSpace/ instead (do NOT put in results/):
     Model weights (.pt, .pth, .ckpt, .safetensors)
     Full prediction arrays (.npy, .pkl for large tensors)
     Checkpoint directories
     Anything > a few MB
 
-Run-result pairing: each result subfolder mirrors a run script name (no extension):
-  scripts/train_num/runs/phase1_gpu0.sh  <->  scripts/train_num/results/phase1_gpu0/
-  scripts/train_num/runs/phase2_gpu0.sh  <->  scripts/train_num/results/phase2_gpu0/
+Run name = result folder name (drop extension):
+  tasks/A1_cook_data/runs/build_v0003_per6h.sh  <->  tasks/A1_cook_data/results/build_v0003_per6h/
+  tasks/C2_eval_main_table/runs/all_noevent.sh  <->  tasks/C2_eval_main_table/results/all_noevent/
 
-A run script without a result folder is incomplete work (flagged by review).
-A result folder without a matching run script is orphaned (flagged by review).
+Each .sh is self-contained — bash runs/{name}.sh writes to results/{name}/.
+No command-line arguments needed.
+
+A run without a result folder is incomplete work (flagged by review).
+A result folder without a matching run is orphaned (flagged by review).
 
 
 ---
@@ -306,71 +413,55 @@ with all resolved paths. No project-level path declarations are needed.
 
 ---
 
-docs/ Rules
-============
+docs/ Rules (OPTIONAL)
+=======================
 
 - Contains planning and summary documents only. No code, no data, no configs.
-- Two standard files:
+- Create docs/ when the project needs planning docs or summaries.
+- Standard files (all optional):
 
-  TODO.md              Created at scaffold time by fn-new.md.
-                       Tracks all required files and pipeline progress.
-                       Updated by fn-review.md after each review run.
+  TODO.md              Pipeline progress tracker.
+                       Created at scaffold time or by fn-review.md.
                        Format: see template below.
 
-  project-summary.md   Created at end of development by fn-summarize.md.
-                       Human-readable summary + ASCII flow chart + key metrics.
-                       Designed to be readable by someone with zero prior context.
+  project-summary.md   Post-development summary + flow chart.
+                       Created by fn-summarize.md.
+                       Readable by someone with zero prior context.
 
-  nb-plan.md           Created and updated by fn-nb.md (/haipipe-project nb).
-                       One section per demo notebook in nb/.
-                       Linked from every notebook's opening markdown cell so
-                       the user and Claude always have a reference for what
-                       each notebook should demonstrate.
-                       Format: see fn/fn-nb.md Step 4 for section template.
-
-- Additional docs (design notes, meeting notes, references) may be added here
-  as plain .md files. No strict naming convention for extras.
+- Additional docs (design notes, meeting notes, references) may be added
+  as plain .md files.
 
 docs/TODO.md Template:
 
 ```markdown
-# TODO — {PROJECT_ID}
+# TODO -- {PROJECT_ID}
 # Created: {YYMMDD}
 # Last reviewed: {YYMMDD}
 
-## Required Files
+## Task Progress
 
-| File | Status | Notes |
+| Task | Status | Notes |
 |------|--------|-------|
-| cc-archive/ | done | Created at scaffold |
-| config/1_source_{dataset}.yaml | todo | Fill in SourceFnClass and args |
-| config/2_record_{dataset}.yaml | todo | Fill after Stage 1 done |
-| scripts/INDEX.md | done | Created at scaffold |
-| scripts/{task_name}/ | todo | First task folder |
-| scripts/{task_name}/INDEX.md | todo | Run inventory for first task |
-| scripts/{task_name}/{task_name}.py | todo | First experiment script |
-| scripts/{task_name}/runs/{variant}.sh | todo | First run script |
-| scripts/{task_name}/results/{variant}/ | todo | Created after first run |
-| docs/project-summary.md | todo | Run /haipipe-project summarize |
-| docs/nb-plan.md | n/a | Created by /haipipe-project nb when first demo notebook is added |
-| nb/INDEX.md | n/a | Create nb/ + INDEX.md when demo notebooks are added |
+| cook_modeltuner | done | |
+| cook_modelinstance | done | |
+| eval_main_table | wip | Missing LLM results |
 
 ## Track A Stubs
 
 | Stub File | Paired Example | Status |
 |-----------|----------------|--------|
-| build_{dataset}_source.py | example_{dataset}_stage1_fn.py | todo |
-| algorithm_{name}.py | example_{name}_model.py | todo |
+| build_{dataset}_source.py | example_{dataset}_stage1_fn | todo |
+| algorithm_{name}.py | example_{name}_model | todo |
 
 ## Pipeline Progress
 
 | Stage | Status | Notes |
 |-------|--------|-------|
-| Stage 1 Source | todo | |
-| Stage 2 Record | todo | |
+| Stage 1 Source | done | |
+| Stage 2 Record | done | |
 | Stage 3 Case | n/a | |
-| Stage 4 AIData | todo | |
-| Stage 5 Model | todo | |
+| Stage 4 AIData | done | |
+| Stage 5 Model | wip | |
 ```
 
 Status values: todo | wip | done | n/a
@@ -378,67 +469,58 @@ Status values: todo | wip | done | n/a
 
 ---
 
-Light / Heavy Boundary Summary
-================================
+cc-archive/ Rules (OPTIONAL)
+==============================
 
-  Location                        What goes here                    In git?
-  ------------------------------  --------------------------------  -------
-  scripts/{task}/results/         report.md, metrics.json, plots    YES
-  _WorkSpace/                     weights, checkpoints, arrays      NO
-  cc-archive/                     CC session md files               YES
-  config/                         YAML configs                      YES
-  scripts/{task}/{task}.py        Python logic                      YES
-  scripts/{task}/runs/*.sh        Run scripts                       YES
-  nb/                             demo notebooks (.py + .ipynb)     YES
+- Stores Claude Code session context for this project.
+- Create cc-archive/ when you start using /cc-session-summary or /coding-by-logging.
+- Two file types:
+    cc_*.md    Session exports produced by /cc-session-summary
+    di_*.md    Discussion/design logs produced by /coding-by-logging
+- Naming format: {type}_{YYMMDD}_h{HH}_{emoji}_{topic}_{author}.md
+    Example: di_260310_h16_map_haipipe-project-skill-design_jluo.md
+- Do NOT put code, config, or notebook files here.
 
 
 ---
 
-nb/ Rules (optional folder)
-===========================
+_old/ Rules (OPTIONAL)
+=======================
 
-- nb/ is optional. Create it only when demo notebooks exist or are planned.
-- Once nb/ exists, nb/INDEX.md is MANDATORY — same principle as scripts/INDEX.md.
-- Python-first workflow: .py is source of truth, .ipynb is derived.
-  Edit the .py, then convert: jupytext --to notebook {name}.py -o {name}.ipynb
-  See: Tools/plugins/research/skills/notebook-cell-python/SKILL.md for conventions.
-- Allowed files: .py (cell-wise scripts), .ipynb (converted), INDEX.md. No .yaml.
-- Naming: {seq}_{YYMMDD}_{desc}.py  +  {seq}_{YYMMDD}_{desc}.ipynb (same stem)
-    seq      3-digit zero-padded integer (001, 002, ...)
-    YYMMDD   Date the notebook was written
-    desc     Snake_case description of what the notebook demos
-  Example: 001_260315_demo_source_to_record.py  /  .ipynb
+- Archive folder for superseded files from previous project iterations.
+- Preserves git history while keeping the active project folder clean.
+- No structure rules inside _old/ -- it is a catch-all.
+- Content in _old/ is ignored by review and organize commands.
 
-nb/INDEX.md Rules (MANDATORY when nb/ exists)
-----------------------------------------------
 
-- Purpose: documents what portion of the pipeline each notebook covers,
-  and tracks planned-but-not-yet-created notebooks.
-- Claude reads nb/INDEX.md in fn-organize Phase 2e to detect coverage gaps.
-- Created when nb/ is first created. Updated whenever a notebook is added or changes status.
+---
 
-Format:
+Light / Heavy Boundary Summary
+================================
 
-  # nb/INDEX.md — {PROJECT_ID}
-  # Last updated: {YYMMDD}
-  # Purpose: track pipeline demo notebooks by stages covered, input, and output.
+  Location                          What goes here                    In git?
+  --------------------------------  --------------------------------  -------
+  tasks/{task}/results/             report.md, metrics.json, plots    YES
+  tasks/{task}/{task}.py            Python logic                      YES
+  tasks/{task}/{task}.ipynb         Demo notebook (derived)           YES
+  tasks/{task}/config/              YAML configs (real or symlink)    YES
+  tasks/{task}/runs/*.sh            Run scripts                       YES
+  tasks/{task}/runs/*.ipynb         Parameterized notebook runs       YES
+  _WorkSpace/                       weights, checkpoints, arrays      NO
+  cc-archive/                       CC session md files               YES
+  paper/                            LaTeX, figures, .bib              YES
 
-  | Script (.py) | Notebook (.ipynb) | Stages | Input | Output | Status |
-  |--------------|-------------------|--------|-------|--------|--------|
-  | 001_260315_demo_s1_to_s2.py | .ipynb | S1→S2 | raw visit records | RecordStore | done |
-  | 002_260320_demo_case_build.py | .ipynb | S2→S3 | RecordStore | CaseStore | wip |
-  | (planned) | — | S3→S4 | CaseStore | AIDataStore | planned |
 
-  Column definitions:
-    Script     .py filename (source of truth); use "(planned)" for not-yet-created entries
-    Notebook   .ipynb filename (derived); use "—" if not yet converted
-    Stages     Pipeline stages covered: S1→S2, S2→S3, S3→S4, S4→S5, S5→S6, etc.
-    Input      Description of the input data or asset the notebook starts from
-    Output     Description of the output data or intermediate result produced
-    Status     planned | wip | done | deprecated
+---
 
-  Rows with status=planned represent intended demos not yet implemented.
-  fn-organize Phase 2e flags all planned rows and uncovered stage transitions.
+sbatch/ Rules (inside tasks/, shared across tasks)
+===================================================
+
+  - Use for bash/SLURM scripts that call multiple task Python scripts.
+  - Also use for shared env setup scripts (env.sh, submit wrappers).
+  - A script belongs here if it is cross-task (calls cook_modeltuner.py
+    AND cook_modelinstance.py, etc.)
+  - SLURM log directories (logs/) generated at runtime should be in .gitignore.
 
 
 ---
@@ -448,49 +530,38 @@ Review Checklist (used by fn-review.md)
 
 **Structure checks:**
   [ ] Folder name matches Proj{Series}-{Category}-{Num}-{Name} pattern
-  [ ] cc-archive/ directory exists
-  [ ] config/ directory exists
-  [ ] scripts/ directory exists
-  [ ] docs/ directory exists
-  [ ] No top-level results/ directory (results live in scripts/{task}/results/)
+  [ ] tasks/ directory exists
+  [ ] tasks/INDEX.md exists
+  [ ] paper/ directory exists (or acknowledged as n/a)
+  [ ] No top-level config/ directory (configs live inside task folders)
+  [ ] No top-level results/ directory (results live in tasks/{task}/results/)
 
-**docs/ checks:**
+**Per-task checks (for each tasks/{task}/ folder):**
+  [ ] {task}/{task}.py exists (main logic file)
+  [ ] {task}/INDEX.md exists (if runs/ exists)
+  [ ] {task}/config/ exists (real or symlink) if task uses YAML configs
+  [ ] Config symlinks resolve correctly (target exists)
+  [ ] {task}/runs/ contains at least one .sh or .ipynb (if task has been run)
+  [ ] Every run has a matching result folder in results/
+  [ ] No heavy files in results/ (.pt, .pth, .ckpt, .safetensors, .npy > 1MB)
+  [ ] Each results/{variant}/ contains at least a report.md or metrics.json
+
+**Notebook checks (per task):**
+  [ ] If {task}.ipynb exists, {task}.py also exists (source of truth)
+  [ ] .ipynb in runs/ have descriptive names (not just "notebook.ipynb")
+
+**docs/ checks (if docs/ exists):**
   [ ] docs/TODO.md exists
-  [ ] docs/TODO.md pipeline progress rows are current (no done stages marked todo)
-  [ ] docs/project-summary.md exists (warn if absent, not block — generated at end)
+  [ ] docs/TODO.md task progress rows are current
 
-**cc-archive/ checks:**
+**cc-archive/ checks (if cc-archive/ exists):**
   [ ] Contains at least one cc_*.md or di_*.md file
-  [ ] No non-archive files mixed in (no .py, .yaml, .ipynb)
+  [ ] No non-.md files mixed in
 
-**config/ checks:**
-  [ ] All files are .yaml
-  [ ] YAML filenames start with stage number prefix (1_, 2_, 3_, 4_, 5_)
+**paper/ checks (if paper/ exists):**
+  [ ] Contains at least one Paper-{Name}-{venue}/ subfolder
+  [ ] Evaluation outputs in paper/ have matching source tasks in tasks/
 
-**scripts/ checks:**
-  [ ] scripts/INDEX.md exists (global task index)
-  [ ] INDEX.md has a row for every task subfolder (no orphan tasks)
-  [ ] No flat .py or .sh files directly in scripts/ (only sbatch/ and task subfolders)
-  [ ] No notebooks (.ipynb) in scripts/ (notebooks belong in nb/)
-  [ ] Every Track A stub has a paired example_{name}/ task folder
-
-**Per-task checks (for each scripts/{task}/ folder):**
-  [ ] {task}/INDEX.md exists (run inventory)
-  [ ] {task}/{task}.py exists (Python logic file)
-  [ ] {task}/runs/ exists and contains at least one .sh file
-  [ ] {task}/INDEX.md has an entry for every run script in {task}/runs/
-  [ ] Every {task}/runs/{variant}.sh has a matching {task}/results/{variant}/ folder
-  [ ] No heavy files in {task}/results/ (.pt, .pth, .ckpt, .safetensors, .npy > 1MB)
-  [ ] Each {task}/results/{variant}/ contains at least a report.md or metrics.json
-
-**nb/ checks (if nb/ exists):**
-  [ ] nb/INDEX.md exists (mandatory when nb/ exists)
-  [ ] INDEX.md has an entry for every .py in nb/
-  [ ] Every .py has a matching .ipynb (converted); flag if .ipynb is missing
-  [ ] No files in nb/ other than .py, .ipynb, and INDEX.md
-  [ ] All files follow {seq}_{YYMMDD}_{desc}.py / .ipynb naming (same stem)
-  [ ] No planned rows remain indefinitely (flag if status=planned for > 2 stages)
-
-**script-result alignment (per task):**
-  [ ] Every {task}/runs/{variant}.sh has a matching {task}/results/{variant}/ folder
-  [ ] Every {task}/results/{variant}/ has a matching run script in {task}/runs/
+**Run-result alignment (per task):**
+  [ ] Every run in runs/ has a matching results/{variant}/ folder
+  [ ] Every results/{variant}/ has a matching run in runs/

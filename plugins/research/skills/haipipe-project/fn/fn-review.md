@@ -4,31 +4,31 @@ fn-review: Project Gap Analysis + Docs Generation (Both Tracks)
 Inspects an existing project against the standard structure defined in
 ref/project-structure.md (Track B) and ref/code-structure.md (Track A).
 Outputs a gap report with severity tags AND generates/updates docs/ and
-scripts/INDEX.md so the project is brought to standard automatically.
+tasks/INDEX.md so the project is brought to standard automatically.
 
 Write access policy:
   ALLOWED    docs/              (TODO.md, data-map.md, dependency-report.md)
-  ALLOWED    scripts/INDEX.md   (create if missing, update entries from existing scripts)
-  BLOCKED    config/            (read only — never modify pipeline configs)
+  ALLOWED    tasks/INDEX.md     (create if missing, update entries from existing tasks)
+  BLOCKED    config/ (per-task) (read only — never modify pipeline configs)
   BLOCKED    code/              (read only — never modify generated or library code)
   BLOCKED    code-dev/          (read only — never modify builders)
 
 Execution checklist (track progress through the steps):
   [ ] Step 0   identify target project
   [ ] Step 1   validate project naming
-  [ ] Step 2   check four-part folder structure
+  [ ] Step 2   check folder structure (mandatory + optional)
   [ ] Step 3   review cc-archive/
-  [ ] Step 4   review config/ — set DECLARED_STAGES
+  [ ] Step 4   review per-task config/ — set DECLARED_STAGES
   [ ] Step 4b  generate / update docs/TODO.md
   [ ] Step 4c  generate docs/data-map.md
   [ ] Step 4d  generate docs/dependency-report.md
-  [ ] Step 5   check scripts/ and results/ alignment
-  [ ] Step 5b  generate / update scripts/INDEX.md
+  [ ] Step 5   check tasks/ structure and run-result alignment
+  [ ] Step 5b  generate / update tasks/INDEX.md
   [ ] Step 6   check results/ for heavy files
   [ ] Step 7a  config -> code/haifn/ FnClass resolution
   [ ] Step 7b  config -> code/hainn/ model resolution
   [ ] Step 7c  code-dev/ builder <-> code/haifn/ sync
-  [ ] Step 7d  scripts/ import resolution
+  [ ] Step 7d  tasks/ import resolution
   [ ] Step 8   output gap report + checkpoints
 
 ---
@@ -89,26 +89,38 @@ Violations:
 
 ---
 
-Step 2: Check Four-Part Structure
-===================================
+Step 2: Check Folder Structure
+================================
 
-Verify each mandatory directory exists:
+**Mandatory directories:**
 
-  [ ] {PROJECT_PATH}/cc-archive/     missing -> [BLOCK]
-  [ ] {PROJECT_PATH}/config/         missing -> [BLOCK]
-  [ ] {PROJECT_PATH}/scripts/        missing -> [WARN]
-  [ ] {PROJECT_PATH}/docs/           missing -> [WARN]
+  [ ] {PROJECT_PATH}/tasks/         missing -> [BLOCK]
+  [ ] {PROJECT_PATH}/paper/         missing -> [BLOCK]
+
+**Optional directories (absence is not blocking):**
+
+  [ ] {PROJECT_PATH}/docs/          missing -> [WARN]
+  [ ] {PROJECT_PATH}/cc-archive/    missing -> [NOTE]
+
+Note: there is NO top-level config/ directory. Configs live inside task folders
+at tasks/{task}/config/ (real directory or symlink). A top-level config/ is a
+legacy layout that should be flagged for migration.
+
+  [ ] {PROJECT_PATH}/config/        present -> [NOTE] "Legacy top-level config/ found.
+                                                Consider migrating configs into task folders.
+                                                Run /haipipe-project organize."
 
 Note: there is NO top-level results/ directory. Results live inside task folders
-at scripts/{task}/results/. A top-level results/ is a legacy layout that should
-be flagged for migration, not treated as compliant structure.
+at tasks/{task}/results/. A top-level results/ is a legacy layout that should
+be flagged for migration.
 
-  [ ] {PROJECT_PATH}/results/        present -> [NOTE] "Legacy top-level results/ found.
+  [ ] {PROJECT_PATH}/results/       present -> [NOTE] "Legacy top-level results/ found.
                                                 Consider migrating to task-folder layout.
                                                 Run /haipipe-project organize."
 
-Report any extra top-level directories not in the standard four:
-  Extra dirs (e.g., workspace/, materials/, notebooks/) -> [NOTE]
+Report any extra top-level directories not in the recognized set
+(tasks/, paper/, docs/, cc-archive/):
+  Extra dirs (e.g., workspace/, materials/, notebooks/, scripts/, nb/) -> [NOTE]
   Propose: "Consider migrating content to the standard layout."
 
 ---
@@ -116,6 +128,9 @@ Report any extra top-level directories not in the standard four:
 Step 3: Review cc-archive/
 ============================
 
+If cc-archive/ does not exist, skip this step (already noted in Step 2).
+
+If cc-archive/ exists:
   [ ] Directory is non-empty (has at least one .md file)
       Empty cc-archive/          -> [WARN] "No session records found."
   [ ] Files follow naming convention {type}_{YYMMDD}_h{HH}_*.md
@@ -125,17 +140,39 @@ Step 3: Review cc-archive/
 
 ---
 
-Step 4: Review config/
-========================
+Step 4: Review Per-Task config/
+=================================
 
-  [ ] Directory is non-empty
-      Empty config/              -> [WARN] "No YAML configs found."
+Configs are NOT top-level. They live inside each task folder as
+tasks/{task}/config/ — either a real directory or a symlink.
+
+**Symlink validation (run first):**
+
+For each task in TASKS:
+  If tasks/{task}/config is a symlink:
+    [ ] Symlink target exists and is readable
+        Broken symlink -> [BLOCK] "Config symlink in task {task} points to
+                                   non-existent target: {target_path}"
+    [ ] Symlink target is a directory (not a file)
+        Points to file -> [ERROR] "Config symlink in task {task} should point to
+                                   a directory, not a file."
+
+**Per-task config content checks:**
+
+For each task in TASKS:
+  [ ] tasks/{task}/config/ exists (real dir or valid symlink)
+      Missing -> [WARN] "Task {task} has no config/ folder."
+  [ ] If config/ exists, it is non-empty
+      Empty config/ -> [WARN] "Task {task} has an empty config/ folder."
   [ ] All files have .yaml extension
-      Non-YAML files             -> [WARN]
+      Non-YAML files -> [WARN]
+  [ ] YAML files are syntactically valid (parseable)
+      Parse error -> [ERROR] "YAML file {file} in task {task} is not valid YAML."
   [ ] YAML filenames start with stage number prefix (1_, 2_, 3_, 4_, 5_)
-      Missing prefix             -> [WARN]
+      Missing prefix -> [WARN]
 
-Detect which stages are declared (presence of 1_*.yaml, 2_*.yaml, etc.).
+Aggregate across all tasks: detect which stages are declared (presence of
+1_*.yaml, 2_*.yaml, etc. across all task config/ dirs).
 Save as DECLARED_STAGES for Steps 6 and 7.
 
 ---
@@ -153,15 +190,15 @@ This step has WRITE ACCESS to docs/ only.
   - Required Files table: mark each standard folder/file as "done" if present, "todo" if missing
   - Track A Stubs table: populate from any build_*.py found in code-dev/ and
     algo/tuner/instance files found in code/hainn/ that reference this project's dataset/model
-  - Pipeline Progress table: mark stage as "done" if a non-empty YAML exists for it in config/,
-    "n/a" if no YAML and user hasn't declared it, "todo" otherwise
+  - Pipeline Progress table: mark stage as "done" if a non-empty YAML exists for it
+    in any tasks/*/config/, "n/a" if no YAML and user hasn't declared it, "todo" otherwise
   Write the generated file to docs/TODO.md.
   Report: "[GENERATED] docs/TODO.md created from project scan."
 
 **If docs/TODO.md exists — update it:**
   [ ] TODO.md has a Required Files table       missing table -> [NOTE]
   [ ] TODO.md has a Pipeline Progress table    missing table -> [NOTE]
-  Sync Pipeline Progress rows with config/ YAML presence:
+  Sync Pipeline Progress rows with tasks/*/config/ YAML presence:
     Stage has non-empty YAML but marked "todo" -> upgrade to "done"
   Write updated TODO.md back.
   Report: "[UPDATED] docs/TODO.md — {N} status rows refreshed."
@@ -177,11 +214,11 @@ Step 4c: Generate docs/data-map.md
 =====================================
 
 This step has WRITE ACCESS to docs/ only.
-Always generate (or regenerate) this file — it is derived entirely from config/ YAMLs,
-which are read-only. Overwrite if it already exists.
+Always generate (or regenerate) this file — it is derived entirely from
+per-task config/ YAMLs, which are read-only. Overwrite if it already exists.
 
-Source: read all YAML files in config/ to extract FnClass names, dataset names,
-        model class, and stage sequence.
+Source: read all YAML files across tasks/*/config/ to extract FnClass names,
+        dataset names, model class, and stage sequence.
 
 Write docs/data-map.md with this fixed format:
 
@@ -189,7 +226,7 @@ Write docs/data-map.md with this fixed format:
 Data Map: {PROJECT_ID}
 =======================
 Generated: {YYMMDD}
-Source: derived from config/ YAML files
+Source: derived from tasks/*/config/ YAML files
 
 Pipeline Flow
 -------------
@@ -198,32 +235,32 @@ Pipeline Flow
        |
        v  Stage 1 — Source
        |  FnClass:  {SourceFnClass}     [done / stub / missing]
-       |  Config:   config/1_source_{dataset}.yaml
+       |  Config:   tasks/{task}/config/1_source_{dataset}.yaml
        v
   SourceSet ({dataset})
        |
        v  Stage 2 — Record
        |  FnClass:  {RecordFnClass}     [done / stub / missing]
-       |  Config:   config/2_record_{dataset}.yaml
+       |  Config:   tasks/{task}/config/2_record_{dataset}.yaml
        v
   RecordSet ({dataset})
        |
        v  Stage 3 — Case
        |  FnClass:  {CaseFnClass}       [done / stub / missing]
-       |  Config:   config/3_case_{dataset}.yaml
+       |  Config:   tasks/{task}/config/3_case_{dataset}.yaml
        v
   CaseSet ({dataset})
        |
        v  Stage 4 — AIData
        |  FnClass:  {TfmFnClass}        [done / stub / missing]
-       |  Config:   config/4_aidata_{dataset}.yaml
+       |  Config:   tasks/{task}/config/4_aidata_{dataset}.yaml
        v
   AIDataSet ({dataset})
        |
        v  Stage 5 — Model
        |  ModelClass: {ModelInstanceClass}   [done / stub / missing]
        |  Tuner:      {model_tuner_name}
-       |  Config:     config/5_model_{name}.yaml
+       |  Config:     tasks/{task}/config/5_model_{name}.yaml
        v
   ModelInstance ({name})
        |
@@ -236,11 +273,11 @@ Stages
 
   | Stage | Status | FnClass / ModelClass | Dataset | Config File |
   |-------|--------|----------------------|---------|-------------|
-  | 1 Source  | {status} | {FnClass} | {dataset} | 1_source_{dataset}.yaml |
-  | 2 Record  | {status} | {FnClass} | {dataset} | 2_record_{dataset}.yaml |
-  | 3 Case    | {status} | {FnClass} | {dataset} | 3_case_{dataset}.yaml   |
-  | 4 AIData  | {status} | {FnClass} | {dataset} | 4_aidata_{dataset}.yaml |
-  | 5 Model   | {status} | {ModelClass} | {dataset} | 5_model_{name}.yaml |
+  | 1 Source  | {status} | {FnClass} | {dataset} | tasks/{task}/config/1_source_{dataset}.yaml |
+  | 2 Record  | {status} | {FnClass} | {dataset} | tasks/{task}/config/2_record_{dataset}.yaml |
+  | 3 Case    | {status} | {FnClass} | {dataset} | tasks/{task}/config/3_case_{dataset}.yaml   |
+  | 4 AIData  | {status} | {FnClass} | {dataset} | tasks/{task}/config/4_aidata_{dataset}.yaml |
+  | 5 Model   | {status} | {ModelClass} | {dataset} | tasks/{task}/config/5_model_{name}.yaml |
 
   Status values:
     done     YAML present + FnClass resolves in code/haifn/ or code/hainn/
@@ -262,8 +299,8 @@ Step 4d: Generate docs/dependency-report.md
 This step has WRITE ACCESS to docs/ only.
 Always generate (or regenerate). Overwrite if it already exists.
 
-Source: code/INDEX.md (for cross-project reuse info) + config/ YAMLs (for class names)
-        + code/haifn/ and code/hainn/ (for implementation status).
+Source: code/INDEX.md (for cross-project reuse info) + tasks/*/config/ YAMLs
+        (for class names) + code/haifn/ and code/hainn/ (for implementation status).
 
 Write docs/dependency-report.md with this fixed format:
 
@@ -271,7 +308,7 @@ Write docs/dependency-report.md with this fixed format:
 Dependency Report: {PROJECT_ID}
 ================================
 Generated: {YYMMDD}
-Source: config/ YAMLs cross-referenced with code/INDEX.md
+Source: tasks/*/config/ YAMLs cross-referenced with code/INDEX.md
 
 This project depends on the following Fns and models.
 Use this file to understand reuse opportunities and track implementation status.
@@ -305,10 +342,10 @@ Missing Implementations
 ------------------------
   [List any FnClass or ModelClass referenced in config/ but not found in code/]
 
-  {FnClass} (Stage {N}) — referenced in config/ but not found in code/haifn/{fn_layer}/
+  {FnClass} (Stage {N}) — referenced in tasks/{task}/config/ but not found in code/haifn/{fn_layer}/
     Action: run /haipipe-data design-chef {N} to implement
 
-  {ModelClass} — referenced in config/ but not found in code/hainn/instance/
+  {ModelClass} — referenced in tasks/{task}/config/ but not found in code/hainn/instance/
     Action: run /haipipe-nn to implement
 ```
 
@@ -319,73 +356,91 @@ Report: "[GENERATED] docs/dependency-report.md"
 
 ---
 
-Step 5: Review scripts/ Task Structure and Run-Result Alignment
-================================================================
+Step 5: Review tasks/ Structure and Run-Result Alignment
+==========================================================
 
-**Check scripts/ global structure:**
+**Check tasks/ global structure:**
 
-  [ ] scripts/INDEX.md exists (global task index)
-      Missing -> [WARN] "scripts/INDEX.md missing. Run /haipipe-project review to generate."
+  [ ] tasks/INDEX.md exists (global task index)
+      Missing -> [WARN] "tasks/INDEX.md missing. Run /haipipe-project review to generate."
 
-  [ ] No flat .py or .sh files directly in scripts/ (outside task subfolders or sbatch/)
-      Flat files found -> [WARN] "Flat scripts found in scripts/. These should be inside a
+  [ ] No flat .py or .sh files directly in tasks/ (outside task subfolders or sbatch/)
+      Flat files found -> [WARN] "Flat scripts found in tasks/. These should be inside a
                                    task subfolder. Run /haipipe-project organize to migrate."
 
-**For each task subfolder in scripts/ (excluding sbatch/):**
+**For each task subfolder in tasks/ (excluding sbatch/):**
 
-  TASKS = [subdirectory names in scripts/ except sbatch/]
+  TASKS = [subdirectory names in tasks/ except sbatch/]
 
   For each task in TASKS:
-    [ ] scripts/{task}/INDEX.md exists
-        Missing -> [WARN] "Task {task} has no INDEX.md (run inventory)."
-    [ ] scripts/{task}/{task}.py exists
+    [ ] tasks/{task}/{task}.py exists
         Missing -> [WARN] "Task {task} has no matching Python file ({task}.py)."
-    [ ] scripts/{task}/runs/ exists and contains at least one .sh
+    [ ] tasks/{task}/INDEX.md exists
+        Missing -> [WARN] "Task {task} has no INDEX.md (run inventory)."
+    [ ] tasks/{task}/runs/ exists and contains at least one .sh
         Missing -> [NOTE] "Task {task} has no run scripts in runs/."
+    [ ] tasks/{task}/config/ exists (real dir or valid symlink)
+        Missing -> [WARN] "Task {task} has no config/ folder."
+
+**Notebook-script pairing check (per task):**
+
+  For each task in TASKS:
+    For each .ipynb file in tasks/{task}/:
+      [ ] A matching .py file exists with the same stem
+          tasks/{task}/{name}.ipynb exists but tasks/{task}/{name}.py does not
+          -> [ERROR] "Notebook {name}.ipynb in task {task} has no matching {name}.py."
+
+**Config symlink validation (per task):**
+
+  For each task in TASKS:
+    If tasks/{task}/config is a symlink:
+      [ ] readlink -f tasks/{task}/config resolves to an existing directory
+          Broken symlink -> [BLOCK] "Config symlink in task {task} is broken:
+                                     {symlink} -> {target} (target does not exist)."
 
 **Run-result alignment (per task):**
 
   For each task in TASKS:
-    RUNS    = [basename without .sh for each .sh in scripts/{task}/runs/]
-    RESULTS = [dirname for each dir in scripts/{task}/results/]
+    RUNS    = [basename without .sh for each .sh in tasks/{task}/runs/]
+    RESULTS = [dirname for each dir in tasks/{task}/results/]
 
     For each run in RUNS:
-      [ ] scripts/{task}/results/{run}/ exists
+      [ ] tasks/{task}/results/{run}/ exists
           Missing -> [ERROR] "Run {task}/runs/{run}.sh has no matching result folder."
 
     For each result in RESULTS:
-      [ ] scripts/{task}/runs/{result}.sh exists
+      [ ] tasks/{task}/runs/{result}.sh exists
           Missing -> [ERROR] "Result folder {task}/results/{result}/ has no matching run script."
 
 **Track A example check:**
-  [ ] Every Track A stub has a paired example_{name}/ task folder in scripts/
+  [ ] Every Track A stub has a paired example_{name}/ task folder in tasks/
       Missing -> [WARN] "Track A stub {stub} has no paired example task folder."
 
 ---
 
-Step 5b: Generate / Update scripts/INDEX.md
-=============================================
+Step 5b: Generate / Update tasks/INDEX.md
+==========================================
 
-This step has WRITE ACCESS to scripts/INDEX.md and {task}/INDEX.md only.
+This step has WRITE ACCESS to tasks/INDEX.md and {task}/INDEX.md only.
 
-**If scripts/INDEX.md does not exist — generate it (global task index):**
-  Scan all subdirectories in scripts/ (excluding sbatch/).
+**If tasks/INDEX.md does not exist — generate it (global task index):**
+  Scan all subdirectories in tasks/ (excluding sbatch/).
   For each task subfolder, infer:
-    Data        from the task name or config/ YAML names (best-effort)
-    Stage       from the task name or config/ YAML names (best-effort)
+    Data        from the task name or tasks/{task}/config/ YAML names (best-effort)
+    Stage       from the task name or tasks/{task}/config/ YAML names (best-effort)
     Description from the task name words (snake_case -> human-readable)
     Status      "done" if all runs in {task}/runs/ have matching {task}/results/ folders
                 "wip"  if at least one run exists but some results are missing
                 "stub" if the task folder exists but has no run scripts yet
-  Write scripts/INDEX.md with the inferred table.
-  Report: "[GENERATED] scripts/INDEX.md — {N} tasks indexed."
+  Write tasks/INDEX.md with the inferred table.
+  Report: "[GENERATED] tasks/INDEX.md — {N} tasks indexed."
 
-**If scripts/INDEX.md exists — sync it:**
-  [ ] Every task subfolder in scripts/ has a row     missing -> add row, Status="stub"
+**If tasks/INDEX.md exists — sync it:**
+  [ ] Every task subfolder in tasks/ has a row     missing -> add row, Status="stub"
   [ ] Every row has a matching task subfolder        orphan  -> mark row with [ORPHAN] note
   [ ] Tasks where all runs have results but Status != "done" -> upgrade to "done"
   Write updated INDEX.md back.
-  Report: "[UPDATED] scripts/INDEX.md — {N} rows added/updated."
+  Report: "[UPDATED] tasks/INDEX.md — {N} rows added/updated."
 
 **Per-task INDEX.md sync:**
   For each task in TASKS that has a {task}/INDEX.md:
@@ -399,7 +454,7 @@ This step has WRITE ACCESS to scripts/INDEX.md and {task}/INDEX.md only.
 Step 6: Check Task Results for Heavy Files
 ===========================================
 
-Scan all task result folders recursively: scripts/*/results/
+Scan all task result folders recursively: tasks/*/results/
 
   Heavy extensions:
     .pt, .pth, .ckpt, .safetensors    <- model weights
@@ -419,12 +474,12 @@ Also flag if a top-level results/ directory still exists at project root:
 
 ---
 
-Step 7: Code Sync Check (config ↔ code ↔ code-dev)
-=====================================================
+Step 7: Code Sync Check (config <-> code <-> code-dev)
+========================================================
 
-Purpose: verify that everything the project's config files reference actually
-exists and is implemented in the codebase, and that code-dev/ builders and
-code/haifn/ generated files are in sync.
+Purpose: verify that everything the project's per-task config files reference
+actually exists and is implemented in the codebase, and that code-dev/ builders
+and code/haifn/ generated files are in sync.
 
 Read code/INDEX.md at the start of this step. Use it to resolve class names
 and to note which other projects share the same Fns/models.
@@ -437,10 +492,10 @@ Stage map (used throughout Step 7):
   5  ->  code/hainn/                               code/haifn/fn_model/    FnClass key: ModelInstanceClass
 
 
-Step 7a — Config → code/haifn/ class resolution
--------------------------------------------------
+Step 7a -- Config -> code/haifn/ class resolution
+--------------------------------------------------
 
-For each YAML in config/ (for stages 1-4):
+For each YAML across all tasks/*/config/ (for stages 1-4):
   1. Read the YAML file.
   2. Extract the FnClass value (e.g., SourceFnClass: GlucoseSourceFn).
   3. Search the corresponding code/haifn/{fn_layer}/ directory for a file
@@ -461,10 +516,10 @@ For each YAML in config/ (for stages 1-4):
     "FnClass {FnClassName} is shared with: {Projects Using column}"
 
 
-Step 7b — Config → code/hainn/ model resolution (Stage 5)
-----------------------------------------------------------
+Step 7b -- Config -> code/hainn/ model resolution (Stage 5)
+------------------------------------------------------------
 
-For 5_model_*.yaml (if present):
+For 5_model_*.yaml files found in any tasks/*/config/ (if present):
   1. Read the YAML. Extract:
        MODEL_CLASS   = ModelInstanceClass value
        TUNER_NAME    = model_tuner_name value
@@ -498,8 +553,8 @@ For 5_model_*.yaml (if present):
     "Model {MODEL_CLASS} is also used in: {Projects Using column}"
 
 
-Step 7c — code-dev/ builder ↔ code/haifn/ generated file sync
---------------------------------------------------------------
+Step 7c -- code-dev/ builder <-> code/haifn/ generated file sync
+-----------------------------------------------------------------
 
 For each stage in DECLARED_STAGES (stages 1-4 only):
   1. List build_*.py files in code-dev/1-PIPELINE/{N}-*-WorkSpace/:
@@ -518,11 +573,11 @@ For each stage in DECLARED_STAGES (stages 1-4 only):
            "Builder is newer than generated file — regenerate to stay in sync."
 
 
-Step 7d — scripts/ import resolution
---------------------------------------
+Step 7d -- tasks/ import resolution
+-------------------------------------
 
-Scan all .py files in scripts/ for haipipe imports (recursive):
-  grep -rn "from haifn\|from hainn\|import haifn\|import hainn" scripts/
+Scan all .py files in tasks/ for haipipe imports (recursive):
+  grep -rn "from haifn\|from hainn\|import haifn\|import hainn" tasks/
 
 For each imported class name found:
   [ ] Class exists in code/haifn/ or code/hainn/
@@ -547,13 +602,17 @@ Naming
 ------
   [status]  Project naming convention
 
-Structure
----------
-  [status]  cc-archive/
-  [status]  config/
-  [status]  scripts/
+Structure (mandatory)
+---------------------
+  [status]  tasks/
+  [status]  paper/
+
+Structure (optional)
+--------------------
   [status]  docs/
-  [note]    results/ (top-level) — should not exist; results live in scripts/{task}/results/
+  [status]  cc-archive/
+  [note]    config/ (top-level) — should not exist; configs live in tasks/{task}/config/
+  [note]    results/ (top-level) — should not exist; results live in tasks/{task}/results/
 
 docs
 ----
@@ -564,50 +623,54 @@ cc-archive
 ----------
   [status]  ...
 
-config
-------
+Per-Task Config
+---------------
+  [status]  Config symlinks all resolve to valid targets
+  [status]  All per-task config/ YAML files are syntactically valid
   [status]  ...
   Declared stages: {DECLARED_STAGES}
 
-scripts / INDEX.md
-------------------
-  [status]  scripts/INDEX.md present (global task index)
+tasks / INDEX.md
+-----------------
+  [status]  tasks/INDEX.md present (global task index)
   [status]  All task subfolders indexed
   [status]  All Track A stubs have paired example_{name}/ task folders
 
-scripts / task structure
-------------------------
-  [status]  No flat .py/.sh files directly in scripts/
-  [status]  Each task folder has INDEX.md, {task}.py, and runs/
+tasks / task structure
+-----------------------
+  [status]  No flat .py/.sh files directly in tasks/
+  [status]  Each task folder has INDEX.md, {task}.py, config/, and runs/
+  [status]  Every .ipynb has a matching .py (notebook-script pairing)
+  [status]  All config/ symlinks resolve to existing targets
 
 run-result alignment (per task)
 --------------------------------
   [status]  Run-result pairs per task
   [list of mismatches if any]
 
-results heavy file check (scripts/*/results/)
-----------------------------------------------
+results heavy file check (tasks/*/results/)
+--------------------------------------------
   [status]  ...
 
 Code Sync
 ---------
-  Config → code/haifn/ (FnClass resolution):
+  Config -> code/haifn/ (FnClass resolution):
     [status]  Stage 1: {FnClassName} -> {found/missing}
     [status]  Stage 2: {FnClassName} -> {found/missing}
     ...
     Shared Fns (cross-project reuse): {list or "none"}
 
-  Config → code/hainn/ (model resolution):
+  Config -> code/hainn/ (model resolution):
     [status]  ModelInstanceClass: {MODEL_CLASS} -> {found/missing}
     [status]  Tuner: {TUNER_NAME} -> {found/missing}
     [status]  Required YAML keys -> {ok/list missing keys}
     Shared models (cross-project reuse): {list or "none"}
 
-  code-dev/ ↔ code/haifn/ builder sync:
+  code-dev/ <-> code/haifn/ builder sync:
     [status]  Stage 1 builder -> generated Fn {in-sync/stale/missing}
     [status]  Stage 2 ...
 
-  scripts/ import check:
+  tasks/ import check:
     [status]  All imported classes resolve -> {ok/list broken imports}
 
 Summary
@@ -637,8 +700,8 @@ Print these at the end of Step 8 (verbatim — no extra analysis needed):
   "Quick check: open docs/ and confirm all generated files look correct
    (TODO.md, data-map.md, dependency-report.md). Did anything come out empty?"
 
-  [CH-2] scripts/INDEX.md in sync?
-  "Quick check: (1) scripts/INDEX.md has a row for every task subfolder;
+  [CH-2] tasks/INDEX.md in sync?
+  "Quick check: (1) tasks/INDEX.md has a row for every task subfolder;
    (2) each {task}/INDEX.md has a row for every .sh in {task}/runs/ and the
    matching result folder in {task}/results/. Update any stale entries."
 
@@ -647,10 +710,11 @@ Print these at the end of Step 8 (verbatim — no extra analysis needed):
 MUST NOT
 ---------
 
-- Do NOT modify config/ files — read only, never edit pipeline configs.
+- Do NOT modify per-task config/ files — read only, never edit pipeline configs.
 - Do NOT modify code/ files — read only, never edit library or generated code.
 - Do NOT modify code-dev/ files — read only, never edit builders.
-- Do NOT modify scripts/ (except INDEX.md) — never edit experiment scripts.
+- Do NOT modify tasks/ (except INDEX.md) — never edit experiment scripts.
 - Do NOT modify cc-archive/ — session history is append-only via /cc-session-summary.
+- Do NOT modify paper/ — read only during review.
 - Do NOT run any pipeline commands.
 - Do NOT propose actions outside the project folder without user confirmation.
