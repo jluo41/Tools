@@ -178,13 +178,17 @@ Project naming:   Proj{Series}-{Category}-{Num}-{Name}
   e.g.            ProjC-Model-2-GlucoseTransformer
 
 Standard layout (Track B):
-  tasks/          Self-contained task folders (logic + config + runs + results)
+  tasks/          Self-contained task folders — MANDATORY (the only mandatory folder)
                   tasks/INDEX.md = global task list; {task}/INDEX.md = run inventory
                   tasks/sbatch/ = cross-task SLURM scripts only
-  paper/          Manuscripts and figures (often a git submodule)
-  docs/           Planning + summary docs (optional: TODO.md, project-summary.md)
+  paper/          Manuscripts, LaTeX, figures (optional; often a git submodule)
+  docs/           Internal planning docs (optional: TODO.md, project-summary.md)
   cc-archive/     CC session history (optional)
   _old/           Archived legacy files (optional)
+
+  paper/ vs docs/ boundary:
+    paper/ = external-facing (submitted manuscript, review responses, slides)
+    docs/  = internal-facing (TODO, progress tracker, design notes, team onboarding)
 
   Note: no top-level config/ or results/ folder.
   Configs live inside task folders (with symlinks for sharing).

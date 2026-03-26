@@ -13,13 +13,13 @@ Every project lives under:
 
   examples/Proj{Series}-{Category}-{Num}-{Name}/
 
-Two mandatory folders:
+One mandatory folder:
 
   tasks/           <- Self-contained task folders (logic + config + runs + results)
+
+Four optional folders:
+
   paper/           <- Manuscripts, figures, LaTeX (often a git submodule)
-
-Three optional folders:
-
   docs/            <- Project planning and summary documents
   cc-archive/      <- Claude Code session history
   _old/            <- Archived legacy files (safe to ignore)
@@ -84,7 +84,7 @@ examples/Proj{Series}-{Category}-{Num}-{Name}/
 |   +-- sbatch/                           <- Cross-task SLURM scripts (shared)
 |       +-- submit_{name}.sh
 |
-+-- paper/                                <- MANDATORY: manuscripts + figures
++-- paper/                                <- OPTIONAL: manuscripts + figures
 |   +-- Paper-{Name}-{venue}/             <- One subfolder per submission
 |       +-- (LaTeX files, figures, etc.)  <- Often its own git repo/submodule
 |
@@ -340,21 +340,54 @@ SPACE = setup_workspace()
 
 ---
 
-paper/ Rules
-=============
+paper/ Rules (OPTIONAL)
+========================
 
 - Contains manuscript source files (LaTeX, figures, tables, .bib).
+- Create paper/ only when the project has a paper submission.
 - Often a separate git repository added as a submodule.
 - Each submission gets its own subfolder:
     paper/Paper-{Name}-{venue}/
     Example: paper/Paper-FairGlucose-icml2026/
 - Paper repos have their own lifecycle (branches for revisions, rebuttals, etc.)
   independent of the main project workflow.
-- Evaluation scripts that generate paper figures/tables live in tasks/
-  (e.g., tasks/eval_main_table/), NOT inside paper/. The paper/ folder
-  only contains the final outputs that go into the manuscript.
 - Large binary files (PDFs, compiled papers) follow the paper repo's own
   .gitignore rules.
+
+**Boundary between paper/ and tasks/:**
+
+  paper/ contains ONLY:
+    - LaTeX source (.tex, .bib, .sty, .bst)
+    - Final figures and tables used in the manuscript (.pdf, .png, .tex)
+    - Submission materials (cover letter, checklist, review responses)
+    - Paper-specific scripts for compiling (compile.sh, setup.sh)
+
+  paper/ does NOT contain:
+    - Evaluation scripts that generate figures/tables -> tasks/C*_eval_*/
+    - Raw data or model outputs -> _WorkSpace/
+    - Pipeline configs -> tasks/{task}/config/
+    - Analysis notebooks -> tasks/{task}/
+
+  Data flow: tasks/ produces figures/tables -> copied or symlinked into paper/
+    Example:
+      tasks/C2_eval_main_table/results/all_noevent/table1.tex  (generated here)
+      paper/Paper-FairGlucose-icml2026/0-display/Table/table1.tex  (used here)
+
+**Boundary between paper/ and docs/:**
+
+  paper/ = external-facing, for publication (LaTeX, submission-ready)
+  docs/  = internal-facing, for the team (planning, progress, summaries)
+
+  Goes in paper/:
+    - Anything that ends up in the submitted manuscript
+    - Review responses, rebuttals, revision plans
+    - Presentation slides for the paper
+
+  Goes in docs/:
+    - TODO.md (task progress tracker)
+    - project-summary.md (internal overview for team onboarding)
+    - Design notes, meeting notes, experiment plans
+    - Any .md that helps the team but is NOT part of the paper
 
 
 ---
@@ -508,6 +541,7 @@ Light / Heavy Boundary Summary
   tasks/{task}/runs/*.ipynb         Parameterized notebook runs       YES
   _WorkSpace/                       weights, checkpoints, arrays      NO
   cc-archive/                       CC session md files               YES
+  docs/                             TODO.md, project-summary.md       YES
   paper/                            LaTeX, figures, .bib              YES
 
 
@@ -530,9 +564,8 @@ Review Checklist (used by fn-review.md)
 
 **Structure checks:**
   [ ] Folder name matches Proj{Series}-{Category}-{Num}-{Name} pattern
-  [ ] tasks/ directory exists
-  [ ] tasks/INDEX.md exists
-  [ ] paper/ directory exists (or acknowledged as n/a)
+  [ ] tasks/ directory exists (mandatory)
+  [ ] tasks/INDEX.md exists (mandatory)
   [ ] No top-level config/ directory (configs live inside task folders)
   [ ] No top-level results/ directory (results live in tasks/{task}/results/)
 
@@ -561,6 +594,8 @@ Review Checklist (used by fn-review.md)
 **paper/ checks (if paper/ exists):**
   [ ] Contains at least one Paper-{Name}-{venue}/ subfolder
   [ ] Evaluation outputs in paper/ have matching source tasks in tasks/
+  [ ] No evaluation scripts (.py) inside paper/ (they belong in tasks/C*_eval_*)
+  [ ] No raw data or model outputs inside paper/ (they belong in _WorkSpace/)
 
 **Run-result alignment (per task):**
   [ ] Every run in runs/ has a matching results/{variant}/ folder
