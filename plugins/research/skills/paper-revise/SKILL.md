@@ -1,3 +1,8 @@
+---
+name: paper-revise
+description: "Interactive revision of LaTeX section files through structured discussion. Use when the user wants to revise a paper section, annotate sentences, discuss paragraph logic, or apply accepted changes. Also use when the user mentions /paper-revise, revise section, annotate paper, or paper revision."
+---
+
 Skill: paper-revise
 ===================
 
@@ -533,30 +538,27 @@ When apply IS invoked:
 
 ---
 
-Converting Old Annotations
-===========================
+Resuming a Session
+==================
 
-If the file has old-format `%% Diff:` lines, convert them during
-paragraph processing:
+When `/paper-revise <file>` is invoked on a file that already has annotations:
 
-Old format:
-```latex
-Sentence text.
-%% Diff: -Sentence text.- ++Revised text.++
-%% Reason: Explanation.
-```
+1. **Detect existing state:**
+   - Revision plan at the bottom (`%% REVISION PLAN`) → read it for context
+   - `%% ---- PX.SY ----` annotation blocks → note which paragraphs are done
+   - `%% Author:` fields with content → the author has left feedback
 
-Convert to:
-```latex
-%
-%% ---- PX.SY ----
-Sentence text.
-%% Proposed: Revised text.
-%% Changes:
-%%   (1) [specific phrase-level changes]
-%% Reason: Explanation.
-%% Author:
-```
+2. **Report what's already done:**
+   Show the author: "Found revision plan + annotations for P1-P4.
+   P5-P8 are not yet annotated. Resume from P5?"
+
+3. **Resume from where the author left off.** Skip re-annotating
+   paragraphs unless the author explicitly asks to revisit them.
+   If the author filled in `%% Author:` fields with objections or
+   new ideas, address those before moving forward.
+
+4. **If the revision plan has changed** (author edited it manually),
+   acknowledge the changes and adjust the annotation approach.
 
 ---
 
