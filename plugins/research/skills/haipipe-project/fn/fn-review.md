@@ -2,9 +2,9 @@ fn-review: Project Gap Analysis + Docs Generation
 ===================================================
 
 Inspects an existing project against the standard structure.
-Outputs a gap report and generates/updates docs/ and tasks/INDEX.md.
+Outputs a gap report and generates/updates docs/ and README.md files.
 
-Write access:  docs/ (all files), tasks/INDEX.md, {task}/INDEX.md
+Write access:  docs/ (all files), tasks/README.md, {group}/README.md, {task}/README.md
 Read-only:     everything else (config/, code/, code-dev/, cc-archive/, paper/)
 
 Severity tags: [BLOCK] [ERROR] [WARN] [NOTE]
@@ -15,7 +15,7 @@ Execution checklist (track progress):
   [ ] Step 2   per-task review
   [ ] Step 3   code sync check
   [ ] Step 4   generate/update docs
-  [ ] Step 5   generate/update INDEX.md files
+  [ ] Step 5   generate/update README.md files
   [ ] Step 6   output gap report
 
 ---
@@ -56,22 +56,28 @@ Step 1: Validate Naming + Structure
 
 ---
 
-Step 2: Per-Task Review
-========================
+Step 2: Per-Group and Per-Task Review
+=======================================
 
-For each task subfolder in tasks/ (excluding sbatch/):
+**Group-level checks:**
+For each group folder in tasks/ (excluding sbatch/):
+  - {G}_{group}/README.md exists ([WARN] if missing)
+  - Group letter matches its tasks' prefix ([ERROR] if mismatch)
+  - No flat task folders directly in tasks/ -- must be inside a group ([WARN])
+
+**Per-task checks:**
+For each task folder inside each group:
 
   **Structure checks:**
-    - {task}/{task}.py exists ([WARN] if missing)
-    - {task}/INDEX.md exists ([WARN] if missing and runs/ present)
-    - {task}/config/ exists -- real dir or valid symlink ([WARN] if missing)
-    - Config symlinks resolve to existing directory ([BLOCK] if broken)
+    - At least one *.py exists in the task folder ([WARN] if missing)
+    - {task}/README.md exists ([WARN] if missing)
+    - {task}/config/ exists with its own YAML files ([WARN] if missing)
     - YAML files parseable ([ERROR] if not)
-    - No flat .py/.sh directly in tasks/ ([WARN])
 
   **Run-result alignment:**
-    - Every .sh in runs/ has matching results/{name}/ ([ERROR] if missing)
-    - Every results/{name}/ has matching runs/{name}.sh ([ERROR] if orphaned)
+    - If runs/ exists: every .sh in runs/ has matching results/{name}/ ([ERROR] if missing)
+    - If runs/ exists: every results/{name}/ has matching runs/{name}.sh ([ERROR] if orphaned)
+    - If no runs/: results/ may contain flat files or default/ subfolder (OK)
 
   **Heavy file check in results/:**
     - .pt, .pth, .ckpt, .safetensors, .npy, .pkl, .bin, .h5 -> [ERROR] move to _WorkSpace/
@@ -170,7 +176,7 @@ Create docs/ if it does not exist.
            |
            v  Stage 1 -- Source
            |  FnClass:  {SourceFnClass}     [done / stub / missing]
-           |  Config:   tasks/{task}/config/1_source_{dataset}.yaml
+           |  Config:   tasks/{G}_{group}/{task}/config/1_source_{dataset}.yaml
            v
       SourceSet ({dataset})
            |
@@ -182,7 +188,7 @@ Create docs/ if it does not exist.
            |
            v  Stage 5 -- Model
            |  ModelClass: {ModelInstanceClass}   [done / stub / missing]
-           |  Config:     tasks/{task}/config/5_model_{name}.yaml
+           |  Config:     tasks/{G}_{group}/{task}/config/5_model_{name}.yaml
            v
       ModelInstance ({name})  ->  results/ + _WorkSpace/
 
@@ -191,7 +197,7 @@ Create docs/ if it does not exist.
 
       | Stage | Status | FnClass / ModelClass | Dataset | Config File |
       |-------|--------|----------------------|---------|-------------|
-      | 1 Source | {status} | {FnClass} | {dataset} | tasks/{task}/config/... |
+      | 1 Source | {status} | {FnClass} | {dataset} | tasks/{G}_{group}/{task}/config/... |
       ...
 
     Status: done (class found), stub (TODO_* or not found), missing (no YAML), n/a
@@ -233,16 +239,20 @@ Create docs/ if it does not exist.
 
 ---
 
-Step 5: Generate/Update INDEX.md Files
-========================================
+Step 5: Generate/Update README.md Files
+=========================================
 
-**tasks/INDEX.md** -- create if missing, sync if exists:
-  - Every task subfolder gets a row (infer data/stage/description from name and config/)
+**tasks/README.md** -- create if missing, sync if exists:
+  - Status table: every task gets a row (infer description from name and config/)
   - Orphan rows (row without matching folder) marked [ORPHAN]
   - Status synced: stub (no runs) | wip (some results missing) | done (all runs have results)
 
-**Per-task INDEX.md** -- create if missing, sync runs/ status:
-  - Every .sh in runs/ gets a row
+**{G}_{group}/README.md** -- create if missing, sync task list:
+  - Every task in the group gets a row
+  - Status synced same as above
+
+**Per-task README.md** -- create if missing, sync runs/ status:
+  - Runs table: every .sh in runs/ gets a row
   - Status upgraded to "done" when matching results/ folder exists with content
 
 ---
@@ -251,7 +261,7 @@ Step 6: Output Gap Report
 ===========================
 
 Print a structured report grouped by:
-  Naming, Structure, Per-Task Config, Tasks/INDEX.md,
+  Naming, Structure, Per-Group, Per-Task Config,
   Run-Result Alignment, Heavy Files, Code Sync, Docs.
 
 End with:
@@ -264,6 +274,6 @@ End with:
 MUST NOT
 ---------
 
-- Do NOT modify config/ files, code/, code-dev/, or task scripts (except INDEX.md)
+- Do NOT modify config/ files, code/, code-dev/, or task scripts (except README.md)
 - Do NOT run pipeline commands
 - Do NOT modify cc-archive/ or paper/

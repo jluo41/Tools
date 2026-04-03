@@ -19,7 +19,7 @@ Step 1: Gather Project Facts
 Read in parallel:
 
   (a) PROJECT_ID, Series, Category from folder name
-  (b) tasks/INDEX.md -> all tasks, stages, status
+  (b) tasks/README.md -> all groups, tasks, stages, status
   (c) Task config/ YAMLs -> declared stages, datasets, model name
   (d) Task results/ -> metrics.json values, report.md first paragraphs
   (e) cc-archive/ -> session count, date range
@@ -27,10 +27,10 @@ Read in parallel:
 
 ---
 
-Step 2: Sync INDEX.md Status
+Step 2: Sync README.md Status
 ==============================
 
-Before writing the summary, upgrade status in tasks/INDEX.md and per-task INDEX.md:
+Before writing the summary, upgrade status in tasks/README.md and group/task README.md:
   - If results/ has content for a "stub"/"wip" task/run -> upgrade to "done"
   - Never downgrade "done" entries.
 
@@ -50,7 +50,7 @@ Write examples/{PROJECT_ID}/docs/project-summary.md with these sections:
   **Key Results** -- Top 3-5 metrics from results/*/metrics.json.
   Simple table. If no metrics: "Results pending."
 
-  **Tasks** -- Condensed tasks/INDEX.md (done/wip tasks only).
+  **Tasks** -- Condensed tasks/README.md status table (done/wip tasks only).
 
   **Flow Chart** -- ASCII text flow chart (max 60 chars wide).
   Omit unused stages. Template:
@@ -82,13 +82,13 @@ Write examples/{PROJECT_ID}/docs/project-summary.md with these sections:
 Step 4: Confirm Output
 ========================
 
-Print paths of written/updated files. Report count of INDEX.md status upgrades.
+Print paths of written/updated files. Report count of README.md status upgrades.
 
 ---
 
 MUST NOT
 ---------
 
-- Do NOT modify config/ or task scripts (except INDEX.md status)
+- Do NOT modify config/ or task scripts (except README.md status tables)
 - Do NOT run pipeline commands
 - Do NOT pad with speculation -- if results unavailable, say so in one line

@@ -10,12 +10,15 @@ in one unified flow.
 Commands
 --------
 
-  /haipipe-project new
-      Start a new project from scratch. Asks a few questions (project ID,
-      dataset, stages, new code needed?), then scaffolds the full folder
-      structure under examples/ and optionally creates Track A stubs in
-      code-dev/ and code/hainn/. Checks code/INDEX.md first to suggest
-      reusing existing Fns or models across projects.
+  /haipipe-project new [project|group|task]
+      Three scopes:
+        project  -- full project from scratch (folder + first group + first task)
+        group    -- add a group folder to an existing project
+        task     -- add a task folder to an existing group
+      If scope omitted: asks which one.
+      For "project": also asks about pipeline stages, datasets, and whether
+      new Track A stubs are needed (code-dev/ + hainn/). Checks code/INDEX.md
+      to suggest reusing existing Fns or models.
 
   /haipipe-project review [path]
       Inspect an existing project and generate any missing standard docs.
@@ -27,14 +30,14 @@ Commands
         - Run-result alignment per task
         - Code sync: config FnClass/ModelClass -> code/ resolution
 
-      What it generates (writes to docs/ and tasks/INDEX.md only):
+      What it generates (writes to docs/ and README.md files only):
         - docs/TODO.md, docs/data-map.md, docs/dependency-report.md
-        - tasks/INDEX.md and per-task INDEX.md files
+        - tasks/README.md, group README.md, and per-task README.md
 
   /haipipe-project summarize [path]
       Generate a plain-English post-development summary. Writes
       docs/project-summary.md with a short description, key results table,
-      and an ASCII pipeline flow chart. Updates tasks/INDEX.md statuses.
+      and an ASCII pipeline flow chart. Updates README.md status tables.
 
   /haipipe-project organize [path]
       Inventory all project files, propose reorganization to match the
@@ -51,16 +54,18 @@ Standard Project Layout
 -------------------------
 
   examples/Proj{Series}-{Category}-{Num}-{Name}/
-  +-- tasks/              MANDATORY. One subfolder per task.
-  |   +-- INDEX.md        Global task index
-  |   +-- {task}/         Self-contained: {task}.py, config/, runs/, results/
+  +-- tasks/              MANDATORY. Two-level hierarchy.
+  |   +-- README.md       Project-level task overview
+  |   +-- {G}_{group}/   Group folders (e.g., A_data/, B_training/)
+  |   |   +-- README.md   Group overview
+  |   |   +-- {G}{N}_{name}/  Task folders (*.py, config/, runs/, results/)
   |   +-- sbatch/         Cross-task SLURM scripts (optional)
   +-- paper/              OPTIONAL. Manuscripts, figures, LaTeX.
   +-- docs/               OPTIONAL. TODO.md, data-map.md, project-summary.md
   +-- cc-archive/         OPTIONAL. CC session history (cc_*.md, di_*.md)
   +-- _old/               OPTIONAL. Archived legacy files.
 
-  Note: config/ is inside each task folder, not at the project top level.
+  Note: config/ is inside each task folder (each task owns its own), not at the project or group level.
 
 ---
 

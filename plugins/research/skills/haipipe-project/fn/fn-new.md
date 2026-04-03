@@ -1,13 +1,24 @@
-fn-new: Scaffold a New Project (Both Tracks)
-=============================================
+fn-new: Scaffold Project, Group, or Task
+==========================================
 
-Interactive flow for creating a new project from scratch.
-Covers Track B (examples/) and Track A (code-dev/ + hainn/) in one pass.
+Three scopes, one command:
+
+  /haipipe-project new project   -> full project from scratch
+  /haipipe-project new group     -> add group to existing project
+  /haipipe-project new task      -> add task to existing group
+
+If scope is omitted: ask which one the user wants.
+
+===================================================================
+Scope 1: New Project
+===================================================================
+
+Creates a full project: project folder + first group + first task.
 
 ---
 
-Step 1: Collect Project Metadata
-==================================
+Step 1P: Collect Project Metadata
+------------------------------------
 
 Ask in two blocks. Wait for answers before proceeding.
 
@@ -34,13 +45,13 @@ Display summary and wait for explicit YES before creating anything.
 
 ---
 
-Step 2: Create Track B -- examples/ Folder
-============================================
+Step 2P: Create Project Structure
+------------------------------------
 
 Create the mandatory structure:
 
   examples/{PROJECT_ID}/tasks/
-  examples/{PROJECT_ID}/tasks/INDEX.md
+  examples/{PROJECT_ID}/tasks/README.md
 
 Optionally created (only if user requests):
 
@@ -48,25 +59,207 @@ Optionally created (only if user requests):
   examples/{PROJECT_ID}/docs/
   examples/{PROJECT_ID}/cc-archive/
 
-**tasks/INDEX.md content:**
+**tasks/README.md content:**
 
-  # tasks/INDEX.md -- {PROJECT_ID}
+  # {PROJECT_ID} Tasks
   # Last updated: {YYMMDD}
 
-  | Task | Data | Stage | Description | Status |
-  |------|------|-------|-------------|--------|
+  (flow graph, directory tree, and status table -- see project-structure.md)
 
-**First task folder** -- name reflects the project's first action
-(e.g., cook_modelinstance, cook_source):
+Then proceed to create the first group (-> Scope 2) and first task (-> Scope 3)
+using the metadata collected above. No need to re-ask questions.
 
-  tasks/{first_task}/
-    {first_task}.py       (stub)
-    config/               (YAML skeletons per selected stage)
-    runs/
-    results/
-    INDEX.md
+---
 
-**YAML skeletons** in config/ for each selected stage:
+Step 3P: Create Track A -- Code Stubs (if needed)
+----------------------------------------------------
+
+Skip if both Q7 and Q8 answered NO.
+
+**A1 -- Pipeline Fn stubs (Q7 = YES)**
+
+For each stage needing a new Fn, create:
+  (a) Builder stub: code-dev/1-PIPELINE/{N}-*-WorkSpace/build_{dataset}_{layer}.py
+  (b) Paired example task: tasks/D_demo/example_{dataset}_stage{N}_fn/
+      Contains: example .py with commented-out usage, README.md, config/, runs/, results/
+
+Before creating: check code/INDEX.md for existing Fn at same stage+dataset.
+  Match found -> ask user: "Existing Fn {name} found. Reuse instead?"
+  No match -> create stub, add row to code/INDEX.md.
+
+**A2 -- ML model stubs (Q8 = YES)**
+
+Create stubs:
+  code/hainn/algo/{family}/algorithm_{name}.py
+  code/hainn/tuner/{family}/tuner_{name}.py
+  code/hainn/instance/{family}/instance_{name}.py
+  code/hainn/instance/{family}/configuration_{name}.py
+
+Before creating: check code/INDEX.md for existing model in same family+dataset.
+
+Paired example task: tasks/D_demo/example_{name}_model/
+  Contains: example .py with commented-out usage, README.md, config/, runs/, results/
+
+Add rows to group README.md, tasks/README.md, and code/INDEX.md.
+
+---
+
+Step 4P: Report
+-----------------
+
+Print a structured summary:
+  - Track B files created (project folder, group, task, config YAMLs)
+  - Track A stubs created (if any)
+  - Next steps: fill TODO_ placeholders, implement via /haipipe-data or /haipipe-nn
+
+
+===================================================================
+Scope 2: New Group
+===================================================================
+
+Adds a group folder to an existing project.
+
+---
+
+Step 1G: Identify Project
+----------------------------
+
+If inside a project: auto-detect from cwd or git status.
+Otherwise: list Proj* directories and ask.
+Confirm PROJECT_PATH.
+
+---
+
+Step 2G: Collect Group Metadata
+---------------------------------
+
+  Q1. Group letter? (show existing groups to avoid collision)
+  Q2. Group name? (snake_case, e.g. data, training, evaluation, demo)
+
+  -> Compose: {G}_{group_name}  (e.g. A_data, B_training)
+  -> Confirm with user.
+
+---
+
+Step 3G: Create Group Folder
+-------------------------------
+
+  tasks/{G}_{group_name}/
+    README.md
+
+**Group README.md content:**
+
+  {G}_{group_name}
+  =================
+
+  **Purpose:** {one-line from user or inferred}
+
+  Flow
+  ----
+  (to be filled as tasks are added)
+
+  Tasks
+  -----
+  | Task | Description | Status |
+  |------|-------------|--------|
+
+Add group to tasks/README.md directory tree.
+
+---
+
+Step 4G: Optionally Create First Task
+----------------------------------------
+
+Ask: "Create the first task inside this group? (yes/no)"
+  YES -> proceed to Scope 3 (auto-fill project and group, skip re-asking)
+  NO  -> done
+
+
+===================================================================
+Scope 3: New Task
+===================================================================
+
+Adds a task folder to an existing group.
+
+---
+
+Step 1T: Identify Project and Group
+--------------------------------------
+
+If inside a project: auto-detect from cwd.
+If inside a group folder: auto-detect both.
+Otherwise: ask for project, then list groups and ask which one.
+Confirm PROJECT_PATH and GROUP_PATH.
+
+---
+
+Step 2T: Collect Task Metadata
+---------------------------------
+
+  Q1. Task number? (show existing tasks in this group to avoid collision)
+  Q2. Task name? (snake_case, e.g. cook_data, train_ml, eval_main_table)
+
+  -> Compose: {G}{N}_{task_name}  (e.g. B3_train_neural)
+  -> Confirm with user.
+
+  Q3. Which pipeline stages does this task use? (for config YAML skeletons)
+      If none: create empty config/ dir.
+
+---
+
+Step 3T: Create Task Folder
+------------------------------
+
+  tasks/{G}_{group}/{G}{N}_{task_name}/
+    {G}{N}_{task_name}.py     (stub with # %% cells)
+    README.md
+    config/                   (task's own YAML configs)
+    runs/                     (empty)
+    results/                  (empty)
+
+**Task README.md content:**
+
+  {G}{N}_{task_name}
+  ====================
+
+  **What:** {one-line from user or inferred}
+  **Why:** TODO
+  **Inputs:** TODO
+  **Outputs:** TODO
+
+**Stub .py content:**
+
+  # %% [markdown]
+  # # {G}{N}_{task_name}
+  # TODO: implement
+
+  # %%
+  # Setup
+  import os, sys
+
+  # %%
+  # Main logic
+
+**Config handling:**
+
+  Create config/ dir. If pipeline stages known, add YAML skeletons (see below).
+  Each task owns its own config files. No sharing or symlinks between tasks.
+
+---
+
+Step 4T: Update README.md Files
+----------------------------------
+
+Add task row to:
+  - tasks/{G}_{group}/README.md task list
+  - tasks/README.md status table and directory tree
+
+---
+
+YAML Skeletons (shared across scopes)
+========================================
+
+Created in config/ when pipeline stages are known.
 
   Stage 1: config/1_source_{dataset}.yaml
   Stage 2: config/2_record_{dataset}.yaml
@@ -74,19 +267,19 @@ Optionally created (only if user requests):
   Stage 4: config/4_aidata_{dataset}.yaml
   Stage 5: config/5_model_{name}.yaml
 
-YAML skeleton -- stages 1-4 example:
+Stages 1-4 skeleton:
 
-  # Stage 1: Source Config
+  # Stage {N}: {Layer} Config
   # Project: {PROJECT_ID}
   # Dataset: {dataset}
   # Created: {YYMMDD}
-  # TODO: fill in all fields before running haistep-source
-  SourceFnClass: TODO_SourceFnClassName
-  SourceArgs:
+  # TODO: fill in all fields before running haistep-{layer}
+  {Layer}FnClass: TODO_{Layer}FnClassName
+  {Layer}Args:
     dataset_name: {dataset}
     # TODO: add dataset-specific args
 
-YAML skeleton -- Stage 5 (model):
+Stage 5 skeleton:
 
   # Stage 5: Model Config
   # Project: {PROJECT_ID}
@@ -106,55 +299,6 @@ YAML skeleton -- Stage 5 (model):
     # TODO: inference settings
   EvaluationArgs:
     # TODO: evaluation settings
-
-**Config sharing:** later tasks symlink to the owning task's config/:
-
-  cd tasks/{other_task} && ln -s ../{first_task}/config config
-
-Add task row to tasks/INDEX.md.
-
----
-
-Step 3: Create Track A -- Code Stubs (if needed)
-==================================================
-
-Skip if both Q7 and Q8 answered NO.
-
-**A1 -- Pipeline Fn stubs (Q7 = YES)**
-
-For each stage needing a new Fn, create:
-  (a) Builder stub: code-dev/1-PIPELINE/{N}-*-WorkSpace/build_{dataset}_{layer}.py
-  (b) Paired example task: tasks/example_{dataset}_stage{N}_fn/
-      Contains: example .py with commented-out usage, INDEX.md, config/, runs/, results/
-
-Before creating: check code/INDEX.md for existing Fn at same stage+dataset.
-  Match found -> ask user: "Existing Fn {name} found. Reuse instead?"
-  No match -> create stub, add row to code/INDEX.md.
-
-**A2 -- ML model stubs (Q8 = YES)**
-
-Create stubs:
-  code/hainn/algo/{family}/algorithm_{name}.py
-  code/hainn/tuner/{family}/tuner_{name}.py
-  code/hainn/instance/{family}/instance_{name}.py
-  code/hainn/instance/{family}/configuration_{name}.py
-
-Before creating: check code/INDEX.md for existing model in same family+dataset.
-
-Paired example task: tasks/example_{name}_model/
-  Contains: example .py with commented-out usage, INDEX.md, config/, runs/, results/
-
-Add rows to tasks/INDEX.md and code/INDEX.md.
-
----
-
-Step 4: Report to User
-=======================
-
-Print a structured summary:
-  - Track B files created (project folder, tasks, config YAMLs)
-  - Track A stubs created (if any)
-  - Next steps: fill TODO_ placeholders, implement via /haipipe-data or /haipipe-nn
 
 ---
 

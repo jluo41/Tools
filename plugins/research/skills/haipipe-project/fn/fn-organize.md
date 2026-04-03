@@ -4,7 +4,7 @@ fn-organize: File Inventory + Reorganization + Verification
 Inventories project files, proposes reorganization to standard layout,
 applies changes if approved, and verifies paths after moves.
 
-Writes to: docs/organize-report.md, tasks/INDEX.md (after reorg)
+Writes to: docs/organize-report.md, tasks/README.md, group README.md (after reorg)
 File moves: examples/{PROJECT_ID}/ only (with user approval)
 Read-only: code/, code-dev/
 
@@ -24,8 +24,9 @@ Goal: produce a complete picture of all project-related files.
 
 **Step 1a -- Project folder inventory:**
   Walk examples/{PROJECT_ID}/ recursively (skip _old/).
-  Group by top-level folder. For tasks/: list each task subfolder contents
-  ({task}.py, config/, runs/, results/).
+  Group by top-level folder. For tasks/: list each group folder and its task
+  subfolder contents (*.py, config/, runs/, results/).
+  Flag task folders not inside a group folder.
   Flag files at project root that belong inside task folders.
 
 **Step 1b -- Related external files:**
@@ -50,26 +51,28 @@ Compare current layout to standard and propose specific moves.
     - Extra top-level folders -> migrate contents to standard location
 
   File placement:
-    - .py/.sh at project root -> move to tasks/{task}/
-    - YAML outside task config/ -> move to tasks/{task}/config/
+    - .py/.sh at project root -> move to tasks/{G}_{group}/{task}/
+    - YAML outside task config/ -> move to tasks/{G}_{group}/{task}/config/
     - Non-.md in cc-archive/ -> move to appropriate folder
 
   tasks/ layout:
-    - Flat scripts in tasks/ -> create task subfolder, move inside
-    - Missing tasks/INDEX.md -> create
-    - Per-task: missing {task}.py, INDEX.md, bash scripts outside runs/,
+    - Flat task folders in tasks/ -> create group folder, move tasks inside
+    - Missing group README.md -> create
+    - Per-task: missing *.py, README.md, bash scripts outside runs/,
       results outside results/
 
-  Config sharing:
-    - Same YAML used by multiple tasks -> canonical copy + symlinks
+  Config ownership:
+    - Each task must have its own config/ with real YAML files
+    - If config/ is a symlink -> flag, propose copying to make it independent
 
   Legacy layout:
-    - Top-level config/ -> distribute to task folders
-    - Top-level results/ -> migrate to tasks/{task}/results/
+    - Top-level config/ -> distribute to task or group folders
+    - Top-level results/ -> migrate to tasks/{G}_{group}/{task}/results/
 
   Run-result alignment:
-    - Run without results -> flag as pending
-    - Result without run -> flag as orphaned
+    - If runs/ exists: run without results -> flag as pending
+    - If runs/ exists: result without run -> flag as orphaned
+    - If no runs/: results/ with flat files or default/ -> OK
 
 **Build proposal table:**
 
@@ -81,11 +84,10 @@ Compare current layout to standard and propose specific moves.
 **Ask user:** "Apply this reorganization? (yes/no)"
 
   NO: save proposal to organize-report.md, remind to run `organize verify` later. Stop.
-  YES: execute moves, create symlinks, log to organize-report.md, proceed to Phase 3.
+  YES: execute moves, log to organize-report.md, proceed to Phase 3.
 
   Move rules:
     - Create missing folders first, then move/rename files.
-    - Use relative symlinks for shared configs.
     - Do NOT move code/, code-dev/, cc-archive/ session files, paper/, or _old/.
 
 ---
@@ -106,10 +108,10 @@ Perform these checks on all task .py and .sh files:
   **Relative path check:**
     All paths referenced in scripts (config/, results/, docs/) exist.
     Common post-reorg issue: scripts referencing old flat paths instead of
-    the new task-folder paths (e.g., tasks/{task}.py -> tasks/{task}/{task}.py).
+    the new group/task paths (e.g., tasks/{task}/ -> tasks/{G}_{group}/{task}/).
 
-  **Symlink validity:**
-    All symlinks in the project resolve to existing targets.
+  **No symlinks:**
+    Flag any config/ symlinks -- each task should own its own config files.
 
 Append results to docs/organize-report.md Section 3.
 Print summary: ERROR count, WARN count, PASS count.

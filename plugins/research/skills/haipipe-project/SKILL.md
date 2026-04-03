@@ -13,10 +13,11 @@ Covers project-level structure across TWO tracks simultaneously:
 
 Two structural rules govern all projects:
 
-  Rule 1 -- Self-contained grouped tasks:
-    tasks/ uses {G}{N}_{name} naming (e.g., B1_train_stats).
-    Each task subfolder is self-contained: {task}.py, config/, runs/, results/, INDEX.md.
-    No flat files directly in tasks/ (except sbatch/).
+  Rule 1 -- Two-level task hierarchy:
+    tasks/ contains group folders: {G}_{group_name}/ (e.g., A_data/, B_training/).
+    Each group contains task folders: {G}{N}_{name}/ (e.g., B1_train_stats/).
+    Each task is self-contained: *.py, config/, runs/, results/, README.md.
+    No flat task folders directly in tasks/ -- they must be inside a group.
 
   Rule 2 -- Code always has a paired example:
     Every new pipeline Fn stub or ML model stub in Track A
@@ -27,7 +28,7 @@ Two structural rules govern all projects:
 Commands
 --------
 
-  /haipipe-project new                    -> scaffold a new project (both tracks)
+  /haipipe-project new [project|group|task] -> scaffold project, group, or task
   /haipipe-project review [path]          -> gap analysis + generate docs
   /haipipe-project summarize [path]       -> post-development summary + flow chart
   /haipipe-project organize [path]        -> file inventory + reorganization proposal
@@ -63,7 +64,7 @@ File Map
 --------
 
   SKILL.md                    <- you are here (router)
-  ref/project-structure.md    <- Track B: layout, naming, task-folder, config sharing
+  ref/project-structure.md    <- Track B: layout, naming, group-folder, task-folder
   ref/code-structure.md       <- Track A: code-dev/ + hainn/ conventions
   fn/fn-new.md                <- scaffold new project (interactive, both tracks)
   fn/fn-review.md             <- gap analysis + doc generation (both tracks)
