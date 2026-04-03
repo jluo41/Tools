@@ -11,8 +11,7 @@ Read-only: does NOT modify any files.
 Step 0: Identify Target Project
 =================================
 
-If path given: use it directly.
-Otherwise: auto-detect from cwd or git status.
+Follow the auto-detection rules in SKILL.md.
 Confirm PROJECT_PATH and PROJECT_ID.
 
 ---
@@ -88,3 +87,13 @@ MUST NOT
 - Do NOT write any files -- overview is printed to the user only
 - Do NOT modify README.md files
 - Do NOT run pipeline commands
+
+---
+
+Next Steps
+-----------
+
+After overview:
+  - To fill gaps (missing README, .py): run /haipipe-project review
+  - To reorganize files: run /haipipe-project organize
+  - To generate a project summary: run /haipipe-project summarize

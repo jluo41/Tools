@@ -23,9 +23,7 @@ Execution checklist (track progress):
 Step 0: Identify Target Project
 =================================
 
-If path given: use it directly.
-Otherwise: auto-detect from git status (recently modified files under examples/).
-If ambiguous: list Proj* directories and ask.
+Follow the auto-detection rules in SKILL.md.
 Confirm PROJECT_PATH and PROJECT_ID before proceeding.
 
 ---
@@ -72,6 +70,7 @@ For each task folder inside each group:
     - At least one *.py exists in the task folder ([WARN] if missing)
     - {task}/README.md exists ([WARN] if missing)
     - {task}/config/ exists with its own YAML files ([WARN] if missing)
+    - {task}/config/ is not a symlink ([WARN] if symlink — each task owns its own config)
     - YAML files parseable ([ERROR] if not)
 
   **Run-result alignment:**
@@ -95,9 +94,10 @@ Step 3: Code Sync Check
 Read code/INDEX.md first.
 
 Stage map for FnClass keys:
-  1 -> fn_source/  SourceFnClass     3 -> fn_case/   CaseFnClass
-  2 -> fn_record/  RecordFnClass     4 -> fn_aidata/  TfmFnClass
+  1 -> fn_source/  SourceFnClass     3 -> fn_case/     CaseFnClass
+  2 -> fn_record/  RecordFnClass     4 -> fn_aidata/   TfmFnClass
   5 -> code/hainn/instance/          ModelInstanceClass
+  6 -> fn_endpoint/                  EndpointFnClass
 
 **Config -> code resolution (stages 1-4):**
   For each FnClass in config/ YAMLs:
@@ -113,7 +113,13 @@ Stage map for FnClass keys:
     - Required YAML keys present: ModelArgs, TrainingArgs, InferenceArgs,
       EvaluationArgs, aidata_name, aidata_version, modelinstance_name ([ERROR])
 
-**Builder sync (stages 1-4):**
+**Endpoint resolution (stage 6):**
+  For 6_endpoint_*.yaml files:
+    - EndpointFnClass found in code/haifn/fn_endpoint/ ([BLOCK] if missing)
+    - Required YAML keys present: EndpointArgs, modelinstance_name,
+      modelinstance_version ([ERROR])
+
+**Builder sync (stages 1-4, 6):**
     - build_*.py exists in code-dev/ for each declared stage ([WARN] if missing)
     - Generated file exists in code/haifn/ ([ERROR] if builder exists but no output)
 
@@ -277,3 +283,13 @@ MUST NOT
 - Do NOT modify config/ files, code/, code-dev/, or task scripts (except README.md)
 - Do NOT run pipeline commands
 - Do NOT modify cc-archive/ or paper/
+
+---
+
+Next Steps
+-----------
+
+After review:
+  - If structure issues found: run /haipipe-project organize to fix layout
+  - To see a task-by-task summary: run /haipipe-project overview
+  - To generate a project summary: run /haipipe-project summarize

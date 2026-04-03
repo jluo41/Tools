@@ -40,6 +40,22 @@ Commands
   Typical sequence for an existing project:
     1. organize   <- move files into standard layout
     2. review     <- generate docs + check code sync
+    3. overview   <- verify everything makes sense
+
+---
+
+Auto-Detection Rules (shared across all commands)
+---------------------------------------------------
+
+When a command accepts an optional [path] argument:
+
+  1. If path argument provided: use it as PROJECT_PATH.
+  2. If cwd is inside examples/Proj*/: detect PROJECT_ID from cwd.
+  3. Otherwise: check git status for recently modified files under examples/.
+  4. If multiple projects found: list Proj* directories and ask user to choose.
+  5. Confirm PROJECT_PATH and PROJECT_ID before proceeding.
+
+All fn-*.md files reference these rules in their Step 0.
 
 ---
 

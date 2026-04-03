@@ -13,7 +13,8 @@ Read-only: code/, code-dev/
 Step 0: Identify Target Project
 =================================
 
-Auto-detect from git status or ask. Set PROJECT_PATH and PROJECT_ID.
+Follow the auto-detection rules in SKILL.md.
+Confirm PROJECT_PATH and PROJECT_ID.
 
 ---
 
@@ -156,3 +157,12 @@ MUST NOT
 - Do NOT apply moves without explicit user YES
 - Do NOT modify YAML config content (moves OK, edits not)
 - Do NOT create new .py scripts -- organize only moves existing files
+
+---
+
+Next Steps
+-----------
+
+After organize:
+  - To validate code sync and generate docs: run /haipipe-project review
+  - To see a task-by-task summary: run /haipipe-project overview

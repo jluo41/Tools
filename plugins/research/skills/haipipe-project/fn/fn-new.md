@@ -124,8 +124,7 @@ Adds a group folder to an existing project.
 Step 1G: Identify Project
 ----------------------------
 
-If inside a project: auto-detect from cwd or git status.
-Otherwise: list Proj* directories and ask.
+Follow the auto-detection rules in SKILL.md.
 Confirm PROJECT_PATH.
 
 ---
@@ -186,9 +185,9 @@ Adds a task folder to an existing group.
 Step 1T: Identify Project and Group
 --------------------------------------
 
-If inside a project: auto-detect from cwd.
-If inside a group folder: auto-detect both.
-Otherwise: ask for project, then list groups and ask which one.
+Follow the auto-detection rules in SKILL.md for project.
+If inside a group folder: auto-detect group too.
+Otherwise: list groups and ask which one.
 Confirm PROJECT_PATH and GROUP_PATH.
 
 ---
@@ -266,6 +265,7 @@ Created in config/ when pipeline stages are known.
   Stage 3: config/3_case_{dataset}.yaml
   Stage 4: config/4_aidata_{dataset}.yaml
   Stage 5: config/5_model_{name}.yaml
+  Stage 6: config/6_endpoint_{name}.yaml
 
 Stages 1-4 skeleton:
 
@@ -308,3 +308,14 @@ MUST NOT
 - Do NOT create files outside examples/{PROJECT_ID}/ and code/ without asking
 - Do NOT generate actual implementation in stubs -- stubs only
 - Do NOT run pipeline commands during scaffolding
+
+---
+
+Next Steps
+-----------
+
+After scaffolding:
+  - Fill TODO_ placeholders in config/ YAMLs
+  - Implement pipeline functions: run /haipipe-data or /haipipe-nn
+  - Implement endpoints: run /haipipe-end
+  - To validate structure: run /haipipe-project review

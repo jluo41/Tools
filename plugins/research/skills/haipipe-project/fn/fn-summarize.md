@@ -9,7 +9,8 @@ Writes to: examples/{PROJECT_ID}/docs/project-summary.md
 Step 0: Identify Target Project
 =================================
 
-Auto-detect from git status or ask. Confirm path before proceeding.
+Follow the auto-detection rules in SKILL.md.
+Confirm PROJECT_PATH and PROJECT_ID.
 
 ---
 
@@ -92,3 +93,12 @@ MUST NOT
 - Do NOT modify config/ or task scripts (except README.md status tables)
 - Do NOT run pipeline commands
 - Do NOT pad with speculation -- if results unavailable, say so in one line
+
+---
+
+Next Steps
+-----------
+
+After summarize:
+  - To check for remaining issues: run /haipipe-project review
+  - To see per-task detail: run /haipipe-project overview
