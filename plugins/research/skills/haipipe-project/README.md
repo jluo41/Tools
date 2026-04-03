@@ -20,6 +20,12 @@ Commands
       new Track A stubs are needed (code-dev/ + hainn/). Checks code/INDEX.md
       to suggest reusing existing Fns or models.
 
+  /haipipe-project overview [path]
+      Print a task-by-task overview of what the project does.
+      Reads every task's README.md and produces a structured table
+      per group: task name, what it does, paper/rebuttal reference, status.
+      Read-only -- does not write any files.
+
   /haipipe-project review [path]
       Inspect an existing project and generate any missing standard docs.
       Auto-detects the current project from git status if no path is given.
@@ -76,6 +82,7 @@ Skill Files
   ref/project-structure.md    Standard layout, naming, task-folder rules
   ref/code-structure.md       code-dev/ builder pattern, hainn/ model layout
   fn/fn-new.md                Scaffold flow (both tracks, reuse check)
+  fn/fn-overview.md           Task-by-task project overview (read-only)
   fn/fn-review.md             Gap analysis + doc generation + code sync check
   fn/fn-summarize.md          Post-development summary + ASCII flow chart
   fn/fn-organize.md           File inventory + reorganization + verification

@@ -29,6 +29,7 @@ Commands
 --------
 
   /haipipe-project new [project|group|task] -> scaffold project, group, or task
+  /haipipe-project overview [path]        -> task-by-task overview of what the project does
   /haipipe-project review [path]          -> gap analysis + generate docs
   /haipipe-project summarize [path]       -> post-development summary + flow chart
   /haipipe-project organize [path]        -> file inventory + reorganization proposal
@@ -48,12 +49,13 @@ Execution Protocol
 Step 0: Parse the subcommand from args.
 
 Step 1: Read ref files FIRST (mandatory before proceeding).
-  new / review:         ref/project-structure.md + ref/code-structure.md
-  summarize / organize: ref/project-structure.md only
+  new / review:          ref/project-structure.md + ref/code-structure.md
+  overview / summarize / organize: ref/project-structure.md only
   Confirm: "Loaded: [ref files]. Executing: [subcommand]."
 
 Step 2: Read and follow the function file exactly.
   new        ->  fn/fn-new.md
+  overview   ->  fn/fn-overview.md
   review     ->  fn/fn-review.md
   summarize  ->  fn/fn-summarize.md
   organize   ->  fn/fn-organize.md
@@ -67,6 +69,7 @@ File Map
   ref/project-structure.md    <- Track B: layout, naming, group-folder, task-folder
   ref/code-structure.md       <- Track A: code-dev/ + hainn/ conventions
   fn/fn-new.md                <- scaffold new project (interactive, both tracks)
+  fn/fn-overview.md           <- task-by-task overview (read-only)
   fn/fn-review.md             <- gap analysis + doc generation (both tracks)
   fn/fn-summarize.md          <- post-development summary + flow chart
   fn/fn-organize.md           <- file inventory + reorganization + verification
