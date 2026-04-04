@@ -196,6 +196,52 @@ Step 6: Summarize the reviewer's core concerns
 
 ---
 
+Interactive Walkthrough Mode (Session 1 alternative)
+======================================================
+
+  Instead of the author annotating the file alone and CC responding later,
+  CC can walk through the review with the author in real time. This is
+  useful when the author wants to discuss as they read.
+
+  How it works:
+
+  1. CC presents one paragraph (or sentence, for dense paragraphs) at a time.
+  2. CC adds a short note to help parse what the reviewer is saying —
+     not strategy, not analysis, just comprehension aid.
+  3. The author reacts verbally (in the chat). CC writes the reaction
+     as a > {AU}: annotation in the file.
+  4. CC may add a short > CC: reply if it helps understanding.
+     Keep CC replies to 1 line. The author's voice dominates.
+  5. Move to the next paragraph. Repeat.
+
+  Rules for CC in walkthrough mode:
+    - Present the original text clearly. Never modify it.
+    - Keep CC notes SHORT — one line to clarify intent or flag connections.
+    - Do NOT jump ahead to strategy, tasks, or paper sources. That's Session 2.
+    - Do NOT over-explain. The goal is the author's understanding, not CC's.
+    - If a paragraph is dense (multiple concerns packed in), break it apart
+      and present each concern separately.
+    - Let the author skip paragraphs they don't want to annotate.
+    - Write the author's reaction faithfully — use their words, their language.
+
+  Starting prompt for walkthrough mode:
+
+    "I'm working on review annotation for {paper}. Branch: {branch}.
+     My initials: {INITIALS}.
+
+     Please read the review files in 1-review/A-review-content/.
+     Walk me through review-{reviewer_id}.md sentence by sentence.
+     For each paragraph, help me understand what the reviewer means,
+     then I'll give my reaction for you to add as > {INITIALS}: inline.
+
+     Do NOT modify the original reviewer text. Only add annotation lines.
+     Keep CC replies short — one line max. Start with the first paragraph."
+
+  This mode produces the same output as manual annotation — Section 1 filled
+  with author + CC annotations. Session 2 proceeds identically.
+
+---
+
 Collaboration Notes
 ====================
 
