@@ -1,0 +1,6 @@
+[submodule "plugins/aris"]
+	path = plugins/aris
+	url = https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep.git
+[submodule "plugins/ccskill"]
+	path = plugins/ccskill
+	url = https://github.com/anthropics/skills.git

@@ -73,11 +73,15 @@ echo "Done! Available plugins:"
 echo "  logseq     - LogSeq markdown, queries, templates, whiteboards"
 echo "  research   - Code review, evaluation, notebooks, paper incubation"
 echo "  chronicle  - Email indexing from MS365 Outlook"
+echo "  aris       - Auto-Research-In-Sleep: idea discovery, paper writing, review loops"
+echo "  ccskill    - Official Anthropic skills: PDF, PPTX, XLSX, web artifacts, MCP builder"
 echo ""
 echo "Install in Claude Code with:"
 echo "  /plugin install logseq@jluo41-tools"
 echo "  /plugin install research@jluo41-tools"
 echo "  /plugin install chronicle@jluo41-tools"
+echo "  /plugin install aris@jluo41-tools"
+echo "  /plugin install ccskill@jluo41-tools"
 
 # ─── 2. Global skill installation (--global) ─────────────────────────────────
 
