@@ -58,6 +58,16 @@ Core Principles
 7. **Author comments drive priorities** — If the author provides comments
    with the invocation, those comments set the direction. CC should
    address them before offering its own suggestions.
+8. **Interactive decision cards** — At every decision point where the
+   author must choose between discrete options (A/B/C), use the
+   `AskUserQuestion` tool to present interactive cards the author can
+   navigate with arrow keys. This replaces printing plain-text option
+   lists. The tool supports 1-4 questions per call, 2-4 options per
+   question, and always includes an "Other" option for free-text input.
+   Use the `preview` field to show quoted LaTeX snippets or before/after
+   text when the decision benefits from seeing the actual content.
+   Batch related questions together (up to 4) but keep unrelated
+   decisions in separate calls so the author can focus.
 
 ---
 
@@ -150,8 +160,47 @@ Options:
 My take: [CC's recommendation]
 ```
 
-**Present all questions at once.** Then discuss one by one with the
-author. This is more efficient than discovering issues mid-annotation.
+**Present all questions at once** as a text overview first so the author
+sees the full scope. Then walk through decisions using `AskUserQuestion`
+interactive cards, batching up to 4 related questions per call.
+
+Each question becomes an `AskUserQuestion` entry:
+- `question`: the decision question with context
+- `header`: short category tag (e.g., "Structure", "Redundancy")
+- `options`: 2-4 choices, put CC's recommendation first with "(Recommended)"
+- `preview`: use this to show the relevant LaTeX snippet or quote so
+  the author can see what they're deciding about without scrolling
+
+Example call for two structure questions:
+```
+AskUserQuestion(questions=[
+  {
+    question: "P3 mixes motivation and method. How should we handle it?",
+    header: "Structure",
+    options: [
+      {label: "Split into two (Recommended)", description: "P3a = motivation, P3b = method setup"},
+      {label: "Keep merged", description: "Tighten but keep as one paragraph"},
+      {label: "Move method part to §3", description: "Delete method sentences here, absorb into Method"}
+    ],
+    preview: "P3 currently says:\n\\textit{Our approach is motivated by...}\n[5 sentences later]\n\\textit{Specifically, we define the loss as...}",
+    multiSelect: false
+  },
+  {
+    question: "P5-P6 overlap with the abstract. Cut or keep?",
+    header: "Redundancy",
+    options: [
+      {label: "Cut P6, keep P5 (Recommended)", description: "P5 is stronger; P6 restates without adding"},
+      {label: "Merge into one paragraph", description: "Combine the non-redundant parts"}
+    ],
+    preview: "P5: \\textit{We show that...}\nP6: \\textit{Our results demonstrate that...}\nAbstract: \\textit{We demonstrate that...}",
+    multiSelect: false
+  }
+])
+```
+
+This replaces the old workflow of printing all options as text and
+waiting for the author to type A/B/C. The author navigates with arrow
+keys and selects, or picks "Other" to provide free-text input.
 
 ### Step 3b: Describe Proposed Structure
 
@@ -190,13 +239,26 @@ wants a different organization.
 ### Step 3c: Section-Level Discussion
 
 If the proposed structure requires further discussion about logic or
-reorganization, discuss here. The author may want to:
-- **Accept the structure** → proceed to annotation
-- **Reorder subsections** → CC adjusts, re-presents
-- **Merge/split subsections** → CC proposes how
-- **Change what a subsection argues** → CC revises the plan
+reorganization, present the decision using `AskUserQuestion`:
 
-This discussion may take multiple rounds. That's expected and valuable.
+```
+AskUserQuestion(questions=[
+  {
+    question: "How would you like to proceed with the proposed structure?",
+    header: "Structure",
+    options: [
+      {label: "Accept structure", description: "Proceed to paragraph-level annotation"},
+      {label: "Reorder subsections", description: "CC adjusts order and re-presents the plan"},
+      {label: "Merge/split subsections", description: "CC proposes how to combine or break apart"},
+      {label: "Change argument", description: "Tell CC what a subsection should argue instead"}
+    ],
+    multiSelect: false
+  }
+])
+```
+
+If the author picks "Change argument" or "Other", follow up with
+discussion. This may take multiple rounds. That's expected and valuable.
 
 ### Step 4: Record Section Agreement
 
@@ -309,26 +371,36 @@ Reviewer comments here: [list any]
 This is the most important step. Before touching any sentences, discuss
 the paragraph's **logic and purpose** with the author.
 
-Ask questions that invite both minor and major changes:
+First, present the analysis as text:
 
 ```
-For this paragraph:
-
-1. What is the ONE point this paragraph should make?
-2. [Specific question about logic, not just wording]
-3. [Flag if the current sentences don't match the agreed role from Phase 1]
-
 Current logic: [CC's reading of what the paragraph currently argues]
 Agreed role:   [what this paragraph should do per the revision plan]
 Gap:           [where current logic doesn't match the agreed role]
-
-Options:
-  A. Keep the logic, just tighten sentences
-  B. Restructure — keep some sentences, rewrite others to match new logic
-  C. Rewrite from scratch — tell me what you want it to say
-
-Or give me your raw thoughts and I'll help shape them.
 ```
+
+Then present the decision using `AskUserQuestion` with a preview
+showing the paragraph content:
+
+```
+AskUserQuestion(questions=[
+  {
+    question: "How should we handle this paragraph?",
+    header: "P[N] Logic",
+    options: [
+      {label: "Keep logic, tighten", description: "Current argument is fine — just polish sentences"},
+      {label: "Restructure", description: "Keep some sentences, rewrite others to match the agreed role"},
+      {label: "Rewrite from scratch", description: "Tell CC what you want it to say (pick Other to explain)"}
+    ],
+    preview: "Current P[N] ([N] sentences):\n  S1: [first ~60 chars]...\n  S2: [first ~60 chars]...\n  ...\n\nAgreed role: [role from revision plan]",
+    multiSelect: false
+  }
+])
+```
+
+If the author has paragraph-specific sub-questions (e.g., "should we
+keep S3?" or "which framing?"), batch those as additional questions
+in the same `AskUserQuestion` call (up to 4 total).
 
 **Wait for author response.**
 
@@ -501,11 +573,25 @@ Accept and move to P2, or adjust something?
 
 ### Step 5: Author Feedback
 
-**Wait for author response.** They may:
-- **Accept** → move to next paragraph
-- **Modify** → CC adjusts specific annotations
-- **Add thoughts** → author writes in `%% Author:` fields themselves later
-- **Rethink** → go back to paragraph discussion
+Present the decision using `AskUserQuestion`:
+
+```
+AskUserQuestion(questions=[
+  {
+    question: "How do you want to proceed with P[N] annotations?",
+    header: "P[N] Review",
+    options: [
+      {label: "Accept, next paragraph", description: "Annotations look good — move to P[N+1]"},
+      {label: "Modify annotations", description: "Adjust specific sentences (tell CC which ones)"},
+      {label: "Rethink paragraph", description: "Go back to paragraph logic discussion"}
+    ],
+    multiSelect: false
+  }
+])
+```
+
+The author can also pick "Other" to write in `%% Author:` fields or
+provide free-text feedback.
 
 ---
 
