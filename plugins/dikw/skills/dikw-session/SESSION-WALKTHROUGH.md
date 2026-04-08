@@ -7,6 +7,239 @@ what files are created, and how the workspace evolves.
 Dataset: df_etl_sample.parquet (10K rows, 96 cols, DrFirst SMS experiment)
 Question: "What patterns drive patient engagement in this SMS experiment?"
 
+This doc has TWO parts:
+  Part 1: HAPPY PATH — Human approves everything, linear flow
+  Part 2: REAL INTERACTIONS — Human redirects, disagrees, asks questions
+
+
+=========================================================================
+PART 2: REAL INTERACTIONS (what actually happens)
+=========================================================================
+
+These scenarios show the messy reality of Human-AI interaction.
+Read Part 1 (below) first for the basic flow, then come back here.
+
+
+Scenario A: Human changes the plan
+------------------------------------
+
+  AI presents plan:
+    D: dedup_analysis, engagement_baseline
+    I: arm_effectiveness, patient_segmentation
+    K: behavioral_drivers
+    W: messaging_strategy
+    Proceed?
+
+  Human: "I don't care about segmentation. Replace patient_segmentation
+          with time_of_day_analysis. And add a D task for the message
+          text content."
+
+  AI: "Updated plan:
+       D: dedup_analysis, engagement_baseline, message_content_profile  ← added
+       I: arm_effectiveness, time_of_day_analysis                       ← changed
+       K: behavioral_drivers
+       W: messaging_strategy
+       Proceed?"
+
+  Human: "yes"
+
+  Files: plan-raw.yaml rewritten with new tasks.
+  No plan-raw-v2.yaml (revision happened BEFORE execution started).
+
+
+Scenario B: Gate review finds a gap → ADD_TASKS
+-------------------------------------------------
+
+  D tasks complete. Gate review:
+
+  AI: "D complete. 2 reports produced.
+       - dedup_analysis: 42% dupes identified
+       - engagement_baseline: 13 arms compared
+
+       ⚠️ Gap: click_rate has 42% nulls. No D task addressed how
+       to handle these nulls. I-level statistics will be unreliable
+       if we don't decide on imputation strategy.
+
+       Recommendation: ADD_TASKS
+       → Add D task: null_handling_strategy
+       Agree?"
+
+  Human: "good catch. yes, add it."
+
+  AI runs /dikw-data null_handling_strategy.
+
+  Files ADDED:
+    reports/data/null_handling_strategy.md    ← NEW D report
+    code/data/null_handling_strategy/         ← NEW code folder
+
+  AI re-runs gate review:
+    "D complete. 3 reports now. Null handling documented.
+     Recommendation: PROCEED to I"
+
+  Human: "ok"
+
+
+Scenario C: I-level reveals D was wrong → GO_BACK
+---------------------------------------------------
+
+  I-1 (arm_effectiveness) completes. During I-2 (patient_segmentation):
+
+  AI: "Problem: I tried to segment patients by engagement level,
+       but the dedup_analysis report said to use the raw data.
+       The engagement_baseline was computed on 10K rows (with dupes).
+       The real baseline on 5,757 unique rows is different.
+
+       I need to go back to D and recompute engagement_baseline
+       on the deduped dataset."
+
+  Gate review:
+    "I incomplete. arm_effectiveness done but patient_segmentation
+     found that D-level engagement_baseline used duplicated data.
+
+     Recommendation: GO_BACK to D
+     → Re-run engagement_baseline on deduped data
+     → Then re-run I tasks"
+
+  Human: "makes sense. go back."
+
+  What happens:
+    1. AI runs /dikw-data engagement_baseline (OVERWRITES old report)
+    2. reports/data/engagement_baseline.md ← UPDATED (new numbers)
+    3. AI re-runs gate D → PROCEED
+    4. AI runs I-1 arm_effectiveness again (now uses correct baseline)
+    5. AI runs I-2 patient_segmentation
+    6. Gate I → PROCEED
+
+  Files CHANGED:
+    reports/data/engagement_baseline.md       ← OVERWRITTEN with deduped numbers
+    reports/information/arm_effectiveness.md   ← OVERWRITTEN with correct stats
+    reports/information/patient_segmentation.md ← NEW (first time completing)
+
+
+Scenario D: Human asks questions mid-session
+----------------------------------------------
+
+  During D-level execution:
+
+  Human: "wait — how many unique patients are there?"
+
+  AI: "From the explore notes: 3,608 unique patient_ids
+       across 5,757 unique invitations. Some patients received
+       multiple invitations."
+
+  Human: "can you check if the same patient got different message arms?"
+
+  AI: [reads the data]
+      "Yes — 847 patients (23%) received 2+ different arms.
+       This is important: if we compare arms, these patients
+       appear in multiple groups. Should I add a D task to
+       profile this cross-arm contamination?"
+
+  Human: "yes, add it before we do I-level"
+
+  AI: "Adding D task: cross_arm_contamination.
+       Will run it after the current D tasks finish."
+
+  Files: New task added to plan, will produce:
+    reports/data/cross_arm_contamination.md
+    code/data/cross_arm_contamination/
+
+
+Scenario E: Human skips levels
+--------------------------------
+
+  After I-level gate:
+
+  AI: "I complete. arm_effectiveness and patient_segmentation done.
+       Strong findings: authority arm is best for >50, 3 clear segments.
+       Recommendation: PROCEED to K"
+
+  Human: "actually, skip K and W. The I results are clear enough.
+          Just write the final report from D and I."
+
+  AI: "OK, skipping K and W. Writing final report from D + I only."
+
+  AI runs /dikw-report (reads only D + I reports, no K or W).
+
+  Files: reports/knowledge/ and reports/wisdom/ stay EMPTY.
+  Final report synthesizes from D + I only.
+  DIKW_STATE.json: status=completed, skipped_levels=[K, W]
+
+
+Scenario F: Human disagrees with gate recommendation
+------------------------------------------------------
+
+  After K-level gate:
+
+  AI: "K complete. behavioral_drivers report written.
+       It says: 'authority arm works because of credibility signals.'
+
+       Recommendation: PROCEED to W"
+
+  Human: "I don't agree with the K analysis. The causal claim about
+          credibility is too speculative. There's no evidence for
+          the mechanism — just correlation.
+
+          Go back and redo K with a more conservative framing.
+          Focus on WHAT we know for sure, not WHY."
+
+  AI: "You're right. Revising K task.
+       I'll rewrite behavioral_drivers focusing on validated patterns
+       only, without causal speculation."
+
+  AI runs /dikw-knowledge behavioral_drivers again (OVERWRITES).
+
+  reports/knowledge/behavioral_drivers.md ← OVERWRITTEN (more conservative)
+
+  AI: "Revised K report:
+       'Three arms statistically outperform: authority (+25%), emotionalCue
+       (+20%), socialProof (+16%). Age >50 is the strongest predictor of
+       authority arm response. Mechanism unknown — further study needed.'
+
+       Better?"
+
+  Human: "yes, now do W"
+
+
+Scenario G: Plan revision after discovering data is different
+--------------------------------------------------------------
+
+  After D-level, gate review:
+
+  AI: "D complete. But the findings change everything.
+
+       dedup_analysis discovered that 'duplicates' are actually
+       RETRIES — the same message was sent multiple times.
+       engagement_baseline numbers are all wrong because
+       clicks/auths are counted per-send, not per-patient.
+
+       The ENTIRE plan assumed per-patient metrics.
+       All I/K/W tasks are based on wrong assumptions.
+
+       Recommendation: REVISE_PLAN
+       → Need a new D task: per_patient_aggregation
+       → All I tasks need to use per-patient metrics
+       → Plan structure changes fundamentally"
+
+  Human: "revise the plan"
+
+  AI runs /dikw-plan with feedback:
+    "Previous plan assumed per-row metrics. Data has retries.
+     Must aggregate to per-patient level first."
+
+  Files:
+    sessions/run1/plan/plan-raw-v1.yaml    ← backup of old plan
+    sessions/run1/plan/plan-raw.yaml       ← NEW plan (v2)
+
+  New plan:
+    D: per_patient_aggregation, engagement_baseline_v2
+    I: arm_effectiveness_per_patient, segment_analysis
+    K: behavioral_drivers
+    W: messaging_strategy
+
+  AI keeps valid D reports (dedup_analysis still valid).
+  AI re-runs from D with new tasks.
+
 
 =========================================================================
 PHASE 0: Setup
