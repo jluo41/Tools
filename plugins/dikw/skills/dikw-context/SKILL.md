@@ -1,23 +1,48 @@
 ---
 name: dikw-context
-description: "DIKW context engineering skill. Build a focused context package for a specific task — loads the question, plan, relevant prior reports, session state, and data context. Use when preparing context for a DIKW task, or says /dikw-context. Trigger: load context, build context, context for task, what does this task need to know."
+description: "DIKW context engineering skill. Load context + evaluate readiness for a specific task. Decides: READY (execute), BLOCKED (fix first), or SKIP (unnecessary). Use when preparing context for a DIKW task, checking if a task can proceed, or says /dikw-context. Trigger: load context, build context, evaluate task, can we proceed, context for task, is this task ready."
 argument-hint: [task_type] [task_name] [project_dir]
 ---
 
-# DIKW Context Builder
+# DIKW Context Builder + Evaluator
 
-Build a focused context package for a specific DIKW task.
+Two jobs in one:
+  1. BUILD a focused context package for a specific task
+  2. EVALUATE whether the task should execute, be blocked, or be skipped
 
-Not all context is equal. This skill selects and summarizes EXACTLY
-what a task needs — not too much, not too little.
+Every task goes through /dikw-context BEFORE execution.
+The evaluation decides what happens next.
 
 ## Arguments: $ARGUMENTS
 
 Parse: task_type (explore/plan/D/I/K/W/review/report), task_name, project_dir.
 
+
+## The Flow
+
+```
+/dikw-context {task_type} {task_name} {project_dir}
+    |
+    ├── Step 1-5: Load 6 context layers (question, plan, reports, ...)
+    |
+    ├── Step 6: EVALUATE readiness
+    |     |
+    |     ├── READY    → context sufficient, execute the task
+    |     ├── BLOCKED  → context reveals a gap, fix before executing
+    |     └── SKIP     → task unnecessary, move to next
+    |
+    └── Output: context package + evaluation verdict
+```
+
+/dikw-session uses the verdict to decide:
+  READY   → run /dikw-{level} {task_name}
+  BLOCKED → update plan (add task, go back, revise), then re-evaluate
+  SKIP    → mark task as skipped, move to next task
+
+
 ## What This Skill Produces
 
-A structured CONTEXT PACKAGE with 6 layers:
+A structured CONTEXT PACKAGE with 6 layers + an EVALUATION verdict:
 
 ```
 CONTEXT FOR: {task_type} task "{task_name}"
@@ -146,7 +171,109 @@ Skip gate history if:
 ### Step 5: Assemble the Context Package
 
 Combine all layers into a structured text block.
-Print the context package to stdout.
+
+### Step 6: EVALUATE Readiness
+
+Given the assembled context, evaluate: can this task execute successfully?
+
+Check these conditions:
+
+```
+READY conditions (ALL must be true):
+  ✓ Task description is clear (plan entry exists)
+  ✓ Required input data exists (source/raw/ has files, or prior reports exist)
+  ✓ Prior-level reports provide what this task needs
+  ✓ No blocking gaps identified in the context
+  ✓ Task hasn't already been completed (report doesn't already exist)
+
+BLOCKED conditions (ANY one triggers BLOCKED):
+  ✗ A prior report says "needs X" but no task produced X
+    Example: dedup_analysis says "use deduped data" but no clean dataset exists
+  ✗ Task description references data that doesn't exist
+    Example: plan says "compare arms" but no arm column found in D reports
+  ✗ A gate decision says GO_BACK but the fix hasn't been done yet
+  ✗ Context reveals the task's approach won't work
+    Example: task says "run correlation" but D reports show only 1 numeric column
+
+SKIP conditions (ANY one triggers SKIP):
+  ○ Report already exists at the output path (and >100 bytes)
+  ○ A prior task in this session already covered this analysis
+  ○ The plan was revised and this task is no longer in the current plan
+  ○ A gate explicitly marked this task as unnecessary
+```
+
+Produce the verdict:
+
+```
+EVALUATION:
+  Verdict: READY | BLOCKED | SKIP
+  Reason: {one sentence explaining why}
+  Action: {what to do next}
+
+  If BLOCKED:
+    Blocker: {specific gap or missing prerequisite}
+    Fix: ADD_TASKS {task_name} | GO_BACK {level} | REVISE_PLAN
+    Fix description: {what needs to happen before this task can run}
+
+  If SKIP:
+    Skip reason: {why this task is unnecessary}
+    Existing output: {path to existing report, if applicable}
+```
+
+
+### Output
+
+Print both the context package AND the evaluation:
+
+```
+CONTEXT FOR: {task_type} task "{task_name}"
+═══════════════════════════════════════════
+
+QUESTION: ...
+PLAN CONTEXT: ...
+SESSION STATE: ...
+RELEVANT PRIOR REPORTS: ...
+DATA CONTEXT: ...
+GATE HISTORY: ...
+
+───────────────────────────────────────────
+EVALUATION:
+  Verdict: READY
+  Reason: All prior D reports provide sufficient context for this I task.
+  Action: Execute /dikw-information arm_effectiveness
+───────────────────────────────────────────
+```
+
+---
+
+## How /dikw-session Uses the Verdict
+
+```
+for each task in plan:
+
+    result = /dikw-context {task_type} {task_name} {project_dir}
+
+    if result.verdict == READY:
+        run /dikw-{level} {task_name}    # execute the task
+        continue to next task
+
+    elif result.verdict == BLOCKED:
+        if result.fix == ADD_TASKS:
+            add the suggested task to the plan
+            run the new task first
+            re-evaluate the original task
+        elif result.fix == GO_BACK:
+            go back to the specified level
+            run the fix task
+            come back and re-evaluate
+        elif result.fix == REVISE_PLAN:
+            run /dikw-plan with feedback
+            restart from appropriate level
+
+    elif result.verdict == SKIP:
+        mark task as skipped in DIKW_STATE.json
+        continue to next task
+```
 
 ---
 
@@ -244,6 +371,13 @@ DATA CONTEXT:
 
 GATE HISTORY:
   (no prior gates — this is the first level)
+
+───────────────────────────────────────────
+EVALUATION:
+  Verdict: READY
+  Reason: dedup_analysis complete. Raw data available. Task can proceed.
+  Action: Execute /dikw-data engagement_baseline
+───────────────────────────────────────────
 ```
 
 
@@ -279,6 +413,13 @@ DATA CONTEXT:
 GATE HISTORY:
   Gate D: PROCEED. All D tasks sufficient. One task added by gate
   (null_handling_strategy) but not relevant to this I task.
+
+───────────────────────────────────────────
+EVALUATION:
+  Verdict: READY
+  Reason: D reports provide arm-level engagement data. Sufficient for comparison.
+  Action: Execute /dikw-information arm_effectiveness
+───────────────────────────────────────────
 ```
 
 
@@ -316,6 +457,83 @@ DATA CONTEXT:
 GATE HISTORY:
   Gate D: PROCEED.
   Gate I: PROCEED. Strong statistical evidence. Segments clear.
+
+───────────────────────────────────────────
+EVALUATION:
+  Verdict: READY
+  Reason: D+I reports provide strong statistical evidence and clear segments.
+          Sufficient for causal synthesis.
+  Action: Execute /dikw-knowledge behavioral_drivers
+───────────────────────────────────────────
+```
+
+
+### BLOCKED example — I task needs deduped data that doesn't exist:
+
+```
+CONTEXT FOR: I task "arm_effectiveness"
+═══════════════════════════════════════════
+
+QUESTION:
+  How to improve engagement for low-engagement patients?
+
+PLAN CONTEXT:
+  arm_effectiveness: Compare 13 arms statistically.
+
+SESSION STATE:
+  Phase I, task 1 of 2. D complete (2 tasks).
+
+RELEVANT PRIOR REPORTS:
+  D "dedup_analysis" (full):
+    42% duplicates found. "Use deduped data for accurate metrics."
+    ⚠️ No deduped dataset was created. Only raw data exists.
+
+  D "engagement_baseline" (full):
+    Computed on raw data (10K rows including duplicates).
+    ⚠️ These numbers are inflated by duplicate counting.
+
+DATA CONTEXT:
+  Only source/raw/df_etl_sample.parquet exists (with duplicates).
+  No cleaned/deduped version available.
+
+───────────────────────────────────────────
+EVALUATION:
+  Verdict: BLOCKED
+  Reason: dedup_analysis says "use deduped data" but no deduped dataset exists.
+          engagement_baseline was computed on duplicated data (numbers unreliable).
+          Running arm comparison on this data would produce wrong results.
+
+  Blocker: No deduped dataset available
+  Fix: ADD_TASKS
+  Fix task: D "create_deduped_dataset" — deduplicate by invitation_id,
+            save clean parquet, recompute engagement_baseline on clean data.
+───────────────────────────────────────────
+```
+
+
+### SKIP example — report already exists from prior session:
+
+```
+CONTEXT FOR: D task "col_overview"
+═══════════════════════════════════════════
+
+QUESTION:
+  How to improve engagement for low-engagement patients?
+
+SESSION STATE:
+  Phase D, task 1 of 3. No tasks complete yet.
+
+CHECK:
+  reports/data/col_overview.md exists (4.2KB, from prior session run0)
+
+───────────────────────────────────────────
+EVALUATION:
+  Verdict: SKIP
+  Reason: Report already exists at reports/data/col_overview.md (4.2KB).
+          Produced by a prior session. Still valid for this project.
+  Skip reason: Prior session already completed this task.
+  Existing output: reports/data/col_overview.md
+───────────────────────────────────────────
 ```
 
 ---
