@@ -4,3 +4,6 @@
 [submodule "plugins/ccskill"]
 	path = plugins/ccskill
 	url = https://github.com/anthropics/skills.git
+[submodule "plugins/excalidraw-diagram-skill"]
+	path = plugins/excalidraw-diagram-skill
+	url = https://github.com/coleam00/excalidraw-diagram-skill.git
