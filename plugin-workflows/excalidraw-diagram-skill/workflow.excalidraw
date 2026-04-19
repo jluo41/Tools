@@ -1,0 +1,316 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://excalidraw.com",
+  "elements": [
+    {
+      "type": "text", "id": "title",
+      "x": 80, "y": 30, "width": 1600, "height": 40,
+      "text": "✏️ Excalidraw Diagram — Visual-Argument Builder",
+      "originalText": "✏️ Excalidraw Diagram — Visual-Argument Builder",
+      "fontSize": 26, "fontFamily": 3,
+      "textAlign": "left", "verticalAlign": "top",
+      "strokeColor": "#1e40af", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 100001, "version": 1, "versionNonce": 100002,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": null, "lineHeight": 1.25
+    },
+    {
+      "type": "text", "id": "subtitle",
+      "x": 80, "y": 74, "width": 1600, "height": 22,
+      "text": "1 skill · render-view-fix loop — produces .excalidraw JSON that argues visually, validated via Playwright-rendered PNG",
+      "originalText": "1 skill · render-view-fix loop — produces .excalidraw JSON that argues visually, validated via Playwright-rendered PNG",
+      "fontSize": 14, "fontFamily": 3,
+      "textAlign": "left", "verticalAlign": "top",
+      "strokeColor": "#64748b", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 100003, "version": 1, "versionNonce": 100004,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": null, "lineHeight": 1.25
+    },
+
+    {
+      "type": "ellipse", "id": "user",
+      "x": 80, "y": 200, "width": 220, "height": 100,
+      "strokeColor": "#1e3a5f", "backgroundColor": "#93c5fd",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 200001, "version": 1, "versionNonce": 200002,
+      "isDeleted": false, "groupIds": [],
+      "boundElements": [{"id": "user_t", "type": "text"}],
+      "link": null, "locked": false
+    },
+    {
+      "type": "text", "id": "user_t",
+      "x": 100, "y": 230, "width": 180, "height": 40,
+      "text": "🧑 User request\n\"draw X\"",
+      "originalText": "🧑 User request\n\"draw X\"",
+      "fontSize": 14, "fontFamily": 3,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#1e3a5f", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 200003, "version": 1, "versionNonce": 200004,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": "user", "lineHeight": 1.3
+    },
+
+    {
+      "type": "arrow", "id": "a1",
+      "x": 300, "y": 250, "width": 60, "height": 0,
+      "strokeColor": "#1e3a5f", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 200010, "version": 1, "versionNonce": 200011,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false,
+      "points": [[0, 0], [60, 0]],
+      "startArrowhead": null, "endArrowhead": "arrow"
+    },
+
+    {
+      "type": "diamond", "id": "design",
+      "x": 360, "y": 200, "width": 240, "height": 100,
+      "strokeColor": "#6d28d9", "backgroundColor": "#ddd6fe",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 210001, "version": 1, "versionNonce": 210002,
+      "isDeleted": false, "groupIds": [],
+      "boundElements": [{"id": "design_t", "type": "text"}],
+      "link": null, "locked": false
+    },
+    {
+      "type": "text", "id": "design_t",
+      "x": 380, "y": 230, "width": 200, "height": 40,
+      "text": "🧠 Depth +\nPattern map",
+      "originalText": "🧠 Depth +\nPattern map",
+      "fontSize": 13, "fontFamily": 3,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#6d28d9", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 210003, "version": 1, "versionNonce": 210004,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": "design", "lineHeight": 1.3
+    },
+
+    {
+      "type": "arrow", "id": "a2",
+      "x": 600, "y": 250, "width": 60, "height": 0,
+      "strokeColor": "#6d28d9", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 210010, "version": 1, "versionNonce": 210011,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false,
+      "points": [[0, 0], [60, 0]],
+      "startArrowhead": null, "endArrowhead": "arrow"
+    },
+
+    {
+      "type": "rectangle", "id": "build",
+      "x": 660, "y": 200, "width": 280, "height": 100,
+      "strokeColor": "#c2410c", "backgroundColor": "#fed7aa",
+      "fillStyle": "solid", "strokeWidth": 3, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 220001, "version": 1, "versionNonce": 220002,
+      "isDeleted": false, "groupIds": [],
+      "boundElements": [{"id": "build_t", "type": "text"}],
+      "link": null, "locked": false, "roundness": {"type": 3}
+    },
+    {
+      "type": "text", "id": "build_t",
+      "x": 680, "y": 225, "width": 240, "height": 50,
+      "text": "✍️ Section-by-section\nJSON build",
+      "originalText": "✍️ Section-by-section\nJSON build",
+      "fontSize": 15, "fontFamily": 3,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#c2410c", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 220003, "version": 1, "versionNonce": 220004,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": "build", "lineHeight": 1.3
+    },
+
+    {
+      "type": "arrow", "id": "a3",
+      "x": 940, "y": 250, "width": 60, "height": 0,
+      "strokeColor": "#c2410c", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 220010, "version": 1, "versionNonce": 220011,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false,
+      "points": [[0, 0], [60, 0]],
+      "startArrowhead": null, "endArrowhead": "arrow"
+    },
+
+    {
+      "type": "rectangle", "id": "render",
+      "x": 1000, "y": 200, "width": 260, "height": 100,
+      "strokeColor": "#b45309", "backgroundColor": "#fef3c7",
+      "fillStyle": "solid", "strokeWidth": 3, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 230001, "version": 1, "versionNonce": 230002,
+      "isDeleted": false, "groupIds": [],
+      "boundElements": [{"id": "render_t", "type": "text"}],
+      "link": null, "locked": false, "roundness": {"type": 3}
+    },
+    {
+      "type": "text", "id": "render_t",
+      "x": 1020, "y": 225, "width": 220, "height": 50,
+      "text": "🖥️ Playwright render\n→ PNG",
+      "originalText": "🖥️ Playwright render\n→ PNG",
+      "fontSize": 14, "fontFamily": 3,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#b45309", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 230003, "version": 1, "versionNonce": 230004,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": "render", "lineHeight": 1.3
+    },
+
+    {
+      "type": "arrow", "id": "a4",
+      "x": 1260, "y": 250, "width": 60, "height": 0,
+      "strokeColor": "#b45309", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 230010, "version": 1, "versionNonce": 230011,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false,
+      "points": [[0, 0], [60, 0]],
+      "startArrowhead": null, "endArrowhead": "arrow"
+    },
+
+    {
+      "type": "diamond", "id": "audit",
+      "x": 1320, "y": 200, "width": 240, "height": 100,
+      "strokeColor": "#b91c1c", "backgroundColor": "#fecaca",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 240001, "version": 1, "versionNonce": 240002,
+      "isDeleted": false, "groupIds": [],
+      "boundElements": [{"id": "audit_t", "type": "text"}],
+      "link": null, "locked": false
+    },
+    {
+      "type": "text", "id": "audit_t",
+      "x": 1340, "y": 230, "width": 200, "height": 40,
+      "text": "🔍 Audit PNG\n(defects? fit vision?)",
+      "originalText": "🔍 Audit PNG\n(defects? fit vision?)",
+      "fontSize": 12, "fontFamily": 3,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#b91c1c", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 240003, "version": 1, "versionNonce": 240004,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": "audit", "lineHeight": 1.3
+    },
+
+    {
+      "type": "arrow", "id": "loop_back",
+      "x": 1440, "y": 300, "width": 0, "height": 110,
+      "strokeColor": "#b91c1c", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "dashed",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 240010, "version": 1, "versionNonce": 240011,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false,
+      "points": [[0, 0], [0, 50], [-640, 50], [-640, 110], [-640, 0]],
+      "startArrowhead": null, "endArrowhead": "arrow"
+    },
+    {
+      "type": "text", "id": "loop_label",
+      "x": 940, "y": 355, "width": 200, "height": 22,
+      "text": "↻ fix & re-render (2-4×)",
+      "originalText": "↻ fix & re-render (2-4×)",
+      "fontSize": 12, "fontFamily": 3,
+      "textAlign": "center", "verticalAlign": "top",
+      "strokeColor": "#b91c1c", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 240012, "version": 1, "versionNonce": 240013,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": null, "lineHeight": 1.25
+    },
+
+    {
+      "type": "arrow", "id": "ok",
+      "x": 1440, "y": 300, "width": 0, "height": 160,
+      "strokeColor": "#047857", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 3, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 250001, "version": 1, "versionNonce": 250002,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false,
+      "points": [[0, 0], [0, 160]],
+      "startArrowhead": null, "endArrowhead": "arrow"
+    },
+    {
+      "type": "ellipse", "id": "final",
+      "x": 1320, "y": 460, "width": 240, "height": 80,
+      "strokeColor": "#047857", "backgroundColor": "#a7f3d0",
+      "fillStyle": "solid", "strokeWidth": 3, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 250010, "version": 1, "versionNonce": 250011,
+      "isDeleted": false, "groupIds": [],
+      "boundElements": [{"id": "final_t", "type": "text"}],
+      "link": null, "locked": false
+    },
+    {
+      "type": "text", "id": "final_t",
+      "x": 1340, "y": 475, "width": 200, "height": 50,
+      "text": "✅ validated\n.excalidraw + .png",
+      "originalText": "✅ validated\n.excalidraw + .png",
+      "fontSize": 13, "fontFamily": 3,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#047857", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 250012, "version": 1, "versionNonce": 250013,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": "final", "lineHeight": 1.3
+    },
+
+    {
+      "type": "text", "id": "principles_label",
+      "x": 80, "y": 500, "width": 1000, "height": 24,
+      "text": "📐 DESIGN PRINCIPLES (baked into SKILL.md)",
+      "originalText": "📐 DESIGN PRINCIPLES (baked into SKILL.md)",
+      "fontSize": 14, "fontFamily": 3,
+      "textAlign": "left", "verticalAlign": "top",
+      "strokeColor": "#1e40af", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 300001, "version": 1, "versionNonce": 300002,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": null, "lineHeight": 1.25
+    },
+    {
+      "type": "text", "id": "principles_body",
+      "x": 80, "y": 540, "width": 1200, "height": 130,
+      "text": "• Isomorphism — shape BE the meaning, not just label it\n• Education — viewer learns from evidence artifacts (code, JSON, real API names)\n• Variety — each concept uses a different visual pattern (fan-out · convergence · timeline · cycle)\n• Container discipline — default to free-floating text; <30 % of text elements should be boxed",
+      "originalText": "• Isomorphism — shape BE the meaning, not just label it\n• Education — viewer learns from evidence artifacts (code, JSON, real API names)\n• Variety — each concept uses a different visual pattern (fan-out · convergence · timeline · cycle)\n• Container discipline — default to free-floating text; <30 % of text elements should be boxed",
+      "fontSize": 13, "fontFamily": 3,
+      "textAlign": "left", "verticalAlign": "top",
+      "strokeColor": "#374151", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 300003, "version": 1, "versionNonce": 300004,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": null, "lineHeight": 1.6
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": 20
+  },
+  "files": {}
+}

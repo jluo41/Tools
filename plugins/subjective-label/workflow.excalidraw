@@ -1,0 +1,188 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://excalidraw.com",
+  "elements": [
+    {
+      "type": "text", "id": "title",
+      "x": 80, "y": 30, "width": 1400, "height": 40,
+      "text": "🏷️ Subjective Label — Gallery-Based Annotation",
+      "originalText": "🏷️ Subjective Label — Gallery-Based Annotation",
+      "fontSize": 26, "fontFamily": 3,
+      "textAlign": "left", "verticalAlign": "top",
+      "strokeColor": "#6d28d9", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 100001, "version": 1, "versionNonce": 100002,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": null, "lineHeight": 1.25
+    },
+    {
+      "type": "text", "id": "subtitle",
+      "x": 80, "y": 74, "width": 1400, "height": 22,
+      "text": "1 skill · 2 phases — build a gallery from human+AI examples, then annotate at scale with a weak model",
+      "originalText": "1 skill · 2 phases — build a gallery from human+AI examples, then annotate at scale with a weak model",
+      "fontSize": 14, "fontFamily": 3,
+      "textAlign": "left", "verticalAlign": "top",
+      "strokeColor": "#64748b", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 100003, "version": 1, "versionNonce": 100004,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": null, "lineHeight": 1.25
+    },
+
+    {
+      "type": "rectangle", "id": "skill",
+      "x": 540, "y": 130, "width": 380, "height": 80,
+      "strokeColor": "#6d28d9", "backgroundColor": "#ddd6fe",
+      "fillStyle": "solid", "strokeWidth": 3, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 110001, "version": 1, "versionNonce": 110002,
+      "isDeleted": false, "groupIds": [],
+      "boundElements": [{"id": "skill_t", "type": "text"}],
+      "link": null, "locked": false, "roundness": {"type": 3}
+    },
+    {
+      "type": "text", "id": "skill_t",
+      "x": 560, "y": 150, "width": 340, "height": 40,
+      "text": "🏷️ /subjective-label",
+      "originalText": "🏷️ /subjective-label",
+      "fontSize": 20, "fontFamily": 3,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#6d28d9", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 110003, "version": 1, "versionNonce": 110004,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": "skill", "lineHeight": 1.3
+    },
+
+    {
+      "type": "rectangle", "id": "phase1",
+      "x": 80, "y": 280, "width": 600, "height": 220,
+      "strokeColor": "#1e3a5f", "backgroundColor": "#93c5fd",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 200001, "version": 1, "versionNonce": 200002,
+      "isDeleted": false, "groupIds": [],
+      "boundElements": [{"id": "phase1_head", "type": "text"}],
+      "link": null, "locked": false, "roundness": {"type": 3}
+    },
+    {
+      "type": "text", "id": "phase1_head",
+      "x": 100, "y": 295, "width": 560, "height": 30,
+      "text": "PHASE 1 — Build the Gallery (human × AI)",
+      "originalText": "PHASE 1 — Build the Gallery (human × AI)",
+      "fontSize": 15, "fontFamily": 3,
+      "textAlign": "center", "verticalAlign": "top",
+      "strokeColor": "#1e3a5f", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 200003, "version": 1, "versionNonce": 200004,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": null, "lineHeight": 1.25
+    },
+    {
+      "type": "text", "id": "phase1_body",
+      "x": 100, "y": 340, "width": 560, "height": 140,
+      "text": "🧑  user sees candidate texts\n💬  discusses own subjective criteria\n🤖  strong model drafts labels\n✅  user accepts / revises / rejects\n📚  accepted pairs → gallery.jsonl",
+      "originalText": "🧑  user sees candidate texts\n💬  discusses own subjective criteria\n🤖  strong model drafts labels\n✅  user accepts / revises / rejects\n📚  accepted pairs → gallery.jsonl",
+      "fontSize": 13, "fontFamily": 3,
+      "textAlign": "left", "verticalAlign": "top",
+      "strokeColor": "#374151", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 200005, "version": 1, "versionNonce": 200006,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": null, "lineHeight": 1.7
+    },
+
+    {
+      "type": "arrow", "id": "phase_arr",
+      "x": 680, "y": 390, "width": 100, "height": 0,
+      "strokeColor": "#047857", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 3, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 210001, "version": 1, "versionNonce": 210002,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false,
+      "points": [[0, 0], [100, 0]],
+      "startArrowhead": null, "endArrowhead": "arrow"
+    },
+    {
+      "type": "text", "id": "phase_arr_label",
+      "x": 680, "y": 360, "width": 100, "height": 22,
+      "text": "gallery",
+      "originalText": "gallery",
+      "fontSize": 12, "fontFamily": 3,
+      "textAlign": "center", "verticalAlign": "top",
+      "strokeColor": "#047857", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 210003, "version": 1, "versionNonce": 210004,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": null, "lineHeight": 1.25
+    },
+
+    {
+      "type": "rectangle", "id": "phase2",
+      "x": 780, "y": 280, "width": 600, "height": 220,
+      "strokeColor": "#047857", "backgroundColor": "#a7f3d0",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 220001, "version": 1, "versionNonce": 220002,
+      "isDeleted": false, "groupIds": [],
+      "boundElements": [{"id": "phase2_head", "type": "text"}],
+      "link": null, "locked": false, "roundness": {"type": 3}
+    },
+    {
+      "type": "text", "id": "phase2_head",
+      "x": 800, "y": 295, "width": 560, "height": 30,
+      "text": "PHASE 2 — Annotate at Scale (weak model + gallery)",
+      "originalText": "PHASE 2 — Annotate at Scale (weak model + gallery)",
+      "fontSize": 15, "fontFamily": 3,
+      "textAlign": "center", "verticalAlign": "top",
+      "strokeColor": "#047857", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 220003, "version": 1, "versionNonce": 220004,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": null, "lineHeight": 1.25
+    },
+    {
+      "type": "text", "id": "phase2_body",
+      "x": 800, "y": 340, "width": 560, "height": 140,
+      "text": "📚  gallery is few-shot context\n⚡  cheap weak model runs inference\n🔖  produces label + confidence\n🔁  low-confidence → back to gallery\n📊  outputs labeled dataset",
+      "originalText": "📚  gallery is few-shot context\n⚡  cheap weak model runs inference\n🔖  produces label + confidence\n🔁  low-confidence → back to gallery\n📊  outputs labeled dataset",
+      "fontSize": 13, "fontFamily": 3,
+      "textAlign": "left", "verticalAlign": "top",
+      "strokeColor": "#374151", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 220005, "version": 1, "versionNonce": 220006,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": null, "lineHeight": 1.7
+    },
+
+    {
+      "type": "text", "id": "note",
+      "x": 80, "y": 540, "width": 1400, "height": 22,
+      "text": "💡 Key argument — encode personal subjective criteria once into a gallery, then scale cheaply without losing taste.",
+      "originalText": "💡 Key argument — encode personal subjective criteria once into a gallery, then scale cheaply without losing taste.",
+      "fontSize": 13, "fontFamily": 3,
+      "textAlign": "left", "verticalAlign": "top",
+      "strokeColor": "#64748b", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 300001, "version": 1, "versionNonce": 300002,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": null, "lineHeight": 1.25
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": 20
+  },
+  "files": {}
+}

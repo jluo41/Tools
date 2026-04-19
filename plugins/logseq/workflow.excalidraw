@@ -1,0 +1,256 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://excalidraw.com",
+  "elements": [
+    {
+      "type": "text", "id": "title",
+      "x": 80, "y": 30, "width": 1400, "height": 40,
+      "text": "📒 LogSeq — Facet Skills Around Your Graph",
+      "originalText": "📒 LogSeq — Facet Skills Around Your Graph",
+      "fontSize": 26, "fontFamily": 3,
+      "textAlign": "left", "verticalAlign": "top",
+      "strokeColor": "#1e40af", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 100001, "version": 1, "versionNonce": 100002,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": null, "lineHeight": 1.25
+    },
+    {
+      "type": "text", "id": "subtitle",
+      "x": 80, "y": 74, "width": 1400, "height": 22,
+      "text": "5 skills · no orchestration — each covers one artifact type of a LogSeq graph",
+      "originalText": "5 skills · no orchestration — each covers one artifact type of a LogSeq graph",
+      "fontSize": 14, "fontFamily": 3,
+      "textAlign": "left", "verticalAlign": "top",
+      "strokeColor": "#64748b", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 100003, "version": 1, "versionNonce": 100004,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": null, "lineHeight": 1.25
+    },
+
+    {
+      "type": "ellipse", "id": "hub",
+      "x": 640, "y": 330, "width": 260, "height": 120,
+      "strokeColor": "#047857", "backgroundColor": "#a7f3d0",
+      "fillStyle": "solid", "strokeWidth": 3, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 110001, "version": 1, "versionNonce": 110002,
+      "isDeleted": false, "groupIds": [],
+      "boundElements": [{"id": "hub_t", "type": "text"}],
+      "link": null, "locked": false
+    },
+    {
+      "type": "text", "id": "hub_t",
+      "x": 660, "y": 360, "width": 220, "height": 60,
+      "text": "🧠 LogSeq graph\n(blocks · pages · journal)",
+      "originalText": "🧠 LogSeq graph\n(blocks · pages · journal)",
+      "fontSize": 15, "fontFamily": 3,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#047857", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 110003, "version": 1, "versionNonce": 110004,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": "hub", "lineHeight": 1.3
+    },
+
+    {
+      "type": "rectangle", "id": "s_md",
+      "x": 120, "y": 160, "width": 320, "height": 120,
+      "strokeColor": "#1e3a5f", "backgroundColor": "#93c5fd",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 200001, "version": 1, "versionNonce": 200002,
+      "isDeleted": false, "groupIds": [],
+      "boundElements": [{"id": "s_md_t", "type": "text"}],
+      "link": null, "locked": false, "roundness": {"type": 3}
+    },
+    {
+      "type": "text", "id": "s_md_t",
+      "x": 140, "y": 175, "width": 280, "height": 90,
+      "text": "📄 /logseq-markdown\n\nBlock-based .md: properties,\nwikilinks, refs, tasks, namespaces",
+      "originalText": "📄 /logseq-markdown\n\nBlock-based .md: properties,\nwikilinks, refs, tasks, namespaces",
+      "fontSize": 13, "fontFamily": 3,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#1e3a5f", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 200003, "version": 1, "versionNonce": 200004,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": "s_md", "lineHeight": 1.4
+    },
+    {
+      "type": "arrow", "id": "arr_md",
+      "x": 440, "y": 230, "width": 200, "height": 160,
+      "strokeColor": "#1e3a5f", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 200010, "version": 1, "versionNonce": 200011,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false,
+      "points": [[0, 0], [200, 160]],
+      "startArrowhead": null, "endArrowhead": "arrow"
+    },
+
+    {
+      "type": "rectangle", "id": "s_tpl",
+      "x": 1100, "y": 160, "width": 320, "height": 120,
+      "strokeColor": "#6d28d9", "backgroundColor": "#ddd6fe",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 210001, "version": 1, "versionNonce": 210002,
+      "isDeleted": false, "groupIds": [],
+      "boundElements": [{"id": "s_tpl_t", "type": "text"}],
+      "link": null, "locked": false, "roundness": {"type": 3}
+    },
+    {
+      "type": "text", "id": "s_tpl_t",
+      "x": 1120, "y": 175, "width": 280, "height": 90,
+      "text": "🧩 /logseq-templates\n\nReusable block structures with\ndynamic date/time variables",
+      "originalText": "🧩 /logseq-templates\n\nReusable block structures with\ndynamic date/time variables",
+      "fontSize": 13, "fontFamily": 3,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#6d28d9", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 210003, "version": 1, "versionNonce": 210004,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": "s_tpl", "lineHeight": 1.4
+    },
+    {
+      "type": "arrow", "id": "arr_tpl",
+      "x": 1100, "y": 230, "width": -200, "height": 160,
+      "strokeColor": "#6d28d9", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 210010, "version": 1, "versionNonce": 210011,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false,
+      "points": [[0, 0], [-200, 160]],
+      "startArrowhead": null, "endArrowhead": "arrow"
+    },
+
+    {
+      "type": "rectangle", "id": "s_q",
+      "x": 120, "y": 500, "width": 320, "height": 120,
+      "strokeColor": "#b45309", "backgroundColor": "#fef3c7",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 220001, "version": 1, "versionNonce": 220002,
+      "isDeleted": false, "groupIds": [],
+      "boundElements": [{"id": "s_q_t", "type": "text"}],
+      "link": null, "locked": false, "roundness": {"type": 3}
+    },
+    {
+      "type": "text", "id": "s_q_t",
+      "x": 140, "y": 515, "width": 280, "height": 90,
+      "text": "🔎 /logseq-queries\n\nSimple queries + Datalog for\ndynamic views, filters, tasks",
+      "originalText": "🔎 /logseq-queries\n\nSimple queries + Datalog for\ndynamic views, filters, tasks",
+      "fontSize": 13, "fontFamily": 3,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#b45309", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 220003, "version": 1, "versionNonce": 220004,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": "s_q", "lineHeight": 1.4
+    },
+    {
+      "type": "arrow", "id": "arr_q",
+      "x": 440, "y": 550, "width": 200, "height": -130,
+      "strokeColor": "#b45309", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 220010, "version": 1, "versionNonce": 220011,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false,
+      "points": [[0, 0], [200, -130]],
+      "startArrowhead": null, "endArrowhead": "arrow"
+    },
+
+    {
+      "type": "rectangle", "id": "s_wb",
+      "x": 1100, "y": 500, "width": 320, "height": 120,
+      "strokeColor": "#c2410c", "backgroundColor": "#fed7aa",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 230001, "version": 1, "versionNonce": 230002,
+      "isDeleted": false, "groupIds": [],
+      "boundElements": [{"id": "s_wb_t", "type": "text"}],
+      "link": null, "locked": false, "roundness": {"type": 3}
+    },
+    {
+      "type": "text", "id": "s_wb_t",
+      "x": 1120, "y": 515, "width": 280, "height": 90,
+      "text": "🖼️ /logseq-whiteboards\n\n.edn canvases: shapes,\nconnectors, portals, embeds",
+      "originalText": "🖼️ /logseq-whiteboards\n\n.edn canvases: shapes,\nconnectors, portals, embeds",
+      "fontSize": 13, "fontFamily": 3,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#c2410c", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 230003, "version": 1, "versionNonce": 230004,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": "s_wb", "lineHeight": 1.4
+    },
+    {
+      "type": "arrow", "id": "arr_wb",
+      "x": 1100, "y": 550, "width": -200, "height": -130,
+      "strokeColor": "#c2410c", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 230010, "version": 1, "versionNonce": 230011,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false,
+      "points": [[0, 0], [-200, -130]],
+      "startArrowhead": null, "endArrowhead": "arrow"
+    },
+
+    {
+      "type": "rectangle", "id": "s_cc",
+      "x": 640, "y": 620, "width": 260, "height": 110,
+      "strokeColor": "#1e40af", "backgroundColor": "#dbeafe",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 240001, "version": 1, "versionNonce": 240002,
+      "isDeleted": false, "groupIds": [],
+      "boundElements": [{"id": "s_cc_t", "type": "text"}],
+      "link": null, "locked": false, "roundness": {"type": 3}
+    },
+    {
+      "type": "text", "id": "s_cc_t",
+      "x": 660, "y": 635, "width": 220, "height": 80,
+      "text": "💾 /logseq-cc-records\n\nlog Claude Code session\nto today's journal",
+      "originalText": "💾 /logseq-cc-records\n\nlog Claude Code session\nto today's journal",
+      "fontSize": 13, "fontFamily": 3,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#1e40af", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 240003, "version": 1, "versionNonce": 240004,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": "s_cc", "lineHeight": 1.4
+    },
+    {
+      "type": "arrow", "id": "arr_cc",
+      "x": 770, "y": 620, "width": 0, "height": -160,
+      "strokeColor": "#1e40af", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 240010, "version": 1, "versionNonce": 240011,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false,
+      "points": [[0, 0], [0, -170]],
+      "startArrowhead": null, "endArrowhead": "arrow"
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": 20
+  },
+  "files": {}
+}

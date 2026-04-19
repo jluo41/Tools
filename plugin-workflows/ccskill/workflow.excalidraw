@@ -1,0 +1,308 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://excalidraw.com",
+  "elements": [
+    {
+      "type": "text", "id": "title",
+      "x": 80, "y": 30, "width": 1600, "height": 40,
+      "text": "🎨 ccskill — Anthropic Demo Skill Library",
+      "originalText": "🎨 ccskill — Anthropic Demo Skill Library",
+      "fontSize": 28, "fontFamily": 3,
+      "textAlign": "left", "verticalAlign": "top",
+      "strokeColor": "#1e40af", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 100001, "version": 1, "versionNonce": 100002,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": null, "lineHeight": 1.25
+    },
+    {
+      "type": "text", "id": "subtitle",
+      "x": 80, "y": 74, "width": 1600, "height": 22,
+      "text": "17 demo skills · no orchestration — skills are independent and grouped by purpose (Creative · Dev · Enterprise · Documents)",
+      "originalText": "17 demo skills · no orchestration — skills are independent and grouped by purpose (Creative · Dev · Enterprise · Documents)",
+      "fontSize": 14, "fontFamily": 3,
+      "textAlign": "left", "verticalAlign": "top",
+      "strokeColor": "#64748b", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 100003, "version": 1, "versionNonce": 100004,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": null, "lineHeight": 1.25
+    },
+
+    {
+      "type": "rectangle", "id": "root",
+      "x": 720, "y": 130, "width": 360, "height": 60,
+      "strokeColor": "#1e3a5f", "backgroundColor": "#3b82f6",
+      "fillStyle": "solid", "strokeWidth": 3, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 110001, "version": 1, "versionNonce": 110002,
+      "isDeleted": false, "groupIds": [],
+      "boundElements": [{"id": "root_t", "type": "text"}],
+      "link": null, "locked": false, "roundness": {"type": 3}
+    },
+    {
+      "type": "text", "id": "root_t",
+      "x": 740, "y": 145, "width": 320, "height": 30,
+      "text": "📦 ccskill",
+      "originalText": "📦 ccskill",
+      "fontSize": 20, "fontFamily": 3,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#ffffff", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 110003, "version": 1, "versionNonce": 110004,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": "root", "lineHeight": 1.25
+    },
+
+    {
+      "type": "line", "id": "trunk",
+      "x": 900, "y": 190, "width": 0, "height": 60,
+      "strokeColor": "#1e3a5f", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 120001, "version": 1, "versionNonce": 120002,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false,
+      "points": [[0, 0], [0, 60]]
+    },
+    {
+      "type": "line", "id": "cross",
+      "x": 280, "y": 250, "width": 1240, "height": 0,
+      "strokeColor": "#1e3a5f", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 120003, "version": 1, "versionNonce": 120004,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false,
+      "points": [[0, 0], [1240, 0]]
+    },
+    {
+      "type": "line", "id": "br1",
+      "x": 280, "y": 250, "width": 0, "height": 40,
+      "strokeColor": "#1e3a5f", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 120010, "version": 1, "versionNonce": 120011,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false,
+      "points": [[0, 0], [0, 40]]
+    },
+    {
+      "type": "line", "id": "br2",
+      "x": 700, "y": 250, "width": 0, "height": 40,
+      "strokeColor": "#1e3a5f", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 120012, "version": 1, "versionNonce": 120013,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false,
+      "points": [[0, 0], [0, 40]]
+    },
+    {
+      "type": "line", "id": "br3",
+      "x": 1100, "y": 250, "width": 0, "height": 40,
+      "strokeColor": "#1e3a5f", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 120014, "version": 1, "versionNonce": 120015,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false,
+      "points": [[0, 0], [0, 40]]
+    },
+    {
+      "type": "line", "id": "br4",
+      "x": 1520, "y": 250, "width": 0, "height": 40,
+      "strokeColor": "#1e3a5f", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 120016, "version": 1, "versionNonce": 120017,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false,
+      "points": [[0, 0], [0, 40]]
+    },
+
+    {
+      "type": "rectangle", "id": "cat1",
+      "x": 120, "y": 300, "width": 320, "height": 360,
+      "strokeColor": "#6d28d9", "backgroundColor": "#ddd6fe",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 200001, "version": 1, "versionNonce": 200002,
+      "isDeleted": false, "groupIds": [],
+      "boundElements": [{"id": "cat1_head", "type": "text"}],
+      "link": null, "locked": false, "roundness": {"type": 3}
+    },
+    {
+      "type": "text", "id": "cat1_head",
+      "x": 140, "y": 315, "width": 280, "height": 30,
+      "text": "🎨 CREATIVE & DESIGN",
+      "originalText": "🎨 CREATIVE & DESIGN",
+      "fontSize": 15, "fontFamily": 3,
+      "textAlign": "center", "verticalAlign": "top",
+      "strokeColor": "#6d28d9", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 200003, "version": 1, "versionNonce": 200004,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": null, "lineHeight": 1.25
+    },
+    {
+      "type": "text", "id": "cat1_body",
+      "x": 140, "y": 355, "width": 280, "height": 280,
+      "text": "🖼️  canvas-design\n      posters + static art\n\n🎛️  algorithmic-art\n      p5.js generative art\n\n🎞️  slack-gif-creator\n      animated GIFs\n\n🎨  theme-factory\n      style any artifact\n\n💻  frontend-design\n      polished React/HTML\n\n🏷️  brand-guidelines\n      Anthropic brand style",
+      "originalText": "🖼️  canvas-design\n      posters + static art\n\n🎛️  algorithmic-art\n      p5.js generative art\n\n🎞️  slack-gif-creator\n      animated GIFs\n\n🎨  theme-factory\n      style any artifact\n\n💻  frontend-design\n      polished React/HTML\n\n🏷️  brand-guidelines\n      Anthropic brand style",
+      "fontSize": 12, "fontFamily": 3,
+      "textAlign": "left", "verticalAlign": "top",
+      "strokeColor": "#374151", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 200005, "version": 1, "versionNonce": 200006,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": null, "lineHeight": 1.35
+    },
+
+    {
+      "type": "rectangle", "id": "cat2",
+      "x": 540, "y": 300, "width": 320, "height": 360,
+      "strokeColor": "#1e3a5f", "backgroundColor": "#93c5fd",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 210001, "version": 1, "versionNonce": 210002,
+      "isDeleted": false, "groupIds": [],
+      "boundElements": [{"id": "cat2_head", "type": "text"}],
+      "link": null, "locked": false, "roundness": {"type": 3}
+    },
+    {
+      "type": "text", "id": "cat2_head",
+      "x": 560, "y": 315, "width": 280, "height": 30,
+      "text": "🧑‍💻 DEVELOPMENT & TECHNICAL",
+      "originalText": "🧑‍💻 DEVELOPMENT & TECHNICAL",
+      "fontSize": 15, "fontFamily": 3,
+      "textAlign": "center", "verticalAlign": "top",
+      "strokeColor": "#1e3a5f", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 210003, "version": 1, "versionNonce": 210004,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": null, "lineHeight": 1.25
+    },
+    {
+      "type": "text", "id": "cat2_body",
+      "x": 560, "y": 355, "width": 280, "height": 280,
+      "text": "🤖  claude-api\n      Anthropic SDK + caching\n\n🔌  mcp-builder\n      build MCP servers\n\n🧪  webapp-testing\n      Playwright UI tests\n\n🧩  web-artifacts-builder\n      multi-component HTML\n\n🛠️  skill-creator\n      create / edit / eval skills",
+      "originalText": "🤖  claude-api\n      Anthropic SDK + caching\n\n🔌  mcp-builder\n      build MCP servers\n\n🧪  webapp-testing\n      Playwright UI tests\n\n🧩  web-artifacts-builder\n      multi-component HTML\n\n🛠️  skill-creator\n      create / edit / eval skills",
+      "fontSize": 12, "fontFamily": 3,
+      "textAlign": "left", "verticalAlign": "top",
+      "strokeColor": "#374151", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 210005, "version": 1, "versionNonce": 210006,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": null, "lineHeight": 1.35
+    },
+
+    {
+      "type": "rectangle", "id": "cat3",
+      "x": 960, "y": 300, "width": 280, "height": 360,
+      "strokeColor": "#047857", "backgroundColor": "#a7f3d0",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 220001, "version": 1, "versionNonce": 220002,
+      "isDeleted": false, "groupIds": [],
+      "boundElements": [{"id": "cat3_head", "type": "text"}],
+      "link": null, "locked": false, "roundness": {"type": 3}
+    },
+    {
+      "type": "text", "id": "cat3_head",
+      "x": 980, "y": 315, "width": 240, "height": 30,
+      "text": "🏢 ENTERPRISE & COMMS",
+      "originalText": "🏢 ENTERPRISE & COMMS",
+      "fontSize": 15, "fontFamily": 3,
+      "textAlign": "center", "verticalAlign": "top",
+      "strokeColor": "#047857", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 220003, "version": 1, "versionNonce": 220004,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": null, "lineHeight": 1.25
+    },
+    {
+      "type": "text", "id": "cat3_body",
+      "x": 980, "y": 355, "width": 240, "height": 280,
+      "text": "📝  doc-coauthoring\n      guided doc workflows\n\n📣  internal-comms\n      status · updates · FAQs",
+      "originalText": "📝  doc-coauthoring\n      guided doc workflows\n\n📣  internal-comms\n      status · updates · FAQs",
+      "fontSize": 12, "fontFamily": 3,
+      "textAlign": "left", "verticalAlign": "top",
+      "strokeColor": "#374151", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 220005, "version": 1, "versionNonce": 220006,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": null, "lineHeight": 1.35
+    },
+
+    {
+      "type": "rectangle", "id": "cat4",
+      "x": 1340, "y": 300, "width": 360, "height": 360,
+      "strokeColor": "#b45309", "backgroundColor": "#fef3c7",
+      "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 230001, "version": 1, "versionNonce": 230002,
+      "isDeleted": false, "groupIds": [],
+      "boundElements": [{"id": "cat4_head", "type": "text"}],
+      "link": null, "locked": false, "roundness": {"type": 3}
+    },
+    {
+      "type": "text", "id": "cat4_head",
+      "x": 1360, "y": 315, "width": 320, "height": 30,
+      "text": "📄 DOCUMENT SKILLS",
+      "originalText": "📄 DOCUMENT SKILLS",
+      "fontSize": 15, "fontFamily": 3,
+      "textAlign": "center", "verticalAlign": "top",
+      "strokeColor": "#b45309", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 230003, "version": 1, "versionNonce": 230004,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": null, "lineHeight": 1.25
+    },
+    {
+      "type": "text", "id": "cat4_body",
+      "x": 1360, "y": 355, "width": 320, "height": 280,
+      "text": "📝  docx     Word create / edit / fill\n📕  pdf      extract · merge · OCR\n📊  pptx     decks · templates · notes\n📈  xlsx     spreadsheets · formulas\n\n(Power Claude's built-in\nfile-creation capabilities.)",
+      "originalText": "📝  docx     Word create / edit / fill\n📕  pdf      extract · merge · OCR\n📊  pptx     decks · templates · notes\n📈  xlsx     spreadsheets · formulas\n\n(Power Claude's built-in\nfile-creation capabilities.)",
+      "fontSize": 13, "fontFamily": 3,
+      "textAlign": "left", "verticalAlign": "top",
+      "strokeColor": "#374151", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 230005, "version": 1, "versionNonce": 230006,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": null, "lineHeight": 1.45
+    },
+
+    {
+      "type": "text", "id": "note",
+      "x": 80, "y": 690, "width": 1700, "height": 22,
+      "text": "💡 Unlike orchestration-heavy plugins (aris, dikw), ccskill skills are independent — pick whichever fits your task.",
+      "originalText": "💡 Unlike orchestration-heavy plugins (aris, dikw), ccskill skills are independent — pick whichever fits your task.",
+      "fontSize": 13, "fontFamily": 3,
+      "textAlign": "left", "verticalAlign": "top",
+      "strokeColor": "#64748b", "backgroundColor": "transparent",
+      "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0,
+      "seed": 400001, "version": 1, "versionNonce": 400002,
+      "isDeleted": false, "groupIds": [], "boundElements": null,
+      "link": null, "locked": false, "containerId": null, "lineHeight": 1.25
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": 20
+  },
+  "files": {}
+}

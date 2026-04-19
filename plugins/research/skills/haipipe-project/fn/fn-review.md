@@ -260,6 +260,8 @@ Step 5: Generate/Update README.md Files
 **Per-task README.md** -- create if missing, sync runs/ status:
   - Runs table: every .sh in runs/ gets a row
   - Status upgraded to "done" when matching results/ folder exists with content
+  - For Stage 5 tasks (ModelArgs configs): check for Architecture section with ASCII
+    diagram. If missing, add it. ([WARN] if ModelArgs task has no Architecture section)
 
 ---
 

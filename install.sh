@@ -6,9 +6,10 @@
 #   cd Tools && ./install.sh
 #
 # Options:
-#   --global    Also symlink all skills to ~/.claude/skills/
-#   --hooks     Also configure sound hooks in settings.json
-#   --all       Do everything (marketplace + global + hooks)
+#   --global              Also symlink all skills to ~/.claude/skills/
+#   --project <path>      Symlink all skills into <path>/.claude/skills/ (relative paths)
+#   --hooks               Also configure sound hooks in settings.json
+#   --all                 Do everything (marketplace + global + hooks)
 #
 # Works on macOS (afplay) and Linux (paplay/aplay).
 
@@ -23,12 +24,15 @@ SETTINGS_FILE="$CLAUDE_DIR/settings.json"
 # Parse flags
 DO_GLOBAL=false
 DO_HOOKS=false
-for arg in "$@"; do
-    case "$arg" in
-        --global) DO_GLOBAL=true ;;
-        --hooks)  DO_HOOKS=true ;;
-        --all)    DO_GLOBAL=true; DO_HOOKS=true ;;
+PROJECT_PATH=""
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --global)  DO_GLOBAL=true ;;
+        --hooks)   DO_HOOKS=true ;;
+        --all)     DO_GLOBAL=true; DO_HOOKS=true ;;
+        --project) PROJECT_PATH="$2"; shift ;;
     esac
+    shift
 done
 
 # ─── 1. Marketplace registration ─────────────────────────────────────────────
@@ -107,7 +111,54 @@ if [ "$DO_GLOBAL" = true ]; then
     echo "  All skills installed globally."
 fi
 
-# ─── 3. Sound hooks (--hooks) ────────────────────────────────────────────────
+# ─── 3. Project-level skill installation (--project) ────────────────────────
+
+if [ -n "$PROJECT_PATH" ]; then
+    PROJECT_SKILLS="$PROJECT_PATH/.claude/skills"
+    echo ""
+    echo "Installing skills to project: $PROJECT_SKILLS ..."
+    mkdir -p "$PROJECT_SKILLS"
+
+    # Compute relative path from .claude/skills/ back to Tools/plugins/
+    # e.g., ../../Tools/plugins/research/skills/foo
+    TOOLS_REL="$(python3 -c "import os.path; print(os.path.relpath('$SCRIPT_DIR/plugins', '$PROJECT_SKILLS'))")"
+
+    installed=0
+    for plugin_dir in "$SCRIPT_DIR"/plugins/*/; do
+        plugin_name=$(basename "$plugin_dir")
+        [ -d "$plugin_dir/skills" ] || continue
+        for skill_dir in "$plugin_dir"/skills/*/; do
+            skill_name=$(basename "$skill_dir")
+            target="$PROJECT_SKILLS/$skill_name"
+
+            # Skip non-symlink entries (real dirs like frontend-slides)
+            if [ -e "$target" ] && [ ! -L "$target" ]; then
+                echo "  . $skill_name (kept, not a symlink)"
+                continue
+            fi
+
+            # Create or update symlink
+            [ -L "$target" ] && rm "$target"
+            ln -s "$TOOLS_REL/$plugin_name/skills/$skill_name" "$target"
+            installed=$((installed + 1))
+        done
+    done
+
+    # Clean up stale symlinks (point to removed skills)
+    cleaned=0
+    for link in "$PROJECT_SKILLS"/*/; do
+        link="${link%/}"
+        if [ -L "$link" ] && [ ! -e "$link" ]; then
+            echo "  - $(basename "$link") (stale, removed)"
+            rm "$link"
+            cleaned=$((cleaned + 1))
+        fi
+    done
+
+    echo "  $installed skills symlinked, $cleaned stale links removed."
+fi
+
+# ─── 4. Sound hooks (--hooks) ────────────────────────────────────────────────
 
 if [ "$DO_HOOKS" = true ]; then
     echo ""
@@ -201,6 +252,7 @@ fi
 
 echo ""
 echo "Run with flags for more:"
-echo "  ./install.sh --global   Symlink skills to ~/.claude/skills/"
-echo "  ./install.sh --hooks    Configure sound hooks in settings.json"
-echo "  ./install.sh --all      Do everything"
+echo "  ./install.sh --global                Symlink skills to ~/.claude/skills/"
+echo "  ./install.sh --project /path/to/repo  Symlink skills to repo's .claude/skills/"
+echo "  ./install.sh --hooks                 Configure sound hooks in settings.json"
+echo "  ./install.sh --all                   Do everything (marketplace + global + hooks)"
