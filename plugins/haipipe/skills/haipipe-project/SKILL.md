@@ -34,6 +34,7 @@ Commands
   /haipipe-project summarize [path]       -> post-development summary + flow chart
   /haipipe-project organize [path]        -> file inventory + reorganization proposal
   /haipipe-project organize verify [path] -> verify imports/paths after reorganization
+  /haipipe-project inventory [path]       -> build/refresh per-task-folder inventory.{excalidraw,png}
 
   Default (no arg): show this command list and ask what the user wants.
 
@@ -75,6 +76,7 @@ Step 2: Read and follow the function file exactly.
   review     ->  fn/fn-review.md
   summarize  ->  fn/fn-summarize.md
   organize   ->  fn/fn-organize.md
+  inventory  ->  fn/fn-inventory.md
 
 ---
 

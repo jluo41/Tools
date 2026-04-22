@@ -35,7 +35,7 @@ Dispatch Table
 --------------
 
 After parsing the command, read these files from
-Tools/plugins/research/skills/haipipe-nn/:
+Tools/plugins/haipipe/skills/haipipe-nn/:
 
   Invocation               Ref file(s)                              Function file
   -----------------------  ───────────────────────────────────────  ---------------------
@@ -74,7 +74,7 @@ Step-by-Step Protocol
 Step 0: Bootstrap — read supporting files NOW.
         Before parsing the command or doing anything else, read:
 
-          Tools/plugins/research/skills/haipipe-nn/ref/overview.md
+          Tools/plugins/haipipe/skills/haipipe-nn/ref/overview.md
 
         This is MANDATORY. Do not skip. Do not proceed to Step 1 until
         overview.md is in context. It contains the architecture map,

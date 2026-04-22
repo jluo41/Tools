@@ -41,7 +41,7 @@ Dispatch Table
 --------------
 
 After parsing the command, read these files from
-Tools/plugins/research/skills/haipipe-data/:
+Tools/plugins/haipipe/skills/haipipe-data/:
 
   Invocation                    Ref file(s)                                Function file
   ----------------------------  -----------------------------------------  ----------------------
@@ -98,7 +98,7 @@ Step-by-Step Protocol
 Step 0: Bootstrap -- read supporting file NOW.
         Before parsing the command or doing anything else, read:
 
-          Tools/plugins/research/skills/haipipe-data/ref/0-overview.md
+          Tools/plugins/haipipe/skills/haipipe-data/ref/0-overview.md
 
         This is MANDATORY. Do not skip. Do not proceed to Step 1 until
         0-overview.md is in context. It contains the 6-layer pipeline map,

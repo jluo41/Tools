@@ -21,6 +21,13 @@
       "category": "development"
     },
     {
+      "name": "haipipe",
+      "description": "Claude Skills for the haipipe pipeline - per-subject data contract (stages 0-2), project-wide data pipeline (1-4), NN models (5), endpoints (6), and project scaffolding",
+      "version": "1.0.0",
+      "source": "./plugins/haipipe",
+      "category": "development"
+    },
+    {
       "name": "chronicle",
       "description": "Claude Skills for Email Chronicle - index emails from MS365 Outlook into organized markdown",
       "version": "1.0.0",

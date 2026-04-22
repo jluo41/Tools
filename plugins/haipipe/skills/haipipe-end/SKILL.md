@@ -38,7 +38,7 @@ Dispatch Table
 --------------
 
 After parsing the command, read these files from
-Tools/plugins/research/skills/haipipe-end/:
+Tools/plugins/haipipe/skills/haipipe-end/:
 
   Invocation                Ref file(s)                           Function file
   ------------------------  ------------------------------------  --------------------
@@ -76,7 +76,7 @@ Step-by-Step Protocol
 Step 0: Bootstrap — read supporting files NOW.
         Before parsing the command or doing anything else, read:
 
-          Tools/plugins/research/skills/haipipe-end/ref/0-overview.md
+          Tools/plugins/haipipe/skills/haipipe-end/ref/0-overview.md
 
         This is MANDATORY. Do not skip. Do not proceed to Step 1 until
         0-overview.md is in context. It contains the 7-step inference

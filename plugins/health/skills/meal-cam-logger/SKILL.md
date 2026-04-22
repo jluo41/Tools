@@ -1,6 +1,6 @@
 ---
 name: meal-cam-logger
-description: "Log meals in real time from a webcam or IP camera. Opens a capture loop, asks Claude vision what food is visible in each frame, dedupes, and appends bullets to today's LogSeq journal. Use when the user says start meal cam, log my meal, watch me eat, 记录我吃的, or /meal-cam-logger."
+description: "Log meals in real time from a webcam or IP camera. Opens a capture loop, asks Claude vision what food is visible in each frame, dedupes, and writes each eating session to a standalone Markdown file. Use when the user says start meal cam, log my meal, watch me eat, 记录我吃的, or /meal-cam-logger."
 ---
 
 Skill: meal-cam-logger
@@ -8,7 +8,8 @@ Skill: meal-cam-logger
 
 Live meal logging. The user turns on a camera, starts eating, and this skill
 watches the video stream, identifies food as it appears, and writes each
-detection as a time-stamped bullet in today's LogSeq journal.
+detection to a per-session Markdown file under `_WorkSpace/6-EndpointStore/
+mealcam_logs/`.
 
 Trigger phrases:
   /meal-cam-logger
@@ -24,13 +25,13 @@ Trigger phrases:
 Three phases:
 
 1. **Start** — confirm camera source (built-in webcam / RTSP URL), capture
-   interval (default 5s), and journal target. Launch the capture loop as a
-   background process.
+   interval (default 5s), and output directory. Launch the capture loop as
+   a background process.
 2. **Monitor** — loop grabs one frame per interval, asks Claude vision what
-   food is visible, dedupes against the last detection, appends a bullet to
-   today's LogSeq journal under a `Meal-Cam-Records` block.
-3. **Stop** — user says "stop meal cam" → kill the loop → summarize what got
-   logged this session.
+   food is visible, dedupes against the last detection, writes / rewrites
+   the session's Markdown file on each new detection.
+3. **Stop** — user says "stop meal cam" → kill the loop → read the session
+   Markdown file and summarise.
 
 ---
 
@@ -50,10 +51,11 @@ Then launch the loop in the background:
 ```bash
 cd /home/jluo41/WellDoc-SPACE
 source .venv/bin/activate && source env.sh
+mkdir -p _WorkSpace/6-EndpointStore/mealcam_logs
 nohup python3 Tools/plugins/health/skills/meal-cam-logger/scripts/meal_cam_loop.py \
     --source 0 \
     --interval 5 \
-    --journal /home/jluo41/LogSeq-Me/journals \
+    --output-dir _WorkSpace/6-EndpointStore/mealcam_logs \
     > /tmp/meal_cam.log 2>&1 &
 echo $! > /tmp/meal_cam.pid
 ```
@@ -71,18 +73,21 @@ Tell the user: "📷 Meal cam is on. Just eat — I'll write down what I see."
 ## Phase 2 — Monitor
 
 While the loop runs, the user may ask mid-session:
-- **"what have I eaten so far?"** → `tail -20 /tmp/meal_cam.log` and summarize.
-- **"skip that last one"** → remove the last bullet from today's journal file.
+- **"what have I eaten so far?"** → `tail -20 /tmp/meal_cam.log` or `cat`
+  the current session file, then summarise.
+- **"skip that last one"** → pop the last entry from the in-memory list
+  and rewrite the session file. (Currently requires manual edit of the
+  `.md` — noted as a TODO.)
 - **"pause"** → `kill -STOP $(cat /tmp/meal_cam.pid)`; **"resume"** →
   `kill -CONT`.
 
 The loop itself handles:
 - Frame capture (OpenCV `VideoCapture`, supports int index or RTSP URL).
-- Vision call to Claude (Anthropic SDK, `claude-opus-4-7` or `claude-sonnet-4-6`).
+- Vision call to Claude (Anthropic SDK, `claude-sonnet-4-6` default).
 - Dedupe: skip frame if detected food is the same as the previous detection
   (string match on normalized food label).
-- Append bullet to `journals/YYYY_MM_DD.md` under `[[Meal-Cam-Records]]`,
-  creating the heading on first write of the day.
+- Rewrite `mealcam_logs/meal-{YYYY-MM-DD}-{HHMM}.md` on each new detection
+  (full-file rewrite keeps the logic simple and avoids partial-write bugs).
 
 ---
 
@@ -94,28 +99,44 @@ When user says "stop meal cam" / "end meal" / "done eating":
 kill $(cat /tmp/meal_cam.pid) && rm /tmp/meal_cam.pid
 ```
 
-Then read today's journal and summarize **only the Meal-Cam-Records block**:
+Then find the current session file and summarise:
 
-> "Logged this session:
+```bash
+ls -t _WorkSpace/6-EndpointStore/mealcam_logs/*.md | head -1 | xargs cat
+```
+
+Present to the user:
+
+> "Logged this session (saved to meal-2026-04-19-1204.md):
 >  • 12:04 salad with grilled chicken
 >  • 12:09 sourdough bread
 >  • 12:18 black coffee
->  Total detections: 6 (3 unique foods). Full log in today's journal."
+>  Duration: 24 min. 3 unique foods from 6 detections."
 
 ---
 
-## LogSeq output format
+## Markdown output format
 
-Appended to `/home/jluo41/LogSeq-Me/journals/YYYY_MM_DD.md`:
+Written to `_WorkSpace/6-EndpointStore/mealcam_logs/meal-{YYYY-MM-DD}-{HHMM}.md`.
+One file per eating session; `HHMM` is the session start time.
 
 ```
-- [[Meal-Cam-Records]]
-	- HH:MM <food label> #meal-cam
-	- HH:MM <food label> #meal-cam
+# 2026-04-19
+
+- **Start:**    12:04
+- **End:**      12:28
+- **Duration:** 24 min
+
+## Foods
+
+- 12:04  salad with grilled chicken
+- 12:09  sourdough bread
+- 12:18  black coffee
+- 12:22  apple
 ```
 
-If the heading already exists for today, append children under it; otherwise
-create the heading at the bottom of the file.
+The file is rewritten in full on each new detection (start/end/duration
+stay in sync without append-tracking).
 
 ---
 
@@ -126,8 +147,8 @@ create the heading at the bottom of the file.
 - **API rate limit** — back off: double the interval and warn the user.
 - **No food in frame** — vision returns `none`; do not write a bullet,
   just continue.
-- **LogSeq journal missing** — create `journals/YYYY_MM_DD.md` with an empty
-  first line before appending.
+- **Output dir missing** — script auto-creates with `mkdir -p`; no manual
+  setup needed.
 
 ---
 

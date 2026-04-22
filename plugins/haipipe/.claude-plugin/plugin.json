@@ -1,0 +1,22 @@
+{
+  "name": "haipipe",
+  "version": "1.0.0",
+  "description": "Skills for the haipipe data + NN + endpoint pipeline. Covers stages 0-2 (per-patient data contract), 1-4 (project-wide data build), 5 (model training), 6 (endpoint packaging), and per-project scaffolding.",
+  "author": {
+    "name": "Junjie Luo",
+    "url": "https://github.com/jluo41"
+  },
+  "license": "MIT",
+  "keywords": [
+    "haipipe",
+    "pipeline",
+    "data",
+    "record",
+    "case",
+    "aidata",
+    "endpoint",
+    "modelinstance",
+    "patient",
+    "cgm"
+  ]
+}
