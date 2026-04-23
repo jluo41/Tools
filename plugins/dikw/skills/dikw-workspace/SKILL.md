@@ -39,31 +39,32 @@ Every DIKW workspace follows this layout, nested under a user-owned folder:
 └── _agent_dikw_space/                         AGENT-OWNED workspace root
     └── snapshot-<date>/                       one analysis context per snapshot
         ├── manifest.yaml                      INPUT: file list + hashes + sizes
+        ├── exploration/                       INPUT: snapshot-level exploration (shared by all sessions)
+        │   └── explore_notes.md               produced once by /dikw-explore
         ├── source/                            INPUT: symlinks (or copies) to data
         │   ├── CGM.parquet
         │   └── ...
         ├── insights/                          OUTPUT: DIKW reports + code
-        │   ├── data/                          ├── D-level
-        │   │   └── NN-{task}/
+        │   ├── data/                          ├── D-level (folder prefix D01, D02, …)
+        │   │   └── D{NN}-{task}/
         │   │       ├── report.md              the insight
         │   │       ├── analysis.py            the code
         │   │       └── chart.png              any artifacts
-        │   ├── information/                   ├── I-level
-        │   │   └── NN-{task}/
+        │   ├── information/                   ├── I-level (folder prefix I01, I02, …)
+        │   │   └── I{NN}-{task}/
         │   │       ├── report.md
         │   │       └── analysis.py
-        │   ├── knowledge/                     ├── K-level (reasoning only)
-        │   │   └── NN-{task}/
+        │   ├── knowledge/                     ├── K-level (folder prefix K01, K02, …; reasoning only)
+        │   │   └── K{NN}-{task}/
         │   │       └── report.md
-        │   └── wisdom/                        └── W-level (reasoning only)
-        │       └── NN-{task}/
+        │   └── wisdom/                        └── W-level (folder prefix W01, W02, …; reasoning only)
+        │       └── W{NN}-{task}/
         │           └── report.md
         ├── sessions/                          OUTPUT: per-question runs
         │   └── {aim}/
         │       ├── question.md
-        │       ├── exploration/explore_notes.md
         │       ├── plan/plan-raw.yaml
-        │       ├── gates/gate_{D,I,K,W}.md
+        │       ├── gates/{NN}-G-{phase}.md       ← e.g. 00-G-plan.md, 01-G-D.md, … (sequential counter)
         │       ├── output/final_output.md
         │       └── DIKW_STATE.json
         └── tmp/                               TEMP: execution logs, safe to clean
@@ -74,8 +75,8 @@ Every DIKW workspace follows this layout, nested under a user-owned folder:
 ```
 
 Key naming rules:
-  - Task folders are `NN-{task_name}` where NN = `01`, `02`, … in execution order.
-  - Task name (no NN-) is the canonical key in `plan-raw.yaml`.
+  - Task folders are `{L}{NN}-{task_name}` where L is the level letter (D/I/K/W) and NN = `01`, `02`, … in execution order within that level.
+  - Task name (no `{L}{NN}-`) is the canonical key in `plan-raw.yaml`.
   - Snapshots are named `snapshot-YYYY-MM-DD` (with `-b`, `-c` … suffix for
     same-day re-snapshots).
 
@@ -87,25 +88,25 @@ All DIKW skills use these conventions (relative to the snapshot directory):
 
 ```
 Source data:    source/{file}
-Insight report: insights/{level_dir}/NN-{task}/report.md
-Insight code:   insights/{level_dir}/NN-{task}/analysis.py  (D, I only)
-Insight chart:  insights/{level_dir}/NN-{task}/{name}.{png,svg,...}
+Insight report: insights/{level_dir}/{L}{NN}-{task}/report.md
+Insight code:   insights/{level_dir}/{L}{NN}-{task}/analysis.py  (D, I only)
+Insight chart:  insights/{level_dir}/{L}{NN}-{task}/{name}.{png,svg,...}
 
 level_dir:      data | information | knowledge | wisdom
 
-Explore notes:  sessions/{aim}/exploration/explore_notes.md
+Explore notes:  exploration/explore_notes.md   (snapshot-level; shared by all sessions)
 Plan:           sessions/{aim}/plan/plan-raw.yaml
 Plan revision:  sessions/{aim}/plan/plan-raw-v{N}.yaml
 Question:       sessions/{aim}/question.md
 Final report:   sessions/{aim}/output/final_output.md
-Gate reviews:   sessions/{aim}/gates/gate_{D,I,K,W}.md
+Gate reviews:   sessions/{aim}/gates/{NN}-G-{phase}.md  (sequential NN counter)
 Session state:  sessions/{aim}/DIKW_STATE.json
 
 Temp workspace: tmp/{task}/{timestamp}/
 ```
 
-Task names: lowercase_with_underscores, no NN- prefix, no session prefix.
-  col_overview ✓    01-col_overview ✗    run1_col_overview ✗
+Task names: lowercase_with_underscores, no `{L}{NN}-` prefix, no session prefix.
+  col_overview ✓    01-col_overview ✗    NN_{slug}_col_overview ✗
 
 
 Command: layout
@@ -150,16 +151,18 @@ SOURCE (read-only input)
   ⬜ source/Record-HmPtt.CGM5Min_RecAttr.parquet  →  ../../../2-RecStore/...
 
 INSIGHTS (DIKW outputs — one folder per task)
-  ⬜ insights/data/NN-{task}/           D-level: report.md + analysis.py + charts
-  ⬜ insights/information/NN-{task}/    I-level: report.md + analysis.py + charts
-  ⬜ insights/knowledge/NN-{task}/      K-level: report.md (reasoning, no code)
-  ⬜ insights/wisdom/NN-{task}/         W-level: report.md (reasoning, no code)
+  ⬜ insights/data/D{NN}-{task}/           D-level: report.md + analysis.py + charts
+  ⬜ insights/information/I{NN}-{task}/    I-level: report.md + analysis.py + charts
+  ⬜ insights/knowledge/K{NN}-{task}/      K-level: report.md (reasoning, no code)
+  ⬜ insights/wisdom/W{NN}-{task}/         W-level: report.md (reasoning, no code)
+
+EXPLORATION (snapshot-level; shared across sessions)
+  ⬜ exploration/explore_notes.md
 
 SESSIONS (per-question runs)
   ⬜ sessions/{aim}/question.md
-  ⬜ sessions/{aim}/exploration/explore_notes.md
   ⬜ sessions/{aim}/plan/plan-raw.yaml
-  ⬜ sessions/{aim}/gates/gate_{D,I,K,W}.md
+  ⬜ sessions/{aim}/gates/{NN}-G-{phase}.md  (sequential NN counter)
   ⬜ sessions/{aim}/output/final_output.md
   ⬜ sessions/{aim}/DIKW_STATE.json
 
@@ -193,23 +196,22 @@ Source (frozen at 2026-04-21T14:30:00):
 
 Insights:
   📊 D (3/3 done):
-     ✅ insights/data/01-col_overview/        (report 4.2K + analysis.py + chart.png)
-     ✅ insights/data/02-quality_check/       (report 3.8K + analysis.py)
-     ✅ insights/data/03-time_coverage/       (report 2.1K + analysis.py)
+     ✅ insights/data/D01-col_overview/        (report 4.2K + analysis.py + chart.png)
+     ✅ insights/data/D02-quality_check/       (report 3.8K + analysis.py)
+     ✅ insights/data/D03-time_coverage/       (report 2.1K + analysis.py)
   📈 I (2/2 done):
-     ✅ insights/information/01-cgm_trend/    (report 5.1K + analysis.py + heatmap.png)
-     ✅ insights/information/02-meal_glucose/ (report 4.7K + analysis.py)
+     ✅ insights/information/I01-cgm_trend/    (report 5.1K + analysis.py + heatmap.png)
+     ✅ insights/information/I02-meal_glucose/ (report 4.7K + analysis.py)
   🧠 K (1/1 done):
-     ✅ insights/knowledge/01-pattern_synthesis/report.md
+     ✅ insights/knowledge/K01-pattern_synthesis/report.md
   💡 W (0/1):
      ⬜ insights/wisdom/01-recommendations/
 
 Sessions:
-  📁 sessions/run1/
-     ✅ exploration/explore_notes.md (9.4K)
+  📁 sessions/NN_{slug}/
      ✅ plan/plan-raw.yaml (v1)
      ⬜ output/final_output.md
-     State: phase=W, 6/7 tasks done
+     State: W-Task, 6/7 tasks done
 
 Temp:
   📁 tmp/ (4 runs, 8MB total)
@@ -338,7 +340,7 @@ Cross-references
   `/dikw-data`, `/dikw-information`, `/dikw-knowledge`, `/dikw-wisdom`,
   `/dikw-report`
 - For full-session execution: `/dikw-session`
-- For gate reviews: `/dikw-review`
+- For gate reviews: `/dikw-gate`
 - For per-task context + readiness evaluation: `/dikw-context`
 
 
@@ -347,7 +349,7 @@ Rules
 
 - NEVER write outside `{folder}/_agent_dikw_space/`. User data is untouched.
 - ALWAYS resolve to a specific `snapshot-<date>/` before reading or writing.
-- Task folders are `NN-{task_name}/` — use the canonical task name from
-  `plan-raw.yaml`, prefixed with the next available `NN-` for this level.
-- When listing insights, sort task folders by NN- prefix (execution order).
+- Task folders are `{L}{NN}-{task_name}/` (L=D/I/K/W) — use the canonical task name from
+  `plan-raw.yaml`, prefixed with the level letter + next available `NN` for this level.
+- When listing insights, sort task folders by `{L}{NN}-` prefix (execution order within level).
 - `create` skeleton only — let `/dikw` own manifest.yaml + source/ population.

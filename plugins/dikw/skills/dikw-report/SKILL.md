@@ -6,10 +6,11 @@ description: "DIKW final report skill. Synthesize ALL DIKW findings into a compr
 Skill: dikw-report
 ====================
 
-Final session report. Synthesize ALL DIKW findings into a comprehensive report.
+Runs during **`step=task`** of **`phase=report`** (the single task of that phase).
+Synthesizes ALL DIKW findings into a comprehensive final report.
 
-On invocation, use `$ARGUMENTS` to get: project path, aim, questions.
-Format: `/dikw-report [project_dir] [aim]`
+On invocation, use `$ARGUMENTS` to get: snapshot_dir, aim, questions.
+Format: `/dikw-report [snapshot_dir] [aim]`
 
 ---
 
@@ -17,18 +18,19 @@ Steps
 -----
 
 1. Parse arguments:
-   - project_dir: from args or cwd
-   - aim: from args or "default"
+   - snapshot_dir: from args or cwd
+   - aim: from args (required; auto-generated at session creation as NN_{slug})
 
 2. Read ALL available reports:
-   - Exploration notes: `{project_dir}/sessions/{aim}/exploration/explore_notes.md`
-   - D-level: `{project_dir}/reports/data/*.md`
-   - I-level: `{project_dir}/reports/information/*.md`
-   - K-level: `{project_dir}/reports/knowledge/*.md`
-   - W-level: `{project_dir}/reports/wisdom/*.md`
+   - Exploration notes: `{snapshot_dir}/exploration/explore_notes.md` (snapshot-level)
+   - D-level: `{snapshot_dir}/insights/data/*/report.md`
+   - I-level: `{snapshot_dir}/insights/information/*/report.md`
+   - K-level: `{snapshot_dir}/insights/knowledge/*/report.md`
+   - W-level: `{snapshot_dir}/insights/wisdom/*/report.md`
+   - Session question: `{snapshot_dir}/sessions/{aim}/question.md`
 
 3. Write the final report:
-   - Path: `{project_dir}/sessions/{aim}/output/final_output.md`
+   - Path: `{snapshot_dir}/sessions/{aim}/output/final_output.md`
    - Minimum 600 words
 
 Report structure:
@@ -61,6 +63,14 @@ Rules
 -----
 
 - Read ALL reports before writing — do not skip any
+- When listing reports per level, sort by `{L}{NN}-` prefix (L=D/I/K/W, NN=execution order)
 - Every claim must trace back to a specific D/I/K/W finding
+  (cite task folder: "insights/data/D01-col_overview/report.md")
 - Write for a decision-maker, not a data scientist
-- Report MUST be written to: sessions/{aim}/output/final_output.md
+- Report MUST be written to: `sessions/{aim}/output/final_output.md`
+- **Persona-aware tone.** Read `DIKW_STATE.gate_persona` if present.
+  When `strictness >= 7`, lead with a "What we cannot claim" section and
+  mark every directional claim as CI-limited. When `ambition >= 7`,
+  expand the K/W synthesis into named hypotheses and follow-up
+  questions. When both are low (`lenient`), keep the report tight to
+  the executive summary + direct answers.

@@ -43,7 +43,12 @@ def main() -> None:
 
     sources: list[Path] = []
     if args.all:
-        sources.extend(sorted(args.all.rglob("*.excalidraw")))
+        # Skip excalidraw files under symlinked task folders (backward-compat
+        # aliases during renames) — they'd be dedup-rendered to stale paths.
+        for p in sorted(args.all.rglob("*.excalidraw")):
+            if any(part for part in p.parents if part.is_symlink()):
+                continue
+            sources.append(p)
     sources.extend(p.resolve() for p in args.paths)
     sources = [s for s in sources if s.exists()]
 

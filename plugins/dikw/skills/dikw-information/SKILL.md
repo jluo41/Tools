@@ -6,10 +6,11 @@ description: "DIKW I-level information extraction skill. Extract patterns, corre
 Skill: dikw-information
 ========================
 
-I-level information extraction. Extract patterns, correlations, statistical insights.
+Runs during **`step=task`** of **`phase=I`**, once per I-task.
+I-level information extraction: patterns, correlations, statistical insights.
 
-On invocation, use `$ARGUMENTS` to get: task_name, project path.
-Format: `/dikw-information <task_name> [project_dir]`
+On invocation, use `$ARGUMENTS` to get: task_name, snapshot_dir.
+Format: `/dikw-information <task_name> [snapshot_dir]`
 
 
 DIKW Boundary — What I-level IS and IS NOT
@@ -35,8 +36,8 @@ DIKW Boundary — What I-level IS and IS NOT
   NOT recommendations: "use message_type B for better engagement"
 
   Execution mode: CODE EXECUTION (write and run Python scripts)
-  Reads: raw data in source/raw/ + D-level reports for context
-  Context sources: reports/data/ (understand what D found before extracting patterns)
+  Reads: raw data in source/ + D-level reports for context
+  Context sources: insights/data/*/report.md (understand what D found)
 
 ---
 
@@ -45,27 +46,36 @@ Steps
 
 1. Parse arguments:
    - task_name from `$ARGUMENTS`
-   - project_dir: from args or cwd
-   - source_dir: `{project_dir}/source/raw/`
+   - snapshot_dir: from args or cwd
+   - source_dir: `{snapshot_dir}/source/`
 
-2. Check if report already exists:
-   - Path: `{project_dir}/reports/information/{task_name}.md`
+2. Resolve the task folder name (I-level prefix is `I` + NN, e.g. I01, I02):
+   - List existing `{snapshot_dir}/insights/information/*/` folders
+   - If one matches `I*-{task_name}/` → reuse (re-run)
+   - Else → assign NN = next available two-digit index within the I-level
+     (01, 02, …) and form folder name `I{NN}-{task_name}` (I01, I02, I03, …)
+   - Task folder: `{snapshot_dir}/insights/information/I{NN}-{task_name}/`
+     (example: `insights/information/I01-glycemic_metrics/`)
+
+3. Check if report already exists:
+   - Path: `{snapshot_dir}/insights/information/I{NN}-{task_name}/report.md`
    - If exists and >100 bytes: print "Report exists, skipping." and stop
 
-3. Read context:
-   - Read D-level reports from `{project_dir}/reports/data/` for context
+4. Read context:
+   - Read D-level reports from `{snapshot_dir}/insights/data/*/report.md`
    - Read raw data from source_dir
 
-4. Extract patterns:
+5. Extract patterns:
    - Use statistical methods appropriate to the task
    - Build on D-level findings (don't repeat D-level work)
 
-5. Save code:
-   - Create `{project_dir}/code/information/{task_name}/`
-   - Save Python scripts and chart PNGs
+6. Save code and artifacts:
+   - Create `{snapshot_dir}/insights/information/I{NN}-{task_name}/`
+   - Save Python scripts (`analysis.py`, additional names if needed)
+   - Save chart PNGs in the same folder
 
-6. Write report:
-   - Path: `{project_dir}/reports/information/{task_name}.md`
+7. Write report:
+   - Path: `{snapshot_dir}/insights/information/I{NN}-{task_name}/report.md`
    - Minimum 300 words
 
 Report format:
@@ -74,7 +84,7 @@ Report format:
 
   Statistical Findings — metrics with p-values, effect sizes
 
-  Visualizations — reference saved charts
+  Visualizations — reference saved charts (file names relative to the task folder)
 
   Pattern Description — named patterns with quantitative evidence
 
@@ -82,13 +92,26 @@ Report format:
 
 ---
 
+Definition of done (all must be true before declaring success)
+---------------------------------------------------------------
+
+- [ ] `analysis.py` **written** to `insights/information/I{NN}-{task_name}/analysis.py`
+- [ ] `analysis.py` **executed** (`python3 analysis.py` ran to completion)
+- [ ] `report.md` **exists** in the same folder and is >100 bytes
+- [ ] Any charts referenced in the report exist as PNGs in the same folder
+
+Writing `report.md` directly without a corresponding `analysis.py` is a
+skill failure. I-level is a CODE-EXECUTION tier (like D); the orchestrator's
+pre-gate check will flag a missing `analysis.py` and re-run the task.
+
 Rules
 -----
 
 - Use python3 ONLY
-- Read D-level reports FIRST for context
+- Read D-level reports FIRST for context: `insights/data/*/report.md`
 - Include statistical significance (p-values) where applicable
-- Report MUST be written to: reports/information/{task_name}.md
+- Report, code, charts all live in `insights/information/I{NN}-{task_name}/`
+- `analysis.py` MUST be saved AND executed — not inlined in a heredoc.
 - STAY ANALYTICAL — report patterns, not explanations or recommendations
 
 ---

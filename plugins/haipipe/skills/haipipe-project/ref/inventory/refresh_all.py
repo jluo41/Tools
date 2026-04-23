@@ -52,7 +52,12 @@ def main() -> None:
               file=sys.stderr)
         sys.exit(2)
 
-    tasks = sorted((project / "tasks").glob("*/build_inventory.py"))
+    # Skip symlinked task folders (e.g. backward-compat aliases during renames)
+    # — they'd run the same builder twice and produce stale duplicate artefacts.
+    tasks = sorted(
+        b for b in (project / "tasks").glob("*/build_inventory.py")
+        if not b.parent.is_symlink()
+    )
     if not tasks:
         print(f"WARNING: no build_inventory.py found under {project}/tasks/*/",
               file=sys.stderr)

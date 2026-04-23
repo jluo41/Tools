@@ -6,10 +6,13 @@ description: "DIKW D-level data analysis skill. Read raw data, write Python anal
 Skill: dikw-data
 ==================
 
-D-level data analysis. Read raw data, write Python analysis code, produce report.
+Runs during **`step=task`** of **`phase=D`**, once per D-task.
+D-level data analysis: read raw data, write Python analysis code, produce report.
 
-On invocation, use `$ARGUMENTS` to get: task_name, project path, source_dir.
-Format: `/dikw-data <task_name> [project_dir]`
+On invocation, use `$ARGUMENTS` to get: task_name, snapshot_dir.
+Format: `/dikw-data <task_name> [snapshot_dir]`
+
+Note: `snapshot_dir` is a `_agent_dikw_space/snapshot-<date>/` folder.
 
 
 DIKW Boundary — What D-level IS and IS NOT
@@ -34,7 +37,7 @@ DIKW Boundary — What D-level IS and IS NOT
   NOT interpretations: "the high null rate suggests data quality issues"
 
   Execution mode: CODE EXECUTION (write and run Python scripts)
-  Reads: raw data files in source/raw/ ONLY
+  Reads: raw data files in source/ ONLY
   Context: none (D is the first analysis level)
 
 ---
@@ -44,25 +47,33 @@ Steps
 
 1. Parse arguments:
    - task_name from `$ARGUMENTS` (e.g., "col_overview")
-   - project_dir: from args or cwd
-   - source_dir: `{project_dir}/source/raw/`
+   - snapshot_dir: from args or cwd
+   - source_dir: `{snapshot_dir}/source/`
 
-2. Check if report already exists:
-   - Path: `{project_dir}/reports/data/{task_name}.md`
+2. Resolve the task folder name (D-level prefix is `D` + NN, e.g. D01, D02):
+   - List existing `{snapshot_dir}/insights/data/*/` folders
+   - If one matches `D*-{task_name}/` → reuse that folder (re-run)
+   - Else → assign NN = next available two-digit index within the D-level
+     (01, 02, …) and form folder name `D{NN}-{task_name}` (D01, D02, D03, …)
+   - Task folder: `{snapshot_dir}/insights/data/D{NN}-{task_name}/`
+     (example: `insights/data/D01-cgm_overview/`)
+
+3. Check if report already exists:
+   - Path: `{snapshot_dir}/insights/data/D{NN}-{task_name}/report.md`
    - If exists and >100 bytes: print "Report exists, skipping." and stop
 
-3. Read and analyze data:
+4. Read and analyze data:
    - List files in source_dir
    - Read data with python3 and pandas
    - Perform the analysis (based on task_name)
 
-4. Save code:
-   - Create `{project_dir}/code/data/{task_name}/`
-   - Save all Python scripts there
-   - Save charts as PNG there
+5. Save code and artifacts:
+   - Create `{snapshot_dir}/insights/data/D{NN}-{task_name}/`
+   - Save all Python scripts as `analysis.py` (or additional names if needed)
+   - Save charts as PNG in the same folder
 
-5. Write report:
-   - Path: `{project_dir}/reports/data/{task_name}.md`
+6. Write report:
+   - Path: `{snapshot_dir}/insights/data/D{NN}-{task_name}/report.md`
    - Minimum 300 words
 
 Report format:
@@ -79,14 +90,35 @@ Report format:
 
 ---
 
+Definition of done (all must be true before declaring success)
+---------------------------------------------------------------
+
+- [ ] `analysis.py` **written** to `insights/data/D{NN}-{task_name}/analysis.py`
+      (the canonical, re-runnable script for this task)
+- [ ] `analysis.py` **executed** (`python3 analysis.py` ran to completion
+      — not merely drafted). The script should produce `report.md` when
+      run; any charts are saved as sibling PNGs.
+- [ ] `report.md` **exists** in the same folder and is >100 bytes
+- [ ] Any charts referenced in the report exist as PNGs in the same folder
+
+Writing `report.md` directly via `Write`/`Edit` without a corresponding
+`analysis.py` is a skill failure, not a skill success. The orchestrator's
+pre-gate check will flag it and the task will be re-run.
+
+If the task is purely descriptive (no computation worth scripting — rare
+at D-level), `analysis.py` still exists as a tiny script that prints the
+facts it cites; D-level is specifically the CODE-EXECUTION tier.
+
 Rules
 -----
 
 - Use python3 ONLY (never "python")
-- Create code directory if it does not exist
-- Report MUST be written to: reports/data/{task_name}.md
+- Create task folder if it does not exist: `insights/data/D{NN}-{task_name}/`
+- Report, code, and charts all live in the SAME folder (one folder per task)
+- Report MUST be written to: `insights/data/D{NN}-{task_name}/report.md`
+- `analysis.py` MUST be saved AND executed — not inlined in a heredoc that
+  writes the report via stdout redirection or `Write`.
 - Include specific numbers (counts, percentages, means)
-- Save chart PNGs to code/data/{task_name}/
 - STAY DESCRIPTIVE — report facts, not interpretations
 
 ---

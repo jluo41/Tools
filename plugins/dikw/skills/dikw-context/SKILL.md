@@ -6,16 +6,36 @@ argument-hint: [task_type] [task_name] [project_dir]
 
 # DIKW Context Builder + Evaluator
 
-Two jobs in one:
-  1. BUILD a focused context package for a specific task
+Runs inside **`step=task`** of any phase, once per task, BEFORE the task's
+phase-skill executes. Two jobs:
+
+  1. BUILD a focused context package for the task
   2. EVALUATE whether the task should execute, be blocked, or be skipped
 
-Every task goes through /dikw-context BEFORE execution.
-The evaluation decides what happens next.
+The evaluation verdict (READY / BLOCKED / SKIP) is a per-task readiness
+check — distinct from gate outcomes (approve / revise / done), which are
+phase-level and produced by `/dikw-gate` at `step=gate`.
 
 ## Arguments: $ARGUMENTS
 
-Parse: task_type (explore/plan/D/I/K/W/review/report), task_name, project_dir.
+Parse: `task_type` (one of `plan` | `D` | `I` | `K` | `W` | `report`), `task_name`, `project_dir`.
+
+Note: `task_type=explore` is NOT supported — exploration is a one-time
+snapshot-level artifact produced by `/dikw-explore` at `/dikw` Stage 4.5,
+before the session starts. `exploration/explore_notes.md` lives at snapshot
+level (not under `sessions/{aim}/`) and is READ by this skill as input for
+every phase, but never itself produced by a session phase.
+
+Note: `project_dir` is the DIKW snapshot directory — i.e. a
+`_agent_dikw_space/snapshot-<date>/` folder produced by `/dikw`. All paths
+below are relative to that snapshot.
+
+## Freshness rule (load-every-call)
+
+ALWAYS re-read every input file on every invocation. Never cache across
+calls. The context is **incremental by design**: tasks complete, gates fire,
+plans revise — and the next call must see all of that. The caller (`/dikw-session`)
+does not pass state; it is always re-read from disk.
 
 
 ## The Flow
@@ -42,29 +62,49 @@ Parse: task_type (explore/plan/D/I/K/W/review/report), task_name, project_dir.
 
 ## What This Skill Produces
 
-A structured CONTEXT PACKAGE with 6 layers + an EVALUATION verdict:
+A structured CONTEXT PACKAGE with 8 layers + an EVALUATION verdict:
 
 ```
-CONTEXT FOR: {task_type} task "{task_name}"
-═══════════════════════════════════════════
+CONTEXT FOR: {task_type} task "{task_name}"     (plan_v{N}, round {M})
+═══════════════════════════════════════════════════════════════════════
 
 QUESTION:
   {the original research question from the session}
 
+TRIGGERING GATE:                                  ← only present if this
+  gate: G-{X}                                       phase was re-entered
+  outcome:  revise {phase} "<feedback>"             via a gate outcome
+  plan_version_before → after: {N-1} → {N}          (empty on first entry)
+
 PLAN CONTEXT:
-  {this task's entry from plan-raw.yaml — name + description}
+  {this task's entry from plan-raw-v{N}.yaml — name + description}
+  {for task_type=plan: the full plan goal + prior plan version if any}
 
 SESSION STATE:
-  {phase, completed tasks, pending tasks, revisions}
+  phase={current}, plan_v{N}, gate={current_gate or —}
+  completed: {D:[...], I:[...], K:[...], W:[...]}
+  pending:   {...}
+  revisions_count: {M}
 
 RELEVANT PRIOR REPORTS:
-  {selected and summarized reports from prior levels}
+  {selected & summarized reports from prior levels — per-task_type rules}
 
 DATA CONTEXT:
-  {from explore notes — data overview relevant to this task}
+  {from snapshot-level exploration/explore_notes.md — data overview}
 
 GATE HISTORY:
-  {prior gate decisions, gaps found, tasks added}
+  {full history of gate outcomes with feedback, ALWAYS included when
+   any gates exist; highlights which gate triggered this re-entry}
+
+OUTPUT CONTRACT:
+  Write to:   {exact path for this task's report}
+  Required:   {what the report MUST contain}
+  Format:     {markdown, sections, artifacts}
+  Artifacts:  D / I tasks MUST produce BOTH report.md AND analysis.py
+              (the saved, executable Python source — not an inlined heredoc).
+              K / W tasks produce report.md only (reasoning-only phases).
+              Missing artifacts fail the pre-gate artifact check in
+              /dikw-session and force a revise of the current phase.
 ```
 
 ---
@@ -73,29 +113,42 @@ GATE HISTORY:
 
 ### Step 1: Read Session Foundation
 
-Read these files (they always exist if session is running):
+Read these files FRESH (they always exist if session is running):
 
 ```
-{project_dir}/sessions/{aim}/DIKW_STATE.json     → session state
-{project_dir}/sessions/{aim}/plan/plan-raw.yaml   → the plan
-{project_dir}/sessions/{aim}/exploration/explore_notes.md → data context
+{project_dir}/exploration/explore_notes.md             → snapshot-level data context (one-time, shared)
+{project_dir}/sessions/{aim}/DIKW_STATE.json           → session state
+{project_dir}/sessions/{aim}/plan/plan-raw.yaml        → symlink to latest plan version
+{project_dir}/sessions/{aim}/plan/plan-raw-v*.yaml     → all plan versions (for revision history)
+{project_dir}/sessions/{aim}/gates/*.md                → all gate outcomes to date (files named {NN}-G-{phase}.md)
 ```
 
 Extract:
   - question (from DIKW_STATE.json or plan goal)
-  - current phase and completed/pending tasks
-  - this task's plan entry (name + description)
+  - current phase, current_gate, plan_version, revisions_count
+  - completed_tasks, pending_tasks
+  - gate_persona (locked at session start; pass through unchanged — /dikw-gate reads it)
+  - this task's plan entry (name + description) — from plan-raw.yaml
+  - the TRIGGERING GATE (if any): the most recent gate whose `to_phase`
+    equals the current phase AND fired after the current phase's last
+    entry. That gate's `feedback` drives this context.
 
 ### Step 2: Select Relevant Reports
 
 Based on the task_type, decide which prior reports to include:
 
 ```
-task_type=explore:
-  reports: none (nothing exists yet)
-
 task_type=plan:
-  reports: none (explore notes are the input, handled separately)
+  plan_version == 1 (initial plan):
+    reports: none (explore notes are the only input)
+    budget:  ~500 words
+  plan_version >= 2 (revised plan — triggered by a gate's `revise plan`):
+    reports: ALL existing D+I+K+W reports (summarized, like task_type=report)
+    plus:    FULL gate history, with the triggering gate highlighted
+    budget:  ~4000 words (matches `report` budget)
+    rationale: a revised plan must see everything that was already produced,
+      plus the feedback that drove the revision. Otherwise it either repeats
+      existing work or misses the gap that triggered the revise.
 
 task_type=D:
   reports: other D reports that already exist (avoid duplicate work)
@@ -114,10 +167,6 @@ task_type=K:
 task_type=W:
   reports: RELEVANT D + I + K reports (summarized)
   relevance: keyword matching + all K reports (K is always relevant to W)
-
-task_type=review:
-  reports: ALL reports from the level being reviewed (full text)
-  + the full plan (all levels, not just current)
 
 task_type=report:
   reports: ALL reports across all levels (summarized to key findings)
@@ -151,22 +200,26 @@ if report > 10KB:
 
 Target: ~500 words per summarized report.
 
-### Step 4: Read Gate History
+### Step 4: Read Gate History (MANDATORY when gates exist)
 
-If any gate reviews exist in sessions/{aim}/gates/:
+Read EVERY gate file in `sessions/{aim}/gates/*.md` — no filtering by
+"interestingness". Gate decisions are causal: they determine why the current
+phase is running, what tasks were added, and what feedback must be addressed.
 
-```
-Read each gate_{level}.md
-Extract: decision (PROCEED/ADD_TASKS/GO_BACK/REVISE), reason, new tasks
-```
+For each gate, extract:
+  - gate name (`G-plan`, `G-D`, ...)
+  - plan_version at time of gate (if applicable)
+  - outcome: `approve` | `revise <phase> [feedback]` | `done`
+  - feedback text (free-form)
+  - routes_to (where the outcome routed)
+  - timestamp
 
-Include gate history if:
-  - Current task was ADDED by a gate (explain why it exists)
-  - A GO_BACK happened (explain what was wrong)
-  - Plan was REVISED (explain what changed)
-
-Skip gate history if:
-  - All gates said PROCEED with no issues (nothing interesting)
+Always include the full gate history in the context. Additionally:
+  - Identify the **TRIGGERING GATE** — the most recent gate whose outcome
+    caused the current phase to be (re-)entered. Surface its `feedback` in
+    a dedicated TRIGGERING GATE section at the top of the context.
+  - If no triggering gate exists (first entry into the phase), omit that
+    section but still include the full GATE HISTORY section.
 
 ### Step 5: Assemble the Context Package
 
@@ -181,7 +234,7 @@ Check these conditions:
 ```
 READY conditions (ALL must be true):
   ✓ Task description is clear (plan entry exists)
-  ✓ Required input data exists (source/raw/ has files, or prior reports exist)
+  ✓ Required input data exists (source/ has files, or prior insight reports exist)
   ✓ Prior-level reports provide what this task needs
   ✓ No blocking gaps identified in the context
   ✓ Task hasn't already been completed (report doesn't already exist)
@@ -191,7 +244,7 @@ BLOCKED conditions (ANY one triggers BLOCKED):
     Example: dedup_analysis says "use deduped data" but no clean dataset exists
   ✗ Task description references data that doesn't exist
     Example: plan says "compare arms" but no arm column found in D reports
-  ✗ A gate decision says GO_BACK but the fix hasn't been done yet
+  ✗ A gate outcome said `revise <earlier_phase> ...` but the fix hasn't been done yet
   ✗ Context reveals the task's approach won't work
     Example: task says "run correlation" but D reports show only 1 numeric column
 
@@ -212,7 +265,9 @@ EVALUATION:
 
   If BLOCKED:
     Blocker: {specific gap or missing prerequisite}
-    Fix: ADD_TASKS {task_name} | GO_BACK {level} | REVISE_PLAN
+    Fix: recommend gate outcome `revise <phase> "<feedback>"` where
+         <phase> is the level that must produce the missing evidence and
+         <feedback> is the task(s) to add there.
     Fix description: {what needs to happen before this task can run}
 
   If SKIP:
@@ -258,17 +313,11 @@ for each task in plan:
         continue to next task
 
     elif result.verdict == BLOCKED:
-        if result.fix == ADD_TASKS:
-            add the suggested task to the plan
-            run the new task first
-            re-evaluate the original task
-        elif result.fix == GO_BACK:
-            go back to the specified level
-            run the fix task
-            come back and re-evaluate
-        elif result.fix == REVISE_PLAN:
-            run /dikw-plan with feedback
-            restart from appropriate level
+        # Route via the unified gate vocabulary:
+        # the recommended fix is always "revise <phase> <feedback>"
+        #   phase == current  → run new task here, then retry
+        #   phase == earlier  → go back, run fix task, roll forward
+        #   phase == plan     → bump plan_version, rewrite plan, restart
 
     elif result.verdict == SKIP:
         mark task as skipped in DIKW_STATE.json
@@ -280,16 +329,16 @@ for each task in plan:
 ## Context Budget (target sizes)
 
 ```
-task_type    target words    what's included
-─────────    ────────────    ───────────────
-explore      300             question + data file listing
-plan         500             question + full explore notes
-D            1000            question + plan entry + data context + other D reports
-I            1500            question + plan entry + relevant D summaries
-K            2000            question + plan entry + relevant D+I summaries
-W            2500            question + plan entry + relevant D+I+K summaries
-review       3000            question + full plan + full reports from current level
-report       4000            question + summaries of ALL levels
+task_type            target words    what's included
+─────────            ────────────    ───────────────
+plan (v1)            500             question + full explore notes
+plan (v2+)           4000            question + explore + ALL reports + full gate history
+                                      + triggering gate's feedback (highlighted)
+D                    1000            question + plan entry + explore + other D reports
+I                    1500            question + plan entry + explore + relevant D summaries
+K                    2000            question + plan entry + relevant D+I summaries
+W                    2500            question + plan entry + relevant D+I+K summaries
+report               4000            question + summaries of ALL levels + full gate history
 ```
 
 These are targets. Better to include a critical finding than to trim for size.
@@ -411,7 +460,7 @@ DATA CONTEXT:
   10K rows, 96 cols. 13 arms. 3,608 unique patients.
 
 GATE HISTORY:
-  Gate D: PROCEED. All D tasks sufficient. One task added by gate
+  Gate G-D: approve. All D tasks sufficient. One task added by a prior gate
   (null_handling_strategy) but not relevant to this I task.
 
 ───────────────────────────────────────────
@@ -455,8 +504,8 @@ DATA CONTEXT:
   SMS experiment. 13 behavioral nudge arms. 3,608 patients.
 
 GATE HISTORY:
-  Gate D: PROCEED.
-  Gate I: PROCEED. Strong statistical evidence. Segments clear.
+  Gate G-D: approve.
+  Gate G-I: approve. Strong statistical evidence. Segments clear.
 
 ───────────────────────────────────────────
 EVALUATION:
@@ -493,7 +542,7 @@ RELEVANT PRIOR REPORTS:
     ⚠️ These numbers are inflated by duplicate counting.
 
 DATA CONTEXT:
-  Only source/raw/df_etl_sample.parquet exists (with duplicates).
+  Only source/df_etl_sample.parquet exists (with duplicates).
   No cleaned/deduped version available.
 
 ───────────────────────────────────────────
@@ -504,9 +553,9 @@ EVALUATION:
           Running arm comparison on this data would produce wrong results.
 
   Blocker: No deduped dataset available
-  Fix: ADD_TASKS
-  Fix task: D "create_deduped_dataset" — deduplicate by invitation_id,
-            save clean parquet, recompute engagement_baseline on clean data.
+  Fix: recommend gate outcome `revise D "create_deduped_dataset:
+         deduplicate by invitation_id, save clean parquet, recompute
+         engagement_baseline on clean data"`
 ───────────────────────────────────────────
 ```
 
@@ -524,15 +573,15 @@ SESSION STATE:
   Phase D, task 1 of 3. No tasks complete yet.
 
 CHECK:
-  reports/data/col_overview.md exists (4.2KB, from prior session run0)
+  insights/data/D01-col_overview/report.md exists (4.2KB, from prior session run0)
 
 ───────────────────────────────────────────
 EVALUATION:
   Verdict: SKIP
-  Reason: Report already exists at reports/data/col_overview.md (4.2KB).
-          Produced by a prior session. Still valid for this project.
+  Reason: Report already exists at insights/data/D01-col_overview/report.md (4.2KB).
+          Produced by a prior session against the same snapshot. Still valid.
   Skip reason: Prior session already completed this task.
-  Existing output: reports/data/col_overview.md
+  Existing output: insights/data/D01-col_overview/report.md
 ───────────────────────────────────────────
 ```
 

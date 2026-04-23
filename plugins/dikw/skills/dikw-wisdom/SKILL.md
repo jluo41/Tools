@@ -6,10 +6,11 @@ description: "DIKW W-level wisdom skill. Strategic recommendations, action items
 Skill: dikw-wisdom
 ====================
 
-W-level wisdom synthesis. Strategic recommendations and action items.
+Runs during **`step=task`** of **`phase=W`**, once per W-task.
+W-level wisdom synthesis: strategic recommendations and action items.
 
-On invocation, use `$ARGUMENTS` to get: task_name, project path.
-Format: `/dikw-wisdom <task_name> [project_dir]`
+On invocation, use `$ARGUMENTS` to get: task_name, snapshot_dir.
+Format: `/dikw-wisdom <task_name> [snapshot_dir]`
 
 
 DIKW Boundary — What W-level IS and IS NOT
@@ -38,7 +39,8 @@ DIKW Boundary — What W-level IS and IS NOT
 
   Execution mode: LLM REASONING (reads all prior reports, no code execution)
   Reads: D-level + I-level + K-level reports
-  Context sources: reports/data/*.md + reports/information/*.md + reports/knowledge/*.md
+  Context sources: insights/data/*/report.md + insights/information/*/report.md
+    + insights/knowledge/*/report.md
   Does NOT read: raw data files
 
 ---
@@ -48,23 +50,31 @@ Steps
 
 1. Parse arguments:
    - task_name from `$ARGUMENTS`
-   - project_dir: from args or cwd
+   - snapshot_dir: from args or cwd
 
-2. Check if report already exists:
-   - Path: `{project_dir}/reports/wisdom/{task_name}.md`
+2. Resolve the task folder name (W-level prefix is `W` + NN, e.g. W01, W02):
+   - List existing `{snapshot_dir}/insights/wisdom/*/` folders
+   - If one matches `W*-{task_name}/` → reuse (re-run)
+   - Else → assign NN = next available two-digit index within the W-level
+     (01, 02, …) and form folder name `W{NN}-{task_name}` (W01, W02, …)
+   - Task folder: `{snapshot_dir}/insights/wisdom/W{NN}-{task_name}/`
+     (example: `insights/wisdom/W01-recommendations/`)
+
+3. Check if report already exists:
+   - Path: `{snapshot_dir}/insights/wisdom/W{NN}-{task_name}/report.md`
    - If exists and >100 bytes: skip
 
-3. Read all prior reports:
-   - ALL D-level: `{project_dir}/reports/data/*.md`
-   - ALL I-level: `{project_dir}/reports/information/*.md`
-   - ALL K-level: `{project_dir}/reports/knowledge/*.md`
+4. Read all prior reports:
+   - ALL D-level: `{snapshot_dir}/insights/data/*/report.md`
+   - ALL I-level: `{snapshot_dir}/insights/information/*/report.md`
+   - ALL K-level: `{snapshot_dir}/insights/knowledge/*/report.md`
 
-4. Produce strategic recommendations:
+5. Produce strategic recommendations:
    - Prioritize by impact and feasibility
    - Ground in evidence from K-level insights
 
-5. Write report:
-   - Path: `{project_dir}/reports/wisdom/{task_name}.md`
+6. Write report:
+   - Path: `{snapshot_dir}/insights/wisdom/W{NN}-{task_name}/report.md`
    - Minimum 400 words
 
 Report format:
@@ -92,7 +102,8 @@ Rules
 - No new data analysis — reason from existing findings
 - Be SPECIFIC: "increase X by doing Y" not "consider improving X"
 - Include expected impact and effort for each recommendation
-- Report MUST be written to: reports/wisdom/{task_name}.md
+- W task folders contain only `report.md` (no code, no charts)
+- Report MUST be written to: `insights/wisdom/W{NN}-{task_name}/report.md`
 
 ---
 

@@ -122,7 +122,7 @@ Per-Skill I/O Specification
           reports/wisdom/*.md                 (ALL W)
   WRITES: sessions/{aim}/output/final_output.md
 
-  /dikw-review
+  /dikw-gate
   READS:  sessions/{aim}/plan/plan-raw.yaml
           reports/ (all levels)
           sessions/{aim}/DIKW_STATE.json

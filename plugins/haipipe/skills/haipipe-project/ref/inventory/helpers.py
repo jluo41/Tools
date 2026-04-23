@@ -310,6 +310,186 @@ def mk_timestamp(x: float, y: float, seed: int = 0) -> list[dict]:
                     size=11, color="#9ca3af", align="right", seed=seed + 999)]
 
 
+# ── sub-task annotation overlays ──────────────────────────────────────────────
+# Wrap a set of rows in a coloured box + badge, so per-panel grids can be
+# labelled with which upstream sub-task owns each row.  Non-contiguous row
+# lists produce multiple boxes (one per contiguous segment).
+
+def draw_row_group_brackets(x_panel: int, y_panel: int, grid: "Grid",
+                            groups: list, panel_w: int,
+                            badge_side: str = "left",
+                            badge_prefix: str | None = None,
+                            seed_base: int = 0) -> list[dict]:
+    """For each (label, row_labels, colour) draw a ring + side badge.
+
+    groups:       list of (label, rows, colour) tuples.
+    panel_w:      full grid width (row_label_w + n_cols * cell_w).
+    badge_side:   "left" or "right" — where the A# badge hangs.
+    badge_prefix: uniqueness prefix when the same label appears in multiple panels.
+    """
+    elems: list[dict] = []
+    cy0 = y_panel + grid.col_label_h
+    prefix = badge_prefix or grid.id_prefix
+    for gi, (label, rows, color) in enumerate(groups):
+        indices = sorted(grid.row_labels.index(r) for r in rows
+                         if r in grid.row_labels)
+        if not indices:
+            continue
+        segments: list[list[int]] = []
+        cur = [indices[0]]
+        for i in indices[1:]:
+            if i == cur[-1] + 1:
+                cur.append(i)
+            else:
+                segments.append(cur)
+                cur = [i]
+        segments.append(cur)
+
+        for k, seg in enumerate(segments):
+            r0, rN = seg[0], seg[-1]
+            y = cy0 + r0 * grid.cell_h
+            h = (rN - r0 + 1) * grid.cell_h
+            elems.append(mk_rect(
+                f"ann_{prefix}_{label}_{k}",
+                x_panel - 2, y - 2, panel_w + 4, h + 4,
+                fill="transparent", stroke=color, stroke_width=2,
+                seed=seed_base + gi * 10 + k,
+            ))
+            bw, bh = 26, 20
+            if badge_side == "left":
+                bx = x_panel - bw - 6
+            else:
+                bx = x_panel + panel_w + 6
+            by = y + h / 2 - bh / 2
+            elems.append(mk_rect(
+                f"ann_{prefix}_{label}_{k}_bg",
+                bx, by, bw, bh, fill=color, stroke=color,
+                seed=seed_base + 100 + gi * 10 + k,
+            ))
+            elems.append(mk_text(
+                f"ann_{prefix}_{label}_{k}_t",
+                bx, by, bw, bh, label,
+                size=11, color="#ffffff", align="center", weight="bold",
+                seed=seed_base + 200 + gi * 10 + k,
+            ))
+    return elems
+
+
+def draw_panel_ring(x: int, y: int, w: int, h: int, label: str, color: str,
+                    badge_side: str = "left", seed_base: int = 0) -> list[dict]:
+    """Wrap an entire panel in a colour ring + single badge (e.g. A7 on MC)."""
+    elems: list[dict] = []
+    elems.append(mk_rect(
+        f"ring_{label}", x - 2, y - 2, w + 4, h + 4,
+        fill="transparent", stroke=color, stroke_width=2,
+        seed=seed_base,
+    ))
+    bw, bh = 26, 20
+    if badge_side == "left":
+        bx = x - bw - 6
+    else:
+        bx = x + w + 6
+    by = y + h / 2 - bh / 2
+    elems.append(mk_rect(
+        f"ring_{label}_bg", bx, by, bw, bh,
+        fill=color, stroke=color, seed=seed_base + 1,
+    ))
+    elems.append(mk_text(
+        f"ring_{label}_t", bx, by, bw, bh, label,
+        size=11, color="#ffffff", align="center", weight="bold",
+        seed=seed_base + 2,
+    ))
+    return elems
+
+
+def draw_subtask_legend(x: int, y: int, items: list,
+                        row_h: int = 22, label_w: int = 320,
+                        seed_base: int = 7000) -> list[dict]:
+    """Render a vertical legend mapping A# pills → description text.
+
+    items: list of (label, description, colour).
+    """
+    elems: list[dict] = []
+    for k, (sid, desc, color) in enumerate(items):
+        y_row = y + k * row_h
+        elems.append(mk_rect(
+            f"sl_pill_{k}", x, y_row, 26, 18,
+            fill=color, stroke=color, seed=seed_base + k,
+        ))
+        elems.append(mk_text(
+            f"sl_pill_t_{k}", x, y_row, 26, 18, sid,
+            size=10, color="#ffffff", align="center", weight="bold",
+            seed=seed_base + 100 + k,
+        ))
+        elems.append(mk_text(
+            f"sl_desc_{k}", x + 34, y_row - 1, label_w, 20, desc,
+            size=11, color="#374151", seed=seed_base + 200 + k,
+        ))
+    return elems
+
+
+# ── upload to excalidraw.com ───────────────────────────────────────────────────
+
+def upload_excalidraw(excalidraw_path: str | Path) -> str:
+    """Encrypt + upload a .excalidraw file to json.excalidraw.com.
+
+    Returns a fully shareable, editable URL of the form:
+        https://excalidraw.com/#json={id},{base64url_key}
+
+    The file is AES-128-GCM encrypted before upload — the decryption key
+    never touches excalidraw's server, only the URL fragment.  Edits made
+    by anyone who opens the link persist on excalidraw.com's servers.
+
+    Requires:  pip install cryptography requests
+    Note: uses the unofficial json.excalidraw.com API (no auth, no SLA).
+    """
+    import base64
+    import os
+
+    import requests
+    from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+
+    path      = Path(excalidraw_path)
+    plaintext = path.read_bytes()
+
+    key       = os.urandom(16)          # 128-bit AES key
+    iv        = os.urandom(12)          # 96-bit GCM nonce
+    ciphertext = AESGCM(key).encrypt(iv, plaintext, None)
+
+    resp = requests.post(
+        "https://json.excalidraw.com/api/v2/post/",
+        data=iv + ciphertext,
+        headers={"Content-Type": "application/octet-stream"},
+        timeout=30,
+    )
+    resp.raise_for_status()
+
+    doc_id  = resp.json()["id"]
+    key_b64 = base64.urlsafe_b64encode(key).rstrip(b"=").decode()
+    return f"https://excalidraw.com/#json={doc_id},{key_b64}"
+
+
+def write_share_url(readme_path: str | Path, url: str) -> None:
+    """Write (or update) the excalidraw share URL in a README.md.
+
+    Uses an HTML comment marker so the line can be found and replaced on
+    subsequent uploads without touching the rest of the file.
+    """
+    import re
+
+    path    = Path(readme_path)
+    content = path.read_text()
+    line    = f"<!-- excalidraw-share --> **Excalidraw (live, editable):** {url}"
+
+    if "<!-- excalidraw-share -->" in content:
+        content = re.sub(r"<!-- excalidraw-share -->.*", line, content)
+    else:
+        # insert after the first heading block (first blank line after title)
+        content = re.sub(r"(\n\n)", f"\n{line}\n\n", content, count=1)
+
+    path.write_text(content)
+
+
 # ── save .excalidraw ───────────────────────────────────────────────────────────
 
 def write_excalidraw(path: str | Path, elements: Iterable[dict],

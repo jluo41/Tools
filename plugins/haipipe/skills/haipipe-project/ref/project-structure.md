@@ -49,10 +49,28 @@ Group Folders
 
   Two-level hierarchy: tasks/ -> group folders -> task folders.
 
-  {G}_{group_name}/
+  {G}_{group_name}/            <- default form (one letter + name)
+  {G}_{S}_{group_name}/        <- sub-ordered form (optional, when a group
+                                  splits into ordered stages; see below)
 
   G = uppercase letter (matches its tasks' prefix)
+  S = single digit, optional, used when several groups share letter G and
+      need explicit dependency order in alphabetical listings
   group_name = snake_case descriptor
+
+  Sub-ordered form — when to use:
+    When multiple groups share the same G (e.g. "A = training") but one
+    depends on another (e.g. finetuning depends on pretraining), use the
+    {G}_{S}_ form so `ls` sorts them in dependency order:
+
+      A_1_pretraining_clm/           <- stage 1: produces backbones
+      A_2_finetuning_clm_for_clf/    <- stage 2: consumes backbones from A_1_*
+
+    Without the digit, "A_finetuning_*" would sort before "A_pretraining_*"
+    because 'f' < 'p', which inverts the logical dependency.  One digit
+    is enough; don't nest further.  Task-folder prefix is still {G}{N}_
+    (no sub-digit), so "A_1_pretraining_clm/A1_train_clm_num_modelsize/"
+    has group "A_1_" and sub-task "A1_" — distinct by separator.
 
   Group folder contents:
     README.md        <- MANDATORY: group purpose, task list, internal flow
