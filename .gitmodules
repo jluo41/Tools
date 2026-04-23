@@ -10,3 +10,6 @@
 [submodule "plugins/nature-paper-skills"]
 	path = plugins/nature-paper-skills
 	url = https://github.com/Boom5426/Nature-Paper-Skills.git
+[submodule "plugins/research-writing"]
+	path = plugins/research-writing
+	url = git@github.com:jluo41/research-writing.git
