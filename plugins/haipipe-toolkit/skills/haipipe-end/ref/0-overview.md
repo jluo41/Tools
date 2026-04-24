@@ -1,0 +1,433 @@
+Stage 6: Endpoint Deployment
+=============================
+
+Stage 6 of the haipipe data pipeline.
+Transforms a trained ModelInstance_Set into a self-contained, production-ready
+Endpoint_Set that can run inference from a raw JSON payload.
+
+**Scope:** Architecture, inference pipeline, directory layout, YAML config,
+payload/response schemas, SPACE keys. Per-Fn-type contracts are in ref/1-5.md.
+
+---
+
+Architecture Position
+=====================
+
+```
+Stage 5: ModelInstance_Set     Trained model + prefn_pipeline + examples
+          |
+          v  Endpoint_Pipeline.run()
+Stage 6: Endpoint_Set          Self-contained deployment package
+          |
+          v  Endpoint_Set.inference(payload_json)
+          Client JSON response
+```
+
+The endpoint layer has two classes with a strict separation:
+
+```
+Endpoint_Pipeline   (packaging only)
+  - Input:  ModelInstance_Set + 5 Fn names + config
+  - Output: Endpoint_Set (not yet saved)
+  - Does NOT run inference
+
+Endpoint_Set        (serving only)
+  - Input:  raw JSON payload
+  - Output: client JSON response
+  - Does NOT package; assumes everything is already inside
+```
+
+---
+
+The 7-Step Inference Pipeline
+==============================
+
+Inside Endpoint_Set.inference(), every request goes through these steps:
+
+```
+Step 1  TrigFn         payload_input_json          -> df_case_raw | None
+Step 2  Input2SrcFn    payload_input_json           -> ProcName_to_ProcDf
+Step 3  PreFnPipeline  ProcName_to_ProcDf           -> RecordSet (in-memory)
+Step 4  PreFnPipeline  RecordSet                    -> CaseSet (in-memory)
+Step 5  PreFnPipeline  CaseSet                      -> model_input (HF Dataset)
+Step 6  ModelInfer     model_input                  -> DataFrame (score__{action})
+Step 7  PostFn         ModelArtifact_to_Inference   -> response_json
+```
+
+**Step 1 — TrigFn (optional skip):**
+If TrigFn returns None, inference is skipped and a default response is returned.
+Use when not every incoming request should invoke the model (e.g., only 5-min CGM
+entries should trigger forecast, not every heartbeat).
+
+**Steps 2-5 — the preprocessing chain:**
+These run the same PreFnPipeline that was attached to the model during training.
+The pipeline lives inside the Endpoint_Set's model/ directory and is loaded once
+at warmup(). It converts raw source tables → feature vector the model expects.
+
+**Step 6 — Model Inference:**
+Calls model_instance.infer(model_input_data, InferenceArgs).
+Returns a DataFrame with columns: score__{action}, best_action, [uplift__{action}].
+
+**Step 7 — PostFn:**
+Takes the per-action score DataFrame and formats the client-facing JSON response.
+Handles action filtering, score scaling, and response schema formatting.
+
+---
+
+The 5 Inference Function Types
+================================
+
+These are all generated from builders in code-dev/1-PIPELINE/6-Endpoint-WorkSpace/.
+NEVER edit files in code/haifn/fn_endpoint/ directly.
+
+```
+Type          Builder prefix  Generated location         Purpose
+────────────  ──────────────  ─────────────────────────  ──────────────────────────
+MetaFn        a1_build_...    fn_endpoint/fn_meta/       Model metadata + name map
+TrigFn        b1_build_...    fn_endpoint/fn_trig/       Trigger detection
+PostFn        c1_build_...    fn_endpoint/fn_post/       Score → response JSON
+Src2InputFn   d1_build_...    fn_endpoint/fn_src2input/  ProcDF → payload (inverse)
+Input2SrcFn   e1_build_...    fn_endpoint/fn_input2src/  payload → ProcDF (entry)
+```
+
+**Src2InputFn and Input2SrcFn are inverses:**
+- During packaging: Src2InputFn converts training examples → test payloads
+- During inference: Input2SrcFn converts incoming payload → ProcName_to_ProcDf
+
+---
+
+Directory Structure
+===================
+
+**Stage 5 (input):**
+```
+_WorkSpace/5-ModelInstanceStore/{name}/{version}/
+├── model/
+│   ├── config.json
+│   ├── metadata.json
+│   ├── model_MAIN/            <- Tuner weights
+│   ├── prefn_config.json
+│   ├── prefn_cf_to_cfvocab.json
+│   └── prefn_feat_vocab.json
+├── training/results.json
+├── evaluation/
+├── examples/
+│   ├── example_000_{uuid}/
+│   │   ├── ProcName_to_ProcDf/
+│   │   └── prediction_results.json
+│   └── ...
+└── manifest.json
+```
+
+**Stage 6 (output):**
+```
+_WorkSpace/6-EndpointStore/{endpoint_name}/
+├── model/                     <- Copied from ModelInstance_Set
+│   ├── config.json
+│   ├── model_MAIN/
+│   ├── prefn_config.json
+│   └── ...
+├── code/                      <- Full codebase snapshot
+│   ├── haipipe/
+│   ├── hainn/
+│   └── haifn/
+│       └── fn_endpoint/
+│           ├── fn_meta/
+│           ├── fn_trig/
+│           ├── fn_post/
+│           ├── fn_src2input/
+│           └── fn_input2src/
+├── external/                  <- Reference data (NDC, NPI, etc.)
+├── inference/                 <- Inference schemas and templates
+├── examples/                  <- Test examples with payloads
+│   ├── example_000_{uuid}/
+│   │   ├── ProcName_to_ProcDf/
+│   │   ├── prediction_results.json
+│   │   └── payload.json       <- Generated by Src2InputFn during packaging
+│   └── ...
+├── meta.json                  <- Output of MetaFn (name mappings + metadata_response)
+└── manifest.json              <- Config + lineage chain
+```
+
+---
+
+YAML Config (6_test_endpoint.yaml)
+====================================
+
+Required top-level keys:
+
+```yaml
+# Source model (Stage 5)
+modelinstance_name: "Demo_Small_TSDecoder_ModelInstance"
+modelinstance_version: "@v0001"
+
+# Target endpoint (Stage 6)
+endpoint_name: "endpoint_cgm_decoder_ohio"
+endpoint_version: "v0001"
+
+# 5 Inference function names (exact match to generated .py file names)
+MetaFn: "CGMDecoder_DBR_v260101"
+Input2SrcFn: "CGMDecoder_DBR_Payload2Src_v260101"
+Src2InputFn: "CGMDecoder_DBR_Src2Payload_v260101"
+TrigFn: "CGM5Min_v260101"
+PostFn: "CGMForecast_v260101"
+
+# Deployment settings (optional)
+deployment_config:
+  environment: "test"          # test | staging | production
+  platform: "local"            # local | databricks | sagemaker
+```
+
+**Function name resolution:**
+Each Fn name (e.g., "CGMDecoder_DBR_v260101") maps to a .py file in:
+  code/haifn/fn_endpoint/fn_{type}/{FnName}.py
+
+The Fn is loaded dynamically via Base.load_module_variables(pypath).
+
+---
+
+Payload Formats
+===============
+
+Two supported input formats:
+
+**Format A — Databricks dataframe_records (preferred):**
+
+```json
+{
+  "dataframe_records": [{
+    "TriggerName_to_CaseTriggerList": "...",
+    "inference_form": "...",
+    "models": "[\"cgm-decoder-ohio\"]"
+  }]
+}
+```
+
+**Format B — Legacy flat format:**
+
+```json
+{
+  "field1": "value",
+  "field2": "value",
+  "models": ["ModelName"]
+}
+```
+
+Endpoint_Set.inference() detects format by checking for "dataframe_records" key.
+
+---
+
+Response Format
+===============
+
+All responses follow this schema:
+
+```json
+{
+  "models": [{
+    "name": "ExternalModelName",
+    "date": "2025-02-24T14:30:00.000",
+    "version": "endpoint_name/v0001",
+    "action": {
+      "name": "best_action_name",
+      "score": 85.42
+    },
+    "predictions": [
+      {"name": "action_1", "score": 85.42},
+      {"name": "action_2", "score": 42.17},
+      {"name": "action_3", "score": 31.05}
+    ]
+  }],
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+Error response:
+```json
+{
+  "status": {
+    "code": 500,
+    "message": "Error description"
+  }
+}
+```
+
+---
+
+SPACE Dictionary (Endpoint-specific keys)
+==========================================
+
+```
+Key                        Value                                     Used by
+─────────────────────────  ────────────────────────────────────────  ────────────────────
+CODE_FN                    code/haifn/                               Fn loading
+LOCAL_ENDPOINT_STORE       _WorkSpace/6-EndpointStore/               save/load
+LOCAL_EXTERNAL_STORE       _WorkSpace/ExternalStore/                 NDC, NPI, ZIP
+LOCAL_MODELINSTANCE_STORE  _WorkSpace/5-ModelInstanceStore/          packaging
+LOCAL_RECORD_STORE         _WorkSpace/2-RecStore/                    PreFnPipeline
+DATA_EXTERNAL              _WorkSpace/ExternalStore/                 reference data
+MODEL_ENDPOINT             "{endpoint_name}/{endpoint_version}"      set at inference time
+SPACE                      full SPACE dict                           all components
+```
+
+The SPACE dict is constructed from env.sh env vars. Inside the Endpoint_Set
+(at serving time), paths are relative to the endpoint directory itself.
+In Databricks, SPACE is constructed from context.artifacts['endpoint'].
+
+---
+
+Endpoint_Set API
+================
+
+**Loading:**
+
+```python
+from haipipe.endpoint_base import Endpoint_Set
+import os
+SPACE = os.environ.get('SPACE', '.')
+
+# Load from disk
+endpoint_set = Endpoint_Set.load_from_disk(
+    path='_WorkSpace/6-EndpointStore/endpoint_cgm_decoder_ohio',
+    SPACE=SPACE
+)
+```
+
+**Warmup (strongly recommended before inference):**
+
+```python
+# Pre-loads all components to eliminate cold-start latency
+# Call once after loading, then inference() is fast
+endpoint_set.warmup()
+```
+
+**Inference:**
+
+```python
+import json
+
+# Load test payload
+with open('_WorkSpace/6-EndpointStore/endpoint_cgm_decoder_ohio/examples/example_000_xxx/payload.json') as f:
+    payload = json.load(f)
+
+# Run inference (no profiling)
+response = endpoint_set.inference(payload)
+
+# Run inference with profiling
+response, timing = endpoint_set.inference(payload, profile=True)
+print(timing['summary'])  # Human-readable table
+print(f"Total: {timing['total_ms']:.1f}ms")
+print(f"Slowest step: {timing['slowest_step']}")
+```
+
+**Profiling output (when profile=True):**
+
+```
+timing = {
+  'total_ms': 147.3,
+  'steps': {
+    'load_functions': 0.1,
+    'trig_fn': 2.3,
+    'input2src_fn': 8.7,
+    'prefn_pipeline': 95.4,
+    'prefn_details': {
+      'record_pipeline': 45.2,
+      'case_pipeline': 48.1,
+      'casefn_breakdown': {'CGMInfoBf24h': 23.1, 'PAge5': 0.8, ...}
+    },
+    'model_inference': 38.2,
+    'post_fn': 2.6
+  },
+  'slowest_step': 'prefn_pipeline',
+  'summary': '<formatted table>'
+}
+```
+
+---
+
+Endpoint_Pipeline API
+=====================
+
+```python
+from haipipe.endpoint_base import Endpoint_Pipeline
+from haipipe.model_base.modelinstance_set import ModelInstance_Set
+
+# Load trained model
+modelinstance_set = ModelInstance_Set.load_asset(
+    'ModelName/v0001', SPACE
+)
+
+# Create pipeline with Fn names from YAML
+config = {
+    'MetaFn': 'CGMDecoder_DBR_v260101',
+    'Input2SrcFn': 'CGMDecoder_DBR_Payload2Src_v260101',
+    'Src2InputFn': 'CGMDecoder_DBR_Src2Payload_v260101',
+    'TrigFn': 'CGM5Min_v260101',
+    'PostFn': 'CGMForecast_v260101',
+}
+pipeline = Endpoint_Pipeline(config=config, SPACE=SPACE)
+
+# Package
+endpoint_set = pipeline.run(
+    modelinstance_set=modelinstance_set,
+    endpoint_name='endpoint_cgm_decoder_ohio',
+    endpoint_version='v0001',
+    deployment_config={'environment': 'test', 'platform': 'local'}
+)
+
+# Save -- pipeline does NOT auto-save
+endpoint_set.save_to_disk()
+```
+
+---
+
+Key File Locations
+==================
+
+```
+Endpoint_Set class:       code/haipipe/endpoint_base/endpoint_set.py
+Endpoint_Pipeline class:  code/haipipe/endpoint_base/endpoint_pipeline.py
+Utilities:                code/haipipe/endpoint_base/endpoint_utils.py
+Fn loaders (builder/):    code/haipipe/endpoint_base/builder/
+  MetaFn loader:            builder/metafn.py
+  TrigFn loader:            builder/trigfn.py
+  PostFn loader:            builder/postfn.py
+  Src2InputFn loader:       builder/src2inputfn.py
+  Input2SrcFn loader:       builder/input2srcfn.py
+Generated Fns:            code/haifn/fn_endpoint/    <- NEVER edit directly
+Builder scripts:          code-dev/1-PIPELINE/6-Endpoint-WorkSpace/
+YAML configs:             config/test-haistep-*/6_test_endpoint.yaml
+Databricks platform:      platform-databrick-inference/
+  MLflow wrapper:           code/mlflow_model.py
+  Package script:           scripts/package.py
+  Deploy script:            scripts/deploy.py
+  Test script:              scripts/test.py
+```
+
+---
+
+MUST DO (All Functions)
+========================
+
+1. Activate .venv AND source env.sh before any Python call
+   NOTE: source .venv/bin/activate does NOT persist across Bash tool calls.
+   Always chain: source .venv/bin/activate && source env.sh && python <script>
+   Or call venv Python directly: .venv/bin/python script.py
+2. Verify ModelInstance_Set exists (Stage 5) before packaging
+3. Verify all 5 Fn .py files exist before running Endpoint_Pipeline
+4. Call endpoint_set.warmup() before running inference()
+5. Use test payloads from examples/*/payload.json (generated during packaging)
+6. Check manifest.json at the Endpoint_Set root to confirm clean save
+
+---
+
+MUST NOT (All Functions)
+=========================
+
+1. NEVER edit code/haifn/fn_endpoint/ directly -- use builders
+2. NEVER call Endpoint_Pipeline.run() for inference -- that is Endpoint_Set's job
+3. NEVER skip warmup() in production -- cold-start latency is significant
+4. NEVER pass set_name= or store_key= to load_from_disk -- use path= and SPACE=
