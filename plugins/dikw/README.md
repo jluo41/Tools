@@ -52,9 +52,69 @@ Everything else is reachable but rarely typed by hand.
 
 | Skill | What it does |
 |---|---|
-| /dikw-session | Full lifecycle: phases `plan → D → I → K → W → report → done` with gates |
-| /dikw-gate | Runs during `step=gate`: proposes gate outcome (approve / revise / done) |
+| /dikw-session | Full lifecycle (inline mode): phases `plan → D → I → K → W → report → done` with gates. Task execution runs inline in the main conversation via `Skill(dikw-<phase>)`. |
+| /dikw-session-agent | Same lifecycle, **agent mode**: plan/D/I/K/W tasks are dispatched to phase-specific subagents (see `agents/` below); the report phase stays inline. Opt in via `--agents` on `/dikw`. |
+| /dikw-gate | Runs during `step=gate`: proposes gate outcome (approve / revise / done). Reads from files; works identically in both execution modes. |
 | /dikw-context | Builds per-task context inside `step=task`; evaluates readiness (READY / BLOCKED / SKIP) |
+
+
+Execution Modes
+---------------
+
+The session orchestrator has two execution modes. They produce
+**identical on-disk artifacts** (`report.md`, `analysis.py`,
+`plan-raw-v{N}.yaml`) and share the same state machine, gate contract,
+and `DIKW_STATE.json` schema. The only difference is *who* runs each
+task.
+
+| Mode | CLI | Session skill | Task execution |
+|---|---|---|---|
+| **Inline** (default) | `/dikw {folder}` | `/dikw-session` | `Skill(dikw-<phase>)` in main conversation |
+| **Agent** (opt-in) | `/dikw {folder} --agents` | `/dikw-session-agent` | `Agent(dikw-<phase>-executor)` per task |
+
+**When to use inline mode (default):**
+- Developing or debugging task skills — inline output is fully visible in the transcript.
+- Short interactive sessions where you want to iterate mid-phase.
+- First runs on a new dataset (you're learning the data alongside the pipeline).
+
+**When to use agent mode (`--agents`):**
+- Long `--auto` runs where D/I phases generate large Python output — agent isolation keeps main context clean.
+- Phases with multiple independent tasks (typical for D/I with 2–3 tasks) — agent mode can dispatch them in **parallel** via one assistant message.
+- Repeatable production pipelines where you trust the task skills.
+
+The **report phase always runs inline** (even in agent mode) so the
+final deliverable stays in main context for follow-up questions.
+
+### Agents (`agents/` folder, used only by `/dikw-session-agent`)
+
+| Agent | Phase | Has `Bash`? | Calls skills |
+|---|---|---|---|
+| `dikw-planner` | plan | no | `dikw-context`, `dikw-plan` |
+| `dikw-data-executor` | D | yes (runs `analysis.py`) | `dikw-context`, `dikw-data` |
+| `dikw-information-executor` | I | yes (runs `analysis.py`) | `dikw-context`, `dikw-information` |
+| `dikw-knowledge-executor` | K | no (text-only synthesis) | `dikw-context`, `dikw-knowledge` |
+| `dikw-wisdom-executor` | W | no (text-only synthesis) | `dikw-context`, `dikw-wisdom` |
+
+No agent has permission to modify `DIKW_STATE.json`, `manifest.yaml`,
+`plan-raw-*.yaml`, or gate files — state ownership belongs exclusively
+to the orchestrator session skill.
+
+### Maintenance discipline
+
+`/dikw-session` and `/dikw-session-agent` are parallel implementations
+of the same state machine. Any change to state machine logic,
+`DIKW_STATE.json` schema, gate contract, `MAX_REVISIONS` handling,
+banner format, pre-gate check, or resume logic **must be applied to
+both** — otherwise the two modes will silently diverge. Before
+releasing changes:
+
+1. Run both sessions on a common snapshot.
+2. Diff the `insights/` tree structure (file names, schema, gate files).
+   Content will vary due to LLM randomness; structure must match.
+3. If structure drifts, one file has fallen behind the other.
+
+Each session file has a cross-reference warning block at the top
+reminding maintainers to check its sibling.
 
 
 Folder Layout
@@ -142,6 +202,14 @@ Usage
 ```
 Default is `AUTO_PROCEED=false`: session pauses at every gate for human
 acceptance. With `--auto`, the gate's proposed outcome is auto-accepted.
+
+**Use agent-dispatched task execution:**
+```
+/dikw /path/to/folder "question" --agents
+```
+Default is inline mode (`/dikw-session`). With `--agents`, plan/D/I/K/W
+tasks are dispatched to phase-specific subagents via `/dikw-session-agent`.
+The report phase always stays inline. See "Execution Modes" above.
 
 **Inspect a workspace:**
 ```

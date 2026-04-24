@@ -27,6 +27,12 @@ Constants
   `--symlink` when the data is large and you want to avoid duplication.
 - **DRY_RUN = false** — set true (`--dry-run`) to print the layout + what would
   happen, then exit without running anything.
+- **USE_AGENTS = false** — *default.* Delegate Stage 6 to `/dikw-session`
+  (inline skill mode). Set true (`--agents`) to delegate to
+  `/dikw-session-agent` instead — same state machine, but each task
+  (plan, D, I, K, W) is dispatched to a phase-specific subagent for
+  context isolation and optional parallel dispatch. The report phase
+  stays inline in both modes. File outputs are identical across modes.
 
 
 Pipeline
@@ -68,7 +74,10 @@ Pipeline
   │    (one-time per snapshot; reused by all sessions)
   │
   └─ Stage 5 — Run session
-       delegate: /dikw-session {snapshot_dir} {aim} [question]
+       if USE_AGENTS (--agents):
+           delegate: /dikw-session-agent {snapshot_dir} {aim} [question]
+       else:
+           delegate: /dikw-session       {snapshot_dir} {aim} [question]
        runs phases plan → D → I → K → W → report → done.
        Each phase has 2 steps: task (execute work) then gate (review + outcome).
        Gate outcomes: approve / revise <phase> [feedback] / done.
@@ -424,6 +433,7 @@ write    {snapshot_dir}/sessions/{aim}/DIKW_STATE.json with:
     "status": "running",
     "aim": "{aim}",
     "questions": "{question}",
+    "execution_mode": "agent" if USE_AGENTS else "inline",
     "current_phase": "plan",
     "current_step": "task",
     "current_task": null,
@@ -438,19 +448,39 @@ write    {snapshot_dir}/sessions/{aim}/DIKW_STATE.json with:
   }
 ```
 
+The `execution_mode` field locks which session skill is allowed to run
+or resume this session. It's set once at session creation from
+`USE_AGENTS` and NEVER rewritten. On resume, the invoked session skill
+(`/dikw-session` or `/dikw-session-agent`) must match this field, or
+refuse to start.
+
 If `question.md` or `DIKW_STATE.json` already exists (resume after
 compaction), leave them alone — the user is picking up a prior run.
+If the existing state's `execution_mode` disagrees with `USE_AGENTS`
+for this invocation, abort with a message telling the user to either
+pass the matching flag or start a new session.
 
-Then delegate to `/dikw-session`, passing the aim computed in Stage 2.5:
+Then delegate to the session skill, passing the aim computed in Stage 2.5.
+The session skill is chosen by the `USE_AGENTS` constant:
 
 ```
-/dikw-session {snapshot_dir} {aim} {question}
+if USE_AGENTS (--agents):
+    /dikw-session-agent {snapshot_dir} {aim} {question}
+else:
+    /dikw-session       {snapshot_dir} {aim} {question}
 ```
 
-`/dikw-session` handles:
+Both session skills handle:
   - explore → plan → gate → D → gate → I → gate → K → gate → W → gate → report
   - writes into `{snapshot_dir}/insights/` + `{snapshot_dir}/sessions/{aim}/`
   - DIKW_STATE.json updates for resume-after-compaction
+
+The only difference is execution of task steps: `/dikw-session` invokes
+the phase skill inline (`Skill(dikw-<phase>)`), while
+`/dikw-session-agent` dispatches each task to a phase-specific subagent
+(`dikw-planner`, `dikw-data-executor`, `dikw-information-executor`,
+`dikw-knowledge-executor`, `dikw-wisdom-executor`). The report phase
+stays inline in both modes. File outputs are identical.
 
 Important: per-task artifacts (`analysis.py`, `report.md`, charts) are
 produced by `/dikw-<phase>` sub-skills invoked by the session orchestrator
@@ -513,6 +543,7 @@ Commands
 /dikw {folder} --new-snapshot         → force new snapshot
 /dikw {folder} --symlink              → symlink data in source/ (skip copy; saves disk for large data)
 /dikw {folder} --auto                 → run unattended (AUTO_PROCEED=true); default is to pause at every gate
+/dikw {folder} --agents               → use /dikw-session-agent (subagent dispatch); default is /dikw-session (inline)
 ```
 
 

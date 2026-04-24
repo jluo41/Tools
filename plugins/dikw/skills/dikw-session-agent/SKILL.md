@@ -1,13 +1,23 @@
 ---
-name: dikw-session
-description: "Full DIKW analysis session. Runs phases plan → D → I → K → W → report with a gate at the end of each phase for review. Handles iteration: a gate outcome can revise the current phase, go back to an earlier phase, rewrite the plan, or jump to report. Use when user says 'run DIKW', 'full analysis', 'DIKW session', 'analyze this dataset end-to-end', or /dikw-session. Trigger: DIKW session, full analysis, end-to-end analysis, analyze dataset."
+name: dikw-session-agent
+description: "Full DIKW analysis session, agent-dispatched variant. Same state machine as /dikw-session, but each task (plan, D, I, K, W) is executed by a phase-specific subagent (dikw-planner, dikw-data-executor, dikw-information-executor, dikw-knowledge-executor, dikw-wisdom-executor). The report phase stays inline. Use when the user says 'run DIKW with agents', '/dikw-session-agent', or wants agent-mode execution for context isolation and parallel task dispatch."
 argument-hint: [snapshot_dir] [questions]
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, Agent, Skill
 ---
 
-# DIKW Analysis Session
+# DIKW Analysis Session — Agent Mode
 
 End-to-end DIKW analysis pipeline for: **$ARGUMENTS**
+
+> ⚠ **Sibling skill**: `/dikw-session` is the inline-execution twin of
+> this skill. The state machine, `DIKW_STATE.json` schema, gate contract,
+> `MAX_REVISIONS` handling, banner format, pre-gate check, and resume
+> logic **must stay identical** between the two. When changing any of
+> those, apply the same change to `skills/dikw-session/SKILL.md` too,
+> and run both sessions on a common snapshot to verify the outputs
+> match structurally. The only intentional divergence is the
+> task-execution block (this file uses `Agent()`; the sibling uses
+> `Skill()`).
 
 The first argument, `snapshot_dir`, is a `_agent_dikw_space/snapshot-<date>/`
 folder produced by `/dikw`. If you run `/dikw-session` directly, pass the
@@ -104,28 +114,90 @@ Concrete invocation shape (pseudocode → real tool calls):
 while current_phase != "done":
 
     # ─── step=task ──────────────────────────────────────────────
+    # Agent-mode execution. Each task is dispatched to a phase-specific
+    # subagent which invokes dikw-context + the phase skill in
+    # isolation and returns a structured summary:
+    #   { status: ok|blocked|skipped|failed,
+    #     report_path: <abs>, summary: <text>, blocker?: <text> }
+    #
+    # Phase → agent mapping:
+    #   plan    → dikw-planner
+    #   D       → dikw-data-executor
+    #   I       → dikw-information-executor
+    #   K       → dikw-knowledge-executor
+    #   W       → dikw-wisdom-executor
+    #   report  → (INLINE — see below; kept in main context for user follow-up)
+    #
+    # The report phase is NOT dispatched to an agent. The final report
+    # is the session's user-facing deliverable; keeping it in main
+    # context lets the user ask follow-up questions without re-reading
+    # the file. For the report phase, fall back to the inline Skill()
+    # calls as in /dikw-session.
     current_step = "task"
     for task in pending_tasks[current_phase]:
         if task already completed (see "Task is complete iff…" rule): skip
         current_task = task.name
 
-        # These two lines are NOT pseudocode — they map 1:1 to Skill tool calls:
-        Skill(name="dikw-context",          args="<current_phase> <task.name> <snapshot_dir>")
-            # dikw-context returns a verdict: READY / BLOCKED / SKIP.
-            # Handle each before invoking the phase skill:
-            #   READY   → proceed to Skill(dikw-<phase>) below
-            #   SKIP    → record skip reason in DIKW_STATE, remove from pending,
-            #             add to completed_tasks with status=skipped, current_task=null, continue loop
-            #   BLOCKED → record the blocker in DIKW_STATE, break out of the
+        if current_phase == "report":
+            # ── Inline fallback for the report phase only ──
+            Skill(name="dikw-context", args="report <task.name> <snapshot_dir>")
+            Skill(name="dikw-report",  args="<task.name> <snapshot_dir>")
+
+        else:
+            # ── Agent dispatch for plan / D / I / K / W ──
+            agent_name = {
+                "plan": "dikw-planner",
+                "D":    "dikw-data-executor",
+                "I":    "dikw-information-executor",
+                "K":    "dikw-knowledge-executor",
+                "W":    "dikw-wisdom-executor",
+            }[current_phase]
+
+            # PARALLEL DISPATCH:
+            # When pending_tasks[current_phase] has multiple INDEPENDENT
+            # tasks (typical for D/I with 2–3 tasks), emit multiple
+            # Agent tool calls in a SINGLE assistant message. They run
+            # concurrently. Do NOT parallelize if any task spec
+            # references another task's output (rare in practice for D/I).
+            #
+            # For `plan` phase (one task) and sequentially-dependent
+            # tasks, dispatch one at a time.
+
+            # Plan-phase feedback: when plan_version > 1 this is a
+            # re-plan triggered by a prior `revise plan` outcome. Fetch
+            # the feedback text from DIKW_STATE.json.gates[-1].feedback
+            # and include it in the prompt so the planner can apply it.
+            feedback = (DIKW_STATE.gates[-1].feedback
+                        if current_phase == "plan" and plan_version > 1
+                        else "")
+
+            result = Agent(
+                subagent_type=agent_name,
+                description="<phase>-task <task.name>",
+                prompt=f"snapshot_dir=<abs>\n"
+                       f"task_name=<task.name>\n"
+                       f"phase=<current_phase>\n"
+                       f"feedback={feedback}"
+            )
+
+            # Interpret the returned status. Same vocabulary and
+            # routing as the inline-mode verdict handling:
+            #   ok      → proceed (artifact contract already verified by agent)
+            #   skipped → record skip reason in DIKW_STATE, remove from
+            #             pending, append to completed with status=skipped,
+            #             current_task=null, continue loop
+            #   blocked → record blocker in DIKW_STATE, break out of the
             #             task loop, jump straight to step=gate. /dikw-gate
             #             will see the blocker in state and propose
-            #             `revise plan` (or `revise <earlier_phase>`) with
-            #             the blocker text as feedback.
-        Skill(name="dikw-<current_phase>",  args="<task.name> <snapshot_dir>")
-            # where <current_phase> ∈ {data, information, knowledge, wisdom, plan, report}
+            #             `revise plan` (or `revise <earlier_phase>`).
+            #   failed  → write the agent's failure summary to
+            #             insights/<phase>/<task>/FAILURE.md (so the gate
+            #             can read it from the filesystem), break to
+            #             step=gate. /dikw-gate will detect the missing
+            #             report.md and propose `revise <current_phase>`.
 
-        # Announce in the banner which sub-skill was invoked so the
-        # transcript makes cheating visible (see Banner rules below).
+        # Announce in the banner which sub-skill or agent was invoked so
+        # the transcript makes cheating visible (see Banner rules below).
 
         mark task completed in DIKW_STATE.json
           (remove from pending_tasks[current_phase] AND append to
@@ -260,7 +332,7 @@ Abstract shape: `NN_{domain}-{phenomenon}-{intent}`
   "status": "running",                    // running | complete
   "aim": "NN_{slug}",                     // e.g. "01_dawn-phenomenon-presence"
   "questions": "What CGM patterns exist",
-  "execution_mode": "inline",             // inline | agent — WRITE ONCE at session creation; locks which session skill may run/resume
+  "execution_mode": "agent",              // inline | agent — WRITE ONCE at session creation; locks which session skill may run/resume
   "current_phase": "D",                   // plan | D | I | K | W | report | done
   "current_step": "task",                 // task | gate
   "current_task": "cgm_quality_sampling", // non-null during step=task
@@ -310,15 +382,15 @@ If missing, run `/dikw-explore {snapshot_dir}` once before starting the loop.
 
 Read `DIKW_STATE.json.execution_mode`:
 
-- `"inline"` → this skill (`/dikw-session`) is the correct executor. Proceed.
-- `"agent"`  → this session was created by `/dikw-session-agent`. **Abort**
-               with a message: *"This session's execution_mode is 'agent'.
-               Run `/dikw-session-agent {snapshot_dir} {aim}` (or
-               `/dikw {folder} --agents`) to resume it, or start a new
-               session."*
-- missing    → legacy session (created before mode-locking). Assume
-               `"inline"` and write it back to DIKW_STATE on next state
-               update.
+- `"agent"`  → this skill (`/dikw-session-agent`) is the correct executor. Proceed.
+- `"inline"` → this session was created by `/dikw-session`. **Abort**
+               with a message: *"This session's execution_mode is 'inline'.
+               Run `/dikw-session {snapshot_dir} {aim}` (or `/dikw
+               {folder}` without `--agents`) to resume it, or start a
+               new session."*
+- missing    → legacy session (created before mode-locking).
+               Treat as `"inline"` and abort as above (never silently
+               upgrade a legacy session to agent mode on resume).
 
 This check prevents the two session skills from stomping on each
 other's sessions when resuming.
