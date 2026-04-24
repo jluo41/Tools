@@ -1,6 +1,6 @@
 {
   "name": "jluo41-tools",
-  "description": "Personal Claude Code skill plugins for LogSeq, academic research, and email chronicle",
+  "description": "Personal Claude Code skill plugins for LogSeq, haipipe pipeline, email chronicle, and visual artifacts/diagrams",
   "owner": {
     "name": "Junjie Luo",
     "url": "https://github.com/jluo41"
@@ -14,13 +14,6 @@
       "category": "productivity"
     },
     {
-      "name": "research",
-      "description": "Claude Skills for Academic Research - code review, evaluation display, notebook pipelines, and paper incubation",
-      "version": "1.0.0",
-      "source": "./plugins/research",
-      "category": "development"
-    },
-    {
       "name": "haipipe",
       "description": "Claude Skills for the haipipe pipeline - per-subject data contract (stages 0-2), project-wide data pipeline (1-4), NN models (5), endpoints (6), and project scaffolding",
       "version": "1.0.0",
@@ -32,6 +25,13 @@
       "description": "Claude Skills for Email Chronicle - index emails from MS365 Outlook into organized markdown",
       "version": "1.0.0",
       "source": "./plugins/chronicle",
+      "category": "productivity"
+    },
+    {
+      "name": "diagram-skill",
+      "description": "Claude Skills for visual artifacts and reports - ASCII diagrams, draw.io, Excalidraw, and image-heavy Markdown progress logs",
+      "version": "1.0.0",
+      "source": "./plugins/diagram-skill",
       "category": "productivity"
     }
   ]

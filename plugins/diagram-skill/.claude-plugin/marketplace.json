@@ -1,0 +1,15 @@
+{
+  "name": "diagram-skills",
+  "owner": {
+    "name": "Junjie Luo",
+    "url": "https://github.com/jluo41"
+  },
+  "plugins": [
+    {
+      "name": "diagram-skill",
+      "source": "./",
+      "description": "Visual artifacts and reports - ASCII diagrams, draw.io, Excalidraw, and image-heavy Markdown progress logs",
+      "version": "1.0.0"
+    }
+  ]
+}

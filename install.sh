@@ -74,20 +74,16 @@ fi
 
 echo ""
 echo "Done! Available plugins:"
-echo "  logseq     - LogSeq markdown, queries, templates, whiteboards"
-echo "  research   - Code review, evaluation, notebooks, paper incubation"
-echo "  haipipe    - haipipe pipeline: per-subject data (0-2), data pipeline (1-4), NN (5), endpoints (6), projects"
-echo "  chronicle  - Email indexing from MS365 Outlook"
-echo "  aris       - Auto-Research-In-Sleep: idea discovery, paper writing, review loops"
-echo "  ccskill    - Official Anthropic skills: PDF, PPTX, XLSX, web artifacts, MCP builder"
+echo "  logseq         - LogSeq markdown, queries, templates, whiteboards"
+echo "  haipipe        - haipipe pipeline: per-subject data (0-2), data pipeline (1-4), NN (5), endpoints (6), projects"
+echo "  chronicle      - Email indexing from MS365 Outlook"
+echo "  diagram-skill  - Visual artifacts: diagram-ascii, diagram-drawio, diagram-excalidraw, progress-log"
 echo ""
 echo "Install in Claude Code with:"
 echo "  /plugin install logseq@jluo41-tools"
-echo "  /plugin install research@jluo41-tools"
 echo "  /plugin install haipipe@jluo41-tools"
 echo "  /plugin install chronicle@jluo41-tools"
-echo "  /plugin install aris@jluo41-tools"
-echo "  /plugin install ccskill@jluo41-tools"
+echo "  /plugin install diagram-skill@jluo41-tools"
 
 # ─── 2. Global skill installation (--global) ─────────────────────────────────
 
