@@ -1,0 +1,20 @@
+{
+  "name": "subjective-label",
+  "version": "0.3.0",
+  "description": "Multi-agent panel for subjective text annotation with stage-aware sampling, active-learning hard-example mining, and a 3-tier cascade (embedding k-NN → trained classifier → LLM panel) for scale. One researcher + 9 AI workers converge on a labeling guideline validated against public-dataset human consensus (κ).",
+  "author": {
+    "name": "Junjie Luo",
+    "url": "https://github.com/jluo41"
+  },
+  "license": "MIT",
+  "keywords": [
+    "annotation",
+    "subjective",
+    "multi-agent",
+    "labeling",
+    "kappa",
+    "human-in-the-loop",
+    "panel",
+    "disagreement"
+  ]
+}

@@ -1,0 +1,242 @@
+🧪 subjective-label plugin — v0.3.0
+====================================
+
+Three nested loops · 9 agents · 5 personas · 1 researcher.
+
+
+──────────────────────────────────────────────────────────────────────────
+🔁 THE THREE LOOPS (at a glance)
+──────────────────────────────────────────────────────────────────────────
+
+BIG LOOP — project lifecycle
+
+  +----------+     +--------------+     +---------------+     +-----------+
+  | 🚀 init  |---->| 🔁 iterate   |---->| 📊 validate   |---->| 🎯 scale  |
+  +----------+     | (run N times)|     | (vs human κ)  |     +-----------+
+                   +--------------+     +---------------+
+                          ▲                      │
+                          └── 🚩 STALLED ────────┘
+
+
+MEDIUM LOOP — inside each /sl-iterate (runs 3-6 times per project)
+
+  📥 Sample → 🔍 Prober → 👥 Panel → ⚖️ Analyzer → 🧑 Researcher
+                                                        │
+                                                        ▼
+                                       📚 Gallery ← 🧠 Classifier (train)
+
+
+SMALL LOOP — 3-tier cascade inside /sl-scale (runs per item, 100K-10M items)
+
+  Tier 0 → Tier 1 → Tier 2
+   📐       🧠       👥
+  k-NN    logreg   LLM Panel
+  ~70%    ~20%     ~10%  ← typical distribution
+
+
+
+──────────────────────────────────────────────────────────────────────────
+👥 AGENT ROSTER (9 workers)
+──────────────────────────────────────────────────────────────────────────
+
++-------------------------+----------------------------------------+
+| 🤖 Agent                | Role                                   |
++-------------------------+----------------------------------------+
+| 🤖 moderator            | State machine · only talks to human   |
+| 🤖 sampler              | Stage-aware item selection            |
+| 🤖 embedder             | SBERT + FAISS · speed tool            |
+| 🤖 classifier           | Trained small model · hard-mining     |
+| 🤖 prober               | LLM-judgment layer on candidates      |
+| 🤖 labeler-panel        | Spawns 3-5 personas in parallel       |
+| 🤖 disagreement-analyzer| Sorts disagreement A / B / C / D      |
+| 🤖 gallery-keeper       | Sole writer of gallery + guideline    |
+| 🤖 validator            | Public dataset κ vs human ceiling     |
++-------------------------+----------------------------------------+
+
++-------------------+----------------------------------------+
+| 🎭 Persona        | Lens                                   |
++-------------------+----------------------------------------+
+| 🎭 close-reader   | Slow · evidence-based · cites phrases |
+| 🎭 plain-reader   | Ordinary reader intuition             |
+| 🎭 skeptic        | Adversarial · finds counter-readings  |
+| 🎭 fast-patterns  | Shallow · high-throughput             |
+| 🎭 domain-expert  | Parametrized by topic domain          |
++-------------------+----------------------------------------+
+
+
+
+──────────────────────────────────────────────────────────────────────────
+🔁 MEDIUM LOOP DETAIL — one /sl-iterate
+──────────────────────────────────────────────────────────────────────────
+
+                        🧑 Researcher
+                              │  (only talks to moderator)
+                              ▼
+                       +----------------+
+                       | 🤖 Moderator   |
+                       +----------------+
+                              │
+                              │ orchestrates
+                              ▼
+          +-----------------------------------------+
+          | 🤖 Sampler (mode: iterate_batch)        |
+          |                                         |
+          |   uses 🤖 Embedder · 🤖 Classifier      |
+          |   → picks ~100 candidate items          |
+          +-----------------------------------------+
+                              │
+                              ▼
+          +-----------------------------------------+
+          | 🤖 Prober                                |
+          |   LLM-judgment selects final 20-30      |
+          +-----------------------------------------+
+                              │
+                              ▼
+          +-----------------------------------------+
+          | 🤖 Labeler Panel                         |
+          |                                         |
+          |   spawns 3-5 personas in parallel:      |
+          |   🎭 close-reader                       |
+          |   🎭 plain-reader                       |
+          |   🎭 skeptic                            |
+          |   🎭 fast-patterns  (optional)          |
+          |   🎭 domain-expert  (optional)          |
+          +-----------------------------------------+
+                              │
+                              ▼
+          +-----------------------------------------+
+          | 🤖 Disagreement Analyzer                 |
+          |                                         |
+          |   sorts items into:                     |
+          |    🚩 A = boundary → ask researcher     |
+          |    🚩 B = rule ambiguity → ask          |
+          |    🚩 C = novel pattern → ask           |
+          |    ✅ D = noise → auto majority vote   |
+          +-----------------------------------------+
+                              │
+                              ▼ (A, B, C only)
+                       +----------------+
+                       | 🤖 Moderator   |─── asks ───> 🧑 Researcher
+                       +----------------+      ←─ 5-10 decisions ─┘
+                              │
+                              ▼
+          +-----------------------------------------+
+          | 🤖 Gallery Keeper                        |
+          |                                         |
+          |   writes gallery.json + guideline.md    |
+          |   versioned under gallery/history/      |
+          +-----------------------------------------+
+                              │
+                              ▼
+          +-----------------------------------------+
+          | 🤖 Classifier (train)                   |
+          |                                         |
+          |   retrains on new gallery               |
+          |   → ready for next iter's hard-mining   |
+          |   → ready for /sl-scale Tier 1          |
+          +-----------------------------------------+
+                              │
+                              ▼
+                      🔁 next iteration
+
+
+
+──────────────────────────────────────────────────────────────────────────
+🔁 SMALL LOOP DETAIL — /sl-scale 3-tier cascade (per corpus item)
+──────────────────────────────────────────────────────────────────────────
+
+                      📄 corpus item
+                            │
+                            ▼
+     +------------------------------------------------------+
+     | Tier 0 — 📐 Embedder k-NN                             |
+     |                                                      |
+     |   find top-5 gallery neighbors                      |
+     |   unanimous label + avg sim ≥ 0.85 ?                |
+     +------------------------------------------------------+
+            │                                  │
+        ✅ yes (~70%)                      ❌ no
+            │                                  │
+            ▼                                  ▼
+      inherit label              +------------------------------+
+      method = tier0             | Tier 1 — 🧠 Classifier        |
+      cost ≈ $0                  |                               |
+                                 |   predict + margin + entropy  |
+                                 |   margin ≥ 0.3 & prob ≥ 0.7 ? |
+                                 +------------------------------+
+                                       │                  │
+                                   ✅ yes (~20%)      ❌ no
+                                       │                  │
+                                       ▼                  ▼
+                                  use classifier     +----------------+
+                                  method = tier1     | Tier 2 — 👥    |
+                                  cost ≈ $0.0001     | LLM Panel      |
+                                                     |                |
+                                                     | 3-5 personas   |
+                                                     | majority vote  |
+                                                     +----------------+
+                                                            │
+                                                      ✅ support ≥ 60%
+                                                            │
+                                                            ▼
+                                                    method = tier2
+                                                    cost ≈ $0.10
+                                                    (support < 60% ⇒
+                                                      🚩 human-review
+                                                      queue)
+
+     Typical 1M-item run:
+     +---------+---------+----------+-------------+
+     | Tier    | Share   | Cost/run | Cost/item   |
+     +---------+---------+----------+-------------+
+     | Tier 0  | ~70%    |  $7      | ~$0.00001   |
+     | Tier 1  | ~20%    |  $20     | ~$0.0001    |
+     | Tier 2  | ~10%    |  $10K    | ~$0.10      |
+     | Total   | 100%    |  ~$10K   | —           |
+     +---------+---------+----------+-------------+
+     (vs $100K if every item went through Tier 2)
+
+
+
+──────────────────────────────────────────────────────────────────────────
+📂 WHERE THINGS LIVE
+──────────────────────────────────────────────────────────────────────────
+
+📦 subjective-label/
+├── 📂 .claude-plugin/
+│   └── 📄 plugin.json
+├── 📂 skills/          6 SKILL.md (router + 5 sub-skills)
+├── 📂 agents/          9 agents (top-level per Claude Code spec)
+├── 📂 personas/        5 persona templates
+├── 📂 lib/
+│   ├── 📄 embed.py     SBERT + FAISS
+│   ├── 📄 classify.py  logreg / SetFit
+│   └── 📄 requirements.txt
+├── 📂 ref/
+│   ├── 📄 ref-architecture.md   ← read first
+│   ├── 📄 ref-stages.md         ← big / medium / small loops
+│   ├── 📄 ref-cascade.md        ← tier 0 / 1 / 2
+│   ├── 📄 ref-embeddings.md     ← model + config
+│   ├── 📄 ref-datasets.md       ← GoEmotions / MFTC / POPQuorn / DICES
+│   ├── 📄 ref-assets.md         ← project file schemas
+│   └── 📄 ref-schema.md         ← label schema design
+├── 📄 workflow.txt              (this file)
+├── 📄 workflow.excalidraw       (needs redraw for v0.3.0)
+├── 📄 workflow.png
+└── 📄 README.md
+
+
+
+──────────────────────────────────────────────────────────────────────────
+🎯 KEY IDEAS IN ONE LINE EACH
+──────────────────────────────────────────────────────────────────────────
+
+  1. 🧑 Researcher talks ONLY to 🤖 moderator.
+  2. 📥 Sampler is the single entry point for any "pick N items" decision.
+  3. 📐 Embedder = speed tool. 👥 Panel = judgment tool. Never swap these.
+  4. 🧠 Classifier trained after every iteration → drives next-iter hard-mining
+     AND serves as Tier 1 of the scale cascade.
+  5. ⚖️ Disagreement is signal, not noise (Plank 2022) —
+     Analyzer turns disagreement into 5-10 researcher decisions per iteration.
+  6. 📊 Convergence = agent-panel κ matches public-dataset human κ ceiling.
+  7. 🎯 3-tier cascade: ~70% items free, ~20% cheap, ~10% expensive.

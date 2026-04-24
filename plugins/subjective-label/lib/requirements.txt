@@ -1,0 +1,10 @@
+sentence-transformers>=2.7
+faiss-cpu>=1.7
+scikit-learn>=1.3
+numpy>=1.24
+pyyaml>=6.0
+# Optional — only needed if embedding.backend: openai
+openai>=1.0
+# Optional — only needed if classifier.backend: setfit
+setfit>=1.0
+datasets>=2.14

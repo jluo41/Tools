@@ -1,69 +1,62 @@
 ---
 name: subjective-label
-description: "General-purpose subjective text annotation skill. Two phases: (1) generate a Gallery of labeled examples through human+AI interaction, (2) annotate at scale using a weak model + gallery. Use when the user wants to annotate texts based on their personal subjective criteria, build an annotation gallery, run inference with a gallery, or says /subjective-label."
+description: "Multi-agent panel for subjective text annotation. One researcher + an AI panel (3-5 persona labelers + moderator + analyzer + validator) converge on a labeling guideline through iterative disagreement analysis, validated against public-dataset human consensus (κ). Use when the user wants to label texts on a subjective dimension (humanity, empathy, moral framing, emotion, stance, etc.), run a labeling panel, validate a gallery against public datasets, or says /subjective-label."
 ---
 
-Skill: subjective-label
-========================
+Skill: subjective-label (router)
+================================
 
-Two-phase annotation workflow for subjective labeling tasks.
-
-  Phase 1  ->  Gallery Generation  (interactive, one-time)
-  Phase 2  ->  Inference           (automated, scalable)
-  Phase 3  ->  Evaluation          (validate gallery quality)
+Entry point for the subjective-label plugin. Routes the user to the correct sub-skill.
 
 Invocation:  /subjective-label <command> [args]
 
 
-Commands
---------
+Sub-commands
+------------
 
-  /subjective-label gallery  <project_dir>   Phase 1: generate gallery interactively
-  /subjective-label infer    <project_dir>   Phase 2: annotate with weak model
-  /subjective-label eval     <project_dir>   Phase 3: evaluate gallery quality
+  init      Create project, define topic + boundaries via dialogue
+  iterate   Run one iteration: probe → panel labels → analyze → surface
+  validate  Benchmark current gallery against public dataset (κ vs human)
+  scale     Batch-label full dataset using the converged gallery
+  status    Show project state, κ trajectory, gallery stats, next step
 
-  Default (no command): show this list and ask what the user wants.
-
-
-Execution Protocol
-------------------
-
-Step 0: Parse command from $ARGUMENTS.
-
-Step 1: Read ref files before proceeding.
-  All commands:  ref/ref-assets.md + ref/ref-schema.md
-  Confirm: "Loaded: [ref files]. Executing: [command]."
-
-Step 2: Read and follow the function file exactly.
-  gallery  ->  fn/fn-gallery.md
-  infer    ->  fn/fn-infer.md
-  eval     ->  fn/fn-eval.md
-
-Step 3: Auto-detect project_dir if not provided.
-  1. If arg provided: use it.
-  2. If cwd contains sample/ or gallery/: use cwd.
-  3. Otherwise: ask user for project_dir.
+  (no sub-command) Show this menu and ask what the researcher wants.
 
 
-Project Directory Layout
-------------------------
+Routing
+-------
 
-  {project_dir}/
-    config.yaml           task description + label schema
-    sample/               raw texts to annotate (Phase 1 input)
-    gallery/
-      gallery.json        labeled examples (core artifact)
-      guideline.md        extracted annotation rules
-    output/
-      annotations.jsonl   inference results (Phase 2 output)
-    eval/
-      eval_set.jsonl      human-labeled held-out set
-      eval_report.md      accuracy + failure analysis
+Parse $ARGUMENTS for the sub-command token. Then invoke the matching sub-skill:
+
+  init      ->  /sl-init
+  iterate   ->  /sl-iterate
+  validate  ->  /sl-validate
+  scale     ->  /sl-scale
+  status    ->  /sl-status
+
+
+Core Model
+----------
+
+The researcher talks only to the **Moderator** agent. All other work happens
+behind Moderator:
+
+  Researcher <---> Moderator --+--> Boundary Prober
+                               |--> Labeler Panel (3-5 personas)
+                               |--> Disagreement Analyzer
+                               |--> Gallery Keeper
+                               +--> Validator
+
+See ref/ref-architecture.md for the full protocol.
 
 
 Key Principle
 -------------
 
-  If weak model inference is wrong -> fix the GALLERY, not the model.
-  The gallery is the single source of truth for annotation criteria.
-  A well-built gallery makes any model capable.
+Disagreement is signal, not noise. When the panel disagrees, the Analyzer
+decides whether it's (a) boundary case → refine guideline,
+(b) rule ambiguity → add tie-breaker, (c) novel pattern → extend label
+schema, or (d) pure noise → ignore. Only (a)/(b)/(c) are surfaced to the
+researcher.
+
+Convergence = agent-panel κ matches human-panel κ ceiling on a public dataset.
