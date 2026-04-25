@@ -1,0 +1,76 @@
+Folder tree variants
+=====================
+
+  Four variants ordered by decoration weight.
+  Pick the lightest one that fits the purpose.
+
+
+  Variant 1 — basic
+  -----------------
+
+  📦 my-project/
+  ├── 📂 src/
+  │   ├── 📄 index.ts
+  │   └── 📂 components/
+  ├── 📂 tests/
+  └── 📄 README.md
+
+
+  Variant 2 — annotated  (inline role labels in a consistent column)
+  ------------------------------------------------------------------
+
+  code/
+  ├── haipipe/        # core framework  (editable)
+  ├── hainn/          # ML models       (editable)
+  └── haifn/          # generated fns   (DO NOT EDIT)
+
+
+  Variant 3 — grouped  (blank-line clusters; floating callouts)
+  -------------------------------------------------------------
+
+  Tools/plugins/haipipe-toolkit/skills/
+  ├── 0_subject/
+  │   └── haipipe-subject/SKILL.md
+  │
+  ├── 1_data/
+  │  (umbrella)
+  │   ├── haipipe-data/SKILL.md
+  │   ├── haipipe-data-source/SKILL.md
+  │   ├── haipipe-data-record/SKILL.md
+  │   ├── haipipe-data-case/SKILL.md
+  │   └── haipipe-data-aidata/SKILL.md
+  │
+  ├── 2_model/
+  │   └── haipipe-nn/SKILL.md
+  │
+  └── 3_endpoint/
+      └── haipipe-end/SKILL.md
+
+
+  Variant 4 — annotated + grouped  (full decoration)
+  --------------------------------------------------
+
+  code-dev/1-PIPELINE/
+  │
+  ├── 1-Source-WorkSpace/    →  code/haifn/fn_source/
+  ├── 2-Record-WorkSpace/    →  code/haifn/fn_record/
+  ├── 3-Case-WorkSpace/      →  code/haifn/fn_case/
+  ├── 4-AIData-WorkSpace/    →  code/haifn/fn_aidata/
+  │
+  ├── 5-Instance-WorkSpace/  →  code/haifn/fn_model/
+  │  (run builder to regenerate)
+  │
+  └── 6-Endpoint-WorkSpace/  →  code/haifn/fn_endpoint/
+
+
+  Side-by-side compare  (when explaining a refactor)
+  --------------------------------------------------
+
+  Before                          After
+  ─────                           ─────
+  src/                            src/
+  ├── api.py                      ├── api/
+  ├── api_helpers.py              │   ├── routes.py
+  ├── api_routes.py               │   ├── helpers.py
+  └── api_utils.py                │   └── utils.py
+                                  └── models/

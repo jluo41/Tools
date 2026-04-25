@@ -7,6 +7,20 @@ description: Fast emoji-rich ASCII diagrams for brainstorming, folder/code overv
 
 **Purpose**: quickly sketch ideas and track progress as emoji-rich ASCII. Optimized for speed, readability, and scannability — not mechanical precision. For complex diagrams with many crossing arrows, suggest Mermaid instead.
 
+**🎨 Emoji-first — use as many as possible.** Emoji are the **primary visual scaffolding** of every diagram in this skill, not decoration. Use them densely: 📦 every box, 🏷️ every header cell, 📋 every row label, 🟢 every status indicator. More is better than fewer. Mix categories freely — a diagram packed with 6+ emoji types is the goal, not a problem. If you can put an emoji somewhere, do.
+
+**Gallery (`ref/`)** — full worked examples. Read the relevant file when an inline template isn't enough:
+
+| File | Use for |
+|---|---|
+| `ref/01-pipeline.txt` | left→right flows, branched, with error path |
+| `ref/02-layered-arch.txt` | 3-tier / 5-tier / event-driven systems |
+| `ref/03-folder-tree.txt` | 4 variants: basic / annotated / grouped / combined; before-after refactor |
+| `ref/04-table.txt` | status table, comparison matrix, decision log, risk grid |
+| `ref/05-progress-tracker.txt` | experiment dashboard, multi-run grid, burn-down |
+| `ref/06-numbered-series.txt` | multi-diagram answers with `[N/TOTAL]` headers |
+| `ref/07-task-progress.md` | daily progress log (`YYMMDD-progress.md`) |
+
 ## When to Use
 - Mid-discussion idea plotting — "sketch how this works"
 - Folder / codebase → visual overview
@@ -41,7 +55,7 @@ description: Fast emoji-rich ASCII diagrams for brainstorming, folder/code overv
 
 ## Style — Emoji-Rich
 
-Emoji give ASCII "color." Pick 2–3 categories per diagram; don't spam.
+**Use as many emoji as possible.** Pull from multiple categories in the same diagram — combining People + Services + Data + Status in one sketch is *encouraged*, not "spam." The palette below is a menu, not a quota.
 
 | Category | Examples |
 |---|---|
@@ -225,11 +239,24 @@ code/
 
 Header format: `── [N/TOTAL] Title ──` (dashes fill to ~60 chars). Omit the total if the count isn't fixed upfront.
 
+## Use case: Daily progress log
+
+Pair this skill with a `YYMMDD-progress.md` file in the working folder to track a day's work as a sequence of diagrams. See `ref/07-task-progress.md` for a full worked example.
+
+Conventions:
+
+- **Filename**: `YYMMDD-progress.md` (e.g. `260425-progress.md`).
+- **One section per timestamp**: `## HH:MM  emoji  brief title` (≤ 5 words).
+- **Diagrams ≥ 80% of the page; prose ≤ 20%.** If a sentence can be a diagram, make it one.
+- **Each entry's main diagram shows the work itself** — folder layouts being designed, before/after of a pivot, alternatives compared side-by-side. The status pipeline (`📥 → ⚙️ → 🧠 …`) is a 1-line checkpoint, not the bulk of any entry.
+- **Refresh the punch-list table** at start of day and at wrap-up so the log opens and closes with a clear scoreboard.
+- **Pivots get a before/after**: explicitly show what was tried and abandoned vs. what's being done now, with one line of "why" underneath.
+
 ## Anti-patterns (suggestive)
 
 - Mixing ASCII `+--+` with Unicode `╔══╗` in one diagram
 - Tabs instead of spaces
-- 6+ emoji categories in one diagram (overwhelming)
+- **Plain-text labels with no emoji** — looks dead; defeats the purpose of this skill. If a box, header, row, or status has no emoji, you've under-decorated it.
 - 15+ nodes with crossings — use Mermaid instead
 
 ## See Also

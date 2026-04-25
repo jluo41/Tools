@@ -1,0 +1,54 @@
+Progress tracker
+=================
+
+  For experiments and pipelines with discrete stages.
+  Pair the table with a compact inline form for at-a-glance status.
+
+
+  Verbose dashboard
+  -----------------
+
+  🧪 Experiment: hainn-v0319
+
+  +------------+------------------+------------+----------+
+  | 🗂️ Stage   | 📋 Task          | 🟢 Status  | ⏱️ Time  |
+  +------------+------------------+------------+----------+
+  | 📥 Load    | Pull raw CGM     | ✅ Done    | 12 min   |
+  | ⚙️ Clean   | Dedupe + impute  | ✅ Done    | 8 min    |
+  | 🧠 Train   | Fit ConvLSTM     | ⏳ Running | ~40 min  |
+  | 📊 Eval    | ROC / AUC        | ⬜ Pending | -        |
+  | 🚀 Deploy  | Push endpoint    | ⬜ Pending | -        |
+  +------------+------------------+------------+----------+
+
+
+  Compact inline  (one-liner status)
+  ----------------------------------
+
+  📥 Load → ⚙️ Clean → 🧠 Train → 📊 Eval → 🚀 Deploy
+    ✅        ✅         ⏳          ⬜         ⬜
+
+
+  Multi-experiment grid
+  ---------------------
+
+  +------------+----------+----------+----------+
+  | 🧪 Run     | 📥 Load  | 🧠 Train | 📊 Eval  |
+  +------------+----------+----------+----------+
+  | v0317      | ✅       | ✅       | ✅       |
+  | v0318      | ✅       | ✅       | ❌       |
+  | v0319      | ✅       | ⏳       | ⬜       |
+  | v0320      | ⬜       | ⬜       | ⬜       |
+  +------------+----------+----------+----------+
+
+
+  Burn-down  (today's punch list)
+  -------------------------------
+
+  +-----------------------+------------+
+  | 📋 Item               | 🟢 Status  |
+  +-----------------------+------------+
+  | Refactor data loader  | ✅         |
+  | Add CI gate for nulls | ✅         |
+  | Update README         | ⏳         |
+  | Tag release           | ⬜         |
+  +-----------------------+------------+
