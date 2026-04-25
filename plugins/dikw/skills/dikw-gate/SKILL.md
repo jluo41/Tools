@@ -19,9 +19,16 @@ Note: `snapshot_dir` is a `_agent_dikw_space/snapshot-<date>/` folder.
 
 ## Constants
 
-- `AUTO_PROCEED = false` — *default.* When false, present the proposed
-  outcome and wait for the human. When `true` (the session passed
-  `--auto`), auto-accept the proposed outcome.
+- `UNATTENDED_TIMEOUT` — read from `DIKW_STATE.unattended_timeout`.
+  Three modes:
+    - `null` — 🧑 attended (default). Present the proposal and wait
+      indefinitely for a human reply (A/B/C/D/E).
+    - `N > 0` — ⏳ timed. Present the proposal with an "auto in {N}s"
+      hint; wait up to N seconds; if no reply, auto-accept the
+      proposal verbatim (treat as reply A).
+    - `0` — 🤖 unattended. Skip the wait entirely; auto-accept the
+      proposal immediately.
+  The legacy `--auto` flag maps to `unattended_timeout=0`.
 
 ## Gate outcome vocabulary (the only three)
 
@@ -290,7 +297,7 @@ Decision: revise plan "D01 showed only 61 readings over 75 days with huge
 Routes to: plan (plan-version will bump 1 → 2)
 ```
 
-### Step 5: Present to the human (when `AUTO_PROCEED=false`)
+### Step 5: Present to the human (when `unattended_timeout` is `null` or `> 0`)
 
 Present in this order:
   1. Banner.
@@ -357,8 +364,39 @@ How to respond? (reply with the letter)
   (E) cancel
 ```
 
-If `AUTO_PROCEED=true`, skip the wait and accept the proposed outcome,
+If `unattended_timeout=0`, skip the wait and accept the proposed outcome,
 but still print the above so the outcome is auditable.
+
+### Auto-accept audit (when no human reply arrives)
+
+When the gate is auto-accepted (either `unattended_timeout=0` or the
+timer fired in `unattended_timeout=N>0`), the gate FILE
+`gates/{NN}-G-{phase}.md` MUST include an audit header at the top so
+the transcript explains why the proposal was accepted without a human
+reply:
+
+```
+**AUTO-ACCEPTED**
+  Mode:           unattended (timeout=0)        ← OR: timed (waited 30s)
+  Proposed:       <approve | revise [feedback] | done>
+  Accepted at:    <ISO timestamp>
+  Human reply:    none received
+```
+
+For ⏳ timed mode, also record:
+- `timer_seconds: <N>` — the configured timeout
+- `elapsed_seconds: <N>` — how long the timer actually ran (≤ N)
+
+The `gates[]` entry in `DIKW_STATE.json` adds a parallel field:
+`"auto_accepted": true` (with `"auto_accept_mode": "unattended" | "timed"`)
+so resume logic can distinguish auto-accepted gates from human-accepted
+ones. The `outcome` field is unchanged — auto-accept does not alter
+the proposal, only who clicked accept.
+
+If the gate is force-approved by the MAX_REVISIONS cap (see
+dikw-session "Force-approve audit trail"), both the FORCED APPROVAL
+banner and the AUTO-ACCEPTED banner appear — they describe orthogonal
+events (cap downgrade vs. attendance state).
 
 ## State update
 

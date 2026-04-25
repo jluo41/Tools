@@ -34,28 +34,48 @@
 
    ✅ output visible in transcript       ✅ context isolation
    ✅ easy to iterate mid-phase          ✅ optional parallel dispatch
-   ✅ best for first runs / debug        ✅ best for long --auto runs
+   ✅ best for first runs / debug        ✅ best for unattended runs
 
    🔍  Context check is identical in both modes — every agent
        invokes /dikw-context as Step 1 and forwards the verdict
        (READY / BLOCKED / SKIP) without rewriting the contract.
 
 
-─§ 🎯  Mode picker ─────────────────────────────────────────
+─§ 🎯  Mode picker  (TWO axes — execution × gating) ─────────
 
-  🎯  Mode picker
-  ---------------
+  🎯  Mode picker  (TWO axes — execution × gating)
+  -------------------------------------------------
 
-  +------------------------------------------+-------------------+
-  | If you are ...                           | Use               |
-  +------------------------------------------+-------------------+
-  | 🐛 Developing or debugging task skills   | 💬 inline         |
-  | 💬 Short interactive session             | 💬 inline         |
-  | 🆕 First run on a new dataset            | 💬 inline         |
-  | 🤖 Long --auto run, big D/I outputs      | 🧩 --agents       |
-  | ⚡ D/I have 2-3 independent tasks        | 🧩 --agents (par) |
-  | 🏭 Repeatable production pipeline        | 🧩 --agents       |
-  +------------------------------------------+-------------------+
+  Axis 1 — execution (who runs tasks):
+
+  +------------------------------------------+--------------------+
+  | If you are ...                           | Execution          |
+  +------------------------------------------+--------------------+
+  | 🐛 Developing or debugging task skills   | 💬 inline (default)|
+  | 💬 Short interactive session             | 💬 inline          |
+  | 🆕 First run on a new dataset            | 💬 inline          |
+  | 🤖 Long auto run, big D/I outputs        | 🧩 --agents        |
+  | ⚡ D/I have 2-3 independent tasks        | 🧩 --agents (par)  |
+  | 🏭 Repeatable production pipeline        | 🧩 --agents        |
+  +------------------------------------------+--------------------+
+
+  Axis 2 — gating (who accepts gate proposals):
+
+  +------------------------------------------+--------------------+
+  | If you are ...                           | Gating             |
+  +------------------------------------------+--------------------+
+  | 🐛 Developing / want to review every     | 🧑 attended        |
+  |   gate decision                          |   (default)        |
+  | 👀 Watching with attention but won't     | ⏳ --unattended=30s|
+  |   always reply in time                   |   (timed grace)    |
+  | 🏭 Cron / batch / fully autonomous       | 🤖 --unattended    |
+  +------------------------------------------+--------------------+
+
+  Common combinations:
+
+  • 💬 inline + 🧑 attended           → 🐛 development / first run
+  • 🧩 --agents + ⏳ --unattended=60s → 👀 light supervision
+  • 🧩 --agents + 🤖 --unattended    → 🏭 fully autonomous pipeline
 
 
 ─§ 🤖  The agents  (used only by /dikw-session-agent) ──────

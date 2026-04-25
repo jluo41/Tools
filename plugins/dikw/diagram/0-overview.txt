@@ -79,3 +79,9 @@
       No others.  Every back-edge routes to plan.
       🏁 done is restricted to G-K, G-W, G-report (skipping K/W
       reasoning would produce an incomplete final report).
+
+  3.  🎚️ Two orthogonal axes pick the run mode:
+        Execution:  💬 inline (default)  |  🧩 --agents
+        Gating:     🧑 attended (default) | ⏳ --unattended=Ns | 🤖 --unattended
+      Auto-accepted gates record an AUTO-ACCEPTED audit banner;
+      the gate's proposal logic itself is unchanged.

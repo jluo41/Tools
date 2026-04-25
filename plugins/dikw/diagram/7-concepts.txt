@@ -154,15 +154,20 @@
   |    📄 all prior gate files  (gates/*.md)          |
   |    📄 all insights/*/report.md  (every phase)     |
   |                                                   |
-  |  🎭 applies gate_persona (set once, locked)       |
+  |  🎭 applies gate_persona (locked; opt-in override |
+  |     for one gate only — does not mutate state)    |
   |                                                   |
   |  proposes exactly ONE outcome:                    |
   |                                                   |
   |    ✅ approve             --> next phase forward  |
   |    🔄 revise [feedback]   --> back to 📋 plan     |
   |    🏁 done                --> jump to 📝 report   |
+  |        (only valid at G-🧠K, G-🎯W, G-📝report)   |
   |                                                   |
-  |  🧑 human (or --auto) accepts                    |
+  |  acceptance ::= per unattended_timeout:           |
+  |    🧑 attended (null)  → wait for human reply     |
+  |    ⏳ timed (N>0)      → wait N s, then auto-accept|
+  |    🤖 unattended (0)   → auto-accept immediately  |
   |  🤖 orchestrator applies the outcome             |
   +---------------------------------------------------+
 

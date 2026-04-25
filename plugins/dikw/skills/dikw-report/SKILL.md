@@ -31,7 +31,9 @@ Steps
 
 3. Write the final report:
    - Path: `{snapshot_dir}/sessions/{aim}/output/final_output.md`
-   - Minimum 600 words
+   - Concise and accurate; **max ~1000 words** (matches the K/W /
+     phase-skill cap used elsewhere in the plugin — short reports are
+     fine when findings are clean)
 
 Report structure:
 

@@ -40,8 +40,9 @@
                 v
   +--------+
   |  🚦 S4 |  Gate (one human confirm)
-  +--------+  Part A: 🎭 choose gate persona (locked for whole session)
+  +--------+  Part A: 🎭 choose gate persona (locked, per-gate override possible)
                 Part B: proceed? yes / dry-run / revise / cancel
+                Also locks unattended_timeout (🧑 / ⏳ / 🤖) for the session
                 |
                 v
   +--------+
@@ -99,7 +100,8 @@
   t = setup    ⚙️  S0..S4   resolve, snapshot, scaffold, layout, confirm
   t = explore  🔍  S4.5      one-time exploration  (⏭️ skipped if cached)
   t = session  🔁  S5        📋 plan -> 📊 D -> 📈 I -> 🧠 K -> 🎯 W -> 📝 report -> ✅ done
-                             (🚦 gate after every phase; human may pause)
+                             (🚦 gate after every phase; attendance per
+                              unattended_timeout: 🧑 wait | ⏳ N s | 🤖 auto)
   t = end      ✅  artifacts under sessions/{aim}/ + insights/
 
 

@@ -34,6 +34,7 @@ Everything else is reachable but rarely typed by hand.
 | Skill | What it does |
 |---|---|
 | /dikw | One-shot entry: detect folder, create snapshot, preview layout, confirm, run session |
+| /dikw-batch | Run /dikw on a list of independent questions from a file; one shared snapshot, sequential subagent fan-out, forced --unattended |
 | /dikw-workspace | Inspect layout / status, locate files, clean temps |
 
 **Tier 2 — Task-execution skills (run during `step=task` of their phase)**
@@ -94,6 +95,12 @@ final deliverable stays in main context for follow-up questions.
 | `dikw-information-executor` | I | yes (runs `analysis.py`) | `dikw-context`, `dikw-information` |
 | `dikw-knowledge-executor` | K | no (text-only synthesis) | `dikw-context`, `dikw-knowledge` |
 | `dikw-wisdom-executor` | W | no (text-only synthesis) | `dikw-context`, `dikw-wisdom` |
+
+A separate batch-only agent fans out across many questions:
+
+| Agent | Used by | Calls skills |
+|---|---|---|
+| `dikw-question-runner` | `/dikw-batch` | `dikw` (full pipeline per question) |
 
 No agent has permission to modify `DIKW_STATE.json`, `manifest.yaml`,
 `plan-raw-*.yaml`, or gate files — state ownership belongs exclusively
@@ -196,12 +203,24 @@ Usage
 /dikw /path/to/folder --new-snapshot
 ```
 
-**Run unattended (auto-accept gate outcomes):**
+**Gate attendance modes (who clicks "accept"):**
+
+| Mode | Flag | Behavior at every gate |
+|------|------|------------------------|
+| 🧑 attended (default) | (no flag) | Wait indefinitely for human reply |
+| ⏳ timed | `--unattended=30s` | Wait 30s for human; auto-accept if silent |
+| 🤖 unattended | `--unattended` | Auto-accept immediately, no wait |
+
 ```
-/dikw /path/to/folder "question" --auto
+/dikw /path/to/folder "question"                    # 🧑 attended (default)
+/dikw /path/to/folder "question" --unattended=30s   # ⏳ timed (30s grace)
+/dikw /path/to/folder "question" --unattended       # 🤖 fully auto
 ```
-Default is `AUTO_PROCEED=false`: session pauses at every gate for human
-acceptance. With `--auto`, the gate's proposed outcome is auto-accepted.
+
+`--auto` is accepted as a legacy alias for `--unattended` (= `--unattended=0`).
+Natural-language equivalents are also parsed (e.g. *"run unattended"*,
+*"wait 30s at gates"*, *"interactive"*). Auto-accepted gates record
+an `AUTO-ACCEPTED` audit banner in the gate file regardless of mode.
 
 **Use agent-dispatched task execution:**
 ```
@@ -210,6 +229,17 @@ acceptance. With `--auto`, the gate's proposed outcome is auto-accepted.
 Default is inline mode (`/dikw-session`). With `--agents`, plan/D/I/K/W
 tasks are dispatched to phase-specific subagents via `/dikw-session-agent`.
 The report phase always stays inline. See "Execution Modes" above.
+
+**Run a list of questions against one shared snapshot:**
+```
+/dikw-batch /path/to/folder questions.md --unattended=30s --agents
+```
+Each question gets its own `sessions/NN_{slug}/`; the snapshot and
+`exploration/` are resolved once, and `insights/` is shared so D/I
+findings are reused across runs via `status=reused`. Sequential by
+design (parallel runners would race on the shared NN counter in
+`insights/`). `--unattended` is forced — a batch with attended gates
+deadlocks. See `docs/10-batch-mode.txt`.
 
 **Inspect a workspace:**
 ```

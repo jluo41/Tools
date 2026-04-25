@@ -129,9 +129,11 @@ Extract:
   - completed_tasks, pending_tasks
   - gate_persona (locked at session start; pass through unchanged — /dikw-gate reads it)
   - this task's plan entry (name + description) — from plan-raw.yaml
-  - the TRIGGERING GATE (if any): the most recent gate whose `to_phase`
+  - the TRIGGERING GATE (if any): the most recent gate whose `routes_to`
     equals the current phase AND fired after the current phase's last
-    entry. That gate's `feedback` drives this context.
+    entry. That gate's `feedback` drives this context. (Field name is
+    `routes_to` in `gates[]` — matches the schema in `dikw-session/SKILL.md`
+    and what `/dikw-gate` writes; `to_phase` does not exist.)
 
 ### Step 2: Select Relevant Reports
 
@@ -312,17 +314,25 @@ for each task in plan:
 
     if result.verdict == READY:
         run /dikw-{level} {task_name}    # execute the task
+        append { name, status: "done", plan_version } to completed_tasks
         continue to next task
 
     elif result.verdict == BLOCKED:
-        # Route via the unified gate vocabulary:
-        # the recommended fix is always "revise <feedback>" (back to plan).
-        # Plan reads the feedback, rewrites pending_tasks (adding tasks at
-        # any level, changing specs, or re-marking earlier tasks for re-run),
-        # and the pipeline restarts from plan.
+        # Match the orchestrator contract in dikw-session(-agent)/SKILL.md
+        # § "Orchestrator loop": BLOCKED short-circuits the task loop.
+        record verdict.reason as the blocker in DIKW_STATE
+        break out of the task loop      # do NOT continue to next task
+        jump straight to step=gate      # /dikw-gate sees the blocker,
+                                        # proposes `revise [feedback]`
+                                        # (always routes to plan); plan
+                                        # disambiguates missing-task vs
+                                        # pending-upstream — see /dikw-plan
 
     elif result.verdict == SKIP:
-        mark task as skipped in DIKW_STATE.json
+        append { name, status: "skipped", plan_version } to completed_tasks
+        # NOTE: do NOT leave the task in pending_tasks (the orchestrator
+        # removes it from pending_tasks in the same write — see the
+        # state schema rule about lists never drifting)
         continue to next task
 ```
 
@@ -555,10 +565,13 @@ EVALUATION:
           Running arm comparison on this data would produce wrong results.
 
   Blocker: No deduped dataset available
-  Fix: recommend gate outcome `revise "create_deduped_dataset:
-         deduplicate by invitation_id, save clean parquet, recompute
-         engagement_baseline on clean data"` (back to plan; plan will
-         add this as a new D-task in plan-v{N+1})
+  Fix: recommend gate outcome `revise "D-phase profiled raw rows
+         including ~12% duplicates by invitation_id; engagement_baseline
+         numbers are inflated and the arm comparison cannot run on this
+         data — plan needs a deduplication step before any I-phase
+         comparison."` (gate outcome routes to plan; plan-v{N+1} reads
+         the feedback and rewrites pending_tasks accordingly — typically
+         adding a new D-task and re-running engagement_baseline)
 ───────────────────────────────────────────
 ```
 

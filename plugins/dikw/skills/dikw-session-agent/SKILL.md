@@ -2,7 +2,7 @@
 name: dikw-session-agent
 description: "Full DIKW analysis session, agent-dispatched variant. Same state machine as /dikw-session, but each task (plan, D, I, K, W) is executed by a phase-specific subagent (dikw-planner, dikw-data-executor, dikw-information-executor, dikw-knowledge-executor, dikw-wisdom-executor). The report phase stays inline. Use when the user says 'run DIKW with agents', '/dikw-session-agent', or wants agent-mode execution for context isolation and parallel task dispatch."
 argument-hint: [snapshot_dir] [questions]
-allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, Agent, Skill
+allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, Skill
 ---
 
 # DIKW Analysis Session — Agent Mode
@@ -25,22 +25,17 @@ snapshot dir yourself.
 
 ## Constants
 
-- `AUTO_PROCEED = false` — *default.* Pause at every gate for human
-  acceptance. Set `true` via `--auto` for unattended runs (the gate's
-  proposed outcome is auto-accepted).
+- `UNATTENDED_TIMEOUT = null` — *default* (🧑 attended). Read from
+  `DIKW_STATE.unattended_timeout`. Three settings:
+    - `null` — wait indefinitely for human reply at every gate
+    - `N > 0` — ⏳ timed; wait N seconds, then auto-accept proposal
+    - `0` — 🤖 unattended; auto-accept the proposal immediately
+  Set via `--unattended[=Ns]`. Legacy `--auto` is an alias for `=0`.
 - `MAX_REVISIONS = 3` — caps `revise plan` loops; after exceeding, the
   session force-approves with a warning.
 - `MAX_TASKS_PER_LEVEL = 4` — cap per D/I/K/W phase.
 
-Override: `/dikw-session "questions" --auto` or `/dikw-session "questions" --max-tasks 2`.
-
-> ⚠ **Sibling skill**: `/dikw-session-agent` is a parallel implementation
-> that dispatches each task to a subagent instead of running it inline.
-> Any change to state machine, `DIKW_STATE.json` schema, gate contract,
-> `MAX_REVISIONS` handling, banner format, pre-gate check, or resume
-> logic **must be applied to the sibling too** — otherwise the two
-> modes will silently diverge. See
-> `skills/dikw-session-agent/SKILL.md`.
+Override: `/dikw-session-agent "questions" --auto` or `/dikw-session-agent "questions" --max-tasks 2`.
 
 ---
 
@@ -493,8 +488,12 @@ Read `DIKW_STATE.json.execution_mode`:
                {folder}` without `--agents`) to resume it, or start a
                new session."*
 - missing    → legacy session (created before mode-locking).
-               Treat as `"inline"` and abort as above (never silently
-               upgrade a legacy session to agent mode on resume).
+               Treat as `"inline"` and **abort** as above (never
+               silently upgrade a legacy session to agent mode on
+               resume). The inline twin (`/dikw-session`) takes the
+               symmetric stance for this case: same default
+               (`"inline"`), but it continues — and writes the field
+               back so the session is locked to inline going forward.
 
 This check prevents the two session skills from stomping on each
 other's sessions when resuming.
@@ -787,5 +786,7 @@ summarizing what was changed, so the upgrade is auditable.
 | W      | 2–5 min / task   | Gate |
 | report | 3–5 min          | Final gate |
 
-Total: 30–60 min end-to-end. With `AUTO_PROCEED=false` (default), ~6 gate
-interactions. With `--auto`, 0 gate interactions but outcomes still logged.
+Total: 30–60 min end-to-end. With 🧑 attended (default), ~6 gate
+interactions. With ⏳ `--unattended=30s`, ~0–6 (depends on user
+attention). With 🤖 `--unattended`, 0 gate interactions but outcomes
+still logged with AUTO-ACCEPTED audit banners.

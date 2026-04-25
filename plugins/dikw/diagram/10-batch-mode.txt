@@ -1,0 +1,203 @@
+📦  DIKW — Batch Mode  (one snapshot, N independent questions)
+==============================================================
+
+  /dikw-batch fans a list of independent DIKW questions across
+  N isolated subagent runs against ONE shared snapshot.
+
+      📄 questions.md
+            │
+            ▼
+       🚀 /dikw-batch
+            │
+            ├── 📷 resolve snapshot ONCE
+            │       (exploration runs at most once)
+            │
+            └── 🔁 sequential fan-out
+                    │
+                    ├── 🤖 dikw-question-runner   (Q1)
+                    ├── 🤖 dikw-question-runner   (Q2)
+                    ├── 🤖 dikw-question-runner   (Q3)
+                    └── 🤖 dikw-question-runner   (Qn)
+
+      Each runner →  📂 sessions/NN_{slug}/   (isolated)
+      All runners →  📂 insights/             (SHARED — D/I reused)
+
+
+  🗺️  End-to-end picture
+  -----------------------
+
+  +--------------------------------------------------------------+
+  |                  📄 questions.{txt,md}                       |
+  |  ┌──────────────────────────────────────────────────────┐    |
+  |  │  Q1: What CGM patterns exist in the morning hours?   │    |
+  |  │  Q2: Does meal timing predict post-prandial spikes?  │    |
+  |  │  Q3: How does exercise interact with insulin dosing? │    |
+  |  └──────────────────────────────────────────────────────┘    |
+  +--------------------------------------------------------------+
+                                │
+                                ▼
+  +--------------------------------------------------------------+
+  |             🚀 /dikw-batch {folder} questions.md             |
+  |                                                              |
+  |   Step 1️⃣  📋 parse + dedupe questions                       |
+  |   Step 2️⃣  📷 resolve snapshot ONCE  (one-time exploration)  |
+  |   Step 3️⃣  🤖 force --unattended (no human at N gates)       |
+  |   Step 4️⃣  🔁 sequential Agent() fan-out                     |
+  |   Step 5️⃣  📊 aggregate summary table                        |
+  +--------------------------------------------------------------+
+                                │
+              ┌─────────────────┼─────────────────┐
+              ▼                 ▼                 ▼
+       🤖 runner 1 (Q1)  🤖 runner 2 (Q2)  🤖 runner N (Qn)
+            │                 │                 │
+            └────────┬────────┴────────┬────────┘
+                     ▼                 ▼
+        +---------------------+  +-----------------------------+
+        |  📂 sessions/        |  |  📂 insights/                |
+        |   01_{slug-1}/       |  |   data/      D01..D0X/      |
+        |   02_{slug-2}/       |  |   information/ I01..I0X/    |
+        |   03_{slug-3}/       |  |   knowledge/   K01..K0X/    |
+        |   ...                |  |   wisdom/      W01..W0X/    |
+        |   per-question state |  |   ⬅ shared across questions |
+        +---------------------+  +-----------------------------+
+                                            │
+                          ✅ D/I tasks reused via status="reused"
+                             (see 8-task-status.txt)
+
+
+  ⚙️  Why sequential (not parallel)
+  ---------------------------------
+
+  Within ONE snapshot, 📂 insights/{D,I,K,W}/ share a monotonic NN
+  counter (see 5-snapshot-layout.txt § "NN-monotonic").  Two parallel
+  runners that both want to allocate D03-... for different work would
+  race on the same slot.
+
+  +---------------------------------------------+--------------------+
+  | If you ran two runners in parallel ...      | What goes wrong    |
+  +---------------------------------------------+--------------------+
+  | both pick D03 as next free slot             | 💥 collision        |
+  | one writes report.md, one writes analysis.py| 🧨 mixed task data  |
+  | plan-v2 of Q1 marks D03 invalidated         | 🚫 cross-contam     |
+  +---------------------------------------------+--------------------+
+
+  v1 ships sequential.  A future --parallel=N flag will land once a
+  file-based NN lock exists in dikw-session(-agent).
+
+
+  🔁  Per-question reuse via status="reused"
+  -------------------------------------------
+
+  When runner 2 enters phase D and discovers D01-cgm_overview/
+  already has report.md + analysis.py from runner 1's session,
+  /dikw-context returns READY and the orchestrator appends:
+
+       completed_tasks["D"] += [
+         { name: "cgm_overview", status: "reused", plan_version: 1 }
+       ]
+
+  The pre-gate artifact check still verifies the folder.  No
+  recomputation runs.  Compute saved is roughly:
+
+       reused tasks × (3-8 min/task)  ≈  large
+
+  This is the WHOLE POINT of batch mode against one snapshot.
+
+
+  🤖  Forced --unattended  (every runner)
+  ----------------------------------------
+
+  Batch mode is incompatible with attended gating.  N pipelines
+  × ~6 gates each = N × 6 prompts a human cannot answer in real
+  time.  /dikw-batch silently rejects attended mode and forces
+  a non-null unattended_timeout on every runner:
+
+  +----------------------+----------+---------------------------+
+  | Caller flag          | Internal | Runner re-emits to /dikw  |
+  +----------------------+----------+---------------------------+
+  | (none)               |    0     | --unattended  (🤖 imm.)   |
+  | --unattended         |    0     | --unattended  (🤖 imm.)   |
+  | --unattended=30s     |   30     | --unattended=30s (⏳)     |
+  | --unattended=inf     | rejected | (attended forbidden in    |
+  |   (= attended)       | ⚠️ →  0  |  batch; falls back to 0)  |
+  | --auto               |    0     | --unattended  (legacy)    |
+  +----------------------+----------+---------------------------+
+
+  📐 Internal vocabulary is INTEGER SECONDS (matches DIKW_STATE.json
+     schema: null | 0 | N).  CLI form `30s` is parsed once at Step 3
+     into integer 30; the runner re-emits the CLI form when it
+     invokes /dikw.  No stringly-typed values cross the agent boundary.
+
+  🧑 `--unattended=inf` means attended (UNATTENDED_TIMEOUT=null) —
+     the explicit form, identical to omitting the flag.  Batch
+     rejects it because attended mode would block on Q1's first gate.
+
+  Auto-accepted gates record an AUTO-ACCEPTED audit banner; the
+  audit trail tells you exactly what each runner agreed to without
+  human input.
+
+
+  🧯  Failure handling — continue, don't abort
+  --------------------------------------------
+
+  +----------------------------+--------------------------------+
+  | If runner k returns ...    | /dikw-batch does ...           |
+  +----------------------------+--------------------------------+
+  | status=ok                  | record row, dispatch runner k+1|
+  | status=failed              | flag row, dispatch runner k+1  |
+  | force-approved at MAX      | flag row, dispatch runner k+1  |
+  +----------------------------+--------------------------------+
+
+  No batch-level state file is kept.  Resume = re-invoke
+  /dikw-batch on the same folder + questions.md; runners whose
+  sessions[NN_*] folder already has DIKW_STATE.status=complete
+  are skipped automatically (one-line note in the summary).
+
+
+  📊  Output — one summary table
+  -------------------------------
+
+  +---+-------------------+----+--------+------+------------------+
+  | # | aim               | rev| outcome|auto  | conclusion       |
+  +---+-------------------+----+--------+------+------------------+
+  | 1 | 01_cgm-pattern... | 0  | approve|  6   | 3 dawn patterns..|
+  | 2 | 02_meal-spike-... | 1  | approve|  7   | meal timing pred.|
+  | 3 | 03_exercise-ins.. | —  | failed |  —   | force-approved...|
+  | 4 | 04_outlier-day... | 0  | done   |  5   | 2 days flagged...|
+  +---+-------------------+----+--------+------+------------------+
+
+  Then prints the snapshot path so the user can drill in.
+
+
+  🛑  When to NOT use /dikw-batch  (use a shell loop instead)
+  -----------------------------------------------------------
+
+  +---------------------------------------+---------------------+
+  | If your questions ...                 | Use ...             |
+  +---------------------------------------+---------------------+
+  | are independent, share data semantics | 📦 /dikw-batch      |
+  | should each have a fresh snapshot     | 🐚 shell for-loop   |
+  | should re-explore each time           | 🐚 + --re-explore   |
+  | depend on each other (Q2 reads Q1)    | 💬 interactive /dikw|
+  +---------------------------------------+---------------------+
+
+  Shell-loop equivalent (rare; bypasses cross-question reuse):
+
+       for q in $(cat questions.txt); do
+         /dikw {folder} "$q" --new-snapshot --unattended
+       done
+
+
+  📌  Cheat sheet
+  ---------------
+
+  ✅ ONE snapshot   ✅ ONE exploration   ✅ shared insights
+  ✅ N sessions/    ✅ sequential fan-out
+  ✅ forced unattended    ✅ continue-on-failure
+  ❌ no batch state file  ❌ no parallel (yet)
+
+  Read together with:
+    📄 0-overview.txt          tier map
+    📄 4-execution-modes.txt   inline vs --agents axis
+    📄 5-snapshot-layout.txt   NN-monotonic rule
+    📄 8-task-status.txt       reused / done / skipped semantics

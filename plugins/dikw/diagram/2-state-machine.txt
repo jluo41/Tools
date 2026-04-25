@@ -67,7 +67,10 @@
   |                                                  |
   |   🚦 step = gate                                 |
   |     🤖 /dikw-gate  -->  proposed outcome         |
-  |     🧑 human (or --auto) accepts                 |
+  |     attendance  ::=  unattended_timeout:         |
+  |       🧑 null  -> wait forever for human         |
+  |       ⏳ N>0   -> wait N seconds then auto       |
+  |       🤖 0     -> auto-accept immediately        |
   |     ->  ✅ approve / 🔄 revise / 🏁 done         |
   +--------------------------------------------------+
 
@@ -79,4 +82,4 @@
 
   ⚠️  MAX_REVISIONS        = 3   (🔄 revise loops; force-approve after)
   ⚠️  MAX_TASKS_PER_LEVEL  = 4   (per 📊 D / 📈 I / 🧠 K / 🎯 W phase)
-      AUTO_PROCEED         = false  (🚦 gate pauses; --auto flips it)
+      UNATTENDED_TIMEOUT   = null   (🧑 attended; --unattended[=Ns] sets timer)

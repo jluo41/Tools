@@ -205,7 +205,7 @@ Insights:
   🧠 K (1/1 done):
      ✅ insights/knowledge/K01-pattern_synthesis/report.md
   💡 W (0/1):
-     ⬜ insights/wisdom/01-recommendations/
+     ⬜ insights/wisdom/W01-recommendations/
 
 Sessions:
   📁 sessions/NN_{slug}/

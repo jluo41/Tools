@@ -147,22 +147,39 @@ The Plan Is Not Fixed
 ----------------------
 
   The initial plan comes from the question + explore notes.
-  But gates can CHANGE the plan during execution:
+  But gate outcomes can FEED BACK into the plan during execution.
+  IMPORTANT: gates do NOT directly modify task lists. Every
+  non-forward gate outcome is `revise [feedback]`, which routes
+  back to plan. The PLANNER (in plan-v{N+1}) is the only thing
+  that adds, removes, or re-specs tasks — informed by the feedback.
 
   D discovers something unexpected:
     "Low-engagement patients aren't just non-clickers —
      they're actively opting out. 12% opted out."
-    → Gate adds I task: optout_analysis
+    → G-D outcome: `revise "12% opt-out rate found in D; the
+       opt-out cohort needs its own characterization before we
+       can correlate engagement with anything else."`
+    → routes to plan; plan-v2 adds an I-task: optout_analysis
 
   I finds the hypothesis is wrong:
     "Age doesn't predict engagement after controlling for
      message frequency. Frequency is the real driver."
-    → Gate revises K task: from age_mechanism to frequency_mechanism
+    → G-I outcome: `revise "Age signal disappears after
+       controlling for message frequency. Frequency is the
+       real driver and K should explain its mechanism, not age."`
+    → routes to plan; plan-v3 re-specs the K-task from
+       age_mechanism to frequency_mechanism
 
   K reveals the question itself should change:
     "The problem isn't message design — it's message volume.
      Low-engagement patients receive 3x more messages."
-    → W task changes from message_redesign to volume_optimization
+    → G-K outcome: `revise "Low-engagement patients receive 3x
+       more messages — the actionable lever is volume, not
+       design. W should optimize volume, not redesign content."`
+    → routes to plan; plan-v4 swaps the W-task from
+       message_redesign to volume_optimization
 
-  The question stays the same. The plan evolves.
-  This is the DIKW pipeline working correctly — learning and adapting.
+  The question stays the same. The plan evolves through plan-v{N}
+  files; gates only emit outcomes (approve / revise / done) and
+  let the planner do the work. This is the DIKW pipeline working
+  correctly — learning and adapting through a single router.

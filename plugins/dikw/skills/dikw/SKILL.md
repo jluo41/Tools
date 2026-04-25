@@ -17,9 +17,15 @@ folder — Subject-*/ data, raw dataset dumps, or existing DIKW projects.
 Constants
 ---------
 
-- **AUTO_PROCEED = false** — *default.* Pause at every DIKW gate for human
-  approval (`G-plan` after the plan is written, and each post-phase gate). Set true
-  (`--auto`) to let gates auto-decide for unattended runs.
+- **UNATTENDED_TIMEOUT = null** — *default* (🧑 attended). Pause at every
+  DIKW gate for human approval (`G-plan` after the plan is written, and
+  each post-phase gate). Three settings:
+    - `null`  — 🧑 attended; wait indefinitely for human reply (default)
+    - `N > 0` — ⏳ timed; wait up to N seconds, then auto-accept the
+                gate's proposal verbatim
+    - `0`     — 🤖 unattended; auto-accept the proposal immediately
+  Set via `--unattended[=Ns]` (no value defaults to `0`). The legacy
+  `--auto` flag is accepted as an alias for `--unattended=0`.
 - **NEW_SNAPSHOT = false** — default reuses the latest `snapshot-<date>/` if
   one exists. Set true (`--new-snapshot`) to force a fresh snapshot folder.
 - **COPY_MODE = "copy"** — default `source/` contains real file copies (the
@@ -311,10 +317,11 @@ Example:
    (from question "What CGM patterns exist")
 ```
 
-Under `--auto` (AUTO_PROCEED=true): if the model-generated slug fails
-validation (too short/long, banned suffix, stopword-only), fall back to the
-literal-token slug from `dikw-session/SKILL.md § "Session naming"` and
-proceed — do NOT prompt. Under interactive mode (default), a failing slug
+Under `--unattended=0` (or the legacy `--auto` alias): if the
+model-generated slug fails validation (too short/long, banned suffix,
+stopword-only), fall back to the literal-token slug from
+`dikw-session/SKILL.md § "Session naming"` and proceed — do NOT prompt.
+Under any other mode (timed or attended), a failing slug
 triggers one re-generation attempt; if it still fails, surface the error at
 the Stage 4 gate so the user can `revise-aim "..."`.
 
@@ -397,8 +404,9 @@ NOT be modified for the rest of this session. `/dikw-session` treats
 it as read-only. A future session (new `/dikw` invocation) can set a
 different persona.
 
-If `AUTO_PROCEED=true` and no persona has been set on the CLI, default
-to `balanced` and skip the prompt.
+If `UNATTENDED_TIMEOUT=0` and no persona has been set on the CLI,
+default to `balanced` and skip the prompt. If `UNATTENDED_TIMEOUT>0`,
+prompt with the same N-second window the gates use.
 
 **Part B — Proceed confirm.** Present:
 
@@ -413,9 +421,18 @@ to `balanced` and skip the prompt.
 Proceed?  (yes / dry-run / revise "new question" / revise-aim "new-slug" / cancel)
 ```
 
-If `DRY_RUN=true`: print the above and EXIT (do not run Stage 5).
-If `AUTO_PROCEED=true`: pause 10 seconds, default to yes.
-Else: wait for explicit user input.
+Order of operations under flags (matches the gate-attendance contract
+used by `/dikw-session(-agent)` at every later gate):
+
+  1. If `DRY_RUN=true` (CLI `--dry-run`): print the summary and EXIT.
+     **No prompt fires** — Stage 4 just confirms the layout the
+     scaffolder already wrote and returns.
+  2. Otherwise, render the prompt and obtain a response per
+     `UNATTENDED_TIMEOUT`:
+       - `0`     → 🤖 auto-yes immediately (no wait, no countdown)
+       - `N > 0` → ⏳ wait up to N seconds for input; auto-yes if the
+                    timer fires (banner shows `awaiting (auto in {N}s)`)
+       - `null`  → 🧑 wait for explicit user input (default — attended)
 
 User responses:
   - `yes` → Stage 4.5 → Stage 5
@@ -455,7 +472,8 @@ write    {snapshot_dir}/sessions/{aim}/DIKW_STATE.json with:
     "phase_history": [],
     "gates": [],
     "revisions_count": 0,
-    "gate_persona": {<from Stage 4 Part A>}
+    "gate_persona": {<from Stage 4 Part A>},
+    "unattended_timeout": <UNATTENDED_TIMEOUT or null>
   }
 ```
 
@@ -553,8 +571,21 @@ Commands
 /dikw {folder} --dry-run              → layout preview only, no execution
 /dikw {folder} --new-snapshot         → force new snapshot
 /dikw {folder} --symlink              → symlink data in source/ (skip copy; saves disk for large data)
-/dikw {folder} --auto                 → run unattended (AUTO_PROCEED=true); default is to pause at every gate
+/dikw {folder} --unattended           → 🤖 immediate auto-accept at every gate (no wait)
+/dikw {folder} --unattended=30s       → ⏳ wait 30s for human at each gate, then auto-accept
+/dikw {folder} --unattended=inf       → 🧑 attended (UNATTENDED_TIMEOUT=null) — explicit form, identical to omitting the flag
+/dikw {folder} --auto                 → legacy alias for --unattended (= --unattended=0)
 /dikw {folder} --agents               → use /dikw-session-agent (subagent dispatch); default is /dikw-session (inline)
+```
+
+Natural-language equivalents are also accepted — the orchestrator
+parses common phrasings into the same `UNATTENDED_TIMEOUT` setting:
+
+```
+"run unattended" / "auto-approve" / "no human"          → --unattended (=0)
+"wait 30s at gates" / "30 second grace" / "auto in 1m"  → --unattended=30s / =60s
+"interactive" / "let me approve every gate"             → default (attended)
+"use agents" / "agent mode" / "parallel dispatch"       → --agents
 ```
 
 
