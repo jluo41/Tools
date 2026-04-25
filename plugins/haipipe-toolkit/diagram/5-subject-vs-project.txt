@@ -25,10 +25,14 @@ a subject filter.
   ├── 4-AIDataStore/{AIData}/*         training tensors              ┘  (S1-S4)
   │
   ├── 5-ModelInstanceStore/*           trained weights               ─ /haipipe-nn
+  │                                                                     (or produced by
+  │                                                                      /haipipe-end-develop-sagemaker
+  │                                                                      via SageMaker Pipeline)
   │
   └── 6-EndpointStore/*                deployable artifacts          ─ /haipipe-end
                                               │                         (artifact +
-                                              v                          4 targets)
+                                              v                          3 develop +
+                                                                         4 deploy targets)
                                        ✅ deployable endpoint
 
 

@@ -8,6 +8,7 @@ Verified by reading:
   📂 code-dev/1-PIPELINE/6-Endpoint-WorkSpace/  (builders that GENERATE fn_endpoint/*)
   📂 platform-sagemaker-inference/       (deploy target: AWS SageMaker)
   📂 platform-databrick-inference/       (deploy target: Databricks Model Serving)
+  📂 platform-sagemaker-training/        (develop target: AWS SageMaker Pipeline + RegisterModel)
 
 
 ─§ 🎯 Verdict at a glance ──────────────────────────────────
@@ -17,6 +18,9 @@ Verified by reading:
 
   ✅ Per-Fn-type decomposition (5 skills)        maps cleanly to fn_endpoint/fn_*/
   ✅ haipipe-end-endpointset                     maps to Endpoint_Set + Endpoint_Pipeline classes
+  ✅ haipipe-end-develop-sagemaker               wraps platform-sagemaker-training/
+  ✅ haipipe-end-develop-local                   sequencer over /haipipe-nn modelset + endpointset package
+  ⚠️ haipipe-end-develop-databricks              DEFERRED — no platform-databrick-training repo yet
   ✅ haipipe-end-deploy-sagemaker                wraps platform-sagemaker-inference/
   ✅ haipipe-end-deploy-databricks               wraps platform-databrick-inference/
   ✅ haipipe-end-deploy-local                    wraps platform-sagemaker-inference's local scripts
@@ -79,6 +83,28 @@ Verified by reading:
    │   ├── run_pipeline.py                 │ end-to-end
    │   ├── test_local.py · test.py
    ├── config/ · examples/cgm_payload.json · _WorkSpace/
+
+📂 platform-sagemaker-training/                ← haipipe-end-develop-sagemaker wraps this
+   ├── docker/                             training image Dockerfile + entry
+   ├── scripts/build_docker/
+   │   └── build_docker_training.py        build + push training ECR image
+   ├── scripts/build_training_pipeline/    ┐
+   │   ├── build_training_pipeline.py      │ compose 3-step Pipeline
+   │   ├── script_process.py               │ PreprocessStep
+   │   ├── script_train.py                 │ TrainingStep
+   │   └── script_reorganize.py            │ ReorganizeStep
+   ├── scripts/run_training_pipeline/      ┐
+   │   ├── run_train_local_system.py       │ --stage system   (local Python, no Docker)
+   │   ├── run_train_local_docker.py       │ --stage docker   (local Docker container)
+   │   ├── run_process_local_system.py     │ preprocessing-only local test
+   │   ├── run_process_local_docker.py     │ preprocessing-only local test (Docker)
+   │   └── run_training_pipeline.py        │ --stage pipeline (full SageMaker + RegisterModel)
+   ├── config/                             project YAML configs
+   └── opt_ml/, opt_ml_processing/         local-test output mounts
+
+📂 platform-databrick-training/                ⚠️ NOT YET PRESENT
+   (planned wrap target for haipipe-end-develop-databricks; specialist scaffolded
+    as DEFERRED until this repo is added)
 
 
 ─§ 🗺️ Section 2 — Skill ↔ Code mapping (1:1 where it works) ────
@@ -149,12 +175,44 @@ Verified by reading:
   | ⚠️ DEFERRED                       |    |                                                    |
   +-----------------------------------+    +----------------------------------------------------+
 
+  +-----------------------------------+    +----------------------------------------------------+
+  | 🏗️ haipipe-end-develop-sagemaker  | ─▶ | platform-sagemaker-training/scripts/               |
+  | (BUILD: produces Endpoint_Set)    |    |   run_training_pipeline/run_training_pipeline.py   |
+  | verbs: dashboard, develop, test,  |    |   build_training_pipeline/build_training_pipeline  |
+  |        monitor, teardown, review  |    |   build_docker/build_docker_training.py            |
+  |                                   |    | _WorkSpace/{5-ModelInstanceStore,6-EndpointStore}/ |
+  +-----------------------------------+    +----------------------------------------------------+
+
+  +-----------------------------------+    +----------------------------------------------------+
+  | 🏗️ haipipe-end-develop-databricks | ─▶ | (no platform repo — DEFERRED)                      |
+  | ⚠️ DEFERRED                       |    | will wrap platform-databrick-training/ when added  |
+  +-----------------------------------+    +----------------------------------------------------+
+
+  +-----------------------------------+    +----------------------------------------------------+
+  | 🏗️ haipipe-end-develop-local      | ─▶ | (thin sequencer — owns no code directly)           |
+  | (BUILD: local sequencer)          |    | delegates: Skill("haipipe-nn", "modelset run ...") |
+  |                                   |    |            Skill("haipipe-end-endpointset",        |
+  |                                   |    |                  "package ...")                    |
+  +-----------------------------------+    +----------------------------------------------------+
+
 
 ─§ 🔄 Section 3 — Concrete inference flow (what happens at deploy + invoke time) ────
 
 ─────────────────────────────────────────────────────────────────────────────
-🔄 Section 3 — Concrete inference flow (what happens at deploy + invoke time)
+🔄 Section 3 — Concrete flow (develop → deploy → invoke time)
 ─────────────────────────────────────────────────────────────────────────────
+
+  🏗️ Build time = "develop" axis (two paths producing the same Endpoint_Set):
+       /haipipe-end-develop-local      → /haipipe-nn modelset run
+                                         + /haipipe-end-endpointset package
+       /haipipe-end-develop-sagemaker  → platform-sagemaker-training Pipeline
+                                         (Preprocess → Train → Reorganize → RegisterModel)
+       /haipipe-end-develop-databricks → ⚠️ DEFERRED
+
+  Both paths write to _WorkSpace/6-EndpointStore/Endpoint-*/ . The diagram below
+  shows the local path; -develop-sagemaker substitutes the SageMaker Pipeline
+  for `Endpoint_Pipeline.run()` but produces an equivalent artifact + a
+  registered ModelPackage in the SageMaker Model Registry.
 
   build time (offline, train side)                  deploy time              invoke time (live)
   ─────────────────────────────────                 ─────────────            ─────────────────────
@@ -280,6 +338,13 @@ Verified by reading:
     -deploy-sagemaker:  needs Docker variant flag, ECR push, dev/prod, pressure-test
     -deploy-databricks: just package / deploy / test / monitor / teardown — much thinner
 
+  🏗️ Parallel asymmetry on the develop side:
+    platform-sagemaker-training/    EXISTS — full Pipeline (Process → Train → Reorganize
+                                              → RegisterModel), 3-stage testing ladder
+                                              (system / docker / pipeline)
+    platform-databrick-training/    NOT YET — -develop-databricks specialist scaffolded
+                                              as DEFERRED until this repo is added
+
 
 ─§ ✅ Section 7 — Verdict on whether the skills reflect the code ────
 
@@ -287,13 +352,20 @@ Verified by reading:
 ✅ Section 7 — Verdict on whether the skills reflect the code
 ─────────────────────────────────────────────────────────────────────────────
 
-  ✅ The 11-skill decomposition is grounded:
-     1 umbrella + 1 endpointset + 5 per-Fn-type + 4 deploy = 11
-     Each maps to a real code location.
+  ✅ The 14-skill decomposition is grounded:
+     1 umbrella + 1 endpointset + 5 per-Fn-type + 3 develop + 4 deploy = 14
+     Each maps to a real code location (or is explicitly deferred).
 
   ✅ The per-Fn-type axis is the right axis. fn_endpoint/ literally has
      5 subfolders matching the 5 Fn-type skills, and 6-Endpoint-WorkSpace/
      has builders organized by Fn-type prefix (a/b/c/d/e/f/g).
+
+  ✅ The develop axis (added v2.2) maps cleanly to the build side of the
+     Endpoint_Set lifecycle: -develop-sagemaker wraps platform-sagemaker-
+     training/, -develop-local sequences /haipipe-nn modelset + endpointset
+     package, -develop-databricks is scaffolded for when its platform repo
+     lands. develop and deploy share targets but operate on different
+     phases of the same artifact.
 
   🚩 Two refinements the SKILL.md files need:
 
@@ -311,6 +383,10 @@ Verified by reading:
   💡 Future work: the asymmetry in scripts (sagemaker has full Flask stack,
      databricks has one pyfunc file) suggests a shared helper library that
      both platform repos consume. That's outside the skill layer though.
+
+  💡 Future work (develop side): when platform-databrick-training/ is added,
+     drop the DEFERRED marker on -develop-databricks and add it to the
+     /haipipe-end no-args dashboard fan-out.
 
   📌 Conclusion: the skill structure correctly mirrors the code's natural
      decomposition. The 2 refinements above are tweaks to the SKILL.md
