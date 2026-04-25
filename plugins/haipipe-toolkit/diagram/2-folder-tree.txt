@@ -52,8 +52,8 @@ Tools/plugins/haipipe-toolkit/
     │   ├── haipipe-nn-instance/       L3 ModelInstance
     │   └── haipipe-nn-modelset/       L4 ModelSet / pipeline
     │
-    ├── 3_end/                         Stage 6 (1 umbrella + 1 artifact + 5 Fn-type + 4 deploy = 11 skills)
-    │   ├── haipipe-end/               🎯 umbrella — 3-axis router
+    ├── 3_end/                         Stage 6 (1 umbrella + 1 artifact + 5 Fn-type + 3 develop + 4 deploy = 14 skills)
+    │   ├── haipipe-end/               🎯 umbrella — 4-axis router
     │   │   ├── SKILL.md
     │   │   ├── ref/
     │   │   │   ├── 0-overview.md         Stage 6 architecture (shared by per-Fn-type children)
@@ -73,7 +73,12 @@ Tools/plugins/haipipe-toolkit/
     │   ├── haipipe-end-input2src/     🧠 Input2SrcFn (payload → record)
     │   │   (each: thin SKILL.md + ref/concepts.md)
     │   │
-    │   │  ── per-target deploy (4) ──
+    │   │  ── per-target develop (3) — BUILDS the Endpoint_Set ──
+    │   ├── haipipe-end-develop-sagemaker/   🏗️ → AWS SageMaker Pipeline (wraps platform-sagemaker-training/)
+    │   ├── haipipe-end-develop-databricks/  🏗️ → Databricks Job   ⚠️ DEFERRED (no platform repo)
+    │   ├── haipipe-end-develop-local/       🏗️ → local sequencer (delegates to /haipipe-nn modelset + endpointset package)
+    │   │
+    │   │  ── per-target deploy (4) — SERVES the Endpoint_Set ──
     │   ├── haipipe-end-deploy-sagemaker/   🚀 → AWS SageMaker (wraps platform-sagemaker-inference/)
     │   ├── haipipe-end-deploy-databricks/  🚀 → Databricks Model Serving (wraps platform-databrick-inference/)
     │   ├── haipipe-end-deploy-local/       🚀 → local (Flask / FastAPI / Docker)
@@ -102,16 +107,16 @@ Tools/plugins/haipipe-toolkit/
 📊 Counts
 ----------
    5 umbrella skills (Tier 1, user-facing entry points)
-  21 specialist skills (Tier 2)
+  24 specialist skills (Tier 2)
   ─────────────────────────────
-  26 total SKILL.md files
+  29 total SKILL.md files
 
   Per-group breakdown:
-    1_data/      1 umbrella + 4 stage specialists                = 5
-    2_nn/        1 umbrella + 4 layer specialists                = 5
-    3_end/       1 umbrella + 1 artifact + 5 Fn-type + 4 deploy  = 11
-    4_project/   1 umbrella + 3 risk-profile specialists         = 4
-    5_subject/   1 standalone (no specialists)                   = 1
+    1_data/      1 umbrella + 4 stage specialists                            = 5
+    2_nn/        1 umbrella + 4 layer specialists                            = 5
+    3_end/       1 umbrella + 1 artifact + 5 Fn-type + 3 develop + 4 deploy  = 14
+    4_project/   1 umbrella + 3 risk-profile specialists                     = 4
+    5_subject/   1 standalone (no specialists)                               = 1
 
 
 ─§ 📌 Convention recap ─────────────────────────────────────

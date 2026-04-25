@@ -33,10 +33,10 @@ common pattern:
             present to user. If status != ok → stop chaining.
 
 
-─§ 🚀 Special routing — /haipipe-end (3-axis: Fn-type / artifact / deploy) ────
+─§ 🚀 Special routing — /haipipe-end (4-axis: Fn-type / artifact / develop / deploy) ────
 
-🚀 Special routing — /haipipe-end (3-axis: Fn-type / artifact / deploy)
-------------------------------------------------------------------------
+🚀 Special routing — /haipipe-end (4-axis: Fn-type / artifact / develop / deploy)
+----------------------------------------------------------------------------------
 
    Step 1   Parse $ARGUMENTS.
 
@@ -48,32 +48,52 @@ common pattern:
               Input2SrcFn | payload-to-record           → -input2src
               FOUND → dispatch to that per-Fn-type specialist.
 
-   Step 3   Deploy target keyword?
+   Step 3   🏗️ Develop verb keyword + target?
+              verb: develop | train | build endpoint_set
+                    | training pipeline | RegisterModel
+              target: sagemaker | databricks | local
+              FOUND with target → dispatch to -develop-<target>.
+
+   Step 4   🏗️ Develop verb alone (no target)?
+              ASK target (sagemaker / databricks / local). Don't guess.
+
+   Step 5   🚀 Deploy verb 'deploy' + target keyword?
               sagemaker | aws | ECR | model.tar.gz      → -deploy-sagemaker
               databricks | unity catalog | serving      → -deploy-databricks
               local | flask | fastapi | localhost       → -deploy-local
               mlflow registry | mlflow serve | pyfunc   → -deploy-mlflow
               FOUND → dispatch to that deploy specialist.
 
-   Step 4   Verb 'deploy' alone (no target)?
+   Step 6   🚀 Verb 'deploy' alone (no target)?
               ASK target. Don't guess.
 
-   Step 5   Artifact-as-whole verb?
+   Step 7   ⚖️ Target keyword alone (no develop/deploy verb)?
+              Default to deploy ref-only summary, append a 1-line soft-ask:
+                  "→ if you meant the build side, run /haipipe-end develop <target>"
+              (Common ask is "describe the deploy"; develop stays discoverable.)
+
+   Step 8   🔧 Artifact-as-whole verb?
               package | test (local) | review-overall  → -endpointset
               dashboard (no axis specified)            → -endpointset
               FOUND → dispatch to -endpointset.
 
-   Step 6   Verb 'review <id>' with no fn-type?
-              <id> looks like a live deploy id  → resolve target via
-                                                   local registries,
-                                                   dispatch to that
-                                                   -deploy-<target>.
+   Step 9   📋 Verb 'review <id>' with no fn-type?
+              <id> looks like a Pipeline / Job ARN     → resolve via
+                                                          develop registries,
+                                                          dispatch to that
+                                                          -develop-<target>.
+              <id> looks like a live deploy id         → resolve via
+                                                          deploy registries,
+                                                          dispatch to that
+                                                          -deploy-<target>.
 
-   Step 7   No args → CROSS-SCOPE DASHBOARD (parallel fan-out):
-              -endpointset + -deploy-{sagemaker,databricks,local}
-              (-deploy-mlflow excluded while DEFERRED)
+   Step 10  🔁 No args → CROSS-SCOPE DASHBOARD (parallel fan-out):
+              -endpointset
+              + -develop-{sagemaker, local}
+              + -deploy-{sagemaker, databricks, local}
+              (-develop-databricks and -deploy-mlflow excluded while DEFERRED)
 
-   Step 8   Dispatch:  Skill("haipipe-end-<X>", args=...)
+   Step 11  🛠️ Dispatch:  Skill("haipipe-end-<X>", args=...)
 
 
 ─§ 🎬 Walked example #1 — /haipipe-end "deploy this Endpoint_Set to sagemaker" ────
@@ -175,7 +195,7 @@ common pattern:
                      design-kitchen / review / explain
    /haipipe-nn       dashboard / review / generate / test
    /haipipe-end      package / design / test (local) / review /
-                     deploy / monitor / teardown
+                     develop / deploy / monitor / teardown
    /haipipe-project  new / review / summarize / inventory /
                      overview / organize
 
@@ -189,4 +209,6 @@ common pattern:
    2. Verb unclear, axis clear           → default to `dashboard`.
    3. Verb clear, axis unclear           → ASK axis (don't guess).
    4. Multi-axis request ("review L1-L3") → dispatch sequentially.
-   5. /haipipe-end deploy without target → ASK target.
+   5. /haipipe-end deploy without target  → ASK target.
+   6. /haipipe-end develop without target → ASK target.
+   7. /haipipe-end <target> alone         → deploy ref-only summary + soft-ask "did you mean develop?"

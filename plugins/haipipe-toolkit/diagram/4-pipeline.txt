@@ -22,8 +22,15 @@ the other 6 stages are owned by an umbrella as labelled below.
                             v                   v                   v                   v                   v                            v
                        SourceFn /          RecordFn /           CaseFn               TfmFn /             Algorithm                  Endpoint_Set
                        HumanFn             TriggerFn                                 SplitFn             + Tuner                    artifact
-                                                                                                         + Instance                 + 4 deploy
-                                                                                                         + ModelSet                  targets
+                                                                                                         + Instance                 + 3 develop
+                                                                                                         + ModelSet                  + 4 deploy
+                                                                                                                                      targets
+
+  🏗️ S5 → S6 build paths (the "develop" axis)
+  --------------------------------------------
+     local      /haipipe-end develop local       → /haipipe-nn modelset run + endpointset package
+     sagemaker  /haipipe-end develop sagemaker   → platform-sagemaker-training Pipeline + RegisterModel
+     databricks /haipipe-end develop databricks  → ⚠️ DEFERRED (no platform repo yet)
 
 
 ─§ 🗂️ Stage → specialist mapping ──────────────────────────
@@ -40,11 +47,14 @@ the other 6 stages are owned by an umbrella as labelled below.
   | S3    | CaseStore      | CaseFn                         | haipipe-data-case          |
   | S4    | AIDataStore    | TfmFn, SplitFn                 | haipipe-data-aidata        |
   | S5    | ModelInstance  | Algorithm/Tuner/Instance/Set   | haipipe-nn-{algo,...}      |
-  | S6    | EndpointStore  | Endpoint_Set + deploy          | haipipe-end-endpointset    |
+  | S6    | EndpointStore  | Endpoint_Set + develop +deploy | haipipe-end-endpointset    |
   |       |                |                                | + per-Fn-type:             |
   |       |                |                                |   -{meta,trig,post,        |
   |       |                |                                |     src2input,input2src}   |
-  |       |                |                                | + per-deploy:              |
+  |       |                |                                | + per-develop (BUILD):     |
+  |       |                |                                |   -develop-{sagemaker,     |
+  |       |                |                                |     databricks,local}      |
+  |       |                |                                | + per-deploy (SERVE):      |
   |       |                |                                |   -deploy-{sagemaker,      |
   |       |                |                                |     databricks,local,      |
   |       |                |                                |     mlflow}                |
@@ -99,5 +109,6 @@ the other 6 stages are owned by an umbrella as labelled below.
   📥 0-Raw → 📊 1-Source → 📝 2-Rec → 📂 3-Case → 🎲 4-AIData → 🧠 5-Model → 🚀 6-Endpoint
    input    └────────── /haipipe-data (S1-S4) ──────────┘  └ /haipipe-nn ┘ └ /haipipe-end ┘
                                                                               (artifact +
-                                                                               4 targets)
+                                                                               3 develop +
+                                                                               4 deploy targets)
    subject ─ /haipipe-subject reuses S0-S2 only (filtered view of global stores)
