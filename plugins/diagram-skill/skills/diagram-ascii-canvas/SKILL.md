@@ -48,8 +48,8 @@ bin/txt-to-canvas.py path/to/diagrams/
 # explicit files + custom output
 bin/txt-to-canvas.py a.txt b.txt c.txt --out path/to/big.excalidraw
 
-# tweak gutters (px)
-bin/txt-to-canvas.py path/to/diagrams/ --col-gutter 120 --row-gutter 60
+# tweak gutters (px) — defaults: col 300, row 50
+bin/txt-to-canvas.py path/to/diagrams/ --col-gutter 500 --row-gutter 60
 
 # disable section splitting (one PNG per file)
 bin/txt-to-canvas.py path/to/diagrams/ --blank-lines 0
@@ -116,7 +116,7 @@ How it works: Excalidraw's web app accepts a `#url=<remote .excalidraw>` hash pa
 2. **Measure each PNG** to get its native width/height.
 3. **Assemble Excalidraw JSON**:
    - Each PNG → one `image` element + a `text` element above it as a title.
-   - Lay out in a grid (`--cols`, default 3) with 80px gutter; rows align to the tallest image in that row.
+   - Layout is **one column per source `.txt` file** (sections stacked top→bottom inside each column). Columns are spaced by `--col-gutter` (default 300px); sections inside a column by `--row-gutter` (default 50px). Columns are not height-aligned — easier to scan than a strict grid.
    - PNG bytes → base64 → `files` dict keyed by SHA-1.
 4. **Write `canvas.excalidraw`** — opens directly in Excalidraw.
 

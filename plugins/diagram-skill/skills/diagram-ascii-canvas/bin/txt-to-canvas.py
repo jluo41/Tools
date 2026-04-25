@@ -181,7 +181,7 @@ def render_sections_to_pngs(
 
 def make_excalidraw(
     items: list[tuple[Path, int, str, Path]],
-    col_gutter: int = 100,
+    col_gutter: int = 300,
     row_gutter: int = 50,
     section_title_h: int = 22,
     file_header_h: int = 44,
@@ -333,8 +333,8 @@ def main():
     ap.add_argument(
         "--col-gutter",
         type=int,
-        default=100,
-        help="Horizontal gap between file columns in px (default 100)",
+        default=300,
+        help="Horizontal gap between file columns in px (default 300)",
     )
     ap.add_argument(
         "--row-gutter",
