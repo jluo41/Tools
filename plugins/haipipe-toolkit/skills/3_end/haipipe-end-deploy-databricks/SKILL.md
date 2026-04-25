@@ -1,6 +1,6 @@
 ---
-name: haipipe-end-databricks
-description: "Databricks Model Serving target specialist for haipipe-end. Wraps an Endpoint_Set into MLflow pyfunc + Unity Catalog model, deploys to Databricks Model Serving, runs live smoke tests, monitors, and tears down. Reads Endpoint_Sets produced by haipipe-end-endpointset; never modifies them. Called by /haipipe-end orchestrator when target is databricks."
+name: haipipe-end-deploy-databricks
+description: "Databricks Model Serving deploy specialist for haipipe-end. Wraps an Endpoint_Set into MLflow pyfunc + Unity Catalog model, deploys to Databricks Model Serving, runs live smoke tests, monitors, and tears down. Backed by platform-databrick-inference/. Reads Endpoint_Sets produced by haipipe-end-endpointset; never modifies them. Called by /haipipe-end orchestrator when deploy target is databricks."
 argument-hint: [function] [endpoint_set_or_id] [args...]
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 ---

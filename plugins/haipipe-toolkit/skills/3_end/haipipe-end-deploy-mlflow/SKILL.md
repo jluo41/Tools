@@ -1,6 +1,6 @@
 ---
-name: haipipe-end-mlflow
-description: "MLflow target specialist for haipipe-end. Registers an Endpoint_Set into an MLflow Model Registry and serves it via `mlflow models serve` or as the source artifact for downstream MLflow-aware platforms (Databricks, SageMaker MLflow). Reads Endpoint_Sets produced by haipipe-end-endpointset; never modifies them. Called by /haipipe-end orchestrator when target is mlflow."
+name: haipipe-end-deploy-mlflow
+description: "MLflow deploy specialist for haipipe-end. STATUS: DEFERRED — no platform-mlflow-inference repo backs this yet; SKILL.md kept as a placeholder. Would register an Endpoint_Set into an MLflow Model Registry and serve via `mlflow models serve`. Reads Endpoint_Sets produced by haipipe-end-endpointset; never modifies them. The umbrella's no-args dashboard skips this skill while deferred."
 argument-hint: [function] [endpoint_set_or_id] [args...]
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 ---

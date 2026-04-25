@@ -36,7 +36,7 @@ Tier 1 — user-facing umbrellas
 |---|---|---|
 | `/haipipe-data` | 1-4 (project-wide) | SourceFn, RecordFn, CaseFn, TfmFn, SplitFn — pipeline runs, dashboards, reviews. Routes by stage. |
 | `/haipipe-nn` | 5 | mlpredictor / tsforecast / tefm / tediffusion / bandit; algorithm / tuner / instance / modelset layers. Routes by layer. |
-| `/haipipe-end` | 6 | Endpoint_Set artifact + deploy targets (SageMaker, Databricks, Flask, MLflow). Routes by artifact-vs-target. |
+| `/haipipe-end` | 6 | 3-axis router: per-Fn-type (meta/trig/post/src2input/input2src), artifact-as-whole (endpointset), and deploy target (sagemaker/databricks/local/mlflow). |
 | `/haipipe-project` | — | Project scaffold / review / reorganize. Routes by risk profile (build / read / modify). |
 | `/haipipe-subject` | 0-2 (per subject) | Per-subject `0-RawDataStore`, `1-SourceStore`, `2-RecStore`. Standalone — not decomposed. |
 
@@ -73,12 +73,20 @@ skills/
 │   └── haipipe-nn-modelset/         L4 (ModelSet / pipeline composition)
 │
 ├── 3_end/
-│   ├── haipipe-end/                 (umbrella)
-│   ├── haipipe-end-endpointset/     artifact lifecycle (package/design/test/review)
-│   ├── haipipe-end-sagemaker/       target: AWS SageMaker
-│   ├── haipipe-end-databricks/      target: Databricks Model Serving
-│   ├── haipipe-end-flask/           target: local Flask / FastAPI HTTP
-│   └── haipipe-end-mlflow/          target: MLflow registry + serve
+│   ├── haipipe-end/                  (umbrella — 3-axis router)
+│   │
+│   ├── haipipe-end-endpointset/      artifact-as-whole: package, test, review, dashboard
+│   │
+│   ├── haipipe-end-meta/             per-Fn-type: MetaFn (model metadata)
+│   ├── haipipe-end-trig/             per-Fn-type: TrigFn (trigger detection)
+│   ├── haipipe-end-post/             per-Fn-type: PostFn (response formatting)
+│   ├── haipipe-end-src2input/        per-Fn-type: Src2InputFn (record → payload)
+│   ├── haipipe-end-input2src/        per-Fn-type: Input2SrcFn (payload → record)
+│   │
+│   ├── haipipe-end-deploy-sagemaker/   deploy → AWS SageMaker
+│   ├── haipipe-end-deploy-databricks/  deploy → Databricks Model Serving
+│   ├── haipipe-end-deploy-local/       deploy → local (Flask / FastAPI / Docker)
+│   └── haipipe-end-deploy-mlflow/      deploy → MLflow registry + serve  (DEFERRED)
 │
 ├── 4_project/
 │   ├── haipipe-project/             (umbrella)
@@ -144,7 +152,7 @@ Decomposition axes
 |---|---|---|
 | `/haipipe-data` | pipeline stage | 4 stages with distinct concepts and ref content |
 | `/haipipe-nn` | model layer | 4 layers with distinct contracts |
-| `/haipipe-end` | artifact vs. target | one artifact (Endpoint_Set) consumed by N target deployers |
+| `/haipipe-end` | Fn-type / artifact / deploy-target | 5 inference Fn-types (meta/trig/post/src2input/input2src), 1 artifact-as-whole (endpointset), 4 deploy targets (sagemaker/databricks/local/mlflow); umbrella picks axis from intent |
 | `/haipipe-project` | risk profile | build / read / modify need different `allowed-tools` |
 | `/haipipe-subject` | — | content too small; per-subject semantic is the whole point |
 
