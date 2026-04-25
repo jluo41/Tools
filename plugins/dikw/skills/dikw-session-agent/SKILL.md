@@ -340,7 +340,11 @@ Field rules:
 - `plan-v{N}` — current plan version (matches `plan-raw-v{N}.yaml`).
 - `{Phase}-{Step}` — capitalized phase + step: `Plan-Task`, `Plan-Gate`, `D-Task`, `D-Gate`, `I-Task`, `I-Gate`, `K-Task`, `K-Gate`, `W-Task`, `W-Gate`, `Report-Task`, `Report-Gate`, or terminal `Done`.
 - `{task|gate}` — for multi-task phases during Task: `i/n task_name`. For single-task phases (Plan, Report): the artifact (`writing plan-raw-v1`, `final_output.md`). At gates: the gate id (`G-D`, `G-plan`, …).
-- `{status}` — only at gates: `awaiting` / `approved` / `revise→plan` / `done`. Task steps omit it. Terminal phase: `Done` line has no status.
+- `{status}` — only at gates. Vocabulary depends on `unattended_timeout`:
+    - 🧑 attended (`null`):  `awaiting` → `approved` / `revise→plan` / `done`
+    - ⏳ timed (`N>0`):       `awaiting (auto in {N}s)` → `approved` / `revise→plan` / `done` / `auto-accepted`
+    - 🤖 unattended (`0`):    `auto-accepted` (no awaiting state — gate accepts immediately)
+  `auto-accepted` always means "proposal applied verbatim because no human reply arrived". The proposal's actual outcome (approve / revise / done) is still recorded in `gates[]`. Task steps omit `{status}`. Terminal phase: `Done` line has no status.
 
 Examples (abstract):
 ```
