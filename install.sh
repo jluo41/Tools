@@ -74,37 +74,73 @@ fi
 
 echo ""
 echo "Done! Available plugins:"
-echo "  logseq         - LogSeq markdown, queries, templates, whiteboards"
-echo "  haipipe        - haipipe pipeline: per-subject data (0-2), data pipeline (1-4), NN (5), endpoints (6), projects"
-echo "  chronicle      - Email indexing from MS365 Outlook"
-echo "  diagram-skill  - Visual artifacts: diagram-ascii, diagram-drawio, diagram-excalidraw, progress-log"
+echo "  ccskill           - Anthropic-bundled skills (skill-creator, docx, pptx, pdf, ...)"
+echo "  chronicle         - Email indexing from MS365 Outlook"
+echo "  diagram-skill     - Visual artifacts: diagram-ascii, diagram-ascii-canvas, diagram-drawio, diagram-excalidraw, progress-log"
+echo "  dikw              - DIKW session orchestrator (data/info/knowledge/wisdom + plan/gate/report)"
+echo "  haipipe           - haipipe umbrella commands (data, nn, end, project, subject)"
+echo "  haipipe-toolkit   - haipipe specialists grouped by stage (1_data, 2_nn, 3_end, 4_project, 5_subject)"
+echo "  health            - Health logging (meal-cam-logger, whoop-connect)"
+echo "  logseq            - LogSeq markdown, queries, templates, whiteboards"
+echo "  research-toolkit  - Research workflow stages (00_meta ... 13_venue + _workflows)"
+echo "  subjective-label  - Subjective-label iterator (init, iterate, scale, status, validate)"
 echo ""
-echo "Install in Claude Code with:"
-echo "  /plugin install logseq@jluo41-tools"
+echo "Install in Claude Code with e.g.:"
+echo "  /plugin install dikw@jluo41-tools"
 echo "  /plugin install haipipe@jluo41-tools"
-echo "  /plugin install chronicle@jluo41-tools"
+echo "  /plugin install haipipe-toolkit@jluo41-tools"
 echo "  /plugin install diagram-skill@jluo41-tools"
 
 # ─── 2. Global skill installation (--global) ─────────────────────────────────
+
+# Enumerate every skill dir (containing SKILL.md) under a plugin's skills/ tree,
+# at most two levels deep so nested layouts (skills/<category>/<skill>) work.
+# Prints one line per skill: "<absolute_skill_dir>\t<plugin_name>\t<rel_path_from_plugin_skills>"
+enumerate_skills() {
+    local plugins_root="$1"
+    for plugin_dir in "$plugins_root"/*/; do
+        local plugin_name skills_root
+        plugin_name=$(basename "$plugin_dir")
+        skills_root="$plugin_dir/skills"
+        [ -d "$skills_root" ] || continue
+        for entry in "$skills_root"/*/; do
+            [ -d "$entry" ] || continue
+            local entry_name
+            entry_name=$(basename "$entry")
+            if [ -f "$entry/SKILL.md" ]; then
+                printf '%s\t%s\t%s\n' "${entry%/}" "$plugin_name" "$entry_name"
+            else
+                # Treat as category dir; descend one more level
+                for nested in "$entry"*/; do
+                    [ -d "$nested" ] || continue
+                    if [ -f "$nested/SKILL.md" ]; then
+                        local nested_name
+                        nested_name=$(basename "$nested")
+                        printf '%s\t%s\t%s/%s\n' "${nested%/}" "$plugin_name" "$entry_name" "$nested_name"
+                    fi
+                done
+            fi
+        done
+    done
+}
 
 if [ "$DO_GLOBAL" = true ]; then
     echo ""
     echo "Installing skills globally to $CLAUDE_DIR/skills/..."
     mkdir -p "$CLAUDE_DIR/skills"
 
-    for plugin_dir in "$SCRIPT_DIR"/plugins/*/; do
-        if [ -d "$plugin_dir/skills" ]; then
-            for skill_dir in "$plugin_dir"/skills/*/; do
-                skill_name=$(basename "$skill_dir")
-                target="$CLAUDE_DIR/skills/$skill_name"
-                if [ -L "$target" ]; then
-                    rm "$target"
-                fi
-                ln -s "$skill_dir" "$target"
-                echo "  $skill_name -> $target"
-            done
+    while IFS=$'\t' read -r skill_path plugin_name rel_path; do
+        skill_name=$(basename "$skill_path")
+        target="$CLAUDE_DIR/skills/$skill_name"
+        if [ -L "$target" ]; then
+            rm "$target"
+        elif [ -e "$target" ]; then
+            echo "  . $skill_name (kept, not a symlink)"
+            continue
         fi
-    done
+        ln -s "$skill_path" "$target"
+        echo "  $skill_name -> $target"
+    done < <(enumerate_skills "$SCRIPT_DIR/plugins")
 
     echo "  All skills installed globally."
 fi
@@ -118,29 +154,25 @@ if [ -n "$PROJECT_PATH" ]; then
     mkdir -p "$PROJECT_SKILLS"
 
     # Compute relative path from .claude/skills/ back to Tools/plugins/
-    # e.g., ../../Tools/plugins/research/skills/foo
+    # e.g., ../../Tools/plugins
     TOOLS_REL="$(python3 -c "import os.path; print(os.path.relpath('$SCRIPT_DIR/plugins', '$PROJECT_SKILLS'))")"
 
     installed=0
-    for plugin_dir in "$SCRIPT_DIR"/plugins/*/; do
-        plugin_name=$(basename "$plugin_dir")
-        [ -d "$plugin_dir/skills" ] || continue
-        for skill_dir in "$plugin_dir"/skills/*/; do
-            skill_name=$(basename "$skill_dir")
-            target="$PROJECT_SKILLS/$skill_name"
+    while IFS=$'\t' read -r skill_path plugin_name rel_path; do
+        skill_name=$(basename "$skill_path")
+        target="$PROJECT_SKILLS/$skill_name"
 
-            # Skip non-symlink entries (real dirs like frontend-slides)
-            if [ -e "$target" ] && [ ! -L "$target" ]; then
-                echo "  . $skill_name (kept, not a symlink)"
-                continue
-            fi
+        # Skip non-symlink entries (real dirs the user owns)
+        if [ -e "$target" ] && [ ! -L "$target" ]; then
+            echo "  . $skill_name (kept, not a symlink)"
+            continue
+        fi
 
-            # Create or update symlink
-            [ -L "$target" ] && rm "$target"
-            ln -s "$TOOLS_REL/$plugin_name/skills/$skill_name" "$target"
-            installed=$((installed + 1))
-        done
-    done
+        # Create or update symlink (relative, so the workspace can move)
+        [ -L "$target" ] && rm "$target"
+        ln -s "$TOOLS_REL/$plugin_name/skills/$rel_path" "$target"
+        installed=$((installed + 1))
+    done < <(enumerate_skills "$SCRIPT_DIR/plugins")
 
     # Clean up stale symlinks (point to removed skills)
     cleaned=0
