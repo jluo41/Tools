@@ -1,0 +1,149 @@
+🧪 Data Contract Split — Project-Wide Build vs. Per-Subject Inference
+======================================================================
+
+The pipeline serves two purposes that share early stages but diverge.
+Stages 0-2 are reused per-subject; stages 3-6 only exist project-wide.
+
+Key insight — a per-subject folder is NOT a parallel build. It's a
+VIEW of the global store, produced by running the SAME pipeline with
+a subject filter.
+
+
+─§ |                  🎯 TRAIN-TIME (project-wide build)                 | ────
+
++--------------------------------------------------------------------+
+|                  🎯 TRAIN-TIME (project-wide build)                 |
+|                  used to build deployable models                   |
++--------------------------------------------------------------------+
+
+  📂 _WorkSpace/                       (project-level stores)
+  │
+  ├── 0-RawDataStore/{dataset}/*       whole dataset
+  ├── 1-SourceStore/{SourceSet}/*      all subjects combined         ┐
+  ├── 2-RecStore/{RecSet}/*            all records                   │
+  ├── 3-CaseStore/{CaseSet}/*          cohort cases                  │ /haipipe-data
+  ├── 4-AIDataStore/{AIData}/*         training tensors              ┘  (S1-S4)
+  │
+  ├── 5-ModelInstanceStore/*           trained weights               ─ /haipipe-nn
+  │
+  └── 6-EndpointStore/*                deployable artifacts          ─ /haipipe-end
+                                              │                         (artifact +
+                                              v                          4 targets)
+                                       ✅ deployable endpoint
+
+
+─§ |              🧑‍⚕️ INFERENCE-TIME (one subject at a time)              | ────
+
++--------------------------------------------------------------------+
+|              🧑‍⚕️ INFERENCE-TIME (one subject at a time)              |
+|              what happens when the endpoint serves a real user      |
++--------------------------------------------------------------------+
+
+  📂 _WorkSpace/A-User-Store/UserGroup-{DatasetTag}/Subject-{id}/
+  │
+  ├── 0-RawDataStore/    one subject's raw slice  (FLAT)        ┐
+  ├── 1-SourceStore/     one subject's source rows (FLAT)       │ /haipipe-subject
+  ├── 2-RecStore/        one subject's record(s)  (FLAT)        │
+  └── manifest.yaml      provenance: source_set, rec_set, ...   ┘
+                                              │
+                                              v
+                                       🌐 calls deployed endpoint
+                                              │
+                                              v
+                                       📊 prediction returned
+
+
+─§ 🏗️ How the per-subject folder is BUILT (5-step build) ────
+
+🏗️ How the per-subject folder is BUILT (5-step build)
+------------------------------------------------------
+
+  Subject folder = global pipeline run with subject_id filter.
+  Same code, smaller scope, same outputs (sliced).
+
+  +-----------+--------------------------------------------------+
+  | Step      | What happens                                     |
+  +-----------+--------------------------------------------------+
+  | 1 mkdir   | Create Subject-{DatasetTag}-{id}/ folder         |
+  | 2 raw     | Copy/filter raw files → 0-RawDataStore/          |
+  | 3 source  | fn_source.run() with subject filter              |
+  |           |    → 1-SourceStore/                              |
+  | 4 record  | fn_record.run() against filtered source          |
+  |           |    → 2-RecStore/                                 |
+  | 5 manifest| Write manifest.yaml with full provenance         |
+  +-----------+--------------------------------------------------+
+
+  Idempotent: re-running with fresh manifest = no-op.
+  Reproducible: rm -rf + rebuild = equivalent folder.
+
+
+─§ 📐 Flat-layout rule (build script strips wrapper segments) ────
+
+📐 Flat-layout rule (build script strips wrapper segments)
+-----------------------------------------------------------
+
+  Project-wide layout (KEPT in global stores):
+     1-SourceStore/OhioT1DM/@OhioT1DMxmlv250302/CGM.parquet
+     2-RecStore/OhioT1DM_v0RecSet/@iXnY/Record-HmPtt.CGM5Min/...
+
+  Per-subject layout (FLATTENED):
+     Subject-OhioT1DM-559/1-SourceStore/CGM.parquet
+     Subject-OhioT1DM-559/2-RecStore/Record-HmPtt.CGM5Min/...
+
+  Stripped wrapper segments:
+     ✂️ dataset-name wrappers inside 1-SourceStore/
+     ✂️ rec-set wrappers inside 2-RecStore/  (OhioT1DM_v0RecSet/)
+     ✂️ partition wrappers @iXnY/  (subject lives in only one anyway)
+     ✂️ cohort nesting in 0-RawDataStore/
+
+  All stripped names preserved in manifest.yaml under:
+     source_set, rec_set, rec_partitions_found_in
+  → so you can always trace a subject file back to its global origin.
+
+
+─§ 💡 Why split this way? ──────────────────────────────────
+
+💡 Why split this way?
+-----------------------
+
+  ✅ Endpoint doesn't need 4-AIDataStore — it needs ONE record.
+  ✅ Subject doesn't need to re-train — it consumes the deployed model.
+  ✅ Stages 3-6 are model-development only, irrelevant at inference.
+  ✅ Per-subject folder is a VIEW with provenance, not a fork.
+
+  Train-time   ──  consumes 1000s of subjects, builds the model
+  Inference    ──  serves 1 subject at a time, calls the endpoint
+
+
+─§ 🏷️ Skill ownership of stages 0-2 (overlap is intentional) ────
+
+🏷️ Skill ownership of stages 0-2 (overlap is intentional)
+----------------------------------------------------------
+
+  +-------+--------------------------------------+----------------+
+  | Stage | Project-wide context                 | Per-subject    |
+  +-------+--------------------------------------+----------------+
+  | S0    | (input — not owned)                  | /haipipe-      |
+  | S1    | /haipipe-data-source                 |  subject       |
+  | S2    | /haipipe-data-record                 |  (all 3 inline)|
+  +-------+--------------------------------------+----------------+
+  | S3-S6 | /haipipe-data-case / -aidata,        | (DOES NOT      |
+  |       | /haipipe-nn-*, /haipipe-end-*        |  EXIST per-    |
+  |       |                                      |  subject)      |
+  +-------+--------------------------------------+----------------+
+
+  Same stage numbers; different SCOPE and CONTRACT. The difference
+  shows up in path: project-wide is `_WorkSpace/{N}-Store/`, per-
+  subject is `_WorkSpace/A-User-Store/UserGroup-*/Subject-*/{N}-Store/`.
+
+
+─§ 📌 Hard rules for per-subject folders ───────────────────
+
+📌 Hard rules for per-subject folders
+--------------------------------------
+
+  ❌ NEVER create stages 3-6 inside a Subject-*/ folder.
+  ✅ ALWAYS dataset-qualify the folder: Subject-{DatasetTag}-{id}.
+  ✅ ALWAYS write manifest.yaml — it's the provenance record.
+  ✅ The build SCRIPT is the source of truth; never hand-curate.
+  ✅ rm -rf Subject-*/  is a safe privacy delete (re-buildable).

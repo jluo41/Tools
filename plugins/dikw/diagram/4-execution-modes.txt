@@ -1,0 +1,128 @@
+🔀  DIKW — Execution Modes:  Inline  vs  --agents
+==================================================
+
+  Same state machine. ✅  Same artifacts. ✅  Different WHO runs each task.
+
+
+─§ 💬 Inline mode  (default)              🧩 Agent mode  (--agents) ────
+
+  💬 Inline mode  (default)              🧩 Agent mode  (--agents)
+  --------------------------             --------------------------
+
+   /dikw-session                          /dikw-session-agent
+        |                                      |
+        |  for task in pending:                |  for task in pending:
+        v                                      v
+   +-----------------+               +-------------------+
+   |  🔍 Skill(      |               |  🤖 Agent(        |
+   |    dikw-context)|               |    dikw-<phase>-  |
+   |                 |               |    executor)      |
+   +-----------------+               |  ┌──────────────┐ |
+        |                            |  │ Step 1️⃣      │ |
+        | READY ✅                   |  │ 🔍 Skill(    │ |
+        v                            |  │ dikw-context)│ |
+   +-----------------+               |  │ ↓ READY      │ |
+   |  🔧 Skill(      |               |  │ Step 2️⃣      │ |
+   |    dikw-<phase>)|               |  │ 🔧 Skill(    │ |
+   |                 |               |  │ dikw-<phase>)│ |
+   |  runs in MAIN   |               |  └──────────────┘ |
+   |  conversation   |               |  isolated subagent|
+   +-----------------+               +-------------------+
+        |                                      |
+        v                                      v
+   📂 insights/...                        📂 insights/...
+
+   ✅ output visible in transcript       ✅ context isolation
+   ✅ easy to iterate mid-phase          ✅ optional parallel dispatch
+   ✅ best for first runs / debug        ✅ best for long --auto runs
+
+   🔍  Context check is identical in both modes — every agent
+       invokes /dikw-context as Step 1 and forwards the verdict
+       (READY / BLOCKED / SKIP) without rewriting the contract.
+
+
+─§ 🎯  Mode picker ─────────────────────────────────────────
+
+  🎯  Mode picker
+  ---------------
+
+  +------------------------------------------+-------------------+
+  | If you are ...                           | Use               |
+  +------------------------------------------+-------------------+
+  | 🐛 Developing or debugging task skills   | 💬 inline         |
+  | 💬 Short interactive session             | 💬 inline         |
+  | 🆕 First run on a new dataset            | 💬 inline         |
+  | 🤖 Long --auto run, big D/I outputs      | 🧩 --agents       |
+  | ⚡ D/I have 2-3 independent tasks        | 🧩 --agents (par) |
+  | 🏭 Repeatable production pipeline        | 🧩 --agents       |
+  +------------------------------------------+-------------------+
+
+
+─§ 🤖  The agents  (used only by /dikw-session-agent) ──────
+
+  🤖  The agents  (used only by /dikw-session-agent)
+  ---------------------------------------------------
+
+  +-----------------------------+-------+----------+-------------------+
+  | Agent                       | Phase | Has Bash | Calls             |
+  +-----------------------------+-------+----------+-------------------+
+  | dikw-planner                | 📋    |    no    | 🔍 ctx, 📋 plan  |
+  | dikw-data-executor          | 📊    |   yes    | 🔍 ctx, 📊 data  |
+  | dikw-information-executor   | 📈    |   yes    | 🔍 ctx, 📈 info  |
+  | dikw-knowledge-executor     | 🧠    |    no    | 🔍 ctx, 🧠 know  |
+  | dikw-wisdom-executor        | 🎯    |    no    | 🔍 ctx, 🎯 wisd  |
+  +-----------------------------+-------+----------+-------------------+
+
+  🔒 No agent may mutate:
+      💾 DIKW_STATE.json  |  📄 manifest.yaml
+      📄 plan-raw-*.yaml  |  📄 gate files (G-*.md)
+
+  State ownership belongs EXCLUSIVELY to the 🤖 orchestrator session.
+
+
+─§ ✅  What is identical across modes ──────────────────────
+
+  ✅  What is identical across modes
+  ------------------------------------
+
+  ✅  💾 on-disk artifacts  (report.md, analysis.py, plan-raw-v{N}.yaml)
+  ✅  🔄 state machine + phase order
+  ✅  🚦 gate contract + 3-outcome vocabulary
+  ✅  💾 DIKW_STATE.json schema
+  ✅  ⚠️  MAX_REVISIONS handling
+  ✅  📣 banner format
+  ✅  ♻️  resume logic
+
+
+─§ ❗  What differs ────────────────────────────────────────
+
+  ❗  What differs
+  -----------------
+
+  ❗  WHO runs task code:  💬 main convo  vs  🧩 isolated subagent
+  ❗  parallelism:  🧩 agent mode can dispatch multiple tasks per turn
+  ❗  context:  💬 inline shows everything; 🧩 agents keep main lean
+
+
+─§ ⚠️  Maintenance discipline ─────────────────────────────
+
+  ⚠️  Maintenance discipline
+  --------------------------
+
+  💬 /dikw-session  and  🧩 /dikw-session-agent  are PARALLEL
+  implementations of one state machine.  Any change to:
+
+      🔄 state machine logic    |  💾 DIKW_STATE.json schema
+      🚦 gate contract          |  ⚠️  MAX_REVISIONS handling
+      📣 banner format          |  🔍 pre-gate check
+      ♻️  resume logic           |  ...
+
+  must be applied to BOTH files — otherwise the two modes drift.
+
+  📋 Release procedure:
+    1. 🔁 run both on the same snapshot
+    2. 🔍 diff the insights/ tree structure (file names + schema)
+    3. ⚠️  if structure drifts -> one file has fallen behind
+
+  📝 The report phase ALWAYS runs inline (even in --agents mode), so
+  the final deliverable stays in main context for follow-up questions.

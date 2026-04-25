@@ -1,0 +1,192 @@
+🔀 Umbrella Intent Routing — How a Command Becomes a Specialist Call
+======================================================================
+
+Each umbrella has its OWN routing logic on its OWN axis. They share a
+common pattern:
+
+   parse args → resolve (axis-value, verb) → choose dispatch mode → emit
+
+
+─§ 🛠️ Pattern (applies to data / nn / project) ────────────
+
+🛠️ Pattern (applies to data / nn / project)
+---------------------------------------------
+
+   Step 1   Parse $ARGUMENTS into tokens.
+
+   Step 2   Resolve axis-value (stage/layer/risk):
+              - first positional matches axis alias?  → axis = that
+              - else first positional matches verb?   → verb = that
+              - scan keyword maps for unmatched tokens
+
+   Step 3   Decide dispatch mode:
+              no args                  → no-args dashboard / overview
+              axis-value only          → ref-only summary (specialist)
+              both axis + verb         → SINGLE DISPATCH
+              verb only (no axis)      → ASK user (don't guess)
+              special inline keyword   → INLINE (umbrella handles it)
+
+   Step 4   If dispatching:
+              Skill("haipipe-X-<axis-value>", args="<verb> <rest>")
+
+   Step 5   Capture structured tail (status/summary/artifacts/next),
+            present to user. If status != ok → stop chaining.
+
+
+─§ 🚀 Special routing — /haipipe-end (3-axis: Fn-type / artifact / deploy) ────
+
+🚀 Special routing — /haipipe-end (3-axis: Fn-type / artifact / deploy)
+------------------------------------------------------------------------
+
+   Step 1   Parse $ARGUMENTS.
+
+   Step 2   Fn-type keyword?
+              MetaFn | model metadata | meta            → -meta
+              TrigFn | trigger | gate | trig            → -trig
+              PostFn | response format | post           → -post
+              Src2InputFn | record-to-payload           → -src2input
+              Input2SrcFn | payload-to-record           → -input2src
+              FOUND → dispatch to that per-Fn-type specialist.
+
+   Step 3   Deploy target keyword?
+              sagemaker | aws | ECR | model.tar.gz      → -deploy-sagemaker
+              databricks | unity catalog | serving      → -deploy-databricks
+              local | flask | fastapi | localhost       → -deploy-local
+              mlflow registry | mlflow serve | pyfunc   → -deploy-mlflow
+              FOUND → dispatch to that deploy specialist.
+
+   Step 4   Verb 'deploy' alone (no target)?
+              ASK target. Don't guess.
+
+   Step 5   Artifact-as-whole verb?
+              package | test (local) | review-overall  → -endpointset
+              dashboard (no axis specified)            → -endpointset
+              FOUND → dispatch to -endpointset.
+
+   Step 6   Verb 'review <id>' with no fn-type?
+              <id> looks like a live deploy id  → resolve target via
+                                                   local registries,
+                                                   dispatch to that
+                                                   -deploy-<target>.
+
+   Step 7   No args → CROSS-SCOPE DASHBOARD (parallel fan-out):
+              -endpointset + -deploy-{sagemaker,databricks,local}
+              (-deploy-mlflow excluded while DEFERRED)
+
+   Step 8   Dispatch:  Skill("haipipe-end-<X>", args=...)
+
+
+─§ 🎬 Walked example #1 — /haipipe-end "deploy this Endpoint_Set to sagemaker" ────
+
+🎬 Walked example #1 — /haipipe-end "deploy this Endpoint_Set to sagemaker"
+----------------------------------------------------------------------------
+
+   🧑 user types the command
+        │
+        v
+   ┌──────────────────────────────────────────────────────────┐
+   │ 🎯 haipipe-end (umbrella)                                │
+   │                                                          │
+   │  Step 3 — target keyword "sagemaker" detected           │
+   │  Step 8 — dispatch                                       │
+   │     Skill("haipipe-end-deploy-sagemaker",               │
+   │           args="deploy <endpoint_set_path>")             │
+   └──────────────────────────────────────────────────────────┘
+        │
+        v
+   ┌──────────────────────────────────────────────────────────┐
+   │ 🔧 haipipe-end-deploy-sagemaker (specialist)            │
+   │                                                          │
+   │  - reads own ref/concepts.md (SageMaker target rules)   │
+   │  - reads ../haipipe-end-endpointset/ref/...             │
+   │      (READ-ONLY: artifact contract is owned there)      │
+   │  - performs deploy procedure                             │
+   │                                                          │
+   │  returns:                                                │
+   │     status:    ok                                        │
+   │     summary:   Deployed Endpoint_Set X to SageMaker...  │
+   │     artifacts: [endpoint_id, ECR uri, log group]        │
+   │     next:      /haipipe-end test <endpoint_id>          │
+   └──────────────────────────────────────────────────────────┘
+        │
+        v
+   🎯 umbrella parses tail, surfaces to 🧑 user
+
+
+─§ 🎬 Walked example #2 — /haipipe-data (no args) → cross-stage dashboard ────
+
+🎬 Walked example #2 — /haipipe-data (no args) → cross-stage dashboard
+-----------------------------------------------------------------------
+
+   🧑 user: /haipipe-data
+        │
+        v
+   ┌──────────────────────────────────────────────────────────┐
+   │ 🎯 haipipe-data (umbrella) — Mode 2: parallel fan-out   │
+   │                                                          │
+   │   ┌──Skill("haipipe-data-source",  "dashboard")─┐       │
+   │   ├──Skill("haipipe-data-record",  "dashboard")─┤       │
+   │   ├──Skill("haipipe-data-case",    "dashboard")─┤       │
+   │   └──Skill("haipipe-data-aidata",  "dashboard")─┘       │
+   │            (single assistant message, parallel)          │
+   │                                                          │
+   │  concatenates the 4 tails, emits one cross-stage report  │
+   └──────────────────────────────────────────────────────────┘
+
+
+─§ 🎬 Walked example #3 — /haipipe-data explain → INLINE ────
+
+🎬 Walked example #3 — /haipipe-data explain → INLINE
+------------------------------------------------------
+
+   🧑 user: /haipipe-data explain "what is a CaseFn?"
+        │
+        v
+   ┌──────────────────────────────────────────────────────────┐
+   │ 🎯 haipipe-data (umbrella) — Mode 3: inline             │
+   │                                                          │
+   │  - reads ref/0-overview.md (cross-stage explainer)      │
+   │  - if question references a stage, also reads that      │
+   │    specialist's ref/concepts.md                          │
+   │  - answers directly; cites which ref docs informed it   │
+   │                                                          │
+   │  No Skill() call. No specialist tail.                   │
+   └──────────────────────────────────────────────────────────┘
+
+
+─§ 🧩 Argument flexibility (all umbrellas) ─────────────────
+
+🧩 Argument flexibility (all umbrellas)
+----------------------------------------
+
+   Positional         /haipipe-data source cook
+   Flexible order     /haipipe-data cook source
+   Numeric alias      /haipipe-data 1 cook
+   Numbered alias     /haipipe-data 1-source cook
+   Free-form NL       /haipipe-data "build a SourceFn for Dexcom"
+
+
+─§ 🛠️ Verb maps differ per umbrella ───────────────────────
+
+🛠️ Verb maps differ per umbrella
+---------------------------------
+
+   /haipipe-data     dashboard / load / cook / design-chef /
+                     design-kitchen / review / explain
+   /haipipe-nn       dashboard / review / generate / test
+   /haipipe-end      package / design / test (local) / review /
+                     deploy / monitor / teardown
+   /haipipe-project  new / review / summarize / inventory /
+                     overview / organize
+
+
+─§ ❓ Disambiguation rules (all umbrellas, in priority order) ────
+
+❓ Disambiguation rules (all umbrellas, in priority order)
+----------------------------------------------------------
+
+   1. Axis unclear AND no keywords match → list axis options, WAIT.
+   2. Verb unclear, axis clear           → default to `dashboard`.
+   3. Verb clear, axis unclear           → ASK axis (don't guess).
+   4. Multi-axis request ("review L1-L3") → dispatch sequentially.
+   5. /haipipe-end deploy without target → ASK target.

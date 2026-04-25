@@ -1,0 +1,81 @@
+🗺️  DIKW Plugin — 3-Tier Skill Map
+===================================
+
+  How the pieces fit. Two commands a human normally types (Tier 1).
+  Everything else is reachable but invoked by the orchestrator.
+
+
+─§ 🧑 user ─────────────────────────────────────────────────
+
+  🧑 user
+     |
+     |  /dikw {folder} [question]
+     v
+  +--------------------------------------------------+
+  |  🎮  Tier 1  —  User-Facing                      |
+  |--------------------------------------------------|
+  |  /dikw             🚀 one-shot entry             |
+  |  /dikw-workspace   🔭 inspect / status / cleanup |
+  +--------------------------------------------------+
+     |
+     |  delegates Stage 5 (run the session)
+     v
+  +--------------------------------------------------+
+  |  🤖  Tier 3  —  Orchestrator (owns all state)    |
+  |--------------------------------------------------|
+  |  /dikw-session        💬 inline mode (default)   |
+  |  /dikw-session-agent  🧩 --agents mode           |
+  |  /dikw-gate           🚦 gate outcome proposal   |
+  |  /dikw-context        🔍 READY / BLOCKED / SKIP  |
+  +--------------------------------------------------+
+     |
+     |  per task:  Skill(dikw-context)
+     |          -> Skill(dikw-<phase>)
+     v
+  +--------------------------------------------------+
+  |  🔧  Tier 2  —  Phase Task Skills                |
+  |--------------------------------------------------|
+  |  /dikw-explore       🔍 snapshot-level (once)   |
+  |  /dikw-plan          📋 plan tasks               |
+  |  /dikw-data          📊 D  -- code + report      |
+  |  /dikw-information   📈 I  -- code + report      |
+  |  /dikw-knowledge     🧠 K  -- reasoning only     |
+  |  /dikw-wisdom        🎯 W  -- reasoning only     |
+  |  /dikw-report        📝 final synthesis          |
+  +--------------------------------------------------+
+     |
+     |  writes artifacts to disk 💾
+     v
+  +--------------------------------------------------+
+  |  📂  _agent_dikw_space/snapshot-<date>/          |
+  +--------------------------------------------------+
+
+
+─§ ⚡ Compact form ─────────────────────────────────────────
+
+  ⚡ Compact form
+  ---------------
+
+  🧑  ->  /dikw  ->  /dikw-session(-agent)  ->  🔁 per-task loop
+                              |                        |
+                          🚦 /dikw-gate           🔍 /dikw-context
+                                                  + 🔧 /dikw-<phase>
+                                                        |
+                                                        v
+                                               📂 snapshot/insights/...
+
+
+─§ 📌 Two cross-cutting truths ─────────────────────────────
+
+  📌 Two cross-cutting truths
+  ---------------------------
+
+  1.  💾 State lives ONLY on disk (DIKW_STATE.json + plan files +
+      gate files + insights/).  The orchestrator re-reads it on
+      every loop turn — so resume-from-anywhere is free.
+
+  2.  🚦 Routing vocabulary is exactly THREE outcomes:
+        ✅ approve  |  🔄 revise [feedback]  |  🏁 done
+      No others.  Every back-edge routes to plan.
+      🏁 done is restricted to G-K, G-W, G-report (skipping K/W
+      reasoning would produce an incomplete final report).

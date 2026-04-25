@@ -20,6 +20,7 @@ description: Fast emoji-rich ASCII diagrams for brainstorming, folder/code overv
 | `ref/05-progress-tracker.txt` | experiment dashboard, multi-run grid, burn-down |
 | `ref/06-numbered-series.txt` | multi-diagram answers with `[N/TOTAL]` headers |
 | `ref/07-task-progress.md` | daily progress log (`YYMMDD-progress.md`) |
+| `ref/08-paper-section.txt` | argument-style diagram for a paper method section (progression + contrast + synthesis combined) |
 
 ## When to Use
 - Mid-discussion idea plotting — "sketch how this works"
@@ -53,6 +54,27 @@ description: Fast emoji-rich ASCII diagrams for brainstorming, folder/code overv
 - If no path given: default to CWD, confirm with user before writing.
 - If only a directory given: pick a sensible filename (`architecture.txt`, `flow.txt`, `pipeline.txt`).
 
+## Folder convention: one `diagram/` per module
+
+When a repo or module accumulates 4+ ASCII diagrams describing it, put them in a dedicated **`diagram/`** folder at the module's root — not in `docs/` next to prose docs. This keeps the "things you scan visually" separate from the "things you read line-by-line."
+
+```
+my-module/
+├── README.md
+├── docs/                       prose docs (md, tutorials, references)
+└── diagram/                    ← ASCII diagrams live here
+    ├── 00-index.txt            navigation across this diagram set
+    ├── 01-repo-layout.txt
+    ├── 02-architecture.txt
+    └── canvas-YYMMDD.excalidraw   produced by diagram-ascii-canvas
+```
+
+- Numbered prefix (`00-`, `01-`, …) for ordering and easy reference ("see 03").
+- Cross-references between diagrams use the relative path inside the folder (e.g. `diagram/03-foo.txt`), not `docs/...`. After a rename this stays correct.
+- `_pngs/` (intermediate renders) and `canvas-*.excalidraw` are produced by `diagram-ascii-canvas` and can stay in the same folder; gitignore them if you want.
+
+When you're producing a new diagram for a module that doesn't yet have a `diagram/` folder, create it. Don't add to `docs/`.
+
 ## Style — Emoji-Rich
 
 **Use as many emoji as possible.** Pull from multiple categories in the same diagram — combining People + Services + Data + Status in one sketch is *encouraged*, not "spam." The palette below is a menu, not a quota.
@@ -77,6 +99,53 @@ Single-line ASCII unless cramped. Don't mix styles in one diagram.
 | 📥 Input |----->| 🧠 Model |----->| 📤 Save  |
 +----------+      +----------+      +----------+
 ```
+
+## Section dividers (for canvas-friendly files)
+
+When a `.txt` is going to be split into sections (for `diagram-ascii-canvas`, or just for human scanning), put an explicit divider line between sections:
+
+```
+─§ Section Title ────────────────────────────────────
+```
+
+ASCII fallback when Unicode is awkward to type:
+
+```
+--§ Section Title ------------------------------------
+```
+
+Format:
+
+- Begins with one or more dashes (`─` or `-`), then `§`, then the title.
+- Optional trailing run of dashes pads the line out for visual weight (≈ 60 chars total looks good).
+- The marker line itself is **consumed** by the canvas tool (not rendered into the PNG); only the title is kept and shown above the section's image.
+- The `§` symbol is the unambiguous trigger — it's what makes detection 100% precise. Don't use stand-alone `===` or `---` lines to mark sections; box borders use those, and the canvas tool will not split on them.
+
+Example skeleton:
+
+```
+🌳 Repo Layout
+═══════════════════════════════
+
+(intro paragraph + headline diagram)
+
+─§ Folder tree ──────────────────────────────────────
+
+📦 my-project/
+├── 📂 src/
+└── 📂 tests/
+
+─§ Navigation hint ──────────────────────────────────
+
+🔍 "Where is X?"
+ ├─ HTTP route?  →  app/main.py
+ └─ MCP tool?   →  app/mcp_server.py
+```
+
+Tool behavior:
+
+- File with markers → one PNG per section (titles from the marker).
+- File with no markers → one PNG for the whole file (the canvas tool does not guess section boundaries from box borders).
 
 ## Light Rules
 
@@ -252,6 +321,89 @@ Conventions:
 - **Refresh the punch-list table** at start of day and at wrap-up so the log opens and closes with a clear scoreboard.
 - **Pivots get a before/after**: explicitly show what was tried and abandoned vs. what's being done now, with one line of "why" underneath.
 
+## Logical relations (for argument-style diagrams)
+
+When diagramming a paper section, an idea, or a design rationale, the **logical glue** matters as much as the boxes. Use these primitives so progression / contrast / synthesis are visible at a glance.
+
+### 1. Progression — A builds on B builds on C
+
+```
++-------+      +-----------+      +-------------+
+| 朴素  | ──▶ | + 约束    | ──▶ | + 反事实    |
++-------+      +-----------+      +-------------+
+   📉             📊                  ✅
+  weak           working            best
+```
+
+Right-pointing chain. Each step shows the **delta** (`+ X`). Bottom emoji is a status thermometer.
+
+### 2. Contrast / reversal — "you'd expect X, but actually Y"
+
+```
+🤔 intuition              ⚡ reality
++-------------+    ✗     +-------------+
+| more data   | ─ ─ ─ ▶ | accuracy ↓  |
+| → better    |  fails  | (noise wins)|
++-------------+          +-------------+
+                ⚠️
+           "scale ≠ free"
+```
+
+Dashed arrow `─ ─ ─▶` for "expected-but-disproven" causation. Tagline between.
+
+### 3. Synthesis — many sources, one conclusion (fan-in)
+
+```
+📊 exp A ─┐
+📈 exp B ─┼──▶  🎯 shared finding
+📉 exp C ─┘
+```
+
+### 4. Tension / trade-off
+
+```
+                  🎯
+  📐 accuracy  ◀── ?? ──▶  ⚡ speed
+                    ↕
+                  🤝 our method
+                  (Pareto corner)
+```
+
+### 5. Causation vs correlation (use **different** arrow styles)
+
+```
+A ━━▶ B    causal     (thick)
+A ─ ─▶ B   only correlated  (dashed)
+A ══▶ B    implies / theorem  (double)
+A  ↯  B    counter-example / does NOT imply
+```
+
+### 6. Hypothesis tree — claim with branches of support
+
+```
+              🎯 our claim
+         ┌────────┴────────┐
+         ✅ support 1       ✅ support 2
+       (exp §4.2)         (theory §3)
+         │                  │
+       ┌─┴─┐              ┌─┴─┐
+       📊  📈             📐  📜
+```
+
+### Paper section → recommended pattern
+
+| Section | Pattern(s) | Why |
+|---|---|---|
+| Intro / motivation | contrast + tension | sets up the gap |
+| Related work | progression / matrix | "the line that leads to us" |
+| Method | progression chain + causal arrows | step + dependency |
+| Experiments | fan-in synthesis | many setups → one finding |
+| Ablation | matrix or progression | "remove X, drop to Y" |
+| Discussion | hypothesis tree | claim → supports → evidence |
+| Conclusion | synthesis triangle | wrap everything into one line |
+
+For a worked-through method section using all of the above, see `ref/08-paper-section.txt`.
+
 ## Anti-patterns (suggestive)
 
 - Mixing ASCII `+--+` with Unicode `╔══╗` in one diagram
@@ -261,4 +413,5 @@ Conventions:
 
 ## See Also
 
+- `diagram-ascii-canvas` — when you've produced 3+ `.txt` diagrams in one folder and the user wants to see them all on one canvas (for spatial layout, drawing connections between them, design review). Screenshots each `.txt` and embeds them into a single `.excalidraw` file. After producing multiple `.txt` files, offer this as a follow-up: *"要把这些拼成一张 Excalidraw 大图吗？"*
 - `progress-log` — for image-heavy Markdown progress reports that embed ASCII sketches from this skill alongside PNG figures and tables

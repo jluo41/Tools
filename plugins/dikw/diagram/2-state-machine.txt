@@ -1,0 +1,82 @@
+🔄  DIKW Session — Phase State Machine
+=======================================
+
+  Phases are nodes.  Gate outcomes are edges.
+  Three outcome words.  No other routing vocabulary exists.
+
+
+─§ 🗺️  The state machine  (confirmed design — 2026-04-25) ────
+
+  🗺️  The state machine  (confirmed design — 2026-04-25)
+  -------------------------------------------------------
+
+  📋 plan ──► 📊 D ──► 📈 I ──► 🧠 K ──► 🎯 W ──► 📝 report ──► ✅ done
+      ▲          │        │        │         │          │
+      │          │        │        │         │          │
+      └──────────┴────────┴────────┴─────────┴──────────┘
+           🔄 every "revise [feedback]" routes here,
+              regardless of which gate fired
+           (plan re-decides pending_tasks; pipeline restarts from plan)
+
+  💡 Key insight: plan is the SINGLE router for all non-forward motion.
+  A gate at G-K that needs a different I-task does NOT route K → I
+  directly.  It routes K → plan, and plan decides what to add/re-run.
+  🚦 Gates flag issues;  📋 Plan routes.
+
+  > JL: We don't have `revise D` or `revise I` as gate outcomes.
+  >     Every back-edge is `revise [feedback]` which always goes to
+  >     plan first.  Plan re-decides pending_tasks (may add new tasks
+  >     at any level, or mark existing tasks for re-run), then the
+  >     pipeline restarts from plan.
+  >
+  >     The skill prompts (dikw-gate, dikw-session, dikw-session-agent,
+  >     dikw-context, README) have been updated on 2026-04-25 to
+  >     enforce this.  The canonical outcome string is now
+  >     `revise [feedback]`  (no `<phase>` token).
+
+
+─§ 🚦  Gate-outcome vocabulary  (the only three) ───────────
+
+  🚦  Gate-outcome vocabulary  (the only three)
+  ----------------------------------------------
+
+  +----+-------------------------+------------------------------------------+
+  |    | Outcome                 | Effect on current_phase                  |
+  +----+-------------------------+------------------------------------------+
+  | ✅ | approve                 | -> next forward phase                    |
+  | 🔄 | revise [feedback]       | -> plan (always); plan_version bumps     |
+  | 🏁 | done                    | -> "report" (jump ahead to final)        |
+  |    |                         |    valid only at G-K, G-W, G-report      |
+  +----+-------------------------+------------------------------------------+
+
+
+─§ ⚡  Inside every phase — same 2-step shape ──────────────
+
+  ⚡  Inside every phase — same 2-step shape
+  -------------------------------------------
+
+  +--------------------------------------------------+
+  |  🔄 phase = X                                    |
+  |                                                  |
+  |   ⚙️  step = task                                |
+  |     for each task in pending_tasks[X]:           |
+  |       🔍 /dikw-context  X  <task>  --> verdict   |
+  |         ✅ READY    ->  🔧 /dikw-<X> <task>      |
+  |         🚫 BLOCKED  ->  jump to 🚦 gate          |
+  |         ⏭️  SKIP     ->  mark + next task        |
+  |                                                  |
+  |   🚦 step = gate                                 |
+  |     🤖 /dikw-gate  -->  proposed outcome         |
+  |     🧑 human (or --auto) accepts                 |
+  |     ->  ✅ approve / 🔄 revise / 🏁 done         |
+  +--------------------------------------------------+
+
+
+─§ 📌  Hard caps ───────────────────────────────────────────
+
+  📌  Hard caps
+  -------------
+
+  ⚠️  MAX_REVISIONS        = 3   (🔄 revise loops; force-approve after)
+  ⚠️  MAX_TASKS_PER_LEVEL  = 4   (per 📊 D / 📈 I / 🧠 K / 🎯 W phase)
+      AUTO_PROCEED         = false  (🚦 gate pauses; --auto flips it)

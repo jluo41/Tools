@@ -1,0 +1,125 @@
+📦 haipipe-toolkit/ — Skill Folder Layout
+==========================================
+
+Numeric prefixes follow the data-flow order (data → nn → end), then
+cross-cutting (project), then per-subject (subject). Folder names are
+pure organization — only the `name:` field in each SKILL.md frontmatter
+identifies the skill. Claude Code walks the tree at any depth.
+
+
+─§ Tools/plugins/haipipe-toolkit/ ─────────────────────────
+
+Tools/plugins/haipipe-toolkit/
+│
+├── .claude-plugin/
+│   ├── plugin.json                    plugin manifest (v2.0.0)
+│   └── marketplace.json
+│
+├── README.md                          human-readable plugin guide
+├── diagram/                              ASCII diagrams (this folder)
+│
+└── skills/
+    │
+    ├── 1_data/                        Stages 1-4 (project-wide data build)
+    │  (umbrella + 4 stage specialists)
+    │   ├── haipipe-data/              🎯 umbrella — orchestrator
+    │   │   ├── SKILL.md
+    │   │   ├── ref/0-overview.md       SHARED cross-stage ref
+    │   │   └── fn/                     SHARED procedure docs
+    │   │       ├── fn-0-dashboard.md     fn-1-load.md
+    │   │       ├── fn-2-cook.md          fn-3-design-chef.md
+    │   │       ├── fn-4-design-kitchen.md fn-explain.md
+    │   │       └── fn-review.md
+    │   │
+    │   ├── haipipe-data-source/       S1 SourceFn / HumanFn
+    │   │   ├── SKILL.md
+    │   │   └── ref/concepts.md         stage-specific ref
+    │   ├── haipipe-data-record/       S2 RecordFn / TriggerFn
+    │   ├── haipipe-data-case/         S3 CaseFn
+    │   └── haipipe-data-aidata/       S4 TfmFn / SplitFn
+    │
+    ├── 2_nn/                          Stage 5 (model training)
+    │  (umbrella + 4 layer specialists)
+    │   ├── haipipe-nn/                🎯 umbrella
+    │   │   ├── SKILL.md
+    │   │   ├── ref/overview.md         SHARED 4-layer architecture
+    │   │   └── fn/                     SHARED procedure docs
+    │   │       ├── fn-dashboard.md       fn-review.md
+    │   │       ├── fn-generate.md        fn-test.md
+    │   │
+    │   ├── haipipe-nn-algo/           L1 Algorithm
+    │   ├── haipipe-nn-tuner/          L2 Tuner / hyperparameter sweep
+    │   ├── haipipe-nn-instance/       L3 ModelInstance
+    │   └── haipipe-nn-modelset/       L4 ModelSet / pipeline
+    │
+    ├── 3_end/                         Stage 6 (1 umbrella + 1 artifact + 5 Fn-type + 4 deploy = 11 skills)
+    │   ├── haipipe-end/               🎯 umbrella — 3-axis router
+    │   │   ├── SKILL.md
+    │   │   ├── ref/
+    │   │   │   ├── 0-overview.md         Stage 6 architecture (shared by per-Fn-type children)
+    │   │   │   └── deploy-overview.md    legacy cross-target deploy ref
+    │   │   └── fn/
+    │   │       └── fn-design.md          SHARED — 5 per-Fn-type children read this
+    │   │
+    │   ├── haipipe-end-endpointset/   🔧 artifact-as-whole (package, test, review, dashboard)
+    │   │   ├── SKILL.md
+    │   │   └── fn/                       fn-0-dashboard, fn-1-package, fn-2-test, fn-review
+    │   │
+    │   │  ── per-Fn-type (5) ──
+    │   ├── haipipe-end-meta/          🧠 MetaFn (model metadata)
+    │   ├── haipipe-end-trig/          🧠 TrigFn (trigger detection)
+    │   ├── haipipe-end-post/          🧠 PostFn (response formatting)
+    │   ├── haipipe-end-src2input/     🧠 Src2InputFn (record → payload)
+    │   ├── haipipe-end-input2src/     🧠 Input2SrcFn (payload → record)
+    │   │   (each: thin SKILL.md + ref/concepts.md)
+    │   │
+    │   │  ── per-target deploy (4) ──
+    │   ├── haipipe-end-deploy-sagemaker/   🚀 → AWS SageMaker (wraps platform-sagemaker-inference/)
+    │   ├── haipipe-end-deploy-databricks/  🚀 → Databricks Model Serving (wraps platform-databrick-inference/)
+    │   ├── haipipe-end-deploy-local/       🚀 → local (Flask / FastAPI / Docker)
+    │   └── haipipe-end-deploy-mlflow/      🚀 → MLflow registry + serve   ⚠️ DEFERRED
+    │
+    ├── 4_project/                     cross-cutting project lifecycle
+    │  (umbrella + 3 risk-profile specialists)
+    │   ├── haipipe-project/           🎯 umbrella
+    │   │   ├── SKILL.md
+    │   │   └── ref/
+    │   │       ├── project-structure.md  Track B layout rules
+    │   │       └── code-structure.md     Track A + paired-example rule
+    │   │
+    │   ├── haipipe-project-new/       BUILD: scaffold (creates files)
+    │   ├── haipipe-project-inspect/   READ:  review/summary/inventory/overview
+    │   │   └── ref/inventory/*.py       inventory helper scripts
+    │   └── haipipe-project-organize/  MODIFY: reorganize files
+    │
+    └── 5_subject/                     per-subject inference contract
+        └── haipipe-subject/           standalone — covers stages 0-2
+            └── SKILL.md                 8 commands handled inline
+
+
+─§ 📊 Counts ───────────────────────────────────────────────
+
+📊 Counts
+----------
+   5 umbrella skills (Tier 1, user-facing entry points)
+  21 specialist skills (Tier 2)
+  ─────────────────────────────
+  26 total SKILL.md files
+
+  Per-group breakdown:
+    1_data/      1 umbrella + 4 stage specialists                = 5
+    2_nn/        1 umbrella + 4 layer specialists                = 5
+    3_end/       1 umbrella + 1 artifact + 5 Fn-type + 4 deploy  = 11
+    4_project/   1 umbrella + 3 risk-profile specialists         = 4
+    5_subject/   1 standalone (no specialists)                   = 1
+
+
+─§ 📌 Convention recap ─────────────────────────────────────
+
+📌 Convention recap
+--------------------
+  🎯 umbrella    = orchestrator; parses intent, dispatches via Skill()
+  🔧 specialist  = executor; reads its own ref/concepts.md + umbrella's
+                   shared fn/*.md; emits structured return tail
+  📁 ref/        = reference content (concepts, overviews)
+  📁 fn/         = procedure docs (shared across specialists in a group)
