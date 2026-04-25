@@ -72,6 +72,15 @@ Single-line ASCII unless cramped. Don't mix styles in one diagram.
 - **Tables**: pad cells in the same column to equal width; all `|` separators must line up vertically.
 - **Emoji in tables**: prefer emoji in headers/labels rather than inside cells — monospace fonts render emoji as 1 or 2 character widths inconsistently. If emoji must appear in cells, assume 2 widths and pad accordingly.
 - If output drifts after writing, re-render from scratch — don't patch individual lines.
+- **Numbered series**: when a response contains 3 or more diagrams, prefix each with a numbered header (see template below) so the user can reference them by number in follow-up questions.
+
+### Folder Tree Rules
+
+- Use Unicode tree characters (`├──`, `└──`, `│`), never ASCII dashes for tree lines.
+- Annotations go to the right of the path, separated by 2+ spaces, padded to a consistent column across siblings.
+- Floating group labels (e.g. `(umbrella)`) sit on their own line, indented to align with the `│` column of their parent — not on the same line as the path entry.
+- Blank lines between sibling groups are allowed and encouraged for scannability — they do not break the tree structure.
+- Omit `📄` / `📂` emoji when the path suffix (trailing `/` or extension) already makes the type obvious.
 
 ## Templates
 
@@ -97,7 +106,7 @@ Single-line ASCII unless cramped. Don't mix styles in one diagram.
 +-------------------+
 ```
 
-**Folder tree**
+**Folder tree — basic**
 ```
 📦 my-project/
 ├── 📂 src/
@@ -105,6 +114,50 @@ Single-line ASCII unless cramped. Don't mix styles in one diagram.
 │   └── 📂 components/
 ├── 📂 tests/
 └── 📄 README.md
+```
+
+**Folder tree — annotated** (inline role labels, right-aligned to a consistent column)
+```
+code/
+├── haipipe/        # core framework  (editable)
+├── hainn/          # ML models       (editable)
+└── haifn/          # generated fns   (DO NOT EDIT)
+```
+
+**Folder tree — grouped** (blank lines between logical clusters; floating callout on its own line)
+```
+Tools/plugins/haipipe-toolkit/skills/
+├── 0_subject/
+│   └── haipipe-subject/SKILL.md
+│
+├── 1_data/
+│  (umbrella)
+│   ├── haipipe-data/SKILL.md
+│   ├── haipipe-data-source/SKILL.md
+│   ├── haipipe-data-record/SKILL.md
+│   ├── haipipe-data-case/SKILL.md
+│   └── haipipe-data-aidata/SKILL.md
+│
+├── 2_model/
+│   └── haipipe-nn/SKILL.md
+│
+└── 3_endpoint/
+    └── haipipe-end/SKILL.md
+```
+
+**Folder tree — annotated + grouped** (combines both: role labels and blank-line clusters)
+```
+code-dev/1-PIPELINE/
+│
+├── 1-Source-WorkSpace/    →  code/haifn/fn_source/
+├── 2-Record-WorkSpace/    →  code/haifn/fn_record/
+├── 3-Case-WorkSpace/      →  code/haifn/fn_case/
+├── 4-AIData-WorkSpace/    →  code/haifn/fn_aidata/
+│
+├── 5-Instance-WorkSpace/  →  code/haifn/fn_model/
+│  (run builder to regenerate)
+│
+└── 6-Endpoint-WorkSpace/  →  code/haifn/fn_endpoint/
 ```
 
 **Branch** (fan-out)
@@ -148,6 +201,29 @@ Compact inline form:
 📥 Load → ⚙️ Clean → 🧠 Train → 📊 Eval → 🚀 Deploy
   ✅        ✅        ⏳          ⬜         ⬜
 ```
+
+**Numbered series** (3+ diagrams in one response — number each so it's easy to reference)
+```
+── [1/3] Overall Architecture ──────────────────────────────
+
++----------+     +------------+     +----------+
+| 📥 Input |---->| 🧠 Model   |---->| 📤 Output|
++----------+     +------------+     +----------+
+
+── [2/3] Folder Layout ─────────────────────────────────────
+
+code/
+├── haipipe/    (editable)
+├── hainn/      (editable)
+└── haifn/      (generated)
+
+── [3/3] Stage Status ──────────────────────────────────────
+
+📥 Load → ⚙️ Clean → 🧠 Train → 📊 Eval → 🚀 Deploy
+  ✅        ✅        ⏳          ⬜         ⬜
+```
+
+Header format: `── [N/TOTAL] Title ──` (dashes fill to ~60 chars). Omit the total if the count isn't fixed upfront.
 
 ## Anti-patterns (suggestive)
 
