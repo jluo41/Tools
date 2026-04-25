@@ -1,13 +1,13 @@
 ---
 name: dikw-gate
-description: "DIKW gate-review skill. Runs during step=gate of any phase. Produces the gate's proposed outcome: approve (next phase), revise <phase> [feedback] (redo / go back / rewrite plan), or done (jump to report). Use when the user asks to review DIKW results, run a gate, or says /dikw-gate. Trigger: review results, gate check, quality check, next step, should we proceed, go back, revise plan."
+description: "DIKW gate-review skill. Runs during step=gate of any phase. Produces the gate's proposed outcome: approve (next phase), revise [feedback] (back to plan; plan re-decides pending_tasks), or done (jump to report). Use when the user asks to review DIKW results, run a gate, or says /dikw-gate. Trigger: review results, gate check, quality check, next step, should we proceed, revise plan."
 argument-hint: [snapshot_dir]
 ---
 
 # DIKW Gate Review
 
 Runs during **`step=gate`** of any phase. Produces the gate's **proposed
-outcome** — one of `approve` / `revise <phase> [feedback]` / `done` — which
+outcome** — one of `approve` / `revise [feedback]` / `done` — which
 the orchestrator then accepts (via human or `--auto`).
 
 Called by `/dikw-session` at each gate (`G-plan`, `G-D`, `G-I`, `G-K`,
@@ -26,17 +26,43 @@ Note: `snapshot_dir` is a `_agent_dikw_space/snapshot-<date>/` folder.
 ## Gate outcome vocabulary (the only three)
 
 ```
-approve                      → current phase output is good; next forward phase
-revise <phase> [feedback]    → re-enter <phase>
-                                 <phase>=current → redo current phase
-                                 <phase>=earlier → go back to that phase
-                                 <phase>=plan    → rewrite the plan (bumps plan-version)
-done                         → findings sufficient; jump to report
+approve              → current phase output is good; next forward phase
+revise [feedback]    → back to plan (always); plan_version += 1
+                       /dikw-plan reads `feedback` and rewrites pending_tasks;
+                       pipeline restarts from plan
+done                 → findings sufficient; jump to report
+                       VALID ONLY at G-K, G-W, or G-report (see below)
 ```
+
+**Plan is the SOLE router for non-forward motion.** There is no
+`revise D`, no `revise <current_phase>`, no `revise <earlier_phase>`.
+If a gate at G-K decides "we need a different I-task," it does NOT
+route directly K → I — it routes K → plan, and plan decides what to
+add / re-run / change. Gates flag issues; plan routes.
+
+**`done` is restricted to late gates.** A `done` outcome jumps straight
+to `phase=report`, skipping any remaining phases. The final report
+needs reasoning material from K (mechanisms) and recommendations from
+W to address most user questions. Jumping to report from G-plan, G-D,
+or G-I would produce an incomplete answer.
+
+| Gate       | May propose `done`? |
+|------------|---------------------|
+| `G-plan`   | NO — only `approve` or `revise [feedback]` |
+| `G-D`      | NO — only `approve` or `revise [feedback]` |
+| `G-I`      | NO — only `approve` or `revise [feedback]` |
+| `G-K`      | YES |
+| `G-W`      | YES |
+| `G-report` | YES (terminal approval — `done` and `approve` both lead to the terminal `done` state) |
+
+If the situation at G-D / G-I genuinely calls for skipping further
+work, propose `revise [feedback]` instead — let the planner decide
+whether to drop K/W tasks or compress the plan. The orchestrator
+rejects `done` from G-plan / G-D / G-I and re-prompts the gate.
 
 There is no other vocabulary. Any proposal must map to one of these three.
 
-## Persona (reviewer voice — set once at session start, locked for the whole session)
+## Persona (reviewer voice — set once at session start, locked by default)
 
 The gate's tendency is controlled by `DIKW_STATE.gate_persona`, set once
 at `/dikw` Stage 4 and never changed mid-session. Three layers compose:
@@ -99,6 +125,32 @@ changes the *tendency* of the proposal only.
 absent (older session) or unparseable, default to `balanced` with no
 notes and log a one-line warning in the gate file.
 
+**Per-gate persona override (optional, opt-in).** A user may request a
+one-off persona for a single gate firing — e.g., *"review G-K as
+strict"*, *"creative for this one"*, *"set strictness=8 for this
+gate"*. When the orchestrator passes a `persona_override` argument to
+`/dikw-gate`, the gate composes its block from the override INSTEAD
+of the locked `DIKW_STATE.gate_persona`. Rules for an override:
+
+- Scope: the override applies to ONE gate firing only. The next
+  gate reverts to `DIKW_STATE.gate_persona`.
+- State: the override does NOT mutate `DIKW_STATE.gate_persona`. The
+  locked session persona stays whatever it was at Stage 4.
+- Audit: the gate file MUST record both the locked persona and the
+  override under a `persona:` block at the top, e.g.:
+  ```
+  persona:
+    locked:    { preset: balanced, strictness: 5, ambition: 5 }
+    applied:   { preset: strict,   strictness: 8, ambition: 4 }
+    override_reason: "<short text from the user>"
+  ```
+- The `gates[]` entry in DIKW_STATE.json adds an optional
+  `persona_override` field with the same shape so resume logic can
+  see what was applied.
+
+If no override is passed, persona behavior is identical to the
+session-locked default.
+
 ## Steps
 
 ### Step 1: Gather context
@@ -133,9 +185,10 @@ current_phase == "report" → gate is G-report (final check)
 
 **Completeness** — every task in `pending_tasks[phase]` satisfies the
 artifact contract from `dikw-session/SKILL.md § "Task is complete iff…"`:
-report.md exists and is >100 bytes, AND for D/I also `analysis.py` exists.
-For `plan`, `plan-raw-v{N}.yaml` exists and has goal + a per-level task
-list within the plan's configured cap.
+report.md exists, is non-empty, and is concise (max ~1000 words);
+for D/I also `analysis.py` exists. For `plan`, `plan-raw-v{N}.yaml`
+exists and has goal + a per-level task list within the plan's
+configured cap.
 
 **Sufficiency for next phase:**
 - `G-plan`    → Does the plan cover the question? Are task descriptions self-contained (specific inputs, method, artifact)?
@@ -155,23 +208,30 @@ Pick **exactly one** outcome:
 | Situation | Decision |
 |---|---|
 | Everything looks good, move forward | `approve` |
-| Current phase had an **execution problem** (buggy code, misleading narrative, mislabeled section, wrong number in a report) — same spec on retry should fix it | `revise <current_phase> "<fix description>"` |
-| An **earlier phase** is missing evidence this phase needs — same-spec retry of the earlier task | `revise <earlier_phase> "<what's needed and why current phase can't do it>"` |
-| A task's **spec itself must change** — its description, output contract, method, or inputs — because the plan's v1 assumption is wrong or incomplete | `revise plan "<what changed and why>"` |
-| Enough is done; skip remaining phases | `done` |
+| Anything is wrong — execution bug in current phase, missing evidence from an earlier phase, plan spec is wrong, surprise finding that invalidates an assumption | `revise "<what's wrong and what needs to change>"` |
+| Enough is done; skip remaining phases (only at G-K, G-W, G-report) | `done` |
+
+If you are at G-plan / G-D / G-I and tempted to propose `done`, propose
+`revise [feedback]` instead — let the planner decide whether to compress
+or drop K/W tasks. `done` from an early gate produces an incomplete report.
+
+**There is only one revise target — plan.**  Whether the issue is:
+- the current phase had an execution bug (re-run the same task), or
+- an earlier phase missed evidence the current phase needs, or
+- the plan's spec needs to change,
+
+… the gate emits `revise [feedback]`. Plan reads the feedback,
+rewrites pending_tasks (adding new tasks at any phase, marking
+existing earlier-phase tasks for re-run, or revising specs), and
+the pipeline restarts from plan. This keeps plan as the single
+decision-maker for the task graph; gates only flag issues.
 
 **Default rule — when in doubt, route per persona's "default route".**
 
 The persona preset sets the default route for ambiguous cases
-(`strict`/`balanced` → `revise plan`; `creative`/`lenient` → `approve`).
+(`strict`/`balanced` → `revise`; `creative`/`lenient` → `approve`).
 When the current phase's output has substantive feedback but no clear
-execution bug, apply the persona default. The plan phase is still
-where spec-level discussion happens; the gate's job is to surface the
-issue and hand it off per the persona's tendency.
-
-Use `revise <current_phase>` only for clear retry-with-same-spec cases
-(e.g. a task skill crashed, an artifact is missing, nothing about the
-output itself is under discussion).
+execution bug, apply the persona default.
 
 Write to `{snapshot_dir}/sessions/{aim}/gates/{NN}-G-{phase}.md`:
 
@@ -234,7 +294,7 @@ Routes to: plan (plan-version will bump 1 → 2)
 
 Present in this order:
   1. Banner.
-  2. One-line proposed outcome (`approve` / `revise <phase>` / `done`).
+  2. One-line proposed outcome (`approve` / `revise` / `done`).
   3. **Justification paragraph** (2–4 sentences, required): explain *why*
      you're proposing this outcome — what the reports collectively say,
      what the key judgment call was, and why the alternative outcomes
@@ -254,10 +314,15 @@ Mapping from reply letter to gate outcome:
 | Reply | Resulting outcome |
 |-------|-------------------|
 | `A` | apply the gate's proposed outcome verbatim (whatever it was: approve / revise / done) |
-| `B: <feedback>` | override — treat as `revise <phase>` where `<phase>` is the current gate's phase, using the user's feedback text |
+| `B: <feedback>` | override — treat as `revise` (back to plan) using the user's feedback text |
 | `C` | force `approve`, ignoring the gate's revise proposal; next forward phase |
-| `D` | force `done`, jump to `report` |
+| `D` | force `done`, jump to `report` — **only available at G-K, G-W, G-report**; suppressed at G-plan / G-D / G-I |
 | `E` | cancel the session (no state change) |
+
+When the current gate is G-plan / G-D / G-I, omit option `(D)` from the
+prompt entirely — it is not a valid outcome at those gates. The
+remaining options are `(A) apply proposal`, `(B: feedback) revise`,
+`(C) approve`, `(E) cancel`.
 
 ```
 [{subject} · snap-YYYY-MM-DD · NN_{slug} · plan-v1 · D-Gate · G-D · awaiting]
@@ -281,15 +346,14 @@ instead — same table shape, the column reads "Description" because the
 tasks are brand new rather than re-runs of existing ones.)
 
 Header convention:
-  - `revise <current_phase>`  →  "Tasks to re-run"
-  - `revise <earlier_phase>`  →  "Tasks to re-run"   (in the earlier phase)
-  - `revise plan`             →  "New plan tasks"    (full plan-v{N+1})
+  - `revise`  →  "New plan tasks"    (full plan-v{N+1} written by /dikw-plan)
 
 How to respond? (reply with the letter)
   (A) accept the gate's recommendation above
   (B) provide your own feedback  — reply `B: <your feedback>` to override
   (C) go ahead to the next phase — approve as-is, skip the gate's recommended revise
   (D) done — jump straight to the final report, skip remaining phases
+       (only at G-K, G-W, G-report — omit at G-plan, G-D, G-I)
   (E) cancel
 ```
 
@@ -328,7 +392,6 @@ After the gate outcome, `/dikw-session` updates `DIKW_STATE.json`:
 - If the outcome re-enters a phase, the `feedback` must describe the new
   task(s) with enough detail that `/dikw-plan` (for `revise plan`) or the
   phase skill can execute from it.
-- `revise <earlier_phase>` must explain why the current phase can't fix it.
 - Gate file path: `sessions/{aim}/gates/{NN}-G-{phase}.md` where NN is
   the sequential gate counter (see Step 4). Never reuse an NN — even
   if the same phase gate fires again after a revise-plan loop, it

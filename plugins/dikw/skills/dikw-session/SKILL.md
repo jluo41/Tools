@@ -1,6 +1,6 @@
 ---
 name: dikw-session
-description: "Full DIKW analysis session. Runs phases plan → D → I → K → W → report with a gate at the end of each phase for review. Handles iteration: a gate outcome can revise the current phase, go back to an earlier phase, rewrite the plan, or jump to report. Use when user says 'run DIKW', 'full analysis', 'DIKW session', 'analyze this dataset end-to-end', or /dikw-session. Trigger: DIKW session, full analysis, end-to-end analysis, analyze dataset."
+description: "Full DIKW analysis session. Runs phases plan → D → I → K → W → report with a gate at the end of each phase for review. Handles iteration: a gate's `revise [feedback]` outcome routes back to plan (the single router), which rewrites the plan; pipeline restarts from plan. Use when user says 'run DIKW', 'full analysis', 'DIKW session', 'analyze this dataset end-to-end', or /dikw-session. Trigger: DIKW session, full analysis, end-to-end analysis, analyze dataset."
 argument-hint: [snapshot_dir] [questions]
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, Agent, Skill
 ---
@@ -44,7 +44,7 @@ Five concepts, no more:
 | **Phase** | `plan` / `D` / `I` / `K` / `W` / `report` / `done` — session state |
 | **Step**  | `task` / `gate` — the two steps inside every phase, in order |
 | **Task**  | a specific item run during `step=task` (one for `plan`/`report`; 2–3 for D/I/K/W) |
-| **Gate**  | a specific checkpoint run during `step=gate`; identifier `G-<phase>`; outcome is one of `approve` / `revise <phase> [feedback]` / `done` |
+| **Gate**  | a specific checkpoint run during `step=gate`; identifier `G-<phase>`; outcome is one of `approve` / `revise [feedback]` / `done` (revise always routes back to plan) |
 
 Every phase follows the same 2-step shape:
 
@@ -61,20 +61,26 @@ phase=<X>  ─▶  step=task  ─▶  step=gate  ─▶  (outcome routes next ph
 
 ## State machine
 
-Phases are nodes; gate outcomes are edges.
+Phases are nodes; gate outcomes are edges. Plan is the SINGLE
+router — every non-forward outcome routes back to plan, never
+directly cross-phase.
 
 ```
- plan ─G-plan─▶ D ─G-D─▶ I ─G-I─▶ K ─G-K─▶ W ─G-W─▶ report ─G-report─▶ done
-                 ╲        ╲        ╲        ╲
-                  ╲        ╲        ╲        ╲── revise <earlier_phase> | revise plan
-                   ╲────────╲────────╲──────────  (any back-edge permitted)
+  plan ──▶ D ──▶ I ──▶ K ──▶ W ──▶ report ──▶ done
+   ▲       │     │     │     │       │
+   │       │     │     │     │       │
+   └───────┴─────┴─────┴─────┴───────┘
+        every "revise" routes here, regardless of which gate fired
+        (plan re-decides pending_tasks; pipeline restarts from plan)
 
  Outcome semantics (produced at any gate):
-   approve              → current_phase = next_forward(current_phase)
-   revise <phase> [fb]  → current_phase = <phase>
-                          if <phase> == plan: plan_version += 1
-                          add new/changed task(s) from feedback to pending_tasks[<phase>]
-   done                 → current_phase = "report"
+   approve         → current_phase = next_forward(current_phase)
+   revise [fb]     → current_phase = "plan"
+                     plan_version += 1
+                     /dikw-plan reads `fb` and rewrites the plan
+                     (may add new tasks at any phase, or mark
+                      existing tasks for re-run with applied changes)
+   done            → current_phase = "report"
 ```
 
 ## Orchestrator loop
@@ -114,13 +120,17 @@ while current_phase != "done":
             # dikw-context returns a verdict: READY / BLOCKED / SKIP.
             # Handle each before invoking the phase skill:
             #   READY   → proceed to Skill(dikw-<phase>) below
-            #   SKIP    → record skip reason in DIKW_STATE, remove from pending,
-            #             add to completed_tasks with status=skipped, current_task=null, continue loop
+            #   SKIP    → remove task.name from pending_tasks[current_phase] and
+            #             append { name, status: "skipped", plan_version }
+            #             to completed_tasks[current_phase]; clear current_task;
+            #             continue loop. SKIP carries no artifact requirement.
             #   BLOCKED → record the blocker in DIKW_STATE, break out of the
             #             task loop, jump straight to step=gate. /dikw-gate
             #             will see the blocker in state and propose
-            #             `revise plan` (or `revise <earlier_phase>`) with
-            #             the blocker text as feedback.
+            #             `revise [feedback]` (always back to plan) with
+            #             the blocker text as feedback. Plan must
+            #             disambiguate: missing-task blocker → add task;
+            #             pending-upstream blocker → keep plan, fix ordering.
         Skill(name="dikw-<current_phase>",  args="<task.name> <snapshot_dir>")
             # where <current_phase> ∈ {data, information, knowledge, wisdom, plan, report}
 
@@ -128,15 +138,17 @@ while current_phase != "done":
         # transcript makes cheating visible (see Banner rules below).
 
         mark task completed in DIKW_STATE.json
-          (remove from pending_tasks[current_phase] AND append to
+          (remove from pending_tasks[current_phase] AND append
+           { name, status: "done", plan_version } to
            completed_tasks[current_phase] in the same write — never let
-           the two lists drift)
+           the two lists drift. If the phase skill returned an error,
+           append with status: "failed" instead.)
     current_task = null
 
     # ─── pre-gate verification ─────────────────────────────────
     # Before calling /dikw-gate, scan every completed task folder for
     # this phase and assert the artifact contract holds. Any missing
-    # artifact auto-routes to `revise <phase> "task X missing <file>"`
+    # artifact auto-routes to `revise "task X missing <file>; re-run /dikw-<phase> <task>"`
     # at the upcoming gate. See "Pre-gate artifact check" below.
 
     # ─── step=gate ──────────────────────────────────────────────
@@ -146,7 +158,7 @@ while current_phase != "done":
     # which (a) reads every report across all phases + explore notes +
     # plan + prior gates, (b) assesses completeness / sufficiency /
     # surprises, and (c) proposes exactly one outcome of
-    # {approve | revise <phase> [fb] | done}. Without /dikw-gate the
+    # {approve | revise [fb] | done}. Without /dikw-gate the
     # "should we revise the plan?" question is never actually asked —
     # the orchestrator just rubber-stamps its own progress.
 
@@ -166,21 +178,42 @@ while current_phase != "done":
     # fail-closed: treat the outcome as invalid and re-run.
 
     if AUTO_PROCEED: auto-accept proposal
-    else:             wait for user (approve / revise <phase> [fb] / done)
+    else:             wait for user (approve / revise [fb] / done)
 
     outcome = <accepted gate outcome>
     apply outcome:
-        if approve:         current_phase = next_forward(current_phase)
-        elif revise <p> fb: if p == plan:
-                                plan_version += 1
-                                /dikw-context plan <snapshot_dir>        # full-like-report load
-                                /dikw-plan <snapshot_dir> "<feedback>"   # writes plan-raw-v{N}.yaml
-                            else:
-                                add new task(s) from fb to pending_tasks[p]
-                            current_phase = p
-                            revisions_count += 1  (if p == plan)
-                            if revisions_count >= MAX_REVISIONS: force approve, warn
-        elif done:          current_phase = "report"
+        if approve:           current_phase = next_forward(current_phase)
+        elif revise feedback:
+            # Order matters — see "Plan-version write ordering" rule below.
+            # 1. Load full revision context for the planner
+            /dikw-context plan <snapshot_dir>
+            # 2. Run the planner (writes plan-raw-v{N}.yaml AND updates
+            #    plan-raw.yaml symlink before returning)
+            /dikw-plan <snapshot_dir> "<feedback>"
+            # 3. Post-plan reconciliation: read the new plan's
+            #    revision.changes.removed list and mark each removed task
+            #    in completed_tasks[phase] with status = "invalidated".
+            #    Tasks marked invalidated are no longer counted toward
+            #    pre-gate artifact checks or the final report; their
+            #    folders remain on disk for audit.
+            for phase in [D, I, K, W]:
+                for name in new_plan.revision.changes.removed.get(phase, []):
+                    if entry exists in completed_tasks[phase] with name == name:
+                        set entry.status = "invalidated"
+            # 4. Recompute pending_tasks from the new plan (see
+            #    "pending_tasks recomputation" rule below)
+            recompute_pending_tasks(new_plan)
+            # 5. Bump plan_version in DIKW_STATE.json AFTER the plan file
+            #    and symlink are on disk — never before
+            plan_version += 1
+            current_phase = "plan"
+            revisions_count += 1
+            if revisions_count >= MAX_REVISIONS: force approve, warn
+        elif done:
+            # `done` is only valid at G-K, G-W, or G-report (see Rules).
+            # If the gate proposed `done` from G-plan / G-D / G-I, the
+            # orchestrator MUST reject it before reaching this branch.
+            current_phase = "report"
     current_gate = null
 
 status = "complete"
@@ -213,7 +246,7 @@ Field rules:
 - `plan-v{N}` — current plan version (matches `plan-raw-v{N}.yaml`).
 - `{Phase}-{Step}` — capitalized phase + step: `Plan-Task`, `Plan-Gate`, `D-Task`, `D-Gate`, `I-Task`, `I-Gate`, `K-Task`, `K-Gate`, `W-Task`, `W-Gate`, `Report-Task`, `Report-Gate`, or terminal `Done`.
 - `{task|gate}` — for multi-task phases during Task: `i/n task_name`. For single-task phases (Plan, Report): the artifact (`writing plan-raw-v1`, `final_output.md`). At gates: the gate id (`G-D`, `G-plan`, …).
-- `{status}` — only at gates: `awaiting` / `approved` / `revise→plan` / `revise→D` / `done`. Task steps omit it. Terminal phase: `Done` line has no status.
+- `{status}` — only at gates: `awaiting` / `approved` / `revise→plan` / `done`. Task steps omit it. Terminal phase: `Done` line has no status.
 
 Examples (abstract):
 ```
@@ -266,7 +299,12 @@ Abstract shape: `NN_{domain}-{phenomenon}-{intent}`
   "current_task": "cgm_quality_sampling", // non-null during step=task
   "current_gate": null,                   // non-null during step=gate: "G-D" etc
   "plan_version": 2,
-  "completed_tasks": { "D": ["cgm_normalize_profile"], "I": [], "K": [], "W": [] },
+  "completed_tasks": {
+    "D": [
+      { "name": "cgm_normalize_profile", "status": "done", "plan_version": 1 }
+    ],
+    "I": [], "K": [], "W": []
+  },
   "pending_tasks":   { "D": ["cgm_quality_sampling", "context_streams_align"], ... },
   "phase_history": [
     { "phase": "plan", "plan_version": 1, "entered": "...", "exited": "..." },
@@ -277,7 +315,7 @@ Abstract shape: `NN_{domain}-{phenomenon}-{intent}`
   "gates": [
     { "gate": "G-plan", "plan_version": 1, "outcome": "approve",
       "routes_to": "D", "timestamp": "..." },
-    { "gate": "G-D",    "outcome": "revise plan", "feedback": "wrong data grain",
+    { "gate": "G-D",    "outcome": "revise", "feedback": "wrong data grain",
       "routes_to": "plan", "timestamp": "..." },
     { "gate": "G-plan", "plan_version": 2, "outcome": "approve", "routes_to": "D" }
   ],
@@ -291,11 +329,29 @@ Abstract shape: `NN_{domain}-{phenomenon}-{intent}`
 }
 ```
 
-**`gate_persona` is locked for the whole session.** It is written once
-at `/dikw` Stage 4 and must not be modified between phases. `/dikw-gate`
-reads this field at every firing to compose its reviewer voice. If the
-field is missing (legacy state), default to `{preset: "balanced",
-strictness: 5, ambition: 5, notes: ""}` and log a migration note.
+**`completed_tasks[phase]` entry shape.** Each entry is
+`{ name, status, plan_version }` where `status` ∈:
+- `done` — task ran successfully this session; artifacts exist on disk
+- `reused` — task carried over from a prior session run; artifacts exist
+- `skipped` — task explicitly skipped via `/dikw-context` SKIP verdict; no artifact requirement
+- `failed` — task ran and failed; artifacts may be partial
+- `invalidated` — task was dropped by a later plan revision; its folder may still exist but is not counted toward gate completion or the final report
+
+The pre-gate artifact check enforces artifact existence ONLY for entries
+with status `done` or `reused`. When recomputing `pending_tasks` after
+a `revise` outcome, the orchestrator excludes any name already in
+`completed_tasks[phase]` with status in `{done, reused, skipped}`.
+Names with status `failed` or `invalidated` are eligible to re-enter
+`pending_tasks` if the new plan re-adds them.
+
+**`gate_persona` is locked for the whole session by default.** It is
+written once at `/dikw` Stage 4 and is normally not modified between
+phases. `/dikw-gate` reads this field at every firing to compose its
+reviewer voice. A user MAY request a one-off persona override at a
+single gate; the override applies only to that gate firing and the
+`gate_persona` in state remains unchanged. If the field is missing
+(legacy state), default to `{preset: "balanced", strictness: 5,
+ambition: 5, notes: ""}` and log a migration note.
 
 Update after every task completion, every gate outcome, and every state
 transition. This file is the only source of truth for resume-after-compaction.
@@ -329,19 +385,13 @@ Any gate that proposes or adds tasks MUST render them as **one markdown
 table per affected phase** with full descriptions — never a comma list.
 Columns: `#` / `Task` / `Description`. This applies to:
 - `G-plan` (every plan version, v1 and v2+)
-- `G-D` / `G-I` / `G-K` / `G-W` when outcome is `revise <phase>` with new tasks
+- `G-D` / `G-I` / `G-K` / `G-W` when outcome is `revise` (the next G-plan
+  will own the actual task table; this gate just shows the trigger)
 - `G-report` final check
-
-Third-column header variant: when the outcome is `revise <current_phase>`
-or `revise <earlier_phase>` (re-run existing tasks with applied feedback),
-the third column is labelled **`Change`** instead of **`Description`** —
-same table shape, different semantics: "what's changing about this
-task" vs "the full task spec." `revise plan` always uses `Description`
-(tasks are fresh).
 
 End every human gate message with the A/B/C/D/E option block (see the
 "Gate option mapping" rule below). The A–E letters map internally to
-outcomes (`approve / revise <phase> [feedback] / done / cancel`) — do
+outcomes (`approve / revise [feedback] / done / cancel`) — do
 not show the free-text vocabulary in the prompt line.
 
 Under `--auto`, print the same tables + auto-accept line ("Auto-accepting
@@ -349,52 +399,49 @@ the proposed outcome under `--auto`").
 
 ## Iteration patterns
 
-### Pattern 1 — Add tasks to current phase
+Every non-forward outcome is `revise [feedback]` and routes to plan.
+What differs is what plan-v{N+1} chooses to do with the feedback.
+
+### Pattern 1 — Revise (any non-forward correction)
+
+The gate flags an issue; plan decides how to address it.
 
 ```
-phase=D · step=gate · G-D · proposal: revise D "click_rate nulls not handled"
-  → user approves proposal
-  → current_phase stays D; new D-task added to pending_tasks
-  → next loop iteration: step=task runs the new task
-  → step=gate G-D again → approve
-  → current_phase = I
-```
-
-### Pattern 2 — Go back to an earlier phase
-
-```
-phase=I · step=gate · G-I · proposal: revise D "time column not profiled"
-  → current_phase = D
-  → run new D task, G-D → approve
-  → current_phase = I (re-enter; skip already-valid I tasks)
-```
-
-### Pattern 3 — Rewrite the plan
-
-```
-phase=D · step=gate · G-D · proposal: revise plan "wrong data grain"
-  → plan_version 1 → 2
-  → /dikw-context plan  (full load: explore + all reports + full gate history)
+phase=D · step=gate · G-D · proposal: revise "click_rate nulls not handled"
+  → current_phase = plan; plan_version 1 → 2
+  → /dikw-context plan  (full load: explore + all reports + gates)
   → /dikw-plan "<feedback>"  writes plan-raw-v2.yaml
-  → current_phase = plan
-  → G-plan v2 → present new plan tables → user approves
-  → current_phase = D, continue (skip already-valid tasks)
+  → plan-v2 may add a new D-task, modify the existing D-task spec,
+    or mark earlier-phase tasks for re-run
+  → G-plan v2 → user approves
+  → current_phase = (earliest changed phase, e.g. D)
+  → resume forward (skip already-valid tasks)
 ```
 
-### Pattern 4 — Multi-hop back (K → D)
+```
+phase=I · step=gate · G-I · proposal: revise "time column not profiled in D"
+  → current_phase = plan; plan-v1 → plan-v2
+  → plan-v2 includes a fresh D-task to profile the time column
+  → G-plan v2 → approve
+  → current_phase = D, run new D-task, G-D approve
+  → I, K, ... continue forward
+```
 
 ```
-phase=K · step=gate · G-K · proposal: revise D "K needs hourly profile"
-  → current_phase = D  (skip right past I)
-  → run new D task, G-D → approve
-  → current_phase = I → approve
-  → current_phase = K (re-run K with richer evidence)
+phase=K · step=gate · G-K · proposal: revise "K needs hourly profile from D"
+  → current_phase = plan; plan-v2 reframes D and may re-spec I
+  → G-plan v2 → approve
+  → current_phase = D (earliest changed phase; skip past valid I/K
+    if plan-v2 didn't touch them)
 ```
 
-### Pattern 5 — Jump to report
+### Pattern 2 — Jump to report
+
+`done` is only valid at G-K, G-W, or G-report. From earlier gates,
+propose `revise [feedback]` and let the planner compress.
 
 ```
-phase=I · step=gate · G-I · proposal: done "findings are already clear"
+phase=K · step=gate · G-K · proposal: done "K findings + W not needed; question is descriptive"
   → current_phase = report
   → /dikw-report produces final_output.md
 ```
@@ -403,9 +450,21 @@ phase=I · step=gate · G-I · proposal: done "findings are already clear"
 
 On startup, read `DIKW_STATE.json`:
 1. `current_phase` + `current_step` + `current_task|current_gate` = exact position
-2. Re-enter the orchestrator loop at that position
-3. Never re-run completed tasks (check `report.md` existence)
-4. `/dikw-context` is always re-run — it's cheap and picks up any state drift
+2. **State-vs-disk consistency check** (mandatory, runs before re-entering the loop):
+   for each entry in `completed_tasks[phase]` whose status is `done` or `reused`:
+     - resolve the task's expected folder (`insights/<level>/{L}{NN}-{name}/`)
+     - if the folder is missing, OR a required artifact is missing
+       (D/I: `report.md` + `analysis.py`; K/W: `report.md`),
+       demote the entry: set `status = "failed"`, append the task name back
+       to `pending_tasks[phase]`, and log a one-line recovery note to
+       `tmp/recovery-{ISO-date}.log` recording what was demoted and why.
+   This step must run **before** the orchestrator loop is re-entered, so the
+   loop never trusts `completed_tasks` against a disk that has drifted (user
+   deletion, partial write on prior crash, external cleanup).
+3. Re-enter the orchestrator loop at the recorded position
+4. Never re-run a task that still satisfies the "complete iff" rule above
+5. `/dikw-context` is always re-run — it's cheap and picks up any further
+   state drift that occurred since the consistency check
 
 ## Legacy state upgrade (one-time migration)
 
@@ -441,11 +500,13 @@ If DIKW_STATE.json lacks current_step / current_task / current_gate
        current_step  ← "task" if a phase-skill was running, else "gate"
        current_task  ← null
        current_gate  ← null
-     Map old gate records:
+     Map old gate records (all revise-flavors collapse to a single
+     `revise` outcome that routes back to plan; the original feedback
+     is preserved in the `feedback` field):
        decision=PROCEED      → outcome=approve
-       decision=ADD_TASKS    → outcome=revise <current_phase> "<reason>"
-       decision=GO_BACK <X>  → outcome=revise <X> "<reason>"
-       decision=REVISE_PLAN  → outcome=revise plan "<reason>"
+       decision=ADD_TASKS    → outcome=revise "<reason>"   (back to plan)
+       decision=GO_BACK <X>  → outcome=revise "<reason>"   (back to plan)
+       decision=REVISE_PLAN  → outcome=revise "<reason>"   (back to plan)
        decision=DONE         → outcome=done
      Preserve phase_history, gates[], revisions_count — never delete them.
 
@@ -460,7 +521,58 @@ summarizing what was changed, so the upgrade is auditable.
 ## Rules
 
 - ALWAYS update `DIKW_STATE.json` after every task and every gate outcome.
-- **Task is complete iff all required files exist and are >100 bytes.**
+- **Plan-version write ordering (revise plan).** When applying a `revise`
+  outcome, the orchestrator MUST do these steps in this order, with
+  `DIKW_STATE.json` written LAST:
+  1. Run `/dikw-plan {snapshot_dir} "<feedback>"`. The plan skill writes
+     `plan/plan-raw-v{N}.yaml` AND updates `plan/plan-raw.yaml` symlink
+     to point at the new file before returning.
+  2. Read the new plan's `revision.changes.removed` list and mark each
+     removed task in `completed_tasks[phase]` with status `invalidated`.
+  3. Recompute `pending_tasks` from the new plan (see "pending_tasks
+     recomputation" below).
+  4. Write `DIKW_STATE.json` with `plan_version` bumped to N,
+     `current_phase = "plan"`, `revisions_count` incremented, and the
+     reconciled `completed_tasks` / `pending_tasks` from steps 2–3.
+  Never bump `plan_version` in state before the new `plan-raw-v{N}.yaml`
+  is on disk. A crash between (1) and (4) leaves the new plan file
+  authoritative; on resume, the consistency check + `plan_version` read
+  from the symlink target will recover cleanly.
+- **`pending_tasks` recomputation.** After a plan write (initial or
+  revision), recompute as:
+  `pending_tasks[phase] = {task names in new_plan[phase]} − {names in completed_tasks[phase] with status ∈ {done, reused, skipped}}`.
+  Names with status `failed` or `invalidated` are eligible to re-enter
+  pending if the new plan re-adds them.
+- **`done` outcome is restricted to late gates.** Valid only when
+  `current_gate ∈ {G-K, G-W, G-report}`. If the gate skill proposes
+  `done` at G-plan, G-D, or G-I (or the user picks reply `D` at one of
+  those gates — option D should be suppressed there), the orchestrator
+  MUST reject the outcome with the message *"`done` is not valid at
+  this gate; propose `revise [feedback]` instead so the planner can
+  compress the remaining phases"* and re-prompt. This prevents an
+  early `done` from skipping K/W reasoning and producing an
+  incomplete final report.
+- **Force-approve audit trail (MAX_REVISIONS cap).** When
+  `revisions_count >= MAX_REVISIONS` and the gate proposes `revise`,
+  the orchestrator force-downgrades the outcome to `approve` so the
+  pipeline can advance. The audit trail MUST capture this clearly:
+  1. The gate file `gates/{NN}-G-<phase>.md` is written with a
+     `**FORCED APPROVAL**` banner at the top, recording the original
+     proposed outcome (`revise`), the feedback text, and the cap
+     value (e.g. *"Forced approve at MAX_REVISIONS=3; original
+     proposal was `revise "<feedback>"`"*).
+  2. The `gates[]` entry in `DIKW_STATE.json` adds two fields:
+     `"forced_by_cap": true` and `"original_outcome": "revise"` (with
+     the feedback preserved under `"original_feedback"`). The
+     `outcome` field stays `"approve"` so resume logic still routes
+     forward.
+  3. The user is shown a one-line warning in the banner:
+     *"⚠️ MAX_REVISIONS reached; auto-advancing. See gate file for
+     original proposal."*
+  Without this audit trail, a user reading the gate transcript sees
+  the gate suggest `revise` but the pipeline move forward with no
+  visible reason — looks like a bug.
+- **Task is complete iff all required files exist, are non-empty, and cover the task scope concisely (max ~1000 words).**
   Required files per phase (matches each sub-skill's contract):
   - **D** (`insights/data/D{NN}-.../`): `report.md` + `analysis.py`
   - **I** (`insights/information/I{NN}-.../`): `report.md` + `analysis.py`
@@ -470,15 +582,18 @@ summarizing what was changed, so the upgrade is auditable.
   complete** — the orchestrator took a shortcut or the sub-skill failed
   its contract. The pre-gate check (below) must override the gate's
   proposal with
-  `revise <phase> "task X missing analysis.py — re-run /dikw-<phase> <task>"`.
+  `revise "task X missing analysis.py — re-run /dikw-<phase> <task>"`.
 - NEVER re-run a task that meets the "complete iff" rule above
   unless the gate explicitly invalidated it.
 - **Pre-gate artifact check (runs automatically before `/dikw-gate`):**
-  For every task in `completed_tasks[current_phase]`, verify its folder
-  contains both required files. Missing artifacts → override the
-  gate's proposed outcome with `revise <current_phase>` and list
-  each offending task in the gate feedback. Do this inside the
-  orchestrator before calling `/dikw-gate`, not after.
+  For every entry in `completed_tasks[current_phase]` whose status is
+  `done` or `reused`, verify its folder contains the required files
+  (D/I: report.md + analysis.py; K/W: report.md). Entries with status
+  `skipped`, `failed`, or `invalidated` are NOT checked here — they
+  carry no artifact contract. Missing artifacts on a `done`/`reused`
+  entry → override the gate's proposed outcome with `revise` (back to
+  plan) and list each offending task in the gate feedback. Do this
+  inside the orchestrator before calling `/dikw-gate`, not after.
 - **Sub-skill invocation is mandatory.** The orchestrator MUST invoke
   `/dikw-context` and `/dikw-<phase>` once per task. It MUST NOT
   perform the analysis itself via Bash/Write/Edit. Violations are
@@ -488,8 +603,8 @@ summarizing what was changed, so the upgrade is auditable.
   `/dikw-gate` once per gate (`G-plan`, `G-D`, `G-I`, `G-K`, `G-W`,
   `G-report`). It MUST NOT write a "Proposed: approve" summary inline.
   `/dikw-gate` is the step that genuinely asks "given all evidence so
-  far, should we revise the plan, revise the current phase, jump to
-  report, or approve?" Skipping it turns every gate into an
+  far, should we revise (back to plan), jump to report, or approve?"
+  Skipping it turns every gate into an
   orchestrator self-rubber-stamp and defeats the purpose of gates.
   Forbidden shortcuts at step=gate:
     - Writing the gate file (`gates/G-<phase>.md`) via Write/Edit.
@@ -515,11 +630,11 @@ summarizing what was changed, so the upgrade is auditable.
 - Every human gate presentation MUST end with the five lettered options:
   `(A) accept gate's recommendation · (B: <feedback>) override with your
   own feedback · (C) approve as-is · (D) done / jump to report · (E) cancel`.
-  Do NOT use the verbose free-text vocabulary (`approve / revise <phase>
+  Do NOT use the verbose free-text vocabulary (`approve / revise
   [feedback] / done / cancel`) in the prompt line — the letters map to
   those outcomes internally (see `dikw-gate/SKILL.md` Step 5 mapping table).
 - The final report MUST address the original question — if it doesn't,
-  `G-report` should return `revise <phase>` with feedback on what's missing.
+  `G-report` should return `revise` with feedback on what's missing.
 
 ## Estimated duration
 

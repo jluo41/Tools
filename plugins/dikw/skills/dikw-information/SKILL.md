@@ -59,7 +59,7 @@ Steps
 
 3. Check if report already exists:
    - Path: `{snapshot_dir}/insights/information/I{NN}-{task_name}/report.md`
-   - If exists and >100 bytes: print "Report exists, skipping." and stop
+   - If exists and non-empty: print "Report exists, skipping." and stop
 
 4. Read context:
    - Read D-level reports from `{snapshot_dir}/insights/data/*/report.md`
@@ -76,7 +76,7 @@ Steps
 
 7. Write report:
    - Path: `{snapshot_dir}/insights/information/I{NN}-{task_name}/report.md`
-   - Minimum 300 words
+   - Concise and accurate; max ~1000 words
 
 Report format:
 
@@ -97,7 +97,7 @@ Definition of done (all must be true before declaring success)
 
 - [ ] `analysis.py` **written** to `insights/information/I{NN}-{task_name}/analysis.py`
 - [ ] `analysis.py` **executed** (`python3 analysis.py` ran to completion)
-- [ ] `report.md` **exists** in the same folder and is >100 bytes
+- [ ] `report.md` **exists** in the same folder, is non-empty, and covers the task scope concisely (max ~1000 words)
 - [ ] Any charts referenced in the report exist as PNGs in the same folder
 
 Writing `report.md` directly without a corresponding `analysis.py` is a

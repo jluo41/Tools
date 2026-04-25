@@ -18,7 +18,7 @@ Runtime model (5 concepts)
 | **Phase** | `plan` / `D` / `I` / `K` / `W` / `report` / `done` — session state |
 | **Step** | `task` / `gate` — every phase runs these two, in order |
 | **Task** | a specific item run during `step=task` (one for `plan`/`report`; 2–3 for D/I/K/W) |
-| **Gate** | a checkpoint run during `step=gate`; identifier `G-<phase>`; outcome is one of `approve` / `revise <phase> [feedback]` / `done` |
+| **Gate** | a checkpoint run during `step=gate`; identifier `G-<phase>`; outcome is one of `approve` / `revise [feedback]` / `done` (revise always routes back to plan) |
 
 The gate outcome is the ONLY routing vocabulary. Three values, no others.
 
@@ -247,16 +247,18 @@ Gate outcomes — the only routing vocabulary
 At every `step=gate`, the gate outcome is exactly one of:
 
 ```
-approve                     → current phase output is good; next forward phase
-revise <phase> [feedback]   → re-enter <phase>
-                                <phase>=current → redo current phase (add tasks)
-                                <phase>=earlier → go back to that phase
-                                <phase>=plan    → rewrite the plan (bumps plan_version)
-done                        → findings sufficient; jump to report
+approve              → current phase output is good; next forward phase
+revise [feedback]    → back to plan (always); plan_version bumps;
+                       /dikw-plan rewrites pending_tasks using `feedback`;
+                       pipeline restarts from plan
+done                 → findings sufficient; jump to report
 ```
 
-`/dikw-session` handles all of this automatically. Back-edges (e.g., G-K
-routing back to `plan` or `D`) are just `revise <phase>` outcomes.
+**Plan is the sole router for non-forward motion.** There is no
+`revise D`, `revise <current_phase>`, or `revise <earlier_phase>`.
+If a gate at G-K needs a different I-task, it routes K → plan and
+plan decides — never K → I directly. `/dikw-session` handles all
+of this automatically.
 
 
 Snapshot semantics

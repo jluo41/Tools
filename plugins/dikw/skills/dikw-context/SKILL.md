@@ -104,7 +104,7 @@ OUTPUT CONTRACT:
               (the saved, executable Python source — not an inlined heredoc).
               K / W tasks produce report.md only (reasoning-only phases).
               Missing artifacts fail the pre-gate artifact check in
-              /dikw-session and force a revise of the current phase.
+              /dikw-session and force a `revise` (back to plan).
 ```
 
 ---
@@ -209,7 +209,7 @@ phase is running, what tasks were added, and what feedback must be addressed.
 For each gate, extract:
   - gate name (`G-plan`, `G-D`, ...)
   - plan_version at time of gate (if applicable)
-  - outcome: `approve` | `revise <phase> [feedback]` | `done`
+  - outcome: `approve` | `revise [feedback]` | `done`
   - feedback text (free-form)
   - routes_to (where the outcome routed)
   - timestamp
@@ -244,12 +244,13 @@ BLOCKED conditions (ANY one triggers BLOCKED):
     Example: dedup_analysis says "use deduped data" but no clean dataset exists
   ✗ Task description references data that doesn't exist
     Example: plan says "compare arms" but no arm column found in D reports
-  ✗ A gate outcome said `revise <earlier_phase> ...` but the fix hasn't been done yet
+  ✗ A gate outcome said `revise ...` (back to plan) but the plan re-run
+    hasn't produced the needed output yet
   ✗ Context reveals the task's approach won't work
     Example: task says "run correlation" but D reports show only 1 numeric column
 
 SKIP conditions (ANY one triggers SKIP):
-  ○ Report already exists at the output path (and >100 bytes)
+  ○ Report already exists at the output path (and is non-empty)
   ○ A prior task in this session already covered this analysis
   ○ The plan was revised and this task is no longer in the current plan
   ○ A gate explicitly marked this task as unnecessary
@@ -265,9 +266,10 @@ EVALUATION:
 
   If BLOCKED:
     Blocker: {specific gap or missing prerequisite}
-    Fix: recommend gate outcome `revise <phase> "<feedback>"` where
-         <phase> is the level that must produce the missing evidence and
-         <feedback> is the task(s) to add there.
+    Fix: recommend gate outcome `revise "<feedback>"` (always back to plan);
+         `feedback` should describe what plan-v{N+1} needs to add or change
+         so the pipeline produces the missing evidence before re-entering
+         this phase.
     Fix description: {what needs to happen before this task can run}
 
   If SKIP:
@@ -314,10 +316,10 @@ for each task in plan:
 
     elif result.verdict == BLOCKED:
         # Route via the unified gate vocabulary:
-        # the recommended fix is always "revise <phase> <feedback>"
-        #   phase == current  → run new task here, then retry
-        #   phase == earlier  → go back, run fix task, roll forward
-        #   phase == plan     → bump plan_version, rewrite plan, restart
+        # the recommended fix is always "revise <feedback>" (back to plan).
+        # Plan reads the feedback, rewrites pending_tasks (adding tasks at
+        # any level, changing specs, or re-marking earlier tasks for re-run),
+        # and the pipeline restarts from plan.
 
     elif result.verdict == SKIP:
         mark task as skipped in DIKW_STATE.json
@@ -553,9 +555,10 @@ EVALUATION:
           Running arm comparison on this data would produce wrong results.
 
   Blocker: No deduped dataset available
-  Fix: recommend gate outcome `revise D "create_deduped_dataset:
+  Fix: recommend gate outcome `revise "create_deduped_dataset:
          deduplicate by invitation_id, save clean parquet, recompute
-         engagement_baseline on clean data"`
+         engagement_baseline on clean data"` (back to plan; plan will
+         add this as a new D-task in plan-v{N+1})
 ───────────────────────────────────────────
 ```
 

@@ -1,6 +1,6 @@
 ---
 name: dikw-planner
-description: Executes the plan phase of a DIKW session. Writes or revises plan-raw-v{N}.yaml by invoking /dikw-plan. Returns a structured status the orchestrator uses to route. Do not modify DIKW_STATE.json.
+description: Executes the plan phase of a DIKW session. Invokes /dikw-context then /dikw-plan to write or revise plan-raw-v{N}.yaml. Returns a structured status the orchestrator uses to route. Do not modify DIKW_STATE.json.
 tools: Read, Write, Grep, Glob, Skill
 model: sonnet
 ---
@@ -21,14 +21,16 @@ the plan task and report back.
 ## Steps
 
 1. Invoke `Skill("dikw-context", args="plan <task_name> <snapshot_dir>")`.
-   - If the verdict is `BLOCKED` or `SKIP`, stop and return that status
-     verbatim; do not invoke the phase skill.
-2. If verdict is `READY`, invoke `Skill("dikw-plan", args="<task_name> <snapshot_dir>")`.
+   - Verdict `BLOCKED` → return `status=blocked` with the context's reason; DO NOT invoke `/dikw-plan`.
+   - Verdict `SKIP`    → return `status=skipped` with the context's reason; DO NOT invoke `/dikw-plan`.
+   - Verdict `READY`   → continue to step 2.
+2. Invoke `Skill("dikw-plan", args="<task_name> <snapshot_dir>")`.
    Pass any `feedback` through as part of the args so the plan skill can
-   incorporate it.
-3. Verify the file contract:
-   - `sessions/<aim>/plan/plan-raw-v{N}.yaml` exists
-   - It has `goal` and a per-level task list within `MAX_TASKS_PER_LEVEL`.
+   incorporate it. The phase skill's own contract (see `dikw-plan/SKILL.md`
+   § "Steps") owns plan-file requirements — do not re-define them here.
+   - If the skill returns successfully, return `status=ok`.
+   - If the skill raises or produces unparseable YAML, return
+     `status=failed` with a short diagnostic.
 
 ## Return (structured summary, ≤ 200 words)
 

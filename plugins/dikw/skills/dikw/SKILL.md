@@ -80,7 +80,8 @@ Pipeline
            delegate: /dikw-session       {snapshot_dir} {aim} [question]
        runs phases plan → D → I → K → W → report → done.
        Each phase has 2 steps: task (execute work) then gate (review + outcome).
-       Gate outcomes: approve / revise <phase> [feedback] / done.
+       Gate outcomes: approve / revise [feedback] / done.
+       revise always routes back to plan (the single router).
        Writes into insights/ + sessions/{aim}/.
 ```
 
@@ -142,6 +143,16 @@ Numbering rules:
     Examples: `D01-cgm_overview`, `I02-diurnal_profile`, `K01-pattern_synthesis`,
     `W01-recommendations`. Gate-added tasks get the next number within their level.
   - Task name (without `{L}{NN}-`) stays the canonical key in `plan-raw.yaml`.
+  - **NN is monotonic by design — slots are never recycled.**
+    If plan-v2 drops a task that ran in plan-v1 (e.g. `D02`), the
+    `D02-...` folder remains on disk for audit (status `invalidated`
+    in `completed_tasks`). A new task added in plan-v3 gets `D04`,
+    not `D02`. This guarantees that any external reference to
+    `D02-{task_name}/` keeps resolving to the same artifacts across
+    plan revisions, even if the task is no longer counted toward the
+    current plan's gate or final report. The trade-off is that the
+    on-disk folder list can grow longer than the active plan's task
+    list — that is expected.
 
 
 Stage 0 — Resolve & detect

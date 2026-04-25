@@ -20,15 +20,16 @@ is to run exactly one task and report back.
 ## Steps
 
 1. Invoke `Skill("dikw-context", args="D <task_name> <snapshot_dir>")`.
-   - If the verdict is `BLOCKED` or `SKIP`, stop and return that status
-     verbatim; do not invoke the phase skill.
-2. If verdict is `READY`, invoke `Skill("dikw-data", args="<task_name> <snapshot_dir>")`.
-3. Verify the artifact contract at `insights/data/D{NN}-{task_name}/`:
-   - `analysis.py` exists (was saved AND executed — not inlined in a heredoc)
-   - `report.md` exists and is > 100 bytes
-4. If either file is missing or `report.md` is undersized, return
-   `status=failed` with a concrete diagnostic pointing to the missing
-   or oversized/undersized artifact.
+   - Verdict `BLOCKED` → return `status=blocked` with the context's reason; DO NOT invoke `/dikw-data`.
+   - Verdict `SKIP`    → return `status=skipped` with the context's reason; DO NOT invoke `/dikw-data`.
+   - Verdict `READY`   → continue to step 2.
+2. Invoke `Skill("dikw-data", args="<task_name> <snapshot_dir>")`.
+   The phase skill's own contract (see `dikw-data/SKILL.md` § "Definition
+   of done") owns artifact requirements — do not re-define them here.
+   - If the skill returns successfully, return `status=ok`.
+   - If the skill raises or its post-conditions are not met (per its own
+     definition of done), return `status=failed` with a short diagnostic
+     that points at the missing/wrong artifact.
 
 ## Return (structured summary, ≤ 200 words)
 
@@ -39,6 +40,10 @@ analysis_path:<abs path to analysis.py>     (when status=ok)
 summary:      2–3 sentences of key findings (columns profiled, quality issues, temporal shape)
 blocker:      <short text>                   (only when status=blocked)
 ```
+
+The orchestrator runs the pre-gate artifact check independently against
+disk; this agent's `status=ok` is a fast-path signal, not the
+authoritative completeness check.
 
 ## Rules
 

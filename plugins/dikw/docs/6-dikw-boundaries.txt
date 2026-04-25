@@ -1,0 +1,135 @@
+📐  DIKW — Layer Boundaries (the Contract)
+==========================================
+
+  The four DIKW layers ask different questions, use different
+  methods, read different inputs, and produce different outputs.
+  Each task skill enforces this — crossing layers is a contract bug.
+
+
+  🗺️  The four layers at a glance
+  --------------------------------
+
+  +--------+----------------------------+-----------+------------------+
+  | Phase  | Question                   | Method    | Output           |
+  +--------+----------------------------+-----------+------------------+
+  | 📊 D   | WHAT is in the data?       | 🐍 CODE   | 📋 facts         |
+  | 📈 I   | WHAT PATTERNS exist?       | 🐍 CODE   | 📈 patterns      |
+  | 🧠 K   | WHY do patterns exist?     | 💬 REASON | 💡 explanations  |
+  | 🎯 W   | WHAT SHOULD WE DO?         | 💬 REASON | 🎯 recos         |
+  +--------+----------------------------+-----------+------------------+
+
+
+  🔗  Reads / produces
+  --------------------
+
+   📥 source/         📥 source/ + D     📥 D + I reports   📥 D + I + K
+        |                  |                   |                  |
+        v                  v                   v                  v
+     +-----+            +-----+             +-----+            +-----+
+     | 📊D | ─────────> | 📈I | ──────────> | 🧠K | ─────────> | 🎯W |
+     +-----+            +-----+             +-----+            +-----+
+        |                  |                   |                  |
+        v                  v                   v                  v
+   📤 facts           📤 patterns         📤 explanations    📤 recos
+   + 🐍 analysis.py   + 🐍 analysis.py    (📄 md only)       (📄 md only)
+   + 🖼️  charts        + 🖼️  charts
+
+
+  🔍  Per-layer  IS / IS NOT
+  --------------------------
+
+  +---------------------------------------------------------------+
+  | 📊 D  —  Data                                                 |
+  |---------------------------------------------------------------|
+  |  ✅ IS                                                        |
+  |    describe what exists (cols, types, counts, distributions)  |
+  |    measure quality (nulls, dupes, anomalies)                  |
+  |    compute basic stats (mean, median, range)                  |
+  |    profile structure (what each row represents)               |
+  |    write 🐍 code that reads raw data and produces facts       |
+  |                                                               |
+  |  ❌ IS NOT                                                    |
+  |    finding patterns or correlations    ->  that's 📈 I        |
+  |    explaining why something exists     ->  that's 🧠 K        |
+  |    recommending actions                ->  that's 🎯 W        |
+  |                                                               |
+  |  ✅ Output is FACTS:                                          |
+  |    "42% of rows have null in column X"                        |
+  |  ❌ Output is NOT interpretations:                            |
+  |    "the high null rate suggests data quality issues"          |
+  +---------------------------------------------------------------+
+
+  +---------------------------------------------------------------+
+  | 📈 I  —  Information                                          |
+  |---------------------------------------------------------------|
+  |  ✅ IS                                                        |
+  |    finding relationships, correlations, distributions         |
+  |    detecting patterns across rows / columns / time            |
+  |    segmenting / clustering (if asked by plan)                 |
+  |    measuring statistical strength of patterns                 |
+  |                                                               |
+  |  ❌ IS NOT                                                    |
+  |    raw description          ->  📊 D                          |
+  |    causal explanation       ->  🧠 K                          |
+  |    recommendations          ->  🎯 W                          |
+  |                                                               |
+  |  ✅ Output is PATTERNS with measurements.                     |
+  |  ❌ Output does NOT explain WHY they happen.                  |
+  +---------------------------------------------------------------+
+
+  +---------------------------------------------------------------+
+  | 🧠 K  —  Knowledge                                            |
+  |---------------------------------------------------------------|
+  |  ✅ IS                                                        |
+  |    explain causal mechanisms behind 📈 I-level patterns       |
+  |    validate whether correlations represent real relationships |
+  |    synthesize rules / principles from multiple findings       |
+  |    identify knowledge gaps (what we still don't know)         |
+  |    distinguish causation from correlation                     |
+  |                                                               |
+  |  ❌ IS NOT                                                    |
+  |    running code or analyzing raw data    ->  📊 D / 📈 I      |
+  |    describing what's in the data         ->  📊 D             |
+  |    finding new patterns                  ->  📈 I             |
+  |    recommending actions                  ->  🎯 W             |
+  |                                                               |
+  |  ✅ Output is EXPLANATIONS:                                   |
+  |    "duplicates are caused by the retry mechanism..."          |
+  |  ❌ Output is NOT patterns:                                   |
+  |    "42% duplication rate correlates with message_type"        |
+  |  ❌ Output is NOT recommendations:                            |
+  |    "disable retries to reduce duplicates"                     |
+  +---------------------------------------------------------------+
+
+  +---------------------------------------------------------------+
+  | 🎯 W  —  Wisdom                                               |
+  |---------------------------------------------------------------|
+  |  ✅ IS                                                        |
+  |    strategic recommendations                                  |
+  |    trade-off analysis grounded in 🧠 K's explanations         |
+  |    next-step proposals (data, models, ops, escalation)        |
+  |                                                               |
+  |  ❌ IS NOT                                                    |
+  |    deriving new patterns     ->  back to 📈 I via plan        |
+  |    explaining mechanisms     ->  back to 🧠 K via plan        |
+  |                                                               |
+  |  ✅ Output is ACTIONABLE GUIDANCE:                            |
+  |    "disable retries" / "add CI gate for null %"               |
+  +---------------------------------------------------------------+
+
+
+  ⚠️  Why the contract matters
+  ----------------------------
+
+   📊 D and 📈 I are 🐍 CODE.    They produce analysis.py + 🖼️  charts.
+                                 They are re-runnable from disk.
+
+   🧠 K and 🎯 W are 📄 TEXT.    They read prior reports, never raw data.
+                                 They synthesize — they don't compute.
+
+  🚨 If a 🧠 K-task starts importing pandas, it's mis-classified —
+     that work belongs in 📈 I.
+
+  🚨 If a 📊 D-task says "this suggests...",
+     it has crossed into 🧠 K territory — strip the interpretation,
+     stick to facts.

@@ -62,7 +62,7 @@ Steps
 
 3. Check if report already exists:
    - Path: `{snapshot_dir}/insights/wisdom/W{NN}-{task_name}/report.md`
-   - If exists and >100 bytes: skip
+   - If exists and non-empty: skip
 
 4. Read all prior reports:
    - ALL D-level: `{snapshot_dir}/insights/data/*/report.md`
@@ -75,7 +75,7 @@ Steps
 
 6. Write report:
    - Path: `{snapshot_dir}/insights/wisdom/W{NN}-{task_name}/report.md`
-   - Minimum 400 words
+   - Concise and accurate; max ~1000 words
 
 Report format:
 

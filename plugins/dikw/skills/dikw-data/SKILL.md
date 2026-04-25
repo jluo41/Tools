@@ -60,7 +60,7 @@ Steps
 
 3. Check if report already exists:
    - Path: `{snapshot_dir}/insights/data/D{NN}-{task_name}/report.md`
-   - If exists and >100 bytes: print "Report exists, skipping." and stop
+   - If exists and non-empty: print "Report exists, skipping." and stop
 
 4. Read and analyze data:
    - List files in source_dir
@@ -74,7 +74,7 @@ Steps
 
 6. Write report:
    - Path: `{snapshot_dir}/insights/data/D{NN}-{task_name}/report.md`
-   - Minimum 300 words
+   - Concise and accurate; max ~1000 words
 
 Report format:
 
@@ -98,7 +98,7 @@ Definition of done (all must be true before declaring success)
 - [ ] `analysis.py` **executed** (`python3 analysis.py` ran to completion
       — not merely drafted). The script should produce `report.md` when
       run; any charts are saved as sibling PNGs.
-- [ ] `report.md` **exists** in the same folder and is >100 bytes
+- [ ] `report.md` **exists** in the same folder, is non-empty, and covers the task scope concisely (max ~1000 words)
 - [ ] Any charts referenced in the report exist as PNGs in the same folder
 
 Writing `report.md` directly via `Write`/`Edit` without a corresponding

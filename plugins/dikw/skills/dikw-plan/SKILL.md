@@ -58,6 +58,25 @@ Steps
    - Each task: `name` (short_lowercase) + `description` (specific to this
      data and complete enough to stand alone at Gate G-plan).
 
+   **Disambiguating revise feedback (revision mode only).** Every
+   non-forward gate outcome routes here, so the feedback text can come
+   from very different situations. The plan must figure out *which* and
+   respond accordingly — none of these go anywhere except plan, but the
+   action plan takes is different:
+
+   | Feedback shape | Likely cause | Plan's response |
+   |----------------|--------------|-----------------|
+   | "task X needs upstream <thing>; <thing> not in plan" | **Missing-task blocker** — context returned BLOCKED because a required predecessor doesn't exist in the plan | Add the missing task (often at an earlier level) and keep task X's name unchanged so its eventual run is still recognized |
+   | "task X needs upstream <thing>; <thing> hasn't run yet" | **Pending-upstream blocker** — predecessor exists in plan but not yet executed | DO NOT add a new task. Re-state the existing plan as `kept` and rely on phase ordering (the orchestrator will run the upstream task when its phase opens). If feedback looks like this, the gate likely fired too early — note it in `revision.feedback` so the orchestrator can resume forward |
+   | "task X assumed <X>; data says <Y>" | **Surprise / wrong assumption** — phase ran but found something that invalidates downstream specs | Modify the description of affected tasks (`modified` bucket) and possibly drop tasks that no longer make sense (`removed` bucket) |
+   | "task X execution bug — re-run /dikw-<phase> X" | **Pre-gate artifact failure** — the task's folder is missing required files | Keep task X by name (`kept`) so it re-runs; do not rename or duplicate |
+   | "skip remaining; question is descriptive only" | **Compression request** at G-K / G-W | Drop K and/or W tasks the user no longer wants. Use this only when the user explicitly asks to compress |
+
+   When the feedback shape is ambiguous, prefer `kept` + a tightened
+   description over wholesale rewrite — a leaner diff produces a
+   smaller `revision.changes.removed` list, which means fewer
+   invalidated entries in `completed_tasks` and a cleaner audit trail.
+
 3. Write the plan:
    - New plan version N = (max existing v{k}) + 1, or 1 if none.
    - Output path: `{snapshot_dir}/sessions/{aim}/plan/plan-raw-v{N}.yaml`
@@ -69,11 +88,18 @@ Steps
        triggered_by_gate: "G-D"
        feedback: "<feedback text>"
        changes:
-         - kept:     [<task names unchanged>]
-         - modified: [<task names with updated descriptions>]
-         - added:    [<new task names>]
-         - removed:  [<task names dropped from prior plan>]
+         kept:      { D: [...], I: [...], K: [...], W: [...] }
+         modified:  { D: [...], I: [...], K: [...], W: [...] }
+         added:     { D: [...], I: [...], K: [...], W: [...] }
+         removed:   { D: [...], I: [...], K: [...], W: [...] }
      ```
+     The `removed` map is **load-bearing** — the orchestrator reads it
+     after `/dikw-plan` returns and marks each removed task in
+     `completed_tasks[phase]` with status `invalidated`, so stale
+     findings are excluded from the pre-gate check and the final
+     report. If you genuinely keep a task across versions, include it
+     in `kept`, not `removed`. Bucketing per phase is required even
+     when a list is empty — emit `[]`.
 
 Required YAML format:
 

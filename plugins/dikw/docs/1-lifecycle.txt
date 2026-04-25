@@ -1,0 +1,107 @@
+⏱️  DIKW — End-to-End Lifecycle of  /dikw {folder} [question]
+=============================================================
+
+  Stages 0–4.5 are one-time outer setup, run by /dikw itself.
+  Stage 5 hands off to /dikw-session(-agent), which is the loop.
+
+
+  🏗️  Outer setup  (one-shot, owned by /dikw)
+  --------------------------------------------
+
+  +--------+
+  |  🔍 S0 |  Resolve & detect
+  +--------+  Subject-* / plain-data / existing DIKW project
+                compute resolved project root
+                |
+                v
+  +--------+
+  |  📷 S1 |  Snapshot
+  +--------+  reuse latest snapshot-<date>/ unless --new-snapshot
+                |
+                v
+  +--------+
+  |  🏗️ S2 |  Scaffold workspace
+  +--------+  📄 manifest.yaml | 📂 source/ | 📂 insights/ | 📂 sessions/ | 📂 tmp/
+                COPY data into source/   (or symlink with --symlink)
+                |
+                v
+  +--------+
+  | 🏷️ S2.5|  Compute session aim  ->  NN_{slug}
+  +--------+
+                |
+                v
+  +--------+
+  |  👀 S3 |  Layout preview
+  +--------+  /dikw-workspace layout {snapshot_dir}
+                prints path contract with ✅ / ⬜ markers
+                |
+                v
+  +--------+
+  |  🚦 S4 |  Gate (one human confirm)
+  +--------+  Part A: 🎭 choose gate persona (locked for whole session)
+                Part B: proceed? yes / dry-run / revise / cancel
+                |
+                v
+  +--------+
+  | 🔍 S4.5|  Initial explore  (snapshot-level, once per snapshot)
+  +--------+  /dikw-explore  ->  📄 exploration/explore_notes.md
+                |
+                v
+  +--------+
+  |  🔁 S5 |  Run session  (THE LOOP)
+  +--------+
+         |
+         |  if --agents:  🧩 /dikw-session-agent  {snapshot} {aim} [Q]
+         |  else:         💬 /dikw-session        {snapshot} {aim} [Q]
+         |
+         |  ┌───────────────────────────────────────────────┐
+         |  │ ♻️  State-vs-disk consistency check (FIRST)  │
+         |  │ for entry in completed_tasks with status      │
+         |  │   ∈ {✅ done, ♻️ reused}:                     │
+         |  │     if folder/artifacts missing on disk →     │
+         |  │       demote status to ❌ failed              │
+         |  │       re-add name to pending_tasks            │
+         |  │ runs BEFORE the loop re-enters                │
+         |  └───────────────────────────────────────────────┘
+         v
+
+
+  🔁  Inner session loop  (Stage 5 — owned by /dikw-session*)
+  ------------------------------------------------------------
+
+   📋 plan ──> 📊 D ──> 📈 I ──> 🧠 K ──> 🎯 W ──> 📝 report ──> ✅ done
+      ^          |        |        |         |          |
+      |          |        |        |         |          |
+      +----------+--------+--------+---------+----------+
+           🔄 every "revise [feedback]" routes back to plan
+
+              every phase is exactly:
+
+              +--------------------+     +--------------------+
+              |  ⚙️  step = task   | --> |  🚦 step = gate    |
+              +--------------------+     +--------------------+
+                 for t in pending:          /dikw-gate proposes
+                   🔍 dikw-context          ✅ approve
+                   🔧 dikw-<phase>          🔄 revise [feedback]
+                                            🏁 done
+
+
+  📅  Timeline view
+  -----------------
+
+  t = 0        🧑  user types  /dikw {folder} "question"
+  t = setup    ⚙️  S0..S4   resolve, snapshot, scaffold, layout, confirm
+  t = explore  🔍  S4.5      one-time exploration  (⏭️ skipped if cached)
+  t = session  🔁  S5        📋 plan -> 📊 D -> 📈 I -> 🧠 K -> 🎯 W -> 📝 report -> ✅ done
+                             (🚦 gate after every phase; human may pause)
+  t = end      ✅  artifacts under sessions/{aim}/ + insights/
+
+
+  📌  Snapshot semantics
+  ----------------------
+
+  First run on folder    ->  📷 create snapshot-<date>/ + run 🔍 /dikw-explore
+  Re-run (default)       ->  ♻️  reuse latest snapshot; insights accumulate
+  --new-snapshot         ->  🆕 force a fresh snapshot folder
+  --re-explore           ->  🔄 re-run /dikw-explore on existing snapshot
+  --dry-run              ->  👀 print layout + plan, exit before running

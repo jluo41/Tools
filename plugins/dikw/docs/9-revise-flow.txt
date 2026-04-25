@@ -1,0 +1,145 @@
+🔄  DIKW — Revise-Plan Reconciliation Flow
+===========================================
+
+  When a 🚦 gate proposes  🔄 revise [feedback]  ,  five things happen
+  in a STRICT order — every back-edge in the state machine routes
+  through this flow, regardless of which gate fired.
+
+  💾 DIKW_STATE.json is written LAST.  This makes the on-disk plan file
+  authoritative if the session is killed mid-flow.
+
+
+  🎬  The 5 steps  (must run in order)
+  ------------------------------------
+
+  🚦 Gate proposes  🔄 revise [feedback]
+        │
+        ▼
+  ┌─────────────────────────────────────────────────────────────┐
+  │ 1️⃣  /dikw-context plan {snapshot_dir}                       │
+  │     📥 explore + ALL reports + ALL gate files + new feedback│
+  │     → returns full revision context                          │
+  └─────────────────────────────────────────────────────────────┘
+        │
+        ▼
+  ┌─────────────────────────────────────────────────────────────┐
+  │ 2️⃣  /dikw-plan {snapshot_dir} "<feedback>"                  │
+  │     ✍️  write   📄 plan-raw-v{N}.yaml                       │
+  │     🔗 update  plan-raw.yaml symlink → v{N}                 │
+  │     ⚠️  BOTH actions complete BEFORE this step returns      │
+  └─────────────────────────────────────────────────────────────┘
+        │
+        ▼
+  ┌─────────────────────────────────────────────────────────────┐
+  │ 3️⃣  Reconcile completed_tasks                               │
+  │     read  📄 plan-raw-v{N}.yaml  →  revision.changes.removed│
+  │     for each removed name in each phase:                    │
+  │       set entry.status = 🚫 "invalidated"                   │
+  │     (folder on disk is kept; only state changes)            │
+  └─────────────────────────────────────────────────────────────┘
+        │
+        ▼
+  ┌─────────────────────────────────────────────────────────────┐
+  │ 4️⃣  Recompute pending_tasks                                 │
+  │     pending_tasks[phase] =                                   │
+  │       {names in new_plan[phase]}                             │
+  │     − {names in completed_tasks[phase]                       │
+  │            with status ∈ {✅ done, ♻️ reused, ⏭️ skipped}}   │
+  │     ❌ failed and 🚫 invalidated names CAN re-enter pending  │
+  │        if the new plan re-adds them                          │
+  └─────────────────────────────────────────────────────────────┘
+        │
+        ▼
+  ┌─────────────────────────────────────────────────────────────┐
+  │ 5️⃣  Write 💾 DIKW_STATE.json  (the LAST write)              │
+  │     plan_version       = N                                   │
+  │     current_phase      = "plan"                              │
+  │     current_step       = "task"                              │
+  │     revisions_count    += 1                                  │
+  │     completed_tasks    = (reconciled from step 3)            │
+  │     pending_tasks      = (recomputed from step 4)            │
+  │     gates[].outcome    = "revise" + feedback                 │
+  └─────────────────────────────────────────────────────────────┘
+        │
+        ▼
+  🔁 Loop re-enters at  📋 plan · step=task
+
+
+  ⚠️  Why this order matters
+  --------------------------
+
+  💥  If you bumped plan_version BEFORE writing plan-raw-v{N}.yaml,
+      a crash between the two would leave 💾 state pointing at a
+      file that doesn't exist.
+
+  💥  If you reconciled completed_tasks BEFORE the new plan was on
+      disk, the reconciliation has nothing to read from.
+
+  💥  If you wrote DIKW_STATE.json before reconciliation, the state
+      would briefly contain stale completed_tasks for the new plan
+      version — gates that resume at that moment would mis-judge
+      completeness.
+
+  ✅  With this ordering, the new plan file becomes the single
+      authoritative artifact. State catches up last and never
+      claims more than disk can prove.
+
+
+  ♻️  Crash-recovery matrix  (what survives, what doesn't)
+  ---------------------------------------------------------
+
+  +---------------------+----------------------------------------+
+  | 💥 Killed between…  | 🩹 On resume, the orchestrator will…   |
+  +---------------------+----------------------------------------+
+  | 🚦 propose & step 1 | re-fire the gate proposal              |
+  | step 1 & step 2     | re-load context, re-run /dikw-plan     |
+  | step 2 mid-write    | /dikw-plan rewrites v{N} idempotently  |
+  | step 2 & step 3     | symlink already points at v{N};        |
+  |                     | startup reads it, then reconciles      |
+  | step 3 & step 4     | reconciliation re-runs (idempotent —   |
+  |                     | re-marking invalidated is a no-op)     |
+  | step 4 & step 5     | recompute re-runs from new_plan +      |
+  |                     | reconciled completed_tasks (still in   |
+  |                     | RAM until step 5; on cold start, the   |
+  |                     | startup consistency check rebuilds it) |
+  +---------------------+----------------------------------------+
+
+  All five steps are idempotent up to the point of writing
+  💾 DIKW_STATE.json — running them twice on the same inputs
+  produces the same outputs.
+
+
+  🎯  What the planner must emit  (the load-bearing contract)
+  -----------------------------------------------------------
+
+  📄 plan-raw-v{N}.yaml MUST include a top-level revision block:
+
+  ```yaml
+  revision:
+    from_version: {N-1}
+    triggered_by_gate: "G-D"
+    feedback: "<verbatim text>"
+    changes:
+      kept:      { D: [...], I: [...], K: [...], W: [...] }
+      modified:  { D: [...], I: [...], K: [...], W: [...] }
+      added:     { D: [...], I: [...], K: [...], W: [...] }
+      removed:   { D: [...], I: [...], K: [...], W: [...] }
+  ```
+
+  Empty buckets emit  []  — never omit them.
+
+  The orchestrator in step 3 reads ONLY  changes.removed  to drive
+  invalidation.  If a task that should have been dropped is missed
+  in  removed, it will pollute the next gate's completeness check.
+
+
+  🔗  See also
+  -------------
+
+  📊 docs/8-task-status.txt           — what each status means
+  📐 docs/2-state-machine.txt         — phase fan-in diagram
+  📋 dikw-plan/SKILL.md               — feedback disambiguation
+                                        table (missing-task vs
+                                        pending-upstream blockers)
+  ♻️  dikw-session/SKILL.md           — Plan-version write ordering
+                                        rule + recovery section

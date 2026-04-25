@@ -21,14 +21,17 @@ owns all state.
 ## Steps
 
 1. Invoke `Skill("dikw-context", args="K <task_name> <snapshot_dir>")`.
-   - If the verdict is `BLOCKED` or `SKIP`, stop and return that status
-     verbatim; do not invoke the phase skill.
-2. If verdict is `READY`, invoke `Skill("dikw-knowledge", args="<task_name> <snapshot_dir>")`.
-   - Before running, ensure you have read **all** existing D and I
-     reports: `insights/data/*/report.md` + `insights/information/*/report.md`.
-3. Verify the artifact contract at `insights/knowledge/K{NN}-{task_name}/`:
-   - `report.md` exists and is > 100 bytes
-   - No stray `analysis.py` or chart files (K is text-only)
+   - Verdict `BLOCKED` → return `status=blocked` with the context's reason; DO NOT invoke `/dikw-knowledge`.
+   - Verdict `SKIP`    → return `status=skipped` with the context's reason; DO NOT invoke `/dikw-knowledge`.
+   - Verdict `READY`   → continue to step 2.
+2. Invoke `Skill("dikw-knowledge", args="<task_name> <snapshot_dir>")`.
+   The phase skill's own contract (see `dikw-knowledge/SKILL.md`
+   § "Definition of done") owns artifact requirements — do not re-define
+   them here. The phase skill reads upstream D and I reports as part of
+   its workflow. K is text-only — no analysis.py expected.
+   - If the skill returns successfully, return `status=ok`.
+   - If the skill raises or its post-conditions are not met (per its own
+     definition of done), return `status=failed` with a short diagnostic.
 
 ## Return (structured summary, ≤ 200 words)
 

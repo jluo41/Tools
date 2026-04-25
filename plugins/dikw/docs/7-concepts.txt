@@ -1,0 +1,214 @@
+🗂️  DIKW — 5 Core Concepts Explained
+=====================================
+
+  The five terms form a strict nesting:
+  ⚙️ Stage  >  🔄 Phase  >  ⚡ Step  >  (🔧 Task | 🚦 Gate)
+
+  Each section below zooms one layer deeper.
+
+
+  =========================================================
+  🏗️  CONCEPT 1 — STAGE  (outer setup, owned by /dikw)
+  =========================================================
+
+  ⚙️  Stages are one-time workspace-setup steps that run
+  BEFORE the session starts.  They are not analysis.
+
+  +------+  +------+  +-------+  +--------+  +------+  +------+
+  | 🔍S0 |->| 📷S1 |->| 🏗️S2 |->| 🏷️S2.5|->| 👀S3 |->| 🚦S4 |
+  |detct |  | snap |  |scaffld|  |gen aim |  |layout|  | gate |
+  +------+  +------+  +-------+  +--------+  +------+  +------+
+                                                             |
+                                                        ✅ confirm?
+                                                             |
+                                           +--------+        v
+                                           | 🔍S4.5 |  +--------+
+                                           | explore|  | 🔁 S5  |
+                                           +--------+  |session |  <- 🔄 THE LOOP
+                                                |      +--------+
+                                                |
+                                                v  (one-time per 📷 snapshot)
+                                        📄 exploration/explore_notes.md
+
+  ⚙️  Stages are numbered, finite, and non-repeating.
+  🔁  S5 (session) is the only stage that loops internally.
+
+
+  =========================================================
+  🔄  CONCEPT 2 — PHASE  (named states inside 🔁 S5 session)
+  =========================================================
+
+  🔄  Phases are the states of the analysis state machine.
+  The session moves forward through phases.  Any non-forward
+  outcome always routes back to 📋 plan — never cross-phase direct.
+
+       G-📋    G-📊     G-📈     G-🧠     G-🎯    G-📝
+         |        |       |       |       |        |
+  📋 ───+─► 📊 ──+─► 📈 ─+─► 🧠 ─+─► 🎯 ─+─► 📝 ──► ✅ done
+   ▲          │       │       │       │       │
+   │          │       │       │       │       │
+   └──────────┴───────┴───────┴───────┴───────┘
+          every 🔄 "revise [feedback]" routes here
+     (📋 plan re-decides pending_tasks; restarts from plan)
+
+  There are 7 phases:
+  📋 plan | 📊 D | 📈 I | 🧠 K | 🎯 W | 📝 report | ✅ done
+
+  ✅ "done" is terminal — no steps, no gate.
+
+
+  =========================================================
+  ⚡  CONCEPT 3 — STEP  (sub-structure inside each phase)
+  =========================================================
+
+  ⚡  Every phase (except ✅ done) runs exactly TWO steps, in order.
+  No phase skips or re-orders them.
+
+  +------------------------------------------------------------+
+  |  🔄 phase = <any of 📋 plan / 📊 D / 📈 I / 🧠 K / 🎯 W> |
+  |                                                            |
+  |  ⚙️  step 1:  🔧 task   --> execute the work              |
+  |       |                                                    |
+  |       v                                                    |
+  |  🚦  step 2:  gate   --> review + decide next move         |
+  |       |                                                    |
+  |       v                                                    |
+  |  outcome: ✅ approve / 🔄 revise [feedback] / 🏁 done      |
+  +------------------------------------------------------------+
+
+  ⚡  Step is a POSITION within a phase, not a unit of work.
+  "We are at phase=📊D, step=🚦gate" means D's work is done
+  and we are now reviewing it.
+
+
+  =========================================================
+  🔧  CONCEPT 4 — TASK  (work items inside step=task)
+  =========================================================
+
+  🔧  A task is a specific named unit of analysis.
+  Tasks run one at a time inside step=🔧task.
+
+  +-----------------------------------------------+
+  |  ⚙️  step = 🔧 task                            |
+  |-----------------------------------------------|
+  |  for each task in pending_tasks[phase]:        |
+  |                                               |
+  |    🔍 /dikw-context  <phase> <task>            |
+  |    verdict = ✅ READY | 🚫 BLOCKED | ⏭️  SKIP  |
+  |                                               |
+  |    if ✅ READY:                               |
+  |      🔧 /dikw-<phase>  <task>                 |
+  |      writes:  📂 insights/<L>/<LNN>-<slug>/   |
+  |                 📄 report.md                  |
+  |                 🐍 analysis.py  (📊D and 📈I) |
+  |                                               |
+  |    if 🚫 BLOCKED:  break -> jump to 🚦 gate   |
+  |    if ⏭️  SKIP:    mark + next task           |
+  |                                               |
+  +-----------------------------------------------+
+
+  📋  Task counts by phase:
+
+  +--------+-------+------------------------------------------+
+  | Phase  | Tasks | What each task does                      |
+  +--------+-------+------------------------------------------+
+  | 📋plan |   1   | write the analysis plan (YAML)           |
+  | 📊 D   |  2-3  | 🐍 CODE: profile raw data, measure qual. |
+  | 📈 I   |  2-3  | 🐍 CODE: find patterns, correlations     |
+  | 🧠 K   |  1-2  | 💬 REASON: explain why patterns exist    |
+  | 🎯 W   |  1-2  | 💬 REASON: recommend actions             |
+  | 📝rpt  |   1   | synthesize all findings into final doc   |
+  +--------+-------+------------------------------------------+
+
+  📂  Task folders are named  {L}{NN}-{slug}/
+    L  = 📊D | 📈I | 🧠K | 🎯W   (phase letter)
+    NN = 01, 02, ...               (next available within that level)
+  Example:  📂 insights/data/D01-col_overview/
+
+
+  =========================================================
+  🚦  CONCEPT 5 — GATE  (the single step=gate action)
+  =========================================================
+
+  🚦  A gate is the quality checkpoint at the END of every phase.
+  There is exactly one gate per phase; it reads everything and
+  proposes ONE outcome.
+
+  +---------------------------------------------------+
+  |  🚦 step = gate  (identifier: G-<phase>)          |
+  |---------------------------------------------------|
+  |                                                   |
+  |  🔍 /dikw-gate reads ALL of:                      |
+  |    📄 explore_notes.md    (snapshot-level)        |
+  |    📄 plan-raw-v{N}.yaml  (current plan)          |
+  |    📄 all prior gate files  (gates/*.md)          |
+  |    📄 all insights/*/report.md  (every phase)     |
+  |                                                   |
+  |  🎭 applies gate_persona (set once, locked)       |
+  |                                                   |
+  |  proposes exactly ONE outcome:                    |
+  |                                                   |
+  |    ✅ approve             --> next phase forward  |
+  |    🔄 revise [feedback]   --> back to 📋 plan     |
+  |    🏁 done                --> jump to 📝 report   |
+  |                                                   |
+  |  🧑 human (or --auto) accepts                    |
+  |  🤖 orchestrator applies the outcome             |
+  +---------------------------------------------------+
+
+  📋  Gate IDs (one per phase, in order):
+    G-📋plan  ->  G-📊D  ->  G-📈I  ->  G-🧠K  ->  G-🎯W  ->  G-📝report
+
+  💾  Gate files are written to:
+    📂 sessions/{aim}/gates/{NN}-G-{phase}.md
+  where NN is a session-wide sequential counter (00, 01, 02 ...).
+
+
+  =========================================================
+  📌  SUMMARY — how they nest
+  =========================================================
+
+  +----------+---------+---------------------------------------------+
+  | Concept  | Scope   | Plain definition                            |
+  +----------+---------+---------------------------------------------+
+  | ⚙️ Stage | /dikw   | one-time setup step before the session      |
+  | 🔄 Phase | session | named state in the analysis state machine   |
+  | ⚡ Step  | phase   | 🔧task OR 🚦gate — two per phase, always    |
+  | 🔧 Task  | step    | one named work item run during step=task    |
+  | 🚦 Gate  | step    | quality checkpoint that ends step=gate      |
+  +----------+---------+---------------------------------------------+
+
+  Reading from outermost to innermost:
+
+  🚀 /dikw
+   │
+   ├── ⚙️ Stage S0..S4  (setup)
+   │
+   └── ⚙️ Stage S5  (session)
+         │
+         ├── 🔄 Phase: 📋 plan
+         │     ├── ⚡ Step: 🔧 task  ->  🔧 Task: write plan
+         │     └── ⚡ Step: 🚦 gate  ->  🚦 Gate: G-plan
+         │
+         ├── 🔄 Phase: 📊 D
+         │     ├── ⚡ Step: 🔧 task  ->  🔧 Task: D01-col_overview
+         │     │                    ->  🔧 Task: D02-quality_check
+         │     └── ⚡ Step: 🚦 gate  ->  🚦 Gate: G-D
+         │
+         ├── 🔄 Phase: 📈 I
+         │     ├── ⚡ Step: 🔧 task  ->  🔧 Task: I01-correlation
+         │     └── ⚡ Step: 🚦 gate  ->  🚦 Gate: G-I
+         │
+         ├── 🔄 Phase: 🧠 K
+         │     ├── ⚡ Step: 🔧 task  ->  🔧 Task: K01-rule_extraction
+         │     └── ⚡ Step: 🚦 gate  ->  🚦 Gate: G-K
+         │
+         ├── 🔄 Phase: 🎯 W
+         │     ├── ⚡ Step: 🔧 task  ->  🔧 Task: W01-recommendations
+         │     └── ⚡ Step: 🚦 gate  ->  🚦 Gate: G-W
+         │
+         └── 🔄 Phase: 📝 report
+               ├── ⚡ Step: 🔧 task  ->  🔧 Task: final_output
+               └── ⚡ Step: 🚦 gate  ->  🚦 Gate: G-report
+                                             │
+                                             └── ✅ approve -> ✅ done
