@@ -1,7 +1,7 @@
 {
   "name": "haipipe",
-  "version": "1.0.0",
-  "description": "Skills for the haipipe data + NN + endpoint pipeline. Covers stages 0-2 (per-patient data contract), 1-4 (project-wide data build), 5 (model training), 6 (endpoint packaging), and per-project scaffolding.",
+  "version": "2.0.0",
+  "description": "Skills for the haipipe data + NN + endpoint pipeline. Tier-1 user umbrellas (/haipipe-data, /haipipe-nn, /haipipe-end, /haipipe-project, /haipipe-subject) parse intent and dispatch to per-stage / per-target / per-risk-profile Tier-2 specialists. Covers stages 0-2 (per-subject data contract), 1-4 (project-wide data build), 5 (model training), 6 (endpoint packaging + deploy targets: SageMaker, Databricks, Flask, MLflow), and per-project scaffolding.",
   "author": {
     "name": "Junjie Luo",
     "url": "https://github.com/jluo41"
@@ -17,6 +17,11 @@
     "endpoint",
     "modelinstance",
     "patient",
-    "cgm"
+    "cgm",
+    "sagemaker",
+    "databricks",
+    "mlflow",
+    "flask",
+    "orchestrator"
   ]
 }
