@@ -1,0 +1,146 @@
+🎯 haipipe-toolkit v2 — Architecture Overview
+==============================================
+
+Two-tier skill plugin. Tier 1 user-facing umbrellas parse intent and
+dispatch (via Skill()) to Tier 2 specialists. Each umbrella also owns
+SHARED ref/ and fn/ docs that specialists read.
+
+
++--------------------------------------------------------------------+
+|                  🧑 User types one umbrella command                 |
+|   /haipipe-data | /haipipe-nn | /haipipe-end                       |
+|   /haipipe-project | /haipipe-subject                              |
++--------------------------------------------------------------------+
+                                |
+                                v
++--------------------------------------------------------------------+
+|             ⚙️ Umbrella parses intent on its routing AXIS           |
++--------------------------------------------------------------------+
+
+
+Routing axes — one per umbrella
+--------------------------------
+
+  +--------------------+----------------------+----------------------+
+  | Umbrella           | Axis                 | Specialist names     |
+  +--------------------+----------------------+----------------------+
+  | /haipipe-data      | STAGE                | -source -record      |
+  |                    |                      | -case -aidata        |
+  +--------------------+----------------------+----------------------+
+  | /haipipe-nn        | LAYER                | -algo -tuner         |
+  |                    |                      | -instance -modelset  |
+  +--------------------+----------------------+----------------------+
+  | /haipipe-end       | 3-AXIS (see below)   | -endpointset         |
+  |                    |                      | -meta -trig -post    |
+  |                    |                      | -src2input -input2src|
+  |                    |                      | -deploy-{sagemaker,  |
+  |                    |                      |  databricks,local,   |
+  |                    |                      |  mlflow}             |
+  +--------------------+----------------------+----------------------+
+
+  /haipipe-end's 3 axes:
+    Fn-type axis      meta | trig | post | src2input | input2src
+                      → /haipipe-end-<fn-type>
+    Artifact axis     package | test | review-overall | dashboard
+                      → /haipipe-end-endpointset
+    Deploy axis       deploy <target> + verb (test/monitor/teardown/review id)
+                      → /haipipe-end-deploy-<target>
+  | /haipipe-project   | RISK PROFILE         | -new (build)         |
+  |                    |                      | -inspect (read)      |
+  |                    |                      | -organize (modify)   |
+  +--------------------+----------------------+----------------------+
+  | /haipipe-subject   | (no decomposition)   | (handled inline)     |
+  +--------------------+----------------------+----------------------+
+
+
+Three dispatch modes
+---------------------
+
+  🔀 Mode 1 — Single dispatch (the common case)
+     User gives args that resolve to (axis-value, verb).
+     Umbrella issues exactly one Skill() call.
+
+         🧑 user
+           |
+           v
+         🎯 umbrella  ──Skill(...)──▶  🔧 specialist
+                                            |
+           ◀──── status/summary/artifacts/next ────
+
+  🔁 Mode 2 — No-args cross-scope dashboard (parallel fan-out)
+     User types just /haipipe-X with no args.
+     Umbrella issues N parallel Skill() calls, concatenates the tails.
+
+         🎯 umbrella
+           ├──Skill(specialist-1, "dashboard")─▶  tail 1
+           ├──Skill(specialist-2, "dashboard")─▶  tail 2
+           ├──Skill(specialist-3, "dashboard")─▶  tail 3
+           └──Skill(specialist-N, "dashboard")─▶  tail N
+                          │
+                          v
+                  🧑 user gets unified view
+
+  💡 Mode 3 — Inline (umbrella handles itself, no dispatch)
+     Cross-scope concerns the umbrella owns directly.
+
+         haipipe-data    "explain" / "L0"  → reads ref/0-overview.md
+         haipipe-nn      "L0" / "overview" → reads ref/overview.md
+         haipipe-end     no-args dashboard → cross-scope view (artifact + 3 deploy targets;
+                                              per-Fn-type skipped to avoid duplication)
+         haipipe-end     overview / explain → reads ref/0-overview.md (+ optional fn-type ref)
+         haipipe-project no-args overview  → cross-project list
+         haipipe-subject all 8 commands    → fully inline
+
+
+Specialist return contract (consistent across all umbrellas)
+-------------------------------------------------------------
+
+   +-----------+----------------------------------------------+
+   | status    | ok | blocked | failed                        |
+   | summary   | 2-3 sentences on what was done               |
+   | artifacts | [paths created/read/modified, ids, URLs]     |
+   | next      | suggested next command                       |
+   +-----------+----------------------------------------------+
+
+   If status != ok → umbrella surfaces summary, stops chaining.
+
+
+What each umbrella OWNS (shared with its specialists)
+------------------------------------------------------
+
+   /haipipe-data
+     ├── ref/0-overview.md           (cross-stage explainer)
+     └── fn/                         (procedures shared by all 4 specialists)
+         ├── fn-0-dashboard.md         fn-1-load.md
+         ├── fn-2-cook.md              fn-3-design-chef.md
+         ├── fn-4-design-kitchen.md    fn-explain.md
+         └── fn-review.md
+
+   /haipipe-nn
+     ├── ref/overview.md             (4-layer architecture, registry)
+     └── fn/                         (procedures shared by all 4 specialists)
+         ├── fn-dashboard.md           fn-review.md
+         ├── fn-generate.md            fn-test.md
+
+   /haipipe-end
+     ├── ref/0-overview.md             (Stage 6 architecture + inference pipeline,
+     │                                   shared by all 5 per-Fn-type children)
+     ├── ref/deploy-overview.md        (legacy cross-target deploy ref)
+     └── fn/fn-design.md               (SHARED design procedure — 5 per-Fn-type
+                                        children all read this when handling `design`)
+
+   /haipipe-project
+     └── ref/
+         ├── project-structure.md     (Track B: tasks/ groups)
+         └── code-structure.md        (Track A: code-dev/ + paired-example rule)
+
+
+Discipline
+----------
+
+  ✅ Specialists never modify state owned by another specialist.
+  ✅ Target deployers (-sagemaker etc.) READ Endpoint_Set produced by
+     -endpointset; they never write to it.
+  ✅ Each specialist also has its own ref/concepts.md for axis-specific
+     content (stage/layer/target/risk-profile).
+  ✅ Skill-first development: skill prompt is the source of truth.
