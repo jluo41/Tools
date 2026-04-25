@@ -10,8 +10,8 @@ Verified by reading:
   📂 platform-databrick-inference/       (deploy target: Databricks Model Serving)
 
 
-Verdict at a glance
---------------------
+🎯 Verdict at a glance
+-----------------------
 
   ✅ Per-Fn-type decomposition (5 skills)        maps cleanly to fn_endpoint/fn_*/
   ✅ haipipe-end-endpointset                     maps to Endpoint_Set + Endpoint_Pipeline classes
@@ -22,7 +22,7 @@ Verdict at a glance
 
 
 ─────────────────────────────────────────────────────────────────────────────
-Section 1 — Code locations (where the truth lives)
+📂 Section 1 — Code locations (where the truth lives)
 ─────────────────────────────────────────────────────────────────────────────
 
 📂 code/haipipe/endpoint_base/                 ← haipipe-end-endpointset's home
@@ -78,7 +78,7 @@ Section 1 — Code locations (where the truth lives)
 
 
 ─────────────────────────────────────────────────────────────────────────────
-Section 2 — Skill ↔ Code mapping (1:1 where it works)
+🗺️ Section 2 — Skill ↔ Code mapping (1:1 where it works)
 ─────────────────────────────────────────────────────────────────────────────
 
   +-----------------------------------+    +----------------------------------------------------+
@@ -145,7 +145,7 @@ Section 2 — Skill ↔ Code mapping (1:1 where it works)
 
 
 ─────────────────────────────────────────────────────────────────────────────
-Section 3 — Concrete inference flow (what happens at deploy + invoke time)
+🔄 Section 3 — Concrete inference flow (what happens at deploy + invoke time)
 ─────────────────────────────────────────────────────────────────────────────
 
   build time (offline, train side)                  deploy time              invoke time (live)
@@ -183,7 +183,7 @@ Section 3 — Concrete inference flow (what happens at deploy + invoke time)
 
 
 ─────────────────────────────────────────────────────────────────────────────
-Section 4 — 🚩 The one gotcha: target-aware Fn variants
+🚩 Section 4 — The one gotcha: target-aware Fn variants
 ─────────────────────────────────────────────────────────────────────────────
 
   Some Fn-types have DIFFERENT IMPLEMENTATIONS for different deploy targets.
@@ -215,7 +215,7 @@ Section 4 — 🚩 The one gotcha: target-aware Fn variants
 
 
 ─────────────────────────────────────────────────────────────────────────────
-Section 5 — fn_meta/ has 11 use-case implementations, NOT 11 Fn-types
+🧪 Section 5 — fn_meta/ has 11 use-case implementations, NOT 11 Fn-types
 ─────────────────────────────────────────────────────────────────────────────
 
   fn_meta/  (one per use case the platform serves):
@@ -243,7 +243,7 @@ Section 5 — fn_meta/ has 11 use-case implementations, NOT 11 Fn-types
 
 
 ─────────────────────────────────────────────────────────────────────────────
-Section 6 — Asymmetry between SageMaker and Databricks platform repos
+⚖️ Section 6 — Asymmetry between SageMaker and Databricks platform repos
 ─────────────────────────────────────────────────────────────────────────────
 
   platform-sagemaker-inference/                 platform-databrick-inference/
@@ -268,7 +268,7 @@ Section 6 — Asymmetry between SageMaker and Databricks platform repos
 
 
 ─────────────────────────────────────────────────────────────────────────────
-Section 7 — Verdict on whether the skills reflect the code
+✅ Section 7 — Verdict on whether the skills reflect the code
 ─────────────────────────────────────────────────────────────────────────────
 
   ✅ The 11-skill decomposition is grounded:

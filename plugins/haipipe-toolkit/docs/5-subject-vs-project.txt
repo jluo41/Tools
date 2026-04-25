@@ -49,8 +49,8 @@ a subject filter.
                                        📊 prediction returned
 
 
-How the per-subject folder is BUILT (5-step build)
----------------------------------------------------
+🏗️ How the per-subject folder is BUILT (5-step build)
+------------------------------------------------------
 
   Subject folder = global pipeline run with subject_id filter.
   Same code, smaller scope, same outputs (sliced).
@@ -71,8 +71,8 @@ How the per-subject folder is BUILT (5-step build)
   Reproducible: rm -rf + rebuild = equivalent folder.
 
 
-Flat-layout rule (build script strips wrapper segments)
---------------------------------------------------------
+📐 Flat-layout rule (build script strips wrapper segments)
+-----------------------------------------------------------
 
   Project-wide layout (KEPT in global stores):
      1-SourceStore/OhioT1DM/@OhioT1DMxmlv250302/CGM.parquet
@@ -93,8 +93,8 @@ Flat-layout rule (build script strips wrapper segments)
   → so you can always trace a subject file back to its global origin.
 
 
-Why split this way?
--------------------
+💡 Why split this way?
+-----------------------
 
   ✅ Endpoint doesn't need 4-AIDataStore — it needs ONE record.
   ✅ Subject doesn't need to re-train — it consumes the deployed model.
@@ -105,8 +105,8 @@ Why split this way?
   Inference    ──  serves 1 subject at a time, calls the endpoint
 
 
-Skill ownership of stages 0-2 (overlap is intentional)
--------------------------------------------------------
+🏷️ Skill ownership of stages 0-2 (overlap is intentional)
+----------------------------------------------------------
 
   +-------+--------------------------------------+----------------+
   | Stage | Project-wide context                 | Per-subject    |
@@ -125,8 +125,8 @@ Skill ownership of stages 0-2 (overlap is intentional)
   subject is `_WorkSpace/A-User-Store/UserGroup-*/Subject-*/{N}-Store/`.
 
 
-Hard rules for per-subject folders
------------------------------------
+📌 Hard rules for per-subject folders
+--------------------------------------
 
   ❌ NEVER create stages 3-6 inside a Subject-*/ folder.
   ✅ ALWAYS dataset-qualify the folder: Subject-{DatasetTag}-{id}.

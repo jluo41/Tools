@@ -18,8 +18,8 @@ SHARED ref/ and fn/ docs that specialists read.
 +--------------------------------------------------------------------+
 
 
-Routing axes — one per umbrella
---------------------------------
+📐 Routing axes — one per umbrella
+-----------------------------------
 
   +--------------------+----------------------+----------------------+
   | Umbrella           | Axis                 | Specialist names     |
@@ -37,14 +37,6 @@ Routing axes — one per umbrella
   |                    |                      |  databricks,local,   |
   |                    |                      |  mlflow}             |
   +--------------------+----------------------+----------------------+
-
-  /haipipe-end's 3 axes:
-    Fn-type axis      meta | trig | post | src2input | input2src
-                      → /haipipe-end-<fn-type>
-    Artifact axis     package | test | review-overall | dashboard
-                      → /haipipe-end-endpointset
-    Deploy axis       deploy <target> + verb (test/monitor/teardown/review id)
-                      → /haipipe-end-deploy-<target>
   | /haipipe-project   | RISK PROFILE         | -new (build)         |
   |                    |                      | -inspect (read)      |
   |                    |                      | -organize (modify)   |
@@ -52,9 +44,17 @@ Routing axes — one per umbrella
   | /haipipe-subject   | (no decomposition)   | (handled inline)     |
   +--------------------+----------------------+----------------------+
 
+  🚀 /haipipe-end's 3 axes (since it's the only umbrella that's 3-D):
+    🧠 Fn-type axis      meta | trig | post | src2input | input2src
+                         → /haipipe-end-<fn-type>
+    🔧 Artifact axis     package | test | review-overall | dashboard
+                         → /haipipe-end-endpointset
+    🚀 Deploy axis       deploy <target> + verb (test/monitor/teardown/review id)
+                         → /haipipe-end-deploy-<target>
 
-Three dispatch modes
----------------------
+
+🔀 Three dispatch modes
+------------------------
 
   🔀 Mode 1 — Single dispatch (the common case)
      User gives args that resolve to (axis-value, verb).
@@ -92,8 +92,8 @@ Three dispatch modes
          haipipe-subject all 8 commands    → fully inline
 
 
-Specialist return contract (consistent across all umbrellas)
--------------------------------------------------------------
+📋 Specialist return contract (consistent across all umbrellas)
+----------------------------------------------------------------
 
    +-----------+----------------------------------------------+
    | status    | ok | blocked | failed                        |
@@ -105,8 +105,8 @@ Specialist return contract (consistent across all umbrellas)
    If status != ok → umbrella surfaces summary, stops chaining.
 
 
-What each umbrella OWNS (shared with its specialists)
-------------------------------------------------------
+🏗️ What each umbrella OWNS (shared with its specialists)
+---------------------------------------------------------
 
    /haipipe-data
      ├── ref/0-overview.md           (cross-stage explainer)
@@ -135,8 +135,8 @@ What each umbrella OWNS (shared with its specialists)
          └── code-structure.md        (Track A: code-dev/ + paired-example rule)
 
 
-Discipline
-----------
+📌 Discipline
+--------------
 
   ✅ Specialists never modify state owned by another specialist.
   ✅ Target deployers (-sagemaker etc.) READ Endpoint_Set produced by

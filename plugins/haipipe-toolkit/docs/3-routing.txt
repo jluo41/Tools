@@ -7,8 +7,8 @@ common pattern:
    parse args → resolve (axis-value, verb) → choose dispatch mode → emit
 
 
-Pattern (applies to data / nn / project)
------------------------------------------
+🛠️ Pattern (applies to data / nn / project)
+---------------------------------------------
 
    Step 1   Parse $ARGUMENTS into tokens.
 
@@ -31,8 +31,8 @@ Pattern (applies to data / nn / project)
             present to user. If status != ok → stop chaining.
 
 
-Special routing — /haipipe-end (3-axis: Fn-type / artifact / deploy)
----------------------------------------------------------------------
+🚀 Special routing — /haipipe-end (3-axis: Fn-type / artifact / deploy)
+------------------------------------------------------------------------
 
    Step 1   Parse $ARGUMENTS.
 
@@ -72,8 +72,8 @@ Special routing — /haipipe-end (3-axis: Fn-type / artifact / deploy)
    Step 8   Dispatch:  Skill("haipipe-end-<X>", args=...)
 
 
-Walked example — /haipipe-end "deploy this Endpoint_Set to sagemaker"
-----------------------------------------------------------------------
+🎬 Walked example #1 — /haipipe-end "deploy this Endpoint_Set to sagemaker"
+----------------------------------------------------------------------------
 
    🧑 user types the command
         │
@@ -107,8 +107,8 @@ Walked example — /haipipe-end "deploy this Endpoint_Set to sagemaker"
    🎯 umbrella parses tail, surfaces to 🧑 user
 
 
-Walked example — /haipipe-data (no args) → cross-stage dashboard
------------------------------------------------------------------
+🎬 Walked example #2 — /haipipe-data (no args) → cross-stage dashboard
+-----------------------------------------------------------------------
 
    🧑 user: /haipipe-data
         │
@@ -126,8 +126,8 @@ Walked example — /haipipe-data (no args) → cross-stage dashboard
    └──────────────────────────────────────────────────────────┘
 
 
-Walked example — /haipipe-data explain → INLINE
-------------------------------------------------
+🎬 Walked example #3 — /haipipe-data explain → INLINE
+------------------------------------------------------
 
    🧑 user: /haipipe-data explain "what is a CaseFn?"
         │
@@ -144,8 +144,8 @@ Walked example — /haipipe-data explain → INLINE
    └──────────────────────────────────────────────────────────┘
 
 
-Argument flexibility (all umbrellas)
--------------------------------------
+🧩 Argument flexibility (all umbrellas)
+----------------------------------------
 
    Positional         /haipipe-data source cook
    Flexible order     /haipipe-data cook source
@@ -154,8 +154,8 @@ Argument flexibility (all umbrellas)
    Free-form NL       /haipipe-data "build a SourceFn for Dexcom"
 
 
-Verb maps differ per umbrella
-------------------------------
+🛠️ Verb maps differ per umbrella
+---------------------------------
 
    /haipipe-data     dashboard / load / cook / design-chef /
                      design-kitchen / review / explain
@@ -166,8 +166,8 @@ Verb maps differ per umbrella
                      overview / organize
 
 
-Disambiguation rules (all umbrellas, in priority order)
---------------------------------------------------------
+❓ Disambiguation rules (all umbrellas, in priority order)
+----------------------------------------------------------
 
    1. Axis unclear AND no keywords match → list axis options, WAIT.
    2. Verb unclear, axis clear           → default to `dashboard`.

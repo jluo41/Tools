@@ -95,8 +95,8 @@ Tools/plugins/haipipe-toolkit/
             └── SKILL.md                 8 commands handled inline
 
 
-Counts
-------
+📊 Counts
+----------
    5 umbrella skills (Tier 1, user-facing entry points)
   21 specialist skills (Tier 2)
   ─────────────────────────────
@@ -110,8 +110,8 @@ Counts
     5_subject/   1 standalone (no specialists)                   = 1
 
 
-Convention recap
------------------
+📌 Convention recap
+--------------------
   🎯 umbrella    = orchestrator; parses intent, dispatches via Skill()
   🔧 specialist  = executor; reads its own ref/concepts.md + umbrella's
                    shared fn/*.md; emits structured return tail

@@ -6,8 +6,8 @@ Project-wide build flow (left → right). Each Store is a folder under
 the other 6 stages are owned by an umbrella as labelled below.
 
 
-Build flow — what builds what
-------------------------------
+🏗️ Build flow — what builds what
+---------------------------------
 
   📥 INPUT                 ──── 🎯 /haipipe-data ────                 ──── 🎯 /haipipe-nn ────             ──── 🎯 /haipipe-end ────
 
@@ -24,8 +24,8 @@ Build flow — what builds what
                                                                                                          + ModelSet                  targets
 
 
-Stage → specialist mapping
----------------------------
+🗂️ Stage → specialist mapping
+------------------------------
 
   +-------+----------------+--------------------------------+----------------------------+
   | Stage | Store          | Builds (functions)             | Skill                      |
@@ -47,8 +47,8 @@ Stage → specialist mapping
   +-------+----------------+--------------------------------+----------------------------+
 
 
-Per-subject slice (inference time — see also 5-subject-vs-project.txt)
------------------------------------------------------------------------
+🧑‍⚕️ Per-subject slice (inference time — see also 5-subject-vs-project.txt)
+----------------------------------------------------------------------------
 
    _WorkSpace/A-User-Store/UserGroup-{dataset}/Subject-{id}/
    ├── 📂 0-RawDataStore/    ← subject's raw rows / files (FLAT)
@@ -67,8 +67,8 @@ Per-subject slice (inference time — see also 5-subject-vs-project.txt)
    simply CALLS the deployed endpoint built from project-wide 6-Endpoint.
 
 
-Build verbs that map to each stage (haipipe-data verb map)
------------------------------------------------------------
+🛠️ Build verbs that map to each stage (haipipe-data verb map)
+--------------------------------------------------------------
 
   +------------------+--------------------------------------------+
   | Verb             | What it does                               |
@@ -83,8 +83,8 @@ Build verbs that map to each stage (haipipe-data verb map)
   +------------------+--------------------------------------------+
 
 
-Compact form
-------------
+⚡ Compact form
+---------------
 
   📥 0-Raw → 📊 1-Source → 📝 2-Rec → 📂 3-Case → 🎲 4-AIData → 🧠 5-Model → 🚀 6-Endpoint
    input    └────────── /haipipe-data (S1-S4) ──────────┘  └ /haipipe-nn ┘ └ /haipipe-end ┘
