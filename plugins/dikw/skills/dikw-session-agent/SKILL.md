@@ -249,8 +249,26 @@ while current_phase != "done":
     # appears, the orchestrator wrote the gate decision itself —
     # fail-closed: treat the outcome as invalid and re-run.
 
-    if AUTO_PROCEED: auto-accept proposal
-    else:             wait for user (approve / revise [fb] / done)
+    # Attendance check — see "Gate attendance" rule below
+    timeout = DIKW_STATE.unattended_timeout    # null | 0 | N seconds
+    if timeout is None:
+        wait_for_user_indefinitely()           # 🧑 attended (default)
+    elif timeout == 0:
+        auto_accept_proposal_verbatim()        # 🤖 unattended (immediate)
+    else:
+        # ⏳ timed — print countdown banner, wait up to N seconds.
+        # Banner shows "awaiting (auto in {timeout}s)".
+        # If a human reply arrives before the timeout, use it.
+        # If the timer elapses with no reply, auto-accept the
+        # proposal verbatim (treat as reply A).
+        reply = wait_for_user(timeout_seconds=timeout)
+        if reply is None:                      # timer fired
+            auto_accept_proposal_verbatim()
+        else:
+            apply_user_reply(reply)
+    # Auto-accepted gate files include an "AUTO-ACCEPTED" banner
+    # (see /dikw-gate § "Auto-accept audit"). The proposal itself is
+    # not modified — `done`/`revise` constraints still apply.
 
     outcome = <accepted gate outcome>
     apply outcome:
@@ -401,7 +419,8 @@ Abstract shape: `NN_{domain}-{phenomenon}-{intent}`
     "strictness": 5,                      // 0-10; seeded from preset, optional override
     "ambition": 5,                        // 0-10; seeded from preset, optional override
     "notes": ""                           // free-text voice; optional, may be ""
-  }
+  },
+  "unattended_timeout": null              // null = attended (wait forever) | 0 = immediate auto | N = wait N seconds then auto-accept
 }
 ```
 
@@ -428,6 +447,27 @@ single gate; the override applies only to that gate firing and the
 `gate_persona` in state remains unchanged. If the field is missing
 (legacy state), default to `{preset: "balanced", strictness: 5,
 ambition: 5, notes: ""}` and log a migration note.
+
+**`unattended_timeout` controls who clicks the accept button at each
+gate.** Set once at `/dikw` Stage 4 from CLI flags; locked for the
+session.
+
+| Value | Mode | Behavior at every gate |
+|-------|------|------------------------|
+| `null` | 🧑 attended (default) | Wait indefinitely for human reply (A/B/C/D/E) |
+| `N > 0` | ⏳ timed | Print proposal + countdown; wait up to N seconds; if no reply, auto-accept the proposal verbatim (reply A) |
+| `0` | 🤖 unattended | No wait; auto-accept the proposal immediately |
+
+The field is read by both session skills before every gate firing.
+Auto-acceptance applies the gate's proposed outcome verbatim — the
+gate's proposal logic (and its `revise [feedback]`, `done` constraints)
+is unchanged. MAX_REVISIONS enforcement still fires; if the gate
+auto-accepts a `revise` past the cap, the force-approve audit trail
+records it normally.
+
+If the field is missing (legacy state), default to `null` (attended)
+and log a migration note. The deprecated `--auto` flag is accepted as
+an alias for `unattended_timeout=0`.
 
 Update after every task completion, every gate outcome, and every state
 transition. This file is the only source of truth for resume-after-compaction.
@@ -629,6 +669,24 @@ summarizing what was changed, so the upgrade is auditable.
   compress the remaining phases"* and re-prompt. This prevents an
   early `done` from skipping K/W reasoning and producing an
   incomplete final report.
+- **Gate attendance (`unattended_timeout`).** Read once per gate from
+  DIKW_STATE.json. Three modes:
+    - `null` — 🧑 attended (default). Wait indefinitely for a human
+      reply. The banner status reads `awaiting`.
+    - `N > 0` — ⏳ timed. Print the gate proposal, then wait up to
+      N seconds for a human reply. Banner status reads
+      `awaiting (auto in {N}s)`. If the timer fires first, auto-accept
+      the proposal verbatim (equivalent to reply `A`). If a reply
+      arrives, use it.
+    - `0` — 🤖 unattended. No wait. Auto-accept the proposal
+      immediately. Banner status reads `auto-accepted`.
+  Auto-acceptance never alters the gate's proposal — the gate's own
+  rules (`done` only at G-K/G-W/G-report; `revise` always to plan)
+  still apply. MAX_REVISIONS still fires; if the auto-accepted
+  outcome is `revise` past the cap, the force-approve audit trail
+  records it as usual.
+  The deprecated `--auto` CLI flag is accepted as an alias for
+  `unattended_timeout=0`.
 - **Force-approve audit trail (MAX_REVISIONS cap).** When
   `revisions_count >= MAX_REVISIONS` and the gate proposes `revise`,
   the orchestrator force-downgrades the outcome to `approve` so the
