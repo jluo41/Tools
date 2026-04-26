@@ -35,6 +35,15 @@ while [[ $# -gt 0 ]]; do
     shift
 done
 
+# Auto-detect parent workspace if --project was not given
+if [ -z "$PROJECT_PATH" ]; then
+    PARENT_DIR="$(dirname "$SCRIPT_DIR")"
+    if [ -d "$PARENT_DIR/.claude" ]; then
+        PROJECT_PATH="$PARENT_DIR"
+        echo "  Auto-detected workspace: $PROJECT_PATH"
+    fi
+fi
+
 # ─── 1. Marketplace registration ─────────────────────────────────────────────
 
 echo "Installing jluo41-tools marketplace..."
