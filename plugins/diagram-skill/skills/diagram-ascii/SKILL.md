@@ -321,6 +321,54 @@ Conventions:
 - **Refresh the punch-list table** at start of day and at wrap-up so the log opens and closes with a clear scoreboard.
 - **Pivots get a before/after**: explicitly show what was tried and abandoned vs. what's being done now, with one line of "why" underneath.
 
+## Use case: Daily session log (.txt + canvas append)
+
+When a working session ends, log it as **one** `.txt` per session and *append* it to the day's Excalidraw canvas. The canvas accumulates session-by-session; prior columns and any manual annotations you drew in Excalidraw are preserved.
+
+**File**: `YYMMDD-session-<slug>.txt` in `Daily/YYYY-MM-DD/`. Slug should be 2–4 hyphenated words naming the topic (e.g. `ref-repo-agent-stack`, `voice-bot-debug`).
+
+**Required sections** (each marked with `─§`):
+
+```
+─§ Timeline & user comments ────
+   ⏰ HH:MM  🧑 "verbatim quote or paraphrase"
+             🤖 one-line action you took
+   ⏰ HH:MM  🧑 next comment ...
+
+─§ What we did / converted ─────
+   📂 list of files / folders touched, before → after
+
+─§ Headline finding / comparison
+   the diagram payload of the session
+
+─§ Decisions ──────────────────
+   ✅ what we decided · ⏳ what we parked · ❌ what we ruled out
+```
+
+Style rules:
+
+- ⏰ timestamps lead every comment line — they're the spine of the file
+- 🧑 / 🤖 emoji split user voice from assistant action
+- One quoted phrase per user comment + one-line description of what changed
+- Decisions section ends every session — readers should know "what now" without reading the rest
+
+**Workflow** (see `diagram-ascii-canvas` SKILL for the scripts):
+
+```
+🤖 write YYMMDD-session-<slug>.txt
+        │
+        ▼
+🧑 review the .txt (Read the file, eyeball sections)
+        │
+        ├── ✏️  tweak           ──▶ 🤖 edit · re-preview · loop
+        │
+        └── ✅ "insert it"      ──▶ 🤖 txt-append-to-canvas.py
+                                     (new column on right edge,
+                                      prior content preserved)
+```
+
+**Important**: do NOT re-run `txt-to-canvas.py` (full rebuild) once the day's canvas exists — that wipes manual annotations. Always use `txt-append-to-canvas.py` for accretion.
+
 ## Logical relations (for argument-style diagrams)
 
 When diagramming a paper section, an idea, or a design rationale, the **logical glue** matters as much as the boxes. Use these primitives so progression / contrast / synthesis are visible at a glance.

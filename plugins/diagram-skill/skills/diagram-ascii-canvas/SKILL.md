@@ -1,6 +1,6 @@
 ---
 name: diagram-ascii-canvas
-description: Bundle a folder of ASCII `.txt` diagrams (output of diagram-ascii) into one Excalidraw canvas — screenshots each .txt as a PNG and embeds all of them into a single .excalidraw file laid out in a grid. Use when the user has multiple ASCII diagrams and wants to view them together, rearrange them, or draw connections between them. No re-drawing — just screenshot + embed.
+description: Bundle ASCII `.txt` diagrams into one Excalidraw canvas — two modes. (1) REBUILD: `txt-to-canvas.py` renders a folder of .txt into a multi-column canvas from scratch. (2) APPEND: `txt-append-to-canvas.py` adds ONE .txt as a new rightmost column to an existing canvas, preserving prior columns and manual Excalidraw annotations (arrows, sticky notes). Use rebuild for repo diagram/ folders that change. Use append for daily session-log accretion.
 ---
 
 # /diagram-ascii-canvas — Bundle ASCII diagrams into one Excalidraw file
@@ -93,6 +93,56 @@ The `§` symbol is the unambiguous trigger. The marker line itself is consumed (
 If you have a marker-less file you don't want to retrofit, opt into a blank-line fallback with `--blank-lines 2` (splits at runs of 2+ blank lines, but only when no markers are present).
 
 See `diagram-ascii` SKILL → "Section dividers" for the canonical convention.
+
+### Append vs rebuild — pick the right script
+
+```
+🔁 txt-to-canvas.py         ➕ txt-append-to-canvas.py
++--------------------------+ +--------------------------+
+| 🏗️  REBUILD whole canvas | | 🪄 APPEND ONE .txt as   |
+|    from .txt files in    | |    new rightmost column  |
+|    a folder              | |                          |
+|                          | |                          |
+| ❌ wipes manual edits    | | ✅ preserves prior cols  |
+|    (arrows, sticky notes,| |    AND manual arrows /   |
+|    re-arrangements)      | |    notes drawn in        |
+|                          | |    Excalidraw            |
+|                          | |                          |
+| 🎯 use for: refreshing a | | 🎯 use for: daily session|
+|    repo's diagram/ when  | |    log accretion (one    |
+|    .txt files change     | |    .txt per session)     |
++--------------------------+ +--------------------------+
+```
+
+```bash
+# append one .txt as a new rightmost column
+bin/txt-append-to-canvas.py canvas-260426.excalidraw new-session.txt
+
+# tune gap before the new column (default 300px)
+bin/txt-append-to-canvas.py canvas.excalidraw new.txt --col-gutter 200
+
+# blank-line fallback for marker-less .txt
+bin/txt-append-to-canvas.py canvas.excalidraw legacy.txt --blank-lines 2
+```
+
+The append script computes the new column's `x` from the right edge of all
+existing visible elements, so prior canvas content (including manual
+annotations you drew in Excalidraw) is left exactly where it is.
+
+**Recommended workflow for daily session logs**:
+
+```
+🤖 write YYMMDD-session-<slug>.txt
+   ▼
+🧑 Read the .txt, review                     ← gate: confirm before append
+   ▼  ✅ "insert it"
+🤖 txt-append-to-canvas.py canvas-YYMMDD.excalidraw <new>.txt
+   ▼
+🖼️  canvas grows by one column · old content untouched
+```
+
+After the day's canvas exists, **prefer append over rebuild** — rebuilding
+discards any annotations.
 
 ### 2. Share as a clickable URL (optional)
 
