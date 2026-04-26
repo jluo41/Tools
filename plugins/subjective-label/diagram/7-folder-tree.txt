@@ -1,0 +1,134 @@
+📂  Folder Trees — plugin source · project artifacts
+=====================================================
+
+  Two trees: the plugin code (this repo) and the {project_dir}/
+  the user runs commands against. No agent ever writes to the
+  former; everything lands in the latter.
+
+
+─§ 📦 Plugin source layout ─────────────────────────────────
+
+  📦 subjective-label/
+  │
+  ├── .claude-plugin/
+  │   └── plugin.json                    Claude Code plugin manifest
+  │
+  ├── skills/                            6 SKILL.md (router + 5 sub)
+  │   ├── subjective-label/              🚪 router
+  │   ├── sl-init/                       🚀 init project
+  │   ├── sl-iterate/                    🔁 one iteration
+  │   ├── sl-validate/                   📊 vs human κ
+  │   ├── sl-scale/                      🎯 batch corpus
+  │   └── sl-status/                     🔭 inspect state
+  │
+  ├── agents/                            9 worker agents
+  │   ├── moderator.md                   🧭 only one talks to 🧑
+  │   ├── sampler.md                     📥
+  │   ├── embedder.md                    📐
+  │   ├── classifier.md                  🧠
+  │   ├── prober.md                      🔍
+  │   ├── labeler-panel.md               👥
+  │   ├── disagreement-analyzer.md       ⚖️
+  │   ├── gallery-keeper.md              📚
+  │   └── validator.md                   📊
+  │
+  ├── personas/                          5 panel lenses
+  │   ├── close-reader.md                🎭 mandatory
+  │   ├── plain-reader.md                🎭 mandatory
+  │   ├── skeptic.md                     🎭 mandatory
+  │   ├── fast-patterns.md               🎭 optional
+  │   └── domain-expert.md               🎭 optional
+  │
+  ├── lib/                               🐍 Python utilities
+  │   ├── embed.py                       SBERT + FAISS
+  │   ├── classify.py                    logreg / SetFit
+  │   └── requirements.txt
+  │
+  ├── ref/                               📚 design references
+  │   ├── ref-architecture.md            ← read first
+  │   ├── ref-stages.md                  big · medium · small loops
+  │   ├── ref-cascade.md                 Tier 0 / 1 / 2
+  │   ├── ref-embeddings.md              models + config
+  │   ├── ref-datasets.md                GoEmotions · MFTC · POPQuorn · DICES
+  │   ├── ref-assets.md                  project file schemas
+  │   └── ref-schema.md                  label schema design
+  │
+  ├── diagram/                           🗺️ this folder (ASCII diagrams)
+  │   ├── 0-overview.txt
+  │   ├── 1-three-loops.txt
+  │   ├── 2-state-machine.txt
+  │   ├── 3-medium-loop.txt
+  │   ├── 4-cascade.txt
+  │   ├── 5-roster.txt
+  │   ├── 6-disagreement.txt
+  │   ├── 7-folder-tree.txt              (this file)
+  │   ├── 8-convergence.txt
+  │   └── canvas-YYMMDD.excalidraw       bundled by diagram-ascii-canvas
+  │
+  ├── workflow.txt                       compact one-page tour
+  └── README.md
+
+
+─§ 📁 {project_dir}/ — what each run builds ────────────────
+
+  📂 {project_dir}/
+  │
+  ├── config.yaml                        topic · schema · model prefs
+  ├── .state.json                        🤖 moderator-owned
+  │
+  ├── sample/
+  │   └── sample.jsonl                   📥 raw input texts
+  │
+  ├── gallery/                           📚 gallery-keeper writes
+  │   ├── gallery.json                   curated labeled examples
+  │   ├── guideline.md                   prompt-ready rules
+  │   ├── panel_config.json              this iter's persona mix
+  │   └── history/
+  │       ├── iter_1.diff
+  │       ├── iter_2.diff
+  │       └── CHANGELOG.md
+  │
+  ├── iterations/                        🔁 one folder per iter
+  │   └── iter_N/
+  │       ├── candidate_pool.jsonl       ← 📥 sampler (~100 items)
+  │       ├── batch.jsonl                ← 🔍 prober (20-30 items)
+  │       ├── panel_labels.jsonl         ← 👥 panel
+  │       ├── panel_kappa.json           ← 👥 panel
+  │       ├── disagreements.md           ← ⚖️ analyzer (narrative)
+  │       ├── disagreement_items.jsonl   ← ⚖️ analyzer (per-item)
+  │       └── researcher_decisions.jsonl ← 🤖 moderator (post-dialogue)
+  │
+  ├── cache/                             ⚙️ regenerable
+  │   ├── embeddings/                    📐 embedder
+  │   │   ├── vectors/{sha1}.npy
+  │   │   ├── manifest.jsonl
+  │   │   ├── gallery_index.faiss
+  │   │   └── gallery_index.meta.json
+  │   ├── classifier/                    🧠 classifier (per-iter)
+  │   │   ├── iter_N/
+  │   │   │   ├── model.pkl
+  │   │   │   └── train_metrics.json
+  │   │   └── latest -> iter_N/
+  │   └── sampler/
+  │       ├── init_map.jsonl
+  │       └── diagnostic_{ts}.jsonl
+  │
+  ├── validation/                        📊 validator writes
+  │   ├── trajectory.jsonl               κ over iterations
+  │   ├── {dataset}_iter{N}_report.md
+  │   ├── {dataset}_heldout_sample.jsonl
+  │   └── _cache/{dataset}/              HF dataset cache
+  │
+  └── output/                            🎯 from /sl-scale
+      ├── preflight_sample.jsonl         500-item cost estimate
+      ├── annotations.jsonl              final labels
+      ├── human_review_queue.jsonl       Tier 2 support < 0.6
+      └── scale_report.md                cost · throughput · tier mix
+
+
+─§ 🔑 Boundary rule ────────────────────────────────────────
+
+  🚫 No agent writes to plugin source files.
+  💾 Every artifact lives under {project_dir}/.
+  🧾 The gallery + guideline are the canonical output;
+     iterations/cache/validation are audit + regeneration scaffolding.

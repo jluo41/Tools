@@ -1,0 +1,78 @@
+👥  Roster — 9 agents · 5 personas
+===================================
+
+  The moderator is the only orchestrator and the only researcher-
+  facing agent. Workers do focused jobs; personas are interchangeable
+  panel slots.
+
+
+─§ 🤖 Worker agents (9) ────────────────────────────────────
+
+  +----+--------------------------+------------------------------------+
+  |    | Agent                    | Role                               |
+  +----+--------------------------+------------------------------------+
+  | 🧭 | moderator                | State machine · only talks to 🧑   |
+  | 📥 | sampler                  | Stage-aware item selection         |
+  |    |                          |   modes: init_map · iterate_batch  |
+  |    |                          |   validate_heldout · scale_preflight|
+  |    |                          |   diagnostic                       |
+  | 📐 | embedder                 | SBERT + FAISS · serves Tier 0      |
+  | 🧠 | classifier               | logreg / SetFit · serves Tier 1    |
+  | 🔍 | prober                   | LLM judgment on candidate pool     |
+  | 👥 | labeler-panel            | Spawns 3-5 personas in parallel    |
+  | ⚖️ | disagreement-analyzer    | Sorts disagreement A / B / C / D   |
+  | 📚 | gallery-keeper           | Sole writer of gallery + guideline |
+  | 📊 | validator                | Public-dataset κ vs human ceiling  |
+  +----+--------------------------+------------------------------------+
+
+
+─§ 🎭 Personas — panel lenses (5) ──────────────────────────
+
+  +----+---------------+--------------------------------+-----------+
+  |    | Persona       | Lens                           | Role      |
+  +----+---------------+--------------------------------+-----------+
+  | 🎭 | close-reader  | Slow · evidence-based          | mandatory |
+  | 🎭 | plain-reader  | Ordinary-reader intuition      | mandatory |
+  | 🎭 | skeptic       | Adversarial counter-readings   | mandatory |
+  | 🎭 | fast-patterns | Shallow · high-throughput      | optional  |
+  | 🎭 | domain-expert | Parametrized by topic domain   | optional  |
+  +----+---------------+--------------------------------+-----------+
+
+  ⚙️ Mandatory three guarantee triangulation; optional two add
+     throughput (fast-patterns) or precision (domain-expert).
+
+
+─§ 🌐 Skill × Agent call graph ─────────────────────────────
+
+  +---------------+----------------------------------------------------+
+  | Skill         | Agents invoked (in order)                          |
+  +---------------+----------------------------------------------------+
+  | /sl-init      | 🧭 → 📥(init_map) → 📐 → 🔍 → 🧭 → 📚              |
+  | /sl-iterate   | 🧭 → 📥(iterate_batch) → 📐 + 🧠 → 🔍 → 👥 → ⚖️    |
+  |               |   → 🧭 → 📚 → 🧠(train) → 📐(rebuild index)         |
+  | /sl-validate  | 🧭 → 📥(validate_heldout) → 📊 → 👥 → 🧭            |
+  | /sl-scale     | 🧭 → 📥(scale_preflight) → 👥(cascade) →            |
+  |               |   📐 + 🧠 (Tier 0/1) → 👥 (Tier 2)                  |
+  | /sl-status    | (no agents — pure file read)                        |
+  +---------------+----------------------------------------------------+
+
+
+─§ 💾 Who writes what ──────────────────────────────────────
+
+  Only THREE agents write canonical artifacts:
+
+    📚 gallery-keeper  →  gallery/    (gallery.json + guideline.md)
+    🧠 classifier      →  cache/classifier/iter_N/
+    📊 validator       →  validation/
+
+  Everything else is intermediate output under iterations/iter_N/
+  or cache/. The artifact graph is a clean DAG → audit-friendly.
+
+
+─§ 🎯 Two roles never swap ─────────────────────────────────
+
+    📐 embedder    =  speed    (cheap k-NN — never makes the call)
+    👥 panel       =  judgment (expensive — final say on hard cases)
+    🧠 classifier  =  middle   (gallery-trained — bounded coverage)
+
+  Mixing these up is the most common architectural mistake.

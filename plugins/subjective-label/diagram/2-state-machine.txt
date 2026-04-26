@@ -1,0 +1,81 @@
+🚦  State Machine — owned by 🤖 moderator
+==========================================
+
+  The moderator is the only state-mutating actor. Every command
+  reads + writes {project_dir}/.state.json. Resume-from-anywhere
+  is free because state lives only on disk.
+
+
+─§ 🌀 State graph ───────────────────────────────────────────
+
+                       /sl-init
+                          │
+                          ▼
+                   +---------------+
+                   | 🟢 initialized|
+                   +-------┬-------+
+                           │
+                           │  /sl-iterate
+                           ▼
+                   +---------------+
+                   | 🟡 iterating  |◀───────┐
+                   +-------┬-------+        │
+                           │                │ 🚩 STALLED
+                           │ /sl-validate   │ (refine + iterate)
+                           ▼                │
+                   +---------------+        │
+                   | 🟠 validating |────────┘
+                   +-------┬-------+
+                           │
+                           │  ✅ κ ≥ human ceiling
+                           ▼
+                   +---------------+
+                   | 🟣 CONVERGED  |
+                   +-------┬-------+
+                           │
+                           │  /sl-scale
+                           ▼
+                   +---------------+
+                   | 🎯 scaled     |
+                   +---------------+
+
+
+─§ 📄 .state.json ──────────────────────────────────────────
+
+  +---------------------------+--------------------------------+
+  | Field                     | Meaning                        |
+  +---------------------------+--------------------------------+
+  | 🟢 status                 | initialized · iterating ·     |
+  |                           | validating · CONVERGED · scaled|
+  | 🔢 iteration              | last completed /sl-iterate    |
+  | 📚 gallery_size           | curated examples count        |
+  | 📊 last_validation        | {dataset, κ, iter, verdict}   |
+  | 📝 last_guideline_update  | iter where guideline changed  |
+  | 🕐 created_at · updated_at| timestamps                    |
+  +---------------------------+--------------------------------+
+
+
+─§ 🔁 Skill × state transitions ────────────────────────────
+
+  +-----------------+--------------------+----------------------+
+  | Skill           | Pre-state          | Post-state           |
+  +-----------------+--------------------+----------------------+
+  | /sl-init        | (none)             | 🟢 initialized       |
+  | /sl-iterate     | 🟢 / 🟡 / 🟠       | 🟡 iterating         |
+  | /sl-validate    | 🟡 iterating       | 🟠 validating        |
+  |                 |   ⚖️ verdict:                            |
+  |                 |     IMPROVING  → 🟡 (loop back)          |
+  |                 |     STALLED    → 🟡 (loop back, refine)  |
+  |                 |     CONVERGED  → 🟣                       |
+  | /sl-scale       | 🟣 CONVERGED       | 🎯 scaled            |
+  | /sl-status      | (any)              | (no change)          |
+  +-----------------+--------------------+----------------------+
+
+
+─§ 🎯 Verdicts from /sl-validate ───────────────────────────
+
+  🟢 IMPROVING  · agent κ rising · gap to ceiling closing
+  🟡 STALLED    · κ flat across 2 iter · refine guideline
+  🟣 CONVERGED  · agent κ ≥ public-dataset human κ ceiling
+
+  Verdict drives whether the BIG loop closes or repeats.

@@ -1,0 +1,86 @@
+⚡  Small Loop — 3-tier cascade in /sl-scale
+=============================================
+
+  Built on the principle that most items are easy and a small
+  minority are hard. Each tier is cheaper and faster than the
+  next; routing decisions are logged per item.
+
+
+─§ 🌊 Cascade flow ─────────────────────────────────────────
+
+                      📄 corpus item
+                            │
+                            ▼
+     +------------------------------------------------+
+     | Tier 0  —  📐 Embedder k-NN                    |
+     |                                                |
+     |   neighbors = top-5 in gallery FAISS index    |
+     |   if all_same(labels) and avg_sim ≥ 0.85      |
+     |     → inherit label                            |
+     +------------------┬----------------┬------------+
+            ✅ yes (~70%)             ❌ no
+                       │                │
+                       ▼                ▼
+                inherit label     +------------------------------+
+                method = tier0    | Tier 1  —  🧠 Classifier      |
+                cost ≈ $0         |                              |
+                                  |   pred = classifier(item)    |
+                                  |   if margin ≥ 0.30           |
+                                  |      and prob ≥ 0.70         |
+                                  |     → use predicted label    |
+                                  +-------┬-------------┬--------+
+                                  ✅ yes (~20%)      ❌ no
+                                          │             │
+                                          ▼             ▼
+                                  use classifier   +------------------+
+                                  method = tier1   | Tier 2 — 👥 Panel|
+                                  cost ≈ $0.0001   |                  |
+                                                   |   3-5 personas   |
+                                                   |   majority vote  |
+                                                   |   support ≥ 0.6 ?|
+                                                   +────┬─────────┬───+
+                                                  ✅ yes        ❌ no
+                                                      │           │
+                                                      ▼           ▼
+                                              method = tier2   🚩 surface
+                                              cost ≈ $0.10     to human-
+                                                               review
+                                                               queue
+
+
+─§ 💰 Cost arithmetic for a 1M-item run ────────────────────
+
+  +---------+----------+--------------+--------------+
+  | Tier    | Share    | Cost / item  | Cost / run   |
+  +---------+----------+--------------+--------------+
+  | Tier 0  | ~70%     | ~$0.00001    |   $7         |
+  | Tier 1  | ~20%     | ~$0.0001     |   $20        |
+  | Tier 2  | ~10%     | ~$0.10       |   $10,000    |
+  +---------+----------+--------------+--------------+
+  | Total   | 100%     | —            |   ~$10,000   |
+  +---------+----------+--------------+--------------+
+
+  📉 Compare:  every-item-Tier-2  ≈  $100,000
+  🎯 ~10× cost reduction vs. naive panel-everywhere.
+
+
+─§ 🎚️ Routing modes ────────────────────────────────────────
+
+  +-----------+--------------------------+-------------------+
+  | routing   | Behavior                 | When to use       |
+  +-----------+--------------------------+-------------------+
+  | cascade   | full Tier 0 → 1 → 2      | 🎯 default scale  |
+  | panel     | skip 0+1, use full panel | 🧪 validation set |
+  | single    | skip 0+1, one persona    | 💸 cheapest LLM   |
+  +-----------+--------------------------+-------------------+
+
+
+─§ 🚦 Convergence + drift ──────────────────────────────────
+
+  Healthy cascade  →  Tier 2 load is roughly constant across runs.
+
+  Tier 2 spike on new batch  ⇒  one of:
+
+    📉 data drift        new corpus differs from gallery coverage
+    📉 classifier drift  retrain with fresh examples
+    📉 guideline drift   /sl-iterate a few more rounds

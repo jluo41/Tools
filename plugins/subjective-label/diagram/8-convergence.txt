@@ -1,0 +1,96 @@
+📈  Convergence Signals — when to /sl-scale
+============================================
+
+  Three independent signals tell you the gallery + guideline are
+  mature. The validator owns the primary one; the other two are
+  supporting evidence.
+
+
+─§ 🎯 Three signals (in order of authority) ────────────────
+
+  +----+--------------------------+----------------------------------+
+  |    | Signal                   | Threshold                        |
+  +----+--------------------------+----------------------------------+
+  | 1️⃣ | 📊 public-dataset κ      | agent κ ≥ human κ ceiling        |
+  |    | (Validator · primary)    | on GoEmotions / MFTC / POPQuorn / DICES |
+  | 2️⃣ | 👥 panel-internal κ      | pairwise κ across personas > 0.7 |
+  |    | (Labeler Panel)          | AND plateau across 2 iter        |
+  | 3️⃣ | ⚖️ category D ratio      | D / (A+B+C+D) > 0.7              |
+  |    | (Analyzer)               | (most disagreement is noise)     |
+  +----+--------------------------+----------------------------------+
+
+  🤖 moderator reports all three.
+  🧑 researcher decides when to /sl-scale.
+
+
+─§ 📊 κ trajectory · the headline plot ─────────────────────
+
+  agent κ
+   0.50 ┤                                  🟣 CONVERGED
+        │                                ┌──── ceiling 0.46
+   0.45 ┤                              ┌─┘
+        │                            ╭─┘
+   0.40 ┤                          ╭─┘   📈 IMPROVING
+        │                        ╭─┘
+   0.35 ┤                      ╭─┘
+        │                    ╭─┘
+   0.30 ┤                  ●─┘
+        └──┬─────┬─────┬─────┬─────┬─────┬──→  iteration
+           1     2     3     4     5     6
+
+  trajectory.jsonl appends one row per /sl-validate:
+    {iter, dataset, kappa, alpha, f1_macro, ceiling, gap, verdict}
+
+
+─§ 🚦 Verdict logic ────────────────────────────────────────
+
+  🟢 IMPROVING  agent κ rising · gap to ceiling closing
+                → /sl-iterate again
+
+  🟡 STALLED    κ flat across 2 iterations
+                → refine guideline first, then /sl-iterate
+
+  🟣 CONVERGED  agent κ ≥ human κ ceiling
+                → /sl-scale ready
+
+
+─§ 🌳 Decision tree at end of /sl-validate ─────────────────
+
+                    📊 validator output
+                            │
+                ┌───────────┼───────────┐
+                ▼           ▼           ▼
+            🟢 IMPROV   🟡 STALL    🟣 CONVERGE
+                │           │           │
+                ▼           ▼           ▼
+          /sl-iterate   refine +    🎯 /sl-scale
+          (more data)   /sl-iterate  (ship it)
+
+
+─§ ✨ The 3 supporting signals all point the same way ──────
+
+  At convergence:
+
+    📊 public-dataset κ        ≥ human ceiling      ✅
+    👥 panel-internal κ        > 0.7  (plateaued)   ✅
+    ⚖️ analyzer D-ratio        > 0.7                ✅
+    🧠 classifier CV F1        plateaued            ✅
+    📚 gallery growth          slowed (saturating)  ✅
+
+  When 4-5 of these align, /sl-scale is safe.
+  When only 1-2 align, more /sl-iterate is the answer.
+
+
+─§ 💡 Why the public-dataset κ is primary ──────────────────
+
+  The other two signals are SELF-CONSISTENT (the panel agrees
+  with itself, or the analyzer says it's noise). They don't
+  rule out everyone-converging-on-the-wrong-answer.
+
+  📊 public-dataset κ pins the panel's labels to a known
+     human-derived ground truth. That's why it's the only
+     signal that can produce a CONVERGED verdict alone.
+
+  Public datasets used:
+    📑 GoEmotions  ·  MFTC  ·  POPQuorn  ·  DICES
+    (see ref/ref-datasets.md for human-κ ceilings)

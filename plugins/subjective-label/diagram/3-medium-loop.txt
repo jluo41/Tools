@@ -1,0 +1,120 @@
+🔬  Medium Loop — one /sl-iterate
+==================================
+
+  Inputs: previous gallery + sample pool.
+  Outputs: enlarged gallery, refined guideline, retrained classifier.
+  Researcher contact: ≤ 5-10 decisions per iteration.
+
+
+─§ 🔁 End-to-end pipeline ──────────────────────────────────
+
+                       🧑 researcher
+                            │   (talks only to moderator)
+                            ▼
+                    +-------------------+
+                    | 🤖 moderator      |
+                    +---------┬---------+
+                              │ 1. orchestrate
+                              ▼
+            +--------------------------------------+
+            | 📥 sampler  (mode: iterate_batch)    |
+            |                                      |
+            |   uses 📐 embedder · 🧠 classifier   |
+            |   → ~100 candidate items             |
+            |   (novelty + uncertainty + cluster)  |
+            +--------------------┬-----------------+
+                                 │ 2. shortlist
+                                 ▼
+            +--------------------------------------+
+            | 🔍 prober                            |
+            |                                      |
+            |   LLM judgment on the candidate pool |
+            |   → final 20-30 items                |
+            +--------------------┬-----------------+
+                                 │ 3. label in parallel
+                                 ▼
+            +--------------------------------------+
+            | 👥 labeler-panel                     |
+            |                                      |
+            |   spawns 3-5 personas in parallel:   |
+            |    🎭 close-reader   (mandatory)     |
+            |    🎭 plain-reader   (mandatory)     |
+            |    🎭 skeptic        (mandatory)     |
+            |    🎭 fast-patterns  (optional)      |
+            |    🎭 domain-expert  (if configured) |
+            |                                      |
+            |   → panel_labels.jsonl + κ           |
+            +--------------------┬-----------------+
+                                 │ 4. categorize
+                                 ▼
+            +--------------------------------------+
+            | ⚖️ disagreement-analyzer             |
+            |                                      |
+            |   sorts each item:                   |
+            |    🚩 A  boundary case → ask         |
+            |    🚩 B  rule ambiguity → ask        |
+            |    🚩 C  novel pattern → ask         |
+            |    ✅ D  noise → auto-resolve        |
+            +--------------------┬-----------------+
+                                 │ 5. surface (A/B/C only)
+                                 ▼
+                    +-------------------+
+                    | 🤖 moderator      |─── asks ───▶  🧑 researcher
+                    +---------┬---------+      ◀─ 5-10 decisions ─┘
+                              │ 6. record
+                              ▼
+            +--------------------------------------+
+            | 📚 gallery-keeper                    |
+            |                                      |
+            |   sole writer of:                    |
+            |    📄 gallery.json                   |
+            |    📄 guideline.md                   |
+            |   versioned under gallery/history/   |
+            +--------------------┬-----------------+
+                                 │ 7. retrain
+                                 ▼
+            +--------------------------------------+
+            | 🧠 classifier  (train on new gallery)|
+            |                                      |
+            |   ready for next iter's hard-mining  |
+            |   ready for /sl-scale Tier 1         |
+            +--------------------┬-----------------+
+                                 │
+                                 ▼
+                          🔁 next iteration
+
+
+─§ 🧮 Per-iteration researcher budget ──────────────────────
+
+  +----------+----------------------------+----------+
+  | Category | Decision type              | Count    |
+  +----------+----------------------------+----------+
+  | 🚩 A     | adjudicate boundary item   | 3-5      |
+  | 🚩 B     | refine ambiguous rule      | 1-3      |
+  | 🚩 C     | extend label schema        | 0-2      |
+  +----------+----------------------------+----------+
+  | total                                 | ~5-10    |
+  +----------+----------------------------+----------+
+
+  📐 Convergent project ≈ 3-6 iterations  →  ~20-60 decisions
+     (vs. labeling thousands of items by hand)
+
+
+─§ 💾 Artifacts written this iteration ─────────────────────
+
+  iterations/iter_N/
+    📄 candidate_pool.jsonl        ← sampler
+    📄 batch.jsonl                 ← prober
+    📄 panel_labels.jsonl          ← panel
+    📄 panel_kappa.json            ← panel
+    📄 disagreements.md            ← analyzer (narrative)
+    📄 disagreement_items.jsonl    ← analyzer (per-item A/B/C/D)
+    📄 researcher_decisions.jsonl  ← moderator (after dialogue)
+
+  gallery/                         ← gallery-keeper
+    📄 gallery.json
+    📄 guideline.md
+    📄 history/iter_N.diff
+
+  cache/classifier/iter_N/         ← classifier
+    📄 model.pkl  ·  train_metrics.json

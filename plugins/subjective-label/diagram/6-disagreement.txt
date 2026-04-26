@@ -1,0 +1,92 @@
+⚖️  Disagreement — A / B / C / D
+=================================
+
+  Plank (2022): "disagreement is not noise."
+  The Analyzer's job is to sort the panel's split votes into four
+  buckets so the researcher only sees the parts that need a human.
+
+
+─§ 📋 The four categories ──────────────────────────────────
+
+  +----+---------------------------+------------------+----------------------+
+  |    | Category                  | Who resolves     | Surfaces to 🧑?      |
+  +----+---------------------------+------------------+----------------------+
+  | 🚩 | A · boundary case         | 🧑 researcher    | yes — "what label?"  |
+  |    | (genuinely subjective)    |                  |                      |
+  | 🚩 | B · rule ambiguity        | 🧑 researcher    | yes — "refine rule"  |
+  |    | (guideline underspecified)|                  |                      |
+  | 🚩 | C · novel pattern         | 🧑 researcher    | yes — "new label?"   |
+  |    | (schema gap)              |                  |                      |
+  | ✅ | D · noise                 | 👥 panel majority| no  — auto-resolved  |
+  |    | (one persona careless)    |                  |                      |
+  +----+---------------------------+------------------+----------------------+
+
+
+─§ 🌳 Routing tree — every disagreement item ───────────────
+
+                       👥 panel split
+                              │
+                              ▼
+                     +-----------------+
+                     | ⚖️ analyzer     |
+                     | classifies      |
+                     +--------┬--------+
+                              │
+            ┌─────────────────┼─────────────────┬─────────────────┐
+            ▼                 ▼                 ▼                 ▼
+         🚩 A              🚩 B              🚩 C              ✅ D
+       boundary       rule ambiguity     novel pattern         noise
+            │                 │                 │                 │
+            ▼                 ▼                 ▼                 ▼
+       🤖 moderator      🤖 moderator      🤖 moderator      auto-resolve
+       asks 🧑           asks 🧑           asks 🧑           majority vote
+            │                 │                 │                 │
+            ▼                 ▼                 ▼                 ▼
+       final_label       rule_refine        schema_extend      label written
+       (gallery)         (guideline)        (label_schema)     (no surface)
+
+
+─§ 🧮 Researcher budget per iteration ──────────────────────
+
+  +----+----------------------------+----------+
+  |    | Decision type              | Count    |
+  +----+----------------------------+----------+
+  | 🚩 | A · adjudicate boundary    | 3-5      |
+  | 🚩 | B · refine rule            | 1-3      |
+  | 🚩 | C · extend schema          | 0-2      |
+  +----+----------------------------+----------+
+  | total                           | ~5-10    |
+  +----+----------------------------+----------+
+
+
+─§ 📈 Convergence signal — D ratio rises ───────────────────
+
+  As guideline + gallery mature, the share of items going to
+  category D should grow:
+
+      iter 1:   A 40%  · B 30%  · C 20%  · D 10%   🟡 noisy start
+      iter 3:   A 25%  · B 15%  · C 10%  · D 50%   🟠 settling
+      iter 5:   A 10%  · B  5%  · C  3%  · D 82%   🟢 mature
+
+  📊  D / (A+B+C+D) > 0.7  ⇒  guideline is mature.
+  This is one of the three convergence signals (see 8-convergence.txt).
+
+
+─§ 🧾 Decision log shape ───────────────────────────────────
+
+  researcher_decisions.jsonl (moderator writes after dialogue):
+
+    🚩 A:  {"decision_type":"label",
+            "final_label":"medium",
+            "reasoning":"Sarcasm negates surface signal."}
+
+    🚩 B:  {"decision_type":"rule_refine",
+            "rule_id":"first_person_quotation",
+            "new_text":"When first-person is quoted, rule N/A."}
+
+    🚩 C:  {"decision_type":"schema_extend",
+            "new_label_name":"ambivalent",
+            "definition":"..."}
+
+  Every researcher decision is traceable back to the panel votes
+  + analyzer category that triggered it. Full audit trail.

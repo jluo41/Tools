@@ -1,0 +1,85 @@
+🗺️  subjective-label Plugin — Map at a Glance
+==============================================
+
+  One researcher + one moderator + 8 worker agents + 5 personas.
+  The researcher only ever talks to 🤖 moderator. Everything else
+  is orchestrated through the Task tool.
+
+
+─§ 🧑 user surface ─────────────────────────────────────────
+
+  🧑 researcher
+     |
+     |  /subjective-label  (router — lists sub-commands)
+     |  /sl-init           🚀 create project + define topic
+     |  /sl-iterate        🔁 one labeling iteration
+     |  /sl-validate       📊 benchmark vs human κ ceiling
+     |  /sl-scale          🎯 batch-label full corpus
+     |  /sl-status         🔭 state · κ trajectory · gallery
+     v
+  +--------------------------------------------------+
+  |  🎮  Tier 1  —  User-Facing Skills (5 + router) |
+  +--------------------------------------------------+
+                        |
+                        |  every command goes through:
+                        v
+  +--------------------------------------------------+
+  |  🤖  Tier 2  —  Moderator (state machine)        |
+  |  Only researcher-facing agent · owns .state.json |
+  +--------------------------------------------------+
+                        |
+                        |  delegates via Task tool
+                        v
+  +--------------------------------------------------+
+  |  🔧  Tier 3  —  Worker Agents (8)                |
+  |--------------------------------------------------|
+  |  📥 sampler              stage-aware item picks  |
+  |  📐 embedder             SBERT + FAISS · Tier 0  |
+  |  🧠 classifier           logreg / SetFit · Tier 1|
+  |  🔍 prober               LLM judgment on pool    |
+  |  👥 labeler-panel        spawns 3-5 personas     |
+  |  ⚖️ disagreement-analyzer A / B / C / D sort     |
+  |  📚 gallery-keeper       writes gallery + guide  |
+  |  📊 validator            public-dataset κ check  |
+  +--------------------------------------------------+
+                        |
+                        |  panel composition picked from:
+                        v
+  +--------------------------------------------------+
+  |  🎭  Tier 4  —  Personas (5 lenses)              |
+  |--------------------------------------------------|
+  |  🎭 close-reader  · slow · evidence-based       |
+  |  🎭 plain-reader  · ordinary intuition          |
+  |  🎭 skeptic       · adversarial counter-reading |
+  |  🎭 fast-patterns · shallow · high-throughput   |
+  |  🎭 domain-expert · parametrized by topic       |
+  +--------------------------------------------------+
+                        |
+                        |  all writes land here 💾
+                        v
+  +--------------------------------------------------+
+  |  📂  {project_dir}/                              |
+  |   gallery/  iterations/  cache/  validation/    |
+  |   output/   .state.json  config.yaml            |
+  +--------------------------------------------------+
+
+
+─§ ⚡ Compact form ─────────────────────────────────────────
+
+  🧑 → /sl-init → /sl-iterate × N → /sl-validate → /sl-scale
+                       ▲                  │
+                       └─ 🚩 STALLED ─────┘
+
+  🤖 moderator orchestrates · 8 workers · 5 personas · 1 disk DAG.
+
+
+─§ 📌 Three cross-cutting truths ───────────────────────────
+
+  1. 🧑 researcher talks ONLY to 🤖 moderator. No exceptions.
+
+  2. 📥 sampler is the single entry point for any "pick N items"
+     decision — 5 modes (init_map, iterate_batch, validate_heldout,
+     scale_preflight, diagnostic) share the same primitives.
+
+  3. 📐 embedder = speed · 👥 panel = judgment · 🧠 classifier =
+     middle ground. Cascade composes them in the SMALL loop.
