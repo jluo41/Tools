@@ -192,9 +192,10 @@ async def main(file_path: str):
             return 4
 
         print(f"\n✅ {url}\n", flush=True)
-        url_file = f.with_suffix(".excalidraw.share-url.txt")
-        url_file.write_text(url + "\n")
-        print(f"📝 saved → {url_file}", flush=True)
+        data = json.loads(f.read_text())
+        data["shareUrl"] = url
+        f.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
+        print(f"📝 shareUrl written into {f}", flush=True)
         await browser.close()
         return 0
 
