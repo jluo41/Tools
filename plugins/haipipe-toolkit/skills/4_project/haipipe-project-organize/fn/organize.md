@@ -122,41 +122,157 @@ for context. Otherwise run Phase 1 scan first.
 
 ---
 
-Phase 4: Project Diagram (optional)
-=====================================
+Phase 4: Targeted --fix Modes
+==============================
 
-Generate a draw.io diagram of the project structure.
-Requires drawio MCP server. If unavailable, skip with a note:
-  "Skipping diagram -- drawio MCP not installed.
-   Run: claude mcp add drawio -- npx @next-ai-drawio/mcp-server@latest"
+Each --fix mode runs INSTEAD of the full Phase 1-3 flow when invoked
+explicitly. The full flow handles general layout drift; these modes
+handle specific structural transitions.
 
-  mxGraphModel XML conventions:
-    - Root node: PROJECT_ID, rounded rect, fill=#dae8fc (light blue), fontStyle=1
-    - Mandatory folders (tasks/, docs/): fill=#d5e8d4 (green)
-    - Task subfolders: fill=#fff2cc (yellow), sub-label with run/config counts
-    - sbatch/: fill=#ffe6cc (orange)
-    - paper/: fill=#e1d5e7 (light purple)
-    - _old/ and non-standard dirs: fill=#f5f5f5 (grey), dashed edge
-    - All edges: edgeStyle=orthogonalEdgeStyle
-    - Cell IDs: short unique (p1, cc1, t1, t_task1, ...)
-    - Target size: ~1200x900 px
+ALL modes still print a change plan first and require explicit user YES.
 
-  MCP call sequence:
-    1. start_session
-    2. create_new_diagram with the mxGraphModel XML
-    3. export_diagram  path=docs/project-diagram.drawio  format=drawio
-    4. export_diagram  path=docs/project-diagram.png     format=png
+---
+
+--fix flat-tasks
+----------------
+  For each task folder directly under tasks/ (no group letter prefix):
+    1. Ask the user which group letter G to use, or infer from task name.
+    2. Create tasks/{G}_{group_name}/ if absent.
+    3. git mv the flat task into it, renaming the prefix to {G}{N}_.
+  Plan: list of {old_path} -> {new_path} pairs.
+
+---
+
+--fix renumber
+--------------
+  Within each group, reassign N digits to fill gaps and reflect intended
+  order. Ask the user for desired order if ambiguous.
+  Plan: list of {G}{N_old}_name -> {G}{N_new}_name renames.
+
+---
+
+--fix paired
+------------
+  Two sub-checks:
+  (a) Auto-example pairing — every Track A stub has a paired Track B
+      example task. If missing, scaffold the paired task via
+      Skill("haipipe-project-new", "task ...") with diagram/ included.
+  (b) Logging-header conformance — every runs/*.sh begins with the
+      standard logging header (see project-structure.md). If missing,
+      prepend the header (preserving the rest of the script).
+
+---
+
+--fix migrate-to-diagram        (ONE-TIME README → diagram/ migration)
+------------------------
+
+  Migrates a project from the legacy README.md doc surface to the new
+  diagram/ surface. Idempotent: safe to re-run.
+
+  Step M1 — Project root
+    If examples/{PROJECT}/tasks/README.md exists:
+      Parse its three sections (flow graph, directory tree, status table).
+      Create examples/{PROJECT}/diagram/ if absent.
+      Seed three .txt files via /diagram-ascii:
+        Skill("diagram-ascii",
+          "Convert the project README at {tasks/README.md path} into the
+           project-level story diagram. Produce three .txt files in
+           {PROJECT}/diagram/:
+             01-story.txt        — re-frame the README intro as a research
+                                   narrative (motivation + research question
+                                   + expected impact). Drop status tables;
+                                   they belong in {task}/diagram/03-runs.
+             02-boundary.txt     — extract scope (in / out / definitions)
+                                   from the README intro; ASK user if not
+                                   clearly present.
+             03-exploration.txt  — convert the status table rows into
+                                   'Active' / 'Backlog' / 'Tried' bullets,
+                                   high-level only (no per-run rows).
+           Project-level diagram is HIGH-LEVEL ONLY. Do NOT copy task
+           tables, run logs, or file-level detail into these files.")
+      Bundle:
+        Skill("diagram-ascii-canvas",
+          "Bundle {PROJECT}/diagram/ into {PROJECT}/diagram/project.excalidraw")
+      git rm tasks/README.md.
+
+  Step M2 — Group folders
+    For each tasks/{G}_{group}/README.md:
+      git rm. Group folders no longer have READMEs. Any unique content
+      (purpose blurb, flow within group) is folded into the project-level
+      03-exploration.txt or the per-task 01-overview.txt — ASK user where
+      the content should go before deletion if README has substantive prose.
+
+  Step M3 — Task folders
+    For each {task}/README.md:
+      Parse the five sections (What / Why / Inputs / Outputs / Runs).
+      Create {task}/diagram/ if absent.
+      Seed via /diagram-ascii:
+        Skill("diagram-ascii",
+          "Convert the task README at {task}/README.md into a 4-file task
+           diagram folder. Produce in {task}/diagram/:
+             01-overview.txt   — copy What / Why / Inputs / Outputs verbatim
+                                 into ─§ sections; one block each, 1-3 lines.
+             02-design.txt     — extract the Architecture section if present
+                                 (Stage 5 tasks). Otherwise seed with TODO
+                                 + a 1-line summary of the .py logic.
+             03-runs.txt       — copy the Runs table into a single section.
+                                 If status values use the old vocabulary
+                                 (todo|wip|done|deprecated), map todo→planned.
+             04-progress.txt   — start a fresh dated log, seed with one entry:
+                                 '{YYMMDD} — migrated from README.md'.")
+      Bundle:
+        Skill("diagram-ascii-canvas",
+          "Bundle {task}/diagram/ into {task}/diagram/task.excalidraw")
+      git rm {task}/README.md.
+
+  Step M4 — paper/ folders (if any)
+    For each paper/Paper-*/:
+      Create diagram/ if absent. Seed via /diagram-ascii:
+        Skill("diagram-ascii",
+          "Write the paper-level diagram for {paper-folder-name}. Produce in
+           {paper-folder}/diagram/:
+             01-overview.txt    — sections + headline claims; ASK user.
+             02-figure-plan.txt — figure list + status; seed empty if unknown.
+             03-rebuttal.txt    — only if the project is in rebuttal phase.")
+      Bundle to paper.excalidraw.
+
+  Step M5 — Report migration summary:
+    READMEs removed, diagram/ folders created, .excalidraw files bundled.
+
+  ⚠️ This is a content-bearing migration. Always run --dry-run first.
+  ⚠️ Commit before running so the README content stays in git history.
+
+---
+
+--fix drop-legacy
+-----------------
+  Remove top-level legacy folders that are no longer part of the standard
+  layout: docs/, cc-archive/, _old/.
+
+  For each:
+    - If empty: git rm -r.
+    - If non-empty: ASK user. Options:
+        (a) Move worth-keeping files elsewhere (which?) and git rm the rest.
+        (b) Leave alone (skip for now).
+        (c) git rm -r without preserving (last-resort; user must confirm).
+    - cc-archive/ session files: usually safe to drop — they're conversation
+      logs, not source. Confirm before removing.
+
+  Plan: list of paths to remove + disposition for non-empty folders.
 
 ---
 
 MUST NOT
 ---------
 
-- Do NOT move files in code/, code-dev/ -- read only
-- Do NOT move cc-archive/ session files or paper/ or _old/
-- Do NOT apply moves without explicit user YES
-- Do NOT modify YAML config content (moves OK, edits not)
-- Do NOT create new .py scripts -- organize only moves existing files
+- Do NOT move files in code/, code-dev/ -- read only.
+- Do NOT move paper/ contents (paper/ may be a submodule).
+- Do NOT apply moves without explicit user YES.
+- Do NOT modify YAML config content (moves OK, edits not).
+- Do NOT create new .py scripts -- organize only moves existing files.
+- Do NOT re-run --fix migrate-to-diagram on an already-migrated project
+  without --dry-run first; the tool is idempotent but the user should see
+  the empty plan before re-confirming.
 
 ---
 
@@ -164,5 +280,8 @@ Next Steps
 -----------
 
 After organize:
-  - To validate code sync and generate docs: run /haipipe-project review
-  - To see a task-by-task summary: run /haipipe-project overview
+  - To validate code sync and verify migration:  /haipipe-project review
+  - To see a task-by-task summary:                /haipipe-project overview
+  - If --fix migrate-to-diagram was applied:      open the bundled
+                                                  .excalidraw files and
+                                                  spot-check the canvases

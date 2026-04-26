@@ -1,22 +1,26 @@
-fn-review: Project Gap Analysis + Docs Generation
+fn-review: Project Gap Analysis
 ===================================================
 
-Inspects an existing project against the standard structure.
-Outputs a gap report and generates/updates docs/ and README.md files.
-
-Write access:  docs/ (all files), tasks/README.md, {group}/README.md, {task}/README.md
-Read-only:     everything else (config/, code/, code-dev/, cc-archive/, paper/)
+Inspects an existing project against the standard structure (see
+../../haipipe-project/ref/project-structure.md). Outputs a gap report
+with severity tags. Read-only — issues are flagged here, fixed by
+/haipipe-project organize.
 
 Severity tags: [BLOCK] [ERROR] [WARN] [NOTE]
 
 Execution checklist (track progress):
   [ ] Step 0   identify target project
-  [ ] Step 1   validate naming + structure
-  [ ] Step 2   per-task review
-  [ ] Step 3   code sync check
-  [ ] Step 4   generate/update docs
-  [ ] Step 5   generate/update README.md files
-  [ ] Step 6   output gap report
+  [ ] Step 1   validate naming + top-level structure
+  [ ] Step 2   project-level diagram/ check
+  [ ] Step 3   per-group + per-task review
+  [ ] Step 4   per-task diagram/ check
+  [ ] Step 5   code sync check
+  [ ] Step 6   paper diagram check (if paper/ exists)
+  [ ] Step 7   output gap report
+
+The doc surface is diagram/, NOT README.md. Any README.md found at
+project, group, or task level is flagged [WARN] with the suggestion
+to migrate via /haipipe-project organize --fix migrate-to-diagram.
 
 ---
 
@@ -28,8 +32,8 @@ Confirm PROJECT_PATH and PROJECT_ID before proceeding.
 
 ---
 
-Step 1: Validate Naming + Structure
-=====================================
+Step 1: Validate Naming + Top-Level Structure
+================================================
 
 **Naming:**
   - PROJECT_ID matches Proj{Series}-{Category}-{Num}-{Name}
@@ -38,57 +42,122 @@ Step 1: Validate Naming + Structure
 
 **Mandatory:**
   - tasks/ exists ([BLOCK] if missing)
+  - diagram/ exists ([BLOCK] if missing — every project must have a story)
 
 **Optional (absence is fine):**
-  - docs/ ([WARN] if missing)
   - paper/ ([NOTE] if missing)
-  - cc-archive/ ([NOTE] if missing)
 
-**Legacy detection:**
-  - Top-level config/ present -> [NOTE] suggest /haipipe-project organize
-  - Top-level results/ present -> [NOTE] suggest /haipipe-project organize
-  - Extra top-level dirs -> [NOTE]
-
-**cc-archive/ (if exists):**
-  - Non-empty, .md files only, naming convention {type}_{YYMMDD}_h{HH}_*.md
+**Forbidden at top level:** flag [WARN] each, recommend organize:
+  - README.md  (replaced by diagram/)
+  - docs/      (replaced by diagram/)
+  - cc-archive/ (no longer part of standard layout)
+  - _old/       (use git history instead)
+  - config/     (must live inside each task)
+  - results/    (must live inside each task)
 
 ---
 
-Step 2: Per-Group and Per-Task Review
+Step 2: Project-level diagram/ Check
+=======================================
+
+Walk {PROJECT}/diagram/.
+
+**Required .txt sources:**
+  - 01-story.txt        ([ERROR] if missing or empty)
+  - 02-boundary.txt     ([ERROR] if missing)
+  - 03-exploration.txt  ([ERROR] if missing)
+
+**Required canvas:**
+  - project.excalidraw  ([ERROR] if missing)
+
+**Freshness check:**
+  - project.excalidraw mtime ≥ max mtime of .txt sources
+    [WARN] if any .txt is newer than the canvas — canvas is stale,
+    re-run /diagram-ascii-canvas.
+
+**Scope discipline (project-level is HIGH-LEVEL ONLY):**
+  Scan .txt sources for operational content that does not belong here:
+    - status tables for individual tasks  ([WARN] move to {task}/diagram/03-runs)
+    - cross-task data-flow diagrams       ([WARN] move to {task}/diagram, or omit)
+    - daily progress logs                  ([WARN] move to {task}/diagram/04-progress)
+  Project-level diagram is for story / boundary / exploration. If
+  operational content has crept in, flag and recommend migration.
+
+---
+
+Step 3: Per-Group and Per-Task Review
 =======================================
 
 **Group-level checks:**
-For each group folder in tasks/ (excluding sbatch/):
-  - {G}_{group}/README.md exists ([WARN] if missing)
-  - Group letter matches its tasks' prefix ([ERROR] if mismatch)
-  - No flat task folders directly in tasks/ -- must be inside a group ([WARN])
 
-**Per-task checks:**
+For each group folder in tasks/ (excluding sbatch/):
+  - {G}_{group}/README.md is FORBIDDEN ([WARN] if exists; recommend remove
+    via /haipipe-project organize --fix migrate-to-diagram)
+  - Group letter matches its tasks' prefix ([ERROR] if mismatch)
+  - No flat task folders directly in tasks/ — must be inside a group ([WARN])
+
+**Per-task structure checks:**
+
 For each task folder inside each group:
 
-  **Structure checks:**
-    - At least one *.py exists in the task folder ([WARN] if missing)
-    - {task}/README.md exists ([WARN] if missing)
-    - {task}/config/ exists with its own YAML files ([WARN] if missing)
-    - {task}/config/ is not a symlink ([WARN] if symlink — each task owns its own config)
-    - YAML files parseable ([ERROR] if not)
+  - At least one *.py exists in the task folder ([WARN] if missing)
+  - {task}/README.md is FORBIDDEN ([WARN] if exists; recommend migration)
+  - {task}/config/ exists with its own YAML files ([WARN] if missing)
+  - {task}/config/ is not a symlink ([WARN] if symlink — each task owns its own)
+  - YAML files parseable ([ERROR] if not)
 
-  **Run-result alignment:**
-    - If runs/ exists: every .sh in runs/ has matching results/{name}/ ([ERROR] if missing)
-    - If runs/ exists: every results/{name}/ has matching runs/{name}.sh ([ERROR] if orphaned)
-    - If no runs/: results/ may contain flat files or default/ subfolder (OK)
+**Run-result alignment:**
+  - If runs/ exists: every .sh in runs/ has matching results/{name}/ ([ERROR] if missing)
+  - If runs/ exists: every results/{name}/ has matching runs/{name}.sh ([ERROR] if orphaned)
+  - If no runs/: results/ may contain flat files or default/ subfolder (OK)
 
-  **Heavy file check in results/:**
-    - .pt, .pth, .ckpt, .safetensors, .npy, .pkl, .bin, .h5 -> [ERROR] move to _WorkSpace/
+**Logging-header check:**
+  - Every runs/*.sh begins with the standard logging header
+    ([WARN] if missing — recommend organize --fix paired)
 
-  **Track A example check:**
-    - Every Track A stub has a paired example task ([WARN] if missing)
+**Heavy file check in results/:**
+  - .pt, .pth, .ckpt, .safetensors, .npy, .pkl, .bin, .h5
+    -> [ERROR] move to _WorkSpace/
+
+**Track A example check:**
+  - Every Track A stub has a paired example task ([WARN] if missing)
 
 Aggregate DECLARED_STAGES from config/ YAML filenames across all tasks.
 
 ---
 
-Step 3: Code Sync Check
+Step 4: Per-task diagram/ Check
+==================================
+
+For each task folder, walk {task}/diagram/.
+
+**Required .txt sources:**
+  - 01-overview.txt   ([ERROR] if missing — replaces task README)
+  - 02-design.txt     ([ERROR] if missing)
+  - 03-runs.txt       ([ERROR] if missing)
+  - 04-progress.txt   ([ERROR] if missing)
+
+**Required canvas:**
+  - task.excalidraw   ([ERROR] if missing)
+
+**Freshness check:**
+  - task.excalidraw mtime ≥ max mtime of .txt sources
+    [WARN] if any .txt is newer — canvas stale, re-bundle.
+
+**Content discipline:**
+  - 01-overview.txt has all four sub-blocks (What / Why / Inputs / Outputs)
+    [WARN] if any block is empty or "TODO"
+  - For Stage 5 tasks (ModelArgs in config/), 02-design.txt MUST contain
+    an ASCII forward-pass diagram + architecture sweep table
+    ([WARN] if missing)
+  - 03-runs.txt runs table reflects actual runs/ folder contents
+    [WARN] if a row is missing for an existing runs/*.sh
+    [WARN] if a row exists for a deleted runs/*.sh
+  - 04-progress.txt has at least one entry ([NOTE] if only the seed line)
+
+---
+
+Step 5: Code Sync Check
 =========================
 
 Read code/INDEX.md first.
@@ -129,152 +198,40 @@ Stage map for FnClass keys:
 
 ---
 
-Step 4: Generate/Update Docs
-==============================
+Step 6: Paper diagram/ Check (if paper/ exists)
+=================================================
 
-Create docs/ if it does not exist.
+For each paper/Paper-{Name}-{venue}/:
 
-**docs/TODO.md** -- create or update:
-  Scan project to fill three tables. Sync existing rows (upgrade status only).
+  **Required .txt sources:**
+    - 01-overview.txt    ([WARN] if missing)
+    - 02-figure-plan.txt ([WARN] if missing)
+    - 03-rebuttal.txt    ([NOTE] only relevant during rebuttal)
 
-  Template:
+  **Required canvas:**
+    - paper.excalidraw   ([WARN] if missing)
 
-    # TODO -- {PROJECT_ID}
-    # Created: {YYMMDD}
-    # Last reviewed: {YYMMDD}
+  **Freshness check:**
+    - paper.excalidraw mtime ≥ max mtime of .txt sources
 
-    ## Task Progress
-
-    | Task | Status | Notes |
-    |------|--------|-------|
-    | cook_modeltuner | done | |
-    | cook_modelinstance | wip | Missing LLM results |
-
-    ## Track A Stubs
-
-    | Stub File | Paired Example | Status |
-    |-----------|----------------|--------|
-    | build_{dataset}_source.py | example_{dataset}_stage1_fn | todo |
-
-    ## Pipeline Progress
-
-    | Stage | Status | Notes |
-    |-------|--------|-------|
-    | Stage 1 Source | done | |
-    | Stage 2 Record | done | |
-    | Stage 5 Model  | wip  | |
-
-    Status values: todo | wip | done | n/a
-
-**docs/data-map.md** -- always regenerate (overwrite):
-  Derive from task config/ YAMLs cross-referenced with code/.
-
-  Template:
-
-    Data Map: {PROJECT_ID}
-    =======================
-    Generated: {YYMMDD}
-
-    Pipeline Flow
-    -------------
-
-      {dataset} (raw)
-           |
-           v  Stage 1 -- Source
-           |  FnClass:  {SourceFnClass}     [done / stub / missing]
-           |  Config:   tasks/{G}_{group}/{task}/config/1_source_{dataset}.yaml
-           v
-      SourceSet ({dataset})
-           |
-           v  Stage 2 -- Record
-           |  FnClass:  {RecordFnClass}     [done / stub / missing]
-           ...
-           v
-      AIDataSet ({dataset})
-           |
-           v  Stage 5 -- Model
-           |  ModelClass: {ModelInstanceClass}   [done / stub / missing]
-           |  Config:     tasks/{G}_{group}/{task}/config/5_model_{name}.yaml
-           v
-      ModelInstance ({name})  ->  results/ + _WorkSpace/
-
-    Stages
-    ------
-
-      | Stage | Status | FnClass / ModelClass | Dataset | Config File |
-      |-------|--------|----------------------|---------|-------------|
-      | 1 Source | {status} | {FnClass} | {dataset} | tasks/{G}_{group}/{task}/config/... |
-      ...
-
-    Status: done (class found), stub (TODO_* or not found), missing (no YAML), n/a
-    Omit n/a stages from the pipeline flow diagram.
-
-**docs/dependency-report.md** -- always regenerate (overwrite):
-  Cross-reference config/ YAMLs with code/INDEX.md.
-
-  Template:
-
-    Dependency Report: {PROJECT_ID}
-    ================================
-    Generated: {YYMMDD}
-
-    Pipeline Function Dependencies
-    --------------------------------
-
-      | FnClass | Stage | Location in code/ | Status | Also used in |
-      |---------|-------|-------------------|--------|--------------|
-      | {FnClass} | {N} | {path or "not found"} | {done/stub/missing} | {Projects} |
-
-    ML Model Dependencies
-    ----------------------
-
-      | ModelClass | Family | Tuner | Location in code/ | Status | Also used in |
-      |------------|--------|-------|-------------------|--------|--------------|
-
-    Reuse Opportunities
-    --------------------
-      {FnClass} -- shared with {ProjectList}
-      [If nothing shared: "All Fns and models are unique to this project."]
-
-    Missing Implementations
-    ------------------------
-      {FnClass} (Stage {N}) -- not found in code/haifn/
-        Action: run /haipipe-data design-chef {N}
-      {ModelClass} -- not found in code/hainn/instance/
-        Action: run /haipipe-nn
+  **paper/ contents discipline:**
+    - No eval scripts in paper/      ([ERROR] belong in tasks/C_evaluation/)
+    - No raw data / model outputs    ([ERROR] belong in _WorkSpace/)
+    - No pipeline configs            ([ERROR] belong in tasks/{task}/config/)
 
 ---
 
-Step 5: Generate/Update README.md Files
-=========================================
-
-**tasks/README.md** -- create if missing, sync if exists:
-  - Status table: every task gets a row (infer description from name and config/)
-  - Orphan rows (row without matching folder) marked [ORPHAN]
-  - Status synced: stub (no runs) | wip (some results missing) | done (all runs have results)
-
-**{G}_{group}/README.md** -- create if missing, sync task list:
-  - Every task in the group gets a row
-  - Status synced same as above
-
-**Per-task README.md** -- create if missing, sync runs/ status:
-  - Runs table: every .sh in runs/ gets a row
-  - Status upgraded to "done" when matching results/ folder exists with content
-  - For Stage 5 tasks (ModelArgs configs): check for Architecture section with ASCII
-    diagram. If missing, add it. ([WARN] if ModelArgs task has no Architecture section)
-
----
-
-Step 6: Output Gap Report
+Step 7: Output Gap Report
 ===========================
 
 Print a structured report grouped by:
-  Naming, Structure, Per-Group, Per-Task Config,
-  Run-Result Alignment, Heavy Files, Code Sync, Docs.
+  Naming, Top-level Structure, Project Diagram, Per-Group, Per-Task,
+  Task Diagrams, Code Sync, Paper Diagram (if applicable).
 
 End with:
   - Summary: BLOCK: N, ERROR: N, WARN: N, NOTE: N
-  - Proposed Actions: prioritized fix list
+  - Proposed Actions: prioritized fix list, with the right organize flag
+    for each (e.g., --fix migrate-to-diagram, --fix paired, --fix flat-tasks)
   - If zero issues: "All checks PASSED. Project is conformant."
 
 ---
@@ -282,9 +239,10 @@ End with:
 MUST NOT
 ---------
 
-- Do NOT modify config/ files, code/, code-dev/, or task scripts (except README.md)
-- Do NOT run pipeline commands
-- Do NOT modify cc-archive/ or paper/
+- Do NOT modify any file. This skill is read-only.
+- Do NOT call /diagram-ascii or /diagram-ascii-canvas. Diagram authoring
+  belongs to -new and -organize, not -inspect.
+- Do NOT run pipeline commands.
 
 ---
 
@@ -292,6 +250,7 @@ Next Steps
 -----------
 
 After review:
-  - If structure issues found: run /haipipe-project organize to fix layout
-  - To see a task-by-task summary: run /haipipe-project overview
-  - To generate a project summary: run /haipipe-project summarize
+  - Structure issues found:    /haipipe-project organize  (with the suggested --fix)
+  - Stale canvases:             user re-runs /diagram-ascii-canvas <path>
+  - Task summary view:          /haipipe-project overview
+  - Project summary doc:        /haipipe-project summarize

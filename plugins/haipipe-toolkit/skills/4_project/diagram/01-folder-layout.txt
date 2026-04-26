@@ -1,0 +1,53 @@
+🗂️ 4_project/ — folder layout
+═══════════════════════════════════════════════════════════
+
+  1 umbrella + 3 specialists. The umbrella owns the shared `ref/`
+  rule files; each specialist owns its own `fn/` playbook docs.
+
+─§ Folder tree ───────────────────────────────────────────
+
+4_project/
+│
+├── haipipe-project/                  🎯 orchestrator (umbrella)
+│   ├── SKILL.md                       routing + verb map
+│   ├── README.md
+│   └── ref/                           📜 shared rules (read by all 3 specialists)
+│       ├── project-structure.md       Track B layout (examples/)
+│       └── code-structure.md          Track A layout (code-dev/, hainn/, haifn/)
+│
+├── haipipe-project-new/              🏗️ BUILD specialist  (creates files)
+│   ├── SKILL.md
+│   └── fn/
+│       └── new.md                     scaffold procedure
+│
+├── haipipe-project-inspect/          👀 READ specialist  (no writes)
+│   ├── SKILL.md
+│   ├── fn/
+│   │   ├── overview.md                cross-project status
+│   │   ├── review.md                  structural audit
+│   │   ├── summarize.md               generate summary doc
+│   │   └── inventory.md               file inventory
+│   └── ref/inventory/                 🐍 helper scripts
+│       ├── helpers.py
+│       ├── refresh_all.py
+│       └── render.py
+│
+└── haipipe-project-organize/         🔧 MODIFY specialist  (mv / rename)
+    ├── SKILL.md
+    └── fn/
+        └── organize.md                fix-structure procedure
+
+─§ Who reads which ref file ──────────────────────────────
+
+  📜 haipipe-project/ref/project-structure.md
+     ├── -new          (Step 0: mandatory read)
+     ├── -inspect      (overview · review · summarize)
+     └── -organize     (Step 0: mandatory read)
+
+  📜 haipipe-project/ref/code-structure.md
+     ├── -new          (Step 0: mandatory read)
+     ├── -inspect      (review only — for paired-example check)
+     └── -organize     (Step 0: mandatory read)
+
+  🐍 haipipe-project-inspect/ref/inventory/*.py
+     └── -inspect      (inventory function only)

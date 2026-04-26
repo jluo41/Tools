@@ -1,0 +1,89 @@
+🏗️ Shape — three levels, one doc surface
+═══════════════════════════════════════════════════════════
+
+─§ Top-level layout ─────────────────────────────────────
+
+  examples/{PROJECT_ID}/
+  │
+  ├── 🔒 tasks/                 MANDATORY — all task work
+  │
+  ├── 🎨 diagram/               MANDATORY — project-level story
+  │
+  └── 📜 paper/                 OPTIONAL — manuscript (with own diagram/)
+
+  🚫 NO at top level:
+       README.md  ·  docs/  ·  cc-archive/  ·  _old/
+       config/    ·  results/
+
+─§ Three diagram/ schemas ───────────────────────────────
+
+  +----------------------------+----------------------------------+
+  | 📦 {PROJECT}/diagram/      | HIGH-LEVEL story                 |
+  |   (research narrative)     |   01-story.txt                   |
+  |                            |   02-boundary.txt                |
+  |                            |   03-exploration.txt             |
+  |                            |   project.excalidraw             |
+  +----------------------------+----------------------------------+
+  | 🧩 {task}/diagram/         | OPERATIONAL detail               |
+  |   (per-task)               |   01-overview.txt                |
+  |                            |   02-design.txt                  |
+  |                            |   03-runs.txt                    |
+  |                            |   04-progress.txt                |
+  |                            |   task.excalidraw                |
+  +----------------------------+----------------------------------+
+  | 📜 paper/{Paper}/diagram/  | MANUSCRIPT plan                  |
+  |   (one per paper)          |   01-overview.txt                |
+  |                            |   02-figure-plan.txt             |
+  |                            |   03-rebuttal.txt                |
+  |                            |   paper.excalidraw               |
+  +----------------------------+----------------------------------+
+
+  Group level has NO diagram (purely organizational).
+
+─§ Project-level is HIGH-LEVEL ONLY ─────────────────────
+
+  +--------------------------------+--------------------------------+
+  | ✅ DOES belong                 | 🚫 DOES NOT belong here         |
+  +--------------------------------+--------------------------------+
+  | research question              | per-task status table          |
+  | in / out scope                 | cross-task data flow            |
+  | open exploration directions    | run-level metrics               |
+  | ruled-out + reason             | daily progress entries          |
+  +--------------------------------+--------------------------------+
+                                          ↓
+                         operational state lives in 🧩 {task}/diagram/
+
+─§ Authoring pipeline ───────────────────────────────────
+
+   👤 author edits .txt              📂 .txt sources (committed)
+       │                              ├── 01-*.txt
+       ▼                              ├── 02-*.txt
+   🎨 /diagram-ascii ─── writes ──▶  ├── 03-*.txt
+                                      └── 04-*.txt  (task only)
+                                                 │
+                                                 │   📦 /diagram-ascii-canvas
+                                                 ▼   (txt-to-canvas.py)
+                                          🖼️ {level}.excalidraw
+                                                 │
+                                                 ▼
+                                          👤 humans annotate the canvas
+                                          📌 reviewers see it on GitHub
+
+  Both surfaces are committed to git:
+    📄 .txt          grep-able · LLM-readable · git-diffable
+    🖼️ .excalidraw   human-readable · annotatable canvas
+
+─§ Skills delegate authoring to /diagram-ascii ──────────
+
+  haipipe-project specialists never write diagram .txt content inline.
+
+   /haipipe-project new                       /haipipe-project organize
+   ┌───────────────────────────┐              ┌───────────────────────────┐
+   │ ① scaffold folder shape   │              │ --fix migrate-to-diagram  │
+   │ ② Skill("diagram-ascii")  │              │ ① Skill("diagram-ascii")  │
+   │   for each .txt           │              │   to convert README → .txt│
+   │ ③ Skill("diagram-ascii-   │              │ ② Skill("diagram-ascii-   │
+   │     canvas") to bundle    │              │     canvas") to bundle    │
+   └───────────────────────────┘              └───────────────────────────┘
+
+  One source of truth for emoji conventions, section markers, table formats.

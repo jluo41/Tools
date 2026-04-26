@@ -2,7 +2,7 @@
 name: haipipe-project-organize
 description: "Modify specialist for haipipe-project. Reorganizes files to fix structural violations: flatten flat tasks into groups, rename mis-numbered task folders, align Track A code with Track B examples, fix broken paired-example references. Called by /haipipe-project orchestrator only after /haipipe-project-inspect review identifies issues."
 argument-hint: [function] [project_id] [args...]
-allowed-tools: Bash, Read, Write, Edit, Grep, Glob
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 ---
 
 Skill: haipipe-project-organize
@@ -24,9 +24,11 @@ Commands
 /haipipe-project-organize                              -> ASK what to organize
 /haipipe-project-organize <project_id>                 -> propose + apply fixes
 /haipipe-project-organize <project_id> --dry-run       -> propose only, no writes
-/haipipe-project-organize <project_id> --fix flat-tasks -> targeted fix
-/haipipe-project-organize <project_id> --fix renumber  -> renumber {G}{N} tasks
-/haipipe-project-organize <project_id> --fix paired    -> fix paired-example refs
+/haipipe-project-organize <project_id> --fix flat-tasks         -> move flat tasks into groups
+/haipipe-project-organize <project_id> --fix renumber           -> renumber {G}{N} tasks
+/haipipe-project-organize <project_id> --fix paired             -> fix paired-example refs + logging headers
+/haipipe-project-organize <project_id> --fix migrate-to-diagram -> README.md → diagram/ (one-time migration)
+/haipipe-project-organize <project_id> --fix drop-legacy        -> remove docs/, cc-archive/, _old/ at top level
 ```
 
 ---

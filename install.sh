@@ -78,8 +78,7 @@ echo "  ccskill           - Anthropic-bundled skills (skill-creator, docx, pptx,
 echo "  chronicle         - Email indexing from MS365 Outlook"
 echo "  diagram-skill     - Visual artifacts: diagram-ascii, diagram-ascii-canvas, diagram-drawio, diagram-excalidraw, progress-log"
 echo "  dikw              - DIKW session orchestrator (data/info/knowledge/wisdom + plan/gate/report)"
-echo "  haipipe           - haipipe umbrella commands (data, nn, end, project, subject)"
-echo "  haipipe-toolkit   - haipipe specialists grouped by stage (1_data, 2_nn, 3_end, 4_project, 5_subject)"
+echo "  haipipe-toolkit   - haipipe umbrella + specialists grouped by stage (1_data, 2_nn, 3_end, 4_project, 5_subject)"
 echo "  health            - Health logging (meal-cam-logger, whoop-connect)"
 echo "  logseq            - LogSeq markdown, queries, templates, whiteboards"
 echo "  research-toolkit  - Research workflow stages (00_meta ... 13_venue + _workflows)"
@@ -87,7 +86,6 @@ echo "  subjective-label  - Subjective-label iterator (init, iterate, scale, sta
 echo ""
 echo "Install in Claude Code with e.g.:"
 echo "  /plugin install dikw@jluo41-tools"
-echo "  /plugin install haipipe@jluo41-tools"
 echo "  /plugin install haipipe-toolkit@jluo41-tools"
 echo "  /plugin install diagram-skill@jluo41-tools"
 
@@ -174,16 +172,20 @@ if [ -n "$PROJECT_PATH" ]; then
         installed=$((installed + 1))
     done < <(enumerate_skills "$SCRIPT_DIR/plugins")
 
-    # Clean up stale symlinks (point to removed skills)
+    # Clean up stale symlinks (point to removed skills).
+    # Use plain "*" rather than "*/" so broken symlinks (whose target no
+    # longer exists) are still enumerated — "*/" requires the entry to
+    # resolve to a directory and silently skips dangling links.
     cleaned=0
-    for link in "$PROJECT_SKILLS"/*/; do
-        link="${link%/}"
+    shopt -s nullglob
+    for link in "$PROJECT_SKILLS"/*; do
         if [ -L "$link" ] && [ ! -e "$link" ]; then
             echo "  - $(basename "$link") (stale, removed)"
             rm "$link"
             cleaned=$((cleaned + 1))
         fi
     done
+    shopt -u nullglob
 
     echo "  $installed skills symlinked, $cleaned stale links removed."
 fi

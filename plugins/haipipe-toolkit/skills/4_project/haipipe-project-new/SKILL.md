@@ -2,7 +2,7 @@
 name: haipipe-project-new
 description: "Build specialist for haipipe-project. Scaffolds a new project under examples/ with the two-track structure (Track A code stubs in code-dev/hainn/haifn; Track B examples/{PROJECT_ID}/ with tasks/{group}/{task}/, configs, runs, results, paper). Called by /haipipe-project orchestrator. Direct invocation works for project scaffold work."
 argument-hint: [project_id] [args...]
-allowed-tools: Bash, Read, Write, Edit, Grep, Glob
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 ---
 
 Skill: haipipe-project-new

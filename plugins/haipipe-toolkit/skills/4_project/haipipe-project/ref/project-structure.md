@@ -1,7 +1,15 @@
 Track B: Project Folder Structure (examples/)
 ===============================================
 
-Every project lives under:  examples/Proj{Series}-{Category}-{Num}-{Name}/
+Every project lives under: examples/Proj{Series}-{Category}-{Num}-{Name}/
+
+The doc surface is `diagram/`, NOT `README.md`. Three levels of `diagram/`
+folders (project, task, paper) replace what used to be README.md and docs/.
+
+  Diagrams are authored via /diagram-ascii (.txt sources, ASCII + emoji)
+  and bundled into .excalidraw via /diagram-ascii-canvas (txt-to-canvas.py).
+  Both .txt and .excalidraw are committed to git: .txt is grep-able and
+  LLM-readable; .excalidraw is the human-readable + annotatable canvas.
 
 ---
 
@@ -21,26 +29,46 @@ Standard Layout
 ================
 
   examples/{PROJECT_ID}/
-  +-- tasks/              <- MANDATORY: all work lives here
-  |   +-- README.md       <- MANDATORY: project-level task overview (flow + structure + status)
-  |   +-- {G}_{group}/    <- Group folders (each has its own README.md)
-  |   +-- sbatch/         <- Cross-task SLURM scripts (optional)
-  +-- paper/              <- OPTIONAL: manuscripts, LaTeX (often git submodule)
-  +-- docs/               <- OPTIONAL: TODO.md, project-summary.md
-  +-- cc-archive/         <- OPTIONAL: CC session history (cc_*.md, di_*.md)
-  +-- _old/               <- OPTIONAL: archived legacy files (ignored by tools)
+  +-- tasks/          <- MANDATORY: all task work here
+  +-- diagram/        <- MANDATORY: project-level story (high-level only)
+  +-- paper/          <- OPTIONAL: manuscripts (each Paper-* gets own diagram/)
 
-  No top-level config/ or results/.
-  paper/ = external-facing (manuscript, reviews). docs/ = internal-facing (TODO, notes).
+  No top-level: config/, results/, README.md, docs/, cc-archive/, _old/
 
-  paper/ contains ONLY:
-    - LaTeX source (.tex, .bib, .sty), final figures/tables, submission materials
-    - Often its own git repo/submodule: paper/Paper-{Name}-{venue}/
-  paper/ does NOT contain:
-    - Evaluation scripts (belong in tasks/C_evaluation/)
-    - Raw data or model outputs (belong in _WorkSpace/)
-    - Pipeline configs (belong in tasks/{G}_{group}/{task}/config/)
-  Data flow: tasks/ produces figures/tables -> copied or symlinked into paper/
+  Project-level state lives in three places:
+    - SHAPE       project layout enforced by haipipe-project specialists
+    - STORY       in {PROJECT}/diagram/  (this folder, high-level)
+    - DETAIL      in {task}/diagram/     (per-task, operational)
+
+---
+
+Project-level diagram/  (high-level story)
+============================================
+
+  examples/{PROJECT_ID}/diagram/
+  +-- 01-story.txt          motivation, research question, expected impact
+  +-- 02-boundary.txt       in-scope / out-of-scope / definitions / assumptions
+  +-- 03-exploration.txt    directions tried / active / backlog / ruled out
+  +-- project.excalidraw    bundle of the .txt sources (built by txt-to-canvas)
+
+  PROJECT-LEVEL DIAGRAM IS HIGH-LEVEL ONLY.
+
+  It captures the research narrative — story, boundary, exploration
+  directions. It is NOT an operational dashboard:
+
+    DOES belong here          DOES NOT belong here
+    --------------------       ---------------------------
+    why we are doing this      per-task status table  (-> {task}/diagram/03-runs)
+    in/out scope               cross-task file dependencies (-> implicit in tasks)
+    open questions             run-level metrics  (-> {task}/diagram/03-runs)
+    directions tried/ruled-out daily progress log  (-> {task}/diagram/04-progress)
+
+  Authored via /diagram-ascii. Bundled via /diagram-ascii-canvas:
+    bin/txt-to-canvas.py examples/{PROJECT_ID}/diagram/ \
+      --out examples/{PROJECT_ID}/diagram/project.excalidraw
+
+  Refresh on substantive change to story / scope / exploration. Otherwise
+  stable — most weeks the project diagram does not change.
 
 ---
 
@@ -51,11 +79,10 @@ Group Folders
 
   {G}_{group_name}/            <- default form (one letter + name)
   {G}_{S}_{group_name}/        <- sub-ordered form (optional, when a group
-                                  splits into ordered stages; see below)
+                                  splits into ordered stages)
 
   G = uppercase letter (matches its tasks' prefix)
-  S = single digit, optional, used when several groups share letter G and
-      need explicit dependency order in alphabetical listings
+  S = single digit, optional, sort key when several groups share G
   group_name = snake_case descriptor
 
   Sub-ordered form — when to use:
@@ -67,45 +94,21 @@ Group Folders
       A_2_finetuning_clm_for_clf/    <- stage 2: consumes backbones from A_1_*
 
     Without the digit, "A_finetuning_*" would sort before "A_pretraining_*"
-    because 'f' < 'p', which inverts the logical dependency.  One digit
-    is enough; don't nest further.  Task-folder prefix is still {G}{N}_
+    because 'f' < 'p', which inverts the logical dependency. One digit
+    is enough; don't nest further. Task-folder prefix is still {G}{N}_
     (no sub-digit), so "A_1_pretraining_clm/A1_train_clm_num_modelsize/"
     has group "A_1_" and sub-task "A1_" — distinct by separator.
 
   Group folder contents:
-    README.md        <- MANDATORY: group purpose, task list, internal flow
-    sbatch/          <- OPTIONAL: cross-task SLURM scripts within this group
-    {G}{N}_{name}/   <- task folders (each owns its own config/)
+    sbatch/          OPTIONAL — cross-task SLURM scripts within this group
+    {G}{N}_{name}/   task folders (each owns its own config/, diagram/)
 
-  Group README.md has three sections:
-    1. Purpose -- one line
-    2. Flow -- which tasks feed into which (within the group)
-    3. Task list -- | Task | Description | Status |
+  GROUP FOLDERS DO NOT HAVE A README.md.
 
-  Example:
-    tasks/
-    +-- A_data/
-    |   +-- README.md
-    |   +-- sbatch/                      <- group-level orchestration (optional)
-    |   +-- A1_cook_data/
-    |   |   +-- README.md
-    |   |   +-- cook.py                  <- task logic
-    |   |   +-- config/                  <- YAML configs
-    |   |   +-- runs/                    <- atomic scripts (one per config)
-    |   |   |   +-- run_source_a.sh
-    |   |   |   +-- run_source_b.sh
-    |   |   +-- results/                 <- name-paired with runs/
-    |   |   |   +-- run_source_a/
-    |   |   |   |   +-- 0-run_source_a.log
-    |   |   |   +-- run_source_b/
-    |   |   |       +-- 0-run_source_b.log
-    |   |   +-- sbatch/                  <- task-level orchestration (optional)
-    |   |       +-- all_gpu0.sh
-    |   +-- A2_data_event_alignment/
-    +-- B_training/
-    |   +-- README.md
-    |   +-- B1_train_stats/
-    |   +-- B2_train_ml/
+  Group-level documentation is redundant: the project-level story
+  (in {PROJECT}/diagram/) describes what each group represents at a
+  high level, and per-task diagrams describe operational detail. Group
+  is purely an organizational layer for sorting + sbatch scope.
 
 ---
 
@@ -124,11 +127,13 @@ Task Folder Contents
 ====================
 
   *.py            One or more Python scripts (freestyle naming, # %% cell format)
-  README.md       Task-level documentation (mandatory, see format below)
   config/         YAML configs (each task owns its own, no sharing/symlinks)
   runs/           Atomic run scripts (one config = one script, no CLI args)
   results/        Light summaries (name-paired with runs/)
-  sbatch/         Orchestration scripts (call runs/*.sh, assign GPUs)
+  sbatch/         OPTIONAL: orchestration scripts (call runs/*.sh, assign GPUs)
+  diagram/        MANDATORY: task-level operational detail (overview, design, runs, progress)
+
+  TASKS DO NOT HAVE A README.md. The diagram/ folder is the doc surface.
 
   Python script rules:
     - Naming is freestyle: one file or many, any descriptive name.
@@ -138,13 +143,10 @@ Task Folder Contents
     - ATOMIC: each .sh runs exactly ONE config / ONE model. No loops.
     - Self-contained: all params hardcoded inside. No CLI args.
       Run with: bash runs/{name}.sh
-    - No .py in runs/ -- logic stays in *.py files at task root.
+    - No .py in runs/ — logic stays in *.py files at task root.
     - Naming: descriptive of the single run.
       Examples: run_1m.sh, run_5m_ep0.1.sh, run_hybridA_5m.sh
-    - The script sources env, sets paths, and calls the task's *.py
-      with the matching config from config/.
-    - Every run script MUST include the standard logging header
-      (see "Run Script Logging Header" below).
+    - Every run script MUST include the standard logging header (see below).
 
   results/ rules:
     - LIGHT only: report.md, metrics.json, small PNGs, .csv, .tex
@@ -158,123 +160,133 @@ Task Folder Contents
   sbatch/ rules:
     - ORCHESTRATION: each .sh batches multiple runs/*.sh together.
     - Assigns GPU, sets CUDA_VISIBLE_DEVICES, loops over runs.
-    - Naming describes the batch scope:
-      Examples: phase1_gpu0.sh, epoch_small_gpu0.sh, all_gpu1.sh
-    - sbatch/ scripts call runs/*.sh (or source them), NOT *.py directly.
-    - Can be run via SLURM (sbatch sbatch/foo.sh) or tmux.
-    - sbatch/ can exist at task level AND at group level:
-        Task-level sbatch/:  orchestrates runs within that task
-        Group-level sbatch/: orchestrates runs across tasks in the group
-
-  Run Script Logging Header
-  =========================
-
-    Every runs/*.sh script starts with this standard header:
-
-      #!/bin/bash
-      TASK_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-      RUN_NAME="$(basename "$0" .sh)"
-      RESULT_DIR="${TASK_DIR}/results/${RUN_NAME}"
-      mkdir -p "${RESULT_DIR}"
-      exec > >(tee "${RESULT_DIR}/0-${RUN_NAME}.log") 2>&1
-
-    This ensures:
-      - results/{RUN_NAME}/ directory is created automatically
-      - All stdout + stderr is captured to results/{RUN_NAME}/0-{RUN_NAME}.log
-      - The 0- prefix sorts the log file to the top of the directory listing
-      - Output still prints to terminal (visible in tmux / sbatch logs)
-      - Works regardless of invocation method (direct, tmux, sbatch, or via sbatch/*.sh)
-
-    After the header, the script sources env.sh, sets config path, and
-    calls the task's *.py file.
-
-  Relationship: runs/ <-> results/ <-> sbatch/
-  =============================================
-
-    config/B5_model_cgm_num_1m.yaml  --.
-    runs/run_1m.sh -------------------+--> results/run_1m/    (1:1 pairing)
-                                      |      +-- 0-run_1m.log
-                                      |      +-- metrics.json (optional)
-    config/B5_model_cgm_num_5m.yaml  --.
-    runs/run_5m.sh -------------------+--> results/run_5m/    (1:1 pairing)
-                                      |      +-- 0-run_5m.log
-                                      |
-    sbatch/gpu0.sh -------------------+--> calls runs/run_1m.sh, runs/run_5m.sh
-                                           (many:1 -- one sbatch calls many runs)
-
-    - config/ holds the YAML for each run (config naming is freestyle)
-    - runs/ holds one script per config (atomic, self-contained)
-    - results/ holds one dir per run (name-paired with runs/, NOT config/)
-    - sbatch/ groups runs by GPU or batch (orchestration only)
-    - The run script hardcodes the path to its config YAML inside
+    - sbatch/ scripts call runs/*.sh, NOT *.py directly.
+    - Can exist at task level AND at group level.
 
 ---
 
-README.md Formats
-==================
+Task-level diagram/  (operational detail)
+==========================================
 
-tasks/README.md (project-level, mandatory):
+  tasks/{G}_{group}/{G}{N}_{task}/diagram/
+  +-- 01-overview.txt     what / why / inputs / outputs (replaces task README)
+  +-- 02-design.txt       approach: model arch / algorithm / experiment setup
+  +-- 03-runs.txt         | Run | Variant | Result Dir | Status | Notes |
+  +-- 04-progress.txt     dated progress log (newest entry on top, append-only)
+  +-- task.excalidraw     bundle (built by txt-to-canvas)
 
-  Three sections, in order:
+  01-overview.txt — four short blocks, each 1-3 lines:
+    1. What     one-line purpose
+    2. Why      paper section / rebuttal point / research question it serves
+    3. Inputs   data paths or upstream tasks it reads from
+    4. Outputs  result files or downstream tasks it feeds
 
-  1. ASCII Flow Graph -- shows task dependencies and logic
-     Use arrows (-->, +->), groups (--- Group Name ---), and short
-     annotations to show WHY tasks connect, not just THAT they connect.
+  02-design.txt — approach in detail. Free-form, but for STAGE 5 (model
+  training) tasks it MUST include an ASCII diagram of the forward pass
+  plus an architecture sweep table when multiple sizes are trained:
 
-  2. ASCII Directory Tree -- shows folder structure with one-line descriptions
-     Use +-- for tree branches, <- for annotations.
-     Mark phases/groups (e.g., [original], [rebuttal], [demo]).
+    Architecture
+    ============
+      Input: [x_1, ..., x_L]   shape [B, L]
+              |
+        embed Linear(1 -> H)
+              |
+        Transformer (causal, N layers)
+              |
+        head Linear(H -> K)
+              |
+        Output [B, L, K]   loss = mean MSE over K horizons
 
-  3. Status Table -- tracks completion
-     | Task | Description | Status |
-     Status: stub | wip | done | deprecated
+    Architecture Sweep
+      Size  | Hidden | Layers | Heads | FFN  | LR    | Batch
+      ------+--------+--------+-------+------+-------+------
+      1m    |    128 |      4 |     2 |  512 | 8e-4  |   32
+      100m  |    768 |     11 |    12 | 3072 | 4e-4  |   64
 
-{G}_{group}/{task}/README.md (per-task, mandatory):
+  03-runs.txt — runs table:
+    | Run        | Variant     | Result Dir       | Status | Notes |
+    | run_1m     | 128h x 4l   | results/run_1m   | done   | OK    |
+    | run_5m     | 256h x 6l   | results/run_5m   | done   |       |
+    | run_100m   | 768h x 11l  | results/run_100m | wip    | OOM   |
+    Status: planned | wip | done | failed | deprecated
 
-  Five sections, each 1-3 lines:
+  04-progress.txt — dated entries (newest on top, append-only):
+    260426 — added run_5m; hit OOM at batch 64, downsized to 32, OK
+    260425 — scaffolded task, smoke-tested run_1m on small split
+    260424 — picked task scope, blocked by A2 alignment
 
-  1. What -- one-line purpose
-  2. Why -- which paper section / rebuttal point / research question it serves
-  3. Inputs -- data paths or upstream tasks it reads from
-  4. Outputs -- result files or downstream tasks it feeds
-  5. Runs -- (if runs/ exists) table of run variants and status
+  Authored via /diagram-ascii. Bundled via /diagram-ascii-canvas:
+    bin/txt-to-canvas.py {task}/diagram/ --out {task}/diagram/task.excalidraw
 
-     | Run | Variant | Result Dir | Status | Notes |
-     Status: planned | wip | done | failed | deprecated
+  Refresh whenever 03-runs or 04-progress changes meaningfully (e.g.,
+  after a run completes or a milestone is hit). Stale canvases are
+  flagged by /haipipe-project review.
 
-  Stage 5 tasks (model training, ModelArgs configs) should also include:
+---
 
-  Architecture -- ASCII diagram of the model forward pass.
-    Show: input -> embedding -> backbone -> head -> output -> loss.
-    Include an architecture sweep table when multiple sizes are trained.
+Run Script Logging Header
+==========================
 
-    Example format:
+  Every runs/*.sh script starts with this standard header:
 
-      Architecture
-      ============
+    #!/bin/bash
+    TASK_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+    RUN_NAME="$(basename "$0" .sh)"
+    RESULT_DIR="${TASK_DIR}/results/${RUN_NAME}"
+    mkdir -p "${RESULT_DIR}"
+    exec > >(tee "${RESULT_DIR}/0-${RUN_NAME}.log") 2>&1
 
-        Input: [x_1, x_2, ..., x_L]      shape [B, L]
-                      |
-              embed   Linear(1 -> H)
-                      |
-              Transformer  (causal, N layers)
-              +- Multi-Head Attn
-              +- FFN (H -> 4H -> H)
-                      |
-              Hidden: [h_1, h_2, ..., h_L]  shape [B, L, H]
-                      |
-              head    Linear(H -> K)
-                      |
-              Output: [p_{t+1}, ..., p_{t+K}]   shape [B, L, K]
-                      |
-              Loss: mean MSE over K horizons
+  This ensures:
+    - results/{RUN_NAME}/ directory created automatically
+    - All stdout + stderr captured to results/{RUN_NAME}/0-{RUN_NAME}.log
+    - The 0- prefix sorts the log to the top of `ls`
+    - Output still prints to terminal
+    - Works regardless of invocation (direct, tmux, sbatch)
 
-      Architecture Sweep (when multiple sizes are trained):
+  After the header, the script sources env, sets config path, and
+  calls the task's *.py file with the matching config from config/.
 
-        Size  | Hidden | Layers | Heads | FFN  | LR    | Batch
-        ------+--------+--------+-------+------+-------+------
-        1m    |    128 |      4 |     2 |  512 | 8e-4  |   32
-        100m  |    768 |     11 |    12 | 3072 | 4e-4  |   64
+---
+
+Relationship: runs/ <-> results/ <-> sbatch/
+=============================================
+
+  config/B5_model_cgm_num_1m.yaml  --.
+  runs/run_1m.sh -------------------+--> results/run_1m/    (1:1 pairing)
+                                    |      +-- 0-run_1m.log
+                                    |      +-- metrics.json (optional)
+  config/B5_model_cgm_num_5m.yaml  --.
+  runs/run_5m.sh -------------------+--> results/run_5m/    (1:1 pairing)
+                                    |      +-- 0-run_5m.log
+                                    |
+  sbatch/gpu0.sh -------------------+--> calls runs/run_1m.sh, runs/run_5m.sh
+                                         (many:1 — one sbatch calls many runs)
+
+  - config/ holds the YAML for each run (config naming is freestyle)
+  - runs/ holds one script per config (atomic, self-contained)
+  - results/ holds one dir per run (name-paired with runs/, NOT config/)
+  - sbatch/ groups runs by GPU or batch (orchestration only)
+  - The run script hardcodes the path to its config YAML inside
+
+---
+
+Paper-level diagram/  (manuscript plan)
+=========================================
+
+  paper/Paper-{Name}-{venue}/diagram/
+  +-- 01-overview.txt        sections + main claims
+  +-- 02-figure-plan.txt     what each figure shows + status
+  +-- 03-rebuttal.txt        reviewer-response sketches (when applicable)
+  +-- paper.excalidraw       bundle
+
+  01-overview.txt   manuscript structure: sections, headline claims per section
+  02-figure-plan.txt | Fig | Title | Source task | Status | (planned/draft/final)
+  03-rebuttal.txt   per-reviewer comment + planned response sketch (during rebuttal)
+
+  The paper subfolder is often a git submodule; its diagram/ lives
+  inside the submodule and is committed to the paper repo.
+
+  Authored via /diagram-ascii. Bundled via /diagram-ascii-canvas.
 
 ---
 
@@ -282,7 +294,18 @@ Auto-Example Rule
 ==================
 
 Every Track A stub gets a paired example task in tasks/ (group D by default).
-Status in group README.md: "stub" until implemented.
+
+  Track A stub                              Track B paired task
+  --------------------                       -------------------------
+  code-dev/1-PIPELINE/.../build_*.py    ->  tasks/D_demo/D{N}_test_*/
+  code/hainn/algo/{family}/*.py         ->  tasks/D_demo/D{N}_test_{name}/
+  code/hainn/tuner/{family}/*.py
+  code/hainn/instance/{family}/*.py
+
+The paired task contains the standard task layout including diagram/.
+Status tracked in:
+  - {PROJECT}/diagram/03-exploration.txt  (under "active" or "backlog")
+  - {task}/diagram/03-runs.txt            (Status = "stub" until implemented)
 
 ---
 
@@ -299,24 +322,37 @@ Review Checklist
 
 Structure:
   [ ] Name matches Proj{Series}-{Category}-{Num}-{Name}
-  [ ] tasks/ exists with README.md (flow graph + tree + status table)
-  [ ] No top-level config/ or results/
-  [ ] Tasks are inside group folders (tasks/{G}_{group}/{G}{N}_{name}/)
+  [ ] tasks/ exists
+  [ ] diagram/ exists at project root
+  [ ] No top-level config/, results/, README.md, docs/, cc-archive/, _old/
+  [ ] Tasks live under tasks/{G}_{group}/{G}{N}_{name}/
+
+Project diagram (mandatory):
+  [ ] {PROJECT}/diagram/01-story.txt exists and is non-trivial
+  [ ] {PROJECT}/diagram/02-boundary.txt exists
+  [ ] {PROJECT}/diagram/03-exploration.txt exists
+  [ ] {PROJECT}/diagram/project.excalidraw exists
+  [ ] project.excalidraw is fresher than the oldest .txt source
+       (else canvas is stale; re-bundle)
 
 Per group:
-  [ ] {G}_{group}/README.md exists (purpose, flow, task list)
-  [ ] Group letter matches its tasks' prefix
+  [ ] No README.md in group folder
+  [ ] Group letter G matches its tasks' prefix
+  [ ] If sub-ordered: digit reflects actual dependency order
 
 Per task:
   [ ] At least one *.py exists in the task folder
-  [ ] {task}/README.md exists (what, why, inputs, outputs, runs)
-  [ ] {task}/config/ exists with its own YAML files (no symlinks)
-  [ ] runs/ scripts are atomic (one config = one script, no loops)
-  [ ] runs/foo.sh <-> results/foo/ name pairing holds
-  [ ] sbatch/ scripts call runs/*.sh (not *.py directly)
+  [ ] No README.md in task folder
+  [ ] {task}/diagram/ exists with: 01-overview, 02-design, 03-runs, 04-progress
+  [ ] {task}/diagram/task.excalidraw exists and is fresher than .txt sources
+  [ ] config/ exists with own YAML (no symlinks)
+  [ ] runs/ scripts atomic (1 config = 1 script, no loops)
+  [ ] runs/foo.sh ↔ results/foo/ name pairing holds
+  [ ] sbatch/ scripts call runs/*.sh, NOT *.py directly
   [ ] If no runs/: results/ has flat files or default/ subfolder
-  [ ] No heavy files in results/
+  [ ] No heavy files in results/ (heavy goes to _WorkSpace/)
+  [ ] Every runs/*.sh starts with the standard logging header
 
-docs / paper:
-  [ ] docs/TODO.md current (if docs/ exists)
-  [ ] No eval scripts in paper/ (belong in tasks/)
+Paper (if applicable):
+  [ ] paper/Paper-*/diagram/ exists with 01-overview, 02-figure-plan
+  [ ] paper.excalidraw fresher than .txt sources

@@ -1,0 +1,69 @@
+🚦 /haipipe-project — orchestrator routing
+═══════════════════════════════════════════════════════════
+
+  The umbrella parses the verb, applies disambiguation rules,
+  then dispatches to one of three risk-segregated specialists.
+
+─§ Dispatch flow ─────────────────────────────────────────
+
+   🧑 user
+    │
+    │  /haipipe-project <verb> <project_id> [args...]
+    ▼
+  +-------------------------------------------------+
+  | 🎯 haipipe-project (orchestrator)                |
+  |    • parse $ARGUMENTS                            |
+  |    • verb → specialist via verb map              |
+  |    • apply disambiguation rules                  |
+  +-------------------------------------------------+
+                        │
+       ┌────────────────┼────────────────┐
+       │                │                │
+       ▼                ▼                ▼
+  +----------+    +-------------+    +---------------+
+  | 🏗️ BUILD |    | 👀 READ     |    | 🔧 MODIFY     |
+  | -new     |    | -inspect    |    | -organize     |
+  +----------+    +-------------+    +---------------+
+                                            │
+                                            ▼
+                                     ⚠️ files moved /
+                                        renamed
+
+─§ Verb → specialist map ─────────────────────────────────
+
+  +----------------------------------------+--------------+
+  | Verb                                   | Routes to    |
+  +----------------------------------------+--------------+
+  | 🆕 new · scaffold · create · init      | -new         |
+  | 🔍 review · audit · check · validate   | -inspect     |
+  | 📝 summarize · summary · docs          | -inspect     |
+  | 📋 inventory · list files · files      | -inspect     |
+  | 🗺️ overview · show · status            | -inspect     |
+  | 🔧 organize · reorganize · fix · move  | -organize    |
+  +----------------------------------------+--------------+
+
+─§ Disambiguation rules ──────────────────────────────────
+
+  🟢 verb ✓, id ✓             →  dispatch directly
+  🟡 verb ✗, id ✓             →  default to overview for that id
+  🟡 verb ✗, no args          →  cross-project overview (inline; no dispatch)
+  🔴 organize, no project_id  →  ASK; do not guess
+  🔁 multi-project op         →  dispatch sequentially per project
+
+─§ Specialist return contract (every specialist) ─────────
+
+  status:    ok | blocked | failed
+  summary:   2-3 sentences on what was done
+  artifacts: [paths created / read / moved]
+  next:      suggested next command
+
+─§ Typical handoffs ──────────────────────────────────────
+
+  🆕 new project flow
+     -new  ──▶  ✅ scaffolded  ──▶  -inspect review (sanity-check)
+
+  🩺 audit-and-fix flow
+     -inspect review  ──▶  🚩 violations  ──▶  -organize  ──▶  -inspect review (re-check)
+
+  📊 status-only flow
+     -inspect overview  (read-only; no follow-up needed)

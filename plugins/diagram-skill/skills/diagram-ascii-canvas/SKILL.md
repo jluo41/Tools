@@ -96,6 +96,25 @@ See `diagram-ascii` SKILL → "Section dividers" for the canonical convention.
 
 ### 2. Share as a clickable URL (optional)
 
+Two paths, pick one:
+
+#### 2a. Direct upload to excalidraw.com (no GitHub needed)
+
+`bin/share-via-excalidraw.py` uses headless Playwright to drag-drop the `.excalidraw` onto excalidraw.com, click "Export to Link", and capture the resulting `#json=<id>,<key>` URL.
+
+```bash
+bin/share-via-excalidraw.py path/to/canvas.excalidraw
+# prints:
+#   ✅ https://excalidraw.com/#json=<id>,<key>
+# also writes:  path/to/canvas.excalidraw.share-url.txt
+```
+
+End-to-end encrypted: the encrypted blob is on Excalidraw's servers, but the AES-128 key lives only in the URL fragment (`#…`) and is never sent to any server. Anyone with the full URL can view; **no expiration, no revocation on the free tier**. Treat it like a Google Doc "anyone with the link" — fine for internal review, not for secrets.
+
+Debug screenshots land in `/tmp/excalidraw_share_debug/` for any UI-change failures.
+
+#### 2b. Public GitHub gist via `share-canvas.sh`
+
 `bin/share-canvas.sh` uploads the `.excalidraw` to a **public GitHub gist** and prints a `https://excalidraw.com/#url=...` link that opens the canvas directly in the browser. Requires `gh` CLI logged in with the `gist` scope.
 
 ```bash
@@ -108,7 +127,18 @@ bin/share-canvas.sh path/to/canvas.excalidraw [-d "description"]
 
 How it works: Excalidraw's web app accepts a `#url=<remote .excalidraw>` hash param and fetches the scene from that URL. `raw.githubusercontent.com` serves with CORS open, so the gist's raw URL works without any other infra.
 
-**Privacy note**: this creates a **public** gist. Don't share canvases that include sensitive paths, secrets, or internal architecture you wouldn't put in an open-source repo. The PNGs are baked into the JSON as base64 — they're public the moment the gist is created.
+**Privacy note (both paths)**: the canvas content (paths, annotations, embedded PNGs) is uploaded to a third party. Gist = public on GitHub, indexable. Excalidraw direct = encrypted blob on excalidraw.com, only readable by URL holders. Don't share canvases with secrets or internal architecture you wouldn't put in an open-source repo.
+
+#### Which to use?
+
+| | Gist (`share-canvas.sh`) | Excalidraw direct (`share-via-excalidraw.py`) |
+|---|---|---|
+| Auth needed | `gh` logged in with `gist` scope | none |
+| Content readable by host | yes (public on GitHub) | no (E2E encrypted) |
+| Indexable by search engines | yes | no |
+| Persistence | until you delete the gist | indefinite, no UI to delete |
+| Edit later | yes (`gh gist edit`) | no — re-upload creates a new URL |
+| Setup cost | install `gh`, auth | none (Playwright auto-fetches via `uv`) |
 
 ## How It Works
 
