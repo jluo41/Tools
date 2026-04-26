@@ -1,0 +1,169 @@
+🗺️  haipipe-toolkit — Map at a Glance
+========================================
+
+  5 umbrella commands · 24 specialists · 7 stores · 6 build stages.
+  Each umbrella parses intent on its OWN routing axis and dispatches
+  to a specialist via Skill(). Specialists return a status tail.
+
+  Read this file first; the rest are deep-dives:
+     1-architecture.txt      umbrella + specialist contract
+     2-folder-tree.txt       skills/ on disk
+     3-routing.txt           args → (axis, verb) → dispatch
+     4-pipeline.txt          7 stores · 6 build stages
+     5-subject-vs-project.txt train scope vs inference scope
+     6-code-mapping.txt      skills ↔ code (1:1 audit)
+
+
+─§ 🎯 The 5 user-facing umbrellas ──────────────────────────
+
+  🧑 user
+     │
+     │  pick the umbrella that owns the artifact you want to touch
+     │
+     ├─▶  /haipipe-data       📊 Stages 1-4  (data pipeline)
+     │      axis: STAGE                  → -source -record -case -aidata
+     │
+     ├─▶  /haipipe-nn         🧠 Stage 5   (model training)
+     │      axis: LAYER                  → -algo -tuner -instance -modelset
+     │
+     ├─▶  /haipipe-end        🚀 Stage 6   (endpoint deployment)
+     │      axis: 4-D                    → -endpointset
+     │                                     -{meta,trig,post,src2input,input2src}
+     │                                     -develop-{sagemaker,databricks,local}
+     │                                     -deploy-{sagemaker,databricks,local,mlflow}
+     │
+     ├─▶  /haipipe-project    📁 cross-project lifecycle
+     │      axis: RISK PROFILE           → -new (build)
+     │                                     -inspect (read)
+     │                                     -organize (modify)
+     │
+     └─▶  /haipipe-subject    🧑‍⚕️ per-subject slice (S0-S2 only)
+            (no decomposition · 8 commands handled inline)
+
+
+─§ 🔢 Tier map — umbrella → specialist ─────────────────────
+
+  +-----------------------------------------------------------+
+  |  🎮  Tier 1  —  Umbrella commands (5)                     |
+  |     parse intent on axis · dispatch via Skill()           |
+  +-----------------------------------------------------------+
+                                │
+                                │  Skill("haipipe-X-<axis>", args=...)
+                                ▼
+  +-----------------------------------------------------------+
+  |  🔧  Tier 2  —  Specialists (24)                          |
+  |-----------------------------------------------------------|
+  |  📊 1_data       (4)  -source · -record · -case · -aidata |
+  |  🧠 2_nn         (4)  -algo · -tuner · -instance ·        |
+  |                       -modelset                            |
+  |  🚀 3_end       (13)  -endpointset                        |
+  |                       -{meta,trig,post,src2input,         |
+  |                          input2src}                        |
+  |                       -develop-{sagemaker,databricks,     |
+  |                                  local}                    |
+  |                       -deploy-{sagemaker,databricks,      |
+  |                                 local,mlflow}              |
+  |  📁 4_project    (3)  -new · -inspect · -organize         |
+  |  🧑‍⚕️ 5_subject   (0)  (none — handled inline)            |
+  +-----------------------------------------------------------+
+                                │
+                                │  reads/writes pipeline stores
+                                ▼
+  +-----------------------------------------------------------+
+  |  📂  _WorkSpace/  (7 stores · 6 build stages)             |
+  |     0-RawDataStore → 1-Source → 2-Rec → 3-Case →          |
+  |     4-AIData → 5-ModelInstance → 6-Endpoint               |
+  +-----------------------------------------------------------+
+
+
+─§ 🌊 Pipeline at a glance ─────────────────────────────────
+
+  📥 0-Raw → 📊 1-Source → 📝 2-Rec → 📂 3-Case → 🎲 4-AIData → 🧠 5-Model → 🚀 6-Endpoint
+   input    └────────── /haipipe-data (S1-S4) ──────────┘  └ /haipipe-nn ┘ └ /haipipe-end ┘
+
+  🧑‍⚕️ /haipipe-subject reuses S0-S2 only (filtered VIEW of global stores)
+       — at inference time, a subject just CALLS the deployed endpoint.
+
+  📌 See diagram 4-pipeline.txt for the full per-stage breakdown.
+
+
+─§ 🔀 Three dispatch modes (any umbrella) ──────────────────
+
+  Mode 1 · 🎯 SINGLE DISPATCH        args → (axis, verb) → 1 Skill() call
+  Mode 2 · 🔁 PARALLEL FAN-OUT       no args → N parallel dashboards → merge
+  Mode 3 · 💡 INLINE                 cross-scope concern → umbrella owns it
+
+       /haipipe-data    "explain"  → Mode 3 (inline)
+       /haipipe-data    no args    → Mode 2 (parallel)
+       /haipipe-data    source cook→ Mode 1 (single dispatch)
+
+  📌 See diagram 3-routing.txt for full routing logic per umbrella.
+
+
+─§ 🏗️ /haipipe-end is special — 4 axes ─────────────────────
+
+  All other umbrellas have ONE routing axis. /haipipe-end has 4:
+
+  +----+-----------------+----------------------------------+
+  |    | Axis            | Specialists                      |
+  +----+-----------------+----------------------------------+
+  | 🧠 | Fn-type         | meta · trig · post ·             |
+  |    |                 | src2input · input2src            |
+  | 🔧 | Artifact        | endpointset                      |
+  |    |                 | (package · test · review)        |
+  | 🏗️ | Develop  BUILDS | develop-{sagemaker,              |
+  |    |                 |   databricks⚠️, local}          |
+  | 🚀 | Deploy   SERVES | deploy-{sagemaker,               |
+  |    |                 |   databricks, local, mlflow⚠️}  |
+  +----+-----------------+----------------------------------+
+
+  💡 Develop and deploy share targets but operate on different
+     LIFECYCLE PHASES of the same Endpoint_Set artifact:
+     develop BUILDS it · deploy SERVES it.
+
+  ⚠️ Two targets are DEFERRED (no platform repo yet):
+     · haipipe-end-develop-databricks
+     · haipipe-end-deploy-mlflow
+
+
+─§ 📋 Specialist return contract ───────────────────────────
+
+  Every specialist returns this 4-line tail (umbrella surfaces it):
+
+   +-----------+----------------------------------------------+
+   | status    | ✅ ok | 🚧 blocked | ❌ failed                |
+   | summary   | 2-3 sentences on what was done               |
+   | artifacts | [paths created/read/modified, ids, URLs]     |
+   | next      | suggested next command                       |
+   +-----------+----------------------------------------------+
+
+  📌 If status != ok → umbrella stops chaining and surfaces
+     the message verbatim. No silent retries.
+
+
+─§ 📌 Three cross-cutting truths ───────────────────────────
+
+  1. 🔢  Phase numbers ARE the dependency order — `ls` walks
+      the workflow (data → nn → end, then project, then subject).
+
+  2. 🏗️  Specialists never modify state owned by another
+      specialist. -deploy-* READS the Endpoint_Set;
+      -develop-* and -endpointset WRITE it.
+
+  3. 📜  Skill prompt is the source of truth (skill-first
+      development). Each specialist has its own
+      ref/concepts.md; umbrellas share fn/*.md procedure docs.
+
+
+─§ ⚡ Compact form ─────────────────────────────────────────
+
+  🧑  →  /haipipe-X  →  parse (axis, verb)  →  Skill(specialist)
+                                                    │
+                                                    ▼
+                                             status · summary ·
+                                             artifacts · next
+                                                    │
+                                                    ▼
+                                              🧑 user
+
+  5 umbrellas · 24 specialists · 7 stores · 6 stages · 1 contract.

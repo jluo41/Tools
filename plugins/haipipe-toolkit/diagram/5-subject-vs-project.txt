@@ -9,7 +9,7 @@ VIEW of the global store, produced by running the SAME pipeline with
 a subject filter.
 
 
-─§ |                  🎯 TRAIN-TIME (project-wide build)                 | ────
+─§ 🎯 TRAIN-TIME — project-wide build ─────────────────────
 
 +--------------------------------------------------------------------+
 |                  🎯 TRAIN-TIME (project-wide build)                 |
@@ -36,7 +36,7 @@ a subject filter.
                                        ✅ deployable endpoint
 
 
-─§ |              🧑‍⚕️ INFERENCE-TIME (one subject at a time)              | ────
+─§ 🧑‍⚕️ INFERENCE-TIME — one subject at a time ─────────────
 
 +--------------------------------------------------------------------+
 |              🧑‍⚕️ INFERENCE-TIME (one subject at a time)              |

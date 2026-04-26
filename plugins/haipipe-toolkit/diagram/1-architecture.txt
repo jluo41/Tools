@@ -6,7 +6,7 @@ dispatch (via Skill()) to Tier 2 specialists. Each umbrella also owns
 SHARED ref/ and fn/ docs that specialists read.
 
 
-─§ |                  🧑 User types one umbrella command                 | ────
+─§ 🧑 User types one umbrella command ─────────────────────
 
 +--------------------------------------------------------------------+
 |                  🧑 User types one umbrella command                 |
