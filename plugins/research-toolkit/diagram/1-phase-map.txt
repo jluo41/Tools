@@ -1,0 +1,132 @@
+🔢  The 14-Phase Map
+=====================
+
+  Phase numbers ARE the dependency order. `ls skills/` walks the
+  workflow. The "write band" (06–08) is the only branch point —
+  see diagram 5-write-band.txt.
+
+
+─§ 🌊 Linear walk · 00 → 13 ────────────────────────────────
+
+   ┌──────────────────────────────────────────────┐
+   │  00_meta       🛠️  always available           │
+   │     codex mirrors · shared refs · logging    │
+   └─────────────────┬────────────────────────────┘
+                     │
+                     ▼
+   ┌──────────────────────────────────────────────┐
+   │  01_discover   🔭  lit search · idea gen     │
+   │     research-lit · idea-creator · arxiv ·    │
+   │     novelty-check · paper-analyzer · …       │
+   └─────────────────┬────────────────────────────┘
+                     │
+                     ▼
+   ┌──────────────────────────────────────────────┐
+   │  02_plan       📐  refine method · plan exp  │
+   │     research-refine · experiment-plan ·      │
+   │     ablation-planner · proof-writer · …      │
+   └─────────────────┬────────────────────────────┘
+                     │
+                     ▼
+   ┌──────────────────────────────────────────────┐
+   │  03_execute    ⚙️  run experiments           │
+   │     run-experiment · experiment-queue ·      │
+   │     monitor-experiment · serverless-modal ·  │
+   │     vast-gpu · system-profile · dse-loop · … │
+   └─────────────────┬────────────────────────────┘
+                     │
+                     ▼
+   ┌──────────────────────────────────────────────┐
+   │  04_analyze    📊  results → claims          │
+   │     analyze-results · result-to-claim ·      │
+   │     results-analysis                          │
+   └─────────────────┬────────────────────────────┘
+                     │
+                     ▼
+   ┌──────────────────────────────────────────────┐
+   │  05_prewrite   🏗️  bootstrap · outline       │
+   │     paper-bootstrap · paper-plan ·            │
+   │     paper-architecture · paper-incubator ·    │
+   │     overleaf-sync                             │
+   └─────────────────┬────────────────────────────┘
+                     │
+                     │   ┌────── 09_figures ──────┐
+                     │   │ 🎨 figure-planner runs  │
+                     │   │    in parallel (PRIN-#2)│
+                     │   └────────────────────────┘
+                     ▼
+   ╔══════════════════════════════════════════════╗
+   ║  WRITE BAND  (06 · 07 · 08)                  ║
+   ║  branch by target — see 5-write-band.txt     ║
+   ║                                              ║
+   ║  06_write      ✍️  active drafting           ║
+   ║  07_revise     🔁  structural revision       ║
+   ║  08_postwrite  🛠️  compile · auto-improve   ║
+   ╚═════════════════┬════════════════════════════╝
+                     │
+                     ▼
+   ┌──────────────────────────────────────────────┐
+   │  09_figures    🎨  render · diagrams         │
+   │     paper-figure · paper-illustration ·      │
+   │     mermaid-diagram · excalidraw-diagram ·   │
+   │     pixel-art · figure-spec                   │
+   └─────────────────┬────────────────────────────┘
+                     │
+                     ▼
+   ┌──────────────────────────────────────────────┐
+   │  10_review     🔍  audits · auto-loops       │
+   │     submission-audit · paper-claim-audit ·   │
+   │     citation-verifier · citation-audit ·     │
+   │     auto-review-loop{,-llm,-minimax} ·       │
+   │     research-review · paper-reviewer · …     │
+   └─────────────────┬────────────────────────────┘
+                     │
+                     ▼
+   ┌──────────────────────────────────────────────┐
+   │  11_respond    ✉️  rebuttal                  │
+   │     rebuttal-response · paper-rebuttal       │
+   └─────────────────┬────────────────────────────┘
+                     │
+                     ▼
+   ┌──────────────────────────────────────────────┐
+   │  12_present    🎤  slides · poster · talk    │
+   │     paper-slides · paper-poster ·            │
+   │     academic-presentations                    │
+   └─────────────────┬────────────────────────────┘
+                     │
+                     ▼
+   ┌──────────────────────────────────────────────┐
+   │  13_venue      🎯  venue · IP · grants       │
+   │     nature-portfolio-playbook ·               │
+   │     pnas-playbook · misq · isr · ms-is ·     │
+   │     patent-{novelty,review} ·                 │
+   │     specification-writing ·                   │
+   │     jurisdiction-format · grant-proposal      │
+   └──────────────────────────────────────────────┘
+
+
+─§ 🎚️ Two cross-cutting bands ──────────────────────────────
+
+  🛠️  00_meta       — available at every phase
+  🎯  13_venue      — informs phase 06+ and final submission
+
+  Both are not "next-phase" steps; they shape how the linear
+  walk is executed.
+
+
+─§ 🔀 Dependencies are NOT strictly linear ─────────────────
+
+  The numbers say  "X usually runs before Y".  But:
+
+  • 09_figures is in the linear path AFTER 06-08 for reading
+    convenience, but figure-planner (the structural one) runs
+    in parallel with 05_prewrite. PRINCIPLES.md #2.
+
+  • 10_review wraps around 06-08: paper-claim-audit runs
+    continuously during writing; submission-audit gates only
+    at the end.
+
+  • 13_venue is consulted at 05_prewrite (article-type) AND at
+    10_review (preflight) AND at 11_respond (rebuttal style).
+
+  Treat the map as a sequence diagram, not a strict pipeline.

@@ -1,0 +1,146 @@
+🚂  Workflows — 9 Cross-Phase Orchestrators
+============================================
+
+  `skills/_workflows/*` are the entry points: each one chains
+  multiple phase-skills with parameter pass-through. Underscore
+  prefix sorts them first under `ls`.
+
+
+─§ 📜 Roster ───────────────────────────────────────────────
+
+  +----+-------------------------+----------------------------------+
+  |    | Workflow                | Role                             |
+  +----+-------------------------+----------------------------------+
+  | 🚂 | research-pipeline       | Full W1→W4 (idea → submission)   |
+  | 🌿 | paper-workflow          | Top-level journal router         |
+  | 🤖 | paper-writing (W3)      | Conference paper auto-pipeline   |
+  | 🔭 | idea-discovery (W1)     | Idea exploration pipeline        |
+  | 🤖 | idea-discovery-robot    | W1 specialized for robotics/EAI  |
+  | 🌉 | experiment-bridge (W1.5)| Plan → running code + log        |
+  | 🔄 | (auto-review-loop)*     | W2 — review loop (atomic skill)  |
+  | ✉️ | rebuttal (W4)           | Reviews → safe text rebuttal     |
+  | 📖 | is-paper-workflow       | IS-journal end-to-end            |
+  | 🔒 | patent-pipeline         | Invention → filing               |
+  +----+-------------------------+----------------------------------+
+
+  * auto-review-loop lives in 10_review/, not _workflows/, but
+    plays the W2 role in the canonical W1→W4 chain.
+
+
+─§ 🚂 The full pipeline — research-pipeline ────────────────
+
+  /research-pipeline "direction"
+              │
+              │  W1: idea discovery
+              ▼
+        ┌──────────────────────────┐
+        │ /idea-discovery          │
+        │   ├─ research-lit        │
+        │   ├─ idea-creator        │
+        │   ├─ novelty-check       │
+        │   └─ research-review     │
+        └──────────────┬───────────┘
+                       │   📄 IDEA_REPORT.md
+                       │   📄 EXPERIMENT_PLAN.md
+                       ▼
+              W1.5: experiment bridge
+        ┌──────────────────────────┐
+        │ /experiment-bridge       │
+        │   ├─ implement code      │
+        │   ├─ run on GPU          │
+        │   └─ collect results     │
+        └──────────────┬───────────┘
+                       │   📄 EXPERIMENT_LOG.md
+                       ▼
+                W2: auto review
+        ┌──────────────────────────┐
+        │ /auto-review-loop        │
+        │   ├─ external reviewer   │
+        │   ├─ implement fixes     │
+        │   └─ re-review (× N)     │
+        └──────────────┬───────────┘
+                       │   📄 NARRATIVE_REPORT.md
+                       ▼
+                W3: paper writing
+        ┌──────────────────────────┐
+        │ /paper-writing           │
+        │   ├─ paper-plan          │
+        │   ├─ paper-figure +      │
+        │   │   figure-spec +      │
+        │   │   paper-illustration │
+        │   ├─ paper-write         │
+        │   ├─ paper-compile       │
+        │   └─ auto-paper-         │
+        │       improvement-loop   │
+        └──────────────┬───────────┘
+                       │   📄 paper/main.pdf
+                       ▼
+                  📤 submit
+                       │
+                       │  W4: rebuttal (when reviews arrive)
+                       ▼
+        ┌──────────────────────────┐
+        │ /rebuttal                │
+        │   ├─ parse reviews       │
+        │   ├─ enforce coverage    │
+        │   └─ draft response      │
+        └──────────────────────────┘
+                       │   📄 PASTE_READY.txt
+
+
+─§ 🌿 Journal alternative — paper-workflow ─────────────────
+
+  Same end goal (a PDF), different governance: deliberate Nature
+  flow, no auto-loop until claims are locked.
+
+  /paper-workflow
+       │
+       ├─▶  05_prewrite/paper-bootstrap         🏗️ notes/
+       │
+       ├─▶  13_venue/{nature,pnas}-playbook     🎯 article type
+       │
+       ├─▶  notes refresh (REQUIRED)            📝 project_truth ·
+       │                                          result_summary ·
+       │                                          paper_handoff ·
+       │                                          claim_evidence_map
+       │
+       ├─▶  06_write/scientific-writing         ✍️
+       │
+       ├─▶  07_revise/manuscript-optimizer      🔁
+       │
+       ├─▶  09_figures/figure-planner           🖼️
+       │
+       ├─▶  10_review/citation-verifier         📚
+       ├─▶  10_review/submission-audit          🚪 GATE — Nature discipline
+       │
+       └─▶  📤 submit · then /rebuttal-response
+
+
+─§ 🌉 Workflow chaining — common parameters ────────────────
+
+  All workflows accept and pass through:
+
+    ─ effort:        🪶 lite | balanced | max | beast
+    ─ human checkpoint:  true | false
+    ─ AUTO_PROCEED:      true | false
+    ─ difficulty:    medium | hard | nightmare       (W2 reviewer)
+    ─ venue:         ICLR | NeurIPS | ICML | …       (W1.5+)
+    ─ sources:       web · zotero · deepxiv · …      (W1)
+    ─ gpu:           local · remote · vast · modal   (W1.5+)
+
+
+─§ 🔢 Workflow × phase coverage ────────────────────────────
+
+  +----+--------------------------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
+  |    | Workflow                 | 00  | 01  | 02  | 03  | 04  | 05  | 06  | 07  | 08  | 09  | 10  | 11  |
+  +----+--------------------------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
+  | 🚂 | research-pipeline        | ✓   | ✓   | ✓   | ✓   | ✓   | ✓   | ✓   | ✓   | ✓   | ✓   | ✓   | ✓   |
+  | 🔭 | idea-discovery           |     | ✓   | ✓   |     |     |     |     |     |     |     | ✓   |     |
+  | 🤖 | idea-discovery-robot     |     | ✓   | ✓   |     |     |     |     |     |     |     | ✓   |     |
+  | 🌉 | experiment-bridge        |     |     | ✓   | ✓   | ✓   |     |     |     |     |     |     |     |
+  | 🤖 | paper-writing            |     |     |     |     |     | ✓   | ✓   |     | ✓   | ✓   | ✓   |     |
+  | 🌿 | paper-workflow           |     |     |     |     |     | ✓   | ✓   | ✓   | ✓   | ✓   | ✓   | ✓   |
+  | 📖 | is-paper-workflow        |     |     |     |     |     | ✓   | ✓   | ✓   |     | ✓   | ✓   | ✓   |
+  | 🔒 | patent-pipeline          |     | ✓   |     |     |     |     | ✓   |     |     |     |     |     |
+  | ✉️ | rebuttal                 |     |     |     |     |     |     |     |     |     |     |     | ✓   |
+  +----+--------------------------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+

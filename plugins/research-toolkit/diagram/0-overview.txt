@@ -1,0 +1,105 @@
+🗺️  research-toolkit — Map at a Glance
+========================================
+
+  ~160 skills organized into 14 numbered phases + 9 cross-phase
+  workflow orchestrators. Two philosophies (🌿 Nature + 🤖 ARIS)
+  governed by PRINCIPLES.md; routed by WORKFLOW.md.
+
+
+─§ 🧑 user surface ─────────────────────────────────────────
+
+  🧑 researcher
+     │
+     │  one of two ways in:
+     │
+     ├─▶  /research-pipeline …            🚂 full pipeline
+     ├─▶  /paper-workflow …               🌿 journal router
+     ├─▶  /paper-writing …                🤖 conference pipeline
+     ├─▶  /idea-discovery …               🔭 W1
+     ├─▶  /experiment-bridge …            🌉 W1.5
+     ├─▶  /auto-review-loop …             🔄 W2
+     ├─▶  /rebuttal …                     ✉️ W4
+     ├─▶  /is-paper-workflow …            📖 IS journals
+     ├─▶  /patent-pipeline …              🔒 IP
+     │
+     │       (or invoke any atomic skill directly)
+     │
+     ▼
+  +-----------------------------------------------------------+
+  |  🚪  Tier 1  —  _workflows/  (9 orchestrators)            |
+  +-----------------------------------------------------------+
+                              │
+                              │  delegates by phase
+                              ▼
+  +-----------------------------------------------------------+
+  |  🔢  Tier 2  —  14 phase folders (skills/00 … 13)        |
+  |-----------------------------------------------------------|
+  |  00_meta       🛠️  cross-cutting: logs, archives, refs   |
+  |  01_discover   🔭  lit search · idea generation          |
+  |  02_plan       📐  refine method · plan experiments      |
+  |  03_execute    ⚙️  run experiments (local/modal/vast)    |
+  |  04_analyze    📊  results → claims                      |
+  |  05_prewrite   🏗️  bootstrap · outline · architecture    |
+  |  06_write      ✍️  active drafting                       |
+  |  07_revise     🔁  structural revision                   |
+  |  08_postwrite  🛠️  compile · auto-improve                |
+  |  09_figures    🎨  figure planning · rendering           |
+  |  10_review     🔍  audits · auto-loops · citations       |
+  |  11_respond    ✉️  rebuttal · response                   |
+  |  12_present    🎤  slides · poster · talk                |
+  |  13_venue      🎯  Nature · PNAS · MISQ · patents · grants|
+  +-----------------------------------------------------------+
+                              │
+                              │  reads/writes plain-text artifacts
+                              ▼
+  +-----------------------------------------------------------+
+  |  📂  project files  (notes/ · paper/ · research-wiki/)    |
+  +-----------------------------------------------------------+
+
+
+─§ ⚡ Compact form ─────────────────────────────────────────
+
+  🧑  →  Workflow  →  walk phases 00 → 13  →  📄 PDF / patent / talk
+
+         🌿 Nature mindset    discipline · claim-first · venue-fit
+         🤖 ARIS mindset      automation · loops · effort levels
+
+         Both compose via WORKFLOW.md routing rules.
+
+
+─§ 📌 Five truths to keep straight ─────────────────────────
+
+  1. 🎯  Claim before polish.  No auto-loops on unstable claims.
+
+  2. 🖼️  Figure-led results.  figure-planner before scientific-writing.
+
+  3. 🔢  Phase numbers ARE the dependency order — `ls` in order
+      walks the workflow.
+
+  4. 🌿🤖  Nature vs ARIS — different mindsets per phase
+      (PRINCIPLES.md table). Use BOTH in sequence, not either-or.
+
+  5. 🧾  Skills communicate via plain-text artifact files
+      (IDEA_REPORT → EXPERIMENT_PLAN → … → main.pdf).
+      See diagram 7-artifacts.txt.
+
+
+─§ 🔢 Skill counts (rough) ─────────────────────────────────
+
+  📍 _workflows         9
+  📍 00_meta           17
+  📍 01_discover       12
+  📍 02_plan            7
+  📍 03_execute         9
+  📍 04_analyze         3
+  📍 05_prewrite        5
+  📍 06_write           4
+  📍 07_revise          3
+  📍 08_postwrite       2
+  📍 09_figures         7
+  📍 10_review         11
+  📍 11_respond         2
+  📍 12_present         3
+  📍 13_venue          10
+  ─────────────────────────
+  total              ~160 SKILL.md

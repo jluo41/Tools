@@ -1,0 +1,173 @@
+🧾  Artifact Contracts — how skills compose
+=============================================
+
+  Skills don't call each other in-process — they write plain-text
+  files that the next skill reads. The DAG of artifacts IS the
+  pipeline. Reading the file list tells you where you are.
+
+
+─§ 🌐 The artifact DAG (pipeline as file flow) ─────────────
+
+   🧑 "research-direction"
+            │
+            │  /idea-discovery
+            ▼
+   ┌─────────────────────────┐
+   │ 📄 IDEA_REPORT.md        │
+   │ 📄 EXPERIMENT_PLAN.md    │
+   └─────────────┬───────────┘
+                 │
+                 │  /experiment-bridge
+                 ▼
+   ┌─────────────────────────┐
+   │ 📄 EXPERIMENT_LOG.md     │
+   └─────────────┬───────────┘
+                 │
+                 │  /experiment-audit  (cross-model)
+                 ▼
+   ┌─────────────────────────┐
+   │ 📄 EXPERIMENT_AUDIT.md   │
+   │ 📄 EXPERIMENT_AUDIT.json │
+   └─────────────┬───────────┘
+                 │
+                 │  /result-to-claim
+                 ▼
+   ┌─────────────────────────┐
+   │ 📄 notes/                │
+   │     project_truth.md     │
+   │     result_summary.md    │  ← claim status:
+   │     paper_handoff.md     │    supported · partial ·
+   │     claim_evidence_map   │    directional · gapped
+   │     decision_log.md      │
+   └─────────────┬───────────┘
+                 │
+                 │  /auto-review-loop  (W2)
+                 ▼
+   ┌─────────────────────────┐
+   │ 📄 NARRATIVE_REPORT.md   │
+   └─────────────┬───────────┘
+                 │
+                 │  /paper-writing  (W3)
+                 ▼
+   ┌─────────────────────────┐
+   │ 📂 paper/                │
+   │   📄 main.tex            │
+   │   📄 sections/*.tex      │
+   │   📄 figures/*.pdf       │
+   │   📄 references.bib      │
+   └─────────────┬───────────┘
+                 │
+                 │  /paper-compile
+                 ▼
+   ┌─────────────────────────┐
+   │ 📄 paper/main.pdf        │
+   └─────────────┬───────────┘
+                 │
+                 │  /paper-claim-audit · /citation-audit ·
+                 │  /submission-audit
+                 ▼
+   ┌─────────────────────────┐
+   │ 📄 PAPER_CLAIM_AUDIT.md  │
+   │ 📄 PAPER_CLAIM_AUDIT.json│
+   │ 📄 CITATION_AUDIT.md     │
+   │ 📄 CITATION_AUDIT.json   │
+   │ 📄 SUBMISSION_AUDIT.md   │
+   └─────────────┬───────────┘
+                 │
+                 │  green? → 📤 submit
+                 ▼
+   ┌─────────────────────────┐
+   │ 📥 reviewer responses    │  (external)
+   └─────────────┬───────────┘
+                 │
+                 │  /rebuttal  (W4)
+                 ▼
+   ┌─────────────────────────┐
+   │ 📄 PASTE_READY.txt       │
+   └─────────────────────────┘
+
+
+─§ 📋 Producer × consumer table ────────────────────────────
+
+  +----------------------------+---------------------+---------------------+
+  | Artifact                   | Created by          | Consumed by         |
+  +----------------------------+---------------------+---------------------+
+  | 📄 IDEA_REPORT.md          | idea-discovery      | experiment-bridge   |
+  | 📄 EXPERIMENT_PLAN.md      | experiment-plan     | experiment-bridge   |
+  | 📄 EXPERIMENT_LOG.md       | experiment-bridge   | auto-review-loop,   |
+  |                            |                     | result-to-claim     |
+  | 📄 EXPERIMENT_AUDIT.md/json| experiment-audit    | result-to-claim     |
+  | 📄 NARRATIVE_REPORT.md     | auto-review-loop    | paper-writing       |
+  | 📄 paper/main.tex          | paper-write         | paper-compile       |
+  | 📄 paper/main.pdf          | paper-compile       | auto-paper-improve, |
+  |                            |                     | submission-audit    |
+  | 📄 PAPER_CLAIM_AUDIT.{md,  | paper-claim-audit   | paper-writing 5.5   |
+  |    json}                   |                     | gate                |
+  | 📄 CITATION_AUDIT.{md,json}| citation-audit      | paper-writing 5.8   |
+  |                            |                     | submission gate     |
+  | 📂 research-wiki/          | research-wiki       | idea-creator,       |
+  |                            |                     | research-lit,       |
+  |                            |                     | result-to-claim     |
+  | 📄 .aris/meta/events.jsonl | hooks (passive)     | meta-optimize       |
+  +----------------------------+---------------------+---------------------+
+
+
+─§ 📂 The notes/ canonical set (Stack A · C heavy users) ───
+
+  These are the journal flow's single source of truth. Skills
+  in 06–08 ASSUME they exist and are current.
+
+  📂 notes/
+    📄 project_truth.md       what the paper currently claims
+                              (single source of truth)
+    📄 result_summary.md      locked / directional / gapped
+                              findings; the claim ledger
+    📄 paper_handoff.md       ready-to-draft vs blocked,
+                              with artifact pointers
+    📄 claim_evidence_map.md  claim → evidence → status
+                              (supported / partial / directional)
+    📄 decision_log.md        cross-session decisions, so skills
+                              don't re-litigate them
+
+  📌 Templates in templates/ (ARIS).
+  📌 paper-bootstrap creates them on init.
+  📌 Refresh BEFORE manuscript-optimizer / results-section-revision.
+
+
+─§ 🌐 research-wiki — optional persistent memory ───────────
+
+  When research-wiki/ exists in the project, it becomes the
+  cross-skill memory layer:
+
+      /research-lit       auto-ingests papers found
+                                │
+                                ▼
+                        📂 research-wiki/
+                                ▲
+                                │  reads before ideation
+      /idea-creator             │  writes ideas back after
+                                │
+                                ▼
+                        📂 research-wiki/
+                                ▲
+                                │
+      /result-to-claim          │  updates claim status
+                                ▼
+                        📂 research-wiki/
+
+  Failed ideas → anti-repetition memory. Initialize with
+  /research-wiki init.
+
+
+─§ 📌 The contract is the file ─────────────────────────────
+
+  • If a downstream skill complains "missing X", look for the
+    file the upstream skill should have produced.
+
+  • Skills are interchangeable so long as they produce the same
+    artifact (paper-write and scientific-writing both write
+    paper/main.tex; auto-review-loop and research-review both
+    feed NARRATIVE_REPORT.md).
+
+  • This is why Stacks A/B/C/D look so different yet end at
+    the same place — different skills, same artifact targets.

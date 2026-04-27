@@ -1,0 +1,171 @@
+📚  Four Entry Stacks (curated subsets, not all 160 skills)
+============================================================
+
+  Pick the stack that matches your target. Each stack is a
+  curated walk through the 14-phase map (diagram 1).
+
+
+─§ 🎯 Stack picker (decision tree) ─────────────────────────
+
+                       🧑 what's the target?
+                              │
+        ┌─────────────────────┼──────────────────────┐
+        ▼                     ▼                      ▼
+   Nature / PNAS         NeurIPS / ICML          MISQ / ISR
+   (broad-science        ICLR / ACL / AAAI       Mgmt Science
+    journal)             COLM (conference)       (IS journal)
+        │                     │                      │
+        ▼                     ▼                      ▼
+   📚 Stack A            📚 Stack B               📚 Stack C
+                              │
+                              │     also:
+                              │     ▼
+                              │   patent / IP?  →  📚 Stack D
+                              │
+                              ▼ (none of the above?)
+                         🌿 Default: Stack A (journal-first)
+
+
+─§ 📚 Stack A · Broad-science journal (Nature / PNAS / Science)
+   ───────────────────────────────────────────────────────
+
+  Default when venue is unstated or life-sciences-adjacent.
+  Mindset: 🌿 Nature throughout.
+
+   _workflows/paper-workflow                     🚪 router
+       │
+       ▼
+   05_prewrite/paper-bootstrap                   🏗️ init notes
+       │
+       ▼
+   13_venue/{nature-portfolio,pnas}-playbook     🎯 pick venue + article type
+       │
+       ▼
+   06_write/scientific-writing                   ✍️ deliberate draft
+       │
+       ▼
+   07_revise/manuscript-optimizer                🔁 evidence-chain repair
+   07_revise/results-section-revision            🔁 late-stage Results flow
+       │
+       ▼
+   09_figures/figure-planner                     🖼️ panel claims · legends
+       │
+       ▼
+   10_review/citation-verifier                   📚 bibliography hygiene
+   10_review/submission-audit                    🚪 pre-submission gate
+       │
+       ▼
+   📤 submit
+       │
+       ▼
+   11_respond/rebuttal-response                  ✉️ when reviews return
+
+
+─§ 📚 Stack B · ML / AI conference (NeurIPS, ICML, ICLR …)
+   ───────────────────────────────────────────────────────
+
+  Use ONLY when venue is explicitly a conference.
+  Mindset: 🤖 ARIS pipeline, gated by 🌿 Nature audits at submission.
+
+   _workflows/research-pipeline                  🚂 full router (W1→W4)
+       │
+       ▼
+   _workflows/idea-discovery                     🔭 W1
+   01_discover/research-lit                      📑 lit survey
+       │
+       ▼
+   02_plan/research-refine                       📐 refine method
+   02_plan/experiment-plan                       📐 plan experiments
+       │
+       ▼
+   _workflows/experiment-bridge                  🌉 W1.5
+   03_execute/experiment-queue                   ⚙️ run + monitor
+       │
+       ▼
+   04_analyze/result-to-claim                    📊 verdict
+   02_plan/ablation-planner                      📐 reviewer-perspective
+       │
+       ▼
+   _workflows/paper-writing                      🤖 W3 (auto-loop)
+       │   ├ 05_prewrite/paper-plan
+       │   ├ 09_figures/{figure-spec,paper-illustration,mermaid-diagram}
+       │   ├ 06_write/paper-write
+       │   └ 08_postwrite/{paper-compile,auto-paper-improvement-loop}
+       │
+       ▼
+   10_review/auto-review-loop{,-llm,-minimax}    🔄 W2
+   10_review/paper-claim-audit                   🚪 gate @ effort: max|beast
+   10_review/submission-audit                    🚪 gate
+       │
+       ▼
+   📤 submit
+       │
+       ▼
+   _workflows/rebuttal                           ✉️ W4
+
+
+─§ 📚 Stack C · IS-journal (MISQ / ISR / Mgmt Science)
+   ───────────────────────────────────────────────────
+
+  UTD24 IS venues. Mindset: 🌿 Nature discipline + 🤖 ARIS polish.
+
+   _workflows/is-paper-workflow                  🚪 IS-specific router
+       │
+       ▼
+   13_venue/{misq,isr,ms-is}-playbook            🎯 pick by venue fit
+       │
+       ▼
+   06_write/scientific-writing                   ✍️ Nature-style drafting
+       │
+       ▼
+   07_revise/manuscript-optimizer                🔁 structural revision
+       │
+       ▼
+   09_figures/figure-planner                     🖼️
+       │
+       ▼
+   10_review/citation-verifier                   📚
+   10_review/submission-audit                    🚪
+       │
+       ▼
+   📤 submit
+       │
+       ▼
+   11_respond/rebuttal-response                  ✉️
+
+
+─§ 📚 Stack D · Patent / IP
+   ────────────────────────
+
+   _workflows/patent-pipeline                    🔒 router
+       │
+       ▼
+   01_discover/prior-art-search                  🔍 prior art
+       │
+       ▼
+   13_venue/patent-novelty-check                 🎯 novelty assessment
+       │
+       ▼
+   13_venue/specification-writing                📝 (or 06_write/writing-systems-papers
+                                                     if systems-focused)
+       │
+       ▼
+   13_venue/patent-review                        🔍 internal review
+       │
+       ▼
+   13_venue/jurisdiction-format                  🗺️ CN / US / EP filing format
+
+
+─§ 📋 Stack-at-a-glance table ──────────────────────────────
+
+  +-----+-----------------------+-------------+---------------+
+  |     | Target                | Mindset     | Entry         |
+  +-----+-----------------------+-------------+---------------+
+  | 📚A | Nature · PNAS         | 🌿 Nature   | paper-workflow|
+  | 📚B | NeurIPS · ICML · ICLR | 🤖 ARIS+gate| research-     |
+  |     |                       |             |   pipeline    |
+  | 📚C | MISQ · ISR · MS       | 🌿+🤖 hybrid| is-paper-     |
+  |     |                       |             |   workflow    |
+  | 📚D | Patent / IP           | 🌿 venue    | patent-       |
+  |     |                       |             |   pipeline    |
+  +-----+-----------------------+-------------+---------------+

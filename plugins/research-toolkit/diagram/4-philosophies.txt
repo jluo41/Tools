@@ -1,0 +1,129 @@
+🌿🤖  Two Philosophies — Nature vs ARIS
+========================================
+
+  PRINCIPLES.md says both are useful but apply in different
+  situations. The toolkit's value is bundling them and routing
+  per phase. Mixing them up is the most common mistake.
+
+
+─§ 🤔 The two mindsets ─────────────────────────────────────
+
+  🌿 Nature                          🤖 ARIS
+  ─────────────                      ──────────────
+  • Claim before polish              • Auto-loops + effort dials
+  • Figure-led results               • Cross-model adversarial review
+  • Reverse outline                  • External verifier > self-critique
+  • Evidence-bounded language        • Refresh notes before heavy work
+  • Venue fit is structural          • lite / balanced / max / beast
+  • Deliberate, single-pass-         • Speed via automation
+    with-revision
+
+  🌿  Author makes every decision    🤖  Loop delegates decisions
+
+
+─§ 🔀 Per-phase routing (PRINCIPLES Part 3) ────────────────
+
+  +-------+--------+-----------------------------+----------+
+  | Phase | Owner  | Why                         | Skills   |
+  +-------+--------+-----------------------------+----------+
+  | 01    | 🤖     | breadth matters             | research-lit, idea-creator, ... |
+  | 02    | 🌿+🤖  | volume in brainstorm,       | research-refine, claims-drafting|
+  |       |        | discipline in claim lock    |          |
+  | 03    | 🤖     | infra; automation wins      | run-experiment, queue, monitor  |
+  | 04    | 🌿     | premature polish hides      | result-to-claim, results-       |
+  |       |        | weak claims                 |   analysis                       |
+  | 05    | 🌿     | setup discipline → quality  | paper-bootstrap, paper-plan      |
+  | 06    | 🌿/🤖  | Nature for journals,        | scientific-writing (🌿)          |
+  |       |        | ARIS for conferences        | paper-writing (🤖)               |
+  | 07    | 🌿     | revision is claim work      | manuscript-optimizer            |
+  | 08    | 🤖     | mechanical polish + build   | auto-paper-improvement-loop     |
+  | 09    | 🌿     | figure logic is structural  | figure-planner                  |
+  | 10    | 🤖→🌿  | loop fast, audit final      | auto-review-loop → submission-  |
+  |       |        |                             |   audit                          |
+  | 11    | 🌿     | reviewer-facing → deliberate| rebuttal-response               |
+  | 12    | 🤖     | mechanical from finished pdf| paper-slides, paper-poster      |
+  | 13    | 🌿     | venue fit is structural     | nature/pnas/misq/isr/ms-is/...  |
+  +-------+--------+-----------------------------+----------+
+
+
+─§ ⚠️ Where they collide — DO NOT substitute ───────────────
+
+  Two skills with overlapping shapes are NOT interchangeable:
+
+  +------------------------+------------------------+
+  |  🤖 ARIS skill         |  🌿 Nature skill       |
+  +------------------------+------------------------+
+  |  auto-review-loop      |  paper-reviewer        |
+  |  paper-writing (W3)    |  paper-workflow        |
+  |  paper-write           |  scientific-writing    |
+  |  paper-claim-audit     |  submission-audit      |
+  +------------------------+------------------------+
+
+  ✅ Right: run BOTH in sequence — ARIS first (speed/breadth),
+            Nature second (discipline/audit before submission).
+
+  ❌ Wrong: substitute one for the other to skip a phase.
+
+  When ambiguous: state the swap and why. (PRINCIPLES anti-rule.)
+
+
+─§ 🚦 Auto-loop gating — Principle 7 ───────────────────────
+
+   ❌ DON'T run auto-loop on unstable claims.
+   ✅ DO   run auto-loop on locked claims.
+
+      Polished prose defending weak evidence is the worst outcome.
+
+  Gate before running ANY of:
+     /auto-review-loop · /auto-paper-improvement-loop ·
+     /research-pipeline (which chains both)
+
+  Required state:
+     📄 notes/claim_evidence_map.md   is current
+     📊 notes/result_summary.md       marks target claim "supported"
+     📊                                 NOT  "directional" or "partial"
+
+           ┌─────────────────────────────┐
+           │  claim status?              │
+           └─────┬───────────┬───────────┘
+                 │           │
+           supported     directional /
+                 │       partial / gapped
+                 ▼           │
+           ✅ run loop       ▼
+                       ❌ refine claim first
+                          (run /result-to-claim,
+                           refresh notes,
+                           THEN re-evaluate)
+
+
+─§ 🎚️ Effort levels — assurance, not quality ──────────────
+
+  PRINCIPLES Part 2.8:
+    Effort changes how many verification passes run,
+    NOT how good the output is.
+
+  +----------+-------+-----------------------------------+
+  | Level    | × cost | What changes                     |
+  +----------+-------+-----------------------------------+
+  | 🪶 lite  | 0.4x  | Fewer papers, ideas, rounds       |
+  | ⚖️ balanced| 1x  | Default                            |
+  | 🚀 max   | 2.5x  | More papers, deeper review        |
+  | 🔥 beast | 5–8x  | Every knob to maximum              |
+  +----------+-------+-----------------------------------+
+
+  📌 Codex reasoning is ALWAYS xhigh, regardless of effort.
+  📌 A `beast`-run on a bad plan is still a bad paper.
+
+
+─§ 🤝 The conflict-resolution rule ─────────────────────────
+
+  When ARIS and Nature seem to compete:
+
+    1️⃣  Run the ARIS skill first   →  speed + breadth
+    2️⃣  Run the Nature skill after →  discipline + venue fit
+    🚫  Never substitute auto-review for submission-audit
+        before journal submission.
+    📢  If you swap, declare the swap and why.
+
+  This is the toolkit's organizing principle — not a tie-break.

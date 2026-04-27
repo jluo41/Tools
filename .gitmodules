@@ -1,6 +1,0 @@
-[submodule "plugins/ccskill"]
-	path = plugins/ccskill
-	url = https://github.com/anthropics/skills.git
-[submodule "plugins/research-toolkit"]
-	path = plugins/research-toolkit
-	url = git@github.com:jluo41/research-toolkit.git

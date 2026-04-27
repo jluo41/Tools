@@ -1,0 +1,161 @@
+📂  Folder Tree — research-toolkit source
+==========================================
+
+  No project artifacts live here — the plugin is read-only.
+  Everything skills produce lands in the user's project dir
+  (paper/, notes/, research-wiki/). See diagram 7-artifacts.
+
+
+─§ 🗺️ Top level ────────────────────────────────────────────
+
+  📦 research-toolkit/
+  │
+  ├── README.md              brief tour + attribution
+  ├── PRINCIPLES.md          🌿 Nature + 🤖 ARIS philosophies, per-phase routing
+  ├── WORKFLOW.md            🚂 entry stacks (A/B/C/D) + venue routing rules
+  ├── AGENT_GUIDE.md         🤖 ARIS agent guide — invocation, params, artifacts
+  │
+  ├── LICENSE.aris           ARIS license (71 skills + tools/)
+  ├── LICENSE.nature         Nature-Paper-Skills license (17 skills)
+  │
+  ├── skills/                🔢 14 phase folders + _workflows/
+  ├── mcp-servers/           ARIS MCP servers
+  ├── templates/             ARIS templates (notes/, paper/, research-wiki/)
+  ├── tools/                 ARIS scripts (verify_paper_audits.sh, ...)
+  └── docs/                  ARIS guides (reviewer, recovery, watchdog, ...)
+
+
+─§ 🔢 skills/ — 14 phase folders + _workflows ──────────────
+
+  📦 skills/
+  │
+  ├── _workflows/            🚂 9 cross-phase orchestrators (sort first)
+  │   ├── research-pipeline           full W1→W4
+  │   ├── paper-workflow              🌿 journal router
+  │   ├── paper-writing               🤖 W3 conference pipeline
+  │   ├── idea-discovery              🔭 W1
+  │   ├── idea-discovery-robot        🔭 W1 (robotics)
+  │   ├── experiment-bridge           🌉 W1.5
+  │   ├── rebuttal                    ✉️ W4
+  │   ├── is-paper-workflow           📖 IS journals
+  │   └── patent-pipeline             🔒 IP
+  │
+  ├── 00_meta/               🛠️ cross-cutting (always available)
+  │   ├── cc-archive · cc-session-summary · coding-by-logging
+  │   ├── embodiment-description · evaluation-display-skill
+  │   ├── feishu-notify · figure-description · invention-structuring
+  │   ├── meta-optimize · notebook-cell-python · qzcli
+  │   ├── research-wiki                              📚 persistent memory
+  │   ├── shared-references                          📋 cross-skill rules
+  │   ├── skills-codex / skills-codex-{claude,gemini}-review
+  │
+  ├── 01_discover/           🔭 lit search · ideation · novelty
+  │   ├── academic-researcher · alphaxiv · arxiv · deepxiv
+  │   ├── exa-search · semantic-scholar
+  │   ├── comm-lit-review · research-lit · paper-analyzer
+  │   ├── idea-creator · novelty-check · prior-art-search
+  │
+  ├── 02_plan/               📐 method · experiments · claims
+  │   ├── research-refine · research-refine-pipeline
+  │   ├── experiment-plan · ablation-planner
+  │   ├── claims-drafting · formula-derivation · proof-writer
+  │
+  ├── 03_execute/            ⚙️ run experiments
+  │   ├── run-experiment · experiment-queue · monitor-experiment
+  │   ├── serverless-modal · vast-gpu
+  │   ├── experiment-audit · system-profile · training-check
+  │   └── dse-loop
+  │
+  ├── 04_analyze/            📊 results → claims
+  │   ├── analyze-results · results-analysis
+  │   └── result-to-claim
+  │
+  ├── 05_prewrite/           🏗️ bootstrap · outline · architecture
+  │   ├── paper-bootstrap · paper-plan
+  │   ├── paper-architecture · paper-incubator
+  │   └── overleaf-sync
+  │
+  ├── 06_write/              ✍️ active drafting
+  │   ├── scientific-writing             🌿 (journal default)
+  │   ├── writing-systems-papers         🌿 (10-12pg systems)
+  │   ├── conference-paper-writing       🤖 (NeurIPS/ICML/...)
+  │   └── paper-write                    🤖 (LaTeX-first)
+  │
+  ├── 07_revise/             🔁 structural revision
+  │   ├── manuscript-optimizer           🌿
+  │   ├── results-section-revision       🌿 (late-stage)
+  │   └── paper-revise                   🤖
+  │
+  ├── 08_postwrite/          🛠️ compile · auto-improve
+  │   ├── paper-compile
+  │   └── auto-paper-improvement-loop    🤖
+  │
+  ├── 09_figures/            🎨 panels · diagrams
+  │   ├── figure-planner                 🌿 (structural)
+  │   ├── figure-spec                    🤖 (deterministic SVG)
+  │   ├── paper-figure · paper-illustration
+  │   ├── mermaid-diagram · excalidraw-diagram
+  │   └── pixel-art
+  │
+  ├── 10_review/             🔍 audits · auto-loops · citations
+  │   ├── auto-review-loop · -llm · -minimax       🤖
+  │   ├── research-review · paper-reviewer        🌿
+  │   ├── submission-audit                         🚪 Nature gate
+  │   ├── paper-claim-audit                        🚪 ARIS gate
+  │   ├── citation-verifier · citation-audit · reference-audit-guide
+  │   └── proof-checker
+  │
+  ├── 11_respond/            ✉️ rebuttal
+  │   ├── rebuttal-response  · paper-rebuttal
+  │
+  ├── 12_present/            🎤 slides · poster · talk
+  │   ├── academic-presentations · paper-poster · paper-slides
+  │
+  └── 13_venue/              🎯 venue · IP · grants
+      ├── nature-portfolio-playbook       🌿 Nature / NM / NB
+      ├── pnas-playbook                   🌿 PNAS
+      ├── misq-playbook · isr-playbook · ms-is-playbook   📖 IS UTD24
+      ├── grant-proposal                  💰
+      ├── patent-novelty-check · patent-review · specification-writing
+      └── jurisdiction-format             🗺️ CN / US / EP
+
+
+─§ 🛠️ mcp-servers/ · templates/ · tools/ · docs/ ───────────
+
+  📂 mcp-servers/   ARIS MCP server implementations
+  📂 templates/     starter templates (notes/, paper/, research-wiki/)
+  📂 tools/         scripts called by skills
+                    └── verify_paper_audits.sh   🚪 the submission-ready gate
+  📂 docs/          ARIS deep-dive guides
+                    ├── CODEX_CLAUDE_REVIEW_GUIDE.md
+                    ├── CODEX_GEMINI_REVIEW_GUIDE.md
+                    ├── LLM_API_MIX_MATCH_GUIDE.md
+                    ├── SESSION_RECOVERY_GUIDE.md
+                    ├── WATCHDOG_GUIDE.md
+                    └── (each with CN sibling)
+
+
+─§ 🛠️ diagram/ — this folder ───────────────────────────────
+
+  📂 diagram/                 (you are here)
+  ├── 0-overview.txt          🗺️ map at a glance
+  ├── 1-phase-map.txt         🔢 14-phase walk
+  ├── 2-stacks.txt            📚 4 entry stacks (A/B/C/D)
+  ├── 3-workflows.txt         🚂 9 orchestrators + chaining
+  ├── 4-philosophies.txt      🌿🤖 Nature vs ARIS
+  ├── 5-write-band.txt        ✍️ 06-08 branch by target
+  ├── 6-review-gating.txt     🔍 audit-first vs loop-first
+  ├── 7-artifacts.txt         🧾 producer × consumer DAG
+  ├── 8-effort-levels.txt     🎚️ lite/bal/max/beast + cross-model
+  ├── 9-folder-tree.txt       📂 (this file)
+  └── canvas-YYMMDD.excalidraw  bundled by /diagram-ascii-canvas
+
+
+─§ 🔑 The contract ─────────────────────────────────────────
+
+  🚫  No skill writes inside research-toolkit/.
+  💾  Every artifact lands in the user's project dir.
+  📚  PRINCIPLES.md and WORKFLOW.md are the routing source of
+      truth — these diagrams are visual companions.
+  🌐  Read AGENT_GUIDE.md if you're an AI agent walking this
+      tree from outside.

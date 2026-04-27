@@ -1,0 +1,128 @@
+🎚️  Effort Levels & Cross-Model Protocol
+=========================================
+
+  Effort dials trade tokens for assurance, NOT for quality.
+  Cross-model rules govern which model role does which job.
+
+
+─§ 🎚️ The four effort levels ──────────────────────────────
+
+  +----+-------------+-------+-------------------------------+
+  |    | Level       | × cost| What changes                  |
+  +----+-------------+-------+-------------------------------+
+  | 🪶 | lite        | 0.4×  | Fewer papers, ideas, rounds   |
+  | ⚖️ | balanced    | 1×    | Default                       |
+  | 🚀 | max         | 2.5×  | More papers, deeper review    |
+  | 🔥 | beast       | 5–8×  | Every knob to maximum         |
+  +----+-------------+-------+-------------------------------+
+
+  📌 Codex reasoning is ALWAYS xhigh, regardless of effort level.
+     Effort tunes count of passes, not depth-per-pass.
+
+
+─§ 🚦 What changes per phase, per level ────────────────────
+
+  +----+-------+----------+----------+----------+----------+
+  |    | Phase | 🪶 lite  | ⚖️ bal.  | 🚀 max   | 🔥 beast |
+  +----+-------+----------+----------+----------+----------+
+  | 🔭 | 01    | 5 papers | 15       | 40       | 100+     |
+  | 💡 | 02    | 3 ideas  | 10       | 25       | 50+      |
+  | 🔄 | W2    | 1 round  | 3 rounds | 6 rounds | 10+      |
+  | 🚪 | 10    | self only| ext × 1  | ext × 2  | ext × 3  |
+  | 📜 | 06    | 1 pass   | 2 passes | 4 passes | beast    |
+  +----+-------+----------+----------+----------+----------+
+
+  Numbers are rough — see each skill's SKILL.md for exact knobs.
+
+
+─§ 🤖 Cross-model split (executor / reviewer) ──────────────
+
+   ┌───────────────────────────┐      ┌───────────────────────────┐
+   │ 🛠️  EXECUTOR              │      │ 🔍  REVIEWER              │
+   │ ─────────────             │      │ ─────────────             │
+   │ writes code               │      │ critiques                 │
+   │ runs experiments          │  ─▶  │ scores                    │
+   │ drafts paper              │      │ demands revisions         │
+   │ implements fixes          │      │ audits independently      │
+   │                           │      │                           │
+   │ Claude / Codex            │      │ GPT-5.4 / Gemini / GLM /  │
+   │                           │      │ MiniMax                   │
+   └───────────────────────────┘      └───────────────────────────┘
+
+  Three rules:
+
+   1️⃣  Different families ━━▶  no Claude reviews Claude
+   2️⃣  Reviewer independence ━━▶  pass file paths only,
+                                   never summaries / interp.
+   3️⃣  Experiment integrity   ━━▶  executor must NOT judge its
+                                   own eval code
+
+  Backends used by auto-review-loop variants:
+
+  +-----------------------------+--------------------------+
+  | Skill                       | Reviewer model           |
+  +-----------------------------+--------------------------+
+  | 🔄 auto-review-loop         | Codex MCP                |
+  | 🔄 auto-review-loop-llm     | OpenAI-compatible LLM    |
+  |                             | (configurable backend)   |
+  | 🔄 auto-review-loop-minimax | MiniMax                  |
+  +-----------------------------+--------------------------+
+
+
+─§ 📐 Common parameters (pass through workflows) ───────────
+
+  Every skill accepts:
+
+    ─ effort:           🪶 lite | ⚖️ balanced | 🚀 max | 🔥 beast
+    ─ human checkpoint: 🧑 true | 🤖 false        (default: false)
+    ─ AUTO_PROCEED:        true | false           (default: true)
+
+  Workflow-specific:
+
+    ─ difficulty:    medium | hard | nightmare    (W2 reviewer)
+    ─ venue:         ICLR | NeurIPS | ICML | ...  (W1.5+)
+    ─ sources:       web · zotero · deepxiv · ... (W1)
+    ─ gpu:           local · remote · vast · modal(W1.5+)
+
+  Parameters propagate down workflow chains automatically.
+
+
+─§ 🔥 The beast trap (PRINCIPLES #8) ───────────────────────
+
+  ⚠️  effort: beast on a bad plan  ━━▶  still a bad paper
+
+  Higher effort buys ASSURANCE PASSES, not insight.
+  If the claim is shaky, more passes will produce more
+  confident defense of the wrong claim.
+
+       🪶 lite        ✅ rapid prototyping, scratch ideas
+       ⚖️ balanced    ✅ default for daily work
+       🚀 max         ✅ when claims are locked + venue chosen
+       🔥 beast       ✅ submission-ready run, AFTER all gates
+
+  ❌ beast as a "fix it for me" button on rough work.
+
+
+─§ 🧪 The right effort × phase ─────────────────────────────
+
+  +-------+--------+-------------------------------+
+  | Phase | Best   | Why                           |
+  +-------+--------+-------------------------------+
+  | 01    | 🚀 max | breadth — coverage matters    |
+  | 02    | ⚖️ bal | volume of ideas, not depth   |
+  | 03    | 🪶 lite| infra spin-up, quick smoke    |
+  | 04    | 🚀 max | claim verdicts deserve depth  |
+  | 05    | ⚖️ bal | architecture pass             |
+  | 06    | ⚖️ bal | drafts can iterate            |
+  | 07    | 🚀 max | revision benefits from depth  |
+  | 08    | 🔥 beast | final polish + audits gate  |
+  | 09    | ⚖️ bal | rendering is mechanical       |
+  | 10    | 🔥 beast | reviewer must be exhaustive |
+  | 11    | 🚀 max | rebuttal must be airtight     |
+  | 12    | ⚖️ bal | slides from finished paper    |
+  | 13    | 🚀 max | venue-fit deserves attention  |
+  +-------+--------+-------------------------------+
+
+  Stack B at submission: 10 + 08 at 🔥 beast (with externally
+  verified gates). Stack A at submission: 10 at 🚀 max (Nature
+  audits already deliberate).

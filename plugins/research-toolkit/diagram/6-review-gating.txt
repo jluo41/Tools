@@ -1,0 +1,145 @@
+🔍  Review & Gating — phase 10
+================================
+
+  10_review is where ARIS speed and Nature discipline meet.
+  Audit-first or loop-first depends on the stack; gates depend
+  on the venue.
+
+
+─§ 📋 Roster of review skills ──────────────────────────────
+
+  +----+--------------------------+------+--------------------------+
+  |    | Skill                    | Mind | Role                     |
+  +----+--------------------------+------+--------------------------+
+  | 🔄 | auto-review-loop         | 🤖   | Codex MCP review × N     |
+  | 🔄 | auto-review-loop-llm     | 🤖   | OpenAI-compat backend    |
+  | 🔄 | auto-review-loop-minimax | 🤖   | MiniMax backend          |
+  | 🔍 | research-review          | 🤖   | One-shot GPT-5.4 critique|
+  | 🔍 | paper-reviewer           | 🌿   | Single-pass reviewer eval|
+  | 🚪 | submission-audit         | 🌿   | Pre-submission gate      |
+  | 🔍 | paper-claim-audit        | 🤖   | Numerical claim grounding|
+  | 📚 | citation-verifier        | 🌿   | Bibliography hygiene     |
+  | 📚 | citation-audit           | 🤖   | Cross-family \cite check |
+  | 📚 | reference-audit-guide    | 🌿   | Citation discipline doc  |
+  | ✓  | proof-checker            | 🌿   | LaTeX proof verification |
+  +----+--------------------------+------+--------------------------+
+
+
+─§ 🔀 Loop-first vs audit-first ────────────────────────────
+
+  STACK B (conference)              STACK A (journal)
+  loop-first 🤖                     audit-first 🌿
+  ─────────────────                 ──────────────────
+
+   draft                              draft
+     │                                  │
+     ▼                                  ▼
+   auto-review-loop ⟲                citation-verifier
+     │                                  │
+     │  iterate                         ▼
+     │                                submission-audit  🚪
+     ▼                                  │
+   paper-claim-audit 🚪                 │  green?
+     │  green @ max|beast            ┌──┴──┐
+     ▼                              ✅      ❌
+   submission-audit 🚪               │      │
+     │                                ▼      ▼
+     ▼                            submit  fix claim
+   📤 submit                                 │
+                                              ▼
+                                         iterate
+
+  📌 Why the difference?
+     Conference: many comparisons missing → loop catches them
+                  fast; final audits gate at max|beast.
+     Journal:    weak claim → loop will polish weakness;
+                  audit MUST come first so the loop never runs
+                  on shaky evidence (PRINCIPLES #7).
+
+
+─§ 🚪 The two gate functions ───────────────────────────────
+
+  +----------------------+-----------------+--------------------+
+  | Gate                 | Stack           | What it asks       |
+  +----------------------+-----------------+--------------------+
+  | 🚪 submission-audit  | A · C (always)  | "Is this paper     |
+  |                      | B (final gate)  |  defensible to     |
+  |                      |                 |  reviewers?"       |
+  |                      |                 |                    |
+  | 🚪 paper-claim-audit | B (continuous)  | "Does every number |
+  |                      |                 |  in the paper      |
+  |                      |                 |  match raw         |
+  |                      |                 |  evidence?"        |
+  |                      |                 |                    |
+  | 🚪 citation-audit +  | A · B · C       | "Does every \cite  |
+  |    citation-verifier | (always)        |  exist · resolve · |
+  |                      |                 |  back the claim?"  |
+  |                      |                 |                    |
+  | 🚪 verify_paper_     | B @ max|beast   | All audits green   |
+  |    audits.sh         |                 |  → "submission-    |
+  |                      |                 |   ready"           |
+  +----------------------+-----------------+--------------------+
+
+
+─§ 🤖 Cross-model protocol ─────────────────────────────────
+
+  AGENT_GUIDE.md defines the executor/reviewer split:
+
+      🛠️ Executor   (Claude / Codex)
+                   writes code · runs experiments · drafts paper
+                                │
+                                │  output → file
+                                ▼
+      🔍 Reviewer   (GPT-5.4 / Gemini / GLM)
+                   critiques · scores · demands revisions
+
+  Rules:
+    1. Different model FAMILIES (no Claude reviews Claude).
+    2. Reviewer independence — pass file paths, never summaries.
+    3. Executor must NOT judge its own eval code — reviewer
+       audits it directly (experiment-integrity).
+
+  This split is what makes auto-review-loop's gating credible.
+
+
+─§ 🚦 Gating decision tree ─────────────────────────────────
+
+                  📄 paper draft ready
+                            │
+                            ▼
+                  what stack are we in?
+                            │
+              ┌─────────────┼─────────────┐
+              ▼             ▼             ▼
+            🌿 A         🤖 B           📖 C
+          (journal)  (conference)   (IS journal)
+              │             │             │
+              ▼             ▼             ▼
+        run ALL audits   run loop ⟲   run BOTH
+        before any         until           in order:
+        loop               external        🌿 audits →
+                           reviewer        🤖 polish →
+                           positive        🌿 audits
+                           → audits
+              │             │             │
+              ▼             ▼             ▼
+            green?       green @       green?
+              │          max|beast        │
+       ┌─────┴─────┐        │       ┌────┴────┐
+       ✅          ❌        │       ✅        ❌
+       │           │         ▼       │         │
+       │           │    label as     │         │
+       ▼           ▼   "submission-  ▼         ▼
+     submit    fix +    ready"     submit    fix +
+              audit       │                  audit
+              again       ▼                  again
+                       submit
+
+
+─§ 🛡️ Anti-principles (what review will NEVER do) ─────────
+
+  ⛔ "Make my paper better" one-shot button —
+     every loop gates on claims being locked first.
+  ⛔ Polishing without a claim-evidence map.
+  ⛔ Auto-generated citations without verification.
+  ⛔ Silent skill substitution (loop-where-audit-belongs).
