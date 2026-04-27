@@ -28,6 +28,17 @@ Constants
   `--auto` flag is accepted as an alias for `--unattended=0`.
 - **NEW_SNAPSHOT = false** — default reuses the latest `snapshot-<date>/` if
   one exists. Set true (`--new-snapshot`) to force a fresh snapshot folder.
+- **SNAPSHOT_NAME = null** — *default* uses the date-based naming
+  (`snapshot-<YYYY-MM-DD>`). Set via `--snapshot-name <name>` to use a
+  purpose-named snapshot (`snapshot-<name>`) instead — useful when
+  multiple consumers (different projects / analyses) ask questions of
+  the same dataset and you want each consumer's sessions grouped into
+  its own snapshot. Examples: `--snapshot-name dikw-explore`,
+  `--snapshot-name dikw-smsdesign`. Validated as kebab-case
+  (`[a-z][a-z0-9-]*`); a literal date pattern is rejected to avoid
+  collision with the default scheme. The actual frozen-at timestamp is
+  always recorded inside `manifest.yaml`, so naming by purpose does not
+  lose temporal provenance.
 - **COPY_MODE = "copy"** — default `source/` contains real file copies (the
   snapshot is self-contained and archivable). Set to `"symlink"` via
   `--symlink` when the data is large and you want to avoid duplication.
@@ -98,7 +109,9 @@ Folder Layout (what Stage 2 creates)
 ```
 {folder}/
 └── _agent_dikw_space/                         ← agent-owned, do not hand-edit
-    └── snapshot-2026-04-21/                   ← one per data state
+    └── snapshot-2026-04-21/                   ← default: snapshot-<date>
+                                               ← OR snapshot-<name> if --snapshot-name was passed
+                                               ← (e.g. snapshot-dikw-explore, snapshot-dikw-smsdesign)
         ├── manifest.yaml                      ← file list + hashes + sizes
         ├── exploration/                       ← SNAPSHOT-LEVEL (one-time per snapshot)
         │   └── explore_notes.md               ← produced by /dikw-explore at Stage 4.5
@@ -201,20 +214,43 @@ Stage 1 — Snapshot
 
 ```
 SNAPSHOT_ROOT = {folder}/_agent_dikw_space
-latest = newest snapshot-*/ folder under SNAPSHOT_ROOT (or none)
 
-if NEW_SNAPSHOT=true OR latest is None:
-    today = YYYY-MM-DD
-    if {SNAPSHOT_ROOT}/snapshot-{today}/ exists:
-        suffix = next letter (b, c, d...)
-        snapshot_dir = {SNAPSHOT_ROOT}/snapshot-{today}-{suffix}/
+if SNAPSHOT_NAME is set (via --snapshot-name <name>):
+    # Purpose-named snapshot. Reuse if it already exists; otherwise create.
+    validate(SNAPSHOT_NAME)   # kebab-case [a-z][a-z0-9-]*; reject literal YYYY-MM-DD
+    target = {SNAPSHOT_ROOT}/snapshot-{SNAPSHOT_NAME}/
+
+    if target exists:
+        if NEW_SNAPSHOT=true:
+            ABORT — refuse to clobber a named snapshot.
+            Tell the user to either drop --new-snapshot (to reuse) or
+            choose a different --snapshot-name.
+        snapshot_dir = target
+        is_new = false
     else:
-        snapshot_dir = {SNAPSHOT_ROOT}/snapshot-{today}/
-    is_new = true
+        snapshot_dir = target
+        is_new = true
 else:
-    snapshot_dir = latest
-    is_new = false
+    # Default: date-based naming.
+    latest = newest snapshot-*/ folder under SNAPSHOT_ROOT (or none)
+
+    if NEW_SNAPSHOT=true OR latest is None:
+        today = YYYY-MM-DD
+        if {SNAPSHOT_ROOT}/snapshot-{today}/ exists:
+            suffix = next letter (b, c, d...)
+            snapshot_dir = {SNAPSHOT_ROOT}/snapshot-{today}-{suffix}/
+        else:
+            snapshot_dir = {SNAPSHOT_ROOT}/snapshot-{today}/
+        is_new = true
+    else:
+        snapshot_dir = latest
+        is_new = false
 ```
+
+Note: when `--snapshot-name` is set and a same-named snapshot already
+exists, that is a **deliberate reuse**, not a date-based "latest" lookup.
+Sessions accumulate inside the named snapshot just like they do in a
+date-based one.
 
 
 Stage 2 — Scaffold workspace
@@ -261,6 +297,8 @@ If `is_new`:
      folder: "{absolute path to {folder}}"
      kind: "subject"  # or "plain" / "existing_dikw"
      copy_mode: "copy"  # or "symlink"
+     snapshot_name: "2026-04-21"  # date by default; or the value of --snapshot-name (e.g. "dikw-explore")
+     naming_scheme: "date"  # "date" | "purpose" — set by whether --snapshot-name was passed
      source_roots:
        - "1-SourceStore/"
        - "2-RecStore/"
@@ -570,6 +608,8 @@ Commands
 /dikw {folder} "question"             → runs with question
 /dikw {folder} --dry-run              → layout preview only, no execution
 /dikw {folder} --new-snapshot         → force new snapshot
+/dikw {folder} --snapshot-name <name> → use snapshot-<name> instead of snapshot-<date>
+                                         (kebab-case; e.g. dikw-explore, dikw-smsdesign)
 /dikw {folder} --symlink              → symlink data in source/ (skip copy; saves disk for large data)
 /dikw {folder} --unattended           → 🤖 immediate auto-accept at every gate (no wait)
 /dikw {folder} --unattended=30s       → ⏳ wait 30s for human at each gate, then auto-accept

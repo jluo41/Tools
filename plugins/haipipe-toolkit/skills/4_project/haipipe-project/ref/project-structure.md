@@ -165,6 +165,133 @@ Task Folder Contents
 
 ---
 
+Skill-Runner Tasks (Exemption)
+================================
+
+  Some tasks are thin wrappers around a Claude Code skill (e.g., /dikw)
+  rather than around a Python script. The executor IS the skill; the
+  task folder's job is narrative + invocation pointers, not code.
+
+  When does a task qualify as a skill-runner task?
+    - A Claude Code skill (e.g., /dikw, /dikw-batch) executes the work.
+    - The upstream artifacts already live in _WorkSpace/ (or any other
+      canonical location), so the task does not need to host data/.
+    - The skill writes its own structured outputs (e.g.,
+      _agent_dikw_space/snapshot-<name>/sessions/NN_<slug>/) somewhere
+      OUTSIDE the task folder — the task only references those paths.
+
+  Exemptions from the standard task-folder rules:
+
+    - NO *.py required.  The executor is the skill, not Python.
+    - NO data/ required. Upstream artifacts stay where they live.
+    - config/ becomes OPTIONAL but RECOMMENDED. With ≥2 questions
+      against the same skill, use config/*.yaml — one per question —
+      and a shared runs/_run.sh launcher. With a single one-off
+      question, hardcoding inside runs/ask_<slug>.sh is acceptable.
+      See "config/ rules (skill-runner mode)" and "runs/ rules
+      (skill-runner mode)" below.
+    - runs/ becomes a launcher folder, not a batch-execution folder.
+    - results/ holds the raw session transcript only (debug record),
+      NOT the substantive outputs. Substantive outputs live where the
+      skill writes them (per skill's own SKILL.md).
+
+  config/ rules (skill-runner mode):
+    - One YAML per question: config/<slug>.yaml.
+    - Optional config/_defaults.yaml holds shared defaults (dataset,
+      snapshot name, symlink, persona, attendance).
+      Per-question YAMLs override defaults by setting the same key.
+    - YAMLs encode skill flags + question text — NOT task-script
+      flags, since the executor is the skill itself.
+    - Required keys (per merged YAML): the skill's own required
+      arguments (e.g. for /dikw: dataset, snapshot_name, question).
+    - Underscore-prefixed names (_defaults.yaml, _common.yaml) are
+      reserved for shared/template files — not picked up as questions
+      by the launcher.
+
+  runs/ rules (skill-runner mode):
+    - Pure launchers — thin shells that exec `claude "/<skill> ..."`.
+      Do NOT use the standard `exec > >(tee log)` logging header —
+      it pipes stdout and breaks the interactive Claude TUI.
+    - Use `claude` (interactive TUI), not `claude -p` (headless).
+      Skills like /dikw expect a human at gates by default.
+    - Pass `--session-id $(uuidgen)` so the resulting session.jsonl
+      can be located deterministically and copied to results/.
+    - Pass `--dangerously-skip-permissions` (config-driven, default
+      true) so the skill can run pandas / write files / edit YAML
+      state without pausing at every Bash/Write/Edit. Make this a
+      YAML key (`dangerously_skip_permissions`) so individual
+      sensitive questions can revoke it.
+    - After Claude exits, copy the session transcript to
+      results/<run_name>/session.jsonl as a debug record.
+    - Two-tier shape (recommended when config/ is used):
+        * runs/_run.sh        shared launcher, takes <slug> arg, reads
+                               config/_defaults.yaml + config/<slug>.yaml,
+                               assembles flags, exec's claude.
+        * runs/ask_<slug>.sh  one-line wrapper:
+                               `exec "$(dirname "$0")/_run.sh" <slug>`
+      Adding a new question = config/<slug>.yaml + 1-line ask wrapper.
+    - Underscore-prefixed scripts (_run.sh, _common.sh) are reserved
+      for shared launcher logic — not user-facing entrypoints.
+
+  Skill-runner launcher template (two-tier, config-driven):
+
+    # runs/ask_engagement_funnel.sh   ← one line per question
+    #!/bin/bash
+    exec "$(dirname "$0")/_run.sh" engagement_funnel
+
+    # runs/_run.sh   ← shared, parses YAML and exec's claude
+    #!/bin/bash
+    set -u
+    SLUG="$1"
+    TASK_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+    REPO_ROOT="$(cd "${TASK_DIR}" && git rev-parse --show-toplevel)"
+    RESULT_DIR="${TASK_DIR}/results/ask_${SLUG}"
+    mkdir -p "${RESULT_DIR}"
+
+    eval "$("${REPO_ROOT}/.venv/bin/python3" - \
+        "${TASK_DIR}/config/_defaults.yaml" \
+        "${TASK_DIR}/config/${SLUG}.yaml" <<'PYEOF'
+    import sys, shlex, yaml
+    d = yaml.safe_load(open(sys.argv[1])) or {}
+    o = yaml.safe_load(open(sys.argv[2])) or {}
+    m = {**d, **o}
+    for k, v in m.items():
+        s = "true" if v is True else "false" if v is False else "" if v is None else str(v)
+        print(f"CFG_{k.upper()}={shlex.quote(s)}")
+    PYEOF
+    )"
+
+    DATASET_DIR="${REPO_ROOT}/_WorkSpace/.../${CFG_DATASET}"
+    SESSION_ID=$(uuidgen | tr '[:upper:]' '[:lower:]')
+    PROJECT_DIR="$HOME/.claude/projects/$(echo "${REPO_ROOT}" | sed 's|/|-|g')"
+
+    CLAUDE_FLAGS="--session-id $SESSION_ID"
+    [ "$CFG_DANGEROUSLY_SKIP_PERMISSIONS" = "true" ] && \
+        CLAUDE_FLAGS="$CLAUDE_FLAGS --dangerously-skip-permissions"
+
+    claude $CLAUDE_FLAGS \
+           "/dikw $DATASET_DIR --snapshot-name $CFG_SNAPSHOT_NAME \
+            --symlink \"$CFG_QUESTION\""
+
+    # Copy transcript after Claude exits
+    if [ -f "${PROJECT_DIR}/${SESSION_ID}.jsonl" ]; then
+        cp "${PROJECT_DIR}/${SESSION_ID}.jsonl" "${RESULT_DIR}/session.jsonl"
+    fi
+
+  Reading the audit trail (two layers):
+    - Layer 1: structured artifacts written by the skill itself
+        (e.g., for /dikw: gates/, plan/, output/final_output.md under
+         _agent_dikw_space/snapshot-<name>/sessions/NN_<slug>/).
+        This is the primary record of reasoning.
+    - Layer 2: raw Claude transcript at results/<run_name>/session.jsonl.
+        Verbose; useful for debugging skill behavior.
+
+  Where this applies:
+    - DIKW analysis tasks (e.g., examples/{PROJECT}/tasks/B_explore/B*/).
+    - Any future "thin task wrapping a skill" pattern.
+
+---
+
 Task-level diagram/  (operational detail)
 ==========================================
 
@@ -340,7 +467,7 @@ Per group:
   [ ] Group letter G matches its tasks' prefix
   [ ] If sub-ordered: digit reflects actual dependency order
 
-Per task:
+Per task (standard):
   [ ] At least one *.py exists in the task folder
   [ ] No README.md in task folder
   [ ] {task}/diagram/ exists with: 01-overview, 02-design, 03-runs, 04-progress
@@ -352,6 +479,28 @@ Per task:
   [ ] If no runs/: results/ has flat files or default/ subfolder
   [ ] No heavy files in results/ (heavy goes to _WorkSpace/)
   [ ] Every runs/*.sh starts with the standard logging header
+
+Per task (skill-runner exemption — see "Skill-Runner Tasks" above):
+  Replace the standard *.py / data/ / logging-header rules with:
+  [ ] No *.py required (executor is a Claude Code skill)
+  [ ] No data/ required (upstream lives in _WorkSpace/ or other canonical location)
+  [ ] config/ optional but recommended for ≥2 questions:
+        - one config/<slug>.yaml per question
+        - optional config/_defaults.yaml for shared settings
+        - YAMLs encode skill flags + question text (not task-script flags)
+  [ ] runs/ask_<slug>.sh launchers exec `claude` (interactive, not `claude -p`)
+  [ ] runs/*.sh do NOT use the standard tee logging header (would break TUI)
+  [ ] runs/*.sh pass --session-id $(uuidgen) and copy session.jsonl to results/
+  [ ] runs/*.sh pass --dangerously-skip-permissions (config-driven; default
+      true; per-question YAML override allowed) so the skill can run
+      pandas / write artifacts / edit state files without per-tool prompts
+  [ ] If config/ used: runs/_run.sh is the shared launcher and ask_*.sh are
+      one-line wrappers — `exec "$(dirname "$0")/_run.sh" <slug>`
+  [ ] Underscore-prefixed names in config/ and runs/ (e.g. _defaults.yaml,
+      _run.sh) are reserved for shared/template files — not user-facing
+      questions or entrypoints
+  [ ] diagram/ still mandatory (01-overview, 02-design, 03-runs, 04-progress, .excalidraw)
+  [ ] 01-overview.txt Inputs/Outputs reference the skill's actual artifact paths
 
 Paper (if applicable):
   [ ] paper/Paper-*/diagram/ exists with 01-overview, 02-figure-plan
