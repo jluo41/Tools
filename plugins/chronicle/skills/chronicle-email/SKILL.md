@@ -1,14 +1,121 @@
 ---
 name: chronicle-email
-description: Index emails from MS365 Outlook into organized monthly markdown files. Use when the user wants to chronicle, index, or archive emails by month, or when they say /chronicle-email.
+description: Two modes for MS365 Outlook emails. (1) monthly-index — chronicle a full month into a markdown index file. (2) recent-window — pull last N days as a compact summary (default 7), used as input to chronicle-day-plan Phase 1. Mailbox is junjieluo.jhu@outlook.com via Softeria ms-365-mcp-server. Trigger: "/chronicle-email", "chronicle emails", "last week's emails", "summarize this week's inbox".
 ---
 
 # Chronicle Email
 
-Index and chronicle emails from MS365 Outlook (junjieluo.jhu@outlook.com) into organized monthly markdown index files with daily sections, reimbursement tracking, and structured formatting.
+Index emails from MS365 Outlook (`junjieluo.jhu@outlook.com`) via the
+Softeria `ms-365-mcp-server` MCP. Two modes — pick by user intent.
 
-**Method**: MS365 MCP integration + structured markdown generation
-**Location**: `~/Desktop/jluo41-repo/3-Chronile/Emails/MonthIndex/`
+```
+mode = monthly-index   →  full month → markdown index file        (existing)
+mode = recent-window   →  last N days → compact summary in-chat   (NEW)
+                          (used by chronicle-day-plan Phase 1)
+```
+
+**Server**: `ms-365-mcp-server` (Softeria), launched with `--preset mail --read-only`.
+Tool namespace: `mcp__ms365__*`. Token cached in macOS Keychain after one-time
+device-code login (`mcp__ms365__login` → phone OAuth).
+
+**Output locations**:
+- monthly-index: `~/Desktop/jluo41-repo/3-Chronile/Emails/MonthIndex/`
+- recent-window: returned in-chat (no file written by default)
+
+## Mode: recent-window (last N days)
+
+Pulls the last N days (default 7) of inbox messages and summarizes
+in-chat. The PRIMARY consumer is `chronicle-day-plan` Phase 1 — it
+asks "anything overnight needing a real reply?" and uses this as fuel.
+
+### Verified call (confirmed working 2026-04-28)
+
+```
+tool:    mcp__ms365__list-mail-messages
+filter:  receivedDateTime ge {YYYY-MM-DD}T00:00:00Z   ← last N days = today − N
+orderby: receivedDateTime desc
+select:  id,subject,from,receivedDateTime,bodyPreview,isRead,hasAttachments
+top:     15            ← start small; raise to 30 only if days are dense
+```
+
+⚠️ Microsoft Graph rule: **do not combine `$filter` and `$search`**.
+Use one or the other. For date-window pulls, `$filter` is correct.
+
+### Response shape (what to expect)
+
+```json
+{
+  "value": [
+    {
+      "id": "...",
+      "receivedDateTime": "2026-04-28T08:34:19Z",
+      "subject": "Re: ...",
+      "bodyPreview": "...",
+      "isRead": true,
+      "hasAttachments": false,
+      "from": { "emailAddress": { "name": "...", "address": "..." } }
+    }
+  ],
+  "@odata.nextLink": "..."   // present iff more pages
+}
+```
+
+### Pagination
+
+For >15 emails, follow `@odata.nextLink` ONCE; refuse to fetch all
+pages unless the user explicitly says so (avoid huge context blobs).
+Or set `fetchAllPages: true` to merge — but only when user wants a
+complete export, not a daily summary.
+
+### Summarization rules (the part that goes back to the caller)
+
+```
+For each message, classify into ONE of:
+  ⭐ needs-reply    real correspondence; from a known human; awaits response
+  📋 fyi-internal   meeting cancellations, schedule notices, internal admin
+  💸 financial      invoices, receipts, billing — flag with [$]
+  📰 newsletter     bulk mail, marketing, digest — drop unless explicit ask
+  🔒 security       account-security notices — drop unless they're flagging risk
+
+Return groups in priority order (needs-reply → fyi-internal → financial),
+with newsletters/security counted but not enumerated.
+```
+
+### Compact in-chat output template
+
+```
+📨 Last 7 days · N emails · M after filter
+
+⭐ NEEDS REPLY (count)
+  · 04-28  Ed Bunker         — Re: About the Dissertation Proposal
+  · 04-28  Heller, Carol     — Re: Wharton poster prep
+  · 04-27  Susanne Muehlsch. — Undergrad student project inclusion?
+  · 04-27  attorneys@chen…   — EB-1A Evaluation
+
+📋 FYI / INTERNAL (count)
+  · 04-27  Minghong Xu       — AI Agent Lab weekly meeting (cancelled)
+
+💸 FINANCIAL (count)
+  · (none worth flagging)
+
+(N newsletters · M security notices — dropped)
+```
+
+This compact form is what chronicle-day-plan Phase 1 uses as a SEED
+for sharp prompts ("you've got 4 emails awaiting real replies — which
+one needs your brain today?"). **It is not the plan output itself.**
+
+### Anti-patterns
+
+- ❌ Returning raw bodyPreview unfiltered → too noisy for a day plan
+- ❌ Including "External Email" warning lines in summaries → strip them
+- ❌ Pulling more than 15 emails for the day-plan use case → context bloat
+- ❌ Persisting to a markdown file → recent-window is in-chat only;
+  monthly-index is the persistent mode
+
+---
+
+## Mode: monthly-index (full month → markdown file)
 
 ## Index Format
 
@@ -89,11 +196,15 @@ Folder naming convention:
 ### 4. Retrieve All Emails
 Use `mcp__ms365__list-mail-folder-messages` with:
 - `mailFolderId`: The folder ID from step 3
-- `select`: `["subject", "from", "receivedDateTime"]`
-- `orderby`: `["receivedDateTime asc"]`
+- `select`: `"subject,from,receivedDateTime"`              (comma-separated string)
+- `orderby`: `"receivedDateTime asc"`                      (single string)
 - `fetchAllPages`: `true`
 
 **Important**: Handle pagination properly. Monthly folders typically contain 300-600+ emails.
+
+**Server constraint**: Cannot combine `$filter` and `$search` in the same call.
+For monthly-index, no filter is needed (the folder is already scoped); for
+date-windowed pulls (recent-window mode), use `$filter` only.
 
 ### 5. Process and Format Emails
 
