@@ -8,3 +8,7 @@ openai>=1.0
 # Optional — only needed if classifier.backend: setfit
 setfit>=1.0
 datasets>=2.14
+# Optional — used by `embed.py project` for n-polar projection.
+# If missing, `project` falls back to PCA. matplotlib is required for the PNG.
+umap-learn>=0.5
+matplotlib>=3.7

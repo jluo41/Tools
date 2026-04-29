@@ -1,12 +1,13 @@
 📈  Convergence Signals — when to /sl-scale
 ============================================
 
-  Three independent signals tell you the gallery + guideline are
-  mature. The validator owns the primary one; the other two are
-  supporting evidence.
+  Four independent signals tell you the gallery + guideline are
+  mature. The validator owns the primary one; the others are
+  supporting evidence — but the geometric signal often warns
+  earliest.
 
 
-─§ 🎯 Three signals (in order of authority) ────────────────
+─§ 🎯 Four signals (in order of authority) ────────────────
 
   +----+--------------------------+----------------------------------+
   |    | Signal                   | Threshold                        |
@@ -17,10 +18,17 @@
   |    | (Labeler Panel)          | AND plateau across 2 iter        |
   | 3️⃣ | ⚖️ category D ratio      | D / (A+B+C+D) > 0.7              |
   |    | (Analyzer)               | (most disagreement is noise)     |
+  | 4️⃣ | 🗺️ geometric separation | per-label silhouette ≥ 0.3 AND   |
+  |    | (Embedder · n-polar)    | NO pairwise overlap < 0.10       |
+  |    |                          | (n-label generic; warns earliest)|
   +----+--------------------------+----------------------------------+
 
-  🤖 moderator reports all three.
+  🤖 moderator reports all four.
   🧑 researcher decides when to /sl-scale.
+
+  ⏱️ The geometric signal often surfaces FIRST: two labels can
+     overlap in embedding space before personas start disagreeing
+     about them — a definition warning, not yet a κ warning.
 
 
 ─§ 📊 κ trajectory · the headline plot ─────────────────────
@@ -67,18 +75,48 @@
           (more data)   /sl-iterate  (ship it)
 
 
-─§ ✨ The 3 supporting signals all point the same way ──────
+─§ ✨ The supporting signals all point the same way ────────
 
   At convergence:
 
     📊 public-dataset κ        ≥ human ceiling      ✅
     👥 panel-internal κ        > 0.7  (plateaued)   ✅
     ⚖️ analyzer D-ratio        > 0.7                ✅
+    🗺️ geometric separation   silhouette ≥ 0.3     ✅
+                               no overlap warnings
     🧠 classifier CV F1        plateaued            ✅
     📚 gallery growth          slowed (saturating)  ✅
+    🌀 residual size           plateaued near 0     ✅
+                               (shrinking-net done)
 
-  When 4-5 of these align, /sl-scale is safe.
+  When 5-7 of these align, /sl-scale is safe.
   When only 1-2 align, more /sl-iterate is the answer.
+
+
+─§ 🗺️ The geometric signal · per-label diagnostics ────────
+
+  embedder project (UMAP→PCA) writes separation.json each iter,
+  generic over any n-label schema:
+
+    🟢 silhouette_overall      ≥ 0.3 = labels distinguishable
+    🟢 per_label[L].silhouette  ≥ 0.3 = label L well-defined
+    🚩 pairwise_overlap.flag = "overlap"  if sil between < 0.10
+                              → add tiebreaker to guideline §4
+    🚩 fragments > 1            DBSCAN finds disjoint sub-clusters
+                              → possible schema gap (Category C)
+
+  Failure modes (auto-warned to moderator):
+
+    📉 collapse        one label > 60% of mass
+                       (definition too broad)
+    🔀 overlap         two labels' silhouette < 0.10
+                       (missing tiebreaker)
+    🪓 fragmentation   one label = 2+ sub-clusters
+                       (label combines distinct phenomena)
+    🪶 thin region     label < 3 entries
+                       (under-defined, needs examples)
+
+  Each maps to an action in the next /sl-iterate.
 
 
 ─§ 💡 Why the public-dataset κ is primary ──────────────────

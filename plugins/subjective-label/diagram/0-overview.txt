@@ -34,12 +34,16 @@
   |  🔧  Tier 3  —  Worker Agents (8)                |
   |--------------------------------------------------|
   |  📥 sampler              stage-aware item picks  |
+  |                          🌀 pool_strategy:        |
+  |                            full · residual · auto |
   |  📐 embedder             SBERT + FAISS · Tier 0  |
+  |                          🗺️ project op (n-polar) |
   |  🧠 classifier           logreg / SetFit · Tier 1|
   |  🔍 prober               LLM judgment on pool    |
   |  👥 labeler-panel        spawns 3-5 personas     |
   |  ⚖️ disagreement-analyzer A / B / C / D sort     |
   |  📚 gallery-keeper       writes gallery + guide  |
+  |                          + invokes projection    |
   |  📊 validator            public-dataset κ check  |
   +--------------------------------------------------+
                         |
@@ -80,6 +84,31 @@
   2. 📥 sampler is the single entry point for any "pick N items"
      decision — 5 modes (init_map, iterate_batch, validate_heldout,
      scale_preflight, diagnostic) share the same primitives.
+     🌀 iterate_batch is residual-aware: once the classifier is
+        competent, sampling targets only what Tier 1 can't absorb.
 
   3. 📐 embedder = speed · 👥 panel = judgment · 🧠 classifier =
      middle ground. Cascade composes them in the SMALL loop.
+     🗺️ embedder also produces an n-polar projection map per
+        iteration — a 4th convergence signal beside κ.
+
+
+─§ 🏷️ Schema defaults ─────────────────────────────────────
+
+  /sl-init offers [high, low, none] as the recommended default:
+
+    🔺 high  signal present and strong
+    🔻 low   signal present and weak
+    ⚪ none  signal ABSENT (NOT "annotator unsure")
+
+  ⚠️ uncertainty lives in the `confidence` field, never in the
+     label. If `none` becomes the abstain bucket, geometry
+     collapses and the n-polar projection loses signal.
+
+  Pre-seeded boundary tiebreakers in guideline.md §4:
+     🔺↔⚪   present-and-strong  vs  not-absent
+     🔻↔⚪   present-and-weak    vs  absent-altogether
+     🔺↔🔻   intensity threshold (topic-specific)
+
+  Schema is still n-label generic — tri-polar is the default,
+  not a constraint. Any 2-6 mutually-exclusive labels work.

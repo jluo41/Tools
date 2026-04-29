@@ -1,0 +1,18 @@
+{
+  "name": "phyanno",
+  "version": "0.1.0",
+  "description": "Physician personality annotation skill. Claude acts as an RA to annotate Big Five personality traits from patient reviews using the phyanno platform API. Supports full batch sessions, single-physician annotation, and progress tracking.",
+  "author": {
+    "name": "Junjie Luo",
+    "url": "https://github.com/jluo41"
+  },
+  "license": "MIT",
+  "keywords": [
+    "annotation",
+    "physician",
+    "big-five",
+    "personality",
+    "patient-reviews",
+    "research-assistant"
+  ]
+}

@@ -19,9 +19,16 @@
             +--------------------------------------+
             | 📥 sampler  (mode: iterate_batch)    |
             |                                      |
+            |   🌀 pool_strategy = auto:           |
+            |     full     no classifier · F1<0.6  |
+            |     residual classifier ready (≥0.6) |
+            |       └─ drop items Tier 1 absorbs   |
+            |          (prob ≥ 0.70 AND margin ≥ 0.30)|
+            |                                      |
             |   uses 📐 embedder · 🧠 classifier   |
             |   → ~100 candidate items             |
             |   (novelty + uncertainty + cluster)  |
+            |   📄 pool_stats.json (residual size) |
             +--------------------┬-----------------+
                                  │ 2. shortlist
                                  ▼
@@ -70,6 +77,14 @@
             |    📄 gallery.json                   |
             |    📄 guideline.md                   |
             |   versioned under gallery/history/   |
+            |                                      |
+            |   🗺️ then invokes embedder project: |
+            |     UMAP→PCA over gallery + batch +  |
+            |     predicted (n-label generic)      |
+            |    📄 projection.png                 |
+            |    📄 separation.json (silhouette,   |
+            |        pairwise overlap, fragments,  |
+            |        warnings → moderator)         |
             +--------------------┬-----------------+
                                  │ 7. retrain
                                  ▼
@@ -78,6 +93,8 @@
             |                                      |
             |   ready for next iter's hard-mining  |
             |   ready for /sl-scale Tier 1         |
+            |   CV F1 ≥ 0.6 → sampler flips to    |
+            |   residual mode next round 🌀        |
             +--------------------┬-----------------+
                                  │
                                  ▼
@@ -104,12 +121,17 @@
 
   iterations/iter_N/
     📄 candidate_pool.jsonl        ← sampler
+    📄 pool_stats.json             ← sampler (🌀 residual trajectory)
     📄 batch.jsonl                 ← prober
     📄 panel_labels.jsonl          ← panel
     📄 panel_kappa.json            ← panel
     📄 disagreements.md            ← analyzer (narrative)
     📄 disagreement_items.jsonl    ← analyzer (per-item A/B/C/D)
     📄 researcher_decisions.jsonl  ← moderator (after dialogue)
+    projection/                    ← gallery-keeper → embedder
+      🖼️  projection.png
+      📄 projection.jsonl          (id, x, y, label, source)
+      📄 separation.json           (🗺️ geometric signal)
 
   gallery/                         ← gallery-keeper
     📄 gallery.json

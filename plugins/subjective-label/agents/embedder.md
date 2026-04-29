@@ -57,6 +57,33 @@ python lib/embed.py --project-dir {project_dir} cluster \
   --n-clusters 20
 ```
 
+### `project` — n-label projection + separation diagnostics
+
+```bash
+python lib/embed.py --project-dir {project_dir} project \
+  --input      {project_dir}/iterations/iter_N/projection_input.jsonl \
+  --output-dir {project_dir}/iterations/iter_N/projection \
+  --method     auto         # umap, pca, or auto (umap with PCA fallback)
+```
+
+Input rows: `{id, text, label, source, [confidence]}` where `source ∈
+{gallery, batch, predicted}`. Works for **any number of label values** —
+it reads the labels off the input and treats them generically.
+
+Outputs (in `--output-dir`):
+- `projection.png` — 2D scatter, colored by label, gallery anchors circled
+- `projection.jsonl` — per-point `{id, x, y, label, source, confidence}`
+- `separation.json` — diagnostic report:
+  - `silhouette_overall` — global cluster-vs-label fit (cosine)
+  - `per_label[label]` — `{size, silhouette, fragments}` per label
+  - `pairwise_overlap` — silhouette between every pair of labels;
+    `flag: "overlap"` when < 0.10 (i.e., labels indistinguishable in embedding space)
+  - `warnings` — actionable strings, e.g. "labels {low, none} overlap heavily — add a tiebreaker"
+
+This is the geometric convergence signal (see ref-architecture.md).
+Callers (Gallery Keeper, /sl-status) read `separation.json` to surface
+warnings to the researcher.
+
 ### `stratify` — stratified sample by cluster
 
 ```bash

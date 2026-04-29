@@ -43,22 +43,53 @@ Output: `{project_dir}/cache/sampler/init_map.jsonl`
 
 Goal: pick 20-30 items that will teach the gallery + panel the most this iteration. This is the workhorse.
 
+Caller passes `pool_strategy ∈ {full, residual, auto}` (default `auto`):
+
+  full     — sample from the entire unlabeled pool (cold-start behavior)
+  residual — sample ONLY from items the current classifier cannot
+             confidently resolve. Concretely: drop every item where
+             `prob ≥ classifier.thresholds.accept_prob` AND
+             `margin ≥ classifier.thresholds.accept_margin` —
+             i.e., everything Tier 1 of the cascade would absorb at
+             scale time. The remaining items ARE the boundary the
+             next guideline update has to address.
+  auto     — `full` while no classifier is trained yet OR while the
+             classifier's last CV F1 < 0.6; `residual` otherwise. This
+             matches the literature: random/novelty at cold start,
+             uncertainty-on-residual once a model is trained.
+
 Procedure:
-1. `embedder cluster` on the current sample pool.
-2. `embedder nearest` k=3 against the current gallery — get per-item distance to nearest gallery entry.
-3. IF a classifier exists for this project (check `{project_dir}/cache/classifier/latest/`):
+1. Resolve effective pool:
+   - If `pool_strategy=full`: pool = all unlabeled items.
+   - If `pool_strategy=residual`: load classifier predictions over the
+     full unlabeled pool (run `classifier predict` if not cached for
+     this iteration). Drop high-confidence-correct items per the rule
+     above. Pool = the residual.
+   - If `pool_strategy=auto`: choose `full` vs `residual` per the rule
+     above and proceed.
+   - Record `pool_size_before / pool_size_after` to the iteration log
+     so /sl-status can show the shrinking-residual trajectory.
+2. `embedder cluster` on the resolved pool.
+3. `embedder nearest` k=3 against the current gallery — get per-item distance to nearest gallery entry.
+4. IF a classifier exists (check `{project_dir}/cache/classifier/latest/`):
    - `classifier uncertainty` — get per-item uncertainty score (entropy / margin).
-4. Compose scoring:
+5. Compose scoring:
    - `novelty = 1 - max_sim_to_gallery`              (high = far from gallery)
    - `uncertainty = classifier_entropy`              (high = classifier unsure; 0 if no classifier yet)
    - `cluster_coverage_penalty = 1 / count_in_cluster_this_batch`  (encourage spread)
    - score = 0.4 × novelty + 0.5 × uncertainty + 0.1 × cluster_coverage_penalty
-5. Stratified top-k: take top-k per label bucket (if we already have any labels) or per cluster.
-6. Return 20-30 items.
+6. Stratified top-k: take top-k per label bucket (if we already have any labels) or per cluster.
+7. Return 20-30 items.
 
-This is **active-learning hard-example mining** — with the classifier in place, we actively surface items that break the current model, not just items that are embedding-far from the gallery.
+This is **active-learning hard-example mining**, optionally restricted to
+the **residual** the current classifier can't yet resolve. Across
+iterations, the residual shrinks (60% → 30% → 10% → ...): each round's
+batch and resulting guideline update target progressively narrower
+boundary regions. The cascade you eventually run at /sl-scale is the
+static snapshot of this iteratively-built sieve. See ref-stages.md
+"The shrinking-residual loop" for the full picture.
 
-Output: `{project_dir}/iterations/iter_N/candidate_pool.jsonl` (100 items) +  `batch.jsonl` (final 20-30 after Prober's LLM judgment layer).
+Output: `{project_dir}/iterations/iter_N/candidate_pool.jsonl` (100 items) +  `batch.jsonl` (final 20-30 after Prober's LLM judgment layer) + `pool_stats.json` (records pool_strategy used, pool_size_before, pool_size_after, residual_pct).
 
 ### mode: `validate_heldout`
 

@@ -43,6 +43,13 @@ Gallery examples:
 
 For each item output:
   {item_id, label, confidence: 0-1, reasoning: 1-3 sentences}
+
+IMPORTANT: every item MUST receive one of the schema labels. There is no
+"abstain" or "unsure" label. If you are uncertain, pick the label your
+reading most supports and report low confidence. Do not collapse uncertain
+items into a catch-all label (e.g. `none` for tri-polar schemas) — that
+label means "signal absent", not "annotator unsure". Uncertainty lives in
+the confidence field; the label field is always your best-supported choice.
 ```
 
 Run the persona as a separate Task call (subagent_type is the persona file name). If persona files are not registered as subagents, run them inline — each persona is one LLM turn with the persona prompt as system.

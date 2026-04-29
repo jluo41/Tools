@@ -92,6 +92,32 @@ Rules changed:
 
 Append a one-line summary to `gallery/history/CHANGELOG.md`.
 
+### Step 5b — n-label projection diagnostic
+
+After versioning the iteration, call `embedder` with the `project`
+operation to produce a 2D map of the current label space.
+
+Build `iterations/iter_N/projection_input.jsonl` by combining:
+  - every gallery entry → `source: "gallery"`
+  - every item the panel labeled this iteration → `source: "batch"`
+  - (optional, if classifier predictions over the unlabeled pool are
+    cached for this iter) up to ~500 sampled predicted items →
+    `source: "predicted"`, including their `confidence`
+
+Then invoke embedder:
+```
+python lib/embed.py --project-dir {project_dir} project \
+  --input      {project_dir}/iterations/iter_N/projection_input.jsonl \
+  --output-dir {project_dir}/iterations/iter_N/projection \
+  --method     auto
+```
+
+Read `projection/separation.json`. Append its `warnings[]` (if any) to
+the iteration's diff log under a `Geometric warnings:` heading, and
+return them to Moderator so /sl-iterate's report surfaces them. These
+warnings are **n-label generic** — same machinery for binary, tri-polar,
+and 5-label schemas.
+
 ### Step 6 — sanity checks
 
 Before returning:

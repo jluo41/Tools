@@ -126,13 +126,21 @@ the whole batch themselves.
 Convergence signals
 -------------------
 
-Three signals, in order of authority:
+Four signals, in order of authority:
 
 1. **Public-dataset κ** (Validator): agent κ ≥ human κ ceiling on GoEmotions / MFTC / POPQuorn / DICES. This is the primary signal.
 2. **Panel-internal κ** (Labeler Panel): pairwise κ across personas > 0.7 AND plateau across 2 iterations.
 3. **Category D ratio** (Analyzer): D / (A+B+C+D) > 0.7 suggests most disagreement is noise, i.e. guideline is mature.
+4. **Geometric separation** (`embedder project`): for an n-label schema,
+   the embedding space should resolve into n distinguishable regions.
+   Per-label silhouette ≥ 0.3 and no `pairwise_overlap` flagged means
+   labels are geometrically distinct. This signal is **n-label generic**:
+   it works the same way for binary, tri-polar, or 5-label schemas. It
+   often warns *earlier* than κ — you can see two labels overlapping in
+   embedding space before personas start disagreeing about them, which
+   means the definition is borderline and a tiebreaker is needed.
 
-Moderator reports all three. Researcher decides when to /sl-scale.
+Moderator reports all four. Researcher decides when to /sl-scale.
 
 
 File conventions

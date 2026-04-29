@@ -118,6 +118,48 @@ This mirrors standard active-learning cold-start practice: random/diversity
 sampling until a model is trainable, then switch to uncertainty sampling.
 
 
+The shrinking-residual loop
+---------------------------
+
+Once the classifier is competent (CV F1 ≥ 0.6), each /sl-iterate samples
+ONLY from the pool the current classifier can't already resolve. The
+filter is the same one Tier 1 of the cascade applies at scale time:
+drop items where `prob ≥ accept_prob AND margin ≥ accept_margin`. Whatever
+remains is the residual — by construction, it's exactly the boundary
+the next guideline update has to address.
+
+Across iterations the residual shrinks in roughly this shape:
+
+    iter k   residual
+    ------   -----------
+       1     full pool (no classifier yet)
+       2     ~30-40%   ("coarse net" absorbed the easy 60-70%)
+       3     ~10-15%   ("medium net" absorbed another layer)
+       4     ~3-5%     ("fine net" — only genuinely hard items left)
+       5     ~1%       (a few hundred items — easy to label by hand)
+
+The cascade you eventually run at /sl-scale is the *static snapshot* of
+this iteratively-built sieve. Each /sl-iterate added one layer:
+  - Gallery entries added → Tier 0 (k-NN) absorbs more on next run
+  - Classifier retrained  → Tier 1 absorbs more on next run
+  - Guideline tiebreakers added → Tier 2 panel agrees more on next run
+
+The mechanism behind the multi-net effect is therefore not three
+separately-designed nets. It's one loop running multiple times, each
+pass writing into a different tier.
+
+Where do the criteria for each successive net come from? They emerge
+from the residual itself: Disagreement Analyzer's Category B (rule
+ambiguity) and Category C (schema gap) on the current residual ARE the
+criteria for the next net. The researcher does not design the nets up
+front; the loop produces them.
+
+Watch this in /sl-status's "Residual trajectory" panel. Healthy projects
+see monotonically shrinking residuals. A residual that plateaus or grows
+means: classifier is overfitting to gallery, OR data drift, OR guideline
+changes contradicted earlier rules. All three are signals to pause.
+
+
 What writes / what reads
 ------------------------
 

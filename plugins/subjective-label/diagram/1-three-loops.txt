@@ -83,3 +83,48 @@
     🌐 BIG   →  minimize 🧑 researcher decisions   (analyzer A/B/C/D)
     🔬 MED   →  maximize info per iteration       (sampler hard-mining)
     ⚡ SMALL →  minimize cost per item            (3-tier cascade)
+
+
+─§ 🌀 The shrinking-residual loop · MED ↔ SMALL ────────────
+
+  Every /sl-iterate samples ONLY from items the current classifier
+  can't already resolve (same filter Tier 1 applies at scale time:
+  drop where prob ≥ accept_prob AND margin ≥ accept_margin).
+
+  Across iterations the residual shrinks like a coarse-to-fine net:
+
+   iter k  pool_strategy   residual    what just happened
+   ──────  ─────────────   ────────    ──────────────────────────
+     1     full            100%        🚀 cold start, no model
+     2     residual         ~30%       📉 coarse net absorbed easy 70%
+     3     residual         ~10%       📉 medium net peels another layer
+     4     residual          ~3%       📉 fine net — only hard left
+     5     residual          ~1%       🎯 ~hundreds of items, label by hand
+
+  🤖 sampler picks pool_strategy automatically:
+     full      while no classifier OR CV F1 < 0.6
+     residual  once classifier CV F1 ≥ 0.6
+     auto      = "use the rule above" (default)
+
+
+─§ 🪡 Cascade IS the iteratively-built sieve ───────────────
+
+  The SMALL loop's 3 tiers aren't separately designed nets.
+  They are the static snapshot of the sieve the MED loop built:
+
+    /sl-iterate round 1   📚 gallery grew         →  Tier 0 catches more
+    /sl-iterate round 2   🧠 classifier trained   →  Tier 1 starts absorbing
+    /sl-iterate round k   📜 guideline tightened  →  Tier 2 panel agrees more
+
+  +-----------+      every iteration     +------------------+
+  | 🔬 MED    | ─── adds one layer ───▶  | ⚡ SMALL cascade |
+  | iterate   |                          | (snapshot)       |
+  +-----------+                          +------------------+
+        │                                        │
+        │  guideline §4 tiebreakers              │  applied at
+        │  emerge from residual itself           │  /sl-scale time
+        ▼                                        ▼
+   📜 next net's criteria                  💸 1M items · ~$10K
+
+  💡 You don't design 3 nets. You run 1 loop k times, and each
+     pass writes into a different tier.

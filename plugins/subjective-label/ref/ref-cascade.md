@@ -176,3 +176,25 @@ constant across scale runs. If Tier 2 load spikes on a new batch:
 - Possible data drift — the new data differs from gallery's coverage
 - Possible classifier drift — retrain with fresh examples
 - Possible guideline drift — /sl-iterate a few more rounds on the new data
+
+
+Relationship to the shrinking-residual loop
+--------------------------------------------
+
+The three-tier cascade above is the static snapshot of a sieve that was
+built up iteratively. Each /sl-iterate added one layer:
+
+  /sl-iterate round 1 → gallery grew     → Tier 0 will catch more next time
+  /sl-iterate round 2 → classifier trained → Tier 1 starts absorbing
+  /sl-iterate round k → guideline tightened → Tier 2 panel agrees more
+
+When Sampler runs in `pool_strategy=residual` mode (see agents/sampler.md
+and ref-stages.md "The shrinking-residual loop"), each iteration's batch
+is drawn ONLY from items the *current* Tier 1 classifier cannot resolve.
+That makes every iteration a targeted attack on the next layer of the
+sieve. /sl-scale's cascade then runs the result over the full corpus in
+one pass.
+
+In short: the cascade IS the sieve, and /sl-iterate is how you build it
+one layer at a time. Reading this file alongside ref-stages.md gives the
+full picture.

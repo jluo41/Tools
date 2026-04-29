@@ -52,6 +52,45 @@ Good vs. Bad Schema Design
     Spectrum schemas are naturally ordered — useful for regression-style analysis.
 
 
+Tri-polar ordinal: the recommended default
+-------------------------------------------
+
+  values: [high, low, none]
+
+  This is the default offered by /sl-init because it cleanly separates
+  three distinct annotation states for any "is signal X present, and how
+  strongly?" task:
+
+    high  = signal present and strong
+    low   = signal present and weak
+    none  = signal absent
+
+  Critical: `none` means "signal absent", NOT "annotator unsure".
+  Annotator uncertainty lives in the confidence field on each label, not
+  in the label itself. If a persona is uncertain whether a review shows
+  empathy, it still picks {high, low, none} and reports low confidence;
+  it does NOT default to `none` to mean "I couldn't tell".
+
+  Why this matters: if `none` becomes the abstain bucket, the embedding
+  geometry collapses (every uncertain item lands in the same cluster) and
+  disagreement analysis loses signal — Category B (rule ambiguity) gets
+  miscategorized as Category D (noise). Distribution instability across
+  the panel is itself a signal that the high/low/none boundaries are
+  underspecified; surface this via the n-polar projection diagnostic
+  (see ref-architecture.md "geometric convergence signal") rather than
+  by widening `none`.
+
+  Required boundary tiebreakers in guideline.md §4:
+    * high vs none  — present-and-strong vs not-absent
+    * low  vs none  — present-and-weak   vs absent-altogether
+    * high vs low   — intensity threshold (topic-specific)
+
+  When to deviate: if your task is purely categorical (e.g., nudge_type ∈
+  {authoritative, advisory, informational}), tri-polar is wrong — use a
+  flat categorical schema with an "other" catch-all. Tri-polar fits
+  *intensity* / *salience* questions, not type questions.
+
+
 Boundary Case Design
 ---------------------
 

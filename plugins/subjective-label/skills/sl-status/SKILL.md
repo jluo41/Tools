@@ -19,6 +19,8 @@ Step 2. Read:
   - {project_dir}/gallery/guideline.md (first 30 lines for preview)
   - {project_dir}/validation/trajectory.jsonl (if exists)
   - {project_dir}/gallery/history/*.diff (last 3 for preview)
+  - {project_dir}/iterations/iter_*/pool_stats.json (residual trajectory)
+  - {project_dir}/iterations/iter_*/projection/separation.json (geometric signal)
 
 Step 3. Print status block:
 
@@ -43,6 +45,20 @@ Step 3. Print status block:
     B ambiguity: 3 cases
     C novel:     1 case
     D noise:     8 cases
+  ------------------------------------------------------------
+  Geometric separation (latest iter, n=3 labels):
+    overall silhouette: 0.41
+    per-label:  high (n=18, sil=0.51)  low (n=14, sil=0.38)  none (n=31, sil=0.12, fragments=2)
+    warnings:
+      - label 'none' shows fragmentation (2 sub-clusters) — possible schema gap
+      - labels {low, none} overlap heavily (sil=0.05) — add a tiebreaker
+    plot: iterations/iter_3/projection/projection.png
+  ------------------------------------------------------------
+  Residual trajectory (sample pool the classifier cannot absorb):
+    iter 1   full       pool=12000   (no classifier yet)
+    iter 2   residual   pool= 4100   (-66%)
+    iter 3   residual   pool= 1280   (-69%)
+    iter 4   residual   pool=  310   (-76%)   ← shrinking-net working
   ------------------------------------------------------------
   Next step:
     {contextual recommendation based on state}

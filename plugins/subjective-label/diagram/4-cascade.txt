@@ -84,3 +84,28 @@
     📉 data drift        new corpus differs from gallery coverage
     📉 classifier drift  retrain with fresh examples
     📉 guideline drift   /sl-iterate a few more rounds
+
+
+─§ 🪡 Cascade IS the iteratively-built sieve ───────────────
+
+  The 3 tiers above are NOT separately designed nets. They are
+  the static snapshot of a sieve the MED loop built layer by layer:
+
+   /sl-iterate 1   📚 gallery grew         →  Tier 0 catches more
+   /sl-iterate 2   🧠 classifier trained   →  Tier 1 starts absorbing
+   /sl-iterate k   📜 guideline tightened  →  Tier 2 panel agrees more
+
+  +-------------+   each round adds   +--------------------+
+  | 🔬 /sl-iter |── one layer ───────▶| ⚡ /sl-scale       |
+  | (residual   |                     | (3-tier snapshot)  |
+  | mode 🌀)    |                     |                    |
+  +-------------+                     +--------------------+
+
+  🌀 residual sampling (see 1-three-loops.txt) makes each
+     iteration target the next layer of the sieve directly:
+     items the current Tier 1 cannot resolve ARE the
+     next-layer training set.
+
+  💡 You don't design 3 nets. You run 1 loop k times, and each
+     pass deposits into a different tier. The cascade you see
+     here is the fossil record of that process.

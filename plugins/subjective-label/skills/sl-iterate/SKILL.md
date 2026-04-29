@@ -24,11 +24,17 @@ Step 2. Invoke Moderator (subagent_type: moderator).
 
   Moderator runs the iteration in 6 steps:
 
-    (a) Sampler (subagent_type: sampler, mode=iterate_batch) calls
-        embedder (cluster + nearest) and classifier (uncertainty, if a
-        classifier exists from a prior iteration) to produce a candidate
-        pool of ~100 items scored by novelty + uncertainty + cluster
-        coverage. Outputs: candidate_pool.jsonl.
+    (a) Sampler (subagent_type: sampler, mode=iterate_batch,
+        pool_strategy=auto) calls embedder (cluster + nearest) and
+        classifier (uncertainty / residual filter, if a classifier
+        exists from a prior iteration) to produce a candidate pool of
+        ~100 items scored by novelty + uncertainty + cluster coverage.
+        Under `auto`, Sampler uses the full unlabeled pool when no
+        classifier is trained yet (or its CV F1 < 0.6) and switches to
+        residual mode (sample only from what Tier 1 cannot already
+        absorb) once the classifier is competent. Outputs:
+        candidate_pool.jsonl + pool_stats.json (records the pool
+        strategy used and the residual size).
 
         Boundary Prober (subagent_type: prober) then applies LLM judgment
         on the candidate pool to pick the final 20-30 items. Outputs:
@@ -72,6 +78,7 @@ Step 2. Invoke Moderator (subagent_type: moderator).
 Step 3. Report to researcher.
   Summary:
     - Items labeled this iteration: N
+    - Pool strategy this iter: {full | residual} ; residual size: K → K' (Δ = -X%)
     - Panel-internal κ: {value}
     - Disagreement breakdown: A=X, B=Y, C=Z, D=W
     - Gallery size: before -> after

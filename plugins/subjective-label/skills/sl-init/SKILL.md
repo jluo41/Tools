@@ -32,10 +32,21 @@ Step 3. Invoke Moderator agent (Task tool, subagent_type: moderator).
     project_dir: <path>
   Moderator will:
     - Ask researcher: "What subjective dimension do you want to label?"
-    - Ask: "What are the possible label values? (2-6 recommended)"
+    - Ask: "What are the possible label values? (2-6 recommended).
+      Default template: [high, low, none] — a tri-polar ordinal where
+        high  = signal present and strong
+        low   = signal present and weak
+        none  = signal absent (NOT 'annotator unsure' — uncertainty
+                lives in the confidence field, never in the label)
+      Press enter to accept the default, or type your own values."
     - Call Boundary Prober to generate 5-8 probe questions
-      (each probe = one edge-case the researcher must adjudicate)
-    - Collect adjudications into draft guideline.md
+      (each probe = one edge-case the researcher must adjudicate).
+      For the [high, low, none] default, Prober pre-seeds these tiebreakers
+      and asks the researcher to fill in the topic-specific instances:
+        * high vs none — "is the signal present-and-strong, or merely not absent?"
+        * low  vs none — "is the signal present-and-weak,   or absent altogether?"
+        * high vs low  — "intensity tiebreaker (researcher fills)"
+    - Collect adjudications into draft guideline.md (Section 4: Boundary Cases)
     - Write config.yaml + draft guideline.md + empty gallery.json
     - Initialize .state.json with status="initialized", iteration=0
 
