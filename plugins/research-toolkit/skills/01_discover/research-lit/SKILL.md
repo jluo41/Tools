@@ -31,10 +31,23 @@ Research topic: $ARGUMENTS
 > - `/research-lit "topic" — sources: all, deepxiv` — use default sources plus DeepXiv
 > - `/research-lit "topic" — arxiv download: true` — download top relevant arXiv PDFs
 > - `/research-lit "topic" — arxiv download: true, max download: 10` — download up to 10 PDFs
+> - `/research-lit "topic" — venues: utd24-is` — restrict S2 to UTD24 IS journals (MISQ, ISR, MS); see `13_venue/utd24-is-venues.md`
 
 ## Data Sources
 
 This skill checks multiple sources **in priority order**. All are optional — if a source is not configured or not requested, skip it silently.
+
+### Venue Filter (optional)
+
+Parse `$ARGUMENTS` for a `— venues:` directive (e.g. `— venues: utd24-is`):
+
+- If present, locate the matching venue file under `13_venue/` (e.g. `13_venue/utd24-is-venues.md` for `utd24-is`). The venue file is a small data table — read it, extract the union of `S2 venue strings (any-of match)` across rows.
+- Pass this venue list to `semantic_scholar_fetch.py` via `--venue "venue1,venue2,..."` so S2 results are restricted to UTD24-IS journals.
+- In the final landscape table, add a `UTD24-IS hit?` column (`✓` if paper venue matches list, blank otherwise).
+- arXiv/web/local results are NOT filtered by venue — those sources don't have reliable venue metadata. Use them as broader background.
+- If the venue file is missing, fail loudly with the expected path.
+
+If no `— venues:` directive is given, skip this filter entirely (default behavior).
 
 ### Source Selection
 

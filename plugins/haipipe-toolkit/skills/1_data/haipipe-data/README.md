@@ -1,8 +1,8 @@
 haipipe-data -- Unified Data Pipeline Skill
 ============================================
 
-Covers all 4 data pipeline stages in one skill.
-Functions: dashboard, load, cook, design-chef, design-kitchen, explain, review.
+Covers all 5 data pipeline stages (Stage 0' raw + 4 pipeline) in one skill.
+Functions: dashboard, load, understand, cook, design-chef, design-kitchen, explain, review, hand-off.
 
 ---
 
@@ -17,7 +17,10 @@ Commands
   /haipipe-data design-kitchen [stage]   <- modify Pipeline infrastructure
   /haipipe-data explain [concept]        <- explain a concept (asks if no arg given)
   /haipipe-data review [file_path]       <- structural code review (asks for path if not given)
+  /haipipe-data understand 0-raw <cohort> <- iterative dialogue -> datapoint-timeline.txt
+  /haipipe-data hand-off 0-raw <cohort>   <- derive SourceFn checklist from timeline
   /haipipe-data 0-overview               <- architecture + pipeline map
+  /haipipe-data 0-raw                    <- raw cohort layer reference
   /haipipe-data 1-source                 <- source layer reference
   /haipipe-data 2-record                 <- record layer reference
   /haipipe-data 3-case                   <- case layer reference
@@ -27,6 +30,13 @@ Commands
 
 Stages
 ------
+
+  0-raw       Raw cohort extract -> single-data-point lifecycle understanding
+              Specialist: haipipe-data-raw  |  Output: datapoint-timeline.txt
+              Store:      _WorkSpace/0-RawStore/
+              Domain-agnostic: CGM streams, EHR encounters, claims lines,
+              sensor sessions, messaging extracts, vendor drops, etc.
+              (Run BEFORE 1-source design-chef when onboarding a new cohort.)
 
   1-source    Raw files -> SourceSet
               Kitchen: Source_Pipeline  |  Chef: SourceFn
@@ -100,7 +110,10 @@ Use Cases
 **4. Onboard a new raw dataset (new cohort)**
 
   Situation:  A new CSV/XML data dump has arrived and you need to build
-              a SourceFn so the pipeline can ingest it.
+              a SourceFn so the pipeline can ingest it. (For business-level
+              understanding of what one row means -- events, fog of war,
+              eligibility vs drop-off -- run `understand 0-raw` first;
+              see use case 16.)
   Command:    /haipipe-data design-chef 1-source
   What it does: Guides you through creating and running the builder script
                 in code-dev/1-PIPELINE/1-Source-WorkSpace/ that generates
@@ -206,6 +219,28 @@ Use Cases
               /haipipe-data load 4-aidata  (final verification)
   What it does: Runs each stage sequentially, checking output at each step
                 before proceeding to the next.
+
+**16. Understand a new raw cohort BEFORE pipeline-building**
+
+  Situation:  A new raw extract just landed in _WorkSpace/0-RawStore/<cohort>/
+              (parquet/csv + description .txts). The extract can be from any
+              domain -- CGM stream, EHR encounter table, claims lines, sensor
+              session log, messaging / engagement extract, vendor drop, etc.
+              You need to understand what one data point means at the business
+              level -- what events generate one row, what is observable vs
+              hidden (fog of war), what eligibility / treatment confounders
+              live in the data -- BEFORE wrapping it as a SourceFn.
+  Command:    /haipipe-data understand 0-raw <cohort>
+              /haipipe-data hand-off 0-raw <cohort>     (after understand)
+  What it does: Iterative dialogue with you to draft a single-data-point
+                lifecycle diagram (datapoint-timeline.txt) covering pre-T_0
+                background, in-data events, fog of war, late-visible
+                signals, cross-cutting events. Validates every claim
+                (column existence, prevalence rate) against the parquet.
+                hand-off then derives a SourceFn-ready checklist:
+                columns to keep, derived fields to compute, eligibility
+                flags to keep separate, upstream asks. Run this BEFORE
+                use case 4 (design-chef 1-source).
 
 ---
 

@@ -130,6 +130,10 @@ Task Folder Contents
   config/         YAML configs (each task owns its own, no sharing/symlinks)
   runs/           Atomic run scripts (one config = one script, no CLI args)
   results/        Light summaries (name-paired with runs/)
+  notebook/       OPTIONAL: rendered .ipynb files paired with cell-format *.py
+                  (auto-built by runs/*.sh via the notebook-cell-python skill).
+                  Use for data-audit / DIKW / exploration tasks where humans
+                  read the notebook; skip for pure ML-training tasks.
   sbatch/         OPTIONAL: orchestration scripts (call runs/*.sh, assign GPUs)
   diagram/        MANDATORY: task-level operational detail (overview, design, runs, progress)
 
@@ -156,6 +160,30 @@ Task Folder Contents
         runs/run_5m.sh    <->  results/run_5m/
       (strip .sh from run name to get result dir name)
     - Without runs/: results/ holds output directly (flat or default/)
+
+  notebook/ rules (when used):
+    - Pair: each cell-format *.py at task root → notebook/<stem>.ipynb.
+        1-load.py                 ↔  notebook/1-load.ipynb
+        3-arms-and-message.py     ↔  notebook/3-arms-and-message.ipynb
+      (notebook stem matches .py stem exactly — no rename / re-prefix.)
+    - Build pipeline (runs through the notebook-cell-python skill):
+        step 1   python <name>.py                            ← writes csv/png
+        step 2   convert_to_notebooks.py <name>.py -o ...    ← cells, no outputs
+        step 3   jupyter nbconvert --to notebook \
+                                   --execute --inplace ...   ← embeds outputs
+      All three live inside runs/<run_name>.sh — the notebook IS produced
+      by the same atomic run that produces the results/<run_name>/ dir.
+    - Source of truth is the .py. The .ipynb is a RENDERED VIEW; treat it
+      as a build artifact (regenerated each run, not hand-edited).
+    - Whether to commit .ipynb files is a per-project call:
+        commit       collaborators read the rendered form without running
+                     locally (data-audit, narrative tasks)
+        .gitignore   churn outweighs the readable-form benefit (high-rate
+                     experimental tasks where the notebook is just a
+                     debug view of one run)
+    - When NOT to use notebook/: pure ML-training tasks where the primary
+      artifact is metrics.json + weights, and there is no narrative the
+      notebook adds beyond what `cat results/<run>/0-<run>.log` shows.
 
   sbatch/ rules:
     - ORCHESTRATION: each .sh batches multiple runs/*.sh together.
@@ -479,6 +507,9 @@ Per task (standard):
   [ ] If no runs/: results/ has flat files or default/ subfolder
   [ ] No heavy files in results/ (heavy goes to _WorkSpace/)
   [ ] Every runs/*.sh starts with the standard logging header
+  [ ] If notebook/ exists: each .ipynb has a paired cell-format *.py
+      at task root with the same stem (e.g. notebook/3-arms-and-message.ipynb
+      ↔ 3-arms-and-message.py)
 
 Per task (skill-runner exemption — see "Skill-Runner Tasks" above):
   Replace the standard *.py / data/ / logging-header rules with:

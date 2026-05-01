@@ -24,6 +24,22 @@ Given a broad research direction from the user, systematically generate, validat
 - **OUTPUT_DIR = `idea-stage/`** — All idea-stage outputs go here. Create the directory if it doesn't exist.
 
 > 💡 Override via argument, e.g., `/idea-creator "topic" — pilot budget: 4h per idea, 20h total`.
+> 💡 Venue targeting: `/idea-creator "topic" — venues: utd24-is` constrains every idea to plausibly fit MISQ / ISR / MS-IS; see `13_venue/utd24-is-venues.md`.
+
+## Venue Filter (optional)
+
+Parse `$ARGUMENTS` for a `— venues:` directive (e.g. `— venues: utd24-is`):
+
+- If present, locate the matching venue file under `13_venue/` (e.g. `13_venue/utd24-is-venues.md` for `utd24-is`). Read it and extract:
+  (a) the venue list (used for novelty/landscape filtering and for displaying target venue per idea),
+  (b) the **fit summary table** (signals × venues).
+- Inject (a) and (b) into the Phase 2 brainstorm prompt as a constraint:
+  > "Each idea MUST plausibly fit ONE of the venues in the list. Annotate every idea with `target_venue` (one of: misq | isr | ms-is) and `signal_row_satisfied` (which row of the fit summary it activates). Ideas that do not fit are discarded, not retained."
+- In Phase 3 ranking, add a `venue_fit` sub-score (0-3): 0 = does not fit any venue cleanly; 1 = fits weakly; 2 = fits one venue squarely; 3 = fits one venue squarely AND prior winning papers in that venue used a similar method/frame.
+- In Phase 4 validation, when calling `/novelty-check`, forward the same `— venues:` directive so prior-art search is also venue-restricted.
+- If the venue file is missing, fail loudly with the expected path.
+
+If no `— venues:` directive is given, skip this filter entirely (default behavior).
 
 ## Workflow
 

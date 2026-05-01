@@ -13,6 +13,18 @@ Check whether a proposed method/idea has already been done in the literature: **
 
 - REVIEWER_MODEL = `gpt-5.4` — Model used via Codex MCP. Must be an OpenAI model (e.g., `gpt-5.4`, `o3`, `gpt-4o`)
 
+## Venue Filter (optional)
+
+Parse `$ARGUMENTS` for a `— venues:` directive (e.g. `— venues: utd24-is`):
+
+- If present, locate the matching venue file under `13_venue/` (e.g. `13_venue/utd24-is-venues.md` for `utd24-is`). Read it and extract the union of `S2 venue strings (any-of match)`.
+- In Phase B, run a **first pass** restricted to those venues: append the venue list to every search query (e.g. `"<claim> venue:\"MIS Quarterly\" OR venue:\"Information Systems Research\" OR venue:\"Management Science\""`) and prefer hits from those journals.
+- If fewer than 5 prior-art hits surface from the venue-restricted pass, expand to broad web/arXiv (Phase B as written) — record both passes separately in the report.
+- In Phase D, add a `Venue` column to the prior-work table (already present) and a sub-section: **"Prior work within target venues"** vs **"Prior work outside target venues"**.
+- If the venue file is missing, fail loudly with the expected path.
+
+If no `— venues:` directive is given, skip this filter (default behavior — search broadly).
+
 ## Instructions
 
 Given a method description, systematically verify its novelty:

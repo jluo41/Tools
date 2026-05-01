@@ -27,6 +27,7 @@ Specialists
 -----------
 
 ```
+haipipe-data-raw        Stage 0' (raw cohort): single-data-point timeline, 0-RawStore
 haipipe-data-source     Stage 1: SourceFn, HumanFn, 1-SourceStore
 haipipe-data-record     Stage 2: RecordFn, TriggerFn, 2-RecStore
 haipipe-data-case       Stage 3: CaseFn, 3-CaseStore
@@ -41,6 +42,8 @@ Stage Keyword Map
 When parsing free-form input, infer stage from these keywords:
 
 ```
+raw, RawStore, raw cohort, lifecycle, data point      -> raw
+visit timeline, fog of war, single data point         -> raw
 SourceFn, HumanFn, ingest, raw frame, source layer    -> source
 RecordFn, TriggerFn, record, record-centered          -> record
 CaseFn, case, cohort, sampling, trigger event         -> case
@@ -49,12 +52,13 @@ TfmFn, SplitFn, AIData, tensor, split, model input    -> aidata
 
 Stage aliases (positional):
 ```
+0-raw, raw, 0-rawstore, rawstore -> raw
 1, 1-source, source         -> source
 2, 2-record, record         -> record
 3, 3-case, case             -> case
 4, 4-aidata, aidata         -> aidata
 0, overview, 0-overview     -> umbrella inline (cross-stage explainer)
-rawdata, 0-rawdata          -> source (dashboard rawdata mode)
+rawdata, 0-rawdata          -> source (dashboard rawdata mode; legacy alias)
 ```
 
 ---
@@ -70,6 +74,8 @@ review, audit, check, validate, verify        -> review
 load, inspect, show, view, look               -> load
 status, dashboard, what's there               -> dashboard
 explain, what is, why, how does               -> explain (umbrella inline)
+understand, frame, lifecycle, walk through    -> understand (raw-only)
+hand off, handoff, downstream contract        -> hand-off (raw-only)
 ```
 
 ---
@@ -110,6 +116,7 @@ When invoked with no arguments, fan out to every specialist's dashboard
 in a single message (parallel) and concatenate their summary tails:
 
 ```
+Skill("haipipe-data-raw",     args="dashboard")
 Skill("haipipe-data-source",  args="dashboard")
 Skill("haipipe-data-record",  args="dashboard")
 Skill("haipipe-data-case",    args="dashboard")
