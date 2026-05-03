@@ -1,0 +1,55 @@
+🖼️  paper-poster — 8-Phase Workflow
+═══════════════════════════════════════════════════════════════════
+
+─§ Phase Flow ───────────────────────────────────────────────────────
+
+📄 Input: paper/
+
++----------+     +----------+     +----------+     +----------+
+| 0️⃣ Validate|──▶ | 1️⃣ Extract|──▶ | 2️⃣ Figures|──▶ | 3️⃣ Layout |
+| 🔧 Setup  |     | 📝 Content|     | 🖼️  Select|     | 📐 Design |
++----------+     +----------+     +----------+     +----------+
+     │                │                │                │
+  prereqs          30-40%          priority          grid rows=20
+  LaTeX ok         stat banner     + captions         4 columns
+
++----------+     +----------+     +----------+     +----------+
+| 4️⃣ Compile|──▶ | 5️⃣ Visual |──▶ | 6️⃣ Codex  |──▶ | 7️⃣ Export |
+| ⚙️  latexmk|     | 👁️  Review|     | 🤖 Review |     | 📤 Finish |
++----------+     +----------+     +----------+     +----------+
+     │                │                │                │
+  error loop       PNG render      GPT-5.4 MCP       PPTX + SVG
+  TeX fixes        iterate v1..n   POSTER_REVIEW      final PDF
+
+─§ Critical Architecture ────────────────────────────────────────────
+
+⚠️  MUST use `article` class  (NOT beamer)
+    → beamer + tcbposter + 8+ boxes = grouping levels=255 overflow
+
+⚠️  NEVER use `adjustbox`  → use plain \includegraphics only
+
+⚠️  Use `[table]{xcolor}`  (NOT plain {xcolor})  for \rowcolor
+
+─§ Content Budget ───────────────────────────────────────────────────
+
++--------------------+--------------------------------------------+
+| 🏷️ Element          | 📏 Budget                                  |
++--------------------+--------------------------------------------+
+| 📝 Total words      | 300–500                                    |
+| 📌 Bullet length    | ≤ 8 words                                  |
+| 🔢 Stat banner      | 3–4 big-number callout boxes               |
+| 🖼️  Figure area      | 40–50% of poster                          |
+| 📰 Abstract         | ❌ None — replace with stat banner        |
++--------------------+--------------------------------------------+
+
+─§ Output Files ─────────────────────────────────────────────────────
+
+📤 poster/main.tex           →  LaTeX source (editable)
+📤 poster/main.pdf           →  print-ready PDF  ✅ primary
+📤 poster_components.pptx    →  per-card movable shapes (recommended)
+📤 poster.pptx               →  editable text version
+📤 poster.svg                →  Illustrator-editable SVG
+📋 POSTER_CONTENT_PLAN.md    →  section word-count budget
+📋 POSTER_REVIEW.md          →  Codex MCP feedback
+📋 POSTER_VISUAL_REVIEW.md   →  visual iteration log (v1, v2 …)
+📋 POSTER_SPEECH.md          →  presentation script + Q&A prep

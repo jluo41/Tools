@@ -1,0 +1,53 @@
+🎥 academic-presentations — 4-Stage Pipeline
+═══════════════════════════════════════════════════════════════════
+
+─§ Stage Flow ───────────────────────────────────────────────────────
+
+🧑 Human leads the outline  →  🤖 Agent executes
+
++----------+     +----------+     +----------+     +----------+
+| 1️⃣ Script |──▶ | 2️⃣ Slides |──▶ | 3️⃣ TTS    |──▶ | 4️⃣ Video  |
+| 📝 Outline|     | 🖼️  Gemini|     | 🔊 Audio  |     | 🎬 ffmpeg |
++----------+     +----------+     +----------+     +----------+
+                                      ⬆️
+                              (skip stages 3–4 for slides-only)
+
+Stage 1:  🧑 Human provides outline  →  🤖 drafts per-slide talking points
+Stage 2:  🤖 Gemini nanobanana CLI  →  generates / edits slide PNGs
+Stage 3:  🔊 TTS engine  →  per-slide MP3/WAV narration
+Stage 4:  🎬 ffmpeg  →  stitches slides + audio into final MP4
+
+─§ Slide Generation Priority ────────────────────────────────────────
+
+Priority 1  ✅   /edit  existing paper figures → wrap into slide frames
+Priority 2  ✅   /edit  existing slides from prior versions
+Priority 3  ✅   user-provided refs (NotebookLM, existing PPTX)
+Priority 4  ⬜   /generate from scratch  (last resort)
+
+─§ TTS Engine Comparison ────────────────────────────────────────────
+
++--------------+----------+---------+--------+-------+------------------+
+| 🏷️ Engine     | 💰 Cost   | 🌐 Net  | ✨ Qual | ⚡ Spd | 🎯 Best For    |
++--------------+----------+---------+--------+-------+------------------+
+| edge-tts     | Free ✅  | Online  | ⭐⭐⭐  | ~6s   | Default / quick  |
+| Kokoro       | Free ✅  | Offline | ⭐⭐⭐  | ~1.5s | Offline / fast   |
+| ElevenLabs   | 10k/mo   | Online  | ⭐⭐⭐⭐ | ~3s   | Highest quality  |
++--------------+----------+---------+--------+-------+------------------+
+
+🎙️  Recommended voices
+ ├── edge-tts   →  en-US-AndrewNeural (male presenter, default)
+ ├── Kokoro     →  af_heart (female, warm)  ·  am_adam (male, neutral)
+ └── ElevenLabs →  pre-made voices + voice cloning
+
+─§ Video Assembly (ffmpeg) ──────────────────────────────────────────
+
+🖼️  slide.png  +  🔊 audio.mp3  ──▶  ⚙️  ffmpeg  ──▶  📹 seg.mp4
+📹 seg1.mp4 + seg2.mp4 + ...     ──▶  ⚙️  concat  ──▶  🎬 final.mp4
+
+⚠️  Always re-encode with  -ar 44100 -ac 2  (NEVER use -c copy)
+
+─§ Output Files ─────────────────────────────────────────────────────
+
+📤 slide_01.png … slide_N.png   →  individual slide images
+📤 audio_01.mp3 … audio_N.mp3   →  per-slide narration audio
+📤 final.mp4                    →  narrated demo video  ✅ primary

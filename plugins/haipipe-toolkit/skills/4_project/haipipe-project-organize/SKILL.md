@@ -25,7 +25,7 @@ Commands
 /haipipe-project-organize <project_id>                 -> propose + apply fixes
 /haipipe-project-organize <project_id> --dry-run       -> propose only, no writes
 /haipipe-project-organize <project_id> --fix flat-tasks         -> move flat tasks into groups
-/haipipe-project-organize <project_id> --fix renumber           -> renumber {G}{N} tasks
+/haipipe-project-organize <project_id> --fix renumber           -> renumber {NN} tasks
 /haipipe-project-organize <project_id> --fix paired             -> fix paired-example refs + logging headers
 /haipipe-project-organize <project_id> --fix migrate-to-diagram -> README.md → diagram/ (one-time migration)
 /haipipe-project-organize <project_id> --fix drop-legacy        -> remove docs/, cc-archive/, _old/ at top level

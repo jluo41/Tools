@@ -1,6 +1,6 @@
 ---
 name: haipipe-project
-description: "Run any project-level work in the haipipe workspace. Parses intent (build vs read vs modify) and dispatches to the right specialist (haipipe-project-new for scaffolding, -inspect for review/summary/inventory/overview, -organize for reorganizing files). Use for creating new projects under examples/, auditing structure, generating docs, reorganizing. Trigger: project scaffold, new experiment, project review, project summary, organize project, reorganize files, /haipipe-project."
+description: "Run any project-level work in the haipipe workspace. Parses intent (build vs read vs modify) and dispatches to the right specialist (haipipe-project-task for scaffolding projects/task-groups/task-folders, -inspect for review/summary/inventory/overview, -organize for reorganizing files). Use for creating new projects/task-groups/task-folders (model-run, evaluation, paper figure/table, data-pipeline) under examples/, auditing structure, generating docs, reorganizing. Trigger: project scaffold, new task, new figure task, new evaluation task, project review, project summary, organize project, reorganize files, /haipipe-project."
 argument-hint: [function] [project_id] [args...]
 allowed-tools: Bash, Read, Grep, Glob, Skill
 ---
@@ -14,7 +14,10 @@ and blast radius.
 
 ```
 /haipipe-project                               -> overview of all projects under examples/
-/haipipe-project new <project_id>              -> scaffold a new project
+/haipipe-project task                          -> scaffold (asks: project / task-group / task-folder)
+/haipipe-project task project <project_id>     -> scaffold a new project
+/haipipe-project task task-group               -> scaffold a new task-group
+/haipipe-project task task-folder              -> scaffold a new task-folder (asks task-type)
 /haipipe-project review <project_id>           -> structural audit
 /haipipe-project summarize <project_id>        -> generate summary doc
 /haipipe-project inventory [project_id]        -> file inventory
@@ -29,8 +32,8 @@ Specialists
 -----------
 
 ```
-haipipe-project-new        BUILD: scaffold new project (creates files)
-haipipe-project-inspect    READ:  review, summarize, inventory, overview (no writes)
+haipipe-project-task       BUILD:  scaffold project / task-group / task-folder (creates files)
+haipipe-project-inspect    READ:   review, summarize, inventory, overview (no writes)
 haipipe-project-organize   MODIFY: reorganize files (mv/rename, dry-run supported)
 ```
 
@@ -39,11 +42,15 @@ haipipe-project-organize   MODIFY: reorganize files (mv/rename, dry-run supporte
 Two Structural Rules (cross-cutting; ref'd by all specialists)
 ---------------------------------------------------------------
 
-Rule 1 — Two-level task hierarchy:
-  `tasks/` contains group folders: `{G}_{group_name}/` (e.g., `A_data/`, `B_training/`).
-  Each group contains task folders: `{G}{N}_{name}/` (e.g., `B1_train_stats/`).
-  Each task is self-contained: `*.py`, `config/`, `runs/`, `results/`, `README.md`.
-  No flat task folders directly in `tasks/` — they must be inside a group.
+Rule 1 — Three-level hierarchy (project → task-group → task-folder):
+  `examples/{PROJECT_ID}/tasks/` contains task-groups: `{G}{NN}_{group_name}/`
+    (e.g., `A01_pretraining_clm/`, `B01_evaluation_clm/`, `C01_paper_figures/`).
+  Each task-group contains task-folders: `{NN}_{task_name}/`
+    (e.g., `01_train_clm_num_modelsize/` inside `A01_pretraining_clm/`).
+  Each task-folder is self-contained: `*.py`, `configs/`, `runs/`, `results/`,
+    `notebooks/` (NO README.md — doc surface is `diagram/`).
+  No flat task folders directly in `tasks/` — they must be inside a task-group.
+  Group letter convention: A=model-run, B=evaluation, C=display, D=demo.
 
 Rule 2 — Code always has a paired example:
   Every new pipeline Fn stub or ML model stub in Track A auto-generates
@@ -58,7 +65,8 @@ Function Verb Map
 ------------------
 
 ```
-new, scaffold, create project, init           -> haipipe-project-new
+task, new, scaffold, create, init             -> haipipe-project-task
+  (sub-scopes: project / task-group / task-folder; ask if missing)
 review, audit, check, validate, lint          -> haipipe-project-inspect (review)
 summarize, summary, docs                      -> haipipe-project-inspect (summarize)
 inventory, list files, files                  -> haipipe-project-inspect (inventory)
@@ -81,7 +89,7 @@ Step 2: Resolve function via verb map.
   - If no args at all -> overview across ALL projects (umbrella inline).
 
 Step 3: Decide specialist:
-  - new                                  -> haipipe-project-new
+  - task / new / scaffold                -> haipipe-project-task
   - review/summarize/inventory/overview  -> haipipe-project-inspect
   - organize                             -> haipipe-project-organize
 

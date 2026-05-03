@@ -10,15 +10,22 @@ in one unified flow.
 Commands
 --------
 
-  /haipipe-project new [project|group|task]
-      Three scopes:
-        project  -- full project from scratch (folder + first group + first task)
-        group    -- add a group folder to an existing project
-        task     -- add a task folder to an existing group
-      If scope omitted: asks which one.
+  /haipipe-project task [project|task-group|task-folder]
+      Three scopes (matching the project hierarchy):
+        project       -- full project from scratch (folder + first task-group + first task-folder)
+        task-group    -- add a task-group {G}{NN}_{name}/ to an existing project
+        task-folder   -- add a task-folder {NN}_{name}/ to an existing task-group
+                         (asks task-type: model-run / evaluation / display / data-pipeline / other)
+      If scope omitted: asks which one. With no args at all: defaults to task-folder.
       For "project": also asks about pipeline stages, datasets, and whether
       new Track A stubs are needed (code-dev/ + hainn/). Checks code/INDEX.md
       to suggest reusing existing Fns or models.
+
+      Group letter convention:
+        A-series  model-run    (pretraining, finetuning)
+        B-series  evaluation   (eval, inference, scoring)
+        C-series  display      (paper figures, paper tables)
+        D-series  demo         (paired examples for Track A)
 
   /haipipe-project overview [path]
       Print a task-by-task overview of what the project does.
@@ -62,9 +69,9 @@ Standard Project Layout
   examples/Proj{Series}-{Category}-{Num}-{Name}/
   +-- tasks/              MANDATORY. Two-level hierarchy.
   |   +-- README.md       Project-level task overview
-  |   +-- {G}_{group}/   Group folders (e.g., A_data/, B_training/)
+  |   +-- {G}{GN}_{group}/   Group folders (e.g., A_data/, B_training/)
   |   |   +-- README.md   Group overview
-  |   |   +-- {G}{N}_{name}/  Task folders (*.py, config/, runs/, results/)
+  |   |   +-- {NN}_{name}/  Task folders (*.py, config/, runs/, results/)
   |   +-- sbatch/         Cross-task SLURM scripts (optional)
   +-- paper/              OPTIONAL. Manuscripts, figures, LaTeX.
   +-- docs/               OPTIONAL. TODO.md, data-map.md, project-summary.md

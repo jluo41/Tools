@@ -1,0 +1,167 @@
+🧭 /haipipe-project — Orchestrator & Hierarchy
+═════════════════════════════════════════════════════════════
+
+User-facing entry for project-level work. Routes by 🎯 risk profile
+(🏗️ build / 🔍 read / 🛠️ modify) — three specialists, three blast radii.
+
+
+─§ Orchestrator → Specialists ──────────────────────────────
+
+                    +--------------------------+
+                    | 🧑 user                  |
+                    | "/haipipe-project ..."   |
+                    +--------------------------+
+                                 │
+                                 ▼
+                  +-------------------------------+
+                  | 🧭 /haipipe-project           |
+                  |    (orchestrator)             |
+                  +-------------------------------+
+                       │         │         │
+        ┌──────────────┘         │         └──────────────┐
+        ▼                        ▼                        ▼
++-----------------+    +-----------------+    +--------------------+
+| 🏗️ -task        |    | 🔍 -inspect     |    | 🛠️ -organize       |
+|                 |    |                 |    |                    |
+| BUILD           |    | READ            |    | MODIFY             |
+| (creates files) |    | (no writes)     |    | (mv / rename)      |
++-----------------+    +-----------------+    +--------------------+
+        │                        │                        │
+        │ 3 scopes                │ 4 verbs                 │ --fix modes
+        │                        │                        │
+        ▼                        ▼                        ▼
+  📦 project              👀 review                  🔀 flat-tasks
+  📁 task-group           📝 summarize               🔢 renumber
+  📄 task-folder          📜 inventory               🤝 paired
+                          🗺️  overview               🖼️  migrate-to-diagram
+                                                    🧹 drop-legacy
+
+
+─§ -task: three scopes (the build hierarchy) ───────────────
+
+  /haipipe-project task                ❓ asks which scope
+        │
+        ├──▶ 📦 project       scaffold a new project
+        │       └─▶ examples/Proj{Series}-{Cat}-{Num}-{Name}/
+        │            ├── tasks/
+        │            ├── diagram/      🖼️ (01-story, 02-boundary, 03-exploration)
+        │            └── paper/        📰 optional
+        │
+        ├──▶ 📁 task-group    scaffold tasks/{G}{NN}_{name}/
+        │       ├── sbatch/env.sh     ⚙️ env stub
+        │       └── diagram/           🖼️ (01-overview, 02-tasks, 03-progress, 04-design)
+        │
+        └──▶ 📄 task-folder   scaffold {NN}_{name}/   ❓ asks task-type
+                │
+                ├─ 🧠 (M) model-run       Stage 5 train/sweep    → A-series group
+                ├─ 📊 (E) evaluation      score trained model    → B-series group
+                ├─ 🖼️  (F) display         paper figures/tables   → C-series group
+                ├─ 🔧 (D) data-pipeline   Stage 1-4 builder      → D_demo or in-project
+                └─ ❔ (X) other           free-form / utility
+
+
+─§ Project → Task-group → Task-folder (Track B layout) ─────
+
+📦 examples/Proj{Series}-{Cat}-{Num}-{Name}/
+│
+├── 📁 tasks/                                        ← all task-groups live here
+│   │
+│   ├── 🅰️  A01_pretraining_clm/                    ← 🧠 model-run group
+│   │   ├── 📄 01_train_clm_num_modelsize/          ← task-folder
+│   │   │   ├── 🐍 01_train_clm_num_modelsize.py    (with # %% [parameters])
+│   │   │   ├── 📂 configs/        🟦 5_model_*.yaml
+│   │   │   ├── 📂 runs/           ▶️ run_<variant>.sh       (papermill)
+│   │   │   ├── 📂 results/        📊 (light artifacts only)
+│   │   │   ├── 📂 notebooks/      📓 executed run records (one per run)
+│   │   │   └── 📂 sbatch/         ⚙️ optional within-task
+│   │   ├── 📄 02_..._/
+│   │   ├── 📂 sbatch/             ⚙️ env.sh + cross-task batchers
+│   │   └── 📂 diagram/            🖼️ group narrative
+│   │
+│   ├── 🅱️  B01_evaluation_clm/                    ← 📊 evaluation group
+│   │   ├── 📄 01_eval_*/
+│   │   │   └── 📂 configs/        🟩 eval_<target>.yaml
+│   │   └── 📂 diagram/
+│   │
+│   ├── 🆑 C01_paper_figures/                       ← 🖼️ display group
+│   │   ├── 📄 01_main_figure/
+│   │   │   ├── 📂 configs/        🟪 figure_<name>.yaml  (or table_<name>.yaml)
+│   │   │   └── 📂 results/        📈 *.pdf · *.png · *.tex · source_data.csv
+│   │   └── 📂 diagram/
+│   │
+│   └── 🆔 D_demo/                                   ← 🔧 paired Track A examples
+│       └── 📄 01_test_<fn>/
+│
+├── 📁 diagram/                                      🖼️ project story
+│   ├── 📄 01-story.txt            🎯 research question
+│   ├── 📄 02-boundary.txt         📏 in/out scope
+│   ├── 📄 03-exploration.txt      🌱 active · backlog · tried · ruled out
+│   └── 🎨 project.excalidraw
+│
+└── 📁 paper/                                        📰 optional, per venue
+    └── Paper-{Name}-{venue}/
+
+
+─§ Task-type → seed contract (what -task scaffolds) ────────
+
+  🚀 Running process is the SAME for every type — papermill, always.
+     Type only decides config seed + where results land.
+
++----------+----------------+-------------------------+----------------------------+
+| 🏷️ Type  | 📁 Group hint  | 🟦 Config seed          | 📊 Results land in         |
++----------+----------------+-------------------------+----------------------------+
+| 🧠 (M)   | 🅰️  A-series   | 5_model_<name>.yaml     | _WorkSpace/5-ModelStore    |
+| 📊 (E)   | 🅱️  B-series   | eval_<target>.yaml      | results/<run>/metrics.json |
+| 🖼️  (F)   | 🆑 C-series    | figure_<name>.yaml      | results/<run>/*.pdf, *.tex |
+| 🔧 (D)   | 🆔 D_demo      | {1..4}_<layer>.yaml     | _WorkSpace/{1..4}-*Store   |
+| ❔ (X)   | (any)          | (none required)         | results/<run>/             |
++----------+----------------+-------------------------+----------------------------+
+
+
+─§ Running process — papermill, every task ─────────────────
+
+  📁 runs/run_<variant>.sh
+        │
+        ▼ Step 1: convert .py → template .ipynb
+        🐍 {NN}_{task_name}.py    ──▶  📓 {NN}_{task_name}.ipynb
+            (with # %% [parameters] cell)        (template, at task root)
+        │
+        ▼ Step 2: papermill inject + execute
+        📓 template  +  ⚙️ -p key value ...  ──▶  📓 notebooks/<variant>.ipynb
+                                                    (executed run record)
+
+  ✅ Every run leaves a reviewable notebook — no separate tee logs.
+  ✅ Authoring stays in .py (diff-friendly); execution lives in .ipynb.
+  ✅ Parameters injected into the [parameters] cell — uniform across tasks.
+
+
+─§ Two structural rules (cross-cutting) ────────────────────
+
+  🚧 Rule 1 — Three-level hierarchy
+     project  ▶  task-group {G}{NN}_<name>  ▶  task-folder {NN}_<name>
+     ❌ NO flat task-folders directly under tasks/
+     📜 NO README.md anywhere — doc surface is diagram/
+
+  🤝 Rule 2 — Track A code ⟷ Track B example pairing
+     Every new pipeline Fn or ML model stub in code-dev/ or code/hainn/
+     auto-generates a paired example task in tasks/D_demo/.
+
+
+─§ Verb → specialist routing ───────────────────────────────
+
+  🏗️  task · new · scaffold · create · init       ──▶  🏗️ -task
+  🔍 review · audit · check · validate · lint    ──▶  🔍 -inspect (review)
+  📝 summarize · summary · docs                  ──▶  🔍 -inspect (summarize)
+  📜 inventory · list files · files              ──▶  🔍 -inspect (inventory)
+  🗺️  overview · show · status                    ──▶  🔍 -inspect (overview)
+  🛠️  organize · reorganize · fix structure · move ──▶  🛠️ -organize
+
+
+─§ Specialist return contract ──────────────────────────────
+
+  📤 Every dispatch returns:
+
+     status:    ✅ ok  |  🚫 blocked  |  ❌ failed
+     summary:   2-3 sentences on what was done
+     artifacts: [paths created / read / moved]
+     next:      💡 suggested next command

@@ -1,0 +1,35 @@
+📦 12_present — Module Layout
+═══════════════════════════════════════════════════════════════════
+
+─§ Folder Tree ──────────────────────────────────────────────────────
+
+📂 Tools/plugins/research-toolkit/skills/12_present/
+│
+├── 🖼️  paper-poster/
+│   └── SKILL.md              →  A0/A1 poster via LaTeX tcbposter
+│
+├── 📊 paper-slides/
+│   └── SKILL.md              →  beamer slides · 4 talk types
+│
+└── 🎥 academic-presentations/
+    ├── SKILL.md              →  narrated deck + optional MP4
+    ├── scripts/
+    │   ├── batch_tts_edge.py     →  Microsoft edge-tts batch runner
+    │   └── batch_tts_kokoro.py   →  Kokoro offline TTS batch runner
+    └── references/
+        ├── tts-engines.md        →  TTS engine guide + voice options
+        ├── slide-generation.md   →  Gemini nanobanana CLI guide
+        └── pptx-conversion.md    →  PPTX → PNG conversion guide
+
+─§ 3 Sub-Skills at a Glance ─────────────────────────────────────────
+
++---------------------+------------------+----------------------------+
+| 🏷️ Skill             | ⚙️  Engine        | 📤 Primary Output          |
++---------------------+------------------+----------------------------+
+| 🖼️  paper-poster     | LaTeX tcbposter  | PDF + PPTX + SVG poster    |
+| 📊 paper-slides      | LaTeX beamer     | PDF + PPTX slide deck      |
+| 🎥 academic-pres.    | Gemini + TTS     | Slides + MP4 demo video    |
++---------------------+------------------+----------------------------+
+
+🔄  Workflow 4 in research-toolkit  (runs after /paper-writing)
+    📄 paper/ ──→ 🖼️ poster  OR  📊 slides  OR  🎥 video

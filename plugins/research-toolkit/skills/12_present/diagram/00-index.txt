@@ -1,0 +1,22 @@
+🎨 12_present — Diagram Index
+═══════════════════════════════════════════════════════════════════
+
+📂 Tools/plugins/research-toolkit/skills/12_present/diagram/
+
++------+----------------------------------+----------------------------+
+| 📄   | File                             | 🏷️ Contents                |
++------+----------------------------------+----------------------------+
+| 00   | 00-index.txt                     | 🔍 This navigation file    |
+| 01   | 01-module-layout.txt             | 📦 Folder tree + overview  |
+| 02   | 02-skills-compare.txt            | ⚖️  3-skill comparison      |
+| 03   | 03-poster-pipeline.txt           | 🖼️  Poster 8-phase workflow |
+| 04   | 04-slides-pipeline.txt           | 📊 Slides 8-phase workflow |
+| 05   | 05-presentations-pipeline.txt    | 🎥 Video 4-stage pipeline  |
++------+----------------------------------+----------------------------+
+
+🗺️  Quick Navigation
+ ├── "What skills exist here?"        →  01-module-layout.txt
+ ├── "How do the 3 skills differ?"    →  02-skills-compare.txt
+ ├── "How does poster generation work?"  →  03-poster-pipeline.txt
+ ├── "How does slide generation work?"   →  04-slides-pipeline.txt
+ └── "How does the video pipeline work?" →  05-presentations-pipeline.txt

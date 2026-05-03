@@ -1,0 +1,52 @@
+📊 paper-slides — 8-Phase Workflow
+═══════════════════════════════════════════════════════════════════
+
+─§ Phase Flow ───────────────────────────────────────────────────────
+
+📄 Input: paper/
+
++----------+     +----------+     +----------+     +----------+
+| 0️⃣ Validate|──▶ | 1️⃣ Outline|──▶ | 2️⃣ Draft  |──▶ | 3️⃣ LaTeX  |
+| 🔧 Setup  |     | 📋 Slides |     | 📝 Content|     | ⚙️  Beamer |
++----------+     +----------+     +----------+     +----------+
+     │                │                │                │
+  CJK detect      ⚠️  CHECKPOINT   bullets + figs   clean theme
+  paper verify    slide-by-slide    speaker notes    \pause / \onslide
+
++----------+     +----------+     +----------+     +----------+
+| 4️⃣ Compile|──▶ | 5️⃣ Codex  |──▶ | 6️⃣ Notes  |──▶ | 7️⃣ Export |
+| 📄 PDF    |     | 🤖 Review |     | 📋 Script |     | 📤 PPTX   |
++----------+     +----------+     +----------+     +----------+
+     │                │                │                │
+  page count       story arc        per-slide MD      talk script
+  verify match     slide density    speaker backup    TALK_SCRIPT.md
+
+─§ Talk Type × Slide Count ──────────────────────────────────────────
+
++----------------+----------+--------+------------------------------+
+| 🏷️ Type         | ⏱️  Min   | 📊 Slides | 🎯 Use Case              |
++----------------+----------+--------+------------------------------+
+| 🎙️  poster-talk | 3–5 min  |  5–8   | Poster session lightning    |
+| ⚡ spotlight    | 5–8 min  | 8–12   | Conference spotlight        |
+| 🎤 oral         | 15–20min | 15–22  | Main conference oral        |
+| 🌟 invited      | 30–45min | 25–40  | Invited seminar / keynote   |
++----------------+----------+--------+------------------------------+
+
+─§ Slide Rules (strictly enforced) ──────────────────────────────────
+
+✅ One message per slide
+✅ ≤ 6 lines per slide · ≤ 8 words per line
+✅ Sentence fragments only (no full sentences)
+✅ Figure slides ≥ 60% figure area
+✅ Bold key numbers
+❌ No Related Work slide (unless invited talk)
+
+─§ Output Files ─────────────────────────────────────────────────────
+
+📤 slides/main.tex           →  beamer LaTeX source
+📤 slides/main.pdf           →  compiled slides  ✅ primary
+📤 slides/presentation.pptx  →  editable PowerPoint
+📋 SLIDE_OUTLINE.md          →  slide-by-slide outline
+📋 SLIDES_REVIEW.md          →  Codex MCP review feedback
+📋 speaker_notes.md          →  per-slide notes (backup)
+📋 TALK_SCRIPT.md            →  full word-for-word script + Q&A

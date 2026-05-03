@@ -1,0 +1,38 @@
+⚖️  12_present — 3-Skill Comparison
+═══════════════════════════════════════════════════════════════════
+
+─§ Feature Matrix ───────────────────────────────────────────────────
+
++------------------+---------------------+---------------------+---------------------+
+| 🏷️ Aspect         | 🖼️  paper-poster     | 📊 paper-slides      | 🎥 academic-pres.   |
++------------------+---------------------+---------------------+---------------------+
+| 📌 Purpose        | Conference poster   | Talk slide deck     | Narrated video deck |
+| ⚙️  Engine         | LaTeX tcbposter     | LaTeX beamer        | Gemini nanobanana   |
+| 📐 Format         | A0/A1 single page   | 16:9 multi-slide    | Slides + MP4        |
+| ⏱️  Talk length    | —                   | 3–45 min (4 types)  | Variable            |
+| 🔢 Phases         | 8 phases            | 8 phases            | 4 stages            |
+| 📝 Content %      | 30–40% of paper     | 30–40% of paper     | Human-led outline   |
+| 🤖 LLM Review     | Codex MCP (Ph 6)    | Codex MCP (Ph 5)    | None (human-led)    |
+| 🔁 Resumable      | ✅ JSON state       | ✅ JSON state       | ✅ checkpoints      |
+| 📤 Outputs        | PDF + PPTX + SVG    | PDF + PPTX + script | PNGs + MP3s + MP4   |
++------------------+---------------------+---------------------+---------------------+
+
+─§ Shared Principles ────────────────────────────────────────────────
+
+✅ No fabrication — all numbers must come from source paper
+✅ State persistence (JSON) — workflows are resumable mid-phase
+✅ Multiple output formats — PDF primary + editable PPTX/SVG
+✅ Venue-aware — color schemes adapt to NeurIPS / ICML / CVPR / ACL…
+✅ De-AI polish — remove "delve", "pivotal", "leverage", "facilitate"
+✅ Content ratio — 30–40% of paper content; distilled to key insights
+
+─§ Use-Case Selector ────────────────────────────────────────────────
+
+   "I need a single-page printout for the poster hall"
+         └──▶  🖼️  paper-poster
+
+   "I'm giving a talk (spotlight / oral / invited)"
+         └──▶  📊 paper-slides
+
+   "I want a narrated demo video or YouTube walkthrough"
+         └──▶  🎥 academic-presentations

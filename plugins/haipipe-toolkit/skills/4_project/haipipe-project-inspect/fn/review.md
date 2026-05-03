@@ -1,256 +1,146 @@
 fn-review: Project Gap Analysis
 ===================================================
 
-Inspects an existing project against the standard structure (see
-../../haipipe-project/ref/project-structure.md). Outputs a gap report
-with severity tags. Read-only — issues are flagged here, fixed by
-/haipipe-project organize.
+Read-only audit of an existing project against the standard structure
+(../../haipipe-project/ref/project-structure.md). Output is a gap report
+with severity tags; fixes are applied by /haipipe-project organize.
 
-Severity tags: [BLOCK] [ERROR] [WARN] [NOTE]
+Severity: [BLOCK] [ERROR] [WARN] [NOTE]
 
-Execution checklist (track progress):
-  [ ] Step 0   identify target project
-  [ ] Step 1   validate naming + top-level structure
-  [ ] Step 2   project-level diagram/ check
-  [ ] Step 3   per-group + per-task review
-  [ ] Step 4   per-task diagram/ check
-  [ ] Step 5   code sync check
-  [ ] Step 6   paper diagram check (if paper/ exists)
-  [ ] Step 7   output gap report
+Steps: 0 identify project → 1 naming + top-level → 2 project diagram →
+3 per-group + per-task → 4 task diagram → 5 code sync → 6 paper diagram
+(if applicable) → 7 output report.
 
-The doc surface is diagram/, NOT README.md. Any README.md found at
-project, group, or task level is flagged [WARN] with the suggestion
-to migrate via /haipipe-project organize --fix migrate-to-diagram.
+The doc surface is diagram/, never README.md. Any README.md found is
+flagged [WARN] with `--fix migrate-to-diagram` suggestion.
 
----
 
-Step 0: Identify Target Project
-=================================
+Step 0 — Identify project
+==========================
+Auto-detect or ask. Confirm PROJECT_PATH and PROJECT_ID.
 
-Follow the auto-detection rules in SKILL.md.
-Confirm PROJECT_PATH and PROJECT_ID before proceeding.
 
----
+Step 1 — Naming + top-level structure
+======================================
+- PROJECT_ID matches Proj{Series}-{Category}-{Num}-{Name}
+  ([BLOCK] on pattern mismatch; [WARN] for minor issues)
+- Mandatory: tasks/, diagram/  ([BLOCK] if missing)
+- Optional: paper/  ([NOTE] if missing)
+- Forbidden at top level (each [WARN], suggest organize):
+  README.md, docs/, cc-archive/, _old/, configs/, results/
 
-Step 1: Validate Naming + Top-Level Structure
-================================================
 
-**Naming:**
-  - PROJECT_ID matches Proj{Series}-{Category}-{Num}-{Name}
-    Pattern mismatch -> [BLOCK]
-    Minor issues (underscore in Name, missing Num) -> [WARN]
+Step 2 — Project diagram/
+==========================
+Required .txt: 01-story, 02-boundary, 03-exploration  ([ERROR] if missing/empty)
+Required canvas: project.excalidraw  ([ERROR] if missing)
+Freshness: canvas mtime >= max .txt mtime  ([WARN] if stale)
+Scope discipline: project diagram is HIGH-LEVEL only. Flag operational
+  content that belongs in {task}/diagram/ (status tables, run metrics,
+  daily progress logs) — [WARN] with migration target.
 
-**Mandatory:**
-  - tasks/ exists ([BLOCK] if missing)
-  - diagram/ exists ([BLOCK] if missing — every project must have a story)
 
-**Optional (absence is fine):**
-  - paper/ ([NOTE] if missing)
-
-**Forbidden at top level:** flag [WARN] each, recommend organize:
-  - README.md  (replaced by diagram/)
-  - docs/      (replaced by diagram/)
-  - cc-archive/ (no longer part of standard layout)
-  - _old/       (use git history instead)
-  - config/     (must live inside each task)
-  - results/    (must live inside each task)
-
----
-
-Step 2: Project-level diagram/ Check
+Step 3 — Per-group and per-task review
 =======================================
 
-Walk {PROJECT}/diagram/.
+Group ({G}{NN}_{group}/):
+- README.md forbidden  ([WARN], suggest migrate-to-diagram)
+- Group letter G matches its tasks' series  ([ERROR])
+- No flat task folders directly in tasks/  ([WARN])
+- sbatch/ should exist with env.sh + cross-task batchers  ([NOTE])
+- If cohesive: group/diagram/ has 01-overview, 02-tasks, 03-progress,
+  04-design, group.excalidraw  ([WARN] if missing)
 
-**Required .txt sources:**
-  - 01-story.txt        ([ERROR] if missing or empty)
-  - 02-boundary.txt     ([ERROR] if missing)
-  - 03-exploration.txt  ([ERROR] if missing)
+Per task ({NN}_{task_name}/):
+- >=1 *.py at task root  ([WARN] if missing)
+- README.md forbidden  ([WARN])
+- configs/ exists with own YAMLs (no symlinks)  ([WARN])
+- YAMLs parseable  ([ERROR])
+- runs/<run>.sh ↔ results/<run>/ name pairing  ([ERROR] if orphaned)
+- runs/*.sh has logging header (Template A) OR papermill flow (Template B);
+  same template across the task — don't mix  ([WARN])
+- Heavy files in results/ (.pt/.ckpt/.safetensors/.npy/.pkl/.bin/.h5)
+  → [ERROR] move to _WorkSpace/
+- Track A stub has paired example task  ([WARN] if missing)
 
-**Required canvas:**
-  - project.excalidraw  ([ERROR] if missing)
+Aggregate DECLARED_STAGES from configs/ YAML filenames across tasks.
 
-**Freshness check:**
-  - project.excalidraw mtime ≥ max mtime of .txt sources
-    [WARN] if any .txt is newer than the canvas — canvas is stale,
-    re-run /diagram-ascii-canvas.
 
-**Scope discipline (project-level is HIGH-LEVEL ONLY):**
-  Scan .txt sources for operational content that does not belong here:
-    - status tables for individual tasks  ([WARN] move to {task}/diagram/03-runs)
-    - cross-task data-flow diagrams       ([WARN] move to {task}/diagram, or omit)
-    - daily progress logs                  ([WARN] move to {task}/diagram/04-progress)
-  Project-level diagram is for story / boundary / exploration. If
-  operational content has crept in, flag and recommend migration.
+Step 4 — Per-task diagram/ (only if task has its own; group diagram may cover)
+==============================================================================
+Required .txt: 01-overview, 02-design, 03-runs, 04-progress  ([ERROR])
+Required canvas: task.excalidraw  ([ERROR])
+Freshness: canvas mtime >= max .txt mtime  ([WARN] if stale)
+Content discipline:
+- 01-overview has all four blocks (What/Why/Inputs/Outputs); no "TODO"  ([WARN])
+- Stage 5 tasks (ModelArgs in configs/): 02-design has ASCII forward-pass
+  diagram + architecture-sweep table  ([WARN])
+- 03-runs reflects actual runs/ folder; flag missing/orphaned rows  ([WARN])
+- 04-progress has >= 1 real entry beyond the seed  ([NOTE])
 
----
 
-Step 3: Per-Group and Per-Task Review
-=======================================
-
-**Group-level checks:**
-
-For each group folder in tasks/ (excluding sbatch/):
-  - {G}_{group}/README.md is FORBIDDEN ([WARN] if exists; recommend remove
-    via /haipipe-project organize --fix migrate-to-diagram)
-  - Group letter matches its tasks' prefix ([ERROR] if mismatch)
-  - No flat task folders directly in tasks/ — must be inside a group ([WARN])
-
-**Per-task structure checks:**
-
-For each task folder inside each group:
-
-  - At least one *.py exists in the task folder ([WARN] if missing)
-  - {task}/README.md is FORBIDDEN ([WARN] if exists; recommend migration)
-  - {task}/config/ exists with its own YAML files ([WARN] if missing)
-  - {task}/config/ is not a symlink ([WARN] if symlink — each task owns its own)
-  - YAML files parseable ([ERROR] if not)
-
-**Run-result alignment:**
-  - If runs/ exists: every .sh in runs/ has matching results/{name}/ ([ERROR] if missing)
-  - If runs/ exists: every results/{name}/ has matching runs/{name}.sh ([ERROR] if orphaned)
-  - If no runs/: results/ may contain flat files or default/ subfolder (OK)
-
-**Logging-header check:**
-  - Every runs/*.sh begins with the standard logging header
-    ([WARN] if missing — recommend organize --fix paired)
-
-**Heavy file check in results/:**
-  - .pt, .pth, .ckpt, .safetensors, .npy, .pkl, .bin, .h5
-    -> [ERROR] move to _WorkSpace/
-
-**Track A example check:**
-  - Every Track A stub has a paired example task ([WARN] if missing)
-
-Aggregate DECLARED_STAGES from config/ YAML filenames across all tasks.
-
----
-
-Step 4: Per-task diagram/ Check
-==================================
-
-For each task folder, walk {task}/diagram/.
-
-**Required .txt sources:**
-  - 01-overview.txt   ([ERROR] if missing — replaces task README)
-  - 02-design.txt     ([ERROR] if missing)
-  - 03-runs.txt       ([ERROR] if missing)
-  - 04-progress.txt   ([ERROR] if missing)
-
-**Required canvas:**
-  - task.excalidraw   ([ERROR] if missing)
-
-**Freshness check:**
-  - task.excalidraw mtime ≥ max mtime of .txt sources
-    [WARN] if any .txt is newer — canvas stale, re-bundle.
-
-**Content discipline:**
-  - 01-overview.txt has all four sub-blocks (What / Why / Inputs / Outputs)
-    [WARN] if any block is empty or "TODO"
-  - For Stage 5 tasks (ModelArgs in config/), 02-design.txt MUST contain
-    an ASCII forward-pass diagram + architecture sweep table
-    ([WARN] if missing)
-  - 03-runs.txt runs table reflects actual runs/ folder contents
-    [WARN] if a row is missing for an existing runs/*.sh
-    [WARN] if a row exists for a deleted runs/*.sh
-  - 04-progress.txt has at least one entry ([NOTE] if only the seed line)
-
----
-
-Step 5: Code Sync Check
-=========================
-
+Step 5 — Code sync check
+==========================
 Read code/INDEX.md first.
 
-Stage map for FnClass keys:
-  1 -> fn_source/  SourceFnClass     3 -> fn_case/     CaseFnClass
-  2 -> fn_record/  RecordFnClass     4 -> fn_aidata/   TfmFnClass
-  5 -> code/hainn/instance/          ModelInstanceClass
-  6 -> fn_endpoint/                  EndpointFnClass
+Stage map: 1 fn_source / SourceFnClass; 2 fn_record / RecordFnClass;
+3 fn_case / CaseFnClass; 4 fn_aidata / TfmFnClass; 5 hainn/instance /
+ModelInstanceClass; 6 fn_endpoint / EndpointFnClass.
 
-**Config -> code resolution (stages 1-4):**
-  For each FnClass in config/ YAMLs:
-    - Not "TODO_*" ([BLOCK] if still placeholder)
-    - Class found in code/haifn/{fn_layer}/ ([BLOCK] if missing)
-    - Listed in code/INDEX.md ([WARN] if not registered)
-    - Report cross-project sharing from code/INDEX.md
+Per FnClass key in configs/ YAMLs (stages 1-4):
+- Not "TODO_*"  ([BLOCK])
+- Class exists in code/haifn/{layer}/  ([BLOCK])
+- Registered in code/INDEX.md  ([WARN])
 
-**Model resolution (stage 5):**
-  For 5_model_*.yaml files:
-    - ModelInstanceClass found in code/hainn/instance/ ([BLOCK] if missing)
-    - model_tuner_name found in code/hainn/tuner/ ([BLOCK] if missing)
-    - Required YAML keys present: ModelArgs, TrainingArgs, InferenceArgs,
-      EvaluationArgs, aidata_name, aidata_version, modelinstance_name ([ERROR])
+Stage 5 (5_model_*.yaml):
+- ModelInstanceClass in code/hainn/instance/  ([BLOCK])
+- model_tuner_name in code/hainn/tuner/  ([BLOCK])
+- Required keys: ModelArgs, TrainingArgs, InferenceArgs, EvaluationArgs,
+  aidata_name, aidata_version, modelinstance_name  ([ERROR])
 
-**Endpoint resolution (stage 6):**
-  For 6_endpoint_*.yaml files:
-    - EndpointFnClass found in code/haifn/fn_endpoint/ ([BLOCK] if missing)
-    - Required YAML keys present: EndpointArgs, modelinstance_name,
-      modelinstance_version ([ERROR])
+Stage 6 (6_endpoint_*.yaml):
+- EndpointFnClass in code/haifn/fn_endpoint/  ([BLOCK])
+- Required keys: EndpointArgs, modelinstance_name, modelinstance_version  ([ERROR])
 
-**Builder sync (stages 1-4, 6):**
-    - build_*.py exists in code-dev/ for each declared stage ([WARN] if missing)
-    - Generated file exists in code/haifn/ ([ERROR] if builder exists but no output)
+Builder sync (stages 1-4, 6):
+- code-dev/ build_*.py exists for each declared stage  ([WARN])
+- Generated file exists in code/haifn/  ([ERROR] if builder ran but no output)
 
-**Import resolution:**
-  Scan task .py files for haifn/hainn imports.
-  Each imported class must exist in code/ ([ERROR] if broken).
+Imports: scan task .py files for haifn/hainn imports; each imported class
+must exist in code/  ([ERROR] if broken).
 
----
 
-Step 6: Paper diagram/ Check (if paper/ exists)
-=================================================
+Step 6 — Paper diagram/ (if paper/ exists)
+============================================
+Required .txt: 01-overview, 02-figure-plan  ([WARN]). 03-rebuttal [NOTE]
+during rebuttal only.
+Required canvas: paper.excalidraw  ([WARN]).
+Freshness: canvas mtime >= max .txt mtime.
+Forbidden in paper/: eval scripts ([ERROR] → tasks/), raw data / model
+outputs ([ERROR] → _WorkSpace/), pipeline configs ([ERROR] → tasks/).
 
-For each paper/Paper-{Name}-{venue}/:
 
-  **Required .txt sources:**
-    - 01-overview.txt    ([WARN] if missing)
-    - 02-figure-plan.txt ([WARN] if missing)
-    - 03-rebuttal.txt    ([NOTE] only relevant during rebuttal)
-
-  **Required canvas:**
-    - paper.excalidraw   ([WARN] if missing)
-
-  **Freshness check:**
-    - paper.excalidraw mtime ≥ max mtime of .txt sources
-
-  **paper/ contents discipline:**
-    - No eval scripts in paper/      ([ERROR] belong in tasks/C_evaluation/)
-    - No raw data / model outputs    ([ERROR] belong in _WorkSpace/)
-    - No pipeline configs            ([ERROR] belong in tasks/{task}/config/)
-
----
-
-Step 7: Output Gap Report
-===========================
-
-Print a structured report grouped by:
-  Naming, Top-level Structure, Project Diagram, Per-Group, Per-Task,
-  Task Diagrams, Code Sync, Paper Diagram (if applicable).
+Step 7 — Output gap report
+============================
+Print grouped: Naming, Top-Level, Project Diagram, Per-Group, Per-Task,
+Task Diagrams, Code Sync, Paper Diagram.
 
 End with:
-  - Summary: BLOCK: N, ERROR: N, WARN: N, NOTE: N
-  - Proposed Actions: prioritized fix list, with the right organize flag
-    for each (e.g., --fix migrate-to-diagram, --fix paired, --fix flat-tasks)
-  - If zero issues: "All checks PASSED. Project is conformant."
+- Summary counts (BLOCK/ERROR/WARN/NOTE)
+- Proposed actions: prioritized fix list with right `--fix` flag
+- "All checks PASSED" if zero issues
 
----
 
 MUST NOT
----------
+=========
+- Modify any file (this skill is read-only).
+- Call /diagram-ascii or /diagram-ascii-canvas (authoring belongs to -new / -organize).
+- Run pipeline commands.
 
-- Do NOT modify any file. This skill is read-only.
-- Do NOT call /diagram-ascii or /diagram-ascii-canvas. Diagram authoring
-  belongs to -new and -organize, not -inspect.
-- Do NOT run pipeline commands.
 
----
-
-Next Steps
------------
-
-After review:
-  - Structure issues found:    /haipipe-project organize  (with the suggested --fix)
-  - Stale canvases:             user re-runs /diagram-ascii-canvas <path>
-  - Task summary view:          /haipipe-project overview
-  - Project summary doc:        /haipipe-project summarize
+Next steps
+===========
+- Structure issues: /haipipe-project organize (with suggested --fix)
+- Stale canvases: re-run /diagram-ascii-canvas <path>
+- Summary view: /haipipe-project overview
+- Summary doc: /haipipe-project summarize

@@ -72,7 +72,7 @@ status:    ok | blocked | failed
 summary:   2-3 sentences on findings (violations? counts? doc generated?)
 artifacts: [paths read, output paths if any (e.g. summary.md emitted)]
 next:      suggested next command (often /haipipe-project-organize if violations
-           found, or /haipipe-project-new for missing project)
+           found, or /haipipe-project-task for missing project)
 ```
 
 ---
