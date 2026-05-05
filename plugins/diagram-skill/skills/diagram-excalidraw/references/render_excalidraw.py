@@ -1,11 +1,14 @@
 """Render Excalidraw JSON to PNG using Playwright + headless Chromium.
 
+Uses a locally-vendored Excalidraw bundle (excalidraw-bundle.mjs) so the
+renderer works fully offline — no CDN dependency.
+
 Usage:
-    cd .claude/skills/excalidraw-diagram/references
+    cd .claude/skills/diagram-excalidraw/references
     uv run python render_excalidraw.py <path-to-file.excalidraw> [--output path.png] [--scale 2] [--width 1920]
 
 First-time setup:
-    cd .claude/skills/excalidraw-diagram/references
+    cd .claude/skills/diagram-excalidraw/references
     uv sync
     uv run playwright install chromium
 """
@@ -50,7 +53,6 @@ def compute_bounding_box(elements: list[dict]) -> tuple[float, float, float, flo
         w = el.get("width", 0)
         h = el.get("height", 0)
 
-        # For arrows/lines, points array defines the shape relative to x,y
         if el.get("type") in ("arrow", "line") and "points" in el:
             for px, py in el["points"]:
                 min_x = min(min_x, x + px)
@@ -76,15 +78,13 @@ def render(
     max_width: int = 1920,
 ) -> Path:
     """Render an .excalidraw file to PNG. Returns the output PNG path."""
-    # Import playwright here so validation errors show before import errors
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
         print("ERROR: playwright not installed.", file=sys.stderr)
-        print("Run: cd .claude/skills/excalidraw-diagram/references && uv sync && uv run playwright install chromium", file=sys.stderr)
+        print("Run: cd .claude/skills/diagram-excalidraw/references && uv sync && uv run playwright install chromium", file=sys.stderr)
         sys.exit(1)
 
-    # Read and validate
     raw = excalidraw_path.read_text(encoding="utf-8")
     try:
         data = json.loads(raw)
@@ -99,36 +99,44 @@ def render(
             print(f"  - {err}", file=sys.stderr)
         sys.exit(1)
 
-    # Compute viewport size from element bounding box
     elements = [e for e in data["elements"] if not e.get("isDeleted")]
     min_x, min_y, max_x, max_y = compute_bounding_box(elements)
     padding = 80
     diagram_w = max_x - min_x + padding * 2
     diagram_h = max_y - min_y + padding * 2
 
-    # Cap viewport width, let height be natural
     vp_width = min(int(diagram_w), max_width)
     vp_height = max(int(diagram_h), 600)
 
-    # Output path
     if output_path is None:
         output_path = excalidraw_path.with_suffix(".png")
 
-    # Template path (same directory as this script)
     template_path = Path(__file__).parent / "render_template.html"
+    bundle_path = Path(__file__).parent / "excalidraw-bundle.mjs"
     if not template_path.exists():
         print(f"ERROR: Template not found at {template_path}", file=sys.stderr)
+        sys.exit(1)
+    if not bundle_path.exists():
+        print(f"ERROR: Local Excalidraw bundle not found at {bundle_path}", file=sys.stderr)
+        print("Re-run the bundle build (see SKILL.md → setup) to regenerate excalidraw-bundle.mjs", file=sys.stderr)
         sys.exit(1)
 
     template_url = template_path.as_uri()
 
     with sync_playwright() as p:
         try:
-            browser = p.chromium.launch(headless=True)
+            browser = p.chromium.launch(
+                headless=True,
+                args=[
+                    # Required: ES-module imports from file:// URLs are blocked by CORS by default
+                    "--allow-file-access-from-files",
+                    "--disable-web-security",
+                ],
+            )
         except Exception as e:
             if "Executable doesn't exist" in str(e) or "browserType.launch" in str(e):
                 print("ERROR: Chromium not installed for Playwright.", file=sys.stderr)
-                print("Run: cd .claude/skills/excalidraw-diagram/references && uv run playwright install chromium", file=sys.stderr)
+                print("Run: cd .claude/skills/diagram-excalidraw/references && uv run playwright install chromium", file=sys.stderr)
                 sys.exit(1)
             raise
 
@@ -137,13 +145,10 @@ def render(
             device_scale_factor=scale,
         )
 
-        # Load the template
         page.goto(template_url)
 
-        # Wait for the ES module to load (imports from esm.sh)
         page.wait_for_function("window.__moduleReady === true", timeout=30000)
 
-        # Inject the diagram data and render
         json_str = json.dumps(data)
         result = page.evaluate(f"window.renderDiagram({json_str})")
 
@@ -153,10 +158,8 @@ def render(
             browser.close()
             sys.exit(1)
 
-        # Wait for render completion signal
         page.wait_for_function("window.__renderComplete === true", timeout=15000)
 
-        # Screenshot the SVG element
         svg_el = page.query_selector("#root svg")
         if svg_el is None:
             print("ERROR: No SVG element found after render.", file=sys.stderr)
