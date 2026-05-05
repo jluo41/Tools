@@ -116,8 +116,28 @@ Deploy (Docker):
   4. Record (endpoint_set, port=8080, container_id) in the local registry.
 
 Deploy (FastAPI):
-  Project-specific. Requires a FastAPI boilerplate generator that mirrors
-  the Flask app's `/ping` + `/invocations` contract.
+  1. Read Endpoint_Set at `_WorkSpace/6-EndpointStore/<endpoint_set>/`.
+  2. Run `scripts/serve_local.py` — generic FastAPI wrapper that calls
+     `Endpoint_Set.inference()` behind `POST /invocations`. Routes:
+       GET  /health       — liveness + endpoint_loaded flag
+       GET  /meta         — mirrors MetaFn metadata_response.body
+       POST /invocations  — accepts the Endpoint_Set's documented payload
+                            (typically `dataframe_records` per Input2SrcFn)
+  3. Invocation:
+       ENDPOINT_PATH=_WorkSpace/6-EndpointStore/<endpoint_set> \
+       PORT=8765 \
+           python scripts/serve_local.py
+  4. Smoke-test with `haipipe-subject-inference` (per-subject test) or
+     curl `POST http://127.0.0.1:8765/invocations` with a payload.json
+     pulled from `<endpoint_set>/inference/`.
+  5. Record (endpoint_set, port=8765, pid) in the local registry.
+
+  Notes:
+   - The script is intentionally endpoint-agnostic — same script serves
+     any Endpoint_Set produced by `haipipe-end-endpointset`.
+   - Inference errors propagate as HTTP 500 (no internal fallback);
+     incomplete endpoints (e.g. missing `prefn_config.json`) surface as
+     500 from `Endpoint_Set.inference()` so the caller sees them.
 
 Test, Monitor, Teardown, Review:
   See `ref/concepts.md` for log paths, pid file conventions, port allocation,
