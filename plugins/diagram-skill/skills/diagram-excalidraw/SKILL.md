@@ -455,10 +455,12 @@ See `references/element-templates.md` for copy-paste JSON templates for each ele
 
 You cannot judge a diagram from JSON alone. After generating or editing the Excalidraw JSON, you MUST render it to PNG, view the image, and fix what you see — in a loop until it's right. This is a core part of the workflow, not a final check.
 
+The renderer uses a locally-vendored Excalidraw bundle (`references/excalidraw-bundle.mjs`), so no internet is needed at render time.
+
 ### How to Render
 
 ```bash
-cd .claude/skills/excalidraw-diagram/references && uv run python render_excalidraw.py <path-to-file.excalidraw>
+cd .claude/skills/diagram-excalidraw/references && uv run python render_excalidraw.py <path-to-file.excalidraw>
 ```
 
 This outputs a PNG next to the `.excalidraw` file. Then use the **Read tool** on the PNG to actually view it.
@@ -510,9 +512,19 @@ The loop is done when:
 ### First-Time Setup
 If the render script hasn't been set up yet:
 ```bash
-cd .claude/skills/excalidraw-diagram/references
+cd .claude/skills/diagram-excalidraw/references
 uv sync
 uv run playwright install chromium
+```
+
+If `excalidraw-bundle.mjs` is missing (e.g. cleared by `.gitignore`), regenerate it:
+```bash
+mkdir -p /tmp/excalidraw-build && cd /tmp/excalidraw-build
+npm init -y && npm install @excalidraw/excalidraw@0.18.1 react@18 react-dom@18 esbuild
+echo 'import { exportToSvg } from "@excalidraw/excalidraw"; export { exportToSvg };' > entry.mjs
+npx esbuild entry.mjs --bundle --format=esm --platform=browser --target=es2020 \
+  --define:process.env.NODE_ENV='"production"' --minify --outfile=excalidraw-bundle.mjs
+cp excalidraw-bundle.mjs <skill-path>/references/
 ```
 
 ---

@@ -1,7 +1,8 @@
 [project]
-name = "excalidraw-render"
+name = "diagram-excalidraw-render"
 version = "0.1.0"
-requires-python = ">=3.11"
+description = "Render Excalidraw JSON to PNG via Playwright + locally vendored Excalidraw bundle"
+requires-python = ">=3.10"
 dependencies = [
     "playwright>=1.40.0",
 ]
