@@ -1,0 +1,7 @@
+{
+  "STORAGE_KEY_1": {
+    "run_filter":    "substring_to_match_in_run_names",
+    "parse_pattern": "eval_([a-z_]+)_(\\d+[mb])(?:_(ep[\\d.]+|d\\d+[mb]|v3))?_nb",
+    "parse_fields":  ["model_type", "size", "setup"]
+  }
+}
