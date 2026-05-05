@@ -22,8 +22,9 @@ and blast radius.
 /haipipe-project summarize <project_id>        -> generate summary doc
 /haipipe-project inventory [project_id]        -> file inventory
 /haipipe-project overview [project_id]         -> overview of one or all projects
-/haipipe-project organize <project_id>         -> reorganize files (modifies!)
-/haipipe-project "<natural language>"          -> infer function, dispatch
+/haipipe-project organize <project_id>                      -> reorganize files (modifies!)
+/haipipe-project scan-status <task_dir> [key] [out_txt]     -> scan B01 eval, update status.json + txt
+/haipipe-project "<natural language>"                       -> infer function, dispatch
 ```
 
 ---
@@ -72,6 +73,7 @@ summarize, summary, docs                      -> haipipe-project-inspect (summar
 inventory, list files, files                  -> haipipe-project-inspect (inventory)
 overview, show, status                        -> haipipe-project-inspect (overview)
 organize, reorganize, fix structure, move     -> haipipe-project-organize
+scan-status, scan eval, eval status          -> haipipe-project-inspect (scan-status)
 ```
 
 ---
