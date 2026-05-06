@@ -17,6 +17,9 @@ Usage
 ```
 /paper-revise <file> [author comments]
 /paper-revise <file> apply
+/paper-revise <file> reindex
+/paper-revise <file> clean-l1
+/paper-revise <file> clean-l2
 ```
 
 Examples:
@@ -25,12 +28,19 @@ Examples:
 /paper-revise 0-sections/03_method.tex "Reviewer 2 says the notation is inconsistent with Section 4. Tighten the problem setup."
 /paper-revise 0-sections/05_results.tex "Subgroup analysis needs more statistical rigor per R1. Also cut redundancy with the appendix."
 /paper-revise 0-sections/01_introduction.tex apply
+/paper-revise 0-sections/01_introduction.tex reindex
+/paper-revise 0-sections/01_introduction.tex clean-l1
+/paper-revise 0-sections/01_introduction.tex clean-l2
 ```
 
 The author can provide:
 - Just a file → CC reads, analyzes, and starts section-level discussion
 - A file + comments → CC uses the comments to guide its analysis and priorities
+- A file + reviewer feedback + "apply"/"update with"/"clean with" → CC enters **Phase 2-fast** (lightweight reviewer-feedback apply): edits the active text AND attaches one `%% Comments: {INITIALS} ...` line per sentence; no `%% Proposed:` / `%% Changes:` / `%% Reason:` / `%% Author:` blocks
 - A file + "apply" → CC applies all accepted annotations (Phase 3)
+- A file + "reindex" → CC renumbers sentence-index tags after structural shifts (Phase 3b)
+- A file + "clean-l1" → CC strips metadata but keeps index headers + `%% Comments:` lines (Phase 3c)
+- A file + "clean-l2" → CC strips everything except index headers (Phase 3c)
 
 ---
 
@@ -64,6 +74,23 @@ Core Principles
    navigate with arrow keys. This replaces printing plain-text option
    lists. The tool supports 1-4 questions per call, 2-4 options per
    question, and always includes an "Other" option for free-text input.
+9. **Keep the .tex file clean — no narrative comment blocks.** The .tex
+   file is a working document, but only `%% ---- PX.SY [bracket-note] ----`
+   index headers and `%% Comments: {INITIALS} ...` lines belong in it.
+   **Do NOT add:**
+   - Retired-content notes ("RETIRED per X v0506: Old P7 absorbed into…")
+   - Multi-line section-divider comments ("NEW P6: Study Design + Findings
+     Preview — Combines old P5 with abbreviated preview… Closes intro on
+     results…")
+   - Restructure-explainer headers ("NEW per Ritu v2026-05-06 — restructure
+     §1.1 into intro · removed bold tags · etc.")
+   - "FIGURE 1 — anchored to new P6" type position-explainer headers
+   These belong in the **commit message**, in a **separate revision-log
+   file** (e.g. `1-feedback/v0506feedback/revision-log.md`), or in your
+   conversation with the author — never in the .tex itself. The .tex
+   should compile to a paper, not read as a project journal. The bracket
+   note inside an index header (`[NEW per Ritu — feasibility]`) is the
+   one and only place a one-line provenance hint is allowed.
    Use the `preview` field to show quoted LaTeX snippets or before/after
    text when the decision benefits from seeing the actual content.
    Batch related questions together (up to 4) but keep unrelated
@@ -89,6 +116,40 @@ Read the target file. Detect structure automatically:
 
 Number paragraphs sequentially: P1, P2, P3, ... based on order of
 appearance. If subsections exist, note them: P1 (under §2.1), etc.
+
+### Index format (sentence tags only)
+
+The file uses **exactly one** index-tag form — never anything else:
+
+```
+%% ---- P1.S1 ----                       # sentence index
+%% ---- P1.S1 [bracket note] ----        # sentence index with optional pass tag
+```
+
+**Do NOT add bare paragraph header lines** like `%% ---- P1 ----` or
+`%% ---- P1: D-Agent at Data level ----`. Paragraph boundaries are
+implicit: a blank line in the source separates paragraphs, and the
+paragraph number is encoded in each sentence's `Pn.Sm` tag. Adding a
+standalone `%% ---- Pn ----` header is noise — the user has explicitly
+rejected this pattern.
+
+The bracket note `[...]` is allowed only on sentence tags, where it
+records the revision pass (e.g., `[v0506 RA — substitute]`,
+`[DELETE per v0506 RA]`, `[NEW per Gordon comment v2026-05-04]`).
+
+No `Pn: description`, no `P-XY` letter codes, no slash variants. Keep
+it boring so reindex and clean modes can rely on the format.
+
+### Paragraph numbering scope
+
+`Pn` numbering **restarts at 1 in each .tex file**. Do not continue
+numbering across `\input{}` boundaries. If `03_research_design.tex`
+includes `03-1_empirical_setting.tex`, `03-2_stage1_message_design.tex`,
+etc. via `\input`, each sub-file starts its own `P1`, `P2`, … sequence.
+Sentence numbering also restarts within each paragraph as `S1`, `S2`, …
+
+This keeps tags stable when sub-files are rearranged, split, or moved
+between sections — the file itself is the numbering scope.
 
 **Detect the paper's comment conventions early.** Look for:
 - Custom macros in the preamble (e.g., `\newcommand{\ra}`, `\newcommand{\rev}`)
@@ -449,8 +510,8 @@ Revised sentence text here.
 %%   (1) "old phrase" → "new phrase"
 %%   (2) "another old" → "another new"
 %% Reason: Why this change serves the agreed paragraph topic.
-%% Comments: [reviewer macro]{R1.Q3: Needs stronger statistical support.}
-%% Comments: [author macro]{R1.Q3: Added significance tests and CIs.}
+%% Comments: {RA} R1.Q3: Needs stronger statistical support.
+%% Comments: {JL} R1.Q3: Added significance tests and CIs.
 %% Author:
 ```
 
@@ -460,31 +521,35 @@ text follows as the ACTIVE line (no prefix, compiles in LaTeX).
 Metadata lines (`%% Changes:`, `%% Reason:`, `%% Comments:`, `%% Author:`)
 use `%%` prefix as before.
 
-**The `%% Comments:` lines** use whatever comment macros the paper
-defines (detected in Phase 1 Step 1). Common patterns:
-- `\ra{}`/`\jl{}` — reviewer/author initials
-- `\rev{}`/`\resp{}` — reviewer comment/response
-- `\RC{}`/`\AR{}` — reviewer comment/author response
-- `\todo{}` — general action items
+**The `%% Comments:` lines** use a curly-brace initials tag followed by
+a space and the comment text. **Format:** `%% Comments: {INITIALS} text`
+— note the space after the closing brace, **no colon**.
 
-The author can copy these directly into Overleaf where they compile
-with the paper's existing macros. This ensures:
-- The reviewer's original comment is preserved alongside the change
-- The author's reply explains what was done
-- Coauthors see the full discussion trail
+Common initials patterns (detect from the paper in Phase 1 Step 1):
+- `{RA}` / `{JL}` — reviewer / author initials (e.g., RA = a coauthor's
+  initials, JL = the lead author's initials)
+- `{R1}` / `{R2}` / `{R3}` — numbered reviewers
+- `{AC}` — associate editor / area chair
+- `{TODO}` — general action items
 
-If no comment macros are detected, use plain text:
+Examples:
 ```latex
-%% Comments: [R1.Q3] Needs stronger statistical support.
-%% Comments: [Response] Added significance tests and CIs.
+%% Comments: {RA} C#12: These are referenced often -- where do they come from?
+%% Comments: {JL} C#12: Grounded with citations. Capabilities detailed in §2.2.
 ```
+
+If the paper defines LaTeX macros for inline reviewer comments (e.g.,
+`\ra{}`, `\jl{}`), those still go inside the active text. The
+`%% Comments:` annotation lines, by contrast, are **comment-only** (they
+never compile) and use the curly-brace `{INITIALS} text` form regardless
+of whether the paper defines macros.
 
 Multiple reviewer comments stack on separate lines:
 ```latex
-%% Comments: [reviewer macro]{R2.W1: Claim unsupported by evidence.}
-%% Comments: [author macro]{R2.W1: Added three citations and quantitative comparison.}
-%% Comments: [reviewer macro]{R3.W2: Redundant with Section 4.}
-%% Comments: [author macro]{R3.W2: Removed here, kept in Section 4 only.}
+%% Comments: {RA} R2.W1: Claim unsupported by evidence.
+%% Comments: {JL} R2.W1: Added three citations and quantitative comparison.
+%% Comments: {RA} R3.W2: Redundant with Section 4.
+%% Comments: {JL} R3.W2: Removed here, kept in Section 4 only.
 ```
 
 Only add `%% Comments:` lines when a reviewer comment is relevant to
@@ -507,8 +572,8 @@ Only add `%% Comments:` lines when a reviewer comment is relevant:
 %
 %% ---- P1.S6 [DELETE] ----
 % This approach has generated valuable results, but faces a...
-%% Comments: [reviewer macro]{R1.W2: Claim unsupported at this point.}
-%% Comments: [author macro]{R1.W2: Deleted. Evidence now in Results section.}
+%% Comments: {RA} R1.W2: Claim unsupported at this point.
+%% Comments: {JL} R1.W2: Deleted. Evidence now in Results section.
 ```
 
 KEEP — no changes needed:
@@ -595,6 +660,89 @@ provide free-text feedback.
 
 ---
 
+Phase 2-fast: Reviewer Feedback Direct Apply
+=============================================
+
+**When the author invokes `/paper-revise <file> "<reviewer feedback>"` and
+asks to "apply", "update with", or "clean with" reviewer comments, default
+to this lightweight flow — NOT the full Phase 2 annotation block.**
+
+The user wants the file to converge with minimum scaffolding. The full
+`%% Proposed:` / `%% Changes:` / `%% Reason:` / `%% Author:` block (Phase 2
+Step 3) is the wrong shape for this case — it was rejected as "too
+complicated" in real use. Inline edits without a comment trail are also
+wrong — they lose the audit record.
+
+### The rule (do BOTH for each reviewer note)
+
+1. **Update the active sentence text** to reflect the reviewer's
+   suggestion (the actual edit lands in the prose).
+2. **Attach a single `%% Comments: {INITIALS} v<DATE>: <verbatim or
+   near-verbatim reviewer note>` line** under that sentence as the
+   audit trail.
+
+That's it. No `%% Proposed: %%`, no `%% Changes:`, no `%% Reason:`,
+no `%% Author:`, no commented-out original line. The comment line IS
+the trail; git history captures the diff.
+
+### Format
+
+```latex
+%% ---- P1.SX [optional pass tag] ----
+<updated active sentence>
+%% Comments: {RA} v<YYMMDD>: <reviewer note, near-verbatim>
+%
+```
+
+`{INITIALS} text` — space after the closing brace, no colon. Multiple
+reviewers stack as separate `%% Comments:` lines.
+
+### When to skip
+
+- **Reviewer's note no longer has a target** (the underlying text was
+  rewritten and the highlighted phrase is gone): skip both the edit
+  and the comment, and report which were skipped at the end.
+- **Reviewer's note is genuinely ambiguous** (e.g., a caret with `...`,
+  or a vague rephrasing that could mean several things): ask via
+  `AskUserQuestion` before applying. Don't attach an unresolved comment
+  to a sentence whose text you've already edited.
+
+### When to fall back to the full Phase 2 block
+
+- Logic restructuring (paragraph reorganization, multi-sentence rewrite).
+- Contested decisions where the trail of options/rationale matters.
+- Cases where the author explicitly asks for the full block.
+
+In all other reviewer-feedback applies, **default to Phase 2-fast**.
+
+### Before/after example
+
+Reviewer note (extracted from PDF):
+- HL on `"DIKW"` → "use full form with DIKW in parens"
+
+Wrong (full block — too much scaffolding for a one-line edit):
+```latex
+%% ---- P1.S6 ----
+% The Agentic AI method, equipped with analytical tools and structured DIKW reasoning agents, ...
+%% Proposed: %%
+The Agentic AI method, equipped with analytical tools and structured Data-Information-Knowledge-Wisdom (DIKW) reasoning agents, ...
+%% Changes:
+%%   (1) "DIKW" → "Data-Information-Knowledge-Wisdom (DIKW)" — first-use spell-out
+%% Reason: RA — acronyms must be spelled out on first appearance.
+%% Comments: {RA} v0506: HL "DIKW" — use full form with DIKW in parens
+%% Author:
+```
+
+Right (Phase 2-fast):
+```latex
+%% ---- P1.S6 ----
+The Agentic AI method, equipped with analytical tools and structured Data-Information-Knowledge-Wisdom (DIKW) reasoning agents, produces superior interventions: ...
+%% Comments: {RA} v0506: HL "DIKW" — use full form with DIKW in parens
+%
+```
+
+---
+
 Phase 3: Apply Mode (Author-Initiated Only)
 =============================================
 
@@ -621,6 +769,161 @@ When apply IS invoked:
 4. Keep any reviewer/response macros in the active text (these are
    part of the paper's review workflow, not CC annotations)
 5. Present summary of all changes
+
+---
+
+Phase 3b: Reindex Mode (Author-Initiated Only)
+===============================================
+
+**CRITICAL:** Reindex mode is ONLY invoked when the author explicitly runs:
+```
+/paper-revise <file> reindex
+```
+
+**Use case.** After splitting, merging, reordering, or inserting paragraphs,
+the `%% ---- PX.SY ----` index tags become inconsistent with the new
+paragraph structure (e.g., paragraph 1 was split into two paragraphs, so
+everything below shifts +1). Reindex renumbers the index tags to match
+the current physical paragraph layout — without changing any sentence
+content, comments, or other annotation metadata.
+
+**Algorithm:**
+1. Walk the file from top to bottom.
+2. Detect paragraph boundaries: a paragraph ends at a blank line that
+   separates one block of active sentences from the next. Skip
+   `\section{}`, `\subsection{}`, `\begin{figure}`/`\end{figure}`,
+   and pure comment-block headers when computing boundaries.
+3. Number paragraphs sequentially: P1, P2, P3, ... in order of physical
+   appearance. Continue numbering across `\subsection{}` boundaries
+   (paragraphs are continuous through the section unless the author
+   explicitly asks for subsection-relative numbering).
+4. Within each paragraph, number active `%% ---- PX.SY [...] ----`
+   blocks sequentially as S1, S2, S3, ...
+   - Preserve sub-letter suffixes (S3b, S6b) — these mark sentences
+     inserted between others and should keep their letter unless the
+     author asks for a full renumber.
+   - DELETE blocks still get a sentence number (they hold a slot in
+     the structure).
+5. Update each tag's `PX.SY` while preserving the bracket note text
+   (e.g., `[NEW per Gordon comment v2026-05-04]`).
+6. Update **forward cross-references** in bracket notes that point to
+   a paragraph that has shifted (e.g., "result preview belongs in P6
+   (RQ1)" becomes "P7 (RQ1)" if RQ1's paragraph shifted from P6 to P7).
+7. Leave **historical "was PX.SY" notes unchanged.** These are temporal
+   records of older numbering and overwriting them erases revision
+   history. Example: `[NEW, contribution, was P6.S6]` stays as-is even
+   if the current sentence is now P7.S7.
+8. Update section-header comment lines (e.g., `% NEW P3: Our Approach`
+   → `% NEW P4: Our Approach`) when the paragraph index shifts.
+
+**Workflow:**
+1. Compute the proposed renumbering.
+2. Present a diff to the author:
+   ```
+   Reindex preview
+   ===============
+   P3 split into P1+P2; downstream paragraphs shift +1.
+
+   Tag changes:
+     P2.S1 → P3.S1   (lines 52)
+     P2.S2 → P3.S2   (line 54)
+     ...
+     P8.S8 → P9.S8   (line 237)
+
+   Cross-reference fixes:
+     P4.S5 bracket note: "P6 (RQ1)" → "P7 (RQ1)"
+     Figure comment: "ref in P4.S1" → "ref in P5.S1"
+   ```
+3. Wait for author confirmation.
+4. Apply edits.
+
+CRITICAL: Reindex never modifies sentence text, `%% Comments:` lines,
+`%% Proposed:`, `%% Reason:`, `%% Author:`, or any other annotation
+content. Only the `PX.SY` portion of index tags and forward
+cross-references move.
+
+---
+
+Phase 3c: Clean Modes (Light / Heavy)
+======================================
+
+**CRITICAL:** Clean modes are ONLY invoked when the author explicitly runs:
+```
+/paper-revise <file> clean-l1
+/paper-revise <file> clean-l2
+```
+
+**Purpose.** Two levels of partial cleanup that strip annotation metadata
+while preserving the structural skeleton. Useful when the file has
+accumulated heavy annotation noise and the author wants a tidier working
+document, but is **not yet ready** for the full `apply` reset (which
+removes all index tags too).
+
+The two levels differ only in whether `%% Comments:` lines are kept.
+
+### Level 1: keep index + comments (`clean-l1`)
+
+Keeps:
+- `%% ---- PX.SY [...] ----` index header lines
+- `%% Comments: ...` lines (reviewer/response trail)
+- The active sentence text (after applying any proposed revision)
+
+Removes:
+- `%% Proposed: %%`, `%% Changes:`, `%% Reason:`, `%% Source:`,
+  `%% Author:`, `%% KEEP` lines
+- The commented-out `%` original line (since the proposed text becomes
+  the active text)
+
+### Level 2: keep index only (`clean-l2`)
+
+Keeps:
+- `%% ---- PX.SY [...] ----` index header lines
+- The active sentence text (after applying any proposed revision)
+
+Removes:
+- Everything else: `%% Proposed:`, `%% Changes:`, `%% Reason:`,
+  `%% Source:`, `%% Author:`, `%% KEEP`, `%% Comments:`, and the
+  commented-out original
+
+### Algorithm (both levels)
+
+For each `%% ---- PX.SY [...] ----` block:
+1. Determine the final active text:
+   - If the block has `%% Proposed: %%` followed by an active line, use
+     the active line as the kept text (the proposal is now the sentence).
+   - If the tag carries `[DELETE]`, drop the active text entirely; keep
+     the index header line on its own (the slot stays visible so reindex
+     and re-discussion still work).
+   - Otherwise keep the existing active text.
+2. Strip the metadata lines per the level (above).
+3. Re-emit the block with kept lines only.
+4. Preserve the single `%` separator line between blocks.
+
+### Workflow
+
+1. Read the file and count what would change at the chosen level:
+   ```
+   Clean-l1 preview
+   ================
+   Will apply 17 proposed revisions.
+   Will remove 42 metadata lines (Proposed/Changes/Reason/Source/Author/KEEP).
+   Will keep 23 %% Comments: lines.
+   Will keep 31 index header lines (incl. 4 [DELETE] slots).
+   ```
+2. Show 2-3 sample blocks before/after so the author can verify the
+   transformation looks right.
+3. Wait for author confirmation.
+4. Apply edits.
+
+CRITICAL: Both levels are **partial** cleanups. The file is still in
+"annotation mode" after `clean-l1` or `clean-l2` — index tags persist,
+so `/paper-revise` can resume targeted work, and re-running discussion
+on individual sentences still works. The full reset is `apply`.
+
+If the author wants `clean-l1` followed by `apply` later, that's fine —
+`apply` operates on whatever state remains. But `clean-l2` discards
+`%% Comments:` lines permanently, so warn the author if comments contain
+unaddressed reviewer feedback.
 
 ---
 
@@ -759,6 +1062,15 @@ Session Flow
    ├── Add reference links for new citations
    ├── Self-review annotations
    └── Present complete summary
+
+   Phase 2-fast: Reviewer Feedback Direct Apply
+   ── When invocation includes reviewer comments + "apply"/"update with"
+   │   ├── For each reviewer note that targets a specific sentence:
+   │   │   ├── Update the active text inline
+   │   │   └── Attach ONE %% Comments: {INITIALS} v<DATE>: ... line
+   │   ├── Skip notes whose target text was rewritten (report skipped)
+   │   ├── Ask via AskUserQuestion if the suggestion is ambiguous
+   │   └── NO %% Proposed / Changes / Reason / Author blocks
         │
         ▼
    File now has:
@@ -769,7 +1081,20 @@ Session Flow
    Author works with this at their own pace.
         │
         ▼
-   (Optional, author-initiated)
+   (Optional, author-initiated — three reset modes)
+   /paper-revise <file> reindex
+   └── Renumber PX.SY tags after structural shifts (Phase 3b)
+       Preserves all sentence text, comments, and metadata.
+
+   /paper-revise <file> clean-l1
+   └── Apply proposed revisions; strip Proposed/Changes/Reason/Author
+       lines but KEEP index headers + %% Comments: trail (Phase 3c).
+
+   /paper-revise <file> clean-l2
+   └── Apply proposed revisions; strip everything except index headers
+       (drops %% Comments: too) (Phase 3c).
+
    /paper-revise <file> apply
-   └── Replace originals with accepted proposals, clean up
+   └── Full reset: replace originals with accepted proposals, remove
+       ALL annotation scaffolding including index tags (Phase 3).
 ```
