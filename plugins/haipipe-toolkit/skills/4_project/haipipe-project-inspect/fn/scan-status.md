@@ -93,6 +93,11 @@ Step 2: Run the scanner
       B1 (loss in task name): eval_results.json present in version dir
       B2 (otherwise):         results/{run_name}/forecast.json present in task_dir
   - Writes/merges {task_dir}/diagram/status.json.
+  - After scanning each group, enumerates all non-empty version dirs in
+    _WorkSpace/5-ModelInstanceStore/{storage_key}/ and reports any that do
+    not match a scanned run's version field as unmapped instances.
+    These are stored under status.json["unmapped"][storage_key] and printed
+    as WARNING lines to stdout.
 
 If the script errors (missing _WorkSpace, bad regex, etc.), show the error
 and ask the user how to proceed. Do NOT auto-fix the scan_groups.json pattern.
@@ -138,7 +143,7 @@ Txt format rules (MUST always appear):
   1. Header block — always the first 3 lines:
        Status: {task_dir.name}
        ============================  (= repeated to match title length)
-       Updated: {YYYY-MM-DD}
+       Updated: {YYYY-MM-DD} (auto-updated)
 
   2. Legend — always present after a blank line:
        V = trained + eval done
@@ -146,14 +151,37 @@ Txt format rules (MUST always appear):
        X = not trained
        ? = run not defined in sbatch (not planned)
 
-  3. One section per storage group, separated by a blank line:
-       === {model_type} ===
+  3. Format selection (auto-detected by formatter):
 
-  4. Within each group, sub-sections appear in this order (omit if no entries):
-       --- Phase 1 ---      size rows, single status column
-       --- Epoch Sweep ---  size rows × epoch columns (grid)
-       --- Datasize ---     size rows × datasize columns (grid)
-       --- v3 ---           size rows, single status column
+     Multiple model_type values across groups (e.g. clm_tkn + clm_num):
+       -> MERGED FORMAT: one section per sweep type, model types as columns.
+          Column abbreviation: strip "clm_" prefix and uppercase
+          (clm_tkn -> TKN, clm_num -> NUM).
+          Column order follows MODEL_ABBR_ORDER = ['TKN', 'NUM'] in formatter.
+
+     Single model_type:
+       -> PER-GROUP FORMAT: one === model_type === section per storage group,
+          with sub-sections (--- Phase 1 ---, --- Epoch Sweep ---, etc.).
+
+  4. Merged format — sections appear in this order (omit if no entries):
+
+     === Phase 1 ===
+       Size  |  TKN  |  NUM        (no trailing |)
+       ------|-------|------
+       1m    |   V   |   V
+
+     === Epoch Sweep ===
+              |----------- TKN -----------|----------- NUM -----------|
+       Size   | ep0.1 | ep.25 | ep.75 | ep2 | ...                    |
+       -----  (all rows end with |)
+       Epoch display: ep0.25 -> ep.25, ep0.75 -> ep.75 (ep0.1 unchanged)
+
+     === Datasize ===
+       Size  |---- TKN ----|---- NUM ----|
+             | d10m | d100m | d10m | d100m |   (all rows end with |)
+
+     === v3 ===
+       (same layout as Phase 1)
 
   5. Status cell values: V, O, X, or ? (single character).
        V = trained + eval done
@@ -166,6 +194,16 @@ Txt format rules (MUST always appear):
   7. Column ordering within grids: ascending numeric order derived from the
      setup values present (e.g. ep0.1 < ep0.25 < ep2; d10m < d100m).
      Exact columns depend on what runs exist — do not hardcode.
+
+  8. Unmapped instances — appended at the bottom if status.json["unmapped"]
+     contains any non-empty lists:
+       === Unmapped Instances ===
+
+       Trained versions in store with no matching sbatch run:
+
+         {storage_key}:
+           {version}
+           ...
 
 Setup classification (from JSON 'setup' field):
   None / 'phase1'    -> Phase 1 table
