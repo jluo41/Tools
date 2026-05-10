@@ -1,0 +1,4 @@
+interface:
+  display_name: "PPT Image to Editable PPT"
+  short_description: "Extract slide assets and rebuild editable PPTX decks."
+  default_prompt: "Use $ppt-image-to-editable-ppt to turn these slide images into an editable PPTX deck."
