@@ -1,0 +1,144 @@
+📜 Introduction v0517 : Logic Flow + Proposed Edits
+═══════════════════════════════════════════════════════════
+
+  Each block shows:
+    📌 NOW       what v0516 currently says (S<range>, ~Nw)
+    🔧 PROPOSE   what v0517 changes
+                 ✅ keep   ✏ edit   ✂ drop   ➕ add
+
+  Comments read at : P1.S3 (transition gap)
+                     P2.S9 (paragraph diffuse, repetition)
+                     P3.S3 (P3 <-> P4 ordering)
+
+─────────────────────────────────────────────────────────
+
+
+  ┌───────────────────────────────────────────────────────┐
+  │ 📖 P1  ·  SETUP + SIGNAL                              │
+  │                                                       │
+  │ 📌 NOW (S1-S3, ~63w)                                  │
+  │    S1: physician qualities -> patient outcomes        │
+  │    S2: surveys / aggregate stars = narrow view        │
+  │    S3: online reviews = nat'l-scale patient record    │
+  │                                                       │
+  │ 🔧 PROPOSE (+15w)                                     │
+  │    ✅ keep S1, S2, S3                                 │
+  │    ➕ add S4 (hinge sentence after S3):               │
+  │      "...encoding rich interpersonal and              │
+  │       professional signal that has been hard to       │
+  │       turn into reproducible measurements."           │
+  │      reason: P1 currently lands flat on               │
+  │              "reviews exist"; new S4 sets up P2's     │
+  │              "how to extract" gap                     │
+  └───────────────────────────────────────────────────────┘
+                            │
+                            ▼
+  ┌───────────────────────────────────────────────────────┐
+  │ 🧪 P2  ·  METHOD + LANDSCAPE GAP        [MAIN EDIT]   │
+  │                                                       │
+  │ 📌 NOW (S1-S5 + S7-S9, ~137w)                         │
+  │    S1 : extraction from narratives = challenging      │
+  │    S2 : sentiment / topic = 1 or 2 axes               │
+  │    S3 : Big Five rarely operationalized at scale      │
+  │    S4 : healthcare-specific qualities hard to measure │
+  │    S5 : manual coding doesn't scale                   │
+  │    S7 : prior nat'l work = aggregate stars            │
+  │         (gao 2012, daskivich 2018)                    │
+  │    S8 : interpersonal coding limited (dunivin 2020)   │
+  │    S9 : landscape undercharacterized                  │
+  │                                                       │
+  │ 🔧 PROPOSE (~85w, -52w)                               │
+  │    ✅ keep S1, S2, S3                                 │
+  │    ✂ drop S4 (trait preview, belongs in P5)           │
+  │      reason: not a gap; previews this-work content    │
+  │    ✂ drop S5 (duplicates S2 "doesn't scale")          │
+  │    ✂ merge S7 + S8 + S9 into one summary line:        │
+  │      "Prior large-scale studies have characterized    │
+  │       aggregate star ratings rather than              │
+  │       interpersonal profiles, leaving the national    │
+  │       landscape of patient-perceived physician        │
+  │       traits undercharacterized."                     │
+  └───────────────────────────────────────────────────────┘
+                            │
+                            ▼
+  ┌───────────────────────────────────────────────────────┐
+  │ 🚨 P3  ·  URGENCY (LLMs MEDIATE PATIENT CHOICE)       │
+  │                                                       │
+  │ 📌 NOW (S1-S3, ~92w)                                  │
+  │    S1 : patients consult ChatGPT / Gemini / Perplexity│
+  │    S2 : LLM opinions on empathy mediate choice        │
+  │    S3a: what LLMs extract, by gender/specialty/region │
+  │         not audited at nat'l scale                    │
+  │    S3b: audit = prerequisite; fairness implications   │
+  │                                                       │
+  │ 🔧 PROPOSE                                            │
+  │    ✅ keep as-is (strongest paragraph)                │
+  │    ✏ retag S3b -> S4 (two sentences currently         │
+  │      share the S3 tag, breaks PN.SN file-local rule)  │
+  └───────────────────────────────────────────────────────┘
+                            │
+                            ▼
+  ┌───────────────────────────────────────────────────────┐
+  │ 🛠 P4  ·  METHOD OPPORTUNITY (bridge)   [MAIN EDIT]   │
+  │                                                       │
+  │ 📌 NOW (S1-S3, ~58w)                                  │
+  │    S1 : "Recent LLM advances enable such an audit"    │
+  │         (reintroduces LLMs after P3 already did)      │
+  │    S2 : LLMs unstructured -> structured outputs       │
+  │    S3 : healthcare uses exist; trait mapping not done │
+  │                                                       │
+  │ 🔧 PROPOSE (~30w, -28w)                               │
+  │    ✏ rewrite S1 opener (re-anchor as bridge):         │
+  │      "We leverage these same LLM capabilities to      │
+  │       perform the audit at national scale."           │
+  │      reason: P3 already established LLMs as actor;    │
+  │              P4 must pivot from object to             │
+  │              instrument, not re-introduce             │
+  │    ✂ drop S2 (capability description duplicates P3)   │
+  │    ✅ keep S3 (trait mapping not done)                │
+  └───────────────────────────────────────────────────────┘
+                            │
+                            ▼
+  ┌───────────────────────────────────────────────────────┐
+  │ 🎯 P5  ·  THIS WORK                                   │
+  │                                                       │
+  │ 📌 NOW (S1-S3, ~75w)                                  │
+  │    S1: LLM pipeline -> 10 traits                      │
+  │        (5 BigFive-style + 5 patient-oriented)         │
+  │    S2: multi-model + LLM-as-judge + human check;      │
+  │        applied to 226,999 US physicians               │
+  │    S3: distributions, correlations, gender/specialty, │
+  │        latent archetypes                              │
+  │                                                       │
+  │ 🔧 PROPOSE                                            │
+  │    ✅ keep as-is                                      │
+  └───────────────────────────────────────────────────────┘
+                            │
+                            ▼
+  ┌───────────────────────────────────────────────────────┐
+  │ 📌 P6  ·  SIGNIFICANCE + ROADMAP                      │
+  │                                                       │
+  │ 📌 NOW (S1-S3, ~52w)                                  │
+  │    S1: narratives -> trait profiles                   │
+  │    S2: informs research on experience, fairness, bias │
+  │    S3: roadmap of remaining sections                  │
+  │                                                       │
+  │ 🔧 PROPOSE                                            │
+  │    ✅ keep as-is                                      │
+  └───────────────────────────────────────────────────────┘
+
+  ─────────────────────────────────────────────────────────
+  📐  Length budget
+      v0516 current  : ~477 w / 22 sentences
+      v0517 proposed : ~412 w / 18 sentences (-65w, -4 sents)
+  ─────────────────────────────────────────────────────────
+
+  🗂️  Edits summary
+      ➕ P1.S4          add hinge sentence            +15 w
+      ✂  P2.S4          drop trait preview            -12 w
+      ✂  P2.S5          drop scale-repeat             -10 w
+      ✂  P2.S7+S8+S9    merge into one summary line   -28 w
+      ✏  P3.S3 retag    split S3a/S3b -> S3, S4        0 w
+      ✏  P4.S1          rewrite opener as bridge       0 w
+      ✂  P4.S2          drop duplicate capability     -20 w
+  ─────────────────────────────────────────────────────────
