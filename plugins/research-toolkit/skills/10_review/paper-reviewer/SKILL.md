@@ -139,3 +139,56 @@ Conduct a thorough evaluation of each manuscript section, documenting specific c
 - **Balance:** Are contrary viewpoints appropriately cited?
 - **Accuracy:** Are citations accurate and appropriate?
 - **Self-citation:** Is there excessive or inappropriate self-citation?
+
+---
+
+## Writing Review Feedback Constructively
+
+The author will read every word of your review and will quote your
+exact sentences in their rebuttal. Two writing habits avoid friction
+without softening rigorous assessment.
+
+**1. Write each concern as a complete, quotable sentence.** Authors
+will quote your sentence verbatim in the response letter. A clear,
+self-contained sentence yields a clean back-and-forth; a half-finished
+thought or run-on paragraph forces the author to paraphrase, which
+they should not do (see `paper-rebuttal/ref/principles.md` Principle 12)
+and which invites avoidable disagreement.
+
+  Good: "The IRB exemption does not establish ToS compliance with the
+        source platforms; the manuscript should address platform terms
+        of service separately."
+
+  Bad:  "Ethical issues remain. Platforms? Consent? IRB scope is
+        addressed but other concerns are not. Please discuss."
+
+**2. Frame each concern as the diagnostic question or specific change
+you want.** A diagnostic question lets the author respond with data;
+a specific-change request lets the author commit to a revision.
+Vague displeasure makes both impossible and tends to be answered with
+defensive prose rather than a real fix.
+
+  Good: "Is it possible (for example) that the LLM is largely echoing
+        sentiment, so reviews with positive language get high trait
+        scores and also get high star ratings?"
+        (specific diagnostic; author can run a partial-correlation
+        analysis to address it)
+
+  Bad:  "The high correlations are concerning."
+        (no specific test; invites a hand-wave reply)
+
+**3. Distinguish hard-blocking concerns from preferences.** Mark
+weaknesses you consider must-fix vs. nice-to-have, so the author knows
+where to invest effort. Mixing the two without labels produces
+exhausting rebuttals that lose the editor's attention.
+
+**4. Keep tone professional and direct.** State disagreements as
+substantive critiques, not as judgments of the authors' competence or
+honesty. "The claim is not supported by the data shown" is a strong
+criticism; "the authors clearly do not understand X" is not — it
+moves the discussion away from the data.
+
+**5. Do not invent quoted phrases.** If you put text in quotation
+marks, those words must appear in the manuscript. Inventing a phrase
+("the authors claim ...") that the manuscript never used wastes the
+author's response budget on disclaiming language they never wrote.

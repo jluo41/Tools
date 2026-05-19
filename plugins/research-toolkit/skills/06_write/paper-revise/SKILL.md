@@ -544,16 +544,43 @@ If the paper defines LaTeX macros for inline reviewer comments (e.g.,
 never compile) and use the curly-brace `{INITIALS} text` form regardless
 of whether the paper defines macros.
 
-Multiple reviewer comments stack on separate lines:
+**Replying to an existing comment.** When CC (or a coauthor) responds to
+an existing `%% Comments: {INITIALS} ...` line, the reply is **appended
+inline to the same line**, separated by `========>`. It does **not**
+start a new line and does **not** open a fresh `%% Comments:` thread:
+
 ```latex
-%% Comments: {RA} R2.W1: Claim unsupported by evidence.
-%% Comments: {JL} R2.W1: Added three citations and quantitative comparison.
-%% Comments: {RA} R3.W2: Redundant with Section 4.
-%% Comments: {JL} R3.W2: Removed here, kept in Section 4 only.
+%% Comments: {JL} v0517: rewrite the above two, maybe just to be one single sentence. ========> {CC} v0517: merged the two agent fragments into one sentence; dropped the Table 1 cite.
+```
+
+**Format:** `<existing %% Comments: line> ========> {INITIALS} v<DATE>: <reply text>`
+— eight equals signs, a `>`, a space, then `{INITIALS}` and the body
+in the same `{INITIALS} text` form. The entire thread (question +
+reply) lives on one physical line, so a question-and-answer pair stays
+visually glued together.
+
+The visual rule: `%% Comments:` opens a thread; `========>` appends a
+reply to that same line. A reader skimming the file sees the original
+ask and the response side-by-side without scanning down. A new
+`%% Comments:` line is reserved for raising a **new** point on the
+sentence, never for replying.
+
+Multiple replies can chain on the same line:
+```latex
+%% Comments: {RA} R2.W1: Claim unsupported. ========> {JL} R2.W1: Added three citations and CIs. ========> {RA} R2.W1: Citations fine, numbers still soft. ========> {JL} R2.W1: Re-ran with 95% CIs; tightened.
+```
+
+Two unrelated reviewer threads on the same sentence stay as separate
+`%% Comments:` lines, each with their own inline arrow replies:
+```latex
+%% Comments: {RA} R2.W1: Claim unsupported by evidence. ========> {JL} R2.W1: Added three citations.
+%% Comments: {RA} R3.W2: Redundant with Section 4. ========> {JL} R3.W2: Removed here, kept in §4 only.
 ```
 
 Only add `%% Comments:` lines when a reviewer comment is relevant to
-that sentence. Not every sentence needs them.
+that sentence. Not every sentence needs them. When you are *responding*
+to an existing comment rather than raising a new point, always append
+`========>` to the existing line, never open a new `%% Comments:` line.
 
 **Variants:**
 

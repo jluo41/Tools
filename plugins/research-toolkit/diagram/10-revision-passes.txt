@@ -1,0 +1,109 @@
+🪨 → 💎  Paragraph Revision Passes (coarse to fine)
+=====================================================
+
+  Revising a paragraph is NOT one pass. It is two zoom levels
+  (粗修 / 精修), applied at different stages of the paper life.
+  The skill you reach for depends on BOTH the zoom level AND
+  the stage of revision.
+
+
+─§ 🔍 Two zoom levels per paragraph ────────────────────────
+
+   ┌────────────────────────────┐    ┌────────────────────────────┐
+   │ 🪨  粗修  (coarse pass)    │    │ 💎  精修  (fine pass)      │
+   │ ───────────────            │    │ ───────────────            │
+   │ high-level constraints     │    │ sentence-level surgery     │
+   │ story logic & flow         │    │ word choice                │
+   │ topic-sentence placement   │    │ tense / voice consistency  │
+   │ paragraph length ≤ 6 ¶s    │    │ citation placement         │
+   │ AI-voice scrub             │    │ punctuation / spacing      │
+   │ sentence-length ceiling    │    │ cross-ref resolves         │
+   │                            │    │                            │
+   │ DO NOT read sentences      │    │ READ every sentence        │
+   │ one-by-one yet             │    │ in isolation               │
+   │ FLAG, don't fix            │    │ FIX, don't restructure     │
+   └────────────────────────────┘    └────────────────────────────┘
+              │                                  ▲
+              │  pass 1 first                    │
+              └────────── then pass 2 ───────────┘
+
+
+─§ 📅 Stage-dependent: which pass dominates ────────────────
+
+  Same paragraph at different revision stages → different toolset.
+
+  +----+----------+----------------+------------------------------+
+  |    | Stage    | Dominant pass  | Concern                      |
+  +----+----------+----------------+------------------------------+
+  | 🌱 | early    | 🪨 粗修 only   | structure, ordering,         |
+  |    | (v0..v1) |                | which claim per ¶,           |
+  |    |          |                | does the logic land?         |
+  +----+----------+----------------+------------------------------+
+  | 🌿 | mid      | 🪨 + 💎 mixed  | AI-voice scrub,              |
+  |    | (v2..v3) |                | sentence compression,        |
+  |    |          |                | JL-comment integration       |
+  +----+----------+----------------+------------------------------+
+  | 🌳 | late     | 💎 精修 only   | punctuation, tense,          |
+  |    | (v4+)    |                | citations, copy-edit;        |
+  |    |          |                | no structural change         |
+  +----+----------+----------------+------------------------------+
+
+  ⚠️  💎 too early = wasted work; the sentence may be cut by 🪨
+      in the next round.
+  ⚠️  🪨 too late  = breaks already-approved structure.
+
+
+─§ 🎯 What 粗修 actually checks ─────────────────────────────
+
+  □ Does each sentence carry ONE idea (not stacked)?
+  □ Is the paragraph ≤ 6 sentences (hard ceiling)?
+  □ Does the story logic flow S1 → S2 → ... → Sn without jumps?
+  □ Is the topic sentence actually at S1?
+  □ Any AI voice? (buzzword stacks, italics-on-nouns, hype verbs)
+  □ Any em-dashes? (forbidden)
+  □ Any redundant sentences saying the same thing twice?
+
+  >>> NO sentence-level rewriting in this pass <<<
+  >>> Produce a diagnosis (🔴/🟡/🟢), then stop <<<
+
+
+─§ 🔬 What 精修 actually checks ─────────────────────────────
+
+  □ Word choice: strong verbs, no hedging
+  □ Tense consistency within paragraph
+  □ Active vs passive voice intent
+  □ Punctuation, spacing, citation format
+  □ Cross-references resolve
+  □ JL `%% Comments:` lines preserved verbatim
+  □ Compress (drop adjectives) rather than split
+
+  >>> Read each sentence aloud <<<
+  >>> Diff should be small <<<
+
+
+─§ 🧭 Which skill for which combination ────────────────────
+
+  (Paragraph-level revision mapped to skills/)
+
+  🌱 + 🪨 ──▶  paper-structure-planning
+               diagnose-first audit (severity-ranked 🔴/🟡/🟢)
+
+  🌿 + 🪨 ──▶  paper-revise  (story-logic mode)
+               compress-not-split, AI-voice scrub,
+               JL `%% Comments:` integration
+
+  🌿 + 💎 ──▶  paper-revise  (sentence mode)
+               per-`%% ---- P.S ----` surgical edits
+
+  🌳 + 💎 ──▶  manuscript-optimizer  +  citation-verifier
+               paper-claim-audit  +  paper-diff-pdf
+
+
+─§ 🔁 Rule of thumb ─────────────────────────────────────────
+
+   "粗修 says WHAT the paragraph should claim and HOW it flows.
+    精修 says HOW each sentence should land.
+    Both are needed, but not on the same day."
+
+   Before editing: ask which pass you are in.
+   Before committing: ask whether 🪨 closed cleanly before 💎 opened.

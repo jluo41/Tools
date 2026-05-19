@@ -215,3 +215,109 @@ Principle 11: Tone
 
   Brief:       Don't pad with pleasantries. One opening sentence of thanks,
                then straight to the substance.
+
+  Mandatory opener pattern: EVERY response block must begin with one of:
+    - "We thank the reviewer/editor for ..."
+    - "We are grateful to the reviewer/editor for ..."
+    - "We agree with the reviewer/editor that ..."
+    - "We appreciate this comment ..."
+    - "We accept this criticism ..."
+
+  Never open with a bare "Agreed." or "Added X." or "Task X provides ...".
+  Even for short responses, give one acknowledging clause naming the
+  specific concern before the substantive answer. Terse no-subject
+  openers read as dismissive even when the substance is strong.
+
+---
+
+Principle 12: Verbatim Reviewer Quoting with Source Tracking
+=============================================================
+
+When you quote the reviewer (Principle 10), the text inside the quote
+block MUST be a verbatim copy of the sentence(s) from the raw review
+file. Do not paraphrase, summarize, fix grammar, or smooth typos.
+Reviewers routinely grep your rebuttal against their own letter to
+verify they were quoted accurately; a paraphrase invites a strong
+negative reaction even when your response is otherwise excellent.
+
+  Rules:
+
+    - Quote VERBATIM. Preserve reviewer typos ("logacion") and
+      punctuation. The only allowed adjustment is LaTeX escaping
+      (`%` -> `\%`, `&` -> `\&`, `<` -> `\textless{}`).
+    - Use `[\ldots]` to indicate elision when skipping irrelevant
+      mid-passage text. NEVER use `[\ldots]` to replace material that
+      changes the reviewer's meaning.
+    - Do NOT flatten reviewer questions into reviewer assertions.
+      If the reviewer asked "Is it possible the LLM is largely echoing
+      sentiment?" your quote must include the question mark; do not
+      rephrase as "The LLM is largely echoing sentiment."
+    - Do NOT attribute manuscript-derived phrasings to the editor or
+      reviewer. The editor only said what the editor wrote.
+    - Above each quote block, add a LaTeX comment with the source:
+        % Source: A-review-content/review-R1.md:L42-L44
+      This is for internal grep / co-author cross-reference; the
+      comment is invisible in the rendered PDF.
+    - Multi-paragraph concerns: quote the most pointed 1-3 sentences in
+      full; supplement with `[\ldots]` only if you skip text that does
+      not change the meaning.
+
+  If you cannot find a verbatim source in the raw review files, do not
+  invent text. Add a source comment noting where the concern came from
+  (e.g., cover letter, AC summary) and quote that source directly.
+
+---
+
+Principle 13: No Internal Scaffolding in the Rendered PDF
+==========================================================
+
+The reviewer-facing PDF must contain zero internal-process artifacts.
+Reviewers do not have access to your task-tracker, decision log, file
+paths, or revision-checklist IDs, and seeing them feels like reading
+someone else's project-management notes.
+
+  Strip from rendered output (keep in LaTeX comments only):
+
+    - File paths:    `04-methods.tex`, `examples/ProjA/...`
+    - Revision IDs:  `[R23]`, `[R6]` from revision-checklist.md
+    - Task IDs:      `task \texttt{B6}`, `task \texttt{C5}`
+    - Decision IDs:  `[D-001]`, `[D-002]` from DECISIONS.md
+    - Source paths:  `A-review-content/review-R1.md:L42` (use a `%`
+                     LaTeX comment, never visible prose)
+    - Label names:   `\texttt{sec:cross_family_judge}`,
+                     `\texttt{tab:hard_case_human}`
+
+  Replace task IDs with PLAIN-ENGLISH + manuscript anchor:
+
+    Bad:   "Bootstrap CIs (task \texttt{B6}) confirm precision."
+    Good:  "1,000-resample bootstrap confidence intervals
+            confirm precision (SPS r = 0.814, 95% CI [0.812, 0.816])."
+
+    Bad:   "Discriminant evidence from task \texttt{C5}."
+    Good:  "Discriminant evidence from a partial-correlation analysis
+            controlling for star rating (Supplementary Section S5.2,
+            Partial Correlation Analysis)."
+
+  Macro design pattern (if using a structured LaTeX rebuttal template):
+
+    - Define macros (\paperedit, \taskref, \decref) that accept internal
+      IDs as arguments but DO NOT render those IDs to the PDF.
+    - The first arg can be a filename like "04-methods.tex"; resolve it
+      to a human section name ("Section Methods") via a lookup table
+      in the macro definition.
+    - \decref should render NOTHING in the PDF (purely team-internal).
+    - \paperedit and \taskref should render "Manuscript change. In
+      Section X: ..." and "Supporting analysis. ..." with no bracket
+      tag and no file path.
+
+  Verification: after compiling, run
+    pdftotext rebuttal.pdf - | grep -E 'task A|task B|task C|sec:|tab:|D-001|D-002|examples/|A-review-content|\\[R[0-9]+\\]'
+  Expect zero hits before submission.
+
+  Cross-references to the manuscript: when the rebuttal is compiled
+  standalone (not as part of the paper build), `\ref{}` calls to paper
+  labels will render as `??`. Either (a) wire up `xr` with
+  `\externaldocument` to the paper's `.aux` file, or (b) hardcode the
+  section/figure names in prose (e.g., "Supplementary Section S5.2
+  (Partial Correlation Analysis)"). Option (b) is more robust for
+  one-shot rebuttal compilations.

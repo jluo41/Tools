@@ -214,6 +214,12 @@ perl "$SCRIPT_DIR/silence-minor-changes.pl" \
     2> >(sed 's/^/    /' >&2)
 rm -f "$WORK_DIR/$DIFF_NAME.tex.bak"
 
+# Run post-flatten hook (defined optionally in config.sh)
+if declare -F POST_FLATTEN_HOOK >/dev/null; then
+    echo "[4c] Running POST_FLATTEN_HOOK from config.sh ..."
+    POST_FLATTEN_HOOK "$WORK_DIR/$DIFF_NAME.tex"
+fi
+
 # ─── 5. Stage support files + figure symlink ──────────────────────────────
 echo "[5/6] Staging support files + figure symlink ..."
 (cd "$WORK_DIR" && cp new/*.bib new/*.cls new/*.bst new/*.sty . 2>/dev/null || true)
