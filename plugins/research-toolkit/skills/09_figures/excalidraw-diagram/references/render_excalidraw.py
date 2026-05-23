@@ -141,7 +141,7 @@ def render(
         page.goto(template_url)
 
         # Wait for the ES module to load (imports from esm.sh)
-        page.wait_for_function("window.__moduleReady === true", timeout=30000)
+        page.wait_for_function("window.__moduleReady === true", timeout=180000)
 
         # Inject the diagram data and render
         json_str = json.dumps(data)
