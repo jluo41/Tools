@@ -724,6 +724,49 @@ the trail; git history captures the diff.
 `{INITIALS} text` — space after the closing brace, no colon. Multiple
 reviewers stack as separate `%% Comments:` lines.
 
+### Multi-note consolidation and arrow conventions
+
+When a sentence has **multiple coauthor notes** (and optional coauthor
+self-replies), consolidate them into ONE `%% Comments:` line with visual
+separators, then append the JL reply at the end. Two visual markers are
+used — never interchange them:
+
+| Marker | Role |
+|---|---|
+| `----------` (4+ dashes, no arrowhead) | **Separator** between coauthor notes on the same sentence |
+| `==========>` (4+ equals + arrowhead) | **JL reply marker** — never used as a separator |
+| `-----> {JL}` in the index header | **Resolved marker** — promoted into `%% ---- PX.SY -----> {JL} [...] ----` once every coauthor note on the sentence has a JL reply |
+
+Multiple notes get `[1]`, `[2]`, `[3]` enumeration so the JL reply can
+reference them by number:
+
+```latex
+%% ---- P2.S6 -----> {JL} [v0516 GG — lit-review = positioning] ----
+What is missing is knowledge creation infrastructure ...
+%% [1] Comments: {GG} v0515 note: [HL: "..."] rewrite the ending ... ---------- [2] Comments: {GG} v0515 reply: a literature review is positioning, not related-work. ==========> {JL} v0516: thanks GG. Applied (1) by adding P2.S7 (artifact + DIKW) and (2) by adding P2.S8 (contribution claim).
+%
+```
+
+A single coauthor note drops the `[1]` prefix and the separator:
+
+```latex
+%% ---- P2.S4 -----> {JL} [v0515 GG — claim-verb softened] ----
+Organizational learning theory signifies the importance of learning ...
+%% Comments: {GG} v0515: claim-verb softened from "explains why" to "signifies the importance of". ==========> {JL} v0515: applied GG rewrite verbatim; dropped redundant "from experience".
+%
+```
+
+**Why two distinct markers:**
+- Dashes (`----------`) are visually quiet — they read as inter-note separators.
+- Equals + arrowhead (`==========>`) are visually loud — they mark the *response* that closes the loop. `grep "==========>"` returns every JL reply in the file.
+- The header `-----> {JL}` is the resolution-marker convention: `grep "-----> {JL}"` returns every fully-closed sentence block.
+
+**Common mistakes to avoid:**
+- Using `==========` (no arrowhead) as a note separator: conflates "still a coauthor note" with "JL replying". Use `----------` between notes.
+- Using `==========>` for both separator AND reply: same problem. The arrowhead is reserved for JL.
+- Forgetting to promote the index header to `-----> {JL}` after writing the JL reply: the audit grep will miss the block.
+- Mixing `✅` with the arrow convention: ✅ is deprecated in this workflow; `-----> {JL}` replaces it.
+
 ### When to skip
 
 - **Reviewer's note no longer has a target** (the underlying text was

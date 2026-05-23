@@ -177,3 +177,103 @@ Does NOT own:
 If a develop run fails because of an Endpoint_Set or ModelSet issue, escalate
 to `/haipipe-end-endpointset review` or `/haipipe-nn modelset review` rather
 than patching here.
+
+---
+
+Known Pitfalls (verified on this account: 583537983112 dev / us-east-2)
+------------------------------------------------------------------------
+
+These same constraints apply to the sibling `-deploy-sagemaker` skill —
+read both pitfalls before running any SageMaker action.
+
+**1. SSO role needs SageMaker action permissions explicitly.** The
+   `df-rxinform-nonprod-jhuuser` permission set (and most baseline DrFirst
+   SSO sets) does NOT grant `sagemaker:*` by default. Without it the first
+   `DescribeEndpoint` / `CreatePipeline` call returns:
+
+   ```
+   AccessDeniedException ... no identity-based policy allows the
+   sagemaker:DescribeEndpoint action
+   ```
+
+   Required IAM actions for the train + deploy lifecycle:
+
+   ```
+   sagemaker: CreatePipeline, StartPipelineExecution,
+              DescribePipelineExecution, StopPipelineExecution,
+              ListPipelines, CreateModel, CreateEndpointConfig,
+              CreateEndpoint, UpdateEndpoint, DescribeEndpoint,
+              DescribeEndpointConfig, DescribeModel, ListEndpoints,
+              ListEndpointConfigs, ListModels, DeleteEndpoint,
+              DeleteEndpointConfig, DeleteModel, InvokeEndpoint,
+              CreateModelPackage, CreateModelPackageGroup,
+              DescribeModelPackage, ListModelPackages, RegisterModel
+   iam:       PassRole on SageMaker-ExecutionRole-* (with
+              iam:PassedToService = sagemaker.amazonaws.com)
+   application-autoscaling: RegisterScalableTarget, PutScalingPolicy,
+              DescribeScalableTargets, DescribeScalingPolicies
+   ecr:       BatchGetImage, GetDownloadUrlForLayer (for pull)
+              PutImage, InitiateLayerUpload, UploadLayerPart,
+              CompleteLayerUpload (for push)
+   s3:        GetObject / PutObject on the standard model bucket
+              (rxinform-analytics-personalization in dev)
+   ```
+
+   Cleanest fix: attach AWS-managed `AmazonSageMakerFullAccess` to the
+   SSO permission set. Curated alternative in
+   `examples/ProjA-Timing-01-OptTime/tasks/C01_endpoint/01_endpoint/IAM_REQUEST.md`.
+
+**2. Multi-arch OCI manifests break SageMaker.** If a training image is
+   built with `docker buildx` defaults (multi-arch + provenance + SBOM),
+   the resulting ECR tag is an `application/vnd.oci.image.index.v1+json`
+   manifest, which SageMaker rejects:
+
+   ```
+   ValidationException ... Unsupported manifest media type
+   application/vnd.oci.image.index.v1+json for image <ECR URI>
+   ```
+
+   Build training images with the documented flags
+   (`platform-sagemaker-training/CLAUDE.md` mirrors the inference doc):
+
+   ```bash
+   docker buildx build \
+     --platform linux/amd64 \
+     --provenance=false --sbom=false \
+     --tag <ECR URI>:<tag> --push .
+   ```
+
+   To verify before deploy:
+
+   ```bash
+   aws ecr describe-images --repository-name <repo> \
+     --query 'imageDetails[?contains(imageTags, `latest`)].imageManifestMediaType'
+   # must NOT contain "index" — should be "manifest.v1+json"
+   ```
+
+**3. Find the proven-working image before pushing a new one.** Before
+   building/pushing your own training image, list what's already in use:
+
+   ```bash
+   # All in-service endpoints' training images
+   for ep in $(aws sagemaker list-endpoints --query 'Endpoints[*].EndpointName' --output text); do
+     cfg=$(aws sagemaker describe-endpoint --endpoint-name $ep --query 'EndpointConfigName' --output text)
+     mdl=$(aws sagemaker describe-endpoint-config --endpoint-config-name $cfg --query 'ProductionVariants[0].ModelName' --output text)
+     img=$(aws sagemaker describe-model --model-name $mdl --query 'PrimaryContainer.Image' --output text)
+     echo "$ep -> $img"
+   done
+   ```
+
+   In this account, the proven-working inference image for SMS-family
+   models is `personalize-inference-container:latest` (NOT
+   `docker-inference-standard`, which had broken multi-arch tags on
+   2026-05-21). Training images live in `docker-training-v2`. Pointing
+   configs at the wrong repo wastes a 10-minute deploy cycle on the
+   manifest-format error.
+
+**4. STS session tokens expire mid-deploy.** SSO-assumed STS credentials
+   are typically ~1 hour. A long `develop` Pipeline run can outlast the
+   session and start failing intermittently with `InvalidClientTokenId`.
+   Refresh with `aws sso logout && aws sso login` (or use AWS profiles
+   with auto-refresh: `aws configure sso` + `export AWS_PROFILE=<name>`)
+   before kicking off multi-stage Pipelines.

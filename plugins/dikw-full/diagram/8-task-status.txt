@@ -1,0 +1,159 @@
+📊  DIKW — Task Status Lifecycle  (completed_tasks entries)
+============================================================
+
+  Every task that the orchestrator touches ends up in
+  📦 completed_tasks[phase][i] = { name, status, plan_version }.
+
+  The status field decides how that task is treated by:
+    🛂 the pre-gate artifact check
+    🔁 pending_tasks recomputation on revise plan
+    📝 the final report
+    ♻️  the state-vs-disk consistency check at startup
+
+
+─§ 🌱  Where statuses come from ────────────────────────────
+
+  🌱  Where statuses come from
+  -----------------------------
+
+   📋 pending_tasks[phase]
+              │
+              ▼
+       🔍 /dikw-context
+              │
+   ┌──────────┼─────────────┐
+   │          │             │
+   ▼          ▼             ▼
+  ✅ READY  ⏭️  SKIP       🚫 BLOCKED
+   │          │             │
+   │          │             └──> jump to 🚦 gate
+   │          │                  (NO entry written for this
+   │          │                   task — it stays in pending)
+   │          ▼
+   │   append { status: "skipped" }
+   │
+   ▼
+  🔧 /dikw-<phase>
+   │
+   ├── ok      ──> append { status: "done"   }
+   └── crash   ──> append { status: "failed" }
+
+
+─§ 🔄 Then later, on  revise plan: ─────────────────────────
+
+   🔄 Then later, on  revise plan:
+   ────────────────────────────────
+   for name in new_plan.revision.changes.removed[phase]:
+       if entry exists with that name:
+           set entry.status = "invalidated"
+
+
+─§ 📋  The five statuses ───────────────────────────────────
+
+  📋  The five statuses
+  ----------------------
+
+  +-----------------+----------------------------------------------+
+  | 🏷️  Status      | 💡 Meaning                                   |
+  +-----------------+----------------------------------------------+
+  | ✅ done         | task ran in this session; artifacts on disk  |
+  | ♻️  reused      | task ran in a PRIOR session; artifacts kept  |
+  | ⏭️  skipped     | /dikw-context returned SKIP; no artifacts    |
+  | ❌ failed       | task crashed mid-run; artifacts may be partial|
+  | 🚫 invalidated  | dropped by a later plan revision; folder kept|
+  +-----------------+----------------------------------------------+
+
+
+─§ 🛂  Contract effects (who treats which status, how) ─────
+
+  🛂  Contract effects (who treats which status, how)
+  ----------------------------------------------------
+
+  +-----------------+--------+--------+--------+--------+--------+
+  | 🏷️  Status      | 🛂 Pre-| 📝 Final| 🔁 Re- | ♻️  Re- | 🆕 NN  |
+  |                 |  gate  | report  |  enter | covery |  slot  |
+  |                 |  check |  reads  | pend?  |  demote| reuse  |
+  +-----------------+--------+--------+--------+--------+--------+
+  | ✅ done         |   ✅   |   ✅   |   ❌   |  ✅    |   ❌   |
+  | ♻️  reused      |   ✅   |   ✅   |   ❌   |  ✅    |   ❌   |
+  | ⏭️  skipped     |   ❌   |   ❌   |   ❌   |  ❌    |   ❌   |
+  | ❌ failed       |   ❌   |   ❌   |   ✅   |  ❌    |   ❌   |
+  | 🚫 invalidated  |   ❌   |   ❌   |   ✅*  |  ❌    |   ❌   |
+  +-----------------+--------+--------+--------+--------+--------+
+
+  Legend:
+    🛂 Pre-gate check   — artifact existence is enforced if ✅
+    📝 Final report     — task's report.md is included if ✅
+    🔁 Re-enter pending — task name eligible to land back in
+                          pending_tasks if a future plan re-adds it
+       (* invalidated names CAN re-enter, but the planner usually
+          assigns a fresh name; in practice this is rare)
+    ♻️  Recovery demote — if startup consistency check finds the
+                          folder/artifacts gone, status is demoted
+                          to "failed" so the task re-runs cleanly
+    🆕 NN slot reuse    — never. NN is monotonic by design (see
+                          diagram/5-snapshot-layout.txt).
+
+
+─§ 🎯  Why each status exists ──────────────────────────────
+
+  🎯  Why each status exists
+  --------------------------
+
+  ✅ done         The normal happy path. Counted everywhere.
+
+  ♻️  reused      A snapshot can host multiple sessions. Earlier
+                  insights/ may already satisfy a new session's
+                  task. Reused entries behave like ✅ done for
+                  contract / report purposes, but the audit trail
+                  records they came from a prior session.
+
+  ⏭️  skipped     /dikw-context found the task unnecessary (e.g.,
+                  the report already exists, or the task is
+                  redundant given upstream context). No artifact
+                  contract — it was a deliberate non-run.
+
+  ❌ failed       The phase skill crashed or returned an error.
+                  The folder may be partial or empty. The orchestrator
+                  breaks to the gate; G-{phase} sees the failure and
+                  proposes 🔄 revise [feedback]. The next plan
+                  decides whether to retry with the same name
+                  (same NN folder) or rename / drop the task.
+
+  🚫 invalidated  Plan v2+ explicitly dropped this task via
+                  revision.changes.removed. The folder remains on
+                  disk for audit, but the task is "gone" from the
+                  active plan's perspective. Pre-gate doesn't
+                  check it; final report ignores it.
+
+
+─§ ⚠️  Common pitfalls ────────────────────────────────────
+
+  ⚠️  Common pitfalls
+  --------------------
+
+  🪤  Treating ⏭️  skipped as ✅ done in the report
+      → final report should NOT cite skipped tasks; their reports
+        either don't exist or are stale.
+
+  🪤  Letting ❌ failed entries pile up without a 🔄 revise
+      → the orchestrator MUST break to gate after a failed task;
+        otherwise the gate fires with an artifact gap and proposes
+        revise on its own (correct, but slower than necessary).
+
+  🪤  Deleting a 🚫 invalidated folder by hand
+      → safe in principle, but the audit trail is gone. Prefer to
+        keep them; they cost only disk space.
+
+
+─§ 🔗  See also ────────────────────────────────────────────
+
+  🔗  See also
+  -------------
+
+  📐 diagram/9-revise-flow.txt           — the reconciliation flow
+                                        that produces 🚫 invalidated
+  ♻️  dikw-session/SKILL.md           — startup consistency check
+                                        and pre-gate artifact check
+  📋 dikw-plan/SKILL.md               — revision.changes blocks
+                                        that drive invalidation
