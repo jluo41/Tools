@@ -41,12 +41,23 @@ D layer (Data)
 -----------------------
 
 ```yaml
-exp_id:    <NN>_<slug>                 # source experiment ID
+source_id: <task-id|exp-id>            # WHERE this observation came from
+                                       # task id (e.g. T1, "regression_v2") for
+                                       # C_task-sourced D cards
+                                       # experiment id (e.g. E07) for
+                                       # D_experiment-sourced D cards (rare)
 headline:  "<one-line number summary>" # e.g. "val: FiLM Δ -0.98 ± 0.27 mg/dL (p=0.018, n=3)"
 ```
 
 `headline` is the quick-load summary; specific numbers go in body's
 `## Numbers` table.
+
+Note on `source_id`: D and I cards almost always come from C_task
+results (a regression / display / individual-query task). The legacy
+`exp_id` field name implied D came from experiments — that was the
+old model. New model: D + I = C_task lens, K + W = D_experiment lens.
+For continuity, `exp_id` is accepted as a deprecated alias for
+`source_id` when present; new cards should use `source_id`.
 
 
 I layer (Information)
@@ -247,7 +258,15 @@ Validation rules (any layer)
 
   - YAML frontmatter parses (yaml.safe_load)
   - `id` letter matches `layer` (D, I, K, W)
-  - `sources` are existing entry IDs OR experiment IDs (for D-layer's exp_id)
+  - `sources` field accepts:
+      - D / I cards: task ids (e.g. T1, T2) — points into the
+        plan's task_batch; the task's results/ folder is the
+        evidence anchor
+      - K / W cards: experiment ids (e.g. E07) — points into the
+        plan's experiment_batch; experiment.yaml is the evidence
+        anchor (status MUST be `confirmed`)
+      - Strategic W cards: a list of K ids (e.g. [K01, K03, K05])
+        instead of a single E; mark `type: strategic` in body
   - `ref_by` consistent: if K03 lists `ref_by: [W01]`, W01 MUST list
     `sources: [K03]` (auto-maintained)
   - No `</`-style HTML, no `[[wikilink]]` — pure standard markdown
