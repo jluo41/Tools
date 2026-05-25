@@ -28,10 +28,10 @@ insights/
 ├── W_wisdom/
 │   ├── INDEX.md                   ← W-layer sub-index (auto-maintained)
 │   └── W01_*.md, ...
-├── I_patterns/
-│   └── P01_*.md, ...              (no sub-INDEX; grep tags is enough)
-└── D_observations/
-    └── O01_*.md, ...              (no sub-INDEX; grep tags is enough)
+├── I_information/
+│   └── I01_*.md, ...              (no sub-INDEX; grep tags is enough)
+└── D_data/
+    └── D01_*.md, ...              (no sub-INDEX; grep tags is enough)
 ```
 
 Why K and W get sub-INDEX but D and I don't:
@@ -39,7 +39,7 @@ Why K and W get sub-INDEX but D and I don't:
   - D and I are SUPPORT layers — usually reached by traversal, not lookup
   - K/W counts stay small (3-15 entries) so sub-INDEX is cheap
   - D/I counts can grow (20-90+) so a sub-INDEX would be expensive to maintain;
-    `grep tags:.*<topic> D_observations/*.md` is fast enough.
+    `grep tags:.*<topic> D_data/*.md` is fast enough.
 
 
 INDEX.md format
@@ -57,8 +57,8 @@ Last rebuild: <ISO>
 ### <topic-1>
 - K03 — "<claim>"                     ← K layer prominent at top
 - W01 — "<rec>"                        ← W layer prominent
-- P02, P05 — patterns                  ← I layer summarized
-- O01-O07 — observations (7)           ← D layer just counted (or batched)
+- I02, I05 — patterns                  ← I layer summarized
+- D01-D07 — observations (7)           ← D layer just counted (or batched)
 
 ### <topic-2>
 ...
@@ -145,10 +145,10 @@ Case 3 — "Show me the evidence behind K03"  (deep dive)
 
 ```
 Step 1: Read K03 (already loaded in case 1)
-Step 2: Read K03.sources → P02
-        Read insights/I_patterns/P02_*.md                (~60 lines)
-Step 3: Read P02.sources → O01, O02, O03
-        Read insights/D_observations/{O01,O02,O03}_*.md   (~150 lines)
+Step 2: Read K03.sources → I02
+        Read insights/I_information/I02_*.md                (~60 lines)
+Step 3: Read I02.sources → D01, D02, D03
+        Read insights/D_data/{D01,D02,D03}_*.md   (~150 lines)
 
 TOTAL: ~250 additional lines on top of case 1.
 ```

@@ -1,6 +1,6 @@
 ---
 name: haipipe-insight-explore
-description: "Coverage / readability scanner of the haipipe-insight family. Reads the project's experiments/ and existing insights/ folders; reports which experiments are CONFIRMED and ready for synthesis, what's already in the insight base, and which gaps a session could close. NO code execution. Use to plan the next /haipipe-insight-session, or as a standalone read-only audit. Trigger: explore, scan, coverage, what can we synthesize, what's missing, /haipipe-insight-explore."
+description: "Coverage / readability scanner of the haipipe-insight family. Reads the project's experiments/ and existing insights/ folders; reports which experiments are CONFIRMED and ready for synthesis, what's already in the insight base, and which gaps a session could close. NO code execution. Use to plan the next /haipipe-application ask, or as a standalone read-only audit. Trigger: explore, scan, coverage, what can we synthesize, what's missing, /haipipe-insight-explore."
 argument-hint: [--project <path>]
 allowed-tools: Bash, Read, Grep, Glob, Skill
 ---
@@ -12,8 +12,8 @@ The **coverage scanner** for E_insight. Maps:
 
 ```
 experiments/           which ones are confirmed and ready to feed observations?
-insights/D_observations/   which experiments already have O entries?
-insights/I_patterns/       which observations already feed a pattern?
+insights/D_data/   which experiments already have D entries?
+insights/I_information/       which observations already feed a pattern?
 insights/K_knowledge/      which patterns elevated to knowledge?
 insights/W_wisdom/         which knowledge prompted action items?
 ```
@@ -36,18 +36,18 @@ Step 2: Scan experiments/
 
 Step 3: Scan insights/
   - For each layer (D / I / K / W):
-    - List entries (O*.md, P*.md, K*.md, W*.md)
+    - List entries (D*.md, I*.md, K*.md, W*.md)
     - Read each entry's source_experiment / scoped fields
   - Build cross-reference:
-    - which experiments already produced O entries
-    - which O entries feed P entries
-    - which P entries feed K entries
+    - which experiments already produced D entries
+    - which D entries feed I entries
+    - which I entries feed K entries
     - which K entries spawned W entries
 
 Step 4: Compute gaps
-  - experiments confirmed but no O entry yet      → "ready for observations"
-  - O entries without a P link                     → "candidate pattern source"
-  - P entries without a K link                     → "candidate knowledge source"
+  - experiments confirmed but no D entry yet      → "ready for observations"
+  - D entries without a P link                     → "candidate pattern source"
+  - I entries without a K link                     → "candidate knowledge source"
   - K entries without a W link                     → "candidate action source"
   - K entries with conflicting evidence            → "needs review"
 
@@ -65,32 +65,32 @@ Scanned at: <ISO>
 
 ## Experiments
 
-| ID | Slug              | Status       | O entry?  | Notes               |
+| ID | Slug              | Status       | D entry?  | Notes               |
 |----|-------------------|--------------|-----------|---------------------|
-| 02 | lhm_vs_baseline   | confirmed    | O01       | -                   |
+| 02 | lhm_vs_baseline   | confirmed    | D01       | -                   |
 | 04 | film_test_id      | confirmed    | (none)    | READY FOR SYNTHESIS |
 | 07 | param_matched     | inconclusive | (none)    | not ready           |
 | 12 | lhm_retest        | pending      | (none)    | runs in progress    |
 
 ## Insight base summary
 
-- D_observations:  3 entries (O01, O02, O03)
-- I_patterns:      2 entries (P01, P02)
+- D_data:  3 entries (D01, D02, D03)
+- I_information:      2 entries (I01, I02)
 - K_knowledge:     1 entry  (K01)
 - W_wisdom:        0 entries
 
 ## Gaps (synthesis opportunities)
 
-- experiment 04 (confirmed) → no O entry yet
-- O02 not yet referenced by any P entry
-- P02 references O01, O02 but no K entry has elevated it
+- experiment 04 (confirmed) → no D entry yet
+- D02 not yet referenced by any I entry
+- I02 references D01, D02 but no K entry has elevated it
 - K01 has no W entry yet
 
 ## Suggested next moves
 
-- `/haipipe-insight-data 04`        (write O entry for confirmed experiment 04)
-- `/haipipe-insight-information --scope O02,O03`  (extract pattern from these)
-- `/haipipe-insight-knowledge --scope P02`        (elevate P02 → knowledge)
+- `/haipipe-insight-data 04`        (write D entry for confirmed experiment 04)
+- `/haipipe-insight-information --scope D02,D03`  (extract pattern from these)
+- `/haipipe-insight-knowledge --scope I02`        (elevate I02 → knowledge)
 ```
 
 
@@ -115,7 +115,7 @@ Specialist tail
 
 ```
 status:    ok | blocked | failed
-summary:   "3 experiments confirmed, 2 still need O entries; 1 P→K elevation pending"
+summary:   "3 experiments confirmed, 2 still need D entries; 1 P→K elevation pending"
 artifacts: [stdout summary, insights/coverage.md (if --out)]
 next:      Pick a gap to close: /haipipe-insight-data <ID> | /haipipe-insight-information ...
 ```

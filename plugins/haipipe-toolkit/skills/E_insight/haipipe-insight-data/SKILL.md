@@ -1,6 +1,6 @@
 ---
 name: haipipe-insight-data
-description: "D-level observations specialist of the haipipe-insight family. Reads CONFIRMED experiment claims from D_experiment and synthesizes markdown observation entries into insights/D_observations/. NO code execution — pure markdown synthesis. Use when running D-phase via /haipipe-insight-session, or directly /haipipe-insight-data <experiment-id>. Trigger: D-level, observations, what did we observe, raw findings from experiments."
+description: "D-level observations specialist of the haipipe-insight family. Reads CONFIRMED experiment claims from D_experiment and synthesizes markdown observation entries into insights/D_data/. NO code execution — pure markdown synthesis. Use when running D-phase via /haipipe-application ask, or directly /haipipe-insight-data <experiment-id>. Trigger: D-level, observations, what did we observe, raw findings from experiments."
 argument-hint: [experiment_id] [--project <path>] [--slug <slug>]
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 ---
@@ -12,8 +12,8 @@ D-level of the Insight base (D → I → K → W). Reads CONFIRMED experiment
 claims and writes markdown observation entries.
 
 ```
-D — Observations: "what we observed"          ← THIS SKILL
-I — Patterns:     "what patterns emerged across observations"
+D — Data:         "what we observed"          ← THIS SKILL
+I — Information:      "what patterns emerged across observations"
 K — Knowledge:    "what we now believe is true"
 W — Wisdom:       "what we should do next"
 ```
@@ -45,10 +45,10 @@ Output
 ------
 
 ```
-examples/<project>/insights/D_observations/O{NN}_<slug>.md
+examples/<project>/insights/D_data/D{NN}_<slug>.md
 ```
 
-`NN` = next available 2-digit index across `D_observations/`.
+`NN` = next available 2-digit index across `D_data/`.
 
 
 Hard rules
@@ -76,7 +76,7 @@ Step 1: Parse args
 Step 2: Resolve paths
   - project root        from arg or cwd
   - experiment_dir      examples/<project>/experiments/<NN>_<slug>/
-  - insight_dir         examples/<project>/insights/D_observations/
+  - insight_dir         examples/<project>/insights/D_data/
 
 Step 3: Validate source
   - Read experiment.yaml
@@ -84,7 +84,7 @@ Step 3: Validate source
   - Note presence of CLAIMS_FROM_RESULTS.md and INTEGRITY_AUDIT.md
 
 Step 4: Pick output NN
-  - List existing insights/D_observations/O*.md
+  - List existing insights/D_data/D*.md
   - NN = max existing + 1 (zero-padded to 2 digits)
 
 Step 5: Compose entry (markdown, no Python)
@@ -94,8 +94,8 @@ Step 5: Compose entry (markdown, no Python)
   - Synthesize into the entry schema below
 
 Step 6: Write
-  - insights/D_observations/O{NN}_<slug>.md (atomic write)
-  - Update insights/INDEX.md (one line under D_observations section)
+  - insights/D_data/D{NN}_<slug>.md (atomic write)
+  - Update insights/INDEX.md (one line under D_data section)
 ```
 
 
@@ -128,7 +128,7 @@ numbers go in the `## Numbers` table body section.
 Definition of done
 -------------------
 
-- [ ] `insights/D_observations/O{NN}_<slug>.md` written, non-empty
+- [ ] `insights/D_data/D{NN}_<slug>.md` written, non-empty
 - [ ] Every cited number traceable to experiment.yaml or a specific
       metrics.json key (no fabricated numbers)
 - [ ] No interpretive claims (those are I / K level)
@@ -143,7 +143,7 @@ Disambiguation
 - experiment_id ambiguous (multiple matches) → ASK, list candidates
 - source experiment.result.status != confirmed → REFUSE; report status;
   suggest waiting or using a sibling skill once promoted to confirmed
-- slug collides with existing O*.md → bump NN; do not overwrite
+- slug collides with existing D*.md → bump NN; do not overwrite
 - new computation needed → STOP; recommend
   `/haipipe-task task-folder eval` to scaffold an eval task
 
@@ -151,7 +151,7 @@ Disambiguation
 Risk profile
 -------------
 
-WRITES one new file under `examples/<project>/insights/D_observations/`.
+WRITES one new file under `examples/<project>/insights/D_data/`.
 APPENDS one line to `insights/INDEX.md`. Read-only on everything else.
 Never modifies experiments/ or tasks/ contents.
 
@@ -161,7 +161,7 @@ Specialist tail
 
 ```
 status:    ok | blocked | failed
-summary:   "O03_<slug> written from experiment <NN>_<slug>"
-artifacts: [insights/D_observations/O{NN}_<slug>.md, insights/INDEX.md]
+summary:   "D03_<slug> written from experiment <NN>_<slug>"
+artifacts: [insights/D_data/D{NN}_<slug>.md, insights/INDEX.md]
 next:      /haipipe-insight-information to extract cross-observation patterns
 ```

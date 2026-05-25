@@ -51,8 +51,8 @@ task_name:  <name>
 context:
   plan_section:        <yaml block for this phase's task>
   source_experiment:   <yaml block from experiment.yaml>     # D-phase only
-  scope_observations:  [O01, O03, O07]                       # I-phase
-  scope_patterns:      [P02, P05]                            # K-phase
+  scope_observations:  [D01, D03, D07]                       # I-phase
+  scope_patterns:      [I02, I05]                            # K-phase
   scope_knowledge:     [K03]                                 # W-phase
   prior_entries:       <list of existing entries at this layer>
 
@@ -63,7 +63,7 @@ blocker:
 
 # Filled when verdict=SKIP
 skipped:
-  reason:    "O entry already exists for experiment 04 (O05)"
+  reason:    "D entry already exists for experiment 04 (D05)"
 ```
 
 
@@ -83,13 +83,13 @@ Step 4: Per-phase readiness check
   D:
     - Source experiment in plan.experiments_needed.confirmed?
     - experiment.yaml result.status == confirmed?
-    - O entry for this (experiment, task_name) already exists? → SKIP
+    - D entry for this (experiment, task_name) already exists? → SKIP
   I:
-    - All scoped O entries exist?
-    - At least 2 O entries scoped?
-    - P entry for this task already exists? → SKIP
+    - All scoped D entries exist?
+    - At least 2 D entries scoped?
+    - I entry for this task already exists? → SKIP
   K:
-    - At least 1 P entry scoped + cited?
+    - At least 1 I entry scoped + cited?
     - K entry for this task already exists? → SKIP (unless plan says UPDATE)
   W:
     - At least 1 K entry scoped?

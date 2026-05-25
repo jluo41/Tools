@@ -58,7 +58,7 @@ Phase 2 — EXPERIMENT (conditional)
 Phase 3 — D-PHASE  (Observations)
   For each planned D task:
     Skill("haipipe-insight-data", args="<exp_id>")
-  → writes insights/D_observations/O{NN}_*.md
+  → writes insights/D_data/D{NN}_*.md
 
   Gate: Skill("haipipe-application-gate", args="D")
     revise → back to Phase 1 with feedback
@@ -66,7 +66,7 @@ Phase 3 — D-PHASE  (Observations)
 
 Phase 4 — I-PHASE  (Patterns)
   Skill("haipipe-insight-information", args="--scope <O*>")
-  → writes insights/I_patterns/P{NN}_*.md
+  → writes insights/I_information/I{NN}_*.md
 
   Gate: revise / approve
 
@@ -145,9 +145,9 @@ examples/<project>/insights/sessions/<YYYY-MM-DD>_<slug>.md
 - asked_at:           <ISO>
 - scanned_entries:    [K03, I02, ...]
 - new_experiments:    [12_param_matched_film, ...]    (or [] if none)
-- new_or_updated:     [O05 created, K03 updated, ...]
+- new_or_updated:     [D05 created, K03 updated, ...]
 - final_answer:       "<one-paragraph>"
-- citation_trail:     [K03 → I02 → O05, O07]
+- citation_trail:     [K03 → I02 → D05, D07]
 - git_sha:            <sha of HEAD when session completed>
 - duration:           <wallclock>
 ```
@@ -173,7 +173,7 @@ Risk profile
 WRITES heavily to insights/. May TRIGGER:
 - New experiments via Skill("haipipe-experiment-design new" + "bridge")
   → these in turn scaffold tasks under tasks/ and run GPU jobs
-- Existing K/W entries may be UPDATED (rewriting); D / I / P entries
+- Existing K/W entries may be UPDATED (rewriting); D / I / I entries
   are append-only
 
 Calls external LLM (Codex MCP) indirectly via experiment-bridge's
@@ -188,8 +188,8 @@ Specialist tail
 status:    ok | blocked | failed | answered | budget | paused
 summary:   "Q01 answered via K03 (existing) + new experiment 12"
 artifacts: [insights/sessions/<DATE>_<slug>.md,
-            insights/D_observations/O*.md (new),
-            insights/I_patterns/P*.md (new),
+            insights/D_data/D*.md (new),
+            insights/I_information/I*.md (new),
             insights/K_knowledge/K*.md (new/updated),
             insights/W_wisdom/W*.md (if any),
             experiments/<NN>_<slug>/ (if new experiments scaffolded)]

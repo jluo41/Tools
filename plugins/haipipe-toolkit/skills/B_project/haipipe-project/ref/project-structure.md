@@ -139,12 +139,12 @@ Project-level insights/  (knowledge base)
   |   +-- plans/
   |       +-- plan-v{N}-<slug>.yaml  ← session plan (D/I/K/W tasks)
   |
-  +-- D_observations/                "what we observed"  (one .md per observation)
-  |   +-- O01_<slug>.md
+  +-- D_data/                "what we observed"  (one .md per observation)
+  |   +-- D01_<slug>.md
   |   +-- ...                        (flat; grep tags for filtering)
   |
-  +-- I_patterns/                    "what patterns emerged"
-  |   +-- P01_<slug>.md
+  +-- I_information/                    "what patterns emerged"
+  |   +-- I01_<slug>.md
   |   +-- ...
   |
   +-- K_knowledge/                   "what we now believe"
@@ -615,7 +615,7 @@ Per experiment (if any experiments/ folders exist):
 
 Per insight base (if insights/ exists):
   [ ] Top-level insights/INDEX.md present and fresh
-  [ ] D_observations/, I_patterns/, K_knowledge/, W_wisdom/ folders exist
+  [ ] D_data/, I_information/, K_knowledge/, W_wisdom/ folders exist
   [ ] K_knowledge/INDEX.md and W_wisdom/INDEX.md present (high-signal layers)
   [ ] Every entry has YAML frontmatter (id, layer, tags, status,
       created, updated, sources, ref_by) per E_insight/ref/insight-md-schema.md

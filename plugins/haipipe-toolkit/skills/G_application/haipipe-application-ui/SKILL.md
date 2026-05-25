@@ -40,7 +40,7 @@ Risk profile
 -------------
 
 WRITES new files under `applications/ui/<slug>/`. May trigger
-`/haipipe-insight-session`. NEVER writes to insights/.
+`/haipipe-application ask`. NEVER writes to insights/.
 
 
 Specialist tail

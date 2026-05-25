@@ -51,7 +51,7 @@ Risk profile
 -------------
 
 WRITES new file under `applications/reports/`. May trigger
-`/haipipe-insight-session`. NEVER writes to insights/.
+`/haipipe-application ask`. NEVER writes to insights/.
 
 
 Specialist tail

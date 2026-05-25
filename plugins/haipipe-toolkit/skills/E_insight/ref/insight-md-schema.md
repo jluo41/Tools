@@ -12,7 +12,7 @@ Universal frontmatter (every entry, every layer)
 
 ```yaml
 ---
-id:        <Layer><NN>                # e.g. O01, P02, K03, W01
+id:        <Layer><NN>                # e.g. D01, I02, K03, W01
 layer:     D | I | K | W
 tags:      [<list of cross-cutting topics>]
 status:    active | stale | superseded
@@ -27,17 +27,17 @@ ref_by:    [<entries that cite this>]      # auto-maintained
 ```
 
 Conventions:
-  - `id` letter encodes layer: O=Observation (D), P=Pattern (I), K=Knowledge, W=Wisdom
+  - `id` letter matches layer: D=Data, I=Information, K=Knowledge, W=Wisdom
   - `tags` is a list, lowercase snake_case (e.g. `[film, conditioning, val]`)
   - `status` enum strict; default = `active`
-  - `sources` and `ref_by` use bare IDs (e.g. `[O01, O03]`), NOT prose
+  - `sources` and `ref_by` use bare IDs (e.g. `[D01, D03]`), NOT prose
   - Frontmatter total length target: ≤ 13 lines
 
 
 Layer-specific frontmatter additions
 ======================================
 
-D layer (Observations)
+D layer (Data)
 -----------------------
 
 ```yaml
@@ -49,7 +49,7 @@ headline:  "<one-line number summary>" # e.g. "val: FiLM Δ -0.98 ± 0.27 mg/dL 
 `## Numbers` table.
 
 
-I layer (Patterns)
+I layer (Information)
 -------------------
 
 ```yaml
@@ -89,7 +89,7 @@ D layer
 --------
 
 ```markdown
-# O{NN}: <one-line title>
+# D{NN}: <one-line title>
 
 ## Observation
 <1-2 paragraphs of FACTS only — no interpretation>
@@ -110,7 +110,7 @@ I layer
 --------
 
 ```markdown
-# P{NN}: <one-line title>
+# I{NN}: <one-line title>
 
 ## Pattern statement
 <the invariant in 1-3 sentences>
@@ -118,7 +118,7 @@ I layer
 ## Evidence
 | Source | Metric / Split | Δ or Value | Direction |
 |--------|----------------|------------|-----------|
-| O01    | ...            | ...        | ...       |
+| D01    | ...            | ...        | ...       |
 
 ## Counter-evidence
 <entries that should show the pattern but don't, OR "none found" with rationale>
@@ -137,7 +137,7 @@ K layer
 <1-2 paragraphs: the belief stated fully, with scope qualification>
 
 ## Supporting evidence
-- <bulleted; cite P entries with their key numbers>
+- <bulleted; cite I entries with their key numbers>
 
 ## Counter-evidence
 - <honestly list contradicting findings or "none found" with reason>
@@ -238,7 +238,7 @@ gates further FiLM work and main figure 3.
 
 - Another lab publishes a param-matched FiLM result first
 - OR project pivots away from patient-feature conditioning
-- OR K03 is downgraded by new contradicting evidence (P02 fails to replicate)
+- OR K03 is downgraded by new contradicting evidence (I02 fails to replicate)
 ```
 
 
@@ -246,7 +246,7 @@ Validation rules (any layer)
 =============================
 
   - YAML frontmatter parses (yaml.safe_load)
-  - `id` letter matches `layer` (O ↔ D, P ↔ I, K ↔ K, W ↔ W)
+  - `id` letter matches `layer` (D, I, K, W)
   - `sources` are existing entry IDs OR experiment IDs (for D-layer's exp_id)
   - `ref_by` consistent: if K03 lists `ref_by: [W01]`, W01 MUST list
     `sources: [K03]` (auto-maintained)

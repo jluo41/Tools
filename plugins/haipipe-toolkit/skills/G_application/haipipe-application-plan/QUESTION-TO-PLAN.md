@@ -1,185 +1,195 @@
 How Questions Drive the Pipeline
 ==================================
 
-Human asks ONE general question. The pipeline figures out everything else.
+Human asks ONE question. The pipeline figures out everything else.
+
+The plan output is **two related batches** (task_batch +
+experiment_batch) plus an `insight_yield` map that says which DIKW
+cards each work item closes. **DIKW is a lens, not a phase order** —
+sessions never run "D-tasks first, then I-tasks, then K-tasks".
 
 
 The Seed
 ---------
 
-  The question is the seed. Everything grows from it.
+The question is the seed. Everything grows from it.
 
-  Question
-    | shapes
-  Explore (what data do we have to answer this?)
-    | shapes
-  Plan (what specific tasks will answer this?)
-    | shapes
-  D tasks (what facts do we need?)
-    | shapes
-  I tasks (what patterns to look for?)
-    | shapes
-  K tasks (what to explain?)
-    | shapes
-  W tasks (what to recommend?)
-    | answers
-  Report (here's the answer to your question)
+```
+Question
+  | shapes
+Explore (what KB do we already have?  what task/experiment results?)
+  | shapes
+Plan (what tasks + experiments do we need, and what DIKW yield each)
+  | dispatches
+Workers (C_task + D_experiment, mostly in parallel within batch)
+  | yields
+DIKW cards (filed into insights/D_data, I_information, K_knowledge, W_wisdom)
+  | answers
+Report (here's the answer to your question)
 
-  Human only provides the question.
-  Every other decision flows from it automatically.
+Human only provides the question.
+Every other decision flows from it automatically.
+```
 
 
 How It Works
 -------------
 
-  Human asks:
-    "How should we design SMS messages to improve engagement
-     for patients with low engagement?"
+Human asks:
 
-  /haipipe-insight-explore discovers:
-    10K rows, 13 message arms, 42% duplicates, 3,608 patients
-    Click rates vary 38-67%. Some patients never click.
+```
+"How should we design SMS messages to improve engagement for
+ patients with low engagement?"
+```
 
-  /haipipe-insight-plan reads the question + explore findings and THINKS:
-    "To answer 'how to design messages for low engagement patients'
-     I need to:
-     1. First understand who the low-engagement patients ARE (D)
-     2. Then find what patterns differentiate them (I)
-     3. Then understand WHY they don't engage (K)
-     4. Then recommend message design changes (W)"
+`/haipipe-insight-explore` discovers:
 
-  /haipipe-insight-plan writes:
-    goal: Design SMS strategies for low-engagement patients
-    D:
-      - name: engagement_profiling
-        description: Define engagement levels, profile low-engagement group
-      - name: data_quality
-        description: Handle duplicates and nulls before analysis
-    I:
-      - name: low_engagement_predictors
-        description: What predicts low engagement? (demographics, timing, arm)
-      - name: arm_response_by_segment
-        description: Which arms work for low vs high engagement patients?
-    K:
-      - name: disengagement_drivers
-        description: Why don't low-engagement patients respond?
-    W:
-      - name: message_redesign
-        description: Specific message design recommendations for low-engagement
+```
+10K rows, 13 message arms, 42% duplicates, 3,608 patients.
+Click rates vary 38-67%. Some patients never click.
+KB has: K01 (timing-of-day effect), I02 (3-arm comparison),
+        D05 (engagement distribution), no W on SMS design yet.
+```
 
-  The plan is SHAPED BY the question.
-  Different question → different plan → different tasks.
+`/haipipe-application-plan` reads question + explore findings and
+THINKS in terms of **yields**:
 
+```
+The question is asking about DESIGN (W-level recommendation).
+That implies:
+  - need a fresh K claim about what causes low engagement
+    → so I need an experiment comparing arms × engagement segments
+  - need fresh D + I on who counts as "low engagement"
+    → so I need a regression task to define the segment
+  - the existing K01 (timing) is reusable as a refs in the new K
+```
 
-Question Types
----------------
+`/haipipe-application-plan` writes:
 
-  Different questions produce different plans from the SAME data:
+```yaml
+plan_version: 1
+question: "How should we design SMS messages to improve engagement
+           for patients with low engagement?"
 
-  BROAD: "What patterns exist in this data?"
-    D: col_overview, quality_check
-    I: statistical_summary, correlation_analysis
-    K: rule_extraction
-    W: strategic_recommendations
-    → Full survey. Classic Insights.
+existing_relevant:
+  knowledge:    [K01]
+  information:  [I02]
+  data:         [D05]
+  experiments:  [03_sms_arm_comparison (confirmed)]
 
-  FOCUSED: "Which SMS arm has the highest engagement?"
-    D: engagement_baseline (per arm)
-    I: arm_effectiveness (chi-square, effect sizes)
-    K: arm_performance_drivers
-    W: arm_selection_strategy
-    → Narrow. Fewer tasks. Targeted.
+# Batch A — C_task work (D + I yield)
+task_batch:
+  - id:    T1
+    skill: /haipipe-task eval
+    type:  regression
+    yields: [D06, I04]
+    notes: "define low-engagement segment + predictors profile"
+  - id:    T2
+    skill: /haipipe-task display
+    type:  display
+    yields: [I05]
+    refs:  [D06]
+    notes: "engagement × arm overlay plot for low segment"
 
-  HYPOTHESIS: "Authority messaging works better for older patients"
-    D: age_arm_crosstab (profile age × arm interaction)
-    I: age_arm_interaction_test (test the hypothesis statistically)
-    K: age_authority_mechanism (if confirmed, explain why)
-    W: age_targeted_messaging (practical rollout plan)
-    → Designed to test one specific claim.
+# Batch B — D_experiment work (K + W yield)
+experiment_batch:
+  - id:    E08
+    skill: /haipipe-experiment design
+    new:   true
+    arms:  [arm_warm, arm_directive, arm_baseline]
+    population: "low engagement segment from D06"
+    yields: [K05, W02]
+    needs:  [D06]
+    rationale: "Test message tone × low-engagement interaction"
 
-  COMPARATIVE: "How does this quarter compare to last?"
-    D: current_profile, historical_profile
-    I: quarter_comparison, trend_detection
-    K: change_drivers
-    W: adjustment_recommendations
-    → Two data sources. Comparison focus.
+insight_yield:
+  D06: {layer: D, sources: [T1]}
+  I04: {layer: I, sources: [T1]}
+  I05: {layer: I, sources: [T2], refs: [D06]}
+  K05: {layer: K, sources: [E08], refs: [K01, I04, I05]}
+  W02: {layer: W, sources: [E08], refs: [K05]}
 
-  FOLLOW-UP: "Last session found 3 segments. Dig into the low group."
-    D: low_segment_detailed_profile
-    I: low_segment_behavior_patterns
-    K: low_segment_barriers
-    W: low_segment_interventions
-    → Builds on prior session. May skip explore.
-
-
-How the Question Shapes Each Level
-------------------------------------
-
-  Question: "How to improve engagement for low-engagement patients?"
-
-  D answers: WHO are the low-engagement patients?
-    engagement_profiling →
-      "42% of patients (1,515) never clicked any message.
-       They are younger (median 34 vs 52), more urban,
-       prescribed maintenance medications."
-
-  I answers: WHAT predicts their low engagement?
-    low_engagement_predictors →
-      "Age <40 is the strongest predictor (OR=3.2, p<0.001).
-       No message arm significantly improves their click rate.
-       Morning messages slightly better than afternoon (p=0.08)."
-
-  K answers: WHY don't they engage?
-    disengagement_drivers →
-      "Young patients likely manage health via apps, not SMS.
-       Current arms use medical authority framing — resonates
-       with older patients but not younger digital natives."
-
-  W answers: WHAT SHOULD WE DO?
-    message_redesign →
-      "1. Create a new arm: app-redirect (link to patient portal)
-       2. Test casual/peer framing instead of authority for <40
-       3. Send at 8am not 2pm for working-age patients
-       4. Reduce message frequency for non-responders (weekly → monthly)"
+dag:
+  - T1 → D06 + I04 (define segment)
+  - T2 needs D06 → I05 (visualize)
+  - E08 needs D06 → K05 + W02 (test arms in segment)
+  - All yields filed → G-report
+```
 
 
-The Plan Is Not Fixed
-----------------------
+Why DIKW is NOT a phase order
+-------------------------------
 
-  The initial plan comes from the question + explore notes.
-  But gate outcomes can FEED BACK into the plan during execution.
-  IMPORTANT: gates do NOT directly modify task lists. Every
-  non-forward gate outcome is `revise [feedback]`, which routes
-  back to plan. The PLANNER (in plan-v{N+1}) is the only thing
-  that adds, removes, or re-specs tasks — informed by the feedback.
+The old model was: phase=D → phase=I → phase=K → phase=W (sequence).
 
-  D discovers something unexpected:
-    "Low-engagement patients aren't just non-clickers —
-     they're actively opting out. 12% opted out."
-    → G-D outcome: `revise "12% opt-out rate found in D; the
-       opt-out cohort needs its own characterization before we
-       can correlate engagement with anything else."`
-    → routes to plan; plan-v2 adds an I-task: optout_analysis
+The new model says:
 
-  I finds the hypothesis is wrong:
-    "Age doesn't predict engagement after controlling for
-     message frequency. Frequency is the real driver."
-    → G-I outcome: `revise "Age signal disappears after
-       controlling for message frequency. Frequency is the
-       real driver and K should explain its mechanism, not age."`
-    → routes to plan; plan-v3 re-specs the K-task from
-       age_mechanism to frequency_mechanism
+```
+A "DIKW phase" was a fiction. In reality:
+  - A single regression task (one shell of code) can produce evidence
+    for D, I, AND K candidates at once. The CARDS get separate ids
+    only because their content has different epistemic commitment levels.
+  - Multiple tasks can collectively close ONE D card (cross-task
+    evidence). E.g., D06 might have sources: [T1, T3, T7].
+  - K and W cannot exist without an experiment. No experiment, no K.
+    Multiple D / I are NOT a path to K.
+  - "K from many K" (strategic W) is fine and lives in W_wisdom/
+    with sources: [K01, K03, K05].
 
-  K reveals the question itself should change:
-    "The problem isn't message design — it's message volume.
-     Low-engagement patients receive 3x more messages."
-    → G-K outcome: `revise "Low-engagement patients receive 3x
-       more messages — the actionable lever is volume, not
-       design. W should optimize volume, not redesign content."`
-    → routes to plan; plan-v4 swaps the W-task from
-       message_redesign to volume_optimization
+Plan therefore enumerates work items (tasks + experiments) and their
+yields, NOT phases. Workers execute in parallel within batch (subject
+to dag). Cards are filed at the end (Phase 4 in ask kind).
+```
 
-  The question stays the same. The plan evolves through plan-v{N}
-  files; gates only emit outcomes (approve / revise / done) and
-  let the planner do the work. This is the Insights pipeline working
-  correctly — learning and adapting through a single router.
+
+Why batches not 1:1
+---------------------
+
+```
+N tasks  ↔  M D/I cards     (many-to-many)
+P experiments ↔ Q K/W cards (many-to-many)
+
+  - 1 task → multiple cards: a regression task can yield D + I
+    simultaneously (lens multiplicity).
+  - N tasks → 1 card: a D card can cite [T1, T2, T5] as sources
+    (cross-task evidence).
+  - 1 experiment → multiple K + multiple W (main claim + side claims
+    + corresponding next-step recommendations).
+  - K → W: a per-experiment W cites the K it derives from.
+  - K01 + K03 + K05 → strategic W: cross-experiment synthesis is
+    legal, just mark sources: [K01, K03, K05] and `type: strategic`.
+```
+
+
+Plan output goes where
+-----------------------
+
+```
+applications/ask/<NN_slug>/plans/plan-v{N}.yaml      written by THIS skill
+applications/ask/<NN_slug>/plans/plan.yaml           symlink → plan-v{N}.yaml (latest)
+
+After plan approval:
+  Phase 2 dispatcher reads plan and invokes /haipipe-task * + /haipipe-experiment *
+  Phase 3 result aggregator triggers /haipipe-experiment result for confirmed claims
+  Phase 4 archivist invokes /haipipe-insight-{data,information,knowledge,wisdom}
+          each one files cards from materialized evidence
+```
+
+
+On --revise
+------------
+
+When a gate returns `revise [feedback]`:
+
+```
+/haipipe-application-plan --revise <N-1> --feedback "<text>"
+  ↑ takes the prior plan + feedback verbatim
+  ↑ writes plan-v{N}.yaml with revision.changes.{added,removed,modified}
+  ↑ revise_history entry appended
+  ↑ plan symlink updated
+
+Plan is the SOLE router. A gate at G-claim does NOT route directly
+to G-observe — it routes K→plan, and plan re-decides whether to
+add an observation task, modify an experiment, or rescope the
+question.
+```
