@@ -1,6 +1,6 @@
 ---
 name: haipipe-insight
-description: "Insight base orchestrator (the E_insight umbrella). Builds and maintains the project's cross-experiment knowledge base under examples/<project>/insights/ (D_observations / I_patterns / K_knowledge / W_wisdom). Reads CONFIRMED claims from D_experiment, never executes code. Routes intent to the right specialist (observations / patterns / knowledge / wisdom / session / plan / report / explore / gate / context). Trigger: insight, insights, knowledge base, what do we know, build insight, /haipipe-insight, ask a research question, synthesize across experiments."
+description: "Insight base orchestrator (the E_insight umbrella). Builds and maintains the project's cross-experiment knowledge base under examples/<project>/insights/ (D_data / I_information / K_knowledge / W_wisdom). Reads CONFIRMED claims from D_experiment, never executes code. Routes intent to the right specialist (observations / patterns / knowledge / wisdom / session / plan / report / explore / gate / context). Trigger: insight, insights, knowledge base, what do we know, build insight, /haipipe-insight, ask a research question, synthesize across experiments."
 argument-hint: [function] [args...]
 allowed-tools: Bash, Read, Grep, Glob, Skill
 ---
@@ -32,12 +32,12 @@ examples/Proj-X/
     ├── sessions/                           (lightweight Q&A log; one .md per question)
     │   └── <YYYY-MM-DD>_<slug>.md
     │
-    ├── D_observations/                     "what we observed"
-    │   ├── O01_<slug>.md
+    ├── D_data/                     "what we observed"
+    │   ├── D01_<slug>.md
     │   └── ...
     │
-    ├── I_patterns/                         "what patterns emerged"
-    │   ├── P01_<slug>.md
+    ├── I_information/                         "what patterns emerged"
+    │   ├── I01_<slug>.md
     │   └── ...
     │
     ├── K_knowledge/                        "what we now believe"

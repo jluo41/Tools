@@ -101,7 +101,7 @@ Triggering insight-session (Phase 3)
 When gap detected:
 
 ```
-Skill("haipipe-insight-session", args="<Q>")
+Skill("haipipe-application-ask", args="<Q>")
 
 Q should be:
   - specific:    "Does K03 (FiLM overfit) hold for elderly patient subset?"

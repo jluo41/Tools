@@ -1,6 +1,6 @@
 ---
 name: haipipe-insight-wisdom
-description: "W-level wisdom specialist of the haipipe-insight family. Reads K_knowledge entries (validated beliefs) and writes strategic recommendation entries to insights/W_wisdom/ — 'what we should DO next'. Each W entry is actionable: a proposed next experiment, a strategic re-direction, or a stop-doing-X. NO code. Use when running W-phase via /haipipe-insight-session, or directly /haipipe-insight-wisdom. Trigger: W-level, wisdom, recommendations, what next, strategic direction, action items."
+description: "W-level wisdom specialist of the haipipe-insight family. Reads K_knowledge entries (validated beliefs) and writes strategic recommendation entries to insights/W_wisdom/ — 'what we should DO next'. Each W entry is actionable: a proposed next experiment, a strategic re-direction, or a stop-doing-X. NO code. Use when running W-phase via /haipipe-application ask, or directly /haipipe-insight-wisdom. Trigger: W-level, wisdom, recommendations, what next, strategic direction, action items."
 argument-hint: [--project <path>] [--scope <knowledge-ids>] [--slug <slug>]
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 ---
@@ -12,8 +12,8 @@ W-level of the Insight base (D → I → K → W). Reads validated knowledge
 (K entries) and writes **actionable strategic recommendations**.
 
 ```
-D — Observations:  "what we observed"
-I — Patterns:      "what patterns emerged"
+D — Data:          "what we observed"
+I — Information:       "what patterns emerged"
 K — Knowledge:     "what we now believe is true"     (input)
 W — Wisdom:        "what we should do next"           ← THIS SKILL
 ```
@@ -28,7 +28,7 @@ Input
 
 ```
 examples/<project>/insights/K_knowledge/K*.md      (REQUIRED, ≥ 1)
-examples/<project>/insights/I_patterns/P*.md       (optional context)
+examples/<project>/insights/I_information/I*.md       (optional context)
 ```
 
 
@@ -53,7 +53,7 @@ Hard rules
   stale` rather than delete.
 - W never executes anything. To act on a W's recommendation, the user
   invokes /haipipe-experiment design new (or /haipipe-task task-folder)
-  manually. /haipipe-insight-session can chain this.
+  manually. /haipipe-application ask can chain this.
 
 
 Workflow
@@ -124,5 +124,5 @@ status:    ok | blocked | failed
 summary:   "W02_<slug> written: 'Run param-matched LHM re-test'"
 artifacts: [insights/W_wisdom/W02_<slug>.md, INDEX.md, back-links]
 next:      Suggest user runs the recommended command
-           (or /haipipe-insight-session can chain it directly)
+           (or /haipipe-application ask can chain it directly)
 ```

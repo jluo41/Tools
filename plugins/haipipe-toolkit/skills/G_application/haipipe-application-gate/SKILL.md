@@ -27,8 +27,8 @@ Input
 ```
 phase                                      D | I | K | W
 plan-v{N}-<slug>.yaml                       (current active plan)
-insights/D_observations/O*.md               (newly written this phase)
-insights/I_patterns/P*.md                   (newly written this phase)
+insights/D_data/D*.md               (newly written this phase)
+insights/I_information/I*.md                   (newly written this phase)
 insights/K_knowledge/K*.md                  (newly written this phase)
 insights/W_wisdom/W*.md                     (newly written this phase)
 ```
@@ -66,13 +66,13 @@ Step 1: Parse args
 
 Step 2: Load context
   - Active plan-v{N}.yaml
-  - Phase-specific artifacts (D = insights/D_observations/O*.md newly written, etc.)
+  - Phase-specific artifacts (D = insights/D_data/D*.md newly written, etc.)
 
 Step 3: Evaluate phase outcome
   Per-phase checks:
-    D:  All planned O entries written? Each cites confirmed experiment?
+    D:  All planned D entries written? Each cites confirmed experiment?
         No fabricated numbers?
-    I:  P entries cite ≥ 2 O entries? Non-confirming evidence engaged?
+    I:  I entries cite ≥ 2 D entries? Non-confirming evidence engaged?
     K:  K entries cite supporting P + counter-evidence? Confidence justified?
         Supersedes chain coherent if any?
     W:  W entries actionable? Tied to K? Decay condition stated?
@@ -95,15 +95,15 @@ Per-phase check tables
 
 ```
 G-D (D-phase gate):
-  [ ] all plan.phases.D tasks have a corresponding O*.md
+  [ ] all plan.phases.D tasks have a corresponding D*.md
   [ ] every cited number traceable to an experiment.yaml or metrics.json
   [ ] no Python files were written under insights/
 
 G-I (I-phase gate):
-  [ ] all plan.phases.I tasks have a P*.md
-  [ ] each P cites ≥ 2 O entries
+  [ ] all plan.phases.I tasks have a I*.md
+  [ ] each P cites ≥ 2 D entries
   [ ] non-confirming evidence section non-empty (or "none found" with reason)
-  [ ] back-links added to cited O entries
+  [ ] back-links added to cited D entries
 
 G-K (K-phase gate):
   [ ] all plan.phases.K tasks have a K*.md (new or updated)

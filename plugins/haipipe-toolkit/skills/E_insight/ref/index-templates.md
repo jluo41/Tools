@@ -3,7 +3,7 @@ Insight Base INDEX Templates
 
 Templates for the auto-maintained INDEX files. Per Q-b confirmed:
 top-level INDEX.md + K_knowledge/INDEX.md + W_wisdom/INDEX.md.
-D_observations and I_patterns do NOT get sub-indexes (grep tags is
+D_data and I_information do NOT get sub-indexes (grep tags is
 fast enough on flat lists).
 
 
@@ -23,8 +23,8 @@ Last rebuild: <ISO>
 ### <topic-1>
 - K03 — "<one-line claim>"                 [confidence: high]
 - W01 — "<one-line rec>"                   [type: next_experiment]
-- P02 — pattern across 3 D entries         [direction: mixed]
-- O01, O02, O03 — observations             (3 entries)
+- I02 — pattern across 3 D entries         [direction: mixed]
+- D01, D02, D03 — observations             (3 entries)
 
 ### <topic-2>
 ...
@@ -54,8 +54,8 @@ Last rebuild: <ISO>
 
 ## All entries (flat — for grep)
 
-D_observations:  O01 .. O28
-I_patterns:      P01 .. P06
+D_data:  D01 .. D28
+I_information:      I01 .. I06
 K_knowledge:     K01 K02 K03 K04 K05 (K02 superseded by K05)
 W_wisdom:        W01 W02 W03
 

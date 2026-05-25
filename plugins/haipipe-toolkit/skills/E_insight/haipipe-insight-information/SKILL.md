@@ -1,6 +1,6 @@
 ---
 name: haipipe-insight-information
-description: "I-level patterns specialist of the haipipe-insight family. Reads multiple D_observations entries and synthesizes cross-observation patterns into markdown entries at insights/I_patterns/. NO code execution — pure markdown synthesis. Looks for statistical regularities, repeated effects, paired contrasts across experiments. Use when running I-phase via /haipipe-insight-session, or directly /haipipe-insight-information. Trigger: I-level, patterns, cross-experiment patterns, regularities, what trends emerge."
+description: "I-level patterns specialist of the haipipe-insight family. Reads multiple D_data entries and synthesizes cross-observation patterns into markdown entries at insights/I_information/. NO code execution — pure markdown synthesis. Looks for statistical regularities, repeated effects, paired contrasts across experiments. Use when running I-phase via /haipipe-application ask, or directly /haipipe-insight-information. Trigger: I-level, patterns, cross-experiment patterns, regularities, what trends emerge."
 argument-hint: [--project <path>] [--scope <observation-ids>] [--slug <slug>]
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 ---
@@ -9,13 +9,13 @@ Skill: haipipe-insight-information
 ================================
 
 I-level of the Insight base (D → I → K → W). Reads multiple
-`D_observations/O*.md` entries and synthesizes the **cross-observation
+`D_data/D*.md` entries and synthesizes the **cross-observation
 patterns** that emerge: statistical regularities, repeated effects,
 paired contrasts.
 
 ```
-D — Observations: "what we observed"          (input)
-I — Patterns:     "what patterns emerged"     ← THIS SKILL
+D — Data:         "what we observed"          (input)
+I — Information:      "what patterns emerged"     ← THIS SKILL
 K — Knowledge:    "what we now believe"
 W — Wisdom:       "what we should do next"
 ```
@@ -25,7 +25,7 @@ Input
 -----
 
 ```
-examples/<project>/insights/D_observations/O*.md   (REQUIRED, ≥ 2 entries)
+examples/<project>/insights/D_data/D*.md   (REQUIRED, ≥ 2 entries)
 examples/<project>/experiments/<NN>_<slug>/        (read-only, for back-refs)
 ```
 
@@ -34,7 +34,7 @@ Output
 ------
 
 ```
-examples/<project>/insights/I_patterns/P{NN}_<slug>.md
+examples/<project>/insights/I_information/I{NN}_<slug>.md
 ```
 
 
@@ -59,16 +59,16 @@ Workflow
 ```
 Step 1: Parse args
   - --project <path>          optional, else cwd-inferred
-  - --scope <O01,O02,...>     optional; restrict to specific D entries
+  - --scope <D01,D02,...>     optional; restrict to specific D entries
   - --slug <slug>             optional, descriptive name for the pattern
 
 Step 2: Resolve paths
   - project root              from arg or cwd
-  - d_dir                     examples/<project>/insights/D_observations/
-  - i_dir                     examples/<project>/insights/I_patterns/
+  - d_dir                     examples/<project>/insights/D_data/
+  - i_dir                     examples/<project>/insights/I_information/
 
 Step 3: Scan D entries
-  - Read all (or scoped) D_observations/O*.md files
+  - Read all (or scoped) D_data/D*.md files
   - Build a mental table: per-experiment metric / split / Δ / direction
   - Surface candidate patterns: same metric across experiments, same
     direction across seeds, etc.
@@ -78,16 +78,16 @@ Step 4: Triage patterns (interactive default; --auto skips ASK)
   - User picks which to materialize (or --slug forces one)
 
 Step 5: Pick output NN
-  - List existing I_patterns/P*.md
+  - List existing I_information/I*.md
   - NN = max existing + 1
 
 Step 6: Compose entry (markdown only)
   - Per the entry schema below
 
 Step 7: Write
-  - insights/I_patterns/P{NN}_<slug>.md (atomic)
+  - insights/I_information/I{NN}_<slug>.md (atomic)
   - Update insights/INDEX.md
-  - Back-link: append "linked patterns: P{NN}" to each cited D entry's
+  - Back-link: append "linked patterns: I{NN}" to each cited D entry's
     Cross-references section
 ```
 
@@ -115,13 +115,13 @@ length: ≤ 120 lines total
 
 The `pattern` enum is one of: `statistical_regularity | repeated_effect
 | paired_contrast | null_finding`. `direction` is the overall direction
-across cited O entries.
+across cited D entries.
 
 
 Definition of done
 -------------------
 
-- [ ] `insights/I_patterns/P{NN}_<slug>.md` written, non-empty
+- [ ] `insights/I_information/I{NN}_<slug>.md` written, non-empty
 - [ ] Evidence table cites ≥ 2 D entries with concrete numbers
 - [ ] Non-confirming evidence section honestly populated (or "none found"
       stated explicitly with rationale)
@@ -144,7 +144,7 @@ Disambiguation
 Risk profile
 -------------
 
-WRITES one new file under `insights/I_patterns/`. APPENDS to
+WRITES one new file under `insights/I_information/`. APPENDS to
 `insights/INDEX.md`. APPENDS one back-link line to each cited D entry.
 Read-only on experiments/ and tasks/.
 
@@ -154,8 +154,8 @@ Specialist tail
 
 ```
 status:    ok | blocked | failed
-summary:   "P02_<slug> written from [O01, O03, O07]"
-artifacts: [insights/I_patterns/P{NN}_<slug>.md, insights/INDEX.md,
+summary:   "I02_<slug> written from [D01, D03, D07]"
+artifacts: [insights/I_information/I{NN}_<slug>.md, insights/INDEX.md,
             <back-linked D entries>]
 next:      /haipipe-insight-knowledge to elevate pattern → validated knowledge
 ```
