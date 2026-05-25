@@ -1,17 +1,17 @@
 haipipe-toolkit — Mental Model
 ================================
 
-How to think about the 4 layers (C / D / E / G) and how a research
-session ("application") drives them. Read this before USAGE.md if
-anything in the toolkit feels arbitrary — the rules in USAGE.md are
-consequences of the model laid out here.
+How to think about the 4 layers (C / D / E / G) and how sessions
+("applications") drive them. Read this before USAGE.md if anything in
+the toolkit feels arbitrary — the rules in USAGE.md are consequences
+of the model laid out here.
 
 
 TL;DR — 4 layers, 4 roles
 ==========================
 
 ```
-C_task         WORK       一次 run.sh + 一个 results/dir
+C_task         WORK       one run.sh + one results/<RUN>/
                           produces: D + I material (observations + patterns)
                           "看到了什么, 像什么样子"
 
@@ -23,9 +23,13 @@ E_insight      ARCHIVE    D/I/K/W markdown cards under insights/
                           does NOT produce — only files + cross-refs
                           "项目的永久 KB"
 
-G_application  CHECK      one session, one user question, one report
-                          does NOT produce KB content — only evaluates & orchestrates
-                          "这一次案件, 评估 + 编排"
+G_application  SESSIONS   one user intent → one closed case file
+                          4 kinds share one session skeleton:
+                            ask      research question (KB-writing)
+                            message  patient / clinician (KB-readonly)
+                            ui       designer / dev (KB-readonly)
+                            report   stakeholder (KB-readonly)
+                          "一次案件, 评估 + 编排 + 产物"
 ```
 
 One assignment to remember:
@@ -33,8 +37,9 @@ One assignment to remember:
 ```
 D + I  ←  comes from  C_task        (observational / descriptive)
 K + W  ←  comes from  D_experiment  (normative / prescriptive)
-E_insight = archivist
-G_application = case worker
+E_insight     = archivist           (files cards into permanent KB)
+G_application = case worker         (one session per intent; 4 kinds;
+                                     ask is the only kind that can write KB)
 ```
 
 
@@ -156,28 +161,55 @@ G_application — the SESSION layer
 ----------------------------------
 
 ```
-unit:        one session = one user question = one case file
+unit:        one session = one user intent = one case file
 verb:        DESIGN, DISPATCH, EVALUATE
-asks:        "given the KB so far, does it answer this question? if not,
-              what to do?"
+asks:        "given the KB so far, can we produce this artifact?
+              if not, what to do?"
 artifacts:   SESSION_STATE.json, plans/plan-vN.yaml, gates/##-G-<phase>.md,
-             invocations.log, report.md
-location:    examples/<project>/applications/<NN_slug>/
+             invocations.log, the kind's output artifact
+location:    examples/<project>/applications/<kind>/<...>/
 
-DIKW lens:   none. G does not produce DIKW content. It evaluates
-             whether enough D+I+K+W exists in the KB to answer the
-             user's question, and orchestrates more tasks/experiments
-             if not.
+DIKW lens:   none. G does not produce DIKW content directly. It
+             evaluates whether enough D+I+K+W exists in the KB to
+             produce the artifact, and orchestrates more work
+             (tasks / experiments / new KB cards) if not.
 ```
 
-G_application is the **case worker**. It is the only layer authorized
-to trigger D_experiment from outside, and it is the only layer that
-maintains a per-session work record.
+G_application is the **case worker**. There are 4 kinds of case file,
+all sharing one session skeleton:
 
-A session does NOT accumulate content. When a session ends, the
-permanent residue is in `tasks/`, `experiments/`, `insights/`. The
-session folder itself is a closed case file — the journey, not the
-destination.
+```
+kind        artifact                                writes KB?    can trigger?
+─────────────────────────────────────────────────────────────────────────────
+ask         applications/ask/<NN_slug>/report.md    YES           D_experiment + C_task
+                                                                  + haipipe-insight-{D,I,K,W}
+message     applications/messages/<...>.md           no            (chains to ask if gap)
+ui          applications/ui/<slug>/                  no            (chains to ask if gap)
+report      applications/reports/<...>.md            no            (chains to ask if gap)
+```
+
+`ask` is the only kind authorized to mutate the KB or trigger
+D_experiment / C_task. The external kinds delegate KB work to `ask`
+and resume their own draft once `ask` returns.
+
+A session does NOT accumulate content into the KB by itself (only the
+`ask` kind does, via insight-{D,I,K,W} files). When a session ends,
+the permanent residue lives in `tasks/`, `experiments/`, `insights/`.
+The applications/<kind>/<...>/ folder itself is a closed case file —
+the journey, not the destination.
+
+The session skeleton (shared by all 4 kinds):
+
+```
+haipipe-application                orchestrator (verb-routes to kind)
+haipipe-application-<kind>         kind specialist (per-phase work)
+haipipe-application-plan           writes plan-v{N}.yaml
+haipipe-application-gate           phase gate (persona + attendance)
+haipipe-application-context        per-task context loader
+ref/session-state-schema.md        SESSION_STATE.json fields
+ref/gate-persona.md                4 preset reviewer voices
+ref/attendance-modes.md            attended / timed / unattended
+```
 
 
 The DIKW lens assignment — why this works
@@ -270,13 +302,18 @@ Key properties:
 - **Strategic W cards have multiple K ids in `sources`**
 
 
-Phases of one session — only 4
-================================
+Phases of one session — per kind
+==================================
+
+Every kind specialist runs phases through the same machinery
+(plan / gate / context + SESSION_STATE.json), but the phase list
+differs by kind. The 2-step shape per phase is uniform: `task` then
+`gate`.
+
+ask kind — research session (4 phases):
 
 ```
-                     G_application 4-phase loop
    ┌──────────────────────────────────────────────────────────┐
-   │                                                          │
    │   Phase 1   design       /haipipe-application-plan       │
    │                          writes plan-v{N}.yaml           │
    │                          [G-design gate, SOFT]           │
@@ -293,22 +330,38 @@ Phases of one session — only 4
    │                            /haipipe-experiment result    │
    │                          → D_experiment workers          │
    │                            produce K + W                 │
-   │                          [G-claim gate, HARSH]           │
+   │                          [G-claim gate; SOFT on G side,  │
+   │                           HARSH gates inside D_experiment]│
    │                          (skip if no experiment needed)  │
    │                                                          │
-   │   Phase 4   report       /haipipe-application-report     │
+   │   Phase 4   report       /haipipe-application-plan       │
    │                          + /haipipe-insight-{D,I,K,W}    │
    │                            files all cards into KB       │
    │                          writes session report.md        │
    │                          [G-report gate, HARSH]          │
-   │                                                          │
    └──────────────────────────────────────────────────────────┘
                 Every gate's `revise` outcome → back to Phase 1
                 Plan is the SOLE router for non-forward motion
 ```
 
-No phase=D / phase=I / phase=K / phase=W. DIKW is a card-labeling
-scheme, not an execution stage.
+message / ui / report kinds — external creation (6 phases):
+
+```
+   Phase init   parse intent + audience
+   Phase load   load K/W from insights/ (filter by tag)
+                  [G-load SOFT — KB material sufficient?]
+   Phase gap    if gap → chain /haipipe-application ask "<sub-Q>"
+                  (ask runs its own 4-phase session inline)
+                  resume external kind after ask returns
+   Phase draft  produce artifact (kind-specific template)
+   Phase review self-review against audience-requirements.md
+                  [G-review SOFT]
+   Phase write  atomic write to applications/<kind>/<...>.md
+                  [G-write HARSH — final artifact correct?]
+```
+
+No phase=D / phase=I / phase=K / phase=W in either shape. DIKW is a
+card-labeling scheme, not an execution stage.
 
 
 Gate harshness — HARSH vs SOFT
@@ -331,13 +384,18 @@ D_experiment claim    public commitment    very expensive    HARSH
 E_insight card write  filing a vetted      n/a (already      no gate
                       claim                vetted upstream)
                                            
-G_application
+G_application (ask kind)
   G-design            time spent           cheap             SOFT
   G-observe           D+I gap              cheap             SOFT
   G-claim             K+W validity         medium            ⚠ inherits
                                                               D_experiment
                                                               HARSH gates
   G-report            wrong user answer    hard to undo      HARSH
+
+G_application (message / ui / report kinds)
+  G-load              KB-material gap      cheap             SOFT
+  G-review            audience misfit      cheap             SOFT
+  G-write             external artifact    public-facing     HARSH
 ```
 
 **HARSH gates** have no persona / attendance / MAX_REVISIONS toggle.
@@ -361,15 +419,20 @@ G-claim does not duplicate those gates; it only checks "did we get
 the K+W we wanted from this experiment batch?"
 
 
-One full session, lifecycle walk-through
-==========================================
+One full session, lifecycle walk-through (ask kind)
+=====================================================
+
+This trace is the `ask` kind. The `message` / `ui` / `report` kinds
+follow the 6-phase external-creation shape (init/load/[gap]/draft/
+review/write); their lifecycle is shorter and KB-readonly except for
+the optional inline-ask chain at gap-phase.
 
 ```
 [t=0]  user: "Does FiLM beat baseline on test-od?"
 
 [t=1]  /haipipe-application ask "..."
-       → creates applications/03_film_test_od_generalization/
-       → SESSION_STATE.json initialized
+       → creates applications/ask/03_film_test_od_generalization/
+       → SESSION_STATE.json initialized (kind: ask)
 
 [t=2]  Phase 1 — design
        /haipipe-application-plan
@@ -409,14 +472,14 @@ One full session, lifecycle walk-through
          insights/K_knowledge/K03_*.md
          insights/W_wisdom/W02_*.md
          INDEX.md rebuilt
-       /haipipe-application-report
-         → writes applications/03_*/report.md
+       /haipipe-application-plan compose final report
+         → writes applications/ask/03_*/report.md
          → cites D02 + K03 + W02 with full provenance
        [G-report HARSH] → confirms report.md actually answers Q
        → SESSION_STATE.status = complete
 
 [t=6]  return to user:
-       answer + applications/03_*/report.md
+       answer + applications/ask/03_*/report.md
        residue in KB: D02 / K03 / W02 (cited next time)
 ```
 
@@ -485,8 +548,30 @@ A: Maybe. W cards decay. Check `status:` (active / stale). The
 
 **Q: Where do raw thinking notes / daily logs go?**
 
-A: applications/<NN_slug>/logs/<YYYY-MM-DD>.md (append-only,
+A: applications/ask/<NN_slug>/logs/<YYYY-MM-DD>.md (append-only,
    captain's-log style). Not in tasks/, not in experiments/.
+
+**Q: What's the difference between `/haipipe-application ask` and
+    just running `/haipipe-task` + `/haipipe-experiment` directly?**
+
+A: The ask kind gives you the session machinery: SESSION_STATE.json
+   for resume, plan-vN.yaml for design intent, gates for phase
+   review, persona/attendance knobs. Running raw skills works too,
+   but you lose the per-session log + the gate review at each step.
+
+**Q: Can I make a patient message without a session?**
+
+A: No. All G_application work goes through the session skeleton —
+   even short jobs get a SESSION_STATE.json. The skeleton is what
+   gives you resume + audit + revise.
+
+**Q: I want to ask a question that the message kind chains to
+    automatically. How do I know it'll find a good ask sub-Q?**
+
+A: At Phase load, the external kind reads K/W on the relevant tags.
+   If gap found, it composes a sub-Q (audience-aware) and pipes
+   verbatim to `/haipipe-application ask`. You can override the
+   composed sub-Q at the G-load gate via reply B.
 
 **Q: Two sessions want to run the same experiment. Wasted compute?**
 
@@ -502,12 +587,15 @@ One-line rules of thumb
 new D / I material  → C_task        (a task run produces it)
 new K / W material  → D_experiment  (an experiment claims it)
 file a vetted card  → E_insight     (just write the markdown)
-answer a question   → G_application (one session, one report)
+any session-style intent → G_application (4 kinds: ask / message / ui / report)
 
 no controlled comparison         → no K, only I
 no experiment                    → no K, only I
-no I / no K available            → schedule a task or experiment
+no I / no K available            → /haipipe-application ask  (only kind that
+                                    can schedule tasks / experiments)
 strategic synthesis across K     → still W, sources = [K01, K03, …]
+external artifact needed         → /haipipe-application {message|ui|report}
+                                    (KB-readonly; chains to ask if gap)
 session ends                     → residue in tasks/+experiments/+insights/
                                     session folder is the case file
 ```
@@ -521,6 +609,9 @@ Toolkit-wide usage flows:        USAGE.md
 C_task design + worktree:        skills/C_task/DESIGN.md
 D_experiment ↔ C_task boundary:  skills/D_experiment/MENTAL_MODEL.md
 E_insight schema:                skills/E_insight/ref/insight-md-schema.md
-G_application session spec:      skills/G_application/ (under construction)
+G_application umbrella:          skills/G_application/haipipe-application/SKILL.md
+G_application session state:     skills/G_application/haipipe-application/ref/session-state-schema.md
+G_application gate persona:      skills/G_application/haipipe-application/ref/gate-persona.md
+G_application attendance modes:  skills/G_application/haipipe-application/ref/attendance-modes.md
 Top-level skills inventory:      README.md
 ```

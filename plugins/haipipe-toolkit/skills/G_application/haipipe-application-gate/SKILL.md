@@ -1,11 +1,11 @@
 ---
-name: haipipe-insight-gate
-description: "Phase-transition gate of the haipipe-insight family. Runs between phases (D→I, I→K, K→W, W→report) during a session. Proposes one of three outcomes: approve (next phase), revise [feedback] (route back to plan + rewrite), or done (jump to final report). NO code. Use during /haipipe-insight-session, or standalone via /haipipe-insight-gate <phase>. Trigger: gate, review phase, approve, revise, /haipipe-insight-gate."
+name: haipipe-application-gate
+description: "Phase-transition gate of the haipipe-application family. Runs between phases (D→I, I→K, K→W, W→report) during a session. Proposes one of three outcomes: approve (next phase), revise [feedback] (route back to plan + rewrite), or done (jump to final report). NO code. Use during /haipipe-application-ask, or standalone via /haipipe-application-gate <phase>. Trigger: gate, review phase, approve, revise, /haipipe-application-gate."
 argument-hint: [phase: D|I|K|W] [--project <path>] [--auto]
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 ---
 
-Skill: haipipe-insight-gate
+Skill: haipipe-application-gate
 ============================
 
 Phase transition gate. Reviews the artifacts produced during one phase
@@ -18,7 +18,7 @@ done      → skip remaining phases, jump to final report
 ```
 
 The gate's outcome is the ONLY routing vocabulary used by
-`/haipipe-insight-session`. Three values, no others.
+`/haipipe-application-ask`. Three values, no others.
 
 
 Input
@@ -50,7 +50,7 @@ written_at:  <ISO>
 
 The session orchestrator routes based on `outcome`:
 - approve → next phase
-- revise  → call /haipipe-insight-plan --revise N --feedback <text>
+- revise  → call /haipipe-application-plan --revise N --feedback <text>
 - done    → write session log to insights/sessions/<DATE>_<slug>.md
             and close the session (no separate report doc)
 
@@ -139,7 +139,7 @@ Disambiguation
 
 - phase = D but no plan.phases.D tasks defined → REFUSE; ask whether
   to run plan first
-- no plan-v{N}.yaml exists → REFUSE; run /haipipe-insight-plan first
+- no plan-v{N}.yaml exists → REFUSE; run /haipipe-application-plan first
 - AUTO mode with all-pass → emit approve silently
 - AUTO mode with failed checks → emit revise with auto-derived feedback
 

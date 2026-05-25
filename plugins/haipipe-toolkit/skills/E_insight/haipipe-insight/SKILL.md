@@ -59,16 +59,15 @@ Commands
 
 ```
 /haipipe-insight                                 dashboard (insight base overview)
-/haipipe-insight ask <question>                  question-driven session (Phase 0–8)
-/haipipe-insight session <question>              alias for ask
-/haipipe-insight observations <exp-id>           D-level: write observation from one experiment
-/haipipe-insight patterns [--scope <O*>]         I-level: synthesize cross-observation pattern
-/haipipe-insight knowledge [--scope <P*>]        K-level: elevate pattern to validated belief
+/haipipe-insight data <exp-id>                   D-level: file observation card from one experiment
+/haipipe-insight information [--scope <D*>]      I-level: synthesize cross-experiment pattern
+/haipipe-insight knowledge [--scope <I*>]        K-level: file validated belief (claim from experiment)
 /haipipe-insight wisdom [--scope <K*>]           W-level: strategic recommendation
-/haipipe-insight plan <question>                 plan a multi-phase synthesis
 /haipipe-insight explore [project-path]          scan experiments/ for synthesis-ready threads
-/haipipe-insight gate <phase>                    review proposed outcome of a phase
 /haipipe-insight "<natural language>"            infer, dispatch
+
+(For question-driven sessions: → /haipipe-application ask
+ For session machinery (plan / gate / context): → G_application/)
 ```
 
 
@@ -76,20 +75,15 @@ Specialists
 -----------
 
 ```
-haipipe-insight-session         WORKFLOW: question-driven; can call /haipipe-experiment
-                                          to scaffold new arms if knowledge is missing
-haipipe-insight-data    D-LEVEL:  read confirmed experiment → O*.md
-haipipe-insight-information        I-LEVEL:  cross-observation patterns → P*.md
-haipipe-insight-knowledge       K-LEVEL:  validated beliefs → K*.md
+haipipe-insight-data            D-LEVEL:  file observation card from a task or experiment → D*.md
+haipipe-insight-information     I-LEVEL:  cross-experiment patterns → I*.md
+haipipe-insight-knowledge       K-LEVEL:  validated beliefs (from confirmed experiments) → K*.md
 haipipe-insight-wisdom          W-LEVEL:  strategic recommendations → W*.md
-haipipe-insight-plan            PLAN:     write plan-vN.yaml for a question
 haipipe-insight-explore         READ:     coverage scan over experiments + insights
-haipipe-insight-gate            REVIEW:   gate-outcome proposer between phases
-haipipe-insight-context         LOAD:     per-phase context for the running specialist
 
-(External-facing reports / messages / UI are NOT in E_insight — they
- live in G_application. E_insight's internal Q&A answer = the K/W
- entries written by the session + insights/sessions/<DATE>.md log.)
+(Session machinery — plan / gate / context — and the question-driven
+ ask workflow live in G_application. E_insight only files cards into
+ the permanent KB; it does NOT run sessions or hold per-question state.)
 ```
 
 
@@ -97,17 +91,14 @@ Function Verb Map
 ------------------
 
 ```
-ask, question, /ask, "does X hold?", session    -> haipipe-insight-session
-observations, observe, D-level, raw findings    -> haipipe-insight-data
-patterns, I-level, cross-experiment trend       -> haipipe-insight-information
-knowledge, K-level, validated belief, claim    -> haipipe-insight-knowledge
+data, observations, D-level, raw findings       -> haipipe-insight-data
+information, patterns, I-level, trend           -> haipipe-insight-information
+knowledge, K-level, validated belief, claim     -> haipipe-insight-knowledge
 wisdom, W-level, recommendation, what next      -> haipipe-insight-wisdom
-plan, plan-vN, design analysis                  -> haipipe-insight-plan
 explore, coverage, scan, what can we synthesize -> haipipe-insight-explore
-gate, review, approve/revise                    -> haipipe-insight-gate
-context, load context                           -> haipipe-insight-context
 
-(report / stakeholder doc / message → /haipipe-application; NOT E_insight)
+(ask / question / session / plan / gate / context → /haipipe-application; NOT E_insight)
+(report / stakeholder doc / message / ui         → /haipipe-application; NOT E_insight)
 ```
 
 
@@ -138,15 +129,16 @@ The most-confused boundaries:
 "X is robust on val but not test-od"      → K-level knowledge (E_insight)
 "we should re-test X with param-matched"  → W-level wisdom (E_insight)
 "run param-matched re-test"               → triggers /haipipe-experiment
-                                            (via /haipipe-insight-session)
+                                            (via /haipipe-application ask)
 ```
 
 **One-way dependencies:**
 
 ```
 E_insight READS from D_experiment + C_task
-E_insight CAN TRIGGER D_experiment (only via /haipipe-insight-session)
-E_insight NEVER writes to tasks/ directly
+E_insight NEVER triggers D_experiment (that's G_application's ask kind)
+E_insight NEVER writes to tasks/ or experiments/ directly
+E_insight ONLY files DIKW cards into insights/ from already-existing evidence
 D_experiment NEVER reads from insights/
 ```
 
@@ -166,17 +158,17 @@ Relation to other top-level skills
 -----------------------------------
 
 ```
-A_discover    feeds ideas → seeded questions for /haipipe-insight-session
+A_discover    feeds ideas → seeded questions handled in G_application ask
 B_project     project umbrella → owns the examples/Proj-X/ shape
-C_task        provides runs → linked into experiments → into observations
-D_experiment  provides claims → input to E_insight synthesis
+C_task        provides D/I evidence → filed by haipipe-insight-data/-information
+D_experiment  provides K/W claims    → filed by haipipe-insight-knowledge/-wisdom
 F_paper       consumes K + W entries → academic publication
-G_application consumes K + W entries → patient/clinician messages,
-                                       UI sketches, stakeholder reports
-                                       (external creation; never writes back)
+G_application drives sessions (ask / message / ui / report) that read K/W
+              and (ask kind only) trigger new tasks / experiments / KB writes
 
-E_insight is the cross-experiment synthesis hub: reads from D_experiment,
-feeds F_paper + G_application. Source of "what does this project KNOW".
+E_insight is the project's PERMANENT KB. It does NOT run sessions or
+own per-question state. It just files cards. Source of "what does
+this project KNOW".
 ```
 
 
