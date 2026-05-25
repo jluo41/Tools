@@ -1,11 +1,11 @@
 ---
-name: haipipe-insight-context
-description: "Per-phase context loader of the haipipe-insight family. Given a phase (D/I/K/W) and a task name within the active plan, gathers the relevant inputs (experiment.yaml, prior O/P/K/W entries, plan section) and emits a structured context envelope for the phase skill to consume. Decides: READY (phase skill can execute), BLOCKED (missing prerequisite), or SKIP (already done). NO code. Used internally by /haipipe-insight-session. Trigger: load context, ready-check, /haipipe-insight-context."
+name: haipipe-application-context
+description: "Per-phase context loader of the haipipe-application family. Given a phase (D/I/K/W) and a task name within the active plan, gathers the relevant inputs (experiment.yaml, prior O/P/K/W entries, plan section) and emits a structured context envelope for the phase skill to consume. Decides: READY (phase skill can execute), BLOCKED (missing prerequisite), or SKIP (already done). NO code. Used internally by /haipipe-application-ask. Trigger: load context, ready-check, /haipipe-application-context."
 argument-hint: [phase: D|I|K|W] [task_name] [--project <path>]
 allowed-tools: Bash, Read, Grep, Glob, Skill
 ---
 
-Skill: haipipe-insight-context
+Skill: haipipe-application-context
 ================================
 
 Pre-flight context loader for a phase task. Reads the active plan, the

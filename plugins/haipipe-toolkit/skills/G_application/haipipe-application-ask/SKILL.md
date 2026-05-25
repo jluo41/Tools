@@ -1,18 +1,18 @@
 ---
-name: haipipe-insight-session
-description: "Question-driven workflow of the haipipe-insight family. Takes one research question, scans the existing insight base for an answer, optionally triggers new experiments via haipipe-experiment when knowledge is missing, then runs D → I → K → W synthesis to update the project's insights/. Can call /haipipe-experiment (design + bridge) to materialize new arms when needed. Use when the user asks a research question that may or may not be answerable from existing knowledge. Trigger: ask, insight session, /haipipe-insight-session, question-driven analysis."
+name: haipipe-application-ask
+description: "Question-driven workflow of the haipipe-application family. Takes one research question, scans the existing insight base for an answer, optionally triggers new experiments via haipipe-experiment when knowledge is missing, then runs D → I → K → W synthesis to update the project's insights/. Can call /haipipe-experiment (design + bridge) to materialize new arms when needed. Use when the user asks a research question that may or may not be answerable from existing knowledge. Trigger: ask, insight session, /haipipe-application-ask, question-driven analysis."
 argument-hint: [question] [--project <path>] [--rounds N] [--auto]
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Task
 ---
 
-Skill: haipipe-insight-session
+Skill: haipipe-application-ask
 ===============================
 
 The **question driver**. Takes one research question and orchestrates
 its resolution end-to-end: scan existing insights → trigger experiments
 if needed → synthesize new insights → answer.
 
-This is the only skill in the haipipe-insight family that can call
+This is the only skill in the haipipe-application family that can call
 **outside** E_insight (specifically: /haipipe-experiment to scaffold
 new arms). All other haipipe-insight-* skills are pure markdown
 synthesizers.
@@ -23,7 +23,7 @@ Mirror of D_experiment's loop, at a different level
 
 ```
 /haipipe-experiment loop <ID>     iterates ONE experiment thread until claim ✅
-/haipipe-insight-session <question>  iterates ACROSS threads until question answered
+/haipipe-application-ask <question>  iterates ACROSS threads until question answered
 ```
 
 
@@ -39,7 +39,7 @@ Phase 0 — SCAN INSIGHTS
     partial → present what we know; ask user: dig deeper or accept?
 
 Phase 1 — PLAN
-  Skill("haipipe-insight-plan", args="<question> --project <path>")
+  Skill("haipipe-application-plan", args="<question> --project <path>")
   → writes a plan-vN.yaml describing what D / I / K / W tasks would
     answer the question, AND which experiments (existing or new) are
     needed as inputs.
@@ -60,7 +60,7 @@ Phase 3 — D-PHASE  (Observations)
     Skill("haipipe-insight-data", args="<exp_id>")
   → writes insights/D_observations/O{NN}_*.md
 
-  Gate: Skill("haipipe-insight-gate", args="D")
+  Gate: Skill("haipipe-application-gate", args="D")
     revise → back to Phase 1 with feedback
     approve → continue
 
@@ -98,13 +98,13 @@ Commands
 --------
 
 ```
-/haipipe-insight-session <question>
+/haipipe-application-ask <question>
   Full flow starting from Phase 0.
 
-/haipipe-insight-session continue
+/haipipe-application-ask continue
   Resume the last in-progress session (state in insights/sessions/_active.yaml).
 
-/haipipe-insight-session status
+/haipipe-application-ask status
   Print last session's phase + outstanding gate.
 ```
 
@@ -129,7 +129,7 @@ Stop conditions
 ✅ answered       Phase 0 found existing answer, OR full pipeline produced one
 🟡 budget        MAX_EXPERIMENTS or MAX_ROUNDS hit
 🔴 blocked       gate rejected and user has no path forward
-🛑 paused        user invoked /haipipe-insight-session pause
+🛑 paused        user invoked /haipipe-application-ask pause
 ```
 
 
@@ -157,7 +157,7 @@ Boundary
 --------
 
 ```
-haipipe-insight-session    bridges INSIGHT base ↔ EXPERIMENT base via /haipipe-experiment
+haipipe-application-ask    bridges INSIGHT base ↔ EXPERIMENT base via /haipipe-experiment
 haipipe-experiment-loop    iterates ONE experiment thread
 haipipe-experiment-bridge  scaffolds tasks for ONE experiment
 

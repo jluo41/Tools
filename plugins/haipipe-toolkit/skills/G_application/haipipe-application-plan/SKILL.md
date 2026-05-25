@@ -1,18 +1,18 @@
 ---
-name: haipipe-insight-plan
-description: "Planning specialist of the haipipe-insight family. Given a research question, writes a structured plan-vN.yaml describing which D / I / K / W tasks are needed to answer it AND which experiments (existing or new) must feed them. Used by /haipipe-insight-session at Phase 1. NO code, plan is markdown-yaml. Trigger: plan, /haipipe-insight-plan, design synthesis, what tasks to run, plan-vN."
+name: haipipe-application-plan
+description: "Planning specialist of the haipipe-application family. Given a research question, writes a structured plan-vN.yaml describing which D / I / K / W tasks are needed to answer it AND which experiments (existing or new) must feed them. Used by /haipipe-application-ask at Phase 1. NO code, plan is markdown-yaml. Trigger: plan, /haipipe-application-plan, design synthesis, what tasks to run, plan-vN."
 argument-hint: [question] [--project <path>] [--revise <N>] [--feedback <text>]
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 ---
 
-Skill: haipipe-insight-plan
+Skill: haipipe-application-plan
 =============================
 
 Takes one research question, produces a **plan-vN.yaml** that lays out
 the synthesis path: which D / I / K / W tasks would answer it, and
 which experiments must already be confirmed (or need to be triggered).
 
-Used by `/haipipe-insight-session` at Phase 1. Can also run standalone.
+Used by `/haipipe-application-ask` at Phase 1. Can also run standalone.
 
 
 Input
@@ -153,7 +153,7 @@ Risk profile
 
 Writes one file under `insights/sessions/plans/`. Does NOT scaffold
 tasks or experiments — only proposes them. Actual scaffolding happens
-in `/haipipe-insight-session` Phase 2 after gate approval.
+in `/haipipe-application-ask` Phase 2 after gate approval.
 
 
 Specialist tail
