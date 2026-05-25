@@ -51,7 +51,8 @@ written_at:  <ISO>
 The session orchestrator routes based on `outcome`:
 - approve → next phase
 - revise  → call /haipipe-insight-plan --revise N --feedback <text>
-- done    → jump to /haipipe-insight-report
+- done    → write session log to insights/sessions/<DATE>_<slug>.md
+            and close the session (no separate report doc)
 
 
 Workflow

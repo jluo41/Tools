@@ -83,15 +83,14 @@ Phase 6 — W-PHASE  (Wisdom)
 
   Gate: revise / approve
 
-Phase 7 — REPORT
-  Skill("haipipe-insight-report", args="--question <Q> --scope <K/W/...>")
-  → writes a final synthesis md that DIRECTLY answers the question,
-    with full citation trail through K / I / D entries.
-
-Phase 8 — LOG SESSION
+Phase 7 — LOG SESSION
   Append a Q&A record to insights/sessions/<DATE>_<slug>.md:
     - question, scanned_entries, new_experiments, new/updated insights,
       final answer, git_sha.
+  The new K/W entries written in earlier phases ARE the structured answer;
+  the sessions/ log is the lightweight Q&A record pointing to them.
+  (External-facing report / message / UI synthesis is NOT done here —
+   route to /haipipe-application instead.)
 ```
 
 
@@ -194,5 +193,6 @@ artifacts: [insights/sessions/<DATE>_<slug>.md,
             insights/K_knowledge/K*.md (new/updated),
             insights/W_wisdom/W*.md (if any),
             experiments/<NN>_<slug>/ (if new experiments scaffolded)]
-next:      review the final answer; /haipipe-insight-report if needed
+next:      review final K/W + sessions/<DATE>.md log; if an external
+           artifact (message/ui/report) is wanted, /haipipe-application
 ```

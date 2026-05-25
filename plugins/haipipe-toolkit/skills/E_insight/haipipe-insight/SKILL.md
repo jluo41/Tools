@@ -67,7 +67,6 @@ Commands
 /haipipe-insight wisdom [--scope <K*>]           W-level: strategic recommendation
 /haipipe-insight plan <question>                 plan a multi-phase synthesis
 /haipipe-insight explore [project-path]          scan experiments/ for synthesis-ready threads
-/haipipe-insight report [--question Q]           final synthesis doc, full citation trail
 /haipipe-insight gate <phase>                    review proposed outcome of a phase
 /haipipe-insight "<natural language>"            infer, dispatch
 ```
@@ -86,8 +85,11 @@ haipipe-insight-wisdom          W-LEVEL:  strategic recommendations → W*.md
 haipipe-insight-plan            PLAN:     write plan-vN.yaml for a question
 haipipe-insight-explore         READ:     coverage scan over experiments + insights
 haipipe-insight-gate            REVIEW:   gate-outcome proposer between phases
-haipipe-insight-report          SYNTHESIZE: question-answering doc with full trail
 haipipe-insight-context         LOAD:     per-phase context for the running specialist
+
+(External-facing reports / messages / UI are NOT in E_insight — they
+ live in G_application. E_insight's internal Q&A answer = the K/W
+ entries written by the session + insights/sessions/<DATE>.md log.)
 ```
 
 
@@ -102,9 +104,10 @@ knowledge, K-level, validated belief, claim    -> haipipe-insight-knowledge
 wisdom, W-level, recommendation, what next      -> haipipe-insight-wisdom
 plan, plan-vN, design analysis                  -> haipipe-insight-plan
 explore, coverage, scan, what can we synthesize -> haipipe-insight-explore
-report, final synthesis, answer doc             -> haipipe-insight-report
 gate, review, approve/revise                    -> haipipe-insight-gate
 context, load context                           -> haipipe-insight-context
+
+(report / stakeholder doc / message → /haipipe-application; NOT E_insight)
 ```
 
 
@@ -167,10 +170,13 @@ A_discover    feeds ideas → seeded questions for /haipipe-insight-session
 B_project     project umbrella → owns the examples/Proj-X/ shape
 C_task        provides runs → linked into experiments → into observations
 D_experiment  provides claims → input to E_insight synthesis
-F_paper       consumes K + W entries → publishable narrative
+F_paper       consumes K + W entries → academic publication
+G_application consumes K + W entries → patient/clinician messages,
+                                       UI sketches, stakeholder reports
+                                       (external creation; never writes back)
 
 E_insight is the cross-experiment synthesis hub: reads from D_experiment,
-feeds F_paper. Source of "what does this project KNOW".
+feeds F_paper + G_application. Source of "what does this project KNOW".
 ```
 
 

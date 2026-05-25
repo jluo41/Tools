@@ -58,7 +58,7 @@ Lives in C_task/  (task-scope work — sibling section):
  For experiment-level claims + aggregation, see D_experiment/* skills.)
 ```
 
-Conceptual layering — a `project` is the umbrella, containing four
+Conceptual layering — a `project` is the umbrella, containing five
 parallel worlds. Each world has its own specialist family:
 
 ```
@@ -75,8 +75,16 @@ parallel worlds. Each world has its own specialist family:
    │       "what does the         — cross-experiment synthesis
    │        PROJECT know?"          D/I/K/W markdown layers
    │
-   └── 📰 paper/                   /paper-*                     (separate section)
-           "what claims ship?"     — consumes K/W from insights/
+   ├── 📰 paper/                   /paper-*                     (separate section)
+   │       "what claims ship      — consumes K/W from insights/
+   │        to academia?"
+   │
+   └── 📬 applications/           /haipipe-application-*         (G_application/)
+           "what do we deliver    — patient/clinician messages,
+            to non-academic         UI sketches, stakeholder reports;
+            audiences?"            reads insights/K + W (NEVER writes back);
+                                   can TRIGGER /haipipe-insight ask to
+                                   close knowledge gaps mid-draft
 ```
 
 **For the boundary between C_task and D_experiment** (the most-confused
