@@ -1,0 +1,41 @@
+# =============================================================================
+# Template for configs/<NAME>.yaml
+# =============================================================================
+# Every run MUST start from this template. Fill in `_meta:` before scheduling.
+# Actual config params for your training/eval script go BELOW the `_meta:` block.
+# After execution, runtime info lives in results/<NAME>/runtime.yaml — NOT here.
+# This file is FROZEN once the run starts: never edit it post-execution.
+# =============================================================================
+
+_meta:
+  # purpose — REQUIRED. One sentence: why does this run exist?
+  # If you cannot fill this, you do not know what you are running. Stop.
+  purpose: |
+    <e.g., Verify reproducibility of baseline at seed=42 before multi-seed sweep>
+
+  # note — OPTIONAL. Free-form thoughts, discussion dump, why-this-choice.
+  # This is where Claude-discussion conclusions land.
+  note: |
+    <e.g., 与 Claude 讨论后决定: 先 baseline, 不动 LR/warmup;
+           若 ok 就 fork 出 seed7/seed13/seed21>
+
+  # input — OPTIONAL. Semantic description of data + ckpt origin.
+  # File paths go in the params section below. This is the *meaning*.
+  input: |
+    <e.g., AIData v3 train split (887k cases); from scratch>
+
+  # output — OPTIONAL. Expected artifacts + a headline metric guess.
+  # The actual headline lands in runtime.yaml after the run.
+  output: |
+    <e.g., metrics.json · best.ckpt @ epoch 20; expect MAE ≈ 24.7>
+
+
+# =============================================================================
+# Actual config params below — whatever your script needs.
+# =============================================================================
+# seed: 42
+# batch_size: 16
+# lr: 1.0e-4
+# warmup_steps: 1000
+# epochs: 20
+# ...

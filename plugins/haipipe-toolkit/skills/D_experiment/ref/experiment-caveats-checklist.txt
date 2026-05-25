@@ -1,0 +1,114 @@
+⚠️ Caveats & confounds checklist
+
+For every experiment entry, walk this list before saving.  Each YES
+becomes a bullet in the "Caveats and confounds" section of the log.
+
+THIS IS NOT OPTIONAL.  The differentiator vs MLflow / W&B is that this
+log records what is *uncertain* about each result, not just what
+happened.  If you can't find any caveats, write "no confounds
+identified" explicitly so the reader knows you looked.
+
+
+─§ Apples-to-apples comparison checks ────────────────────────────────
+
+The most common confound: the result is compared to a baseline trained
+under different conditions.  Flag if ANY of these differ from the
+comparison group:
+
+  ☐ Framework            (PyTorch vs Nixtla vs JAX vs ...)
+  ☐ Hyperparameter tuning (Optuna sweep vs hand-set)
+  ☐ Parameter count       (within 2× is roughly comparable; bigger
+                            differences should be flagged)
+  ☐ Optimizer / schedule  (AdamW cosine vs SGD constant vs ...)
+  ☐ Epochs / steps        (training budget difference)
+  ☐ Batch size            (affects effective learning rate)
+  ☐ Loss objective        (MSE vs MAE vs quantile vs custom)
+  ☐ Auxiliary losses      (event-focused / post-event reweighting / etc.)
+  ☐ Data filter           (DE-only vs all events vs ...)
+  ☐ Data split version    (different aidata version)
+  ☐ Random seed           (single seed → noise floor unknown)
+
+
+─§ Statistical confidence ────────────────────────────────────────────
+
+  ☐ Single seed?           → flag noise floor uncertainty.  Cite
+                              expected std from similar experiments.
+  ☐ N < 5 seeds?           → flag low statistical power; t-test will
+                              be sensitive to outliers.
+  ☐ Outlier seed present?  → diagnose what went wrong (training
+                              failure / bad init / OOM); report both
+                              raw and outlier-excluded numbers.
+  ☐ Variance large vs Δ?   → flag — effect could be seed noise.
+  ☐ Cross-split variance?  → if val helps but test-id doesn't, flag.
+
+
+─§ Data / preprocessing pitfalls ─────────────────────────────────────
+
+  ☐ Recent parser bug?     → cite the fix; note whether old numbers
+                              in the log used the buggy parser.
+  ☐ Cache invalidation?    → if features were precomputed, did they
+                              get regenerated after the bug fix?
+  ☐ Filter drift?          → has the data filter changed across
+                              entries (e.g. Med5Min inclusion)?
+  ☐ Train/test leakage?    → did patient IDs span train and test?
+                              were features derived from future data?
+
+
+─§ Architecture / training pitfalls ──────────────────────────────────
+
+  ☐ Training stability?    → did some seeds fail to converge?  flag
+                              the training-stability finding separately
+                              from the headline metric.
+  ☐ Convergence?           → did val loss plateau at the end, or was
+                              it still trending?  may indicate
+                              under-training.
+  ☐ Overfit?               → train loss << val loss?  flag.
+  ☐ Mixed-precision?       → bf16 vs fp32 can subtly affect numbers.
+
+
+─§ Inference pitfalls ────────────────────────────────────────────────
+
+  ☐ Rollout vs direct?     → rollout numbers should NOT be compared
+                              to direct-head numbers.  Flag clearly
+                              which inference regime is being used.
+  ☐ Context window match?  → for time-series forecasting, did the
+                              eval use the same input window as the
+                              baseline?  (e.g. B92 uses 552-bin context
+                              while B91/C01 uses 287-bin trigger
+                              alignment — these are different tasks.)
+  ☐ Horizon match?         → comparing H24 to H48 numbers without
+                              flagging the horizon difference?
+  ☐ Eval split definition? → did the test set get re-filtered?
+
+
+─§ Evaluation metric pitfalls ────────────────────────────────────────
+
+  ☐ Aggregation method?    → Method A (per-sample trajectory rmse) vs
+                              Method B (pooled MSE then sqrt) give
+                              different numbers.  Be consistent.
+  ☐ Outlier handling?      → did you clip predictions to a sensible
+                              range (e.g. [0, 400] for CGM)?
+  ☐ Per-horizon focus?     → did the aggregate metric mask a
+                              horizon-specific failure?  add a brief
+                              per-horizon note if relevant.
+
+
+─§ Reproducibility pitfalls ──────────────────────────────────────────
+
+  ☐ Code version?          → record git commit SHA (if applicable)
+                              when the result was generated.
+  ☐ Env / deps?            → flag if torch / transformers / framework
+                              version differs from other entries.
+  ☐ Hardware?              → A100 vs RTX 4090 vs CPU can affect bf16
+                              numerics.
+
+
+─§ "But..." catch-all ────────────────────────────────────────────────
+
+Before saving, ask: "If a peer reviewer challenged this entry, what
+would I have to admit?"  That answer goes in the caveats.
+
+If you genuinely can't think of one, write:
+   ⚠️ No confounds identified — single-seed run on standard pipeline.
+   (i.e. acknowledge the single-seed limitation as a default caveat
+    for any experiment that isn't multi-seed)

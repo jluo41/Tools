@@ -1,0 +1,37 @@
+# =============================================================================
+# Template for configs/<NAME>.yaml — display task (figure or table)
+# =============================================================================
+
+_meta:
+  purpose: |
+    <e.g., Main paper figure: MAE vs model size at 12 layers, val + test-id>
+  note: |
+    <e.g., 5 model sizes × 2 splits = 10 points; error bars across 3 seeds>
+  input: |
+    <e.g., Eval results from tasks B01/01..05 (one per model size)>
+  output: |
+    results/<run>/{figure.pdf, figure.png, source_data.csv}
+
+
+# =============================================================================
+# Display params
+# =============================================================================
+
+kind: figure                            # figure | table
+
+source_runs:                            # list of upstream result paths
+  - tasks/B01_evaluation_clm/01_eval_d64/results/run_seed42/
+  - tasks/B01_evaluation_clm/02_eval_d128/results/run_seed42/
+  - tasks/B01_evaluation_clm/03_eval_d256/results/run_seed42/
+
+plot_params:                            # only for kind=figure
+  x: model_size
+  y: mae
+  hue: split                            # color by val / test_id
+  errorbar: ci95
+  figsize: [6, 4]
+  style: paper                          # matches paper template
+
+# table_params:                         # only for kind=table
+#   columns: [model_size, mae_val, mae_test_id, mae_test_od]
+#   format: latex

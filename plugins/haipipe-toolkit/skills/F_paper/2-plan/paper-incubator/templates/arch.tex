@@ -1,0 +1,199 @@
+% =============================================================================
+% Incubator Document --- Architecture & Overview
+% =============================================================================
+%
+% STRUCTURE & RULES FOR INCUBATOR .tex FILES
+% -------------------------------------------
+% 1. Purpose:
+%      Incubator files are working documents for developing and refining
+%      paper content. Each file focuses on one aspect (architecture,
+%      displays, structure, etc.) and can be compiled independently.
+%
+% 2. Section hierarchy:
+%      \section{}        -> Top-level grouping (one per file)
+%      \subsection{}     -> Major topic (each starts on a new page)
+%      \subsubsection*{} -> Sub-topics within a subsection (unnumbered)
+%
+% 3. Page layout rules:
+%      - Every \subsection EXCEPT the first gets a \clearpage before it
+%
+% 4. Discussion boxes:
+%      - Wrapped in \fbox{\parbox{0.95\textwidth}{...}}
+%      - Format: \textbf{> JL:} comment \\ \textbf{>> CC:} response
+%      - Remove before final submission
+%
+% 5. Formatting conventions:
+%      - \critical{} = red bold, \high{} = orange bold, \medium{} = blue bold
+%      - [nosep] on itemize/enumerate
+%      - Separator comments: % === (section), % --- (subsection), % . . . (sub)
+%
+% =============================================================================
+
+\documentclass[10pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{float}
+
+% Custom commands
+\newcommand{\critical}[1]{\textcolor{red}{\textbf{#1}}}
+\newcommand{\high}[1]{\textcolor{orange}{\textbf{#1}}}
+\newcommand{\medium}[1]{\textcolor{blue}{\textbf{#1}}}
+
+\title{\textbf{Paper Architecture Overview}\\
+\large [VENUE]}
+\author{Generated: [DATE]}
+\date{}
+
+\begin{document}
+\maketitle
+
+% =============================================================================
+\section{Paper Architecture Overview}
+% =============================================================================
+
+% -----------------------------------------------------------------------------
+\subsection{One-Paragraph Summary}
+% -----------------------------------------------------------------------------
+
+[One dense paragraph summarizing the paper: what it is, what it finds, why it matters. Include key numbers (task count, model count, main finding percentages). This is the 30-second elevator pitch.]
+
+% -----------------------------------------------------------------------------
+\clearpage
+\subsection{Key Data Points}
+% -----------------------------------------------------------------------------
+
+\textbf{Scale:}
+\begin{itemize}[nosep]
+\item [N task instances: factorial breakdown]
+\item [N model configurations: category breakdown]
+\item [Evaluation protocol details]
+\item [Data resolution and window sizes]
+\end{itemize}
+
+\textbf{Validation:}
+\begin{itemize}[nosep]
+\item [Primary metric and why chosen]
+\item [Visualization approach for results]
+\item [Standard metrics for comparison]
+\item [Reproducibility measures]
+\end{itemize}
+
+\textbf{Core Findings:}
+\begin{enumerate}[nosep,leftmargin=1.5em]
+\item \textbf{Finding 1 Title} (Table N):
+  \begin{itemize}[nosep]
+  \item [specific number or claim]
+  \item [specific number or claim]
+  \end{itemize}
+
+\item \textbf{Finding 2 Title} (Table N):
+  \begin{itemize}[nosep]
+  \item [specific number or claim]
+  \end{itemize}
+\end{enumerate}
+
+% -----------------------------------------------------------------------------
+\clearpage
+\subsection{Main Contributions}
+% -----------------------------------------------------------------------------
+
+[Opening sentence framing the contributions.]
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{C1: Title --- Subtitle}
+  \begin{itemize}[nosep]
+  \item [point]
+  \item [point]
+  \end{itemize}
+
+\item \textbf{C2: Title --- Subtitle}
+  \begin{itemize}[nosep]
+  \item [point]
+  \item [point]
+  \end{itemize}
+
+\item \textbf{C3: Title --- Subtitle}
+  \begin{itemize}[nosep]
+  \item [point]
+  \end{itemize}
+\end{enumerate}
+
+% -----------------------------------------------------------------------------
+\clearpage
+\subsection{Storytelling Arc \& Position}
+% -----------------------------------------------------------------------------
+
+% . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+\subsubsection*{Story Arc (5 Acts)}
+
+\textbf{Act 1 --- The Need:}
+[Why this problem matters. What gap exists.]
+
+\textbf{Act 2 --- The Approach:}
+[What was built or evaluated. Scale and design.]
+
+\textbf{Act 3 --- The Discovery:}
+[Key findings with numbers. What surprised.]
+
+\textbf{Act 4 --- The Mechanism:}
+[Why findings occur. Architectural or methodological explanation.]
+
+\textbf{Act 5 --- The Frontier:}
+[What this enables. Future research directions.]
+
+% . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+\subsubsection*{Fitting Position}
+
+\begin{itemize}[nosep]
+\item \textbf{Venue Criterion 1 (C1):} [Why this contribution fits]
+\item \textbf{Venue Criterion 2 (C2--C4):} [Why these contributions fit]
+\item \textbf{Venue Criterion 3 (C5):} [Why this contribution fits]
+\end{itemize}
+
+% . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+\subsubsection*{Terminology Quick Reference}
+
+\begin{tabular}{@{}p{0.47\textwidth}p{0.47\textwidth}@{}}
+\toprule
+\textbf{Use} & \textbf{Avoid} \\
+\midrule
+[preferred term] & [term to avoid] \\
+[preferred term] & [term to avoid] \\
+\bottomrule
+\end{tabular}
+
+% -----------------------------------------------------------------------------
+\clearpage
+\subsection{Scope \& Boundaries}
+% -----------------------------------------------------------------------------
+
+\textbf{What We Deliver:}
+\begin{itemize}[nosep]
+\item [deliverable with concrete metric]
+\item [deliverable with concrete metric]
+\end{itemize}
+
+\textbf{Out of Scope:}
+\begin{itemize}[nosep]
+\item [exclusion (reason)]
+\item [exclusion (reason)]
+\end{itemize}
+
+\textbf{Acknowledged Limitations:}
+\begin{itemize}[nosep]
+\item [limitation and its impact]
+\item [limitation and its impact]
+\end{itemize}
+
+\textbf{Intentional Design Choices:}
+\begin{itemize}[nosep]
+\item [choice and justification]
+\item [choice and justification]
+\end{itemize}
+
+\end{document}
