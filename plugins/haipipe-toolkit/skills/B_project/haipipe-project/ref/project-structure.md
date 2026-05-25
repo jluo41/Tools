@@ -34,16 +34,18 @@ Standard Layout
   +-- insights/       <- MANDATORY: knowledge base (E_insight manages)
   +-- diagram/        <- MANDATORY: project-level story (high-level only)
   +-- paper/          <- OPTIONAL: manuscripts (F_paper; each Paper-* gets own diagram/)
+  +-- applications/   <- OPTIONAL: external artifacts (G_application; messages/ui/reports)
 
   No top-level: configs/, results/, README.md, docs/, cc-archive/, _old/
 
-  Project-level state lives in six places:
+  Project-level state lives in seven places:
     - SHAPE       project layout enforced by haipipe-project specialists
     - WORK        in {PROJECT}/tasks/         (execution: code, configs, runs, metrics)
     - CLAIMS      in {PROJECT}/experiments/   (research threads + claim verdicts)
     - KNOWLEDGE   in {PROJECT}/insights/      (cross-experiment synthesis; D/I/K/W)
     - STORY       in {PROJECT}/diagram/       (project-level narrative)
     - DETAIL      in {task}/diagram/          (per-task, operational)
+    - DELIVERY    in {PROJECT}/applications/  (external artifacts: messages, UI, reports)
 
 ---
 
@@ -92,23 +94,36 @@ Project-level experiments/  (research threads)
   NO code, no notebooks, no plots inside experiments/. Those live in tasks/
   and are referenced from experiment.yaml via the `evidence:` field.
 
-  experiments/ vs tasks/ vs paper/ vs diagram/  -- the four project worlds:
+  experiments/ vs tasks/ vs insights/ vs paper/ vs applications/ vs diagram/
+  -- the six project worlds:
 
-    tasks/        WORK     execution-side: code, configs, runs, metrics.
-                           one task-folder = one runnable unit. C_task owns.
-    experiments/  CLAIMS   research-side: hypothesis -> arms -> aggregated claim.
-                           one experiment-folder = one research thread.
-                           D_experiment owns. NO code lives here.
-    paper/        DELIVER  manuscripts. F_paper owns. Each Paper-{Name}-{venue}/
-                           is often a git submodule.
-    diagram/      STORY    project-level narrative (motivation / boundary /
-                           exploration). HIGH-LEVEL only; operational status
-                           belongs in tasks/{...}/diagram/ or experiments/
-                           {NN}_{slug}/logs/.
+    tasks/         WORK       execution-side: code, configs, runs, metrics.
+                              one task-folder = one runnable unit. C_task owns.
+    experiments/   CLAIMS     research-side: hypothesis -> arms -> aggregated claim.
+                              one experiment-folder = one research thread.
+                              D_experiment owns. NO code lives here.
+    insights/      KNOWLEDGE  cross-experiment synthesis (D/I/K/W markdown).
+                              E_insight owns. NO code; entries cite experiments
+                              + tasks via frontmatter sources.
+    paper/         PUBLISH    academic manuscripts. F_paper owns. Each
+                              Paper-{Name}-{venue}/ is often a git submodule.
+    applications/  DELIVER    external artifacts (patient/clinician messages,
+                              UI sketches, stakeholder reports). G_application
+                              owns. Reads insights/K + insights/W; NEVER writes
+                              back.
+    diagram/       STORY      project-level narrative (motivation / boundary /
+                              exploration). HIGH-LEVEL only; operational status
+                              belongs in tasks/{...}/diagram/ or experiments/
+                              {NN}_{slug}/logs/.
 
-  One-way dependency: experiments/ READS from tasks/ (links runs into arms,
-  references display tasks for figures via evidence:). tasks/ NEVER references
-  experiments/. paper/ READS from experiments/ (claims -> published).
+  One-way dependencies:
+    experiments/   READS tasks/                 (links runs into arms via evidence:)
+    insights/      READS experiments/ + tasks/  (D/I/K/W synthesis)
+    paper/         READS insights/K + W         (publication narrative)
+    applications/  READS insights/K + W         (external creation; can TRIGGER
+                                                 /haipipe-insight ask to close gaps)
+    tasks/         NEVER reads experiments/insights/paper/applications/
+    experiments/   NEVER reads insights/
 
   Schema authority: D_experiment/ref/experiment-yaml-schema.md.
 
@@ -138,12 +153,13 @@ Project-level insights/  (knowledge base)
   |   +-- ...
   |
   +-- W_wisdom/                      "what we should do next"
-  |   +-- INDEX.md                   ← W-layer sub-index (auto)
-  |   +-- W01_<slug>.md
-  |   +-- ...
-  |
-  +-- reports/                       (optional: final synthesis docs answering
-                                      specific questions; R{NN}_<slug>.md)
+      +-- INDEX.md                   ← W-layer sub-index (auto)
+      +-- W01_<slug>.md
+      +-- ...
+
+  (External-facing synthesis docs / reports / messages / UI are NOT in
+   insights/ — they live in applications/. The internal Q&A answer is
+   the K/W entries written by insight-session + sessions/<DATE>.md log.)
 
   Each entry is one .md with YAML frontmatter (id, layer, tags, status,
   sources, ref_by) + standard body sections. NO code, no notebooks,
@@ -170,6 +186,50 @@ Project-level insights/  (knowledge base)
   K_knowledge and W_wisdom each get an INDEX.md (highest-signal layers,
   used as primary query entry); D and I do not (grep tags is fast enough
   on flat lists).
+
+---
+
+Project-level applications/  (external creation)
+==================================================
+
+  examples/{PROJECT_ID}/applications/
+  +-- INDEX.md                              (auto: list all artifacts + status)
+  +-- messages/                             (patient / clinician messages)
+  |   +-- <YYYY-MM-DD>_<audience>_<slug>.md
+  |   +-- ...
+  +-- ui/                                   (UI sketches / specs)
+  |   +-- <slug>/
+  |       +-- sketch.md                     (ASCII layout + annotations)
+  |       +-- spec.md                       (component contract for dev)
+  +-- reports/                              (external stakeholder reports)
+      +-- <YYYY-MM-DD>_<audience>_<slug>.md
+      +-- ...
+
+  Each artifact is one .md with YAML frontmatter (kind, audience, intent,
+  created, cited_K, cited_W, triggered, status). NO code, no notebooks,
+  no plots embedded (kind=ui may have ASCII sketches only).
+
+  applications/ vs insights/ vs paper/  -- the boundary:
+
+    insights/      KNOWLEDGE   internal epistemic state (D/I/K/W)
+                                ↓ feeds both paper/ and applications/
+    paper/         PUBLISH     academic manuscript (researchers)
+    applications/  DELIVER     external artifact (patient / clinician /
+                               regulator / executive / designer / dev /
+                               partner)
+
+  One-way dependency: applications/ READS insights/K + W. NEVER writes
+  back. If a gap surfaces during drafting, the kind-specialist calls
+  /haipipe-insight ask (which may chain into /haipipe-experiment); new
+  entries land in insights/, then drafting resumes.
+
+  Schema authority: G_application/haipipe-application/ref/
+                    audience-requirements.md (audience/tone/length),
+                    application-input-contract.md (how to read K/W).
+
+  Each artifact MUST cite K/W entries in its frontmatter `cited_K` and
+  `cited_W` fields, regardless of audience-facing format. The frontmatter
+  is the machine-traversable trail.
 
 ---
 
@@ -503,10 +563,12 @@ Review Checklist
 Project structure:
   [ ] Name matches Proj{Series}-{Category}-{Num}-{Name}
   [ ] tasks/ + experiments/ + insights/ + diagram/ exist at project root
+  [ ] applications/ exists if any external artifacts have been created
   [ ] No top-level configs/, results/, README.md, docs/, cc-archive/, _old/
   [ ] Tasks live under tasks/{G}{NN}_{group}/{NN}_{name}/
   [ ] Experiments live under experiments/{NN}_{slug}/
   [ ] Insights live under insights/{D,I,K,W}_*/ with INDEX.md at root
+  [ ] Applications (if present) live under applications/{messages,ui,reports}/
   [ ] {PROJECT}/diagram/ has 01-story, 02-boundary, 03-exploration,
       project.excalidraw (canvas fresher than .txt sources)
 
@@ -561,6 +623,23 @@ Per insight base (if insights/ exists):
   [ ] sources / ref_by are consistent (if K cites P, P's ref_by lists the K)
   [ ] All K entries cite ≥ 1 P; all W entries cite ≥ 1 K
   [ ] Each entry ≤ 200 lines total (frontmatter ≤ 13 + body ≤ 200)
+  [ ] No reports/ or external-facing synthesis docs (those moved to
+      applications/; insights/ is internal epistemic state only)
+
+Per application (if applications/ exists):
+  [ ] applications/INDEX.md present and fresh
+  [ ] Artifacts live under applications/{messages,ui,reports}/
+  [ ] Each artifact has YAML frontmatter (kind, audience, intent, created,
+      cited_K, cited_W, triggered, status) per G_application/ref/
+      audience-requirements.md
+  [ ] cited_K / cited_W populated for every load-bearing claim
+  [ ] No K cited with status=superseded as if active
+  [ ] Length within audience budget (patient ≤ 200w, clinician ≤ 400w,
+      regulator ≤ 1500w, executive ≤ 600w, partner ≤ 800w, designer/dev
+      kind=ui per spec)
+  [ ] No *.py / *.ipynb / no edits to insights/ from this layer
+  [ ] If status=draft: "## Open questions" section present listing
+      unresolved gaps
 
 Paper (if applicable):
   [ ] paper/Paper-*/diagram/ has 01-overview, 02-figure-plan
