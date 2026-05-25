@@ -1,0 +1,80 @@
+📊 Headline scoreboard template
+
+This is the one table that lives at the TOP of experiment-log.txt.
+Re-derive it any time a new experiment is added.  Goal: a researcher
+opening the log file should see "which model wins which split" within
+the first 30 lines.
+
+
+─§ Scoreboard layout ────────────────────────────────────────────────────
+
+🎯 <Metric>  (lower=better unless noted) — <evaluation dataset / filter>
+🏆 = best per split.  📍 = reference floor or ceiling.
+
++---------------------------+----------------------+---------+---------+---------+
+| Group                     | Model / Recipe       | val     | test-id | test-od |
++---------------------------+----------------------+---------+---------+---------+
+| 📍 Trivial floor          | <e.g. persistence>   |  X.XX   |  X.XX   |  X.XX   |
+| 📊 Strong baseline        | <e.g. PatchTST>      |  X.XX   |  X.XX   |  X.XX   |
+| 🚀 Pretrained             | <e.g. LHM 50M zero-shot> |  X.XX |  X.XX  |  X.XX   |   🏆 split
+| 🔬 Architecture probe     | <e.g. B93/03>        |  X.XX   |  X.XX   |  X.XX   |   🏆 split
++---------------------------+----------------------+---------+---------+---------+
+
+
+─§ Annotation rules ────────────────────────────────────────────────────
+
+   Mark with 🏆 the row whose value is the strict minimum on that split.
+   When two rows tie within 0.05 (noise), use 🤝 instead of 🏆.
+
+   📍 Reserve for *reference rows*, not "real" models:
+     - persistence / naive (trivial floor)
+     - the strongest known baseline (e.g. PatchTST DE-event after Optuna)
+     - the absolute target if you have one (e.g. clinically useful 26)
+
+   The Group column is a category, not the model name.  Categories:
+     📍  reference   (floor / ceiling / target)
+     📊  baseline    (classical / ML / standard neural)
+     🚀  pretrained  (foundation model, zero-shot or fine-tuned)
+     🔬  probe       (architectural ablation, sub-task experiments)
+     🧪  candidate   (a model under active iteration)
+
+
+─§ Where the numbers come from ─────────────────────────────────────────
+
+   Each row corresponds to ONE entry in the log below.  Numbers MUST
+   match the entry's results section (no rounding drift).  When
+   updating an entry, also update the scoreboard.
+
+   If you have a multi-seed entry, show the MEAN in the scoreboard;
+   put the ± std in the full entry below.
+
+
+─§ When to add a new row ──────────────────────────────────────────────
+
+   Add a row when the model represents a meaningfully different
+   architecture or recipe — NOT every seed / hyperparameter sweep.
+
+   Examples of when to add:
+     ✅ new architecture family (PatchTST → TCN → transformer)
+     ✅ new training regime (pretrain → fine-tune → from-scratch)
+     ✅ new feature set (CGM only → CGM+events → CGM+events+patient)
+
+   Examples of when NOT to add:
+     ❌ different seed of the same arch + recipe (use multi-seed entry)
+     ❌ same arch trained for more epochs (update existing entry)
+     ❌ same arch with hyperparameter tweak (update existing entry)
+
+
+─§ Worked example (from EventGlucose project) ─────────────────────────
+
+🎯 H24 cumulative RMSE (lower=better, mg/dL) — EventGlucose v0004 DE-only
+🏆 = best per split.   📍 = reference floor / ceiling.
+
++---------------------------+--------------------------------+--------+---------+---------+
+| Group                     | Model / Recipe                 |   val  | test-id | test-od |
++---------------------------+--------------------------------+--------+---------+---------+
+| 📍 Trivial floor          | Persistence (cgm[286] repeat)  |  33.18 |  34.10  |  32.16  |
+| 📊 Strong baseline        | PatchTST DE-event (Optuna 10M) |  29.09 |  29.84  |  28.29  |
+| 🚀 Pretrained             | LHM 50M K=24 zero-shot         |  28.45 |  29.60  |  28.17  | 🏆 test-od
+| 🔬 Architecture probe     | B93/03 PatchTST + FiLM 23-d    |  28.37 |  29.57  |  29.03  | 🏆 val 🏆 test-id
++---------------------------+--------------------------------+--------+---------+---------+

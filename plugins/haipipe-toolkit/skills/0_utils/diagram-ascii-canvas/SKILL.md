@@ -1,0 +1,215 @@
+---
+name: diagram-ascii-canvas
+description: Bundle ASCII `.txt` diagrams into one Excalidraw canvas — two modes. (1) REBUILD: `txt-to-canvas.py` renders a folder of .txt into a multi-column canvas from scratch. (2) APPEND: `txt-append-to-canvas.py` adds ONE .txt as a new rightmost column to an existing canvas, preserving prior columns and manual Excalidraw annotations (arrows, sticky notes). Use rebuild for repo diagram/ folders that change. Use append for daily session-log accretion.
+---
+
+# /diagram-ascii-canvas — Bundle ASCII diagrams into one Excalidraw file
+
+**Purpose**: take a directory (or list) of `.txt` ASCII diagrams produced by `diagram-ascii` and assemble them into a single `.excalidraw` file. Each `.txt` is rendered to a PNG via headless Chromium (so emoji are colored correctly) and embedded as an image element in the canvas. A title text element is placed above each image so you can see at a glance which file is which.
+
+The resulting `.excalidraw` opens in Excalidraw / VS Code's Excalidraw extension, where you can drag images around, draw arrows between them, and add notes — without re-drawing anything.
+
+## When to Use
+
+- User has 3+ `.txt` diagrams and asks "put them together", "see how they relate", "make one big canvas"
+- After `diagram-ascii` produces multiple files in a folder
+- Before a design review where someone wants to gesture across diagrams
+
+## When to Defer
+
+- User wants editable text inside Excalidraw — this skill embeds PNGs, not live text. Editing means changing the `.txt` and re-running.
+- Only one diagram — just open the `.txt`, no canvas needed.
+
+## Inputs
+
+| Input | Form |
+|---|---|
+| A directory of `.txt` files | `path/to/diagrams/` — script picks up `*.txt` |
+| Explicit list of files | space-separated `.txt` paths |
+| Output path (optional) | defaults to `<input-dir>/canvas.excalidraw` |
+
+## Output
+
+- `canvas.excalidraw` — single file with all diagrams embedded
+- `_pngs/` (sibling dir) — intermediate PNGs, kept for re-use / debugging
+
+## How to Run
+
+The skill ships two scripts. Step 1 is always required; step 2 is for sharing.
+
+### 1. Build the canvas
+
+`bin/txt-to-canvas.py` uses `uv` to pull `playwright` on demand; the chromium browser must already be cached (`~/Library/Caches/ms-playwright/chromium-*`).
+
+```bash
+# whole directory (auto-splits each .txt at runs of 2+ blank lines)
+bin/txt-to-canvas.py path/to/diagrams/
+
+# explicit files + custom output
+bin/txt-to-canvas.py a.txt b.txt c.txt --out path/to/big.excalidraw
+
+# tweak gutters (px) — defaults: col 300, row 50
+bin/txt-to-canvas.py path/to/diagrams/ --col-gutter 500 --row-gutter 60
+
+# disable section splitting (one PNG per file)
+bin/txt-to-canvas.py path/to/diagrams/ --blank-lines 0
+
+# split more aggressively (any 1+ blank line is a section break)
+bin/txt-to-canvas.py path/to/diagrams/ --blank-lines 1
+```
+
+### Layout: one column per file, sections stacked top→bottom
+
+Reading order on the canvas matches reading order in your folder:
+
+```
+┌─ 📄 00-index.txt ─┐  ┌─ 📄 01-repo-layout.txt ─┐  ┌─ 📄 02-… ─┐
+│ §1/N · <title>    │  │ §1/N · <title>          │  │ …         │
+│ [image]           │  │ [image]                 │  │           │
+│                   │  │                         │  │           │
+│ §2/N · <title>    │  │ §2/N · <title>          │  │           │
+│ [image]           │  │ [image]                 │  │           │
+│ …                 │  │ …                       │  │           │
+└───────────────────┘  └─────────────────────────┘  └───────────┘
+   column = 1 file        column = 1 file              …
+```
+
+- **Each column** is one source `.txt` file, with a bold filename header.
+- **Each row inside a column** is one section, stacked top→bottom in source order.
+- **Each section** has a `§N/TOTAL · <section title>` label above its image. The section title is the first non-blank line of that section.
+- Columns aren't height-aligned — files with more sections just go further down. That's intentional and easier to scan than forcing a strict grid.
+
+### Section splitting — explicit `─§` markers only
+
+A file is split into sections **only** at lines that match this marker:
+
+```
+─§ Section Title ────────────────────────────────
+--§ Section Title ----------------------------------    # ASCII fallback
+```
+
+The `§` symbol is the unambiguous trigger. The marker line itself is consumed (not rendered) — only its title is shown above the section's image. Files without any `─§` markers render as **one PNG per file**; the tool does not guess section boundaries from blank lines, box borders, or rule lines, because those over-fire on diagram content.
+
+If you have a marker-less file you don't want to retrofit, opt into a blank-line fallback with `--blank-lines 2` (splits at runs of 2+ blank lines, but only when no markers are present).
+
+See `diagram-ascii` SKILL → "Section dividers" for the canonical convention.
+
+### Append vs rebuild — pick the right script
+
+```
+🔁 txt-to-canvas.py         ➕ txt-append-to-canvas.py
++--------------------------+ +--------------------------+
+| 🏗️  REBUILD whole canvas | | 🪄 APPEND ONE .txt as   |
+|    from .txt files in    | |    new rightmost column  |
+|    a folder              | |                          |
+|                          | |                          |
+| ❌ wipes manual edits    | | ✅ preserves prior cols  |
+|    (arrows, sticky notes,| |    AND manual arrows /   |
+|    re-arrangements)      | |    notes drawn in        |
+|                          | |    Excalidraw            |
+|                          | |                          |
+| 🎯 use for: refreshing a | | 🎯 use for: daily session|
+|    repo's diagram/ when  | |    log accretion (one    |
+|    .txt files change     | |    .txt per session)     |
++--------------------------+ +--------------------------+
+```
+
+```bash
+# append one .txt as a new rightmost column
+bin/txt-append-to-canvas.py canvas-260426.excalidraw new-session.txt
+
+# tune gap before the new column (default 300px)
+bin/txt-append-to-canvas.py canvas.excalidraw new.txt --col-gutter 200
+
+# blank-line fallback for marker-less .txt
+bin/txt-append-to-canvas.py canvas.excalidraw legacy.txt --blank-lines 2
+```
+
+The append script computes the new column's `x` from the right edge of all
+existing visible elements, so prior canvas content (including manual
+annotations you drew in Excalidraw) is left exactly where it is.
+
+**Recommended workflow for daily session logs**:
+
+```
+🤖 write YYMMDD-session-<slug>.txt
+   ▼
+🧑 Read the .txt, review                     ← gate: confirm before append
+   ▼  ✅ "insert it"
+🤖 txt-append-to-canvas.py canvas-YYMMDD.excalidraw <new>.txt
+   ▼
+🖼️  canvas grows by one column · old content untouched
+```
+
+After the day's canvas exists, **prefer append over rebuild** — rebuilding
+discards any annotations.
+
+### 2. Share as a clickable URL (optional)
+
+Two paths, pick one:
+
+#### 2a. Direct upload to excalidraw.com (no GitHub needed)
+
+`bin/share-via-excalidraw.py` uses headless Playwright to drag-drop the `.excalidraw` onto excalidraw.com, click "Export to Link", and capture the resulting `#json=<id>,<key>` URL.
+
+```bash
+bin/share-via-excalidraw.py path/to/canvas.excalidraw
+# prints:
+#   ✅ https://excalidraw.com/#json=<id>,<key>
+# also writes:  path/to/canvas.excalidraw.share-url.txt
+```
+
+End-to-end encrypted: the encrypted blob is on Excalidraw's servers, but the AES-128 key lives only in the URL fragment (`#…`) and is never sent to any server. Anyone with the full URL can view; **no expiration, no revocation on the free tier**. Treat it like a Google Doc "anyone with the link" — fine for internal review, not for secrets.
+
+Debug screenshots land in `/tmp/excalidraw_share_debug/` for any UI-change failures.
+
+#### 2b. Public GitHub gist via `share-canvas.sh`
+
+`bin/share-canvas.sh` uploads the `.excalidraw` to a **public GitHub gist** and prints a `https://excalidraw.com/#url=...` link that opens the canvas directly in the browser. Requires `gh` CLI logged in with the `gist` scope.
+
+```bash
+bin/share-canvas.sh path/to/canvas.excalidraw [-d "description"]
+# prints:
+#   gist:       https://gist.github.com/USER/HASH
+#   raw:        https://gist.githubusercontent.com/USER/HASH/raw/.../canvas.excalidraw
+#   excalidraw: https://excalidraw.com/#url=<raw>     ← click this
+```
+
+How it works: Excalidraw's web app accepts a `#url=<remote .excalidraw>` hash param and fetches the scene from that URL. `raw.githubusercontent.com` serves with CORS open, so the gist's raw URL works without any other infra.
+
+**Privacy note (both paths)**: the canvas content (paths, annotations, embedded PNGs) is uploaded to a third party. Gist = public on GitHub, indexable. Excalidraw direct = encrypted blob on excalidraw.com, only readable by URL holders. Don't share canvases with secrets or internal architecture you wouldn't put in an open-source repo.
+
+#### Which to use?
+
+| | Gist (`share-canvas.sh`) | Excalidraw direct (`share-via-excalidraw.py`) |
+|---|---|---|
+| Auth needed | `gh` logged in with `gist` scope | none |
+| Content readable by host | yes (public on GitHub) | no (E2E encrypted) |
+| Indexable by search engines | yes | no |
+| Persistence | until you delete the gist | indefinite, no UI to delete |
+| Edit later | yes (`gh gist edit`) | no — re-upload creates a new URL |
+| Setup cost | install `gh`, auth | none (Playwright auto-fetches via `uv`) |
+
+## How It Works
+
+1. **Render each `.txt` → PNG** via headless Chromium screenshot of an HTML `<pre>` block (system monospace + emoji fonts).
+2. **Measure each PNG** to get its native width/height.
+3. **Assemble Excalidraw JSON**:
+   - Each PNG → one `image` element + a `text` element above it as a title.
+   - Layout is **one column per source `.txt` file** (sections stacked top→bottom inside each column). Columns are spaced by `--col-gutter` (default 300px); sections inside a column by `--row-gutter` (default 50px). Columns are not height-aligned — easier to scan than a strict grid.
+   - PNG bytes → base64 → `files` dict keyed by SHA-1.
+4. **Write `canvas.excalidraw`** — opens directly in Excalidraw.
+
+## Calling From `diagram-ascii`
+
+`diagram-ascii` should suggest this skill **whenever it has just produced 3+ `.txt` files in the same folder**. Example handoff line:
+
+> 我把这 5 个 diagram 写到了 `examples/foo/`。要把它们拼成一张 Excalidraw 大图吗？(运行 `diagram-ascii-canvas`)
+
+Don't auto-run — confirm first, since the canvas is a downstream artifact the user may not always want.
+
+## Anti-patterns
+
+- Running on a directory with non-diagram `.txt` files — script renders everything matching `*.txt`. Filter the input directory first.
+- Editing the embedded PNGs in Excalidraw — they're images; edit the source `.txt` and re-run.
+- Re-running without deleting old `_pngs/` — script overwrites by filename, but stale PNGs from removed `.txt` files will linger. Clean `_pngs/` if the input set shrinks.

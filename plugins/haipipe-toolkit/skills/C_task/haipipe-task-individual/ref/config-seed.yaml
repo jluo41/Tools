@@ -1,0 +1,41 @@
+# =============================================================================
+# Template for configs/<NAME>.yaml — individual subject-query task
+# =============================================================================
+
+_meta:
+  purpose: |
+    <e.g., Visualize CGM + meal + bolus timeline for subject WD-12345
+           over week of 2026-01-01>
+  note: |
+    <e.g., Subject flagged in B01 eval as high-error;
+           investigating meal-timing artifacts>
+  input: |
+    <e.g., 2-RecStore CGM5Min + meal-cam-logger annotations; cohort: WellDoc>
+  output: |
+    results/<run>/{plot.pdf, table.csv}
+
+
+# =============================================================================
+# Subject query params
+# =============================================================================
+
+subject_id: <e.g. WD-12345>
+subject_group: <e.g. WellDoc>           # which UserGroup under _WorkSpace/A-User-Store/
+
+view: timeline                          # timeline | meal_overlay | treatment_event | ...
+
+time_window:
+  mode: absolute                        # absolute | relative
+  start: 2026-01-01T00:00:00
+  end:   2026-01-08T00:00:00
+  # OR (mode=relative):
+  # last_days: 7
+
+source_layer: 2-RecStore                # 1-SourceStore | 2-RecStore | 3-CaseStore
+source_dataset: CGM5Min
+source_version: vNNNN
+
+plot_params:
+  figsize: [12, 4]
+  show_meals: true
+  show_bolus: true

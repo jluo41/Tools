@@ -1,0 +1,162 @@
+📜 Paper sections as argument diagrams
+═══════════════════════════════════════════════════════════════
+
+A worked example. Imagine a (fictional) paper:
+"Long-Document QA via Cross-Chunk Attention".
+
+Each section below shows which logical-relation primitive
+fits it — progression, contrast, synthesis, tension, etc.
+
+
+─§ Intro — the gap (contrast + tension) ────────────────────
+
+  🤔 belief                      ⚡ reality
+  +---------------+    ✗ ✗ ✗   +-------------------+
+  | longer        | ─ ─ ─ ─ ─▶ | F1 collapses past |
+  | context = OK  |  empirical | 8K tokens         |
+  +---------------+            +-------------------+
+                  ⚠️
+              "long ≠ understood"
+
+
+  And the trade-off the field has been stuck in:
+
+                  🎯
+   📐 accuracy ◀── ?? ──▶ ⚡ throughput
+                  ↕
+              🤝 our method
+              (claims: top-right corner)
+
+
+─§ Related work — three lines, one missing piece (progression) ─
+
+  +----------+    +----------+    +----------+    +----------+
+  | RAG      |──▶ | sparse   |──▶ | sliding  |──▶ |  ?       |
+  | retrieval|    | attention|    | window   |    | (us)     |
+  +----------+    +----------+    +----------+    +----------+
+   📥 picks         🪟 local       🚪 fixed       🌉 cross-
+      relevant         only            span         chunk
+      chunks                                         attention
+
+   Each step kept some property and lost another.
+   We claim to recover what step 3 lost without
+   regressing on step 1.
+
+
+─§ Method — building up the architecture (progression + causal) ─
+
+  [📥 long doc input]
+        │
+        ▼
+  +-------------+     ─ ─▶ ⚠️ context overflow
+  | 🧪 step 1   |          (long ≠ free)
+  | naive: feed |
+  | the whole   |
+  | doc to LLM  |
+  +-------------+
+        │  fixes:
+        ▼
+  +-------------+     ─ ─▶ ⚠️ cross-chunk semantics
+  | 🧪 step 2   |          lost (each chunk solo)
+  | + chunk @8K |
+  +-------------+
+        │  fixes:
+        ▼
+  +-------------+     ━━▶ ✅ this is our contribution
+  | ✅ step 3   |
+  | + cross-    |          implements: §3.2
+  |   chunk     |          ablation:  §4.3
+  |   attention |
+  +-------------+
+        │
+        ▼
+  [📤 answer]
+
+
+  Arrow legend (used above):
+   ─ ─▶  exposes a problem  (motivates the next step)
+   ━━▶   we claim this is a *causal* improvement
+   (vertical arrows are the build-up sequence)
+
+
+─§ Experiments — three setups, one finding (synthesis fan-in) ─
+
+  📊 NarrativeQA  ──┐
+  📈 GovReport    ──┼──▶ 🎯 cross-chunk attn
+  📉 LongBench    ──┘    helps on every length
+                          regime ≥ 8K tokens
+
+  +----------+----------+----------+----------+
+  | setup    | 4K       | 8K       | 32K      |
+  +----------+----------+----------+----------+
+  | RAG      |  44.1    |  41.2    |  38.0    |
+  | window   |  46.3    |  43.0    |  35.5    |
+  | ours     |  46.5    | 🟢 49.8 | 🟢 47.1 |
+  +----------+----------+----------+----------+
+
+  💡 The win shows up exactly where step 2 broke down.
+
+
+─§ Ablation — what carries the weight (matrix + progression) ─
+
+  +--------------------+--------+
+  | variant            | F1     |
+  +--------------------+--------+
+  | full method        | 49.8   |
+  | − cross-chunk attn | 43.1  ← biggest drop
+  | − chunk overlap    | 47.0   |
+  | − retrieval prefix | 48.9   |
+  | naive baseline     | 41.2   |
+  +--------------------+--------+
+
+   📉 step 3 → step 2 ≈ 6.7 F1
+   📉 step 2 → step 1 ≈ 1.9 F1
+
+   ⇒ the gain is *concentrated* in the new component,
+     not diffused across infra changes.
+
+
+─§ Discussion — claim tree (hypothesis tree) ──────────────
+
+                  🎯 cross-chunk attn is the
+                     missing piece for long-doc QA
+              ┌──────────────┴──────────────┐
+              ✅ empirical                ✅ analytical
+              (table + fan-in)            (theorem 3.2)
+              │                           │
+            ┌─┴─┐                       ┌─┴─┐
+            📊  📈                      📐  📜
+           (3 sets, all                (info-flow
+            length regimes)              bound)
+
+
+─§ Conclusion — fold everything into one line (synthesis △) ─
+
+      📊 empirical ─┐
+      📐 analytical ┼──▶ 🎯 "Long-doc QA wants
+      🪟 ablation   ─┘     cross-chunk
+                            interaction, not
+                            longer windows."
+
+  One sentence at the apex; everything else
+  is supporting structure.
+
+
+─§ How to apply this template ─────────────────────────────
+
+  1. For each paper section, ask: "what is the
+     reader supposed to feel here?"
+       •  surprise / dissatisfaction → contrast
+       •  step-by-step buildup       → progression
+       •  many things agree          → fan-in
+       •  one thing is the cause     → causal arrow
+       •  here's the case for X      → hypothesis tree
+
+  2. Pick the matching primitive. Don't force a
+     "boxes-and-arrows" template if the section is
+     really a comparison — use a table.
+
+  3. One primitive per section is usually enough.
+     Stack two only when the section is genuinely
+     two sub-arguments (e.g. method = motivation
+     + construction; can show contrast then chain).
