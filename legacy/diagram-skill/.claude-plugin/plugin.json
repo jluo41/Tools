@@ -1,0 +1,17 @@
+{
+  "name": "diagram-skill",
+  "version": "1.0.0",
+  "description": "Skills for producing visual artifacts and reports. Includes diagram-excalidraw (.excalidraw), diagram-drawio (draw.io XML), diagram-ascii (emoji-rich ASCII sketches for brainstorming), and progress-log (image-heavy Markdown progress reports for experiment tracking and team sharing).",
+  "author": {
+    "name": "Junjie Luo",
+    "url": "https://github.com/jluo41"
+  },
+  "license": "MIT",
+  "keywords": [
+    "diagram",
+    "excalidraw",
+    "drawio",
+    "ascii",
+    "visualization"
+  ]
+}
