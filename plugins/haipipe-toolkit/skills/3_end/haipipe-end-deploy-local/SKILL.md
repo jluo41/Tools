@@ -127,7 +127,7 @@ Deploy (FastAPI):
        ENDPOINT_PATH=_WorkSpace/6-EndpointStore/<endpoint_set> \
        PORT=8765 \
            python scripts/serve_local.py
-  4. Smoke-test with `haipipe-subject-inference` (per-subject test) or
+  4. Smoke-test with `haipipe-individual-inference` (per-individual test) or
      curl `POST http://127.0.0.1:8765/invocations` with a payload.json
      pulled from `<endpoint_set>/inference/`.
   5. Record (endpoint_set, port=8765, pid) in the local registry.

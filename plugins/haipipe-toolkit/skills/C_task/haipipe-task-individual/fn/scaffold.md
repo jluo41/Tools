@@ -1,7 +1,7 @@
 fn-scaffold: Scaffold an individual-query task-folder
 ======================================================
 
-Query / visualize ONE subject's data (CGM trace, meal timeline,
+Query / visualize ONE individual's data (CGM trace, meal timeline,
 treatment events). Group letter default: **E** (individual).
 
 Output: `tasks/E{NN}_<group>/{NN}_<task_name>/`.
@@ -36,9 +36,9 @@ E{NN}_<group>/
 └── {NN}_<task_name>/
     ├── {NN}_<task_name>.py
     ├── configs/
-    │   └── subject_<view>.yaml             from ref/config-seed.yaml
+    │   └── individual_<view>.yaml             from ref/config-seed.yaml
     ├── runs/
-    │   └── subject_<view>.sh
+    │   └── individual_<view>.sh
     ├── results/
     │   └── <run>/                           plot.pdf, table.csv
     └── notebooks/
@@ -48,7 +48,7 @@ E{NN}_<group>/
 Step 4 — Seed config
 ---------------------
 
-Copy `ref/config-seed.yaml` to `configs/subject_<view>.yaml`. Fill in:
+Copy `ref/config-seed.yaml` to `configs/individual_<view>.yaml`. Fill in:
 - `_meta:` block.
 - `subject_id:`, `subject_group:`.
 - `view:` (one of the supported view names).
@@ -59,7 +59,7 @@ Copy `ref/config-seed.yaml` to `configs/subject_<view>.yaml`. Fill in:
 Step 5 — Run-script
 --------------------
 
-Copy `../haipipe-task/ref/run-sh-template.sh` to `runs/subject_<view>.sh`.
+Copy `../haipipe-task/ref/run-sh-template.sh` to `runs/individual_<view>.sh`.
 Set `TASK_NAME="{NN}_{task_name}"`.
 
 
@@ -67,9 +67,9 @@ Step 6 — Cross-skill link
 --------------------------
 
 After scaffolding, suggest:
-- `/haipipe-subject` for per-subject data access (`Subject-*` folder layout
+- `/haipipe-individual` for per-individual data access (`Subject-*` folder layout
   under `_WorkSpace/A-User-Store/`).
-- `/haipipe-subject-inference` if the view includes model predictions.
+- `/haipipe-individual-inference` if the view includes model predictions.
 
 
 Step 7 — Report
@@ -86,7 +86,7 @@ next:      verify subject_id exists, then run.sh
 MUST NOT
 ---------
 
-- Hardcode `subject_id` in the `.py` — it lives in `configs/subject_<view>.yaml`
+- Hardcode `subject_id` in the `.py` — it lives in `configs/individual_<view>.yaml`
   so different subjects can be queried by config change alone.
 - Include PHI / PII beyond the project's data policy.
 - Place full data dumps in `results/` — only summary plots + tables.

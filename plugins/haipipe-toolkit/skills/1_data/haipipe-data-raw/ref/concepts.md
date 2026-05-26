@@ -134,12 +134,12 @@ Step 4g: ONLY when user signals alignment ("this is good", "save it"),
 
 Common pitfalls to flag during the dialogue:
 
-  - Treating dataset-level funnel rates as a single-subject story.
+  - Treating dataset-level funnel rates as a single-individual story.
     A 100% → 60% → 40% → 1% drop-off chart describes a population,
-    not one subject. (Applies equally to CGM wear funnels, EHR
+    not one individual. (Applies equally to CGM wear funnels, EHR
     follow-up retention, clinical trial enrolment, app onboarding.)
   - Mixing eligibility (system / cohort gating decision) with
-    operational drop-off (subject behaviour, device dropout, response
+    operational drop-off (individual behaviour, device dropout, response
     refusal). These look identical in a binary 0/1 column but are
     causally different. Examples: "CGM not worn" can mean "device
     failed" vs "patient removed it"; "no follow-up encounter" can
@@ -219,8 +219,8 @@ corrupts downstream analysis if the timeline isn't drawn first. They
 recur across domains; the patterns matter more than any one example.
 
   1. **Eligibility-vs-drop-off mixing**:
-     A binary 0/1 column that conflates "subject was never eligible"
-     with "subject was eligible but did not engage / data was lost".
+     A binary 0/1 column that conflates "individual was never eligible"
+     with "individual was eligible but did not engage / data was lost".
      Causally different, statistically indistinguishable from the
      column alone.
      - CGM example: `wore_sensor=0` could mean "no prescription / not

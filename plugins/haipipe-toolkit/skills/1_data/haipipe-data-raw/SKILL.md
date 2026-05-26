@@ -115,7 +115,7 @@ Hand-off contract (Stage 0' → Stage 1):
   "ask upstream" MUST be addressed by SourceFn — either by computing
   the column or by carrying a TODO referencing the upstream ask.
   Eligibility flags (system / cohort gating) MUST stay separate from
-  operational outcome flags (subject behaviour, device dropout,
+  operational outcome flags (individual behaviour, device dropout,
   engagement drop-off, etc.).
 
 Reference cohorts (worked examples):

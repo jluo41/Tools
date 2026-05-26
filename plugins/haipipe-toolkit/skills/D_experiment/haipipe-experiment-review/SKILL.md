@@ -1,6 +1,6 @@
 ---
 name: haipipe-experiment-review
-description: "QA specialist of haipipe-experiment. Three complementary checks. (1) STRUCTURAL: audits run quality (per-run sanity) and experiment quality (statistical claim integrity) via checklists, produces ✅/⚠️/❌ + actionable issues. (2) INTEGRITY: Codex MCP fraud-pattern audit (ground-truth provenance, metric-definition consistency, phantom results, scope-language mismatch, subject/split leakage), writes INTEGRITY_AUDIT.md. (3) SEMANTIC: Codex MCP judges whether evidence supports the intended claim (yes/partial/no + confidence), writes CLAIMS_FROM_RESULTS.md. The honest-science gate before a claim becomes a paper-able statement. Trigger: review, audit, qa, integrity, fraud check, fake ground truth, phantom results, scope check, claim verdict, supports?, /haipipe-experiment-review."
+description: "QA specialist of haipipe-experiment. Three complementary checks. (1) STRUCTURAL: audits run quality (per-run sanity) and experiment quality (statistical claim integrity) via checklists, produces ✅/⚠️/❌ + actionable issues. (2) INTEGRITY: Codex MCP fraud-pattern audit (ground-truth provenance, metric-definition consistency, phantom results, scope-language mismatch, individual/split leakage), writes INTEGRITY_AUDIT.md. (3) SEMANTIC: Codex MCP judges whether evidence supports the intended claim (yes/partial/no + confidence), writes CLAIMS_FROM_RESULTS.md. The honest-science gate before a claim becomes a paper-able statement. Trigger: review, audit, qa, integrity, fraud check, fake ground truth, phantom results, scope check, claim verdict, supports?, /haipipe-experiment-review."
 argument-hint: [run|experiment|claim|project] [target]
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill, mcp__codex__codex, mcp__codex__codex-reply
 ---
@@ -28,7 +28,7 @@ Commands
 /haipipe-experiment review integrity <ID>
   INTEGRITY: Codex MCP reads eval scripts / configs / results / claims
   and judges 5 fraud patterns (A. GT provenance / B. metric consistency /
-  C. phantom results / D. scope mismatch / E. subject leakage).
+  C. phantom results / D. scope mismatch / E. individual leakage).
   Writes INTEGRITY_AUDIT.md sidecar.
 
 /haipipe-experiment review claim <ID>
@@ -133,10 +133,10 @@ its own work. Reviewer sees raw files; executor sees only paths.
 | B   | Metric-definition consistency      | "MAE" silently shifts horizon (288:312 vs 552:575) across arms — the B92/A41 gap     |
 | C   | Phantom results                    | claim references metrics.json key/number that doesn't exist or doesn't match         |
 | D   | Scope-language mismatch            | "comprehensive across conditions" with N=1 seed → FAIL                               |
-| E   | Subject/split leakage              | same patient_id appears in train AND test split (cross-subject claim broken)         |
+| E   | Individual/split leakage              | same patient_id appears in train AND test split (cross-individual claim broken)         |
 
 A / C / D adapted from `experiment-audit`; B / E added for CGM-domain
-realities (per [[project_b92_eval_position_mismatch]] and per-subject
+realities (per [[project_b92_eval_position_mismatch]] and per-individual
 splitting requirements).
 
 
@@ -165,7 +165,7 @@ mcp__codex__codex:
       B. Metric-definition consistency — same metric key, horizon, exclusion across arms?
       C. Phantom results               — referenced file / key / number actually exists?
       D. Scope-language mismatch       — claim wording vs N seeds, N datasets
-      E. Subject/split leakage         — patient_id leak across splits?
+      E. Individual/split leakage         — patient_id leak across splits?
 
     For each category report:
       status:    PASS | WARN | FAIL
@@ -200,7 +200,7 @@ Schema:
 ## B. Metric-definition consistency: ...
 ## C. Phantom results: ...
 ## D. Scope-language mismatch: ...
-## E. Subject/split leakage: ...
+## E. Individual/split leakage: ...
 
 ## Action items
 - [specific fix per non-PASS category]

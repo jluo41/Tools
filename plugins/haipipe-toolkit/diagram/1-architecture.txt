@@ -11,7 +11,7 @@ SHARED ref/ and fn/ docs that specialists read.
 +--------------------------------------------------------------------+
 |                  🧑 User types one umbrella command                 |
 |   /haipipe-data | /haipipe-nn | /haipipe-end                       |
-|   /haipipe-project | /haipipe-subject                              |
+|   /haipipe-project | /haipipe-individual                              |
 +--------------------------------------------------------------------+
                                 |
                                 v
@@ -47,7 +47,7 @@ SHARED ref/ and fn/ docs that specialists read.
   |                    |                      | -inspect (read)      |
   |                    |                      | -organize (modify)   |
   +--------------------+----------------------+----------------------+
-  | /haipipe-subject   | (no decomposition)   | (handled inline)     |
+  | /haipipe-individual   | (no decomposition)   | (handled inline)     |
   +--------------------+----------------------+----------------------+
 
   🚀 /haipipe-end's 4 axes (the only umbrella that's 4-D):
@@ -106,7 +106,7 @@ SHARED ref/ and fn/ docs that specialists read.
                                               avoid duplication; deferred targets excluded)
          haipipe-end     overview / explain → reads ref/0-overview.md (+ optional fn-type ref)
          haipipe-project no-args overview  → cross-project list
-         haipipe-subject all 8 commands    → fully inline
+         haipipe-individual all 8 commands    → fully inline
 
 
 ─§ 📋 Specialist return contract (consistent across all umbrellas) ────

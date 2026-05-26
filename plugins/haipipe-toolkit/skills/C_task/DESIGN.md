@@ -55,7 +55,7 @@ C_task/                                 ← task-scope skills (THIS SECTION)
 ├── haipipe-task-training/              🧠 model training (Stage 5)
 ├── haipipe-task-eval/                  📊 model evaluation
 ├── haipipe-task-display/               🖼️  paper figure / table
-├── haipipe-task-individual/            👤 subject-centric query
+├── haipipe-task-individual/            👤 individual-centric query
 └── haipipe-task-agent/                 🤖 LLM agent call
 ```
 
@@ -133,7 +133,7 @@ task-training     ↔  /haipipe-nn-tuner + /haipipe-nn-instance
                        (Layer 2 + 3 — hyperparam sweep, materialization)
 task-eval         ↔  /haipipe-end (or future eval skill)
 task-display      ↔  (none — independent; pulls from results/<run>/)
-task-individual   ↔  /haipipe-subject
+task-individual   ↔  /haipipe-individual
 task-agent        ↔  /claude-api (adjacent; no pipeline skill yet)
 ```
 
@@ -196,7 +196,7 @@ Phase 3 — Per-type content                                  ✅ DONE (2026-05-
   ✓ training:    fn/scaffold.md + ref/config-seed.yaml (5_model_<name>.yaml)
   ✓ eval:        fn/scaffold.md + ref/config-seed.yaml (eval_<target>.yaml)
   ✓ display:     fn/scaffold.md + ref/config-seed.yaml (figure_<name>.yaml | table_<name>.yaml)
-  ✓ individual:  fn/scaffold.md + ref/config-seed.yaml (subject_<view>.yaml)
+  ✓ individual:  fn/scaffold.md + ref/config-seed.yaml (individual_<view>.yaml)
   ✓ agent:       fn/scaffold.md + ref/config-seed.yaml (agent_<name>.yaml + prompts/)
   ✓ all 7 SKILL.md TODO sections replaced with pointer to fn/scaffold.md
 

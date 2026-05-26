@@ -22,7 +22,7 @@ Position in the series
 /haipipe-task-training        model training
 /haipipe-task-eval            model evaluation
 /haipipe-task-display     ◀── you are here (figure / table)
-/haipipe-task-individual      subject-centric query
+/haipipe-task-individual      individual-centric query
 /haipipe-task-agent           LLM agent call
 ```
 
