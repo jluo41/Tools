@@ -1,6 +1,6 @@
 ---
 name: haipipe-task-individual
-description: "individual-query task-folder build specialist. Scaffolds {NN}_<name>/ task-folders under E-series task-groups that query / visualize ONE subject's data (CGM trace, meal timeline, treatment events) — outputs to results/<run>/{plot.pdf, table.csv}. Called by /haipipe-task orchestrator when task-type=individual. Cross-references /haipipe-subject."
+description: "individual-query task-folder build specialist. Scaffolds {NN}_<name>/ task-folders under E-series task-groups that query / visualize ONE individual's data (CGM trace, meal timeline, treatment events) — outputs to results/<run>/{plot.pdf, table.csv}. Called by /haipipe-task orchestrator when task-type=individual. Cross-references /haipipe-individual."
 argument-hint: [project_id] [group] [task-name]
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 ---
@@ -8,7 +8,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 Skill: haipipe-task-individual
 =======================================
 
-Scaffolds a **subject-centric query task-folder**. Pulls one
+Scaffolds a **individual-centric query task-folder**. Pulls one
 patient's Source / Record data, applies a view (timeline,
 treatment-event plot, meal-vs-glucose overlay), and writes a small
 PDF + CSV to `results/<run>/`.
@@ -23,7 +23,7 @@ Position in the series
 /haipipe-task-training        model training
 /haipipe-task-eval            model evaluation
 /haipipe-task-display         paper figure / table
-/haipipe-task-individual  ◀── you are here (subject query)
+/haipipe-task-individual  ◀── you are here (individual query)
 /haipipe-task-agent           LLM agent call
 ```
 
@@ -36,9 +36,9 @@ tasks/E{NN}_<group_name>/                    ← E-series group (individual)
 └── {NN}_<task_name>/
     ├── {NN}_<task_name>.py
     ├── configs/
-    │   └── subject_<view>.yaml              seeded from ref/config-seed.yaml
+    │   └── individual_<view>.yaml              seeded from ref/config-seed.yaml
     ├── runs/
-    │   └── subject_<view>.sh
+    │   └── individual_<view>.sh
     ├── results/
     │   └── <run>/                           plot.pdf, table.csv
     └── notebooks/
@@ -51,9 +51,9 @@ Heavy outputs: none.
 Cross-reference to pipeline skill
 ----------------------------------
 
-`/haipipe-subject` owns per-subject data access (Subject-* folders
+`/haipipe-individual` owns per-individual data access (Subject-* folders
 under `_WorkSpace/A-User-Store/`). This skill scaffolds the example
-view; the view logic typically calls `/haipipe-subject` helpers.
+view; the view logic typically calls `/haipipe-individual` helpers.
 
 
 Scaffold flow
@@ -77,5 +77,5 @@ Return contract
 status:    ok | blocked | failed
 summary:   2-3 sentences on what was scaffolded
 artifacts: [paths created]
-next:      suggested next command (run.sh / /haipipe-subject)
+next:      suggested next command (run.sh / /haipipe-individual)
 ```

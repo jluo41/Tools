@@ -10,7 +10,7 @@
      2-folder-tree.txt       skills/ on disk
      3-routing.txt           args → (axis, verb) → dispatch
      4-pipeline.txt          7 stores · 6 build stages
-     5-subject-vs-project.txt train scope vs inference scope
+     5-individual-vs-project.txt train scope vs inference scope
      6-code-mapping.txt      skills ↔ code (1:1 audit)
 
 
@@ -37,7 +37,7 @@
      │                                     -inspect (read)
      │                                     -organize (modify)
      │
-     └─▶  /haipipe-subject    🧑‍⚕️ per-subject slice (S0-S2 only)
+     └─▶  /haipipe-individual    🧑‍⚕️ per-individual slice (S0-S2 only)
             (no decomposition · 8 commands handled inline)
 
 
@@ -64,7 +64,7 @@
   |                       -deploy-{sagemaker,databricks,      |
   |                                 local,mlflow}              |
   |  📁 4_project    (3)  -new · -inspect · -organize         |
-  |  🧑‍⚕️ 5_subject   (0)  (none — handled inline)            |
+  |  🧑‍⚕️ 4_individual   (0)  (none — handled inline)            |
   +-----------------------------------------------------------+
                                 │
                                 │  reads/writes pipeline stores
@@ -81,8 +81,8 @@
   📥 0-Raw → 📊 1-Source → 📝 2-Rec → 📂 3-Case → 🎲 4-AIData → 🧠 5-Model → 🚀 6-Endpoint
    input    └────────── /haipipe-data (S1-S4) ──────────┘  └ /haipipe-nn ┘ └ /haipipe-end ┘
 
-  🧑‍⚕️ /haipipe-subject reuses S0-S2 only (filtered VIEW of global stores)
-       — at inference time, a subject just CALLS the deployed endpoint.
+  🧑‍⚕️ /haipipe-individual reuses S0-S2 only (filtered VIEW of global stores)
+       — at inference time, an individual just CALLS the deployed endpoint.
 
   📌 See diagram 4-pipeline.txt for the full per-stage breakdown.
 
@@ -144,7 +144,7 @@
 ─§ 📌 Three cross-cutting truths ───────────────────────────
 
   1. 🔢  Phase numbers ARE the dependency order — `ls` walks
-      the workflow (data → nn → end, then project, then subject).
+      the workflow (data → nn → end, then project, then individual).
 
   2. 🏗️  Specialists never modify state owned by another
       specialist. -deploy-* READS the Endpoint_Set;

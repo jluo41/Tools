@@ -93,10 +93,10 @@ A. SCAN KB (Phase 0 of the old vocabulary, now a sub-step of design)
      only if needed.
 
 B. SANITY-CHECK question vs data (THIS WAS MISSING — bug #11)
-   - If question is per-subject ("understand Subject-X"), verify
-     CGM density ≥ 1000 rows under the subject's 1-SourceStore
+   - If question is per-individual (e.g. references a single Subject-<id> folder), verify
+     CGM density ≥ 1000 rows under the individual's 1-SourceStore
      before planning task_batch. Sparse-sample subjects → ASK user
-     whether to (a) pick a denser subject or (b) reframe to cohort
+     whether to (a) pick a denser individual or (b) reframe to cohort
      scope.
    - If question is cross-experiment, verify experiments/ has at
      least one confirmed experiment with matching tags.

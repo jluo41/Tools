@@ -259,7 +259,7 @@ task_batch:
     yields: [I02]
   - id: T3
     skill: /haipipe-task individual
-    type: subject-query
+    type: individual-query
     yields: [D02]
 
 # Batch B — D_experiment work to produce K + W
@@ -439,14 +439,14 @@ the optional inline-ask chain at gap-phase.
        → scans insights/INDEX.md  (does KB already answer?)
        → KB has D01, I01 already — but no K with test-od scope
        → writes plan-v1.yaml:
-            task_batch:     [T1 (subject-query OD samples)]
+            task_batch:     [T1 (individual-query OD samples)]
             experiment_batch: [E12 (FiLM vs baseline, OD eval)]
             insight_yield:  [D02, K03, W02]
        [G-design SOFT] → approve
 
 [t=3]  Phase 2 — observe
        dispatch T1:
-         /haipipe-task individual subject-query --od-samples ...
+         /haipipe-task individual individual-query --od-samples ...
          → tasks/E01_individual_query/02_od_filmcase/results/...
        → returns D02 material
        [G-observe SOFT] → approve

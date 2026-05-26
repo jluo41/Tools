@@ -28,7 +28,7 @@ algo          X              /haipipe-task-algo              /haipipe-nn-algo
 training      A              /haipipe-task-training          /haipipe-nn-tuner+instance
 eval          B              /haipipe-task-eval              (project-local; future)
 display       C              /haipipe-task-display           (independent)
-individual    E              /haipipe-task-individual        /haipipe-subject
+individual    E              /haipipe-task-individual        /haipipe-individual
 agent         F              /haipipe-task-agent             (none yet)
 ```
 
@@ -94,7 +94,7 @@ algo          X              /haipipe-task-algo              /haipipe-nn-algo
 training      A              /haipipe-task-training          /haipipe-nn-tuner+instance
 eval          B              /haipipe-task-eval              (project-local; future)
 display       C              /haipipe-task-display           (independent)
-individual    E              /haipipe-task-individual        /haipipe-subject
+individual    E              /haipipe-task-individual        /haipipe-individual
 agent         F              /haipipe-task-agent             (none yet)
 ```
 

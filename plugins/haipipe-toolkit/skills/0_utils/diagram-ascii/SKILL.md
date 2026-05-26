@@ -211,7 +211,7 @@ code/
 ```
 Tools/plugins/haipipe-toolkit/skills/
 ├── 0_subject/
-│   └── haipipe-subject/SKILL.md
+│   └── haipipe-individual/SKILL.md
 │
 ├── 1_data/
 │  (umbrella)

@@ -61,25 +61,25 @@ the other 6 stages are owned by an umbrella as labelled below.
   +-------+----------------+--------------------------------+----------------------------+
 
 
-─§ 🧑‍⚕️ Per-subject slice (inference time — see also 5-subject-vs-project.txt) ────
+─§ 🧑‍⚕️ Per-individual slice (inference time — see also 5-individual-vs-project.txt) ────
 
-🧑‍⚕️ Per-subject slice (inference time — see also 5-subject-vs-project.txt)
+🧑‍⚕️ Per-individual slice (inference time — see also 5-individual-vs-project.txt)
 ----------------------------------------------------------------------------
 
    _WorkSpace/A-User-Store/UserGroup-{dataset}/Subject-{id}/
-   ├── 📂 0-RawDataStore/    ← subject's raw rows / files (FLAT)
-   ├── 📂 1-SourceStore/     ← subject's source frames    (FLAT, no @iXnY)
-   ├── 📂 2-RecStore/        ← subject's record(s)        (FLAT, no @iXnY)
+   ├── 📂 0-RawDataStore/    ← individual's raw rows / files (FLAT)
+   ├── 📂 1-SourceStore/     ← individual's source frames    (FLAT, no @iXnY)
+   ├── 📂 2-RecStore/        ← individual's record(s)        (FLAT, no @iXnY)
    └── 📄 manifest.yaml      ← provenance: source_set, rec_set, partition
 
                                   │
                                   v  serves a deployed endpoint with
-                                     this subject's record
+                                     this individual's record
                                   │
                                   v
-                          🎯 /haipipe-subject
+                          🎯 /haipipe-individual
 
-   Stages 3-6 NEVER appear per-subject — at inference, the subject
+   Stages 3-6 NEVER appear per-individual — at inference, the individual
    simply CALLS the deployed endpoint built from project-wide 6-Endpoint.
 
 
@@ -111,4 +111,4 @@ the other 6 stages are owned by an umbrella as labelled below.
                                                                               (artifact +
                                                                                3 develop +
                                                                                4 deploy targets)
-   subject ─ /haipipe-subject reuses S0-S2 only (filtered view of global stores)
+   individual ─ /haipipe-individual reuses S0-S2 only (filtered view of global stores)

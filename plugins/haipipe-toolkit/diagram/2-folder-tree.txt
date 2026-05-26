@@ -2,7 +2,7 @@
 ==========================================
 
 Numeric prefixes follow the data-flow order (data → nn → end), then
-cross-cutting (project), then per-subject (subject). Folder names are
+cross-cutting (project), then per-individual. Folder names are
 pure organization — only the `name:` field in each SKILL.md frontmatter
 identifies the skill. Claude Code walks the tree at any depth.
 
@@ -97,8 +97,8 @@ Tools/plugins/haipipe-toolkit/
     │   │   └── ref/inventory/*.py       inventory helper scripts
     │   └── haipipe-project-organize/  MODIFY: reorganize files
     │
-    └── 5_subject/                     per-subject inference contract
-        └── haipipe-subject/           standalone — covers stages 0-2
+    └── 4_individual/                     per-individual inference contract
+        └── haipipe-individual/           standalone — covers stages 0-2
             └── SKILL.md                 8 commands handled inline
 
 
@@ -116,7 +116,7 @@ Tools/plugins/haipipe-toolkit/
     2_nn/        1 umbrella + 4 layer specialists                            = 5
     3_end/       1 umbrella + 1 artifact + 5 Fn-type + 3 develop + 4 deploy  = 14
     4_project/   1 umbrella + 3 risk-profile specialists                     = 4
-    5_subject/   1 standalone (no specialists)                               = 1
+    4_individual/   1 standalone (no specialists)                               = 1
 
 
 ─§ 📌 Convention recap ─────────────────────────────────────

@@ -51,7 +51,7 @@ Lives in C_task/  (task-scope work — sibling section):
   haipipe-task-training      model training (Stage 5)            A-series  → /haipipe-nn-tuner+instance
   haipipe-task-eval          evaluation                          B-series  → (project-local; future)
   haipipe-task-display       paper figures / tables              C-series  → (independent)
-  haipipe-task-individual    subject-centric query               E-series  → /haipipe-subject
+  haipipe-task-individual    individual-centric query               E-series  → /haipipe-individual
   haipipe-task-agent         LLM agent call                      F-series  → (none yet)
 
 (Per-run logging is automatic via runs/<NAME>.sh → results/<NAME>/runtime.yaml.

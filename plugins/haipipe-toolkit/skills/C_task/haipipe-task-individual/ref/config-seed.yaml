@@ -1,13 +1,13 @@
 # =============================================================================
-# Template for configs/<NAME>.yaml — individual subject-query task
+# Template for configs/<NAME>.yaml — individual individual-query task
 # =============================================================================
 
 _meta:
   purpose: |
-    <e.g., Visualize CGM + meal + bolus timeline for subject WD-12345
+    <e.g., Visualize CGM + meal + bolus timeline for individual WD-12345
            over week of 2026-01-01>
   note: |
-    <e.g., Subject flagged in B01 eval as high-error;
+    <e.g., Individual flagged in B01 eval as high-error;
            investigating meal-timing artifacts>
   input: |
     <e.g., 2-RecStore CGM5Min + meal-cam-logger annotations; cohort: WellDoc>
@@ -16,7 +16,7 @@ _meta:
 
 
 # =============================================================================
-# Subject query params
+# Individual query params
 # =============================================================================
 
 subject_id: <e.g. WD-12345>

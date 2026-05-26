@@ -31,7 +31,7 @@ Step 2 — Collect metadata
                       B = evaluation       (eval, inference, scoring)
                       C = display          (paper figures, paper tables)
                       D = data-pipeline    (Stage 1-4 builders)
-                      E = individual       (subject-centric query / visualization)
+                      E = individual       (individual-centric query / visualization)
                       F = agent            (LLM agent / prompt task)
                       X = algo-dev demo    (paired Track A smoke-test;
                                             X_algo/ — typically one per project)

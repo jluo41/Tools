@@ -275,7 +275,7 @@ task-folder    /haipipe-task <type> --auto                          orchestrator
                /haipipe-task-training --auto                        direct, A-series train
                /haipipe-task-eval     --auto                        direct, B-series eval
                /haipipe-task-display  --auto                        direct, C-series fig
-               /haipipe-task-individual --auto                      direct, E subject
+               /haipipe-task-individual --auto                      direct, E individual
                /haipipe-task-agent   --auto                         direct, F LLM agent
 
 run            bash runs/<NAME>.sh                                  execute a run
@@ -314,7 +314,7 @@ Bridge skill (D ↔ C connector)               skills/D_experiment/haipipe-exper
 Pipeline (Stages 1-4)                        skills/1_data/haipipe-data/SKILL.md
 Pipeline (Stage 5 NN)                        skills/2_nn/haipipe-nn/SKILL.md
 Pipeline (Stage 6 endpoints)                 skills/3_end/haipipe-end/SKILL.md
-Per-subject contract (Stages 0-2)            skills/4_individual/haipipe-subject/SKILL.md
+Per-individual contract (Stages 0-2)            skills/4_individual/haipipe-individual/SKILL.md
 Run Script Reviewer (pre-flight agent)       agents/run-script-reviewer.md
 ```
 
@@ -331,7 +331,7 @@ New metric value?      → tasks/.../metrics.json
 New per-run record?    → tasks/.../runtime.yaml (atomic, by run.sh)
 New cross-run stat?    → experiments/<NN>/experiment.yaml result: (via result aggregate)
 New "why it failed"?   → experiments/<NN>/logs/<DATE>.md
-New subject view?      → tasks/individual/  (E-series)
+New individual view?      → tasks/individual/  (E-series)
 New LLM agent task?    → tasks/agent/  (F-series)
 First run after scaffold? → HAIPIPE_SKIP_REVIEW=1, or run reviewer agent first
 ```
