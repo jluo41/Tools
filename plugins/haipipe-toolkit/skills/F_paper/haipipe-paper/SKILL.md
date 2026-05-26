@@ -165,28 +165,77 @@ next:      suggested next command (often a lifecycle stage skill like
 
 ---
 
-Relation to Lifecycle Stage Skills
------------------------------------
+Relation to Lifecycle Stage Skills, Sections, and Components
+-------------------------------------------------------------
 
 The orchestrator and venue specialists in `0-workflow/` operate at the
-**workflow** level. They internally call into the **stage** skills under
-`E_paper/{1-narrative,2-plan,3-figure,4-write,5-revise,6-review,7-respond,8-present}/`:
+**workflow** level. Underneath they coordinate three kinds of skills:
+
+**Lifecycle stages** — `F_paper/{1-narrative,2-plan,3-write,4-revise,5-review,6-respond,7-present}/`:
 
 ```
-1-narrative/  narrative-report, result-to-claim
+1-narrative/  narrative-report (entry gate from upstream E_insight)
 2-plan/       paper-plan, paper-bootstrap, paper-architecture, paper-incubator
-3-figure/     paper-figure, paper-illustration, figure-spec, figure-planner, …
-4-write/      paper-write, scientific-writing, conference-paper-writing, paper-compile, overleaf-sync, …
-5-revise/     paper-revise, manuscript-optimizer, auto-paper-improvement-loop, paper-diff-pdf, results-section-revision
-6-review/     paper-claim-audit, citation-audit, citation-verifier, proof-checker, paper-reviewer, submission-audit, …
-7-respond/    paper-rebuttal, rebuttal-response
-8-present/    paper-slides, paper-poster
+3-write/      paper-write, scientific-writing, conference-paper-writing, writing-systems-papers
+4-revise/     paper-revise, manuscript-optimizer, auto-paper-improvement-loop, results-section-revision
+5-review/     paper-claim-audit, paper-reviewer, proof-checker, submission-audit,
+              paper-manual-review-citations, paper-manual-review-values
+6-respond/    paper-rebuttal, rebuttal-response
+7-present/    paper-slides, paper-poster
 ```
 
-Power users can invoke a stage skill directly (e.g. `/paper-plan`,
-`/paper-figure`) — those slash commands remain unchanged. The
-orchestrator is the right entry point when you don't yet know which
-stage you're in or which venue you're targeting.
+**Per-section playbooks** — `F_paper/sections/` (Dimension B, reference material):
+
+```
+section-intro / -methods / -results / -discussion /
+section-abstract / -related-work / -appendix
+```
+
+These are guidance docs read by 3-write / 4-revise / 5-review when they
+target a specific .tex file under `0-sections/` in the paper folder.
+
+**Cross-cutting components** — `F_paper/components/`:
+
+```
+components/figure/    paper-figure, figure-spec, figure-planner,
+                      paper-illustration, paper-illustration-image2,
+                      paper-structure-diagram
+components/citation/  citation-audit, citation-verifier, reference-audit-guide
+components/compile/   paper-compile, overleaf-sync
+components/diff/      paper-diff-pdf (one-PDF colored diff),
+                      paper-diff-folder (writes 1-diff/vs-<ref>/ tree)
+```
+
+Components are invoked by multiple stages (figures touched during
+write/revise/review; citations touched during write/review; etc.).
+
+Power users can invoke any stage / section / component skill directly
+via its slash command — those slugs remain unchanged. The orchestrator
+is the right entry point when you don't yet know which stage you're
+in or which venue you're targeting.
+
+Paper-folder contract
+----------------------
+
+All F_paper skills assume their input is a paper folder following the
+layout:
+
+```
+<paper>/
+├── 0-<paper>.tex / .bib                    master shell
+├── 0-sections/                             section + lettered-appendix .tex files
+├── 0-display/{Figure,Table,                main + appendix display assets
+│              AppendixFigure,AppendixTable}/
+├── 0-extra/{cover_letter,IRB,news,...}/    submission accessories
+├── 1-config.yaml                           paths + metric definitions
+├── 1-compile.sh                            build script
+├── 1-diff/vs-<ref>/                        diff packages (written by paper-diff-folder)
+├── 1-feedback/v<date>/                     reviewer feedback by date
+└── 1-review/{A-E,DECISIONS.md,HANDOFF.md}/ active review session pipeline
+```
+
+A revision **session** = a git branch (e.g. `review_v0325`); F_paper
+skills are branch-agnostic at the file level.
 
 ---
 
