@@ -8,11 +8,21 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 Skill: haipipe-application-plan
 =============================
 
-Takes one research question, produces a **plan-vN.yaml** that lays out
-the synthesis path: which D / I / K / W tasks would answer it, and
-which experiments must already be confirmed (or need to be triggered).
+Two modes.
 
-Used by `/haipipe-application-ask` at Phase 1. Can also run standalone.
+Mode 1 — **plan** (Phase 1): takes one research question, produces a
+**plan-vN.yaml** that lays out the synthesis path: which D / I / K / W
+tasks would answer it, and which experiments must already be
+confirmed (or need to be triggered).
+
+Mode 2 — **compose report** (Phase 4): reads SESSION_STATE.json +
+the filed insight cards and writes the final `report.md` following
+the DIKW-spine template at `../haipipe-application/ref/report-template.md`.
+Invoked as `Skill("haipipe-application-plan", args="compose report")`.
+See "Compose report mode" section below.
+
+Used by `/haipipe-application-ask` at Phases 1 and 4. Can also run
+standalone.
 
 
 Input
@@ -170,12 +180,48 @@ Definition of done
 - [ ] On --revise: revise_history appended; feedback verbatim preserved
 
 
+Compose report mode (Phase 4)
+------------------------------
+
+Triggered as `Skill("haipipe-application-plan", args="compose report")`.
+Distinct from the plan mode above — no plan is written; the active
+plan-v{N}.yaml + filed insight cards are READ to assemble the final
+report.
+
+Inputs (read-only):
+- `applications/ask/<NN>/SESSION_STATE.json`  (data_cut, plan_version, gates)
+- `applications/ask/<NN>/plans/plan-v{N}.yaml`  (insight_yield map)
+- `insights/<L>_<folder>/<L>NN_*.md` for every card in insight_yield
+- `data/contract.yaml` + `data/available.md`  (for Provenance section)
+
+Output:
+- `applications/ask/<NN>/report.md`  (atomic .tmp + mv)
+
+Template:
+- MUST follow `../haipipe-application/ref/report-template.md` exactly:
+  header, TL;DR, per-layer blocks (D, I, K, W), empty-layer
+  placeholders, "Did we answer..." section, Provenance.
+- Per-card block: 5 elements (Illustration | Table | Narrative | Source).
+  Illustration path comes from the card's `source_artifact` field
+  (PROJECT_ROOT-relative); use "n/a — no figure produced" if the
+  artifact folder contains no figure.
+- Table is copied verbatim from the card body's primary table.
+- Narrative is freshly composed (2-4 sentences) by interpreting the
+  card's Observation + table — NOT copied wholesale from the card.
+
+Gate hand-off:
+- This mode does NOT fire G-report itself; it returns to ask Phase 4
+  step E which invokes G-report against the template invariants.
+
+
 Risk profile
 -------------
 
-Writes one file under `insights/sessions/plans/`. Does NOT scaffold
-tasks or experiments — only proposes them. Actual scaffolding happens
-in `/haipipe-application-ask` Phase 2 after gate approval.
+Plan mode writes one file under `applications/<kind>/<NN_slug>/plans/`.
+Compose-report mode writes one file under `applications/<kind>/<NN_slug>/report.md`.
+Does NOT scaffold tasks or experiments — only proposes (plan) or
+assembles (compose). Actual scaffolding happens in
+`/haipipe-application-ask` Phase 2 after gate approval.
 
 
 Specialist tail

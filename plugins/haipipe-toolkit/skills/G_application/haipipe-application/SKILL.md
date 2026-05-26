@@ -62,8 +62,14 @@ their own draft once `ask` returns.
 Where artifacts live
 =====================
 
+A project always has this canonical shape:
+
 ```
-examples/Proj-X/
+<PROJECT_ROOT>/
+├── data/                                   ← data contract (hand + generated)
+│   ├── contract.yaml                       hand-written: required / optional streams
+│   ├── available.md                        generated: what subject has at active cut
+│   └── gaps.md                             generated: missing -> block / trim
 ├── tasks/                                  (C_task)
 ├── experiments/                            (D_experiment)
 ├── insights/                               (E_insight)
@@ -80,6 +86,77 @@ examples/Proj-X/
     ├── ui/<slug>/                          (sketches + annotated mocks)
     └── reports/<YYYY-MM-DD>_<audience>_<slug>.md
 ```
+
+`<PROJECT_ROOT>` resolves to one of two locations:
+
+**Multi-subject project (default):**
+```
+examples/<Proj>/                            ← repo-root examples/
+```
+Use this when the project spans multiple subjects, cohorts, or
+benchmarks (e.g., `examples/ProjB-Bench-2-EventGlucose/`).
+
+**Per-subject project (when --individual is given):**
+```
+<subject_store>/examples/<Proj>/            ← under the subject's folder
+  where <subject_store> = _WorkSpace/A-User-Store/UserGroup-<dataset>/Subject-<id>
+```
+Use this when the project is scoped to one specific individual
+(e.g., subject profiling, per-patient case study). The project
+lives alongside the subject's data so the entire per-patient
+package — data + analyses — stays co-located:
+
+```
+_WorkSpace/A-User-Store/UserGroup-<dataset>/Subject-<id>/
+├── 1-SourceStore/, 2-RecStore/, manifest.yaml      (data)
+└── examples/<Proj>/                                 (analyses for this subject)
+    ├── tasks/, insights/, applications/, ...
+```
+
+The session skill is layout-agnostic: once `<PROJECT_ROOT>` is
+resolved at Step 3 of routing, every internal path is
+project-root-relative. The two layouts differ ONLY in where the
+project root lives on disk.
+
+
+Data contract layer
+====================
+
+The optional `data/` folder at the project root declares what data
+the project needs. Three files:
+
+```
+data/contract.yaml      hand-written -- required + optional streams,
+                        minimum windows / density, data-cut policy
+data/available.md       generated   -- what the active subject store
+                        actually has at the active cut
+data/gaps.md            generated   -- missing requireds (BLOCK) +
+                        missing optionals (TRIM which analyses)
+```
+
+`available.md` + `gaps.md` are regenerated at the start of every
+ask session by Phase 1 step A1. Never hand-edit them.
+
+Per-subject layout: contract is reusable across subjects (same
+`Subject*-Profile/data/contract.yaml`, different subject manifests
+satisfy or fail it).
+Multi-subject layout: contract applies to the cohort as a whole; the
+orchestrator iterates subjects against it.
+
+When the subject store advances to a new data cut (any cadence —
+monthly drop, quarterly release, on-demand re-extract, event
+trigger), do NOT fork the project folder. Open a NEW session under
+`applications/ask/NN_refresh_<cut-tag>/`. The project root is
+stable; sessions are dated case files. The active cut is recorded
+as `SESSION_STATE.data_cut`; insight cards carry the same tag in
+frontmatter so superseded cards stay diffable in git.
+
+Cut tags are opaque strings owned by the subject manifest
+(`v2026-04`, `release-3`, `post-recalibration`, etc.) — the
+application skill never assumes a date format or cadence.
+
+See `ref/data-contract-schema.md` for the full schema and the
+Phase 1 step A1 resolution rules.
 
 
 Commands
@@ -141,14 +218,50 @@ Routing Logic
 ==============
 
 ```
-Step 1: Parse $ARGUMENTS.
+Step 1: Parse $ARGUMENTS (kind keyword, --project, --individual, --auto, --persona).
+
 Step 2: Resolve kind → specialist via verb map.
         - First positional matches a kind keyword → use it.
         - No args → dashboard (list current applications/).
         - Natural language → infer kind from keywords; ASK if ambiguous.
-Step 3: Validate project root (cwd-inferred or --project).
-Step 4: Dispatch: Skill("haipipe-application-<kind>", args="<rest>").
-Step 5: Surface specialist tail.
+
+Step 3: Resolve PROJECT_ROOT. This is the most-important routing decision.
+        Two layouts (see "Where artifacts live"):
+
+        a) Per-subject layout (preferred when --individual is given):
+           PROJECT_ROOT = <individual>/examples/<project-name>
+           where <individual> is the value of --individual (must be a valid
+           path under _WorkSpace/A-User-Store/UserGroup-*/Subject-*/),
+           and <project-name> is taken from --project (basename only) or
+           derived from the question slug.
+
+        b) Multi-subject layout (default when --individual is absent):
+           PROJECT_ROOT = examples/<project-name>
+           where <project-name> is --project (basename) or a sensible slug.
+
+        Decision rule:
+          if --individual:
+              PROJECT_ROOT = <individual>/examples/<project-name>
+          else:
+              PROJECT_ROOT = examples/<project-name>
+
+        --project MAY be supplied as either a bare name (e.g.
+        "Subject26-Profile") or a full path. The skill treats it as a
+        bare name when --individual is set; otherwise as a path.
+
+        If PROJECT_ROOT does not exist on disk, scaffold the canonical
+        directory shape (tasks/, insights/, applications/, experiments/,
+        paper/) before dispatch.
+
+Step 4: Validate the subject store if --individual was given:
+        verify <individual>/1-SourceStore/ exists. If not, BLOCK and
+        surface to user.
+
+Step 5: Dispatch: Skill("haipipe-application-<kind>", args="<rest>").
+        Pass --project-root <PROJECT_ROOT> --subject-store <individual>
+        downstream so the specialist does not have to re-resolve.
+
+Step 6: Surface specialist tail.
 ```
 
 
@@ -232,12 +345,19 @@ ref/gate-persona.md                       4 preset reviewer voices
 ref/attendance-modes.md                   attended / timed / unattended
 ref/audience-requirements.md              external-kind audience schema
 ref/application-input-contract.md         how to load K/W from E_insight
+ref/data-contract-schema.md               data/contract.yaml schema +
+                                          Phase 1 A1 resolution rules
+ref/report-template.md                    DIKW-spine report.md template
+                                          enforced by G-report (HARSH)
 ```
 
 `session-state-schema.md` / `gate-persona.md` / `attendance-modes.md`
 are shared by ALL kinds. `audience-requirements.md` and
 `application-input-contract.md` are specific to the external kinds
 (message / ui / report); the ask kind does not consult them.
+`data-contract-schema.md` is consulted by ask at Phase 1 step A1;
+external kinds may read the generated `data/available.md` to know
+what data backed the K/W cards they cite.
 
 
 Relation to other top-level skills

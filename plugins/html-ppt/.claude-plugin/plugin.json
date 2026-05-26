@@ -1,0 +1,18 @@
+{
+  "name": "html-ppt",
+  "version": "1.0.0",
+  "description": "HTML PPT Studio — author professional static HTML presentations (36 themes, 31 layouts, 15 full-deck templates, 27 CSS animations, 20 canvas FX, presenter mode with speaker notes). Single-skill plugin vendored from https://github.com/lewislulu/html-ppt-skill.",
+  "author": {
+    "name": "lewislulu (upstream)",
+    "url": "https://github.com/lewislulu/html-ppt-skill"
+  },
+  "license": "MIT",
+  "keywords": [
+    "html",
+    "ppt",
+    "slides",
+    "deck",
+    "presentation",
+    "presenter-mode"
+  ]
+}
