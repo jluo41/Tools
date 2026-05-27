@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper
-description: "Run any paper-lifecycle work. Parses intent (venue + phase) and dispatches to the right specialist (haipipe-paper-conference/-journal/-is/-rebuttal). Use for writing/revising/rebutting papers targeting any venue — ICLR, NeurIPS, ICML, Nature, PNAS, MISQ, ISR. Trigger: paper, write paper, paper pipeline, paper writing, rebuttal, reply to reviewers, 写论文, 论文流程, /haipipe-paper."
+description: "Run any paper-lifecycle work. Parses intent (venue + phase) and dispatches to the right specialist (haipipe-paper-conference/-journal/-is/-rebuttal/-create/-revise). Use for writing/revising/rebutting papers targeting any venue — ICLR, NeurIPS, ICML, Nature, PNAS, MISQ, ISR. Trigger: paper, write paper, paper pipeline, paper writing, draft paper, revise paper, polish tex, rebuttal, reply to reviewers, 写论文, 论文流程, /haipipe-paper."
 argument-hint: [venue] [phase] [args...]
 allowed-tools: Bash, Read, Grep, Glob, Skill
 ---
@@ -18,6 +18,8 @@ called by the specialist, not by this orchestrator directly.
 /haipipe-paper <venue>                      -> dispatch to that specialist (no args)
 /haipipe-paper <venue> "<topic-or-input>"   -> dispatch to specialist with input
 /haipipe-paper rebuttal "<paper-path>"      -> dispatch to rebuttal specialist
+/haipipe-paper create "<plan-dir>"          -> draft fresh tex paragraph-by-paragraph
+/haipipe-paper revise "<tex-root>"          -> polish existing tex paragraph-by-paragraph
 /haipipe-paper "<natural language>"         -> infer venue from keywords, dispatch
 ```
 
@@ -27,6 +29,8 @@ Examples:
 /haipipe-paper journal                       (no input → Nature default)
 /haipipe-paper is "MISQ paper on AI adoption"
 /haipipe-paper rebuttal "paper/" — venue: NeurIPS
+/haipipe-paper create "papers/lhm-a/" — venue: iclr
+/haipipe-paper revise "papers/lhm-a/"
 ```
 
 ---
@@ -43,6 +47,11 @@ haipipe-paper-is          MISQ/ISR/Management Science IS journal paper
                           (contribution framing → theory → method → submission)
 haipipe-paper-rebuttal    Submission rebuttal pipeline (venue-agnostic)
                           (parse reviews → strategy → draft → coverage check)
+haipipe-paper-create      Fresh-draft pipeline, venue-agnostic at workflow
+                          (narrative+plan → scaffold tex → paragraph-by-paragraph draft)
+haipipe-paper-revise      Whole-paper polish pipeline, venue-agnostic
+                          (discover sections → paragraph-by-paragraph polish
+                           via paper-revise → cross-section audit → diff report)
 ```
 
 ---
@@ -59,15 +68,25 @@ IS, MISQ, ISR, Management Science, Information
 Systems, IT artifact, digital systems, UTD24-IS        -> is
 rebuttal, reply, response, OpenReview response,
 reviewer comments, review-response, R1 revision        -> rebuttal
+create, draft tex, write tex, from narrative,
+new paper, scaffold paper, 写初稿                       -> create
+revise, polish, polish tex, paragraph polish,
+walk sections, whole-paper revision, 整篇润色           -> revise
 ```
 
-Venue aliases (positional):
+Venue/task aliases (positional):
 ```
 conf, conference, ml, neurips, iclr, icml  -> conference
 journal, nature, pnas, nat                 -> journal
 is, misq, isr, management-science, msis    -> is
 rebuttal, reply, response, rev             -> rebuttal
+create, draft, new, scaffold               -> create
+revise, polish, walk                       -> revise
 ```
+
+Note: `create` and `revise` are task aliases, not venues. They are
+venue-agnostic at the workflow level — the underlying templates and
+section playbooks know the venue.
 
 ---
 
@@ -77,14 +96,18 @@ Routing Logic
 ```
 Step 1: Parse $ARGUMENTS.
 
-Step 2: Resolve venue:
-  - First positional matches a venue alias?           -> venue = that
+Step 2: Resolve venue/task:
+  - First positional matches a venue/task alias?      -> dispatch target = that
   - Else scan keyword map across all positional args.
   - Phrase contains "reply to reviewers" / "rebuttal"
-    / review-related verbs                            -> venue = rebuttal
-  - Topic mentions ICLR/NeurIPS/ICML etc.             -> venue = conference
-  - Topic mentions Nature/PNAS                        -> venue = journal
-  - Topic mentions MISQ/ISR/IS journal                -> venue = is
+    / review-related verbs                            -> target = rebuttal
+  - Phrase contains "draft tex" / "new paper" /
+    "scaffold" / "from narrative"                     -> target = create
+  - Phrase contains "polish" / "revise" / "walk
+    sections" / "paragraph polish"                    -> target = revise
+  - Topic mentions ICLR/NeurIPS/ICML etc.             -> target = conference
+  - Topic mentions Nature/PNAS                        -> target = journal
+  - Topic mentions MISQ/ISR/IS journal                -> target = is
   - Default if a NARRATIVE_REPORT.md exists with no
     venue hint                                        -> ASK (don't guess)
 
@@ -128,7 +151,18 @@ chooser:
                 Parses reviews, drafts text-only rebuttal under venue limits.
                 Best after external reviews land.
 
-Next: /haipipe-paper <venue> "<input>"
+  create      → fresh draft from narrative + plan (venue-agnostic)
+                Scaffolds tex root, walks sections, drafts paragraph-by-paragraph.
+                Best when you have NARRATIVE_REPORT.md + PAPER_PLAN.md and want
+                a compileable first draft.
+
+  revise      → polish an existing tex (venue-agnostic)
+                Discovers sections, walks each through paper-weaving's
+                diagnose+plan+apply gates (G1/Q/G2), cross-section audit.
+                Best when you have a draft and want to polish it paragraph-by-
+                paragraph, optionally guided by reviewer feedback.
+
+Next: /haipipe-paper <venue-or-task> "<input>"
 ```
 
 ---
@@ -255,5 +289,7 @@ Composing with Other Workflows
         ├─► /haipipe-paper-conference  (ICLR/NeurIPS/…)
         ├─► /haipipe-paper-journal     (Nature/PNAS/…)
         ├─► /haipipe-paper-is          (MISQ/ISR/…)
-        └─► /haipipe-paper-rebuttal    (any venue, post-review)
+        ├─► /haipipe-paper-rebuttal    (any venue, post-review)
+        ├─► /haipipe-paper-create      (narrative+plan → fresh tex)
+        └─► /haipipe-paper-revise      (existing tex → polish via paper-weaving)
 ```
