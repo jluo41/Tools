@@ -32,6 +32,7 @@ Standard Layout
   +-- tasks/          <- MANDATORY: all task work here (C_task scaffolds)
   +-- probes/    <- MANDATORY: research threads (D_probe manages)
   +-- insights/       <- MANDATORY: knowledge base (E_insight manages)
+  +-- narratives/     <- OPTIONAL: living story lines (N_narrative manages; KB ⇄ Narrative)
   +-- diagram/        <- MANDATORY: project-level story (high-level only)
   +-- paper/          <- OPTIONAL: manuscripts (F_paper; each Paper-* gets own diagram/)
   +-- applications/   <- OPTIONAL: external artifacts (G_application; messages/ui/reports)
