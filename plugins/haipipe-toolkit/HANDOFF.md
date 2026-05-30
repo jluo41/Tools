@@ -60,8 +60,19 @@ DONE this session
    - Verified: 0 dangling `haipipe-experiment` / `D_experiment` /
      `experiment.yaml` tokens; 8/8 skill `name:` fields match their dirs.
 
-3. **N_narrative/DESIGN.md written** (this commit) — full design for the new
-   Narrative layer, scope A. NOT yet implemented as a runnable skill.
+3. **N_narrative/DESIGN.md written** — full design for the new Narrative
+   layer, scope A.
+
+4. **N_narrative scope-A skill BUILT** (this commit):
+   - `skills/N_narrative/haipipe-narrative/SKILL.md` — verbs new / status /
+     claims / ignite. Reads insights/K+W; writes only narratives/; never
+     touches probes/tasks/insights; never fires a probe (scope B).
+   - `skills/N_narrative/haipipe-narrative/ref/narrative-schema.md` —
+     canonical schema for story.md / claims.md / ignite-log.md /
+     decision-tree.md + INDEX.md.
+   - `narratives/` added to the project-structure.md Standard Layout
+     (OPTIONAL world, N_narrative manages).
+   - name matches dir; no stray experiment tokens.
 
 
 The expected project folder layout (reference)
@@ -91,24 +102,22 @@ tasks/ READS no one (atomic foundation) ;  probes/ NEVER reads insights/
 NEXT STEP (where to resume)
 ===========================
 
-We are mid-way through building the **N_narrative layer, scope A**. The
-DESIGN.md is written and AWAITING USER REVIEW.
+Scope A is BUILT (skill + schema + project-structure wiring). The natural
+next moves, in rough priority order:
 
-Immediate decision pending:
-  → User should read `skills/N_narrative/DESIGN.md` and approve/amend the
-    schema BEFORE we build the skill (schema stability matters because
-    scope B automates against it).
+1. **Dogfood it** — run `/haipipe-narrative new <slug>` against a real (or
+   stub) `examples/<proj>/` and walk new → claims → ignite. Confirm the 4
+   files + INDEX.md scaffold and read cleanly. Fix any friction in the
+   verbs before automating.
 
-Then build (scope A):
-  - `skills/N_narrative/haipipe-narrative/SKILL.md`
-  - `skills/N_narrative/haipipe-narrative/ref/narrative-schema.md`
-  Verbs: `new <slug>` / `status` / `claims <id>` / `ignite <id>`.
+2. **Cross-reference pass** — update MENTAL_MODEL.md and the F_paper
+   narrative-report SKILL.md to point at N_narrative as the upstream living
+   story (narrative-report = the snapshot step). Make the upstream→downstream
+   relationship explicit in both directions.
 
-Scope A unit = one narrative folder with 4 files (decided):
-  `story.md` (angle + why sell + core claim),
-  `claims.md` (needed K cards by reference; GAP/weak rows = next whip),
-  `ignite-log.md` (append-only "am I ignited?" judgments),
-  `decision-tree.md` (section paths A/B/C/D).
+3. **Then scope B** (the automation) — see DEFERRED below. Start with the
+   gap-diff (claims.md needs[] minus insights/K → candidate probes), since
+   the schema it automates against is now stable.
 
 
 DEFERRED — scope B (explicitly NOT in current work)
