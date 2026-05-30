@@ -1,31 +1,24 @@
 {
   "name": "jluo41-tools",
-  "description": "Personal Claude Code skill plugins for LogSeq, haipipe pipeline, email chronicle, and visual artifacts/diagrams",
+  "description": "Personal Claude Code skill plugins for chronicle workflows, HAI-Pipe research, visual artifacts, and subjective labeling",
   "owner": {
     "name": "Junjie Luo",
     "url": "https://github.com/jluo41"
   },
   "plugins": [
     {
-      "name": "logseq",
-      "description": "Claude Skills for LogSeq - block-based markdown, Datalog queries, templates, whiteboards, and session logging",
+      "name": "chronicle",
+      "description": "Session, daily, email, and Obsidian chronicle workflows",
       "version": "1.0.0",
-      "source": "./plugins/logseq",
+      "source": "./plugins/chronicle",
       "category": "productivity"
     },
     {
       "name": "haipipe",
-      "description": "Claude Skills for the haipipe pipeline - per-subject data contract (stages 0-2), project-wide data pipeline (1-4), NN models (5), endpoints (6), and project scaffolding",
-      "version": "1.0.0",
-      "source": "./plugins/haipipe",
-      "category": "development"
-    },
-    {
-      "name": "chronicle",
-      "description": "Claude Skills for Email Chronicle - index emails from MS365 Outlook into organized markdown",
-      "version": "1.0.0",
-      "source": "./plugins/chronicle",
-      "category": "productivity"
+      "description": "HAI-Pipe research toolkit: data, NN, endpoint, task, experiment, paper, and application workflows",
+      "version": "2.0.0",
+      "source": "./plugins/haipipe-toolkit",
+      "category": "research"
     },
     {
       "name": "diagram-skill",
@@ -33,6 +26,13 @@
       "version": "1.0.0",
       "source": "./plugins/diagram-skill",
       "category": "productivity"
+    },
+    {
+      "name": "subjective-label",
+      "description": "Multi-agent subjective text annotation with calibration, validation, and scale workflows",
+      "version": "0.3.0",
+      "source": "./plugins/subjective-label",
+      "category": "research"
     }
   ]
 }
