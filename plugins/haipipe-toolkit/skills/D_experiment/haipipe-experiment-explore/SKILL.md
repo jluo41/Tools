@@ -1,7 +1,7 @@
 ---
 name: haipipe-experiment-explore
 description: "Coverage and propose specialist of haipipe-experiment. Maps what's been explored across (arch × data × training) axes, identifies gaps, and proposes the next valuable experiments or runs to fill them. The 'what should we try next?' brain of the research methodology layer."
-argument-hint: [coverage|propose] [project-path]
+argument-hint: "[coverage|propose] [project-path]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 ---
 

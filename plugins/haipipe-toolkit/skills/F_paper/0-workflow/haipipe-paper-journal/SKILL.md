@@ -1,6 +1,13 @@
 ---
 name: haipipe-paper-journal
-description: Journal paper routing map specialist (was: paper-workflow). Nature-portfolio default. Tells you which paper skill to use next for journal-style manuscripts (Nature, Nature Methods, Nature Biotechnology, PNAS). Covers bootstrap → venue fit → drafting → revision → figures → citations → submission → rebuttal. Called by /haipipe-paper orchestrator. Direct invocation works for journal work. Trigger: journal paper, Nature paper, PNAS paper, manuscript sequencing, which skill next.
+description: >-
+  Journal paper routing map specialist (was: paper-workflow). Nature-portfolio
+  default. Tells you which paper skill to use next for journal-style manuscripts
+  (Nature, Nature Methods, Nature Biotechnology, PNAS). Covers bootstrap → venue
+  fit → drafting → revision → figures → citations → submission → rebuttal.
+  Called by /haipipe-paper orchestrator. Direct invocation works for journal
+  work. Trigger: journal paper, Nature paper, PNAS paper, manuscript sequencing,
+  which skill next.
 ---
 
 # Paper Workflow

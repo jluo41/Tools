@@ -1,7 +1,7 @@
 ---
 name: haipipe-nn-algo
 description: "Layer 1 (Algorithm) specialist of haipipe-nn. Defines the algorithm contract — model class, forward pass, loss, metric. Covers mlpredictor, tsforecast, tefm, tediffusion, bandit. Called by /haipipe-nn orchestrator. Direct invocation works for layer-scoped work."
-argument-hint: [function] [args...]
+argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 ---
 

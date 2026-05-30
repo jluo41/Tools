@@ -1,7 +1,7 @@
 ---
 name: narrative-report
 description: "Generate NARRATIVE_REPORT.md — the design contract for /haipipe-paper. Reads upstream research artifacts (IDEA_REPORT, AUTO_REVIEW, CLAIMS_FROM_RESULTS, experiment results, repo source) and emits a single coherent narrative: problem statement, core claim, method, claim-evidence matrix, figure inventory, limitations. Use when transitioning from research/experiment phase to writing phase, or when the user says 'write narrative report', '生成 narrative', '/narrative-report'."
-argument-hint: [project-dir-or-topic]
+argument-hint: "[project-dir-or-topic]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
 ---
 

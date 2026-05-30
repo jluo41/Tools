@@ -1,7 +1,7 @@
 ---
 name: haipipe-end-develop-local
 description: "Local develop specialist for haipipe-end. Thin wrapper that runs Stage 5 training on the local machine and produces an Endpoint_Set under 6-EndpointStore/. For dev iteration, smoke tests, and DIY builds without managed pipelines. Mostly delegates to /haipipe-nn modelset for the actual training; this skill exists for symmetry with -deploy-local and to give the haipipe-end umbrella a uniform develop axis. Reads from /haipipe-nn output; writes Endpoint_Sets that haipipe-end-endpointset and the deploy specialists consume."
-argument-hint: [verb] [config_or_modelset] [args...]
+argument-hint: "[verb] [config_or_modelset] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: haipipe-discover
 description: "Router for Stage A (discover) literature/idea discovery. Dispatches to 1 of 4 buckets: search (arxiv/semantic-scholar/exa-search), read (alphaxiv/deepxiv/paper-analyzer), review (research-lit/comm-lit-review/academic-researcher), idea (idea-creator/novelty-check). Pipelines escalate to /idea-discovery. Patent work lives in D_patent/. Trigger: discover, find paper, lit review, 找idea, 查新, /haipipe-discover."
-argument-hint: [bucket] [specialist] [args...]
+argument-hint: "[bucket] [specialist] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 ---
 

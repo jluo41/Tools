@@ -1,7 +1,7 @@
 ---
 name: haipipe-experiment
 description: "Research pipeline — drives how tasks/runs in a project roll out. Each experiment is a research thread; the skill steers that thread end-to-end: design (hypothesis + planned arms), bridge (scaffold tasks/runs in C_task), result (harvest arms → claim), review (structural QA + Codex semantic verdict), explore (coverage + propose next), loop (review→propose→materialize→re-review). Contains no code — pure steering layer on top of C_task execution. Feeds F_paper. Trigger: experiment, claim, hypothesis, drive experiment, plan next runs, aggregate runs, statistical test, paired-t, coverage, propose next experiment, review-loop, iterate until claim holds, implement the plan, deploy experiments, /haipipe-experiment."
-argument-hint: [function] [experiment_id_or_path] [args...]
+argument-hint: "[function] [experiment_id_or_path] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 ---
 

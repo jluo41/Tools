@@ -1,7 +1,7 @@
 ---
 name: haipipe-experiment-design
 description: "Pre-run specialist of haipipe-experiment. Defines a new experiment (claim + planned arms) and links existing runs into its arms. Writes/edits experiments/<ID>.yaml under a project. Called by /haipipe-experiment orchestrator. Direct invocation works for design-scoped work."
-argument-hint: [new|link] [args...]
+argument-hint: "[new|link] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 ---
 

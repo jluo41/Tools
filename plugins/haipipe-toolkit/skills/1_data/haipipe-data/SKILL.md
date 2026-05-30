@@ -1,7 +1,7 @@
 ---
 name: haipipe-data
 description: "Run any Stage 1-4 data pipeline work. Parses intent (stage + function) and dispatches to the right specialist (haipipe-data-source/-record/-case/-aidata). Use for SourceFn/RecordFn/CaseFn/TfmFn/SplitFn builds, pipeline runs, dashboards, reviews, or any natural-language data-pipeline question. Trigger: data pipeline, source, record, case, aidata, fn build, cook, /haipipe-data."
-argument-hint: [stage] [function] [args...]
+argument-hint: "[stage] [function] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 ---
 

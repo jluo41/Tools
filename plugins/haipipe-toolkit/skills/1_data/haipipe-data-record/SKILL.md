@@ -1,7 +1,7 @@
 ---
 name: haipipe-data-record
 description: "Stage 2 (Record) specialist. Builds, runs, and reviews RecordFn / TriggerFn; inspects 2-RecStore; loads record-layer assets. Called by /haipipe-data orchestrator. Direct invocation works for stage-scoped work, but /haipipe-data is the recommended entry."
-argument-hint: [function] [args...]
+argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 ---
 

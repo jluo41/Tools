@@ -1,7 +1,7 @@
 ---
 name: haipipe-paper-conference
 description: "Conference paper pipeline specialist (was: paper-writing). Orchestrates paper-plan → paper-figure → figure-spec/paper-illustration/mermaid-diagram → paper-write → paper-compile → auto-paper-improvement-loop to go from a narrative report to a polished PDF. Target venues: ICLR, NeurIPS, ICML, CVPR, ACL, AAAI, IEEE. At `— effort: max | beast` (or explicit `— assurance: submission`), Phase 6 gates the Final Report on `tools/verify_paper_audits.sh`. Called by /haipipe-paper orchestrator. Direct invocation works for conference work. Trigger: conference paper, ICLR/NeurIPS/ICML paper, write paper pipeline, 写论文全流程, 从报告到PDF."
-argument-hint: [narrative-report-path-or-topic]
+argument-hint: "[narrative-report-path-or-topic]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, Skill, mcp__codex__codex, mcp__codex__codex-reply
 ---
 

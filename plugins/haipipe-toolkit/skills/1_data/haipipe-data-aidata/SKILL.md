@@ -1,7 +1,7 @@
 ---
 name: haipipe-data-aidata
 description: "Stage 4 (AIData) specialist. Builds, runs, and reviews TfmFn / SplitFn; inspects 4-AIDataStore; loads AIData-layer assets and tensors. Called by /haipipe-data orchestrator. Direct invocation works for stage-scoped work, but /haipipe-data is the recommended entry."
-argument-hint: [function] [args...]
+argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 ---
 

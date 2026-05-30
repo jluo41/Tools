@@ -1,7 +1,7 @@
 ---
 name: haipipe-nn-tuner
 description: "Layer 2 (Tuner) specialist of haipipe-nn. Defines the hyperparameter search space and the tuner that drives sweeps. Called by /haipipe-nn orchestrator. Direct invocation works for layer-scoped work."
-argument-hint: [function] [args...]
+argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 ---
 

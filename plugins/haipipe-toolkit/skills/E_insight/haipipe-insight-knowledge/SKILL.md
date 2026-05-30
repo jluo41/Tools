@@ -1,7 +1,7 @@
 ---
 name: haipipe-insight-knowledge
 description: "K-level knowledge specialist of the haipipe-insight family. Reads I_information entries and synthesizes validated belief statements into insights/K_knowledge/. A K entry is a 'we now claim X is true' statement with explicit support / counter-evidence / confidence. NO code, pure markdown synthesis. Use when running K-phase via /haipipe-application ask, or directly /haipipe-insight-knowledge. Trigger: K-level, knowledge, validated belief, causal claim, what do we know."
-argument-hint: [--project <path>] [--scope <pattern-ids>] [--slug <slug>]
+argument-hint: "[--project <path>] [--scope <pattern-ids>] [--slug <slug>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 ---
 
