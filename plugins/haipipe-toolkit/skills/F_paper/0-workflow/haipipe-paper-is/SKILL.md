@@ -1,6 +1,13 @@
 ---
 name: haipipe-paper-is
-description: Information Systems paper workflow specialist (was: is-paper-workflow). End-to-end writing for UTD24 IS journals (MISQ, ISR, Management Science IS section). Covers contribution framing, theory selection, methodology design, and submission strategy. Called by /haipipe-paper orchestrator. Direct invocation works for IS work. Trigger: IS paper, MISQ paper, ISR paper, Management Science IS, Information Systems research, IT artifacts, digital systems paper.
+description: >-
+  Information Systems paper workflow specialist (was: is-paper-workflow).
+  End-to-end writing for UTD24 IS journals (MISQ, ISR, Management Science IS
+  section). Covers contribution framing, theory selection, methodology design,
+  and submission strategy. Called by /haipipe-paper orchestrator. Direct
+  invocation works for IS work. Trigger: IS paper, MISQ paper, ISR paper,
+  Management Science IS, Information Systems research, IT artifacts, digital
+  systems paper.
 ---
 
 # IS Paper Workflow

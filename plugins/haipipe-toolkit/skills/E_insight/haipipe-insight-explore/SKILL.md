@@ -1,7 +1,7 @@
 ---
 name: haipipe-insight-explore
 description: "Coverage / readability scanner of the haipipe-insight family. Reads the project's experiments/ and existing insights/ folders; reports which experiments are CONFIRMED and ready for synthesis, what's already in the insight base, and which gaps a session could close. NO code execution. Use to plan the next /haipipe-application ask, or as a standalone read-only audit. Trigger: explore, scan, coverage, what can we synthesize, what's missing, /haipipe-insight-explore."
-argument-hint: [--project <path>]
+argument-hint: "[--project <path>]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 ---
 

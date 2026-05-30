@@ -1,7 +1,7 @@
 ---
 name: haipipe-data-source
 description: "Stage 1 (Source) specialist. Builds, runs, and reviews SourceFn / HumanFn; inspects 1-SourceStore; loads source-layer typed frames. Called by /haipipe-data orchestrator. Direct invocation works for stage-scoped work, but /haipipe-data is the recommended entry."
-argument-hint: [function] [args...]
+argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 ---
 

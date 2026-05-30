@@ -1,7 +1,7 @@
 ---
 name: haipipe-project-inspect
 description: "Read-only specialist for haipipe-project. Reviews project structure, summarizes, generates inventory, prints overview. Touches no files. Called by /haipipe-project orchestrator. Direct invocation works for project audit work."
-argument-hint: [function] [project_id_or_path] [args...]
+argument-hint: "[function] [project_id_or_path] [args...]"
 allowed-tools: Read, Grep, Glob, Bash
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: haipipe-experiment-loop
 description: "Iteration specialist of haipipe-experiment. Chains review → explore (propose) → design (materialize) → re-review in an adversarial loop until the claim verdict reaches ✅ or a round budget is hit. The 'is this research strong enough yet?' loop driver. Called by /haipipe-experiment orchestrator. Direct invocation works for loop-scoped work."
-argument-hint: [start|continue|status] [experiment_id_or_project] [args...]
+argument-hint: "[start|continue|status] [experiment_id_or_project] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, mcp__codex__codex, mcp__codex__codex-reply
 ---
 

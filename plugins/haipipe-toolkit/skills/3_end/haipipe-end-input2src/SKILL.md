@@ -1,7 +1,7 @@
 ---
 name: haipipe-end-input2src
 description: "Input2SrcFn specialist — design and review of the wire-payload-to-record function in an Endpoint_Set (deserializes JSON request into a ProcessedDF row). One of 5 inference Fn-types. TARGET-AWARE: SageMaker uses builders e1_*, Databricks uses builders f1_* (different wire formats). Pass --target sagemaker (default) or --target databricks. Called by /haipipe-end orchestrator when intent references Input2SrcFn, payload-to-record deserialization, or `input2src` keyword."
-argument-hint: [verb] [use_case] [--target sagemaker|databricks] [args...]
+argument-hint: "[verb] [use_case] [--target sagemaker|databricks] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 ---
 

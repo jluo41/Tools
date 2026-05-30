@@ -1,7 +1,7 @@
 ---
 name: haipipe-end-post
 description: "PostFn specialist — design and review of the response-formatting function in an Endpoint_Set. One of 5 inference Fn-types. Called by /haipipe-end orchestrator when intent references PostFn, response formatting, post-processing, or `post` keyword. Reads own ref/concepts.md plus umbrella's fn/fn-design.md and endpointset's fn/fn-review.md."
-argument-hint: [verb] [use_case] [args...]
+argument-hint: "[verb] [use_case] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 ---
 

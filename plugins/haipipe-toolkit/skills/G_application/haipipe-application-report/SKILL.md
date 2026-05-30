@@ -1,7 +1,7 @@
 ---
 name: haipipe-application-report
 description: "Report specialist of the haipipe-application family. STUB. Will be an outer-loop session producing external stakeholder reports (regulator / executive / partner) from the project's K/W knowledge base. Reads K_knowledge + W_wisdom from E_insight, can trigger /haipipe-insight ask, writes to examples/<project>/applications/reports/. NEVER writes back to insights/. NOTE: for the internal Q&A synthesis previously called 'insight-report', use insight-session's sessions/<DATE>.md log instead — that scope moved entirely to G_application. Trigger: report, stakeholder report, briefing, exec summary, regulator doc, /haipipe-application report."
-argument-hint: [--audience regulator|executive|partner] [--project <path>] [--slug <slug>] "<intent>"
+argument-hint: '[--audience regulator|executive|partner] [--project <path>] [--slug <slug>] "<intent>"'
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 ---
 

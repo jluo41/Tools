@@ -1,7 +1,7 @@
 ---
 name: haipipe-data-case
 description: "Stage 3 (Case) specialist. Builds, runs, and reviews CaseFn; inspects 3-CaseStore; loads case-layer assets. Called by /haipipe-data orchestrator. Direct invocation works for stage-scoped work, but /haipipe-data is the recommended entry."
-argument-hint: [function] [args...]
+argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 ---
 

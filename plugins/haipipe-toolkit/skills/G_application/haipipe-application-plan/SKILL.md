@@ -1,7 +1,7 @@
 ---
 name: haipipe-application-plan
 description: "Planning specialist of the haipipe-application family. Given a research question, writes a structured plan-vN.yaml describing which D / I / K / W tasks are needed to answer it AND which experiments (existing or new) must feed them. Used by /haipipe-application-ask at Phase 1. NO code, plan is markdown-yaml. Trigger: plan, /haipipe-application-plan, design synthesis, what tasks to run, plan-vN."
-argument-hint: [question] [--project <path>] [--revise <N>] [--feedback <text>]
+argument-hint: "[question] [--project <path>] [--revise <N>] [--feedback <text>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: haipipe-experiment-bridge
 description: "Bridge specialist of haipipe-experiment. Takes a designed experiment.yaml (claim + planned arms) and MATERIALIZES it into runnable tasks in C_task. Invokes the Run Script Reviewer agent on each scaffolded task before deploy (centralized intent ↔ implementation review), runs a sanity arm first, then launches the full arm set. The 'design → execution' connector between D_experiment and C_task. Called by /haipipe-experiment orchestrator. Direct invocation works for bridge-scoped work."
-argument-hint: [bridge|sanity|deploy|status] [experiment_id] [args...]
+argument-hint: "[bridge|sanity|deploy|status] [experiment_id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Task
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: haipipe-end-endpointset
 description: "Endpoint_Set artifact-as-whole specialist. Owns target-agnostic operations on the deployable artifact: package (Stage 5 → 6), local inference() smoke test, structural review, dashboard. Per-Fn-type design/review lives in sibling skills (haipipe-end-{meta,trig,post,src2input,input2src}); deployment lives in haipipe-end-deploy-*. Called by /haipipe-end orchestrator when the request is about the artifact itself."
-argument-hint: [verb] [args...]
+argument-hint: "[verb] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: haipipe-project-organize
 description: "Modify specialist for haipipe-project. Reorganizes files to fix structural violations: flatten flat tasks into groups, rename mis-numbered task folders, align Track A code with Track B examples, fix broken paired-example references. Called by /haipipe-project orchestrator only after /haipipe-project-inspect review identifies issues."
-argument-hint: [function] [project_id] [args...]
+argument-hint: "[function] [project_id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 ---
 

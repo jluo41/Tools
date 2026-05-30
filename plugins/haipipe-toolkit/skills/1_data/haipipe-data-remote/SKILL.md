@@ -1,7 +1,7 @@
 ---
 name: haipipe-data-remote
 description: "Cross-stage transport specialist. Pushes / pulls cohort assets between local _WorkSpace and the configured remote (S3 / GCS / Databricks / Google Drive). Wraps hai-remote-sync; never invokes destructive operations. Trigger: push, pull, sync, remote, S3, upload, download, fetch, hai-remote-sync."
-argument-hint: [function] [args...]
+argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Grep, Glob
 ---
 

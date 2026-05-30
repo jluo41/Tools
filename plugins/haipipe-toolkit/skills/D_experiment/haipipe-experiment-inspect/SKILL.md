@@ -1,7 +1,7 @@
 ---
 name: haipipe-experiment-inspect
 description: "Read-only specialist of haipipe-experiment. Lists experiments, prints status, shows arms + linked runs, finds reverse references (which experiments reference a given run). The 'what's the state of experiments?' query layer. Called by /haipipe-experiment orchestrator."
-argument-hint: [list|show|refs|unused] [target]
+argument-hint: "[list|show|refs|unused] [target]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 ---
 

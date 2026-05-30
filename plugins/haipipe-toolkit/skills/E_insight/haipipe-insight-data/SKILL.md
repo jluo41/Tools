@@ -1,7 +1,7 @@
 ---
 name: haipipe-insight-data
 description: "D-level observations specialist of the haipipe-insight family. Reads CONFIRMED experiment claims from D_experiment and synthesizes markdown observation entries into insights/D_data/. NO code execution — pure markdown synthesis. Use when running D-phase via /haipipe-application ask, or directly /haipipe-insight-data <experiment-id>. Trigger: D-level, observations, what did we observe, raw findings from experiments."
-argument-hint: [experiment_id] [--project <path>] [--slug <slug>]
+argument-hint: "[experiment_id] [--project <path>] [--slug <slug>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: haipipe-end-develop-databricks
 description: "Databricks develop specialist for haipipe-end. STATUS: DEFERRED — no platform-databrick-training repo backs this yet; SKILL.md kept as a placeholder for parity with -develop-sagemaker. Would run Stage 5 training as a Databricks Job (notebook or wheel task) with model logged to Unity Catalog and exported as an Endpoint_Set under 6-EndpointStore/. The umbrella's no-args dashboard skips this skill while deferred."
-argument-hint: [verb] [config_or_run_id] [args...]
+argument-hint: "[verb] [config_or_run_id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 ---
 

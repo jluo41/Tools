@@ -1,7 +1,7 @@
 ---
 name: haipipe-experiment-result
 description: "Post-run specialist of haipipe-experiment. Aggregates linked-run results into mean/std/paired-t/sign-test, writes claim sentence with caveats, and renders the project-level experiment-log.txt comparison table. Called by /haipipe-experiment orchestrator. Direct invocation works for result-scoped work."
-argument-hint: [aggregate|claim|render] [experiment_id]
+argument-hint: "[aggregate|claim|render] [experiment_id]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 ---
 

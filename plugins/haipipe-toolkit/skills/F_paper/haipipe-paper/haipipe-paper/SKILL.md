@@ -1,7 +1,7 @@
 ---
 name: haipipe-paper
 description: "Run any paper-lifecycle work. Parses intent (venue + phase) and dispatches to the right specialist (haipipe-paper-conference/-journal/-is/-rebuttal). Use for writing/revising/rebutting papers targeting any venue — ICLR, NeurIPS, ICML, Nature, PNAS, MISQ, ISR. Trigger: paper, write paper, paper pipeline, paper writing, rebuttal, reply to reviewers, 写论文, 论文流程, /haipipe-paper."
-argument-hint: [venue] [phase] [args...]
+argument-hint: "[venue] [phase] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 ---
 
