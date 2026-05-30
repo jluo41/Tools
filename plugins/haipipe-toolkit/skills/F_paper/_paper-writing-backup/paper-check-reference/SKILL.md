@@ -1,5 +1,5 @@
 ---
-name: paper-check-reference
+name: paper-check-reference-backup
 description: "Audit LaTeX paper cross-references and flag broken/positional/orphan items. Scans the root .tex and all transitively \\input{}-ed files, builds maps of \\label / \\ref / \\hyperref / \\cite / \\input, cross-checks them, and produces a markdown audit report. Catches: broken refs (\\ref with no matching \\label), broken inputs (\\input{} file not found), broken citations (\\cite key not in any .bib), positional issues (\\phantomsection\\label{} placed AFTER \\section*{} heading), unlabeled SI sections, orphan labels, and dead bib entries. Companion to citation-verifier (deeper text-content citation audit) and paper-revise-section (logical revision). Use when user says /paper-check-reference, 'check refs', 'audit references', '查 reference', '检查引用', or before submission to catch broken cross-references."
 ---
 

@@ -15,9 +15,10 @@ C_task         WORK       one run.sh + one results/<RUN>/
                           produces: D + I material (observations + patterns)
                           "看到了什么, 像什么样子"
 
-D_experiment   CLAIM      arms[] + statistical contract + verdict
+D_probe        PROBE      arms[] + statistical contract + verdict
+              (folder:    implemented today as D_experiment / experiments/)
                           produces: K + W material (claims + recommendations)
-                          "我们 claim 什么, 该怎么办"
+                          "朝哪个方向试探, 我们 claim 什么, 该怎么办"
 
 E_insight      ARCHIVE    D/I/K/W markdown cards under insights/
                           does NOT produce — only files + cross-refs
@@ -36,7 +37,8 @@ One assignment to remember:
 
 ```
 D + I  ←  comes from  C_task        (observational / descriptive)
-K + W  ←  comes from  D_experiment  (normative / prescriptive)
+K + W  ←  comes from  D_probe       (normative / prescriptive)
+          folder/skill compatibility name: D_experiment
 E_insight     = archivist           (files cards into permanent KB)
 G_application = case worker         (one session per intent; 4 kinds;
                                      ask is the only kind that can write KB)
@@ -63,7 +65,7 @@ DIKW lens:   D (data observation) + I (information pattern)
              A task can carry both lenses at once: e.g. a regression
              task produces D ("the distribution") AND I ("the
              correlation pattern") AND maybe a candidate K hint.
-             But K and W never *commit* here; they need experiment.
+             But K and W never *commit* here; they need a probe.
 
 task-types:  data / algo / training / eval / display / individual / agent
              (see C_task/haipipe-task SKILL.md)
@@ -78,12 +80,12 @@ well-designed display or regression task often closes 3+ D/I cards in
 one shot. That is the point — DIKW is a *lens*, not a *phase*.
 
 
-D_experiment — the CLAIM layer
--------------------------------
+D_probe — the PROBE / CLAIM layer
+----------------------------------
 
 ```
-unit:        one experiment.yaml (one research thread)
-verb:        COMPARE, CLAIM, RECOMMEND
+unit:        one experiment.yaml (one claim-directed probe thread)
+verb:        PROBE, COMPARE, CLAIM, RECOMMEND
 asks:        "across these arms, with N seeds, does the hypothesis hold?
               what should we do next?"
 artifacts:   experiment.yaml (hypothesis + arms[] + result + claim + caveats),
@@ -97,6 +99,10 @@ DIKW lens:   K (validated belief) + W (per-experiment recommendation)
              (e.g. "param-matched re-test", "drop arm X").
 ```
 
+D_probe is the conceptual name. `D_experiment`, `experiments/`, and
+`/haipipe-experiment` remain the compatibility names in the current
+folder and command layout.
+
 A claim CANNOT exist without an experiment.
 A pattern observed in a single task is at most I; promoting it to K
 requires a controlled comparison (arms × seeds × statistical test).
@@ -105,11 +111,11 @@ This is the most important boundary in the toolkit:
 
 ```
    D + I       no comparison needed     → C_task is sufficient
-   K + W       requires controlled      → D_experiment mandatory
+   K + W       requires controlled      → D_probe mandatory
                comparison                  (no shortcut from I to K)
 ```
 
-A single experiment can produce multiple K (a main claim + secondary
+A single probe can produce multiple K (a main claim + secondary
 claims observed in the same run) and multiple W (different "next
 steps" implied by different parts of the claim).
 
@@ -126,7 +132,7 @@ location:    examples/<project>/insights/
 
 DIKW lens:   all 4 — but as labels on cards that were *produced
              elsewhere*. E does not compute, observe, or claim. It only
-             archives material that C_task and D_experiment have
+             archives material that C_task and D_probe have
              already produced, and maintains the cross-reference graph.
 ```
 
@@ -137,8 +143,8 @@ Folder name aligned to DIKW letters:
 ```
 insights/D_data/            D## cards   ← filed from C_task results/
 insights/I_information/     I## cards   ← filed from C_task results/
-insights/K_knowledge/       K## cards   ← filed from D_experiment claims
-insights/W_wisdom/          W## cards   ← filed from D_experiment recs
+insights/K_knowledge/       K## cards   ← filed from D_probe claims
+insights/W_wisdom/          W## cards   ← filed from D_probe recs
                                           AND from strategic synthesis
                                           (multiple K → 1 strategic W)
 ```

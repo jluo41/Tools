@@ -1,14 +1,20 @@
 ---
 name: haipipe-experiment
-description: "Research pipeline — drives how tasks/runs in a project roll out. Each experiment is a research thread; the skill steers that thread end-to-end: design (hypothesis + planned arms), bridge (scaffold tasks/runs in C_task), result (harvest arms → claim), review (structural QA + Codex semantic verdict), explore (coverage + propose next), loop (review→propose→materialize→re-review). Contains no code — pure steering layer on top of C_task execution. Feeds F_paper. Trigger: experiment, claim, hypothesis, drive experiment, plan next runs, aggregate runs, statistical test, paired-t, coverage, propose next experiment, review-loop, iterate until claim holds, implement the plan, deploy experiments, /haipipe-experiment."
-argument-hint: "[function] [experiment_id_or_path] [args...]"
+description: "Research probe pipeline — drives how tasks/runs in a project roll out. Each probe/experiment is a claim-directed research thread: design (hypothesis + planned arms), bridge (scaffold tasks/runs in C_task), result (harvest arms → claim), review (structural QA + Codex semantic verdict), explore (coverage + propose next), loop (review→propose→materialize→re-review). Contains no code — pure steering layer on top of C_task execution. Feeds F_paper. Trigger: probe, experiment, claim, hypothesis, drive experiment, plan next runs, aggregate runs, statistical test, paired-t, coverage, propose next experiment, review-loop, iterate until claim holds, implement the plan, deploy experiments, /haipipe-experiment."
+argument-hint: [function] [experiment_id_or_path] [args...]
 allowed-tools: Bash, Read, Grep, Glob, Skill
 ---
 
 Skill: haipipe-experiment (orchestrator)
 =========================================
 
-User-facing entry for the **research pipeline**.
+User-facing entry for the **research probe pipeline**.
+
+Naming note: the command and folder remain `/haipipe-experiment` and
+`experiments/` for compatibility. Conceptually this layer is
+**D_probe**: each experiment folder is a focused probe that asks reality
+whether a candidate claim or story direction survives contact with
+evidence.
 
 Two pipelines live side-by-side in a project; this skill owns the
 research side and never crosses into execution:
@@ -19,13 +25,13 @@ EXECUTION PIPELINE          (C_task)
   artifacts:  code, notebooks, configs, runtime.yaml, metrics.json
   question:   "this run, did it work?"
 
-RESEARCH PIPELINE           (D_experiment ← this skill)
-  experiment = 为什么做、接下来做什么
+RESEARCH PROBE PIPELINE     (D_probe ← this skill; folder name D_experiment)
+  probe      = 朝哪个方向探索、为什么做、接下来做什么
   artifacts:  experiment.yaml, daily logs, review.md, claim
   question:   "across these runs, does the hypothesis hold?"
 ```
 
-An **experiment is a research thread**, not a claim repository. It
+An **experiment is a probe thread**, not a claim repository. It
 steers how tasks and runs roll out: defines hypothesis → bridges plan
 into C_task tasks → harvests arms → judges → proposes next move →
 iterates. It contains NO code, NO notebooks, NO metrics computation;
@@ -168,6 +174,6 @@ C_task     provides runs → linked into experiment arms
 E_insight        consumes claims → analysis methodology
 F_paper       consumes claims → paper writing
 
-D_experiment is the central hub: reads from B, writes claims that
+D_probe is the central hub: reads from B, writes claims that
 feed both E_insight (analysis) and F_paper (writing).
 ```

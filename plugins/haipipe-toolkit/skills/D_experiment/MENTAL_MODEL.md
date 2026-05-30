@@ -1,25 +1,32 @@
-D_experiment ↔ C_task — Mental Model
-======================================
+D_probe ↔ C_task — Mental Model
+=================================
 
-Onboarding doc. Read this BEFORE writing your first experiment, or
+Onboarding doc. Read this BEFORE writing your first probe / experiment, or
 when something feels like it could go in either tasks/ or experiments/
 and you're not sure which.
+
+Naming note: the current folder and command names still say
+`D_experiment`, `experiments/`, and `/haipipe-experiment` for
+compatibility. Conceptually, this layer is **D_probe**: a
+claim-directed probe that asks reality a focused question.
 
 
 TL;DR
 =====
 
 ```
-C_task        =  DO   layer   "did this run work?"
-D_experiment  =  MEAN layer   "across these runs, does the hypothesis hold?"
+C_task    =  DO     layer   "did this run work?"
+D_probe   =  MEAN   layer   "across these runs, does the hypothesis hold?"
+                          "what did this probe teach us?"
 
-bridge skill (D → C):  scaffold arms as tasks
-arms[] pointer (D → C):  experiment reads tasks' metrics.json
+bridge skill (D → C):  scaffold probe arms as tasks
+arms[] pointer (D → C):  probe reads tasks' metrics.json
 tasks NEVER reference experiments.
 ```
 
 If you can ask **"did this run work?"** about something, it's a task.
-If you can ask **"does the hypothesis hold?"** about it, it's an experiment.
+If you can ask **"does this hypothesis / story direction survive contact
+with reality?"** about it, it's a probe.
 
 
 The two pipelines, side by side
@@ -27,9 +34,9 @@ The two pipelines, side by side
 
 ```
 ╔═══════════════════════════════════════════╗  ╔══════════════════════════════════════════╗
-║  C_task — EXECUTION                       ║  ║  D_experiment — RESEARCH                 ║
+║  C_task — EXECUTION                       ║  ║  D_probe — RESEARCH                      ║
 ║                                           ║  ║                                          ║
-║  unit:        task / run                   ║  ║  unit:        experiment (research thread)║
+║  unit:        task / run                   ║  ║  unit:        probe (research thread)     ║
 ║  asks:        "did THIS run work?"        ║  ║  asks:        "does the HYPOTHESIS hold ║
 ║                                           ║  ║                across these runs?"       ║
 ║                                           ║  ║                                          ║
@@ -46,6 +53,7 @@ The two pipelines, side by side
 ║  has code?    YES — *.py runs, helpers     ║  ║  has code?    NO — pure steering state    ║
 ║                                           ║  ║                                          ║
 ║  mood:        "how / what / when"          ║  ║  mood:        "why / what next"          ║
+║                                           ║  ║                "what did reality answer?"║
 ╚═══════════════════════════════════════════╝  ╚══════════════════════════════════════════╝
 ```
 
@@ -55,19 +63,19 @@ The 4 boundary rules
 
 ```
 Rule 1 — experiments/ folder has NO code, NO notebook, NO metric calculation.
-         All computation lives in tasks/. Experiments only hold
+         All computation lives in tasks/. Probes only hold
          steering state (plan + verdict + narrative).
 
 Rule 2 — experiment.yaml is STEERING state, not a result archive.
          result: block holds *aggregated references* to per-run
          metrics that physically live in tasks/.../metrics.json.
 
-Rule 3 — Strict one-way dependency: experiments READ tasks; tasks
+Rule 3 — Strict one-way dependency: probes READ tasks; tasks
          do NOT reference experiments.
          - Delete an experiment → no impact on tasks.
          - Delete a task → linked experiment becomes invalid (caught by review).
 
-Rule 4 — Tasks are ATOMIC; experiments COMPOSE.
+Rule 4 — Tasks are ATOMIC; probes COMPOSE.
          - A single task/run can be referenced by multiple experiments
            (as a member of different arms in different threads).
          - An experiment cites multiple runs across multiple tasks.
@@ -78,7 +86,7 @@ The bridge — only one direction crosses C ↔ D
 ================================================
 
 ```
- D_experiment side                       C_task side
+D_probe side                             C_task side
 ─────────────────                       ──────────────
  experiment.yaml                         tasks/A01_*/
    arms:                                   ├── 01_pretrain_baseline/
@@ -110,14 +118,15 @@ The bridge — only one direction crosses C ↔ D
 ```
 
 Tasks never know an experiment is reading them. They produce their
-own metrics; the experiment is just a downstream consumer.
+own metrics; the probe is just a downstream consumer.
 
 
-One experiment, full lifecycle
-================================
+One probe, full lifecycle
+=========================
 
 ```
 [t=0]  💡 Researcher has a question: "does architecture X beat baseline?"
+         This is a probe: a focused kick at reality.
          │
 [t=1]  📐 /haipipe-experiment design new E02
          │   writes experiments/02_x_vs_baseline/experiment.yaml
@@ -136,7 +145,7 @@ One experiment, full lifecycle
          │
 [t=3]  ⚙️  C_task runs the training
          │   each run writes results/<RUN>/runtime.yaml + metrics.json
-         │   ── pure C_task territory; D_experiment is asleep ──
+         │   ── pure C_task territory; D_probe is asleep ──
          │
 [t=4]  🔗 /haipipe-experiment design link E02 <run-path>
          │   (called by bridge automatically, or manually for stragglers)
@@ -164,7 +173,7 @@ One experiment, full lifecycle
 [t=9]  🔄 /haipipe-experiment loop E02 (optional)
          │   review → fix → re-aggregate → re-review, until verdict is clean
 
-[done] experiment.yaml is the canonical record. C_task artifacts are the
+[done] experiment.yaml is the canonical probe record. C_task artifacts are the
        evidence. F_paper / E_dikw consume the claim downstream.
 ```
 
@@ -192,7 +201,7 @@ examples/Proj-X/
 │   ├── B01_evaluation_clm/...
 │   └── ...
 │
-├── experiments/                            📊 D_experiment — research
+├── experiments/                            📊 D_probe — research
 │   ├── INDEX.md                            ← auto: list all experiments
 │   ├── coverage.md                         ← auto: gaps + proposals
 │   ├── comparison.md                       ← auto: cross-experiment view
@@ -209,7 +218,8 @@ examples/Proj-X/
 ```
 
 Note: same project, three worlds, three folders. No code in
-experiments/. No claims in tasks/. No mixing.
+experiments/. No claims in tasks/. No mixing. The folder is still named
+experiments/; conceptually each folder is one probe thread.
 
 
 Common confusions — FAQ

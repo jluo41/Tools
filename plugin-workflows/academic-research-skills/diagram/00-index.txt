@@ -1,0 +1,59 @@
+🗺️  Academic Research Skills — Diagram Index
+============================================
+
+  This folder captures design-level diagrams and discussion notes for
+  the ARS workflow. The focus is not only "how to write a paper", but
+  when a paper becomes worth writing.
+
+
+─§ 📌 Current diagrams ─────────────────────────────────────
+
+  +----+--------------------------+-------------------------------+
+  | #  | File                     | What it explains              |
+  +----+--------------------------+-------------------------------+
+  | 01 | 01-paper-ignition.txt    | Probe + Narrative             |
+  |    |                          | convergence before writing    |
+  | 02 | 02-ignition-loop.txt     | One-by-one alternation:       |
+  |    |                          | narrative ↔ probe             |
+  +----+--------------------------+-------------------------------+
+
+
+─§ 🎯 Core idea ────────────────────────────────────────────
+
+  A paper should not begin at "topic selected".
+
+  It should begin when two lines converge:
+
+      🧪 Probe line        →  facts · evidence · claim support
+      🎭 Narrative line    →  angle · urgency · reader desire
+
+  When they meet, the author does not feel pushed to write.
+  The author feels eager to sell the story.
+
+
+─§ 🧭 Suggested reading order ──────────────────────────────
+
+  1️⃣  Read 01-paper-ignition.txt first.
+      It reframes ARS Stage 1 → Stage 2 as a convergence problem.
+
+  2️⃣  Read 02-ignition-loop.txt next.
+      It explains why narrative and probe must alternate,
+      not run as two isolated phases.
+
+  3️⃣  Then compare with:
+      📄 ../docs/ARCHITECTURE.md
+      📄 ../academic-paper/references/plan_mode_protocol.md
+      📄 ../academic-paper/agents/structure_architect_agent.md
+      📄 ../academic-paper/agents/argument_builder_agent.md
+
+  4️⃣  Design question for future work:
+      Should ARS add an explicit "Narrative-Evidence Convergence"
+      or "Paper Ignition" stage before drafting?
+
+
+─§ 🧨 One-line memory ──────────────────────────────────────
+
+  Research gives possibility.
+  Probe gives truth pressure.
+  Narrative gives desire.
+  Only when truth and desire meet should writing begin.
