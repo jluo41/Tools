@@ -1,7 +1,7 @@
 ---
 name: haipipe-insight
-description: "Insight base orchestrator (the E_insight umbrella). Builds and maintains the project's cross-experiment knowledge base under examples/<project>/insights/ (D_data / I_information / K_knowledge / W_wisdom). Reads CONFIRMED claims from D_experiment, never executes code. Routes intent to the right specialist (observations / patterns / knowledge / wisdom / session / plan / report / explore / gate / context). Trigger: insight, insights, knowledge base, what do we know, build insight, /haipipe-insight, ask a research question, synthesize across experiments."
-argument-hint: "[function] [args...]"
+description: "Insight base orchestrator (the E_insight umbrella). Builds and maintains the project's cross-probe knowledge base under examples/<project>/insights/ (D_data / I_information / K_knowledge / W_wisdom). Reads CONFIRMED claims from D_probe/D_experiment, never executes code. Routes intent to the right specialist (observations / patterns / knowledge / wisdom / session / plan / report / explore / gate / context). Trigger: insight, insights, knowledge base, what do we know, build insight, /haipipe-insight, ask a research question, synthesize across experiments."
+argument-hint: [function] [args...]
 allowed-tools: Bash, Read, Grep, Glob, Skill
 ---
 
@@ -14,7 +14,8 @@ markdown.
 
 ```
 C_task          executes runs                            (code, GPU)
-D_experiment    claims from runs (per-thread)            (yaml + verdicts)
+D_probe         claims from runs (per-thread)            (yaml + verdicts)
+                compatibility name: D_experiment
 E_insight       cross-experiment knowledge base   ← THIS SKILL FAMILY
 F_paper         publication                              (final form)
 ```
@@ -26,7 +27,7 @@ Where the insight base lives (project-level)
 ```
 examples/Proj-X/
 ├── tasks/                                  (C_task)
-├── experiments/                            (D_experiment)
+├── experiments/                            (D_probe / D_experiment)
 └── insights/                               ← E_insight writes here
     ├── INDEX.md                            (auto: all entries + status)
     ├── sessions/                           (lightweight Q&A log; one .md per question)
@@ -50,7 +51,7 @@ examples/Proj-X/
 ```
 
 **Hard rule:** NO code, no Python, no notebooks, no plots inside insights/.
-That work belongs to C_task (code) or D_experiment (claim verdicts).
+That work belongs to C_task (code) or D_probe (claim verdicts).
 E_insight only synthesizes markdown.
 
 
@@ -118,13 +119,13 @@ Step 5: Surface specialist tail.
 ```
 
 
-Boundary with D_experiment and C_task
+Boundary with D_probe and C_task
 ---------------------------------------
 
 The most-confused boundaries:
 
 ```
-"this experiment confirmed X"             → D_experiment's claim
+"this probe confirmed X"                  → D_probe's claim
 "5 experiments all show X"                → I-level pattern (E_insight)
 "X is robust on val but not test-od"      → K-level knowledge (E_insight)
 "we should re-test X with param-matched"  → W-level wisdom (E_insight)
@@ -135,11 +136,11 @@ The most-confused boundaries:
 **One-way dependencies:**
 
 ```
-E_insight READS from D_experiment + C_task
-E_insight NEVER triggers D_experiment (that's G_application's ask kind)
+E_insight READS from D_probe + C_task
+E_insight NEVER triggers D_probe (that's G_application's ask kind)
 E_insight NEVER writes to tasks/ or experiments/ directly
 E_insight ONLY files DIKW cards into insights/ from already-existing evidence
-D_experiment NEVER reads from insights/
+D_probe NEVER reads from insights/
 ```
 
 
@@ -161,7 +162,7 @@ Relation to other top-level skills
 A_discover    feeds ideas → seeded questions handled in G_application ask
 B_project     project umbrella → owns the examples/Proj-X/ shape
 C_task        provides D/I evidence → filed by haipipe-insight-data/-information
-D_experiment  provides K/W claims    → filed by haipipe-insight-knowledge/-wisdom
+D_probe       provides K/W claims    → filed by haipipe-insight-knowledge/-wisdom
 F_paper       consumes K + W entries → academic publication
 G_application drives sessions (ask / message / ui / report) that read K/W
               and (ask kind only) trigger new tasks / experiments / KB writes

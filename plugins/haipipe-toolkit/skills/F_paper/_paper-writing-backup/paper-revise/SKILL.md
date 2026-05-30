@@ -1,5 +1,5 @@
 ---
-name: paper-revise
+name: paper-revise-backup
 description: "Interactive revision of LaTeX section files through structured discussion. Use when the user wants to revise a paper section, annotate sentences, discuss paragraph logic, or apply accepted changes. Also use when the user mentions /paper-revise, revise section, annotate paper, or paper revision."
 ---
 

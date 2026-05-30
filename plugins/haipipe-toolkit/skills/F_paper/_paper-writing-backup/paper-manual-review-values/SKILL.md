@@ -1,5 +1,5 @@
 ---
-name: paper-manual-review-values
+name: paper-manual-review-values-backup
 description: "Section-by-section, number-by-number manual verification of every quantitative claim in the paper, with a human approval gate at every fix. Re-derives each value from raw data files (not from prose-vs-prose internal consistency) and hunts unsupported method claims (e.g., correction procedures the code never applied). Use when user says \"manually review the values\", \"逐个核对论文数字\", \"walk through every number\", \"pre-submission number pass\", or before any high-stakes submission where a single wrong number is unacceptable."
 argument-hint: "[paper-directory]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent
