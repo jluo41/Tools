@@ -1,6 +1,6 @@
 ⚠️ Caveats & confounds checklist
 
-For every experiment entry, walk this list before saving.  Each YES
+For every probe entry, walk this list before saving.  Each YES
 becomes a bullet in the "Caveats and confounds" section of the log.
 
 THIS IS NOT OPTIONAL.  The differentiator vs MLflow / W&B is that this
@@ -32,7 +32,7 @@ comparison group:
 ─§ Statistical confidence ────────────────────────────────────────────
 
   ☐ Single seed?           → flag noise floor uncertainty.  Cite
-                              expected std from similar experiments.
+                              expected std from similar probes.
   ☐ N < 5 seeds?           → flag low statistical power; t-test will
                               be sensitive to outliers.
   ☐ Outlier seed present?  → diagnose what went wrong (training
@@ -111,4 +111,4 @@ would I have to admit?"  That answer goes in the caveats.
 If you genuinely can't think of one, write:
    ⚠️ No confounds identified — single-seed run on standard pipeline.
    (i.e. acknowledge the single-seed limitation as a default caveat
-    for any experiment that isn't multi-seed)
+    for any probe that isn't multi-seed)

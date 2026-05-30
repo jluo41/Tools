@@ -25,7 +25,7 @@ Output
 
   B-rebuttal-task/
   +-- README.md             <- Point → Task mapping table + status
-  +-- experiment-plan.md    <- Detailed plan: execution order, deps, feasibility
+  +-- probe-plan.md    <- Detailed plan: execution order, deps, feasibility
 
   Task implementations go in the project's tasks/ directory:
   tasks/
@@ -77,7 +77,7 @@ Step 3: Create B-rebuttal-task/README.md
   Include a note pointing to the project tasks/ directory:
     "Task implementations are in `{project}/tasks/`."
 
-Step 4: Create experiment-plan.md
+Step 4: Create probe-plan.md
 ------------------------------------
 
   The detailed plan for executing the tasks:

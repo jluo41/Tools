@@ -195,7 +195,7 @@ Composing with Other Workflows
 
 ```
 /idea-discovery       → IDEA_REPORT.md
-/run-experiment       → experiment results
+/run-probe       → experiment results
 /auto-review-loop     → AUTO_REVIEW.md
 /result-to-claim      → CLAIMS_FROM_RESULTS.md
 /narrative-report     → NARRATIVE_REPORT.md  ← design contract

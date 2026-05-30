@@ -10,7 +10,7 @@ voice.
 
 ONLY applies to SOFT gates inside G_application (G-plan / G-observe
 / G-claim / G-draft / G-review / etc.). HARSH gates upstream
-(C_task CODE_REVIEW, D_experiment review/integrity/claim) ignore
+(C_task CODE_REVIEW, D_probe review/integrity/claim) ignore
 persona — they enforce minimum bars regardless.
 
 

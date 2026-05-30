@@ -67,7 +67,7 @@ Step 1: Parse args after `/haipipe-data-source`. Extract:
           function  in { dashboard, load, cook, design-chef, design-kitchen, review, (none) }
           extras    e.g. `rawdata` for dashboard, file_path for review
         If no args -> dashboard.
-        If only ref-style probe -> read `ref/concepts.md`, summarize, stop.
+        If only ref-style experiment -> read `ref/concepts.md`, summarize, stop.
 
 Step 2: Read THIS skill's `ref/concepts.md` for stage-1 specifics.
 

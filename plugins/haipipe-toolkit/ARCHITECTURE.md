@@ -7,8 +7,8 @@ mechanics (C / D / E / G) live in MENTAL_MODEL.md; this doc is the
 world they sit inside.
 
 Two naming notes carried from MENTAL_MODEL.md:
-  - "D_probe" is the concept; `D_experiment` / `experiments/` /
-    `/haipipe-experiment` remain compatibility names. New folder name
+  - "D_probe" is the concept; `D_probe` / `probes/` /
+    `/haipipe-probe` remain compatibility names. New folder name
     for this layer is `probes/`.
   - "KB" (Knowledge Base) = probes/ + tasks/ + insights/ together —
     the project's single source of truth about facts.
@@ -25,7 +25,7 @@ heart — and everything else is its intake or its output:
 
         🧠 KB  ⇄[🔥 ignite]⇄  📖 Narrative
 
-    facts tell you the story  /  story tells you which experiment to run
+    facts tell you the story  /  story tells you which probe to run
 
 KB without Narrative = a pile of dead cards nobody sells.
 Narrative without KB  = an empty story with no evidence under it.
@@ -55,7 +55,7 @@ Everything is a pipeline (one-way) EXCEPT this. This is the engine.
   claim that *ignites* a story you hadn't planned. Data tells you the story.
 - **Narrative → KB** (deduction / down): the story hits a spot where the
   evidence isn't hard enough, so you *crack a whip* — fire a probe to fill it.
-  Story tells you which experiment to run.
+  Story tells you which probe to run.
 
 Either direction ALONE breaks:
   - KB→N only (run everything, then invent a story) = work for work's
@@ -78,7 +78,7 @@ All the layers (the full table)
                                                      individual            aidata                    UP ↑ receives intervention回流           case/aidata)
 1   Task (C)       ✋ hands/feet          verb (do)   one run.sh + results/ D + I material (obs.)     probe whips → spawns it;                  tasks/
                                                                                                      it → feeds insight
-2   Probe (D)      🔧 engine             noun+verb   one probe.yaml(1 whip) K + W material (claims)   references many tasks;                    probes/ (was experiments/)
+2   Probe (D)      🔧 engine             noun+verb   one probe.yaml(1 whip) K + W material (claims)   references many tasks;                    probes/ (was probes/)
                                                                                                      claim → feeds insight
 3   Insight (E)    🧠 memory             noun(settle) one D/I/K/W card      permanent KB cards +      reads task+probe only; writes cards only  insights/ (D/I/K/W)
                                                                            cross-refs
@@ -233,7 +233,7 @@ Where to go from here
 
 ```
 4-layer mechanics (C/D/E/G):     MENTAL_MODEL.md
-D_probe ↔ C_task boundary:       skills/D_experiment/MENTAL_MODEL.md
+D_probe ↔ C_task boundary:       skills/D_probe/MENTAL_MODEL.md
 E_insight card schema:           skills/E_insight/ref/insight-md-schema.md
 G_application session skeleton:  skills/G_application/haipipe-application/SKILL.md
 data / source layer:             skills/1_data/haipipe-data/SKILL.md

@@ -1,15 +1,15 @@
-Experiment Daily Log — Format
+Probe Daily Log — Format
 ==============================
 
-Location: `experiments/<NN>_<slug>/logs/<YYYY-MM-DD>.md`
-Owner:    Auto-appended by D_experiment skills + manually edited by user/Claude.
+Location: `probes/<NN>_<slug>/logs/<YYYY-MM-DD>.md`
+Owner:    Auto-appended by D_probe skills + manually edited by user/Claude.
 Status:   Append-only narrative; never overwrite past days.
 
 
 Why daily (not single log.md)
 ------------------------------
 
-A long-running experiment may span weeks. A single `log.md` becomes
+A long-running probe may span weeks. A single `log.md` becomes
 unwieldy; a daily file:
 
 - "What happened on E02 on 2026-05-24?" → open `logs/2026-05-24.md`
@@ -22,7 +22,7 @@ File structure
 --------------
 
 ```
-# Experiment <NN> — <slug> — <YYYY-MM-DD>
+# Probe <NN> — <slug> — <YYYY-MM-DD>
 
 ## HH:MM — <action> [<skill>]
 <one-paragraph description>
@@ -39,7 +39,7 @@ Action keywords (vocabulary for "action" field)
 ------------------------------------------------
 
 ```
-created           experiment yaml first written
+created           probe yaml first written
 linked            run(s) attached to an arm
 unlinked          run removed from an arm
 aggregated        result block computed
@@ -52,7 +52,7 @@ note              free-form thought (user or Claude)
 discussed         chat or pairing session yielded a decision
 linked-evidence   figure/table from a display task attached
 status-change     status field went from A → B (e.g., pending → confirmed)
-postmortem        experiment closed (refuted / abandoned); lessons noted
+postmortem        probe closed (refuted / abandoned); lessons noted
 ```
 
 
@@ -60,7 +60,7 @@ Examples
 --------
 
 ```markdown
-# Experiment 02 — lhm_vs_baseline — 2026-05-24
+# Probe 02 — lhm_vs_baseline — 2026-05-24
 
 ## 14:30 — created [design new]
 Hypothesis: LHM-A test-id MAE lower than baseline by ≥ 0.5 mg/dL.
@@ -85,13 +85,13 @@ Need to re-aggregate excluding seed7. Will do tomorrow.
 ```
 
 ```markdown
-# Experiment 02 — lhm_vs_baseline — 2026-05-25
+# Probe 02 — lhm_vs_baseline — 2026-05-25
 
 ## 09:00 — re-aggregated [result aggregate --exclude-seeds 7]
 Without seed7: Δ=-0.42, p=0.052 (marginal). status downgraded to
 confirmed-pending-validation.
 
-## 09:30 — reviewed [review experiment]
+## 09:30 — reviewed [review probe]
 Structural: 0 errors, 2 warnings (scale confound not in caveats;
 outlier-excluded analysis now present).
 Action: add caveat for +20% params.
@@ -120,14 +120,14 @@ created            — design new (auto)
 linked / unlinked  — design link / unlink (auto)
 aggregated / re-aggregated — result aggregate (auto)
 claim-written      — result claim (auto)
-reviewed           — review experiment (auto)
+reviewed           — review probe (auto)
 verdict            — review claim (auto, via Codex MCP)
 proposed           — explore propose (when invoked, auto)
 linked-evidence    — design link-evidence (auto)
 note               — user / Claude (manual)
 discussed          — user / Claude (manual)
 status-change      — any skill that changes status: field
-postmortem         — user (manual, when closing experiment)
+postmortem         — user (manual, when closing probe)
 ```
 
 
@@ -139,12 +139,12 @@ Each entry is appended to today's file via:
 ```bash
 DATE=$(date +%F)
 HHMM=$(date +%H:%M)
-LOG="experiments/<NN>_<slug>/logs/${DATE}.md"
+LOG="probes/<NN>_<slug>/logs/${DATE}.md"
 
 # Init file if missing
 if [ ! -f "$LOG" ]; then
   mkdir -p "$(dirname "$LOG")"
-  echo "# Experiment <NN> — <slug> — $DATE" > "$LOG"
+  echo "# Probe <NN> — <slug> — $DATE" > "$LOG"
   echo "" >> "$LOG"
 fi
 
@@ -171,14 +171,14 @@ Cross-day discovery
 -------------------
 
 ```bash
-# All days for this experiment, chronological:
-ls experiments/02_lhm_vs_baseline/logs/
+# All days for this probe, chronological:
+ls probes/02_lhm_vs_baseline/logs/
 
-# Today's log across all experiments:
-find experiments -path "*/logs/$(date +%F).md"
+# Today's log across all probes:
+find probes -path "*/logs/$(date +%F).md"
 
-# Search all experiment logs for a keyword:
-grep -rn "outlier" experiments/*/logs/
+# Search all probe logs for a keyword:
+grep -rn "outlier" probes/*/logs/
 ```
 
 
@@ -190,8 +190,8 @@ B_project/runlogs/<DATE>-runlog.md     (DELETED 2026-05-24)
   was: per-task daily index + LLM narrative of runs
   why deleted: "today's runs" wasn't a real research question
 
-D_experiment/<ID>/logs/<DATE>.md       (THIS file)
-  is:  per-experiment daily narrative of design decisions
-  why kept: experiments evolve over days; daily slicing matches research
+D_probe/<ID>/logs/<DATE>.md       (THIS file)
+  is:  per-probe daily narrative of design decisions
+  why kept: probes evolve over days; daily slicing matches research
             cadence ("what did we decide about E02 today")
 ```

@@ -329,7 +329,7 @@ After `/auto-paper-improvement-loop` finishes, **rerun** `/paper-claim-audit` be
 
 Use the same detectors as Phase 4.7:
 - numeric-claim regex over `paper/main.tex` and `paper/sections/*.tex`
-- raw-evidence file search in `results/`, `outputs/`, `experiments/`, and `figures/` for `.json`, `.jsonl`, `.csv`, `.tsv`, `.yaml`, or `.yml`
+- raw-evidence file search in `results/`, `outputs/`, `probes/`, and `figures/` for `.json`, `.jsonl`, `.csv`, `.tsv`, `.yaml`, or `.yml`
 
 This phase is **mandatory** if both detectors are positive. It blocks the final report.
 If numeric claims exist but no raw result files are found, stop and warn the user before declaring the paper complete.
@@ -356,7 +356,7 @@ fi
 
 ### Phase 5.8: Citation Audit (submission gate)
 
-After the final paper-claim-audit passes, run `/citation-audit` to verify every `\cite{...}` along three axes: existence, metadata correctness, and context appropriateness. This is the fourth and final layer of the evidence-and-claim assurance stack (`experiment-audit` → `result-to-claim` → `paper-claim-audit` → `citation-audit`).
+After the final paper-claim-audit passes, run `/citation-audit` to verify every `\cite{...}` along three axes: existence, metadata correctness, and context appropriateness. This is the fourth and final layer of the evidence-and-claim assurance stack (`probe-audit` → `result-to-claim` → `paper-claim-audit` → `citation-audit`).
 
 ```
 if paper/references.bib (or paper.bib) exists and contains entries cited from sec/*.tex:
@@ -586,7 +586,7 @@ or directly if `assurance=draft`)
 ```
 /idea-discovery "direction"         ← Workflow 1: find ideas
 implement                           ← write code
-/run-experiment                     ← deploy experiments
+/run-probe                     ← deploy experiments
 /auto-review-loop "paper topic"     ← Workflow 2: iterate research
 /haipipe-paper-conference "NARRATIVE_REPORT.md"  ← Workflow 3: you are here
                                          submit! 🎉

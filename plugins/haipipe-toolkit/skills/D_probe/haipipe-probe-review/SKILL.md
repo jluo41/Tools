@@ -1,43 +1,43 @@
 ---
-name: haipipe-experiment-review
-description: "QA specialist of haipipe-experiment. Three complementary checks. (1) STRUCTURAL: audits run quality (per-run sanity) and experiment quality (statistical claim integrity) via checklists, produces ✅/⚠️/❌ + actionable issues. (2) INTEGRITY: Codex MCP fraud-pattern audit (ground-truth provenance, metric-definition consistency, phantom results, scope-language mismatch, individual/split leakage), writes INTEGRITY_AUDIT.md. (3) SEMANTIC: Codex MCP judges whether evidence supports the intended claim (yes/partial/no + confidence), writes CLAIMS_FROM_RESULTS.md. The honest-science gate before a claim becomes a paper-able statement. Trigger: review, audit, qa, integrity, fraud check, fake ground truth, phantom results, scope check, claim verdict, supports?, /haipipe-experiment-review."
-argument-hint: "[run|experiment|claim|project] [target]"
+name: haipipe-probe-review
+description: "QA specialist of haipipe-probe. Three complementary checks. (1) STRUCTURAL: audits run quality (per-run sanity) and probe quality (statistical claim integrity) via checklists, produces ✅/⚠️/❌ + actionable issues. (2) INTEGRITY: Codex MCP fraud-pattern audit (ground-truth provenance, metric-definition consistency, phantom results, scope-language mismatch, individual/split leakage), writes INTEGRITY_AUDIT.md. (3) SEMANTIC: Codex MCP judges whether evidence supports the intended claim (yes/partial/no + confidence), writes CLAIMS_FROM_RESULTS.md. The honest-science gate before a claim becomes a paper-able statement. Trigger: review, audit, qa, integrity, fraud check, fake ground truth, phantom results, scope check, claim verdict, supports?, /haipipe-probe-review."
+argument-hint: "[run|probe|claim|project] [target]"
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill, mcp__codex__codex, mcp__codex__codex-reply
 ---
 
-Skill: haipipe-experiment-review
+Skill: haipipe-probe-review
 =================================
 
-The **scientific-honesty gate**. Before a claim leaves an experiment
+The **scientific-honesty gate**. Before a claim leaves an probe
 yaml and enters a paper / dashboard / decision, this skill audits:
 
   - Per-run quality (was the run trustworthy?)
-  - Per-experiment quality (is the comparison apples-to-apples?)
+  - Per-probe quality (is the comparison apples-to-apples?)
 
 
 Commands
 --------
 
 ```
-/haipipe-experiment review run <run-path>
+/haipipe-probe review run <run-path>
   STRUCTURAL: audit ONE run against the per-run checklist.
 
-/haipipe-experiment review experiment <ID>
-  STRUCTURAL: audit ONE experiment against the per-experiment checklist.
+/haipipe-probe review probe <ID>
+  STRUCTURAL: audit ONE probe against the per-probe checklist.
 
-/haipipe-experiment review integrity <ID>
+/haipipe-probe review integrity <ID>
   INTEGRITY: Codex MCP reads eval scripts / configs / results / claims
   and judges 5 fraud patterns (A. GT provenance / B. metric consistency /
   C. phantom results / D. scope mismatch / E. individual leakage).
   Writes INTEGRITY_AUDIT.md sidecar.
 
-/haipipe-experiment review claim <ID>
+/haipipe-probe review claim <ID>
   SEMANTIC: Codex judges whether evidence supports the claim.
   Auto-runs integrity first if no recent audit. Writes CLAIMS_FROM_RESULTS.md
   for downstream consumption (e.g. /narrative-report).
 
-/haipipe-experiment review project [project-path]
-  STRUCTURAL: audit ALL experiments + all referenced runs in a project.
+/haipipe-probe review project [project-path]
+  STRUCTURAL: audit ALL probes + all referenced runs in a project.
   Output ranked by severity.
 ```
 
@@ -61,7 +61,7 @@ Per-run checklist
 Each unchecked item → issue with severity (red/yellow/blue) + suggested fix.
 
 
-Per-experiment checklist
+Per-probe checklist
 -------------------------
 
 ```
@@ -80,7 +80,7 @@ Per-experiment checklist
 ```
 
 
-Caveats auto-detection (run before approving experiment)
+Caveats auto-detection (run before approving probe)
 ---------------------------------------------------------
 
 ```
@@ -94,7 +94,7 @@ Caveats auto-detection (run before approving experiment)
 ⚠️ Filter / split definition changed?       → flag dataset confound
 ```
 
-Each YES → must appear in the experiment's `caveats:` list, OR the
+Each YES → must appear in the probe's `caveats:` list, OR the
 review fails with a "missing caveat" issue.
 
 
@@ -109,7 +109,7 @@ claim verdict  "do the honest results support the intended claim?"
 ```
 
 Integrity is the earlier gate — fraud invalidates any downstream verdict.
-Adapted from research-toolkit's `experiment-audit`, specialized for our
+Adapted from research-toolkit's `probe-audit`, specialized for our
 CGM / ML-research domain.
 
 ### Role separation (CRITICAL)
@@ -121,7 +121,7 @@ Reviewer (Codex via MCP)       →  reads files directly
                                    judges each category independently
 ```
 
-Prevents the executor — who built the experiment — from rationalizing
+Prevents the executor — who built the probe — from rationalizing
 its own work. Reviewer sees raw files; executor sees only paths.
 
 
@@ -135,7 +135,7 @@ its own work. Reviewer sees raw files; executor sees only paths.
 | D   | Scope-language mismatch            | "comprehensive across conditions" with N=1 seed → FAIL                               |
 | E   | Individual/split leakage              | same patient_id appears in train AND test split (cross-individual claim broken)         |
 
-A / C / D adapted from `experiment-audit`; B / E added for CGM-domain
+A / C / D adapted from `probe-audit`; B / E added for CGM-domain
 realities (per [[project_b92_eval_position_mismatch]] and per-individual
 splitting requirements).
 
@@ -148,7 +148,7 @@ mcp__codex__codex:
   sandbox: read-only
   cwd: <project root>
   prompt: |
-    EXPERIMENT INTEGRITY AUDIT
+    PROBE INTEGRITY AUDIT
 
     Read the files below and check 5 fraud patterns.
 
@@ -157,7 +157,7 @@ mcp__codex__codex:
       configs:        [configs/<NAME>.yaml for every linked run]
       results:        [results/<NAME>/metrics.json for every linked run]
       runtime:        [results/<NAME>/runtime.yaml for every linked run]
-      experiment:     [experiments/<NN>_<slug>/experiment.yaml]
+      probe:     [probes/<NN>_<slug>/probe.yaml]
       claim refs:     [CLAIMS_FROM_RESULTS.md, paper/*.tex if present]
 
     Categories:
@@ -179,10 +179,10 @@ mcp__codex__codex:
 
 ### Output: INTEGRITY_AUDIT.md
 
-Sidecar file in the experiment folder:
+Sidecar file in the probe folder:
 
 ```
-experiments/<NN>_<slug>/INTEGRITY_AUDIT.md
+probes/<NN>_<slug>/INTEGRITY_AUDIT.md
 ```
 
 Schema:
@@ -229,7 +229,7 @@ same session before claim verdict.
 
 ```
 caveats     experimenter-declared confounds (param-count diff, etc.)
-            → live in experiment.yaml caveats: list
+            → live in probe.yaml caveats: list
             → ACCEPTABLE if declared and qualifying the claim
 
 integrity   reviewer-detected fraud patterns (fake GT, leakage, etc.)
@@ -249,7 +249,7 @@ are complementary — run both before any submission claim.
 ### Why Codex, not Claude
 
 This skill collects evidence and routes; Codex evaluates. Claude
-implemented the experiments and naturally rationalizes its own work;
+implemented the probes and naturally rationalizes its own work;
 an out-of-family reviewer doesn't. This is the same reviewer-independence
 principle the auto-review-loop uses.
 
@@ -263,8 +263,8 @@ mcp__codex__codex:
 
     Judge whether experimental results support the intended claim.
 
-    Intended claim: [the claim these experiments test]
-    Experiments run: [list with method, dataset, metrics]
+    Intended claim: [the claim these probes test]
+    Probes run: [list with method, dataset, metrics]
     Results: [paste key numbers, comparison deltas, significance]
     Baselines: [baseline numbers and sources — reproduced or from paper]
     Known caveats: [confounding factors, limited datasets, missing comparisons]
@@ -275,7 +275,7 @@ mcp__codex__codex:
     3. what_results_dont_support: where the data falls short of the claim
     4. missing_evidence: specific evidence gaps
     5. suggested_claim_revision: strengthen / weaken / reframe
-    6. next_experiments_needed: specific experiments to fill gaps
+    6. next_probes_needed: specific probes to fill gaps
     7. confidence: high | medium | low
 
     Be honest. Do not inflate claims beyond what the data supports.
@@ -284,7 +284,7 @@ mcp__codex__codex:
 
 ### Verdict integration with structural review
 
-If `review experiment <ID>` (structural) was run first, its issues feed
+If `review probe <ID>` (structural) was run first, its issues feed
 the Codex prompt as `Known caveats:`. If the structural review found
 `error`-severity issues, the semantic verdict's confidence is
 auto-downgraded to `low` regardless of Codex's own confidence.
@@ -293,9 +293,9 @@ auto-downgraded to `low` regardless of Codex's own confidence.
 
 ```
 yes      → claim supported. If ablations incomplete → suggest
-           /haipipe-experiment explore propose <ID>. Else ready for paper.
+           /haipipe-probe explore propose <ID>. Else ready for paper.
 partial  → update claim to reflect what IS supported. Suggest supplementary
-           experiments (via /haipipe-experiment explore propose). Multiple
+           probes (via /haipipe-probe explore propose). Multiple
            rounds of partial on the same claim → consider narrowing scope.
 no       → record postmortem in findings.md. Decide whether to pivot
            (next IDEA_REPORT entry) or try an alternative approach.
@@ -303,7 +303,7 @@ no       → record postmortem in findings.md. Decide whether to pivot
 
 ### Output: CLAIMS_FROM_RESULTS.md
 
-Written at project root (or wherever the experiment lives). Schema:
+Written at project root (or wherever the probe lives). Schema:
 
 ```markdown
 # CLAIMS_FROM_RESULTS
@@ -317,7 +317,7 @@ Written at project root (or wherever the experiment lives). Schema:
 - what_results_dont_support: ...
 - missing_evidence: ...
 - suggested_claim_revision: ...
-- next_experiments_needed: ...
+- next_probes_needed: ...
 - raw_evidence_files: [paths to results/*.json or metrics.json]
 - reviewed_by: codex-<reasoning-effort>, <timestamp>
 ```
@@ -330,7 +330,7 @@ Output format
 --------------
 
 ```
-═══ Experiment E02 review ═══
+═══ Probe E02 review ═══
 Status: ⚠️ 2 warnings, 0 errors
 
 ✅ Arms paired (N=3 each)
@@ -368,25 +368,25 @@ Severity levels
 Risk profile
 -------------
 
-- `review run|experiment|project` (structural): READ-ONLY. Produces a
+- `review run|probe|project` (structural): READ-ONLY. Produces a
   report (stdout or `--out <path>`).
 - `review integrity` (Codex fraud audit): WRITES `INTEGRITY_AUDIT.md`
-  in the experiment folder. Calls `mcp__codex__codex` (external LLM,
-  read-only sandbox). Does not modify experiment yaml or run artifacts.
+  in the probe folder. Calls `mcp__codex__codex` (external LLM,
+  read-only sandbox). Does not modify probe yaml or run artifacts.
 - `review claim` (semantic): WRITES `CLAIMS_FROM_RESULTS.md` at the
   project root. Calls `mcp__codex__codex` (external LLM). May auto-invoke
-  `review integrity` as a preceding step. Does not modify experiment
+  `review integrity` as a preceding step. Does not modify probe
   yaml or run artifacts.
 
 
 Disambiguation
 ---------------
 
-  - No verb (just <ID>) → default to `experiment` (structural) review.
+  - No verb (just <ID>) → default to `probe` (structural) review.
   - "integrity" / "audit" / "fraud" / "honesty" + ID → integrity audit via Codex.
   - "claim" / "verdict" / "supports?" + ID → semantic verdict via Codex
     (auto-runs integrity first if no recent audit).
-  - "claim" or "integrity" alone (no ID) → ASK which experiment.
+  - "claim" or "integrity" alone (no ID) → ASK which probe.
   - No target at all → default to `project` review on cwd.
   - run-path that isn't a run → bail with helpful message.
 
@@ -402,5 +402,5 @@ summary:   "E02 review: 0 errors, 2 warnings, recommended actions: 3"
 artifacts: [report stdout / --out path / INTEGRITY_AUDIT.md / CLAIMS_FROM_RESULTS.md]
 next:      apply suggested actions then /result aggregate <ID> again
           OR if integrity WARN/FAIL: fix flagged categories then /review integrity <ID>
-          OR if claim verdict was partial/no: /haipipe-experiment explore propose <ID>
+          OR if claim verdict was partial/no: /haipipe-probe explore propose <ID>
 ```

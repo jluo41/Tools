@@ -74,7 +74,7 @@ Do not force this layout mechanically. Use it as the default skeleton when the r
 Default state files inside `notes/` when the project does not already have equivalents:
 - `project_truth.md` for the current paper story, active manuscript, central claim, and stable constraints
 - `decision_log.md` for durable framing or scope decisions that future revisions must respect
-- `result_summary.md` for experiment-to-manuscript translation of supported findings, weak findings, and figure anchors
+- `result_summary.md` for probe-to-manuscript translation of supported findings, weak findings, and figure anchors
 - `paper_handoff.md` for the current writing-ready package: what is ready to draft, what still lacks evidence, and which figures or tables carry each point
 
 If the project already has an established structure, preserve it and map the workflow onto that structure instead of rebuilding everything.

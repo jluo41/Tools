@@ -1,16 +1,16 @@
-experiment.yaml — Schema
+probe.yaml — Schema
 =========================
 
 What this file is
 -----------------
 
-`experiment.yaml` is the **state of one research thread**, not a result
-artifact. It belongs to the research pipeline (D_experiment), which is
+`probe.yaml` is the **state of one research thread**, not a result
+artifact. It belongs to the research pipeline (D_probe), which is
 distinct from the execution pipeline (C_task, owner of tasks/runs):
 
 ```
 EXECUTION PIPELINE     task/run    →  did this run work? (metrics, runtime.yaml)
-RESEARCH PIPELINE      experiment  →  does the hypothesis hold? (this yaml)
+RESEARCH PIPELINE      probe  →  does the hypothesis hold? (this yaml)
 ```
 
 The yaml evolves over the lifetime of the thread:
@@ -21,19 +21,19 @@ The yaml evolves over the lifetime of the thread:
 It is **steering state**, not a metrics file. Numbers in `result:` are
 aggregated *references* to per-run metrics that live under tasks/.
 
-Location: `examples/<project>/experiments/<NN>_<slug>/experiment.yaml`
-Owner:    Written by `haipipe-experiment-design` (`new`/`link`),
-          extended by `haipipe-experiment-result` (`aggregate`/`claim`).
-          Audited by `haipipe-experiment-review`. Read by all.
+Location: `examples/<project>/probes/<NN>_<slug>/probe.yaml`
+Owner:    Written by `haipipe-probe-design` (`new`/`link`),
+          extended by `haipipe-probe-result` (`aggregate`/`claim`).
+          Audited by `haipipe-probe-review`. Read by all.
 
 Sibling files in the same folder:
-  experiment.yaml             this file (source of truth for the thread)
+  probe.yaml             this file (source of truth for the thread)
   review.md                   latest QA report (overwritten)
   CLAIMS_FROM_RESULTS.md      Codex verdict snapshot (overwritten)
   logs/<YYYY-MM-DD>.md        daily captain's-log narrative (append-only)
-  reports/ (optional)         other per-experiment reports
+  reports/ (optional)         other per-probe reports
 
-NO code, no notebooks, no plots in experiment folder. Those live in
+NO code, no notebooks, no plots in probe folder. Those live in
 tasks/ (execution pipeline) and are referenced via `evidence:` field.
 
 
@@ -46,10 +46,10 @@ ID convention
   (3-digit fallback at 100+, rare)
 ```
 
-Folder name: `experiments/<NN>_<slug>/` (e.g. `02_lhm_vs_baseline/`).
-File inside: `experiment.yaml` (canonical name; never `<NN>_<slug>.yaml`).
+Folder name: `probes/<NN>_<slug>/` (e.g. `02_lhm_vs_baseline/`).
+File inside: `probe.yaml` (canonical name; never `<NN>_<slug>.yaml`).
 
-Cross-reference style: `experiment 02` or `[02]` in prose; in yaml
+Cross-reference style: `probe 02` or `[02]` in prose; in yaml
 `references: [02, 04]`.
 
 

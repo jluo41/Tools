@@ -65,7 +65,7 @@ rules still hold:
   cap triggers the force-approve audit trail (gate file gets a
   **FORCED APPROVAL** banner; gates[] entry records original_outcome).
 
-- HARSH gates upstream (C_task CODE_REVIEW, D_experiment review)
+- HARSH gates upstream (C_task CODE_REVIEW, D_probe review)
   never auto-accept. They block until met. If a SOFT gate sits
   in front of a HARSH gate, the SOFT gate can auto-accept but the
   HARSH one will still block.

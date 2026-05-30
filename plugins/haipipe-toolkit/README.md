@@ -27,23 +27,23 @@ Numbered  0–6   ENGINEERING substrate — "how data becomes a model and ships"
 
 Lettered  A–G   RESEARCH lifecycle — "how to turn runs into trustworthy,
                 publishable science"
-                A_discover → B_project → C_task → D_experiment → E_insight
+                A_discover → B_project → C_task → D_probe → E_insight
                 → F_paper → G_application
-                Driven by /haipipe-discover, /haipipe-task, /haipipe-experiment,
+                Driven by /haipipe-discover, /haipipe-task, /haipipe-probe,
                 /haipipe-insight, /haipipe-application, and the F_paper commands.
                 ► See MENTAL_MODEL.md (the model) and USAGE.md (the recipes).
 ```
 
 The seam between the axes is `C_task`: a task's `run.sh` *executes* a stage of
 the numbered pipeline and emits `metrics.json`; the lettered layer wraps those
-runs with scientific bookkeeping (DIKW cards, experiment arms, claims).
+runs with scientific bookkeeping (DIKW cards, probe arms, claims).
 
 Glossary (one concept, three names you will see):
 
 ```
 D_probe   = the concept (a claim-directed probe)
-D_experiment = the folder name (skills/D_experiment/, experiments/)
-/haipipe-experiment = the command
+D_probe = the folder name (skills/D_probe/, probes/)
+/haipipe-probe = the command
 ```
 
 
@@ -137,7 +137,7 @@ skills/
 ```
 
 Note: the lettered research families (`A_discover/`, `B_project/`, `C_task/`,
-`D_experiment/`, `E_insight/`, `F_paper/`, `G_application/`) live alongside the
+`D_probe/`, `E_insight/`, `F_paper/`, `G_application/`) live alongside the
 numbered ones under `skills/`. Folder prefix is organization only — a skill is
 identified solely by its `name:` frontmatter.
 

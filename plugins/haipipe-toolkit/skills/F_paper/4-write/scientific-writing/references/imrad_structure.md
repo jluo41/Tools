@@ -531,7 +531,7 @@ crisis in higher education.
 | **Nature/Science** | 2,000-4,500 words | Modified IMRAD | Supplement | Broad significance |
 | **Medical** | 2,700-3,500 words | Strict IMRAD | Main text | Clinical outcomes |
 | **Field journals** | 3,000-6,000 words | Standard IMRAD | Main text | Technical depth |
-| **ML conferences** | 8-9 pages (~6,000 words) | Intro-Method-Experiments-Conclusion | Main text (concise) | Novel contribution |
+| **ML conferences** | 8-9 pages (~6,000 words) | Intro-Method-Probes-Conclusion | Main text (concise) | Novel contribution |
 
 ### ML Conference Structure (NeurIPS/ICML/ICLR)
 

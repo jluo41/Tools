@@ -1,6 +1,6 @@
 ---
 name: haipipe-application-plan
-description: "Planning specialist of the haipipe-application family. Given a research question, writes a structured plan-vN.yaml describing which D / I / K / W tasks are needed to answer it AND which experiments (existing or new) must feed them. Used by /haipipe-application-ask at Phase 1. NO code, plan is markdown-yaml. Trigger: plan, /haipipe-application-plan, design synthesis, what tasks to run, plan-vN."
+description: "Planning specialist of the haipipe-application family. Given a research question, writes a structured plan-vN.yaml describing which D / I / K / W tasks are needed to answer it AND which probes (existing or new) must feed them. Used by /haipipe-application-ask at Phase 1. NO code, plan is markdown-yaml. Trigger: plan, /haipipe-application-plan, design synthesis, what tasks to run, plan-vN."
 argument-hint: "[question] [--project <path>] [--revise <N>] [--feedback <text>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 ---
@@ -10,7 +10,7 @@ Skill: haipipe-application-plan
 
 Takes one research question, produces a **plan-vN.yaml** that lays out
 the synthesis path: which D / I / K / W tasks would answer it, and
-which experiments must already be confirmed (or need to be triggered).
+which probes must already be confirmed (or need to be triggered).
 
 Used by `/haipipe-application-ask` at Phase 1. Can also run standalone.
 
@@ -20,7 +20,7 @@ Input
 
 - The question (text)
 - Current insight base state (`insights/INDEX.md` + entries)
-- Current experiment state (`experiments/<NN>_<slug>/experiment.yaml`)
+- Current probe state (`probes/<NN>_<slug>/probe.yaml`)
 
 
 Output
@@ -47,17 +47,17 @@ Step 1: Parse args
 Step 2: Resolve project + read state
   - insight base summary (via /haipipe-insight-explore internally OR
     inline grep of insights/)
-  - experiments confirmed and ready
+  - probes confirmed and ready
 
 Step 3: Decompose question into phases
-  - What D tasks (observations from which experiments)?
+  - What D tasks (observations from which probes)?
   - What I tasks (which patterns to extract)?
   - What K tasks (which beliefs to elevate)?
   - What W tasks (which recommendations to derive)?
 
-Step 4: Identify experiment gaps
-  - Does any planned D task require an experiment not yet confirmed?
-  - For each such gap: propose "trigger experiment" (with proposed
+Step 4: Identify probe gaps
+  - Does any planned D task require an probe not yet confirmed?
+  - For each such gap: propose "trigger probe" (with proposed
     arms / claim_target). User decides via gate.
 
 Step 5: Write plan-v{N}.yaml (atomic)
@@ -68,7 +68,7 @@ Plan schema (plan-v{N}.yaml)
 ------------------------------
 
 DIKW is a card-labeling scheme, NOT a phase order. The plan output is
-two related batches (tasks + experiments) plus an `insight_yield` map
+two related batches (tasks + probes) plus an `insight_yield` map
 that says which DIKW cards each work item closes. Sessions do NOT
 execute phase=D → phase=I → phase=K → phase=W in sequence.
 
@@ -83,7 +83,7 @@ existing_relevant:
   knowledge:      [K03]
   information:    [I02, I05]
   data:           [D01, D03]
-  experiments:    [02_lhm_vs_baseline (confirmed),
+  probes:    [02_lhm_vs_baseline (confirmed),
                    04_film_test_id (confirmed)]
 
 # Batch A — C_task work (produces D + I material)
@@ -101,10 +101,10 @@ task_batch:
     refs:      [D04]
     notes:     "FiLM vs baseline test-od overlay plot"
 
-# Batch B — D_experiment work (produces K + W material)
+# Batch B — D_probe work (produces K + W material)
 experiment_batch:
   - id:        E12
-    skill:     /haipipe-experiment design
+    skill:     /haipipe-probe design
     new:       true
     arms:      [film_pm, baseline_pm]
     claim_target: "FiLM + param-matched yields X improvement on test-od"
@@ -134,7 +134,7 @@ gates:
   - id:         G-observe
     threshold:  "every D/I in insight_yield has artifact under tasks/.../results/"
   - id:         G-claim
-    threshold:  "every K/W in insight_yield has experiment.yaml.result.status == confirmed"
+    threshold:  "every K/W in insight_yield has probe.yaml.result.status == confirmed"
   - id:         G-report
     threshold:  "report.md cites the K/W in insight_yield; truly answers question"
 
@@ -151,11 +151,11 @@ Key invariants:
 - yields is the contract — each id in yields must appear as a key
   in insight_yield.
 - insight_yield key letter (D/I/K/W) MUST equal `layer` field.
-- K/W cards MUST have at least one experiment id in `sources`.
+- K/W cards MUST have at least one probe id in `sources`.
 - D/I cards MUST have at least one task id in `sources`.
 - Strategic W cards (sources = multiple K) are allowed; mark with
   `type: strategic` on the entry.
-- dag never has K depending only on D (must pass through experiment).
+- dag never has K depending only on D (must pass through probe).
 ```
 
 
@@ -165,7 +165,7 @@ Definition of done
 - [ ] `applications/<kind>/<NN_slug>/plans/plan-v{N}.yaml` written, parses
 - [ ] `task_batch` + `experiment_batch` + `insight_yield` all populated
 - [ ] Every id in any `yields:` list appears as key in `insight_yield`
-- [ ] No K/W entry sources a task (must source an experiment)
+- [ ] No K/W entry sources a task (must source an probe)
 - [ ] dag respects layer-letter promotion rule
 - [ ] On --revise: revise_history appended; feedback verbatim preserved
 
@@ -174,7 +174,7 @@ Risk profile
 -------------
 
 Writes one file under `insights/sessions/plans/`. Does NOT scaffold
-tasks or experiments — only proposes them. Actual scaffolding happens
+tasks or probes — only proposes them. Actual scaffolding happens
 in `/haipipe-application-ask` Phase 2 after gate approval.
 
 

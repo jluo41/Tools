@@ -1,6 +1,6 @@
 ---
 name: haipipe-application-ask
-description: "Research-question driver of the haipipe-application family. Takes one question, scans the project's KB, plans batches of C_task work (for D+I) and D_experiment work (for K+W), dispatches them, files DIKW cards via E_insight, writes a session report. The only kind in G_application authorized to trigger /haipipe-experiment + /haipipe-task from outside. Use when the user asks a research question (no specific external artifact wanted). Trigger: ask, research question, /haipipe-application ask, what do we know about X, does X hold."
+description: "Research-question driver of the haipipe-application family. Takes one question, scans the project's KB, plans batches of C_task work (for D+I) and D_probe work (for K+W), dispatches them, files DIKW cards via E_insight, writes a session report. The only kind in G_application authorized to trigger /haipipe-probe + /haipipe-task from outside. Use when the user asks a research question (no specific external artifact wanted). Trigger: ask, research question, /haipipe-application ask, what do we know about X, does X hold."
 argument-hint: "[question] [--project <path>] [--auto] [--unattended[=Ns]] [--persona strict|balanced|creative|lenient]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Task
 ---
@@ -12,7 +12,7 @@ The **question driver**. One user intent → one closed case file under
 `applications/ask/<NN_slug>/`. Walks the 4-phase ask shape end-to-end,
 calling the shared session machinery (plan / gate / context) at each
 boundary. Only kind in G_application authorized to trigger
-`/haipipe-experiment` and `/haipipe-task` from outside.
+`/haipipe-probe` and `/haipipe-task` from outside.
 
 
 Phase shape — 4 phases × 2 steps
@@ -45,10 +45,10 @@ Phase shape — 4 phases × 2 steps
    │             step=task    for each E in plan.experiment_batch:│
    │                            Skill("haipipe-application-context"│
    │                                   args="claim E")            │
-   │                            Skill("haipipe-experiment design")│
-   │                            Skill("haipipe-experiment bridge")│
-   │                              → HARSH gates inside D_experiment│
-   │                            Skill("haipipe-experiment result")│
+   │                            Skill("haipipe-probe design")│
+   │                            Skill("haipipe-probe bridge")│
+   │                              → HARSH gates inside D_probe│
+   │                            Skill("haipipe-probe result")│
    │             step=gate    G-claim SOFT on G-side              │
    │                          (skip Phase 3 entirely if            │
    │                           experiment_batch is empty)          │
@@ -98,8 +98,8 @@ B. SANITY-CHECK question vs data (THIS WAS MISSING — bug #11)
      before planning task_batch. Sparse-sample subjects → ASK user
      whether to (a) pick a denser individual or (b) reframe to cohort
      scope.
-   - If question is cross-experiment, verify experiments/ has at
-     least one confirmed experiment with matching tags.
+   - If question is cross-probe, verify probes/ has at
+     least one confirmed probe with matching tags.
    - If a required data source is missing entirely, gate the plan
      to BLOCKED and surface to user.
 
@@ -157,7 +157,7 @@ Phase 3 — claim (detail)
 =========================
 
 Dispatches experiment_batch. Skip entirely if experiment_batch is
-empty. K and W cards CANNOT be filed unless an experiment validates
+empty. K and W cards CANNOT be filed unless an probe validates
 them — this is the strict rule from MENTAL_MODEL.md.
 
 ```
@@ -165,25 +165,25 @@ For each E in plan.experiment_batch:
   1. SESSION_STATE: current_step="task", current_task=E.id
   2. Skill("haipipe-application-context", args="claim <E.id>")
      → checks E.needs (D/I cards required as input) all resolved
-  3. Skill("haipipe-experiment design", args="new <E.id> --auto")
-  4. Skill("haipipe-experiment bridge", args="<E.id>")
+  3. Skill("haipipe-probe design", args="new <E.id> --auto")
+  4. Skill("haipipe-probe bridge", args="<E.id>")
      → scaffolds runs/ + invokes Run Script Reviewer
        (HARSH gate inside C_task; bridge handles its own gates)
      → deploys runs (GPU work; may take hours)
-  5. WAIT for results to land (poll experiment.yaml.result.status)
-  6. Skill("haipipe-experiment result aggregate", args="<E.id>")
+  5. WAIT for results to land (poll probe.yaml.result.status)
+  6. Skill("haipipe-probe result aggregate", args="<E.id>")
      → fills result block; status: pending → confirmed
-  7. Skill("haipipe-experiment review", args="<E.id>")
+  7. Skill("haipipe-probe review", args="<E.id>")
      → HARSH structural + Codex verdict
   8. Update experiment_calls[] in SESSION_STATE.json
 
 Pre-gate artifact check (G-claim):
   For every K/W in plan.insight_yield: verify the sourcing
-  experiment's result.status == "confirmed". If any "pending" or
+  probe's result.status == "confirmed". If any "pending" or
   "refuted", override gate to revise.
 
 Skill("haipipe-application-gate", args="G-claim")
-  → SOFT-on-G-side (HARSH already happened upstream in D_experiment)
+  → SOFT-on-G-side (HARSH already happened upstream in D_probe)
   → revise → back to Phase 1
   → approve → Phase 4
 ```
@@ -198,7 +198,7 @@ A. FILE DIKW cards (one card per entry in plan.insight_yield)
      Skill("haipipe-insight-<layer>", args="--scope <C.sources>")
        → writes insights/<L>_*/C##_<slug>.md
    D + I cards source from C_task results/.
-   K + W cards source from D_experiment experiment.yaml.
+   K + W cards source from D_probe probe.yaml.
 
 B. REBUILD insights/INDEX.md
    Aggregate all cards (incl. existing ones), regenerate top INDEX
@@ -232,7 +232,7 @@ shape                            phases run
 ─────────────────────────────────────────────
 descriptive (D/I only)           1 → 2 → 4   (skip 3, no K/W)
 KB lookup (no new evidence)      1 → 4       (skip 2 + 3; report from KB)
-experiment-only (K/W only)       1 → 3 → 4   (skip 2, no new D/I)
+probe-only (K/W only)       1 → 3 → 4   (skip 2, no new D/I)
 full (D + I + K + W)             1 → 2 → 3 → 4
 ```
 
@@ -290,7 +290,7 @@ MAX_REVISIONS    default 3      Cap on revise→plan cycles. Hitting cap
                                 triggers FORCED APPROVAL with audit banner
                                 (see ../haipipe-application/ref/gate-persona.md).
 
-MAX_EXPERIMENTS  default 3      Cap on new experiments triggered per session.
+MAX_EXPERIMENTS  default 3      Cap on new probes triggered per session.
                                 Exceeding asks user to confirm continuation.
 
 Flags:
@@ -322,7 +322,7 @@ On resume, read SESSION_STATE.json, then:
 1. State-vs-disk consistency check (mandatory before re-entering loop):
    For each `done`/`reused` entry in completed_tasks.*, verify the
    yield artifacts exist on disk (D/I → tasks/.../results/; K/W →
-   experiment.yaml.result.status=="confirmed" + corresponding
+   probe.yaml.result.status=="confirmed" + corresponding
    insight card filed). Missing → demote entry to status="failed",
    name re-enters pending_tasks. Log demotions to
    `applications/ask/<NN>/tmp/recovery-<ISO>.log`.
@@ -338,15 +338,15 @@ Boundary
 =========
 
 ```
-haipipe-application-ask     bridges INSIGHT base ↔ EXPERIMENT base
-                            via /haipipe-experiment + /haipipe-task
+haipipe-application-ask     bridges INSIGHT base ↔ PROBE base
+                            via /haipipe-probe + /haipipe-task
 
-haipipe-experiment-loop     iterates ONE experiment thread
-haipipe-experiment-bridge   scaffolds tasks for ONE experiment
+haipipe-probe-loop     iterates ONE probe thread
+haipipe-probe-bridge   scaffolds tasks for ONE probe
 
 Session NEVER writes tasks/ directly — always via /haipipe-task or
-/haipipe-experiment-bridge. The one-way dependency
-(experiments → tasks; ask → both) stays clean.
+/haipipe-probe-bridge. The one-way dependency
+(probes → tasks; ask → both) stays clean.
 ```
 
 
@@ -356,10 +356,10 @@ Risk profile
 WRITES:
 - insights/ (heavy — files D/I/K/W cards, rebuilds INDEX)
 - applications/ask/<NN>/ (plans, gates, SESSION_STATE.json, report.md)
-- via dispatch: tasks/, experiments/ (through C_task / D_experiment)
+- via dispatch: tasks/, probes/ (through C_task / D_probe)
 
 CALLS:
-- External LLM (Codex MCP) indirectly via experiment-bridge's
+- External LLM (Codex MCP) indirectly via probe-bridge's
   Run Script Reviewer + review claim. Budget via MAX_EXPERIMENTS.
 
 GATES:
@@ -367,7 +367,7 @@ GATES:
   G-report) — persona + attendance driven.
 - HARSH gates downstream:
   - C_task: CODE_REVIEW.md (bridge invokes Run Script Reviewer)
-  - D_experiment: review structural + integrity + claim
+  - D_probe: review structural + integrity + claim
   - Phase 4: G-report (this session's HARSH gate)
 
 
@@ -384,7 +384,7 @@ artifacts: [applications/ask/<NN_slug>/{SESSION_STATE.json, plans/, gates/,
             insights/I_information/I*.md (new),
             insights/K_knowledge/K*.md (new / updated),
             insights/W_wisdom/W*.md (if any),
-            experiments/<NN>_<slug>/ (if new experiments scaffolded),
+            probes/<NN>_<slug>/ (if new probes scaffolded),
             tasks/<G##>/<##>/results/<RUN>/ (per dispatched task)]
 next:      "review report.md + KB updates; if external artifact needed,
             /haipipe-application {message|ui|report}"

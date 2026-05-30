@@ -1,6 +1,6 @@
 ---
 name: haipipe-application-context
-description: "Per-phase context loader of the haipipe-application family. Given a phase (D/I/K/W) and a task name within the active plan, gathers the relevant inputs (experiment.yaml, prior O/P/K/W entries, plan section) and emits a structured context envelope for the phase skill to consume. Decides: READY (phase skill can execute), BLOCKED (missing prerequisite), or SKIP (already done). NO code. Used internally by /haipipe-application-ask. Trigger: load context, ready-check, /haipipe-application-context."
+description: "Per-phase context loader of the haipipe-application family. Given a phase (D/I/K/W) and a task name within the active plan, gathers the relevant inputs (probe.yaml, prior O/P/K/W entries, plan section) and emits a structured context envelope for the phase skill to consume. Decides: READY (phase skill can execute), BLOCKED (missing prerequisite), or SKIP (already done). NO code. Used internally by /haipipe-application-ask. Trigger: load context, ready-check, /haipipe-application-context."
 argument-hint: "[phase: D|I|K|W] [task_name] [--project <path>]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 ---
@@ -9,12 +9,12 @@ Skill: haipipe-application-context
 ================================
 
 Pre-flight context loader for a phase task. Reads the active plan, the
-relevant prior insights, and the relevant experiment artifacts. Decides
+relevant prior insights, and the relevant probe artifacts. Decides
 whether the phase task can proceed.
 
 ```
 READY     → phase skill (e.g. /haipipe-insight-data) can run
-BLOCKED   → prerequisite missing (e.g. source experiment not confirmed);
+BLOCKED   → prerequisite missing (e.g. source probe not confirmed);
             emit reason and STOP
 SKIP      → this task already done (entry exists); orchestrator skips
 ```
@@ -32,8 +32,8 @@ Files read:
   insights/sessions/plans/plan-v{N}-<slug>.yaml        active plan
   insights/INDEX.md                                    insight base summary
   insights/{D,I,K,W}_*/                                prior entries
-  experiments/<NN>_<slug>/experiment.yaml              for D-phase tasks
-  experiments/<NN>_<slug>/CLAIMS_FROM_RESULTS.md       (optional)
+  probes/<NN>_<slug>/probe.yaml              for D-phase tasks
+  probes/<NN>_<slug>/CLAIMS_FROM_RESULTS.md       (optional)
 ```
 
 
@@ -50,7 +50,7 @@ task_name:  <name>
 # Filled when verdict=READY
 context:
   plan_section:        <yaml block for this phase's task>
-  source_experiment:   <yaml block from experiment.yaml>     # D-phase only
+  source_experiment:   <yaml block from probe.yaml>     # D-phase only
   scope_observations:  [D01, D03, D07]                       # I-phase
   scope_patterns:      [I02, I05]                            # K-phase
   scope_knowledge:     [K03]                                 # W-phase
@@ -58,12 +58,12 @@ context:
 
 # Filled when verdict=BLOCKED
 blocker:
-  reason:    "source experiment 04 result.status != confirmed (status=pending)"
-  fix:       "wait for experiment to confirm OR adjust plan"
+  reason:    "source probe 04 result.status != confirmed (status=pending)"
+  fix:       "wait for probe to confirm OR adjust plan"
 
 # Filled when verdict=SKIP
 skipped:
-  reason:    "D entry already exists for experiment 04 (D05)"
+  reason:    "D entry already exists for probe 04 (D05)"
 ```
 
 
@@ -81,9 +81,9 @@ Step 3: Lookup task in plan.phases.<phase>
 
 Step 4: Per-phase readiness check
   D:
-    - Source experiment in plan.experiments_needed.confirmed?
-    - experiment.yaml result.status == confirmed?
-    - D entry for this (experiment, task_name) already exists? → SKIP
+    - Source probe in plan.experiments_needed.confirmed?
+    - probe.yaml result.status == confirmed?
+    - D entry for this (probe, task_name) already exists? → SKIP
   I:
     - All scoped D entries exist?
     - At least 2 D entries scoped?

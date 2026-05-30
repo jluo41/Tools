@@ -1,33 +1,33 @@
 ---
-name: haipipe-experiment-explore
-description: "Coverage and propose specialist of haipipe-experiment. Maps what's been explored across (arch × data × training) axes, identifies gaps, and proposes the next valuable experiments or runs to fill them. The 'what should we try next?' brain of the research methodology layer."
+name: haipipe-probe-explore
+description: "Coverage and propose specialist of haipipe-probe. Maps what's been explored across (arch × data × training) axes, identifies gaps, and proposes the next valuable probes or runs to fill them. The 'what should we try next?' brain of the research methodology layer."
 argument-hint: "[coverage|propose] [project-path]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 ---
 
-Skill: haipipe-experiment-explore
+Skill: haipipe-probe-explore
 ==================================
 
-The active research-design assistant. Reads all experiments + runs in a
+The active research-design assistant. Reads all probes + runs in a
 project, infers the design-space axes, marks coverage, and proposes
-the most informative next experiment.
+the most informative next probe.
 
 
 Commands
 --------
 
 ```
-/haipipe-experiment explore coverage [project-path]
+/haipipe-probe explore coverage [project-path]
   Build coverage map across detected axes. Show ✅/—/⚠️ per cell.
 
-/haipipe-experiment explore propose [project-path] [--budget HOURS]
-  Suggest next 3-5 experiments based on:
+/haipipe-probe explore propose [project-path] [--budget HOURS]
+  Suggest next 3-5 probes based on:
     - Gaps in coverage
     - Unconfirmed single-seed runs (need N≥3 paired)
     - High-value missing baselines
     - User's stated open questions (from paper narrative or claim_target)
 
-/haipipe-experiment explore axes [project-path]
+/haipipe-probe explore axes [project-path]
   Inspect what axes are detected. Allow user to add/remove/rename axes.
 ```
 
@@ -35,7 +35,7 @@ Commands
 Axis detection (heuristic)
 ---------------------------
 
-The skill auto-detects design-space axes by scanning all experiments +
+The skill auto-detects design-space axes by scanning all probes +
 runs in the project:
 
 ```
@@ -70,7 +70,7 @@ Transformer  ⚠️(1)        —          —
 cells: ✅=N≥3 paired | ⚠️=N=1 (needs confirm) | —=no runs
 total: 4 archs × 3 data = 12 cells; 3 confirmed, 2 exploratory, 7 untouched
 
-experiments covering this design space:
+probes covering this design space:
   E01 baseline_noise_floor       (covers baseline × all data)
   E02 lhm_vs_baseline            (covers baseline + LHM-A × data_v3)
   E04 transformer_pilot          (covers Transformer × data_v1, single-seed)
@@ -81,7 +81,7 @@ Propose output
 ---------------
 
 ```
-═══ Suggested next experiments — Proj-Model-1-ScalingLaw ═══
+═══ Suggested next probes — Proj-Model-1-ScalingLaw ═══
 
 Priority 1 — confirm exploratory cells:
   E05  Transformer noise-floor   paired N=3 on data_v1
@@ -111,12 +111,12 @@ Workflow — `coverage`
 ----------------------
 
 ```
-Step 1: Load all experiments/*.yaml in project.
+Step 1: Load all probes/*.yaml in project.
 Step 2: Scan all runs across tasks/ (recursive); extract design-space
         signals from configs and runtime.yaml.
 Step 3: Group runs by (arch × data); count seeds per cell.
 Step 4: Classify each cell: ✅ (N≥3), ⚠️ (N=1-2), — (none).
-Step 5: Render table + list which experiment covers which cells.
+Step 5: Render table + list which probe covers which cells.
 ```
 
 
@@ -125,8 +125,8 @@ Workflow — `propose`
 
 ```
 Step 1: Coverage map (as above).
-Step 2: For each ⚠️ cell, propose a "confirm" experiment (N=3 paired).
-Step 3: For — cells adjacent to ✅ cells, propose a "fill" experiment.
+Step 2: For each ⚠️ cell, propose a "confirm" probe (N=3 paired).
+Step 3: For — cells adjacent to ✅ cells, propose a "fill" probe.
 Step 4: LLM ranks proposals by:
         - Information value (does it answer an open question?)
         - Cost (GPU-hours estimate)
@@ -147,8 +147,8 @@ Risk profile
 -------------
 
 READ-ONLY. Produces a report (stdout or `--out`). Does not scaffold
-or modify experiments. Suggested proposals are textual — user runs
-`/haipipe-experiment design new` to actually create them.
+or modify probes. Suggested proposals are textual — user runs
+`/haipipe-probe design new` to actually create them.
 
 
 Specialist tail
@@ -158,5 +158,5 @@ Specialist tail
 status:    ok | blocked | failed
 summary:   "Coverage: 3 confirmed, 2 exploratory, 7 untouched. 4 proposals ranked."
 artifacts: [coverage report path or stdout]
-next:      /haipipe-experiment design new E05 (for top-priority proposal)
+next:      /haipipe-probe design new E05 (for top-priority proposal)
 ```

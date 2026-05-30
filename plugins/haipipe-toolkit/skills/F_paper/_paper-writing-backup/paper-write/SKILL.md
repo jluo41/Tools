@@ -487,7 +487,7 @@ After drafting all sections:
 1. **Extract topic sentences** — pull the first sentence of every paragraph
 2. **Read them in sequence** — they should form a coherent narrative on their own
 3. **Check claim coverage** — every claim from the Claims-Evidence Matrix must appear
-4. **Check evidence mapping** — every experiment/figure must support a stated claim
+4. **Check evidence mapping** — every probe/figure must support a stated claim
 5. **Fix gaps** — if a topic sentence doesn't advance the story, rewrite the paragraph
 
 ### Step 8: Final Checks

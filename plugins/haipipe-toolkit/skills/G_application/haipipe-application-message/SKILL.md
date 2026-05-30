@@ -88,7 +88,7 @@ Phase 2 — Gap check
 
 Phase 3 — Trigger insight-session (optional)
   ASK user: "Knowledge gap: <gap statement>. Run insight-session to close
-             it (may trigger experiments), OR proceed with draft + flag
+             it (may trigger probes), OR proceed with draft + flag
              open question?"
   → option A: Skill("haipipe-application-ask", args="<gap question>")
               → on return, Phase 4
@@ -166,10 +166,10 @@ Risk profile
 
 WRITES new file under `applications/messages/`. May TRIGGER
 `/haipipe-application ask` in Phase 3, which can chain
-`/haipipe-experiment` → GPU jobs. Budget via MAX_EXPERIMENTS (default 3,
+`/haipipe-probe` → GPU jobs. Budget via MAX_EXPERIMENTS (default 3,
 inherited from insight-session).
 
-NEVER writes to insights/, tasks/, or experiments/ directly.
+NEVER writes to insights/, tasks/, or probes/ directly.
 
 
 Specialist tail

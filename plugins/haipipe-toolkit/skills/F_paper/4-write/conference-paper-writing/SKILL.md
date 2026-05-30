@@ -106,7 +106,7 @@ find . -name "*.md" -o -name "*.txt" | xargs grep -l -i "result\|conclusion\|fin
 
 Look for:
 - `README.md` - Project overview and claims
-- `results/`, `outputs/`, `experiments/` - Key findings
+- `results/`, `outputs/`, `probes/` - Key findings
 - `configs/` - Experimental settings
 - Existing `.bib` files or citation references
 - Any draft documents or notes
@@ -685,7 +685,7 @@ When expanding (e.g., ICML 8 → ICLR 9):
 
 When resubmitting after rejection:
 - **Do** address reviewer concerns in the new version
-- **Do** add experiments/clarifications reviewers requested
+- **Do** add probes/clarifications reviewers requested
 - **Don't** include a "changes from previous submission" section (blind review)
 - **Don't** reference the previous submission or reviews
 

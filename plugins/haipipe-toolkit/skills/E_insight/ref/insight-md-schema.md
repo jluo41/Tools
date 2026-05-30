@@ -44,8 +44,8 @@ D layer (Data)
 source_id: <task-id|exp-id>            # WHERE this observation came from
                                        # task id (e.g. T1, "regression_v2") for
                                        # C_task-sourced D cards
-                                       # experiment id (e.g. E07) for
-                                       # D_experiment-sourced D cards (rare)
+                                       # probe id (e.g. E07) for
+                                       # D_probe-sourced D cards (rare)
 headline:  "<one-line number summary>" # e.g. "val: FiLM Δ -0.98 ± 0.27 mg/dL (p=0.018, n=3)"
 ```
 
@@ -54,8 +54,8 @@ headline:  "<one-line number summary>" # e.g. "val: FiLM Δ -0.98 ± 0.27 mg/dL 
 
 Note on `source_id`: D and I cards almost always come from C_task
 results (a regression / display / individual-query task). The legacy
-`exp_id` field name implied D came from experiments — that was the
-old model. New model: D + I = C_task lens, K + W = D_experiment lens.
+`exp_id` field name implied D came from probes — that was the
+old model. New model: D + I = C_task lens, K + W = D_probe lens.
 For continuity, `exp_id` is accepted as a deprecated alias for
 `source_id` when present; new cards should use `source_id`.
 
@@ -111,7 +111,7 @@ D layer
 | ...    | ...   | ...   | ...    |
 
 ## Caveats
-- <bulleted, verbatim from experiment.yaml caveats[]>
+- <bulleted, verbatim from probe.yaml caveats[]>
 ```
 
 Length budget: 30-50 body lines.
@@ -173,8 +173,8 @@ W layer
 <1-2 paragraphs: concrete action, sufficient detail to execute>
 
 ## How to act
-<exact command / decision / next step. For triggering experiments:
- the literal /haipipe-experiment design new ... command.>
+<exact command / decision / next step. For triggering probes:
+ the literal /haipipe-probe design new ... command.>
 
 ## Why now
 <one paragraph: what makes this timely; which K entries trigger it>
@@ -223,7 +223,7 @@ ref_by:    []
 
 ## Recommendation
 
-Scaffold a new experiment with:
+Scaffold a new probe with:
 - baseline arm:  current arch + 5% width reduction → match FiLM params
 - film_pm arm:   FiLM on the size-reduced baseline
 - film_orig arm: FiLM on original arch (control)
@@ -233,10 +233,10 @@ N=3 seeds each. Eval on val / test-id / test-od.
 ## How to act
 
 ```
-/haipipe-experiment design new 12 \
+/haipipe-probe design new 12 \
     --title "Param-matched FiLM re-test" \
     --hypothesis "FiLM in-dist benefit survives param-matching"
-/haipipe-experiment bridge 12
+/haipipe-probe bridge 12
 ```
 
 ## Why now
@@ -262,8 +262,8 @@ Validation rules (any layer)
       - D / I cards: task ids (e.g. T1, T2) — points into the
         plan's task_batch; the task's results/ folder is the
         evidence anchor
-      - K / W cards: experiment ids (e.g. E07) — points into the
-        plan's experiment_batch; experiment.yaml is the evidence
+      - K / W cards: probe ids (e.g. E07) — points into the
+        plan's experiment_batch; probe.yaml is the evidence
         anchor (status MUST be `confirmed`)
       - Strategic W cards: a list of K ids (e.g. [K01, K03, K05])
         instead of a single E; mark `type: strategic` in body

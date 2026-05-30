@@ -1,7 +1,7 @@
 scope: expmt
 ============
 
-Project-level comparison-centric experiment log. Aggregates the BEST runs
+Project-level comparison-centric probe log. Aggregates the BEST runs
 across all task-groups in a project into a single readable file that answers:
 
 > "Of all the architectures / data / training tricks I've tried this project,
@@ -29,9 +29,9 @@ Reads:   <project>/tasks/*/configs/*.yaml                  (_meta)
          <project>/tasks/*/results/*/runtime.yaml          (facts)
          <project>/tasks/*/results/*/{metrics,summary,aggregated}.json
          <project>/tasks/*/grouplog.md                     (for context)
-         <project>/diagram/experiment-log.txt              (existing, preserved)
+         <project>/diagram/probe-log.txt              (existing, preserved)
 
-Writes:  <project>/diagram/experiment-log.txt              (atomic overwrite)
+Writes:  <project>/diagram/probe-log.txt              (atomic overwrite)
 ```
 
 The log is plain `.txt` (NOT .md) — keeps it canvas-friendly via
@@ -42,7 +42,7 @@ File structure (top → bottom)
 ------------------------------
 
 ```
-🧪 <ProjectName> — Full Experiment Log
+🧪 <ProjectName> — Full Probe Log
 ═══════════════════════════════════════
 
 (intro: dataset, metric, period covered)
@@ -53,7 +53,7 @@ File structure (top → bottom)
 
 
 ─§ <Task-group 1>  e.g. A01 — Baselines ──────
-  one ─§ ID block per important experiment, see entry template below
+  one ─§ ID block per important probe, see entry template below
 
 
 ─§ <Task-group 2>  e.g. A02 — LHM family ─────
@@ -70,7 +70,7 @@ File structure (top → bottom)
 ```
 
 
-Per-experiment entry template
+Per-probe entry template
 ------------------------------
 
 ```
@@ -98,7 +98,7 @@ Workflow
 
 ```
 Step 1: Locate or initialize.
-  LOG=<project>/diagram/experiment-log.txt
+  LOG=<project>/diagram/probe-log.txt
   mkdir -p $(dirname $LOG)
   [ ! -f $LOG ] && initialize from skeleton
 
@@ -149,7 +149,7 @@ Mentally check each before saving. Each YES becomes a bullet.
 Multi-seed extension
 ---------------------
 
-When the same experiment was repeated with multiple seeds:
+When the same probe was repeated with multiple seeds:
 
 ```
 Results (mean ± std, N=<#seeds>):
@@ -171,11 +171,11 @@ Anti-patterns
 -------------
 
 - ❌ Logging only the best metric without paired baseline Δ.
-- ❌ Re-running the same experiment with a new name to "fix" a result.
+- ❌ Re-running the same probe with a new name to "fix" a result.
   If a number changes, add a corrected entry; don't overwrite history.
 - ❌ Burying caveats in prose — they belong in the numbered Caveats section.
 - ❌ Letting the log grow past ~500 lines. When it does, fold sub-tasks
-  into their own per-task experiment-log.txt and link.
+  into their own per-task probe-log.txt and link.
 - ❌ Using `.md` extension — table alignment breaks in some renderers.
   Stay with `.txt`.
 
@@ -183,11 +183,11 @@ Anti-patterns
 Comparison-centric philosophy
 -----------------------------
 
-Most experiment-tracking tools default to "one row per run." This skill
+Most probe-tracking tools default to "one row per run." This skill
 flips that: the **default view is the comparison table**, individual runs
 are entries that feed into it.
 
-When adding an experiment, always ask:
+When adding an probe, always ask:
 
 1. What baseline does this beat? (Quote a number, not a vibe.)
 2. What's the Δ on the headline metric across all splits?
@@ -208,8 +208,8 @@ Specialist tail
 
 ```
 status:    ok | blocked | failed
-summary:   "Refreshed experiment-log.txt: <N> entries, <M> caveats"
-artifacts: [path to experiment-log.txt]
+summary:   "Refreshed probe-log.txt: <N> entries, <M> caveats"
+artifacts: [path to probe-log.txt]
 next:      suggested: /diagram-ascii-canvas to render headline scoreboard
 ```
 
@@ -217,6 +217,6 @@ next:      suggested: /diagram-ascii-canvas to render headline scoreboard
 See also
 --------
 
-- `diagram-ascii-canvas` — render the experiment log into a visual canvas
+- `diagram-ascii-canvas` — render the probe log into a visual canvas
 - `analyze-results` — deeper post-hoc statistical analysis after logging
-- `monitor-experiment` — track RUNNING experiments before they finalize
+- `monitor-probe` — track RUNNING probes before they finalize

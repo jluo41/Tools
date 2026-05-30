@@ -30,7 +30,7 @@ If the user already has new results, derivations, or approved commitments, the s
 
 ```text
 Workflow 1:   idea-discovery
-Workflow 1.5: experiment-bridge
+Workflow 1.5: probe-bridge
 Workflow 2:   auto-review-loop (pre-submission)
 Workflow 3:   paper-writing
 Workflow 4:   rebuttal (post-submission external reviews)
@@ -45,7 +45,7 @@ Workflow 4:   rebuttal (post-submission external reviews)
 - **MAX_INTERNAL_DRAFT_ROUNDS = 2** — draft → lint → revise.
 - **MAX_STRESS_TEST_ROUNDS = 1** — One Codex MCP critique round.
 - **MAX_FOLLOWUP_ROUNDS = 3** — per reviewer thread.
-- **AUTO_EXPERIMENT = false** — When `true`, automatically invoke `/haipipe-experiment bridge` to run supplementary experiments when the strategy plan identifies reviewer concerns that require new empirical evidence. When `false` (default), pause and present the evidence gap to the user for manual handling.
+- **AUTO_EXPERIMENT = false** — When `true`, automatically invoke `/haipipe-probe bridge` to run supplementary experiments when the strategy plan identifies reviewer concerns that require new empirical evidence. When `false` (default), pause and present the evidence gap to the user for manual handling.
 - **QUICK_MODE = false** — When `true`, only run Phase 0-3 (parse reviews, atomize concerns, build strategy). Outputs `ISSUE_BOARD.md` + `STRATEGY_PLAN.md` and stops — no drafting, no stress test. Useful for quickly understanding what reviewers want before deciding how to respond.
 - **REBUTTAL_DIR = `rebuttal/`**
 
@@ -119,9 +119,9 @@ If the strategy plan identifies issues that require new empirical evidence (tagg
    - Success criterion (what result would satisfy the reviewer)
    - Estimated GPU-hours
 
-2. Invoke `/haipipe-experiment bridge` with the mini plan:
+2. Invoke `/haipipe-probe bridge` with the mini plan:
    ```
-   /haipipe-experiment bridge "rebuttal/REBUTTAL_EXPERIMENT_PLAN.md"
+   /haipipe-probe bridge "rebuttal/REBUTTAL_EXPERIMENT_PLAN.md"
    ```
 
 3. Wait for results, then update `ISSUE_BOARD.md`:

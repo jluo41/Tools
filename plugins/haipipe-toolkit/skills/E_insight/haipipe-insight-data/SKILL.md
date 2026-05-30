@@ -1,6 +1,6 @@
 ---
 name: haipipe-insight-data
-description: "D-level observations specialist of the haipipe-insight family. Reads CONFIRMED experiment claims from D_experiment and synthesizes markdown observation entries into insights/D_data/. NO code execution — pure markdown synthesis. Use when running D-phase via /haipipe-application ask, or directly /haipipe-insight-data <experiment-id>. Trigger: D-level, observations, what did we observe, raw findings from experiments."
+description: "D-level observations specialist of the haipipe-insight family. Reads CONFIRMED probe claims from D_probe and synthesizes markdown observation entries into insights/D_data/. NO code execution — pure markdown synthesis. Use when running D-phase via /haipipe-application ask, or directly /haipipe-insight-data <probe-id>. Trigger: D-level, observations, what did we observe, raw findings from probes."
 argument-hint: "[experiment_id] [--project <path>] [--slug <slug>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 ---
@@ -8,7 +8,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 Skill: haipipe-insight-data
 ====================================
 
-D-level of the Insight base (D → I → K → W). Reads CONFIRMED experiment
+D-level of the Insight base (D → I → K → W). Reads CONFIRMED probe
 claims and writes markdown observation entries.
 
 ```
@@ -30,9 +30,9 @@ Input
 -----
 
 ```
-examples/<project>/experiments/<NN>_<slug>/experiment.yaml          (REQUIRED)
-examples/<project>/experiments/<NN>_<slug>/CLAIMS_FROM_RESULTS.md   (if any)
-examples/<project>/experiments/<NN>_<slug>/INTEGRITY_AUDIT.md       (if any)
+examples/<project>/probes/<NN>_<slug>/probe.yaml          (REQUIRED)
+examples/<project>/probes/<NN>_<slug>/CLAIMS_FROM_RESULTS.md   (if any)
+examples/<project>/probes/<NN>_<slug>/INTEGRITY_AUDIT.md       (if any)
 examples/<project>/tasks/.../results/<run>/metrics.json             (optional;
                                                                      read for
                                                                      specific
@@ -55,12 +55,12 @@ Hard rules
 ----------
 
 - NO Python execution. NO writing `analysis.py`. NO running scripts.
-- Pure markdown synthesis from already-existing experiment artifacts.
-- Numbers cited must reference exact source: experiment ID + metric key.
+- Pure markdown synthesis from already-existing probe artifacts.
+- Numbers cited must reference exact source: probe ID + metric key.
 - If a number requires NEW computation, that belongs in C_task — invoke
   `/haipipe-task task-folder eval` to scaffold an evaluation task. Never
   compute inline here.
-- Source experiment MUST have `result.status == confirmed`. Pending /
+- Source probe MUST have `result.status == confirmed`. Pending /
   inconclusive / refuted are refused.
 
 
@@ -71,15 +71,15 @@ Workflow
 Step 1: Parse args
   - <experiment_id>     required (e.g. 02 or 02_lhm_vs_baseline)
   - --project <path>    optional, else cwd-inferred
-  - --slug <slug>       optional, else derived from experiment title
+  - --slug <slug>       optional, else derived from probe title
 
 Step 2: Resolve paths
   - project root        from arg or cwd
-  - experiment_dir      examples/<project>/experiments/<NN>_<slug>/
+  - experiment_dir      examples/<project>/probes/<NN>_<slug>/
   - insight_dir         examples/<project>/insights/D_data/
 
 Step 3: Validate source
-  - Read experiment.yaml
+  - Read probe.yaml
   - Refuse if result.status != confirmed (report which status it has)
   - Note presence of CLAIMS_FROM_RESULTS.md and INTEGRITY_AUDIT.md
 
@@ -88,7 +88,7 @@ Step 4: Pick output NN
   - NN = max existing + 1 (zero-padded to 2 digits)
 
 Step 5: Compose entry (markdown, no Python)
-  - Read experiment.yaml hypothesis / claim / result fields
+  - Read probe.yaml hypothesis / claim / result fields
   - Optionally read 1-3 linked run-paths' metrics.json (read-only) for
     exact number quotes
   - Synthesize into the entry schema below
@@ -115,7 +115,7 @@ frontmatter (≤ 13 lines):
 body sections (in order):
   ## Observation     (1-2 paragraphs, FACTS only — no interpretation)
   ## Numbers         (table: Metric / Value / Split / Source)
-  ## Caveats         (bullet list, verbatim from experiment.yaml caveats[])
+  ## Caveats         (bullet list, verbatim from probe.yaml caveats[])
 
 length: ≤ 100 lines total
 ```
@@ -129,10 +129,10 @@ Definition of done
 -------------------
 
 - [ ] `insights/D_data/D{NN}_<slug>.md` written, non-empty
-- [ ] Every cited number traceable to experiment.yaml or a specific
+- [ ] Every cited number traceable to probe.yaml or a specific
       metrics.json key (no fabricated numbers)
 - [ ] No interpretive claims (those are I / K level)
-- [ ] `caveats` section non-empty if source experiment had caveats
+- [ ] `caveats` section non-empty if source probe had caveats
 - [ ] NO Python file written, NO script executed
 - [ ] `insights/INDEX.md` updated with the new entry's one-line stub
 
@@ -141,7 +141,7 @@ Disambiguation
 ---------------
 
 - experiment_id ambiguous (multiple matches) → ASK, list candidates
-- source experiment.result.status != confirmed → REFUSE; report status;
+- source probe.result.status != confirmed → REFUSE; report status;
   suggest waiting or using a sibling skill once promoted to confirmed
 - slug collides with existing D*.md → bump NN; do not overwrite
 - new computation needed → STOP; recommend
@@ -153,7 +153,7 @@ Risk profile
 
 WRITES one new file under `examples/<project>/insights/D_data/`.
 APPENDS one line to `insights/INDEX.md`. Read-only on everything else.
-Never modifies experiments/ or tasks/ contents.
+Never modifies probes/ or tasks/ contents.
 
 
 Specialist tail
@@ -161,7 +161,7 @@ Specialist tail
 
 ```
 status:    ok | blocked | failed
-summary:   "D03_<slug> written from experiment <NN>_<slug>"
+summary:   "D03_<slug> written from probe <NN>_<slug>"
 artifacts: [insights/D_data/D{NN}_<slug>.md, insights/INDEX.md]
 next:      /haipipe-insight-information to extract cross-observation patterns
 ```

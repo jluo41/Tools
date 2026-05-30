@@ -1,7 +1,7 @@
 📊 Headline scoreboard template
 
-This is the one table that lives at the TOP of experiment-log.txt.
-Re-derive it any time a new experiment is added.  Goal: a researcher
+This is the one table that lives at the TOP of probe-log.txt.
+Re-derive it any time a new probe is added.  Goal: a researcher
 opening the log file should see "which model wins which split" within
 the first 30 lines.
 
@@ -35,7 +35,7 @@ the first 30 lines.
      📍  reference   (floor / ceiling / target)
      📊  baseline    (classical / ML / standard neural)
      🚀  pretrained  (foundation model, zero-shot or fine-tuned)
-     🔬  probe       (architectural ablation, sub-task experiments)
+     🔬  probe       (architectural ablation, sub-task probes)
      🧪  candidate   (a model under active iteration)
 
 
