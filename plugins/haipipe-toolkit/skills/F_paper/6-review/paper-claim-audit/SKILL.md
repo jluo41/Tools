@@ -23,7 +23,7 @@ A **fresh reviewer with zero prior context** catches these because it has no exp
 
 | Skill | Question it answers |
 |-------|-------------------|
-| `/experiment-audit` | Is the experiment code honest? (fake GT, normalization fraud) |
+| `/probe-audit` | Is the experiment code honest? (fake GT, normalization fraud) |
 | `/result-to-claim` | Does the data scientifically support this claim? |
 | **`/paper-claim-audit`** | **Does the paper report the data truthfully and precisely?** |
 
@@ -229,7 +229,7 @@ if PAPER_CLAIM_AUDIT.json exists:
 
 ### Advisory, Never Blocking
 
-Same pattern as `/experiment-audit`:
+Same pattern as `/probe-audit`:
 - `PASS` → continue normally
 - `WARN` → print warning, continue, flag draft as "check numbers before submission"
 - `FAIL` → print alert, continue, but do NOT mark as submission-ready

@@ -47,7 +47,7 @@ Hard rules
 ----------
 
 - NO Python. NO statistical computation. Statistics were done at the
-  D_experiment result-aggregate step; this layer reads numbers and
+  D_probe result-aggregate step; this layer reads numbers and
   commits to a belief.
 - A K entry must list ALL contradicting evidence found in I/D entries.
   Cherry-picking is a violation.
@@ -130,7 +130,7 @@ Risk profile
 
 WRITES new file under `insights/K_knowledge/`. MAY UPDATE existing K
 entries' status field (supersede chain). APPENDS back-links to cited
-P/D entries. Read-only on experiments/, tasks/, all other folders.
+P/D entries. Read-only on probes/, tasks/, all other folders.
 
 
 Specialist tail

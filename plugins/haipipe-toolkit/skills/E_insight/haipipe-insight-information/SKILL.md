@@ -1,6 +1,6 @@
 ---
 name: haipipe-insight-information
-description: "I-level patterns specialist of the haipipe-insight family. Reads multiple D_data entries and synthesizes cross-observation patterns into markdown entries at insights/I_information/. NO code execution — pure markdown synthesis. Looks for statistical regularities, repeated effects, paired contrasts across experiments. Use when running I-phase via /haipipe-application ask, or directly /haipipe-insight-information. Trigger: I-level, patterns, cross-experiment patterns, regularities, what trends emerge."
+description: "I-level patterns specialist of the haipipe-insight family. Reads multiple D_data entries and synthesizes cross-observation patterns into markdown entries at insights/I_information/. NO code execution — pure markdown synthesis. Looks for statistical regularities, repeated effects, paired contrasts across probes. Use when running I-phase via /haipipe-application ask, or directly /haipipe-insight-information. Trigger: I-level, patterns, cross-probe patterns, regularities, what trends emerge."
 argument-hint: "[--project <path>] [--scope <observation-ids>] [--slug <slug>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 ---
@@ -26,7 +26,7 @@ Input
 
 ```
 examples/<project>/insights/D_data/D*.md   (REQUIRED, ≥ 2 entries)
-examples/<project>/experiments/<NN>_<slug>/        (read-only, for back-refs)
+examples/<project>/probes/<NN>_<slug>/        (read-only, for back-refs)
 ```
 
 
@@ -44,10 +44,10 @@ Hard rules
 - NO Python execution. Patterns are extracted by **reading** multiple
   D entries and noticing regularities — not by running statistics.
 - The statistical work (paired-t, sign-test, effect sizes) was already
-  done in D_experiment at result-aggregate time. This skill READS those
+  done in D_probe at result-aggregate time. This skill READS those
   numbers and synthesizes the pattern.
 - If a pattern needs NEW computation (e.g. a meta-analysis across
-  experiments not yet computed), scaffold an eval task in C_task. Never
+  probes not yet computed), scaffold an eval task in C_task. Never
   inline here.
 - A pattern must cite ≥ 2 source D entries (otherwise it's just an
   observation, not a pattern).
@@ -69,8 +69,8 @@ Step 2: Resolve paths
 
 Step 3: Scan D entries
   - Read all (or scoped) D_data/D*.md files
-  - Build a mental table: per-experiment metric / split / Δ / direction
-  - Surface candidate patterns: same metric across experiments, same
+  - Build a mental table: per-probe metric / split / Δ / direction
+  - Surface candidate patterns: same metric across probes, same
     direction across seeds, etc.
 
 Step 4: Triage patterns (interactive default; --auto skips ASK)
@@ -134,7 +134,7 @@ Disambiguation
 ---------------
 
 - fewer than 2 D entries to draw from → REFUSE; suggest running
-  /haipipe-insight-data on more experiments first
+  /haipipe-insight-data on more probes first
 - proposed pattern actually visible in only 1 D entry → REFUSE; report
   as observation not pattern
 - new statistical computation needed → STOP; recommend C_task eval
@@ -146,7 +146,7 @@ Risk profile
 
 WRITES one new file under `insights/I_information/`. APPENDS to
 `insights/INDEX.md`. APPENDS one back-link line to each cited D entry.
-Read-only on experiments/ and tasks/.
+Read-only on probes/ and tasks/.
 
 
 Specialist tail

@@ -111,7 +111,7 @@ Review Directory Structure
     |   +-- review-{reviewer_id}.md     <- Review + annotations + paper source refs
     +-- B-rebuttal-task/                <- Point → task mapping
     |   +-- README.md                   <- Point → task table + status
-    |   +-- experiment-plan.md          <- Execution order, feasibility, deps
+    |   +-- probe-plan.md          <- Execution order, feasibility, deps
     +-- C-rebuttal-writing/             <- Strategy + final responses
     |   +-- 0-rebuttal-strategy.md      <- Reviewer goals, char budgets, table allocation
     |   +-- rebuttal-{reviewer_id}.md   <- Annotated version (with > comments)

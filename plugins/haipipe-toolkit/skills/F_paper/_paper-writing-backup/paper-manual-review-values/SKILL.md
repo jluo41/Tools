@@ -27,7 +27,7 @@ The goal is not speed. The goal is that after this skill finishes, the user can 
 
 | Skill | Mode | Reviewer | Output | When to use |
 |-------|------|----------|--------|-------------|
-| `/experiment-audit` | autonomous | fresh GPT-5.4 | report | code-honesty audit |
+| `/probe-audit` | autonomous | fresh GPT-5.4 | report | code-honesty audit |
 | `/result-to-claim` | autonomous | fresh GPT-5.4 | report | "does the data support the inference?" |
 | `/paper-claim-audit` | autonomous, one-shot | fresh GPT-5.4 | JSON+MD | routine pre-submission check |
 | **`/paper-manual-review-values`** | **interactive, human-paced** | **same agent + human at every gate** | **edits applied + change log** | **high-stakes final submission** |

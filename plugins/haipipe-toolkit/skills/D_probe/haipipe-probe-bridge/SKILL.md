@@ -1,39 +1,39 @@
 ---
-name: haipipe-experiment-bridge
-description: "Bridge specialist of haipipe-experiment. Takes a designed experiment.yaml (claim + planned arms) and MATERIALIZES it into runnable tasks in C_task. Invokes the Run Script Reviewer agent on each scaffolded task before deploy (centralized intent ↔ implementation review), runs a sanity arm first, then launches the full arm set. The 'design → execution' connector between D_experiment and C_task. Called by /haipipe-experiment orchestrator. Direct invocation works for bridge-scoped work."
-argument-hint: "[bridge|sanity|deploy|status] [experiment_id] [args...]"
+name: haipipe-probe-bridge
+description: "Bridge specialist of haipipe-probe. Takes a designed probe.yaml (claim + planned arms) and MATERIALIZES it into runnable tasks in C_task. Invokes the Run Script Reviewer agent on each scaffolded task before deploy (centralized intent ↔ implementation review), runs a sanity arm first, then launches the full arm set. The 'design → execution' connector between D_probe and C_task. Called by /haipipe-probe orchestrator. Direct invocation works for bridge-scoped work."
+argument-hint: "[bridge|sanity|deploy|status] [probe_id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Task
 ---
 
-Skill: haipipe-experiment-bridge
+Skill: haipipe-probe-bridge
 =================================
 
 The **design → execution connector**. Where `-design` defines what to
-test (claim + arms in `experiment.yaml`) and `-result` interprets what
-came back, this specialist **makes the experiment actually run**: it
+test (claim + arms in `probe.yaml`) and `-result` interprets what
+came back, this specialist **makes the probe actually run**: it
 scaffolds the arms as tasks in C_task, optionally Codex-reviews the
 implementation, runs a sanity arm first, then launches the rest.
 
-This is the migrated `experiment-bridge` from research-toolkit
-(Workflow 1.5), adapted to read from D_experiment's `experiment.yaml`
+This is the migrated `probe-bridge` from research-toolkit
+(Workflow 1.5), adapted to read from D_probe's `probe.yaml`
 instead of `EXPERIMENT_PLAN.md`, and to call C_task specialists
-instead of `/run-experiment` directly.
+instead of `/run-probe` directly.
 
 
 Commands
 --------
 
 ```
-/haipipe-experiment bridge <ID>
-  Full bridge: read experiment.yaml → review code → sanity → deploy all arms.
+/haipipe-probe bridge <ID>
+  Full bridge: read probe.yaml → review code → sanity → deploy all arms.
 
-/haipipe-experiment bridge sanity <ID>
+/haipipe-probe bridge sanity <ID>
   Only run the smallest arm to validate setup. Don't deploy the rest.
 
-/haipipe-experiment bridge deploy <ID>
+/haipipe-probe bridge deploy <ID>
   Skip sanity, deploy all arms (only safe after a passing sanity run).
 
-/haipipe-experiment bridge status <ID>
+/haipipe-probe bridge status <ID>
   Show: which arms have been materialized as tasks, which are running,
   which have results linked.
 ```
@@ -54,15 +54,15 @@ AUTO_DEPLOY    = false  When true, skip user approval after sanity passes.
 ```
 
 Override inline:
-`/haipipe-experiment bridge <ID> — code review: false, max parallel: 2`
+`/haipipe-probe bridge <ID> — code review: false, max parallel: 2`
 
 
-Bridge flow (one experiment)
+Bridge flow (one probe)
 ----------------------------
 
 ```
 Step 1: PARSE
-  Read experiments/<NN>_<slug>/experiment.yaml
+  Read probes/<NN>_<slug>/probe.yaml
   Extract: claim, arms (with hyperparams), priority, compute_budget.
   Identify sanity arm (smallest N / shortest training / lowest cost).
 
@@ -79,12 +79,12 @@ Step 3: PRE-FLIGHT CODE REVIEW (CODE_REVIEW=true)
     Task tool, subagent_type="run-script-reviewer"
     Prompt: "Pre-flight review for bridge deploy.
              task-folder:   <absolute path>
-             experiment_id: <ID>
-             hypothesis:    <quoted from experiment.yaml>
+             probe_id: <ID>
+             hypothesis:    <quoted from probe.yaml>
              arm:           <arm name>"
 
   The agent reads <TASK>.py + configs/<RUN>.yaml + imported model
-  module(s) + this experiment.yaml hypothesis, runs a two-stage review
+  module(s) + this probe.yaml hypothesis, runs a two-stage review
   (sonnet draft + Codex out-of-family), and writes CODE_REVIEW.md
   sidecar in the task-folder.
 
@@ -121,16 +121,16 @@ Step 5: HUMAN GATE (AUTO_DEPLOY=false, default)
 
 Step 6: DEPLOY rest of arms
   Up to MAX_PARALLEL in parallel.
-  Each arm: 2_nn training → metrics.json → linked back to experiment arm.
+  Each arm: 2_nn training → metrics.json → linked back to probe arm.
 
 Step 7: LINK runs to arms
   For each completed arm:
-    Skill("haipipe-experiment-design", args="link <experiment-ID> <run-path>")
-  experiment.yaml now points to materialized runs.
+    Skill("haipipe-probe-design", args="link <probe-ID> <run-path>")
+  probe.yaml now points to materialized runs.
 
 Step 8: HANDOFF
-  All arms linked → ready for /haipipe-experiment result <ID> (aggregate)
-  followed by /haipipe-experiment review claim <ID> (Codex verdict).
+  All arms linked → ready for /haipipe-probe result <ID> (aggregate)
+  followed by /haipipe-probe review claim <ID> (Codex verdict).
 ```
 
 
@@ -139,8 +139,8 @@ Where things live
 
 ```
 examples/Proj-X/
-├── experiments/<NN>_<slug>/
-│   ├── experiment.yaml              ← READ: source of truth (arms + claim)
+├── probes/<NN>_<slug>/
+│   ├── probe.yaml              ← READ: source of truth (arms + claim)
 │   ├── bridge-log.md                ← APPEND: per-arm scaffold/sanity/deploy log
 │   └── (no code here — only meta)
 │
@@ -158,7 +158,7 @@ Disambiguation
   - No verb (just <ID>) → `bridge` (full flow with defaults).
   - "deploy" + no sanity passed yet → WARN before proceeding.
   - "status" with no in-progress bridge → show "ready to bridge".
-  - <ID> doesn't exist → bail; suggest `/haipipe-experiment design new <ID>` first.
+  - <ID> doesn't exist → bail; suggest `/haipipe-probe design new <ID>` first.
 
 
 Risk profile
@@ -166,8 +166,8 @@ Risk profile
 
 WRITES heavily:
 - New task folders under `examples/Proj-X/tasks/` (via C_task scaffold)
-- `bridge-log.md` per-experiment
-- Updates `experiment.yaml` with linked-run pointers (via `-design link`)
+- `bridge-log.md` per-probe
+- Updates `probe.yaml` with linked-run pointers (via `-design link`)
 - Triggers GPU training jobs (via 2_nn / C_task execution)
 - Invokes the **Run Script Reviewer** agent once per arm during Step 3
   (the agent internally calls Codex MCP — bridge no longer calls Codex
@@ -181,18 +181,18 @@ Relation to other layers
 ------------------------
 
 ```
-D_experiment-design       defines arms (in experiment.yaml)
+D_probe-design       defines arms (in probe.yaml)
         │
         ▼
-D_experiment-bridge       ← YOU ARE HERE
+D_probe-bridge       ← YOU ARE HERE
   ├──► C_task          scaffolds tasks per arm
   └──► 2_nn               runs training
         │
         ▼
-D_experiment-design link  binds completed runs back to arms
+D_probe-design link  binds completed runs back to arms
         │
         ▼
-D_experiment-result       aggregates linked runs into stats + claim
+D_probe-result       aggregates linked runs into stats + claim
 ```
 
 
@@ -203,6 +203,6 @@ Specialist tail
 status:    ok | blocked | failed | sanity_passed | deploy_complete
 summary:   "E02 bridge: 3/3 arms scaffolded, sanity passed, 2/3 arms deployed"
 artifacts: [bridge-log.md, scaffolded task IDs, linked run paths]
-next:      /haipipe-experiment result <ID>     (after all arms complete)
-          /haipipe-experiment review claim <ID> (Codex verdict on aggregated results)
+next:      /haipipe-probe result <ID>     (after all arms complete)
+          /haipipe-probe review claim <ID> (Codex verdict on aggregated results)
 ```

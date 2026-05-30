@@ -26,7 +26,7 @@ invent it.
 
 Do **not** use when:
 - Experiments are still running (the narrative would be premature)
-- You only have a vague topic — use `/idea-discovery` or `/haipipe-experiment review claim` first
+- You only have a vague topic — use `/idea-discovery` or `/haipipe-probe review claim` first
 - A `NARRATIVE_REPORT.md` already exists and is current — edit it directly
 
 ## Inputs (in priority order)
@@ -34,7 +34,7 @@ Do **not** use when:
 The skill discovers whichever of these exist in the project tree:
 
 1. **`CLAIMS_FROM_RESULTS.md`** (best) — validated claim ↔ evidence map from
-   `/haipipe-experiment review claim`. If present, use as the spine of the narrative; every
+   `/haipipe-probe review claim`. If present, use as the spine of the narrative; every
    listed claim becomes a section in the report.
 2. **`IDEA_REPORT.md`** — chosen idea, hypothesis, novelty justification (from
    `/idea-discovery`). Supplies the problem statement and intended contribution.
@@ -42,11 +42,11 @@ The skill discovers whichever of these exist in the project tree:
    history, weaknesses fixed, remaining limitations (from `/auto-review-loop`).
    Supplies the limitations section and reframings.
 4. **Experiment results** — JSON / CSV / TSV under `figures/`, `results/`,
-   `outputs/`, `experiments/`. These are the raw evidence for every quantitative
+   `outputs/`, `probes/`. These are the raw evidence for every quantitative
    claim. Each number that ends up in the narrative must trace back to one of
    these files.
-5. **`EXPERIMENT_LOG.md` / `experiment-log.txt`** — comparison-first experiment
-   ledger. Useful for cross-experiment deltas and baseline-vs-method tables.
+5. **`EXPERIMENT_LOG.md` / `probe-log.txt`** — comparison-first experiment
+   ledger. Useful for cross-probe deltas and baseline-vs-method tables.
 6. **Repo source** — for the method summary (what was actually built; not
    what was originally proposed). One short paragraph, not a code dump.
 
@@ -88,13 +88,13 @@ The report must contain these five sections, in this order:
 ### Step 1: Discover inputs
 
 ```bash
-ls CLAIMS_FROM_RESULTS.md IDEA_REPORT.md review-stage/AUTO_REVIEW.md AUTO_REVIEW.md EXPERIMENT_LOG.md experiment-log.txt 2>/dev/null
+ls CLAIMS_FROM_RESULTS.md IDEA_REPORT.md review-stage/AUTO_REVIEW.md AUTO_REVIEW.md EXPERIMENT_LOG.md probe-log.txt 2>/dev/null
 find results outputs experiments figures -maxdepth 3 -type f \
     \( -name '*.json' -o -name '*.csv' -o -name '*.tsv' -o -name '*.jsonl' \) 2>/dev/null | head -50
 ```
 
 Report what was found vs missing. If `CLAIMS_FROM_RESULTS.md` is missing,
-suggest running `/haipipe-experiment review claim` first — the narrative is significantly
+suggest running `/haipipe-probe review claim` first — the narrative is significantly
 stronger when claims are pre-validated.
 
 ### Step 2: Build the claim ↔ evidence map
@@ -148,7 +148,7 @@ implement + experiments            │                                          
                                    │                                                       ├──► /paper-plan
 /auto-review-loop ──► AUTO_REVIEW ─┤                                                       ├──► /paper-figure
                                    │                                                       ├──► /paper-write
-/haipipe-experiment review claim  ──► CLAIMS_…    ─┘                                                       ├──► /paper-compile
+/haipipe-probe review claim  ──► CLAIMS_…    ─┘                                                       ├──► /paper-compile
                                                                                            └──► /auto-paper-improvement-loop
 ```
 
@@ -166,6 +166,6 @@ already have the upstream artifacts and only need the narrative.
   punish overclaiming far harder than they punish modest claims.
 - **The narrative is editable.** Treat the first generation as a draft —
   expect a human pass before `/haipipe-paper` consumes it.
-- **One narrative per paper**, not per experiment. Multi-experiment projects
+- **One narrative per paper**, not per probe. Multi-probe projects
   collapse into one story or split into separate papers; don't try to fit two
   stories into one narrative.

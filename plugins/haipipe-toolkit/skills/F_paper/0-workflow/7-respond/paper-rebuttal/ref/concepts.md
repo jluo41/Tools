@@ -86,7 +86,7 @@ Be honest, not diplomatic:
 
 The annotation serves two purposes:
   1. Load the context into YOUR brain (the "笨功夫" part)
-  2. Give CC enough information to map to experiments/tasks
+  2. Give CC enough information to map to probes/tasks
 
 A terse "agree" or "disagree" is not enough. Explain WHY — what's
 your reasoning as the domain expert?

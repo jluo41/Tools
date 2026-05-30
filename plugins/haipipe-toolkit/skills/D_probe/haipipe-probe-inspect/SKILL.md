@@ -1,35 +1,35 @@
 ---
-name: haipipe-experiment-inspect
-description: "Read-only specialist of haipipe-experiment. Lists experiments, prints status, shows arms + linked runs, finds reverse references (which experiments reference a given run). The 'what's the state of experiments?' query layer. Called by /haipipe-experiment orchestrator."
+name: haipipe-probe-inspect
+description: "Read-only specialist of haipipe-probe. Lists probes, prints status, shows arms + linked runs, finds reverse references (which probes reference a given run). The 'what's the state of probes?' query layer. Called by /haipipe-probe orchestrator."
 argument-hint: "[list|show|refs|unused] [target]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 ---
 
-Skill: haipipe-experiment-inspect
+Skill: haipipe-probe-inspect
 ==================================
 
-Read-only query layer for experiments. Never modifies files.
+Read-only query layer for probes. Never modifies files.
 
 
 Commands
 --------
 
 ```
-/haipipe-experiment inspect list [project-path]
-  Table of all experiments in project: ID, title, status, # arms, # runs.
+/haipipe-probe inspect list [project-path]
+  Table of all probes in project: ID, title, status, # arms, # runs.
 
-/haipipe-experiment inspect show <ID>
-  Full view of one experiment yaml: claim, arms, results, caveats.
+/haipipe-probe inspect show <ID>
+  Full view of one probe yaml: claim, arms, results, caveats.
 
-/haipipe-experiment inspect refs <run-path>
-  Reverse index: which experiments reference this run?
+/haipipe-probe inspect refs <run-path>
+  Reverse index: which probes reference this run?
 
-/haipipe-experiment inspect unused [project-path]
-  List runs in the project that are NOT referenced by any experiment.
+/haipipe-probe inspect unused [project-path]
+  List runs in the project that are NOT referenced by any probe.
   Useful for finding debug / smoke / exploratory runs that never got promoted.
 
-/haipipe-experiment inspect status [project-path]
-  Counts: # experiments by status (confirmed / inconclusive / refuted / pending).
+/haipipe-probe inspect status [project-path]
+  Counts: # probes by status (confirmed / inconclusive / refuted / pending).
 ```
 
 
@@ -37,7 +37,7 @@ Output — `list`
 ----------------
 
 ```
-═══ Experiments in Proj-Model-1-ScalingLaw ═══
+═══ Probes in Proj-Model-1-ScalingLaw ═══
 
 ID    Title                             Status         Arms  Runs  Claim
 ────  ────────────────────────────────  ─────────────  ────  ────  ──────
@@ -93,7 +93,7 @@ Output — `refs <run-path>`
 ```
 ═══ References to run_seed42_baseline ═══
 
-Linked in 2 experiments:
+Linked in 2 probes:
   E01 (arm: baseline)  status: ✅ confirmed
   E02 (arm: baseline)  status: ✅ confirmed
 ```
@@ -116,7 +116,7 @@ tasks/A01_pretraining_clm/02_pretrain_lhm/runs/
   run_lhm_no_event         (exploratory, never linked)
   ...
 
-Hint: unused runs are fine for debug/smoke. Link them to an experiment
+Hint: unused runs are fine for debug/smoke. Link them to an probe
       if they're part of a comparison; otherwise leave as exploration.
 ```
 
@@ -134,7 +134,7 @@ Specialist tail
 
 ```
 status:    ok
-summary:   "N experiments listed / shown / referenced"
+summary:   "N probes listed / shown / referenced"
 artifacts: (stdout only; no file writes)
 next:      suggested follow-up depending on what was inspected
 ```

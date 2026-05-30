@@ -18,7 +18,7 @@ it live THREE parallel worlds:
 │
 ├── 📁 tasks/        ← 💼 the WORK         build & run things
 ├── 📁 paper/        ← 📰 the DELIVERABLE  what we publish
-└── 📁 experiment/   ← 📊 the CLAIMS       cross-run aggregation
+└── 📁 probe/   ← 📊 the CLAIMS       cross-run aggregation
 ```
 
 Each world has its own specialist family — different sections, no overlap:
@@ -27,7 +27,7 @@ Each world has its own specialist family — different sections, no overlap:
 project umbrella     /haipipe-project              B_project/ (this folder's sibling)
 tasks/               /haipipe-task-*               C_task/    ← THIS SECTION
 paper/               /paper-*                      (existing paper-workflow / paper-figure / ...)
-experiment/          /haipipe-experiment           D_experiment/
+probe/          /haipipe-probe           D_probe/
 ```
 
 `B_project/` owns project-scope ops (the umbrella + inspect + organize).

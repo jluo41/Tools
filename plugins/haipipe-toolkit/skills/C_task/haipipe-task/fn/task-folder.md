@@ -155,8 +155,8 @@ Why centralize the wrapper:
     - `configs/<NAME>.yaml`             frozen input (`_meta:` + params)
     - `results/<NAME>/runtime.yaml`     post-run facts (10 fields)
 
-For experiment-level aggregation (claim + caveats + comparison), see
-`/haipipe-experiment` under `D_experiment/`.
+For probe-level aggregation (claim + caveats + comparison), see
+`/haipipe-probe` under `D_probe/`.
 
 Configs use the `_meta:` block template at
 `../ref/config-meta-template.yaml` as starting point — fill in

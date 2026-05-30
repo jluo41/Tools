@@ -176,7 +176,7 @@ For each multi-section cite, show the user:
   §1 line 75:  "...has been criticized as hampering the advance of social science"
                (uses cite for: cumulative-learning critique → matches the paper's argument? YES)
   §2 line 43:  "...amounts to playing 20 questions with nature..."
-               (uses cite for: integrative-experiment-design critique → matches paper's argument? YES)
+               (uses cite for: integrative-probe-design critique → matches paper's argument? YES)
   → consistent: same paper, two compatible aspects of its argument
 ```
 

@@ -79,7 +79,7 @@ intent:       "<one-line restatement of the request>"
 created:      YYYY-MM-DD
 cited_K:      [K01, K03]
 cited_W:      [W02]
-triggered:    [exp_ids if any]   # E_insight sessions / experiments spawned during creation
+triggered:    [exp_ids if any]   # E_insight sessions / probes spawned during creation
 status:       draft | reviewed | shipped | superseded
 ---
 ```

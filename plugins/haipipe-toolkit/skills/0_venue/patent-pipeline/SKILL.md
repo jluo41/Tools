@@ -21,12 +21,12 @@ This skill orchestrates the full patent drafting lifecycle -- from prior art sea
 ```
 
 **This is a parallel branch, not part of the linear research pipeline.** After `/idea-discovery` produces validated ideas, the user can either:
-- Go to `/haipipe-experiment bridge` → `/auto-review-loop` → `/haipipe-paper` (publish track)
+- Go to `/haipipe-probe bridge` → `/auto-review-loop` → `/haipipe-paper` (publish track)
 - Go to `/grant-proposal` (funding track)
 - Go to `/patent-pipeline` (patent track) **<-- this skill**
 
 ```
-                    ┌→ /haipipe-experiment bridge → /auto-review-loop → /haipipe-paper  (publish track)
+                    ┌→ /haipipe-probe bridge → /auto-review-loop → /haipipe-paper  (publish track)
 /idea-discovery ────┤
                     ├→ /grant-proposal → [get funded] → ...  (funding track)
                     └→ /patent-pipeline → [file patent]       (patent track)

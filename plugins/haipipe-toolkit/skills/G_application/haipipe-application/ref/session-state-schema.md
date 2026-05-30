@@ -94,7 +94,7 @@ revisions_count      number of `revise` outcomes so far
                      Hits MAX_REVISIONS = 3 → forced approve with audit banner.
 
 experiment_calls     [{ phase, exp_id, via, ts, status }, ...]
-                     Records every /haipipe-experiment * invocation.
+                     Records every /haipipe-probe * invocation.
                      via ∈ { design, bridge, result, review }.
 
 task_calls           [{ phase, task_path, via, ts, status }, ...]
@@ -125,7 +125,7 @@ completed_tasks entry shape
 ```
 
 `yields` carries the DIKW card ids this task closes (D/I from C_task,
-K/W from D_experiment). Pre-gate artifact check verifies each yield
+K/W from D_probe). Pre-gate artifact check verifies each yield
 has a card filed in `insights/<layer>/`.
 
 
@@ -138,7 +138,7 @@ entries with `status ∈ {done, reused}` and asserts:
 ```
 ask kind:
   task that yields D## or I## → insights/D_data/D##_*.md OR I_information/I##_*.md exists
-  task that yields K## or W## → experiment.yaml has result.status == confirmed
+  task that yields K## or W## → probe.yaml has result.status == confirmed
                                 AND insights/K_knowledge/K##_*.md OR W_wisdom/W##_*.md exists
 
 message/ui/report kinds:

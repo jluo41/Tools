@@ -90,8 +90,8 @@ What NOT to do
   layer-internal; use K/W as the audience-facing layer.
 - DO NOT cite a K with status=superseded as if active. If the user
   insists, mark the artifact `status: draft` + explain in "Open questions".
-- DO NOT cite an exp_id directly. Experiments are the substrate of K;
-  if you need to cite a specific experiment, cite the K that derives
+- DO NOT cite an exp_id directly. Probes are the substrate of K;
+  if you need to cite a specific probe, cite the K that derives
   from it.
 
 
@@ -107,7 +107,7 @@ Q should be:
   - specific:    "Does K03 (FiLM overfit) hold for elderly patient subset?"
                  NOT "What about FiLM?"
   - load-bearing: tied to a concrete claim the artifact needs
-  - bounded:     answerable by ≤ MAX_EXPERIMENTS (3) new experiments
+  - bounded:     answerable by ≤ MAX_EXPERIMENTS (3) new probes
 
 Return contract: the session completes with status=answered (or
 budget/blocked). Phase 4 re-reads INDEX to pick up new K/W.
@@ -142,4 +142,4 @@ triggered:    [insight_session_2026-05-25_film_elderly,
 ```
 
 This makes the artifact reproducible: future readers can follow
-`triggered` → experiment → K → I → D back to raw observations.
+`triggered` → probe → K → I → D back to raw observations.

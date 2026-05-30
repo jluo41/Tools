@@ -1,6 +1,6 @@
 ---
 name: haipipe-application
-description: "Application layer orchestrator (the G_application umbrella). Routes every session-style workflow in the haipipe stack: ask (research question driver, can trigger D_experiment) and external creation (message / ui / report) drawing on K/W from E_insight. All kinds share one session skeleton: SESSION_STATE.json + plan-vN.yaml + gate (persona + attendance) + context loader. Use to ask a research question, draft a patient/clinician message, sketch UI, write a stakeholder report. Trigger: ask, question, session, message, ui, sketch, report, briefing, /haipipe-application."
+description: "Application layer orchestrator (the G_application umbrella). Routes every session-style workflow in the haipipe stack: ask (research question driver, can trigger D_probe) and external creation (message / ui / report) drawing on K/W from E_insight. All kinds share one session skeleton: SESSION_STATE.json + plan-vN.yaml + gate (persona + attendance) + context loader. Use to ask a research question, draft a patient/clinician message, sketch UI, write a stakeholder report. Trigger: ask, question, session, message, ui, sketch, report, briefing, /haipipe-application."
 argument-hint: "[kind] [intent...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 ---
@@ -13,8 +13,8 @@ A session = one user intent, one case file, one closed report.
 
 ```
 C_task          executes runs                            (code, GPU)
-D_experiment    claims from runs                         (yaml + verdicts)
-E_insight       cross-experiment KB                      (D/I/K/W markdown)
+D_probe    claims from runs                         (yaml + verdicts)
+E_insight       cross-probe KB                      (D/I/K/W markdown)
 F_paper         academic publication                     (paper-*)
 G_application   session workflows                ← THIS SKILL FAMILY
                   - ask      (research question driver)
@@ -34,8 +34,8 @@ Internal kind (research-facing, writes to KB):
 
 ```
   ask        question-driven research session
-             reads insights/ + experiments/ + tasks/
-             CAN trigger /haipipe-experiment + /haipipe-task
+             reads insights/ + probes/ + tasks/
+             CAN trigger /haipipe-probe + /haipipe-task
              CAN write to insights/ (new D/I/K/W cards)
              artifact: applications/ask/<NN_slug>/report.md
 ```
@@ -50,7 +50,7 @@ External kinds (consumer-facing, KB-readonly):
              all 3:
              reads insights/ only (no exp / task access)
              can chain /haipipe-application ask if KB gap blocks the draft
-             NEVER writes to insights/, tasks/, experiments/
+             NEVER writes to insights/, tasks/, probes/
              artifact: applications/<kind>/<...>.md
 ```
 
@@ -65,7 +65,7 @@ Where artifacts live
 ```
 examples/Proj-X/
 ├── tasks/                                  (C_task)
-├── experiments/                            (D_experiment)
+├── probes/                            (D_probe)
 ├── insights/                               (E_insight)
 ├── paper/                                  (F_paper)
 └── applications/                           ← G_application writes here
@@ -87,7 +87,7 @@ Commands
 
 ```
 /haipipe-application                                dashboard (list current applications/)
-/haipipe-application ask <question>                 research session (D_experiment-allowed)
+/haipipe-application ask <question>                 research session (D_probe-allowed)
 /haipipe-application message <intent>               patient / clinician message
 /haipipe-application ui <intent>                    UI sketch / spec
 /haipipe-application report <intent>                stakeholder report
@@ -103,7 +103,7 @@ Kind specialists (one per artifact type):
 ```
 haipipe-application-ask        SESSION: research-question driver
                                         can write to insights/, can trigger
-                                        D_experiment + C_task
+                                        D_probe + C_task
 
 haipipe-application-message    SESSION: message creation (patient/clinician)
                                         KB-readonly
@@ -162,7 +162,7 @@ Phase init      Skill("haipipe-application-plan")
                   writes plan-v1.yaml
                   [G-plan SOFT gate via haipipe-application-gate]
 
-Phase mid       per-kind work (run tasks / experiments OR draft prose)
+Phase mid       per-kind work (run tasks / probes OR draft prose)
                   may invoke haipipe-application-context before each task
                   [G-mid SOFT gate]
 
@@ -196,9 +196,9 @@ One-way dependencies:
 ```
 G_application READS  ←──── E_insight (always)
 G_application READS  ←──── C_task results (ask kind only)
-G_application READS  ←──── D_experiment claims (ask kind only)
+G_application READS  ←──── D_probe claims (ask kind only)
 
-G_application TRIGGERS ──→ D_experiment (ask kind only, sole external trigger)
+G_application TRIGGERS ──→ D_probe (ask kind only, sole external trigger)
 G_application TRIGGERS ──→ C_task       (ask kind only)
 G_application TRIGGERS ──→ haipipe-insight-{data,information,knowledge,wisdom}
                           (ask kind, files KB cards from materialized evidence)
@@ -206,8 +206,8 @@ G_application TRIGGERS ──→ haipipe-insight-{data,information,knowledge,wis
 E_insight     NEVER reads from applications/
 ```
 
-The ask kind is the **only** outside trigger for D_experiment.
-External kinds never see tasks/ or experiments/ directly; they go
+The ask kind is the **only** outside trigger for D_probe.
+External kinds never see tasks/ or probes/ directly; they go
 through ask if they need new KB material.
 
 
@@ -247,7 +247,7 @@ Relation to other top-level skills
 A_discover    seeds ideas → may suggest research questions for ask
 B_project     project umbrella → owns examples/Proj-X/applications/
 C_task        runs code → triggered by ask
-D_experiment  claims → triggered by ask
+D_probe  claims → triggered by ask
 E_insight     K/W → REQUIRED INPUT for all kinds
 F_paper       parallel external artifact (academic-only twin of report)
 ```

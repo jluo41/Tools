@@ -1,14 +1,14 @@
 ---
-name: haipipe-experiment-design
-description: "Pre-run specialist of haipipe-experiment. Defines a new experiment (claim + planned arms) and links existing runs into its arms. Writes/edits experiments/<ID>.yaml under a project. Called by /haipipe-experiment orchestrator. Direct invocation works for design-scoped work."
+name: haipipe-probe-design
+description: "Pre-run specialist of haipipe-probe. Defines a new probe (claim + planned arms) and links existing runs into its arms. Writes/edits probes/<ID>.yaml under a project. Called by /haipipe-probe orchestrator. Direct invocation works for design-scoped work."
 argument-hint: "[new|link] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 ---
 
-Skill: haipipe-experiment-design
+Skill: haipipe-probe-design
 =================================
 
-Owns the PRE-RUN half of experiment lifecycle: define an experiment
+Owns the PRE-RUN half of probe lifecycle: define an probe
 (claim + arms) and link existing runs into arms.
 
 Does NOT scaffold runs. Use `/haipipe-project task run` for that.
@@ -18,19 +18,19 @@ Commands
 --------
 
 ```
-/haipipe-experiment design new <ID> [--project <path>]
-  Interactive: writes experiments/<ID>.yaml from template, asks user
+/haipipe-probe design new <ID> [--project <path>]
+  Interactive: writes probes/<ID>.yaml from template, asks user
   for claim / hypothesis / aggregation spec / planned arm names.
 
-/haipipe-experiment design link <ID> <run-path> [--arm <arm-name>]
+/haipipe-probe design link <ID> <run-path> [--arm <arm-name>]
   Adds <run-path> to arms[<arm-name>] list in the yaml.
   If --arm missing: infer from arm name if there's only one with
   matching pattern, else ASK.
 
-/haipipe-experiment design unlink <ID> <run-path>
+/haipipe-probe design unlink <ID> <run-path>
   Removes a run from arms.
 
-/haipipe-experiment design rename-arm <ID> <old> <new>
+/haipipe-probe design rename-arm <ID> <old> <new>
   Renames an arm key in the yaml.
 ```
 
@@ -46,7 +46,7 @@ Step 1: Resolve project root.
 
 Step 2: Validate <ID>.
   - Convention: E + 2-digit (e.g. E01, E02, E42).
-  - Must not collide with existing experiments/*.yaml.
+  - Must not collide with existing probes/*.yaml.
 
 Step 3: Collect via interactive prompts:
   - title (1 line, descriptive)
@@ -56,8 +56,8 @@ Step 3: Collect via interactive prompts:
   - aggregation.statistic (mean_std | mean_std_paired_t | sign_test)
   - planned arms (names only, no run-paths yet)
 
-Step 4: Write experiments/<ID>.yaml from template.
-  Template: ../ref/experiment-yaml-schema.md (skeleton at the top).
+Step 4: Write probes/<ID>.yaml from template.
+  Template: ../ref/probe-yaml-schema.md (skeleton at the top).
 
 Step 5: Emit specialist tail.
 ```
@@ -67,7 +67,7 @@ Workflow — `link`
 ------------------
 
 ```
-Step 1: Resolve experiment by <ID>; refuse if not found.
+Step 1: Resolve probe by <ID>; refuse if not found.
 Step 2: Validate <run-path> exists and contains runtime.yaml.
 Step 3: Determine arm:
   - --arm explicit: use that.
@@ -100,7 +100,7 @@ Validation (always run before saving)
 Risk profile
 -------------
 
-CREATES / EDITS files under `examples/<project>/experiments/`. Does not
+CREATES / EDITS files under `examples/<project>/probes/`. Does not
 touch tasks/ or runs/. Refuses to overwrite existing yamls without
 `--force`.
 
@@ -111,7 +111,7 @@ Specialist tail
 ```
 status:    ok | blocked | failed
 summary:   "Created 02_lhm_vs_baseline (3 arms planned)" / "Linked run_seed42 to arm 'baseline'"
-artifacts: [experiments/02_lhm_vs_baseline/experiment.yaml]
-next:      suggested: /haipipe-experiment design link 02 <next-run>
-           or         /haipipe-experiment result 02 (when all arms have runs)
+artifacts: [probes/02_lhm_vs_baseline/probe.yaml]
+next:      suggested: /haipipe-probe design link 02 <next-run>
+           or         /haipipe-probe result 02 (when all arms have runs)
 ```
