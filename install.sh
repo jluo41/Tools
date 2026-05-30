@@ -83,52 +83,55 @@ fi
 
 echo ""
 echo "Done! Available plugins:"
-echo "  ccskill           - Anthropic-bundled skills (skill-creator, docx, pptx, pdf, ...)"
-echo "  chronicle         - Email indexing from MS365 Outlook"
+echo "  chronicle         - Session, daily, email, and Obsidian chronicle workflows"
 echo "  diagram-skill     - Visual artifacts: diagram-ascii, diagram-ascii-canvas, diagram-drawio, diagram-excalidraw, progress-log"
-echo "  dikw              - DIKW session orchestrator (data/info/knowledge/wisdom + plan/gate/report)"
-echo "  haipipe-toolkit   - haipipe umbrella + specialists grouped by stage (1_data, 2_nn, 3_end, 4_project, 5_subject)"
-echo "  health            - Health logging (meal-cam-logger, whoop-connect)"
-echo "  logseq            - LogSeq markdown, queries, templates, whiteboards"
-echo "  research-toolkit  - Research workflow stages (00_meta ... 13_venue + _workflows)"
+echo "  haipipe           - HAI-Pipe research toolkit: data, NN, endpoint, task, experiment, paper, application"
 echo "  subjective-label  - Subjective-label iterator (init, iterate, scale, status, validate)"
 echo ""
 echo "Install in Claude Code with e.g.:"
-echo "  /plugin install dikw@jluo41-tools"
-echo "  /plugin install haipipe-toolkit@jluo41-tools"
+echo "  /plugin install haipipe@jluo41-tools"
 echo "  /plugin install diagram-skill@jluo41-tools"
+echo "  /plugin install subjective-label@jluo41-tools"
 
 # ─── 2. Global skill installation (--global) ─────────────────────────────────
 
-# Enumerate every skill dir (containing SKILL.md) under a plugin's skills/ tree,
-# at most two levels deep so nested layouts (skills/<category>/<skill>) work.
+# Enumerate every skill dir (containing SKILL.md) under a plugin's skills/ tree.
+# Discovery is recursive because haipipe-toolkit intentionally nests skills by
+# workflow family, e.g. skills/F_paper/4-write/paper-write.
 # Prints one line per skill: "<absolute_skill_dir>\t<plugin_name>\t<rel_path_from_plugin_skills>"
 enumerate_skills() {
     local plugins_root="$1"
-    for plugin_dir in "$plugins_root"/*/; do
-        local plugin_name skills_root
-        plugin_name=$(basename "$plugin_dir")
-        skills_root="$plugin_dir/skills"
-        [ -d "$skills_root" ] || continue
-        for entry in "$skills_root"/*/; do
-            [ -d "$entry" ] || continue
-            local entry_name
-            entry_name=$(basename "$entry")
-            if [ -f "$entry/SKILL.md" ]; then
-                printf '%s\t%s\t%s\n' "${entry%/}" "$plugin_name" "$entry_name"
-            else
-                # Treat as category dir; descend one more level
-                for nested in "$entry"*/; do
-                    [ -d "$nested" ] || continue
-                    if [ -f "$nested/SKILL.md" ]; then
-                        local nested_name
-                        nested_name=$(basename "$nested")
-                        printf '%s\t%s\t%s/%s\n' "${nested%/}" "$plugin_name" "$entry_name" "$nested_name"
-                    fi
-                done
-            fi
-        done
-    done
+
+    find "$plugins_root" -path '*/skills/*/SKILL.md' -type f -print | while IFS= read -r skill_file; do
+        local skill_path plugin_rel plugin_name rel_path skill_name priority
+        skill_path="${skill_file%/SKILL.md}"
+        plugin_rel="${skill_path#"$plugins_root"/}"
+        plugin_name="${plugin_rel%%/*}"
+        rel_path="${skill_path#"$plugins_root/$plugin_name/skills/"}"
+        skill_name="$(basename "$skill_path")"
+
+        # Duplicate skill names cannot both be symlinked into one skills dir.
+        # Keep the canonical copy deterministically:
+        #   1. standalone diagram-skill wins over haipipe utility mirrors
+        #   2. active paper skills win over _paper-writing-backup snapshots
+        #   3. otherwise sort by plugin/path for stable installs
+        priority=50
+        case "$plugin_name/$rel_path" in
+            diagram-skill/*) priority=10 ;;
+            haipipe-toolkit/0_utils/diagram-*) priority=70 ;;
+            haipipe-toolkit/F_paper/_paper-writing-backup/*) priority=80 ;;
+        esac
+
+        printf '%03d\t%s\t%s\t%s\t%s\n' "$priority" "$skill_name" "$skill_path" "$plugin_name" "$rel_path"
+    done | sort -t $'\t' -k2,2 -k1,1n -k4,4 -k5,5 | awk -F '\t' '
+        !seen[$2]++ {
+            print $3 "\t" $4 "\t" $5
+            next
+        }
+        {
+            print "  . " $2 " (duplicate skipped: " $4 "/skills/" $5 ")" > "/dev/stderr"
+        }
+    '
 }
 
 if [ "$DO_GLOBAL" = true ]; then
