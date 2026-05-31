@@ -36,7 +36,13 @@ ASK for `<NAME>` if not given. Constraints:
 Step 2 — Collect _meta fields (4 questions)
 --------------------------------------------
 
-ASK in this order. `purpose` is REQUIRED; others optional but recommended.
+**Dual-mode (see `../ref/invocation-modes.md`):** if the spec already carries
+these fields (agent / headless path), DO NOT ASK — use them verbatim and run
+silently. Only ASK for fields genuinely missing AND when a user is present. If
+`purpose` is missing and there is no user (agent path), return
+`status: blocked, missing: [purpose]` — never invent it.
+
+ASK (interactive path only) in this order. `purpose` is REQUIRED:
 
 ```
 1. purpose  — One sentence: why does this run exist?
@@ -46,8 +52,9 @@ ASK in this order. `purpose` is REQUIRED; others optional but recommended.
 4. output   — Expected artifacts + headline guess
 ```
 
-If invoked from a Claude conversation where these are already implicit,
-the LLM may pre-fill from context and let user confirm.
+End every invocation with the structured return block from
+`../ref/invocation-modes.md` (status / task_folder / run_name / files), so an
+agent caller can locate the scaffolded folder to author into.
 
 
 Step 3 — Create files
