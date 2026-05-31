@@ -3,12 +3,18 @@ name: haipipe-probe-review
 description: "QA specialist of haipipe-probe. Three complementary checks. (1) STRUCTURAL: audits run quality (per-run sanity) and probe quality (statistical claim integrity) via checklists, produces ✅/⚠️/❌ + actionable issues. (2) INTEGRITY: Codex MCP fraud-pattern audit (ground-truth provenance, metric-definition consistency, phantom results, scope-language mismatch, individual/split leakage), writes INTEGRITY_AUDIT.md. (3) SEMANTIC: Codex MCP judges whether evidence supports the intended claim (yes/partial/no + confidence), writes CLAIMS_FROM_RESULTS.md. The honest-science gate before a claim becomes a paper-able statement. Trigger: review, audit, qa, integrity, fraud check, fake ground truth, phantom results, scope check, claim verdict, supports?, /haipipe-probe-review."
 argument-hint: "[run|probe|claim|project] [target]"
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill, mcp__codex__codex, mcp__codex__codex-reply
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "QA specialist of haipipe-probe."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-probe-review
 =================================
 
-The **scientific-honesty gate**. Before a claim leaves an probe
+The **scientific-honesty gate**. Before a claim leaves a probe
 yaml and enters a paper / dashboard / decision, this skill audits:
 
   - Per-probe quality (is the comparison apples-to-apples?)
@@ -43,16 +49,16 @@ Commands
   and dispatch its body to a Task subagent over <run-path>. Per-run
   quality is a C_task judgment; D_probe only consumes the verdict.
 
-/haipipe-probe review probe <ID>
+/haipipe-probe review probe <probe>
   STRUCTURAL: audit ONE probe against the per-probe checklist.
 
-/haipipe-probe review integrity <ID>
+/haipipe-probe review integrity <probe>
   INTEGRITY: Codex MCP reads eval scripts / configs / results / claims
   and judges 5 fraud patterns (A. GT provenance / B. metric consistency /
   C. phantom results / D. scope mismatch / E. individual leakage).
   Writes INTEGRITY_AUDIT.md sidecar.
 
-/haipipe-probe review claim <ID>
+/haipipe-probe review claim <probe>
   SEMANTIC: Codex judges whether evidence supports the claim.
   Auto-runs integrity first if no recent audit. Writes CLAIMS_FROM_RESULTS.md
   for downstream consumption (e.g. /narrative-report).
@@ -117,7 +123,7 @@ review fails with a "missing caveat" issue.
 Integrity audit — fraud-pattern check via Codex MCP
 ----------------------------------------------------
 
-`review integrity <ID>` is a SEPARATE Codex check from claim verdict:
+`review integrity <probe>` is a SEPARATE Codex check from claim verdict:
 
 ```
 integrity      "is the experimental setup honest?"
@@ -173,7 +179,7 @@ mcp__codex__codex:
       configs:        [configs/<NAME>.yaml for every linked run]
       results:        [results/<NAME>/metrics.json for every linked run]
       runtime:        [results/<NAME>/runtime.yaml for every linked run]
-      probe:     [probes/<NN>_<slug>/probe.yaml]
+      probe:     [probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml]
       claim refs:     [CLAIMS_FROM_RESULTS.md, paper/*.tex if present]
 
     Categories:
@@ -198,13 +204,13 @@ mcp__codex__codex:
 Sidecar file in the probe folder:
 
 ```
-probes/<NN>_<slug>/INTEGRITY_AUDIT.md
+probes/<GROUP>_<group_slug>/<NN>_<slug>/INTEGRITY_AUDIT.md
 ```
 
 Schema:
 
 ```markdown
-# INTEGRITY AUDIT — <ID>
+# INTEGRITY AUDIT — P.A01
 
 - overall_verdict:  pass | warn | fail
 - audited_at:       <ISO timestamp>
@@ -236,7 +242,7 @@ integrity = warn  →  claim verdict runs but confidence auto-capped at
 integrity = pass  →  claim verdict runs normally
 ```
 
-If `/review claim <ID>` is invoked without a recent INTEGRITY_AUDIT.md
+If `/review claim <probe>` is invoked without a recent INTEGRITY_AUDIT.md
 (< 24h old, same git_sha), this skill auto-runs integrity first in the
 same session before claim verdict.
 
@@ -257,7 +263,7 @@ integrity   reviewer-detected fraud patterns (fake GT, leakage, etc.)
 Claim verdict — semantic judgment via Codex MCP
 ------------------------------------------------
 
-The `review claim <ID>` mode delegates the value-judgment to an external
+The `review claim <probe>` mode delegates the value-judgment to an external
 LLM. Structural checklists catch "is the comparison apples-to-apples?";
 this catches "does the data actually mean what we say it means?". They
 are complementary — run both before any submission claim.
@@ -300,7 +306,7 @@ mcp__codex__codex:
 
 ### Verdict integration with structural review
 
-If `review probe <ID>` (structural) was run first, its issues feed
+If `review probe <probe>` (structural) was run first, its issues feed
 the Codex prompt as `Known caveats:`. If the structural review found
 `error`-severity issues, the semantic verdict's confidence is
 auto-downgraded to `low` regardless of Codex's own confidence.
@@ -309,7 +315,7 @@ auto-downgraded to `low` regardless of Codex's own confidence.
 
 ```
 yes      → claim supported. If ablations incomplete → suggest
-           /haipipe-probe explore propose <ID>. Else ready for paper.
+           /haipipe-probe explore propose <probe>. Else ready for paper.
 partial  → update claim to reflect what IS supported. Suggest supplementary
            probes (via /haipipe-probe explore propose). Multiple
            rounds of partial on the same claim → consider narrowing scope.
@@ -346,7 +352,7 @@ Output format
 --------------
 
 ```
-═══ Probe E02 review ═══
+═══ Probe P.A01 review ═══
 Status: ⚠️ 2 warnings, 0 errors
 
 ✅ Arms paired (N=3 each)
@@ -398,7 +404,7 @@ Risk profile
 Disambiguation
 ---------------
 
-  - No verb (just <ID>) → default to `probe` (structural) review.
+  - No verb (just <probe>) → default to `probe` (structural) review.
   - "integrity" / "audit" / "fraud" / "honesty" + ID → integrity audit via Codex.
   - "claim" / "verdict" / "supports?" + ID → semantic verdict via Codex
     (auto-runs integrity first if no recent audit).
@@ -412,11 +418,11 @@ Specialist tail
 
 ```
 status:    ok | blocked | failed
-summary:   "E02 review: 0 errors, 2 warnings, recommended actions: 3"
-          OR "E02 integrity audit: WARN (B metric-definition inconsistent)"
-          OR "E02 claim verdict: partial (confidence: medium)"
+summary:   "P.A01 review: 0 errors, 2 warnings, recommended actions: 3"
+          OR "P.A01 integrity audit: WARN (B metric-definition inconsistent)"
+          OR "P.A01 claim verdict: partial (confidence: medium)"
 artifacts: [report stdout / --out path / INTEGRITY_AUDIT.md / CLAIMS_FROM_RESULTS.md]
-next:      apply suggested actions then /result aggregate <ID> again
-          OR if integrity WARN/FAIL: fix flagged categories then /review integrity <ID>
-          OR if claim verdict was partial/no: /haipipe-probe explore propose <ID>
+next:      apply suggested actions then /result aggregate <probe> again
+          OR if integrity WARN/FAIL: fix flagged categories then /review integrity <probe>
+          OR if claim verdict was partial/no: /haipipe-probe explore propose <probe>
 ```

@@ -3,6 +3,12 @@ name: paper-illustration
 description: "Generate publication-quality AI illustrations for academic papers using Gemini image generation. Creates architecture diagrams, method illustrations with Claude-supervised iterative refinement loop. Use when user says \"生成图表\", \"画架构图\", \"AI绘图\", \"paper illustration\", \"generate diagram\", or needs visual figures for papers."
 argument-hint: '"[description-or-method-file] [— style-ref: <source>]"'
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex, mcp__codex__codex-reply, WebSearch
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Generate publication-quality AI illustrations for academic papers using Gemini image generation."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Paper Illustration: Multi-Stage Claude-Supervised Figure Generation

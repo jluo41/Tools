@@ -3,6 +3,12 @@ name: haipipe-application
 description: "Application layer orchestrator (the G_application umbrella). Routes every session-style workflow in the haipipe stack: ask (research question driver, can trigger D_probe) and external creation (message / ui / report) drawing on K/W from E_insight. All kinds share one session skeleton: SESSION_STATE.json + plan-vN.yaml + gate (persona + attendance) + context loader. Use to ask a research question, draft a patient/clinician message, sketch UI, write a stakeholder report. Trigger: ask, question, session, message, ui, sketch, report, briefing, /haipipe-application."
 argument-hint: "[kind] [intent...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Application layer orchestrator (the G_application umbrella)."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-application (orchestrator)

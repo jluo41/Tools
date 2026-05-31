@@ -1,6 +1,12 @@
 ---
 name: conference-paper-writing
 description: Use when writing or revising ML or AI conference papers for venues such as NeurIPS, ICML, ICLR, ACL, AAAI, or COLM, especially when the workflow is conference-first rather than Nature-style journal-first.
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Use when writing or revising ML or AI conference papers for venues such as NeurIPS, ICML, ICLR, ACL, AAAI, or COLM, especially when the workflow is conference-first rather than Nature-style journal-first."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Conference Paper Writing for Top AI Venues

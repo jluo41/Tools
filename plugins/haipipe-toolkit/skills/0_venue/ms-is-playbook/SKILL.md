@@ -1,6 +1,12 @@
 ---
 name: ms-is-playbook
 description: Use when preparing or positioning a paper for the Information Systems department of Management Science (MS). Invoke for venue fit assessment, framing the economic or analytical angle of IS research, and MS-specific reviewer expectations around formal modeling, causal econometrics, and market/platform mechanisms. Use proactively when the user is writing an IS paper involving platforms, digital markets, IT economics, mechanism design, or analytical models.
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Use when preparing or positioning a paper for the Information Systems department of Management Science (MS)."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Management Science — IS Section Playbook

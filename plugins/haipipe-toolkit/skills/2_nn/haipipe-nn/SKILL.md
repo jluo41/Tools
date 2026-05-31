@@ -3,6 +3,12 @@ name: haipipe-nn
 description: "Run any Stage 5 NN pipeline work. Parses intent (layer + function) and dispatches to the right specialist (haipipe-nn-algo/-tuner/-instance/-modelset). Use for algorithms (mlpredictor/tsforecast/tefm/tediffusion/bandit), tuner sweeps, ModelInstance materialization, ModelSet pipelines, dashboards, reviews, generation, testing. Trigger: nn pipeline, model, algorithm, tuner, instance, modelset, /haipipe-nn."
 argument-hint: "[layer] [function] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Run any Stage 5 NN pipeline work."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-nn (orchestrator)

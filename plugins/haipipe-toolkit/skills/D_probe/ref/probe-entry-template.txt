@@ -1,6 +1,6 @@
 📋 Per-probe entry template
 
-Use this skeleton for ONE block in an probe-log.txt.  Copy, fill,
+Use this skeleton for ONE block in a probe-log.txt. Copy, fill,
 prune fields that don't apply.  Keep total length ~25 lines.
 
 ──────────────────────────────────────────────────────────────────────────

@@ -1,6 +1,12 @@
 ---
 name: paper-bootstrap
 description: Use when starting a new manuscript project or cleaning up an existing paper directory under `/data/boom/Papers` and you need a standard structure, active source files, project memory, and venue defaults before deeper writing begins.
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Use when starting a new manuscript project or cleaning up an existing paper directory under `/data/boom/Papers` and you need a standard structure, active source files, project memory, and venue defaults before deeper writing begins."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Paper Bootstrap

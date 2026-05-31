@@ -3,6 +3,12 @@ name: haipipe-insight-knowledge
 description: "K-level knowledge specialist of the haipipe-insight family. Reads I_information entries and synthesizes validated belief statements into insights/K_knowledge/. A K entry is a 'we now claim X is true' statement with explicit support / counter-evidence / confidence. NO code, pure markdown synthesis. Use when running K-phase via /haipipe-application ask, or directly /haipipe-insight-knowledge. Trigger: K-level, knowledge, validated belief, causal claim, what do we know."
 argument-hint: "[--project <path>] [--scope <pattern-ids>] [--slug <slug>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "K-level knowledge specialist of the haipipe-insight family."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-insight-knowledge
@@ -11,6 +17,12 @@ Skill: haipipe-insight-knowledge
 K-level of the Insight base (D → I → K → W). Reads multiple
 `I_information/I*.md` entries (and optionally underlying D/D*.md) and
 synthesizes validated belief statements.
+
+**Invocation modes** (see `../../ref/invocation-modes.md`): interactive (a
+human steers; the belief-triage ASK runs) OR headless (`--scope` ≥ 1 I id +
+`--auto` → file silently), chosen by input completeness.
+`card-creator-knowledge-agent` calls this skill headless during fan-out; agent
++ no I id → `status: blocked` (never hang). End with the structured return block.
 
 ```
 D — Data:         "what we observed"

@@ -3,6 +3,12 @@ name: haipipe-narrative
 description: "Story layer (N_narrative). Manages the project's LIVING narratives under examples/<project>/narratives/ — the right-hand side of the KB ⇄ Narrative double arrow. A narrative is a story line: an angle, the claims it needs (by reference to insights/K), an ignite-log, and a section decision-tree. Reads the KB (insights/K + W) to surface claim GAPs; never writes to probes/tasks/insights. Distinct from F_paper/1-narrative/narrative-report (that is a one-shot paper contract; THIS is the upstream living story). NO code, pure markdown. Trigger: narrative, story, story line, angle, ignite, am I ignited, what story, sell this, which claims do I need, narrative gap, /haipipe-narrative."
 argument-hint: "[new|status|claims|ignite] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Story layer (N_narrative)."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-narrative (story layer)

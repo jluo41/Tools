@@ -3,6 +3,12 @@ name: haipipe-insight-explore
 description: "Coverage / readability scanner of the haipipe-insight family. Reads the project's probes/ and existing insights/ folders; reports which probes are CONFIRMED and ready for synthesis, what's already in the insight base, and which gaps a session could close. NO code execution. Use to plan the next /haipipe-application ask, or as a standalone read-only audit. Trigger: explore, scan, coverage, what can we synthesize, what's missing, /haipipe-insight-explore."
 argument-hint: "[--project <path>]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Coverage / readability scanner of the haipipe-insight family."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-insight-explore
@@ -29,7 +35,7 @@ Workflow
 Step 1: Resolve project root (--project or cwd-inferred)
 
 Step 2: Scan probes/
-  - For each probes/<NN>_<slug>/probe.yaml:
+  - For each probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml:
     - status = result.status (pending | confirmed | inconclusive | refuted | exploratory)
     - has CLAIMS_FROM_RESULTS.md? has INTEGRITY_AUDIT.md?
     - bucketize: ready_for_synthesis (confirmed) | not_ready | failed
@@ -117,5 +123,5 @@ Specialist tail
 status:    ok | blocked | failed
 summary:   "3 probes confirmed, 2 still need D entries; 1 P→K elevation pending"
 artifacts: [stdout summary, insights/coverage.md (if --out)]
-next:      Pick a gap to close: /haipipe-insight-data <ID> | /haipipe-insight-information ...
+next:      Pick a gap to close: /haipipe-insight-data <probe_ref> | /haipipe-insight-information ...
 ```

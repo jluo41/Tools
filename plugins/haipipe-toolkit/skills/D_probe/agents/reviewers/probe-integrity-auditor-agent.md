@@ -10,6 +10,12 @@ tools:
   - mcp__codex__codex
   - mcp__codex__codex-reply
 model: sonnet
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "REVIEWER agent for D_probe."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Probe Integrity Auditor
@@ -67,7 +73,7 @@ integrity = pass  → claim-verifier runs normally
 
 ```
 status:    ok | blocked | failed
-summary:   "E02 integrity: WARN (B metric-definition inconsistent across arms)"
-artifacts: [probes/<NN>_<slug>/INTEGRITY_AUDIT.md]
+summary:   "P.A01 integrity: WARN (B metric-definition inconsistent across arms)"
+artifacts: [probes/<GROUP>_<group_slug>/<NN>_<slug>/INTEGRITY_AUDIT.md]
 next:      pass/warn → claim-verifier-agent;  fail → fix flagged category, re-audit
 ```

@@ -3,6 +3,12 @@ name: haipipe-task-for-algo
 description: "algo-dev task-folder build specialist. Scaffolds {NN}_<name>/ task-folders under X-series (paired Track A demo) that smoke-test a newly developed algorithm class end-to-end on a TINY config. NOT for full training — see /haipipe-task-for-training. Called by /haipipe-task orchestrator when task-type=algo. Cross-references /haipipe-nn-algo."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "algo-dev task-folder build specialist."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-task-for-algo

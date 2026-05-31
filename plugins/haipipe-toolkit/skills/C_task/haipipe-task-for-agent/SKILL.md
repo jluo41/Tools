@@ -3,6 +3,12 @@ name: haipipe-task-for-agent
 description: "agent task-folder build specialist. Scaffolds {NN}_<name>/ task-folders under F-series task-groups that call an LLM agent with prompts + tools — outputs to results/<run>/{transcript.json, summary.md}. Called by /haipipe-task orchestrator when task-type=agent. No corresponding pipeline skill yet."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "agent task-folder build specialist."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-task-for-agent

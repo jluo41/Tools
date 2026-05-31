@@ -3,6 +3,12 @@ name: haipipe-application-ui
 description: "UI specialist of the haipipe-application family. STUB. Will be an outer-loop session producing UI sketches / specs from the project's K/W knowledge base. Reads K_knowledge + W_wisdom from E_insight, can trigger /haipipe-insight ask, writes to examples/<project>/applications/ui/. NEVER writes back to insights/. Trigger: ui, sketch, mockup, screen, layout, wireframe, /haipipe-application ui."
 argument-hint: '[--audience designer|dev] [--project <path>] [--slug <slug>] "<intent>"'
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "UI specialist of the haipipe-application family."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-application-ui   (STUB)

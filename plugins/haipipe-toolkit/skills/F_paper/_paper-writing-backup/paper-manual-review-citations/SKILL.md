@@ -3,6 +3,12 @@ name: paper-manual-review-citations-backup
 description: "Section-by-section, citation-by-citation manual verification of every \\cite{...} in the paper, with a human approval gate at every fix. Verifies three independent axes per cite: existence (paper resolves at the claimed DOI/arXiv/venue), metadata correctness (author, year, venue, title), and context appropriateness (cited paper actually supports the surrounding claim). Use when user says \"manually review the citations\", \"逐个核对引用\", \"walk through every cite\", \"pre-submission citation pass\", or before any high-stakes submission where one wrong-context or hallucinated cite is unacceptable."
 argument-hint: "[paper-directory]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, WebFetch, WebSearch
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Section-by-section, citation-by-citation manual verification of every \\\\cite{...} in the paper, with a human approval gate at every fix."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Paper Manual Review (Citations): Walk Every Cite, Approve Every Fix

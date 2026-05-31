@@ -31,7 +31,7 @@ Top-level fields
   "phase_history": [ ... ],
   "gates":         [ ... ],
   "revisions_count": 0,
-  "experiment_calls": [ ... ],
+  "probe_calls":      [ ... ],
   "task_calls":      [ ... ],
   "gate_persona":    { ... },
   "unattended_timeout": null
@@ -93,7 +93,7 @@ gates                ordered log of every gate firing
 revisions_count      number of `revise` outcomes so far
                      Hits MAX_REVISIONS = 3 → forced approve with audit banner.
 
-experiment_calls     [{ phase, exp_id, via, ts, status }, ...]
+probe_calls          [{ phase, probe_ref, via, ts, status }, ...]
                      Records every /haipipe-probe * invocation.
                      via ∈ { design, bridge, result, review }.
 

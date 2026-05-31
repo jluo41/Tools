@@ -44,7 +44,7 @@ D layer (Data)
 source_id: <task-id|exp-id>            # WHERE this observation came from
                                        # task id (e.g. T1, "regression_v2") for
                                        # C_task-sourced D cards
-                                       # probe id (e.g. E07) for
+                                       # probe source ref (e.g. P.A07) for
                                        # D_probe-sourced D cards (rare)
 headline:  "<one-line number summary>" # e.g. "val: FiLM Δ -0.98 ± 0.27 mg/dL (p=0.018, n=3)"
 ```
@@ -262,8 +262,8 @@ Validation rules (any layer)
       - D / I cards: task ids (e.g. T1, T2) — points into the
         plan's task_batch; the task's results/ folder is the
         evidence anchor
-      - K / W cards: probe ids (e.g. E07) — points into the
-        plan's experiment_batch; probe.yaml is the evidence
+      - K / W cards: probe source refs (e.g. P.A07) — points into the
+        plan's probe_batch; probe.yaml is the evidence
         anchor (status MUST be `confirmed`)
       - Strategic W cards: a list of K ids (e.g. [K01, K03, K05])
         instead of a single E; mark `type: strategic` in body

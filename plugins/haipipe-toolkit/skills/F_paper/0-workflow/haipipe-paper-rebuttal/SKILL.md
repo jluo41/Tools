@@ -3,6 +3,12 @@ name: haipipe-paper-rebuttal
 description: "Submission rebuttal pipeline specialist (was: rebuttal). Parses external reviews, enforces coverage and grounding, drafts a safe text-only rebuttal under venue limits, and manages follow-up rounds. Venue-agnostic. Called by /haipipe-paper orchestrator. Direct invocation works for rebuttal work. Trigger: rebuttal, reply to reviewers, ICML/NeurIPS/ICLR rebuttal, OpenReview response, respond to external reviews."
 argument-hint: "[paper-path-or-review-bundle]"
 allowed-tools: Bash(*), Read, Grep, Glob, Write, Edit, Agent, Skill, mcp__codex__codex, mcp__codex__codex-reply
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Submission rebuttal pipeline specialist (was: rebuttal)."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Workflow 4: Rebuttal

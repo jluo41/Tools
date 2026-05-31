@@ -1,8 +1,14 @@
 ---
 name: haipipe-probe
-description: "Research probe pipeline — drives how tasks/runs in a project roll out. Each probe/probe is a claim-directed research thread: design (hypothesis + planned arms), bridge (scaffold tasks/runs in C_task), result (harvest arms → claim), review (structural QA + Codex semantic verdict), explore (coverage + propose next), loop (review→propose→materialize→re-review). Contains no code — pure steering layer on top of C_task execution. Feeds F_paper. Trigger: probe, probe, claim, hypothesis, drive probe, plan next runs, aggregate runs, statistical test, paired-t, coverage, propose next probe, review-loop, iterate until claim holds, implement the plan, deploy probes, /haipipe-probe."
-argument-hint: [function] [probe_id_or_path] [args...]
+description: "Research probe pipeline — drives how tasks/runs in a project roll out. Each probe is a claim-directed research thread: design (hypothesis + planned arms), bridge (scaffold tasks/runs in C_task), result (harvest arms → claim), review (structural QA + Codex semantic verdict), explore (coverage + propose next), loop (review→propose→materialize→re-review). Contains no code — pure steering layer on top of C_task execution. Feeds F_paper. Trigger: probe, claim, hypothesis, drive probe, plan next runs, aggregate runs, statistical test, paired-t, coverage, propose next probe, review-loop, iterate until claim holds, implement the plan, deploy probes, /haipipe-probe."
+argument-hint: [function] [probe_ref_or_path] [args...]
 allowed-tools: Bash, Read, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Research probe pipeline — drives how tasks/runs in a project roll out."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-probe (orchestrator)
@@ -25,13 +31,13 @@ EXECUTION PIPELINE          (C_task)
   artifacts:  code, notebooks, configs, runtime.yaml, metrics.json
   question:   "this run, did it work?"
 
-RESEARCH PROBE PIPELINE     (D_probe ← this skill; folder name D_probe)
+RESEARCH PROBE PIPELINE     (D_probe ← this skill; project folder probes/)
   probe      = 朝哪个方向探索、为什么做、接下来做什么
   artifacts:  probe.yaml, daily logs, review.md, claim
   question:   "across these runs, does the hypothesis hold?"
 ```
 
-An **probe is a probe thread**, not a claim repository. It
+A **probe is a research thread**, not a claim repository. It
 steers how tasks and runs roll out: defines hypothesis → bridges plan
 into C_task tasks → harvests arms → judges → proposes next move →
 iterates. It contains NO code, NO notebooks, NO metrics computation;
@@ -42,17 +48,17 @@ The two pipelines have a strict one-way dependency: probes read
 task artifacts and link to them; tasks never reference probes.
 
 ```
-/haipipe-probe                                -> dashboard (list expmts)
-/haipipe-probe design <ID>                    -> define new probe
-/haipipe-probe link <ID> <run-path>           -> link a run to an arm
-/haipipe-probe result <ID>                    -> aggregate + claim
-/haipipe-probe review <ID>                    -> structural QA gate
-/haipipe-probe review integrity <ID>          -> Codex fraud-pattern audit
-/haipipe-probe review claim <ID>              -> Codex semantic verdict
-/haipipe-probe bridge <ID>                    -> scaffold arms in C_task + deploy
+/haipipe-probe                                -> dashboard (list probes)
+/haipipe-probe design new <slug>              -> define new probe folder
+/haipipe-probe design link <probe> <run-path> -> link a run to an arm
+/haipipe-probe result <probe>                 -> aggregate + claim
+/haipipe-probe review <probe>                 -> structural QA gate
+/haipipe-probe review integrity <probe>       -> Codex fraud-pattern audit
+/haipipe-probe review claim <probe>           -> Codex semantic verdict
+/haipipe-probe bridge <probe>                 -> scaffold arms in C_task + deploy
 /haipipe-probe explore [project-path]         -> coverage map + propose
-/haipipe-probe loop <ID>                      -> iterate review→propose→materialize
-/haipipe-probe inspect [<ID> | <project>]     -> list / status / audit
+/haipipe-probe loop <probe>                   -> iterate review→propose→materialize
+/haipipe-probe inspect [<probe> | <project>]  -> list / status / audit
 /haipipe-probe "<natural language>"           -> infer, dispatch
 ```
 
@@ -105,7 +111,7 @@ ref/                           shared across specialists:
   probe-entry-template.txt  per-probe entry template (project log)
   probe-headline-template.txt headline scoreboard skeleton
   probe-caveats-checklist.txt 8+ confound categories
-  _legacy-scope-expmt.md       migrated content reference
+  _legacy-scope-expmt.md       migrated content reference (read-only)
 ```
 
 
@@ -120,26 +126,40 @@ examples/Proj-X/
 │   ├── propose.md                          (auto: /explore propose output)
 │   ├── comparison.md                       (auto: /result render output)
 │   │
-│   ├── 01_baseline_noise_floor/            ← folder-per-probe
-│   │   ├── probe.yaml                 source of truth (claim + arms + result)
-│   │   ├── review.md                       latest QA + Codex verdict (overwritten)
-│   │   ├── CLAIMS_FROM_RESULTS.md          Codex verdict snapshot
-│   │   └── logs/                           daily narrative
-│   │       ├── 2026-05-24.md
-│   │       └── 2026-05-25.md
+│   ├── A_baseline_controls/                ← probe group / series
+│   │   ├── 01_baseline_noise_floor/        ← folder-per-probe
+│   │   │   ├── probe.yaml             source of truth (claim + arms + result)
+│   │   │   ├── review.md                   latest QA + Codex verdict (overwritten)
+│   │   │   ├── CLAIMS_FROM_RESULTS.md      Codex verdict snapshot
+│   │   │   └── logs/                       daily narrative
+│   │   │       ├── 2026-05-24.md
+│   │   │       └── 2026-05-25.md
 │   │
-│   └── 02_lhm_vs_baseline/
-│       └── ...
+│   └── B_generalization/
+│       └── 01_cross_dataset_transfer/
+│           └── ...
 │
 ├── tasks/...                               (execution, C_task owns)
 └── paper/...                               (claims feed F_paper)
 ```
 
-Naming: `<NN>_<slug>/` (2-digit, no gap on creation, snake_case slug).
+Naming: `<GROUP>_<group_slug>/<NN>_<slug>/`, where the canonical source
+ref is `P.<GROUP><NN>` (e.g. `P.A01`). `NN` is allocated within the group,
+not globally.
 `probe.yaml` is **source of truth**; `comparison.md` and `INDEX.md`
 are derived; `logs/<DATE>.md` is append-only daily narrative.
 NO code in probe folders — figures/tables/notebooks live in tasks/
 and are referenced via `evidence:` field in probe.yaml.
+
+Probe identity contract:
+
+```
+folder:             probes/A_baseline_controls/01_lhm_vs_baseline/
+source of truth:    probes/A_baseline_controls/01_lhm_vs_baseline/probe.yaml
+yaml id:            P.A01
+mixed source refs:  P.A01
+resolver accepts:   P.A01 | A01 | A/01_lhm_vs_baseline | probes/A_baseline_controls/01_lhm_vs_baseline/
+```
 
 
 Routing Logic
@@ -148,7 +168,7 @@ Routing Logic
 ```
 Step 1: Parse $ARGUMENTS.
 Step 2: Resolve verb -> specialist via verb map.
-Step 3: Validate target (probe ID or project path).
+Step 3: Validate target (probe ref/folder/path or project path).
 Step 4: Dispatch: Skill("haipipe-probe-<specialist>", args="<verb> <rest>").
 Step 5: Surface specialist tail.
 ```

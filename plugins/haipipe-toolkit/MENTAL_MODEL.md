@@ -103,7 +103,7 @@ D_probe is the conceptual name. `D_probe`, `probes/`, and
 `/haipipe-probe` remain the compatibility names in the current
 folder and command layout.
 
-A claim CANNOT exist without an probe.
+A claim CANNOT exist without a probe.
 A pattern observed in a single task is at most I; promoting it to K
 requires a controlled comparison (arms × seeds × statistical test).
 
@@ -153,7 +153,7 @@ W has two flavors in the archive — same folder, distinguished by
 `sources:`
 
 ```
-per-probe W:  sources: [E07]                 (1 probe)
+per-probe W:  sources: [P.A07]               (1 probe)
 strategic     W:  sources: [K01, K03, K05]       (cross-probe)
 ```
 
@@ -226,7 +226,7 @@ Three old confusions, resolved:
 ```
 Old confusion 1:  "where does K come from?"
                   was: vaguely "synthesize across D entries"
-                  now: K is born when an probe validates a claim;
+                  now: K is born when a probe validates a claim;
                        no probe, no K.
 
 Old confusion 2:  "D vs I — what's the cut?"
@@ -269,13 +269,13 @@ task_batch:
     yields: [D02]
 
 # Batch B — D_probe work to produce K + W
-experiment_batch:
-  - id: E07
+probe_batch:
+  - id: P.A07
     skill: /haipipe-probe design
     arms: [film_pm, baseline_pm]
     yields: [K01, W01]
-    needs: [D01, I02]          # must finish before E07 starts
-  - id: E08
+    needs: [D01, I02]          # must finish before P.A07 starts
+  - id: P.B01
     skill: /haipipe-probe design
     arms: [film_subset_od, baseline_subset_od]
     yields: [K02]
@@ -287,15 +287,15 @@ insight_yield:
   D02: {layer: D, sources: [T3]}
   I01: {layer: I, sources: [T1]}
   I02: {layer: I, sources: [T2], refs: [D01]}
-  K01: {layer: K, sources: [E07], refs: [D01, I02]}
-  K02: {layer: K, sources: [E08], refs: [D02]}
-  W01: {layer: W, sources: [E07], refs: [K01]}
+  K01: {layer: K, sources: [P.A07], refs: [D01, I02]}
+  K02: {layer: K, sources: [P.B01], refs: [D02]}
+  W01: {layer: W, sources: [P.A07], refs: [K01]}
 
 # DAG — what blocks what
 dag:
   - T1, T2, T3 in parallel
-  - E07 needs D01 + I02
-  - E08 needs D02
+  - P.A07 needs D01 + I02
+  - P.B01 needs D02
   - All yields → G-report
 ```
 
@@ -304,7 +304,7 @@ Key properties:
 - **N tasks ↔ M D/I cards** (many-to-many, not 1:1)
 - **N tasks can collectively close 1 D card** (cross-task evidence)
 - **1 task can close multiple D+I cards at once** (lens multiplicity)
-- **K + W cards always have an probe id in `sources`**
+- **K + W cards always have a probe source ref (`P.<GROUP><NN>`) in `sources`**
 - **Strategic W cards have multiple K ids in `sources`**
 
 
@@ -330,7 +330,7 @@ ask kind — research session (4 phases):
    │                          [G-observe gate, SOFT]          │
    │                          (skip if KB already has all D+I)│
    │                                                          │
-   │   Phase 3   claim        dispatch experiment_batch:      │
+   │   Phase 3   claim        dispatch probe_batch:           │
    │                            /haipipe-probe design    │
    │                            /haipipe-probe bridge    │
    │                            /haipipe-probe result    │
@@ -446,7 +446,7 @@ the optional inline-ask chain at gap-phase.
        → KB has D01, I01 already — but no K with test-od scope
        → writes plan-v1.yaml:
             task_batch:     [T1 (individual-query OD samples)]
-            experiment_batch: [E12 (FiLM vs baseline, OD eval)]
+            probe_batch: [P.A12 (FiLM vs baseline, OD eval)]
             insight_yield:  [D02, K03, W02]
        [G-design SOFT] → approve
 
@@ -458,15 +458,15 @@ the optional inline-ask chain at gap-phase.
        [G-observe SOFT] → approve
 
 [t=4]  Phase 3 — claim
-       dispatch E12:
-         /haipipe-probe design new E12
-         /haipipe-probe bridge E12
+       dispatch P.A12:
+         /haipipe-probe design new film_vs_baseline_od_eval --group A --group-title baseline_controls --id 12
+         /haipipe-probe bridge P.A12
            → scaffolds 6 task-folders (3 seeds × 2 arms)
            → invokes Run Script Reviewer (HARSH gate, C_task side)
            → bash runs/<RUN>.sh × 6
-         /haipipe-probe result aggregate E12
+         /haipipe-probe result aggregate P.A12
            → fills result block in probe.yaml
-         /haipipe-probe review E12
+         /haipipe-probe review P.A12
            → HARSH structural QA + Codex verdict
        → returns K03 + W02 material
        [G-claim SOFT-on-G-side] → approve
@@ -507,7 +507,7 @@ A: tasks/ — specifically a `display`-type task. The figure is the
 
 A: No. K requires a controlled comparison — arms × seeds × test. A
    regression is observational; it can produce strong I, but not K.
-   Promote by scaffolding an probe that arm-matches the regressor.
+   Promote by scaffolding a probe that arm-matches the regressor.
 
 **Q: One C_task run yields evidence for 3 D cards. How is that
     recorded in the plan?**
@@ -526,11 +526,11 @@ A: `insight_yield.D01.sources: [T1, T2, T5]`. The card cites all
 
 A: Yes. If the KB already has all needed K+W, or if the question
    only needs D+I (e.g. "describe the data"), the plan's
-   `experiment_batch` is empty and Phase 3 is a no-op.
+   `probe_batch` is empty and Phase 3 is a no-op.
 
 **Q: Can a session skip Phase 2 (observe)?**
 
-A: Yes. If the experiment_batch only depends on existing D/I in the
+A: Yes. If the probe_batch only depends on existing D/I in the
    KB, Phase 2 is a no-op and Phase 3 runs directly.
 
 **Q: Multiple sessions cite the same K card. Does the card get
@@ -581,8 +581,8 @@ A: At Phase load, the external kind reads K/W on the relevant tags.
 
 **Q: Two sessions want to run the same probe. Wasted compute?**
 
-A: The second session's plan-v1.yaml.experiment_batch will scan
-   existing probes/ first. If E07 with the desired arms exists
+A: The second session's plan-v1.yaml.probe_batch will scan
+   existing probes/ first. If P.A07 with the desired arms exists
    and is `confirmed`, the second session reuses it (no re-run).
 
 
@@ -591,7 +591,7 @@ One-line rules of thumb
 
 ```
 new D / I material  → C_task        (a task run produces it)
-new K / W material  → D_probe  (an probe claims it)
+new K / W material  → D_probe  (a probe claims it)
 file a vetted card  → E_insight     (just write the markdown)
 any session-style intent → G_application (4 kinds: ask / message / ui / report)
 

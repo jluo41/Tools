@@ -3,6 +3,12 @@ name: haipipe-data-source
 description: "Stage 1 (Source) specialist. Builds, runs, and reviews SourceFn / HumanFn; inspects 1-SourceStore; loads source-layer typed frames. Called by /haipipe-data orchestrator. Direct invocation works for stage-scoped work, but /haipipe-data is the recommended entry."
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Stage 1 (Source) specialist."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-data-source
