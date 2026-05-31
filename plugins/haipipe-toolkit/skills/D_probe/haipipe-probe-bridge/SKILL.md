@@ -74,10 +74,13 @@ Step 2: SCAFFOLD into C_task
 
 Step 3: PRE-FLIGHT CODE REVIEW (CODE_REVIEW=true)
   For each scaffolded task-folder from Step 2, invoke the
-  **Run Script Reviewer** agent (out-of-family intent ↔ impl audit):
+  **Run Script Reviewer** agent (out-of-family intent ↔ impl audit).
+  The agent is a role-doc (not a registered subagent_type) — dispatch
+  it by reading its file and handing the body to a Task subagent:
 
-    Task tool, subagent_type="run-script-reviewer"
-    Prompt: "Pre-flight review for bridge deploy.
+    Read  skills/C_task/agents/reviewers/run-script-reviewer-agent.md
+    Task tool (general-purpose subagent), Prompt = that file's body +
+            "Pre-flight review for bridge deploy.
              task-folder:   <absolute path>
              probe_id: <ID>
              hypothesis:    <quoted from probe.yaml>

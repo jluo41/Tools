@@ -20,7 +20,10 @@ Commands
 
 ```
 /haipipe-probe review run <run-path>
-  STRUCTURAL: audit ONE run against the per-run checklist.
+  STRUCTURAL: per-run trustworthiness. DELEGATES to the C_task agent
+  run-result-auditor-agent — read skills/C_task/agents/reviewers/run-result-auditor-agent.md
+  and dispatch its body to a Task subagent over <run-path>. Per-run
+  quality is a C_task judgment; D_probe only consumes the verdict.
 
 /haipipe-probe review probe <ID>
   STRUCTURAL: audit ONE probe against the per-probe checklist.
@@ -42,23 +45,18 @@ Commands
 ```
 
 
-Per-run checklist
-------------------
+Per-run checklist — MOVED to C_task
+------------------------------------
 
-```
-□ _meta.purpose         non-empty in configs/<NAME>.yaml
-□ _meta.note            non-empty (warn if missing, not fail)
-□ config seed           explicit value (not relying on framework default)
-□ runtime.yaml exists   (otherwise: orphan run)
-□ runtime.status        == ok (failed/aborted: red flag for any claim use)
-□ runtime.exit_code     == 0
-□ runtime.git_sha       != "unknown"; refers to a real commit
-□ git working tree      clean at runtime.started? (best-effort check)
-□ metrics.json exists   parseable
-□ heavy artifacts       under _WorkSpace/, NOT in results/
-```
+The per-run sanity checklist (runtime.status, exit_code, git_sha,
+metrics.json parseable, heavy-artifact placement, ...) now lives with the
+agent that owns it: **`skills/C_task/agents/reviewers/run-result-auditor-agent.md`**
+(GATE 2). "Did THIS run produce a trustworthy artifact?" is a C_task
+question, not a D_probe one.
 
-Each unchecked item → issue with severity (red/yellow/blue) + suggested fix.
+`review run` above delegates to that agent. The per-probe checklist below
+consumes its verdict (see "all linked runs pass run-result-auditor-agent").
+D_probe does NOT re-implement the per-run list — single source of truth.
 
 
 Per-probe checklist
@@ -68,7 +66,7 @@ Per-probe checklist
 □ all arms have ≥ 1 linked run
 □ paired arms have equal N runs (warn if unequal)
 □ N ≥ 3 for statistical claim (else mark claim as "exploratory")
-□ all linked runs pass per-run review
+□ all linked runs pass run-result-auditor-agent (GATE 2, C_task)
 □ all linked runs share same git_sha (within arm AND across arms)
 □ all linked runs share same AIData version (read from configs)
 □ same training schedule across arms (only the intended difference varies)
