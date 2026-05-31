@@ -23,13 +23,13 @@ specialists (one per type):
 ```
 task-type     Group letter   Specialist                              Cross-skill
 ------------  -------------  --------------------------------------  --------------------------
-data          D              /haipipe-task-data              /haipipe-data
-algo          X              /haipipe-task-algo              /haipipe-nn-algo
-training      A              /haipipe-task-training          /haipipe-nn-tuner+instance
-eval          B              /haipipe-task-eval              (project-local; future)
-display       C              /haipipe-task-display           (independent)
-individual    E              /haipipe-task-individual        /haipipe-individual
-agent         F              /haipipe-task-agent             (none yet)
+data          D              /haipipe-task-for-data              /haipipe-data
+algo          X              /haipipe-task-for-algo              /haipipe-nn-algo
+training      A              /haipipe-task-for-training          /haipipe-nn-tuner+instance
+eval          B              /haipipe-task-for-eval              (project-local; future)
+display       C              /haipipe-task-for-display           (independent)
+individual    E              /haipipe-task-for-individual        /haipipe-individual
+agent         F              /haipipe-task-for-agent             (none yet)
 ```
 
 Called by `/haipipe-project` when the request is to **create** something
@@ -69,13 +69,13 @@ task-group       this skill                                 fn/task-group.md
                  reads: ref/hierarchy.md
                         ../../B_project/haipipe-project/ref/project-structure.md
 task-folder      → dispatch by task-type to one of:
-                     /haipipe-task-data
-                     /haipipe-task-algo
-                     /haipipe-task-training
-                     /haipipe-task-eval
-                     /haipipe-task-display
-                     /haipipe-task-individual
-                     /haipipe-task-agent
+                     /haipipe-task-for-data
+                     /haipipe-task-for-algo
+                     /haipipe-task-for-training
+                     /haipipe-task-for-eval
+                     /haipipe-task-for-display
+                     /haipipe-task-for-individual
+                     /haipipe-task-for-agent
                  (legacy monolithic flow at fn/task-folder.md is DEPRECATED;
                   kept as transition fallback only)
 run              this skill                                 fn/run.md
@@ -89,13 +89,13 @@ Task-type → specialist mapping (for scope=task-folder):
 ```
 task-type     Group letter   Specialist                              Cross-skill
 ------------  -------------  --------------------------------------  --------------------------
-data          D              /haipipe-task-data              /haipipe-data
-algo          X              /haipipe-task-algo              /haipipe-nn-algo
-training      A              /haipipe-task-training          /haipipe-nn-tuner+instance
-eval          B              /haipipe-task-eval              (project-local; future)
-display       C              /haipipe-task-display           (independent)
-individual    E              /haipipe-task-individual        /haipipe-individual
-agent         F              /haipipe-task-agent             (none yet)
+data          D              /haipipe-task-for-data              /haipipe-data
+algo          X              /haipipe-task-for-algo              /haipipe-nn-algo
+training      A              /haipipe-task-for-training          /haipipe-nn-tuner+instance
+eval          B              /haipipe-task-for-eval              (project-local; future)
+display       C              /haipipe-task-for-display           (independent)
+individual    E              /haipipe-task-for-individual        /haipipe-individual
+agent         F              /haipipe-task-for-agent             (none yet)
 ```
 
 ---
@@ -284,8 +284,8 @@ $ /haipipe-task task-folder           ← type=data inferred from cwd D01_
 /haipipe-task "train clm baseline" --auto
 
 # direct specialist (bypass orchestrator entirely; skips cascade check)
-/haipipe-task-data
-/haipipe-task-training
+/haipipe-task-for-data
+/haipipe-task-for-training
 
 # end-to-end with auto-cascade (creates project + group if missing)
 /haipipe-task data --auto \
@@ -296,7 +296,7 @@ $ /haipipe-task task-folder           ← type=data inferred from cwd D01_
 #  Step 3b cascade:
 #    ▪ ProjA-Bench-1-FairGlucose missing  → Skill(haipipe-task, project ..., --auto)
 #    ▪ D01_data missing                    → Skill(haipipe-task, task-group ..., --auto)
-#    ▪ both now exist                      → Skill(haipipe-task-data, ..., --auto)
+#    ▪ both now exist                      → Skill(haipipe-task-for-data, ..., --auto)
 ```
 
 ---
@@ -329,7 +329,7 @@ exists in the task-folder. The review is produced by the
 **Run Script Reviewer** agent at:
 
 ```
-Tools/plugins/haipipe-toolkit/agents/run-script-reviewer.md
+Tools/plugins/haipipe-toolkit/skills/C_task/agents/reviewers/run-script-reviewer-agent.md
 ```
 
 What it catches: **intent-vs-implementation mismatches** — silent
@@ -355,7 +355,7 @@ HAIPIPE_SKIP_REVIEW=1          env var at run.sh launch
 ```
 
 This is the only currently-wired trigger. Future trigger points
-(scaffold-time auto-review, claim-gate re-review, manual /run-script-reviewer
+(scaffold-time auto-review, claim-gate re-review, manual /run-script-reviewer-agent
 slash command) are noted as TODOs in the agent's Roadmap section.
 
 

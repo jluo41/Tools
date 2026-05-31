@@ -50,13 +50,13 @@ C_task/                                 ← task-scope skills (THIS SECTION)
 │   ├── ref/                            SHARED: hierarchy, run-sh-template, ...
 │   └── fn/{project, task-group, task-folder, run}.md
 │
-├── haipipe-task-data/                  🔧 data-pipeline (Stage 1-4)
-├── haipipe-task-algo/                  🧪 algo-dev demo
-├── haipipe-task-training/              🧠 model training (Stage 5)
-├── haipipe-task-eval/                  📊 model evaluation
-├── haipipe-task-display/               🖼️  paper figure / table
-├── haipipe-task-individual/            👤 individual-centric query
-└── haipipe-task-agent/                 🤖 LLM agent call
+├── haipipe-task-for-data/                  🔧 data-pipeline (Stage 1-4)
+├── haipipe-task-for-algo/                  🧪 algo-dev demo
+├── haipipe-task-for-training/              🧠 model training (Stage 5)
+├── haipipe-task-for-eval/                  📊 model evaluation
+├── haipipe-task-for-display/               🖼️  paper figure / table
+├── haipipe-task-for-individual/            👤 individual-centric query
+└── haipipe-task-for-agent/                 🤖 LLM agent call
 ```
 
 Scope=project and scope=task-group stay in the orchestrator (they only
@@ -87,13 +87,13 @@ Group Letter Assignment
 ========================
 
 ```
-A = model-run (training)         /haipipe-task-training
-B = evaluation                   /haipipe-task-eval
-C = display (figure/table)       /haipipe-task-display
-D = data-pipeline                /haipipe-task-data          (reassigned from D_demo)
-E = individual query             /haipipe-task-individual    (new)
-F = agent                        /haipipe-task-agent         (new)
-X = algo-dev demo (paired)       /haipipe-task-algo          (renamed from D_demo)
+A = model-run (training)         /haipipe-task-for-training
+B = evaluation                   /haipipe-task-for-eval
+C = display (figure/table)       /haipipe-task-for-display
+D = data-pipeline                /haipipe-task-for-data          (reassigned from D_demo)
+E = individual query             /haipipe-task-for-individual    (new)
+F = agent                        /haipipe-task-for-agent         (new)
+X = algo-dev demo (paired)       /haipipe-task-for-algo          (renamed from D_demo)
 ```
 
 Migration cost for existing projects: `tasks/D_demo/` → `tasks/X_algo/`
@@ -146,20 +146,20 @@ Orchestrator Routing
 /haipipe-task project ...               ──▶ fn/project.md       (scaffold project + first group)
 /haipipe-task task-group ...            ──▶ fn/task-group.md    (scaffold group)
 /haipipe-task task-folder               ❓ ask task-type:
-       data        ──▶  /haipipe-task-data
-       algo        ──▶  /haipipe-task-algo
-       training    ──▶  /haipipe-task-training
-       eval        ──▶  /haipipe-task-eval
-       display     ──▶  /haipipe-task-display
-       individual  ──▶  /haipipe-task-individual
-       agent       ──▶  /haipipe-task-agent
+       data        ──▶  /haipipe-task-for-data
+       algo        ──▶  /haipipe-task-for-algo
+       training    ──▶  /haipipe-task-for-training
+       eval        ──▶  /haipipe-task-for-eval
+       display     ──▶  /haipipe-task-for-display
+       individual  ──▶  /haipipe-task-for-individual
+       agent       ──▶  /haipipe-task-for-agent
 ```
 
 Shortcuts allowed (skip the questions):
 
 ```
-/haipipe-task-training {project_id} {group} {name}
-/haipipe-task-data     {project_id} {group} {name}
+/haipipe-task-for-training {project_id} {group} {name}
+/haipipe-task-for-data     {project_id} {group} {name}
 ...
 ```
 

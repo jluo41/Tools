@@ -1,0 +1,1 @@
+../skills/C_task/agents/creators/code-creator-for-training-agent.md

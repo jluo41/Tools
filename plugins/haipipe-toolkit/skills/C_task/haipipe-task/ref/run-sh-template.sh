@@ -8,6 +8,14 @@
 #   3. papermill execute -> notebooks/<NAME>.ipynb
 #   4. Finalize runtime.yaml (status: ok | failed)
 #
+# Notebook policy (configs/<RUN>.yaml -> _meta.notebook: full | thin | off):
+#   full (default) keep the executed notebook with all outputs
+#   thin           execute, then clear cell outputs (small record; keeps code+params,
+#                  drops bulky stream/image output) — good for heavy compute (training/data)
+#   off            execute via papermill (so config injection + the .py run identically),
+#                  but DON'T keep the .ipynb artifact at all
+# All three execute the .py the same way; they differ only in what notebook is retained.
+#
 # Variables you MUST set:
 #   TASK_NAME — the .py basename (without .py) at task root
 #
@@ -30,6 +38,11 @@ RESULTS_DIR="$TASK_DIR/results/${RUN_NAME}"
 RUNTIME_YAML="$RESULTS_DIR/runtime.yaml"
 NOTEBOOK_TEMPLATE="$TASK_DIR/${TASK_NAME}.ipynb"
 NOTEBOOK_OUT="notebooks/${RUN_NAME}.ipynb"
+
+# Notebook policy: full (keep) | thin (keep, outputs cleared) | off (execute, don't keep).
+NOTEBOOK_MODE="$(grep -E '^\s*notebook:\s*(full|thin|off)\b' "$TASK_DIR/$CONFIG" 2>/dev/null | awk '{print $2}' | head -1)"
+NOTEBOOK_MODE="${NOTEBOOK_MODE:-full}"
+NOTEBOOK_RECORD=$([ "$NOTEBOOK_MODE" = "off" ] && echo "(off)" || echo "$NOTEBOOK_OUT")
 
 mkdir -p "$RESULTS_DIR" "$TASK_DIR/notebooks"
 
@@ -57,7 +70,7 @@ else
     echo "==> [pre-flight] BLOCKED: no CODE_REVIEW.md in $TASK_DIR" >&2
     echo "    Run the Run Script Reviewer agent on this task-folder first," >&2
     echo "    or set HAIPIPE_SKIP_REVIEW=1 to bypass." >&2
-    echo "    Agent: Tools/plugins/haipipe-toolkit/agents/run-script-reviewer.md" >&2
+    echo "    Agent: Tools/plugins/haipipe-toolkit/skills/C_task/agents/reviewers/run-script-reviewer-agent.md" >&2
     exit 2
   fi
   REVIEW_SHA="$(grep -E '^- git_sha:' "$CODE_REVIEW" 2>/dev/null | awk '{print $3}')"
@@ -97,20 +110,34 @@ git_sha:    $GIT_SHA
 host:       $HOST
 cmd:        $CMD
 config:     $CONFIG
-notebook:   $NOTEBOOK_OUT
+notebook:   $NOTEBOOK_RECORD
 EOF
 mv "$RUNTIME_YAML.tmp" "$RUNTIME_YAML"
 
-# ─── 4. Execute (convert + papermill) ──────────────────────────────────────
+# ─── 4. Execute (convert + papermill, per notebook policy) ─────────────────
+# off → execute to a temp notebook we delete after; full/thin → keep the real one.
+if [ "$NOTEBOOK_MODE" = "off" ]; then
+  NB_TARGET="$TASK_DIR/notebooks/.${RUN_NAME}.tmp.ipynb"
+else
+  NB_TARGET="$TASK_DIR/$NOTEBOOK_OUT"
+fi
+
 EXIT_CODE=0
 {
   python "$REPO_ROOT/code/scripts/convert_to_notebooks.py" \
          "$TASK_DIR/${TASK_NAME}.py" \
          -o "$NOTEBOOK_TEMPLATE"
 
-  papermill "$NOTEBOOK_TEMPLATE" "$TASK_DIR/$NOTEBOOK_OUT" \
+  papermill "$NOTEBOOK_TEMPLATE" "$NB_TARGET" \
             -p config "$TASK_DIR/$CONFIG"
 } || EXIT_CODE=$?
+
+# Apply notebook policy (does not affect EXIT_CODE — the run already happened).
+case "$NOTEBOOK_MODE" in
+  thin) jupyter nbconvert --clear-output --inplace "$NB_TARGET" 2>/dev/null \
+          || echo "==> [warn] notebook=thin: clear-output failed; keeping full notebook" >&2 ;;
+  off)  rm -f "$NB_TARGET" ;;
+esac
 
 # ─── 5. Finalize runtime.yaml ──────────────────────────────────────────────
 ENDED="$(date -Iseconds)"
@@ -140,7 +167,7 @@ host:       $HOST
 exit_code:  $EXIT_CODE
 cmd:        $CMD
 config:     $CONFIG
-notebook:   $NOTEBOOK_OUT
+notebook:   $NOTEBOOK_RECORD
 headline:   $HEADLINE
 EOF
 mv "$RUNTIME_YAML.tmp" "$RUNTIME_YAML"
