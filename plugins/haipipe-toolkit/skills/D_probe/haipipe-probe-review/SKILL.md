@@ -11,8 +11,26 @@ Skill: haipipe-probe-review
 The **scientific-honesty gate**. Before a claim leaves an probe
 yaml and enters a paper / dashboard / decision, this skill audits:
 
-  - Per-run quality (was the run trustworthy?)
   - Per-probe quality (is the comparison apples-to-apples?)
+  - Honesty (is the setup free of fraud patterns?)
+  - Claim support (do the results mean what we say?)
+
+(Per-RUN quality moved to C_task `run-result-auditor-agent` — `review run`
+delegates to it; see Commands below.)
+
+**Agent embodiment (builder ≠ judge).** The three checks below ARE three
+independent D_probe reviewer agents — dispatch them as `subagent_type` (e.g.
+from `haipipe-probe-loop` or a `G_application` session) for an out-of-family
+verdict, or run their logic inline here:
+
+```
+review probe     → probe-structural-reviewer-agent   (review.md)
+review integrity → probe-integrity-auditor-agent      (INTEGRITY_AUDIT.md, Codex)
+review claim     → claim-verifier-agent               (CLAIMS_FROM_RESULTS.md, Codex)
+```
+
+This skill remains the canonical home for the checklists + Codex prompts; the
+agents are thin pointers to it (`skills/D_probe/agents/`).
 
 
 Commands

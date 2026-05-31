@@ -35,6 +35,12 @@ skills, batch fan-out, and a notebook-bloat policy.
 - **Per-run quality moved C ← D** — the per-run sanity checklist now lives with
   `run-result-auditor-agent` (C_task GATE 2); `D_probe review run` delegates.
   → see [skills/D_probe/CHANGELOG.md](skills/D_probe/CHANGELOG.md)
+- **D_probe agent families (lighter pattern)** — `reviewers/` (structural +
+  integrity-Codex + claim-Codex) and `advancers/` (explorer). Deliberately NO
+  `creators/`: D_probe's builders stay interactive skills (probe design needs
+  steering; no type axis; parallelism is downstream in C_task). The same
+  builder≠judge method, applied to a low-volume deliberate layer.
+  → see [skills/D_probe/CHANGELOG.md](skills/D_probe/CHANGELOG.md)
 
 ### Layer changelogs touched this release
 - [C_task](skills/C_task/CHANGELOG.md) — agents, skill renames, dual-mode, batch, notebook knob
