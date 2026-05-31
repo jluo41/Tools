@@ -12,6 +12,12 @@ K-level of the Insight base (D → I → K → W). Reads multiple
 `I_information/I*.md` entries (and optionally underlying D/D*.md) and
 synthesizes validated belief statements.
 
+**Invocation modes** (see `../../ref/invocation-modes.md`): interactive (a
+human steers; the belief-triage ASK runs) OR headless (`--scope` ≥ 1 I id +
+`--auto` → file silently), chosen by input completeness.
+`card-creator-knowledge-agent` calls this skill headless during fan-out; agent
++ no I id → `status: blocked` (never hang). End with the structured return block.
+
 ```
 D — Data:         "what we observed"
 I — Information:      "what patterns emerged"      (input)

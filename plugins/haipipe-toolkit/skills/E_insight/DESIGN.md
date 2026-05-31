@@ -1,9 +1,14 @@
 E_insight — The Archive Layer (DESIGN)
 ========================================
 
-Status: DESIGN draft (2026-05-31) — agentification + dual-mode pass.
-        Captures the design conversation; the templates/agents are NOT
-        built yet (that is the next, separate step).
+Status: BUILT (2026-05-31) — agentification + dual-mode + per-type reviewers landed.
+        Built this session: ref/invocation-modes.md + ref/dikw-boundaries.md
+        (boundaries + worked examples); agents/ (README + creators×4 +
+        reviewers×5 [4 per-type card-reviewers + 1 cross-layer index-integrity]
+        + 2 _TEMPLATEs); the 4 DIKW skills declare dual-mode; 9 top-level agent
+        symlinks (registry 22); haipipe-probe-loop wired to file a D card on
+        convergence (Q2). Remaining: higher-layer I/K/W auto-synthesis as cards
+        accumulate; an E_insight CHANGELOG; dogfood.
 Owner:  jluo41
 
 Read ARCHITECTURE.md + MENTAL_MODEL.md first. This doc designs the AGENT
@@ -59,16 +64,22 @@ D_probe   SKILLS (no creators)    reviewers/ (3)             advancers/ (1)
           ∵ probe design is       structural/integrity/      explore =
           interactive, low-vol    claim                      propose next
 
-E_insight creators/ (per DIKW)    reviewers/ (2)             deferred
-          ∵ NOT "batchable code"  card-fidelity +            (explore skill
-          but "the HEADLESS path   index-integrity            already covers
-          an AGENT calls"          = E's UNIQUE gate          the read side)
+E_insight creators/ (per DIKW)    reviewers/ (4 per-type     deferred
+          ∵ "the HEADLESS path    + 1 cross-layer): one      (explore skill
+          an AGENT calls", not    card-reviewer per D/I/K/W   already covers
+          C's "batchable code"    + index-integrity (graph)  the read side)
 ```
 
-Key reframe settled this session: **E's creators exist for a different
-reason than C's.** Not because filing is mechanical — because the user
-needs a headless, full-args path an agent can call with zero
-human-in-the-loop. The creator IS that path.
+Two reframes settled this session:
+1. **E's creators exist for a different reason than C's** — not because filing
+   is mechanical, but because we need a headless, full-args path an agent can
+   call with zero human-in-the-loop. The creator IS that path.
+2. **E's reviewers go PER-TYPE** — a deliberate departure from C/D's
+   type-agnostic reviewers. Each DIKW card has a genuinely different boundary
+   (D traces · I needs ≥2 D · K needs the probe + full counter-evidence · W
+   must be actionable), so each gets its own card-reviewer enforcing accuracy +
+   style against `ref/dikw-boundaries.md`. Only `index-integrity` stays shared
+   (the cross-layer graph cannot be per-type).
 
 
 The dual-mode invocation contract (the core)
@@ -146,6 +157,7 @@ E_insight/
 ├── CHANGELOG.md                    🆕 parity with C/D
 ├── ref/
 │   ├── invocation-modes.md         🆕 the dual-mode contract + per-DIKW table
+│   ├── dikw-boundaries.md          🆕 each layer's boundary + worked examples (reviewers enforce)
 │   ├── insight-md-schema.md        ✅ exists (reviewers point here, no dup)
 │   ├── insight-context-loading.md  ✅ exists
 │   └── index-templates.md          ✅ exists
@@ -157,16 +169,20 @@ E_insight/
 │   │   ├── card-creator-information-agent.md
 │   │   ├── card-creator-knowledge-agent.md
 │   │   └── card-creator-wisdom-agent.md
-│   └── reviewers/                  🆕 E's unique fidelity gate
+│   └── reviewers/                  🆕 one card-reviewer per DIKW type + 1 cross-layer
 │       ├── _TEMPLATE.md
-│       ├── card-fidelity-reviewer-agent.md     (Codex: card <= evidence)
-│       └── index-integrity-auditor-agent.md    (sources<->ref_by, INDEX<->files)
+│       ├── card-reviewer-data-agent.md          🟦 Codex accuracy + D boundary/style
+│       ├── card-reviewer-information-agent.md    🟩
+│       ├── card-reviewer-knowledge-agent.md      🟨 + the ★ probe gate
+│       ├── card-reviewer-wisdom-agent.md         🟧
+│       └── index-integrity-auditor-agent.md     🔗 cross-layer: sources<->ref_by, INDEX<->files
 └── haipipe-insight*/SKILL.md       ♻️ each gains a dual-mode body + structured return
 ```
 
-Growth axes (C's iron rule): creators grow per DIKW layer; reviewers are
-fixed + type-agnostic (gate all four layers; adding a card type = +1
-creator, +0 reviewer).
+Growth axes: creators grow per DIKW layer (+1 creator per layer). E DEPARTS
+from C's "reviewers fixed/type-agnostic" rule — reviewers ALSO grow per layer
+(+1 card-reviewer per layer), because each layer's boundary genuinely differs;
+only index-integrity is shared. Adding a card type = +1 creator AND +1 reviewer.
 
 
 Decisions settled this session
@@ -176,7 +192,8 @@ Decisions settled this session
 - Dual-mode by input completeness; agent-missing → blocked.  ✅
 - creators/ per DIKW (4) = the headless agent path.          ✅ (user override of
                                                                 an earlier "no creators" lean)
-- reviewers/ = card-fidelity (Codex) + index-integrity.      ✅
+- reviewers/ = one per DIKW (card-reviewer-{D,I,K,W}: Codex
+  accuracy + style) + cross-layer index-integrity.           ✅ (per-type, user's call)
 - E never triggers probes / drives loops; always callee.     ✅
 - E closes the L0 atom that probe-loop currently skips.       ✅
 
@@ -184,29 +201,42 @@ Decisions settled this session
 Open questions (decide before building)
 =======================================
 
-Q1. Is the creator a SEPARATE agent, or just the skill's headless mode?
-    C's creator authors extra body the skill doesn't; E's card is mostly
-    schema, so E's creator is thinner. Lean: keep it a thin agent for
-    fan-out parallelism (G-report files many cards at once), but it may
-    just wrap the skill.
+Q1. [RESOLVED — build both] Creator is a SEPARATE thin agent AND the
+    underlying skill stays (exactly C_task's split): each
+    card-creator-<layer>-agent calls the dual-mode haipipe-insight-<layer>
+    skill headless. The agent is the fan-out-able subagent_type; the skill
+    holds the filing logic.
 
-Q2. Should probe-loop be amended to call E on convergence (auto-close L0),
-    or stay E-agnostic with G-ask doing the filing? Touches L1 ownership.
+Q2. [RESOLVED — wired now] haipipe-probe-loop Step 3 (convergence) dispatches
+    card-creator-data-agent for the confirmed probe → files the D card,
+    closing L0 inside the loop. Higher-layer I/K/W synthesis stays OUT of the
+    per-probe loop (accumulates via the report phase / explore).
 
 Q3. Does E need an advancer (synthesis proposer: "what is filable/
     synthesizable now")? The haipipe-insight-explore skill already covers
     the read/coverage side; advancer deferred unless explore proves too thin.
 
-Q4. fidelity + integrity as two reviewers, or one? Kept separate (distinct
-    deliverables; integrity is graph-only, fidelity re-reads evidence).
+Q4. [RESOLVED — per-type] Each DIKW card has a distinct boundary, so E uses a
+    SPECIFIC card-reviewer per type (a deliberate departure from C/D's
+    type-agnostic reviewers), each enforcing accuracy + style/boundary against
+    ref/dikw-boundaries.md. index-integrity stays single (the cross-layer graph
+    cannot be per-type).
 
 
 Next steps
 ==========
 
-1. Write ref/invocation-modes.md (formalize the per-DIKW completeness table).
-2. Write agents/README.md + agents/{creators,reviewers}/_TEMPLATE.md.
-3. Author the 4 creators + 2 reviewers from the templates (thin pointers;
-   judgment logic stays in the SKILLs + ref/, not duplicated in agents).
-4. Add the dual-mode body + structured return to the 6 insight SKILLs.
-5. (Decide Q2) optionally wire probe-loop → E on convergence to auto-close L0.
+DONE this session:
+  ✅ 1. ref/invocation-modes.md (per-DIKW completeness table + 3 branches)
+  ✅ 2. agents/README.md + creators/_TEMPLATE.md + reviewers/_TEMPLATE.md
+  ✅ 3. 4 creators + 5 reviewers (4 per-type card-reviewers + 1 index-integrity)
+        + ref/dikw-boundaries.md (boundaries + examples) + 9 top-level symlinks
+  ✅ 4. dual-mode "Invocation modes" block added to the 4 DIKW skills
+  ✅ 5. (Q2) probe-loop wired → card-creator-data-agent on convergence
+
+Remaining:
+  - Higher-layer I/K/W auto-synthesis as D cards accumulate (report phase /
+    haipipe-insight-explore) — NOT per single probe.
+  - An E_insight CHANGELOG.md (parity with C_task / D_probe).
+  - Dogfood: run a converged probe through the loop; confirm the D card files
+    and the two reviewers pass on a real card.
