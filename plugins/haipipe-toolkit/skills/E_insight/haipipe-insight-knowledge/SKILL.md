@@ -1,28 +1,30 @@
 ---
 name: haipipe-insight-knowledge
-description: "K-level knowledge specialist of the haipipe-insight family. Reads I_information entries and synthesizes validated belief statements into insights/K_knowledge/. A K entry is a 'we now claim X is true' statement with explicit support / counter-evidence / confidence. NO code, pure markdown synthesis. Use when running K-phase via /haipipe-application ask, or directly /haipipe-insight-knowledge. Trigger: K-level, knowledge, validated belief, causal claim, what do we know."
-argument-hint: "[--project <path>] [--scope <pattern-ids>] [--slug <slug>]"
+description: "K-level knowledge specialist of the haipipe-insight family. Files a CONFIRMED probe's claim as a validated belief in insights/K_knowledge/ (the confirmed probe is the controlled comparison K requires); cites supporting I_information entries where they exist. A K entry is a 'we now believe X is true' statement with explicit support / counter-evidence / confidence. NO code, pure markdown synthesis. Use when running K-phase via /haipipe-application ask, or directly /haipipe-insight-knowledge <probe_ref>. Trigger: K-level, knowledge, validated belief, file probe claim, what do we know."
+argument-hint: "<probe_ref> [--project <path>] [--supports <I-ids>] [--slug <slug>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   last_updated: "2026-05-31"
   summary: "K-level knowledge specialist of the haipipe-insight family."
   changelog:
     - "1.0.0 (2026-05-31): baseline metadata added."
+    - "1.1.0 (2026-05-31): K sources a confirmed probe's claim (was >=1 I card); cites supporting I cards in the body."
 ---
 
 Skill: haipipe-insight-knowledge
 =================================
 
-K-level of the Insight base (D → I → K → W). Reads multiple
-`I_information/I*.md` entries (and optionally underlying D/D*.md) and
-synthesizes validated belief statements.
+K-level of the Insight base (D → I → K → W). A CONFIRMED probe's `claim` IS the
+validated belief (the probe is the controlled comparison K requires); this
+skill files that claim as a K card, citing supporting I cards where they exist.
 
 **Invocation modes** (see `../../ref/invocation-modes.md`): interactive (a
-human steers; the belief-triage ASK runs) OR headless (`--scope` ≥ 1 I id +
-`--auto` → file silently), chosen by input completeness.
+human steers; may tighten the claim wording) OR headless (a confirmed
+`probe_ref` → file its claim silently), chosen by input completeness.
 `card-creator-knowledge-agent` calls this skill headless during fan-out; agent
-+ no I id → `status: blocked` (never hang). End with the structured return block.
++ non-confirmed / no-claim probe → `status: blocked` (never hang). End with the
+structured return block.
 
 ```
 D — Data:         "what we observed"
@@ -39,8 +41,8 @@ Input
 -----
 
 ```
-examples/<project>/insights/I_information/I*.md       (REQUIRED, ≥ 1 entry)
-examples/<project>/insights/D_data/D*.md   (optional, for context)
+examples/<project>/probes/<...>/probe.yaml            (REQUIRED; result.status==confirmed, has `claim`)
+examples/<project>/insights/I_information/I*.md       (optional; supporting evidence to cite)
 ```
 
 
@@ -61,8 +63,8 @@ Hard rules
 - NO Python. NO statistical computation. Statistics were done at the
   D_probe result-aggregate step; this layer reads numbers and
   commits to a belief.
-- A K entry must list ALL contradicting evidence found in I/D entries.
-  Cherry-picking is a violation.
+- A K entry must list ALL contradicting evidence (the probe's `caveats` +
+  any I/D counter-evidence). Cherry-picking is a violation.
 - Confidence is qualitative (high / medium / low / contested) and must
   be justified in the entry body.
 - If a K entry would directly contradict an existing K entry, the new
@@ -75,16 +77,16 @@ Workflow
 
 ```
 Step 1: Parse args
-  --project / --scope / --slug
+  <probe_ref> (required) / --project / --supports <I-ids> / --slug
 
 Step 2: Resolve paths and load inputs
-  - Read scoped I*.md entries
-  - Optionally read underlying D*.md for context
+  - Read the confirmed probe.yaml: `claim` is the belief; `caveats` →
+    counter-evidence; `result` → the numbers. REFUSE if status != confirmed.
+  - Optionally read --supports I*.md entries to cite as supporting evidence
 
-Step 3: Triage candidate beliefs (interactive default)
-  - Group patterns by topic
-  - Propose ≥ 1 candidate belief statement per topic
-  - User picks; --auto picks top-ranked
+Step 3: Take the belief from the probe
+  - The probe's `claim` IS the K belief (validated by the confirmed probe).
+    Headless: use it verbatim. Interactive: user may tighten the wording.
 
 Step 4: Check for existing K entries to update
   - Grep K_knowledge/*.md for topic overlap
