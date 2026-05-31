@@ -1,8 +1,14 @@
 ---
 name: haipipe-probe-bridge
 description: "Bridge specialist of haipipe-probe. Takes a designed probe.yaml (claim + planned arms) and MATERIALIZES it into runnable tasks in C_task. Invokes the Run Script Reviewer agent on each scaffolded task before deploy (centralized intent ↔ implementation review), runs a sanity arm first, then launches the full arm set. The 'design → execution' connector between D_probe and C_task. Called by /haipipe-probe orchestrator. Direct invocation works for bridge-scoped work."
-argument-hint: "[bridge|sanity|deploy|status] [probe_id] [args...]"
+argument-hint: "[bridge|sanity|deploy|status] [probe_ref] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Task
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Bridge specialist of haipipe-probe."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-probe-bridge
@@ -24,16 +30,16 @@ Commands
 --------
 
 ```
-/haipipe-probe bridge <ID>
+/haipipe-probe bridge <probe>
   Full bridge: read probe.yaml → review code → sanity → deploy all arms.
 
-/haipipe-probe bridge sanity <ID>
+/haipipe-probe bridge sanity <probe>
   Only run the smallest arm to validate setup. Don't deploy the rest.
 
-/haipipe-probe bridge deploy <ID>
+/haipipe-probe bridge deploy <probe>
   Skip sanity, deploy all arms (only safe after a passing sanity run).
 
-/haipipe-probe bridge status <ID>
+/haipipe-probe bridge status <probe>
   Show: which arms have been materialized as tasks, which are running,
   which have results linked.
 ```
@@ -54,7 +60,7 @@ AUTO_DEPLOY    = false  When true, skip user approval after sanity passes.
 ```
 
 Override inline:
-`/haipipe-probe bridge <ID> — code review: false, max parallel: 2`
+`/haipipe-probe bridge <probe> — code review: false, max parallel: 2`
 
 
 Bridge flow (one probe)
@@ -62,15 +68,16 @@ Bridge flow (one probe)
 
 ```
 Step 1: PARSE
-  Read probes/<NN>_<slug>/probe.yaml
-  Extract: claim, arms (with hyperparams), priority, compute_budget.
+  Read probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml
+  Extract: claim, arms.<arm>.task_type, arms.<arm>.run_specs,
+  priority, compute_budget.
   Identify sanity arm (smallest N / shortest training / lowest cost).
 
 Step 2: SCAFFOLD into C_task
-  For each arm:
-    Skill("haipipe-task", args="task-folder training <arm-task-id>")
+  For each arm run_spec:
+    Skill("haipipe-task", args="task-folder <task_type> <arm-task-id>")
     Materialize the task folder under examples/Proj-X/tasks/
-    Wire the task's config.yaml from the arm's hyperparams.
+    Wire the task's configs/<run>.yaml from the run_spec params.
 
 Step 3: PRE-FLIGHT CODE REVIEW (CODE_REVIEW=true)
   For each scaffolded task-folder from Step 2, invoke the
@@ -82,7 +89,7 @@ Step 3: PRE-FLIGHT CODE REVIEW (CODE_REVIEW=true)
     Task tool (general-purpose subagent), Prompt = that file's body +
             "Pre-flight review for bridge deploy.
              task-folder:   <absolute path>
-             probe_id: <ID>
+             probe:        P.A01 / A01 / probes/A_baseline_controls/01_lhm_vs_baseline
              hypothesis:    <quoted from probe.yaml>
              arm:           <arm name>"
 
@@ -128,12 +135,12 @@ Step 6: DEPLOY rest of arms
 
 Step 7: LINK runs to arms
   For each completed arm:
-    Skill("haipipe-probe-design", args="link <probe-ID> <run-path>")
-  probe.yaml now points to materialized runs.
+    Skill("haipipe-probe-design", args="link <probe> <run-path>")
+  probe.yaml arms.<arm>.runs now points to materialized runs.
 
 Step 8: HANDOFF
-  All arms linked → ready for /haipipe-probe result <ID> (aggregate)
-  followed by /haipipe-probe review claim <ID> (Codex verdict).
+  All arms linked → ready for /haipipe-probe result <probe> (aggregate)
+  followed by /haipipe-probe review claim <probe> (Codex verdict).
 ```
 
 
@@ -142,26 +149,25 @@ Where things live
 
 ```
 examples/Proj-X/
-├── probes/<NN>_<slug>/
+├── probes/<GROUP>_<group_slug>/<NN>_<slug>/
 │   ├── probe.yaml              ← READ: source of truth (arms + claim)
 │   ├── bridge-log.md                ← APPEND: per-arm scaffold/sanity/deploy log
 │   └── (no code here — only meta)
 │
 └── tasks/<arm-task-id>/             ← WRITE: scaffolded by Step 2
-    ├── config.yaml                  ← arm hyperparams
-    ├── runtime.yaml                 ← written by 2_nn at run time
-    ├── metrics.json                 ← written by 2_nn at run end
-    └── results/                     ← written by 2_nn
+    ├── configs/<run>.yaml           ← run_spec params + _meta
+    ├── runs/<run>.sh                ← run wrapper
+    └── results/<run>/               ← runtime.yaml + metrics.json
 ```
 
 
 Disambiguation
 ---------------
 
-  - No verb (just <ID>) → `bridge` (full flow with defaults).
+  - No verb (just <probe>) → `bridge` (full flow with defaults).
   - "deploy" + no sanity passed yet → WARN before proceeding.
   - "status" with no in-progress bridge → show "ready to bridge".
-  - <ID> doesn't exist → bail; suggest `/haipipe-probe design new <ID>` first.
+  - <probe> doesn't exist → bail; suggest `/haipipe-probe design new <slug> --group A` first.
 
 
 Risk profile
@@ -204,8 +210,8 @@ Specialist tail
 
 ```
 status:    ok | blocked | failed | sanity_passed | deploy_complete
-summary:   "E02 bridge: 3/3 arms scaffolded, sanity passed, 2/3 arms deployed"
+summary:   "P.A01 bridge: 3/3 arms scaffolded, sanity passed, 2/3 arms deployed"
 artifacts: [bridge-log.md, scaffolded task IDs, linked run paths]
-next:      /haipipe-probe result <ID>     (after all arms complete)
-          /haipipe-probe review claim <ID> (Codex verdict on aggregated results)
+next:      /haipipe-probe result <probe>     (after all arms complete)
+          /haipipe-probe review claim <probe> (Codex verdict on aggregated results)
 ```

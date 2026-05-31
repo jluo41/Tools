@@ -3,6 +3,12 @@ name: haipipe-application-gate
 description: "Phase-transition gate of the haipipe-application family. Runs between phases (D→I, I→K, K→W, W→report) during a session. Proposes one of three outcomes: approve (next phase), revise [feedback] (route back to plan + rewrite), or done (jump to final report). NO code. Use during /haipipe-application-ask, or standalone via /haipipe-application-gate <phase>. Trigger: gate, review phase, approve, revise, /haipipe-application-gate."
 argument-hint: "[phase: D|I|K|W] [--project <path>] [--auto]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Phase-transition gate of the haipipe-application family."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-application-gate
@@ -96,7 +102,7 @@ Per-phase check tables
 ```
 G-D (D-phase gate):
   [ ] all plan.phases.D tasks have a corresponding D*.md
-  [ ] every cited number traceable to an probe.yaml or metrics.json
+  [ ] every cited number traceable to a probe.yaml or metrics.json
   [ ] no Python files were written under insights/
 
 G-I (I-phase gate):

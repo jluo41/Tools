@@ -8,6 +8,12 @@ tools:
   - Bash
   - Write
 model: sonnet
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Post-run trustworthiness auditor for C_task."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Run Result Auditor

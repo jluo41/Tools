@@ -8,6 +8,12 @@ description: >-
   invocation works for IS work. Trigger: IS paper, MISQ paper, ISR paper,
   Management Science IS, Information Systems research, IT artifacts, digital
   systems paper.
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Information Systems paper workflow specialist (was: is-paper-workflow)."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # IS Paper Workflow

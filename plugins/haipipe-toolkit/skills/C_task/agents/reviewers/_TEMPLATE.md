@@ -8,6 +8,12 @@ tools:
   - Bash
   # add Write for the sidecar; add mcp__codex__codex for out-of-family second opinion
 model: sonnet
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "REVIEWER agent for C_task."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # <Reviewer Name>

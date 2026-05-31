@@ -1,0 +1,57 @@
+🗺️  haipipe-toolkit — Research Engine (v260531)
+================================================
+
+  Snapshot (2026-05-31) of the research-engine mental model: an HOURGLASS.
+  A 🥢 direction decomposes DOWN into work (fan-out 1:n), executes at the
+  bottom (✋ task eats 🌱 Source), then aggregates UP into a deliverable
+  (fan-in n:1). 📖 narrative is the only layer that THINKS — everything
+  else is its stimulus / tool / hands / memory.
+
+  These sit ABOVE the original pipeline diagrams (../0-6) — that set maps
+  the data→nn→end BUILD pipeline; THIS set maps the research LOOP.
+
+  Read in order:
+     01-research-engine.txt      🏗️  the hourglass + cardinalities + deps
+     02-probe-step.txt           ⚛️  probe cycle — anatomy (probe·task·insight distillation)
+     03-loops.txt                🔁  nested cycles: narrative ⊃ probe ⊃ task
+     04-e-insight-movement.txt   🧠  E dual-mode + creators/reviewers + GAP
+     05-roles-and-cycle.txt      🎭  5 roles (领导/办事的人/...) + the narrative-cycle
+     06-probe-cycle.txt          🔧  how to RUN one probe cycle (the 6-step process)
+
+  Canonical prose:
+     ../../HANDOFF.md   ../../ARCHITECTURE.md   ../../MENTAL_MODEL.md
+     ../../skills/E_insight/DESIGN.md
+
+
+─§ 🎭 The 5 roles (背下来这个) ─────────────────────────────
+
+  🥢 application·ask  领导      给粗方向 (nudge) — 不定目标·不做事
+  📖 narrative        办事的人   立目标·做plan·想好·挥鞭 (动脑,不跑 compute)
+  🔧 probe            鞭子      whip — 抽向现实的一下 (whip-crack)
+  ✋ task             体力      真正跑 compute (吃 🌱 Source)
+  🧠 insight          记忆      被鞭子更新的知识状态
+
+
+─§ 🧬 One line (the hourglass, compressed) ─────────────────
+
+  🥢 ask ─▶ 📖 narrative ─▶ 🔧 probe ─▶ ✋ task ─▶ 🧠 insight ─▶ 📖 narrative ─▶ 📰 paper
+   领导给向    办事的人想+挥鞭   鞭子      体力       记忆          回读+ignite      变现
+       └──────── ⬇️ decompose 1:n ───────┘    └──────── ⬆️ aggregate n:1 ───────┘
+
+
+─§ 🆕 What this version captures ───────────────────────────
+
+  ✅ hourglass: 🥢 decompose down (1:n) · 🧠 aggregate up (n:1)        → 01
+  ✅ probe·task·insight = a distillation chain, NOT 3 peers           → 02
+  ✅ nested cycles: 📖 narrative-cycle ⊃ 🔧 probe-cycle ⊃ ✋ task-cycle  → 03 · 05 · 06
+  ✅ 📖 narrative = 办事的人/whip-hand · 🥢 ask = 领导/nudge          → 05
+  ✅ whip (挥鞭),NOT wipe (擦除) — probe = 鞭子, 抽一下               → 全套
+  ❌ THE GAP: probe-loop never files insight (L0's last cell)         → 02 · 03
+  🆕 E gets dual-mode + creators/reviewers to close the gap           → 04
+
+
+─§ 📌 The one finding to remember ──────────────────────────
+
+  📖 narrative 挥的那一鞭,要靠 🧠 E 把结果归档成 insights,它才看得见
+  鞭子抽出了什么。E 不归档 (L0 的洞) → narrative 是对着空气挥鞭。
+  🟨 K 卡 = probe-step ↔ narrative 唯一的交接口。

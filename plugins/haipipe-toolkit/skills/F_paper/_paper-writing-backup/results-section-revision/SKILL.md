@@ -1,6 +1,12 @@
 ---
 name: results-section-revision-backup
 description: Use when revising a scientific manuscript Results section whose figures, evidence, and main claims are mostly fixed, but subsection flow, paragraph openings, reader guidance, and argumentative progression still feel abrupt, repetitive, or figure-by-figure.
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Use when revising a scientific manuscript Results section whose figures, evidence, and main claims are mostly fixed, but subsection flow, paragraph openings, reader guidance, and argumentative progression still feel abrupt, repetitive, or figure-by-figure."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Results Section Revision

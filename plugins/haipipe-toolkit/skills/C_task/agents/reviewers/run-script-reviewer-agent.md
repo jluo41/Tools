@@ -10,6 +10,12 @@ tools:
   - mcp__codex__codex
   - mcp__codex__codex-reply
 model: sonnet
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Run Script Reviewer."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Run Script Reviewer

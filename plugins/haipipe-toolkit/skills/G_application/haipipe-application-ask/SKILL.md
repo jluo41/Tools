@@ -3,6 +3,12 @@ name: haipipe-application-ask
 description: "Research-question driver of the haipipe-application family. Takes one question, scans the project's KB, plans batches of C_task work (for D+I) and D_probe work (for K+W), dispatches them, files DIKW cards via E_insight, writes a session report. The only kind in G_application authorized to trigger /haipipe-probe + /haipipe-task from outside. Use when the user asks a research question (no specific external artifact wanted). Trigger: ask, research question, /haipipe-application ask, what do we know about X, does X hold."
 argument-hint: "[question] [--project <path>] [--auto] [--unattended[=Ns]] [--persona strict|balanced|creative|lenient]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Task
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Research-question driver of the haipipe-application family."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-application-ask
@@ -41,8 +47,8 @@ Phase shape — 4 phases × 2 steps
    │                          (skip Phase 2 entirely if            │
    │                           task_batch is empty)                │
    │                                                              │
-   │   Phase 3   claim        dispatch experiment_batch:          │
-   │             step=task    for each E in plan.experiment_batch:│
+   │   Phase 3   claim        dispatch probe_batch:               │
+   │             step=task    for each P in plan.probe_batch:     │
    │                            Skill("haipipe-application-context"│
    │                                   args="claim E")            │
    │                            Skill("haipipe-probe design")│
@@ -51,7 +57,7 @@ Phase shape — 4 phases × 2 steps
    │                            Skill("haipipe-probe result")│
    │             step=gate    G-claim SOFT on G-side              │
    │                          (skip Phase 3 entirely if            │
-   │                           experiment_batch is empty)          │
+   │                           probe_batch is empty)               │
    │                                                              │
    │   Phase 4   report       for each card C in plan.insight_yield:│
    │             step=task    Skill("haipipe-insight-<layer>"     │
@@ -107,7 +113,7 @@ C. WRITE plan-v{N}.yaml
    - Location: applications/ask/<NN_slug>/plans/plan-v{N}.yaml
    - Maintain plans/plan.yaml symlink → plan-v{N}.yaml
    - Schema: see haipipe-application-plan/SKILL.md (task_batch +
-     experiment_batch + insight_yield + dag + gates + revise_history)
+     probe_batch + insight_yield + dag + gates + revise_history)
    - Atomic: write to .tmp then mv; never partial write.
 
 D. UPDATE SESSION_STATE.json (always atomic, .tmp + mv)
@@ -156,26 +162,26 @@ After all T done (or blocker reached):
 Phase 3 — claim (detail)
 =========================
 
-Dispatches experiment_batch. Skip entirely if experiment_batch is
+Dispatches probe_batch. Skip entirely if probe_batch is
 empty. K and W cards CANNOT be filed unless an probe validates
 them — this is the strict rule from MENTAL_MODEL.md.
 
 ```
-For each E in plan.experiment_batch:
-  1. SESSION_STATE: current_step="task", current_task=E.id
-  2. Skill("haipipe-application-context", args="claim <E.id>")
-     → checks E.needs (D/I cards required as input) all resolved
-  3. Skill("haipipe-probe design", args="new <E.id> --auto")
-  4. Skill("haipipe-probe bridge", args="<E.id>")
+For each P in plan.probe_batch:
+  1. SESSION_STATE: current_step="task", current_task=P.id
+  2. Skill("haipipe-application-context", args="claim <P.id>")
+     → checks P.needs (D/I cards required as input) all resolved
+  3. Skill("haipipe-probe design", args="new <P.slug> --group <P.group> --id <P.local_id> --auto")
+  4. Skill("haipipe-probe bridge", args="<P.id>")
      → scaffolds runs/ + invokes Run Script Reviewer
        (HARSH gate inside C_task; bridge handles its own gates)
      → deploys runs (GPU work; may take hours)
   5. WAIT for results to land (poll probe.yaml.result.status)
-  6. Skill("haipipe-probe result aggregate", args="<E.id>")
+  6. Skill("haipipe-probe result aggregate", args="<P.id>")
      → fills result block; status: pending → confirmed
-  7. Skill("haipipe-probe review", args="<E.id>")
+  7. Skill("haipipe-probe review", args="<P.id>")
      → HARSH structural + Codex verdict
-  8. Update experiment_calls[] in SESSION_STATE.json
+  8. Update probe_calls[] in SESSION_STATE.json
 
 Pre-gate artifact check (G-claim):
   For every K/W in plan.insight_yield: verify the sourcing
@@ -236,7 +242,7 @@ probe-only (K/W only)       1 → 3 → 4   (skip 2, no new D/I)
 full (D + I + K + W)             1 → 2 → 3 → 4
 ```
 
-Plan declares which shape via task_batch / experiment_batch
+Plan declares which shape via task_batch / probe_batch
 emptiness. The orchestrator detects this automatically; no special
 flag needed.
 
@@ -255,12 +261,12 @@ complete schema. Key fields for ask:
 kind: ask
 current_phase: design | observe | claim | report | done
 current_step:  task | gate
-current_task:  <task id like T1, E07, plan-v1, report.md>
+current_task:  <task id like T1, P.A07, plan-v1, report.md>
 current_gate:  G-design | G-observe | G-claim | G-report
 plan_version:  N
 completed_tasks: {design:[], observe:[], claim:[], report:[]}
 pending_tasks:   {design:[], observe:[], claim:[], report:[]}
-experiment_calls: [{phase, exp_id, via, ts, status}, ...]
+probe_calls:      [{phase, probe_ref, via, ts, status}, ...]
 task_calls:       [{phase, task_path, via, ts, status}, ...]
 gate_persona:    {preset, strictness, ambition, notes}
 unattended_timeout: null | N | 0
@@ -384,7 +390,7 @@ artifacts: [applications/ask/<NN_slug>/{SESSION_STATE.json, plans/, gates/,
             insights/I_information/I*.md (new),
             insights/K_knowledge/K*.md (new / updated),
             insights/W_wisdom/W*.md (if any),
-            probes/<NN>_<slug>/ (if new probes scaffolded),
+            probes/<GROUP>_<group_slug>/<NN>_<slug>/ (if new probes scaffolded),
             tasks/<G##>/<##>/results/<RUN>/ (per dispatched task)]
 next:      "review report.md + KB updates; if external artifact needed,
             /haipipe-application {message|ui|report}"

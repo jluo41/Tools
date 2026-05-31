@@ -1,6 +1,12 @@
 ---
 name: figure-planner
 description: Use when designing, restructuring, or auditing manuscript figures and you need to define one main claim per figure, assign panel roles, align legends with the text, or decide what belongs in main figures versus supplement.
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Use when designing, restructuring, or auditing manuscript figures and you need to define one main claim per figure, assign panel roles, align legends with the text, or decide what belongs in main figures versus supplement."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Figure Planner

@@ -3,6 +3,12 @@ name: haipipe-application-context
 description: "Per-phase context loader of the haipipe-application family. Given a phase (D/I/K/W) and a task name within the active plan, gathers the relevant inputs (probe.yaml, prior O/P/K/W entries, plan section) and emits a structured context envelope for the phase skill to consume. Decides: READY (phase skill can execute), BLOCKED (missing prerequisite), or SKIP (already done). NO code. Used internally by /haipipe-application-ask. Trigger: load context, ready-check, /haipipe-application-context."
 argument-hint: "[phase: D|I|K|W] [task_name] [--project <path>]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Per-phase context loader of the haipipe-application family."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-application-context
@@ -32,8 +38,8 @@ Files read:
   insights/sessions/plans/plan-v{N}-<slug>.yaml        active plan
   insights/INDEX.md                                    insight base summary
   insights/{D,I,K,W}_*/                                prior entries
-  probes/<NN>_<slug>/probe.yaml              for D-phase tasks
-  probes/<NN>_<slug>/CLAIMS_FROM_RESULTS.md       (optional)
+  probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml              for claim-phase probes
+  probes/<GROUP>_<group_slug>/<NN>_<slug>/CLAIMS_FROM_RESULTS.md  (optional)
 ```
 
 

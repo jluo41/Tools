@@ -3,6 +3,12 @@ name: haipipe-end-deploy-sagemaker
 description: "AWS SageMaker deploy specialist for haipipe-end. Wraps an Endpoint_Set into the SageMaker model.tar.gz format, deploys to a SageMaker endpoint, runs live smoke tests, monitors logs, and tears down. Backed by platform-sagemaker-inference/ scripts (system → docker → sagemaker testing ladder, ECR push, dev/prod configs, pressure test). Reads Endpoint_Sets produced by haipipe-end-endpointset; never modifies them. Called by /haipipe-end orchestrator when deploy target is sagemaker."
 argument-hint: "[function] [endpoint_set_or_id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "AWS SageMaker deploy specialist for haipipe-end."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-end-sagemaker

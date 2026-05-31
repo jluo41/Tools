@@ -3,6 +3,12 @@ name: haipipe-individual-inference-report
 description: "Per-individual prediction-interpretation report. Loads one individual's data + recent CGM, hits the deployed prediction endpoint, then asks Claude (via claude_agent_sdk) to compose a dual-layer Report — structured JSON + natural-language text — for a specified audience persona (patient / clinician / etc.). Builds on haipipe-individual-inference (which provides the load+predict). The persona library (system prompt, schema, safety rules, tone) is pluggable: name a shipped persona or pass an absolute path to your own. Use to test how a deployed endpoint's prediction reads to a real audience, or to generate reports for downstream LLM-judge / doctor evaluation. Trigger: individual report, prediction interpretation, generate patient message, /haipipe-individual-inference-report."
 argument-hint: "--individual <id> --persona <name_or_path> [--endpoint-url URL] [--model X]"
 allowed-tools: Bash, Read
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Per-individual prediction-interpretation report."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-individual-inference-report

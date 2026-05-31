@@ -90,7 +90,7 @@ What NOT to do
   layer-internal; use K/W as the audience-facing layer.
 - DO NOT cite a K with status=superseded as if active. If the user
   insists, mark the artifact `status: draft` + explain in "Open questions".
-- DO NOT cite an exp_id directly. Probes are the substrate of K;
+- DO NOT cite a probe_ref directly. Probes are the substrate of K;
   if you need to cite a specific probe, cite the K that derives
   from it.
 

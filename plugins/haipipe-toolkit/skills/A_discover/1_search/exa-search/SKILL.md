@@ -3,6 +3,12 @@ name: exa-search
 description: AI-powered web search via Exa with content extraction. Use when user says "exa search", "web search with content", "find similar pages", or needs broad web results beyond academic databases (arXiv, Semantic Scholar).
 argument-hint: "[search-query-or-url]"
 allowed-tools: Bash(*), Read, Write
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "AI-powered web search via Exa with content extraction."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Exa AI-Powered Web Search

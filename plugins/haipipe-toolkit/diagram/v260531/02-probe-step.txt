@@ -1,0 +1,52 @@
+⚛️  L0 — the Probe Cycle (probe → N tasks → insight)
+================================================
+
+  沙漏的底部 (见 01)。一鞭 (🔧 probe) 抽下去 → 撬动 ✋ task → 蒸馏成 🧠 insight。
+  这一个 probe → N tasks → insight 的单元 = **一个 probe cycle**(内循环 L1 的一步)。
+  probe·task·insight 不是平级,是一条 "越往上越浓缩" 的链。
+
+  Prose: ../../skills/E_insight/DESIGN.md · roles → 05
+
+
+─§ 🧪 The chain (bottom-up · 每层只蒸馏一次) ───────────────
+
+   ✋ task ×N          🏃 跑 compute → 📊 metrics.json
+   (体力 · arms×seeds) └─ 产 🟦D + 🟩I 的原料
+        │
+        │  📥 result aggregate  (probe 把 N 个 task 的数字聚成 1 个 claim)
+        ▼
+   🔧 probe            🎯 probe.yaml = result + claim
+   (鞭子 · 意图+契约)   └─ 坐在 task 上面 · 产 🟨K + 🟧W 的原料
+        │
+        │  🧠 E creators 归档两头     ❌ 今天断在这里 (probe-loop 跳过!)
+        ▼
+   🧠 insight          🗂️ DIKW 卡 + INDEX
+   (记忆 · 图书馆)      ├─ ✋ task results → 🟦 D 观察 + 🟩 I 模式   (n:1)
+        │              └─ 🔧 probe claim  → 🟨 K 信念 + 🟧 W 建议   (1:1)
+        │
+        │  👁️ 📖 narrative 只读最浓缩的 🟨K / 🟧W
+        ▼
+   📖 narrative        🎯 select K + 🔥 ignite   (选择+点火 · NOT summarize)
+
+
+─§ 🧭 Who produces which card → 🧠 insight ─────────────────
+
+  +-----------+---------------------+------------------------------+
+  | 产出方     | 卡                  | cardinality → 🧠 insight     |
+  +-----------+---------------------+------------------------------+
+  | ✋ task    | 🟦 D + 🟩 I         | n:1  (多 task 喂一个)          |
+  | 🔧 probe   | 🟨 K + 🟧 W         | 1:1  (一 probe 一束)          |
+  | 🧠 insight | (不产 · 只归档)      | —    (图书馆: 装卡 + 连引用线) |
+  +-----------+---------------------+------------------------------+
+  ⛔ 单 task 顶多到 🟩I;要 🟨K 必须经 🔧probe 受控对比 (arms×seeds×检验)
+
+
+─§ ❌ The GAP — narrative 为什么会 "对空气挥鞭" ────────────
+
+  🟨 K 卡 = probe-step ↔ narrative 唯一的交接口。narrative 不读 probe.yaml,
+  只读 E 蒸馏出的 🟨K 卡。所以:
+
+   🔧 probe → ✋ task → ❌【insight 没人填】→ 📖 narrative 看不见鞭子抽出了啥
+                          ▲ probe-loop 跳过的那一格
+
+  📌 补上这一格 (E headless creators) = 让 narrative 看得见自己那一鞭的结果。 → 04

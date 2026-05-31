@@ -3,6 +3,12 @@ name: haipipe-insight-information
 description: "I-level patterns specialist of the haipipe-insight family. Reads multiple D_data entries and synthesizes cross-observation patterns into markdown entries at insights/I_information/. NO code execution — pure markdown synthesis. Looks for statistical regularities, repeated effects, paired contrasts across probes. Use when running I-phase via /haipipe-application ask, or directly /haipipe-insight-information. Trigger: I-level, patterns, cross-probe patterns, regularities, what trends emerge."
 argument-hint: "[--project <path>] [--scope <observation-ids>] [--slug <slug>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "I-level patterns specialist of the haipipe-insight family."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-insight-information
@@ -12,6 +18,12 @@ I-level of the Insight base (D → I → K → W). Reads multiple
 `D_data/D*.md` entries and synthesizes the **cross-observation
 patterns** that emerge: statistical regularities, repeated effects,
 paired contrasts.
+
+**Invocation modes** (see `../../ref/invocation-modes.md`): interactive (a
+human steers; the triage ASK runs) OR headless (`--scope` ≥ 2 D ids + `--auto`
+→ file silently), chosen by input completeness. `card-creator-information-agent`
+calls this skill headless during fan-out; agent + < 2 D ids → `status: blocked`
+(never hang). End with the structured return block.
 
 ```
 D — Data:         "what we observed"          (input)
@@ -26,7 +38,7 @@ Input
 
 ```
 examples/<project>/insights/D_data/D*.md   (REQUIRED, ≥ 2 entries)
-examples/<project>/probes/<NN>_<slug>/        (read-only, for back-refs)
+examples/<project>/probes/<GROUP>_<group_slug>/<NN>_<slug>/        (read-only, for back-refs)
 ```
 
 

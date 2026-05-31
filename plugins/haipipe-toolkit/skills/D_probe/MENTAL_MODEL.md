@@ -72,13 +72,13 @@ Rule 2 — probe.yaml is STEERING state, not a result archive.
 
 Rule 3 — Strict one-way dependency: probes READ tasks; tasks
          do NOT reference probes.
-         - Delete an probe → no impact on tasks.
+         - Delete a probe → no impact on tasks.
          - Delete a task → linked probe becomes invalid (caught by review).
 
 Rule 4 — Tasks are ATOMIC; probes COMPOSE.
          - A single task/run can be referenced by multiple probes
            (as a member of different arms in different threads).
-         - An probe cites multiple runs across multiple tasks.
+         - A probe cites multiple runs across multiple tasks.
 ```
 
 
@@ -108,7 +108,7 @@ D_probe side                             C_task side
                                                                         ││
    ③ result aggregate (D reads C via arms[] pointers):                  ││
         for arm in arms:                                                ││
-            for run in arm:                                             ││
+            for run in arm.runs:                                        ││
                 metric = read(run/results/.../metrics.json) ◀───────────┘│
         write result: block in probe.yaml                           │
                                                                          │
@@ -117,7 +117,7 @@ D_probe side                             C_task side
         writes review.md + CLAIMS_FROM_RESULTS.md
 ```
 
-Tasks never know an probe is reading them. They produce their
+Tasks never know a probe is reading them. They produce their
 own metrics; the probe is just a downstream consumer.
 
 
@@ -128,14 +128,14 @@ One probe, full lifecycle
 [t=0]  💡 Researcher has a question: "does architecture X beat baseline?"
          This is a probe: a focused kick at reality.
          │
-[t=1]  📐 /haipipe-probe design new E02
-         │   writes probes/02_x_vs_baseline/probe.yaml
+[t=1]  📐 /haipipe-probe design new x_vs_baseline --group A --id 02
+         │   writes probes/A_baseline_controls/02_x_vs_baseline/probe.yaml
          │     - hypothesis, claim_target
          │     - arms.baseline = []  (placeholder)
          │     - arms.x        = []  (placeholder)
          │     - aggregation spec (metric, statistic, noise_floor)
          │
-[t=2]  🌉 /haipipe-probe bridge E02
+[t=2]  🌉 /haipipe-probe bridge P.A02
          │   for each arm:
          │     Skill("haipipe-task", "task-folder training arm-baseline-seed42")
          │     Skill("haipipe-task", "task-folder training arm-x-seed42")
@@ -147,22 +147,22 @@ One probe, full lifecycle
          │   each run writes results/<RUN>/runtime.yaml + metrics.json
          │   ── pure C_task territory; D_probe is asleep ──
          │
-[t=4]  🔗 /haipipe-probe design link E02 <run-path>
+[t=4]  🔗 /haipipe-probe design link P.A02 <run-path>
          │   (called by bridge automatically, or manually for stragglers)
          │   appends the run-path to the correct arm in probe.yaml
          │
-[t=5]  📊 /haipipe-probe result aggregate E02
-         │   scans arms[*].metrics.json
+[t=5]  📊 /haipipe-probe result aggregate P.A02
+         │   scans arms[*].runs[*]/results/<RUN>/metrics.json
          │   computes mean / std / paired-t / sign-test
          │   writes result: block in probe.yaml
          │     status: pending → confirmed | inconclusive | refuted
          │
-[t=6]  🔍 /haipipe-probe review E02
+[t=6]  🔍 /haipipe-probe review P.A02
          │   structural QA: arms ≥1, metric set, caveats present, ...
          │   Codex semantic verdict (out-of-family review)
          │   writes review.md + CLAIMS_FROM_RESULTS.md
          │
-[t=7]  📝 /haipipe-probe result claim E02
+[t=7]  📝 /haipipe-probe result claim P.A02
          │   final 1-2 sentence statement with stats + caveats
          │   "Treatment X beats baseline by Δ ± std (p=Y, N=3). +caveat."
          │
@@ -170,7 +170,7 @@ One probe, full lifecycle
          │   coverage map across all probes
          │   proposes next probe to ask
          │
-[t=9]  🔄 /haipipe-probe loop E02 (optional)
+[t=9]  🔄 /haipipe-probe loop P.A02 (optional)
          │   review → fix → re-aggregate → re-review, until verdict is clean
 
 [done] probe.yaml is the canonical probe record. C_task artifacts are the
@@ -236,7 +236,7 @@ A: tasks/ — specifically a `display`-type task-folder (C-series).
 **Q: Can one task be referenced by two probes?**
 A: Yes. Tasks are atomic. Probes compose. E.g., one
    `01_pretrain_baseline/run_seed42` can serve as a baseline arm in
-   E02 AND as a control arm in E07. They share the same run-path.
+   P.A02 AND as a control arm in P.B07. They share the same run-path.
 
 **Q: Can one probe span multiple projects?**
 A: Not in this design. `examples/Proj-X/probes/` is project-
@@ -245,7 +245,7 @@ A: Not in this design. `examples/Proj-X/probes/` is project-
 
 **Q: What about exploratory runs that aren't part of any probe?**
 A: Fine — they live in tasks/ alone, unlinked. No requirement to
-   create an probe for every run. Probes exist for runs
+   create a probe for every run. Probes exist for runs
    that test a specific claim.
 
 **Q: When does a task-folder become a task-algo (X_algo demo)?**
@@ -260,8 +260,8 @@ A: No — those numbers are AGGREGATED REFERENCES to per-run metrics.
    `metrics.json`. If you regenerate the probe.yaml result
    block, you'd read the same per-run metrics and recompute.
 
-**Q: Where do daily notes about an probe go?**
-A: `probes/<NN>_<slug>/logs/<YYYY-MM-DD>.md`. Append-only,
+**Q: Where do daily notes about a probe go?**
+A: `probes/<GROUP>_<group_slug>/<NN>_<slug>/logs/<YYYY-MM-DD>.md`. Append-only,
    one per day. Captain's-log style: what was tried, what surprised,
    what's next. Reviewed by `-loop` when iterating.
 
@@ -277,7 +277,7 @@ C_task per-run runtime.yaml     C_task/haipipe-task/ref/runtime-yaml-schema.md
 
 D_probe overall            D_probe/haipipe-probe/SKILL.md
 D_probe bridge skill       D_probe/haipipe-probe-bridge/SKILL.md
-D_probe.yaml schema        D_probe/ref/probe-yaml-schema.md
+probe.yaml schema          D_probe/ref/probe-yaml-schema.md
 D_probe caveats checklist  D_probe/ref/probe-caveats-checklist.txt
 D_probe legacy migration   D_probe/ref/_legacy-scope-expmt.md
 
@@ -291,7 +291,7 @@ One-line rules of thumb
 - New code? → tasks/  (never probes/)
 - New claim? → probes/  (never tasks/)
 - New plot? → tasks/display/  (referenced by probes/<X>/probe.yaml evidence:)
-- New hypothesis? → probes/<NN>_<slug>/probe.yaml hypothesis: field
+- New hypothesis? → probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml hypothesis: field
 - New metric measurement? → tasks/<X>/results/<RUN>/metrics.json
 - New per-run record? → tasks/<X>/results/<RUN>/runtime.yaml (atomic by run.sh)
 - New cross-run statistic? → probes/<X>/probe.yaml result: (via /result aggregate)

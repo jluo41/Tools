@@ -10,6 +10,12 @@ tools:
   - mcp__codex__codex
   - mcp__codex__codex-reply
 model: sonnet
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "REVIEWER agent for D_probe."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Claim Verifier
@@ -63,7 +69,7 @@ no       → record postmortem; pivot or try an alternative approach
 
 ```
 status:    ok | blocked | failed
-summary:   "E02 claim: partial (confidence medium) — holds on test-id, not test-od"
+summary:   "P.A01 claim: partial (confidence medium) — holds on test-id, not test-od"
 artifacts: [CLAIMS_FROM_RESULTS.md]
 next:      partial/no → probe-explorer-agent (propose supplementary probes)
 ```

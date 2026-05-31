@@ -3,6 +3,12 @@ name: haipipe-insight-wisdom
 description: "W-level wisdom specialist of the haipipe-insight family. Reads K_knowledge entries (validated beliefs) and writes strategic recommendation entries to insights/W_wisdom/ — 'what we should DO next'. Each W entry is actionable: a proposed next probe, a strategic re-direction, or a stop-doing-X. NO code. Use when running W-phase via /haipipe-application ask, or directly /haipipe-insight-wisdom. Trigger: W-level, wisdom, recommendations, what next, strategic direction, action items."
 argument-hint: "[--project <path>] [--scope <knowledge-ids>] [--slug <slug>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "W-level wisdom specialist of the haipipe-insight family."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-insight-wisdom
@@ -10,6 +16,12 @@ Skill: haipipe-insight-wisdom
 
 W-level of the Insight base (D → I → K → W). Reads validated knowledge
 (K entries) and writes **actionable strategic recommendations**.
+
+**Invocation modes** (see `../../ref/invocation-modes.md`): interactive (a
+human steers; the recommendation-triage ASK runs) OR headless (`--scope` ≥ 1 K
+id + `--auto` → file silently), chosen by input completeness.
+`card-creator-wisdom-agent` calls this skill headless during fan-out; agent +
+no K id → `status: blocked` (never hang). End with the structured return block.
 
 ```
 D — Data:          "what we observed"

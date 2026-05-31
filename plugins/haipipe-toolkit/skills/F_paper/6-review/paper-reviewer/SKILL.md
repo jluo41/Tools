@@ -1,6 +1,12 @@
 ---
 name: paper-reviewer
 description: Use when acting as a journal or grant reviewer and writing formal reviewer-side evaluations focused on methodology, statistics, reporting standards, reproducibility, and constructive feedback.
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Use when acting as a journal or grant reviewer and writing formal reviewer-side evaluations focused on methodology, statistics, reporting standards, reproducibility, and constructive feedback."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Scientific Critical Evaluation and Peer Review
