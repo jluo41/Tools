@@ -5,6 +5,22 @@ Layer-scoped changelog for the E_insight (KNOWLEDGE / archive) layer. Newest
 first. Rollup lives in the plugin-level `CHANGELOG.md`.
 
 
+## [2.3.2] — 2026-05-31
+
+### Fixed
+- **K now sources the confirmed probe's `claim`**, not `≥1 I card`. The
+  `haipipe-insight-knowledge` skill + `card-creator-knowledge-agent` +
+  `ref/invocation-modes.md` (K row) now take a `probe_ref` (status==confirmed);
+  the probe's `claim` becomes the K, `caveats` → counter-evidence, supporting
+  I cards cited in the body. This matches `ref/insight-md-schema.md` (which
+  already said K sources = confirmed probe) and unblocks a single probe-cycle
+  from reaching K (the I-chain needs ≥2 D, which one cycle can't produce).
+- `probe-loop` convergence dispatches `card-creator-knowledge-agent` (the K),
+  closing the probe-cycle with its actual deliverable.
+- `dikw-boundaries.md`: K boundary + worked example now source the probe.
+- **Dogfood-verified** on a stub (confirmed probe → K01; all gates passed).
+
+
 ## [2.3.0] — 2026-05-31
 
 ### Added

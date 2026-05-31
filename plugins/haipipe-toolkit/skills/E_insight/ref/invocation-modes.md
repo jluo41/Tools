@@ -35,7 +35,7 @@ layer           BLOCKING (no source → blocked)                auto-derivable i
 ──────────────────────────────────────────────────────────────────────────────────────
 🟦 data         probe_ref present AND result.status == confirmed   slug · headline · numbers
 🟩 information   --scope: ≥ 2 existing D ids                        slug · pattern · direction
-🟨 knowledge     --scope: ≥ 1 existing I id                         slug · claim · confidence
+🟨 knowledge     probe_ref present AND result.status == confirmed   slug · confidence · supporting I-ids (claim ← probe.claim)
 🟧 wisdom        --scope: ≥ 1 existing K id                         slug · rec · type · cost
 ```
 
@@ -55,9 +55,10 @@ Rules
    `status: blocked` naming the missing source — the caller (a creator agent
    or an orchestrator) re-dispatches with it filled. NEVER fabricate a
    `source_id`, a `claim`, a `confidence`, or a number.
-4. **A refusal stays a refusal.** `data` still refuses a non-`confirmed`
-   probe; `information` still refuses < 2 D entries. In headless mode these
-   return `status: blocked` (with the reason), NOT an ASK and NOT a silent pass.
+4. **A refusal stays a refusal.** `data` / `knowledge` still refuse a
+   non-`confirmed` probe (and `knowledge` a probe with no `claim`);
+   `information` still refuses < 2 D entries. In headless mode these return
+   `status: blocked` (with the reason), NOT an ASK and NOT a silent pass.
 
 
 Structured return (so an agent caller can consume it)

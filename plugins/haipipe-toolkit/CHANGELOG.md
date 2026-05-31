@@ -5,6 +5,24 @@ Plugin-level rollup. Per-layer detail lives in each layer's own
 `skills/<LAYER>/CHANGELOG.md`. Newest first.
 
 
+## [2.3.2] — 2026-05-31
+
+Fix: a probe-cycle now files its claim as a 🟨 K card (was a 🟦 D card).
+
+- **K sources the confirmed probe's `claim`** (not `≥1 I card`). The skill prose
+  contradicted the schema — which already said `K sources = confirmed probe` —
+  and a single probe-cycle could never reach K through the I-chain (I needs ≥2
+  D). Fixed in `haipipe-insight-knowledge`, `card-creator-knowledge-agent`,
+  `ref/invocation-modes.md`.
+- **probe-loop convergence now dispatches `card-creator-knowledge-agent`**
+  (files the K from the claim), not `card-creator-data-agent`. The 🟦 D
+  observations come from the probe's task-cycles; 🟩 I / 🟧 W are cross-cycle.
+- **Dogfooded** on a stub project (confirmed probe → K01): all
+  card-reviewer-knowledge gates + index-integrity passed.
+- Docs threaded: `dikw-boundaries.md` (K source = confirmed probe) + `06-probe-cycle.txt` Ⓕ.
+- Still pending: the `D-from-task` reconciliation (data skill still reads a probe).
+
+
 ## [2.3.1] — 2026-05-31
 
 Vocabulary + a probe-cycle process doc (docs only).

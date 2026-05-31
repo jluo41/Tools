@@ -17,8 +17,9 @@
                                                  🚦 Run Result Auditor (per-run trust)
   ④ 📥 result    /haipipe-probe result <id>    → aggregate N metrics → result + claim      [D_probe]
   ⑤ ⚖️ verdict   /haipipe-probe review <id>    → structural + 🚦 Codex claim → confirmed?   [D_probe]
-  ⑥ 🧠 insight   card-creator-data-agent <id>  → file 🟦 D card                             [E_insight]
-                                              → 🚦 card-reviewer-data → 🚦 index-integrity
+  ⑥ 🧠 insight   card-creator-knowledge-agent <id> → file 🟨 K card from the probe's claim   [E_insight]
+                                              → 🚦 card-reviewer-knowledge → 🚦 index-integrity
+                                              (🟦 D from the task-cycles · 🟩 I / 🟧 W cross-cycle)
 
 
 ─§ ⏳ A probe cycle is itself a tiny hourglass ─────────────
@@ -35,7 +36,7 @@
   | ②    | Run Script Reviewer (pre)   | run-script-reviewer-agent     | C_task   |
   | ③    | Run Result Auditor (post)   | run-result-auditor-agent      | C_task   |
   | ⑤    | Claim verdict (Codex)       | claim-verifier-agent          | D_probe  |
-  | ⑥    | card review + graph         | card-reviewer-data +          | E_insight|
+  | ⑥    | card review + graph         | card-reviewer-knowledge +     | E_insight|
   |      |                             | index-integrity-auditor       |          |
   +------+-----------------------------+-------------------------------+----------+
 

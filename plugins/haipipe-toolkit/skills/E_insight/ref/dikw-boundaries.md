@@ -48,6 +48,8 @@ Per-layer boundary
            evidence listed (cherry-picking = a violation).
   IS NOT:  a pattern (→I) · an action (→W).
   ★ gate:  promotion I→K REQUIRES a controlled comparison (a probe). No probe, no K.
+  source:  the CONFIRMED probe's `claim` (the probe IS that comparison); cite
+           supporting I cards in the body where they exist.
   line→W:  K is the belief; W is what to DO about it.
   style:   ## Claim · ## Supporting evidence · ## Counter-evidence (ALL) ·
            ## Confidence rationale · ## Scope.
@@ -114,7 +116,7 @@ pattern:   repeated_effect
 n_obs:     2
 direction: negative
 sources:   [D01, D03]
-ref_by:    [K01]
+ref_by:    []          # K01 sources the probe P.A01; it cites I01 as supporting evidence in its body
 ---
 
 # I01: FiLM lowers MAE on in-distribution splits
@@ -145,7 +147,7 @@ created:   2026-05-26
 updated:   2026-05-26
 claim:     "FiLM conditioning improves in-distribution CGM forecasting (lower MAE)"
 confidence: medium
-sources:   [I01]
+sources:   [P.A01]
 ref_by:    [W01]
 ---
 
