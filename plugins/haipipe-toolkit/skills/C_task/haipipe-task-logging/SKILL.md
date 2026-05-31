@@ -6,6 +6,9 @@ allowed-tools: Bash, Read, Glob
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Task-folder-scope logging specialist."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-task-logging

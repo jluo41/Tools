@@ -6,6 +6,9 @@ allowed-tools: Read, Grep, Glob, Bash
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Read-only specialist for haipipe-project."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-project-inspect

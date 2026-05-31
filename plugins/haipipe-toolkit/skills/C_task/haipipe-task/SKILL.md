@@ -6,6 +6,9 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Build orchestrator for haipipe-project."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-task (orchestrator)

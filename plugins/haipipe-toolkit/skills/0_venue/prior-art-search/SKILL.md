@@ -6,6 +6,9 @@ allowed-tools: Bash(*), Read, Glob, Grep, WebSearch, WebFetch, Write, Agent
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Search patent databases and academic literature for prior art relevant to an invention."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Prior Art Search

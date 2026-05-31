@@ -4,6 +4,9 @@ description: "Connect a Whoop wearable device to the bot. Guides the user step-b
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Connect a Whoop wearable device to the bot."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: whoop-connect

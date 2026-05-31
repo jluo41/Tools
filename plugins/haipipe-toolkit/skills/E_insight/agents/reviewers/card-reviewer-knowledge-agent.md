@@ -13,6 +13,9 @@ model: sonnet
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "REVIEWER agent for E_insight 🟨 K (knowledge) cards."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Card Reviewer for Knowledge (🟨 K)

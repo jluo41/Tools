@@ -6,6 +6,9 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Compile patent application into jurisdiction-specific filing format."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Jurisdiction Format: Patent Filing Compilation

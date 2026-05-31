@@ -6,6 +6,9 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "TrigFn specialist — design and review of the trigger-detection function in an Endpoint_Set."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-end-trig

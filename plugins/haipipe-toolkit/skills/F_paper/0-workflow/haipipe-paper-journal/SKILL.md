@@ -11,6 +11,9 @@ description: >-
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Journal paper routing map specialist (was: paper-workflow)."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Paper Workflow

@@ -5,6 +5,9 @@ allowed-tools: Bash, Read, Write, Edit, Glob, Skill
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Guide authors through the full rebuttal process for ML conference/journal reviews."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: paper-rebuttal

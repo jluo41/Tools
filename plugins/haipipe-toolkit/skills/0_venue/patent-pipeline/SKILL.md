@@ -6,6 +6,9 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, Agen
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Full patent drafting pipeline from invention description to jurisdiction-formatted filing documents."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Patent Pipeline: From Invention to Filing

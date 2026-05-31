@@ -6,6 +6,9 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, WebSearch, WebFetc
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Draft LaTeX paper section by section from an outline."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Paper Write: Section-by-Section LaTeX Generation

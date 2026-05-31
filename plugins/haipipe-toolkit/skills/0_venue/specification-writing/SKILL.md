@@ -6,6 +6,9 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, Skill, WebSearch, 
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Write the full patent specification from claims and invention disclosure."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Specification Writing: Section-by-Section Patent Description

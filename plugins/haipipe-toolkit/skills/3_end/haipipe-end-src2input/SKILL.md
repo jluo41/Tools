@@ -6,6 +6,9 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Src2InputFn specialist — design and review of the record-to-wire-payload function in an Endpoint_Set (serializes a ProcessedDF record into JSON the model can ingest)."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-end-src2input

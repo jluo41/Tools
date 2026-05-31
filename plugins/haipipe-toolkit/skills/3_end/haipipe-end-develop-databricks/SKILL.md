@@ -6,6 +6,9 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Databricks develop specialist for haipipe-end."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-end-develop-databricks

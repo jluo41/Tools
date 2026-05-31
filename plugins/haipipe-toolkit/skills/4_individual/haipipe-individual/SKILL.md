@@ -5,6 +5,9 @@ argument-hint: "[command] [args...]"
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Per-individual data contract skill."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-individual

@@ -4,6 +4,9 @@ description: "Interactive revision of LaTeX section files through structured dis
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Interactive revision of LaTeX section files through structured discussion."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: paper-revise

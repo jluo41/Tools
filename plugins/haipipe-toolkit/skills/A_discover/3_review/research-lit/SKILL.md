@@ -6,6 +6,9 @@ allowed-tools: Bash(*), Read, Glob, Grep, WebSearch, WebFetch, Write, Agent, mcp
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Search and analyze research papers, find related work, summarize key ideas."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Research Literature Review

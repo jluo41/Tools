@@ -6,6 +6,9 @@ allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Per-phase context loader of the haipipe-application family."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-application-context

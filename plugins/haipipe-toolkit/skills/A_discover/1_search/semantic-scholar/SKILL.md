@@ -6,6 +6,9 @@ allowed-tools: Bash(*), Read, Write
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Search published venue papers (IEEE, ACM, Springer, etc.) via Semantic Scholar API."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Semantic Scholar Paper Search

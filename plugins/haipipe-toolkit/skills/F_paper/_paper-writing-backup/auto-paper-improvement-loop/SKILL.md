@@ -6,6 +6,9 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex,
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Autonomously improve a generated paper via GPT-5.4 xhigh review → implement fixes → recompile, for 2 rounds."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Auto Paper Improvement Loop: Review → Fix → Recompile

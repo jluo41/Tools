@@ -12,6 +12,9 @@ model: sonnet
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "REVIEWER agent for E_insight."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # <Reviewer Name>

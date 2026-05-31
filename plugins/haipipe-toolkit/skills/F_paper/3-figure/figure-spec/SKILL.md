@@ -6,6 +6,9 @@ allowed-tools: Bash(*), Read, Write, Edit
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Generate deterministic publication-quality architecture, workflow, and pipeline diagrams from structured JSON (FigureSpec) into editable SVG."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # FigureSpec: Deterministic JSON → SVG Figure Generation

@@ -4,6 +4,9 @@ description: "Log meals in real time from a webcam or IP camera. Opens a capture
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Log meals in real time from a webcam or IP camera."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: meal-cam-logger

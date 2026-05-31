@@ -6,6 +6,9 @@ allowed-tools: Bash, Read, Grep, Glob
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Cross-stage transport specialist."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-data-remote

@@ -6,6 +6,9 @@ allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Router for Stage A (discover) literature/idea discovery."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-discover (orchestrator)

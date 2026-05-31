@@ -6,6 +6,9 @@ allowed-tools: Bash(*), Read, Grep, Glob, Write, Edit, Agent, Skill, mcp__codex_
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Submission rebuttal pipeline specialist (was: rebuttal)."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Workflow 4: Rebuttal

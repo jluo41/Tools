@@ -6,6 +6,9 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Zero-context verification that every number, comparison, and scope claim in the paper matches raw result files."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Paper Claim Audit: Zero-Context Evidence Verification
