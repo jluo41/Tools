@@ -46,13 +46,13 @@ Lives in C_task/  (task-scope work — sibling section):
 
   haipipe-task               BUILD orchestrator: scope=project / task-group / run, plus
                                      task-folder dispatch to the 7 type specialists below.
-  haipipe-task-data          data-pipeline (Stage 1-4)           D-series  → /haipipe-data
-  haipipe-task-algo          algo-dev smoke-test                 X_algo    → /haipipe-nn-algo
-  haipipe-task-training      model training (Stage 5)            A-series  → /haipipe-nn-tuner+instance
-  haipipe-task-eval          evaluation                          B-series  → (project-local; future)
-  haipipe-task-display       paper figures / tables              C-series  → (independent)
-  haipipe-task-individual    individual-centric query               E-series  → /haipipe-individual
-  haipipe-task-agent         LLM agent call                      F-series  → (none yet)
+  haipipe-task-for-data          data-pipeline (Stage 1-4)           D-series  → /haipipe-data
+  haipipe-task-for-algo          algo-dev smoke-test                 X_algo    → /haipipe-nn-algo
+  haipipe-task-for-training      model training (Stage 5)            A-series  → /haipipe-nn-tuner+instance
+  haipipe-task-for-eval          evaluation                          B-series  → (project-local; future)
+  haipipe-task-for-display       paper figures / tables              C-series  → (independent)
+  haipipe-task-for-individual    individual-centric query               E-series  → /haipipe-individual
+  haipipe-task-for-agent         LLM agent call                      F-series  → (none yet)
 
 (Per-run logging is automatic via runs/<NAME>.sh → results/<NAME>/runtime.yaml.
  For probe-level claims + aggregation, see D_probe/* skills.)
