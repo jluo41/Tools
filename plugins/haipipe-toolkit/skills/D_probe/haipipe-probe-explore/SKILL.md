@@ -12,6 +12,11 @@ The active research-design assistant. Reads all probes + runs in a
 project, infers the design-space axes, marks coverage, and proposes
 the most informative next probe.
 
+**Agent embodiment.** This is the D_probe **advancer** — dispatchable as the
+`probe-explorer-agent` subagent_type (e.g. by `haipipe-probe-loop` after a
+`partial`/`no` claim verdict, to propose supplementary probes). This skill is
+the canonical logic home; the agent is a thin pointer (`skills/D_probe/agents/advancers/`).
+
 
 Commands
 --------
