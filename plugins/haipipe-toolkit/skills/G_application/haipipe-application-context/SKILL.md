@@ -3,6 +3,9 @@ name: haipipe-application-context
 description: "Per-phase context loader of the haipipe-application family. Given a phase (D/I/K/W) and a task name within the active plan, gathers the relevant inputs (probe.yaml, prior O/P/K/W entries, plan section) and emits a structured context envelope for the phase skill to consume. Decides: READY (phase skill can execute), BLOCKED (missing prerequisite), or SKIP (already done). NO code. Used internally by /haipipe-application-ask. Trigger: load context, ready-check, /haipipe-application-context."
 argument-hint: "[phase: D|I|K|W] [task_name] [--project <path>]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 Skill: haipipe-application-context

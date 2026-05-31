@@ -1,3 +1,12 @@
+---
+name: paper-rebuttal
+description: "Guide authors through the full rebuttal process for ML conference/journal reviews. Four phases (Understand → Task → Rebuttal → Revise) producing artifacts under 1-review/. Use when the user has received peer reviews and needs to write rebuttal responses, plan experiments to address reviewer concerns, or prepare a revised manuscript. Trigger: rebuttal, reviewer response, author response, review feedback, camera-ready revision."
+allowed-tools: Bash, Read, Write, Edit, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+---
+
 Skill: paper-rebuttal
 =====================
 

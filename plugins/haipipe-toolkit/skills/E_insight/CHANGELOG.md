@@ -36,7 +36,7 @@ first. Rollup lives in the plugin-level `CHANGELOG.md`.
   source → `status: blocked`, never hang.
 - **`haipipe-probe-loop` wired to close L0** (the change lives in D_probe): on
   convergence, Step 3 dispatches `card-creator-data-agent` to file the D card —
-  closing the `probe → task → insight` atom the loop previously left open.
+  closing the probe cycle (`probe → task → insight`, L0) the loop previously left open.
 
 ### Notes / remaining
 - Higher-layer I/K/W auto-synthesis (as D cards accumulate) is NOT per-probe —

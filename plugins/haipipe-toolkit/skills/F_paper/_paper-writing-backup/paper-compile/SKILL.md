@@ -3,6 +3,9 @@ name: paper-compile-backup
 description: "Compile LaTeX paper to PDF, fix errors, and verify output. Use when user says \"编译论文\", \"compile paper\", \"build PDF\", \"生成PDF\", or wants to compile LaTeX into a submission-ready PDF."
 argument-hint: "[paper-directory]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 # Paper Compile: LaTeX to Submission-Ready PDF

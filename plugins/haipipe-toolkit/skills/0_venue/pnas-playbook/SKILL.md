@@ -1,6 +1,9 @@
 ---
 name: pnas-playbook
 description: Use when choosing PNAS as a venue, deciding between PNAS and Nature-portfolio journals, or preparing a PNAS-specific manuscript for fit, article-type framing, Significance Statement drafting, and pre-submission checks.
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 # PNAS Playbook

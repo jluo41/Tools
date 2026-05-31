@@ -120,12 +120,13 @@ W (Wisdom)       sources:[K..] + rec + type + cost + how-to-act
 E's role in the loop architecture (the big finding)
 ===================================================
 
-The system runs as nested loops. They map onto EXISTING machinery — except
-one empty cell, which is E's job:
+The system runs as nested loops. The smallest unit is the **probe cycle** (L0:
+probe → N tasks → insight). They map onto EXISTING machinery — except one empty
+cell, which is E's job:
 
 ```
-L0 atom    🔧 Probe ─bridge─▶ ✋ N×Task ─run─▶ result→probe.yaml ─▶ 🧠 E files D/I/K/W
-           [bridge + result BUILT]                                  ▲ ★ EMPTY TODAY
+L0 cycle   🔧 Probe ─bridge─▶ ✋ N×Task ─run─▶ result→probe.yaml ─▶ 🧠 E files D/I/K/W
+  (probe cycle)  [bridge + result BUILT]                            ▲ ★ EMPTY TODAY
 L1 inner   haipipe-probe-loop  (review→verdict→propose→materialize→re-review)  [BUILT]
 L2 outer   N_narrative ⇄ KB    (ignite-log; claims.md GAP rows)  [scope A BUILT, auto=scope B ⏳]
 L3 trigger ignite=ready → narrative-report → Application (cash-out)            [path exists]
@@ -133,12 +134,12 @@ L3 trigger ignite=ready → narrative-report → Application (cash-out)         
 
 THE FINDING: `haipipe-probe-loop` never calls E_insight. Its Step 6
 materializes (design + bridge → C_task), then on convergence jumps to
-`narrative-report` — skipping the DIKW filing entirely. So the L0 atom's
+`narrative-report` — skipping the DIKW filing entirely. So the probe cycle's
 last cell ("→ insight") is unwired.
 
 Two consequences:
-1. **E's headless creators are exactly what closes the L0 atom inside the
-   L1 loop.** Their full-spec source in loop mode = the confirmed
+1. **E's headless creators are exactly what closes the probe cycle (L0) inside
+   the L1 loop.** Their full-spec source in loop mode = the confirmed
    `probe.yaml` + the tasks' `results/`.
 2. **The loop is WHY E filing must be headless.** L1 runs round after round;
    L2 can fan out several probes at once. You cannot human-in-the-loop every
@@ -195,7 +196,7 @@ Decisions settled this session
 - reviewers/ = one per DIKW (card-reviewer-{D,I,K,W}: Codex
   accuracy + style) + cross-layer index-integrity.           ✅ (per-type, user's call)
 - E never triggers probes / drives loops; always callee.     ✅
-- E closes the L0 atom that probe-loop currently skips.       ✅
+- E closes the probe cycle (L0) that probe-loop skips.        ✅
 
 
 Open questions (decide before building)

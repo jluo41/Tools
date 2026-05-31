@@ -3,6 +3,9 @@ name: haipipe-probe-bridge
 description: "Bridge specialist of haipipe-probe. Takes a designed probe.yaml (claim + planned arms) and MATERIALIZES it into runnable tasks in C_task. Invokes the Run Script Reviewer agent on each scaffolded task before deploy (centralized intent ↔ implementation review), runs a sanity arm first, then launches the full arm set. The 'design → execution' connector between D_probe and C_task. Called by /haipipe-probe orchestrator. Direct invocation works for bridge-scoped work."
 argument-hint: "[bridge|sanity|deploy|status] [probe_ref] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Task
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 Skill: haipipe-probe-bridge

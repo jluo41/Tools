@@ -1,50 +1,47 @@
-🔁  Nested Loops L0–L3  +  one stage
-=====================================
+🔁  Nested cycles — narrative ⊃ probe ⊃ task
+=============================================
 
-  整套系统按嵌套循环跑。一个 "stage" = 📖 narrative 的一轮
-  (接方向 → 想清楚 → 挥鞭 → 回看)。除了 ⚛️ L0 最后一格,全落在已有机器上。
+  The system runs as three nested cycles. Each WHIPS the level below and
+  PRODUCES one thing. (The L-labels map each cycle to existing machinery.)
 
   Prose: ../../HANDOFF.md (LATEST MOVEMENT)
-         ../../skills/D_probe/haipipe-probe-loop/SKILL.md · stage 拆解 → 05
+         ../../skills/D_probe/haipipe-probe-loop/SKILL.md · probe-cycle steps → 06
 
 
 ─§ 🪆 The nesting ──────────────────────────────────────────
 
-┌─ L3 🎯 TRIGGER ── 🔥 ignite=ready ─▶ 🥢 application 变现 (📰/📊/💬/🖥️)
+┌─ 📖 narrative-cycle ── 1 narrative turn; whips N probe cycles    [N_narrative ✅ scope A]
+│     立目标 → plan → 读 🧠insights → 🔧 whip probe cycles → 回读 → 🔥 ignite?
+│     ignite=ready → 🥢 application 变现 (📰/📊/💬/🖥️)
 │
-│  ┌─ L2 🔁 OUTER ── 📖 narrative ⇄ 🧠 insights        [scope A ✅ · auto ⏳]
-│  │                  一轮 = 一个 STAGE · 🔥 ignite-log 记录每轮收尾
+│  ┌─ 🔧 probe-cycle ── 1 probe → N task-cycles → 1 insight        [steps → 06]
+│  │     ① design → ② bridge → ③ run×N → ④ result → ⑤ verdict → ⑥ insight
+│  │     (probe-loop iterates ①–⑤ in "rounds" until ✅; ⑥ files on convergence)
 │  │
-│  │  ┌─ L1 🔁 INNER ── 🔧 haipipe-probe-loop            [已建 ✅]
-│  │  │                  🔍 review → ⚖️ verdict → 💡 propose → 🛠️ materialize → 🔁
-│  │  │                  (--auto = headless)
-│  │  │
-│  │  │   ⚛️ L0 ATOM ── 🔧 probe →🌉 bridge→ ✋ task×N →📥 result→ 🧠 insight
-│  │  │                  [bridge+result ✅]                       ❌ GAP ← 要补
-│  │  └────────────────────────────────────────────────────────────────────
-│  └───────────────────────────────────────────────────────────────────────
-└──────────────────────────────────────────────────────────────────────────
+│  │  ┌─ ✋ task-cycle ── 1 task: config → run → result            [C_task]
+│  │  │     author → 🚦 Run Script Reviewer → bash run.sh → 🚦 Run Result Auditor → result
+│  │  └──────────────────────────────────────────────────────────────
+│  └─────────────────────────────────────────────────────────────────
+└────────────────────────────────────────────────────────────────────
 
-  📌 📖 narrative 是脑子,从不跑 compute。"再转一圈" 由它 (L2) 决定,机器 (L1/L0) 执行。
+  📌 each cycle is the callee of the one above: 📖 narrative whips 🔧 probe cycles;
+     a 🔧 probe cycle whips ✋ task cycles. 🧠 E only FILES (⑥) — it never drives.
 
 
-─§ 🎬 ONE STAGE = L2 的一轮 (拆解见 05) ────────────────────
+─§ 🗺️ Cycle → machine map (exists / gap) ──────────────────
 
-  🥢 ask(方向) ─▶ 📖 narrative(立目标·plan·想·挥鞭) ─▶ 🔧probe→✋task→🧠 E归档★
-        ▲                                                            │
-        └──── 🔥 ignite? ◀── 👁️ narrative 回读更新的 insights ◀───────┘
-              YES ▶ 📰 paper (thread 继续)  ·  NO ▶ 下一个 stage
+  +-----------------------+-----------------------------+-----------------------+
+  | cycle (L-label)       | machine                     | status                |
+  +-----------------------+-----------------------------+-----------------------+
+  | ✋ task-cycle          | C_task (author→run→audit)   | ✅ built              |
+  | 🔧 probe-cycle (L0)    | bridge + result + ⑥ E-file  | ✅ (⑥ now wired in)   |
+  | 🔁 probe-loop (L1)     | haipipe-probe-loop          | ✅ --auto headless    |
+  | 📖 narrative-cycle (L2)| N_narrative (ignite/claims) | ✅ scope A · ⏳ auto   |
+  | 🎯 trigger (L3)        | ignite=ready → narr-report  | ✅ path exists        |
+  +-----------------------+-----------------------------+-----------------------+
 
-  ★ = ⚛️ L0 那一格 (E 归档)。断了 → narrative 回读到的是空的。
 
+─§ ⚡ Compact ──────────────────────────────────────────────
 
-─§ 🗺️ Loop → machine map (exists / gap) ───────────────────
-
-  +-------+-----------------------------+------------------------+
-  | 层    | 机器                         | 状态                    |
-  +-------+-----------------------------+------------------------+
-  | ⚛️ L0 | bridge + result             | ✅ 建了 · ❌ 最后归档格   |
-  | 🔁 L1 | haipipe-probe-loop          | ✅ 有 --auto headless   |
-  | 🔁 L2 | N_narrative (ignite/claims) | ✅ scope A · ⏳ auto     |
-  | 🎯 L3 | ignite=ready → narr-report  | ✅ 路径在                |
-  +-------+-----------------------------+------------------------+
+  📖 narrative-cycle   ⊃   🔧 probe-cycle        ⊃   ✋ task-cycle
+  (whip probes · ignite)   (probe → N tasks → insight)  (config → run → result)

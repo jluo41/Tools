@@ -1,6 +1,9 @@
 ---
 name: citation-verifier
 description: Use when checking manuscript citations, bibliography hygiene, DOI or PMID completeness, placeholder references, or BibTeX consistency before submission or revision.
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 # Citation Verifier

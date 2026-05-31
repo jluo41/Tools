@@ -3,6 +3,9 @@ name: haipipe-task-for-training
 description: "model-run task-folder build specialist. Scaffolds {NN}_<name>/ task-folders under A-series task-groups that train a model — full hyperparam config, real GPU sweep, checkpoint to _WorkSpace/5-ModelInstanceStore/. NOT for algorithm development — see /haipipe-task-for-algo. Called by /haipipe-task orchestrator when task-type=training. Cross-references /haipipe-nn-tuner and /haipipe-nn-instance."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 Skill: haipipe-task-for-training

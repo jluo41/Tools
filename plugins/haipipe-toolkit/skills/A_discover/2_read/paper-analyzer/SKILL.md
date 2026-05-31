@@ -1,6 +1,9 @@
 ---
 name: paper-analyzer
 description: Use when deeply analyzing a single paper and producing structured notes on claims, methods, figures, evaluation, strengths, limitations, and related work.
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 # Paper Analyzer
 

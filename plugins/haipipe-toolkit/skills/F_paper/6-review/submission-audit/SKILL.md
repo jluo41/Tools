@@ -1,6 +1,9 @@
 ---
 name: submission-audit
 description: Use when a manuscript is close to submission or resubmission and you need a preflight audit for claim support, figure-panel coverage, legend sync, methods references, terminology stability, and venue-facing risks.
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 # Submission Audit

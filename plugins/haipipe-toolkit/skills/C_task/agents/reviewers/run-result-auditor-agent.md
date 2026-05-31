@@ -8,6 +8,9 @@ tools:
   - Bash
   - Write
 model: sonnet
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 # Run Result Auditor

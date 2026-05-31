@@ -1,6 +1,9 @@
 ---
 name: conference-paper-writing-backup
 description: Use when writing or revising ML or AI conference papers for venues such as NeurIPS, ICML, ICLR, ACL, AAAI, or COLM, especially when the workflow is conference-first rather than Nature-style journal-first.
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 # Conference Paper Writing for Top AI Venues

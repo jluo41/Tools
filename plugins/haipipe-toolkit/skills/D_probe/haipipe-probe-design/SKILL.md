@@ -3,6 +3,9 @@ name: haipipe-probe-design
 description: "Pre-run specialist of haipipe-probe. Defines a new probe (claim + planned arms) and links existing runs into its arms. Writes/edits probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml under a project. Called by /haipipe-probe orchestrator. Direct invocation works for design-scoped work."
 argument-hint: "[new|link] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 Skill: haipipe-probe-design

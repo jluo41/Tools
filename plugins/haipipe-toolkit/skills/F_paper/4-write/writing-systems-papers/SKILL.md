@@ -3,6 +3,9 @@ name: writing-systems-papers
 description: "Paragraph-level structural blueprint for 10-12 page systems papers targeting OSDI, SOSP, ASPLOS, NSDI, and EuroSys. Provides page allocation, paragraph templates, and writing patterns. Use when user says \"写系统论文\", \"systems paper structure\", \"OSDI paper\", \"SOSP paper\", or wants fine-grained structural guidance for a systems conference submission."
 argument-hint: "[venue-or-section]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, WebSearch, WebFetch, mcp__codex__codex, mcp__codex__codex-reply
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 # Writing Systems Papers: Paragraph-Level Blueprint

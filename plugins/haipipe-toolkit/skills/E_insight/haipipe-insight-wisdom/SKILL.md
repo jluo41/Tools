@@ -3,6 +3,9 @@ name: haipipe-insight-wisdom
 description: "W-level wisdom specialist of the haipipe-insight family. Reads K_knowledge entries (validated beliefs) and writes strategic recommendation entries to insights/W_wisdom/ — 'what we should DO next'. Each W entry is actionable: a proposed next probe, a strategic re-direction, or a stop-doing-X. NO code. Use when running W-phase via /haipipe-application ask, or directly /haipipe-insight-wisdom. Trigger: W-level, wisdom, recommendations, what next, strategic direction, action items."
 argument-hint: "[--project <path>] [--scope <knowledge-ids>] [--slug <slug>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 Skill: haipipe-insight-wisdom

@@ -1,10 +1,10 @@
-🎭  Roles & One Stage — 领导 / 办事的人 / 鞭子
-================================================
+🎭  Roles & the narrative-cycle — 领导 / 办事的人 / 鞭子
+========================================================
 
   谁动脑、谁动手、谁是工具,分清楚。核心比喻:🥢 ask 是领导提个方向,
-  📖 narrative 是办事的人 — 自己立目标、做 plan、想清楚,再 🔧 whip probe 去探索。
+  📖 narrative 是办事的人 — 自己立目标、做 plan、想清楚,再 🔧 whip probe cycles 去探索。
 
-  Prose: ../../skills/N_narrative/DESIGN.md · ../../skills/E_insight/DESIGN.md
+  Prose: ../../skills/N_narrative/DESIGN.md · ../../skills/E_insight/DESIGN.md · probe-cycle → 06
 
 
 ─§ 🎭 5 roles — each does ONE thing ────────────────────────
@@ -27,23 +27,24 @@
                 → narrative 不跑 compute,只出 "挥鞭的意图";机器替它落地
 
 
-─§ 🎬 ONE STAGE (办事的人的一轮) ───────────────────────────
+─§ 🎬 ONE NARRATIVE-CYCLE (办事的人的一轮) ─────────────────
 
   🥢 ask ─▶ 📖 narrative:
               ① 立目标   → story.md     (把粗方向磨成 core claim)
               ② 做 plan  → claims.md    (要哪些 🟨K · 标 GAP)
               ③ 想好     → 读 🧠insights (have / weak / GAP)
-              ④ 挥鞭     → 对每个 GAP 🔧 whip 一个 probe
+              ④ 挥鞭     → 对每个 GAP 跑一个 🔧 probe cycle
+                              │ (probe → N ✋ task-cycles → 🧠 insight · 见 06)
                               │ 委派机器执行 (不亲自跑 compute)
                               ▼
-                  🔧probe → ✋task → 🧠 E 归档 ★ → 🧠 insights 更新
+                  🔧probe → ✋task×N → 🧠 E 归档 → 🧠 insights 更新
                               │
           👁️ narrative 回读更新后的 insights ◀┘
                               ▼
                       🔥 ignite?  ──YES──▶ 📰 paper (thread 不死,继续)
-                                  ──NO───▶ 下一个 stage (再 立目标/想/挥鞭)
+                                  ──NO───▶ 下一个 narrative-cycle (再 立目标/想/挥鞭)
 
-  ★ = ⚛️ L0 那一格 (E 归档)。没有它,narrative 看不见自己那一鞭抽出了什么。
+  一个 narrative-cycle 收尾在 🔥 ignite 判断;ignite-log 记录每一轮。
 
 
 ─§ 🤛 narrative ⇄ insights (精炼后的双箭头) ────────────────
@@ -52,7 +53,7 @@
   现在精炼:  📖 narrative ⇄ 🧠 insights   (🔧probe / ✋task / 🧠E 只是下行鞭子的 "机制")
 
    📖 narrative ──👁️ 读 🟨K/🟧W 内容── 🧠 insights (现在知道的)
-        │ 🔧 发现 GAP,挥一鞭 (决定;不下场)
+        │ 🔧 发现 GAP,挥一鞭 (= 跑一个 probe cycle;决定,不下场)
         ▼
    机器:  🔧probe → ✋task → 🧠E归档 ──▶ 🧠 insights 更新 ──▶ 回到 narrative 👁️
 

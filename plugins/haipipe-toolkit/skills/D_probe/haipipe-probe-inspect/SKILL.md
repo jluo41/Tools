@@ -3,6 +3,9 @@ name: haipipe-probe-inspect
 description: "Read-only specialist of haipipe-probe. Lists probes, prints status, shows arms + linked runs, finds reverse references (which probes reference a given run). The 'what's the state of probes?' query layer. Called by /haipipe-probe orchestrator."
 argument-hint: "[list|show|refs|unused] [target]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 Skill: haipipe-probe-inspect

@@ -3,6 +3,9 @@ name: haipipe-application-gate
 description: "Phase-transition gate of the haipipe-application family. Runs between phases (D→I, I→K, K→W, W→report) during a session. Proposes one of three outcomes: approve (next phase), revise [feedback] (route back to plan + rewrite), or done (jump to final report). NO code. Use during /haipipe-application-ask, or standalone via /haipipe-application-gate <phase>. Trigger: gate, review phase, approve, revise, /haipipe-application-gate."
 argument-hint: "[phase: D|I|K|W] [--project <path>] [--auto]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 Skill: haipipe-application-gate

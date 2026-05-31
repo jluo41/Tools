@@ -7,6 +7,9 @@ description: >-
   new rightmost column to an existing canvas, preserving prior columns and manual
   Excalidraw annotations (arrows, sticky notes). Use rebuild for repo diagram/
   folders that change. Use append for daily session-log accretion.
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 # /diagram-ascii-canvas — Bundle ASCII diagrams into one Excalidraw file

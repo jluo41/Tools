@@ -2,6 +2,9 @@
 name: paper-structure-diagram
 description: ASCII diagrams of a LaTeX paper at three zoom levels — sections (whole paper), paragraphs (one section), sentences (one paragraph). Use when reviewing structure, spotting empty/thin sections, auditing paragraph roles, or checking sentence-level rhetorical flow. Trigger words — paper structure, section overview, section map, paragraph map, paragraph roles, sentence breakdown, rhetorical flow, /paper-structure-diagram.
 argument-hint: "[scope] [section] [paragraph]"
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 # /paper-structure-diagram — Section / Paragraph / Sentence Maps

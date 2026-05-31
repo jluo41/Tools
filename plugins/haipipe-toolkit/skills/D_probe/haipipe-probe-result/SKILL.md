@@ -3,6 +3,9 @@ name: haipipe-probe-result
 description: "Post-run specialist of haipipe-probe. Aggregates linked-run results into mean/std/paired-t/sign-test, writes claim sentence with caveats, and renders the project-level probe-log.txt comparison table. Called by /haipipe-probe orchestrator. Direct invocation works for result-scoped work."
 argument-hint: "[aggregate|claim|render] [probe_ref]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 Skill: haipipe-probe-result

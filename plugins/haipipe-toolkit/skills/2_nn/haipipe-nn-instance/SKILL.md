@@ -3,6 +3,9 @@ name: haipipe-nn-instance
 description: "Layer 3 (Instance) specialist of haipipe-nn. Materializes a trained ModelInstance from a tuner's best-config + checkpoint. Called by /haipipe-nn orchestrator. Direct invocation works for layer-scoped work."
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 Skill: haipipe-nn-instance

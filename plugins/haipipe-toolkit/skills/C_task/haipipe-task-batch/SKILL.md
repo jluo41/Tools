@@ -3,6 +3,9 @@ name: haipipe-task-batch
 description: "Batch orchestrator for C_task. Fan out MANY task-groups in ONE session: parse N typed specs, dispatch one code-creator-for-<type>-agent per spec (in parallel), flow each through GATE 1 -> run -> GATE 2 independently, collect for human review. Two engines: native parallel Agent calls (a few, in-loop) or the Workflow pipeline (deterministic, resumable batch). Use when the user wants to build/run several tasks at once, fan out arms, or automate multi-task creation. Trigger: build several tasks, run multiple task-groups, fan out, batch scaffold, /haipipe-task-batch."
 argument-hint: "[specs-or-path] [--auto-run]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Task, Workflow
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 Skill: haipipe-task-batch

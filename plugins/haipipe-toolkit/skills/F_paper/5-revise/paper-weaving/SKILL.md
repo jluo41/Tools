@@ -21,6 +21,9 @@ description: >-
   paper section.
 argument-hint: "[granularity-or-verb] [path] [args...]"
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 Skill: paper-weaving (orchestrator)

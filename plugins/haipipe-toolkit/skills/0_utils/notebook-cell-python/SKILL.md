@@ -1,3 +1,12 @@
+---
+name: notebook-cell-python
+description: "Cell-based .py ↔ .ipynb workflow — the .py is source-of-truth, the .ipynb is auto-derived for browser viewing of code + outputs + figures. Use when authoring a script that must run as a script (PR/CI) AND be viewable as a notebook; common home examples/<project>/tasks/<task>/. Trigger: cell-based py, .py to .ipynb, notebook from script, jupytext-style cells."
+allowed-tools: Bash, Read, Write, Edit
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+---
+
 Skill: notebook-cell-python
 ===========================
 

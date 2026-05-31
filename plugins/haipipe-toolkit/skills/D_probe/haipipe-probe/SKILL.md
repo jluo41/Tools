@@ -3,6 +3,9 @@ name: haipipe-probe
 description: "Research probe pipeline — drives how tasks/runs in a project roll out. Each probe is a claim-directed research thread: design (hypothesis + planned arms), bridge (scaffold tasks/runs in C_task), result (harvest arms → claim), review (structural QA + Codex semantic verdict), explore (coverage + propose next), loop (review→propose→materialize→re-review). Contains no code — pure steering layer on top of C_task execution. Feeds F_paper. Trigger: probe, claim, hypothesis, drive probe, plan next runs, aggregate runs, statistical test, paired-t, coverage, propose next probe, review-loop, iterate until claim holds, implement the plan, deploy probes, /haipipe-probe."
 argument-hint: [function] [probe_ref_or_path] [args...]
 allowed-tools: Bash, Read, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 Skill: haipipe-probe (orchestrator)
