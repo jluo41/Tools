@@ -6,6 +6,9 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Task, Workflow
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Batch orchestrator for C_task."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-task-batch

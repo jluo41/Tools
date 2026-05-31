@@ -6,6 +6,9 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, WebSearch, mcp__co
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Generate publication-quality academic illustrations through a local Codex app-server bridge that uses Codex native image generation."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Paper Illustration Image2

@@ -13,6 +13,9 @@ model: inherit
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Thin BUILDER agent for E_insight W (wisdom) cards."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Card Creator for Wisdom (🟧 W)

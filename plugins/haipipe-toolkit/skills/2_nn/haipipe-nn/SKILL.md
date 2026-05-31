@@ -6,6 +6,9 @@ allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Run any Stage 5 NN pipeline work."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-nn (orchestrator)

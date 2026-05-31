@@ -6,6 +6,9 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, Agen
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Draft a structured grant proposal from research ideas and literature."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Grant Proposal: From Research Ideas to Fundable Application

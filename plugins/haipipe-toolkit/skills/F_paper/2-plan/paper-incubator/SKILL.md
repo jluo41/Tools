@@ -6,6 +6,9 @@ allowed-tools: Bash, Read, Write, Edit, Glob
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Three subcommands (display/arch/structure) for creating and interactively refining the incubator LaTeX working documents in 0-incubator/."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: paper-incubator

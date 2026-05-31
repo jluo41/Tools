@@ -4,6 +4,9 @@ description: Use when preparing or positioning a paper for Information Systems R
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Use when preparing or positioning a paper for Information Systems Research (ISR)."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # ISR Playbook

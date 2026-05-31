@@ -13,6 +13,9 @@ model: inherit
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Thin BUILDER agent for E_insight I (information) cards."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Card Creator for Information (🟩 I)

@@ -6,6 +6,9 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, mcp__codex__codex, mc
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Iteration specialist of haipipe-probe."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-probe-loop

@@ -6,6 +6,9 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex,
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Generate publication-quality AI illustrations for academic papers using Gemini image generation."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Paper Illustration: Multi-Stage Claude-Supervised Figure Generation

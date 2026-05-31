@@ -6,6 +6,9 @@ allowed-tools: Bash(*), Read, Write
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "AI-powered web search via Exa with content extraction."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Exa AI-Powered Web Search

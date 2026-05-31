@@ -4,6 +4,9 @@ description: Use when responding to journal or conference reviewer comments and 
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Use when responding to journal or conference reviewer comments and you need a structured author response, aligned manuscript edits, and clear decisions about when to clarify, add evidence, concede, or respectfully disagree."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Rebuttal Response

@@ -6,6 +6,9 @@ allowed-tools: Bash(*), Read, Grep, Glob, Write, Edit, Agent, mcp__codex__codex,
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Get an external patent examiner review of a patent application."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Patent Examiner Review via Codex MCP (xhigh reasoning)

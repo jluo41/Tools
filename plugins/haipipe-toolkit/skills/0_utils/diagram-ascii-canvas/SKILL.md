@@ -10,6 +10,9 @@ description: >-
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Bundle ASCII `.txt` diagrams into one Excalidraw canvas — two modes."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # /diagram-ascii-canvas — Bundle ASCII diagrams into one Excalidraw file

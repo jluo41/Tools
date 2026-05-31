@@ -6,6 +6,9 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, WebFetch, WebSearc
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Section-by-section, citation-by-citation manual verification of every \\\\cite{...} in the paper, with a human approval gate at every fix."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Paper Manual Review (Citations): Walk Every Cite, Approve Every Fix

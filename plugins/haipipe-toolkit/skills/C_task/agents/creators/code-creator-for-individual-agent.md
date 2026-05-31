@@ -13,6 +13,9 @@ model: inherit
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Thin BUILDER agent for C_task individual tasks (Group E)."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Code Creator for Individual

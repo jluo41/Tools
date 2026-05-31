@@ -6,6 +6,9 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Section-by-section, number-by-number manual verification of every quantitative claim in the paper, with a human approval gate at every fix."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Paper Manual Review (Values): Walk Every Number, Approve Every Fix

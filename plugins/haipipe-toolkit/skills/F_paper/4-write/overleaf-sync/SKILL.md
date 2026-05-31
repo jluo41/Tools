@@ -6,6 +6,9 @@ allowed-tools: Bash(*), Read, Grep, Glob, Edit, Write
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Two-way sync between a local paper directory and an Overleaf project via the Overleaf Git bridge (Premium feature)."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Overleaf Sync

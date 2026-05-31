@@ -4,6 +4,9 @@ description: Use when preparing or positioning a paper for MIS Quarterly (MISQ).
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Use when preparing or positioning a paper for MIS Quarterly (MISQ)."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # MISQ Playbook

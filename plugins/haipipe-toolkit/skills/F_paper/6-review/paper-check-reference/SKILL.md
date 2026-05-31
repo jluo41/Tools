@@ -4,6 +4,9 @@ description: "Audit LaTeX paper cross-references and flag broken/positional/orph
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Audit LaTeX paper cross-references and flag broken/positional/orphan items."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: paper-check-reference

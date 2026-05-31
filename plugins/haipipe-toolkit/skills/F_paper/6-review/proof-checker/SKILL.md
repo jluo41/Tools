@@ -6,6 +6,9 @@ allowed-tools: Bash(*), Read, Grep, Glob, Write, Edit, Agent, mcp__codex__codex,
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Rigorous mathematical proof verification and fixing workflow."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Proof Checker: Rigorous Mathematical Verification & Fixing

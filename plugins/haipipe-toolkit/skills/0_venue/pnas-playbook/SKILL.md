@@ -4,6 +4,9 @@ description: Use when choosing PNAS as a venue, deciding between PNAS and Nature
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Use when choosing PNAS as a venue, deciding between PNAS and Nature-portfolio journals, or preparing a PNAS-specific manuscript for fit, article-type framing, Significance Statement drafting, and pre-submission checks."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # PNAS Playbook

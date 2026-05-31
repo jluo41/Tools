@@ -5,6 +5,9 @@ allowed-tools: Bash(*), Read, Glob, Grep, WebSearch, WebFetch, Write, Agent, mcp
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Communications-domain literature review with Claude-style knowledge-base-first retrieval."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Comm Lit Review Claude Single

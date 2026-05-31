@@ -6,6 +6,9 @@ allowed-tools: WebSearch, WebFetch, Grep, Read, Glob, mcp__codex__codex
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Verify research idea novelty against recent literature."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Novelty Check Skill

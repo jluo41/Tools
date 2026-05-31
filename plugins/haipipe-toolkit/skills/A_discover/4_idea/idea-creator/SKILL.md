@@ -6,6 +6,9 @@ allowed-tools: Bash(*), Read, Write, Grep, Glob, WebSearch, WebFetch, Agent, mcp
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Generate and rank research ideas given a broad direction."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Research Idea Creator

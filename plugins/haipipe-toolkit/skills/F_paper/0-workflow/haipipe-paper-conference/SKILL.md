@@ -6,6 +6,9 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, Skill, mcp__codex_
 metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
+  summary: "Conference paper pipeline specialist (was: paper-writing)."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Workflow 3: Paper Writing Pipeline
