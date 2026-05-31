@@ -11,6 +11,12 @@ Skill: haipipe-insight-wisdom
 W-level of the Insight base (D → I → K → W). Reads validated knowledge
 (K entries) and writes **actionable strategic recommendations**.
 
+**Invocation modes** (see `../../ref/invocation-modes.md`): interactive (a
+human steers; the recommendation-triage ASK runs) OR headless (`--scope` ≥ 1 K
+id + `--auto` → file silently), chosen by input completeness.
+`card-creator-wisdom-agent` calls this skill headless during fan-out; agent +
+no K id → `status: blocked` (never hang). End with the structured return block.
+
 ```
 D — Data:          "what we observed"
 I — Information:       "what patterns emerged"

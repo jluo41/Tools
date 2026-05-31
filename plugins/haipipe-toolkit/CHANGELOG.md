@@ -5,6 +5,33 @@ Plugin-level rollup. Per-layer detail lives in each layer's own
 `skills/<LAYER>/CHANGELOG.md`. Newest first.
 
 
+## [2.3.0] — 2026-05-31
+
+The E_insight agent skeleton — E gets the `agents/` + dual-mode parity C_task
+and D_probe already had, with a deliberate per-type-reviewer twist.
+
+### Highlights
+- **E_insight agentified** — `agents/creators/` (4, one per DIKW layer; each a
+  thin headless wrapper over `haipipe-insight-<layer>`) + `agents/reviewers/`
+  (**per-type**: `card-reviewer-{data,information,knowledge,wisdom}-agent`, each
+  enforcing that card's accuracy + boundary, plus a cross-layer
+  `index-integrity-auditor`). A deliberate departure from C/D's type-agnostic
+  reviewers — each DIKW card has a genuinely different boundary.
+  → see [skills/E_insight/CHANGELOG.md](skills/E_insight/CHANGELOG.md)
+- **`ref/dikw-boundaries.md`** — canonical per-layer boundary + the two
+  promotion gates + a worked D→I→K→W example; creators follow it, reviewers
+  enforce it.
+- **Dual-mode DIKW skills** + `ref/invocation-modes.md` — the 4 filer skills run
+  interactive OR headless (full spec → silent), chosen by input completeness.
+- **Loop closure** — `haipipe-probe-loop` now dispatches `card-creator-data-agent`
+  on convergence, filing the D card and closing the `probe → task → insight`
+  atom the loop previously skipped.
+- **Agent registry** 13 → 22 (E adds 9: 4 creators + 5 reviewers).
+
+### Layer changelogs touched this release
+- [E_insight](skills/E_insight/CHANGELOG.md) — NEW: agent skeleton, dual-mode, per-type reviewers, dikw-boundaries
+
+
 ## [2.2.0] — 2026-05-31
 
 The E_insight design + research-engine model release. **Design-only** — no

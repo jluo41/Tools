@@ -51,6 +51,16 @@ Step 2: SEMANTIC VERDICT
 
 Step 3: STOP CHECK
   if verdict == yes AND structural errors == 0:
+      → FILE INSIGHT (close the L0 atom): the probe is now confirmed, so
+        before exiting, dispatch the E_insight filing path so the narrative
+        has a card to read —
+          Agent(agent_type="card-creator-data-agent",
+                prompt="<probe_ref> --project <project>")
+          → files the 🟦 D observation card from this probe (headless).
+        Higher-layer I/K/W cards are synthesized later, as cards accumulate,
+        by the ask report phase / haipipe-insight-explore — NOT per single
+        probe. (Without this step the loop converges but never updates
+        insights/, leaving the narrative blind — the gap this wiring closes.)
       exit loop with status = converged
   if round_count >= max_rounds:
       exit loop with status = budget_exhausted
@@ -151,6 +161,9 @@ WRITES heavily:
 - New probe yamls (via design new each round)
 - Triggers C_task task creation via bridge (Step 6 calls
   `haipipe-probe-bridge` for any proposal needing new runs)
+- Triggers E_insight filing on convergence (Step 3 dispatches
+  `card-creator-data-agent` → writes `insights/D_data/`), closing the
+  probe → task → insight (L0) atom the loop previously left open
 
 Calls external LLM (`mcp__codex__codex`) once per round in Step 2.
 For multi-round loops, this is the dominant cost — budget accordingly
@@ -179,7 +192,8 @@ Specialist tail
 status:    ok | blocked | failed | converged | budget_exhausted
 summary:   "P.A01 loop: round 3/4, verdict=partial→yes, converged"
 artifacts: [probes/<GROUP>_<group_slug>/<NN>_<slug>/LOOP_LOG.md, CLAIMS_FROM_RESULTS.md, new probe IDs]
-next:      if converged → /narrative-report (start paper write-up)
+next:      if converged → D card filed via card-creator-data-agent (L0 closed),
+                          then /narrative-report (start paper write-up)
           if budget_exhausted → /haipipe-probe review claim <probe> manually
           if blocked → triage rejected proposals
 ```

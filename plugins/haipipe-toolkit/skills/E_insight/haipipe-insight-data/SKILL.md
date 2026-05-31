@@ -11,6 +11,13 @@ Skill: haipipe-insight-data
 D-level of the Insight base (D → I → K → W). Reads CONFIRMED probe
 claims and writes markdown observation entries.
 
+**Invocation modes** (see `../../ref/invocation-modes.md`): interactive (a
+human steers; a missing/ambiguous `probe_ref` gets ASKed) OR headless (a full
+spec → file the card silently, no ASK), chosen by input completeness.
+`card-creator-data-agent` calls this skill headless during fan-out; agent +
+missing/unconfirmed source → `status: blocked` (never hang). End with the
+structured return block.
+
 ```
 D — Data:         "what we observed"          ← THIS SKILL
 I — Information:      "what patterns emerged across observations"

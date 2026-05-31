@@ -35,6 +35,7 @@
   E_insight/
   ├── DESIGN.md                       ✅ 写了
   ├── ref/invocation-modes.md         🆕 双模式契约 + 上表
+  ├── ref/dikw-boundaries.md          🆕 每层边界 + 例子(reviewers 照它执法)
   ├── agents/
   │   ├── README.md                   🆕 花名册 + asymmetry note
   │   ├── creators/                   🆕 headless · 🤖 agent 直调的路径
@@ -42,9 +43,12 @@
   │   │   ├── card-creator-information-agent.md    🟩
   │   │   ├── card-creator-knowledge-agent.md      🟨
   │   │   └── card-creator-wisdom-agent.md         🟧
-  │   └── reviewers/                  🆕 E 独有的 fidelity 关
-  │       ├── card-fidelity-reviewer-agent.md      🔍 Codex: 卡 ≤ 证据
-  │       └── index-integrity-auditor-agent.md     🔗 sources↔ref_by · INDEX↔文件
+  │   └── reviewers/                  🆕 每个 DIKW 一个 + 1 跨层
+  │       ├── card-reviewer-data-agent.md          🟦 Codex 准确性 + D 边界/风格
+  │       ├── card-reviewer-information-agent.md    🟩
+  │       ├── card-reviewer-knowledge-agent.md      🟨 + ★ probe 关
+  │       ├── card-reviewer-wisdom-agent.md         🟧
+  │       └── index-integrity-auditor-agent.md     🔗 跨层: sources↔ref_by · INDEX↔文件
   └── haipipe-insight*/SKILL.md       ♻️ 各加 dual-mode body + structured return
 
 
@@ -55,9 +59,9 @@
   +-----------+-----------------------+---------------------+-------------+
   | C_task    | creators (per TYPE)   | fixed 2             | —           |
   | D_probe   | SKILLS (no creators)  | 3 struct/integ/claim| 1 explore   |
-  | E_insight | creators (per DIKW)   | 2 fidelity/integrity| deferred    |
+  | E_insight | creators (per DIKW)   | 4 per-type + 1 graph| deferred    |
   +-----------+-----------------------+---------------------+-------------+
-  | 为什么    | ∵ 🤖 headless agent路径| ∵ E 独有 "忠于证据" |             |
+  | 为什么    | ∵ 🤖 headless agent路径| ∵ 每层边界不同 → departs C/D |    |
   +-----------+-----------------------+---------------------+-------------+
 
   🔑 E creator 存在的理由 ≠ C 的 "代码可批量",而是

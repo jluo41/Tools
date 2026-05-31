@@ -13,6 +13,12 @@ I-level of the Insight base (D → I → K → W). Reads multiple
 patterns** that emerge: statistical regularities, repeated effects,
 paired contrasts.
 
+**Invocation modes** (see `../../ref/invocation-modes.md`): interactive (a
+human steers; the triage ASK runs) OR headless (`--scope` ≥ 2 D ids + `--auto`
+→ file silently), chosen by input completeness. `card-creator-information-agent`
+calls this skill headless during fan-out; agent + < 2 D ids → `status: blocked`
+(never hang). End with the structured return block.
+
 ```
 D — Data:         "what we observed"          (input)
 I — Information:      "what patterns emerged"     ← THIS SKILL
