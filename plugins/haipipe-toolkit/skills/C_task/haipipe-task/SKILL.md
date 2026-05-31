@@ -32,6 +32,25 @@ individual    E              /haipipe-task-for-individual        /haipipe-indivi
 agent         F              /haipipe-task-for-agent             (none yet)
 ```
 
+Stata sub-family (engine = Stata + PowerShell + logs, NOT papermill):
+
+```
+task-type     Specialist                          Output store
+------------  ----------------------------------  ------------------------
+stata-cms     /haipipe-task-for-stata-cms         1-CMS-Store   (heavy, per year)
+stata-case    /haipipe-task-for-stata-case        2-Case-Store  (heavy, cohort × year)
+stata-data    /haipipe-task-for-stata-data        *-Data-Store  (heavy, cross-year)
+stata-reg     /haipipe-task-for-stata-reg         results/      (LIGHT coef tables)
+```
+
+These four share ONE execution dialect — `ref/stata-dialect.md` (engine
+contract) + `ref/run-ps1-template.ps1` (PowerShell run template). They
+keep all structure invariants (hierarchy, RUNNAME spine, light/heavy,
+diagram-as-doc) but swap the Python/papermill engine for Stata. The
+project-local letter convention (cms/case/data/reg) is documented in
+`ref/stata-dialect.md`. Emitting `runtime.yaml` from the `.ps1` gives
+unified `task-log.md` across Python and Stata tasks for free.
+
 Called by `/haipipe-project` when the request is to **create** something
 in the hierarchy. For audit / read see `-inspect`; for moves see `-organize`.
 
@@ -174,7 +193,21 @@ Step 3a (scope=task-folder only): Task-type inference cascade.
         │ individual │ subject · patient · individual · one user · single subject ·    │
         │            │ cgm trace · treatment event · view                              │
         │ agent      │ agent · llm · prompt · claude · gpt · tool use · system prompt  │
+        ├────────────┼─────────────────────────────────────────────────────────────────┤
+        │ stata-cms  │ stata · do-file · cms · cms-pipeline · neat · bene_info ·       │
+        │            │ extract claims · elixhauser · raw cms                           │
+        │ stata-case │ stata · case-pipeline · trigger cases · cohort · visit · bfaf · │
+        │            │ opioidrx · case panel                                           │
+        │ stata-data │ stata · data-pipeline · analysis table · filter case ·          │
+        │            │ filter external · full variables · ANALYSIS-*.dta              │
+        │ stata-reg  │ stata · reg · regression · ols · iv · instrument · estimate ·   │
+        │            │ coef table · two-part · lpm · logit · first-stage               │
         └────────────┴─────────────────────────────────────────────────────────────────┘
+
+      Stata disambiguation: the bare keyword `stata` (or `.do`) signals the
+      Stata engine; the accompanying stage word (cms / case / data / reg)
+      picks the specialist. If `stata` appears with no stage word, ASK which
+      stage (AUTO → blocked: "stata engine but stage unknown").
 
       Confidence: medium. Behavior:
         - AUTO         → accept; log "inferred from keyword '<kw>': <type>"

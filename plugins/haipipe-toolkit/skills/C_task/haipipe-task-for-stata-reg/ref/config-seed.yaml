@@ -1,0 +1,26 @@
+# =============================================================================
+# configs/run_reg_<Condition>_<Pairing>_<Trait>.yaml  —  reg-pipeline (Stata dialect)
+# =============================================================================
+# Carries the _meta: block + the spec cell identity. Output is LIGHT:
+# coefficient tables land in results/<run>/, NOT _WorkSpace/.
+# Shared estimation settings (controls, FE, cluster) may live in a configs/*.do.
+# =============================================================================
+
+_meta:
+  purpose: |
+    <e.g., IV estimate of Agreeableness → 1st-pair OpioidRx for VisitLBP cohort>
+  note: |
+    <e.g., leave-one-out trait IV; cluster at physician; controls = age/sex/race/elix>
+  input: |
+    <e.g., *-Data-Store/.../ANALYSIS-CMS-Filter.dta; IV definitions>
+  output: |
+    <e.g., results/run_reg_VisitLBP_1stPair_Agreeableness-iv/{coef.tex, coef.csv};
+           headline beta / SE / N / first-stage F>
+  # skip_review: true
+
+# ── Run identity (Stata dialect) ─────────────────────────────────────────────
+condition: <VisitLBP>
+pairing: <1stPair>
+trait: <Agreeableness>
+estimators: [ols-progressive, ols-lpm-logit, ols-twopart, iv-main, iv-grid, iv-overid]
+# RUNNAME per cell = run_reg_<condition>_<pairing>_<trait>-<ols|iv>
