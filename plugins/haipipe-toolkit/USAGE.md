@@ -54,7 +54,7 @@ $EDITOR configs/5_model_clm_baseline.yaml   # fill in real ModelArgs
 
 # 4. Pre-flight: run the code reviewer (or skip with env var first time)
 # Option A: real review
-# (see Tools/plugins/haipipe-toolkit/agents/run-script-reviewer.md)
+# (see Tools/plugins/haipipe-toolkit/skills/C_task/agents/reviewers/run-script-reviewer-agent.md)
 # Option B: skip for first smoke run
 HAIPIPE_SKIP_REVIEW=1 bash runs/5_model_clm_baseline_seed42.sh
 
@@ -270,13 +270,13 @@ project        /haipipe-project overview [<ID>]                     dashboard
 task-group     /haipipe-task task-group <ID> --project-id <PROJ>    scaffold a group
 
 task-folder    /haipipe-task <type> --auto                          orchestrator scaffold
-               /haipipe-task-data    --auto                         direct, data-pipeline
-               /haipipe-task-algo    --auto                         direct, X_algo smoke
-               /haipipe-task-training --auto                        direct, A-series train
-               /haipipe-task-eval     --auto                        direct, B-series eval
-               /haipipe-task-display  --auto                        direct, C-series fig
-               /haipipe-task-individual --auto                      direct, E individual
-               /haipipe-task-agent   --auto                         direct, F LLM agent
+               /haipipe-task-for-data    --auto                         direct, data-pipeline
+               /haipipe-task-for-algo    --auto                         direct, X_algo smoke
+               /haipipe-task-for-training --auto                        direct, A-series train
+               /haipipe-task-for-eval     --auto                        direct, B-series eval
+               /haipipe-task-for-display  --auto                        direct, C-series fig
+               /haipipe-task-for-individual --auto                      direct, E individual
+               /haipipe-task-for-agent   --auto                         direct, F LLM agent
 
 run            bash runs/<NAME>.sh                                  execute a run
                HAIPIPE_SKIP_REVIEW=1 bash runs/<NAME>.sh            same, skip review
@@ -315,7 +315,7 @@ Pipeline (Stages 1-4)                        skills/1_data/haipipe-data/SKILL.md
 Pipeline (Stage 5 NN)                        skills/2_nn/haipipe-nn/SKILL.md
 Pipeline (Stage 6 endpoints)                 skills/3_end/haipipe-end/SKILL.md
 Per-individual contract (Stages 0-2)            skills/4_individual/haipipe-individual/SKILL.md
-Run Script Reviewer (pre-flight agent)       agents/run-script-reviewer.md
+Run Script Reviewer (pre-flight agent)       skills/C_task/agents/reviewers/run-script-reviewer-agent.md
 ```
 
 

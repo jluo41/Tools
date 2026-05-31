@@ -141,7 +141,7 @@ Quality / gates model (discussed, not yet built)
 For when we get to correctness: every arrow (transformation) gets a
 guardian agent that only refutes; producer ≠ reviewer. Existing strong
 gates: G3 Run Script Reviewer (Codex cross-family, in
-`agents/run-script-reviewer.md`) and G5 Claim Verdict (Codex, in
+`skills/C_task/agents/reviewers/run-script-reviewer-agent.md`) and G5 Claim Verdict (Codex, in
 `haipipe-probe-review`). Missing gates: G1 (pre-whip relevance) and the
 ignite steelman. `validity` gates guard "is it true"; `relevance` gates
 (narrative ends) guard "does it matter"; `fidelity` lint guards
