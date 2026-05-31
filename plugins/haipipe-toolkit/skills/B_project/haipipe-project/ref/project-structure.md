@@ -359,9 +359,18 @@ Task Folder Contents
         runs/<run>.sh in papermill mode does NOT use `exec > >(tee log)`;
         the recorded notebook IS the log. exports TASK_DIR before papermill.
 
-    - Commit policy: per-project. Commit when collaborators benefit from
-      the rendered form; gitignore when churn dominates. Template <stem>.ipynb
-      is usually safe to gitignore (regenerates from .py).
+    - Retention knob: configs/<run>.yaml → `_meta.notebook: full | thin | off`
+      (default full). run.sh applies it: full = keep with outputs; thin =
+      keep but clear outputs (small record — use for heavy training/data runs);
+      off = execute via papermill but keep no .ipynb. See
+      C_task/haipipe-task/ref/authoring-conventions.md §7.
+
+    - Commit policy: per-project, but DEFAULT to gitignoring `notebooks/`
+      (and `_WorkSpace/`) — N×seeds×arms recorded notebooks bloat the repo.
+      Commit a rendered notebook only when collaborators benefit from it.
+      Template <stem>.ipynb is always safe to gitignore (regenerates from .py).
+      The project scaffold should seed `.gitignore` with `notebooks/` and
+      `_WorkSpace/`.
 
   sbatch/ rules:
     - ORCHESTRATION: each .sh coordinates one or several runs/*.sh.
