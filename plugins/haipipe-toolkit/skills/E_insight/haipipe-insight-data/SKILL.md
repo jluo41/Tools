@@ -3,6 +3,9 @@ name: haipipe-insight-data
 description: "D-level observations specialist of the haipipe-insight family. Reads CONFIRMED probe claims from D_probe and synthesizes markdown observation entries into insights/D_data/. NO code execution — pure markdown synthesis. Use when running D-phase via /haipipe-application ask, or directly /haipipe-insight-data <probe-ref>. Trigger: D-level, observations, what did we observe, raw findings from probes."
 argument-hint: "[probe_ref] [--project <path>] [--slug <slug>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 Skill: haipipe-insight-data

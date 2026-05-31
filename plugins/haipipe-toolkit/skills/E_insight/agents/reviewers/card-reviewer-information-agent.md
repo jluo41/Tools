@@ -10,6 +10,9 @@ tools:
   - mcp__codex__codex
   - mcp__codex__codex-reply
 model: sonnet
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 # Card Reviewer for Information (🟩 I)

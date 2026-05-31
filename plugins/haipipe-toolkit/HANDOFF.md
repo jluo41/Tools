@@ -43,7 +43,7 @@ narrative reads the update. `ignite` decides: cash out (paper) or whip again.
 Cardinality: per ignite, n insights → 1 paper (n:1); over a thread's life,
 1 narrative → N papers (1:N). The narrative is a persistent, iterating line;
 papers are its discrete snapshots. A full visual breakdown is in
-`diagram/v260531/` (hourglass · distillation chain · loops · roles+stage).
+`diagram/v260531/` (hourglass · probe-cycle anatomy · nested cycles · roles · probe-cycle process).
 
 
 LATEST MOVEMENT (2026-05-31) — E_insight agentification + loop closure
@@ -68,16 +68,16 @@ Full write-up: `skills/E_insight/DESIGN.md` + the `diagram/v260531/` set.
      INDEX↔files). This is the "fidelity lint" listed under Quality below.
 
 4. **THE BIG FINDING — loop closure.** `haipipe-probe-loop` never calls
-   E_insight; the atom `probe → task → INSIGHT` has an empty last cell
+   E_insight; the probe cycle (`probe → task → INSIGHT`, L0) has an empty last cell
    (probe-loop materializes via design+bridge, then jumps to
    narrative-report, skipping the DIKW filing). E's headless creators close
    it — and the loop (L1 inner × L2 narrative fan-out) is WHY filing must be
    headless (cannot HITL every card). E never DRIVES a loop; always the callee.
 
    ```
-   L0 atom    probe → bridge → N tasks → result → [E files D/I/K/W]  ← THE GAP
+   L0 cycle   probe → bridge → N tasks → result → [E files D/I/K/W]  ← THE GAP (probe cycle)
    L1 inner   haipipe-probe-loop (review→verdict→propose→materialize→re-review)  BUILT
-   L2 outer   N_narrative ⇄ insights (one turn = one "stage"; ignite-log)   scope A BUILT
+   L2 outer   N_narrative ⇄ insights (one turn = one narrative-cycle; ignite-log)  scope A BUILT
    L3 trigger ignite=ready → narrative-report → application (cash-out)        path exists
    ```
 

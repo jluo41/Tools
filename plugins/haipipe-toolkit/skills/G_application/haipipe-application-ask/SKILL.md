@@ -3,6 +3,9 @@ name: haipipe-application-ask
 description: "Research-question driver of the haipipe-application family. Takes one question, scans the project's KB, plans batches of C_task work (for D+I) and D_probe work (for K+W), dispatches them, files DIKW cards via E_insight, writes a session report. The only kind in G_application authorized to trigger /haipipe-probe + /haipipe-task from outside. Use when the user asks a research question (no specific external artifact wanted). Trigger: ask, research question, /haipipe-application ask, what do we know about X, does X hold."
 argument-hint: "[question] [--project <path>] [--auto] [--unattended[=Ns]] [--persona strict|balanced|creative|lenient]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Task
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 Skill: haipipe-application-ask

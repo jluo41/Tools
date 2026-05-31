@@ -3,6 +3,9 @@ name: haipipe-probe-review
 description: "QA specialist of haipipe-probe. Three complementary checks. (1) STRUCTURAL: audits run quality (per-run sanity) and probe quality (statistical claim integrity) via checklists, produces ✅/⚠️/❌ + actionable issues. (2) INTEGRITY: Codex MCP fraud-pattern audit (ground-truth provenance, metric-definition consistency, phantom results, scope-language mismatch, individual/split leakage), writes INTEGRITY_AUDIT.md. (3) SEMANTIC: Codex MCP judges whether evidence supports the intended claim (yes/partial/no + confidence), writes CLAIMS_FROM_RESULTS.md. The honest-science gate before a claim becomes a paper-able statement. Trigger: review, audit, qa, integrity, fraud check, fake ground truth, phantom results, scope check, claim verdict, supports?, /haipipe-probe-review."
 argument-hint: "[run|probe|claim|project] [target]"
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill, mcp__codex__codex, mcp__codex__codex-reply
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 Skill: haipipe-probe-review

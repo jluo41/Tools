@@ -3,6 +3,9 @@ name: haipipe-probe-loop
 description: "Iteration specialist of haipipe-probe. Chains review → explore (propose) → design (materialize) → re-review in an adversarial loop until the claim verdict reaches ✅ or a round budget is hit. The 'is this research strong enough yet?' loop driver. Called by /haipipe-probe orchestrator. Direct invocation works for loop-scoped work."
 argument-hint: "[start|continue|status] [probe_ref_or_project] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, mcp__codex__codex, mcp__codex__codex-reply
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 Skill: haipipe-probe-loop
@@ -51,7 +54,7 @@ Step 2: SEMANTIC VERDICT
 
 Step 3: STOP CHECK
   if verdict == yes AND structural errors == 0:
-      → FILE INSIGHT (close the L0 atom): the probe is now confirmed, so
+      → FILE INSIGHT (close the probe cycle / L0): the probe is now confirmed, so
         before exiting, dispatch the E_insight filing path so the narrative
         has a card to read —
           Agent(agent_type="card-creator-data-agent",
@@ -163,7 +166,7 @@ WRITES heavily:
   `haipipe-probe-bridge` for any proposal needing new runs)
 - Triggers E_insight filing on convergence (Step 3 dispatches
   `card-creator-data-agent` → writes `insights/D_data/`), closing the
-  probe → task → insight (L0) atom the loop previously left open
+  probe cycle (probe → task → insight · L0) the loop previously left open
 
 Calls external LLM (`mcp__codex__codex`) once per round in Step 2.
 For multi-round loops, this is the dominant cost — budget accordingly

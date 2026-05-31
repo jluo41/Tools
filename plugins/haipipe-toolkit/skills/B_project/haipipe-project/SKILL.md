@@ -3,6 +3,9 @@ name: haipipe-project
 description: "Run any project-level work in the haipipe workspace. Parses intent (build vs read vs modify) and dispatches to the right specialist (/haipipe-task for scaffolding tasks under examples/, /haipipe-project-inspect for review/summary/inventory/overview, /haipipe-project-organize for reorganizing files). Use for creating new projects/task-groups/task-folders (data / algo / training / eval / display / individual / agent) under examples/, auditing structure, generating docs, reorganizing. Trigger: project scaffold, new task, new figure task, new evaluation task, project review, project summary, organize project, reorganize files, /haipipe-project."
 argument-hint: "[function] [project_id] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 Skill: haipipe-project (orchestrator)

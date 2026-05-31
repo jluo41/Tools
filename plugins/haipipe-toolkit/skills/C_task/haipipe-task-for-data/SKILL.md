@@ -3,6 +3,9 @@ name: haipipe-task-for-data
 description: "data-pipeline task-folder build specialist. Scaffolds {NN}_<name>/ task-folders under D-series task-groups that run a Stage 1-4 builder (Source / Record / Case / AIData). Called by /haipipe-task orchestrator when task-type=data. Direct invocation works for scoped scaffolding. Cross-references /haipipe-data."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 Skill: haipipe-task-for-data

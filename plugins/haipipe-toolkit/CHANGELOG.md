@@ -5,6 +5,21 @@ Plugin-level rollup. Per-layer detail lives in each layer's own
 `skills/<LAYER>/CHANGELOG.md`. Newest first.
 
 
+## [2.3.1] — 2026-05-31
+
+Vocabulary + a probe-cycle process doc (docs only).
+
+- **Cycle vocabulary unified** — the three nested units are now
+  **narrative-cycle ⊃ probe-cycle ⊃ task-cycle** (renamed from the earlier
+  "stage / atom" mix). `L0–L3` stay as loop-level labels.
+- **`diagram/v260531/06-probe-cycle.txt`** (new) — the canonical 6-step process
+  for running ONE probe cycle (design → bridge → run×N → result → verdict →
+  insight), its 4 gates, and the two drive modes. `02` reframed as the
+  probe-cycle *anatomy*; `03` as the *nested cycles*; `05` renamed
+  `roles-and-stage` → `roles-and-cycle`. Threaded through DESIGN / HANDOFF /
+  both CHANGELOGs / probe-loop.
+
+
 ## [2.3.0] — 2026-05-31
 
 The E_insight agent skeleton — E gets the `agents/` + dual-mode parity C_task
@@ -24,8 +39,8 @@ and D_probe already had, with a deliberate per-type-reviewer twist.
 - **Dual-mode DIKW skills** + `ref/invocation-modes.md` — the 4 filer skills run
   interactive OR headless (full spec → silent), chosen by input completeness.
 - **Loop closure** — `haipipe-probe-loop` now dispatches `card-creator-data-agent`
-  on convergence, filing the D card and closing the `probe → task → insight`
-  atom the loop previously skipped.
+  on convergence, filing the D card and closing the probe cycle
+  (`probe → task → insight`) the loop previously skipped.
 - **Agent registry** 13 → 22 (E adds 9: 4 creators + 5 reviewers).
 
 ### Layer changelogs touched this release
@@ -46,7 +61,7 @@ the build has a stable target.
   agent-callable filing path), and `reviewers/` = E's unique `card-fidelity`
   (Codex) + `index-integrity` gates. Templates + agents NOT built yet.
 - **Loop-closure finding** — `haipipe-probe-loop` never files insight: the
-  atom `probe → task → INSIGHT` has an empty last cell. E's headless creators
+  probe cycle (`probe → task → INSIGHT`) has an empty last cell. E's headless creators
   are what close it; the loop is WHY filing must be headless.
 - **Research-engine model, versioned** — `diagram/v260531/` (6 files): the
   hourglass (decompose ↓1:n / aggregate ↑n:1); the 5 roles (🥢 ask=领导/nudge ·

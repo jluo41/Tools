@@ -10,6 +10,9 @@ tools:
   - Bash
   - Skill
 model: inherit
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 # Code Creator for Display

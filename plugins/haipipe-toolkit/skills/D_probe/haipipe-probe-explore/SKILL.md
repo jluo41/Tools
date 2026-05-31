@@ -3,6 +3,9 @@ name: haipipe-probe-explore
 description: "Coverage and propose specialist of haipipe-probe. Maps what's been explored across (arch × data × training) axes, identifies gaps, and proposes the next valuable probes or runs to fill them. The 'what should we try next?' brain of the research methodology layer."
 argument-hint: "[coverage|propose] [project-path]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 Skill: haipipe-probe-explore

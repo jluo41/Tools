@@ -1,7 +1,8 @@
-⚛️  L0 Atom — the probe-step distillation chain
+⚛️  L0 — the Probe Cycle (probe → N tasks → insight)
 ================================================
 
   沙漏的底部 (见 01)。一鞭 (🔧 probe) 抽下去 → 撬动 ✋ task → 蒸馏成 🧠 insight。
+  这一个 probe → N tasks → insight 的单元 = **一个 probe cycle**(内循环 L1 的一步)。
   probe·task·insight 不是平级,是一条 "越往上越浓缩" 的链。
 
   Prose: ../../skills/E_insight/DESIGN.md · roles → 05

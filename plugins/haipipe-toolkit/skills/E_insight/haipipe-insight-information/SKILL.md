@@ -3,6 +3,9 @@ name: haipipe-insight-information
 description: "I-level patterns specialist of the haipipe-insight family. Reads multiple D_data entries and synthesizes cross-observation patterns into markdown entries at insights/I_information/. NO code execution — pure markdown synthesis. Looks for statistical regularities, repeated effects, paired contrasts across probes. Use when running I-phase via /haipipe-application ask, or directly /haipipe-insight-information. Trigger: I-level, patterns, cross-probe patterns, regularities, what trends emerge."
 argument-hint: "[--project <path>] [--scope <observation-ids>] [--slug <slug>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 Skill: haipipe-insight-information

@@ -3,6 +3,9 @@ name: haipipe-task
 description: "Build orchestrator for haipipe-project. Routes scope=project / task-group / task-folder; for scope=task-folder, dispatches to one of seven task-type specialists (data / algo / training / eval / display / individual / agent). Replaces the older monolithic -task specialist with a router + per-type series. Called by /haipipe-project orchestrator. Direct invocation works for scaffold work."
 argument-hint: "[scope] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 Skill: haipipe-task (orchestrator)

@@ -1,6 +1,9 @@
 ---
 name: isr-playbook
 description: Use when preparing or positioning a paper for Information Systems Research (ISR). Invoke for venue fit assessment, framing decisions, and ISR-specific reviewer expectations around theory-driven empirics, causal identification, and quantitative rigor. Use proactively when the user is writing an IS paper with survey, experiment, archival, or econometric methods targeting ISR.
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 # ISR Playbook

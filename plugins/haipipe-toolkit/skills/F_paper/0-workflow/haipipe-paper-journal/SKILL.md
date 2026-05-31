@@ -8,6 +8,9 @@ description: >-
   Called by /haipipe-paper orchestrator. Direct invocation works for journal
   work. Trigger: journal paper, Nature paper, PNAS paper, manuscript sequencing,
   which skill next.
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 # Paper Workflow

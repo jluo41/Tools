@@ -3,6 +3,9 @@ name: haipipe-insight
 description: "Insight base orchestrator (the E_insight umbrella). Builds and maintains the project's cross-probe knowledge base under examples/<project>/insights/ (D_data / I_information / K_knowledge / W_wisdom). Reads CONFIRMED claims from D_probe/D_probe, never executes code. Routes intent to the right specialist (observations / patterns / knowledge / wisdom / session / plan / report / explore / gate / context). Trigger: insight, insights, knowledge base, what do we know, build insight, /haipipe-insight, ask a research question, synthesize across probes."
 argument-hint: [function] [args...]
 allowed-tools: Bash, Read, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
 ---
 
 Skill: haipipe-insight (orchestrator)
