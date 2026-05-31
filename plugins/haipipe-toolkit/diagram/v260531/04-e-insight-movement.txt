@@ -1,0 +1,64 @@
+🧠  E_insight Movement — dual-mode + creators/reviewers
+========================================================
+
+  🧠 insight 是 "记忆" 层。今天 📖 narrative 挥的鞭子 (🔧 probe) 打完后,
+  结果没人归档进来 (⚛️ L0 的洞)。这次给 E 补骨架,让 "挥鞭 → 更新记忆" 闭合。
+  E 缺骨架: C_task / D_probe 都有 design 文档 + agents/,E 两样都没有。
+
+  Prose: ../../skills/E_insight/DESIGN.md
+
+
+─§ 🔀 Dual-mode 调用 (🧑 人 与 🤖 agent 共用一个 body) ──────
+
+  🧑 human (常给一半) ─┐                              ┌─▶ ✅ 齐    → 🤫 SILENT 直接产卡
+                      ├─▶ ⚙️ haipipe-insight-<层>     ┤
+  🤖 agent (给全spec) ─┘    🚪 gate: 卡片要素齐了吗?  ├─▶ ❌缺+人  → ❓ ASK 只问缺项 (HITL)
+                                                      └─▶ ❌缺+无人→ 🚧 blocked + missing[]
+                                                                     (调用方补齐再调 · 绝不挂死)
+
+  📌 模式由 INPUT 完整度决定,不由 "谁调" 决定 (= C_task ref/invocation-modes.md)
+  📌 挥鞭循环要 headless: narrative 一轮轮挥鞭,不可能每张卡都 human-in-the-loop
+
+
+─§ ✅ 要素齐不齐 (per-DIKW spec-complete) ──────────────────
+
+  +-------+---------------------------------------------------+
+  | 🟦 D  | source_id + headline + 📊 Numbers                  |
+  | 🟩 I  | sources:[D..] + pattern + direction                |
+  | 🟨 K  | sources:[🔧probe ✅confirmed] + claim + confidence |
+  | 🟧 W  | sources:[K..] + rec + type + cost + how-to-act     |
+  +-------+---------------------------------------------------+
+
+
+─§ 🦴 The skeleton to build ────────────────────────────────
+
+  E_insight/
+  ├── DESIGN.md                       ✅ 写了
+  ├── ref/invocation-modes.md         🆕 双模式契约 + 上表
+  ├── agents/
+  │   ├── README.md                   🆕 花名册 + asymmetry note
+  │   ├── creators/                   🆕 headless · 🤖 agent 直调的路径
+  │   │   ├── card-creator-data-agent.md          🟦
+  │   │   ├── card-creator-information-agent.md    🟩
+  │   │   ├── card-creator-knowledge-agent.md      🟨
+  │   │   └── card-creator-wisdom-agent.md         🟧
+  │   └── reviewers/                  🆕 E 独有的 fidelity 关
+  │       ├── card-fidelity-reviewer-agent.md      🔍 Codex: 卡 ≤ 证据
+  │       └── index-integrity-auditor-agent.md     🔗 sources↔ref_by · INDEX↔文件
+  └── haipipe-insight*/SKILL.md       ♻️ 各加 dual-mode body + structured return
+
+
+─§ 🧬 Asymmetry — apply, don't copy (E vs C vs D) ──────────
+
+  +-----------+-----------------------+---------------------+-------------+
+  |           | 🏗️ builder            | 🔍 reviewer         | 🧭 advancer |
+  +-----------+-----------------------+---------------------+-------------+
+  | C_task    | creators (per TYPE)   | fixed 2             | —           |
+  | D_probe   | SKILLS (no creators)  | 3 struct/integ/claim| 1 explore   |
+  | E_insight | creators (per DIKW)   | 2 fidelity/integrity| deferred    |
+  +-----------+-----------------------+---------------------+-------------+
+  | 为什么    | ∵ 🤖 headless agent路径| ∵ E 独有 "忠于证据" |             |
+  +-----------+-----------------------+---------------------+-------------+
+
+  🔑 E creator 存在的理由 ≠ C 的 "代码可批量",而是
+     "🤖 agent 能直调的 headless 路径" — 正好补上 ⚛️ L0 的 ❌ (见 02 / 03)

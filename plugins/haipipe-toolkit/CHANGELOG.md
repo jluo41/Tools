@@ -5,6 +5,31 @@ Plugin-level rollup. Per-layer detail lives in each layer's own
 `skills/<LAYER>/CHANGELOG.md`. Newest first.
 
 
+## [2.2.0] — 2026-05-31
+
+The E_insight design + research-engine model release. **Design-only** — no
+new runtime skills built yet; this records the design + the mental model so
+the build has a stable target.
+
+### Highlights
+- **E_insight `DESIGN.md`** (`skills/E_insight/DESIGN.md`) — E finally gets
+  the skeleton C_task/D_probe already have, applied THOUGHTFULLY (as D_probe
+  departed from C_task): dual-mode invocation (= C_task's
+  `ref/invocation-modes.md`), `creators/` per DIKW (the headless,
+  agent-callable filing path), and `reviewers/` = E's unique `card-fidelity`
+  (Codex) + `index-integrity` gates. Templates + agents NOT built yet.
+- **Loop-closure finding** — `haipipe-probe-loop` never files insight: the
+  atom `probe → task → INSIGHT` has an empty last cell. E's headless creators
+  are what close it; the loop is WHY filing must be headless.
+- **Research-engine model, versioned** — `diagram/v260531/` (6 files): the
+  hourglass (decompose ↓1:n / aggregate ↑n:1); the 5 roles (🥢 ask=领导/nudge ·
+  📖 narrative=办事的人/brain · 🔧 probe=whip · ✋ task · 🧠 insight); "one
+  stage" = one narrative turn; the probe·task·insight distillation chain.
+  Vocabulary pinned: **whip** (挥鞭), not "wipe"; narrative is the brain
+  (delegates execution, never runs compute).
+- **HANDOFF.md** rewritten to resume from this converged model.
+
+
 ## [2.1.0] — 2026-05-31
 
 The C_task "creator + reviewer agents" release: a clean split between thin

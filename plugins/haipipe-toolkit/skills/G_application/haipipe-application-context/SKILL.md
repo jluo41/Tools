@@ -32,8 +32,8 @@ Files read:
   insights/sessions/plans/plan-v{N}-<slug>.yaml        active plan
   insights/INDEX.md                                    insight base summary
   insights/{D,I,K,W}_*/                                prior entries
-  probes/<NN>_<slug>/probe.yaml              for D-phase tasks
-  probes/<NN>_<slug>/CLAIMS_FROM_RESULTS.md       (optional)
+  probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml              for claim-phase probes
+  probes/<GROUP>_<group_slug>/<NN>_<slug>/CLAIMS_FROM_RESULTS.md  (optional)
 ```
 
 

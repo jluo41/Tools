@@ -1,7 +1,7 @@
 ---
 name: haipipe-insight-data
-description: "D-level observations specialist of the haipipe-insight family. Reads CONFIRMED probe claims from D_probe and synthesizes markdown observation entries into insights/D_data/. NO code execution — pure markdown synthesis. Use when running D-phase via /haipipe-application ask, or directly /haipipe-insight-data <probe-id>. Trigger: D-level, observations, what did we observe, raw findings from probes."
-argument-hint: "[experiment_id] [--project <path>] [--slug <slug>]"
+description: "D-level observations specialist of the haipipe-insight family. Reads CONFIRMED probe claims from D_probe and synthesizes markdown observation entries into insights/D_data/. NO code execution — pure markdown synthesis. Use when running D-phase via /haipipe-application ask, or directly /haipipe-insight-data <probe-ref>. Trigger: D-level, observations, what did we observe, raw findings from probes."
+argument-hint: "[probe_ref] [--project <path>] [--slug <slug>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 ---
 
@@ -30,9 +30,9 @@ Input
 -----
 
 ```
-examples/<project>/probes/<NN>_<slug>/probe.yaml          (REQUIRED)
-examples/<project>/probes/<NN>_<slug>/CLAIMS_FROM_RESULTS.md   (if any)
-examples/<project>/probes/<NN>_<slug>/INTEGRITY_AUDIT.md       (if any)
+examples/<project>/probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml          (REQUIRED)
+examples/<project>/probes/<GROUP>_<group_slug>/<NN>_<slug>/CLAIMS_FROM_RESULTS.md   (if any)
+examples/<project>/probes/<GROUP>_<group_slug>/<NN>_<slug>/INTEGRITY_AUDIT.md       (if any)
 examples/<project>/tasks/.../results/<run>/metrics.json             (optional;
                                                                      read for
                                                                      specific
@@ -69,13 +69,13 @@ Workflow
 
 ```
 Step 1: Parse args
-  - <experiment_id>     required (e.g. 02 or 02_lhm_vs_baseline)
+  - <probe_ref>         required (e.g. P.A01, A01, or A/01_lhm_vs_baseline)
   - --project <path>    optional, else cwd-inferred
   - --slug <slug>       optional, else derived from probe title
 
 Step 2: Resolve paths
   - project root        from arg or cwd
-  - experiment_dir      examples/<project>/probes/<NN>_<slug>/
+  - probe_dir           examples/<project>/probes/<GROUP>_<group_slug>/<NN>_<slug>/
   - insight_dir         examples/<project>/insights/D_data/
 
 Step 3: Validate source
@@ -109,7 +109,7 @@ Quick reminder for D entries:
 ```
 frontmatter (≤ 13 lines):
   id, layer=D, tags, status, created, updated,
-  exp_id, headline,
+  source_id, headline,
   sources, ref_by
 
 body sections (in order):
@@ -140,7 +140,7 @@ Definition of done
 Disambiguation
 ---------------
 
-- experiment_id ambiguous (multiple matches) → ASK, list candidates
+- probe_ref ambiguous (multiple matches) → ASK, list candidates
 - source probe.result.status != confirmed → REFUSE; report status;
   suggest waiting or using a sibling skill once promoted to confirmed
 - slug collides with existing D*.md → bump NN; do not overwrite
@@ -161,7 +161,7 @@ Specialist tail
 
 ```
 status:    ok | blocked | failed
-summary:   "D03_<slug> written from probe <NN>_<slug>"
+summary:   "D03_<slug> written from probe P.A01"
 artifacts: [insights/D_data/D{NN}_<slug>.md, insights/INDEX.md]
 next:      /haipipe-insight-information to extract cross-observation patterns
 ```

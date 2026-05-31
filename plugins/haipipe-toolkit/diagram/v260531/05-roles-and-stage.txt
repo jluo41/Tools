@@ -1,0 +1,60 @@
+🎭  Roles & One Stage — 领导 / 办事的人 / 鞭子
+================================================
+
+  谁动脑、谁动手、谁是工具,分清楚。核心比喻:🥢 ask 是领导提个方向,
+  📖 narrative 是办事的人 — 自己立目标、做 plan、想清楚,再 🔧 whip probe 去探索。
+
+  Prose: ../../skills/N_narrative/DESIGN.md · ../../skills/E_insight/DESIGN.md
+
+
+─§ 🎭 5 roles — each does ONE thing ────────────────────────
+
+  +--------------------+-----------+----------------------------------+
+  | 层                  | 是        | 只干这件事                        |
+  +--------------------+-----------+----------------------------------+
+  | 🥢 application·ask  | 领导       | 给粗方向 (nudge) — 不定目标·不做事 |
+  | 📖 narrative        | 办事的人   | 立目标·做plan·想好·挥鞭 (动脑)     |
+  | 🔧 probe            | 鞭子       | whip — 抽向现实的一下             |
+  | ✋ task             | 体力       | 真正跑 compute (吃 🌱 Source)     |
+  | 🧠 insight          | 记忆       | 被鞭子更新的知识状态              |
+  +--------------------+-----------+----------------------------------+
+
+
+─§ 🧠 两条容易混的线,这里分清 ──────────────────────────
+
+  方向 ≠ 目标   🥢 领导给 "方向" (粗) · 📖 办事的人磨成 "目标" (细)
+  想   ≠ 做     📖 narrative 想 (plan / 目标 / 读 insights) · 机器 (🔧✋🧠) 做
+                → narrative 不跑 compute,只出 "挥鞭的意图";机器替它落地
+
+
+─§ 🎬 ONE STAGE (办事的人的一轮) ───────────────────────────
+
+  🥢 ask ─▶ 📖 narrative:
+              ① 立目标   → story.md     (把粗方向磨成 core claim)
+              ② 做 plan  → claims.md    (要哪些 🟨K · 标 GAP)
+              ③ 想好     → 读 🧠insights (have / weak / GAP)
+              ④ 挥鞭     → 对每个 GAP 🔧 whip 一个 probe
+                              │ 委派机器执行 (不亲自跑 compute)
+                              ▼
+                  🔧probe → ✋task → 🧠 E 归档 ★ → 🧠 insights 更新
+                              │
+          👁️ narrative 回读更新后的 insights ◀┘
+                              ▼
+                      🔥 ignite?  ──YES──▶ 📰 paper (thread 不死,继续)
+                                  ──NO───▶ 下一个 stage (再 立目标/想/挥鞭)
+
+  ★ = ⚛️ L0 那一格 (E 归档)。没有它,narrative 看不见自己那一鞭抽出了什么。
+
+
+─§ 🤛 narrative ⇄ insights (精炼后的双箭头) ────────────────
+
+  之前粗糙:  📖 narrative ⇄ 🧠 KB
+  现在精炼:  📖 narrative ⇄ 🧠 insights   (🔧probe / ✋task / 🧠E 只是下行鞭子的 "机制")
+
+   📖 narrative ──👁️ 读 🟨K/🟧W 内容── 🧠 insights (现在知道的)
+        │ 🔧 发现 GAP,挥一鞭 (决定;不下场)
+        ▼
+   机器:  🔧probe → ✋task → 🧠E归档 ──▶ 🧠 insights 更新 ──▶ 回到 narrative 👁️
+
+  📌 narrative 看 insights = 读内容;看 probe = 看 probes/INDEX 覆盖 + 决定抽哪。
+     它不读 probe 内部 — 那要等 E 蒸馏成 🟨K 卡才读。

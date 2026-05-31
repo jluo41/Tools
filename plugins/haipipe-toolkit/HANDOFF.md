@@ -1,78 +1,121 @@
 HANDOFF — haipipe-toolkit redesign (resume here)
 ==================================================
 
-Last updated: 2026-05-30
+Last updated: 2026-05-31  (movement: E_insight agentification + research-engine model)
 Purpose: pick up the design work from a fresh session without re-deriving it.
 
-Read these three, in order, to reload full context:
-  1. ARCHITECTURE.md            — the 7-layer world view (the big picture)
-  2. MENTAL_MODEL.md            — the 4-layer (C/D/E/G) mechanics
-  3. skills/N_narrative/DESIGN.md — the layer we are currently building
+Read these, in order, to reload full context:
+  1. ARCHITECTURE.md               — the 7-layer world view (the big picture)
+  2. MENTAL_MODEL.md               — the C/D/E/G mechanics
+  3. diagram/v260531/00-index.txt  — the CURRENT model as a visual set (start here for the gestalt)
+  4. skills/E_insight/DESIGN.md    — the live movement: E agentification + loop closure
+  5. skills/N_narrative/DESIGN.md  — the Narrative layer (prior movement)
 
 
-The one-paragraph mental model
-==============================
+The mental model — an hourglass (read this first)
+==================================================
 
-The system is a research engine. Facts flow up:
-`Source → Task → Probe → Insight (= KB)`. A living story (`Narrative`)
-sits in a **double-arrow loop with the KB** — facts ignite stories, stories
-demand new probes. When a story is "ignited enough to sell", an
-`Application` cashes it out into a deliverable (paper / report / message /
-UI). Paper is just the (communication, read-only) kind; message/ui are the
-(intervention) kind whose real-world reaction flows back to Source — making
-the whole thing a flywheel, not a pipeline.
+The system is a research engine shaped like an HOURGLASS. A direction
+decomposes DOWN into work (fan-out, 1:n), executes at the bottom, then
+aggregates UP into a deliverable (fan-in, n:1):
 
-```
-Source → Task → Probe → Insight ═══ Narrative → Application → (回流 to Source)
-  🌱      ✋      🔧       🧠     ⇅      📖           🥢            ↺
-                      └──── KB ────┘  ⇅ = the only double arrow (ignite lives here)
-```
+  ⬇️ decompose 1:n                                              ⬆️ aggregate n:1
+  🥢 application → 📖 narrative → 🔧 probe → ✋ task → 🧠 insight → 📖 narrative → 🥢 application → ↺🌱
 
-Key vocabulary settled this session:
-- **Probe** = a claim-directed research thread (was "experiment"). One
-  probe = one `probe.yaml` = one whip-crack at reality. References tasks as
-  arms; never owns them. Produces K+W. Lives in `probes/`.
-- **Narrative** = the living story (NOUN). KB ⇄ Narrative is the engine.
-- **Application** = the act of cashing KB out (VERB). paper/report/message/ui.
-- **ignite** = the gate on the KB⇄Narrative arrow: "am I ignited (eager to
-  sell this)?" — advance if yes, re-scope/shelve if no.
+ONE layer thinks; the rest are its stimulus / tool / hands / memory:
+
+  🥢 application·ask  = 领导 (leader)    gives a COARSE direction (nudge); does no work
+  📖 narrative        = 办事的人 (doer)   the BRAIN: sets the goal, makes the plan,
+                                          reads what it knows, then whips probes.
+                                          Never runs compute — delegates execution.
+  🔧 probe            = 鞭子 (the whip)   one whip-crack at reality
+  ✋ task             = 体力 (labor)      runs compute (eats 🌱 Source)
+  🧠 insight          = 记忆 (memory)     the knowledge state a whip-crack updates
+
+Vocabulary nailed this session: it is **whip** (挥鞭, crack a whip), NOT
+"wipe". The probe is the whip; the narrative is the whip-hand.
+
+`narrative ⇄ insights` is the engine (the refined "double arrow"): narrative
+READS insight content (🟨K/🟧W) + probe COVERAGE (probes/INDEX), finds a gap,
+whips a probe; the machine runs it and E files the result back as insights;
+narrative reads the update. `ignite` decides: cash out (paper) or whip again.
+
+Cardinality: per ignite, n insights → 1 paper (n:1); over a thread's life,
+1 narrative → N papers (1:N). The narrative is a persistent, iterating line;
+papers are its discrete snapshots. A full visual breakdown is in
+`diagram/v260531/` (hourglass · distillation chain · loops · roles+stage).
 
 
-DONE this session
-=================
+LATEST MOVEMENT (2026-05-31) — E_insight agentification + loop closure
+======================================================================
 
-1. **ARCHITECTURE.md written** (committed) — the 7-layer world, KB⇄Narrative
-   as the only double arrow, ignite gate, application = cash-out layer,
-   two-axis classification of applications, the flywheel, multiplicity rules
-   (1 narrative : N papers; KB shared once).
+Full write-up: `skills/E_insight/DESIGN.md` + the `diagram/v260531/` set.
 
-2. **probe rename fully landed in code** (committed in `fd80941`):
-   - `skills/D_experiment/` → `skills/D_probe/`
-   - all 8 skills `haipipe-experiment-*` → `haipipe-probe-*` (names match dirs)
-   - `experiment.yaml` → `probe.yaml`; `experiments/` → `probes/`
-   - `ref/experiment-*.{md,txt}` → `ref/probe-*.{md,txt}`
-   - identifiers `experiment_id` → `probe_id`, `next_experiments_needed`
-     → `next_probes_needed`
-   - Generic academic "experiment" in F_paper / A_discover / 0_venue PROSE
-     was deliberately PRESERVED (those describe paper-writing, not this
-     layer). The `experimental` adjective was never touched.
-   - `project-structure.md` already shows the new `probes/` layout.
-   - Verified: 0 dangling `haipipe-experiment` / `D_experiment` /
-     `experiment.yaml` tokens; 8/8 skill `name:` fields match their dirs.
+1. **E had skins but no skeleton.** C_task and D_probe each ship a design
+   doc + `agents/{...}`; E_insight had neither. This session designs E's
+   skeleton, applying the C/D pattern THOUGHTFULLY (as D departed from C).
 
-3. **N_narrative/DESIGN.md written** — full design for the new Narrative
-   layer, scope A.
+2. **Dual-mode invocation for E** (= C_task's `ref/invocation-modes.md`):
+   mode chosen by INPUT COMPLETENESS, not by who calls. agent = full spec →
+   SILENT; human = partial → ASK only the missing fields; agent + missing →
+   `status: blocked` (never hang). One body, callable by human AND agent.
 
-4. **N_narrative scope-A skill BUILT** (this commit):
-   - `skills/N_narrative/haipipe-narrative/SKILL.md` — verbs new / status /
-     claims / ignite. Reads insights/K+W; writes only narratives/; never
-     touches probes/tasks/insights; never fires a probe (scope B).
-   - `skills/N_narrative/haipipe-narrative/ref/narrative-schema.md` —
-     canonical schema for story.md / claims.md / ignite-log.md /
-     decision-tree.md + INDEX.md.
-   - `narratives/` added to the project-structure.md Standard Layout
-     (OPTIONAL world, N_narrative manages).
-   - name matches dir; no stray experiment tokens.
+3. **Agent families for E** (thoughtful, not copied):
+   - `creators/` per DIKW (D/I/K/W) = the headless, agent-callable filing
+     path. The reason is "headless agent path", NOT C's "code is batchable".
+   - `reviewers/` = E's UNIQUE gate: `card-fidelity` (Codex; card ≤ the
+     evidence cited, no overclaim) + `index-integrity` (sources↔ref_by,
+     INDEX↔files). This is the "fidelity lint" listed under Quality below.
+
+4. **THE BIG FINDING — loop closure.** `haipipe-probe-loop` never calls
+   E_insight; the atom `probe → task → INSIGHT` has an empty last cell
+   (probe-loop materializes via design+bridge, then jumps to
+   narrative-report, skipping the DIKW filing). E's headless creators close
+   it — and the loop (L1 inner × L2 narrative fan-out) is WHY filing must be
+   headless (cannot HITL every card). E never DRIVES a loop; always the callee.
+
+   ```
+   L0 atom    probe → bridge → N tasks → result → [E files D/I/K/W]  ← THE GAP
+   L1 inner   haipipe-probe-loop (review→verdict→propose→materialize→re-review)  BUILT
+   L2 outer   N_narrative ⇄ insights (one turn = one "stage"; ignite-log)   scope A BUILT
+   L3 trigger ignite=ready → narrative-report → application (cash-out)        path exists
+   ```
+
+
+NEXT STEP (where to resume)
+===========================
+
+Build E's skeleton — the design is recorded in `skills/E_insight/DESIGN.md`:
+
+1. `skills/E_insight/ref/invocation-modes.md` — formalize the per-DIKW
+   "spec-complete" table (what makes each card headless-fileable).
+2. `skills/E_insight/agents/README.md` + `{creators,reviewers}/_TEMPLATE.md`.
+3. Author 4 creators (`card-creator-{data,information,knowledge,wisdom}`) +
+   2 reviewers (`card-fidelity` Codex, `index-integrity`). Thin pointers —
+   judgment logic stays in the SKILLs + ref/, not duplicated in the agents.
+4. Add the dual-mode body + structured return to the 6 insight SKILLs.
+
+Open decisions (see DESIGN.md Q1–Q4):
+- Q2: should `haipipe-probe-loop` auto-call E on convergence (close L0 inside
+  the loop), or stay E-agnostic with G-ask doing the filing?
+- creator = thin agent (for fan-out) vs just the skill's headless mode.
+- probe : insight = 1:1 (one bundle) — settled this session.
+
+
+DONE (movement history, newest first)
+=====================================
+
+- **2026-05-31  E_insight agentification + research-engine model** — this
+  movement (above): DESIGN.md + diagram/v260531/ + this HANDOFF + CHANGELOG 2.2.0.
+- **N_narrative scope A** — `skills/N_narrative/` built: story / claims /
+  ignite-log / decision-tree schema + `/haipipe-narrative` (new / status /
+  claims / ignite). Reads insights/K+W; writes only narratives/; never fires
+  a probe (that is scope B).
+- **probe rename landed** (`fd80941`) — `D_experiment` → `D_probe`;
+  `experiment.yaml` → `probe.yaml`; `experiments/` → `probes/`; 8/8 skill
+  names match dirs; generic academic "experiment" prose preserved.
+- **ARCHITECTURE.md** — the 7-layer world, KB⇄Narrative, ignite, cash-out
+  layer, the flywheel, multiplicity (1 narrative : N papers).
 
 
 The expected project folder layout (reference)
@@ -96,35 +139,15 @@ One-way dependency rule (who may read whom):
 probes/  READS tasks/ ;  insights/ READS probes/+tasks/ ;
 paper/ + applications/ READ insights/K+W ;
 tasks/ READS no one (atomic foundation) ;  probes/ NEVER reads insights/
+narrative READS insights (content) + probes/INDEX (coverage); never writes/triggers directly
 ```
 
 
-NEXT STEP (where to resume)
-===========================
-
-Scope A is BUILT (skill + schema + project-structure wiring). The natural
-next moves, in rough priority order:
-
-1. **Dogfood it** — run `/haipipe-narrative new <slug>` against a real (or
-   stub) `examples/<proj>/` and walk new → claims → ignite. Confirm the 4
-   files + INDEX.md scaffold and read cleanly. Fix any friction in the
-   verbs before automating.
-
-2. **Cross-reference pass** — update MENTAL_MODEL.md and the F_paper
-   narrative-report SKILL.md to point at N_narrative as the upstream living
-   story (narrative-report = the snapshot step). Make the upstream→downstream
-   relationship explicit in both directions.
-
-3. **Then scope B** (the automation) — see DEFERRED below. Start with the
-   gap-diff (claims.md needs[] minus insights/K → candidate probes), since
-   the schema it automates against is now stable.
-
-
-DEFERRED — scope B (explicitly NOT in current work)
-===================================================
+DEFERRED — N_narrative scope B + gates (NOT in current work)
+============================================================
 
 - Auto gap-diff: claims.md `needs[]` minus insights/K → auto-emit
-  `/haipipe-probe design new ...`.
+  `/haipipe-probe design new ...` (through G_application ask, never directly).
 - Wire narrative gaps into G_application ask-kind (load→gap→chain stub
   already exists in `skills/G_application/haipipe-application-ask/`).
 - ignite as an ENFORCED gate with an adversarial steelman reviewer
@@ -132,17 +155,15 @@ DEFERRED — scope B (explicitly NOT in current work)
 - The pre-whip gate (G1): review "should this probe run at all" before
   `/haipipe-probe design`. Currently design just asks the user; no gate.
 
-See DESIGN.md "Scope boundary" + "Open questions" for the full deferred list.
 
+Quality / gates model
+=====================
 
-Quality / gates model (discussed, not yet built)
-================================================
-
-For when we get to correctness: every arrow (transformation) gets a
-guardian agent that only refutes; producer ≠ reviewer. Existing strong
-gates: G3 Run Script Reviewer (Codex cross-family, in
-`skills/C_task/agents/reviewers/run-script-reviewer-agent.md`) and G5 Claim Verdict (Codex, in
-`haipipe-probe-review`). Missing gates: G1 (pre-whip relevance) and the
-ignite steelman. `validity` gates guard "is it true"; `relevance` gates
-(narrative ends) guard "does it matter"; `fidelity` lint guards
-"card faithful to evidence".
+Every arrow (transformation) gets a guardian agent that only refutes;
+producer ≠ reviewer. Existing strong gates: G3 Run Script Reviewer (Codex
+cross-family, `skills/C_task/agents/reviewers/run-script-reviewer-agent.md`)
+and G5 Claim Verdict (Codex, `haipipe-probe-review`). Missing/planned: G1
+(pre-whip relevance), the ignite steelman, and E's `card-fidelity` reviewer
+(designed this movement; not built). `validity` gates guard "is it true";
+`relevance` gates (narrative ends) guard "does it matter"; `fidelity` lint
+guards "card faithful to evidence".

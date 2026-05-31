@@ -20,7 +20,7 @@ Input
 
 - The question (text)
 - Current insight base state (`insights/INDEX.md` + entries)
-- Current probe state (`probes/<NN>_<slug>/probe.yaml`)
+- Current probe state (`probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml`)
 
 
 Output
@@ -56,7 +56,7 @@ Step 3: Decompose question into phases
   - What W tasks (which recommendations to derive)?
 
 Step 4: Identify probe gaps
-  - Does any planned D task require an probe not yet confirmed?
+  - Does any planned D task require a probe not yet confirmed?
   - For each such gap: propose "trigger probe" (with proposed
     arms / claim_target). User decides via gate.
 
@@ -83,8 +83,8 @@ existing_relevant:
   knowledge:      [K03]
   information:    [I02, I05]
   data:           [D01, D03]
-  probes:    [02_lhm_vs_baseline (confirmed),
-                   04_film_test_id (confirmed)]
+  probes:    [P.A02 lhm_vs_baseline (confirmed),
+              P.A04 film_test_id (confirmed)]
 
 # Batch A — C_task work (produces D + I material)
 task_batch:
@@ -102,8 +102,8 @@ task_batch:
     notes:     "FiLM vs baseline test-od overlay plot"
 
 # Batch B — D_probe work (produces K + W material)
-experiment_batch:
-  - id:        E12
+probe_batch:
+  - id:        P.A12
     skill:     /haipipe-probe design
     new:       true
     arms:      [film_pm, baseline_pm]
@@ -118,19 +118,19 @@ insight_yield:
   D04: {layer: D, sources: [T1]}
   I06: {layer: I, sources: [T1]}
   I07: {layer: I, sources: [T2], refs: [D04]}
-  K04: {layer: K, sources: [E12], refs: [I06, I07]}
-  W03: {layer: W, sources: [E12], refs: [K04]}
+  K04: {layer: K, sources: [P.A12], refs: [I06, I07]}
+  W03: {layer: W, sources: [P.A12], refs: [K04]}
 
 # DAG — explicit blocking relationships
 dag:
   - T1, T2 in parallel                # D04 + I06 + I07 obtained
-  - E12 needs [D04, I07]              # then triggered
+  - P.A12 needs [D04, I07]            # then triggered
   - All yields filed → G-report
 
 # Gate budget
 gates:
   - id:         G-design
-    threshold:  "all yields have a producer in task_batch or experiment_batch"
+    threshold:  "all yields have a producer in task_batch or probe_batch"
   - id:         G-observe
     threshold:  "every D/I in insight_yield has artifact under tasks/.../results/"
   - id:         G-claim
@@ -163,9 +163,9 @@ Definition of done
 -------------------
 
 - [ ] `applications/<kind>/<NN_slug>/plans/plan-v{N}.yaml` written, parses
-- [ ] `task_batch` + `experiment_batch` + `insight_yield` all populated
+- [ ] `task_batch` + `probe_batch` + `insight_yield` all populated
 - [ ] Every id in any `yields:` list appears as key in `insight_yield`
-- [ ] No K/W entry sources a task (must source an probe)
+- [ ] No K/W entry sources a task (must source a probe)
 - [ ] dag respects layer-letter promotion rule
 - [ ] On --revise: revise_history appended; feedback verbatim preserved
 

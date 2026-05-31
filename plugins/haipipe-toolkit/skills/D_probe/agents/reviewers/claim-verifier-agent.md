@@ -63,7 +63,7 @@ no       → record postmortem; pivot or try an alternative approach
 
 ```
 status:    ok | blocked | failed
-summary:   "E02 claim: partial (confidence medium) — holds on test-id, not test-od"
+summary:   "P.A01 claim: partial (confidence medium) — holds on test-id, not test-od"
 artifacts: [CLAIMS_FROM_RESULTS.md]
 next:      partial/no → probe-explorer-agent (propose supplementary probes)
 ```

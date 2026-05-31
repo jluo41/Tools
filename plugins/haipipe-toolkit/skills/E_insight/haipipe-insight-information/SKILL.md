@@ -26,7 +26,7 @@ Input
 
 ```
 examples/<project>/insights/D_data/D*.md   (REQUIRED, ≥ 2 entries)
-examples/<project>/probes/<NN>_<slug>/        (read-only, for back-refs)
+examples/<project>/probes/<GROUP>_<group_slug>/<NN>_<slug>/        (read-only, for back-refs)
 ```
 
 

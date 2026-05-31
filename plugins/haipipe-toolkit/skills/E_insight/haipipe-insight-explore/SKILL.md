@@ -29,7 +29,7 @@ Workflow
 Step 1: Resolve project root (--project or cwd-inferred)
 
 Step 2: Scan probes/
-  - For each probes/<NN>_<slug>/probe.yaml:
+  - For each probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml:
     - status = result.status (pending | confirmed | inconclusive | refuted | exploratory)
     - has CLAIMS_FROM_RESULTS.md? has INTEGRITY_AUDIT.md?
     - bucketize: ready_for_synthesis (confirmed) | not_ready | failed
@@ -117,5 +117,5 @@ Specialist tail
 status:    ok | blocked | failed
 summary:   "3 probes confirmed, 2 still need D entries; 1 P→K elevation pending"
 artifacts: [stdout summary, insights/coverage.md (if --out)]
-next:      Pick a gap to close: /haipipe-insight-data <ID> | /haipipe-insight-information ...
+next:      Pick a gap to close: /haipipe-insight-data <probe_ref> | /haipipe-insight-information ...
 ```

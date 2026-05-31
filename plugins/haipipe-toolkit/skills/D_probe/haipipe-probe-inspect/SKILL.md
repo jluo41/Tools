@@ -18,7 +18,7 @@ Commands
 /haipipe-probe inspect list [project-path]
   Table of all probes in project: ID, title, status, # arms, # runs.
 
-/haipipe-probe inspect show <ID>
+/haipipe-probe inspect show <probe>
   Full view of one probe yaml: claim, arms, results, caveats.
 
 /haipipe-probe inspect refs <run-path>
@@ -39,20 +39,20 @@ Output — `list`
 ```
 ═══ Probes in Proj-Model-1-ScalingLaw ═══
 
-ID    Title                             Status         Arms  Runs  Claim
-────  ────────────────────────────────  ─────────────  ────  ────  ──────
-E01   baseline_noise_floor              ✅ confirmed    1     5     "Baseline MAE 24.6 ± 0.2"
-E02   lhm_vs_baseline                   ⚠️ exploratory  2     2     "LHM-A beats baseline 0.68 (N=1)"
-E03   event_channels                    ❌ refuted      2     6     "No measurable gain from events"
-E04   transformer_pilot                 ⏸ pending      1     1     (no aggregate yet)
+ID      Title                             Status         Arms  Runs  Claim
+──────  ────────────────────────────────  ─────────────  ────  ────  ──────
+P.A01   baseline_noise_floor              ✅ confirmed    1     5     "Baseline MAE 24.6 ± 0.2"
+P.A02   lhm_vs_baseline                   ⚠️ exploratory  2     2     "LHM-A beats baseline 0.68 (N=1)"
+P.B01   event_channels                    ❌ refuted      2     6     "No measurable gain from events"
+P.C01   transformer_pilot                 ⏸ pending      1     1     (no aggregate yet)
 ```
 
 
-Output — `show <ID>`
+Output — `show <probe>`
 ---------------------
 
 ```
-═══ E02 — lhm_vs_baseline ═══
+═══ P.A02 — lhm_vs_baseline ═══
 
 hypothesis:    LHM-A in test-id MAE lower than baseline by ≥ 0.5 mg/dL
 claim_target:  "LHM-A architecture improves CGM forecasting by X mg/dL ..."
@@ -94,8 +94,8 @@ Output — `refs <run-path>`
 ═══ References to run_seed42_baseline ═══
 
 Linked in 2 probes:
-  E01 (arm: baseline)  status: ✅ confirmed
-  E02 (arm: baseline)  status: ✅ confirmed
+  P.A01 (arm: baseline)  status: ✅ confirmed
+  P.A02 (arm: baseline)  status: ✅ confirmed
 ```
 
 
@@ -110,13 +110,13 @@ Output — `unused`
 tasks/A01_pretraining_clm/01_pretrain_baseline/runs/
   run_smoke_test           (smoke, ok)
   run_debug_oom            (failed, debug)
-  run_seed99_one_off       (ok, but never linked to expmt)
+  run_seed99_one_off       (ok, but never linked to a probe)
 
 tasks/A01_pretraining_clm/02_pretrain_lhm/runs/
   run_lhm_no_event         (exploratory, never linked)
   ...
 
-Hint: unused runs are fine for debug/smoke. Link them to an probe
+Hint: unused runs are fine for debug/smoke. Link them to a probe
       if they're part of a comparison; otherwise leave as exploration.
 ```
 
@@ -125,8 +125,8 @@ Disambiguation
 ---------------
 
   - No verb → default `list`.
-  - <ID> looks like a path → assume `refs`.
-  - <ID> looks like E\d+ → assume `show`.
+  - <target> looks like a path → assume `refs`.
+  - <target> looks like `P.A01`, `A01`, or `A/01_<slug>` → assume `show`.
 
 
 Specialist tail
