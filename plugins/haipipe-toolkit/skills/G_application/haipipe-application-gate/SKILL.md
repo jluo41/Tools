@@ -96,7 +96,7 @@ Per-phase check tables
 ```
 G-D (D-phase gate):
   [ ] all plan.phases.D tasks have a corresponding D*.md
-  [ ] every cited number traceable to an probe.yaml or metrics.json
+  [ ] every cited number traceable to a probe.yaml or metrics.json
   [ ] no Python files were written under insights/
 
 G-I (I-phase gate):

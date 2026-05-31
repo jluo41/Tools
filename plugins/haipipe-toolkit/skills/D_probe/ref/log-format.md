@@ -1,7 +1,7 @@
 Probe Daily Log — Format
 ==============================
 
-Location: `probes/<NN>_<slug>/logs/<YYYY-MM-DD>.md`
+Location: `probes/<GROUP>_<group_slug>/<NN>_<slug>/logs/<YYYY-MM-DD>.md`
 Owner:    Auto-appended by D_probe skills + manually edited by user/Claude.
 Status:   Append-only narrative; never overwrite past days.
 
@@ -12,8 +12,8 @@ Why daily (not single log.md)
 A long-running probe may span weeks. A single `log.md` becomes
 unwieldy; a daily file:
 
-- "What happened on E02 on 2026-05-24?" → open `logs/2026-05-24.md`
-- "How did E02 evolve over the week?" → ls `logs/`, read chronologically
+- "What happened on P.A01 on 2026-05-24?" → open `logs/2026-05-24.md`
+- "How did P.A01 evolve over the week?" → ls `logs/`, read chronologically
 - Diff-friendly in git (today's edits don't churn the whole history)
 - Aligns with how research actually unfolds (one decision per day, not 1 file)
 
@@ -22,7 +22,7 @@ File structure
 --------------
 
 ```
-# Probe <NN> — <slug> — <YYYY-MM-DD>
+# Probe P.<GROUP><NN> — <slug> — <YYYY-MM-DD>
 
 ## HH:MM — <action> [<skill>]
 <one-paragraph description>
@@ -47,7 +47,7 @@ re-aggregated     after excluding seed, fixing bug, etc.
 claim-written     final claim sentence composed
 reviewed          structural QA pass
 verdict           Codex semantic verdict obtained
-proposed          explore suggested next steps from this expmt
+proposed          explore suggested next steps from this probe
 note              free-form thought (user or Claude)
 discussed         chat or pairing session yielded a decision
 linked-evidence   figure/table from a display task attached
@@ -139,12 +139,12 @@ Each entry is appended to today's file via:
 ```bash
 DATE=$(date +%F)
 HHMM=$(date +%H:%M)
-LOG="probes/<NN>_<slug>/logs/${DATE}.md"
+LOG="probes/<GROUP>_<group_slug>/<NN>_<slug>/logs/${DATE}.md"
 
 # Init file if missing
 if [ ! -f "$LOG" ]; then
   mkdir -p "$(dirname "$LOG")"
-  echo "# Probe <NN> — <slug> — $DATE" > "$LOG"
+  echo "# Probe P.<GROUP><NN> — <slug> — $DATE" > "$LOG"
   echo "" >> "$LOG"
 fi
 
@@ -172,7 +172,7 @@ Cross-day discovery
 
 ```bash
 # All days for this probe, chronological:
-ls probes/02_lhm_vs_baseline/logs/
+ls probes/A_baseline_controls/01_lhm_vs_baseline/logs/
 
 # Today's log across all probes:
 find probes -path "*/logs/$(date +%F).md"
@@ -190,8 +190,8 @@ B_project/runlogs/<DATE>-runlog.md     (DELETED 2026-05-24)
   was: per-task daily index + LLM narrative of runs
   why deleted: "today's runs" wasn't a real research question
 
-D_probe/<ID>/logs/<DATE>.md       (THIS file)
+D_probe/<probe>/logs/<DATE>.md    (THIS file)
   is:  per-probe daily narrative of design decisions
   why kept: probes evolve over days; daily slicing matches research
-            cadence ("what did we decide about E02 today")
+            cadence ("what did we decide about P.A01 today")
 ```

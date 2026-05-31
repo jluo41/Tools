@@ -1,0 +1,72 @@
+🏗️  The Research Engine — an Hourglass
+========================================
+
+  A 🥢 direction decomposes DOWN into work (fan-out · 1:n), executes at the
+  bottom (✋ task eats 🌱 Source), then aggregates UP into a deliverable
+  (fan-in · n:1). 📖 narrative is the only layer that THINKS.
+
+  Prose: ../../ARCHITECTURE.md · ../../MENTAL_MODEL.md · roles → 05
+
+
+─§ ⏳ The hourglass (decompose ⬇️1:n · aggregate ⬆️n:1) ─────
+
+   ⬇️ DECOMPOSE (fan-out · 1:n)              ⬆️ AGGREGATE (fan-in · n:1)
+
+      🥢 application ──────(一次循环 one cycle)──────▶ 🥢 application ─▶ 📰 + ↺🌱
+           │ 1:n  (领导给方向)                            ▲ n:1  (n 张 → 1 篇)
+           ▼                                              │
+      📖 narrative                                   📖 narrative
+           │ 1:n  (挥鞭探索)                              ▲ n:1
+           ▼                                              │
+      🔧 probe ───────────1:1────────────────────────▶ 🧠 insight
+           │ 1:n  (arms×seeds)                            ▲ n:1
+           ▼                                              │
+      ✋ task ×N ─────────🏃 run (吃 🌱 Source)────────────┘
+
+  底部 = ⚛️ L0 atom (蒸馏链,见 02)。这张是把它 zoom out 的全景。
+
+
+─§ 🎭 Who is who (5 roles · 详见 05) ───────────────────────
+
+  +--------------------+-----------+--------------------------------+
+  | 层                  | 是        | 只干这件事                      |
+  +--------------------+-----------+--------------------------------+
+  | 🥢 application·ask  | 领导       | 给粗方向 (nudge) · 不做事        |
+  | 📖 narrative        | 办事的人   | 立目标·plan·想好·挥鞭 (不跑compute)|
+  | 🔧 probe            | 鞭子       | whip — 抽向现实的一下           |
+  | ✋ task             | 体力       | 真正跑 compute (吃 🌱 Source)    |
+  | 🧠 insight          | 记忆       | 被鞭子更新的知识状态            |
+  +--------------------+-----------+--------------------------------+
+
+
+─§ 🕰️ narrative 是一条持续的线;paper 是它的快照 ──────────
+
+   📖 narrative ─🔥ignite#1─▶ 📰 paper#1     这一刻: n 张 🧠insight 聚成 1 篇 (n:1)
+        │ (线没死,继续 想 / 挥鞭)
+        └────────🔥ignite#2─▶ 📰 paper#2      同一条 thread → 第 2 篇 (1:N)
+
+  ⇒ 每次 ignite = n insight → 1 paper (n:1) · 一条 thread 一生 → N paper (1:N)。不矛盾。
+
+
+─§ 🔒 One-way dependency rule (谁能读谁) ───────────────────
+
+  +--------------+------------------------------------------------+
+  | ✋ tasks/     | READS no one              (atomic foundation)   |
+  | 🔧 probes/    | READS tasks/              (arms → runs)          |
+  | 🧠 insights/  | READS probes/ + tasks/       NEVER writes them   |
+  | 📖 narrative/ | READS insights/ 🟨K+🟧W (内容) + probes/INDEX (覆盖) |
+  | 🥢 app/       | nudge narrative · 只 'ask' 路径触发执行+回写 KB  |
+  +--------------+------------------------------------------------+
+  🚫 probes/ NEVER reads insights/
+  📖 narrative 只"想"+"挥鞭",不跑 compute → 委派机器执行,再回读 insights
+
+
+─§ 🥢 Application = cash-out (2 axes) ──────────────────────
+
+  +--------------+----------------------+--------------------------+
+  |              | 🗣️ COMMUNICATION     | 💉 INTERVENTION          |
+  +--------------+----------------------+--------------------------+
+  | 📖 reads KB  | 📰 paper · 📊 report | 💬 message · 🖥️ ui       |
+  | ✍️ writes KB | 🎯 ask (唯一回写 KB) | ——                       |
+  +--------------+----------------------+--------------------------+
+  💬 message/ui 部署后 → 真人反应 = 新 🌱 Source → ↺ flywheel

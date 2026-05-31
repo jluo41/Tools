@@ -60,7 +60,7 @@ if `result.status == confirmed` then p<0.05 AND |Δ|>noise-floor.
 
 ```
 status:    ok | blocked | failed
-summary:   "E02 structural: 0 errors, 2 warnings (missing scale-confound caveat)"
-artifacts: [probes/<NN>_<slug>/review.md]
+summary:   "P.A01 structural: 0 errors, 2 warnings (missing scale-confound caveat)"
+artifacts: [probes/<GROUP>_<group_slug>/<NN>_<slug>/review.md]
 next:      if clean → probe-integrity-auditor-agent, then claim-verifier-agent
 ```

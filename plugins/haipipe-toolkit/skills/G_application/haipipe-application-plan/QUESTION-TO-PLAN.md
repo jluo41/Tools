@@ -4,7 +4,7 @@ How Questions Drive the Pipeline
 Human asks ONE question. The pipeline figures out everything else.
 
 The plan output is **two related batches** (task_batch +
-experiment_batch) plus an `insight_yield` map that says which DIKW
+probe_batch) plus an `insight_yield` map that says which DIKW
 cards each work item closes. **DIKW is a lens, not a phase order** —
 sessions never run "D-tasks first, then I-tasks, then K-tasks".
 
@@ -58,7 +58,7 @@ THINKS in terms of **yields**:
 The question is asking about DESIGN (W-level recommendation).
 That implies:
   - need a fresh K claim about what causes low engagement
-    → so I need an probe comparing arms × engagement segments
+    → so I need a probe comparing arms × engagement segments
   - need fresh D + I on who counts as "low engagement"
     → so I need a regression task to define the segment
   - the existing K01 (timing) is reusable as a refs in the new K
@@ -92,8 +92,8 @@ task_batch:
     notes: "engagement × arm overlay plot for low segment"
 
 # Batch B — D_probe work (K + W yield)
-experiment_batch:
-  - id:    E08
+probe_batch:
+  - id:    P.B01
     skill: /haipipe-probe design
     new:   true
     arms:  [arm_warm, arm_directive, arm_baseline]
@@ -106,13 +106,13 @@ insight_yield:
   D06: {layer: D, sources: [T1]}
   I04: {layer: I, sources: [T1]}
   I05: {layer: I, sources: [T2], refs: [D06]}
-  K05: {layer: K, sources: [E08], refs: [K01, I04, I05]}
-  W02: {layer: W, sources: [E08], refs: [K05]}
+  K05: {layer: K, sources: [P.B01], refs: [K01, I04, I05]}
+  W02: {layer: W, sources: [P.B01], refs: [K05]}
 
 dag:
   - T1 → D06 + I04 (define segment)
   - T2 needs D06 → I05 (visualize)
-  - E08 needs D06 → K05 + W02 (test arms in segment)
+  - P.B01 needs D06 → K05 + W02 (test arms in segment)
   - All yields filed → G-report
 ```
 
@@ -131,7 +131,7 @@ A "DIKW phase" was a fiction. In reality:
     only because their content has different epistemic commitment levels.
   - Multiple tasks can collectively close ONE D card (cross-task
     evidence). E.g., D06 might have sources: [T1, T3, T7].
-  - K and W cannot exist without an probe. No probe, no K.
+  - K and W cannot exist without a probe. No probe, no K.
     Multiple D / I are NOT a path to K.
   - "K from many K" (strategic W) is fine and lives in W_wisdom/
     with sources: [K01, K03, K05].
@@ -190,6 +190,6 @@ When a gate returns `revise [feedback]`:
 
 Plan is the SOLE router. A gate at G-claim does NOT route directly
 to G-observe — it routes K→plan, and plan re-decides whether to
-add an observation task, modify an probe, or rescope the
+add an observation task, modify a probe, or rescope the
 question.
 ```

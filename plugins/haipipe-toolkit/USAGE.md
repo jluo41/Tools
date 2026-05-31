@@ -65,20 +65,20 @@ cat task-log.md
 bash runs/5_model_clm_baseline_seed7.sh
 bash runs/5_model_clm_baseline_seed13.sh
 
-# 7. Design an probe to compare the 3 seeds against an LHM arm
-/haipipe-probe design new E01 \
+# 7. Design a probe to compare the 3 seeds against an LHM arm
+/haipipe-probe design new clm_baseline_reproducibility --id 01 \
     --title "CLM baseline reproducibility" \
     --hypothesis "MAE val < 25.0 across 3 seeds, paired-t p<0.05"
 
 # 8. Link the 3 runs into the probe as the baseline arm
-/haipipe-probe design link E01 \
+/haipipe-probe design link 01 \
     tasks/A01_pretraining_clm/01_train_clm_baseline/results/run_seed42 \
     tasks/A01_pretraining_clm/01_train_clm_baseline/results/run_seed7 \
     tasks/A01_pretraining_clm/01_train_clm_baseline/results/run_seed13
 
 # 9. Aggregate stats and write the claim
-/haipipe-probe result E01
-/haipipe-probe review E01     # structural QA + Codex semantic verdict
+/haipipe-probe result aggregate 01
+/haipipe-probe review 01     # structural QA + Codex semantic verdict
 ```
 
 
@@ -165,27 +165,27 @@ Workflow E — Run a full probe (research thread)
 
 ```bash
 # 1. Design — declare hypothesis, planned arms, aggregation spec
-/haipipe-probe design new E02 \
+/haipipe-probe design new lhm_a_vs_baseline_test_id --id 02 \
     --title "LHM-A architecture beats baseline on test-id" \
     --hypothesis "LHM-A MAE < baseline by ≥0.5, paired-t p<0.05, N=3"
 
 # 2. Bridge — scaffold the arms as tasks in C_task and deploy
-/haipipe-probe bridge E02
+/haipipe-probe bridge 02
 # (this auto-calls Skill("haipipe-task", "task-folder training ..."))
 
 # 3. Wait for training; runs complete; results/<RUN>/metrics.json written
 
 # 4. Link the runs back into the probe (bridge does this auto)
-# (manual fallback: /haipipe-probe design link E02 <run-path>)
+# (manual fallback: /haipipe-probe design link 02 <run-path>)
 
 # 5. Aggregate
-/haipipe-probe result E02         # mean/std/paired-t/sign
+/haipipe-probe result aggregate 02         # mean/std/paired-t/sign
 
 # 6. Review (structural QA + Codex semantic verdict)
-/haipipe-probe review E02
+/haipipe-probe review 02
 
 # 7. Iterate if needed
-/haipipe-probe loop E02           # review → propose → re-materialize
+/haipipe-probe loop 02           # review → propose → re-materialize
 ```
 
 
@@ -284,14 +284,14 @@ run            bash runs/<NAME>.sh                                  execute a ru
 task observe   /haipipe-task-logging <task-path>                    regen task-log.md
                /haipipe-task-logging <task-path> --print            regen + cat
 
-probe     /haipipe-probe design new <ID>                  declare new thread
-               /haipipe-probe design link <ID> <run-path>      attach a run to an arm
-               /haipipe-probe bridge <ID>                      scaffold arms + deploy
-               /haipipe-probe result <ID>                      aggregate stats + claim
-               /haipipe-probe review <ID>                      QA + Codex verdict
+probe     /haipipe-probe design new <slug> --group A       declare new thread
+               /haipipe-probe design link <probe> <run-path>   attach a run to an arm
+               /haipipe-probe bridge <probe>                   scaffold arms + deploy
+               /haipipe-probe result <probe>                   aggregate stats + claim
+               /haipipe-probe review <probe>                   QA + Codex verdict
                /haipipe-probe explore                          coverage + propose next
-               /haipipe-probe loop <ID>                        iterate until clean
-               /haipipe-probe inspect [<ID>]                   list / status
+               /haipipe-probe loop <probe>                     iterate until clean
+               /haipipe-probe inspect [<probe>]                list / status
 
 paper          /paper-workflow / /paper-figure / ...                see F_paper section
 ```
@@ -326,11 +326,12 @@ One-line rules of thumb
 New code?              → tasks/
 New claim?             → probes/
 New plot?              → tasks/display/  (referenced from probe.yaml evidence:)
-New hypothesis?        → probes/<NN>/probe.yaml
+New hypothesis?        → probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml
 New metric value?      → tasks/.../metrics.json
 New per-run record?    → tasks/.../runtime.yaml (atomic, by run.sh)
-New cross-run stat?    → probes/<NN>/probe.yaml result: (via result aggregate)
-New "why it failed"?   → probes/<NN>/logs/<DATE>.md
+New cross-run stat?    → probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml result:
+                         (via result aggregate)
+New "why it failed"?   → probes/<GROUP>_<group_slug>/<NN>_<slug>/logs/<DATE>.md
 New individual view?      → tasks/individual/  (E-series)
 New LLM agent task?    → tasks/agent/  (F-series)
 First run after scaffold? → HAIPIPE_SKIP_REVIEW=1, or run reviewer agent first

@@ -36,7 +36,7 @@ sole_deliverable: ranked list of next probes + a coverage map
 ## What I do (canonical source)
 
 Per `../../haipipe-probe-explore/SKILL.md`:
-1. Scan all `probes/*.yaml` + linked runs; auto-detect design-space axes
+1. Scan all `probes/*/*/probe.yaml` + linked runs; auto-detect design-space axes
    (arch / data / training / eval — axes with one value are dropped).
 2. Build the coverage map: ✅ (N≥3 paired) / ⚠️ (N=1, needs confirm) / — (none).
 3. Propose the next 3-5 probes from: coverage gaps, unconfirmed single-seed
@@ -50,7 +50,7 @@ claim verdict, I propose the supplementary probes that would strengthen it.
 
 ```
 status:    ok | blocked | failed
-summary:   "coverage: 3/12 cells confirmed; proposed E13 (LHM×data_v2), E14 (param-matched re-test)"
+summary:   "coverage: 3/12 cells confirmed; proposed P.B01 (LHM x data_v2), P.A03 (param-matched re-test)"
 artifacts: [proposal (returned) ; optionally probes/coverage.md]
 next:      hand proposals to haipipe-probe-design (human steers materialization)
 ```

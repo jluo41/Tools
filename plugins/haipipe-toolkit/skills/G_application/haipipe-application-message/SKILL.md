@@ -125,7 +125,7 @@ intent:       "<one-line restatement>"
 created:      YYYY-MM-DD
 cited_K:      [K01, K03]
 cited_W:      [W02]
-triggered:    [insight_session_id, exp_id]   # if Phase 3 fired
+triggered:    [insight_session_id, probe_ref]   # if Phase 3 fired
 status:       draft | reviewed | shipped | superseded
 ---
 

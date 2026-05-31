@@ -1,7 +1,7 @@
 ---
 name: haipipe-probe-result
 description: "Post-run specialist of haipipe-probe. Aggregates linked-run results into mean/std/paired-t/sign-test, writes claim sentence with caveats, and renders the project-level probe-log.txt comparison table. Called by /haipipe-probe orchestrator. Direct invocation works for result-scoped work."
-argument-hint: "[aggregate|claim|render] [probe_id]"
+argument-hint: "[aggregate|claim|render] [probe_ref]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 ---
 
@@ -16,16 +16,16 @@ Commands
 --------
 
 ```
-/haipipe-probe result aggregate <ID>
+/haipipe-probe result aggregate <probe>
   Read arms' runtime.yaml + metrics.json. Compute aggregation per spec.
-  Fill the `result:` block in probes/<ID>.yaml.
+  Fill the `result:` block in probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml.
 
-/haipipe-probe result claim <ID>
+/haipipe-probe result claim <probe>
   Read filled `result:` + `caveats:`. LLM writes final claim sentence
-  into probes/<ID>.yaml `claim:` field.
+  into probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml `claim:` field.
 
 /haipipe-probe result render [project-path]
-  Render ALL probes/*.yaml into diagram/probe-log.txt
+  Render ALL probes/*/*/probe.yaml into diagram/probe-log.txt
   (comparison-centric scoreboard).
 ```
 
@@ -34,9 +34,9 @@ Workflow — `aggregate`
 -----------------------
 
 ```
-Step 1: Load probes/<ID>.yaml. Refuse if arms are empty.
+Step 1: Resolve and load probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml. Refuse if arms are empty.
 
-Step 2: For each arm, for each linked run-path:
+Step 2: For each arm, for each linked run-path in arms.<arm>.runs:
   - Read <run-path>/results/<NAME>/runtime.yaml; require status=ok.
   - Read <run-path>/results/<NAME>/{metrics,summary,aggregated}.json.
   - Extract metric value matching aggregation.metric.
@@ -54,10 +54,10 @@ Step 4: Determine status:
   - refuted: Δ in OPPOSITE direction with p < 0.05
   - pending: missing data (insufficient runs / failed runs)
 
-Step 5: Write result: block in probes/<ID>.yaml (atomic).
+Step 5: Write result: block in probe.yaml (atomic).
         Set status field.
 
-Step 6: Emit tail; suggest /result claim <ID> as next.
+Step 6: Emit tail; suggest /result claim <probe> as next.
 ```
 
 
@@ -65,7 +65,7 @@ Workflow — `claim`
 -------------------
 
 ```
-Step 1: Load probes/<ID>.yaml. Require result.status != pending.
+Step 1: Resolve and load probe.yaml. Require result.status != pending.
 
 Step 2: Run the caveats checklist
         (see ../ref/probe-caveats-checklist.txt):
@@ -83,7 +83,7 @@ Step 3: LLM composes claim sentence from:
   (statistical: <test> p=<X>, N=<seeds>). <caveat headline>.
   ```
 
-Step 4: Write claim: field in probes/<ID>.yaml.
+Step 4: Write claim: field in probe.yaml.
 
 Step 5: Emit tail.
 ```
@@ -94,7 +94,7 @@ Workflow — `render`
 
 ```
 Step 1: Resolve project root.
-Step 2: Glob probes/*.yaml.
+Step 2: Glob probes/*/*/probe.yaml.
 Step 3: For each, format into the per-entry template
         (../ref/probe-entry-template.txt).
 Step 4: Build the headline scoreboard (best per split per category).
@@ -130,7 +130,7 @@ Disambiguation
 Risk profile
 -------------
 
-EDITS probes/<ID>.yaml (fills result: + claim:). WRITES
+EDITS probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml (fills result: + claim:). WRITES
 diagram/probe-log.txt (project-level). Does NOT touch tasks/ or runs/.
 
 
@@ -139,7 +139,7 @@ Specialist tail
 
 ```
 status:    ok | blocked | failed
-summary:   "02_lhm_vs_baseline aggregated: Δ=-0.68 p=0.018, status=confirmed"
-artifacts: [probes/02_lhm_vs_baseline/probe.yaml, probes/comparison.md]
-next:      /haipipe-probe review 02
+summary:   "P.A01 lhm_vs_baseline aggregated: Δ=-0.68 p=0.018, status=confirmed"
+artifacts: [probes/A_baseline_controls/01_lhm_vs_baseline/probe.yaml, probes/comparison.md]
+next:      /haipipe-probe review P.A01
 ```

@@ -1,0 +1,50 @@
+🔁  Nested Loops L0–L3  +  one stage
+=====================================
+
+  整套系统按嵌套循环跑。一个 "stage" = 📖 narrative 的一轮
+  (接方向 → 想清楚 → 挥鞭 → 回看)。除了 ⚛️ L0 最后一格,全落在已有机器上。
+
+  Prose: ../../HANDOFF.md (LATEST MOVEMENT)
+         ../../skills/D_probe/haipipe-probe-loop/SKILL.md · stage 拆解 → 05
+
+
+─§ 🪆 The nesting ──────────────────────────────────────────
+
+┌─ L3 🎯 TRIGGER ── 🔥 ignite=ready ─▶ 🥢 application 变现 (📰/📊/💬/🖥️)
+│
+│  ┌─ L2 🔁 OUTER ── 📖 narrative ⇄ 🧠 insights        [scope A ✅ · auto ⏳]
+│  │                  一轮 = 一个 STAGE · 🔥 ignite-log 记录每轮收尾
+│  │
+│  │  ┌─ L1 🔁 INNER ── 🔧 haipipe-probe-loop            [已建 ✅]
+│  │  │                  🔍 review → ⚖️ verdict → 💡 propose → 🛠️ materialize → 🔁
+│  │  │                  (--auto = headless)
+│  │  │
+│  │  │   ⚛️ L0 ATOM ── 🔧 probe →🌉 bridge→ ✋ task×N →📥 result→ 🧠 insight
+│  │  │                  [bridge+result ✅]                       ❌ GAP ← 要补
+│  │  └────────────────────────────────────────────────────────────────────
+│  └───────────────────────────────────────────────────────────────────────
+└──────────────────────────────────────────────────────────────────────────
+
+  📌 📖 narrative 是脑子,从不跑 compute。"再转一圈" 由它 (L2) 决定,机器 (L1/L0) 执行。
+
+
+─§ 🎬 ONE STAGE = L2 的一轮 (拆解见 05) ────────────────────
+
+  🥢 ask(方向) ─▶ 📖 narrative(立目标·plan·想·挥鞭) ─▶ 🔧probe→✋task→🧠 E归档★
+        ▲                                                            │
+        └──── 🔥 ignite? ◀── 👁️ narrative 回读更新的 insights ◀───────┘
+              YES ▶ 📰 paper (thread 继续)  ·  NO ▶ 下一个 stage
+
+  ★ = ⚛️ L0 那一格 (E 归档)。断了 → narrative 回读到的是空的。
+
+
+─§ 🗺️ Loop → machine map (exists / gap) ───────────────────
+
+  +-------+-----------------------------+------------------------+
+  | 层    | 机器                         | 状态                    |
+  +-------+-----------------------------+------------------------+
+  | ⚛️ L0 | bridge + result             | ✅ 建了 · ❌ 最后归档格   |
+  | 🔁 L1 | haipipe-probe-loop          | ✅ 有 --auto headless   |
+  | 🔁 L2 | N_narrative (ignite/claims) | ✅ scope A · ⏳ auto     |
+  | 🎯 L3 | ignite=ready → narr-report  | ✅ 路径在                |
+  +-------+-----------------------------+------------------------+
