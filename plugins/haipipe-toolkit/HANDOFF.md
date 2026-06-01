@@ -1,15 +1,16 @@
 HANDOFF — haipipe-toolkit redesign (resume here)
 ==================================================
 
-Last updated: 2026-05-31  (movement: E_insight agentification + research-engine model)
+Last updated: 2026-05-31  (movement: probe-cycle — K/W output + dogfood; v2.3.2)
 Purpose: pick up the design work from a fresh session without re-deriving it.
 
 Read these, in order, to reload full context:
   1. ARCHITECTURE.md               — the 7-layer world view (the big picture)
   2. MENTAL_MODEL.md               — the C/D/E/G mechanics
   3. diagram/v260531/00-index.txt  — the CURRENT model as a visual set (start here for the gestalt)
-  4. skills/E_insight/DESIGN.md    — the live movement: E agentification + loop closure
-  5. skills/N_narrative/DESIGN.md  — the Narrative layer (prior movement)
+  4. diagram/v260531/06-probe-cycle.txt — how to RUN one probe cycle (the 6-stage process)
+  5. skills/E_insight/DESIGN.md    — E (BUILT): agents + dual-mode + per-type reviewers
+  6. skills/N_narrative/DESIGN.md  — the Narrative layer (prior movement)
 
 
 The mental model — an hourglass (read this first)
@@ -46,67 +47,71 @@ papers are its discrete snapshots. A full visual breakdown is in
 `diagram/v260531/` (hourglass · probe-cycle anatomy · nested cycles · roles · probe-cycle process).
 
 
-LATEST MOVEMENT (2026-05-31) — E_insight agentification + loop closure
-======================================================================
+LATEST MOVEMENT (2026-05-31) — probe-cycle: K/W output + dogfood
+================================================================
 
-Full write-up: `skills/E_insight/DESIGN.md` + the `diagram/v260531/` set.
+The probe-cycle (1 🔧 probe → N ✋ task-cycles → 1 🧠 insight) is now named,
+documented (`diagram/v260531/06-probe-cycle.txt` = the 6-stage process), and its
+insight-filing joint is fixed + dogfood-verified.
 
-1. **E had skins but no skeleton.** C_task and D_probe each ship a design
-   doc + `agents/{...}`; E_insight had neither. This session designs E's
-   skeleton, applying the C/D pattern THOUGHTFULLY (as D departed from C).
+Done (committed; v2.3.0 → 2.3.2):
+1. **E_insight agentified & BUILT** — `agents/creators/` (4, per DIKW) +
+   `agents/reviewers/` (per-type `card-reviewer-{D,I,K,W}` + cross-layer
+   `index-integrity-auditor`). Dual-mode skills (`ref/invocation-modes.md`).
+   Per-type reviewers are a DELIBERATE departure from C/D's type-agnostic ones
+   (each DIKW boundary differs — see `ref/dikw-boundaries.md`). Registry 13→22.
+2. **Cycle vocabulary** — `narrative-cycle ⊃ probe-cycle ⊃ task-cycle`
+   (grammar: cycle → stage → step; steps ◆ required / ◇ optional).
+3. **K-from-probe fix (v2.3.2)** — a converged probe files its **claim → 🟨 K**
+   (was wrongly a D card). `haipipe-insight-knowledge` + `card-creator-knowledge`
+   + `invocation-modes` now source a CONFIRMED `probe_ref`; `probe-loop`
+   convergence dispatches `card-creator-knowledge-agent`. **Dogfood-verified**
+   on a stub (`/tmp/haipipe-dogfood/`, confirmed probe → K01; all gates green).
 
-2. **Dual-mode invocation for E** (= C_task's `ref/invocation-modes.md`):
-   mode chosen by INPUT COMPLETENESS, not by who calls. agent = full spec →
-   SILENT; human = partial → ASK only the missing fields; agent + missing →
-   `status: blocked` (never hang). One body, callable by human AND agent.
-
-3. **Agent families for E** (thoughtful, not copied):
-   - `creators/` per DIKW (D/I/K/W) = the headless, agent-callable filing
-     path. The reason is "headless agent path", NOT C's "code is batchable".
-   - `reviewers/` = E's UNIQUE gate: `card-fidelity` (Codex; card ≤ the
-     evidence cited, no overclaim) + `index-integrity` (sources↔ref_by,
-     INDEX↔files). This is the "fidelity lint" listed under Quality below.
-
-4. **THE BIG FINDING — loop closure.** `haipipe-probe-loop` never calls
-   E_insight; the probe cycle (`probe → task → INSIGHT`, L0) has an empty last cell
-   (probe-loop materializes via design+bridge, then jumps to
-   narrative-report, skipping the DIKW filing). E's headless creators close
-   it — and the loop (L1 inner × L2 narrative fan-out) is WHY filing must be
-   headless (cannot HITL every card). E never DRIVES a loop; always the callee.
-
-   ```
-   L0 cycle   probe → bridge → N tasks → result → [E files D/I/K/W]  ← THE GAP (probe cycle)
-   L1 inner   haipipe-probe-loop (review→verdict→propose→materialize→re-review)  BUILT
-   L2 outer   N_narrative ⇄ insights (one turn = one narrative-cycle; ignite-log)  scope A BUILT
-   L3 trigger ignite=ready → narrative-report → application (cash-out)        path exists
-   ```
+A probe-cycle's deliverable = **🟨 K (claim) + 🟧 W (next-step)**, both from the
+probe; 🟦 D from its task-cycles; 🟩 I = cross-D pattern. **K is wired; W is NOT
+yet** — that is the next step (below).
 
 
 NEXT STEP (where to resume)
 ===========================
 
-Build E's skeleton — the design is recorded in `skills/E_insight/DESIGN.md`:
+**Wire 🟧 W into the probe-cycle** (the K's twin — the probe's next-step rec).
+The wisdom machinery is ALREADY correct (`haipipe-insight-wisdom` +
+`card-creator-wisdom-agent` already do `K → W`); only the WIRING is missing:
 
-1. `skills/E_insight/ref/invocation-modes.md` — formalize the per-DIKW
-   "spec-complete" table (what makes each card headless-fileable).
-2. `skills/E_insight/agents/README.md` + `{creators,reviewers}/_TEMPLATE.md`.
-3. Author 4 creators (`card-creator-{data,information,knowledge,wisdom}`) +
-   2 reviewers (`card-fidelity` Codex, `index-integrity`). Thin pointers —
-   judgment logic stays in the SKILLs + ref/, not duplicated in the agents.
-4. Add the dual-mode body + structured return to the 6 insight SKILLs.
+1. `probe-loop` convergence: after filing K, chain
+   `card-creator-wisdom-agent --scope <new-K>` → file the per-probe 🟧 W (the
+   next-step). OPTIONAL ◇ — skip if the probe implies no concrete next-step.
+   (per-probe W = single K; strategic W across many K stays cross-cycle.)
+2. Docs: `06` stage Ⓕ (K → W), probe-loop text, the "probe-cycle → K+W" framing.
+3. Dogfood: K01 → W01 ("run a param-matched re-test"); run card-reviewer-wisdom
+   + index-integrity.
+4. Bump `haipipe-probe-loop` metadata (→ 1.2.0 + changelog); commit.
 
-Open decisions (see DESIGN.md Q1–Q4):
-- Q2: should `haipipe-probe-loop` auto-call E on convergence (close L0 inside
-  the loop), or stay E-agnostic with G-ask doing the filing?
-- creator = thin agent (for fan-out) vs just the skill's headless mode.
-- probe : insight = 1:1 (one bundle) — settled this session.
+Then (lower priority):
+- **D-from-task reconciliation** — the `data` skill still reads a *probe*; it
+  should read a *task*'s results. (Flagged in E_insight CHANGELOG.)
+- **Metadata backfill** — some skills edited earlier this session are still at
+  baseline `1.0.0` with no per-edit changelog (`haipipe-insight-{data,
+  information,wisdom}`, probe-loop's pre-K changes). Bump + log if desired.
+- **Full dogfood** — only stage Ⓕ was dogfooded; ①–⑤ have skills, not yet run e2e.
+
+Discipline: when editing a skill/agent, bump `metadata.version` + add a
+`metadata.changelog` line IN THE SAME COMMIT (per the metadata convention).
 
 
 DONE (movement history, newest first)
 =====================================
 
-- **2026-05-31  E_insight agentification + research-engine model** — this
-  movement (above): DESIGN.md + diagram/v260531/ + this HANDOFF + CHANGELOG 2.2.0.
+- **2026-05-31  probe-cycle K-fix (v2.3.2)** — converged probe files its claim
+  → 🟨 K (was D); dogfood-verified. (commit `3ed80ac`)
+- **2026-05-31  cycle vocabulary + probe-cycle process doc (v2.3.1)** —
+  narrative/probe/task-cycle; `diagram/v260531/06-probe-cycle.txt`.
+- **2026-05-31  E_insight agent skeleton (v2.3.0)** — per-type creators +
+  reviewers + `dikw-boundaries.md`; agent registry 13→22.
+- **2026-05-31  E_insight design + research-engine model (v2.2.0)** —
+  DESIGN.md + diagram/v260531/ (hourglass, loops).
 - **N_narrative scope A** — `skills/N_narrative/` built: story / claims /
   ignite-log / decision-tree schema + `/haipipe-narrative` (new / status /
   claims / ignite). Reads insights/K+W; writes only narratives/; never fires
@@ -163,7 +168,8 @@ Every arrow (transformation) gets a guardian agent that only refutes;
 producer ≠ reviewer. Existing strong gates: G3 Run Script Reviewer (Codex
 cross-family, `skills/C_task/agents/reviewers/run-script-reviewer-agent.md`)
 and G5 Claim Verdict (Codex, `haipipe-probe-review`). Missing/planned: G1
-(pre-whip relevance), the ignite steelman, and E's `card-fidelity` reviewer
-(designed this movement; not built). `validity` gates guard "is it true";
+(pre-whip relevance) and the ignite steelman. E's reviewers are BUILT: per-type
+`card-reviewer-{D,I,K,W}` (Codex accuracy + boundary/style) + `index-integrity`
+(graph). `validity` gates guard "is it true";
 `relevance` gates (narrative ends) guard "does it matter"; `fidelity` lint
 guards "card faithful to evidence".
