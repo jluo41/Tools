@@ -1,0 +1,24 @@
+# =============================================================================
+# configs/run_cms_<year>.yaml  —  CMS-pipeline (Stata dialect)
+# =============================================================================
+# Carries ONLY the _meta: discipline block + a pointer to the Stata config.
+# The real Stata globals live in configs/cms_production.do (source of truth).
+# Inherits the _meta convention from ../../haipipe-task/ref/config-meta-template.yaml.
+# =============================================================================
+
+_meta:
+  purpose: |
+    <e.g., Extract + enrich raw CMS 2015 into Neat-*.dta + Bene_Info-2015.dta>
+  note: |
+    <e.g., 2015 is the ICD-9→ICD-10 transition year; Elixhauser index=10>
+  input: |
+    <e.g., raw CMS .dta at G:\CMS\DATA\ (PDE, BCarrier{Claim,Line}, Outpatient, MBSF-*)>
+  output: |
+    <e.g., 1-CMS-Store/cms_full/v0001_0130/year-2015/  (~50-60 GB); headline Bene_Info ~11.8M × 121>
+  # skip_review: true        # uncomment to bypass the pre-flight CODE_REVIEW gate
+
+# ── Run identity (Stata dialect) ─────────────────────────────────────────────
+stata_config: cms_production    # → configs/cms_production.do
+year: <2015>                    # the per-run year axis
+steps: [pde, carrier_claim, carrier_line, outpatient, bene_year, summary]
+asset: <v0001_0130>             # 1-CMS-Store/cms_full/<asset>/

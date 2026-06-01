@@ -47,6 +47,13 @@ creators/ (grows — one per type)
 | `code-creator-for-individual-agent` | `haipipe-task-for-individual` | per-patient query `<TASK>.py`   | built |
 | `code-creator-for-algo-agent`       | `haipipe-task-for-algo`       | algo-demo `<TASK>.py`           | built |
 | `code-creator-for-agent-agent`      | `haipipe-task-for-agent`      | LLM agent-call `<TASK>.py`      | built |
+| `code-creator-for-stata-agent`      | `haipipe-task-for-stata`†     | dispatcher `<TASK>.do` + `scripts/` workers | built |
+
+† The Stata creator is the one that fronts a 4-stage family: it calls the
+**parent** `haipipe-task-for-stata`, which disambiguates the stage
+(cms/case/data/reg) and routes to the right `haipipe-task-for-stata-<stage>`
+child. Engine = Stata + PowerShell + logs (NOT papermill); deliverable is a
+multi-file `.do` job, not a single `.py`.
 
 Each is THIN: call the type skill (headless) → author the body → return.
 Type-expertise stays in the skill + ref. Adding a type = copy `_TEMPLATE.md`,
