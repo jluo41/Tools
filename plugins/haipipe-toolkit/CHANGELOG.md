@@ -5,6 +5,28 @@ Plugin-level rollup. Per-layer detail lives in each layer's own
 `skills/<LAYER>/CHANGELOG.md`. Newest first.
 
 
+## [2.3.4] — 2026-05-31
+
+Feature: a probe-cycle now returns 🟧 W (the next-step) as well as 🟨 K.
+
+- **W wired into the probe-cycle.** On convergence, `haipipe-probe-loop` Step 3
+  files the 🟨 K, then OPTIONALLY (◇) chains `card-creator-wisdom-agent --scope
+  <new-K>` → one per-probe 🟧 W (the probe's concrete next-step), scoped to that
+  K. Skips cleanly when the probe implies no next-step (no fabrication).
+- The W machinery (`haipipe-insight-wisdom` + `card-creator-wisdom-agent` +
+  `invocation-modes` W row) was already correct — only the wiring was missing.
+  The probe-cycle deliverable is now **K + W** end-to-end, so the narrative gets
+  the claim AND the recommended next whip-crack to decide `ignite`.
+- **Per-probe W** (single-K next-step, in the loop) is now distinguished from
+  **strategic W** (across many K, stays cross-cycle).
+- **Dogfooded**: confirmed probe → K01 → W01 ("param-matched FiLM re-test");
+  13/13 card-reviewer-wisdom + 5/5 index-integrity gates green (independent re-run).
+- Docs threaded: `06`/`00`/`07` diagrams, `ARCHITECTURE.md`, `DESIGN.md` (Q2
+  corrected from the stale `card-creator-data-agent` dispatch). The v2.3.3
+  "W is the next wiring target" caveats are now flipped to "K + W both wired".
+  → see [skills/E_insight/CHANGELOG.md](skills/E_insight/CHANGELOG.md)
+
+
 ## [2.3.3] — 2026-05-31
 
 Docs: named the end-to-end hinge between narrative-cycle and probe-cycle.

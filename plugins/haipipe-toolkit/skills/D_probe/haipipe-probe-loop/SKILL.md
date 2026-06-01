@@ -4,12 +4,13 @@ description: "Iteration specialist of haipipe-probe. Chains review → explore (
 argument-hint: "[start|continue|status] [probe_ref_or_project] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
   last_updated: "2026-05-31"
   summary: "Iteration specialist of haipipe-probe."
   changelog:
     - "1.0.0 (2026-05-31): baseline metadata added."
     - "1.1.0 (2026-05-31): convergence files the K card (card-creator-knowledge-agent), closing the probe-cycle."
+    - "1.2.0 (2026-05-31): convergence also files the per-probe W (card-creator-wisdom-agent, optional ◇) scoped to the new K — returns K+W to the narrative."
 ---
 
 Skill: haipipe-probe-loop
@@ -59,16 +60,29 @@ Step 2: SEMANTIC VERDICT
 Step 3: STOP CHECK
   if verdict == yes AND structural errors == 0:
       → FILE INSIGHT (close the probe cycle / L0): the probe is now confirmed,
-        so its claim is a validated belief — dispatch the K filer so the
-        narrative has a 🟨 K card to read —
-          Agent(agent_type="card-creator-knowledge-agent",
-                prompt="<probe_ref> --project <project>")
-          → files the 🟨 K card from this probe's `claim` (headless).
+        so its claim is a validated belief — file its 🟨 K, then its 🟧 W:
+
+        (a) ◆ FILE K (required) — dispatch the K filer so the narrative has a
+            🟨 K card to read —
+              Agent(agent_type="card-creator-knowledge-agent",
+                    prompt="<probe_ref> --project <project>")
+              → files the 🟨 K card from this probe's `claim` (headless).
+                Read the returned `card:` path to recover the new K id (e.g. K07).
+
+        (b) ◇ FILE W (optional) — the K's twin: this probe's concrete next-step.
+            If the confirmed probe implies a concrete next action (a re-test, a
+            pivot, a stop-doing-X), chain the W filer scoped to the just-filed K —
+              Agent(agent_type="card-creator-wisdom-agent",
+                    prompt="--scope <new-K-id> --project <project>")
+              → files one per-probe 🟧 W from that single K (headless).
+            SKIP if the probe implies no concrete next-step (don't fabricate one).
+
         The 🟦 D observations come from this probe's task-cycles
-        (card-creator-data per arm); 🟩 I and 🟧 W are cross-cycle synthesis
-        (ask report phase / haipipe-insight-explore) — NOT per single probe.
-        (Without this step the loop converges but never updates insights/,
-        leaving the narrative blind — the gap this wiring closes.)
+        (card-creator-data per arm); 🟩 I (cross-D pattern) and STRATEGIC W
+        spanning many K stay cross-cycle synthesis (ask report phase /
+        haipipe-insight-explore) — the per-probe W here is the single-K next-step.
+        (Without (a) the loop converges but never updates insights/, leaving the
+        narrative blind; (b) hands the narrative the recommended next whip-crack.)
       exit loop with status = converged
   if round_count >= max_rounds:
       exit loop with status = budget_exhausted
@@ -171,8 +185,10 @@ WRITES heavily:
   `haipipe-probe-bridge` for any proposal needing new runs)
 - Triggers E_insight filing on convergence (Step 3 dispatches
   `card-creator-knowledge-agent` → writes `insights/K_knowledge/` from the
-  probe's claim), closing the probe cycle (probe → task → insight · L0) the
-  loop previously left open
+  probe's claim, then optionally `card-creator-wisdom-agent` → writes
+  `insights/W_wisdom/` the per-probe next-step), closing the probe cycle
+  (probe → task → insight · L0) with both 🟨 K and 🟧 W the loop previously
+  left open
 
 Calls external LLM (`mcp__codex__codex`) once per round in Step 2.
 For multi-round loops, this is the dominant cost — budget accordingly
@@ -201,7 +217,8 @@ Specialist tail
 status:    ok | blocked | failed | converged | budget_exhausted
 summary:   "P.A01 loop: round 3/4, verdict=partial→yes, converged"
 artifacts: [probes/<GROUP>_<group_slug>/<NN>_<slug>/LOOP_LOG.md, CLAIMS_FROM_RESULTS.md, new probe IDs]
-next:      if converged → K card filed via card-creator-knowledge-agent (L0 closed),
+next:      if converged → K (+ optional per-probe W) filed via
+                          card-creator-{knowledge,wisdom}-agent (L0 closed),
                           then /narrative-report (start paper write-up)
           if budget_exhausted → /haipipe-probe review claim <probe> manually
           if blocked → triage rejected proposals

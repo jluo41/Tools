@@ -49,7 +49,7 @@
   ✅ 📖 narrative = 办事的人/whip-hand · 🥢 ask = 领导/nudge          → 05
   ✅ whip (挥鞭),NOT wipe (擦除) — probe = 鞭子, 抽一下               → 全套
   ✅ E gets dual-mode + creators/reviewers; probe claim files to K      → 04 · 06
-  ⏳ W wiring is next: probe-cycle should return K + W to narrative     → 06 · 07
+  ✅ W wired: probe-cycle returns 🟨 K + 🟧 W (per-probe next-step) to narrative → 06 · 07
 
 
 ─§ 📌 The one finding to remember ──────────────────────────
