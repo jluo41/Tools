@@ -4,13 +4,15 @@ description: "Iteration specialist of haipipe-probe. Chains review → explore (
 argument-hint: "[start|continue|status] [probe_ref_or_project] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "1.2.0"
-  last_updated: "2026-05-31"
+  version: "1.4.0"
+  last_updated: "2026-06-01"
   summary: "Iteration specialist of haipipe-probe."
   changelog:
     - "1.0.0 (2026-05-31): baseline metadata added."
     - "1.1.0 (2026-05-31): convergence files the K card (card-creator-knowledge-agent), closing the probe-cycle."
     - "1.2.0 (2026-05-31): convergence also files the per-probe W (card-creator-wisdom-agent, optional ◇) scoped to the new K — returns K+W to the narrative."
+    - "1.3.0 (2026-06-01): update probe loop examples for lightweight `MM-NN_slug` probe folders."
+    - "1.4.0 (2026-06-01): probe folders + refs switch to date-based `MMDD` / `P.MMDD`; materialize passes `--date MMDD`."
 ---
 
 Skill: haipipe-probe-loop
@@ -101,7 +103,7 @@ Step 5: HUMAN GATE (optional, on by default)
 Step 6: MATERIALIZE
   For each approved proposal:
     a) Write the new probe.yaml:
-       Skill("haipipe-probe-design", args="new <slug> --group <GROUP>")
+       Skill("haipipe-probe-design", args="new <slug> [--date MMDD]")
 
     b) Resolve arms — either link existing OR scaffold new via bridge:
        • Existing runs satisfy the proposal:
@@ -129,7 +131,7 @@ State file: `LOOP_LOG.md`
 Per-probe loop history. Lives in the probe's own folder:
 
 ```
-examples/<project>/probes/<GROUP>_<group_slug>/<NN>_<slug>/LOOP_LOG.md
+examples/<project>/probes/<MMDD>_<slug>/LOOP_LOG.md
 ```
 
 Per-folder isolation prevents multiple probes' loops from clobbering
@@ -137,7 +139,7 @@ each other (a probe is a research thread; the loop log is that
 thread's iteration history).
 
 ```markdown
-# LOOP_LOG — probe P.A01
+# LOOP_LOG — probe P.0601
 
 ## Round 1 — <timestamp>
 - structural: 2 warnings, 0 errors
@@ -178,7 +180,7 @@ Risk profile
 -------------
 
 WRITES heavily:
-- `probes/<GROUP>_<group_slug>/<NN>_<slug>/LOOP_LOG.md` (per-probe iteration history)
+- `probes/<MMDD>_<slug>/LOOP_LOG.md` (per-probe iteration history)
 - `CLAIMS_FROM_RESULTS.md` (via review claim each round)
 - New probe yamls (via design new each round)
 - Triggers C_task task creation via bridge (Step 6 calls
@@ -215,8 +217,8 @@ Specialist tail
 
 ```
 status:    ok | blocked | failed | converged | budget_exhausted
-summary:   "P.A01 loop: round 3/4, verdict=partial→yes, converged"
-artifacts: [probes/<GROUP>_<group_slug>/<NN>_<slug>/LOOP_LOG.md, CLAIMS_FROM_RESULTS.md, new probe IDs]
+summary:   "P.0601 loop: round 3/4, verdict=partial→yes, converged"
+artifacts: [probes/<MMDD>_<slug>/LOOP_LOG.md, CLAIMS_FROM_RESULTS.md, new probe IDs]
 next:      if converged → K (+ optional per-probe W) filed via
                           card-creator-{knowledge,wisdom}-agent (L0 closed),
                           then /narrative-report (start paper write-up)

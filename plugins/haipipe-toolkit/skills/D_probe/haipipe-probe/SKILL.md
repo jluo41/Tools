@@ -4,11 +4,13 @@ description: "Research probe pipeline — drives how tasks/runs in a project rol
 argument-hint: [function] [probe_ref_or_path] [args...]
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.2.0"
+  last_updated: "2026-06-01"
   summary: "Research probe pipeline — drives how tasks/runs in a project roll out."
   changelog:
     - "1.0.0 (2026-05-31): baseline metadata added."
+    - "1.1.0 (2026-06-01): document lightweight probe folder naming (`MM-NN_slug`) plus year archive folders."
+    - "1.2.0 (2026-06-01): probe folder naming switches to date-based `MMDD_slug` + `P.MMDD` refs (same-day collisions get a letter suffix)."
 ---
 
 Skill: haipipe-probe (orchestrator)
@@ -126,26 +128,31 @@ examples/Proj-X/
 │   ├── propose.md                          (auto: /explore propose output)
 │   ├── comparison.md                       (auto: /result render output)
 │   │
-│   ├── A_baseline_controls/                ← probe group / series
-│   │   ├── 01_baseline_noise_floor/        ← folder-per-probe
-│   │   │   ├── probe.yaml             source of truth (claim + arms + result)
-│   │   │   ├── review.md                   latest QA + Codex verdict (overwritten)
-│   │   │   ├── CLAIMS_FROM_RESULTS.md      Codex verdict snapshot
-│   │   │   └── logs/                       daily narrative
-│   │   │       ├── 2026-05-24.md
-│   │   │       └── 2026-05-25.md
+│   ├── 0601_framing_loss-aversion/        ← active folder-per-probe
+│   │   ├── probe.yaml                      source of truth (claim + arms + result)
+│   │   ├── review.md                       latest QA + Codex verdict (overwritten)
+│   │   ├── CLAIMS_FROM_RESULTS.md          Codex verdict snapshot
+│   │   └── logs/                           daily narrative
+│   │       ├── 2026-06-01.md
+│   │       └── 2026-06-02.md
 │   │
-│   └── B_generalization/
-│       └── 01_cross_dataset_transfer/
-│           └── ...
+│   ├── 0602_simplification_plain-language/
+│   │   └── ...
+│   │
+│   └── 2026-archive/                       inactive/completed/deprecated probes
+│       ├── 0501_social-norm/
+│       └── 0502_long-message/
 │
 ├── tasks/...                               (execution, C_task owns)
 └── paper/...                               (claims feed F_paper)
 ```
 
-Naming: `<GROUP>_<group_slug>/<NN>_<slug>/`, where the canonical source
-ref is `P.<GROUP><NN>` (e.g. `P.A01`). `NN` is allocated within the group,
-not globally.
+Naming: active probe folders live directly under `probes/` as
+`<MMDD>_<short-name>/`, where `MMDD` is the creation date (`MM` = month,
+`DD` = day). A second probe created the same day gets the next free
+lowercase letter suffix (`0601` → `0601b`). The canonical source ref is
+`P.<MMDD>` (e.g. `P.0601`). Inactive, completed, or deprecated probes
+move to `probes/<YYYY>-archive/` with the original folder name preserved.
 `probe.yaml` is **source of truth**; `comparison.md` and `INDEX.md`
 are derived; `logs/<DATE>.md` is append-only daily narrative.
 NO code in probe folders — figures/tables/notebooks live in tasks/
@@ -154,12 +161,17 @@ and are referenced via `evidence:` field in probe.yaml.
 Probe identity contract:
 
 ```
-folder:             probes/A_baseline_controls/01_lhm_vs_baseline/
-source of truth:    probes/A_baseline_controls/01_lhm_vs_baseline/probe.yaml
-yaml id:            P.A01
-mixed source refs:  P.A01
-resolver accepts:   P.A01 | A01 | A/01_lhm_vs_baseline | probes/A_baseline_controls/01_lhm_vs_baseline/
+folder:             probes/0601_framing_loss-aversion/
+source of truth:    probes/0601_framing_loss-aversion/probe.yaml
+yaml id:            P.0601
+mixed source refs:  P.0601
+resolver accepts:   P.0601 | 0601 | probes/0601_framing_loss-aversion/
 ```
+
+Legacy grouped layouts such as
+`probes/A_baseline_controls/01_lhm_vs_baseline/` may be read during
+migration, but new probe folders should use the lightweight active/archive
+layout.
 
 
 Routing Logic

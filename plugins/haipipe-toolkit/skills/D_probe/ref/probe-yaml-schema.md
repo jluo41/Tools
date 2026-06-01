@@ -21,7 +21,7 @@ The yaml evolves over the lifetime of the thread:
 It is **steering state**, not a metrics file. Numbers in `result:` are
 aggregated *references* to per-run metrics that live under tasks/.
 
-Location: `examples/<project>/probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml`
+Location: `examples/<project>/probes/<MMDD>_<slug>/probe.yaml`
 Owner:    Written by `haipipe-probe-design` (`new`/`link`),
           extended by `haipipe-probe-result` (`aggregate`/`claim`).
           Audited by `haipipe-probe-review`. Read by all.
@@ -41,41 +41,50 @@ ID convention
 -------------
 
 ```
-grouped, project-scoped source ref:
-  P.A01, P.A02, P.B01, ...
+lightweight, project-scoped source ref:
+  P.0601, P.0602, P.0603, ...
 
   P      = probe layer
-  A/B/C  = probe group / series
-  01     = sequence number within the group
+  06     = month of creation
+  01     = day of creation
+  (a 2nd probe the same day appends a letter suffix: P.0601b)
 ```
 
-Folder name: `probes/<GROUP>_<group_slug>/<NN>_<slug>/`
-(e.g. `probes/A_baseline_controls/01_lhm_vs_baseline/`).
-File inside: `probe.yaml` (canonical name; never `<NN>_<slug>.yaml`).
+Folder name: `probes/<MMDD>_<slug>/`
+(e.g. `probes/0601_framing_loss-aversion/`).
+File inside: `probe.yaml` (canonical name; never
+`<MMDD>_<slug>.yaml`).
 
-YAML `id:` is the canonical source ref (`P.A01`), not `E01` or flat
-`P01`. `group:` and `local_id:` duplicate the parseable pieces so tools
-can sort and allocate without regex-only logic.
+YAML `id:` is the canonical source ref (`P.0601`), not `E01` or flat
+`P01`. `created_month:` and `created_day:` duplicate the parseable pieces so
+tools can sort and allocate without regex-only logic.
 
 Cross-reference style:
 
 ```
-human prose:        probe P.A01
-mixed source lists: P.A01            # avoids collision with D/I/K/W card IDs
-commands accept:    P.A01 | A01 | A/01_lhm_vs_baseline | probes/A_baseline_controls/01_lhm_vs_baseline/
+human prose:        probe P.0601
+mixed source lists: P.0601          # avoids collision with D/I/K/W card IDs
+commands accept:    P.0601 | 0601 | probes/0601_framing_loss-aversion/
 ```
 
-`probes/INDEX.md` may define the group registry:
+Active/archive organization:
 
-```yaml
-groups:
-  A: baseline_controls
-  B: generalization
-  C: architecture_family
+```
+probes/
+  0601_framing_loss-aversion/                 # active
+  0602_simplification_plain-language/         # active
+  2026-archive/
+    0501_social-norm/                         # inactive; name preserved
 ```
 
-The letter is stable; the title can be renamed as the research thread
-gets clearer.
+Move inactive, completed, or deprecated probes into
+`probes/<YYYY>-archive/`. Preserve the original folder name so historical
+records remain auditable while the active workspace stays clean.
+
+Legacy grouped layouts such as
+`probes/A_baseline_controls/01_lhm_vs_baseline/` may be read during
+migration, but new writes should use the lightweight active/archive
+layout above.
 
 
 Top-level fields
@@ -84,9 +93,8 @@ Top-level fields
 | Field           | Type    | When written     | Required |
 |-----------------|---------|------------------|----------|
 | id              | string  | design new       | yes      |
-| group           | string  | design new       | yes      |
-| group_title     | string  | design new       | yes      |
-| local_id        | string  | design new       | yes      |
+| created_month   | string  | design new       | yes      |
+| created_day     | string  | design new       | yes      |
 | slug            | string  | design new       | yes      |
 | title           | string  | design new       | yes      |
 | hypothesis      | string  | design new       | yes      |
@@ -104,14 +112,13 @@ Skeleton (design new writes this)
 ----------------------------------
 
 ```yaml
-id: P.A01
-group: A
-group_title: baseline_controls
-local_id: "01"
-slug: lhm_vs_baseline
-title: LHM-A architecture beats baseline on test-id
-created_at: 2026-05-24T18:00:00-04:00
-updated_at: 2026-05-24T18:00:00-04:00
+id: P.0601
+created_month: "06"
+created_day: "01"
+slug: framing_loss-aversion
+title: Loss-aversion framing improves message acceptance
+created_at: 2026-06-01T18:00:00-04:00
+updated_at: 2026-06-01T18:00:00-04:00
 
 # ── INTENT (pre-run, user/Claude writes) ────────────────────────────
 hypothesis: |
@@ -296,7 +303,7 @@ Validation rules (review enforces)
 -----------------------------------
 
 ```
-- id matches folder group + local_id (`P.<GROUP><NN>`)
+- id matches folder date `created_month`+`created_day` (`P.<MMDD>`)
 - arms has ≥1 arm and each arm has `runs:` before aggregation
 - aggregation.metric is non-empty
 - if result.status == confirmed:

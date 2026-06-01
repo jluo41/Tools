@@ -4,11 +4,13 @@ description: "Coverage and propose specialist of haipipe-probe. Maps what's been
 argument-hint: "[coverage|propose] [project-path]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.2.0"
+  last_updated: "2026-06-01"
   summary: "Coverage and propose specialist of haipipe-probe."
   changelog:
     - "1.0.0 (2026-05-31): baseline metadata added."
+    - "1.1.0 (2026-06-01): update coverage scan for active/archive probe folders."
+    - "1.2.0 (2026-06-01): switch probe ref examples to date-based `P.MMDD`."
 ---
 
 Skill: haipipe-probe-explore
@@ -82,9 +84,9 @@ cells: ✅=N≥3 paired | ⚠️=N=1 (needs confirm) | —=no runs
 total: 4 archs × 3 data = 12 cells; 3 confirmed, 2 exploratory, 7 untouched
 
 probes covering this design space:
-  P.A01 baseline_noise_floor       (covers baseline x all data)
-  P.A02 lhm_vs_baseline            (covers baseline + LHM-A x data_v3)
-  P.C01 transformer_pilot          (covers Transformer x data_v1, single-seed)
+  P.0601 baseline_noise_floor     (covers baseline x all data)
+  P.0602 lhm_vs_baseline          (covers baseline + LHM-A x data_v3)
+  P.0603 transformer_pilot        (covers Transformer x data_v1, single-seed)
 ```
 
 
@@ -95,26 +97,26 @@ Propose output
 ═══ Suggested next probes — Proj-Model-1-ScalingLaw ═══
 
 Priority 1 — confirm exploratory cells:
-  P.C02  Transformer noise-floor   paired N=3 on data_v1
+  P.0604  Transformer noise-floor paired N=3 on data_v1
        Why: existing single-seed result (MAE 24.2) is in baseline noise range
        Cost: ~12 GPU-hours (3 seeds x 4h)
        Adds: cell (Transformer, data_v1) → ✅
 
-  P.A03  LHM-A confirm             paired N=3 on data_v3
-       Why: P.A02 used N=1 LHM, claim is exploratory
+  P.0605  LHM-A confirm           paired N=3 on data_v3
+       Why: P.0602 used N=1 LHM, claim is exploratory
        Cost: ~10 GPU-hours
-       Adds: cell (LHM-A, data_v3) → ✅, upgrades P.A02 claim
+       Adds: cell (LHM-A, data_v3) → ✅, upgrades P.0602 claim
 
 Priority 2 — fill obvious gaps:
-  P.B01  LHM-A OOD test            data_v1, paired N=3
+  P.0606  LHM-A OOD test          data_v1, paired N=3
        Why: does LHM-A win generalize across data versions?
        Cost: ~12 GPU-hours
        Adds: cell (LHM-A, data_v1) → ✅
 
 Priority 3 — speculative:
-  P.A04  LHM-B baseline            data_v3, paired N=3
-       Why: LHM family extension; only worth if P.A03 confirms LHM-A win
-       Defer until P.A03.
+  P.0607  LHM-B baseline          data_v3, paired N=3
+       Why: LHM family extension; only worth if P.0605 confirms LHM-A win
+       Defer until P.0605.
 ```
 
 
@@ -122,7 +124,8 @@ Workflow — `coverage`
 ----------------------
 
 ```
-Step 1: Load all probes/*/*/probe.yaml in project.
+Step 1: Load all active probes/*/probe.yaml and archived
+        probes/*-archive/*/probe.yaml in project.
 Step 2: Scan all runs across tasks/ (recursive); extract design-space
         signals from configs and runtime.yaml.
 Step 3: Group runs by (arch × data); count seeds per cell.
