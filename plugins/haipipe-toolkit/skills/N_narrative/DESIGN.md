@@ -151,12 +151,26 @@ papers:    []                      # paper ids that render this story (back-ref)
 ## Gap summary
 - C2: no K card. → next probe: param-matched re-test
 - C3: K05 exists but confidence=low → strengthen or re-scope
+
+## Claim Gap Contracts
+
+### C2 — benefit survives param-matching
+- needed_claim: Benefit survives parameter matching.
+- why_needed: Without this, the story may be only a scale-confound story.
+- evidence_standard: N>=3 paired seeds; same split; same schedule; same metric.
+- candidate_probe: P.A03 param-matched re-test
+- expected_return:
+  - K: supported/refuted claim
+  - W: next recommended move
 ```
 
 `status` per slot: `have` (K card exists, confidence ok) / `weak` (exists
 but low confidence) / `GAP` (no card). The GAP/weak rows ARE the
-"which whip to crack next" list. (Scope A: human reads this. Scope B: a
-skill diffs `needs[]` against insights/K automatically.)
+"which whip to crack next" list. The **Claim Gap Contract** is the precise
+hinge from narrative-cycle to probe-cycle: a weak/GAP claim slot made
+specific enough to become one probe's hypothesis, arms, evidence standard,
+and expected K/W return. (Scope A: human reads this. Scope B: a skill diffs
+`needs[]` against insights/K automatically and materializes the contract.)
 
 
 ### ignite-log.md  (③ the gate on the double arrow)
@@ -253,8 +267,8 @@ Scope boundary (what this DESIGN does NOT do)
 
 Deferred to scope B (a later pass), explicitly OUT of this design:
 
-- Auto gap-diff: claims.md `needs[]` minus insights/K → auto-generate
-  `/haipipe-probe design new ...` calls.
+- Auto gap-diff: claims.md Claim Gap Contracts minus insights/K → auto-generate
+  `/haipipe-probe design new ...` calls with an evidence standard.
 - The G_application ask-kind wiring (load→gap→chain already has a stub;
   connecting narrative gaps to it is scope B).
 - Multi-narrative strategic synthesis (one project, many stories competing

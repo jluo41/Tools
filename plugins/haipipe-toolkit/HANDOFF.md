@@ -1,7 +1,7 @@
 HANDOFF — haipipe-toolkit redesign (resume here)
 ==================================================
 
-Last updated: 2026-05-31  (movement: probe-cycle — K/W output + dogfood; v2.3.2)
+Last updated: 2026-05-31  (movement: end-to-end claim-gap hinge; v2.3.3)
 Purpose: pick up the design work from a fresh session without re-deriving it.
 
 Read these, in order, to reload full context:
@@ -9,8 +9,9 @@ Read these, in order, to reload full context:
   2. MENTAL_MODEL.md               — the C/D/E/G mechanics
   3. diagram/v260531/00-index.txt  — the CURRENT model as a visual set (start here for the gestalt)
   4. diagram/v260531/06-probe-cycle.txt — how to RUN one probe cycle (the 6-stage process)
-  5. skills/E_insight/DESIGN.md    — E (BUILT): agents + dual-mode + per-type reviewers
-  6. skills/N_narrative/DESIGN.md  — the Narrative layer (prior movement)
+  5. diagram/v260531/07-end-to-end-claim-gap.txt — the ask→claim-gap→probe→K/W→cash-out hinge
+  6. skills/E_insight/DESIGN.md    — E (BUILT): agents + dual-mode + per-type reviewers
+  7. skills/N_narrative/DESIGN.md  — the Narrative layer + Claim Gap Contract
 
 
 The mental model — an hourglass (read this first)
@@ -37,9 +38,11 @@ Vocabulary nailed this session: it is **whip** (挥鞭, crack a whip), NOT
 "wipe". The probe is the whip; the narrative is the whip-hand.
 
 `narrative ⇄ insights` is the engine (the refined "double arrow"): narrative
-READS insight content (🟨K/🟧W) + probe COVERAGE (probes/INDEX), finds a gap,
-whips a probe; the machine runs it and E files the result back as insights;
-narrative reads the update. `ignite` decides: cash out (paper) or whip again.
+READS insight content (🟨K/🟧W) + probe COVERAGE (probes/INDEX), finds a
+claim slot that is GAP/weak, turns that slot into a **Claim Gap Contract**,
+then whips a probe; the machine runs it and E files the result back as
+insights; narrative reads the update. `ignite` decides: cash out (paper) or
+whip again.
 
 Cardinality: per ignite, n insights → 1 paper (n:1); over a thread's life,
 1 narrative → N papers (1:N). The narrative is a persistent, iterating line;
@@ -49,6 +52,14 @@ papers are its discrete snapshots. A full visual breakdown is in
 
 LATEST MOVEMENT (2026-05-31) — probe-cycle: K/W output + dogfood
 ================================================================
+
+Addendum (v2.3.3): the end-to-end hinge is now named and documented:
+**Claim Gap Contract**. A narrative-cycle exposes a C-slot GAP/weak row in
+`claims.md`; that row becomes the contract for one probe-cycle; the probe
+contract expects K/W (K is wired now; W is the next target); narrative
+re-reads K/W and records ignite. See
+`diagram/v260531/07-end-to-end-claim-gap.txt`, `ARCHITECTURE.md`, and
+`skills/N_narrative/.../narrative-schema.md`.
 
 The probe-cycle (1 🔧 probe → N ✋ task-cycles → 1 🧠 insight) is now named,
 documented (`diagram/v260531/06-probe-cycle.txt` = the 6-stage process), and its
@@ -104,6 +115,9 @@ Discipline: when editing a skill/agent, bump `metadata.version` + add a
 DONE (movement history, newest first)
 =====================================
 
+- **2026-05-31  end-to-end claim-gap hinge (v2.3.3)** — named the
+  **Claim Gap Contract** as the connector between narrative-cycle and
+  probe-cycle; added diagram 07 and threaded schema/architecture docs.
 - **2026-05-31  probe-cycle K-fix (v2.3.2)** — converged probe files its claim
   → 🟨 K (was D); dogfood-verified. (commit `3ed80ac`)
 - **2026-05-31  cycle vocabulary + probe-cycle process doc (v2.3.1)** —
@@ -152,7 +166,8 @@ DEFERRED — N_narrative scope B + gates (NOT in current work)
 ============================================================
 
 - Auto gap-diff: claims.md `needs[]` minus insights/K → auto-emit
-  `/haipipe-probe design new ...` (through G_application ask, never directly).
+  `/haipipe-probe design new ...` from Claim Gap Contracts (through
+  G_application ask, never directly).
 - Wire narrative gaps into G_application ask-kind (load→gap→chain stub
   already exists in `skills/G_application/haipipe-application-ask/`).
 - ignite as an ENFORCED gate with an adversarial steelman reviewer

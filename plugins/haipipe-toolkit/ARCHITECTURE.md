@@ -20,8 +20,16 @@ TL;DR — one line, one heartbeat
     Source → Task → Probe → Insight ═══ Narrative → Application → (回流)
       🌱      ✋      🔧       🧠     ⇅      📖           🥢            ↺
 
-Seven layers in one line. But only ONE link is a double arrow — the
-heart — and everything else is its intake or its output:
+Seven layers in one line. But the true end-to-end turn starts at
+`application·ask` (a coarse human/application direction), passes through
+the research engine, and ends at a cashed-out application plus possible
+feedback:
+
+    ask → narrative → claim-gap → probe → task → insight(K/W)
+        → narrative(ignite) → paper/report/message/UI → feedback
+
+Only ONE link is a double arrow — the heart — and everything else is its
+intake or its output:
 
         🧠 KB  ⇄[🔥 ignite]⇄  📖 Narrative
 
@@ -66,6 +74,56 @@ Either direction ALONE breaks:
 Double arrow = walking on two legs, alternating. **ignite** is the
 metronome on this arrow: every round-trip asks once "am I ignited?" —
 ignited → take another step; not ignited → change direction.
+
+
+The hinge: Claim Gap Contract
+==============================
+
+The double arrow needs a concrete joint. That joint is the **Claim Gap
+Contract**: a narrative claim slot whose evidence is `GAP` or `weak`,
+made precise enough for one probe-cycle to test.
+
+Narrative does NOT vaguely say "run more experiments". It says:
+
+```
+N01.C2 needs this claim:
+  "Benefit survives parameter matching."
+
+Why it matters:
+  "Without C2, the story may just be a scale-confound story."
+
+Evidence standard:
+  N>=3 paired seeds; same split; same training schedule; same metric.
+
+Expected return:
+  K = supported/refuted claim
+  W = recommended next move
+  (K is wired now; W is the next wiring target.)
+```
+
+Then:
+
+```
+📖 narrative claim slot  →  Claim Gap Contract  →  🔧 probe-cycle
+        ↑                                                    │
+        └────────────── 🧠 K/W insight return ───────────────┘
+```
+
+This is what connects the cycles:
+
+- `narratives/<NN>_<slug>/claims.md` owns the C-slots and their gap
+  contracts.
+- `probes/<GROUP>/<NN>_<slug>/probe.yaml` owns the focused reality test.
+- `tasks/.../metrics.json` owns measurements.
+- `insights/K_knowledge/*.md` returns the settled claim.
+- `insights/W_wisdom/*.md` returns the next move.
+
+So the control sentence is:
+
+> The narrative-cycle exposes a claim gap; the claim gap becomes a probe
+> contract; the probe-cycle tests it through tasks; insight files the return
+> K/W contract; the narrative re-reads K/W and decides whether to cash out
+> or revise.
 
 
 All the layers (the full table)
@@ -179,7 +237,7 @@ examples/Proj-X/
 │   ├── INDEX.md
 │   ├── 01_fairness_angle/
 │   │   ├── story.md          the angle + why it sells
-│   │   ├── claims.md         this story needs [K01, K03, K05]  (by reference!)
+│   │   ├── claims.md         C-slots + Claim Gap Contracts, by reference
 │   │   ├── decision-tree.md  section paths A/B/C/D
 │   │   └── ignite-log.md     ③ the ignite judgments
 │   └── 02_robustness_angle/   same project, different angle, reuses same K cards

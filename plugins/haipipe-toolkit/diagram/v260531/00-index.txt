@@ -17,10 +17,11 @@
      04-e-insight-movement.txt   🧠  E dual-mode + creators/reviewers + GAP
      05-roles-and-cycle.txt      🎭  5 roles (领导/办事的人/...) + the narrative-cycle
      06-probe-cycle.txt          🔧  how to RUN one probe cycle (the 6-step process)
+     07-end-to-end-claim-gap.txt 🧭  ask→claim-gap→probe→K/W→cash-out
 
   Canonical prose:
      ../../HANDOFF.md   ../../ARCHITECTURE.md   ../../MENTAL_MODEL.md
-     ../../skills/E_insight/DESIGN.md
+     ../../skills/E_insight/DESIGN.md   ../../skills/N_narrative/DESIGN.md
 
 
 ─§ 🎭 The 5 roles (背下来这个) ─────────────────────────────
@@ -44,14 +45,15 @@
   ✅ hourglass: 🥢 decompose down (1:n) · 🧠 aggregate up (n:1)        → 01
   ✅ probe·task·insight = a distillation chain, NOT 3 peers           → 02
   ✅ nested cycles: 📖 narrative-cycle ⊃ 🔧 probe-cycle ⊃ ✋ task-cycle  → 03 · 05 · 06
+  ✅ Claim Gap Contract = 📖 narrative-cycle ↔ 🔧 probe-cycle hinge       → 07
   ✅ 📖 narrative = 办事的人/whip-hand · 🥢 ask = 领导/nudge          → 05
   ✅ whip (挥鞭),NOT wipe (擦除) — probe = 鞭子, 抽一下               → 全套
-  ❌ THE GAP: probe-loop never files insight (L0's last cell)         → 02 · 03
-  🆕 E gets dual-mode + creators/reviewers to close the gap           → 04
+  ✅ E gets dual-mode + creators/reviewers; probe claim files to K      → 04 · 06
+  ⏳ W wiring is next: probe-cycle should return K + W to narrative     → 06 · 07
 
 
 ─§ 📌 The one finding to remember ──────────────────────────
 
-  📖 narrative 挥的那一鞭,要靠 🧠 E 把结果归档成 insights,它才看得见
-  鞭子抽出了什么。E 不归档 (L0 的洞) → narrative 是对着空气挥鞭。
-  🟨 K 卡 = probe-step ↔ narrative 唯一的交接口。
+  📖 narrative 不是直接说 "run experiments"; it names a C-slot GAP.
+  That GAP becomes a Claim Gap Contract. 🔧 probe-cycle tests the contract,
+  🧠 E files K (and W next), then 📖 narrative re-reads K/W and records 🔥 ignite.
