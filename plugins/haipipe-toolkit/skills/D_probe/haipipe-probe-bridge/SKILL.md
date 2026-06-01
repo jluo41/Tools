@@ -4,11 +4,13 @@ description: "Bridge specialist of haipipe-probe. Takes a designed probe.yaml (c
 argument-hint: "[bridge|sanity|deploy|status] [probe_ref] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Task
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.2.0"
+  last_updated: "2026-06-01"
   summary: "Bridge specialist of haipipe-probe."
   changelog:
     - "1.0.0 (2026-05-31): baseline metadata added."
+    - "1.1.0 (2026-06-01): update probe path examples for lightweight `MM-NN_slug` layout."
+    - "1.2.0 (2026-06-01): switch probe folder + ref examples to date-based `MMDD` / `P.MMDD`."
 ---
 
 Skill: haipipe-probe-bridge
@@ -68,7 +70,7 @@ Bridge flow (one probe)
 
 ```
 Step 1: PARSE
-  Read probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml
+  Read probes/<MMDD>_<slug>/probe.yaml
   Extract: claim, arms.<arm>.task_type, arms.<arm>.run_specs,
   priority, compute_budget.
   Identify sanity arm (smallest N / shortest training / lowest cost).
@@ -89,7 +91,7 @@ Step 3: PRE-FLIGHT CODE REVIEW (CODE_REVIEW=true)
     Task tool (general-purpose subagent), Prompt = that file's body +
             "Pre-flight review for bridge deploy.
              task-folder:   <absolute path>
-             probe:        P.A01 / A01 / probes/A_baseline_controls/01_lhm_vs_baseline
+             probe:        P.0601 / 0601 / probes/0601_framing_loss-aversion
              hypothesis:    <quoted from probe.yaml>
              arm:           <arm name>"
 
@@ -149,7 +151,7 @@ Where things live
 
 ```
 examples/Proj-X/
-├── probes/<GROUP>_<group_slug>/<NN>_<slug>/
+├── probes/<MMDD>_<slug>/
 │   ├── probe.yaml              ← READ: source of truth (arms + claim)
 │   ├── bridge-log.md                ← APPEND: per-arm scaffold/sanity/deploy log
 │   └── (no code here — only meta)
@@ -210,7 +212,7 @@ Specialist tail
 
 ```
 status:    ok | blocked | failed | sanity_passed | deploy_complete
-summary:   "P.A01 bridge: 3/3 arms scaffolded, sanity passed, 2/3 arms deployed"
+summary:   "P.0601 bridge: 3/3 arms scaffolded, sanity passed, 2/3 arms deployed"
 artifacts: [bridge-log.md, scaffolded task IDs, linked run paths]
 next:      /haipipe-probe result <probe>     (after all arms complete)
           /haipipe-probe review claim <probe> (Codex verdict on aggregated results)

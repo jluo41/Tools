@@ -4,11 +4,13 @@ description: "Post-run specialist of haipipe-probe. Aggregates linked-run result
 argument-hint: "[aggregate|claim|render] [probe_ref]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.2.0"
+  last_updated: "2026-06-01"
   summary: "Post-run specialist of haipipe-probe."
   changelog:
     - "1.0.0 (2026-05-31): baseline metadata added."
+    - "1.1.0 (2026-06-01): update probe path examples and glob rules for active/archive `MM-NN_slug` layout."
+    - "1.2.0 (2026-06-01): switch probe folder + ref examples to date-based `MMDD` / `P.MMDD`."
 ---
 
 Skill: haipipe-probe-result
@@ -24,14 +26,15 @@ Commands
 ```
 /haipipe-probe result aggregate <probe>
   Read arms' runtime.yaml + metrics.json. Compute aggregation per spec.
-  Fill the `result:` block in probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml.
+  Fill the `result:` block in probes/<MMDD>_<slug>/probe.yaml.
 
 /haipipe-probe result claim <probe>
   Read filled `result:` + `caveats:`. LLM writes final claim sentence
-  into probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml `claim:` field.
+  into probes/<MMDD>_<slug>/probe.yaml `claim:` field.
 
 /haipipe-probe result render [project-path]
-  Render ALL probes/*/*/probe.yaml into diagram/probe-log.txt
+  Render all active probes/*/probe.yaml plus archived
+  probes/*-archive/*/probe.yaml into diagram/probe-log.txt
   (comparison-centric scoreboard).
 ```
 
@@ -40,7 +43,7 @@ Workflow — `aggregate`
 -----------------------
 
 ```
-Step 1: Resolve and load probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml. Refuse if arms are empty.
+Step 1: Resolve and load probes/<MMDD>_<slug>/probe.yaml. Refuse if arms are empty.
 
 Step 2: For each arm, for each linked run-path in arms.<arm>.runs:
   - Read <run-path>/results/<NAME>/runtime.yaml; require status=ok.
@@ -100,7 +103,7 @@ Workflow — `render`
 
 ```
 Step 1: Resolve project root.
-Step 2: Glob probes/*/*/probe.yaml.
+Step 2: Glob active probes/*/probe.yaml and archived probes/*-archive/*/probe.yaml.
 Step 3: For each, format into the per-entry template
         (../ref/probe-entry-template.txt).
 Step 4: Build the headline scoreboard (best per split per category).
@@ -136,7 +139,7 @@ Disambiguation
 Risk profile
 -------------
 
-EDITS probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml (fills result: + claim:). WRITES
+EDITS probes/<MMDD>_<slug>/probe.yaml (fills result: + claim:). WRITES
 diagram/probe-log.txt (project-level). Does NOT touch tasks/ or runs/.
 
 
@@ -145,7 +148,7 @@ Specialist tail
 
 ```
 status:    ok | blocked | failed
-summary:   "P.A01 lhm_vs_baseline aggregated: Δ=-0.68 p=0.018, status=confirmed"
-artifacts: [probes/A_baseline_controls/01_lhm_vs_baseline/probe.yaml, probes/comparison.md]
-next:      /haipipe-probe review P.A01
+summary:   "P.0601 framing_loss-aversion aggregated: Δ=-0.68 p=0.018, status=confirmed"
+artifacts: [probes/0601_framing_loss-aversion/probe.yaml, probes/comparison.md]
+next:      /haipipe-probe review P.0601
 ```

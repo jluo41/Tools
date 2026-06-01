@@ -4,11 +4,13 @@ description: "Read-only specialist of haipipe-probe. Lists probes, prints status
 argument-hint: "[list|show|refs|unused] [target]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.2.0"
+  last_updated: "2026-06-01"
   summary: "Read-only specialist of haipipe-probe."
   changelog:
     - "1.0.0 (2026-05-31): baseline metadata added."
+    - "1.1.0 (2026-06-01): update probe examples for lightweight `MM-NN_slug` layout."
+    - "1.2.0 (2026-06-01): switch probe folder + ref examples to date-based `MMDD` / `P.MMDD`."
 ---
 
 Skill: haipipe-probe-inspect
@@ -47,10 +49,10 @@ Output — `list`
 
 ID      Title                             Status         Arms  Runs  Claim
 ──────  ────────────────────────────────  ─────────────  ────  ────  ──────
-P.A01   baseline_noise_floor              ✅ confirmed    1     5     "Baseline MAE 24.6 ± 0.2"
-P.A02   lhm_vs_baseline                   ⚠️ exploratory  2     2     "LHM-A beats baseline 0.68 (N=1)"
-P.B01   event_channels                    ❌ refuted      2     6     "No measurable gain from events"
-P.C01   transformer_pilot                 ⏸ pending      1     1     (no aggregate yet)
+P.0601   baseline_noise_floor              ✅ confirmed    1     5     "Baseline MAE 24.6 ± 0.2"
+P.0602   lhm_vs_baseline                   ⚠️ exploratory  2     2     "LHM-A beats baseline 0.68 (N=1)"
+P.0603 event_channels                    ❌ refuted      2     6     "No measurable gain from events"
+P.0604 transformer_pilot                 ⏸ pending      1     1     (no aggregate yet)
 ```
 
 
@@ -58,7 +60,7 @@ Output — `show <probe>`
 ---------------------
 
 ```
-═══ P.A02 — lhm_vs_baseline ═══
+═══ P.0602 — lhm_vs_baseline ═══
 
 hypothesis:    LHM-A in test-id MAE lower than baseline by ≥ 0.5 mg/dL
 claim_target:  "LHM-A architecture improves CGM forecasting by X mg/dL ..."
@@ -100,8 +102,8 @@ Output — `refs <run-path>`
 ═══ References to run_seed42_baseline ═══
 
 Linked in 2 probes:
-  P.A01 (arm: baseline)  status: ✅ confirmed
-  P.A02 (arm: baseline)  status: ✅ confirmed
+  P.0601 (arm: baseline)  status: ✅ confirmed
+  P.0602 (arm: baseline)  status: ✅ confirmed
 ```
 
 
@@ -132,7 +134,7 @@ Disambiguation
 
   - No verb → default `list`.
   - <target> looks like a path → assume `refs`.
-  - <target> looks like `P.A01`, `A01`, or `A/01_<slug>` → assume `show`.
+  - <target> looks like `P.0601`, `0601`, or `probes/0601_<slug>` → assume `show`.
 
 
 Specialist tail

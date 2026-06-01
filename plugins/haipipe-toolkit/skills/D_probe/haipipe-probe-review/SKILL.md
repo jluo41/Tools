@@ -4,11 +4,13 @@ description: "QA specialist of haipipe-probe. Three complementary checks. (1) ST
 argument-hint: "[run|probe|claim|project] [target]"
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.2.0"
+  last_updated: "2026-06-01"
   summary: "QA specialist of haipipe-probe."
   changelog:
     - "1.0.0 (2026-05-31): baseline metadata added."
+    - "1.1.0 (2026-06-01): update probe artifact paths for lightweight `MM-NN_slug` layout."
+    - "1.2.0 (2026-06-01): switch probe folder + ref examples to date-based `MMDD` / `P.MMDD`."
 ---
 
 Skill: haipipe-probe-review
@@ -179,7 +181,7 @@ mcp__codex__codex:
       configs:        [configs/<NAME>.yaml for every linked run]
       results:        [results/<NAME>/metrics.json for every linked run]
       runtime:        [results/<NAME>/runtime.yaml for every linked run]
-      probe:     [probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml]
+      probe:     [probes/<MMDD>_<slug>/probe.yaml]
       claim refs:     [CLAIMS_FROM_RESULTS.md, paper/*.tex if present]
 
     Categories:
@@ -204,13 +206,13 @@ mcp__codex__codex:
 Sidecar file in the probe folder:
 
 ```
-probes/<GROUP>_<group_slug>/<NN>_<slug>/INTEGRITY_AUDIT.md
+probes/<MMDD>_<slug>/INTEGRITY_AUDIT.md
 ```
 
 Schema:
 
 ```markdown
-# INTEGRITY AUDIT — P.A01
+# INTEGRITY AUDIT — P.0601
 
 - overall_verdict:  pass | warn | fail
 - audited_at:       <ISO timestamp>
@@ -352,7 +354,7 @@ Output format
 --------------
 
 ```
-═══ Probe P.A01 review ═══
+═══ Probe P.0601 review ═══
 Status: ⚠️ 2 warnings, 0 errors
 
 ✅ Arms paired (N=3 each)
@@ -418,9 +420,9 @@ Specialist tail
 
 ```
 status:    ok | blocked | failed
-summary:   "P.A01 review: 0 errors, 2 warnings, recommended actions: 3"
-          OR "P.A01 integrity audit: WARN (B metric-definition inconsistent)"
-          OR "P.A01 claim verdict: partial (confidence: medium)"
+summary:   "P.0601 review: 0 errors, 2 warnings, recommended actions: 3"
+          OR "P.0601 integrity audit: WARN (B metric-definition inconsistent)"
+          OR "P.0601 claim verdict: partial (confidence: medium)"
 artifacts: [report stdout / --out path / INTEGRITY_AUDIT.md / CLAIMS_FROM_RESULTS.md]
 next:      apply suggested actions then /result aggregate <probe> again
           OR if integrity WARN/FAIL: fix flagged categories then /review integrity <probe>

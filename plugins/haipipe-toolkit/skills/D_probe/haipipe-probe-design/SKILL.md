@@ -1,14 +1,16 @@
 ---
 name: haipipe-probe-design
-description: "Pre-run specialist of haipipe-probe. Defines a new probe (claim + planned arms) and links existing runs into its arms. Writes/edits probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml under a project. Called by /haipipe-probe orchestrator. Direct invocation works for design-scoped work."
+description: "Pre-run specialist of haipipe-probe. Defines a new probe (claim + planned arms) and links existing runs into its arms. Writes/edits probes/<MMDD>_<slug>/probe.yaml under a project. Called by /haipipe-probe orchestrator. Direct invocation works for design-scoped work."
 argument-hint: "[new|link] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.2.0"
+  last_updated: "2026-06-01"
   summary: "Pre-run specialist of haipipe-probe."
   changelog:
     - "1.0.0 (2026-05-31): baseline metadata added."
+    - "1.1.0 (2026-06-01): new probe identity uses direct `probes/MM-NN_slug/` folders and `P.MM-NN` refs."
+    - "1.2.0 (2026-06-01): probe identity switches to date-based `MMDD` folders + `P.MMDD` refs; `design new` takes `--date MMDD` (default today), same-day collisions get a letter suffix."
 ---
 
 Skill: haipipe-probe-design
@@ -24,8 +26,8 @@ Commands
 --------
 
 ```
-/haipipe-probe design new <slug> [--project <path>] [--group A] [--group-title <slug>] [--id NN]
-  Interactive: writes probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml
+/haipipe-probe design new <slug> [--project <path>] [--date MMDD]
+  Interactive: writes probes/<MMDD>_<slug>/probe.yaml
   from template, asks user for claim / hypothesis / aggregation spec /
   planned arm names.
 
@@ -52,12 +54,17 @@ Step 1: Resolve project root.
   - Else ASK.
 
 Step 2: Allocate / validate identity.
-  - Canonical source ref: `P.<GROUP><NN>`, e.g. `P.A01`.
-  - Canonical folder: `probes/<GROUP>_<group_slug>/<NN>_<slug>/`.
+  - Canonical source ref: `P.<MMDD>`, e.g. `P.0601`.
+  - Canonical folder: `probes/<MMDD>_<slug>/`.
   - YAML `id:` is the canonical source ref, not `E02` or flat `P02`.
-  - If `--group` is omitted, ASK or choose the default group from `probes/INDEX.md`.
-  - If `--id NN` is omitted, use the next unused 2-digit NN within that group.
-  - Must not collide with an existing probe folder in that group.
+  - `MMDD` is the creation date: `MM` = month, `DD` = day.
+  - If `--date MMDD` is omitted, use today's local month+day (`MMDD`).
+  - If a probe folder already exists for that `MMDD`, append the next free
+    lowercase letter suffix (`0601` → `0601b` → `0601c` → ...), scanning both
+    active `probes/<MM>*` and archived `probes/<YYYY>-archive/<MM>*` folders
+    for the current year.
+  - Must not collide with an existing active or archived probe folder for
+    that `MMDD` (or `MMDD<suffix>`).
 
 Step 3: Collect via interactive prompts:
   - title (1 line, descriptive)
@@ -67,7 +74,7 @@ Step 3: Collect via interactive prompts:
   - aggregation.statistic (mean_std | mean_std_paired_t | sign_test)
   - planned arms (names + optional task_type / run_specs; no run-paths yet)
 
-Step 4: Write probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml from template.
+Step 4: Write probes/<MMDD>_<slug>/probe.yaml from template.
   Template: ../ref/probe-yaml-schema.md (skeleton at the top).
 
 Step 5: Emit specialist tail.
@@ -78,7 +85,7 @@ Workflow — `link`
 ------------------
 
 ```
-Step 1: Resolve probe by `P.A01`, `A01`, `A/01_<slug>`, or folder path; refuse if not found.
+Step 1: Resolve probe by `P.0601`, `0601`, or folder path; refuse if not found.
 Step 2: Validate <run-path> exists and contains runtime.yaml.
 Step 3: Determine arm:
   - --arm explicit: use that.
@@ -94,7 +101,8 @@ Disambiguation
 
   - Missing verb (just <probe> + run-path) → assume `link`.
   - Missing run-path in `link` → ASK; show available runs in project.
-  - group+slug/NN exists for `new` → refuse, suggest `link` instead.
+  - MMDD+slug already exists for `new` → refuse (or allocate the next letter
+    suffix); suggest `link` instead.
   - target doesn't exist for `link` → suggest `new` first.
 
 
@@ -121,8 +129,8 @@ Specialist tail
 
 ```
 status:    ok | blocked | failed
-summary:   "Created P.A01 lhm_vs_baseline (3 arms planned)" / "Linked run_seed42 to arm 'baseline'"
-artifacts: [probes/A_baseline_controls/01_lhm_vs_baseline/probe.yaml]
-next:      suggested: /haipipe-probe design link P.A01 <next-run>
-           or         /haipipe-probe result P.A01 (when all arms have runs)
+summary:   "Created P.0601 framing_loss-aversion (3 arms planned)" / "Linked run_seed42 to arm 'baseline'"
+artifacts: [probes/0601_framing_loss-aversion/probe.yaml]
+next:      suggested: /haipipe-probe design link P.0601 <next-run>
+           or         /haipipe-probe result P.0601 (when all arms have runs)
 ```
