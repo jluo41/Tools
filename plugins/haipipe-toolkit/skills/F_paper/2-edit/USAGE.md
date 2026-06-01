@@ -63,6 +63,14 @@ you didn't answer. Run it section by section.
 `paper-edit-cleaner` strips the `%% {CC-…} ========>` threads, keeps the `Pn.Sm`
 index and banners.
 
+**Then build the handoff diff (end of stage 5):**
+
+> Build the tracked-changes PDF of this cycle vs the last baseline.
+
+`paper-diff-pdf` (now inside `4-edit/`) produces a latexdiff-style PDF showing
+exactly what this cycle changed — for co-author / advisor sign-off before the
+next cycle.
+
 ---
 
 ## B. One section, one topic (manual / low-effort)

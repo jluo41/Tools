@@ -169,6 +169,30 @@ Inputs that are genuinely fixed (e.g. real CMS at `G:\CMS\DATA`) stay absolute
 in the config; only the *repo-relative* `_WorkSpace` data root is resolved this
 way.
 
+### reg-stage exception — dispatcher-less, env-var ws_root
+
+The **reg** stage has NO central dispatcher and NO `run_<stage>_year.ps1`
+orchestrator (there is no year axis). Each `runs/<run>.ps1` calls its estimation
+`scripts/run-*.do` **directly**, and each `.do` opens with `clear all`. So rules
+2–3 take a reg-specific form:
+
+- **ws_root via ENV var, not a `do` arg.** `clear all` would drop a `global`
+  (and is hostile to threading args), so the `.ps1` exports
+  `$env:HAIPIPE_WS_ROOT = "<repo>/_WorkSpace"` and the `.do` reads it AFTER
+  `clear all`:
+  ```stata
+  global ws_root : environment HAIPIPE_WS_ROOT
+  if "${ws_root}" == "" global ws_root "_WorkSpace"   // fallback for direct GUI runs
+  ```
+- **Run from the task folder via `Push-Location`.** A direct `& $stata /e do
+  "scripts/..."` cannot take `-WorkingDirectory`, so wrap it:
+  `Push-Location $TASK_DIR; try { & $stata /e do "scripts/<run>.do" } finally { Pop-Location }`.
+- **Output is task-relative `results/`** (LIGHT coef tables) — `global log_file
+  "results/<run>.log"`, `capture mkdir "results"`. No folder-name prefix.
+- **Grouped vs per-cell runs.** Each estimator family may be one `.ps1` that
+  loops several worker `.do` (e.g. `ols` → run-1..5, `iv` → run-6..8), or one
+  `.ps1` per cell — the author's call; both keep results task-relative.
+
 
 Light vs heavy (unchanged from the invariants)
 -----------------------------------------------

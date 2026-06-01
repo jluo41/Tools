@@ -11,6 +11,14 @@ KEY DIFFERENCE from cms/case/data: the primary output is LIGHT (coef
 tables in-repo under `results/`), not a heavy `.dta` in `_WorkSpace/`.
 The grid fans wide — organize `runs/` and `scripts/` in per-spec subfolders.
 
+**Default vs topic-split.** By default ONE study folder holds the whole grid
+(condition × pairing × trait × estimator) in per-spec subfolders. ACCEPTED
+project-local override: if two conditions are genuinely *different topics*, split
+into one folder PER topic — `D{NN}_reg_pipeline_<condition>_<pairing>` — making
+the condition the folder boundary. Then the folder name already names the spec,
+so FLATTEN the redundant inner subfolder (`runs/` + `scripts/` directly). Each
+topic still keeps trait × estimator as its inner grid.
+
 
 Step 1 — Identify project + task-group
 ---------------------------------------
@@ -68,15 +76,24 @@ Copy `ref/config-seed.yaml` to
 settings (controls, cluster level, FE) may live in a `configs/*.do`.
 
 
-Step 5 — Run-script
--------------------
+Step 5 — Run-script (reg runtime contract)
+------------------------------------------
 
-Copy `../haipipe-task/ref/run-ps1-template.ps1` to each
-`runs/<Condition>_<Pairing>/run-<Condition>_<Pairing>_<Trait>-<est>.ps1`.
-Set `$RUNNAME = "run_reg_<Condition>_<Pairing>_<Trait>-<est>"`, the
-`$REQUIRED` analysis-table precondition, and call the per-spec estimation
-`.do` (this stage often calls Stata directly rather than via a
-`run_<stage>_year.ps1` orchestrator — there is no year axis).
+Reg is **dispatcher-less** — each `runs/.../<run>.ps1` calls its estimation
+`scripts/...do` DIRECTLY (no `run_<stage>_year.ps1`, no year axis). Each `.ps1`:
+
+- resolves Stata with `Resolve-StataExe` (no hardcoded version);
+- resolves the absolute `_WorkSpace` (walk up to `pyproject.toml`) and exports it
+  as `$env:HAIPIPE_WS_ROOT` — the `.do` reads it AFTER `clear all` via
+  `global ws_root : environment HAIPIPE_WS_ROOT` (a `do`-arg/global would not
+  survive `clear all`; see ref/stata-dialect.md "reg-stage exception");
+- runs Stata from the task folder: `Push-Location $TASK_DIR; try { & $stata /e do
+  "scripts/<run>.do" } finally { Pop-Location }`;
+- input ← `${ws_root}/3-Data-Store/<spec>/…ANALYSIS-*.dta`; output →
+  task-relative `results/<run>.log` + coef tables (LIGHT, in-repo).
+
+A `.ps1` may run ONE cell or loop a worker family (e.g. `-ols.ps1` → run-1..5,
+`-iv.ps1` → run-6..8). NO path hardcodes the folder name → renamable by `mv`.
 
 Because output is LIGHT, the `summary.txt` headline should surface the
 key coefficient (β · SE · N; first-stage F for IV).
@@ -99,5 +116,7 @@ MUST NOT
 - Send coefficient tables to `_WorkSpace/` — reg output is LIGHT, in-repo
   under `results/<run>/`.
 - Skip the `_meta:` block. Create `README.md`. Use papermill / `.ipynb`.
-- Collapse the grid into one run — each spec cell is its own RUNNAME so
-  results pair 1:1 and task-log.md stays legible.
+- Collapse the WHOLE grid (all conditions/traits/estimators) into one run.
+  Keep runs at the trait × estimator-family grain so results stay legible.
+  (Grouping a worker *family* — e.g. one `-ols.ps1` looping run-1..5 — is fine;
+  collapsing distinct traits/conditions into a single run is not.)

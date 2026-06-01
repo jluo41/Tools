@@ -5,6 +5,10 @@ AI and human share the work, and you choose how much human effort to spend at
 each. The `paper-edit` orchestrator drives the cycle and fans out the per-stage
 agents in `../agents/`.
 
+> **Upstream input (not a stage here):** the section → paragraph → sentence map
+> from `2-plan/paper-structure-diagram` is a useful diagnostic to hand the
+> annotators before Stage 2. It is produced in planning, not in the edit cycle.
+
 ## The five stages
 
 ```
@@ -23,15 +27,17 @@ agents in `../agents/`.
 (4) IMPROVE        apply accepted comments, one section at a time   (agent: paper-edit-improver)
     │              accept/modify → edit; reject → drop; OPEN/discuss → leave
     ▼
-(5) CLEAN          strip annotations to the clean version   (agent: paper-edit-cleaner)
-                   human-gated; levels: keep-comments / keep-index / full clean
+(5) CLEAN +        strip annotations to the clean version   (agent: paper-edit-cleaner)
+    HANDOFF        human-gated; levels: keep-comments / keep-index / full clean
+                   then a tracked-changes PDF of this cycle  (skill: paper-diff-pdf)
 ```
 
 ### Mapping to the comment protocol
 
 Stages 2–4 are the comment protocol's rounds (`comment-protocol.md`): stage 2 =
 Round 1 (comment-only), stage 3 = Round 1.5 (reply), stage 4 = Round 2 (apply).
-Stage 1 is a pre-round normalization; stage 5 is the post-apply teardown.
+Stage 1 is a pre-round normalization; stage 5 is the post-apply teardown plus a
+between-cycles tracked-changes handoff (`paper-diff-pdf`).
 
 ## Effort dial (how much human to spend)
 

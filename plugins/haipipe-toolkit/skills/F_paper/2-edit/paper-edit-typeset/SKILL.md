@@ -35,9 +35,10 @@ boxes, no awkward page or column breaks, figures/tables near their references.
 
 ## Approach (intended)
 
-Compile, read the PDF + log, and fix at the **prose** level first (tighten a
+Compile with `4-write/paper-compile` and read the PDF + log (`Overfull` /
+`Underfull` warnings, widow/orphan) — fix at the **prose** level first (tighten a
 sentence to pull a widow back) before reaching for manual break commands. A diff
-of before/after PDFs (`5-revise/paper-diff-pdf`) confirms nothing else moved.
+of before/after PDFs (`../paper-diff-pdf`) confirms nothing else moved.
 
 ## Done means
 
