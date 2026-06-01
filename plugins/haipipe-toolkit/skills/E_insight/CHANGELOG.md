@@ -5,6 +5,36 @@ Layer-scoped changelog for the E_insight (KNOWLEDGE / archive) layer. Newest
 first. Rollup lives in the plugin-level `CHANGELOG.md`.
 
 
+## [2.3.4] — 2026-05-31
+
+### Added
+- **W is now wired into the probe-cycle** (the K's twin). A converged
+  `haipipe-probe-loop` Step 3 now files the 🟨 K, then OPTIONALLY (◇) chains
+  `card-creator-wisdom-agent --scope <new-K>` to file the per-probe 🟧 W (the
+  probe's concrete next-step), scoped to the just-filed K. Skips when the probe
+  implies no concrete next-step (no fabrication). The W machinery
+  (`haipipe-insight-wisdom` + `card-creator-wisdom-agent` + `invocation-modes`
+  W row) was already correct — only the probe-loop wiring was missing.
+- The probe-cycle deliverable is now **🟨 K + 🟧 W** end-to-end; the
+  narrative-cycle gets both the claim and the recommended next whip-crack.
+
+### Changed
+- Distinction made explicit: **per-probe W** (single-K next-step, filed in the
+  loop) vs **strategic W** (across many K, stays cross-cycle via the report
+  phase / `haipipe-insight-explore`).
+- Docs threaded: `06-probe-cycle.txt` step ⑥ + gates table, `00-index.txt`,
+  `07-end-to-end-claim-gap.txt`, `ARCHITECTURE.md`, `DESIGN.md` Q2 (which still
+  described the pre-K-fix `card-creator-data-agent` dispatch — corrected to
+  knowledge→wisdom).
+
+### Verified
+- **Dogfood-verified** on the stub (`/tmp/haipipe-dogfood/`): confirmed probe →
+  K01 → **W01** ("param-matched FiLM re-test"). 13/13 `card-reviewer-wisdom`
+  gates + 5/5 `index-integrity` gates green on an independent re-run (reciprocal
+  K01↔W01 back-link, INDEX consistency, schema sections/enums, type/cost enums,
+  actionable `/haipipe-probe` command, boundary = action-not-restated-belief).
+
+
 ## [2.3.2] — 2026-05-31
 
 ### Fixed

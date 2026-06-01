@@ -209,9 +209,12 @@ Q1. [RESOLVED — build both] Creator is a SEPARATE thin agent AND the
     holds the filing logic.
 
 Q2. [RESOLVED — wired now] haipipe-probe-loop Step 3 (convergence) dispatches
-    card-creator-data-agent for the confirmed probe → files the D card,
-    closing L0 inside the loop. Higher-layer I/K/W synthesis stays OUT of the
-    per-probe loop (accumulates via the report phase / explore).
+    card-creator-knowledge-agent for the confirmed probe → files the 🟨 K from
+    its claim, then optionally chains card-creator-wisdom-agent --scope <new-K>
+    → files the per-probe 🟧 W (the next-step), closing L0 inside the loop. The
+    🟦 D observations come from the probe's task-cycles; 🟩 I (cross-D pattern)
+    and STRATEGIC W (across many K) stay OUT of the per-probe loop (accumulate
+    via the report phase / explore).
 
 Q3. Does E need an advancer (synthesis proposer: "what is filable/
     synthesizable now")? The haipipe-insight-explore skill already covers

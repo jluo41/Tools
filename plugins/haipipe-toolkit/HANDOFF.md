@@ -1,7 +1,7 @@
 HANDOFF — haipipe-toolkit redesign (resume here)
 ==================================================
 
-Last updated: 2026-05-31  (movement: end-to-end claim-gap hinge; v2.3.3)
+Last updated: 2026-05-31  (movement: W wired into the probe-cycle; v2.3.4)
 Purpose: pick up the design work from a fresh session without re-deriving it.
 
 Read these, in order, to reload full context:
@@ -41,8 +41,8 @@ Vocabulary nailed this session: it is **whip** (挥鞭, crack a whip), NOT
 READS insight content (🟨K/🟧W) + probe COVERAGE (probes/INDEX), finds a
 claim slot that is GAP/weak, turns that slot into a **Claim Gap Contract**,
 then whips a probe; the machine runs it and E files the result back as
-insights; narrative reads the update. `ignite` decides: cash out (paper) or
-whip again.
+insights (🟨 K + 🟧 W, both now wired); narrative reads the update. `ignite`
+decides: cash out (paper) or whip again.
 
 Cardinality: per ignite, n insights → 1 paper (n:1); over a thread's life,
 1 narrative → N papers (1:N). The narrative is a persistent, iterating line;
@@ -53,10 +53,12 @@ papers are its discrete snapshots. A full visual breakdown is in
 LATEST MOVEMENT (2026-05-31) — probe-cycle: K/W output + dogfood
 ================================================================
 
-Addendum (v2.3.3): the end-to-end hinge is now named and documented:
-**Claim Gap Contract**. A narrative-cycle exposes a C-slot GAP/weak row in
-`claims.md`; that row becomes the contract for one probe-cycle; the probe
-contract expects K/W (K is wired now; W is the next target); narrative
+Addendum (v2.3.4): **W is now wired** — a converged probe-cycle files 🟨 K,
+then optionally (◇) the per-probe 🟧 W (scoped to that K). Dogfood-verified
+(K01 → W01; all wisdom + index-integrity gates green). The earlier
+Claim Gap Contract hinge (v2.3.3) is unchanged: a narrative-cycle exposes a
+C-slot GAP/weak row in `claims.md`; that row becomes the contract for one
+probe-cycle; the probe contract expects K/W (**both wired now**); narrative
 re-reads K/W and records ignite. See
 `diagram/v260531/07-end-to-end-claim-gap.txt`, `ARCHITECTURE.md`, and
 `skills/N_narrative/.../narrative-schema.md`.
@@ -80,33 +82,45 @@ Done (committed; v2.3.0 → 2.3.2):
    on a stub (`/tmp/haipipe-dogfood/`, confirmed probe → K01; all gates green).
 
 A probe-cycle's deliverable = **🟨 K (claim) + 🟧 W (next-step)**, both from the
-probe; 🟦 D from its task-cycles; 🟩 I = cross-D pattern. **K is wired; W is NOT
-yet** — that is the next step (below).
+probe; 🟦 D from its task-cycles; 🟩 I = cross-D pattern. **K and W are both
+wired now** (W added v2.3.4, dogfood-verified) — the per-probe loop closes with
+K+W; 🟩 I and STRATEGIC W (across many K) stay cross-cycle synthesis.
 
 
-NEXT STEP (where to resume)
-===========================
+NEXT STEP (where to resume) — CLOSE THE NARRATIVE LOOP
+=====================================================
 
-**Wire 🟧 W into the probe-cycle** (the K's twin — the probe's next-step rec).
-The wisdom machinery is ALREADY correct (`haipipe-insight-wisdom` +
-`card-creator-wisdom-agent` already do `K → W`); only the WIRING is missing:
+Framing (from the 2026-05-31 narrative-loop review): the outer loop has TWO
+arms. The **induction arm** (KB → 📖: `claims` reads K/W, `ignite` records) is
+wired. The **deduction arm** (📖 → KB: a story's GAP says which whip to crack)
+is still the HUMAN — `narratives/*/claims.md` holds the Claim Gap Contract, but
+nothing turns it into a probe. Wiring W (v2.3.4) was step 1 — it filled the
+narrative's INPUT (K+W). Steps 2–4 below close the loop itself.
 
-1. `probe-loop` convergence: after filing K, chain
-   `card-creator-wisdom-agent --scope <new-K>` → file the per-probe 🟧 W (the
-   next-step). OPTIONAL ◇ — skip if the probe implies no concrete next-step.
-   (per-probe W = single K; strategic W across many K stays cross-cycle.)
-2. Docs: `06` stage Ⓕ (K → W), probe-loop text, the "probe-cycle → K+W" framing.
-3. Dogfood: K01 → W01 ("run a param-matched re-test"); run card-reviewer-wisdom
-   + index-integrity.
-4. Bump `haipipe-probe-loop` metadata (→ 1.2.0 + changelog); commit.
+1. **Deduction-arm handoff** (the missing return rail — scope B, first slice).
+   Make `/haipipe-narrative claims <id>` emit a ready-to-run Claim Gap Contract
+   — a `/haipipe-probe design new ... --hypothesis "..."` command line WITH the
+   evidence standard — instead of prose, so a human approves ONE line instead of
+   retyping. Goes THROUGH `G_application` ask (narrative NEVER writes `probes/`
+   directly — hard rule). Turns "human re-reads + retypes" into "human approves".
+2. **`ignite` as a GATE, not a log.** Add the steelman reviewer ("argue this is
+   NOT worth selling") so `/haipipe-narrative ignite` ENFORCES the judgment
+   (stops motivated reasoning), rather than only appending to `ignite-log.md`.
+3. **GAP→have notification** (N_narrative open Q2) — when E files a K/W, refresh
+   any `claims.md` that references it (today: manual `claims` re-scan).
+4. **Full e2e dogfood of the loop** — run ask → narrative → contract → probe →
+   K/W → re-read → ignite once on a real instantiated project. Only stage Ⓕ
+   (K, now W) has been dogfooded; the loop has never turned end-to-end.
 
-Then (lower priority):
-- **D-from-task reconciliation** — the `data` skill still reads a *probe*; it
-  should read a *task*'s results. (Flagged in E_insight CHANGELOG.)
-- **Metadata backfill** — some skills edited earlier this session are still at
-  baseline `1.0.0` with no per-edit changelog (`haipipe-insight-{data,
-  information,wisdom}`, probe-loop's pre-K changes). Bump + log if desired.
-- **Full dogfood** — only stage Ⓕ was dogfooded; ①–⑤ have skills, not yet run e2e.
+Probe-cycle internals (lower priority — refinements, not loop-blockers):
+- **D-from-task reconciliation** — `haipipe-insight-data` still sources a D from
+  a *confirmed probe*; per the model (D+I = C_task lens, K+W = D_probe lens) a
+  🟦 D should source a *task*'s `results/` (`source_id` = task id). Fix the data
+  skill + `card-creator-data-agent` + `invocation-modes` D row, then re-point
+  probe-loop's per-arm D filing. Flagged in E_insight CHANGELOG.
+- **Metadata backfill** — `haipipe-insight-{data,information,wisdom}` still at
+  baseline `1.0.0`. The wisdom pair is now load-bearing; a `1.1.0` "W wired
+  (consumer)" line would aid traceability.
 
 Discipline: when editing a skill/agent, bump `metadata.version` + add a
 `metadata.changelog` line IN THE SAME COMMIT (per the metadata convention).
@@ -115,6 +129,14 @@ Discipline: when editing a skill/agent, bump `metadata.version` + add a
 DONE (movement history, newest first)
 =====================================
 
+- **2026-05-31  W wired into the probe-cycle (v2.3.4)** — a converged
+  `haipipe-probe-loop` (→ 1.2.0) files 🟨 K, then optionally (◇) chains
+  `card-creator-wisdom-agent --scope <new-K>` → the per-probe 🟧 W. The W
+  machinery was already correct; only the wiring was missing. Per-probe W
+  (single-K) vs strategic W (cross-K) made explicit. Dogfood: K01 → W01,
+  13/13 wisdom + 5/5 index-integrity gates green (independent re-run). Flipped the v2.3.3
+  "W is next" caveats; corrected `DESIGN.md` Q2 (was the stale data-agent
+  dispatch).
 - **2026-05-31  end-to-end claim-gap hinge (v2.3.3)** — named the
   **Claim Gap Contract** as the connector between narrative-cycle and
   probe-cycle; added diagram 07 and threaded schema/architecture docs.

@@ -98,7 +98,8 @@ Evidence standard:
 Expected return:
   K = supported/refuted claim
   W = recommended next move
-  (K is wired now; W is the next wiring target.)
+  (K and W are both wired now: a converged probe-loop files the 🟨 K, then
+   chains the per-probe 🟧 W — optional ◇ — scoped to that K.)
 ```
 
 Then:

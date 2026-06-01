@@ -127,8 +127,9 @@
   insights/K_knowledge/K07.md    owns the settled claim returned to narrative
   insights/W_wisdom/W04.md       owns the next move returned to narrative
 
-  Implementation note: K is wired now; W is the next wiring target. The
-  end-to-end contract is still K + W because narrative needs both the claim
+  Implementation note: K and W are both wired now — a converged probe-loop
+  files the K, then chains the per-probe W (optional ◇) scoped to that K.
+  The end-to-end contract is K + W because narrative needs both the claim
   and the next move to decide ignite.
 
   📌 One sentence:
