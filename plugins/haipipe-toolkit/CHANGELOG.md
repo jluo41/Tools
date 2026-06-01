@@ -5,6 +5,20 @@ Plugin-level rollup. Per-layer detail lives in each layer's own
 `skills/<LAYER>/CHANGELOG.md`. Newest first.
 
 
+## [2.3.3] — 2026-05-31
+
+Docs: named the end-to-end hinge between narrative-cycle and probe-cycle.
+
+- **Claim Gap Contract** is now the explicit connector: a narrative C-slot
+  marked `GAP`/`weak` in `claims.md` becomes the evidence contract for one
+  probe-cycle. The contract expects K/W (K is wired now; W remains the next
+  wiring target); the narrative re-reads K/W and records `ignite`.
+- Added `diagram/v260531/07-end-to-end-claim-gap.txt` for the full
+  ask→claim-gap→probe→K/W→cash-out workflow.
+- Threaded the concept through `ARCHITECTURE.md`, `HANDOFF.md`, the diagram
+  index, `skills/N_narrative/DESIGN.md`, and the narrative schema.
+
+
 ## [2.3.2] — 2026-05-31
 
 Fix: a probe-cycle now files its claim as a 🟨 K card (was a 🟦 D card).

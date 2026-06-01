@@ -73,7 +73,9 @@ claims.md
 =========
 
 The N→KB interface. The GAP/weak rows ARE the "which probe to crack next"
-list. `needs[]` references K cards BY ID — never copies their content.
+list. `needs[]` references K cards BY ID — never copies their content. A
+GAP/weak row may be expanded into a **Claim Gap Contract**, the explicit
+handoff from narrative-cycle to probe-cycle.
 
 ```markdown
 # N01 — claims ledger
@@ -88,6 +90,17 @@ list. `needs[]` references K cards BY ID — never copies their content.
 ## Gap summary
 - C2: no K card → candidate next probe: param-matched re-test
 - C3: K05 exists but confidence=low → strengthen or re-scope
+
+## Claim Gap Contracts
+
+### C2 — benefit survives param-matching
+- needed_claim: Benefit survives parameter matching.
+- why_needed: Without this, the story may be only a scale-confound story.
+- evidence_standard: N>=3 paired seeds; same split; same schedule; same metric.
+- candidate_probe: P.A03 param-matched re-test
+- expected_return:
+  - K: supported/refuted claim
+  - W: next recommended move
 ```
 
 Per-slot `status`:
@@ -103,6 +116,9 @@ Rules:
 - `KB card` column holds a K id or `—`. Never inline the claim text from K.
 - The `claims` verb re-derives `status` by reading insights/K; humans set
   the `needed` rows.
+- A Claim Gap Contract is required before auto-materializing a probe in
+  scope B; it must name `needed_claim`, `why_needed`, `evidence_standard`,
+  and `expected_return`.
 
 
 ignite-log.md
