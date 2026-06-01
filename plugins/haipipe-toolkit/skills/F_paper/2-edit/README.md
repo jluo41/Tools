@@ -23,8 +23,8 @@ stage **agents/**, and fans out one annotator per section.
 ## One edit-cycle = five stages
 
 ```
-(1) format-check → (2) annotate → (3) human-AI feedback → (4) improve → (5) clean
-    layout only       comments        ========> replies       apply         strip
+(1) format-check → (2) annotate → (3) human-AI feedback → (4) improve → (5) clean + diff
+    layout only       comments        ========> replies       apply         strip + handoff
     [sequential]      [FAN OUT]       [human + AI]            [sequential]  [sequential]
 ```
 
@@ -58,8 +58,13 @@ reply fast, trust the apply; heavy = discuss + hand contested sections to
 ├── paper-edit-citation/       ← ③ citations             (stub)
 ├── paper-edit-consistency/    ← ④ terms / labels / refs  (stub)
 ├── paper-edit-format/         ← ⑤ venue format / style   (stub)
-└── paper-edit-typeset/        ← ⑥ widow / orphan / boxes (stub)
+├── paper-edit-typeset/        ← ⑥ widow / orphan / boxes (stub)
+└── paper-diff-pdf/            ← Stage-5 tracked-changes handoff (tool, not a topic)
 ```
+
+Upstream input: the section→paragraph→sentence map comes from
+`2-plan/paper-structure-diagram` (produced in planning, consumed here as a
+diagnostic). ⑥ typeset compiles via `4-write/paper-compile` to detect widows/overfull.
 
 ## The six update topics
 

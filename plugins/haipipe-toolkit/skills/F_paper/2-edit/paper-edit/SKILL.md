@@ -84,7 +84,8 @@ rounds; stages 2–5 are collaborative and scale to the effort the user wants.
    `accept`/`modify`, dismissing `reject`, leaving `OPEN`/`discuss`. Re-MAP:
    a content apply re-opens that section's values + citation cells.
 6. **Stage 5** — when the author asks, run `paper-edit-cleaner` at the chosen
-   level to produce the clean version.
+   level to produce the clean version, then build the between-cycles tracked-changes
+   PDF with `../paper-diff-pdf` for co-author / advisor sign-off.
 
 ## Fan-out is stage 2 only
 
