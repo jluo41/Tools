@@ -32,7 +32,7 @@ The RUNNAME spine — Stata projection
 ```
 Python projection                    Stata projection
 ─────────────────────────────────    ──────────────────────────────────────────────
-{task}.py        (cell source)    →   {task}.do        (dispatcher) + stata/*.do (lib)
+{task}.py        (cell source)    →   {task}.do        (dispatcher) + scripts/*.do (lib)
 configs/<run>.yaml (_meta+params) →   configs/<run>.yaml (_meta ONLY)
                                        + configs/<cfg>.do  (Stata globals — source of truth)
 runs/<run>.sh    (entry)          →   runs/<run>.ps1   (PowerShell entry)
@@ -87,31 +87,45 @@ Anatomy of a Stata task-folder
 -------------------------------
 
 ```
-{NN}_{stage}_pipeline/
-├── {NN}_{stage}_pipeline.do   ← single-step DISPATCHER: args <config> <step> [<year>] <results_dir>
-├── stata/                     ← the worker library (one .do per step; imported by the dispatcher)
+{LNN}_{stage}_pipeline/
+├── {LNN}_{stage}_pipeline.do  ← single-step DISPATCHER: <config> <step> [<year>] <results_dir> <ws_root>
+├── scripts/                   ← the worker library (one .do per step; imported by the dispatcher)
 ├── configs/
-│   ├── <cfg>.do               ← Stata globals (raw paths, keep-vars, flags) — SOURCE OF TRUTH
+│   ├── <cfg>.do               ← Stata globals (keep-vars, flags; paths built from ${ws_root}) — SOURCE OF TRUTH
 │   └── <run>.yaml             ← _meta: block + stata_config: pointer  (NEW under this dialect)
 ├── runs/
-│   └── <run>.ps1              ← per-run ENTRY (from run-ps1-template.ps1); writes runtime.yaml
-├── run_{stage}_year.ps1       ← intra-run ORCHESTRATOR at task root (step parallelism + phases)
+│   └── <run>.ps1              ← per-run ENTRY (from run-ps1-template.ps1); resolves ws_root; writes runtime.yaml
+├── run_{stage}_year.ps1       ← intra-run ORCHESTRATOR at task root (resolves Stata; step parallelism + phases)
 ├── sbatch/                    ← cross-run batchers (multi-year / multi-cohort / multi-trait)
 ├── results/
 │   └── <run>/                 ← log/*.txt · config_snapshot.do · summary.txt · runtime.yaml
 └── diagram/                   ← doc surface (NEVER README.md); see diagram-ascii
 ```
 
+The dispatcher `.do`, the worker `scripts/`, and `run_{stage}_year.ps1` live at
+the task ROOT — they are the task's entry + execution machinery (the Stata
+analog of Python's root `{task}.py` + papermill). Only the per-step WORKERS go
+in `scripts/`. Three ref templates seed them:
+`run-ps1-template.ps1` (the per-run entry), `run-stage-year-template.ps1`
+(the orchestrator), `dispatcher-do-template.do` (the dispatcher).
+
 Roles, precisely:
 
-- **dispatcher `.do`** — `do {task}.do <config> <step> [<year>] <results_dir>`.
-  Loads `configs/<cfg>.do`, sets up dirs, opens a per-step log, dispatches
-  to `stata/<step>.do`, skips if output exists (idempotent), closes log.
-- **`run_{stage}_year.ps1`** — internal helper; runs the dispatcher's steps
-  in dependency-correct phases (often with within-phase parallelism via
-  `Start-Process ... -PassThru | Wait-Process`). Called by the per-run `.ps1`.
-- **`runs/<run>.ps1`** — the RUNNAME entry. Precondition-checks inputs,
-  snapshots config, writes runtime.yaml, calls the orchestrator, finalizes.
+- **dispatcher `.do`** — `do {task}.do <config> <step> [<year>] <results_dir> <ws_root>`.
+  Sets `global ws_root` FIRST, loads `configs/<cfg>.do`, sets up dirs, opens a
+  per-step log, dispatches to `scripts/<step>.do`, skips if output exists
+  (idempotent), closes log. Code paths (`configs/`, `scripts/`) are
+  task-folder-relative; the DATA root arrives absolute as `<ws_root>`. The file
+  name is FREE — nothing references it by a hardcoded path.
+- **`run_{stage}_year.ps1`** — internal helper; resolves the Stata exe
+  (`Resolve-StataExe`, any installed version), runs Stata with the working dir
+  set to `$PSScriptRoot` (the task folder), and runs the dispatcher's steps in
+  dependency-correct phases (within-phase parallelism via
+  `Start-Process ... -PassThru | Wait-Process`). Called by the per-run `.ps1`;
+  receives `-wsRoot` and passes it through.
+- **`runs/<run>.ps1`** — the RUNNAME entry. Resolves the absolute `ws_root`
+  (walk up to `pyproject.toml`), precondition-checks inputs, snapshots config,
+  writes runtime.yaml, calls the orchestrator, finalizes.
 - **`sbatch/`** — fan a single per-run `.ps1` across years / cohorts / traits.
 
 
@@ -123,6 +137,37 @@ Every worker `.do` (or the dispatcher's skip block) does
 finished pipeline is cheap; to recompute, delete the specific `.dta`.
 Steps with no persistent output (`shared_*`, `describe`, `summary`,
 `*_erase`) always run.
+
+
+Runtime portability — three CWD/location-independence rules
+------------------------------------------------------------
+
+A Stata task must run identically on a laptop and on the secure server,
+launched from anywhere, regardless of the folder's own name. Three rules
+(all baked into the ref templates — do NOT re-derive them per task):
+
+1. **Resolve Stata, never hardcode a version.** The orchestrator uses
+   `Resolve-StataExe`: honor `$env:HAIPIPE_STATA`, else newest
+   `C:\Program Files\Stata*\StataMP-64.exe` (then SE/BE/base). This survives
+   the common local-17 vs server-18 split with no per-machine edit.
+
+2. **Run from the task folder; keep code paths relative.** The orchestrator
+   sets the Stata working dir to `$PSScriptRoot` (the task root) and calls the
+   dispatcher by bare name; the dispatcher loads `configs/<cfg>.do` and
+   `scripts/<step>.do` relative to that. NO path hardcodes the folder name, so
+   the folder can be renamed with a pure `mv`.
+
+3. **Anchor the DATA root absolute via `ws_root`.** The per-run `.ps1` walks up
+   to the `pyproject.toml` marker, forms `<repo>/_WorkSpace`, and passes it as
+   `-wsRoot`. The dispatcher sets `global ws_root` and the config builds ALL
+   output paths from `${ws_root}` (e.g. `global output_root "${ws_root}"`).
+   NEVER write a relative `_WorkSpace` in the config — outputs would land
+   wherever the CWD happens to be (a classic bug: 50+ GB/year under the task
+   folder).
+
+Inputs that are genuinely fixed (e.g. real CMS at `G:\CMS\DATA`) stay absolute
+in the config; only the *repo-relative* `_WorkSpace` data root is resolved this
+way.
 
 
 Light vs heavy (unchanged from the invariants)
@@ -173,8 +218,32 @@ reg     estimate (OLS / IV / LPM / 2-part)   coef tables (.tex/.csv)   results/ 
 This is an ACCEPTED project-local override. Document it in the project's
 `diagram/` so an auditor reading `tasks/{letter}{NN}_*/` is not confused
 by the letter mismatch with the default convention. `regen_task_log.py`'s
-`LETTER_TO_TYPE` map is approximate for these folders; the type hint it
-prints is cosmetic and does not affect correctness.
+`LETTER_TO_TYPE` map (keyed on the GROUP letter, `parent[:1]`) is approximate
+for these folders; the type hint it prints is cosmetic and does not affect
+correctness.
+
+### Task-folder `{LNN}` stage-letter alphabet
+
+Stata task-FOLDERS use `{L}{NN}_{stage}_pipeline[_<study>]`, where the leading
+letter `L` encodes the pipeline STAGE (so alphabetical sort = pipeline order),
+and `NN` is a stable study/cohort id (or a within-stage sequence where no study
+axis exists):
+
+```
+L   stage   produces                  store
+──  ─────   ────────────────────────  ─────────────────────
+A   cms     Neat-*.dta, Bene_Info     1-CMS-Store   (heavy)
+B   case    CASES / BFAF panels       2-Case-Store  (heavy)
+C   data    ANALYSIS-*.dta            *-Data-Store  (heavy)
+D   reg     coef tables (.tex/.csv)   results/      (LIGHT)
+```
+
+So `B01/C01/D01` = one study's case→data→reg folders; the disease-agnostic
+`cms` stage (run once, reused) sits alone with `NN` as a plain sequence
+(`A01`, `A02`). These task-folder letters reuse `A/B/C/D` (which mean
+training/eval/display/data at the GROUP level) — no functional clash, since
+they live at a different hierarchy level and the logging map keys on the
+GROUP letter. Note it in the project `diagram/` so it reads clearly.
 
 
 RUNNAME grammar by stage (see each specialist for detail)

@@ -39,8 +39,8 @@ What this scaffolds
 
 ```
 tasks/{G}{NN}_<group>/                              ← group (e.g. R1_Regression_TraitOpioid)
-└── {NN}_reg_pipeline_<study>/
-    ├── stata/
+└── D{NN}_reg_pipeline_<study>/                      ← task-folder letter D = reg stage ({LNN})
+    ├── scripts/
     │   └── <Condition>_<Pairing>/                   per-spec worker .do files:
     │       ├── run-1-..._-ols-progressive.do          run-2 ols-lpm-logit · run-3 ols-twopart
     │       ├── run-4-..._-ols-windows.do              run-5 ols-traitform
@@ -85,7 +85,7 @@ Scaffold flow
 
 See `fn/scaffold.md`. Summary: identify project+group → collect `_meta` +
 the (condition × pairing × trait × estimator) grid → create skeleton
-(runs/ + stata/ organized in per-spec subfolders) → seed `<run>.yaml`
+(runs/ + scripts/ organized in per-spec subfolders) → seed `<run>.yaml`
 from `ref/config-seed.yaml` → copy per-estimator `runs/.../<run>.ps1` →
 emit return contract.
 

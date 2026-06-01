@@ -3,7 +3,7 @@ fn-scaffold: Scaffold a data-pipeline task-folder (Stata dialect)
 
 Assembles the cross-year, regression-ready analysis table into
 `_WorkSpace/*-Data-Store/`. Output:
-`tasks/{G}{NN}_<group>/{NN}_data_pipeline_<study>/`.
+`tasks/{G}{NN}_<group>/C{NN}_data_pipeline_<study>/`  (task-folder letter C = data stage).
 Read `../haipipe-task/ref/stata-dialect.md` for the engine contract.
 
 NOTE: this stage is **cross-year** — the dispatcher takes
@@ -37,9 +37,9 @@ Step 3 — Create skeleton
 -------------------------
 
 ```
-{NN}_data_pipeline_<study>/
-├── {NN}_data_pipeline_<study>.do   # dispatcher stub: <config> <step> <results_dir>  (no year)
-├── stata/
+C{NN}_data_pipeline_<study>/        # task-folder letter C = data stage ({LNN})
+├── C{NN}_data_pipeline_<study>.do  # dispatcher: from ref/dispatcher-do-template.do (<config> <step> <results_dir> <ws_root>; no year)
+├── scripts/
 │   ├── 1-filter-case/
 │   ├── 2-filter-external/
 │   ├── 3-full-variables/
@@ -81,7 +81,7 @@ Step 6 — Report
 status:    ok
 summary:   Scaffolded data-pipeline task <NN>_data_pipeline_<study> under {G}{NN}_<group>; spec <Spec>.
 artifacts: [paths created]
-next:      author dispatcher .do + stata/{1..4}-* workers; CODE_REVIEW.md; then runs/run_data_<Spec>.ps1
+next:      author dispatcher .do + scripts/{1..4}-* workers; CODE_REVIEW.md; then runs/run_data_<Spec>.ps1
 ```
 
 

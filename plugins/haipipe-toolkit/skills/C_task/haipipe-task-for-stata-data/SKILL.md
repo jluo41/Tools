@@ -38,19 +38,19 @@ What this scaffolds
 
 ```
 tasks/{G}{NN}_<group>/                              ← group (e.g. R1_Regression_TraitOpioid)
-└── {NN}_data_pipeline_<study>/
-    ├── {NN}_data_pipeline_<study>.do                dispatcher: <config> <step> <results_dir>  (NO year)
-    ├── stata/
+└── C{NN}_data_pipeline_<study>/                     ← task-folder letter C = data stage ({LNN})
+    ├── C{NN}_data_pipeline_<study>.do               dispatcher: <config> <step> <results_dir> <ws_root>  (NO year)
+    ├── scripts/
     │   ├── 1-filter-case/                           filter-case.do
     │   ├── 2-filter-external/                       filter-external.do (physician traits, policy)
     │   ├── 3-full-variables/                        full-variables.do (derive + write ANALYSIS-*.dta)
     │   └── 4-describe/                              describe-data.do
     ├── configs/
-    │   ├── <Spec>.do                                analysis spec: cohort, pairing, filters, var lists
+    │   ├── <Spec>.do                                analysis spec: cohort, pairing, filters, var lists; paths from ${ws_root}
     │   └── run_data_<Spec>.yaml                     _meta: block + stata_config: pointer
     ├── runs/
     │   └── run_data_<Spec>.ps1                      from ../haipipe-task/ref/run-ps1-template.ps1
-    ├── run_data_steps.ps1                           intra-run orchestrator (sequential step chain)
+    ├── run_data_steps.ps1                           orchestrator from ../haipipe-task/ref/run-stage-year-template.ps1 (drop -year; sequential chain)
     ├── sbatch/
     ├── results/                                     log/ · runtime.yaml · summary.txt (heavy → _WorkSpace)
     └── diagram/
@@ -91,5 +91,5 @@ Return contract
 status:    ok | blocked | failed
 summary:   2-3 sentences on what was scaffolded
 artifacts: [paths created]
-next:      author dispatcher .do + stata/{1..4}-* workers; run the Run Script Reviewer agent
+next:      author dispatcher .do + scripts/{1..4}-* workers; run the Run Script Reviewer agent
 ```

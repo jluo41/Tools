@@ -35,17 +35,17 @@ What this scaffolds
 
 ```
 tasks/{G}{NN}_<group>/                              ← group (e.g. R1_Regression_TraitOpioid)
-└── {NN}_case_pipeline_<study>/
-    ├── {NN}_case_pipeline_<study>.do                dispatcher: <config> <step> <year> <results_dir>
-    ├── stata/
+└── B{NN}_case_pipeline_<study>/                     ← task-folder letter B = case stage ({LNN})
+    ├── B{NN}_case_pipeline_<study>.do               dispatcher: <config> <step> <year> <results_dir> <ws_root>
+    ├── scripts/
     │   ├── cases/                                   trigger-cases-<script>.do (one per cohort)
     │   └── feat/                                    bene-* / bfaf-* / shared-* feature workers
     ├── configs/
-    │   ├── <Cohort>.do                              per-cohort: ICD codes, topic flags (VisitLBP.do, ...)
+    │   ├── <Cohort>.do                              per-cohort: ICD codes, topic flags (VisitLBP.do, ...); paths from ${ws_root}
     │   └── run_case_<Cohort>_<year>.yaml            _meta: block + stata_config: pointer
     ├── runs/
     │   └── run_case_<Cohort>_<year>.ps1             from ../haipipe-task/ref/run-ps1-template.ps1
-    ├── run_case_year.ps1                            intra-run orchestrator (topic chains, parallel)
+    ├── run_case_year.ps1                            orchestrator from ../haipipe-task/ref/run-stage-year-template.ps1 (topic chains, parallel)
     ├── sbatch/
     │   ├── run_case_<Cohort>_<y0>-<y1>.ps1          one cohort, all years
     │   └── run_case_all_<y0>-<y1>.ps1               all cohorts, all years
@@ -89,5 +89,5 @@ Return contract
 status:    ok | blocked | failed
 summary:   2-3 sentences on what was scaffolded
 artifacts: [paths created]
-next:      author dispatcher .do + stata/{cases,feat}/ workers; run the Run Script Reviewer agent
+next:      author dispatcher .do + scripts/{cases,feat}/ workers; run the Run Script Reviewer agent
 ```

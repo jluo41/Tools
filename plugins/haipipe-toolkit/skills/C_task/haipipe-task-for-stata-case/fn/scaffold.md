@@ -3,7 +3,7 @@ fn-scaffold: Scaffold a case-pipeline task-folder (Stata dialect)
 
 Triggers cohort cases + feature panels per (cohort × year) into
 `_WorkSpace/2-Case-Store/`. Output:
-`tasks/{G}{NN}_<group>/{NN}_case_pipeline_<study>/`.
+`tasks/{G}{NN}_<group>/B{NN}_case_pipeline_<study>/`  (task-folder letter B = case stage).
 Read `../haipipe-task/ref/stata-dialect.md` for the engine contract.
 
 
@@ -35,9 +35,9 @@ Step 3 — Create skeleton
 -------------------------
 
 ```
-{NN}_case_pipeline_<study>/
-├── {NN}_case_pipeline_<study>.do   # dispatcher stub: <config> <step> <year> <results_dir>
-├── stata/
+B{NN}_case_pipeline_<study>/        # task-folder letter B = case stage ({LNN})
+├── B{NN}_case_pipeline_<study>.do  # dispatcher: from ref/dispatcher-do-template.do (<config> <step> <year> <results_dir> <ws_root>)
+├── scripts/
 │   ├── cases/                      # trigger-cases-<script>.do
 │   └── feat/                       # bene-*, bfaf-*, shared-* workers
 ├── configs/
@@ -77,7 +77,7 @@ Step 6 — Report
 status:    ok
 summary:   Scaffolded case-pipeline task <NN>_case_pipeline_<study> under {G}{NN}_<group>; cohorts <...> × years <...>.
 artifacts: [paths created]
-next:      author dispatcher .do + stata/{cases,feat}/ workers; CODE_REVIEW.md; then runs/run_case_<Cohort>_<year>.ps1
+next:      author dispatcher .do + scripts/{cases,feat}/ workers; CODE_REVIEW.md; then runs/run_case_<Cohort>_<year>.ps1
 ```
 
 
