@@ -35,15 +35,15 @@ What this scaffolds
 
 ```
 tasks/{G}{NN}_<group>/                          ← group (project-local letter; e.g. D3, A0)
-└── {NN}_cms_pipeline/
-    ├── {NN}_cms_pipeline.do                     dispatcher: <config> <step> <year> <results_dir>
-    ├── stata/                                   worker .do per step (b-*-All.do, c-Bene-Year.do, d-Year-Summary.do)
+└── A{NN}_cms_pipeline/                          ← task-folder letter A = cms stage ({LNN})
+    ├── A{NN}_cms_pipeline.do                    dispatcher: <config> <step> <year> <results_dir> <ws_root>
+    ├── scripts/                                 worker .do per step (b-*-All.do, c-Bene-Year.do, d-Year-Summary.do)
     ├── configs/
-    │   ├── cms_production.do                    Stata globals (raw_cms path, keep-vars, flags) — source of truth
+    │   ├── cms_production.do                    Stata globals (keep-vars, flags; paths from ${ws_root}) — source of truth
     │   └── run_cms_<year>.yaml                  _meta: block + stata_config: pointer
     ├── runs/
-    │   └── run_cms_<year>.ps1                   from ../haipipe-task/ref/run-ps1-template.ps1
-    ├── run_cms_year.ps1                         intra-year orchestrator (4 extracts ∥ → bene_year → summary)
+    │   └── run_cms_<year>.ps1                   from ../haipipe-task/ref/run-ps1-template.ps1 (resolves ws_root)
+    ├── run_cms_year.ps1                         orchestrator from ../haipipe-task/ref/run-stage-year-template.ps1 (resolves Stata; 4 extracts ∥ → bene_year → summary)
     ├── sbatch/
     │   └── run_cms_<y0>-<y1>.ps1                multi-year batcher
     ├── results/                                 log/ · runtime.yaml · summary.txt (heavy .dta → _WorkSpace)
@@ -81,5 +81,5 @@ Return contract
 status:    ok | blocked | failed
 summary:   2-3 sentences on what was scaffolded
 artifacts: [paths created]
-next:      author the dispatcher .do + stata/ workers; run the Run Script Reviewer agent
+next:      author the dispatcher .do + scripts/ workers; run the Run Script Reviewer agent
 ```

@@ -2,7 +2,7 @@ fn-scaffold: Scaffold a CMS-pipeline task-folder (Stata dialect)
 ================================================================
 
 Extracts + enriches raw CMS claims per year into `_WorkSpace/1-CMS-Store/`.
-Output: `tasks/{G}{NN}_<group>/{NN}_cms_pipeline/`.
+Output: `tasks/{G}{NN}_<group>/A{NN}_cms_pipeline/`  (task-folder letter A = cms stage; see {LNN} alphabet in stata-dialect.md).
 Read `../haipipe-task/ref/stata-dialect.md` for the engine contract.
 
 
@@ -31,15 +31,15 @@ Step 3 — Create skeleton
 -------------------------
 
 ```
-{NN}_cms_pipeline/
-├── {NN}_cms_pipeline.do        # dispatcher stub: args <config> <step> <year> <results_dir>
-├── stata/                      # empty; workers authored later (b-*-All.do, c-Bene-Year.do, d-Year-Summary.do)
+A{NN}_cms_pipeline/
+├── A{NN}_cms_pipeline.do       # dispatcher: from ref/dispatcher-do-template.do (<config> <step> <year> <results_dir> <ws_root>)
+├── scripts/                    # empty; workers authored later (b-*-All.do, c-Bene-Year.do, d-Year-Summary.do)
 ├── configs/
-│   ├── cms_production.do       # stub: raw_cms path, keep-vars, skip_existing, run_* flags
+│   ├── cms_production.do       # stub: keep-vars, skip_existing, run_* flags; paths built from ${ws_root}
 │   └── run_cms_<year>.yaml     # from ref/config-seed.yaml, one per year
 ├── runs/
 │   └── run_cms_<year>.ps1      # from ../haipipe-task/ref/run-ps1-template.ps1
-├── run_cms_year.ps1            # orchestrator stub (phase1 4 extracts ∥; phase2 bene_year; phase3 summary)
+├── run_cms_year.ps1            # orchestrator: from ../haipipe-task/ref/run-stage-year-template.ps1 (phase1 4 extracts ∥; phase2 bene_year; phase3 summary)
 ├── sbatch/
 ├── results/
 └── diagram/
@@ -60,7 +60,10 @@ Step 5 — Run-script
 Copy `../haipipe-task/ref/run-ps1-template.ps1` to `runs/run_cms_<year>.ps1`.
 Set `$CFG = "cms_production"`, the `$YEAR`/`$RUNNAME`, the `$REQUIRED`
 raw-input precondition list, and point the orchestrator call at
-`run_cms_year.ps1`.
+`run_cms_year.ps1`. Copy `../haipipe-task/ref/run-stage-year-template.ps1` to
+`run_cms_year.ps1` (Stata auto-detect + `$PSScriptRoot` working dir + `-wsRoot`
+passthrough are already wired — do NOT hardcode a Stata path or a relative
+`_WorkSpace`).
 
 
 Step 6 — Report
@@ -68,9 +71,9 @@ Step 6 — Report
 
 ```
 status:    ok
-summary:   Scaffolded CMS-pipeline task <NN>_cms_pipeline under {G}{NN}_<group>; years <...>.
+summary:   Scaffolded CMS-pipeline task A<NN>_cms_pipeline under {G}{NN}_<group>; years <...>.
 artifacts: [paths created]
-next:      author dispatcher .do + stata/ workers; produce CODE_REVIEW.md; then runs/run_cms_<year>.ps1
+next:      author dispatcher .do + scripts/ workers; produce CODE_REVIEW.md; then runs/run_cms_<year>.ps1
 ```
 
 

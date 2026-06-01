@@ -35,6 +35,25 @@ By default, `install.sh` registers this repository as the `jluo41-tools`
 marketplace. If the parent workspace has a `.claude/` directory, it also
 symlinks the skills into that workspace.
 
+### Windows
+
+Native symlinks on Windows require Administrator or Developer Mode, so use the
+PowerShell installer, which creates directory **junctions** instead (no special
+privileges needed):
+
+```powershell
+cd Tools
+.\install.ps1                          # marketplace + auto-detected project skills
+.\install.ps1 -Project C:\path\repo    # link into a specific workspace
+.\install.ps1 -Global                  # also link into ~\.claude\skills
+.\install.ps1 -Symlink                 # use symlinks instead (needs admin / Dev Mode)
+```
+
+Junctions use absolute targets, so re-run `install.ps1` if you relocate the
+repo. The generated links are OS/machine-specific — gitignore
+`<workspace>/.claude/skills/` and regenerate per machine rather than committing
+them (committed symlinks check out as dead text stubs on Windows).
+
 ### Project Install
 
 ```bash

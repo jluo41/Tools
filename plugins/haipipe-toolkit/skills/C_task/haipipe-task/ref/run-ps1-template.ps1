@@ -20,7 +20,10 @@ $ErrorActionPreference = "Stop"
 # ─── 1. What this run is (EDIT THESE) ────────────────────────────────────────
 $RUNNAME   = [System.IO.Path]::GetFileNameWithoutExtension($MyInvocation.MyCommand.Path)  # = run_cms_2015
 $CFG       = "cms_production"          # configs/<CFG>.do  (Stata globals, source of truth)
-$STATA     = "C:\Program Files\Stata18\StataMP-64.exe"
+$YEAR      = 2015                      # per-year stages (cms/case) only; DELETE for data/reg
+# Stata is NOT launched here — the orchestrator (run_<stage>_year.ps1) resolves
+# the exe itself (any installed version; see run-stage-year-template.ps1). Do
+# NOT hardcode a Stata path in this wrapper.
 # Precondition inputs (absolute or repo-relative). Empty list = no check.
 $REQUIRED  = @(
     # "_WorkSpace\1-CMS-Store\cms_full\v0001_0130\year-2015\PDE-Neat-2015.dta"
@@ -28,7 +31,14 @@ $REQUIRED  = @(
 
 # ─── 2. Resolve identity from this script's path ─────────────────────────────
 $TASK_DIR   = Split-Path -Parent $PSScriptRoot      # ...\{NN}_{stage}_pipeline
-$REPO_ROOT  = (& git -C $TASK_DIR rev-parse --show-toplevel).Trim()
+# Repo root via the haipipe marker (pyproject.toml) — location-independent: NO
+# "..\..\.." depth counting, so the task folder can be moved/renamed freely.
+$REPO_ROOT  = $TASK_DIR
+while ($REPO_ROOT -and -not (Test-Path (Join-Path $REPO_ROOT "pyproject.toml"))) {
+    $REPO_ROOT = Split-Path -Parent $REPO_ROOT
+}
+if (-not $REPO_ROOT) { Write-Error "[$RUNNAME] repo root (pyproject.toml) not found above $TASK_DIR"; exit 1 }
+$WS_ROOT    = Join-Path $REPO_ROOT "_WorkSpace"      # absolute data root, passed to the dispatcher
 $RESULTS    = Join-Path $TASK_DIR "results\$RUNNAME"
 $LOG_DIR    = Join-Path $RESULTS "log"
 $RUNTIME    = Join-Path $RESULTS "runtime.yaml"
@@ -86,7 +96,8 @@ Write-Runtime ([ordered]@{
 # ─── 6. Execute the Stata steps via the per-stage orchestrator ───────────────
 $EXIT = 0
 try {
-    & pwsh -File (Join-Path $TASK_DIR "run_<stage>_year.ps1") -cfg $CFG -resultsDir $RESULTS
+    # data/reg stages have no year axis — drop -year there.
+    & pwsh -File (Join-Path $TASK_DIR "run_<stage>_year.ps1") -cfg $CFG -year $YEAR -resultsDir $RESULTS -wsRoot $WS_ROOT
     $EXIT = $LASTEXITCODE
 } catch {
     $EXIT = 1

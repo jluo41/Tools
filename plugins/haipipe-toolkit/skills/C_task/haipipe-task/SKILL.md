@@ -41,21 +41,20 @@ agent         F              /haipipe-task-for-agent             (none yet)
 Stata sub-family (engine = Stata + PowerShell + logs, NOT papermill):
 
 ```
-task-type     Specialist                          Output store
-------------  ----------------------------------  ------------------------
-stata-cms     /haipipe-task-for-stata-cms         1-CMS-Store   (heavy, per year)
-stata-case    /haipipe-task-for-stata-case        2-Case-Store  (heavy, cohort × year)
-stata-data    /haipipe-task-for-stata-data        *-Data-Store  (heavy, cross-year)
-stata-reg     /haipipe-task-for-stata-reg         results/      (LIGHT coef tables)
+engine = Stata   →  /haipipe-task-for-stata   (sub-orchestrator / father skill)
+                       ├── /haipipe-task-for-stata-cms     A · 1-CMS-Store   (heavy, per year)
+                       ├── /haipipe-task-for-stata-case    B · 2-Case-Store  (heavy, cohort × year)
+                       ├── /haipipe-task-for-stata-data    C · *-Data-Store  (heavy, cross-year)
+                       └── /haipipe-task-for-stata-reg     D · results/      (LIGHT coef tables)
 ```
 
-These four share ONE execution dialect — `ref/stata-dialect.md` (engine
-contract) + `ref/run-ps1-template.ps1` (PowerShell run template). They
-keep all structure invariants (hierarchy, RUNNAME spine, light/heavy,
-diagram-as-doc) but swap the Python/papermill engine for Stata. The
-project-local letter convention (cms/case/data/reg) is documented in
-`ref/stata-dialect.md`. Emitting `runtime.yaml` from the `.ps1` gives
-unified `task-log.md` across Python and Stata tasks for free.
+ANY engine=Stata request is delegated to **`/haipipe-task-for-stata`**, which owns
+the stage disambiguation (cms/case/data/reg), the `{LNN}` stage-letter alphabet,
+and the shared engine contract (`ref/stata-dialect.md` + the three Stata ref
+templates). This skill does NOT route stata stages itself — it hands off once
+the engine is detected as Stata. The four children keep all structure invariants
+(hierarchy, RUNNAME spine, light/heavy, diagram-as-doc) and emit `runtime.yaml`
+for a unified `task-log.md` across Python and Stata tasks.
 
 Called by `/haipipe-project` when the request is to **create** something
 in the hierarchy. For audit / read see `-inspect`; for moves see `-organize`.
@@ -200,20 +199,16 @@ Step 3a (scope=task-folder only): Task-type inference cascade.
         │            │ cgm trace · treatment event · view                              │
         │ agent      │ agent · llm · prompt · claude · gpt · tool use · system prompt  │
         ├────────────┼─────────────────────────────────────────────────────────────────┤
-        │ stata-cms  │ stata · do-file · cms · cms-pipeline · neat · bene_info ·       │
-        │            │ extract claims · elixhauser · raw cms                           │
-        │ stata-case │ stata · case-pipeline · trigger cases · cohort · visit · bfaf · │
-        │            │ opioidrx · case panel                                           │
-        │ stata-data │ stata · data-pipeline · analysis table · filter case ·          │
-        │            │ filter external · full variables · ANALYSIS-*.dta              │
-        │ stata-reg  │ stata · reg · regression · ols · iv · instrument · estimate ·   │
-        │            │ coef table · two-part · lpm · logit · first-stage               │
+        │ STATA      │ stata · do-file · .do · cms · case-pipeline · trigger cases ·   │
+        │ (engine)   │ analysis table · reg · regression · ols · iv · neat · bene_info │
         └────────────┴─────────────────────────────────────────────────────────────────┘
 
-      Stata disambiguation: the bare keyword `stata` (or `.do`) signals the
-      Stata engine; the accompanying stage word (cms / case / data / reg)
-      picks the specialist. If `stata` appears with no stage word, ASK which
-      stage (AUTO → blocked: "stata engine but stage unknown").
+      Stata engine-detect → DELEGATE: the keyword `stata` (or a `.do` file, or
+      any stage word cms/case/data/reg) signals the Stata engine. Do NOT pick a
+      stage here — hand off the whole request to `/haipipe-task-for-stata`, which
+      owns stage disambiguation and routes to the right
+      `/haipipe-task-for-stata-<stage>` child:
+        Skill("haipipe-task-for-stata", args="<remaining_args> [--auto]")
 
       Confidence: medium. Behavior:
         - AUTO         → accept; log "inferred from keyword '<kw>': <type>"

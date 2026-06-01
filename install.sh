@@ -1,5 +1,7 @@
 #!/bin/bash
-# Install jluo41-tools as a Claude Code marketplace
+# Install jluo41-tools as a Claude Code marketplace (macOS / Linux).
+# Windows users: run install.ps1 in PowerShell instead — it creates directory
+# junctions (native symlinks need admin/Developer Mode on Windows).
 #
 # Usage:
 #   git clone --recursive git@github.com:jluo41/Tools.git
@@ -11,7 +13,12 @@
 #   --hooks               Also configure sound hooks in settings.json
 #   --all                 Do everything (marketplace + global + hooks)
 #
-# Works on macOS (afplay) and Linux (paplay/aplay).
+# Skills are enumerated dynamically from plugins/**/skills/*/SKILL.md, so adding
+# or moving a plugin needs no edits here — just re-run. Anything under legacy/ is
+# intentionally excluded. The link set is OS/machine-specific; gitignore
+# <project>/.claude/skills/ and regenerate per machine rather than committing it.
+#
+# Sound hooks work on macOS (afplay) and Linux (paplay/aplay).
 
 set -e
 

@@ -4,12 +4,12 @@ fn-scaffold: Scaffold a reg-pipeline task-folder (Stata dialect)
 Runs the estimation grid (OLS / IV / LPM / logit / two-part) on the
 data-stage analysis table, writing LIGHT coefficient tables into
 `results/<run>/`. Output:
-`tasks/{G}{NN}_<group>/{NN}_reg_pipeline_<study>/`.
+`tasks/{G}{NN}_<group>/D{NN}_reg_pipeline_<study>/`  (task-folder letter D = reg stage).
 Read `../haipipe-task/ref/stata-dialect.md` for the engine contract.
 
 KEY DIFFERENCE from cms/case/data: the primary output is LIGHT (coef
 tables in-repo under `results/`), not a heavy `.dta` in `_WorkSpace/`.
-The grid fans wide — organize `runs/` and `stata/` in per-spec subfolders.
+The grid fans wide — organize `runs/` and `scripts/` in per-spec subfolders.
 
 
 Step 1 — Identify project + task-group
@@ -41,8 +41,8 @@ Step 3 — Create skeleton
 -------------------------
 
 ```
-{NN}_reg_pipeline_<study>/
-├── stata/
+D{NN}_reg_pipeline_<study>/          # task-folder letter D = reg stage ({LNN})
+├── scripts/
 │   └── <Condition>_<Pairing>/        # per-spec worker .do (run-1..8); authored later
 ├── configs/
 │   └── run_reg_<Condition>_<Pairing>_<Trait>.yaml
