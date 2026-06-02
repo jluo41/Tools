@@ -36,6 +36,50 @@ haipipe-data-aidata     Stage 4: TfmFn, SplitFn, 4-AIDataStore
 
 ---
 
+★ Notebook Wrappers (Databricks / papermill)  ── code/scripts/haistepnb/
+-----------------------------------------------------------------------
+
+Every pipeline stage has a **parameterized notebook** that wraps the
+production CLI (`code/scripts/haistep/*.py`, the `haistep-*` entry points)
+WITHOUT duplicating its logic. One cell-based `.py` per stage; converts to a
+`.ipynb` that runs three ways: **Databricks** (widgets), **papermill**
+(`-p CONFIG ...`), and plain `python`.
+
+```
+code/scripts/haistepnb/
+  0_data_nb.py     Stages 1-4 (multi-cohort, parallel) — DRIVES haistep.data.main (spawn-safe)
+  1_source_nb.py   Stage 1     ┐ each = the original main() body decomposed into
+  2_record_nb.py   Stage 2     │ runnable, inspectable cells (real code, NOT `import main`)
+  3_case_nb.py     Stage 3     │
+  4_aidata_nb.py   Stage 4     │
+  5_model_nb.py    Stage 5     │ (model/endpoint live here too, for end-to-end)
+  6_endpoint_nb.py Stage 6     ┘
+  notebook/*.ipynb            converted artifacts (the Databricks import targets)
+```
+
+Recipe — turn a stage into a task-local Databricks notebook:
+
+```
+1. cp code/scripts/haistepnb/<N>_<stage>_nb.py  <task>/<task>_nb.py
+2. set the CONFIG default to the task's config (repo-root-relative)
+3. python code/scripts/convert_to_notebooks.py <task>/<task>_nb.py -o <task>/notebook/<task>_nb.ipynb
+       (converter: 0_utils/notebook-cell-python — the `# %% [parameters]` cell becomes papermill-tagged)
+4. papermill <ipynb> <out.ipynb> -p CONFIG <config>   # local test
+5. import the .ipynb into Databricks, Run all (CONFIG exposed as a widget)
+```
+
+The notebook auto-detects REPO_ROOT (dbutils notebookPath / cwd marker / env),
+puts `code/` on sys.path, and reuses the original functions — so there is ONE
+source of truth (the `haistep` CLI). Multiprocessing note: `0_data_nb` keeps the
+parallel workers importable by driving `main()`; set `NUM_PROCESSORS_*=1` for a
+sequential, Databricks-driver-safe run.
+
+Worked example: `examples/ProjB-Bench-1-FairGlucose/tasks/A_data/A1_cook_data/`
+  - `A1_cook_data_nb.py` + `notebook/A1_cook_data_nb.ipynb`  (from `0_data_nb.py`)
+  - `runs/build_v0003_per6h_nb.sh`  (copy -> convert -> papermill -> compare, one command)
+
+---
+
 Stage Keyword Map
 ------------------
 
@@ -70,6 +114,7 @@ Function Verb Map
 build, create, design, scaffold, new          -> design-chef
 modify pipeline, change pipeline, kitchen     -> design-kitchen
 run, execute, cook, process                   -> cook
+notebook, nb, papermill, databricks notebook   -> notebook-wrapper (see ★ section; code/scripts/haistepnb/)
 review, audit, check, validate, verify        -> review
 load, inspect, show, view, look               -> load
 status, dashboard, what's there               -> dashboard
