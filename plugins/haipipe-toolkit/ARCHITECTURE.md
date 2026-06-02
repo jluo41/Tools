@@ -114,7 +114,7 @@ This is what connects the cycles:
 
 - `narratives/<NN>_<slug>/claims.md` owns the C-slots and their gap
   contracts.
-- `probes/<GROUP>/<NN>_<slug>/probe.yaml` owns the focused reality test.
+- `probes/<MMDD>_<slug>/probe.yaml` owns the focused reality test.
 - `tasks/.../metrics.json` owns measurements.
 - `insights/K_knowledge/*.md` returns the settled claim.
 - `insights/W_wisdom/*.md` returns the next move.
