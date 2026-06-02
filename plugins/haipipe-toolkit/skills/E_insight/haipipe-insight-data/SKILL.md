@@ -73,8 +73,12 @@ Hard rules
 - If a number requires NEW computation, that belongs in C_task — invoke
   `/haipipe-task task-folder eval` to scaffold an evaluation task. Never
   compute inline here.
-- Source probe MUST have `result.status == confirmed`. Pending /
-  inconclusive / refuted are refused.
+- Source probe MUST have `result.status` in {confirmed, refuted, inconclusive}.
+  Only `pending` / `exploratory` are refused (no settled run). A `refuted` or
+  `inconclusive` probe is a controlled comparison with real numbers → a valid D
+  observation. An inconclusive D MUST set frontmatter `verdict: inconclusive`
+  and its headline must state the null (e.g. "Δ … CI straddles 0") so a reader
+  never mistakes a null for an effect.
 
 
 Workflow
@@ -93,7 +97,9 @@ Step 2: Resolve paths
 
 Step 3: Validate source
   - Read probe.yaml
-  - Refuse if result.status != confirmed (report which status it has)
+  - Accept result.status in {confirmed, refuted, inconclusive}; refuse only
+    pending / exploratory (report which status it has). Inconclusive D cards
+    must carry `verdict: inconclusive` + a null-stating headline.
   - Note presence of CLAIMS_FROM_RESULTS.md and INTEGRITY_AUDIT.md
 
 Step 4: Pick output NN
@@ -154,8 +160,9 @@ Disambiguation
 ---------------
 
 - probe_ref ambiguous (multiple matches) → ASK, list candidates
-- source probe.result.status != confirmed → REFUSE; report status;
-  suggest waiting or using a sibling skill once promoted to confirmed
+- source probe.result.status is pending / exploratory → REFUSE; report status;
+  suggest waiting for a settled run. confirmed / refuted / inconclusive are all
+  accepted (inconclusive files a `verdict: inconclusive` D card).
 - slug collides with existing D*.md → bump NN; do not overwrite
 - new computation needed → STOP; recommend
   `/haipipe-task task-folder eval` to scaffold an eval task

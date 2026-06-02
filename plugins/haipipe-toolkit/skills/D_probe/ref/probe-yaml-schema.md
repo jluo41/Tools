@@ -99,6 +99,7 @@ Top-level fields
 | title           | string  | design new       | yes      |
 | hypothesis      | string  | design new       | yes      |
 | claim_target    | string  | design new       | yes      |
+| resolves_K      | string  | design new       | (opt)    |
 | arms            | mapping | design new+link  | yes      |
 | aggregation     | mapping | design new       | yes      |
 | result          | mapping | result aggregate | (post)   |
@@ -128,6 +129,15 @@ hypothesis: |
 claim_target: |
   "LHM-A architecture improves CGM forecasting by X mg/dL on test-id
    (N=3 seeds, paired-t p=Y)."
+
+# resolves_K (optional, pre-registration): the KNOWLEDGE topic this probe
+# will settle, declared at design time BEFORE the result is known. Names the
+# K slot the archive reserves — so the answer is recorded whether the probe
+# lands `confirmed` (the belief) or `refuted` (its negation). Front-loading
+# only the TOPIC (not the verdict) is what kills the file-drawer bias; the
+# verdict, plus any I/W cards, stay emergent (discovered by `explore`).
+resolves_K: |
+  Whether LHM-A architecture beats the baseline forecaster (scope: test-id MAE).
 
 # ── DESIGN (arms = what to run + which runs support each side) ──────
 arms:
@@ -230,6 +240,29 @@ result:
   aggregated_at:  2026-05-24T19:30:00-04:00
 ```
 
+When the comparison is interval-based (bootstrap / off-policy eval) rather
+than (or in addition to) a t-test, the result block carries the CI on Δ.
+All CI fields are OPTIONAL — a plain paired-t result omits them:
+
+```yaml
+result:
+  status: confirmed
+  baseline_mean:  0.4761          # e.g. V_DR of the baseline policy
+  treatment_mean: 0.4826          # V_DR of the treatment policy
+  delta:          0.0069          # treatment − baseline (native metric units)
+  delta_ci_lower: -0.0052         # 95% CI on Δ — lower bound
+  delta_ci_upper:  0.0190         # 95% CI on Δ — upper bound
+  ci_method:      bootstrap_paired  # paired_t | bootstrap_paired | percentile | bca
+  n_bootstrap_samples: 1000       # if ci_method is a bootstrap
+  N:              24845           # sample size the estimate was built on
+  p_value:        null            # may be null when CI is the primary inference
+  aggregated_at:  2026-06-01T00:30:00-04:00
+```
+
+status from a CI: `confirmed` if the Δ CI excludes 0 in the claim direction;
+`inconclusive` if the CI straddles 0 OR |Δ| < noise_floor; `refuted` if the
+CI excludes 0 in the OPPOSITE direction.
+
 Optional secondary results (per-split or per-metric):
 
 ```yaml
@@ -249,6 +282,8 @@ statistic enum values
 | mean_std_paired_t     | + paired-t between baseline_arm and treatment_arm |
 | sign_test             | counts of same-sign Δ across seeds                |
 | mean_std_paired_t_+_sign | both                                           |
+| mean_std_paired_t_+_ci | paired-t PLUS a CI on Δ (fills delta_ci_lower/upper + ci_method) |
+| bootstrap_paired_ci   | paired bootstrap CI on Δ as the primary inference (p_value may be null) |
 
 
 status enum

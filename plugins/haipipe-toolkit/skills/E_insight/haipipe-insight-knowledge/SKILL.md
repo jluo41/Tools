@@ -41,7 +41,7 @@ Input
 -----
 
 ```
-examples/<project>/probes/<...>/probe.yaml            (REQUIRED; result.status==confirmed, has `claim`)
+examples/<project>/probes/<...>/probe.yaml            (REQUIRED; result.status in {confirmed, refuted}, has `claim`)
 examples/<project>/insights/I_information/I*.md       (optional; supporting evidence to cite)
 ```
 
@@ -80,13 +80,18 @@ Step 1: Parse args
   <probe_ref> (required) / --project / --supports <I-ids> / --slug
 
 Step 2: Resolve paths and load inputs
-  - Read the confirmed probe.yaml: `claim` is the belief; `caveats` →
-    counter-evidence; `result` → the numbers. REFUSE if status != confirmed.
+  - Read the probe.yaml: `claim` is the belief; `caveats` → counter-evidence;
+    `result` → the numbers. ACCEPT status `confirmed` or `refuted`. REFUSE
+    `pending` / `inconclusive` / `exploratory` (report which status it has).
   - Optionally read --supports I*.md entries to cite as supporting evidence
 
 Step 3: Take the belief from the probe
-  - The probe's `claim` IS the K belief (validated by the confirmed probe).
-    Headless: use it verbatim. Interactive: user may tighten the wording.
+  - status==confirmed: the probe's `claim` IS the K belief — use it verbatim
+    (headless) or let the user tighten the wording (interactive).
+  - status==refuted: the belief is the NEGATION of the hypothesis. Write the
+    K claim as "X does NOT <hold>", set `contradicts:` to the prior K /
+    hypothesis it overturns and `refutation_basis:` to the refuting numbers
+    (see ../ref/dikw-boundaries.md "Refuted and inconclusive probes as K cards").
 
 Step 4: Check for existing K entries to update
   - Grep K_knowledge/*.md for topic overlap

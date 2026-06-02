@@ -48,14 +48,26 @@ Step 1: Resolve and load probes/<MMDD>_<slug>/probe.yaml. Refuse if arms are emp
 Step 2: For each arm, for each linked run-path in arms.<arm>.runs:
   - Read <run-path>/results/<NAME>/runtime.yaml; require status=ok.
   - Read <run-path>/results/<NAME>/{metrics,summary,aggregated}.json.
-  - Extract metric value matching aggregation.metric.
-  - Collect array of metric values per arm.
+  - Extract metric value matching aggregation.metric, per the extraction
+    contract in ../../C_task/haipipe-task/ref/metrics-json-schema.md:
+      * value is a number               -> use directly (scalar / legacy path)
+      * value is an object with `point`  -> use value.point as the estimate AND
+                                            carry value.ci_lower/ci_upper/N along
+      * value is an object WITHOUT `point` -> WARN (malformed); treat as missing
+      * key absent / file missing        -> FAIL, naming the run path + the
+                                            missing key + the expected contract
+                                            (never silently coerce to 0 / NaN).
+  - Collect array of metric values per arm (plus any per-run CI bounds).
 
 Step 3: Compute statistics per aggregation.statistic:
   - mean_std: per-arm mean ± std
   - mean_std_paired_t: + paired-t between baseline and treatment arms
                        (require equal N, sort by seed for pairing)
   - sign_test: count of seeds where Δ has the same sign
+  - mean_std_paired_t_+_ci: paired-t PLUS a paired CI on Δ. If the metric
+                       carried per-run CIs (bootstrap), pool the bounds
+                       (percentile across runs); else compute a paired-t CI.
+                       Write delta_ci_lower/upper + ci_method to result:.
 
 Step 4: Determine status:
   - confirmed: p < 0.05 AND Δ in claim direction
