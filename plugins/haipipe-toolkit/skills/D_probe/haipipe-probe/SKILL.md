@@ -110,6 +110,23 @@ Files Owned by This Umbrella
 SKILL.md                       (this file)
 ref/                           shared across specialists:
   probe-yaml-schema.md    probe.yaml field spec
+  probe-cycle-audit-template.txt       CYCLE.md — per-probe closed-loop audit.
+                              Self-contained: stage trail · method · evidence ·
+                              verdict · the DIKW THIS cycle produced (its 🟦 D +
+                              own 🟨 K). One probe cycle = probe.yaml + CYCLE.md.
+  probe-run-dashboard-template.txt     TASK-RUNS.md — campaign run dashboard:
+                              arms × runs (proposed vs existing/done), seed fill.
+  probe-status-template.txt   canonical campaign status tracker (4 sections).
+  (DIKW is PARTITIONED, not duplicated: per-probe 🟦 D + 🟨 K live in the cycle
+   (CYCLE.md); cross-probe 🟩 I + meta-🟨 K + 🟧 W live in insights/INDEX.md —
+   the narrative layer. No separate campaign DIKW dashboard.)
+                              Arc is a LOOP: probe = machine hub (judge before
+                              insights); the HUMAN narrative closes it by
+                              proposing the next probe (explore only feeds that
+                              human decision):
+                              probe(plan)->task(run)->probe(judge)->insights
+                              ->explore->NARRATIVE(human: propose next)-> ...
+                              NEVER `paper` (that is a downstream application).
   probe-entry-template.txt  per-probe entry template (project log)
   probe-headline-template.txt headline scoreboard skeleton
   probe-caveats-checklist.txt 8+ confound categories

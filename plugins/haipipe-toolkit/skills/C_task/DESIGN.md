@@ -54,6 +54,7 @@ C_task/                                 ← task-scope skills (THIS SECTION)
 ├── haipipe-task-for-algo/                  🧪 algo-dev demo
 ├── haipipe-task-for-training/              🧠 model training (Stage 5)
 ├── haipipe-task-for-eval/                  📊 model evaluation
+├── haipipe-task-for-inference/             ⏱️  inference performance (latency, group P)
 ├── haipipe-task-for-display/               🖼️  paper figure / table
 ├── haipipe-task-for-individual/            👤 individual-centric query
 └── haipipe-task-for-agent/                 🤖 LLM agent call

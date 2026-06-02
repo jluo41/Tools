@@ -36,6 +36,7 @@ eval          B              /haipipe-task-for-eval              (project-local;
 display       C              /haipipe-task-for-display           (independent)
 individual    E              /haipipe-task-for-individual        /haipipe-individual
 agent         F              /haipipe-task-for-agent             (none yet)
+inference     P              /haipipe-task-for-inference         /haipipe-end-endpointset (profile)
 ```
 
 Stata sub-family (engine = Stata + PowerShell + logs, NOT papermill):
@@ -120,6 +121,7 @@ eval          B              /haipipe-task-for-eval              (project-local;
 display       C              /haipipe-task-for-display           (independent)
 individual    E              /haipipe-task-for-individual        /haipipe-individual
 agent         F              /haipipe-task-for-agent             (none yet)
+inference     P              /haipipe-task-for-inference         /haipipe-end-endpointset (profile)
 ```
 
 ---
@@ -232,7 +234,7 @@ Step 3b (scope=task-folder only): Parent existence cascade.
     PROJECT_PATH = `examples/{PROJECT_ID}/`
     GROUP_LETTER = the letter required by task-type (see Step 3a table):
                      A=training · B=eval · C=display · D=data ·
-                     E=individual · F=agent · X=algo
+                     E=individual · F=agent · P=inference · X=algo
     GROUP_PATH   = `PROJECT_PATH/tasks/{GROUP_LETTER}{NN}_<group_name>/`
                      (or `PROJECT_PATH/tasks/X_algo/` for algo)
 

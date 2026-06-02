@@ -30,10 +30,17 @@ Per-layer boundary
 
 ```
 🟦 D — Data — "what we observed"
-  IS:      facts + numbers from ONE source, no interpretation.
+  IS:      facts + numbers from ONE source, no interpretation. An INCONCLUSIVE
+           comparison is still an observation ("tried X, Δ=−1.8 [−5.7,+2.0],
+           cannot distinguish from 0") and IS a valid D card.
   IS NOT:  a cross-source pattern (→I) · a belief (→K) · an action (→W).
   line→I:  one observation = D; the SAME effect across ≥ 2 observations = I.
-  source:  a confirmed probe (probe.yaml result + metrics.json) / task results.
+  source:  a probe whose result.status is `confirmed`, `refuted`, OR
+           `inconclusive` (probe.yaml result + metrics.json) / task results.
+           A `pending` / `exploratory` probe does NOT file a D (no settled run).
+           An inconclusive D MUST set frontmatter `verdict: inconclusive` and
+           its headline must state the null ("Δ … CI straddles 0"), so a reader
+           never mistakes a null for an effect.
   style:   ## Observation (facts only) · ## Numbers (table) · ## Caveats (verbatim).
 
 🟩 I — Information — "what patterns emerged"
@@ -43,16 +50,44 @@ Per-layer boundary
   gate:    needs ≥ 2 D cards citing the same effect / direction.
   style:   ## Pattern statement · ## Evidence (table, ≥2 D) · ## Counter-evidence.
 
-🟨 K — Knowledge — "what we believe is true"
+🟨 K — Knowledge — "what we believe is true (or believe is FALSE)"
   IS:      a validated belief with explicit scope + confidence; ALL counter-
-           evidence listed (cherry-picking = a violation).
+           evidence listed (cherry-picking = a violation). A high-confidence
+           NEGATIVE belief ("X does NOT beat baseline") is knowledge too.
   IS NOT:  a pattern (→I) · an action (→W).
-  ★ gate:  promotion I→K REQUIRES a controlled comparison (a probe). No probe, no K.
-  source:  the CONFIRMED probe's `claim` (the probe IS that comparison); cite
-           supporting I cards in the body where they exist.
+  ★ gate:  promotion I→K REQUIRES a controlled comparison (a probe) whose
+           result.status is `confirmed` OR `refuted`. No probe, no K.
+           `pending` / `inconclusive` / `exploratory` do NOT promote.
+  source:  the probe's `claim`. `confirmed` → the belief verbatim;
+           `refuted` → the belief becomes a NEGATION, and the card MUST add
+           `contradicts:` (the prior K or hypothesis it overturns) +
+           `refutation_basis:` (the numbers that refute it). Cite supporting
+           I cards in the body where they exist.
   line→W:  K is the belief; W is what to DO about it.
   style:   ## Claim · ## Supporting evidence · ## Counter-evidence (ALL) ·
            ## Confidence rationale · ## Scope.
+
+  ─ Refuted and inconclusive probes as K cards ─
+    refuted     → CAN promote to K alone, as a negative belief. Confidence is
+                  whatever the refutation supports (often high if the CI
+                  excludes 0 in the opposite direction). MUST set
+                  `contradicts:` + `refutation_basis:`.
+    inconclusive→ files a D card (marked `verdict: inconclusive`) and may join
+                  an I pattern, but MUST NOT ALONE promote to K — one null is
+                  "tested, no signal", not a belief.
+                  EXCEPTION (convergent null): when ≥3 inconclusive/refuted
+                  probes all fail the SAME way (e.g. "no model structure beats
+                  the baseline"), the I pattern MAY support ONE meta-K, with
+                  confidence capped at `medium` and a mandatory caveat line:
+                  "built on convergent nulls — suggestive, not proof (absence
+                  of evidence)". This lets the archive record "we tried N
+                  things, none worked" without overclaiming any single null.
+    Example refuted-K headline:
+      "K07: greedy policy does NOT beat random (V_DR −1.27 pp, CI [−4.0,+1.4]
+       straddles 0 — refutes the 'model personalizes' hypothesis, P.A01)."
+    Example convergent-null meta-K headline:
+      "K08: no model-structure change beats pooled (3 probes, all Δ≤0; medium
+       conf, convergent-null caveat)."
 
 🟧 W — Wisdom — "what we should do next"
   IS:      an ACTIONABLE recommendation derived from ≥ 1 K.
