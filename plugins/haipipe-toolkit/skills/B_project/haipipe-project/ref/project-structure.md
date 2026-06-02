@@ -75,13 +75,15 @@ Project-level probes/  (research threads)
   +-- coverage.md           auto: explore coverage map (arch x data x seed)
   +-- propose.md            auto: explore propose output (next-step ideas)
   +-- comparison.md         auto: result render output (cross-probe scoreboard)
-  +-- 01_{slug}/            folder-per-probe (2-digit prefix, no gap on create)
-  +-- 02_{slug}/
+  +-- 0601_{slug}/         active probe (MMDD prefix)
+  +-- 0602_{slug}/
+  +-- 2026-archive/         inactive / completed / deprecated probes
+      +-- 0501_{slug}/     original folder name preserved
   +-- ...
 
   Each probe is a research thread. Per-folder layout:
 
-  probes/{NN}_{slug}/
+  probes/{MMDD}_{slug}/
   +-- probe.yaml         source of truth: hypothesis / claim_target / arms /
                               aggregation spec / result / caveats / claim
   +-- review.md               latest structural QA report (overwritten per review)
@@ -94,6 +96,29 @@ Project-level probes/  (research threads)
 
   NO code, no notebooks, no plots inside probes/. Those live in tasks/
   and are referenced from probe.yaml via the `evidence:` field.
+
+  Probe folder naming:
+
+    Active probes live directly under probes/ and use:
+
+      {MMDD}_{short-name}
+
+    where MMDD is the creation date (MM = month, DD = day) and short-name
+    is a concise probe idea slug. A second probe created the same day
+    appends a lowercase letter suffix (0601 -> 0601b). Examples:
+
+      probes/0601_framing_loss-aversion/
+      probes/0602_simplification_plain-language/
+      probes/0603_authority_clinician-recommendation/
+
+    When a probe is no longer active, useful, or under development, move
+    it into the matching year archive folder:
+
+      probes/{YYYY}-archive/{MMDD}_{short-name}/
+
+    Preserve the original probe folder name when archiving. Archive
+    folders keep the active probes/ workspace short while preserving an
+    auditable historical record.
 
   probes/ vs tasks/ vs insights/ vs paper/ vs applications/ vs diagram/
   -- the six project worlds:
@@ -115,7 +140,7 @@ Project-level probes/  (research threads)
     diagram/       STORY      project-level narrative (motivation / boundary /
                               exploration). HIGH-LEVEL only; operational status
                               belongs in tasks/{...}/diagram/ or probes/
-                              {NN}_{slug}/logs/.
+                              {MMDD}_{slug}/logs/.
 
   One-way dependencies:
     probes/   READS tasks/                 (links runs into arms via evidence:)
@@ -622,7 +647,9 @@ Project structure:
   [ ] applications/ exists if any external artifacts have been created
   [ ] No top-level configs/, results/, README.md, docs/, cc-archive/, _old/
   [ ] Tasks live under tasks/{G}{NN}_{group}/{NN}_{name}/
-  [ ] Probes live under probes/{NN}_{slug}/
+  [ ] Active probes live under probes/{MMDD}_{slug}/
+  [ ] Inactive/completed/deprecated probes live under
+      probes/{YYYY}-archive/{MMDD}_{slug}/ with original name preserved
   [ ] Insights live under insights/{D,I,K,W}_*/ with INDEX.md at root
   [ ] Applications (if present) live under applications/{messages,ui,reports}/
   [ ] {PROJECT}/diagram/ has 01-story, 02-boundary, 03-exploration,
@@ -661,7 +688,9 @@ Per task (skill-runner exemption):
       + runs/ask_<slug>.sh one-line wrappers (`_`-prefix = shared/template)
 
 Per probe (if any probes/ folders exist):
-  [ ] Folder name is {NN}_{slug} (2-digit, no gap on creation)
+  [ ] Folder name is {MMDD}_{slug}
+      (MMDD = creation date: MM month, DD day; same-day collisions get a
+      letter suffix, e.g. 0601b)
   [ ] probe.yaml exists; passes schema
       (D_probe/ref/probe-yaml-schema.md)
   [ ] No *.py / *.ipynb / *.png / *.pdf inside probe folder
