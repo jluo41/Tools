@@ -35,6 +35,11 @@ Commands
 /haipipe-data-aidata review [file_path]     -> structural review of an AIData-layer file
 ```
 
+Notebook / Databricks run: to run Stage 4 (or full 1-4) as a parameterized
+Databricks/papermill notebook, use `code/scripts/haistepnb/4_aidata_nb.py`
+(or `0_data_nb.py` for 1-4) — see the ★ Notebook Wrappers section in the
+`haipipe-data` umbrella SKILL.
+
 ---
 
 Dispatch Table
