@@ -39,12 +39,14 @@ B{NN}_case_pipeline_<study>/        # task-folder letter B = case stage ({LNN})
 ├── B{NN}_case_pipeline_<study>.do  # dispatcher: from ref/dispatcher-do-template.do (<config> <step> <year> <results_dir> <ws_root>)
 ├── scripts/
 │   ├── cases/                      # trigger-cases-<script>.do
-│   └── feat/                       # bene-*, bfaf-*, shared-* workers
+│   ├── feat/                       # bene-*, bfaf-*, shared-* workers
+│   └── d-Case-Describe.do          # `describe` QC worker (cross-year, read-only)
 ├── configs/
 │   ├── <Cohort>.do                 # one per cohort: ICD codes, topic flags
 │   └── run_case_<Cohort>_<year>.yaml
 ├── runs/
-│   └── run_case_<Cohort>_<year>.ps1
+│   ├── run_case_<Cohort>_<year>.ps1
+│   └── run_describe_<Cohort>.ps1   # describe-ONLY QC run (no rebuild)
 ├── run_case_year.ps1               # orchestrator stub
 ├── sbatch/
 ├── results/
@@ -70,6 +72,19 @@ Copy `../haipipe-task/ref/run-ps1-template.ps1` to
 External-Store precondition list, and point at `run_case_year.ps1`.
 
 
+Step 5b — Describe / QC run
+---------------------------
+
+Add the read-only QC run (see "Describe / QC run" in `../haipipe-task/ref/stata-dialect.md`):
+- `scripts/d-Case-Describe.do` — loops the `year-*` dirs under `${case_asset_path}`
+  and `file write`s `case-describe.txt`: per year #cases, distinct benes / npis
+  (via `egen tag` — NOT `distinct`), `visit_type` split, the pde_bn enrichment
+  check (rows with >=1 rx), `obs_dt` range. `capture`-guarded; read-only.
+- Wire a `describe` branch into the dispatcher (`do "scripts/d-Case-Describe.do" \`year'`).
+- `runs/run_describe_<Cohort>.ps1` — resolves Stata + `ws_root`, runs only the
+  `describe` step (dummy year; `-source synth|full` picks which case asset).
+
+
 Step 6 — Report
 ----------------
 
@@ -77,7 +92,7 @@ Step 6 — Report
 status:    ok
 summary:   Scaffolded case-pipeline task <NN>_case_pipeline_<study> under {G}{NN}_<group>; cohorts <...> × years <...>.
 artifacts: [paths created]
-next:      author dispatcher .do + scripts/{cases,feat}/ workers; CODE_REVIEW.md; then runs/run_case_<Cohort>_<year>.ps1
+next:      author dispatcher .do + scripts/{cases,feat}/ workers + d-Case-Describe.do; CODE_REVIEW.md; then runs/run_case_<Cohort>_<year>.ps1 (+ run_describe_<Cohort>.ps1)
 ```
 
 

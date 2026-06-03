@@ -74,6 +74,20 @@ precondition list, and point at `run_data_steps.ps1`. The dispatcher call
 inside the orchestrator omits the year argument.
 
 
+Step 5b — Describe / QC run
+---------------------------
+
+The data stage already has a `describe` dispatch step (`scripts/4-describe/describe-data.do`).
+Ensure it is a proper QC report and ALSO expose it as a describe-only run (see
+"Describe / QC run" in `../haipipe-task/ref/stata-dialect.md`):
+- `describe-data.do` reports: N, distinct benes / npis (`egen tag` — NOT
+  `distinct`, which aborts `r(199)` on a clean server), year dist, treatment
+  (trait) summary, outcome means, key-control missingness, IV first-stage corr.
+  Keep every block `capture`-guarded.
+- `runs/run_describe_<Spec>.ps1` — resolves Stata + `ws_root`, runs ONLY the
+  `describe` step on the built `ANALYSIS-*.dta` (no rebuild).
+
+
 Step 6 — Report
 ----------------
 
@@ -81,7 +95,7 @@ Step 6 — Report
 status:    ok
 summary:   Scaffolded data-pipeline task <NN>_data_pipeline_<study> under {G}{NN}_<group>; spec <Spec>.
 artifacts: [paths created]
-next:      author dispatcher .do + scripts/{1..4}-* workers; CODE_REVIEW.md; then runs/run_data_<Spec>.ps1
+next:      author dispatcher .do + scripts/{1..4}-* workers (4-describe = QC); CODE_REVIEW.md; then runs/run_data_<Spec>.ps1 (+ run_describe_<Spec>.ps1)
 ```
 
 

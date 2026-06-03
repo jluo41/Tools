@@ -99,6 +99,20 @@ Because output is LIGHT, the `summary.txt` headline should surface the
 key coefficient (β · SE · N; first-stage F for IV).
 
 
+Step 5b — Describe / QC run
+---------------------------
+
+Reg's "describe" is a **coefficient-sanity** report (see "Describe / QC run" in
+`../haipipe-task/ref/stata-dialect.md`). Since reg is dispatcher-less and output
+is LIGHT, this is a `runs/run_describe_<Trait>.ps1` that runs a
+`scripts/d-Reg-Describe.do` (read-only) which parses the per-spec estimation
+logs / saved estimates and `file write`s `reg-describe.txt`: per cell the trait
+β · SE · N (first-stage F for IV), and FLAGS any cell that failed to estimate
+(no-obs, dropped/collinear). Built-ins only; `capture`-guarded. (The per-run
+`summary.txt` headline already surfaces the key β · SE · N; this aggregates the
+whole grid into one glance.)
+
+
 Step 6 — Report
 ----------------
 
@@ -106,7 +120,7 @@ Step 6 — Report
 status:    ok
 summary:   Scaffolded reg-pipeline task <NN>_reg_pipeline_<study> under {G}{NN}_<group>; grid <conds × pairings × traits × estimators>.
 artifacts: [paths created]
-next:      author per-spec estimation .do files; CODE_REVIEW.md (IV validity / spec / clustering); then runs/.../<run>.ps1
+next:      author per-spec estimation .do files (+ d-Reg-Describe.do); CODE_REVIEW.md (IV validity / spec / clustering); then runs/.../<run>.ps1 (+ run_describe_<Trait>.ps1)
 ```
 
 
