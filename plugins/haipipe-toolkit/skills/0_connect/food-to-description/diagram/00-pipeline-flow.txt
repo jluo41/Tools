@@ -1,0 +1,129 @@
+Food-to-Description Pipeline Flow
+==================================
+
+Input: Diet.parquet (Shanghai meals, free-text FoodName column)
+
+┌──────────────────────────────────────────────────────────────┐
+│  Stage 1: Decompose                                          │
+│  ──────────────────────────────────────────────────────────  │
+│  Parse multi-line food strings → (food, amount_g) tuples     │
+│                                                               │
+│  Input:  "Scallion chops 125g\nRice 200g"                   │
+│  Output: [("scallion chops", 125), ("rice", 200)]           │
+│  Metric: 2,018 unique components extracted                   │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ food_list
+                           ▼
+┌──────────────────────────────────────────────────────────────┐
+│  Stage 2: Retrieve (FTS5)                                    │
+│  ──────────────────────────────────────────────────────────  │
+│  Multi-tier retrieval: alias → prefix → FTS5                │
+│  Query USDA DB for top-10 matches                            │
+│                                                               │
+│  Input:  food_name ("rice")                                 │
+│  Output: Top-10 USDA candidates [fdc_id, description, ...]  │
+│  Metric: 62.8% GOOD/OK, 35.4% WEAK, 1.7% MISS               │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ top-10 candidates
+                           │ + quality classification
+                           ▼
+┌──────────────────────────────────────────────────────────────┐
+│  Stage 3: LLM Rerank [Optional, New]                         │
+│  ──────────────────────────────────────────────────────────  │
+│  Use Claude (Anthropic API) to pick best from top-10         │
+│  Only process WEAK/MISS cases (skip GOOD/OK)                │
+│                                                               │
+│  Input:  food + top-10 candidates                           │
+│  Output: Best fdc_id + confidence (0-1)                      │
+│  Metric: ~90-95% expected (from 62.8% → 90%)                │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ fdc_id mapping
+                           │ (food → best USDA match)
+                           ▼
+┌──────────────────────────────────────────────────────────────┐
+│  Stage 4: Aggregate & Write-back                             │
+│  ──────────────────────────────────────────────────────────  │
+│  Sum nutrition across components, write to parquet           │
+│                                                               │
+│  Input:  food_list + fdc_id mapping + amounts                │
+│  Output: parquet with added columns:                         │
+│          [Calories, Carbs, Protein, Fat, Fiber]              │
+│  Metric: 3,470 rows filled                                   │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+                           ▼
+                    Output: nutrition-filled parquet
+
+
+Resumable Execution
+===================
+
+Each stage updates ~/.food-description/status.json:
+
+{
+  "stages": {
+    "stage_1": {"status": "done",    "metric": "2,018 components"},
+    "stage_2": {"status": "done",    "metric": "62.8% rank-1"},
+    "stage_3": {"status": "running", "metric": "150/1,676 reranked"},
+    "stage_4": {"status": "pending", "metric": null}
+  }
+}
+
+Resume from interrupted stage:
+  python pipeline.py input.parquet --from-stage 3
+
+
+Performance
+===========
+
+Timing (3,470 meals, 2,018 unique foods):
+  Stage 1: <1 min     (parse)
+  Stage 2: ~5-10 min  (FTS5 queries)
+  Stage 3: ~2-3 hours (1,676 Claude calls)
+  Stage 4: <1 min     (aggregate)
+           ─────────
+  Total:   ~2.5-3 hours (with rerank)
+
+Cost (Stage 3 only): ~$50-84
+  1,676 unique foods × $0.03-0.05/call
+
+
+Stage Outputs (JSON schema)
+===========================
+
+Stage 1 decompose():
+  [
+    ("food_name", 125.0),  # or None if no amount
+    ("food_name", 200.0),
+  ]
+
+Stage 2 retrieve() [from usda_db.fts_topk()]:
+  [
+    {
+      "fdc_id": 168917,
+      "description": "Rice, white, cooked",
+      "calories": 130.0,
+      "carbs": 28.2,
+      "protein": 2.7,
+      "fat": 0.3,
+      "fiber": 0.4,
+      "__alias": False  # True if from alias dict
+    },
+    ...
+  ]
+
+Stage 3 rerank_via_claude():
+  {
+    "fdc_id": 168917,
+    "confidence": 0.95,
+    "reasoning": "Rice white cooked matches Chinese rice based on..."
+  }
+
+Stage 4 aggregate_nutrition():
+  {
+    "calories": 450.5,
+    "carbs": 85.2,
+    "protein": 15.3,
+    "fat": 5.1,
+    "fiber": 2.8
+  }
