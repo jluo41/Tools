@@ -1,0 +1,139 @@
+🧭  End-to-end workflow — ask → claim-gap → probe → K/W → cash-out
+========================================================================
+
+  This diagram names the hinge between 📖 narrative-cycle and 🔧 probe-cycle:
+
+      Claim Gap Contract
+
+  A narrative does not vaguely "run more experiments". It exposes a claim
+  slot whose evidence is missing or weak. That slot becomes a contract for
+  one probe-cycle. The probe returns 🟨 K (what is now known) and 🟧 W
+  (what should happen next). The narrative then re-reads K/W and asks
+  🔥 ignite?
+
+
+─§ The outer ends ──────────────────────────────────────────
+
+  First end                                                       Second end
+  ─────────                                                       ──────────
+
+  +----------------------+                                  +----------------------+
+  | 🥢 application·ask   |                                  | 🥢 application cash  |
+  |----------------------|                                  |----------------------|
+  | coarse direction     |                                  | paper / report       |
+  | "what might matter?" |                                  | message / UI         |
+  | nudge, not a goal    |                                  | decision / feedback  |
+  +----------+-----------+                                  +-----------+----------+
+             |                                                          ^
+             v                                                          |
+  +----------+-----------+     +----------+     +----------+     +-------+----------+
+  | 📖 narrative-cycle   |---->| 🔧 probe |---->| ✋ task  |---->| 🧠 insight      |
+  | story goal + claims  |     | cycle    |     | cycle    |     | K/W memory      |
+  +----------+-----------+     +----------+     +----------+     +-------+----------+
+             ^                                                          |
+             |                                                          |
+             +----------------------------------------------------------+
+                         narrative re-reads updated K/W, then ignite?
+
+
+─§ The hinge: Claim Gap Contract ───────────────────────────
+
+  📖 narratives/N01_*/
+  ├── story.md
+  │     core claim: "Method X matters because it helps hard cases."
+  │
+  └── claims.md
+        C1  in-dist gain                      have K03
+        C2  survives parameter matching       GAP
+        C3  holds out-of-distribution         weak K05
+             |
+             | C2 is not "more experiments".
+             | C2 becomes a precise evidence contract.
+             v
+
+  +--------------------------------------------------------------------+
+  | Claim Gap Contract — N01.C2                                        |
+  |--------------------------------------------------------------------|
+  | needed_claim:       benefit survives parameter matching             |
+  | why_needed:         otherwise the story may be only a scale effect  |
+  | evidence_standard:  N>=3 paired seeds; same split/schedule/metric   |
+  | candidate_probe:    P.A03 param-matched re-test                     |
+  | expected_return:    K card = supported/refuted claim                |
+  |                     W card = next recommended move                  |
+  +--------------------------------------------------------------------+
+             |
+             v
+  🔧 probes/P.A03_*/
+  └── probe.yaml
+        hypothesis / arms / aggregation / caveats / verdict
+
+
+─§ The inner workflow ──────────────────────────────────────
+
+  +-----------------------+
+  | 1. ask gives direction|
+  +-----------+-----------+
+              |
+              v
+  +-----------------------+
+  | 2. narrative sets goal|
+  |    story + C-slots    |
+  +-----------+-----------+
+              |
+              v
+  +-----------------------+
+  | 3. claims scan K/W    |
+  |    have / weak / GAP  |
+  +-----------+-----------+
+              |
+              v
+  +-----------------------+
+  | 4. GAP -> contract    |
+  |    evidence standard  |
+  +-----------+-----------+
+              |
+              v
+  +-----------------------+
+  | 5. probe-cycle runs   |
+  |   design->tasks->claim|
+  +-----------+-----------+
+              |
+              v
+  +-----------------------+
+  | 6. insight files K/W  |
+  |    memory is updated  |
+  +-----------+-----------+
+              |
+              v
+  +-----------------------+
+  | 7. narrative re-reads |
+  |    ignite?            |
+  +-----+-------------+---+
+        |             |
+        v             v
+  +-----------+   +----------------+
+  | cash out  |   | revise / shelve|
+  | paper etc.|   | next contract  |
+  +-----------+   +----------------+
+
+
+─§ Structure rule ──────────────────────────────────────────
+
+  The hierarchy is expressed by REFERENCES, never by nesting.
+
+  narratives/N01_*/claims.md     owns C-slots + gap contracts
+  probes/P.A03_*/probe.yaml      owns the focused reality test
+  tasks/.../metrics.json         owns measurements
+  insights/K_knowledge/K07.md    owns the settled claim returned to narrative
+  insights/W_wisdom/W04.md       owns the next move returned to narrative
+
+  Implementation note: K and W are both wired now — a converged probe-loop
+  files the K, then chains the per-probe W (optional ◇) scoped to that K.
+  The end-to-end contract is K + W because narrative needs both the claim
+  and the next move to decide ignite.
+
+  📌 One sentence:
+
+  A full end-to-end turn is an ask becoming a story, a story exposing a
+  claim gap, the claim gap becoming a probe contract, the probe filing K/W,
+  and the story deciding whether it is now ignited enough to cash out.

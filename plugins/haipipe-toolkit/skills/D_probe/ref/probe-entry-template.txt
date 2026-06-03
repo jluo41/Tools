@@ -1,0 +1,92 @@
+📋 Per-probe entry template
+
+Use this skeleton for ONE block in a probe-log.txt. Copy, fill,
+prune fields that don't apply.  Keep total length ~25 lines.
+
+──────────────────────────────────────────────────────────────────────────
+ID   <task-group>/<num> — <one-line description>
+──────────────────────────────────────────────────────────────────────────
+📂 source         <path/to/training_script.py>  +  <path/to/config.yaml>
+📥 Data           <aidata_name>/<version>
+                  splits = <split sizes>
+                  filter = <e.g. drop Med5Min-triggered>
+🧱 Architecture   hidden=<H>, layers=<L>, heads=<n_h>, kv_heads=<n_kv>,
+                  intermediate=<ffn>, params=<N>
+⚙️ Training       <epochs> epochs, LR <X> <schedule>, batch <B>,
+                  optimizer=<adamw/sgd/...>, seed(s)=<list>,
+                  bf16 / fp16 / fp32
+🎯 Loss           <objective>  +  <any auxiliary terms>
+🔗 Recipe notes   <framework>, <pretrain origin / warm-start ckpt>
+📊 Results        val / test-id / test-od  (H<K> cumulative RMSE mg/dL)
+                  primary metric    X.XX  /  X.XX  /  X.XX
+                  secondary metric  X.XX  /  X.XX  /  X.XX
+                  (include 1-3 diagnostic per-split numbers if useful)
+💾 Saved          <checkpoint path or forecast.json path>
+⏱  Time           <wall-clock> on <hardware>
+📝 Notes          <follow-ups / oddities / bugs encountered>
+
+
+──────────────────────────────────────────────────────────────────────────
+Multi-seed variant — add this block when N > 1
+──────────────────────────────────────────────────────────────────────────
+🌱 Seeds          N=<#>, seeds=<list>
+📊 Results (mean ± std):
+                  val      X.XX ± Y.YY
+                  test-id  X.XX ± Y.YY
+                  test-od  X.XX ± Y.YY
+📈 Paired-t vs baseline (seed-matched):
+                  val      Δ = -X.XX  p = 0.0XX
+                  test-id  Δ = -X.XX  p = 0.0XX
+                  test-od  Δ = -X.XX  p = 0.XXX
+🔢 Sign test      <m>/<N> seeds show negative Δ on <metric>
+
+
+──────────────────────────────────────────────────────────────────────────
+Common metric names by domain
+──────────────────────────────────────────────────────────────────────────
+
+   forecasting   H<K>_cum  (Method-A per-sample trajectory rMSE)
+                 H<K>_pool (Method-B pooled MSE then sqrt)
+                 per_step.k<k> RMSE
+                 MAE_k0   MAE per horizon
+   classification accuracy / F1 / AUROC / AUPRC / Brier
+   generation     perplexity / BLEU / ROUGE / METEOR / loss
+
+
+──────────────────────────────────────────────────────────────────────────
+Worked example (B93/03 entry from EventGlucose project)
+──────────────────────────────────────────────────────────────────────────
+
+ID   B93/03 — PatchTST-style + FiLM(23-d patient features), MULTI-SEED (N=10)
+📂 source         B93_event_arch/03_patchtst_plus_features/
+                    03_patchtst_plus_features.py
+                  (no config YAML — args via CLI)
+📥 Data           EventGlucose / @v0004_welldoc_dem_events_tewindow
+                  splits = 22,830 / 373 / 2,767 / 6,324  (train/val/test-id/test-od)
+                  filter = drop Med5Min-triggered cases
+🧱 Architecture   channel-indep patch transformer:
+                  patch_len=24, stride=12, d_model=128, n_heads=4,
+                  n_layers=3, dropout=0.1
+                  3 channels (cgm, carbs, exer) + FiLM(23-d patient vec)
+                  ~1-2M params
+⚙️ Training       30 epochs cosine LR 5e-4, batch 128, AdamW, grad-clip 1.0
+                  10 seeds {0..9}
+🎯 Loss           MSE on cgm[287:311]
+🔗 Recipe notes   train-from-scratch on EventGlucose (no pretrain)
+📊 Results (mean ± std, N=10):
+                  val      28.37 ± 0.18
+                  test-id  29.57 ± 0.28
+                  test-od  29.03 ± 0.26
+📈 Paired-t vs same-arch baseline (no patient features):
+                  val      Δ = -2.20  p = 0.0372  ✅
+                  test-id  Δ = -2.39  p = 0.0492  ✅
+                  test-od  Δ = -1.39  p = 0.1663  🟡
+🔢 Sign test      10/10 seeds negative on val + test-id; 9/10 on test-od
+💾 Saved          examples/.../03_patchtst_plus_features/results/multi_seed/
+                  aggregated.json + comparison.md + seed_{0..9}/summary.json
+⏱  Time           ~60 min total on 1× RTX 4090
+📝 Notes          seed 4 baseline failed to converge (val_rmse stuck at 50);
+                  outlier-excluded N=9 analysis gives Δ ≈ -1.2 / -1.0 / -0.5,
+                  paired-t p<0.005 on val and test-id.
+                  Side finding: with_patient std is 10-20× smaller than
+                  baseline std — FiLM patient conditioning stabilizes training.

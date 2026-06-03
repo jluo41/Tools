@@ -1,8 +1,14 @@
 ---
 name: haipipe-end-src2input
 description: "Src2InputFn specialist — design and review of the record-to-wire-payload function in an Endpoint_Set (serializes a ProcessedDF record into JSON the model can ingest). One of 5 inference Fn-types. TARGET-AWARE: SageMaker uses builders d1_*, Databricks uses builders f2_* (different wire formats). Pass --target sagemaker (default) or --target databricks. Called by /haipipe-end orchestrator when intent references Src2InputFn, record-to-payload serialization, or `src2input` keyword."
-argument-hint: [verb] [use_case] [--target sagemaker|databricks] [args...]
+argument-hint: "[verb] [use_case] [--target sagemaker|databricks] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Src2InputFn specialist — design and review of the record-to-wire-payload function in an Endpoint_Set (serializes a ProcessedDF record into JSON the model can ingest)."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-end-src2input

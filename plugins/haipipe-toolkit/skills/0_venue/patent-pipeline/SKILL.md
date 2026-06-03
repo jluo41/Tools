@@ -1,8 +1,14 @@
 ---
 name: patent-pipeline
 description: "Full patent drafting pipeline from invention description to jurisdiction-formatted filing documents. Supports CN (CNIPA), US (USPTO), EP (EPO). Supports invention patents and utility models. Use when user says \"写专利\", \"patent pipeline\", \"专利申请\", \"draft patent\", \"写权利要求书\", or wants to draft a complete patent application."
-argument-hint: [invention-description — jurisdiction]
+argument-hint: "[invention-description — jurisdiction]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, Agent, Skill, mcp__codex__codex
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Full patent drafting pipeline from invention description to jurisdiction-formatted filing documents."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Patent Pipeline: From Invention to Filing
@@ -21,12 +27,12 @@ This skill orchestrates the full patent drafting lifecycle -- from prior art sea
 ```
 
 **This is a parallel branch, not part of the linear research pipeline.** After `/idea-discovery` produces validated ideas, the user can either:
-- Go to `/haipipe-experiment bridge` → `/auto-review-loop` → `/haipipe-paper` (publish track)
+- Go to `/haipipe-probe bridge` → `/auto-review-loop` → `/haipipe-paper` (publish track)
 - Go to `/grant-proposal` (funding track)
 - Go to `/patent-pipeline` (patent track) **<-- this skill**
 
 ```
-                    ┌→ /haipipe-experiment bridge → /auto-review-loop → /haipipe-paper  (publish track)
+                    ┌→ /haipipe-probe bridge → /auto-review-loop → /haipipe-paper  (publish track)
 /idea-discovery ────┤
                     ├→ /grant-proposal → [get funded] → ...  (funding track)
                     └→ /patent-pipeline → [file patent]       (patent track)

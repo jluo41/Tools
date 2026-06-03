@@ -1,6 +1,12 @@
 ---
-name: scientific-writing
+name: scientific-writing-backup
 description: Use when writing or revising scientific manuscripts, abstracts, figures, or references for journal submission and you need full-paragraph prose, scientific structure, citation-style guidance, or reporting-guideline support.
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Use when writing or revising scientific manuscripts, abstracts, figures, or references for journal submission and you need full-paragraph prose, scientific structure, citation-style guidance, or reporting-guideline support."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Scientific Writing

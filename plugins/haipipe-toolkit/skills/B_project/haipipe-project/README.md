@@ -2,7 +2,7 @@ haipipe-project
 ===============
 
 Skill for creating, reviewing, and summarizing haipipe research projects.
-Covers both the experiment side (examples/) and the code side (code/ + code-dev/)
+Covers both the probe side (examples/) and the code side (code/ + code-dev/)
 in one unified flow.
 
 ---

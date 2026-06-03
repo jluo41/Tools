@@ -1,8 +1,14 @@
 ---
 name: haipipe-insight-wisdom
-description: "W-level wisdom specialist of the haipipe-insight family. Reads K_knowledge entries (validated beliefs) and writes strategic recommendation entries to insights/W_wisdom/ — 'what we should DO next'. Each W entry is actionable: a proposed next experiment, a strategic re-direction, or a stop-doing-X. NO code. Use when running W-phase via /haipipe-application ask, or directly /haipipe-insight-wisdom. Trigger: W-level, wisdom, recommendations, what next, strategic direction, action items."
-argument-hint: [--project <path>] [--scope <knowledge-ids>] [--slug <slug>]
+description: "W-level wisdom specialist of the haipipe-insight family. Reads K_knowledge entries (validated beliefs) and writes strategic recommendation entries to insights/W_wisdom/ — 'what we should DO next'. Each W entry is actionable: a proposed next probe, a strategic re-direction, or a stop-doing-X. NO code. Use when running W-phase via /haipipe-application ask, or directly /haipipe-insight-wisdom. Trigger: W-level, wisdom, recommendations, what next, strategic direction, action items."
+argument-hint: "[--project <path>] [--scope <knowledge-ids>] [--slug <slug>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "W-level wisdom specialist of the haipipe-insight family."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-insight-wisdom
@@ -10,6 +16,12 @@ Skill: haipipe-insight-wisdom
 
 W-level of the Insight base (D → I → K → W). Reads validated knowledge
 (K entries) and writes **actionable strategic recommendations**.
+
+**Invocation modes** (see `../../ref/invocation-modes.md`): interactive (a
+human steers; the recommendation-triage ASK runs) OR headless (`--scope` ≥ 1 K
+id + `--auto` → file silently), chosen by input completeness.
+`card-creator-wisdom-agent` calls this skill headless during fan-out; agent +
+no K id → `status: blocked` (never hang). End with the structured return block.
 
 ```
 D — Data:          "what we observed"
@@ -19,8 +31,8 @@ W — Wisdom:        "what we should do next"           ← THIS SKILL
 ```
 
 W is the bridge **from understanding to action**. Each W entry should
-be actionable — translatable into either a new experiment (via
-/haipipe-experiment), a research pivot, or a stop-doing-X decision.
+be actionable — translatable into either a new probe (via
+/haipipe-probe), a research pivot, or a stop-doing-X decision.
 
 
 Input
@@ -44,7 +56,7 @@ Hard rules
 ----------
 
 - W entries must be ACTIONABLE. "Should think about X" is too vague —
-  prefer "Run experiment to test X under param-matched conditions",
+  prefer "Run probe to test X under param-matched conditions",
   "Stop chasing the +1mg val improvement; it doesn't transfer to test-od",
   "Pivot main figure 3 to focus on FiLM generalization gap".
 - Each W must cite ≥ 1 K it derives from.
@@ -52,7 +64,7 @@ Hard rules
   now". As K updates, W entries may become stale; mark them `status:
   stale` rather than delete.
 - W never executes anything. To act on a W's recommendation, the user
-  invokes /haipipe-experiment design new (or /haipipe-task task-folder)
+  invokes /haipipe-probe design new (or /haipipe-task task-folder)
   manually. /haipipe-application ask can chain this.
 
 
@@ -112,7 +124,7 @@ Risk profile
 -------------
 
 WRITES new file under `insights/W_wisdom/`. APPENDS to INDEX.md and
-back-links. Suggests but does NOT execute /haipipe-experiment or
+back-links. Suggests but does NOT execute /haipipe-probe or
 /haipipe-task commands — those are user actions.
 
 

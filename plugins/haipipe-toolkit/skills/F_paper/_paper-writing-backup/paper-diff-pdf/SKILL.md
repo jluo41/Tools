@@ -1,8 +1,14 @@
 ---
-name: paper-diff-pdf
+name: paper-diff-pdf-backup
 description: "Build a tracked-changes PDF (latexdiff style) showing what changed between a baseline commit and the current working tree. Class-aware (INFORMS / ACM / IEEE / Springer LNCS / NeurIPS / ICML / Elsevier / generic article), with a scope-aware noise filter that silences audit-fix arithmetic but never hides changes inside the abstract or title. Use when user says \"build the diff PDF\", \"make a tracked-changes version\", \"diff this paper against <baseline>\", or before sending the paper to co-authors / advisor / reviewers for sign-off."
-argument-hint: [baseline-commit-or-tag] [tag-name] [main-tex]
+argument-hint: "[baseline-commit-or-tag] [tag-name] [main-tex]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Build a tracked-changes PDF (latexdiff style) showing what changed between a baseline commit and the current working tree."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Paper Diff PDF

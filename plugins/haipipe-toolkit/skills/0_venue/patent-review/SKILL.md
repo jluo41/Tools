@@ -1,8 +1,14 @@
 ---
 name: patent-review
 description: "Get an external patent examiner review of a patent application. Use when user says \"专利审查\", \"patent review\", \"审查意见\", \"examiner review\", or wants critical feedback on patent claims and specification."
-argument-hint: [patent-directory-or-scope]
+argument-hint: "[patent-directory-or-scope]"
 allowed-tools: Bash(*), Read, Grep, Glob, Write, Edit, Agent, mcp__codex__codex, mcp__codex__codex-reply
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Get an external patent examiner review of a patent application."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Patent Examiner Review via Codex MCP (xhigh reasoning)

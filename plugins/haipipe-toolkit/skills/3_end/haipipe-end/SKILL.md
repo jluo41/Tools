@@ -1,8 +1,14 @@
 ---
 name: haipipe-end
 description: "Run any Stage 6 endpoint work. Parses intent across FOUR axes — Fn-type (meta/trig/post/src2input/input2src), artifact-as-whole verb (package/test/review/dashboard), develop target (sagemaker/databricks/local) producing an Endpoint_Set, or deploy target (sagemaker/databricks/local/mlflow) serving one — and dispatches to the right specialist via Skill(). Use for designing inference Fns, packaging Endpoint_Sets, training a build to produce one, local inference tests, or deploying to any target. Trigger: endpoint, deploy, develop, train, package, inference Fn, MetaFn, TrigFn, PostFn, Src2InputFn, Input2SrcFn, /haipipe-end."
-argument-hint: [target_or_fn_or_verb] [args...]
+argument-hint: "[target_or_fn_or_verb] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Run any Stage 6 endpoint work."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-end (orchestrator)

@@ -2,8 +2,8 @@ haipipe-toolkit — Usage Guide
 ==============================
 
 Practical guide to USING the toolkit. For an inventory of what skills
-exist see `README.md`. For task ↔ experiment boundary thinking see
-`skills/D_experiment/MENTAL_MODEL.md`. This file is the workflow recipe
+exist see `README.md`. For task ↔ probe boundary thinking see
+`skills/D_probe/MENTAL_MODEL.md`. This file is the workflow recipe
 book — concrete commands, common flows, gotchas.
 
 
@@ -14,7 +14,7 @@ The 3 worlds — one project, three folders
 📦 examples/Proj{Series}-{Cat}-{Num}-{Name}/
 │
 ├── 💼 tasks/         ← the WORK         (C_task)   code + runs + metrics
-├── 📊 experiments/   ← the CLAIMS       (D_experiment)  steering + verdicts
+├── 📊 probes/   ← the CLAIMS       (D_probe)  steering + verdicts
 └── 📰 paper/         ← the DELIVERABLE  (F_paper)  manuscripts
 ```
 
@@ -22,9 +22,9 @@ Each world has its own specialist family. You can stay in one or
 cross between them; the cross-world dependency is **strict one-way**:
 
 ```
-experiments  ──reads──▶  tasks   (via experiment.yaml arms[])
-tasks        ──reads──▶  (nothing about experiments)
-paper        ──reads──▶  experiments (claims) + tasks (figures)
+probes  ──reads──▶  tasks   (via probe.yaml arms[])
+tasks        ──reads──▶  (nothing about probes)
+paper        ──reads──▶  probes (claims) + tasks (figures)
 ```
 
 
@@ -54,7 +54,7 @@ $EDITOR configs/5_model_clm_baseline.yaml   # fill in real ModelArgs
 
 # 4. Pre-flight: run the code reviewer (or skip with env var first time)
 # Option A: real review
-# (see Tools/plugins/haipipe-toolkit/agents/run-script-reviewer.md)
+# (see Tools/plugins/haipipe-toolkit/skills/C_task/agents/reviewers/run-script-reviewer-agent.md)
 # Option B: skip for first smoke run
 HAIPIPE_SKIP_REVIEW=1 bash runs/5_model_clm_baseline_seed42.sh
 
@@ -65,20 +65,20 @@ cat task-log.md
 bash runs/5_model_clm_baseline_seed7.sh
 bash runs/5_model_clm_baseline_seed13.sh
 
-# 7. Design an experiment to compare the 3 seeds against an LHM arm
-/haipipe-experiment design new E01 \
+# 7. Design a probe to compare the 3 seeds against an LHM arm
+/haipipe-probe design new clm_baseline_reproducibility --id 01 \
     --title "CLM baseline reproducibility" \
     --hypothesis "MAE val < 25.0 across 3 seeds, paired-t p<0.05"
 
-# 8. Link the 3 runs into the experiment as the baseline arm
-/haipipe-experiment design link E01 \
+# 8. Link the 3 runs into the probe as the baseline arm
+/haipipe-probe design link 01 \
     tasks/A01_pretraining_clm/01_train_clm_baseline/results/run_seed42 \
     tasks/A01_pretraining_clm/01_train_clm_baseline/results/run_seed7 \
     tasks/A01_pretraining_clm/01_train_clm_baseline/results/run_seed13
 
 # 9. Aggregate stats and write the claim
-/haipipe-experiment result E01
-/haipipe-experiment review E01     # structural QA + Codex semantic verdict
+/haipipe-probe result aggregate 01
+/haipipe-probe review 01     # structural QA + Codex semantic verdict
 ```
 
 
@@ -160,32 +160,32 @@ Workflow D — Make a paper figure
 bash runs/figure_main.sh
 ```
 
-Workflow E — Run a full experiment (research thread)
+Workflow E — Run a full probe (research thread)
 -----------------------------------------------------
 
 ```bash
 # 1. Design — declare hypothesis, planned arms, aggregation spec
-/haipipe-experiment design new E02 \
+/haipipe-probe design new lhm_a_vs_baseline_test_id --id 02 \
     --title "LHM-A architecture beats baseline on test-id" \
     --hypothesis "LHM-A MAE < baseline by ≥0.5, paired-t p<0.05, N=3"
 
 # 2. Bridge — scaffold the arms as tasks in C_task and deploy
-/haipipe-experiment bridge E02
+/haipipe-probe bridge 02
 # (this auto-calls Skill("haipipe-task", "task-folder training ..."))
 
 # 3. Wait for training; runs complete; results/<RUN>/metrics.json written
 
-# 4. Link the runs back into the experiment (bridge does this auto)
-# (manual fallback: /haipipe-experiment design link E02 <run-path>)
+# 4. Link the runs back into the probe (bridge does this auto)
+# (manual fallback: /haipipe-probe design link 02 <run-path>)
 
 # 5. Aggregate
-/haipipe-experiment result E02         # mean/std/paired-t/sign
+/haipipe-probe result aggregate 02         # mean/std/paired-t/sign
 
 # 6. Review (structural QA + Codex semantic verdict)
-/haipipe-experiment review E02
+/haipipe-probe review 02
 
 # 7. Iterate if needed
-/haipipe-experiment loop E02           # review → propose → re-materialize
+/haipipe-probe loop 02           # review → propose → re-materialize
 ```
 
 
@@ -233,9 +233,9 @@ Gotchas
    A=training  B=eval  C=display  D=data  E=individual  F=agent  X=algo
    ```
 
-3. **Single-direction dependency: experiments read tasks, never vice versa.**
-   Don't write `experiment.yaml` paths into task configs. Don't import
-   task code from experiment scripts (experiments have no code at all).
+3. **Single-direction dependency: probes read tasks, never vice versa.**
+   Don't write `probe.yaml` paths into task configs. Don't import
+   task code from probe scripts (probes have no code at all).
 
 4. **`results/` is for LIGHT artifacts only.**
    Heavy outputs (`.pt`, `.ckpt`, `.npy`, `.parquet > 1 MB`) belong in
@@ -270,13 +270,13 @@ project        /haipipe-project overview [<ID>]                     dashboard
 task-group     /haipipe-task task-group <ID> --project-id <PROJ>    scaffold a group
 
 task-folder    /haipipe-task <type> --auto                          orchestrator scaffold
-               /haipipe-task-data    --auto                         direct, data-pipeline
-               /haipipe-task-algo    --auto                         direct, X_algo smoke
-               /haipipe-task-training --auto                        direct, A-series train
-               /haipipe-task-eval     --auto                        direct, B-series eval
-               /haipipe-task-display  --auto                        direct, C-series fig
-               /haipipe-task-individual --auto                      direct, E individual
-               /haipipe-task-agent   --auto                         direct, F LLM agent
+               /haipipe-task-for-data    --auto                         direct, data-pipeline
+               /haipipe-task-for-algo    --auto                         direct, X_algo smoke
+               /haipipe-task-for-training --auto                        direct, A-series train
+               /haipipe-task-for-eval     --auto                        direct, B-series eval
+               /haipipe-task-for-display  --auto                        direct, C-series fig
+               /haipipe-task-for-individual --auto                      direct, E individual
+               /haipipe-task-for-agent   --auto                         direct, F LLM agent
 
 run            bash runs/<NAME>.sh                                  execute a run
                HAIPIPE_SKIP_REVIEW=1 bash runs/<NAME>.sh            same, skip review
@@ -284,14 +284,14 @@ run            bash runs/<NAME>.sh                                  execute a ru
 task observe   /haipipe-task-logging <task-path>                    regen task-log.md
                /haipipe-task-logging <task-path> --print            regen + cat
 
-experiment     /haipipe-experiment design new <ID>                  declare new thread
-               /haipipe-experiment design link <ID> <run-path>      attach a run to an arm
-               /haipipe-experiment bridge <ID>                      scaffold arms + deploy
-               /haipipe-experiment result <ID>                      aggregate stats + claim
-               /haipipe-experiment review <ID>                      QA + Codex verdict
-               /haipipe-experiment explore                          coverage + propose next
-               /haipipe-experiment loop <ID>                        iterate until clean
-               /haipipe-experiment inspect [<ID>]                   list / status
+probe     /haipipe-probe design new <slug> --group A       declare new thread
+               /haipipe-probe design link <probe> <run-path>   attach a run to an arm
+               /haipipe-probe bridge <probe>                   scaffold arms + deploy
+               /haipipe-probe result <probe>                   aggregate stats + claim
+               /haipipe-probe review <probe>                   QA + Codex verdict
+               /haipipe-probe explore                          coverage + propose next
+               /haipipe-probe loop <probe>                     iterate until clean
+               /haipipe-probe inspect [<probe>]                list / status
 
 paper          /paper-workflow / /paper-figure / ...                see F_paper section
 ```
@@ -303,19 +303,19 @@ Where to go deeper
 ```
 What is this toolkit                         README.md (this folder)
 Project layout, 3 worlds                     skills/B_project/haipipe-project/SKILL.md
-Task ↔ experiment boundary                   skills/D_experiment/MENTAL_MODEL.md  ⭐
+Task ↔ probe boundary                   skills/D_probe/MENTAL_MODEL.md  ⭐
 Task hierarchy + naming                      skills/C_task/haipipe-task/ref/hierarchy.md
 Task-type series design                      skills/C_task/DESIGN.md
 runtime.yaml schema                          skills/C_task/haipipe-task/ref/runtime-yaml-schema.md
 task-log.md (per-task observability)         skills/C_task/haipipe-task-logging/SKILL.md
 Run.sh wrapper internals                     skills/C_task/haipipe-task/ref/run-sh-template.sh
-experiment.yaml schema                       skills/D_experiment/ref/experiment-yaml-schema.md
-Bridge skill (D ↔ C connector)               skills/D_experiment/haipipe-experiment-bridge/SKILL.md
+probe.yaml schema                       skills/D_probe/ref/probe-yaml-schema.md
+Bridge skill (D ↔ C connector)               skills/D_probe/haipipe-probe-bridge/SKILL.md
 Pipeline (Stages 1-4)                        skills/1_data/haipipe-data/SKILL.md
 Pipeline (Stage 5 NN)                        skills/2_nn/haipipe-nn/SKILL.md
 Pipeline (Stage 6 endpoints)                 skills/3_end/haipipe-end/SKILL.md
 Per-individual contract (Stages 0-2)            skills/4_individual/haipipe-individual/SKILL.md
-Run Script Reviewer (pre-flight agent)       agents/run-script-reviewer.md
+Run Script Reviewer (pre-flight agent)       skills/C_task/agents/reviewers/run-script-reviewer-agent.md
 ```
 
 
@@ -324,13 +324,14 @@ One-line rules of thumb
 
 ```
 New code?              → tasks/
-New claim?             → experiments/
-New plot?              → tasks/display/  (referenced from experiment.yaml evidence:)
-New hypothesis?        → experiments/<NN>/experiment.yaml
+New claim?             → probes/
+New plot?              → tasks/display/  (referenced from probe.yaml evidence:)
+New hypothesis?        → probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml
 New metric value?      → tasks/.../metrics.json
 New per-run record?    → tasks/.../runtime.yaml (atomic, by run.sh)
-New cross-run stat?    → experiments/<NN>/experiment.yaml result: (via result aggregate)
-New "why it failed"?   → experiments/<NN>/logs/<DATE>.md
+New cross-run stat?    → probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml result:
+                         (via result aggregate)
+New "why it failed"?   → probes/<GROUP>_<group_slug>/<NN>_<slug>/logs/<DATE>.md
 New individual view?      → tasks/individual/  (E-series)
 New LLM agent task?    → tasks/agent/  (F-series)
 First run after scaffold? → HAIPIPE_SKIP_REVIEW=1, or run reviewer agent first

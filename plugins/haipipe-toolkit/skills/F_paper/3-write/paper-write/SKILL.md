@@ -1,8 +1,14 @@
 ---
 name: paper-write
 description: "Draft LaTeX paper section by section from an outline. Use when user says \"写论文\", \"write paper\", \"draft LaTeX\", \"开始写\", or wants to generate LaTeX content from a paper plan."
-argument-hint: [venue-or-section]
+argument-hint: "[venue-or-section]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, WebSearch, WebFetch, mcp__codex__codex, mcp__codex__codex-reply
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Draft LaTeX paper section by section from an outline."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Paper Write: Section-by-Section LaTeX Generation
@@ -487,7 +493,7 @@ After drafting all sections:
 1. **Extract topic sentences** — pull the first sentence of every paragraph
 2. **Read them in sequence** — they should form a coherent narrative on their own
 3. **Check claim coverage** — every claim from the Claims-Evidence Matrix must appear
-4. **Check evidence mapping** — every experiment/figure must support a stated claim
+4. **Check evidence mapping** — every probe/figure must support a stated claim
 5. **Fix gaps** — if a topic sentence doesn't advance the story, rewrite the paragraph
 
 ### Step 8: Final Checks

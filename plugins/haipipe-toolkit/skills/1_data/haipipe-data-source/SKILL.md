@@ -1,8 +1,14 @@
 ---
 name: haipipe-data-source
 description: "Stage 1 (Source) specialist. Builds, runs, and reviews SourceFn / HumanFn; inspects 1-SourceStore; loads source-layer typed frames. Called by /haipipe-data orchestrator. Direct invocation works for stage-scoped work, but /haipipe-data is the recommended entry."
-argument-hint: [function] [args...]
+argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Stage 1 (Source) specialist."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-data-source
@@ -67,7 +73,7 @@ Step 1: Parse args after `/haipipe-data-source`. Extract:
           function  in { dashboard, load, cook, design-chef, design-kitchen, review, (none) }
           extras    e.g. `rawdata` for dashboard, file_path for review
         If no args -> dashboard.
-        If only ref-style probe -> read `ref/concepts.md`, summarize, stop.
+        If only ref-style experiment -> read `ref/concepts.md`, summarize, stop.
 
 Step 2: Read THIS skill's `ref/concepts.md` for stage-1 specifics.
 

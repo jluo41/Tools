@@ -1,6 +1,12 @@
 ---
 name: meal-cam-logger
 description: "Log meals in real time from a webcam or IP camera. Opens a capture loop, asks Claude vision what food is visible in each frame, dedupes, and writes each eating session to a standalone Markdown file. Use when the user says start meal cam, log my meal, watch me eat, 记录我吃的, or /meal-cam-logger."
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Log meals in real time from a webcam or IP camera."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: meal-cam-logger

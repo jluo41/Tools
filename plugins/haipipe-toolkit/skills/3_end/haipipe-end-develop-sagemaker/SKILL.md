@@ -1,8 +1,14 @@
 ---
 name: haipipe-end-develop-sagemaker
 description: "AWS SageMaker develop specialist for haipipe-end. Runs Stage 5 training as a managed SageMaker Pipeline (Preprocess → Train → Reorganize → RegisterModel) and produces a deployable Endpoint_Set / registered model package. Backed by platform-sagemaker-training/ scripts (system → docker → pipeline testing ladder, ECR push, ModelPackageGroup registration). Writes Endpoint_Sets that haipipe-end-endpointset and the deploy specialists consume. Called by /haipipe-end orchestrator when develop target is sagemaker."
-argument-hint: [verb] [endpoint_set_or_run_id] [args...]
+argument-hint: "[verb] [endpoint_set_or_run_id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "AWS SageMaker develop specialist for haipipe-end."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-end-develop-sagemaker

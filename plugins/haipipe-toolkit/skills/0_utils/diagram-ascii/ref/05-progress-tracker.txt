@@ -28,7 +28,7 @@ Progress tracker
     ✅        ✅         ⏳          ⬜         ⬜
 
 
-  Multi-experiment grid
+  Multi-probe grid
   ---------------------
 
   +------------+----------+----------+----------+

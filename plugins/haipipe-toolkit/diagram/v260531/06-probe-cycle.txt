@@ -1,0 +1,54 @@
+🔧  Running one Probe Cycle (the working process)
+==================================================
+
+  ONE probe cycle = 1 🔧 probe → N ✋ task-cycles → 1 🧠 insight.
+  It spans 3 layers: D_probe DRIVES, C_task EXECUTES, E_insight FILES.
+  This is the canonical "how to run one probe cycle." (Anatomy → 02 · nesting → 03.)
+
+  Prose: ../../skills/D_probe/haipipe-probe-loop/SKILL.md
+
+
+─§ 🔢 The 6 steps (probe → N task-cycles → insight) ────────
+
+  ① 🎯 design    /haipipe-probe design <id>    → probe.yaml: hypothesis + arms plan      [D_probe]
+  ② 🌉 bridge    /haipipe-probe bridge <id>    → scaffold each arm as a ✋ task-cycle      [D→C]
+                                                 sanity arm → 🚦 Run Script Reviewer → deploy rest
+  ③ 🏃 run       (per ✋ task-cycle · ×N)       → bash run.sh → results/<run>/metrics.json  [C_task]
+                                                 🚦 Run Result Auditor (per-run trust)
+  ④ 📥 result    /haipipe-probe result <id>    → aggregate N metrics → result + claim      [D_probe]
+  ⑤ ⚖️ verdict   /haipipe-probe review <id>    → structural + 🚦 Codex claim → confirmed?   [D_probe]
+  ⑥ 🧠 insight   card-creator-knowledge-agent <id> → file 🟨 K card from the probe's claim   [E_insight]
+                 ◇ card-creator-wisdom-agent --scope <K> → file 🟧 W (this probe's next-step)
+                                              → 🚦 card-reviewer-{knowledge,wisdom} → 🚦 index-integrity
+                                              (🟦 D from the task-cycles · 🟩 I + strategic W cross-cycle)
+
+
+─§ ⏳ A probe cycle is itself a tiny hourglass ─────────────
+
+  1 🔧 probe ──1:n──▶ N ✋ task-cycles ──run──▶ ──n:1──▶ 1 🧠 insight
+            (② bridge fans out)    (③ execute)   (④ result aggregates · ⑥ E files)
+
+
+─§ 🚦 The 4 gates (no producer reviews itself) ─────────────
+
+  +------+-----------------------------+-------------------------------+----------+
+  | step | gate                        | who                           | layer    |
+  +------+-----------------------------+-------------------------------+----------+
+  | ②    | Run Script Reviewer (pre)   | run-script-reviewer-agent     | C_task   |
+  | ③    | Run Result Auditor (post)   | run-result-auditor-agent      | C_task   |
+  | ⑤    | Claim verdict (Codex)       | claim-verifier-agent          | D_probe  |
+  | ⑥    | card review + graph         | card-reviewer-{knowledge,     | E_insight|
+  |      |                             | wisdom} + index-integrity     |          |
+  +------+-----------------------------+-------------------------------+----------+
+
+
+─§ 🚗 Two ways to drive it ─────────────────────────────────
+
+  Orchestrated (one command):
+    /haipipe-probe loop start <id>   → runs ①–⑤ with iteration until ✅ converged,
+                                       then fires ⑥ on convergence (closes the cycle).
+  Manual (step it):
+    run ① → ⑥ yourself, inspecting at each 🚦 gate.
+
+  📌 A 📖 narrative-cycle whips N of these probe cycles; each probe cycle whips
+     N task-cycles.   narrative-cycle ⊃ probe-cycle ⊃ task-cycle.

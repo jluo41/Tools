@@ -237,7 +237,7 @@ recur across domains; the patterns matter more than any one example.
      other knobs are held fixed or stratified.
      - Messaging example: a "timing" experiment that also varies
        message content via a separate model — the same dataset is
-       effectively two experiments.
+       effectively two probes.
      - CGM / device example: device firmware version × wear protocol
        co-vary across study arms.
      - EHR example: care-pathway changes coincide with site or

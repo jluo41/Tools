@@ -1,8 +1,14 @@
 ---
 name: haipipe-task-logging
 description: "Task-folder-scope logging specialist. Regenerates <task-folder>/task-log.md — an aggregated markdown view of every run in a task-folder, derived from results/<RUN>/runtime.yaml. Called automatically by runs/<RUN>.sh at finalize, or invoked directly to re-render. Read-only on runtime.yaml (source of truth); writes only task-log.md. Scope: task-folder. Group/project rollups are not in scope."
-argument-hint: [task-path] [--print]
+argument-hint: "[task-path] [--print]"
 allowed-tools: Bash, Read, Glob
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Task-folder-scope logging specialist."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-task-logging

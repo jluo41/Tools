@@ -142,7 +142,7 @@ demonstrate effort. Frame correctly:
 
   Good: "Your insight led us to diagnose three barriers, showing that
          our benchmark enables this research direction."
-  Bad:  "We ran 6 additional experiments."
+  Bad:  "We ran 6 additional probes."
 
   Good: "This analysis reveals that metric-A fairness can diverge from
          metric-B fairness — a finding that changes how the community

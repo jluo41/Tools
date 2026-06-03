@@ -1,8 +1,14 @@
 ---
 name: haipipe-end-trig
 description: "TrigFn specialist — design and review of the trigger-detection function in an Endpoint_Set. One of 5 inference Fn-types. Called by /haipipe-end orchestrator when intent references TrigFn, trigger detection, or `trig` keyword. Reads own ref/concepts.md plus umbrella's fn/fn-design.md and endpointset's fn/fn-review.md."
-argument-hint: [verb] [use_case] [args...]
+argument-hint: "[verb] [use_case] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "TrigFn specialist — design and review of the trigger-detection function in an Endpoint_Set."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-end-trig

@@ -1,8 +1,14 @@
 ---
 name: paper-claim-audit
 description: "Zero-context verification that every number, comparison, and scope claim in the paper matches raw result files. Uses a fresh cross-model reviewer with NO prior context to prevent confirmation bias. Use when user says \"审查论文数据\", \"check paper claims\", \"verify numbers\", \"论文数字核对\", or before submission to ensure paper-to-evidence fidelity."
-argument-hint: [paper-directory]
+argument-hint: "[paper-directory]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Zero-context verification that every number, comparison, and scope claim in the paper matches raw result files."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Paper Claim Audit: Zero-Context Evidence Verification
@@ -23,7 +29,7 @@ A **fresh reviewer with zero prior context** catches these because it has no exp
 
 | Skill | Question it answers |
 |-------|-------------------|
-| `/experiment-audit` | Is the experiment code honest? (fake GT, normalization fraud) |
+| `/probe-audit` | Is the experiment code honest? (fake GT, normalization fraud) |
 | `/result-to-claim` | Does the data scientifically support this claim? |
 | **`/paper-claim-audit`** | **Does the paper report the data truthfully and precisely?** |
 
@@ -229,7 +235,7 @@ if PAPER_CLAIM_AUDIT.json exists:
 
 ### Advisory, Never Blocking
 
-Same pattern as `/experiment-audit`:
+Same pattern as `/probe-audit`:
 - `PASS` → continue normally
 - `WARN` → print warning, continue, flag draft as "check numbers before submission"
 - `FAIL` → print alert, continue, but do NOT mark as submission-ready
