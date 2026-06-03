@@ -1,6 +1,12 @@
 ---
 name: reference-audit-guide
 description: Use when the user asks for citation-verification principles, reference-audit best practices, or guidance on preventing fake or inaccurate citations in academic writing.
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Use when the user asks for citation-verification principles, reference-audit best practices, or guidance on preventing fake or inaccurate citations in academic writing."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Citation Verification Reference Guide

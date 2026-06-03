@@ -1,8 +1,14 @@
 ---
 name: grant-proposal
 description: "Draft a structured grant proposal from research ideas and literature. Supports KAKENHI (Japan), NSF (US), NSFC (China, including 面上/青年/优青/杰青/海外优青/重点), ERC (EU), DFG (Germany), SNSF (Switzerland), ARC (Australia), NWO (Netherlands), and generic formats. Use when user says \"write grant\", \"grant proposal\", \"申請書\", \"write KAKENHI\", \"科研費\", \"基金申请\", \"写基金\", \"NSF proposal\", or wants to turn research ideas into a funding application."
-argument-hint: [research-direction — grant-type]
+argument-hint: "[research-direction — grant-type]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, Agent, Skill, mcp__codex__codex, mcp__codex__codex-reply
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Draft a structured grant proposal from research ideas and literature."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Grant Proposal: From Research Ideas to Fundable Application
@@ -19,13 +25,13 @@ This skill turns validated research ideas into a structured, reviewer-ready gran
 ```
 
 **This is a parallel branch, not part of the linear Workflow 1→1.5→2→3 pipeline.** After `/idea-discovery` produces validated ideas, the user can either:
-- Go to `/haipipe-experiment bridge` → `/auto-review-loop` → `/haipipe-paper` (implement & publish)
+- Go to `/haipipe-probe bridge` → `/auto-review-loop` → `/haipipe-paper` (implement & publish)
 - Go to `/grant-proposal` (write funding application first, then implement after funding)
 
 ```
-                    ┌→ /haipipe-experiment bridge → /auto-review-loop → /haipipe-paper  (publish track)
+                    ┌→ /haipipe-probe bridge → /auto-review-loop → /haipipe-paper  (publish track)
 /idea-discovery ────┤
-                    └→ /grant-proposal → [get funded] → /haipipe-experiment bridge → ...  (funding track)
+                    └→ /grant-proposal → [get funded] → /haipipe-probe bridge → ...  (funding track)
 ```
 
 Grant proposals argue for **future work** (feasibility + potential), not completed work (results + claims). This skill handles the unique requirements of grant writing: narrative arc design, reviewer-facing structure, budget justification, timeline planning, and agency-specific formatting.
@@ -165,7 +171,7 @@ Then gather context from the project directory:
 
 1. Read `idea-stage/IDEA_REPORT.md` if it exists (from `/idea-discovery`); fall back to `./IDEA_REPORT.md` if not found
 2. Read `refine-logs/FINAL_PROPOSAL.md` if it exists (from `/research-refine`)
-3. Read `refine-logs/EXPERIMENT_PLAN.md` if it exists (from `/experiment-plan`)
+3. Read `refine-logs/EXPERIMENT_PLAN.md` if it exists (from `/probe-plan`)
 4. Read `review-stage/AUTO_REVIEW.md` if it exists (from `/auto-review-loop` — prior review feedback is gold for grants); fall back to `./AUTO_REVIEW.md` if not found
 5. Read `NARRATIVE_REPORT.md` or `STORY.md` if they exist
 6. Read any existing literature notes or survey documents
@@ -608,7 +614,7 @@ Parameters can be passed inline with `—` separator. They flow to sub-skills wh
 /research-refine "idea"                  ← sharpen the method
 /grant-proposal "idea — KAKENHI"         ← this skill: write the grant proposal
                                           ← [submit & get funded]
-/haipipe-experiment bridge                       ← implement experiments with funding
+/haipipe-probe bridge                       ← implement experiments with funding
 /auto-review-loop "results"              ← Workflow 2: iterate until submission-ready
 /haipipe-paper                           ← Workflow 3: write the paper
 ```
@@ -616,7 +622,7 @@ Parameters can be passed inline with `—` separator. They flow to sub-skills wh
 ### Publish Track (skip this skill)
 
 ```
-/idea-discovery → /haipipe-experiment bridge → /auto-review-loop → /haipipe-paper → submit
+/idea-discovery → /haipipe-probe bridge → /auto-review-loop → /haipipe-paper → submit
 ```
 
 ## Output Protocols

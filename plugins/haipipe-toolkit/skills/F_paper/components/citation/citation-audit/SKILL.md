@@ -1,8 +1,14 @@
 ---
 name: citation-audit
 description: "Zero-context verification that every bibliographic entry in the paper is real, correctly attributed, and used in a context the cited paper actually supports. Uses a fresh cross-model reviewer with web/DBLP/arXiv lookup to catch hallucinated authors, wrong years, fabricated venues, version mismatches, and wrong-context citations (cite present but the cited paper does not establish the claim). Use when user says \"审查引用\", \"check citations\", \"citation audit\", \"verify references\", \"引用核对\", or before submission to ensure bibliography integrity."
-argument-hint: [paper-directory-or-bib-file]
+argument-hint: "[paper-directory-or-bib-file]"
 allowed-tools: Bash(*), Read, Grep, Glob, Edit, Write, Agent, mcp__codex__codex, WebSearch, WebFetch
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Zero-context verification that every bibliographic entry in the paper is real, correctly attributed, and used in a context the cited paper actually supports."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Citation Audit
@@ -13,7 +19,7 @@ Verify every `\cite{...}` in a paper against three independent layers:
 2. **Metadata correctness** — author names, year, venue, and title match canonical sources (DBLP, arXiv, ACL Anthology, Nature, OpenReview, etc.).
 3. **Context appropriateness** — the cited paper actually supports the claim it is being used to support in the manuscript.
 
-This skill is the fourth layer of \aris{}'s evidence-and-claim assurance, complementing `experiment-audit` (code), `result-to-claim` (science verdict), and `paper-claim-audit` (numerical claims). Together they form a bottom-up integrity stack from raw evaluation code to manuscript bibliography.
+This skill is the fourth layer of \aris{}'s evidence-and-claim assurance, complementing `probe-audit` (code), `result-to-claim` (science verdict), and `paper-claim-audit` (numerical claims). Together they form a bottom-up integrity stack from raw evaluation code to manuscript bibliography.
 
 ## When to Use This Skill
 
@@ -226,7 +232,7 @@ Confirm:
 
 | Skill | What it audits | What it catches |
 |-------|---------------|-----------------|
-| `/experiment-audit` | Evaluation code | Fake ground truth, self-normalized scores, phantom results |
+| `/probe-audit` | Evaluation code | Fake ground truth, self-normalized scores, phantom results |
 | `/result-to-claim` | Result-to-claim mapping | Claims unsupported by evidence |
 | `/paper-claim-audit` | Numerical claims in manuscript | Number inflation, best-seed cherry-pick, config mismatch |
 | `/citation-audit` | Bibliographic entries | Hallucinated refs, wrong-context citations, metadata errors |
@@ -327,7 +333,7 @@ verifier decide whether the verdict blocks finalization based on the
 ## See Also
 
 - `/paper-claim-audit` — sibling skill for numerical claim verification
-- `/experiment-audit` — sibling skill for evaluation code integrity
+- `/probe-audit` — sibling skill for evaluation code integrity
 - `/result-to-claim` — claim verdict assignment from results
 - `shared-references/citation-discipline.md` — protocol document for citation hygiene
 - `shared-references/reviewer-independence.md` — cross-model review constraints

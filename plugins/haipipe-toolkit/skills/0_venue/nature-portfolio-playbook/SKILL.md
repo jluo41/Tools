@@ -1,6 +1,12 @@
 ---
 name: nature-portfolio-playbook
 description: Use when choosing among Nature, Nature Methods, or Nature Biotechnology, or when preparing a Nature Portfolio life-science manuscript for venue fit, article-type framing, and policy-aware pre-submission checks.
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Use when choosing among Nature, Nature Methods, or Nature Biotechnology, or when preparing a Nature Portfolio life-science manuscript for venue fit, article-type framing, and policy-aware pre-submission checks."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Nature Portfolio Playbook

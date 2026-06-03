@@ -1,8 +1,14 @@
 ---
 name: idea-creator
 description: Generate and rank research ideas given a broad direction. Use when user says "找idea", "brainstorm ideas", "generate research ideas", "what can we work on", or wants to explore a research area for publishable directions.
-argument-hint: [research-direction]
+argument-hint: "[research-direction]"
 allowed-tools: Bash(*), Read, Write, Grep, Glob, WebSearch, WebFetch, Agent, mcp__codex__codex, mcp__codex__codex-reply
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Generate and rank research ideas given a broad direction."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Research Idea Creator
@@ -158,7 +164,7 @@ For each surviving idea, run a deeper evaluation:
    - Which 2-3 would you actually work on?
    ```
 
-3. **Combine rankings**: Merge your assessment with GPT-5.4's ranking. Select top 2-3 ideas for pilot experiments.
+3. **Combine rankings**: Merge your assessment with GPT-5.4's ranking. Select top 2-3 ideas for pilot probes.
 
 ### Phase 5: Parallel Pilot Experiments (for top 2-3 ideas)
 
@@ -170,7 +176,7 @@ Before committing to a full research effort, run cheap pilot experiments to get 
    - **Estimate GPU-hours BEFORE launching.** If estimated time > PILOT_MAX_HOURS, reduce scale (fewer epochs, smaller subset) or flag as "needs manual pilot"
    - Clear success metric defined upfront (e.g., "if metric improves by > 1%, signal is positive")
 
-2. **Deploy in parallel**: Use `/run-experiment` to launch pilots on different GPUs simultaneously:
+2. **Deploy in parallel**: Use `/run-probe` to launch pilots on different GPUs simultaneously:
    ```
    GPU 0: Pilot for Idea 1
    GPU 1: Pilot for Idea 2
@@ -178,7 +184,7 @@ Before committing to a full research effort, run cheap pilot experiments to get 
    ```
    Use `run_in_background: true` to launch all at once.
 
-3. **Collect results**: Use `/monitor-experiment` to check progress. If any pilot exceeds PILOT_TIMEOUT_HOURS, kill it and collect partial results. Once all pilots complete (or timeout), compare:
+3. **Collect results**: Use `/monitor-probe` to check progress. If any pilot exceeds PILOT_TIMEOUT_HOURS, kill it and collect partial results. Once all pilots complete (or timeout), compare:
    - Which ideas showed positive signal?
    - Which showed null/negative results? (eliminate or deprioritize)
    - Any surprising findings that suggest a pivot?
@@ -299,7 +305,7 @@ After this skill produces the ranked report:
 /novelty-check "top idea"     → deep novelty verification (already done in Phase 4, but user can re-run)
 /research-review "top idea"   → external critical feedback
 implement                     → write code
-/run-experiment               → deploy to GPU
+/run-probe               → deploy to GPU
 /auto-review-loop             → iterate until submission-ready
 ```
 

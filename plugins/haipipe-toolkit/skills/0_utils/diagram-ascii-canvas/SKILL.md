@@ -1,6 +1,18 @@
 ---
 name: diagram-ascii-canvas
-description: Bundle ASCII `.txt` diagrams into one Excalidraw canvas — two modes. (1) REBUILD: `txt-to-canvas.py` renders a folder of .txt into a multi-column canvas from scratch. (2) APPEND: `txt-append-to-canvas.py` adds ONE .txt as a new rightmost column to an existing canvas, preserving prior columns and manual Excalidraw annotations (arrows, sticky notes). Use rebuild for repo diagram/ folders that change. Use append for daily session-log accretion.
+description: >-
+  Bundle ASCII `.txt` diagrams into one Excalidraw canvas — two modes. (1)
+  REBUILD: `txt-to-canvas.py` renders a folder of .txt into a multi-column
+  canvas from scratch. (2) APPEND: `txt-append-to-canvas.py` adds ONE .txt as a
+  new rightmost column to an existing canvas, preserving prior columns and manual
+  Excalidraw annotations (arrows, sticky notes). Use rebuild for repo diagram/
+  folders that change. Use append for daily session-log accretion.
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Bundle ASCII `.txt` diagrams into one Excalidraw canvas — two modes."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # /diagram-ascii-canvas — Bundle ASCII diagrams into one Excalidraw file

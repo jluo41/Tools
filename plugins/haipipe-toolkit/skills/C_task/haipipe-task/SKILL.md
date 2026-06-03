@@ -1,8 +1,14 @@
 ---
 name: haipipe-task
 description: "Build orchestrator for haipipe-project. Routes scope=project / task-group / task-folder; for scope=task-folder, dispatches to one of seven task-type specialists (data / algo / training / eval / display / individual / agent). Replaces the older monolithic -task specialist with a router + per-type series. Called by /haipipe-project orchestrator. Direct invocation works for scaffold work."
-argument-hint: [scope] [args...]
+argument-hint: "[scope] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Build orchestrator for haipipe-project."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-task (orchestrator)
@@ -23,14 +29,33 @@ specialists (one per type):
 ```
 task-type     Group letter   Specialist                              Cross-skill
 ------------  -------------  --------------------------------------  --------------------------
-data          D              /haipipe-task-data              /haipipe-data
-algo          X              /haipipe-task-algo              /haipipe-nn-algo
-training      A              /haipipe-task-training          /haipipe-nn-tuner+instance
-eval          B              /haipipe-task-eval              (project-local; future)
-display       C              /haipipe-task-display           (independent)
-individual    E              /haipipe-task-individual        /haipipe-individual
-agent         F              /haipipe-task-agent             (none yet)
+data          D              /haipipe-task-for-data              /haipipe-data
+algo          X              /haipipe-task-for-algo              /haipipe-nn-algo
+training      A              /haipipe-task-for-training          /haipipe-nn-tuner+instance
+eval          B              /haipipe-task-for-eval              (project-local; future)
+display       C              /haipipe-task-for-display           (independent)
+individual    E              /haipipe-task-for-individual        /haipipe-individual
+agent         F              /haipipe-task-for-agent             (none yet)
+inference     P              /haipipe-task-for-inference         /haipipe-end-endpointset (profile)
 ```
+
+Stata sub-family (engine = Stata + PowerShell + logs, NOT papermill):
+
+```
+engine = Stata   →  /haipipe-task-for-stata   (sub-orchestrator / father skill)
+                       ├── /haipipe-task-for-stata-cms     A · 1-CMS-Store   (heavy, per year)
+                       ├── /haipipe-task-for-stata-case    B · 2-Case-Store  (heavy, cohort × year)
+                       ├── /haipipe-task-for-stata-data    C · *-Data-Store  (heavy, cross-year)
+                       └── /haipipe-task-for-stata-reg     D · results/      (LIGHT coef tables)
+```
+
+ANY engine=Stata request is delegated to **`/haipipe-task-for-stata`**, which owns
+the stage disambiguation (cms/case/data/reg), the `{LNN}` stage-letter alphabet,
+and the shared engine contract (`ref/stata-dialect.md` + the three Stata ref
+templates). This skill does NOT route stata stages itself — it hands off once
+the engine is detected as Stata. The four children keep all structure invariants
+(hierarchy, RUNNAME spine, light/heavy, diagram-as-doc) and emit `runtime.yaml`
+for a unified `task-log.md` across Python and Stata tasks.
 
 Called by `/haipipe-project` when the request is to **create** something
 in the hierarchy. For audit / read see `-inspect`; for moves see `-organize`.
@@ -69,13 +94,13 @@ task-group       this skill                                 fn/task-group.md
                  reads: ref/hierarchy.md
                         ../../B_project/haipipe-project/ref/project-structure.md
 task-folder      → dispatch by task-type to one of:
-                     /haipipe-task-data
-                     /haipipe-task-algo
-                     /haipipe-task-training
-                     /haipipe-task-eval
-                     /haipipe-task-display
-                     /haipipe-task-individual
-                     /haipipe-task-agent
+                     /haipipe-task-for-data
+                     /haipipe-task-for-algo
+                     /haipipe-task-for-training
+                     /haipipe-task-for-eval
+                     /haipipe-task-for-display
+                     /haipipe-task-for-individual
+                     /haipipe-task-for-agent
                  (legacy monolithic flow at fn/task-folder.md is DEPRECATED;
                   kept as transition fallback only)
 run              this skill                                 fn/run.md
@@ -89,13 +114,14 @@ Task-type → specialist mapping (for scope=task-folder):
 ```
 task-type     Group letter   Specialist                              Cross-skill
 ------------  -------------  --------------------------------------  --------------------------
-data          D              /haipipe-task-data              /haipipe-data
-algo          X              /haipipe-task-algo              /haipipe-nn-algo
-training      A              /haipipe-task-training          /haipipe-nn-tuner+instance
-eval          B              /haipipe-task-eval              (project-local; future)
-display       C              /haipipe-task-display           (independent)
-individual    E              /haipipe-task-individual        /haipipe-individual
-agent         F              /haipipe-task-agent             (none yet)
+data          D              /haipipe-task-for-data              /haipipe-data
+algo          X              /haipipe-task-for-algo              /haipipe-nn-algo
+training      A              /haipipe-task-for-training          /haipipe-nn-tuner+instance
+eval          B              /haipipe-task-for-eval              (project-local; future)
+display       C              /haipipe-task-for-display           (independent)
+individual    E              /haipipe-task-for-individual        /haipipe-individual
+agent         F              /haipipe-task-for-agent             (none yet)
+inference     P              /haipipe-task-for-inference         /haipipe-end-endpointset (profile)
 ```
 
 ---
@@ -174,7 +200,17 @@ Step 3a (scope=task-folder only): Task-type inference cascade.
         │ individual │ subject · patient · individual · one user · single subject ·    │
         │            │ cgm trace · treatment event · view                              │
         │ agent      │ agent · llm · prompt · claude · gpt · tool use · system prompt  │
+        ├────────────┼─────────────────────────────────────────────────────────────────┤
+        │ STATA      │ stata · do-file · .do · cms · case-pipeline · trigger cases ·   │
+        │ (engine)   │ analysis table · reg · regression · ols · iv · neat · bene_info │
         └────────────┴─────────────────────────────────────────────────────────────────┘
+
+      Stata engine-detect → DELEGATE: the keyword `stata` (or a `.do` file, or
+      any stage word cms/case/data/reg) signals the Stata engine. Do NOT pick a
+      stage here — hand off the whole request to `/haipipe-task-for-stata`, which
+      owns stage disambiguation and routes to the right
+      `/haipipe-task-for-stata-<stage>` child:
+        Skill("haipipe-task-for-stata", args="<remaining_args> [--auto]")
 
       Confidence: medium. Behavior:
         - AUTO         → accept; log "inferred from keyword '<kw>': <type>"
@@ -198,7 +234,7 @@ Step 3b (scope=task-folder only): Parent existence cascade.
     PROJECT_PATH = `examples/{PROJECT_ID}/`
     GROUP_LETTER = the letter required by task-type (see Step 3a table):
                      A=training · B=eval · C=display · D=data ·
-                     E=individual · F=agent · X=algo
+                     E=individual · F=agent · P=inference · X=algo
     GROUP_PATH   = `PROJECT_PATH/tasks/{GROUP_LETTER}{NN}_<group_name>/`
                      (or `PROJECT_PATH/tasks/X_algo/` for algo)
 
@@ -284,8 +320,8 @@ $ /haipipe-task task-folder           ← type=data inferred from cwd D01_
 /haipipe-task "train clm baseline" --auto
 
 # direct specialist (bypass orchestrator entirely; skips cascade check)
-/haipipe-task-data
-/haipipe-task-training
+/haipipe-task-for-data
+/haipipe-task-for-training
 
 # end-to-end with auto-cascade (creates project + group if missing)
 /haipipe-task data --auto \
@@ -296,7 +332,7 @@ $ /haipipe-task task-folder           ← type=data inferred from cwd D01_
 #  Step 3b cascade:
 #    ▪ ProjA-Bench-1-FairGlucose missing  → Skill(haipipe-task, project ..., --auto)
 #    ▪ D01_data missing                    → Skill(haipipe-task, task-group ..., --auto)
-#    ▪ both now exist                      → Skill(haipipe-task-data, ..., --auto)
+#    ▪ both now exist                      → Skill(haipipe-task-for-data, ..., --auto)
 ```
 
 ---
@@ -329,7 +365,7 @@ exists in the task-folder. The review is produced by the
 **Run Script Reviewer** agent at:
 
 ```
-Tools/plugins/haipipe-toolkit/agents/run-script-reviewer.md
+Tools/plugins/haipipe-toolkit/skills/C_task/agents/reviewers/run-script-reviewer-agent.md
 ```
 
 What it catches: **intent-vs-implementation mismatches** — silent
@@ -355,7 +391,7 @@ HAIPIPE_SKIP_REVIEW=1          env var at run.sh launch
 ```
 
 This is the only currently-wired trigger. Future trigger points
-(scaffold-time auto-review, claim-gate re-review, manual /run-script-reviewer
+(scaffold-time auto-review, claim-gate re-review, manual /run-script-reviewer-agent
 slash command) are noted as TODOs in the agent's Roadmap section.
 
 

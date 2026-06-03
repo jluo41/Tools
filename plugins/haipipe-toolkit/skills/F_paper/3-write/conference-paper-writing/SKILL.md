@@ -1,6 +1,12 @@
 ---
 name: conference-paper-writing
 description: Use when writing or revising ML or AI conference papers for venues such as NeurIPS, ICML, ICLR, ACL, AAAI, or COLM, especially when the workflow is conference-first rather than Nature-style journal-first.
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Use when writing or revising ML or AI conference papers for venues such as NeurIPS, ICML, ICLR, ACL, AAAI, or COLM, especially when the workflow is conference-first rather than Nature-style journal-first."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Conference Paper Writing for Top AI Venues
@@ -106,7 +112,7 @@ find . -name "*.md" -o -name "*.txt" | xargs grep -l -i "result\|conclusion\|fin
 
 Look for:
 - `README.md` - Project overview and claims
-- `results/`, `outputs/`, `experiments/` - Key findings
+- `results/`, `outputs/`, `probes/` - Key findings
 - `configs/` - Experimental settings
 - Existing `.bib` files or citation references
 - Any draft documents or notes
@@ -685,7 +691,7 @@ When expanding (e.g., ICML 8 → ICLR 9):
 
 When resubmitting after rejection:
 - **Do** address reviewer concerns in the new version
-- **Do** add experiments/clarifications reviewers requested
+- **Do** add probes/clarifications reviewers requested
 - **Don't** include a "changes from previous submission" section (blind review)
 - **Don't** reference the previous submission or reviews
 

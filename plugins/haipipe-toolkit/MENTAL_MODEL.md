@@ -15,9 +15,10 @@ C_task         WORK       one run.sh + one results/<RUN>/
                           produces: D + I material (observations + patterns)
                           "看到了什么, 像什么样子"
 
-D_experiment   CLAIM      arms[] + statistical contract + verdict
+D_probe        PROBE      arms[] + statistical contract + verdict
+              (folder:    implemented today as D_probe / probes/)
                           produces: K + W material (claims + recommendations)
-                          "我们 claim 什么, 该怎么办"
+                          "朝哪个方向试探, 我们 claim 什么, 该怎么办"
 
 E_insight      ARCHIVE    D/I/K/W markdown cards under insights/
                           does NOT produce — only files + cross-refs
@@ -36,7 +37,8 @@ One assignment to remember:
 
 ```
 D + I  ←  comes from  C_task        (observational / descriptive)
-K + W  ←  comes from  D_experiment  (normative / prescriptive)
+K + W  ←  comes from  D_probe       (normative / prescriptive)
+          folder/skill compatibility name: D_probe
 E_insight     = archivist           (files cards into permanent KB)
 G_application = case worker         (one session per intent; 4 kinds;
                                      ask is the only kind that can write KB)
@@ -63,7 +65,7 @@ DIKW lens:   D (data observation) + I (information pattern)
              A task can carry both lenses at once: e.g. a regression
              task produces D ("the distribution") AND I ("the
              correlation pattern") AND maybe a candidate K hint.
-             But K and W never *commit* here; they need experiment.
+             But K and W never *commit* here; they need a probe.
 
 task-types:  data / algo / training / eval / display / individual / agent
              (see C_task/haipipe-task SKILL.md)
@@ -78,26 +80,30 @@ well-designed display or regression task often closes 3+ D/I cards in
 one shot. That is the point — DIKW is a *lens*, not a *phase*.
 
 
-D_experiment — the CLAIM layer
--------------------------------
+D_probe — the PROBE / CLAIM layer
+----------------------------------
 
 ```
-unit:        one experiment.yaml (one research thread)
-verb:        COMPARE, CLAIM, RECOMMEND
+unit:        one probe.yaml (one claim-directed probe thread)
+verb:        PROBE, COMPARE, CLAIM, RECOMMEND
 asks:        "across these arms, with N seeds, does the hypothesis hold?
               what should we do next?"
-artifacts:   experiment.yaml (hypothesis + arms[] + result + claim + caveats),
+artifacts:   probe.yaml (hypothesis + arms[] + result + claim + caveats),
              review.md, CLAIMS_FROM_RESULTS.md, logs/<DATE>.md
-location:    examples/<project>/experiments/<NN_slug>/
+location:    examples/<project>/probes/<NN_slug>/
 
-DIKW lens:   K (validated belief) + W (per-experiment recommendation)
+DIKW lens:   K (validated belief) + W (per-probe recommendation)
              — normative / prescriptive.
-             K appears in experiment.yaml.claim after result aggregation.
+             K appears in probe.yaml.claim after result aggregation.
              W appears as the "next step" implied by claim + caveats
              (e.g. "param-matched re-test", "drop arm X").
 ```
 
-A claim CANNOT exist without an experiment.
+D_probe is the conceptual name. `D_probe`, `probes/`, and
+`/haipipe-probe` remain the compatibility names in the current
+folder and command layout.
+
+A claim CANNOT exist without a probe.
 A pattern observed in a single task is at most I; promoting it to K
 requires a controlled comparison (arms × seeds × statistical test).
 
@@ -105,11 +111,11 @@ This is the most important boundary in the toolkit:
 
 ```
    D + I       no comparison needed     → C_task is sufficient
-   K + W       requires controlled      → D_experiment mandatory
+   K + W       requires controlled      → D_probe mandatory
                comparison                  (no shortcut from I to K)
 ```
 
-A single experiment can produce multiple K (a main claim + secondary
+A single probe can produce multiple K (a main claim + secondary
 claims observed in the same run) and multiple W (different "next
 steps" implied by different parts of the claim).
 
@@ -126,7 +132,7 @@ location:    examples/<project>/insights/
 
 DIKW lens:   all 4 — but as labels on cards that were *produced
              elsewhere*. E does not compute, observe, or claim. It only
-             archives material that C_task and D_experiment have
+             archives material that C_task and D_probe have
              already produced, and maintains the cross-reference graph.
 ```
 
@@ -137,8 +143,8 @@ Folder name aligned to DIKW letters:
 ```
 insights/D_data/            D## cards   ← filed from C_task results/
 insights/I_information/     I## cards   ← filed from C_task results/
-insights/K_knowledge/       K## cards   ← filed from D_experiment claims
-insights/W_wisdom/          W## cards   ← filed from D_experiment recs
+insights/K_knowledge/       K## cards   ← filed from D_probe claims
+insights/W_wisdom/          W## cards   ← filed from D_probe recs
                                           AND from strategic synthesis
                                           (multiple K → 1 strategic W)
 ```
@@ -147,12 +153,12 @@ W has two flavors in the archive — same folder, distinguished by
 `sources:`
 
 ```
-per-experiment W:  sources: [E07]                 (1 experiment)
-strategic     W:  sources: [K01, K03, K05]       (cross-experiment)
+per-probe W:  sources: [P.A07]               (1 probe)
+strategic     W:  sources: [K01, K03, K05]       (cross-probe)
 ```
 
 The K-commit "harsh" gate (must list all counter-evidence) is NOT in
-E_insight — it lives in `D_experiment/-review` where the claim is
+E_insight — it lives in `D_probe/-review` where the claim is
 made. By the time material reaches E_insight, it has already been
 vetted upstream. E_insight is a flat file-write.
 
@@ -172,7 +178,7 @@ location:    examples/<project>/applications/<kind>/<...>/
 DIKW lens:   none. G does not produce DIKW content directly. It
              evaluates whether enough D+I+K+W exists in the KB to
              produce the artifact, and orchestrates more work
-             (tasks / experiments / new KB cards) if not.
+             (tasks / probes / new KB cards) if not.
 ```
 
 G_application is the **case worker**. There are 4 kinds of case file,
@@ -181,7 +187,7 @@ all sharing one session skeleton:
 ```
 kind        artifact                                writes KB?    can trigger?
 ─────────────────────────────────────────────────────────────────────────────
-ask         applications/ask/<NN_slug>/report.md    YES           D_experiment + C_task
+ask         applications/ask/<NN_slug>/report.md    YES           D_probe + C_task
                                                                   + haipipe-insight-{D,I,K,W}
 message     applications/messages/<...>.md           no            (chains to ask if gap)
 ui          applications/ui/<slug>/                  no            (chains to ask if gap)
@@ -189,12 +195,12 @@ report      applications/reports/<...>.md            no            (chains to as
 ```
 
 `ask` is the only kind authorized to mutate the KB or trigger
-D_experiment / C_task. The external kinds delegate KB work to `ask`
+D_probe / C_task. The external kinds delegate KB work to `ask`
 and resume their own draft once `ask` returns.
 
 A session does NOT accumulate content into the KB by itself (only the
 `ask` kind does, via insight-{D,I,K,W} files). When a session ends,
-the permanent residue lives in `tasks/`, `experiments/`, `insights/`.
+the permanent residue lives in `tasks/`, `probes/`, `insights/`.
 The applications/<kind>/<...>/ folder itself is a closed case file —
 the journey, not the destination.
 
@@ -220,8 +226,8 @@ Three old confusions, resolved:
 ```
 Old confusion 1:  "where does K come from?"
                   was: vaguely "synthesize across D entries"
-                  now: K is born when an experiment validates a claim;
-                       no experiment, no K.
+                  now: K is born when a probe validates a claim;
+                       no probe, no K.
 
 Old confusion 2:  "D vs I — what's the cut?"
                   was: blurry; both observational
@@ -262,15 +268,15 @@ task_batch:
     type: individual-query
     yields: [D02]
 
-# Batch B — D_experiment work to produce K + W
-experiment_batch:
-  - id: E07
-    skill: /haipipe-experiment design
+# Batch B — D_probe work to produce K + W
+probe_batch:
+  - id: P.A07
+    skill: /haipipe-probe design
     arms: [film_pm, baseline_pm]
     yields: [K01, W01]
-    needs: [D01, I02]          # must finish before E07 starts
-  - id: E08
-    skill: /haipipe-experiment design
+    needs: [D01, I02]          # must finish before P.A07 starts
+  - id: P.B01
+    skill: /haipipe-probe design
     arms: [film_subset_od, baseline_subset_od]
     yields: [K02]
     needs: [D02]
@@ -281,15 +287,15 @@ insight_yield:
   D02: {layer: D, sources: [T3]}
   I01: {layer: I, sources: [T1]}
   I02: {layer: I, sources: [T2], refs: [D01]}
-  K01: {layer: K, sources: [E07], refs: [D01, I02]}
-  K02: {layer: K, sources: [E08], refs: [D02]}
-  W01: {layer: W, sources: [E07], refs: [K01]}
+  K01: {layer: K, sources: [P.A07], refs: [D01, I02]}
+  K02: {layer: K, sources: [P.B01], refs: [D02]}
+  W01: {layer: W, sources: [P.A07], refs: [K01]}
 
 # DAG — what blocks what
 dag:
   - T1, T2, T3 in parallel
-  - E07 needs D01 + I02
-  - E08 needs D02
+  - P.A07 needs D01 + I02
+  - P.B01 needs D02
   - All yields → G-report
 ```
 
@@ -298,7 +304,7 @@ Key properties:
 - **N tasks ↔ M D/I cards** (many-to-many, not 1:1)
 - **N tasks can collectively close 1 D card** (cross-task evidence)
 - **1 task can close multiple D+I cards at once** (lens multiplicity)
-- **K + W cards always have an experiment id in `sources`**
+- **K + W cards always have a probe source ref (`P.<GROUP><NN>`) in `sources`**
 - **Strategic W cards have multiple K ids in `sources`**
 
 
@@ -324,15 +330,15 @@ ask kind — research session (4 phases):
    │                          [G-observe gate, SOFT]          │
    │                          (skip if KB already has all D+I)│
    │                                                          │
-   │   Phase 3   claim        dispatch experiment_batch:      │
-   │                            /haipipe-experiment design    │
-   │                            /haipipe-experiment bridge    │
-   │                            /haipipe-experiment result    │
-   │                          → D_experiment workers          │
+   │   Phase 3   claim        dispatch probe_batch:           │
+   │                            /haipipe-probe design    │
+   │                            /haipipe-probe bridge    │
+   │                            /haipipe-probe result    │
+   │                          → D_probe workers          │
    │                            produce K + W                 │
    │                          [G-claim gate; SOFT on G side,  │
-   │                           HARSH gates inside D_experiment]│
-   │                          (skip if no experiment needed)  │
+   │                           HARSH gates inside D_probe]│
+   │                          (skip if no probe needed)  │
    │                                                          │
    │   Phase 4   report       /haipipe-application-plan       │
    │                          + /haipipe-insight-{D,I,K,W}    │
@@ -375,10 +381,10 @@ Two gate styles in the toolkit, separated by stake and reversibility:
 C_task CODE_REVIEW    GPU compute waste    can re-run        HARSH
                                            (3 bypass options)
                                            
-D_experiment review   claim entering       retract is        HARSH
+D_probe review   claim entering       retract is        HARSH
   (structural)        project record       expensive         (no bypass)
                                            
-D_experiment claim    public commitment    very expensive    HARSH
+D_probe claim    public commitment    very expensive    HARSH
   (Codex verdict)                                            (no bypass)
 
 E_insight card write  filing a vetted      n/a (already      no gate
@@ -388,7 +394,7 @@ G_application (ask kind)
   G-design            time spent           cheap             SOFT
   G-observe           D+I gap              cheap             SOFT
   G-claim             K+W validity         medium            ⚠ inherits
-                                                              D_experiment
+                                                              D_probe
                                                               HARSH gates
   G-report            wrong user answer    hard to undo      HARSH
 
@@ -413,10 +419,10 @@ SOFT gates protect *exploration efficiency*, not permanent record.
 That is why they have knobs — explorations should adapt.
 
 The G-claim gate is special: from G_application's side it looks SOFT
-(it can `revise` and re-plan), but the work it gates (the experiment
-itself) is governed by D_experiment's HARSH review gates upstream.
+(it can `revise` and re-plan), but the work it gates (the probe
+itself) is governed by D_probe's HARSH review gates upstream.
 G-claim does not duplicate those gates; it only checks "did we get
-the K+W we wanted from this experiment batch?"
+the K+W we wanted from this probe batch?"
 
 
 One full session, lifecycle walk-through (ask kind)
@@ -440,7 +446,7 @@ the optional inline-ask chain at gap-phase.
        → KB has D01, I01 already — but no K with test-od scope
        → writes plan-v1.yaml:
             task_batch:     [T1 (individual-query OD samples)]
-            experiment_batch: [E12 (FiLM vs baseline, OD eval)]
+            probe_batch: [P.A12 (FiLM vs baseline, OD eval)]
             insight_yield:  [D02, K03, W02]
        [G-design SOFT] → approve
 
@@ -452,15 +458,15 @@ the optional inline-ask chain at gap-phase.
        [G-observe SOFT] → approve
 
 [t=4]  Phase 3 — claim
-       dispatch E12:
-         /haipipe-experiment design new E12
-         /haipipe-experiment bridge E12
+       dispatch P.A12:
+         /haipipe-probe design new film_vs_baseline_od_eval --group A --group-title baseline_controls --id 12
+         /haipipe-probe bridge P.A12
            → scaffolds 6 task-folders (3 seeds × 2 arms)
            → invokes Run Script Reviewer (HARSH gate, C_task side)
            → bash runs/<RUN>.sh × 6
-         /haipipe-experiment result aggregate E12
-           → fills result block in experiment.yaml
-         /haipipe-experiment review E12
+         /haipipe-probe result aggregate P.A12
+           → fills result block in probe.yaml
+         /haipipe-probe review P.A12
            → HARSH structural QA + Codex verdict
        → returns K03 + W02 material
        [G-claim SOFT-on-G-side] → approve
@@ -501,7 +507,7 @@ A: tasks/ — specifically a `display`-type task. The figure is the
 
 A: No. K requires a controlled comparison — arms × seeds × test. A
    regression is observational; it can produce strong I, but not K.
-   Promote by scaffolding an experiment that arm-matches the regressor.
+   Promote by scaffolding a probe that arm-matches the regressor.
 
 **Q: One C_task run yields evidence for 3 D cards. How is that
     recorded in the plan?**
@@ -520,11 +526,11 @@ A: `insight_yield.D01.sources: [T1, T2, T5]`. The card cites all
 
 A: Yes. If the KB already has all needed K+W, or if the question
    only needs D+I (e.g. "describe the data"), the plan's
-   `experiment_batch` is empty and Phase 3 is a no-op.
+   `probe_batch` is empty and Phase 3 is a no-op.
 
 **Q: Can a session skip Phase 2 (observe)?**
 
-A: Yes. If the experiment_batch only depends on existing D/I in the
+A: Yes. If the probe_batch only depends on existing D/I in the
    KB, Phase 2 is a no-op and Phase 3 runs directly.
 
 **Q: Multiple sessions cite the same K card. Does the card get
@@ -533,10 +539,10 @@ A: Yes. If the experiment_batch only depends on existing D/I in the
 A: No. Cards are atomic. Sessions cite by ID. The card's `ref_by:`
    list grows.
 
-**Q: A session's K card later turns out wrong (new experiment
+**Q: A session's K card later turns out wrong (new probe
     refutes it). What happens?**
 
-A: The refuting experiment yields a new K with `supersedes: [K-old]`.
+A: The refuting probe yields a new K with `supersedes: [K-old]`.
    K-old's `status:` changes to `superseded` but the file remains
    for history. Both visible in K_knowledge/INDEX.md.
 
@@ -549,10 +555,10 @@ A: Maybe. W cards decay. Check `status:` (active / stale). The
 **Q: Where do raw thinking notes / daily logs go?**
 
 A: applications/ask/<NN_slug>/logs/<YYYY-MM-DD>.md (append-only,
-   captain's-log style). Not in tasks/, not in experiments/.
+   captain's-log style). Not in tasks/, not in probes/.
 
 **Q: What's the difference between `/haipipe-application ask` and
-    just running `/haipipe-task` + `/haipipe-experiment` directly?**
+    just running `/haipipe-task` + `/haipipe-probe` directly?**
 
 A: The ask kind gives you the session machinery: SESSION_STATE.json
    for resume, plan-vN.yaml for design intent, gates for phase
@@ -573,10 +579,10 @@ A: At Phase load, the external kind reads K/W on the relevant tags.
    verbatim to `/haipipe-application ask`. You can override the
    composed sub-Q at the G-load gate via reply B.
 
-**Q: Two sessions want to run the same experiment. Wasted compute?**
+**Q: Two sessions want to run the same probe. Wasted compute?**
 
-A: The second session's plan-v1.yaml.experiment_batch will scan
-   existing experiments/ first. If E07 with the desired arms exists
+A: The second session's plan-v1.yaml.probe_batch will scan
+   existing probes/ first. If P.A07 with the desired arms exists
    and is `confirmed`, the second session reuses it (no re-run).
 
 
@@ -585,18 +591,18 @@ One-line rules of thumb
 
 ```
 new D / I material  → C_task        (a task run produces it)
-new K / W material  → D_experiment  (an experiment claims it)
+new K / W material  → D_probe  (a probe claims it)
 file a vetted card  → E_insight     (just write the markdown)
 any session-style intent → G_application (4 kinds: ask / message / ui / report)
 
 no controlled comparison         → no K, only I
-no experiment                    → no K, only I
+no probe                    → no K, only I
 no I / no K available            → /haipipe-application ask  (only kind that
-                                    can schedule tasks / experiments)
+                                    can schedule tasks / probes)
 strategic synthesis across K     → still W, sources = [K01, K03, …]
 external artifact needed         → /haipipe-application {message|ui|report}
                                     (KB-readonly; chains to ask if gap)
-session ends                     → residue in tasks/+experiments/+insights/
+session ends                     → residue in tasks/+probes/+insights/
                                     session folder is the case file
 ```
 
@@ -607,7 +613,7 @@ Where to go from here
 ```
 Toolkit-wide usage flows:        USAGE.md
 C_task design + worktree:        skills/C_task/DESIGN.md
-D_experiment ↔ C_task boundary:  skills/D_experiment/MENTAL_MODEL.md
+D_probe ↔ C_task boundary:  skills/D_probe/MENTAL_MODEL.md
 E_insight schema:                skills/E_insight/ref/insight-md-schema.md
 G_application umbrella:          skills/G_application/haipipe-application/SKILL.md
 G_application session state:     skills/G_application/haipipe-application/ref/session-state-schema.md

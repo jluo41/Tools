@@ -1,8 +1,14 @@
 ---
 name: haipipe-end-deploy-local
 description: "Local self-hosted deploy specialist for haipipe-end. Wraps an Endpoint_Set into a local HTTP server — Flask (default), FastAPI, or local Docker container. For dev, integration testing, demos, and DIY deployments. Backed in part by platform-sagemaker-inference/scripts/build_endpoint/run_endpoint_{system,docker}.py for the Flask + Docker testing ladder. Reads Endpoint_Sets produced by haipipe-end-endpointset; never modifies them. Called by /haipipe-end orchestrator when deploy target is local / flask / fastapi / localhost."
-argument-hint: [verb] [endpoint_set_or_id] [args...]
+argument-hint: "[verb] [endpoint_set_or_id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Local self-hosted deploy specialist for haipipe-end."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-end-deploy-local

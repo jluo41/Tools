@@ -30,8 +30,9 @@ Standard Layout
 
   examples/{PROJECT_ID}/
   +-- tasks/          <- MANDATORY: all task work here (C_task scaffolds)
-  +-- experiments/    <- MANDATORY: research threads (D_experiment manages)
+  +-- probes/    <- MANDATORY: research threads (D_probe manages)
   +-- insights/       <- MANDATORY: knowledge base (E_insight manages)
+  +-- narratives/     <- OPTIONAL: living story lines (N_narrative manages; KB ⇄ Narrative)
   +-- diagram/        <- MANDATORY: project-level story (high-level only)
   +-- paper/          <- OPTIONAL: manuscripts (F_paper; each Paper-* gets own diagram/)
   +-- applications/   <- OPTIONAL: external artifacts (G_application; messages/ui/reports)
@@ -41,8 +42,8 @@ Standard Layout
   Project-level state lives in seven places:
     - SHAPE       project layout enforced by haipipe-project specialists
     - WORK        in {PROJECT}/tasks/         (execution: code, configs, runs, metrics)
-    - CLAIMS      in {PROJECT}/experiments/   (research threads + claim verdicts)
-    - KNOWLEDGE   in {PROJECT}/insights/      (cross-experiment synthesis; D/I/K/W)
+    - CLAIMS      in {PROJECT}/probes/   (research threads + claim verdicts)
+    - KNOWLEDGE   in {PROJECT}/insights/      (cross-probe synthesis; D/I/K/W)
     - STORY       in {PROJECT}/diagram/       (project-level narrative)
     - DETAIL      in {task}/diagram/          (per-task, operational)
     - DELIVERY    in {PROJECT}/applications/  (external artifacts: messages, UI, reports)
@@ -66,44 +67,69 @@ Project-level diagram/  (high-level story)
 
 ---
 
-Project-level experiments/  (research threads)
+Project-level probes/  (research threads)
 ================================================
 
-  examples/{PROJECT_ID}/experiments/
-  +-- INDEX.md              auto: list all experiments + status (by inspect)
+  examples/{PROJECT_ID}/probes/
+  +-- INDEX.md              auto: list all probes + status (by inspect)
   +-- coverage.md           auto: explore coverage map (arch x data x seed)
   +-- propose.md            auto: explore propose output (next-step ideas)
-  +-- comparison.md         auto: result render output (cross-experiment scoreboard)
-  +-- 01_{slug}/            folder-per-experiment (2-digit prefix, no gap on create)
-  +-- 02_{slug}/
+  +-- comparison.md         auto: result render output (cross-probe scoreboard)
+  +-- 0601_{slug}/         active probe (MMDD prefix)
+  +-- 0602_{slug}/
+  +-- 2026-archive/         inactive / completed / deprecated probes
+      +-- 0501_{slug}/     original folder name preserved
   +-- ...
 
-  Each experiment is a research thread. Per-folder layout:
+  Each probe is a research thread. Per-folder layout:
 
-  experiments/{NN}_{slug}/
-  +-- experiment.yaml         source of truth: hypothesis / claim_target / arms /
+  probes/{MMDD}_{slug}/
+  +-- probe.yaml         source of truth: hypothesis / claim_target / arms /
                               aggregation spec / result / caveats / claim
   +-- review.md               latest structural QA report (overwritten per review)
   +-- INTEGRITY_AUDIT.md      Codex fraud-pattern verdict (overwritten)
   +-- CLAIMS_FROM_RESULTS.md  Codex semantic claim verdict (overwritten)
-  +-- LOOP_LOG.md             iteration history (append-only; per-experiment)
+  +-- LOOP_LOG.md             iteration history (append-only; per-probe)
   +-- logs/                   daily captain's-log narrative
   +    +-- YYYY-MM-DD.md      (one file per day, append-only)
-  +-- reports/                OPTIONAL: ad-hoc per-experiment reports
+  +-- reports/                OPTIONAL: ad-hoc per-probe reports
 
-  NO code, no notebooks, no plots inside experiments/. Those live in tasks/
-  and are referenced from experiment.yaml via the `evidence:` field.
+  NO code, no notebooks, no plots inside probes/. Those live in tasks/
+  and are referenced from probe.yaml via the `evidence:` field.
 
-  experiments/ vs tasks/ vs insights/ vs paper/ vs applications/ vs diagram/
+  Probe folder naming:
+
+    Active probes live directly under probes/ and use:
+
+      {MMDD}_{short-name}
+
+    where MMDD is the creation date (MM = month, DD = day) and short-name
+    is a concise probe idea slug. A second probe created the same day
+    appends a lowercase letter suffix (0601 -> 0601b). Examples:
+
+      probes/0601_framing_loss-aversion/
+      probes/0602_simplification_plain-language/
+      probes/0603_authority_clinician-recommendation/
+
+    When a probe is no longer active, useful, or under development, move
+    it into the matching year archive folder:
+
+      probes/{YYYY}-archive/{MMDD}_{short-name}/
+
+    Preserve the original probe folder name when archiving. Archive
+    folders keep the active probes/ workspace short while preserving an
+    auditable historical record.
+
+  probes/ vs tasks/ vs insights/ vs paper/ vs applications/ vs diagram/
   -- the six project worlds:
 
     tasks/         WORK       execution-side: code, configs, runs, metrics.
                               one task-folder = one runnable unit. C_task owns.
-    experiments/   CLAIMS     research-side: hypothesis -> arms -> aggregated claim.
-                              one experiment-folder = one research thread.
-                              D_experiment owns. NO code lives here.
-    insights/      KNOWLEDGE  cross-experiment synthesis (D/I/K/W markdown).
-                              E_insight owns. NO code; entries cite experiments
+    probes/   CLAIMS     research-side: hypothesis -> arms -> aggregated claim.
+                              one probe-folder = one research thread.
+                              D_probe owns. NO code lives here.
+    insights/      KNOWLEDGE  cross-probe synthesis (D/I/K/W markdown).
+                              E_insight owns. NO code; entries cite probes
                               + tasks via frontmatter sources.
     paper/         PUBLISH    academic manuscripts. F_paper owns. Each
                               Paper-{Name}-{venue}/ is often a git submodule.
@@ -113,19 +139,19 @@ Project-level experiments/  (research threads)
                               back.
     diagram/       STORY      project-level narrative (motivation / boundary /
                               exploration). HIGH-LEVEL only; operational status
-                              belongs in tasks/{...}/diagram/ or experiments/
-                              {NN}_{slug}/logs/.
+                              belongs in tasks/{...}/diagram/ or probes/
+                              {MMDD}_{slug}/logs/.
 
   One-way dependencies:
-    experiments/   READS tasks/                 (links runs into arms via evidence:)
-    insights/      READS experiments/ + tasks/  (D/I/K/W synthesis)
+    probes/   READS tasks/                 (links runs into arms via evidence:)
+    insights/      READS probes/ + tasks/  (D/I/K/W synthesis)
     paper/         READS insights/K + W         (publication narrative)
     applications/  READS insights/K + W         (external creation; can TRIGGER
                                                  /haipipe-insight ask to close gaps)
-    tasks/         NEVER reads experiments/insights/paper/applications/
-    experiments/   NEVER reads insights/
+    tasks/         NEVER reads probes/insights/paper/applications/
+    probes/   NEVER reads insights/
 
-  Schema authority: D_experiment/ref/experiment-yaml-schema.md.
+  Schema authority: D_probe/ref/probe-yaml-schema.md.
 
 ---
 
@@ -166,17 +192,17 @@ Project-level insights/  (knowledge base)
   no plots inside insights/ — those live in tasks/. Cross-references
   via the frontmatter `sources` / `ref_by` fields, machine-traversable.
 
-  insights/ vs experiments/ vs tasks/  -- the boundary that matters:
+  insights/ vs probes/ vs tasks/  -- the boundary that matters:
 
     tasks/        WORK         executes runs (code, GPU, metrics)
                                 ↓ provides per-run results
-    experiments/  CLAIMS       single-thread hypothesis verdict (yaml)
+    probes/  CLAIMS       single-thread hypothesis verdict (yaml)
                                 ↓ provides per-claim K/W feedstock
-    insights/     KNOWLEDGE    cross-experiment synthesis (D/I/K/W markdown)
+    insights/     KNOWLEDGE    cross-probe synthesis (D/I/K/W markdown)
                                 ↓ feeds paper
 
-  One-way dependency: insights/ READS from experiments/ (claims) + tasks/
-  (metrics). experiments/ NEVER reads from insights/. paper/ READS
+  One-way dependency: insights/ READS from probes/ (claims) + tasks/
+  (metrics). probes/ NEVER reads from insights/. paper/ READS
   insights/K + insights/W.
 
   Schema authority: E_insight/ref/insight-md-schema.md (entry shape),
@@ -220,7 +246,7 @@ Project-level applications/  (external creation)
 
   One-way dependency: applications/ READS insights/K + W. NEVER writes
   back. If a gap surfaces during drafting, the kind-specialist calls
-  /haipipe-insight ask (which may chain into /haipipe-experiment); new
+  /haipipe-insight ask (which may chain into /haipipe-probe); new
   entries land in insights/, then drafting resumes.
 
   Schema authority: G_application/haipipe-application/ref/
@@ -358,9 +384,18 @@ Task Folder Contents
         runs/<run>.sh in papermill mode does NOT use `exec > >(tee log)`;
         the recorded notebook IS the log. exports TASK_DIR before papermill.
 
-    - Commit policy: per-project. Commit when collaborators benefit from
-      the rendered form; gitignore when churn dominates. Template <stem>.ipynb
-      is usually safe to gitignore (regenerates from .py).
+    - Retention knob: configs/<run>.yaml → `_meta.notebook: full | thin | off`
+      (default full). run.sh applies it: full = keep with outputs; thin =
+      keep but clear outputs (small record — use for heavy training/data runs);
+      off = execute via papermill but keep no .ipynb. See
+      C_task/haipipe-task/ref/authoring-conventions.md §7.
+
+    - Commit policy: per-project, but DEFAULT to gitignoring `notebooks/`
+      (and `_WorkSpace/`) — N×seeds×arms recorded notebooks bloat the repo.
+      Commit a rendered notebook only when collaborators benefit from it.
+      Template <stem>.ipynb is always safe to gitignore (regenerates from .py).
+      The project scaffold should seed `.gitignore` with `notebooks/` and
+      `_WorkSpace/`.
 
   sbatch/ rules:
     - ORCHESTRATION: each .sh coordinates one or several runs/*.sh.
@@ -433,7 +468,7 @@ Task-level diagram/  (operational detail)
 
   tasks/{G}{GN}_{group}/{NN}_{task}/diagram/
   +-- 01-overview.txt     what / why / inputs / outputs (replaces task README)
-  +-- 02-design.txt       approach: model arch / algorithm / experiment setup
+  +-- 02-design.txt       approach: model arch / algorithm / probe setup
   +-- 03-runs.txt         | Run | Variant | Result Dir | Status | Notes |
   +-- 04-progress.txt     dated progress log (newest entry on top, append-only)
   +-- task.excalidraw     bundle (built by txt-to-canvas)
@@ -608,11 +643,13 @@ Review Checklist
 
 Project structure:
   [ ] Name matches Proj{Series}-{Category}-{Num}-{Name}
-  [ ] tasks/ + experiments/ + insights/ + diagram/ exist at project root
+  [ ] tasks/ + probes/ + insights/ + diagram/ exist at project root
   [ ] applications/ exists if any external artifacts have been created
   [ ] No top-level configs/, results/, README.md, docs/, cc-archive/, _old/
   [ ] Tasks live under tasks/{G}{NN}_{group}/{NN}_{name}/
-  [ ] Experiments live under experiments/{NN}_{slug}/
+  [ ] Active probes live under probes/{MMDD}_{slug}/
+  [ ] Inactive/completed/deprecated probes live under
+      probes/{YYYY}-archive/{MMDD}_{slug}/ with original name preserved
   [ ] Insights live under insights/{D,I,K,W}_*/ with INDEX.md at root
   [ ] Applications (if present) live under applications/{messages,ui,reports}/
   [ ] {PROJECT}/diagram/ has 01-story, 02-boundary, 03-exploration,
@@ -650,16 +687,18 @@ Per task (skill-runner exemption):
   [ ] If ≥2 questions: configs/<slug>.yaml + runs/_run.sh shared launcher
       + runs/ask_<slug>.sh one-line wrappers (`_`-prefix = shared/template)
 
-Per experiment (if any experiments/ folders exist):
-  [ ] Folder name is {NN}_{slug} (2-digit, no gap on creation)
-  [ ] experiment.yaml exists; passes schema
-      (D_experiment/ref/experiment-yaml-schema.md)
-  [ ] No *.py / *.ipynb / *.png / *.pdf inside experiment folder
+Per probe (if any probes/ folders exist):
+  [ ] Folder name is {MMDD}_{slug}
+      (MMDD = creation date: MM month, DD day; same-day collisions get a
+      letter suffix, e.g. 0601b)
+  [ ] probe.yaml exists; passes schema
+      (D_probe/ref/probe-yaml-schema.md)
+  [ ] No *.py / *.ipynb / *.png / *.pdf inside probe folder
   [ ] If result.status == confirmed: review.md + INTEGRITY_AUDIT.md +
       CLAIMS_FROM_RESULTS.md all present
   [ ] LOOP_LOG.md (if loop ever started) records all rounds + final status
   [ ] logs/ entries are date-named (YYYY-MM-DD.md), append-only
-  [ ] All experiment.yaml arms[*] run-paths exist under tasks/
+  [ ] All probe.yaml arms[*] run-paths exist under tasks/
 
 Per insight base (if insights/ exists):
   [ ] Top-level insights/INDEX.md present and fresh

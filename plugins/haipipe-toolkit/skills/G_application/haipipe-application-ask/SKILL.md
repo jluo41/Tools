@@ -1,8 +1,14 @@
 ---
 name: haipipe-application-ask
-description: "Research-question driver of the haipipe-application family. Takes one question, scans the project's KB, plans batches of C_task work (for D+I) and D_experiment work (for K+W), dispatches them, files DIKW cards via E_insight, writes a session report. The only kind in G_application authorized to trigger /haipipe-experiment + /haipipe-task from outside. Use when the user asks a research question (no specific external artifact wanted). Trigger: ask, research question, /haipipe-application ask, what do we know about X, does X hold."
-argument-hint: [question] [--project <name-or-path>] [--individual <subject-store>] [--auto] [--unattended[=Ns]] [--persona strict|balanced|creative|lenient]
+description: "Research-question driver of the haipipe-application family. Takes one question, scans the project's KB, plans batches of C_task work (for D+I) and D_probe work (for K+W), dispatches them, files DIKW cards via E_insight, writes a session report. The only kind in G_application authorized to trigger /haipipe-probe + /haipipe-task from outside. Use when the user asks a research question (no specific external artifact wanted). Trigger: ask, research question, /haipipe-application ask, what do we know about X, does X hold."
+argument-hint: "[question] [--project <path>] [--auto] [--unattended[=Ns]] [--persona strict|balanced|creative|lenient]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Task
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Research-question driver of the haipipe-application family."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-application-ask
@@ -12,7 +18,7 @@ The **question driver**. One user intent → one closed case file under
 `applications/ask/<NN_slug>/`. Walks the 4-phase ask shape end-to-end,
 calling the shared session machinery (plan / gate / context) at each
 boundary. Only kind in G_application authorized to trigger
-`/haipipe-experiment` and `/haipipe-task` from outside.
+`/haipipe-probe` and `/haipipe-task` from outside.
 
 
 Phase shape — 4 phases × 2 steps
@@ -41,17 +47,17 @@ Phase shape — 4 phases × 2 steps
    │                          (skip Phase 2 entirely if            │
    │                           task_batch is empty)                │
    │                                                              │
-   │   Phase 3   claim        dispatch experiment_batch:          │
-   │             step=task    for each E in plan.experiment_batch:│
+   │   Phase 3   claim        dispatch probe_batch:               │
+   │             step=task    for each P in plan.probe_batch:     │
    │                            Skill("haipipe-application-context"│
    │                                   args="claim E")            │
-   │                            Skill("haipipe-experiment design")│
-   │                            Skill("haipipe-experiment bridge")│
-   │                              → HARSH gates inside D_experiment│
-   │                            Skill("haipipe-experiment result")│
+   │                            Skill("haipipe-probe design")│
+   │                            Skill("haipipe-probe bridge")│
+   │                              → HARSH gates inside D_probe│
+   │                            Skill("haipipe-probe result")│
    │             step=gate    G-claim SOFT on G-side              │
    │                          (skip Phase 3 entirely if            │
-   │                           experiment_batch is empty)          │
+   │                           probe_batch is empty)               │
    │                                                              │
    │   Phase 4   report       for each card C in plan.insight_yield:│
    │             step=task    Skill("haipipe-insight-<layer>"     │
@@ -80,65 +86,11 @@ sequence. Phases 2 (observe) and 3 (claim) collect *evidence*; Phase
 Phase 1 — design (detail)
 ==========================
 
-Resolve project root + scan + sanity-check + plan, in this order:
+Scan + sanity-check + plan, in this order:
 
 ```
-A0. RESOLVE PROJECT_ROOT (before anything else)
-    Two layouts (see haipipe-application/SKILL.md "Where artifacts live"):
-
-      Per-subject (preferred when --individual is supplied):
-        PROJECT_ROOT = <individual>/examples/<project-name>
-        Example:
-          --individual _WorkSpace/A-User-Store/UserGroup-WellDoc2022CGM/Subject-26
-          --project    Subject26-Profile
-        →   PROJECT_ROOT = _WorkSpace/A-User-Store/UserGroup-WellDoc2022CGM/
-                           Subject-26/examples/Subject26-Profile
-
-      Multi-subject (default when --individual is absent):
-        PROJECT_ROOT = examples/<project-name>
-
-    If --individual is set but --project is missing, prompt for a
-    project name (or in --auto mode synthesize from the question slug
-    + "Subject<id>-" prefix).
-
-    If PROJECT_ROOT directory does not exist, scaffold the canonical
-    shape: data/, tasks/, insights/{D_data,I_information,K_knowledge,W_wisdom}/,
-    applications/ask/, experiments/, paper/, README.md.
-
-    From here on, ALL paths in the session are PROJECT_ROOT-relative.
-    Plan, SESSION_STATE.json, gates, cards, and report.md must
-    record:
-      - project:       <PROJECT_ROOT> (absolute or repo-relative)
-      - subject_store: <individual>   (if per-subject)
-      - session_root:  <PROJECT_ROOT>/applications/ask/<NN_slug>
-
-A1. LOAD DATA CONTRACT  (HARD gate — see ref/data-contract-schema.md)
-    Runs BEFORE KB scan and sanity-check; collapses bug #11 / #17
-    ad-hoc stream checks into one resolution pass.
-
-    1. Read <PROJECT_ROOT>/data/contract.yaml
-       - Missing       -> scaffold default contract for ask kind
-                          (cgm required; diet/medication/activity
-                          optional) and surface a one-line notice
-       - Schema-invalid -> HARD BLOCK; surface to user
-
-    2. Read <subject_store>/manifest.yaml (per-subject only)
-       - cuts[]   -> pick active cut (last entry, or `--cut <tag>` override)
-       - streams: -> presence map for the active cut
-
-    3. Diff contract vs subject
-       - Any required stream missing OR below floor -> HARD BLOCK,
-         surface gaps.md to user; session terminates with status=blocked
-       - Otherwise write data/available.md + data/gaps.md (atomic .tmp+mv)
-
-    4. Pin into SESSION_STATE.json:
-       - data_cut       = <active cut tag>
-       - contract_path  = data/contract.yaml
-       - (later, step C) trimmed_by_contract = [task ids dropped because
-         their `enables` matched an absent optional stream]
-
-A. SCAN KB
-   - Read <PROJECT_ROOT>/insights/INDEX.md if present
+A. SCAN KB (Phase 0 of the old vocabulary, now a sub-step of design)
+   - Read examples/<project>/insights/INDEX.md if present
    - If INDEX.md missing: KB is empty, set existing_relevant: {} and
      CONTINUE. Empty KB is NOT a blocker for ask sessions; it is the
      normal starting state for a new project.
@@ -146,36 +98,25 @@ A. SCAN KB
      relevant. Skim frontmatter only (≤ 13 lines each); read bodies
      only if needed.
 
-B. SANITY-CHECK question vs data
-   Per-subject stream presence + density is already resolved at
-   step A1 via the data contract (HARD BLOCK on missing requireds,
-   trim list for missing optionals). Step B handles only the
-   question-vs-evidence checks the contract cannot express:
-   - If the question references streams the contract marks as
-     optional AND those streams are absent in data/gaps.md,
-     reduce sub-questions accordingly (record dropped sub-questions
-     in question.md "Out of scope" block).
-   - If question is cross-experiment, verify experiments/ has at
-     least one confirmed experiment with matching tags. Missing
-     -> BLOCK and surface to user.
-   - If the contract was scaffolded with defaults at A1, prompt
-     the user to confirm the auto-generated requireds before
-     committing the plan (skip prompt in --auto / --unattended=0
-     mode; record the auto-confirm in SESSION_STATE.notes).
+B. SANITY-CHECK question vs data (THIS WAS MISSING — bug #11)
+   - If question is per-individual (e.g. references a single Subject-<id> folder), verify
+     CGM density ≥ 1000 rows under the individual's 1-SourceStore
+     before planning task_batch. Sparse-sample subjects → ASK user
+     whether to (a) pick a denser individual or (b) reframe to cohort
+     scope.
+   - If question is cross-probe, verify probes/ has at
+     least one confirmed probe with matching tags.
+   - If a required data source is missing entirely, gate the plan
+     to BLOCKED and surface to user.
 
 C. WRITE plan-v{N}.yaml
-   - Location: <PROJECT_ROOT>/applications/ask/<NN_slug>/plans/plan-v{N}.yaml
+   - Location: applications/ask/<NN_slug>/plans/plan-v{N}.yaml
    - Maintain plans/plan.yaml symlink → plan-v{N}.yaml
    - Schema: see haipipe-application-plan/SKILL.md (task_batch +
-     experiment_batch + insight_yield + dag + gates + revise_history)
-   - Task entries record both `script` and `out` paths as
-     PROJECT_ROOT-relative — typically
-       script: tasks/<group>/<NN_task>/run.py
-       out:    tasks/<group>/<NN_task>/results/run_v1
+     probe_batch + insight_yield + dag + gates + revise_history)
    - Atomic: write to .tmp then mv; never partial write.
 
 D. UPDATE SESSION_STATE.json (always atomic, .tmp + mv)
-   - project, subject_store (if any), session_root recorded
    - current_phase = "design", current_step = "task"
    - completed_tasks.design = [{name:"plan-v1", status:"done",
      plan_version:1}]
@@ -221,34 +162,34 @@ After all T done (or blocker reached):
 Phase 3 — claim (detail)
 =========================
 
-Dispatches experiment_batch. Skip entirely if experiment_batch is
-empty. K and W cards CANNOT be filed unless an experiment validates
+Dispatches probe_batch. Skip entirely if probe_batch is
+empty. K and W cards CANNOT be filed unless an probe validates
 them — this is the strict rule from MENTAL_MODEL.md.
 
 ```
-For each E in plan.experiment_batch:
-  1. SESSION_STATE: current_step="task", current_task=E.id
-  2. Skill("haipipe-application-context", args="claim <E.id>")
-     → checks E.needs (D/I cards required as input) all resolved
-  3. Skill("haipipe-experiment design", args="new <E.id> --auto")
-  4. Skill("haipipe-experiment bridge", args="<E.id>")
+For each P in plan.probe_batch:
+  1. SESSION_STATE: current_step="task", current_task=P.id
+  2. Skill("haipipe-application-context", args="claim <P.id>")
+     → checks P.needs (D/I cards required as input) all resolved
+  3. Skill("haipipe-probe design", args="new <P.slug> --group <P.group> --id <P.local_id> --auto")
+  4. Skill("haipipe-probe bridge", args="<P.id>")
      → scaffolds runs/ + invokes Run Script Reviewer
        (HARSH gate inside C_task; bridge handles its own gates)
      → deploys runs (GPU work; may take hours)
-  5. WAIT for results to land (poll experiment.yaml.result.status)
-  6. Skill("haipipe-experiment result aggregate", args="<E.id>")
+  5. WAIT for results to land (poll probe.yaml.result.status)
+  6. Skill("haipipe-probe result aggregate", args="<P.id>")
      → fills result block; status: pending → confirmed
-  7. Skill("haipipe-experiment review", args="<E.id>")
+  7. Skill("haipipe-probe review", args="<P.id>")
      → HARSH structural + Codex verdict
-  8. Update experiment_calls[] in SESSION_STATE.json
+  8. Update probe_calls[] in SESSION_STATE.json
 
 Pre-gate artifact check (G-claim):
   For every K/W in plan.insight_yield: verify the sourcing
-  experiment's result.status == "confirmed". If any "pending" or
+  probe's result.status == "confirmed". If any "pending" or
   "refuted", override gate to revise.
 
 Skill("haipipe-application-gate", args="G-claim")
-  → SOFT-on-G-side (HARSH already happened upstream in D_experiment)
+  → SOFT-on-G-side (HARSH already happened upstream in D_probe)
   → revise → back to Phase 1
   → approve → Phase 4
 ```
@@ -263,7 +204,7 @@ A. FILE DIKW cards (one card per entry in plan.insight_yield)
      Skill("haipipe-insight-<layer>", args="--scope <C.sources>")
        → writes insights/<L>_*/C##_<slug>.md
    D + I cards source from C_task results/.
-   K + W cards source from D_experiment experiment.yaml.
+   K + W cards source from D_probe probe.yaml.
 
 B. REBUILD insights/INDEX.md
    Aggregate all cards (incl. existing ones), regenerate top INDEX
@@ -273,14 +214,6 @@ B. REBUILD insights/INDEX.md
 C. COMPOSE final report
    Skill("haipipe-application-plan", args="compose report")
      → writes applications/ask/<NN_slug>/report.md
-     → MUST follow the DIKW-spine template in
-       ../haipipe-application/ref/report-template.md:
-         - Header (Data cut + Question verbatim)
-         - TL;DR <= 20 lines
-         - One block per insight_yield card under D/I/K/W headers
-         - Each block: Illustration + Table + Narrative + Source
-         - Empty layers carry the canonical placeholder (NOT omitted)
-         - Trailing "Did we answer..." + Provenance sections
      → MUST cite the K/W (or D/I if no K/W) entries it relies on
      → MUST honestly answer "did we answer the original question?"
 
@@ -288,11 +221,6 @@ D. UPDATE SESSION_STATE.json to status="complete", current_phase="done"
 
 E. G-report (HARSH)
    Skill("haipipe-application-gate", args="G-report")
-     → checks template invariants 1-7 in
-       ../haipipe-application/ref/report-template.md
-       (header, TL;DR length, per-card block presence,
-        5-element completeness, source path resolution,
-        empty-layer placeholders, trailing sections)
      → checks: report.md cites filed cards; truly answers Q
      → revise → back to Phase 1
      → approve → terminal: session complete
@@ -310,11 +238,11 @@ shape                            phases run
 ─────────────────────────────────────────────
 descriptive (D/I only)           1 → 2 → 4   (skip 3, no K/W)
 KB lookup (no new evidence)      1 → 4       (skip 2 + 3; report from KB)
-experiment-only (K/W only)       1 → 3 → 4   (skip 2, no new D/I)
+probe-only (K/W only)       1 → 3 → 4   (skip 2, no new D/I)
 full (D + I + K + W)             1 → 2 → 3 → 4
 ```
 
-Plan declares which shape via task_batch / experiment_batch
+Plan declares which shape via task_batch / probe_batch
 emptiness. The orchestrator detects this automatically; no special
 flag needed.
 
@@ -333,52 +261,16 @@ complete schema. Key fields for ask:
 kind: ask
 current_phase: design | observe | claim | report | done
 current_step:  task | gate
-current_task:  <task id like T1, E07, plan-v1, report.md>
+current_task:  <task id like T1, P.A07, plan-v1, report.md>
 current_gate:  G-design | G-observe | G-claim | G-report
 plan_version:  N
-data_cut:      <tag from subject manifest, e.g. "2026-05"> | null
-contract_path: data/contract.yaml | null
-trimmed_by_contract: [<task id>, ...]   # filled at Phase 1 step C
 completed_tasks: {design:[], observe:[], claim:[], report:[]}
 pending_tasks:   {design:[], observe:[], claim:[], report:[]}
-experiment_calls: [{phase, exp_id, via, ts, status}, ...]
+probe_calls:      [{phase, probe_ref, via, ts, status}, ...]
 task_calls:       [{phase, task_path, via, ts, status}, ...]
 gate_persona:    {preset, strictness, ambition, notes}
 unattended_timeout: null | N | 0
 ```
-
-
-Refresh sessions (new data cut)
-================================
-
-When the subject store advances to a new data cut — at any time t,
-any cadence — do NOT fork the project folder. Open a new session:
-
-```
-applications/ask/NN_refresh_<cut-tag>/
-  e.g.  02_refresh_v2026-06/
-        03_refresh_release-3/
-        04_refresh_post-recalibration/
-```
-
-Cut tags are opaque strings from the subject manifest; this skill
-makes no assumption about date format or cadence.
-
-Phase 1 step A1 pins the new cut into `SESSION_STATE.data_cut` and
-regenerates `data/available.md` + `data/gaps.md` against the new
-manifest. Insight cards filed by the refresh session carry the new
-cut in frontmatter. Cards from prior cuts behave per the project's
-`cut_discipline` (see ref/data-contract-schema.md):
-
-```
-snapshot   prior cards stay frozen; new cut goes into a fresh
-           session-scoped card set (no supersession)
-latest     prior cards are SUPERSEDED in place (git keeps history)
-pinned     refresh is a no-op unless the pin is bumped explicitly
-```
-
-Trend cards (`I0N_trend-*.md`) become possible once ≥ 2 cuts exist
-and explicitly cite the cut series.
 
 
 Commands
@@ -404,7 +296,7 @@ MAX_REVISIONS    default 3      Cap on revise→plan cycles. Hitting cap
                                 triggers FORCED APPROVAL with audit banner
                                 (see ../haipipe-application/ref/gate-persona.md).
 
-MAX_EXPERIMENTS  default 3      Cap on new experiments triggered per session.
+MAX_EXPERIMENTS  default 3      Cap on new probes triggered per session.
                                 Exceeding asks user to confirm continuation.
 
 Flags:
@@ -413,14 +305,7 @@ Flags:
   --unattended[=Ns]                            maps to SESSION_STATE.unattended_timeout
                                                 (see ref/attendance-modes.md)
   --auto                                       legacy alias for --unattended=0
-  --project <name-or-path>                     project name (per-subject) OR full
-                                                project root path (multi-subject).
-                                                See Phase 1.A0 for resolution rules.
-  --individual <subject-store>                 path to _WorkSpace/A-User-Store/
-                                                UserGroup-<dataset>/Subject-<id>/.
-                                                When supplied, PROJECT_ROOT defaults
-                                                to <individual>/examples/<project-name>
-                                                (per-subject layout).
+  --project <path>                             override project root
 ```
 
 
@@ -443,7 +328,7 @@ On resume, read SESSION_STATE.json, then:
 1. State-vs-disk consistency check (mandatory before re-entering loop):
    For each `done`/`reused` entry in completed_tasks.*, verify the
    yield artifacts exist on disk (D/I → tasks/.../results/; K/W →
-   experiment.yaml.result.status=="confirmed" + corresponding
+   probe.yaml.result.status=="confirmed" + corresponding
    insight card filed). Missing → demote entry to status="failed",
    name re-enters pending_tasks. Log demotions to
    `applications/ask/<NN>/tmp/recovery-<ISO>.log`.
@@ -459,15 +344,15 @@ Boundary
 =========
 
 ```
-haipipe-application-ask     bridges INSIGHT base ↔ EXPERIMENT base
-                            via /haipipe-experiment + /haipipe-task
+haipipe-application-ask     bridges INSIGHT base ↔ PROBE base
+                            via /haipipe-probe + /haipipe-task
 
-haipipe-experiment-loop     iterates ONE experiment thread
-haipipe-experiment-bridge   scaffolds tasks for ONE experiment
+haipipe-probe-loop     iterates ONE probe thread
+haipipe-probe-bridge   scaffolds tasks for ONE probe
 
 Session NEVER writes tasks/ directly — always via /haipipe-task or
-/haipipe-experiment-bridge. The one-way dependency
-(experiments → tasks; ask → both) stays clean.
+/haipipe-probe-bridge. The one-way dependency
+(probes → tasks; ask → both) stays clean.
 ```
 
 
@@ -477,10 +362,10 @@ Risk profile
 WRITES:
 - insights/ (heavy — files D/I/K/W cards, rebuilds INDEX)
 - applications/ask/<NN>/ (plans, gates, SESSION_STATE.json, report.md)
-- via dispatch: tasks/, experiments/ (through C_task / D_experiment)
+- via dispatch: tasks/, probes/ (through C_task / D_probe)
 
 CALLS:
-- External LLM (Codex MCP) indirectly via experiment-bridge's
+- External LLM (Codex MCP) indirectly via probe-bridge's
   Run Script Reviewer + review claim. Budget via MAX_EXPERIMENTS.
 
 GATES:
@@ -488,7 +373,7 @@ GATES:
   G-report) — persona + attendance driven.
 - HARSH gates downstream:
   - C_task: CODE_REVIEW.md (bridge invokes Run Script Reviewer)
-  - D_experiment: review structural + integrity + claim
+  - D_probe: review structural + integrity + claim
   - Phase 4: G-report (this session's HARSH gate)
 
 
@@ -505,7 +390,7 @@ artifacts: [applications/ask/<NN_slug>/{SESSION_STATE.json, plans/, gates/,
             insights/I_information/I*.md (new),
             insights/K_knowledge/K*.md (new / updated),
             insights/W_wisdom/W*.md (if any),
-            experiments/<NN>_<slug>/ (if new experiments scaffolded),
+            probes/<GROUP>_<group_slug>/<NN>_<slug>/ (if new probes scaffolded),
             tasks/<G##>/<##>/results/<RUN>/ (per dispatched task)]
 next:      "review report.md + KB updates; if external artifact needed,
             /haipipe-application {message|ui|report}"

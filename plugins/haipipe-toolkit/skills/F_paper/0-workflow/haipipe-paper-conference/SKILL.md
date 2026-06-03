@@ -1,8 +1,14 @@
 ---
 name: haipipe-paper-conference
 description: "Conference paper pipeline specialist (was: paper-writing). Orchestrates paper-plan → paper-figure → figure-spec/paper-illustration/mermaid-diagram → paper-write → paper-compile → auto-paper-improvement-loop to go from a narrative report to a polished PDF. Target venues: ICLR, NeurIPS, ICML, CVPR, ACL, AAAI, IEEE. At `— effort: max | beast` (or explicit `— assurance: submission`), Phase 6 gates the Final Report on `tools/verify_paper_audits.sh`. Called by /haipipe-paper orchestrator. Direct invocation works for conference work. Trigger: conference paper, ICLR/NeurIPS/ICML paper, write paper pipeline, 写论文全流程, 从报告到PDF."
-argument-hint: [narrative-report-path-or-topic]
+argument-hint: "[narrative-report-path-or-topic]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, Skill, mcp__codex__codex, mcp__codex__codex-reply
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Conference paper pipeline specialist (was: paper-writing)."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Workflow 3: Paper Writing Pipeline
@@ -329,7 +335,7 @@ After `/auto-paper-improvement-loop` finishes, **rerun** `/paper-claim-audit` be
 
 Use the same detectors as Phase 4.7:
 - numeric-claim regex over `paper/main.tex` and `paper/sections/*.tex`
-- raw-evidence file search in `results/`, `outputs/`, `experiments/`, and `figures/` for `.json`, `.jsonl`, `.csv`, `.tsv`, `.yaml`, or `.yml`
+- raw-evidence file search in `results/`, `outputs/`, `probes/`, and `figures/` for `.json`, `.jsonl`, `.csv`, `.tsv`, `.yaml`, or `.yml`
 
 This phase is **mandatory** if both detectors are positive. It blocks the final report.
 If numeric claims exist but no raw result files are found, stop and warn the user before declaring the paper complete.
@@ -356,7 +362,7 @@ fi
 
 ### Phase 5.8: Citation Audit (submission gate)
 
-After the final paper-claim-audit passes, run `/citation-audit` to verify every `\cite{...}` along three axes: existence, metadata correctness, and context appropriateness. This is the fourth and final layer of the evidence-and-claim assurance stack (`experiment-audit` → `result-to-claim` → `paper-claim-audit` → `citation-audit`).
+After the final paper-claim-audit passes, run `/citation-audit` to verify every `\cite{...}` along three axes: existence, metadata correctness, and context appropriateness. This is the fourth and final layer of the evidence-and-claim assurance stack (`probe-audit` → `result-to-claim` → `paper-claim-audit` → `citation-audit`).
 
 ```
 if paper/references.bib (or paper.bib) exists and contains entries cited from sec/*.tex:
@@ -586,7 +592,7 @@ or directly if `assurance=draft`)
 ```
 /idea-discovery "direction"         ← Workflow 1: find ideas
 implement                           ← write code
-/run-experiment                     ← deploy experiments
+/run-probe                     ← deploy experiments
 /auto-review-loop "paper topic"     ← Workflow 2: iterate research
 /haipipe-paper-conference "NARRATIVE_REPORT.md"  ← Workflow 3: you are here
                                          submit! 🎉

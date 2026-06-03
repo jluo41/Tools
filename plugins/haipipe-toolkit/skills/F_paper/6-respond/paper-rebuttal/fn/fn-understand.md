@@ -296,7 +296,7 @@ Step 6: Generate A-review-content/README.md (after ALL reviewers done)
 
     For each reviewer, list every W/Q/L with:
       - The concern text (1-line summary)
-      - Actionability tag ([experiment/analysis/text-change/concede])
+      - Actionability tag ([probe/analysis/text-change/concede])
       - Cross-review connection
 
     | Tag | Concern                     | Actionability      | Cross-review        |
@@ -323,7 +323,7 @@ Quality Check
   Before moving to Phase B, verify:
     [ ] Every W, Q, L has at least one author annotation
     [ ] Every concern has a CC response with mapping
-    [ ] Every concern is tagged [experiment/analysis/text-change/concede]
+    [ ] Every concern is tagged [probe/analysis/text-change/concede]
     [ ] Cross-review connections are flagged
     [ ] Bottom-line summary exists for each reviewer
     [ ] README.md exists with master mapping + concern inventory

@@ -1,8 +1,14 @@
 ---
 name: haipipe-project
 description: "Run any project-level work in the haipipe workspace. Parses intent (build vs read vs modify) and dispatches to the right specialist (/haipipe-task for scaffolding tasks under examples/, /haipipe-project-inspect for review/summary/inventory/overview, /haipipe-project-organize for reorganizing files). Use for creating new projects/task-groups/task-folders (data / algo / training / eval / display / individual / agent) under examples/, auditing structure, generating docs, reorganizing. Trigger: project scaffold, new task, new figure task, new evaluation task, project review, project summary, organize project, reorganize files, /haipipe-project."
-argument-hint: [function] [project_id] [args...]
+argument-hint: "[function] [project_id] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Run any project-level work in the haipipe workspace."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-project (orchestrator)
@@ -46,16 +52,16 @@ Lives in C_task/  (task-scope work — sibling section):
 
   haipipe-task               BUILD orchestrator: scope=project / task-group / run, plus
                                      task-folder dispatch to the 7 type specialists below.
-  haipipe-task-data          data-pipeline (Stage 1-4)           D-series  → /haipipe-data
-  haipipe-task-algo          algo-dev smoke-test                 X_algo    → /haipipe-nn-algo
-  haipipe-task-training      model training (Stage 5)            A-series  → /haipipe-nn-tuner+instance
-  haipipe-task-eval          evaluation                          B-series  → (project-local; future)
-  haipipe-task-display       paper figures / tables              C-series  → (independent)
-  haipipe-task-individual    individual-centric query               E-series  → /haipipe-individual
-  haipipe-task-agent         LLM agent call                      F-series  → (none yet)
+  haipipe-task-for-data          data-pipeline (Stage 1-4)           D-series  → /haipipe-data
+  haipipe-task-for-algo          algo-dev smoke-test                 X_algo    → /haipipe-nn-algo
+  haipipe-task-for-training      model training (Stage 5)            A-series  → /haipipe-nn-tuner+instance
+  haipipe-task-for-eval          evaluation                          B-series  → (project-local; future)
+  haipipe-task-for-display       paper figures / tables              C-series  → (independent)
+  haipipe-task-for-individual    individual-centric query               E-series  → /haipipe-individual
+  haipipe-task-for-agent         LLM agent call                      F-series  → (none yet)
 
 (Per-run logging is automatic via runs/<NAME>.sh → results/<NAME>/runtime.yaml.
- For experiment-level claims + aggregation, see D_experiment/* skills.)
+ For probe-level claims + aggregation, see D_probe/* skills.)
 ```
 
 Conceptual layering — a `project` is the umbrella, containing five
@@ -67,12 +73,12 @@ parallel worlds. Each world has its own specialist family:
    ├── 💼 tasks/                  /haipipe-task-*               (C_task/)
    │       "did THIS run work?"   — code + runs + per-run metrics
    │
-   ├── 📊 experiments/            /haipipe-experiment           (D_experiment/)
+   ├── 📊 probes/            /haipipe-probe           (D_probe/)
    │       "does the HYPOTHESIS   — steering state; NO code, only
    │        hold?"                  arms[] pointers into tasks/
    │
    ├── 💡 insights/               /haipipe-insight              (E_insight/)
-   │       "what does the         — cross-experiment synthesis
+   │       "what does the         — cross-probe synthesis
    │        PROJECT know?"          D/I/K/W markdown layers
    │
    ├── 📰 paper/                   /paper-*                     (separate section)
@@ -87,10 +93,10 @@ parallel worlds. Each world has its own specialist family:
                                    close knowledge gaps mid-draft
 ```
 
-**For the boundary between C_task and D_experiment** (the most-confused
+**For the boundary between C_task and D_probe** (the most-confused
 pair, since both touch results/), see
-`D_experiment/MENTAL_MODEL.md` — onboarding doc with FAQ +
-"rules of thumb" + walkthrough of one experiment's full lifecycle.
+`D_probe/MENTAL_MODEL.md` — onboarding doc with FAQ +
+"rules of thumb" + walkthrough of one probe's full lifecycle.
 
 ---
 
@@ -132,8 +138,8 @@ overview, show, status                        -> haipipe-project-inspect (overvi
 organize, reorganize, fix structure, move     -> haipipe-project-organize
 scan-status, scan eval, eval status          -> haipipe-project-inspect (scan-status)
 
-(claims / experiments / comparison: → /haipipe-experiment under D_experiment/
- per-run runtime.yaml is auto-written; query via grep/yq or /haipipe-experiment inspect)
+(claims / probes / comparison: → /haipipe-probe under D_probe/
+ per-run runtime.yaml is auto-written; query via grep/yq or /haipipe-probe inspect)
 ```
 
 ---

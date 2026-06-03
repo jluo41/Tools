@@ -1,8 +1,14 @@
 ---
 name: haipipe-application-message
 description: "Message specialist of the haipipe-application family. Outer-loop session that drafts patient or clinician messages from the project's K/W knowledge base. Reads K_knowledge + W_wisdom from E_insight, can trigger /haipipe-insight ask when a load-bearing claim is missing, then writes the final message to examples/<project>/applications/messages/. NEVER writes back to insights/. Trigger: message, patient message, clinician message, sms, send to user, /haipipe-application message."
-argument-hint: [--audience patient|clinician] [--project <path>] [--slug <slug>] "<intent>"
+argument-hint: '[--audience patient|clinician] [--project <path>] [--slug <slug>] "<intent>"'
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Message specialist of the haipipe-application family."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-application-message
@@ -88,7 +94,7 @@ Phase 2 — Gap check
 
 Phase 3 — Trigger insight-session (optional)
   ASK user: "Knowledge gap: <gap statement>. Run insight-session to close
-             it (may trigger experiments), OR proceed with draft + flag
+             it (may trigger probes), OR proceed with draft + flag
              open question?"
   → option A: Skill("haipipe-application-ask", args="<gap question>")
               → on return, Phase 4
@@ -125,7 +131,7 @@ intent:       "<one-line restatement>"
 created:      YYYY-MM-DD
 cited_K:      [K01, K03]
 cited_W:      [W02]
-triggered:    [insight_session_id, exp_id]   # if Phase 3 fired
+triggered:    [insight_session_id, probe_ref]   # if Phase 3 fired
 status:       draft | reviewed | shipped | superseded
 ---
 
@@ -166,10 +172,10 @@ Risk profile
 
 WRITES new file under `applications/messages/`. May TRIGGER
 `/haipipe-application ask` in Phase 3, which can chain
-`/haipipe-experiment` → GPU jobs. Budget via MAX_EXPERIMENTS (default 3,
+`/haipipe-probe` → GPU jobs. Budget via MAX_EXPERIMENTS (default 3,
 inherited from insight-session).
 
-NEVER writes to insights/, tasks/, or experiments/ directly.
+NEVER writes to insights/, tasks/, or probes/ directly.
 
 
 Specialist tail

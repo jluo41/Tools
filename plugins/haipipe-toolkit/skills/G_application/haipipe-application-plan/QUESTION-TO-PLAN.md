@@ -4,7 +4,7 @@ How Questions Drive the Pipeline
 Human asks ONE question. The pipeline figures out everything else.
 
 The plan output is **two related batches** (task_batch +
-experiment_batch) plus an `insight_yield` map that says which DIKW
+probe_batch) plus an `insight_yield` map that says which DIKW
 cards each work item closes. **DIKW is a lens, not a phase order** —
 sessions never run "D-tasks first, then I-tasks, then K-tasks".
 
@@ -17,11 +17,11 @@ The question is the seed. Everything grows from it.
 ```
 Question
   | shapes
-Explore (what KB do we already have?  what task/experiment results?)
+Explore (what KB do we already have?  what task/probe results?)
   | shapes
-Plan (what tasks + experiments do we need, and what DIKW yield each)
+Plan (what tasks + probes do we need, and what DIKW yield each)
   | dispatches
-Workers (C_task + D_experiment, mostly in parallel within batch)
+Workers (C_task + D_probe, mostly in parallel within batch)
   | yields
 DIKW cards (filed into insights/D_data, I_information, K_knowledge, W_wisdom)
   | answers
@@ -58,7 +58,7 @@ THINKS in terms of **yields**:
 The question is asking about DESIGN (W-level recommendation).
 That implies:
   - need a fresh K claim about what causes low engagement
-    → so I need an experiment comparing arms × engagement segments
+    → so I need a probe comparing arms × engagement segments
   - need fresh D + I on who counts as "low engagement"
     → so I need a regression task to define the segment
   - the existing K01 (timing) is reusable as a refs in the new K
@@ -75,7 +75,7 @@ existing_relevant:
   knowledge:    [K01]
   information:  [I02]
   data:         [D05]
-  experiments:  [03_sms_arm_comparison (confirmed)]
+  probes:  [03_sms_arm_comparison (confirmed)]
 
 # Batch A — C_task work (D + I yield)
 task_batch:
@@ -91,10 +91,10 @@ task_batch:
     refs:  [D06]
     notes: "engagement × arm overlay plot for low segment"
 
-# Batch B — D_experiment work (K + W yield)
-experiment_batch:
-  - id:    E08
-    skill: /haipipe-experiment design
+# Batch B — D_probe work (K + W yield)
+probe_batch:
+  - id:    P.B01
+    skill: /haipipe-probe design
     new:   true
     arms:  [arm_warm, arm_directive, arm_baseline]
     population: "low engagement segment from D06"
@@ -106,13 +106,13 @@ insight_yield:
   D06: {layer: D, sources: [T1]}
   I04: {layer: I, sources: [T1]}
   I05: {layer: I, sources: [T2], refs: [D06]}
-  K05: {layer: K, sources: [E08], refs: [K01, I04, I05]}
-  W02: {layer: W, sources: [E08], refs: [K05]}
+  K05: {layer: K, sources: [P.B01], refs: [K01, I04, I05]}
+  W02: {layer: W, sources: [P.B01], refs: [K05]}
 
 dag:
   - T1 → D06 + I04 (define segment)
   - T2 needs D06 → I05 (visualize)
-  - E08 needs D06 → K05 + W02 (test arms in segment)
+  - P.B01 needs D06 → K05 + W02 (test arms in segment)
   - All yields filed → G-report
 ```
 
@@ -131,12 +131,12 @@ A "DIKW phase" was a fiction. In reality:
     only because their content has different epistemic commitment levels.
   - Multiple tasks can collectively close ONE D card (cross-task
     evidence). E.g., D06 might have sources: [T1, T3, T7].
-  - K and W cannot exist without an experiment. No experiment, no K.
+  - K and W cannot exist without a probe. No probe, no K.
     Multiple D / I are NOT a path to K.
   - "K from many K" (strategic W) is fine and lives in W_wisdom/
     with sources: [K01, K03, K05].
 
-Plan therefore enumerates work items (tasks + experiments) and their
+Plan therefore enumerates work items (tasks + probes) and their
 yields, NOT phases. Workers execute in parallel within batch (subject
 to dag). Cards are filed at the end (Phase 4 in ask kind).
 ```
@@ -147,16 +147,16 @@ Why batches not 1:1
 
 ```
 N tasks  ↔  M D/I cards     (many-to-many)
-P experiments ↔ Q K/W cards (many-to-many)
+P probes ↔ Q K/W cards (many-to-many)
 
   - 1 task → multiple cards: a regression task can yield D + I
     simultaneously (lens multiplicity).
   - N tasks → 1 card: a D card can cite [T1, T2, T5] as sources
     (cross-task evidence).
-  - 1 experiment → multiple K + multiple W (main claim + side claims
+  - 1 probe → multiple K + multiple W (main claim + side claims
     + corresponding next-step recommendations).
-  - K → W: a per-experiment W cites the K it derives from.
-  - K01 + K03 + K05 → strategic W: cross-experiment synthesis is
+  - K → W: a per-probe W cites the K it derives from.
+  - K01 + K03 + K05 → strategic W: cross-probe synthesis is
     legal, just mark sources: [K01, K03, K05] and `type: strategic`.
 ```
 
@@ -169,8 +169,8 @@ applications/ask/<NN_slug>/plans/plan-v{N}.yaml      written by THIS skill
 applications/ask/<NN_slug>/plans/plan.yaml           symlink → plan-v{N}.yaml (latest)
 
 After plan approval:
-  Phase 2 dispatcher reads plan and invokes /haipipe-task * + /haipipe-experiment *
-  Phase 3 result aggregator triggers /haipipe-experiment result for confirmed claims
+  Phase 2 dispatcher reads plan and invokes /haipipe-task * + /haipipe-probe *
+  Phase 3 result aggregator triggers /haipipe-probe result for confirmed claims
   Phase 4 archivist invokes /haipipe-insight-{data,information,knowledge,wisdom}
           each one files cards from materialized evidence
 ```
@@ -190,6 +190,6 @@ When a gate returns `revise [feedback]`:
 
 Plan is the SOLE router. A gate at G-claim does NOT route directly
 to G-observe — it routes K→plan, and plan re-decides whether to
-add an observation task, modify an experiment, or rescope the
+add an observation task, modify a probe, or rescope the
 question.
 ```

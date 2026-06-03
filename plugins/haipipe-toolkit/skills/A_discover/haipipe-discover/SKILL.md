@@ -1,8 +1,15 @@
 ---
 name: haipipe-discover
 description: "Router for Stage A (discover) literature/idea discovery. Dispatches to 1 of 4 buckets: search (arxiv/semantic-scholar/exa-search), read (alphaxiv/deepxiv/paper-analyzer), review (research-lit/comm-lit-review/academic-researcher), idea (idea-creator/novelty-check). Pipelines escalate to /idea-discovery. Patent work lives in D_patent/. Trigger: discover, find paper, lit review, 找idea, 查新, /haipipe-discover."
-argument-hint: [bucket] [specialist] [args...]
+argument-hint: "[bucket] [specialist] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
+metadata:
+  version: "1.1.0"
+  last_updated: "2026-06-01"
+  summary: "Router for Stage A (discover) literature/idea discovery."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
+    - "1.1.0 (2026-06-01): added Review Output Contract (3_review) — full citations, numbered reference list, same-author/year disambiguation, plain-language finding, per-paper verification flag; router appends it to review-bucket dispatches."
 ---
 
 Skill: haipipe-discover (orchestrator)
@@ -74,7 +81,65 @@ Routing Logic
 6. Nothing resolves -> ask user to pick 1 of 4 buckets.
 
 Dispatch: Skill(<specialist>, args="<remaining_args>"). Do not auto-chain.
+         For any 3_review dispatch, APPEND the Review Output Contract
+         (below) to args so the result is citation-matchable.
 ```
+
+---
+
+Review Output Contract (3_review)
+---------------------------------
+
+Append this to the args of any review-bucket dispatch (research-lit /
+comm-lit-review / academic-researcher). It exists because short author-year
+tags alone (e.g. "Lu 2025") are **not matchable** by the reader. Every
+review MUST satisfy all five rules.
+
+```
+1. FULL NAMES, never bare tags. Each paper gets a FULL citation on first
+   mention AND a line in the final reference list:
+     - Full title, verbatim (not shortened or paraphrased).
+     - Full author list (name all; use "first three + et al." only when
+       authors >= 6).
+     - Venue: journal/conference with vol(issue):pages if published, else
+       "arXiv preprint" / "working paper" with status.
+     - Year + a LOCATOR: arXiv ID (arXiv:2405.07960), DOI, or URL.
+   A short tag in running prose is OK ONLY if it maps to exactly one full
+   reference-list entry.
+
+2. NUMBERED REFERENCE LIST at the end ("References (full, verified)"):
+   one self-contained, deduped line per paper. The reader must be able to
+   match any in-text mention to exactly one numbered entry.
+
+3. DISAMBIGUATE COLLISIONS. Two papers sharing author+year each get a
+   distinguishing nickname in EVERY mention:
+     Lu et al. 2025a (AgentA/B)  vs  Lu et al. 2025b (multi-turn behavior)
+   Never leave two different papers both as "Lu 2025".
+
+4. ONE-LINE PLAIN FINDING per paper (jargon-free) so a non-specialist can
+   tell the papers apart at a glance.
+
+5. VERIFICATION FLAG per paper: VERIFIED (id/DOI/venue confirmed via
+   search) vs NEEDS-VERIFICATION. Never assert an unchecked citation; a
+   gray-zone citation is flagged, not stated. Fabrication is the worst
+   failure — fewer real entries beat invented ones.
+```
+
+Output skeleton the specialist should follow:
+
+```
+## <Topic> — Related Work
+### <Theme / sub-question>   (repeat per group)
+  - FULL citation (rule 1) + 1-line plain finding (rule 4) + flag (rule 5)
+### References (full, verified)
+  1. <self-contained full citation>   (rules 2 + 3, deduped & numbered)
+```
+
+For deeper rigor (systematic search + adversarial citation verification +
+synthesis), escalate to the deep-research lit-review pipeline
+(`Tools/plugin-workflows/academic-research-skills/deep-research`, mode
+`lit-review`) — its source_verification_agent enforces rule 5 by re-checking
+every id/DOI/venue and labelling FABRICATED / UNVERIFIABLE.
 
 ---
 

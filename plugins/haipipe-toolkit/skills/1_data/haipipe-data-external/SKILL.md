@@ -1,8 +1,14 @@
 ---
 name: haipipe-data-external
 description: "Stage 0 (External) specialist. Builds, runs, and reviews ExternalFn (currently as e_build_external_*.py scripts); inspects ExternalStore; loads dimension and engagement assets; previews joins into Source/Record sets. Called by /haipipe-data orchestrator. Direct invocation works for stage-scoped work, but /haipipe-data is the recommended entry. Trigger: external, ExternalFn, dimension, lookup, reference, NPPES, ADI, MHI, NPI lookup, NDC lookup, NCPDP, zip5, zip3, engagement features, vendor data."
-argument-hint: [function] [args...]
+argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Stage 0 (External) specialist."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-data-external

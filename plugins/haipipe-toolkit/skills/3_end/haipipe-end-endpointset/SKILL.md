@@ -1,8 +1,15 @@
 ---
 name: haipipe-end-endpointset
 description: "Endpoint_Set artifact-as-whole specialist. Owns target-agnostic operations on the deployable artifact: package (Stage 5 → 6), local inference() smoke test, structural review, dashboard. Per-Fn-type design/review lives in sibling skills (haipipe-end-{meta,trig,post,src2input,input2src}); deployment lives in haipipe-end-deploy-*. Called by /haipipe-end orchestrator when the request is about the artifact itself."
-argument-hint: [verb] [args...]
+argument-hint: "[verb] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
+metadata:
+  version: "1.1.0"
+  last_updated: "2026-06-01"
+  summary: "Endpoint_Set artifact-as-whole specialist."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
+    - "1.1.0 (2026-06-01): added `profile` verb (latency breakdown + per-arm decomposition; fn-3-profile.md). Durable/reproducible version of the same profile lives in C_task /haipipe-task-for-inference."
 ---
 
 Skill: haipipe-end-endpointset
@@ -13,7 +20,10 @@ Endpoint_Set as a unit — packaging, local smoke test, structural review,
 dashboard. Target-agnostic: produces / inspects the artifact; deploying
 it is the deploy specialists' job.
 
-  Verb axis:  package | test | review | dashboard
+  Verb axis:  package | test | profile | review | dashboard
+
+  `test`    = does inference WORK (smoke test, correctness)
+  `profile` = where does inference TIME go (latency breakdown + per-arm decomposition)
 
   This skill does NOT cover per-Fn-type design / review. For that, use:
     /haipipe-end-meta        /haipipe-end-trig        /haipipe-end-post
@@ -28,7 +38,8 @@ Commands
 /haipipe-end-endpointset                       -> dashboard: 6-EndpointStore status
 /haipipe-end-endpointset dashboard             -> same
 /haipipe-end-endpointset package               -> run Endpoint_Pipeline (Stage 5 -> 6)
-/haipipe-end-endpointset test [payload_path]   -> local inference() with profiling
+/haipipe-end-endpointset test [payload_path]   -> local inference() smoke test (does it work?)
+/haipipe-end-endpointset profile [endpoint]    -> latency breakdown (where does the time go?)
 /haipipe-end-endpointset review                -> structural review of the whole artifact
 ```
 
@@ -43,6 +54,7 @@ Verb       Reads
 dashboard  ../haipipe-end/ref/0-overview.md  +  fn/fn-0-dashboard.md
 package    ../haipipe-end/ref/0-overview.md  +  fn/fn-1-package.md
 test       ../haipipe-end/ref/0-overview.md  +  fn/fn-2-test.md
+profile    ../haipipe-end/ref/0-overview.md  +  fn/fn-3-profile.md
 review     ../haipipe-end/ref/0-overview.md  +  fn/fn-review.md
 ```
 
@@ -57,7 +69,7 @@ Step-by-Step Protocol
 Step 0:  Read `../haipipe-end/ref/0-overview.md`. Mandatory.
          Contains the Endpoint_Set layout + inference pipeline + YAML conventions.
 
-Step 1:  Parse args. Verb vocabulary: dashboard / package / test / review.
+Step 1:  Parse args. Verb vocabulary: dashboard / package / test / profile / review.
 
 Step 2:  Read the relevant fn doc per the dispatch table.
 

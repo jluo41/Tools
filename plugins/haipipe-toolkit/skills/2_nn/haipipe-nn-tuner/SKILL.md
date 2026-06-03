@@ -1,8 +1,14 @@
 ---
 name: haipipe-nn-tuner
 description: "Layer 2 (Tuner) specialist of haipipe-nn. Defines the hyperparameter search space and the tuner that drives sweeps. Called by /haipipe-nn orchestrator. Direct invocation works for layer-scoped work."
-argument-hint: [function] [args...]
+argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Layer 2 (Tuner) specialist of haipipe-nn."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-nn-tuner

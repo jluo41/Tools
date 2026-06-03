@@ -1,0 +1,121 @@
+probe status tracker — canonical format
+========================================
+
+What this is
+------------
+
+The standard "where are we?" view for a probe campaign. Rendered by
+`/haipipe-probe inspect status [project]` and emitted at the END of any
+response that advances probe work, so the reader always sees the position
+without re-deriving it from prose.
+
+Four sections, always in this order. Keep every line physical (no soft-wrap).
+
+
+The arc (section ①) — it is a LOOP, not a line
+----------------------------------------------
+
+The probe is the machine HUB; the human (NARRATIVE) closes the loop. The
+status update on the probe (judge) must happen BEFORE insights, because the
+K-gate requires confirmed/refuted. After insights, `explore` produces a
+machine coverage map of candidate next probes, but it is the human narrative
+that SYNTHESIZES the insights and PROPOSES the next probe — that human decision
+is what loops back. explore feeds the narrative; it does not replace it.
+
+```
+       ┌──── NARRATIVE (human): synthesize insights → propose next ◀──────┐
+       ▼                                                                  │
+ probe ─bridge─▶ task ─metrics─▶ probe(judge) ─▶ insights ─▶ explore ──────┘
+ (plan)         (run)          (status:          (D·I·K·W)   (machine coverage
+                               pending→conf/ref)              map of candidates;
+                                                              FEEDS the human)
+```
+
+- probe (D_probe)    machine HUB: plan (design+bridge) · judge
+                     (aggregate+review+claim → sets result.status).
+- task  (C_task)     execute: the runs a probe bridges into; produce metrics.
+- insights (E_insight) distill: D/I/K/W from a confirmed OR refuted probe.
+- explore            MACHINE assist: coverage map / candidate next probes
+                     (probes/propose.md). An input to the human, not the decider.
+- narrative (HUMAN)  the loop-closer: reads insights (+ explore), writes the
+                     synthesis, and PROPOSES the next probe. Owned by the human.
+
+Compact one-liner for the §1 header (the loop collapsed for scanning):
+  `probe ⇄ task → probe(judge) → insights → explore → NARRATIVE(human: propose next)↺`
+
+Do NOT put `paper` in this arc. A paper is an APPLICATION far downstream of the
+narrative; it does not belong in day-to-day status.
+Mark the arc position with `▲ HERE` under the stage the campaign is in.
+
+
+The 8 probe stages (sections ② / ③)
+-----------------------------------
+
+```
+1 design · 2 bridge · 3 run · 4 aggregate · 5 review · 6 claim · 7 file K · 8 explore
+```
+
+Glyphs: ✅ done · ⏳ active · ⬜ todo · ⚠️ blocked/caveat · — n/a
+
+Stage "done" is EVIDENCED by an artifact, not asserted. §3 names the file each
+completed stage produced; an empty artifact path means the stage is not done.
+
+| stage      | artifact that proves it is done                          |
+|------------|----------------------------------------------------------|
+| design     | probes/<G>_<slug>/<NN>_<slug>/probe.yaml                  |
+| bridge     | tasks/<group>/<task>/ (config + run + eval scaffolded)   |
+| run        | results/<run>/metrics.json (CI-aware per metrics-json-schema) |
+| aggregate  | probe.yaml result: block (delta + CI / p)                |
+| review     | review.md + CLAIMS_FROM_RESULTS.md                       |
+| claim      | probe.yaml claim:                                        |
+| file K     | insights/K_knowledge/K*.md (win OR loss — refuted counts)|
+| explore    | probes/propose.md                                        |
+
+
+Skeleton (fill from the actual probe.yaml files each render)
+------------------------------------------------------------
+
+```
+╔═ <PROJECT> campaign status ═══════════════════════════ <YYYY-MM-DD> ═╗
+
+① ARC
+   probes ──▶ tasks ──▶ insights (D·I·K·W) ──▶ narrative (optional)
+     <marker line: ▲ HERE under the current stage; ⬜/✅ under the others>
+
+② PROBE MATRIX  (✅ done · ⏳ active · ⬜ todo)
+   ┌───────┬────────┬────────┬─────┬──────┬──────┬─────┬──────┬───────┐
+   │ probe │ design │ bridge │ run │ aggr │ revw │claim│fileK │verdict│
+   ├───────┼────────┼────────┼─────┼──────┼──────┼─────┼──────┼───────┤
+   │ P.x01 │  ...   │  ...   │ ... │ ...  │ ...  │ ... │ ...  │ conf/ │
+   │  ...  │        │        │     │      │      │     │      │ refut/│
+   └───────┴────────┴────────┴─────┴──────┴──────┴─────┴──────┴───────┘
+
+③ ACTIVE PROBE — <P.x0N> (<slug>) — stage + ARTIFACT produced
+   1 design    <glyph>  <artifact path or → target>
+   2 bridge    <glyph>  <...>                                   <NEXT?>
+   3 run       <glyph>  <...>
+   4 aggregate <glyph>  <...>
+   5 review    <glyph>  <...>
+   6 claim     <glyph>  <...>
+   7 file K    <glyph>  <...>
+   8 explore   <glyph>  <...>
+
+④ BLOCKERS / NEXT
+   ⚠️ <the real blocker, if any>
+   ▶ next action: <the exact next command / step>
+╚══════════════════════════════════════════════════════════════════════╝
+```
+
+
+Render rules
+------------
+
+- Regenerate §2–§4 from the actual probe.yaml files every time — never carry
+  stale glyphs forward; the tracker must not drift from disk.
+- A probe's matrix row reaches a stage only when that stage's artifact exists.
+- verdict column: blank until aggregate; then confirmed / inconclusive /
+  refuted / exploratory (from result.status).
+- §3 shows ONE active probe (the ⏳ one). If none active, show the next ⬜.
+- Persisting is optional: a caller may write this block to probes/STATUS.md.
+  `inspect` itself stays read-only (renders to stdout); the writer is the
+  orchestrator/agent, not inspect.

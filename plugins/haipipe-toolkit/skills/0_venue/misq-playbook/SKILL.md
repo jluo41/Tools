@@ -1,6 +1,12 @@
 ---
 name: misq-playbook
 description: Use when preparing or positioning a paper for MIS Quarterly (MISQ). Invoke for venue fit assessment, framing decisions, article-type selection, and MISQ-specific reviewer expectations. Use proactively when the user mentions MISQ, MIS Quarterly, or is writing an IS paper with design science, interpretive, or pluralistic methods — these are strong MISQ signals.
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-05-31"
+  summary: "Use when preparing or positioning a paper for MIS Quarterly (MISQ)."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # MISQ Playbook
