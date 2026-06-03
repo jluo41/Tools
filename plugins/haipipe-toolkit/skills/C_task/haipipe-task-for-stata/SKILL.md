@@ -107,6 +107,13 @@ Three portability rules (DO NOT re-derive per task — the templates already bak
   2. Run from the task folder (`$PSScriptRoot`); code paths stay relative; folder name is free.
   3. Anchor the DATA root absolute via `ws_root` (config builds paths from `${ws_root}`, never literal `_WorkSpace`).
 
+Every Stata task ALSO ships a read-only **describe / QC run** (`describe` dispatch
+step → `scripts/d-<Stage>-Describe.do`, + `runs/run_describe_<...>.ps1`) that
+writes a human-readable correctness report to `results/`. Built-ins only — NO SSC
+(`egen tag` for distinct counts, never `distinct`). See the "Describe / QC run"
+section in `../haipipe-task/ref/stata-dialect.md`; each child scaffolds the
+stage-specific version.
+
 
 Return contract
 ---------------
@@ -115,5 +122,5 @@ Return contract
 status:    ok | blocked | failed
 summary:   2-3 sentences — which stage was chosen + what the child scaffolded
 artifacts: [paths created]   (from the child)
-next:      author dispatcher .do + scripts/ workers; CODE_REVIEW.md; then runs/<run>.ps1
+next:      author dispatcher .do + scripts/ workers (incl. a `describe` step + run_describe_*.ps1 QC run); CODE_REVIEW.md; then runs/<run>.ps1
 ```

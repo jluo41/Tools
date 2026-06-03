@@ -129,6 +129,33 @@ Roles, precisely:
 - **`sbatch/`** — fan a single per-run `.ps1` across years / cohorts / traits.
 
 
+Dispatcher coding style (multi-line braces)
+--------------------------------------------
+
+The dispatcher's `step → worker` ladder (and any `if/else if` chain) uses ONE
+house style: **multi-line braces, never one-liners.** Each branch opens `{` on
+the condition line, the body sits on its OWN indented line, and `}` is alone on
+the next line — even for a single-command branch:
+
+```stata
+// GOOD
+else if "`step'" == "claims_erase" {
+    do "scripts/feat/_old/shared-claims-erase.do" `year'
+}
+
+// AVOID — one-liners (and braceless `else if … local …`) read poorly and make
+// diffs and edits error-prone
+else if "`step'" == "claims_erase" { do "scripts/feat/_old/shared-claims-erase.do" `year' }
+else if "`step'" == "bene_year"    local out_file "${out_bene_beneobsdt_year}"
+```
+
+Section labels (`// PDE`, `// CLAIMS`, …) above a group of branches are fine and
+encouraged — a full-line `//` comment between a `}` and the next `else if` is
+tolerated by Stata (verified) and does not break brace matching. The
+`dispatcher-do-template.do` already encodes this style; keep generated and
+hand-edited dispatchers consistent with it.
+
+
 Idempotency
 -----------
 
@@ -137,6 +164,40 @@ Every worker `.do` (or the dispatcher's skip block) does
 finished pipeline is cheap; to recompute, delete the specific `.dta`.
 Steps with no persistent output (`shared_*`, `describe`, `summary`,
 `*_erase`) always run.
+
+
+Describe / QC run (every stage ships one)
+------------------------------------------
+
+Beyond its build steps, every Stata task SHIPS a read-only **describe** run that
+emits a human-readable QC report so a reviewer can confirm the output is correct
+without opening Stata. Two pieces:
+
+- **`describe` dispatch step** → `scripts/d-<Stage>-Describe.do`. Walks the
+  stage's asset and `file write`s a report into `${results_dir}` (e.g.
+  `case-describe.txt`). No persistent data output, so it is NOT in the skip list
+  — it always runs.
+- **`runs/run_describe_<...>.ps1`** — a describe-ONLY run: `Resolve-StataExe` +
+  `ws_root`, then runs just the `describe` step on the already-built asset (no
+  rebuild). For per-year stages the year arg is a dummy; the worker loops the
+  `year-*` dirs it finds under the asset path.
+
+⚠️ **No SSC dependencies in describe** (it must run on a clean CMS server). Use
+built-ins: `egen tag()` + `count` for distinct counts — NEVER `distinct` (SSC;
+aborts `r(199)`). Use `summarize` / `tabulate` / `ds` + `egen rowtotal` for the
+rest, all `capture`-guarded so a missing optional variable is skipped, not fatal.
+
+What each stage's describe reports (illustrative):
+```
+cms   per year: Neat panel inventory + row counts, Bene_Info rows, claim
+      service-date ranges (sanity: dates are %td and within the year).
+case  per year: #cases, distinct benes / npis, visit_type split, the BN
+      enrichment check (pde_bn rows with >=1 rx), obs_dt range.
+data  analysis table: N, distinct benes/npis, year dist, treatment (trait)
+      summary, outcome means, key-control missingness, IV first-stage corr.
+reg   coefficient sanity: trait coef + SE + N per spec from the logs
+      (did every cell estimate; any dropped / collinear / no-obs).
+```
 
 
 Runtime portability — three CWD/location-independence rules

@@ -66,6 +66,18 @@ passthrough are already wired — do NOT hardcode a Stata path or a relative
 `_WorkSpace`).
 
 
+Step 5b — Describe / QC run
+---------------------------
+
+Add the read-only QC run (see "Describe / QC run" in `../haipipe-task/ref/stata-dialect.md`):
+- `scripts/d-Cms-Describe.do` — loops the `year-*` dirs under `${cms_asset_path}`
+  and `file write`s `cms-describe.txt`: per year the Neat panel inventory + row
+  counts, Bene_Info rows, and claim service-date ranges (sanity: dates are `%td`
+  and within the year). Built-ins only (no `distinct`); `capture`-guarded.
+- Wire a `describe` branch into the dispatcher; add `runs/run_describe_cms.ps1`
+  (resolves Stata + `ws_root`, runs only the `describe` step — no rebuild).
+
+
 Step 6 — Report
 ----------------
 
@@ -73,7 +85,7 @@ Step 6 — Report
 status:    ok
 summary:   Scaffolded CMS-pipeline task A<NN>_cms_pipeline under {G}{NN}_<group>; years <...>.
 artifacts: [paths created]
-next:      author dispatcher .do + scripts/ workers; produce CODE_REVIEW.md; then runs/run_cms_<year>.ps1
+next:      author dispatcher .do + scripts/ workers + d-Cms-Describe.do; produce CODE_REVIEW.md; then runs/run_cms_<year>.ps1 (+ run_describe_cms.ps1)
 ```
 
 
