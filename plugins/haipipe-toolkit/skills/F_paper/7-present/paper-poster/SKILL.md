@@ -676,7 +676,7 @@ pdfinfo poster/main.pdf
 
 ### Phase 5: Visual Review via Claude + Gemini (Iterative Refinement)
 
-> This phase uses **Claude visual assessment** on rendered poster images to iteratively refine layout, readability, and visual hierarchy — similar to the `paper-illustration` skill's review loop.
+> This phase uses **Claude visual assessment** on rendered poster images to iteratively refine layout, readability, and visual hierarchy — similar to the `haipipe-paper-structure-illustration` skill's review loop.
 
 **Step 1: Render poster to PNG preview**
 

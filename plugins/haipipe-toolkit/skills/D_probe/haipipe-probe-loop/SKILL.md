@@ -221,7 +221,7 @@ summary:   "P.0601 loop: round 3/4, verdict=partial→yes, converged"
 artifacts: [probes/<MMDD>_<slug>/LOOP_LOG.md, CLAIMS_FROM_RESULTS.md, new probe IDs]
 next:      if converged → K (+ optional per-probe W) filed via
                           card-creator-{knowledge,wisdom}-agent (L0 closed),
-                          then /narrative-report (start paper write-up)
+                          then /haipipe-paper-structure-narrative (start paper write-up)
           if budget_exhausted → /haipipe-probe review claim <probe> manually
           if blocked → triage rejected proposals
 ```

@@ -134,7 +134,7 @@ L3 trigger ignite=ready → narrative-report → Application (cash-out)         
 
 THE FINDING: `haipipe-probe-loop` never calls E_insight. Its Step 6
 materializes (design + bridge → C_task), then on convergence jumps to
-`narrative-report` — skipping the DIKW filing entirely. So the probe cycle's
+`haipipe-paper-structure-narrative` — skipping the DIKW filing entirely. So the probe cycle's
 last cell ("→ insight") is unwired.
 
 Two consequences:

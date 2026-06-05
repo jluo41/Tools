@@ -41,6 +41,6 @@ TODO
 ----
 
 - Add 2-3 worked examples (good intros from accepted papers in this group)
-- Link to `1-narrative/narrative-report/` — the pitch in intro must
+- Link to `1-narrative/haipipe-paper-structure-narrative/` — the pitch in intro must
   match the narrative report's take-away message
 - Add "swap-test": replace your hook with a competitor's — still defensible?

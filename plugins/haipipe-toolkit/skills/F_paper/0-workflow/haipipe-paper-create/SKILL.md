@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-create
-description: "Create a fresh LaTeX paper paragraph-by-paragraph from an existing narrative + plan. Scaffolds the tex root from a venue template, walks the planned sections, and drafts each paragraph through interactive author discussion. Every paragraph is written with paper-weaving's marker convention (PN.SN headers) so the resulting draft is immediately polishable by /haipipe-paper-revise without a marker-insertion pass. Called by /haipipe-paper orchestrator. Direct invocation works for whole-paper drafting. Trigger: create paper, write tex from plan, draft paper paragraph by paragraph, scaffold paper, new paper from narrative, 写论文初稿, /haipipe-paper-create."
+description: "Create a fresh LaTeX paper paragraph-by-paragraph from an existing narrative + plan. Scaffolds the tex root from a venue template, walks the planned sections, and drafts each paragraph through interactive author discussion. Every paragraph is written with haipipe-paper-edit-weaving's marker convention (PN.SN headers) so the resulting draft is immediately polishable by /haipipe-paper-revise without a marker-insertion pass. Called by /haipipe-paper orchestrator. Direct invocation works for whole-paper drafting. Trigger: create paper, write tex from plan, draft paper paragraph by paragraph, scaffold paper, new paper from narrative, 写论文初稿, /haipipe-paper-create."
 argument-hint: [plan-or-narrative-path] [--venue <v>] [--out <dir>]
 allowed-tools: Bash, Read, Grep, Glob, Write, Edit, AskUserQuestion, Skill
 ---
@@ -13,7 +13,7 @@ section-by-section and paragraph-by-paragraph. Venue-agnostic at the
 workflow level — venue only picks the LaTeX template and section budget.
 
 Hand-off contract: every paragraph this skill writes carries the
-`%% ---- PN.SN ----` markers that `paper-weaving` (the per-file revision
+`%% ---- PN.SN ----` markers that `haipipe-paper-edit-weaving` (the per-file revision
 engine) expects. So once a section is drafted, `/haipipe-paper-revise`
 can polish it without any marker-insertion pass.
 
@@ -42,13 +42,13 @@ Lifecycle Position
 
 ```
 1-narrative  →  2-plan  →  ┌──────────────────┐  →  haipipe-paper-revise → 5-review → ...
-                          │ haipipe-paper-    │       (paper-weaving runs
+                          │ haipipe-paper-    │       (haipipe-paper-edit-weaving runs
                           │   create (HERE)   │        per-section: G1 → Q → G2)
                           └──────────────────┘
 ```
 
 The drafting hop. Reads the contracts produced upstream, emits a
-compileable tex tree, every paragraph written in paper-weaving's
+compileable tex tree, every paragraph written in haipipe-paper-edit-weaving's
 marker convention.
 
 Required Inputs
@@ -59,8 +59,8 @@ Required Inputs
 3. **venue**              — `iclr | neurips | icml | nature | pnas | misq | isr | …`
 
 If any are missing, **pause and route back**:
-- no narrative → `Skill("narrative-report")`
-- no plan      → `Skill("paper-plan")` or `Skill("paper-architecture")`
+- no narrative → `Skill("haipipe-paper-structure-narrative")`
+- no plan      → `Skill("haipipe-paper-structure-plan")` or `Skill("haipipe-paper-structure-architecture")`
 - no venue     → `AskUserQuestion`
 
 Constants
@@ -71,7 +71,7 @@ Constants
 - **PARAGRAPH_GATE** = `true`  — every paragraph confirmed via `AskUserQuestion` before write
 - **MAX_PARAGRAPH_RETRIES** = 3
 - **AUTO_COMPILE** = `false`  — skip Phase 5 compile unless requested
-- **MARKER_CONVENTION** = `paper-weaving`  — every paragraph carries `%% ---- PN.SN ----`
+- **MARKER_CONVENTION** = `haipipe-paper-edit-weaving`  — every paragraph carries `%% ---- PN.SN ----`
 
 Workflow
 --------
@@ -141,8 +141,8 @@ paragraph loop — never silently diverge from the plan.
 
 Once the section loop completes:
 
-1. `Skill("manuscript-optimizer")` in **review mode** on `OUT_DIR/`
-2. `Skill("paper-claim-audit")` — does the draft support the narrative claim?
+1. `Skill("haipipe-paper-edit-optimizer")` in **review mode** on `OUT_DIR/`
+2. `Skill("haipipe-paper-edit-claim-audit")` — does the draft support the narrative claim?
 3. Emit `CREATE_DIR/CREATE_AUDIT.md` summarizing flagged issues
 4. If issues found → present to user; they can either invoke
    `/haipipe-paper-revise` to address them or accept and proceed
@@ -165,16 +165,16 @@ Update `CREATE_STATE.md`. Present to user:
 - TODO paragraphs (skipped, need follow-up)
 - Audit findings (if Phase 4 ran)
 - Suggested next:
-  `/haipipe-paper-revise <OUT_DIR>` — polish via paper-weaving
+  `/haipipe-paper-revise <OUT_DIR>` — polish via haipipe-paper-edit-weaving
   (markers are already in place, no insertion pass needed)
 
 ---
 
-Marker Format (paper-weaving handoff contract)
+Marker Format (haipipe-paper-edit-weaving handoff contract)
 ----------------------------------------------
 
 Every paragraph this skill writes into a section file follows this
-shape so `paper-weaving` accepts the file as-is at its Step 1 format
+shape so `haipipe-paper-edit-weaving` accepts the file as-is at its Step 1 format
 check:
 
 ```latex
@@ -199,9 +199,9 @@ Rules:
 - **One marker per sentence.** Even short transitional sentences get
   their own `%% ---- PN.SN ----` header.
 - **Paragraph ceiling: ≤6 sentences per paragraph.** This matches
-  paper-weaving Hard Rule 5. If the plan slot calls for more, split
+  haipipe-paper-edit-weaving Hard Rule 5. If the plan slot calls for more, split
   the paragraph or rethink the slot with the author.
-- **No `%%@` lines.** The `%%@` sentinel is paper-weaving's namespace
+- **No `%%@` lines.** The `%%@` sentinel is haipipe-paper-edit-weaving's namespace
   (for plan/diagnose/propose blocks). This skill never writes them.
 - **Empty paragraph slot**: when the author skips, write only the
   paragraph's lead marker with a TODO tag, no body:
@@ -216,7 +216,7 @@ Rules:
 Venue Map
 ---------
 
-Which template `3-write/conference-paper-writing/templates/<X>/` to copy
+Which template `3-edit/haipipe-paper-edit-write-conference/templates/<X>/` to copy
 into the scaffold:
 
 ```
@@ -227,8 +227,8 @@ acl                              → templates/acl/
 aaai, aaai2026                   → templates/aaai2026/
 colm, colm2025                   → templates/colm2025/
 
-ieee_conf                        → 3-write/paper-write/templates/ieee_conference.tex
-ieee_journal                     → 3-write/paper-write/templates/ieee_journal.tex
+ieee_conf                        → 3-edit/haipipe-paper-edit-write/templates/ieee_conference.tex
+ieee_journal                     → 3-edit/haipipe-paper-edit-write/templates/ieee_journal.tex
 
 nature, pnas, misq, isr          → fall back to plain article + a note
                                     that journal venues usually use the
@@ -243,17 +243,17 @@ template wastes drafting work.
 
 ---
 
-Inherited Hard Rules (from paper-weaving)
+Inherited Hard Rules (from haipipe-paper-edit-weaving)
 -----------------------------------------
 
-Because this skill's output is the input contract for `paper-weaving`,
-it adopts paper-weaving's hard rules at draft time so the polish round
+Because this skill's output is the input contract for `haipipe-paper-edit-weaving`,
+it adopts haipipe-paper-edit-weaving's hard rules at draft time so the polish round
 doesn't have to undo them:
 
 1. **PN.SN markers file-local** (already described above)
 2. **No em-dashes anywhere.** Use comma, colon, or sentence break.
    Applies in drafted prose AND in this skill's chat output.
-3. **No AI-flavored prose.** Anti-pattern shortlist (paper-weaving Hard Rule 4):
+3. **No AI-flavored prose.** Anti-pattern shortlist (haipipe-paper-edit-weaving Hard Rule 4):
    - parenthetical adverbs comma-fenced mid-sentence ("primarily,", "specifically,")
    - apposition padding ("we use LLMs *as the measurement instrument* …")
    - callback constructions ("the same X *that drives* Y *also* enables Z")
@@ -278,7 +278,7 @@ doesn't have to undo them:
 Workflow-specific additional rules:
 
 8. **Never skip the plan.** If the plan slot for a section is empty,
-   pause and route to `Skill("paper-plan")` for that section only.
+   pause and route to `Skill("haipipe-paper-structure-plan")` for that section only.
 9. **Paragraph gate is hard.** Even in `--resume`, every paragraph
    re-prompts unless `--auto-accept` is explicitly passed.
 10. **No silent overwrite.** Existing files in `OUT_DIR/` halt the run.
@@ -286,8 +286,8 @@ Workflow-specific additional rules:
     voice drifts when they context-switch.
 12. **Reuse, don't rewrite.** Section structure comes from
     `sections/section-<name>/`, prose style from
-    `3-write/scientific-writing/`, templates from
-    `3-write/conference-paper-writing/templates/`. This skill is glue.
+    `3-edit/haipipe-paper-edit-write-scientific/`, templates from
+    `3-edit/haipipe-paper-edit-write-conference/templates/`. This skill is glue.
 13. **State first, write second.** `CREATE_STATE.md` updated before
     every `.tex` write so a crash mid-paragraph is resumable.
 

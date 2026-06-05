@@ -163,7 +163,7 @@ chooser:
                 a compileable first draft.
 
   revise      → polish an existing tex (venue-agnostic)
-                Discovers sections, walks each through paper-weaving's
+                Discovers sections, walks each through haipipe-paper-edit-weaving's
                 diagnose+plan+apply gates (G1/Q/G2), cross-section audit.
                 Best when you have a draft and want to polish it paragraph-by-
                 paragraph, optionally guided by reviewer feedback.
@@ -199,7 +199,7 @@ status:    ok | blocked | failed
 summary:   2-3 sentences on what the specialist did
 artifacts: [paths created, read, or modified]
 next:      suggested next command (often a lifecycle stage skill like
-           /paper-plan, /paper-figure, /paper-write, or a re-invocation
+           /haipipe-paper-structure-plan, /haipipe-paper-structure-figure, /haipipe-paper-edit-write, or a re-invocation
            of /haipipe-paper for a different phase)
 ```
 
@@ -211,15 +211,22 @@ Relation to Lifecycle Stage Skills, Sections, and Components
 The orchestrator and venue specialists in `0-workflow/` operate at the
 **workflow** level. Underneath they coordinate three kinds of skills:
 
-**Lifecycle stages** — `F_paper/{1-narrative,2-plan,3-write,4-revise,5-review,6-respond,7-present}/`:
+**Lifecycle stages** — `F_paper/{1-structure,2-build,3-edit,6-respond,7-present}/`
+(unified `haipipe-paper-<stage>-<topic>` names; 6-respond/7-present keep legacy slugs for now):
 
 ```
-1-narrative/  narrative-report (entry gate from upstream E_insight)
-2-plan/       paper-plan, paper-bootstrap, paper-architecture, paper-incubator
-3-write/      paper-write, scientific-writing, conference-paper-writing, writing-systems-papers
-4-revise/     paper-revise, manuscript-optimizer, auto-paper-improvement-loop, results-section-revision
-5-review/     paper-claim-audit, paper-reviewer, proof-checker, submission-audit,
-              paper-manual-review-citations, paper-manual-review-values
+1-structure/  haipipe-paper-structure-narrative (entry gate from upstream E_insight),
+              -structure-plan, -structure-bootstrap, -structure-architecture, -structure-incubator,
+              -structure-diagram, -structure-figure-planner, -structure-figure-spec,
+              -structure-figure, -structure-illustration, -structure-illustration-image2
+2-build/      haipipe-paper-build-scaffold, -build-restructure, -build-check
+3-edit/       haipipe-paper-edit (orchestrator) + topic subs -edit-content, -edit-values,
+              -edit-citation, -edit-consistency, -edit-format, -edit-typeset;
+              tools: -edit-diffpdf, -edit-to-overleaf;
+              drafting: -edit-write, -edit-write-scientific, -edit-write-conference, -edit-write-systems;
+              revision: -edit-weaving, -edit-optimizer, -edit-improve-loop, -edit-results-revision;
+              audits: -edit-claim-audit, -edit-reviewer, -edit-proof-checker, -edit-submission-audit,
+              -edit-manual-review-citations, -edit-manual-review-values, -edit-check-reference
 6-respond/    paper-rebuttal, rebuttal-response
 7-present/    paper-slides, paper-poster
 ```
@@ -237,20 +244,22 @@ target a specific .tex file under `0-sections/` in the paper folder.
 **Cross-cutting components** — `F_paper/components/`:
 
 ```
-components/figure/    paper-figure, figure-spec, figure-planner,
-                      paper-illustration, paper-illustration-image2,
-                      paper-structure-diagram
 components/citation/  citation-audit, citation-verifier, reference-audit-guide
-components/compile/   paper-compile, overleaf-sync
-components/diff/      paper-diff-pdf (one-PDF colored diff),
+components/compile/   paper-compile
+components/diff/      haipipe-paper-edit-diffpdf (one-PDF colored diff; SKILL.md lives in 3-edit/haipipe-paper-edit-diffpdf/),
                       paper-diff-folder (writes 1-diff/vs-<ref>/ tree)
 ```
+
+(Figure skills moved to `1-structure/` under the `haipipe-paper-structure-figure*` /
+`-illustration*` names; see the lifecycle stage list above.)
 
 Components are invoked by multiple stages (figures touched during
 write/revise/review; citations touched during write/review; etc.).
 
 Power users can invoke any stage / section / component skill directly
-via its slash command — those slugs remain unchanged. The orchestrator
+via its slash command — stage 1-3 slugs follow the unified
+`haipipe-paper-<stage>-<topic>` scheme; later stages keep their legacy
+slugs until they are migrated. The orchestrator
 is the right entry point when you don't yet know which stage you're
 in or which venue you're targeting.
 
@@ -287,7 +296,7 @@ Composing with Other Workflows
 /run-probe       → experiment results
 /auto-review-loop     → AUTO_REVIEW.md
 /result-to-claim      → CLAIMS_FROM_RESULTS.md
-/narrative-report     → NARRATIVE_REPORT.md  ← design contract
+/haipipe-paper-structure-narrative     → NARRATIVE_REPORT.md  ← design contract
         │
         ▼
 /haipipe-paper        ← you are here (router)
@@ -297,5 +306,5 @@ Composing with Other Workflows
         ├─► /haipipe-paper-is          (MISQ/ISR/…)
         ├─► /haipipe-paper-rebuttal    (any venue, post-review)
         ├─► /haipipe-paper-create      (narrative+plan → fresh tex)
-        └─► /haipipe-paper-revise      (existing tex → polish via paper-weaving)
+        └─► /haipipe-paper-revise      (existing tex → polish via haipipe-paper-edit-weaving)
 ```

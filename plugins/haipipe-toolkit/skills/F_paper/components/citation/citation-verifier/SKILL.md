@@ -15,7 +15,7 @@ metadata:
 
 Use this skill when citation integrity is the bottleneck. It is narrower and more operational than general writing skills: the goal is to catch unverifiable references, missing identifiers, duplicated BibTeX keys, placeholder citations, and mismatches between local citation artifacts before they become submission problems.
 
-Use this skill together with `scientific-writing` or `submission-audit`, not instead of them.
+Use this skill together with `haipipe-paper-edit-write-scientific` or `haipipe-paper-edit-submission-audit`, not instead of them.
 
 ## When To Use
 

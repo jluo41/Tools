@@ -54,7 +54,7 @@ narratives/01_fairness/  ──(ignite says "sells")──►  narrative-report 
    (living story, mutates)                            (snapshots it now)        (frozen, per venue)
 ```
 
-So `narrative-report` is UNCHANGED. It becomes the bridge FROM this new
+So `haipipe-paper-structure-narrative` is UNCHANGED. It becomes the bridge FROM this new
 layer TO a paper. N_narrative owns the living story + ignite; rendering a
 story into a paper contract stays with the existing narrative-report skill.
 

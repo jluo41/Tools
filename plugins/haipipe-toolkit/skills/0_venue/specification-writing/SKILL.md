@@ -15,7 +15,7 @@ metadata:
 
 Write the patent specification based on: **$ARGUMENTS**
 
-Adapted from `/paper-write` for patent specifications. The specification supports the claims -- it is not a paper.
+Adapted from `/haipipe-paper-edit-write` for patent specifications. The specification supports the claims -- it is not a paper.
 
 ## Constants
 

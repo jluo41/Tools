@@ -19,13 +19,13 @@ Verify every `\cite{...}` in a paper against three independent layers:
 2. **Metadata correctness** — author names, year, venue, and title match canonical sources (DBLP, arXiv, ACL Anthology, Nature, OpenReview, etc.).
 3. **Context appropriateness** — the cited paper actually supports the claim it is being used to support in the manuscript.
 
-This skill is the fourth layer of \aris{}'s evidence-and-claim assurance, complementing `probe-audit` (code), `result-to-claim` (science verdict), and `paper-claim-audit` (numerical claims). Together they form a bottom-up integrity stack from raw evaluation code to manuscript bibliography.
+This skill is the fourth layer of \aris{}'s evidence-and-claim assurance, complementing `probe-audit` (code), `result-to-claim` (science verdict), and `haipipe-paper-edit-claim-audit` (numerical claims). Together they form a bottom-up integrity stack from raw evaluation code to manuscript bibliography.
 
 ## When to Use This Skill
 
 **Run before submission.** The right gating point is:
-- After `paper-write` has produced the LaTeX draft and bib file
-- After `paper-claim-audit` has verified numerical claims
+- After `haipipe-paper-edit-write` has produced the LaTeX draft and bib file
+- After `haipipe-paper-edit-claim-audit` has verified numerical claims
 - Before final `paper-compile` for submission
 
 **Do not** run this on a half-written draft — most of the work is in cross-checking each `\cite` against context, which is wasted on placeholder text.
@@ -234,7 +234,7 @@ Confirm:
 |-------|---------------|-----------------|
 | `/probe-audit` | Evaluation code | Fake ground truth, self-normalized scores, phantom results |
 | `/result-to-claim` | Result-to-claim mapping | Claims unsupported by evidence |
-| `/paper-claim-audit` | Numerical claims in manuscript | Number inflation, best-seed cherry-pick, config mismatch |
+| `/haipipe-paper-edit-claim-audit` | Numerical claims in manuscript | Number inflation, best-seed cherry-pick, config mismatch |
 | `/citation-audit` | Bibliographic entries | Hallucinated refs, wrong-context citations, metadata errors |
 
 Together: code → result → numerical claim → cited claim. Each layer has cross-family review with no executor in the validator path.
@@ -332,7 +332,7 @@ verifier decide whether the verdict blocks finalization based on the
 
 ## See Also
 
-- `/paper-claim-audit` — sibling skill for numerical claim verification
+- `/haipipe-paper-edit-claim-audit` — sibling skill for numerical claim verification
 - `/probe-audit` — sibling skill for evaluation code integrity
 - `/result-to-claim` — claim verdict assignment from results
 - `shared-references/citation-discipline.md` — protocol document for citation hygiene

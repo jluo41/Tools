@@ -172,7 +172,7 @@ Read-only. Never edits.
      yes + all needed slots have   → ready
      yes + gaps remain             → igniting
      no  + spine claim is GAP/dead → exploring (re-scope) or shelved (user choice)
-5. Tail: if status→ready, suggest /narrative-report to snapshot into a paper.
+5. Tail: if status→ready, suggest /haipipe-paper-structure-narrative to snapshot into a paper.
 ```
 
 

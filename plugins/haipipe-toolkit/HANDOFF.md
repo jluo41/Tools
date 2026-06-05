@@ -1,7 +1,7 @@
 HANDOFF — haipipe-toolkit redesign (resume here)
 ==================================================
 
-Last updated: 2026-05-31  (movement: W wired into the probe-cycle; v2.3.4)
+Last updated: 2026-06-05  (movement: F_paper 5-stage restructure + haipipe-paper-* name unification)
 Purpose: pick up the design work from a fresh session without re-deriving it.
 
 Read these, in order, to reload full context:
@@ -50,7 +50,40 @@ papers are its discrete snapshots. A full visual breakdown is in
 `diagram/v260531/` (hourglass · probe-cycle anatomy · nested cycles · roles · probe-cycle process).
 
 
-LATEST MOVEMENT (2026-05-31) — probe-cycle: K/W output + dogfood
+LATEST MOVEMENT (2026-06-05): F_paper 5-stage restructure + name unification
+============================================================================
+
+F_paper (the paper-lifecycle skill family) was collapsed and renamed in one pass. This is a separate track from the C/D/E/G/N research-engine work below; nothing in that model changed.
+
+**New stage layout** (was ~10 stage folders, now 5 + workflow):
+
+```
+0-workflow/   haipipe-paper (router) + 6 venue/task specialists (names unchanged)
+1-structure/  decide WHAT the paper says (was 1-plan, then 1-narrate)
+2-build/      NEW STAGE: build the physical paper folder the prose lives in
+3-edit/       absorbed 3-write, 4-revise, 5-revise, 5-review, 6-review (one edit/audit family)
+6-respond/    paper-rebuttal, rebuttal-response          (legacy names)
+7-present/    paper-slides, paper-poster                 (legacy names)
+components/   citation-*, paper-compile, paper-diff-folder (legacy names)
+```
+
+**Name unification**: every skill in stages 1-3 is now `haipipe-paper-<stage>-<topic>`, and every skill DIRECTORY equals its `name:` frontmatter (e.g. `3-edit/haipipe-paper-edit-to-overleaf/`). 37 skills renamed; all references swept (slash triggers, `Skill()` dispatches, backticked mentions, path refs); each renamed SKILL.md got a `1.1.0 (2026-06-05)` changelog line. Verified: zero leftover legacy tokens, zero duplicate names, dir==name for all of stages 1-3.
+
+**2-build is new** (grounded in the gold paper `examples/ProjA-PhyTraitLandScape/paper/Paper-MapPhyTrait-npjDM2025`):
+- `_shared/paper-folder-anatomy.md`: the whole-folder contract (0-/1- prefix semantics, NN-MM grammar + gap rule, two-document main+SI rule, 1-compile.sh contract)
+- `haipipe-paper-build-scaffold` (+6 templates): plan → conforming empty skeleton
+- `haipipe-paper-build-restructure`: migrate/repair, gated by prose parity + compile parity
+- `haipipe-paper-build-check` (+`scripts/check_structure.sh`): report-only conformance audit; script verified green on the gold paper and all failure paths fixture-tested
+
+Other moves this pass: `overleaf-sync` → `3-edit/haipipe-paper-edit-to-overleaf`; `paper-diff-pdf` → `haipipe-paper-edit-diffpdf`; `paper-architecture` registered (its skill.md had no frontmatter at all); the four write skills live on as `-edit-write{,-scientific,-conference,-systems}` (write = the cold-start of editing).
+
+Known leftovers (deliberate):
+- `6-respond` / `7-present` / `components` / `sections` keep legacy names. If unifying later: `6-respond/paper-rebuttal` COLLIDES with workflow `haipipe-paper-rebuttal`; needs e.g. `haipipe-paper-respond-rebuttal`.
+- `skills/F_paper/MENTAL_MODEL.md` still describes the old 8-stage layout; needs a rewrite around structure → build → edit → respond → present (a mechanical sweep would mangle it, so it was excluded).
+- Reload Claude Code for the renamed skills to register.
+
+
+PREVIOUS MOVEMENT (2026-05-31) — probe-cycle: K/W output + dogfood
 ================================================================
 
 Addendum (v2.3.4): **W is now wired** — a converged probe-cycle files 🟨 K,
@@ -129,6 +162,11 @@ Discipline: when editing a skill/agent, bump `metadata.version` + add a
 DONE (movement history, newest first)
 =====================================
 
+- **2026-06-05  F_paper 5-stage restructure + haipipe-paper-* unification**:
+  stages collapsed to 1-structure / 2-build (new) / 3-edit (absorbed write,
+  revise, review); 37 skills renamed to `haipipe-paper-<stage>-<topic>` with
+  dir == name; 2-build stage built from the npjDM2025 gold paper (anatomy
+  contract, scaffold templates, parity-gated restructure, check_structure.sh).
 - **2026-05-31  W wired into the probe-cycle (v2.3.4)** — a converged
   `haipipe-probe-loop` (→ 1.2.0) files 🟨 K, then optionally (◇) chains
   `card-creator-wisdom-agent --scope <new-K>` → the per-probe 🟧 W. The W

@@ -293,7 +293,7 @@ probe     /haipipe-probe design new <slug> --group A       declare new thread
                /haipipe-probe loop <probe>                     iterate until clean
                /haipipe-probe inspect [<probe>]                list / status
 
-paper          /paper-workflow / /paper-figure / ...                see F_paper section
+paper          /paper-workflow / /haipipe-paper-structure-figure / ...                see F_paper section
 ```
 
 
