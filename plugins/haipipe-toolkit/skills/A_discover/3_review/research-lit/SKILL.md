@@ -102,7 +102,7 @@ Try calling a Zotero MCP tool (e.g., search). If it succeeds:
 1. **Search by topic**: Use the Zotero search tool to find papers matching the research topic
 2. **Read collections**: Check if the user has a relevant collection/folder for this topic
 3. **Extract annotations**: For highly relevant papers, pull PDF highlights and notes — these represent what the user found important
-4. **Export BibTeX**: Get citation data for relevant papers (useful for `/paper-write` later)
+4. **Export BibTeX**: Get citation data for relevant papers (useful for `/haipipe-paper-edit-write` later)
 5. **Compile results**: For each relevant Zotero entry, extract:
    - Title, authors, year, venue
    - User's annotations/highlights (if any)

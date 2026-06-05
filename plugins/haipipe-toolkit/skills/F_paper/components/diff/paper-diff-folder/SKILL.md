@@ -1,6 +1,6 @@
 ---
 name: paper-diff-folder
-description: "Produce a multi-file diff between the current paper folder and a prior version (git commit / branch / tag / sibling folder). Writes 1-diff/vs-<ref>/ inside the paper folder, containing: per-section .tex line diffs, figure delta list, table value delta list, citation delta list, summary.md. Use when preparing a rebuttal package, comparing submissions, or showing reviewers what changed since v0. Companion to paper-diff-pdf (which produces a single colored PDF). Trigger: diff folder, paper diff, what changed, since last submission, vs commit, /paper-diff-folder."
+description: "Produce a multi-file diff between the current paper folder and a prior version (git commit / branch / tag / sibling folder). Writes 1-diff/vs-<ref>/ inside the paper folder, containing: per-section .tex line diffs, figure delta list, table value delta list, citation delta list, summary.md. Use when preparing a rebuttal package, comparing submissions, or showing reviewers what changed since v0. Companion to haipipe-paper-edit-diffpdf (which produces a single colored PDF). Trigger: diff folder, paper diff, what changed, since last submission, vs commit, /paper-diff-folder."
 argument-hint: <paper-folder> <ref> [--scope=sections|display|cite|all]
 allowed-tools: Bash, Read, Write, Grep, Glob
 ---
@@ -8,7 +8,7 @@ allowed-tools: Bash, Read, Write, Grep, Glob
 paper-diff-folder — STUB
 =========================
 
-Multi-file diff writer. Sister to `paper-diff-pdf` (which produces ONE
+Multi-file diff writer. Sister to `haipipe-paper-edit-diffpdf` (which produces ONE
 colored-diff PDF of the manuscript). This skill produces a STRUCTURED
 folder of diffs against a reference, written into the paper folder
 itself as `1-diff/vs-<ref>/`.
@@ -80,7 +80,7 @@ Status
 Related skills
 ---------------
 
-- `paper-diff-pdf` (`components/diff/`) — single-PDF colored diff
+- `haipipe-paper-edit-diffpdf` (`components/diff/`) — single-PDF colored diff
 - `1-narrative/narrative-report` — what the paper claims; this skill
   shows whether those claims changed
 - `6-respond/paper-rebuttal` — consumes summary.md to draft "what we

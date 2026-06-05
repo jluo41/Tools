@@ -15,7 +15,7 @@ metadata:
 
 Use this skill when reviewer comments already exist and the task is no longer generic manuscript revision. The goal is to produce a response package that is credible, efficient, and easy for editors or reviewers to verify.
 
-This skill is not for redesigning the whole paper. Use `manuscript-optimizer` first if the manuscript itself is structurally unstable. Use this skill when the paper is in revision mode and each comment must be turned into an explicit response and, where needed, a concrete manuscript change.
+This skill is not for redesigning the whole paper. Use `haipipe-paper-edit-optimizer` first if the manuscript itself is structurally unstable. Use this skill when the paper is in revision mode and each comment must be turned into an explicit response and, where needed, a concrete manuscript change.
 
 ## When To Use
 

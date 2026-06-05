@@ -63,7 +63,7 @@ Commands
 /haipipe-probe review claim <probe>
   SEMANTIC: Codex judges whether evidence supports the claim.
   Auto-runs integrity first if no recent audit. Writes CLAIMS_FROM_RESULTS.md
-  for downstream consumption (e.g. /narrative-report).
+  for downstream consumption (e.g. /haipipe-paper-structure-narrative).
 
 /haipipe-probe review project [project-path]
   STRUCTURAL: audit ALL probes + all referenced runs in a project.
@@ -346,7 +346,7 @@ Written at project root (or wherever the probe lives). Schema:
 - reviewed_by: codex-<reasoning-effort>, <timestamp>
 ```
 
-Downstream `/narrative-report` reads this as the spine of its
+Downstream `/haipipe-paper-structure-narrative` reads this as the spine of its
 claim ↔ evidence matrix.
 
 

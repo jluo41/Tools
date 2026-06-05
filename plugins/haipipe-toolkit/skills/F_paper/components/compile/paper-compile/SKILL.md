@@ -92,7 +92,7 @@ LaTeX Warning: Citation `smith2024' undefined
 → Add the missing entry to `references.bib` or fix the citation key.
 
 **`[VERIFY]` markers in text:**
-→ Search for `[VERIFY]` markers left by `/paper-write`. These indicate unverified citations or facts. Search for the correct information or flag to the user.
+→ Search for `[VERIFY]` markers left by `/haipipe-paper-edit-write`. These indicate unverified citations or facts. Search for the correct information or flag to the user.
 
 **Overfull hbox:**
 ```
@@ -248,7 +248,7 @@ For conference submission, additional checks:
 
 ### Next Steps
 - [ ] Visual inspection of PDF
-- [ ] Run `/paper-write` to fix any content issues
+- [ ] Run `/haipipe-paper-edit-write` to fix any content issues
 - [ ] Submit to [venue] via OpenReview / CMT / HotCRP
 ```
 

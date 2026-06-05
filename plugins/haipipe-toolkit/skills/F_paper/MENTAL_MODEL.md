@@ -63,7 +63,7 @@ Two things fold in here:
   paper-compile, scientific-writing}` is the bootstrap of ②, not a separate stage.
 - **Figure *making*** (`3-figure/{paper-figure, figure-spec, paper-illustration}`)
   is an asset ② produces and the prose consumes. Revision skills
-  (`5-revise/{manuscript-optimizer, results-section-revision, paper-weaving}`)
+  (`5-revise/{haipipe-paper-edit-optimizer, haipipe-paper-edit-results-revision, haipipe-paper-edit-weaving}`)
   are simply more edit passes.
 
 Re-entered when the gate finds a **local** problem (a number, a cite, a clumsy
@@ -74,8 +74,8 @@ paragraph) — fixable without rethinking the plan.
 ## The REVIEW gate — *which loop do we re-enter?*
 
 `6-review` is **not a third cycle**; it is the gate between cycles. Its
-zero-context, fresh-model audits (`paper-claim-audit`, `citation-audit`,
-`paper-manual-review-values/-citations`, `proof-checker`, `submission-audit`)
+zero-context, fresh-model audits (`haipipe-paper-edit-claim-audit`, `citation-audit`,
+`haipipe-paper-edit-manual-review-values/-citations`, `haipipe-paper-edit-proof-checker`, `haipipe-paper-edit-submission-audit`)
 exist precisely to catch what the editing author is blind to. Its verdict routes:
 
 | Gate finding | Route to |
@@ -93,9 +93,9 @@ Both exist on purpose.
 ## Figures live in both cycles (split)
 
 - **Planning** a figure — what it claims, panel roles, main-vs-SI — is ① plan
-  (`figure-planner`).
+  (`haipipe-paper-structure-figure-planner`).
 - **Making** the figure — plotting, diagram, illustration — is ② edit
-  (`paper-figure`, `figure-spec`, `paper-illustration`).
+  (`haipipe-paper-structure-figure`, `haipipe-paper-structure-figure-spec`, `haipipe-paper-structure-illustration`).
 
 Figures are the one shared asset that touches both loops; keep the *decision* in
 plan and the *production* in edit.
@@ -123,7 +123,7 @@ whole arc: plan → edit → gate → submit → rebuttal → present.
   done = a stable contract; edit done = every section's topic cells applied
   (`4-edit/_shared/edit-cycle.md` grid).
 - **Across cycles:** the gate decides. Local → edit; structural → plan; clean →
-  submit. A `paper-diff-pdf` at the end of each edit cycle shows co-authors what
+  submit. A `haipipe-paper-edit-diffpdf` at the end of each edit cycle shows co-authors what
   that cycle changed.
 - **Convergence:** stop when a full edit cycle + gate produces no structural
   finding and only cosmetic edits — that's "ready to submit."

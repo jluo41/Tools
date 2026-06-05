@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-conference
-description: "Conference paper pipeline specialist (was: paper-writing). Orchestrates paper-plan → paper-figure → figure-spec/paper-illustration/mermaid-diagram → paper-write → paper-compile → auto-paper-improvement-loop to go from a narrative report to a polished PDF. Target venues: ICLR, NeurIPS, ICML, CVPR, ACL, AAAI, IEEE. At `— effort: max | beast` (or explicit `— assurance: submission`), Phase 6 gates the Final Report on `tools/verify_paper_audits.sh`. Called by /haipipe-paper orchestrator. Direct invocation works for conference work. Trigger: conference paper, ICLR/NeurIPS/ICML paper, write paper pipeline, 写论文全流程, 从报告到PDF."
+description: "Conference paper pipeline specialist (was: paper-writing). Orchestrates paper-plan → paper-figure → haipipe-paper-structure-figure-spec/haipipe-paper-structure-illustration/mermaid-diagram → paper-write → paper-compile → haipipe-paper-edit-improve-loop to go from a narrative report to a polished PDF. Target venues: ICLR, NeurIPS, ICML, CVPR, ACL, AAAI, IEEE. At `— effort: max | beast` (or explicit `— assurance: submission`), Phase 6 gates the Final Report on `tools/verify_paper_audits.sh`. Called by /haipipe-paper orchestrator. Direct invocation works for conference work. Trigger: conference paper, ICLR/NeurIPS/ICML paper, write paper pipeline, 写论文全流程, 从报告到PDF."
 argument-hint: "[narrative-report-path-or-topic]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, Skill, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
@@ -20,13 +20,13 @@ Orchestrate a complete paper writing workflow for: **$ARGUMENTS**
 This skill chains five sub-skills into a single automated pipeline:
 
 ```
-/paper-plan → /paper-figure → /paper-write → /paper-compile → /auto-paper-improvement-loop
+/haipipe-paper-structure-plan → /haipipe-paper-structure-figure → /haipipe-paper-edit-write → /paper-compile → /haipipe-paper-edit-improve-loop
   (outline)     (plots)        (LaTeX)        (build PDF)       (review & polish ×2)
 ```
 
 Each phase builds on the previous one's output. The final deliverable is a polished, reviewed `paper/` directory with LaTeX source and compiled PDF.
 
-In this hybrid pack, the pipeline itself is unchanged, but `paper-plan` and `paper-write` use Orchestra-adapted shared references for stronger story framing and prose guidance.
+In this hybrid pack, the pipeline itself is unchanged, but `haipipe-paper-structure-plan` and `haipipe-paper-edit-write` use Orchestra-adapted shared references for stronger story framing and prose guidance.
 
 ## Constants
 
@@ -34,8 +34,8 @@ In this hybrid pack, the pipeline itself is unchanged, but `paper-plan` and `pap
 - **MAX_IMPROVEMENT_ROUNDS = 2** — Number of review→fix→recompile rounds in the improvement loop.
 - **REVIEWER_MODEL = `gpt-5.4`** — Model used via Codex MCP for plan review, figure review, writing review, and improvement loop.
 - **AUTO_PROCEED = true** — Auto-continue between phases. Set `false` to pause and wait for user approval after each phase.
-- **HUMAN_CHECKPOINT = false** — When `true`, the improvement loop (Phase 5) pauses after each round's review to let you see the score and provide custom modification instructions. When `false` (default), the loop runs fully autonomously. Passed through to `/auto-paper-improvement-loop`.
-- **ILLUSTRATION = `figurespec`** — Architecture/illustration generator for Phase 2b: `figurespec` (default, deterministic JSON→SVG via `/figure-spec`, best for architecture/workflow/topology), `gemini` (AI-generated via `/paper-illustration`, best for qualitative method illustrations; needs `GEMINI_API_KEY`), `mermaid` (Mermaid syntax via `/mermaid-diagram`, free, best for flowcharts), or `false` (skip Phase 2b, manual only).
+- **HUMAN_CHECKPOINT = false** — When `true`, the improvement loop (Phase 5) pauses after each round's review to let you see the score and provide custom modification instructions. When `false` (default), the loop runs fully autonomously. Passed through to `/haipipe-paper-edit-improve-loop`.
+- **ILLUSTRATION = `figurespec`** — Architecture/illustration generator for Phase 2b: `figurespec` (default, deterministic JSON→SVG via `/haipipe-paper-structure-figure-spec`, best for architecture/workflow/topology), `gemini` (AI-generated via `/haipipe-paper-structure-illustration`, best for qualitative method illustrations; needs `GEMINI_API_KEY`), `mermaid` (Mermaid syntax via `/mermaid-diagram`, free, best for flowcharts), or `false` (skip Phase 2b, manual only).
 
 > Override inline: `/haipipe-paper-conference "NARRATIVE_REPORT.md" — venue: NeurIPS, illustration: gemini, human checkpoint: true`
 > IEEE example: `/haipipe-paper-conference "NARRATIVE_REPORT.md" — venue: IEEE_JOURNAL`
@@ -77,8 +77,8 @@ echo "<resolved-level>" > paper/.aris/assurance.txt   # draft or submission
 - **`draft`** — Existing behavior. Audits run only when their content detector
   matches (Phase 4.5 / 4.7 / 5.5 / 5.8). Missing artifacts are non-blocking.
   Silent-skip allowed.
-- **`submission`** — The three mandatory audits (proof-checker,
-  paper-claim-audit, citation-audit) are treated as load-bearing gates. Each
+- **`submission`** — The three mandatory audits (haipipe-paper-edit-proof-checker,
+  haipipe-paper-edit-claim-audit, citation-audit) are treated as load-bearing gates. Each
   sub-audit must emit its JSON artifact (PASS / WARN / FAIL / NOT_APPLICABLE /
   BLOCKED / ERROR) — never silent-skip. Phase 6 runs
   `tools/verify_paper_audits.sh`; a non-zero exit blocks the Final Report.
@@ -97,10 +97,10 @@ discouraged for actual submissions. See
 
 ### Phase 1: Paper Plan
 
-Invoke `/paper-plan` to create the structural outline:
+Invoke `/haipipe-paper-structure-plan` to create the structural outline:
 
 ```
-/paper-plan "$ARGUMENTS"
+/haipipe-paper-structure-plan "$ARGUMENTS"
 ```
 
 **What this does:**
@@ -130,10 +130,10 @@ Shall I proceed with figure generation?
 
 ### Phase 2: Figure Generation
 
-Invoke `/paper-figure` to generate data-driven plots and tables:
+Invoke `/haipipe-paper-structure-figure` to generate data-driven plots and tables:
 
 ```
-/paper-figure "PAPER_PLAN.md"
+/haipipe-paper-structure-figure "PAPER_PLAN.md"
 ```
 
 **What this does:**
@@ -145,7 +145,7 @@ Invoke `/paper-figure` to generate data-driven plots and tables:
 
 **Output:** `figures/` directory with PDFs, generation scripts, and LaTeX snippets.
 
-> **Scope:** `paper-figure` covers data plots and comparison tables. Architecture diagrams, pipeline figures, and method illustrations are handled in Phase 2b below.
+> **Scope:** `haipipe-paper-structure-figure` covers data plots and comparison tables. Architecture diagrams, pipeline figures, and method illustrations are handled in Phase 2b below.
 
 #### Phase 2b: Architecture & Illustration Generation
 
@@ -153,18 +153,18 @@ Invoke `/paper-figure` to generate data-driven plots and tables:
 
 If the paper plan includes architecture diagrams, pipeline figures, audit cascades, or method illustrations, invoke the appropriate generator based on the `illustration` parameter:
 
-**When `illustration: figurespec`** (default) — invoke `/figure-spec`:
+**When `illustration: figurespec`** (default) — invoke `/haipipe-paper-structure-figure-spec`:
 ```
-/figure-spec "[architecture/workflow description from PAPER_PLAN.md]"
+/haipipe-paper-structure-figure-spec "[architecture/workflow description from PAPER_PLAN.md]"
 ```
 - Deterministic JSON → SVG vector rendering (editable, reproducible)
 - Best for: system architecture, workflow pipelines, audit cascades, layered topology
 - Output: `figures/*.svg` + `figures/*.pdf` (via rsvg-convert) + `figures/specs/*.json`
 - No external API, runs fully local
 
-**When `illustration: gemini`** — invoke `/paper-illustration`:
+**When `illustration: gemini`** — invoke `/haipipe-paper-structure-illustration`:
 ```
-/paper-illustration "[method description from PAPER_PLAN.md or NARRATIVE_REPORT.md]"
+/haipipe-paper-structure-illustration "[method description from PAPER_PLAN.md or NARRATIVE_REPORT.md]"
 ```
 - Claude plans → Gemini optimizes → Nano Banana Pro renders → Claude reviews (score ≥ 9)
 - Best for: qualitative method illustrations, natural-style diagrams, result grids
@@ -205,10 +205,10 @@ These are complementary, not mutually exclusive: you can run multiple generators
 
 ### Phase 3: LaTeX Writing
 
-Invoke `/paper-write` to generate section-by-section LaTeX:
+Invoke `/haipipe-paper-edit-write` to generate section-by-section LaTeX:
 
 ```
-/paper-write "PAPER_PLAN.md"
+/haipipe-paper-edit-write "PAPER_PLAN.md"
 ```
 
 **What this does:**
@@ -270,7 +270,7 @@ Shall I proceed with the improvement loop?
 
 ```
 if paper contains \begin{theorem} or \begin{lemma} or \begin{proof}:
-    Run /proof-checker "paper/"
+    Run /haipipe-paper-edit-proof-checker "paper/"
     This invokes GPT-5.4 xhigh to:
     - Verify all proof steps (hypothesis discharge, interchange justification, etc.)
     - Check for logic gaps, quantifier errors, missing domination conditions
@@ -291,7 +291,7 @@ else:
 
 ```
 if results/*.json or results/*.csv or outputs/*.json exist:
-    Run /paper-claim-audit "paper/"
+    Run /haipipe-paper-edit-claim-audit "paper/"
     Fresh zero-context reviewer compares every number in the paper
     against raw result files. Catches rounding inflation, best-seed
     cherry-pick, config mismatch, delta errors.
@@ -306,10 +306,10 @@ else:
 
 ### Phase 5: Auto Improvement Loop
 
-Invoke `/auto-paper-improvement-loop` to polish the paper:
+Invoke `/haipipe-paper-edit-improve-loop` to polish the paper:
 
 ```
-/auto-paper-improvement-loop "paper/"
+/haipipe-paper-edit-improve-loop "paper/"
 ```
 
 **What this does (2 rounds):**
@@ -331,7 +331,7 @@ Invoke `/auto-paper-improvement-loop` to polish the paper:
 
 ### Phase 5.5: Final Paper Claim Audit (MANDATORY submission gate)
 
-After `/auto-paper-improvement-loop` finishes, **rerun** `/paper-claim-audit` before the final report whenever the paper contains numeric claims and machine-readable raw result files exist.
+After `/haipipe-paper-edit-improve-loop` finishes, **rerun** `/haipipe-paper-edit-claim-audit` before the final report whenever the paper contains numeric claims and machine-readable raw result files exist.
 
 Use the same detectors as Phase 4.7:
 - numeric-claim regex over `paper/main.tex` and `paper/sections/*.tex`
@@ -350,7 +350,7 @@ RAW_RESULT_FILES=$(find results outputs experiments figures -type f \
   \( -name '*.json' -o -name '*.jsonl' -o -name '*.csv' -o -name '*.tsv' -o -name '*.yaml' -o -name '*.yml' \) 2>/dev/null | head -200)
 
 if [ -n "$NUMERIC_CLAIMS" ] && [ -n "$RAW_RESULT_FILES" ]; then
-    Run /paper-claim-audit "paper/"
+    Run /haipipe-paper-edit-claim-audit "paper/"
     If FAIL:
         Fix mismatched numbers before the final report
 elif [ -n "$NUMERIC_CLAIMS" ]; then
@@ -358,11 +358,11 @@ elif [ -n "$NUMERIC_CLAIMS" ]; then
 fi
 ```
 
-**Empirical motivation:** in our April 2026 NeurIPS run, the final paper claimed `w ∈ {0,1,2,3}` for the width-tradeoff experiment but the raw JSON had `w ∈ {0,1,2,3,4,5}`. The crossing-point tolerance was claimed as `0.05%` but the actual relative error was `0.0577%`. Both were caught only after manual `paper-claim-audit` invocation in the final round; the improvement loop did not detect them.
+**Empirical motivation:** in our April 2026 NeurIPS run, the final paper claimed `w ∈ {0,1,2,3}` for the width-tradeoff experiment but the raw JSON had `w ∈ {0,1,2,3,4,5}`. The crossing-point tolerance was claimed as `0.05%` but the actual relative error was `0.0577%`. Both were caught only after manual `haipipe-paper-edit-claim-audit` invocation in the final round; the improvement loop did not detect them.
 
 ### Phase 5.8: Citation Audit (submission gate)
 
-After the final paper-claim-audit passes, run `/citation-audit` to verify every `\cite{...}` along three axes: existence, metadata correctness, and context appropriateness. This is the fourth and final layer of the evidence-and-claim assurance stack (`probe-audit` → `result-to-claim` → `paper-claim-audit` → `citation-audit`).
+After the final haipipe-paper-edit-claim-audit passes, run `/citation-audit` to verify every `\cite{...}` along three axes: existence, metadata correctness, and context appropriateness. This is the fourth and final layer of the evidence-and-claim assurance stack (`probe-audit` → `result-to-claim` → `haipipe-paper-edit-claim-audit` → `citation-audit`).
 
 ```
 if paper/references.bib (or paper.bib) exists and contains entries cited from sec/*.tex:
@@ -440,8 +440,8 @@ skipping audits while claiming to have run them.
 
 ```
 📋 Submission audits required before Final Report:
-   [ ] 1. /proof-checker        → paper/PROOF_AUDIT.json
-   [ ] 2. /paper-claim-audit    → paper/PAPER_CLAIM_AUDIT.json
+   [ ] 1. /haipipe-paper-edit-proof-checker        → paper/PROOF_AUDIT.json
+   [ ] 2. /haipipe-paper-edit-claim-audit    → paper/PAPER_CLAIM_AUDIT.json
    [ ] 3. /citation-audit       → paper/CITATION_AUDIT.json
    [ ] 4. bash <ARIS_REPO>/tools/verify_paper_audits.sh paper/ --assurance submission
    [ ] 5. Block Final Report iff verifier exit code != 0
@@ -466,9 +466,9 @@ emission" section of each audit's SKILL.md.
 
 Order:
 
-1. `/proof-checker "paper/"` → writes `paper/PROOF_AUDIT.json` (emits
+1. `/haipipe-paper-edit-proof-checker "paper/"` → writes `paper/PROOF_AUDIT.json` (emits
    `NOT_APPLICABLE` if the paper contains no theorems / lemmas / proofs)
-2. `/paper-claim-audit "paper/"` → writes `paper/PAPER_CLAIM_AUDIT.json`
+2. `/haipipe-paper-edit-claim-audit "paper/"` → writes `paper/PAPER_CLAIM_AUDIT.json`
    (emits `NOT_APPLICABLE` if the paper has no numeric claims; emits
    `BLOCKED` if numeric claims exist but raw result files are missing)
 3. `/citation-audit "paper/"` → writes `paper/CITATION_AUDIT.json`

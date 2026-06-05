@@ -11,24 +11,24 @@ Layout
 ```
 components/
 ├── figure/          Display assets (0-display/Figure, /Table, /AppendixFigure, /AppendixTable)
-│   ├── paper-figure/
-│   ├── figure-spec/
-│   ├── figure-planner/
-│   ├── paper-illustration/
-│   ├── paper-illustration-image2/
-│   └── paper-structure-diagram/
+│   ├── haipipe-paper-structure-figure/
+│   ├── haipipe-paper-structure-figure-spec/
+│   ├── haipipe-paper-structure-figure-planner/
+│   ├── haipipe-paper-structure-illustration/
+│   ├── haipipe-paper-structure-illustration-image2/
+│   └── haipipe-paper-structure-diagram/
 │
 ├── citation/        Bibliography integrity (0-XXX.bib)
 │   ├── citation-audit/
 │   ├── citation-verifier/
 │   └── reference-audit-guide/
 │
-├── compile/         Build pipeline (LaTeX → PDF, sync to Overleaf)
-│   ├── paper-compile/
-│   └── overleaf-sync/
+├── compile/         Build pipeline (LaTeX → PDF)
+│   └── paper-compile/
+│       (overleaf sync moved to 3-edit/haipipe-paper-edit-to-overleaf)
 │
 └── diff/            Change-set production (vs prior submission / commit / branch)
-    ├── paper-diff-pdf/      Two .tex files → colored-diff PDF
+    ├── haipipe-paper-edit-diffpdf/      Two .tex files → colored-diff PDF
     └── paper-diff-folder/   Two paper folders → 1-diff/vs-<ref>/ writeup
 ```
 

@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-revise
-description: "Polish an existing LaTeX paper paragraph-by-paragraph across all its sections. Discovers section files from a tex root, then runs paper-weaving on each (pilot first, parallel for the rest), respecting paper-weaving's three gates G1 (review plan) → Q (auto quality check) → G2 (cleanup). Cross-section audit and before/after diff at the end. Venue-agnostic. Called by /haipipe-paper orchestrator. Direct invocation works for whole-paper polish. Trigger: revise paper, polish tex, paragraph polish, whole-paper revision, walk sections, weave whole paper, 修改论文, 整篇润色, /haipipe-paper-revise."
+description: "Polish an existing LaTeX paper paragraph-by-paragraph across all its sections. Discovers section files from a tex root, then runs haipipe-paper-edit-weaving on each (pilot first, parallel for the rest), respecting haipipe-paper-edit-weaving's three gates G1 (review plan) → Q (auto quality check) → G2 (cleanup). Cross-section audit and before/after diff at the end. Venue-agnostic. Called by /haipipe-paper orchestrator. Direct invocation works for whole-paper polish. Trigger: revise paper, polish tex, paragraph polish, whole-paper revision, walk sections, weave whole paper, 修改论文, 整篇润色, /haipipe-paper-revise."
 argument-hint: [tex-root-or-main.tex] [--feedback <path>] [--section <name>] [--apply] [--cleanup]
 allowed-tools: Bash, Read, Grep, Glob, Write, Edit, AskUserQuestion, Skill, Agent
 ---
@@ -9,12 +9,12 @@ Skill: haipipe-paper-revise (workflow specialist)
 =================================================
 
 Whole-paper polish orchestrator. The **engine for each section file is
-`paper-weaving`** (in `5-revise/paper-weaving/`): this skill walks every
-section `.tex` in a paper, dispatches each to `paper-weaving`, and
-threads `paper-weaving`'s three-gate lifecycle (G1 → Q → G2) up to the
+`haipipe-paper-edit-weaving`** (in `3-edit/haipipe-paper-edit-weaving/`): this skill walks every
+section `.tex` in a paper, dispatches each to `haipipe-paper-edit-weaving`, and
+threads `haipipe-paper-edit-weaving`'s three-gate lifecycle (G1 → Q → G2) up to the
 paper-wide level.
 
-This skill does NOT re-implement paper-weaving's diagnose / propose /
+This skill does NOT re-implement haipipe-paper-edit-weaving's diagnose / propose /
 apply / check / cleanup logic. It coordinates *across files*; the
 per-file engine owns the marker convention, the `%%@` plan blocks, the
 hard rules, and the gates.
@@ -53,13 +53,13 @@ Lifecycle Position
                                  │  revise (HERE)   │
                                  │                  │
                                  │  per-section:    │
-                                 │  paper-weaving   │
+                                 │  haipipe-paper-edit-weaving   │
                                  │   G1 → Q → G2    │
                                  └──────────────────┘
 ```
 
 The polish hop. Pairs naturally with `haipipe-paper-create` upstream
-(which writes new tex in the marker convention paper-weaving expects)
+(which writes new tex in the marker convention haipipe-paper-edit-weaving expects)
 and `haipipe-paper-rebuttal` downstream (which consumes the polished
 draft).
 
@@ -69,17 +69,17 @@ Required Inputs
 1. **tex root** — directory (e.g. `papers/lhm-a/`) or path to a main
    `.tex` file (e.g. `papers/lhm-a/0-lhm-a.tex`)
 2. **marker convention** — every section file MUST have `%% ---- PN.SN ----`
-   index headers per paragraph/sentence (paper-weaving Step 1 format
+   index headers per paragraph/sentence (haipipe-paper-edit-weaving Step 1 format
    check). If not, this skill stops at Phase 2 and reports which
    sections need marker insertion before polish can begin.
 3. **(optional) reviewer feedback** — path passed through to each
-   `paper-weaving` invocation as author-comment context
+   `haipipe-paper-edit-weaving` invocation as author-comment context
 
 Constants
 ---------
 
 - **REVISE_DIR** = `revise/`  (board + state + audit reports)
-- **ENGINE** = `paper-weaving`  (per-section diagnose + plan + apply + gates)
+- **ENGINE** = `haipipe-paper-edit-weaving`  (per-section diagnose + plan + apply + gates)
 - **DEFAULT_STRATEGY** = `pilot-then-parallel`  (see Phase 3)
 - **CROSS_SECTION_AUDIT** = `true`  (Phase 5 after all sections done)
 - **DIFF_REPORT** = `true`  (Phase 7 emits a colored PDF diff)
@@ -105,12 +105,12 @@ Try in order, stop at first success:
 3. **Glob `*.tex` in the root** (excluding the main shell). Last resort.
 
 If discovery returns 0 files → stop and ask. If it returns 1 file →
-dispatch straight to `paper-weaving` (no orchestration overhead).
+dispatch straight to `haipipe-paper-edit-weaving` (no orchestration overhead).
 
 ### Phase 2: Format Check (gate before any section is walked)
 
-For each discovered section file, verify paper-weaving's format
-contract (Step 1 of paper-weaving):
+For each discovered section file, verify haipipe-paper-edit-weaving's format
+contract (Step 1 of haipipe-paper-edit-weaving):
 
 - every paragraph has a `%% ---- PN.SN ----` header
 - PN numbering is file-local, monotone from 1
@@ -133,8 +133,8 @@ Emit `REVISE_DIR/SECTION_BOARD.md`:
 ```
 
 A `blocked` row stops the whole walk. The author can either fix the
-markers manually or invoke `Skill("paper-weaving", args="<file>")`
-directly so paper-weaving's own format-check error guides them.
+markers manually or invoke `Skill("haipipe-paper-edit-weaving", args="<file>")`
+directly so haipipe-paper-edit-weaving's own format-check error guides them.
 
 Role detection by filename pattern. Pick the **pilot** as the most
 structurally representative section (default: intro if present, else
@@ -142,7 +142,7 @@ the first section the author knows best — ask if ambiguous).
 
 ### Phase 3: Pilot + Parallel Walk
 
-Adapted from paper-weaving's "Multi-subsection workflow (pilot +
+Adapted from haipipe-paper-edit-weaving's "Multi-subsection workflow (pilot +
 parallel)" pattern, applied at the section level.
 
 #### Phase 3a: Pilot (main agent, one section)
@@ -150,12 +150,12 @@ parallel)" pattern, applied at the section level.
 1. Mark pilot row `in_progress`
 2. Dispatch:
    ```
-   Skill("paper-weaving", args="<pilot.tex> [feedback-slice]")
+   Skill("haipipe-paper-edit-weaving", args="<pilot.tex> [feedback-slice]")
    ```
-3. paper-weaving runs its inline diagnose + plan embed (Step 1 through
+3. haipipe-paper-edit-weaving runs its inline diagnose + plan embed (Step 1 through
    Step 4) and ends the turn at its own **Gate G1** (review the plan
    before any prose edits)
-4. The author iterates with paper-weaving directly until Gate G1 is
+4. The author iterates with haipipe-paper-edit-weaving directly until Gate G1 is
    resolved (typically: approve / rework P<n> / rethink the story)
 5. Mark pilot row `g1-approved`
 6. **Lock the cross-section vocabulary** observed in the pilot
@@ -170,10 +170,10 @@ single message** (so they run concurrently):
 
 ```
 Agent(
-  description: "paper-weaving on <section>",
+  description: "haipipe-paper-edit-weaving on <section>",
   subagent_type: "general-purpose",
   prompt: """
-    Run /paper-weaving on <abs-path-to-section.tex>.
+    Run /haipipe-paper-edit-weaving on <abs-path-to-section.tex>.
 
     Structural reference (read FIRST):
       <abs-path-to-pilot.tex>   — pilot section with embedded plan
@@ -211,8 +211,8 @@ After all sub-agents return:
 #### Phase 3c: G1 resolution loop (main agent)
 
 For each `g1-pending` section, the author reviews the embedded plan in
-that `.tex` and chooses paper-weaving's G1 options (approve / rework /
-rethink / abort) directly in the main conversation. paper-weaving handles
+that `.tex` and chooses haipipe-paper-edit-weaving's G1 options (approve / rework /
+rethink / abort) directly in the main conversation. haipipe-paper-edit-weaving handles
 the iteration; this skill only updates the board row to `g1-approved`
 when the author signals approval.
 
@@ -227,27 +227,27 @@ Once enough sections are `g1-approved`, the author invokes:
 For each `g1-approved` section:
 
 1. Mark row `applying`
-2. Dispatch the apply phase through paper-weaving or its sibling
+2. Dispatch the apply phase through haipipe-paper-edit-weaving or its sibling
    `paper-revise`. Two routes:
    - **Default**: hand off to `Skill("paper-revise", args="<section.tex> apply")`
      for sentence-level apply (broader workflow, comments → edits)
-   - **Fast**: when the author wants paper-weaving's own collapse-block
-     apply path, dispatch `Skill("paper-weaving", args="<section.tex>")`
-     and let paper-weaving's lifecycle handle apply + auto-trigger Gate Q
+   - **Fast**: when the author wants haipipe-paper-edit-weaving's own collapse-block
+     apply path, dispatch `Skill("haipipe-paper-edit-weaving", args="<section.tex>")`
+     and let haipipe-paper-edit-weaving's lifecycle handle apply + auto-trigger Gate Q
 3. Mark row `q-pending` (apply done, Gate Q will fire next)
 
 ### Phase 5: Cross-Section Audits + per-section Gate Q
 
-paper-weaving's **Gate Q** fires per file automatically after apply.
+haipipe-paper-edit-weaving's **Gate Q** fires per file automatically after apply.
 This skill adds a paper-wide audit on top:
 
 1. Collect each section's Gate Q summary (PASS / 🟡 ATTENTION / FAIL)
    into `REVISE_DIR/REVISE_AUDIT.md`
 2. Run cross-section sweeps (these complement the per-file checks):
    ```
-   Skill("manuscript-optimizer")  # review mode — claim ↔ evidence ↔ figures ↔ terminology
-   Skill("paper-claim-audit")     # does the polished draft still support the headline claim?
-   Skill("submission-audit")      # only if --pre-submission flag set
+   Skill("haipipe-paper-edit-optimizer")  # review mode — claim ↔ evidence ↔ figures ↔ terminology
+   Skill("haipipe-paper-edit-claim-audit")     # does the polished draft still support the headline claim?
+   Skill("haipipe-paper-edit-submission-audit")      # only if --pre-submission flag set
    ```
 3. Aggregate into a paper-wide PASS/🟡/FAIL table; present to the
    author with offers to loop back to specific sections
@@ -264,7 +264,7 @@ items), the author invokes:
 This **does not auto-delete anything**. For each section row marked
 `q-pending` (post-Q) or `q-resolved`:
 
-1. Print the paper-weaving Gate G2 prompt for that file (verbatim,
+1. Print the haipipe-paper-edit-weaving Gate G2 prompt for that file (verbatim,
    path substituted) so the author can decide per-section:
    - delete in place themselves (recommended sed regex shown)
    - ask the skill to delete (requires `confirm-delete` token)
@@ -279,7 +279,7 @@ This is the only destructive operation; it always requires explicit
 
 If the tex root was version-controlled (or has a pre-revise snapshot):
 
-1. `Skill("paper-diff-pdf")` to produce a colored before/after PDF
+1. `Skill("haipipe-paper-edit-diffpdf")` to produce a colored before/after PDF
 2. Save under `REVISE_DIR/DIFF.pdf`
 3. Mention path in final report
 
@@ -287,7 +287,7 @@ If the tex root was version-controlled (or has a pre-revise snapshot):
 
 Update `REVISE_STATE.md`. Present to user:
 - Sections walked (with per-file paragraph-edit counts pulled from
-  paper-weaving's block-collapse markers `[APPLIED v<tag>]`)
+  haipipe-paper-edit-weaving's block-collapse markers `[APPLIED v<tag>]`)
 - Paper-wide Gate Q summary (Phase 5)
 - Cleanup status (Phase 6)
 - Diff location (Phase 7)
@@ -332,10 +332,10 @@ paper/
 
 ---
 
-Inherited Hard Rules (from paper-weaving)
+Inherited Hard Rules (from haipipe-paper-edit-weaving)
 -----------------------------------------
 
-These are paper-weaving's hard rules, propagated to the workflow level.
+These are haipipe-paper-edit-weaving's hard rules, propagated to the workflow level.
 The workflow MUST NOT violate them when writing its own files
 (`REVISE_DIR/*`) or when phrasing chat output:
 
@@ -346,22 +346,22 @@ The workflow MUST NOT violate them when writing its own files
    continuous numbering in the board or audit reports.
 3. **No em-dashes anywhere.** Workflow output (board, audit, chat) uses
    commas, colons, or sentence breaks.
-4. **No AI-flavored prose.** Workflow's chat updates follow paper-weaving's
+4. **No AI-flavored prose.** Workflow's chat updates follow haipipe-paper-edit-weaving's
    anti-pattern list (no comma-fenced adverbs, no apposition padding,
    no callback constructions, no noun stacks).
 5. **No sidecar `.txt` files for plan content.** Plan lives in each
-   `.tex` as `%%@` blocks (owned by paper-weaving). Workflow may write
+   `.tex` as `%%@` blocks (owned by haipipe-paper-edit-weaving). Workflow may write
    `.md` files for *state* (board, audit, vocab) — those are coordination
    artifacts, not plan content.
-6. **`%%@` sentinel is paper-weaving's namespace.** This workflow never
+6. **`%%@` sentinel is haipipe-paper-edit-weaving's namespace.** This workflow never
    writes `%%@` lines into any `.tex` file. All `.tex` edits flow
-   through paper-weaving.
+   through haipipe-paper-edit-weaving.
 7. **Never auto-delete `%%@` blocks.** Phase 6 always requires explicit
    `confirm-delete-*` authorization from the author.
 8. **Never apply prose edits without Gate G1 approval per section.**
    Phase 4 only walks sections marked `g1-approved` in the board.
 9. **Gate Q always runs after apply per file.** Workflow does not
-   suppress it; paper-weaving owns the suppression rules (micro-round,
+   suppress it; haipipe-paper-edit-weaving owns the suppression rules (micro-round,
    author override).
 10. **Immerse before acting.** Even at the workflow level, read each
     section's embedded plan before drafting the triage table — don't
@@ -375,7 +375,7 @@ Workflow-specific additional rules:
 12. **Feedback passes through unchanged.** When `--feedback` is given,
     read the file once at Phase 0; forward the relevant slice (or the
     whole file if section-specific slicing isn't obvious) into the
-    `paper-weaving` invocation as the author-comment argument.
+    `haipipe-paper-edit-weaving` invocation as the author-comment argument.
 13. **No silent skipping.** A section the user asks to skip is marked
     `skipped` with a one-line reason in the board, not removed.
 14. **One paper at a time.** Don't walk two tex roots in one invocation
@@ -383,21 +383,21 @@ Workflow-specific additional rules:
 
 ---
 
-Engine Map (paper-weaving and its siblings)
+Engine Map (haipipe-paper-edit-weaving and its siblings)
 -------------------------------------------
 
 | Per-section need | Engine | Notes |
 |---|---|---|
-| diagnose + plan embed in `.tex` (default) | `paper-weaving` | inline section-route |
-| rework one paragraph | `Skill("paper-revise-paragraph")` via paper-weaving | paper-weaving routes |
-| rewrite one sentence | `Skill("paper-revise-sentence")` via paper-weaving | paper-weaving routes |
+| diagnose + plan embed in `.tex` (default) | `haipipe-paper-edit-weaving` | inline section-route |
+| rework one paragraph | `Skill("paper-revise-paragraph")` via haipipe-paper-edit-weaving | haipipe-paper-edit-weaving routes |
+| rewrite one sentence | `Skill("paper-revise-sentence")` via haipipe-paper-edit-weaving | haipipe-paper-edit-weaving routes |
 | verify quantitative claims | `Skill("paper-check-numeric")` via Gate Q | Q substep Q2 |
-| verify citations | `Skill("paper-check-reference")` via Gate Q | Q substep Q2 |
-| broader multi-pass revision with sentence-annotation lifecycle | `paper-revise` | sibling of paper-weaving; this workflow can also dispatch directly to it |
+| verify citations | `Skill("haipipe-paper-edit-check-reference")` via Gate Q | Q substep Q2 |
+| broader multi-pass revision with sentence-annotation lifecycle | `paper-revise` | sibling of haipipe-paper-edit-weaving; this workflow can also dispatch directly to it |
 
 This workflow does not call the leaf engines (paper-revise-paragraph,
-paper-revise-sentence, paper-check-numeric, paper-check-reference,
-citation-verifier) directly — paper-weaving routes to them as needed.
+paper-revise-sentence, paper-check-numeric, haipipe-paper-edit-check-reference,
+citation-verifier) directly — haipipe-paper-edit-weaving routes to them as needed.
 
 ---
 

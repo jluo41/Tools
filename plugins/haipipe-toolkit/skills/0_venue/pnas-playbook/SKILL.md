@@ -15,7 +15,7 @@ metadata:
 
 Use this skill when the venue decision is between PNAS and another broad-scope journal (Nature family, Science, or top field-specific journals), or when a manuscript already targets PNAS and needs venue-specific framing before a heavy revision pass.
 
-This skill is about fit, Significance Statement quality, classification, and submission policy. It does not replace `scientific-writing`, `manuscript-optimizer`, or `submission-audit`.
+This skill is about fit, Significance Statement quality, classification, and submission policy. It does not replace `haipipe-paper-edit-write-scientific`, `haipipe-paper-edit-optimizer`, or `haipipe-paper-edit-submission-audit`.
 
 ## When To Use
 
@@ -29,7 +29,7 @@ Use this skill when:
 Do not use this skill when:
 - the task is generic sentence-level editing
 - the venue is a conference or a specialty journal without broad-readership framing
-- the manuscript structure itself is still unstable and needs `manuscript-optimizer` first
+- the manuscript structure itself is still unstable and needs `haipipe-paper-edit-optimizer` first
 
 ## Venue Fit vs Alternatives
 
@@ -126,11 +126,11 @@ PNAS historically had three tracks (Direct, Contributed, Communicated). In pract
 
 After this playbook settles venue fit, classification, article type, and Significance Statement framing, hand off to:
 
-- `paper-bootstrap` -- if the project is new or needs a source-of-truth refresh
-- `manuscript-optimizer` -- if the paper's claim structure, evidence chain, or terminology needs revision under PNAS framing
-- `scientific-writing` -- for drafting or section-level rewriting with PNAS classification in mind
-- `figure-planner` -- PNAS allows ~6 main figures; plan panel roles against that budget
+- `haipipe-paper-structure-bootstrap` -- if the project is new or needs a source-of-truth refresh
+- `haipipe-paper-edit-optimizer` -- if the paper's claim structure, evidence chain, or terminology needs revision under PNAS framing
+- `haipipe-paper-edit-write-scientific` -- for drafting or section-level rewriting with PNAS classification in mind
+- `haipipe-paper-structure-figure-planner` -- PNAS allows ~6 main figures; plan panel roles against that budget
 - `citation-verifier` -- bibliography hygiene
-- `submission-audit` -- final pre-submission gate; confirm this playbook's preflight items are satisfied
+- `haipipe-paper-edit-submission-audit` -- final pre-submission gate; confirm this playbook's preflight items are satisfied
 
-Do not skip `submission-audit` just because this playbook ran. They check different things: this playbook checks venue-specific fit; `submission-audit` checks that the manuscript's internal claim-evidence-figure-text alignment is stable.
+Do not skip `haipipe-paper-edit-submission-audit` just because this playbook ran. They check different things: this playbook checks venue-specific fit; `haipipe-paper-edit-submission-audit` checks that the manuscript's internal claim-evidence-figure-text alignment is stable.
