@@ -51,11 +51,16 @@ engine = Stata   →  /haipipe-task-for-stata   (sub-orchestrator / father skill
 
 ANY engine=Stata request is delegated to **`/haipipe-task-for-stata`**, which owns
 the stage disambiguation (cms/case/data/reg), the `{LNN}` stage-letter alphabet,
-and the shared engine contract (`ref/stata-dialect.md` + the three Stata ref
-templates). This skill does NOT route stata stages itself — it hands off once
-the engine is detected as Stata. The four children keep all structure invariants
-(hierarchy, RUNNAME spine, light/heavy, diagram-as-doc) and emit `runtime.yaml`
-for a unified `task-log.md` across Python and Stata tasks.
+and the shared engine contract in **its own `ref/`**
+(`haipipe-task-for-stata/ref/`: `stata-dialect.md` + the three Stata templates).
+This skill does NOT route stata stages itself — it hands off once the engine is
+detected as Stata. The four children keep all structure invariants (hierarchy,
+RUNNAME spine, light/heavy, diagram-as-doc).
+
+Routing principle: this skill is the HIGH-LEVEL router — it owns only the
+engine-agnostic invariants (`ref/hierarchy.md`, authoring conventions). Each
+`/haipipe-task-for-<engine>` child owns its OWN `ref/` (templates + dialect);
+route to the child and read the child's `ref/`, never keep engine specifics here.
 
 Called by `/haipipe-project` when the request is to **create** something
 in the hierarchy. For audit / read see `-inspect`; for moves see `-organize`.

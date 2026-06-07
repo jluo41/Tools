@@ -1,15 +1,16 @@
 Stata Execution Dialect — shared engine contract
 ==================================================
 
-This is the **layer-2 execution contract** for Stata task-folders. The
-skill's default dialect is Python + papermill + `.ipynb`; this document
+This is the **layer-2 execution contract** for Stata task-folders, owned by
+`haipipe-task-for-stata` (this skill's `ref/`). The parent `/haipipe-task` is
+the high-level router (default dialect Python + papermill); this document
 defines the parallel Stata + PowerShell + `.log` dialect that the four
 `haipipe-task-for-stata-*` specialists share.
 
 The **structure invariants** (3-level hierarchy, RUNNAME spine, run↔result
 pairing, light/heavy split, diagram-as-doc) are UNCHANGED. Only the
-execution engine differs. Read `hierarchy.md` first for the invariants;
-this file only describes what swaps out.
+execution engine differs. Read `../../haipipe-task/ref/hierarchy.md` first for
+the invariants; this file only describes what swaps out.
 
 
 Three orthogonal axes
@@ -54,15 +55,15 @@ Two deliberate departures from the Python mold:
    `.do`. The `.ps1` snapshots BOTH into `results/<run>/`.
 
 
-runtime.yaml — the integration point
--------------------------------------
+runtime.yaml — OPTIONAL task-log integration
+---------------------------------------------
 
-The `.ps1` runner MUST emit `results/<run>/runtime.yaml` in the flat
-key:value schema that `haipipe-task-logging/ref/regen_task_log.py` parses.
-That script is engine-agnostic — it only globs `results/*/runtime.yaml` —
-so emitting this gives a unified `task-log.md` across Python AND Stata
-tasks for free. (The existing `manifest.json` may stay as a Stata-native
-extra, or be retired.)
+Under the Stata dialect the execution record is the per-step Stata log +
+`summary.txt`; runners stay THIN and write no bookkeeping (see the script
+style contract below). `results/<run>/runtime.yaml` is OPTIONAL — add one
+after a run (by hand or tooling, never in the runner hot path) only when the
+unified `task-log.md` from `haipipe-task-logging/ref/regen_task_log.py` is
+wanted. Flat schema:
 
 ```yaml
 status:     ok                              # running | ok | failed
@@ -72,15 +73,11 @@ duration:   3h26m
 git_sha:    8d8d6d1
 host:       jjluo-pc/floyd
 exit_code:  0
-cmd:        pwsh A01_cms_pipeline/runs/run_cms_2015.ps1
+cmd:        powershell A01_cms_pipeline/runs/run_cms_2015.ps1
 config:     configs/run_cms_2015.yaml
-notebook:   results/run_cms_2015/log/       # repurposed → per-step log dir
-headline:   Bene_Info-2015 · 11,783,927 × 121
+notebook:   results/run_cms_2015/log/       # repurposed -> per-step log dir
+headline:   Bene_Info-2015 11,783,927 x 121
 ```
-
-Write it twice: once at launch with `status: running` (atomically, via a
-`.tmp` + move), then overwrite at finalize with the terminal status,
-duration, exit_code, and headline. See `run-ps1-template.ps1`.
 
 
 Anatomy of a Stata task-folder
@@ -93,12 +90,13 @@ Anatomy of a Stata task-folder
 ├── configs/
 │   ├── <cfg>.do               ← Stata globals (keep-vars, flags; paths built from ${ws_root}) — SOURCE OF TRUTH
 │   └── <run>.yaml             ← _meta: block + stata_config: pointer  (NEW under this dialect)
+├── run_{stage}_year.ps1       ← intra-run ORCHESTRATOR at task root (~15 lines: phases + parallelism)
 ├── runs/
-│   └── <run>.ps1              ← per-run ENTRY (from run-ps1-template.ps1); resolves ws_root; writes runtime.yaml
-├── run_{stage}_year.ps1       ← intra-run ORCHESTRATOR at task root (resolves Stata; step parallelism + phases)
-├── sbatch/                    ← cross-run batchers (multi-year / multi-cohort / multi-trait)
+│   └── <run>.ps1              ← THIN per-run entry (a few lines); one per run identity; pairs with results/<run>/
+├── sbatch/
+│   └── <range>.ps1            ← cross-run batcher: loops the runs/ entries (no logic of its own)
 ├── results/
-│   └── <run>/                 ← log/*.txt · config_snapshot.do · summary.txt · runtime.yaml
+│   └── <run>/                 ← log/*.txt · summary.txt  (runtime.yaml optional)
 └── diagram/                   ← doc surface (NEVER README.md); see diagram-ascii
 ```
 
@@ -106,7 +104,7 @@ The dispatcher `.do`, the worker `scripts/`, and `run_{stage}_year.ps1` live at
 the task ROOT — they are the task's entry + execution machinery (the Stata
 analog of Python's root `{task}.py` + papermill). Only the per-step WORKERS go
 in `scripts/`. Three ref templates seed them:
-`run-ps1-template.ps1` (the per-run entry), `run-stage-year-template.ps1`
+`run-ps1-template.ps1` (the thin per-run entry), `run-stage-year-template.ps1`
 (the orchestrator), `dispatcher-do-template.do` (the dispatcher).
 
 Roles, precisely:
@@ -117,16 +115,101 @@ Roles, precisely:
   (idempotent), closes log. Code paths (`configs/`, `scripts/`) are
   task-folder-relative; the DATA root arrives absolute as `<ws_root>`. The file
   name is FREE — nothing references it by a hardcoded path.
-- **`run_{stage}_year.ps1`** — internal helper; resolves the Stata exe
-  (`Resolve-StataExe`, any installed version), runs Stata with the working dir
-  set to `$PSScriptRoot` (the task folder), and runs the dispatcher's steps in
-  dependency-correct phases (within-phase parallelism via
-  `Start-Process ... -PassThru | Wait-Process`). Called by the per-run `.ps1`;
-  receives `-wsRoot` and passes it through.
-- **`runs/<run>.ps1`** — the RUNNAME entry. Resolves the absolute `ws_root`
-  (walk up to `pyproject.toml`), precondition-checks inputs, snapshots config,
-  writes runtime.yaml, calls the orchestrator, finalizes.
-- **`sbatch/`** — fan a single per-run `.ps1` across years / cohorts / traits.
+- **`run_{stage}_year.ps1`** — the engine for one run: `$stata` variable at top
+  (one editable line), resolves `ws_root` by walking up to `pyproject.toml`,
+  runs Stata with the working dir set to `$PSScriptRoot` (the task folder), and
+  sequences the dispatcher's steps in dependency-correct phases (within-phase
+  parallelism via `Start-Process ... -PassThru | Wait-Process`). ~15 lines —
+  see the script style contract below.
+- **`runs/<run>.ps1`** — the RUNNAME entry, THIN: one comment line + one call
+  into the orchestrator with this run's parameters
+  (`& "$PSScriptRoot\..\run_<stage>_year.ps1" -cfg <cfg> -year <year>`).
+  One file per run identity so run ↔ `results/<run>/` pairing stays 1:1.
+- **`sbatch/`** — fans across runs: `foreach ($y in 2015..2020) { & "$PSScriptRoot\..\runs\run_<stage>_$y.ps1" }`.
+  No logic of its own.
+
+
+Script style + server constraints — the review contract
+---------------------------------------------------------
+
+The CMS secure server is the binding constraint: **Windows PowerShell 5.1 only**
+(no `pwsh`; installs blocked), clean Stata (no SSC), isolated (no network), and
+every file is hand-read + hand-copied there by the researcher. Audience is
+human AND machine. Style reference: `cms_results_v0316/code` (the `_cms-server`
+snapshot under `_WorkSpace/0-CMS-Store/CMS-Analysis-Results/`). The
+`stata-script-reviewer-agent` enforces these points before any hand-copy.
+
+Server-runnability (hard blockers):
+
+```
+A1  No `pwsh`, no PS7-only syntax (&&, ||, ternary, ??). Child calls are
+    `& $script` (preferred, same session) or `powershell -File`.
+A2  ASCII-only .ps1/.do. PS 5.1 reads ANSI: an em-dash or box-drawing char
+    mis-decodes (em-dash byte 0x94 = closing smart-quote) -> string truncates
+    -> "Unexpected token" parse error. If non-ASCII is truly unavoidable,
+    save UTF-8 WITH BOM.
+A3  No installs, no network: no winget / pip / ssc install anywhere.
+A4  No SSC commands in .do: no `distinct` (use egen tag() + count); built-ins
+    only; capture-guard optional variables.
+A5  Stata exe = ONE editable line at the top of the orchestrator:
+    $stata = "C:\Program Files\Stata18\StataMP-64.exe"
+    No resolver functions. Another machine edits that one line.
+A6  Output paths from the ABSOLUTE _WorkSpace (pyproject.toml walk-up).
+    Never a relative "_WorkSpace", never ..\.. depth counting. Genuinely
+    fixed raw inputs (G:\CMS\DATA) stay absolute in the config.
+A7  Run from the task folder ($PSScriptRoot); configs/ + scripts/ relative;
+    nothing hardcodes the folder's own name.
+```
+
+Readability (every file is hand-checked before copy):
+
+```
+B1  Header = 1-2 comment lines (what + args/usage). No banner blocks, no
+    ===/--- separator walls, no ASCII-art in code, no "// CHANGE (n)" patch
+    markers, no commented-out alternatives left behind.
+B2  Size budget: orchestrator .ps1 <= ~30 lines; runs/ entry <= ~5; sbatch
+    batcher <= ~10; worker .do = one focused step.
+B3  No ceremony in the hot path: no runtime.yaml / manifest.json / config
+    snapshots / precondition hashtables in runners. Stata logs + summary.txt
+    are the record.
+B4  .do dispatch ladders: multi-line braces (next section), aligned step names.
+B5  Orchestrator reads as: variable block ($stata, $dir, $ws, $base, $tail),
+    then the action lines. Input -> step -> output traceable in one screen.
+B6  Comment budget: ref TEMPLATES carry a ~4-line header (contract + what to
+    EDIT) and one short note per decision point (phase blocks, $stata, $tail);
+    scaffolded INSTANCES trim to a 1-2 line header + the phase labels.
+```
+
+The settled good example (ProjB `A01_cms_pipeline`):
+
+```powershell
+# run_cms_year.ps1 (orchestrator, task root)
+# one year: 4 extracts in parallel, then bene_year + summary
+param([string]$cfg = "cms_production", [string]$year = "2015")
+
+$stata = "C:\Program Files\Stata18\StataMP-64.exe"
+$dir   = $PSScriptRoot
+$ws    = $dir; while ($ws -and -not (Test-Path "$ws\pyproject.toml")) { $ws = Split-Path $ws }
+$base  = "do 01_cms_pipeline.do $cfg"
+$tail  = "`"$dir\results\run_cms_$year`" `"$ws\_WorkSpace`""
+
+$jobs = "pde","carrier_claim","carrier_line","outpatient" |
+        ForEach-Object { Start-Process $stata "/e $base $_ $year $tail" -WorkingDirectory $dir -PassThru }
+$jobs | Wait-Process
+Start-Process $stata "/e $base bene_year $year $tail" -WorkingDirectory $dir -PassThru -Wait
+Start-Process $stata "/e $base summary   $year $tail" -WorkingDirectory $dir -PassThru -Wait
+Write-Host "Year $year done."
+```
+
+```powershell
+# runs/run_cms_2015.ps1 (thin per-run entry; one per year)
+& "$PSScriptRoot\..\run_cms_year.ps1" -cfg cms_production -year 2015
+```
+
+```powershell
+# sbatch/run_cms_2015-2020.ps1 (batcher; loops the runs/ entries)
+foreach ($y in 2015..2020) { & "$PSScriptRoot\..\runs\run_cms_$y.ps1" }
+```
 
 
 Dispatcher coding style (multi-line braces)
@@ -177,8 +260,8 @@ without opening Stata. Two pieces:
   stage's asset and `file write`s a report into `${results_dir}` (e.g.
   `case-describe.txt`). No persistent data output, so it is NOT in the skip list
   — it always runs.
-- **`runs/run_describe_<...>.ps1`** — a describe-ONLY run: `Resolve-StataExe` +
-  `ws_root`, then runs just the `describe` step on the already-built asset (no
+- **`runs/run_describe_<...>.ps1`** — a describe-ONLY run: same thin shape as
+  any runs/ entry, runs just the `describe` step on the already-built asset (no
   rebuild). For per-year stages the year arg is a dummy; the worker loops the
   `year-*` dirs it finds under the asset path.
 
@@ -207,10 +290,10 @@ A Stata task must run identically on a laptop and on the secure server,
 launched from anywhere, regardless of the folder's own name. Three rules
 (all baked into the ref templates — do NOT re-derive them per task):
 
-1. **Resolve Stata, never hardcode a version.** The orchestrator uses
-   `Resolve-StataExe`: honor `$env:HAIPIPE_STATA`, else newest
-   `C:\Program Files\Stata*\StataMP-64.exe` (then SE/BE/base). This survives
-   the common local-17 vs server-18 split with no per-machine edit.
+1. **Stata exe = one editable variable.** The orchestrator's first code line is
+   `$stata = "C:\Program Files\Stata18\StataMP-64.exe"` (the server exe). A
+   different machine edits that ONE line. No resolver functions (rule A5) —
+   a 10-line auto-detect costs more hand-check time than it saves.
 
 2. **Run from the task folder; keep code paths relative.** The orchestrator
    sets the Stata working dir to `$PSScriptRoot` (the task root) and calls the
@@ -269,18 +352,20 @@ cms/case/data stages produce HEAVY `.dta` assets and keep only pointers +
 logs in `results/`.
 
 
-Pre-flight code-review gate (ported)
--------------------------------------
+Pre-hand-copy review (agent, not in-script plumbing)
+-----------------------------------------------------
 
-The bash `run-sh-template.sh` blocks launch until a fresh `CODE_REVIEW.md`
-exists. `run-ps1-template.ps1` ports the same gate to PowerShell. For
-Stata this is arguably MORE valuable — silent merge / keep-var / horizon /
-sample-definition bugs run clean and produce numbers. Skip mechanisms
-mirror the bash gate: `_meta.skip_review: true` in `<run>.yaml`, or
-`$env:HAIPIPE_SKIP_REVIEW = "1"` at launch.
+There is NO in-script review gate — runners stay thin (rule B3). Instead,
+run `stata-script-reviewer-agent` on the task-folder BEFORE hand-copying
+files to the server. It checks the contract above (structure S, runnability
+A, readability B, pipeline correctness C) plus a machine pre-flight
+(PS 5.1 parse-check, non-ASCII byte scan, grep gate for pwsh/ssc/distinct),
+and writes `CODE_REVIEW.md` + the hand-port file list. For Stata this
+matters MORE than for Python — silent merge / keep-var / sample-definition
+bugs run clean and produce numbers.
 
-Author convention: the dispatcher `.do` SHOULD carry a top-of-file
-`Intent` comment block (what each step measures, where outputs land).
+Author convention: the dispatcher `.do` carries a 1-2 line header comment
+(args + step list) — that is the whole "intent block" under this dialect.
 
 
 Project-local letter convention (cms/case/data/reg)

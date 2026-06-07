@@ -5,7 +5,7 @@ Runs the estimation grid (OLS / IV / LPM / logit / two-part) on the
 data-stage analysis table, writing LIGHT coefficient tables into
 `results/<run>/`. Output:
 `tasks/{G}{NN}_<group>/D{NN}_reg_pipeline_<study>/`  (task-folder letter D = reg stage).
-Read `../haipipe-task/ref/stata-dialect.md` for the engine contract.
+Read `../haipipe-task-for-stata/ref/stata-dialect.md` for the engine contract.
 
 KEY DIFFERENCE from cms/case/data: the primary output is LIGHT (coef
 tables in-repo under `results/`), not a heavy `.dta` in `_WorkSpace/`.
@@ -82,7 +82,7 @@ Step 5 — Run-script (reg runtime contract)
 Reg is **dispatcher-less** — each `runs/.../<run>.ps1` calls its estimation
 `scripts/...do` DIRECTLY (no `run_<stage>_year.ps1`, no year axis). Each `.ps1`:
 
-- resolves Stata with `Resolve-StataExe` (no hardcoded version);
+- sets `$stata` to the server exe (ONE editable line at the top — no resolver functions);
 - resolves the absolute `_WorkSpace` (walk up to `pyproject.toml`) and exports it
   as `$env:HAIPIPE_WS_ROOT` — the `.do` reads it AFTER `clear all` via
   `global ws_root : environment HAIPIPE_WS_ROOT` (a `do`-arg/global would not
@@ -103,7 +103,7 @@ Step 5b — Describe / QC run
 ---------------------------
 
 Reg's "describe" is a **coefficient-sanity** report (see "Describe / QC run" in
-`../haipipe-task/ref/stata-dialect.md`). Since reg is dispatcher-less and output
+`../haipipe-task-for-stata/ref/stata-dialect.md`). Since reg is dispatcher-less and output
 is LIGHT, this is a `runs/run_describe_<Trait>.ps1` that runs a
 `scripts/d-Reg-Describe.do` (read-only) which parses the per-spec estimation
 logs / saved estimates and `file write`s `reg-describe.txt`: per cell the trait

@@ -1,6 +1,6 @@
 ---
 name: haipipe-task-for-stata-cms
-description: "Stata-dialect CMS-pipeline task-folder build specialist. Scaffolds {NN}_cms_pipeline/ task-folders that extract + enrich raw CMS claims per year into _WorkSpace/1-CMS-Store (disease-agnostic, run once per year). Called by /haipipe-task orchestrator when task-type=stata-cms. Direct invocation works for scoped scaffolding. Shares the Stata engine in ../haipipe-task/ref/stata-dialect.md."
+description: "Stata-dialect CMS-pipeline task-folder build specialist. Scaffolds {NN}_cms_pipeline/ task-folders that extract + enrich raw CMS claims per year into _WorkSpace/1-CMS-Store (disease-agnostic, run once per year). Called by /haipipe-task orchestrator when task-type=stata-cms. Direct invocation works for scoped scaffolding. Shares the Stata engine in ../haipipe-task-for-stata/ref/stata-dialect.md."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 ---
@@ -14,7 +14,7 @@ panels. Disease-agnostic: processes ALL claims with no cohort filter, run
 once per year, reused by every downstream study.
 
 Engine: **Stata + PowerShell + logs** (NOT Python/papermill). The full
-execution contract is `../haipipe-task/ref/stata-dialect.md` — read it
+execution contract is `../haipipe-task-for-stata/ref/stata-dialect.md` — read it
 first. This skill only scaffolds the task-folder skeleton under
 `examples/`; the worker `.do` logic is authored separately.
 
@@ -41,12 +41,12 @@ tasks/{G}{NN}_<group>/                          ← group (project-local letter;
     ├── configs/
     │   ├── cms_production.do                    Stata globals (keep-vars, flags; paths from ${ws_root}) — source of truth
     │   └── run_cms_<year>.yaml                  _meta: block + stata_config: pointer
+    ├── run_cms_year.ps1                         orchestrator (~15 lines) from ../haipipe-task-for-stata/ref/run-stage-year-template.ps1 ($stata var; 4 extracts ∥ → bene_year → summary)
     ├── runs/
-    │   └── run_cms_<year>.ps1                   from ../haipipe-task/ref/run-ps1-template.ps1 (resolves ws_root)
-    ├── run_cms_year.ps1                         orchestrator from ../haipipe-task/ref/run-stage-year-template.ps1 (resolves Stata; 4 extracts ∥ → bene_year → summary)
+    │   └── run_cms_<year>.ps1                   THIN per-year entry from ../haipipe-task-for-stata/ref/run-ps1-template.ps1
     ├── sbatch/
-    │   └── run_cms_<y0>-<y1>.ps1                multi-year batcher
-    ├── results/                                 log/ · runtime.yaml · summary.txt (heavy .dta → _WorkSpace)
+    │   └── run_cms_<y0>-<y1>.ps1                multi-year batcher: loops the runs/ entries
+    ├── results/                                 log/ · summary.txt (heavy .dta → _WorkSpace)
     └── diagram/                                 doc surface (never README.md)
 ```
 
@@ -81,5 +81,5 @@ Return contract
 status:    ok | blocked | failed
 summary:   2-3 sentences on what was scaffolded
 artifacts: [paths created]
-next:      author the dispatcher .do + scripts/ workers; run the Run Script Reviewer agent
+next:      author the dispatcher .do + scripts/ workers; run stata-script-reviewer-agent before hand-copy to the CMS server
 ```

@@ -1,6 +1,6 @@
 ---
 name: haipipe-task-for-stata-case
-description: "Stata-dialect case-pipeline task-folder build specialist. Scaffolds {NN}_case_pipeline_<study>/ task-folders that trigger cohort cases (per cohort × year) from CMS-Store into _WorkSpace/2-Case-Store as CASES + BFAF feature panels. Called by /haipipe-task orchestrator when task-type=stata-case. Direct invocation works for scoped scaffolding. Shares the Stata engine in ../haipipe-task/ref/stata-dialect.md."
+description: "Stata-dialect case-pipeline task-folder build specialist. Scaffolds {NN}_case_pipeline_<study>/ task-folders that trigger cohort cases (per cohort × year) from CMS-Store into _WorkSpace/2-Case-Store as CASES + BFAF feature panels. Called by /haipipe-task orchestrator when task-type=stata-case. Direct invocation works for scoped scaffolding. Shares the Stata engine in ../haipipe-task-for-stata/ref/stata-dialect.md."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 ---
@@ -15,7 +15,7 @@ event, then attaches bene/PDE/claims/lines/outpatient feature panels
 slices plus External-Store crosswalks (NDC→opioid, ICD→pain).
 
 Engine: **Stata + PowerShell + logs**. Read
-`../haipipe-task/ref/stata-dialect.md` first. This skill scaffolds the
+`../haipipe-task-for-stata/ref/stata-dialect.md` first. This skill scaffolds the
 task-folder; worker `.do` logic is authored separately.
 
 
@@ -43,13 +43,13 @@ tasks/{G}{NN}_<group>/                              ← group (e.g. R1_Regressio
     ├── configs/
     │   ├── <Cohort>.do                              per-cohort: ICD codes, topic flags (VisitLBP.do, ...); paths from ${ws_root}
     │   └── run_case_<Cohort>_<year>.yaml            _meta: block + stata_config: pointer
+    ├── run_case_year.ps1                            orchestrator (~15 lines) from ../haipipe-task-for-stata/ref/run-stage-year-template.ps1 ($stata var; topic chains, parallel)
     ├── runs/
-    │   └── run_case_<Cohort>_<year>.ps1             from ../haipipe-task/ref/run-ps1-template.ps1
-    ├── run_case_year.ps1                            orchestrator from ../haipipe-task/ref/run-stage-year-template.ps1 (topic chains, parallel)
+    │   └── run_case_<Cohort>_<year>.ps1             THIN entry from ../haipipe-task-for-stata/ref/run-ps1-template.ps1
     ├── sbatch/
-    │   ├── run_case_<Cohort>_<y0>-<y1>.ps1          one cohort, all years
+    │   ├── run_case_<Cohort>_<y0>-<y1>.ps1          one cohort, all years (loops the runs/ entries)
     │   └── run_case_all_<y0>-<y1>.ps1               all cohorts, all years
-    ├── results/                                     log/ · runtime.yaml · summary.txt (heavy → _WorkSpace)
+    ├── results/                                     log/ · summary.txt (heavy → _WorkSpace)
     └── diagram/
 ```
 
@@ -89,5 +89,5 @@ Return contract
 status:    ok | blocked | failed
 summary:   2-3 sentences on what was scaffolded
 artifacts: [paths created]
-next:      author dispatcher .do + scripts/{cases,feat}/ workers; run the Run Script Reviewer agent
+next:      author dispatcher .do + scripts/{cases,feat}/ workers; run stata-script-reviewer-agent before hand-copy
 ```

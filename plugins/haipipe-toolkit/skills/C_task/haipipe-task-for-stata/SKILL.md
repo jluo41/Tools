@@ -11,7 +11,7 @@ Skill: haipipe-task-for-stata  (Stata sub-orchestrator)
 The **father skill** for Stata task-folder builds. `/haipipe-task` routes any
 **engine=Stata** request here; this skill picks the right **stage** specialist
 and delegates. The four children differ only in RUNNAME grammar, output store,
-and headline — they share ONE execution dialect (`../haipipe-task/ref/stata-dialect.md`).
+and headline — they share ONE execution dialect (`ref/stata-dialect.md`).
 
 ```
 /haipipe-task   (top: ML task-types + engine routing)
@@ -37,7 +37,7 @@ reg     stata-reg     /haipipe-task-for-stata-reg        D              results/
 
 The `{LNN}` letter encodes the stage so a task-folder sorts in pipeline order
 (`A`cms → `B`case → `C`data → `D`reg). Full definition: the "Task-folder
-`{LNN}` stage-letter alphabet" section in `../haipipe-task/ref/stata-dialect.md`.
+`{LNN}` stage-letter alphabet" section in `ref/stata-dialect.md`.
 
 
 Stage disambiguation (the "smart delegation")
@@ -73,7 +73,7 @@ Cascade:
 Routing protocol
 ----------------
 
-Step 0: Read `../haipipe-task/ref/stata-dialect.md` (the engine contract) — the
+Step 0: Read `ref/stata-dialect.md` (the engine contract) — the
         three CWD/location-independence rules (Stata auto-detect, run-from-
         `$PSScriptRoot`, `ws_root`-anchored output) and the `{LNN}` alphabet.
 
@@ -96,22 +96,28 @@ Shared engine assets (all four children inherit these)
 ------------------------------------------------------
 
 ```
-../haipipe-task/ref/stata-dialect.md            engine contract + {LNN} alphabet + portability rules
-../haipipe-task/ref/run-ps1-template.ps1        per-run ENTRY (resolves ws_root via pyproject; writes runtime.yaml)
-../haipipe-task/ref/run-stage-year-template.ps1 intra-run ORCHESTRATOR (Resolve-StataExe; $PSScriptRoot CWD; phases)
-../haipipe-task/ref/dispatcher-do-template.do   DISPATCHER (5-arg: <config> <step> <year> <results_dir> <ws_root>)
+ref/stata-dialect.md            engine contract + {LNN} alphabet + script style/server constraints
+ref/run-ps1-template.ps1        THIN per-run entry in runs/ (a few lines; delegates to the orchestrator)
+ref/run-stage-year-template.ps1 intra-run ORCHESTRATOR (~15 lines; $stata var; $PSScriptRoot CWD; phases)
+ref/dispatcher-do-template.do   DISPATCHER (5-arg: <config> <step> <year> <results_dir> <ws_root>)
 ```
 
 Three portability rules (DO NOT re-derive per task — the templates already bake them):
-  1. Resolve Stata, never hardcode a version (`Resolve-StataExe`; honors `$env:HAIPIPE_STATA`).
+  1. Stata exe = ONE editable `$stata` line at the top of the orchestrator (no resolver functions).
   2. Run from the task folder (`$PSScriptRoot`); code paths stay relative; folder name is free.
   3. Anchor the DATA root absolute via `ws_root` (config builds paths from `${ws_root}`, never literal `_WorkSpace`).
+
+⚠️ All `.ps1`/`.do` follow the **"Script style + server constraints"** contract in
+`ref/stata-dialect.md` — CMS server is Windows PowerShell 5.1 only
+(no `pwsh`), ASCII-only files, 1-2 line headers, no ceremony, thin `runs/` +
+`sbatch/`. `stata-script-reviewer-agent` enforces it before any hand-copy to the
+server (the researcher hand-reads every file).
 
 Every Stata task ALSO ships a read-only **describe / QC run** (`describe` dispatch
 step → `scripts/d-<Stage>-Describe.do`, + `runs/run_describe_<...>.ps1`) that
 writes a human-readable correctness report to `results/`. Built-ins only — NO SSC
 (`egen tag` for distinct counts, never `distinct`). See the "Describe / QC run"
-section in `../haipipe-task/ref/stata-dialect.md`; each child scaffolds the
+section in `ref/stata-dialect.md`; each child scaffolds the
 stage-specific version.
 
 
@@ -122,5 +128,5 @@ Return contract
 status:    ok | blocked | failed
 summary:   2-3 sentences — which stage was chosen + what the child scaffolded
 artifacts: [paths created]   (from the child)
-next:      author dispatcher .do + scripts/ workers (incl. a `describe` step + run_describe_*.ps1 QC run); CODE_REVIEW.md; then runs/<run>.ps1
+next:      author dispatcher .do + scripts/ workers (incl. a `describe` step + run_describe_*.ps1 QC run); stata-script-reviewer-agent before hand-copy; then runs/<run>.ps1 (or sbatch/)
 ```
