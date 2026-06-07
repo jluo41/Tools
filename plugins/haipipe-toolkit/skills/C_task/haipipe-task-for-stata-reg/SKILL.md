@@ -1,6 +1,6 @@
 ---
 name: haipipe-task-for-stata-reg
-description: "Stata-dialect reg-pipeline task-folder build specialist. Scaffolds {NN}_reg_pipeline_<study>/ task-folders that estimate trait→outcome models (OLS / IV / LPM / logit / two-part) over a condition × pairing × trait × estimator grid, writing LIGHT coefficient tables (.tex/.csv) into results/. Called by /haipipe-task orchestrator when task-type=stata-reg. Direct invocation works for scoped scaffolding. Shares the Stata engine in ../haipipe-task/ref/stata-dialect.md."
+description: "Stata-dialect reg-pipeline task-folder build specialist. Scaffolds {NN}_reg_pipeline_<study>/ task-folders that estimate trait→outcome models (OLS / IV / LPM / logit / two-part) over a condition × pairing × trait × estimator grid, writing LIGHT coefficient tables (.tex/.csv) into results/. Called by /haipipe-task orchestrator when task-type=stata-reg. Direct invocation works for scoped scaffolding. Shares the Stata engine in ../haipipe-task-for-stata/ref/stata-dialect.md."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 ---
@@ -19,7 +19,7 @@ in-repo under `results/<run>/`, NOT in `_WorkSpace/`. Re-runs are cheap
 and you WANT many (one per spec cell), so the grid fans out wide.
 
 Engine: **Stata + PowerShell + logs**. Read
-`../haipipe-task/ref/stata-dialect.md` first. This skill scaffolds the
+`../haipipe-task-for-stata/ref/stata-dialect.md` first. This skill scaffolds the
 task-folder; worker `.do` logic is authored separately.
 
 
@@ -56,7 +56,7 @@ tasks/{G}{NN}_<group>/                              ← group (e.g. R1_Regressio
     │   ├── run-<Condition>_<Pairing>-all.ps1        one spec, all traits
     │   └── run-all.ps1                              full grid
     ├── results/
-    │   └── run_reg_<Condition>_<Pairing>_<Trait>/   log/ · runtime.yaml · *.tex / *.csv (THE output)
+    │   └── run_reg_<Condition>_<Pairing>_<Trait>/   log/ · *.tex / *.csv (THE output)
     └── diagram/
 ```
 
@@ -97,5 +97,5 @@ Return contract
 status:    ok | blocked | failed
 summary:   2-3 sentences on what was scaffolded
 artifacts: [paths created]
-next:      author the per-spec estimation .do files; run the Run Script Reviewer agent (esp. IV/spec checks)
+next:      author the per-spec estimation .do files; run stata-script-reviewer-agent before hand-copy (esp. IV/spec checks)
 ```

@@ -3,7 +3,7 @@ fn-scaffold: Scaffold a CMS-pipeline task-folder (Stata dialect)
 
 Extracts + enriches raw CMS claims per year into `_WorkSpace/1-CMS-Store/`.
 Output: `tasks/{G}{NN}_<group>/A{NN}_cms_pipeline/`  (task-folder letter A = cms stage; see {LNN} alphabet in stata-dialect.md).
-Read `../haipipe-task/ref/stata-dialect.md` for the engine contract.
+Read `../haipipe-task-for-stata/ref/stata-dialect.md` for the engine contract.
 
 
 Step 1 — Identify project + task-group
@@ -37,10 +37,10 @@ A{NN}_cms_pipeline/
 ├── configs/
 │   ├── cms_production.do       # stub: keep-vars, skip_existing, run_* flags; paths built from ${ws_root}
 │   └── run_cms_<year>.yaml     # from ref/config-seed.yaml, one per year
+├── run_cms_year.ps1            # orchestrator (~15 lines): from ../haipipe-task-for-stata/ref/run-stage-year-template.ps1 (phase1 4 extracts ∥; phase2 bene_year; phase3 summary)
 ├── runs/
-│   └── run_cms_<year>.ps1      # from ../haipipe-task/ref/run-ps1-template.ps1
-├── run_cms_year.ps1            # orchestrator: from ../haipipe-task/ref/run-stage-year-template.ps1 (phase1 4 extracts ∥; phase2 bene_year; phase3 summary)
-├── sbatch/
+│   └── run_cms_<year>.ps1      # THIN per-year entry: from ../haipipe-task-for-stata/ref/run-ps1-template.ps1
+├── sbatch/                     # run_cms_<y0>-<y1>.ps1: loops the runs/ entries
 ├── results/
 └── diagram/
 ```
@@ -57,19 +57,20 @@ set `stata_config: cms_production`, set `year:`. The real Stata globals
 Step 5 — Run-script
 -------------------
 
-Copy `../haipipe-task/ref/run-ps1-template.ps1` to `runs/run_cms_<year>.ps1`.
-Set `$CFG = "cms_production"`, the `$YEAR`/`$RUNNAME`, the `$REQUIRED`
-raw-input precondition list, and point the orchestrator call at
-`run_cms_year.ps1`. Copy `../haipipe-task/ref/run-stage-year-template.ps1` to
-`run_cms_year.ps1` (Stata auto-detect + `$PSScriptRoot` working dir + `-wsRoot`
-passthrough are already wired — do NOT hardcode a Stata path or a relative
-`_WorkSpace`).
+Copy `../haipipe-task-for-stata/ref/run-stage-year-template.ps1` to `run_cms_year.ps1`
+and fill the step names (4 extracts in parallel → bene_year → summary).
+Copy `../haipipe-task-for-stata/ref/run-ps1-template.ps1` to `runs/run_cms_<year>.ps1`,
+one THIN entry per year:
+`& "$PSScriptRoot\..\run_cms_year.ps1" -cfg cms_production -year <year>`.
+Add `sbatch/run_cms_<y0>-<y1>.ps1` looping the runs/ entries. Follow the
+"Script style + server constraints" contract in stata-dialect.md: ASCII-only,
+no `pwsh`, `$stata` is one editable line, no relative `_WorkSpace`.
 
 
 Step 5b — Describe / QC run
 ---------------------------
 
-Add the read-only QC run (see "Describe / QC run" in `../haipipe-task/ref/stata-dialect.md`):
+Add the read-only QC run (see "Describe / QC run" in `../haipipe-task-for-stata/ref/stata-dialect.md`):
 - `scripts/d-Cms-Describe.do` — loops the `year-*` dirs under `${cms_asset_path}`
   and `file write`s `cms-describe.txt`: per year the Neat panel inventory + row
   counts, Bene_Info rows, and claim service-date ranges (sanity: dates are `%td`
@@ -85,7 +86,7 @@ Step 6 — Report
 status:    ok
 summary:   Scaffolded CMS-pipeline task A<NN>_cms_pipeline under {G}{NN}_<group>; years <...>.
 artifacts: [paths created]
-next:      author dispatcher .do + scripts/ workers + d-Cms-Describe.do; produce CODE_REVIEW.md; then runs/run_cms_<year>.ps1 (+ run_describe_cms.ps1)
+next:      author dispatcher .do + scripts/ workers + d-Cms-Describe.do; stata-script-reviewer-agent before hand-copy; then runs/run_cms_<year>.ps1 (+ run_describe_cms.ps1)
 ```
 
 

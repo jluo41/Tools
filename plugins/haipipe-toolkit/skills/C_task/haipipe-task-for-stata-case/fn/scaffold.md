@@ -4,7 +4,7 @@ fn-scaffold: Scaffold a case-pipeline task-folder (Stata dialect)
 Triggers cohort cases + feature panels per (cohort × year) into
 `_WorkSpace/2-Case-Store/`. Output:
 `tasks/{G}{NN}_<group>/B{NN}_case_pipeline_<study>/`  (task-folder letter B = case stage).
-Read `../haipipe-task/ref/stata-dialect.md` for the engine contract.
+Read `../haipipe-task-for-stata/ref/stata-dialect.md` for the engine contract.
 
 
 Step 1 — Identify project + task-group
@@ -66,16 +66,19 @@ live in `configs/<Cohort>.do`.
 Step 5 — Run-script
 -------------------
 
-Copy `../haipipe-task/ref/run-ps1-template.ps1` to
-`runs/run_case_<Cohort>_<year>.ps1`. Set `$CFG = "<Cohort>"`,
-`$RUNNAME = "run_case_<Cohort>_<year>"`, the `$REQUIRED` CMS-Store +
-External-Store precondition list, and point at `run_case_year.ps1`.
+Copy `../haipipe-task-for-stata/ref/run-stage-year-template.ps1` to `run_case_year.ps1`
+and fill the topic-chain steps. Copy `../haipipe-task-for-stata/ref/run-ps1-template.ps1`
+to `runs/run_case_<Cohort>_<year>.ps1`, one THIN entry per (cohort × year):
+`& "$PSScriptRoot\..\run_case_year.ps1" -cfg <Cohort> -year <year>`.
+sbatch/ batchers loop the runs/ entries. Follow the "Script style + server
+constraints" contract in stata-dialect.md (ASCII-only, no `pwsh`, one `$stata`
+line, no ceremony).
 
 
 Step 5b — Describe / QC run
 ---------------------------
 
-Add the read-only QC run (see "Describe / QC run" in `../haipipe-task/ref/stata-dialect.md`):
+Add the read-only QC run (see "Describe / QC run" in `../haipipe-task-for-stata/ref/stata-dialect.md`):
 - `scripts/d-Case-Describe.do` — loops the `year-*` dirs under `${case_asset_path}`
   and `file write`s `case-describe.txt`: per year #cases, distinct benes / npis
   (via `egen tag` — NOT `distinct`), `visit_type` split, the pde_bn enrichment

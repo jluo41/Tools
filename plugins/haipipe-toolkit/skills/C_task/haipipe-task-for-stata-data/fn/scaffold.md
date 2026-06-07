@@ -4,7 +4,7 @@ fn-scaffold: Scaffold a data-pipeline task-folder (Stata dialect)
 Assembles the cross-year, regression-ready analysis table into
 `_WorkSpace/*-Data-Store/`. Output:
 `tasks/{G}{NN}_<group>/C{NN}_data_pipeline_<study>/`  (task-folder letter C = data stage).
-Read `../haipipe-task/ref/stata-dialect.md` for the engine contract.
+Read `../haipipe-task-for-stata/ref/stata-dialect.md` for the engine contract.
 
 NOTE: this stage is **cross-year** — the dispatcher takes
 `<config> <step> <results_dir>` with NO year argument; `filter_case`
@@ -67,11 +67,13 @@ lists live in `configs/<Spec>.do`.
 Step 5 — Run-script
 -------------------
 
-Copy `../haipipe-task/ref/run-ps1-template.ps1` to
-`runs/run_data_<Spec>.ps1`. Set `$CFG = "<Spec>"`,
-`$RUNNAME = "run_data_<Spec>"`, the `$REQUIRED` Case-Store + trait/policy
-precondition list, and point at `run_data_steps.ps1`. The dispatcher call
-inside the orchestrator omits the year argument.
+Copy `../haipipe-task-for-stata/ref/run-stage-year-template.ps1` to `run_data_steps.ps1`
+and fill the sequential chain (the dispatcher call omits the year argument).
+Copy `../haipipe-task-for-stata/ref/run-ps1-template.ps1` to `runs/run_data_<Spec>.ps1`,
+one THIN entry per spec:
+`& "$PSScriptRoot\..\run_data_steps.ps1" -cfg <Spec>`.
+Follow the "Script style + server constraints" contract in stata-dialect.md
+(ASCII-only, no `pwsh`, one `$stata` line, no ceremony).
 
 
 Step 5b — Describe / QC run
@@ -79,7 +81,7 @@ Step 5b — Describe / QC run
 
 The data stage already has a `describe` dispatch step (`scripts/4-describe/describe-data.do`).
 Ensure it is a proper QC report and ALSO expose it as a describe-only run (see
-"Describe / QC run" in `../haipipe-task/ref/stata-dialect.md`):
+"Describe / QC run" in `../haipipe-task-for-stata/ref/stata-dialect.md`):
 - `describe-data.do` reports: N, distinct benes / npis (`egen tag` — NOT
   `distinct`, which aborts `r(199)` on a clean server), year dist, treatment
   (trait) summary, outcome means, key-control missingness, IV first-stage corr.

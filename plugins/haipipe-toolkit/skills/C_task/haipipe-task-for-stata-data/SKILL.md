@@ -1,6 +1,6 @@
 ---
 name: haipipe-task-for-stata-data
-description: "Stata-dialect data-pipeline task-folder build specialist. Scaffolds {NN}_data_pipeline_<study>/ task-folders that assemble the cross-year regression-ready analysis table (filter cases → merge physician traits + policy → derive vars → ANALYSIS-*.dta) from Case-Store into _WorkSpace/*-Data-Store. Called by /haipipe-task orchestrator when task-type=stata-data. Direct invocation works for scoped scaffolding. Shares the Stata engine in ../haipipe-task/ref/stata-dialect.md."
+description: "Stata-dialect data-pipeline task-folder build specialist. Scaffolds {NN}_data_pipeline_<study>/ task-folders that assemble the cross-year regression-ready analysis table (filter cases → merge physician traits + policy → derive vars → ANALYSIS-*.dta) from Case-Store into _WorkSpace/*-Data-Store. Called by /haipipe-task orchestrator when task-type=stata-data. Direct invocation works for scoped scaffolding. Shares the Stata engine in ../haipipe-task-for-stata/ref/stata-dialect.md."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 ---
@@ -18,7 +18,7 @@ Unlike cms/case, this stage is **cross-year** (no year axis — it appends
 all years) and produces ONE analysis asset per spec.
 
 Engine: **Stata + PowerShell + logs**. Read
-`../haipipe-task/ref/stata-dialect.md` first. This skill scaffolds the
+`../haipipe-task-for-stata/ref/stata-dialect.md` first. This skill scaffolds the
 task-folder; worker `.do` logic is authored separately.
 
 
@@ -48,11 +48,11 @@ tasks/{G}{NN}_<group>/                              ← group (e.g. R1_Regressio
     ├── configs/
     │   ├── <Spec>.do                                analysis spec: cohort, pairing, filters, var lists; paths from ${ws_root}
     │   └── run_data_<Spec>.yaml                     _meta: block + stata_config: pointer
+    ├── run_data_steps.ps1                           orchestrator (~15 lines) from ../haipipe-task-for-stata/ref/run-stage-year-template.ps1 ($stata var; drop -year; sequential chain)
     ├── runs/
-    │   └── run_data_<Spec>.ps1                      from ../haipipe-task/ref/run-ps1-template.ps1
-    ├── run_data_steps.ps1                           orchestrator from ../haipipe-task/ref/run-stage-year-template.ps1 (drop -year; sequential chain)
+    │   └── run_data_<Spec>.ps1                      THIN entry from ../haipipe-task-for-stata/ref/run-ps1-template.ps1
     ├── sbatch/
-    ├── results/                                     log/ · runtime.yaml · summary.txt (heavy → _WorkSpace)
+    ├── results/                                     log/ · summary.txt (heavy → _WorkSpace)
     └── diagram/
 ```
 
@@ -91,5 +91,5 @@ Return contract
 status:    ok | blocked | failed
 summary:   2-3 sentences on what was scaffolded
 artifacts: [paths created]
-next:      author dispatcher .do + scripts/{1..4}-* workers; run the Run Script Reviewer agent
+next:      author dispatcher .do + scripts/{1..4}-* workers; run stata-script-reviewer-agent before hand-copy
 ```
