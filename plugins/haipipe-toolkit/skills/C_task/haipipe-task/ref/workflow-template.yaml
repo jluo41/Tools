@@ -1,0 +1,96 @@
+# ─── Task Workflow Template ──────────────────────────────────────
+# Generic IPO template for any haipipe task folder.
+# Copy to <task-folder>/workflow/plan.yaml and fill in the blanks.
+#
+# Lifecycle: Plan → Build → Execute → Report
+# See: skills/flow/haipipe-workflow/ref/concepts.md
+
+name: <TASK_NAME>                        # kebab-case, e.g. build-physician
+purpose: "<one line: what and why>"
+skill: <TASK_TYPE_SKILL>                 # e.g. haipipe-task-for-data, haipipe-task-for-stata
+task_folder: <PATH_TO_TASK_FOLDER>       # relative to project root
+
+# ─── I: Input ────────────────────────────────────────────────────
+input:
+  args:
+    config: configs/<CONFIG>.yaml        # the frozen config for this task
+    # add task-specific args here
+  files_in:
+    - configs/<CONFIG>.yaml              # per-run config
+    - scripts/<SCRIPT>.py                # main computation script(s)
+    # - _WorkSpace/...                   # upstream data dependencies
+
+# ─── P: Phases ───────────────────────────────────────────────────
+# Typical task phases. Adjust to fit your task.
+# Each step tracks files_in (reads) and files_out (creates).
+#
+# run_trigger connects the step to the actual run script
+# (the four-sister-file pattern: config/run/result/notebook).
+
+phases:
+
+  - title: Build
+    detail: "<what this phase produces>"
+
+    steps:
+      - label: "S1: <first build step>"
+        type: agent                      # agent | skill | workflow
+        required: true                   # true = must run, false = optional
+        run_trigger: runs/<RUN>.sh       # which run script executes this
+        prompt: |
+          <What this step does. Be specific about computation.>
+        files_in:
+          - scripts/<SCRIPT>.py
+          - configs/<CONFIG>.yaml
+          # - _WorkSpace/...             # upstream dependencies
+        files_out:
+          - _WorkSpace/<STORE>/<OUTPUT>  # heavy artifacts (out-of-repo)
+          - results/<RUN>/summary.txt    # light artifacts (in-repo)
+          - results/<RUN>/manifest.json
+
+      # Add more steps as needed.
+      # Each step's files_in may reference previous step's files_out.
+
+  - title: Validate
+    detail: "check outputs exist and are reasonable"
+
+    steps:
+      - label: "S1: audit outputs"
+        type: agent
+        required: true
+        prompt: |
+          Verify all expected outputs exist, row counts match,
+          checksums recorded.
+        files_in:
+          - _WorkSpace/<STORE>/<OUTPUT>  # from Build phase
+        files_out:
+          - results/<RUN>/summary.txt    # audit report
+
+      - label: "S2: spot-check distributions"
+        type: agent
+        required: false                  # optional sanity check
+        prompt: |
+          Optional: load outputs and check distributions are reasonable.
+        files_in:
+          - _WorkSpace/<STORE>/<OUTPUT>
+        files_out: []                    # produces no files, just checks
+
+# ─── O: Output ───────────────────────────────────────────────────
+output:
+  returns:
+    status: ok                           # ok | failed
+    # add task-specific return fields
+  files_out:
+    # Union of all step files_out:
+    - _WorkSpace/<STORE>/<OUTPUT>
+    - results/<RUN>/summary.txt
+    - results/<RUN>/manifest.json
+
+# ─── Progress Reporting ─────────────────────────────────────────
+# When executing this workflow, Claude reports progress as:
+#
+#   📍 build-physician > P1:Build > S2:physician [2/3] [Phase 1/2]
+#      files_in:  doctors_df_profile.dta, zip_county_xwalk.dta
+#      files_out: npi_review_data.dta ✅
+#
+# After completion, the report.yaml mirrors this plan with actual results.

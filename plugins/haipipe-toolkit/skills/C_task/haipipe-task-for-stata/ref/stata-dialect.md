@@ -159,6 +159,14 @@ A6  Output paths from the ABSOLUTE _WorkSpace (pyproject.toml walk-up).
     fixed raw inputs (G:\CMS\DATA) stay absolute in the config.
 A7  Run from the task folder ($PSScriptRoot); configs/ + scripts/ relative;
     nothing hardcodes the folder's own name.
+A8  Dead %TEMP% on the server. (a) NEVER run a .do via the editor's "Do"
+    button -- it stages to %TEMP%\pNNNN.do and fails (`command E is
+    unrecognized` r(199)); launch ONLY via the .ps1 (Start-Process $stata
+    /e do <dispatcher>). (b) `preserve`/`tempfile` write to %TEMP% too:
+    stage intermediates with explicit `save "${temp_dir}/.."` + `use`
+    (the v0316 trigger pattern), or set $env:STATATMP to a writable in-repo
+    dir. (c) Python build steps (external-data) set $env:PYTHONUTF8="1" --
+    Windows cp1252 default crashes read_text()/print() on UTF-8 files.
 ```
 
 Readability (every file is hand-checked before copy):

@@ -4,10 +4,11 @@ description: "Generate a concise strategic architecture overview for an academic
 argument-hint: "[@incubator-or-structure-file] [--format md|tex]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "2.1.0"
-  last_updated: "2026-06-05"
-  summary: "Strategic architecture overview generator for academic papers."
+  version: "2.2.0"
+  last_updated: "2026-06-08"
+  summary: "Strategic architecture overview generator for academic papers, now with section minimap (diagram-ascii style)."
   changelog:
+    - "2.2.0 (2026-06-08): added Step 2.5 Section Minimap — emoji-rich ASCII diagram showing paragraph-level structure with A/B options per section, using diagram-ascii conventions. Output as .txt alongside the architecture overview."
     - "2.1.0 (2026-06-05): added frontmatter (was unregistered) and renamed to haipipe-paper-structure-architecture (haipipe-paper-* name unification)."
     - "2.0 (2026-02-08): prior unregistered version."
 ---
@@ -627,6 +628,79 @@ For LaTeX output, use the following structure:
 
 \end{document}
 ```
+
+### Step 2.5: Section Minimap (diagram-ascii style)
+
+After generating the architecture overview, produce a **section minimap** as an emoji-rich ASCII `.txt` file (following diagram-ascii conventions). This is the paragraph-level decision document that the architecture overview does not provide.
+
+**Purpose:** Show the reader, at a glance, what each section does paragraph by paragraph, with A/B options where the narrative could go either way. The user annotates with `> JL:` to lock decisions.
+
+**Output file:** `section-minimap.txt` (saved alongside the architecture overview)
+
+**Format rules (from diagram-ascii):**
+- Emoji-first: every section header, paragraph role, and status gets an emoji
+- One sentence per line — no mid-sentence wrapping
+- Use `─§` section dividers between major sections
+- A/B options rendered as side-by-side contrast boxes
+- Decision summary table at the end
+- `> JL:` placeholder after each option for user annotation
+
+**Template:**
+
+```text
+🗺️ Section Minimap — [Paper Short Name]
+═══════════════════════════════════════════════════════════════
+Generated from: [architecture overview file]
+Decisions to make: [N] open choices marked with > JL:
+
+─§ §1 Introduction (~[N] pages, [N] paras) ────────────────
+
+  📌 Current: [1-line summary of v0517 state]
+  🔄 Change: [1-line summary of what shifts in v0607]
+
+  ┌─────────────────────────────────────────────────────────┐
+  │ P1 🧩 [role]  [1-line content]                          │
+  │ P2 🤖 [role]  [1-line content]                          │
+  │ P3 ❓ [role]  [1-line content]                          │
+  │ P4 📐 [role]  [1-line content]                          │
+  │ P5 📊 [role]  [1-line content]                          │
+  │ P6 💡 [role]  [1-line content]                          │
+  └─────────────────────────────────────────────────────────┘
+
+  ⚖️ CHOICE #1: [what the choice is about]
+
+  ┌─ Option A ──────────────┐   ┌─ Option B ──────────────┐
+  │ [1-line description]    │   │ [1-line description]    │
+  │ ✅ [pro]                │   │ ✅ [pro]                │
+  │ ⚠️ [con]                │   │ ⚠️ [con]                │
+  └─────────────────────────┘   └─────────────────────────┘
+  > JL: [A or B?]
+
+─§ §2 Literature Review (~[N] pages) ──────────────────────
+
+  ... same pattern ...
+
+─§ Decision Summary ───────────────────────────────────────
+
+  ┌────┬──────────┬─────────────────────┬───────────────────┐
+  │ #  │ Section  │ Choice              │ Status            │
+  ├────┼──────────┼─────────────────────┼───────────────────┤
+  │ 1  │ §1 P2-P3 │ Intro framing       │ > JL: [?]         │
+  │ 2  │ §2.3     │ LLM lit depth       │ > JL: [?]         │
+  │ ...│ ...      │ ...                 │ ...               │
+  └────┴──────────┴─────────────────────┴───────────────────┘
+```
+
+**Key differences from the .md minimap:**
+- ASCII `.txt` format (not markdown) — monospace, diagram-ascii style
+- Side-by-side option boxes for visual comparison
+- Emoji on every line — scannable at a glance
+- Section dividers (`─§`) for canvas compatibility (diagram-ascii-canvas can screenshot each section)
+- Compact: entire minimap should fit in ~150-200 lines
+
+**When to generate:** Always produce alongside the architecture overview. The overview is the strategic blueprint (what to emphasize); the minimap is the tactical map (what each paragraph does).
+
+---
 
 ### Step 3: User Refinement (Conversational)
 
