@@ -1,15 +1,28 @@
-fn/workflow-report — generate report.yaml after execution
-==========================================================
+fn/workflow-report — generate reports mirroring plans
+======================================================
 
-Called by `/haipipe-task` after execution completes (or manually to
-capture an already-completed run). Reads the plan.yaml + actual
-results and generates report.yaml mirroring the plan.
+Called by `/haipipe-task report`. Generates reports at two levels:
+per-script (detailed step-by-step results) and task-level (roll-up).
+Each report mirrors its corresponding plan — same structure, filled
+with what actually happened.
+
+
+Three-layer report structure
+-----------------------------
+
+```
+          PLAN (before)              REPORT (after)
+task      plan.yaml                  report.yaml
+script    plan-script-<name>.yaml    report-script-<name>.yaml
+run       configs/<run>.yaml         results/<run>/{manifest,log,outputs}
+```
+
+Each layer aggregates the one below. Plan = intent. Report = evidence.
+Same tree shape, so you can diff them to find divergences.
 
 
 When to call
 ------------
-
-Automatically after execution. Also callable standalone:
 
 ```
 /haipipe-task report <task-folder-path>
@@ -19,155 +32,175 @@ Automatically after execution. Also callable standalone:
 Procedure
 ---------
 
-### Step 1 — Read the plan
+### Step 1 — Read plans
 
-Load `workflow/plan.yaml`. This is the contract we report against.
+Load `workflow/plan.yaml` and all `workflow/plan-script-*.yaml` files.
+These are the contracts we report against.
 
-### Step 2 — Scan execution evidence
+### Step 2 — Scan execution evidence per script
 
-For each Step in the plan, check what actually happened:
+For each `plan-script-<name>.yaml`, gather evidence:
 
-**From results/<NAME>/:**
-- `runtime.yaml` → status, timing, exit_code, git_sha
-- `manifest.json` → file listing, checksums
-- `summary.txt` → audit notes
-- `metrics.json` → measured numbers (if applicable)
+| Source | What it gives |
+|--------|--------------|
+| `results/<run>/manifest.json` | finished timestamp, paths |
+| `results/<run>/log/*.txt` | step-level stdout, errors |
+| `notebooks/<run>.ipynb` | cell outputs (row counts, print statements) |
+| `results/<run>/*.csv` | actual file sizes, row counts |
+| `results/<run>/figures/*.png` | figure file sizes |
+| `results/<run>/config_snapshot.yaml` | config used |
 
-**From notebooks/<NAME>.ipynb:**
-- Exists? → execution record available
-- Cell outputs? → full vs thin notebook
+### Step 3 — Generate per-script reports
 
-**From _WorkSpace/ files_out:**
-- Each expected output file: exists? size? modified date?
+For EACH `plan-script-<name>.yaml`, generate a matching
+`report-script-<name>.yaml`.
 
-### Step 3 — Collect _WorkSpace I/O
+**How to fill each step's result:**
+1. Read the plan step (id, name, outputs)
+2. Check if each planned output exists under `results/<run>/`
+3. For CSV outputs: count rows (`wc -l` or read first line)
+4. For PNG outputs: get file size
+5. For display-only steps (no files): mark as done if notebook cell ran
+6. Read notebook cell outputs for row counts, print statements
 
-Scan all steps and separate _WorkSpace paths into two lists:
-
-**_WorkSpace used (input):** files read from _WorkSpace by any step
-  - Include a `role:` one-line description of what each file is
-  - Mark `optional: true` for files that may not exist
-
-**_WorkSpace generated (output):** files created in _WorkSpace by any step
-  - Include `role:` description
-  - Include `rows:` or `count:` when known from metrics/summary
-
-### Step 4 — Record agents & skills used
-
-Track what was invoked during the workflow:
-
-**execution.mode:** `manual` | `subagent` | `workflow-engine`
-**execution.agents_used:** list of agent names invoked (e.g. `code-creator-for-data-agent`)
-**execution.skills_used:** list of skills invoked (e.g. `haipipe-task`, `haipipe-data-external`)
-**execution.lifecycle_agent:** which agent ran the audit → fix → plan → report lifecycle
-  - type: subagent | workflow-engine | human
-  - skill_invoked: which skill it called
-  - fn_procedures: which fn/ docs it followed
-
-Per step, also record `agent:` if an agent was used for that step.
-
-### Step 5 — Write report.yaml
-
-The report.yaml has THREE sections:
-
-**Section 1: Preview (comment block at top)**
-
-A compact tree-style summary readable at a glance. This is what gets
-shown to the user in the Claude Code session. Format:
-
-```
-# ─── Preview ─────────────────────────────────────────────────────
-#
-# <task_name> — task execution report
-#
-# I: <key input files, one per line>
-#    _WorkSpace/... (role)
-#
-# ├── P1: <Phase title>
-# │   ├── S1: <step label>                    ✅/❌/⏭️ status
-# │   │       run: <run_trigger>
-# │   │       → <key files_out, _WorkSpace paths>
-# │   │       note: <if any>
-# │   ├── S2: ...
-# │   └── S3: ...
-# │
-# └── P2: <Phase title>
-#     ├── S1: ...
-#     └── S2: ...
-#
-# O: { status, verdict, phases, steps summary }
-#    _WorkSpace used (input):
-#      _WorkSpace/... (role)
-#    _WorkSpace generated (output):
-#      _WorkSpace/... (role)
-#    agents: [list or "none"]
-#    skills: [list]
-```
-
-**Section 2: Structured YAML data**
+**Per-script report format:**
 
 ```yaml
-name: <workflow name>
+# --- Preview -----------------------------------------------------------
+# <script_name>.py — execution report
+#
+# I: <input file>                   ok (<row count> rows)
+#    <input file>                   ok (<detail>)
+#
+# +-- S1: <step name>                              done
+# +-- S2: <step name>                              done
+# |       -> <output.csv>                          <N> rows
+# +-- S3: <step name>                              done
+# |       -> <figure.png>                          <size> KB
+# +-- S4: <step name>                              skipped
+#
+# O: <N> CSVs + <M> PNGs under results/<run>/
+#    status: ok   steps: X/Y done   duration: Zs
+# -------------------------------------------------------------------
+
+script: <script_name>.py
+run_name: <run_name>
+plan: workflow/plan-script-<name>.yaml
+finished: "<timestamp from manifest.json>"
+status: ok | incomplete | failed
+
+inputs:
+  - path: _WorkSpace/...
+    status: ok
+    detail: "<row count> rows"     # if readable
+  - path: _WorkSpace/...
+    status: ok
+
+steps:
+  - id: S1
+    name: "<step name>"
+    status: done | skipped | failed
+  - id: S2
+    name: "<step name>"
+    status: done
+    outputs:
+      - path: trait_dictionary.csv
+        exists: true
+        rows: 10                   # for CSVs
+  - id: S3
+    name: "<step name>"
+    status: done
+    outputs:
+      - path: figures/01_*.png
+        exists: true
+        size_kb: 48                # for images
+
+outputs:
+  - path: results/<run>/<file>
+    exists: true
+    rows: 10                       # or size_kb for non-CSV
+    from_step: S2
+```
+
+### Step 4 — Collect agents & skills used
+
+Track what was invoked during execution:
+- `execution.mode`: manual | subagent | workflow-engine
+- `execution.agents_used`: list of agents called
+- `execution.skills_used`: list of skills called
+
+### Step 5 — Generate task-level report.yaml
+
+Roll up the script reports:
+
+```yaml
+# --- Preview -----------------------------------------------------------
+# <task_name> — task execution report
+#
+# I: <key _WorkSpace inputs with status>
+#
+# +-- P1: <Phase> (<script1>.py)           done  N/N steps
+# +-- P2: <Phase> (<script2>.py)           done  M/M steps
+# +-- G1: run-script-reviewer              pass | warn | fail
+# +-- G2: run-result-auditor               pass | warn | fail
+#
+# O: status=ok  phases=P/P  steps=X/Y done
+#    _WorkSpace used (input): [list with status]
+#    _WorkSpace generated (output): [list or "none"]
+#    agents: [list or "none"]
+#    skills: [list]
+# -------------------------------------------------------------------
+
+name: <task-name>
 plan: workflow/plan.yaml
-executed_at: <timestamp>
-reported_at: <date>
+reported_at: "<date>"
 
 execution:
   mode: manual | subagent | workflow-engine
   agents_used: [...]
   skills_used: [...]
-  lifecycle_agent:
-    type: subagent
-    skill_invoked: haipipe-task
-    fn_procedures: [fn/workflow-audit.md, fn/workflow-plan.md, fn/workflow-report.md]
+
+scripts:
+  - report: workflow/report-script-<name1>.yaml
+    status: ok
+    steps_done: N
+    steps_total: N
+  - report: workflow/report-script-<name2>.yaml
+    status: ok
+    steps_done: M
+    steps_total: M
 
 workspace:
   used:
     - path: _WorkSpace/...
-      role: "description"
-      optional: false
+      role: "..."
+      status: ok
   generated:
     - path: _WorkSpace/...
-      role: "description"
-      rows: 1141176          # when known
-
-phases:
-  - title: Phase Name
-    steps:
-      - label: "S1: step name"
-        status: done | skipped | failed
-        run_trigger: runs/<NAME>.sh
-        agent: <agent-name> | null
-        files_in: [...]
-        files_out: [...]
-        output: { ... }       # from runtime.yaml + metrics.json
-        note: "..."           # if any
+      role: "..."
+      # or empty if read-only task
 
 summary:
-  status: ok | incomplete | failed
-  phases_completed: "2/2"
-  steps_done: 4
-  steps_skipped: 1
+  status: ok
+  phases_completed: "P/P"
+  steps_done: X
+  steps_skipped: Y
   steps_failed: 0
   verdict: ok
-  issues: []
 ```
 
-**Section 3: nothing else** — the preview + YAML are the full report.
+### Step 6 — Progress output
 
-### Step 6 — Completeness check
+After writing all reports, output the task-level preview tree to the
+user. This is the IPO summary they see in the session.
 
-Before writing, verify:
-- Were all required steps executed?
-- Were all expected files_out created?
-- Were any steps skipped? Why?
-- Are all _WorkSpace generated files accounted for?
-
-### Step 7 — Progress output to user
-
-After writing report.yaml, output the Preview section (the compact tree)
-directly to the user in the Claude Code session. This is the IPO summary
-they see without opening the file.
+```
+📋 Report: B01_explore_physician
+   script reports:
+     report-script-explore_physician.yaml (10/10 steps done)
+     report-script-show_final_physician.yaml (2/2 steps done)
+   task report: report.yaml (2/2 phases, 12/12 steps)
+```
 
 
 Return contract
@@ -176,12 +209,9 @@ Return contract
 ```yaml
 status: ok | incomplete | failed
 report_path: workflow/report.yaml
-phases_completed: "2/2"
-steps_done: 4
-steps_skipped: 1
-steps_failed: 0
-files_expected: 12
-files_created: 12
-files_missing: 0
-issues: []
+script_reports: [workflow/report-script-*.yaml]
+phases_completed: "P/P"
+steps_done: X
+steps_total: Y
+verdict: ok
 ```

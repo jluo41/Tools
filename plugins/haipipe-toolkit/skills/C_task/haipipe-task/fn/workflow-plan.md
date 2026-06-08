@@ -1,16 +1,40 @@
-fn/workflow-plan — generate plan.yaml from task folder state
-=============================================================
+fn/workflow-plan — audit + fix + generate plans
+=================================================
 
-Called by `/haipipe-task` after audit, when workflow/plan.yaml is
-missing or stale. Reads the task folder's current state (scripts,
-configs, runs, results) and generates a plan.yaml.
+Called by `/haipipe-task plan`. Runs the full pre-plan sequence:
+audit the task folder, fix fixable issues, then generate plans
+at two levels: per-script (detailed I/P[S]/O) and task-level
+(roll-up).
+
+
+Three-layer plan structure
+---------------------------
+
+```
+┌────────┬──────────────────────────────────┬────────────────────────────────────┐
+│ Layer  │ File                             │ Answers                            │
+├────────┼──────────────────────────────────┼────────────────────────────────────┤
+│ Task   │ workflow/plan.yaml               │ "What does this task folder do?"   │
+│        │                                  │ Roll-up of all scripts + phases    │
+├────────┼──────────────────────────────────┼────────────────────────────────────┤
+│ Script │ workflow/plan-script-<name>.yaml │ "What does this one script do?"    │
+│        │                                  │ Detailed I/P[S]/O + run trigger    │
+├────────┼──────────────────────────────────┼────────────────────────────────────┤
+│ Run    │ configs/<run>.yaml               │ "What config for this execution?"  │
+│        │ results/<run>/config_snapshot    │ Frozen params + _meta              │
+└────────┴──────────────────────────────────┴────────────────────────────────────┘
+```
+
+The script plan is the key new layer. Each `.py` (or `.do`) gets its own
+plan file that maps the script's internal steps — what it reads, what each
+cell/section does, what it produces. Self-contained and independently useful.
+
+The task plan references the script plans and adds the big picture (phases,
+ordering, _WorkSpace I/O summary).
 
 
 When to call
 ------------
-
-Automatically after `fn/workflow-audit` reports `workflow_exists: false`
-or plan is stale. Also callable standalone:
 
 ```
 /haipipe-task plan <task-folder-path>
@@ -20,96 +44,168 @@ or plan is stale. Also callable standalone:
 Procedure
 ---------
 
-### Step 1 — Read audit results
+### Step 1 — Run audit first
 
-From `fn/workflow-audit`, get:
-- `type` — detected task type
-- `run_names` — all discovered run names
-- `sisters` — four-sister status per name
-- `shared_configs` — which configs are shared
+Execute `fn/workflow-audit.md` on the task folder (the full 6-step
+procedure). Collect: type, run_names, sisters, shared_configs, issues.
 
-### Step 2 — Read the type template
+Report the audit results to the user (the audit progress block).
 
-Load the workflow template for this task type:
+### Step 2 — Fix: generate per-run configs
 
-```
-type=data     → haipipe-task-for-data/ref/workflow-template.yaml (if exists)
-type=stata    → haipipe-task-for-stata/ref/workflow-template.yaml (if exists)
-type=external → haipipe-data-external (or fallback to generic)
-fallback      → haipipe-task/ref/workflow-template.yaml
-```
-
-The template provides the typical Phase structure for this type.
-
-### Step 3 — Infer Phases and Steps from task state
-
-Read the actual task folder and infer the IPO:
-
-**Input (I):**
-- Collect all `files_in` from configs/ and scripts/
-- Trace upstream dependencies from `_WorkSpace/` references in configs
-- Record the config file(s)
-
-**Phases (P) with Steps (S):**
-- Each run name becomes a Step (or group of steps)
-- Ordering: infer from file dependencies
-  - If S2 reads a file that S1 creates → S1 before S2
-  - If sbatch/run_build_all.sh exists, read its ordering
-- Group steps into Phases by logical boundary
-  - Build phase: steps that create data
-  - Validate phase: steps that check/audit data
-
-**Per Step, fill in:**
-- `label`: from run name (`S1: build ZIP-county xwalk`)
-- `type`: agent (most steps) or skill (if calls sub-workflow)
-- `required`: true unless clearly optional
-- `run_trigger`: matched runs/<NAME>.sh
-- `files_in`: read from script imports + config references
-- `files_out`: read from script outputs + results/<NAME>/ contents
-
-**Output (O):**
-- Union of all step files_out
-- Key output files from `_WorkSpace/` (heavy) + results/ (light)
-
-### Step 4 — Generate per-run configs (if shared config detected)
-
-When audit found `shared_configs`, split into per-run configs:
-
-```
-FROM: configs/external_physician.yaml (shared)
-TO:   configs/run_build_physician.yaml
-      configs/run_build_xwalk.yaml
-      configs/run_build_cleanse.yaml
-```
+When audit found `shared_configs` (one config serving multiple runs),
+generate a per-run config for each run that's missing one.
 
 Each per-run config:
 1. Inherits all params from the shared config
-2. Adds `_meta:` block specific to this run:
-   ```yaml
-   _meta:
-     purpose: "Build ZIP-county modal crosswalk from Census+NBER sources"
-     input: "Census 2020 ZCTA, NBER SSA-FIPS"
-     output: "zip_county_xwalk.dta (one row per ZIP5)"
-   ```
-3. Optionally adds step-specific params (subset of shared config)
+2. Adds `_meta:` block specific to this run (read the script to fill
+   accurate purpose/input/output)
+3. The shared config is kept as reference
 
-The shared config is kept as a reference but is no longer the config
-of record for any run.
+Progress:
+```
+🔧 Fix: created N per-run configs from shared <name>.yaml
+```
 
-### Step 5 — Write plan.yaml
+### Step 3 — Fix: generate missing run script counterparts
 
-Write `workflow/plan.yaml` to the task folder. Use the format from
-`skills/flow/haipipe-workflow/ref/plan-schema.md`.
+If a run has `.sh` but no `.ps1` (or vice versa), generate the
+missing counterpart.
 
-### Step 6 — Progress report
+### Step 4 — Fix: notebook naming
+
+Flag mismatches but do NOT rename existing notebooks.
+
+### Step 5 — Generate per-script plans
+
+For EACH main `.py` (or `.do`) script in the task folder, generate
+a `workflow/plan-script-<name>.yaml`.
+
+**How to read a script's internal structure:**
+1. Read the full script file
+2. Identify cells/sections (marked by `# %%` for papermill .py,
+   or section comments for .do)
+3. Group cells into Phases by logical boundary:
+   - Setup phase: config loading, path resolution, imports
+   - Data-specific phases: each distinct analysis chunk
+   - Summary/output phase: final tables, wrap-up
+4. Within each Phase, each cell becomes a Step:
+   - What data it loads (reads)
+   - What transformation it applies (does)
+   - What it produces (outputs: files, figures, variables)
+5. Map _WorkSpace references to roles
+
+The IPO pattern is the SAME at script level as at task level:
+  I → P1[S1,S2] → P2[S3,S4] → P3[...] → O
+
+**Per-script plan format:**
+
+```yaml
+# --- Preview -----------------------------------------------------------
+# <script_name>.py — <one-line purpose>
+#
+# I: <input files, one per line with role>
+#
+# +-- P1: <Phase title>
+# |   +-- S1: <step name>
+# |   +-- S2: <step name>           -> <output>
+# |
+# +-- P2: <Phase title>
+# |   +-- S3: <step name>
+# |   |       -> <output>
+# |   +-- S4: <step name>
+# |           -> <output>
+# |
+# +-- P3: ...
+#
+# O: <output files>
+# -------------------------------------------------------------------
+
+script: <script_name>.py
+config: configs/<run_name>.yaml
+run_trigger: runs/<run_name>.sh
+
+inputs:
+  - path: _WorkSpace/...
+    role: "<what this file is>"
+  - path: _WorkSpace/...
+    role: "..."
+
+steps:
+  - id: S1
+    name: "<step name>"
+    cell: "<cell marker or line range>"
+    reads: [<files or variables from prior steps>]
+    does: "<one line: what this step computes>"
+    outputs: []                         # empty if no file produced
+  - id: S2
+    name: "<step name>"
+    reads: [<files>]
+    does: "<what>"
+    outputs: [trait_dictionary.csv]      # relative to results/<run>/
+  # ... one entry per logical step
+
+outputs:
+  - path: results/<run>/<file>
+    role: "<what this output is>"
+    from_step: S2
+  - path: results/<run>/figures/<file>.png
+    role: "<what this figure shows>"
+    from_step: S5
+```
+
+Write one `workflow/plan-script-<name>.yaml` per script.
+
+Progress:
+```
+📍 Script plan: workflow/plan-script-explore_physician.yaml
+   steps: 10, inputs: 5 _WorkSpace files, outputs: 9 result files
+```
+
+### Step 6 — Generate task-level plan.yaml
+
+The task plan rolls up the script plans:
+
+```yaml
+# --- Preview (roll-up tree) --- ...
+
+name: <task-name>
+purpose: "<one line>"
+skill: <detected type skill>
+task_folder: <path>
+
+input:
+  files_in: [union of all script inputs]
+
+scripts:
+  - plan: workflow/plan-script-<name1>.yaml
+    phase: P1
+    run_trigger: runs/<run1>.sh
+  - plan: workflow/plan-script-<name2>.yaml
+    phase: P1
+    run_trigger: runs/<run2>.sh
+
+phases:
+  - title: <Phase>
+    scripts: [<name1>, <name2>]
+    ordering: <sequential | parallel | independent>
+
+output:
+  files_out: [union of all script outputs]
+```
+
+The task plan does NOT duplicate the script-level steps — it references
+the script plans. To see internal steps, read the script plan.
+
+### Step 7 — Progress report
 
 ```
-📍 plan generated: A01_build_physician/workflow/plan.yaml
-   type: external
-   phases: 2 (Build, Validate)
-   steps: 5 (3 required + 1 required + 1 optional)
-   files tracked: 8 in, 12 out
-   per-run configs: 3 generated from shared config
+📍 Plan: B01_explore_physician
+   task plan: workflow/plan.yaml (1 phase, 2 scripts)
+   script plans:
+     workflow/plan-script-explore_physician.yaml (10 steps)
+     workflow/plan-script-show_final_physician.yaml (3 steps)
+   fixed: 2 per-run configs
 ```
 
 
@@ -119,9 +215,11 @@ Return contract
 ```yaml
 status: ok | blocked
 plan_path: workflow/plan.yaml
-phases: 2
-steps: 5
-configs_generated: [run_build_physician.yaml, run_build_xwalk.yaml, run_build_cleanse.yaml]
-issues_fixed: [missing_config x3]
-issues_remaining: [stale_result: run_build_roberta]
+script_plans: [workflow/plan-script-*.yaml]
+type: <detected>
+phases: N
+scripts: M
+configs_generated: [list]
+issues_fixed: [list]
+issues_remaining: [list]
 ```
