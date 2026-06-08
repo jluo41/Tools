@@ -4,11 +4,12 @@ description: "Build orchestrator for haipipe-project. Routes scope=project / tas
 argument-hint: "[scope] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
-  summary: "Build orchestrator for haipipe-project."
+  version: "2.0.0"
+  last_updated: "2026-06-08"
+  summary: "Build orchestrator for haipipe-project. Now includes workflow lifecycle (audit/plan/report) for existing task folders."
   changelog:
     - "1.0.0 (2026-05-31): baseline metadata added."
+    - "2.0.0 (2026-06-08): add workflow lifecycle — audit (four-sister check), plan (generate plan.yaml), report (mirror plan with results). New fn/ procedures: workflow-audit.md, workflow-plan.md, workflow-report.md. New ref: workflow-template.yaml."
 ---
 
 Skill: haipipe-task (orchestrator)
@@ -27,17 +28,22 @@ This skill OWNS scaffolding for **project** and **task-group**. For
 specialists (one per type):
 
 ```
-task-type     Group letter   Specialist                              Cross-skill
-------------  -------------  --------------------------------------  --------------------------
-data          D              /haipipe-task-for-data              /haipipe-data
-algo          X              /haipipe-task-for-algo              /haipipe-nn-algo
-training      A              /haipipe-task-for-training          /haipipe-nn-tuner+instance
-eval          B              /haipipe-task-for-eval              (project-local; future)
-display       C              /haipipe-task-for-display           (independent)
-individual    E              /haipipe-task-for-individual        /haipipe-individual
-agent         F              /haipipe-task-for-agent             (none yet)
-inference     P              /haipipe-task-for-inference         /haipipe-end-endpointset (profile)
+task-type     Specialist                              Cross-skill
+------------  --------------------------------------  --------------------------
+data          /haipipe-task-for-data              /haipipe-data
+algo          /haipipe-task-for-algo              /haipipe-nn-algo
+training      /haipipe-task-for-training          /haipipe-nn-tuner+instance
+eval          /haipipe-task-for-eval              (project-local; future)
+display       /haipipe-task-for-display           (independent)
+individual    /haipipe-task-for-individual        /haipipe-individual
+agent         /haipipe-task-for-agent             (none yet)
+inference     /haipipe-task-for-inference         /haipipe-end-endpointset (profile)
 ```
+
+NOTE: group letters (A00_, B01_, C01_, D01_) are project-specific
+organizational prefixes, NOT type indicators. Each project defines
+its own letter scheme. Type is detected from script content, not
+from group letters.
 
 Stata sub-family (engine = Stata + PowerShell + logs, NOT papermill):
 
@@ -71,17 +77,25 @@ Commands
 --------
 
 ```
-/haipipe-project task                                ASK which scope
-/haipipe-project task project [id]                   scaffold a new project (here)
-/haipipe-project task task-group                     scaffold a new task-group (here)
-/haipipe-project task task-folder                    ASK task-type, then dispatch
-/haipipe-project task task-folder <type> [args...]   dispatch to type specialist
-/haipipe-project task run [task-path] [run-name]     scaffold a new run (asks _meta)
+/haipipe-task                                        ASK which scope
+/haipipe-task project [id]                           scaffold a new project (here)
+/haipipe-task task-group                             scaffold a new task-group (here)
+/haipipe-task task-folder                            ASK task-type, then dispatch
+/haipipe-task task-folder <type> [args...]           dispatch to type specialist
+/haipipe-task run [task-path] [run-name]             scaffold a new run (asks _meta)
+/haipipe-task audit <task-folder-path>               four-sister check + type detect
+/haipipe-task plan <task-folder-path>                generate workflow/plan.yaml
+/haipipe-task report <task-folder-path>              generate workflow/report.yaml
 ```
 
-Shorthand: `/haipipe-project task` with no scope and no args defaults to
+Shorthand: `/haipipe-task` with no scope and no args defaults to
 `run` (most common ask once a task-folder exists; falls back to
 `task-folder` if cwd is not a task-folder yet).
+
+When targeting an **existing** task folder (not scaffolding new), the
+workflow layer activates automatically:
+  audit → fix → plan → dispatch → report
+See Step 3c below.
 
 ---
 
@@ -112,22 +126,19 @@ run              this skill                                 fn/run.md
                  reads: ref/hierarchy.md
                         ref/config-meta-template.yaml
                         ref/run-sh-template.sh
+audit            this skill                                 fn/workflow-audit.md
+                 reads: task folder configs/ runs/ results/ notebooks/
+plan             this skill                                 fn/workflow-plan.md
+                 reads: fn/workflow-audit result
+                        ref/workflow-template.yaml
+                        type specialist's ref/workflow-template.yaml (if exists)
+report           this skill                                 fn/workflow-report.md
+                 reads: workflow/plan.yaml
+                        results/*/runtime.yaml, manifest.json
 ```
 
 Task-type → specialist mapping (for scope=task-folder):
-
-```
-task-type     Group letter   Specialist                              Cross-skill
-------------  -------------  --------------------------------------  --------------------------
-data          D              /haipipe-task-for-data              /haipipe-data
-algo          X              /haipipe-task-for-algo              /haipipe-nn-algo
-training      A              /haipipe-task-for-training          /haipipe-nn-tuner+instance
-eval          B              /haipipe-task-for-eval              (project-local; future)
-display       C              /haipipe-task-for-display           (independent)
-individual    E              /haipipe-task-for-individual        /haipipe-individual
-agent         F              /haipipe-task-for-agent             (none yet)
-inference     P              /haipipe-task-for-inference         /haipipe-end-endpointset (profile)
-```
+same as the table above (type → specialist → cross-skill).
 
 ---
 
@@ -176,17 +187,24 @@ Step 3a (scope=task-folder only): Task-type inference cascade.
   (1) EXPLICIT — type given as positional after `task-folder`, or already
       pinned at Step 2 cascade (2).  ✅ done.
 
-  (2) CWD-INFERRED — pwd matches
-        `examples/Proj*/tasks/{LETTER}{NN}_*/`
-      Group letter maps deterministically to task-type:
-
-        A → training      D → data         E → individual
-        B → eval          X → algo         F → agent
-        C → display
-
+  (2) SCRIPT-INFERRED — if pwd is inside an existing task-folder,
+      read the main `*.py` script and `scripts/*.py` files. Detect type
+      from imports and content:
+        - `from haipipe` / `SourceFn` / `RecordFn`  → data
+        - `import torch` / `Trainer` / `sweep`       → training
+        - `eval` / `metrics` / `score`                → eval
+        - `plt.` / `fig` / `savefig` / `.tex`        → display
+        - `stata` / `.do` / `preserve`                → stata (delegate)
+        - `agent` / `claude` / `anthropic`            → agent
       Confidence: high. Behavior:
-        - AUTO         → accept; log "inferred from cwd: <type>"
+        - AUTO         → accept; log "inferred from script: <type>"
         - interactive  → propose; one-line ASK to confirm
+
+      NOTE: the group letter ({A}{NN}, {B}{NN}, etc.) is purely
+      organizational — each project chooses its own letter scheme.
+      Do NOT infer task-type from the group letter. ProjA uses
+      different letters than ProjB. Always use script analysis
+      or explicit type instead.
 
   (3) KEYWORD-INFERRED — scan free-text args for keywords (table below).
       First match (left-to-right in args) wins.
@@ -237,11 +255,8 @@ Step 3b (scope=task-folder only): Parent existence cascade.
 
   Resolve target paths:
     PROJECT_PATH = `examples/{PROJECT_ID}/`
-    GROUP_LETTER = the letter required by task-type (see Step 3a table):
-                     A=training · B=eval · C=display · D=data ·
-                     E=individual · F=agent · P=inference · X=algo
-    GROUP_PATH   = `PROJECT_PATH/tasks/{GROUP_LETTER}{NN}_<group_name>/`
-                     (or `PROJECT_PATH/tasks/X_algo/` for algo)
+    GROUP_PATH   = `PROJECT_PATH/tasks/{LETTER}{NN}_<group_name>/`
+                     (letter is project-specific, NOT tied to task-type)
 
   (1) Project check
         EXISTS                                  → continue.
@@ -279,6 +294,70 @@ Step 3b (scope=task-folder only): Parent existence cascade.
       Skill("haipipe-task-<type>",
             args="<remaining_args> --project-id <PROJECT_ID>
                   --group <group_id> [--auto]")
+
+
+Step 3c (existing task-folder): Workflow layer.
+
+  When the target task-folder ALREADY EXISTS (has configs/ or runs/ or
+  results/), the workflow layer activates. This is distinct from
+  scaffolding (Step 3b) — here we're auditing and working with an
+  existing task, not creating a new one.
+
+  Detect: task-folder exists if any of these are present:
+    - <target>/configs/
+    - <target>/runs/
+    - <target>/results/
+    - <target>/*.py (main script)
+
+  If task-folder exists, run the workflow lifecycle:
+
+  (1) AUDIT — read fn/workflow-audit.md, execute it.
+      Scan four-sister consistency (configs/runs/results/notebooks).
+      Detect task type (from group letter or script analysis).
+      Check if workflow/plan.yaml exists.
+      Report: issues found, type detected, plan status.
+
+      Progress:
+        📋 Audit: <task-folder>
+           type: <detected>
+           four-sister: N runs, M issues (K fixable)
+
+  (2) FIX — if audit found fixable issues:
+      - missing per-run configs → split shared config into per-run
+        (read fn/workflow-plan.md Step 4 for the split procedure)
+      - missing .ps1 counterpart → generate from .sh
+      - stale results/ with no runner → flag for user decision
+
+      Progress:
+        🔧 Fixed: 3 per-run configs generated from shared config
+           Flagged: run_build_roberta (stale result, no runner)
+
+  (3) PLAN — if workflow/plan.yaml missing or stale:
+      Read fn/workflow-plan.md, execute it.
+      Infer phases and steps from task state.
+      Write workflow/plan.yaml.
+
+      Progress:
+        📍 Plan: workflow/plan.yaml written
+           phases: 2, steps: 5, files tracked: 8 in / 12 out
+
+  (4) DISPATCH — same as before (Skill("haipipe-task-<type>", ...))
+      BUT now the specialist has workflow context:
+      - It can read workflow/plan.yaml to know the intended phases
+      - It can report progress per step
+
+  (5) REPORT — after execution completes:
+      Read fn/workflow-report.md, execute it.
+      Read plan.yaml + results/ → write workflow/report.yaml.
+
+      Progress:
+        📋 Report: 2/2 phases, 4/5 steps done, 1 skipped
+
+  For explicit audit/plan/report commands (/haipipe-task audit, etc.),
+  run ONLY that step, not the full lifecycle.
+
+  For the full lifecycle, report progress at each boundary:
+    📋 Audit → 🔧 Fix → 📍 Plan → ⏳ Execute → 📋 Report
 
 
 Step 4: For locally-executed scopes, follow the function file step-by-step.
