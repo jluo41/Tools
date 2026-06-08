@@ -72,15 +72,18 @@ For EACH `plan-script-<name>.yaml`, generate a matching
 # I: <input file>                   ok (<row count> rows)
 #    <input file>                   ok (<detail>)
 #
-# +-- S1: <step name>                              done
-# +-- S2: <step name>                              done
-# |       -> <output.csv>                          <N> rows
-# +-- S3: <step name>                              done
-# |       -> <figure.png>                          <size> KB
-# +-- S4: <step name>                              skipped
+# +-- P1: <Phase title>
+# |   +-- S1: <step name>                          done
+# |   +-- S2: <step name>                          done
+# |           -> <output.csv>                      <N> rows
+# |
+# +-- P2: <Phase title>
+# |   +-- S3: <step name>                          done
+# |   |       -> <figure.png>                      <size> KB
+# |   +-- S4: <step name>                          skipped
 #
 # O: <N> CSVs + <M> PNGs under results/<run>/
-#    status: ok   steps: X/Y done   duration: Zs
+#    status: ok   phases: P/P   steps: X/Y done   duration: Zs
 # -------------------------------------------------------------------
 
 script: <script_name>.py
@@ -92,23 +95,27 @@ status: ok | incomplete | failed
 inputs:
   - path: _WorkSpace/...
     status: ok
-    detail: "<row count> rows"     # if readable
+    detail: "<row count> rows"
   - path: _WorkSpace/...
     status: ok
 
-steps:
-  - id: S1
-    name: "<step name>"
-    status: done | skipped | failed
-  - id: S2
-    name: "<step name>"
-    status: done
-    outputs:
-      - path: trait_dictionary.csv
-        exists: true
-        rows: 10                   # for CSVs
-  - id: S3
-    name: "<step name>"
+phases:
+  - title: "<Phase title>"
+    steps:
+      - id: S1
+        name: "<step name>"
+        status: done | skipped | failed
+      - id: S2
+        name: "<step name>"
+        status: done
+        outputs:
+          - path: trait_dictionary.csv
+            exists: true
+            rows: 10                   # for CSVs
+  - title: "<Next phase>"
+    steps:
+      - id: S3
+        name: "<step name>"
     status: done
     outputs:
       - path: figures/01_*.png

@@ -128,29 +128,34 @@ run_trigger: runs/<run_name>.sh
 inputs:
   - path: _WorkSpace/...
     role: "<what this file is>"
-  - path: _WorkSpace/...
-    role: "..."
 
-steps:
-  - id: S1
-    name: "<step name>"
-    cell: "<cell marker or line range>"
-    reads: [<files or variables from prior steps>]
-    does: "<one line: what this step computes>"
-    outputs: []                         # empty if no file produced
-  - id: S2
-    name: "<step name>"
-    reads: [<files>]
-    does: "<what>"
-    outputs: [trait_dictionary.csv]      # relative to results/<run>/
-  # ... one entry per logical step
+phases:
+  - title: "<Phase title>"
+    detail: "<one-line what this phase does>"
+    steps:
+      - id: S1
+        name: "<step name>"
+        cell: "<cell marker or line range>"
+        reads: [<files or variables from prior steps>]
+        does: "<one line: what this step computes>"
+        outputs: []                     # empty if no file produced
+      - id: S2
+        name: "<step name>"
+        reads: [<files>]
+        does: "<what>"
+        outputs: [trait_dictionary.csv]  # relative to results/<run>/
+
+  - title: "<Next phase>"
+    detail: "..."
+    steps:
+      - id: S3
+        name: "..."
+        # ...
 
 outputs:
   - path: results/<run>/<file>
     role: "<what this output is>"
     from_step: S2
-  - path: results/<run>/figures/<file>.png
-    role: "<what this figure shows>"
     from_step: S5
 ```
 
