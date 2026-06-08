@@ -56,8 +56,7 @@ Step 3 -- Create skeleton
 ```
 D{NN}_reg_<condition>_<pairing>/
 +-- configs/
-|   +-- <Cohort>.do                          shared Stata globals
-|   +-- run_reg_<window>_<family>.yaml       per-run _meta (one per RUNNAME)
+|   +-- <Cohort>.do                          shared Stata globals (data path)
 +-- scripts/                                 worker .do files (SHARED)
 |   +-- run-{N}-*-<family>-<variant>.do      numbered 1-10
 +-- runs/
@@ -65,19 +64,20 @@ D{NN}_reg_<condition>_<pairing>/
 +-- sbatch/
 |   +-- run-all.ps1                          fan-out all runs
 +-- results/
-|   +-- run_reg_<window>_<family>/           per-run output (three-sisters)
+|   +-- run_reg_<window>_<family>/           per-run output
 |       +-- log/
 |       +-- tables/
 +-- diagram/
 ```
 
 
-Step 4 -- Seed config
----------------------
+Step 4 -- Shared config (.do)
+-----------------------------
 
-Copy `ref/config-seed.yaml` to `configs/run_reg_<window>_<family>.yaml`.
-Fill `_meta`, set `window:`, `family:`, `workers:`, `stata_config:`.
-Shared Stata globals (data path, data version) live in `configs/<Cohort>.do`.
+Create `configs/<Cohort>.do` with shared Stata globals (data path, data
+version, cohort name, res_root). Stata dialect uses `.do` for configs,
+not `.yaml` -- Stata cannot parse YAML. Per-run parameters (window,
+res_dir) pass via env vars in the `.ps1` runner.
 
 
 Step 5 -- Run-script (reg runtime contract)
