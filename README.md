@@ -99,13 +99,16 @@ When adding or changing a skill, treat implementation and validation as two
 separate steps:
 
 1. Develop or revise the skill.
-2. Call a subagent with a fresh context to invoke that skill against a realistic
-   task.
-3. Confirm that the subagent used the skill as expected and that the result
-   matches the intended behavior before committing or publishing the change.
+2. Test the skill by calling a subagent with a fresh context and explicitly
+   instructing that subagent to invoke the new or revised skill against a
+   realistic task.
+3. Confirm that the subagent selected and used the skill as expected, followed
+   the skill instructions, and produced the intended result before committing or
+   publishing the change.
 
-This fresh-context check is required because it tests the skill from the point
-of view of a new agent that has not seen the development discussion.
+This fresh-context subagent check is required because it tests the skill from
+the point of view of a new agent that has not seen the development discussion.
+The standard workflow is: develop the skill, then test the skill.
 
 ## License
 
