@@ -215,10 +215,12 @@ The orchestrator and venue specialists in `0-workflow/` operate at the
 (unified `haipipe-paper-<stage>-<topic>` names; 6-respond/7-present keep legacy slugs for now):
 
 ```
-1-structure/  haipipe-paper-structure-narrative (entry gate from upstream E_insight),
-              -structure-plan, -structure-bootstrap, -structure-architecture, -structure-incubator,
-              -structure-diagram, -structure-figure-planner, -structure-figure-spec,
-              -structure-figure, -structure-illustration, -structure-illustration-image2
+1-structure/  haipipe-paper-structure (orchestrator) routes to:
+              haipipe-paper-folder (scaffold Paper-<Name>-<Venue><Year>/),
+              -structure-narrative, -structure-architecture, -structure-plan,
+              -structure-diagram, -structure-incubator, -structure-figure-planner,
+              -structure-figure, -structure-figure-spec,
+              -structure-illustration, -structure-illustration-image2
 2-build/      haipipe-paper-build-scaffold, -build-restructure, -build-check
 3-edit/       haipipe-paper-edit (orchestrator) + topic subs -edit-content, -edit-values,
               -edit-citation, -edit-consistency, -edit-format, -edit-typeset;
