@@ -63,7 +63,6 @@ tasks/{G}{NN}_<group>/
   D{NN}_reg_<condition>_<pairing>/
   +-- configs/
   |   +-- <Cohort>.do                            shared Stata globals (data path)
-  |   +-- run_reg_<window>_<family>.yaml          per-run _meta (one per RUNNAME)
   +-- scripts/                                    worker .do files (SHARED)
   |   +-- run-{N}-*-<family>-<variant>.do         numbered 1-10, all estimators
   +-- runs/
@@ -76,6 +75,11 @@ tasks/{G}{NN}_<group>/
   |       +-- tables/                              coef tables (.tex/.csv)
   +-- diagram/
 ```
+
+**Stata dialect config convention:** Reg uses `.do` for configs (not
+`.yaml`). Stata cannot parse YAML. The shared `configs/<Cohort>.do`
+sets data globals; per-run parameters pass via env vars in the `.ps1`
+runner. The `.ps1` header comment carries the run purpose.
 
 - **RUNNAME grammar (topic-split):** `run_reg_<window>_<family>`
   where window = {af14d, af7d, ...} and family = {ols, iv, did, ols_windows}.
