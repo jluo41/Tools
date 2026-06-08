@@ -83,8 +83,8 @@ Commands
 /haipipe-task task-folder                            ASK task-type, then dispatch
 /haipipe-task task-folder <type> [args...]           dispatch to type specialist
 /haipipe-task run [task-path] [run-name]             scaffold a new run (asks _meta)
-/haipipe-task audit <task-folder-path>               four-sister check + type detect
-/haipipe-task plan <task-folder-path>                generate workflow/plan.yaml
+/haipipe-task audit <task-folder-path>               four-sister check + type detect (read-only)
+/haipipe-task plan <task-folder-path>                audit + fix + generate workflow/plan.yaml
 /haipipe-task report <task-folder-path>              generate workflow/report.yaml
 ```
 
@@ -129,8 +129,9 @@ run              this skill                                 fn/run.md
 audit            this skill                                 fn/workflow-audit.md
                  reads: task folder configs/ runs/ results/ notebooks/
 plan             this skill                                 fn/workflow-plan.md
-                 reads: fn/workflow-audit result
-                        ref/workflow-template.yaml
+                 runs:  fn/workflow-audit.md FIRST (audit + fix)
+                        then fn/workflow-plan.md (generate plan.yaml)
+                 reads: ref/workflow-template.yaml
                         type specialist's ref/workflow-template.yaml (if exists)
 report           this skill                                 fn/workflow-report.md
                  reads: workflow/plan.yaml
@@ -313,9 +314,8 @@ Step 3c (existing task-folder): Workflow layer.
 
   (1) AUDIT — read fn/workflow-audit.md, execute it.
       Scan four-sister consistency (configs/runs/results/notebooks).
-      Detect task type (from group letter or script analysis).
+      Detect task type (from script content, NOT group letter).
       Check if workflow/plan.yaml exists.
-      Report: issues found, type detected, plan status.
 
       Progress:
         📋 Audit: <task-folder>
@@ -330,7 +330,6 @@ Step 3c (existing task-folder): Workflow layer.
 
       Progress:
         🔧 Fixed: 3 per-run configs generated from shared config
-           Flagged: run_build_roberta (stale result, no runner)
 
   (3) PLAN — if workflow/plan.yaml missing or stale:
       Read fn/workflow-plan.md, execute it.
@@ -339,16 +338,70 @@ Step 3c (existing task-folder): Workflow layer.
 
       Progress:
         📍 Plan: workflow/plan.yaml written
-           phases: 2, steps: 5, files tracked: 8 in / 12 out
+           phases: N, steps: M, files tracked: X in / Y out
 
-  (4) DISPATCH — same as before (Skill("haipipe-task-<type>", ...))
-      BUT now the specialist has workflow context:
-      - It can read workflow/plan.yaml to know the intended phases
-      - It can report progress per step
+  (4) REVIEW — call the reviewer agent for pre-run code quality gate.
+      Agent: `run-script-reviewer-agent`
+        (or `stata-script-reviewer-agent` for Stata tasks)
+      Located: `C_task/agents/reviewers/run-script-reviewer-agent.md`
+      Input: task-folder path + main script
+      Output: CODE_REVIEW.md in task-folder
+      Invoke: Agent(agentType="run-script-reviewer-agent",
+                    prompt="Review <task-folder> for intent-vs-implementation bugs")
 
-  (5) REPORT — after execution completes:
-      Read fn/workflow-report.md, execute it.
+      Progress:
+        🚦 Gate 1: run-script-reviewer → CODE_REVIEW.md
+           verdict: pass | warn | fail
+
+  (5) EXECUTE — run the task (mode depends on context):
+      - **manual**: user runs `runs/<NAME>.sh` on their machine
+        (e.g. CMS server). Claude reports the plan as a checklist.
+      - **subagent**: for each run_trigger in plan.yaml, execute it.
+      - **workflow-engine**: generate .workflow.js, run via Workflow tool.
+
+  (6) AUDIT RESULTS — call the result auditor agent for post-run gate.
+      Agent: `run-result-auditor-agent`
+      Located: `C_task/agents/reviewers/run-result-auditor-agent.md`
+      Input: task-folder path + results/<NAME>/
+      Output: RUN_AUDIT.md in task-folder
+      Invoke: Agent(agentType="run-result-auditor-agent",
+                    prompt="Audit results of <task-folder> run <NAME>")
+
+      Progress:
+        🚦 Gate 2: run-result-auditor → RUN_AUDIT.md
+           verdict: pass | warn | fail
+
+  (7) REPORT — read fn/workflow-report.md, execute it.
       Read plan.yaml + results/ → write workflow/report.yaml.
+      Include which agents were called and their verdicts.
+
+      Progress:
+        📋 Report: workflow/report.yaml written
+           phases: N/N, steps: X done, Y skipped
+
+  Full lifecycle with agents:
+  ```
+  audit → fix → plan → review(agent) → execute → audit-results(agent) → report
+                        ↑                         ↑
+                  run-script-reviewer      run-result-auditor
+  ```
+
+  For explicit commands (/haipipe-task audit, /haipipe-task report, etc.),
+  run ONLY that step, not the full lifecycle.
+
+  For the full lifecycle, the IPO return is:
+  ```
+  <task> — workflow lifecycle
+  I: ...
+  ├── P1: Audit    [S1..SN]
+  ├── P2: Fix      [S1..SN]
+  ├── P3: Plan     [S1]
+  ├── P4: Review   [S1: run-script-reviewer-agent → CODE_REVIEW.md]
+  ├── P5: Execute  [S1..SN per run_trigger]
+  ├── P6: Audit Results [S1: run-result-auditor-agent → RUN_AUDIT.md]
+  └── P7: Report   [S1: write report.yaml]
+  O: ...
+  ```
 
       Progress:
         📋 Report: 2/2 phases, 4/5 steps done, 1 skipped
