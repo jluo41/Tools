@@ -1,26 +1,25 @@
-# =============================================================================
-# configs/run_reg_<Condition>_<Pairing>_<Trait>.yaml  —  reg-pipeline (Stata dialect)
-# =============================================================================
-# Carries the _meta: block + the spec cell identity. Output is LIGHT:
-# coefficient tables land in results/<run>/, NOT _WorkSpace/.
-# Shared estimation settings (controls, FE, cluster) may live in a configs/*.do.
-# =============================================================================
+# configs/run_reg_<window>_<family>.yaml  --  reg-pipeline (Stata dialect)
+# Per-run _meta: one file per RUNNAME. Output is LIGHT: coef tables land
+# in results/<RUNNAME>/, NOT _WorkSpace/.
+# Shared Stata globals (data path, data version) live in configs/<Cohort>.do.
 
 _meta:
   purpose: |
-    <e.g., IV estimate of Agreeableness → 1st-pair OpioidRx for VisitLBP cohort>
+    <e.g., OLS regressions (progressive, LPM, two-part, trait-form) for af14d window>
   note: |
-    <e.g., leave-one-out trait IV; cluster at physician; controls = age/sex/race/elix>
+    <e.g., workers 1,2,3,5; cluster npi_id; full controls>
   input: |
-    <e.g., *-Data-Store/.../ANALYSIS-CMS-Filter.dta; IV definitions>
+    <e.g., _WorkSpace/3-Data-Store/<Cohort>/<version>/ANALYSIS-CMS-Filter.dta>
   output: |
-    <e.g., results/run_reg_VisitLBP_1stPair_Agreeableness-iv/{coef.tex, coef.csv};
-           headline beta / SE / N / first-stage F>
+    <e.g., results/run_reg_af14d_ols/{log/, tables/}>
   # skip_review: true
 
-# ── Run identity (Stata dialect) ─────────────────────────────────────────────
-condition: <VisitLBP>
-pairing: <1stPair>
-trait: <Agreeableness>
-estimators: [ols-progressive, ols-lpm-logit, ols-twopart, iv-main, iv-grid, iv-overid]
-# RUNNAME per cell = run_reg_<condition>_<pairing>_<trait>-<ols|iv>
+# -- Run identity --
+window: <af14d>           # outcome BFAF window; empty string for ols_windows
+family: <ols>             # ols | iv | did | ols_windows
+workers:                  # worker .do scripts this run calls (subset of scripts/)
+  - run-1-*-ols-progressive.do
+  - run-2-*-ols-lpm-logit.do
+  - run-3-*-ols-twopart.do
+  - run-5-*-ols-traitform.do
+stata_config: <Cohort>_<Pairing>   # pointer to configs/<this>.do
