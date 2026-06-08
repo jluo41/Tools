@@ -93,6 +93,20 @@ cd Tools
 git pull
 ```
 
+## Skill Development Validation
+
+When adding or changing a skill, treat implementation and validation as two
+separate steps:
+
+1. Develop or revise the skill.
+2. Call a subagent with a fresh context to invoke that skill against a realistic
+   task.
+3. Confirm that the subagent used the skill as expected and that the result
+   matches the intended behavior before committing or publishing the change.
+
+This fresh-context check is required because it tests the skill from the point
+of view of a new agent that has not seen the development discussion.
+
 ## License
 
 MIT
