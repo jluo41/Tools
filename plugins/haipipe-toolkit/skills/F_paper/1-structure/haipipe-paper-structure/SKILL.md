@@ -60,10 +60,12 @@ haipipe-paper-structure-narrative     CONTRACT:  generate NARRATIVE_REPORT.md fr
 ### Architecture & Planning — what the paper says
 
 ```
-haipipe-paper-structure-architecture  BLUEPRINT: versioned vNN-architecture-minimap.md —
+haipipe-paper-structure-architecture  BLUEPRINT: versioned vNN-architecture-minimap.md (v3.1) —
                                                  config table, 5-act arc, paragraph-level
-                                                 minimap with A/B options, appendix plan,
-                                                 language guide, page budget
+                                                 minimap with A/B options, substantial appendix
+                                                 plan (~half the paper), language guide, MISQ-
+                                                 format page budget (body+appendix+refs+buffer).
+                                                 Tested: subagent produces consistent output.
 
 haipipe-paper-structure-plan          OUTLINE:   PAPER_PLAN.md — section-by-section plan
                                                  with venue-specific page budgets, from
