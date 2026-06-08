@@ -65,22 +65,27 @@ For EACH `plan-script-<name>.yaml`, generate a matching
 
 **Per-script report format:**
 
+Use the SAME phase emojis from the plan (matching phase titles).
+Add status emojis per step: ✅ done, ⏭️ skipped, ❌ failed.
+
 ```yaml
 # --- Preview -----------------------------------------------------------
 # <script_name>.py — execution report
 #
-# I: <input file>                   ok (<row count> rows)
-#    <input file>                   ok (<detail>)
+# I: <input file>                        ✅ (<row count> rows)
+#    <input file>                        ✅ (<detail>)
 #
-# +-- P1: <Phase title>
-# |   +-- S1: <step name>                          done
-# |   +-- S2: <step name>                          done
-# |           -> <output.csv>                      <N> rows
+# +-- 🔧 P1: <Phase title>                              ✅ done
+# |   +-- S1: <step name>                               ✅
+# |   +-- S2: <step name>                               ✅
+# |           -> <output.csv>                            <N> rows
 # |
-# +-- P2: <Phase title>
-# |   +-- S3: <step name>                          done
-# |   |       -> <figure.png>                      <size> KB
-# |   +-- S4: <step name>                          skipped
+# +-- 🔬 P2: <Phase title>                              ✅ done
+# |   +-- S3: <step name>                               ✅
+# |   |       -> <figure.png>                            <size> KB
+# |   +-- S4: <step name>                               ⏭️ skipped
+# |
+# +-- 📋 P3: ...                                        ✅ done
 #
 # O: <N> CSVs + <M> PNGs under results/<run>/
 #    status: ok   phases: P/P   steps: X/Y done   duration: Zs
@@ -146,10 +151,10 @@ Roll up the script reports:
 #
 # I: <key _WorkSpace inputs with status>
 #
-# +-- P1: <Phase> (<script1>.py)           done  N/N steps
-# +-- P2: <Phase> (<script2>.py)           done  M/M steps
-# +-- G1: run-script-reviewer              pass | warn | fail
-# +-- G2: run-result-auditor               pass | warn | fail
+# +-- 🔨 P1: <Phase> (<script1>.py)              ✅ done  N/N steps
+# +-- 🧹 P2: <Phase> (<script2>.py)              ✅ done  M/M steps
+# +-- 🚦 G1: run-script-reviewer                 pass | warn | fail
+# +-- 🚦 G2: run-result-auditor                  pass | warn | fail
 #
 # O: status=ok  phases=P/P  steps=X/Y done
 #    _WorkSpace used (input): [list with status]

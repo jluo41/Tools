@@ -100,23 +100,28 @@ The IPO pattern is the SAME at script level as at task level:
 
 **Per-script plan format:**
 
+Use emoji per Phase to show phase type at a glance. Common phase emojis:
+  🔧 Setup/config   🔨 Build/construct   🔬 Analysis/compute
+  🧹 Clean/filter   📊 Visualize/plot    📋 Summary/audit
+  🌐 Download/fetch  🔗 Merge/join       📦 Export/save
+
 ```yaml
 # --- Preview -----------------------------------------------------------
 # <script_name>.py — <one-line purpose>
 #
 # I: <input files, one per line with role>
 #
-# +-- P1: <Phase title>
+# +-- 🔧 P1: <Phase title>
 # |   +-- S1: <step name>
 # |   +-- S2: <step name>           -> <output>
 # |
-# +-- P2: <Phase title>
+# +-- 🔬 P2: <Phase title>
 # |   +-- S3: <step name>
 # |   |       -> <output>
 # |   +-- S4: <step name>
 # |           -> <output>
 # |
-# +-- P3: ...
+# +-- 📋 P3: ...
 #
 # O: <output files>
 # -------------------------------------------------------------------
