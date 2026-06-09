@@ -3,6 +3,13 @@ name: haipipe-task-for-stata-reg
 description: "Stata-dialect reg-pipeline task-folder build specialist. Scaffolds D{NN}_reg_<condition>_<pairing>/ task-folders that estimate trait->outcome models (OLS / IV / DID) over a window x estimator-family grid, writing LIGHT coefficient tables (.tex/.csv) into results/. Called by /haipipe-task orchestrator when task-type=stata-reg. Direct invocation works for scoped scaffolding. Shares the Stata engine in ../haipipe-task-for-stata/ref/stata-dialect.md."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+metadata:
+  version: "1.1.0"
+  last_updated: "2026-06-08"
+  summary: "Stata reg-pipeline task-folder builder."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline."
+    - "1.1.0 (2026-06-08): add metadata; workflow lifecycle compatible."
 ---
 
 Skill: haipipe-task-for-stata-reg

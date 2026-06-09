@@ -10,7 +10,7 @@ everything.
               ┌────────────────────────────────────────┐
   human ─────▶│   haipipe-task-for-<type>  (one body)   │
   (usually    │   input gate:  spec complete?           │
-   partial)   │      ✅ yes → SILENT  (skip all ASK)     │◀──── code-creator-for-<type>-agent
+   partial)   │      ✅ yes → SILENT  (skip all ASK)     │◀──── haipipe-task-builder-agent
               │      ❌ no  → ASK the missing fields     │      (always passes full spec → SILENT)
   agent ─────▶│   rest of scaffold logic is identical   │
   (full spec) └────────────────────────────────────────┘

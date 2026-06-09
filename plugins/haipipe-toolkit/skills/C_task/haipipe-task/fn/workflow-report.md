@@ -153,8 +153,8 @@ Roll up the script reports:
 #
 # +-- 🔨 P1: <Phase> (<script1>.py)              ✅ done  N/N steps
 # +-- 🧹 P2: <Phase> (<script2>.py)              ✅ done  M/M steps
-# +-- 🚦 G1: run-script-reviewer                 pass | warn | fail
-# +-- 🚦 G2: run-result-auditor                  pass | warn | fail
+# +-- 🚦 G1: reviewer gate=1                      pass | warn | fail
+# +-- 🚦 G2: reviewer gate=2                      pass | warn | fail
 #
 # O: status=ok  phases=P/P  steps=X/Y done
 #    _WorkSpace used (input): [list with status]

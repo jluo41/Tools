@@ -3,6 +3,13 @@ name: haipipe-task-for-stata-cms
 description: "Stata-dialect CMS-pipeline task-folder build specialist. Scaffolds {NN}_cms_pipeline/ task-folders that extract + enrich raw CMS claims per year into _WorkSpace/1-CMS-Store (disease-agnostic, run once per year). Called by /haipipe-task orchestrator when task-type=stata-cms. Direct invocation works for scoped scaffolding. Shares the Stata engine in ../haipipe-task-for-stata/ref/stata-dialect.md."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+metadata:
+  version: "1.1.0"
+  last_updated: "2026-06-08"
+  summary: "Stata CMS-pipeline task-folder builder."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline."
+    - "1.1.0 (2026-06-08): add metadata; workflow lifecycle compatible."
 ---
 
 Skill: haipipe-task-for-stata-cms

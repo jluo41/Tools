@@ -21,8 +21,10 @@ Procedure
 
 ### Step 1 — Discover run names
 
-Scan four directories and collect all unique run names:
+Scan directories and collect all unique run names. The exact directories
+depend on the task engine:
 
+**Python/papermill tasks:**
 ```
 NAMES_FROM_CONFIGS   = stem of each configs/*.yaml
 NAMES_FROM_RUNS      = stem of each runs/*.{sh,ps1} (dedupe .sh/.ps1 pairs)
@@ -32,9 +34,36 @@ NAMES_FROM_NOTEBOOKS = stem of each notebooks/*.ipynb
 ALL_NAMES = union of all four sets
 ```
 
+**Stata tasks** (configs may be .do or .yaml, no notebooks):
+```
+NAMES_FROM_CONFIGS   = stem of each configs/*.{yaml,do}
+                       EXCLUDE shared configs: _source_*.do, bare <Cohort>.do
+                       (these are shared/selectors, not per-run configs)
+                       INCLUDE per-run configs: <Cohort>_{synth|full}_<year>.do
+NAMES_FROM_RUNS      = stem of each runs/*.ps1 (strip run_ prefix to match config stem)
+NAMES_FROM_RESULTS   = name of each results/*/ subfolder
+NAMES_FROM_LOGS      = stem of each results/*/log/*.txt (Stata log files)
+
+ALL_NAMES = union of all sets
+```
+
+Stata tasks may not have notebooks/ at all -- that's expected, not an issue.
+
+**Stata config matching rule:** for a run named `run_case_VisitLBP_synth_2015`,
+the matching config is `configs/VisitLBP_synth_2015.do` (strip the `run_case_`
+prefix). Shared configs (`VisitLBP.do`, `_source_synth.do`) are NOT per-run
+configs -- they are the base layer that per-run configs load via `do` include.
+A run without a matching per-run config is flagged `missing_config: FIXABLE`.
+The fix: generate a thin `.do` wrapper that loads the source selector + shared
+config + pins the year (see `haipipe-task-for-stata-case/ref/config-seed-run.do`).
+
 ### Step 2 — Check four-sister pairing
 
-For each name in ALL_NAMES, check all four sisters exist:
+For each name in ALL_NAMES, check sisters exist. The "four sisters" vary
+by engine:
+
+**Python:** configs/<NAME>.yaml + runs/<NAME>.sh + results/<NAME>/ + notebooks/<NAME>.ipynb
+**Stata:**  configs/<NAME>.{yaml|do} + runs/<NAME>.ps1 + results/<NAME>/ + (log optional)
 
 ```
 NAME              configs/  runs/   results/  notebooks/
