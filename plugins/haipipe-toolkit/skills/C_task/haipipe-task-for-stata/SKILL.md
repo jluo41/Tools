@@ -3,6 +3,13 @@ name: haipipe-task-for-stata
 description: "Stata-engine task-folder build sub-orchestrator — the parent of the four haipipe-task-for-stata-* specialists (cms / case / data / reg). Owns the Stata engine contract, the {LNN} stage-letter alphabet, and stage disambiguation; smartly delegates a Stata build request to the right child. Called by /haipipe-task when engine=Stata; direct invocation works for any Stata-dialect scaffold. Engine = Stata + PowerShell + logs (NOT Python/papermill)."
 argument-hint: "[stage] [project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+metadata:
+  version: "1.1.0"
+  last_updated: "2026-06-08"
+  summary: "Stata sub-orchestrator — routes to cms/case/data/reg children."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline."
+    - "1.1.0 (2026-06-08): add metadata; workflow lifecycle compatible."
 ---
 
 Skill: haipipe-task-for-stata  (Stata sub-orchestrator)

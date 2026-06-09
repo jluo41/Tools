@@ -64,7 +64,7 @@ per-run record, not weights.
 □ metrics.json    parseable, keys match what the claim will reference
 ```
 
-These are exactly what `run-result-auditor-agent` (GATE 2) checks. Author
+These are exactly what `haipipe-task-reviewer-agent` (GATE 2) checks. Author
 the code so it passes that audit by construction.
 
 
@@ -72,7 +72,7 @@ the code so it passes that audit by construction.
 ---------------------
 
 `runs/<RUN>.sh` refuses to launch if `CODE_REVIEW.md` is missing or stale.
-That sidecar is produced by `run-script-reviewer-agent` (GATE 1). The
+That sidecar is produced by `haipipe-task-reviewer-agent` (GATE 1). The
 author NEVER writes its own CODE_REVIEW.md and NEVER self-reviews —
 builder ≠ judge. The orchestrator/bridge runs GATE 1 after authoring.
 
@@ -82,9 +82,9 @@ builder ≠ judge. The orchestrator/bridge runs GATE 1 after authoring.
 
 ```
 scaffold the 4 sister files / _meta / hierarchy   → the type SKILL (haipipe-task-for-<type>)
-write the <TASK>.py algorithm body + config params → the CREATOR agent
-review code vs intent (GATE 1)                      → run-script-reviewer-agent
-audit the finished run (GATE 2)                     → run-result-auditor-agent
+write the <TASK>.py algorithm body + config params → haipipe-task-builder-agent
+review code vs intent (GATE 1)                      → haipipe-task-reviewer-agent
+audit the finished run (GATE 2)                     → haipipe-task-reviewer-agent
 ```
 
 A creator authors and stops. It does not scaffold (the skill does), does

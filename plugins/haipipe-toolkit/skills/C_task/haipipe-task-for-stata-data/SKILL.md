@@ -3,6 +3,13 @@ name: haipipe-task-for-stata-data
 description: "Stata-dialect data-pipeline task-folder build specialist. Scaffolds {NN}_data_pipeline_<study>/ task-folders that assemble the cross-year regression-ready analysis table (filter cases → merge physician traits + policy → derive vars → ANALYSIS-*.dta) from Case-Store into _WorkSpace/*-Data-Store. Called by /haipipe-task orchestrator when task-type=stata-data. Direct invocation works for scoped scaffolding. Shares the Stata engine in ../haipipe-task-for-stata/ref/stata-dialect.md."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+metadata:
+  version: "1.1.0"
+  last_updated: "2026-06-08"
+  summary: "Stata data-pipeline task-folder builder."
+  changelog:
+    - "1.0.0 (2026-05-31): baseline."
+    - "1.1.0 (2026-06-08): add metadata; workflow lifecycle compatible."
 ---
 
 Skill: haipipe-task-for-stata-data

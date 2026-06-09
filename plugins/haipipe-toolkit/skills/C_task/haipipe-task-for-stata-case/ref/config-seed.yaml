@@ -1,25 +1,27 @@
 # =============================================================================
-# configs/run_case_<Cohort>_<year>.yaml  —  case-pipeline (Stata dialect)
+# configs/run_case_<Cohort>_<source>_<year>.yaml  --  case-pipeline (Stata dialect)
 # =============================================================================
-# Carries ONLY the _meta: block + a pointer to the Stata cohort config.
+# Optional structured metadata companion to the per-run .do config.
+# The .do config is what Stata loads; this .yaml is what the workflow layer reads.
 # ICD codes + topic flags live in configs/<Cohort>.do (source of truth).
 # =============================================================================
 
 _meta:
   purpose: |
-    <e.g., Trigger VisitLBP cases for 2015 + attach bene/PDE/lines/outpt panels>
+    <e.g., Trigger VisitLBP cases for synth 2015 + attach bene/PDE/lines/outpt panels>
   note: |
-    <e.g., opioidrx subchain ON; uses NDC_opioid_named + ICD_pain_lbp crosswalks>
+    <e.g., opioidrx subchain ON; uses NDC_MME + ICD_lbp crosswalks>
   input: |
-    <e.g., 1-CMS-Store/.../year-2015/{BCarrierLine,Outpatient,BCarrierClaim,Bene_Info}-Neat-2015.dta;
+    <e.g., 1-CMS-Store/cms_synth/v0002_enrich/year-2015/;
            0-External-Store NDC-opioid + ICD-pain>
   output: |
-    <e.g., 2-Case-Store/case_lbp/v0001_lbp_20260307/year-2015/; headline N triggered cases>
+    <e.g., 2-Case-Store/case_lbp_synth/v0001_lbp_20260307/year-2015/; headline N triggered cases>
   # skip_review: true
 
-# ── Run identity (Stata dialect) ─────────────────────────────────────────────
-stata_config: <Cohort>          # → configs/<Cohort>.do  (e.g. VisitLBP)
+# -- Run identity (Stata dialect) ---------------------------------------------
+stata_config: <Cohort>          # -> configs/<Cohort>.do  (e.g. VisitLBP)
+source: <synth|full>            # -> configs/_source_<source>.do
 cohort: <VisitLBP>
 year: <2015>
-topics: [cases, bene_year, enrollment, pde, claims, lines, outpt]   # feature chains to build
-asset: <v0001_lbp_20260307>     # 2-Case-Store/case_<cohort>/<asset>/
+topics: [cases, bene_year, enrollment, pde, claims, lines, outpt]
+asset: <v0001_lbp_20260307>     # 2-Case-Store/case_<cohort>_<source>/<asset>/
