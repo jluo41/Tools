@@ -69,6 +69,91 @@ function Get-Skills {
         ForEach-Object { $_.Group[0] }
 }
 
+# ─── Agent enumeration ───────────────────────────────────────────────────────
+# Recursively find every *-agent.md under agents/ directories, excluding _old/,
+# _archive/, _paper-writing-backup/. Dedup by agent name: agents under skills/
+# (priority 10) win over flat copies at plugin-root agents/ (priority 50).
+function Get-Agents {
+    param([string]$Root)
+
+    $rootFull = (Resolve-Path $Root).Path
+    $rows = foreach ($f in Get-ChildItem -Path $rootFull -Recurse -Filter "*-agent.md" -File) {
+        $fullPath = $f.FullName
+        $rel = $fullPath.Substring($rootFull.Length).TrimStart('\', '/')
+
+        # Skip _old, _archive, _paper-writing-backup, README, _TEMPLATE
+        if ($rel -match '[\\/]_old[\\/]' -or $rel -match '[\\/]_archive[\\/]' -or
+            $rel -match '[\\/]_paper-writing-backup[\\/]') { continue }
+        if ($f.Name -eq 'README.md' -or $f.Name -eq '_TEMPLATE.md') { continue }
+        # Must be under an agents/ directory
+        if ($rel -notmatch '[\\/]agents[\\/]') { continue }
+
+        $parts   = $rel -split '[\\/]'
+        $plugin  = $parts[0]
+        $relPath = ($parts[1..($parts.Length - 1)] -join '/')
+        $name    = $f.BaseName    # e.g. haipipe-task-builder-agent
+
+        $priority = 50
+        if ($relPath -match '^skills/') { $priority = 10 }
+
+        [pscustomobject]@{
+            Name      = $name
+            Priority  = $priority
+            AgentFile = $fullPath
+            Plugin    = $plugin
+            RelPath   = $relPath
+        }
+    }
+
+    $rows |
+        Sort-Object Name, Priority, Plugin, RelPath |
+        Group-Object Name |
+        ForEach-Object { $_.Group[0] }
+}
+
+function Install-Agents {
+    param([string]$AgentsDir, [string]$Label)
+
+    Write-Host ""
+    Write-Host "Installing agents to $Label : $AgentsDir ..."
+    New-Item -ItemType Directory -Force -Path $AgentsDir | Out-Null
+
+    $installed = 0; $kept = 0
+    foreach ($a in Get-Agents $PluginsRoot) {
+        $linkPath = Join-Path $AgentsDir "$($a.Name).md"
+        $target   = $a.AgentFile
+
+        # Replace existing reparse point; never clobber a real file.
+        if (Test-Path -LiteralPath $linkPath) {
+            $item = Get-Item -LiteralPath $linkPath -Force
+            $isReparse = ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0
+            if ($isReparse) { $item.Delete() }
+            else { $kept++; Write-Host "  . $($a.Name) (kept, not a link)"; continue }
+        }
+
+        if ($Symlink) {
+            New-Item -ItemType SymbolicLink -Path $linkPath -Target $target -Force | Out-Null
+        } else {
+            # Agent files are single .md files, not directories — use symlink
+            # (junctions only work for directories on Windows).
+            New-Item -ItemType SymbolicLink -Path $linkPath -Target $target -Force | Out-Null
+        }
+        $installed++
+    }
+
+    # Remove stale links
+    $cleaned = 0
+    foreach ($entry in Get-ChildItem -LiteralPath $AgentsDir -Filter "*.md" -Force) {
+        $isReparse = ($entry.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0
+        if ($isReparse -and -not (Test-Path -LiteralPath $entry.Target)) {
+            $entry.Delete(); $cleaned++
+            Write-Host "  - $($entry.Name) (stale, removed)"
+        }
+    }
+
+    Write-Host "  $installed agents linked, $kept kept, $cleaned stale removed."
+}
+
 # ─── Link helpers ────────────────────────────────────────────────────────────
 function New-SkillLink {
     param([string]$LinkPath, [string]$Target)
@@ -162,11 +247,13 @@ if (-not $Project) {
 }
 if ($Project) {
     Install-Skills -SkillsDir (Join-Path $Project ".claude\skills") -Label "project"
+    Install-Agents -AgentsDir (Join-Path $Project ".claude\agents") -Label "project"
 }
 
 # ─── 3. Global skills (-Global) ──────────────────────────────────────────────
 if ($Global) {
     Install-Skills -SkillsDir (Join-Path $ClaudeDir "skills") -Label "global"
+    Install-Agents -AgentsDir (Join-Path $ClaudeDir "agents") -Label "global"
 }
 
 Write-Host ""
