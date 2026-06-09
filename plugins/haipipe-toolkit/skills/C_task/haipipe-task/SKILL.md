@@ -323,14 +323,28 @@ Step 3c (existing task-folder): Workflow layer.
            type: <detected>
            four-sister: N runs, M issues (K fixable)
 
-  (2) FIX — if audit found fixable issues:
-      - missing per-run configs → split shared config into per-run
-        (read fn/workflow-plan.md Step 4 for the split procedure)
+  (2) FIX — if audit found fixable issues, dispatch to the builder agent:
+      Agent: `haipipe-task-builder-agent` (mode=fix)
+      Located: `C_task/agents/haipipe-task-builder-agent.md`
+      Input: task-folder path + audit results (issues list + detected type)
+      Output: restructured task-folder with four-sister compliance
+      Invoke: Agent(agentType="haipipe-task-builder-agent",
+                    prompt="mode: fix. task-folder: <path>. type: <detected>.
+                    issues: <audit issues list>. Apply four-sister fixes.")
+
+      What the builder agent fixes:
+      - script naming: rename to {NN}_{task_name}.py convention
+      - missing per-run configs → extract hardcoded constants into YAML
+      - missing cell markers → add # %% at logical phase boundaries
+      - missing notebooks/ dir → create it
+      - missing workflow/ dir → create it
+      - run script → update to papermill flow per ref/run-sh-template.sh
       - missing .ps1 counterpart → generate from .sh
       - stale results/ with no runner → flag for user decision
 
       Progress:
-        🔧 Fixed: 3 per-run configs generated from shared config
+        🔧 Builder: haipipe-task-builder-agent (mode=fix)
+           fixes: N applied, M skipped
 
   (3) PLAN — if workflow/plan.yaml missing or stale:
       Read fn/workflow-plan.md, execute it.

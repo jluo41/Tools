@@ -109,7 +109,10 @@ echo "  /plugin install subjective-label@jluo41-tools"
 enumerate_skills() {
     local plugins_root="$1"
 
-    find "$plugins_root" -path '*/skills/*/SKILL.md' -type f -print | while IFS= read -r skill_file; do
+    find "$plugins_root" \
+        -path '*/_paper-writing-backup' -prune -o \
+        -path '*/_archive' -prune -o \
+        -path '*/skills/*/SKILL.md' -type f -print | while IFS= read -r skill_file; do
         local skill_path plugin_rel plugin_name rel_path skill_name priority
         skill_path="${skill_file%/SKILL.md}"
         plugin_rel="${skill_path#"$plugins_root"/}"
@@ -141,6 +144,43 @@ enumerate_skills() {
     '
 }
 
+# Enumerate every agent .md file under a plugin's agents/ tree (recursive).
+# Discovery covers both plugin-root agents/ and skill-nested agents/ dirs.
+# Excludes _old/, _archive/, README.md, _TEMPLATE.md.
+# Prints one line per agent: "<absolute_agent_file>\t<plugin_name>\t<rel_path_from_plugin>"
+enumerate_agents() {
+    local plugins_root="$1"
+
+    find "$plugins_root" \
+        -path '*/_old' -prune -o \
+        -path '*/_archive' -prune -o \
+        -path '*/_paper-writing-backup' -prune -o \
+        -path '*/agents/*-agent.md' -type f -print | while IFS= read -r agent_file; do
+        local agent_name plugin_rel plugin_name rel_path priority
+        agent_name="$(basename "$agent_file" .md)"
+        plugin_rel="${agent_file#"$plugins_root"/}"
+        plugin_name="${plugin_rel%%/*}"
+        rel_path="${plugin_rel#"$plugin_name/"}"
+
+        # Dedup priority: canonical definitions nested under skills/ (10) win
+        # over flat copies at plugin-root agents/ (50).
+        priority=50
+        case "$rel_path" in
+            skills/*) priority=10 ;;
+        esac
+
+        printf '%03d\t%s\t%s\t%s\t%s\n' "$priority" "$agent_name" "$agent_file" "$plugin_name" "$rel_path"
+    done | sort -t $'\t' -k2,2 -k1,1n -k4,4 -k5,5 | awk -F '\t' '
+        !seen[$2]++ {
+            print $3 "\t" $4 "\t" $5
+            next
+        }
+        {
+            print "  . " $2 " (duplicate skipped: " $4 "/" $5 ")" > "/dev/stderr"
+        }
+    '
+}
+
 if [ "$DO_GLOBAL" = true ]; then
     echo ""
     echo "Installing skills globally to $CLAUDE_DIR/skills/..."
@@ -160,6 +200,27 @@ if [ "$DO_GLOBAL" = true ]; then
     done < <(enumerate_skills "$SCRIPT_DIR/plugins")
 
     echo "  All skills installed globally."
+
+    echo ""
+    echo "Installing agents globally to $CLAUDE_DIR/agents/..."
+    mkdir -p "$CLAUDE_DIR/agents"
+
+    agent_count=0
+    while IFS=$'\t' read -r agent_path plugin_name rel_path; do
+        agent_name=$(basename "$agent_path" .md)
+        target="$CLAUDE_DIR/agents/$agent_name.md"
+        if [ -L "$target" ]; then
+            rm "$target"
+        elif [ -e "$target" ]; then
+            echo "  . $agent_name (kept, not a symlink)"
+            continue
+        fi
+        ln -s "$agent_path" "$target"
+        echo "  $agent_name -> $target"
+        agent_count=$((agent_count + 1))
+    done < <(enumerate_agents "$SCRIPT_DIR/plugins")
+
+    echo "  $agent_count agents installed globally."
 fi
 
 # ─── 3. Project-level skill installation (--project) ────────────────────────
@@ -207,6 +268,43 @@ if [ -n "$PROJECT_PATH" ]; then
     shopt -u nullglob
 
     echo "  $installed skills symlinked, $cleaned stale links removed."
+
+    # ── Project-level agent installation ──
+    PROJECT_AGENTS="$PROJECT_PATH/.claude/agents"
+    echo ""
+    echo "Installing agents to project: $PROJECT_AGENTS ..."
+    mkdir -p "$PROJECT_AGENTS"
+
+    TOOLS_REL_AGENTS="$(python3 -c "import os.path; print(os.path.relpath('$SCRIPT_DIR/plugins', '$PROJECT_AGENTS'))")"
+
+    agent_installed=0
+    while IFS=$'\t' read -r agent_path plugin_name rel_path; do
+        agent_name=$(basename "$agent_path" .md)
+        target="$PROJECT_AGENTS/$agent_name.md"
+
+        if [ -e "$target" ] && [ ! -L "$target" ]; then
+            echo "  . $agent_name (kept, not a symlink)"
+            continue
+        fi
+
+        [ -L "$target" ] && rm "$target"
+        ln -s "$TOOLS_REL_AGENTS/$plugin_name/$rel_path" "$target"
+        agent_installed=$((agent_installed + 1))
+    done < <(enumerate_agents "$SCRIPT_DIR/plugins")
+
+    # Clean stale agent symlinks
+    agent_cleaned=0
+    shopt -s nullglob
+    for link in "$PROJECT_AGENTS"/*; do
+        if [ -L "$link" ] && [ ! -e "$link" ]; then
+            echo "  - $(basename "$link") (stale, removed)"
+            rm "$link"
+            agent_cleaned=$((agent_cleaned + 1))
+        fi
+    done
+    shopt -u nullglob
+
+    echo "  $agent_installed agents symlinked, $agent_cleaned stale links removed."
 fi
 
 # ─── 4. Sound hooks (--hooks) ────────────────────────────────────────────────
