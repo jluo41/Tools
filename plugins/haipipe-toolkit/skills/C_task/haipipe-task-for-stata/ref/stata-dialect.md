@@ -175,8 +175,9 @@ Readability (every file is hand-checked before copy):
 B1  Header = 1-2 comment lines (what + args/usage). No banner blocks, no
     ===/--- separator walls, no ASCII-art in code, no "// CHANGE (n)" patch
     markers, no commented-out alternatives left behind.
-B2  Size budget: orchestrator .ps1 <= ~30 lines; runs/ entry <= ~5; sbatch
-    batcher <= ~10; worker .do = one focused step.
+B2  Size budget: orchestrator .ps1 <= ~30 lines; runs/ entry as small as
+    possible (ideal: 2-3 lines -- comment + call orchestrator, thin
+    dispatch only); sbatch batcher <= ~10; worker .do = one focused step.
 B3  No ceremony in the hot path: no runtime.yaml / manifest.json / config
     snapshots / precondition hashtables in runners. Stata logs + summary.txt
     are the record.
