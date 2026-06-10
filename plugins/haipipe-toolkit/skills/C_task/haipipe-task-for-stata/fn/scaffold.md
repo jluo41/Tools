@@ -42,7 +42,7 @@ Stage-specific tree (see SKILL.md for the full tree per stage). Common elements:
     |- configs/              Stata .do configs (source of truth) + YAML _meta wrappers
     |- runs/                 THIN .ps1 entries (from ref/run-ps1-template.ps1)
     |- sbatch/               multi-run batchers (optional)
-    |- results/              log/ + summary.txt + manifest.json
+    |- results/              log/ + summary.txt (no ceremony -- no manifest.json)
     +- diagram/              doc surface (never README.md)
 
 Stage differences:
@@ -53,22 +53,37 @@ Stage differences:
 Step 5 -- Seed configs
 -----------------------
 
-Copy `ref/config-seed-<stage>.yaml` to `configs/<run>.yaml`. Fill in `_meta:` block and stage-specific fields.
+Copy `ref/config-seed-<stage>.do` to `configs/<cfg>.do`. Fill in Stata globals (keep-vars, paths, flags). The `.do` is the source of truth; a companion `.yaml` carries only the `_meta:` discipline block.
 
 Stage-specific seeding:
 - cms: one config per year. `stata_config:` points to shared `cms_production.do`.
 - case: three layers -- (1) `_source_{synth|full}.do` source selectors, (2) `<Cohort>.do` shared cohort config, (3) thin per-run `<Cohort>_<source>_<year>.do` from `ref/config-seed-run.do`. One YAML + one .do per (cohort x source x year).
-- data: one config per spec. No year axis.
-- reg: one config per (window x family). `workers:` lists which worker .do scripts this run calls.
+- data: paired configs per spec (synth + real variants). No year axis.
+    (1) `<Spec>.do` -- synth config (laptop-safe). `data_asset_version "v001_base_synth"`.
+    (2) `<Spec>_real.do` -- real config (CMS server). `data_asset_version "v001_base_real"`.
+        `case_asset_version` is TODO-tagged until real case-pipeline runs complete.
+    Identical except: case_asset_version, data_asset_version, file_physician path.
+    Each gets its own runner + results dir. sbatch accepts `-mode synth|real|all`.
+- reg: two-layer chain from `ref/config-seed-reg.do` + `ref/config-seed-reg-run.do`:
+    (1) `<Cohort>_<Pairing>.do` -- shared: data path + version + res_root.
+    (2) `<Cohort>_<Pairing>_synth.do` -- shared synth variant (different data_version).
+    (3) `run_reg_<RUNNAME>.do` -- per-run: loads shared + pins outcome_bfaf_window + res_dir.
+        DID per-run configs add: `global file_policy "${ws_root}/0-External-Store/Policy/..."`.
+    YAML _meta companions are OPTIONAL for reg (simple 5-7 line .do configs are self-describing).
+    Controls/outcomes/instruments live in worker .do scripts, NOT in configs.
 
 
 Step 6 -- Run-scripts
 ----------------------
 
-Copy `ref/run-ps1-template.ps1` to `runs/<run>.ps1` for each RUNNAME. Thin entries only.
+**cms/case:** Copy `ref/run-ps1-template.ps1` to `runs/<run>.ps1` for each RUNNAME. Thin entries that delegate to the orchestrator .ps1.
 
-For cms/case/data: also copy `ref/run-stage-year-template.ps1` as the orchestrator .ps1.
-For reg: no orchestrator -- the runs/*.ps1 call workers directly.
+**data:** Copy `ref/run-data-runner-template.ps1` to `runs/<run>.ps1`. Self-orchestrating entries.
+
+**reg:** Copy `ref/run-ps1-reg-template.ps1` to `runs/<run>.ps1`. Self-contained runners with Resolve-StataExe + HAIPIPE_RUN_CONFIG + worker list.
+
+For cms/case: also copy `ref/run-stage-year-template.ps1` as the orchestrator .ps1.
+For data/reg: no separate orchestrator -- the runner IS the orchestrator.
 
 Optional: create sbatch/*.ps1 multi-run batchers.
 

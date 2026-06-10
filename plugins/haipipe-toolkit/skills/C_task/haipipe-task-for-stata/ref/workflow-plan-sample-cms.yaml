@@ -1,77 +1,136 @@
-# workflow-plan-sample.yaml — Stata CMS task script-level plan
+# workflow-plan-sample-cms.yaml -- Stata CMS stage script-level plan
 # Schema: B_project/haipipe-workflow/ref/plan-schema.md
-# Task-level template: ../haipipe-task/ref/workflow-template.yaml
-#
-# Typical CMS phases: Extract → Clean → Store → Describe
+# Phases: Setup -> Extract (parallel) -> Bene -> Summary
 # Heavy outputs land in _WorkSpace/1-CMS-Store/.
 
-# ─── Header ──────────────────────────────────────────────────────
-name: cms-<STUDY>-<YEAR>
-purpose: "Extract and clean CMS claims for <STUDY> year <YEAR> into 1-CMS-Store"
-skill: haipipe-task-for-stata-cms
+# --- Preview -----------------------------------------------------------
+# cms-pipeline -- CMS extract + enrich per year
+#
+# I: G:/CMS/DATA/<year>/Stata/*.dta (raw claims + MBSF)
+#    configs/cms_production.do
+#
+# +-- 🔧 P1: Setup
+# |   +-- S1: validate config + year
+# |   +-- S2: create results dir
+# |
+# +-- 🔨 P2: Parallel extracts (4 workers)
+# |   +-- S3: b-PDE-All.do           -> PDE-Neat-<year>.dta
+# |   +-- S4: b-BCarrierClaim-All.do -> BCarrierClaim-Neat-<year>.dta
+# |   +-- S5: b-BCarrierLine-All.do  -> BCarrierLine-Neat-<year>.dta
+# |   +-- S6: b-OutpatientClaim-All.do -> OutpatientClaim-Neat-<year>.dta
+# |
+# +-- 🔗 P3: Bene_Info (sequential, depends on PDE-Neat)
+# |   +-- S7: c-Bene-Year.do         -> Bene_Info-<year>.dta
+# |
+# +-- 📋 P4: Summary
+# |   +-- S8: d-Year-Summary.do      -> summary.txt
+#
+# O: _WorkSpace/1-CMS-Store/cms_full/<ver>/year-<year>/ (5 .dta)
+#    results/run_cms_<year>/summary.txt + log/
+# -------------------------------------------------------------------
 
-# ─── I: Input ────────────────────────────────────────────────────
+name: cms-<YEAR>
+purpose: "Extract and enrich raw CMS claims for year <YEAR> into 1-CMS-Store"
+skill: haipipe-task-for-stata
+
 input:
   args:
-    config: configs/<STUDY>_<YEAR>.do
+    config: configs/cms_production.do
     year: <YEAR>
   files_in:
-    - cms_extract.do
-    - configs/<STUDY>_<YEAR>.do
-    - _WorkSpace/0-External-Store/<CROSSWALK>
+    - configs/cms_production.do
+    - G:/CMS/DATA/<YEAR>/Stata/pde_file[_k]_<YEAR>.dta
+    - G:/CMS/DATA/<YEAR>/Stata/bcarrier_claims[_k]_<YEAR>.dta
+    - G:/CMS/DATA/<YEAR>/Stata/bcarrier_line[_k]_<YEAR>.dta
+    - G:/CMS/DATA/<YEAR>/Stata/outpatient_*_<YEAR>.dta
+    - G:/CMS/DATA/<YEAR>/Stata/mbsf_abcd_summary_<YEAR>.dta
+    - G:/CMS/DATA/<YEAR>/Stata/mbsf_cc_summary_<YEAR>.dta
+    - G:/CMS/DATA/<YEAR>/Stata/mbsf_costuse_<YEAR>.dta
 
-# ─── P: Phases ───────────────────────────────────────────────────
 phases:
 
-  - title: Extract
-    detail: "read raw CMS files for target year"
+  - title: Setup
+    detail: "validate config, resolve paths, create results dir"
     steps:
-      - label: "extract:read-raw"
+      - label: "setup:validate"
         type: agent
         required: true
-        prompt: "Read raw CMS claims/enrollment files for year <YEAR>"
+        prompt: "Validate config exists, resolve ws_root via pyproject.toml walk-up, create results/run_cms_<YEAR>/log/"
         files_in:
-          - raw CMS data (server path)
+          - configs/cms_production.do
         files_out: []
 
-  - title: Clean
-    detail: "apply inclusion/exclusion criteria, dedup"
+  - title: Parallel extracts
+    detail: "extract + slim 4 CMS claim types (concurrent Stata instances)"
     steps:
-      - label: "clean:filter"
+      - label: "extract:pde"
         type: agent
         required: true
-        prompt: "Apply cohort filters, dedup claims, validate beneficiary IDs"
-        files_in: []
-        files_out: []
+        prompt: "Load raw PDE, keep 9 vars, save PDE-Neat-<YEAR>.dta"
+        files_in:
+          - G:/CMS/DATA/<YEAR>/Stata/pde_file[_k]_<YEAR>.dta
+        files_out:
+          - _WorkSpace/1-CMS-Store/cms_full/<VER>/year-<YEAR>/PDE-Neat-<YEAR>.dta
 
-  - title: Store
-    detail: "write cleaned data to CMS-Store"
-    steps:
-      - label: "store:write"
+      - label: "extract:carrier-claim"
         type: agent
         required: true
-        prompt: "Write cleaned .dta files to _WorkSpace/1-CMS-Store/<asset>/year-<YEAR>/"
+        prompt: "Load raw BCarrier claims, keep 13 vars, run Elixhauser (5-slot), save BCarrierClaim-Neat-<YEAR>.dta"
+        files_in:
+          - G:/CMS/DATA/<YEAR>/Stata/bcarrier_claims[_k]_<YEAR>.dta
+        files_out:
+          - _WorkSpace/1-CMS-Store/cms_full/<VER>/year-<YEAR>/BCarrierClaim-Neat-<YEAR>.dta
+
+      - label: "extract:carrier-line"
+        type: agent
+        required: true
+        prompt: "Load raw BCarrier lines, keep 6 vars, run Elixhauser (1-slot), save BCarrierLine-Neat-<YEAR>.dta"
+        files_in:
+          - G:/CMS/DATA/<YEAR>/Stata/bcarrier_line[_k]_<YEAR>.dta
+        files_out:
+          - _WorkSpace/1-CMS-Store/cms_full/<VER>/year-<YEAR>/BCarrierLine-Neat-<YEAR>.dta
+
+      - label: "extract:outpatient"
+        type: agent
+        required: true
+        prompt: "Load raw Outpatient claims, keep 15 vars, run Elixhauser (5-slot), save OutpatientClaim-Neat-<YEAR>.dta"
+        files_in:
+          - G:/CMS/DATA/<YEAR>/Stata/outpatient_*_<YEAR>.dta
+        files_out:
+          - _WorkSpace/1-CMS-Store/cms_full/<VER>/year-<YEAR>/OutpatientClaim-Neat-<YEAR>.dta
+
+  - title: Bene_Info
+    detail: "demographics + chronic conditions + utilization + LICS (depends on PDE-Neat)"
+    steps:
+      - label: "bene:build"
+        type: agent
+        required: true
+        prompt: "Load MBSF-ABCD, merge CC + CostUse, aggregate LICS from PDE-Neat, save Bene_Info-<YEAR>.dta"
+        files_in:
+          - G:/CMS/DATA/<YEAR>/Stata/mbsf_abcd_summary_<YEAR>.dta
+          - _WorkSpace/1-CMS-Store/cms_full/<VER>/year-<YEAR>/PDE-Neat-<YEAR>.dta
+        files_out:
+          - _WorkSpace/1-CMS-Store/cms_full/<VER>/year-<YEAR>/Bene_Info-<YEAR>.dta
+
+  - title: Summary
+    detail: "row-count inventory of all .dta in year dir"
+    steps:
+      - label: "summary:counts"
+        type: agent
+        required: true
+        prompt: "Walk year-<YEAR>/ dir, count rows per .dta, write summary.txt"
         files_in: []
         files_out:
-          - _WorkSpace/1-CMS-Store/<ASSET>/year-<YEAR>/
+          - results/run_cms_<YEAR>/summary.txt
 
-  - title: Describe
-    detail: "QC summary statistics"
-    steps:
-      - label: "describe:summary"
-        type: agent
-        required: true
-        prompt: "Generate row counts, coverage stats, write summary.txt"
-        files_in: []
-        files_out:
-          - results/<RUN>/summary.txt
-          - results/<RUN>/manifest.json
-
-# ─── O: Output ───────────────────────────────────────────────────
 output:
   returns:
     status: ok
   files_out:
-    - _WorkSpace/1-CMS-Store/<ASSET>/year-<YEAR>/
-    - results/<RUN>/summary.txt
-    - results/<RUN>/manifest.json
+    - _WorkSpace/1-CMS-Store/cms_full/<VER>/year-<YEAR>/PDE-Neat-<YEAR>.dta
+    - _WorkSpace/1-CMS-Store/cms_full/<VER>/year-<YEAR>/BCarrierClaim-Neat-<YEAR>.dta
+    - _WorkSpace/1-CMS-Store/cms_full/<VER>/year-<YEAR>/BCarrierLine-Neat-<YEAR>.dta
+    - _WorkSpace/1-CMS-Store/cms_full/<VER>/year-<YEAR>/OutpatientClaim-Neat-<YEAR>.dta
+    - _WorkSpace/1-CMS-Store/cms_full/<VER>/year-<YEAR>/Bene_Info-<YEAR>.dta
+    - results/run_cms_<YEAR>/summary.txt
+    - results/run_cms_<YEAR>/log/<step>-<YEAR>.txt

@@ -1,16 +1,38 @@
-# workflow-plan-sample.yaml — Stata data task script-level plan
+# workflow-plan-sample-data.yaml -- Stata data stage script-level plan
 # Schema: B_project/haipipe-workflow/ref/plan-schema.md
-# Task-level template: ../haipipe-task/ref/workflow-template.yaml
-#
-# Typical data phases: FilterCase → FilterExternal → FullVariables → Describe
+# Phases: Setup -> FilterCase -> FilterExternal -> FullVariables -> Describe
 # Heavy outputs land in _WorkSpace/*-Data-Store/.
 
-# ─── Header ──────────────────────────────────────────────────────
-name: data-<SPEC>
-purpose: "Assemble cross-year regression-ready analysis table for <SPEC> into *-Data-Store"
-skill: haipipe-task-for-stata-data
+# --- Preview -----------------------------------------------------------
+# data-pipeline -- cross-year analysis table assembly
+#
+# I: _WorkSpace/2-Case-Store/case_<cohort>_<source>/<asset>/year-*/
+#    _WorkSpace/0-External-Store/<physician_traits>
+#    configs/<Spec>.do
+#
+# +-- 🔧 P1: Setup
+# |   +-- S1: load config, resolve paths
+# |
+# +-- 🧹 P2: FilterCase
+# |   +-- S2: append per-year CASES, apply first-visit + age/year filters
+# |
+# +-- 🧹 P3: FilterExternal
+# |   +-- S3: merge physician traits, apply MD/DO + review-count filters
+# |
+# +-- 🔨 P4: FullVariables
+# |   +-- S4: derive treatment/outcome/control vars -> ANALYSIS-CMS-Filter.dta
+# |
+# +-- 📋 P5: Describe
+# |   +-- S5: N, distinct benes/NPIs, year dist, treatment summary
+#
+# O: _WorkSpace/*-Data-Store/<asset>/ANALYSIS-CMS-Filter.dta
+#    results/run_data_<Spec>/summary.txt + log/
+# -------------------------------------------------------------------
 
-# ─── I: Input ────────────────────────────────────────────────────
+name: data-<SPEC>
+purpose: "Assemble cross-year regression-ready analysis table for <SPEC>"
+skill: haipipe-task-for-stata
+
 input:
   args:
     config: configs/<SPEC>.do
@@ -19,18 +41,27 @@ input:
     - configs/<SPEC>.do
     - _WorkSpace/2-Case-Store/case_<COHORT>_<SOURCE>/<ASSET>/year-*/
     - _WorkSpace/0-External-Store/<PHYSICIAN_TRAITS>
-    - _WorkSpace/0-External-Store/<POLICY>
 
-# ─── P: Phases ───────────────────────────────────────────────────
 phases:
 
-  - title: FilterCase
-    detail: "append all per-year CASES, apply first-visit + age/year filters"
+  - title: Setup
+    detail: "load config, resolve _WorkSpace paths"
     steps:
-      - label: "filter-case:append"
+      - label: "setup:config"
         type: agent
         required: true
-        prompt: "Append per-year CASES from Case-Store, apply first-visit rule and age/year window"
+        prompt: "Load config, resolve case-store and external-store paths"
+        files_in:
+          - configs/<SPEC>.do
+        files_out: []
+
+  - title: FilterCase
+    detail: "append per-year CASES, apply first-visit + age/year filters"
+    steps:
+      - label: "filter-case:append-filter"
+        type: agent
+        required: true
+        prompt: "Append per-year CASES from Case-Store, apply first-visit rule, age/year window, cancer exclusion"
         files_in:
           - _WorkSpace/2-Case-Store/case_<COHORT>_<SOURCE>/<ASSET>/year-*/
         files_out: []
@@ -38,43 +69,40 @@ phases:
   - title: FilterExternal
     detail: "merge physician traits + policy, apply MD/DO + review-count filters"
     steps:
-      - label: "filter-external:merge"
+      - label: "filter-external:merge-filter"
         type: agent
         required: true
-        prompt: "Merge physician personality traits and (optional) policy; apply MD/DO and review-count filters"
+        prompt: "Merge physician personality traits, apply MD/DO filter, review-count filter"
         files_in:
           - _WorkSpace/0-External-Store/<PHYSICIAN_TRAITS>
-          - _WorkSpace/0-External-Store/<POLICY>
         files_out: []
 
   - title: FullVariables
-    detail: "derive variables, write ANALYSIS-*.dta"
+    detail: "derive treatment/outcome/control variables, write analysis table"
     steps:
       - label: "full-variables:derive"
         type: agent
         required: true
-        prompt: "Derive treatment/outcome/control variables, write ANALYSIS-CMS-Filter.dta to Data-Store"
+        prompt: "Derive treatment/outcome/control variables, write ANALYSIS-CMS-Filter.dta"
         files_in: []
         files_out:
           - _WorkSpace/<N>-Data-Store/<DATA_ASSET>/ANALYSIS-CMS-Filter.dta
 
   - title: Describe
-    detail: "QC summary statistics on the analysis table"
+    detail: "QC summary of the analysis table"
     steps:
       - label: "describe:summary"
         type: agent
         required: true
-        prompt: "Generate N rows, distinct benes/NPIs, year dist, treatment summary, outcome means, missingness report"
+        prompt: "N rows, distinct benes/NPIs, year dist, treatment summary, outcome means, missingness"
         files_in: []
         files_out:
-          - results/<RUN>/summary.txt
-          - results/<RUN>/manifest.json
+          - results/run_data_<SPEC>/summary.txt
 
-# ─── O: Output ───────────────────────────────────────────────────
 output:
   returns:
     status: ok
   files_out:
     - _WorkSpace/<N>-Data-Store/<DATA_ASSET>/ANALYSIS-CMS-Filter.dta
-    - results/<RUN>/summary.txt
-    - results/<RUN>/manifest.json
+    - results/run_data_<SPEC>/summary.txt
+    - results/run_data_<SPEC>/log/

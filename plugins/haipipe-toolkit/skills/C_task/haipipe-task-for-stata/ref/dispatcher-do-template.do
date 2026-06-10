@@ -25,6 +25,10 @@ foreach d in "${results_dir}" "${results_log}" /* + stage heavy dirs, e.g. "${cm
     capture mkdir "`d'"
 }
 
+// NOTE: rangejoin (SSC) is the ONE allowed SSC exception -- installed on CMS server.
+// All other SSC commands are blocked (no internet). If a worker needs rangejoin,
+// guard with: capture which rangejoin; if _rc != 0 { display as error "..."; exit 199 }
+
 log using "${results_log}/`step'-`year'.txt", replace text
 display "Step `step' year `year' start: " c(current_time)
 

@@ -134,24 +134,25 @@ function Install-Agents {
         if ($Symlink) {
             New-Item -ItemType SymbolicLink -Path $linkPath -Target $target -Force | Out-Null
         } else {
-            # Agent files are single .md files, not directories — use symlink
-            # (junctions only work for directories on Windows).
-            New-Item -ItemType SymbolicLink -Path $linkPath -Target $target -Force | Out-Null
+            # Agent files are single .md files — junctions don't work for files,
+            # and symlinks need admin. Fall back to Copy-Item (no admin required).
+            Copy-Item -LiteralPath $target -Destination $linkPath -Force
         }
         $installed++
     }
 
-    # Remove stale links
+    # Remove stale symlinks (only applies when -Symlink was used previously)
     $cleaned = 0
     foreach ($entry in Get-ChildItem -LiteralPath $AgentsDir -Filter "*.md" -Force) {
         $isReparse = ($entry.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0
         if ($isReparse -and -not (Test-Path -LiteralPath $entry.Target)) {
             $entry.Delete(); $cleaned++
-            Write-Host "  - $($entry.Name) (stale, removed)"
+            Write-Host "  - $($entry.Name) (stale symlink, removed)"
         }
     }
 
-    Write-Host "  $installed agents linked, $kept kept, $cleaned stale removed."
+    $verb = if ($Symlink) { "symlinked" } else { "copied" }
+    Write-Host "  $installed agents $verb, $kept kept, $cleaned stale removed."
 }
 
 # ─── Link helpers ────────────────────────────────────────────────────────────
