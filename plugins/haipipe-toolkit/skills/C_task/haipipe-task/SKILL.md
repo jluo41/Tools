@@ -42,17 +42,13 @@ inference     /haipipe-task-for-inference         /haipipe-end-endpointset (prof
 
 NOTE: group letters (A00_, B01_, C01_, D01_) are project-specific organizational prefixes, NOT type indicators. Each project defines its own letter scheme. Type is detected from script content, not from group letters.
 
-Stata sub-family (engine = Stata + PowerShell + logs, NOT papermill):
+Stata specialist (engine = Stata + PowerShell + logs, NOT papermill):
 
 ```
-engine = Stata   →  /haipipe-task-for-stata   (sub-orchestrator / father skill)
-                       ├── /haipipe-task-for-stata-cms     A · 1-CMS-Store   (heavy, per year)
-                       ├── /haipipe-task-for-stata-case    B · 2-Case-Store  (heavy, cohort × year)
-                       ├── /haipipe-task-for-stata-data    C · *-Data-Store  (heavy, cross-year)
-                       └── /haipipe-task-for-stata-reg     D · results/      (LIGHT coef tables)
+engine = Stata   →  /haipipe-task-for-stata   (unified — handles cms/case/data/reg internally)
 ```
 
-ANY engine=Stata request is delegated to **`/haipipe-task-for-stata`**, which owns the stage disambiguation (cms/case/data/reg), the `{LNN}` stage-letter alphabet, and the shared engine contract in **its own `ref/`** (`haipipe-task-for-stata/ref/`: `stata-dialect.md` + the three Stata templates). This skill does NOT route stata stages itself — it hands off once the engine is detected as Stata.
+ANY engine=Stata request is delegated to **`/haipipe-task-for-stata`**, a unified Stata specialist that handles all 4 stages internally (cms/case/data/reg), owns the `{LNN}` stage-letter alphabet, and keeps the shared engine contract in **its own `ref/`** (`haipipe-task-for-stata/ref/`: `stata-dialect.md` + the Stata templates). This skill does NOT route stata stages itself — it hands off once the engine is detected as Stata.
 
 Routing principle: this skill is the HIGH-LEVEL router — it owns only the engine-agnostic invariants (`ref/hierarchy.md`, authoring conventions). Each `/haipipe-task-for-<engine>` child owns its OWN `ref/` (templates + dialect); route to the child and read the child's `ref/`, never keep engine specifics here.
 

@@ -79,11 +79,7 @@ C_task/                                 <- task-scope skills (THIS SECTION)
 |-- haipipe-task-for-individual/
 |-- haipipe-task-for-agent/             (LOW QUALITY — see TODO.md)
 |
-|-- haipipe-task-for-stata/             🔧 Stata sub-family (5)
-|   |-- haipipe-task-for-stata-cms/     1-CMS-Store (per year)
-|   |-- haipipe-task-for-stata-case/    2-Case-Store (cohort x year)
-|   |-- haipipe-task-for-stata-data/    *-Data-Store (cross-year)
-|   |-- haipipe-task-for-stata-reg/     results/ (LIGHT coef tables)
+|-- haipipe-task-for-stata/             🔧 Stata (unified — handles cms/case/data/reg internally)
 ```
 
 
@@ -216,7 +212,7 @@ ref/config-seed.yaml            config template (read by SCAFFOLD path)
 fn/scaffold.md                  scaffold procedure (run by SCAFFOLD path, read by BUILD stage)
 ```
 
-Shared content stays in `haipipe-task/ref/` (the backbone) and is read by all specialists. The Stata sub-family additionally shares `haipipe-task-for-stata/ref/stata-dialect.md`.
+Shared content stays in `haipipe-task/ref/` (the backbone) and is read by all specialists. The Stata specialist keeps its `.do` config templates and workflow samples in `haipipe-task-for-stata/ref/` (including `stata-dialect.md`).
 
 
 Critical Distinction: algo-dev vs training
@@ -239,17 +235,16 @@ Critical Distinction: algo-dev vs training
 Stata Sub-Family
 =================
 
-Any engine=Stata request is delegated to `/haipipe-task-for-stata`, which owns stage disambiguation and the shared engine contract. It routes to one of 4 children:
+Any engine=Stata request is delegated to `/haipipe-task-for-stata`, a unified specialist that owns stage disambiguation and the shared engine contract. It handles all 4 stages internally:
 
 ```
-haipipe-task-for-stata           sub-orchestrator (router)
-  |-- haipipe-task-for-stata-cms     A: 1-CMS-Store (heavy, per year)
-  |-- haipipe-task-for-stata-case    B: 2-Case-Store (heavy, cohort x year)
-  |-- haipipe-task-for-stata-data    C: *-Data-Store (heavy, cross-year)
-  |-- haipipe-task-for-stata-reg     D: results/ (LIGHT coef tables)
+haipipe-task-for-stata           unified (handles all 4 stages internally)
+  stages: cms (A) / case (B) / data (C) / reg (D)
+  ref/config-seed-{stage}.do     Stata config templates (.do is source of truth)
+  ref/workflow-plan-sample-{stage}.yaml
 ```
 
-Engine = Stata + PowerShell + logs (NOT Python/papermill). All children share `ref/stata-dialect.md`.
+Engine = Stata + PowerShell + logs (NOT Python/papermill). All 4 stages share `ref/stata-dialect.md`.
 
 
 Cross-Skill References
@@ -264,7 +259,7 @@ task-inference    <->  /haipipe-end-endpointset (profile verb)
 task-display      <->  (none — independent; pulls from results/<run>/)
 task-individual   <->  /haipipe-individual
 task-agent        <->  /claude-api (adjacent; overlap with G_application — see TODO.md)
-task-stata-*      <->  (project-local .do files; no pipeline skill)
+task-stata        <->  (project-local .do files; no pipeline skill)
 ```
 
 
@@ -327,5 +322,5 @@ Decision Log
 2026-06-08  Approved: move project/task-group scope to B_project/haipipe-project.
 2026-06-09  Approved: remove haipipe-task-batch (batch = multiple configs in one Build, not a separate skill).
 2026-06-09  Approved: remove haipipe-task-logging (superseded by Report stage).
-2026-06-09  Approved: add Stata sub-family (5 specialists: parent router + 4 stage children).
+2026-06-09  Approved: add Stata specialist (1 unified specialist handling all 4 stages internally).
 2026-06-09  Aligned: all 13 specialists consistent with orchestrator v3 (agent names, lifecycle paragraph, IPO samples).
