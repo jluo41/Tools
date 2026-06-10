@@ -1,0 +1,211 @@
+🏗️ haipipe-task — Architecture (5 views)
+══════════════════════════════════════════
+
+
+─§ 1. File & Folder Structure ──────────────────────────────────────
+
+📦 C_task/
+│
+├── 🤖 agents/
+│   ├── haipipe-task-creator-agent.md     🔨 produces artifacts (plan, code, report)
+│   └── haipipe-task-reviewer-agent.md    🔍 evaluates artifacts (bugs, schema, accuracy)
+│
+├── 📋 haipipe-task/                      🎯 ORCHESTRATOR (this skill)
+│   ├── SKILL.md                          📜 routing + 4-stage lifecycle + agents section
+│   │
+│   ├── fn/                               📝 procedures (Claude follows these)
+│   │   ├── run.md                           scaffold a new run
+│   │   ├── task-folder.md                   scaffold task-folder (DEPRECATED → specialists)
+│   │   ├── workflow-audit.md                four-sister consistency check
+│   │   ├── workflow-plan.md                 generate IPO plan.yaml
+│   │   └── workflow-report.md               generate report.yaml mirroring plan
+│   │
+│   ├── ref/                              📚 templates + schemas + the workflow engine
+│   │   ├── task-lifecycle.workflow.js     ⚡ THE ENGINE — 4-stage creator-reviewer loop
+│   │   ├── workflow-template.yaml        📄 generic task-level IPO template (Run/Gate1/Gate2)
+│   │   ├── hierarchy.md                  🏛️ project → task-group → task-folder → run
+│   │   ├── authoring-conventions.md      ✍️ code style rules
+│   │   ├── intent-docstring-template.py  📝 Intent section template for .py
+│   │   ├── config-meta-template.yaml     📋 _meta block template for configs
+│   │   ├── run-sh-template.sh            🔧 papermill wrapper + pre-flight gate
+│   │   ├── metrics-json-schema.md        📊 CI-aware metrics format
+│   │   ├── runtime-yaml-schema.md        ⏱️ run status format
+│   │   └── invocation-modes.md           🎛️ interactive vs headless
+│   │
+│   └── diagram/                          🎨 you are here
+│
+├── 🔧 haipipe-task-for-{type}/          8️⃣ type specialists (eval/training/data/display/
+│   ├── SKILL.md                              individual/agent/algo/inference)
+│   ├── ref/config-seed.yaml              each has: scaffold template + workflow-plan-sample
+│   ├── ref/workflow-plan-sample.yaml     type-specific IPO phases
+│   └── fn/scaffold.md                    scaffold procedure
+│
+├── 🔧 haipipe-task-for-stata/           Stata sub-family (engine=Stata, not papermill)
+│   └── {cms,case,data,reg}/              4 stage children
+│
+├── 📦 haipipe-task-batch/                batch fan-out (N tasks in parallel)
+└── 📋 haipipe-task-logging/              legacy (superseded by workflow/)
+
+
+─§ 2. What Plan / Build / Execute / Report MEAN ───────────────────
+
+Each stage answers ONE question and produces ONE artifact set.
+All 4 stages operate on the SAME task folder's workflow/ directory.
+
+📍 Stage 1: PLAN — "What should this task do?"
+──────────────────────────────────────────────────
+  I: existing .py script + type specialist's workflow-plan-sample.yaml
+  P: 🔨 creator reads code, maps phases, writes IPO-compliant YAML
+     🔍 reviewer checks schema compliance + phase accuracy
+  O: workflow/plan.yaml          (task-level: Run/Gate1/Gate2)
+     workflow/plan-script-*.yaml (script-level: type-specific phases)
+
+     The plan is the CONTRACT. Everything else refers back to it.
+
+🔨 Stage 2: BUILD — "Is the code ready to run?"
+──────────────────────────────────────────────────
+  I: the plan (from Stage 1) + existing code (may be messy)
+  P: 🔨 creator writes/fixes .py, configs, runs/, structure
+     🔍 reviewer checks for intent-vs-implementation bugs (Gate 1)
+  O: 01_band4.py               (complete, config-driven, # %% cells)
+     configs/run_band4.yaml     (frozen params with _meta)
+     runs/run_band4.sh          (papermill wrapper + pre-flight gate)
+     notebooks/                 (dir ready for runtime output)
+     CODE_REVIEW.md             (Gate 1 verdict)
+
+     After Build, the task folder is COMPLETE and READY TO RUN.
+
+▶️ Stage 3: EXECUTE — "Run it and wait."
+──────────────────────────────────────────────────
+  I: the ready task folder (from Stage 2)
+  P: bash runs/run_band4.sh     (no creator — just press the button)
+     🔍 reviewer audits outputs vs plan contract (Gate 2)
+  O: results/run_band4/         (metrics.json, runtime.yaml, comparison.md)
+     notebooks/run_band4.ipynb  (papermill execution record)
+     RUN_AUDIT.md               (Gate 2 verdict)
+
+     Execute is DUMB — no thinking, no modification, just run + audit.
+     Optional (autoExecute=false by default).
+
+📋 Stage 4: REPORT — "What actually happened?"
+──────────────────────────────────────────────────
+  I: the plan (from Stage 1) + results (from Stage 3) + gate verdicts
+  P: 🔨 creator mirrors plan structure with ✅/⏭️/❌ per step
+     🔍 reviewer checks accuracy vs actual files on disk
+  O: workflow/report.yaml              (task-level, mirrors plan.yaml)
+     workflow/report-script-*.yaml     (script-level, mirrors plan-script)
+
+     Plan = intent. Report = evidence. Same shape, diffed to find gaps.
+     Optional (autoReport=false by default).
+
+
+─§ 3. Task Folder Accumulates Across Stages ────────────────────────
+
+01_band4/                       after PLAN  after BUILD  after EXECUTE  after REPORT
+├── 01_band4.py                    ·          ✅ written     ·              ·
+├── configs/run_band4.yaml         ·          ✅ written     ·              ·
+├── runs/run_band4.sh              ·          ✅ written     ·              ·
+├── notebooks/                     ·          ✅ dir          ✅ .ipynb      ·
+├── results/run_band4/             ·          ·              ✅ metrics     ·
+├── CODE_REVIEW.md                 ·          ✅ Gate 1       ·              ·
+├── RUN_AUDIT.md                   ·          ·              ✅ Gate 2      ·
+└── workflow/
+    ├── plan.yaml                  ✅          ·              ·              ·
+    ├── plan-script-01_band4.yaml  ✅          ·              ·              ·
+    ├── report.yaml                ·          ·              ·              ✅
+    └── report-script-*.yaml       ·          ·              ·              ✅
+
+
+─§ 4. Creator-Reviewer Loop (at each stage) ────────────────────────
+
+                    ┌──────────────────────────────────┐
+                    │                                  │
+          ┌────────▼────────┐                          │
+          │ 🔨 CREATOR      │                          │
+          │  reads input    │                          │
+          │  writes artifact│                          │
+          └────────┬────────┘                          │
+                   │                                   │
+                   ▼                                   │
+          ┌─────────────────┐                          │
+          │ 🔍 REVIEWER     │                          │
+          │  reads artifact │                          │
+          │  checks quality │                          │
+          └────────┬────────┘                          │
+                   │                                   │
+           ┌──────┼──────┬──────┐                      │
+           ▼      ▼      ▼      ▼                      │
+         ✅      ⚠️     🔁     ❌                      │
+        pass    warn   revise   fail                   │
+          │      │      │        │                     │
+          │    1st→    feedback   ╳ STOP               │
+          │    retry   to creator                      │
+          │    2nd→      │                             │
+          │    accept    └─────────────────────────────┘
+          │      │
+          └──────┘
+               │
+               ▼
+        next stage ──▶
+
+
+─§ 5. Dispatch Routing ─────────────────────────────────────────────
+
+🧑 user types: /haipipe-task <args>
+         │
+         ▼
+📜 SKILL.md loaded → Claude reads Step 0..5
+         │
+    Step 2: resolve scope
+         │
+    ┌────┼────────────────────────────────┐
+    │    │                                │
+    ▼    ▼                                ▼
+"project"   "task-group"            path or type keyword
+    │           │                         │
+    ▼           ▼                   ┌─────┴─────┐
+ 🔀 redirect to                existing?    new?
+ /haipipe-project                   │           │
+ (not this skill)                   ▼           ▼
+                              ⚡ Workflow    Step 3a: detect type
+                                 tool          │
+                                 │        ┌────┼────┬────┬────┬────┬────┬────┐
+                                 │        ▼    ▼    ▼    ▼    ▼    ▼    ▼    ▼
+                                 │      📊  🧠  📂  🎨  🧬  🤖  🔬  ⏱️
+                                 │      eval trn data disp indv agnt algo infr
+                                 │        └────┴────┴────┴────┴────┴────┴────┘
+                                 ▼                       │
+                          task-lifecycle          Skill("haipipe-task-for-<type>")
+                            .workflow.js              scaffolds new folder
+                                 │
+                       ┌─────────┴─────────┐
+                       │ 📍 Plan           │
+                       │ 🔨 Build          │
+                       │ ▶️ Execute (opt)   │
+                       │ 📋 Report (opt)   │
+                       └───────────────────┘
+
+
+─§ 6. Schema Consistency Chain ─────────────────────────────────────
+
+📐 haipipe-workflow (B_project/)         ← the PATTERN
+   ref/plan-schema.md                    ← canonical IPO schema
+   ref/concepts.md                       ← I/P/S/O vocabulary
+         │
+         │  "every plan/report follows this"
+         │
+         ├──▶ 📋 haipipe-task/ref/
+         │       workflow-template.yaml     generic task-level (Run/Gate1/Gate2)
+         │       fn/workflow-plan.md        procedure → "use canonical fields"
+         │       fn/workflow-report.md      procedure → "mirror plan"
+         │
+         └──▶ 🔧 each specialist/ref/
+                 workflow-plan-sample.yaml   type-specific script phases:
+                   📊 eval:       Load → Score → Compare → Emit
+                   🧠 training:   Configure → Train → Checkpoint → Validate
+                   📂 data:       Load → Build → Validate → Export
+                   🎨 display:    Load → Plot → Export
+                   🔬 algo:       Setup → SmokeTest → Verify
+                   🧬 individual: Load → Query → Visualize
+                   🤖 agent:      Setup → Execute → Parse
+                   ⏱️ inference:  Setup → Profile → Report
