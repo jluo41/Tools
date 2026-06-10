@@ -1,104 +1,144 @@
 C_task — Task-Type Specialist Series (DESIGN)
 ==============================================
 
-Status: Phase 3 complete (2026-05-24) — content seeded, Phase 4 cleanup remaining
+Status: v3.0.0 (2026-06-09) — 4-stage lifecycle with creator-reviewer agents; 13 type specialists aligned
 Owner:  jluo41
-Scope:  task-folder scaffolding split into per-type specialists,
+Scope:  task-folder lifecycle (Plan/Build/Execute/Report) + per-type scaffolding,
         mirroring the /haipipe-data and /haipipe-nn pattern.
 
 
 Conceptual Layering
 ====================
 
-A `project` is the umbrella for one cohesive research effort. Inside
-it live THREE parallel worlds:
+A `project` is the umbrella for one cohesive research effort. Inside it live THREE parallel worlds:
 
 ```
-📦 examples/Proj{Series}-{Cat}-{Num}-{Name}/    ← project (umbrella)
-│
-├── 📁 tasks/        ← 💼 the WORK         build & run things
-├── 📁 paper/        ← 📰 the DELIVERABLE  what we publish
-└── 📁 probes/       ← 📊 the CLAIMS       cross-run aggregation
+📦 examples/Proj{Series}-{Cat}-{Num}-{Name}/    <- project (umbrella)
+|
+|-- 📁 tasks/        <- 💼 the WORK         build & run things
+|-- 📁 paper/        <- 📰 the DELIVERABLE  what we publish
+|-- 📁 probes/       <- 📊 the CLAIMS       cross-run aggregation
+|-- 📁 insights/     <- 🧠 the KNOWLEDGE    DIKW cards from probes
 ```
 
 Each world has its own specialist family — different sections, no overlap:
 
 ```
-project umbrella     /haipipe-project              B_project/ (this folder's sibling)
-tasks/               /haipipe-task-*               C_task/    ← THIS SECTION
-paper/               /paper-*                      (existing paper-workflow / paper-figure / ...)
-probes/             /haipipe-probe           D_probe/
+project umbrella     /haipipe-project              B_project/ (sibling)
+tasks/               /haipipe-task-*               C_task/    <- THIS SECTION
+paper/               /haipipe-paper-*              F_paper/
+probes/              /haipipe-probe-*              D_probe/
+insights/            /haipipe-insight-*            E_insight/
 ```
 
-`B_project/` owns project-scope ops (the umbrella + inspect + organize).
-`C_task/` owns task-scope ops — the 7 task-type specialists below.
+`B_project/` owns project-scope ops (the umbrella + inspect + organize + project/task-group scaffold).
+`C_task/` owns task-scope ops — the orchestrator, 13 type specialists, and 2 shared agents.
 
 
-Current State (Phase 2 complete)
-=================================
-
-```
-B_project/                              ← project-scope skills
-├── haipipe-project/                    🧭 umbrella
-├── haipipe-project-inspect/            🔍 read project structure
-└── haipipe-project-organize/           🛠️  reorganize project files
-
-C_task/                                 ← task-scope skills (THIS SECTION)
-├── DESIGN.md                           (this file)
-├── haipipe-task/                       🧭 task orchestrator
-│   ├── SKILL.md                        (asks scope; dispatches by task-type)
-│   ├── ref/                            SHARED: hierarchy, run-sh-template, ...
-│   └── fn/{project, task-group, task-folder, run}.md
-│
-├── haipipe-task-for-data/                  🔧 data-pipeline (Stage 1-4)
-├── haipipe-task-for-algo/                  🧪 algo-dev demo
-├── haipipe-task-for-training/              🧠 model training (Stage 5)
-├── haipipe-task-for-eval/                  📊 model evaluation
-├── haipipe-task-for-inference/             ⏱️  inference performance (latency, group P)
-├── haipipe-task-for-display/               🖼️  paper figure / table
-├── haipipe-task-for-individual/            👤 individual-centric query
-└── haipipe-task-for-agent/                 🤖 LLM agent call
-```
-
-Scope=project and scope=task-group stay in the orchestrator (they only
-open a directory and seed a first task-folder, then delegate to a type
-specialist). Scope=task-folder dispatches to one of 7 specialists.
-
-
-Critical Distinction: algo-dev vs training
-===========================================
-
-```
-┌──────────────────┬───────────────────────────────┬──────────────────────────────────┐
-│                  │ task-algo (开发)              │ task-training (产出)             │
-├──────────────────┼───────────────────────────────┼──────────────────────────────────┤
-│ Purpose          │ verify the algorithm runs     │ train a real model + sweep       │
-│                  │ end-to-end (smoke test)       │                                  │
-│ Group letter     │ X_algo (Track A paired)       │ A-series (model-run)             │
-│ Config scale     │ minimal (1-batch / tiny)      │ full hyperparam grid             │
-│ Runtime          │ minutes                       │ hours-to-days                    │
-│ Outputs          │ "didn't crash" + 1 loss val   │ checkpoint → _WorkSpace/5        │
-│ Audience         │ algo developer themselves     │ cross-run comparison, paper      │
-│ Pipeline skill   │ /haipipe-nn-algo              │ /haipipe-nn-tuner + -instance    │
-└──────────────────┴───────────────────────────────┴──────────────────────────────────┘
-```
-
-
-Group Letter Assignment
+Current State (v3.0.0)
 ========================
 
 ```
-A = model-run (training)         /haipipe-task-for-training
-B = evaluation                   /haipipe-task-for-eval
-C = display (figure/table)       /haipipe-task-for-display
-D = data-pipeline                /haipipe-task-for-data          (reassigned from D_demo)
-E = individual query             /haipipe-task-for-individual    (new)
-F = agent                        /haipipe-task-for-agent         (new)
-X = algo-dev demo (paired)       /haipipe-task-for-algo          (renamed from D_demo)
+C_task/                                 <- task-scope skills (THIS SECTION)
+|-- DESIGN.md                           (this file)
+|-- TODO.md                             open issues + future directions
+|-- CHANGELOG.md
+|
+|-- agents/                             🤖 shared creator-reviewer pair
+|   |-- haipipe-task-creator-agent.md   produces artifacts (plan, code, report)
+|   |-- haipipe-task-reviewer-agent.md  evaluates artifacts (IPO, bugs, accuracy)
+|   |-- README.md
+|
+|-- haipipe-task/                       🧭 task orchestrator (v3.0.0)
+|   |-- SKILL.md                        scope resolution + 4-stage lifecycle dispatch
+|   |-- ref/
+|   |   |-- task-lifecycle.workflow.js  Workflow tool script for the 4-stage loop
+|   |   |-- hierarchy.md               project -> task-group -> task-folder -> run
+|   |   |-- authoring-conventions.md   cell markers, Intent docstring, config-driven
+|   |   |-- workflow-template.yaml     task-level IPO template (Run/Gate1/Gate2)
+|   |   |-- run-sh-template.sh         papermill wrapper + pre-flight gate
+|   |   |-- config-meta-template.yaml  _meta block template
+|   |   |-- metrics-json-schema.md     CI-aware metrics format
+|   |   |-- runtime-yaml-schema.md     run status format
+|   |   |-- intent-docstring-template.py
+|   |   |-- invocation-modes.md        interactive vs headless
+|   |-- fn/
+|   |   |-- workflow-plan.md           procedure for Plan stage
+|   |   |-- workflow-report.md         procedure for Report stage
+|   |   |-- run.md                     procedure for run scaffolding
+|   |   |-- workflow-audit.md          procedure for auditing
+|   |-- diagram/
+|       |-- 01-architecture.txt
+|
+|-- haipipe-task-for-data/              🔧 Python specialists (8)
+|-- haipipe-task-for-algo/
+|-- haipipe-task-for-training/
+|-- haipipe-task-for-eval/
+|-- haipipe-task-for-inference/
+|-- haipipe-task-for-display/
+|-- haipipe-task-for-individual/
+|-- haipipe-task-for-agent/             (LOW QUALITY — see TODO.md)
+|
+|-- haipipe-task-for-stata/             🔧 Stata sub-family (5)
+|   |-- haipipe-task-for-stata-cms/     1-CMS-Store (per year)
+|   |-- haipipe-task-for-stata-case/    2-Case-Store (cohort x year)
+|   |-- haipipe-task-for-stata-data/    *-Data-Store (cross-year)
+|   |-- haipipe-task-for-stata-reg/     results/ (LIGHT coef tables)
 ```
 
-Migration cost for existing projects: `tasks/D_demo/` → `tasks/X_algo/`
-(one rename per project, deferred until Phase 4).
+
+The 4-Stage Lifecycle
+======================
+
+Every existing task folder goes through 4 stages. Each stage has strict file ownership.
+
+```
+Stage 1: PLAN — the contract (what the script SHOULD do)
+  creates:   workflow/plan.yaml, workflow/plan-script-<name>.yaml
+  agents:    creator drafts -> reviewer checks IPO compliance -> loop if revise
+
+Stage 2: BUILD — the implementation (code that matches the plan)
+  creates:   {NN}_{task}.py, configs/<run>.yaml, runs/<run>.sh, CODE_REVIEW.md
+  agents:    creator writes code -> reviewer does Gate 1 code review -> loop if revise
+
+Stage 3: EXECUTE — just run (no creation, no modification)
+  generates: results/<run>/metrics.json, runtime.yaml, notebooks/<run>.ipynb
+  runs:      bash runs/<run>.sh (human or autoExecute)
+
+Stage 4: REPORT — summarize (what happened vs the plan)
+  creates:   workflow/report.yaml, workflow/report-script-<name>.yaml, RUN_AUDIT.md
+  agents:    creator drafts -> reviewer checks accuracy -> loop if revise
+```
+
+Orchestrated by `haipipe-task/ref/task-lifecycle.workflow.js` via the Workflow tool. The creator and reviewer agents in `agents/` are paired at each stage — creator never reviews, reviewer never creates.
+
+
+Two Paths Through the System
+==============================
+
+**Path 1: NEW task (scaffold)**
+
+```
+/haipipe-task task-folder <type>
+  -> orchestrator resolves type (Step 3a)
+  -> Skill("haipipe-task-for-<type>") — specialist runs fn/scaffold.md
+  -> folder created, ready for lifecycle
+```
+
+The specialist IS the executor. It creates dirs, seeds configs, returns the contract.
+
+**Path 2: EXISTING task (lifecycle)**
+
+```
+/haipipe-task <existing-task-folder-path>
+  -> orchestrator detects existing folder (Step 2)
+  -> Workflow(task-lifecycle.workflow.js)
+  -> creator agent reads specialist's ref/workflow-plan-sample.yaml (Plan stage)
+  -> creator agent reads specialist's SKILL.md (Build stage)
+  -> 4-stage creator-reviewer loop
+```
+
+The specialist is a REFERENCE LIBRARY. The workflow never calls the specialist as a Skill — the creator agent reads its files directly for type-specific guidance.
 
 
 Per-Specialist Responsibilities
@@ -107,133 +147,122 @@ Per-Specialist Responsibilities
 Every type specialist owns:
 
 ```
-SKILL.md              entry + this type's invariants + group-letter default
-ref/config-seed.yaml  the YAML template seeded into configs/
-ref/run-sh.template   (optional) overrides for parameter injection
-fn/scaffold.md        scaffold flow + cross-skill links
-fn/pitfalls.md        (optional) common mistakes for this type
+SKILL.md                        entry + type invariants + group-letter default + MUST NOT
+ref/config-seed.yaml            YAML template seeded into configs/ (scaffold path)
+ref/workflow-plan-sample.yaml   type-specific IPO phases (lifecycle path)
+fn/scaffold.md                  scaffold flow + cross-skill links (scaffold path)
 ```
 
-Shared content stays in `haipipe-task/ref/` and is read by all type
-specialists.
+Shared content stays in `haipipe-task/ref/` and is read by all type specialists. The Stata sub-family additionally shares `haipipe-task-for-stata/ref/stata-dialect.md`.
+
+
+Critical Distinction: algo-dev vs training
+===========================================
+
+```
++-----------------+-------------------------------+----------------------------------+
+|                 | task-algo (dev)               | task-training (production)       |
++-----------------+-------------------------------+----------------------------------+
+| Purpose         | verify the algorithm runs     | train a real model + sweep       |
+|                 | end-to-end (smoke test)       |                                  |
+| Config scale    | minimal (1-batch / tiny)      | full hyperparam grid             |
+| Runtime         | minutes                       | hours-to-days                    |
+| Outputs         | "didn't crash" + 1 loss val   | checkpoint -> _WorkSpace/5       |
+| Pipeline skill  | /haipipe-nn-algo              | /haipipe-nn-tuner + -instance    |
++-----------------+-------------------------------+----------------------------------+
+```
+
+
+Stata Sub-Family
+=================
+
+Any engine=Stata request is delegated to `/haipipe-task-for-stata`, which owns stage disambiguation and the shared engine contract. It routes to one of 4 children:
+
+```
+haipipe-task-for-stata           sub-orchestrator (router)
+  |-- haipipe-task-for-stata-cms     A: 1-CMS-Store (heavy, per year)
+  |-- haipipe-task-for-stata-case    B: 2-Case-Store (heavy, cohort x year)
+  |-- haipipe-task-for-stata-data    C: *-Data-Store (heavy, cross-year)
+  |-- haipipe-task-for-stata-reg     D: results/ (LIGHT coef tables)
+```
+
+Engine = Stata + PowerShell + logs (NOT Python/papermill). All children share `ref/stata-dialect.md`.
 
 
 Cross-Skill References
 =======================
 
-Each task-* specialist links to its corresponding pipeline skill —
-the pipeline skill owns the CODE, the task-* skill owns the EXAMPLE
-SCAFFOLD under `examples/`. No duplication.
-
 ```
-task-data         ↔  /haipipe-data
-                       (-source / -record / -case / -aidata)
-task-algo         ↔  /haipipe-nn-algo
-                       (Layer 1 — algorithm class, forward, loss)
-task-training     ↔  /haipipe-nn-tuner + /haipipe-nn-instance
-                       (Layer 2 + 3 — hyperparam sweep, materialization)
-task-eval         ↔  /haipipe-end (or future eval skill)
-task-display      ↔  (none — independent; pulls from results/<run>/)
-task-individual   ↔  /haipipe-individual
-task-agent        ↔  /claude-api (adjacent; no pipeline skill yet)
+task-data         <->  /haipipe-data (-source / -record / -case / -aidata)
+task-algo         <->  /haipipe-nn-algo (Layer 1)
+task-training     <->  /haipipe-nn-tuner + /haipipe-nn-instance (Layer 2+3)
+task-eval         <->  /haipipe-end (or future eval skill)
+task-inference    <->  /haipipe-end-endpointset (profile verb)
+task-display      <->  (none — independent; pulls from results/<run>/)
+task-individual   <->  /haipipe-individual
+task-agent        <->  /claude-api (adjacent; overlap with G_application — see TODO.md)
+task-stata-*      <->  (project-local .do files; no pipeline skill)
 ```
 
 
-Orchestrator Routing
-=====================
+Group Letter Convention
+========================
+
+Group letters (A, B, C, D, ...) are **project-specific organizational prefixes**, NOT tied to task types. Each project defines its own letter scheme. The orchestrator detects type from script content analysis, not from group letters.
+
+Historical defaults (from Phase 2, now advisory only):
 
 ```
-/haipipe-task                           ❓ ask scope: project | task-group | task-folder
-/haipipe-task project ...               ──▶ fn/project.md       (scaffold project + first group)
-/haipipe-task task-group ...            ──▶ fn/task-group.md    (scaffold group)
-/haipipe-task task-folder               ❓ ask task-type:
-       data        ──▶  /haipipe-task-for-data
-       algo        ──▶  /haipipe-task-for-algo
-       training    ──▶  /haipipe-task-for-training
-       eval        ──▶  /haipipe-task-for-eval
-       display     ──▶  /haipipe-task-for-display
-       individual  ──▶  /haipipe-task-for-individual
-       agent       ──▶  /haipipe-task-for-agent
+A = training, B = evaluation, C = display, D = data, E = individual, F = agent, X = algo-dev
 ```
 
-Shortcuts allowed (skip the questions):
+
+Orchestrator Routing (v3.0.0)
+==============================
 
 ```
-/haipipe-task-for-training {project_id} {group} {name}
-/haipipe-task-for-data     {project_id} {group} {name}
-...
-```
-
-Equivalent entries via umbrella:
-
-```
-/haipipe-project task task-folder training {project_id} {group} {name}
+/haipipe-task plan <path>              Stage 1 only
+/haipipe-task build <path>             Stage 2 only
+/haipipe-task execute <path>           Stage 3 only
+/haipipe-task report <path>            Stage 4 only
+/haipipe-task <existing-path>          full lifecycle (all 4 stages)
+/haipipe-task task-folder <type>       scaffold NEW folder via specialist
+project / task-group scope             -> redirect to /haipipe-project
 ```
 
 
 Migration Plan
 ==============
 
-Phase 1 — DESIGN review                                      ✅ DONE
-  ✓ group-letter assignment confirmed (A/B/C/D/E/F/X)
-  ✓ scope split confirmed (project + task-group in orchestrator;
-    task-folder dispatches)
-  ✓ Option B confirmed (split B_project/ and C_task/ directories)
-
-Phase 2 — Skeleton                                            ✅ DONE (2026-05-24)
-  ✓ created 7 task-* specialist directories with SKILL.md stubs
-  ✓ each stub: frontmatter + position-in-series + scaffold layout +
-    cross-skill link + TODO marker for scaffold flow
-  ✓ updated haipipe-task SKILL.md to dispatch (legacy fn/task-folder.md
-    marked DEPRECATED)
-  ✓ updated haipipe-project umbrella to advertise new commands and
-    document the layered conceptual model
-  ✓ split into B_project/ (umbrella + inspect + organize) and
-    C_task/ (orchestrator + 7 type specialists)
-
-Phase 3 — Per-type content                                  ✅ DONE (2026-05-24)
-  ✓ data:        fn/scaffold.md + ref/config-seed.yaml ({stage}_{layer}_{ds}.yaml)
-  ✓ algo:        fn/scaffold.md + ref/config-seed.yaml (algo_<name>_tiny.yaml)
-  ✓ training:    fn/scaffold.md + ref/config-seed.yaml (5_model_<name>.yaml)
-  ✓ eval:        fn/scaffold.md + ref/config-seed.yaml (eval_<target>.yaml)
-  ✓ display:     fn/scaffold.md + ref/config-seed.yaml (figure_<name>.yaml | table_<name>.yaml)
-  ✓ individual:  fn/scaffold.md + ref/config-seed.yaml (individual_<view>.yaml)
-  ✓ agent:       fn/scaffold.md + ref/config-seed.yaml (agent_<name>.yaml + prompts/)
-  ✓ all 7 SKILL.md TODO sections replaced with pointer to fn/scaffold.md
-
-Phase 4 — Cleanup
-  ▢ remove monolithic branching from haipipe-task SKILL.md
-    (delete legacy fn/task-folder.md once all type specialists ship)
-  ▢ update B_project/haipipe-project/diagram.txt to show the
-    B_project / C_task split
-  ▢ rename D_demo → X_algo across existing projects (one PR per project)
-
-
-Open Questions
-==============
-
-Q1. `task-eval` — should there be a /haipipe-eval pipeline skill, or
-    keep eval logic project-local?
-    Current default: project-local. Revisit if eval logic stabilizes
-    across projects.
-
-Q2. `task-agent` — no corresponding pipeline skill yet. Is /claude-api
-    enough as a building block, or do we need a /haipipe-agent skill?
-    Current default: /claude-api is sufficient for now; ship agent
-    scaffold with placeholder config seed.
-
-Q3. Should existing 5 task-types in `haipipe-task/fn/*.md` be deleted,
-    or kept as DEPRECATED fallbacks during transition?
-    Current default: keep one cycle as fallback; delete after all
-    type specialists ship (Phase 4).
+Phase 1 — DESIGN review                                      DONE (2026-05-24)
+Phase 2 — Skeleton (7 specialist directories)                 DONE (2026-05-24)
+Phase 3 — Per-type content (scaffold + config-seed)           DONE (2026-05-24)
+Phase 4 — Cleanup                                             DONE (2026-06-08)
+  - removed legacy fn/task-folder.md from orchestrator
+  - moved fn/project.md + fn/task-group.md to B_project/haipipe-project/fn/
+Phase 5 — 4-stage lifecycle                                   DONE (2026-06-09)
+  - task-lifecycle.workflow.js with creator-reviewer loop
+  - workflow-plan-sample.yaml in all 13 specialists
+  - haipipe-task-batch removed (batch = multiple configs in one Build)
+  - haipipe-task-logging removed (superseded by Report stage)
+Phase 6 — Consistency alignment                               DONE (2026-06-09)
+  - all 13 specialists: unwrap prose, fix agent names, add lifecycle paragraph
+  - Stata children: add workflow-plan-sample.yaml + Workflow plan section
+  - agents/README.md: remove stale batch reference
+Phase 7 — Next                                                OPEN (see TODO.md)
+  - rethink for-agent (low quality, overlap with G_application)
+  - extract shared scaffold-base to reduce duplication
+  - broaden for-eval to cover analysis scripts
+  - resolve scaffold-vs-lifecycle tension
 
 
 Decision Log
 ============
 
-2026-05-24
-  - Approved: split haipipe-project-task into 7 type specialists.
-  - Approved: drop "project-" prefix; rename to haipipe-task-*.
-  - Approved: move task series to sibling directory C_task/.
-  - Approved: group letters A=training, B=eval, C=display, D=data,
-    E=individual, F=agent, X=algo-demo. D_demo → X_algo.
+2026-05-24  Approved: split into 7 type specialists; group letters A-F + X.
+2026-06-08  Approved: 4-stage lifecycle (Plan/Build/Execute/Report) with creator-reviewer agents.
+2026-06-08  Approved: move project/task-group scope to B_project/haipipe-project.
+2026-06-09  Approved: remove haipipe-task-batch (batch = multiple configs in one Build, not a separate skill).
+2026-06-09  Approved: remove haipipe-task-logging (superseded by Report stage).
+2026-06-09  Approved: add Stata sub-family (5 specialists: parent router + 4 stage children).
+2026-06-09  Aligned: all 13 specialists consistent with orchestrator v3 (agent names, lifecycle paragraph, IPO samples).
