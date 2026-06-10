@@ -1,7 +1,7 @@
 fn-scaffold: Scaffold an algo-dev demo task-folder
 ====================================================
 
-Purpose: verify a newly developed algorithm class (forward / loss / metric) runs end-to-end on a TINY config. NOT for full training — see `/haipipe-task-for-training` for that. Group letter default: **X** (X_algo).
+Purpose: verify a newly developed algorithm class (forward / loss / metric) runs end-to-end on a TINY config. NOT for full training — see `/haipipe-task-for-fit` for that. Group letter default: **X** (X_algo).
 
 Output: `tasks/X_algo/{NN}_test_<algo_name>/`.
 
@@ -63,7 +63,7 @@ Step 6 — Cross-skill link
 After scaffolding, suggest:
 - `/haipipe-nn-algo` to author or refine the algorithm class itself
   (Layer 1: model, forward, loss, metric).
-- Once the demo passes → `/haipipe-task-for-training` for the real run.
+- Once the demo passes → `/haipipe-task-for-fit` for the real run.
 
 
 Step 7 — Report

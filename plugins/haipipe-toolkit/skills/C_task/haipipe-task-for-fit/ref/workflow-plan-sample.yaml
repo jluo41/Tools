@@ -8,7 +8,7 @@
 # ─── Header ──────────────────────────────────────────────────────
 name: train-<ALGO>-<VARIANT>
 purpose: "Train <ALGO> with full hyperparams; checkpoint to ModelInstanceStore"
-skill: haipipe-task-for-training
+skill: haipipe-task-for-fit
 
 # ─── I: Input ────────────────────────────────────────────────────
 input:

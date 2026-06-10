@@ -22,22 +22,6 @@ This is NOT model accuracy (that's `for-eval`). This measures WHERE the inferenc
 **Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the `<TASK>.py` body). Always end with the structured return block (status / task_folder / run_name / files).
 
 
-Position in the series
-----------------------
-
-```
-/haipipe-task-for-data            data-pipeline          (group D)
-/haipipe-task-for-algo            algo-dev demo
-/haipipe-task-for-training        model training         (group A, Stage 5)
-/haipipe-task-for-eval            model evaluation        (group B — accuracy)
-/haipipe-task-for-inference  ◀──  inference performance   (group P — LATENCY)  ← here
-/haipipe-task-for-display         paper figure / table    (group C)
-/haipipe-task-for-individual      individual-centric query
-/haipipe-task-for-agent           LLM agent call
-```
-
-`for-eval` answers "is the model RIGHT?"  ·  `for-inference` answers "is the endpoint FAST, and if not, WHERE is the time?"
-
 
 What this scaffolds
 -------------------

@@ -20,19 +20,6 @@ Scaffolds a **display task-folder** — paper figures or paper tables. Consumes 
 **Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the `<TASK>.py` body). Always end with the structured return block (status / task_folder / run_name / files).
 
 
-Position in the series
-----------------------
-
-```
-/haipipe-task-for-data            data-pipeline
-/haipipe-task-for-algo            algo-dev demo
-/haipipe-task-for-training        model training
-/haipipe-task-for-eval            model evaluation
-/haipipe-task-for-display     ◀── you are here (figure / table)
-/haipipe-task-for-individual      individual-centric query
-/haipipe-task-for-agent           LLM agent call
-```
-
 
 What this scaffolds
 -------------------

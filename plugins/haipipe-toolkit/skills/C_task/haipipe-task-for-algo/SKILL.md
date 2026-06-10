@@ -1,6 +1,6 @@
 ---
 name: haipipe-task-for-algo
-description: "algo-dev task-folder build specialist. Scaffolds {NN}_<name>/ task-folders under X-series (paired Track A demo) that smoke-test a newly developed algorithm class end-to-end on a TINY config. NOT for full training — see /haipipe-task-for-training. Called by /haipipe-task orchestrator when task-type=algo. Cross-references /haipipe-nn-algo."
+description: "algo-dev task-folder build specialist. Scaffolds {NN}_<name>/ task-folders under X-series (paired Track A demo) that smoke-test a newly developed algorithm class end-to-end on a TINY config. NOT for full training — see /haipipe-task-for-fit. Called by /haipipe-task orchestrator when task-type=algo. Cross-references /haipipe-nn-algo."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
@@ -19,19 +19,6 @@ Scaffolds an **algo-dev smoke-test task-folder**. Purpose: verify a new algorith
 
 **Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the `<TASK>.py` body). Always end with the structured return block (status / task_folder / run_name / files).
 
-
-Position in the series
-----------------------
-
-```
-/haipipe-task-for-data            data-pipeline
-/haipipe-task-for-algo        ◀── you are here (algo-dev demo)
-/haipipe-task-for-training        model training
-/haipipe-task-for-eval            model evaluation
-/haipipe-task-for-display         paper figure / table
-/haipipe-task-for-individual      individual-centric query
-/haipipe-task-for-agent           LLM agent call
-```
 
 
 task-algo vs task-training (don't confuse them)
@@ -76,7 +63,7 @@ Cross-reference to pipeline skill
   1. `/haipipe-nn-algo` — author the algorithm class.
   2. `/haipipe-task-for-algo` — scaffold the paired demo.
   3. Run the demo. Iterate.
-  4. Once stable → `/haipipe-task-for-training` for the real run.
+  4. Once stable → `/haipipe-task-for-fit` for the real run.
 
 
 Scaffold flow
