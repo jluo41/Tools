@@ -90,7 +90,9 @@ C_task/                                 <- task-scope skills (THIS SECTION)
 Backbone + Add-on Architecture
 =================================
 
-**haipipe-task IS the backbone.** It owns everything that is type-agnostic:
+The relationship is **hub-and-spoke** — haipipe-task is the hub, specialists are spokes. The hub is the recommended entry point, but any spoke can be entered directly and it reaches back to the hub for shared resources.
+
+**haipipe-task (hub)** owns everything that is type-agnostic:
 
 - The 4-stage lifecycle (Plan / Build / Execute / Report)
 - The creator-reviewer agent loop (`task-lifecycle.workflow.js`)
@@ -98,37 +100,59 @@ Backbone + Add-on Architecture
 - Scope resolution, routing, AUTO_MODE detection
 - Shared conventions (`ref/authoring-conventions.md`, `ref/run-sh-template.sh`, `ref/hierarchy.md`)
 
-**haipipe-task-for-xxx are add-ons.** Each specialist provides type-specific knowledge that the backbone consumes. A specialist never runs the lifecycle itself — the backbone does. The specialist just answers: "for THIS type of task, what does a good plan/build/config look like?"
+**haipipe-task-for-xxx (spokes)** provide type-specific knowledge:
+
+- Phase templates for this type (`ref/workflow-plan-sample.yaml`)
+- Type constraints and MUST NOT rules (`SKILL.md`)
+- Config seeds for new folders (`ref/config-seed.yaml`)
+- Scaffold procedure (`fn/scaffold.md`)
+
+The arrows go **both ways**. The hub reads spokes for type knowledge; spokes read the hub for shared conventions.
 
 ```
-+------------------------------------------------------------------+
-|                      haipipe-task (backbone)                      |
-|                                                                   |
-|  scope resolution -> type detection -> 4-stage lifecycle engine   |
-|                                                                   |
-|  Stage 1: PLAN    creator + reviewer loop                        |
-|  Stage 2: BUILD   creator + reviewer loop                        |
-|  Stage 3: EXECUTE bash runs/<run>.sh                             |
-|  Stage 4: REPORT  creator + reviewer loop                        |
-|                                                                   |
-|  agents/  task-lifecycle.workflow.js  ref/  fn/                  |
-+------------------------------------------------------------------+
-       |            |            |            |
-       | reads      | reads      | reads      | reads
-       v            v            v            v
-  +----------+ +----------+ +----------+ +----------+
-  | for-eval | | for-data | |for-train | |for-stata |  ...
-  +----------+ +----------+ +----------+ +----------+
-  | SKILL.md | | SKILL.md | | SKILL.md | | SKILL.md |
-  | ref/     | | ref/     | | ref/     | | ref/     |
-  | fn/      | | fn/      | | fn/      | | fn/      |
-  +----------+ +----------+ +----------+ +----------+
+                   +------------------------------------------+
+                   |         haipipe-task (hub)                |
+                   |                                          |
+                   |  4-stage lifecycle engine                |
+                   |  creator-reviewer agent loop             |
+                   |  scope resolution + routing              |
+                   |  shared ref/ (templates, conventions)    |
+                   +------------------------------------------+
+                      |    ^       |    ^       |    ^
+              reads   |    | reads |    | reads |    | reads
+             type ref |    | hub   |    | hub   |    | hub
+                      v    |       v    |       v    |
+                   +------+    +------+    +------+
+                   | eval |    | data |    |stata |    ...
+                   +------+    +------+    +------+
 ```
 
-What the backbone reads from each add-on at each stage:
+
+Three ways to enter
+--------------------
 
 ```
-Stage      | What backbone reads from the specialist    | File
+Path 1 — Via hub (lifecycle):   /haipipe-task <existing-path>
+  hub detects type -> reads spoke's ref/ as reference -> runs 4-stage lifecycle
+
+Path 2 — Via hub (scaffold):    /haipipe-task task-folder eval
+  hub resolves type -> Skill("haipipe-task-for-eval") -> spoke runs fn/scaffold.md
+
+Path 3 — Direct call:           /haipipe-task-for-stata <args>
+  spoke runs on its own -> reads ../haipipe-task/ref/ for shared conventions
+  (run-sh-template.sh, hierarchy.md, authoring-conventions.md, etc.)
+```
+
+Path 1 is the most common (lifecycle on existing tasks). Path 2 is for new task creation. Path 3 is a shortcut when you already know the type — the spoke reaches back to the hub for shared resources, so nothing is lost.
+
+All three paths are valid. The hub is the **recommended** entry point because it handles type detection and lifecycle orchestration automatically, but direct spoke invocation works and is useful for scoped scaffolding or when the type is already known.
+
+
+What the hub reads from each spoke
+------------------------------------
+
+```
+Stage      | What hub reads from the spoke              | File
 -----------+-------------------------------------------+-----------------------------
 PLAN       | type-specific phase template               | ref/workflow-plan-sample.yaml
 BUILD      | type constraints, MUST NOT rules           | SKILL.md
@@ -137,7 +161,18 @@ SCAFFOLD   | config template for new folders             | ref/config-seed.yaml
 SCAFFOLD   | step-by-step creation procedure             | fn/scaffold.md (executor)
 ```
 
-Note: in the scaffold path (new task), the specialist is called as a Skill and acts as the executor. In the lifecycle path (existing task), the specialist is never called — the creator agent reads its files as reference material. Either way, **the backbone drives**; the specialist provides knowledge.
+What each spoke reads from the hub
+------------------------------------
+
+```
+Resource                     | What the spoke gets from the hub
+-----------------------------+--------------------------------------------------
+ref/run-sh-template.sh       | papermill wrapper + pre-flight gate (copied to runs/)
+ref/hierarchy.md             | project -> task-group -> task-folder -> run model
+ref/authoring-conventions.md | cell markers, Intent docstring, config-driven rules
+ref/config-meta-template.yaml| _meta block template for configs/
+ref/workflow-template.yaml   | task-level IPO template (Run/Gate1/Gate2)
+```
 
 
 The 4-Stage Lifecycle
