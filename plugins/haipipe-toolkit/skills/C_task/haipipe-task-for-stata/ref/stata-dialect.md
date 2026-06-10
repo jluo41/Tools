@@ -5,7 +5,7 @@ This is the **layer-2 execution contract** for Stata task-folders, owned by
 `haipipe-task-for-stata` (this skill's `ref/`). The parent `/haipipe-task` is
 the high-level router (default dialect Python + papermill); this document
 defines the parallel Stata + PowerShell + `.log` dialect that the four
-`haipipe-task-for-stata-*` specialists share.
+all 4 Stata stages (cms/case/data/reg) share.
 
 The **structure invariants** (3-level hierarchy, RUNNAME spine, run↔result
 pairing, light/heavy split, diagram-as-doc) are UNCHANGED. Only the
