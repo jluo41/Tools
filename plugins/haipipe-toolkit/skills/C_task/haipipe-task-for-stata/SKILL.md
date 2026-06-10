@@ -229,10 +229,6 @@ ref/config-seed-case.do               Stata config template for case stage (shar
 ref/config-seed-data.do               Stata config template for data stage (analysis spec)
 ref/config-seed-reg.do                Stata config template for reg stage (regression config)
 ref/config-seed-run.do                thin per-run .do wrapper (case only — loads source + cohort + year)
-ref/config-meta-cms.yaml              _meta: discipline template for CMS (workflow layer reads this)
-ref/config-meta-case.yaml             _meta: discipline template for case
-ref/config-meta-data.yaml             _meta: discipline template for data
-ref/config-meta-reg.yaml              _meta: discipline template for reg
 ref/workflow-plan-sample-cms.yaml     IPO phases for CMS stage
 ref/workflow-plan-sample-case.yaml    IPO phases for case stage
 ref/workflow-plan-sample-data.yaml    IPO phases for data stage
