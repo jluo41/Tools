@@ -87,6 +87,59 @@ C_task/                                 <- task-scope skills (THIS SECTION)
 ```
 
 
+Backbone + Add-on Architecture
+=================================
+
+**haipipe-task IS the backbone.** It owns everything that is type-agnostic:
+
+- The 4-stage lifecycle (Plan / Build / Execute / Report)
+- The creator-reviewer agent loop (`task-lifecycle.workflow.js`)
+- The IPO workflow schema (`ref/workflow-template.yaml`)
+- Scope resolution, routing, AUTO_MODE detection
+- Shared conventions (`ref/authoring-conventions.md`, `ref/run-sh-template.sh`, `ref/hierarchy.md`)
+
+**haipipe-task-for-xxx are add-ons.** Each specialist provides type-specific knowledge that the backbone consumes. A specialist never runs the lifecycle itself — the backbone does. The specialist just answers: "for THIS type of task, what does a good plan/build/config look like?"
+
+```
++------------------------------------------------------------------+
+|                      haipipe-task (backbone)                      |
+|                                                                   |
+|  scope resolution -> type detection -> 4-stage lifecycle engine   |
+|                                                                   |
+|  Stage 1: PLAN    creator + reviewer loop                        |
+|  Stage 2: BUILD   creator + reviewer loop                        |
+|  Stage 3: EXECUTE bash runs/<run>.sh                             |
+|  Stage 4: REPORT  creator + reviewer loop                        |
+|                                                                   |
+|  agents/  task-lifecycle.workflow.js  ref/  fn/                  |
++------------------------------------------------------------------+
+       |            |            |            |
+       | reads      | reads      | reads      | reads
+       v            v            v            v
+  +----------+ +----------+ +----------+ +----------+
+  | for-eval | | for-data | |for-train | |for-stata |  ...
+  +----------+ +----------+ +----------+ +----------+
+  | SKILL.md | | SKILL.md | | SKILL.md | | SKILL.md |
+  | ref/     | | ref/     | | ref/     | | ref/     |
+  | fn/      | | fn/      | | fn/      | | fn/      |
+  +----------+ +----------+ +----------+ +----------+
+```
+
+What the backbone reads from each add-on at each stage:
+
+```
+Stage      | What backbone reads from the specialist    | File
+-----------+-------------------------------------------+-----------------------------
+PLAN       | type-specific phase template               | ref/workflow-plan-sample.yaml
+BUILD      | type constraints, MUST NOT rules           | SKILL.md
+BUILD      | authoring guidance for this type            | fn/scaffold.md (reference)
+SCAFFOLD   | config template for new folders             | ref/config-seed.yaml
+SCAFFOLD   | step-by-step creation procedure             | fn/scaffold.md (executor)
+```
+
+Note: in the scaffold path (new task), the specialist is called as a Skill and acts as the executor. In the lifecycle path (existing task), the specialist is never called — the creator agent reads its files as reference material. Either way, **the backbone drives**; the specialist provides knowledge.
+
+
 The 4-Stage Lifecycle
 ======================
 
@@ -95,10 +148,12 @@ Every existing task folder goes through 4 stages. Each stage has strict file own
 ```
 Stage 1: PLAN — the contract (what the script SHOULD do)
   creates:   workflow/plan.yaml, workflow/plan-script-<name>.yaml
+  reads:     specialist's ref/workflow-plan-sample.yaml for type-specific phases
   agents:    creator drafts -> reviewer checks IPO compliance -> loop if revise
 
 Stage 2: BUILD — the implementation (code that matches the plan)
   creates:   {NN}_{task}.py, configs/<run>.yaml, runs/<run>.sh, CODE_REVIEW.md
+  reads:     specialist's SKILL.md for type constraints + MUST NOT rules
   agents:    creator writes code -> reviewer does Gate 1 code review -> loop if revise
 
 Stage 3: EXECUTE — just run (no creation, no modification)
@@ -107,53 +162,26 @@ Stage 3: EXECUTE — just run (no creation, no modification)
 
 Stage 4: REPORT — summarize (what happened vs the plan)
   creates:   workflow/report.yaml, workflow/report-script-<name>.yaml, RUN_AUDIT.md
+  reads:     workflow/plan*.yaml to mirror structure
   agents:    creator drafts -> reviewer checks accuracy -> loop if revise
 ```
 
 Orchestrated by `haipipe-task/ref/task-lifecycle.workflow.js` via the Workflow tool. The creator and reviewer agents in `agents/` are paired at each stage — creator never reviews, reviewer never creates.
 
 
-Two Paths Through the System
-==============================
-
-**Path 1: NEW task (scaffold)**
-
-```
-/haipipe-task task-folder <type>
-  -> orchestrator resolves type (Step 3a)
-  -> Skill("haipipe-task-for-<type>") — specialist runs fn/scaffold.md
-  -> folder created, ready for lifecycle
-```
-
-The specialist IS the executor. It creates dirs, seeds configs, returns the contract.
-
-**Path 2: EXISTING task (lifecycle)**
-
-```
-/haipipe-task <existing-task-folder-path>
-  -> orchestrator detects existing folder (Step 2)
-  -> Workflow(task-lifecycle.workflow.js)
-  -> creator agent reads specialist's ref/workflow-plan-sample.yaml (Plan stage)
-  -> creator agent reads specialist's SKILL.md (Build stage)
-  -> 4-stage creator-reviewer loop
-```
-
-The specialist is a REFERENCE LIBRARY. The workflow never calls the specialist as a Skill — the creator agent reads its files directly for type-specific guidance.
-
-
 Per-Specialist Responsibilities
 ================================
 
-Every type specialist owns:
+Every type specialist (add-on) owns:
 
 ```
-SKILL.md                        entry + type invariants + group-letter default + MUST NOT
-ref/config-seed.yaml            YAML template seeded into configs/ (scaffold path)
-ref/workflow-plan-sample.yaml   type-specific IPO phases (lifecycle path)
-fn/scaffold.md                  scaffold flow + cross-skill links (scaffold path)
+SKILL.md                        type invariants + MUST NOT constraints (read by BUILD stage)
+ref/workflow-plan-sample.yaml   type-specific IPO phases (read by PLAN stage)
+ref/config-seed.yaml            config template (read by SCAFFOLD path)
+fn/scaffold.md                  scaffold procedure (run by SCAFFOLD path, read by BUILD stage)
 ```
 
-Shared content stays in `haipipe-task/ref/` and is read by all type specialists. The Stata sub-family additionally shares `haipipe-task-for-stata/ref/stata-dialect.md`.
+Shared content stays in `haipipe-task/ref/` (the backbone) and is read by all specialists. The Stata sub-family additionally shares `haipipe-task-for-stata/ref/stata-dialect.md`.
 
 
 Critical Distinction: algo-dev vs training
