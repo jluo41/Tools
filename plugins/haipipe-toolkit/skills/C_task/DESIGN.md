@@ -25,10 +25,12 @@ Each world has its own specialist family — different sections, no overlap:
 
 ```
 project umbrella     /haipipe-project              B_project/ (sibling)
+narratives/
 tasks/               /haipipe-task-*               C_task/    <- THIS SECTION
-paper/               /haipipe-paper-*              F_paper/
 probes/              /haipipe-probe-*              D_probe/
 insights/            /haipipe-insight-*            E_insight/
+
+paper/               /haipipe-paper-*              F_paper/
 ```
 
 `B_project/` owns project-scope ops (the umbrella + inspect + organize + project/task-group scaffold).
@@ -72,7 +74,7 @@ C_task/                                 <- task-scope skills (THIS SECTION)
 |
 |-- haipipe-task-for-data/              🔧 Python specialists (8)
 |-- haipipe-task-for-algo/
-|-- haipipe-task-for-training/
+|-- haipipe-task-for-fit/
 |-- haipipe-task-for-eval/
 |-- haipipe-task-for-inference/
 |-- haipipe-task-for-display/

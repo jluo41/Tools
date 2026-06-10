@@ -20,19 +20,6 @@ Scaffolds an **evaluation task-folder**. Consumes a trained ModelInstance + an A
 **Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the `<TASK>.py` body). Always end with the structured return block (status / task_folder / run_name / files).
 
 
-Position in the series
-----------------------
-
-```
-/haipipe-task-for-data            data-pipeline
-/haipipe-task-for-algo            algo-dev demo
-/haipipe-task-for-training        model training
-/haipipe-task-for-eval        ◀── you are here (evaluation)
-/haipipe-task-for-display         paper figure / table
-/haipipe-task-for-individual      individual-centric query
-/haipipe-task-for-agent           LLM agent call
-```
-
 
 What this scaffolds
 -------------------

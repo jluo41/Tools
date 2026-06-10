@@ -1,6 +1,6 @@
 ---
 name: haipipe-task
-description: "Task-folder orchestrator. For new tasks, dispatches to type specialists (data/algo/training/eval/display/individual/agent). For existing tasks, runs the 4-stage lifecycle (Plan → Build → Execute → Report) via ref/task-lifecycle.workflow.js, with haipipe-task-creator-agent and haipipe-task-reviewer-agent paired at each stage in a creator-reviewer loop."
+description: "Task-folder orchestrator. For new tasks, dispatches to type specialists (data/algo/fit/eval/display/individual/agent). For existing tasks, runs the 4-stage lifecycle (Plan → Build → Execute → Report) via ref/task-lifecycle.workflow.js, with haipipe-task-creator-agent and haipipe-task-reviewer-agent paired at each stage in a creator-reviewer loop."
 argument-hint: "[scope] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
@@ -32,7 +32,7 @@ task-type     Specialist                              Cross-skill
 ------------  --------------------------------------  --------------------------
 data          /haipipe-task-for-data              /haipipe-data
 algo          /haipipe-task-for-algo              /haipipe-nn-algo
-training      /haipipe-task-for-training          /haipipe-nn-tuner+instance
+fit           /haipipe-task-for-fit               /haipipe-nn-tuner+instance
 eval          /haipipe-task-for-eval              (project-local; future)
 display       /haipipe-task-for-display           (independent)
 individual    /haipipe-task-for-individual        /haipipe-individual
@@ -151,7 +151,7 @@ task-group       → /haipipe-project                         (not this skill)
 task-folder      → dispatch by task-type to one of:
                      /haipipe-task-for-data
                      /haipipe-task-for-algo
-                     /haipipe-task-for-training
+                     /haipipe-task-for-fit
                      /haipipe-task-for-eval
                      /haipipe-task-for-display
                      /haipipe-task-for-individual
@@ -180,7 +180,7 @@ Step 2: Resolve scope. Cascade:
   (1) explicit stage command (`plan` / `build` / `execute` / `report`) as first positional → run that single stage on the given task-folder path.
   (2) `task-folder` as first positional → scope=new task-folder (scaffold).
   (3) `project` or `task-group` → redirect: `Skill("haipipe-project", args="<remaining_args>")`.
-  (4) first positional is a known task-type (`data` / `algo` / `training` / `eval` / `display` / `individual` / `agent`) → scope=task-folder, task-type=that positional.
+  (4) first positional is a known task-type (`data` / `algo` / `fit` / `eval` / `display` / `individual` / `agent`) → scope=task-folder, task-type=that positional.
   (5) first positional is a path to an existing task-folder → scope=full lifecycle (all 4 stages via Step 3c).
   (6) no args at all → default to full lifecycle if cwd is inside a task-folder, else scope=task-folder (scaffold).
   (7) still missing: AUTO → status: blocked. Interactive → ASK.
@@ -202,7 +202,7 @@ Step 3a (scope=task-folder only): Task-type inference cascade.
 
   (2) SCRIPT-INFERRED — if pwd is inside an existing task-folder, read the main `*.py` script and `scripts/*.py` files. Detect type from imports and content:
     - `from haipipe` / `SourceFn` / `RecordFn` → data
-    - `import torch` / `Trainer` / `sweep` → training
+    - `import torch` / `Trainer` / `sweep` → fit
     - `eval` / `metrics` / `score` → eval
     - `plt.` / `fig` / `savefig` / `.tex` → display
     - `stata` / `.do` / `preserve` → stata (delegate)
@@ -217,7 +217,7 @@ Step 3a (scope=task-folder only): Task-type inference cascade.
         │            │ pipeline 1·2·3·4 · fn build                                     │
         │ algo       │ smoke · smoke-test · verify algorithm · test algo · algo dev ·  │
         │            │ algo class · forward pass · loss class                          │
-        │ training   │ train · training · sweep · hyperparam · lr · epoch ·            │
+        │ fit        │ train · training · fit · sweep · hyperparam · lr · epoch ·      │
         │            │ model size · pretrain · finetune · ft                           │
         │ eval       │ eval · evaluate · evaluation · score · scoring · metrics ·      │
         │            │ mae · rmse · accuracy · horizon                                 │
@@ -299,7 +299,7 @@ Invocation examples
 
 # direct specialist (bypass orchestrator)
 /haipipe-task-for-data
-/haipipe-task-for-training
+/haipipe-task-for-fit
 ```
 
 ---

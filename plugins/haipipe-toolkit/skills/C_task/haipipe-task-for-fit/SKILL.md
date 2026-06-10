@@ -1,6 +1,6 @@
 ---
-name: haipipe-task-for-training
-description: "model-run task-folder build specialist. Scaffolds {NN}_<name>/ task-folders under A-series task-groups that train a model — full hyperparam config, real GPU sweep, checkpoint to _WorkSpace/5-ModelInstanceStore/. NOT for algorithm development — see /haipipe-task-for-algo. Called by /haipipe-task orchestrator when task-type=training. Cross-references /haipipe-nn-tuner and /haipipe-nn-instance."
+name: haipipe-task-for-fit
+description: "model-fitting task-folder build specialist. Scaffolds {NN}_<name>/ task-folders that fit/train a model — full hyperparam config, real GPU sweep, checkpoint to _WorkSpace/5-ModelInstanceStore/. NOT for algorithm development — see /haipipe-task-for-algo. Called by /haipipe-task orchestrator when task-type=fit. Cross-references /haipipe-nn-tuner and /haipipe-nn-instance."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
@@ -12,7 +12,7 @@ metadata:
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
-Skill: haipipe-task-for-training
+Skill: haipipe-task-for-fit
 =====================================
 
 Scaffolds a **model-training task-folder**. Full training config, heavy outputs to `_WorkSpace/5-ModelInstanceStore/`, designed for cross-run comparison and paper-grade results.
@@ -56,7 +56,7 @@ Cross-reference to pipeline skill
 
   1. `/haipipe-nn-algo`   — algorithm class exists.
   2. `/haipipe-nn-tuner`  — author the sweep.
-  3. `/haipipe-task-for-training` — scaffold the example task.
+  3. `/haipipe-task-for-fit` — scaffold the example task.
   4. Run sweep → ModelInstance → `/haipipe-task-for-eval`.
 
 
