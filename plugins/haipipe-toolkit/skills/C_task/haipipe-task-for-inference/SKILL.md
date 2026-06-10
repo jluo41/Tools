@@ -172,3 +172,19 @@ MUST NOT
   the cost is the arm loop (fixable by vectorizing) or the data transform.
 - Mutate any file under `_WorkSpace/6-EndpointStore/` (read-only).
 - Create `README.md`.
+
+
+
+Workflow plan
+--------------
+
+When `/haipipe-task plan` targets an existing task-folder of this type,
+the generated plan-script YAML should follow the type-specific sample:
+
+```
+ref/workflow-plan-sample.yaml     ← script-level phases for this type
+../haipipe-task/ref/workflow-template.yaml  ← task-level template (Run/Gate1/Gate2)
+```
+
+Schema source of truth:
+  B_project/haipipe-workflow/ref/plan-schema.md

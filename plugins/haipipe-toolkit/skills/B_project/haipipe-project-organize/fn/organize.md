@@ -1,12 +1,10 @@
 fn-organize: File Inventory + Reorganization + Verification
 =============================================================
 
-Inventories project files, proposes reorganization to standard layout,
-applies moves with user approval, and verifies paths after.
+Inventories project files, proposes reorganization to standard layout, applies moves with user approval, and verifies paths after.
 
 Writes: docs/organize-report.md
-Moves files only inside examples/{PROJECT_ID}/. code/ and code-dev/ are
-read-only.
+Moves files only inside examples/{PROJECT_ID}/. code/ and code-dev/ are read-only.
 
 
 Step 0 — Identify project

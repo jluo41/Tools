@@ -1,9 +1,7 @@
 fn-review: Project Gap Analysis
 ===================================================
 
-Read-only audit of an existing project against the standard structure
-(../../haipipe-project/ref/project-structure.md). Output is a gap report
-with severity tags; fixes are applied by /haipipe-project organize.
+Read-only audit of an existing project against the standard structure (../../haipipe-project/ref/project-structure.md). Output is a gap report with severity tags; fixes are applied by /haipipe-project organize.
 
 Severity: [BLOCK] [ERROR] [WARN] [NOTE]
 
@@ -11,8 +9,7 @@ Steps: 0 identify project → 1 naming + top-level → 2 project diagram →
 3 per-group + per-task → 4 task diagram → 5 code sync → 6 paper diagram
 (if applicable) → 7 output report.
 
-The doc surface is diagram/, never README.md. Any README.md found is
-flagged [WARN] with `--fix migrate-to-diagram` suggestion.
+The doc surface is diagram/, never README.md. Any README.md found is flagged [WARN] with `--fix migrate-to-diagram` suggestion.
 
 
 Step 0 — Identify project

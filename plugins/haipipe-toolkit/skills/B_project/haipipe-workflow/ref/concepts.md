@@ -72,29 +72,22 @@ round 2: refine — "wait, need an extra step for config validation"
 round 3: ready ✓ — freeze the plan
 ```
 
-The frozen plan is the contract. Build translates it. Execute runs it.
-Report echoes it.
+The frozen plan is the contract. Build translates it. Execute runs it. Report echoes it.
 
 ### Build (plan → script)
 
-Generate a `.workflow.js` from the frozen plan. The `.js` is the
-machine-executable form — it maps plan phases to `phase()` calls,
-plan steps to `agent()` calls, plan schemas to JSON Schema constants.
+Generate a `.workflow.js` from the frozen plan. The `.js` is the machine-executable form — it maps plan phases to `phase()` calls, plan steps to `agent()` calls, plan schemas to JSON Schema constants.
 
-You read and edit the `plan.yaml`. The `.workflow.js` is generated.
-You should rarely edit the `.js` directly.
+You read and edit the `plan.yaml`. The `.workflow.js` is generated. You should rarely edit the `.js` directly.
 
 ### Execute (run the script)
 
 Run the `.workflow.js` via the Workflow engine:
 `Workflow({ scriptPath: "..." }, args)`.
 
-Each Step calls a subagent (or a sub-workflow skill). The execute act
-follows the frozen plan — if something unexpected arises, it records
-the deviation, it doesn't re-plan.
+Each Step calls a subagent (or a sub-workflow skill). The execute act follows the frozen plan — if something unexpected arises, it records the deviation, it doesn't re-plan.
 
-For manual mode (CMS server, GPU jobs), the `plan.yaml` serves as the
-checklist. The human follows the phases/steps and records results.
+For manual mode (CMS server, GPU jobs), the `plan.yaml` serves as the checklist. The human follows the phases/steps and records results.
 
 ### Report (the plan's echo)
 
@@ -120,9 +113,7 @@ The Report contains:
 Template vs Specific
 =====================
 
-The skill (haipipe-workflow) defines the **template** — the abstract
-shape. When you instantiate a real workflow, everything becomes
-**specific**.
+The skill (haipipe-workflow) defines the **template** — the abstract shape. When you instantiate a real workflow, everything becomes **specific**.
 
 ```
 TEMPLATE (in the skill):              SPECIFIC (a real instance):
@@ -134,16 +125,13 @@ TEMPLATE (in the skill):              SPECIFIC (a real instance):
   prompt: "Create {{type}} script"     prompt: "Create data pipeline for LBP cohort"
 ```
 
-The skill owns the template. Each specific workflow fills in the
-blanks with concrete file paths, concrete field values, concrete
-prompts. The Plan act is where template → specific happens.
+The skill owns the template. Each specific workflow fills in the blanks with concrete file paths, concrete field values, concrete prompts. The Plan act is where template → specific happens.
 
 
 File tracking
 ==============
 
-Every Step declares which files it reads and which files it produces.
-Files are the tangible artifacts that flow through the pipeline.
+Every Step declares which files it reads and which files it produces. Files are the tangible artifacts that flow through the pipeline.
 
 ### In the Plan (what we expect)
 

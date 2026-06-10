@@ -4,8 +4,7 @@ fn-project: Scaffold a New Project
 Output: `examples/{PROJECT_ID}/{tasks/, diagram/, paper/ (optional)}`.
 Forbidden at top level: README.md, docs/, cc-archive/, _old/, configs/, results/.
 
-A project is the outer container. It holds task-groups (Level 2), which
-hold task-folders (Level 3). See `ref/hierarchy.md`.
+A project is the outer container. It holds task-groups (Level 2), which hold task-folders (Level 3). See `ref/hierarchy.md`.
 
 
 Step 1 — Collect metadata (ASK, wait for confirmation)

@@ -1,0 +1,100 @@
+# workflow-plan-sample.yaml — data-pipeline task script-level plan
+# Schema: B_project/haipipe-workflow/ref/plan-schema.md
+# Task-level template: ../haipipe-task/ref/workflow-template.yaml
+#
+# Typical data phases: Load → Build → Validate → Export
+# Heavy outputs to _WorkSpace/{1..4}-*Store/; light summaries to results/.
+
+# ─── Header ──────────────────────────────────────────────────────
+name: build-<STAGE>-<DATASET>
+purpose: "Run Stage <N> builder (<FnType>) for <DATASET>"
+skill: haipipe-task-for-data
+
+# ─── I: Input ────────────────────────────────────────────────────
+input:
+  args:
+    config: configs/<RUN>.yaml
+    stage: <1|2|3|4>
+    fn_type: <SourceFn|RecordFn|CaseFn|TfmFn|SplitFn>
+  files_in:
+    - <NN>_<TASK>.py
+    - configs/<RUN>.yaml
+    - _WorkSpace/<UPSTREAM_STORE>/<UPSTREAM_ASSET>
+
+# ─── P: Phases ───────────────────────────────────────────────────
+phases:
+
+  - title: Load
+    detail: "load upstream data from _WorkSpace"
+    steps:
+      - label: "load:upstream"
+        type: agent
+        required: true
+        prompt: "Load upstream asset from _WorkSpace/<UPSTREAM_STORE>/"
+        files_in:
+          - _WorkSpace/<UPSTREAM_STORE>/<UPSTREAM_ASSET>
+        files_out: []
+
+  - title: Build
+    detail: "run the Fn builder"
+    steps:
+      - label: "build:transform"
+        type: agent
+        required: true
+        prompt: "Apply <FnType> transformations (filter, join, feature engineering)"
+        files_in: []
+        files_out: []
+
+      - label: "build:split"
+        type: agent
+        required: false
+        prompt: "Apply SplitFn if Stage 4 (train/val/test)"
+        files_in: []
+        files_out: []
+
+  - title: Validate
+    detail: "check output integrity"
+    steps:
+      - label: "validate:counts"
+        type: agent
+        required: true
+        prompt: "Row counts, schema check, no nulls in required cols"
+        files_in: []
+        files_out: []
+
+      - label: "validate:distributions"
+        type: agent
+        required: false
+        prompt: "Optional: check feature distributions, class balance"
+        files_in: []
+        files_out: []
+
+  - title: Export
+    detail: "write to _WorkSpace store + light summary"
+    steps:
+      - label: "export:store"
+        type: agent
+        required: true
+        prompt: "Serialize to _WorkSpace/<N>-*Store/<ASSET>"
+        files_in: []
+        files_out:
+          - _WorkSpace/<N>-<STORE>/<ASSET>
+
+      - label: "export:summary"
+        type: agent
+        required: true
+        prompt: "Write manifest.json + summary to results/<RUN>/"
+        files_in: []
+        files_out:
+          - results/<RUN>/manifest.json
+          - results/<RUN>/summary.txt
+
+# ─── O: Output ───────────────────────────────────────────────────
+output:
+  returns:
+    status: ok
+    store_path: _WorkSpace/<N>-<STORE>/<ASSET>
+  files_out:
+    - _WorkSpace/<N>-<STORE>/<ASSET>
+    - results/<RUN>/manifest.json
+    - results/<RUN>/summary.txt

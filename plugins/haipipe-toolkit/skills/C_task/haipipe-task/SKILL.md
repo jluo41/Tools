@@ -1,16 +1,17 @@
 ---
 name: haipipe-task
-description: "Build orchestrator for haipipe-project. Routes scope=project / task-group / task-folder; for scope=task-folder, dispatches to one of seven task-type specialists (data / algo / training / eval / display / individual / agent). Replaces the older monolithic -task specialist with a router + per-type series. Called by /haipipe-project orchestrator. Direct invocation works for scaffold work."
+description: "Task-folder orchestrator. For new tasks, dispatches to type specialists (data/algo/training/eval/display/individual/agent). For existing tasks, runs the 4-stage lifecycle (Plan → Build → Execute → Report) via ref/task-lifecycle.workflow.js, with haipipe-task-creator-agent and haipipe-task-reviewer-agent paired at each stage in a creator-reviewer loop."
 argument-hint: "[scope] [args...]"
-allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "2.1.0"
-  last_updated: "2026-06-08"
-  summary: "Build orchestrator for haipipe-project. Workflow lifecycle (audit/plan/report) with three-layer IPO plans and emoji previews."
+  version: "3.0.0"
+  last_updated: "2026-06-09"
+  summary: "Build orchestrator with automated workflow lifecycle for existing tasks."
   changelog:
     - "1.0.0 (2026-05-31): baseline metadata added."
-    - "2.0.0 (2026-06-08): add workflow lifecycle — audit (four-sister check), plan (generate plan.yaml), report (mirror plan with results). New fn/ procedures: workflow-audit.md, workflow-plan.md, workflow-report.md. New ref: workflow-template.yaml."
-    - "2.1.0 (2026-06-08): three-layer plans (task/script/run); per-script IPO phases with emojis; Stata four-sister support in audit; supersede haipipe-task-logging with workflow/ reports; wire reviewer+auditor agents into lifecycle."
+    - "2.0.0 (2026-06-08): add workflow lifecycle — audit, plan, report. New fn/ procedures. New ref: workflow-template.yaml."
+    - "2.1.0 (2026-06-08): three-layer plans; per-script IPO; Stata four-sister; wire reviewer+auditor agents."
+    - "3.0.0 (2026-06-09): 4-stage lifecycle (Plan/Build/Execute/Report) via task-lifecycle.workflow.js; creator-reviewer agent loop at each stage; all plans follow haipipe-workflow IPO schema; type-specific workflow-plan-sample.yaml in every specialist; project/task-group scope moved to haipipe-project."
 ---
 
 Skill: haipipe-task (orchestrator)
@@ -24,9 +25,7 @@ project           examples/Proj{...}/
         └── task-folder  {NN}_{name}/{*.py, configs/, runs/, results/, notebooks/}
 ```
 
-This skill OWNS scaffolding for **project** and **task-group**. For
-**task-folder** scaffolding, it dispatches to one of seven task-type
-specialists (one per type):
+Project and task-group scaffolding belong to `/haipipe-project`. This skill owns **task-folder** and below. For task-folder scaffolding, it dispatches to one of seven task-type specialists (one per type):
 
 ```
 task-type     Specialist                              Cross-skill
@@ -41,10 +40,7 @@ agent         /haipipe-task-for-agent             (none yet)
 inference     /haipipe-task-for-inference         /haipipe-end-endpointset (profile)
 ```
 
-NOTE: group letters (A00_, B01_, C01_, D01_) are project-specific
-organizational prefixes, NOT type indicators. Each project defines
-its own letter scheme. Type is detected from script content, not
-from group letters.
+NOTE: group letters (A00_, B01_, C01_, D01_) are project-specific organizational prefixes, NOT type indicators. Each project defines its own letter scheme. Type is detected from script content, not from group letters.
 
 Stata sub-family (engine = Stata + PowerShell + logs, NOT papermill):
 
@@ -56,21 +52,11 @@ engine = Stata   →  /haipipe-task-for-stata   (sub-orchestrator / father skill
                        └── /haipipe-task-for-stata-reg     D · results/      (LIGHT coef tables)
 ```
 
-ANY engine=Stata request is delegated to **`/haipipe-task-for-stata`**, which owns
-the stage disambiguation (cms/case/data/reg), the `{LNN}` stage-letter alphabet,
-and the shared engine contract in **its own `ref/`**
-(`haipipe-task-for-stata/ref/`: `stata-dialect.md` + the three Stata templates).
-This skill does NOT route stata stages itself — it hands off once the engine is
-detected as Stata. The four children keep all structure invariants (hierarchy,
-RUNNAME spine, light/heavy, diagram-as-doc).
+ANY engine=Stata request is delegated to **`/haipipe-task-for-stata`**, which owns the stage disambiguation (cms/case/data/reg), the `{LNN}` stage-letter alphabet, and the shared engine contract in **its own `ref/`** (`haipipe-task-for-stata/ref/`: `stata-dialect.md` + the three Stata templates). This skill does NOT route stata stages itself — it hands off once the engine is detected as Stata.
 
-Routing principle: this skill is the HIGH-LEVEL router — it owns only the
-engine-agnostic invariants (`ref/hierarchy.md`, authoring conventions). Each
-`/haipipe-task-for-<engine>` child owns its OWN `ref/` (templates + dialect);
-route to the child and read the child's `ref/`, never keep engine specifics here.
+Routing principle: this skill is the HIGH-LEVEL router — it owns only the engine-agnostic invariants (`ref/hierarchy.md`, authoring conventions). Each `/haipipe-task-for-<engine>` child owns its OWN `ref/` (templates + dialect); route to the child and read the child's `ref/`, never keep engine specifics here.
 
-Called by `/haipipe-project` when the request is to **create** something
-in the hierarchy. For audit / read see `-inspect`; for moves see `-organize`.
+Called by `/haipipe-project` when the request is to **create** something in the hierarchy. For audit / read see `-inspect`; for moves see `-organize`.
 
 ---
 
@@ -79,24 +65,55 @@ Commands
 
 ```
 /haipipe-task                                        ASK which scope
-/haipipe-task project [id]                           scaffold a new project (here)
-/haipipe-task task-group                             scaffold a new task-group (here)
 /haipipe-task task-folder                            ASK task-type, then dispatch
 /haipipe-task task-folder <type> [args...]           dispatch to type specialist
 /haipipe-task run [task-path] [run-name]             scaffold a new run (asks _meta)
 /haipipe-task audit <task-folder-path>               four-sister check + type detect (read-only)
 /haipipe-task plan <task-folder-path>                audit + fix + generate workflow/plan.yaml
 /haipipe-task report <task-folder-path>              generate workflow/report.yaml
+/haipipe-task <existing-task-folder-path>            full lifecycle via workflow engine
 ```
 
-Shorthand: `/haipipe-task` with no scope and no args defaults to
-`run` (most common ask once a task-folder exists; falls back to
-`task-folder` if cwd is not a task-folder yet).
+For project and task-group scaffolding, use `/haipipe-project` instead.
 
-When targeting an **existing** task folder (not scaffolding new), the
-workflow layer activates automatically:
-  audit → fix → plan → dispatch → report
-See Step 3c below.
+Shorthand: `/haipipe-task` with no scope and no args defaults to `run` (most common ask once a task-folder exists; falls back to `task-folder` if cwd is not a task-folder yet).
+
+---
+
+Agents
+------
+
+Two agents in `C_task/agents/` power the lifecycle. They always work as a pair — creator produces an artifact, reviewer evaluates it, loop if the reviewer says revise.
+
+```
+C_task/agents/
+  haipipe-task-creator-agent.md     produces artifacts (plan, code, report)
+  haipipe-task-reviewer-agent.md    evaluates artifacts (IPO compliance, code bugs, result integrity)
+```
+
+The creator-reviewer pair operates at every stage of the task lifecycle:
+
+```
+Stage 1: PLAN      creator → plan.yaml + plan-script     reviewer → IPO schema check       ↺ revise
+Stage 2: BUILD     creator → code + configs + structure   reviewer → Gate 1 code review     ↺ revise
+Stage 3: EXECUTE   (run, no creator)                      reviewer → Gate 2 result audit
+Stage 4: REPORT    creator → report.yaml                  reviewer → accuracy check          ↺ revise
+```
+
+The lifecycle workflow (`ref/task-lifecycle.workflow.js`) orchestrates the loop:
+1. Creator agent produces the artifact for the current stage
+2. Reviewer agent evaluates it → returns `pass` / `warn` / `revise` / `fail`
+3. `revise` → reviewer feedback is passed back to creator, who tries again (up to `maxRetries`)
+4. `pass` / `warn` → advance to next stage
+5. `fail` → stop, human decides
+
+The creator never reviews its own work. The reviewer never produces artifacts. This separation is the core invariant.
+
+The reviewer catches **intent-vs-implementation mismatches** — silent semantic bugs where the code runs and produces numbers but doesn't measure what the writer intended. Two-stage internally: Claude drafts, Codex (xhigh, out-of-family) independently reviews.
+
+Author convention: `<TASK_NAME>.py` MUST have an `Intent` section in its docstring (template: `ref/intent-docstring-template.py`). Skip mechanisms for the run.sh pre-flight gate: `_meta.skip_review: true` in config, or `HAIPIPE_SKIP_REVIEW=1` env var.
+
+When targeting an **existing** task folder (not scaffolding new), the workflow lifecycle activates automatically via `ref/task-lifecycle.workflow.js`. See Step 3c below.
 
 ---
 
@@ -106,13 +123,8 @@ Dispatch Table
 ```
 Scope            Owner / route                              Function file
 ---------------- ------------------------------------------ ----------------------
-project          this skill                                 fn/project.md
-                 reads: ref/hierarchy.md
-                        ../../B_project/haipipe-project/ref/project-structure.md
-                        ../../B_project/haipipe-project/ref/code-structure.md
-task-group       this skill                                 fn/task-group.md
-                 reads: ref/hierarchy.md
-                        ../../B_project/haipipe-project/ref/project-structure.md
+project          → /haipipe-project                         (not this skill)
+task-group       → /haipipe-project                         (not this skill)
 task-folder      → dispatch by task-type to one of:
                      /haipipe-task-for-data
                      /haipipe-task-for-algo
@@ -121,95 +133,58 @@ task-folder      → dispatch by task-type to one of:
                      /haipipe-task-for-display
                      /haipipe-task-for-individual
                      /haipipe-task-for-agent
-                 (legacy monolithic flow at fn/task-folder.md is DEPRECATED;
-                  kept as transition fallback only)
+                 (legacy monolithic flow at fn/task-folder.md is DEPRECATED)
 run              this skill                                 fn/run.md
-                 reads: ref/hierarchy.md
-                        ref/config-meta-template.yaml
-                        ref/run-sh-template.sh
+                 reads: ref/hierarchy.md, ref/config-meta-template.yaml, ref/run-sh-template.sh
 audit            this skill                                 fn/workflow-audit.md
-                 reads: task folder configs/ runs/ results/ notebooks/
 plan             this skill                                 fn/workflow-plan.md
-                 runs:  fn/workflow-audit.md FIRST (audit + fix)
-                        then fn/workflow-plan.md (generate plan.yaml)
                  reads: ref/workflow-template.yaml
-                        type specialist's ref/workflow-template.yaml (if exists)
+                        type specialist's ref/workflow-plan-sample.yaml
 report           this skill                                 fn/workflow-report.md
-                 reads: workflow/plan.yaml
-                        results/*/runtime.yaml, manifest.json
+                 reads: workflow/plan.yaml, results/*/runtime.yaml
 ```
-
-Task-type → specialist mapping (for scope=task-folder):
-same as the table above (type → specialist → cross-skill).
 
 ---
 
 Step-by-Step Protocol
 ----------------------
 
-Step 0: Read `ref/hierarchy.md` first. It's the conceptual model.
-        Then read `../../B_project/haipipe-project/ref/project-structure.md`.
-        For scope=project, also read `../../B_project/haipipe-project/ref/code-structure.md`.
+Step 0: Read `ref/hierarchy.md` first. It's the conceptual model for the task hierarchy (project → task-group → task-folder → run).
 
-Step 1: Detect AUTO_MODE. Any of these flips it on:
-          - `--auto` anywhere in args
-          - env var `CLAUDE_AUTO_HANDOFF=1` or `AUTO_MODE=1`
-          - parent skill passed `--auto` when invoking us
-        AUTO_MODE changes "ASK" steps into "accept best inference or
-        return blocked"; it never changes what gets written.
+Step 1: Detect AUTO_MODE. Any of these flips it on: `--auto` anywhere in args, env var `CLAUDE_AUTO_HANDOFF=1` or `AUTO_MODE=1`, parent skill passed `--auto`. AUTO_MODE changes "ASK" steps into "accept best inference or return blocked"; it never changes what gets written.
 
 Step 2: Resolve scope. Cascade:
-          (1) explicit scope token (`project` / `task-group` / `task-folder` / `run`)
-              as first positional                        → use it.
-          (2) first positional is a known task-type
-              (`data` / `algo` / `training` / `eval` /
-               `display` / `individual` / `agent`)       → scope=task-folder,
-                                                            task-type=that positional.
-          (3) no args at all                             → default to `run` if cwd
-                                                            is inside a task-folder
-                                                            (has runs/ + configs/),
-                                                            else `task-folder`.
-          (4) still missing
-                AUTO         → status: blocked, reason: "scope unknown"
-                interactive  → ASK.
+  (1) explicit scope token (`task-folder` / `run` / `audit` / `plan` / `report`) as first positional → use it.
+  (2) `project` or `task-group` → redirect: `Skill("haipipe-project", args="<remaining_args>")`.
+  (3) first positional is a known task-type (`data` / `algo` / `training` / `eval` / `display` / `individual` / `agent`) → scope=task-folder, task-type=that positional.
+  (4) first positional is a path to an existing task-folder → scope=existing (Step 3c).
+  (5) no args at all → default to `run` if cwd is inside a task-folder (has runs/ + configs/), else `task-folder`.
+  (6) still missing: AUTO → status: blocked, reason: "scope unknown". Interactive → ASK.
 
 Step 3: Branch by scope:
-          - scope=project       → read fn/project.md, execute here
-          - scope=task-group    → read fn/task-group.md, execute here
-          - scope=task-folder   → resolve task-type via Step 3a cascade,
-                                  then Skill("haipipe-task-<type>",
-                                              args="<remaining_args> [--auto]")
-          - scope=run           → read fn/run.md, execute here
+  - scope=task-folder (new) → resolve task-type via Step 3a cascade, then Skill("haipipe-task-<type>", args="<remaining_args> [--auto]")
+  - scope=existing → run full lifecycle via Step 3c (Workflow tool)
+  - scope=run → read fn/run.md, execute here
+  - scope=audit/plan/report → run single step via corresponding fn/ procedure
 
 
 Step 3a (scope=task-folder only): Task-type inference cascade.
 
   Highest-to-lowest confidence:
 
-  (1) EXPLICIT — type given as positional after `task-folder`, or already
-      pinned at Step 2 cascade (2).  ✅ done.
+  (1) EXPLICIT — type given as positional after `task-folder`, or already pinned at Step 2 cascade (2). Done.
 
-  (2) SCRIPT-INFERRED — if pwd is inside an existing task-folder,
-      read the main `*.py` script and `scripts/*.py` files. Detect type
-      from imports and content:
-        - `from haipipe` / `SourceFn` / `RecordFn`  → data
-        - `import torch` / `Trainer` / `sweep`       → training
-        - `eval` / `metrics` / `score`                → eval
-        - `plt.` / `fig` / `savefig` / `.tex`        → display
-        - `stata` / `.do` / `preserve`                → stata (delegate)
-        - `agent` / `claude` / `anthropic`            → agent
-      Confidence: high. Behavior:
-        - AUTO         → accept; log "inferred from script: <type>"
-        - interactive  → propose; one-line ASK to confirm
+  (2) SCRIPT-INFERRED — if pwd is inside an existing task-folder, read the main `*.py` script and `scripts/*.py` files. Detect type from imports and content:
+    - `from haipipe` / `SourceFn` / `RecordFn` → data
+    - `import torch` / `Trainer` / `sweep` → training
+    - `eval` / `metrics` / `score` → eval
+    - `plt.` / `fig` / `savefig` / `.tex` → display
+    - `stata` / `.do` / `preserve` → stata (delegate)
+    - `agent` / `claude` / `anthropic` → agent
+  Confidence: high. AUTO → accept; log "inferred from script: <type>". Interactive → propose; one-line ASK to confirm.
+  NOTE: the group letter ({A}{NN}, {B}{NN}, etc.) is purely organizational — each project chooses its own letter scheme. Do NOT infer task-type from the group letter. Always use script analysis or explicit type instead.
 
-      NOTE: the group letter ({A}{NN}, {B}{NN}, etc.) is purely
-      organizational — each project chooses its own letter scheme.
-      Do NOT infer task-type from the group letter. ProjA uses
-      different letters than ProjB. Always use script analysis
-      or explicit type instead.
-
-  (3) KEYWORD-INFERRED — scan free-text args for keywords (table below).
-      First match (left-to-right in args) wins.
+  (3) KEYWORD-INFERRED — scan free-text args for keywords (table below). First match (left-to-right in args) wins.
 
         ┌────────────┬─────────────────────────────────────────────────────────────────┐
         │ data       │ build · source · record · dataset · cgm · raw · ingest ·        │
@@ -230,208 +205,60 @@ Step 3a (scope=task-folder only): Task-type inference cascade.
         │ (engine)   │ analysis table · reg · regression · ols · iv · neat · bene_info │
         └────────────┴─────────────────────────────────────────────────────────────────┘
 
-      Stata engine-detect → DELEGATE: the keyword `stata` (or a `.do` file, or
-      any stage word cms/case/data/reg) signals the Stata engine. Do NOT pick a
-      stage here — hand off the whole request to `/haipipe-task-for-stata`, which
-      owns stage disambiguation and routes to the right
-      `/haipipe-task-for-stata-<stage>` child:
-        Skill("haipipe-task-for-stata", args="<remaining_args> [--auto]")
+  Stata engine-detect → DELEGATE: hand off to `/haipipe-task-for-stata` which owns stage disambiguation: `Skill("haipipe-task-for-stata", args="<remaining_args> [--auto]")`
+  Confidence: medium. AUTO → accept. Interactive → propose; one-line ASK to confirm.
 
-      Confidence: medium. Behavior:
-        - AUTO         → accept; log "inferred from keyword '<kw>': <type>"
-        - interactive  → propose; one-line ASK to confirm
-
-  (4) STILL UNKNOWN:
-        - AUTO         → status: blocked, reason:
-                         "cannot infer task-type. Pass one of
-                         data/algo/training/eval/display/individual/agent
-                         as positional, OR cd into a tasks/{LETTER}{NN}_*/
-                         group folder, OR include a keyword hint in args."
-        - interactive  → ASK with all 7 options.
+  (4) STILL UNKNOWN: AUTO → status: blocked. Interactive → ASK with all 7 options.
 
 
 Step 3b (scope=task-folder only): Parent existence cascade.
 
-  Before dispatching to `/haipipe-task-<type>`, verify all ancestors
-  exist. Order: project → task-group → task-folder.
+  Before dispatching to `/haipipe-task-<type>`, verify all ancestors exist. Order: project → task-group → task-folder.
 
-  Resolve target paths:
-    PROJECT_PATH = `examples/{PROJECT_ID}/`
-    GROUP_PATH   = `PROJECT_PATH/tasks/{LETTER}{NN}_<group_name>/`
-                     (letter is project-specific, NOT tied to task-type)
+  Resolve target paths: PROJECT_PATH = `examples/{PROJECT_ID}/`, GROUP_PATH = `PROJECT_PATH/tasks/{LETTER}{NN}_<group_name>/` (letter is project-specific, NOT tied to task-type).
 
-  (1) Project check
-        EXISTS                                  → continue.
-        MISSING + `--project-id` given
-          AUTO        → Skill("haipipe-task", args="project <PROJECT_ID> --auto")
-                        then continue.
-          interactive → propose "scaffold project <PROJECT_ID>?", confirm, then proceed.
-        MISSING + no `--project-id`
-          AUTO        → status: blocked,
-                        reason: "no project in cwd and no --project-id given."
-          interactive → ASK which project (or scaffold one).
+  (1) Project check: EXISTS → continue. MISSING + `--project-id` given → scaffold via `Skill("haipipe-task", args="project <PROJECT_ID> --auto")`. MISSING + no `--project-id` → blocked (AUTO) or ASK (interactive).
 
-  (2) Group check
-        EXISTS + letter matches task-type       → continue.
-        EXISTS + letter MISMATCH
-          AUTO        → status: blocked,
-                        reason: "group <{LETTER}{NN}_...> has letter <X>, but
-                        task-type <type> requires letter <Y>. Pick a different
-                        group, or move/rename via /haipipe-project-organize."
-          interactive → warn; ASK (override / pick different group).
-        MISSING + `--group` given
-          AUTO        → Skill("haipipe-task",
-                              args="task-group <group_id>
-                                    --project-id <PROJECT_ID>
-                                    --letter <GROUP_LETTER> --auto")
-                        then continue.
-          interactive → propose "scaffold group <group_id>?", confirm, then proceed.
-        MISSING + no `--group`
-          AUTO        → status: blocked,
-                        reason: "no --group given; specify which group to
-                        create or scaffold under."
-          interactive → ASK.
+  (2) Group check: EXISTS → continue. MISSING + `--group` given → scaffold via `Skill("haipipe-task", args="task-group ...")`. MISSING + no `--group` → blocked (AUTO) or ASK (interactive).
 
-  Only after both checks pass:
-      Skill("haipipe-task-<type>",
-            args="<remaining_args> --project-id <PROJECT_ID>
-                  --group <group_id> [--auto]")
+  Only after both checks pass: `Skill("haipipe-task-<type>", args="<remaining_args> --project-id <PROJECT_ID> --group <group_id> [--auto]")`
 
 
-Step 3c (existing task-folder): Workflow layer.
+Step 3c (existing task-folder): Automated workflow lifecycle.
 
-  When the target task-folder ALREADY EXISTS (has configs/ or runs/ or
-  results/), the workflow layer activates. This is distinct from
-  scaffolding (Step 3b) — here we're auditing and working with an
-  existing task, not creating a new one.
+  When the target task-folder ALREADY EXISTS (has configs/ or runs/ or results/ or *.py), the workflow lifecycle activates. This is distinct from scaffolding (Step 3b) — here we're auditing and working with an existing task, not creating a new one.
 
-  Detect: task-folder exists if any of these are present:
-    - <target>/configs/
-    - <target>/runs/
-    - <target>/results/
-    - <target>/*.py (main script)
+  Run the lifecycle via the Workflow tool:
 
-  If task-folder exists, run the workflow lifecycle:
-
-  (1) AUDIT — read fn/workflow-audit.md, execute it.
-      Scan four-sister consistency (configs/runs/results/notebooks).
-      Detect task type (from script content, NOT group letter).
-      Check if workflow/plan.yaml exists.
-
-      Progress:
-        📋 Audit: <task-folder>
-           type: <detected>
-           four-sister: N runs, M issues (K fixable)
-
-  (2) FIX — if audit found fixable issues, dispatch to the builder agent:
-      Agent: `haipipe-task-builder-agent` (mode=fix)
-      Located: `C_task/agents/haipipe-task-builder-agent.md`
-      Input: task-folder path + audit results (issues list + detected type)
-      Output: restructured task-folder with four-sister compliance
-      Invoke: Agent(agentType="haipipe-task-builder-agent",
-                    prompt="mode: fix. task-folder: <path>. type: <detected>.
-                    issues: <audit issues list>. Apply four-sister fixes.")
-
-      What the builder agent fixes:
-      - script naming: rename to {NN}_{task_name}.py convention
-      - missing per-run configs → extract hardcoded constants into YAML
-      - missing cell markers → add # %% at logical phase boundaries
-      - missing notebooks/ dir → create it
-      - missing workflow/ dir → create it
-      - run script → update to papermill flow per ref/run-sh-template.sh
-      - missing .ps1 counterpart → generate from .sh
-      - stale results/ with no runner → flag for user decision
-
-      Progress:
-        🔧 Builder: haipipe-task-builder-agent (mode=fix)
-           fixes: N applied, M skipped
-
-  (3) PLAN — if workflow/plan.yaml missing or stale:
-      Read fn/workflow-plan.md, execute it.
-      Infer phases and steps from task state.
-      Write workflow/plan.yaml.
-
-      Progress:
-        📍 Plan: workflow/plan.yaml written
-           phases: N, steps: M, files tracked: X in / Y out
-
-  (4) REVIEW — call the reviewer agent for pre-run code quality gate.
-      Agent: `haipipe-task-reviewer-agent` (gate=1)
-      Located: `C_task/agents/haipipe-task-reviewer-agent.md`
-      Input: task-folder path + main script
-      Output: CODE_REVIEW.md in task-folder
-      Invoke: Agent(agentType="haipipe-task-reviewer-agent",
-                    prompt="gate 1: review <task-folder> for intent-vs-implementation bugs")
-
-      Progress:
-        🚦 Gate 1: run-script-reviewer → CODE_REVIEW.md
-           verdict: pass | warn | fail
-
-  (5) EXECUTE — run the task (mode depends on context):
-      - **manual**: user runs `runs/<NAME>.sh` on their machine
-        (e.g. CMS server). Claude reports the plan as a checklist.
-      - **subagent**: for each run_trigger in plan.yaml, execute it.
-      - **workflow-engine**: generate .workflow.js, run via Workflow tool.
-
-  (6) AUDIT RESULTS — call the result auditor agent for post-run gate.
-      Agent: `haipipe-task-reviewer-agent` (gate=2)
-      Located: `C_task/agents/haipipe-task-reviewer-agent.md`
-      Input: task-folder path + results/<NAME>/
-      Output: RUN_AUDIT.md in task-folder
-      Invoke: Agent(agentType="haipipe-task-reviewer-agent",
-                    prompt="gate 2: audit results of <task-folder> run <NAME>")
-
-      Progress:
-        🚦 Gate 2: run-result-auditor → RUN_AUDIT.md
-           verdict: pass | warn | fail
-
-  (7) REPORT — read fn/workflow-report.md, execute it.
-      Read plan.yaml + results/ → write workflow/report.yaml.
-      Include which agents were called and their verdicts.
-
-      Progress:
-        📋 Report: workflow/report.yaml written
-           phases: N/N, steps: X done, Y skipped
-
-  Full lifecycle with agents:
   ```
-  audit → fix → plan → review(agent) → execute → audit-results(agent) → report
-                        ↑                         ↑
-                  run-script-reviewer      run-result-auditor
+  Workflow({
+    scriptPath: "Tools/plugins/haipipe-toolkit/skills/C_task/haipipe-task/ref/task-lifecycle.workflow.js"
+  }, {
+    task_folder: "<path>",
+    type: "<detected from Step 3a, or null for auto-detect>",
+    autoRun: false
+  })
   ```
 
-  For explicit commands (/haipipe-task audit, /haipipe-task report, etc.),
-  run ONLY that step, not the full lifecycle.
+  The workflow script (`ref/task-lifecycle.workflow.js`) drives 4 stages. Each stage pairs a **creator agent** (`haipipe-task-creator-agent`) with a **reviewer agent** (`haipipe-task-reviewer-agent`) in a loop: creator produces → reviewer evaluates → revise if needed.
 
-  For the full lifecycle, the IPO return is:
   ```
-  <task> — workflow lifecycle
-  I: ...
-  ├── P1: Audit    [S1..SN]
-  ├── P2: Fix      [S1..SN]
-  ├── P3: Plan     [S1]
-  ├── P4: Review   [S1: haipipe-task-reviewer-agent gate=1 → CODE_REVIEW.md]
-  ├── P5: Execute  [S1..SN per run_trigger]
-  ├── P6: Audit Results [S1: haipipe-task-reviewer-agent gate=2 → RUN_AUDIT.md]
-  └── P7: Report   [S1: write report.yaml]
-  O: ...
+  Stage 1: PLAN      creator drafts plan.yaml        → reviewer checks  → loop if revise
+  Stage 2: BUILD     creator writes/fixes code+config → reviewer checks  → loop if revise
+  Stage 3: EXECUTE   run the task (optional)          → reviewer audits  → (no loop)
+  Stage 4: REPORT    creator drafts report.yaml       → reviewer checks  → loop if revise
   ```
 
-      Progress:
-        📋 Report: 2/2 phases, 4/5 steps done, 1 skipped
+  Stages 3 and 4 are optional (`autoExecute=false`, `autoReport=false` by default). The creator-reviewer loop retries up to `maxRetries` (default 2) per stage. `fail` from the reviewer stops the lifecycle; `revise` feeds back to the creator with specific issues to fix.
 
-  For explicit audit/plan/report commands (/haipipe-task audit, etc.),
-  run ONLY that step, not the full lifecycle.
+  Agents: `C_task/agents/haipipe-task-creator-agent.md`, `C_task/agents/haipipe-task-reviewer-agent.md`.
 
-  For the full lifecycle, report progress at each boundary:
-    📋 Audit → 🔧 Fix → 📍 Plan → ⏳ Execute → 📋 Report
+  All generated plan/report files follow the haipipe-workflow IPO schema at `B_project/haipipe-workflow/ref/plan-schema.md`. Steps use canonical fields: `label`, `type`, `required`, `prompt`, `files_in`, `files_out`.
+
+  For explicit single-step commands (`/haipipe-task plan`, `/haipipe-task report`), run ONLY that step via the corresponding `fn/` procedure, not the full lifecycle.
 
 
-Step 4: For locally-executed scopes, follow the function file step-by-step.
-        ASK for any metadata not provided (AUTO mode: best-effort defaults,
-        or blocked if a required field has no sensible default). For
-        dispatched scopes, capture the specialist's return contract and
-        surface it as our own.
+Step 4: For locally-executed scopes, follow the function file step-by-step. ASK for any metadata not provided (AUTO mode: best-effort defaults, or blocked if a required field has no sensible default). For dispatched scopes, capture the specialist's return contract and surface it as our own.
 
 Step 5: Emit the structured tail:
 
@@ -457,33 +284,22 @@ Invocation examples
 
 # cwd-inferred: cd into the group folder first
 $ cd examples/Proj-X/tasks/D01_data_wellreadi/
-$ /haipipe-task task-folder           ← type=data inferred from cwd D01_
+$ /haipipe-task task-folder           ← type=data inferred from script
 
 # keyword-inferred: free-text hint
-/haipipe-task "build CGM 5min record dataset for wellreadi v3"
-   → keyword "build" + "record" + "dataset"  → type=data
-
-/haipipe-task "evaluate clm at h24 on test-id split"
-   → keyword "evaluate"  → type=eval
+/haipipe-task "build CGM 5min record dataset for wellreadi v3"   → type=data
+/haipipe-task "evaluate clm at h24 on test-id split"             → type=eval
 
 # auto mode: same as above but no confirm prompts
 /haipipe-task data --auto
 /haipipe-task "train clm baseline" --auto
 
+# existing task-folder: full lifecycle via Workflow tool
+/haipipe-task evaluate and plan examples/ProjA/tasks/B03_band4/01_band4
+
 # direct specialist (bypass orchestrator entirely; skips cascade check)
 /haipipe-task-for-data
 /haipipe-task-for-training
-
-# end-to-end with auto-cascade (creates project + group if missing)
-/haipipe-task data --auto \
-    --project-id ProjA-Bench-1-FairGlucose \
-    --group D01_data \
-    --task 01_build_source_wellreadi
-#  ↓
-#  Step 3b cascade:
-#    ▪ ProjA-Bench-1-FairGlucose missing  → Skill(haipipe-task, project ..., --auto)
-#    ▪ D01_data missing                    → Skill(haipipe-task, task-group ..., --auto)
-#    ▪ both now exist                      → Skill(haipipe-task-for-data, ..., --auto)
 ```
 
 ---
@@ -491,76 +307,25 @@ $ /haipipe-task task-folder           ← type=data inferred from cwd D01_
 Per-task observability (workflow/ folder)
 ------------------------------------------
 
-Task-level observability is now handled by the **workflow/ folder**:
+Task-level observability is handled by the **workflow/ folder**:
 
 ```
 <task-folder>/workflow/
-  plan.yaml                            task-level roll-up of script plans
-  plan-script-<name>.yaml              per-script IPO (Phases with Steps)
-  report.yaml                          task-level roll-up of script reports
-  report-script-<name>.yaml            per-script execution evidence
+  plan.yaml                            task-level IPO (Run/Gate1/Gate2 phases)
+  plan-script-<name>.yaml              per-script IPO (type-specific phases)
+  report.yaml                          task-level report mirroring plan
+  report-script-<name>.yaml            per-script report mirroring plan-script
 ```
 
-Three layers: task → script → run. Plan = intent. Report = evidence.
-Same tree shape at every level (I → P[S] → O with emojis).
+Plan = intent. Report = evidence. Same IPO shape at both levels, following `B_project/haipipe-workflow/ref/plan-schema.md`.
 
-Generated by `/haipipe-task plan` (audit + fix + generate plans) and
-`/haipipe-task report` (scan results + generate reports).
-
-Supersedes the older `haipipe-task-logging` / `task-log.md` approach.
-The workflow report is richer: per-script IPO phases, _WorkSpace I/O
-tracking, agent/skill recording, emoji-annotated previews.
-
+Generated by the lifecycle workflow (`ref/task-lifecycle.workflow.js`) or manually via `/haipipe-task plan` and `/haipipe-task report`.
 
 ---
-
-Pre-flight code review
------------------------
-
-Every scaffolded `run.sh` (from `ref/run-sh-template.sh`) carries a
-**pre-flight gate** that blocks launch until a fresh `CODE_REVIEW.md`
-exists in the task-folder. The review is produced by the
-**Task Reviewer** agent at:
-
-```
-Tools/plugins/haipipe-toolkit/skills/C_task/agents/haipipe-task-reviewer-agent.md
-```
-
-Invoke: `Agent(agentType="haipipe-task-reviewer-agent", prompt="gate 1: review <task-folder>")`
-
-What it catches: **intent-vs-implementation mismatches** — silent
-semantic bugs where the code runs and produces numbers but doesn't
-measure what the writer intended (e.g. scope misaligned to full input
-vs horizon-only, masking direction reversed, eval horizon shifted,
-patient-split actually sample-split, etc.). Two-stage: Claude drafts,
-Codex (xhigh, out-of-family) independently reviews; the merge surfaces
-agreements and disagreements.
-
-Author convention — `<TASK_NAME>.py` MUST have a top-of-file docstring
-with an `Intent` section. Template:
-
-```
-ref/intent-docstring-template.py
-```
-
-Skip mechanisms (any one will bypass the gate):
-
-```
-_meta.skip_review: true        in configs/<RUN_NAME>.yaml
-HAIPIPE_SKIP_REVIEW=1          env var at run.sh launch
-```
-
-This is the only currently-wired trigger. Future trigger points
-(scaffold-time auto-review, claim-gate re-review, manual /haipipe-task-reviewer-agent
-slash command) are noted as TODOs in the agent's Roadmap section.
-
 
 Risk Profile
 -------------
 
-CREATES files under `examples/{PROJECT_ID}/`. For scope=project with
-new code stubs, also creates files under `code-dev/` and `code/hainn/`.
-Refuse to overwrite existing names — abort and recommend `-organize`.
+CREATES files under `examples/{PROJECT_ID}/`. For scope=project with new code stubs, also creates files under `code-dev/` and `code/hainn/`. Refuse to overwrite existing names — abort and recommend `-organize`.
 
-When dispatching to a task-type specialist, the same blast radius
-applies — specialists also CREATE files under `examples/`.
+When dispatching to a task-type specialist, the same blast radius applies — specialists also CREATE files under `examples/`.

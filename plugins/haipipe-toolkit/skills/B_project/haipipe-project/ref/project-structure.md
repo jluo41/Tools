@@ -3,13 +3,9 @@ Track B: Project Folder Structure (examples/)
 
 Every project lives under: examples/Proj{Series}-{Category}-{Num}-{Name}/
 
-The doc surface is `diagram/`, NOT `README.md`. Three levels of `diagram/`
-folders (project, task, paper) replace what used to be README.md and docs/.
+The doc surface is `diagram/`, NOT `README.md`. Three levels of `diagram/` folders (project, task, paper) replace what used to be README.md and docs/.
 
-  Diagrams are authored via /diagram-ascii (.txt sources, ASCII + emoji)
-  and bundled into .excalidraw via /diagram-ascii-canvas (txt-to-canvas.py).
-  Both .txt and .excalidraw are committed to git: .txt is grep-able and
-  LLM-readable; .excalidraw is the human-readable + annotatable canvas.
+  Diagrams are authored via /diagram-ascii (.txt sources, ASCII + emoji) and bundled into .excalidraw via /diagram-ascii-canvas (txt-to-canvas.py). Both .txt and .excalidraw are committed to git: .txt is grep-able and LLM-readable; .excalidraw is the human-readable + annotatable canvas.
 
 ---
 
@@ -59,11 +55,9 @@ Project-level diagram/  (high-level story)
   +-- 03-exploration.txt    directions tried / active / backlog / ruled out
   +-- project.excalidraw    bundle (built by txt-to-canvas)
 
-  HIGH-LEVEL ONLY — research narrative, NOT an operational dashboard.
-  Status tables, run metrics, daily logs belong in {task}/diagram/.
+  HIGH-LEVEL ONLY — research narrative, NOT an operational dashboard. Status tables, run metrics, daily logs belong in {task}/diagram/.
 
-  Authored via /diagram-ascii, bundled via /diagram-ascii-canvas. Refresh
-  on substantive narrative change; otherwise stable.
+  Authored via /diagram-ascii, bundled via /diagram-ascii-canvas. Refresh on substantive narrative change; otherwise stable.
 
 ---
 
@@ -84,8 +78,7 @@ Project-level probes/  (research threads)
   Each probe is a research thread. Per-folder layout:
 
   probes/{MMDD}_{slug}/
-  +-- probe.yaml         source of truth: hypothesis / claim_target / arms /
-                              aggregation spec / result / caveats / claim
+  +-- probe.yaml         source of truth: hypothesis / claim_target / arms / aggregation spec / result / caveats / claim
   +-- review.md               latest structural QA report (overwritten per review)
   +-- INTEGRITY_AUDIT.md      Codex fraud-pattern verdict (overwritten)
   +-- CLAIMS_FROM_RESULTS.md  Codex semantic claim verdict (overwritten)
@@ -94,8 +87,7 @@ Project-level probes/  (research threads)
   +    +-- YYYY-MM-DD.md      (one file per day, append-only)
   +-- reports/                OPTIONAL: ad-hoc per-probe reports
 
-  NO code, no notebooks, no plots inside probes/. Those live in tasks/
-  and are referenced from probe.yaml via the `evidence:` field.
+  NO code, no notebooks, no plots inside probes/. Those live in tasks/ and are referenced from probe.yaml via the `evidence:` field.
 
   Probe folder naming:
 
@@ -103,51 +95,32 @@ Project-level probes/  (research threads)
 
       {MMDD}_{short-name}
 
-    where MMDD is the creation date (MM = month, DD = day) and short-name
-    is a concise probe idea slug. A second probe created the same day
-    appends a lowercase letter suffix (0601 -> 0601b). Examples:
+    where MMDD is the creation date (MM = month, DD = day) and short-name is a concise probe idea slug. A second probe created the same day appends a lowercase letter suffix (0601 -> 0601b). Examples:
 
       probes/0601_framing_loss-aversion/
       probes/0602_simplification_plain-language/
       probes/0603_authority_clinician-recommendation/
 
-    When a probe is no longer active, useful, or under development, move
-    it into the matching year archive folder:
+    When a probe is no longer active, useful, or under development, move it into the matching year archive folder:
 
       probes/{YYYY}-archive/{MMDD}_{short-name}/
 
-    Preserve the original probe folder name when archiving. Archive
-    folders keep the active probes/ workspace short while preserving an
-    auditable historical record.
+    Preserve the original probe folder name when archiving. Archive folders keep the active probes/ workspace short while preserving an auditable historical record.
 
-  probes/ vs tasks/ vs insights/ vs paper/ vs applications/ vs diagram/
-  -- the six project worlds:
+  probes/ vs tasks/ vs insights/ vs paper/ vs applications/ vs diagram/ -- the six project worlds:
 
-    tasks/         WORK       execution-side: code, configs, runs, metrics.
-                              one task-folder = one runnable unit. C_task owns.
-    probes/   CLAIMS     research-side: hypothesis -> arms -> aggregated claim.
-                              one probe-folder = one research thread.
-                              D_probe owns. NO code lives here.
-    insights/      KNOWLEDGE  cross-probe synthesis (D/I/K/W markdown).
-                              E_insight owns. NO code; entries cite probes
-                              + tasks via frontmatter sources.
-    paper/         PUBLISH    academic manuscripts. F_paper owns. Each
-                              Paper-{Name}-{venue}/ is often a git submodule.
-    applications/  DELIVER    external artifacts (patient/clinician messages,
-                              UI sketches, stakeholder reports). G_application
-                              owns. Reads insights/K + insights/W; NEVER writes
-                              back.
-    diagram/       STORY      project-level narrative (motivation / boundary /
-                              exploration). HIGH-LEVEL only; operational status
-                              belongs in tasks/{...}/diagram/ or probes/
-                              {MMDD}_{slug}/logs/.
+    tasks/         WORK       execution-side: code, configs, runs, metrics. one task-folder = one runnable unit. C_task owns.
+    probes/   CLAIMS     research-side: hypothesis -> arms -> aggregated claim. one probe-folder = one research thread. D_probe owns. NO code lives here.
+    insights/      KNOWLEDGE  cross-probe synthesis (D/I/K/W markdown). E_insight owns. NO code; entries cite probes + tasks via frontmatter sources.
+    paper/         PUBLISH    academic manuscripts. F_paper owns. Each Paper-{Name}-{venue}/ is often a git submodule.
+    applications/  DELIVER    external artifacts (patient/clinician messages, UI sketches, stakeholder reports). G_application owns. Reads insights/K + insights/W; NEVER writes back.
+    diagram/       STORY      project-level narrative (motivation / boundary / exploration). HIGH-LEVEL only; operational status belongs in tasks/{...}/diagram/ or probes/{MMDD}_{slug}/logs/.
 
   One-way dependencies:
     probes/   READS tasks/                 (links runs into arms via evidence:)
     insights/      READS probes/ + tasks/  (D/I/K/W synthesis)
     paper/         READS insights/K + W         (publication narrative)
-    applications/  READS insights/K + W         (external creation; can TRIGGER
-                                                 /haipipe-insight ask to close gaps)
+    applications/  READS insights/K + W         (external creation; can TRIGGER /haipipe-insight ask to close gaps)
     tasks/         NEVER reads probes/insights/paper/applications/
     probes/   NEVER reads insights/
 
@@ -183,35 +156,21 @@ Project-level insights/  (knowledge base)
       +-- W01_<slug>.md
       +-- ...
 
-  (External-facing synthesis docs / reports / messages / UI are NOT in
-   insights/ — they live in applications/. The internal Q&A answer is
-   the K/W entries written by insight-session + sessions/<DATE>.md log.)
+  (External-facing synthesis docs / reports / messages / UI are NOT in insights/ — they live in applications/. The internal Q&A answer is the K/W entries written by insight-session + sessions/<DATE>.md log.)
 
-  Each entry is one .md with YAML frontmatter (id, layer, tags, status,
-  sources, ref_by) + standard body sections. NO code, no notebooks,
-  no plots inside insights/ — those live in tasks/. Cross-references
-  via the frontmatter `sources` / `ref_by` fields, machine-traversable.
+  Each entry is one .md with YAML frontmatter (id, layer, tags, status, sources, ref_by) + standard body sections. NO code, no notebooks, no plots inside insights/ — those live in tasks/. Cross-references via the frontmatter `sources` / `ref_by` fields, machine-traversable.
 
   insights/ vs probes/ vs tasks/  -- the boundary that matters:
 
-    tasks/        WORK         executes runs (code, GPU, metrics)
-                                ↓ provides per-run results
-    probes/  CLAIMS       single-thread hypothesis verdict (yaml)
-                                ↓ provides per-claim K/W feedstock
-    insights/     KNOWLEDGE    cross-probe synthesis (D/I/K/W markdown)
-                                ↓ feeds paper
+    tasks/        WORK         executes runs (code, GPU, metrics) ↓ provides per-run results
+    probes/  CLAIMS       single-thread hypothesis verdict (yaml) ↓ provides per-claim K/W feedstock
+    insights/     KNOWLEDGE    cross-probe synthesis (D/I/K/W markdown) ↓ feeds paper
 
-  One-way dependency: insights/ READS from probes/ (claims) + tasks/
-  (metrics). probes/ NEVER reads from insights/. paper/ READS
-  insights/K + insights/W.
+  One-way dependency: insights/ READS from probes/ (claims) + tasks/ (metrics). probes/ NEVER reads from insights/. paper/ READS insights/K + insights/W.
 
-  Schema authority: E_insight/ref/insight-md-schema.md (entry shape),
-                    E_insight/ref/insight-context-loading.md (loading),
-                    E_insight/ref/index-templates.md (INDEX shape).
+  Schema authority: E_insight/ref/insight-md-schema.md (entry shape), E_insight/ref/insight-context-loading.md (loading), E_insight/ref/index-templates.md (INDEX shape).
 
-  K_knowledge and W_wisdom each get an INDEX.md (highest-signal layers,
-  used as primary query entry); D and I do not (grep tags is fast enough
-  on flat lists).
+  K_knowledge and W_wisdom each get an INDEX.md (highest-signal layers, used as primary query entry); D and I do not (grep tags is fast enough on flat lists).
 
 ---
 
@@ -231,31 +190,19 @@ Project-level applications/  (external creation)
       +-- <YYYY-MM-DD>_<audience>_<slug>.md
       +-- ...
 
-  Each artifact is one .md with YAML frontmatter (kind, audience, intent,
-  created, cited_K, cited_W, triggered, status). NO code, no notebooks,
-  no plots embedded (kind=ui may have ASCII sketches only).
+  Each artifact is one .md with YAML frontmatter (kind, audience, intent, created, cited_K, cited_W, triggered, status). NO code, no notebooks, no plots embedded (kind=ui may have ASCII sketches only).
 
   applications/ vs insights/ vs paper/  -- the boundary:
 
-    insights/      KNOWLEDGE   internal epistemic state (D/I/K/W)
-                                ↓ feeds both paper/ and applications/
+    insights/      KNOWLEDGE   internal epistemic state (D/I/K/W) ↓ feeds both paper/ and applications/
     paper/         PUBLISH     academic manuscript (researchers)
-    applications/  DELIVER     external artifact (patient / clinician /
-                               regulator / executive / designer / dev /
-                               partner)
+    applications/  DELIVER     external artifact (patient / clinician / regulator / executive / designer / dev / partner)
 
-  One-way dependency: applications/ READS insights/K + W. NEVER writes
-  back. If a gap surfaces during drafting, the kind-specialist calls
-  /haipipe-insight ask (which may chain into /haipipe-probe); new
-  entries land in insights/, then drafting resumes.
+  One-way dependency: applications/ READS insights/K + W. NEVER writes back. If a gap surfaces during drafting, the kind-specialist calls /haipipe-insight ask (which may chain into /haipipe-probe); new entries land in insights/, then drafting resumes.
 
-  Schema authority: G_application/haipipe-application/ref/
-                    audience-requirements.md (audience/tone/length),
-                    application-input-contract.md (how to read K/W).
+  Schema authority: G_application/haipipe-application/ref/ audience-requirements.md (audience/tone/length), application-input-contract.md (how to read K/W).
 
-  Each artifact MUST cite K/W entries in its frontmatter `cited_K` and
-  `cited_W` fields, regardless of audience-facing format. The frontmatter
-  is the machine-traversable trail.
+  Each artifact MUST cite K/W entries in its frontmatter `cited_K` and `cited_W` fields, regardless of audience-facing format. The frontmatter is the machine-traversable trail.
 
 ---
 
@@ -270,8 +217,7 @@ Group Folders
   NN  2-digit index (group: unique within series; task: sequential within group)
   *_name  snake_case descriptor
 
-  Index lets ls sort by dependency: A01 (pretraining) < A21 (finetuning) < B01.
-  Reserve ranges by stage: A01-A09 stage 1, A20-A29 stage 2, etc.
+  Index lets ls sort by dependency: A01 (pretraining) < A21 (finetuning) < B01. Reserve ranges by stage: A01-A09 stage 1, A20-A29 stage 2, etc.
 
   Examples:
     A01_pretraining_clm/01_train_clm_num_modelsize/
@@ -279,14 +225,11 @@ Group Folders
   Reference globally as "A01.01".
 
   Group folder contents:
-    diagram/        MANDATORY when group is cohesive (siblings share a
-                    narrative); covers per-task diagram so tasks stay thin.
-                    See "Group-level diagram/" below.
+    diagram/        MANDATORY when group is cohesive (siblings share a narrative); covers per-task diagram so tasks stay thin. See "Group-level diagram/" below.
     sbatch/         Cross-task orchestration (env.sh + batchers).
     {NN}_{name}/    task folders.
 
-  No README.md in group folders. If sibling tasks are unrelated, fall back
-  to per-task diagrams instead of group/diagram/.
+  No README.md in group folders. If sibling tasks are unrelated, fall back to per-task diagrams instead of group/diagram/.
 
 ---
 
@@ -298,9 +241,7 @@ Task Naming
   NN = 2-digit zero-padded index (sequence within the group)
   task_name = snake_case descriptor
 
-  Tasks are numeric-only — they live inside their group folder, so the
-  group letter is implicit in the path. Globally referenced as
-  "{group_id}.{task_id}" (e.g. "A01.01").
+  Tasks are numeric-only — they live inside their group folder, so the group letter is implicit in the path. Globally referenced as "{group_id}.{task_id}" (e.g. "A01.01").
 
 ---
 
@@ -311,28 +252,12 @@ Task Folder Contents
   configs/         YAML configs (each task owns its own, no sharing/symlinks)
   runs/           Atomic run scripts (one config = one script, no CLI args)
   results/        Light summaries (name-paired with runs/)
-  <stem>.ipynb    Template notebook(s) at TASK ROOT, one per cell-format *.py
-                  (e.g. train_num_nb.py ↔ train_num_nb.ipynb). Built by
-                  convert_to_notebooks.py from the .py source. Sits next to
-                  its .py so opening the task folder shows source + template
-                  side-by-side.
-  notebooks/       MANDATORY: runtime-recording folder. Holds one
-                  <run_name>.ipynb per runs/<run_name>.sh — papermill injects
-                  params from the runs/*.sh and writes the executed result
-                  here. Each run's notebook captures full execution +
-                  injected params + outputs — it's the canonical "what
-                  happened during this run" record. Use papermill mode for
-                  parameterized ML training, nbconvert mode for single-render
-                  data-audit / Insights / exploration.
-  sbatch/         OPTIONAL: task-internal orchestration — e.g. splitting
-                  this task's runs across multiple GPUs. Group/sbatch/ is
-                  for cross-task orchestration; task/sbatch/ is for
-                  within-task. Both levels can coexist.
-  diagram/        OPTIONAL: only when this task diverges from the group
-                  narrative. If group/diagram/ covers it, skip.
+  <stem>.ipynb    Template notebook(s) at TASK ROOT, one per cell-format *.py (e.g. train_num_nb.py ↔ train_num_nb.ipynb). Built by convert_to_notebooks.py from the .py source. Sits next to its .py so opening the task folder shows source + template side-by-side.
+  notebooks/       MANDATORY: runtime-recording folder. Holds one <run_name>.ipynb per runs/<run_name>.sh — papermill injects params from the runs/*.sh and writes the executed result here. Each run's notebook captures full execution + injected params + outputs — it's the canonical "what happened during this run" record. Use papermill mode for parameterized ML training, nbconvert mode for single-render data-audit / Insights / exploration.
+  sbatch/         OPTIONAL: task-internal orchestration — e.g. splitting this task's runs across multiple GPUs. Group/sbatch/ is for cross-task orchestration; task/sbatch/ is for within-task. Both levels can coexist.
+  diagram/        OPTIONAL: only when this task diverges from the group narrative. If group/diagram/ covers it, skip.
 
-  TASKS DO NOT HAVE A README.md. The doc surface is group/diagram/ (for
-  cohesive groups) or task/diagram/ (for divergent tasks).
+  TASKS DO NOT HAVE A README.md. The doc surface is group/diagram/ (for cohesive groups) or task/diagram/ (for divergent tasks).
 
   Python script rules:
     - Naming is freestyle: one file or many, any descriptive name.
@@ -340,15 +265,10 @@ Task Folder Contents
 
   runs/ rules:
     - ATOMIC: each .sh runs exactly ONE config / ONE model. No loops.
-    - Self-contained: all params hardcoded inside. No CLI args.
-      Run with: bash runs/{name}.sh
+    - Self-contained: all params hardcoded inside. No CLI args. Run with: bash runs/{name}.sh
     - No .py in runs/ — logic stays in *.py files at task root.
-    - Naming: descriptive of the single run.
-      Examples: run_1m.sh, run_5m_ep0.1.sh, run_hybridA_5m.sh
-    - Every run script MUST include the standard logging header AND the
-    "Files-generated footer" (see Run Script Templates below). The footer
-    runs on EXIT (success or failure) and prints local results/ contents
-    + cross-stage _WorkSpace writes — keeps every run self-documenting.
+    - Naming: descriptive of the single run. Examples: run_1m.sh, run_5m_ep0.1.sh, run_hybridA_5m.sh
+    - Every run script MUST include the standard logging header AND the "Files-generated footer" (see Run Script Templates below). The footer runs on EXIT (success or failure) and prints local results/ contents + cross-stage _WorkSpace writes — keeps every run self-documenting.
 
   results/ rules:
     - LIGHT only: report.md, metrics.json, small PNGs, .csv, .tex
@@ -363,79 +283,49 @@ Task Folder Contents
     - Two locations:
         <task>/<stem>.ipynb            template, paired 1:1 with <stem>.py
         <task>/notebooks/<run>.ipynb   runtime record, paired 1:1 with runs/<run>.sh
-      Stems match exactly (no rename). Source of truth is always the .py;
-      both .ipynb files are build artifacts.
+      Stems match exactly (no rename). Source of truth is always the .py; both .ipynb files are build artifacts.
 
     - Two build modes:
         papermill   (parameterized: one .py + many runs differing in hyperparams)
-                    runs/<run>.sh: convert_to_notebooks.py → <stem>.ipynb,
-                    then `papermill <stem>.ipynb notebooks/<run>.ipynb -p ...`
-                    Output bakes stdout/stderr + injected params + figures.
+                    runs/<run>.sh: convert_to_notebooks.py → <stem>.ipynb, then `papermill <stem>.ipynb notebooks/<run>.ipynb -p ...` Output bakes stdout/stderr + injected params + figures.
         nbconvert   (single-render: one .py = one execution, no knobs)
                     `python <stem>.py` then `jupyter nbconvert --execute`.
 
     - Papermill .py conventions:
-        First cell after docstring is `# %% [parameters]` — declares all
-        tunable knobs with defaults. convert_to_notebooks.py tags it for
-        papermill injection.
-        Setup cell auto-detects TASK_DIR for portability:
-          __file__ (script) → __vsc_ipynb_file__.parent.parent (VS Code)
-            → os.environ['TASK_DIR']  (exported by run.sh)
-        runs/<run>.sh in papermill mode does NOT use `exec > >(tee log)`;
-        the recorded notebook IS the log. exports TASK_DIR before papermill.
+        First cell after docstring is `# %% [parameters]` — declares all tunable knobs with defaults. convert_to_notebooks.py tags it for papermill injection.
+        Setup cell auto-detects TASK_DIR for portability: __file__ (script) → __vsc_ipynb_file__.parent.parent (VS Code) → os.environ['TASK_DIR']  (exported by run.sh)
+        runs/<run>.sh in papermill mode does NOT use `exec > >(tee log)`; the recorded notebook IS the log. exports TASK_DIR before papermill.
 
-    - Retention knob: configs/<run>.yaml → `_meta.notebook: full | thin | off`
-      (default full). run.sh applies it: full = keep with outputs; thin =
-      keep but clear outputs (small record — use for heavy training/data runs);
-      off = execute via papermill but keep no .ipynb. See
-      C_task/haipipe-task/ref/authoring-conventions.md §7.
+    - Retention knob: configs/<run>.yaml → `_meta.notebook: full | thin | off` (default full). run.sh applies it: full = keep with outputs; thin = keep but clear outputs (small record — use for heavy training/data runs); off = execute via papermill but keep no .ipynb. See C_task/haipipe-task/ref/authoring-conventions.md §7.
 
-    - Commit policy: per-project, but DEFAULT to gitignoring `notebooks/`
-      (and `_WorkSpace/`) — N×seeds×arms recorded notebooks bloat the repo.
-      Commit a rendered notebook only when collaborators benefit from it.
-      Template <stem>.ipynb is always safe to gitignore (regenerates from .py).
-      The project scaffold should seed `.gitignore` with `notebooks/` and
-      `_WorkSpace/`.
+    - Commit policy: per-project, but DEFAULT to gitignoring `notebooks/` (and `_WorkSpace/`) — N×seeds×arms recorded notebooks bloat the repo. Commit a rendered notebook only when collaborators benefit from it. Template <stem>.ipynb is always safe to gitignore (regenerates from .py). The project scaffold should seed `.gitignore` with `notebooks/` and `_WorkSpace/`.
 
   sbatch/ rules:
     - ORCHESTRATION: each .sh coordinates one or several runs/*.sh.
     - Assigns GPU, sets CUDA_VISIBLE_DEVICES, loops over runs.
     - sbatch/ scripts call runs/*.sh, NOT *.py directly.
     - Two levels — both valid, at different scopes:
-        group/sbatch/   cross-task orchestration: env.sh + batchers that
-                        loop over runs from multiple sibling tasks.
-        task/sbatch/    task-internal orchestration: GPU split or batch
-                        across this task's own runs/*.sh only.
-      Group/sbatch/ is the more common case (env.sh + cross-task batchers
-      live there). Task/sbatch/ is fine when orchestration is genuinely
-      task-scoped and would awkwardly leak siblings into a group script.
+        group/sbatch/   cross-task orchestration: env.sh + batchers that loop over runs from multiple sibling tasks.
+        task/sbatch/    task-internal orchestration: GPU split or batch across this task's own runs/*.sh only.
+      Group/sbatch/ is the more common case (env.sh + cross-task batchers live there). Task/sbatch/ is fine when orchestration is genuinely task-scoped and would awkwardly leak siblings into a group script.
 
 ---
 
 Skill-Runner Tasks (Exemption)
 ================================
 
-  When a task wraps a Claude Code skill (e.g. /haipipe-insight) instead of a .py,
-  the skill executes the work and writes structured outputs elsewhere
-  (e.g. insights/ at project root). The task folder is narrative + launcher.
+  When a task wraps a Claude Code skill (e.g. /haipipe-insight) instead of a .py, the skill executes the work and writes structured outputs elsewhere (e.g. insights/ at project root). The task folder is narrative + launcher.
 
   Exemptions:
     - No *.py, no data/ required.
-    - configs/ optional but recommended: one configs/<slug>.yaml per
-      question; configs/_defaults.yaml for shared keys.
+    - configs/ optional but recommended: one configs/<slug>.yaml per question; configs/_defaults.yaml for shared keys.
     - runs/<slug>.sh is a thin launcher around `claude "/<skill> ..."`:
         * Use `claude` (interactive TUI), NOT `claude -p`.
-        * Pass `--session-id $(uuidgen)`, copy session.jsonl to
-          results/<run>/ after exit (debug record only — substantive
-          output lives wherever the skill writes it).
-        * Pass `--dangerously-skip-permissions` (config-driven; default
-          true) so the skill can run pandas / write files freely.
+        * Pass `--session-id $(uuidgen)`, copy session.jsonl to results/<run>/ after exit (debug record only — substantive output lives wherever the skill writes it).
+        * Pass `--dangerously-skip-permissions` (config-driven; default true) so the skill can run pandas / write files freely.
         * Do NOT use `exec > >(tee log)` — breaks the TUI.
-    - Two-tier shape recommended for ≥2 questions: runs/_run.sh shared
-      launcher reads YAML + exec's claude; runs/ask_<slug>.sh one-line
-      wrapper. Underscore prefix reserved for shared/template files.
-    - results/ holds the session transcript (debug); substantive
-      outputs live at the skill's own artifact paths.
+    - Two-tier shape recommended for ≥2 questions: runs/_run.sh shared launcher reads YAML + exec's claude; runs/ask_<slug>.sh one-line wrapper. Underscore prefix reserved for shared/template files.
+    - results/ holds the session transcript (debug); substantive outputs live at the skill's own artifact paths.
 
 ---
 
@@ -443,20 +333,15 @@ Group-level diagram/  (cohesive-group narrative)
 ==================================================
 
   tasks/{G}_{group}/diagram/
-  +-- 01-overview.txt    what this group is, why it exists, narrative
-                          binding sibling tasks
-  +-- 02-tasks.txt       | Task | What it sweeps | Status |  (one row per
-                          sibling task)
+  +-- 01-overview.txt    what this group is, why it exists, narrative binding sibling tasks
+  +-- 02-tasks.txt       | Task | What it sweeps | Status |  (one row per sibling task)
   +-- 03-progress.txt    cross-task runs / progress table
   +-- 04-design.txt      shared script logic when tasks share a .py / approach
   +-- group.excalidraw   bundle (built by txt-to-canvas)
 
-  Use group-level diagram/ when sibling tasks form a coherent story
-  (e.g. "scaling-law sweeps across model size, epochs, datasize"). Each
-  task is then thin (artifacts only) and references back to group docs.
+  Use group-level diagram/ when sibling tasks form a coherent story (e.g. "scaling-law sweeps across model size, epochs, datasize"). Each task is then thin (artifacts only) and references back to group docs.
 
-  When the group is heterogeneous (sibling tasks unrelated), skip
-  group/diagram/ and put diagram/ at task level instead.
+  When the group is heterogeneous (sibling tasks unrelated), skip group/diagram/ and put diagram/ at task level instead.
 
   Authored via /diagram-ascii. Bundled via /diagram-ascii-canvas:
     bin/txt-to-canvas.py {group}/diagram/ --out {group}/diagram/group.excalidraw
@@ -475,21 +360,16 @@ Task-level diagram/  (operational detail)
 
   01-overview.txt — four blocks, 1-3 lines each: What / Why / Inputs / Outputs.
 
-  02-design.txt — approach detail (free-form). For model-training tasks,
-  include an ASCII forward-pass diagram + architecture-sweep table.
+  02-design.txt — approach detail (free-form). For model-training tasks, include an ASCII forward-pass diagram + architecture-sweep table.
 
-  03-runs.txt — runs table: | Run | Variant | Result Dir | Status | Notes |
-    Status values: planned | wip | done | failed | deprecated.
+  03-runs.txt — runs table: | Run | Variant | Result Dir | Status | Notes | Status values: planned | wip | done | failed | deprecated.
 
-  04-progress.txt — dated log, newest on top, append-only.
-    Format: `260426 — added run_5m; OOM at batch 64, downsized to 32`
+  04-progress.txt — dated log, newest on top, append-only. Format: `260426 — added run_5m; OOM at batch 64, downsized to 32`
 
   Authored via /diagram-ascii. Bundled via /diagram-ascii-canvas:
     bin/txt-to-canvas.py {task}/diagram/ --out {task}/diagram/task.excalidraw
 
-  Refresh whenever 03-runs or 04-progress changes meaningfully (e.g.,
-  after a run completes or a milestone is hit). Stale canvases are
-  flagged by /haipipe-project review.
+  Refresh whenever 03-runs or 04-progress changes meaningfully (e.g., after a run completes or a milestone is hit). Stale canvases are flagged by /haipipe-project review.
 
 ---
 
@@ -545,9 +425,7 @@ Run Script Templates
 
   The footer:
     - Prints on success AND on Python error (via bash EXIT trap).
-    - Lists local artifacts (results/<run>/) + cross-stage writes under
-      _WorkSpace/{1-SourceStore,2-RecStore,3-CaseStore,4-AIDataStore*,
-      5-ModelInstanceStore*,6-EndpointStore}.
+    - Lists local artifacts (results/<run>/) + cross-stage writes under _WorkSpace/{1-SourceStore,2-RecStore,3-CaseStore,4-AIDataStore*,5-ModelInstanceStore*,6-EndpointStore}.
     - `-newermt "@<unix_ts>"` requires GNU find (default on Linux).
     - `head -50` caps spammy output; raise if a real sweep produces more.
 
@@ -581,13 +459,10 @@ Relationship: runs/ <-> results/ <-> notebooks/ <-> sbatch/
 
   - configs/ holds the YAML for each run (config naming is freestyle)
   - runs/ holds one script per config (atomic, self-contained)
-  - notebooks/ holds one template <stem>.ipynb per task .py, plus one
-    <run_name>.ipynb per runs/<run_name>.sh (runtime record with outputs)
+  - notebooks/ holds one template <stem>.ipynb per task .py, plus one <run_name>.ipynb per runs/<run_name>.sh (runtime record with outputs)
   - results/ holds one dir per run (name-paired with runs/, NOT configs/)
   - sbatch/ coordinates one or several runs (orchestration only)
-  - One task = one .py template, multiple configs, multiple runs, multiple
-    runtime-recorded notebooks. sbatch/ scripts orchestrate which runs go
-    on which GPU.
+  - One task = one .py template, multiple configs, multiple runs, multiple runtime-recorded notebooks. sbatch/ scripts orchestrate which runs go on which GPU.
 
 ---
 
@@ -604,8 +479,7 @@ Paper-level diagram/  (manuscript plan)
   02-figure-plan.txt | Fig | Title | Source task | Status | (planned/draft/final)
   03-rebuttal.txt   per-reviewer comment + planned response sketch (during rebuttal)
 
-  The paper subfolder is often a git submodule; its diagram/ lives
-  inside the submodule and is committed to the paper repo.
+  The paper subfolder is often a git submodule; its diagram/ lives inside the submodule and is committed to the paper repo.
 
   Authored via /diagram-ascii. Bundled via /diagram-ascii-canvas.
 
@@ -623,8 +497,7 @@ Every Track A stub gets a paired example task in tasks/ (group D by default).
   code/hainn/tuner/{family}/*.py
   code/hainn/instance/{family}/*.py
 
-The paired task contains the standard task layout including diagram/.
-Status tracked in:
+The paired task contains the standard task layout including diagram/. Status tracked in:
   - {PROJECT}/diagram/03-exploration.txt  (under "active" or "backlog")
   - {task}/diagram/03-runs.txt            (Status = "stub" until implemented)
 
@@ -633,8 +506,7 @@ Status tracked in:
 _WorkSpace Paths
 =================
 
-Declared in env.sh, read by setup_workspace() in code/haipipe/base.py.
-NEVER inside the project folder.
+Declared in env.sh, read by setup_workspace() in code/haipipe/base.py. NEVER inside the project folder.
 
 ---
 
@@ -648,19 +520,16 @@ Project structure:
   [ ] No top-level configs/, results/, README.md, docs/, cc-archive/, _old/
   [ ] Tasks live under tasks/{G}{NN}_{group}/{NN}_{name}/
   [ ] Active probes live under probes/{MMDD}_{slug}/
-  [ ] Inactive/completed/deprecated probes live under
-      probes/{YYYY}-archive/{MMDD}_{slug}/ with original name preserved
+  [ ] Inactive/completed/deprecated probes live under probes/{YYYY}-archive/{MMDD}_{slug}/ with original name preserved
   [ ] Insights live under insights/{D,I,K,W}_*/ with INDEX.md at root
   [ ] Applications (if present) live under applications/{messages,ui,reports}/
-  [ ] {PROJECT}/diagram/ has 01-story, 02-boundary, 03-exploration,
-      project.excalidraw (canvas fresher than .txt sources)
+  [ ] {PROJECT}/diagram/ has 01-story, 02-boundary, 03-exploration, project.excalidraw (canvas fresher than .txt sources)
 
 Per group:
   [ ] No README.md
   [ ] Group letter G matches its tasks' series
   [ ] sbatch/ exists for cross-task orchestration (env.sh + batchers)
-  [ ] If cohesive: {group}/diagram/ has 01-overview, 02-tasks,
-      03-progress, 04-design, group.excalidraw
+  [ ] If cohesive: {group}/diagram/ has 01-overview, 02-tasks, 03-progress, 04-design, group.excalidraw
 
 Per task (standard):
   [ ] >=1 *.py at task root, no README.md
@@ -670,32 +539,21 @@ Per task (standard):
   [ ] runs/<run>.sh ↔ results/<run>/ name pairing holds
   [ ] sbatch/ scripts call runs/*.sh, never *.py
   [ ] No heavy files in results/ (heavy → _WorkSpace/)
-  [ ] notebooks/ has <run>.ipynb per runs/<run>.sh; template
-      <stem>.ipynb sits at task root next to <stem>.py
-  [ ] runs/*.sh include the "Files-generated footer" (Template A) — every
-      run prints local results + _WorkSpace writes on EXIT
-  [ ] runs/*.sh consistently use Template A (tee log) OR Template B
-      (papermill); never mix on same task
-  [ ] Papermill-mode .py: # %% [parameters] cell as first cell;
-      auto-detects TASK_DIR via __file__ → __vsc_ipynb_file__
-      → os.environ['TASK_DIR']
+  [ ] notebooks/ has <run>.ipynb per runs/<run>.sh; template <stem>.ipynb sits at task root next to <stem>.py
+  [ ] runs/*.sh include the "Files-generated footer" (Template A) — every run prints local results + _WorkSpace writes on EXIT
+  [ ] runs/*.sh consistently use Template A (tee log) OR Template B (papermill); never mix on same task
+  [ ] Papermill-mode .py: # %% [parameters] cell as first cell; auto-detects TASK_DIR via __file__ → __vsc_ipynb_file__ → os.environ['TASK_DIR']
 
 Per task (skill-runner exemption):
   [ ] No *.py / data/ required
-  [ ] runs/<slug>.sh execs `claude` (interactive, not `-p`); no tee header;
-      passes --session-id $(uuidgen) and copies session.jsonl to results/
-  [ ] If ≥2 questions: configs/<slug>.yaml + runs/_run.sh shared launcher
-      + runs/ask_<slug>.sh one-line wrappers (`_`-prefix = shared/template)
+  [ ] runs/<slug>.sh execs `claude` (interactive, not `-p`); no tee header; passes --session-id $(uuidgen) and copies session.jsonl to results/
+  [ ] If ≥2 questions: configs/<slug>.yaml + runs/_run.sh shared launcher + runs/ask_<slug>.sh one-line wrappers (`_`-prefix = shared/template)
 
 Per probe (if any probes/ folders exist):
-  [ ] Folder name is {MMDD}_{slug}
-      (MMDD = creation date: MM month, DD day; same-day collisions get a
-      letter suffix, e.g. 0601b)
-  [ ] probe.yaml exists; passes schema
-      (D_probe/ref/probe-yaml-schema.md)
+  [ ] Folder name is {MMDD}_{slug} (MMDD = creation date: MM month, DD day; same-day collisions get a letter suffix, e.g. 0601b)
+  [ ] probe.yaml exists; passes schema (D_probe/ref/probe-yaml-schema.md)
   [ ] No *.py / *.ipynb / *.png / *.pdf inside probe folder
-  [ ] If result.status == confirmed: review.md + INTEGRITY_AUDIT.md +
-      CLAIMS_FROM_RESULTS.md all present
+  [ ] If result.status == confirmed: review.md + INTEGRITY_AUDIT.md + CLAIMS_FROM_RESULTS.md all present
   [ ] LOOP_LOG.md (if loop ever started) records all rounds + final status
   [ ] logs/ entries are date-named (YYYY-MM-DD.md), append-only
   [ ] All probe.yaml arms[*] run-paths exist under tasks/
@@ -704,29 +562,22 @@ Per insight base (if insights/ exists):
   [ ] Top-level insights/INDEX.md present and fresh
   [ ] D_data/, I_information/, K_knowledge/, W_wisdom/ folders exist
   [ ] K_knowledge/INDEX.md and W_wisdom/INDEX.md present (high-signal layers)
-  [ ] Every entry has YAML frontmatter (id, layer, tags, status,
-      created, updated, sources, ref_by) per E_insight/ref/insight-md-schema.md
+  [ ] Every entry has YAML frontmatter (id, layer, tags, status, created, updated, sources, ref_by) per E_insight/ref/insight-md-schema.md
   [ ] No *.py / *.ipynb inside insights/ (synthesis only, no code)
   [ ] sources / ref_by are consistent (if K cites P, P's ref_by lists the K)
   [ ] All K entries cite ≥ 1 P; all W entries cite ≥ 1 K
   [ ] Each entry ≤ 200 lines total (frontmatter ≤ 13 + body ≤ 200)
-  [ ] No reports/ or external-facing synthesis docs (those moved to
-      applications/; insights/ is internal epistemic state only)
+  [ ] No reports/ or external-facing synthesis docs (those moved to applications/; insights/ is internal epistemic state only)
 
 Per application (if applications/ exists):
   [ ] applications/INDEX.md present and fresh
   [ ] Artifacts live under applications/{messages,ui,reports}/
-  [ ] Each artifact has YAML frontmatter (kind, audience, intent, created,
-      cited_K, cited_W, triggered, status) per G_application/ref/
-      audience-requirements.md
+  [ ] Each artifact has YAML frontmatter (kind, audience, intent, created, cited_K, cited_W, triggered, status) per G_application/ref/ audience-requirements.md
   [ ] cited_K / cited_W populated for every load-bearing claim
   [ ] No K cited with status=superseded as if active
-  [ ] Length within audience budget (patient ≤ 200w, clinician ≤ 400w,
-      regulator ≤ 1500w, executive ≤ 600w, partner ≤ 800w, designer/dev
-      kind=ui per spec)
+  [ ] Length within audience budget (patient ≤ 200w, clinician ≤ 400w, regulator ≤ 1500w, executive ≤ 600w, partner ≤ 800w, designer/dev kind=ui per spec)
   [ ] No *.py / *.ipynb / no edits to insights/ from this layer
-  [ ] If status=draft: "## Open questions" section present listing
-      unresolved gaps
+  [ ] If status=draft: "## Open questions" section present listing unresolved gaps
 
 Paper (if applicable):
   [ ] paper/Paper-*/diagram/ has 01-overview, 02-figure-plan

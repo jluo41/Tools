@@ -1,12 +1,9 @@
 plan.yaml — workflow design document
 =====================================
 
-The plan is the human-readable blueprint of a workflow's IPO contract.
-`/haipipe-workflow plan` produces it; `/haipipe-workflow build` consumes
-it; `/haipipe-workflow report` echoes it with results.
+The plan is the human-readable blueprint of a workflow's IPO contract. `/haipipe-workflow plan` produces it; `/haipipe-workflow build` consumes it; `/haipipe-workflow report` echoes it with results.
 
-The skill defines **templates** (abstract shapes with placeholders).
-A specific workflow instance fills in every field with concrete values.
+The skill defines **templates** (abstract shapes with placeholders). A specific workflow instance fills in every field with concrete values.
 
 
 Plan schema
@@ -239,8 +236,7 @@ summary:
 Sub-workflow steps
 ===================
 
-When a Step calls another skill (type: skill), the plan declares
-only sub_I and sub_O. The callee's internal phases are hidden.
+When a Step calls another skill (type: skill), the plan declares only sub_I and sub_O. The callee's internal phases are hidden.
 
 ```yaml
 # In haipipe-probe's plan.yaml

@@ -1,8 +1,7 @@
 fn-summarize: Post-Development Summary + Flow Chart
 ====================================================
 
-Generates a human-readable project summary for someone with zero prior context.
-Writes to: examples/{PROJECT_ID}/docs/project-summary.md
+Generates a human-readable project summary for someone with zero prior context. Writes to: examples/{PROJECT_ID}/docs/project-summary.md
 
 ---
 

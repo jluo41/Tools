@@ -14,9 +14,7 @@ metadata:
 Skill: haipipe-project-inspect
 ===============================
 
-Read-only specialist. Reviews, summarizes, inventories, and overviews
-project state without modifying anything. Called by the `/haipipe-project`
-orchestrator; can also be invoked directly.
+Read-only specialist. Reviews, summarizes, inventories, and overviews project state without modifying anything. Called by the `/haipipe-project` orchestrator; can also be invoked directly.
 
   Function axis:  review | summarize | inventory | overview | scan-status
 

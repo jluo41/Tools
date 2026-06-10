@@ -18,9 +18,7 @@ Skill: haipipe-workflow (orchestrator)
 
 The **basic orchestration unit** of haipipe-toolkit.
 
-Every haipipe skill (task, probe, insight, narrative) IS a workflow —
-a specific one with its own domain phases and steps. This skill defines
-the shared shape they all follow.
+Every haipipe skill (task, probe, insight, narrative) IS a workflow — a specific one with its own domain phases and steps. This skill defines the shared shape they all follow.
 
 ```
      ┌─────────┐     ┌───────────────────────────────────┐     ┌──────────┐
@@ -67,9 +65,7 @@ plan.yaml ──(build)──▶ .workflow.js ──(execute)──▶ results �
 Template vs Specific
 ---------------------
 
-This skill defines **templates** — abstract shapes with placeholders.
-Each domain skill (task, probe, ...) fills in the blanks to make a
-**specific** workflow with concrete files, concrete steps, concrete prompts.
+This skill defines **templates** — abstract shapes with placeholders. Each domain skill (task, probe, ...) fills in the blanks to make a **specific** workflow with concrete files, concrete steps, concrete prompts.
 
 ```
 TEMPLATE (this skill):                SPECIFIC (e.g. haipipe-task):
@@ -183,9 +179,7 @@ Generate a `.workflow.js` script from the frozen `plan.yaml`.
    - `return` ← plan output contract
 5. Write `<target-dir>/<name>.workflow.js`.
 
-The generated `.js` is the machine-executable form of the plan.
-The plan is what you read and edit; the `.js` is what the Workflow
-engine runs. You should rarely need to edit the `.js` directly.
+The generated `.js` is the machine-executable form of the plan. The plan is what you read and edit; the `.js` is what the Workflow engine runs. You should rarely need to edit the `.js` directly.
 
 
 Function: execute
@@ -208,9 +202,7 @@ Subagent          Agent() per step, manual chain    a few steps, want to watch
 Manual            human runs each step              CMS server, GPU jobs
 ```
 
-For manual mode (e.g. edit-local-run-server), the plan.yaml still
-serves as the checklist — the human follows the phases/steps and
-records results that feed into the report.
+For manual mode (e.g. edit-local-run-server), the plan.yaml still serves as the checklist — the human follows the phases/steps and records results that feed into the report.
 
 
 Function: report
@@ -261,8 +253,7 @@ OUTPUT
 Function: template
 ------------------
 
-Dump a starter `plan.yaml` with all fields annotated. Quick start for
-designing a new specific workflow.
+Dump a starter `plan.yaml` with all fields annotated. Quick start for designing a new specific workflow.
 
 
 Routing logic

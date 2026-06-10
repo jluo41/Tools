@@ -1,9 +1,7 @@
 Claude Code Workflow API — cheat sheet
 =======================================
 
-The Workflow tool runs deterministic, resumable multi-agent scripts.
-Scripts are plain JavaScript (NOT TypeScript). The script body runs
-in an async context — use `await` directly.
+The Workflow tool runs deterministic, resumable multi-agent scripts. Scripts are plain JavaScript (NOT TypeScript). The script body runs in an async context — use `await` directly.
 
 
 Invocation
@@ -85,9 +83,7 @@ const result = await agent(
 
 ### pipeline(items, stage1, stage2, ...) → Promise<any[]>
 
-**DEFAULT fan-out.** Each item flows through all stages independently.
-No barrier between stages — item A can be in stage 3 while item B is
-still in stage 1.
+**DEFAULT fan-out.** Each item flows through all stages independently. No barrier between stages — item A can be in stage 3 while item B is still in stage 1.
 
 ```javascript
 const results = await pipeline(
@@ -108,7 +104,7 @@ A stage that throws drops that item to `null` and skips remaining stages.
 
 ### parallel(thunks) → Promise<any[]>
 
-**Barrier fan-out.** Awaits ALL thunks before returning.
+**Barrier fan-out.** Awaits ALL thunks before returning. A thunk that throws resolves to `null`. Use `.filter(Boolean)` on results.
 
 ```javascript
 const all = await parallel([
@@ -118,16 +114,12 @@ const all = await parallel([
 ])
 ```
 
-A thunk that throws resolves to `null`. Use `.filter(Boolean)` on results.
-
-**Use parallel only when you genuinely need ALL results together**
-(dedup, merge, early-exit). Otherwise use pipeline.
+**Use parallel only when you genuinely need ALL results together** (dedup, merge, early-exit). Otherwise use pipeline.
 
 
 ### phase(title) → void
 
-Start a new phase. Subsequent `agent()` calls group under this title
-in the progress display.
+Start a new phase. Subsequent `agent()` calls group under this title in the progress display.
 
 ```javascript
 phase('Discover')

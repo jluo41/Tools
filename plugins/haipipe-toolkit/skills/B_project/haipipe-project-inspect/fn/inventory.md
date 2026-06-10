@@ -5,16 +5,11 @@ Build or refresh the visual catalog for a haipipe project.
 
 One rule:
 
-  **Every task folder under  tasks/  contains exactly one
-   build_inventory.py + {folder_name}.excalidraw + {folder_name}.png.**
+  **Every task folder under  tasks/  contains exactly one build_inventory.py + {folder_name}.excalidraw + {folder_name}.png.**
 
-  The figure filename matches the folder name — e.g. A_pretraining_clm/ contains
-  A_pretraining_clm.{excalidraw,png}.  This makes  find -name "*.png"  produce
-  unambiguous results across the whole project.
+  The figure filename matches the folder name — e.g. A_pretraining_clm/ contains A_pretraining_clm.{excalidraw,png}.  This makes  find -name "*.png"  produce unambiguous results across the whole project.
 
-The folder name is the figure's identity — no separate "inventory/" dir at the
-project root.  Data inventory lives in  tasks/0_data/  like any other task.
-Rendering calls the shared excalidraw-diagram-skill; no parallel template.
+The folder name is the figure's identity — no separate "inventory/" dir at the project root.  Data inventory lives in  tasks/0_data/  like any other task. Rendering calls the shared excalidraw-diagram-skill; no parallel template.
 
 
 Convention

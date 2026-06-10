@@ -1,0 +1,89 @@
+# workflow-plan-sample.yaml — inference-performance task script-level plan
+# Schema: B_project/haipipe-workflow/ref/plan-schema.md
+# Task-level template: ../haipipe-task/ref/workflow-template.yaml
+#
+# Typical inference phases: Setup → Profile → Report
+# All outputs light (results/<run>/latency.json). Reads from 6-EndpointStore.
+
+# ─── Header ──────────────────────────────────────────────────────
+name: profile-<ENDPOINT>
+purpose: "Profile inference latency of <ENDPOINT> Endpoint_Set"
+skill: haipipe-task-for-inference
+
+# ─── I: Input ────────────────────────────────────────────────────
+input:
+  args:
+    config: configs/<RUN>.yaml
+    endpoint_path: <_WorkSpace path to Endpoint_Set>
+  files_in:
+    - <NN>_<TASK>.py
+    - configs/<RUN>.yaml
+    - _WorkSpace/6-EndpointStore/<ENDPOINT>
+
+# ─── P: Phases ───────────────────────────────────────────────────
+phases:
+
+  - title: Setup
+    detail: "load Endpoint_Set, prepare test payload"
+    steps:
+      - label: "setup:load-endpoint"
+        type: agent
+        required: true
+        prompt: "Load Endpoint_Set from _WorkSpace/6-EndpointStore/"
+        files_in:
+          - _WorkSpace/6-EndpointStore/<ENDPOINT>
+        files_out: []
+
+      - label: "setup:payload"
+        type: agent
+        required: true
+        prompt: "Build representative test payload from examples/"
+        files_in: []
+        files_out: []
+
+  - title: Profile
+    detail: "run N iterations, measure per-step latency"
+    steps:
+      - label: "profile:warmup"
+        type: agent
+        required: true
+        prompt: "Run 5 warmup iterations (discard timings)"
+        files_in: []
+        files_out: []
+
+      - label: "profile:measure"
+        type: agent
+        required: true
+        prompt: "Run N timed iterations, collect per-step latency breakdown"
+        files_in: []
+        files_out: []
+
+  - title: Report
+    detail: "aggregate timings, write latency report"
+    steps:
+      - label: "report:aggregate"
+        type: agent
+        required: true
+        prompt: "Compute p50/p95/p99 per step, identify bottleneck"
+        files_in: []
+        files_out:
+          - results/<RUN>/latency.json
+
+      - label: "report:summary"
+        type: agent
+        required: true
+        prompt: "Write human-readable latency summary"
+        files_in:
+          - results/<RUN>/latency.json
+        files_out:
+          - results/<RUN>/runtime.yaml
+
+# ─── O: Output ───────────────────────────────────────────────────
+output:
+  returns:
+    status: ok
+    bottleneck: "<step with highest p95>"
+    p95_total_ms: <N>
+  files_out:
+    - results/<RUN>/latency.json
+    - results/<RUN>/runtime.yaml

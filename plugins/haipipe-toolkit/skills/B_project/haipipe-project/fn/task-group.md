@@ -1,8 +1,7 @@
 fn-task-group: Scaffold a New Task-Group
 ==========================================
 
-A task-group holds related task-folders that share context: one diagram
-narrative, one sbatch coordinator, one group letter.
+A task-group holds related task-folders that share context: one diagram narrative, one sbatch coordinator, one group letter.
 
 Output: `examples/{PROJECT_ID}/tasks/{G}{NN}_{group_name}/`.
 
