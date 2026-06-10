@@ -27,6 +27,34 @@ this one engine but differ in RUNNAME grammar, output destination, and
 headline meaning — which is why each gets its own specialist.
 
 
+Stage topology families
+------------------------
+
+The four stages split into two TOPOLOGY FAMILIES that determine how
+runners, orchestrators, and ceremony are organized:
+
+```
+ORCHESTRATED (year axis):                SELF-ORCHESTRATING (no year axis):
+  cms, case                                data, reg
+  ---------------------------              ----------------------------------
+  run_<stage>_year.ps1 heavyweight         runs/<run>.ps1 IS the heavyweight
+  runs/<run>.ps1 = 2-3 thin lines          (no year orchestrator exists)
+  (delegates to orchestrator)
+
+  No preconditions in runner               Preconditions in runner (config
+  (orchestrator checks inputs)             parsing, upstream .dta existence)
+
+  No ceremony in runner                    config_snapshot.do + manifest.json
+  (Stata logs are the record)              acceptable (runner IS orchestrator)
+
+  Template: ref/run-ps1-template.ps1       Template: ref/run-data-runner-template.ps1
+            ref/run-stage-year-template.ps1           (reg: inline in runner)
+```
+
+Rules A5, B2, B3 are SCOPED by topology family -- see each rule for
+per-family details. Rules A1-A4, A6-A8, B1, B4-B6 apply equally.
+
+
 The RUNNAME spine — Stata projection
 -------------------------------------
 
@@ -90,7 +118,7 @@ Anatomy of a Stata task-folder
 ├── configs/
 │   ├── <cfg>.do               ← Stata globals (keep-vars, flags; paths built from ${ws_root}) — SOURCE OF TRUTH
 │   └── <run>.yaml             ← _meta: block + stata_config: pointer  (NEW under this dialect)
-├── run_{stage}_year.ps1       ← intra-run ORCHESTRATOR at task root (~15 lines: phases + parallelism)
+├── run_{stage}_year.ps1       ← intra-run ORCHESTRATOR at task root (<=30 lines: phases + parallelism)
 ├── runs/
 │   └── <run>.ps1              ← THIN per-run entry (a few lines); one per run identity; pairs with results/<run>/
 ├── sbatch/
@@ -119,7 +147,7 @@ Roles, precisely:
   (one editable line), resolves `ws_root` by walking up to `pyproject.toml`,
   runs Stata with the working dir set to `$PSScriptRoot` (the task folder), and
   sequences the dispatcher's steps in dependency-correct phases (within-phase
-  parallelism via `Start-Process ... -PassThru | Wait-Process`). ~15 lines —
+  parallelism via `Start-Process ... -PassThru | Wait-Process`). <=30 lines —
   see the script style contract below.
 - **`runs/<run>.ps1`** — the RUNNAME entry, THIN: one comment line + one call
   into the orchestrator with this run's parameters
@@ -151,9 +179,14 @@ A2  ASCII-only .ps1/.do. PS 5.1 reads ANSI: an em-dash or box-drawing char
 A3  No installs, no network: no winget / pip / ssc install anywhere.
 A4  No SSC commands in .do: no `distinct` (use egen tag() + count); built-ins
     only; capture-guard optional variables.
-A5  Stata exe = ONE editable line at the top of the orchestrator:
-    $stata = "C:\Program Files\Stata18\StataMP-64.exe"
-    No resolver functions. Another machine edits that one line.
+A5  Stata exe resolution -- two accepted patterns (scoped by topology):
+    (a) HARDCODED (server-optimized): $stata = "C:\...\StataMP-64.exe"
+        Another machine edits that one line. Preferred for cms-stage.
+    (b) RESOLVER (multi-machine): Resolve-StataExe function (~10 lines,
+        checks $env:HAIPIPE_STATA then scans Program Files). Standard for
+        data/reg/case-stage runners that also run on laptop during dev.
+    The reviewer accepts either. On the CMS server the user can always
+    override via $env:HAIPIPE_STATA.
 A6  Output paths from the ABSOLUTE _WorkSpace (pyproject.toml walk-up).
     Never a relative "_WorkSpace", never ..\.. depth counting. Genuinely
     fixed raw inputs (G:\CMS\DATA) stay absolute in the config.
@@ -175,12 +208,20 @@ Readability (every file is hand-checked before copy):
 B1  Header = 1-2 comment lines (what + args/usage). No banner blocks, no
     ===/--- separator walls, no ASCII-art in code, no "// CHANGE (n)" patch
     markers, no commented-out alternatives left behind.
-B2  Size budget: orchestrator .ps1 <= ~30 lines; runs/ entry as small as
-    possible (ideal: 2-3 lines -- comment + call orchestrator, thin
-    dispatch only); sbatch batcher <= ~10; worker .do = one focused step.
-B3  No ceremony in the hot path: no runtime.yaml / manifest.json / config
-    snapshots / precondition hashtables in runners. Stata logs + summary.txt
-    are the record.
+B2  Size budget (scoped by topology):
+    ORCHESTRATED (cms/case): orchestrator <= ~30 lines; runs/ entry 2-3
+      lines (comment + call orchestrator -- thin dispatch only).
+    SELF-ORCHESTRATING (data/reg): runs/ IS the orchestrator, no fixed
+      limit but stays focused (data: ~60-105 lines; reg: ~30-40 lines).
+      Shared helper (run_data_steps.ps1) <= ~45 lines.
+    All: sbatch <= ~10 lines (longer if parameterized); worker .do = one step.
+B3  Ceremony (scoped by topology):
+    ORCHESTRATED (cms/case): no ceremony in runners -- Stata logs +
+      summary.txt are the record.
+    SELF-ORCHESTRATING (data/reg): runners MAY include config_snapshot.do,
+      manifest.json, and precondition checks (verify upstream .dta exist).
+      Acceptable because the runner IS the orchestrator. Keep in numbered
+      sections for readability. Do NOT add ceremony to shared helpers or workers.
 B4  .do dispatch ladders: multi-line braces (next section), aligned step names.
 B5  Orchestrator reads as: variable block ($stata, $dir, $ws, $base, $tail),
     then the action lines. Input -> step -> output traceable in one screen.
@@ -299,10 +340,11 @@ A Stata task must run identically on a laptop and on the secure server,
 launched from anywhere, regardless of the folder's own name. Three rules
 (all baked into the ref templates — do NOT re-derive them per task):
 
-1. **Stata exe = one editable variable.** The orchestrator's first code line is
-   `$stata = "C:\Program Files\Stata18\StataMP-64.exe"` (the server exe). A
-   different machine edits that ONE line. No resolver functions (rule A5) —
-   a 10-line auto-detect costs more hand-check time than it saves.
+1. **Stata exe = one resolvable location.** Either a hardcoded line
+   (`$stata = "C:\...\StataMP-64.exe"` -- cms-stage server pattern) or a
+   `Resolve-StataExe` function (~10 lines, checks `$env:HAIPIPE_STATA` then
+   scans Program Files -- data/reg/case pattern for multi-machine dev).
+   See rule A5 for when each is preferred.
 
 2. **Run from the task folder; keep code paths relative.** The orchestrator
    sets the Stata working dir to `$PSScriptRoot` (the task root) and calls the

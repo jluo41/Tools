@@ -1,21 +1,29 @@
-# run_<stage>_year.ps1 - ORCHESTRATOR: one run (one year), steps in dependency phases
-# Contract: do <NN>_<stage>_pipeline.do <cfg> <step> <year> <results_dir> <ws_root>
-# EDIT the <placeholders>: dispatcher name, stage name, step names, phase grouping.
-# Phase rule: independent steps -> one parallel block; dependent steps -> -Wait, in order.
+# run_<stage>_year.ps1 -- per-year orchestrator (<=30 lines)
+# EDIT: param defaults, $stata path, dispatcher name, step names, phase grouping.
 param([string]$cfg = "<cfg>", [string]$year = "2015")
+$ErrorActionPreference = "Stop"
+$stata = "C:\Program Files\Stata18\StataMP-64.exe"
+$dir = $PSScriptRoot
+$ws = $dir
+while ($ws -and -not (Test-Path "$ws\pyproject.toml")) { $ws = Split-Path $ws }
+if (-not $ws) { Write-Error "pyproject.toml not found above $dir"; exit 1 }
+if (-not (Test-Path "$dir\configs\$cfg.do")) { Write-Error "config not found: configs\$cfg.do"; exit 1 }
+$wsRoot = "$ws\_WorkSpace"
+$resultsDir = "$dir\results\run_<stage>_$year"
+New-Item -ItemType Directory -Force -Path "$resultsDir\log" | Out-Null
+if (-not $env:STATATMP) { $env:STATATMP = "$resultsDir\tmp" }
+New-Item -ItemType Directory -Force -Path $env:STATATMP | Out-Null
+$base = "do <NN>_<stage>_pipeline.do $cfg"
+$tail = "`"$resultsDir`" `"$wsRoot`""
 
-$stata = "C:\Program Files\Stata18\StataMP-64.exe"   # server exe; edit this ONE line per machine
-$dir   = $PSScriptRoot                               # task folder = Stata working dir (configs/, scripts/ resolve relative)
-$ws    = $dir; while ($ws -and -not (Test-Path "$ws\pyproject.toml")) { $ws = Split-Path $ws }
-$base  = "do <NN>_<stage>_pipeline.do $cfg"
-$tail  = "`"$dir\results\run_<stage>_$year`" `"$ws\_WorkSpace`""   # results_dir + ws_root, both absolute
-
-# phase 1: independent steps, parallel (~32GB RAM per Stata job; keep <= 4)
-$jobs = "<step_a>","<step_b>","<step_c>" |
-        ForEach-Object { Start-Process $stata "/e $base $_ $year $tail" -WorkingDirectory $dir -PassThru }
-$jobs | Wait-Process
-
-# phase 2: dependent steps, sequential
-Start-Process $stata "/e $base <dependent_step> $year $tail" -WorkingDirectory $dir -PassThru -Wait
-Start-Process $stata "/e $base summary $year $tail" -WorkingDirectory $dir -PassThru -Wait
-Write-Host "Year $year done."
+# Phase 1: independent steps in parallel
+$p1 = @(
+    Start-Process $stata -ArgumentList "/e $base <step_a> $year $tail" -WorkingDirectory $dir -PassThru
+    Start-Process $stata -ArgumentList "/e $base <step_b> $year $tail" -WorkingDirectory $dir -PassThru
+)
+$p1 | Wait-Process
+# Phase 2: dependent step (sequential)
+Start-Process $stata -ArgumentList "/e $base <dependent_step> $year $tail" -WorkingDirectory $dir -PassThru -Wait
+# Phase 3: summary
+Start-Process $stata -ArgumentList "/e $base summary $year $tail" -WorkingDirectory $dir -PassThru -Wait
+Write-Host "[run_<stage>_$year] done."
