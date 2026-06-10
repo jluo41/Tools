@@ -4,26 +4,20 @@ description: "data-pipeline task-folder build specialist. Scaffolds {NN}_<name>/
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-06-09"
   summary: "data-pipeline task-folder build specialist."
   changelog:
+    - "1.1.0 (2026-06-09): unwrap prose; fix agent names; add 4-stage lifecycle paragraph."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-task-for-data
 =================================
 
-Scaffolds a **data-pipeline task-folder** — a runnable example that
-invokes one of the Stage 1-4 builders. Heavy outputs land in
-`_WorkSpace/{1..4}-*Store/`; the task-folder keeps light pointers
-and a notebook of the run.
+Scaffolds a **data-pipeline task-folder** — a runnable example that invokes one of the Stage 1-4 builders. Heavy outputs land in `_WorkSpace/{1..4}-*Store/`; the task-folder keeps light pointers and a notebook of the run.
 
-**Invocation modes (see `../haipipe-task/ref/invocation-modes.md`):**
-interactive (a human steers; missing fields get ASKed) OR headless (a full
-spec → run silently, no ASK). `code-creator-for-data-agent` calls this skill
-headless during fan-out, then authors the `<TASK>.py` body. Always end with
-the structured return block (status / task_folder / run_name / files).
+**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the `<TASK>.py` body). Always end with the structured return block (status / task_folder / run_name / files).
 
 
 Position in the series
@@ -63,10 +57,7 @@ Heavy outputs land in: `_WorkSpace/{1..4}-*Store/`.
 Cross-reference to pipeline skill
 ----------------------------------
 
-`/haipipe-data` (and its sub-specialists: -source / -record / -case /
--aidata) owns the BUILDER code. This skill only scaffolds the example
-under `examples/`. After scaffolding, suggest `/haipipe-data <stage>`
-to author the builder logic.
+`/haipipe-data` (and its sub-specialists: -source / -record / -case / -aidata) owns the BUILDER code. This skill only scaffolds the example under `examples/`. After scaffolding, suggest `/haipipe-data <stage>` to author the builder logic.
 
 
 Commands
@@ -107,8 +98,7 @@ next:      suggested next command (typically /haipipe-data <stage>)
 Workflow plan
 --------------
 
-When `/haipipe-task plan` targets an existing task-folder of this type,
-the generated plan-script YAML should follow the type-specific sample:
+When `/haipipe-task plan` targets an existing task-folder of this type, the generated plan-script YAML should follow the type-specific sample:
 
 ```
 ref/workflow-plan-sample.yaml     ← script-level phases for this type

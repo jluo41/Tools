@@ -4,19 +4,20 @@ description: "display task-folder build specialist. Scaffolds {NN}_<name>/ task-
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-06-09"
   summary: "display task-folder build specialist."
   changelog:
+    - "1.1.0 (2026-06-09): unwrap prose; fix agent names; add 4-stage lifecycle paragraph."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-task-for-display
 ====================================
 
-Scaffolds a **display task-folder** — paper figures or paper tables.
-Consumes `results/<run>/` artifacts from upstream eval / training
-tasks; produces publication-ready PDF / PNG / TeX.
+Scaffolds a **display task-folder** — paper figures or paper tables. Consumes `results/<run>/` artifacts from upstream eval / training tasks; produces publication-ready PDF / PNG / TeX.
+
+**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the `<TASK>.py` body). Always end with the structured return block (status / task_folder / run_name / files).
 
 
 Position in the series
@@ -56,9 +57,7 @@ Heavy outputs: none.
 Cross-reference to pipeline skill
 ----------------------------------
 
-No corresponding pipeline skill — display tasks are independent;
-they read from upstream `results/<run>/` and write final artifacts.
-Useful adjacent skills: `/haipipe-paper-structure-figure`, `/haipipe-paper-structure-illustration`.
+No corresponding pipeline skill — display tasks are independent; they read from upstream `results/<run>/` and write final artifacts. Useful adjacent skills: `/haipipe-paper-structure-figure`, `/haipipe-paper-structure-illustration`.
 
 
 Scaffold flow
@@ -90,8 +89,7 @@ next:      suggested next command (run.sh / /haipipe-paper-structure-figure)
 Workflow plan
 --------------
 
-When `/haipipe-task plan` targets an existing task-folder of this type,
-the generated plan-script YAML should follow the type-specific sample:
+When `/haipipe-task plan` targets an existing task-folder of this type, the generated plan-script YAML should follow the type-specific sample:
 
 ```
 ref/workflow-plan-sample.yaml     ← script-level phases for this type

@@ -4,21 +4,19 @@ description: "Stata-engine task-folder build sub-orchestrator — the parent of 
 argument-hint: "[stage] [project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-06-08"
+  version: "1.2.0"
+  last_updated: "2026-06-09"
   summary: "Stata sub-orchestrator — routes to cms/case/data/reg children."
   changelog:
     - "1.0.0 (2026-05-31): baseline."
     - "1.1.0 (2026-06-08): add metadata; workflow lifecycle compatible."
+    - "1.2.0 (2026-06-09): unwrap prose; fix agent names to haipipe-task-{creator,reviewer}-agent; add lifecycle paragraph."
 ---
 
 Skill: haipipe-task-for-stata  (Stata sub-orchestrator)
 ====================================================
 
-The **father skill** for Stata task-folder builds. `/haipipe-task` routes any
-**engine=Stata** request here; this skill picks the right **stage** specialist
-and delegates. The four children differ only in RUNNAME grammar, output store,
-and headline — they share ONE execution dialect (`ref/stata-dialect.md`).
+The **father skill** for Stata task-folder builds. `/haipipe-task` routes any **engine=Stata** request here; this skill picks the right **stage** specialist and delegates. The four children differ only in RUNNAME grammar, output store, and headline — they share ONE execution dialect (`ref/stata-dialect.md`).
 
 ```
 /haipipe-task   (top: ML task-types + engine routing)
@@ -42,16 +40,13 @@ data    stata-data    /haipipe-task-for-stata-data       C              *-Data-S
 reg     stata-reg     /haipipe-task-for-stata-reg        D              results/      (LIGHT)
 ```
 
-The `{LNN}` letter encodes the stage so a task-folder sorts in pipeline order
-(`A`cms → `B`case → `C`data → `D`reg). Full definition: the "Task-folder
-`{LNN}` stage-letter alphabet" section in `ref/stata-dialect.md`.
+The `{LNN}` letter encodes the stage so a task-folder sorts in pipeline order (`A`cms → `B`case → `C`data → `D`reg). Full definition: the "Task-folder `{LNN}` stage-letter alphabet" section in `ref/stata-dialect.md`.
 
 
 Stage disambiguation (the "smart delegation")
 ---------------------------------------------
 
-The bare keyword `stata` (or a `.do` file) signals this skill; the accompanying
-**stage word** picks the child:
+The bare keyword `stata` (or a `.do` file) signals this skill; the accompanying **stage word** picks the child:
 
 ```
 ┌────────────┬─────────────────────────────────────────────────────────────────┐
@@ -80,18 +75,13 @@ Cascade:
 Routing protocol
 ----------------
 
-Step 0: Read `ref/stata-dialect.md` (the engine contract) — the
-        three CWD/location-independence rules (Stata auto-detect, run-from-
-        `$PSScriptRoot`, `ws_root`-anchored output) and the `{LNN}` alphabet.
+Step 0: Read `ref/stata-dialect.md` (the engine contract) — the three CWD/location-independence rules (Stata auto-detect, run-from-`$PSScriptRoot`, `ws_root`-anchored output) and the `{LNN}` alphabet.
 
-Step 1: Detect AUTO_MODE (same triggers as `/haipipe-task`: `--auto`, env, or
-        parent passed `--auto`).
+Step 1: Detect AUTO_MODE (same triggers as `/haipipe-task`: `--auto`, env, or parent passed `--auto`).
 
 Step 2: Resolve stage via the cascade above.
 
-Step 3: Verify ancestors exist (project → group), mirroring `/haipipe-task`
-        Step 3b. If a `--project-id` / `--group` is given and missing, scaffold
-        via `/haipipe-task` (project / task-group) first; else ASK / block.
+Step 3: Verify ancestors exist (project → group), mirroring `/haipipe-task` Step 3b. If a `--project-id` / `--group` is given and missing, scaffold via `/haipipe-task` (project / task-group) first; else ASK / block.
 
 Step 4: Delegate —
           Skill("haipipe-task-for-stata-<stage>",
@@ -114,18 +104,9 @@ Three portability rules (DO NOT re-derive per task — the templates already bak
   2. Run from the task folder (`$PSScriptRoot`); code paths stay relative; folder name is free.
   3. Anchor the DATA root absolute via `ws_root` (config builds paths from `${ws_root}`, never literal `_WorkSpace`).
 
-⚠️ All `.ps1`/`.do` follow the **"Script style + server constraints"** contract in
-`ref/stata-dialect.md` — CMS server is Windows PowerShell 5.1 only
-(no `pwsh`), ASCII-only files, 1-2 line headers, no ceremony, thin `runs/` +
-`sbatch/`. `stata-script-reviewer-agent` enforces it before any hand-copy to the
-server (the researcher hand-reads every file).
+⚠️ All `.ps1`/`.do` follow the **"Script style + server constraints"** contract in `ref/stata-dialect.md` — CMS server is Windows PowerShell 5.1 only (no `pwsh`), ASCII-only files, 1-2 line headers, no ceremony, thin `runs/` + `sbatch/`. `haipipe-task-reviewer-agent` enforces it before any hand-copy to the server (the researcher hand-reads every file).
 
-Every Stata task ALSO ships a read-only **describe / QC run** (`describe` dispatch
-step → `scripts/d-<Stage>-Describe.do`, + `runs/run_describe_<...>.ps1`) that
-writes a human-readable correctness report to `results/`. Built-ins only — NO SSC
-(`egen tag` for distinct counts, never `distinct`). See the "Describe / QC run"
-section in `ref/stata-dialect.md`; each child scaffolds the
-stage-specific version.
+Every Stata task ALSO ships a read-only **describe / QC run** (`describe` dispatch step → `scripts/d-<Stage>-Describe.do`, + `runs/run_describe_<...>.ps1`) that writes a human-readable correctness report to `results/`. Built-ins only — NO SSC (`egen tag` for distinct counts, never `distinct`). See the "Describe / QC run" section in `ref/stata-dialect.md`; each child scaffolds the stage-specific version.
 
 
 Return contract
@@ -135,5 +116,5 @@ Return contract
 status:    ok | blocked | failed
 summary:   2-3 sentences — which stage was chosen + what the child scaffolded
 artifacts: [paths created]   (from the child)
-next:      author dispatcher .do + scripts/ workers (incl. a `describe` step + run_describe_*.ps1 QC run); stata-script-reviewer-agent before hand-copy; then runs/<run>.ps1 (or sbatch/)
+next:      author dispatcher .do + scripts/ workers (incl. a `describe` step + run_describe_*.ps1 QC run); haipipe-task-reviewer-agent before hand-copy; then runs/<run>.ps1 (or sbatch/)
 ```

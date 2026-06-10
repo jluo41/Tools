@@ -1,0 +1,97 @@
+# workflow-plan-sample.yaml — Stata case task script-level plan
+# Schema: B_project/haipipe-workflow/ref/plan-schema.md
+# Task-level template: ../haipipe-task/ref/workflow-template.yaml
+#
+# Typical case phases: TriggerCases → AttachFeatures → Store → Describe
+# Heavy outputs land in _WorkSpace/2-Case-Store/.
+
+# ─── Header ──────────────────────────────────────────────────────
+name: case-<COHORT>-<SOURCE>-<YEAR>
+purpose: "Trigger cohort cases and attach BFAF feature panels for <COHORT> <SOURCE> year <YEAR> into 2-Case-Store"
+skill: haipipe-task-for-stata-case
+
+# ─── I: Input ────────────────────────────────────────────────────
+input:
+  args:
+    config: configs/<COHORT>_<SOURCE>_<YEAR>.do
+    year: <YEAR>
+    source: <SOURCE>
+  files_in:
+    - case_pipeline.do
+    - configs/<COHORT>.do
+    - configs/_source_<SOURCE>.do
+    - configs/<COHORT>_<SOURCE>_<YEAR>.do
+    - _WorkSpace/1-CMS-Store/<CMS_ASSET>/year-<YEAR>/
+    - _WorkSpace/0-External-Store/<NDC_CROSSWALK>
+    - _WorkSpace/0-External-Store/<ICD_CROSSWALK>
+
+# ─── P: Phases ───────────────────────────────────────────────────
+phases:
+
+  - title: TriggerCases
+    detail: "identify service events matching cohort ICD codes"
+    steps:
+      - label: "trigger:cases"
+        type: agent
+        required: true
+        prompt: "Run trigger-cases scripts for <COHORT> on CMS year <YEAR> (<SOURCE>)"
+        files_in:
+          - _WorkSpace/1-CMS-Store/<CMS_ASSET>/year-<YEAR>/
+        files_out: []
+
+  - title: AttachFeatures
+    detail: "attach bene/PDE/claims/lines/outpatient BFAF feature panels"
+    steps:
+      - label: "feat:bene"
+        type: agent
+        required: true
+        prompt: "Attach beneficiary-year enrollment features"
+        files_in: []
+        files_out: []
+
+      - label: "feat:pde-chain"
+        type: agent
+        required: true
+        prompt: "Run PDE chain: shared_pde → pde_bene/pde_npi/pde_bn → opioidrx"
+        files_in:
+          - _WorkSpace/0-External-Store/<NDC_CROSSWALK>
+        files_out: []
+
+      - label: "feat:claims-lines-outpt"
+        type: agent
+        required: true
+        prompt: "Run claims/lines/outpatient chains: shared → bene/npi/bn workers"
+        files_in: []
+        files_out: []
+
+  - title: Store
+    detail: "write case + BFAF panels to Case-Store"
+    steps:
+      - label: "store:write"
+        type: agent
+        required: true
+        prompt: "Write CASES + BFAF-* panels to _WorkSpace/2-Case-Store/case_<COHORT>_<SOURCE>/<asset>/year-<YEAR>/"
+        files_in: []
+        files_out:
+          - _WorkSpace/2-Case-Store/case_<COHORT>_<SOURCE>/<ASSET>/year-<YEAR>/
+
+  - title: Describe
+    detail: "QC summary statistics"
+    steps:
+      - label: "describe:summary"
+        type: agent
+        required: true
+        prompt: "Generate case counts, feature coverage, write summary.txt"
+        files_in: []
+        files_out:
+          - results/<RUN>/summary.txt
+          - results/<RUN>/manifest.json
+
+# ─── O: Output ───────────────────────────────────────────────────
+output:
+  returns:
+    status: ok
+  files_out:
+    - _WorkSpace/2-Case-Store/case_<COHORT>_<SOURCE>/<ASSET>/year-<YEAR>/
+    - results/<RUN>/summary.txt
+    - results/<RUN>/manifest.json

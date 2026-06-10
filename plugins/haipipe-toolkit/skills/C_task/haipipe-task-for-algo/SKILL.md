@@ -4,20 +4,20 @@ description: "algo-dev task-folder build specialist. Scaffolds {NN}_<name>/ task
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-06-09"
   summary: "algo-dev task-folder build specialist."
   changelog:
+    - "1.1.0 (2026-06-09): unwrap prose; fix agent names; add 4-stage lifecycle paragraph."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-task-for-algo
 =================================
 
-Scaffolds an **algo-dev smoke-test task-folder**. Purpose: verify a
-new algorithm class (forward / loss / metric) runs end-to-end. This
-is NOT a training run — minimal config, minutes-not-hours, just
-"did it crash + does the loss go down on one batch".
+Scaffolds an **algo-dev smoke-test task-folder**. Purpose: verify a new algorithm class (forward / loss / metric) runs end-to-end. This is NOT a training run — minimal config, minutes-not-hours, just "did it crash + does the loss go down on one batch".
+
+**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the `<TASK>.py` body). Always end with the structured return block (status / task_folder / run_name / files).
 
 
 Position in the series
@@ -71,9 +71,7 @@ Heavy outputs: none (tiny / disposable).
 Cross-reference to pipeline skill
 ----------------------------------
 
-`/haipipe-nn-algo` owns the algorithm class itself (Layer 1: model,
-forward, loss, metric). This skill scaffolds the smoke-test demo
-that exercises it. Typical flow:
+`/haipipe-nn-algo` owns the algorithm class itself (Layer 1: model, forward, loss, metric). This skill scaffolds the smoke-test demo that exercises it. Typical flow:
 
   1. `/haipipe-nn-algo` — author the algorithm class.
   2. `/haipipe-task-for-algo` — scaffold the paired demo.
@@ -110,8 +108,7 @@ next:      suggested next command (run the demo / /haipipe-nn-algo refine)
 Workflow plan
 --------------
 
-When `/haipipe-task plan` targets an existing task-folder of this type,
-the generated plan-script YAML should follow the type-specific sample:
+When `/haipipe-task plan` targets an existing task-folder of this type, the generated plan-script YAML should follow the type-specific sample:
 
 ```
 ref/workflow-plan-sample.yaml     ← script-level phases for this type

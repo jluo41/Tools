@@ -3,7 +3,7 @@ Inference Performance — harness shape + anti-patterns
 
 What an inference-perf task body looks like, the per-step timing model, and
 the known bottlenecks this task type exists to catch. Source of truth for
-the profiler the `code-creator-for-inference-agent` writes.
+the profiler the `haipipe-task-creator-agent` writes.
 
 
 The per-step timing model

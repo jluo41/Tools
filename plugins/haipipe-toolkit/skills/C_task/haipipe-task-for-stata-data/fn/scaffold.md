@@ -15,7 +15,7 @@ Step 1 — Identify project + task-group
 ---------------------------------------
 
 - Auto-detect project from cwd (`examples/Proj*/`).
-- ASK task-group. Data work lives in the study group
+- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK task-group. Data work lives in the study group
   (e.g. `R1_Regression_TraitOpioid`) next to its case + reg siblings.
 - Confirm the upstream case-pipeline task exists (data consumes its
   Case-Store panels). If not, suggest `/haipipe-task-for-stata-case` first.

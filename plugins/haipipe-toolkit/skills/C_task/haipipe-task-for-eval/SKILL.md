@@ -4,25 +4,20 @@ description: "evaluation task-folder build specialist. Scaffolds {NN}_<name>/ ta
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-06-09"
   summary: "evaluation task-folder build specialist."
   changelog:
+    - "1.1.0 (2026-06-09): unwrap prose; fix agent names; add 4-stage lifecycle paragraph."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-task-for-eval
 =================================
 
-Scaffolds an **evaluation task-folder**. Consumes a trained
-ModelInstance + an AIData split; produces metrics + diagnostic
-plots under `results/<run>/`.
+Scaffolds an **evaluation task-folder**. Consumes a trained ModelInstance + an AIData split; produces metrics + diagnostic plots under `results/<run>/`.
 
-**Invocation modes (see `../haipipe-task/ref/invocation-modes.md`):**
-interactive (a human steers; missing fields get ASKed) OR headless (a full
-spec → run silently, no ASK). `code-creator-for-eval-agent` calls this skill
-headless during fan-out, then authors the `<TASK>.py` body. Always end with
-the structured return block (status / task_folder / run_name / files).
+**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the `<TASK>.py` body). Always end with the structured return block (status / task_folder / run_name / files).
 
 
 Position in the series
@@ -62,10 +57,7 @@ Heavy outputs: none — `results/<run>/` is all light artifacts.
 Cross-reference to pipeline skill
 ----------------------------------
 
-Currently no dedicated `/haipipe-eval` skill. Evaluation logic
-typically calls into `/haipipe-end` (Stage 6 inference + scoring)
-or a project-local eval script. This may grow into its own skill;
-for now, the eval code is project-owned.
+Currently no dedicated `/haipipe-eval` skill. Evaluation logic typically calls into `/haipipe-end` (Stage 6 inference + scoring) or a project-local eval script. This may grow into its own skill; for now, the eval code is project-owned.
 
 
 Scaffold flow

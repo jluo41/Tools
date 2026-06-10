@@ -1,0 +1,77 @@
+# workflow-plan-sample.yaml — Stata CMS task script-level plan
+# Schema: B_project/haipipe-workflow/ref/plan-schema.md
+# Task-level template: ../haipipe-task/ref/workflow-template.yaml
+#
+# Typical CMS phases: Extract → Clean → Store → Describe
+# Heavy outputs land in _WorkSpace/1-CMS-Store/.
+
+# ─── Header ──────────────────────────────────────────────────────
+name: cms-<STUDY>-<YEAR>
+purpose: "Extract and clean CMS claims for <STUDY> year <YEAR> into 1-CMS-Store"
+skill: haipipe-task-for-stata-cms
+
+# ─── I: Input ────────────────────────────────────────────────────
+input:
+  args:
+    config: configs/<STUDY>_<YEAR>.do
+    year: <YEAR>
+  files_in:
+    - cms_extract.do
+    - configs/<STUDY>_<YEAR>.do
+    - _WorkSpace/0-External-Store/<CROSSWALK>
+
+# ─── P: Phases ───────────────────────────────────────────────────
+phases:
+
+  - title: Extract
+    detail: "read raw CMS files for target year"
+    steps:
+      - label: "extract:read-raw"
+        type: agent
+        required: true
+        prompt: "Read raw CMS claims/enrollment files for year <YEAR>"
+        files_in:
+          - raw CMS data (server path)
+        files_out: []
+
+  - title: Clean
+    detail: "apply inclusion/exclusion criteria, dedup"
+    steps:
+      - label: "clean:filter"
+        type: agent
+        required: true
+        prompt: "Apply cohort filters, dedup claims, validate beneficiary IDs"
+        files_in: []
+        files_out: []
+
+  - title: Store
+    detail: "write cleaned data to CMS-Store"
+    steps:
+      - label: "store:write"
+        type: agent
+        required: true
+        prompt: "Write cleaned .dta files to _WorkSpace/1-CMS-Store/<asset>/year-<YEAR>/"
+        files_in: []
+        files_out:
+          - _WorkSpace/1-CMS-Store/<ASSET>/year-<YEAR>/
+
+  - title: Describe
+    detail: "QC summary statistics"
+    steps:
+      - label: "describe:summary"
+        type: agent
+        required: true
+        prompt: "Generate row counts, coverage stats, write summary.txt"
+        files_in: []
+        files_out:
+          - results/<RUN>/summary.txt
+          - results/<RUN>/manifest.json
+
+# ─── O: Output ───────────────────────────────────────────────────
+output:
+  returns:
+    status: ok
+  files_out:
+    - _WorkSpace/1-CMS-Store/<ASSET>/year-<YEAR>/
+    - results/<RUN>/summary.txt
+    - results/<RUN>/manifest.json
