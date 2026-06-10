@@ -14,10 +14,7 @@ metadata:
 Skill: haipipe-project-organize
 ================================
 
-Modify specialist. Moves and renames files to bring a project into
-structural compliance. Called by the `/haipipe-project` orchestrator
-typically as a follow-up to `/haipipe-project-inspect review` flagging
-violations.
+Modify specialist. Moves and renames files to bring a project into structural compliance. Called by the `/haipipe-project` orchestrator typically as a follow-up to `/haipipe-project-inspect review` flagging violations.
 
   Function axis:  organize (only — purpose-built)
 

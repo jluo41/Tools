@@ -1,0 +1,104 @@
+# workflow-plan-sample.yaml — training task script-level plan
+# Schema: B_project/haipipe-workflow/ref/plan-schema.md
+# Task-level template: ../haipipe-task/ref/workflow-template.yaml
+#
+# Typical training phases: Configure → Train → Checkpoint → Validate
+# Heavy outputs to _WorkSpace/5-ModelInstanceStore/; light metrics to results/.
+
+# ─── Header ──────────────────────────────────────────────────────
+name: train-<ALGO>-<VARIANT>
+purpose: "Train <ALGO> with full hyperparams; checkpoint to ModelInstanceStore"
+skill: haipipe-task-for-training
+
+# ─── I: Input ────────────────────────────────────────────────────
+input:
+  args:
+    config: configs/<RUN>.yaml
+    aidata_path: <_WorkSpace path to AIData>
+    algo: <algorithm class name>
+  files_in:
+    - <NN>_<TASK>.py
+    - configs/<RUN>.yaml
+    - _WorkSpace/4-AIDataStore/<AIDATA>
+
+# ─── P: Phases ───────────────────────────────────────────────────
+phases:
+
+  - title: Configure
+    detail: "load data, resolve hyperparams, build model"
+    steps:
+      - label: "configure:load-aidata"
+        type: agent
+        required: true
+        prompt: "Load AIDataSet, materialize train/val splits"
+        files_in:
+          - _WorkSpace/4-AIDataStore/<AIDATA>
+        files_out: []
+
+      - label: "configure:build-model"
+        type: agent
+        required: true
+        prompt: "Instantiate model class + optimizer from config hyperparams"
+        files_in:
+          - configs/<RUN>.yaml
+        files_out: []
+
+  - title: Train
+    detail: "run tuner sweep or single training loop"
+    steps:
+      - label: "train:sweep"
+        type: agent
+        required: true
+        prompt: "Run XGBoostTuner / Optuna / training loop for N trials/epochs"
+        files_in: []
+        files_out: []
+
+      - label: "train:select-best"
+        type: agent
+        required: true
+        prompt: "Select best trial/epoch, extract config + checkpoint"
+        files_in: []
+        files_out: []
+
+  - title: Checkpoint
+    detail: "save ModelInstance to _WorkSpace"
+    steps:
+      - label: "checkpoint:save"
+        type: agent
+        required: true
+        prompt: "Serialize ModelInstance to _WorkSpace/5-ModelInstanceStore/"
+        files_in: []
+        files_out:
+          - _WorkSpace/5-ModelInstanceStore/<MODEL>
+
+      - label: "checkpoint:pointer"
+        type: agent
+        required: true
+        prompt: "Write model_path.txt pointer in results/<RUN>/"
+        files_in: []
+        files_out:
+          - results/<RUN>/model_path.txt
+
+  - title: Validate
+    detail: "quick sanity check on val split"
+    steps:
+      - label: "validate:eval"
+        type: agent
+        required: false
+        prompt: "Score model on val split, write metrics.json"
+        files_in:
+          - _WorkSpace/5-ModelInstanceStore/<MODEL>
+        files_out:
+          - results/<RUN>/metrics.json
+          - results/<RUN>/runtime.yaml
+
+# ─── O: Output ───────────────────────────────────────────────────
+output:
+  returns:
+    status: ok
+    model_path: _WorkSpace/5-ModelInstanceStore/<MODEL>
+  files_out:
+    - _WorkSpace/5-ModelInstanceStore/<MODEL>
+    - results/<RUN>/model_path.txt
+    - results/<RUN>/metrics.json
+    - results/<RUN>/runtime.yaml

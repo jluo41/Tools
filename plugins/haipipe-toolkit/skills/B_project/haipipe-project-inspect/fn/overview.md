@@ -1,8 +1,7 @@
 fn-overview: Task-by-Task Project Overview
 ============================================
 
-Reads every task's README.md and produces a structured overview
-of what the project does, organized by group.
+Reads every task's README.md and produces a structured overview of what the project does, organized by group.
 
 Read-only: does NOT modify any files.
 

@@ -2,23 +2,28 @@ fn/workflow-report — generate reports mirroring plans
 ======================================================
 
 Called by `/haipipe-task report`. Generates reports at two levels:
-per-script (detailed step-by-step results) and task-level (roll-up).
-Each report mirrors its corresponding plan — same structure, filled
-with what actually happened.
+per-script and task-level. Each report mirrors its corresponding
+plan — same phases, same steps — filled with what actually happened.
+
+Schema source of truth:
+  ../../B_project/haipipe-workflow/ref/plan-schema.md  (Report schema section)
+  ../../B_project/haipipe-workflow/ref/concepts.md     (Report = plan's echo)
+
+The report uses the SAME structure as the plan, adding per-step
+result fields: status, output, note, reason.
 
 
-Three-layer report structure
------------------------------
+Two-layer report structure
+---------------------------
 
 ```
           PLAN (before)              REPORT (after)
 task      plan.yaml                  report.yaml
 script    plan-script-<name>.yaml    report-script-<name>.yaml
-run       configs/<run>.yaml         results/<run>/{manifest,log,outputs}
 ```
 
-Each layer aggregates the one below. Plan = intent. Report = evidence.
-Same tree shape, so you can diff them to find divergences.
+Each layer mirrors the one it reports on. Plan = intent. Report = evidence.
+Same phases, same steps. You can diff them to find divergences.
 
 
 When to call
@@ -55,163 +60,149 @@ For each `plan-script-<name>.yaml`, gather evidence:
 For EACH `plan-script-<name>.yaml`, generate a matching
 `report-script-<name>.yaml`.
 
-**How to fill each step's result:**
-1. Read the plan step (id, name, outputs)
-2. Check if each planned output exists under `results/<run>/`
-3. For CSV outputs: count rows (`wc -l` or read first line)
-4. For PNG outputs: get file size
-5. For display-only steps (no files): mark as done if notebook cell ran
-6. Read notebook cell outputs for row counts, print statements
+**The report MUST mirror the plan structure per plan-schema.md
+Report schema.** For each step in the plan, fill in:
 
-**Per-script report format:**
+  label      same as plan (unchanged)
+  status     done | skipped | failed
+  files_in   files actually read (from plan, with status annotation)
+  files_out  files actually created (check existence, add size/rows)
+  output     structured result from the step (if any)
+  note       free-text observation (optional)
+  reason     why skipped (required if status=skipped)
 
-Use the SAME phase emojis from the plan (matching phase titles).
-Add status emojis per step: ✅ done, ⏭️ skipped, ❌ failed.
+Do NOT use ad-hoc fields like `id`, `name`, `outputs`, `exists`,
+`rows`, `size_kb`. Those are not in the schema. File existence and
+size go in `note` or `output`.
+
+**Per-script report format (follows plan-schema.md Report schema):**
 
 ```yaml
-# --- Preview -----------------------------------------------------------
-# <script_name>.py — execution report
-#
-# I: <input file>                        ✅ (<row count> rows)
-#    <input file>                        ✅ (<detail>)
-#
-# +-- 🔧 P1: <Phase title>                              ✅ done
-# |   +-- S1: <step name>                               ✅
-# |   +-- S2: <step name>                               ✅
-# |           -> <output.csv>                            <N> rows
-# |
-# +-- 🔬 P2: <Phase title>                              ✅ done
-# |   +-- S3: <step name>                               ✅
-# |   |       -> <figure.png>                            <size> KB
-# |   +-- S4: <step name>                               ⏭️ skipped
-# |
-# +-- 📋 P3: ...                                        ✅ done
-#
-# O: <N> CSVs + <M> PNGs under results/<run>/
-#    status: ok   phases: P/P   steps: X/Y done   duration: Zs
-# -------------------------------------------------------------------
-
-script: <script_name>.py
-run_name: <run_name>
+# ─── Header ──────────────────────────────────────────────────────
+name: <same as plan>
 plan: workflow/plan-script-<name>.yaml
-finished: "<timestamp from manifest.json>"
-status: ok | incomplete | failed
+executed_at: "<timestamp>"
 
-inputs:
-  - path: _WorkSpace/...
-    status: ok
-    detail: "<row count> rows"
-  - path: _WorkSpace/...
-    status: ok
-
+# ─── Per-Phase, Per-Step results ─────────────────────────────────
 phases:
-  - title: "<Phase title>"
+
+  - title: <Phase title>
     steps:
-      - id: S1
-        name: "<step name>"
-        status: done | skipped | failed
-      - id: S2
-        name: "<step name>"
+      - label: "<phase>:<step-name>"
         status: done
-        outputs:
-          - path: trait_dictionary.csv
-            exists: true
-            rows: 10                   # for CSVs
-  - title: "<Next phase>"
+        files_in:
+          - _WorkSpace/...
+        files_out: []
+        note: "train=62,112 test=24,845"
+
+      - label: "<phase>:<step-name>"
+        status: done
+        files_in: []
+        files_out:
+          - results/<run>/<file>
+        output: { key: value }
+
+      - label: "<phase>:<step-name>"
+        status: skipped
+        reason: "optional step — no test data available"
+        files_in: []
+        files_out: []
+
+  - title: <Next phase>
     steps:
-      - id: S3
-        name: "<step name>"
-    status: done
-    outputs:
-      - path: figures/01_*.png
-        exists: true
-        size_kb: 48                # for images
+      - label: "..."
+        # ...
 
-outputs:
-  - path: results/<run>/<file>
-    exists: true
-    rows: 10                       # or size_kb for non-CSV
-    from_step: S2
-```
-
-### Step 4 — Collect agents & skills used
-
-Track what was invoked during execution:
-- `execution.mode`: manual | subagent | workflow-engine
-- `execution.agents_used`: list of agents called
-- `execution.skills_used`: list of skills called
-
-### Step 5 — Generate task-level report.yaml
-
-Roll up the script reports:
-
-```yaml
-# --- Preview -----------------------------------------------------------
-# <task_name> — task execution report
-#
-# I: <key _WorkSpace inputs with status>
-#
-# +-- 🔨 P1: <Phase> (<script1>.py)              ✅ done  N/N steps
-# +-- 🧹 P2: <Phase> (<script2>.py)              ✅ done  M/M steps
-# +-- 🚦 G1: reviewer gate=1                      pass | warn | fail
-# +-- 🚦 G2: reviewer gate=2                      pass | warn | fail
-#
-# O: status=ok  phases=P/P  steps=X/Y done
-#    _WorkSpace used (input): [list with status]
-#    _WorkSpace generated (output): [list or "none"]
-#    agents: [list or "none"]
-#    skills: [list]
-# -------------------------------------------------------------------
-
-name: <task-name>
-plan: workflow/plan.yaml
-reported_at: "<date>"
-
-execution:
-  mode: manual | subagent | workflow-engine
-  agents_used: [...]
-  skills_used: [...]
-
-scripts:
-  - report: workflow/report-script-<name1>.yaml
-    status: ok
-    steps_done: N
-    steps_total: N
-  - report: workflow/report-script-<name2>.yaml
-    status: ok
-    steps_done: M
-    steps_total: M
-
-workspace:
-  used:
-    - path: _WorkSpace/...
-      role: "..."
-      status: ok
-  generated:
-    - path: _WorkSpace/...
-      role: "..."
-      # or empty if read-only task
-
+# ─── Overall ─────────────────────────────────────────────────────
 summary:
-  status: ok
-  phases_completed: "P/P"
+  status: ok | incomplete | failed
+  phases_completed: "N/N"
   steps_done: X
   steps_skipped: Y
   steps_failed: 0
-  verdict: ok
+  files_created:
+    - results/<run>/<file1>
+    - results/<run>/<file2>
+  verdict: <pass | warn | fail | inconclusive>
+  issues: []
 ```
 
-### Step 6 — Progress output
+### Step 4 — Generate task-level report.yaml
 
-After writing all reports, output the task-level preview tree to the
-user. This is the IPO summary they see in the session.
+The task report mirrors `workflow/plan.yaml` — same phases (Run,
+Gate1, Gate2), same steps, filled with results.
+
+**Task report format (follows plan-schema.md Report schema):**
+
+```yaml
+# ─── Header ──────────────────────────────────────────────────────
+name: <same as plan>
+plan: workflow/plan.yaml
+executed_at: "<timestamp>"
+
+# ─── Per-Phase, Per-Step results ─────────────────────────────────
+phases:
+
+  - title: Run
+    steps:
+      - label: "run:<script-name>"
+        status: done
+        files_in:
+          - <script>.py
+          - configs/<run_name>.yaml
+          - _WorkSpace/...
+        files_out:
+          - results/<run>/<file1>
+          - results/<run>/<file2>
+        note: "238s, N test rows"
+
+  - title: Gate1
+    steps:
+      - label: "gate1:code-review"
+        status: done
+        files_in:
+          - <script>.py
+          - configs/<run_name>.yaml
+        files_out:
+          - CODE_REVIEW.md
+        output: { verdict: warn, issues: ["..."] }
+        note: "fixes applied: ..."
+
+  - title: Gate2
+    steps:
+      - label: "gate2:result-audit"
+        status: done
+        files_in:
+          - results/<run>/*
+          - workflow/plan-script-<name>.yaml
+        files_out:
+          - RUN_AUDIT.md
+        output: { verdict: warn, findings: ["..."] }
+
+# ─── Overall ─────────────────────────────────────────────────────
+summary:
+  status: ok
+  phases_completed: "N/N"
+  steps_done: X
+  steps_skipped: Y
+  steps_failed: 0
+  files_created:
+    - results/<run>/<file1>
+    - CODE_REVIEW.md
+    - RUN_AUDIT.md
+  verdict: <pass | warn | fail>
+  issues: []
+```
+
+### Step 5 — Progress output
+
+After writing all reports, output the task-level summary:
 
 ```
-📋 Report: B01_explore_physician
+📋 Report: <task-name>
    script reports:
-     report-script-explore_physician.yaml (10/10 steps done)
-     report-script-show_final_physician.yaml (2/2 steps done)
-   task report: report.yaml (2/2 phases, 12/12 steps)
+     report-script-<name>.yaml (X/Y steps done)
+   task report: report.yaml (N/N phases, M steps)
 ```
 
 

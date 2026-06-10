@@ -1,9 +1,7 @@
 Function: scan-status
 ======================
 
-Scan a B01-style eval task directory, update diagram/status.json, and format
-a human-readable txt status table. Covers both loss-eval (B1) and
-forecast-eval (B2) subtask types automatically.
+Scan a B01-style eval task directory, update diagram/status.json, and format a human-readable txt status table. Covers both loss-eval (B1) and forecast-eval (B2) subtask types automatically.
 
 Three artefacts produced per run:
   {task_dir}/diagram/status.json       <- machine-readable; one key per storage group
@@ -15,8 +13,7 @@ Execution is fully reproducible: re-run to pick up newly completed evaluations.
 Placement convention
 ---------------------
 
-scan_status.py and scan_groups.json live at the **task-group level** (B01),
-shared by all subtasks. The formatter script runs per subtask.
+scan_status.py and scan_groups.json live at the **task-group level** (B01), shared by all subtasks. The formatter script runs per subtask.
 
   B01_evaluation_pretrain/
   ├── scan_status.py          <- shared scanner (copy from ref/scan_status/)
@@ -39,10 +36,8 @@ Step 0: Parse args
   scan-status <task_dir> [storage_key] [out_txt]
 
     task_dir     = path to a specific B01 subtask folder
-    storage_key  = optional; if given, only re-scan that one group (merge into
-                   existing JSON; useful for incremental updates)
-    out_txt      = optional; path for the formatted txt output
-                   (default: {task_dir}/diagram/status.txt)
+    storage_key  = optional; if given, only re-scan that one group (merge into existing JSON; useful for incremental updates)
+    out_txt      = optional; path for the formatted txt output (default: {task_dir}/diagram/status.txt)
 
 Derived:
   task_group_dir  = task_dir.parent
@@ -63,15 +58,11 @@ a) scan_status.py missing from task_group_dir?
 b) scan_groups.json missing from task_group_dir?
    Show the user SKILL_REF/scan_groups_template.json as a starting point.
    Explain each field:
-     storage_key    = first-level key in status.json; matches the model-store
-                      subdirectory name under _WorkSpace/5-ModelInstanceStore/
+     storage_key    = first-level key in status.json; matches the model-store subdirectory name under _WorkSpace/5-ModelInstanceStore/
      run_filter     = substring that all run names for this group contain
      parse_pattern  = regex with capture groups for parse_fields
-     parse_fields   = ordered list of field names; "setup" field (optional
-                      capture group) becomes None when absent and is treated
-                      as 'phase1' in the formatter
-   Ask the user to confirm / fill in group definitions. Do NOT proceed until
-   scan_groups.json is written and confirmed.
+     parse_fields   = ordered list of field names; "setup" field (optional capture group) becomes None when absent and is treated as 'phase1' in the formatter
+   Ask the user to confirm / fill in group definitions. Do NOT proceed until scan_groups.json is written and confirmed.
 
 c) scan_groups.json exists?
    Read it. Confirm the storage keys to the user before running.
@@ -113,14 +104,10 @@ If the paths are unambiguous after that inspection, proceed silently.
 
 Only pause and ask if still unclear after the above — for example:
 
-  a) VERSIONS_STR missing or contains multiple whitespace-separated values and
-     the eval script doesn't clarify which version is the output target.
-  b) Multiple eval result files exist for the same run (e.g. eval_results.json
-     in both the main version dir and an other/ subdir) with no clear precedence.
-  c) The storage_key matches no subdir under 5-ModelInstanceStore/ even after
-     checking env vars.
-  d) A run name passes run_filter but the parse_pattern captures nothing — the
-     entry would be structureless and the status unreliable.
+  a) VERSIONS_STR missing or contains multiple whitespace-separated values and the eval script doesn't clarify which version is the output target.
+  b) Multiple eval result files exist for the same run (e.g. eval_results.json in both the main version dir and an other/ subdir) with no clear precedence.
+  c) The storage_key matches no subdir under 5-ModelInstanceStore/ even after checking env vars.
+  d) A run name passes run_filter but the parse_pattern captures nothing — the entry would be structureless and the status unreliable.
 
   For each unresolved case, show what was found (paths, candidates) and ask the
   user which to treat as authoritative. Do not silently pick one.

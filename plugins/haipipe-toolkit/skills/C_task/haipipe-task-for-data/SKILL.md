@@ -101,3 +101,19 @@ summary:   2-3 sentences on what was scaffolded
 artifacts: [paths created]
 next:      suggested next command (typically /haipipe-data <stage>)
 ```
+
+
+
+Workflow plan
+--------------
+
+When `/haipipe-task plan` targets an existing task-folder of this type,
+the generated plan-script YAML should follow the type-specific sample:
+
+```
+ref/workflow-plan-sample.yaml     ← script-level phases for this type
+../haipipe-task/ref/workflow-template.yaml  ← task-level template (Run/Gate1/Gate2)
+```
+
+Schema source of truth:
+  B_project/haipipe-workflow/ref/plan-schema.md
