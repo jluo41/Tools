@@ -51,14 +51,6 @@ Agent details
 Shared across C_task
 ---------------------
 
-These agents are used by both:
-- `haipipe-task` — single task lifecycle (task-lifecycle.workflow.js)
-- `haipipe-task-batch` — fan-out over N tasks (batch-pipeline.workflow.js)
-
-That's why they live at `C_task/agents/` (shared), not inside any single skill.
+These agents are used by `haipipe-task` (single task lifecycle via task-lifecycle.workflow.js) and by all type specialists (`haipipe-task-for-*`) that invoke them during their scaffold flow. That's why they live at `C_task/agents/` (shared), not inside any single skill.
 
 
-Legacy agents
---------------
-
-The per-type `code-creator-for-<type>-agent` family (9 agents) and the separate `run-script-reviewer-agent` + `run-result-auditor-agent` + `stata-script-reviewer-agent` (3 agents) are superseded. 12 agents → 2 agents, zero duplication, same coverage.

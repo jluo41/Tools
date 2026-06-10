@@ -10,9 +10,7 @@ Step 1 — Identify project + task-group
 ---------------------------------------
 
 - Auto-detect project from cwd (look for `examples/Proj*/`).
-- ASK task-group if not given. Group letter must be **D**;
-  scaffold a new `D{NN}_<group_name>/` if needed
-  (see `../haipipe-task/fn/task-group.md`).
+- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK task-group. Group letter must be **D**; scaffold a new `D{NN}_<group_name>/` if needed (see `../haipipe-task/fn/task-group.md`).
 
 
 Step 2 — Collect metadata
@@ -104,7 +102,7 @@ For the first run after this scaffold, do ONE of:
 
   1. **Recommended** — run the Run Script Reviewer agent on this
      task-folder to produce a fresh `CODE_REVIEW.md`:
-     `Tools/plugins/haipipe-toolkit/skills/C_task/agents/reviewers/run-script-reviewer-agent.md`
+     `Tools/plugins/haipipe-toolkit/skills/C_task/agents/haipipe-task-reviewer-agent.md`
 
   2. **Temporary bypass** — set env var at launch:
      `HAIPIPE_SKIP_REVIEW=1 bash runs/<RUN>.sh`

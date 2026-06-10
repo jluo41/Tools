@@ -137,7 +137,7 @@ The CMS secure server is the binding constraint: **Windows PowerShell 5.1 only**
 every file is hand-read + hand-copied there by the researcher. Audience is
 human AND machine. Style reference: `cms_results_v0316/code` (the `_cms-server`
 snapshot under `_WorkSpace/0-CMS-Store/CMS-Analysis-Results/`). The
-`stata-script-reviewer-agent` enforces these points before any hand-copy.
+`haipipe-task-reviewer-agent` enforces these points before any hand-copy.
 
 Server-runnability (hard blockers):
 
@@ -364,7 +364,7 @@ Pre-hand-copy review (agent, not in-script plumbing)
 -----------------------------------------------------
 
 There is NO in-script review gate — runners stay thin (rule B3). Instead,
-run `stata-script-reviewer-agent` on the task-folder BEFORE hand-copying
+run `haipipe-task-reviewer-agent` on the task-folder BEFORE hand-copying
 files to the server. It checks the contract above (structure S, runnability
 A, readability B, pipeline correctness C) plus a machine pre-flight
 (PS 5.1 parse-check, non-ASCII byte scan, grep gate for pwsh/ssc/distinct),

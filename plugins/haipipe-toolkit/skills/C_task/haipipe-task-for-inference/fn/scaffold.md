@@ -1,8 +1,7 @@
 fn-scaffold: Scaffold an inference-performance task-folder
 ===========================================================
 
-Profile a packaged Endpoint_Set's inference latency; produce a per-step
-breakdown under `results/<run>/`. Group letter default: **P** (Performance).
+Profile a packaged Endpoint_Set's inference latency; produce a per-step breakdown under `results/<run>/`. Group letter default: **P** (Performance).
 
 Output: `tasks/P{NN}_<group>/{NN}_<task_name>/`.
 
@@ -12,13 +11,8 @@ Step 1 — Identify project + task-group  (placement decision)
 
 - Auto-detect project from cwd.
 - DECIDE placement (see SKILL.md "Placement"):
-  • If the project HAS an endpoint group (the one that built the Endpoint_Set,
-    e.g. `C_endpoint/` with a `*_endpoint` build task) → CO-LOCATE there as a
-    sibling: `<EndpointGroup>/<N>_inference_profile/`. Do NOT make a P group.
-    Use the project's local task-numbering (e.g. `C2_inference_profile`) and a
-    cohort-agnostic folder name + per-cohort config.
-  • Else (no endpoint group / standalone) → ASK task-group; group letter **P**,
-    scaffold `P{NN}_<group_name>/` if needed.
+  * If the project HAS an endpoint group (the one that built the Endpoint_Set, e.g. `C_endpoint/` with a `*_endpoint` build task) → CO-LOCATE there as a sibling: `<EndpointGroup>/<N>_inference_profile/`. Do NOT make a P group. Use the project's local task-numbering (e.g. `C2_inference_profile`) and a cohort-agnostic folder name + per-cohort config.
+  * Else (no endpoint group / standalone) → AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK task-group. Group letter **P**, scaffold `P{NN}_<group_name>/` if needed.
 
 
 Step 2 — Collect metadata
@@ -70,7 +64,7 @@ Set `TASK_NAME="{NN}_{task_name}"`. The body sources `.venv` + `env.sh`
 (the profiler loads the real Endpoint_Set, needs the haipipe import path).
 
 
-Step 6 — Author the `<TASK>.py` body  (code-creator-for-inference does this)
+Step 6 — Author the `<TASK>.py` body  (haipipe-task-creator-agent does this)
 ----------------------------------------------------------------------------
 
 The body MUST:

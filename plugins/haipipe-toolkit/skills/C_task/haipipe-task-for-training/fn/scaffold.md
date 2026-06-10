@@ -1,9 +1,7 @@
 fn-scaffold: Scaffold a model-training task-folder
 ====================================================
 
-Train a real model with full hyperparameters; checkpoint to
-`_WorkSpace/5-ModelInstanceStore/`. Group letter default: **A** (model-run).
-For smoke-testing an algorithm, use `/haipipe-task-for-algo` instead.
+Train a real model with full hyperparameters; checkpoint to `_WorkSpace/5-ModelInstanceStore/`. Group letter default: **A** (model-run). For smoke-testing an algorithm, use `/haipipe-task-for-algo` instead.
 
 Output: `tasks/A{NN}_<group>/{NN}_<task_name>/`.
 
@@ -12,8 +10,7 @@ Step 1 — Identify project + task-group
 ---------------------------------------
 
 - Auto-detect project from cwd.
-- ASK task-group if not given. Group letter must be **A**;
-  scaffold a new `A{NN}_<group_name>/` if needed.
+- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK task-group. Group letter must be **A**; scaffold a new `A{NN}_<group_name>/` if needed.
 
 
 Step 2 — Collect metadata
@@ -103,7 +100,7 @@ For the first run after this scaffold, do ONE of:
 
   1. **Recommended** — run the Run Script Reviewer agent on this
      task-folder to produce a fresh `CODE_REVIEW.md`:
-     `Tools/plugins/haipipe-toolkit/skills/C_task/agents/reviewers/run-script-reviewer-agent.md`
+     `Tools/plugins/haipipe-toolkit/skills/C_task/agents/haipipe-task-reviewer-agent.md`
 
   2. **Temporary bypass** — set env var at launch:
      `HAIPIPE_SKIP_REVIEW=1 bash runs/<RUN>.sh`

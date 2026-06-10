@@ -4,20 +4,20 @@ description: "individual-query task-folder build specialist. Scaffolds {NN}_<nam
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-06-09"
   summary: "individual-query task-folder build specialist."
   changelog:
+    - "1.1.0 (2026-06-09): unwrap prose; fix agent names; add 4-stage lifecycle paragraph."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-task-for-individual
 =======================================
 
-Scaffolds a **individual-centric query task-folder**. Pulls one
-patient's Source / Record data, applies a view (timeline,
-treatment-event plot, meal-vs-glucose overlay), and writes a small
-PDF + CSV to `results/<run>/`.
+Scaffolds a **individual-centric query task-folder**. Pulls one patient's Source / Record data, applies a view (timeline, treatment-event plot, meal-vs-glucose overlay), and writes a small PDF + CSV to `results/<run>/`.
+
+**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the `<TASK>.py` body). Always end with the structured return block (status / task_folder / run_name / files).
 
 
 Position in the series
@@ -57,9 +57,7 @@ Heavy outputs: none.
 Cross-reference to pipeline skill
 ----------------------------------
 
-`/haipipe-individual` owns per-individual data access (Subject-* folders
-under `_WorkSpace/A-User-Store/`). This skill scaffolds the example
-view; the view logic typically calls `/haipipe-individual` helpers.
+`/haipipe-individual` owns per-individual data access (Subject-* folders under `_WorkSpace/A-User-Store/`). This skill scaffolds the example view; the view logic typically calls `/haipipe-individual` helpers.
 
 
 Scaffold flow

@@ -1,9 +1,7 @@
 fn-scaffold: Scaffold an algo-dev demo task-folder
 ====================================================
 
-Purpose: verify a newly developed algorithm class (forward / loss /
-metric) runs end-to-end on a TINY config. NOT for full training —
-see `/haipipe-task-for-training` for that. Group letter default: **X** (X_algo).
+Purpose: verify a newly developed algorithm class (forward / loss / metric) runs end-to-end on a TINY config. NOT for full training — see `/haipipe-task-for-training` for that. Group letter default: **X** (X_algo).
 
 Output: `tasks/X_algo/{NN}_test_<algo_name>/`.
 
@@ -12,8 +10,7 @@ Step 1 — Identify project + task-group
 ---------------------------------------
 
 - Auto-detect project from cwd.
-- Group is always `X_algo` for algo-dev. Scaffold the group if absent
-  (see `../haipipe-task/fn/task-group.md`).
+- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK task-group. Group is always `X_algo` for algo-dev. Scaffold the group if absent (see `../haipipe-task/fn/task-group.md`).
 
 
 Step 2 — Collect metadata
@@ -98,7 +95,7 @@ For the first run after this scaffold, do ONE of:
 
   1. **Recommended** — run the Run Script Reviewer agent on this
      task-folder to produce a fresh `CODE_REVIEW.md`:
-     `Tools/plugins/haipipe-toolkit/skills/C_task/agents/reviewers/run-script-reviewer-agent.md`
+     `Tools/plugins/haipipe-toolkit/skills/C_task/agents/haipipe-task-reviewer-agent.md`
 
   2. **Temporary bypass** — set env var at launch:
      `HAIPIPE_SKIP_REVIEW=1 bash runs/<RUN>.sh`

@@ -4,29 +4,22 @@ description: "inference-performance task-folder build specialist. Scaffolds {NN}
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-06-01"
+  version: "1.1.0"
+  last_updated: "2026-06-09"
   summary: "inference-performance (latency profiling) task-folder build specialist."
   changelog:
+    - "1.1.0 (2026-06-09): unwrap prose; fix agent names; add 4-stage lifecycle paragraph."
     - "1.0.0 (2026-06-01): created — inference latency profiling as a first-class task type (group P)."
 ---
 
 Skill: haipipe-task-for-inference
 =================================
 
-Scaffolds an **inference-performance task-folder**. Consumes a packaged
-Endpoint_Set (Stage 6, from `_WorkSpace/6-EndpointStore/`); produces a
-per-step LATENCY breakdown + the per-arm scoring decomposition under
-`results/<run>/latency.json`.
+Scaffolds an **inference-performance task-folder**. Consumes a packaged Endpoint_Set (Stage 6, from `_WorkSpace/6-EndpointStore/`); produces a per-step LATENCY breakdown + the per-arm scoring decomposition under `results/<run>/latency.json`.
 
-This is NOT model accuracy (that's `for-eval`). This measures WHERE the
-inference wall-clock goes — so a slow endpoint can be diagnosed and fixed.
+This is NOT model accuracy (that's `for-eval`). This measures WHERE the inference wall-clock goes — so a slow endpoint can be diagnosed and fixed.
 
-**Invocation modes (see `../haipipe-task/ref/invocation-modes.md`):**
-interactive (a human steers; missing fields get ASKed) OR headless (a full
-spec → run silently). `code-creator-for-inference-agent` calls this skill
-headless during fan-out, then authors the `<TASK>.py` body. Always end with
-the structured return block.
+**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the `<TASK>.py` body). Always end with the structured return block (status / task_folder / run_name / files).
 
 
 Position in the series
@@ -43,8 +36,7 @@ Position in the series
 /haipipe-task-for-agent           LLM agent call
 ```
 
-`for-eval` answers "is the model RIGHT?"  ·  `for-inference` answers
-"is the endpoint FAST, and if not, WHERE is the time?"
+`for-eval` answers "is the model RIGHT?"  ·  `for-inference` answers "is the endpoint FAST, and if not, WHERE is the time?"
 
 
 What this scaffolds
@@ -63,20 +55,14 @@ tasks/P{NN}_<group_name>/                    ← P-series group (inference perf)
     └── notebooks/
 ```
 
-Group letter default: **P** (Performance / Profiling). If P is not yet
-registered in the orchestrator's task-type table, fall back to B and note it.
+Group letter default: **P** (Performance / Profiling). If P is not yet registered in the orchestrator's task-type table, fall back to B and note it.
 Heavy outputs: none — `results/<run>/` is all light artifacts.
 
 
 Placement — prefer co-locating with the endpoint group
 -------------------------------------------------------
 
-An inference-profile task PROFILES a packaged Endpoint_Set. So when the
-project already organizes work by lifecycle stage and has an **endpoint
-group** (the one that builds the Endpoint_Set), co-locate the profile task
-THERE as a sibling of the endpoint-build task — do NOT spin up a separate
-P-series group. The endpoint group then owns the whole endpoint lifecycle:
-build → profile.
+An inference-profile task PROFILES a packaged Endpoint_Set. So when the project already organizes work by lifecycle stage and has an **endpoint group** (the one that builds the Endpoint_Set), co-locate the profile task THERE as a sibling of the endpoint-build task — do NOT spin up a separate P-series group. The endpoint group then owns the whole endpoint lifecycle: build → profile.
 
 ```
   tasks/C_endpoint/                    ← the endpoint group (project-local letter)
@@ -89,18 +75,10 @@ build → profile.
 ```
 
 Decision rule:
-  - Project has an endpoint group (built via /haipipe-end)  → co-locate as
-    `<EndpointGroup>/<N>_inference_profile/`, sibling of the build task.
-    Cohort-agnostic folder name + per-cohort config (mirror the eval task).
-  - Standalone / fresh project, no endpoint group              → use the
-    P-series group (`tasks/P{NN}_<group>/`) per the table above.
+  - Project has an endpoint group (built via /haipipe-end)  → co-locate as `<EndpointGroup>/<N>_inference_profile/`, sibling of the build task. Cohort-agnostic folder name + per-cohort config (mirror the eval task).
+  - Standalone / fresh project, no endpoint group  → use the P-series group (`tasks/P{NN}_<group>/`) per the table above.
 
-Worked example (real): `examples/ProjA-Click-01-ClickPred/tasks/C_endpoint/
-C2_inference_profile/` — profiles `endpoint_sms_clickpred_v0001smsr4-slenteng`,
-records the before/after of the vectorized _compute_scores fix (model_inference
-3692 ms → ~19 ms, total 3746 → ~85 ms, scores byte-identical). It sits next to
-`C1_endpoint/` (which packaged that endpoint). This co-location overrides the
-global P-letter rule by design — the task is endpoint-scoped.
+Worked example (real): `examples/ProjA-Click-01-ClickPred/tasks/C_endpoint/C2_inference_profile/` — profiles `endpoint_sms_clickpred_v0001smsr4-slenteng`, records the before/after of the vectorized _compute_scores fix (model_inference 3692 ms → ~19 ms, total 3746 → ~85 ms, scores byte-identical). It sits next to `C1_endpoint/` (which packaged that endpoint). This co-location overrides the global P-letter rule by design — the task is endpoint-scoped.
 
 
 What the `<TASK>.py` measures
@@ -131,11 +109,7 @@ exists to catch (chiefly: HuggingFace Dataset ops in the per-arm loop).
 Cross-reference to endpoint skill
 ----------------------------------
 
-`/haipipe-end-endpointset profile <endpoint>` runs the SAME breakdown ad-hoc
-(no task-folder). Use this `for-inference` skill when you want the profile
-recorded as a reproducible, versioned task (e.g. to track latency across
-model releases, or to A/B a vectorization fix). The endpointset `profile`
-verb is the quick one-off; this is the durable artifact.
+`/haipipe-end-endpointset profile <endpoint>` runs the SAME breakdown ad-hoc (no task-folder). Use this `for-inference` skill when you want the profile recorded as a reproducible, versioned task (e.g. to track latency across model releases, or to A/B a vectorization fix). The endpointset `profile` verb is the quick one-off; this is the durable artifact.
 
 
 Scaffold flow
@@ -168,8 +142,7 @@ MUST NOT
 
 - Measure accuracy here — that is `for-eval`. This is latency only.
 - Report only the cold (first) call — always warm up, report warm medians.
-- Skip the model_inference DECOMPOSITION — the per-step total hides whether
-  the cost is the arm loop (fixable by vectorizing) or the data transform.
+- Skip the model_inference DECOMPOSITION — the per-step total hides whether the cost is the arm loop (fixable by vectorizing) or the data transform.
 - Mutate any file under `_WorkSpace/6-EndpointStore/` (read-only).
 - Create `README.md`.
 

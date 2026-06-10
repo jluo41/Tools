@@ -1,0 +1,81 @@
+# workflow-plan-sample.yaml — Stata reg task script-level plan
+# Schema: B_project/haipipe-workflow/ref/plan-schema.md
+# Task-level template: ../haipipe-task/ref/workflow-template.yaml
+#
+# Typical reg phases: Setup → Estimate → Collect → Describe
+# All outputs light (results/<run>/), no _WorkSpace writes.
+
+# ─── Header ──────────────────────────────────────────────────────
+name: reg-<WINDOW>-<FAMILY>
+purpose: "Estimate <FAMILY> models on <WINDOW> outcome window; produce coef tables"
+skill: haipipe-task-for-stata-reg
+
+# ─── I: Input ────────────────────────────────────────────────────
+input:
+  args:
+    config: configs/<COHORT>.do
+    window: <WINDOW>
+    family: <FAMILY>
+  files_in:
+    - configs/<COHORT>.do
+    - scripts/run-*-<FAMILY>-*.do
+    - _WorkSpace/<N>-Data-Store/<DATA_ASSET>/ANALYSIS-CMS-Filter.dta
+
+# ─── P: Phases ───────────────────────────────────────────────────
+phases:
+
+  - title: Setup
+    detail: "resolve env vars, load config, verify analysis table exists"
+    steps:
+      - label: "setup:env"
+        type: agent
+        required: true
+        prompt: "Set HAIPIPE_WS_ROOT, HAIPIPE_REG_WINDOW, HAIPIPE_RES_DIR; load configs/<COHORT>.do"
+        files_in:
+          - configs/<COHORT>.do
+        files_out: []
+
+  - title: Estimate
+    detail: "run estimation workers for the target family"
+    steps:
+      - label: "estimate:run-workers"
+        type: agent
+        required: true
+        prompt: "Execute worker .do scripts for <FAMILY> (e.g. OLS progressive/LPM-logit/two-part, or IV main/grid/over-id, or DID TWFE/CS)"
+        files_in:
+          - _WorkSpace/<N>-Data-Store/<DATA_ASSET>/ANALYSIS-CMS-Filter.dta
+        files_out: []
+
+  - title: Collect
+    detail: "gather coef tables + logs into results/<RUN>/"
+    steps:
+      - label: "collect:tables"
+        type: agent
+        required: true
+        prompt: "Collect .tex/.csv coefficient tables and Stata logs into results/<RUN>/tables/ and results/<RUN>/log/"
+        files_in: []
+        files_out:
+          - results/<RUN>/tables/
+          - results/<RUN>/log/
+
+  - title: Describe
+    detail: "coefficient-sanity QC report"
+    steps:
+      - label: "describe:coef-sanity"
+        type: agent
+        required: true
+        prompt: "Parse per-run logs, report trait coef/SE/N per cell (first-stage F for IV), flag failed estimates"
+        files_in: []
+        files_out:
+          - results/<RUN>/summary.txt
+          - results/<RUN>/manifest.json
+
+# ─── O: Output ───────────────────────────────────────────────────
+output:
+  returns:
+    status: ok
+  files_out:
+    - results/<RUN>/tables/
+    - results/<RUN>/log/
+    - results/<RUN>/summary.txt
+    - results/<RUN>/manifest.json

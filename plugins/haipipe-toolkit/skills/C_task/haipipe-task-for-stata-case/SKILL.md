@@ -4,37 +4,30 @@ description: "Stata-dialect case-pipeline task-folder build specialist. Scaffold
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.2.0"
-  last_updated: "2026-06-08"
+  version: "1.3.0"
+  last_updated: "2026-06-09"
   summary: "Stata case-pipeline task-folder builder."
   changelog:
     - "1.0.0 (2026-05-31): baseline."
     - "1.1.0 (2026-06-08): add metadata; workflow lifecycle compatible."
     - "1.2.0 (2026-06-08): add synth/full source dimension to RUNNAME grammar; per-run .do configs; _source_{synth|full}.do selectors."
+    - "1.3.0 (2026-06-09): unwrap prose; fix agent names to haipipe-task-{creator,reviewer}-agent; add lifecycle paragraph."
 ---
 
 Skill: haipipe-task-for-stata-case
 ==================================
 
-Scaffolds a **case-pipeline task-folder** (Stata dialect) — triggers cases
-for a clinical cohort (e.g. VisitLBP, VisitCancer) at every service
-event, then attaches bene/PDE/claims/lines/outpatient feature panels
-(`BFAF-*`). Runs per (cohort × source × year); consumes the per-year
-CMS-Store slices plus External-Store crosswalks (NDC→opioid, ICD→pain).
+Scaffolds a **case-pipeline task-folder** (Stata dialect) — triggers cases for a clinical cohort (e.g. VisitLBP, VisitCancer) at every service event, then attaches bene/PDE/claims/lines/outpatient feature panels (`BFAF-*`). Runs per (cohort × source × year); consumes the per-year CMS-Store slices plus External-Store crosswalks (NDC→opioid, ICD→pain).
+
+**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the worker `.do` files). Always end with the structured return block (status / task_folder / run_name / files).
 
 **Source dimension (synth vs full):** CMS data exists in two environments:
 - `synth` — synthetic CMS data, laptop-safe, for pipeline development
 - `full` — real CMS PHI, runs ONLY on the isolated CMS secure server
 
-Each source has its own `_source_{synth|full}.do` selector that sets
-`cms_source`, `cms_asset_name`, and `cms_asset_version`. Case output is
-tagged by `${cms_source}` (e.g. `case_lbp_synth` vs `case_lbp_full`) so
-outputs never collide. Every (source × year) pair gets its own runner
-AND its own config in `configs/`.
+Each source has its own `_source_{synth|full}.do` selector that sets `cms_source`, `cms_asset_name`, and `cms_asset_version`. Case output is tagged by `${cms_source}` (e.g. `case_lbp_synth` vs `case_lbp_full`) so outputs never collide. Every (source × year) pair gets its own runner AND its own config in `configs/`.
 
-Engine: **Stata + PowerShell + logs**. Read
-`../haipipe-task-for-stata/ref/stata-dialect.md` first. This skill scaffolds the
-task-folder; worker `.do` logic is authored separately.
+Engine: **Stata + PowerShell + logs**. Read `../haipipe-task-for-stata/ref/stata-dialect.md` first. This skill scaffolds the task-folder; worker `.do` logic is authored separately.
 
 
 Position in the Stata sub-family
@@ -108,11 +101,7 @@ Commands
 Scaffold flow
 -------------
 
-See `fn/scaffold.md`. Summary: identify project+group → collect `_meta` +
-cohort list + source list + year axis → create skeleton → seed source
-selectors (`_source_synth.do`, `_source_full.do`) → seed per-run `.do`
-configs from `ref/config-seed-run.do` for each (cohort × source × year)
-→ copy `runs/<run>.ps1` → emit return contract.
+See `fn/scaffold.md`. Summary: identify project+group → collect `_meta` + cohort list + source list + year axis → create skeleton → seed source selectors (`_source_synth.do`, `_source_full.do`) → seed per-run `.do` configs from `ref/config-seed-run.do` for each (cohort × source × year) → copy `runs/<run>.ps1` → emit return contract.
 
 
 Return contract
@@ -122,5 +111,19 @@ Return contract
 status:    ok | blocked | failed
 summary:   2-3 sentences on what was scaffolded
 artifacts: [paths created]
-next:      author dispatcher .do + scripts/{cases,feat}/ workers; run stata-script-reviewer-agent before hand-copy
+next:      author dispatcher .do + scripts/{cases,feat}/ workers; run haipipe-task-reviewer-agent before hand-copy
 ```
+
+
+Workflow plan
+--------------
+
+When `/haipipe-task plan` targets an existing task-folder of this type, the generated plan-script YAML should follow the type-specific sample:
+
+```
+ref/workflow-plan-sample.yaml     <- script-level phases for this type
+../haipipe-task/ref/workflow-template.yaml  <- task-level template (Run/Gate1/Gate2)
+```
+
+Schema source of truth:
+  B_project/haipipe-workflow/ref/plan-schema.md

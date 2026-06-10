@@ -4,29 +4,25 @@ description: "Stata-dialect data-pipeline task-folder build specialist. Scaffold
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-06-08"
+  version: "1.2.0"
+  last_updated: "2026-06-09"
   summary: "Stata data-pipeline task-folder builder."
   changelog:
     - "1.0.0 (2026-05-31): baseline."
     - "1.1.0 (2026-06-08): add metadata; workflow lifecycle compatible."
+    - "1.2.0 (2026-06-09): unwrap prose; fix agent names to haipipe-task-{creator,reviewer}-agent; add lifecycle paragraph."
 ---
 
 Skill: haipipe-task-for-stata-data
 ==================================
 
-Scaffolds a **data-pipeline task-folder** (Stata dialect) — assembles the
-single, cross-year, regression-ready analysis table. Appends per-year
-CASES, applies first-visit + age/year filters, merges physician
-personality traits + (optional) policy, applies MD/DO + review-count
-filters, derives variables, and writes `ANALYSIS-CMS-Filter.dta`.
+Scaffolds a **data-pipeline task-folder** (Stata dialect) — assembles the single, cross-year, regression-ready analysis table. Appends per-year CASES, applies first-visit + age/year filters, merges physician personality traits + (optional) policy, applies MD/DO + review-count filters, derives variables, and writes `ANALYSIS-CMS-Filter.dta`.
 
-Unlike cms/case, this stage is **cross-year** (no year axis — it appends
-all years) and produces ONE analysis asset per spec.
+**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the worker `.do` files). Always end with the structured return block (status / task_folder / run_name / files).
 
-Engine: **Stata + PowerShell + logs**. Read
-`../haipipe-task-for-stata/ref/stata-dialect.md` first. This skill scaffolds the
-task-folder; worker `.do` logic is authored separately.
+Unlike cms/case, this stage is **cross-year** (no year axis — it appends all years) and produces ONE analysis asset per spec.
+
+Engine: **Stata + PowerShell + logs**. Read `../haipipe-task-for-stata/ref/stata-dialect.md` first. This skill scaffolds the task-folder; worker `.do` logic is authored separately.
 
 
 Position in the Stata sub-family
@@ -86,9 +82,7 @@ Commands
 Scaffold flow
 -------------
 
-See `fn/scaffold.md`. Summary: identify project+group → collect `_meta` +
-analysis spec → create skeleton → seed `<run>.yaml` from
-`ref/config-seed.yaml` → copy `runs/<run>.ps1` → emit return contract.
+See `fn/scaffold.md`. Summary: identify project+group → collect `_meta` + analysis spec → create skeleton → seed `<run>.yaml` from `ref/config-seed.yaml` → copy `runs/<run>.ps1` → emit return contract.
 
 
 Return contract
@@ -98,5 +92,19 @@ Return contract
 status:    ok | blocked | failed
 summary:   2-3 sentences on what was scaffolded
 artifacts: [paths created]
-next:      author dispatcher .do + scripts/{1..4}-* workers; run stata-script-reviewer-agent before hand-copy
+next:      author dispatcher .do + scripts/{1..4}-* workers; run haipipe-task-reviewer-agent before hand-copy
 ```
+
+
+Workflow plan
+--------------
+
+When `/haipipe-task plan` targets an existing task-folder of this type, the generated plan-script YAML should follow the type-specific sample:
+
+```
+ref/workflow-plan-sample.yaml     <- script-level phases for this type
+../haipipe-task/ref/workflow-template.yaml  <- task-level template (Run/Gate1/Gate2)
+```
+
+Schema source of truth:
+  B_project/haipipe-workflow/ref/plan-schema.md

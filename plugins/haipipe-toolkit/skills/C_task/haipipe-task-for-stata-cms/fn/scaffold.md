@@ -10,7 +10,7 @@ Step 1 — Identify project + task-group
 ---------------------------------------
 
 - Auto-detect project from cwd (`examples/Proj*/`).
-- ASK task-group if not given. CMS is the upstream-most stage; it usually
+- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK task-group. CMS is the upstream-most stage; it usually
   lives in its own group (e.g. `D3_CMS-pipeline`). The project-local
   letter convention (cms/case/data/reg) applies — see stata-dialect.md.
   Scaffold a new group via `../haipipe-task/fn/task-group.md` if needed.
@@ -86,7 +86,7 @@ Step 6 — Report
 status:    ok
 summary:   Scaffolded CMS-pipeline task A<NN>_cms_pipeline under {G}{NN}_<group>; years <...>.
 artifacts: [paths created]
-next:      author dispatcher .do + scripts/ workers + d-Cms-Describe.do; stata-script-reviewer-agent before hand-copy; then runs/run_cms_<year>.ps1 (+ run_describe_cms.ps1)
+next:      author dispatcher .do + scripts/ workers + d-Cms-Describe.do; haipipe-task-reviewer-agent before hand-copy; then runs/run_cms_<year>.ps1 (+ run_describe_cms.ps1)
 ```
 
 

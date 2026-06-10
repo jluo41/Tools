@@ -4,31 +4,25 @@ description: "Stata-dialect reg-pipeline task-folder build specialist. Scaffolds
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-06-08"
+  version: "1.2.0"
+  last_updated: "2026-06-09"
   summary: "Stata reg-pipeline task-folder builder."
   changelog:
     - "1.0.0 (2026-05-31): baseline."
     - "1.1.0 (2026-06-08): add metadata; workflow lifecycle compatible."
+    - "1.2.0 (2026-06-09): unwrap prose; fix agent names to haipipe-task-{creator,reviewer}-agent; add lifecycle paragraph."
 ---
 
 Skill: haipipe-task-for-stata-reg
 =================================
 
-Scaffolds a **reg-pipeline task-folder** (Stata dialect) — runs the
-estimation grid on the analysis table from the data stage: OLS
-(progressive / LPM-logit / two-part / windows / trait-form), IV
-(main / grid / over-id), and DID (staggered TWFE / Callaway-Sant'Anna).
-This is the **findings** stage.
+Scaffolds a **reg-pipeline task-folder** (Stata dialect) — runs the estimation grid on the analysis table from the data stage: OLS (progressive / LPM-logit / two-part / windows / trait-form), IV (main / grid / over-id), and DID (staggered TWFE / Callaway-Sant'Anna). This is the **findings** stage.
 
-Output asymmetry: unlike cms/case/data, the reg stage's PRIMARY output
-is **LIGHT** — coefficient tables (`.tex`/`.csv`/`.txt`) that belong
-in-repo under `results/<run>/`, NOT in `_WorkSpace/`. Re-runs are cheap
-and you WANT many (one per run cell), so the grid fans out wide.
+**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the worker `.do` files). Always end with the structured return block (status / task_folder / run_name / files).
 
-Engine: **Stata + PowerShell + logs**. Read
-`../haipipe-task-for-stata/ref/stata-dialect.md` first. This skill scaffolds the
-task-folder; worker `.do` logic is authored separately.
+Output asymmetry: unlike cms/case/data, the reg stage's PRIMARY output is **LIGHT** — coefficient tables (`.tex`/`.csv`/`.txt`) that belong in-repo under `results/<run>/`, NOT in `_WorkSpace/`. Re-runs are cheap and you WANT many (one per run cell), so the grid fans out wide.
+
+Engine: **Stata + PowerShell + logs**. Read `../haipipe-task-for-stata/ref/stata-dialect.md` first. This skill scaffolds the task-folder; worker `.do` logic is authored separately.
 
 
 Position in the Stata sub-family
@@ -45,8 +39,7 @@ Position in the Stata sub-family
 Three-sisters pattern (RUNNAME spine)
 -------------------------------------
 
-Reg follows the same **haipipe-task** convention as all other task types,
-adapted for Stata (no notebooks). Each RUNNAME appears in three sisters:
+Reg follows the same **haipipe-task** convention as all other task types, adapted for Stata (no notebooks). Each RUNNAME appears in three sisters:
 
 ```
 configs/<RUNNAME>.yaml     frozen config with _meta: block
@@ -54,16 +47,13 @@ runs/<RUNNAME>.ps1         thin PS1 launcher (sets env vars, calls workers)
 results/<RUNNAME>/         per-run output (log/ + tables/)
 ```
 
-Workers in `scripts/` are SHARED across runs — they are estimation code,
-not runs themselves. A run calls a subset of workers.
+Workers in `scripts/` are SHARED across runs — they are estimation code, not runs themselves. A run calls a subset of workers.
 
 
 What this scaffolds (topic-split layout)
 ----------------------------------------
 
-When one condition per folder (recommended), the condition and pairing
-are encoded in the folder name. The grid axes WITHIN the folder are
-**window x estimator-family**:
+When one condition per folder (recommended), the condition and pairing are encoded in the folder name. The grid axes WITHIN the folder are **window x estimator-family**:
 
 ```
 tasks/{G}{NN}_<group>/
@@ -83,10 +73,7 @@ tasks/{G}{NN}_<group>/
   +-- diagram/
 ```
 
-**Stata dialect config convention:** Reg uses `.do` for configs (not
-`.yaml`). Stata cannot parse YAML. The shared `configs/<Cohort>.do`
-sets data globals; per-run parameters pass via env vars in the `.ps1`
-runner. The `.ps1` header comment carries the run purpose.
+**Stata dialect config convention:** Reg uses `.do` for configs (not `.yaml`). Stata cannot parse YAML. The shared `configs/<Cohort>.do` sets data globals; per-run parameters pass via env vars in the `.ps1` runner. The `.ps1` header comment carries the run purpose.
 
 - **RUNNAME grammar (topic-split):** `run_reg_<window>_<family>`
   where window = {af14d, af7d, ...} and family = {ols, iv, did, ols_windows}.
@@ -104,8 +91,7 @@ runner. The `.ps1` header comment carries the run purpose.
 Env vars crossing the `clear all` boundary
 -------------------------------------------
 
-Workers start with `clear all` which wipes all Stata globals. Data must
-pass through **environment variables** set by the `.ps1` runner:
+Workers start with `clear all` which wipes all Stata globals. Data must pass through **environment variables** set by the `.ps1` runner:
 
 ```
 HAIPIPE_WS_ROOT      absolute _WorkSpace path (for data input)
@@ -137,11 +123,7 @@ Commands
 Scaffold flow
 -------------
 
-See `fn/scaffold.md`. Summary: identify project+group -> collect `_meta` +
-the window x estimator-family grid -> create skeleton (flat scripts/,
-runs/, configs/) -> seed per-run `<RUNNAME>.yaml` from
-`ref/config-seed.yaml` -> create per-run `<RUNNAME>.ps1` -> emit return
-contract.
+See `fn/scaffold.md`. Summary: identify project+group -> collect `_meta` + the window x estimator-family grid -> create skeleton (flat scripts/, runs/, configs/) -> seed per-run `<RUNNAME>.yaml` from `ref/config-seed.yaml` -> create per-run `<RUNNAME>.ps1` -> emit return contract.
 
 
 Return contract
@@ -151,5 +133,19 @@ Return contract
 status:    ok | blocked | failed
 summary:   2-3 sentences on what was scaffolded
 artifacts: [paths created]
-next:      author the worker .do files; run stata-script-reviewer-agent before hand-copy
+next:      author the worker .do files; run haipipe-task-reviewer-agent before hand-copy
 ```
+
+
+Workflow plan
+--------------
+
+When `/haipipe-task plan` targets an existing task-folder of this type, the generated plan-script YAML should follow the type-specific sample:
+
+```
+ref/workflow-plan-sample.yaml     <- script-level phases for this type
+../haipipe-task/ref/workflow-template.yaml  <- task-level template (Run/Gate1/Gate2)
+```
+
+Schema source of truth:
+  B_project/haipipe-workflow/ref/plan-schema.md

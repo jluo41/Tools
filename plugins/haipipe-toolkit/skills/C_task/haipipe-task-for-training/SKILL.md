@@ -4,25 +4,20 @@ description: "model-run task-folder build specialist. Scaffolds {NN}_<name>/ tas
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-06-09"
   summary: "model-run task-folder build specialist."
   changelog:
+    - "1.1.0 (2026-06-09): unwrap prose; fix agent names; add 4-stage lifecycle paragraph."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-task-for-training
 =====================================
 
-Scaffolds a **model-training task-folder**. Full training config,
-heavy outputs to `_WorkSpace/5-ModelInstanceStore/`, designed for
-cross-run comparison and paper-grade results.
+Scaffolds a **model-training task-folder**. Full training config, heavy outputs to `_WorkSpace/5-ModelInstanceStore/`, designed for cross-run comparison and paper-grade results.
 
-**Invocation modes (see `../haipipe-task/ref/invocation-modes.md`):**
-interactive (a human steers; missing fields get ASKed) OR headless (a full
-spec → run silently, no ASK). `code-creator-for-training-agent` calls this
-skill headless during fan-out, then authors the `<TASK>.py` body. Always end
-with the structured return block (status / task_folder / run_name / files).
+**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the `<TASK>.py` body). Always end with the structured return block (status / task_folder / run_name / files).
 
 
 Position in the series
@@ -70,9 +65,7 @@ Heavy outputs land in: `_WorkSpace/5-ModelInstanceStore/`.
 Cross-reference to pipeline skill
 ----------------------------------
 
-`/haipipe-nn-tuner` defines the hyperparameter search space; 
-`/haipipe-nn-instance` materializes a ModelInstance from a tuner
-sweep. This skill scaffolds the example task that drives both.
+`/haipipe-nn-tuner` defines the hyperparameter search space; `/haipipe-nn-instance` materializes a ModelInstance from a tuner sweep. This skill scaffolds the example task that drives both.
 
   1. `/haipipe-nn-algo`   — algorithm class exists.
   2. `/haipipe-nn-tuner`  — author the sweep.

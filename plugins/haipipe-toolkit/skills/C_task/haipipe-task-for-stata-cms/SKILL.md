@@ -4,26 +4,23 @@ description: "Stata-dialect CMS-pipeline task-folder build specialist. Scaffolds
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-06-08"
+  version: "1.2.0"
+  last_updated: "2026-06-09"
   summary: "Stata CMS-pipeline task-folder builder."
   changelog:
     - "1.0.0 (2026-05-31): baseline."
     - "1.1.0 (2026-06-08): add metadata; workflow lifecycle compatible."
+    - "1.2.0 (2026-06-09): unwrap prose; fix agent names to haipipe-task-{creator,reviewer}-agent; add lifecycle paragraph."
 ---
 
 Skill: haipipe-task-for-stata-cms
 =================================
 
-Scaffolds a **CMS-pipeline task-folder** (Stata dialect) — extracts and
-enriches raw CMS claims into per-year `Neat-*.dta` + `Bene_Info-*.dta`
-panels. Disease-agnostic: processes ALL claims with no cohort filter, run
-once per year, reused by every downstream study.
+Scaffolds a **CMS-pipeline task-folder** (Stata dialect) — extracts and enriches raw CMS claims into per-year `Neat-*.dta` + `Bene_Info-*.dta` panels. Disease-agnostic: processes ALL claims with no cohort filter, run once per year, reused by every downstream study.
 
-Engine: **Stata + PowerShell + logs** (NOT Python/papermill). The full
-execution contract is `../haipipe-task-for-stata/ref/stata-dialect.md` — read it
-first. This skill only scaffolds the task-folder skeleton under
-`examples/`; the worker `.do` logic is authored separately.
+**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the worker `.do` files). Always end with the structured return block (status / task_folder / run_name / files).
+
+Engine: **Stata + PowerShell + logs** (NOT Python/papermill). The full execution contract is `../haipipe-task-for-stata/ref/stata-dialect.md` — read it first. This skill only scaffolds the task-folder skeleton under `examples/`; the worker `.do` logic is authored separately.
 
 
 Position in the Stata sub-family
@@ -75,10 +72,7 @@ Commands
 Scaffold flow
 -------------
 
-See `fn/scaffold.md` for step-by-step. Summary: identify project+group →
-collect `_meta` + year axis → create skeleton → seed `configs/<run>.yaml`
-from `ref/config-seed.yaml` → copy `runs/<run>.ps1` from the Stata run
-template → emit return contract.
+See `fn/scaffold.md` for step-by-step. Summary: identify project+group → collect `_meta` + year axis → create skeleton → seed `configs/<run>.yaml` from `ref/config-seed.yaml` → copy `runs/<run>.ps1` from the Stata run template → emit return contract.
 
 
 Return contract
@@ -88,5 +82,19 @@ Return contract
 status:    ok | blocked | failed
 summary:   2-3 sentences on what was scaffolded
 artifacts: [paths created]
-next:      author the dispatcher .do + scripts/ workers; run stata-script-reviewer-agent before hand-copy to the CMS server
+next:      author the dispatcher .do + scripts/ workers; run haipipe-task-reviewer-agent before hand-copy to the CMS server
 ```
+
+
+Workflow plan
+--------------
+
+When `/haipipe-task plan` targets an existing task-folder of this type, the generated plan-script YAML should follow the type-specific sample:
+
+```
+ref/workflow-plan-sample.yaml     <- script-level phases for this type
+../haipipe-task/ref/workflow-template.yaml  <- task-level template (Run/Gate1/Gate2)
+```
+
+Schema source of truth:
+  B_project/haipipe-workflow/ref/plan-schema.md

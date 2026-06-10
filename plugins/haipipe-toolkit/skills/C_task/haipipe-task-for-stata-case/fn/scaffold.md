@@ -11,7 +11,7 @@ Step 1 -- Identify project + task-group
 ---------------------------------------
 
 - Auto-detect project from cwd (`examples/Proj*/`).
-- ASK task-group. Case work usually lives in a study group
+- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK task-group. Case work usually lives in a study group
   (e.g. `C01_CaseData_TraitOpioid`) alongside its data + reg siblings.
 - Confirm the upstream CMS-pipeline task exists (case consumes its
   per-year `Neat-*.dta` + `Bene_Info-*.dta`). If not, suggest
@@ -182,7 +182,7 @@ summary:   Scaffolded case-pipeline B{NN}_case_pipeline_<study>;
            Per-run configs: N, runners: N, source selectors: 2.
 artifacts: [paths created]
 next:      author dispatcher .do + scripts/{cases,feat}/ workers;
-           run stata-script-reviewer-agent; then hand-copy to server.
+           run haipipe-task-reviewer-agent; then hand-copy to server.
 ```
 
 
