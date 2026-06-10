@@ -64,56 +64,83 @@ Commands
 --------
 
 ```
-/haipipe-task                                        ASK which scope
-/haipipe-task task-folder                            ASK task-type, then dispatch
-/haipipe-task task-folder <type> [args...]           dispatch to type specialist
-/haipipe-task run [task-path] [run-name]             scaffold a new run (asks _meta)
-/haipipe-task audit <task-folder-path>               four-sister check + type detect (read-only)
-/haipipe-task plan <task-folder-path>                audit + fix + generate workflow/plan.yaml
-/haipipe-task report <task-folder-path>              generate workflow/report.yaml
-/haipipe-task <existing-task-folder-path>            full lifecycle via workflow engine
+/haipipe-task plan <task-folder-path>                Stage 1: design the IPO contract
+/haipipe-task build <task-folder-path>               Stage 2: implement the contract as code
+/haipipe-task execute <task-folder-path>              Stage 3: run the code (or human runs manually)
+/haipipe-task report <task-folder-path>               Stage 4: summarize results vs plan
+/haipipe-task <existing-task-folder-path>             full lifecycle (all 4 stages)
+/haipipe-task task-folder <type> [args...]            scaffold a NEW task-folder via type specialist
 ```
 
 For project and task-group scaffolding, use `/haipipe-project` instead.
 
-Shorthand: `/haipipe-task` with no scope and no args defaults to `run` (most common ask once a task-folder exists; falls back to `task-folder` if cwd is not a task-folder yet).
+---
+
+Four Stages
+-----------
+
+Every task folder goes through 4 stages. Each stage has clear file ownership — it ONLY touches its own files.
+
+```
+Stage 1: PLAN — the contract (what the script SHOULD do)
+  creates:   workflow/plan.yaml              task-level IPO (Run/Gate1/Gate2)
+             workflow/plan-script-<name>.yaml script-level IPO (type-specific phases)
+  reads:     *.py (if exists), haipipe-task-for-<type>/ref/workflow-plan-sample.yaml
+  agents:    creator drafts plan → reviewer checks IPO compliance → ↺ revise
+
+Stage 2: BUILD — the implementation (code that matches the plan)
+  creates:   {NN}_{task_name}.py             main script (or fixes existing)
+             configs/<run>.yaml              frozen parameters
+             runs/<run>.sh                   papermill wrapper
+             notebooks/                      empty dir (populated at runtime)
+             CODE_REVIEW.md                  Gate 1 review (reviewer creates)
+  reads:     workflow/plan.yaml, haipipe-task/ref/authoring-conventions.md
+  agents:    creator writes code → reviewer does Gate 1 code review → ↺ revise
+  after:     human can run directly: bash runs/<run>.sh
+
+Stage 3: EXECUTE — just run (no creation, no modification)
+  generates: results/<run>/metrics.json      output metrics
+             results/<run>/runtime.yaml      run status/timing
+             results/<run>/*.md, *.csv       other outputs
+             notebooks/<run>.ipynb           papermill execution record
+  runs:      bash runs/<run>.sh (human or autoExecute)
+  agents:    none — this is a run, not an agent task
+
+Stage 4: REPORT — summarize (what actually happened vs the plan)
+  creates:   workflow/report.yaml            task-level report mirroring plan
+             workflow/report-script-<name>.yaml script-level report
+             RUN_AUDIT.md                    Gate 2 review (reviewer creates)
+  reads:     workflow/plan*.yaml, results/<run>/*, CODE_REVIEW.md
+  agents:    creator drafts report → reviewer checks accuracy → ↺ revise
+```
+
+File ownership is strict: Plan touches only `workflow/plan*.yaml`. Build touches only code/configs/runs. Execute touches only `results/` and `notebooks/`. Report touches only `workflow/report*.yaml` and `RUN_AUDIT.md`.
 
 ---
 
 Agents
 ------
 
-Two agents in `C_task/agents/` power the lifecycle. They always work as a pair — creator produces an artifact, reviewer evaluates it, loop if the reviewer says revise.
+Two agents in `C_task/agents/` power stages 1, 2, and 4. They always work as a pair — creator produces, reviewer evaluates, loop if revise.
 
 ```
 C_task/agents/
   haipipe-task-creator-agent.md     produces artifacts (plan, code, report)
-  haipipe-task-reviewer-agent.md    evaluates artifacts (IPO compliance, code bugs, result integrity)
-```
-
-The creator-reviewer pair operates at every stage of the task lifecycle:
-
-```
-Stage 1: PLAN      creator → plan.yaml + plan-script     reviewer → IPO schema check       ↺ revise
-Stage 2: BUILD     creator → code + configs + structure   reviewer → Gate 1 code review     ↺ revise
-Stage 3: EXECUTE   (run, no creator)                      reviewer → Gate 2 result audit
-Stage 4: REPORT    creator → report.yaml                  reviewer → accuracy check          ↺ revise
+  haipipe-task-reviewer-agent.md    evaluates artifacts (IPO compliance, code bugs, result accuracy)
 ```
 
 The lifecycle workflow (`ref/task-lifecycle.workflow.js`) orchestrates the loop:
-1. Creator agent produces the artifact for the current stage
-2. Reviewer agent evaluates it → returns `pass` / `warn` / `revise` / `fail`
-3. `revise` → reviewer feedback is passed back to creator, who tries again (up to `maxRetries`)
-4. `pass` / `warn` → advance to next stage
+1. Creator agent produces the stage's artifact
+2. Reviewer agent evaluates → `pass` / `warn` / `revise` / `fail`
+3. First `warn` → feeds issues back to creator for one retry
+4. Second `warn` or `pass` → advance to next stage
 5. `fail` → stop, human decides
 
 The creator never reviews its own work. The reviewer never produces artifacts. This separation is the core invariant.
 
-The reviewer catches **intent-vs-implementation mismatches** — silent semantic bugs where the code runs and produces numbers but doesn't measure what the writer intended. Two-stage internally: Claude drafts, Codex (xhigh, out-of-family) independently reviews.
+The reviewer catches **intent-vs-implementation mismatches** — silent semantic bugs where the code runs but doesn't measure what the writer intended. Two-stage internally: Claude drafts, Codex (xhigh, out-of-family) independently reviews.
 
 Author convention: `<TASK_NAME>.py` MUST have an `Intent` section in its docstring (template: `ref/intent-docstring-template.py`). Skip mechanisms for the run.sh pre-flight gate: `_meta.skip_review: true` in config, or `HAIPIPE_SKIP_REVIEW=1` env var.
-
-When targeting an **existing** task folder (not scaffolding new), the workflow lifecycle activates automatically via `ref/task-lifecycle.workflow.js`. See Step 3c below.
 
 ---
 
@@ -154,18 +181,21 @@ Step 0: Read `ref/hierarchy.md` first. It's the conceptual model for the task hi
 Step 1: Detect AUTO_MODE. Any of these flips it on: `--auto` anywhere in args, env var `CLAUDE_AUTO_HANDOFF=1` or `AUTO_MODE=1`, parent skill passed `--auto`. AUTO_MODE changes "ASK" steps into "accept best inference or return blocked"; it never changes what gets written.
 
 Step 2: Resolve scope. Cascade:
-  (1) explicit scope token (`task-folder` / `run` / `audit` / `plan` / `report`) as first positional → use it.
-  (2) `project` or `task-group` → redirect: `Skill("haipipe-project", args="<remaining_args>")`.
-  (3) first positional is a known task-type (`data` / `algo` / `training` / `eval` / `display` / `individual` / `agent`) → scope=task-folder, task-type=that positional.
-  (4) first positional is a path to an existing task-folder → scope=existing (Step 3c).
-  (5) no args at all → default to `run` if cwd is inside a task-folder (has runs/ + configs/), else `task-folder`.
-  (6) still missing: AUTO → status: blocked, reason: "scope unknown". Interactive → ASK.
+  (1) explicit stage command (`plan` / `build` / `execute` / `report`) as first positional → run that single stage on the given task-folder path.
+  (2) `task-folder` as first positional → scope=new task-folder (scaffold).
+  (3) `project` or `task-group` → redirect: `Skill("haipipe-project", args="<remaining_args>")`.
+  (4) first positional is a known task-type (`data` / `algo` / `training` / `eval` / `display` / `individual` / `agent`) → scope=task-folder, task-type=that positional.
+  (5) first positional is a path to an existing task-folder → scope=full lifecycle (all 4 stages via Step 3c).
+  (6) no args at all → default to full lifecycle if cwd is inside a task-folder, else scope=task-folder (scaffold).
+  (7) still missing: AUTO → status: blocked. Interactive → ASK.
 
 Step 3: Branch by scope:
+  - scope=plan → run Stage 1 only (creator drafts plan.yaml, reviewer checks)
+  - scope=build → run Stage 2 only (creator writes code, reviewer does Gate 1)
+  - scope=execute → run Stage 3 only (bash runs/<run>.sh)
+  - scope=report → run Stage 4 only (creator drafts report.yaml, reviewer checks)
+  - scope=full lifecycle → run all 4 stages via Step 3c (Workflow tool)
   - scope=task-folder (new) → resolve task-type via Step 3a cascade, then Skill("haipipe-task-<type>", args="<remaining_args> [--auto]")
-  - scope=existing → run full lifecycle via Step 3c (Workflow tool)
-  - scope=run → read fn/run.md, execute here
-  - scope=audit/plan/report → run single step via corresponding fn/ procedure
 
 
 Step 3a (scope=task-folder only): Task-type inference cascade.
@@ -224,11 +254,9 @@ Step 3b (scope=task-folder only): Parent existence cascade.
   Only after both checks pass: `Skill("haipipe-task-<type>", args="<remaining_args> --project-id <PROJECT_ID> --group <group_id> [--auto]")`
 
 
-Step 3c (existing task-folder): Automated workflow lifecycle.
+Step 3c: Full lifecycle or single stage.
 
-  When the target task-folder ALREADY EXISTS (has configs/ or runs/ or results/ or *.py), the workflow lifecycle activates. This is distinct from scaffolding (Step 3b) — here we're auditing and working with an existing task, not creating a new one.
-
-  Run the lifecycle via the Workflow tool:
+  Run via the Workflow tool:
 
   ```
   Workflow({
@@ -236,36 +264,22 @@ Step 3c (existing task-folder): Automated workflow lifecycle.
   }, {
     task_folder: "<path>",
     type: "<detected from Step 3a, or null for auto-detect>",
-    autoRun: false
+    stages: ["plan", "build", "execute", "report"],
+    autoExecute: false
   })
   ```
 
-  The workflow script (`ref/task-lifecycle.workflow.js`) drives 4 stages. Each stage pairs a **creator agent** (`haipipe-task-creator-agent`) with a **reviewer agent** (`haipipe-task-reviewer-agent`) in a loop: creator produces → reviewer evaluates → revise if needed.
+  For single-stage commands (`/haipipe-task plan <path>`), pass only that stage: `stages: ["plan"]`.
 
-  ```
-  Stage 1: PLAN      creator drafts plan.yaml        → reviewer checks  → loop if revise
-  Stage 2: BUILD     creator writes/fixes code+config → reviewer checks  → loop if revise
-  Stage 3: EXECUTE   run the task (optional)          → reviewer audits  → (no loop)
-  Stage 4: REPORT    creator drafts report.yaml       → reviewer checks  → loop if revise
-  ```
-
-  Stages 3 and 4 are optional (`autoExecute=false`, `autoReport=false` by default). The creator-reviewer loop retries up to `maxRetries` (default 2) per stage. `fail` from the reviewer stops the lifecycle; `revise` feeds back to the creator with specific issues to fix.
-
-  Agents: `C_task/agents/haipipe-task-creator-agent.md`, `C_task/agents/haipipe-task-reviewer-agent.md`.
-
-  All generated plan/report files follow the haipipe-workflow IPO schema at `B_project/haipipe-workflow/ref/plan-schema.md`. Steps use canonical fields: `label`, `type`, `required`, `prompt`, `files_in`, `files_out`.
-
-  For explicit single-step commands (`/haipipe-task plan`, `/haipipe-task report`), run ONLY that step via the corresponding `fn/` procedure, not the full lifecycle.
+  All generated plan/report files follow the haipipe-workflow IPO schema at `B_project/haipipe-workflow/ref/plan-schema.md`. Every plan YAML starts with an IPO tree preview comment with emojis.
 
 
-Step 4: For locally-executed scopes, follow the function file step-by-step. ASK for any metadata not provided (AUTO mode: best-effort defaults, or blocked if a required field has no sensible default). For dispatched scopes, capture the specialist's return contract and surface it as our own.
-
-Step 5: Emit the structured tail:
+Step 4: Emit the structured tail:
 
 ```
 status:    ok | blocked | failed
-summary:   2-3 sentences on what was scaffolded
-artifacts: [paths created]
+summary:   2-3 sentences on what was done
+artifacts: [paths created/modified]
 next:      suggested next command
 ```
 
@@ -274,30 +288,20 @@ Invocation examples
 --------------------
 
 ```
-# explicit (most precise — always works)
+# 4-stage lifecycle on existing task folder
+/haipipe-task examples/ProjA/tasks/B03_band4/01_band4
+
+# single stage
+/haipipe-task plan examples/ProjA/tasks/B03_band4/01_band4
+/haipipe-task build examples/ProjA/tasks/B03_band4/01_band4
+/haipipe-task execute examples/ProjA/tasks/B03_band4/01_band4
+/haipipe-task report examples/ProjA/tasks/B03_band4/01_band4
+
+# scaffold a NEW task-folder (dispatches to type specialist)
 /haipipe-task task-folder data
-/haipipe-task task-folder training A01_pretraining 02_train_d128
+/haipipe-task task-folder eval --project-id ProjA-Timing-01-OptTime --group B03_band4
 
-# shorthand: first positional is a task-type → scope=task-folder inferred
-/haipipe-task data
-/haipipe-task training
-
-# cwd-inferred: cd into the group folder first
-$ cd examples/Proj-X/tasks/D01_data_wellreadi/
-$ /haipipe-task task-folder           ← type=data inferred from script
-
-# keyword-inferred: free-text hint
-/haipipe-task "build CGM 5min record dataset for wellreadi v3"   → type=data
-/haipipe-task "evaluate clm at h24 on test-id split"             → type=eval
-
-# auto mode: same as above but no confirm prompts
-/haipipe-task data --auto
-/haipipe-task "train clm baseline" --auto
-
-# existing task-folder: full lifecycle via Workflow tool
-/haipipe-task evaluate and plan examples/ProjA/tasks/B03_band4/01_band4
-
-# direct specialist (bypass orchestrator entirely; skips cascade check)
+# direct specialist (bypass orchestrator)
 /haipipe-task-for-data
 /haipipe-task-for-training
 ```

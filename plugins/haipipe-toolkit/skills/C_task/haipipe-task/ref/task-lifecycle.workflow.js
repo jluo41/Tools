@@ -9,13 +9,18 @@ export const meta = {
   ],
 }
 
-const folder = args && args.task_folder
+const parsed = typeof args === 'string' ? JSON.parse(args) : (args || {})
+const folder = parsed.task_folder
 if (!folder) { log('task-lifecycle: no task_folder in args'); return { status: 'blocked', reason: 'missing task_folder' } }
-const hintType = (args && args.type) || null
-const autoExecute = !!(args && args.autoExecute)
-const autoReport = !!(args && args.autoReport)
-const maxRetries = (args && args.maxRetries) || 2
-log(`task-lifecycle: ${folder}, type=${hintType || 'auto'}, autoExecute=${autoExecute}, autoReport=${autoReport}, maxRetries=${maxRetries}`)
+const hintType = parsed.type || null
+const stages = parsed.stages || ['plan', 'build', 'execute', 'report']
+const autoExecute = !!parsed.autoExecute
+const maxRetries = parsed.maxRetries || 2
+const runPlan = stages.includes('plan')
+const runBuild = stages.includes('build')
+const runExecute = stages.includes('execute') && autoExecute
+const runReport = stages.includes('report')
+log(`task-lifecycle: ${folder}, type=${hintType || 'auto'}, stages=[${stages}], autoExecute=${autoExecute}, maxRetries=${maxRetries}`)
 
 const CREATOR_RESULT = {
   type: 'object', required: ['stage', 'status'],
@@ -53,11 +58,14 @@ const RUN_RESULT = {
 }
 
 // ─── Stage 1: PLAN ─────────────────────────────────────────────
-phase('Plan')
 let planResult = null
 let planReview = null
 let planFeedback = ''
 
+if (!runPlan) {
+  log('Plan: skipped (not in stages)')
+} else {
+phase('Plan')
 for (let attempt = 0; attempt <= maxRetries; attempt++) {
   const retryNote = attempt > 0 ? `\n\nATTEMPT ${attempt + 1}. Reviewer feedback from previous attempt:\n${planFeedback}\nAddress these specific issues.` : ''
 
@@ -70,7 +78,18 @@ for (let attempt = 0; attempt <= maxRetries; attempt++) {
     `4. Generate workflow/plan-script-<name>.yaml (script-level, type-specific phases)\n` +
     `5. Generate workflow/plan.yaml (task-level: Run/Gate1/Gate2)\n` +
     `Schema: B_project/haipipe-workflow/ref/plan-schema.md\n` +
-    `Fields: label, type, required, prompt, files_in, files_out` + retryNote,
+    `Fields: label, type, required, prompt, files_in, files_out\n\n` +
+    `IMPORTANT: Every plan YAML MUST start with a comment block showing the IPO tree preview:\n` +
+    `# <task-name> — <purpose>\n` +
+    `#\n` +
+    `# I: <input files with roles>\n` +
+    `# |\n` +
+    `# |-- 🔧 P1: <Phase>  [S1: <step>, S2: <step>]\n` +
+    `# |-- 🔨 P2: <Phase>  [S1: <step>, S2: <step> -> <output>]\n` +
+    `# |-- 🔬 P3: <Phase>  [S1: <step>]\n` +
+    `# |\n` +
+    `# O: { status, files_out: [...] }\n` +
+    `Use phase emojis: 🔧 setup, 🔨 build/train, 🔬 analysis, 📋 summary, 🚦 gate` + retryNote,
     { label: `plan:create:${attempt}`, phase: 'Plan', agentType: 'haipipe-task-creator-agent', schema: CREATOR_RESULT }
   )
 
@@ -96,24 +115,29 @@ for (let attempt = 0; attempt <= maxRetries; attempt++) {
 
   log(`Plan: attempt=${attempt}, creator=${planResult.status}, reviewer=${planReview ? planReview.verdict : 'null'}`)
 
-  if (!planReview || planReview.verdict === 'pass' || planReview.verdict === 'warn') break
+  if (!planReview || planReview.verdict === 'pass') break
   if (planReview.verdict === 'fail') break
-  if (planReview.verdict === 'revise') {
-    planFeedback = planReview.feedback || planReview.issues.join('; ')
+  if (planReview.verdict === 'warn' && attempt > 0) break
+  if (planReview.verdict === 'warn' || planReview.verdict === 'revise') {
+    planFeedback = (planReview.feedback || (planReview.issues || []).join('; ')) + '\nFix the issues above. Do not leave them as warnings.'
   }
 }
 
 if (planReview && planReview.verdict === 'fail') {
   return { status: 'failed', stage: 'Plan', plan: planResult, review: planReview }
 }
+} // end runPlan
 
 // ─── Stage 2: BUILD ────────────────────────────────────────────
-phase('Build')
 let buildResult = null
 let buildReview = null
 let buildFeedback = ''
 const detectedType = (planResult && planResult.type) || hintType || 'unknown'
 
+if (!runBuild) {
+  log('Build: skipped (not in stages)')
+} else {
+phase('Build')
 for (let attempt = 0; attempt <= maxRetries; attempt++) {
   const retryNote = attempt > 0 ? `\n\nATTEMPT ${attempt + 1}. Reviewer feedback from previous attempt:\n${buildFeedback}\nAddress these specific issues.` : ''
 
@@ -150,26 +174,28 @@ for (let attempt = 0; attempt <= maxRetries; attempt++) {
 
   log(`Build: attempt=${attempt}, creator=${buildResult.status}, reviewer=${buildReview ? buildReview.verdict : 'null'}`)
 
-  if (!buildReview || buildReview.verdict === 'pass' || buildReview.verdict === 'warn') break
+  if (!buildReview || buildReview.verdict === 'pass') break
   if (buildReview.verdict === 'fail') break
-  if (buildReview.verdict === 'revise') {
-    buildFeedback = buildReview.feedback || buildReview.issues.join('; ')
+  if (buildReview.verdict === 'warn' && attempt > 0) break
+  if (buildReview.verdict === 'warn' || buildReview.verdict === 'revise') {
+    buildFeedback = (buildReview.feedback || (buildReview.issues || []).join('; ')) + '\nFix the issues above. Do not leave them as warnings.'
   }
 }
 
 if (buildReview && buildReview.verdict === 'fail') {
   return { status: 'failed', stage: 'Build', plan: planResult, build: buildResult, review: buildReview }
 }
+} // end runBuild
 
 // ─── Stage 3: EXECUTE (optional) ───────────────────────────────
-phase('Execute')
 let runResult = null
 let executeReview = null
 
-if (!autoExecute) {
-  log('Execute: skipped (autoExecute=false — run manually, then re-invoke with autoReport=true)')
-  runResult = { status: 'skipped', note: 'autoExecute=false' }
+if (!runExecute) {
+  log('Execute: skipped — run manually: bash runs/<RUN>.sh')
+  runResult = { status: 'skipped', note: 'run manually or set autoExecute=true' }
 } else {
+  phase('Execute')
   runResult = await agent(
     `Stage: EXECUTE. Task folder: ${folder}.\n` +
     `Run the task via runs/<RUN>.sh. Report status. Do NOT modify code.`,
@@ -193,16 +219,16 @@ if (!autoExecute) {
   }
 }
 
-// ─── Stage 4: REPORT (optional) ────────────────────────────────
-phase('Report')
+// ─── Stage 4: REPORT ───────────────────────────────────────────
 let reportResult = null
 let reportReview = null
 let reportFeedback = ''
 
-if (!autoReport && !autoExecute) {
-  log('Report: skipped (autoReport=false)')
+if (!runReport) {
+  log('Report: skipped (not in stages)')
   reportResult = { stage: 'report', status: 'skipped' }
 } else {
+  phase('Report')
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     const retryNote = attempt > 0 ? `\n\nATTEMPT ${attempt + 1}. Reviewer feedback:\n${reportFeedback}\nAddress these issues.` : ''
 
@@ -220,6 +246,16 @@ if (!autoReport && !autoExecute) {
       `2. Read execution evidence: results/, CODE_REVIEW.md, RUN_AUDIT.md\n` +
       `3. Mirror plan structure with status/output/note per step\n` +
       `4. Follow B_project/haipipe-workflow/ref/plan-schema.md Report schema\n\n` +
+      `IMPORTANT: Every report YAML MUST start with a comment block showing the IPO tree with status emojis:\n` +
+      `# <task-name> — execution report\n` +
+      `#\n` +
+      `# I: <input files>                          ✅\n` +
+      `# |\n` +
+      `# |-- 🔧 P1: <Phase>  [S1: ✅, S2: ✅ -> <output>]\n` +
+      `# |-- 🔨 P2: <Phase>  [S1: ✅, S2: ⏭️ skipped]\n` +
+      `# |-- 🚦 G1: review   [verdict: warn]       ✅\n` +
+      `# |\n` +
+      `# O: { status: ok, phases: N/N, steps: X done, Y skipped }\n\n` +
       `Lifecycle context: ${context}` + retryNote,
       { label: `report:create:${attempt}`, phase: 'Report', agentType: 'haipipe-task-creator-agent', schema: CREATOR_RESULT }
     )
@@ -239,10 +275,11 @@ if (!autoReport && !autoExecute) {
 
     log(`Report: attempt=${attempt}, creator=${reportResult.status}, reviewer=${reportReview ? reportReview.verdict : 'null'}`)
 
-    if (!reportReview || reportReview.verdict === 'pass' || reportReview.verdict === 'warn') break
+    if (!reportReview || reportReview.verdict === 'pass') break
     if (reportReview.verdict === 'fail') break
-    if (reportReview.verdict === 'revise') {
-      reportFeedback = reportReview.feedback || reportReview.issues.join('; ')
+    if (reportReview.verdict === 'warn' && attempt > 0) break
+    if (reportReview.verdict === 'warn' || reportReview.verdict === 'revise') {
+      reportFeedback = (reportReview.feedback || (reportReview.issues || []).join('; ')) + '\nFix the issues above. Do not leave them as warnings.'
     }
   }
 }
