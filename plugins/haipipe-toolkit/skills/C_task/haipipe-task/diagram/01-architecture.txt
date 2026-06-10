@@ -40,11 +40,8 @@
 │   ├── ref/workflow-plan-sample.yaml     type-specific IPO phases
 │   └── fn/scaffold.md                    scaffold procedure
 │
-├── 🔧 haipipe-task-for-stata/           Stata sub-family (engine=Stata, not papermill)
-│   └── {cms,case,data,reg}/              4 stage children
-│
-├── 📦 haipipe-task-batch/                batch fan-out (N tasks in parallel)
-└── 📋 haipipe-task-logging/              legacy (superseded by workflow/)
+└── 🔧 haipipe-task-for-stata/           Stata sub-family (engine=Stata, not papermill)
+    └── {cms,case,data,reg}/              4 stage children
 
 
 ─§ 2. What Plan / Build / Execute / Report MEAN ───────────────────
