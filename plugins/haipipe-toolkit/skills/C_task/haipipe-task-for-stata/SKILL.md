@@ -268,8 +268,7 @@ report (existing)  fn/report-stata.md         /haipipe-task report
 
 For an EXISTING task folder, the full lifecycle is:
   audit → plan → build → execute → report
-Each stage reads its fn/ file. For explicit commands (`plan`, `audit`, etc.),
-run ONLY that step.
+Each stage reads its fn/ file. For explicit commands (`plan`, `audit`, etc.), run ONLY that step.
 
 For a NEW task folder, only `fn/scaffold.md` runs.
 
@@ -302,6 +301,7 @@ Shared engine assets
 ```
 ref/stata-dialect.md            engine contract + {LNN} alphabet + script style/server constraints
 ref/cms-server-checklist.md     three-gate migration checklist (synth run / pre-flight / real-data validation)
+ref/ndc-drug-features.md        NDC drug-type feature pattern: tier 1 (class flags) vs tier 2 (named drugs) + coverage
 ref/run-ps1-template.ps1        THIN per-run entry for ORCHESTRATED stages (cms/case)
 ref/run-data-runner-template.ps1 SELF-ORCHESTRATING per-run entry for data-stage (preconditions + delegate)
 ref/run-stage-year-template.ps1 intra-run ORCHESTRATOR for ORCHESTRATED stages (<=30 lines; phases)
@@ -340,9 +340,7 @@ ref/workflow-plan-sample-reg.yaml     IPO phases for reg stage
 Workflow lifecycle
 ------------------
 
-When `/haipipe-task` targets an EXISTING task-folder of this type, it runs
-the Stata lifecycle via the fn/ dispatch table above. Each fn/ procedure
-reads its ref/ inputs:
+When `/haipipe-task` targets an EXISTING task-folder of this type, it runs the Stata lifecycle via the fn/ dispatch table above. Each fn/ procedure reads its ref/ inputs:
 
 ```
 fn/audit-stata.md    reads: (task folder .do/.ps1 files)
@@ -357,9 +355,7 @@ fn/execute-stata.md  reads: ref/cms-server-checklist.md (server mode)
 fn/report-stata.md   reads: workflow/plan.yaml + results/*/log/*.txt
 ```
 
-This closes the gap where the old skill only had `fn/scaffold.md` (new
-task creation) but no procedures for the plan/audit/build/execute/report
-lifecycle on existing task folders.
+This closes the gap where the old skill only had `fn/scaffold.md` (new task creation) but no procedures for the plan/audit/build/execute/report lifecycle on existing task folders.
 
 
 Return contract
