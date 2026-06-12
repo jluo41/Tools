@@ -1,9 +1,7 @@
 fn/plan-stata — Generate Stata-specific IPO plans
 ===================================================
 
-Called by `/haipipe-task plan` when the task-folder is Stata-engine.
-Generates plan.yaml + plan-script-*.yaml in plan-schema.md format,
-using the stage-specific samples in `ref/workflow-plan-sample-<stage>.yaml`.
+Called by `/haipipe-task plan` when the task-folder is Stata-engine. Generates plan.yaml + plan-script-*.yaml in plan-schema.md format, using the stage-specific samples in `ref/workflow-plan-sample-<stage>.yaml`.
 
 
 When to call

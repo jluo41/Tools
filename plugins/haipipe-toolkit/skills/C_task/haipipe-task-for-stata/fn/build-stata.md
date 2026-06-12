@@ -1,9 +1,7 @@
 fn/build-stata — Author Stata pipeline code
 =============================================
 
-Extends `fn/scaffold.md` (which creates the skeleton) into full authoring:
-write dispatcher branches, worker scripts, configs, and orchestrator logic.
-This is what the creator agent does during Stage 2 of the lifecycle.
+Extends `fn/scaffold.md` (which creates the skeleton) into full authoring: write dispatcher branches, worker scripts, configs, and orchestrator logic. This is what the creator agent does during Stage 2 of the lifecycle.
 
 
 When to call
@@ -18,8 +16,7 @@ Prerequisite: `fn/plan-stata.md` has been run (plan.yaml exists).
 Mode: existing task folder (match-existing)
 -------------------------------------------
 
-When building into a task folder that already has authored code (e.g.,
-adding a new cohort config to an existing data-pipeline task):
+When building into a task folder that already has authored code (e.g., adding a new cohort config to an existing data-pipeline task):
 
 1. **Read existing patterns first.** Scan the task folder for:
    - Resolve-StataExe function presence (if yes, use it in new files)

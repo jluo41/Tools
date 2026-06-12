@@ -1,9 +1,7 @@
 fn/execute-stata — Two-mode Stata execution
 =============================================
 
-Stata tasks execute via PowerShell runners (`.ps1`), NOT Python/papermill.
-Two modes: local (laptop, synth) vs server (CMS, full/real). The server is
-an isolated machine — Claude never runs the real pipeline.
+Stata tasks execute via PowerShell runners (`.ps1`), NOT Python/papermill. Two modes: local (laptop, synth) vs server (CMS, full/real). The server is an isolated machine — Claude never runs the real pipeline.
 
 
 When to call
