@@ -37,10 +37,10 @@ eval          /haipipe-task-for-eval              (project-local; future)
 display       /haipipe-task-for-display           (independent)
 individual    /haipipe-task-for-individual        /haipipe-individual
 agent         /haipipe-task-for-agent             (none yet)
-inference     /haipipe-task-for-inference         /haipipe-end-endpointset (profile)
+endpoint      /haipipe-task-for-endpoint          /haipipe-end (package + deploy)
 ```
 
-NOTE: group letters (A00_, B01_, C01_, D01_) are project-specific organizational prefixes, NOT type indicators. Each project defines its own letter scheme. Type is detected from script content, not from group letters.
+NOTE: group letters (A01_, B01_, C01_) are project-specific organizational prefixes, NOT type indicators. Each project defines its own letter scheme. Type is detected from script content, not from group letters. The recommended convention is A=data, B=fit, C=endpoint.
 
 Stata specialist (engine = Stata + PowerShell + logs, NOT papermill):
 

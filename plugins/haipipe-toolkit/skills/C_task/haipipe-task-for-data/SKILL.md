@@ -1,13 +1,14 @@
 ---
 name: haipipe-task-for-data
-description: "data-pipeline task-folder build specialist. Scaffolds {NN}_<name>/ task-folders under D-series task-groups that run a Stage 1-4 builder (Source / Record / Case / AIData). Called by /haipipe-task orchestrator when task-type=data. Direct invocation works for scoped scaffolding. Cross-references /haipipe-data."
+description: "data-pipeline task-folder specialist. Scaffolds AND executes {NN}_<name>/ task-folders that run Stage 1-4 builders (Source / Record / Case / AIData) with multi-partition support. Called by /haipipe-task orchestrator when task-type=data. Cross-references /haipipe-data for Fn authoring."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-06-09"
-  summary: "data-pipeline task-folder build specialist."
+  version: "2.0.0"
+  last_updated: "2026-06-11"
+  summary: "data-pipeline task-folder specialist (scaffold + execute + partition)."
   changelog:
+    - "2.0.0 (2026-06-11): add execute path, notebook template pattern, multi-partition support."
     - "1.1.0 (2026-06-09): unwrap prose; fix agent names; add 4-stage lifecycle paragraph."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
@@ -15,36 +16,114 @@ metadata:
 Skill: haipipe-task-for-data
 =================================
 
-Scaffolds a **data-pipeline task-folder** — a runnable example that invokes one of the Stage 1-4 builders. Heavy outputs land in `_WorkSpace/{1..4}-*Store/`; the task-folder keeps light pointers and a notebook of the run.
+Scaffolds AND executes **data-pipeline task-folders** — runnable examples
+that invoke Stage 1-4 builders. Heavy outputs land in `_WorkSpace/{1..4}-*Store/`;
+the task-folder keeps light pointers and a notebook of the run.
 
-**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the `<TASK>.py` body). Always end with the structured return block (status / task_folder / run_name / files).
-
+**Two modes:**
+- **Scaffold** (new task): creates skeleton from notebook template
+- **Execute** (existing task): runs the pipeline, stage-aware with partition support
 
 
 What this scaffolds
 -------------------
 
 ```
-tasks/D{NN}_<group_name>/                   ← group (D-series)
-└── {NN}_<task_name>/                       ← task-folder this scaffold creates
-    ├── {NN}_<task_name>.py                 source + # %% [parameters] cell
+tasks/{G}{NN}_<group_name>/                 ← group (letter is project-specific)
+└── {NN}_<task_name>/                       ← task-folder
+    ├── {NN}_<task_name>.py                 source (instantiation of haistepnb template)
     ├── configs/
-    │   └── <task_name>_default.yaml        seeded from ref/config-seed.yaml
+    │   └── run_<task_name>.yaml            seeded from ref/config-seed.yaml
     ├── runs/
-    │   └── <task_name>_default.sh          from haipipe-task/ref/run-sh-template.sh
-    ├── results/                            light pointers + summary
+    │   └── run_<task_name>.sh              from haipipe-task/ref/run-sh-template.sh
+    ├── results/                            runtime.yaml per run
     ├── notebooks/                          papermill output per run
-    └── diagram/                            optional, if task diverges from group
+    └── workflow/                           plan.yaml + report.yaml
 ```
 
-Group letter default: **D** (data-pipeline).
 Heavy outputs land in: `_WorkSpace/{1..4}-*Store/`.
 
 
-Cross-reference to pipeline skill
-----------------------------------
+Notebook template pattern
+--------------------------
 
-`/haipipe-data` (and its sub-specialists: -source / -record / -case / -aidata) owns the BUILDER code. This skill only scaffolds the example under `examples/`. After scaffolding, suggest `/haipipe-data <stage>` to author the builder logic.
+The task `.py` is an **instantiation** of a generic template from
+`code/scripts/haistepnb/`. Only the CONFIG default and docstring change.
+The `.ipynb` is auto-generated at runtime — it is NOT source.
+
+```
+Template (generic)                         Task .py (exact copy)
+──────────────────                         ──────────────────────────────────────
+code/scripts/haistepnb/a1_source_nb.py →   {task}/1_source_<project>.py
+code/scripts/haistepnb/a2_record_nb.py →   {task}/2_record_<project>.py
+code/scripts/haistepnb/a3_case_nb.py   →   {task}/3_case_<project>.py
+code/scripts/haistepnb/a4_aidata_nb.py →   {task}/4_aidata_<project>.py
+```
+
+Scaffold step: exact copy of template → rename file. CONFIG overridden at runtime by papermill.
+See `ref/notebook-templates.md` for the full mapping and conventions.
+
+
+Execution flow
+---------------
+
+Two execution paths:
+
+**(a) Notebook (papermill)** — standard path via `bash runs/<RUN>.sh`:
+  1. `convert_to_notebooks.py` converts `.py` → `.ipynb` (template)
+  2. `papermill` injects CONFIG + executes → `notebooks/<RUN>.ipynb`
+  3. `run.sh` writes `results/<RUN>/runtime.yaml`
+
+**(b) CLI (direct)** — for parallel workers or scripted pipelines:
+  ```
+  python -m scripts.haistep.source --config <config>
+  python -m scripts.haistep.record --config <config> --num-partitions 20 --use-cache
+  python -m scripts.haistep.case   --config <config> --num-partitions 0 --num-workers 4
+  python -m scripts.haistep.aidata --config <config>
+  ```
+
+See `fn/execute.md` for the detailed stage-aware execution protocol.
+
+
+Partition support
+------------------
+
+```
+Stage    Partitions     CLI flags                                    Notebook params
+──────   ────────────   ──────────────────────────────────────────   ────────────────────
+1 Source none           (none)                                       (none)
+2 Record creates @i1nN  --num-partitions N --use-cache               NUM_PARTITIONS, PARTITION_INDEX
+3 Case   follows @i*n*  --num-partitions 0 --num-workers N --use-cache NUM_PARTITIONS, PARTITION_INDEX
+4 AIData merges all     --use-cache (auto-discovers partitions)      NUM_PARTITIONS
+```
+
+- **Record** splits patients into N partitions. Each loads only its slice via
+  Ptt.parquet + predicate pushdown (memory: ~30GB vs 120GB+ full).
+- **Case** is embarrassingly parallel — each partition is independent. Use
+  `--num-workers 4` for 4x speedup.
+- **AIData** auto-discovers all CaseSet partitions and merges via streaming
+  HF Dataset (memory-efficient).
+- Partition naming: `@i{i}n{n}` (1-based). Discovery: glob `@i*n*`.
+
+
+Cross-references
+-----------------
+
+Pipeline code (Fn authoring, review, inspection):
+- `/haipipe-data` — orchestrator for all stages
+- `/haipipe-data-source` — Stage 1 SourceFn/HumanFn
+- `/haipipe-data-record` — Stage 2 RecordFn/TriggerFn
+- `/haipipe-data-case` — Stage 3 CaseFn
+- `/haipipe-data-aidata` — Stage 4 TfmFn/SplitFn
+
+CLI scripts (direct execution):
+- `code/scripts/haistepcli/source.py` — Stage 1
+- `code/scripts/haistepcli/record.py` — Stage 2 (multi-partition)
+- `code/scripts/haistepcli/case.py` — Stage 3 (multi-partition + parallel)
+- `code/scripts/haistepcli/aidata.py` — Stage 4 (multi-CaseSet merge)
+
+Notebook templates:
+- `code/scripts/haistepnb/a1_source_nb.py` through `a4_aidata_nb.py`
 
 
 Commands
@@ -62,12 +141,24 @@ Scaffold flow
 See `fn/scaffold.md` for the detailed step-by-step. Summary:
 
   1. Identify project + task-group.
-  2. Collect metadata (NN, name, type-specific extras, _meta block).
-  3. Create skeleton (.py, configs/, runs/, results/, notebooks/).
-  4. Seed config from `ref/config-seed.yaml`.
+  2. Collect metadata (NN, name, stage, _meta block).
+  3. Copy notebook template from `haistepnb/{N}_{stage}_nb.py`, set CONFIG default.
+  4. Seed config from `ref/config-seed.yaml` (with partition fields for Stage 2+).
   5. Copy run-script from `../haipipe-task/ref/run-sh-template.sh`.
   6. Suggest next via cross-skill link.
   7. Emit return contract.
+
+
+Execute flow
+-------------
+
+See `fn/execute.md` for the detailed step-by-step. Summary:
+
+  1. Detect stage from script imports (SourceSet/RecordSet/CaseSet/AIData).
+  2. Read config for partition_number and stage-specific args.
+  3. Execute via notebook (run.sh) or CLI (python -m scripts.haistep.{stage}).
+  4. Write results/<RUN>/runtime.yaml.
+  5. Emit return contract.
 
 
 Return contract
@@ -75,11 +166,10 @@ Return contract
 
 ```
 status:    ok | blocked | failed
-summary:   2-3 sentences on what was scaffolded
+summary:   2-3 sentences on what was done
 artifacts: [paths created]
-next:      suggested next command (typically /haipipe-data <stage>)
+next:      suggested next command
 ```
-
 
 
 Workflow plan

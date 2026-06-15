@@ -25,20 +25,40 @@ Step 2 — Collect metadata
 - `_meta:` block (purpose / note / input / output).
 
 
-Step 3 — Create skeleton
--------------------------
+Step 3 — Create skeleton (from notebook template)
+---------------------------------------------------
+
+The `.py` is an instantiation of a generic template. Copy the right
+template from `code/scripts/haistepnb/`, then change only the CONFIG
+default and docstring:
 
 ```
-D{NN}_<group>/
+Stage A1 → cp code/scripts/haistepnb/a1_source_nb.py → {task}/{NN}_{task_name}.py
+Stage A2 → cp code/scripts/haistepnb/a2_record_nb.py → {task}/{NN}_{task_name}.py
+Stage A3 → cp code/scripts/haistepnb/a3_case_nb.py   → {task}/{NN}_{task_name}.py
+Stage A4 → cp code/scripts/haistepnb/a4_aidata_nb.py → {task}/{NN}_{task_name}.py
+```
+
+After copy:
+- Set CONFIG default to `examples/<project>/tasks/<group>/<task>/configs/run_<name>.yaml`
+- Update the docstring (first line + Input/Output) with project-specific info
+
+Result:
+```
+{G}{NN}_<group>/
 └── {NN}_<task_name>/
-    ├── {NN}_<task_name>.py                  papermill source; calls Fn.build()
+    ├── {NN}_<task_name>.py                  instantiation of haistepnb template
     ├── configs/
-    │   └── {stage}_{layer}_{dataset}.yaml   from ref/config-seed.yaml
+    │   └── run_<task_name>.yaml             from ref/config-seed.yaml
     ├── runs/
-    │   └── {stage}_{layer}_{dataset}.sh     from haipipe-task/ref/run-sh-template.sh
+    │   └── run_<task_name>.sh               from haipipe-task/ref/run-sh-template.sh
     ├── results/                              empty (heavy data → _WorkSpace/)
     └── notebooks/
 ```
+
+The `.ipynb` is NOT created at scaffold time — `run.sh` auto-generates it
+via `convert_to_notebooks.py` at execution time. It is an intermediate
+output, not source.
 
 
 Step 4 — Seed config

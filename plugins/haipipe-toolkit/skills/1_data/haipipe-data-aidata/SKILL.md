@@ -1,13 +1,14 @@
 ---
 name: haipipe-data-aidata
-description: "Stage 4 (AIData) specialist. Builds, runs, and reviews TfmFn / SplitFn; inspects 4-AIDataStore; loads AIData-layer assets and tensors. Called by /haipipe-data orchestrator. Direct invocation works for stage-scoped work, but /haipipe-data is the recommended entry."
+description: "Stage 4 (AIData) specialist. Builds, runs, and reviews TfmFn / SplitFn; inspects 4-AIDataStore; loads AIData-layer assets and tensors. Supports multi-partition CaseSet merge via streaming HF Dataset. Called by /haipipe-data orchestrator. Direct invocation works for stage-scoped work."
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
-  summary: "Stage 4 (AIData) specialist."
+  version: "1.1.0"
+  last_updated: "2026-06-11"
+  summary: "Stage 4 (AIData) specialist with multi-partition CaseSet merge."
   changelog:
+    - "1.1.0 (2026-06-11): add Multi-partition Mode section — auto-discover CaseSet partitions via record_set_name + CaseArgs config, streaming HF Dataset merge, --use-cache; remove stale 0_data_nb reference."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
@@ -35,9 +36,9 @@ Commands
 /haipipe-data-aidata review [file_path]     -> structural review of an AIData-layer file
 ```
 
-Notebook / Databricks run: to run Stage 4 (or full 1-4) as a parameterized
-Databricks/papermill notebook, use `code/scripts/haistepnb/4_aidata_nb.py`
-(or `0_data_nb.py` for 1-4) — see the ★ Notebook Wrappers section in the
+Notebook / Databricks run: use `code/scripts/haistepnb/a4_aidata_nb.py`
+as the template. Supports multi-partition CaseSet discovery via
+`NUM_PARTITIONS` parameter. See the ★ Notebook Templates section in the
 `haipipe-data` umbrella SKILL.
 
 ---
@@ -91,6 +92,44 @@ Hand-off contract (Stage 4 -> 5):
   AIData_Set is the input contract for `/haipipe-nn`. Splits, tensor shapes,
   and target column conventions must match what algorithms in
   `code/hainn/algo/` expect.
+
+
+Multi-partition Mode
+---------------------
+
+When upstream RecordSet is partitioned (@i{i}n{n}), AIData auto-discovers
+all CaseSet partitions and merges them into a single AIDataSet.
+
+**CLI:**
+```bash
+python -m scripts.haistep.aidata --config <config>
+python -m scripts.haistep.aidata --config <config> --use-cache  # skip if exists
+```
+
+**Config (multi-partition mode):**
+```yaml
+record_set_name: "mimiciv-3.1_v3RecSet"   # triggers partition discovery
+CaseArgs:
+  case_set_version: 0
+  Case_Args:
+    - TriggerName: 'MimicAdmissionEntry'
+      TriggerArgs: { TriggerFolderName: "MimicAdmissionEntry" }
+aidata_name: "MimicMortality"
+aidata_version: "v0001"
+InputArgs: { ... }
+```
+
+**Config (single CaseSet mode — backward compatible):**
+```yaml
+case_set_name: "mimiciv-3.1_v3RecSet/@v0CaseSet-MimicAdmissionEntry"
+```
+
+**How it works:**
+- Globs `LOCAL_CASE_STORE/{RecSet}/@i*n*/@v{ver}CaseSet-{Trigger}/`
+- Loads all non-empty CaseSets (skips empty partitions)
+- Passes `case_set_list=[...]` to `AIData_Pipeline.run()`
+- Streaming HF Dataset conversion (memory-efficient, no pandas concat)
+- Output: `4-AIDataStore/{name}/@{version}/`
 
 ---
 

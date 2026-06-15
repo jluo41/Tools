@@ -1,13 +1,14 @@
 ---
 name: haipipe-data-record
-description: "Stage 2 (Record) specialist. Builds, runs, and reviews RecordFn / TriggerFn; inspects 2-RecStore; loads record-layer assets. Called by /haipipe-data orchestrator. Direct invocation works for stage-scoped work, but /haipipe-data is the recommended entry."
+description: "Stage 2 (Record) specialist. Builds, runs, and reviews RecordFn / TriggerFn; inspects 2-RecStore; loads record-layer assets. Supports multi-partition via patient_ids predicate pushdown. Called by /haipipe-data orchestrator. Direct invocation works for stage-scoped work."
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
-  summary: "Stage 2 (Record) specialist."
+  version: "1.1.0"
+  last_updated: "2026-06-11"
+  summary: "Stage 2 (Record) specialist with multi-partition support."
   changelog:
+    - "1.1.0 (2026-06-11): add Partition Support section — CLI (--num-partitions, --use-cache), patient_ids predicate pushdown via Ptt.parquet, @i{i}n{n} output naming."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
@@ -89,3 +90,34 @@ Upstream dependency (Stage 1):
 Hand-off contract (Stage 2 -> 3):
   Each Record's columns and time grid must match the keys CaseFn samples on.
   Verify against `../haipipe-data-case/ref/concepts.md` before locking schema.
+
+
+Partition Support
+------------------
+
+Record supports multi-partition processing for large datasets. Each partition
+processes a subset of patients, reducing peak memory.
+
+**CLI:**
+```bash
+python -m scripts.haistep.record --config <config> --num-partitions 20 --use-cache
+python -m scripts.haistep.record --config <config> --num-partitions 20 --partition-index 5  # retry one
+```
+
+**Notebook parameter:** `NUM_PARTITIONS` in the `# %% [parameters]` cell.
+
+**How it works:**
+- Reads `Ptt.parquet` (tiny) to get all patient IDs
+- Computes the i/n slice for this partition
+- Loads SourceSet with `patient_ids` predicate pushdown (pyarrow filters)
+- Peak memory: ~30GB per partition vs 120GB+ full load (MIMIC-IV scale)
+- Sequential recommended: each partition reads SourceSet from disk (I/O heavy)
+
+**Output naming:** `2-RecStore/{name}_v{N}RecSet/@i{i}n{n}/` (1-based)
+
+**Config:**
+```yaml
+RecordArgs:
+  partition_number: 20    # number of partitions
+  use_cache: true         # skip existing partitions on re-run
+```

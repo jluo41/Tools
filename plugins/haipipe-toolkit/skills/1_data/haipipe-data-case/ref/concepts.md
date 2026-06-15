@@ -243,6 +243,70 @@ Or call venv python directly: `.venv/bin/python script.py`
 12. Return real numeric values in `--wgt` for numeric CaseFns (not just 1.0)
 
 
+CaseFn → AIData → Model Format Chain
+--------------------------------------
+
+CaseFn output format determines whether the downstream model pipeline works.
+Missing `--tid`/`--wgt` causes silent failures that only surface at training time.
+
+```
+CaseFn returns:
+  {'--tid': [0, 1, 2], '--wgt': [val0, val1, val2], '--val': {...}}
+       │                    │
+       ▼                    ▼
+CaseSet saves as columns:
+  @CaseFnName.parquet → CaseFnName--tid, CaseFnName--wgt, CaseFnName--val
+       │                    │
+       ▼                    ▼
+AIData InputTransform (e.g. CatInputMultiCFSparse):
+  Concatenates --tid/--wgt across CaseFns → feat-idx, feat-wgt
+       │                    │
+       ▼                    ▼
+Model Tuner (e.g. XGBoostTuner):
+  Reads feat-idx + feat-wgt → builds sparse matrix → trains
+```
+
+**If CaseFn returns only `--val` (no `--tid`/`--wgt`):**
+- CaseSet saves only `--val` columns
+- Sparse InputTransforms find no `--tid` → `feat-idx` is empty
+- Model tuner crashes: `Column 'feat-idx' doesn't exist`
+
+**Validation:** After building a CaseFn, check:
+```bash
+grep -c "\-\-tid" code/haifn/fn_case/case_casefn/<CaseFnName>.py
+# Must be >= 2 (empty case + data case both return --tid)
+```
+
+**Three CaseFn return patterns:**
+
+1. **Numeric** (e.g., stats, counts, continuous values):
+   ```python
+   # COVocab = {'tid2tkn': ['mean', 'std', 'count'], 'vocab_size': 3}
+   tid_list, wgt_list = [], []
+   for _i, _k in enumerate(_sub_keys):
+       _v = val_dict.get(_k)
+       if _v is not None and not (isinstance(_v, float) and np.isnan(_v)):
+           tid_list.append(_i)
+           wgt_list.append(float(_v))
+   return {'--tid': tid_list, '--wgt': wgt_list, '--val': val_dict}
+   ```
+
+2. **Categorical** (e.g., gender, type, category):
+   ```python
+   # COVocab = {'tid2tkn': ['<pad>', 'cat-A', 'cat-B'], 'tkn2tid': {...}}
+   tid = COVocab['tkn2tid'].get(f'cat-{value}', 0)
+   return {'--tid': [tid], '--wgt': [1.0], '--val': {'category': value}}
+   ```
+
+3. **Empty case** (no data in window):
+   ```python
+   return {'--tid': [], '--wgt': [], '--val': empty_dict}
+   ```
+
+**NEVER return only `--val`** — even if the feature is "just a number", the
+downstream sparse pipeline needs `--tid`/`--wgt` to function.
+
+
 MUST NOT
 --------
 
@@ -254,6 +318,7 @@ MUST NOT
 6. NEVER skip `RUN_TEST` in builder
 7. NEVER look for `case_data.parquet` (the file is `df_case.parquet`)
 8. NEVER look for CaseFn files in a subdirectory (they are `@`-prefixed at ROOT)
+9. NEVER return only `--val` from fn_CaseFn — always include `--tid` and `--wgt` (even empty lists)
 
 
 Key File Locations

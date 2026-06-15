@@ -107,3 +107,24 @@ Pair invariant
 ---------------
 For any record R: `Input2SrcFn(Src2InputFn(R)) == R`.
 Changes here typically require a paired update in `-src2input`.
+
+Roundtrip test (REQUIRED for design and review)
+-------------------------------------------------
+
+Every `design` or `review` MUST include a roundtrip test against **real
+example data** from the ModelInstanceStore. See the paired skill
+`haipipe-end-src2input` for the full test protocol.
+
+The test verifies:
+1. All non-empty source tables survive the roundtrip
+2. Features produced from original vs reconstructed data are identical
+3. Model predictions match within tolerance (< 0.001)
+
+**Why this matters:** Input2SrcFn must reconstruct ALL tables that CaseFns
+read — not just the ones that seem important. If Src2InputFn serializes
+only 4 of 19 tables and Input2SrcFn creates empty stubs for the rest,
+CaseFns that read the missing tables produce zero features → different
+predictions. This is silent — no error, just wrong scores.
+
+The builder script (code-dev/ e1_build_*) must include this test paired
+with the Src2InputFn. If the roundtrip fails, neither Fn is production-ready.

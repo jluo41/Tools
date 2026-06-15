@@ -17,17 +17,52 @@ _meta:
 
 
 # =============================================================================
-# Stage-specific params
+# Stage 1 (Source) — no partitions
 # =============================================================================
+# SourceArgs:
+#   SourceFnName: "<SourceFnClassName>"
+#   raw_data_name: "<cohort_name>"
+#   raw_data_path: "_WorkSpace/0-RawDataStore/<cohort>/"
+#   use_cache: true
+#   save_cache: true
 
-stage: <1|2|3|4>                    # 1=Source 2=Record 3=Case 4=AIData
-FnClass: <SourceFn|RecordFn|CaseFn|TfmFn|SplitFn>
-Args:
-  dataset_name: <dataset>           # e.g. wellreadi_v3, CGM5Min, EventGlucose
-  version: <vNNNN>                  # e.g. v0003
-  # ... stage-specific args (cohort, num_partitions, lookups, ...)
+# =============================================================================
+# Stage 2 (Record) — partition by patients
+# =============================================================================
+# source_set_name: "<cohort>/@<SourceFnName>"
+# RecordArgs:
+#   record_set_version: 0
+#   record_set_label: 1
+#   partition_number: 20              # split patients into N partitions
+#   use_cache: true                   # skip existing partitions on re-run
+#   save_cache: true
+#   HumanRecords:
+#     <HumanName>:
+#       - <RecordFnName1>
+#       - <RecordFnName2>
 
-# Partitioning (stage 2+ typically uses this)
-Partition_Args:
-  num_processors_case: 2            # see "C3 mode" — concurrent writes constraint
-  num_partitions: 20
+# =============================================================================
+# Stage 3 (Case) — follows RecordSet partitions (auto-discovered)
+# =============================================================================
+# record_set_name: "<cohort>_v<N>RecSet"
+# CaseArgs:
+#   case_set_version: 0
+#   use_cache: false
+#   Case_Args:
+#     - TriggerName: '<TriggerFnName>'
+#       TriggerArgs: { ... }
+#   CaseFn_list:
+#     - <CaseFnName1>
+#     - <CaseFnName2>
+
+# =============================================================================
+# Stage 4 (AIData) — merges all CaseSet partitions
+# =============================================================================
+# record_set_name: "<cohort>_v<N>RecSet"    # for multi-partition discovery
+# CaseArgs: { ... }                         # needed to construct CaseSet path
+# aidata_name: "<AIDataName>"
+# aidata_version: "<version>"
+# InputArgs: { ... }
+# OutputArgs: { ... }
+# SplitArgs: { ... }
+# MetaArgs: { ... }

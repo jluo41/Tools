@@ -111,6 +111,18 @@ InputArgs:
     max_seq_len: 512
 ```
 
+**InputTransform choice determines model compatibility:**
+
+| InputTransform | Output format | Use case |
+|----------------|--------------|----------|
+| `CatInputMultiCFSparse` | `feat-idx` + `feat-wgt` (sparse) | Tree models (XGBoost, LightGBM, etc.) via mlpredictor tuners |
+| `InputMultiCF` | Per-CaseFn columns | Custom models, exploration |
+| Project-specific (e.g. `InputXxxTabular`) | Flat named columns | Direct analysis, NOT mlpredictor |
+
+**For tree-model training (mlpredictor), use `CatInputMultiCFSparse`.**
+It concatenates `--tid`/`--wgt` from all CaseFns into a global sparse vector.
+Requires CaseFns to return `--tid`/`--wgt` (see haipipe-data-case concepts).
+
 **3. OutputArgs (optional) -- how to extract labels:**
 
 ```yaml
@@ -261,6 +273,8 @@ Or call venv python directly: `.venv/bin/python script.py`
    - output `tfm_fn` takes 2 params
 6. Vocab files are at ROOT of the version dir -- no subdirectory
 7. Present plan and get approval before any code changes
+8. For tree-model training (mlpredictor): use `CatInputMultiCFSparse` as input_method
+9. Verify upstream CaseFns return `--tid`/`--wgt` before building AIData (see haipipe-data-case)
 
 ---
 
