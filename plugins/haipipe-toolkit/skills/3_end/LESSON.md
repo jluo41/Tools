@@ -310,3 +310,39 @@ The `f1_roundtrip_test_*.py` script is the Phase 2+3 template.
 
 **Rule:** No Fn is production-ready until it passes Phase 2 on real data.
 The builder's quick test (synthetic payload) is necessary but not sufficient.
+
+### L13: Three-layer builder pattern — templates → project → production
+
+**Problem:** Builder scripts lived in `code-dev/1-PIPELINE/6-Endpoint-WorkSpace/`
+as a flat directory mixing WellDoc, CGM, and MIMIC builders. No clear separation
+between generic templates and project-specific implementations. New projects
+had to guess which file to copy.
+
+**Fix — three-layer pattern:**
+
+```
+Layer 1: TEMPLATES     code/scripts/haibuilder/6-endpoint/
+                       └── canonical WellDoc references (copy-and-customize)
+
+Layer 2: PROJECT       examples/<project>/tasks/C01_*/00_endpoint_set_fn_develop/
+                       └── project-specific builders, each as own run
+                           (configs/ + runs/ + results/ per builder)
+
+Layer 3: PRODUCTION    code/haifn/fn_endpoint/fn_*/*.py
+                       └── generated output (NEVER edit directly)
+```
+
+**Workflow:**
+1. Copy closest template from Layer 1 → Layer 2
+2. Customize the `[CUSTOMIZE]` sections, keep `[BOILERPLATE]` as-is
+3. Run builder: `bash runs/run_a1_metafn.sh` → generates Layer 3
+4. Builder tests with real ModelInstanceStore data (not synthetic)
+5. After all builders pass → run endpoint packaging task (`01_endpoint_*`)
+
+**Task-folder convention:** The `00_endpoint_set_fn_develop` folder follows
+/haipipe-task structure: each builder is an independent run with its own
+config/run/results. Can run one at a time or all sequentially.
+
+**Rule:** Templates (Layer 1) are WellDoc references — don't modify them.
+Project builders (Layer 2) are where customization happens. Production
+files (Layer 3) are generated — never hand-edit.

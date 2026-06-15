@@ -89,3 +89,17 @@ Does NOT own:
   - Other 4 Fn-types — sibling skills `-meta`, `-post`, `-src2input`, `-input2src`
   - Whole-artifact verbs — `/haipipe-end-endpointset`
   - Deployment — `/haipipe-end-deploy-*`
+
+Builder templates (code/scripts/haibuilder/)
+---------------------------------------------
+
+Copy-and-customize starting point for new TrigFn builders:
+
+```
+code/scripts/haibuilder/6-endpoint/b1_build_trigfn_weightdayentry.py   ← WellDoc weight trigger
+```
+
+Project-specific builders live in the task folder:
+```
+examples/<project>/tasks/C01_*/00_endpoint_set_fn_develop/b1_build_trigfn.py
+```

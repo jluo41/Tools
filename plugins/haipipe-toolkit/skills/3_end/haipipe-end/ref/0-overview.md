@@ -77,8 +77,29 @@ Handles action filtering, score scaling, and response schema formatting.
 The 5 Inference Function Types
 ================================
 
-These are all generated from builders in code-dev/1-PIPELINE/6-Endpoint-WorkSpace/.
-NEVER edit files in code/haifn/fn_endpoint/ directly.
+NEVER edit files in code/haifn/fn_endpoint/ directly — use builders.
+
+**Three-layer builder pattern:**
+
+```
+Layer 1: TEMPLATES     code/scripts/haibuilder/6-endpoint/   ← copy-and-customize starting points
+                       code/scripts/haibuilder/5-instance/   ← ExampleFn templates
+
+Layer 2: PROJECT       examples/<project>/tasks/C01_*/        ← project-specific builders
+                       00_endpoint_set_fn_develop/            ← each Fn is its own run
+                         ├── a1_build_metafn.py + configs/run_a1_metafn.yaml + runs/run_a1_metafn.sh
+                         ├── b1_build_trigfn.py + ...
+                         ├── c1_build_postfn.py + ...
+                         ├── d1_build_src2inputfn.py + ...   ← includes roundtrip test
+                         ├── e1_build_input2srcfn.py + ...   ← includes roundtrip test
+                         ├── e4_build_examplefn.py + ...     ← tests with real model + AIData
+                         └── f1_roundtrip_test.py + ...      ← prediction-level verification
+
+Layer 3: PRODUCTION    code/haifn/fn_endpoint/fn_*/*.py       ← generated output (do not edit)
+```
+
+Workflow: copy from Layer 1 → customize in Layer 2 → run builder → produces Layer 3.
+The `00_develop` task folder follows /haipipe-task convention (configs/, runs/, results/).
 
 ```
 Type          Builder prefix  Generated location         Purpose
@@ -88,6 +109,7 @@ TrigFn        b1_build_...    fn_endpoint/fn_trig/       Trigger detection
 PostFn        c1_build_...    fn_endpoint/fn_post/       Score → response JSON
 Src2InputFn   d1_build_...    fn_endpoint/fn_src2input/  ProcDF → payload (inverse)
 Input2SrcFn   e1_build_...    fn_endpoint/fn_input2src/  payload → ProcDF (entry)
+ExampleFn     e4_build_...    fn_model/fn_example/       Example selection strategy
 ```
 
 **Src2InputFn and Input2SrcFn are inverses:**

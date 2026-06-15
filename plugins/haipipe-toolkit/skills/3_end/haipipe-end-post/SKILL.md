@@ -100,3 +100,17 @@ Does NOT own:
   - Other 4 Fn-types — sibling skills `-meta`, `-trig`, `-src2input`, `-input2src`
   - Whole-artifact verbs — `/haipipe-end-endpointset`
   - Deployment — `/haipipe-end-deploy-*`
+
+Builder templates (code/scripts/haibuilder/)
+---------------------------------------------
+
+Copy-and-customize starting point for new PostFn builders:
+
+```
+code/scripts/haibuilder/6-endpoint/c1_build_postfn_weight_multilabel.py  ← WellDoc weight PostFn
+```
+
+Project-specific builders live in the task folder:
+```
+examples/<project>/tasks/C01_*/00_endpoint_set_fn_develop/c1_build_postfn.py
+```
