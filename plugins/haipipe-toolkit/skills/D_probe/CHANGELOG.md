@@ -5,6 +5,34 @@ Layer-scoped changelog for the D_probe (PROBE / claim) layer. Newest first.
 Rollup lives in the plugin-level `CHANGELOG.md`.
 
 
+## [2.0.0] — 2026-06-11
+
+### Added
+- **IPO workflow adoption.** D_probe now follows the haipipe-workflow (B_project)
+  IPO pattern — the same universal unit that C_task adopted for task folders.
+  - `ref/workflow-plan-sample.yaml` — the probe lifecycle as an IPO plan template.
+    6 domain phases (Design → Bridge → Run → Aggregate → Review → Claim), each
+    with steps declaring `files_in` / `files_out`. Follows `plan-schema.md`.
+  - `haipipe-probe/ref/probe-lifecycle.workflow.js` — the 4-stage lifecycle
+    (Plan → Build → Execute → Report) wrapping the 6 domain phases. Plan creates
+    the probe plan; Build executes Design + Bridge; Execute runs Run + Aggregate +
+    Review + Claim; Report mirrors the plan with results.
+  - Lifecycle section added to `haipipe-probe/SKILL.md` showing the mapping:
+    Plan → Build (Design + Bridge) → Execute (Run + Aggregate + Review + Claim)
+    → Report.
+
+### Notes
+- The 4-stage lifecycle is the same universal wrapper from B_project/haipipe-workflow.
+  The 6 domain phases are D_probe-specific — not copied from C_task. C_task's eval
+  task has Load/Score/Compare/Emit; D_probe has Design/Bridge/Run/Aggregate/Review/Claim.
+- Builder asymmetry preserved: Design, Bridge, Result remain interactive skills in the
+  workflow.js (not creator-reviewer agent loops). Reviewer agents run in the Review
+  domain phase (P5), gated sequentially (structural → integrity → semantic).
+- No per-probe `workflow/` folder — probe.yaml is already the plan (hypothesis + arms +
+  aggregation), and CYCLE.md (from inspect cycle) is the report. The workflow-plan-sample
+  serves as the reference template; probe-lifecycle.workflow.js is shared across probes.
+
+
 ## [Unreleased] — 2026-05-31
 
 ### Added
@@ -29,17 +57,16 @@ Rollup lives in the plugin-level `CHANGELOG.md`.
 ### Changed
 - **Per-run quality is no longer owned here.** The per-run sanity checklist
   (runtime.status / exit_code / git_sha / metrics.json parseable / heavy-artifact
-  placement) moved to the C_task agent `run-result-auditor-agent` (GATE 2).
-  `haipipe-probe-review` `review run` now DELEGATES to that agent instead of
-  re-implementing the checklist — single source of truth. "Did THIS run produce
-  a trustworthy artifact?" is a C_task question; D_probe only consumes the verdict.
-  The per-probe checklist's line now reads "all linked runs pass
-  run-result-auditor-agent (GATE 2, C_task)".
-- **Bridge dispatch updated.** `haipipe-probe-bridge` Step 3 invokes the Run
-  Script Reviewer by reading
-  `skills/C_task/agents/reviewers/run-script-reviewer-agent.md` and handing its
-  body to a Task subagent (the agent is a role-doc invoked by path, registered
-  at the plugin top-level `agents/` for `subagent_type` addressing).
+  placement) moved to the C_task unified reviewer `haipipe-task-reviewer-agent`
+  (GATE 2). `haipipe-probe-review` `review run` now DELEGATES to that agent
+  instead of re-implementing the checklist — single source of truth. "Did THIS
+  run produce a trustworthy artifact?" is a C_task question; D_probe only
+  consumes the verdict. The per-probe checklist's line now reads "all linked
+  runs pass haipipe-task-reviewer-agent GATE 2 (C_task)".
+- **Bridge dispatch updated.** `haipipe-probe-bridge` Step 3 invokes the C_task
+  reviewer by reading `skills/C_task/agents/haipipe-task-reviewer-agent.md` and
+  handing its body to a Task subagent (the agent is a role-doc invoked by path,
+  registered at the plugin top-level `agents/` for `subagent_type` addressing).
 
 ### Notes
 - Integrity audit (5 fraud patterns) and claim verdict remain Codex-backed

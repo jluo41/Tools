@@ -5,6 +5,20 @@ Layer-scoped changelog for the C_task (WORK / execution) layer. Newest first.
 Rollup lives in the plugin-level `CHANGELOG.md`.
 
 
+## [4.0.0] — 2026-06-11
+
+### Changed
+- **5-stage lifecycle: Plan / Build / Execute / Report / Insight.** Stage 5 (Insight) is optional — it files a D_data observation card via `/haipipe-insight-data` for insight-worthy task types (eval, fit, stata-reg, stata-data) when results exist. Captures what the DATA taught us, not what the CODE did. First cross-layer call from C_task into E_insight.
+- **"Two Lifecycles in One Pipeline" framing** added to DESIGN.md: stages 1-4 = code lifecycle ("is the implementation right?"), stage 5 = data lifecycle ("what did we learn?").
+- **DESIGN.md bumped to v4.0.0** with Insight stage documentation, type eligibility table, DIKW accumulation ladder, and cross-layer contract (C_task → E_insight).
+- **Architecture diagram** (01-architecture.txt) rebuilt: new sections for two-lifecycle framing (§3), cross-layer contract (§8), updated accumulation table with Insight column, schema chain extended to E_insight.
+
+### Added
+- `/haipipe-task insight <path>` command — runs Stage 5 only on an existing task folder.
+- Stage 5 in `task-lifecycle.workflow.js` — eligibility check + Skill("haipipe-insight-data") call + card-reviewer-data-agent validation.
+- Migration Phase 7 (Insight stage) in DESIGN.md.
+
+
 ## [3.1.0] — 2026-06-10
 
 ### Changed

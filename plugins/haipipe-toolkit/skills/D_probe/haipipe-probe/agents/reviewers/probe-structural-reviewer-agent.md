@@ -37,8 +37,8 @@ sole_deliverable: review.md (structural section) + ✅/⚠️/❌ issues
 
 **I do NOT (→ who):**
 - per-RUN trustworthiness (runtime.status / metrics parseable) → **C_task**
-  `run-result-auditor-agent` (GATE 2). I consume its verdict ("all linked
-  runs pass run-result-auditor-agent"), I do not re-check runs.
+  `haipipe-task-reviewer-agent` (GATE 2). I consume its verdict ("all linked
+  runs pass haipipe-task-reviewer-agent GATE 2"), I do not re-check runs.
 - fraud patterns (fake GT, metric drift, leakage) → `probe-integrity-auditor-agent`
 - does evidence support the claim → `claim-verifier-agent`
 - designing / editing the probe.yaml → the `haipipe-probe-design` skill (interactive)

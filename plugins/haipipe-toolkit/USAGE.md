@@ -1,10 +1,7 @@
 haipipe-toolkit — Usage Guide
 ==============================
 
-Practical guide to USING the toolkit. For an inventory of what skills
-exist see `README.md`. For task ↔ probe boundary thinking see
-`skills/D_probe/MENTAL_MODEL.md`. This file is the workflow recipe
-book — concrete commands, common flows, gotchas.
+Practical guide to USING the toolkit. For an inventory of what skills exist see `README.md`. For task ↔ probe boundary thinking see `skills/D_probe/MENTAL_MODEL.md`. This file is the workflow recipe book — concrete commands, common flows, gotchas.
 
 
 The 3 worlds — one project, three folders
@@ -18,8 +15,7 @@ The 3 worlds — one project, three folders
 └── 📰 paper/         ← the DELIVERABLE  (F_paper)  manuscripts
 ```
 
-Each world has its own specialist family. You can stay in one or
-cross between them; the cross-world dependency is **strict one-way**:
+Each world has its own specialist family. You can stay in one or cross between them; the cross-world dependency is **strict one-way**:
 
 ```
 probes  ──reads──▶  tasks   (via probe.yaml arms[])
@@ -31,8 +27,7 @@ paper        ──reads──▶  probes (claims) + tasks (figures)
 Quick start — your first end-to-end run
 ========================================
 
-You are at the repo root. You want to train a CGM baseline model
-and aggregate 3 seeds into one claim.
+You are at the repo root. You want to train a CGM baseline model and aggregate 3 seeds into one claim.
 
 ```bash
 # 0. Activate env (always, per CLAUDE.md)
@@ -202,58 +197,43 @@ AUTO_MODE=1             alternate env var
 
 When AUTO is on, the orchestrator:
   - infers from cwd + keywords + args (Step 3a cascade)
-  - auto-creates missing parents (project / task-group) if `--project-id`
-    and `--group` are provided (Step 3b cascade)
-  - returns `status: blocked` when a required input can't be inferred
-    (instead of asking)
+  - auto-creates missing parents (project / task-group) if `--project-id` and `--group` are provided (Step 3b cascade)
+  - returns `status: blocked` when a required input can't be inferred (instead of asking)
 
-Without AUTO, the same orchestrator asks at every ambiguous step.
-Use AUTO for batch / nightly / scripted; interactive for first-time.
+Without AUTO, the same orchestrator asks at every ambiguous step. Use AUTO for batch / nightly / scripted; interactive for first-time.
 
 
 Gotchas
 ========
 
 1. **CODE_REVIEW.md gate blocks first runs.**
-   Every `run.sh` checks for `<task>/CODE_REVIEW.md` (produced by the
-   Run Script Reviewer agent). Without it, run.sh exits 2 immediately.
-   Three ways to satisfy:
+   Every `run.sh` checks for `<task>/CODE_REVIEW.md` (produced by the Run Script Reviewer agent). Without it, run.sh exits 2 immediately. Three ways to satisfy:
 
    - Run the reviewer agent (recommended for non-throwaway runs).
    - `HAIPIPE_SKIP_REVIEW=1 bash runs/<RUN>.sh` (env var, one run).
-   - `_meta.skip_review: true` in `configs/<RUN>.yaml` (permanent for
-     that config — only for throwaway / smoke tasks).
+   - `_meta.skip_review: true` in `configs/<RUN>.yaml` (permanent for that config — only for throwaway / smoke tasks).
 
 2. **Group letter must match task-type.**
-   `/haipipe-task data` only scaffolds under a **D**-series group.
-   Mismatch (e.g., trying to put data into A-series) → blocked in
-   AUTO; warn + ASK in interactive.
+   `/haipipe-task data` only scaffolds under a **D**-series group. Mismatch (e.g., trying to put data into A-series) → blocked in AUTO; warn + ASK in interactive.
 
    ```
    A=training  B=eval  C=display  D=data  E=individual  F=agent  X=algo
    ```
 
 3. **Single-direction dependency: probes read tasks, never vice versa.**
-   Don't write `probe.yaml` paths into task configs. Don't import
-   task code from probe scripts (probes have no code at all).
+   Don't write `probe.yaml` paths into task configs. Don't import task code from probe scripts (probes have no code at all).
 
 4. **`results/` is for LIGHT artifacts only.**
-   Heavy outputs (`.pt`, `.ckpt`, `.npy`, `.parquet > 1 MB`) belong in
-   `_WorkSpace/{N}-*Store/`. `-inspect review` flags violations.
+   Heavy outputs (`.pt`, `.ckpt`, `.npy`, `.parquet > 1 MB`) belong in `_WorkSpace/{N}-*Store/`. `-inspect review` flags violations.
 
 5. **Run-name pairing is mandatory.**
-   `configs/<RUN>.yaml`, `runs/<RUN>.sh`, `results/<RUN>/`,
-   `notebooks/<RUN>.ipynb` must all share the same `<RUN>` token.
-   Renaming one = renaming all four.
+   `configs/<RUN>.yaml`, `runs/<RUN>.sh`, `results/<RUN>/`, `notebooks/<RUN>.ipynb` must all share the same `<RUN>` token. Renaming one = renaming all four.
 
 6. **`.venv` + `env.sh` always.**
-   `source .venv/bin/activate && source env.sh` before any Python
-   command. `env.sh` sets `PYTHONPATH` to the current worktree (not
-   main's editable install).
+   `source .venv/bin/activate && source env.sh` before any Python command. `env.sh` sets `PYTHONPATH` to the current worktree (not main's editable install).
 
 7. **`code/haifn/` is generated.**
-   Never edit `code/haifn/` directly. Edit builders in
-   `code-dev/1-PIPELINE/`, then run the builder.
+   Never edit `code/haifn/` directly. Edit builders in `code-dev/1-PIPELINE/`, then run the builder.
 
 
 Cheatsheet — scope × command

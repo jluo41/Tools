@@ -23,8 +23,8 @@ yaml and enters a paper / dashboard / decision, this skill audits:
   - Honesty (is the setup free of fraud patterns?)
   - Claim support (do the results mean what we say?)
 
-(Per-RUN quality moved to C_task `run-result-auditor-agent` — `review run`
-delegates to it; see Commands below.)
+(Per-RUN quality moved to C_task `haipipe-task-reviewer-agent` (GATE 2) —
+`review run` delegates to it; see Commands below.)
 
 **Agent embodiment (builder ≠ judge).** The three checks below ARE three
 independent D_probe reviewer agents — dispatch them as `subagent_type` (e.g.
@@ -47,7 +47,7 @@ Commands
 ```
 /haipipe-probe review run <run-path>
   STRUCTURAL: per-run trustworthiness. DELEGATES to the C_task agent
-  run-result-auditor-agent — read skills/C_task/agents/reviewers/run-result-auditor-agent.md
+  haipipe-task-reviewer-agent (GATE 2) — read skills/C_task/agents/haipipe-task-reviewer-agent.md
   and dispatch its body to a Task subagent over <run-path>. Per-run
   quality is a C_task judgment; D_probe only consumes the verdict.
 
@@ -76,12 +76,12 @@ Per-run checklist — MOVED to C_task
 
 The per-run sanity checklist (runtime.status, exit_code, git_sha,
 metrics.json parseable, heavy-artifact placement, ...) now lives with the
-agent that owns it: **`skills/C_task/agents/reviewers/run-result-auditor-agent.md`**
+agent that owns it: **`skills/C_task/agents/haipipe-task-reviewer-agent.md`**
 (GATE 2). "Did THIS run produce a trustworthy artifact?" is a C_task
 question, not a D_probe one.
 
 `review run` above delegates to that agent. The per-probe checklist below
-consumes its verdict (see "all linked runs pass run-result-auditor-agent").
+consumes its verdict (see "all linked runs pass haipipe-task-reviewer-agent GATE 2").
 D_probe does NOT re-implement the per-run list — single source of truth.
 
 
@@ -92,7 +92,7 @@ Per-probe checklist
 □ all arms have ≥ 1 linked run
 □ paired arms have equal N runs (warn if unequal)
 □ N ≥ 3 for statistical claim (else mark claim as "exploratory")
-□ all linked runs pass run-result-auditor-agent (GATE 2, C_task)
+□ all linked runs pass haipipe-task-reviewer-agent GATE 2 (C_task)
 □ all linked runs share same git_sha (within arm AND across arms)
 □ all linked runs share same AIData version (read from configs)
 □ same training schedule across arms (only the intended difference varies)

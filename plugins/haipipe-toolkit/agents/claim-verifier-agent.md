@@ -1,1 +1,1 @@
-../skills/D_probe/agents/reviewers/claim-verifier-agent.md
+../skills/D_probe/haipipe-probe/agents/reviewers/claim-verifier-agent.md

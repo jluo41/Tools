@@ -68,9 +68,9 @@ if [ -n "$SKIP_REVIEW_CONFIG" ] || [ "${HAIPIPE_SKIP_REVIEW:-0}" = "1" ]; then
 else
   if [ ! -f "$CODE_REVIEW" ]; then
     echo "==> [pre-flight] BLOCKED: no CODE_REVIEW.md in $TASK_DIR" >&2
-    echo "    Run the Run Script Reviewer agent on this task-folder first," >&2
+    echo "    Run the Task Reviewer agent (GATE 1) on this task-folder first," >&2
     echo "    or set HAIPIPE_SKIP_REVIEW=1 to bypass." >&2
-    echo "    Agent: Tools/plugins/haipipe-toolkit/skills/C_task/agents/reviewers/run-script-reviewer-agent.md" >&2
+    echo "    Agent: Tools/plugins/haipipe-toolkit/skills/C_task/agents/haipipe-task-reviewer-agent.md" >&2
     exit 2
   fi
   REVIEW_SHA="$(grep -E '^- git_sha:' "$CODE_REVIEW" 2>/dev/null | awk '{print $3}')"
@@ -78,7 +78,7 @@ else
   if [ "$REVIEW_SHA" != "$GIT_SHA" ] && [ "$GIT_SHA" != "unknown" ]; then
     echo "==> [pre-flight] BLOCKED: CODE_REVIEW.md is stale" >&2
     echo "    review git_sha = ${REVIEW_SHA:-<none>}, current git_sha = $GIT_SHA" >&2
-    echo "    Re-run the Run Script Reviewer agent, or set HAIPIPE_SKIP_REVIEW=1." >&2
+    echo "    Re-run the Task Reviewer agent (GATE 1), or set HAIPIPE_SKIP_REVIEW=1." >&2
     exit 2
   fi
   case "$REVIEW_VERDICT" in

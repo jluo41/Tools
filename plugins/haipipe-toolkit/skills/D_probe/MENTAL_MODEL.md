@@ -174,7 +174,7 @@ One probe, full lifecycle
          │   review → fix → re-aggregate → re-review, until verdict is clean
 
 [done] probe.yaml is the canonical probe record. C_task artifacts are the
-       evidence. F_paper / E_dikw consume the claim downstream.
+       evidence. E_insight files D + K cards; F_paper consumes K + W downstream.
 ```
 
 
@@ -217,9 +217,17 @@ examples/Proj-X/
     └── Paper-X-icml/...                    (consumes probes' claims)
 ```
 
-Note: same project, three worlds, three folders. No code in
-probes/. No claims in tasks/. No mixing. The folder is still named
-probes/; conceptually each folder is one probe thread.
+Note: same project, four worlds, four folders. No code in
+probes/ or insights/. No claims in tasks/. No mixing. The folder is still
+named probes/; conceptually each folder is one probe thread.
+
+```
+examples/Proj-X/
+├── tasks/      💼 C_task      code + results + D cards (via Stage 5)
+├── probes/     📊 D_probe     steering state + K cards (via convergence)
+├── insights/   🧠 E_insight   DIKW knowledge base (D/I/K/W cards + INDEX)
+└── paper/      📰 F_paper     consumes K + W for publication
+```
 
 
 Common confusions — FAQ
@@ -266,12 +274,50 @@ A: `probes/<MMDD>_<slug>/logs/<YYYY-MM-DD>.md`. Append-only,
    what's next. Reviewed by `-loop` when iterating.
 
 
+Where probes meet insights (C_task ↔ D_probe ↔ E_insight)
+============================================================
+
+The three layers form a knowledge pipeline. Each layer produces DIKW cards at its natural scope:
+
+```
+C_task (execution)     produces → 🟦 D observation    "this task's data showed X"
+D_probe (research)     produces → 🟨 K belief          "this probe confirms/refutes X"
+E_insight (knowledge)  synthesizes → 🟩 I pattern      "across tasks, the pattern is X"
+                       synthesizes → 🟧 W action       "based on what we know, do X"
+```
+
+Concrete wiring:
+
+```
+C_task Stage 5 (Insight)  →  Skill("haipipe-insight-data")  →  🟦 D card
+  trigger:  task lifecycle completes with results (eval, fit, stata-reg, stata-data)
+  source:   results/<run>/metrics.json + workflow/report*.yaml
+  scope:    one task/run
+
+D_probe convergence       →  card-creator-knowledge-agent   →  🟨 K card
+  trigger:  probe result.status = confirmed or refuted
+  source:   probe.yaml claim + result block
+  scope:    one probe claim
+  optional: chains card-creator-wisdom-agent → 🟧 W per-probe next-step
+```
+
+The DIKW partition principle: atomic layers (D, K) are filed automatically by their producers. Synthesis layers (I, W) require cross-source context and are owned by E_insight.
+
+**Q: Can a task produce a K card directly?**
+A: No. K requires a controlled comparison (a probe with arms × seeds × test). One task run is an observation (D), not a belief (K). Even if a single eval shows AUC=0.95, that's a D card until a probe formally compares it against a baseline.
+
+**Q: Can a probe produce an I card?**
+A: No. I is a cross-D pattern ("5 tasks all show the same trend"). A single probe sees only its own arms, not other probes' findings. I-level synthesis is E_insight's job.
+
+**Q: What about the per-probe D + K in CYCLE.md?**
+A: CYCLE.md is a DERIVED audit view that lists which D and K cards a probe produced. It does not file them — C_task Stage 5 files D, D_probe convergence files K. CYCLE.md just links to the filed cards via grep on `sources:`.
+
+
 Cross-references
 =================
 
 ```
 C_task overall                  C_task/DESIGN.md
-C_task → task-log               C_task/haipipe-task-logging/SKILL.md
 C_task task-folder shape        C_task/haipipe-task/ref/hierarchy.md
 C_task per-run runtime.yaml     C_task/haipipe-task/ref/runtime-yaml-schema.md
 
@@ -280,6 +326,10 @@ D_probe bridge skill       D_probe/haipipe-probe-bridge/SKILL.md
 probe.yaml schema          D_probe/ref/probe-yaml-schema.md
 D_probe caveats checklist  D_probe/ref/probe-caveats-checklist.txt
 D_probe legacy migration   D_probe/ref/_legacy-scope-expmt.md
+
+E_insight overall               E_insight/DESIGN.md
+E_insight DIKW boundaries       E_insight/ref/dikw-boundaries.md
+E_insight card schema           E_insight/ref/insight-md-schema.md
 
 Project umbrella (3 worlds)     B_project/haipipe-project/SKILL.md
 ```
@@ -297,3 +347,7 @@ One-line rules of thumb
 - New cross-run statistic? → probes/<X>/probe.yaml result: (via /result aggregate)
 - New "this didn't work, here's why" narrative? → probes/<X>/logs/<DATE>.md
 - New CGM trace for one patient? → tasks/individual/  (never probes/)
+- New observation from a task run? → insights/D_data/  (filed by C_task Stage 5)
+- New belief from a confirmed probe? → insights/K_knowledge/  (filed by D_probe convergence)
+- New cross-task pattern? → insights/I_information/  (synthesized by E_insight)
+- New actionable recommendation? → insights/W_wisdom/  (synthesized by E_insight)

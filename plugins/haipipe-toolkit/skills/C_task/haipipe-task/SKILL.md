@@ -1,17 +1,20 @@
 ---
 name: haipipe-task
-description: "Task-folder orchestrator. For new tasks, dispatches to type specialists (data/algo/fit/eval/display/individual/agent). For existing tasks, runs the 4-stage lifecycle (Plan → Build → Execute → Report) via ref/task-lifecycle.workflow.js, with haipipe-task-creator-agent and haipipe-task-reviewer-agent paired at each stage in a creator-reviewer loop."
+description: "Task-folder and task-group orchestrator. For a task-folder: runs the 4-stage code lifecycle (Plan → Build → Execute → Report) or dispatches to type specialists for scaffolding. For a task-group: iterates over each child task-folder and runs the lifecycle on each one. For insight (filing D_data observation cards from results), use /haipipe-insight with the task-folder path."
 argument-hint: "[scope] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "3.0.0"
-  last_updated: "2026-06-09"
-  summary: "Build orchestrator with automated workflow lifecycle for existing tasks."
+  version: "5.0.0"
+  last_updated: "2026-06-11"
+  summary: "Build orchestrator with 4-stage code lifecycle for task-folders and task-groups."
   changelog:
     - "1.0.0 (2026-05-31): baseline metadata added."
     - "2.0.0 (2026-06-08): add workflow lifecycle — audit, plan, report. New fn/ procedures. New ref: workflow-template.yaml."
     - "2.1.0 (2026-06-08): three-layer plans; per-script IPO; Stata four-sister; wire reviewer+auditor agents."
     - "3.0.0 (2026-06-09): 4-stage lifecycle (Plan/Build/Execute/Report) via task-lifecycle.workflow.js; creator-reviewer agent loop at each stage; all plans follow haipipe-workflow IPO schema; type-specific workflow-plan-sample.yaml in every specialist; project/task-group scope moved to haipipe-project."
+    - "4.0.0 (2026-06-11): 5-stage lifecycle — add Stage 5 (Insight), optional, files D_data observation card via /haipipe-insight-data for insight-worthy types. Code lifecycle (1-4) + data lifecycle (5)."
+    - "4.1.0 (2026-06-11): task-group iteration — when given a task-group path, enumerate child task-folders and run lifecycle on each one sequentially (Step 3d). Removed project/task-group redirects to /haipipe-project; this skill now owns both task-folder and task-group scope."
+    - "5.0.0 (2026-06-11): remove Stage 5 (Insight) from task lifecycle — insight is /haipipe-insight's responsibility, not C_task's. This skill is now a pure 4-stage code lifecycle (Plan/Build/Execute/Report). Task-group iteration updated accordingly."
 ---
 
 Skill: haipipe-task (orchestrator)
@@ -25,7 +28,7 @@ project           examples/Proj{...}/
         └── task-folder  {NN}_{name}/{*.py, configs/, runs/, results/, notebooks/}
 ```
 
-Project and task-group scaffolding belong to `/haipipe-project`. This skill owns **task-folder** and below. For task-folder scaffolding, it dispatches to one of seven task-type specialists (one per type):
+This skill owns **task-folder** and **task-group** scope. For a task-folder, it runs the 4-stage code lifecycle (Plan → Build → Execute → Report) or dispatches to a type specialist for scaffolding. For a task-group, it iterates over each child task-folder and runs the lifecycle on each one. For filing observations from results, use `/haipipe-insight` separately. Type specialists (one per type):
 
 ```
 task-type     Specialist                              Cross-skill
@@ -52,7 +55,7 @@ ANY engine=Stata request is delegated to **`/haipipe-task-for-stata`**, a unifie
 
 Routing principle: this skill is the HIGH-LEVEL router — it owns only the engine-agnostic invariants (`ref/hierarchy.md`, authoring conventions). Each `/haipipe-task-for-<engine>` child owns its OWN `ref/` (templates + dialect); route to the child and read the child's `ref/`, never keep engine specifics here.
 
-Called by `/haipipe-project` when the request is to **create** something in the hierarchy. For audit / read see `-inspect`; for moves see `-organize`.
+For audit / read see `/haipipe-project-inspect`; for moves see `/haipipe-project-organize`.
 
 ---
 
@@ -65,17 +68,19 @@ Commands
 /haipipe-task execute <task-folder-path>              Stage 3: run the code (or human runs manually)
 /haipipe-task report <task-folder-path>               Stage 4: summarize results vs plan
 /haipipe-task <existing-task-folder-path>             full lifecycle (all 4 stages)
+/haipipe-task <existing-task-group-path>              iterate: full lifecycle on each child task-folder
+/haipipe-task <stage> <existing-task-group-path>      iterate: that stage on each child task-folder
 /haipipe-task task-folder <type> [args...]            scaffold a NEW task-folder via type specialist
 ```
 
-For project and task-group scaffolding, use `/haipipe-project` instead.
+For project scaffolding (creating `examples/Proj{...}/`), use `/haipipe-project`.
 
 ---
 
-Four Stages
------------
+Four Stages (code lifecycle)
+------------------------------
 
-Every task folder goes through 4 stages. Each stage has clear file ownership — it ONLY touches its own files.
+All four stages answer one question: **"is the implementation right?"**
 
 ```
 Stage 1: PLAN — the contract (what the script SHOULD do)
@@ -112,6 +117,8 @@ Stage 4: REPORT — summarize (what actually happened vs the plan)
 
 File ownership is strict: Plan touches only `workflow/plan*.yaml`. Build touches only code/configs/runs. Execute touches only `results/` and `notebooks/`. Report touches only `workflow/report*.yaml` and `RUN_AUDIT.md`.
 
+To file observations from task results ("what did the data teach us?"), use `/haipipe-insight <task-folder-path>` after the code lifecycle completes.
+
 ---
 
 Agents
@@ -146,8 +153,7 @@ Dispatch Table
 ```
 Scope            Owner / route                              Function file
 ---------------- ------------------------------------------ ----------------------
-project          → /haipipe-project                         (not this skill)
-task-group       → /haipipe-project                         (not this skill)
+task-group       → this skill: iterate children             Step 3d
 task-folder      → dispatch by task-type to one of:
                      /haipipe-task-for-data
                      /haipipe-task-for-algo
@@ -177,13 +183,20 @@ Step 0: Read `ref/hierarchy.md` first. It's the conceptual model for the task hi
 Step 1: Detect AUTO_MODE. Any of these flips it on: `--auto` anywhere in args, env var `CLAUDE_AUTO_HANDOFF=1` or `AUTO_MODE=1`, parent skill passed `--auto`. AUTO_MODE changes "ASK" steps into "accept best inference or return blocked"; it never changes what gets written.
 
 Step 2: Resolve scope. Cascade:
-  (1) explicit stage command (`plan` / `build` / `execute` / `report`) as first positional → run that single stage on the given task-folder path.
+  (1) explicit stage command (`plan` / `build` / `execute` / `report`) as first positional → check the path argument:
+      - path is an existing task-folder → scope=single-stage on that folder (Step 3c).
+      - path is an existing task-group → scope=task-group-iterate with stages=[that stage] (Step 3d).
   (2) `task-folder` as first positional → scope=new task-folder (scaffold).
-  (3) `project` or `task-group` → redirect: `Skill("haipipe-project", args="<remaining_args>")`.
-  (4) first positional is a known task-type (`data` / `algo` / `fit` / `eval` / `display` / `individual` / `agent`) → scope=task-folder, task-type=that positional.
+  (3) first positional is a known task-type (`data` / `algo` / `fit` / `eval` / `display` / `individual` / `agent`) → scope=task-folder, task-type=that positional.
+  (4) first positional is a path to an existing task-group → scope=task-group-iterate (Step 3d).
   (5) first positional is a path to an existing task-folder → scope=full lifecycle (all 4 stages via Step 3c).
-  (6) no args at all → default to full lifecycle if cwd is inside a task-folder, else scope=task-folder (scaffold).
+  (6) no args at all → default:
+      - cwd is inside a task-folder → scope=full lifecycle (Step 3c).
+      - cwd is inside a task-group (but not inside a task-folder) → scope=task-group-iterate (Step 3d).
+      - else → scope=task-folder (scaffold).
   (7) still missing: AUTO → status: blocked. Interactive → ASK.
+
+  Task-group detection: a path is a task-group if it matches `tasks/{G}{NN}_{name}/`, contains at least one `{NN}_*/` subdirectory, and has NO `.py` script at its root. This distinguishes it from a task-folder (which has `{NN}_{task_name}.py`).
 
 Step 3: Branch by scope:
   - scope=plan → run Stage 1 only (creator drafts plan.yaml, reviewer checks)
@@ -191,6 +204,7 @@ Step 3: Branch by scope:
   - scope=execute → run Stage 3 only (bash runs/<run>.sh)
   - scope=report → run Stage 4 only (creator drafts report.yaml, reviewer checks)
   - scope=full lifecycle → run all 4 stages via Step 3c (Workflow tool)
+  - scope=task-group-iterate → enumerate children, run per-child via Step 3d
   - scope=task-folder (new) → resolve task-type via Step 3a cascade, then Skill("haipipe-task-<type>", args="<remaining_args> [--auto]")
 
 
@@ -270,6 +284,51 @@ Step 3c: Full lifecycle or single stage.
   All generated plan/report files follow the haipipe-workflow IPO schema at `B_project/haipipe-workflow/ref/plan-schema.md`. Every plan YAML starts with an IPO tree preview comment with emojis.
 
 
+Step 3d: Task-group iteration (scope=task-group-iterate).
+
+  The lifecycle scope stays at task-folder — this step just loops over children. No workflow/ artifacts are ever created at the group level.
+
+  (1) ENUMERATE — list child task-folders in the group directory, sorted by numeric prefix:
+      ```
+      ls -d <group-path>/{NN}_*/ | sort
+      ```
+      Filter: only directories whose name matches `{NN}_{name}` (2-digit prefix + underscore). Skip `sbatch/`, `diagram/`, and any non-task directories.
+
+  (2) CONFIRM — log the children found:
+      ```
+      Task-group: <group-path>
+      Children (N task-folders):
+        [1/N] 01_foo
+        [2/N] 02_bar
+      Stages: <plan|build|...|all>
+      ```
+      In interactive mode, ASK to confirm before proceeding. In AUTO_MODE, proceed directly.
+
+  (3) ITERATE — for each child task-folder, in order:
+      - Log: `── [i/N] <child_name> ──`
+      - Call Workflow with the existing `task-lifecycle.workflow.js`, passing the child path and the requested stages:
+        ```
+        Workflow({
+          scriptPath: "Tools/plugins/haipipe-toolkit/skills/C_task/haipipe-task/ref/task-lifecycle.workflow.js"
+        }, {
+          task_folder: "<group-path>/<child>/",
+          type: null,
+          stages: <requested stages or ["plan", "build", "execute", "report"]>,
+          autoExecute: false
+        })
+        ```
+      - Collect the result. If a child fails (status=failed), log the failure and continue to the next child — do NOT stop the group iteration.
+
+  (4) AGGREGATE — after all children complete, emit a group summary:
+      ```
+      Task-group: <group-path>
+      Results:
+        [1/N] 01_foo — ok (plan: pass, build: pass, ...)
+        [2/N] 02_bar — failed (build: fail)
+      Overall: N-1 ok, 1 failed
+      ```
+
+
 Step 4: Emit the structured tail:
 
 ```
@@ -292,6 +351,13 @@ Invocation examples
 /haipipe-task build examples/ProjA/tasks/B03_band4/01_band4
 /haipipe-task execute examples/ProjA/tasks/B03_band4/01_band4
 /haipipe-task report examples/ProjA/tasks/B03_band4/01_band4
+
+# task-GROUP: iterate lifecycle over all children (01_band4, 02_eval, ...)
+/haipipe-task examples/ProjA/tasks/B03_band4
+
+# task-GROUP with single stage: run that stage on each child
+/haipipe-task plan examples/ProjA/tasks/B03_band4
+/haipipe-task report examples/ProjA/tasks/B03_band4
 
 # scaffold a NEW task-folder (dispatches to type specialist)
 /haipipe-task task-folder data

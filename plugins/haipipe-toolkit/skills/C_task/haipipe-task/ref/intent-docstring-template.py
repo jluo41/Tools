@@ -7,7 +7,7 @@ Convention: half-fixed (option b).
   - Free-form: any other sections you like (Confounds / Inputs /
     Outputs / Notes / References / etc.).
 
-The Run Script Reviewer agent (Tools/plugins/haipipe-toolkit/skills/C_task/agents/reviewers/run-script-reviewer-agent.md)
+The Task Reviewer agent (Tools/plugins/haipipe-toolkit/skills/C_task/agents/haipipe-task-reviewer-agent.md)
 reads this docstring as the authoritative "what this script is supposed to do"
 and compares it against the actual code. If Intent is missing, review fails
 hard — the writer must state intent before any review can run.

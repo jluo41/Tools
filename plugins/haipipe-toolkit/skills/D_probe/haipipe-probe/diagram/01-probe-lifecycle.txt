@@ -1,0 +1,500 @@
+🔬 D_probe — 5-Stage Probe Lifecycle with Loop + DIKW Cascade
+══════════════════════════════════════════════════════════════
+
+probe-lifecycle.workflow.js owns both the linear pass
+AND the loop-back. haipipe-probe-loop absorbed into hub.
+Design has TWO modes: 🧑 interactive (default) or
+🤖 auto (creator-reviewer agents for autonomous probing).
+Insight stage files full DIKW cascade (D → I → K → W).
+
+─§ 1. Five stages — linear pass with file ownership ────
+
+  📐 1.DESIGN        🌉 2.MATERIALIZE       📊 3.HARVEST        🔍 4.JUDGE          🧠 5.INSIGHT
+  ┌──────────────┐   ┌──────────────┐   ┌──────────────┐   ┌──────────────┐   ┌──────────────┐
+  │ 💡 question + │   │ 🏗️ scaffold  │   │ 🔗 link runs │   │ 🛡️ structural│   │ 🟦 D per-arm │
+  │    hypothesis │   │    arms as   │   │ 📈 aggregate │   │ 🔬 integrity │   │ 🟩 I cross-  │
+  │    + arms plan│   │    C_task    │   │    stats     │   │ ⚖️  claim    │   │    arm patt. │
+  │              │   │    tasks     │   │ ✍️  write    │   │    verdict   │   │ 🟨 K claim   │
+  │ 🧑 or 🤖     │   │ 🚀 deploy    │   │    result +  │   │              │   │ 🟧 W action  │
+  │ (two modes)  │   │    arms      │   │    claim     │   │              │   │   (optional) │
+  └──────────────┘   └──────────────┘   └──────────────┘   └──────────────┘   └──────────────┘
+        │                  │                  │                  │                  │
+    📄 Files           📄 Files           📄 Files           📄 Files           📄 Files
+  ┌──────────────┐   ┌──────────────┐   ┌──────────────┐   ┌──────────────┐   ┌──────────────┐
+  │probe.yaml    │   │tasks/<arm>/  │   │probe.yaml    │   │review.md     │   │insights/     │
+  │  hypothesis  │   │  configs/    │   │  result:     │   │INTEGRITY_    │   │  D_data/     │
+  │  arms[]      │   │  runs/       │   │  claim:      │   │  AUDIT.md    │   │  I_info/     │
+  │  aggregation │   │  CODE_REVIEW │   │  status      │   │CLAIMS_FROM_  │   │  K_knowledge/│
+  │logs/<DATE>.md│   │bridge-log.md │   │              │   │  RESULTS.md  │   │  W_wisdom/   │
+  └──────────────┘   └──────────────┘   └──────────────┘   └──────────────┘   └──────────────┘
+        │                  ║                  │                  │                  │
+    🤖 Agents          ════╩════           🤖 Agents         🤖 Agents         🤖 Agents
+  ┌──────────────┐   ║ C_task  ║       ┌──────────────┐   ┌──────────────┐   ┌──────────────┐
+  │ TWO MODES:   │   ║ handoff ║       │ result skill │   │ 3 reviewers: │   │ DIKW cascade │
+  │              │   ║ D sleeps║       │ + structural │   │  structural  │   │ 4 creator +  │
+  │ A 🧑 human   │   ║         ║       │   reviewer   │   │  integrity🔬│   │ 4 reviewer   │
+  │   (default)  │   ╚═════════╝       │   (schema)   │   │  claim    🔬│   │ agents from  │
+  │              │                     └──────────────┘   └──────────────┘   │ E_insight    │
+  │ B 🤖 auto    │                                          🔬 = Codex       └──────────────┘
+  │   idea-crtr  │
+  │   idea-revwr │
+  │   (--auto)   │
+  └──────────────┘
+
+─§ 2. Design stage — two modes ─────────────────────────
+
+  ┌───────────────────────────────────────────────────────────────────────────────┐
+  │ 📐 DESIGN — the only stage with two modes                                    │
+  │                                                                               │
+  │  ┌─────────────────────────────────────────────────────────────────────────┐  │
+  │  │ MODE A: 🧑 interactive (default, first probe in a direction)            │  │
+  │  │                                                                         │  │
+  │  │  🧑 human writes hypothesis + arms                                      │  │
+  │  │  haipipe-probe-design skill (interactive prompts)                       │  │
+  │  │  no agents — user judgment is the quality gate                          │  │
+  │  │                                                                         │  │
+  │  │  When: first probe, novel direction, human has a specific question      │  │
+  │  └─────────────────────────────────────────────────────────────────────────┘  │
+  │                                                                               │
+  │  ┌─────────────────────────────────────────────────────────────────────────┐  │
+  │  │ MODE B: 🤖 auto (--auto flag, or rounds ≥2 in autonomous loop)         │  │
+  │  │                                                                         │  │
+  │  │  ┌─────────────────────┐     ┌─────────────────────┐                    │  │
+  │  │  │ 💡 probe-idea-      │     │ 🔍 probe-idea-      │                    │  │
+  │  │  │    creator-agent    │────▶│    reviewer-agent   │                    │  │
+  │  │  │                     │     │                     │                    │  │
+  │  │  │ 📥 inputs:          │     │ ✅ checks:          │                    │  │
+  │  │  │  explore proposals  │     │  falsifiable?       │                    │  │
+  │  │  │  existing probes    │     │  not duplicate?     │                    │  │
+  │  │  │  insights K/W       │     │  arms well-formed?  │                    │  │
+  │  │  │  project question   │     │  worth compute?     │                    │  │
+  │  │  │                     │  ↺  │                     │                    │  │
+  │  │  │ 📤 output:          │revise│ 📤 verdict:         │                    │  │
+  │  │  │  probe.yaml with    │◀────│  pass / revise /   │                    │  │
+  │  │  │  hypothesis + arms  │     │  fail              │                    │  │
+  │  │  │  + aggregation spec │     │  (max 2 rounds)    │                    │  │
+  │  │  └─────────────────────┘     └─────────────────────┘                    │  │
+  │  │                                                                         │  │
+  │  │  When: loop round ≥2, overnight batch, budget-driven sweep,             │  │
+  │  │        coverage-gap filling, confirm single-seed exploratory             │  │
+  │  └─────────────────────────────────────────────────────────────────────────┘  │
+  │                                                                               │
+  │  Mode selection in workflow.js:                                                │
+  │    round == 1 && !args.auto  →  Mode A (human designs first probe)            │
+  │    round >= 2 || args.auto   →  Mode B (agents design follow-up probes)       │
+  │    args.interactive          →  Mode A always (override for manual steering)   │
+  └───────────────────────────────────────────────────────────────────────────────┘
+
+─§ 3. Insight stage — DIKW cascade at two granularities ─
+
+  DIKW files at TWO levels, with different granularity:
+
+  ┌─────────────────────────────────────────────────────────────────────────────────┐
+  │                                                                                 │
+  │   💼 C_task Stage 5 (Insight)           📊 D_probe Stage 5 (Insight)            │
+  │   per-TASK, within one task folder      per-PROBE, across arms                  │
+  │   ══════════════════════════════        ══════════════════════════════          │
+  │                                                                                 │
+  │   🟦 D_data: per-RUN observations      🟦 D_data: per-ARM observations         │
+  │   "seed42 produced MAE=24.6"           "baseline arm: 24.6 ± 0.2 (3 seeds)"   │
+  │   "seed7 produced MAE=24.8"            "treatment arm: 23.9 ± 0.3 (3 seeds)"  │
+  │                                                                                 │
+  │   🟩 I_info: cross-RUN patterns         🟩 I_info: cross-ARM patterns           │
+  │   "across 3 seeds, MAE is stable       "treatment wins 3/3 seeds;              │
+  │    at 24.6 ± 0.2; converges by         margin narrows on noisy data;           │
+  │    epoch 50"                            baseline variance 2x higher"           │
+  │                                                                                 │
+  │   ❌ K: (C_task doesn't claim)          🟨 K_know: validated belief             │
+  │                                         "LHM beats baseline by 0.68            │
+  │   ❌ W: (C_task doesn't act)             (paired-t p=0.018, N=3)"              │
+  │                                                                                 │
+  │                                         🟧 W_wisdom: actionable next step      │
+  │                                         "use LHM for production;               │
+  │                                          investigate param confound"           │
+  │                                                                                 │
+  └─────────────────────────────────────────────────────────────────────────────────┘
+
+  The cascade: each level reads the output of the previous
+
+  ┌──────────────────────────────────────────────────────────────────────────────┐
+  │ 🧠 D_probe Stage 5: INSIGHT — file full DIKW cascade                        │
+  │                                                                              │
+  │  Step 1: 🟦 D_data — per-arm observations                                   │
+  │    reads:   probe.yaml arms + task-level I cards (from C_task Insight)       │
+  │             or metrics.json directly if no C_task I cards exist              │
+  │    files:   one D card per arm (what this arm showed)                        │
+  │    creator: card-creator-data-agent                                          │
+  │    review:  card-reviewer-data-agent (numbers trace to metrics?)             │
+  │             ↺ revise if inaccurate (max 2 rounds)                            │
+  │                                                                              │
+  │                          │ D cards                                           │
+  │                          ▼                                                   │
+  │  Step 2: 🟩 I_information — cross-arm patterns                              │
+  │    reads:   ≥2 D cards from Step 1                                           │
+  │    files:   one I card (patterns across arms within this probe)              │
+  │    creator: card-creator-information-agent                                   │
+  │    review:  card-reviewer-information-agent (pattern in the D cards?)        │
+  │             ↺ revise if pattern not supported (max 2 rounds)                 │
+  │                                                                              │
+  │                          │ I card                                            │
+  │                          ▼                                                   │
+  │  Step 3: 🟨 K_knowledge — validated belief from confirmed claim             │
+  │    reads:   I card + confirmed probe.yaml result + caveats                   │
+  │    files:   one K card (the probe's claim as a validated belief)             │
+  │    creator: card-creator-knowledge-agent                                     │
+  │    review:  card-reviewer-knowledge-agent (scope ⊆ evidence? no overclaim?) │
+  │             ↺ revise if overclaim (max 2 rounds)                             │
+  │                                                                              │
+  │                          │ K card                                            │
+  │                          ▼                                                   │
+  │  Step 4: 🟧 W_wisdom — actionable recommendation (OPTIONAL)                │
+  │    reads:   K card from Step 3                                               │
+  │    files:   one W card (concrete next step from this probe)                  │
+  │    creator: card-creator-wisdom-agent                                        │
+  │    review:  card-reviewer-wisdom-agent (actionable? follows from K?)        │
+  │    skip:    if probe implies no concrete next step                           │
+  │                                                                              │
+  │  Final: 📋 index-integrity-auditor checks cross-ref graph                   │
+  │                                                                              │
+  └──────────────────────────────────────────────────────────────────────────────┘
+
+  How C_task insight feeds D_probe insight:
+
+  ┌──────────────────────────────────────────────────────────────────────────────┐
+  │                                                                              │
+  │  C_task                              D_probe                                │
+  │  task run 1 ─┐                                                              │
+  │    Stage 5   │                                                              │
+  │    🟦 D01    │─→ 🟩 I01              🟦 D_arm1 ◀── reads C_task I01          │
+  │              │   (cross-run          🟦 D_arm2 ◀── reads C_task I02          │
+  │  task run 2 ─┤    pattern)                │                                  │
+  │    🟦 D02    │                            ▼                                  │
+  │              │                       🟩 I_probe (cross-arm pattern)          │
+  │  task run 3 ─┤                            │                                  │
+  │    🟦 D03    │─→ 🟩 I02                   ▼                                  │
+  │              │   (cross-run          🟨 K_probe (validated claim)            │
+  │  task run 4 ─┘    pattern)                │                                  │
+  │    🟦 D04    │                            ▼                                  │
+  │              │                       🟧 W_probe (recommendation)            │
+  │  ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─          │
+  │  C_task sees RUNS within tasks       D_probe sees ARMS across tasks         │
+  │  Files D + I                         Files D + I + K + W                    │
+  │  Stops at patterns                   Validates claims + acts                │
+  │                                                                              │
+  └──────────────────────────────────────────────────────────────────────────────┘
+
+─§ 4. The loop — interactive vs autonomous ─────────────
+
+  🔄 probe-lifecycle.workflow.js owns the whole loop.
+     Mode A (interactive) keeps human gates.
+     Mode B (auto) replaces them with agents.
+
+  ┌─────────────────────────────────────────────────────────────────────────────────────────┐
+  │                                                                                         │
+  │  START                                                                                  │
+  │    │                                                                                    │
+  │    ├── round 1, no --auto flag?  →  MODE A 🧑 (human designs first probe)               │
+  │    └── --auto flag or round ≥2?  →  MODE B 🤖 (agents design follow-ups)                │
+  │    │                                                                                    │
+  │    ▼                                                                                    │
+  │  ┌──────────┐     ┌──────────────┐        ┌──────────┐     ┌──────────┐                │
+  │  │📐 DESIGN │────▶│🌉 MATERIALIZE│══════▶ │📊 HARVEST│────▶│🔍 JUDGE  │                │
+  │  │ A🧑 or B🤖│     └──────────────┘  C_task └──────────┘     └─────┬────┘                │
+  │  └──────────┘                        runs                         │                      │
+  │       ▲                              here                         │                      │
+  │       │                                                       ┌───┴───────────┐          │
+  │       │                                                       │   verdict?    │          │
+  │       │                                                       └───┬───────┬───┘          │
+  │       │                                                           │       │              │
+  │       │                                                      yes ✅    partial/no ⚠️     │
+  │       │                                                           │       │              │
+  │       │         ┌─────────────────────────────────────────────────┼───────┘              │
+  │       │         │                                                 │                      │
+  │       │         ▼                                                 │                      │
+  │       │  ┌──────────────────┐                                     │                      │
+  │       │  │  🗺️ EXPLORE      │                                     │                      │
+  │       │  │  coverage map    │                                     │                      │
+  │       │  │  + propose next  │                                     │                      │
+  │       │  └────────┬─────────┘                                     │                      │
+  │       │           │                                               │                      │
+  │       │      ┌────┴──────────────────────┐                        │                      │
+  │       │      │                           │                        │                      │
+  │       │      ▼ MODE A 🧑                  ▼ MODE B 🤖              │                      │
+  │       │  ┌───────────────┐          ┌───────────────┐             │                      │
+  │       │  │ 🧑 HUMAN GATE  │          │ 💡 idea-crtr  │             │                      │
+  │       │  │ approve/reject│          │ + 🔍 idea-revw│             │                      │
+  │       │  └──┬─────────┬──┘          └──┬─────────┬──┘             │                      │
+  │       │     │         │                │         │                │                      │
+  │       │  approved  rejected         pass      fail                │                      │
+  │       │     │         │                │         │                │                      │
+  │       │     ▼         ▼                ▼         ▼                ▼                      │
+  │       │  ┌──────┐  ┌──────┐       ┌──────┐  ┌──────┐       ┌──────────┐                │
+  │       └──│ new  │  │🛑STOP│       │ new  │  │🛑STOP│       │🧠 INSIGHT│                │
+  │  (loop)  │probe │  │      │       │probe │  │      │       │ D→I→K→W  │                │
+  │          │+bridg│  │      │       │+bridg│  │      │       │ cascade  │                │
+  │          └──────┘  └──────┘       └──────┘  └──────┘       └────┬─────┘                │
+  │                                                                  │                      │
+  │                                                                  ▼                      │
+  │                                                           ┌──────────────┐              │
+  │                                                           │ 🧠 E_insight │              │
+  │                                                           │ D+I+K+W cards│              │
+  │                                                           └──────────────┘              │
+  │                                                                                         │
+  └─────────────────────────────────────────────────────────────────────────────────────────┘
+
+  🛑 Stop conditions (both modes):
+     ✅ converged        verdict = yes AND structural errors = 0 → INSIGHT
+     🟡 budget_exhausted hit --rounds N without converging
+     🔴 blocked          Mode A: user rejected  /  Mode B: agent rejected
+     ⏸️  paused           user interrupt
+
+─§ 5. Creator-reviewer pattern at each stage ───────────
+
+  ┌─────────────┬─────────────────┬─────────────────┬─────────────────────────────────────────┐
+  │ 🏷️ Stage    │ 🤖 Creator      │ 🔍 Reviewer     │ 📋 Pattern                              │
+  ├─────────────┼─────────────────┼─────────────────┼─────────────────────────────────────────┤
+  │             │                 │                 │                                         │
+  │ 📐 DESIGN  │ Mode A: 🧑 human│ Mode A: (inline)│ 🧑 Mode A: human-steered (interactive)   │
+  │             │ Mode B: 💡 idea-│ Mode B: 🔍 idea-│ 🤖 Mode B: creator-reviewer loop         │
+  │             │   creator-agent │   reviewer-agent│    (auto — max 2 rounds)                │
+  │             │                 │                 │                                         │
+  ├─────────────┼─────────────────┼─────────────────┼─────────────────────────────────────────┤
+  │             │                 │                 │                                         │
+  │ 🌉 MATER-  │ 🌉 bridge skill │ 📝 Run Script   │ ✅ creator-reviewer                      │
+  │    IALIZE   │ (scaffold arms, │    Reviewer     │    bridge creates → RSR checks code     │
+  │             │  wire configs)  │    (C_task agent)│    → ↺ fix if fail (max 2 rounds)      │
+  │             │                 │                 │                                         │
+  ├─────────────┼─────────────────┼─────────────────┼─────────────────────────────────────────┤
+  │             │                 │                 │                                         │
+  │ 📊 HARVEST │ 📊 result skill │ 🛡️ structural   │ ✅ creator-reviewer                      │
+  │             │ (link + aggr +  │    reviewer     │    result aggregates → reviewer checks   │
+  │             │  write claim)   │    (schema +    │    arm pairing / N≥3 / caveats / fmt    │
+  │             │                 │     arm checks) │                                         │
+  │             │                 │                 │                                         │
+  ├─────────────┼─────────────────┼─────────────────┼─────────────────────────────────────────┤
+  │             │                 │                 │                                         │
+  │ 🔍 JUDGE   │ ❌ none         │ 3 sequential:   │ ✅ review-only (no creator)              │
+  │             │ (nothing to     │  🛡️ structural  │    structural gates integrity;           │
+  │             │  create — this  │  🔬 integrity   │    integrity gates claim;                │
+  │             │  IS the review) │  ⚖️  claim      │    fail at any gate → stop               │
+  │             │                 │                 │                                         │
+  ├─────────────┼─────────────────┼─────────────────┼─────────────────────────────────────────┤
+  │             │                 │                 │                                         │
+  │ 🧠 INSIGHT │ 4 sequential:   │ 4 matching:     │ ✅ DIKW cascade — each level creator +   │
+  │             │  🟦 D-creator   │  🟦 D-reviewer   │    reviewer, feeds the next level        │
+  │             │  🟩 I-creator   │  🟩 I-reviewer   │    D → I → K → W (W optional)           │
+  │             │  🟨 K-creator   │  🟨 K-reviewer   │    + index-integrity-auditor at end      │
+  │             │  🟧 W-creator   │  🟧 W-reviewer   │    all from E_insight/agents/            │
+  │             │    (optional)   │    (optional)   │                                         │
+  │             │                 │                 │                                         │
+  └─────────────┴─────────────────┴─────────────────┴─────────────────────────────────────────┘
+
+  Legend:
+    ✅ creator-reviewer loop    stage has both roles, workflow.js orchestrates
+    ❌ none                     role not applicable at this stage
+    🔬 Codex-backed             out-of-family reviewer (builder ≠ judge)
+    🧑 human-steered            interactive skill, user provides judgment
+    💡 auto-steered             agent generates, another agent reviews
+
+─§ 6. Agent families — complete roster ─────────────────
+
+  D_probe/agents/
+  │
+  ├── 💡 creators/
+  │   └── probe-idea-creator-agent.md
+  │       📥 reads: explore proposals, existing probes,
+  │                 insights K/W, project research question
+  │       📤 writes: probe.yaml (hypothesis + arms + spec)
+  │       🔀 fires in: Design Mode B only
+  │
+  ├── 🔍 reviewers/
+  │   ├── probe-idea-reviewer-agent.md
+  │   │   ✅ checks: falsifiable? duplicate? arms ok? worth compute?
+  │   │   🔀 fires in: Design Mode B only
+  │   │
+  │   ├── probe-structural-reviewer-agent.md
+  │   │   🏠 gate: structural (arms paired, N≥3, caveats)
+  │   │
+  │   ├── probe-integrity-auditor-agent.md
+  │   │   🏠 gate: integrity (5 fraud patterns) 🔬 Codex
+  │   │
+  │   └── claim-verifier-agent.md
+  │       🏠 gate: claim support (evidence → claim match) 🔬 Codex
+  │
+  └── 🗺️ advancers/
+      └── probe-explorer-agent.md
+          🏠 coverage map + propose next probes
+
+  E_insight/agents/ (borrowed by Stage 5):
+  │
+  ├── creators/
+  │   ├── card-creator-data-agent.md          🟦 D cards
+  │   ├── card-creator-information-agent.md   🟩 I cards
+  │   ├── card-creator-knowledge-agent.md     🟨 K cards
+  │   └── card-creator-wisdom-agent.md        🟧 W cards
+  │
+  └── reviewers/
+      ├── card-reviewer-data-agent.md         🟦 accuracy
+      ├── card-reviewer-information-agent.md  🟩 pattern support
+      ├── card-reviewer-knowledge-agent.md    🟨 scope ⊆ evidence
+      ├── card-reviewer-wisdom-agent.md       🟧 actionable? from K?
+      └── index-integrity-auditor-agent.md    📋 cross-ref graph
+
+  D_probe agents: 6 (own)  +  9 (borrowed from E_insight) = 15 total in Stage 5
+
+─§ 7. C_task parallel — side-by-side comparison ────────
+
+  ┌──────────────────────────────────────────────────────────────────────────────────────┐
+  │                                                                                      │
+  │  💼 C_task (task-lifecycle)              📊 D_probe (probe-lifecycle)                 │
+  │  ═══════════════════════════             ═══════════════════════════                  │
+  │                                                                                      │
+  │  ┌────────┐  Plan                       ┌────────┐  Design                           │
+  │  │ 📋 what│  "what should the           │ 💡 what│  "what question                    │
+  │  │ to do" │   script do?"               │ to ask"│   to ask reality?"                 │
+  │  └───┬────┘  plan.yaml                  └───┬────┘  probe.yaml                       │
+  │      │       creator → reviewer             │       A🧑 human  B🤖 idea-crtr/revwr    │
+  │      ▼                                      ▼                                        │
+  │  ┌────────┐  Build                      ┌────────┐  Materialize                      │
+  │  │ 🔨 code│  "write the                 │ 🌉 arms│  "scaffold arms                   │
+  │  │ it up" │   implementation"            │ → task"│   into C_task"                    │
+  │  └───┬────┘  *.py + configs             └───┬────┘  tasks/ via Skill()               │
+  │      │       creator → reviewer             │       bridge → RSR                      │
+  │      ▼                                      ║                                        │
+  │  ┌────────┐  Execute                    ════╩════   ← C_task runs here                │
+  │  │ ⚙️ run │  "just run it"             ║ D_probe║   D_probe is ASLEEP                │
+  │  │ it"    │                             ║ sleeps ║   until runs finish                │
+  │  └───┬────┘  results/ + metrics.json    ╚════════╝                                    │
+  │      │       (no creator-reviewer)          ║                                        │
+  │      ▼                                      ▼                                        │
+  │  ┌────────┐  Report                     ┌────────┐  Harvest                          │
+  │  │ 📝 what│  "what happened             │ 📊 what│  "what did reality                 │
+  │  │ happen"│   vs the plan?"             │ answer"│   answer?"                        │
+  │  └───┬────┘  report.yaml                └───┬────┘  result: + claim:                 │
+  │      │       creator → reviewer             │       result → structural               │
+  │      ▼                                      ▼                                        │
+  │  ┌────────┐  Insight                    ┌────────┐  Judge                            │
+  │  │ 🧠 what│  "what did the              │ 🔍 is  │  "is the answer                   │
+  │  │ data   │   data teach us?"           │ honest"│   honest?"                        │
+  │  │ teach" │                             └───┬────┘  struct → integr → claim           │
+  │  └────────┘  🟦 D + 🟩 I                    │                                        │
+  │              (per-task level)                │       ┌──────────┐                     │
+  │              creator → reviewer             │       │ verdict?  │                     │
+  │                                             │       ├────┬─────┤                     │
+  │                                             │       │yes │ no  │                     │
+  │                                             │       ▼    ▼     │                     │
+  │                                          ┌──────┐ 🔄 loop     │                     │
+  │                                          │🧠 IN-│ explore →   │                     │
+  │                                          │SIGHT │ A🧑 or B🤖  │                     │
+  │                                          └──┬───┘ → Design    │                     │
+  │                                             │                  │                     │
+  │                                             ▼                  │                     │
+  │                                          🧠 E_insight          │                     │
+  │                                          🟦D 🟩I 🟨K 🟧W       │                     │
+  │                                          (per-probe level)     │                     │
+  │                                                                                      │
+  └──────────────────────────────────────────────────────────────────────────────────────┘
+
+  Key differences:
+    📋 C_task is LINEAR (5 stages, no loop-back)
+    🔄 D_probe is a LOOP (Judge can send back to Design)
+    ⚙️  C_task Execute is INSIDE its own lifecycle
+    💤 D_probe's "execute" is OUTSIDE (delegated to C_task)
+    🔍 C_task has 1 reviewer per stage
+    🔍 D_probe Judge has 3 SEQUENTIAL reviewers
+    🧠 C_task Insight files 🟦 D + 🟩 I (per-task level)
+    🧠 D_probe Insight files 🟦 D + 🟩 I + 🟨 K + 🟧 W (per-probe level)
+    📊 C_task D reads metrics.json; D_probe D reads C_task I cards
+
+─§ 8. Hub absorption — workflow.js with DIKW Insight ───
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │ 🧭 probe-lifecycle.workflow.js                                          │
+  │                                                                         │
+  │  const autoMode = args.auto || false                                    │
+  │  let round = 0                                                          │
+  │                                                                         │
+  │  while (round < maxRounds) {                                            │
+  │    round++                                                              │
+  │                                                                         │
+  │    // ── Stage 1: DESIGN ─────────────────────────────────────          │
+  │    phase('Design')                                                      │
+  │    if (round === 1 && !autoMode) {                                      │
+  │      // 🧑 MODE A: interactive                                          │
+  │      designResult = agent("design new ...",                              │
+  │                           {agentType: 'haipipe-probe-design-skill'})    │
+  │    } else {                                                             │
+  │      // 🤖 MODE B: auto creator-reviewer loop                           │
+  │      for (let attempt = 0; attempt <= 2; attempt++) {                   │
+  │        ideaResult = agent("create probe from explore proposals",         │
+  │                           {agentType: 'probe-idea-creator-agent'})      │
+  │        ideaReview = agent("review probe idea",                           │
+  │                           {agentType: 'probe-idea-reviewer-agent'})     │
+  │        if (ideaReview.verdict === 'pass') break                         │
+  │        if (ideaReview.verdict === 'fail') { STOP; break }               │
+  │      }                                                                  │
+  │    }                                                                    │
+  │                                                                         │
+  │    // ── Stage 2: MATERIALIZE ────────────────────────────────          │
+  │    phase('Materialize')                                                 │
+  │    bridgeResult = agent("bridge <probe>", ...)                          │
+  │    bridgeReview = agent("code review", ...)                              │
+  │    // → C_task runs (workflow waits)                                     │
+  │                                                                         │
+  │    // ── Stage 3: HARVEST ────────────────────────────────────          │
+  │    phase('Harvest')                                                     │
+  │    harvestResult = agent("link + aggregate + claim", ...)               │
+  │    harvestReview = agent("structural check", ...)                        │
+  │                                                                         │
+  │    // ── Stage 4: JUDGE ──────────────────────────────────────          │
+  │    phase('Judge')                                                       │
+  │    integrityResult = agent("integrity audit", ...)                       │
+  │    if (integrityResult.verdict === 'fail') → STOP                       │
+  │    claimResult = agent("claim verdict", ...)                             │
+  │                                                                         │
+  │    if (claimResult.verdict === 'yes') break  // → Insight               │
+  │                                                                         │
+  │    // verdict = partial/no → explore + loop back                        │
+  │    exploreResult = agent("coverage + propose", ...)                      │
+  │    log(`Round ${round}: ${claimResult.verdict}, looping...`)            │
+  │  }                                                                      │
+  │                                                                         │
+  │  // ── Stage 5: INSIGHT — DIKW cascade ──────────────────────           │
+  │  phase('Insight')                                                       │
+  │                                                                         │
+  │  // Step 1: 🟦 D_data per arm                                           │
+  │  const dCards = await pipeline(arms, async (arm) => {                   │
+  │    const d = await agent(`file D card for arm ${arm.name}`,              │
+  │      {agentType: 'card-creator-data-agent'})                            │
+  │    const dReview = await agent(`review D card`,                          │
+  │      {agentType: 'card-reviewer-data-agent'})                           │
+  │    return d                                                             │
+  │  })                                                                     │
+  │                                                                         │
+  │  // Step 2: 🟩 I_information cross-arm                                   │
+  │  const iCard = await agent(`file I card from ${dCards.length} D cards`,  │
+  │    {agentType: 'card-creator-information-agent'})                        │
+  │  await agent(`review I card`,                                            │
+  │    {agentType: 'card-reviewer-information-agent'})                       │
+  │                                                                         │
+  │  // Step 3: 🟨 K_knowledge validated claim                               │
+  │  const kCard = await agent(`file K card from probe claim`,               │
+  │    {agentType: 'card-creator-knowledge-agent'})                          │
+  │  await agent(`review K card`,                                            │
+  │    {agentType: 'card-reviewer-knowledge-agent'})                         │
+  │                                                                         │
+  │  // Step 4: 🟧 W_wisdom (optional)                                      │
+  │  if (probeHasNextStep) {                                                │
+  │    await agent(`file W card from K`,                                     │
+  │      {agentType: 'card-creator-wisdom-agent'})                           │
+  │    await agent(`review W card`,                                          │
+  │      {agentType: 'card-reviewer-wisdom-agent'})                          │
+  │  }                                                                      │
+  │                                                                         │
+  │  // Final: cross-ref integrity                                          │
+  │  await agent(`audit index`, {agentType: 'index-integrity-auditor'})     │
+  │                                                                         │
+  │  return { probe, verdict, rounds: round, cards: {d: dCards, i: iCard,   │
+  │           k: kCard, w: wCard} }                                         │
+  │                                                                         │
+  └─────────────────────────────────────────────────────────────────────────┘

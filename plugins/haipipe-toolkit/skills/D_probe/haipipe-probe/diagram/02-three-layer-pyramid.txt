@@ -1,0 +1,230 @@
+🔬 Three-Layer Research Pyramid — DO · CLAIM · ARGUE
+═════════════════════════════════════════════════════
+
+The haipipe research engine as three nested lifecycles.
+Each layer calls DOWN to spawn work; reports UP with results.
+The whole pyramid loops until ARGUE.Ignite = YES → outputs.
+
+─§ 1. The pyramid — layers + lifecycles + loop ─────
+
+                                                                    📤 OUTPUTS
+   🔄                                                               ══════════
+   repeat    ┌──────────────────────────────────────────────────┐
+   until     │                                                  │
+   ignite    │  📖 ARGUE  (N_narrative — months)                │   🔥 Ignite
+   = YES     │  "this is the story worth telling"               │   = YES
+             │                                                  │      │
+   │         │  🔍 A_discover                                   │      ├──→ 📰 F_paper
+   │         │    (eyes — landscape                             │      │    "render for
+   │         │     + lit filter)                                │      │     academics"
+   │         │         │                                        │      │
+   │         │  📐 Conceive ──→ 🔍 Landscape ──→ 📋 Map ──┐    │      │
+   │         │  angle +          A_discover       read KB  │    │      ├──→ 💬 G_application
+   │         │  core claim       position         mark     │    │      │    "deliver to
+   │         │  (🧑 human)       + novelty        have /   │    │      │     audiences"
+   │         │                                    weak /   │    │      │    (msg/report/ui)
+   │         │                                    GAP     │    │      │
+   │         │       ┌────────────────────────────────────┘    │      │
+   │         │       │                                         │      │
+   │         │       ▼                                         │      │
+   │         │  ⚙️ Fill ────────────────────────→ 🔥 Ignite    │      │
+   │         │  per GAP:                         all claims   │      │
+   │         │    A_discover filter               have?       │      │
+   │         │    → lit? file K (hours)          story sharp? │      │
+   │         │    → novel? spawn CLAIM ▼         steelman     │      │
+   │         │                        │          YES → exit ──┼──────┘
+   │         │                        │          NO  → ───────┼──┐
+   │         │                        │                       │  │
+   │         │  🧠 E_insight          │                       │  │
+   │ ┌───────┼── (memory — K cards    │                       │  │
+   │ │       │    flow UP from CLAIM)  │                       │  │
+   │ │       ├────────────────────────┼───────────────────────┤  │
+   │ │       │                        │                       │  │
+   │ │       │  📊 CLAIM  (D_probe — weeks)                   │  │
+   │ │       │  "does the hypothesis hold?"                   │  │
+   │ │       │                        │                       │  │
+   │ │       │          ┌─────────────┘                       │  │
+   │ │       │          │  one probe per GAP                  │  │
+   │ │       │          ▼                                     │  │
+   │ │       │  📐 Design ──→ 🌉 Materialize ──→ 📊 Harvest  │  │
+   │ │       │  hypothesis     scaffold arms      link runs   │  │
+   │ │       │  + arms         → C_task           aggregate   │  │
+   │ │       │  (🧑A / 🤖B)    code review        stats       │  │
+   │ │       │                  deploy                        │  │
+   │ │       │                        ║                       │  │
+   │ │       │                   C_task runs                  │  │
+   │ │       │                   (D_probe sleeps)             │  │
+   │ │       │                        ║                       │  │
+   │ │       │  ──→ 🔍 Judge ──→ 🧠 Insight                   │  │
+   │ │       │      structural    🟦 D per-arm                │  │
+   │ │       │      integrity🔬   🟩 I cross-arm              │  │
+   │ │       │      claim    🔬   🟨 K validated  ────→ E_insight  │
+   │ │       │      │             🟧 W next-step              │  │
+   │ │       │      │ partial                                 │  │
+   │ │       │      └──→ Explore ──→ loop inner               │  │
+   │ │       │                                                │  │
+   │ │       ├────────────────────────────────────────────────┤  │
+   │ │       │                                                │  │
+   │ │       │  💼 DO  (C_task — hours)                        │  │
+   │ │       │  "did this run work?"                          │  │
+   │ │       │                                                │  │
+   │ │       │  🏗️ B_project                                   │  │
+   │ │       │    (skeleton — project                         │  │
+   │ │       │     structure)                                 │  │
+   │ │       │                                                │  │
+   │ │       │  📋 Plan → 🔨 Build → ⚙️ Execute → 📝 Report   │  │
+   │ │       │  what to    write      run code    summarize   │  │
+   │ │       │  do         code       → metrics   vs plan     │  │
+   │ │       │  (IPO)      + configs  .json       + audit     │  │
+   │ │       │                                                │  │
+   │ │       │  → 🧠 Insight (optional)                       │  │
+   │ │       │    🟦 D per-run + 🟩 I cross-run               │  │
+   │ │       │    files to E_insight                          │  │
+   │ │       │                                                │  │
+   │ │       │  📦 Pipeline stages (what DO builds):          │  │
+   │ │       │    1_data · 2_nn · 3_end · 4_individual       │  │
+   │ │       │                                                │  │
+   │ │       └────────────────────────────────────────────────┘  │
+   │ │                                                           │
+   │ └───── NO (gaps remain) ── back to Map ─────────────────────┘
+   │
+   └─── the outer loop: Map → Fill → Ignite → (NO → Map)
+
+─§ 2. Each layer calls DOWN, reports UP ────────────
+
+  📖 ARGUE                   📊 CLAIM                   💼 DO
+  ═══════                    ══════                     ════
+  identifies GAP             tests hypothesis           runs code
+       │                          │                          │
+       │ spawns                   │ spawns                   │ produces
+       ▼                          ▼                          ▼
+  📊 CLAIM lifecycle         💼 DO lifecycle             📊 metrics.json
+  (one per GAP)              (one per arm × seed)             │
+       │                          │                          │ reports UP
+       │ returns                  │ returns                  ▼
+       ▼                          ▼                     📊 CLAIM reads
+  🟨 K card filed            📊 metrics.json            metrics, computes
+  → E_insight                → CLAIM reads              stats, writes K
+       │                                                     │
+       │ reports UP                                          │ reports UP
+       ▼                                                     ▼
+  📖 ARGUE rechecks          📖 ARGUE rechecks claims.md
+  claims.md                  GAP → have? → recheck ignite
+
+  Time flows DOWN (ARGUE spawns CLAIM spawns DO).
+  Evidence flows UP (DO → metrics → CLAIM → K card → ARGUE → ignite).
+
+─§ 3. Where A through N live ───────────────────────
+
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │  📖 ARGUE layer  — "why does this matter?"                          │
+  │                                                                     │
+  │    N_narrative     📖 the editor     story + claims + ignite        │
+  │    A_discover      🔍 the eyes       landscape + literature filter  │
+  │    F_paper         📰 the typesetter render story → paper    ──┐    │
+  │    G_application   💬 the translator  deliver to audiences   ──┤    │
+  │                                                         OUTPUTS│    │
+  ├─────────────────────────────────────────────────────────────────┤    │
+  │  📊 CLAIM layer  — "does the hypothesis hold?"                  │    │
+  │                                                                 │    │
+  │    D_probe         📊 the judge      test one hypothesis        │    │
+  │    E_insight       🧠 the memory     store validated DIKW       │    │
+  │                                                                 │    │
+  ├─────────────────────────────────────────────────────────────────┤    │
+  │  💼 DO layer     — "did this run work?"                         │    │
+  │                                                                 │    │
+  │    C_task          💼 the hands      execute code → metrics     │    │
+  │    B_project       🏗️ the skeleton    scaffold project structure │    │
+  │    1_data          📥 data pipeline  Source→Record→Case→AIData  │    │
+  │    2_nn            🧠 model pipeline Algo→Tuner→Instance→Set    │    │
+  │    3_end           🚀 endpoint       package→test→deploy        │    │
+  │    4_individual    🧑 per-individual  single-subject data slice  │    │
+  │                                                                 │    │
+  └─────────────────────────────────────────────────────────────────┘    │
+                                                                        │
+  F_paper + G_application are INSIDE the ARGUE layer                    │
+  but they fire AFTER the loop exits (Ignite=YES) ─────────────────────┘
+  They are the VOICE, not the ENGINE.
+
+─§ 4. The research loop — one picture ──────────────
+
+  🧑 Human: "I want to tell the story of X"
+       │
+       ▼
+  📐 CONCEIVE (story.md: angle + core claim)
+       │
+       ▼
+  🔍 LANDSCAPE (A_discover: what does the world know?)
+       │
+       ▼
+  ┌──────────────────────────────────────────────────────────┐
+  │  📋 MAP (claims.md: which K cards do we need?)           │
+  │       │                                                  │
+  │       ▼                                                  │
+  │  ⚙️ FILL (per GAP)                                       │
+  │    ├── 🔍 A_discover filter                              │
+  │    │     ├── ✅ lit confirms → file lit-K (hours)         │
+  │    │     ├── ❌ lit contradicts → revise claim            │
+  │    │     └── ❓ lit silent → spawn probe:                 │
+  │    │           │                                         │
+  │    │           ▼                                         │
+  │    │      ┌─────────────────────────────────────────┐    │
+  │    │      │  📊 CLAIM lifecycle (weeks)              │    │
+  │    │      │  Design → Materialize → Harvest → Judge │    │
+  │    │      │       │                                 │    │
+  │    │      │       ▼ spawns                          │    │
+  │    │      │  ┌──────────────────────────────────┐   │    │
+  │    │      │  │ 💼 DO lifecycle (hours)           │   │    │
+  │    │      │  │ Plan → Build → Execute → Report  │   │    │
+  │    │      │  │ → metrics.json                   │   │    │
+  │    │      │  └──────────────────────────────────┘   │    │
+  │    │      │       │                                 │    │
+  │    │      │       ▼ reports UP                      │    │
+  │    │      │  → Judge → Insight → 🟨 K card filed    │    │
+  │    │      └─────────────────────────────────────────┘    │
+  │    │                    │                                 │
+  │    │                    ▼                                 │
+  │    │              🧠 E_insight (K card stored)            │
+  │    │                    │                                 │
+  │    │                    ▼                                 │
+  │    └──────────── claims.md updated (GAP → have)          │
+  │                                                          │
+  │       ▼                                                  │
+  │  🔥 IGNITE (all claims have? steelman: NOT ready?)       │
+  │       │                                                  │
+  │    NO └──────────────── loop back to MAP ────────────────┘
+  │    │
+  │   YES
+  │    │
+  └────┘
+       │
+       ▼
+  🚀 HANDOFF
+       │
+       ├──→ 📰 F_paper        "render for venue"
+       ├──→ 💬 G_app report   "brief stakeholders"
+       ├──→ 💬 G_app message  "tell patient/clinician"
+       └──→ 💬 G_app ui       "design the feature"
+
+─§ 5. Summary table ────────────────────────────────
+
+  ┌───────────┬──────────┬───────────┬────────────┬────────────────────────────┐
+  │ 🏷️ Layer   │ 🔑 Verb   │ ⏱️ Time    │ 🔧 Unit     │ 📋 Lifecycle stages         │
+  ├───────────┼──────────┼───────────┼────────────┼────────────────────────────┤
+  │ 📖 ARGUE  │ ARGUE    │ months    │ story      │ Conceive → Landscape       │
+  │           │          │           │            │ → (Map→Fill→Ignite)*       │
+  │           │          │           │            │ → Handoff                  │
+  ├───────────┼──────────┼───────────┼────────────┼────────────────────────────┤
+  │ 📊 CLAIM  │ CLAIM    │ weeks     │ hypothesis │ Design → Materialize       │
+  │           │          │           │            │ → Harvest → Judge          │
+  │           │          │           │            │ → (loop)* → Insight        │
+  ├───────────┼──────────┼───────────┼────────────┼────────────────────────────┤
+  │ 💼 DO     │ DO       │ hours     │ task/run   │ Plan → Build → Execute     │
+  │           │          │           │            │ → Report → Insight         │
+  └───────────┴──────────┴───────────┴────────────┴────────────────────────────┘
+
+  🔄 Nesting:  ARGUE contains N × CLAIM contains N × DO
+  📤 Outputs:  ARGUE.Ignite=YES → F_paper + G_application
+  🧠 Memory:   E_insight stores DIKW; sits between CLAIM↑ and ARGUE↓
+  🔍 Eyes:     A_discover feeds ARGUE.Landscape + ARGUE.Fill
+  🏗️ Skeleton: B_project scaffolds DO layer

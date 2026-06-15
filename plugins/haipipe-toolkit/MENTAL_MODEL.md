@@ -1,10 +1,7 @@
 haipipe-toolkit — Mental Model
 ================================
 
-How to think about the 4 layers (C / D / E / G) and how sessions
-("applications") drive them. Read this before USAGE.md if anything in
-the toolkit feels arbitrary — the rules in USAGE.md are consequences
-of the model laid out here.
+How to think about the 4 layers (C / D / E / G) and how sessions ("applications") drive them. Read this before USAGE.md if anything in the toolkit feels arbitrary — the rules in USAGE.md are consequences of the model laid out here.
 
 
 TL;DR — 4 layers, 4 roles
@@ -62,22 +59,15 @@ location:    examples/<project>/tasks/<G##_group>/<##_task>/
 
 DIKW lens:   D (data observation) + I (information pattern)
              — observational / descriptive only.
-             A task can carry both lenses at once: e.g. a regression
-             task produces D ("the distribution") AND I ("the
-             correlation pattern") AND maybe a candidate K hint.
-             But K and W never *commit* here; they need a probe.
+             A task can carry both lenses at once: e.g. a regression task produces D ("the distribution") AND I ("the correlation pattern") AND maybe a candidate K hint. But K and W never *commit* here; they need a probe.
 
 task-types:  data / algo / training / eval / display / individual / agent
              (see C_task/haipipe-task SKILL.md)
 ```
 
-A task is **atomic on the compute side**: one bash invocation, one
-output directory. Multiple tasks can be chained, but each is its own
-unit of work.
+A task is **atomic on the compute side**: one bash invocation, one output directory. Multiple tasks can be chained, but each is its own unit of work.
 
-A task CAN produce evidence for several DIKW cards at once. A
-well-designed display or regression task often closes 3+ D/I cards in
-one shot. That is the point — DIKW is a *lens*, not a *phase*.
+A task CAN produce evidence for several DIKW cards at once. A well-designed display or regression task often closes 3+ D/I cards in one shot. That is the point — DIKW is a *lens*, not a *phase*.
 
 
 D_probe — the PROBE / CLAIM layer
@@ -94,18 +84,12 @@ location:    examples/<project>/probes/<NN_slug>/
 
 DIKW lens:   K (validated belief) + W (per-probe recommendation)
              — normative / prescriptive.
-             K appears in probe.yaml.claim after result aggregation.
-             W appears as the "next step" implied by claim + caveats
-             (e.g. "param-matched re-test", "drop arm X").
+             K appears in probe.yaml.claim after result aggregation. W appears as the "next step" implied by claim + caveats (e.g. "param-matched re-test", "drop arm X").
 ```
 
-D_probe is the conceptual name. `D_probe`, `probes/`, and
-`/haipipe-probe` remain the compatibility names in the current
-folder and command layout.
+D_probe is the conceptual name. `D_probe`, `probes/`, and `/haipipe-probe` remain the compatibility names in the current folder and command layout.
 
-A claim CANNOT exist without a probe.
-A pattern observed in a single task is at most I; promoting it to K
-requires a controlled comparison (arms × seeds × statistical test).
+A claim CANNOT exist without a probe. A pattern observed in a single task is at most I; promoting it to K requires a controlled comparison (arms × seeds × statistical test).
 
 This is the most important boundary in the toolkit:
 
@@ -115,9 +99,7 @@ This is the most important boundary in the toolkit:
                comparison                  (no shortcut from I to K)
 ```
 
-A single probe can produce multiple K (a main claim + secondary
-claims observed in the same run) and multiple W (different "next
-steps" implied by different parts of the claim).
+A single probe can produce multiple K (a main claim + secondary claims observed in the same run) and multiple W (different "next steps" implied by different parts of the claim).
 
 
 E_insight — the ARCHIVE layer
@@ -130,10 +112,7 @@ asks:        "what does the project KNOW, and where is each piece?"
 artifacts:   insights/INDEX.md, insights/{D,I,K,W}_*/{D,I,K,W}##_<slug>.md
 location:    examples/<project>/insights/
 
-DIKW lens:   all 4 — but as labels on cards that were *produced
-             elsewhere*. E does not compute, observe, or claim. It only
-             archives material that C_task and D_probe have
-             already produced, and maintains the cross-reference graph.
+DIKW lens:   all 4 — but as labels on cards that were *produced elsewhere*. E does not compute, observe, or claim. It only archives material that C_task and D_probe have already produced, and maintains the cross-reference graph.
 ```
 
 E_insight is the **librarian**. It writes no original content.
@@ -149,18 +128,14 @@ insights/W_wisdom/          W## cards   ← filed from D_probe recs
                                           (multiple K → 1 strategic W)
 ```
 
-W has two flavors in the archive — same folder, distinguished by
-`sources:`
+W has two flavors in the archive — same folder, distinguished by `sources:`
 
 ```
 per-probe W:  sources: [P.A07]               (1 probe)
 strategic     W:  sources: [K01, K03, K05]       (cross-probe)
 ```
 
-The K-commit "harsh" gate (must list all counter-evidence) is NOT in
-E_insight — it lives in `D_probe/-review` where the claim is
-made. By the time material reaches E_insight, it has already been
-vetted upstream. E_insight is a flat file-write.
+The K-commit "harsh" gate (must list all counter-evidence) is NOT in E_insight — it lives in `D_probe/-review` where the claim is made. By the time material reaches E_insight, it has already been vetted upstream. E_insight is a flat file-write.
 
 
 G_application — the SESSION layer
@@ -175,14 +150,10 @@ artifacts:   SESSION_STATE.json, plans/plan-vN.yaml, gates/##-G-<phase>.md,
              invocations.log, the kind's output artifact
 location:    examples/<project>/applications/<kind>/<...>/
 
-DIKW lens:   none. G does not produce DIKW content directly. It
-             evaluates whether enough D+I+K+W exists in the KB to
-             produce the artifact, and orchestrates more work
-             (tasks / probes / new KB cards) if not.
+DIKW lens:   none. G does not produce DIKW content directly. It evaluates whether enough D+I+K+W exists in the KB to produce the artifact, and orchestrates more work (tasks / probes / new KB cards) if not.
 ```
 
-G_application is the **case worker**. There are 4 kinds of case file,
-all sharing one session skeleton:
+G_application is the **case worker**. There are 4 kinds of case file, all sharing one session skeleton:
 
 ```
 kind        artifact                                writes KB?    can trigger?
@@ -194,15 +165,9 @@ ui          applications/ui/<slug>/                  no            (chains to as
 report      applications/reports/<...>.md            no            (chains to ask if gap)
 ```
 
-`ask` is the only kind authorized to mutate the KB or trigger
-D_probe / C_task. The external kinds delegate KB work to `ask`
-and resume their own draft once `ask` returns.
+`ask` is the only kind authorized to mutate the KB or trigger D_probe / C_task. The external kinds delegate KB work to `ask` and resume their own draft once `ask` returns.
 
-A session does NOT accumulate content into the KB by itself (only the
-`ask` kind does, via insight-{D,I,K,W} files). When a session ends,
-the permanent residue lives in `tasks/`, `probes/`, `insights/`.
-The applications/<kind>/<...>/ folder itself is a closed case file —
-the journey, not the destination.
+A session does NOT accumulate content into the KB by itself (only the `ask` kind does, via insight-{D,I,K,W} files). When a session ends, the permanent residue lives in `tasks/`, `probes/`, `insights/`. The applications/<kind>/<...>/ folder itself is a closed case file — the journey, not the destination.
 
 The session skeleton (shared by all 4 kinds):
 
@@ -245,8 +210,7 @@ Old confusion 3:  "what does E_insight actually do?"
 The plan-vN.yaml — central artifact of a session
 =================================================
 
-A session's plan does NOT enumerate phases (D / I / K / W). It
-enumerates two related batches, with a DAG between them:
+A session's plan does NOT enumerate phases (D / I / K / W). It enumerates two related batches, with a DAG between them:
 
 ```yaml
 plan_version: 2
@@ -311,10 +275,7 @@ Key properties:
 Phases of one session — per kind
 ==================================
 
-Every kind specialist runs phases through the same machinery
-(plan / gate / context + SESSION_STATE.json), but the phase list
-differs by kind. The 2-step shape per phase is uniform: `task` then
-`gate`.
+Every kind specialist runs phases through the same machinery (plan / gate / context + SESSION_STATE.json), but the phase list differs by kind. The 2-step shape per phase is uniform: `task` then `gate`.
 
 ask kind — research session (4 phases):
 
@@ -366,8 +327,7 @@ message / ui / report kinds — external creation (6 phases):
                   [G-write HARSH — final artifact correct?]
 ```
 
-No phase=D / phase=I / phase=K / phase=W in either shape. DIKW is a
-card-labeling scheme, not an execution stage.
+No phase=D / phase=I / phase=K / phase=W in either shape. DIKW is a card-labeling scheme, not an execution stage.
 
 
 Gate harshness — HARSH vs SOFT
@@ -409,8 +369,7 @@ They block until met. They protect the project's permanent record.
 
 **SOFT gates** have:
 - 3-outcome vocabulary: `approve` / `revise [feedback]` / `done`
-- 4-preset persona: `strict` / `balanced` / `creative` / `lenient`
-  + `strictness(0-10)` + `ambition(0-10)`
+- 4-preset persona: `strict` / `balanced` / `creative` / `lenient` + `strictness(0-10)` + `ambition(0-10)`
 - 3-mode attendance: `null` (attended) / `N` (timed) / `0` (unattended)
 - `MAX_REVISIONS=3` force-approve audit
 - Plan as sole router (all revise → plan)
@@ -428,10 +387,7 @@ the K+W we wanted from this probe batch?"
 One full session, lifecycle walk-through (ask kind)
 =====================================================
 
-This trace is the `ask` kind. The `message` / `ui` / `report` kinds
-follow the 6-phase external-creation shape (init/load/[gap]/draft/
-review/write); their lifecycle is shorter and KB-readonly except for
-the optional inline-ask chain at gap-phase.
+This trace is the `ask` kind. The `message` / `ui` / `report` kinds follow the 6-phase external-creation shape (init/load/[gap]/draft/review/write); their lifecycle is shorter and KB-readonly except for the optional inline-ask chain at gap-phase.
 
 ```
 [t=0]  user: "Does FiLM beat baseline on test-od?"
@@ -493,97 +449,61 @@ the optional inline-ask chain at gap-phase.
 Boundary FAQ
 =============
 
-**Q: I have a notebook that plots 5 training runs into one figure.
-    Where does it go?**
+**Q: I have a notebook that plots 5 training runs into one figure. Where does it go?**
 
-A: tasks/ — specifically a `display`-type task. The figure is the
-   product of an observation task. It yields one or more I cards.
-   The notebook lives at `tasks/.../<task>/notebooks/<RUN>.ipynb`,
-   the figure at `tasks/.../<task>/results/<RUN>/<name>.png`. The
-   I card cites it.
+A: tasks/ — specifically a `display`-type task. The figure is the product of an observation task. It yields one or more I cards. The notebook lives at `tasks/.../<task>/notebooks/<RUN>.ipynb`, the figure at `tasks/.../<task>/results/<RUN>/<name>.png`. The I card cites it.
 
-**Q: A regression task produced what looks like a clean causal effect.
-    Can I write a K card straight from it?**
+**Q: A regression task produced what looks like a clean causal effect. Can I write a K card straight from it?**
 
-A: No. K requires a controlled comparison — arms × seeds × test. A
-   regression is observational; it can produce strong I, but not K.
-   Promote by scaffolding a probe that arm-matches the regressor.
+A: No. K requires a controlled comparison — arms × seeds × test. A regression is observational; it can produce strong I, but not K. Promote by scaffolding a probe that arm-matches the regressor.
 
-**Q: One C_task run yields evidence for 3 D cards. How is that
-    recorded in the plan?**
+**Q: One C_task run yields evidence for 3 D cards. How is that recorded in the plan?**
 
-A: `task_batch[i].yields: [D01, D02, D03]`. The yields list is the
-   contract — that many cards must be filed at Phase 4 or G-observe
-   refuses to approve.
+A: `task_batch[i].yields: [D01, D02, D03]`. The yields list is the contract — that many cards must be filed at Phase 4 or G-observe refuses to approve.
 
 **Q: One D card needs evidence from 3 tasks. How?**
 
-A: `insight_yield.D01.sources: [T1, T2, T5]`. The card cites all
-   three task results. E_insight filing reads from each task's
-   results/.
+A: `insight_yield.D01.sources: [T1, T2, T5]`. The card cites all three task results. E_insight filing reads from each task's results/.
 
 **Q: Can a session skip Phase 3 (claim)?**
 
-A: Yes. If the KB already has all needed K+W, or if the question
-   only needs D+I (e.g. "describe the data"), the plan's
-   `probe_batch` is empty and Phase 3 is a no-op.
+A: Yes. If the KB already has all needed K+W, or if the question only needs D+I (e.g. "describe the data"), the plan's `probe_batch` is empty and Phase 3 is a no-op.
 
 **Q: Can a session skip Phase 2 (observe)?**
 
-A: Yes. If the probe_batch only depends on existing D/I in the
-   KB, Phase 2 is a no-op and Phase 3 runs directly.
+A: Yes. If the probe_batch only depends on existing D/I in the KB, Phase 2 is a no-op and Phase 3 runs directly.
 
-**Q: Multiple sessions cite the same K card. Does the card get
-    duplicated?**
+**Q: Multiple sessions cite the same K card. Does the card get duplicated?**
 
-A: No. Cards are atomic. Sessions cite by ID. The card's `ref_by:`
-   list grows.
+A: No. Cards are atomic. Sessions cite by ID. The card's `ref_by:` list grows.
 
-**Q: A session's K card later turns out wrong (new probe
-    refutes it). What happens?**
+**Q: A session's K card later turns out wrong (new probe refutes it). What happens?**
 
-A: The refuting probe yields a new K with `supersedes: [K-old]`.
-   K-old's `status:` changes to `superseded` but the file remains
-   for history. Both visible in K_knowledge/INDEX.md.
+A: The refuting probe yields a new K with `supersedes: [K-old]`. K-old's `status:` changes to `superseded` but the file remains for history. Both visible in K_knowledge/INDEX.md.
 
 **Q: A W card was filed last month. Is it still actionable?**
 
-A: Maybe. W cards decay. Check `status:` (active / stale). The
-   application doing the re-check can mark a W stale if its trigger
-   condition no longer holds.
+A: Maybe. W cards decay. Check `status:` (active / stale). The application doing the re-check can mark a W stale if its trigger condition no longer holds.
 
 **Q: Where do raw thinking notes / daily logs go?**
 
-A: applications/ask/<NN_slug>/logs/<YYYY-MM-DD>.md (append-only,
-   captain's-log style). Not in tasks/, not in probes/.
+A: applications/ask/<NN_slug>/logs/<YYYY-MM-DD>.md (append-only, captain's-log style). Not in tasks/, not in probes/.
 
-**Q: What's the difference between `/haipipe-application ask` and
-    just running `/haipipe-task` + `/haipipe-probe` directly?**
+**Q: What's the difference between `/haipipe-application ask` and just running `/haipipe-task` + `/haipipe-probe` directly?**
 
-A: The ask kind gives you the session machinery: SESSION_STATE.json
-   for resume, plan-vN.yaml for design intent, gates for phase
-   review, persona/attendance knobs. Running raw skills works too,
-   but you lose the per-session log + the gate review at each step.
+A: The ask kind gives you the session machinery: SESSION_STATE.json for resume, plan-vN.yaml for design intent, gates for phase review, persona/attendance knobs. Running raw skills works too, but you lose the per-session log + the gate review at each step.
 
 **Q: Can I make a patient message without a session?**
 
-A: No. All G_application work goes through the session skeleton —
-   even short jobs get a SESSION_STATE.json. The skeleton is what
-   gives you resume + audit + revise.
+A: No. All G_application work goes through the session skeleton — even short jobs get a SESSION_STATE.json. The skeleton is what gives you resume + audit + revise.
 
-**Q: I want to ask a question that the message kind chains to
-    automatically. How do I know it'll find a good ask sub-Q?**
+**Q: I want to ask a question that the message kind chains to automatically. How do I know it'll find a good ask sub-Q?**
 
-A: At Phase load, the external kind reads K/W on the relevant tags.
-   If gap found, it composes a sub-Q (audience-aware) and pipes
-   verbatim to `/haipipe-application ask`. You can override the
-   composed sub-Q at the G-load gate via reply B.
+A: At Phase load, the external kind reads K/W on the relevant tags. If gap found, it composes a sub-Q (audience-aware) and pipes verbatim to `/haipipe-application ask`. You can override the composed sub-Q at the G-load gate via reply B.
 
 **Q: Two sessions want to run the same probe. Wasted compute?**
 
-A: The second session's plan-v1.yaml.probe_batch will scan
-   existing probes/ first. If P.A07 with the desired arms exists
-   and is `confirmed`, the second session reuses it (no re-run).
+A: The second session's plan-v1.yaml.probe_batch will scan existing probes/ first. If P.A07 with the desired arms exists and is `confirmed`, the second session reuses it (no re-run).
 
 
 One-line rules of thumb

@@ -87,7 +87,7 @@ Step 3: PRE-FLIGHT CODE REVIEW (CODE_REVIEW=true)
   The agent is a role-doc (not a registered subagent_type) — dispatch
   it by reading its file and handing the body to a Task subagent:
 
-    Read  skills/C_task/agents/reviewers/run-script-reviewer-agent.md
+    Read  skills/C_task/agents/haipipe-task-reviewer-agent.md
     Task tool (general-purpose subagent), Prompt = that file's body +
             "Pre-flight review for bridge deploy.
              task-folder:   <absolute path>
