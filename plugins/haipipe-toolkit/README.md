@@ -1,21 +1,15 @@
 haipipe Plugin
 ===============
 
-Skills for the haipipe pipeline — from raw data to trained models to deployed
-endpoints. Covers all 6 stages plus a per-individual data contract and project
-scaffolding.
+Skills for the haipipe pipeline — from raw data to trained models to deployed endpoints. Covers all 6 stages plus a per-individual data contract and project scaffolding.
 
-**v2.0 layout** — five user-facing **umbrella** skills parse intent and
-dispatch to per-stage / per-target / per-risk-profile **specialists**. You
-only need to remember the umbrellas; specialists exist as real skills (each
-with its own `SKILL.md`) but are normally called by the umbrella via `Skill()`.
+**v2.0 layout** — five user-facing **umbrella** skills parse intent and dispatch to per-stage / per-target / per-risk-profile **specialists**. You only need to remember the umbrellas; specialists exist as real skills (each with its own `SKILL.md`) but are normally called by the umbrella via `Skill()`.
 
 
 Two organizing axes
 -------------------
 
-The toolkit is laid out along **two orthogonal axes**. They are not siblings —
-they meet at one point (a `C_task` run), and you usually use both.
+The toolkit is laid out along **two orthogonal axes**. They are not siblings — they meet at one point (a `C_task` run), and you usually use both.
 
 ```
 Numbered  0–6   ENGINEERING substrate — "how data becomes a model and ships"
@@ -34,9 +28,7 @@ Lettered  A–G   RESEARCH lifecycle — "how to turn runs into trustworthy,
                 ► See MENTAL_MODEL.md (the model) and USAGE.md (the recipes).
 ```
 
-The seam between the axes is `C_task`: a task's `run.sh` *executes* a stage of
-the numbered pipeline and emits `metrics.json`; the lettered layer wraps those
-runs with scientific bookkeeping (DIKW cards, probe arms, claims).
+The seam between the axes is `C_task`: a task's `run.sh` *executes* a stage of the numbered pipeline and emits `metrics.json`; the lettered layer wraps those runs with scientific bookkeeping (DIKW cards, probe arms, claims).
 
 Glossary (one concept, three names you will see):
 
@@ -80,17 +72,13 @@ Tier 1 — user-facing umbrellas
 Tier 2 — specialists (called by umbrellas)
 -------------------------------------------
 
-Specialists each have their own `SKILL.md` and can be invoked directly for
-power-user work, but the recommended entry is always the umbrella.
+Specialists each have their own `SKILL.md` and can be invoked directly for power-user work, but the recommended entry is always the umbrella.
 
 
 Folder layout
 --------------
 
-Skills are grouped into family folders under `skills/`. Folder names are
-pure organization — only the `name:` field in each SKILL.md frontmatter
-identifies the skill. Numeric prefixes follow the data flow order
-(data → nn → end), then cross-cutting (project), then inference-time (individual).
+Skills are grouped into family folders under `skills/`. Folder names are pure organization — only the `name:` field in each SKILL.md frontmatter identifies the skill. Numeric prefixes follow the data flow order (data → nn → end), then cross-cutting (project), then inference-time (individual).
 
 ```
 skills/
@@ -136,10 +124,7 @@ skills/
     └── haipipe-individual-inference-judge/  judge persona
 ```
 
-Note: the lettered research families (`A_discover/`, `B_project/`, `C_task/`,
-`D_probe/`, `E_insight/`, `F_paper/`, `G_application/`) live alongside the
-numbered ones under `skills/`. Folder prefix is organization only — a skill is
-identified solely by its `name:` frontmatter.
+Note: the lettered research families (`A_discover/`, `B_project/`, `C_task/`, `D_probe/`, `E_insight/`, `F_paper/`, `G_application/`) live alongside the numbered ones under `skills/`. Folder prefix is organization only — a skill is identified solely by its `name:` frontmatter.
 
 
 Stage map
@@ -163,7 +148,7 @@ _WorkSpace/A-User-Store/UserGroup/Subject-{dataset}-{id}/
 Architecture
 ------------
 
-**Umbrella -> Specialist contract.** Each umbrella SKILL.md owns:
+**Umbrella → Specialist contract.** Each umbrella SKILL.md owns:
   - Keyword tables (stage / layer / target / verb)
   - Intent parsing logic
   - `Skill("haipipe-<group>-<scope>", args=...)` dispatch
@@ -181,11 +166,7 @@ artifacts: [paths created, read, or modified]
 next:      suggested next command
 ```
 
-**Discipline.** Specialists never modify state owned by another specialist.
-For example, target deployers (`-sagemaker`, `-databricks`, etc.) read the
-Endpoint_Set produced by `-endpointset` but never modify it. If a deploy
-fails because of an artifact issue, the fix lives in `-endpointset`, not in
-the target skill.
+**Discipline.** Specialists never modify state owned by another specialist. For example, target deployers (`-sagemaker`, `-databricks`, etc.) read the Endpoint_Set produced by `-endpointset` but never modify it. If a deploy fails because of an artifact issue, the fix lives in `-endpointset`, not in the target skill.
 
 
 Decomposition axes
@@ -203,10 +184,6 @@ Decomposition axes
 Principle
 ---------
 
-**Data contract split.** Project-wide stages 1-4 are for building models. Per-individual
-stages 0-2 are for serving one individual's data to a deployed endpoint. The split mirrors
-train-time vs. inference-time: the endpoint doesn't need 4-AIDataStore, it needs a
-record.
+**Data contract split.** Project-wide stages 1-4 are for building models. Per-individual stages 0-2 are for serving one individual's data to a deployed endpoint. The split mirrors train-time vs. inference-time: the endpoint doesn't need 4-AIDataStore, it needs a record.
 
-**Skill-first development.** Make a skill work locally first, then wire it
-into an umbrella's keyword table. The skill prompt is the source of truth.
+**Skill-first development.** Make a skill work locally first, then wire it into an umbrella's keyword table. The skill prompt is the source of truth.

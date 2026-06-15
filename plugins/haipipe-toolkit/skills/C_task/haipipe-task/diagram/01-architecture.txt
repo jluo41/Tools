@@ -11,7 +11,7 @@
 │   └── haipipe-task-reviewer-agent.md    🔍 evaluates artifacts (bugs, schema, accuracy)
 │
 ├── 📋 haipipe-task/                      🎯 ORCHESTRATOR — the hub
-│   ├── SKILL.md                          📜 routing + 4-stage lifecycle + agents section
+│   ├── SKILL.md                          📜 routing + 5-stage lifecycle + agents section
 │   │
 │   ├── fn/                               📝 procedures (Claude follows these)
 │   │   ├── run.md                           scaffold a new run
@@ -20,7 +20,7 @@
 │   │   └── workflow-report.md               generate report.yaml mirroring plan
 │   │
 │   ├── ref/                              📚 templates + schemas + the workflow engine
-│   │   ├── task-lifecycle.workflow.js     ⚡ THE ENGINE — 4-stage creator-reviewer loop
+│   │   ├── task-lifecycle.workflow.js     ⚡ THE ENGINE — 5-stage lifecycle loop
 │   │   ├── workflow-template.yaml        📄 generic task-level IPO template (Run/Gate1/Gate2)
 │   │   ├── hierarchy.md                  🏛️ project → task-group → task-folder → run
 │   │   ├── authoring-conventions.md      ✍️ code style rules
@@ -53,7 +53,7 @@
                +------------------------------------------+
                |         haipipe-task (hub)                |
                |                                          |
-               |  4-stage lifecycle engine                |
+               |  5-stage lifecycle engine                |
                |  creator-reviewer agent loop             |
                |  scope resolution + routing              |
                |  shared ref/ (templates, conventions)    |
@@ -72,10 +72,19 @@ Three entry paths:
   Path 3 — /haipipe-task-for-stata <args>    spoke reads hub ref/ → standalone
 
 
-─§ 3. What Plan / Build / Execute / Report MEAN ───────────────────
+─§ 3. Two Lifecycles — CODE then DATA ────────────────────────────
+
+   Plan / Build / Execute / Report   =   CODE lifecycle    "is the implementation right?"
+   Insight (optional)                =   DATA lifecycle    "what did we learn from the data?"
+
+Stages 1-4 care about the engineering: correct, structured, runnable, documented.
+Stage 5 captures what the data told us — independent of the code that produced it.
+
+
+─§ 4. What Each Stage MEANS ──────────────────────────────────────
 
 Each stage answers ONE question and produces ONE artifact set.
-All 4 stages operate on the SAME task folder's workflow/ directory.
+Stages 1-4 operate on the task folder. Stage 5 writes to insights/.
 
 📍 Stage 1: PLAN — "What should this task do?"
 ──────────────────────────────────────────────────
@@ -122,25 +131,41 @@ All 4 stages operate on the SAME task folder's workflow/ directory.
 
      Plan = intent. Report = evidence. Same shape, diffed to find gaps.
 
+🧠 Stage 5: INSIGHT — "What did the data teach us?" (optional)
+──────────────────────────────────────────────────
+  I: results/<run>/metrics.json + workflow/report*.yaml + workflow/plan*.yaml
+  P: check type eligibility (eval, fit, stata-reg, stata-data → yes; others → skip)
+     check results exist (metrics.json present → yes; absent → skip)
+     call Skill("haipipe-insight-data") to file D_data observation card
+     card-reviewer-data-agent validates the card
+  O: insights/D_data/D{NN}_{slug}.md  (D-level observation)
 
-─§ 4. Task Folder Accumulates Across Stages ────────────────────────
+     About the DATA, not the code. Records what we learned from running it.
+     Optional — only fires for insight-worthy types with actual results.
+     If enough D cards accumulate → suggest /haipipe-insight information.
 
-{NN}_{task}/                    after PLAN  after BUILD  after EXECUTE  after REPORT
-├── {NN}_{task}.py                 ·          ✅ written     ·              ·
-├── configs/<run>.yaml             ·          ✅ written     ·              ·
-├── runs/<run>.sh                  ·          ✅ written     ·              ·
-├── notebooks/                     ·          ✅ dir          ✅ .ipynb      ·
-├── results/<run>/                 ·          ·              ✅ metrics     ·
-├── CODE_REVIEW.md                 ·          ✅ Gate 1       ·              ·
-├── RUN_AUDIT.md                   ·          ·              ·              ✅ Gate 2
+
+─§ 5. Task Folder Accumulates Across Stages ────────────────────────
+
+                                after    after    after     after     after
+{NN}_{task}/                    PLAN     BUILD    EXECUTE   REPORT    INSIGHT
+├── {NN}_{task}.py                ·       ✅        ·         ·         ·
+├── configs/<run>.yaml            ·       ✅        ·         ·         ·
+├── runs/<run>.sh                 ·       ✅        ·         ·         ·
+├── notebooks/                    ·       ✅ dir    ✅ .ipynb  ·         ·
+├── results/<run>/                ·        ·       ✅ metrics  ·         ·
+├── CODE_REVIEW.md                ·       ✅ G1     ·         ·         ·
+├── RUN_AUDIT.md                  ·        ·        ·        ✅ G2      ·
 └── workflow/
-    ├── plan.yaml                  ✅          ·              ·              ·
-    ├── plan-script-*.yaml         ✅          ·              ·              ·
-    ├── report.yaml                ·          ·              ·              ✅
-    └── report-script-*.yaml       ·          ·              ·              ✅
+    ├── plan.yaml                ✅        ·        ·         ·         ·
+    ├── plan-script-*.yaml       ✅        ·        ·         ·         ·
+    ├── report.yaml               ·        ·        ·        ✅         ·
+    └── report-script-*.yaml      ·        ·        ·        ✅         ·
+
+insights/D_data/D{NN}_{slug}.md   ·        ·        ·         ·        ✅ (optional)
 
 
-─§ 5. Creator-Reviewer Loop (at each stage) ────────────────────────
+─§ 6. Creator-Reviewer Loop (stages 1-4) ──────────────────────────
 
                     ┌──────────────────────────────────┐
                     │                                  │
@@ -172,8 +197,11 @@ All 4 stages operate on the SAME task folder's workflow/ directory.
                ▼
         next stage ──▶
 
+Stage 5 (Insight) does NOT use the creator-reviewer loop from C_task.
+It calls E_insight's own card-creator + card-reviewer agents.
 
-─§ 6. Dispatch Routing ─────────────────────────────────────────────
+
+─§ 7. Dispatch Routing ─────────────────────────────────────────────
 
 🧑 user types: /haipipe-task <args>
          │
@@ -207,10 +235,35 @@ All 4 stages operate on the SAME task folder's workflow/ directory.
                        │ 🔨 Build          │
                        │ ▶️ Execute (opt)   │
                        │ 📋 Report (opt)   │
+                       │ 🧠 Insight (opt)  │
                        └───────────────────┘
 
 
-─§ 7. Schema Consistency Chain ─────────────────────────────────────
+─§ 8. Cross-Layer: C_task → E_insight ─────────────────────────────
+
+Stage 5 is the ONE place where C_task crosses into E_insight.
+
+   ┌─────────────────────┐         ┌─────────────────────────┐
+   │     C_task (hub)     │         │      E_insight           │
+   │                     │         │                         │
+   │  Stage 5: INSIGHT    │────────▶│  /haipipe-insight-data   │
+   │  checks eligibility  │  Skill()│  files D_data card       │
+   │  reads metrics.json  │         │                         │
+   │                     │         │  card-reviewer-data-agent│
+   │                     │◀────────│  validates the card      │
+   │                     │  verdict│                         │
+   └─────────────────────┘         └─────────────────────────┘
+
+Eligibility:
+  ✅ eval, fit, stata-reg, stata-data   (interpretable results)
+  ❌ data, algo, individual, agent, inference   (no domain findings)
+  ❓ display   (only if quantitative summaries exist)
+
+D cards accumulate → I-level pattern suggestion:
+  if count(D cards in task-group) >= 3 → suggest /haipipe-insight information
+
+
+─§ 9. Schema Consistency Chain ─────────────────────────────────────
 
 📐 haipipe-workflow (B_project/)         ← the PATTERN
    ref/plan-schema.md                    ← canonical IPO schema
@@ -234,3 +287,8 @@ All 4 stages operate on the SAME task folder's workflow/ directory.
                    🤖 agent:      Setup → Execute → Parse
                    ⏱️ inference:  Setup → Profile → Report
                    🔩 stata:      per-stage (Extract/Trigger/Filter/Estimate → Describe)
+
+📐 haipipe-insight (E_insight/)          ← the CARD SCHEMA
+   ref/insight-md-schema.md              ← canonical D/I/K/W card format
+         │
+         └──▶ 🧠 Stage 5 (Insight) files D_data cards following this schema

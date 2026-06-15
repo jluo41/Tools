@@ -133,11 +133,21 @@ frontmatter (≤ 13 lines):
 
 body sections (in order):
   ## Observation     (1-2 paragraphs, FACTS only — no interpretation)
-  ## Numbers         (table: Metric / Value / Split / Source)
+  ## Numbers         (padded fixed-width table — see below)
   ## Caveats         (bullet list, verbatim from probe.yaml caveats[])
 
 length: ≤ 100 lines total
 ```
+
+Numbers table MUST use padded fixed-width columns for visual consistency across all D cards:
+
+```
+| Metric                                | Value              | CI (95%)                        | Source                         |
+|---------------------------------------|--------------------|---------------------------------|--------------------------------|
+| <40 chars padded>                     | <20 chars padded>  | <33 chars padded>               | <32 chars padded>              |
+```
+
+Use `—` (em-dash) for missing CI values, not `--`. Column headers: Metric (40), Value (20), CI (33), Source (32).
 
 The `headline` field in frontmatter is the one-line number summary
 (e.g. `"val: FiLM Δ -0.98 ± 0.27 mg/dL (p=0.018, n=3)"`); detailed

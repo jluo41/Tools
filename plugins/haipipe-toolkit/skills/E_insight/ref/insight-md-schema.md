@@ -106,13 +106,15 @@ D layer
 <1-2 paragraphs of FACTS only — no interpretation>
 
 ## Numbers
-| Metric | Value | Split | Source |
-|--------|-------|-------|--------|
-| ...    | ...   | ...   | ...    |
+| Metric                                | Value              | CI (95%)                        | Source                         |
+|---------------------------------------|--------------------|---------------------------------|--------------------------------|
+| ...                                   | ...                | ...                             | ...                            |
 
 ## Caveats
 - <bulleted, verbatim from probe.yaml caveats[]>
 ```
+
+Table formatting: use padded fixed-width columns so all D cards render as a clean grid. Column headers are `Metric` (40 chars), `Value` (20 chars), `CI (95%)` (33 chars), `Source` (32 chars). Pad every cell to its column width with trailing spaces. Use `—` for missing CI values, not `--`.
 
 Length budget: 30-50 body lines.
 
@@ -127,13 +129,15 @@ I layer
 <the invariant in 1-3 sentences>
 
 ## Evidence
-| Source | Metric / Split | Δ or Value | Direction |
-|--------|----------------|------------|-----------|
-| D01    | ...            | ...        | ...       |
+| Source | Metric / Split                 | Δ or Value         | Direction  |
+|--------|--------------------------------|--------------------|------------|
+| D01    | ...                            | ...                | ...        |
 
 ## Counter-evidence
 <entries that should show the pattern but don't, OR "none found" with rationale>
 ```
+
+Table formatting: use padded fixed-width columns consistent with D-layer tables. Column headers are `Source` (8 chars), `Metric / Split` (32 chars), `Δ or Value` (20 chars), `Direction` (12 chars).
 
 Length budget: 30-60 body lines.
 

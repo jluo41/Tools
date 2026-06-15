@@ -1,14 +1,10 @@
 E_insight — The Archive Layer (DESIGN)
 ========================================
 
-Status: BUILT (2026-05-31) — agentification + dual-mode + per-type reviewers landed.
-        Built this session: ref/invocation-modes.md + ref/dikw-boundaries.md
-        (boundaries + worked examples); agents/ (README + creators×4 +
-        reviewers×5 [4 per-type card-reviewers + 1 cross-layer index-integrity]
-        + 2 _TEMPLATEs); the 4 DIKW skills declare dual-mode; 9 top-level agent
-        symlinks (registry 22); haipipe-probe-loop wired to file a D card on
-        convergence (Q2). Remaining: higher-layer I/K/W auto-synthesis as cards
-        accumulate; an E_insight CHANGELOG; dogfood.
+Status: v2.0.0 (2026-06-11) — DIKW producer partition established.
+        C_task Stage 5 files D cards; D_probe convergence files K cards;
+        E_insight owns I + W synthesis. Prior: agentification + dual-mode +
+        per-type reviewers (2026-05-31).
 Owner:  jluo41
 
 Read ARCHITECTURE.md + MENTAL_MODEL.md first. This doc designs the AGENT
@@ -36,15 +32,42 @@ This doc adds the skeleton.
 E's nature (recap — the librarian)
 ==================================
 
-E_insight does NOT think, compute, or claim. It FILES. It reads evidence
-that C_task and D_probe already produced and writes DIKW markdown cards +
-the cross-reference graph. Hard invariants (unchanged):
+E_insight does NOT think, compute, or claim. It FILES. It is CALLED BY
+C_task and D_probe to file cards, and it synthesizes cross-cutting
+patterns (I) and recommendations (W) from the accumulated cards.
 
 ```
-reads:    probes/ + tasks/   (the evidence anchors)
-writes:   insights/ only     (D/I/K/W cards + INDEX)
-NEVER:    writes tasks/ or probes/ ; triggers a probe (that is G-ask's job)
+called by:  C_task Stage 5 → files D cards (per-task observations)
+            D_probe convergence → files K cards (per-probe beliefs)
+            G_application Phase 4 → files any DIKW level
+owns:       I synthesis (cross-D patterns) + W synthesis (cross-K actions)
+writes:     insights/ only (D/I/K/W cards + INDEX)
+NEVER:      writes tasks/ or probes/ ; triggers a probe (that is G-ask's job)
 ```
+
+
+Who produces what (the DIKW producer partition)
+================================================
+
+Each DIKW level has one natural producer, determined by scope:
+
+```
+DIKW level     Producer           Trigger                          Scope
+─────────────  ─────────────────  ───────────────────────────────  ──────────────
+🟦 D data      C_task Stage 5     task lifecycle completes         one task/run
+🟩 I info      E_insight          enough D cards accumulate        cross-task pattern
+🟨 K knowledge D_probe loop       probe converges (confirmed)      one probe claim
+🟧 W wisdom    E_insight / G_app  enough K cards accumulate        cross-probe action
+```
+
+The principle: **DIKW levels are partitioned by scope. Each scope has one natural owner. No layer files cards above its scope.**
+
+- A task doesn't produce K (it doesn't test hypotheses — that's a probe's job).
+- A probe doesn't produce I (it doesn't see cross-probe patterns — that's synthesis).
+- The atomic layers (D, K) are filed automatically by their producers.
+- The synthesis layers (I, W) require either enough accumulation or human judgment.
+
+G_application-ask can also file any DIKW level during its Phase 4, but even then it calls the same E_insight skills — just with broader orchestration context.
 
 
 The asymmetry note (E vs C vs D) — apply, don't copy
@@ -117,36 +140,56 @@ W (Wisdom)       sources:[K..] + rec + type + cost + how-to-act
 ```
 
 
-E's role in the loop architecture (the big finding)
-===================================================
+E's role in the loop architecture
+===================================
 
 The system runs as nested loops. The smallest unit is the **probe cycle** (L0:
-probe → N tasks → insight). They map onto EXISTING machinery — except one empty
-cell, which is E's job:
+probe → N tasks → insight). The insight filing cell is now wired via two paths:
 
 ```
-L0 cycle   🔧 Probe ─bridge─▶ ✋ N×Task ─run─▶ result→probe.yaml ─▶ 🧠 E files D/I/K/W
-  (probe cycle)  [bridge + result BUILT]                            ▲ ★ EMPTY TODAY
+L0 cycle   🔧 Probe ─bridge─▶ ✋ N×Task ─run─▶ result→probe.yaml ─▶ 🧠 E files D + K
+  (probe cycle)                  │ Stage 5                            ▲ ✅ WIRED
+                                 └──▶ 🟦 D card (per-task)            │
+                                                    probe convergence └──▶ 🟨 K card (per-probe)
 L1 inner   haipipe-probe-loop  (review→verdict→propose→materialize→re-review)  [BUILT]
 L2 outer   N_narrative ⇄ KB    (ignite-log; claims.md GAP rows)  [scope A BUILT, auto=scope B ⏳]
 L3 trigger ignite=ready → narrative-report → Application (cash-out)            [path exists]
 ```
 
-THE FINDING: `haipipe-probe-loop` never calls E_insight. Its Step 6
-materializes (design + bridge → C_task), then on convergence jumps to
-`haipipe-paper-structure-narrative` — skipping the DIKW filing entirely. So the probe cycle's
-last cell ("→ insight") is unwired.
+The two concrete paths into E_insight:
 
-Two consequences:
-1. **E's headless creators are exactly what closes the probe cycle (L0) inside
-   the L1 loop.** Their full-spec source in loop mode = the confirmed
-   `probe.yaml` + the tasks' `results/`.
-2. **The loop is WHY E filing must be headless.** L1 runs round after round;
-   L2 can fan out several probes at once. You cannot human-in-the-loop every
-   card. Headless E filing is a structural requirement, not a nicety.
+```
+Path A (task → D):   C_task Stage 5 (Insight) → Skill("haipipe-insight-data") → 🟦 D card
+  trigger:   task lifecycle completes with results (eval, fit, stata-reg, stata-data)
+  source:    results/<run>/metrics.json + workflow/report*.yaml
+  review:    card-reviewer-data-agent validates accuracy + boundary
+
+Path B (probe → K):  D_probe convergence → card-creator-knowledge-agent → 🟨 K card
+  trigger:   probe result.status = confirmed (or refuted)
+  source:    probe.yaml claim + result block
+  review:    card-reviewer-knowledge-agent validates scope + counter-evidence
+  optional:  chains card-creator-wisdom-agent → 🟧 W card (per-probe next-step)
+```
+
+Synthesis (I, W) is NOT triggered by a single producer — it accumulates:
+
+```
+Path C (D cards → I): when ≥2 D cards show the same pattern → /haipipe-insight information
+  trigger:   C_task Stage 5 suggests when D card count ≥ 3 in a task-group
+             G_application-ask Phase 4 schedules explicitly
+             human calls /haipipe-insight information directly
+
+Path D (K cards → W): when K cards imply an actionable recommendation → /haipipe-insight wisdom
+  trigger:   G_application-ask Phase 4 schedules explicitly
+             human calls /haipipe-insight wisdom directly
+```
 
 E never DRIVES a loop. It is always the callee. L1 (probe-loop) and L2
 (narrative / G-ask) decide "go round again"; E only files when called.
+
+The headless filing requirement still holds: L1 runs round after round;
+L2 can fan out several probes at once. You cannot human-in-the-loop every
+card. Headless E filing is a structural requirement, not a nicety.
 
 
 Proposed structure (the skeleton to build)
@@ -186,61 +229,60 @@ from C's "reviewers fixed/type-agnostic" rule — reviewers ALSO grow per layer
 only index-integrity is shared. Adding a card type = +1 creator AND +1 reviewer.
 
 
-Decisions settled this session
-==============================
+Decisions settled
+==================
 
+Session 1 (2026-05-31):
 - E gets a DESIGN.md + agents/ (parity with C/D).            ✅
 - Dual-mode by input completeness; agent-missing → blocked.  ✅
-- creators/ per DIKW (4) = the headless agent path.          ✅ (user override of
-                                                                an earlier "no creators" lean)
-- reviewers/ = one per DIKW (card-reviewer-{D,I,K,W}: Codex
-  accuracy + style) + cross-layer index-integrity.           ✅ (per-type, user's call)
+- creators/ per DIKW (4) = the headless agent path.          ✅
+- reviewers/ per DIKW (4) + cross-layer index-integrity.     ✅
 - E never triggers probes / drives loops; always callee.     ✅
 - E closes the probe cycle (L0) that probe-loop skips.        ✅
 
+Session 2 (2026-06-11):
+- **DIKW producer partition established.** D cards produced by C_task Stage 5; K cards produced by D_probe convergence; I + W owned by E_insight as synthesis layers. Each DIKW level partitioned by scope — no layer files above its scope. ✅
+- **C_task Stage 5 (Insight)** calls Skill("haipipe-insight-data") → files D card after task lifecycle completes. Optional, only for insight-worthy types (eval, fit, stata-reg, stata-data). ✅
+- **D_probe convergence** calls card-creator-knowledge-agent → files K card when probe result.status = confirmed/refuted. ✅
+- **L0 loop cell wired.** The formerly empty "→ insight" cell now has two concrete paths: task→D and probe→K. ✅
 
-Open questions (decide before building)
-=======================================
+
+Open questions
+===============
 
 Q1. [RESOLVED — build both] Creator is a SEPARATE thin agent AND the
-    underlying skill stays (exactly C_task's split): each
-    card-creator-<layer>-agent calls the dual-mode haipipe-insight-<layer>
-    skill headless. The agent is the fan-out-able subagent_type; the skill
-    holds the filing logic.
+    underlying skill stays: each card-creator-<layer>-agent calls the
+    dual-mode haipipe-insight-<layer> skill headless.
 
-Q2. [RESOLVED — wired now] haipipe-probe-loop Step 3 (convergence) dispatches
-    card-creator-knowledge-agent for the confirmed probe → files the 🟨 K from
-    its claim, then optionally chains card-creator-wisdom-agent --scope <new-K>
-    → files the per-probe 🟧 W (the next-step), closing L0 inside the loop. The
-    🟦 D observations come from the probe's task-cycles; 🟩 I (cross-D pattern)
-    and STRATEGIC W (across many K) stay OUT of the per-probe loop (accumulate
-    via the report phase / explore).
+Q2. [RESOLVED — wired] probe-loop convergence → K card; C_task Stage 5 → D card.
+    🟩 I and strategic 🟧 W stay OUT of the per-probe loop (accumulate via
+    explore / G_application).
 
-Q3. Does E need an advancer (synthesis proposer: "what is filable/
-    synthesizable now")? The haipipe-insight-explore skill already covers
-    the read/coverage side; advancer deferred unless explore proves too thin.
+Q3. Does E need an advancer (synthesis proposer)? Deferred — explore skill
+    covers the read/coverage side. C_task Stage 5 now suggests I-level
+    synthesis when D card count >= 3 in a task-group, which partially fills
+    this role.
 
-Q4. [RESOLVED — per-type] Each DIKW card has a distinct boundary, so E uses a
-    SPECIFIC card-reviewer per type (a deliberate departure from C/D's
-    type-agnostic reviewers), each enforcing accuracy + style/boundary against
-    ref/dikw-boundaries.md. index-integrity stays single (the cross-layer graph
-    cannot be per-type).
+Q4. [RESOLVED — per-type] Each DIKW card gets a specific card-reviewer
+    enforcing accuracy + style against ref/dikw-boundaries.md.
 
 
 Next steps
 ==========
 
-DONE this session:
-  ✅ 1. ref/invocation-modes.md (per-DIKW completeness table + 3 branches)
-  ✅ 2. agents/README.md + creators/_TEMPLATE.md + reviewers/_TEMPLATE.md
-  ✅ 3. 4 creators + 5 reviewers (4 per-type card-reviewers + 1 index-integrity)
-        + ref/dikw-boundaries.md (boundaries + examples) + 9 top-level symlinks
-  ✅ 4. dual-mode "Invocation modes" block added to the 4 DIKW skills
-  ✅ 5. (Q2) probe-loop wired → card-creator-data-agent on convergence
+DONE:
+  ✅ 1. ref/invocation-modes.md + ref/dikw-boundaries.md
+  ✅ 2. agents/ (4 creators + 5 reviewers + README + templates)
+  ✅ 3. dual-mode blocks in all 4 DIKW skills
+  ✅ 4. probe-loop wired → card-creator-knowledge-agent on convergence
+  ✅ 5. C_task Stage 5 wired → Skill("haipipe-insight-data") for D cards
+  ✅ 6. DIKW producer partition documented (this doc + dikw-boundaries.md)
+  ✅ 7. D_probe MENTAL_MODEL.md updated with insight connection
 
 Remaining:
-  - Higher-layer I/K/W auto-synthesis as D cards accumulate (report phase /
-    haipipe-insight-explore) — NOT per single probe.
-  - An E_insight CHANGELOG.md (parity with C_task / D_probe).
-  - Dogfood: run a converged probe through the loop; confirm the D card files
-    and the two reviewers pass on a real card.
+  - I-level auto-synthesis trigger: when C_task Stage 5 suggests (D count >= 3),
+    who acts? Currently suggestion only. Could wire to G_application or make
+    haipipe-insight-explore auto-check.
+  - E_insight CHANGELOG.md (parity with C_task / D_probe).
+  - Dogfood: run a real task through Stage 5 → D card → reviewer pass.
+  - Dogfood: run a converged probe through loop → K card → reviewer pass.

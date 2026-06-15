@@ -1,0 +1,362 @@
+# workflow-plan-sample.yaml — probe lifecycle IPO plan
+# Schema: B_project/haipipe-workflow/ref/plan-schema.md
+# Lifecycle: Design → Materialize → Harvest → Judge → Insight (+ loop)
+# Engine: probe-lifecycle.workflow.js
+#
+# probe-lifecycle — test whether <hypothesis>
+#
+# I: research question + project context + existing probes/insights
+# |
+# |-- 📐 P1: Design       [S1: hypothesis, S2: arms, S3: aggregation → probe.yaml]
+# |                         Mode A: 🧑 human / Mode B: 🤖 idea-creator + idea-reviewer
+# |-- 🌉 P2: Materialize  [S1: scaffold (→ C_task), S2: code review, S3: sanity + deploy]
+# |                         ═══ C_task handoff: D_probe sleeps while tasks run ═══
+# |-- 📊 P3: Harvest       [S1: link runs, S2: aggregate stats, S3: caveats + claim]
+# |-- 🔍 P4: Judge         [S1: structural, S2: integrity (Codex), S3: claim verdict (Codex)]
+# |                         verdict=yes → P5 / verdict=partial|no → Explore → loop to P1
+# |-- 🧠 P5: Insight       [S1: 🟦 D per-arm, S2: 🟩 I cross-arm, S3: 🟨 K claim, S4: 🟧 W action]
+# |                         DIKW cascade — each step creator + reviewer
+# |
+# O: { converged, rounds, verdict, claim, insight_cards: {d, i, k, w} }
+
+# ─── Header ──────────────────────────────────────────────────────
+name: probe-<MMDD>-<slug>
+purpose: "Test whether <hypothesis> holds (N=<seeds>, <statistic>)"
+skill: haipipe-probe
+probe_folder: probes/<MMDD>_<slug>/
+
+# ─── I: Input ────────────────────────────────────────────────────
+input:
+  args:
+    project: examples/<Proj>/
+    probe: P.<MMDD>                                          # null for new probe
+    auto: false                                              # true → Mode B Design
+    rounds: 4                                                # max loop rounds
+    research_question: "<one-sentence question>"
+  files_in:
+    - probes/INDEX.md                                        # existing probes
+    - probes/coverage.md                                     # current gaps
+    - probes/propose.md                                      # ranked proposals (if auto)
+    - insights/K_knowledge/                                  # what we already know
+    - insights/W_wisdom/                                     # recommended directions
+
+# ─── P: Phases ───────────────────────────────────────────────────
+phases:
+
+  # ── P1: Design ─────────────────────────────────────────────────
+  - title: Design
+    detail: "Define hypothesis + arms + aggregation spec → probe.yaml"
+    steps:
+      - label: "design:hypothesis-arms-spec"
+        type: agent
+        required: true
+        prompt: |
+          MODE A (round 1, default): interactively define hypothesis,
+            claim_target, arms (baseline + treatment), aggregation spec.
+          MODE B (round ≥2 or --auto): probe-idea-creator-agent reads
+            explore proposals + existing probes + insights K/W, generates
+            probe.yaml. probe-idea-reviewer-agent checks: falsifiable?
+            not duplicate? arms ok? worth compute? Loop max 2 rounds.
+          Resolve identity P.<MMDD> (collision letters if needed).
+          Write probe.yaml via fn/design.md procedure.
+        files_in:
+          - probes/INDEX.md
+          - probes/coverage.md                               # Mode B: explore output
+          - probes/propose.md                                # Mode B: ranked proposals
+          - insights/K_knowledge/                            # Mode B: what we know
+          - ref/probe-yaml-schema.md
+        files_out:
+          - probes/<MMDD>_<slug>/probe.yaml
+
+  # ── P2: Materialize ───────────────────────────────────────────
+  - title: Materialize
+    detail: "Scaffold arms as C_task tasks, code review, sanity, deploy"
+    steps:
+      - label: "materialize:scaffold"
+        type: skill
+        required: true
+        calls: haipipe-task
+        prompt: |
+          For each arm × seed in probe.yaml run_specs:
+            Skill("haipipe-task", "task-folder <task_type> <arm-task-id>")
+          Wire configs/<run>.yaml from run_spec params.
+          Procedure: fn/bridge.md
+        sub_I:
+          probe_yaml: probes/<MMDD>_<slug>/probe.yaml
+          arm: "<arm_name>"
+          run_spec: "<name, seed, params>"
+        sub_O:
+          status: { type: string }
+          task_folder: { type: string }
+        files_in:
+          - probes/<MMDD>_<slug>/probe.yaml
+        files_out:
+          - tasks/<GROUP>/<TASK>/                             # one per arm × seed
+          - tasks/<GROUP>/<TASK>/configs/<RUN>.yaml
+          - tasks/<GROUP>/<TASK>/runs/<RUN>.sh
+
+      - label: "materialize:code-review"
+        type: agent
+        required: true
+        agentType: haipipe-task-reviewer-agent
+        prompt: "Gate 1: review each scaffolded task for intent-vs-implementation bugs"
+        files_in:
+          - tasks/<GROUP>/<TASK>/<SCRIPT>.py
+          - tasks/<GROUP>/<TASK>/configs/<RUN>.yaml
+        files_out:
+          - tasks/<GROUP>/<TASK>/CODE_REVIEW.md
+        schema:
+          name: VERDICT
+          type: object
+          required: [verdict]
+          properties:
+            verdict: { type: string, enum: [pass, warn, fail] }
+            issues: { type: array, items: { type: string } }
+
+      - label: "materialize:sanity-deploy"
+        type: agent
+        required: true
+        prompt: |
+          Sanity: run smallest arm first, verify exit_code + metrics.json.
+          Deploy: launch remaining arms (MAX_PARALLEL=4).
+          Link: append completed run-paths to probe.yaml arms[].runs[].
+          ═══ C_task handoff: D_probe sleeps while tasks execute ═══
+        files_in:
+          - tasks/<GROUP>/<TASK>/runs/<RUN>.sh
+        files_out:
+          - tasks/<GROUP>/<TASK>/results/<RUN>/runtime.yaml
+          - tasks/<GROUP>/<TASK>/results/<RUN>/metrics.json
+          - probes/<MMDD>_<slug>/probe.yaml                  # arms[].runs updated
+
+  # ── P3: Harvest ────────────────────────────────────────────────
+  - title: Harvest
+    detail: "Link runs, aggregate metrics, compute stats, write claim"
+    steps:
+      - label: "harvest:link-aggregate"
+        type: agent
+        required: true
+        prompt: |
+          For each arm, for each linked run:
+            read results/<RUN>/metrics.json
+            extract aggregation.metric (scalar or {point, ci_lower, ci_upper}).
+          Compute statistics per aggregation spec.
+          Determine result.status: confirmed|exploratory|inconclusive|refuted.
+          Write result: block in probe.yaml.
+          Procedure: fn/harvest.md
+        files_in:
+          - probes/<MMDD>_<slug>/probe.yaml
+          - tasks/<GROUP>/<TASK>/results/<RUN>/metrics.json   # per linked run
+        files_out:
+          - probes/<MMDD>_<slug>/probe.yaml                  # result: block filled
+
+      - label: "harvest:caveats-claim"
+        type: agent
+        required: true
+        prompt: |
+          Walk probe-caveats-checklist.txt → fill caveats[].
+          Compose claim: "<Treatment> <direction> <Baseline> by <Δ ± std>
+            on <metric/split> (stats: <test> p=<X>, N=<seeds>). <key caveat>."
+          Write claim: field in probe.yaml.
+        files_in:
+          - probes/<MMDD>_<slug>/probe.yaml
+          - ref/probe-caveats-checklist.txt
+        files_out:
+          - probes/<MMDD>_<slug>/probe.yaml                  # caveats[] + claim: filled
+
+      - label: "harvest:structural-review"
+        type: agent
+        required: true
+        agentType: probe-structural-reviewer-agent
+        prompt: |
+          Structural checklist: arms paired, equal N, N≥3, git_sha consistent,
+          AIData version consistent, caveats cover confounds, baseline exists,
+          confirmed → p<0.05 ∧ |Δ|>noise_floor.
+        files_in:
+          - probes/<MMDD>_<slug>/probe.yaml
+          - ref/probe-caveats-checklist.txt
+        files_out:
+          - probes/<MMDD>_<slug>/review.md
+        schema:
+          name: STRUCTURAL_VERDICT
+          type: object
+          required: [verdict]
+          properties:
+            verdict: { type: string, enum: [pass, warn, fail] }
+            errors: { type: number }
+            warnings: { type: number }
+
+  # ── P4: Judge ──────────────────────────────────────────────────
+  - title: Judge
+    detail: "Three-gate honesty check: integrity → claim verdict → loop-or-converge"
+    steps:
+      - label: "judge:integrity"
+        type: agent
+        required: true
+        agentType: probe-integrity-auditor-agent
+        prompt: |
+          Codex fraud-pattern audit (5 categories):
+            A. Ground-truth provenance, B. Metric consistency,
+            C. Phantom results, D. Scope mismatch, E. Leakage.
+          Executor passes file PATHS only; Codex reads and judges.
+          Procedure: fn/judge.md
+        files_in:
+          - probes/<MMDD>_<slug>/probe.yaml
+          - tasks/<GROUP>/<TASK>/results/<RUN>/metrics.json
+          - tasks/<GROUP>/<TASK>/<SCRIPT>.py
+        files_out:
+          - probes/<MMDD>_<slug>/INTEGRITY_AUDIT.md
+        schema:
+          name: INTEGRITY_VERDICT
+          type: object
+          required: [verdict]
+          properties:
+            verdict: { type: string, enum: [pass, warn, fail] }
+            categories: { type: object }
+
+      - label: "judge:claim-verdict"
+        type: agent
+        required: true
+        agentType: claim-verifier-agent
+        prompt: |
+          Codex semantic verdict: does evidence support the claim?
+          GATED: integrity=fail → BLOCKED (refuse to run).
+          integrity=warn → confidence capped ≤medium.
+          Returns: yes|partial|no + confidence + next_probes_needed.
+        files_in:
+          - probes/<MMDD>_<slug>/probe.yaml
+          - probes/<MMDD>_<slug>/INTEGRITY_AUDIT.md
+        files_out:
+          - probes/<MMDD>_<slug>/CLAIMS_FROM_RESULTS.md
+        schema:
+          name: CLAIM_VERDICT
+          type: object
+          required: [verdict, confidence]
+          properties:
+            verdict: { type: string, enum: [yes, partial, no] }
+            confidence: { type: string, enum: [high, medium, low] }
+            next_probes_needed: { type: array, items: { type: string } }
+
+      - label: "judge:loop-decision"
+        type: agent
+        required: false                                      # only runs if verdict != yes
+        prompt: |
+          verdict=yes → exit loop, proceed to P5 Insight.
+          verdict=partial|no → call haipipe-probe-explore for coverage + proposals,
+            then loop back to P1 Design (Mode B for auto, human gate for Mode A).
+          Budget check: if round >= max_rounds → stop (budget_exhausted).
+        files_in:
+          - probes/<MMDD>_<slug>/CLAIMS_FROM_RESULTS.md
+          - probes/coverage.md
+        files_out:
+          - probes/coverage.md                               # updated by explore
+          - probes/propose.md                                # updated by explore
+
+  # ── P5: Insight — DIKW cascade ────────────────────────────────
+  - title: Insight
+    detail: "File DIKW cards: D (per-arm) → I (cross-arm) → K (claim) → W (action)"
+    steps:
+      - label: "insight:d-data"
+        type: agent
+        required: true
+        agentType: card-creator-data-agent
+        prompt: |
+          File one D_data observation card per arm.
+          Read arm results (C_task I cards if available, else metrics.json directly).
+          Pure observations — NO interpretation.
+          Review: card-reviewer-data-agent (numbers trace to metrics?).
+        files_in:
+          - probes/<MMDD>_<slug>/probe.yaml
+          - tasks/<GROUP>/<TASK>/results/<RUN>/metrics.json
+          - insights/D_data/                                 # check for existing cards
+        files_out:
+          - insights/D_data/D<NN>_<slug>.md                  # one per arm
+
+      - label: "insight:i-information"
+        type: agent
+        required: true
+        agentType: card-creator-information-agent
+        prompt: |
+          File one I_information card from ≥2 D cards.
+          Cross-arm patterns: which arm wins, consistency, margin trends.
+          Review: card-reviewer-information-agent (pattern in D cards?).
+        files_in:
+          - insights/D_data/D<NN>_*.md                       # D cards from prev step
+        files_out:
+          - insights/I_information/I<NN>_<slug>.md
+
+      - label: "insight:k-knowledge"
+        type: agent
+        required: true
+        agentType: card-creator-knowledge-agent
+        prompt: |
+          File one K_knowledge card from confirmed claim.
+          Read probe.yaml claim + result + I card.
+          Scope must ⊆ evidence; no overclaim.
+          Review: card-reviewer-knowledge-agent (scope check).
+        files_in:
+          - probes/<MMDD>_<slug>/probe.yaml
+          - probes/<MMDD>_<slug>/CLAIMS_FROM_RESULTS.md
+          - insights/I_information/I<NN>_<slug>.md
+        files_out:
+          - insights/K_knowledge/K<NN>_<slug>.md
+
+      - label: "insight:w-wisdom"
+        type: agent
+        required: false                                      # optional — skip if no next step
+        agentType: card-creator-wisdom-agent
+        prompt: |
+          File one W_wisdom card — actionable next step from this probe.
+          Must pass "could I write the exact command?" test.
+          Skip if probe implies no concrete next step.
+          Review: card-reviewer-wisdom-agent (actionable? from K?).
+        files_in:
+          - insights/K_knowledge/K<NN>_<slug>.md
+        files_out:
+          - insights/W_wisdom/W<NN>_<slug>.md
+
+      - label: "insight:index-audit"
+        type: agent
+        required: true
+        agentType: index-integrity-auditor-agent
+        prompt: "Audit cross-ref graph: sources↔ref_by symmetry, no dangling ids, INDEX.md consistent."
+        files_in:
+          - insights/INDEX.md
+          - insights/D_data/
+          - insights/I_information/
+          - insights/K_knowledge/
+          - insights/W_wisdom/
+        files_out:
+          - insights/INDEX.md                                # updated if needed
+
+# ─── O: Output ───────────────────────────────────────────────────
+output:
+  returns:
+    converged: true | false
+    rounds: <number>
+    status: converged | budget_exhausted | blocked
+    verdict:
+      structural: pass | warn | fail
+      integrity: pass | warn | fail
+      claim: yes | partial | no
+    claim: "<final 1-2 sentence claim>"
+    probe_id: P.<MMDD>
+    insight_cards:
+      d: [D<NN>_<slug>.md, ...]                             # per arm
+      i: I<NN>_<slug>.md                                    # cross-arm pattern
+      k: K<NN>_<slug>.md                                    # validated claim
+      w: W<NN>_<slug>.md | null                             # optional next step
+  files_out:
+    # Probe artifacts:
+    - probes/<MMDD>_<slug>/probe.yaml
+    - probes/<MMDD>_<slug>/review.md
+    - probes/<MMDD>_<slug>/INTEGRITY_AUDIT.md
+    - probes/<MMDD>_<slug>/CLAIMS_FROM_RESULTS.md
+    # C_task artifacts (via Materialize):
+    - tasks/<GROUP>/<TASK>/results/<RUN>/metrics.json
+    - tasks/<GROUP>/<TASK>/CODE_REVIEW.md
+    # Insight artifacts (via DIKW cascade):
+    - insights/D_data/D<NN>_*.md
+    - insights/I_information/I<NN>_*.md
+    - insights/K_knowledge/K<NN>_*.md
+    - insights/W_wisdom/W<NN>_*.md                           # if filed
+    - insights/INDEX.md

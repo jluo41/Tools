@@ -1,6 +1,6 @@
 export const meta = {
   name: 'haipipe-task-lifecycle',
-  description: 'Four-stage lifecycle for a task folder: Plan → Build → Execute → Report. Each stage uses a creator-reviewer loop.',
+  description: 'Four-stage code lifecycle for a task folder: Plan → Build → Execute → Report.',
   phases: [
     { title: 'Plan', detail: 'creator drafts plan.yaml → reviewer checks → loop if revise' },
     { title: 'Build', detail: 'creator writes/fixes code → reviewer checks → loop if revise' },

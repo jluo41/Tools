@@ -1,1 +1,0 @@
-../skills/C_task/agents/reviewers/run-script-reviewer-agent.md

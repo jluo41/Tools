@@ -41,6 +41,9 @@ Per-layer boundary
            An inconclusive D MUST set frontmatter `verdict: inconclusive` and
            its headline must state the null ("Δ … CI straddles 0"), so a reader
            never mistakes a null for an effect.
+  filed by: C_task Stage 5 (Insight) → Skill("haipipe-insight-data").
+           Automatic for insight-worthy task types (eval, fit, stata-reg,
+           stata-data) when results exist. Also filed by G_application Phase 4.
   style:   ## Observation (facts only) · ## Numbers (table) · ## Caveats (verbatim).
 
 🟩 I — Information — "what patterns emerged"
@@ -48,6 +51,9 @@ Per-layer boundary
   IS NOT:  a single observation (→D) · a committed belief (→K).
   line→K:  I says "the data TENDS to show X"; K COMMITS "X is true (scope, conf)".
   gate:    needs ≥ 2 D cards citing the same effect / direction.
+  filed by: E_insight (synthesis layer). Triggered when C_task Stage 5 notes
+           D card count ≥ 3, by G_application Phase 4, or by human via
+           /haipipe-insight information. NOT filed automatically per task.
   style:   ## Pattern statement · ## Evidence (table, ≥2 D) · ## Counter-evidence.
 
 🟨 K — Knowledge — "what we believe is true (or believe is FALSE)"
@@ -63,6 +69,9 @@ Per-layer boundary
            `contradicts:` (the prior K or hypothesis it overturns) +
            `refutation_basis:` (the numbers that refute it). Cite supporting
            I cards in the body where they exist.
+  filed by: D_probe convergence → card-creator-knowledge-agent. Automatic
+           when probe result.status = confirmed or refuted. Also filed by
+           G_application Phase 4.
   line→W:  K is the belief; W is what to DO about it.
   style:   ## Claim · ## Supporting evidence · ## Counter-evidence (ALL) ·
            ## Confidence rationale · ## Scope.
@@ -93,6 +102,10 @@ Per-layer boundary
   IS:      an ACTIONABLE recommendation derived from ≥ 1 K.
   IS NOT:  a restatement of the belief (→K) · a vague "should think about X".
   line:    must pass "could I write the exact command / decision?". W decays.
+  filed by: E_insight (synthesis layer). Per-probe W optionally chained from
+           D_probe convergence (card-creator-wisdom-agent after K card).
+           Strategic W from G_application Phase 4 or human via
+           /haipipe-insight wisdom. NOT filed automatically per task.
   style:   ## Recommendation · ## How to act (exact step) · ## Why now · ## Decay condition.
 ```
 
