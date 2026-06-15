@@ -124,3 +124,38 @@ Endpoint-{name}/
 Deploy specialists (`-deploy-*`) READ this artifact and never modify it.
 If a deploy fails because of a missing/malformed field here, the fix
 lives in this skill (or a per-Fn-type sibling), not in the deploy skill.
+
+---
+
+Task-folder lifecycle (00_develop → 01_package)
+-------------------------------------------------
+
+In the /haipipe-task convention, endpoint work lives under C-series groups:
+
+```
+examples/<project>/tasks/C01_endpoint_*/
+├── 00_endpoint_set_fn_develop/         ← DEVELOP: build + test all Fns
+│   ├── a1_build_metafn.py              ← each builder is its own run
+│   ├── b1_build_trigfn.py
+│   ├── c1_build_postfn.py
+│   ├── d1_build_src2inputfn.py         ← roundtrip test with real data
+│   ├── e1_build_input2srcfn.py         ← roundtrip test with real data
+│   ├── e4_build_examplefn.py           ← tests with real model + AIData
+│   ├── f1_roundtrip_test.py            ← prediction-level verification
+│   ├── configs/run_*.yaml              ← one config per builder
+│   ├── runs/run_*.sh                   ← one run script per builder
+│   └── results/run_*/runtime.yaml      ← per-builder pass/fail
+│
+└── 01_endpoint_<name>/                 ← PACKAGE: Endpoint_Set + validate + .tar.gz
+    ├── 01_endpoint_<name>.py           ← exact copy of c_endpoint_nb.py
+    ├── configs/run_endpoint_<name>.yaml
+    └── runs/run_endpoint_<name>.sh
+```
+
+**Flow:** develop (00_) → package (01_) → deploy.
+
+The `00_develop` task must pass all 7 runs before the `01_package` task
+is executed. Step 5b in `c_endpoint_nb.py` (reproducibility check) is
+the runtime safety net that catches any remaining roundtrip issues.
+
+Start new builders from templates in `code/scripts/haibuilder/6-endpoint/`.
