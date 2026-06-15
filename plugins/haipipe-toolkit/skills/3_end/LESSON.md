@@ -1,0 +1,312 @@
+# Endpoint Lifecycle — Lessons Learned
+
+## The Endpoint Lifecycle
+
+The endpoint lifecycle has **4 phases**, each with clear ownership:
+
+```
+Phase 1: DESIGN        Author the 5 inference Fns
+Phase 2: PACKAGE       ModelInstance_Set → Endpoint_Set (c_endpoint_nb.py)
+Phase 3: VALIDATE      Local inference on saved examples
+Phase 4: DEPLOY        Serve on a target (local / databricks / sagemaker)
+```
+
+### Phase 1: Design (code-dev/ → code/haifn/fn_endpoint/)
+
+Author 5 Fn files that define how raw data becomes a prediction response:
+
+```
+MetaFn       — model metadata (name, version, capabilities)
+TrigFn       — should this request trigger inference? (optional gate)
+Src2InputFn  — ProcName_to_ProcDf → JSON payload (serialization)
+Input2SrcFn  — JSON payload → ProcName_to_ProcDf (deserialization)
+PostFn       — raw model scores → client-facing JSON response
+```
+
+Tools: `/haipipe-end <fn-type> design` or manual builder scripts in `code-dev/`.
+
+### Phase 2: Package (c_endpoint_nb.py steps 1-4)
+
+```
+[1] Load ModelInstance_Set (must have examples from ExampleConfig)
+[2] Endpoint_Pipeline.run()
+    — loads 5 Fn files
+    — generates payload.json per example via Src2InputFn
+    — packages everything into Endpoint_Set
+[3] Save to 6-EndpointStore/
+[4] Verify examples have payload.json
+```
+
+The Endpoint_Set is self-contained: model weights, PreFn pipeline, code
+snapshot, examples with payloads — everything needed to serve.
+
+### Phase 3: Validate (c_endpoint_nb.py steps 5-6)
+
+```
+[5] Load Endpoint_Set from disk
+    Run endpoint.inference(payload) on each example's payload.json
+    Verify predictions are valid (format, values, no errors)
+[6] Package for deployment (.tar.gz)
+```
+
+### Phase 4: Deploy
+
+```
+/haipipe-end deploy local       — Flask/FastAPI on localhost
+/haipipe-end deploy databricks  — Unity Catalog → Model Serving
+/haipipe-end deploy sagemaker   — ECR → SageMaker Endpoint
+```
+
+---
+
+## The 7-Step Inference Pipeline (inside Endpoint_Set.inference())
+
+```
+Step 1  TrigFn         payload_json           → should_process? (optional gate)
+Step 2  Input2SrcFn    payload_json           → ProcName_to_ProcDf
+Step 3  PreFnPipeline  ProcName_to_ProcDf     → RecordSet
+Step 4  PreFnPipeline  RecordSet + df_case    → CaseSet (features)
+Step 5  PreFnPipeline  CaseSet               → model_input (HF Dataset)
+Step 6  model.infer()  model_input            → DataFrame (score__{action})
+Step 7  PostFn         scores_df              → response_json
+```
+
+---
+
+## Lessons from MIMIC-IV Mortality Endpoint Build (2026-06-13)
+
+### L1: `.inference()` vs `.infer()` — unified to `.infer()`
+
+**Problem:** Two generations of model classes existed:
+- Old (`code/hainn/mlpredictor/`): `.inference(Data, InferenceArgs)`
+- New (`code/hainn/instance/mlpredictor/`): `.infer(Data, InferenceArgs)`
+
+The model registry (`model_registry.py`) points exclusively to `instance/`
+classes, but `modelinstance_pipeline.py` still called `.inference()`. This
+caused silent failures (AttributeError caught by try/except) that left
+`prediction_results.json` empty — making step 8 reproducibility checks
+pass vacuously ("no saved predictions to compare").
+
+**Fix:** Unified all model-level calls to `.infer()`. The method accepts
+raw Dataset, DataFrame, or dict — no wrapper needed for single examples.
+
+**Rule:** All model inference calls use `.infer()`. `Endpoint_Set.inference()`
+is the endpoint-level API (JSON in → JSON out) and keeps its name — it's
+a different abstraction level.
+
+### L2: `df_case_raw` means "skip the trigger"
+
+**Problem:** `Case_Pipeline.run(df_case_raw=...)` was calling
+`execute_triggertask()` which runs the full TriggerFn expecting a
+training-mode RecordSet with `Name_to_HRF`. In inference mode, the
+RecordSet is built from parquet files and has no `Name_to_HRF`.
+
+**Fix:** When `df_case_raw` is provided, use it directly as `df_case`.
+The trigger's job is to extract cases from a RecordSet — `df_case_raw`
+IS those cases. The subsequent `_extract_features(df_case, record_set)`
+still uses the RecordSet for CaseFn feature extraction.
+
+**Rule:** `df_case_raw` = "I already have the cases, just extract features."
+
+### L3: PostFn output ≠ template display assumptions
+
+**Problem:** `c_endpoint_nb.py` step 5 validation assumed predictions
+have `{name, score}` per action (the WellDoc format). MIMIC PostFn
+returns `{mortality_risk, risk_level, threshold_alerts}`. The format
+string `pred.get('score', 'N/A'):6.2f` crashed with "Unknown format
+code 'f' for object of type 'str'" because `score` key was missing.
+
+**Fix:** Made the display code format-agnostic — iterate dict keys,
+format floats as floats and everything else as strings.
+
+**Rule:** Template display code must handle arbitrary PostFn output
+schemas. Never hardcode field names from one project's PostFn.
+
+### L4: `prediction_results.json` must be non-empty for reproducibility
+
+**Problem:** Due to L1, `prediction_results.json` was `{}` for all
+examples. Step 8 then printed "No saved predictions to compare" and
+marked the example as passing — a false positive. The reproducibility
+check was vacuously true.
+
+**Fix:** Fixed L1 so predictions are actually saved during training.
+Step 8 now does real score comparisons.
+
+**Rule:** If `prediction_results.json` is empty after training, that's
+a bug — the ExampleConfig pipeline failed silently. Check for it.
+
+### L5: `SKIP_TRAINING` parameter for fast iteration
+
+**Problem:** Every run of `b_model_nb.py` re-trains (15+ minutes for
+3 Optuna trials). When debugging steps 6-9 (validation), this wastes
+time.
+
+**Fix:** Added `SKIP_TRAINING` parameter to `b_model_nb.py`. When
+`"true"`, skips steps 2-3 (train + save) and uses existing model on
+disk. Steps 4-9 run normally.
+
+**Usage:**
+```bash
+papermill ... -p SKIP_TRAINING "true"
+```
+
+**Rule:** Every long-running template should have a skip mechanism
+for the expensive step, gated on whether output already exists.
+
+### L6: Copying shared packages overwrites local fixes
+
+**Problem:** After copying `haipipe/` from WellDoc-SPACE to sync
+changes, local fixes to `case_pipeline.py` and
+`modelinstance_pipeline.py` were overwritten.
+
+**Rule:** Before copying shared packages (`haipipe`, `hainn`), check
+`git diff` for local modifications. Apply fixes to the source repo
+first, then copy. Or better: make shared packages a git submodule.
+
+### L7: Endpoint validation mismatch — root cause: Src2InputFn lost data
+
+**Problem:** 2 of 6 examples showed different predictions between
+training-time `prediction_results.json` and endpoint-time inference.
+
+**Root cause (resolved):** Two issues in the Src2InputFn/Input2SrcFn
+roundtrip:
+
+1. **Src2InputFn serialized only 4 tables** (LabEvent, ChartEvent,
+   Prescription, DiagnosisICD). The remaining 15-20 clinical tables
+   were lost. Fix: serialize ALL non-empty tables under `source_tables`.
+
+2. **Src2InputFn picked wrong admission** — `Admission.iloc[0]` for
+   top-level fields (patient_id, admission_id, admit_time), but patients
+   with multiple admissions have the wrong one at index 0. The correct
+   admission is identified by `df_case_raw` (which has `HadmID`, `ObsDT`).
+   Fix: pass `df_case_raw` to Src2InputFn.
+
+**Root cause of wrong admissions in ProcName_to_ProcDf (resolved):**
+`extract_example_from_source` didn't filter by time — kept ALL patient
+admissions including future ones. See haipipe-task-for-fit/LESSON.md L1
+for the temporal filtering fix.
+
+**After all fixes:** 6/6 examples match with zero delta:
+```
+example_000  | 0.346305 | 0.346305 | 0.000000 | YES
+example_001  | 0.351480 | 0.351480 | 0.000000 | YES
+```
+
+**Rule:** Always compare training predictions with endpoint predictions
+as a reproducibility gate. Mismatches reveal real pipeline bugs — never
+dismiss as "floating point noise" without investigation.
+
+### L8: Src2InputFn needs df_case_raw for case identity
+
+**Problem:** `Src2InputFn(ProcName_to_ProcDf, SPACE)` doesn't know which
+specific case (admission) the example represents. For multi-admission
+patients, it picks the wrong admission for top-level payload fields.
+
+**Fix:** Add `df_case_raw` parameter: `Src2InputFn(ProcName_to_ProcDf,
+SPACE, df_case_raw=None)`. When provided, use `HadmID`/`ObsDT` from
+df_case_raw for case identity. The pipeline passes `example_info` as
+df_case_raw.
+
+**Rule:** Src2InputFn must always receive case identity (df_case_raw)
+to correctly populate the payload. The Endpoint_Pipeline should pass it.
+
+### L9: Lossless payload roundtrip via `source_tables`
+
+**Design:** `Src2InputFn` stores all source tables under a `source_tables`
+key in the payload JSON. `Input2SrcFn` checks for `source_tables` first
+(new lossless format), falls back to per-field extraction (legacy format
+for real-time API calls with partial data).
+
+```json
+{
+  "patient_id": "11213546",
+  "admission_id": "27235432",
+  "source_tables": {
+    "Ptt": [...],
+    "Admission": [...],
+    "LabEvent": [...],
+    ...
+  }
+}
+```
+
+**Rule:** Example payloads should use the `source_tables` format for
+validation. Real-time API payloads may use the legacy flat format (only
+demographics + available clinical data).
+
+### L10: endpoint_pipeline.py must pass df_case_raw to Src2InputFn
+
+**Problem:** `endpoint_pipeline.py` line 199 called
+`Src2InputFn(ProcName_to_ProcDf, SPACE)` without `df_case_raw` during
+payload generation. Even though Src2InputFn had the `df_case_raw` parameter
+(L8), the pipeline never passed it. Multi-admission patients got wrong
+admission identity in the payload → wrong features → wrong predictions.
+
+**Fix:** `endpoint_pipeline.py` now extracts `example_info` from each
+example and passes it as `df_case_raw`:
+```python
+_example_info = example_data.get('example_info', {})
+_df_case_raw = pd.DataFrame([_example_info]) if _example_info else None
+payload_json = Src2InputFn(ProcName_to_ProcDf, SPACE, df_case_raw=_df_case_raw)
+```
+With try/except TypeError fallback for Src2InputFns that don't accept
+df_case_raw (backward compatibility).
+
+**Result:** All 6 examples now match within Δ < 0.00003 (floating point
+rounding only).
+
+**Rule:** When the pipeline has case identity, always pass it through.
+Don't let intermediate code lose context that downstream Fns need.
+
+### L11: Roundtrip test with real data — enforced at 3 levels
+
+**Problem:** The original builder scripts (`d1_build_src2inputfn_*.py`,
+`e1_build_input2srcfn_*.py`) only tested with synthetic minimal payloads.
+Synthetic tests pass trivially — they don't catch:
+- Tables dropped during serialization (only 4 of 19)
+- Multi-admission patients getting wrong admission at iloc[0]
+- Dtype mismatches after JSON roundtrip
+- CaseFns reading tables that weren't serialized
+
+**Fix — three enforcement levels:**
+
+1. **Design time** (`code-dev/f1_roundtrip_test_mimic.py`): Loads real
+   examples from ModelInstanceStore, runs full roundtrip (Src2InputFn →
+   Input2SrcFn → PreFn → model.infer()), compares predictions. Must pass
+   before Fn is production-ready.
+
+2. **Packaging time** (`c_endpoint_nb.py` step 5b): Compares endpoint
+   predictions against training `prediction_results.json`. Warns on
+   mismatch so the issue is always visible.
+
+3. **Skill docs** (`haipipe-end-src2input/SKILL.md`,
+   `haipipe-end-input2src/SKILL.md`): Roundtrip test with real data is
+   REQUIRED in the design and review protocol. Also documented in
+   `haipipe-end/ref/0-overview.md` as a first-class invariant.
+
+**Rule:** Every Src2InputFn/Input2SrcFn pair must pass a roundtrip test
+on real ModelInstanceStore examples before deployment. Synthetic-only
+testing is insufficient — it catches parsing bugs but not data loss bugs.
+
+### L12: code-dev builders must test with real ModelInstanceStore data
+
+**Problem:** Builder scripts in `code-dev/1-PIPELINE/6-Endpoint-WorkSpace/`
+are the design-time authoring environment for inference Fns. They wrote
+files to `code/haifn/fn_endpoint/` but only tested with hardcoded minimal
+inputs. The gap between "builder passes" and "endpoint works" was invisible.
+
+**Fix:** Builder scripts should follow this pattern:
+
+```
+Phase 1: AUTHOR  — write the Fn to code/haifn/fn_endpoint/
+Phase 2: TEST    — load real example from 5-ModelInstanceStore
+                   run full roundtrip with Src2InputFn + Input2SrcFn
+                   run PreFn → model.infer() on both original and roundtrip
+                   assert predictions match
+Phase 3: REPORT  — print table/row/feature/prediction comparison
+```
+
+The `f1_roundtrip_test_*.py` script is the Phase 2+3 template.
+
+**Rule:** No Fn is production-ready until it passes Phase 2 on real data.
+The builder's quick test (synthetic payload) is necessary but not sufficient.

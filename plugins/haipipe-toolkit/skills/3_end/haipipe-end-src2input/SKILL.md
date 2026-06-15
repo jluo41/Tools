@@ -107,3 +107,45 @@ Pair invariant
 ---------------
 For any record R: `Input2SrcFn(Src2InputFn(R)) == R`.
 Changes here typically require a paired update in `-input2src`.
+
+Roundtrip test (REQUIRED for design and review)
+-------------------------------------------------
+
+Every `design` or `review` MUST include a roundtrip test against **real
+example data** from the ModelInstanceStore — not synthetic/minimal payloads.
+
+```python
+# Load a real example from training
+example_path = f"{MODELINSTANCE_STORE}/{name}/@{version}/examples/example_000"
+ProcName_to_ProcDf = {
+    f.replace('.parquet',''): pd.read_parquet(os.path.join(example_path, 'ProcName_to_ProcDf', f))
+    for f in os.listdir(os.path.join(example_path, 'ProcName_to_ProcDf'))
+    if f.endswith('.parquet')
+}
+
+# Roundtrip: serialize → deserialize
+payload = Src2InputFn(ProcName_to_ProcDf, SPACE)
+reconstructed = Input2SrcFn(payload, SPACE)
+
+# Verify: all non-empty source tables survived
+for table_name, original_df in ProcName_to_ProcDf.items():
+    if len(original_df) == 0:
+        continue
+    recon_df = reconstructed.get(table_name, pd.DataFrame())
+    assert len(recon_df) > 0, f"Table {table_name} lost in roundtrip ({len(original_df)} rows → 0)"
+
+# Verify: features produce same model prediction
+result_original = prefn(df_case_raw, ProcName_to_ProcDf, mode='inference')
+result_roundtrip = prefn(df_case_raw, reconstructed, mode='inference')
+pred_original = model.infer(result_original['all'])
+pred_roundtrip = model.infer(result_roundtrip['all'])
+# Compare scores — delta must be < 0.001
+```
+
+**Why real data:** Synthetic payloads only test happy-path parsing. Real data
+catches: tables dropped by Src2InputFn (only 4 of 19 serialized), datetime
+serialization issues, multi-admission patients getting wrong admission at
+iloc[0], dtype mismatches (int vs float vs string).
+
+The builder script (code-dev/ d1_build_*) must include this test. If the
+roundtrip fails, the Fn is not production-ready.

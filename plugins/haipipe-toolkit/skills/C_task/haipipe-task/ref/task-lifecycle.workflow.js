@@ -72,11 +72,12 @@ for (let attempt = 0; attempt <= maxRetries; attempt++) {
   planResult = await agent(
     `Stage: PLAN. Task folder: ${folder}. Type hint: ${hintType || 'auto-detect from script'}.\n\n` +
     `Create IPO-compliant workflow plan files:\n` +
-    `1. Read the main .py script to understand phases\n` +
-    `2. Read type-specific sample: haipipe-task-for-<type>/ref/workflow-plan-sample.yaml\n` +
-    `3. Read task-level template: haipipe-task/ref/workflow-template.yaml\n` +
-    `4. Generate workflow/plan-script-<name>.yaml (script-level, type-specific phases)\n` +
-    `5. Generate workflow/plan.yaml (task-level: Run/Gate1/Gate2)\n` +
+    `1. Check if workflow/plan.yaml already exists — if so, READ it and IMPROVE it (do not start from scratch)\n` +
+    `2. Read the main .py script to understand phases\n` +
+    `3. Read type-specific sample: haipipe-task-for-<type>/ref/workflow-plan-sample.yaml\n` +
+    `4. Read task-level template: haipipe-task/ref/workflow-template.yaml\n` +
+    `5. Generate/update workflow/plan-script-<name>.yaml (script-level, type-specific phases)\n` +
+    `6. Generate/update workflow/plan.yaml (task-level: Run/Gate1/Gate2)\n` +
     `Schema: B_project/haipipe-workflow/ref/plan-schema.md\n` +
     `Fields: label, type, required, prompt, files_in, files_out\n\n` +
     `IMPORTANT: Every plan YAML MUST start with a comment block showing the IPO tree preview:\n` +
@@ -134,6 +135,11 @@ let buildReview = null
 let buildFeedback = ''
 const detectedType = (planResult && planResult.type) || hintType || 'unknown'
 
+// Template-based types use exact copies of haistepnb/ templates.
+// The build stage should VERIFY structure, not rewrite code.
+const TEMPLATE_TYPES = ['data', 'fit', 'endpoint']
+const isTemplateBased = TEMPLATE_TYPES.includes(detectedType)
+
 if (!runBuild) {
   log('Build: skipped (not in stages)')
 } else {
@@ -141,17 +147,35 @@ phase('Build')
 for (let attempt = 0; attempt <= maxRetries; attempt++) {
   const retryNote = attempt > 0 ? `\n\nATTEMPT ${attempt + 1}. Reviewer feedback from previous attempt:\n${buildFeedback}\nAddress these specific issues.` : ''
 
+  const templateRule = isTemplateBased
+    ? `\n\nIMPORTANT: This is a TEMPLATE-BASED task (type=${detectedType}).` +
+      `\nThe main .py script is an EXACT COPY of a template from code/scripts/haistepnb/.` +
+      `\nDo NOT modify, rename, or recreate the .py file.` +
+      `\nDo NOT create a new .py file — one already exists.` +
+      `\nCONFIG is overridden at runtime by papermill, NOT by editing the file.` +
+      `\nOnly verify/fix the four-sister structure: configs/ runs/ results/ notebooks/ dirs exist.`
+    : ''
+
   buildResult = await agent(
-    `Stage: BUILD. Task folder: ${folder}. Type: ${detectedType}.\n\n` +
-    `Fix/scaffold the task-folder structure:\n` +
-    `- Rename script to {NN}_{task_name}.py if needed\n` +
-    `- Add # %% cell markers at logical phase boundaries\n` +
-    `- Create missing configs/<run>.yaml (extract hardcoded constants)\n` +
-    `- Create missing notebooks/, workflow/ dirs\n` +
-    `- Update runs/<run>.sh for papermill flow\n` +
-    `- Ensure Intent docstring per ref/intent-docstring-template.py\n\n` +
-    `Read: haipipe-task/ref/authoring-conventions.md\n` +
-    `Read: haipipe-task-for-${detectedType}/SKILL.md` + retryNote,
+    `Stage: BUILD. Task folder: ${folder}. Type: ${detectedType}.` +
+    (isTemplateBased ? ' (template-based — DO NOT modify the .py script)' : '') +
+    `\n\n` +
+    (isTemplateBased
+      ? `Verify the task-folder structure (do NOT touch the .py script):\n` +
+        `- Verify the main .py exists and is an exact template copy (DO NOT modify it)\n` +
+        `- Create missing configs/<run>.yaml if needed\n` +
+        `- Create missing runs/<run>.sh if needed\n` +
+        `- Create missing notebooks/, results/ dirs\n` +
+        `- Verify configs/<run>.yaml has all required fields for this task type\n`
+      : `Fix/scaffold the task-folder structure:\n` +
+        `- Add # %% cell markers at logical phase boundaries\n` +
+        `- Create missing configs/<run>.yaml (extract hardcoded constants)\n` +
+        `- Create missing notebooks/, workflow/ dirs\n` +
+        `- Update runs/<run>.sh for papermill flow\n` +
+        `- Ensure Intent docstring per ref/intent-docstring-template.py\n`
+    ) +
+    `\nRead: haipipe-task/ref/authoring-conventions.md\n` +
+    `Read: haipipe-task-for-${detectedType}/SKILL.md` + templateRule + retryNote,
     { label: `build:create:${attempt}`, phase: 'Build', agentType: 'haipipe-task-creator-agent', schema: CREATOR_RESULT }
   )
 
@@ -161,13 +185,21 @@ for (let attempt = 0; attempt <= maxRetries; attempt++) {
   }
 
   buildReview = await agent(
-    `Stage: BUILD review (Gate 1). Task folder: ${folder}.\n\n` +
-    `Review the code for intent-vs-implementation bugs:\n` +
-    `1. Read the main .py script and its Intent docstring\n` +
-    `2. Check for silent semantic bugs (scope, masking, metric units, split leaking)\n` +
-    `3. Check four-sister compliance (configs + runs + results + notebooks)\n` +
-    `4. Check that configs/<run>.yaml has all constants from the script\n\n` +
-    `Write CODE_REVIEW.md in the task folder.\n` +
+    `Stage: BUILD review (Gate 1). Task folder: ${folder}. Type: ${detectedType}.` +
+    (isTemplateBased ? ' (template-based)' : '') +
+    `\n\n` +
+    `Review the task folder:\n` +
+    (isTemplateBased
+      ? `1. Verify the .py is an unmodified template copy (DO NOT suggest edits to template code)\n` +
+        `2. Check four-sister compliance (configs/ + runs/ + results/ + notebooks/ exist)\n` +
+        `3. Check that configs/<run>.yaml has all required fields\n` +
+        `4. Check that runs/<run>.sh passes CONFIG correctly via papermill\n`
+      : `1. Read the main .py script and its Intent docstring\n` +
+        `2. Check for silent semantic bugs (scope, masking, metric units, split leaking)\n` +
+        `3. Check four-sister compliance (configs + runs + results + notebooks)\n` +
+        `4. Check that configs/<run>.yaml has all constants from the script\n`
+    ) +
+    `\nWrite CODE_REVIEW.md in the task folder.\n` +
     `Return verdict: pass, warn, revise (with feedback for creator), or fail (stop).`,
     { label: `build:review:${attempt}`, phase: 'Build', agentType: 'haipipe-task-reviewer-agent', schema: REVIEWER_RESULT }
   )

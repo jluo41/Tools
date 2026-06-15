@@ -1,13 +1,14 @@
 ---
 name: haipipe-data-case
-description: "Stage 3 (Case) specialist. Builds, runs, and reviews CaseFn; inspects 3-CaseStore; loads case-layer assets. Called by /haipipe-data orchestrator. Direct invocation works for stage-scoped work, but /haipipe-data is the recommended entry."
+description: "Stage 3 (Case) specialist. Builds, runs, and reviews CaseFn; inspects 3-CaseStore; loads case-layer assets. Supports multi-partition with parallel workers (embarrassingly parallel). Called by /haipipe-data orchestrator. Direct invocation works for stage-scoped work."
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
-  summary: "Stage 3 (Case) specialist."
+  version: "1.1.0"
+  last_updated: "2026-06-11"
+  summary: "Stage 3 (Case) specialist with multi-partition + parallel support."
   changelog:
+    - "1.1.0 (2026-06-11): add Partition Support section — CLI (--num-partitions 0 auto-discover, --num-workers N parallel), embarrassingly parallel pattern, partition discovery via glob."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
@@ -87,3 +88,30 @@ Upstream dependency (Stage 2):
 Hand-off contract (Stage 3 -> 4):
   Each Case must expose the fields TfmFn will tensorize. Verify against
   `../haipipe-data-aidata/ref/concepts.md`.
+
+
+Partition Support
+------------------
+
+Case follows RecordSet partitions. Each RecordSet partition (@i{i}n{n})
+produces one independent CaseSet. **Embarrassingly parallel** — each
+partition loads a small RecordSet (~100MB), no shared state.
+
+**CLI:**
+```bash
+python -m scripts.haistep.case --config <config> --num-partitions 0 --num-workers 4
+python -m scripts.haistep.case --config <config> --num-partitions 0 --partition-index 5  # retry one
+```
+
+`--num-partitions 0` = auto-discover from `2-RecStore/{name}/@i*n*`.
+
+**Notebook parameters:** `NUM_PARTITIONS`, `PARTITION_INDEX`, `NUM_WORKERS`
+
+**Parallelism:**
+- `--num-workers 4` gives ~4x speedup (each worker: ~100MB memory)
+- Safe because each partition is fully independent (no shared data)
+- Notebook mode: sequential by default; set `NUM_WORKERS > 1` for parallel
+
+**Output naming:** `3-CaseStore/{RecSet}/@i{i}n{n}/@v{ver}CaseSet-{Trigger}/`
+
+**Discovery:** `glob.glob(LOCAL_RECORD_STORE/{name}/@i*n*)` sorts by partition index.

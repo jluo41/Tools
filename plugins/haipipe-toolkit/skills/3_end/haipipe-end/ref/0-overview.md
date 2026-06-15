@@ -94,6 +94,22 @@ Input2SrcFn   e1_build_...    fn_endpoint/fn_input2src/  payload → ProcDF (ent
 - During packaging: Src2InputFn converts training examples → test payloads
 - During inference: Input2SrcFn converts incoming payload → ProcName_to_ProcDf
 
+**ROUNDTRIP INVARIANT (enforced):**
+`Input2SrcFn(Src2InputFn(ProcName_to_ProcDf)) ≈ ProcName_to_ProcDf`
+
+Both builder scripts (d1 + e1) MUST include a roundtrip test using **real
+example data** from ModelInstanceStore — not synthetic payloads. The test
+loads a training example, serializes with Src2InputFn, deserializes with
+Input2SrcFn, then verifies: (a) all non-empty tables survive, and (b)
+model predictions match within tolerance. Without this test, data loss in
+the roundtrip (e.g., serializing only 4 of 19 tables) goes undetected
+until deployment — producing silently wrong predictions.
+
+The endpoint template (`c_endpoint_nb.py` step 5b) also checks this at
+packaging time by comparing endpoint predictions against training
+`prediction_results.json`. This is the runtime safety net; the builder
+roundtrip test is the design-time prevention.
+
 ---
 
 Directory Structure

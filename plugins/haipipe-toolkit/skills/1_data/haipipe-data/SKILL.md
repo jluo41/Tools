@@ -4,10 +4,11 @@ description: "Run any Stage 1-4 data pipeline work. Parses intent (stage + funct
 argument-hint: "[stage] [function] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-06-11"
   summary: "Run any Stage 1-4 data pipeline work."
   changelog:
+    - "1.1.0 (2026-06-11): update notebook section — retire 0_data_nb, add partition params (NUM_PARTITIONS/PARTITION_INDEX/NUM_WORKERS), CLI alternative, MIMIC-IV worked example; add partition mode to fn-2-cook.md for Record/Case/AIData."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
@@ -42,47 +43,52 @@ haipipe-data-aidata     Stage 4: TfmFn, SplitFn, 4-AIDataStore
 
 ---
 
-★ Notebook Wrappers (Databricks / papermill)  ── code/scripts/haistepnb/
------------------------------------------------------------------------
+★ Notebook Templates (Databricks / papermill)  ── code/scripts/haistepnb/
+--------------------------------------------------------------------------
 
-Every pipeline stage has a **parameterized notebook** that wraps the
-production CLI (`code/scripts/haistep/*.py`, the `haistep-*` entry points)
-WITHOUT duplicating its logic. One cell-based `.py` per stage; converts to a
-`.ipynb` that runs three ways: **Databricks** (widgets), **papermill**
+Per-stage parameterized notebooks. Each is a cell-based `.py` that converts
+to `.ipynb` and runs three ways: **Databricks** (widgets), **papermill**
 (`-p CONFIG ...`), and plain `python`.
 
 ```
 code/scripts/haistepnb/
-  0_data_nb.py     Stages 1-4 (multi-cohort, parallel) — DRIVES haistep.data.main (spawn-safe)
-  1_source_nb.py   Stage 1     ┐ each = the original main() body decomposed into
-  2_record_nb.py   Stage 2     │ runnable, inspectable cells (real code, NOT `import main`)
-  3_case_nb.py     Stage 3     │
-  4_aidata_nb.py   Stage 4     │
-  5_model_nb.py    Stage 5     │ (model/endpoint live here too, for end-to-end)
-  6_endpoint_nb.py Stage 6     ┘
-  notebook/*.ipynb            converted artifacts (the Databricks import targets)
+  a1_source_nb.py   Stage A1 — no partitions
+  a2_record_nb.py   Stage A2 — multi-partition (NUM_PARTITIONS, PARTITION_INDEX)
+  a3_case_nb.py     Stage A3 — multi-partition + parallel (NUM_WORKERS)
+  a4_aidata_nb.py   Stage A4 — auto-discovers CaseSet partitions
+  b_model_nb.py     Stage B  — model training (+ ExampleConfig)
+  c_endpoint_nb.py  Stage C  — endpoint packaging (+ payload.json)
 ```
 
-Recipe — turn a stage into a task-local Databricks notebook:
+**Partition parameters** (Stage 2-4):
+```python
+NUM_PARTITIONS = 0      # 0 = use config / auto-discover; >0 = override
+PARTITION_INDEX = ""    # "" = all; int = run one partition (1-based)
+NUM_WORKERS    = 1      # >1 = parallel (Stage 3 Case only)
+```
+
+Recipe — create a task-folder instance:
 
 ```
-1. cp code/scripts/haistepnb/<N>_<stage>_nb.py  <task>/<task>_nb.py
+1. cp code/scripts/haistepnb/<N>_<stage>_nb.py  <task>/{NN}_{task_name}.py
 2. set the CONFIG default to the task's config (repo-root-relative)
-3. python code/scripts/convert_to_notebooks.py <task>/<task>_nb.py -o <task>/notebook/<task>_nb.ipynb
-       (converter: 0_utils/notebook-cell-python — the `# %% [parameters]` cell becomes papermill-tagged)
-4. papermill <ipynb> <out.ipynb> -p CONFIG <config>   # local test
-5. import the .ipynb into Databricks, Run all (CONFIG exposed as a widget)
+3. update the docstring with project-specific info
+4. bash runs/<RUN>.sh   # auto-converts .py → .ipynb, runs papermill
 ```
 
-The notebook auto-detects REPO_ROOT (dbutils notebookPath / cwd marker / env),
-puts `code/` on sys.path, and reuses the original functions — so there is ONE
-source of truth (the `haistep` CLI). Multiprocessing note: `0_data_nb` keeps the
-parallel workers importable by driving `main()`; set `NUM_PROCESSORS_*=1` for a
-sequential, Databricks-driver-safe run.
+The `.py` is source of truth. The `.ipynb` is auto-generated at runtime
+by `convert_to_notebooks.py` — it is intermediate output, not source.
 
-Worked example: `examples/ProjB-Bench-1-FairGlucose/tasks/A_data/A1_cook_data/`
-  - `A1_cook_data_nb.py` + `notebook/A1_cook_data_nb.ipynb`  (from `0_data_nb.py`)
-  - `runs/build_v0003_per6h_nb.sh`  (copy -> convert -> papermill -> compare, one command)
+CLI alternative (supports `--num-workers` for parallel execution):
+```
+python -m scripts.haistep.record --config <config> --num-partitions 20 --use-cache
+python code/scripts/haistepcli/case.py   --config <config> --num-partitions 0 --num-workers 4
+python code/scripts/haistepcli/aidata.py --config <config>
+```
+
+Worked example: `examples/ProjD-EHR-1-Mimic/tasks/A01_data_pipeline_mimic/`
+  - `02_record_mimiciv/2_record_mimiciv31.py` (from `a2_record_nb.py`, 80 partitions)
+  - `03_case_mimiciv_mortality/3_case_mimiciv31_mortality.py` (from `a3_case_nb.py`, auto-discover)
 
 ---
 

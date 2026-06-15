@@ -36,8 +36,8 @@ Commands
 /haipipe-end-meta review <use_case> [endpoint_set]      -> structural audit of one use-case impl
 ```
 
-Use cases (concrete impls in code/haifn/fn_endpoint/fn_meta/, as of 2026-04-25)
---------------------------------------------------------------------------------
+Use cases (concrete impls in code/haifn/fn_endpoint/fn_meta/)
+--------------------------------------------------------------
 
 ```
 AutoMetaFn                                  generic auto-built MetaFn
@@ -45,6 +45,7 @@ BanditSMS_v250225                           SMS bandit
 BanditSMSnNudge_v0620                       SMS+Nudge bandit
 CGMDecoder_v260101                          CGM decoder (SageMaker)
 CGMDecoder_DBR_v260101                  🚩  CGM decoder (Databricks variant)
+MimicMortality_v260611                  🆕  MIMIC-IV mortality (binary classification)
 SMSnNudge_v0620                             SMS+Nudge
 SMSR2_13Messages                            R2: 13-message lineup
 SMSR3_20Messages_SMSPersonalizeContent      R3: 20-message lineup with personalization
@@ -53,6 +54,7 @@ WeightLossMultiLabel_Af1M_v260310           weight-loss (Af1M variant)
 WeightLossMultiLabel_OldFormat_v260318      weight-loss (legacy format)
 
 🚩 = target-specific variant (Databricks)
+🆕 = added in REACH-SPACE (2026-06)
 ```
 
 If `<use_case>` is omitted, the skill should `Bash("ls code/haifn/fn_endpoint/fn_meta/")`
@@ -109,3 +111,18 @@ Does NOT own:
 
 If a design fails because of an Endpoint_Set issue, escalate to
 `/haipipe-end-endpointset review` rather than patching here.
+
+Builder examples (ref/examples/)
+---------------------------------
+
+Three real builders are provided as reference — copy the closest one:
+
+```
+ref/examples/
+├── a1_build_metafn_cgm_dbr.py              CGM (Databricks, time-series forecast)
+├── a1_build_metafn_weight_multilabel.py     Weight (SageMaker, multi-label classification)
+└── a1_build_metafn_mimic_mortality.py       MIMIC (binary classification, source_tables format)
+```
+
+All follow [BOILERPLATE]/[CUSTOMIZE] convention with region markers.
+See `ref/concepts.md` "Builder Examples" section for the comparison table.
