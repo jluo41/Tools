@@ -1,5 +1,39 @@
 # Endpoint Lifecycle — Lessons Learned
 
+## The Journey (MIMIC-IV Mortality, 2026-06-13 → 2026-06-16)
+
+**DESIGNED** 5 inference Fns (MetaFn, TrigFn, PostFn, Src2InputFn, Input2SrcFn).
+Established builder template system (`code/scripts/haibuilder/`) and the
+develop→execute task pattern (`00_endpoint_set_fn_develop_mimic/`).
+
+**UNIFIED** `.inference()` → `.infer()` across 6 packages. Two generations of
+model classes coexisted; the registry pointed to new classes but pipeline code
+called the old API — causing silent failures (empty `prediction_results.json`).
+
+**PACKAGED** Endpoint_Set. Added step 5b reproducibility check — found 3/6
+examples diverged because `endpoint_pipeline.py` didn't pass `df_case_raw`
+to Src2InputFn (multi-admission patients got wrong admission at `iloc[0]`).
+
+**GUARANTEED** roundtrip fidelity with `f1_roundtrip_test_mimic.py`. Enforced
+at three levels: builder test, packaging template (step 5b), skill docs.
+
+**FIXED** trigger re-execution bug (`case_pipeline.py` called `execute_triggertask`
+in inference mode where `df_case_raw` IS the cases — skip the trigger).
+
+**SLIMMED** 160MB → 14MB. D-prefix dictionary tables (DRGCode 761K rows etc.)
+were copied into every example. No CaseFn reads them — excluded from
+`extract_example_from_source` and `Src2InputFn`.
+
+**DEPLOYED** to Databricks Model Serving. Hit: wrong catalog, missing
+`mlflow[databricks]`, 201MB payload exceeds 33MB limit. After slimming: READY.
+
+**TESTED** 6/6 examples via curl — predictions identical to training, 1.8s latency.
+
+**DOCUMENTED** 14 lessons, updated 13 skills, established three patterns:
+three-layer builder, develop→execute pairing, deployment verb ladder.
+
+---
+
 ## The Endpoint Lifecycle
 
 The endpoint lifecycle has **4 phases**, each with clear ownership:
