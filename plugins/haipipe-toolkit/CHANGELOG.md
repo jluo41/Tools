@@ -4,6 +4,31 @@ haipipe-toolkit — Changelog
 Plugin-level rollup. Per-layer detail lives in each layer's own `skills/<LAYER>/CHANGELOG.md`. Newest first.
 
 
+## [2.4.0] — 2026-06-16
+
+Feature: endpoint lifecycle overhaul — MIMIC-IV mortality deployed to Databricks end-to-end.
+
+### Endpoint skills (3_end/)
+- **LESSON.md**: 14 lessons from MIMIC endpoint build (L1–L14), journey summary, deployment platform comparison (SageMaker vs Databricks).
+- **haipipe-end/ref/0-overview.md**: three-layer builder architecture (template → project → production), deployment platform verb table (validate → upload → register → deploy → smoke test → stress test → promote), roundtrip invariant.
+- **haipipe-end-meta**: inputSchema follows Databricks `dataframe_records` format, 3 builder examples in `ref/examples/` (CGM, Weight, MIMIC).
+- **haipipe-end-src2input + input2src**: real-data roundtrip test REQUIRED for design/review.
+- **haipipe-end-endpointset**: step 5b reproducibility check, D-prefix exclusion (160MB→14MB), three-level roundtrip enforcement.
+- **haipipe-end-deploy-databricks**: platform repo link, verb-to-script mapping, MIMIC config example, gotchas (D-prefix, DATABRICKS_USER).
+
+### Task skills (C_task/)
+- **haipipe-task-for-endpoint**: renamed from haipipe-task-for-inference, C-series endpoint building scope.
+- **haipipe-task-for-fit**: ExampleFn, SKIP_TRAINING parameter, step 8 reproducibility, prediction_results.json must-be-non-empty.
+- **haipipe-task-for-data**: 00_develop pattern (develop→execute pairs per stage), D-prefix dictionary table exclusion.
+- **haipipe-task/ref/task-lifecycle.workflow.js**: template-based task detection (data/fit/endpoint → don't modify .py).
+
+### Data skills (1_data/)
+- **haipipe-data-source**: D-prefix tables are SourceFn-only, never enter examples or payloads.
+
+### Infrastructure
+- **haipipe-qa**: new QA walkthrough skill for systematic pipeline review.
+
+
 ## [2.3.4] — 2026-05-31
 
 Feature: a probe-cycle now returns 🟧 W (the next-step) as well as 🟨 K.
