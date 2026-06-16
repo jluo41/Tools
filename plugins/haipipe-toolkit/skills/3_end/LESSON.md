@@ -5,11 +5,32 @@
 The endpoint lifecycle has **4 phases**, each with clear ownership:
 
 ```
-Phase 1: DESIGN        Author the 5 inference Fns
-Phase 2: PACKAGE       ModelInstance_Set → Endpoint_Set (c_endpoint_nb.py)
-Phase 3: VALIDATE      Local inference on saved examples
-Phase 4: DEPLOY        Serve on a target (local / databricks / sagemaker)
+Phase 1: DESIGN        Author the 5 inference Fns (00_endpoint_set_fn_develop)
+Phase 2: PACKAGE       ModelInstance_Set → Endpoint_Set → .tar.gz (01_endpoint)
+Phase 3: VALIDATE      Local inference on saved examples (step 5 + 5b)
+Phase 4: DEPLOY        Serve on a target (platform-*-inference/)
 ```
+
+Phase 4 delegates to a **deployment platform** — the `.tar.gz` is the handoff:
+
+```
+                SageMaker                          Databricks
+                ─────────                          ──────────
+Input:          .tar.gz                            .tar.gz (same artifact!)
+                    │                                  │
+Upload:         S3 bucket                          Unity Catalog Volume
+                    │                                  │
+Runtime:        ECR Docker image                   (none — MLflow pyfunc)
+                    │                                  │
+Register:       SageMaker Model                    MLflow → Unity Catalog
+                    │                                  │
+Deploy:         Endpoint (serverless)              Model Serving endpoint
+                    │                                  │
+Test:           test_endpoint_sage.py              test_endpoint_databricks.py
+```
+
+Verb lifecycle shared across platforms:
+`VALIDATE → UPLOAD → REGISTER → DEPLOY → TEST → STRESS → PROMOTE`
 
 ### Phase 1: Design (code-dev/ → code/haifn/fn_endpoint/)
 
@@ -346,3 +367,58 @@ config/run/results. Can run one at a time or all sequentially.
 **Rule:** Templates (Layer 1) are WellDoc references — don't modify them.
 Project builders (Layer 2) are where customization happens. Production
 files (Layer 3) are generated — never hand-edit.
+
+### L14: Every Fn that reads payload must handle `dataframe_records`
+
+**Problem:** `TrigFn` read `payload_input.get('patient_id')` directly.
+In Databricks Model Serving, the payload is wrapped:
+`{'dataframe_records': [{'patient_id': '...', ...}]}`. TrigFn got empty
+strings for all fields → PreFn saw the same empty case for every patient
+→ all 6 patients returned the same score (0.5752).
+
+`Input2SrcFn` had the unwrapping (line 94-95), but `TrigFn` did not.
+The two Fns see the same `payload_input_json` but handled it differently.
+
+**Fix:** Every Fn that reads from `payload_input` must start with:
+```python
+if 'dataframe_records' in payload_input and payload_input['dataframe_records']:
+    payload_input = payload_input['dataframe_records'][0]
+```
+
+Affected Fns: `TrigFn`, `Input2SrcFn`. PostFn is not affected (reads
+model output, not payload).
+
+**Rule:** Databricks `dataframe_records` unwrapping is not optional —
+it's part of the Fn contract. Builder tests must cover BOTH formats:
+```python
+# Direct format test
+result = TrigFn({'patient_id': '10001', ...})
+assert result['HadmID'].iloc[0] == '21001'
+
+# Databricks format test  
+result = TrigFn({'dataframe_records': [{'patient_id': '10001', ...}]})
+assert result['HadmID'].iloc[0] == '21001'
+```
+
+### L15: `02_deploy_local` catches what `00_develop` and `01_endpoint` miss
+
+**Problem:** The `00_develop` builders tested each Fn in isolation (direct
+format only). The `01_endpoint` packaging tested inference (direct format
+only). Neither tested the Databricks wire format. The bug was invisible
+until `02_deploy_local` ran both formats side-by-side and compared.
+
+**The testing pyramid for endpoints:**
+```
+00_develop    — per-Fn unit tests (direct + Databricks format)
+01_endpoint   — integration test (packaging + step 5b reproducibility)
+02_deploy     — system test (simulates real deployment wire format)
+```
+
+Each layer catches different classes of bugs:
+- 00: Fn logic bugs, roundtrip data loss
+- 01: packaging bugs, prediction_results.json consistency
+- 02: wire format bugs, format unwrapping, end-to-end latency
+
+**Rule:** All three tasks must pass before deploying to cloud. The
+`02_deploy_local` task is NOT optional — it's the only one that tests
+the exact format the cloud endpoint will receive.
