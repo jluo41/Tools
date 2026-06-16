@@ -427,3 +427,41 @@ Each layer catches different classes of bugs:
 **Rule:** All three tasks must pass before deploying to cloud. The
 `02_deploy_local` task is NOT optional — it's the only one that tests
 the exact format the cloud endpoint will receive.
+
+### L16: Fns are platform-agnostic — no Databricks/SageMaker variants
+
+**Problem:** The CGM endpoint had separate Fn files for "Databricks" and
+non-Databricks (e.g., `CGMDecoder_Databricks_v260101` vs `CGMDecoder_v260101`).
+The only real difference was the `dataframe_records` unwrapping in Input2SrcFn.
+This creates maintenance burden — every Fn fix must be applied to two files.
+
+**Root cause:** The Databricks variant was created before L14 established
+that ALL Fns must handle both wire formats. Once `dataframe_records`
+unwrapping became part of the Fn contract, there is no reason for
+platform-specific Fn variants.
+
+**Architecture:**
+
+```
+Fns (platform-agnostic, one set)      Deploy wrappers (platform-specific)
+├── MetaFn                             ├── platform-databrick-inference/  (MLflow pyfunc)
+├── TrigFn                             └── platform-sagemaker-inference/  (Docker + Flask)
+├── Input2SrcFn
+├── Src2InputFn                        Both call: endpoint_set.inference(payload)
+└── PostFn
+```
+
+The platform distinction is a **deploy-time** concern, not an Fn-level
+concern. The `.tar.gz` Endpoint_Set is the universal handoff artifact:
+
+```
+haipipe pipeline → .tar.gz → Databricks (MLflow + UC + Model Serving)
+                           → SageMaker  (Docker + ECR + Endpoint)
+                           → Local      (direct Python call)
+```
+
+**Rule:** Write ONE set of Fns that handle all wire formats. The deploy
+platform is chosen at `02_deploy` time, not at `00_develop` Fn authoring
+time. The "Databricks" suffix on a Fn name (e.g., `CGMDecoder_Databricks_*`)
+indicates this is the variant used for the Databricks-deployed endpoint —
+NOT that the Fn itself has Databricks-specific logic.

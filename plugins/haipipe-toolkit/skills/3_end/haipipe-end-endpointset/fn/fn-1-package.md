@@ -77,9 +77,9 @@ endpoint_name: "endpoint_cgm_decoder_ohio"
 endpoint_version: "v0001"
 
 # Inference functions (exact .py filename without extension)
-MetaFn: "CGMDecoder_DBR_v260101"
-Input2SrcFn: "CGMDecoder_DBR_Payload2Src_v260101"
-Src2InputFn: "CGMDecoder_DBR_Src2Payload_v260101"
+MetaFn: "CGMDecoder_Databricks_v260101"
+Input2SrcFn: "CGMDecoder_Databricks_Payload2Src_v260101"
+Src2InputFn: "CGMDecoder_Databricks_Src2Payload_v260101"
 TrigFn: "CGM5Min_v260101"
 PostFn: "CGMForecast_v260101"
 

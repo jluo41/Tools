@@ -68,7 +68,7 @@ File Structure
 ==============
 
 ```python
-# code/haifn/fn_endpoint/fn_src2input/CGMDecoder_DBR_Src2Payload_v260101.py
+# code/haifn/fn_endpoint/fn_src2input/CGMDecoder_Databricks_Src2Payload_v260101.py
 # (GENERATED -- do not edit directly)
 
 import json
@@ -165,7 +165,7 @@ MetaDict: {"Src2InputFn": Src2InputFn}
 
 Builder naming convention: d1_build_src2inputfn_{description}.py
 
-Example names: CGMDecoder_DBR_Src2Payload_v260101, InferenceInverseV1219
+Example names: CGMDecoder_Databricks_Src2Payload_v260101, InferenceInverseV1219
 
 ---
 
@@ -182,7 +182,7 @@ code-dev/1-PIPELINE/6-Endpoint-WorkSpace/d1_build_src2inputfn_{description}.py
 
 ```python
 OUTPUT_DIR = 'fn_endpoint/fn_src2input'
-FN_NAME = 'CGMDecoder_DBR_Src2Payload_v260101'
+FN_NAME = 'CGMDecoder_Databricks_Src2Payload_v260101'
 RUN_TEST = True
 ```
 
@@ -201,7 +201,7 @@ Generates: code/haifn/fn_endpoint/fn_src2input/{FN_NAME}.py
 **Step 4: Reference in YAML:**
 
 ```yaml
-Src2InputFn: "CGMDecoder_DBR_Src2Payload_v260101"
+Src2InputFn: "CGMDecoder_Databricks_Src2Payload_v260101"
 ```
 
 ---

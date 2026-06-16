@@ -130,7 +130,7 @@ MetaDict key: "MetaFn"
 
 Builder naming convention: a1_build_metafn_{description}.py
 
-Example names: SMSR2_13Messages, CGMDecoder_DBR_v260101, BanditSMS_v250225
+Example names: SMSR2_13Messages, CGMDecoder_Databricks_v260101, BanditSMS_v250225
 
 ---
 

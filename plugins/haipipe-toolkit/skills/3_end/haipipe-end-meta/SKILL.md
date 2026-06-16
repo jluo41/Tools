@@ -44,7 +44,7 @@ AutoMetaFn                                  generic auto-built MetaFn
 BanditSMS_v250225                           SMS bandit
 BanditSMSnNudge_v0620                       SMS+Nudge bandit
 CGMDecoder_v260101                          CGM decoder (SageMaker)
-CGMDecoder_DBR_v260101                  🚩  CGM decoder (Databricks variant)
+CGMDecoder_Databricks_v260101           🚩  CGM decoder (Databricks variant)
 MimicMortality_v260611                  🆕  MIMIC-IV mortality (binary classification)
 SMSnNudge_v0620                             SMS+Nudge
 SMSR2_13Messages                            R2: 13-message lineup
@@ -119,7 +119,7 @@ Three real builders are provided as reference — copy the closest one:
 
 ```
 ref/examples/
-├── a1_build_metafn_cgm_dbr.py              CGM (Databricks, time-series forecast)
+├── a1_build_metafn_cgm_databricks.py        CGM (Databricks, time-series forecast)
 ├── a1_build_metafn_weight_multilabel.py     Weight (SageMaker, multi-label classification)
 └── a1_build_metafn_mimic_mortality.py       MIMIC (binary classification, source_tables format)
 ```

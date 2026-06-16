@@ -38,11 +38,11 @@ Extract the `inference_functions` block:
 ```json
 {
   "inference_functions": {
-    "MetaFn":      "CGMDecoder_DBR_v260101",
+    "MetaFn":      "CGMDecoder_Databricks_v260101",
     "TrigFn":      "CGM5Min_v260101",
     "PostFn":      "CGMForecast_v260101",
-    "Src2InputFn": "CGMDecoder_DBR_Src2Payload_v260101",
-    "Input2SrcFn": "CGMDecoder_DBR_Payload2Src_v260101"
+    "Src2InputFn": "CGMDecoder_Databricks_Src2Payload_v260101",
+    "Input2SrcFn": "CGMDecoder_Databricks_Payload2Src_v260101"
   }
 }
 ```
@@ -287,11 +287,11 @@ After running all checks, produce a summary:
 Fn Review Summary: endpoint_cgm_decoder_ohio
 =============================================
 
-MetaFn      (CGMDecoder_DBR_v260101)        PASS
+MetaFn      (CGMDecoder_Databricks_v260101)        PASS
 TrigFn      (CGM5Min_v260101)               PASS
 PostFn      (CGMForecast_v260101)           PASS
-Src2InputFn (CGMDecoder_DBR_Src2Payload_v260101)  PASS
-Input2SrcFn (CGMDecoder_DBR_Payload2Src_v260101)  PASS
+Src2InputFn (CGMDecoder_Databricks_Src2Payload_v260101)  PASS
+Input2SrcFn (CGMDecoder_Databricks_Payload2Src_v260101)  PASS
 
 Cross-Fn Checks
   Name chain:      PASS

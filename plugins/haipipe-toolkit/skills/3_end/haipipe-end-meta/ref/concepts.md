@@ -139,7 +139,7 @@ MetaDict key: "MetaFn"
 
 Builder naming convention: a1_build_metafn_{description}.py
 
-Example names: SMSR2_13Messages, CGMDecoder_DBR_v260101, BanditSMS_v250225
+Example names: SMSR2_13Messages, CGMDecoder_Databricks_v260101, BanditSMS_v250225
 
 ---
 
@@ -247,7 +247,7 @@ Three real builder scripts are provided as reference implementations:
 
 ```
 ref/examples/
-├── a1_build_metafn_cgm_dbr.py              CGM glucose forecast (Databricks)
+├── a1_build_metafn_cgm_databricks.py        CGM glucose forecast (Databricks)
 ├── a1_build_metafn_weight_multilabel.py     Weight loss multi-label (SageMaker)
 └── a1_build_metafn_mimic_mortality.py       MIMIC-IV mortality (binary classification)
 ```

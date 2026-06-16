@@ -166,9 +166,9 @@ endpoint_name: "endpoint_cgm_decoder_ohio"
 endpoint_version: "v0001"
 
 # 5 Inference function names (exact match to generated .py file names)
-MetaFn: "CGMDecoder_DBR_v260101"
-Input2SrcFn: "CGMDecoder_DBR_Payload2Src_v260101"
-Src2InputFn: "CGMDecoder_DBR_Src2Payload_v260101"
+MetaFn: "CGMDecoder_Databricks_v260101"
+Input2SrcFn: "CGMDecoder_Databricks_Payload2Src_v260101"
+Src2InputFn: "CGMDecoder_Databricks_Src2Payload_v260101"
 TrigFn: "CGM5Min_v260101"
 PostFn: "CGMForecast_v260101"
 
@@ -179,7 +179,7 @@ deployment_config:
 ```
 
 **Function name resolution:**
-Each Fn name (e.g., "CGMDecoder_DBR_v260101") maps to a .py file in:
+Each Fn name (e.g., "CGMDecoder_Databricks_v260101") maps to a .py file in:
   code/haifn/fn_endpoint/fn_{type}/{FnName}.py
 
 The Fn is loaded dynamically via Base.load_module_variables(pypath).
@@ -362,9 +362,9 @@ modelinstance_set = ModelInstance_Set.load_asset(
 
 # Create pipeline with Fn names from YAML
 config = {
-    'MetaFn': 'CGMDecoder_DBR_v260101',
-    'Input2SrcFn': 'CGMDecoder_DBR_Payload2Src_v260101',
-    'Src2InputFn': 'CGMDecoder_DBR_Src2Payload_v260101',
+    'MetaFn': 'CGMDecoder_Databricks_v260101',
+    'Input2SrcFn': 'CGMDecoder_Databricks_Payload2Src_v260101',
+    'Src2InputFn': 'CGMDecoder_Databricks_Src2Payload_v260101',
     'TrigFn': 'CGM5Min_v260101',
     'PostFn': 'CGMForecast_v260101',
 }
