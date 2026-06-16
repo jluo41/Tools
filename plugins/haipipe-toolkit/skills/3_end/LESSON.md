@@ -465,3 +465,29 @@ platform is chosen at `02_deploy` time, not at `00_develop` Fn authoring
 time. The "Databricks" suffix on a Fn name (e.g., `CGMDecoder_Databricks_*`)
 indicates this is the variant used for the Databricks-deployed endpoint —
 NOT that the Fn itself has Databricks-specific logic.
+
+### L14: D-prefix dictionary tables must not enter examples or payloads
+
+**Problem:** `extract_example_from_source` copied ALL tables from SourceSet
+into each example's `ProcName_to_ProcDf/` — including D-prefix dictionary
+tables (DRGCode 761K rows, DIcdDiagnoses 112K rows, etc.). These are
+full-database lookup tables shared across all patients, not patient data.
+
+Impact:
+- Each example: 11MB → should be ~300KB (37x bloat)
+- `.tar.gz`: 160MB → should be 14MB (11x bloat)
+- Databricks payload: 201MB → rejected (33MB limit)
+
+**Fix:**
+1. `extract_example_from_source`: skip `D*` tables (D-prefix + uppercase)
+2. `Src2InputFn`: skip `D*` tables during serialization
+3. Delete existing D-prefix parquets from ModelInstanceStore examples
+
+**Verification:** No CaseFn reads any D-prefix table. The model uses only
+5 tables: Ptt, Admission, LabEvent, ChartEvent, Prescription. Predictions
+are identical with or without D-prefix tables (6/6 Databricks smoke test pass).
+
+**Rule:** Before extracting examples, check which tables the CaseFns
+actually read. Only store patient-specific clinical tables. Dictionary/
+reference tables belong in `external/` (if needed at all), never in
+per-patient examples.
