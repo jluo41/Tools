@@ -14,13 +14,20 @@ metadata:
 Skill: haipipe-end-databricks
 ==============================
 
-Databricks Model Serving deployment specialist. Consumes an Endpoint_Set
-built by `haipipe-end-endpointset`, registers it as an MLflow pyfunc in
-Unity Catalog, deploys to Databricks Model Serving, tests live, and cleans up.
+Databricks Model Serving deployment specialist — one of **two production
+deployment platforms** (the other is SageMaker via `haipipe-end-deploy-sagemaker`).
 
-> Status: scaffolded. Procedures below are placeholders to be filled with
-> the project's actual Databricks conventions (workspace URL, catalog/schema
-> names, serving endpoint config).
+Consumes the same platform-agnostic Endpoint_Set `.tar.gz` built by
+`haipipe-end-endpointset`, registers it as an MLflow pyfunc in Unity Catalog,
+deploys to Databricks Model Serving, tests live, and cleans up.
+
+**Backing repo:** `platform-databrick-inference/` (submodule of the main repo).
+Contains `opt_program/mlflow_model.py` (MLflow wrapper), `opt_program/mlflow_packaging.py`
+(UC registration), `scripts/build_endpoint/` (deploy pipeline), and per-product
+configs under `config/<product>/<version>/dev.yaml`.
+
+> Status: active. Deployment scripts implemented and tested with CGM + MIMIC
+> endpoints. See `platform-databrick-inference/CLAUDE.md` for full reference.
 
   Function axis:  dashboard | deploy | test | monitor | teardown | review
 

@@ -227,6 +227,27 @@ The Fn is loaded dynamically via Base.load_module_variables(pypath).
 Deployment Platforms
 =====================
 
+**Fns are platform-agnostic.** There is ONE set of 5 Fns per endpoint —
+not separate Databricks/SageMaker variants. Every TrigFn and Input2SrcFn
+handles both wire formats (direct dict AND Databricks `dataframe_records`)
+via the standard unwrapping pattern:
+
+```python
+if 'dataframe_records' in payload_input and payload_input['dataframe_records']:
+    payload_input = payload_input['dataframe_records'][0]
+```
+
+The platform distinction lives in the **deploy wrappers**, not in the Fns:
+
+```
+Fns (platform-agnostic, one set)      Deploy wrappers (platform-specific)
+├── MetaFn                             ├── platform-databrick-inference/  (MLflow pyfunc)
+├── TrigFn                             └── platform-sagemaker-inference/  (Docker + Flask)
+├── Input2SrcFn
+├── Src2InputFn                        Both call: endpoint_set.inference(payload)
+└── PostFn
+```
+
 The `.tar.gz` is the universal handoff artifact — haipipe produces it,
 deployment platforms consume it. The same `.tar.gz` deploys to any target.
 
@@ -288,9 +309,9 @@ Both repos follow the same config pattern:
 Payload Formats
 ===============
 
-Two supported input formats:
+Two wire formats — all Fns handle both transparently:
 
-**Format A — Databricks dataframe_records (preferred):**
+**Databricks format** (dataframe_records — how Databricks Model Serving calls it):
 
 ```json
 {
@@ -302,7 +323,7 @@ Two supported input formats:
 }
 ```
 
-**Format B — Legacy flat format:**
+**Direct format** (dict — how SageMaker / local / tests call it):
 
 ```json
 {
@@ -312,7 +333,9 @@ Two supported input formats:
 }
 ```
 
-Endpoint_Set.inference() detects format by checking for "dataframe_records" key.
+Endpoint_Set.inference() passes the raw payload to TrigFn and Input2SrcFn.
+Each Fn unwraps `dataframe_records` if present, then proceeds identically.
+There is no platform-specific Fn — one Fn handles both formats.
 
 ---
 

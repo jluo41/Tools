@@ -50,14 +50,14 @@ InferenceInverseV1219                           generic inference v1219  (sagema
 WellDocWeight_Src2Payload_v260305               weight encoder           (sagemaker)
 WellDocWeight_Src2OldFormat_v260318             weight encoder (legacy)  (sagemaker)
 DatabricksV1                                🚩  generic Databricks       (databricks)
-CGMDecoder_DBR_Src2Payload_v260101          🚩  CGM Databricks variant   (databricks)
+CGMDecoder_Databricks_Src2Payload_v260101          🚩  CGM Databricks variant   (databricks)
 
 🚩 = target-specific variant (Databricks)
 ```
 
 If `<use_case>` is omitted, the skill should `Bash("ls code/haifn/fn_endpoint/fn_src2input/")`
 and ask the user to pick. If `--target` is omitted on a use case that has both variants
-(e.g. CGM has `CGMInverse_v260101` for SageMaker and `CGMDecoder_DBR_Src2Payload_v260101`
+(e.g. CGM has `CGMInverse_v260101` for SageMaker and `CGMDecoder_Databricks_Src2Payload_v260101`
 for Databricks), confirm before proceeding.
 
 ---

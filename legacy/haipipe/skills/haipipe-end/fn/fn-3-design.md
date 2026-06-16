@@ -254,7 +254,7 @@ Read ref/4-src2input.md and ref/5-input2src.md together.
 Src2InputFn MUST produce output that Input2SrcFn can parse.
 
 ```python
-FN_NAME = 'CGMDecoder_DBR_Src2Payload_v260101'
+FN_NAME = 'CGMDecoder_Databricks_Src2Payload_v260101'
 import json
 
 def Src2InputFn(ProcName_to_ProcDf, SPACE):
@@ -292,7 +292,7 @@ Read ref/5-input2src.md carefully. ProcName_List and ProcName_to_columns
 MUST match the schema the model was trained on.
 
 ```python
-FN_NAME = 'CGMDecoder_DBR_Payload2Src_v260101'
+FN_NAME = 'CGMDecoder_Databricks_Payload2Src_v260101'
 import pandas as pd
 
 ProcName_List = ['Ptt', 'CGM']

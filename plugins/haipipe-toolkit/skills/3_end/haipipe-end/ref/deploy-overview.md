@@ -2,7 +2,7 @@ fn-deploy: Deploy Endpoint
 ===========================
 
 Deploys a packaged Endpoint_Set to a serving platform.
-Two supported platforms: Databricks (via MLflow + Unity Catalog) and local.
+Two production platforms: **Databricks** and **SageMaker**. Plus local for testing.
 
 Always run /haipipe-end test first. Do NOT deploy an untested endpoint.
 
@@ -11,12 +11,16 @@ Always run /haipipe-end test first. Do NOT deploy an untested endpoint.
 Platform Overview
 ==================
 
+**Fns are platform-agnostic.** All Fns handle both wire formats (direct
+dict and Databricks `dataframe_records`). The platform choice is a deploy-time
+concern — the same `.tar.gz` deploys to any target.
+
 ```
-Platform      Wrapper              Registry              Auth
-────────────  ───────────────────  ────────────────────  ──────────────────────────────────
-Databricks    MLflow PythonModel   Unity Catalog (UC)    DATABRICKS_HOST + TOKEN + USER
-Local         direct Python call   filesystem            none
-SageMaker     Flask + Docker       S3 + SageMaker        AWS IAM
+Platform      Wrapper              Registry              Auth                                Repo
+────────────  ───────────────────  ────────────────────  ──────────────────────────────────  ────────────────────────────────
+Databricks    MLflow PythonModel   Unity Catalog (UC)    DATABRICKS_HOST + TOKEN + USER      platform-databrick-inference/
+SageMaker     Flask + Docker       S3 + SageMaker        AWS IAM                             platform-sagemaker-inference/
+Local         direct Python call   filesystem            none                                (main repo)
 ```
 
 Both Databricks and SageMaker use identical core inference code:

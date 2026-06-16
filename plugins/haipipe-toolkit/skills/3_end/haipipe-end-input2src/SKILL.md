@@ -50,14 +50,14 @@ CGMExamples_v260101                             CGM examples decoder      (sagem
 WellDocWeight_Payload2Src_v260305               weight decoder            (sagemaker)
 WellDocWeight_OldFormat2Src_v260318             weight decoder (legacy)   (sagemaker)
 DatabricksV1                                🚩  generic Databricks         (databricks)
-CGMDecoder_DBR_Payload2Src_v260101          🚩  CGM Databricks variant     (databricks)
+CGMDecoder_Databricks_Payload2Src_v260101          🚩  CGM Databricks variant     (databricks)
 
 🚩 = target-specific variant (Databricks)
 ```
 
 If `<use_case>` is omitted, the skill should `Bash("ls code/haifn/fn_endpoint/fn_input2src/")`
 and ask the user to pick. If `--target` is omitted on a use case that has both variants
-(e.g. CGM has `CGMExamples_v260101` for SageMaker and `CGMDecoder_DBR_Payload2Src_v260101`
+(e.g. CGM has `CGMExamples_v260101` for SageMaker and `CGMDecoder_Databricks_Payload2Src_v260101`
 for Databricks), confirm before proceeding.
 
 ---

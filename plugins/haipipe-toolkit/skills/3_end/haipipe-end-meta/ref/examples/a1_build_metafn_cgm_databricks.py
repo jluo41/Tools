@@ -59,7 +59,7 @@ os.makedirs(META_FN_PATH, exist_ok=True)
 # ============================================================================
 # [CUSTOMIZE] MetaFn Configuration
 # ============================================================================
-META_FN_NAME = 'CGMDecoder_DBR_v260101'
+META_FN_NAME = 'CGMDecoder_Databricks_v260101'
 
 print(f"\nBuilding MetaFn: {META_FN_NAME}")
 print("="*80)

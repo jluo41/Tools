@@ -2,7 +2,7 @@
 
 Conforms to the contract documented in
   endpoint_cgm_patchtst_ohio_v0001/code/haifn/fn_endpoint/fn_input2src/
-  CGMDecoder_DBR_Payload2Src_v260101.py (Format 1: dataframe_records).
+  CGMDecoder_Databricks_Payload2Src_v260101.py (Format 1: dataframe_records).
 
 Output shape:
   {
