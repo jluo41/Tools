@@ -224,6 +224,64 @@ The Fn is loaded dynamically via Base.load_module_variables(pypath).
 
 ---
 
+Deployment Platforms
+=====================
+
+The `.tar.gz` is the universal handoff artifact — haipipe produces it,
+deployment platforms consume it. The same `.tar.gz` deploys to any target.
+
+```
+                SageMaker                          Databricks
+                ─────────                          ──────────
+Input:          .tar.gz                            .tar.gz (same artifact!)
+                    │                                  │
+Upload:         S3 bucket                          Unity Catalog Volume
+                    │                                  │
+Runtime:        ECR Docker image                   (none — MLflow pyfunc wraps it)
+                    │                                  │
+Register:       SageMaker Model                    MLflow → Unity Catalog model
+                    │                                  │
+Deploy:         Endpoint (serverless/provisioned)  Model Serving endpoint
+                    │                                  │
+Test:           test_endpoint_sage.py              test_endpoint_databricks.py
+                    │                                  │
+Stress:         sagemaker_load_test.py             test_endpoint_databricks.py
+```
+
+**Key difference:** SageMaker needs a Docker image (ECR) as the runtime
+container; Databricks doesn't — MLflow pyfunc wraps the endpoint code at
+registration time, and Databricks manages the runtime environment.
+
+**Verb lifecycle (shared across platforms):**
+
+```
+VALIDATE  →  UPLOAD  →  REGISTER  →  DEPLOY  →  TEST  →  STRESS  →  PROMOTE
+(local)      (cloud     (model       (serve)    (smoke)   (load)     (dev→prod)
+              storage)   catalog)
+```
+
+| Verb     | SageMaker script                       | Databricks script                          |
+|----------|----------------------------------------|--------------------------------------------|
+| validate | run_endpoint_system.py (Flask :5000)   | test_local.py (direct Python)              |
+| upload   | aws s3 cp → bucket                     | Phase 0 → Volume                           |
+| register | build_run_endpoint_sage.py (Model)     | Phase 1 → mlflow_packaging.py → UC         |
+| deploy   | build_run_endpoint_sage.py (Endpoint)  | Phase 2 → Model Serving                    |
+| test     | test_endpoint_sage.py                  | test_endpoint_databricks.py                |
+| stress   | sagemaker_load_test.py                 | test_endpoint_databricks.py (--benchmark)  |
+| teardown | aws sagemaker delete-endpoint          | (API call to delete serving endpoint)      |
+
+**Platform repos:**
+
+```
+platform-sagemaker-inference/       AWS SageMaker (Docker + S3 + ECR)
+platform-databrick-inference/       Databricks (MLflow + Unity Catalog + Model Serving)
+```
+
+Both repos follow the same config pattern:
+`config/<product>/<release>/{dev,prod}.yaml`
+
+---
+
 Payload Formats
 ===============
 
