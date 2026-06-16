@@ -106,6 +106,26 @@ Stage    Partitions     CLI flags                                    Notebook pa
 - Partition naming: `@i{i}n{n}` (1-based). Discovery: glob `@i*n*`.
 
 
+The 00_develop pattern
+-----------------------
+
+Each pipeline stage has a paired develop task: `NN_<stage>_fn_develop_mimic/`
+builds the Fns, `NN_<stage>_mimiciv/` runs the pipeline. Same number = same stage.
+
+```
+A01_data_pipeline_mimic/
+  01_source_fn_develop_mimic/  + 01_source_mimiciv/
+  02_record_fn_develop_mimic/  + 02_record_mimiciv/
+  03_case_fn_develop_mimic/    + 03_case_mimiciv_mortality/
+  04_aidata_fn_develop_mimic/  + 04_aidata_mimiciv_mortality/
+```
+
+- Builder reference templates at `code/scripts/haibuilder/{1-source,2-record,3-case,4-aidata}/`.
+- D-prefix dictionary tables (`DRGCode`, `DIcdDiagnoses`, `DLabItems`,
+  `DIcdProcedures`, `DHcpcs`, `DItems`) are SourceFn-only — no CaseFn reads
+  them, and they must NOT enter examples or payloads.
+
+
 Cross-references
 -----------------
 

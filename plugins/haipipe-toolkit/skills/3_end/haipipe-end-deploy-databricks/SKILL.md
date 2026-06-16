@@ -114,6 +114,43 @@ Test, Monitor, Teardown, Review:
 
 ---
 
+Platform repo and scripts
+--------------------------
+
+The actual deployment scripts live in `platform-databrick-inference/`
+(git submodule). The platform-level skill doc is at
+`Tools/skills/databricks-deploy/SKILL.md` (inside the platform repo).
+
+### Verb lifecycle
+
+```
+VALIDATE → UPLOAD → REGISTER → DEPLOY → SMOKE TEST → STRESS TEST
+```
+
+### Script mapping
+
+```
+Verb           Script
+-------------- -----------------------------------------------------------
+validate       scripts/test_local.py
+deploy (3ph)   scripts/build_endpoint/build_run_endpoint_databricks.py
+smoke test     scripts/build_endpoint/test_smoke_endpoint_databricks.py
+stress test    scripts/pressure_test/test_stress_endpoint_databricks.py
+teardown       scripts/build_endpoint/teardown_endpoint_databricks.py
+```
+
+### Config
+
+- Per-product config at `config/<product>/<release>/dev.yaml` with
+  `uc_catalog`, `uc_schema`, `endpoint_name`.
+- MIMIC example config: `config/mimic-mortality/v0001/dev.yaml`.
+
+### Gotchas
+
+- D-prefix tables must be excluded from payload (33 MB Databricks limit).
+- Set `DATABRICKS_USER` env var for the MLflow experiment path.
+
+
 Target Scope
 -------------
 

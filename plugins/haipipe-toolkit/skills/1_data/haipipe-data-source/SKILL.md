@@ -95,6 +95,22 @@ next:      suggested next command (often a /haipipe-data-record action)
 
 ---
 
+D-prefix dictionary tables
+---------------------------
+
+SourceFn defines D-prefix lookup tables (`DRGCode`, `DLabItems`,
+`DIcdDiagnoses`, `DIcdProcedures`, `DHcpcs`, `DItems`) as part of
+`ProcName_List`. Key rules:
+
+- These are **full-database dictionary tables**, NOT patient-specific data.
+- They flow through Source -> Record pipeline but are **NEVER read by any CaseFn**.
+- `extract_example_from_source` SKIPS D-prefix tables (they bloat examples by 37x).
+- `Src2InputFn` SKIPS D-prefix tables (they bloat payloads beyond the
+  Databricks 33 MB limit).
+- If a future CaseFn needs D-prefix data, load it from the endpoint's
+  `external/` dir, not from the per-request payload.
+
+
 Stage Scope
 ------------
 
