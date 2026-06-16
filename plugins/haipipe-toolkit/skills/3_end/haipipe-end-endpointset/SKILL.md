@@ -107,6 +107,29 @@ Does NOT own:
 
 ---
 
+Lessons learned (MIMIC-IV endpoint session)
+---------------------------------------------
+
+### Step 5b reproducibility check
+
+`c_endpoint_nb.py` step 5b compares endpoint predictions against training
+`prediction_results.json`. Warns on mismatch (does not block). This catches
+roundtrip data loss early — before the artifact ships to a deploy specialist.
+
+### D-prefix exclusion
+
+`Src2InputFn` and `extract_example_from_source` now skip D-prefix tables
+(`DRGCode`, `DLabItems`, `DIcdDiagnoses`, `DIcdProcedures`, `DHcpcs`, `DItems`).
+This reduced `.tar.gz` from 160 MB to 14 MB.
+
+### Three-level Src2InputFn / Input2SrcFn roundtrip enforcement
+
+1. **Design time:** builder roundtrip test (`code-dev f1_roundtrip_test`).
+2. **Packaging time:** step 5b in `c_endpoint_nb.py`.
+3. **Skill docs:** required in `haipipe-end-src2input` + `haipipe-end-input2src`
+   SKILL.md.
+
+
 Hand-off Contract (Endpoint_Set → deploy specialists)
 ------------------------------------------------------
 

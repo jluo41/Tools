@@ -86,6 +86,38 @@ next:      suggested next command (/haipipe-nn-tuner or run.sh)
 
 
 
+Lessons learned (MIMIC-IV endpoint session)
+---------------------------------------------
+
+### ExampleFn and ExampleConfig
+
+- Trained models generate examples via `ExampleConfig` in the training YAML.
+- The ExampleFn builder lives in `01_model_fn_develop_mimic/` (same number as
+  the training task — same number = same stage).
+- Builder reference templates at `code/scripts/haibuilder/5-instance/`.
+
+### SKIP_TRAINING parameter
+
+- `b_model_nb.py` supports `-p SKIP_TRAINING "true"` to skip steps 2-3
+  (train + save) and reuse the existing model on disk.
+- Steps 4-9 (verify examples, reload, PreFn, reproducibility, inference)
+  run normally.
+- Use for debugging validation steps without re-training (~20 min to ~20 sec).
+
+### Step 8 reproducibility check
+
+- Compares `model.infer()` on each saved example's PreFn output against
+  `prediction_results.json`.
+- If `prediction_results.json` is empty, that is a bug (see L1/L4 in
+  `3_end/LESSON.md`).
+
+### prediction_results.json
+
+- Must be non-empty after training.
+- If empty, the `_infer_examples` step in `ModelInstance_Pipeline` failed
+  silently — investigate before proceeding to endpoint packaging.
+
+
 Workflow plan
 --------------
 
