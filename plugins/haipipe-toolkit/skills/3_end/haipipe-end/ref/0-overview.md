@@ -204,9 +204,9 @@ endpoint_name: "endpoint_cgm_decoder_ohio"
 endpoint_version: "v0001"
 
 # 5 Inference function names (exact match to generated .py file names)
-MetaFn: "CGMDecoder_DBR_v260101"
-Input2SrcFn: "CGMDecoder_DBR_Payload2Src_v260101"
-Src2InputFn: "CGMDecoder_DBR_Src2Payload_v260101"
+MetaFn: "CGMDecoder_Databricks_v260101"
+Input2SrcFn: "CGMDecoder_Databricks_Payload2Src_v260101"
+Src2InputFn: "CGMDecoder_Databricks_Src2Payload_v260101"
 TrigFn: "CGM5Min_v260101"
 PostFn: "CGMForecast_v260101"
 
@@ -217,7 +217,7 @@ deployment_config:
 ```
 
 **Function name resolution:**
-Each Fn name (e.g., "CGMDecoder_DBR_v260101") maps to a .py file in:
+Each Fn name (e.g., "CGMDecoder_Databricks_v260101") maps to a .py file in:
   code/haifn/fn_endpoint/fn_{type}/{FnName}.py
 
 The Fn is loaded dynamically via Base.load_module_variables(pypath).
@@ -255,20 +255,23 @@ registration time, and Databricks manages the runtime environment.
 **Verb lifecycle (shared across platforms):**
 
 ```
-VALIDATE  →  UPLOAD  →  REGISTER  →  DEPLOY  →  TEST  →  STRESS  →  PROMOTE
-(local)      (cloud     (model       (serve)    (smoke)   (load)     (dev→prod)
-              storage)   catalog)
+VALIDATE → UPLOAD → REGISTER → DEPLOY → SMOKE TEST → STRESS TEST → PROMOTE
+(local)    (cloud    (model     (serve)   (one call,    (load,        (dev→prod)
+            storage)  catalog)             correctness)  throughput)
 ```
 
-| Verb     | SageMaker script                       | Databricks script                          |
-|----------|----------------------------------------|--------------------------------------------|
-| validate | run_endpoint_system.py (Flask :5000)   | test_local.py (direct Python)              |
-| upload   | aws s3 cp → bucket                     | Phase 0 → Volume                           |
-| register | build_run_endpoint_sage.py (Model)     | Phase 1 → mlflow_packaging.py → UC         |
-| deploy   | build_run_endpoint_sage.py (Endpoint)  | Phase 2 → Model Serving                    |
-| test     | test_endpoint_sage.py                  | test_endpoint_databricks.py                |
-| stress   | sagemaker_load_test.py                 | test_endpoint_databricks.py (--benchmark)  |
-| teardown | aws sagemaker delete-endpoint          | (API call to delete serving endpoint)      |
+| Verb        | What it proves                        | SageMaker                            | Databricks                              |
+|-------------|---------------------------------------|--------------------------------------|-----------------------------------------|
+| validate    | Endpoint works locally (no cloud)     | run_endpoint_system.py (Flask :5000) | test_local.py (direct Python)           |
+| upload      | Artifact in cloud storage             | aws s3 cp → bucket                   | Phase 0 → Volume                        |
+| register    | Model in catalog                      | build_run_endpoint_sage.py (Model)   | Phase 1 → mlflow_packaging.py → UC      |
+| deploy      | Endpoint serving                      | build_run_endpoint_sage.py (Endpoint)| Phase 2 → Model Serving                 |
+| smoke test  | Correctness: one call, assert API-1   | test_endpoint_sage.py                | test_endpoint_databricks.py             |
+| stress test | Capacity: throughput, p95/p99, errors | sagemaker_load_test.py               | test_endpoint_databricks.py --benchmark |
+| teardown    | Cleanup                               | aws sagemaker delete-endpoint        | API call to delete serving endpoint     |
+
+**Smoke test** = does it return the right answer? (one request, assert format + values)
+**Stress test** = does it hold up under load? (concurrent requests, latency percentiles, error rate)
 
 **Platform repos:**
 
@@ -458,9 +461,9 @@ modelinstance_set = ModelInstance_Set.load_asset(
 
 # Create pipeline with Fn names from YAML
 config = {
-    'MetaFn': 'CGMDecoder_DBR_v260101',
-    'Input2SrcFn': 'CGMDecoder_DBR_Payload2Src_v260101',
-    'Src2InputFn': 'CGMDecoder_DBR_Src2Payload_v260101',
+    'MetaFn': 'CGMDecoder_Databricks_v260101',
+    'Input2SrcFn': 'CGMDecoder_Databricks_Payload2Src_v260101',
+    'Src2InputFn': 'CGMDecoder_Databricks_Src2Payload_v260101',
     'TrigFn': 'CGM5Min_v260101',
     'PostFn': 'CGMForecast_v260101',
 }

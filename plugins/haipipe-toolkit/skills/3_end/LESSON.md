@@ -26,11 +26,16 @@ Register:       SageMaker Model                    MLflow → Unity Catalog
                     │                                  │
 Deploy:         Endpoint (serverless)              Model Serving endpoint
                     │                                  │
-Test:           test_endpoint_sage.py              test_endpoint_databricks.py
+Smoke Test:     test_endpoint_sage.py              test_endpoint_databricks.py
+                    │                                  │
+Stress Test:    sagemaker_load_test.py             test_endpoint_databricks.py --benchmark
 ```
 
 Verb lifecycle shared across platforms:
-`VALIDATE → UPLOAD → REGISTER → DEPLOY → TEST → STRESS → PROMOTE`
+`VALIDATE → UPLOAD → REGISTER → DEPLOY → SMOKE TEST → STRESS TEST → PROMOTE`
+
+- **Smoke test** = correctness (one call, assert format + values match)
+- **Stress test** = capacity (concurrent load, throughput, latency p95/p99, error rate)
 
 ### Phase 1: Design (code-dev/ → code/haifn/fn_endpoint/)
 
