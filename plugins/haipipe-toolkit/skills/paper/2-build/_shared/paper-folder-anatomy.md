@@ -11,6 +11,10 @@ The companion doc `3-edit/_shared/tex-file-anatomy.md` defines the anatomy of **
 ├── 0-<paper>.tex                         DRIVER: \documentclass, preamble, \section{} + \input
 ├── 0-<paper>.bib                         bibliography (same stem as the driver)
 ├── 0-Supplementary-<paper>.tex           SI DRIVER: standalone second document (optional but standard)
+├── 0-pitch/                              one-minute paper story + provenance
+│   ├── PAPER_PITCH.md                    current public-facing pitch
+│   ├── PITCH_LOG.md                      short record of why the pitch changed
+│   └── archive/                          semantic snapshots of old pitch versions
 ├── 0-sections/                           all body prose, split per the naming grammar below
 │   ├── README.md                         one-screen map of the section files
 │   ├── 00_abstract.tex                       leaf
@@ -39,10 +43,39 @@ The two prefixes are the folder's whole filing system:
 
 | Prefix | Meaning | Examples |
 |--------|---------|----------|
-| `0-` | **the manuscript itself**: what the venue ultimately receives | `0-<paper>.tex`, `0-<paper>.bib`, `0-Supplementary-*.tex`, `0-sections/`, `0-display/`, `0-extra/` |
+| `0-` | **the manuscript itself**: what the venue ultimately receives or what defines how it is told | `0-<paper>.tex`, `0-<paper>.bib`, `0-Supplementary-*.tex`, `0-pitch/`, `0-sections/`, `0-display/`, `0-extra/` |
 | `1-` | **process artifacts**: how the manuscript gets built and revised | `1-compile.sh`, `1-feedback/`, `1-diff/`, `1-review/`, `1-config.yaml` |
 
 Sorting puts manuscript before process. A submission package is "everything `0-` plus the compiled PDFs"; nothing under `1-` ever goes to the venue.
+
+`0-pitch/` is the exception inside `0-`: it is not submitted as prose, but it is
+part of the manuscript's source of truth. It records how this specific paper is
+explained to a reader before the reader sees the LaTeX.
+
+## `0-pitch/` rules
+
+`0-pitch/` is the one-minute story layer for this concrete manuscript. It lives
+inside the paper folder, not the project-level `narratives/`, because the same
+project story can produce several papers with different venue-facing pitches.
+
+Files:
+
+- `PAPER_PITCH.md` — current one-minute version. A random reader should
+  understand what the paper is about, why it matters, what is surprising, why to
+  believe it, and what remains fragile.
+- `PITCH_LOG.md` — short provenance log. It records the source and reason for
+  each semantic pitch shift; it does not duplicate every old pitch in full.
+- `archive/` — semantic snapshots such as `v01_seed.md`,
+  `v02_discovery-shift.md`, and `v03_probe-supported.md`. Archive only when the
+  story state changes, not for typo edits.
+
+Pitch principle:
+
+> Pitch can start as intuition, but every later shift must cite a source.
+
+Valid sources include author judgment, literature review, `discoveries/`,
+`tasks/`, `probes/`, `insights/`, reviewer feedback, or venue strategy. If the
+pitch is not readable in one minute, it is too long.
 
 ## `0-sections/` naming grammar
 

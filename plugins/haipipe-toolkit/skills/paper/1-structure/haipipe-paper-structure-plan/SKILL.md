@@ -16,6 +16,11 @@ metadata:
 
 Generate a structured, section-by-section paper outline from: **$ARGUMENTS**
 
+This plan is downstream of the paper pitch. If `0-pitch/PAPER_PITCH.md` exists,
+read it first and preserve its hook, surprise, so-what, why-believe, and
+still-fragile framing. `PAPER_PLAN.md` is the execution outline for writing; it
+does not replace the one-minute story.
+
 ## Constants
 
 - **REVIEWER_MODEL = `gpt-5.4`** — Model used via Codex MCP for outline review. Must be an OpenAI model.
@@ -26,6 +31,8 @@ Generate a structured, section-by-section paper outline from: **$ARGUMENTS**
 
 The skill expects one or more of these in the project directory:
 
+0. **`0-pitch/PAPER_PITCH.md`** — current one-minute public-facing story for
+   this concrete paper. Use it as the framing constraint.
 1. **NARRATIVE_REPORT.md** or **STORY.md** — research narrative with claims and evidence
 2. **review-stage/AUTO_REVIEW.md** — auto-review loop conclusions *(fall back to `./AUTO_REVIEW.md` if not found)*
 3. **Experiment results** — JSON files in `figures/`, screen logs, tables
@@ -75,6 +82,9 @@ Before committing to a structure, apply the narrative principle from `../shared-
 
 - The paper should tell one coherent technical story.
 - By the end of the Introduction, the outline should make the **What**, **Why**, and **So What** explicit.
+- The abstract, introduction, hero figure, and discussion/application paragraph
+  should all preserve the same pitch. If they do not, revise the plan or update
+  `0-pitch/PAPER_PITCH.md` with a logged reason.
 - Front-load the most important material: title, abstract, introduction, and hero figure. Reviewers often form a judgment before reading the full method.
 
 **IMPORTANT**: The section count is FLEXIBLE (5-8 sections). Choose what fits the content best. The templates below are starting points, not rigid constraints.
@@ -253,6 +263,13 @@ Save the final outline to `PAPER_PLAN.md` in the project root:
 **Page budget**: [MAX_PAGES] pages (main body to Conclusion end, excluding references & appendix)
 **Section count**: [N] (must match the number of section files that will be created)
 
+## Pitch Alignment
+- **Current pitch**: [from 0-pitch/PAPER_PITCH.md]
+- **Hook preserved in**: [title / abstract S1 / intro P1 / hero figure]
+- **Surprise preserved in**: [abstract / intro / main result / hero figure]
+- **So what preserved in**: [abstract close / discussion / application paragraph]
+- **Still fragile preserved as**: [limitation / caveat / future work]
+
 ## Claims-Evidence Matrix
 [from Step 1]
 
@@ -283,6 +300,7 @@ Save the final outline to `PAPER_PLAN.md` in the project root:
 - **Venue-specific norms** — ML conferences (ICLR/NeurIPS/ICML) use `natbib` (`\citep`/`\citet`); **IEEE venues use `cite` package (`\cite{}`, numeric style)**
 - **Claims-Evidence Matrix is the backbone** — every claim must map to evidence, every experiment must support a claim
 - **Front-load the story** — the outline should make the contribution clear in the title, abstract, introduction, and hero figure before the reader reaches the full method
+- **Preserve the pitch** — `PAPER_PLAN.md` must not create a different public-facing story from `0-pitch/PAPER_PITCH.md`; if the evidence or venue requires a different story, update the pitch first and append `PITCH_LOG.md`
 - **Figures need detailed descriptions** — especially the hero figure, which must clearly specify comparisons and visual expectations
 - **Section count is flexible** — 5-8 sections depending on paper type. Don't force content into a rigid 5-section template.
 

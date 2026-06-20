@@ -1,10 +1,10 @@
 ---
 name: haipipe-paper-structure-bootstrap
-description: Scaffold a new manuscript paper folder (0-sections/, 0-display/, 1-feedback/, compile scripts, .gitignore) matching the proven Paper-<Name>-<Venue><Year> layout used across ProjA/ProjB.
+description: Scaffold a new manuscript paper folder (0-pitch/, 0-sections/, 0-display/, 1-feedback/, compile scripts, .gitignore) matching the proven Paper-<Name>-<Venue><Year> layout used across ProjA/ProjB.
 metadata:
   version: "2.0.0"
   last_updated: "2026-06-08"
-  summary: "Scaffold a new manuscript paper folder matching the proven 0-/1- prefix layout. Creates 0-sections, 0-display, 1-feedback, compile scripts, .gitignore, and venue-appropriate section stubs."
+  summary: "Scaffold a new manuscript paper folder matching the proven 0-/1- prefix layout. Creates 0-pitch, 0-sections, 0-display, 1-feedback, compile scripts, .gitignore, and venue-appropriate section stubs."
   changelog:
     - "2.0.0 (2026-06-08): complete rewrite — layout now matches real Paper-MapPhyTrait-npjDM2025 and Paper-Personality2Opioid-MISQ2026 folders (0-sections, 0-display, 1-feedback, compile scripts, .gitignore). Dropped generic input/notes/figures/output skeleton. Added venue templates and section stubs."
     - "1.1.0 (2026-06-05): renamed from paper-bootstrap to haipipe-paper-structure-bootstrap."
@@ -19,7 +19,7 @@ Scaffold a paper project directory that is compilable from day one. The layout u
 
 | Prefix | Purpose | Examples |
 |--------|---------|---------|
-| `0-` | Source of truth — what IS the paper | `0-*.tex`, `0-*.bib`, `0-sections/`, `0-display/` |
+| `0-` | Source of truth — what IS the paper and how it is told | `0-*.tex`, `0-*.bib`, `0-pitch/`, `0-sections/`, `0-display/` |
 | `1-` | Process — how the paper is BUILT and REVISED | `1-compile.*`, `1-config.yaml`, `1-feedback/` |
 
 Reference implementations:
@@ -60,6 +60,12 @@ Paper-<Name>-<Venue><Year>/
 │  1-config.yaml                     # optional: figure/table paths, eval config
 │
 │  .gitignore                        # LaTeX artifacts; preserves 0-display/**/*.pdf
+│
+│  # ── 0-pitch/  (one-minute story) ───────────────────────
+│  0-pitch/
+│    PAPER_PITCH.md                  # current one-minute public-facing story
+│    PITCH_LOG.md                    # short provenance log for story shifts
+│    archive/                        # semantic snapshots of older pitches
 │
 │  # ── 0-sections/  (modular .tex) ───────────────────────
 │  0-sections/
@@ -129,14 +135,16 @@ Rules (from Paper-MapPhyTrait):
    - Main `.tex` with venue-appropriate preamble + modular `\input{}` skeleton
    - `.bib` (empty with header comment)
    - SI `.tex` if venue requires separate PDF
-4. **Scaffold 0-sections/**: section stubs per venue format + `README.md`
-5. **Scaffold 0-display/**: `Figures/`, `Tables/`, `_old/`
-6. **Scaffold 1-prefix process files**:
+4. **Scaffold 0-pitch/**: one-minute `PAPER_PITCH.md`, short `PITCH_LOG.md`,
+   and `archive/` for semantic pitch snapshots
+5. **Scaffold 0-sections/**: section stubs per venue format + `README.md`
+6. **Scaffold 0-display/**: `Figures/`, `Tables/`, `_old/`
+7. **Scaffold 1-prefix process files**:
    - `1-compile.sh` and `1-compile.ps1` (auto-detect `0-*.tex`, 4-pass pdflatex)
    - `.gitignore` (LaTeX artifacts + selective PDF preservation)
    - `1-config.yaml` (optional, with figure/table path defaults)
-7. **Create 1-feedback/** as empty dir (revision rounds created on demand)
-8. **Report** what was created and the next step (usually: write the abstract or fill author info)
+8. **Create 1-feedback/** as empty dir (revision rounds created on demand)
+9. **Report** what was created and the next step (usually: fill `0-pitch/PAPER_PITCH.md`, write the abstract, or fill author info)
 
 ## Compile Script Contract
 
@@ -211,6 +219,8 @@ Do NOT write memory for transient to-dos or single-round wording preferences.
 - Putting section headers in section files (the main `.tex` owns `\section{}`)
 - Using flat figure directory instead of `Figures/` + `Tables/` under `0-display/`
 - Forgetting the PowerShell compile script (Windows users need it)
+- Skipping `0-pitch/PAPER_PITCH.md` and letting the abstract/intro invent
+  different public-facing stories
 
 ## Output Standard
 
@@ -220,4 +230,4 @@ When bootstrapping is complete, report:
 - Main `.tex` file name
 - Number of section stubs created
 - Compile scripts present
-- Next step (usually: write abstract, fill author block, or add style file)
+- Next step (usually: fill `0-pitch/PAPER_PITCH.md`, write abstract, fill author block, or add style file)

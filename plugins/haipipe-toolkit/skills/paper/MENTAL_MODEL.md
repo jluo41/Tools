@@ -1,5 +1,9 @@
 # paper — the mental model: two cycles, one gate
 
+For the full paper journey from seed idea to submission, revision, and
+presentation, including file-change maps and loopback diagnosis, see
+`LIFECYCLE.md`.
+
 A paper is not a linear pipeline. It is **two loops that alternate until they
 converge**, with a review gate deciding which loop you re-enter:
 
@@ -30,10 +34,16 @@ Run **① then ② then the gate**, and repeat. Each loop is itself iterative
 ## ① PLAN cycle — decide *what the paper says*
 
 Settles the argument before prose exists (or when prose has drifted from it):
-narrative/story, core claim, **claim → evidence map**, section architecture,
-outline, and the **figure inventory** (which figures, one claim each).
+one-minute paper pitch, narrative/story, core claim, **claim → evidence map**,
+section architecture, outline, and the **figure inventory** (which figures, one
+claim each).
 
 **Output: a design contract** the edit cycle realizes.
+
+The lightest artifact in this cycle is `0-pitch/PAPER_PITCH.md`: the current
+one-minute story for this concrete manuscript. It can start from intuition, but
+later pitch shifts should cite the source in `0-pitch/PITCH_LOG.md` and archive
+semantic old versions under `0-pitch/archive/`.
 
 Skills today: `1-narrative/narrative-report`, `2-plan/{paper-architecture,
 paper-bootstrap, paper-incubator, paper-plan, paper-structure-diagram}`, and
@@ -134,6 +144,7 @@ whole arc: plan → edit → gate → submit → rebuttal → present.
 
 | Folder today | Role | Cycle |
 |--------------|------|-------|
+| `0-pitch` | one-minute story + pitch provenance | ① plan |
 | `1-narrative` | story / claim contract | ① plan |
 | `2-plan` | architecture, outline, structure-diagram | ① plan |
 | `3-figure` (figure-planner) | figure inventory | ① plan |

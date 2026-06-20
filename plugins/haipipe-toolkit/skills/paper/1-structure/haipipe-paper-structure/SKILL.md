@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-structure
-description: "Orchestrator for the paper structure lifecycle (1-structure). Routes to specialists: folder (scaffold), narrative (design contract), architecture (blueprint+minimap), plan (outline), diagram (structural audit), incubator (working docs), figure-planner (inventory), figure (plots/tables), figure-spec (vector diagrams), illustration (AI images). Use when you need any structural work on a paper before or during writing. Trigger: paper structure, scaffold paper, paper outline, paper architecture, figure plan, paper diagram, incubator, /haipipe-paper-structure."
+description: "Orchestrator for the paper structure lifecycle (1-structure). Routes to specialists: folder (scaffold), pitch (one-minute story), narrative (design contract), architecture (blueprint+minimap), plan (outline), diagram (structural audit), incubator (working docs), figure-planner (inventory), figure (plots/tables), figure-spec (vector diagrams), illustration (AI images). Use when you need any structural work on a paper before or during writing. Trigger: paper structure, paper pitch, scaffold paper, paper outline, paper architecture, figure plan, paper diagram, incubator, /haipipe-paper-structure."
 argument-hint: "[function] [paper-path-or-input] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
   version: "1.0.0"
   last_updated: "2026-06-08"
-  summary: "Orchestrator for 1-structure — routes to 11 specialists covering folder scaffold through figure production."
+  summary: "Orchestrator for 1-structure — routes to specialists covering folder scaffold, paper pitch, narrative, planning, and figure production."
   changelog:
     - "1.0.0 (2026-06-08): created as orchestrator over all 1-structure specialists."
 ---
@@ -26,6 +26,7 @@ narrative, outlines, figures, or diagrams itself.
 ```
 /haipipe-paper-structure                                -> dashboard (list specialists + pipeline)
 /haipipe-paper-structure folder <args>                  -> scaffold paper directory
+/haipipe-paper-structure pitch <args>                   -> 0-pitch/PAPER_PITCH.md + provenance
 /haipipe-paper-structure narrative <args>               -> NARRATIVE_REPORT.md (design contract)
 /haipipe-paper-structure architecture <args>            -> vNN-architecture-minimap.md
 /haipipe-paper-structure plan <args>                    -> PAPER_PLAN.md (structured outline)
@@ -50,6 +51,11 @@ Specialists
 haipipe-paper-folder                  SCAFFOLD:  create Paper-<Name>-<Venue><Year>/ with
                                                  0-sections, 0-display, 1-feedback, compile
                                                  scripts, .gitignore, section stubs (IRDM/IMRD/IS)
+
+haipipe-paper-structure-pitch         PITCH:     maintain 0-pitch/PAPER_PITCH.md — the
+                                                 one-minute public-facing story for this
+                                                 concrete paper, plus PITCH_LOG.md and
+                                                 archive/ snapshots for pitch provenance.
 
 haipipe-paper-structure-narrative     CONTRACT:  generate NARRATIVE_REPORT.md from research
                                                  artifacts — problem, core claim, method,
@@ -110,17 +116,19 @@ invoked standalone. The typical first-pass order:
 ```
 ① folder         scaffold the directory
       ↓
-② narrative      design contract from upstream research
+② pitch          one-minute public-facing story + provenance
       ↓
-③ architecture   strategic blueprint + section minimap
+③ narrative      design contract from upstream research
       ↓
-④ plan           structured outline with page budgets
+④ architecture   strategic blueprint + section minimap
       ↓
-⑤ figure-plan    decide what figures show, panel roles
+⑤ plan           structured outline with page budgets
       ↓
-⑥ figure / figure-spec / illustration   make the visual assets
+⑥ figure-plan    decide what figures show, panel roles
       ↓
-⑦ diagram        audit structure before handing off to Edit cycle
+⑦ figure / figure-spec / illustration   make the visual assets
+      ↓
+⑧ diagram        audit structure before handing off to Edit cycle
 ```
 
 `incubator` runs in parallel at any point (scratch docs for thinking).
@@ -143,7 +151,7 @@ Step 2: Resolve function:
   - Default if no match                              -> dashboard (inline)
 
 Step 3: Dispatch:
-    function = "folder"    -> Skill("haipipe-paper-folder", args)
+    function = "folder"    -> Skill("haipipe-paper-structure-bootstrap", args)
     function = else        -> Skill("haipipe-paper-structure-<function>", args)
 
     Special: "figure-plan" -> Skill("haipipe-paper-structure-figure-planner", args)
@@ -161,6 +169,9 @@ folder, scaffold, bootstrap, init, new paper dir,
 
 narrative, story, design contract, NARRATIVE_REPORT,
   claim-evidence matrix, core claim                   -> narrative
+
+pitch, paper pitch, one-minute story, hook, surprise,
+  so what, story trajectory, pitch provenance          -> pitch
 
 architecture, blueprint, minimap, 5-act arc,
   strategic overview, vNN-architecture                -> architecture
@@ -194,6 +205,7 @@ illustration-image2, codex illustration, codex bridge,
 Function aliases (positional):
 ```
 folder, scaffold, bootstrap, init                -> folder
+pitch, paper-pitch, storycard                    -> pitch
 narrative, story, contract                       -> narrative
 architecture, arch, blueprint, minimap           -> architecture
 plan, outline                                    -> plan
@@ -218,6 +230,7 @@ When invoked with no arguments, emit a compact specialist chooser:
 
   Foundation:
     folder         Scaffold Paper-<Name>-<Venue><Year>/ directory
+    pitch          Maintain 0-pitch/PAPER_PITCH.md (one-minute story)
     narrative      Generate NARRATIVE_REPORT.md (design contract)
 
   Architecture & Planning:
@@ -232,7 +245,7 @@ When invoked with no arguments, emit a compact specialist chooser:
     figure-spec    Deterministic vector diagrams (JSON → SVG)
     illustration   AI illustrations (Gemini + Claude refinement)
 
-  Pipeline: folder → narrative → architecture → plan → figure-plan → figure → diagram
+  Pipeline: folder → pitch → narrative → architecture → plan → figure-plan → figure → diagram
 
 Next: /haipipe-paper-structure <function> "<input>"
 ```
@@ -273,6 +286,7 @@ haipipe-paper (venue router)
             ▼
 haipipe-paper-structure (this orchestrator)
   ├─► folder
+  ├─► pitch
   ├─► narrative
   ├─► architecture
   ├─► plan
