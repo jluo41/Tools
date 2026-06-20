@@ -1,0 +1,6 @@
+id: T001_baseline
+status: reported
+probe_id: P001_first-check
+task_type: eval
+metric: score
+result: 0.71

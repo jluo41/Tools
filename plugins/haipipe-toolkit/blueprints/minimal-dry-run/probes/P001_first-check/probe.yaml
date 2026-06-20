@@ -1,0 +1,21 @@
+id: P001_first-check
+status: closed
+narrative_id: N001_toy-claim
+claim: Candidate method beats the baseline on the target metric.
+verdict: supported_with_caveats
+
+evidence_refs:
+  discoveries:
+    - discoveries/D001_prior-art/verdict.md
+  tasks:
+    - tasks/T001_baseline/results/metrics.json
+    - tasks/T002_candidate/results/metrics.json
+
+completion_gate:
+  require_discovery_verdicts: true
+  require_task_reports: true
+  required_task_status: reported
+
+claim_result:
+  summary: Candidate score is higher than baseline, but robustness is untested.
+  supports_narrative_claim: partial

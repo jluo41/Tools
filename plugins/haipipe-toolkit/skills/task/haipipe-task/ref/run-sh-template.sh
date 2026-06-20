@@ -172,11 +172,8 @@ headline:   $HEADLINE
 EOF
 mv "$RUNTIME_YAML.tmp" "$RUNTIME_YAML"
 
-# ─── 6. Regenerate task-log.md (delegate to haipipe-task-logging) ─────────
-REGEN="$REPO_ROOT/Tools/plugins/haipipe-toolkit/skills/task/haipipe-task-logging/ref/regen_task_log.py"
-if [ -f "$REGEN" ]; then
-  python3 "$REGEN" "$TASK_DIR" 2>/dev/null \
-    || echo "==> [warn] task-log regen failed (non-fatal, see $REGEN)" >&2
-fi
+# ─── 6. Hand off observability to Report stage ─────────────────────────────
+echo "==> Runtime written to $RUNTIME_YAML"
+echo "==> Next: /haipipe-task report $TASK_DIR"
 
 exit $EXIT_CODE

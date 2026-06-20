@@ -1,0 +1,6 @@
+id: D001_prior-art
+status: ok
+probe_id: P001_first-check
+role: prior_art_check
+question: Is there direct prior art that already resolves this claim?
+verdict_file: verdict.md

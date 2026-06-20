@@ -83,6 +83,18 @@ Do not plan a prefix migration for these folders. Keep existing skill paths and
 references stable.
 
 
+Skill Identity And Refresh
+==========================
+
+Folder names are organization only. A skill is identified by the `name:` field
+inside its `SKILL.md` frontmatter.
+
+After a folder rename, an already-running Codex session may still show the old
+path in its cached skill list. Start a fresh session or reload the plugin index
+to see the new folder paths. Do not rename skill `name:` values just to match
+folder names.
+
+
 Blueprint Docs
 ==============
 
