@@ -1,0 +1,105 @@
+[submodule "references/academic-research-skills"]
+	path = references/academic-research-skills
+	url = https://github.com/Imbad0202/academic-research-skills
+[submodule "references/aris"]
+	path = references/aris
+	url = https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep
+[submodule "references/ft50-empirical-writing"]
+	path = references/ft50-empirical-writing
+	url = https://github.com/liyuanbo1024/ft50-empirical-writing
+[submodule "references/paperjury"]
+	path = references/paperjury
+	url = https://github.com/u7079256/paperjury
+[submodule "references/auto-empirical-research-skills"]
+	path = references/auto-empirical-research-skills
+	url = https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills
+[submodule "references/statspai"]
+	path = references/statspai
+	url = https://github.com/brycewang-stanford/StatsPAI
+[submodule "references/awesome-journal-skills"]
+	path = references/awesome-journal-skills
+	url = https://github.com/brycewang-stanford/Awesome-Journal-Skills
+[submodule "references/aer-skills"]
+	path = references/aer-skills
+	url = https://github.com/brycewang-stanford/AER-Skills
+[submodule "references/auto-research-skills"]
+	path = references/auto-research-skills
+	url = https://github.com/brycewang-stanford/Auto-Research-Skills
+[submodule "references/tools/statsmodels"]
+	path = references/tools/statsmodels
+	url = https://github.com/statsmodels/statsmodels
+[submodule "references/tools/dowhy"]
+	path = references/tools/dowhy
+	url = https://github.com/py-why/dowhy
+[submodule "references/tools/causalml"]
+	path = references/tools/causalml
+	url = https://github.com/uber/causalml
+[submodule "references/tools/econml"]
+	path = references/tools/econml
+	url = https://github.com/py-why/EconML
+[submodule "references/tools/python-causality-handbook"]
+	path = references/tools/python-causality-handbook
+	url = https://github.com/matheusfacure/python-causality-handbook
+[submodule "references/paper2beamer-skills"]
+	path = references/paper2beamer-skills
+	url = https://github.com/Sheng910411/paper2beamer-skills
+[submodule "references/research-genealogy"]
+	path = references/research-genealogy
+	url = https://github.com/unumbrela/research-genealogy
+[submodule "references/paper-to-patent-skill-snipp-zha"]
+	path = references/paper-to-patent-skill-snipp-zha
+	url = https://github.com/snipp-zha/Paper-to-patent-Skill
+[submodule "references/paper-to-patent-tangrj"]
+	path = references/paper-to-patent-tangrj
+	url = https://github.com/TangRj-Git/paper-to-patent
+[submodule "references/paper-to-patent-wyxsjtu"]
+	path = references/paper-to-patent-wyxsjtu
+	url = https://github.com/wyxsjtu/paper-to-patent
+[submodule "references/literature-source-tracing"]
+	path = references/literature-source-tracing
+	url = https://github.com/hengdaoye50/literature-source-tracing
+[submodule "references/intelligrapher"]
+	path = references/intelligrapher
+	url = https://github.com/MrLee2R/Intelligrapher
+[submodule "references/happy-figure-skill"]
+	path = references/happy-figure-skill
+	url = https://github.com/BAIKEMARK/happy-figure-skill
+[submodule "references/science-superpowers"]
+	path = references/science-superpowers
+	url = https://github.com/K-Dense-AI/science-superpowers
+[submodule "references/superpower-socialscience-skills"]
+	path = references/superpower-socialscience-skills
+	url = https://github.com/ptreezh/superpower-socialscience-skills
+[submodule "references/mathmodel-skill"]
+	path = references/mathmodel-skill
+	url = https://github.com/handsomeZR-netizen/mathmodel-skill
+[submodule "references/claude-code-math-skills"]
+	path = references/claude-code-math-skills
+	url = https://github.com/lonexreb/claude-code-math-skills
+[submodule "references/stop-slop"]
+	path = references/stop-slop
+	url = https://github.com/hardikpandya/stop-slop
+[submodule "references/stop-slop-zh"]
+	path = references/stop-slop-zh
+	url = https://github.com/VincentOld/stop-slop-zh
+[submodule "references/llm-wiki-skill"]
+	path = references/llm-wiki-skill
+	url = https://github.com/oscarxl/llm-wiki-skill
+[submodule "references/tools/chatgpt-comparison-detection"]
+	path = references/tools/chatgpt-comparison-detection
+	url = https://github.com/Hello-SimpleAI/chatgpt-comparison-detection
+[submodule "references/research-workflows/ai-scientist"]
+	path = references/research-workflows/ai-scientist
+	url = https://github.com/SakanaAI/AI-Scientist
+[submodule "references/workflow-diagrams/aris"]
+	path = references/workflow-diagrams/aris
+	url = https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep
+[submodule "references/workflow-diagrams/ccskill"]
+	path = references/workflow-diagrams/ccskill
+	url = https://github.com/anthropics/skills
+[submodule "references/workflow-diagrams/excalidraw-diagram-skill"]
+	path = references/workflow-diagrams/excalidraw-diagram-skill
+	url = https://github.com/coleam00/excalidraw-diagram-skill
+[submodule "references/workflow-diagrams/nature-paper-skills"]
+	path = references/workflow-diagrams/nature-paper-skills
+	url = https://github.com/Boom5426/Nature-Paper-Skills

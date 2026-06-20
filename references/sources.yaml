@@ -1,0 +1,309 @@
+references:
+  - name: academic-research-skills
+    path: references/academic-research-skills
+    type: git-submodule
+    url: https://github.com/Imbad0202/academic-research-skills
+    license: CC-BY-NC-4.0
+    notes: "Original copied tree replaced by submodule."
+
+  - name: aris
+    path: references/aris
+    type: git-submodule
+    url: https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep
+    license: MIT
+    notes: "Matched from ARIS workflow diagram and public ARIS repository."
+
+  - name: ft50-empirical-writing
+    path: references/ft50-empirical-writing
+    type: git-submodule
+    url: https://github.com/liyuanbo1024/ft50-empirical-writing
+    license: MIT
+    notes: "FT50 empirical paper writing skill for OpenCode, Claude Code, and Codex."
+
+  - name: paperjury
+    path: references/paperjury
+    type: git-submodule
+    url: https://github.com/u7079256/paperjury
+    license: MIT
+    notes: "Pre-submission AI review stress-test skill: review, verdict, revise, verify."
+
+  - name: auto-empirical-research-skills
+    path: references/auto-empirical-research-skills
+    type: git-submodule
+    url: https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills
+    license: CC-BY-SA-4.0
+    notes: "Large curated social-science empirical research skill collection."
+
+  - name: statspai
+    path: references/statspai
+    type: git-submodule
+    url: https://github.com/brycewang-stanford/StatsPAI
+    license: MIT
+    notes: "Agent-native causal inference and applied econometrics toolkit; more library/MCP than pure skill."
+
+  - name: awesome-journal-skills
+    path: references/awesome-journal-skills
+    type: git-submodule
+    url: https://github.com/brycewang-stanford/Awesome-Journal-Skills
+    license: MIT
+    notes: "Journal-specific Claude Code/Codex skill packs."
+
+  - name: aer-skills
+    path: references/aer-skills
+    type: git-submodule
+    url: https://github.com/brycewang-stanford/AER-Skills
+    license: MIT
+    notes: "AER-focused publication workflow skill stack."
+
+  - name: auto-research-skills
+    path: references/auto-research-skills
+    type: git-submodule
+    url: https://github.com/brycewang-stanford/Auto-Research-Skills
+    license: CC0-1.0
+    notes: "Autonomous research skill and agent hub."
+
+  - name: paper2beamer-skills
+    path: references/paper2beamer-skills
+    type: git-submodule
+    url: https://github.com/Sheng910411/paper2beamer-skills
+    license: unknown
+    notes: "Claude Code skill for turning academic papers into Beamer decks and research-gap analyses."
+
+  - name: research-genealogy
+    path: references/research-genealogy
+    type: git-submodule
+    url: https://github.com/unumbrela/research-genealogy
+    license: unknown
+    notes: "Claude Code skill for citation-verified research genealogy, timelines, Mermaid, and draw.io output."
+
+  - name: paper-to-patent-skill-snipp-zha
+    path: references/paper-to-patent-skill-snipp-zha
+    type: git-submodule
+    url: https://github.com/snipp-zha/Paper-to-patent-Skill
+    license: unknown
+    notes: "Paper-to-patent skill implementation; one of several similar references."
+
+  - name: paper-to-patent-tangrj
+    path: references/paper-to-patent-tangrj
+    type: git-submodule
+    url: https://github.com/TangRj-Git/paper-to-patent
+    license: unknown
+    notes: "Codex skill for generating Chinese invention patent disclosure drafts from LaTeX/paper inputs."
+
+  - name: paper-to-patent-wyxsjtu
+    path: references/paper-to-patent-wyxsjtu
+    type: git-submodule
+    url: https://github.com/wyxsjtu/paper-to-patent
+    license: MIT
+    notes: "Claude Code skill for converting academic papers into Chinese invention patent disclosures."
+
+  - name: literature-source-tracing
+    path: references/literature-source-tracing
+    type: git-submodule
+    url: https://github.com/hengdaoye50/literature-source-tracing
+    license: unknown
+    notes: "Claude Code skill for tracing citations to source passages in reference PDFs."
+
+  - name: intelligrapher
+    path: references/intelligrapher
+    type: git-submodule
+    url: https://github.com/MrLee2R/Intelligrapher
+    license: MIT
+    notes: "Scientific research illustration assistant / Claude Code skill."
+
+  - name: happy-figure-skill
+    path: references/happy-figure-skill
+    type: git-submodule
+    url: https://github.com/BAIKEMARK/happy-figure-skill
+    license: MIT
+    notes: "Generates structured scientific figure prompts from research content."
+
+  - name: science-superpowers
+    path: references/science-superpowers
+    type: git-submodule
+    url: https://github.com/K-Dense-AI/science-superpowers
+    license: MIT
+    notes: "Composable computational-science methodology skills for AI research agents."
+
+  - name: superpower-socialscience-skills
+    path: references/superpower-socialscience-skills
+    type: git-submodule
+    url: https://github.com/ptreezh/superpower-socialscience-skills
+    license: mixed
+    notes: "Social-science research skill collection and online-guide companion."
+
+  - name: mathmodel-skill
+    path: references/mathmodel-skill
+    type: git-submodule
+    url: https://github.com/handsomeZR-netizen/mathmodel-skill
+    license: unknown
+    notes: "Math modeling competition skill supporting Claude Code and Codex CLI."
+
+  - name: claude-code-math-skills
+    path: references/claude-code-math-skills
+    type: git-submodule
+    url: https://github.com/lonexreb/claude-code-math-skills
+    license: MIT
+    notes: "Rigorous math problem-solving skill stack with generator-critic, Lean 4, and SymPy checks."
+
+  - name: stop-slop
+    path: references/stop-slop
+    type: git-submodule
+    url: https://github.com/hardikpandya/stop-slop
+    license: MIT
+    notes: "Skill file for removing common AI tells from prose."
+
+  - name: stop-slop-zh
+    path: references/stop-slop-zh
+    type: git-submodule
+    url: https://github.com/VincentOld/stop-slop-zh
+    license: MIT
+    notes: "Chinese Claude skill for reducing AI writing traces."
+
+  - name: llm-wiki-skill
+    path: references/llm-wiki-skill
+    type: git-submodule
+    url: https://github.com/oscarxl/llm-wiki-skill
+    license: MIT
+    notes: "Claude Code skill for LLM-driven personal knowledge base management; includes good-question collection."
+
+  - name: tools/statsmodels
+    path: references/tools/statsmodels
+    type: tool-library-submodule
+    url: https://github.com/statsmodels/statsmodels
+    license: BSD-3-Clause
+    notes: "General statistical modeling library from screenshot's social-science tool list."
+
+  - name: tools/dowhy
+    path: references/tools/dowhy
+    type: tool-library-submodule
+    url: https://github.com/py-why/dowhy
+    license: MIT
+    notes: "Causal inference library from screenshot's social-science tool list."
+
+  - name: tools/causalml
+    path: references/tools/causalml
+    type: tool-library-submodule
+    url: https://github.com/uber/causalml
+    license: Apache-2.0
+    notes: "Uplift modeling and causal ML library from screenshot's social-science tool list."
+
+  - name: tools/econml
+    path: references/tools/econml
+    type: tool-library-submodule
+    url: https://github.com/py-why/EconML
+    license: MIT
+    notes: "Heterogeneous treatment-effect estimation library from screenshot's social-science tool list."
+
+  - name: tools/python-causality-handbook
+    path: references/tools/python-causality-handbook
+    type: tool-library-submodule
+    url: https://github.com/matheusfacure/python-causality-handbook
+    license: MIT
+    notes: "Causal inference handbook from screenshot's social-science tool list."
+
+  - name: tools/chatgpt-comparison-detection
+    path: references/tools/chatgpt-comparison-detection
+    type: tool-library-submodule
+    url: https://github.com/Hello-SimpleAI/chatgpt-comparison-detection
+    license: MIT
+    notes: "ChatGPT comparison/detection project from de-AI-flavor screenshot list; tool reference, not a skill."
+
+  - name: research-workflows/ai-scientist
+    path: references/research-workflows/ai-scientist
+    type: research-workflow-submodule
+    url: https://github.com/SakanaAI/AI-Scientist
+    license: Apache-2.0
+    notes: "Autonomous scientific discovery workflow reference; related to autoresearch/ML experiment workflows."
+
+  - name: workflow-diagrams/aris
+    path: references/workflow-diagrams/aris
+    type: git-submodule
+    url: https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep
+    license: MIT
+    notes: "Workflow diagram snapshot replaced by ARIS upstream repo submodule. Local snapshot backup: /tmp/workflow-diagrams-backup-20260620/aris."
+
+  - name: workflow-diagrams/ccskill
+    path: references/workflow-diagrams/ccskill
+    type: git-submodule
+    url: https://github.com/anthropics/skills
+    license: mixed
+    notes: "Workflow diagram labeled Anthropic Demo Skill Library; replaced by Anthropic official skills repo submodule. Local snapshot backup: /tmp/workflow-diagrams-backup-20260620/ccskill."
+
+  - name: workflow-diagrams/excalidraw-diagram-skill
+    path: references/workflow-diagrams/excalidraw-diagram-skill
+    type: git-submodule
+    url: https://github.com/coleam00/excalidraw-diagram-skill
+    license: unknown
+    notes: "Workflow diagram replaced by Excalidraw diagram skill upstream repo submodule. Local snapshot backup: /tmp/workflow-diagrams-backup-20260620/excalidraw-diagram-skill."
+
+  - name: workflow-diagrams/nature-paper-skills
+    path: references/workflow-diagrams/nature-paper-skills
+    type: git-submodule
+    url: https://github.com/Boom5426/Nature-Paper-Skills
+    license: unknown
+    notes: "Workflow diagram replaced by Nature Paper Skills upstream repo submodule. Local snapshot backup: /tmp/workflow-diagrams-backup-20260620/nature-paper-skills."
+
+candidates_from_screenshots:
+  - name: CCFA-Skill
+    status: unresolved
+    notes: "Screenshot listed as full-process top-conference paper workflow; no verified public repository added yet."
+  - name: Paper-Skill
+    status: unresolved
+    notes: "Screenshot listed as writing repository; no verified public repository added yet."
+  - name: Question-Validator
+    status: unresolved
+    notes: "Screenshot listed as question validation; no verified public repository added yet."
+  - name: Empirical-Paper
+    status: unresolved
+    notes: "Screenshot listed as empirical paper skill; possibly covered by ft50-empirical-writing and auto-empirical-research-skills."
+  - name: Paper-to-Patent
+    status: added
+    paths: [references/paper-to-patent-skill-snipp-zha, references/paper-to-patent-tangrj, references/paper-to-patent-wyxsjtu]
+  - name: In-depth-Research
+    status: unresolved
+    notes: "Screenshot listed as deep research; no verified public repository added yet."
+  - name: Paper-to-Storyboard
+    status: unresolved
+    notes: "Screenshot listed as paper-to-webpage/storyboard; no verified public repository added yet."
+  - name: Source-Tracing
+    status: added
+    path: references/literature-source-tracing
+  - name: Paper2Beamer
+    status: added
+    path: references/paper2beamer-skills
+  - name: Research-Genealogy
+    status: added
+    path: references/research-genealogy
+  - name: Good-Question
+    status: partially-covered
+    path: references/llm-wiki-skill
+    notes: "GitHub search found llm-wiki-skill with good-question collection; exact screenshot source still unresolved."
+  - name: Intelligrapher
+    status: added
+    path: references/intelligrapher
+  - name: Paperjury
+    status: added
+    path: references/paperjury
+  - name: Math.Skill
+    status: added
+    paths: [references/mathmodel-skill, references/claude-code-math-skills]
+  - name: Research Planning
+    status: unresolved
+    notes: "Screenshot listed as research planning; no verified public repository added yet."
+  - name: Happy Figure
+    status: added
+    path: references/happy-figure-skill
+  - name: Deep Research
+    status: partially-covered
+    notes: "Covered by existing academic-research-skills and ARIS references; exact screenshot source not verified."
+  - name: Science Superpower
+    status: added
+    paths: [references/science-superpowers, references/superpower-socialscience-skills]
+  - name: de-ai-flavor skill list
+    status: partially-added
+    paths: [references/stop-slop, references/stop-slop-zh, references/tools/chatgpt-comparison-detection]
+    notes: "Added stop-slop, stop-slop-zh, and chatgpt-comparison-detection. humanizer, taste-skill, ai-flavor-remover, shounhenhua, nuwa-skill, writing-agent, and De-AI-Prompt-Enhancer still unresolved."
+  - name: social-science tool list
+    status: added
+    paths: [references/auto-empirical-research-skills, references/statspai, references/awesome-journal-skills, references/aer-skills, references/auto-research-skills, references/tools/statsmodels, references/tools/dowhy, references/tools/causalml, references/tools/econml, references/tools/python-causality-handbook]
