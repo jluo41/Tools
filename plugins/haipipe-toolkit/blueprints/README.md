@@ -15,6 +15,8 @@ projects. They exist to answer:
 
 Start here:
 
+- `hai-pipe-stack-concept.png` - visual concept map for Narrative, Probe,
+  Discovery, Task, Insight, and sibling folder references.
 - `end-to-end-sandwich-run.md` - one narrative, one probe, two discoveries,
   and three tasks from start to finish.
 - `minimal-dry-run/` - a tiny completed run fixture with project log,
