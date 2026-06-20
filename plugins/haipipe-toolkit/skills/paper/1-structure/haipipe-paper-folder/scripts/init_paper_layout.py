@@ -67,6 +67,7 @@ FORMAT_MAP = {
 # ---------------------------------------------------------------------------
 
 DEFAULT_DIRS = [
+    "0-pitch/archive",
     "0-sections",
     "0-display/Figures",
     "0-display/Tables",
@@ -396,6 +397,68 @@ def config_yaml(name: str, venue: str) -> str:
     """)
 
 
+def paper_pitch(name: str, venue: str) -> str:
+    return textwrap.dedent(f"""\
+        # Paper Pitch
+
+        Paper: {name} ({venue})
+
+        ## Current Pitch
+        One sentence that a non-specialist can repeat after one minute.
+
+        ## Hook
+        Why should a random reader care?
+
+        ## Surprise
+        What is the non-obvious turn, tension, or finding?
+
+        ## So What
+        What changes if this story is true, and who can use it?
+
+        ## Why Believe
+        - Evidence 1: [source path or intuition if seed-stage]
+        - Evidence 2: [source path]
+        - Evidence 3: [source path]
+
+        ## Still Fragile
+        - The weakest point or most important missing evidence.
+
+        ## Next Evidence Move
+        What discovery, task, probe, or review should happen next?
+    """)
+
+
+def pitch_log(name: str, venue: str) -> str:
+    return textwrap.dedent(f"""\
+        # Pitch Log
+
+        Paper: {name} ({venue})
+
+        This file records semantic story shifts. Keep each entry short. Archive
+        old full pitch snapshots under `archive/` when the story state changes.
+
+        ## v01 -- Seed
+
+        Archived:
+        - none
+
+        Source:
+        - Author intuition / initial review / early project direction.
+
+        Pitch:
+        - See `PAPER_PITCH.md`.
+
+        Why this version:
+        - Initial public-facing story before the evidence base is stable.
+
+        Still fragile:
+        - No direct evidence may exist yet.
+
+        Next:
+        - Identify the first discovery, task, or probe that can strengthen or kill this story.
+    """)
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -441,6 +504,11 @@ def main() -> None:
     # 1. Directories
     for d in DEFAULT_DIRS:
         track_dir(d)
+
+    # 1a. One-minute paper pitch
+    track_file("0-pitch/PAPER_PITCH.md", paper_pitch(args.name, args.venue))
+    track_file("0-pitch/PITCH_LOG.md", pitch_log(args.name, args.venue))
+    track_file("0-pitch/archive/.gitkeep", "")
 
     # 2. Section stubs
     for filename, stub in sections:

@@ -19,6 +19,12 @@ metadata:
 **Version:** 3.1
 **Purpose:** Generate ONE versioned markdown file combining strategic overview with paragraph-level section minimap. All decisions tracked inline. Output ready to hand to a writing agent.
 
+If `0-pitch/PAPER_PITCH.md` exists in the paper folder, read it first. The
+architecture should expand the current one-minute pitch into a 5-act arc and
+section minimap; it should not invent a competing hook, surprise, or so-what.
+If the architecture needs a different public-facing story, update the pitch
+through `/haipipe-paper-structure pitch` and log the reason.
+
 ---
 
 ## Output
@@ -38,6 +44,7 @@ metadata:
 ### Step 1: Auto-Detect (Silent)
 
 Read input files and detect:
+- Current paper pitch: `0-pitch/PAPER_PITCH.md` if present
 - Paper type: empirical / design-science / theory / hybrid
 - Venue + page limit (MISQ Research Article = 55 pages)
 - Contributions: rank by emphasis %, separate contributions (empirically tested) from implications (theoretical only)
@@ -85,11 +92,11 @@ Follow the template below. Rules:
 
 ## 5-Act Story Arc
 
-1. **Gap:**       [1 line]
-2. **Setup:**     [1 line]
-3. **Discovery:** [1 line]
-4. **Mechanism:** [1 line]
-5. **Impact:**    [1 line]
+1. **Hook / Gap:**     [1 line; inherits Hook from PAPER_PITCH.md if present]
+2. **Setup:**          [1 line]
+3. **Surprise:**       [1 line; inherits Surprise from PAPER_PITCH.md if present]
+4. **Mechanism:**      [1 line]
+5. **So What / Impact:** [1 line; inherits So What from PAPER_PITCH.md if present]
 
 ## Section Minimap — Main Body (~[N] pages)
 
@@ -239,6 +246,8 @@ After all choices locked, produce a clean version (e.g. `v03`) that:
 - [ ] Appendix plan is substantial with specific content per appendix
 - [ ] Page budget: body + appendix + refs + buffer = venue limit
 - [ ] Contributions vs implications clearly separated
+- [ ] 5-act arc preserves the current `0-pitch/PAPER_PITCH.md` hook,
+      surprise, and so-what, or the pitch log records why it changed
 - [ ] One sentence per line throughout
 - [ ] Final clean version has no `> JL:` / `{CC}` history
 - [ ] Total file length: 100-200 lines (final version)

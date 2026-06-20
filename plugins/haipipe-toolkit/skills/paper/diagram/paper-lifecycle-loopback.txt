@@ -1,0 +1,105 @@
+HAI-Pipe Paper Lifecycle
+========================
+
+Forward path
+------------
+
+  0 Seed
+    |
+    v
+  1 Paper Folder
+    |
+    v
+  2 Paper Pitch
+    |        files: 0-pitch/PAPER_PITCH.md
+    |               0-pitch/PITCH_LOG.md
+    |               0-pitch/archive/
+    v
+  3 Evidence-Backed Narrative
+    |        files: NARRATIVE_REPORT.md
+    v
+  4 Architecture / Minimap
+    |        files: vNN-architecture-minimap.md
+    v
+  5 Paper Plan
+    |        files: PAPER_PLAN.md
+    v
+  6 Build Skeleton
+    |        files: 0-sections/, 0-display/, 1-compile.sh
+    v
+  7 Write Draft
+    |        files: 0-sections/*.tex, 0-*.bib
+    v
+  8 Edit Cycle
+    |        files: comments, accepted edits, diffs
+    v
+  9 Review Gate
+    |
+    v
+ 10 Submit
+    |
+    v
+ 11 Respond / Revise
+    |
+    v
+ 12 Present
+
+
+Diagnosis-driven loopbacks
+--------------------------
+
+                        +--------------------+
+                        |    9 Review Gate   |
+                        +--------------------+
+                          |   |   |   |   |
+       local prose/cite --+   |   |   |   +-- whole idea no longer viable
+                              |   |   |       -> 0 Seed
+                              |   |   |
+                              |   |   +------ public story failed
+                              |   |           -> 2 Paper Pitch
+                              |   |
+                              |   +---------- claim/evidence mismatch
+                              |               -> 3 Narrative
+                              |               -> discovery/task/probe if evidence missing
+                              |
+                              +-------------- section/figure/argument shape wrong
+                                              -> 4 Architecture or 5 Plan
+
+       local prose/cite/number/format
+       -> 8 Edit Cycle
+
+
+Layer map
+---------
+
+  Story layer
+    0 Seed
+    2 Paper Pitch
+
+  Evidence contract layer
+    3 Evidence-Backed Narrative
+
+  Paper shape layer
+    4 Architecture / Minimap
+    5 Paper Plan
+    6 Build Skeleton
+
+  Text realization layer
+    7 Write Draft
+    8 Edit Cycle
+
+  External gate layer
+    9 Review Gate
+    10 Submit
+    11 Respond / Revise
+    12 Present
+
+
+Rule
+----
+
+  A paper moves forward through pitch, narrative, architecture, plan, draft,
+  and review; feedback loops back to the earliest layer that explains the
+  failure.
+
+  Loopback is chosen by diagnosis, not by chronology.
