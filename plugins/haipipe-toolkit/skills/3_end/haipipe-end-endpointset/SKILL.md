@@ -9,7 +9,7 @@ metadata:
   summary: "Endpoint_Set artifact-as-whole specialist."
   changelog:
     - "1.0.0 (2026-05-31): baseline metadata added."
-    - "1.1.0 (2026-06-01): added `profile` verb (latency breakdown + per-arm decomposition; fn-3-profile.md). Durable/reproducible version of the same profile lives in C_task /haipipe-task-for-inference."
+    - "1.1.0 (2026-06-01): added `profile` verb (latency breakdown + per-arm decomposition; fn-3-profile.md). Durable/reproducible version of the same profile lives in task /haipipe-task-for-inference."
 ---
 
 Skill: haipipe-end-endpointset

@@ -1,0 +1,263 @@
+DIKW boundaries + worked examples
+==================================
+
+The canonical "what belongs in which card, where the line between them is, and
+what a good one looks like." The per-type reviewers
+(`card-reviewer-{data,information,knowledge,wisdom}-agent`) enforce THIS doc +
+the format in `insight-md-schema.md`. The creators follow it.
+
+The ladder (each step is a PROMOTION, not a rename):
+
+```
+  🟦 D observe   →   🟩 I pattern   →   🟨 K believe   →   🟧 W act
+  one source         ≥2 D, a            a probe            a K, plus
+  of facts           regularity         confirms it        an action
+```
+
+Two hard gates on the ladder:
+
+```
+1. 🟩 I → 🟨 K  REQUIRES a controlled comparison (a probe: arms × seeds × test).
+   No probe → no K. A regression / observation gives strong I, NEVER K.
+2. source axis:  🟦 D + 🟩 I  describe (observational — from task results /
+   a confirmed probe's observations);  🟨 K + 🟧 W  prescribe (normative —
+   from a confirmed probe claim).
+```
+
+
+Per-layer boundary
+==================
+
+```
+🟦 D — Data — "what we observed"
+  IS:      facts + numbers from ONE source, no interpretation. An INCONCLUSIVE
+           comparison is still an observation ("tried X, Δ=−1.8 [−5.7,+2.0],
+           cannot distinguish from 0") and IS a valid D card.
+  IS NOT:  a cross-source pattern (→I) · a belief (→K) · an action (→W).
+  line→I:  one observation = D; the SAME effect across ≥ 2 observations = I.
+  source:  a probe whose result.status is `confirmed`, `refuted`, OR
+           `inconclusive` (probe.yaml result + metrics.json) / task results.
+           A `pending` / `exploratory` probe does NOT file a D (no settled run).
+           An inconclusive D MUST set frontmatter `verdict: inconclusive` and
+           its headline must state the null ("Δ … CI straddles 0"), so a reader
+           never mistakes a null for an effect.
+  filed by: task Stage 5 (Insight) → Skill("haipipe-insight-data").
+           Automatic for insight-worthy task types (eval, fit, stata-reg,
+           stata-data) when results exist. Also filed by application Phase 4.
+  style:   ## Observation (facts only) · ## Numbers (table) · ## Caveats (verbatim).
+
+🟩 I — Information — "what patterns emerged"
+  IS:      a regularity visible across ≥ 2 D cards.
+  IS NOT:  a single observation (→D) · a committed belief (→K).
+  line→K:  I says "the data TENDS to show X"; K COMMITS "X is true (scope, conf)".
+  gate:    needs ≥ 2 D cards citing the same effect / direction.
+  filed by: insight (synthesis layer). Triggered when task Stage 5 notes
+           D card count ≥ 3, by application Phase 4, or by human via
+           /haipipe-insight information. NOT filed automatically per task.
+  style:   ## Pattern statement · ## Evidence (table, ≥2 D) · ## Counter-evidence.
+
+🟨 K — Knowledge — "what we believe is true (or believe is FALSE)"
+  IS:      a validated belief with explicit scope + confidence; ALL counter-
+           evidence listed (cherry-picking = a violation). A high-confidence
+           NEGATIVE belief ("X does NOT beat baseline") is knowledge too.
+  IS NOT:  a pattern (→I) · an action (→W).
+  ★ gate:  promotion I→K REQUIRES a controlled comparison (a probe) whose
+           result.status is `confirmed` OR `refuted`. No probe, no K.
+           `pending` / `inconclusive` / `exploratory` do NOT promote.
+  source:  the probe's `claim`. `confirmed` → the belief verbatim;
+           `refuted` → the belief becomes a NEGATION, and the card MUST add
+           `contradicts:` (the prior K or hypothesis it overturns) +
+           `refutation_basis:` (the numbers that refute it). Cite supporting
+           I cards in the body where they exist.
+  filed by: probe convergence → card-creator-knowledge-agent. Automatic
+           when probe result.status = confirmed or refuted. Also filed by
+           application Phase 4.
+  line→W:  K is the belief; W is what to DO about it.
+  style:   ## Claim · ## Supporting evidence · ## Counter-evidence (ALL) ·
+           ## Confidence rationale · ## Scope.
+
+  ─ Refuted and inconclusive probes as K cards ─
+    refuted     → CAN promote to K alone, as a negative belief. Confidence is
+                  whatever the refutation supports (often high if the CI
+                  excludes 0 in the opposite direction). MUST set
+                  `contradicts:` + `refutation_basis:`.
+    inconclusive→ files a D card (marked `verdict: inconclusive`) and may join
+                  an I pattern, but MUST NOT ALONE promote to K — one null is
+                  "tested, no signal", not a belief.
+                  EXCEPTION (convergent null): when ≥3 inconclusive/refuted
+                  probes all fail the SAME way (e.g. "no model structure beats
+                  the baseline"), the I pattern MAY support ONE meta-K, with
+                  confidence capped at `medium` and a mandatory caveat line:
+                  "built on convergent nulls — suggestive, not proof (absence
+                  of evidence)". This lets the archive record "we tried N
+                  things, none worked" without overclaiming any single null.
+    Example refuted-K headline:
+      "K07: greedy policy does NOT beat random (V_DR −1.27 pp, CI [−4.0,+1.4]
+       straddles 0 — refutes the 'model personalizes' hypothesis, P.A01)."
+    Example convergent-null meta-K headline:
+      "K08: no model-structure change beats pooled (3 probes, all Δ≤0; medium
+       conf, convergent-null caveat)."
+
+🟧 W — Wisdom — "what we should do next"
+  IS:      an ACTIONABLE recommendation derived from ≥ 1 K.
+  IS NOT:  a restatement of the belief (→K) · a vague "should think about X".
+  line:    must pass "could I write the exact command / decision?". W decays.
+  filed by: insight (synthesis layer). Per-probe W optionally chained from
+           probe convergence (card-creator-wisdom-agent after K card).
+           Strategic W from application Phase 4 or human via
+           /haipipe-insight wisdom. NOT filed automatically per task.
+  style:   ## Recommendation · ## How to act (exact step) · ## Why now · ## Decay condition.
+```
+
+
+Worked example — one coherent FiLM thread, cross-referenced
+===========================================================
+
+`D01 → I01 → K01 → W01`, each a complete, schema-valid card. Note how the
+`sources` / `ref_by` chain links them, and how each card stays inside its
+boundary (D never interprets; I needs ≥2 D; K needs the probe; W is a command).
+
+--- 🟦 insights/D_data/D01_film_val.md ---
+
+```markdown
+---
+id:        D01
+layer:     D
+tags:      [film, conditioning, val]
+status:    active
+created:   2026-05-24
+updated:   2026-05-24
+source_id: P.A01
+headline:  "val: FiLM Δ -0.98 ± 0.27 mg/dL MAE (p=0.018, n=3)"
+sources:   [P.A01]
+ref_by:    [I01]
+---
+
+# D01: FiLM lowers val MAE vs baseline (n=3)
+
+## Observation
+On AIData v3, validation split, the FiLM-conditioned forecaster shows lower MAE
+than the matched baseline across 3 seeds. Reported from confirmed probe P.A01.
+
+## Numbers
+| Metric  | Value              | Split | Source       |
+|---------|--------------------|-------|--------------|
+| MAE Δ   | -0.98 ± 0.27 mg/dL | val   | P.A01 result |
+| p-value | 0.018 (paired-t)   | val   | P.A01 result |
+| seeds   | 3 (all negative Δ) | val   | P.A01 result |
+
+## Caveats
+- FiLM arm has +20% params vs baseline — scale confound (verbatim from P.A01).
+```
+
+--- 🟩 insights/I_information/I01_film_indist.md ---
+
+```markdown
+---
+id:        I01
+layer:     I
+tags:      [film, conditioning, in_dist]
+status:    active
+created:   2026-05-25
+updated:   2026-05-25
+pattern:   repeated_effect
+n_obs:     2
+direction: negative
+sources:   [D01, D03]
+ref_by:    []          # K01 sources the probe P.A01; it cites I01 as supporting evidence in its body
+---
+
+# I01: FiLM lowers MAE on in-distribution splits
+
+## Pattern statement
+Across in-distribution splits (val, test-id), FiLM lowers MAE relative to the
+matched baseline — same direction in every observed seed.
+
+## Evidence
+| Source | Metric / Split | Δ            | Direction |
+|--------|----------------|--------------|-----------|
+| D01    | MAE / val      | -0.98 ± 0.27 | negative  |
+| D03    | MAE / test-id  | -0.71 ± 0.30 | negative  |
+
+## Counter-evidence
+- No in-dist split shows a positive Δ. test-od not yet observed (see W01).
+```
+
+--- 🟨 insights/K_knowledge/K01_film_indist.md ---
+
+```markdown
+---
+id:        K01
+layer:     K
+tags:      [film, conditioning, in_dist]
+status:    active
+created:   2026-05-26
+updated:   2026-05-26
+claim:     "FiLM conditioning improves in-distribution CGM forecasting (lower MAE)"
+confidence: medium
+sources:   [P.A01]
+ref_by:    [W01]
+---
+
+# K01: FiLM improves in-distribution forecasting
+
+## Claim
+FiLM conditioning lowers MAE on in-distribution splits (val, test-id) versus a
+matched baseline. Holds in every observed seed; established by the controlled
+probe P.A01 (arms × 3 seeds, paired-t).
+
+## Supporting evidence
+- I01: repeated negative Δ across val (D01) + test-id (D03).
+
+## Counter-evidence
+- +20% params in the FiLM arm → scale confound not yet ruled out.
+- test-od (out-of-distribution) not yet measured.
+
+## Confidence rationale
+medium — direction is clean and significant in-distribution, but the scale
+confound blocks a clean causal claim. Param-matching (W01) would raise it to high.
+
+## Scope
+In-distribution only (val, test-id); AIData v3; current training schedule.
+```
+
+--- 🟧 insights/W_wisdom/W01_param_matched.md ---
+
+```markdown
+---
+id:        W01
+type:      Insight Wisdom
+layer:     W
+title:     "Param-matched FiLM re-test"
+description: "Action recommendation to isolate FiLM conditioning from scale."
+tags:      [film, conditioning, next_experiment]
+status:    active
+created:   2026-05-26
+updated:   2026-05-26
+rec:       "Run a param-matched FiLM re-test to isolate conditioning from scale"
+rec_type:  next_experiment
+cost:      medium
+sources:   [K01]
+ref_by:    []
+---
+
+# W01: Param-matched FiLM re-test
+
+## Recommendation
+Scaffold a probe with a size-reduced baseline (matched to FiLM params) vs FiLM,
+n=3 seeds, eval on val / test-id / test-od. Isolates conditioning from the +20%
+param confound flagged in K01.
+
+## How to act
+    /haipipe-probe design new 12 --title "Param-matched FiLM re-test" \
+        --hypothesis "FiLM in-dist benefit survives param-matching"
+    /haipipe-probe bridge 12
+
+## Why now
+K01 is the strongest in-distribution belief, but its scale confound blocks a
+clean paper claim and gates further FiLM work.
+
+## Decay condition
+- A param-matched result lands (this W becomes acted_on), OR
+- the project pivots away from patient-feature conditioning.
+```

@@ -9,7 +9,7 @@ Skills for the haipipe pipeline — from raw data to trained models to deployed 
 Two organizing axes
 -------------------
 
-The toolkit is laid out along **two orthogonal axes**. They are not siblings — they meet at one point (a `C_task` run), and you usually use both.
+The toolkit is laid out along **two orthogonal axes**. They are not siblings — they meet at one point (a `task` run), and you usually use both.
 
 ```
 Numbered  0–6   ENGINEERING substrate — "how data becomes a model and ships"
@@ -19,22 +19,23 @@ Numbered  0–6   ENGINEERING substrate — "how data becomes a model and ships"
                 /haipipe-individual, /haipipe-project.
                 ► THIS README documents the numbered axis.
 
-Lettered  A–G   RESEARCH lifecycle — "how to turn runs into trustworthy,
+Research        RESEARCH lifecycle — "how to turn runs into trustworthy,
                 publishable science"
-                A_discover → B_project → C_task → D_probe → E_insight
-                → F_paper → G_application
+                discover → project → task → probe → insight
+                → paper → application
                 Driven by /haipipe-discover, /haipipe-task, /haipipe-probe,
-                /haipipe-insight, /haipipe-application, and the F_paper commands.
+                /haipipe-insight, /haipipe-application, and the paper commands.
                 ► See MENTAL_MODEL.md (the model) and USAGE.md (the recipes).
+                ► See blueprints/ for expected end-to-end project run shapes.
 ```
 
-The seam between the axes is `C_task`: a task's `run.sh` *executes* a stage of the numbered pipeline and emits `metrics.json`; the lettered layer wraps those runs with scientific bookkeeping (DIKW cards, probe arms, claims).
+The seam between the axes is `task`: a task's `run.sh` *executes* a stage of the numbered pipeline and emits `metrics.json`; the research layer wraps those runs with scientific bookkeeping (DIKW cards, probe arms, claims).
 
 Glossary (one concept, three names you will see):
 
 ```
-D_probe   = the concept (a claim-directed probe)
-D_probe = the folder name (skills/D_probe/, probes/)
+probe   = the concept (a claim-directed probe)
+probe = the folder name (skills/probe/, probes/)
 /haipipe-probe = the command
 ```
 
@@ -112,7 +113,7 @@ skills/
 │   ├── haipipe-end-deploy-local/       deploy → local (Flask / FastAPI / Docker)
 │   └── haipipe-end-deploy-mlflow/      deploy → MLflow registry + serve  (DEFERRED)
 │
-├── B_project/                       (cross-cutting — lettered research axis)
+├── project/                       (cross-cutting — research axis)
 │   ├── haipipe-project/             (umbrella)
 │   ├── haipipe-project-inspect/     READ: review, summarize, inventory, overview
 │   └── haipipe-project-organize/    MODIFY: reorganize files
@@ -124,7 +125,7 @@ skills/
     └── haipipe-individual-inference-judge/  judge persona
 ```
 
-Note: the lettered research families (`A_discover/`, `B_project/`, `C_task/`, `D_probe/`, `E_insight/`, `F_paper/`, `G_application/`) live alongside the numbered ones under `skills/`. Folder prefix is organization only — a skill is identified solely by its `name:` frontmatter.
+Note: the research families (`discover/`, `project/`, `task/`, `probe/`, `insight/`, `paper/`, `application/`, `narrative/`) live alongside the numbered ones under `skills/`. Folder name is organization only — a skill is identified solely by its `name:` frontmatter.
 
 
 Stage map

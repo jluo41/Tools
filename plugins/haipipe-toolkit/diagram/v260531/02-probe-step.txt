@@ -5,7 +5,7 @@
   这一个 probe → N tasks → insight 的单元 = **一个 probe cycle**(内循环 L1 的一步)。
   probe·task·insight 不是平级,是一条 "越往上越浓缩" 的链。
 
-  Prose: ../../skills/E_insight/DESIGN.md · roles → 05
+  Prose: ../../skills/insight/DESIGN.md · roles → 05
 
 
 ─§ 🧪 The chain (bottom-up · 每层只蒸馏一次) ───────────────

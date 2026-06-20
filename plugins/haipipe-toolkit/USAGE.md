@@ -1,7 +1,7 @@
 haipipe-toolkit — Usage Guide
 ==============================
 
-Practical guide to USING the toolkit. For an inventory of what skills exist see `README.md`. For task ↔ probe boundary thinking see `skills/D_probe/MENTAL_MODEL.md`. This file is the workflow recipe book — concrete commands, common flows, gotchas.
+Practical guide to USING the toolkit. For an inventory of what skills exist see `README.md`. For task ↔ probe boundary thinking see `skills/probe/MENTAL_MODEL.md`. This file is the workflow recipe book — concrete commands, common flows, gotchas.
 
 
 The 3 worlds — one project, three folders
@@ -10,9 +10,9 @@ The 3 worlds — one project, three folders
 ```
 📦 examples/Proj{Series}-{Cat}-{Num}-{Name}/
 │
-├── 💼 tasks/         ← the WORK         (C_task)   code + runs + metrics
-├── 📊 probes/   ← the CLAIMS       (D_probe)  steering + verdicts
-└── 📰 paper/         ← the DELIVERABLE  (F_paper)  manuscripts
+├── 💼 tasks/         ← the WORK         (task)   code + runs + metrics
+├── 📊 probes/   ← the CLAIMS       (probe)  steering + verdicts
+└── 📰 paper/         ← the DELIVERABLE  (paper)  manuscripts
 ```
 
 Each world has its own specialist family. You can stay in one or cross between them; the cross-world dependency is **strict one-way**:
@@ -49,7 +49,7 @@ $EDITOR configs/5_model_clm_baseline.yaml   # fill in real ModelArgs
 
 # 4. Pre-flight: run the code reviewer (or skip with env var first time)
 # Option A: real review
-# (see Tools/plugins/haipipe-toolkit/skills/C_task/agents/reviewers/run-script-reviewer-agent.md)
+# (see Tools/plugins/haipipe-toolkit/skills/task/agents/reviewers/run-script-reviewer-agent.md)
 # Option B: skip for first smoke run
 HAIPIPE_SKIP_REVIEW=1 bash runs/5_model_clm_baseline_seed42.sh
 
@@ -164,7 +164,7 @@ Workflow E — Run a full probe (research thread)
     --title "LHM-A architecture beats baseline on test-id" \
     --hypothesis "LHM-A MAE < baseline by ≥0.5, paired-t p<0.05, N=3"
 
-# 2. Bridge — scaffold the arms as tasks in C_task and deploy
+# 2. Bridge — scaffold the arms as tasks in task and deploy
 /haipipe-probe bridge 02
 # (this auto-calls Skill("haipipe-task", "task-folder training ..."))
 
@@ -273,7 +273,7 @@ probe     /haipipe-probe design new <slug> --group A       declare new thread
                /haipipe-probe loop <probe>                     iterate until clean
                /haipipe-probe inspect [<probe>]                list / status
 
-paper          /paper-workflow / /haipipe-paper-structure-figure / ...                see F_paper section
+paper          /paper-workflow / /haipipe-paper-structure-figure / ...                see paper section
 ```
 
 
@@ -282,20 +282,20 @@ Where to go deeper
 
 ```
 What is this toolkit                         README.md (this folder)
-Project layout, 3 worlds                     skills/B_project/haipipe-project/SKILL.md
-Task ↔ probe boundary                   skills/D_probe/MENTAL_MODEL.md  ⭐
-Task hierarchy + naming                      skills/C_task/haipipe-task/ref/hierarchy.md
-Task-type series design                      skills/C_task/DESIGN.md
-runtime.yaml schema                          skills/C_task/haipipe-task/ref/runtime-yaml-schema.md
-task-log.md (per-task observability)         skills/C_task/haipipe-task-logging/SKILL.md
-Run.sh wrapper internals                     skills/C_task/haipipe-task/ref/run-sh-template.sh
-probe.yaml schema                       skills/D_probe/ref/probe-yaml-schema.md
-Bridge skill (D ↔ C connector)               skills/D_probe/haipipe-probe-bridge/SKILL.md
+Project layout, 3 worlds                     skills/project/haipipe-project/SKILL.md
+Task ↔ probe boundary                   skills/probe/MENTAL_MODEL.md  ⭐
+Task hierarchy + naming                      skills/task/haipipe-task/ref/hierarchy.md
+Task-type series design                      skills/task/DESIGN.md
+runtime.yaml schema                          skills/task/haipipe-task/ref/runtime-yaml-schema.md
+task-log.md (per-task observability)         skills/task/haipipe-task-logging/SKILL.md
+Run.sh wrapper internals                     skills/task/haipipe-task/ref/run-sh-template.sh
+probe.yaml schema                       skills/probe/haipipe-probe/ref/probe-yaml-schema.md
+Bridge skill (D ↔ C connector)               skills/probe/haipipe-probe-bridge/SKILL.md
 Pipeline (Stages 1-4)                        skills/1_data/haipipe-data/SKILL.md
 Pipeline (Stage 5 NN)                        skills/2_nn/haipipe-nn/SKILL.md
 Pipeline (Stage 6 endpoints)                 skills/3_end/haipipe-end/SKILL.md
 Per-individual contract (Stages 0-2)            skills/4_individual/haipipe-individual/SKILL.md
-Run Script Reviewer (pre-flight agent)       skills/C_task/agents/reviewers/run-script-reviewer-agent.md
+Run Script Reviewer (pre-flight agent)       skills/task/agents/reviewers/run-script-reviewer-agent.md
 ```
 
 

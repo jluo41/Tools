@@ -4,7 +4,7 @@
   谁动脑、谁动手、谁是工具,分清楚。核心比喻:🥢 ask 是领导提个方向,
   📖 narrative 是办事的人 — 自己立目标、做 plan、想清楚,再 🔧 whip probe cycles 去探索。
 
-  Prose: ../../skills/N_narrative/DESIGN.md · ../../skills/E_insight/DESIGN.md · probe-cycle → 06
+  Prose: ../../skills/narrative/DESIGN.md · ../../skills/insight/DESIGN.md · probe-cycle → 06
 
 
 ─§ 🎭 5 roles — each does ONE thing ────────────────────────

@@ -1,0 +1,101 @@
+# ─── Task Workflow Template ──────────────────────────────────────
+# Generic IPO template for any haipipe task folder.
+# Copy to <task-folder>/workflow/plan.yaml and fill in the blanks.
+#
+# Schema: project/haipipe-workflow/ref/plan-schema.md
+# Concepts: project/haipipe-workflow/ref/concepts.md
+# Lifecycle: Plan → Build → Execute → Report
+#
+# Type-specific samples (if the specialist has one):
+#   haipipe-task-for-<type>/ref/workflow-plan-sample.yaml
+
+# ─── Header ──────────────────────────────────────────────────────
+name: <TASK_NAME>                        # kebab-case, e.g. eval-band4-vs-20arm
+purpose: "<one line: what and why>"
+skill: <TASK_TYPE_SKILL>                 # e.g. haipipe-task-for-eval
+task_folder: <PATH_TO_TASK_FOLDER>       # relative to project root
+
+# ─── I: Input ────────────────────────────────────────────────────
+input:
+  args:
+    config: configs/<CONFIG>.yaml        # the frozen config for this task
+    # add task-specific args here
+  files_in:
+    - <SCRIPT>.py                        # main computation script
+    - configs/<CONFIG>.yaml              # per-run config
+    # - _WorkSpace/...                   # upstream data dependencies
+
+# ─── P: Phases ───────────────────────────────────────────────────
+phases:
+
+  - title: Run
+    detail: "<what the script does end-to-end>"
+    steps:
+      - label: "run:<SCRIPT_NAME>"
+        type: agent                      # agent | skill | workflow
+        required: true                   # true = must run, false = optional
+        prompt: |
+          <What this step does. Be specific about computation.>
+        files_in:
+          - <SCRIPT>.py
+          - configs/<CONFIG>.yaml
+          # - _WorkSpace/...             # upstream dependencies
+        files_out:
+          - results/<RUN>/<OUTPUT>       # light artifacts (in-repo)
+          - notebooks/<RUN>.ipynb        # papermill execution record
+
+  - title: Gate1
+    detail: "pre-run code quality review"
+    steps:
+      - label: "gate1:code-review"
+        type: agent
+        required: true
+        agentType: haipipe-task-reviewer-agent
+        prompt: "gate 1: review <SCRIPT>.py for intent-vs-implementation bugs"
+        files_in:
+          - <SCRIPT>.py
+          - configs/<CONFIG>.yaml
+        files_out:
+          - CODE_REVIEW.md
+        schema:
+          name: VERDICT
+          type: object
+          required: [verdict]
+          properties:
+            verdict: { type: string, enum: [pass, warn, fail] }
+            issues: { type: array, items: { type: string } }
+
+  - title: Gate2
+    detail: "post-run result audit"
+    steps:
+      - label: "gate2:result-audit"
+        type: agent
+        required: true
+        agentType: haipipe-task-reviewer-agent
+        prompt: "gate 2: audit results of <RUN>"
+        files_in:
+          - results/<RUN>/*
+          - workflow/plan-script-<SCRIPT_NAME>.yaml
+        files_out:
+          - RUN_AUDIT.md
+        schema:
+          name: VERDICT
+          type: object
+          required: [verdict]
+          properties:
+            verdict: { type: string, enum: [pass, warn, fail] }
+            findings: { type: array, items: { type: string } }
+
+# ─── O: Output ───────────────────────────────────────────────────
+output:
+  returns:
+    status: ok                           # ok | failed
+    gate1_verdict: <pass | warn | fail>
+    gate2_verdict: <pass | warn | fail>
+    headline: "<one-line result summary>"
+  files_out:
+    # Union of all step files_out:
+    - results/<RUN>/<OUTPUT>
+    - notebooks/<RUN>.ipynb
+    - CODE_REVIEW.md
+    - RUN_AUDIT.md

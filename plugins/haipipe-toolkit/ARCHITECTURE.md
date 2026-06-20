@@ -4,7 +4,7 @@ haipipe-toolkit — Architecture (the whole world)
 This is the TOP-LEVEL vision: how the whole system fits together, from raw data to real-world deliverables. Read this FIRST. The 4-layer mechanics (C / D / E / G) live in MENTAL_MODEL.md; this doc is the world they sit inside.
 
 Two naming notes carried from MENTAL_MODEL.md:
-  - "D_probe" is the concept; `D_probe` / `probes/` / `/haipipe-probe` remain compatibility names. New folder name for this layer is `probes/`.
+  - "probe" is the concept; `probe` / `probes/` / `/haipipe-probe` remain compatibility names. New folder name for this layer is `probes/`.
   - "KB" (Knowledge Base) = probes/ + tasks/ + insights/ together — the project's single source of truth about facts.
 
 
@@ -125,7 +125,7 @@ All the layers (the full table)
 5a  ├ ask          writes-KB whip主力    verb        one research session  report.md + writes insight ONLY kind that writes back to KB         applications/ask/
 5b  ├ paper/report communication (read)  verb        one manuscript/report venue snapshot           reads KB+Narrative; read-only on world    applications/paper/ report/
 5c  └ message/ui   intervention (on人)   verb        one message / one UI  deployed to real people   product reaction ↑ 回流 Source ★flywheel  applications/message/ ui/
-6   (G) Session    🎛️ dispatcher         mechanism   SESSION_STATE+plan+gate orchestrates all above   all applications share one skeleton       G_application/
+6   (G) Session    🎛️ dispatcher         mechanism   SESSION_STATE+plan+gate orchestrates all above   all applications share one skeleton       application/
 ```
 
 
@@ -241,8 +241,8 @@ Where to go from here
 
 ```
 4-layer mechanics (C/D/E/G):     MENTAL_MODEL.md
-D_probe ↔ C_task boundary:       skills/D_probe/MENTAL_MODEL.md
-E_insight card schema:           skills/E_insight/ref/insight-md-schema.md
-G_application session skeleton:  skills/G_application/haipipe-application/SKILL.md
+probe ↔ task boundary:       skills/probe/MENTAL_MODEL.md
+insight card schema:           skills/insight/ref/insight-md-schema.md
+application session skeleton:  skills/application/haipipe-application/SKILL.md
 data / source layer:             skills/1_data/haipipe-data/SKILL.md
 ```

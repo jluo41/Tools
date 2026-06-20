@@ -21,7 +21,7 @@
 
   Canonical prose:
      ../../HANDOFF.md   ../../ARCHITECTURE.md   ../../MENTAL_MODEL.md
-     ../../skills/E_insight/DESIGN.md   ../../skills/N_narrative/DESIGN.md
+     ../../skills/insight/DESIGN.md   ../../skills/narrative/DESIGN.md
 
 
 ─§ 🎭 The 5 roles (背下来这个) ─────────────────────────────

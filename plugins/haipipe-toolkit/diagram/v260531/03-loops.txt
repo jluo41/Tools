@@ -5,12 +5,12 @@
   PRODUCES one thing. (The L-labels map each cycle to existing machinery.)
 
   Prose: ../../HANDOFF.md (LATEST MOVEMENT)
-         ../../skills/D_probe/haipipe-probe-loop/SKILL.md · probe-cycle steps → 06
+         ../../skills/probe/haipipe-probe-loop/SKILL.md · probe-cycle steps → 06
 
 
 ─§ 🪆 The nesting ──────────────────────────────────────────
 
-┌─ 📖 narrative-cycle ── 1 narrative turn; whips N probe cycles    [N_narrative ✅ scope A]
+┌─ 📖 narrative-cycle ── 1 narrative turn; whips N probe cycles    [narrative ✅ scope A]
 │     立目标 → plan → 读 🧠insights → 🔧 whip probe cycles → 回读 → 🔥 ignite?
 │     ignite=ready → 🥢 application 变现 (📰/📊/💬/🖥️)
 │
@@ -18,7 +18,7 @@
 │  │     ① design → ② bridge → ③ run×N → ④ result → ⑤ verdict → ⑥ insight
 │  │     (probe-loop iterates ①–⑤ in "rounds" until ✅; ⑥ files on convergence)
 │  │
-│  │  ┌─ ✋ task-cycle ── 1 task: config → run → result            [C_task]
+│  │  ┌─ ✋ task-cycle ── 1 task: config → run → result            [task]
 │  │  │     author → 🚦 Run Script Reviewer → bash run.sh → 🚦 Run Result Auditor → result
 │  │  └──────────────────────────────────────────────────────────────
 │  └─────────────────────────────────────────────────────────────────
@@ -33,10 +33,10 @@
   +-----------------------+-----------------------------+-----------------------+
   | cycle (L-label)       | machine                     | status                |
   +-----------------------+-----------------------------+-----------------------+
-  | ✋ task-cycle          | C_task (author→run→audit)   | ✅ built              |
+  | ✋ task-cycle          | task (author→run→audit)   | ✅ built              |
   | 🔧 probe-cycle (L0)    | bridge + result + ⑥ E-file  | ✅ (⑥ now wired in)   |
   | 🔁 probe-loop (L1)     | haipipe-probe-loop          | ✅ --auto headless    |
-  | 📖 narrative-cycle (L2)| N_narrative (ignite/claims) | ✅ scope A · ⏳ auto   |
+  | 📖 narrative-cycle (L2)| narrative (ignite/claims) | ✅ scope A · ⏳ auto   |
   | 🎯 trigger (L3)        | ignite=ready → narr-report  | ✅ path exists        |
   +-----------------------+-----------------------------+-----------------------+
 
