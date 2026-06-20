@@ -1,0 +1,73 @@
+# workflow-plan-sample.yaml — individual-query task script-level plan
+# Schema: project/haipipe-workflow/ref/plan-schema.md
+# Task-level template: ../haipipe-task/ref/workflow-template.yaml
+#
+# Typical individual phases: Load → Query → Visualize
+# All outputs light (results/<run>/{plot.pdf, table.csv}).
+
+# ─── Header ──────────────────────────────────────────────────────
+name: view-<SUBJECT>-<VIEW_TYPE>
+purpose: "Query and visualize one individual's <VIEW_TYPE>"
+skill: haipipe-task-for-individual
+
+# ─── I: Input ────────────────────────────────────────────────────
+input:
+  args:
+    config: configs/<RUN>.yaml
+    subject_id: <SUBJECT_ID>
+    view_type: <timeline | treatment_events | meal_glucose>
+  files_in:
+    - <NN>_<TASK>.py
+    - configs/<RUN>.yaml
+    - _WorkSpace/A-User-Store/UserGroup-<DATASET>/Subject-<ID>
+
+# ─── P: Phases ───────────────────────────────────────────────────
+phases:
+
+  - title: Load
+    detail: "load individual's data from A-User-Store"
+    steps:
+      - label: "load:subject"
+        type: agent
+        required: true
+        prompt: "Load Subject-<ID> from _WorkSpace/A-User-Store/"
+        files_in:
+          - _WorkSpace/A-User-Store/UserGroup-<DATASET>/Subject-<ID>
+        files_out: []
+
+  - title: Query
+    detail: "filter and prepare the view-specific slice"
+    steps:
+      - label: "query:filter"
+        type: agent
+        required: true
+        prompt: "Filter to view window, join Source+Record layers"
+        files_in: []
+        files_out: []
+
+  - title: Visualize
+    detail: "render plot and export"
+    steps:
+      - label: "visualize:plot"
+        type: agent
+        required: true
+        prompt: "Render <VIEW_TYPE> plot for Subject-<ID>"
+        files_in: []
+        files_out:
+          - results/<RUN>/plot.pdf
+
+      - label: "visualize:table"
+        type: agent
+        required: false
+        prompt: "Export supporting data as CSV"
+        files_in: []
+        files_out:
+          - results/<RUN>/table.csv
+
+# ─── O: Output ───────────────────────────────────────────────────
+output:
+  returns:
+    status: ok
+  files_out:
+    - results/<RUN>/plot.pdf
+    - results/<RUN>/table.csv

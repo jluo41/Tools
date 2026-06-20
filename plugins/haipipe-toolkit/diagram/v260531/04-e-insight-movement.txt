@@ -1,11 +1,11 @@
-🧠  E_insight Movement — dual-mode + creators/reviewers
+🧠  insight Movement — dual-mode + creators/reviewers
 ========================================================
 
   🧠 insight 是 "记忆" 层。今天 📖 narrative 挥的鞭子 (🔧 probe) 打完后,
   结果没人归档进来 (⚛️ L0 的洞)。这次给 E 补骨架,让 "挥鞭 → 更新记忆" 闭合。
-  E 缺骨架: C_task / D_probe 都有 design 文档 + agents/,E 两样都没有。
+  E 缺骨架: task / probe 都有 design 文档 + agents/,E 两样都没有。
 
-  Prose: ../../skills/E_insight/DESIGN.md
+  Prose: ../../skills/insight/DESIGN.md
 
 
 ─§ 🔀 Dual-mode 调用 (🧑 人 与 🤖 agent 共用一个 body) ──────
@@ -16,7 +16,7 @@
                                                       └─▶ ❌缺+无人→ 🚧 blocked + missing[]
                                                                      (调用方补齐再调 · 绝不挂死)
 
-  📌 模式由 INPUT 完整度决定,不由 "谁调" 决定 (= C_task ref/invocation-modes.md)
+  📌 模式由 INPUT 完整度决定,不由 "谁调" 决定 (= task ref/invocation-modes.md)
   📌 挥鞭循环要 headless: narrative 一轮轮挥鞭,不可能每张卡都 human-in-the-loop
 
 
@@ -32,7 +32,7 @@
 
 ─§ 🦴 The skeleton to build ────────────────────────────────
 
-  E_insight/
+  insight/
   ├── DESIGN.md                       ✅ 写了
   ├── ref/invocation-modes.md         🆕 双模式契约 + 上表
   ├── ref/dikw-boundaries.md          🆕 每层边界 + 例子(reviewers 照它执法)
@@ -57,9 +57,9 @@
   +-----------+-----------------------+---------------------+-------------+
   |           | 🏗️ builder            | 🔍 reviewer         | 🧭 advancer |
   +-----------+-----------------------+---------------------+-------------+
-  | C_task    | creators (per TYPE)   | fixed 2             | —           |
-  | D_probe   | SKILLS (no creators)  | 3 struct/integ/claim| 1 explore   |
-  | E_insight | creators (per DIKW)   | 4 per-type + 1 graph| deferred    |
+  | task    | creators (per TYPE)   | fixed 2             | —           |
+  | probe   | SKILLS (no creators)  | 3 struct/integ/claim| 1 explore   |
+  | insight | creators (per DIKW)   | 4 per-type + 1 graph| deferred    |
   +-----------+-----------------------+---------------------+-------------+
   | 为什么    | ∵ 🤖 headless agent路径| ∵ 每层边界不同 → departs C/D |    |
   +-----------+-----------------------+---------------------+-------------+

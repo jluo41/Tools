@@ -14,7 +14,7 @@ Two ways to run it; same instrumentation underneath
 
 For a DURABLE, versioned profile (tracked across model releases, or to A/B a
 vectorization fix), scaffold a task instead via `/haipipe-task-for-inference`
-(C_task) — same breakdown, recorded as `results/<run>/latency.json`. Preferred
+(task) — same breakdown, recorded as `results/<run>/latency.json`. Preferred
 placement: co-locate it in the project's ENDPOINT group as a sibling of the
 endpoint-build task (e.g. `tasks/C_endpoint/C2_inference_profile/` next to
 `C1_endpoint/`), so the group owns build → profile. Real example:
@@ -87,7 +87,7 @@ Fix (NOT in this skill — it is a `hainn` change): replace the HF-Dataset loop
 with scipy.sparse — build the base feature matrix ONCE, append the N one-hot
 variants as a single sparse identity block, run ONE batched `predict_proba`.
 ~80-150× faster, all arms kept. Full sketch + numbers:
-`skills/C_task/haipipe-task-for-inference/ref/inference-perf-notes.md`.
+`skills/task/haipipe-task-for-inference/ref/inference-perf-notes.md`.
 The code site is `code/hainn/instance/mlpredictor/instance_slearner._compute_scores`.
 
 Other flags: cold-call reported as steady-state (always warm up); per-request

@@ -1,0 +1,75 @@
+# workflow-plan-sample.yaml — agent task script-level plan
+# Schema: project/haipipe-workflow/ref/plan-schema.md
+# Task-level template: ../haipipe-task/ref/workflow-template.yaml
+#
+# Typical agent phases: Setup → Execute → Parse
+# All outputs light (results/<run>/{transcript.json, summary.md}).
+
+# ─── Header ──────────────────────────────────────────────────────
+name: agent-<TASK_NAME>
+purpose: "Run LLM agent for <PURPOSE>"
+skill: haipipe-task-for-agent
+
+# ─── I: Input ────────────────────────────────────────────────────
+input:
+  args:
+    config: configs/<RUN>.yaml
+    agent_type: <claude | gpt>
+    system_prompt: <path or inline>
+  files_in:
+    - <NN>_<TASK>.py
+    - configs/<RUN>.yaml
+
+# ─── P: Phases ───────────────────────────────────────────────────
+phases:
+
+  - title: Setup
+    detail: "load context, build prompt, configure tools"
+    steps:
+      - label: "setup:context"
+        type: agent
+        required: true
+        prompt: "Load data context for the agent (documents, metrics, prior results)"
+        files_in:
+          - configs/<RUN>.yaml
+        files_out: []
+
+      - label: "setup:prompt"
+        type: agent
+        required: true
+        prompt: "Build system prompt + user prompt from config"
+        files_in: []
+        files_out: []
+
+  - title: Execute
+    detail: "call the LLM agent"
+    steps:
+      - label: "execute:call"
+        type: agent
+        required: true
+        prompt: "Send prompt to LLM, collect response + tool-use transcript"
+        files_in: []
+        files_out:
+          - results/<RUN>/transcript.json
+
+  - title: Parse
+    detail: "extract structured output from response"
+    steps:
+      - label: "parse:extract"
+        type: agent
+        required: true
+        prompt: "Parse agent response into structured result"
+        files_in:
+          - results/<RUN>/transcript.json
+        files_out:
+          - results/<RUN>/summary.md
+          - results/<RUN>/result.json
+
+# ─── O: Output ───────────────────────────────────────────────────
+output:
+  returns:
+    status: ok
+  files_out:
+    - results/<RUN>/transcript.json
+    - results/<RUN>/summary.md
+    - results/<RUN>/result.json

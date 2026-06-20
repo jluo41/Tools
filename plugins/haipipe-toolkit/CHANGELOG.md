@@ -4,6 +4,18 @@ haipipe-toolkit — Changelog
 Plugin-level rollup. Per-layer detail lives in each layer's own `skills/<LAYER>/CHANGELOG.md`. Newest first.
 
 
+## [Unreleased] — 2026-06-20
+
+Structure: removed letter prefixes from research-layer skill folders while
+keeping all skill names and slash commands unchanged.
+
+- Renamed `skills/{A_discover,B_project,C_task,D_probe,E_insight,F_paper,G_application,N_narrative}/`
+  to `skills/{discover,project,task,probe,insight,paper,application,narrative}/`.
+- Kept numbered task-domain folders unchanged: `0_*`, `1_data`, `2_nn`,
+  `3_end`, and `4_individual`.
+- Updated plugin docs and cross-references to use the new folder names.
+
+
 ## [2.4.0] — 2026-06-16
 
 Feature: endpoint lifecycle overhaul — MIMIC-IV mortality deployed to Databricks end-to-end.
@@ -16,7 +28,7 @@ Feature: endpoint lifecycle overhaul — MIMIC-IV mortality deployed to Databric
 - **haipipe-end-endpointset**: step 5b reproducibility check, D-prefix exclusion (160MB→14MB), three-level roundtrip enforcement.
 - **haipipe-end-deploy-databricks**: platform repo link, verb-to-script mapping, MIMIC config example, gotchas (D-prefix, DATABRICKS_USER).
 
-### Task skills (C_task/)
+### Task skills (task/)
 - **haipipe-task-for-endpoint**: renamed from haipipe-task-for-inference, C-series endpoint building scope.
 - **haipipe-task-for-fit**: ExampleFn, SKIP_TRAINING parameter, step 8 reproducibility, prediction_results.json must-be-non-empty.
 - **haipipe-task-for-data**: 00_develop pattern (develop→execute pairs per stage), D-prefix dictionary table exclusion.
@@ -37,7 +49,7 @@ Feature: a probe-cycle now returns 🟧 W (the next-step) as well as 🟨 K.
 - The W machinery (`haipipe-insight-wisdom` + `card-creator-wisdom-agent` + `invocation-modes` W row) was already correct — only the wiring was missing. The probe-cycle deliverable is now **K + W** end-to-end, so the narrative gets the claim AND the recommended next whip-crack to decide `ignite`.
 - **Per-probe W** (single-K next-step, in the loop) is now distinguished from **strategic W** (across many K, stays cross-cycle).
 - **Dogfooded**: confirmed probe → K01 → W01 ("param-matched FiLM re-test"); 13/13 card-reviewer-wisdom + 5/5 index-integrity gates green (independent re-run).
-- Docs threaded: `06`/`00`/`07` diagrams, `ARCHITECTURE.md`, `DESIGN.md` (Q2 corrected from the stale `card-creator-data-agent` dispatch). The v2.3.3 "W is the next wiring target" caveats are now flipped to "K + W both wired". → see [skills/E_insight/CHANGELOG.md](skills/E_insight/CHANGELOG.md)
+- Docs threaded: `06`/`00`/`07` diagrams, `ARCHITECTURE.md`, `DESIGN.md` (Q2 corrected from the stale `card-creator-data-agent` dispatch). The v2.3.3 "W is the next wiring target" caveats are now flipped to "K + W both wired". → see [skills/insight/CHANGELOG.md](skills/insight/CHANGELOG.md)
 
 
 ## [2.3.3] — 2026-05-31
@@ -46,7 +58,7 @@ Docs: named the end-to-end hinge between narrative-cycle and probe-cycle.
 
 - **Claim Gap Contract** is now the explicit connector: a narrative C-slot marked `GAP`/`weak` in `claims.md` becomes the evidence contract for one probe-cycle. The contract expects K/W (K is wired now; W remains the next wiring target); the narrative re-reads K/W and records `ignite`.
 - Added `diagram/v260531/07-end-to-end-claim-gap.txt` for the full ask→claim-gap→probe→K/W→cash-out workflow.
-- Threaded the concept through `ARCHITECTURE.md`, `HANDOFF.md`, the diagram index, `skills/N_narrative/DESIGN.md`, and the narrative schema.
+- Threaded the concept through `ARCHITECTURE.md`, `HANDOFF.md`, the diagram index, `skills/narrative/DESIGN.md`, and the narrative schema.
 
 
 ## [2.3.2] — 2026-05-31
@@ -70,25 +82,25 @@ Vocabulary + a probe-cycle process doc (docs only).
 
 ## [2.3.0] — 2026-05-31
 
-The E_insight agent skeleton — E gets the `agents/` + dual-mode parity C_task and D_probe already had, with a deliberate per-type-reviewer twist.
+The insight agent skeleton — E gets the `agents/` + dual-mode parity task and probe already had, with a deliberate per-type-reviewer twist.
 
 ### Highlights
-- **E_insight agentified** — `agents/creators/` (4, one per DIKW layer; each a thin headless wrapper over `haipipe-insight-<layer>`) + `agents/reviewers/` (**per-type**: `card-reviewer-{data,information,knowledge,wisdom}-agent`, each enforcing that card's accuracy + boundary, plus a cross-layer `index-integrity-auditor`). A deliberate departure from C/D's type-agnostic reviewers — each DIKW card has a genuinely different boundary. → see [skills/E_insight/CHANGELOG.md](skills/E_insight/CHANGELOG.md)
+- **insight agentified** — `agents/creators/` (4, one per DIKW layer; each a thin headless wrapper over `haipipe-insight-<layer>`) + `agents/reviewers/` (**per-type**: `card-reviewer-{data,information,knowledge,wisdom}-agent`, each enforcing that card's accuracy + boundary, plus a cross-layer `index-integrity-auditor`). A deliberate departure from C/D's type-agnostic reviewers — each DIKW card has a genuinely different boundary. → see [skills/insight/CHANGELOG.md](skills/insight/CHANGELOG.md)
 - **`ref/dikw-boundaries.md`** — canonical per-layer boundary + the two promotion gates + a worked D→I→K→W example; creators follow it, reviewers enforce it.
 - **Dual-mode DIKW skills** + `ref/invocation-modes.md` — the 4 filer skills run interactive OR headless (full spec → silent), chosen by input completeness.
 - **Loop closure** — `haipipe-probe-loop` now dispatches `card-creator-data-agent` on convergence, filing the D card and closing the probe cycle (`probe → task → insight`) the loop previously skipped.
 - **Agent registry** 13 → 22 (E adds 9: 4 creators + 5 reviewers).
 
 ### Layer changelogs touched this release
-- [E_insight](skills/E_insight/CHANGELOG.md) — NEW: agent skeleton, dual-mode, per-type reviewers, dikw-boundaries
+- [insight](skills/insight/CHANGELOG.md) — NEW: agent skeleton, dual-mode, per-type reviewers, dikw-boundaries
 
 
 ## [2.2.0] — 2026-05-31
 
-The E_insight design + research-engine model release. **Design-only** — no new runtime skills built yet; this records the design + the mental model so the build has a stable target.
+The insight design + research-engine model release. **Design-only** — no new runtime skills built yet; this records the design + the mental model so the build has a stable target.
 
 ### Highlights
-- **E_insight `DESIGN.md`** (`skills/E_insight/DESIGN.md`) — E finally gets the skeleton C_task/D_probe already have, applied THOUGHTFULLY (as D_probe departed from C_task): dual-mode invocation (= C_task's `ref/invocation-modes.md`), `creators/` per DIKW (the headless, agent-callable filing path), and `reviewers/` = E's unique `card-fidelity` (Codex) + `index-integrity` gates. Templates + agents NOT built yet.
+- **insight `DESIGN.md`** (`skills/insight/DESIGN.md`) — E finally gets the skeleton task/probe already have, applied THOUGHTFULLY (as probe departed from task): dual-mode invocation (= task's `ref/invocation-modes.md`), `creators/` per DIKW (the headless, agent-callable filing path), and `reviewers/` = E's unique `card-fidelity` (Codex) + `index-integrity` gates. Templates + agents NOT built yet.
 - **Loop-closure finding** — `haipipe-probe-loop` never files insight: the probe cycle (`probe → task → INSIGHT`) has an empty last cell. E's headless creators are what close it; the loop is WHY filing must be headless.
 - **Research-engine model, versioned** — `diagram/v260531/` (6 files): the hourglass (decompose ↓1:n / aggregate ↑n:1); the 5 roles (🥢 ask=领导/nudge · 📖 narrative=办事的人/brain · 🔧 probe=whip · ✋ task · 🧠 insight); "one stage" = one narrative turn; the probe·task·insight distillation chain. Vocabulary pinned: **whip** (挥鞭), not "wipe"; narrative is the brain (delegates execution, never runs compute).
 - **HANDOFF.md** rewritten to resume from this converged model.
@@ -96,22 +108,22 @@ The E_insight design + research-engine model release. **Design-only** — no new
 
 ## [2.1.0] — 2026-05-31
 
-The C_task "creator + reviewer agents" release: a clean split between thin per-type builder agents and shared type-agnostic reviewer gates, dual-mode skills, batch fan-out, and a notebook-bloat policy.
+The task "creator + reviewer agents" release: a clean split between thin per-type builder agents and shared type-agnostic reviewer gates, dual-mode skills, batch fan-out, and a notebook-bloat policy.
 
 ### Highlights
-- **C_task agent families** — `creators/` (7 per-type thin builders, `code-creator-for-<type>-agent`) + `reviewers/` (2 fixed, type-agnostic gates). builder ≠ judge; the creator that writes code never reviews it. → see [skills/C_task/CHANGELOG.md](skills/C_task/CHANGELOG.md)
+- **task agent families** — `creators/` (7 per-type thin builders, `code-creator-for-<type>-agent`) + `reviewers/` (2 fixed, type-agnostic gates). builder ≠ judge; the creator that writes code never reviews it. → see [skills/task/CHANGELOG.md](skills/task/CHANGELOG.md)
 - **Skills renamed** `haipipe-task-<type>` → `haipipe-task-for-<type>` (7 types; router + logging unchanged), matching the `code-creator-for-<type>` naming.
 - **Dual-mode skills** — one body, interactive (human steers) OR headless (agent passes a full spec → runs silent), chosen by input completeness; structured return so an agent caller can locate the scaffolded folder.
 - **Knowledge centralized in `ref/`** — `authoring-conventions.md` (shared) + `invocation-modes.md` (dual-mode contract). Skills and agents both stay thin; knowledge has ONE home.
 - **Batch fan-out** — `haipipe-task-batch` skill + Workflow `pipeline` (`batch-pipeline.workflow.js`): N typed specs in one session, each flowing author → GATE 1 → run → GATE 2 independently; GPU-safe (`autoRun` default off).
-- **Notebook policy** — `_meta.notebook: full | thin | off` knob in `run-sh-template.sh`; heavy compute (training/data) defaults to `thin`; `notebooks/` + `_WorkSpace/` default-gitignored. → see [skills/B_project/CHANGELOG.md](skills/B_project/CHANGELOG.md)
-- **Per-run quality moved C ← D** — the per-run sanity checklist now lives with `run-result-auditor-agent` (C_task GATE 2); `D_probe review run` delegates. → see [skills/D_probe/CHANGELOG.md](skills/D_probe/CHANGELOG.md)
-- **D_probe agent families (lighter pattern)** — `reviewers/` (structural + integrity-Codex + claim-Codex) and `advancers/` (explorer). Deliberately NO `creators/`: D_probe's builders stay interactive skills (probe design needs steering; no type axis; parallelism is downstream in C_task). The same builder≠judge method, applied to a low-volume deliberate layer. → see [skills/D_probe/CHANGELOG.md](skills/D_probe/CHANGELOG.md)
+- **Notebook policy** — `_meta.notebook: full | thin | off` knob in `run-sh-template.sh`; heavy compute (training/data) defaults to `thin`; `notebooks/` + `_WorkSpace/` default-gitignored. → see [skills/project/CHANGELOG.md](skills/project/CHANGELOG.md)
+- **Per-run quality moved C ← D** — the per-run sanity checklist now lives with `run-result-auditor-agent` (task GATE 2); `probe review run` delegates. → see [skills/probe/CHANGELOG.md](skills/probe/CHANGELOG.md)
+- **probe agent families (lighter pattern)** — `reviewers/` (structural + integrity-Codex + claim-Codex) and `advancers/` (explorer). Deliberately NO `creators/`: probe's builders stay interactive skills (probe design needs steering; no type axis; parallelism is downstream in task). The same builder≠judge method, applied to a low-volume deliberate layer. → see [skills/probe/CHANGELOG.md](skills/probe/CHANGELOG.md)
 
 ### Layer changelogs touched this release
-- [C_task](skills/C_task/CHANGELOG.md) — agents, skill renames, dual-mode, batch, notebook knob
-- [D_probe](skills/D_probe/CHANGELOG.md) — per-run checklist delegated to C_task; bridge dispatch
-- [B_project](skills/B_project/CHANGELOG.md) — notebook retention + gitignore guidance
+- [task](skills/task/CHANGELOG.md) — agents, skill renames, dual-mode, batch, notebook knob
+- [probe](skills/probe/CHANGELOG.md) — per-run checklist delegated to task; bridge dispatch
+- [project](skills/project/CHANGELOG.md) — notebook retention + gitignore guidance
 
 
 ## [2.0.0] — prior
