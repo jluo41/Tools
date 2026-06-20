@@ -4,6 +4,9 @@ This document explains the full paper-skill mental model: how a paper moves
 from a seed idea to submission, revision, and presentation, and how feedback
 loops back to the right earlier layer.
 
+For a comparison with the ARIS autonomous research workflow reference in
+`references/aris`, see `ARIS_COMPARISON.md`.
+
 The key rule:
 
 > A paper moves forward through pitch, narrative, architecture, plan, draft, and
@@ -32,6 +35,9 @@ diagnosis-driven loopbacks.
       ↓
 5. Paper Plan
    section, figure, citation, and page-budget execution plan
+      ↓
+5a. Display Contract
+   figure/table jobs, evidence sources, captions, labels, preview PDFs
       ↓
 6. Build Skeleton
    conforming paper folder, section files, display folders, compile scripts
@@ -64,7 +70,7 @@ the failure, not the stage where the failure was noticed.
 |-------|--------|------|------------|
 | Story layer | `0 Seed`, `2 Paper Pitch` | What a random reader should understand in one minute | `0-pitch/PAPER_PITCH.md`, `0-pitch/PITCH_LOG.md`, `0-pitch/archive/` |
 | Evidence contract layer | `3 Evidence-Backed Narrative` | What the paper can honestly claim | `NARRATIVE_REPORT.md`, claim/evidence tables |
-| Paper shape layer | `4 Architecture`, `5 Paper Plan`, `6 Build Skeleton` | How the story becomes a paper-shaped artifact | `vNN-architecture-minimap.md`, `PAPER_PLAN.md`, `0-sections/`, `0-display/`, `1-compile.sh` |
+| Paper shape layer | `4 Architecture`, `5 Paper Plan`, `5a Display Contract`, `6 Build Skeleton` | How the story becomes a paper-shaped artifact | `vNN-architecture-minimap.md`, `PAPER_PLAN.md`, `0-display/DISPLAY_INDEX.md`, `0-sections/`, `1-compile.sh` |
 | Text realization layer | `7 Write Draft`, `8 Edit Cycle` | How the paper is written and polished | `0-sections/*.tex`, `0-*.bib`, edit comments, diff packages |
 | External gate layer | `9 Review`, `10 Submit`, `11 Respond`, `12 Present` | How the paper survives audiences outside the author loop | review reports, `1-feedback/`, rebuttal drafts, submission bundles, slides/posters |
 
@@ -78,6 +84,7 @@ the failure, not the stage where the failure was noticed.
 | 3. Evidence-Backed Narrative | Expand pitch into evidence-backed claim contract | `haipipe-paper-structure narrative` | `PAPER_PITCH.md`, `CLAIMS_FROM_RESULTS.md`, `AUTO_REVIEW.md`, results, logs | `NARRATIVE_REPORT.md` | Do all claims trace to evidence and limitations? |
 | 4. Architecture / Minimap | Decide the paper-shaped strategy | `haipipe-paper-structure architecture` | pitch, narrative, venue constraints, key numbers | `vNN-architecture-minimap.md` | Does the 5-act arc match the pitch and evidence? |
 | 5. Paper Plan | Create the writing execution map | `haipipe-paper-structure plan` | pitch, narrative, architecture, figure needs, citations | `PAPER_PLAN.md` | Can the plan fit the venue and preserve the pitch? |
+| 5a. Display Contract | Make figures/tables ready as story-evidence objects | `haipipe-paper-structure display` | pitch, narrative, architecture, plan, results, figure/table needs | `0-display/DISPLAY_INDEX.md`, per-item `DISPLAY.md`, `float.tex`, `preview.pdf` | Does each display have a claim, source, reader takeaway, caption, label, and input path? |
 | 6. Build Skeleton | Materialize or repair the folder structure | `haipipe-paper-build-scaffold`, `haipipe-paper-build-restructure`, `haipipe-paper-build-check` | plan, venue, existing folder | `0-sections/`, wrappers, display dirs, compile scripts | Does the folder conform and compile structurally? |
 | 7. Write Draft | Realize the plan in LaTeX | `haipipe-paper-create`, `haipipe-paper-edit-write` | pitch, narrative, plan, section playbooks | `0-sections/*.tex`, `0-*.bib`, display references | Does the draft carry the same story? |
 | 8. Edit Cycle | Improve draft via comment-first passes | `haipipe-paper-edit`, edit topic skills, `haipipe-paper-edit-weaving` | draft, comments, audits, reviewer notes | inline comments, accepted prose changes, diffs | Are problems local or do they expose deeper structure? |
@@ -98,6 +105,8 @@ Loopback is chosen by diagnosis, not chronology.
 | Paragraph has no point | `5 Paper Plan` | Paragraph job was not specified or no longer fits |
 | Section feels unnecessary | `4 Architecture / Minimap` | Paper-shaped argument is wrong |
 | Figure does not support its claimed point | `4 Architecture` or `5 Paper Plan` | Figure job or placement is wrong |
+| Figure/table has no clear claim, source, caption, or input path | `5a Display Contract` | Display is not ready to enter the manuscript |
+| Display preview fails to compile | `5a Display Contract` or display production skill | The display block is not ready to input |
 | Hero figure does not sell the paper | `2 Paper Pitch` or `4 Architecture` | Public story or paper-shaped strategy is wrong |
 | Abstract and introduction disagree | `2 Paper Pitch` | The paper has multiple public stories |
 | Contribution emphasis feels wrong for venue | `2 Paper Pitch` or `4 Architecture` | Audience and framing mismatch |
@@ -133,6 +142,18 @@ Use when the draft is locally correct but the section-level job is wrong:
 
 Examples: paragraphs lack jobs, Results order is confusing, figure sequence is
 not aligned with claims.
+
+### Display loop
+
+Use when figures/tables exist but are not paper-ready display objects:
+
+```
+5a Display Contract → 7 Draft → 8 Edit Cycle → 9 Review Gate → 5a Display Contract
+```
+
+Examples: display lacks a claim, caption overclaims, `float.tex` is missing,
+`preview.pdf` fails, a table's numbers changed without section prose changing,
+or a figure exists but no section owns it.
 
 ### Architecture loop
 
@@ -190,6 +211,8 @@ Respond/revise is not terminal. It is the strongest loopback source:
 - `vNN-architecture-minimap.md` changes when contribution emphasis, 5-act arc,
   page budget, or section strategy changes.
 - `PAPER_PLAN.md` changes when the execution outline changes.
+- `0-display/DISPLAY_INDEX.md` changes when figure/table jobs, sources,
+  placement, readiness, captions, or preview status change.
 - `0-sections/*.tex` changes when prose changes.
 - `0-display/` changes when visual evidence changes.
 - `1-feedback/` changes when external comments, rebuttal, or revision process
