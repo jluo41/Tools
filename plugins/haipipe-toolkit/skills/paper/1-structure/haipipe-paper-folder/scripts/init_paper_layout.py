@@ -459,6 +459,61 @@ def pitch_log(name: str, venue: str) -> str:
     """)
 
 
+def display_index(name: str, venue: str) -> str:
+    return textwrap.dedent(f"""\
+        # Display Index
+
+        Paper: {name} ({venue})
+
+        This file is the display contract for every figure and table the paper
+        uses. A display item is not just an asset; it is a story/evidence object.
+
+        ## Display Table
+
+        | ID | Type | Role | Claim | Evidence Source | Section | Status |
+        |----|------|------|-------|-----------------|---------|--------|
+        | Fig 1 | hero figure | one-minute story | core contribution | `0-pitch/PAPER_PITCH.md`, `NARRATIVE_REPORT.md` | Introduction | planned |
+        | Table 1 | result table | benchmark comparison | [claim] | [task/probe/result path] | Results | planned |
+
+        ## Status Vocabulary
+
+        - `planned`: the paper needs this display, but evidence or rendering is not ready.
+        - `data-ready`: source data or evidence exists.
+        - `rendered`: visual asset or table body exists.
+        - `input-ready`: `float.tex` exists and can be `\\input` by a section.
+        - `inserted`: a section file inputs the display.
+        - `reviewed`: claim, caption, label, numbers, and placement passed review.
+
+        ## Display Item Contract
+
+        Each major display may have its own folder:
+
+        ```text
+        0-display/Figures/fig01-hero/
+          DISPLAY.md
+          figure.pdf
+          float.tex
+          preview.tex
+          preview.pdf
+          sources/
+          versions/
+
+        0-display/Tables/tab01-main-results/
+          DISPLAY.md
+          table-body.tex
+          float.tex
+          preview.tex
+          preview.pdf
+          data/
+          versions/
+        ```
+
+        The main paper should input `float.tex`, not copy/paste display code.
+        The preview PDF is for human review; the clean visual asset should not
+        bake in the caption.
+    """)
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -509,6 +564,7 @@ def main() -> None:
     track_file("0-pitch/PAPER_PITCH.md", paper_pitch(args.name, args.venue))
     track_file("0-pitch/PITCH_LOG.md", pitch_log(args.name, args.venue))
     track_file("0-pitch/archive/.gitkeep", "")
+    track_file("0-display/DISPLAY_INDEX.md", display_index(args.name, args.venue))
 
     # 2. Section stubs
     for filename, stub in sections:

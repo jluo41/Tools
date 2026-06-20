@@ -86,8 +86,9 @@ Paper-<Name>-<Venue><Year>/
 │
 │  # ── 0-display/  (figures & tables) ────────────────────
 │  0-display/
-│    Figures/                        # organized by analysis node or named
-│    Tables/                         # .tex table files (\input from sections)
+│    DISPLAY_INDEX.md                # figure/table story-evidence contract
+│    Figures/                        # figNN folders: DISPLAY.md, figure.pdf, float.tex, preview.pdf
+│    Tables/                         # tabNN folders: DISPLAY.md, table-body.tex, float.tex, preview.pdf
 │    _old/                           # superseded versions (tracked in git)
 │
 │  # ── 0-extra/  (optional) ──────────────────────────────
@@ -138,7 +139,7 @@ Rules (from Paper-MapPhyTrait):
 4. **Scaffold 0-pitch/**: one-minute `PAPER_PITCH.md`, short `PITCH_LOG.md`,
    and `archive/` for semantic pitch snapshots
 5. **Scaffold 0-sections/**: section stubs per venue format + `README.md`
-6. **Scaffold 0-display/**: `Figures/`, `Tables/`, `_old/`
+6. **Scaffold 0-display/**: `DISPLAY_INDEX.md`, `Figures/`, `Tables/`, `_old/`
 7. **Scaffold 1-prefix process files**:
    - `1-compile.sh` and `1-compile.ps1` (auto-detect `0-*.tex`, 4-pass pdflatex)
    - `.gitignore` (LaTeX artifacts + selective PDF preservation)

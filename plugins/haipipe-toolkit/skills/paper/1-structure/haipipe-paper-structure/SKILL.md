@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-structure
-description: "Orchestrator for the paper structure lifecycle (1-structure). Routes to specialists: folder (scaffold), pitch (one-minute story), narrative (design contract), architecture (blueprint+minimap), plan (outline), diagram (structural audit), incubator (working docs), figure-planner (inventory), figure (plots/tables), figure-spec (vector diagrams), illustration (AI images). Use when you need any structural work on a paper before or during writing. Trigger: paper structure, paper pitch, scaffold paper, paper outline, paper architecture, figure plan, paper diagram, incubator, /haipipe-paper-structure."
+description: "Orchestrator for the paper structure lifecycle (1-structure). Routes to specialists: folder (scaffold), pitch (one-minute story), narrative (design contract), architecture (blueprint+minimap), plan (outline), display (figure/table contract + preview PDFs), diagram (structural audit), incubator (working docs), figure-planner (inventory), figure (plots/tables), figure-spec (vector diagrams), illustration (AI images). Use when you need any structural work on a paper before or during writing. Trigger: paper structure, paper pitch, scaffold paper, paper outline, paper architecture, display layer, figure plan, paper diagram, incubator, /haipipe-paper-structure."
 argument-hint: "[function] [paper-path-or-input] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
   version: "1.0.0"
   last_updated: "2026-06-08"
-  summary: "Orchestrator for 1-structure — routes to specialists covering folder scaffold, paper pitch, narrative, planning, and figure production."
+  summary: "Orchestrator for 1-structure — routes to specialists covering folder scaffold, paper pitch, narrative, planning, display contracts, and figure production."
   changelog:
     - "1.0.0 (2026-06-08): created as orchestrator over all 1-structure specialists."
 ---
@@ -30,6 +30,7 @@ narrative, outlines, figures, or diagrams itself.
 /haipipe-paper-structure narrative <args>               -> NARRATIVE_REPORT.md (design contract)
 /haipipe-paper-structure architecture <args>            -> vNN-architecture-minimap.md
 /haipipe-paper-structure plan <args>                    -> PAPER_PLAN.md (structured outline)
+/haipipe-paper-structure display <args>                 -> DISPLAY_INDEX.md + ready-to-input display blocks
 /haipipe-paper-structure diagram <args>                 -> ASCII structural audit (3 zoom levels)
 /haipipe-paper-structure incubator <sub> <args>         -> incubator docs (display/arch/structure)
 /haipipe-paper-structure figure-plan <args>             -> figure inventory + panel roles
@@ -76,6 +77,11 @@ haipipe-paper-structure-architecture  BLUEPRINT: versioned vNN-architecture-mini
 haipipe-paper-structure-plan          OUTLINE:   PAPER_PLAN.md — section-by-section plan
                                                  with venue-specific page budgets, from
                                                  NARRATIVE_REPORT.md or AUTO_REVIEW.md
+
+haipipe-paper-structure-display       DISPLAY:   0-display/DISPLAY_INDEX.md plus per-item
+                                                 DISPLAY.md, float.tex, and preview.pdf for
+                                                 figures/tables. Keeps display items tied to
+                                                 claim, evidence source, section, and caption.
 
 haipipe-paper-structure-diagram       AUDIT:     ASCII diagrams at 3 zoom levels (sections /
                                                  paragraphs / sentences) for structural review
@@ -124,11 +130,13 @@ invoked standalone. The typical first-pass order:
       ↓
 ⑤ plan           structured outline with page budgets
       ↓
-⑥ figure-plan    decide what figures show, panel roles
+⑥ display        display contract: figure/table jobs, sources, captions, preview PDFs
       ↓
-⑦ figure / figure-spec / illustration   make the visual assets
+⑦ figure-plan    decide detailed figure panels and main-vs-supplement roles
       ↓
-⑧ diagram        audit structure before handing off to Edit cycle
+⑧ figure / figure-spec / illustration   make the visual assets
+      ↓
+⑨ diagram        audit structure before handing off to Edit cycle
 ```
 
 `incubator` runs in parallel at any point (scratch docs for thinking).
@@ -179,6 +187,10 @@ architecture, blueprint, minimap, 5-act arc,
 plan, outline, PAPER_PLAN, section plan,
   page budget, 写大纲, paper outline                   -> plan
 
+display, display layer, DISPLAY_INDEX, 0-display,
+  ready to input, preview pdf, float.tex, caption,
+  figure table contract, display contract              -> display
+
 diagram, structure audit, section map, paragraph map,
   rhetorical flow, sentence breakdown, zoom           -> diagram
 
@@ -209,6 +221,7 @@ pitch, paper-pitch, storycard                    -> pitch
 narrative, story, contract                       -> narrative
 architecture, arch, blueprint, minimap           -> architecture
 plan, outline                                    -> plan
+display, displays, disp                          -> display
 diagram, audit, map                              -> diagram
 incubator, incubate                              -> incubator
 figure-plan, fp, figplan                         -> figure-plan
@@ -236,6 +249,7 @@ When invoked with no arguments, emit a compact specialist chooser:
   Architecture & Planning:
     architecture   Strategic blueprint + section minimap
     plan           Structured outline with page budgets
+    display        DISPLAY_INDEX + ready-to-input display blocks
     diagram        ASCII structural audit (sections / paragraphs / sentences)
     incubator      Incubator LaTeX working docs (display / arch / structure)
 
@@ -245,7 +259,7 @@ When invoked with no arguments, emit a compact specialist chooser:
     figure-spec    Deterministic vector diagrams (JSON → SVG)
     illustration   AI illustrations (Gemini + Claude refinement)
 
-  Pipeline: folder → pitch → narrative → architecture → plan → figure-plan → figure → diagram
+  Pipeline: folder → pitch → narrative → architecture → plan → display → figure-plan → figure → diagram
 
 Next: /haipipe-paper-structure <function> "<input>"
 ```
@@ -290,6 +304,7 @@ haipipe-paper-structure (this orchestrator)
   ├─► narrative
   ├─► architecture
   ├─► plan
+  ├─► display
   ├─► diagram
   ├─► incubator
   ├─► figure-plan

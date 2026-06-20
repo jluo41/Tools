@@ -26,8 +26,9 @@ The companion doc `3-edit/_shared/tex-file-anatomy.md` defines the anatomy of **
 │   ├── 05_back-matter.tex                    leaf (\section*{} blocks: data/code availability, contributions, ethics)
 │   └── A_*.tex  B_*.tex  C_*.tex ...         SI leaves, \input by the SI driver
 ├── 0-display/                            every display asset the tex includes
-│   ├── Figures/                          .pdf/.png plus their sources (.pptx, build dirs)
-│   └── Tables/                           standalone .tex table bodies, \input by leaves
+│   ├── DISPLAY_INDEX.md                  display contract: role, claim, source, section, status
+│   ├── Figures/                          figure folders with asset + float.tex + preview.pdf
+│   └── Tables/                           table folders with body + float.tex + preview.pdf
 ├── 0-extra/                              (optional) cover letter, IRB, reporting checklists
 ├── 1-compile.sh                          THE build entry point (contract below)
 ├── 1-feedback/                           process: reviewer/co-author feedback by date
@@ -113,10 +114,42 @@ Both documents `\input` from the same `0-sections/` pool; an SI leaf never appea
 
 ## `0-display/` rules
 
-- Two top-level homes: `Figures/` and `Tables/`. Appendix-specific variants (`AppendixFigure/`, `AppendixTable/`) appear when the venue wants separated numbering.
-- **All `\includegraphics` and table-`\input` paths are written relative to the paper root** (e.g. `0-display/Figures/pipeline.pdf`), because both drivers compile from the root.
-- Tables are standalone `.tex` bodies (the `tabular`, not the `table` float): the leaf owns the float, caption, and `\label`; the display file owns the data. Regenerating a table then touches only `0-display/`.
-- Figure **sources** (`.pptx`, plotting build dirs) live next to their exports inside `Figures/`; retired assets move to `_old/`, they are not deleted.
+`0-display/` is the manuscript's display layer. Figures and tables are not just
+assets; each one carries a claim, evidence source, reader takeaway, caption, and
+placement.
+
+- `DISPLAY_INDEX.md` is required. It is the one-screen contract for every
+  figure/table:
+  `ID | Type | Role | Claim | Evidence Source | Section | Status`.
+- Two top-level homes: `Figures/` and `Tables/`. Appendix-specific variants
+  (`AppendixFigure/`, `AppendixTable/`) appear when the venue wants separated
+  numbering.
+- Prefer one folder per major display item:
+  `0-display/Figures/fig01-hero/` or
+  `0-display/Tables/tab01-main-results/`.
+- A figure folder may contain:
+  `DISPLAY.md`, `figure.pdf`, `float.tex`, `preview.tex`, `preview.pdf`,
+  `sources/`, and `versions/`.
+- A table folder may contain:
+  `DISPLAY.md`, `table-body.tex`, `float.tex`, `preview.tex`, `preview.pdf`,
+  `data/`, and `versions/`.
+- **All `\includegraphics` and table-`\input` paths are written relative to the
+  paper root** (e.g. `0-display/Figures/fig01-hero/figure.pdf`), because both
+  drivers and display previews compile from the root.
+- The main paper should input display blocks, not copy/paste them:
+  `\input{0-display/Figures/fig01-hero/float.tex}` or
+  `\input{0-display/Tables/tab01-main-results/float.tex}`.
+- `float.tex` owns the LaTeX float, caption, label, and asset/table-body input.
+  Section prose owns the lead-in and placement decision.
+- Do not bake captions into image PDFs. `figure.pdf` is the clean visual asset;
+  `preview.pdf` is a standalone review artifact compiled from `preview.tex` and
+  the same `float.tex`.
+- Regenerating a table should usually update `table-body.tex`, not the section
+  prose. Regenerating a figure should usually update `figure.pdf`, not the
+  section prose.
+- Figure/table **sources** (`.pptx`, `.svg`, plotting build dirs, scripts,
+  source data) live next to their exports inside the display item folder;
+  retired assets move to `_old/` or item-local `versions/`, they are not deleted.
 
 ## `1-compile.sh` contract
 
@@ -144,4 +177,5 @@ Mechanical version: `2-build/haipipe-paper-build-check/scripts/check_structure.s
 - [ ] Every section file is `\input` exactly once (no orphans, no double-inputs).
 - [ ] Wrappers contain only `\input` lines; leaves contain no `\input`/`\documentclass`; drivers own `\section{}`.
 - [ ] Every `\input` and `\includegraphics` target exists on disk; `\bibliography{}` resolves.
+- [ ] `0-display/DISPLAY_INDEX.md` exists; every major figure/table has a claim, evidence source, section, status, and ready input path when inserted.
 - [ ] No stray aux files in the tree (the EXIT trap should have cleaned them).

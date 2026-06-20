@@ -4,6 +4,9 @@ For the full paper journey from seed idea to submission, revision, and
 presentation, including file-change maps and loopback diagnosis, see
 `LIFECYCLE.md`.
 
+For a comparison with the ARIS workflow reference in `references/aris`, see
+`ARIS_COMPARISON.md`.
+
 A paper is not a linear pipeline. It is **two loops that alternate until they
 converge**, with a review gate deciding which loop you re-enter:
 
@@ -35,8 +38,9 @@ Run **① then ② then the gate**, and repeat. Each loop is itself iterative
 
 Settles the argument before prose exists (or when prose has drifted from it):
 one-minute paper pitch, narrative/story, core claim, **claim → evidence map**,
-section architecture, outline, and the **figure inventory** (which figures, one
-claim each).
+section architecture, outline, and the **display contract** (which figures and
+tables exist, one claim each, where evidence comes from, and how each display is
+input into the paper).
 
 **Output: a design contract** the edit cycle realizes.
 
@@ -46,8 +50,9 @@ later pitch shifts should cite the source in `0-pitch/PITCH_LOG.md` and archive
 semantic old versions under `0-pitch/archive/`.
 
 Skills today: `1-narrative/narrative-report`, `2-plan/{paper-architecture,
-paper-bootstrap, paper-incubator, paper-plan, paper-structure-diagram}`, and
-**figure *planning*** (`3-figure/figure-planner`).
+paper-bootstrap, paper-incubator, paper-plan, paper-structure-diagram}`,
+`haipipe-paper-structure-display`, and **figure *planning***
+(`3-figure/figure-planner`).
 
 Re-entered when the gate finds a **structural** problem ("this section has no
 job", "the claim isn't supported", "wrong story") — not a wording problem.
@@ -100,15 +105,27 @@ Both exist on purpose.
 
 ---
 
-## Figures live in both cycles (split)
+## Display lives between plan and edit
 
-- **Planning** a figure — what it claims, panel roles, main-vs-SI — is ① plan
-  (`haipipe-paper-structure-figure-planner`).
-- **Making** the figure — plotting, diagram, illustration — is ② edit
-  (`haipipe-paper-structure-figure`, `haipipe-paper-structure-figure-spec`, `haipipe-paper-structure-illustration`).
+Figures and tables are display items. They are not just files in a folder; they
+are evidence/story objects with a claim, source, caption, label, placement, and
+preview.
 
-Figures are the one shared asset that touches both loops; keep the *decision* in
-plan and the *production* in edit.
+- **Planning** a display — what claim it supports, where its evidence comes
+  from, whether it is main or appendix, and where it appears — is ① plan
+  (`haipipe-paper-structure-display`, `haipipe-paper-structure-figure-planner`).
+- **Making** a display — plotting, table generation, diagram rendering,
+  illustration — is ② edit / production
+  (`haipipe-paper-structure-figure`, `haipipe-paper-structure-figure-spec`,
+  `haipipe-paper-structure-illustration`).
+- **Using** a display happens through `float.tex`: section files should input
+  ready display blocks such as
+  `\input{0-display/Figures/fig01-hero/float.tex}`.
+- **Reviewing** a display uses `preview.pdf` plus the same `float.tex`, so the
+  caption and visual can be audited without compiling the whole paper.
+
+The display contract lives in `0-display/DISPLAY_INDEX.md`. Keep the *decision*
+in display/plan and the *production* in the display item folder.
 
 ---
 
@@ -147,8 +164,9 @@ whole arc: plan → edit → gate → submit → rebuttal → present.
 | `0-pitch` | one-minute story + pitch provenance | ① plan |
 | `1-narrative` | story / claim contract | ① plan |
 | `2-plan` | architecture, outline, structure-diagram | ① plan |
-| `3-figure` (figure-planner) | figure inventory | ① plan |
-| `3-figure` (figure/spec/illustration) | figure production | ② edit |
+| `0-display/DISPLAY_INDEX.md` | display contract: figure/table jobs, sources, status | ① plan |
+| `3-figure` (figure-planner) | display panel roles and main-vs-supplement | ① plan |
+| `3-figure` (figure/spec/illustration) | display production | ② edit |
 | `4-write` | cold-start drafting | ② edit |
 | `4-edit` | the 5-stage edit cycle | ② edit |
 | `5-revise` | further edit passes | ② edit |
