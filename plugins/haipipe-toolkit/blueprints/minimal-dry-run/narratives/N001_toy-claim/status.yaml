@@ -1,0 +1,9 @@
+id: N001_toy-claim
+status: needs_next_probe
+question: Can the candidate method beat the baseline on the target metric?
+current_answer: plausible_but_not_ready
+probes:
+  - probes/P001_first-check/probe.yaml
+open_gaps:
+  - robustness
+next_step: Open P002_robustness-check.

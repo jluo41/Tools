@@ -17,3 +17,5 @@ Start here:
 
 - `end-to-end-sandwich-run.md` - one narrative, one probe, two discoveries,
   and three tasks from start to finish.
+- `minimal-dry-run/` - a tiny completed run fixture with project log,
+  status snapshots, local sites, one discovery, and two task results.

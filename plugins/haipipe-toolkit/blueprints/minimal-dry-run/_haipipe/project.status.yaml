@@ -1,0 +1,36 @@
+project_id: ProjDryRun-Sandwich-001
+updated_at: "2026-06-20T10:40:00-04:00"
+status: needs_next_probe
+active_narrative: N001_toy-claim
+
+narratives:
+  N001_toy-claim:
+    status: needs_next_probe
+    probes:
+      - P001_first-check
+    open_gaps:
+      - robustness
+
+probes:
+  P001_first-check:
+    status: closed
+    verdict: supported_with_caveats
+    narrative_id: N001_toy-claim
+    discoveries:
+      - D001_prior-art
+    tasks:
+      - T001_baseline
+      - T002_candidate
+
+discoveries:
+  D001_prior-art:
+    status: ok
+    probe_id: P001_first-check
+
+tasks:
+  T001_baseline:
+    status: reported
+    probe_id: P001_first-check
+  T002_candidate:
+    status: reported
+    probe_id: P001_first-check
