@@ -1,10 +1,10 @@
 ---
 name: haipipe-paper-enter
-description: "Enter a paper repo in status-aware mode. Use for `/haipipe-paper enter <paper-path>`, `/haipipe-paper status [paper-path]`, or when starting work in an existing paper folder. Reads STATUS.md, 0-lifecycle, 0-displays, 0-sections, 1-feedback, and git state; outputs an open-needs dashboard with current layer, stable assets, claim/display/feedback gaps, loopback diagnosis, and next commands. Does not edit files."
+description: "Enter a paper repo in status-aware mode. Use for `/haipipe-paper enter <paper-path>`, `/haipipe-paper status [paper-path]`, or when starting work in an existing paper folder. Reads STATUS.md, 0-lifecycle, 1-rounds, 0-displays, 0-sections, and git state; outputs an open-needs dashboard with current layer, maturity, stable assets, claim/display/round gaps, loopback diagnosis, and next commands. Does not edit files."
 argument-hint: "[paper-path]"
 allowed-tools: Bash, Read, Grep, Glob
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
   last_updated: "2026-06-21"
   summary: "Open-needs paper session loader."
 ---
@@ -15,7 +15,7 @@ Enter a concrete paper folder in aware mode. This skill is a preflight/status
 loader. It does not write, revise, compile, or create files.
 
 The main job is to expose the paper's current debt board: open claim gaps,
-display/table gaps, paragraph-placement gaps, feedback gaps, and evidence
+display/table gaps, paragraph-placement gaps, round todo gaps, and evidence
 needs that may require probe/discover/task/insight work. The user often does
 not know the next layer in advance; the dashboard makes the next need visible.
 
@@ -28,7 +28,15 @@ fresh Claude/Codex session should run `enter` again.
 Story ownership rule: this paper owns its own story, claim wording, narrative,
 displays, and minimap. Shared evidence lives in project-level probes,
 discoveries, tasks, and insights. Do not look for or require a project-level
-narrative handoff.
+narrative layer.
+
+Read these references when needed:
+
+```text
+../../ref/paper-lifecycle.md
+../../ref/paper-rounds.md
+../../ref/paper-skill-structure.md
+```
 
 When creating or interpreting explicit need records, use:
 
@@ -83,7 +91,7 @@ Read only files that exist, in this order:
 7. `0-sections/README.md`
 8. `0-sections/*.tex` names and short headers/comments only; do not read full
    long sections unless needed to diagnose minimap drift.
-9. `1-feedback/<branch>/latest.md`, then the referenced round README,
+9. `1-rounds/latest.md`, then the referenced round README, `discussion.md`,
    `decisions.md`, `todo.md`, and `applied.md` if they exist.
 10. Git state:
    - `git status --short --branch`
@@ -104,6 +112,19 @@ available artifacts:
 | display units exist but paragraph placement is missing | `5-minimap` |
 | minimap exists and displays are placed | ready for section edit/build/review |
 
+Infer maturity separately from current layer:
+
+| Evidence | Maturity |
+|---|---|
+| seed/pitch only | `prospectus` |
+| lifecycle + sections + compile script | `scaffold` |
+| explicit claim ledger | `claim-ledger` |
+| display map exists | `display-map` |
+| minimap maps paragraph jobs | `section-map` |
+| section prose compiles | `draft` |
+| checks/audits mostly pass | `submission-candidate` |
+| active round after external/coauthor review | `revision` |
+
 Need diagnosis is separate from lifecycle layer. Extract open needs from:
 
 | Surface | Typical need |
@@ -112,7 +133,7 @@ Need diagnosis is separate from lifecycle layer. Extract open needs from:
 | `4-figures-tables` missing display units | display or task |
 | `5-minimap` empty paragraph/display slots | paper minimap or display |
 | section comments/TODOs | paper edit or evidence need |
-| feedback `todo.md` unresolved items | paper edit, probe, display, citation |
+| round `todo.md` unresolved items | paper edit, probe, display, citation |
 
 Classify each open item using the delivery-need interface:
 

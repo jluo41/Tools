@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-structure-display
-description: "Plan, scaffold, build, audit, and insert paper display items: figures, tables, diagrams, and preview PDFs under 0-display/. Use for display layer, DISPLAY_INDEX.md, ready-to-input figure/table blocks, captions, labels, standalone previews, or figure/table story-evidence contracts."
+description: "Plan, scaffold, build, audit, and insert paper display items: figures, tables, diagrams, and preview PDFs under 0-displays/. Use for display-unit README files, ready-to-input figure/table blocks, captions, labels, standalone previews, or figure/table story-evidence contracts."
 argument-hint: "[plan|scaffold|build|audit|insert] [paper-dir-or-display-id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
   version: "1.0.0"
   last_updated: "2026-06-20"
-  summary: "Maintain 0-display/ as a story/evidence display layer with DISPLAY_INDEX.md, per-item DISPLAY.md, float.tex, and standalone preview PDFs."
+  summary: "Maintain 0-displays/ as a story/evidence display layer with README.md, per-unit README.md, float.tex, and standalone preview PDFs."
 ---
 
 Skill: haipipe-paper-structure-display
@@ -30,27 +30,17 @@ Location:
 
 ```
 <paper>/
-└── 0-display/
-    ├── DISPLAY_INDEX.md
-    ├── Figures/
-    │   └── fig01-hero/
-    │       ├── DISPLAY.md
-    │       ├── figure.pdf
-    │       ├── float.tex
-    │       ├── preview.tex
-    │       ├── preview.pdf
-    │       ├── sources/
-    │       └── versions/
-    ├── Tables/
-    │   └── tab01-main-results/
-    │       ├── DISPLAY.md
-    │       ├── table-body.tex
-    │       ├── float.tex
-    │       ├── preview.tex
-    │       ├── preview.pdf
-    │       ├── data/
-    │       └── versions/
-    └── _old/
+└── 0-displays/
+    ├── README.md
+    ├── display01-hero/
+    │   ├── README.md
+    │   ├── float.tex
+    │   ├── preview.tex
+    │   ├── preview.pdf
+    │   ├── assets/
+    │   ├── source/
+    │   └── versions/
+    └── displayNN-<slug>/
 ```
 
 Principles
@@ -61,7 +51,7 @@ Principles
 2. **Do not bake captions into image PDFs.** `figure.pdf` is the visual asset;
    `float.tex` owns caption, label, and `\includegraphics`.
 3. **Make display blocks ready to input.** Section files should be able to use:
-   `\input{0-display/Figures/fig01-hero/float.tex}`.
+   `\input{0-displays/display01-hero/float.tex}`.
 4. **Preview separately.** `preview.pdf` is a standalone review artifact built
    from the same `float.tex`. It lets humans and reviewers inspect the display
    without compiling the whole paper.
@@ -92,15 +82,15 @@ Modes
 
 ### `plan`
 
-Create or refresh `0-display/DISPLAY_INDEX.md` from the paper state.
+Create or refresh `0-displays/README.md` from the paper state.
 
 Inputs to read when present:
 
-- `0-pitch/PAPER_PITCH.md`
+- `0-lifecycle/1-pitch/1-pitch.tex`
 - `NARRATIVE_REPORT.md`
 - `vNN-architecture-minimap.md`
 - `PAPER_PLAN.md`
-- existing `0-display/`
+- existing `0-displays/`
 - upstream result paths referenced by the user
 
 Output:
@@ -126,33 +116,26 @@ Status vocabulary:
 
 Create a display item folder from an index row or user request.
 
-Figure scaffold:
+Display-unit scaffold:
 
 ```text
-0-display/Figures/figNN-slug/
-  DISPLAY.md
+0-displays/displayNN-slug/
+  README.md
   float.tex
   preview.tex
-  sources/.gitkeep
+  assets/.gitkeep
+  source/.gitkeep
   versions/.gitkeep
 ```
 
-Table scaffold:
+One display unit can hold one or many concrete results: a main figure, a table
+body, appendix variants, robustness previews, and the source needed to rebuild
+them.
 
-```text
-0-display/Tables/tabNN-slug/
-  DISPLAY.md
-  table-body.tex
-  float.tex
-  preview.tex
-  data/.gitkeep
-  versions/.gitkeep
-```
-
-`DISPLAY.md` template:
+`README.md` template:
 
 ```markdown
-# Display: <Fig/Table ID> -- <short title>
+# displayNN-slug
 
 ## Reader Takeaway
 What should a reader understand in five seconds?
@@ -185,7 +168,7 @@ planned / data-ready / rendered / input-ready / inserted / reviewed
 ```latex
 \begin{figure}[t]
   \centering
-  \includegraphics[width=0.95\textwidth]{0-display/Figures/figNN-slug/figure.pdf}
+  \includegraphics[width=0.95\textwidth]{0-displays/displayNN-slug/assets/figure.pdf}
   \caption{TODO: concise caption that states the display's job without overclaiming.}
   \label{fig:slug}
 \end{figure}
@@ -198,7 +181,7 @@ planned / data-ready / rendered / input-ready / inserted / reviewed
   \centering
   \caption{TODO: concise caption that states the table's job without overclaiming.}
   \label{tab:slug}
-  \input{0-display/Tables/tabNN-slug/table-body.tex}
+  \input{0-displays/displayNN-slug/assets/table-body.tex}
 \end{table}
 ```
 
@@ -212,7 +195,7 @@ planned / data-ready / rendered / input-ready / inserted / reviewed
 \usepackage{subcaption}
 \usepackage{caption}
 \begin{document}
-\input{0-display/Figures/figNN-slug/float.tex}
+\input{0-displays/displayNN-slug/float.tex}
 \end{document}
 ```
 
@@ -237,8 +220,8 @@ Check display/story/evidence consistency.
 
 Audit questions:
 
-- Does every `DISPLAY_INDEX.md` row have a concrete claim and evidence source?
-- Does every major display have `DISPLAY.md`?
+- Does every `0-displays/README.md` row have a concrete claim and evidence source?
+- Does every major display have a unit `README.md`?
 - Does `float.tex` exist for each inserted display?
 - Does `preview.pdf` compile?
 - Does the caption match the actual asset/table body?
@@ -263,13 +246,7 @@ Route failures:
 Insert a ready display into a section file by adding:
 
 ```latex
-\input{0-display/Figures/figNN-slug/float.tex}
-```
-
-or:
-
-```latex
-\input{0-display/Tables/tabNN-slug/float.tex}
+\input{0-displays/displayNN-slug/float.tex}
 ```
 
 Rules:
@@ -277,7 +254,7 @@ Rules:
 - Only insert displays with status `input-ready` or better.
 - Insert near the paragraph whose claim the display supports.
 - Do not duplicate an existing input line.
-- After insertion, update `DISPLAY_INDEX.md` status to `inserted`.
+- After insertion, update `0-displays/README.md` status to `inserted`.
 
 Handoff
 -------
@@ -285,7 +262,7 @@ Handoff
 After any mode, report:
 
 - display items created or changed
-- paths to `DISPLAY_INDEX.md`, `DISPLAY.md`, `float.tex`, and `preview.pdf`
+- paths to `0-displays/README.md`, unit `README.md`, `float.tex`, and `preview.pdf`
 - current status for each touched item
 - next command, usually one of:
 
