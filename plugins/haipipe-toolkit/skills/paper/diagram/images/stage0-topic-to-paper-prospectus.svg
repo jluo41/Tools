@@ -44,8 +44,8 @@
   <text class="label" x="750" y="160">Paper Prospectus Folder</text>
   <text class="small" x="750" y="194">Paper repo/submodule can start early</text>
   <text class="tiny" x="750" y="226">README.md</text>
-  <text class="tiny" x="750" y="250">PAPER_PROSPECTUS.md</text>
-  <text class="tiny" x="750" y="274">NARRATIVE_HANDOFF.md</text>
+  <text class="tiny" x="750" y="250">stage00/current.md</text>
+  <text class="tiny" x="750" y="274">stage01/current.md</text>
   <text class="tiny" x="750" y="304">No LaTeX scaffold yet</text>
 
   <rect class="work" x="135" y="430" width="300" height="175"/>

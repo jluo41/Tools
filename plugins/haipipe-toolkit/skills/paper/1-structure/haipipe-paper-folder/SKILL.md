@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-structure-bootstrap
-description: Scaffold a new paper folder in prospectus mode or manuscript mode. Prospectus mode creates README.md, PAPER_PROSPECTUS.md, and NARRATIVE_HANDOFF.md for an early paper repo/submodule. Manuscript mode creates the full 0-/1-prefix LaTeX layout matching proven Paper-<Name>-<Venue><Year> folders across ProjA/ProjB.
+description: Scaffold a new paper folder in prospectus mode or manuscript mode. Prospectus mode creates README.md plus lifecycle/stage00_topic-appears/current.md and lifecycle/stage01_create-paper-folder/current.md for an early paper repo/submodule. Manuscript mode creates the full 0-/1-prefix LaTeX layout matching proven Paper-<Name>-<Venue><Year> folders across ProjA/ProjB.
 metadata:
   version: "2.0.0"
   last_updated: "2026-06-08"
@@ -20,7 +20,7 @@ supports two maturity modes:
 
 | Mode | Use when | Files |
 |------|----------|-------|
-| `prospectus` | The topic is paper-shaped but not yet evidence-backed | `README.md`, `PAPER_PROSPECTUS.md`, `NARRATIVE_HANDOFF.md` |
+| `prospectus` | The topic is paper-shaped but not yet evidence-backed | `README.md`, `lifecycle/stage00_topic-appears/current.md`, `lifecycle/stage01_create-paper-folder/current.md` |
 | `manuscript` | The paper has a supported seed and is ready for pitch/plan/draft work | full `0-` / `1-` LaTeX layout |
 
 The preferred project-backed pattern is that each paper folder is its own Git
@@ -79,11 +79,41 @@ Do NOT use for:
 Paper-<Name>/
 │
 │  README.md              # paper repo status, parent project link, maturity
-│  PAPER_PROSPECTUS.md    # paper-shaped discovery constraint
-│  NARRATIVE_HANDOFF.md   # handoff from prospectus to project narrative
+│
+│  lifecycle/
+│    README.md            # lifecycle branch convention
+│
+│    stage00_topic-appears/
+│      current.md         # paper-shaped discovery constraint
+│      runs/              # dated snapshots
+│      feedback/          # comments and review notes for this stage
+│      assets/            # diagrams/images/supporting files for this stage
+│
+│    stage01_create-paper-folder/
+│      current.md         # folder creation record and narrative handoff
+│      runs/
+│      feedback/
+│      assets/
 ```
 
-### `PAPER_PROSPECTUS.md` contract
+Each `lifecycle/stageXX_slug/` folder is a durable stage branch. Keep the
+stage's active artifact in `current.md`. Use `runs/YYYY-MM-DD.md` only for
+dated snapshots worth preserving; use `feedback/` for comments, objections, and
+review notes; use `assets/` for diagrams and supporting files.
+
+All `current.md` files should include frontmatter:
+
+```yaml
+---
+date: YYYY-MM-DD
+stage: stageXX_slug
+status: current
+paper: Paper-<Name>
+project: examples/<Project>
+---
+```
+
+### `lifecycle/stage00_topic-appears/current.md` contract
 
 Required sections:
 
@@ -114,7 +144,7 @@ discover/probe/task/insight routes.
 Concrete conditions for promoting this prospectus to an active paper seed.
 ```
 
-### `NARRATIVE_HANDOFF.md` contract
+### `lifecycle/stage01_create-paper-folder/current.md` contract
 
 Required sections:
 
@@ -122,7 +152,7 @@ Required sections:
 # Narrative Handoff
 
 ## Source Prospectus
-Path to `PAPER_PROSPECTUS.md`.
+Path to `../stage00_topic-appears/current.md`.
 
 ## Narrative Job
 What the narrative layer should clarify or synthesize.
@@ -143,10 +173,12 @@ The conditions under which narrative can recommend promotion to paper seed.
 Prospectus mode definition of done:
 
 - `README.md` says this is `maturity: prospectus`
-- `PAPER_PROSPECTUS.md` states the question, constraints, current evidence status,
-  narrative handoff, inquiry tracks, and promotion gate
-- `NARRATIVE_HANDOFF.md` gives narrative a concrete first job and at least one
-  open question that can route to discover/probe/task/insight
+- `lifecycle/README.md` explains the stage-branch convention
+- `lifecycle/stage00_topic-appears/current.md` states the question, constraints,
+  current evidence status, narrative handoff, inquiry tracks, and promotion gate
+- `lifecycle/stage01_create-paper-folder/current.md` gives narrative a concrete
+  first job and at least one open question that can route to
+  discover/probe/task/insight
 - No `0-sections/`, no `0-display/`, no LaTeX wrappers, no compile scripts
 
 ## Target Layout
@@ -251,7 +283,9 @@ Rules (from Paper-MapPhyTrait):
    - `.gitignore` (LaTeX artifacts + selective PDF preservation)
    - `1-config.yaml` (optional, with figure/table path defaults)
 8. **Create 1-feedback/** as empty dir (revision rounds created on demand)
-9. **Report** what was created and the next step (usually: fill `0-pitch/PAPER_PITCH.md`, write the abstract, or fill author info)
+9. **Report** what was created and the next step (usually: fill
+   `lifecycle/stage02_seed-pitch/current.md`, mirror to `0-pitch/` if
+   manuscript mode is active, write the abstract, or fill author info)
 
 ## Compile Script Contract
 
@@ -326,8 +360,8 @@ Do NOT write memory for transient to-dos or single-round wording preferences.
 - Putting section headers in section files (the main `.tex` owns `\section{}`)
 - Using flat figure directory instead of `Figures/` + `Tables/` under `0-display/`
 - Forgetting the PowerShell compile script (Windows users need it)
-- Skipping `0-pitch/PAPER_PITCH.md` and letting the abstract/intro invent
-  different public-facing stories
+- Skipping `lifecycle/stage02_seed-pitch/current.md` and letting the
+  abstract/intro invent different public-facing stories
 
 ## Output Standard
 
@@ -337,4 +371,5 @@ When bootstrapping is complete, report:
 - Main `.tex` file name
 - Number of section stubs created
 - Compile scripts present
-- Next step (usually: fill `0-pitch/PAPER_PITCH.md`, write abstract, fill author block, or add style file)
+- Next step (usually: fill `lifecycle/stage02_seed-pitch/current.md`, write
+  abstract, fill author block, or add style file)

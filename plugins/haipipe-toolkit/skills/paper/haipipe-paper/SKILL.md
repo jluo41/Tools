@@ -32,7 +32,7 @@ called by the specialist, not by this orchestrator directly.
 
 Examples:
 ```
-/haipipe-paper conference "NARRATIVE_REPORT.md" — venue: ICLR
+/haipipe-paper conference "lifecycle/stage03_evidence-backed-narrative/current.md" — venue: ICLR
 /haipipe-paper journal                       (no input → Nature default)
 /haipipe-paper is "MISQ paper on AI adoption"
 /haipipe-paper prospectus "examples/ProjC-LLMRecPhysicain/paper/Paper-LLMPhysicianRanking"
@@ -57,7 +57,7 @@ haipipe-paper-rebuttal    Submission rebuttal pipeline (venue-agnostic)
                           (parse reviews → strategy → draft → coverage check)
 haipipe-paper-structure-bootstrap
                           Paper folder bootstrap, including prospectus mode
-                          (README.md + PAPER_PROSPECTUS.md + NARRATIVE_HANDOFF.md)
+                          (README.md + lifecycle/stage00... + lifecycle/stage01...)
                           and manuscript mode (full 0-/1-prefix tex scaffold)
 haipipe-paper-create      Fresh-draft pipeline, venue-agnostic at workflow
                           (narrative+plan → scaffold tex → paragraph-by-paragraph draft)
@@ -126,7 +126,7 @@ Step 2: Resolve venue/task:
   - Topic mentions ICLR/NeurIPS/ICML etc.             -> target = conference
   - Topic mentions Nature/PNAS                        -> target = journal
   - Topic mentions MISQ/ISR/IS journal                -> target = is
-  - Default if a NARRATIVE_REPORT.md exists with no
+  - Default if a lifecycle stage03 narrative exists with no
     venue hint                                        -> ASK (don't guess)
 
 Step 3: Decide handling:
@@ -158,7 +158,7 @@ chooser:
 
   conference  → ICLR / NeurIPS / ICML / CVPR / ACL / AAAI
                 Full automated pipeline: narrative → PDF (Phase 1-6 with audits)
-                Best when you have a NARRATIVE_REPORT.md and want a submission-ready PDF.
+                Best when you have a stage03 evidence narrative and want a submission-ready PDF.
 
   journal     → Nature portfolio / PNAS / biomedical journals
                 Nature-style routing advisor: which skill to use next.
@@ -174,7 +174,7 @@ chooser:
 
   create      → fresh draft from narrative + plan (venue-agnostic)
                 Scaffolds tex root, walks sections, drafts paragraph-by-paragraph.
-                Best when you have NARRATIVE_REPORT.md + PAPER_PLAN.md and want
+                Best when you have stage03 evidence narrative + stage05 paper plan and want
                 a compileable first draft.
 
   revise      → polish an existing tex (venue-agnostic)
@@ -194,7 +194,7 @@ Disambiguation Rules
   - Venue unclear → list the 4 options, wait. Do NOT default to conference
     or journal silently — venue choice drives style file, page limit, and
     structure decisions that are expensive to redo.
-  - User says "paper" with no venue + provides NARRATIVE_REPORT.md →
+  - User says "paper" with no venue + provides a stage03 narrative →
     ASK which venue.
   - User says "rebuttal" + provides paper path → dispatch to rebuttal
     immediately (rebuttal is venue-agnostic).
@@ -313,7 +313,7 @@ Composing with Other Workflows
 /run-probe       → experiment results
 /auto-review-loop     → AUTO_REVIEW.md
 /result-to-claim      → CLAIMS_FROM_RESULTS.md
-/haipipe-paper-structure-narrative     → NARRATIVE_REPORT.md  ← design contract
+/haipipe-paper-structure-narrative     → lifecycle/stage03_evidence-backed-narrative/current.md
         │
         ▼
 /haipipe-paper        ← you are here (router)

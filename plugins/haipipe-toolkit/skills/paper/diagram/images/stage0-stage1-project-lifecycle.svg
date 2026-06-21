@@ -55,8 +55,8 @@
   <text class="label" x="432" y="175">Stage 1</text>
   <text class="text" x="432" y="208">Create paper prospectus folder</text>
   <text class="small" x="432" y="240">README.md</text>
-  <text class="small" x="432" y="264">PAPER_PROSPECTUS.md</text>
-  <text class="small" x="432" y="288">NARRATIVE_HANDOFF.md</text>
+  <text class="small" x="432" y="264">stage00/current.md</text>
+  <text class="small" x="432" y="288">stage01/current.md</text>
 
   <rect class="box" x="815" y="135" width="245" height="185"/>
   <text class="label" x="842" y="175">Not Yet</text>
@@ -114,7 +114,7 @@
 
   <text class="tiny" x="348" y="213">if paper-shaped</text>
   <text class="tiny" x="755" y="213">prospectus only</text>
-  <text class="tiny" x="395" y="415">PAPER_PROSPECTUS + NARRATIVE_HANDOFF guide narrative</text>
+  <text class="tiny" x="395" y="415">stage00 + stage01 guide narrative</text>
   <text class="tiny" x="380" y="705">if not enough narrative evidence, keep looping</text>
   <text class="tiny" x="888" y="710">if yes</text>
 

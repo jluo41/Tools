@@ -44,8 +44,8 @@
   <rect class="prospectus" x="70" y="175" width="280" height="150"/>
   <text class="label" x="100" y="215">Stage 1 Output</text>
   <text class="text" x="100" y="248">Paper prospectus</text>
-  <text class="small" x="100" y="280">PAPER_PROSPECTUS.md</text>
-  <text class="small" x="100" y="302">NARRATIVE_HANDOFF.md</text>
+  <text class="small" x="100" y="280">stage00/current.md</text>
+  <text class="small" x="100" y="302">stage01/current.md</text>
 
   <rect class="loop" x="70" y="505" width="310" height="170"/>
   <text class="label" x="100" y="545">Narrative / Project Loop</text>
