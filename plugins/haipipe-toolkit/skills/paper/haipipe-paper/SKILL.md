@@ -1,13 +1,14 @@
 ---
 name: haipipe-paper
-description: "Run any paper-lifecycle work. Use `/haipipe-paper enter <paper-path>` or `/haipipe-paper status [paper-path]` to preload a paper session dashboard from STATUS.md, 0-lifecycle, 0-displays, 0-sections, 1-feedback, and git state. Also parses intent (venue + phase) and dispatches to specialists for writing/revising/rebutting papers targeting ICLR, NeurIPS, ICML, Nature, PNAS, MISQ, ISR. Trigger: paper, enter paper, paper status, write paper, paper pipeline, paper writing, draft paper, revise paper, polish tex, rebuttal, reply to reviewers, 写论文, 论文流程, /haipipe-paper."
+description: "Run any paper-lifecycle work. Use `/haipipe-paper enter <paper-path>` or `/haipipe-paper status [paper-path]` to preload an open-needs paper dashboard from STATUS.md, 0-lifecycle, 0-displays, 0-sections, 1-feedback, and git state. Paper lifecycle owns paper-specific story, angle, claims, narrative, displays, and minimap; open GAP/NEED items can call probe/discover/task/insight directly through the shared delivery-need interface. Also parses intent (venue + phase) and dispatches to specialists for writing/revising/rebutting papers targeting ICLR, NeurIPS, ICML, Nature, PNAS, MISQ, ISR. Trigger: paper, enter paper, paper status, open needs, claim gap, figure table gap, write paper, paper pipeline, paper writing, draft paper, revise paper, polish tex, rebuttal, reply to reviewers, 写论文, 论文流程, /haipipe-paper."
 argument-hint: "[enter|status|venue|phase] [paper-path-or-args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
   last_updated: "2026-06-21"
   summary: "Run any paper-lifecycle work."
   changelog:
+    - "1.2.0 (2026-06-21): made paper lifecycle the delivery-side owner of story/claims and routed GAP/NEED items through the shared delivery-need interface."
     - "1.1.0 (2026-06-21): added enter/status paper-session loader routing."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
@@ -15,17 +16,27 @@ metadata:
 Skill: haipipe-paper (orchestrator)
 ====================================
 
-User-facing entry for the paper lifecycle. Parses intent, dispatches to
-the right venue specialist via `Skill()`. Lifecycle phase skills
-(narrative, plan, figure, write, compile, revise, review, present) are
-called by the specialist, not by this orchestrator directly.
+User-facing entry for the paper lifecycle. The paper lifecycle is a delivery
+owner: it owns this paper's angle, claims, narrative, section map, displays,
+and minimap. Project-level evidence lives outside the paper in probes,
+discoveries, tasks, and insights.
+
+When the paper hits a gap, record or surface a delivery need and route directly
+to the relevant evidence worker. Do not route through a project-level narrative
+layer. Use `../../_shared/delivery-need-interface.md` when creating or interpreting
+GAP/NEED records.
+
+This orchestrator parses intent and dispatches to the right venue specialist
+via `Skill()`. Lifecycle phase skills (pitch, claims, narrative, display,
+write, compile, revise, review, present) are called by the specialist, not by
+this orchestrator directly.
 
 For teaching and internalization, use `play/`: it contains stage-by-stage
 walkthrough folders and images for Stage 00, Stage 01, and Stage 02.
 
 ```
 /haipipe-paper                              -> enter current paper if detectable; else venue dashboard
-/haipipe-paper enter "<paper-path>"         -> preload paper session status dashboard
+/haipipe-paper enter "<paper-path>"         -> preload open-needs paper session dashboard
 /haipipe-paper status ["<paper-path>"]      -> same as enter; path optional
 /haipipe-paper <venue>                      -> dispatch to that specialist (no args)
 /haipipe-paper <venue> "<topic-or-input>"   -> dispatch to specialist with input
@@ -65,7 +76,7 @@ haipipe-paper-rebuttal    Submission rebuttal pipeline (venue-agnostic)
                           (parse reviews → strategy → draft → coverage check)
 haipipe-paper-enter       Status-aware paper session loader
                           (read STATUS.md + lifecycle/displays/sections/feedback/git,
-                           report current layer, open gates, next commands)
+                           report current layer, open needs, open gates, next commands)
 haipipe-paper-structure-bootstrap
                           Paper folder bootstrap, including prospectus mode
                           (README.md + lifecycle/stage00... + lifecycle/stage01...)
@@ -255,6 +266,35 @@ next:      suggested next command (often a lifecycle stage skill like
 ```
 
 ---
+
+Delivery Need Routing
+---------------------
+
+Paper work is demand-driven. A paper paragraph, claim, figure, table, or
+feedback item may reveal that the next action is a probe, discovery, task,
+display unit, or insight. The `enter/status` path must surface those needs
+before recommending more writing.
+
+Use this shared reference when interpreting or creating need records:
+
+```
+../../_shared/delivery-need-interface.md
+```
+
+Routing hints:
+
+```
+claim needs a verdict or robustness check       -> /haipipe-probe open <need>
+claim needs outside literature/context          -> /haipipe-discover <question>
+claim/display needs a run or data artifact      -> /haipipe-task <contract>
+figure/table needs materialized output          -> /haipipe-task-for-display <need>
+closed evidence needs reusable meaning/caveat   -> /haipipe-insight <artifact>
+wording/section placement needs paper work      -> paper lifecycle stage/edit skill
+```
+
+The paper backfills resolved evidence into `2-claims`, `4-figures-tables`,
+`5-minimap`, sections, or feedback logs. Evidence workers do not own the paper
+story.
 
 Relation to Lifecycle Stage Skills, Sections, and Components
 -------------------------------------------------------------

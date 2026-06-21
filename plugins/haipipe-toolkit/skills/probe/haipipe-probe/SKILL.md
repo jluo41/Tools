@@ -1,11 +1,11 @@
 ---
 name: haipipe-probe
-description: "Research probe pipeline — sandwich lifecycle around discovery/task evidence work. Probe-open designs the research contract and dispatches discovery refs plus task contracts; discoveries and task run independently; Probe-post resumes after completion to harvest and judge the claim. Insight/DIKW export is deferred. Contains no code — pure steering/interpretation layer. Trigger: probe, claim, hypothesis, drive probe, plan next runs, dispatch tasks, dispatch discoveries, aggregate runs, statistical test, paired-t, coverage, propose next probe, review-loop, iterate until claim holds, /haipipe-probe."
-argument-hint: [function] [probe_ref_or_path] [args...]
+description: "Research probe pipeline — sandwich lifecycle around discovery/task evidence work. Accepts direct delivery needs from paper/application claim gaps via the shared delivery-need interface. Probe-open designs the research contract and dispatches discovery refs plus task contracts; discoveries and task run independently; Probe-post resumes after completion to harvest and judge the claim, then returns a verdict/artifact/caveat for backfill into the source delivery lifecycle. Insight/DIKW export is deferred. Contains no code — pure steering/interpretation layer. Trigger: probe, claim, hypothesis, delivery need, claim gap, evidence gap, drive probe, plan next runs, dispatch tasks, dispatch discoveries, aggregate runs, statistical test, paired-t, coverage, propose next probe, review-loop, iterate until claim holds, /haipipe-probe."
+argument-hint: "[function] [probe_ref_or_path] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "3.2.0"
-  last_updated: "2026-06-19"
+  version: "3.3.0"
+  last_updated: "2026-06-21"
   summary: "Research probe pipeline — sandwich lifecycle: Probe-open → discoveries/tasks → Probe-post; insights deferred."
   changelog:
     - "1.0.0 (2026-05-31): baseline metadata added."
@@ -14,6 +14,7 @@ metadata:
     - "2.0.0 (2026-06-11): IPO workflow adoption — add workflow-plan-sample.yaml (6 domain phases) + probe-lifecycle.workflow.js (4-stage lifecycle). Lifecycle section in SKILL.md."
     - "3.0.0 (2026-06-11): 5-stage lifecycle (Design/Materialize/Harvest/Judge/Insight) with loop. Two-mode Design (A: human, B: auto agents). Insight files full DIKW cascade. Loop absorbed from haipipe-probe-loop."
     - "3.1.0 (2026-06-19): reframe lifecycle as sandwich: Probe-open (Design/Dispatch) → task execution pause → Probe-post (Harvest/Judge); insights deferred."
+    - "3.3.0 (2026-06-21): accept delivery-need inputs from paper/application and return verdicts for source backfill without requiring narrative."
     - "3.2.0 (2026-06-19): add discoveries/ as external-evidence work, sibling to tasks/ and referenced by probes."
 ---
 
@@ -27,6 +28,17 @@ Naming note: the command and folder remain `/haipipe-probe` and
 `probes/` for compatibility. Conceptually this layer is
 **probe**: each probe folder is a focused probe that asks reality
 whether a candidate claim survives contact with evidence.
+
+Probes can be opened directly from a delivery lifecycle need raised by paper
+or application. In that case, read the need context, create/locate the probe
+contract, and return a verdict plus backfill target to the source delivery
+artifact. Do not require a project-level narrative layer.
+
+Shared interface:
+
+```text
+../../_shared/delivery-need-interface.md
+```
 
 Three work areas live side-by-side in a project; this skill owns the claim
 contract and never crosses into execution:
@@ -101,9 +113,10 @@ Use it like this:
 1. `/haipipe-probe open <probe|new>` when you know the claim to test.
 2. Run or wait for dispatched discoveries and task work to finish.
 3. `/haipipe-probe post <probe>` to harvest evidence artifacts and judge the claim.
-4. If the verdict is weak, open the next probe; if it is strong, return to Narrative-post.
+4. If the verdict is weak, open the next probe; if it is strong, return to the
+   source paper/application lifecycle for backfill.
 
-In one sentence: **Probe asks, discoveries/tasks answer, Probe judges.**
+In one sentence: **Delivery asks, Probe frames, discoveries/tasks answer, Probe judges, delivery backfills.**
 
 ---
 
@@ -113,6 +126,7 @@ Commands
 ```
 /haipipe-probe                                  dashboard (list probes + status)
 /haipipe-probe open <probe|new>                 probe-open: design + dispatch, then pause
+/haipipe-probe open <need-id-or-source>         open from paper/application delivery need
 /haipipe-probe post <probe>                     probe-post: harvest + judge after evidence finishes
 /haipipe-probe resume <probe>                   alias for post
 /haipipe-probe <probe>                          full sandwich, only for small/auto runs
@@ -184,7 +198,7 @@ PROBE-POST B: JUDGE — "is the answer honest?"
       🔬 integrity auditor  → INTEGRITY_AUDIT.md (Codex)
       ⚖️  claim verifier    → CLAIMS_FROM_RESULTS.md (Codex)
     Fail at any gate → stop.
-  verdict: yes → close probe or return to Narrative-post
+  verdict: yes → close probe or return to source delivery lifecycle
            partial/no → Explore → new Probe-open cycle
 
 DEFERRED EXPORT: INSIGHT / DIKW
@@ -229,7 +243,7 @@ Probe-post verdict = partial/no
 Stop conditions:
 
 ```
-✅ converged        verdict = yes AND structural errors = 0 → close / narrative-post
+✅ converged        verdict = yes AND structural errors = 0 → close / delivery backfill
 🟡 budget_exhausted hit --rounds N without converging
 🔴 blocked          Mode A: user rejected  /  Mode B: agent rejected all proposals
 ⏸️  paused           user interrupt
@@ -434,8 +448,10 @@ discover    provides discoveries/ → external evidence linked into probe eviden
 task        provides tasks/runs   → internal execution linked into probe evidence_refs
               neither layer interprets probe claims
 insight     deferred export layer (parked while focusing on N/P/T)
-paper       consumes confirmed claims for paper writing
+paper       consumes confirmed claims for paper writing and lifecycle backfill
+application consumes confirmed claims/caveats for audience-specific delivery
 
 probe is the central research hub: opens research contracts, pauses while
-discoveries/tasks run, resumes to write claims/verdicts that feed Narrative-post.
+discoveries/tasks run, resumes to write claims/verdicts that feed delivery
+lifecycle backfill.
 ```

@@ -1,13 +1,14 @@
 ---
 name: haipipe-application
-description: "Application layer orchestrator (the application umbrella). Routes every session-style workflow in the haipipe stack: ask (research question driver, can trigger probe) and external creation (message / ui / report) drawing on K/W from insight. All kinds share one session skeleton: SESSION_STATE.json + plan-vN.yaml + gate (persona + attendance) + context loader. Use to ask a research question, draft a patient/clinician message, sketch UI, write a stakeholder report. Trigger: ask, question, session, message, ui, sketch, report, briefing, /haipipe-application."
+description: "Application layer orchestrator (the application umbrella). Routes every session-style workflow in the haipipe stack: ask (research question driver, can trigger probe) and external creation (message / ui / report) drawing on K/W from insight. Application lifecycle owns audience-specific message/story/report/UI, records open delivery needs, and can call probe/discover/task/insight directly through the shared delivery-need interface. All kinds share one session skeleton: SESSION_STATE.json + plan-vN.yaml + gate (persona + attendance) + context loader. Use to ask a research question, draft a patient/clinician message, sketch UI, write a stakeholder report. Trigger: ask, question, session, message, ui, sketch, report, briefing, application open needs, delivery need, /haipipe-application."
 argument-hint: "[kind] [intent...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-06-21"
   summary: "Application layer orchestrator (the application umbrella)."
   changelog:
+    - "1.1.0 (2026-06-21): align application with delivery-need model; application owns audience-specific story/message while shared evidence lives in probes/discoveries/tasks/insights."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
@@ -16,6 +17,17 @@ Skill: haipipe-application (orchestrator)
 
 User-facing entry for every **session-style workflow** in the toolkit.
 A session = one user intent, one case file, one closed report.
+
+Application is a delivery-side owner. It owns audience-specific intent,
+message, report, UI, and delivery claims. If the application hits an evidence
+gap, record a delivery need and call probe/discover/task/insight directly.
+Do not route application story through a project-level narrative layer.
+
+Shared interface:
+
+```text
+../../_shared/delivery-need-interface.md
+```
 
 ```
 task          executes runs                            (code, GPU)
