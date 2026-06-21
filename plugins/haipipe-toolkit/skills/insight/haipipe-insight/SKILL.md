@@ -43,6 +43,8 @@ apply <INSIGHT_REVIEW.yaml> = "write the reviewed cards into insights/"
 Internally, this is the same review contract. `INSIGHT_REVIEW.yaml` is the
 reviewable checklist between raw material and permanent cards.
 
+For a beginner-friendly walkthrough, read `play/README.md`.
+
 
 Where the insight base lives (project-level)
 ---------------------------------------------

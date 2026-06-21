@@ -91,6 +91,8 @@ discover/
 │   ├── SKILL.md
 │   └── ref/
 │       └── discovery-yaml-schema.md
+├── play/                      plain-language explanation by example
+│   └── README.md
 ├── 1_search/                  find sources
 │   ├── arxiv/
 │   ├── semantic-scholar/

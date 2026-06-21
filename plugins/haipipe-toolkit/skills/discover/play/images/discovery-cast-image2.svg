@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="680" viewBox="0 0 1200 680" role="img" aria-labelledby="title desc">
+  <title id="title">Discovery Cast</title>
+  <desc id="desc">Narrative opens a question, Discovery reads outside evidence, Probe gates claims, Task runs internal work, and Insight stores reusable synthesis.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#243746"/>
+    </marker>
+    <style>
+      .bg { fill: #f7f4ee; }
+      .box { fill: #ffffff; stroke: #243746; stroke-width: 2.5; rx: 16; }
+      .source { fill: #fff8d8; stroke: #9a7b1f; stroke-width: 2.5; rx: 16; }
+      .title { font-family: Inter, Arial, sans-serif; font-size: 26px; font-weight: 700; fill: #1f2a33; }
+      .text { font-family: Inter, Arial, sans-serif; font-size: 17px; fill: #31424f; }
+      .small { font-family: Inter, Arial, sans-serif; font-size: 15px; fill: #52636f; }
+      .label { font-family: Inter, Arial, sans-serif; font-size: 18px; font-weight: 700; fill: #243746; }
+      .line { stroke: #243746; stroke-width: 2.5; fill: none; marker-end: url(#arrow); }
+      .muted { stroke: #8999a3; stroke-width: 2; stroke-dasharray: 7 7; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="680"/>
+  <text x="72" y="72" class="title">Discovery is the outside evidence layer</text>
+  <text x="72" y="104" class="text">It scouts external evidence. It does not own Tasks, final claims, or the Insight archive.</text>
+
+  <rect class="box" x="70" y="180" width="210" height="130"/>
+  <text x="100" y="220" class="label">Narrative</text>
+  <text x="100" y="254" class="text">story steering</text>
+  <text x="100" y="282" class="small">opens a gap</text>
+
+  <rect class="box" x="370" y="180" width="230" height="130"/>
+  <text x="400" y="220" class="label">Discovery</text>
+  <text x="400" y="254" class="text">outside evidence</text>
+  <text x="400" y="282" class="small">search, read, verdict</text>
+
+  <rect class="source" x="720" y="130" width="230" height="100"/>
+  <text x="750" y="170" class="label">Papers</text>
+  <text x="750" y="201" class="small">methods and findings</text>
+
+  <rect class="source" x="720" y="260" width="230" height="100"/>
+  <text x="750" y="300" class="label">Web / Data</text>
+  <text x="750" y="331" class="small">external facts</text>
+
+  <rect class="box" x="370" y="440" width="230" height="130"/>
+  <text x="400" y="480" class="label">Probe</text>
+  <text x="400" y="514" class="text">claim gate</text>
+  <text x="400" y="542" class="small">combines evidence</text>
+
+  <rect class="box" x="70" y="440" width="210" height="130"/>
+  <text x="100" y="480" class="label">Task</text>
+  <text x="100" y="514" class="text">inside execution</text>
+  <text x="100" y="542" class="small">code and metrics</text>
+
+  <rect class="box" x="720" y="440" width="230" height="130"/>
+  <text x="750" y="480" class="label">Insight</text>
+  <text x="750" y="514" class="text">reusable synthesis</text>
+  <text x="750" y="542" class="small">after review</text>
+
+  <path class="line" d="M280 245 H365"/>
+  <path class="line" d="M600 230 C650 190 675 180 715 180"/>
+  <path class="line" d="M600 268 C650 300 675 310 715 310"/>
+  <path class="line" d="M485 312 V435"/>
+  <path class="line" d="M280 505 H365"/>
+  <path class="muted" d="M600 505 H715"/>
+
+  <text x="306" y="230" class="small">question</text>
+  <text x="620" y="158" class="small">read</text>
+  <text x="616" y="342" class="small">verify</text>
+  <text x="502" y="382" class="small">outside verdict</text>
+  <text x="300" y="488" class="small">metrics</text>
+  <text x="622" y="488" class="small">post only after review</text>
+</svg>

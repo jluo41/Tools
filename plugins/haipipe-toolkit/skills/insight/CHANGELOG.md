@@ -4,6 +4,14 @@ insight — Changelog
 Layer-scoped changelog for the insight (KNOWLEDGE / archive) layer. Newest
 first. Rollup lives in the plugin-level `CHANGELOG.md`.
 
+## [2.6.0] — 2026-06-21
+
+### Added
+- **Beginner play folder.** Added `play/` as a new-reader walkthrough for the
+  review/apply workflow, including a plain mental model, toy walkthrough,
+  example `INSIGHT_REVIEW.yaml`, example cards after apply, and card update
+  rules.
+
 ## [2.5.0] — 2026-06-20
 
 ### Added
