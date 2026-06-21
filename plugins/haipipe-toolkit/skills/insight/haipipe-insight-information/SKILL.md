@@ -1,13 +1,14 @@
 ---
 name: haipipe-insight-information
-description: "I-level patterns specialist of the haipipe-insight family. Reads multiple D_data entries and synthesizes cross-observation patterns into markdown entries at insights/I_information/. NO code execution — pure markdown synthesis. Looks for statistical regularities, repeated effects, paired contrasts across probes. Use when running I-phase via /haipipe-application ask, or directly /haipipe-insight-information. Trigger: I-level, patterns, cross-probe patterns, regularities, what trends emerge."
+description: "I-level patterns specialist of the haipipe-insight family. Reads multiple D_data entries and synthesizes one reusable cross-observation pattern into insights/I_information/. NO code execution — pure markdown synthesis. Looks for statistical regularities, repeated effects, and paired contrasts across D cards. Use via /haipipe-insight review/apply, /haipipe-application ask, or directly /haipipe-insight-information. Trigger: I-level, patterns, cross-D patterns, regularities, what trends emerge."
 argument-hint: "[--project <path>] [--scope <observation-ids>] [--slug <slug>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-06-20"
   summary: "I-level patterns specialist of the haipipe-insight family."
   changelog:
+    - "1.1.0 (2026-06-20): clarified cross-D granularity; one reusable pattern per card."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
@@ -18,6 +19,9 @@ I-level of the Insight base (D → I → K → W). Reads multiple
 `D_data/D*.md` entries and synthesizes the **cross-observation
 patterns** that emerge: statistical regularities, repeated effects,
 paired contrasts.
+Each I card should contain ONE reusable pattern. If a candidate is a whole
+topic summary, split it; if it duplicates an active I card, merge evidence
+instead of filing a new card (see `../../ref/card-granularity.md`).
 
 **Invocation modes** (see `../../ref/invocation-modes.md`): interactive (a
 human steers; the triage ASK runs) OR headless (`--scope` ≥ 2 D ids + `--auto`
@@ -63,6 +67,8 @@ Hard rules
   inline here.
 - A pattern must cite ≥ 2 source D entries (otherwise it's just an
   observation, not a pattern).
+- A card must contain one reusable pattern. Broad summaries should split;
+  reinforcing evidence for an existing pattern should merge.
 
 
 Workflow
@@ -138,6 +144,7 @@ Definition of done
 - [ ] Evidence table cites ≥ 2 D entries with concrete numbers
 - [ ] Non-confirming evidence section honestly populated (or "none found"
       stated explicitly with rationale)
+- [ ] `## Change log` records creation source or meaningful update
 - [ ] NO Python file written, NO script executed
 - [ ] Back-link added to each cited D entry's Cross-references section
 - [ ] `insights/INDEX.md` updated

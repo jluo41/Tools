@@ -7,6 +7,7 @@ Story gap:
 Evidence used:
 
 - `probes/P001_first-check/site.md`
+- `insights/I001_candidate-lift/site.md`
 
 Decision:
 

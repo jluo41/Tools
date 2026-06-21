@@ -8,8 +8,20 @@ narratives:
     status: needs_next_probe
     probes:
       - P001_first-check
+    insights:
+      - I001_candidate-lift
     open_gaps:
       - robustness
+    scope_refs:
+      probes:
+        - probes/P001_first-check/probe.yaml
+      discoveries:
+        - discoveries/P01_first-check/01_prior-art/discovery.yaml
+      tasks:
+        - tasks/T001_baseline/status.yaml
+        - tasks/T002_candidate/status.yaml
+      insights:
+        - insights/I001_candidate-lift/insight.yaml
 
 probes:
   P001_first-check:
@@ -17,15 +29,16 @@ probes:
     verdict: supported_with_caveats
     narrative_id: N001_toy-claim
     discoveries:
-      - D001_prior-art
+      - P01.01
     tasks:
       - T001_baseline
       - T002_candidate
 
 discoveries:
-  D001_prior-art:
+  P01.01:
     status: ok
     probe_id: P001_first-check
+    path: discoveries/P01_first-check/01_prior-art
 
 tasks:
   T001_baseline:
@@ -34,3 +47,10 @@ tasks:
   T002_candidate:
     status: reported
     probe_id: P001_first-check
+
+insights:
+  I001_candidate-lift:
+    status: drafted
+    source_probe: P001_first-check
+    used_by:
+      - N001_toy-claim

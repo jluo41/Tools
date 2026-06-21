@@ -53,8 +53,10 @@ the structured block.
 1. Receive the full spec (the BLOCKING source + any recommended fields —
    see `../../ref/invocation-modes.md` → "spec complete" for <layer>).
 2. Pre-flight the source (no fabrication): resolve `--project`; confirm the
-   source exists — D: probe `result.status == confirmed`; I/K/W: every cited
-   id exists. Missing/unconfirmed → return `status: blocked` + `missing`, stop.
+   source exists and satisfies the layer gate — D: one settled traceable source;
+   I: at least two D ids; K: judged source with claim + confidence basis; W:
+   at least one K id. Missing/unsettled/unjudged → return `status: blocked` +
+   `missing`, stop.
 3. `Skill("haipipe-insight-<layer>", "<headless full-spec args> --auto")`
    → files the card silently (spec complete → no ASK).
 4. Verify: the returned `card` path exists and parses; sources match. Do NOT

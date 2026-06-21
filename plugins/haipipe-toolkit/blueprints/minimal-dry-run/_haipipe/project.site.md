@@ -7,14 +7,16 @@ Current stack:
 ```
 N001_toy-claim
   P001_first-check
-    D001_prior-art
+    P01.01 prior-art
     T001_baseline
     T002_candidate
+  I001_candidate-lift
 ```
 
 Closed:
 
 - `P001_first-check`: supported_with_caveats.
+- `I001_candidate-lift`: candidate lift synthesized with robustness caveat.
 
 Open:
 

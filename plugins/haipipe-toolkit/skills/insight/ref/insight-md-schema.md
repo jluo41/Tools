@@ -18,14 +18,19 @@ layer:     D | I | K | W
 title:     "<short title for generic catalog readers>"
 description: "<one-sentence OKF/catalog summary>"
 tags:      [<list of cross-cutting topics>]
-status:    active | stale | superseded
+status:    active | stale | superseded | contested | acted_on
 created:   YYYY-MM-DD                  # date only, not timestamp
 updated:   YYYY-MM-DD
 
 # (Layer-specific fields go HERE — see per-layer sections below)
 
-sources:   [<entries this derives from>]   # machine-traversable
-ref_by:    [<entries that cite this>]      # auto-maintained
+sources:   [<internal card ids or external source refs>]   # machine-traversable
+ref_by:    [<internal card ids or external caller refs>]   # auto-maintained
+
+# Optional lifecycle fields:
+# supersedes: [K02]
+# superseded_by: K09
+# merged_from: [task:T.A01.04, probe:P.0701_param_matched]
 ---
 ```
 
@@ -35,8 +40,13 @@ Conventions:
     not replace the layer-specific fields below
   - `tags` is a list, lowercase snake_case (e.g. `[film, conditioning, val]`)
   - `status` enum strict; default = `active`
-  - `sources` and `ref_by` use bare IDs (e.g. `[D01, D03]`), NOT prose
+  - `sources` and `ref_by` use structured refs, NOT prose
+    - internal insight refs are bare IDs: `D01`, `I02`, `K03`, `W01`
+    - external refs are namespaced: `task:T.A01.02`, `probe:P.0619_film_ood`,
+      `lit:smith2024`, `discover:Dsc.03`, `narrative:N01.C2`, `app:ask:03`
   - Frontmatter total length target: ≤ 16 lines
+  - Lifecycle fields are optional; use them only when status/evidence history
+    requires machine-readable routing
 
 
 Layer-specific frontmatter additions
@@ -46,23 +56,22 @@ D layer (Data)
 -----------------------
 
 ```yaml
-source_id: <task-id|exp-id>            # WHERE this observation came from
-                                       # task id (e.g. T1, "regression_v2") for
-                                       # task-sourced D cards
-                                       # probe source ref (e.g. P.A07) for
-                                       # probe-sourced D cards (rare)
+source_id: <source-ref>                # WHERE this observation came from
+                                       # task:T.A01.02 for task-sourced D
+                                       # lit:smith2024 for literature-sourced D
+                                       # probe:P.A07 for probe-sourced D (rare)
 headline:  "<one-line number summary>" # e.g. "val: FiLM Δ -0.98 ± 0.27 mg/dL (p=0.018, n=3)"
 ```
 
 `headline` is the quick-load summary; specific numbers go in body's
 `## Numbers` table.
 
-Note on `source_id`: D and I cards almost always come from task
-results (a regression / display / individual-query task). The legacy
-`exp_id` field name implied D came from probes — that was the
-old model. New model: D + I = task lens, K + W = probe lens.
-For continuity, `exp_id` is accepted as a deprecated alias for
-`source_id` when present; new cards should use `source_id`.
+Note on `source_id`: D cards cite the source artifact that produced the
+observation. The legacy `exp_id` field name implied D came only from probes;
+that was the old model. New model: D/I describe settled material, while K/W
+record judged beliefs and actions selected through review. For continuity,
+`exp_id` is accepted as a deprecated alias for `source_id` when present; new
+cards should use a namespaced `source_id`.
 
 
 I layer (Information)
@@ -121,6 +130,9 @@ D layer
 
 ## Caveats
 - <bulleted, verbatim from probe.yaml caveats[]>
+
+## Change log
+- <YYYY-MM-DD> — created from <source-ref>.
 ```
 
 Table formatting: use padded fixed-width columns so all D cards render as a clean grid. Column headers are `Metric` (40 chars), `Value` (20 chars), `CI (95%)` (33 chars), `Source` (32 chars). Pad every cell to its column width with trailing spaces. Use `—` for missing CI values, not `--`.
@@ -144,6 +156,9 @@ I layer
 
 ## Counter-evidence
 <entries that should show the pattern but don't, OR "none found" with rationale>
+
+## Change log
+- <YYYY-MM-DD> — created from <D ids>.
 ```
 
 Table formatting: use padded fixed-width columns consistent with D-layer tables. Column headers are `Source` (8 chars), `Metric / Split` (32 chars), `Δ or Value` (20 chars), `Direction` (12 chars).
@@ -171,6 +186,10 @@ K layer
 
 ## Scope
 <where/when this belief holds; one paragraph>
+
+## Change log
+- <YYYY-MM-DD> — created from <source-ref>.
+- <YYYY-MM-DD> — merged <source-ref>; confidence changed <old> -> <new>.
 ```
 
 Length budget: 40-80 body lines.
@@ -194,6 +213,9 @@ W layer
 
 ## Decay condition
 - <conditions under which this recommendation should be downgraded>
+
+## Change log
+- <YYYY-MM-DD> — created from <K ids>.
 ```
 
 Length budget: 30-60 body lines.
@@ -274,18 +296,28 @@ Validation rules (any layer)
 
   - YAML frontmatter parses (yaml.safe_load)
   - `id` letter matches `layer` (D, I, K, W)
-  - `sources` field accepts:
-      - D / I cards: task ids (e.g. T1, T2) — points into the
-        plan's task_batch; the task's results/ folder is the
-        evidence anchor
-      - K / W cards: probe source refs (e.g. P.A07) — points into the
-        plan's probe_batch; probe.yaml is the evidence
-        anchor (status MUST be `confirmed`)
-      - Strategic W cards: a list of K ids (e.g. [K01, K03, K05])
-        instead of a single E; mark `type: strategic` in body
+  - `sources` field accepts structured refs only:
+      - internal insight card ids: D01, I02, K03, W01
+      - external source refs: task:T.A01.02, probe:P.A07,
+        discover:Dsc.03, lit:smith2024, narrative:N01.C2, app:ask:03
+  - D cards cite one settled source ref through `source_id`
+  - I cards cite >=2 D cards unless explicitly marked as rich descriptive
+    synthesis by the INSIGHT_REVIEW.yaml
+  - K cards cite judged evidence: usually a confirmed/refuted probe or vetted
+    literature/review source, plus supporting I cards where useful
+  - W cards cite >=1 K card
   - `ref_by` consistent: if K03 lists `ref_by: [W01]`, W01 MUST list
     `sources: [K03]` (auto-maintained)
+  - Lifecycle conforms to `ref/card-lifecycle.md`:
+      - same reusable unit + new evidence should merge/update, not duplicate
+      - superseded cards stay in place and link to replacements
+      - meaningful updates append `## Change log`
+  - Granularity conforms to `ref/card-granularity.md`:
+      - one card = one reusable knowledge unit
+      - not a raw row / seed / log line
+      - not a whole report / full topic / multi-claim essay
+      - duplicate evidence should merge into an existing card
   - No `</`-style HTML, no `[[wikilink]]` — pure standard markdown
-  - Length: total file ≤ 200 lines
+  - Length: target ≤ 160 lines; absolute max ≤ 200 lines
 
 Loading order: see `ref/insight-context-loading.md`.

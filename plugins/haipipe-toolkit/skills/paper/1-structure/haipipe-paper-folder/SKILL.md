@@ -1,10 +1,10 @@
 ---
 name: haipipe-paper-structure-bootstrap
-description: Scaffold a new manuscript paper folder (0-pitch/, 0-sections/, 0-display/, 1-feedback/, compile scripts, .gitignore) matching the proven Paper-<Name>-<Venue><Year> layout used across ProjA/ProjB.
+description: Scaffold a new paper folder in prospectus mode or manuscript mode. Prospectus mode creates README.md, PAPER_PROSPECTUS.md, and NARRATIVE_HANDOFF.md for an early paper repo/submodule. Manuscript mode creates the full 0-/1-prefix LaTeX layout matching proven Paper-<Name>-<Venue><Year> folders across ProjA/ProjB.
 metadata:
   version: "2.0.0"
   last_updated: "2026-06-08"
-  summary: "Scaffold a new manuscript paper folder matching the proven 0-/1- prefix layout. Creates 0-pitch, 0-sections, 0-display, 1-feedback, compile scripts, .gitignore, and venue-appropriate section stubs."
+  summary: "Scaffold a paper folder in prospectus mode or manuscript mode. Prospectus mode creates paper-discovery constraints; manuscript mode creates the proven 0-/1-prefix LaTeX layout."
   changelog:
     - "2.0.0 (2026-06-08): complete rewrite — layout now matches real Paper-MapPhyTrait-npjDM2025 and Paper-Personality2Opioid-MISQ2026 folders (0-sections, 0-display, 1-feedback, compile scripts, .gitignore). Dropped generic input/notes/figures/output skeleton. Added venue templates and section stubs."
     - "1.1.0 (2026-06-05): renamed from paper-bootstrap to haipipe-paper-structure-bootstrap."
@@ -15,7 +15,24 @@ metadata:
 
 ## Overview
 
-Scaffold a paper project directory that is compilable from day one. The layout uses a **prefix convention** proven across two published/in-progress manuscripts:
+Scaffold a paper project directory under `examples/<Project>/paper/`. HAI-Pipe
+supports two maturity modes:
+
+| Mode | Use when | Files |
+|------|----------|-------|
+| `prospectus` | The topic is paper-shaped but not yet evidence-backed | `README.md`, `PAPER_PROSPECTUS.md`, `NARRATIVE_HANDOFF.md` |
+| `manuscript` | The paper has a supported seed and is ready for pitch/plan/draft work | full `0-` / `1-` LaTeX layout |
+
+The preferred project-backed pattern is that each paper folder is its own Git
+repo, attached under the project as a submodule when a remote exists:
+
+```text
+examples/<Project>/paper/Paper-<Slug>/
+```
+
+Prospectus mode is allowed to start early. It must not create manuscript
+obligations. Manuscript mode is compilable from day one and uses a **prefix
+convention** proven across two published/in-progress manuscripts:
 
 | Prefix | Purpose | Examples |
 |--------|---------|---------|
@@ -26,6 +43,12 @@ Reference implementations:
 - `examples/ProjA-PhyTraitLandScape/paper/Paper-MapPhyTrait-npjDM2025/` (npj Digital Medicine, published)
 - `examples/ProjB-PhyTrait-OpioidRx/paper/Paper-Personality2Opioid-MISQ2026/` (MISQ, in progress)
 
+Illustrations:
+- `images/stage0-topic-appears-image2.png` — Stage 0 topic classification into
+  project-only, paper prospectus, or paper seed.
+- `images/stage1-paper-prospectus-folder-image2.png` — Stage 1 prospectus
+  folder and narrative handoff before project evidence work.
+
 Use the helper script for quick scaffolding:
 
 ```bash
@@ -33,15 +56,98 @@ python <skill-dir>/scripts/init_paper_layout.py <paper-root> \
     --name MapPhyTrait --venue npjDM2025 --format IRDM
 ```
 
+Prospectus mode can be created manually or by a future helper:
+
+```text
+/haipipe-paper-structure folder <paper-root> --mode prospectus --project <project-root>
+```
+
 ## When To Use
 
 - Creating a new paper directory under `examples/<Project>/paper/`
+- Starting an early paper-prospectus repo/submodule before evidence is mature
 - An existing paper has scattered drafts with no clear source of truth
 - Starting a revision round and need `1-feedback/v<MMDD>/` structure
 
 Do NOT use for:
 - Late-stage section editing within an already-stable structure
 - Conference-template conversion (use haipipe-paper-conference instead)
+
+## Prospectus Mode Target Layout
+
+```
+Paper-<Name>/
+│
+│  README.md              # paper repo status, parent project link, maturity
+│  PAPER_PROSPECTUS.md    # paper-shaped discovery constraint
+│  NARRATIVE_HANDOFF.md   # handoff from prospectus to project narrative
+```
+
+### `PAPER_PROSPECTUS.md` contract
+
+Required sections:
+
+```markdown
+# Paper Prospectus: <working title>
+
+## Parent Project
+Path and one-line project context.
+
+## Prospectus Question
+The paper-shaped question.
+
+## Tentative Claim Shape
+What the paper may eventually argue, phrased as a hypothesis, not a finding.
+
+## Current Evidence Status
+What exists now: task plan, narrative notes, literature, runs, probes, insights.
+State clearly that this is not yet a paper seed if probes are missing.
+
+## Discovery Constraints
+What project discovery should prioritize because of this paper prospectus.
+
+## Narrative Handoff
+What the project narrative should do next, including open questions and possible
+discover/probe/task/insight routes.
+
+## Promotion Gate
+Concrete conditions for promoting this prospectus to an active paper seed.
+```
+
+### `NARRATIVE_HANDOFF.md` contract
+
+Required sections:
+
+```markdown
+# Narrative Handoff
+
+## Source Prospectus
+Path to `PAPER_PROSPECTUS.md`.
+
+## Narrative Job
+What the narrative layer should clarify or synthesize.
+
+## Initial Story Hypothesis
+The current story possibility, phrased as tentative.
+
+## Open Narrative Questions
+Questions narrative must resolve before paper seed promotion.
+
+## Candidate Work The Narrative May Trigger
+Discover, probe, task, and insight work that narrative may call for.
+
+## Promotion Check
+The conditions under which narrative can recommend promotion to paper seed.
+```
+
+Prospectus mode definition of done:
+
+- `README.md` says this is `maturity: prospectus`
+- `PAPER_PROSPECTUS.md` states the question, constraints, current evidence status,
+  narrative handoff, inquiry tracks, and promotion gate
+- `NARRATIVE_HANDOFF.md` gives narrative a concrete first job and at least one
+  open question that can route to discover/probe/task/insight
+- No `0-sections/`, no `0-display/`, no LaTeX wrappers, no compile scripts
 
 ## Target Layout
 

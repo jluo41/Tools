@@ -1,0 +1,15 @@
+id: I001_candidate-lift
+status: drafted
+source_probe: probes/P001_first-check/probe.yaml
+
+source_discoveries:
+  - discoveries/P01_first-check/01_prior-art/verdict.md
+
+source_tasks:
+  - tasks/T001_baseline/results/metrics.json
+  - tasks/T002_candidate/results/metrics.json
+
+usable_claim: Candidate method improves the toy score over baseline.
+caveat: Robustness is untested; do not hand off to paper/application yet.
+used_by:
+  - narratives/N001_toy-claim/status.yaml

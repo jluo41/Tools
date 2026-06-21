@@ -1,10 +1,11 @@
 {"ts":"2026-06-20T09:00:00-04:00","event":"narrative.opened","narrative_id":"N001_toy-claim","status":"open","summary":"Opened a toy story: a candidate method may beat a baseline on one metric."}
 {"ts":"2026-06-20T09:05:00-04:00","event":"probe.opened","narrative_id":"N001_toy-claim","probe_id":"P001_first-check","status":"waiting_for_evidence","summary":"Probe will check prior art plus baseline/candidate task outputs."}
-{"ts":"2026-06-20T09:10:00-04:00","event":"discovery.started","probe_id":"P001_first-check","discovery_id":"D001_prior-art","role":"prior_art_check"}
+{"ts":"2026-06-20T09:10:00-04:00","event":"discovery.started","probe_id":"P001_first-check","discovery_id":"P01.01","path":"discoveries/P01_first-check/01_prior-art","role":"prior_art_check"}
 {"ts":"2026-06-20T09:15:00-04:00","event":"task.started","probe_id":"P001_first-check","task_id":"T001_baseline","task_type":"eval"}
 {"ts":"2026-06-20T09:16:00-04:00","event":"task.started","probe_id":"P001_first-check","task_id":"T002_candidate","task_type":"eval"}
-{"ts":"2026-06-20T09:40:00-04:00","event":"discovery.completed","discovery_id":"D001_prior-art","status":"ok","summary":"No direct blocker found; related methods noted."}
+{"ts":"2026-06-20T09:40:00-04:00","event":"discovery.completed","discovery_id":"P01.01","path":"discoveries/P01_first-check/01_prior-art","status":"ok","summary":"No direct blocker found; related methods noted."}
 {"ts":"2026-06-20T10:10:00-04:00","event":"task.completed","task_id":"T001_baseline","status":"reported","summary":"Baseline metric recorded: score=0.71."}
 {"ts":"2026-06-20T10:12:00-04:00","event":"task.completed","task_id":"T002_candidate","status":"reported","summary":"Candidate metric recorded: score=0.77."}
 {"ts":"2026-06-20T10:30:00-04:00","event":"probe.closed","probe_id":"P001_first-check","status":"closed","verdict":"supported_with_caveats","summary":"Candidate beats baseline in the toy check; next probe should test robustness."}
+{"ts":"2026-06-20T10:35:00-04:00","event":"insight.created","insight_id":"I001_candidate-lift","probe_id":"P001_first-check","status":"drafted","summary":"Candidate lift is promising, but only reusable with robustness caveat."}
 {"ts":"2026-06-20T10:40:00-04:00","event":"narrative.posted","narrative_id":"N001_toy-claim","status":"needs_next_probe","summary":"Story is plausible but not ready; robustness remains open."}

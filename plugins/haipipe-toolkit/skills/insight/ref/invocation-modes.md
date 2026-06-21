@@ -2,10 +2,12 @@ Invocation modes — interactive vs headless (dual-mode contract)
 ===============================================================
 
 Every DIKW filer skill — `haipipe-insight-data` / `-information` /
-`-knowledge` / `-wisdom` — is callable two ways over ONE body. The mode is
-chosen by **input completeness, NOT by who calls** — a human who supplies a
-full spec also gets headless; a `card-creator-<layer>-agent` always supplies a
-full spec, so it always runs headless.
+`-knowledge` / `-wisdom` — is callable two ways over ONE body. The preferred
+entry is `/haipipe-insight review ...`; apply calls these writer APIs
+with full specs. The mode is chosen by **input completeness, NOT by who calls**
+— a human who supplies a full spec also gets headless; a
+`card-creator-<layer>-agent` always supplies a full spec, so it always runs
+headless.
 
 (`haipipe-insight` umbrella = a router; `-explore` = read-only coverage scan.
  Neither files a card, so neither is dual-mode in this sense.)
@@ -33,9 +35,9 @@ source there is nothing to file. Everything else a silent run may auto-derive
 ```
 layer           BLOCKING (no source → blocked)                auto-derivable in --auto
 ──────────────────────────────────────────────────────────────────────────────────────
-🟦 data         probe_ref present AND result.status == confirmed   slug · headline · numbers
+🟦 data         one settled source_ref from INSIGHT_REVIEW.yaml            slug · headline · numbers
 🟩 information   --scope: ≥ 2 existing D ids                        slug · pattern · direction
-🟨 knowledge     probe_ref present AND result.status == confirmed   slug · confidence · supporting I-ids (claim ← probe.claim)
+🟨 knowledge     judged source_ref with claim + confidence basis     slug · supporting I-ids
 🟧 wisdom        --scope: ≥ 1 existing K id                         slug · rec · rec_type · cost
 ```
 
@@ -55,8 +57,9 @@ Rules
    `status: blocked` naming the missing source — the caller (a creator agent
    or an orchestrator) re-dispatches with it filled. NEVER fabricate a
    `source_id`, a `claim`, a `confidence`, or a number.
-4. **A refusal stays a refusal.** `data` / `knowledge` still refuse a
-   non-`confirmed` probe (and `knowledge` a probe with no `claim`);
+4. **A refusal stays a refusal.** `data` refuses unsettled or untraceable
+   sources; `knowledge` refuses unjudged claims, probe claims without
+   confirmed/refuted status, and literature claims without vetting context;
    `information` still refuses < 2 D entries. In headless mode these return
    `status: blocked` (with the reason), NOT an ASK and NOT a silent pass.
 

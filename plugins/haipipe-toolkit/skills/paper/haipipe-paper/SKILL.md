@@ -24,6 +24,7 @@ called by the specialist, not by this orchestrator directly.
 /haipipe-paper <venue>                      -> dispatch to that specialist (no args)
 /haipipe-paper <venue> "<topic-or-input>"   -> dispatch to specialist with input
 /haipipe-paper rebuttal "<paper-path>"      -> dispatch to rebuttal specialist
+/haipipe-paper prospectus "<project-or-paper>"  -> create/inspect paper-prospectus folder
 /haipipe-paper create "<plan-dir>"          -> draft fresh tex paragraph-by-paragraph
 /haipipe-paper revise "<tex-root>"          -> polish existing tex paragraph-by-paragraph
 /haipipe-paper "<natural language>"         -> infer venue from keywords, dispatch
@@ -34,6 +35,7 @@ Examples:
 /haipipe-paper conference "NARRATIVE_REPORT.md" — venue: ICLR
 /haipipe-paper journal                       (no input → Nature default)
 /haipipe-paper is "MISQ paper on AI adoption"
+/haipipe-paper prospectus "examples/ProjC-LLMRecPhysicain/paper/Paper-LLMPhysicianRanking"
 /haipipe-paper rebuttal "paper/" — venue: NeurIPS
 /haipipe-paper create "papers/lhm-a/" — venue: iclr
 /haipipe-paper revise "papers/lhm-a/"
@@ -53,6 +55,10 @@ haipipe-paper-is          MISQ/ISR/Management Science IS journal paper
                           (contribution framing → theory → method → submission)
 haipipe-paper-rebuttal    Submission rebuttal pipeline (venue-agnostic)
                           (parse reviews → strategy → draft → coverage check)
+haipipe-paper-structure-bootstrap
+                          Paper folder bootstrap, including prospectus mode
+                          (README.md + PAPER_PROSPECTUS.md + NARRATIVE_HANDOFF.md)
+                          and manuscript mode (full 0-/1-prefix tex scaffold)
 haipipe-paper-create      Fresh-draft pipeline, venue-agnostic at workflow
                           (narrative+plan → scaffold tex → paragraph-by-paragraph draft)
 haipipe-paper-revise      Whole-paper polish pipeline, venue-agnostic
@@ -74,6 +80,8 @@ IS, MISQ, ISR, Management Science, Information
 Systems, IT artifact, digital systems, UTD24-IS        -> is
 rebuttal, reply, response, OpenReview response,
 reviewer comments, review-response, R1 revision        -> rebuttal
+prospectus, paper prospectus, topic appears, project seed,
+paper seed, paper folder, bootstrap folder              -> structure-bootstrap
 create, draft tex, write tex, from narrative,
 new paper, scaffold paper, 写初稿                       -> create
 revise, polish, polish tex, paragraph polish,
@@ -86,6 +94,7 @@ conf, conference, ml, neurips, iclr, icml  -> conference
 journal, nature, pnas, nat                 -> journal
 is, misq, isr, management-science, msis    -> is
 rebuttal, reply, response, rev             -> rebuttal
+prospectus, folder, bootstrap                  -> structure-bootstrap
 create, draft, new, scaffold               -> create
 revise, polish, walk                       -> revise
 ```
@@ -107,6 +116,9 @@ Step 2: Resolve venue/task:
   - Else scan keyword map across all positional args.
   - Phrase contains "reply to reviewers" / "rebuttal"
     / review-related verbs                            -> target = rebuttal
+  - Phrase contains "paper prospectus" / "topic appears" /
+    "project seed" / "paper folder" / "bootstrap
+    folder"                                           -> target = structure-bootstrap
   - Phrase contains "draft tex" / "new paper" /
     "scaffold" / "from narrative"                     -> target = create
   - Phrase contains "polish" / "revise" / "walk
@@ -119,12 +131,15 @@ Step 2: Resolve venue/task:
 
 Step 3: Decide handling:
   - No args                                           -> usage dashboard (inline)
-  - venue resolved, no other args                     -> dispatch with "(none)"
+  - venue/task resolved, no other args                -> dispatch with "(none)"
   - venue + input/args                                -> dispatch with full args
   - input but no venue                                -> ASK which venue
 
 Step 4: Dispatch:
-    Skill("haipipe-paper-<venue>", args="<remaining_args>")
+    If target = structure-bootstrap:
+      Skill("haipipe-paper-structure-bootstrap", args="<remaining_args>")
+    Else:
+      Skill("haipipe-paper-<target>", args="<remaining_args>")
 
 Step 5: Capture the specialist's structured tail (status / summary /
         artifacts / next), present it.

@@ -27,6 +27,10 @@ What is still fragile?
 How did the story get here?
 ```
 
+Illustration:
+- `images/stage2-pitch-gate-image2.png` — Stage 2 as a pitch gate: either return
+  to narrative/project work or proceed to Stage 3 evidence-backed narrative.
+
 Location:
 
 ```

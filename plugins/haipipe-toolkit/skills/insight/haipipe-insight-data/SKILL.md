@@ -1,27 +1,30 @@
 ---
 name: haipipe-insight-data
-description: "D-level observations specialist of the haipipe-insight family. Reads CONFIRMED probe claims from probe and synthesizes markdown observation entries into insights/D_data/. NO code execution — pure markdown synthesis. Use when running D-phase via /haipipe-application ask, or directly /haipipe-insight-data <probe-ref>. Trigger: D-level, observations, what did we observe, raw findings from probes."
-argument-hint: "[probe_ref] [--project <path>] [--slug <slug>]"
+description: "D-level observation writer API of the haipipe-insight family. Files one traceable observation into insights/D_data/ from a approved by review task/probe/discover/lit source. NO code execution — pure markdown synthesis. Prefer /haipipe-insight review; call this directly only with a complete source spec."
+argument-hint: "[source_ref] [--project <path>] [--slug <slug>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
-  summary: "D-level observations specialist of the haipipe-insight family."
+  version: "1.1.0"
+  last_updated: "2026-06-20"
+  summary: "D-level observation writer API of the haipipe-insight family."
   changelog:
+    - "1.1.0 (2026-06-20): repositioned as review-called writer API; source_ref may be task/probe/discover/lit."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 Skill: haipipe-insight-data
 ====================================
 
-D-level of the Insight base (D → I → K → W). Reads CONFIRMED probe
-claims and writes markdown observation entries.
+D-level of the Insight base (D → I → K → W). Writes one markdown observation
+entry from a approved by review, traceable source. Prefer
+`/haipipe-insight review ...`; direct calls to this skill are the low-level
+writer path when the caller already has a complete source spec.
 
 **Invocation modes** (see `../../ref/invocation-modes.md`): interactive (a
-human steers; a missing/ambiguous `probe_ref` gets ASKed) OR headless (a full
+human steers; a missing/ambiguous `source_ref` gets ASKed) OR headless (a full
 spec → file the card silently, no ASK), chosen by input completeness.
-`card-creator-data-agent` calls this skill headless during fan-out; agent +
-missing/unconfirmed source → `status: blocked` (never hang). End with the
+Review apply or `card-creator-data-agent` calls this skill headless during
+fan-out; agent + missing/unsettled source → `status: blocked` (never hang). End with the
 structured return block.
 
 ```
@@ -43,7 +46,14 @@ Input
 -----
 
 ```
-examples/<project>/probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml          (REQUIRED)
+One source ref from `INSIGHT_REVIEW.yaml`, usually one of:
+  task:<task-id-or-path>
+  probe:<probe-id-or-path>
+  discover:<note-id-or-path>
+  lit:<citekey>
+
+For probe sources:
+examples/<project>/probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml
 examples/<project>/probes/<GROUP>_<group_slug>/<NN>_<slug>/CLAIMS_FROM_RESULTS.md   (if any)
 examples/<project>/probes/<GROUP>_<group_slug>/<NN>_<slug>/INTEGRITY_AUDIT.md       (if any)
 examples/<project>/tasks/.../results/<run>/metrics.json             (optional;
@@ -68,17 +78,23 @@ Hard rules
 ----------
 
 - NO Python execution. NO writing `analysis.py`. NO running scripts.
-- Pure markdown synthesis from already-existing probe artifacts.
-- Numbers cited must reference exact source: probe ID + metric key.
+- Pure markdown synthesis from already-existing source artifacts.
+- Numbers cited must reference exact source: source ref + metric/table/key.
 - If a number requires NEW computation, that belongs in task — invoke
   `/haipipe-task task-folder eval` to scaffold an evaluation task. Never
   compute inline here.
-- Source probe MUST have `result.status` in {confirmed, refuted, inconclusive}.
+- Probe sources MUST have `result.status` in {confirmed, refuted, inconclusive}.
   Only `pending` / `exploratory` are refused (no settled run). A `refuted` or
   `inconclusive` probe is a controlled comparison with real numbers → a valid D
   observation. An inconclusive D MUST set frontmatter `verdict: inconclusive`
   and its headline must state the null (e.g. "Δ … CI straddles 0") so a reader
   never mistakes a null for an effect.
+- Task/discover/lit sources must be settled, traceable, and named with a
+  namespaced `source_ref`; otherwise return `status: blocked`.
+- D granularity is one important reusable observation, not one raw row, one
+  seed, or a whole task dump. If the source only adds evidence to an existing
+  D/I/K, prefer `merge` during review/apply (see
+  `../../ref/card-granularity.md`).
 
 
 Workflow
@@ -86,28 +102,31 @@ Workflow
 
 ```
 Step 1: Parse args
-  - <probe_ref>         required (e.g. P.A01, A01, or A/01_lhm_vs_baseline)
+  - <source_ref>        required (e.g. task:T.A01.02, probe:P.A01, lit:smith2024)
   - --project <path>    optional, else cwd-inferred
-  - --slug <slug>       optional, else derived from probe title
+  - --slug <slug>       optional, else derived from source title
 
 Step 2: Resolve paths
   - project root        from arg or cwd
-  - probe_dir           examples/<project>/probes/<GROUP>_<group_slug>/<NN>_<slug>/
+  - source artifact     from source_ref namespace + review context
   - insight_dir         examples/<project>/insights/D_data/
 
 Step 3: Validate source
-  - Read probe.yaml
-  - Accept result.status in {confirmed, refuted, inconclusive}; refuse only
-    pending / exploratory (report which status it has). Inconclusive D cards
-    must carry `verdict: inconclusive` + a null-stating headline.
-  - Note presence of CLAIMS_FROM_RESULTS.md and INTEGRITY_AUDIT.md
+  - Read the cited source artifact
+  - For probe refs, accept result.status in {confirmed, refuted, inconclusive};
+    refuse only pending / exploratory (report which status it has).
+    Inconclusive D cards must carry `verdict: inconclusive` + a null-stating
+    headline.
+  - For probe refs, note presence of CLAIMS_FROM_RESULTS.md and INTEGRITY_AUDIT.md
+  - Check `../../ref/card-granularity.md`: block or merge if the candidate is
+    too fine, too broad, or duplicates an active card.
 
 Step 4: Pick output NN
   - List existing insights/D_data/D*.md
   - NN = max existing + 1 (zero-padded to 2 digits)
 
 Step 5: Compose entry (markdown, no Python)
-  - Read probe.yaml hypothesis / claim / result fields
+  - Read the source artifact's observation / claim / result fields
   - Optionally read 1-3 linked run-paths' metrics.json (read-only) for
     exact number quotes
   - Synthesize into the entry schema below
@@ -135,7 +154,8 @@ frontmatter (≤ 16 lines):
 body sections (in order):
   ## Observation     (1-2 paragraphs, FACTS only — no interpretation)
   ## Numbers         (padded fixed-width table — see below)
-  ## Caveats         (bullet list, verbatim from probe.yaml caveats[])
+  ## Caveats         (bullet list, verbatim from the source where available)
+  ## Change log      (created/merged/updated evidence trail)
 
 length: ≤ 100 lines total
 ```
@@ -159,10 +179,11 @@ Definition of done
 -------------------
 
 - [ ] `insights/D_data/D{NN}_<slug>.md` written, non-empty
-- [ ] Every cited number traceable to probe.yaml or a specific
-      metrics.json key (no fabricated numbers)
+- [ ] Every cited number traceable to the source artifact or a specific
+      metrics/table key (no fabricated numbers)
 - [ ] No interpretive claims (those are I / K level)
 - [ ] `caveats` section non-empty if source probe had caveats
+- [ ] `## Change log` records creation source or meaningful update
 - [ ] NO Python file written, NO script executed
 - [ ] `insights/INDEX.md` updated with the new entry's one-line stub
 
@@ -170,7 +191,7 @@ Definition of done
 Disambiguation
 ---------------
 
-- probe_ref ambiguous (multiple matches) → ASK, list candidates
+- source_ref ambiguous (multiple matches) → ASK, list candidates
 - source probe.result.status is pending / exploratory → REFUSE; report status;
   suggest waiting for a settled run. confirmed / refuted / inconclusive are all
   accepted (inconclusive files a `verdict: inconclusive` D card).
@@ -192,7 +213,7 @@ Specialist tail
 
 ```
 status:    ok | blocked | failed
-summary:   "D03_<slug> written from probe P.A01"
+summary:   "D03_<slug> written from probe:P.A01"
 artifacts: [insights/D_data/D{NN}_<slug>.md, insights/INDEX.md]
 next:      /haipipe-insight-information to extract cross-observation patterns
 ```

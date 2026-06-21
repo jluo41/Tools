@@ -87,14 +87,14 @@ Scanned at: <ISO>
 
 ## Gaps (synthesis opportunities)
 
-- probe 04 (confirmed) → no D entry yet
+- probe 04 (confirmed) → review candidate for D/K
 - D02 not yet referenced by any I entry
 - I02 references D01, D02 but no K entry has elevated it
 - K01 has no W entry yet
 
 ## Suggested next moves
 
-- `/haipipe-insight-data 04`        (write D entry for confirmed probe 04)
+- `/haipipe-insight review probe:04`        (decide whether to archive D/K)
 - `/haipipe-insight-information --scope D02,D03`  (extract pattern from these)
 - `/haipipe-insight-knowledge --scope I02`        (elevate I02 → knowledge)
 ```

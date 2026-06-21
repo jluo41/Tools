@@ -1,13 +1,14 @@
 ---
 name: haipipe-insight-wisdom
-description: "W-level wisdom specialist of the haipipe-insight family. Reads K_knowledge entries (validated beliefs) and writes strategic recommendation entries to insights/W_wisdom/ — 'what we should DO next'. Each W entry is actionable: a proposed next probe, a strategic re-direction, or a stop-doing-X. NO code. Use when running W-phase via /haipipe-application ask, or directly /haipipe-insight-wisdom. Trigger: W-level, wisdom, recommendations, what next, strategic direction, action items."
+description: "W-level wisdom specialist of the haipipe-insight family. Reads K_knowledge entries (validated beliefs) and writes one actionable recommendation entry to insights/W_wisdom/ — 'what we should DO next'. Each W entry is one executable action: a proposed next probe, a strategic re-direction, or a stop-doing-X. NO code. Use via /haipipe-insight review/apply, /haipipe-application ask, or directly /haipipe-insight-wisdom. Trigger: W-level, wisdom, recommendations, what next, strategic direction, action items."
 argument-hint: "[--project <path>] [--scope <knowledge-ids>] [--slug <slug>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-06-20"
   summary: "W-level wisdom specialist of the haipipe-insight family."
   changelog:
+    - "1.1.0 (2026-06-20): clarified one-action granularity for W cards."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
@@ -33,6 +34,9 @@ W — Wisdom:        "what we should do next"           ← THIS SKILL
 W is the bridge **from understanding to action**. Each W entry should
 be actionable — translatable into either a new probe (via
 /haipipe-probe), a research pivot, or a stop-doing-X decision.
+Each W card should contain ONE recommendation. If a candidate is a roadmap,
+split it into separate W cards; if it restates an active W, merge/update
+instead of filing a new card (see `../../ref/card-granularity.md`).
 
 
 Input
@@ -66,6 +70,8 @@ Hard rules
 - W never executes anything. To act on a W's recommendation, the user
   invokes /haipipe-probe design new (or /haipipe-task task-folder)
   manually. /haipipe-application ask can chain this.
+- W granularity is one executable action. Broad strategy memos should split;
+  repeated/reinforcing actions should merge or update an existing W.
 
 
 Workflow
@@ -100,6 +106,7 @@ body sections (in order):
   ## How to act        (exact command / decision / next step)
   ## Why now           (timeliness; which K entries trigger this)
   ## Decay condition   (what would change our mind)
+  ## Change log        (created/acted_on/stale/update evidence trail)
 
 length: ≤ 120 lines total
 ```
@@ -117,6 +124,7 @@ Definition of done
 - [ ] `insights/W_wisdom/W{NN}_<slug>.md` written
 - [ ] Recommendation is actionable (passes "could I write the command?" test)
 - [ ] At least 1 K cited; counter-arguments engaged in "What would change..."
+- [ ] `## Change log` records creation source or status/action update
 - [ ] NO Python written, NO command auto-executed (user must act)
 - [ ] Back-links added to cited K entries
 

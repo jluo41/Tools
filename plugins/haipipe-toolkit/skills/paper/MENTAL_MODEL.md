@@ -7,6 +7,9 @@ presentation, including file-change maps and loopback diagnosis, see
 For a comparison with the ARIS workflow reference in `references/aris`, see
 `ARIS_COMPARISON.md`.
 
+For a script-style walkthrough from a topic to a paper, see
+`LIFECYCLE_WALKTHROUGH.md`.
+
 A paper is not a linear pipeline. It is **two loops that alternate until they
 converge**, with a review gate deciding which loop you re-enter:
 

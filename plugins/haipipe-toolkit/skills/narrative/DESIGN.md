@@ -1,10 +1,10 @@
 narrative — The Story Layer (DESIGN)
 ========================================
 
-Status: v2.2.0 (2026-06-19) — outer sandwich over Probe/Discovery/Task; insights deferred;
-        discover integration; batch probes per round.
+Status: v2.3.0 (2026-06-20) — narrative as control envelope over Probe/Discovery/Task/Insight;
+        paper/application as downstream delivery layers.
 Owner:  jluo41
-Scope:  narrative lifecycle (Open → [Probe/Discovery/Task stack → Post]* → Handoff).
+Scope:  narrative lifecycle (Open → [Probe/Discovery/Task/Insight stack → Post]* → Handoff).
         The ARGUE layer in the DO/CLAIM/ARGUE pyramid.
 
 
@@ -20,9 +20,57 @@ For a concrete end-to-end project shape, see
 `../../blueprints/end-to-end-sandwich-run.md`.
 
 ```
-   probes/ + discoveries/ + tasks/ ⇄[ignite]⇄  narrative (story)
-   claim verdicts                                 story + claims + ignite-log + decision-tree
+   probes/ + discoveries/ + tasks/ + insights/ ⇄[ignite]⇄  narrative (story)
+   verdicts + synthesis                              story + claims + ignite-log + decision-tree
 ```
+
+
+Control Envelope, Not Filesystem Parent
+=======================================
+
+Narrative can "contain" Probe, Discovery, Task, and Insight in the control
+sense. It should not contain their folders.
+
+```
+Narrative Session / Control Envelope
+|
+|-- Probe contracts
+|   |-- Discovery evidence
+|   `-- Task evidence
+|
+`-- Insight synthesis
+```
+
+On disk, these remain sibling folders:
+
+```
+narratives/
+probes/
+discoveries/
+tasks/
+insights/
+paper/
+applications/
+```
+
+The narrative records scope by reference:
+
+```yaml
+# narratives/N001_example/status.yaml
+scope_refs:
+  probes:
+    - probes/P001_first-check/probe.yaml
+  discoveries:
+    - discoveries/P01_first-check/01_prior-art/discovery.yaml
+  tasks:
+    - tasks/T001_baseline/status.yaml
+  insights:
+    - insights/I001_candidate-lift/insight.yaml
+```
+
+Paper and application are downstream delivery layers. They are outside the
+narrative folder but inside the narrative session's control scope once the
+narrative reaches Handoff.
 
 
 The Three-Layer Pyramid
@@ -36,13 +84,14 @@ See **MENTAL_MODEL.md** (sibling file) for the full three-layer model.
 🔍 FIND    (discovery)     "what does the world know?" hours–days
 💼 DO      (task)          "did this run work?"        hours
 
-ARGUE opens N × CLAIM contracts; each CLAIM opens N × FIND/DO contracts.
-The narrative is the outermost sandwich.
+ARGUE opens N × CLAIM contracts; each CLAIM opens N × FIND/DO contracts and
+may produce N × Insight summaries after Probe-post. The narrative is the
+outermost sandwich and session control envelope.
 ```
 
 Key principle: **discoveries produce external evidence, tasks produce internal
-evidence, probes produce verdicts, the narrative decides which verdicts fill
-the story.** Insights/insight are deferred while we focus on the core stack.
+evidence, probes produce verdicts, insights produce reusable synthesis, and
+the narrative decides which verdicts and insights fill the story.**
 
 
 CRITICAL: two "narratives" — do not confuse them
@@ -66,8 +115,9 @@ The Outer Sandwich Lifecycle + Loop
 1. 💡 Idea             what story are we telling?              ┐ NARRATIVE-OPEN
 2. 🔍 Discovery        what would make it true?                ┘
 3. 📊 Probes + Evidence settle current GAPs (batch)        ┐
-4. 📋 Fill             check claims: have / weak / GAP     │  NARRATIVE-POST
-5. 🔥 Ignite           is the story ready? steelman        │
+4. 🧠 Insight          synthesize reusable meaning         │
+5. 📋 Fill             check claims: have / weak / GAP     │  NARRATIVE-POST
+6. 🔥 Ignite           is the story ready? steelman        │
                         YES → Handoff                      │
                         NO  → back to Probes + Evidence ───┘
 
@@ -115,7 +165,21 @@ writes:   probe.yaml result/claim/verdict sidecars;
 ```
 
 
-**Stage 4: 📋 Fill** — check what's filled vs what's missing
+**Stage 4: 🧠 Insight** — make the verdict reusable
+
+```
+reads:    closed probe verdict
+          discovery verdicts
+          task reports / metrics
+writes:   insights/<ID>/insight.yaml
+          insights/<ID>/site.md
+          insights/<ID>/caveats.md
+purpose:  turn "supported_with_caveats" into reusable claim wording,
+          caveats, and narrative implications.
+```
+
+
+**Stage 5: 📋 Fill** — check what's filled vs what's missing
 
 ```
 reads:    closed probes directly:
@@ -123,13 +187,14 @@ reads:    closed probes directly:
           review.md
           INTEGRITY_AUDIT.md
           CLAIMS_FROM_RESULTS.md
+          insights/<ID>/insight.yaml when present
 updates:  claims.md ledger: have / weak / GAP per slot
 creates:  Claim Gap Contracts for remaining GAP/weak rows
 output:   count of remaining GAPs → next round's batch size
 ```
 
 
-**Stage 5: 🔥 Ignite** — is the story ready?
+**Stage 6: 🔥 Ignite** — is the story ready?
 
 ```
 checks:   all claims have? confidence ≥ threshold? angle still sharp?
@@ -201,10 +266,21 @@ narratives/<NN>_<slug>/
 └── decision-tree.md  section paths A/B/C/D; chosen spine ties them together
 ```
 
+Recommended session file:
+
+```
+narratives/<NN>_<slug>/
+└── copilot.md        current narrative session frame: open gap, latest probe,
+                      latest insight, recommended next action, guardrails
+```
+
 Hard rules (mirror insight discipline):
 - NO code, no notebooks, no plots. Pure markdown.
 - `claims.md` references K cards BY ID, never copies.
 - 1 narrative : N papers. Papers back-ref via `papers:` in story.md.
+- Do not put `probes/`, `discoveries/`, `tasks/`, `insights/`, `paper/`, or
+  `applications/` inside a narrative folder. The narrative owns their scope by
+  reference, not by filesystem containment.
 
 
 Interfaces
@@ -212,14 +288,15 @@ Interfaces
 
 ```
 reads:    probes/      probe.yaml result + claim + review sidecars (for Fill)
+          insights/    reusable synthesis + caveats (for Fill/Ignite)
 calls:    discover   landscape + novelty + durable discoveries/
           probe      spawn probe sandwiches (Probe-open → discoveries/tasks → Probe-post)
           task       (via probe bridge, not directly)
+          insight    draft synthesis after Probe-post when evidence is meaningful
 writes:   narratives/<NN>_<slug>/*  (story, claims, ignite-log, decision-tree)
           _haipipe/project.log.jsonl (orchestration events)
 feeds:    paper       (when status=ready → narrative-report → paper)
           application (when status=ready → report / message / ui)
-deferred: insight     optional export layer, outside current Narrative/Probe/Discovery/Task core
 ```
 
 
@@ -233,4 +310,6 @@ Decision Log
             (Fill determines batch size). Handoff → paper + application (not just paper).
 2026-06-19  Superseded: v2.0 insight ownership parked. Core focus is Narrative/Probe/Discovery/Task:
             Narrative-open defines story gaps, Probe sandwiches settle them via discoveries/tasks, Narrative-post reads
-            probe verdicts directly for Fill/Ignite. insight becomes deferred export layer.
+            probe verdicts directly for Fill/Ignite. At this point, insight was treated as a deferred export layer.
+2026-06-20  Clarified: narrative is a control envelope, not a filesystem parent. Probe/Discovery/Task/Insight
+            are inside narrative scope by reference. Paper/Application stay downstream delivery layers.

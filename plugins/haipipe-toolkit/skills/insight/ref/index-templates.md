@@ -1,10 +1,13 @@
 Insight Base INDEX Templates
 =============================
 
-Templates for the auto-maintained INDEX files. Per Q-b confirmed:
-top-level INDEX.md + K_knowledge/INDEX.md + W_wisdom/INDEX.md.
-D_data and I_information do NOT get sub-indexes (grep tags is
-fast enough on flat lists).
+Templates for the auto-maintained INDEX and view files. The card folders stay
+flat by DIKW layer. Topic/source/narrative/status navigation is generated under
+`insights/views/`, not encoded as subfolders.
+
+Per Q-b confirmed: top-level INDEX.md + K_knowledge/INDEX.md +
+W_wisdom/INDEX.md. D_data and I_information do NOT get sub-indexes (grep tags
+is fast enough on flat lists).
 
 
 Top-level: insights/INDEX.md
@@ -22,7 +25,7 @@ Last rebuild: <ISO>
 
 ### <topic-1>
 - K03 — "<one-line claim>"                 [confidence: high]
-- W01 — "<one-line rec>"                   [type: next_experiment]
+- W01 — "<one-line rec>"                   [rec_type: next_experiment]
 - I02 — pattern across 3 D entries         [direction: mixed]
 - D01, D02, D03 — observations             (3 entries)
 
@@ -114,7 +117,7 @@ Active: <N> | Acted-on: <N> | Stale: <N>
 
 ## Active
 
-| ID  | Recommendation                                         | Type             | Cost     | Derived from |
+| ID  | Recommendation                                         | Rec type         | Cost     | Derived from |
 |-----|--------------------------------------------------------|------------------|----------|--------------|
 | W01 | "Param-matched FiLM re-test"                           | next_experiment  | medium   | K03          |
 | W02 | "Pivot main figure 3 to FiLM generalization gap"       | paper_direction  | cheap    | K03          |
@@ -138,6 +141,80 @@ Active: <N> | Acted-on: <N> | Stale: <N>
 Length budget: ≤ 60 lines for W layer with ≤ 10 entries.
 
 
+Generated views: insights/views/
+=================================
+
+Views are derived navigation files. They are not source of truth and should be
+rebuilt from card frontmatter.
+
+```text
+insights/views/
+├── by_topic.md
+├── by_source.md
+├── by_narrative.md
+└── by_status.md
+```
+
+### views/by_topic.md
+
+```markdown
+# Insight View — By Topic
+
+## film
+- K03 — "<claim>" [active, medium]
+- W01 — "<rec>" [next_experiment]
+- I02 — "<pattern>"
+- D04 — "<headline>"
+
+## ood
+...
+```
+
+Group by `tags`. A card appears under every tag it declares.
+
+### views/by_source.md
+
+```markdown
+# Insight View — By Source
+
+## probe:P.0619_film_ood
+- D04 — "<headline>"
+- K03 — "<claim>"
+
+## task:T.A01.02
+- D02 — "<headline>"
+```
+
+Group by `sources` and D-layer `source_id`.
+
+### views/by_narrative.md
+
+```markdown
+# Insight View — By Narrative
+
+## narrative:N01.C2
+- K03 — "<claim>"
+- W01 — "<rec>"
+```
+
+Group by `ref_by` entries that start with `narrative:`.
+
+### views/by_status.md
+
+```markdown
+# Insight View — By Status
+
+## active
+- D01 ...
+- K03 ...
+
+## superseded
+- K02 — superseded by K05
+```
+
+Group by `status`.
+
+
 Rebuild semantics
 ==================
 
@@ -145,6 +222,7 @@ Any layer skill that writes/updates an entry rebuilds:
   - data / information writes  → top INDEX.md only
   - knowledge writes/updates   → top INDEX.md + K_knowledge/INDEX.md
   - wisdom writes/updates      → top INDEX.md + W_wisdom/INDEX.md
+  - any write/update           → insights/views/*.md when view rebuild exists
 
 Manual rebuild: `/haipipe-insight rebuild-index` (umbrella verb).
 
@@ -152,8 +230,9 @@ Rebuild procedure (idempotent):
   1. Glob insights/{D,I,K,W}_*/*.md
   2. Read frontmatter of each (one YAML parse per file)
   3. Group by tags (topic), by layer, by status, by created date
-  4. Render into the templates above
-  5. Atomic write (tmp → mv)
+  4. Group by source, narrative ref, and status for views/
+  5. Render into the templates above
+  6. Atomic write (tmp → mv)
 
 The entries themselves are source of truth; INDEX files are derived
 state. If they ever disagree, `rebuild-index` trusts the entries.

@@ -49,14 +49,22 @@ reviewer:         Codex (out-of-family) for accuracy · self for style/boundary
 
 - `../../ref/dikw-boundaries.md` → 🟦 D boundary (IS / IS NOT / line→I) + the D example
 - `../../ref/insight-md-schema.md` → D layer frontmatter + body sections
-- the cited source (probe.yaml confirmed + metrics.json): hand Codex the card +
-  source paths and ask it to REFUTE accuracy.
+- `../../ref/card-granularity.md` → one important observation per card; not
+  raw seed/table/log rows
+- `../../ref/card-lifecycle.md` → merge/update/supersede/change-log rules
+- the cited source (`task:*`, `probe:*`, `discover:*`, or `lit:*`): hand Codex
+  the card + source paths and ask it to REFUTE accuracy. For probe sources,
+  the probe must have a settled result.status (`confirmed`, `refuted`, or
+  `inconclusive`); for task/discover/lit sources, the cited artifact must be
+  stable and traceable.
 
 ```
 □ accuracy   every number in `headline` + `## Numbers` traces to a source key
 □ boundary   FACTS ONLY — no pattern / belief / action leaked in (those are I/K/W)
+□ grain      one reusable observation; not a raw row, isolated seed, or task dump
+□ lifecycle  meaningful edits have `## Change log`; duplicates should merge
 □ style      ## Observation · ## Numbers (table) · ## Caveats (verbatim) present
-□ source     source_id resolves; the probe's result.status == confirmed
+□ source     source_id resolves; namespaced source ref is settled + traceable
 ```
 
 Default to **fail** if a number is untraceable or interpretation has leaked in.

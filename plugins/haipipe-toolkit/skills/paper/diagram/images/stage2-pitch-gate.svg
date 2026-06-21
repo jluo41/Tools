@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="850" viewBox="0 0 1400 850" role="img" aria-labelledby="title desc">
+  <title id="title">Stage 2 Pitch Gate</title>
+  <desc id="desc">Illustration of Stage 2 as a story gate: write pitch and settlement, decide whether narrative supports the pitch, loop back to narrative if not, or proceed to Stage 3 evidence-backed narrative if ready.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f7f8fa; }
+      .box { fill: #ffffff; stroke: #d5dbe3; stroke-width: 2; rx: 14; }
+      .prospectus { fill: #fff7e8; stroke: #d9961f; stroke-width: 2.5; rx: 14; }
+      .stage { fill: #eaf3ff; stroke: #2f6fb1; stroke-width: 2.5; rx: 14; }
+      .gate { fill: #f4ecff; stroke: #7856b8; stroke-width: 2.5; rx: 14; }
+      .loop { fill: #eef9f0; stroke: #3b8a4f; stroke-width: 2.5; rx: 14; }
+      .next { fill: #fff1f2; stroke: #be123c; stroke-width: 2.5; rx: 14; }
+      .file { fill: #ffffff; stroke: #9ca3af; stroke-width: 1.7; rx: 8; }
+      .title { font-family: Inter, Arial, sans-serif; fill: #111827; font-size: 38px; font-weight: 700; }
+      .subtitle { font-family: Inter, Arial, sans-serif; fill: #4b5563; font-size: 18px; }
+      .label { font-family: Inter, Arial, sans-serif; fill: #111827; font-size: 23px; font-weight: 700; }
+      .text { font-family: Inter, Arial, sans-serif; fill: #374151; font-size: 17px; }
+      .small { font-family: Inter, Arial, sans-serif; fill: #6b7280; font-size: 14px; }
+      .tiny { font-family: Inter, Arial, sans-serif; fill: #6b7280; font-size: 13px; }
+      .arrow { stroke: #6b7280; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .strong { stroke: #374151; stroke-width: 3.5; fill: none; marker-end: url(#arrow-dark); }
+      .pass { stroke: #be123c; stroke-width: 3.5; fill: none; marker-end: url(#arrow-red); }
+      .return { stroke: #3b8a4f; stroke-width: 3.5; fill: none; stroke-dasharray: 9 7; marker-end: url(#arrow-green); }
+      .note { fill: #fffbeb; stroke: #f59e0b; stroke-width: 1.8; rx: 10; }
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto">
+      <polygon points="0 0, 12 4, 0 8" fill="#6b7280"/>
+    </marker>
+    <marker id="arrow-dark" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto">
+      <polygon points="0 0, 12 4, 0 8" fill="#374151"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto">
+      <polygon points="0 0, 12 4, 0 8" fill="#be123c"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto">
+      <polygon points="0 0, 12 4, 0 8" fill="#3b8a4f"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1400" height="850"/>
+  <text class="title" x="70" y="72">Stage 2 - Pitch Gate</text>
+  <text class="subtitle" x="70" y="106">The pitch is not just writing. It is the gate that asks whether narrative is strong enough to become a paper.</text>
+
+  <rect class="prospectus" x="70" y="175" width="280" height="150"/>
+  <text class="label" x="100" y="215">Stage 1 Output</text>
+  <text class="text" x="100" y="248">Paper prospectus</text>
+  <text class="small" x="100" y="280">PAPER_PROSPECTUS.md</text>
+  <text class="small" x="100" y="302">NARRATIVE_HANDOFF.md</text>
+
+  <rect class="loop" x="70" y="505" width="310" height="170"/>
+  <text class="label" x="100" y="545">Narrative / Project Loop</text>
+  <text class="text" x="100" y="578">More story work needed</text>
+  <text class="small" x="100" y="610">discover -> probe -> task</text>
+  <text class="small" x="100" y="632">insight -> narrative update</text>
+  <text class="small" x="100" y="654">then retry pitch gate</text>
+
+  <rect class="stage" x="450" y="150" width="330" height="210"/>
+  <text class="label" x="480" y="190">Write Pitch Package</text>
+  <text class="text" x="480" y="224">Make the story explicit</text>
+  <rect class="file" x="480" y="252" width="250" height="34"/>
+  <text class="small" x="498" y="274">0-pitch/PAPER_PITCH.md</text>
+  <rect class="file" x="480" y="298" width="250" height="34"/>
+  <text class="small" x="498" y="320">0-pitch/PITCH_SETTLEMENT.md</text>
+  <text class="tiny" x="480" y="348">Pitch for readers; settlement for internal decisions.</text>
+
+  <rect class="note" x="450" y="410" width="330" height="190"/>
+  <text class="label" x="480" y="450">Settlement Questions</text>
+  <text class="small" x="480" y="482">What is the central claim?</text>
+  <text class="small" x="480" y="506">What is the contribution type?</text>
+  <text class="small" x="480" y="530">What evidence is real vs fragile?</text>
+  <text class="small" x="480" y="554">What challenge could break the story?</text>
+  <text class="small" x="480" y="578">What must narrative resolve next?</text>
+
+  <rect class="gate" x="870" y="190" width="300" height="250"/>
+  <text class="label" x="900" y="232">Pitch Gate</text>
+  <text class="text" x="900" y="266">Can narrative support</text>
+  <text class="text" x="900" y="292">this paper story?</text>
+  <text class="small" x="900" y="330">3-5 sentence story</text>
+  <text class="small" x="900" y="354">specific central claim</text>
+  <text class="small" x="900" y="378">evidence path visible</text>
+  <text class="small" x="900" y="402">fragility named honestly</text>
+
+  <rect class="next" x="1010" y="560" width="300" height="145"/>
+  <text class="label" x="1040" y="600">Stage 3</text>
+  <text class="text" x="1040" y="632">Evidence-backed narrative</text>
+  <text class="small" x="1040" y="664">NARRATIVE_REPORT.md</text>
+  <text class="small" x="1040" y="686">claim -> evidence -> limitation</text>
+
+  <path class="strong" d="M350 250 L450 250"/>
+  <path class="strong" d="M780 260 L870 300"/>
+  <path class="strong" d="M615 360 L615 410"/>
+  <path class="pass" d="M1030 440 C1045 490 1095 520 1140 560"/>
+  <path class="return" d="M870 390 C720 705 300 735 225 675"/>
+  <path class="return" d="M225 505 C245 430 355 345 450 315"/>
+
+  <text class="tiny" x="386" y="235">story candidate</text>
+  <text class="tiny" x="1065" y="510">pass</text>
+  <text class="tiny" x="585" y="720">not ready: return to narrative/project loop</text>
+
+  <rect class="box" x="70" y="735" width="1240" height="60"/>
+  <text class="text" x="100" y="772">Example: LM-derived physician traits can predict real-world behavior. Opioid prescribing is the first testbed; clinical discretion is the key challenge the pitch must settle.</text>
+</svg>

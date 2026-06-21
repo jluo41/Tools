@@ -1,13 +1,14 @@
 ---
 name: haipipe-insight-knowledge
-description: "K-level knowledge specialist of the haipipe-insight family. Files a CONFIRMED probe's claim as a validated belief in insights/K_knowledge/ (the confirmed probe is the controlled comparison K requires); cites supporting I_information entries where they exist. A K entry is a 'we now believe X is true' statement with explicit support / counter-evidence / confidence. NO code, pure markdown synthesis. Use when running K-phase via /haipipe-application ask, or directly /haipipe-insight-knowledge <probe_ref>. Trigger: K-level, knowledge, validated belief, file probe claim, what do we know."
-argument-hint: "<probe_ref> [--project <path>] [--supports <I-ids>] [--slug <slug>]"
+description: "K-level knowledge writer API of the haipipe-insight family. Files one judged claim as a validated belief in insights/K_knowledge/ from a approved by review probe/lit/review source; cites supporting I_information entries where they exist. NO code, pure markdown synthesis. Prefer /haipipe-insight review; call directly only with a complete judged source spec."
+argument-hint: "<source_ref> [--project <path>] [--supports <I-ids>] [--slug <slug>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-05-31"
-  summary: "K-level knowledge specialist of the haipipe-insight family."
+  version: "1.2.0"
+  last_updated: "2026-06-20"
+  summary: "K-level knowledge writer API of the haipipe-insight family."
   changelog:
+    - "1.2.0 (2026-06-20): repositioned as review-called judged-source writer API."
     - "1.0.0 (2026-05-31): baseline metadata added."
     - "1.1.0 (2026-05-31): K sources a confirmed probe's claim (was >=1 I card); cites supporting I cards in the body."
 ---
@@ -15,15 +16,17 @@ metadata:
 Skill: haipipe-insight-knowledge
 =================================
 
-K-level of the Insight base (D → I → K → W). A CONFIRMED probe's `claim` IS the
-validated belief (the probe is the controlled comparison K requires); this
-skill files that claim as a K card, citing supporting I cards where they exist.
+K-level of the Insight base (D → I → K → W). This writer files one judged claim
+as a K card, citing supporting I cards where they exist. A confirmed/refuted
+probe is the common judged source; a vetted literature/review claim can also
+be valid when `INSIGHT_REVIEW.yaml` supplies a claim and confidence basis. Prefer
+`/haipipe-insight review ...`; direct calls are the low-level writer path.
 
 **Invocation modes** (see `../../ref/invocation-modes.md`): interactive (a
-human steers; may tighten the claim wording) OR headless (a confirmed
-`probe_ref` → file its claim silently), chosen by input completeness.
+human steers; may tighten the claim wording) OR headless (a judged `source_ref`
+→ file its claim silently), chosen by input completeness. Review apply or
 `card-creator-knowledge-agent` calls this skill headless during fan-out; agent
-+ non-confirmed / no-claim probe → `status: blocked` (never hang). End with the
++ unjudged / no-claim source → `status: blocked` (never hang). End with the
 structured return block.
 
 ```
@@ -41,7 +44,11 @@ Input
 -----
 
 ```
-examples/<project>/probes/<...>/probe.yaml            (REQUIRED; result.status in {confirmed, refuted}, has `claim`)
+One judged source ref from `INSIGHT_REVIEW.yaml`, usually:
+  probe:<probe-id-or-path>       (result.status in {confirmed, refuted}, has `claim`)
+  lit:<citekey>                  (vetted literature/review claim)
+  discover:<note-id-or-path>     (reviewed synthesis claim)
+
 examples/<project>/insights/I_information/I*.md       (optional; supporting evidence to cite)
 ```
 
@@ -67,6 +74,9 @@ Hard rules
   any I/D counter-evidence). Cherry-picking is a violation.
 - Confidence is qualitative (high / medium / low / contested) and must
   be justified in the entry body.
+- K granularity is one scoped belief/claim per card. If the candidate is a
+  topic essay, split it; if it reinforces an active K, merge evidence instead
+  of filing a duplicate (see `../../ref/card-granularity.md`).
 - If a K entry would directly contradict an existing K entry, the new
   entry's "supersedes / contradicts" field MUST point to the prior K,
   and the prior K's status MUST be updated to "superseded" (not deleted).
@@ -77,25 +87,32 @@ Workflow
 
 ```
 Step 1: Parse args
-  <probe_ref> (required) / --project / --supports <I-ids> / --slug
+  <source_ref> (required) / --project / --supports <I-ids> / --slug
 
 Step 2: Resolve paths and load inputs
-  - Read the probe.yaml: `claim` is the belief; `caveats` → counter-evidence;
-    `result` → the numbers. ACCEPT status `confirmed` or `refuted`. REFUSE
-    `pending` / `inconclusive` / `exploratory` (report which status it has).
+  - Read the cited source artifact. For probe refs: `claim` is the belief;
+    `caveats` → counter-evidence; `result` → the numbers. ACCEPT status
+    `confirmed` or `refuted`. REFUSE `pending` / `inconclusive` /
+    `exploratory` (report which status it has).
+  - For lit/discover refs: require an explicit claim, source citation, and
+    confidence rationale from `INSIGHT_REVIEW.yaml`. If absent, block.
   - Optionally read --supports I*.md entries to cite as supporting evidence
 
-Step 3: Take the belief from the probe
-  - status==confirmed: the probe's `claim` IS the K belief — use it verbatim
+Step 3: Take the belief from the judged source
+  - probe status==confirmed: the probe's `claim` IS the K belief — use it verbatim
     (headless) or let the user tighten the wording (interactive).
-  - status==refuted: the belief is the NEGATION of the hypothesis. Write the
+  - probe status==refuted: the belief is the NEGATION of the hypothesis. Write the
     K claim as "X does NOT <hold>", set `contradicts:` to the prior K /
     hypothesis it overturns and `refutation_basis:` to the refuting numbers
     (see ../ref/dikw-boundaries.md "Refuted and inconclusive probes as K cards").
+  - lit/discover source: use the review-provided claim and confidence basis;
+    cite the original reference in `sources`.
 
 Step 4: Check for existing K entries to update
   - Grep K_knowledge/*.md for topic overlap
-  - If overlap: decide UPDATE existing vs SUPERSEDE vs CO-EXIST
+  - If overlap: decide MERGE/UPDATE existing vs SUPERSEDE vs CO-EXIST
+  - Block broad candidates that contain multiple independent claims; split
+    them before filing.
 
 Step 5: Compose entry per schema below; atomic write
 
@@ -138,9 +155,10 @@ Definition of done
 -------------------
 
 - [ ] `insights/K_knowledge/K{NN}_<slug>.md` written
-- [ ] supporting_patterns ≥ 1
+- [ ] judged source and evidence trail are explicit
 - [ ] counter_evidence honestly populated (or "none found" with reasoning)
 - [ ] If supersedes set: target K entry's status flipped to "superseded"
+- [ ] `## Change log` records creation source, merge/update, or supersede reason
 - [ ] NO Python written, NO computation run
 - [ ] Back-links added to cited P/D entries' Cross-references
 

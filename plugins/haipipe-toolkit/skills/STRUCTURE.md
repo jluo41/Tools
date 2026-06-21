@@ -15,6 +15,7 @@ narrative   story layer        decides what claims the project needs
 probe       claim layer        opens a claim contract, then closes it after evidence
 discover    outside evidence   sources, notes, prior art, novelty, verdicts
 task        inside execution   code, runs, metrics, reports
+insight     synthesis layer    reusable meaning, caveats, claim wording
 ```
 
 `discover` and `task` are sibling filling under a probe. A probe can dispatch
@@ -22,8 +23,35 @@ one discovery, many discoveries, one task, many tasks, or a mix of both. The
 probe does not contain the task or discovery; it references their artifacts and
 resumes after they are ready.
 
-`narrative` is the outer sandwich. It opens story gaps, starts probes, reads
-closed probe verdicts, and decides whether the story is ready to hand off.
+`insight` is the synthesis layer after Probe-post. It does not replace raw
+discovery/task evidence and it does not re-judge the claim. It turns evidence
+plus probe verdict into reusable meaning the narrative can consume.
+
+`narrative` is the outer sandwich and the control envelope. It opens story gaps,
+starts probes, reads closed probe verdicts and insight summaries, and decides
+whether the story is ready to hand off.
+
+Important distinction:
+
+```
+Narrative control scope contains Probe / Discovery / Task / Insight.
+Narrative filesystem folder does not contain their folders.
+```
+
+Use references to express the control scope:
+
+```yaml
+# narratives/N001_example/status.yaml
+scope_refs:
+  probes:
+    - probes/P001_first-check/probe.yaml
+  discoveries:
+    - discoveries/P01_first-check/01_prior-art/discovery.yaml
+  tasks:
+    - tasks/T001_baseline/status.yaml
+  insights:
+    - insights/I001_candidate-lift/insight.yaml
+```
 
 
 Project Folder Contract
@@ -41,6 +69,7 @@ examples/<PROJECT>/
 |-- probes/
 |-- discoveries/
 |-- tasks/
+|-- insights/
 |-- paper/
 `-- applications/
 ```
@@ -61,7 +90,7 @@ discover   external evidence capability + durable discovery artifacts
 project    project umbrella, inspect, organize, workflow helpers
 task       task lifecycle hub and task-type specialists
 probe      claim lifecycle hub
-insight    deferred export/synthesis layer
+insight    reusable synthesis from evidence + probe verdicts
 paper      paper deliverables
 application application/report/message deliverables
 narrative  story lifecycle

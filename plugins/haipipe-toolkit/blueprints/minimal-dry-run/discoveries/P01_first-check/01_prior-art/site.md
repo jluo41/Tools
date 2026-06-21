@@ -1,4 +1,4 @@
-# D001_prior-art
+# P01.01 Prior Art
 
 Question:
 
@@ -11,3 +11,9 @@ Status:
 Probe consumer:
 
 - `probes/P001_first-check/probe.yaml`
+
+Files:
+
+- `sources.md`
+- `notes.md`
+- `verdict.md`
