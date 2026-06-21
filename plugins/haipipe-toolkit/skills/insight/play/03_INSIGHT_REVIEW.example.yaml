@@ -1,0 +1,62 @@
+review_id: R20260621_toy_model_ood
+project: examples/ProjToy
+scope:
+  kind: probe
+  ref: probe:P001_model_ood
+  path: examples/ProjToy/probes/P001_model_ood
+
+summary: >
+  Probe material is complete enough to archive one judged K card and one
+  action-oriented W card. Raw run details stay in the probe/task folders.
+
+candidate_cards:
+  - candidate_id: C1
+    layer: K
+    title: "Validation gain does not transfer to OOD"
+    sources:
+      - probe:P001_model_ood
+    refs:
+      - task:T001_validation
+      - task:T002_ood_split
+    reason: "judged probe verdict should become a reusable project belief"
+    granularity:
+      unit: claim
+      decision: file
+      rationale: "one scoped belief with a clear caveat; not a full probe summary"
+    action: file
+
+  - candidate_id: C2
+    layer: W
+    title: "Do not use validation gain as OOD evidence"
+    sources:
+      - probe:P001_model_ood
+    refs:
+      - C1
+    reason: "the K-level belief implies a concrete modeling/reporting rule"
+    granularity:
+      unit: recommendation
+      decision: file
+      rationale: "one action future experiments and narratives can follow"
+    action: file
+
+  - candidate_id: C3
+    layer: D
+    title: "Raw run completion note"
+    sources:
+      - task:T001_validation
+    reason: "run metadata is already preserved in task logs and is not reusable"
+    granularity:
+      unit: run note
+      decision: skip
+      rationale: "too small and not useful as permanent knowledge"
+    action: skip
+
+skip:
+  - source: task:T001_validation
+    reason: "raw metrics are task artifacts; only the judged claim is archived here"
+
+review:
+  required:
+    - card-reviewer-knowledge-agent
+    - card-reviewer-wisdom-agent
+    - index-integrity-auditor-agent

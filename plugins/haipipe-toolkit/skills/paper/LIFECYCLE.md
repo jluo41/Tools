@@ -10,6 +10,8 @@ For a comparison with the ARIS autonomous research workflow reference in
 For a script-style walkthrough from topic to paper, including the project-paper
 handshake, see `LIFECYCLE_WALKTHROUGH.md`.
 
+For teaching/playground assets organized by stage, see `play/`.
+
 The key rule:
 
 > A paper moves forward through pitch, narrative, architecture, plan, draft, and

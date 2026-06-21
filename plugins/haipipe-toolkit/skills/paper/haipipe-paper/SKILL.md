@@ -19,6 +19,9 @@ the right venue specialist via `Skill()`. Lifecycle phase skills
 (narrative, plan, figure, write, compile, revise, review, present) are
 called by the specialist, not by this orchestrator directly.
 
+For teaching and internalization, use `play/`: it contains stage-by-stage
+walkthrough folders and images for Stage 00, Stage 01, and Stage 02.
+
 ```
 /haipipe-paper                              -> venue dashboard + usage hints
 /haipipe-paper <venue>                      -> dispatch to that specialist (no args)
