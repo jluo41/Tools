@@ -71,9 +71,9 @@ the failure, not the stage where the failure was noticed.
 
 | Layer | Stages | Owns | Main files |
 |-------|--------|------|------------|
-| Prospectus/story layer | `0 Topic appears`, `1 Paper Folder`, `2 Paper Pitch` | Whether the topic is only a project direction, a paper prospectus, or a paper seed; then what a random reader should understand in one minute | `PAPER_PROSPECTUS.md`, `NARRATIVE_HANDOFF.md`, `README.md`, `0-pitch/PAPER_PITCH.md`, `0-pitch/PITCH_LOG.md`, `0-pitch/archive/` |
-| Evidence contract layer | `3 Evidence-Backed Narrative` | What the paper can honestly claim | `NARRATIVE_REPORT.md`, claim/evidence tables |
-| Paper shape layer | `4 Architecture`, `5 Paper Plan`, `5a Display Contract`, `6 Build Skeleton` | How the story becomes a paper-shaped artifact | `vNN-architecture-minimap.md`, `PAPER_PLAN.md`, `0-display/DISPLAY_INDEX.md`, `0-sections/`, `1-compile.sh` |
+| Prospectus/story layer | `0 Topic appears`, `1 Paper Folder`, `2 Paper Pitch` | Whether the topic is only a project direction, a paper prospectus, or a paper seed; then what a random reader should understand in one minute | `lifecycle/stage00_topic-appears/current.md`, `lifecycle/stage01_create-paper-folder/current.md`, `lifecycle/stage02_seed-pitch/current.md`; manuscript mode may mirror to `0-pitch/` |
+| Evidence contract layer | `3 Evidence-Backed Narrative` | What the paper can honestly claim | `lifecycle/stage03_evidence-backed-narrative/current.md`, claim/evidence tables |
+| Paper shape layer | `4 Architecture`, `5 Paper Plan`, `5a Display Contract`, `6 Build Skeleton` | How the story becomes a paper-shaped artifact | `lifecycle/stage04_architecture-minimap/current.md`, `lifecycle/stage05_paper-plan/current.md`, `lifecycle/stage05a_display-contract/`, `0-sections/`, `1-compile.sh` |
 | Text realization layer | `7 Write Draft`, `8 Edit Cycle` | How the paper is written and polished | `0-sections/*.tex`, `0-*.bib`, edit comments, diff packages |
 | External gate layer | `9 Review`, `10 Submit`, `11 Respond`, `12 Present` | How the paper survives audiences outside the author loop | review reports, `1-feedback/`, rebuttal drafts, submission bundles, slides/posters |
 
@@ -82,19 +82,19 @@ the failure, not the stage where the failure was noticed.
 | Stage | Purpose | Primary skill | Typical inputs | Files changed | Gate / next decision |
 |-------|---------|---------------|----------------|---------------|----------------------|
 | 0. Topic appears | Classify a topic as project seed, paper prospectus, or paper seed | none, author notes, upstream project work | author judgment, literature review, project direction, task/probe/insight state | usually none; completion means a decision to stay in project discovery or start a paper prospectus repo | Is there enough direction to create a paper prospectus container? |
-| 1. Paper Folder | Create or attach a concrete paper repo/submodule, usually under `examples/<Project>/paper/` | `haipipe-paper-structure folder --mode prospectus|manuscript` → `haipipe-paper-structure-bootstrap` | paper name, parent project, optional GitHub repo, maturity mode | prospectus mode: `README.md`, `PAPER_PROSPECTUS.md`, `NARRATIVE_HANDOFF.md`; manuscript mode: `0-*.tex`, `0-*.bib`, `0-pitch/`, `0-sections/`, `0-display/`, `1-feedback/`, `1-compile.*` | Prospectus mode: hand off to project narrative; manuscript mode: fill the one-minute story before writing prose |
-| 2. Paper Pitch | Maintain the one-minute story and its provenance | `haipipe-paper-structure pitch` | seed idea, review, discoveries, tasks, probes, insights, author decisions | `0-pitch/PAPER_PITCH.md`, `0-pitch/PITCH_LOG.md`, `0-pitch/archive/*.md` | Is the story understandable, compelling, and honest about fragility? |
-| 3. Evidence-Backed Narrative | Expand pitch into evidence-backed claim contract | `haipipe-paper-structure narrative` | `PAPER_PITCH.md`, `CLAIMS_FROM_RESULTS.md`, `AUTO_REVIEW.md`, results, logs | `NARRATIVE_REPORT.md` | Do all claims trace to evidence and limitations? |
-| 4. Architecture / Minimap | Decide the paper-shaped strategy | `haipipe-paper-structure architecture` | pitch, narrative, venue constraints, key numbers | `vNN-architecture-minimap.md` | Does the 5-act arc match the pitch and evidence? |
-| 5. Paper Plan | Create the writing execution map | `haipipe-paper-structure plan` | pitch, narrative, architecture, figure needs, citations | `PAPER_PLAN.md` | Can the plan fit the venue and preserve the pitch? |
-| 5a. Display Contract | Make figures/tables ready as story-evidence objects | `haipipe-paper-structure display` | pitch, narrative, architecture, plan, results, figure/table needs | `0-display/DISPLAY_INDEX.md`, per-item `DISPLAY.md`, `float.tex`, `preview.pdf` | Does each display have a claim, source, reader takeaway, caption, label, and input path? |
-| 6. Build Skeleton | Materialize or repair the folder structure | `haipipe-paper-build-scaffold`, `haipipe-paper-build-restructure`, `haipipe-paper-build-check` | plan, venue, existing folder | `0-sections/`, wrappers, display dirs, compile scripts | Does the folder conform and compile structurally? |
-| 7. Write Draft | Realize the plan in LaTeX | `haipipe-paper-create`, `haipipe-paper-edit-write` | pitch, narrative, plan, section playbooks | `0-sections/*.tex`, `0-*.bib`, display references | Does the draft carry the same story? |
-| 8. Edit Cycle | Improve draft via comment-first passes | `haipipe-paper-edit`, edit topic skills, `haipipe-paper-edit-weaving` | draft, comments, audits, reviewer notes | inline comments, accepted prose changes, diffs | Are problems local or do they expose deeper structure? |
-| 9. Review Gate | Route failures to the right earlier layer | claim audit, citation audit, proof checker, reviewer skills | draft, PDF, pitch, narrative, plan | audit reports, review notes | Local → edit; structural → plan/architecture; evidential → narrative/research; story → pitch |
-| 10. Submit | Build venue-ready package | compile/submission audit skills | clean draft, venue requirements | submission bundle, final PDFs | External review starts |
-| 11. Respond / Revise | Convert reviews into revision plan and response | `haipipe-paper-rebuttal`, `paper-rebuttal`, `rebuttal-response` | reviewer comments, submitted manuscript, pitch/narrative | `1-feedback/`, response letter, revised sections | Which layer did reviewers actually challenge? |
-| 12. Present | Cash the paper into talks/posters/slides | `paper-slides`, `paper-poster` | accepted/submitted paper, pitch, figures | slides, poster, presentation artifacts | Presentations may reveal pitch problems for future versions |
+| 1. Paper Folder | Create or attach a concrete paper repo/submodule, usually under `examples/<Project>/paper/` | `haipipe-paper-structure folder --mode prospectus|manuscript` → `haipipe-paper-structure-bootstrap` | paper name, parent project, optional GitHub repo, maturity mode | prospectus mode: `README.md`, `lifecycle/stage00_topic-appears/current.md`, `lifecycle/stage01_create-paper-folder/current.md`; manuscript mode: `0-*.tex`, `0-*.bib`, `0-pitch/`, `0-sections/`, `0-display/`, `1-feedback/`, `1-compile.*` | Prospectus mode: hand off to project narrative; manuscript mode: fill the one-minute story before writing prose |
+| 2. Paper Pitch | Maintain the one-minute story and its provenance | `haipipe-paper-structure pitch` | seed idea, review, discoveries, tasks, probes, insights, author decisions | `lifecycle/stage02_seed-pitch/current.md`; manuscript mode may mirror to `0-pitch/` | Is the story understandable, compelling, and honest about fragility? |
+| 3. Evidence-Backed Narrative | Expand pitch into evidence-backed claim contract | `haipipe-paper-structure narrative` | pitch, claims from results, review notes, results, logs | `lifecycle/stage03_evidence-backed-narrative/current.md` | Do all claims trace to evidence and limitations? |
+| 4. Architecture / Minimap | Decide the paper-shaped strategy | `haipipe-paper-structure architecture` | pitch, narrative, venue constraints, key numbers | `lifecycle/stage04_architecture-minimap/current.md` | Does the 5-act arc match the pitch and evidence? |
+| 5. Paper Plan | Create the writing execution map | `haipipe-paper-structure plan` | pitch, narrative, architecture, figure needs, citations | `lifecycle/stage05_paper-plan/current.md` | Can the plan fit the venue and preserve the pitch? |
+| 5a. Display Contract | Make figures/tables ready as story-evidence objects | `haipipe-paper-structure display` | pitch, narrative, architecture, plan, results, figure/table needs | `lifecycle/stage05a_display-contract/current.md`, `lifecycle/stage05a_display-contract/displays/`; manuscript mode may mirror to `0-display/` | Does each display have a claim, source, reader takeaway, caption, label, and input path? |
+| 6. Build Skeleton | Materialize or repair the folder structure | `haipipe-paper-build-scaffold`, `haipipe-paper-build-restructure`, `haipipe-paper-build-check` | plan, venue, existing folder | `lifecycle/stage06_build-skeleton/current.md`, plus `0-sections/`, wrappers, display dirs, compile scripts | Does the folder conform and compile structurally? |
+| 7. Write Draft | Realize the plan in LaTeX | `haipipe-paper-create`, `haipipe-paper-edit-write` | pitch, narrative, plan, section playbooks | `lifecycle/stage07_write-draft/current.md`, `0-sections/*.tex`, `0-*.bib`, display references | Does the draft carry the same story? |
+| 8. Edit Cycle | Improve draft via comment-first passes | `haipipe-paper-edit`, edit topic skills, `haipipe-paper-edit-weaving` | draft, comments, audits, reviewer notes | `lifecycle/stage08_edit-cycle/current.md`, inline comments, accepted prose changes, diffs | Are problems local or do they expose deeper structure? |
+| 9. Review Gate | Route failures to the right earlier layer | claim audit, citation audit, proof checker, reviewer skills | draft, PDF, pitch, narrative, plan | `lifecycle/stage09_review-gate/current.md`, audit reports, review notes | Local → edit; structural → plan/architecture; evidential → narrative/research; story → pitch |
+| 10. Submit | Build venue-ready package | compile/submission audit skills | clean draft, venue requirements | `lifecycle/stage10_submit/current.md`, submission bundle, final PDFs | External review starts |
+| 11. Respond / Revise | Convert reviews into revision plan and response | `haipipe-paper-rebuttal`, `paper-rebuttal`, `rebuttal-response` | reviewer comments, submitted manuscript, pitch/narrative | `lifecycle/stage11_respond-revise/current.md`, `1-feedback/`, response letter, revised sections | Which layer did reviewers actually challenge? |
+| 12. Present | Cash the paper into talks/posters/slides | `paper-slides`, `paper-poster` | accepted/submitted paper, pitch, figures | `lifecycle/stage12_present/current.md`, slides, poster, presentation artifacts | Presentations may reveal pitch problems for future versions |
 
 ## Loopback diagnosis
 
@@ -130,14 +130,17 @@ preferred HAI-Pipe pattern is:
 ```
 examples/<Project>/paper/Paper-<Slug>/    # Git submodule when a remote repo exists
   README.md
-  PAPER_PROSPECTUS.md
-  NARRATIVE_HANDOFF.md
+  lifecycle/
+    README.md
+    stage00_topic-appears/current.md
+    stage01_create-paper-folder/current.md
 ```
 
-`PAPER_PROSPECTUS.md` is not an abstract, pitch, outline, or manuscript plan. It
-is the constraint file for discovery: tentative question, paper-shaped unknown,
-current evidence status, discovery constraints, narrative handoff, inquiry
-tracks, and promotion gate. `NARRATIVE_HANDOFF.md` hands the prospectus to the
+`lifecycle/stage00_topic-appears/current.md` is not an abstract, pitch, outline,
+or manuscript plan. It is the constraint file for discovery: tentative question,
+paper-shaped unknown, current evidence status, discovery constraints, narrative
+handoff, inquiry tracks, and promotion gate.
+`lifecycle/stage01_create-paper-folder/current.md` hands the prospectus to the
 project narrative layer, which then decides whether to trigger discover, probe,
 task, or insight work.
 
@@ -235,18 +238,22 @@ Respond/revise is not terminal. It is the strongest loopback source:
 
 ## File-change invariants
 
-- `PAPER_PROSPECTUS.md` changes when the paper-shaped discovery direction changes
-  before the paper has a supported seed.
-- `NARRATIVE_HANDOFF.md` changes when the paper prospectus's open questions are
-  handed to narrative, converted into discover/probe/task/insight work, resolved,
-  or superseded.
-- `0-pitch/` changes when the public-facing story changes.
-- `NARRATIVE_REPORT.md` changes when claims, evidence, or limitations change.
-- `vNN-architecture-minimap.md` changes when contribution emphasis, 5-act arc,
-  page budget, or section strategy changes.
-- `PAPER_PLAN.md` changes when the execution outline changes.
-- `0-display/DISPLAY_INDEX.md` changes when figure/table jobs, sources,
-  placement, readiness, captions, or preview status change.
+- `lifecycle/stage00_topic-appears/current.md` changes when the paper-shaped
+  discovery direction changes before the paper has a supported seed.
+- `lifecycle/stage01_create-paper-folder/current.md` changes when the paper
+  prospectus's open questions are handed to narrative, converted into
+  discover/probe/task/insight work, resolved, or superseded.
+- `lifecycle/stage02_seed-pitch/current.md` changes when the public-facing story
+  changes.
+- `lifecycle/stage03_evidence-backed-narrative/current.md` changes when claims,
+  evidence, or limitations change.
+- `lifecycle/stage04_architecture-minimap/current.md` changes when contribution
+  emphasis, 5-act arc, page budget, or section strategy changes.
+- `lifecycle/stage05_paper-plan/current.md` changes when the execution outline
+  changes.
+- `lifecycle/stage05a_display-contract/current.md` and its `displays/` folder
+  change when figure/table jobs, sources, placement, readiness, captions, or
+  preview status change.
 - `0-sections/*.tex` changes when prose changes.
 - `0-display/` changes when visual evidence changes.
 - `1-feedback/` changes when external comments, rebuttal, or revision process

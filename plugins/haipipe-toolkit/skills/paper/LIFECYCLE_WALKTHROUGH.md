@@ -70,8 +70,8 @@ start in prospectus mode only.
 Done marker:
 
 > Stage 0 is done when the decision is explicit: project-only, paper prospectus, or
-> paper seed. For paper prospectus, the next action is to create `PAPER_PROSPECTUS.md`
-> inside the paper repo/submodule.
+> paper seed. For paper prospectus, the next action is to create
+> `lifecycle/stage00_topic-appears/current.md` inside the paper repo/submodule.
 
 ## Stage 1 — Create the paper folder
 
@@ -98,17 +98,31 @@ Files created:
 ```text
 <paper>/
   README.md
-  PAPER_PROSPECTUS.md
-  NARRATIVE_HANDOFF.md
+  lifecycle/
+    README.md
+    stage00_topic-appears/
+      current.md
+      runs/
+      feedback/
+      assets/
+    stage01_create-paper-folder/
+      current.md
+      runs/
+      feedback/
+      assets/
 ```
 
 Meaning:
 
-- `PAPER_PROSPECTUS.md` constrains discovery. It states the tentative question,
-  claim shape, current evidence status, discovery constraints, narrative
-  handoff, inquiry tracks, and promotion gate.
-- `NARRATIVE_HANDOFF.md` hands the prospectus to project narrative. Narrative
-  then decides whether to trigger discover, probe, task, or insight work.
+- `lifecycle/stage00_topic-appears/current.md` constrains discovery. It states
+  the tentative question, claim shape, current evidence status, discovery
+  constraints, narrative handoff, inquiry tracks, and promotion gate.
+- `lifecycle/stage01_create-paper-folder/current.md` hands the prospectus to
+  project narrative. Narrative then decides whether to trigger discover, probe,
+  task, or insight work.
+- Each `stageXX_slug/` folder acts like a durable stage branch: `current.md` is
+  active state, `runs/` stores dated snapshots, `feedback/` stores comments, and
+  `assets/` stores diagrams or support files.
 - No LaTeX scaffold exists yet. No `0-sections/`, no compile scripts, no
   manuscript obligations.
 
@@ -172,10 +186,15 @@ Command shape:
 Files changed:
 
 ```text
-0-pitch/PAPER_PITCH.md
-0-pitch/PITCH_LOG.md
-0-pitch/archive/
+lifecycle/stage02_seed-pitch/
+  current.md
+  runs/
+  feedback/
+  assets/
 ```
+
+In manuscript mode, the accepted pitch may also be mirrored into `0-pitch/`, but
+the lifecycle branch remains the teaching and decision artifact.
 
 Pitch answers:
 
@@ -218,7 +237,11 @@ Command shape:
 Files changed:
 
 ```text
-NARRATIVE_REPORT.md
+lifecycle/stage03_evidence-backed-narrative/
+  current.md
+  runs/
+  feedback/
+  assets/
 ```
 
 Narrative answers:
@@ -265,7 +288,11 @@ Command shape:
 Files changed:
 
 ```text
-vNN-architecture-minimap.md
+lifecycle/stage04_architecture-minimap/
+  current.md
+  runs/
+  feedback/
+  assets/
 ```
 
 Architecture answers:
@@ -301,7 +328,11 @@ Command shape:
 Files changed:
 
 ```text
-PAPER_PLAN.md
+lifecycle/stage05_paper-plan/
+  current.md
+  runs/
+  feedback/
+  assets/
 ```
 
 Plan answers:
@@ -499,11 +530,11 @@ Inputs:
 
 ```text
 PDF
-0-pitch/PAPER_PITCH.md
-NARRATIVE_REPORT.md
-vNN-architecture-minimap.md
-PAPER_PLAN.md
-0-display/DISPLAY_INDEX.md
+lifecycle/stage02_seed-pitch/current.md
+lifecycle/stage03_evidence-backed-narrative/current.md
+lifecycle/stage04_architecture-minimap/current.md
+lifecycle/stage05_paper-plan/current.md
+lifecycle/stage05a_display-contract/current.md
 0-sections/*.tex
 ```
 
@@ -597,8 +628,9 @@ Q&A prep
 
 Presentation reads:
 
-- `0-pitch/PAPER_PITCH.md` first.
-- Then figures/tables from `0-display/`.
+- `lifecycle/stage02_seed-pitch/current.md` first.
+- Then figures/tables from `lifecycle/stage05a_display-contract/` and
+  materialized `0-display/`.
 - Then the paper sections.
 
 Why:
@@ -687,15 +719,14 @@ Scene:
 
 | File | Role |
 |------|------|
-| `0-pitch/PAPER_PITCH.md` | The current one-minute public story. |
-| `0-pitch/PITCH_LOG.md` | Why the story changed. |
-| `NARRATIVE_REPORT.md` | Claim/evidence/limitation contract. |
-| `vNN-architecture-minimap.md` | Paper-shaped strategy and section minimap. |
-| `PAPER_PLAN.md` | Execution plan for sections, figures, citations, page budget. |
-| `0-display/DISPLAY_INDEX.md` | Figure/table contract and readiness state. |
-| `0-display/*/DISPLAY.md` | One display item's claim, source, caption job, fragility. |
-| `0-display/*/float.tex` | Ready-to-input LaTeX block. |
-| `0-display/*/preview.pdf` | Standalone review artifact for one display. |
+| `lifecycle/stage02_seed-pitch/current.md` | The current one-minute public story. |
+| `lifecycle/stage03_evidence-backed-narrative/current.md` | Claim/evidence/limitation contract. |
+| `lifecycle/stage04_architecture-minimap/current.md` | Paper-shaped strategy and section minimap. |
+| `lifecycle/stage05_paper-plan/current.md` | Execution plan for sections, figures, citations, page budget. |
+| `lifecycle/stage05a_display-contract/current.md` | Figure/table contract and readiness state. |
+| `lifecycle/stage05a_display-contract/displays/*.md` | One display item's claim, source, caption job, fragility. |
+| `0-display/*/float.tex` | Ready-to-input LaTeX block once manuscript mode is active. |
+| `0-display/*/preview.pdf` | Standalone review artifact for one display once materialized. |
 | `0-sections/*.tex` | The actual paper prose. |
 | `1-feedback/` | External comments, rebuttal, revision process. |
 
