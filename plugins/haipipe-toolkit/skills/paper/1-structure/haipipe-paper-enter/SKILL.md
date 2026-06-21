@@ -28,7 +28,7 @@ fresh Claude/Codex session should run `enter` again.
 Story ownership rule: this paper owns its own story, claim wording, narrative,
 displays, and minimap. Shared evidence lives in project-level probes,
 discoveries, tasks, and insights. Do not look for or require a project-level
-`narratives/` handoff.
+narrative handoff.
 
 When creating or interpreting explicit need records, use:
 

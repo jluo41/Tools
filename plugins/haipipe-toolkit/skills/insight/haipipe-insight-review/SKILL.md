@@ -74,7 +74,6 @@ Scope examples:
 
 ```bash
 /haipipe-insight review examples/ProjA
-/haipipe-insight review examples/ProjA/narratives/01_film_story
 /haipipe-insight review examples/ProjA/applications/ask/03_film_ood
 /haipipe-insight review examples/ProjA/probes/0619_film_ood
 /haipipe-insight review examples/ProjA/tasks/A01_eval/02_ood_split
@@ -88,7 +87,6 @@ Step 1: Resolve project root and scope kind.
 
 ```
 scope path contains /applications/ask/  → application_ask
-scope path contains /narratives/        → narrative
 scope path contains /probes/            → probe
 scope path contains /tasks/             → task
 scope path is project root              → project

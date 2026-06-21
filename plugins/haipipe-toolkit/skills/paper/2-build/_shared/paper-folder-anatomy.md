@@ -56,8 +56,8 @@ explained to a reader before the reader sees the LaTeX.
 ## `0-pitch/` rules
 
 `0-pitch/` is the one-minute story layer for this concrete manuscript. It lives
-inside the paper folder, not the project-level `narratives/`, because the same
-project story can produce several papers with different venue-facing pitches.
+inside the paper folder because the same evidence base can produce several
+papers with different venue-facing pitches.
 
 Files:
 

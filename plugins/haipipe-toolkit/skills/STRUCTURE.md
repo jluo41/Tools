@@ -33,25 +33,8 @@ whether the story is ready to hand off.
 
 Important distinction:
 
-```
-Narrative control scope contains Probe / Discovery / Task / Insight.
-Narrative filesystem folder does not contain their folders.
-```
-
-Use references to express the control scope:
-
-```yaml
-# narratives/N001_example/status.yaml
-scope_refs:
-  probes:
-    - probes/P001_first-check/probe.yaml
-  discoveries:
-    - discoveries/P01_first-check/01_prior-art/discovery.yaml
-  tasks:
-    - tasks/T001_baseline/status.yaml
-  insights:
-    - insights/I001_candidate-lift/insight.yaml
-```
+Delivery lifecycles contain their own story/message and record evidence needs
+by reference. Evidence work remains in probes, discoveries, tasks, and insights.
 
 
 Project Folder Contract
@@ -65,7 +48,6 @@ examples/<PROJECT>/
 |   |-- project.log.jsonl      single append-only event log
 |   |-- project.status.yaml    current project snapshot
 |   `-- project.site.md        human dashboard
-|-- narratives/
 |-- probes/
 |-- discoveries/
 |-- tasks/

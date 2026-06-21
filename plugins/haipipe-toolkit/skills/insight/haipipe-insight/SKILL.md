@@ -234,7 +234,6 @@ PATH-BASED (auto-detect source type → review checklist):
 tasks/<group>/<task>/  (has results/)           -> haipipe-insight-review review
 tasks/<group>/         (has child task dirs)     -> haipipe-insight-review review
 probes/<MMDD>_<slug>/  (has probe.yaml)         -> haipipe-insight-review review
-narratives/<slug>/                              -> haipipe-insight-review review
 applications/ask/<slug>/                        -> haipipe-insight-review review
 
 (ask / question / session / plan / gate / context → /haipipe-application; NOT insight)
@@ -286,7 +285,6 @@ Step 2a: Source-type detection (path-based review).
   task-folder     path under tasks/ + has results/<run>/     haipipe-insight-review
   task-group      path under tasks/ + has child task dirs    haipipe-insight-review
   probe-folder    path under probes/ + has probe.yaml        haipipe-insight-review
-  narrative       path under narratives/                     haipipe-insight-review
   ask-session     path under applications/ask/               haipipe-insight-review
   ```
 
@@ -294,7 +292,6 @@ Step 2a: Source-type detection (path-based review).
     - `ls <path>/results/*/metrics.json` succeeds → task-folder review scope
     - `ls <path>/*/results/*/metrics.json` succeeds → task-group review scope
     - `ls <path>/probe.yaml` succeeds → probe-folder review scope
-    - path contains `/narratives/` → narrative review scope
     - path contains `/applications/ask/` → ask-session review scope
     - path contains `/tasks/` or `/probes/` → matching review scope
 
@@ -474,11 +471,7 @@ Invocation examples
 --------------------
 
 ```
-# Preferred: review a scope, then apply the reviewed checklist
-/haipipe-insight review examples/ProjA/narratives/01_film_story/
-/haipipe-insight apply examples/ProjA/narratives/01_film_story/INSIGHT_REVIEW.yaml
-
-# Convenience: review/apply in one run when explicitly requested
+# Preferred: review/apply in one run when explicitly requested
 /haipipe-insight review examples/ProjA/applications/ask/03_film_ood --auto
 
 # Low-level: explicit D card from a task
