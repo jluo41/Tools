@@ -1,13 +1,14 @@
 ---
 name: haipipe-paper
-description: "Run any paper-lifecycle work. Parses intent (venue + phase) and dispatches to the right specialist (haipipe-paper-conference/-journal/-is/-rebuttal/-create/-revise). Use for writing/revising/rebutting papers targeting any venue — ICLR, NeurIPS, ICML, Nature, PNAS, MISQ, ISR. Trigger: paper, write paper, paper pipeline, paper writing, draft paper, revise paper, polish tex, rebuttal, reply to reviewers, 写论文, 论文流程, /haipipe-paper."
-argument-hint: "[venue] [phase] [args...]"
+description: "Run any paper-lifecycle work. Use `/haipipe-paper enter <paper-path>` or `/haipipe-paper status [paper-path]` to preload a paper session dashboard from STATUS.md, 0-lifecycle, 0-displays, 0-sections, 1-feedback, and git state. Also parses intent (venue + phase) and dispatches to specialists for writing/revising/rebutting papers targeting ICLR, NeurIPS, ICML, Nature, PNAS, MISQ, ISR. Trigger: paper, enter paper, paper status, write paper, paper pipeline, paper writing, draft paper, revise paper, polish tex, rebuttal, reply to reviewers, 写论文, 论文流程, /haipipe-paper."
+argument-hint: "[enter|status|venue|phase] [paper-path-or-args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-06-21"
   summary: "Run any paper-lifecycle work."
   changelog:
+    - "1.1.0 (2026-06-21): added enter/status paper-session loader routing."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
@@ -23,7 +24,9 @@ For teaching and internalization, use `play/`: it contains stage-by-stage
 walkthrough folders and images for Stage 00, Stage 01, and Stage 02.
 
 ```
-/haipipe-paper                              -> venue dashboard + usage hints
+/haipipe-paper                              -> enter current paper if detectable; else venue dashboard
+/haipipe-paper enter "<paper-path>"         -> preload paper session status dashboard
+/haipipe-paper status ["<paper-path>"]      -> same as enter; path optional
 /haipipe-paper <venue>                      -> dispatch to that specialist (no args)
 /haipipe-paper <venue> "<topic-or-input>"   -> dispatch to specialist with input
 /haipipe-paper rebuttal "<paper-path>"      -> dispatch to rebuttal specialist
@@ -36,6 +39,8 @@ walkthrough folders and images for Stage 00, Stage 01, and Stage 02.
 Examples:
 ```
 /haipipe-paper conference "lifecycle/stage03_evidence-backed-narrative/current.md" — venue: ICLR
+/haipipe-paper enter "examples/ProjB-PhyTrait-OpioidRx/paper/Paper-Personality-Opioid-MedJournal"
+/haipipe-paper status
 /haipipe-paper journal                       (no input → Nature default)
 /haipipe-paper is "MISQ paper on AI adoption"
 /haipipe-paper prospectus "examples/ProjC-LLMRecPhysicain/paper/Paper-LLMPhysicianRanking"
@@ -58,6 +63,9 @@ haipipe-paper-is          MISQ/ISR/Management Science IS journal paper
                           (contribution framing → theory → method → submission)
 haipipe-paper-rebuttal    Submission rebuttal pipeline (venue-agnostic)
                           (parse reviews → strategy → draft → coverage check)
+haipipe-paper-enter       Status-aware paper session loader
+                          (read STATUS.md + lifecycle/displays/sections/feedback/git,
+                           report current layer, open gates, next commands)
 haipipe-paper-structure-bootstrap
                           Paper folder bootstrap, including prospectus mode
                           (README.md + lifecycle/stage00... + lifecycle/stage01...)
@@ -83,6 +91,8 @@ IS, MISQ, ISR, Management Science, Information
 Systems, IT artifact, digital systems, UTD24-IS        -> is
 rebuttal, reply, response, OpenReview response,
 reviewer comments, review-response, R1 revision        -> rebuttal
+enter, status, dashboard, preload, session,
+paper status, enter paper, aware mode                   -> enter
 prospectus, paper prospectus, topic appears, project seed,
 paper seed, paper folder, bootstrap folder              -> structure-bootstrap
 create, draft tex, write tex, from narrative,
@@ -97,6 +107,7 @@ conf, conference, ml, neurips, iclr, icml  -> conference
 journal, nature, pnas, nat                 -> journal
 is, misq, isr, management-science, msis    -> is
 rebuttal, reply, response, rev             -> rebuttal
+enter, status, dashboard, preload          -> enter
 prospectus, folder, bootstrap                  -> structure-bootstrap
 create, draft, new, scaffold               -> create
 revise, polish, walk                       -> revise
@@ -116,9 +127,12 @@ Step 1: Parse $ARGUMENTS.
 
 Step 2: Resolve venue/task:
   - First positional matches a venue/task alias?      -> dispatch target = that
+  - First positional is "enter" or "status"            -> target = enter
   - Else scan keyword map across all positional args.
   - Phrase contains "reply to reviewers" / "rebuttal"
     / review-related verbs                            -> target = rebuttal
+  - Phrase contains "enter paper" / "paper status" /
+    "preload" / "dashboard" / "aware mode"             -> target = enter
   - Phrase contains "paper prospectus" / "topic appears" /
     "project seed" / "paper folder" / "bootstrap
     folder"                                           -> target = structure-bootstrap
@@ -133,13 +147,18 @@ Step 2: Resolve venue/task:
     venue hint                                        -> ASK (don't guess)
 
 Step 3: Decide handling:
-  - No args                                           -> usage dashboard (inline)
+  - No args and current directory is a paper root
+    (`STATUS.md`, `0-lifecycle/`, or `0-*.tex` +
+    `0-sections/`)                                    -> target = enter, args="."
+  - No args and no paper root                         -> usage dashboard (inline)
   - venue/task resolved, no other args                -> dispatch with "(none)"
   - venue + input/args                                -> dispatch with full args
   - input but no venue                                -> ASK which venue
 
 Step 4: Dispatch:
-    If target = structure-bootstrap:
+    If target = enter:
+      Skill("haipipe-paper-enter", args="<remaining_args or .>")
+    Else if target = structure-bootstrap:
       Skill("haipipe-paper-structure-bootstrap", args="<remaining_args>")
     Else:
       Skill("haipipe-paper-<target>", args="<remaining_args>")
@@ -150,11 +169,25 @@ Step 5: Capture the specialist's structured tail (status / summary /
 
 ---
 
-No-Arg Mode (usage dashboard, inline)
---------------------------------------
+No-Arg Mode (status first, then usage dashboard)
+------------------------------------------------
 
-When invoked with no arguments, do not fan out. Emit a compact venue
-chooser:
+When invoked with no arguments, first check whether the current directory is
+inside a paper root. A paper root is any directory upward containing one of:
+
+- `STATUS.md`
+- `0-lifecycle/`
+- `0-*.tex` plus `0-sections/`
+- `1-compile.sh` plus `0-sections/`
+
+If a paper root is found, dispatch:
+
+```
+Skill("haipipe-paper-enter", args="<detected-paper-root>")
+```
+
+Only if no paper root is found, do not fan out. Emit a compact venue chooser:
+
 
 ```
 📄 haipipe-paper — pick a venue track:
