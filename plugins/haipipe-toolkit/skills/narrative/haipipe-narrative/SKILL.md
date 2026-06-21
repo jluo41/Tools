@@ -1,17 +1,18 @@
 ---
 name: haipipe-narrative
-description: "Story layer (narrative) — the outer sandwich in the Narrative/Probe/Discovery/Task stack. Narrative-open defines the story and claim gaps; Probe sandwiches run underneath and may dispatch discoveries plus tasks; Narrative-post reads probe verdicts, fills the claims ledger, and decides ignite/handoff. Insights/insight are deferred. Trigger: narrative, story, angle, ignite, what story, sell this, which claims, gap, /haipipe-narrative."
+description: "Story layer (narrative) — the outer control envelope in the Narrative/Probe/Discovery/Task/Insight stack. Narrative-open defines story gaps; Probe sandwiches run underneath and may dispatch discoveries plus tasks; Insight synthesizes useful meaning after Probe-post; Narrative-post reads verdicts/insights, fills the claims ledger, and decides ignite/handoff. Trigger: narrative, story, angle, ignite, what story, sell this, which claims, gap, /haipipe-narrative."
 argument-hint: "[verb] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "2.2.0"
-  last_updated: "2026-06-19"
-  summary: "Story layer — outer sandwich over Probe/Discovery/Task; insights deferred."
+  version: "2.3.0"
+  last_updated: "2026-06-20"
+  summary: "Story layer — control envelope over Probe/Discovery/Task/Insight; delivery handoff to paper/application."
   changelog:
     - "1.0.0 (2026-05-31): baseline — scope A (narrative as first-class citizen, 4 manual verbs)."
     - "2.0.0 (2026-06-11): 6-stage lifecycle (Idea/Discovery/Probes&Tasks/Insights/Fill/Ignite + Handoff). Narrative owns ALL insight filing. discover integration. Batch probes per round. Three-layer pyramid model (DO/CLAIM/ARGUE)."
     - "2.1.0 (2026-06-19): focus core stack on Narrative/Probe/Task. Narrative becomes outer sandwich; Insights/insight deferred."
     - "2.2.0 (2026-06-19): add discoveries/ as external-evidence work, sibling to tasks/ and referenced by probes."
+    - "2.3.0 (2026-06-20): narrative becomes a session control envelope; Insight is reusable synthesis after Probe-post; paper/application are downstream delivery layers."
 ---
 
 Skill: haipipe-narrative (story layer — ARGUE)
@@ -26,7 +27,8 @@ The **ARGUE layer** in the three-layer research pyramid.
 ```
 
 Discoveries produce external evidence. Tasks produce internal execution
-artifacts. Probes produce verdicts. The narrative decides which verdicts fill
+artifacts. Probes produce verdicts. Insights produce reusable synthesis from
+evidence plus verdicts. The narrative decides which verdicts and insights fill
 the story gaps and when the story is ready.
 
 See **MENTAL_MODEL.md** for the full three-layer pyramid model.
@@ -39,7 +41,8 @@ See **MENTAL_MODEL.md** for the full three-layer pyramid model.
 - Probe verdicts → Narrative (induction): external/internal evidence fills or weakens a claim slot.
 - Narrative → Probe (deduction): a story GAP becomes a probe contract.
 
-Insights/insight are intentionally parked while this core stack is shaped.
+Narrative can include Probe, Discovery, Task, and Insight in its control scope.
+It must not include their folders inside `narratives/<N>/`; use references.
 
 
 Simple Mental Model
@@ -60,8 +63,11 @@ Narrative-open
   Probe-post
     "Did the task evidence support the claim?"
 
+Insight
+  "What reusable meaning follows from the evidence and verdict?"
+
 Narrative-post
-  "Which closed probe verdicts now belong in the story?"
+  "Which verdicts and insights now belong in the story?"
 ```
 
 The operating rule:
@@ -72,6 +78,7 @@ Probe opens the claim.
 Discoveries check outside evidence.
 Tasks run internal work.
 Probe closes the claim.
+Insight synthesizes reusable meaning.
 Narrative closes or reopens the story.
 ```
 
@@ -81,11 +88,12 @@ So a normal use looks like:
 2. Run `/haipipe-narrative probes <narrative>` to turn current gaps into probe sandwiches.
 3. Let each probe dispatch discoveries and/or task contracts; both run independently.
 4. Run `/haipipe-probe post <probe>` after required evidence artifacts exist.
-5. Run `/haipipe-narrative post <narrative>` to fill claims and decide ignite vs another round.
+5. Draft insight when a probe produces reusable meaning.
+6. Run `/haipipe-narrative post <narrative>` to fill claims and decide ignite vs another round.
 
 Discovery output is outside-world evidence. Task output is internal-run
-evidence. Probe output is a claim verdict. Narrative output is the story
-decision.
+evidence. Probe output is a claim verdict. Insight output is reusable synthesis.
+Narrative output is the story decision.
 
 
 NOT to be confused with narrative-report
@@ -146,12 +154,16 @@ MIDDLE STACK: PROBES, DISCOVERIES & TASKS — "settle the current gaps" (batch)
         → which may spawn discoveries/ external evidence work
         → which may spawn tasks/ internal execution work
 
-NARRATIVE-POST A: FILL — "which claim slots are now filled?"
-  read closed probes directly (probe.yaml result + claim + verdict sidecars)
+NARRATIVE-POST A: INSIGHT — "what reusable meaning follows?"
+  after Probe-post, draft insights/<ID>/ when the verdict has reusable meaning
+  synthesis includes meaning, caveats, reusable claim wording, and source refs
+
+NARRATIVE-POST B: FILL — "which claim slots are now filled?"
+  read closed probes and linked insights
   update claims.md: have / weak / GAP per slot
   remaining GAPs → next round's batch size
 
-NARRATIVE-POST B: IGNITE — "is the story ready?"
+NARRATIVE-POST C: IGNITE — "is the story ready?"
   all claims have? confidence ok? angle sharp?
   steelman: argue NOT ready
   YES → exit loop → Handoff
@@ -201,7 +213,7 @@ examples/<PROJECT_ID>/
 ├── discoveries/                  🔍 external evidence (sources/notes/verdict)
 ├── tasks/                        💼 internal DO evidence (metrics.json)
 ├── probes/                       📊 CLAIM verdicts (probe.yaml)
-├── insights/                     🧠 deferred export layer (parked for now)
+├── insights/                     🧠 reusable synthesis from probe verdicts
 ├── paper/                        📰 paper (Handoff → here)
 └── applications/                 💬 application (Handoff → here)
 ```
@@ -215,7 +227,9 @@ Hard rules
 
 - NO code, no notebooks, no plots in narratives/. Pure markdown.
 - `claims.md` references K cards BY ID, never copies.
-- Insights/insight are deferred while focusing on the Narrative/Probe/Discovery/Task stack.
+- Narrative owns work scope by reference, not by filesystem containment.
+- Insights are sibling synthesis artifacts consumed by narrative; they are not
+  nested inside narrative folders.
 - Discoveries, tasks, and probes NEVER write narrative conclusions; narrative reads probe verdicts.
 - 1 narrative : N papers. Papers back-ref via `papers:` in story.md.
 
@@ -227,7 +241,7 @@ Function verb map
 idea, new, create, start, angle, story           → idea (Stage 1)
 discover, landscape, literature, novelty          → discovery (Narrative-open / discovery work)
 probes, tasks, discoveries, work, spawn, do, run   → probes (middle stack)
-insights, harvest, file, DIKW, knowledge          → deferred export (not core)
+insights, synthesize, harvest, file, knowledge    → insight synthesis after Probe-post
 fill, check, claims, gaps, what's missing         → fill (Narrative-post)
 ignite, ready?, sellable?, fire, publish?         → ignite (Narrative-post)
 handoff, ship, render, paper, application         → handoff
@@ -241,12 +255,13 @@ Interfaces
 ```
 calls:    discover     landscape + lit filter + durable discoveries/
           probe        spawn probe sandwiches (Probe-open → discoveries/tasks → Probe-post)
-reads:    probes/        probe.yaml result + claim + review sidecars (for Fill)
+          insight      draft reusable synthesis after Probe-post
+reads:    probes/      probe.yaml result + claim + review sidecars (for Fill)
+          insights/    meaning, caveats, reusable claim wording
 writes:   narratives/    story, claims, ignite-log, decision-tree
           _haipipe/      project.log.jsonl events for orchestration steps
 feeds:    paper        (Handoff → paper scaffold)
           application  (Handoff → report / message / ui)
-deferred: insight      optional export layer, outside current N/P/T core
 ```
 
 

@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">Stage 0: Topic Appears to Paper Prospectus</title>
+  <desc id="desc">A diagram showing how a project seed becomes a paper prospectus, then drives narrative handoff, tasks, insights, and later promotion to a paper seed.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f7f8fa; }
+      .panel { fill: #ffffff; stroke: #d5dbe3; stroke-width: 2; rx: 12; }
+      .prospectus { fill: #fff7e8; stroke: #d9961f; stroke-width: 2; rx: 12; }
+      .project { fill: #eaf3ff; stroke: #2f6fb1; stroke-width: 2; rx: 12; }
+      .work { fill: #eef9f0; stroke: #3b8a4f; stroke-width: 2; rx: 12; }
+      .gate { fill: #f4ecff; stroke: #7856b8; stroke-width: 2; rx: 12; }
+      .text { font-family: Inter, Arial, sans-serif; fill: #1f2937; font-size: 22px; }
+      .small { font-family: Inter, Arial, sans-serif; fill: #4b5563; font-size: 16px; }
+      .tiny { font-family: Inter, Arial, sans-serif; fill: #6b7280; font-size: 14px; }
+      .title { font-family: Inter, Arial, sans-serif; fill: #111827; font-size: 34px; font-weight: 700; }
+      .label { font-family: Inter, Arial, sans-serif; fill: #111827; font-size: 19px; font-weight: 700; }
+      .arrow { stroke: #6b7280; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+      .loop { stroke: #9a6700; stroke-width: 3; fill: none; stroke-dasharray: 8 8; marker-end: url(#arrowhead); }
+      .no { fill: #fee2e2; stroke: #dc2626; stroke-width: 2; rx: 10; }
+    </style>
+    <marker id="arrowhead" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto">
+      <polygon points="0 0, 12 4, 0 8" fill="#6b7280"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1200" height="720"/>
+  <text class="title" x="60" y="68">Stage 0 - Topic Appears</text>
+  <text class="small" x="60" y="100">Done when the topic is classified and, if paper-shaped, captured as a prospectus artifact.</text>
+
+  <rect class="project" x="60" y="150" width="250" height="145"/>
+  <text class="label" x="85" y="190">Project Seed</text>
+  <text class="small" x="85" y="222">Research direction exists</text>
+  <text class="tiny" x="85" y="250">Example: ProjC-LLMRecPhysicain</text>
+  <text class="tiny" x="85" y="274">LLM physician recommendation</text>
+
+  <rect class="panel" x="380" y="135" width="260" height="175"/>
+  <text class="label" x="405" y="175">Stage 0 Triage</text>
+  <text class="small" x="405" y="208">Is this only project discovery,</text>
+  <text class="small" x="405" y="232">a paper prospectus, or a paper seed?</text>
+  <text class="tiny" x="405" y="266">Reads: narrative, literature, tasks,</text>
+  <text class="tiny" x="405" y="288">probes, insights if they exist</text>
+
+  <rect class="prospectus" x="720" y="120" width="340" height="210"/>
+  <text class="label" x="750" y="160">Paper Prospectus Folder</text>
+  <text class="small" x="750" y="194">Paper repo/submodule can start early</text>
+  <text class="tiny" x="750" y="226">README.md</text>
+  <text class="tiny" x="750" y="250">PAPER_PROSPECTUS.md</text>
+  <text class="tiny" x="750" y="274">NARRATIVE_HANDOFF.md</text>
+  <text class="tiny" x="750" y="304">No LaTeX scaffold yet</text>
+
+  <rect class="work" x="135" y="430" width="300" height="175"/>
+  <text class="label" x="165" y="470">Project Discovery Loop</text>
+  <text class="small" x="165" y="504">Narrative handoff drives work</text>
+  <text class="tiny" x="165" y="536">narrative -> discover</text>
+  <text class="tiny" x="165" y="560">narrative -> probe/task</text>
+  <text class="tiny" x="165" y="584">insights -> narrative update</text>
+
+  <rect class="gate" x="520" y="430" width="280" height="175"/>
+  <text class="label" x="550" y="470">Promotion Gate</text>
+  <text class="small" x="550" y="504">Stable claim shape?</text>
+  <text class="small" x="550" y="530">Evidence-backed probes?</text>
+  <text class="small" x="550" y="556">Narrative can state contribution?</text>
+  <text class="tiny" x="550" y="586">If yes: Paper Seed</text>
+
+  <rect class="no" x="875" y="430" width="245" height="175"/>
+  <text class="label" x="905" y="470">Not Yet</text>
+  <text class="small" x="905" y="504">Do not create manuscript</text>
+  <text class="small" x="905" y="530">obligations early</text>
+  <text class="tiny" x="905" y="560">No 0-sections/</text>
+  <text class="tiny" x="905" y="584">No compile scripts</text>
+
+  <path class="arrow" d="M310 222 L380 222"/>
+  <path class="arrow" d="M640 222 L720 222"/>
+  <path class="arrow" d="M890 330 C850 395 720 400 660 430"/>
+  <path class="arrow" d="M720 518 L800 518"/>
+  <path class="loop" d="M520 518 C470 518 470 518 435 518"/>
+  <path class="loop" d="M875 518 C825 650 235 665 210 606"/>
+  <path class="arrow" d="M285 430 C365 365 690 365 830 330"/>
+
+  <text class="tiny" x="330" y="207">classify</text>
+  <text class="tiny" x="655" y="207">paper-shaped</text>
+  <text class="tiny" x="720" y="396">candidate probes</text>
+  <text class="tiny" x="455" y="505">evidence returns</text>
+  <text class="tiny" x="930" y="650">loop back to discovery</text>
+
+  <text class="small" x="60" y="670">Rule: paper repo can start early; manuscript obligations start late.</text>
+</svg>

@@ -1,0 +1,41 @@
+kind: discovery
+id: P01.01
+group:
+  id: P01
+  slug: first-check
+  title: First probe discovery evidence
+slug: prior-art
+title: Prior art check for first toy claim
+status: ok
+created_at: "2026-06-20T09:10:00-04:00"
+updated_at: "2026-06-20T09:40:00-04:00"
+
+parent:
+  type: probe
+  path: probes/P001_first-check
+  role: required_evidence
+role: prior_art_check
+
+question: Is there direct prior art that already resolves this claim?
+
+sources:
+  requested:
+    - research-lit
+    - semantic-scholar
+  local_first: true
+  verification_required: true
+
+expected_outputs:
+  - sources.md
+  - notes.md
+  - verdict.md
+
+verdict:
+  status: supports
+  summary: No direct blocker found in this dry run; related methods should be cited.
+  confidence: low
+  supports_claim: true
+  contradicts_claim: false
+
+consumed_by:
+  - probes/P001_first-check

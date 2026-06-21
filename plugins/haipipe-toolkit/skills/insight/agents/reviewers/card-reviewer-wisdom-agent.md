@@ -48,6 +48,9 @@ reviewer:         Codex (out-of-family) for accuracy · self for style/boundary
 
 - `../../ref/dikw-boundaries.md` → 🟧 W boundary (actionable; not a restated belief) + the W example
 - `../../ref/insight-md-schema.md` → W layer frontmatter + body sections
+- `../../ref/card-granularity.md` → one recommendation per card; split broad
+  strategy memos
+- `../../ref/card-lifecycle.md` → merge/update/supersede/change-log rules
 - the cited K card(s): hand Codex the W card + the cited K; ask it to REFUTE
   that the rec follows from the K and that it is executable.
 
@@ -56,6 +59,8 @@ reviewer:         Codex (out-of-family) for accuracy · self for style/boundary
 □ actionable `## How to act` is a concrete command / decision (the "could I
              write it?" test) — not "should think about X"
 □ boundary   an ACTION, not a restatement of the belief (that is K)
+□ grain      one recommendation; not a multi-action roadmap or vague strategy memo
+□ lifecycle  meaningful edits have `## Change log`; stale/acted_on status explained
 □ style      ## Recommendation · ## How to act · ## Why now · ## Decay condition
 □ decay      `## Decay condition` states what would make this stale
 ```

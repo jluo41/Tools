@@ -6,7 +6,7 @@ Claim:
 
 Evidence:
 
-- Discovery: `discoveries/D001_prior-art/verdict.md`
+- Discovery: `discoveries/P01_first-check/01_prior-art/verdict.md`
 - Baseline task: `tasks/T001_baseline/site.md`
 - Candidate task: `tasks/T002_candidate/site.md`
 
@@ -17,3 +17,7 @@ Verdict:
 Caveat:
 
 - This is one toy check. The narrative needs a robustness probe next.
+
+Synthesis:
+
+- `insights/I001_candidate-lift/site.md`

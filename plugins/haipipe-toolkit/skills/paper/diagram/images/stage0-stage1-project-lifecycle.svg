@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="820" viewBox="0 0 1400 820" role="img" aria-labelledby="title desc">
+  <title id="title">Stage 0 and Stage 1 Relation to Project Lifecycle</title>
+  <desc id="desc">Concept diagram showing Stage 0 topic triage, Stage 1 paper prospectus folder, the project lifecycle loop, and the later promotion gate into active paper writing.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f7f8fa; }
+      .box { fill: #ffffff; stroke: #d5dbe3; stroke-width: 2; rx: 14; }
+      .stage { fill: #eaf3ff; stroke: #2f6fb1; stroke-width: 2.5; rx: 14; }
+      .prospectus { fill: #fff7e8; stroke: #d9961f; stroke-width: 2.5; rx: 14; }
+      .project { fill: #eef9f0; stroke: #3b8a4f; stroke-width: 2.5; rx: 14; }
+      .gate { fill: #f4ecff; stroke: #7856b8; stroke-width: 2.5; rx: 14; }
+      .later { fill: #fef2f2; stroke: #c2410c; stroke-width: 2.5; rx: 14; }
+      .title { font-family: Inter, Arial, sans-serif; fill: #111827; font-size: 36px; font-weight: 700; }
+      .subtitle { font-family: Inter, Arial, sans-serif; fill: #4b5563; font-size: 18px; }
+      .label { font-family: Inter, Arial, sans-serif; fill: #111827; font-size: 22px; font-weight: 700; }
+      .text { font-family: Inter, Arial, sans-serif; fill: #374151; font-size: 17px; }
+      .small { font-family: Inter, Arial, sans-serif; fill: #6b7280; font-size: 14px; }
+      .tiny { font-family: Inter, Arial, sans-serif; fill: #6b7280; font-size: 13px; }
+      .arrow { stroke: #6b7280; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+      .strong { stroke: #374151; stroke-width: 3.5; fill: none; marker-end: url(#arrowhead-dark); }
+      .loop { stroke: #3b8a4f; stroke-width: 3; fill: none; stroke-dasharray: 9 7; marker-end: url(#arrowhead-green); }
+      .constraint { stroke: #d9961f; stroke-width: 3; fill: none; stroke-dasharray: 7 6; marker-end: url(#arrowhead-gold); }
+      .divider { stroke: #d1d5db; stroke-width: 2; stroke-dasharray: 6 6; }
+    </style>
+    <marker id="arrowhead" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto">
+      <polygon points="0 0, 12 4, 0 8" fill="#6b7280"/>
+    </marker>
+    <marker id="arrowhead-dark" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto">
+      <polygon points="0 0, 12 4, 0 8" fill="#374151"/>
+    </marker>
+    <marker id="arrowhead-green" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto">
+      <polygon points="0 0, 12 4, 0 8" fill="#3b8a4f"/>
+    </marker>
+    <marker id="arrowhead-gold" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto">
+      <polygon points="0 0, 12 4, 0 8" fill="#d9961f"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1400" height="820"/>
+
+  <text class="title" x="70" y="70">Stage 0 and Stage 1: Fast Paper Prospectus, Then Project Work</text>
+  <text class="subtitle" x="70" y="104">Stage 0 decides whether a paper prospectus exists. Stage 1 gives it a folder. The heavy evidence work happens after Stage 1, before Stage 2.</text>
+
+  <line class="divider" x1="70" y1="370" x2="1330" y2="370"/>
+  <text class="small" x="72" y="352">paper-prospectus setup</text>
+  <text class="small" x="72" y="398">project lifecycle loop</text>
+
+  <rect class="stage" x="70" y="155" width="255" height="145"/>
+  <text class="label" x="96" y="195">Stage 0</text>
+  <text class="text" x="96" y="228">Topic appears</text>
+  <text class="small" x="96" y="258">Classify: project-only,</text>
+  <text class="small" x="96" y="280">paper prospectus, or paper seed</text>
+
+  <rect class="prospectus" x="405" y="135" width="330" height="185"/>
+  <text class="label" x="432" y="175">Stage 1</text>
+  <text class="text" x="432" y="208">Create paper prospectus folder</text>
+  <text class="small" x="432" y="240">README.md</text>
+  <text class="small" x="432" y="264">PAPER_PROSPECTUS.md</text>
+  <text class="small" x="432" y="288">NARRATIVE_HANDOFF.md</text>
+
+  <rect class="box" x="815" y="135" width="245" height="185"/>
+  <text class="label" x="842" y="175">Not Yet</text>
+  <text class="text" x="842" y="208">No manuscript obligations</text>
+  <text class="small" x="842" y="240">No 0-sections/</text>
+  <text class="small" x="842" y="264">No 0-display/</text>
+  <text class="small" x="842" y="288">No LaTeX scaffold</text>
+
+  <rect class="project" x="140" y="465" width="220" height="145"/>
+  <text class="label" x="166" y="505">Narrative</text>
+  <text class="text" x="166" y="538">Owns the story</text>
+  <text class="small" x="166" y="570">Reads prospectus</text>
+  <text class="small" x="166" y="592">routes open questions</text>
+
+  <rect class="project" x="430" y="465" width="220" height="145"/>
+  <text class="label" x="456" y="505">Discover</text>
+  <text class="text" x="456" y="538">Sharpen unknowns</text>
+  <text class="small" x="456" y="570">Scope, baselines,</text>
+  <text class="small" x="456" y="592">prompts, design</text>
+
+  <rect class="project" x="720" y="465" width="220" height="145"/>
+  <text class="label" x="746" y="505">Probe / Task</text>
+  <text class="text" x="746" y="538">Test and run work</text>
+  <text class="small" x="746" y="570">Probes ask claims</text>
+  <text class="small" x="746" y="592">tasks produce results</text>
+
+  <rect class="project" x="1010" y="465" width="220" height="145"/>
+  <text class="label" x="1036" y="505">Insight</text>
+  <text class="text" x="1036" y="538">Archive knowledge</text>
+  <text class="small" x="1036" y="570">D/I/K/W cards</text>
+  <text class="small" x="1036" y="592">feed narrative</text>
+
+  <rect class="gate" x="500" y="675" width="360" height="100"/>
+  <text class="label" x="528" y="715">Promotion Gate</text>
+  <text class="text" x="528" y="746">Stable claim + evidence-backed narrative?</text>
+
+  <rect class="later" x="980" y="675" width="290" height="100"/>
+  <text class="label" x="1008" y="715">Stage 2+</text>
+  <text class="text" x="1008" y="746">Pitch, narrative, plan, draft</text>
+
+  <path class="strong" d="M325 228 L405 228"/>
+  <path class="strong" d="M735 228 L815 228"/>
+
+  <path class="constraint" d="M570 320 C520 400 360 430 250 465"/>
+  <path class="constraint" d="M615 320 C660 395 735 430 830 465"/>
+  <path class="constraint" d="M650 320 C820 395 1010 420 1120 465"/>
+
+  <path class="loop" d="M360 538 L430 538"/>
+  <path class="loop" d="M650 538 L720 538"/>
+  <path class="loop" d="M940 538 L1010 538"/>
+  <path class="loop" d="M1120 610 C1110 660 895 665 810 675"/>
+  <path class="loop" d="M500 725 C330 720 175 660 190 610"/>
+
+  <path class="strong" d="M860 725 L980 725"/>
+
+  <text class="tiny" x="348" y="213">if paper-shaped</text>
+  <text class="tiny" x="755" y="213">prospectus only</text>
+  <text class="tiny" x="395" y="415">PAPER_PROSPECTUS + NARRATIVE_HANDOFF guide narrative</text>
+  <text class="tiny" x="380" y="705">if not enough narrative evidence, keep looping</text>
+  <text class="tiny" x="888" y="710">if yes</text>
+
+  <text class="subtitle" x="70" y="790">Key rule: Stage 0 -> Stage 1 can be immediate. Evidence accumulation happens after Stage 1 and before Stage 2.</text>
+</svg>

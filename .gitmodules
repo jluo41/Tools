@@ -103,3 +103,6 @@
 [submodule "references/workflow-diagrams/nature-paper-skills"]
 	path = references/workflow-diagrams/nature-paper-skills
 	url = https://github.com/Boom5426/Nature-Paper-Skills
+[submodule "spaces/Physician-SPACE"]
+	path = spaces/Physician-SPACE
+	url = git@github.com:JHU-CDHAI/Physician-SPACE.git

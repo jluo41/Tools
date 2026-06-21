@@ -43,6 +43,8 @@ reviewer:         <Codex (out-of-family) | self (checklist)>
 
 Point at the canonical home; do not copy the schema/checklist:
 - `../../ref/insight-md-schema.md` → <layer schema · `sources`/`ref_by` rules>
+- `../../ref/card-granularity.md` → one reusable unit, merge/split/skip rules
+- `../../ref/card-lifecycle.md` → merge/update/supersede/change-log rules
 - the cited sources themselves (probe.yaml / D / I / K cards) — re-read and
   compare against the card's claims and numbers.
 

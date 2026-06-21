@@ -1,0 +1,9 @@
+id: P01.01
+group_id: P01
+path: discoveries/P01_first-check/01_prior-art
+status: ok
+parent:
+  type: probe
+  path: probes/P001_first-check
+role: prior_art_check
+completed_at: "2026-06-20T09:40:00-04:00"

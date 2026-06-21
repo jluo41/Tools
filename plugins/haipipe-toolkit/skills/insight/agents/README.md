@@ -11,7 +11,8 @@ reviewers/  🔍 REVIEWER family — one per DIKW layer (gates the card) + 1 cro
 
 Folder = family. Knowledge lives in `../ref/insight-md-schema.md` (card format),
 `../ref/dikw-boundaries.md` (each layer's boundary + worked examples), and
-`../ref/invocation-modes.md` (the dual-mode contract) — NOT in the agents.
+`../ref/invocation-modes.md` (the dual-mode contract), and
+`../ref/card-granularity.md` (one reusable unit per card) — NOT in the agents.
 Agents are thin pointers.
 
 
@@ -25,7 +26,7 @@ reviewers") because run trustworthiness is the same check for any task type.
 ```
 🟦 D  numbers must trace · no interpretation
 🟩 I  a regularity across ≥ 2 D
-🟨 K  claim ⊆ evidence · ALL counter-evidence · + the ★ probe gate
+🟨 K  claim ⊆ evidence · ALL counter-evidence · + judged-evidence gate
 🟧 W  actionable ("could I write the command?")
 ```
 
@@ -39,7 +40,7 @@ The insight lifecycle
 -----------------------
 
 ```
-   source: probes/<...>/probe.yaml (confirmed)  OR  prior D/I/K cards
+   source: INSIGHT_REVIEW.yaml candidate  OR  explicit low-level writer spec
                           │
    ▼ FILE                │ creators/ call the layer skill headless (full spec → SILENT)
    card-creator-<layer>-agent       → insights/<LAYER>/<ID>_<slug>.md
@@ -81,7 +82,8 @@ reviewers/ (4 per-type + 1 cross-layer)
 
 Each per-type reviewer checks **accuracy** (card ≤ cited evidence — Codex
 re-reads the sources) + **boundary/style** (conforms to its layer in
-`../ref/dikw-boundaries.md` + `../ref/insight-md-schema.md`). None judges
+`../ref/dikw-boundaries.md` + `../ref/insight-md-schema.md`) + **granularity**
+(one reusable unit per `../ref/card-granularity.md`). None judges
 VALIDITY ("is the claim true?") — that was probe's `review` upstream.
 
 

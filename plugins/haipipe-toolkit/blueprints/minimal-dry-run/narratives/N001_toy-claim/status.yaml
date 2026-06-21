@@ -4,6 +4,8 @@ question: Can the candidate method beat the baseline on the target metric?
 current_answer: plausible_but_not_ready
 probes:
   - probes/P001_first-check/probe.yaml
+insights:
+  - insights/I001_candidate-lift/insight.yaml
 open_gaps:
   - robustness
 next_step: Open P002_robustness-check.

@@ -4,26 +4,40 @@ description: "Router for Stage A (discover) literature/idea discovery. Dispatche
 argument-hint: "[bucket] [specialist] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "1.3.0"
-  last_updated: "2026-06-19"
-  summary: "Router for Stage A (discover) literature/idea discovery; durable project artifacts live under discoveries/."
+  version: "1.5.0"
+  last_updated: "2026-06-20"
+  summary: "Single entry for discover: capability router plus lightweight markdown discovery notes."
   changelog:
     - "1.0.0 (2026-05-31): baseline metadata added."
     - "1.1.0 (2026-06-01): added Review Output Contract (3_review) — full citations, numbered reference list, same-author/year disambiguation, plain-language finding, per-paper verification flag; router appends it to review-bucket dispatches."
     - "1.2.0 (2026-06-19): define discoveries/ as project-level external-evidence work, sibling to tasks/ and referenced by probes."
     - "1.3.0 (2026-06-19): split capability router from durable discovery artifact contract; add ref/discovery-yaml-schema.md."
+    - "1.4.0 (2026-06-20): add discovery-group/discovery-folder hierarchy and one-interface lifecycle: open/search/read/review/verdict/post."
+    - "1.5.0 (2026-06-20): make one markdown file the default durable artifact; folderized discovery becomes an opt-in heavy mode."
 ---
 
 Skill: haipipe-discover (orchestrator)
 ======================================
 
-Single-step router for Stage A / the discover layer. Multi-step pipelines
-escalate to `/idea-discovery`.
+Single entry for Stage A / the discover layer. Multi-step idea pipelines
+still escalate to `/idea-discovery`.
+
+This skill has two modes:
+
+```
+1. Durable project work
+   Operate on lightweight discovery markdown files under
+   examples/<PROJECT>/discoveries/.
+
+2. Capability routing
+   Dispatch to search/read/review/idea specialists for one-off discovery, or
+   for work inside the current discovery markdown file.
+```
 
 In project workflows, discovery is **external evidence work**. It is not a
 task execution stage. When a discovery needs to become durable project
-evidence, write it under `discoveries/` and let probes reference it the same
-way they reference tasks:
+evidence, write it under `discoveries/` and let probes or narratives reference
+it the same way probes reference tasks:
 
 ```
 Probe-open
@@ -36,11 +50,119 @@ Probe-post
 
 Invocation:
 ```
-/haipipe-discover                       -> dashboard
-/haipipe-discover <bucket>              -> list specialists
-/haipipe-discover <specialist> [args]   -> dispatch
-/haipipe-discover "<natural language>"  -> infer + dispatch
-/haipipe-discover pipeline [topic]      -> escalate /idea-discovery
+/haipipe-discover                              -> dashboard
+/haipipe-discover <discovery.md>               -> run full lifecycle
+/haipipe-discover <discovery-group>            -> iterate/summarize children
+/haipipe-discover status [path]                -> read-only status
+/haipipe-discover open <role> <question>       -> scaffold discovery markdown
+/haipipe-discover open-group <slug>            -> ensure discovery-group dir
+/haipipe-discover search <discovery.md>        -> fill Sources section
+/haipipe-discover read <discovery.md>          -> fill Notes section
+/haipipe-discover review <discovery.md>        -> synthesize Notes/Verdict
+/haipipe-discover verdict <discovery.md>       -> finalize Verdict section
+/haipipe-discover post <discovery.md>          -> mark consumed if parent exists
+
+/haipipe-discover <bucket>                     -> list specialists
+/haipipe-discover <specialist> [args]          -> dispatch specialist
+/haipipe-discover "<natural language>"         -> infer + dispatch
+/haipipe-discover pipeline [topic]             -> escalate /idea-discovery
+```
+
+---
+
+Hierarchy
+---------
+
+Discover mirrors task's clean grouping, but stays much lighter because it does
+not execute code:
+
+```
+Task:     task-group      -> task-folder      -> run
+Discover: discovery-group -> discovery.md     -> source row
+```
+
+Definitions:
+
+```
+discovery-group   A directory grouping related outside-evidence questions.
+discovery.md      One durable outside-evidence question, stored as one file.
+source row        One paper/webpage/report/dataset citation in the Sources
+                  section.
+```
+
+Project shape:
+
+```
+examples/<PROJECT>/
+├── discoveries/
+│   ├── L01_initial-landscape/
+│   │   ├── 01_landscape-review.md
+│   │   └── 02_novelty-check.md
+│   └── P01_rare-phenotype-lift/
+│       ├── 01_prior-art.md
+│       └── 02_benchmark-landscape.md
+├── probes/
+├── tasks/
+└── narratives/
+```
+
+Group letters are organizational hints, not the source of truth. The
+frontmatter `role:` in the discovery markdown is authoritative.
+
+Recommended group hints:
+
+```
+L  landscape / narrative-open discovery
+P  probe-backed prior art or counterevidence
+B  benchmark landscape
+C  counterevidence
+S  source reads
+```
+
+Folderized legacy packages such as `discoveries/D0619_noisy-labels-prior-art/`
+or `discoveries/P01_group/01_question/` are readable for compatibility, but new
+durable work should default to `discoveries/<GROUP>/<NN_slug>.md`.
+
+---
+
+Discovery Lifecycle
+-------------------
+
+Every discovery markdown answers one external-world question:
+
+```
+Open     create <NN_slug>.md with frontmatter and empty sections
+Search   fill ## Sources with candidate sources + verification state
+Read     fill ## Notes with extracted source facts
+Review   synthesize notes into claim-relevant findings
+Verdict  finalize ## Verdict (ok/inconclusive/blocked)
+Post     update parent refs/status and _haipipe/project.log.jsonl
+```
+
+`post` does not judge the research claim. It only makes the discovery verdict
+available to its parent narrative or probe.
+
+File ownership:
+
+```
+Open      <NN_slug>.md frontmatter + headings
+Search    ## Sources
+Read      ## Notes
+Review    ## Notes / ## Verdict draft
+Verdict   frontmatter status/verdict + ## Verdict
+Post      parent refs, project.status.yaml, project.log.jsonl
+```
+
+No local status/site files belong in a discovery-group by default. Timeline
+events go to `_haipipe/project.log.jsonl`.
+
+Folderized heavy mode is opt-in only. Use it when the discovery must keep PDFs,
+HTML snapshots, many per-source notes, or other source artifacts:
+
+```
+discoveries/<GROUP>/<NN_slug>/
+├── discovery.md
+└── sources/
 ```
 
 ---
@@ -72,29 +194,67 @@ Buckets
 Bucket aliases: `1|search`, `2|read`, `3|review`, `4|idea|novelty`.
 
 
-Project Discovery Folder
-------------------------
+Project Discovery File
+----------------------
 
 Use this folder when discovery output is part of a narrative/probe stack:
 
 ```
 examples/<PROJECT>/
 ├── discoveries/
-│   ├── D0619_noisy-labels-prior-art/
-│   │   ├── discovery.yaml     external-evidence contract + status
-│   │   ├── status.yaml        current snapshot
-│   │   ├── site.md            human-readable summary
-│   │   ├── sources.md         citations, URLs, verification flags
-│   │   ├── notes.md           synthesis / extracted findings
-│   │   └── verdict.md         concise answer for the parent probe
-│   └── 2026-archive/
+│   ├── P01_robustness-claim/
+│   │   └── 01_noisy-labels-prior-art.md
+│   └── L01_initial-landscape/
 ```
 
-Schema authority: `ref/discovery-yaml-schema.md`.
+Default markdown contract:
+
+```md
+---
+kind: discovery
+id: P01.01
+group: P01_robustness-claim
+role: prior_art_check
+status: ok
+parent: probes/P001_robustness_claim
+verdict: inconclusive
+created_at: "2026-06-20T15:05:00-04:00"
+updated_at: "2026-06-20T15:05:00-04:00"
+consumed_by: []
+---
+
+# Noisy-label prior art
+
+## Question
+
+## Sources
+
+## Notes
+
+## Verdict
+
+## Caveats
+```
+
+Legacy folderized schema authority: `ref/discovery-yaml-schema.md`.
 
 `discoveries/` should contain evidence and citations, not code/runs/metrics.
 The single project event log remains `_haipipe/project.log.jsonl`; discovery
-folders do not keep their own orchestration logs.
+files do not keep their own orchestration logs.
+
+Parent contracts:
+
+```
+Narrative-triggered discovery
+  parent.type = narrative
+  use: landscape_review, novelty_check, benchmark_landscape
+  consumer: story.md / claims.md / Narrative-post
+
+Probe-triggered discovery
+  parent.type = probe
+  use: prior_art_check, counterevidence, source_read, benchmark_landscape
+  consumer: Probe-post
+```
 
 ---
 
@@ -102,13 +262,17 @@ Routing Logic
 -------------
 
 ```
-1. First positional is a specialist name  -> dispatch directly.
-2. arXiv ID / arxiv URL in args            -> 2_read.
+1. First positional is a lifecycle verb    -> durable discovery operation.
+2. First positional is an existing path:
+     discovery markdown -> run requested stage or full lifecycle.
+     discovery-group    -> iterate/summarize child discovery files.
+3. First positional is a specialist name  -> dispatch directly.
+4. arXiv ID / arxiv URL in args            -> 2_read.
      "summarize|explain"   -> alphaxiv (default)
      "section|layered"     -> deepxiv
      "analyze|claims"      -> paper-analyzer
-3. First positional is a bucket alias      -> use that bucket.
-4. Keyword scan:
+5. First positional is a bucket alias      -> use that bucket.
+6. Keyword scan:
      "preprint|arxiv"           -> arxiv
      "IEEE|ACM|venue|citation"  -> semantic-scholar
      "web|blog|news|exa"        -> exa-search
@@ -118,13 +282,129 @@ Routing Logic
      "novelty|查新"                          -> novelty-check
      "patent|专利|prior art"                  -> hand off to D_patent/
      "pipeline|全流程|end-to-end"             -> escalate /idea-discovery
-5. Bucket resolved, specialist unresolved -> use bucket default
+7. Bucket resolved, specialist unresolved -> use bucket default
    (arxiv | alphaxiv | research-lit | idea-creator).
-6. Nothing resolves -> ask user to pick 1 of 4 buckets.
+8. Nothing resolves -> ask user to pick lifecycle vs specialist bucket.
 
 Dispatch: Skill(<specialist>, args="<remaining_args>"). Do not auto-chain.
          For any 3_review dispatch, APPEND the Review Output Contract
          (below) to args so the result is citation-matchable.
+```
+
+---
+
+Step-by-Step Protocol
+---------------------
+
+Use this protocol whenever `/haipipe-discover` is used for durable project
+work. Do not hand-place a completed discovery package without walking the
+lifecycle stages.
+
+Step 0: Resolve project root.
+
+```
+Project root = nearest ancestor containing tasks/, narratives/, paper/, probes/,
+or _haipipe/. If ambiguous, ask. In AUTO mode, return blocked.
+```
+
+Step 1: Resolve scope.
+
+```
+existing discovery:
+  path is a discovery markdown file, or a heavy folder containing discovery.md
+  -> run requested stage or full lifecycle
+
+existing discovery-group:
+  path is under discoveries/, contains discovery markdown files or heavy
+  discovery markdown files or heavy discovery folders, and has no discovery.md
+  at root -> summarize/iterate
+
+open-group:
+  create discoveries/<GROUP_slug>/ only. Do not add status.yaml/site.md by
+  default.
+
+open:
+  create discoveries/<GROUP_slug>/<NN_slug>.md by default.
+  Use folderized heavy mode only when explicitly requested with --folder or
+  when source artifacts must be stored.
+
+specialist:
+  dispatch one-off or scoped specialist work
+```
+
+Step 2: Detect or choose discovery-group.
+
+```
+If parent is a narrative or story-level shadow -> prefer LNN_<slug>.
+If parent is a probe or candidate probe -> prefer PNN_<slug>.
+If the question is benchmark norms -> BNN_<slug>.
+If the question is counterevidence -> CNN_<slug>.
+If the question is a deep read of a specific source -> SNN_<slug>.
+```
+
+Pick the next free two-digit group id within that letter. Do not renumber
+existing groups. Group letter is an organizational hint only; `role:` remains
+authoritative.
+
+Step 3: Detect or choose discovery file.
+
+```
+Inside the selected discovery-group, pick the next free two-digit file:
+01_<slug>.md, 02_<slug>.md, ...
+```
+
+Each discovery file answers one external-world question. If the request
+contains multiple questions, create multiple discovery markdown files rather
+than putting all verdicts into one file.
+
+Step 4: Run lifecycle stages.
+
+```
+open:
+  write <NN_slug>.md with frontmatter and the required sections
+  append discovery.opened or discovery.group_opened to _haipipe/project.log.jsonl
+
+search:
+  inspect local project evidence first unless the user asks for fresh web search
+  fill ## Sources with citation/source rows and verification state
+  update frontmatter status to searching or reading
+
+read:
+  extract source-specific findings into ## Notes
+  keep source records in the markdown unless heavy artifacts are required
+
+review:
+  synthesize the notes into claim-relevant findings
+  update ## Notes and draft ## Verdict
+
+verdict:
+  write ## Verdict using the Verdict Contract
+  update frontmatter to ok/inconclusive/blocked
+  append discovery.completed to _haipipe/project.log.jsonl
+
+post:
+  verify the parent path exists before marking consumed
+  add the parent to consumed_by only after ## Verdict exists and parent exists
+  if parent is missing, leave consumed_by unchanged and report blocked:
+    missing_parent=<path>
+  update _haipipe/project.status.yaml when present
+  append discovery.consumed to _haipipe/project.log.jsonl
+```
+
+YAML timestamps MUST be quoted strings, e.g.
+`"2026-06-20T15:05:00-04:00"`. JSONL files must contain one JSON object per
+non-empty line and no blank lines.
+
+Step 5: Return structured result.
+
+```
+status: ok | blocked | failed
+discovery_group: <project-relative path>
+discovery_file: <project-relative path>
+files_written:
+  - ...
+next:
+  - what should consume the Verdict section
 ```
 
 ---
@@ -189,10 +469,17 @@ Dashboard (no-arg)
 ------------------
 
 ```
-1_search   arxiv | semantic-scholar | exa-search
-2_read     alphaxiv | deepxiv | paper-analyzer
-3_review   research-lit | comm-lit-review | academic-researcher
-4_idea     idea-creator | novelty-check
+Durable:
+  status [path]
+  open <role> <question>
+  open-group <slug>
+  search | read | review | verdict | post <discovery.md>
+
+Specialists:
+  1_search   arxiv | semantic-scholar | exa-search
+  2_read     alphaxiv | deepxiv | paper-analyzer
+  3_review   research-lit | comm-lit-review | academic-researcher
+  4_idea     idea-creator | novelty-check
 
 Pipeline:  /idea-discovery   (research-lit -> idea-creator -> novelty-check)
 ```

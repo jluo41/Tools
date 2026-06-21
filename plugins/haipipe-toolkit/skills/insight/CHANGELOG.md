@@ -4,6 +4,44 @@ insight — Changelog
 Layer-scoped changelog for the insight (KNOWLEDGE / archive) layer. Newest
 first. Rollup lives in the plugin-level `CHANGELOG.md`.
 
+## [2.5.0] — 2026-06-20
+
+### Added
+- **Card lifecycle policy.** Added `ref/card-lifecycle.md` to define how cards
+  evolve after creation: stable IDs, `merge` for new evidence, `update` for
+  maintenance, `supersede` for refuted/wrong-scope cards, and a body
+  `## Change log` for meaningful changes.
+- **Card granularity policy.** Added `ref/card-granularity.md` to control card
+  size and count: one card = one reusable knowledge unit; use `merge` for
+  reinforcing evidence, `split` for broad candidates, and `skip` for raw/noisy
+  material.
+- **Generated views contract.** Added `insights/views/{by_topic,by_source,
+  by_narrative,by_status}.md` as the preferred navigation layer instead of
+  adding topic subfolders under D/I/K/W.
+- **Review/apply user vocabulary.** `/haipipe-insight review <folder>` now
+  means "show me what is worth keeping as insight cards"; `/haipipe-insight
+  apply <INSIGHT_REVIEW.yaml>` writes the accepted cards. Internally these map to
+  the review/apply contract.
+- **Review contract.** Added `ref/review-contract.md` to make insight
+  construction explicit: task/probe/discover produce material;
+  narrative/application/human review decides what becomes permanent KB;
+  insight files curated D/I/K/W cards, then reviews, indexes, and audits.
+- **Review skill.** Added `haipipe-insight-review/SKILL.md` for
+  `/haipipe-insight review ...`, `/haipipe-insight apply ...`, and `--auto` workflows.
+- **Namespaced external refs.** Insight cards can now cite external source refs
+  such as `task:T.A01.02`, `probe:P.0619_film_ood`, `discover:Dsc.03`,
+  `narrative:N01.C2`, `app:ask:03`, and `lit:smith2024`.
+
+### Changed
+- `/haipipe-insight` is now review-first. Direct D/I/K/W writer calls remain
+  valid low-level APIs, but are no longer the recommended construction path.
+- DIKW boundaries and invocation-mode docs now distinguish source production
+  from archival filing. `insights/` is the curated permanent archive, not a
+  session log, task log, probe log, or narrative workspace.
+- OKF export now treats namespaced external refs as external sources instead of
+  dangling internal graph links.
+
+
 ## [2.4.0] — 2026-06-19
 
 ### Added

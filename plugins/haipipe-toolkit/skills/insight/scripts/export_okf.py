@@ -45,6 +45,8 @@ W_REC_TYPES = {
     "paper_direction",
 }
 
+EXTERNAL_SOURCE_RE = re.compile(r"^[a-z][a-z0-9_-]*:", re.IGNORECASE)
+
 
 @dataclass
 class Entry:
@@ -190,6 +192,10 @@ def markdown_link(label: str, target: Path | None) -> str:
     return f"[{label}]({target.as_posix()})"
 
 
+def is_external_ref(ref_id: str) -> bool:
+    return bool(EXTERNAL_SOURCE_RE.match(ref_id))
+
+
 def normalize_entry(entry: Entry, id_to_export_path: dict[str, Path]) -> str:
     fm = dict(entry.frontmatter)
     fm["id"] = entry.id
@@ -269,16 +275,24 @@ def write_graph(entries: list[Entry], out_dir: Path, id_to_path: dict[str, Path]
         for entry in entries
     ]
     edges = []
+    external_sources: list[dict[str, str]] = []
     for entry in entries:
         for source_id in list_value(entry.frontmatter.get("sources")):
             if source_id in ids:
                 edges.append({"source": source_id, "target": entry.id, "label": "supports"})
+            elif is_external_ref(source_id):
+                external_sources.append({"source": source_id, "target": entry.id})
             else:
                 warnings.append(f"{entry.id}: dangling source {source_id}")
         for ref_id in list_value(entry.frontmatter.get("ref_by")):
             if ref_id not in ids:
                 warnings.append(f"{entry.id}: dangling ref_by {ref_id}")
-    graph = {"nodes": nodes, "edges": edges, "warnings": warnings}
+    graph = {
+        "nodes": nodes,
+        "edges": edges,
+        "external_sources": external_sources,
+        "warnings": warnings,
+    }
     (out_dir / "graph.json").write_text(
         json.dumps(graph, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",

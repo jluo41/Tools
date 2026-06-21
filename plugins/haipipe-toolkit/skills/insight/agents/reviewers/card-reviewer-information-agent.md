@@ -49,12 +49,17 @@ reviewer:         Codex (out-of-family) for accuracy · self for style/boundary
 
 - `../../ref/dikw-boundaries.md` → 🟩 I boundary (line→K, the ≥2-D gate) + the I example
 - `../../ref/insight-md-schema.md` → I layer frontmatter + body sections
+- `../../ref/card-granularity.md` → one pattern per card; split broad summaries,
+  merge duplicate/reinforcing patterns
+- `../../ref/card-lifecycle.md` → merge/update/supersede/change-log rules
 - the cited D cards: hand Codex the I card + every cited D card; ask it to
   REFUTE that the pattern holds across them.
 
 ```
 □ accuracy   the pattern IS visible in every cited D; `direction` matches them
 □ boundary   ≥ 2 D cited (1 D = an observation, not a pattern); not a belief yet
+□ grain      one reusable pattern; not a whole topic summary or duplicate I
+□ lifecycle  meaningful edits have `## Change log`; reinforcing evidence merges
 □ style      ## Pattern statement · ## Evidence (table, ≥2 D) · ## Counter-evidence
 □ honesty    `## Counter-evidence` lists null/reversed cases (or "none found" + why)
 ```

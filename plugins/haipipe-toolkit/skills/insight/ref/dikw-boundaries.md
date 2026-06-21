@@ -10,8 +10,8 @@ The ladder (each step is a PROMOTION, not a rename):
 
 ```
   🟦 D observe   →   🟩 I pattern   →   🟨 K believe   →   🟧 W act
-  one source         ≥2 D, a            a probe            a K, plus
-  of facts           regularity         confirms it        an action
+  one settled        ≥2 D, a            judged probe       a K, plus
+  source             regularity         or vetted lit      an action
 ```
 
 Two hard gates on the ladder:
@@ -19,9 +19,9 @@ Two hard gates on the ladder:
 ```
 1. 🟩 I → 🟨 K  REQUIRES a controlled comparison (a probe: arms × seeds × test).
    No probe → no K. A regression / observation gives strong I, NEVER K.
-2. source axis:  🟦 D + 🟩 I  describe (observational — from task results /
-   a confirmed probe's observations);  🟨 K + 🟧 W  prescribe (normative —
-   from a confirmed probe claim).
+2. source axis:  🟦 D + 🟩 I  describe (observational — from task results,
+   discover notes, literature facts, or settled probe observations);
+   🟨 K + 🟧 W prescribe (normative — from judged probe/literature claims).
 ```
 
 
@@ -35,15 +35,18 @@ Per-layer boundary
            cannot distinguish from 0") and IS a valid D card.
   IS NOT:  a cross-source pattern (→I) · a belief (→K) · an action (→W).
   line→I:  one observation = D; the SAME effect across ≥ 2 observations = I.
-  source:  a probe whose result.status is `confirmed`, `refuted`, OR
-           `inconclusive` (probe.yaml result + metrics.json) / task results.
+  source:  one namespaced source ref, usually `task:<id>`, `probe:<id>`,
+           `discover:<id>`, or `lit:<citekey>`. For probe-sourced D, the
+           probe result.status is `confirmed`, `refuted`, OR `inconclusive`
+           (probe.yaml result + metrics.json). For task/discover/lit-sourced
+           D, the source must be settled and citeable enough to re-check.
            A `pending` / `exploratory` probe does NOT file a D (no settled run).
            An inconclusive D MUST set frontmatter `verdict: inconclusive` and
            its headline must state the null ("Δ … CI straddles 0"), so a reader
            never mistakes a null for an effect.
-  filed by: task Stage 5 (Insight) → Skill("haipipe-insight-data").
-           Automatic for insight-worthy task types (eval, fit, stata-reg,
-           stata-data) when results exist. Also filed by application Phase 4.
+  filed by: apply → `haipipe-insight-data` writer API. Direct writer
+           calls are allowed only when the caller already knows the source is
+           worth archiving.
   style:   ## Observation (facts only) · ## Numbers (table) · ## Caveats (verbatim).
 
 🟩 I — Information — "what patterns emerged"
@@ -51,9 +54,9 @@ Per-layer boundary
   IS NOT:  a single observation (→D) · a committed belief (→K).
   line→K:  I says "the data TENDS to show X"; K COMMITS "X is true (scope, conf)".
   gate:    needs ≥ 2 D cards citing the same effect / direction.
-  filed by: insight (synthesis layer). Triggered when task Stage 5 notes
-           D card count ≥ 3, by application Phase 4, or by human via
-           /haipipe-insight information. NOT filed automatically per task.
+  filed by: apply → `haipipe-insight-information` writer API when
+           `INSIGHT_REVIEW.yaml` finds a coherent cross-D pattern. Direct writer calls
+           remain possible for manual synthesis.
   style:   ## Pattern statement · ## Evidence (table, ≥2 D) · ## Counter-evidence.
 
 🟨 K — Knowledge — "what we believe is true (or believe is FALSE)"
@@ -61,17 +64,18 @@ Per-layer boundary
            evidence listed (cherry-picking = a violation). A high-confidence
            NEGATIVE belief ("X does NOT beat baseline") is knowledge too.
   IS NOT:  a pattern (→I) · an action (→W).
-  ★ gate:  promotion I→K REQUIRES a controlled comparison (a probe) whose
-           result.status is `confirmed` OR `refuted`. No probe, no K.
-           `pending` / `inconclusive` / `exploratory` do NOT promote.
-  source:  the probe's `claim`. `confirmed` → the belief verbatim;
+  ★ gate:  promotion I→K REQUIRES judged evidence: usually a controlled
+           comparison probe whose result.status is `confirmed` OR `refuted`,
+           or a vetted literature claim from discover/review. A single
+           observation is not enough. `pending` / `inconclusive` /
+           `exploratory` probes do NOT promote alone.
+  source:  the judged claim. For probes, `confirmed` → the belief verbatim;
            `refuted` → the belief becomes a NEGATION, and the card MUST add
            `contradicts:` (the prior K or hypothesis it overturns) +
            `refutation_basis:` (the numbers that refute it). Cite supporting
            I cards in the body where they exist.
-  filed by: probe convergence → card-creator-knowledge-agent. Automatic
-           when probe result.status = confirmed or refuted. Also filed by
-           application Phase 4.
+  filed by: apply → `haipipe-insight-knowledge` writer API. Direct
+           writer calls are allowed only for complete judged evidence.
   line→W:  K is the belief; W is what to DO about it.
   style:   ## Claim · ## Supporting evidence · ## Counter-evidence (ALL) ·
            ## Confidence rationale · ## Scope.
@@ -102,10 +106,9 @@ Per-layer boundary
   IS:      an ACTIONABLE recommendation derived from ≥ 1 K.
   IS NOT:  a restatement of the belief (→K) · a vague "should think about X".
   line:    must pass "could I write the exact command / decision?". W decays.
-  filed by: insight (synthesis layer). Per-probe W optionally chained from
-           probe convergence (card-creator-wisdom-agent after K card).
-           Strategic W from application Phase 4 or human via
-           /haipipe-insight wisdom. NOT filed automatically per task.
+  filed by: apply → `haipipe-insight-wisdom` writer API. Strategic W
+           normally comes from application/narrative/manual review, not from
+           every task/probe.
   style:   ## Recommendation · ## How to act (exact step) · ## Why now · ## Decay condition.
 ```
 
@@ -127,9 +130,9 @@ tags:      [film, conditioning, val]
 status:    active
 created:   2026-05-24
 updated:   2026-05-24
-source_id: P.A01
+source_id: probe:P.A01
 headline:  "val: FiLM Δ -0.98 ± 0.27 mg/dL MAE (p=0.018, n=3)"
-sources:   [P.A01]
+sources:   [probe:P.A01]
 ref_by:    [I01]
 ---
 
@@ -137,17 +140,18 @@ ref_by:    [I01]
 
 ## Observation
 On AIData v3, validation split, the FiLM-conditioned forecaster shows lower MAE
-than the matched baseline across 3 seeds. Reported from confirmed probe P.A01.
+than the matched baseline across 3 seeds. Reported from confirmed probe
+probe:P.A01.
 
 ## Numbers
 | Metric  | Value              | Split | Source       |
 |---------|--------------------|-------|--------------|
-| MAE Δ   | -0.98 ± 0.27 mg/dL | val   | P.A01 result |
-| p-value | 0.018 (paired-t)   | val   | P.A01 result |
-| seeds   | 3 (all negative Δ) | val   | P.A01 result |
+| MAE Δ   | -0.98 ± 0.27 mg/dL | val   | probe:P.A01 result |
+| p-value | 0.018 (paired-t)   | val   | probe:P.A01 result |
+| seeds   | 3 (all negative Δ) | val   | probe:P.A01 result |
 
 ## Caveats
-- FiLM arm has +20% params vs baseline — scale confound (verbatim from P.A01).
+- FiLM arm has +20% params vs baseline — scale confound (verbatim from probe:P.A01).
 ```
 
 --- 🟩 insights/I_information/I01_film_indist.md ---
@@ -164,7 +168,7 @@ pattern:   repeated_effect
 n_obs:     2
 direction: negative
 sources:   [D01, D03]
-ref_by:    []          # K01 sources the probe P.A01; it cites I01 as supporting evidence in its body
+ref_by:    []          # K01 sources probe:P.A01; it cites I01 as supporting evidence in its body
 ---
 
 # I01: FiLM lowers MAE on in-distribution splits
@@ -195,7 +199,7 @@ created:   2026-05-26
 updated:   2026-05-26
 claim:     "FiLM conditioning improves in-distribution CGM forecasting (lower MAE)"
 confidence: medium
-sources:   [P.A01]
+sources:   [probe:P.A01]
 ref_by:    [W01]
 ---
 
@@ -204,7 +208,7 @@ ref_by:    [W01]
 ## Claim
 FiLM conditioning lowers MAE on in-distribution splits (val, test-id) versus a
 matched baseline. Holds in every observed seed; established by the controlled
-probe P.A01 (arms × 3 seeds, paired-t).
+probe:P.A01 (arms × 3 seeds, paired-t).
 
 ## Supporting evidence
 - I01: repeated negative Δ across val (D01) + test-id (D03).

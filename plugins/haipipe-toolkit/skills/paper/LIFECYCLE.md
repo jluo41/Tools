@@ -7,6 +7,9 @@ loops back to the right earlier layer.
 For a comparison with the ARIS autonomous research workflow reference in
 `references/aris`, see `ARIS_COMPARISON.md`.
 
+For a script-style walkthrough from topic to paper, including the project-paper
+handshake, see `LIFECYCLE_WALKTHROUGH.md`.
+
 The key rule:
 
 > A paper moves forward through pitch, narrative, architecture, plan, draft, and
@@ -18,11 +21,11 @@ diagnosis-driven loopbacks.
 ## The forward path
 
 ```
-0. Seed
-   initial idea, author intuition, literature impression, rough direction
+0. Topic appears
+   project seed, discovery direction, or early paper prospectus
       ↓
 1. Paper Folder
-   create the concrete manuscript container
+   create or attach a paper repo/submodule; start in prospectus or manuscript mode
       ↓
 2. Paper Pitch
    one-minute public-facing story for this paper
@@ -68,7 +71,7 @@ the failure, not the stage where the failure was noticed.
 
 | Layer | Stages | Owns | Main files |
 |-------|--------|------|------------|
-| Story layer | `0 Seed`, `2 Paper Pitch` | What a random reader should understand in one minute | `0-pitch/PAPER_PITCH.md`, `0-pitch/PITCH_LOG.md`, `0-pitch/archive/` |
+| Prospectus/story layer | `0 Topic appears`, `1 Paper Folder`, `2 Paper Pitch` | Whether the topic is only a project direction, a paper prospectus, or a paper seed; then what a random reader should understand in one minute | `PAPER_PROSPECTUS.md`, `NARRATIVE_HANDOFF.md`, `README.md`, `0-pitch/PAPER_PITCH.md`, `0-pitch/PITCH_LOG.md`, `0-pitch/archive/` |
 | Evidence contract layer | `3 Evidence-Backed Narrative` | What the paper can honestly claim | `NARRATIVE_REPORT.md`, claim/evidence tables |
 | Paper shape layer | `4 Architecture`, `5 Paper Plan`, `5a Display Contract`, `6 Build Skeleton` | How the story becomes a paper-shaped artifact | `vNN-architecture-minimap.md`, `PAPER_PLAN.md`, `0-display/DISPLAY_INDEX.md`, `0-sections/`, `1-compile.sh` |
 | Text realization layer | `7 Write Draft`, `8 Edit Cycle` | How the paper is written and polished | `0-sections/*.tex`, `0-*.bib`, edit comments, diff packages |
@@ -78,8 +81,8 @@ the failure, not the stage where the failure was noticed.
 
 | Stage | Purpose | Primary skill | Typical inputs | Files changed | Gate / next decision |
 |-------|---------|---------------|----------------|---------------|----------------------|
-| 0. Seed | Start from intuition, review, or rough idea | none, author notes, upstream project work | author judgment, literature review, project direction | usually none, or notes outside paper folder | Is there enough direction to create a paper container? |
-| 1. Paper Folder | Create a concrete manuscript home | `haipipe-paper-structure folder` → `haipipe-paper-structure-bootstrap` | paper name, venue, format | `0-*.tex`, `0-*.bib`, `0-pitch/`, `0-sections/`, `0-display/`, `1-feedback/`, `1-compile.*` | Fill the one-minute story before writing prose |
+| 0. Topic appears | Classify a topic as project seed, paper prospectus, or paper seed | none, author notes, upstream project work | author judgment, literature review, project direction, task/probe/insight state | usually none; completion means a decision to stay in project discovery or start a paper prospectus repo | Is there enough direction to create a paper prospectus container? |
+| 1. Paper Folder | Create or attach a concrete paper repo/submodule, usually under `examples/<Project>/paper/` | `haipipe-paper-structure folder --mode prospectus|manuscript` → `haipipe-paper-structure-bootstrap` | paper name, parent project, optional GitHub repo, maturity mode | prospectus mode: `README.md`, `PAPER_PROSPECTUS.md`, `NARRATIVE_HANDOFF.md`; manuscript mode: `0-*.tex`, `0-*.bib`, `0-pitch/`, `0-sections/`, `0-display/`, `1-feedback/`, `1-compile.*` | Prospectus mode: hand off to project narrative; manuscript mode: fill the one-minute story before writing prose |
 | 2. Paper Pitch | Maintain the one-minute story and its provenance | `haipipe-paper-structure pitch` | seed idea, review, discoveries, tasks, probes, insights, author decisions | `0-pitch/PAPER_PITCH.md`, `0-pitch/PITCH_LOG.md`, `0-pitch/archive/*.md` | Is the story understandable, compelling, and honest about fragility? |
 | 3. Evidence-Backed Narrative | Expand pitch into evidence-backed claim contract | `haipipe-paper-structure narrative` | `PAPER_PITCH.md`, `CLAIMS_FROM_RESULTS.md`, `AUTO_REVIEW.md`, results, logs | `NARRATIVE_REPORT.md` | Do all claims trace to evidence and limitations? |
 | 4. Architecture / Minimap | Decide the paper-shaped strategy | `haipipe-paper-structure architecture` | pitch, narrative, venue constraints, key numbers | `vNN-architecture-minimap.md` | Does the 5-act arc match the pitch and evidence? |
@@ -117,7 +120,33 @@ Loopback is chosen by diagnosis, not chronology.
 | Too much content for page budget | `5 Paper Plan` or `4 Architecture` | Allocation and main-vs-appendix decisions are wrong |
 | Paper will not compile | `6 Build Skeleton` or typeset edit | Physical artifact is broken |
 | Revision changes the central claim | `2 Pitch` and `3 Narrative` | Story and evidence contract both changed |
-| Whole idea no longer viable | `0 Seed` | Start a new paper, merge into another paper, or stop |
+| Whole idea no longer viable | `0 Topic appears` | Reclassify as project-only, start a new paper prospectus, merge into another paper, or stop |
+
+## Paper prospectus rule
+
+Early paper folders are allowed, but they must declare their maturity. The
+preferred HAI-Pipe pattern is:
+
+```
+examples/<Project>/paper/Paper-<Slug>/    # Git submodule when a remote repo exists
+  README.md
+  PAPER_PROSPECTUS.md
+  NARRATIVE_HANDOFF.md
+```
+
+`PAPER_PROSPECTUS.md` is not an abstract, pitch, outline, or manuscript plan. It
+is the constraint file for discovery: tentative question, paper-shaped unknown,
+current evidence status, discovery constraints, narrative handoff, inquiry
+tracks, and promotion gate. `NARRATIVE_HANDOFF.md` hands the prospectus to the
+project narrative layer, which then decides whether to trigger discover, probe,
+task, or insight work.
+
+Do not create `0-sections/`, `0-display/`, LaTeX wrappers, or compile scripts
+until the prospectus is promoted to an active paper seed. Promotion requires a
+stable narrative claim shape and evidence from discovery/tasks/probes/insights.
+In short:
+
+> Paper repo can start early; manuscript obligations start late.
 
 ## Important loopback patterns
 
@@ -206,6 +235,11 @@ Respond/revise is not terminal. It is the strongest loopback source:
 
 ## File-change invariants
 
+- `PAPER_PROSPECTUS.md` changes when the paper-shaped discovery direction changes
+  before the paper has a supported seed.
+- `NARRATIVE_HANDOFF.md` changes when the paper prospectus's open questions are
+  handed to narrative, converted into discover/probe/task/insight work, resolved,
+  or superseded.
 - `0-pitch/` changes when the public-facing story changes.
 - `NARRATIVE_REPORT.md` changes when claims, evidence, or limitations change.
 - `vNN-architecture-minimap.md` changes when contribution emphasis, 5-act arc,

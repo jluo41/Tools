@@ -3,7 +3,7 @@ End-to-End Sandwich Run Example
 
 Status: draft (2026-06-20)
 Scope: one concrete project run through Narrative -> Probe -> Discovery/Task
-       -> Probe -> Narrative.
+       -> Probe -> Insight -> Narrative.
 
 
 Mental Model
@@ -20,6 +20,7 @@ Narrative-open
     Task 2
     Task 3
   Probe-post
+  Insight
 Narrative-post
 ```
 
@@ -27,9 +28,14 @@ Narrative asks, "what story are we trying to fill?"
 Probe asks, "what claim would settle this gap?"
 Discovery asks, "what does the outside world already know?"
 Task asks, "what did our own execution show?"
+Insight asks, "what reusable meaning follows from the evidence and verdict?"
 
 The key rule: each layer references the next layer's artifacts. It does not
 own or embed them.
+
+Narrative is the control envelope. Probe, Discovery, Task, and Insight are
+inside the narrative's scope by reference, but they remain sibling folders on
+disk.
 
 
 Example User Request
@@ -66,20 +72,21 @@ examples/ProjX-Phy-001-AdaptiveSampling/
 |       |-- INTEGRITY_AUDIT.md
 |       `-- CLAIMS_FROM_RESULTS.md
 |-- discoveries/
-|   |-- D001_prior-art-adaptive-sampling/
-|   |   |-- discovery.yaml
-|   |   |-- status.yaml
-|   |   |-- site.md
-|   |   |-- sources.md
-|   |   |-- notes.md
-|   |   `-- verdict.md
-|   `-- D002_benchmark-landscape-rare-phenotypes/
-|       |-- discovery.yaml
-|       |-- status.yaml
-|       |-- site.md
-|       |-- sources.md
-|       |-- notes.md
-|       `-- verdict.md
+|   `-- P01_rare-phenotype-lift/
+|       |-- 01_prior-art-adaptive-sampling/
+|       |   |-- discovery.yaml
+|       |   |-- status.yaml
+|       |   |-- site.md
+|       |   |-- sources.md
+|       |   |-- notes.md
+|       |   `-- verdict.md
+|       `-- 02_benchmark-landscape-rare-phenotypes/
+|           |-- discovery.yaml
+|           |-- status.yaml
+|           |-- site.md
+|           |-- sources.md
+|           |-- notes.md
+|           `-- verdict.md
 |-- tasks/
 |   |-- T001_baseline-eval/
 |   |   |-- workflow/
@@ -102,6 +109,14 @@ examples/ProjX-Phy-001-AdaptiveSampling/
 |       |-- results/
 |       |-- status.yaml
 |       `-- site.md
+|-- insights/
+|   `-- I001_rare-phenotype-lift/
+|       |-- insight.yaml
+|       |-- status.yaml
+|       |-- site.md
+|       |-- evidence.md
+|       |-- caveats.md
+|       `-- reusable-claims.md
 |-- paper/
 `-- applications/
 ```
@@ -126,6 +141,9 @@ Owns the story:
 It references `P001_rare-phenotype-lift`; it does not read task metrics
 directly unless debugging.
 
+It also references any insights created from closed probes. These are in the
+narrative's control scope, not inside the narrative folder.
+
 Probe package:
 
 ```
@@ -145,8 +163,8 @@ It references discoveries and tasks by ID/path; it does not contain them.
 Discovery packages:
 
 ```
-discoveries/D001_prior-art-adaptive-sampling/
-discoveries/D002_benchmark-landscape-rare-phenotypes/
+discoveries/P01_rare-phenotype-lift/01_prior-art-adaptive-sampling/
+discoveries/P01_rare-phenotype-lift/02_benchmark-landscape-rare-phenotypes/
 ```
 
 Own outside-world evidence:
@@ -175,6 +193,22 @@ Own inside-world execution:
 Tasks do not decide whether the research claim is true. They only produce
 execution evidence for Probe-post.
 
+Insight package:
+
+```
+insights/I001_rare-phenotype-lift/
+```
+
+Owns reusable synthesis:
+
+- what the probe verdict means beyond the current run
+- caveats that must travel with the claim
+- reusable claim wording for narrative, paper, or application
+- links back to source probe, discoveries, and tasks
+
+Insights do not re-judge the claim. They translate the Probe-post verdict and
+evidence into reusable meaning.
+
 
 Single Project Log
 ==================
@@ -190,17 +224,18 @@ Example:
 ```jsonl
 {"ts":"2026-06-20T09:00:00-04:00","event":"narrative.opened","narrative_id":"N001_adaptive-sampling","status":"exploring","summary":"Story angle created: adaptive sampling may improve rare phenotype detection."}
 {"ts":"2026-06-20T09:12:00-04:00","event":"probe.opened","narrative_id":"N001_adaptive-sampling","probe_id":"P001_rare-phenotype-lift","status":"waiting_for_evidence","summary":"Probe opened for rare phenotype lift claim."}
-{"ts":"2026-06-20T09:15:00-04:00","event":"discovery.started","probe_id":"P001_rare-phenotype-lift","discovery_id":"D001_prior-art-adaptive-sampling","role":"prior_art_check"}
-{"ts":"2026-06-20T09:16:00-04:00","event":"discovery.started","probe_id":"P001_rare-phenotype-lift","discovery_id":"D002_benchmark-landscape-rare-phenotypes","role":"benchmark_landscape"}
+{"ts":"2026-06-20T09:15:00-04:00","event":"discovery.started","probe_id":"P001_rare-phenotype-lift","discovery_id":"P01.01","path":"discoveries/P01_rare-phenotype-lift/01_prior-art-adaptive-sampling","role":"prior_art_check"}
+{"ts":"2026-06-20T09:16:00-04:00","event":"discovery.started","probe_id":"P001_rare-phenotype-lift","discovery_id":"P01.02","path":"discoveries/P01_rare-phenotype-lift/02_benchmark-landscape-rare-phenotypes","role":"benchmark_landscape"}
 {"ts":"2026-06-20T09:20:00-04:00","event":"task.started","probe_id":"P001_rare-phenotype-lift","task_id":"T001_baseline-eval","task_type":"eval"}
 {"ts":"2026-06-20T09:21:00-04:00","event":"task.started","probe_id":"P001_rare-phenotype-lift","task_id":"T002_adaptive-eval","task_type":"eval"}
 {"ts":"2026-06-20T09:22:00-04:00","event":"task.started","probe_id":"P001_rare-phenotype-lift","task_id":"T003_ablation-eval","task_type":"eval"}
-{"ts":"2026-06-20T11:05:00-04:00","event":"discovery.completed","discovery_id":"D001_prior-art-adaptive-sampling","status":"ok","summary":"No exact prior art found; related active-learning methods noted."}
-{"ts":"2026-06-20T11:20:00-04:00","event":"discovery.completed","discovery_id":"D002_benchmark-landscape-rare-phenotypes","status":"ok","summary":"Benchmark metrics and baseline expectations captured."}
+{"ts":"2026-06-20T11:05:00-04:00","event":"discovery.completed","discovery_id":"P01.01","path":"discoveries/P01_rare-phenotype-lift/01_prior-art-adaptive-sampling","status":"ok","summary":"No exact prior art found; related active-learning methods noted."}
+{"ts":"2026-06-20T11:20:00-04:00","event":"discovery.completed","discovery_id":"P01.02","path":"discoveries/P01_rare-phenotype-lift/02_benchmark-landscape-rare-phenotypes","status":"ok","summary":"Benchmark metrics and baseline expectations captured."}
 {"ts":"2026-06-20T12:30:00-04:00","event":"task.completed","task_id":"T001_baseline-eval","status":"reported","summary":"Baseline metrics written."}
 {"ts":"2026-06-20T12:42:00-04:00","event":"task.completed","task_id":"T002_adaptive-eval","status":"reported","summary":"Adaptive metrics written."}
 {"ts":"2026-06-20T12:55:00-04:00","event":"task.completed","task_id":"T003_ablation-eval","status":"reported","summary":"Ablation metrics written."}
 {"ts":"2026-06-20T13:10:00-04:00","event":"probe.closed","probe_id":"P001_rare-phenotype-lift","status":"closed","verdict":"supported_with_caveats","summary":"Adaptive sampling improves recall, but precision cost must be reported."}
+{"ts":"2026-06-20T13:18:00-04:00","event":"insight.created","insight_id":"I001_rare-phenotype-lift","probe_id":"P001_rare-phenotype-lift","status":"drafted","summary":"Reusable synthesis: recall lift is promising, precision tradeoff must be framed."}
 {"ts":"2026-06-20T13:30:00-04:00","event":"narrative.posted","narrative_id":"N001_adaptive-sampling","status":"needs_next_probe","summary":"Main claim partly filled; next gap is precision tradeoff framing."}
 ```
 
@@ -224,6 +259,18 @@ narratives:
     status: needs_next_probe
     open_gaps:
       - precision_tradeoff
+    scope_refs:
+      probes:
+        - probes/P001_rare-phenotype-lift/probe.yaml
+      discoveries:
+        - discoveries/P01_rare-phenotype-lift/01_prior-art-adaptive-sampling/discovery.yaml
+        - discoveries/P01_rare-phenotype-lift/02_benchmark-landscape-rare-phenotypes/discovery.yaml
+      tasks:
+        - tasks/T001_baseline-eval/status.yaml
+        - tasks/T002_adaptive-eval/status.yaml
+        - tasks/T003_ablation-eval/status.yaml
+      insights:
+        - insights/I001_rare-phenotype-lift/insight.yaml
 
 probes:
   P001_rare-phenotype-lift:
@@ -232,12 +279,14 @@ probes:
     narrative_id: N001_adaptive-sampling
 
 discoveries:
-  D001_prior-art-adaptive-sampling:
+  P01.01:
     status: ok
     probe_id: P001_rare-phenotype-lift
-  D002_benchmark-landscape-rare-phenotypes:
+    path: discoveries/P01_rare-phenotype-lift/01_prior-art-adaptive-sampling
+  P01.02:
     status: ok
     probe_id: P001_rare-phenotype-lift
+    path: discoveries/P01_rare-phenotype-lift/02_benchmark-landscape-rare-phenotypes
 
 tasks:
   T001_baseline-eval:
@@ -249,6 +298,13 @@ tasks:
   T003_ablation-eval:
     status: reported
     probe_id: P001_rare-phenotype-lift
+
+insights:
+  I001_rare-phenotype-lift:
+    status: drafted
+    source_probe: P001_rare-phenotype-lift
+    used_by:
+      - N001_adaptive-sampling
 ```
 
 
@@ -265,10 +321,12 @@ claim: Adaptive sampling improves rare phenotype recall over the baseline.
 
 evidence_plan:
   discoveries:
-    - id: D001_prior-art-adaptive-sampling
+    - id: P01.01
+      path: discoveries/P01_rare-phenotype-lift/01_prior-art-adaptive-sampling
       role: prior_art_check
       required: true
-    - id: D002_benchmark-landscape-rare-phenotypes
+    - id: P01.02
+      path: discoveries/P01_rare-phenotype-lift/02_benchmark-landscape-rare-phenotypes
       role: benchmark_landscape
       required: true
   tasks:
@@ -299,8 +357,8 @@ claim_result:
   supports_narrative_claim: partial
 evidence_refs:
   discoveries:
-    - discoveries/D001_prior-art-adaptive-sampling/verdict.md
-    - discoveries/D002_benchmark-landscape-rare-phenotypes/verdict.md
+    - discoveries/P01_rare-phenotype-lift/01_prior-art-adaptive-sampling/verdict.md
+    - discoveries/P01_rare-phenotype-lift/02_benchmark-landscape-rare-phenotypes/verdict.md
   tasks:
     - tasks/T001_baseline-eval/results/main/metrics.json
     - tasks/T002_adaptive-eval/results/main/metrics.json
@@ -327,7 +385,7 @@ Local `site.md` files answer local questions:
 ```
 narratives/N001.../site.md   what story gap is open?
 probes/P001.../site.md       what evidence is missing?
-discoveries/D001.../site.md  what sources/verdict exist?
+discoveries/P01.../site.md   what sources/verdict exist?
 tasks/T001.../site.md        what run/report status exists?
 ```
 

@@ -1,10 +1,10 @@
 insight — The Archive Layer (DESIGN)
 ========================================
 
-Status: v2.0.0 (2026-06-11) — DIKW producer partition established.
-        task Stage 5 files D cards; probe convergence files K cards;
-        insight owns I + W synthesis. Prior: agentification + dual-mode +
-        per-type reviewers (2026-05-31).
+Status: v2.5.0 (2026-06-20) — review contract established.
+        task/probe/discover produce material; narrative/application/human
+        review decides what becomes permanent KB; insight files reviewed
+        D/I/K/W cards, indices, and graph audits.
 Owner:  jluo41
 
 Read ARCHITECTURE.md + MENTAL_MODEL.md first. This doc designs the AGENT
@@ -32,42 +32,50 @@ This doc adds the skeleton.
 E's nature (recap — the librarian)
 ==================================
 
-insight does NOT think, compute, or claim. It FILES. It is CALLED BY
-task and probe to file cards, and it synthesizes cross-cutting
-patterns (I) and recommendations (W) from the accumulated cards.
+insight does NOT compute or claim. It ARCHIVES. It is called at review
+boundaries to turn finished material into curated permanent memory.
 
 ```
-called by:  task Stage 5 → files D cards (per-task observations)
-            probe convergence → files K cards (per-probe beliefs)
-            application Phase 4 → files any DIKW level
-owns:       I synthesis (cross-D patterns) + W synthesis (cross-K actions)
-writes:     insights/ only (D/I/K/W cards + INDEX)
-NEVER:      writes tasks/ or probes/ ; triggers a probe (that is G-ask's job)
+called by:  narrative review
+            application ask Phase 4
+            human/manual review
+owns:       review → apply → card review → index → audit
+writes:     insights/ only (D/I/K/W cards + INDEX + audits + derived exports)
+NEVER:      writes tasks/ or probes/ ; triggers a probe ; judges claim truth
 ```
 
+DIKW folders are flat. Topic/source/narrative grouping is generated as views,
+not encoded as subfolders. Card growth is controlled by review review using
+`ref/card-granularity.md`: one card = one reusable knowledge unit; use merge
+for reinforcing evidence, split for broad candidates, and skip for raw/noisy
+material.
 
-Who produces what (the DIKW producer partition)
+Cards are not write-once. `ref/card-lifecycle.md` controls how they evolve:
+stable card ids, merge/update for same-unit evidence, supersede for refuted or
+wrong-scope claims, and `## Change log` for meaningful edits.
+
+
+Who produces material vs who files memory
 ================================================
 
-Each DIKW level has one natural producer, determined by scope:
+DIKW layers are card labels in the archive, not lifecycle stages.
 
 ```
-DIKW level     Producer           Trigger                          Scope
-─────────────  ─────────────────  ───────────────────────────────  ──────────────
-🟦 D data      task Stage 5     task lifecycle completes         one task/run
-🟩 I info      insight          enough D cards accumulate        cross-task pattern
-🟨 K knowledge probe loop       probe converges (confirmed)      one probe claim
-🟧 W wisdom    insight / G_app  enough K cards accumulate        cross-probe action
+Card layer     Material source                              Filing decision
+─────────────  ───────────────────────────────────────────  ─────────────────
+🟦 D data      task/discover observation                    review
+🟩 I info      pattern across D / rich descriptive material review
+🟨 K knowledge judged probe claim / vetted literature       review
+🟧 W wisdom    K-backed action / strategic synthesis        review
 ```
 
-The principle: **DIKW levels are partitioned by scope. Each scope has one natural owner. No layer files cards above its scope.**
+The principle: **upstream layers produce material; review decides archival
+value; insight files and maintains the graph.**
 
 - A task doesn't produce K (it doesn't test hypotheses — that's a probe's job).
-- A probe doesn't produce I (it doesn't see cross-probe patterns — that's synthesis).
-- The atomic layers (D, K) are filed automatically by their producers.
-- The synthesis layers (I, W) require either enough accumulation or human judgment.
-
-application-ask can also file any DIKW level during its Phase 4, but even then it calls the same insight skills — just with broader orchestration context.
+- A probe doesn't directly mutate `insights/`; it produces verdict material.
+- Narrative/application ask/human review is the construction boundary.
+- The D/I/K/W layer skills are low-level writers used by review.
 
 
 The asymmetry note (E vs C vs D) — apply, don't copy
@@ -129,63 +137,46 @@ the skill must NEVER hang on an ASK in a headless run — it returns
 `status: blocked` + `missing: [field]`, and the calling agent fills it and
 re-dispatches. Never invent a required field.
 
-What "complete" means per layer (the meat of E's ref/invocation-modes.md,
-derived from ref/insight-md-schema.md):
+What "complete" means per layer when review calls a writer:
 
 ```
-D (Data)        source_id (task/probe) + headline + Numbers table + tags
+D (Data)        source_id (namespaced task/probe/discover/lit ref) + headline + Numbers table + tags
 I (Information)  sources:[D..] (>=1) + pattern + direction + pattern stmt
-K (Knowledge)    sources:[probe] MUST be confirmed + claim + confidence
+K (Knowledge)    sources:[probe/lit refs] MUST be judged + claim + confidence
 W (Wisdom)       sources:[K..] + rec + rec_type + cost + how-to-act
 ```
 
 
-E's role in the loop architecture
+Insight's role in the loop architecture
 ===================================
 
-The system runs as nested loops. The smallest unit is the **probe cycle** (L0:
-probe → N tasks → insight). The insight filing cell is now wired via two paths:
+The system runs as nested loops, but insight is not a loop driver. It is the
+archive step after a meaningful boundary:
 
 ```
-L0 cycle   🔧 Probe ─bridge─▶ ✋ N×Task ─run─▶ result→probe.yaml ─▶ 🧠 E files D + K
-  (probe cycle)                  │ Stage 5                            ▲ ✅ WIRED
-                                 └──▶ 🟦 D card (per-task)            │
-                                                    probe convergence └──▶ 🟨 K card (per-probe)
-L1 inner   haipipe-probe-loop  (review→verdict→propose→materialize→re-review)  [BUILT]
-L2 outer   narrative ⇄ KB    (ignite-log; claims.md GAP rows)  [scope A BUILT, auto=scope B ⏳]
-L3 trigger ignite=ready → narrative-report → Application (cash-out)            [path exists]
+task/probe/discover finish material
+        ↓
+narrative or application ask reviews
+        ↓
+insight files D/I/K/W cards
+        ↓
+narrative/application/paper cite card ids
 ```
 
-The two concrete paths into insight:
+The concrete paths into insight:
 
 ```
-Path A (task → D):   task Stage 5 (Insight) → Skill("haipipe-insight-data") → 🟦 D card
-  trigger:   task lifecycle completes with results (eval, fit, stata-reg, stata-data)
-  source:    results/<run>/metrics.json + workflow/report*.yaml
-  review:    card-reviewer-data-agent validates accuracy + boundary
-
-Path B (probe → K):  probe convergence → card-creator-knowledge-agent → 🟨 K card
-  trigger:   probe result.status = confirmed (or refuted)
-  source:    probe.yaml claim + result block
-  review:    card-reviewer-knowledge-agent validates scope + counter-evidence
-  optional:  chains card-creator-wisdom-agent → 🟧 W card (per-probe next-step)
+Path A (application ask):  Phase 4 → review → D/I/K/W cards + report refs
+Path B (narrative):        post/fill → review → K/W refs in claims.md
+Path C (manual):           user calls review on project/probe/task scope
+Path D (low-level):        explicit data/information/knowledge/wisdom writer
 ```
 
-Synthesis (I, W) is NOT triggered by a single producer — it accumulates:
+Review is the preferred path because it can deduplicate, skip, supersede, and
+audit before the permanent KB changes.
 
-```
-Path C (D cards → I): when ≥2 D cards show the same pattern → /haipipe-insight information
-  trigger:   task Stage 5 suggests when D card count ≥ 3 in a task-group
-             application-ask Phase 4 schedules explicitly
-             human calls /haipipe-insight information directly
-
-Path D (K cards → W): when K cards imply an actionable recommendation → /haipipe-insight wisdom
-  trigger:   application-ask Phase 4 schedules explicitly
-             human calls /haipipe-insight wisdom directly
-```
-
-E never DRIVES a loop. It is always the callee. L1 (probe-loop) and L2
-(narrative / G-ask) decide "go round again"; E only files when called.
+insight never DRIVES a loop. It is always the callee. Narrative/application
+decide "go round again"; insight only archives when called.
 
 The headless filing requirement still holds: L1 runs round after round;
 L2 can fan out several probes at once. You cannot human-in-the-loop every
@@ -200,6 +191,9 @@ insight/
 ├── DESIGN.md                       (this file)
 ├── CHANGELOG.md                    🆕 parity with C/D
 ├── ref/
+│   ├── review-contract.md        🆕 how insights/ is constructed
+│   ├── card-granularity.md        🆕 card size + merge/split/skip rules
+│   ├── card-lifecycle.md          🆕 file/merge/update/supersede history rules
 │   ├── invocation-modes.md         🆕 the dual-mode contract + per-DIKW table
 │   ├── dikw-boundaries.md          🆕 each layer's boundary + worked examples (reviewers enforce)
 │   ├── insight-md-schema.md        ✅ exists (reviewers point here, no dup)
@@ -221,6 +215,7 @@ insight/
 │       ├── card-reviewer-wisdom-agent.md         🟧
 │       └── index-integrity-auditor-agent.md     🔗 cross-layer: sources<->ref_by, INDEX<->files
 └── haipipe-insight*/SKILL.md       ♻️ each gains a dual-mode body + structured return
+    haipipe-insight-review/SKILL.md 🆕 review/apply archive construction
 ```
 
 Growth axes: creators grow per DIKW layer (+1 creator per layer). E DEPARTS
@@ -241,10 +236,21 @@ Session 1 (2026-05-31):
 - E closes the probe cycle (L0) that probe-loop skips.        ✅
 
 Session 2 (2026-06-11):
-- **DIKW producer partition established.** D cards produced by task Stage 5; K cards produced by probe convergence; I + W owned by insight as synthesis layers. Each DIKW level partitioned by scope — no layer files above its scope. ✅
-- **task Stage 5 (Insight)** calls Skill("haipipe-insight-data") → files D card after task lifecycle completes. Optional, only for insight-worthy types (eval, fit, stata-reg, stata-data). ✅
-- **probe convergence** calls card-creator-knowledge-agent → files K card when probe result.status = confirmed/refuted. ✅
-- **L0 loop cell wired.** The formerly empty "→ insight" cell now has two concrete paths: task→D and probe→K. ✅
+- **Previous direct-producer model established.** D was modeled as task-stage
+  output; K was modeled as probe-convergence output; I + W stayed synthesis
+  layers. This closed the loop technically, but it made the archive too eager. ✅
+- **Low-level writer APIs validated.** `haipipe-insight-data` and
+  `haipipe-insight-knowledge` can file cards from complete specs. These remain
+  useful under apply, but are no longer the preferred public entry. ✅
+- **L0 loop cell had a concrete path.** Superseded by Session 3's review gate:
+  task/probe/discover produce material; review decides permanence. ✅
+
+Session 3 (2026-06-20):
+- **Review contract established.** task/probe/discover produce material;
+  narrative/application/human review decides what becomes permanent KB;
+  insight writers file cards under a review/apply/card-review/index/audit protocol. ✅
+- **Direct task/probe filing downgraded to low-level/manual API.** The
+  preferred construction path is `/haipipe-insight review ...`. ✅
 
 
 Open questions
@@ -254,13 +260,14 @@ Q1. [RESOLVED — build both] Creator is a SEPARATE thin agent AND the
     underlying skill stays: each card-creator-<layer>-agent calls the
     dual-mode haipipe-insight-<layer> skill headless.
 
-Q2. [RESOLVED — wired] probe-loop convergence → K card; task Stage 5 → D card.
-    🟩 I and strategic 🟧 W stay OUT of the per-probe loop (accumulate via
-    explore / application).
+Q2. [RESOLVED — review gate] probe/task/discover material can become K/D, but
+    not automatically. `/haipipe-insight review ...` decides whether the
+    material is archive-worthy, deduplicates it, and then calls the writer APIs.
+    🟩 I and strategic 🟧 W accumulate via application/narrative/manual review.
 
 Q3. Does E need an advancer (synthesis proposer)? Deferred — explore skill
-    covers the read/coverage side. task Stage 5 now suggests I-level
-    synthesis when D card count >= 3 in a task-group, which partially fills
+    covers the read/coverage side. Review planning can suggest I-level
+    synthesis when D card count >= 3 in a coherent scope, which partially fills
     this role.
 
 Q4. [RESOLVED — per-type] Each DIKW card gets a specific card-reviewer
@@ -274,15 +281,15 @@ DONE:
   ✅ 1. ref/invocation-modes.md + ref/dikw-boundaries.md
   ✅ 2. agents/ (4 creators + 5 reviewers + README + templates)
   ✅ 3. dual-mode blocks in all 4 DIKW skills
-  ✅ 4. probe-loop wired → card-creator-knowledge-agent on convergence
-  ✅ 5. task Stage 5 wired → Skill("haipipe-insight-data") for D cards
-  ✅ 6. DIKW producer partition documented (this doc + dikw-boundaries.md)
-  ✅ 7. probe MENTAL_MODEL.md updated with insight connection
+  ✅ 4. review contract documented (`ref/review-contract.md`)
+  ✅ 5. review skill skeleton added (`haipipe-insight-review/SKILL.md`)
+  ✅ 6. DIKW writer APIs kept as low-level apply targets
+  ✅ 7. probe/task direct filing model superseded by review gate
 
 Remaining:
-  - I-level auto-synthesis trigger: when task Stage 5 suggests (D count >= 3),
-    who acts? Currently suggestion only. Could wire to application or make
-    haipipe-insight-explore auto-check.
-  - insight CHANGELOG.md (parity with task / probe).
-  - Dogfood: run a real task through Stage 5 → D card → reviewer pass.
-  - Dogfood: run a converged probe through loop → K card → reviewer pass.
+  - I-level auto-synthesis trigger: review can suggest it; decide
+    whether application ask should apply it automatically or require review.
+  - Dogfood: run a real task/probe/narrative scope through review → apply
+    → reviewer pass → index-integrity pass.
+  - Tighten old layer writer docs so they all point back to review as the
+    preferred entry.

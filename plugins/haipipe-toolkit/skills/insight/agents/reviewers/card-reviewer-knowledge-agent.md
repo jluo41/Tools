@@ -50,27 +50,32 @@ reviewer:         Codex (out-of-family) for accuracy · self for style/boundary
 
 - `../../ref/dikw-boundaries.md` → 🟨 K boundary + the ★ I→K gate (no probe, no K)
 - `../../ref/insight-md-schema.md` → K layer frontmatter + body sections
+- `../../ref/card-granularity.md` → one scoped belief per card; merge/split rules
+- `../../ref/card-lifecycle.md` → merge/update/supersede/change-log rules
 - the cited I cards (and their D → probe chain): hand Codex the K card + the
   cited evidence; ask it to REFUTE the claim's scope and find any omitted
   counter-evidence.
 
 ```
-□ ★ gate     the source chain traces to a CONFIRMED probe (controlled comparison)
+□ ★ gate     the source chain traces to judged evidence: confirmed/refuted probe
+             or vetted literature/review source with confidence basis
 □ accuracy   `claim` scope ⊆ what the cited evidence supports (no overreach)
 □ honesty    `## Counter-evidence` lists ALL contradictions (cherry-pick = fail)
 □ confidence `confidence` matches the rationale; `## Scope` bounds the belief
+□ grain      one scoped belief; not a topic essay and not duplicate of active K
+□ lifecycle  meaningful edits have `## Change log`; refuted claims supersede
 □ style      ## Claim · ## Supporting evidence · ## Counter-evidence · ## Confidence rationale · ## Scope
 □ supersede  if it contradicts an existing K, the supersede chain is set
 ```
 
 Default to **fail** if scope exceeds the evidence, a counter-fact is omitted, or
-no confirmed probe underlies the chain.
+no judged source underlies the chain.
 
 ## Specialist tail
 
 ```
 status:    ok | blocked | failed
-summary:   "<faithful | overclaim of scope | counter-evidence omitted | no probe>"
+summary:   "<faithful | overclaim of scope | counter-evidence omitted | no judged source>"
 artifacts: [K_CARD_REVIEW.md]
 next:      if clean → index-integrity-auditor-agent (cross-layer graph)
            else → back to haipipe-insight-knowledge to re-file
