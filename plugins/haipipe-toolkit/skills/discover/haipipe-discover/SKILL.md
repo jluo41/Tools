@@ -103,7 +103,8 @@ examples/<PROJECT>/
 │       └── 02_benchmark-landscape.md
 ├── probes/
 ├── tasks/
-└── narratives/
+├── paper/
+└── applications/
 ```
 
 Group letters are organizational hints, not the source of truth. The
@@ -112,7 +113,7 @@ frontmatter `role:` in the discovery markdown is authoritative.
 Recommended group hints:
 
 ```
-L  landscape / narrative-open discovery
+L  landscape / delivery-open discovery
 P  probe-backed prior art or counterevidence
 B  benchmark landscape
 C  counterevidence
@@ -245,10 +246,10 @@ files do not keep their own orchestration logs.
 Parent contracts:
 
 ```
-Narrative-triggered discovery
-  parent.type = narrative
+Delivery-triggered discovery
+  parent.type = paper | application
   use: landscape_review, novelty_check, benchmark_landscape
-  consumer: story.md / claims.md / Narrative-post
+  consumer: delivery lifecycle open need
 
 Probe-triggered discovery
   parent.type = probe
@@ -303,7 +304,7 @@ lifecycle stages.
 Step 0: Resolve project root.
 
 ```
-Project root = nearest ancestor containing tasks/, narratives/, paper/, probes/,
+Project root = nearest ancestor containing tasks/, paper/, applications/, probes/,
 or _haipipe/. If ambiguous, ask. In AUTO mode, return blocked.
 ```
 

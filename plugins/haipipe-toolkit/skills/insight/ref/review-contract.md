@@ -83,7 +83,7 @@ Use review after a meaningful boundary, not after every tiny edit.
 Good review boundaries:
 
 - after `/haipipe-probe post <probe>` has a judged verdict
-- after `/haipipe-narrative post <narrative>` needs to fill claim slots
+- after a paper/application lifecycle needs to backfill claim slots from evidence
 - during `/haipipe-application ask` Phase 4
 - manually, after several completed tasks/probes need archiving
 
@@ -253,7 +253,7 @@ insights/
 ```
 
 Session plans, logs, and gates belong under `applications/ask/<NN_slug>/`.
-Narrative claim ledgers belong under `narratives/<NN_slug>/`.
+Paper/application claim ledgers belong inside their delivery lifecycle folders.
 Task/probe execution artifacts stay under `tasks/` and `probes/`.
 
 

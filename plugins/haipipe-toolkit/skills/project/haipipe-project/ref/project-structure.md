@@ -28,7 +28,6 @@ Standard Layout
   +-- tasks/          <- MANDATORY: all task work here (task scaffolds)
   +-- probes/    <- MANDATORY: research threads (probe manages)
   +-- insights/       <- MANDATORY: knowledge base (insight manages)
-  +-- narratives/     <- OPTIONAL: living story lines (narrative manages; KB ⇄ Narrative)
   +-- diagram/        <- MANDATORY: project-level story (high-level only)
   +-- paper/          <- OPTIONAL: manuscripts (paper; each Paper-* gets own diagram/)
   +-- applications/   <- OPTIONAL: external artifacts (application; messages/ui/reports)
@@ -114,12 +113,12 @@ Project-level probes/  (research threads)
     insights/      KNOWLEDGE  cross-probe synthesis (D/I/K/W markdown). insight owns. NO code; entries cite probes + tasks via frontmatter sources.
     paper/         PUBLISH    academic manuscripts. paper owns. Each Paper-{Name}-{venue}/ is often a git submodule.
     applications/  DELIVER    external artifacts (patient/clinician messages, UI sketches, stakeholder reports). application owns. Reads insights/K + insights/W; NEVER writes back.
-    diagram/       STORY      project-level narrative (motivation / boundary / exploration). HIGH-LEVEL only; operational status belongs in tasks/{...}/diagram/ or probes/{MMDD}_{slug}/logs/.
+    diagram/       STORY      high-level project motivation / boundary / exploration. Delivery-specific story belongs inside paper/application lifecycles.
 
   One-way dependencies:
     probes/   READS tasks/                 (links runs into arms via evidence:)
     insights/      READS probes/ + tasks/  (D/I/K/W synthesis)
-    paper/         READS insights/K + W         (publication narrative)
+    paper/         READS insights/K + W + probes/tasks as needed (publication lifecycle)
     applications/  READS insights/K + W         (external creation; can TRIGGER /haipipe-insight ask to close gaps)
     tasks/         NEVER reads probes/insights/paper/applications/
     probes/   NEVER reads insights/

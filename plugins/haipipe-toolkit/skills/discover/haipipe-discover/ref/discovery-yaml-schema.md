@@ -145,12 +145,12 @@ Parent Values
 
 ```yaml
 parent:
-  type: narrative | probe | manual
-  path: narratives/N001_story | probes/P001_claim | ""
-  role: required_evidence | optional_context | story_steering
+  type: paper | application | probe | manual
+  path: paper/PaperX/0-lifecycle/2-claims | applications/ask/001_question | probes/P001_claim | ""
+  role: required_evidence | optional_context | delivery_steering
 ```
 
-Narrative-triggered discoveries usually use `landscape_review`,
+Delivery-triggered discoveries usually use `landscape_review`,
 `novelty_check`, or `benchmark_landscape`. Probe-triggered discoveries usually
 use `prior_art_check`, `counterevidence`, `source_read`, or
 `benchmark_landscape`.

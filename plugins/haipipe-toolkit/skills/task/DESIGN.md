@@ -22,8 +22,8 @@ For a concrete end-to-end project shape, see
 |-- 📁 tasks/        <- 💼 the WORK         build & run things
 |-- 📁 discoveries/  <- 🔍 the OUTSIDE      sources, notes, prior art verdicts
 |-- 📁 probes/       <- 📊 the CLAIMS       cross-run aggregation
-|-- 📁 narratives/   <- 📖 the STORY        gaps, fill, ignite
 |-- 📁 paper/        <- 📰 the DELIVERABLE  what we publish
+|-- 📁 applications/ <- 💬 the DELIVERABLE  audience-specific reports/messages/UI
 |-- 📁 insights/     <- 🧠 deferred export layer (parked for now)
 ```
 
@@ -31,13 +31,13 @@ Each core layer has its own specialist family — different sections, no overlap
 
 ```
 project umbrella     /haipipe-project              project/ (sibling)
-narratives/          /haipipe-narrative            narrative/
 discoveries/         /haipipe-discover             discover/
 tasks/               /haipipe-task-*               task/    <- THIS SECTION
 probes/              /haipipe-probe-*              probe/
 insights/            /haipipe-insight-*            insight/ (deferred)
 
 paper/               /haipipe-paper-*              paper/
+applications/        /haipipe-application-*        application/
 ```
 
 `project/` owns project-scope ops (the umbrella + inspect + organize + project/task-group scaffold).
@@ -211,7 +211,8 @@ The 4-Stage Lifecycle
 
 Every existing task folder goes through up to 4 stages. These stages care
 about engineering: is the code correct, structured, runnable, and documented?
-What the data means for the story is handled by Probe-post and Narrative-post.
+What the data means for delivery is handled by Probe-post and then backfilled
+into paper/application lifecycle artifacts.
 
 ```
 Stage 1: PLAN — the contract (what the script SHOULD do)

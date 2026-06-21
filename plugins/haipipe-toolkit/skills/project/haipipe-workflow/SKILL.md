@@ -91,8 +91,11 @@ haipipe-workflow     ← the PATTERN (IPO + lifecycle + file tracking)
     ├── haipipe-insight      ← a SPECIFIC workflow
     │     └── reads probe outputs
     │
-    └── haipipe-narrative    ← a SPECIFIC workflow
-          └── calls haipipe-probe as sub-workflow (sees only I/O)
+    ├── haipipe-paper        ← a SPECIFIC delivery workflow
+    │     └── records evidence needs and calls probe/discover/task/insight
+    │
+    └── haipipe-application  ← a SPECIFIC delivery workflow
+          └── records evidence needs and calls probe/discover/task/insight
 ```
 
 Each skill:
