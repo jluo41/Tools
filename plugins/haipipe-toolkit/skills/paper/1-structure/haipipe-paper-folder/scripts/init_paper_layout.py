@@ -67,12 +67,17 @@ FORMAT_MAP = {
 # ---------------------------------------------------------------------------
 
 DEFAULT_DIRS = [
-    "0-pitch/archive",
+    "0-lifecycle/0-seed",
+    "0-lifecycle/1-pitch",
+    "0-lifecycle/2-claims",
+    "0-lifecycle/3-narrative",
+    "0-lifecycle/4-figures-tables",
+    "0-lifecycle/5-minimap",
     "0-sections",
-    "0-display/Figures",
-    "0-display/Tables",
-    "0-display/_old",
-    "1-feedback",
+    "0-displays/display01-placeholder/assets",
+    "0-displays/display01-placeholder/source",
+    "0-displays/display01-placeholder/versions",
+    "1-rounds",
 ]
 
 
@@ -361,14 +366,14 @@ def gitignore_content() -> str:
         *.log
         *.out
         *.pdf
-        # but keep figure / table PDFs under 0-display/
-        !0-display/**/*.pdf
+        # but keep figure / table PDFs under 0-displays/
+        !0-displays/**/*.pdf
         # and keep submission-bundle PDFs for any revision round
-        !1-feedback/*/submission/**/*.pdf
+        !1-rounds/*/submission/**/*.pdf
         # and keep the rebuttal-report PDF for any revision round
-        !1-feedback/*/rebuttal-report/**/*.pdf
+        !1-rounds/*/rebuttal-report/**/*.pdf
         # and keep the diff PDFs for any revision round
-        !1-feedback/*/diff/**/*.pdf
+        !1-rounds/*/diff/**/*.pdf
         *.synctex.gz
         *.fdb_latexmk
         *.fls
@@ -392,70 +397,220 @@ def config_yaml(name: str, venue: str) -> str:
         # Paper config: {name} ({venue})
         ##############################################
 
-        FigurePath: '0-display/Figures'
-        TablePath: '0-display/Tables'
+        DisplayPath: '0-displays'
+        ActiveRound: 'v000000'
     """)
 
 
-def paper_pitch(name: str, venue: str) -> str:
+def status_md(name: str, venue: str) -> str:
     return textwrap.dedent(f"""\
-        # Paper Pitch
+        # Paper Status
 
         Paper: {name} ({venue})
 
-        ## Current Pitch
-        One sentence that a non-specialist can repeat after one minute.
+        | Field | Value |
+        |---|---|
+        | current_layer | 0-seed |
+        | maturity | scaffold |
+        | active_round | none |
+        | next_gate | fill 0-lifecycle/0-seed and 1-pitch |
 
-        ## Hook
-        Why should a random reader care?
+        ## Open Gates
 
-        ## Surprise
-        What is the non-obvious turn, tension, or finding?
-
-        ## So What
-        What changes if this story is true, and who can use it?
-
-        ## Why Believe
-        - Evidence 1: [source path or intuition if seed-stage]
-        - Evidence 2: [source path]
-        - Evidence 3: [source path]
-
-        ## Still Fragile
-        - The weakest point or most important missing evidence.
-
-        ## Next Evidence Move
-        What discovery, task, probe, or review should happen next?
+        - Seed, pitch, claims, display map, and minimap need author content.
     """)
 
 
-def pitch_log(name: str, venue: str) -> str:
+def lifecycle_readme(name: str, venue: str) -> str:
     return textwrap.dedent(f"""\
-        # Pitch Log
+        # Paper Lifecycle
 
         Paper: {name} ({venue})
 
-        This file records semantic story shifts. Keep each entry short. Archive
-        old full pitch snapshots under `archive/` when the story state changes.
+        This folder is the TeX-first paper maturation spine.
 
-        ## v01 -- Seed
+        ```text
+        0-seed -> 1-pitch -> 2-claims -> 3-narrative -> 4-figures-tables -> 5-minimap
+        ```
 
-        Archived:
-        - none
+        Each stage owns one reviewable `.tex` file and may compile to its own
+        PDF when useful.
+    """)
 
-        Source:
-        - Author intuition / initial review / early project direction.
 
-        Pitch:
-        - See `PAPER_PITCH.md`.
+def lifecycle_stage_tex(stage: str, title: str, body: str) -> str:
+    return textwrap.dedent(f"""\
+        \\documentclass{{article}}
+        \\usepackage[margin=1in]{{geometry}}
+        \\usepackage{{booktabs}}
+        \\usepackage{{hyperref}}
 
-        Why this version:
-        - Initial public-facing story before the evidence base is stable.
+        \\title{{{title}}}
+        \\date{{}}
 
-        Still fragile:
-        - No direct evidence may exist yet.
+        \\begin{{document}}
+        \\maketitle
 
-        Next:
-        - Identify the first discovery, task, or probe that can strengthen or kill this story.
+        {body}
+
+        \\end{{document}}
+    """)
+
+
+def seed_tex(name: str, venue: str) -> str:
+    return lifecycle_stage_tex(
+        "0-seed",
+        f"0-seed: {name} ({venue})",
+        textwrap.dedent("""\
+            \\section*{Seed}
+
+            Why might this paper exist?
+
+            \\section*{Current Evidence}
+
+            List task, probe, discovery, and insight paths that make this
+            possibility plausible.
+
+            \\section*{Kill Criteria}
+
+            What evidence would make this paper not worth pursuing?
+        """),
+    )
+
+
+def pitch_tex(name: str, venue: str) -> str:
+    return lifecycle_stage_tex(
+        "1-pitch",
+        f"1-pitch: {name} ({venue})",
+        textwrap.dedent("""\
+            \\section*{One-Minute Pitch}
+
+            One sentence that a non-specialist can repeat after one minute.
+
+            \\section*{Hook}
+
+            Why should a reader care?
+
+            \\section*{Surprise}
+
+            What is non-obvious?
+
+            \\section*{Why Believe}
+
+            What evidence makes the pitch credible?
+
+            \\section*{Still Fragile}
+
+            What is the weakest point?
+        """),
+    )
+
+
+def claims_tex(name: str, venue: str) -> str:
+    return lifecycle_stage_tex(
+        "2-claims",
+        f"2-claims: {name} ({venue})",
+        textwrap.dedent("""\
+            \\section*{Claim Ledger}
+
+            \\begin{tabular}{p{0.12\\linewidth}p{0.34\\linewidth}p{0.18\\linewidth}p{0.25\\linewidth}}
+            \\toprule
+            ID & Claim & Status & Need / Evidence \\\\
+            \\midrule
+            C1 & TODO & GAP & TODO: probe/discover/task route \\\\
+            \\bottomrule
+            \\end{tabular}
+        """),
+    )
+
+
+def narrative_tex(name: str, venue: str) -> str:
+    return lifecycle_stage_tex(
+        "3-narrative",
+        f"3-narrative: {name} ({venue})",
+        "\\section*{Narrative Arc}\n\nHow do the claims become this paper's story?",
+    )
+
+
+def figures_tables_tex(name: str, venue: str) -> str:
+    return lifecycle_stage_tex(
+        "4-figures-tables",
+        f"4-figures-tables: {name} ({venue})",
+        textwrap.dedent("""\
+            \\section*{Display Map}
+
+            \\begin{tabular}{p{0.12\\linewidth}p{0.2\\linewidth}p{0.28\\linewidth}p{0.24\\linewidth}}
+            \\toprule
+            Display & Type & Claim & Source / Status \\\\
+            \\midrule
+            display01 & TODO & TODO & planned \\\\
+            \\bottomrule
+            \\end{tabular}
+        """),
+    )
+
+
+def minimap_tex(name: str, venue: str) -> str:
+    return lifecycle_stage_tex(
+        "5-minimap",
+        f"5-minimap: {name} ({venue})",
+        textwrap.dedent("""\
+            \\section*{Paragraph Minimap}
+
+            \\begin{tabular}{p{0.12\\linewidth}p{0.25\\linewidth}p{0.25\\linewidth}p{0.22\\linewidth}}
+            \\toprule
+            Section & Paragraph job & Evidence anchor & Display \\\\
+            \\midrule
+            Intro P1 & TODO & TODO & none \\\\
+            \\bottomrule
+            \\end{tabular}
+        """),
+    )
+
+
+def round_latest() -> str:
+    return textwrap.dedent("""\
+        # Latest Round
+
+        active_round: none
+
+        Start a dated round as `1-rounds/vYYMMDD/` when discussion, review,
+        decisions, or applied edits need to be tracked.
+    """)
+
+
+def display_readme(name: str, venue: str) -> str:
+    return textwrap.dedent(f"""\
+        # Displays
+
+        Paper: {name} ({venue})
+
+        | ID | Type | Claim | Evidence Source | Section | Status | Canonical PDF |
+        |---|---|---|---|---|---|---|
+        | display01 | TODO | TODO | TODO | TODO | planned | TODO |
+    """)
+
+
+def display_unit_readme(name: str, venue: str) -> str:
+    return textwrap.dedent(f"""\
+        # display01-placeholder
+
+        Paper: {name} ({venue})
+
+        ## Purpose
+        TODO
+
+        ## Claim
+        TODO
+
+        ## Evidence Source
+        TODO
+
+        ## Exports
+        - `preview.pdf`: TODO
+
+        ## Status
+        planned
     """)
 
 
@@ -472,7 +627,7 @@ def display_index(name: str, venue: str) -> str:
 
         | ID | Type | Role | Claim | Evidence Source | Section | Status |
         |----|------|------|-------|-----------------|---------|--------|
-        | Fig 1 | hero figure | one-minute story | core contribution | `0-pitch/PAPER_PITCH.md`, `NARRATIVE_REPORT.md` | Introduction | planned |
+        | Fig 1 | hero figure | one-minute story | core contribution | `0-lifecycle/1-pitch/1-pitch.tex` | Introduction | planned |
         | Table 1 | result table | benchmark comparison | [claim] | [task/probe/result path] | Results | planned |
 
         ## Status Vocabulary
@@ -489,22 +644,22 @@ def display_index(name: str, venue: str) -> str:
         Each major display may have its own folder:
 
         ```text
-        0-display/Figures/fig01-hero/
-          DISPLAY.md
-          figure.pdf
+        0-displays/display01-hero/
+          README.md
+          assets/figure.pdf
           float.tex
           preview.tex
           preview.pdf
-          sources/
+          source/
           versions/
 
-        0-display/Tables/tab01-main-results/
-          DISPLAY.md
-          table-body.tex
+        0-displays/display02-main-results/
+          README.md
+          assets/table-body.tex
           float.tex
           preview.tex
           preview.pdf
-          data/
+          source/
           versions/
         ```
 
@@ -560,11 +715,18 @@ def main() -> None:
     for d in DEFAULT_DIRS:
         track_dir(d)
 
-    # 1a. One-minute paper pitch
-    track_file("0-pitch/PAPER_PITCH.md", paper_pitch(args.name, args.venue))
-    track_file("0-pitch/PITCH_LOG.md", pitch_log(args.name, args.venue))
-    track_file("0-pitch/archive/.gitkeep", "")
-    track_file("0-display/DISPLAY_INDEX.md", display_index(args.name, args.venue))
+    # 1a. Paper status, lifecycle, rounds, and display index
+    track_file("STATUS.md", status_md(args.name, args.venue))
+    track_file("0-lifecycle/README.md", lifecycle_readme(args.name, args.venue))
+    track_file("0-lifecycle/0-seed/0-seed.tex", seed_tex(args.name, args.venue))
+    track_file("0-lifecycle/1-pitch/1-pitch.tex", pitch_tex(args.name, args.venue))
+    track_file("0-lifecycle/2-claims/2-claims.tex", claims_tex(args.name, args.venue))
+    track_file("0-lifecycle/3-narrative/3-narrative.tex", narrative_tex(args.name, args.venue))
+    track_file("0-lifecycle/4-figures-tables/4-figures-tables.tex", figures_tables_tex(args.name, args.venue))
+    track_file("0-lifecycle/5-minimap/5-minimap.tex", minimap_tex(args.name, args.venue))
+    track_file("1-rounds/latest.md", round_latest())
+    track_file("0-displays/README.md", display_readme(args.name, args.venue))
+    track_file("0-displays/display01-placeholder/README.md", display_unit_readme(args.name, args.venue))
 
     # 2. Section stubs
     for filename, stub in sections:

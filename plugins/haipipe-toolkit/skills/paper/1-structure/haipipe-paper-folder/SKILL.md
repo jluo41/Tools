@@ -6,7 +6,7 @@ metadata:
   last_updated: "2026-06-08"
   summary: "Scaffold a paper folder in prospectus mode or manuscript mode. Prospectus mode creates paper-discovery constraints; manuscript mode creates the proven 0-/1-prefix LaTeX layout."
   changelog:
-    - "2.0.0 (2026-06-08): complete rewrite — layout now matches real Paper-MapPhyTrait-npjDM2025 and Paper-Personality2Opioid-MISQ2026 folders (0-sections, 0-display, 1-feedback, compile scripts, .gitignore). Dropped generic input/notes/figures/output skeleton. Added venue templates and section stubs."
+    - "2.0.0 (2026-06-08): complete rewrite — layout now matches real Paper-MapPhyTrait-npjDM2025 and Paper-Personality2Opioid-MISQ2026 folders (0-sections, 0-displays, 1-rounds, compile scripts, .gitignore). Dropped generic input/notes/figures/output skeleton. Added venue templates and section stubs."
     - "1.1.0 (2026-06-05): renamed from paper-bootstrap to haipipe-paper-structure-bootstrap."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
@@ -36,8 +36,8 @@ convention** proven across two published/in-progress manuscripts:
 
 | Prefix | Purpose | Examples |
 |--------|---------|---------|
-| `0-` | Source of truth — what IS the paper and how it is told | `0-*.tex`, `0-*.bib`, `0-pitch/`, `0-sections/`, `0-display/` |
-| `1-` | Process — how the paper is BUILT and REVISED | `1-compile.*`, `1-config.yaml`, `1-feedback/` |
+| `0-` | Source of truth — what IS the paper and how it is told | `0-*.tex`, `0-*.bib`, `0-lifecycle/`, `0-sections/`, `0-displays/` |
+| `1-` | Process — how the paper is BUILT and REVISED | `1-compile.*`, `1-config.yaml`, `1-rounds/` |
 
 Reference implementations:
 - `examples/ProjA-PhyTraitLandScape/paper/Paper-MapPhyTrait-npjDM2025/` (npj Digital Medicine, published)
@@ -47,7 +47,7 @@ Illustrations:
 - `images/stage0-topic-appears-image2.png` — Stage 0 topic classification into
   project-only, paper prospectus, or paper seed.
 - `images/stage1-paper-prospectus-folder-image2.png` — Stage 1 prospectus
-  folder and narrative handoff before project evidence work.
+  folder and evidence-needs handoff before project evidence work.
 
 Use the helper script for quick scaffolding:
 
@@ -67,7 +67,7 @@ Prospectus mode can be created manually or by a future helper:
 - Creating a new paper directory under `examples/<Project>/paper/`
 - Starting an early paper-prospectus repo/submodule before evidence is mature
 - An existing paper has scattered drafts with no clear source of truth
-- Starting a revision round and need `1-feedback/v<MMDD>/` structure
+- Starting a revision round and need `1-rounds/v<MMDD>/` structure
 
 Do NOT use for:
 - Late-stage section editing within an already-stable structure
@@ -86,19 +86,19 @@ Paper-<Name>/
 │    stage00_topic-appears/
 │      current.md         # paper-shaped discovery constraint
 │      runs/              # dated snapshots
-│      feedback/          # comments and review notes for this stage
+│      rounds/            # comments and review notes for this stage
 │      assets/            # diagrams/images/supporting files for this stage
 │
 │    stage01_create-paper-folder/
-│      current.md         # folder creation record and narrative handoff
+│      current.md         # folder creation record and open evidence needs
 │      runs/
-│      feedback/
+│      rounds/
 │      assets/
 ```
 
 Each `lifecycle/stageXX_slug/` folder is a durable stage branch. Keep the
 stage's active artifact in `current.md`. Use `runs/YYYY-MM-DD.md` only for
-dated snapshots worth preserving; use `feedback/` for comments, objections, and
+dated snapshots worth preserving; use `rounds/` for comments, objections, and
 review notes; use `assets/` for diagrams and supporting files.
 
 All `current.md` files should include frontmatter:
@@ -136,9 +136,8 @@ State clearly that this is not yet a paper seed if probes are missing.
 ## Discovery Constraints
 What project discovery should prioritize because of this paper prospectus.
 
-## Narrative Handoff
-What the project narrative should do next, including open questions and possible
-discover/probe/task/insight routes.
+## Open Evidence Needs
+What the paper needs next, including discover/probe/task/insight routes.
 
 ## Promotion Gate
 Concrete conditions for promoting this prospectus to an active paper seed.
@@ -149,25 +148,25 @@ Concrete conditions for promoting this prospectus to an active paper seed.
 Required sections:
 
 ```markdown
-# Narrative Handoff
+# Paper Folder Handoff
 
 ## Source Prospectus
 Path to `../stage00_topic-appears/current.md`.
 
-## Narrative Job
-What the narrative layer should clarify or synthesize.
+## Delivery Job
+What this paper folder should clarify or synthesize.
 
 ## Initial Story Hypothesis
 The current story possibility, phrased as tentative.
 
-## Open Narrative Questions
-Questions narrative must resolve before paper seed promotion.
+## Open Delivery Questions
+Questions the paper lifecycle must resolve before seed promotion.
 
-## Candidate Work The Narrative May Trigger
-Discover, probe, task, and insight work that narrative may call for.
+## Candidate Evidence Work
+Discover, probe, task, and insight work the paper may call for.
 
 ## Promotion Check
-The conditions under which narrative can recommend promotion to paper seed.
+The conditions under which the paper can be promoted to seed.
 ```
 
 Prospectus mode definition of done:
@@ -175,11 +174,11 @@ Prospectus mode definition of done:
 - `README.md` says this is `maturity: prospectus`
 - `lifecycle/README.md` explains the stage-branch convention
 - `lifecycle/stage00_topic-appears/current.md` states the question, constraints,
-  current evidence status, narrative handoff, inquiry tracks, and promotion gate
-- `lifecycle/stage01_create-paper-folder/current.md` gives narrative a concrete
-  first job and at least one open question that can route to
+  current evidence status, open needs, inquiry tracks, and promotion gate
+- `lifecycle/stage01_create-paper-folder/current.md` gives the paper lifecycle a
+  concrete first job and at least one open question that can route to
   discover/probe/task/insight
-- No `0-sections/`, no `0-display/`, no LaTeX wrappers, no compile scripts
+- No `0-sections/`, no `0-displays/`, no LaTeX wrappers, no compile scripts
 
 ## Target Layout
 
@@ -197,13 +196,16 @@ Paper-<Name>-<Venue><Year>/
 │  1-compile.ps1                     # PowerShell port (toolchain check, same logic)
 │  1-config.yaml                     # optional: figure/table paths, eval config
 │
-│  .gitignore                        # LaTeX artifacts; preserves 0-display/**/*.pdf
+│  .gitignore                        # LaTeX artifacts; preserves 0-displays/**/*.pdf
 │
-│  # ── 0-pitch/  (one-minute story) ───────────────────────
-│  0-pitch/
-│    PAPER_PITCH.md                  # current one-minute public-facing story
-│    PITCH_LOG.md                    # short provenance log for story shifts
-│    archive/                        # semantic snapshots of older pitches
+│  # ── 0-lifecycle/  (tex-first paper maturation) ─────────
+│  0-lifecycle/
+│    0-seed/0-seed.tex
+│    1-pitch/1-pitch.tex
+│    2-claims/2-claims.tex
+│    3-narrative/3-narrative.tex
+│    4-figures-tables/4-figures-tables.tex
+│    5-minimap/5-minimap.tex
 │
 │  # ── 0-sections/  (modular .tex) ───────────────────────
 │  0-sections/
@@ -222,18 +224,19 @@ Paper-<Name>-<Venue><Year>/
 │    05_back-matter.tex              # data/code avail, acknowledgments, ethics
 │    A_<si-section>.tex              # supplementary sections (A_, B_, C_, ...)
 │
-│  # ── 0-display/  (figures & tables) ────────────────────
-│  0-display/
-│    DISPLAY_INDEX.md                # figure/table story-evidence contract
-│    Figures/                        # figNN folders: DISPLAY.md, figure.pdf, float.tex, preview.pdf
-│    Tables/                         # tabNN folders: DISPLAY.md, table-body.tex, float.tex, preview.pdf
-│    _old/                           # superseded versions (tracked in git)
+│  # ── 0-displays/  (figures & tables) ────────────────────
+│  0-displays/
+│    README.md                       # paper-level display index
+│    display01-<slug>/               # README.md, float.tex, preview.tex, preview.pdf
+│      assets/                       # exported figure/table files
+│      source/                       # scripts, source data, slides, drawings
+│      versions/                     # superseded versions
 │
 │  # ── 0-extra/  (optional) ──────────────────────────────
 │  0-extra/                          # reference papers, slides, ChatGPT logs
 │
-│  # ── 1-feedback/  (versioned revision rounds) ──────────
-│  1-feedback/
+│  # ── 1-rounds/  (versioned revision rounds) ──────────
+│  1-rounds/
 │    v<MMDD>/                        # one folder per revision round
 │      Raw-Comment.md                # raw reviewer/editor feedback
 │      0-sections-v<MMDD>backup/     # snapshot of 0-sections/ before revision
@@ -274,18 +277,18 @@ Rules (from Paper-MapPhyTrait):
    - Main `.tex` with venue-appropriate preamble + modular `\input{}` skeleton
    - `.bib` (empty with header comment)
    - SI `.tex` if venue requires separate PDF
-4. **Scaffold 0-pitch/**: one-minute `PAPER_PITCH.md`, short `PITCH_LOG.md`,
-   and `archive/` for semantic pitch snapshots
+4. **Scaffold 0-lifecycle/**: seed, pitch, claims, narrative, figures/tables,
+   and minimap stage TeX files
 5. **Scaffold 0-sections/**: section stubs per venue format + `README.md`
-6. **Scaffold 0-display/**: `DISPLAY_INDEX.md`, `Figures/`, `Tables/`, `_old/`
+6. **Scaffold 0-displays/**: paper display index plus display-unit folders
 7. **Scaffold 1-prefix process files**:
    - `1-compile.sh` and `1-compile.ps1` (auto-detect `0-*.tex`, 4-pass pdflatex)
    - `.gitignore` (LaTeX artifacts + selective PDF preservation)
    - `1-config.yaml` (optional, with figure/table path defaults)
-8. **Create 1-feedback/** as empty dir (revision rounds created on demand)
+8. **Create 1-rounds/latest.md** as the active-round pointer
 9. **Report** what was created and the next step (usually: fill
-   `lifecycle/stage02_seed-pitch/current.md`, mirror to `0-pitch/` if
-   manuscript mode is active, write the abstract, or fill author info)
+   `0-lifecycle/0-seed/0-seed.tex` and `0-lifecycle/1-pitch/1-pitch.tex`,
+   write the abstract, or fill author info)
 
 ## Compile Script Contract
 
@@ -308,14 +311,14 @@ Both `1-compile.sh` and `1-compile.ps1` must:
 *.log
 *.out
 *.pdf
-# but keep figure / table PDFs under 0-display/
-!0-display/**/*.pdf
+# but keep figure / table PDFs under 0-displays/
+!0-displays/**/*.pdf
 # and keep submission-bundle PDFs for any revision round
-!1-feedback/*/submission/**/*.pdf
+!1-rounds/*/submission/**/*.pdf
 # and keep the rebuttal-report PDF for any revision round
-!1-feedback/*/rebuttal-report/**/*.pdf
+!1-rounds/*/rebuttal-report/**/*.pdf
 # and keep the diff PDFs for any revision round
-!1-feedback/*/diff/**/*.pdf
+!1-rounds/*/diff/**/*.pdf
 *.synctex.gz
 *.fdb_latexmk
 *.fls
@@ -332,11 +335,11 @@ Both `1-compile.sh` and `1-compile.ps1` must:
 _old/
 ```
 
-## Feedback Round Workflow
+## Round Workflow
 
 When the user starts a revision round (e.g. received reviews):
 
-1. Create `1-feedback/v<MMDD>/`
+1. Create `1-rounds/v<MMDD>/`
 2. Copy raw reviewer comments into `Raw-Comment.md`
 3. Snapshot current `0-sections/` into `0-sections-v<MMDD>backup/`
 4. Create review workflow subdirs: `1-review/A-review-content/` through `E-cover-letter/`
@@ -355,13 +358,13 @@ Do NOT write memory for transient to-dos or single-round wording preferences.
 ## Common Mistakes
 
 - Using `input/notes/figures/output/` layout (that's the old generic skeleton)
-- Missing the `.gitignore` or not preserving `0-display/**/*.pdf`
-- Creating `1-feedback/` subdirs before a review round exists
+- Missing the `.gitignore` or not preserving `0-displays/**/*.pdf`
+- Creating `1-rounds/` subdirs before a review round exists
 - Putting section headers in section files (the main `.tex` owns `\section{}`)
-- Using flat figure directory instead of `Figures/` + `Tables/` under `0-display/`
+- Using `Figures/` + `Tables/` buckets instead of display-unit folders under `0-displays/`
 - Forgetting the PowerShell compile script (Windows users need it)
-- Skipping `lifecycle/stage02_seed-pitch/current.md` and letting the
-  abstract/intro invent different public-facing stories
+- Skipping `0-lifecycle/1-pitch/1-pitch.tex` and letting the abstract/intro
+  invent different public-facing stories
 
 ## Output Standard
 
@@ -371,5 +374,6 @@ When bootstrapping is complete, report:
 - Main `.tex` file name
 - Number of section stubs created
 - Compile scripts present
-- Next step (usually: fill `lifecycle/stage02_seed-pitch/current.md`, write
+- Next step (usually: fill `0-lifecycle/0-seed/0-seed.tex` and
+  `0-lifecycle/1-pitch/1-pitch.tex`, write
   abstract, fill author block, or add style file)

@@ -26,11 +26,11 @@ narrative, outlines, figures, or diagrams itself.
 ```
 /haipipe-paper-structure                                -> dashboard (list specialists + pipeline)
 /haipipe-paper-structure folder <args>                  -> scaffold paper directory
-/haipipe-paper-structure pitch <args>                   -> 0-pitch/PAPER_PITCH.md + provenance
+/haipipe-paper-structure pitch <args>                   -> 0-lifecycle/1-pitch/1-pitch.tex
 /haipipe-paper-structure narrative <args>               -> NARRATIVE_REPORT.md (design contract)
 /haipipe-paper-structure architecture <args>            -> vNN-architecture-minimap.md
 /haipipe-paper-structure plan <args>                    -> PAPER_PLAN.md (structured outline)
-/haipipe-paper-structure display <args>                 -> DISPLAY_INDEX.md + ready-to-input display blocks
+/haipipe-paper-structure display <args>                 -> 0-displays/README.md + ready-to-input display blocks
 /haipipe-paper-structure diagram <args>                 -> ASCII structural audit (3 zoom levels)
 /haipipe-paper-structure incubator <sub> <args>         -> incubator docs (display/arch/structure)
 /haipipe-paper-structure figure-plan <args>             -> figure inventory + panel roles
@@ -50,10 +50,10 @@ Specialists
 
 ```
 haipipe-paper-folder                  SCAFFOLD:  create Paper-<Name>-<Venue><Year>/ with
-                                                 0-sections, 0-display, 1-feedback, compile
+                                                 0-sections, 0-displays, 1-rounds, compile
                                                  scripts, .gitignore, section stubs (IRDM/IMRD/IS)
 
-haipipe-paper-structure-pitch         PITCH:     maintain 0-pitch/PAPER_PITCH.md — the
+haipipe-paper-structure-pitch         PITCH:     maintain 0-lifecycle/1-pitch/1-pitch.tex — the
                                                  one-minute public-facing story for this
                                                  concrete paper, plus PITCH_LOG.md and
                                                  archive/ snapshots for pitch provenance.
@@ -78,8 +78,8 @@ haipipe-paper-structure-plan          OUTLINE:   PAPER_PLAN.md — section-by-se
                                                  with venue-specific page budgets, from
                                                  NARRATIVE_REPORT.md or AUTO_REVIEW.md
 
-haipipe-paper-structure-display       DISPLAY:   0-display/DISPLAY_INDEX.md plus per-item
-                                                 DISPLAY.md, float.tex, and preview.pdf for
+haipipe-paper-structure-display       DISPLAY:   0-displays/README.md plus per-unit
+                                                 README.md, float.tex, and preview.pdf for
                                                  figures/tables. Keeps display items tied to
                                                  claim, evidence source, section, and caption.
 
@@ -187,7 +187,7 @@ architecture, blueprint, minimap, 5-act arc,
 plan, outline, PAPER_PLAN, section plan,
   page budget, 写大纲, paper outline                   -> plan
 
-display, display layer, DISPLAY_INDEX, 0-display,
+display, display layer, 0-displays/README.md, 0-displays,
   ready to input, preview pdf, float.tex, caption,
   figure table contract, display contract              -> display
 
@@ -243,13 +243,13 @@ When invoked with no arguments, emit a compact specialist chooser:
 
   Foundation:
     folder         Scaffold Paper-<Name>-<Venue><Year>/ directory
-    pitch          Maintain 0-pitch/PAPER_PITCH.md (one-minute story)
+    pitch          Maintain 0-lifecycle/1-pitch/1-pitch.tex (one-minute story)
     narrative      Generate NARRATIVE_REPORT.md (design contract)
 
   Architecture & Planning:
     architecture   Strategic blueprint + section minimap
     plan           Structured outline with page budgets
-    display        DISPLAY_INDEX + ready-to-input display blocks
+    display        0-displays/README.md + ready-to-input display blocks
     diagram        ASCII structural audit (sections / paragraphs / sentences)
     incubator      Incubator LaTeX working docs (display / arch / structure)
 
