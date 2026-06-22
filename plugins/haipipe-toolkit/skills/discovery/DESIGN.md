@@ -1,8 +1,8 @@
-discover — External Evidence Layer (DESIGN)
+discovery — External Evidence Layer (DESIGN)
 =============================================
 
-Status: v1.5.0 (2026-06-20) — single discover entry; durable project
-        evidence defaults to one markdown file per discovery.
+Status: v1.7.0 (2026-06-21) - discovery = one research topic per FOLDER (mirrors
+        task-folder); IO files sources/notes/verdict; narrative parent retired.
 Owner:  jluo41
 Scope:  search/read/review/idea discovery work and its durable artifact
         contract inside project folders.
@@ -11,24 +11,24 @@ Scope:  search/read/review/idea discovery work and its durable artifact
 Why this layer exists
 =====================
 
-`discover` answers what the outside world already knows. It is not a
+`discovery` answers what the outside world already knows. It is not a
 task execution stage and it does not judge probe claims by itself.
 
 For a concrete end-to-end project shape, see
 `../../blueprints/end-to-end-sandwich-run.md`.
 
 ```
-discover    outside-world evidence   sources, notes, prior art, novelty
-task        inside-world execution   code, runs, metrics, audits
-probe       claim judgment           combines discovery + task evidence
-narrative   story judgment           decides which probe verdicts fill gaps
+discovery   outside-world evidence   sources, notes, prior art, novelty, verdicts
+task        inside-world execution   code, runs, metrics, reports
+probe       claim hub                opens a claim, dispatches discovery + task, closes a verdict
+paper/app   delivery (story)         owns the message, lists evidence needs by reference
 ```
 
 
 Two Parts
 =========
 
-`discover` has two separate responsibilities:
+`discovery` has two separate responsibilities:
 
 ```
 1. Skill interface layer
@@ -36,8 +36,8 @@ Two Parts
    verbs and routes to search/read/review/idea specialists.
 
 2. Durable artifact layer
-   discoveries/<group>/<NN_slug>.md stores external evidence when it belongs
-   to a project narrative/probe stack.
+   discoveries/<group>/<NN>_<topic>/ stores external evidence when it belongs
+   to a project probe or delivery (paper/application) stack.
 ```
 
 Do not create a new discovery skill family for project artifacts. The existing
@@ -48,30 +48,31 @@ package they can write.
 Hierarchy
 =========
 
-Discover mirrors task's clean grouping, but does not copy task's heavy folder
-surface:
+Discovery mirrors task: a discovery is one research topic stored as its own
+folder, the way a task is one runnable unit stored as its own folder.
 
 ```
-Task:     task-group      -> task-folder      -> run
-Discover: discovery-group -> discovery.md     -> source row
+Task:      tasks/{G}{NN}_group/   -> {NN}_taskname/   -> one runnable unit
+Discovery: discoveries/<GROUP>/   -> <NN>_<topic>/    -> one research topic
 ```
 
 Definitions:
 
 ```
-discovery-group   A directory grouping related outside-evidence questions.
-discovery.md      One durable external-world question, stored as one file.
-source row        One paper/webpage/report/dataset citation in the Sources
-                  section.
+discovery-group    A directory grouping related research topics.
+discovery-folder   One research topic = one folder. Its IO files (discovery.yaml
+                   + sources.md / notes.md / verdict.md + status.yaml / site.md)
+                   mirror a task-folder's configs / results / runtime / notebooks.
+source row         One paper/webpage/report/dataset citation inside sources.md.
 ```
 
-Folderized heavy mode is opt-in only, for cases with PDFs, HTML snapshots,
-annotations, or many per-source extracted notes.
+Heavy source artifacts (PDFs, HTML snapshots, per-source annotations) go in an
+optional sources/ subfolder inside the discovery-folder.
 
 Recommended group hints:
 
 ```
-L  landscape / narrative-open discovery
+L  landscape / delivery-open discovery
 P  probe-backed prior art or counterevidence
 B  benchmark landscape
 C  counterevidence
@@ -79,17 +80,19 @@ S  source reads
 ```
 
 Group letters are organizational hints only. The authoritative type is
-`role:` in the discovery markdown frontmatter.
+`role:` in discovery.yaml.
 
 
 Skill Structure
 ===============
 
 ```
-discover/
+discovery/
+├── CHANGELOG.md               layer-scoped change history
 ├── haipipe-discover/          router + durable artifact contract
 │   ├── SKILL.md
 │   └── ref/
+│       ├── lifecycle-map.md          canonical verb lifecycle table
 │       └── discovery-yaml-schema.md
 ├── play/                      plain-language explanation by example
 │   └── README.md
@@ -124,51 +127,39 @@ examples/<PROJECT>/
 │   └── project.site.md
 ├── discoveries/
 │   ├── L01_initial-landscape/
-│   │   ├── 01_landscape-review.md
-│   │   └── 02_novelty-check.md
+│   │   ├── 01_landscape-review/
+│   │   └── 02_novelty-check/
 │   └── P01_rare-phenotype-lift/
-│       ├── 01_prior-art.md
-│       └── 02_benchmark-landscape.md
+│       ├── 01_prior-art/
+│       └── 02_benchmark-landscape/
 ├── probes/
 ├── tasks/
-└── narratives/
+├── insights/
+├── paper/
+└── applications/
 ```
 
-The single orchestration log remains `_haipipe/project.log.jsonl`. Discovery
-folders do not keep local event logs.
-
-Folderized legacy packages such as `discoveries/D0619_noisy-labels-prior-art/`
-remain readable, but new durable work should default to the group/markdown
-hierarchy.
+The single orchestration log remains `_haipipe/project.log.jsonl`. A
+discovery-folder keeps its own `status.yaml` / `site.md` snapshot (like a
+task-folder), not an event log.
 
 
 Discovery Lifecycle
 ===================
 
-Every discovery markdown answers one external-world question:
+A discovery-folder's IO files are filled by the lifecycle, the way a
+task-folder's results are filled by its runs:
 
 ```
-Open     create <NN_slug>.md with frontmatter and empty sections
-Search   fill ## Sources with candidate sources + verification state
-Read     fill ## Notes with extracted source facts
-Review   synthesize notes into claim-relevant findings
-Verdict  finalize ## Verdict (ok/inconclusive/blocked)
-Post     update parent refs/status and _haipipe/project.log.jsonl
+open    ->  search    ->  read     ->  review (or idea)  ->  post
+discovery.yaml  sources.md   notes.md     verdict.md          parent link
 ```
 
-File ownership:
-
-```
-Open      <NN_slug>.md frontmatter + headings
-Search    ## Sources
-Read      ## Notes
-Review    ## Notes / ## Verdict draft
-Verdict   frontmatter status/verdict + ## Verdict
-Post      parent refs, project.status.yaml, project.log.jsonl
-```
-
-`post` does not judge the research claim. It only makes the discovery verdict
-available to its parent narrative or probe.
+The canonical per-stage contract (skill, files_in, files_out) lives in ONE
+place: `haipipe-discover/ref/lifecycle-map.md`. Do not restate it here. `open`
+scaffolds the folder, the work stages fill its IO files, and `post` makes the
+verdict available to the parent delivery lifecycle (paper/application) or probe
+without judging the claim.
 
 
 How It Combines With Probe
@@ -186,31 +177,31 @@ Probe-open
       - baseline_eval
       - treatment_eval
 
-discover
-  writes discoveries/<group>/<NN_slug>.md
+discovery
+  writes discoveries/<group>/<NN>_<topic>/ (sources.md, notes.md, verdict.md)
 
 task
   writes tasks/<id>/
 
 Probe-post
-  reads the Verdict section in discoveries/<group>/<NN_slug>.md
+  reads discoveries/<group>/<NN>_<topic>/verdict.md
   reads tasks/<id>/results/*/metrics.json
   writes probe result + claim verdict
 ```
 
 `probe` references discoveries; it does not own their search/read/review
-process. `discover` writes external evidence; it does not close probe claims.
+process. `discovery` writes external evidence; it does not close probe claims.
 
-Narrative may also dispatch discoveries during Narrative-open:
+A delivery lifecycle may also dispatch discoveries during Delivery-open:
 
 ```
-Narrative-open
+Delivery-open (paper / application)
   dispatches L* discovery-groups for landscape and novelty
-  writes story.md / claims.md from the discovery verdicts
+  writes the deliverable's story/claims from the discovery verdicts
 
 Probe-open
   dispatches P*/B*/C*/S* discovery-groups for claim-level evidence
-  waits for the discovery Verdict section before Probe-post if required
+  waits for the discovery's verdict.md before Probe-post if required
 ```
 
 
@@ -237,17 +228,17 @@ Boundary Rules
 - `discoveries/` does not store code, notebooks, runs, or metrics.
 - `tasks/` stores execution artifacts and metrics.
 - `probes/` stores claim contracts and verdict sidecars.
-- `narratives/` stores story contracts and claim ledgers.
+- `paper/` and `applications/` own the delivery story and list evidence needs by reference.
 - `_haipipe/project.log.jsonl` is the only orchestration event log.
-- `## Sources` in the discovery markdown is the default home for source records.
-  Source folders are optional and only for heavy artifacts.
+- `sources.md` in the discovery-folder is the default home for source records.
+  A `sources/` subfolder is optional and only for heavy artifacts.
 
 
 Decision Log
 ============
 
 2026-06-19  Adopted: discoveries/ as durable external-evidence packages.
-            Existing discover specialists remain the capability layer.
+            Existing discovery specialists remain the capability layer.
             probe can reference discoveries and tasks as sibling evidence
             work before Probe-post judges the claim.
 2026-06-20  Adopted: discovery-group/discovery-folder hierarchy. `source` is
@@ -256,3 +247,20 @@ Decision Log
 2026-06-20  Revised: default durable artifact is now one markdown file:
             `discoveries/<group>/<NN_slug>.md`. Folderized packages are legacy
             compatible or opt-in heavy mode only.
+2026-06-21  Retired: the narrative layer. A discovery now has two parents only:
+            a delivery lifecycle (paper/application) for L* landscape/novelty,
+            and a probe for claim-level evidence. Story-side dispatch moved from
+            Narrative-open to Delivery-open.
+2026-06-21  Added: ref/lifecycle-map.md as the canonical verb lifecycle table
+            (Status/Open/Search/Read/Review/Verdict/Post). SKILL.md and this
+            file now point to it instead of restating the per-verb columns.
+2026-06-21  Renamed: folder discover/ -> discovery/ so the layer concept reads
+            as a noun, matching discoveries/ and the task/probe/insight siblings.
+            Skill name: stays haipipe-discover.
+2026-06-21  Reverted the v1.5 single-file default. A discovery is one research
+            topic = its own FOLDER (discovery.yaml + sources.md/notes.md/verdict.md
+            + status.yaml/site.md), mirroring a task-folder; sources/notes/verdict
+            are its results. The dry-run fixture and blueprint already used folders;
+            the single-file default never landed. lifecycle-map.md recast as
+            open -> search -> read -> review/idea -> post, each stage filling one
+            IO file.

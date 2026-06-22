@@ -4,6 +4,42 @@ haipipe-toolkit — Changelog
 Plugin-level rollup. Per-layer detail lives in each layer's own `skills/<LAYER>/CHANGELOG.md`. Newest first.
 
 
+## [Unreleased] — 2026-06-21
+
+Structure: moved numbered task-domain families under `skills/task/` while
+keeping all skill names and slash commands unchanged.
+
+- Moved `skills/{1_data,2_nn,3_end,4_individual}/` to
+  `skills/task/{1_data,2_nn,3_end,4_individual}/`.
+- Kept `/haipipe-data`, `/haipipe-nn`, `/haipipe-end`, and
+  `/haipipe-individual` stable; skill identity still comes from each
+  `SKILL.md` frontmatter `name:`.
+- Updated plugin docs, task design notes, diagrams, and stale individual-skill
+  path references.
+
+Structure: discovery layer renamed and the narrative layer retired in discovery docs.
+
+- Renamed `skills/discover/` to `skills/discovery/` so the layer concept reads
+  as a noun, matching the `discoveries/` artifact dir and the task/probe/insight
+  siblings. Skill `name:` stays `haipipe-discover`.
+- Retired the narrative parent in the discovery docs: a discovery now has two
+  parents only, a delivery lifecycle (`paper`/`application`) for L* landscape /
+  novelty work and a `probe` for claim-level evidence. Story-side dispatch moved
+  from Narrative-open to Delivery-open.
+- Recast the discovery model: a discovery is one research topic = its own FOLDER
+  (`discovery.yaml` + `sources.md`/`notes.md`/`verdict.md` + `status.yaml`/
+  `site.md`), mirroring a task-folder; reverted v1.5's single-file default, which
+  the dry-run fixture and blueprint never followed.
+- Added `skills/discovery/haipipe-discover/ref/lifecycle-map.md`, the canonical
+  lifecycle table (`open -> search -> read -> review/idea -> post`, each stage
+  filling one IO file), isomorphic to the probe lifecycle map; SKILL.md and
+  DESIGN.md point to it instead of restating it. Added
+  `skills/discovery/CHANGELOG.md` for layer parity. → see [skills/discovery/CHANGELOG.md](skills/discovery/CHANGELOG.md)
+- Follow-up still open: `skills/STRUCTURE.md` and
+  `blueprints/end-to-end-sandwich-run.md` still reference the old `discover`
+  path and the narrative layer.
+
+
 ## [Unreleased] — 2026-06-20
 
 Structure: removed letter prefixes from research-layer skill folders while

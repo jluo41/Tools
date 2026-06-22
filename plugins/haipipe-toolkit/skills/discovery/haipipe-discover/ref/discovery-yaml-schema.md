@@ -1,20 +1,13 @@
-Folderized discovery.yaml — Legacy / Heavy Schema
-=================================================
+discovery.yaml — Discovery Folder Schema
+========================================
 
 What this file is
 -----------------
 
-This schema is for legacy or opt-in heavy folderized discovery packages only.
-The default durable Discovery artifact is now a single markdown file:
-
-```
-examples/<PROJECT>/discoveries/<GROUP_slug>/<NN_slug>.md
-```
-
-Use folderized mode only when the discovery must keep PDFs, HTML snapshots,
-many per-source notes, or other source artifacts. In that case,
-`discovery.yaml` records what question was asked of the outside world and where
-the durable evidence files live.
+`discovery.yaml` is the spec at the root of every discovery-folder. A discovery
+is one research topic = one folder, mirroring a task-folder; `discovery.yaml`
+records what question was asked of the outside world, who consumes it, and which
+IO files the folder holds (see Sibling files below).
 
 Location:
 
@@ -22,9 +15,9 @@ Location:
 examples/<PROJECT>/discoveries/<GROUP_slug>/<NN_slug>/discovery.yaml
 ```
 
-Legacy flat locations such as `discoveries/D0619_slug/discovery.yaml` are
-readable for compatibility, but new durable discovery work should use a
-discovery-group plus discovery-folder.
+Legacy flat single-file discoveries (`discoveries/<GROUP>/<NN_slug>.md`) and flat
+`discoveries/D0619_slug/` packages remain readable for compatibility, but new
+durable work uses the discovery-folder.
 
 Sibling files:
 
@@ -34,7 +27,7 @@ status.yaml      current snapshot
 site.md          human-readable summary
 sources.md       citations, URLs, identifiers, verification flags
 notes.md         extracted findings and synthesis
-verdict.md       concise answer for the parent probe/narrative
+verdict.md       concise answer for the parent probe or delivery lifecycle
 ```
 
 No local event log belongs here. Orchestration events go to
@@ -52,7 +45,7 @@ Top-Level Fields
 | slug           | string  | yes      | discovery-folder slug |
 | title          | string  | yes      | human-readable title |
 | status         | enum    | yes      | planned/searching/reading/reviewed/ok/inconclusive/blocked |
-| parent         | mapping | opt      | narrative/probe/manual consumer |
+| parent         | mapping | opt      | delivery/probe/manual consumer |
 | role           | enum    | yes      | how the evidence is used |
 | question       | string  | yes      | external-world question |
 | sources        | mapping | opt      | search scope and selected source refs |
@@ -128,7 +121,7 @@ group:
 Recommended group id hints:
 
 ```
-L  landscape / narrative-open discovery
+L  landscape / delivery-open discovery
 P  probe-backed prior art or counterevidence
 B  benchmark landscape
 C  counterevidence
