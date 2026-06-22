@@ -23,7 +23,7 @@
 #   ├── config.sh                          (optional) per-diff overrides
 #   ├── old/                               baseline snapshot (gitignored)
 #   ├── new/                               current snapshot (gitignored)
-#   └── 0-display → new/0-display          symlink so figures resolve
+#   └── 0-displays → new/0-displays          symlink so figures resolve
 
 set -e
 
@@ -131,7 +131,7 @@ mkdir -p "$WORK_DIR/old" "$WORK_DIR/new"
 # ─── 1. Extract baseline tree (tolerate missing files) ────────────────────
 echo "[1/6] Extracting baseline $SHA into old/ ..."
 BASELINE_PATHS=()
-for p in 0-sections 0-display "$MAIN_TEX"; do
+for p in 0-sections 0-displays "$MAIN_TEX"; do
     if (cd "$PAPER_DIR" && git cat-file -e "$SHA:$p" 2>/dev/null); then
         BASELINE_PATHS+=("$p")
     else
@@ -162,7 +162,7 @@ done
 
 # ─── 2. Copy current working tree ─────────────────────────────────────────
 echo "[2/6] Copying current working tree into new/ ..."
-(cd "$PAPER_DIR" && cp -r 0-sections 0-display "$MAIN_TEX" *.bib *.cls *.bst *.sty "$WORK_DIR/new/" 2>/dev/null || true)
+(cd "$PAPER_DIR" && cp -r 0-sections 0-displays "$MAIN_TEX" *.bib *.cls *.bst *.sty "$WORK_DIR/new/" 2>/dev/null || true)
 
 # ─── 3. Detect class & load config (with optional override) ───────────────
 echo "[3/6] Detecting paper class & loading config ..."
@@ -217,8 +217,8 @@ rm -f "$WORK_DIR/$DIFF_NAME.tex.bak"
 # ─── 5. Stage support files + figure symlink ──────────────────────────────
 echo "[5/6] Staging support files + figure symlink ..."
 (cd "$WORK_DIR" && cp new/*.bib new/*.cls new/*.bst new/*.sty . 2>/dev/null || true)
-# Replace any existing 0-display symlink/dir
-(cd "$WORK_DIR" && rm -rf 0-display 2>/dev/null; ln -sfn new/0-display 0-display)
+# Replace any existing 0-displays symlink/dir
+(cd "$WORK_DIR" && rm -rf 0-displays 2>/dev/null; ln -sfn new/0-displays 0-displays)
 
 # ─── 6. Compile ───────────────────────────────────────────────────────────
 echo "[6/6] Compiling diff PDF (4-pass with bibtex) ..."

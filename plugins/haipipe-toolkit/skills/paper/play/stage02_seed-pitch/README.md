@@ -39,7 +39,7 @@ lifecycle/stage02_seed-pitch/
   assets/
 ```
 
-In manuscript mode, the accepted pitch may also be mirrored to `0-pitch/`, but
+In manuscript mode, the accepted pitch may also be mirrored to `0-lifecycle/1-pitch/`, but
 the lifecycle branch remains the teaching and decision artifact.
 
 ## When It Moves Forward

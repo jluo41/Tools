@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-build-scaffold
-description: "Build a new paper folder in the gold-standard layout (npjDM2025 contract): driver tex, section wrappers, leaf stubs with paragraph banners, 0-display, SI driver, 1-compile.sh. Input is a paper plan or just a title + section list; output is a compileable skeleton with zero prose. Trigger: scaffold paper, paper skeleton, new paper folder, build paper structure, init paper dir, 搭论文骨架, /haipipe-paper-build-scaffold."
+description: "Build a new paper folder in the gold-standard layout (npjDM2025 contract): driver tex, section wrappers, leaf stubs with paragraph banners, 0-displays, SI driver, 1-compile.sh. Input is a paper plan or just a title + section list; output is a compileable skeleton with zero prose. Trigger: scaffold paper, paper skeleton, new paper folder, build paper structure, init paper dir, 搭论文骨架, /haipipe-paper-build-scaffold."
 argument-hint: "[plan-path-or-title] [--out <dir>] [--venue <v>] [--no-si]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, AskUserQuestion
 metadata:
@@ -59,8 +59,8 @@ Read the plan doc if given; extract title, sections, subsections, SI blocks. Any
 
 ```
 <out>/
-├── 0-sections/        0-display/Figures/        0-display/Tables/
-└── 1-feedback/
+├── 0-sections/        0-displays/Figures/        0-displays/Tables/
+└── 1-rounds/
 ```
 
 (`0-extra/`, `1-diff/`, `1-review/` are created later by the skills that need them; do not pre-create empty process dirs.)

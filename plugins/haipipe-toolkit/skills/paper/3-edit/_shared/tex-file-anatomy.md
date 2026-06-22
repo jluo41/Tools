@@ -39,13 +39,13 @@ the file do not repeat it.
 
 ```latex
 % optional top matter: a pointer to the side-car logic/diagram file for this section
-%% Logic + proposed edits: ../1-feedback/vXXXX/02-05_..._logic.txt
+%% Logic + proposed edits: ../1-rounds/vXXXX/02-05_..._logic.txt
 
 \subsection{Trait--Rating Correlation}
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\textwidth]{0-display/Figures/.../plot.pdf}
+  \includegraphics[width=\textwidth]{0-displays/Figures/.../plot.pdf}
   \caption{...}
   \label{fig:trait_satisfaction}
 \end{figure}
@@ -72,7 +72,7 @@ Rules:
    preamble to "test it alone."
 4. **Figure/table blocks** carry a stable `\label`; do not churn it.
 5. **No project-journal prose in the file** — provenance notes belong in the
-   commit message or a side-car `1-feedback/` log, not the `.tex` (one-line
+   commit message or a side-car `1-rounds/` log, not the `.tex` (one-line
    bracket hints in a banner are the only exception).
 
 ## The `\input` tree (how files connect)

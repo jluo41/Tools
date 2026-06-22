@@ -52,7 +52,7 @@ Behavior contract
 2. **Diff 0-sections/** — for each pair of matching `.tex` files,
    produce a unified diff. Track adds (only-in-new) and removes
    (only-in-old).
-3. **Diff 0-display/** — list figures/tables added, removed, or with
+3. **Diff 0-displays/** — list figures/tables added, removed, or with
    changed contents (use pHash for images, file hash for PDF).
 4. **Diff .bib** — added / removed / metadata-changed entries.
 5. **Write summary.md** — top-of-file changes table:

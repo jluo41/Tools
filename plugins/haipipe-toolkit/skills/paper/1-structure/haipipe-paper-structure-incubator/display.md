@@ -6,14 +6,14 @@
 
 ## Sources to Read
 
-- `0-display/Figure/` and `0-display/Table/` — checked-in display outputs
+- `0-displays/Figure/` and `0-displays/Table/` — checked-in display outputs
 - `evaluation/scripts/` — scripts that generate each display (for provenance)
 - `evaluation/results/` — intermediate outputs (Source path in provenance)
 - `1-config.yaml` — metrics, model lists, paths driving the evaluation pipeline
 
 **Evaluation pipeline flow:**
 ```
-1-config.yaml → evaluation/scripts/*.py → evaluation/results/ → 0-display/
+1-config.yaml → evaluation/scripts/*.py → evaluation/results/ → 0-displays/
 ```
 
 ---
@@ -29,7 +29,7 @@ Each display is a `\subsection` on its own page. The first display has no
 
 ## Create Mode
 
-1. Scan `0-display/Figure/` and `0-display/Table/` for all outputs
+1. Scan `0-displays/Figure/` and `0-displays/Table/` for all outputs
 2. Match each to its generating script in `evaluation/scripts/`
 3. Generate the full display file with an entry per display
 4. Present Display 1 as readable summary (see below)
@@ -39,7 +39,7 @@ Each display is a `\subsection` on its own page. The first display has no
 ## Refine Mode
 
 1. Read existing `00-incubator-display.tex`
-2. Scan `0-display/` for any uncataloged displays → offer to add them
+2. Scan `0-displays/` for any uncataloged displays → offer to add them
 3. Present display list, ask user which to focus on
 4. Present focal display as readable summary
 5. User gives feedback → CC updates LaTeX + discussion box
@@ -66,7 +66,7 @@ Each display is a `\subsection` on its own page. The first display has no
 **Provenance:**
 - Script: evaluation/scripts/2-generate-Table1-and-Table2.py
 - Source: evaluation/results/2-generate-Table1-and-Table2/
-- Current: 0-display/Table/Table1-eventglucose-main_Main.tex
+- Current: 0-displays/Table/Table1-eventglucose-main_Main.tex
 
 What would you like to change in the analysis?
 ```
@@ -81,7 +81,7 @@ Each display subsection contains (in order):
 ```latex
 \begin{figure}[H]   % or \begin{table}[H]
 \centering
-\includegraphics[width=0.95\textwidth]{0-display/Figure/filename.pdf}
+\includegraphics[width=0.95\textwidth]{0-displays/Figure/filename.pdf}
 \caption{Caption}
 \end{figure}
 ```
@@ -102,7 +102,7 @@ Sub-topics (all required):
 ### 3. Provenance Footer (required)
 ```latex
 \textbf{Source:} \texttt{evaluation/results/...}\\
-\textbf{Current:} \texttt{0-display/Figure/...}\\
+\textbf{Current:} \texttt{0-displays/Figure/...}\\
 \textbf{Script:} \texttt{evaluation/scripts/...}
 ```
 
@@ -110,8 +110,8 @@ Sub-topics (all required):
 
 ## Formatting Rules (display-specific)
 
-- Figures use `0-display/Figure/filename.pdf` paths (compiled from repo root)
-- Tables use `\input{0-display/Table/filename.tex}` wrapped in `\begin{table}[H]`
+- Figures use `0-displays/Figure/filename.pdf` paths (compiled from repo root)
+- Tables use `\input{0-displays/Table/filename.tex}` wrapped in `\begin{table}[H]`
 - Critical Insights numbered sequentially: `CRITICAL INSIGHT #1`, `#2`, ...
 - Connections use `$\rightarrow$ \textbf{Display M:}` format
 - Commented-out displays (`% \subsection{...}`) preserved for history

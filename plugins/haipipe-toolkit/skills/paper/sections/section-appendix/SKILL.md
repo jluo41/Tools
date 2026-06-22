@@ -57,4 +57,4 @@ TODO
 
 - Per-venue: which journals allow unlimited SI vs strict page limits
 - Cross-link to `components/figure/`: appendix figures go in
-  `0-display/AppendixFigure/`, not `0-display/Figure/`
+  `0-displays/AppendixFigure/`, not `0-displays/Figure/`

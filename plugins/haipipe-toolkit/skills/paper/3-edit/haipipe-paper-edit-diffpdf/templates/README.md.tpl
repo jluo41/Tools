@@ -20,7 +20,7 @@ Working tree is NEVER modified. All output goes into per-baseline subdirs.
     ├── config.sh                  ← (optional) per-diff overrides
     ├── old/                       ← baseline snapshot (gitignored)
     ├── new/                       ← current snapshot (gitignored)
-    └── 0-display → new/0-display  ← symlink so figures resolve
+    └── 0-displays → new/0-displays  ← symlink so figures resolve
 ```
 
 Naming: `vs-<tag>-<sha>` — e.g., `vs-v0503-a362838` reads as
@@ -66,4 +66,4 @@ directives prevent the silencer from touching text inside `\NAME{...}`
 - ✅ DIFF.pdf, DIFF.tex, silenced-changes.txt, config.sh, README.md, .gitignore
 - ❌ old/, new/ — full source snapshots; regenerated from git on demand
 - ❌ build aux files (.aux, .bbl, .log, etc.)
-- ❌ symlinks (0-display) — recreated each build
+- ❌ symlinks (0-displays) — recreated each build

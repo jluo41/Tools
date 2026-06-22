@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-edit-values
-description: "Reconcile every numeric value in an existing LaTeX draft against its 0-display/ source. Topic ② of the 4-edit cycle. Self-contained numeric-consistency checks. STUB — scope defined, checklist to be filled. Trigger: check numbers, numeric consistency, reconcile values, verify stats."
+description: "Reconcile every numeric value in an existing LaTeX draft against its 0-displays/ source. Topic ② of the 4-edit cycle. Self-contained numeric-consistency checks. STUB — scope defined, checklist to be filled. Trigger: check numbers, numeric consistency, reconcile values, verify stats."
 metadata:
   version: "0.0.1"
   status: stub
@@ -22,14 +22,14 @@ sub-skill it is **comment-first**: Round 1 inserts `%% {CC-values-vMMDD}: findin
 ## Scope
 
 Every number in the prose, tables, and captions matches the artifact it came
-from. Ground truth is `0-display/` (figures, tables, computed stats) and the
+from. Ground truth is `0-displays/` (figures, tables, computed stats) and the
 analysis outputs — never the prose's memory of a number.
 
 ## Intended checks (to be written)
 
 - [ ] Each `% TODO[values]` flag from the content pass is resolved against source.
 - [ ] Every reported statistic (means, $r$, CIs, $n$, $p$, $\beta$, $R^2$) traces
-      to a `0-display/` value or a logged computation.
+      to a `0-displays/` value or a logged computation.
 - [ ] In-text numbers agree with the same number in tables/figure captions.
 - [ ] Rounding/precision is consistent within a section and across the paper.
 - [ ] Units and scales are correct and consistent.

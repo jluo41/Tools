@@ -71,7 +71,7 @@ diagnostic). ⑥ typeset compiles via `components/compile/paper-compile` to dete
 | # | Sub-skill | Concern | Status |
 |---|-----------|---------|--------|
 | ① | `haipipe-paper-edit-content` | prose: structure, one-point paragraphs, claims, flow | **active** |
-| ② | `haipipe-paper-edit-values` | every number matches its `0-display/` source | stub |
+| ② | `haipipe-paper-edit-values` | every number matches its `0-displays/` source | stub |
 | ③ | `haipipe-paper-edit-citation` | every `\cite` resolves, is real, supports its claim | stub |
 | ④ | `haipipe-paper-edit-consistency` | terminology, `\label`/`\ref` integrity, notation | stub |
 | ⑤ | `haipipe-paper-edit-format` | venue style, headings, units, abbreviations | stub |

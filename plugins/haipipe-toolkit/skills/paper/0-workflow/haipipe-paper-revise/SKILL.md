@@ -27,7 +27,7 @@ Usage
 
 ```
 /haipipe-paper-revise <tex-root>
-/haipipe-paper-revise <tex-root> --feedback 1-feedback/v0506/REVIEWS.md
+/haipipe-paper-revise <tex-root> --feedback 1-rounds/v0506/REVIEWS.md
 /haipipe-paper-revise <tex-root> --section method
 /haipipe-paper-revise <tex-root> --apply                 (post-G1: cascade apply across done sections)
 /haipipe-paper-revise <tex-root> --cleanup               (post-G2: cascade cleanup across done sections)
@@ -38,7 +38,7 @@ Examples
 ```
 /haipipe-paper-revise papers/lhm-a/                              (whole paper, discover → pilot → parallel)
 /haipipe-paper-revise papers/lhm-a/0-lhm-a.tex                    (main.tex auto-discovers sections)
-/haipipe-paper-revise papers/lhm-a/ --feedback 1-feedback/v0506/  (reviewer-feedback pass per section)
+/haipipe-paper-revise papers/lhm-a/ --feedback 1-rounds/v0506/  (reviewer-feedback pass per section)
 /haipipe-paper-revise papers/lhm-a/ --section intro               (single section, no parallel)
 /haipipe-paper-revise papers/lhm-a/ --apply                       (apply all G1-approved plans)
 /haipipe-paper-revise papers/lhm-a/ --cleanup confirm-delete      (Gate G2 cascade with auth)

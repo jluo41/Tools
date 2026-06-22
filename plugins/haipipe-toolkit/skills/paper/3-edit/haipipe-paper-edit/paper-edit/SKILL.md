@@ -24,7 +24,7 @@ draft is reviewed at once. It edits no prose itself; it dispatches and coordinat
 | Topic | Sub-skill | Reviews |
 |-------|-----------|---------|
 | ① content | `haipipe-paper-edit-content` | structure, one-point paragraphs, claims, flow |
-| ② values | `haipipe-paper-edit-values` | numbers vs `0-display/` source |
+| ② values | `haipipe-paper-edit-values` | numbers vs `0-displays/` source |
 | ③ citations | `haipipe-paper-edit-citation` | `\cite` resolves / real / on-claim |
 | ④ consistency | `haipipe-paper-edit-consistency` | terms, notation, `\label`/`\ref` |
 | ⑤ format | `haipipe-paper-edit-format` | venue style, units, abbreviations |

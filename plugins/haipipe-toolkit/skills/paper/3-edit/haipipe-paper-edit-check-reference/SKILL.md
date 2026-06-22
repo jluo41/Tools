@@ -33,8 +33,8 @@ Usage
 
 The argument is either a directory (skill auto-finds the root `.tex`
 with `\documentclass`) or a specific root `.tex` path. Output report
-defaults to `<paper-dir>/1-feedback/v<latest-tag>/reference-audit.md`,
-or stdout if no `1-feedback/` exists.
+defaults to `<paper-dir>/1-rounds/v<latest-tag>/reference-audit.md`,
+or stdout if no `1-rounds/` exists.
 
 What it checks
 ==============
@@ -113,8 +113,8 @@ Output rules
 - **Format = `.md` ONLY.** This is a deliverable for the author to
   read, possibly with reviewer or co-author.
 - **Save path**:
-  - If `<paper-dir>/1-feedback/v<tag>/` exists, save to
-    `1-feedback/v<latest-tag>/reference-audit.md` (newest version dir).
+  - If `<paper-dir>/1-rounds/v<tag>/` exists, save to
+    `1-rounds/v<latest-tag>/reference-audit.md` (newest version dir).
   - Otherwise save to `<paper-dir>/reference-audit.md`.
   - Override with `-o <path>` flag.
 - **Idempotent**: re-running overwrites the same file.

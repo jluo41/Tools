@@ -1,6 +1,6 @@
 # Write Principles — Paper Revision Reference
 
-A condensed rule reference for any `.tex` paper-revision pass driven by `paper-revise-section` or its companion `paper-revise`. Distilled from the npjDM2025 v0516-v0519 sessions. Rules in this file SUPERSEDE skill defaults when they conflict. Hard-rule recaps are intentional: this is the single sheet to scan before applying edits. Project-specific items (canonical terminology, reviewer-id schema) live in each paper's own `1-feedback/v<tag>/` folder, not here.
+A condensed rule reference for any `.tex` paper-revision pass driven by `paper-revise-section` or its companion `paper-revise`. Distilled from the npjDM2025 v0516-v0519 sessions. Rules in this file SUPERSEDE skill defaults when they conflict. Hard-rule recaps are intentional: this is the single sheet to scan before applying edits. Project-specific items (canonical terminology, reviewer-id schema) live in each paper's own `1-rounds/v<tag>/` folder, not here.
 
 ---
 
@@ -118,8 +118,8 @@ The operational heart of "compress, don't split". Each recipe is a concrete patt
 | **G2** | Paste-as-merge convention. When the user pastes a `% commented-out` index header next to a different paragraph block, the intent is MERGE the two sentences/paragraphs into one. |
 | **G3** | User-pasted edit = authoritative. When the user pastes their own draft and says "follow", apply their structure; don't argue for a different one unless asked. |
 | **G4** | Comment hygiene after structural change. After paragraph rename/split/merge: (a) DROP "was Pn.Sm" provenance notes (git diff captures them); (b) DROP forward-looking labels in comments ("P20a = omnibus framing") since the new header already states the role; (c) DROP bracket annotations on headers once their content has been consumed into the prose, especially any containing em-dashes (B violation). |
-| **G5** | Reviewer-id tag in CC comments (when applicable). Format: `%% Comments: {CC} v<DATE>: R2 M5 -- short reason.`. Use the project's reviewer-id schema (e.g. `R1 W7`, `R2 M5`, `Editor E.4a`). Multi-point sentences chain: `R1 W1 + R2 M5 -- ...`. The project's `1-feedback/v<tag>/` defines the schema. |
-| **G6** | Per-section reports and revision-checklist files are PROJECT-SPECIFIC. Some projects forbid per-section `.md` reports during revision (npjDM2025 does); some forbid checklist updates during per-section audits. Check the project's `1-feedback/v<tag>/INSTRUCTIONS.md` (or equivalent) for the project rule. |
+| **G5** | Reviewer-id tag in CC comments (when applicable). Format: `%% Comments: {CC} v<DATE>: R2 M5 -- short reason.`. Use the project's reviewer-id schema (e.g. `R1 W7`, `R2 M5`, `Editor E.4a`). Multi-point sentences chain: `R1 W1 + R2 M5 -- ...`. The project's `1-rounds/v<tag>/` defines the schema. |
+| **G6** | Per-section reports and revision-checklist files are PROJECT-SPECIFIC. Some projects forbid per-section `.md` reports during revision (npjDM2025 does); some forbid checklist updates during per-section audits. Check the project's `1-rounds/v<tag>/INSTRUCTIONS.md` (or equivalent) for the project rule. |
 
 ---
 
@@ -165,5 +165,5 @@ Before committing a section-file edit:
 | Compression recipes (sentence-level patterns) | This file Section F |
 | Comment preservation conventions (A1-A5, reply-block format) | This file Section A |
 | Post-iteration code-claim audit | This file Section H |
-| Per-project canonical terminology / reviewer-id schema | `<paper>/1-feedback/v<tag>/INSTRUCTIONS.md` and project memory |
-| Per-project rebuttal-letter format (`\paperedit{}`, etc.) | `<paper>/1-feedback/v<tag>/INSTRUCTIONS.md` |
+| Per-project canonical terminology / reviewer-id schema | `<paper>/1-rounds/v<tag>/INSTRUCTIONS.md` and project memory |
+| Per-project rebuttal-letter format (`\paperedit{}`, etc.) | `<paper>/1-rounds/v<tag>/INSTRUCTIONS.md` |

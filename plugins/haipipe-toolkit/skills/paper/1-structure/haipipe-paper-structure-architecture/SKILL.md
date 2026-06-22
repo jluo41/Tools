@@ -19,7 +19,7 @@ metadata:
 **Version:** 3.1
 **Purpose:** Generate ONE versioned markdown file combining strategic overview with paragraph-level section minimap. All decisions tracked inline. Output ready to hand to a writing agent.
 
-If `0-pitch/PAPER_PITCH.md` exists in the paper folder, read it first. The
+If `0-lifecycle/1-pitch/1-pitch.tex` exists in the paper folder, read it first. The
 architecture should expand the current one-minute pitch into a 5-act arc and
 section minimap; it should not invent a competing hook, surprise, or so-what.
 If the architecture needs a different public-facing story, update the pitch
@@ -35,7 +35,7 @@ through `/haipipe-paper-structure pitch` and log the reason.
 - Final clean version (e.g. `v03`) = all locked, no conversation history, ready for writing
 - Keep old versions for audit trail
 
-**Location:** user-specified (typically `1-feedback/<revision>/2-paper-architecture/`)
+**Location:** user-specified (typically `1-rounds/<revision>/2-paper-architecture/`)
 
 ---
 
@@ -44,7 +44,7 @@ through `/haipipe-paper-structure pitch` and log the reason.
 ### Step 1: Auto-Detect (Silent)
 
 Read input files and detect:
-- Current paper pitch: `0-pitch/PAPER_PITCH.md` if present
+- Current paper pitch: `0-lifecycle/1-pitch/1-pitch.tex` if present
 - Paper type: empirical / design-science / theory / hybrid
 - Venue + page limit (MISQ Research Article = 55 pages)
 - Contributions: rank by emphasis %, separate contributions (empirically tested) from implications (theoretical only)
@@ -246,7 +246,7 @@ After all choices locked, produce a clean version (e.g. `v03`) that:
 - [ ] Appendix plan is substantial with specific content per appendix
 - [ ] Page budget: body + appendix + refs + buffer = venue limit
 - [ ] Contributions vs implications clearly separated
-- [ ] 5-act arc preserves the current `0-pitch/PAPER_PITCH.md` hook,
+- [ ] 5-act arc preserves the current `0-lifecycle/1-pitch/1-pitch.tex` hook,
       surprise, and so-what, or the pitch log records why it changed
 - [ ] One sentence per line throughout
 - [ ] Final clean version has no `> JL:` / `{CC}` history

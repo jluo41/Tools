@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-build-restructure
-description: "Migrate an existing paper into the gold-standard folder layout (npjDM2025 contract): split a monolithic main.tex into 0-sections/ driver/wrapper/leaf files, rewire the \\input tree, normalize NN-MM naming, relocate display assets to 0-display/. Prose stays byte-identical; gated by prose parity + compile parity. Also handles in-layout repairs: renumber after deletes, rehouse stray assets. Trigger: restructure paper, split main.tex, migrate paper layout, convert to 0-sections, renumber sections, close numbering gap, 重构论文目录, /haipipe-paper-build-restructure."
+description: "Migrate an existing paper into the gold-standard folder layout (npjDM2025 contract): split a monolithic main.tex into 0-sections/ driver/wrapper/leaf files, rewire the \\input tree, normalize NN-MM naming, relocate display assets to 0-displays/. Prose stays byte-identical; gated by prose parity + compile parity. Also handles in-layout repairs: renumber after deletes, rehouse stray assets. Trigger: restructure paper, split main.tex, migrate paper layout, convert to 0-sections, renumber sections, close numbering gap, 重构论文目录, /haipipe-paper-build-restructure."
 argument-hint: "[paper-dir] [--plan-only] [--repair]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, AskUserQuestion
 metadata:
@@ -18,7 +18,7 @@ Skill: haipipe-paper-build-restructure (2-build)
 Re-house an existing paper in the layout defined by `2-build/_shared/paper-folder-anatomy.md` **without changing a single sentence**. Two modes:
 
 - **Migrate** (default): the folder does not conform at all (monolithic `main.tex`, flat `sections/`, ad-hoc names). Produce the full gold tree.
-- **Repair** (`--repair`): the folder already follows the layout but has drifted: numbering gaps after a delete, a leaf never `\input`, figures outside `0-display/`. Fix only the findings (usually handed over from `haipipe-paper-build-check`).
+- **Repair** (`--repair`): the folder already follows the layout but has drifted: numbering gaps after a delete, a leaf never `\input`, figures outside `0-displays/`. Fix only the findings (usually handed over from `haipipe-paper-build-check`).
 
 Not this skill: building a folder from nothing (`haipipe-paper-build-scaffold`), or any wording change (`3-edit`).
 
@@ -62,7 +62,7 @@ main.tex  preamble+title                →  0-<paper>.tex                    (d
 main.tex  §Results intro                →  0-sections/02-00_overview.tex    (leaf)
 main.tex  §Results/Subsec "Traits"      →  0-sections/02-01_trait-targets.tex
 sections/methods.tex (whole)            →  0-sections/04_methods.tex + 04-0M leaves (split at \subsection)
-figs/pipeline.pdf                       →  0-display/Figures/pipeline.pdf   (+ rewrite \includegraphics path)
+figs/pipeline.pdf                       →  0-displays/Figures/pipeline.pdf   (+ rewrite \includegraphics path)
 refs.bib                                →  0-<paper>.bib                    (+ rewrite \bibliography)
 compile via: (none found)               →  1-compile.sh                     (from paper-scaffold templates)
 ```
@@ -94,7 +94,7 @@ Input is a finding list (typically `haipipe-paper-build-check` output). For each
 | Numbering gap (`04-05` missing) | Rename downstream leaves up by one **and** rewire their `\input` lines in the same pass; never leave a gap or a dangling input. Stable-ids and `\label`s do not change. |
 | Orphan leaf (never `\input`) | Ask: wire it in (where?) or retire it to `_old/`; never silently delete. |
 | Wrapper contains prose | Move the prose into the correct leaf (existing or new `NN-MM`); wrapper returns to pure `\input`. |
-| Display asset outside `0-display/` | Move it under `Figures/`/`Tables/`, rewrite the referencing path. |
+| Display asset outside `0-displays/` | Move it under `Figures/`/`Tables/`, rewrite the referencing path. |
 | Aux files lingering | `./1-compile.sh --clean-only`. |
 
 Return contract

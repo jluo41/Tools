@@ -112,7 +112,7 @@ sandbox:
    - 4b. If `silenced-changes.txt` exists, run `silence-minor-changes.pl`
         to silently accept matching (old, new) pairs outside protected
         blocks.
-5. Stage support files (.bib, .cls, .sty) and create the `0-display`
+5. Stage support files (.bib, .cls, .sty) and create the `0-displays`
    symlink so figures resolve.
 6. Compile with the auto-detected compiler (pdflatex / lualatex / xelatex)
    in the standard 4-pass + bibtex pipeline.
@@ -261,7 +261,7 @@ For each invocation, the script writes (and the user commits a subset):
 | `1-diff/vs-<tag>-<sha>/config.sh` | ✅ if exists | per-diff overrides |
 | `1-diff/vs-<tag>-<sha>/old/` | ❌ gitignored | baseline snapshot (regenerable) |
 | `1-diff/vs-<tag>-<sha>/new/` | ❌ gitignored | current snapshot (regenerable) |
-| `1-diff/vs-<tag>-<sha>/0-display` | ❌ gitignored | symlink for figure resolution |
+| `1-diff/vs-<tag>-<sha>/0-displays` | ❌ gitignored | symlink for figure resolution |
 
 `templates/.gitignore.tpl` has the gitignore rules; copy to `1-diff/.gitignore`
 on first setup.
@@ -304,7 +304,7 @@ Do not run this skill:
 - Synthetic baselines (editing `old/` after extraction) are a legitimate
   technique. Document them in a README inside the diff subdir so co-authors
   understand what they're looking at.
-- For figure-heavy papers, the `0-display → new/0-display` symlink is
+- For figure-heavy papers, the `0-displays → new/0-displays` symlink is
   load-bearing. If you see "missing graphics" errors, the symlink is broken.
 
 ## See Also

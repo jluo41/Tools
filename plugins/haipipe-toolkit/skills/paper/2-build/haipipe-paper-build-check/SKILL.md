@@ -53,7 +53,7 @@ Read briefly and report, do not fix:
 - Filename slug still describes the file's content (`02-05_trait-rating-correlation.tex` should be about trait-rating correlation).
 - Driver `\input` order matches the venue's section order.
 - SI leaves (`A_*`..`Z_*`) are reached only from the SI driver, main sections only from the main driver.
-- `0-display/` assets referenced by no `.tex` at all (candidates for `_old/`, not deletion).
+- `0-displays/` assets referenced by no `.tex` at all (candidates for `_old/`, not deletion).
 
 ### Step 3: Report + route
 

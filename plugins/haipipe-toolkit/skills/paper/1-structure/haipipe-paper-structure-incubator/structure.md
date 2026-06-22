@@ -9,7 +9,7 @@
 - `0-sections/*.tex` — actual paper section files (primary source)
 - `01-incubator-arch.tex` — canonical numbers for the header
 - `00-incubator-display.tex` — display inventory for placement references
-- `0-display/Figure/`, `0-display/Table/` — to verify display references
+- `0-displays/Figure/`, `0-displays/Table/` — to verify display references
 
 ---
 
@@ -146,7 +146,7 @@ For sections with subsections:
 - `\inconsistency{text}` — red background (problem flagged)
 
 **Figure paths:**
-- `\graphicspath{{../0-display/}}` — figures load from paper's display directory
+- `\graphicspath{{../0-displays/}}` — figures load from paper's display directory
 
 **Document extras:**
 - Includes `\tableofcontents` + `\clearpage` after `\maketitle`

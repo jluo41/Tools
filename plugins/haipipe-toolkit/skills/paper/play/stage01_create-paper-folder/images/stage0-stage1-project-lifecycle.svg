@@ -62,7 +62,7 @@
   <text class="label" x="842" y="175">Not Yet</text>
   <text class="text" x="842" y="208">No manuscript obligations</text>
   <text class="small" x="842" y="240">No 0-sections/</text>
-  <text class="small" x="842" y="264">No 0-display/</text>
+  <text class="small" x="842" y="264">No 0-displays/</text>
   <text class="small" x="842" y="288">No LaTeX scaffold</text>
 
   <rect class="project" x="140" y="465" width="220" height="145"/>
