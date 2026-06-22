@@ -1,8 +1,8 @@
 discovery — External Evidence Layer (DESIGN)
 =============================================
 
-Status: v1.7.0 (2026-06-21) - discovery = one research topic per FOLDER (mirrors
-        task-folder); IO files sources/notes/verdict; narrative parent retired.
+Status: v1.8.0 (2026-06-21) - skill renamed haipipe-discover -> haipipe-discovery
+        (haipipe-<noun> convention); discovery = one research topic per FOLDER.
 Owner:  jluo41
 Scope:  search/read/review/idea discovery work and its durable artifact
         contract inside project folders.
@@ -32,7 +32,7 @@ Two Parts
 
 ```
 1. Skill interface layer
-   /haipipe-discover is the single entry. It runs durable discovery lifecycle
+   /haipipe-discovery is the single entry. It runs durable discovery lifecycle
    verbs and routes to search/read/review/idea specialists.
 
 2. Durable artifact layer
@@ -89,7 +89,7 @@ Skill Structure
 ```
 discovery/
 ├── CHANGELOG.md               layer-scoped change history
-├── haipipe-discover/          router + durable artifact contract
+├── haipipe-discovery/          router + durable artifact contract
 │   ├── SKILL.md
 │   └── ref/
 │       ├── lifecycle-map.md          canonical verb lifecycle table
@@ -156,7 +156,7 @@ discovery.yaml  sources.md   notes.md     verdict.md          parent link
 ```
 
 The canonical per-stage contract (skill, files_in, files_out) lives in ONE
-place: `haipipe-discover/ref/lifecycle-map.md`. Do not restate it here. `open`
+place: `haipipe-discovery/ref/lifecycle-map.md`. Do not restate it here. `open`
 scaffolds the folder, the work stages fill its IO files, and `post` makes the
 verdict available to the parent delivery lifecycle (paper/application) or probe
 without judging the claim.
@@ -243,7 +243,7 @@ Decision Log
             work before Probe-post judges the claim.
 2026-06-20  Adopted: discovery-group/discovery-folder hierarchy. `source` is
             not a mandatory folder; it is usually a record in sources.md.
-            `/haipipe-discover` is the single entry for lifecycle + routing.
+            `/haipipe-discovery` is the single entry for lifecycle + routing.
 2026-06-20  Revised: default durable artifact is now one markdown file:
             `discoveries/<group>/<NN_slug>.md`. Folderized packages are legacy
             compatible or opt-in heavy mode only.
@@ -256,7 +256,7 @@ Decision Log
             file now point to it instead of restating the per-verb columns.
 2026-06-21  Renamed: folder discover/ -> discovery/ so the layer concept reads
             as a noun, matching discoveries/ and the task/probe/insight siblings.
-            Skill name: stays haipipe-discover.
+            Skill name kept haipipe-discover at the time (superseded below).
 2026-06-21  Reverted the v1.5 single-file default. A discovery is one research
             topic = its own FOLDER (discovery.yaml + sources.md/notes.md/verdict.md
             + status.yaml/site.md), mirroring a task-folder; sources/notes/verdict
@@ -264,3 +264,8 @@ Decision Log
             the single-file default never landed. lifecycle-map.md recast as
             open -> search -> read -> review/idea -> post, each stage filling one
             IO file.
+2026-06-21  Renamed the skill haipipe-discover -> haipipe-discovery to match the
+            haipipe-<noun> sibling convention (probe/paper/task/insight/project/
+            application); supersedes the "name stays" note above. Inner folder,
+            .claude symlink, and all refs updated; the command is now
+            /haipipe-discovery.

@@ -9,6 +9,11 @@ history also lives in each `SKILL.md` frontmatter `changelog:`.
 ## [Unreleased] — 2026-06-21
 
 ### Changed
+- **Skill renamed `haipipe-discover` -> `haipipe-discovery` (1.8.0).** Matches the
+  haipipe-<noun> sibling convention (probe/paper/task/insight/project/application);
+  the verb-named skill was the lone exception. Inner folder `haipipe-discovery/`,
+  the `.claude` symlink, the command `/haipipe-discovery`, and all in-repo refs
+  updated.
 - **Discovery is a FOLDER, not a single file (reverted v1.5).** A discovery is
   one research topic = its own folder (`discovery.yaml` + `sources.md` /
   `notes.md` / `verdict.md` + `status.yaml` / `site.md`), mirroring a
@@ -20,9 +25,9 @@ history also lives in each `SKILL.md` frontmatter `changelog:`.
   match. Version 1.7.0.
 - **Folder renamed `discover/` to `discovery/`.** The layer concept now reads as
   a noun, matching the `discoveries/` artifact dir and the task/probe/insight
-  sibling layers. Skill `name:` stays `haipipe-discover` (the command verb is
-  unchanged); only the folder moved. Cross-reference path fixups in
-  `STRUCTURE.md`, the blueprint, and the plugin CHANGELOG are a follow-up.
+  sibling layers. (The skill itself was renamed too, see above.) Cross-reference
+  path fixups in `STRUCTURE.md`, the blueprint, and the plugin CHANGELOG are a
+  follow-up.
 - **Narrative layer retired across discovery docs.** A discovery now has exactly
   two parents: a delivery lifecycle (`paper` / `application`) for L* landscape /
   novelty work, and a `probe` for claim-level evidence. The story-side dispatch

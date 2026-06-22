@@ -21,7 +21,8 @@ Structure: discovery layer renamed and the narrative layer retired in discovery 
 
 - Renamed `skills/discover/` to `skills/discovery/` so the layer concept reads
   as a noun, matching the `discoveries/` artifact dir and the task/probe/insight
-  siblings. Skill `name:` stays `haipipe-discover`.
+  siblings. The skill was then also renamed `haipipe-discover` -> `haipipe-discovery`
+  (haipipe-<noun> convention); the command is now `/haipipe-discovery`.
 - Retired the narrative parent in the discovery docs: a discovery now has two
   parents only, a delivery lifecycle (`paper`/`application`) for L* landscape /
   novelty work and a `probe` for claim-level evidence. Story-side dispatch moved

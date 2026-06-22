@@ -50,12 +50,12 @@ reads the previous output and writes the next `expected_output`:
 
 | stage | skill (the tool) | `files_in` | `files_out` |
 |---|---|---|---|
-| `open` *(bookend, scaffold)* | `haipipe-discover` + `ref/discovery-yaml-schema.md` | parent ref | `discovery.yaml` · `status.yaml` · `site.md` (creates the folder) |
+| `open` *(bookend, scaffold)* | `haipipe-discovery` + `ref/discovery-yaml-schema.md` | parent ref | `discovery.yaml` · `status.yaml` · `site.md` (creates the folder) |
 | `search` | `1_search/`: arxiv · semantic-scholar · exa-search | `discovery.yaml` | `sources.md` |
 | `read` | `2_read/`: alphaxiv · deepxiv · paper-analyzer | `sources.md` | `notes.md` |
 | `review` | `3_review/`: research-lit · comm-lit-review · academic-researcher | `notes.md` | `verdict.md` (+ `discovery.yaml` verdict block) |
 | `idea` *(topic-type alt to review)* | `4_idea/`: idea-creator · novelty-check | `notes.md` | `verdict.md` |
-| `post` *(bookend, handoff)* | `haipipe-discover` | `verdict.md` · `discovery.yaml` | `discovery.yaml` consumed_by · `status.yaml` · `_haipipe/project.{status.yaml,log.jsonl}` |
+| `post` *(bookend, handoff)* | `haipipe-discovery` | `verdict.md` · `discovery.yaml` | `discovery.yaml` consumed_by · `status.yaml` · `_haipipe/project.{status.yaml,log.jsonl}` |
 
 `open` and `post` are one-time bookends (scaffold the unit, hand it off) — the
 same role as scaffolding a task-folder and handing its results to a probe. The
@@ -75,14 +75,14 @@ probe reads claim-level verdicts at Probe-post.
 ## Command routing
 
 ```
-/haipipe-discover                          -> dashboard (list discovery-folders)
-/haipipe-discover open <role> <question>   -> scaffold a discovery-folder
-/haipipe-discover search <discovery>       -> fill sources.md
-/haipipe-discover read <discovery>         -> fill notes.md
-/haipipe-discover review <discovery>       -> fill verdict.md
-/haipipe-discover post <discovery>         -> link verdict to parent
-/haipipe-discover <discovery>              -> run remaining stages
-/haipipe-discover <specialist> [args]      -> one-off bucket skill (NO folder)
+/haipipe-discovery                          -> dashboard (list discovery-folders)
+/haipipe-discovery open <role> <question>   -> scaffold a discovery-folder
+/haipipe-discovery search <discovery>       -> fill sources.md
+/haipipe-discovery read <discovery>         -> fill notes.md
+/haipipe-discovery review <discovery>       -> fill verdict.md
+/haipipe-discovery post <discovery>         -> link verdict to parent
+/haipipe-discovery <discovery>              -> run remaining stages
+/haipipe-discovery <specialist> [args]      -> one-off bucket skill (NO folder)
 ```
 
 A one-off capability call (just run arxiv / alphaxiv / research-lit) does NOT

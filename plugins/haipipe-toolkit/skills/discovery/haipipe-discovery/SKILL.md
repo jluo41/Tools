@@ -1,10 +1,10 @@
 ---
-name: haipipe-discover
-description: "Router for Stage A (discovery) literature/idea discovery. Dispatches to 1 of 4 buckets: search (arxiv/semantic-scholar/exa-search), read (alphaxiv/deepxiv/paper-analyzer), review (research-lit/comm-lit-review/academic-researcher), idea (idea-creator/novelty-check). Pipelines escalate to /idea-discovery. Patent work lives in D_patent/. Trigger: discover, find paper, lit review, 找idea, 查新, /haipipe-discover."
+name: haipipe-discovery
+description: "Router for Stage A (discovery) literature/idea discovery. Dispatches to 1 of 4 buckets: search (arxiv/semantic-scholar/exa-search), read (alphaxiv/deepxiv/paper-analyzer), review (research-lit/comm-lit-review/academic-researcher), idea (idea-creator/novelty-check). Pipelines escalate to /idea-discovery. Patent work lives in D_patent/. Trigger: discover, find paper, lit review, 找idea, 查新, /haipipe-discovery."
 argument-hint: "[bucket] [specialist] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "1.7.0"
+  version: "1.8.0"
   last_updated: "2026-06-21"
   summary: "Single entry for discovery: capability router plus per-topic discovery-folders (mirror task-folders)."
   changelog:
@@ -16,9 +16,10 @@ metadata:
     - "1.5.0 (2026-06-20): make one markdown file the default durable artifact; folderized discovery becomes an opt-in heavy mode."
     - "1.6.0 (2026-06-21): add ref/lifecycle-map.md as the canonical verb table (SKILL/DESIGN point to it, not restate it); retire the narrative parent (parents are now delivery paper/application or probe); folder renamed discover -> discovery."
     - "1.7.0 (2026-06-21): revert v1.5 single-file default. A discovery is one research topic = its own FOLDER (discovery.yaml + sources/notes/verdict + status/site), mirroring a task-folder; lifecycle-map.md recast as open -> search -> read -> review/idea -> post filling the folder's IO files."
+    - "1.8.0 (2026-06-21): rename skill haipipe-discover -> haipipe-discovery to match the haipipe-<noun> sibling convention; inner folder, refs, and command (/haipipe-discovery) updated."
 ---
 
-Skill: haipipe-discover (orchestrator)
+Skill: haipipe-discovery (orchestrator)
 ======================================
 
 Single entry for Stage A / the discovery layer. Multi-step idea pipelines
@@ -52,21 +53,21 @@ Probe-post
 
 Invocation:
 ```
-/haipipe-discover                              -> dashboard
-/haipipe-discover <discovery>                  -> run full lifecycle on a folder
-/haipipe-discover <discovery-group>            -> iterate/summarize children
-/haipipe-discover status [path]                -> read-only status
-/haipipe-discover open <role> <question>       -> scaffold discovery-folder
-/haipipe-discover open-group <slug>            -> ensure discovery-group dir
-/haipipe-discover search <discovery>           -> write sources.md
-/haipipe-discover read <discovery>             -> write notes.md
-/haipipe-discover review <discovery>           -> write verdict.md (or idea)
-/haipipe-discover post <discovery>             -> link verdict to parent if it exists
+/haipipe-discovery                              -> dashboard
+/haipipe-discovery <discovery>                  -> run full lifecycle on a folder
+/haipipe-discovery <discovery-group>            -> iterate/summarize children
+/haipipe-discovery status [path]                -> read-only status
+/haipipe-discovery open <role> <question>       -> scaffold discovery-folder
+/haipipe-discovery open-group <slug>            -> ensure discovery-group dir
+/haipipe-discovery search <discovery>           -> write sources.md
+/haipipe-discovery read <discovery>             -> write notes.md
+/haipipe-discovery review <discovery>           -> write verdict.md (or idea)
+/haipipe-discovery post <discovery>             -> link verdict to parent if it exists
 
-/haipipe-discover <bucket>                     -> list specialists
-/haipipe-discover <specialist> [args]          -> dispatch specialist
-/haipipe-discover "<natural language>"         -> infer + dispatch
-/haipipe-discover pipeline [topic]             -> escalate /idea-discovery
+/haipipe-discovery <bucket>                     -> list specialists
+/haipipe-discovery <specialist> [args]          -> dispatch specialist
+/haipipe-discovery "<natural language>"         -> infer + dispatch
+/haipipe-discovery pipeline [topic]             -> escalate /idea-discovery
 ```
 
 ---
@@ -149,7 +150,7 @@ discoveries/<GROUP>/<NN>_<topic>/
 ```
 
 The CANONICAL per-stage contract (skill, files_in, files_out, parent model)
-lives in ONE place: `haipipe-discover/ref/lifecycle-map.md`. Do not restate it
+lives in ONE place: `haipipe-discovery/ref/lifecycle-map.md`. Do not restate it
 here or in DESIGN.md; edit the map. In short: `open` scaffolds the folder,
 `search/read/review` fill the IO files, and `post` makes the verdict available
 to the parent delivery lifecycle (paper/application) or probe without judging
@@ -268,7 +269,7 @@ Dispatch: Skill(<specialist>, args="<remaining_args>"). Do not auto-chain.
 Step-by-Step Protocol
 ---------------------
 
-Use this protocol whenever `/haipipe-discover` is used for durable project
+Use this protocol whenever `/haipipe-discovery` is used for durable project
 work. Do not hand-place a completed discovery package without walking the
 lifecycle stages.
 

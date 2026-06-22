@@ -202,7 +202,7 @@ One paragraph answering the discovery question.
 ```
 
 The full citation and verification discipline follows the Review Output
-Contract in `haipipe-discover/SKILL.md`.
+Contract in `haipipe-discovery/SKILL.md`.
 
 
 Source Records
