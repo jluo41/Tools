@@ -57,6 +57,6 @@ Common failure modes
 TODO
 ----
 
-- Cross-check with `1-lifecycle/haipipe-paper-structure-narrative` — abstract pitch
+- Cross-check with `1-lifecycle/haipipe-paper-narrative` — abstract pitch
   must equal narrative pitch
 - Per-venue word counts auto-checked

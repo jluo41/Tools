@@ -14,7 +14,7 @@ probes, discoveries, tasks, and insights.
 │   ├── 1-pitch/
 │   ├── 2-claims/
 │   ├── 3-narrative/
-│   ├── 4-figures-tables/
+│   ├── 4-display/
 │   └── 5-minimap/
 ├── 1-rounds/
 ├── 0-displays/
@@ -29,8 +29,8 @@ probes, discoveries, tasks, and insights.
 | `0-seed` | Keep the paper possibility alive | Why might this paper exist? | back to project evidence or drop |
 | `1-pitch` | Make the one-minute argument | What is the paper selling? | `2-claims` |
 | `2-claims` | Maintain the claim ledger | Which claims are supported, weak, or GAP? | probe/discover/task/insight |
-| `3-narrative` | Shape this paper's story | How do claims become a manuscript arc? | `4-figures-tables` or `2-claims` |
-| `4-figures-tables` | Design displays | What figure/table carries each claim? | display task or `5-minimap` |
+| `3-narrative` | Shape this paper's story | How do claims become a manuscript arc? | `4-display` or `2-claims` |
+| `4-display` | Design displays | What figure/table carries each claim? | display task or `5-minimap` |
 | `5-minimap` | Map paragraphs | What job does each paragraph do, and what evidence anchors it? | sections/edit/build |
 
 ## Maturity Ladder
@@ -43,7 +43,7 @@ current stage; a paper can be mature yet loop back to claims.
 | `prospectus` | Paper-shaped possibility | seed/pitch, no full section contract |
 | `scaffold` | Manuscript folder exists | lifecycle files, sections, compile script |
 | `claim-ledger` | Claims are explicit | `2-claims` has C-slots and open needs |
-| `display-map` | Displays are planned | `4-figures-tables` maps claim -> display |
+| `display-map` | Displays are planned | `4-display` maps claim -> display |
 | `section-map` | Paragraph jobs are mapped | `5-minimap` maps paragraphs/displays |
 | `draft` | Section text exists | main paper compiles with rough prose |
 | `submission-candidate` | Checks mostly pass | citations, claims, displays, compile stable |
@@ -60,7 +60,7 @@ explains the failure:
 |---|---|
 | claim unsupported / too strong | `2-claims` |
 | story arc weak or abstract disagrees | `1-pitch` / `3-narrative` |
-| display cannot support claim | `4-figures-tables` |
+| display cannot support claim | `4-display` |
 | paragraph has no job/evidence anchor | `5-minimap` |
 | reviewer/coauthor comment unresolved | `1-rounds` then target lifecycle stage |
 

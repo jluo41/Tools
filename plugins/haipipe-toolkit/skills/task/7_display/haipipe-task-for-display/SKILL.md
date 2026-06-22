@@ -44,7 +44,7 @@ Heavy outputs: none.
 Cross-reference to pipeline skill
 ----------------------------------
 
-No corresponding pipeline skill — display tasks are independent; they read from upstream `results/<run>/` and write final artifacts. Useful adjacent skills: `/haipipe-paper-structure-figure`, `/haipipe-paper-structure-illustration`.
+No corresponding pipeline skill — display tasks are independent; they read from upstream `results/<run>/` and write final artifacts. Useful adjacent skills: `/haipipe-paper-figure`, `/haipipe-paper-illustration`.
 
 
 Scaffold flow
@@ -68,7 +68,7 @@ Return contract
 status:    ok | blocked | failed
 summary:   2-3 sentences on what was scaffolded
 artifacts: [paths created]
-next:      suggested next command (run.sh / /haipipe-paper-structure-figure)
+next:      suggested next command (run.sh / /haipipe-paper-figure)
 ```
 
 

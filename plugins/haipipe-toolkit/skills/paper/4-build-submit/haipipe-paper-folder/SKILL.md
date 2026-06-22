@@ -1,5 +1,5 @@
 ---
-name: haipipe-paper-structure-bootstrap
+name: haipipe-paper-bootstrap
 description: Scaffold a new paper folder in prospectus mode or manuscript mode. Prospectus mode creates README.md and STATUS.md plus a sparse 0-lifecycle/ (0-seed, optionally 1-pitch) for an early paper repo/submodule, with no manuscript obligations. Manuscript mode creates the full 0-/1-prefix LaTeX layout matching proven Paper-<Name>-<Venue><Year> folders across ProjA/ProjB.
 metadata:
   version: "2.0.0"
@@ -7,7 +7,7 @@ metadata:
   summary: "Scaffold a paper folder in prospectus mode or manuscript mode. Prospectus mode creates paper-discovery constraints; manuscript mode creates the proven 0-/1-prefix LaTeX layout."
   changelog:
     - "2.0.0 (2026-06-08): complete rewrite — layout now matches real Paper-MapPhyTrait-npjDM2025 and Paper-Personality2Opioid-MISQ2026 folders (0-sections, 0-displays, 1-rounds, compile scripts, .gitignore). Dropped generic input/notes/figures/output skeleton. Added venue templates and section stubs."
-    - "1.1.0 (2026-06-05): renamed from paper-bootstrap to haipipe-paper-structure-bootstrap."
+    - "1.1.0 (2026-06-05): renamed from paper-bootstrap to haipipe-paper-bootstrap."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
@@ -59,7 +59,7 @@ python <skill-dir>/scripts/init_paper_layout.py <paper-root> \
 Prospectus mode can be created manually or by a future helper:
 
 ```text
-/haipipe-paper-structure folder <paper-root> --mode prospectus --project <project-root>
+/haipipe-paper-lifecycle folder <paper-root> --mode prospectus --project <project-root>
 ```
 
 ## When To Use
@@ -142,7 +142,7 @@ Paper-<Name>-<Venue><Year>/
 │    1-pitch/1-pitch.tex
 │    2-claims/2-claims.tex
 │    3-narrative/3-narrative.tex
-│    4-figures-tables/4-figures-tables.tex
+│    4-display/4-display.tex
 │    5-minimap/5-minimap.tex
 │
 │  # ── 0-sections/  (modular .tex) ───────────────────────

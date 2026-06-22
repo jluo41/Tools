@@ -6,7 +6,7 @@ each. The `haipipe-paper-edit` orchestrator drives the cycle and fans out the pe
 agents in `../agents/`.
 
 > **Upstream input (not a stage here):** the section → paragraph → sentence map
-> from `1-lifecycle/haipipe-paper-structure-diagram` is a useful diagnostic to hand the
+> from `1-lifecycle/haipipe-paper-edit-diagram` is a useful diagnostic to hand the
 > annotators before Stage 2. It is produced in planning, not in the edit cycle.
 
 ## The five stages

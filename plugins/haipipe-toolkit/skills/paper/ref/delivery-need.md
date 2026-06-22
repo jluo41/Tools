@@ -28,7 +28,7 @@ needed: each artifact's shape belongs to the skill that produces it.
 ## When to record a need
 
 Only when the problem is EVIDENCE, not wording. A wording/structure problem loops
-back inside the paper lifecycle (1-pitch / 2-claims / 3-narrative / 4-figures-tables
+back inside the paper lifecycle (1-pitch / 2-claims / 3-narrative / 4-display
 / 5-minimap). A need leaves the paper for an evidence worker.
 
 ```

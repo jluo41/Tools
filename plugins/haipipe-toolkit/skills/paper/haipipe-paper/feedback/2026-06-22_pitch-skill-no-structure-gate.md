@@ -1,7 +1,7 @@
 ---
 status: open
 created: 2026-06-22
-context: haipipe-paper-structure-pitch (/haipipe-paper pitch); artifact = Paper-Personality-Opioid-MedJournal/0-lifecycle/1-pitch/1-pitch.tex
+context: haipipe-paper-pitch (/haipipe-paper pitch); artifact = Paper-Personality-Opioid-MedJournal/0-lifecycle/1-pitch/1-pitch.tex
 fixed_in: ""
 ---
 我觉得这个pitch 不好，你也加到feedback上去吧。不知道是哪个skill跟这个相关的。
@@ -9,7 +9,7 @@ fixed_in: ""
 就是说，你得有hook，有supersie 有implication，然后有什么证据支持，诸如此类的，你可以看看我们pitch相关的skill是怎么写的。这个pitch写的不行。
 
 Diagnosis (after reading the skill):
-- Related skill = haipipe-paper-structure-pitch (/haipipe-paper pitch).
+- Related skill = haipipe-paper-pitch (/haipipe-paper pitch).
 - The skill ALREADY defines exactly the structure the reporter wants (SKILL.md lines 82-103 template): Hook / Surprise / So What (= implication) / Why Believe (= evidence support) / Still Fragile / Next Evidence Move.
 - But the produced 1-pitch.tex only has \section*{One-Minute Story} + \section*{Current Fragility} -- it is freeform prose missing Hook / Surprise / So What / Why Believe entirely. The author did not apply the skill's own template.
 

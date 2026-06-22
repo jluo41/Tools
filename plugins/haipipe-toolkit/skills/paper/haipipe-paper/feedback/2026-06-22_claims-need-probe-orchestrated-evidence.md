@@ -1,7 +1,7 @@
 ---
 status: fixed (structure-claims two-stage gate + delivery-need.md drain loop)
 created: 2026-06-22
-context: haipipe-paper-structure-claims (claim lifecycle stage); how it should orchestrate haipipe-probe -> haipipe-task + haipipe-insight for solid evidence. Extends 2026-06-22_claims-ledger-thin-no-status-no-evidence.
+context: haipipe-paper-claims (claim lifecycle stage); how it should orchestrate haipipe-probe -> haipipe-task + haipipe-insight for solid evidence. Extends 2026-06-22_claims-ledger-thin-no-status-no-evidence.
 fixed_in: ""
 ---
 feedback for the claim in the lifecycle, the content is so thin, you need the solid evidences to support it!! plesae think about how to use haipipe-probe to call haipipe-insight and haipipe-task to make this better, you can also learn to borrow the ideas from Tools/references/academic-research-skills or Tools/references/aris
@@ -14,7 +14,7 @@ Distilled ask:
 Why this matters (links): extends [claims-ledger-thin-no-status-no-evidence]. The earlier item said the ledger lacks status + quantified evidence; this item says the FIX is an orchestration: probe(plan->gather->read->judge->return) where gather calls task/discovery and return files insight, so every claim row traces to a confirmed probe verdict + an insight card, not a "planned Table".
 
 Suggested fix direction (skill, later pass):
-- Make haipipe-paper-structure-claims emit, per weak/GAP claim, a concrete probe contract (claim + evidence needed) and route it: /haipipe-probe plan from-need. Probe Gather calls /haipipe-task (run-X regression) and /haipipe-discover (lit anchor); probe Return files /haipipe-insight (K card) and backfills the verdict path + quantified result into the claim row.
+- Make haipipe-paper-claims emit, per weak/GAP claim, a concrete probe contract (claim + evidence needed) and route it: /haipipe-probe plan from-need. Probe Gather calls /haipipe-task (run-X regression) and /haipipe-discover (lit anchor); probe Return files /haipipe-insight (K card) and backfills the verdict path + quantified result into the claim row.
 - Adopt the reference libraries' rigor patterns (see the design proposal produced this session): explicit evidence grading, claim-evidence-citation linkage, falsification/limitation per claim.
 - A claim row done-rubric: status + confirmed probe verdict ref + quantified result + insight card ref + caveat. No "planned" anchors.
 

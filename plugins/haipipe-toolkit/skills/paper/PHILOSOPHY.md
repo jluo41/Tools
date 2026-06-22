@@ -29,7 +29,7 @@ The paper lifecycle is the stage spine, not a new set of verbs. It is defined in
 `ref/paper-lifecycle.md` and is the same spine the folder uses:
 
 ```text
-enter ▸ 0-seed → 1-pitch → 2-claims → 3-narrative → 4-figures-tables → 5-minimap
+enter ▸ 0-seed → 1-pitch → 2-claims → 3-narrative → 4-display → 5-minimap
         ▸ write/edit → review → submit ↻ round/respond → present
 ```
 
@@ -44,7 +44,7 @@ Each stage answers one question and owns one file:
 1-pitch          What is the paper selling?
 2-claims         Which claims are supported, weak, or GAP?
 3-narrative      How do claims become a manuscript arc?
-4-figures-tables What figure/table carries each claim?
+4-display What figure/table carries each claim?
 5-minimap        What job does each paragraph do, and what anchors it?
 ```
 
@@ -55,7 +55,7 @@ layer / frontier  where the active work is (which stage)
 maturity          how real the paper is (prospectus ... published)
 ```
 
-`2-claims` and `4-figures-tables` are the two stages where the paper reaches out
+`2-claims` and `4-display` are the two stages where the paper reaches out
 for evidence. `review` is the gate that decides which earlier stage is broken.
 
 ## Paper Console
@@ -82,7 +82,7 @@ The paper folder is fixed in `README.md` and `ref/paper-lifecycle.md`:
 
 ```text
 STATUS.md
-0-lifecycle/{0-seed,1-pitch,2-claims,3-narrative,4-figures-tables,5-minimap}/
+0-lifecycle/{0-seed,1-pitch,2-claims,3-narrative,4-display,5-minimap}/
 0-sections/
 0-displays/displayNN-<slug>/
 1-rounds/vYYMMDD/
@@ -160,7 +160,7 @@ insight   stores judged knowledge
 paper     selects evidence, sets story/claims/displays/minimap, writes prose, delivers
 ```
 
-The paper calls probe/task/discovery during `2-claims`, `4-figures-tables`, and
+The paper calls probe/task/discovery during `2-claims`, `4-display`, and
 `review`, and may call insight during respond/return. The paper does not execute
 code, search literature bodies directly, or store raw results as its own
 artifact.
@@ -174,7 +174,7 @@ You are designing the haipipe-paper layer.
 
 Treat a paper as a delivery contract, not a writing folder.
 The paper lifecycle is the stage spine:
-0-seed -> 1-pitch -> 2-claims -> 3-narrative -> 4-figures-tables -> 5-minimap,
+0-seed -> 1-pitch -> 2-claims -> 3-narrative -> 4-display -> 5-minimap,
 then write/edit -> review -> submit -> round/respond -> present.
 Do not invent a parallel set of verbs.
 

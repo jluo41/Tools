@@ -25,8 +25,8 @@ perl -i -pe 's/haipipe-discover(?!y)/haipipe-discovery/g' <file>
 - [ ] `skills/paper/ref/paper-lifecycle.md`  (L80)
 - [ ] `skills/paper/ref/lifecycle-map.md`  (L15)
 - [ ] `skills/paper/ref/delivery-need.md`  (L44)
-- [ ] `skills/paper/1-lifecycle/haipipe-paper-structure-seed/SKILL.md`  (L93, L106)
-- [ ] `skills/paper/1-lifecycle/haipipe-paper-structure-claims/SKILL.md`  (L90, L102)
+- [ ] `skills/paper/1-lifecycle/haipipe-paper-seed/SKILL.md`  (L93, L106)
+- [ ] `skills/paper/1-lifecycle/haipipe-paper-claims/SKILL.md`  (L90, L102)
 
 ## probe  (do in the probe session)
 - [ ] `skills/probe/DESIGN.md`  (L206, L398)

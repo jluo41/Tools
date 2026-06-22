@@ -63,7 +63,7 @@ reply fast, trust the apply; heavy = discuss + hand contested sections to
 ```
 
 Upstream input: the section→paragraph→sentence map comes from
-`1-lifecycle/haipipe-paper-structure-diagram` (produced in planning, consumed here as a
+`1-lifecycle/haipipe-paper-edit-diagram` (produced in planning, consumed here as a
 diagnostic). ⑥ typeset compiles via `components/compile/paper-compile` to detect widows/overfull.
 
 ## The six update topics

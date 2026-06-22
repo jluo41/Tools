@@ -1,7 +1,7 @@
 ---
 status: fixed (structure-claims v1.1.0: status col + per-claim detail + no-planned)
 created: 2026-06-22
-context: haipipe-paper-structure-claims + the live ledger Paper-Personality-Opioid-MedJournal/0-lifecycle/2-claims/2-claims.tex
+context: haipipe-paper-claims + the live ledger Paper-Personality-Opioid-MedJournal/0-lifecycle/2-claims/2-claims.tex
 fixed_in: ""
 ---
 ok feedback for claims， also very thin，how do you think we can provide more evidence? from discovery or from tasks?

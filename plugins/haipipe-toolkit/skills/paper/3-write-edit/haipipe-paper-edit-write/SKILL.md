@@ -26,13 +26,13 @@ Draft a LaTeX paper based on: **$ARGUMENTS**
 
 ## Inputs
 
-1. **PAPER_PLAN.md** — outline with claims-evidence matrix, section plan, figure plan (from `/haipipe-paper-structure-plan`)
+1. **PAPER_PLAN.md** — outline with claims-evidence matrix, section plan, figure plan (from `/haipipe-paper-minimap`; plan outline folded in, see its `ref/plan-outline.md`)
 2. **NARRATIVE_REPORT.md** — the research narrative (primary source of content)
-3. **Generated figures** — PDF/PNG files in `figures/` (from `/haipipe-paper-structure-figure`)
-4. **LaTeX includes** — `figures/latex_includes.tex` (from `/haipipe-paper-structure-figure`)
+3. **Generated figures** — PDF/PNG files in `figures/` (from `/haipipe-paper-figure`)
+4. **LaTeX includes** — `figures/latex_includes.tex` (from `/haipipe-paper-figure`)
 5. **Bibliography** — existing `.bib` file, or will create one
 
-If no PAPER_PLAN.md exists, ask the user to run `/haipipe-paper-structure-plan` first or provide a brief outline.
+If no PAPER_PLAN.md exists, ask the user to run `/haipipe-paper-minimap` first or provide a brief outline.
 
 ## Orchestra-Guided Writing Overlay
 

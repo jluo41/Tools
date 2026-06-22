@@ -31,7 +31,7 @@ stage and maturity detail, and `ref/paper-rounds.md` for the rounds detail.
 │   ├── 1-pitch/
 │   ├── 2-claims/
 │   ├── 3-narrative/
-│   ├── 4-figures-tables/
+│   ├── 4-display/
 │   └── 5-minimap/
 ├── 0-sections/          manuscript prose .tex files
 ├── 0-displays/          reusable figure/table units, one folder per display
@@ -84,6 +84,6 @@ These names were removed. Do not reintroduce them.
 |---|---|
 | `1-feedback/` | `1-rounds/` |
 | `lifecycle/stageNN_slug/current.md` + per-stage `runs/` `feedback/` `assets/` | `0-lifecycle/<N-stage>/<N-stage>.tex` + `1-rounds/vYYMMDD/` |
-| old stage names: `architecture-minimap`, `paper-plan`, `display-contract` | folded into `2-claims`, `3-narrative`, `4-figures-tables`, `5-minimap` |
+| old stage names: `architecture-minimap`, `paper-plan`, `display-contract` | folded into `2-claims`, `3-narrative`, `4-display`, `5-minimap` |
 | `0-displays/Figures/<id>/`, `0-displays/Tables/<id>/` buckets | `0-displays/displayNN-<slug>/` units |
 | project-level narrative coordination layer | the paper owns its own story; route gaps straight to evidence workers |

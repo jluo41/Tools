@@ -87,7 +87,7 @@ If no paper root is found, report `status: blocked` and suggest:
 
 ```text
 /haipipe-paper prospectus "<paper-path>"
-/haipipe-paper-structure folder "<paper-path>"
+/haipipe-paper-lifecycle folder "<paper-path>"
 ```
 
 ## Read Order
@@ -101,7 +101,7 @@ Read only files that exist, in this order:
    - `0-lifecycle/1-pitch/1-pitch.tex`
    - `0-lifecycle/2-claims/2-claims.tex`
    - `0-lifecycle/3-narrative/3-narrative.tex`
-   - `0-lifecycle/4-figures-tables/4-figures-tables.tex`
+   - `0-lifecycle/4-display/4-display.tex`
    - `0-lifecycle/5-minimap/5-minimap.tex`
 4. Explicit need records in lifecycle TeX comments or markdown tables. Search
    for `NEED`, `GAP`, `TODO`, `blocked`, `missing`, and `open`.
@@ -131,8 +131,8 @@ Per-stage inference when disk is the source of truth:
 | only `README.md` / prospectus lifecycle | `0-seed` or `1-pitch` |
 | `1-pitch.tex` exists but claims are absent/thin | `1-pitch -> 2-claims` |
 | claims exist but narrative is absent/thin | `2-claims -> 3-narrative` |
-| narrative exists but display units are missing | `3-narrative -> 4-figures-tables` |
-| display plan exists but display units/canonical PDFs are missing | `4-figures-tables` |
+| narrative exists but display units are missing | `3-narrative -> 4-display` |
+| display plan exists but display units/canonical PDFs are missing | `4-display` |
 | display units exist but paragraph placement is missing | `5-minimap` |
 | minimap exists and displays are placed | ready for section edit/build/review |
 
@@ -154,7 +154,7 @@ Need diagnosis is separate from lifecycle layer. Extract open needs from:
 | Surface | Typical need |
 |---|---|
 | `2-claims` GAP/weak/unsupported rows | probe, discovery, task, insight |
-| `4-figures-tables` missing display units | display or task |
+| `4-display` missing display units | display or task |
 | `5-minimap` empty paragraph/display slots | paper minimap or display |
 | section comments/TODOs | paper edit or evidence need |
 | round `todo.md` unresolved items | paper edit, probe, display, citation |
@@ -171,7 +171,7 @@ Loopback diagnosis follows the paper lifecycle:
 |---|---|
 | wording, citation, format, stale number | edit cycle |
 | paragraph has no job | `5-minimap` |
-| figure/table unclear or lacks source/caption/preview | `4-figures-tables` |
+| figure/table unclear or lacks source/caption/preview | `4-display` |
 | unsupported or too-strong claim | `2-claims` / `3-narrative` |
 | story not compelling or abstract/intro disagree | `1-pitch` |
 | paper no longer viable | `0-seed` |
@@ -212,7 +212,7 @@ Always answer with emoji-headed sections:
 
 ## 🎯 Recommended Next
 
-1. `/haipipe-paper-structure ...`
+1. `/haipipe-paper-lifecycle ...`
 2. ...
 
 ## 📦 Artifacts Read
@@ -229,12 +229,12 @@ After the dashboard, route follow-up input through the lifecycle using the
 command map in `../../ref/lifecycle-map.md`:
 
 ```text
-seed                       -> /haipipe-paper seed       (haipipe-paper-structure-seed)
-pitch / story / sell       -> /haipipe-paper pitch      (haipipe-paper-structure-pitch)
-claim / claims / ledger    -> /haipipe-paper claims     (haipipe-paper-structure-claims)
-narrative / arc            -> /haipipe-paper narrative  (haipipe-paper-structure-narrative)
-figure / table / display   -> /haipipe-paper figures    (haipipe-paper-structure-display)
-minimap / paragraph plan   -> /haipipe-paper minimap    (haipipe-paper-structure-minimap)
+seed                       -> /haipipe-paper seed       (haipipe-paper-seed)
+pitch / story / sell       -> /haipipe-paper pitch      (haipipe-paper-pitch)
+claim / claims / ledger    -> /haipipe-paper claims     (haipipe-paper-claims)
+narrative / arc            -> /haipipe-paper narrative  (haipipe-paper-narrative)
+figure / table / display   -> /haipipe-paper figures    (haipipe-paper-display)
+minimap / paragraph plan   -> /haipipe-paper minimap    (haipipe-paper-minimap)
 write / draft / edit / polish -> write/edit skills
 review / audit / gate      -> review skills
 round / todo / decisions   -> round skills
