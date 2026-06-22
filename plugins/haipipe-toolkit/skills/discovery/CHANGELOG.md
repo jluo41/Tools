@@ -6,6 +6,27 @@ first. Rollup lives in the plugin-level `CHANGELOG.md`. Per-skill version
 history also lives in each `SKILL.md` frontmatter `changelog:`.
 
 
+## [2.0.0] — 2026-06-22
+
+### Changed (TWO-AXIS redesign, mirrors task)
+- **Lifecycle is now the uniform `Plan -> Build(opt) -> Execute -> Report`.** Retires the
+  old `open -> search -> read -> review -> post` verb-lifecycle. Build is optional (only
+  for a systematic query string / extraction schema). One execution per folder (no `runs/`
+  multiplicity, unlike task).
+- **`search/read/review/idea` are no longer stage verbs — they are the capability buckets
+  (Execute-stage workers).** The folder TYPE is one of 3 Chinese-char types:
+  - `搜` source = search + read merged -> `sources.md` + `notes.md` (a reusable, accumulating source base).
+  - `析` analyze = judge + synthesize merged -> `verdict.md` (判, role prior_art/counter/novelty -> probe)
+    or `landscape.md` (综, role landscape/benchmark -> paper); `role:` picks the branch.
+  - `创` idea -> `ideas.md` (-> probe-open / paper-seed).
+- **`verdict:` block renamed to `report:`** (report-to-human; generalized across types).
+- **New terminal files** `landscape.md` + `ideas.md` alongside `verdict.md`.
+- Workers (4 buckets) and types (3) are different axes; per-type specialist skills are NOT created.
+- Old folders (`role:` + `verdict:`, no `type:`) remain readable; treat missing `type:` as `析`.
+- Updated: `SKILL.md` (2.0.0), `DESIGN.md` (2.0.0), `ref/lifecycle-map.md`,
+  `ref/discovery-yaml-schema.md`, and the minimal-dry-run fixture.
+
+
 ## [Unreleased] — 2026-06-21
 
 ### Changed

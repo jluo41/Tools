@@ -1,13 +1,8 @@
-discovery.yaml — Discovery Folder Schema
-========================================
+# discovery.yaml — Discovery Folder Schema (v2, two-axis, 3 types: 搜 析 创)
 
-What this file is
------------------
+## What this file is
 
-`discovery.yaml` is the spec at the root of every discovery-folder. A discovery
-is one research topic = one folder, mirroring a task-folder; `discovery.yaml`
-records what question was asked of the outside world, who consumes it, and which
-IO files the folder holds (see Sibling files below).
+`discovery.yaml` is the Plan + Report spec at the root of every discovery-folder. A discovery is one research topic = one folder, a sibling of a task-folder, running the uniform `Plan → Build(opt) → Execute → Report` lifecycle. `type:` names the folder type (`搜`/`析`/`创`); the lifecycle is identical for all three.
 
 Location:
 
@@ -15,179 +10,158 @@ Location:
 examples/<PROJECT>/discoveries/<GROUP_slug>/<NN_slug>/discovery.yaml
 ```
 
-Legacy flat single-file discoveries (`discoveries/<GROUP>/<NN_slug>.md`) and flat
-`discoveries/D0619_slug/` packages remain readable for compatibility, but new
-durable work uses the discovery-folder.
-
 Sibling files:
 
 ```
-discovery.yaml   source of truth for this discovery package
-status.yaml      current snapshot
-site.md          human-readable summary
-sources.md       citations, URLs, identifiers, verification flags
-notes.md         extracted findings and synthesis
-verdict.md       concise answer for the parent probe or delivery lifecycle
+discovery.yaml   Plan + Report spec (source of truth)
+build/           (optional) instrument authored at Build
+status.yaml      Axis-1 lifecycle progress snapshot
+site.md          human-readable Report record
+sources.md       Execute work product (搜: search)
+notes.md         Execute work product (搜: read)
+verdict.md | landscape.md | ideas.md   Execute TERMINAL (by type)
 ```
 
-No local event log belongs here. Orchestration events go to
-`_haipipe/project.log.jsonl`.
+No local event log belongs here. Orchestration events go to `_haipipe/project.log.jsonl`.
 
+## The two axes as fields
 
-Top-Level Fields
-----------------
+```
+type:    Axis 2 — the folder type     搜 | 析 | 创      (decides the Execute terminal)
+status:  Axis 1 — lifecycle progress  planned | building | executing | reported | ok | inconclusive | blocked
+```
 
-| Field          | Type    | Required | Notes |
-|----------------|---------|----------|-------|
-| kind           | string  | yes      | always `discovery` |
-| id             | string  | yes      | e.g. `D001` or `P01.01` |
-| group          | mapping | yes      | discovery-group metadata |
-| slug           | string  | yes      | discovery-folder slug |
-| title          | string  | yes      | human-readable title |
-| status         | enum    | yes      | planned/searching/reading/reviewed/ok/inconclusive/blocked |
-| parent         | mapping | opt      | delivery/probe/manual consumer |
-| role           | enum    | yes      | how the evidence is used |
-| question       | string  | yes      | external-world question |
-| sources        | mapping | opt      | search scope and selected source refs |
-| expected_outputs | list  | yes      | files expected in this folder |
-| verdict        | mapping | yes      | pending/supports/contradicts/inconclusive |
-| consumed_by    | list    | opt      | project-relative consumers that have used verdict.md |
-| created_at     | string  | yes      | quoted ISO8601 creation time |
-| updated_at     | string  | yes      | quoted ISO8601 last update time |
+## Type values (Axis 2)
 
+| 字 | type | IPO | Execute terminal | roles |
+|---|---|---|---|---|
+| 搜 | source | INPUT | `sources.md` (+ `notes.md`) | source_gather, source_read |
+| 析 | analyze | PROCESS | `verdict.md` (判) / `landscape.md` (综) | prior_art_check, counterevidence, novelty_check → verdict; landscape_review, benchmark_landscape → landscape |
+| 创 | create | OUTPUT | `ideas.md` | idea_generation |
 
-Skeleton
---------
+`type` is authoritative for the terminal. For `析`, `role` picks the verdict-vs-landscape branch.
+
+## Top-level fields
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| kind | string | yes | always `discovery` |
+| id | string | yes | e.g. `L01.03` |
+| **type** | enum | yes | **NEW** — folder type (Axis 2): `搜`/`析`/`创` |
+| role | enum | yes | refinement within `type` (esp. 析); see Role Values |
+| group | mapping | yes | discovery-group metadata |
+| slug | string | yes | discovery-folder slug |
+| title | string | yes | human-readable title |
+| status | enum | yes | lifecycle progress (Axis 1) |
+| parent | mapping | opt | delivery/probe/manual consumer |
+| question | string | yes | external-world question (Plan) |
+| sources | mapping | opt | search scope + selected refs (Plan); for `析`, may reference a `搜` folder |
+| **build** | mapping | opt | **NEW** — optional instrument (`needed` + `artifact`) |
+| expected_outputs | list | yes | files expected; terminal depends on `type` |
+| **report** | mapping | yes | **RENAMED from `verdict`** — report-to-human outcome block, generalized across types |
+| consumed_by | list | opt | project-relative parents that used the terminal |
+| created_at | string | yes | quoted ISO8601 |
+| updated_at | string | yes | quoted ISO8601 |
+
+## Skeleton (析 type, synthesize flavor)
 
 ```yaml
 kind: discovery
-id: P01.01
+id: L01.03
+type: 析                 # 搜 | 析 | 创
+role: landscape_review   # picks landscape.md (综) vs verdict.md (判)
 group:
-  id: P01
-  slug: robustness-claim
-  title: Robustness claim evidence
-slug: noisy-labels-prior-art
-title: Noisy-label robustness prior art
-status: planned
-created_at: "2026-06-19T10:00:00-04:00"
-updated_at: "2026-06-19T10:00:00-04:00"
+  id: L01
+  slug: personality-prescribing-landscape
+  title: Personality x prescribing landscape
+slug: empathy-agreeableness-outcomes
+title: Empathy / agreeableness effects on prescribing outcomes
+status: ok
+created_at: "2026-06-22T10:00:00-04:00"
+updated_at: "2026-06-22T11:30:00-04:00"
 
 parent:
-  type: probe
-  path: probes/0619_robustness_claim
+  type: paper
+  path: paper/MISQ2026/0-lifecycle/2-claims
   role: required_evidence
-role: prior_art_check
 
+# --- Plan (intent) ---
 question: |
-  Does prior work already show the same noisy-label robustness mechanism
-  claimed by this probe?
-
+  What is known about physician agreeableness / empathy affecting prescribing outcomes?
 sources:
-  requested:
-    - research-lit
-    - semantic-scholar
-    - exa
+  requested: [research-lit, semantic-scholar]
+  from_source_folder: ""    # optional: a 搜 folder to reuse instead of searching inline
   local_first: true
   verification_required: true
-
+build:
+  needed: false             # true only for a systematic query string / extraction schema
+  artifact: ""              # e.g. build/query-strategy.md
 expected_outputs:
   - sources.md
   - notes.md
-  - verdict.md
+  - landscape.md            # terminal for 析-synthesize (verdict.md for 析-judge)
 
-verdict:
-  status: pending
+# --- Report (outcome, report-to-human) ---
+report:
+  outcome: mapped           # per-type values below (NOT the top-level lifecycle `status:`)
   summary: ""
-  confidence: unknown
-  supports_claim: null
-  contradicts_claim: null
+  confidence: medium
+  supports_claim: null      # 析-judge only
+  contradicts_claim: null   # 析-judge only
 
 consumed_by: []
 ```
 
+A `搜` folder omits the `report.supports_claim`/`contradicts_claim` fields and ends at `sources.md`/`notes.md`; a `创` folder ends at `ideas.md` and usually sets `sources.from_source_folder` to the `搜`/`析` it builds on.
 
-Group Values
-------------
-
-`group:` records the discovery-group that owns this folder:
-
-```yaml
-group:
-  id: L01
-  slug: initial-landscape
-  title: Initial landscape discovery
-```
-
-Recommended group id hints:
+## Role values (refinements of type)
 
 ```
-L  landscape / delivery-open discovery
-P  probe-backed prior art or counterevidence
-B  benchmark landscape
-C  counterevidence
-S  source reads
+搜  source_gather        broad source scan, curated list          -> sources.md
+搜  source_read          deep read of important source(s)         -> notes.md
+析  prior_art_check      does the claim already exist?  (判)       -> verdict.md
+析  counterevidence      what argues against the claim? (判)       -> verdict.md
+析  novelty_check        is the angle new enough?       (判)       -> verdict.md
+析  landscape_review     map approaches/baselines       (综)       -> landscape.md
+析  benchmark_landscape  standard eval setups           (综)       -> landscape.md
+创  idea_generation      generate + rank candidate claims         -> ideas.md
 ```
 
-Group letters are organizational hints. `role:` remains authoritative.
-
-
-Parent Values
--------------
-
-`parent:` records who is expected to consume this discovery:
-
-```yaml
-parent:
-  type: paper | application | probe | manual
-  path: paper/PaperX/0-lifecycle/2-claims | applications/ask/001_question | probes/P001_claim | ""
-  role: required_evidence | optional_context | delivery_steering
-```
-
-Delivery-triggered discoveries usually use `landscape_review`,
-`novelty_check`, or `benchmark_landscape`. Probe-triggered discoveries usually
-use `prior_art_check`, `counterevidence`, `source_read`, or
-`benchmark_landscape`.
-
-
-Status Values
--------------
+## Status values (Axis 1 lifecycle)
 
 ```
-planned        package exists, work not started
-searching      finding sources
-reading        reading selected sources
-reviewed       synthesis complete, verdict not finalized
-ok             verdict.md complete and usable by Probe-post
-inconclusive   evidence exists but does not settle the question
-blocked        missing access, missing sources, or unresolved ambiguity
+planned       Plan written (discovery.yaml exists), not executed
+building      Build instrument in progress (optional stage)
+executing     Execute in progress
+reported      Report written, outcome being finalized
+ok            terminal complete and usable by the parent
+inconclusive  evidence exists but does not settle the question
+blocked       missing access, missing sources, or unresolved ambiguity
 ```
 
-Do not use `consumed` as the main status. A discovery can be reused by multiple
-parents. Keep `status: ok` or `inconclusive` and append consumers to
-`consumed_by`.
+A discovery can be reused by multiple parents. Keep `status: ok` (or `inconclusive`) and append consumers to `consumed_by`; never use `consumed` as the status.
 
+## Report block (was `verdict`) — report to a human
 
-Role Values
------------
+The report block uses `outcome:`, NOT `status:`. The top-level `status:` is Axis-1 lifecycle progress (planned/executing/ok/...); `report.outcome` is the per-type result. Two distinct fields, deliberately different names so they never collide.
+
+`report.outcome` per type:
 
 ```
-prior_art_check       checks whether the claim already exists
-landscape_review      maps known approaches, baselines, datasets, metrics
-novelty_check         checks whether the angle is new enough
-source_read           deep read of one important source
-counterevidence       searches for evidence against the claim
-benchmark_landscape   identifies standard eval setups
+搜               gathered      (N sources curated / read)
+析-judge         supports | contradicts | inconclusive
+析-synthesize    mapped        (field organized)
+创               generated     (N candidates ranked)
 ```
 
+Common fields: `outcome`, `summary`, `confidence` (high/medium/low/unknown). `析-judge` adds `supports_claim` / `contradicts_claim` (bool or null).
 
-Verdict Contract
-----------------
+## Terminal contracts (by type)
 
-`verdict.md` should be short enough for Probe-post to read directly:
+### verdict.md — 析-judge (判) → probe
 
 ```md
 # Verdict
-
 status: supports | contradicts | inconclusive
 confidence: high | medium | low
 
@@ -195,28 +169,62 @@ confidence: high | medium | low
 One paragraph answering the discovery question.
 
 ## Evidence
-- Full citation / URL / identifier — one-line finding — VERIFIED or NEEDS-VERIFICATION
+- Full citation / URL / id — one-line finding — VERIFIED | NEEDS-VERIFICATION
 
 ## Caveats
 - What this discovery did not check.
 ```
 
-The full citation and verification discipline follows the Review Output
-Contract in `haipipe-discovery/SKILL.md`.
+### landscape.md — 析-synthesize (综) → paper / idea-gen
 
+A map, not a yes/no.
 
-Source Records
---------------
+```md
+# Landscape: <topic>
+status: mapped
+confidence: high | medium | low
 
-Sources normally live as records in `sources.md`, not as directories:
+## Approaches (taxonomy)
+- <cluster> — what it does — exemplar refs
+
+## Baselines / datasets / metrics      (for benchmark_landscape)
+- <name> — what it measures — used by <refs>
+
+## Gaps / open questions
+- <gap> — why it is open
+
+## References (full, verified)
+1. <self-contained full citation>      (Review Output Contract rules 1-5)
+```
+
+### ideas.md — 创 → probe-open / paper-seed
+
+A ranked candidate-claim set, not a verdict.
+
+```md
+# Ideas: <prompt>
+status: generated
+
+## Candidates (ranked)
+1. <claim> — rationale — novelty: NOVEL | PARTIAL | SEEN (vs <ref>) — testability: <how a probe would test it>
+
+## Grounding
+- which 搜 / 析 folder this builds on
+```
+
+### sources.md and notes.md — 搜 (also work products inside 析)
 
 ```md
 # Sources
-
 | id | citation / URL | role | verification |
 |----|----------------|------|--------------|
 | S001 | <full citation or URL> | adjacent method | VERIFIED |
 ```
 
-Only create `sources/Sxxx_slug/` when the project must keep heavy source
-artifacts such as PDFs, HTML snapshots, or per-source annotation files.
+`notes.md` holds per-source extracted findings, one block per source id. In a `搜` folder these are the terminal; in an `析` folder they are work products feeding the verdict/landscape.
+
+The full citation and verification discipline follows the Review Output Contract in `haipipe-discovery/SKILL.md` (rule 5: every id/DOI/venue VERIFIED or flagged NEEDS-VERIFICATION).
+
+## Source records
+
+Sources normally live as rows in `sources.md`, not as directories. Only create `sources/Sxxx_slug/` when the project must keep heavy artifacts (PDFs, HTML snapshots, per-source annotations).

@@ -14,6 +14,7 @@ parent:
   type: probe
   path: probes/P001_first-check
   role: required_evidence
+type: 析
 role: prior_art_check
 
 question: Is there direct prior art that already resolves this claim?
@@ -30,8 +31,8 @@ expected_outputs:
   - notes.md
   - verdict.md
 
-verdict:
-  status: supports
+report:
+  outcome: supports
   summary: No direct blocker found in this dry run; related methods should be cited.
   confidence: low
   supports_claim: true

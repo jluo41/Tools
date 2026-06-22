@@ -81,12 +81,12 @@ examples/ProjX-Phy-001-AdaptiveSampling/
 |       |   |-- notes.md
 |       |   `-- verdict.md
 |       `-- 02_benchmark-landscape-rare-phenotypes/
-|           |-- discovery.yaml
+|           |-- discovery.yaml          # type: 析, role: benchmark_landscape
 |           |-- status.yaml
 |           |-- site.md
 |           |-- sources.md
 |           |-- notes.md
-|           `-- verdict.md
+|           `-- landscape.md            # 综 terminal (map, not a verdict)
 |-- tasks/
 |   |-- T001_baseline-eval/
 |   |   |-- workflow/
@@ -167,12 +167,13 @@ discoveries/P01_rare-phenotype-lift/01_prior-art-adaptive-sampling/
 discoveries/P01_rare-phenotype-lift/02_benchmark-landscape-rare-phenotypes/
 ```
 
-Own outside-world evidence:
+Own outside-world evidence, each running the discovery lifecycle
+(Plan -> Build(opt) -> Execute -> Report). `discovery.yaml` carries `type:`
+(搜 source / 析 analyze / 创 idea); `role:` refines it:
 
-- sources
-- source notes
-- prior-art or benchmark synthesis
-- a compact verdict the probe can consume
+- `01_prior-art` = 析 判 (role prior_art_check) -> terminal `verdict.md`, consumed by Probe-post
+- `02_benchmark-landscape` = 析 综 (role benchmark_landscape) -> terminal `landscape.md`, consumed by paper / idea-gen
+- both: `sources.md` + `notes.md` are the Execute work products
 
 Task packages:
 
@@ -358,7 +359,7 @@ claim_result:
 evidence_refs:
   discoveries:
     - discoveries/P01_rare-phenotype-lift/01_prior-art-adaptive-sampling/verdict.md
-    - discoveries/P01_rare-phenotype-lift/02_benchmark-landscape-rare-phenotypes/verdict.md
+    - discoveries/P01_rare-phenotype-lift/02_benchmark-landscape-rare-phenotypes/landscape.md
   tasks:
     - tasks/T001_baseline-eval/results/main/metrics.json
     - tasks/T002_adaptive-eval/results/main/metrics.json
