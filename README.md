@@ -32,8 +32,9 @@ Then in Claude Code:
 ```
 
 By default, `install.sh` registers this repository as the `jluo41-tools`
-marketplace. If the parent workspace has a `.claude/` directory, it also
-symlinks the skills into that workspace.
+marketplace. If the parent workspace has a `.claude/` directory, it symlinks
+the skills into that Claude workspace. If the parent workspace has a `.codex/`
+directory, it also symlinks the same skills into `.codex/skills/` for Codex.
 
 ### Windows
 
@@ -51,8 +52,9 @@ cd Tools
 
 Junctions use absolute targets, so re-run `install.ps1` if you relocate the
 repo. The generated links are OS/machine-specific — gitignore
-`<workspace>/.claude/skills/` and regenerate per machine rather than committing
-them (committed symlinks check out as dead text stubs on Windows).
+`<workspace>/.claude/skills/` and `<workspace>/.codex/skills/` and regenerate
+per machine rather than committing them (committed symlinks check out as dead
+text stubs on Windows).
 
 ### Project Install
 
@@ -60,7 +62,8 @@ them (committed symlinks check out as dead text stubs on Windows).
 ./install.sh --project /path/to/workspace
 ```
 
-This symlinks every discovered skill into `/path/to/workspace/.claude/skills/`.
+This symlinks every discovered skill into `/path/to/workspace/.claude/skills/`
+and `/path/to/workspace/.codex/skills/` when those tool directories exist.
 Skill discovery is recursive, so deeply nested skills such as
 `haipipe-toolkit/skills/F_paper/4-write/paper-write` are included.
 

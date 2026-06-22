@@ -1,11 +1,11 @@
 ---
 name: haipipe-paper-structure-display
-description: "Plan, scaffold, build, audit, and insert paper display items: figures, tables, diagrams, and preview PDFs under 0-displays/. Use for display-unit README files, ready-to-input figure/table blocks, captions, labels, standalone previews, or figure/table story-evidence contracts."
-argument-hint: "[plan|scaffold|build|audit|insert] [paper-dir-or-display-id] [args...]"
-allowed-tools: Bash, Read, Write, Edit, Grep, Glob
+description: "Plan, materialize (via task/probe), scaffold, build, audit, and insert paper display items: figures, tables, diagrams, and preview PDFs under 0-displays/. Displays are RENDERED by a paper-display task from evidence, never hand-authored in float.tex. Use for display-unit README files, ready-to-input figure/table blocks, captions, labels, standalone previews, or figure/table story-evidence contracts."
+argument-hint: "[plan|materialize|scaffold|build|audit|insert] [paper-dir-or-display-id] [args...]"
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-06-20"
+  version: "1.2.0"
+  last_updated: "2026-06-22"
   summary: "Maintain 0-displays/ as a story/evidence display layer with README.md, per-unit README.md, float.tex, and standalone preview PDFs."
 ---
 
@@ -58,6 +58,16 @@ Principles
 5. **Display is a contract layer.** Figure/table generation skills may create
    assets, but this skill records why each display exists and whether it still
    supports the story.
+6. **A display is materialized by a task, never hand-authored.** The asset
+   (`assets/figure.pdf` for a figure, `assets/table-body.tex` for a table) is
+   RENDERED by a paper-display task from evidence (a probe verdict, a parser's
+   `metrics.json`, a result table), and `float.tex` only references it via
+   `\includegraphics` or `\input`. Numbers typed directly into `float.tex` are a
+   placeholder, not a display: route them through `materialize`. A figure-bearing
+   claim should be shown as a figure (forest, dose-response curve, panel), not
+   only as a typed table.
+7. **The stage doc is the gallery.** `0-lifecycle/4-figures-tables/4-figures-tables.tex` `\input`s each rendered `float.tex`, so the stage PDF doubles as the combined figures-and-tables view; do NOT make a separate `preview-all`. Compile from the paper ROOT so the `0-displays/` paths resolve. Per-unit `preview.pdf` remain as individual review artifacts.
+8. **Two display kinds, both task-rendered.** (a) data-driven: a parser turns server logs/CSVs into `metrics.json`, then a render task turns that into `assets/figure.pdf` / `assets/table-body.tex` (robust parser: handle factor-variable rows, leading-dot numbers, SE/CIs). (b) schematic/flow (study-flow, data-provenance, CONSORT): a diagram render task draws the flow and annotates it with REAL Ns pulled from the data description; still a task output, never hand-drawn.
 
 Relationship to ARIS
 --------------------
@@ -201,6 +211,37 @@ planned / data-ready / rendered / input-ready / inserted / reviewed
 
 For table previews, input the table `float.tex` instead.
 
+### `materialize`
+
+Turn a `planned` / `data-ready` display into a real RENDERED asset by actively
+calling the evidence and render workers. This stage never hand-authors a figure
+or pastes numbers into `float.tex`.
+
+Routing (use `../ref/delivery-need.md`):
+
+```text
+claim has no confirmed verdict yet     -> /haipipe-probe plan from-need <need>
+asset needs rendering from evidence    -> /haipipe-task-for-display <need>
+```
+
+`/haipipe-task-for-display` creates or extends a **paper-display task group**
+folder (e.g. `tasks/Z0N_Display_<topic>/`) and a per-display **task folder** that
+RENDERS the figure/table from the evidence (a probe verdict, or a parser's
+`metrics.json`) into:
+
+```text
+assets/figure.pdf          (graphical display: forest, dose-response curve, panel)
+assets/table-body.tex      (LaTeX-native table body)
+source_data.csv            (the exact numbers behind the asset)
+metrics.json               (machine-readable summary, for re-derivation)
+```
+
+The task renders; the paper then backfills the rendered asset path into the
+display unit and points `float.tex` at it (`\includegraphics` / `\input`). A
+display reaches status `rendered` only when its asset exists on disk as a task
+output, not when numbers are typed into `float.tex`. Prefer reusing an existing
+display task group (extend it with a new config) over creating a new one.
+
 ### `build`
 
 Compile standalone preview PDFs for one display item or all display items with
@@ -236,7 +277,8 @@ Route failures:
 | Failure | Route |
 |---------|-------|
 | caption typo, stale label, path issue | edit display item |
-| missing asset/table body | figure/table production skill |
+| `float.tex` inlines pasted numbers (no rendered asset) | `materialize` (call `/haipipe-task-for-display`) |
+| missing asset/table body | `materialize` (render via the paper-display task) |
 | unsupported claim | `haipipe-paper-structure narrative` or upstream task/probe |
 | wrong figure sequence | `haipipe-paper-structure architecture` or `plan` |
 | hero figure does not sell story | `haipipe-paper-structure pitch` or `architecture` |

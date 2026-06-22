@@ -1,5 +1,5 @@
 ---
-status: open
+status: fixed (structure-claims two-stage gate + delivery-need.md drain loop)
 created: 2026-06-22
 context: haipipe-paper-structure-claims (claim lifecycle stage); how it should orchestrate haipipe-probe -> haipipe-task + haipipe-insight for solid evidence. Extends 2026-06-22_claims-ledger-thin-no-status-no-evidence.
 fixed_in: ""

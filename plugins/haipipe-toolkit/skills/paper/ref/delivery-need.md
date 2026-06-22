@@ -50,6 +50,11 @@ The probe entry is `plan from-need`: Plan intakes the paper claim gap, then
 decides attach-to-existing-probe / new-probe / standalone and runs the
 Plan -> Gather -> Read -> Judge -> Return lifecycle.
 
+Two entry rules (who the delivery calls):
+
+- a CLAIM need (needs a judged verdict) -> call PROBE; the probe owns the task call (its Gather step), so the claim is always judged before it lands. The delivery never calls a raw compute task for a claim-bearing need.
+- a pure ARTIFACT / render need (no new claim, e.g. re-render a figure) -> call `/haipipe-task-for-display` directly; the display references the rendered asset.
+
 ## Need record
 
 Each open need is one row in `0-lifecycle/2-claims/` (the claim ledger) or the
@@ -78,3 +83,35 @@ verdict back here. On backfill:
 
 One claim slot can be backed by one probe; multiple papers can cite the SAME
 probe (evidence is shared, framing is not).
+
+## Autonomous drain (the "keep going" loop)
+
+The console is a derive-from-disk, resumable loop body. To drive a delivery to done:
+
+```
+LOOP until (no open needs) OR (gate hit) OR (only server-blocked left):
+  1. enter    derive frontier + open needs from disk (the queue)
+  2. pick     the next actionable need (skip server-blocked)
+  3. route    claim -> probe (probe calls task) ; artifact -> task-for-display ; prose -> edit
+  4. execute  write the artifact / verdict (local)
+  5. backfill update the slot/display/section; mark the need returned
+  6. -> 1
+```
+
+State lives on disk (the need ledger + STATUS), so a fresh session re-enters and continues.
+
+### Server vs local
+
+A local need (render, parse, draft, backfill) drains immediately. A need that requires a NEW server run (Stata on PHI depositing to `Report-From-CMS-Server`) is server-blocked: schedule a poll and resume when results land. A figure renders locally; it blocks only if its underlying regression is not back yet.
+
+### Autonomy policy
+
+```
+AUTO (no asking):  local render/parse, backfill claims/displays, draft a stage tex,
+                   compile previews, parse logs, status/ledger updates
+PAUSE + surface:   trigger a server/PHI run; declare a final yes/no verdict;
+                   file insight as accepted knowledge; compile-to-submit;
+                   destructive round / git ops
+```
+
+The loop runs AUTO unattended and stops at the first PAUSE gate, reporting what it hit.

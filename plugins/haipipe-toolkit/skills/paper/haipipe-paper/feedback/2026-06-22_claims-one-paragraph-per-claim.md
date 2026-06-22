@@ -1,5 +1,5 @@
 ---
-status: open
+status: fixed (structure-claims v1.1.0: matrix + per-claim \subsection* detail)
 created: 2026-06-22
 context: haipipe-paper-structure-claims ledger layout; how 2-claims.tex should present each claim. Extends 2026-06-22_claims-ledger-thin-no-status-no-evidence and 2026-06-22_claims-need-probe-orchestrated-evidence.
 fixed_in: ""
