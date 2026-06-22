@@ -279,7 +279,7 @@ Save the final outline to `PAPER_PLAN.md` in the project root:
 [from Step 6, summarized]
 
 ## Next Steps
-- [ ] /haipipe-paper-figure to generate all figures
+- [ ] /haipipe-paper-display-figure to generate all figures
 - [ ] /haipipe-paper-edit-write to draft LaTeX
 - [ ] /paper-compile to build PDF
 ```

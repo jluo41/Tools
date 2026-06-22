@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-conference
-description: "Conference paper pipeline specialist (was: paper-writing). Orchestrates paper-plan → paper-figure → haipipe-paper-figure-spec/haipipe-paper-illustration/mermaid-diagram → paper-write → paper-compile → haipipe-paper-edit-improve-loop to go from a narrative report to a polished PDF. Target venues: ICLR, NeurIPS, ICML, CVPR, ACL, AAAI, IEEE. At `— effort: max | beast` (or explicit `— assurance: submission`), Phase 6 gates the Final Report on `tools/verify_paper_audits.sh`. Called by /haipipe-paper orchestrator. Direct invocation works for conference work. Trigger: conference paper, ICLR/NeurIPS/ICML paper, write paper pipeline, 写论文全流程, 从报告到PDF."
+description: "Conference paper pipeline specialist (was: paper-writing). Orchestrates paper-plan → paper-figure → haipipe-paper-display-diagram/haipipe-paper-display-illustration-gemini/mermaid-diagram → paper-write → paper-compile → haipipe-paper-edit-improve-loop to go from a narrative report to a polished PDF. Target venues: ICLR, NeurIPS, ICML, CVPR, ACL, AAAI, IEEE. At `— effort: max | beast` (or explicit `— assurance: submission`), Phase 6 gates the Final Report on `tools/verify_paper_audits.sh`. Called by /haipipe-paper orchestrator. Direct invocation works for conference work. Trigger: conference paper, ICLR/NeurIPS/ICML paper, write paper pipeline, 写论文全流程, 从报告到PDF."
 argument-hint: "[narrative-report-path-or-topic]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, Skill, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
@@ -20,7 +20,7 @@ Orchestrate a complete paper writing workflow for: **$ARGUMENTS**
 This skill chains five sub-skills into a single automated pipeline:
 
 ```
-/haipipe-paper-minimap → /haipipe-paper-figure → /haipipe-paper-edit-write → /paper-compile → /haipipe-paper-edit-improve-loop
+/haipipe-paper-minimap → /haipipe-paper-display-figure → /haipipe-paper-edit-write → /paper-compile → /haipipe-paper-edit-improve-loop
   (outline)        (plots)        (LaTeX)        (build PDF)       (review & polish ×2)
 ```
 
@@ -35,7 +35,7 @@ In this hybrid pack, the pipeline itself is unchanged, but `haipipe-paper-minima
 - **REVIEWER_MODEL = `gpt-5.4`** — Model used via Codex MCP for plan review, figure review, writing review, and improvement loop.
 - **AUTO_PROCEED = true** — Auto-continue between phases. Set `false` to pause and wait for user approval after each phase.
 - **HUMAN_CHECKPOINT = false** — When `true`, the improvement loop (Phase 5) pauses after each round's review to let you see the score and provide custom modification instructions. When `false` (default), the loop runs fully autonomously. Passed through to `/haipipe-paper-edit-improve-loop`.
-- **ILLUSTRATION = `figurespec`** — Architecture/illustration generator for Phase 2b: `figurespec` (default, deterministic JSON→SVG via `/haipipe-paper-figure-spec`, best for architecture/workflow/topology), `gemini` (AI-generated via `/haipipe-paper-illustration`, best for qualitative method illustrations; needs `GEMINI_API_KEY`), `mermaid` (Mermaid syntax via `/mermaid-diagram`, free, best for flowcharts), or `false` (skip Phase 2b, manual only).
+- **ILLUSTRATION = `figurespec`** — Architecture/illustration generator for Phase 2b: `figurespec` (default, deterministic JSON→SVG via `/haipipe-paper-display-diagram`, best for architecture/workflow/topology), `gemini` (AI-generated via `/haipipe-paper-display-illustration-gemini`, best for qualitative method illustrations; needs `GEMINI_API_KEY`), `mermaid` (Mermaid syntax via `/mermaid-diagram`, free, best for flowcharts), or `false` (skip Phase 2b, manual only).
 
 > Override inline: `/haipipe-paper-conference "NARRATIVE_REPORT.md" — venue: NeurIPS, illustration: gemini, human checkpoint: true`
 > IEEE example: `/haipipe-paper-conference "NARRATIVE_REPORT.md" — venue: IEEE_JOURNAL`
@@ -130,10 +130,10 @@ Shall I proceed with figure generation?
 
 ### Phase 2: Figure Generation
 
-Invoke `/haipipe-paper-figure` to generate data-driven plots and tables:
+Invoke `/haipipe-paper-display-figure` to generate data-driven plots and tables:
 
 ```
-/haipipe-paper-figure "PAPER_PLAN.md"
+/haipipe-paper-display-figure "PAPER_PLAN.md"
 ```
 
 **What this does:**
@@ -145,7 +145,7 @@ Invoke `/haipipe-paper-figure` to generate data-driven plots and tables:
 
 **Output:** `figures/` directory with PDFs, generation scripts, and LaTeX snippets.
 
-> **Scope:** `haipipe-paper-figure` covers data plots and comparison tables. Architecture diagrams, pipeline figures, and method illustrations are handled in Phase 2b below.
+> **Scope:** `haipipe-paper-display-figure` covers data plots and comparison tables. Architecture diagrams, pipeline figures, and method illustrations are handled in Phase 2b below.
 
 #### Phase 2b: Architecture & Illustration Generation
 
@@ -153,18 +153,18 @@ Invoke `/haipipe-paper-figure` to generate data-driven plots and tables:
 
 If the paper plan includes architecture diagrams, pipeline figures, audit cascades, or method illustrations, invoke the appropriate generator based on the `illustration` parameter:
 
-**When `illustration: figurespec`** (default) — invoke `/haipipe-paper-figure-spec`:
+**When `illustration: figurespec`** (default) — invoke `/haipipe-paper-display-diagram`:
 ```
-/haipipe-paper-figure-spec "[architecture/workflow description from PAPER_PLAN.md]"
+/haipipe-paper-display-diagram "[architecture/workflow description from PAPER_PLAN.md]"
 ```
 - Deterministic JSON → SVG vector rendering (editable, reproducible)
 - Best for: system architecture, workflow pipelines, audit cascades, layered topology
 - Output: `figures/*.svg` + `figures/*.pdf` (via rsvg-convert) + `figures/specs/*.json`
 - No external API, runs fully local
 
-**When `illustration: gemini`** — invoke `/haipipe-paper-illustration`:
+**When `illustration: gemini`** — invoke `/haipipe-paper-display-illustration-gemini`:
 ```
-/haipipe-paper-illustration "[method description from PAPER_PLAN.md or NARRATIVE_REPORT.md]"
+/haipipe-paper-display-illustration-gemini "[method description from PAPER_PLAN.md or NARRATIVE_REPORT.md]"
 ```
 - Claude plans → Gemini optimizes → Nano Banana Pro renders → Claude reviews (score ≥ 9)
 - Best for: qualitative method illustrations, natural-style diagrams, result grids

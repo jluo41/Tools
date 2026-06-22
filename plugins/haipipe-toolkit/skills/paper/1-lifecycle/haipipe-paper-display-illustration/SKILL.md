@@ -1,13 +1,14 @@
 ---
-name: haipipe-paper-illustration-image2
-description: "Generate publication-quality academic illustrations through a local Codex app-server bridge that uses Codex native image generation. This is a separate experimental alternative to `haipipe-paper-illustration`, intended for Claude Code users who want a GPT-image-style renderer without modifying the original skill."
+name: haipipe-paper-display-illustration
+description: "Default AI-illustration renderer of the display family: generate publication-quality academic concept figures (architecture/method/pipeline/taxonomy) through a local Codex app-server bridge that uses Codex native image generation. Use when user says \"画架构图\", \"method illustration\", \"concept figure\", \"AI 配图\", or needs an AI-rendered concept figure. If the codex-image2 bridge is unavailable, fall back to haipipe-paper-display-illustration-gemini (Gemini backend)."
 argument-hint: "[description-or-method-file]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, WebSearch, mcp__codex-image2__generate, mcp__codex-image2__generate_start, mcp__codex-image2__generate_status, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "1.2.0"
+  version: "1.3.0"
   last_updated: "2026-06-22"
-  summary: "Generate publication-quality academic illustrations through a local Codex app-server bridge that uses Codex native image generation."
+  summary: "Default AI-illustration renderer of the display family (Codex native image generation); Gemini backend lives in -gemini."
   changelog:
+    - "1.3.0 (2026-06-22): promoted to the DEFAULT illustration renderer and renamed haipipe-paper-display-illustration (the Codex bridge is the maintained path); the Gemini backend moved to haipipe-paper-display-illustration-gemini as the named fallback."
     - "1.2.0 (2026-06-22): completed the migration -- vendored the canonical helper scripts/paper_illustration_image2.py (the 1.1.0 rename dropped it, leaving the $IMAGE2_HELPER reference dangling) and the codex-image2 MCP bridge (toolkit mcp-servers/codex-image2/). Added the Fit & Readiness section."
     - "1.1.0 (2026-06-05): renamed from paper-illustration-image2 to haipipe-paper-illustration-image2 (haipipe-paper-* name unification)."
     - "1.0.0 (2026-05-31): baseline metadata added."
@@ -28,7 +29,7 @@ dose-response, subgroup, etc.) must be rendered from real data by a task
 (the `Z01`-style parse-then-render path) so they are reproducible and exact. An
 AI raster of a data figure is unverifiable and unfit for a data-driven venue.
 For deterministic vector schematics (e.g. a study-flow / CONSORT diagram), prefer
-`haipipe-paper-figure-spec` (JSON -> SVG, no external service) or a
+`haipipe-paper-display-diagram` (JSON -> SVG, no external service) or a
 task-rendered matplotlib schematic; reach for image2 only when you want a richer
 conceptual illustration than a vector spec can express, typically for a
 conference/ML venue.
@@ -171,7 +172,7 @@ rather than falling back to a shell/Python bitmap.
 | **Method illustrations** | Excellent | Conceptual diagrams, algorithm flowcharts |
 | **Conceptual figures** | Good | Comparison diagrams, taxonomy trees |
 
-**Not for:** Statistical plots (use `/haipipe-paper-figure`), deterministic vector topology figures (prefer `/haipipe-paper-figure-spec`), photo-realistic scenes
+**Not for:** Statistical plots (use `/haipipe-paper-display-figure`), deterministic vector topology figures (prefer `/haipipe-paper-display-diagram`), photo-realistic scenes
 
 ## Workflow: MUST EXECUTE ALL STEPS
 

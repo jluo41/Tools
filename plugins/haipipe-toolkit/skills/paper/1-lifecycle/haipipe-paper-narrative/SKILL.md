@@ -17,7 +17,7 @@ metadata:
 The narrative report is **not** a draft of the paper. It is the **design contract**
 that the paper writes from. Every claim, figure, and citation in the final PDF
 should trace back to a line in this file. If something is not in the narrative,
-the downstream pipeline (`/haipipe-paper-minimap → /haipipe-paper-figure → /haipipe-paper-edit-write`) will not
+the downstream pipeline (`/haipipe-paper-minimap → /haipipe-paper-display-figure → /haipipe-paper-edit-write`) will not
 invent it.
 
 If the paper folder has `0-lifecycle/1-pitch/1-pitch.tex`, read it before composing the
@@ -166,7 +166,7 @@ Upstream                          This skill                  Downstream
                                    ├──► /haipipe-paper-narrative  ──► NARRATIVE_REPORT.md ──► /haipipe-paper
 implement + experiments            │                                                       │
                                    │                                                       ├──► /haipipe-paper-minimap
-/auto-review-loop ──► AUTO_REVIEW ─┤                                                       ├──► /haipipe-paper-figure
+/auto-review-loop ──► AUTO_REVIEW ─┤                                                       ├──► /haipipe-paper-display-figure
                                    │                                                       ├──► /haipipe-paper-edit-write
 /haipipe-probe judge  ──► CLAIMS_…    ─┘                                                       ├──► /paper-compile
                                                                                            └──► /haipipe-paper-edit-improve-loop

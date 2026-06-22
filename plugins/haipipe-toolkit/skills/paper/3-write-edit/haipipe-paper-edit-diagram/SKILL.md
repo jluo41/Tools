@@ -25,7 +25,7 @@ metadata:
 - Pairing with `/paper-revise` or `/haipipe-paper-edit-optimizer` to pick *which* paragraph or sentence to revise next
 
 ## When to Defer
-- Want figures inside the paper rendered → use `/haipipe-paper-figure`
+- Want figures inside the paper rendered → use `/haipipe-paper-display-figure`
 - Want a logical-argument diagram (claim flow across sections) → use `/diagram-ascii` ref/08-paper-section
 - Want word-by-word style review → use `/haipipe-paper-edit-write-scientific` or `/paper-revise`
 

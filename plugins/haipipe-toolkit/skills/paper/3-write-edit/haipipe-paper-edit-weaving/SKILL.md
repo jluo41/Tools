@@ -853,7 +853,7 @@ When to invoke this skill vs. neighbours
 | interactive multi-pass revision with sentence-level annotations + apply | `/paper-revise` (sibling, not a child) |
 | draft a section from an outline | `/haipipe-paper-edit-write` |
 | critique paper-wide structure, not one section | `/paper-structure-planning` |
-| build a TikZ figure for the published paper | `/haipipe-paper-figure-spec` or `/diagram-drawio` |
+| build a TikZ figure for the published paper | `/haipipe-paper-display-diagram` or `/diagram-drawio` |
 
 ---
 

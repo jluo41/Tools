@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-lifecycle
-description: "Orchestrator for the paper structure lifecycle (1-lifecycle). Routes to specialists: folder (scaffold), pitch (one-minute story), narrative (design contract), minimap (paragraph jobs + evidence anchors; folds in the architecture blueprint and plan outline), display (figure/table contract + preview PDFs; folds in figure-planner inventory), figure (plots/tables), figure-spec (vector diagrams), illustration (AI images). Use when you need any structural work on a paper before or during writing. Trigger: paper structure, paper pitch, scaffold paper, paper outline, paper architecture, display layer, figure plan, /haipipe-paper-lifecycle."
+description: "Orchestrator for the paper structure lifecycle (1-lifecycle). Routes to specialists: folder (scaffold), pitch (one-minute story), narrative (design contract), minimap (paragraph jobs + evidence anchors; folds in the architecture blueprint and plan outline), display (figure/table contract + architecture/figure1 framework candidate rounds + preview PDFs; folds in figure-planner inventory), figure (plots/tables), figure-spec (vector diagrams), illustration (AI images). Use when you need any structural work on a paper before or during writing. Trigger: paper structure, paper pitch, scaffold paper, paper outline, paper architecture, display layer, figure plan, /haipipe-paper-lifecycle."
 argument-hint: "[function] [paper-path-or-input] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
@@ -32,10 +32,12 @@ narrative, outlines, figures, or diagrams itself.
 /haipipe-paper-lifecycle narrative <args>               -> NARRATIVE_REPORT.md (design contract)
 /haipipe-paper-lifecycle minimap <args>                 -> 0-lifecycle/5-minimap/5-minimap.tex (folds in architecture blueprint + plan outline; see its ref/)
 /haipipe-paper-lifecycle display <args>                 -> 0-displays/README.md + ready-to-input display blocks (folds in figure-planner inventory; see its ref/)
-/haipipe-paper-lifecycle figure <args>                  -> data-driven plots + tables
-/haipipe-paper-lifecycle figure-spec <args>             -> deterministic vector diagrams (SVG)
-/haipipe-paper-lifecycle illustration <args>            -> AI illustrations (Gemini)
-/haipipe-paper-lifecycle illustration-image2 <args>     -> AI illustrations (Codex bridge, experimental)
+/haipipe-paper-lifecycle table <args>                   -> data-driven LaTeX tables (haipipe-paper-display-table)
+/haipipe-paper-lifecycle figure <args>                  -> data-driven plots (haipipe-paper-display-figure)
+/haipipe-paper-lifecycle diagram <args>                 -> deterministic vector diagrams / SVG (haipipe-paper-display-diagram)
+/haipipe-paper-lifecycle illustration <args>            -> AI concept illustration, DEFAULT Codex bridge (haipipe-paper-display-illustration)
+/haipipe-paper-lifecycle illustration-gemini <args>     -> AI concept illustration, Gemini fallback (haipipe-paper-display-illustration-gemini)
+/haipipe-paper-lifecycle framework <args>                -> display framework mode (candidate rounds, selection, handoff)
 /haipipe-paper-lifecycle "<natural language>"            -> infer function, dispatch
 ```
 
@@ -89,22 +91,28 @@ haipipe-paper-display       DISPLAY:   0-displays/README.md plus per-unit
                                                  Figure-inventory planning (one claim per figure,
                                                  panel roles, main vs supplement) is folded in as
                                                  ref/figure-logic.md.
+                                                 Framework/architecture mode handles Figure 1 candidate
+                                                 rounds before final rendering.
 ```
 
 ### Figures & Illustrations — visual assets
 
 ```
-haipipe-paper-figure          PLOT:    data-driven publication plots + tables from
-                                                 experiment results (~60% of figures)
+haipipe-paper-display-table           TABLE:   data-driven LaTeX tables (booktabs/stars/
+                                                 panels) from an aggregated CSV/JSON
 
-haipipe-paper-figure-spec     VECTOR:  deterministic architecture/workflow/pipeline
+haipipe-paper-display-figure          PLOT:    data-driven publication plots from
+                                                 experiment results (plots only)
+
+haipipe-paper-display-diagram         VECTOR:  deterministic architecture/workflow/pipeline
                                                  diagrams from structured JSON → editable SVG
 
-haipipe-paper-illustration    AI-IMG:  AI illustrations via Gemini with Claude-
-                                                 supervised iterative refinement
+haipipe-paper-display-illustration    AI-IMG:  DEFAULT AI concept illustration via the local
+                                                 Codex app-server bridge (native image gen)
 
-haipipe-paper-illustration-image2  AI-IMG2: experimental alternative via local Codex
-                                                 app-server bridge (GPT-image-style renderer)
+haipipe-paper-display-illustration-gemini  AI-IMG (fallback):  Gemini backend with Claude-
+                                                 supervised refinement; use if the Codex bridge
+                                                 is unavailable or the user asks for Gemini
 ```
 
 ---
@@ -132,7 +140,7 @@ invoked standalone. The typical first-pass order:
 ⑦ minimap        paragraph jobs + evidence anchors
                  (architecture blueprint + plan outline folded in as its ref/)
       ↓
-⑧ figure / figure-spec / illustration   make the visual assets
+⑧ table / figure / diagram / illustration   make the visual assets
 ```
 
 After ⑦, the paper folder is ready for the **Edit cycle (②)** in the
@@ -155,12 +163,23 @@ Step 2: Resolve function:
 
 Step 3: Dispatch:
     function = "folder"    -> Skill("haipipe-paper-bootstrap", args)
-    function = else        -> Skill("haipipe-paper-<function>", args)
 
-    Special: "figure-plan" -> Skill("haipipe-paper-display", args)
+    # Display renderers carry the display- prefix; map the short verb explicitly:
+    function = "table"          -> Skill("haipipe-paper-display-table", args)
+    function = "figure"         -> Skill("haipipe-paper-display-figure", args)
+    function = "diagram"        -> Skill("haipipe-paper-display-diagram", args)
+    function = "illustration"   -> Skill("haipipe-paper-display-illustration", args)        # DEFAULT (Codex bridge)
+    function = "illustration-gemini" -> Skill("haipipe-paper-display-illustration-gemini", args)  # fallback
+
+    # Lifecycle stages keep the plain haipipe-paper-<stage> name:
+    function = else        -> Skill("haipipe-paper-<function>", args)
+        (seed | pitch | claims | narrative | minimap | display)
+
+    Special: "figure-plan", "framework" -> Skill(
+      "haipipe-paper-display", "framework " + args
+    )
              (figure-inventory planning now lives inside display;
               see haipipe-paper-display/ref/figure-logic.md)
-             "illustration-image2" -> Skill("haipipe-paper-illustration-image2", args)
 ```
 
 ---
@@ -197,19 +216,24 @@ display, display layer, 0-displays/README.md, 0-displays,
   main vs supplement, what figures                    -> display
 
 figure-plan                                           -> display
+framework, figure1, figure 1, 架构图, pipeline图             -> framework
 
-figure, plot, plots, tables, data figure,
-  generate figures, 画图, 作图                          -> figure
+table, tables, latex table, regression table,
+  coefficient table, descriptive table, comparison table,
+  做表, 生成表格, 表格                                  -> table
 
-figure-spec, vector, architecture diagram, SVG,
-  pipeline diagram, workflow diagram, 架构图,
-  确定性矢量图                                         -> figure-spec
+figure, plot, plots, data figure, line plot, bar chart,
+  scatter, heatmap, box plot, generate figures, 画图, 作图  -> figure
 
-illustration, AI illustration, Gemini illustration,
-  method illustration, 生成图表, AI绘图                 -> illustration
+diagram, figure-spec, vector, SVG, pipeline diagram,
+  workflow diagram, 确定性矢量图                        -> diagram
 
-illustration-image2, codex illustration, codex bridge,
-  experimental illustration                           -> illustration-image2
+illustration, AI illustration, concept figure, method
+  illustration, codex illustration, AI 配图, AI绘图,
+  生成图表                                              -> illustration   (DEFAULT, Codex bridge)
+
+illustration-gemini, gemini illustration, gemini,
+  nano banana, 用 gemini 画                            -> illustration-gemini
 ```
 
 Function aliases (positional):
@@ -222,11 +246,13 @@ narrative, story, contract                       -> narrative
 minimap, paragraph-map, anchors,
   architecture, arch, blueprint, plan, outline   -> minimap
 display, displays, disp,
-  figure-plan, fp, figplan                       -> display
+  figure-plan, fp, figplan, fw                   -> display
+framework, figureone, fig1                        -> framework
+table, tbl, tab                                  -> table
 figure, fig, plot                                -> figure
-figure-spec, spec, vector, svg                   -> figure-spec
-illustration, illust, ai-img                     -> illustration
-illustration-image2, illust2, ai-img2            -> illustration-image2
+diagram, figure-spec, spec, vector, svg          -> diagram
+illustration, illust, ai-img, image2, codex      -> illustration          (DEFAULT)
+illustration-gemini, gemini, illust-g, ai-img-g  -> illustration-gemini
 ```
 
 ---
@@ -252,12 +278,17 @@ When invoked with no arguments, emit a compact specialist chooser:
     minimap        5-minimap: paragraph jobs + evidence anchors
                    (architecture blueprint + plan outline folded in; see its ref/)
 
-  Figures & Illustrations:
-    figure         Data-driven plots + tables
-    figure-spec    Deterministic vector diagrams (JSON → SVG)
-    illustration   AI illustrations (Gemini + Claude refinement)
+  Display renderers (data-driven):
+    table          Data-driven LaTeX tables (booktabs/stars/panels)
+    figure         Data-driven plots (line/bar/scatter/heatmap/box)
 
-  Pipeline: folder → seed → pitch → claims → narrative → display → minimap → figure
+  Display renderers (concept):
+    diagram        Deterministic vector diagrams (JSON → SVG)
+    illustration   AI concept illustration — DEFAULT, Codex bridge
+    illustration-gemini  AI concept illustration — Gemini fallback
+    framework      Candidate framework/architecture figure planning (Figure 1 style)
+
+  Pipeline: folder → seed → pitch → claims → narrative → display → minimap → table/figure/diagram/illustration
 
 Next: /haipipe-paper-lifecycle <function> "<input>"
 ```
@@ -302,7 +333,7 @@ haipipe-paper-lifecycle (this orchestrator)
   ├─► narrative
   ├─► display      (figure-inventory planning folded in; see ref/figure-logic.md)
   ├─► minimap      (architecture blueprint + plan outline folded in; see its ref/)
-  ├─► figure / figure-spec / illustration
+  ├─► table / figure / diagram / illustration (+ illustration-gemini fallback)
   └─► (hands off to 4-build-submit / 3-write-edit when structure is settled;
        structural ASCII audit now lives there as haipipe-paper-edit-diagram)
 ```

@@ -1,13 +1,14 @@
 ---
-name: haipipe-paper-illustration
-description: "Generate publication-quality AI illustrations for academic papers using Gemini image generation. Creates architecture diagrams, method illustrations with Claude-supervised iterative refinement loop. Use when user says \"生成图表\", \"画架构图\", \"AI绘图\", \"paper illustration\", \"generate diagram\", or needs visual figures for papers."
+name: haipipe-paper-display-illustration-gemini
+description: "Gemini-backend AI-illustration renderer of the display family (named fallback to the default haipipe-paper-display-illustration, which uses the Codex bridge). Generate publication-quality AI concept figures using Gemini image generation with a Claude-supervised refinement loop. Use when the Codex bridge is unavailable or the user explicitly asks for the Gemini backend: \"gemini illustration\", \"用 gemini 画\", \"nano banana\". Needs GEMINI_API_KEY."
 argument-hint: '"[description-or-method-file] [— style-ref: <source>]"'
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex, mcp__codex__codex-reply, WebSearch
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-05-31"
-  summary: "Generate publication-quality AI illustrations for academic papers using Gemini image generation."
+  version: "1.2.0"
+  last_updated: "2026-06-22"
+  summary: "Gemini-backend AI-illustration renderer (named fallback to the default Codex-bridge haipipe-paper-display-illustration)."
   changelog:
+    - "1.2.0 (2026-06-22): renamed haipipe-paper-display-illustration-gemini and repositioned as the named Gemini fallback; the default illustration renderer is now the Codex-bridge haipipe-paper-display-illustration."
     - "1.1.0 (2026-06-05): renamed from paper-illustration to haipipe-paper-illustration (haipipe-paper-* name unification)."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
@@ -186,7 +187,7 @@ Sources accepted: local TeX dir / file, local PDF, arXiv id, http(s) URL. Overle
 | **Method illustrations** | Excellent | Conceptual diagrams, algorithm flowcharts |
 | **Conceptual figures** | Good | Comparison diagrams, taxonomy trees |
 
-**Not for:** Statistical plots (use `/haipipe-paper-figure`), photo-realistic images
+**Not for:** Statistical plots (use `/haipipe-paper-display-figure`), photo-realistic images
 
 ## Workflow: MUST EXECUTE ALL STEPS
 

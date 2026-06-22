@@ -28,8 +28,8 @@ Draft a LaTeX paper based on: **$ARGUMENTS**
 
 1. **PAPER_PLAN.md** — outline with claims-evidence matrix, section plan, figure plan (from `/haipipe-paper-minimap`; plan outline folded in, see its `ref/plan-outline.md`)
 2. **NARRATIVE_REPORT.md** — the research narrative (primary source of content)
-3. **Generated figures** — PDF/PNG files in `figures/` (from `/haipipe-paper-figure`)
-4. **LaTeX includes** — `figures/latex_includes.tex` (from `/haipipe-paper-figure`)
+3. **Generated figures** — PDF/PNG files in `figures/` (from `/haipipe-paper-display-figure`)
+4. **LaTeX includes** — `figures/latex_includes.tex` (from `/haipipe-paper-display-figure`)
 5. **Bibliography** — existing `.bib` file, or will create one
 
 If no PAPER_PLAN.md exists, ask the user to run `/haipipe-paper-minimap` first or provide a brief outline.
