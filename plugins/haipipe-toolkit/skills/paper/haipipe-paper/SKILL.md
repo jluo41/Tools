@@ -34,6 +34,36 @@ this orchestrator directly.
 
 For the canonical paper structure, read `README.md` at the paper skill root.
 
+Stage Strip (lead every reply)
+------------------------------
+
+In a paper session, BEGIN every reply with the lifecycle stage strip so the user
+always sees which stage we are in. Spine order is fixed:
+
+```text
+seed -> pitch -> claims -> narrative -> display -> minimap -> write/edit -> review
+```
+
+Read `current_layer` from the paper's `STATUS.md`. Mark each stage ✅ before
+current, ▶️ at current, ⬜ after current; arrows sit before `write/edit` and
+`review`. One line, e.g.:
+
+```text
+seed ✅  pitch ✅  claims ✅  narrative ✅  display ✅  minimap ✅  →  write/edit ▶️  →  review ⬜
+```
+
+Render it DETERMINISTICALLY with the helper (never hand-type it; it drifts):
+
+```sh
+sh "$CLAUDE_SKILL_DIR/../ref/stage-strip.sh" <paper-dir>   # walks upward for STATUS.md
+```
+
+Gate-aware: advancing `current_layer` to the next stage requires an EXPLICIT user
+confirm that the current stage is done (the Stage Gate). Once `STATUS.md` carries
+the gate confirmation ledger, ✅ means "user-confirmed", not merely "before
+current". See `../ref/delivery-need.md` (autonomy policy) and the Stage Gate
+feedback.
+
 Read these references when the task touches lifecycle shape, rounds, or skill
 organization:
 

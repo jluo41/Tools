@@ -178,9 +178,22 @@ Loopback diagnosis follows the paper lifecycle:
 
 ## Output Format
 
-Always answer with emoji-headed sections:
+LEAD with the lifecycle stage strip (the first line of the reply), then the
+emoji-headed sections. Render the strip deterministically with the helper, never
+hand-typed:
+
+```sh
+sh "$CLAUDE_SKILL_DIR/../../ref/stage-strip.sh" <paper-root>
+```
+
+It prints one line driven by `STATUS.md current_layer`, e.g.
+`seed ✅  pitch ✅  …  →  write/edit ▶️  →  review ⬜`. This strip leads EVERY reply
+in the session, not just the first dashboard (see the orchestrator's "Stage Strip"
+rule). Then:
 
 ```markdown
+seed ✅  pitch ✅  claims ✅  narrative ✅  display ✅  minimap ✅  →  write/edit ▶️  →  review ⬜
+
 ## 📄 Paper Session
 
 | Field | Value |
