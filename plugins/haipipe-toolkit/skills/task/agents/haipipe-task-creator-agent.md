@@ -61,7 +61,7 @@ Input: task-folder path + detected type.
 Output: `workflow/plan.yaml` + `workflow/plan-script-<name>.yaml`.
 
 1. Read the main `.py` script to understand what it does.
-2. Read the type-specific sample at `haipipe-task-for-<type>/ref/workflow-plan-sample.yaml`.
+2. Read the type-specific sample at `**/haipipe-task-for-<type>/ref/workflow-plan-sample.yaml` (glob; it is nested under its numbered domain folder).
 3. Read the task-level template at `haipipe-task/ref/workflow-template.yaml`.
 4. Generate `workflow/plan-script-<name>.yaml` with type-specific phases (from the sample), using canonical IPO fields: `label`, `type`, `required`, `prompt`, `files_in`, `files_out`.
 5. Generate `workflow/plan.yaml` task-level rollup (Run/Gate1/Gate2 phases).
