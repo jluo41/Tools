@@ -3,6 +3,7 @@
 # Usage (from the Tools/ directory):
 #   .\install.ps1                       # marketplace + auto-detected project skills
 #   .\install.ps1 -Project C:\path\repo # link skills into <repo>\.claude\skills
+#                                      # and <repo>\.codex\skills when present
 #   .\install.ps1 -Global               # also link skills into ~\.claude\skills
 #   .\install.ps1 -Symlink              # use symlinks instead of junctions (needs admin / Developer Mode)
 #   .\install.ps1 -NoMarketplace        # skip marketplace registration
@@ -241,14 +242,20 @@ if (-not $NoMarketplace) {
 # ─── 2. Project-level skills (auto-detect parent workspace) ──────────────────
 if (-not $Project) {
     $parent = Split-Path -Parent $ScriptDir
-    if (Test-Path -LiteralPath (Join-Path $parent ".claude")) {
+    if ((Test-Path -LiteralPath (Join-Path $parent ".claude")) -or
+        (Test-Path -LiteralPath (Join-Path $parent ".codex"))) {
         $Project = $parent
         Write-Host "  Auto-detected workspace: $Project"
     }
 }
 if ($Project) {
-    Install-Skills -SkillsDir (Join-Path $Project ".claude\skills") -Label "project"
-    Install-Agents -AgentsDir (Join-Path $Project ".claude\agents") -Label "project"
+    if (Test-Path -LiteralPath (Join-Path $Project ".claude")) {
+        Install-Skills -SkillsDir (Join-Path $Project ".claude\skills") -Label "Claude project"
+        Install-Agents -AgentsDir (Join-Path $Project ".claude\agents") -Label "Claude project"
+    }
+    if (Test-Path -LiteralPath (Join-Path $Project ".codex")) {
+        Install-Skills -SkillsDir (Join-Path $Project ".codex\skills") -Label "Codex project"
+    }
 }
 
 # ─── 3. Global skills (-Global) ──────────────────────────────────────────────
