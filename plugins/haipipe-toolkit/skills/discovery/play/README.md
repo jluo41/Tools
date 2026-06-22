@@ -4,7 +4,7 @@ This folder explains Discovery as a short play for someone who has never used
 HAI-Pipe.
 
 It is not an execution protocol. The protocol lives in
-`../haipipe-discover/SKILL.md`.
+`../haipipe-discovery/SKILL.md`.
 
 ## Figures
 
