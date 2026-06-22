@@ -94,7 +94,7 @@ task_batch:
 # Batch B — probe work (K + W yield)
 probe_batch:
   - id:    P.B01
-    skill: /haipipe-probe design
+    skill: /haipipe-probe plan
     new:   true
     arms:  [arm_warm, arm_directive, arm_baseline]
     population: "low engagement segment from D06"
@@ -170,7 +170,7 @@ applications/ask/<NN_slug>/plans/plan.yaml           symlink → plan-v{N}.yaml 
 
 After plan approval:
   Phase 2 dispatcher reads plan and invokes /haipipe-task * + /haipipe-probe *
-  Phase 3 result aggregator triggers /haipipe-probe result for confirmed claims
+  Phase 3 result aggregator triggers /haipipe-probe read then judge for confirmed claims
   Phase 4 archivist invokes /haipipe-insight-{data,information,knowledge,wisdom}
           each one files cards from materialized evidence
 ```

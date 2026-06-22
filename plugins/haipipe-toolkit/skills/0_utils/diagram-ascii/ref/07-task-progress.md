@@ -36,15 +36,13 @@ Before                          After
 basic              annotated                 grouped                  annotated+grouped
 ─────              ─────────                 ───────                  ─────────────────
 src/               code/                     skills/                  1-PIPELINE/
-├─ index.ts        ├─ haipipe/  (editable)   ├─ 0_subject/            │
-└─ tests/          ├─ hainn/    (editable)   │   └─ SKILL.md          ├─ 1-Source/  →  fn_source/
-                   └─ haifn/    (DO NOT EDIT)│                        ├─ 2-Record/  →  fn_record/
-                                             ├─ 1_data/               │
-                                             │  (umbrella)            ├─ 5-Inst/    →  fn_model/
-                                             │   ├─ data/             │  (run builder)
-                                             │   └─ data-source/      │
-                                             │                        └─ 6-End/     →  fn_endpoint/
-                                             └─ 2_model/
+├─ index.ts        ├─ haipipe/  (editable)   └─ task/                 │
+└─ tests/          ├─ hainn/    (editable)      ├─ haipipe-task/      ├─ 1-Source/  →  fn_source/
+                   └─ haifn/    (DO NOT EDIT)   ├─ 1_data/           ├─ 2-Record/  →  fn_record/
+                                                 │  (umbrella)        ├─ 5-Inst/    →  fn_model/
+                                                 │   ├─ data/         │  (run builder)
+                                                 │   └─ data-source/  │
+                                                 └─ 2_nn/             └─ 6-End/     →  fn_endpoint/
 ```
 
 Rules: Unicode tree chars · annotations padded to consistent column · floating callouts on own line.

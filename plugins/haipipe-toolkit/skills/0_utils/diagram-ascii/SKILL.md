@@ -216,22 +216,25 @@ code/
 **Folder tree — grouped** (blank lines between logical clusters; floating callout on its own line)
 ```
 Tools/plugins/haipipe-toolkit/skills/
-├── 0_subject/
-│   └── haipipe-individual/SKILL.md
-│
-├── 1_data/
-│  (umbrella)
-│   ├── haipipe-data/SKILL.md
-│   ├── haipipe-data-source/SKILL.md
-│   ├── haipipe-data-record/SKILL.md
-│   ├── haipipe-data-case/SKILL.md
-│   └── haipipe-data-aidata/SKILL.md
-│
-├── 2_model/
-│   └── haipipe-nn/SKILL.md
-│
-└── 3_endpoint/
-    └── haipipe-end/SKILL.md
+└── task/
+    ├── haipipe-task/SKILL.md
+    │
+    ├── 1_data/
+    │  (umbrella)
+    │   ├── haipipe-data/SKILL.md
+    │   ├── haipipe-data-source/SKILL.md
+    │   ├── haipipe-data-record/SKILL.md
+    │   ├── haipipe-data-case/SKILL.md
+    │   └── haipipe-data-aidata/SKILL.md
+    │
+    ├── 2_nn/
+    │   └── haipipe-nn/SKILL.md
+    │
+    ├── 3_end/
+    │   └── haipipe-end/SKILL.md
+    │
+    └── 4_individual/
+        └── haipipe-individual/SKILL.md
 ```
 
 **Folder tree — annotated + grouped** (combines both: role labels and blank-line clusters)

@@ -110,7 +110,7 @@ task_batch:
 # Batch B — probe work (produces K + W material)
 probe_batch:
   - id:        P.A12
-    skill:     /haipipe-probe design
+    skill:     /haipipe-probe plan
     new:       true
     arms:      [film_pm, baseline_pm]
     claim_target: "FiLM + param-matched yields X improvement on test-od"

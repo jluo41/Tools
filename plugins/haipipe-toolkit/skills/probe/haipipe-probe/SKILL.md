@@ -1,457 +1,305 @@
 ---
 name: haipipe-probe
-description: "Research probe pipeline — sandwich lifecycle around discovery/task evidence work. Accepts direct delivery needs from paper/application claim gaps via the shared delivery-need interface. Probe-open designs the research contract and dispatches discovery refs plus task contracts; discoveries and task run independently; Probe-post resumes after completion to harvest and judge the claim, then returns a verdict/artifact/caveat for backfill into the source delivery lifecycle. Insight/DIKW export is deferred. Contains no code — pure steering/interpretation layer. Trigger: probe, claim, hypothesis, delivery need, claim gap, evidence gap, drive probe, plan next runs, dispatch tasks, dispatch discoveries, aggregate runs, statistical test, paired-t, coverage, propose next probe, review-loop, iterate until claim holds, /haipipe-probe."
-argument-hint: "[function] [probe_ref_or_path] [args...]"
-allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
+description: "Probe Console and claim-level evidence lifecycle. Opens a context-aware console for one active probe, then routes free-form user input through Plan -> Gather -> Read -> Judge -> Return. A probe is a claim-level evidence contract: it plans what claim needs evidence, gathers by calling missing task/discovery work or linking existing artifacts, reads linked evidence, judges claim support, and returns the verdict to paper/application/insight memory. Trigger: probe, claim gap, evidence gap, hypothesis, link task, link discovery, judge claim, return verdict, Probe Console, /haipipe-probe."
+argument-hint: "[console|plan|gather|read|judge|return|status] [probe_ref_or_path] [args...]"
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow, Task
 metadata:
-  version: "3.3.0"
-  last_updated: "2026-06-21"
-  summary: "Research probe pipeline — sandwich lifecycle: Probe-open → discoveries/tasks → Probe-post; insights deferred."
+  version: "4.0.0"
+  last_updated: "2026-06-22"
+  summary: "Probe Console + lifecycle map: Plan, Gather, Read, Judge, Return."
   changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
-    - "1.1.0 (2026-06-01): document lightweight probe folder naming (`MM-NN_slug`) plus year archive folders."
-    - "1.2.0 (2026-06-01): probe folder naming switches to date-based `MMDD_slug` + `P.MMDD` refs (same-day collisions get a letter suffix)."
-    - "2.0.0 (2026-06-11): IPO workflow adoption — add workflow-plan-sample.yaml (6 domain phases) + probe-lifecycle.workflow.js (4-stage lifecycle). Lifecycle section in SKILL.md."
-    - "3.0.0 (2026-06-11): 5-stage lifecycle (Design/Materialize/Harvest/Judge/Insight) with loop. Two-mode Design (A: human, B: auto agents). Insight files full DIKW cascade. Loop absorbed from haipipe-probe-loop."
-    - "3.1.0 (2026-06-19): reframe lifecycle as sandwich: Probe-open (Design/Dispatch) → task execution pause → Probe-post (Harvest/Judge); insights deferred."
-    - "3.3.0 (2026-06-21): accept delivery-need inputs from paper/application and return verdicts for source backfill without requiring narrative."
-    - "3.2.0 (2026-06-19): add discoveries/ as external-evidence work, sibling to tasks/ and referenced by probes."
+    - "4.0.0 (2026-06-22): reframe probe around Probe Console and the concise lifecycle Plan/Gather/Read/Judge/Return; flat probe folders; group folders removed."
+    - "3.3.0 (2026-06-21): delivery-need inputs from paper/application and verdict backfill."
+    - "3.1.0 (2026-06-19): sandwich lifecycle around discoveries/tasks."
 ---
 
-Skill: haipipe-probe (orchestrator + lifecycle engine)
-=======================================================
+# Skill: haipipe-probe
 
-User-facing entry for the **research probe pipeline** and owner of the
-**sandwich lifecycle engine** (`ref/probe-lifecycle.workflow.js`).
+`haipipe-probe` owns the **Probe Console** and the claim-level evidence
+lifecycle.
 
-Naming note: the command and folder remain `/haipipe-probe` and
-`probes/` for compatibility. Conceptually this layer is
-**probe**: each probe folder is a focused probe that asks reality
-whether a candidate claim survives contact with evidence.
-
-Probes can be opened directly from a delivery lifecycle need raised by paper
-or application. In that case, read the need context, create/locate the probe
-contract, and return a verdict plus backfill target to the source delivery
-artifact. Do not require a project-level narrative layer.
-
-Shared interface:
+A probe is not an execution unit. A probe is a claim-level evidence contract.
+Tasks run code. Discoveries inspect outside evidence. Insights preserve judged
+knowledge. The probe asks:
 
 ```text
-../../_shared/delivery-need-interface.md
+Does the available evidence support this claim, under what scope, and with what caveats?
 ```
 
-Three work areas live side-by-side in a project; this skill owns the claim
-contract and never crosses into execution:
+Read first:
 
-```
-DISCOVERY PIPELINE          (discover artifacts)
-  discovery = 外部世界已经知道什么
-  artifacts:  discoveries/<id>/{discovery.yaml,sources.md,notes.md,verdict.md}
-  question:   "what does prior work / web evidence say?"
-
-EXECUTION PIPELINE          (task)
-  task / run = 做什么、怎么做
-  artifacts:  code, notebooks, configs, runtime.yaml, metrics.json
-  question:   "this run, did it work?"
-
-RESEARCH PROBE PIPELINE     (probe ← this skill; project folder probes/)
-  probe      = 朝哪个方向探索、为什么做、接下来做什么
-  artifacts:  probe.yaml, status.yaml, site.md, review.md, claim verdict sidecars
-  question:   "across these runs, does the hypothesis hold?"
-```
-
-A **probe is a research contract**, not a container for tasks. It is the
-bread around the task sandwich:
-
-```
-PROBE-OPEN     design the question + dispatch executable task contracts
-MIDDLE WORK    discoveries check external evidence; tasks run internal work
-PROBE-POST     resume later; harvest, judge, decide next probe
-```
-
-The probe opens a question, hands external-evidence work to `discoveries/` and
-execution work to task, then pauses. When linked discoveries/tasks finish,
-the probe resumes and interprets the evidence. It contains NO code, NO
-notebooks, NO metrics computation; all that lives in `tasks/`. It also should
-not store literature bodies; those live in `discoveries/`.
-
-Strict one-way dependency: probes read discovery/task artifacts; discoveries
-and tasks never interpret probe claims.
-
----
-
-How to Use the Sandwich
------------------------
-
-Think of a probe as a claim-level bracket around evidence work:
-
-```
-Probe-open
-  "I believe claim C might be true. To test it, I need discoveries A/B and tasks C/D."
-  writes: probe.yaml hypothesis, evidence plan, success criteria, dispatch refs
-  ends:   status=waiting_for_evidence
-
-Discovery
-  "I check the outside world."
-  writes: sources.md, notes.md, verdict.md
-
-Task
-  "I run our internal code/data/model work."
-  writes: runtime.yaml, metrics.json, reports, audits
-
-Probe-post
-  "Given those discovery/task artifacts, is claim C supported?"
-  writes: result block, claim sentence, review/verdict sidecars
-```
-
-Do not put discoveries or tasks inside the probe mentally. The probe does not
-own the work; it owns the question before the work and the interpretation
-after the work.
-
-Use it like this:
-
-1. `/haipipe-probe open <probe|new>` when you know the claim to test.
-2. Run or wait for dispatched discoveries and task work to finish.
-3. `/haipipe-probe post <probe>` to harvest evidence artifacts and judge the claim.
-4. If the verdict is weak, open the next probe; if it is strong, return to the
-   source paper/application lifecycle for backfill.
-
-In one sentence: **Delivery asks, Probe frames, discoveries/tasks answer, Probe judges, delivery backfills.**
-
----
-
-Commands
---------
-
-```
-/haipipe-probe                                  dashboard (list probes + status)
-/haipipe-probe open <probe|new>                 probe-open: design + dispatch, then pause
-/haipipe-probe open <need-id-or-source>         open from paper/application delivery need
-/haipipe-probe post <probe>                     probe-post: harvest + judge after evidence finishes
-/haipipe-probe resume <probe>                   alias for post
-/haipipe-probe <probe>                          full sandwich, only for small/auto runs
-/haipipe-probe <probe> --auto                   auto follow-up design after post verdict needs more work
-/haipipe-probe <probe> --rounds N               max N sandwich cycles
-
-/haipipe-probe design <probe>                   Open stage 1 only (interactive Mode A)
-/haipipe-probe dispatch <probe>                 Open stage 2 only (bridge + task handoff)
-/haipipe-probe harvest <probe>                  Post stage 1 only (link + aggregate + claim)
-/haipipe-probe judge <probe>                    Post stage 2 only (structural + integrity + claim verdict)
-/haipipe-probe insight <probe>                  deferred export; not part of core N/P/T stack
-
-/haipipe-probe design new <slug>                define new probe folder (Mode A: interactive)
-/haipipe-probe design link <probe> <run-path>   link a run to an arm
-/haipipe-probe result aggregate <probe>         compute stats + fill result block
-/haipipe-probe result claim <probe>             write final claim sentence
-/haipipe-probe review <probe>                   structural QA gate
-/haipipe-probe review integrity <probe>         Codex fraud-pattern audit
-/haipipe-probe review claim <probe>             Codex semantic verdict
-/haipipe-probe bridge <probe>                   scaffold/dispatch task arms
-/haipipe-probe explore [project-path]           coverage map + propose next probes
-/haipipe-probe inspect [<probe> | <project>]    list / status / audit (read-only)
-/haipipe-probe "<natural language>"             infer verb, dispatch
+```text
+../PHILOSOPHY.md
+ref/lifecycle-map.md
 ```
 
 ---
 
-Sandwich Lifecycle + Loop
---------------------------
+## Probe Console
 
-Orchestrated by `ref/probe-lifecycle.workflow.js`. The lifecycle is not a
-continuous parent-child flow. It is a contract/resume flow:
+`/haipipe-probe <probe>` opens a Probe Console: a context-aware working session
+for one active probe.
 
-See `diagram/01-probe-lifecycle.txt` for the full architecture diagram.
+The console:
 
-```
-PROBE-OPEN A: DESIGN — "what question to ask reality?"
-  Mode A (interactive, round 1 default):
-    🧑 human writes hypothesis + arms via haipipe-probe-design skill
-  Mode B (auto, round ≥2 default or --auto):
-    💡 probe-idea-creator-agent generates probe.yaml
-    🔍 probe-idea-reviewer-agent checks (falsifiable? dup? worth compute?)
-    ↺ creator-reviewer loop (max 2 rounds)
-  produces: probe.yaml (hypothesis + arms + aggregation spec)
-
-PROBE-OPEN B: DISPATCH — "what evidence work must exist to answer it?"
-    🔍 discover artifacts become discoveries/ refs for external evidence
-    🌉 haipipe-probe-bridge scaffolds arms as task task contracts
-    📝 Run Script Reviewer agent checks code
-    🚀 optionally sanity-check/deploy, then link known run paths to arms
-  produces: discovery refs + task refs + run refs in probe.yaml
-  terminal state: status=waiting_for_evidence
-
-══════ Evidence interval: probe is paused while discoveries/tasks run ══════
-    ✋ discover owns search/read/review outputs in discoveries/
-    ✋ task owns plan/build/execute/report
-    ✋ Discovery/task results are readiness signals, not child objects inside probe
-  produces: discoveries/<id>/{sources.md,notes.md,verdict.md}
-  produces: tasks/<arm>/results/<run>/{runtime.yaml,metrics.json,...}
-
-PROBE-POST A: HARVEST — "what did reality answer?"
-    📊 haipipe-probe-result reads discovery verdicts + links runs + aggregates stats + writes claim
-    🛡️ probe-structural-reviewer checks (N≥3, arms paired, caveats)
-  produces: probe.yaml result: block + claim: sentence
-
-PROBE-POST B: JUDGE — "is the answer honest?"
-    3 sequential gates (each independent reviewer):
-      🛡️ structural reviewer → review.md
-      🔬 integrity auditor  → INTEGRITY_AUDIT.md (Codex)
-      ⚖️  claim verifier    → CLAIMS_FROM_RESULTS.md (Codex)
-    Fail at any gate → stop.
-  verdict: yes → close probe or return to source delivery lifecycle
-           partial/no → Explore → new Probe-open cycle
-
-DEFERRED EXPORT: INSIGHT / DIKW
-    Not part of the current Narrative/Probe/Task core stack.
-    Later, a separate export layer may turn closed probes into DIKW cards.
-  produces now: probe.yaml result + claim + verdict sidecars
+```text
+1. resolves the active probe
+2. loads probe.yaml and lifecycle artifacts
+3. renders status.md / a console panel
+4. records active state in .probe-console.yaml
+5. routes later free-form user input through the lifecycle
 ```
 
-File ownership: Design touches only `probe.yaml`. Dispatch may request
-discoveries and task artifacts and write refs back to `probe.yaml`, but
-discovery work remains discover-owned and execution remains task-owned.
-Harvest touches only `probe.yaml` result/claim blocks. Judge touches only
-`review.md`, `INTEGRITY_AUDIT.md`, `CLAIMS_FROM_RESULTS.md`. Insights/DIKW are
-parked for a later export layer.
+Console state is session state, not research evidence. Store active probe state
+at the **project root**, defined as the nearest directory containing `probes/`
+(for example `examples/ProjB-PhyTrait-OpioidRx/`, not necessarily the repo
+root):
 
-**Core boundary** — task produces execution artifacts; probe interprets them:
-
-```
-discover output: discoveries/<id>/{sources.md,notes.md,verdict.md}
-task output:     runtime.yaml + metrics.json + workflow/report*.yaml + RUN_AUDIT.md
-probe output:    result block + claim sentence + integrity/claim verdict
-Narrative reads:   probe verdicts and claim sidecars directly for now.
+```text
+.probe-console.yaml
 ```
 
-Discovery artifact schema authority:
-`discover/haipipe-discover/ref/discovery-yaml-schema.md`.
+Use `status.md` inside each probe folder for the human-readable panel.
 
 ---
 
-The Loop
----------
+## Lifecycle
 
-```
-Probe-post verdict = partial/no
-  → 🗺️ Explore (coverage map + propose next probes)
-  → Mode A: 🧑 human gate (approve/reject proposals)
-    Mode B: 💡 idea-creator + 🔍 idea-reviewer (auto-generate + auto-review)
-  → New Probe-open cycle
-  → Repeat until converged or budget exhausted
-```
+Every probe has the same lifecycle:
 
-Stop conditions:
-
-```
-✅ converged        verdict = yes AND structural errors = 0 → close / delivery backfill
-🟡 budget_exhausted hit --rounds N without converging
-🔴 blocked          Mode A: user rejected  /  Mode B: agent rejected all proposals
-⏸️  paused           user interrupt
+```text
+1. Plan   - define the claim and evidence needed to test it
+2. Gather - call missing task/discovery work and link existing artifacts
+3. Read   - summarize the gathered evidence
+4. Judge  - decide what the evidence supports
+5. Return - send the verdict back to the source or memory
 ```
 
-Mode selection:
+`Plan` absorbs intake/framing. Users may enter a paper claim gap, application
+question, task path, discovery note, insight card, or loose idea.
 
+`Gather` has two internal actions:
+
+```text
+Call - create missing task/discovery work
+Link - attach existing task/discovery/insight artifacts
 ```
-round == 1 && !args.auto  →  Mode A (human designs first probe)
-round >= 2 || args.auto   →  Mode B (agents design follow-up probes)
-args.interactive          →  Mode A always (override for manual steering)
+
+`Read` and `Judge` must stay separate:
+
+```text
+Read  = what did the evidence say?
+Judge = what claim can we honestly make?
+```
+
+`Return` is not `Report`. Report makes a result inspectable. Return sends a
+judged verdict back to the source that needed it.
+
+---
+
+## Commands
+
+```text
+/haipipe-probe <probe>                  open Probe Console for probe
+/haipipe-probe console <probe>          explicit console open
+/haipipe-probe                          project-level probe dashboard / active console resume
+
+/haipipe-probe plan <args...>           Plan: create or revise claim/evidence contract
+/haipipe-probe gather <probe> <args...> Gather: call/link/check evidence
+/haipipe-probe read <probe>             Read: summarize linked evidence
+/haipipe-probe judge <probe>            Judge: structural + integrity + claim verdict
+/haipipe-probe return <probe>           Return: backfill/file memory/emit next need
+
+/haipipe-probe status [<probe>]         render status panel
+/haipipe-probe link <artifact>          alias: gather link in active console
+/haipipe-probe call <kind> <need>       alias: gather call task|discovery
+/haipipe-probe feedback "<text>"        capture skill feedback to feedback/ (fix later); `feedback list` shows open items
+/haipipe-probe "<free text>"            route through active Probe Console if present
+```
+
+Legacy aliases remain valid:
+
+```text
+design   -> plan
+bridge   -> gather call
+dispatch -> gather call
+harvest  -> read
+post     -> read + judge
+resume   -> read + judge
+review   -> judge
+file     -> gather link / plan, depending on input
 ```
 
 ---
 
-Specialists
------------
+## Skill Procedures
 
-Each specialist owns one lifecycle stage:
+Each lifecycle verb has one procedure file:
 
-```
-Stage         Specialist              Role in lifecycle
-───────────   ──────────────────────  ────────────────────────────────────────
-OPEN DESIGN   haipipe-probe-design    write probe.yaml (Mode A: interactive)
-              + probe-idea-creator    generate probe.yaml (Mode B: auto)
-              + probe-idea-reviewer   check idea quality (Mode B: auto)
-OPEN DISPATCH haipipe-probe-bridge    scaffold/dispatch arms → task, then pause
-POST HARVEST  haipipe-probe-result    link runs + aggregate + write claim
-POST JUDGE    haipipe-probe-review    structural + integrity + claim verdict
-DEFERRED      (future export layer)   optional DIKW/insight filing
-
-LOOP-BACK    haipipe-probe-explore   coverage map + propose next (between rounds)
-READ-ONLY    haipipe-probe-inspect   list / status / audit (no writes)
+```text
+fn/console.md   Probe Console entrypoint and router
+fn/plan.md      define/revise the claim and evidence contract
+fn/gather.md    call missing work, link existing artifacts, check readiness
+fn/read.md      summarize linked evidence
+fn/judge.md     decide claim support through independent gates
+fn/return.md    return verdict to source or memory
 ```
 
-haipipe-probe-loop is **absorbed** — loop logic lives in `ref/probe-lifecycle.workflow.js`.
+Legacy verbs (`design`/`bridge`/`harvest`/`dispatch`/`post`/`resume`/`review`/
+`file`) have no separate files: the router maps them to the v4 procedures above
+via the alias table in Commands, then reads that procedure.
 
----
+Utility verb (not a lifecycle step):
 
-Agents
-------
-
-probe owns 6 agents in 3 families:
-
-```
-probe/agents/
-├── creators/
-│   └── probe-idea-creator-agent     Design Mode B — auto-generate probe.yaml
-├── reviewers/
-│   ├── probe-idea-reviewer-agent    Design Mode B — check idea quality
-│   ├── probe-structural-reviewer    Harvest + Judge — arms paired, N≥3, caveats
-│   ├── probe-integrity-auditor      Judge — 5 fraud patterns (Codex)
-│   └── claim-verifier-agent         Judge — evidence supports claim? (Codex)
-└── advancers/
-    └── probe-explorer-agent         Loop-back — coverage + propose next
+```text
+fn/feedback.md   capture skill feedback into feedback/ ; `feedback list` reviews open items
 ```
 
-Deferred Insight export would borrow agents from insight:
+When implementing or revising a step, use the `Probe Lifecycle Map`:
 
-```
-insight/agents/
-├── creators/   card-creator-{data,information,knowledge,wisdom}-agent
-├── reviewers/  card-reviewer-{data,information,knowledge,wisdom}-agent
-└──             index-integrity-auditor-agent
-```
-
-Agents are THIN pointers — logic stays in specialist SKILL.md and ref/.
-
----
-
-Function Verb Map
-------------------
-
-```
-new, define, create, design, hypothesis           -> design (new)
-link, attach, add run, assign run                 -> design (link)
-bridge, deploy, scaffold, dispatch, implement,
-make-runnable, run the plan, 实现实验, 部署        -> open dispatch (bridge)
-open, pre, plan-and-dispatch, start probe         -> probe-open
-post, resume, close, summarize after task         -> probe-post
-aggregate, compute, mean+std, paired-t            -> harvest (result aggregate)
-claim, conclude, write statement                  -> harvest (result claim)
-review, qa, quality check                         -> judge (review structural)
-audit, integrity, fraud, fake-GT, phantom results,
-honesty check, scope check, leakage check         -> judge (review integrity)
-verdict, judge, supports?, semantic check         -> judge (review claim)
-insight, file cards, DIKW, what did we learn      -> deferred export
-explore, coverage, gap, propose, suggest          -> explore (loop-back)
-loop, iterate, until passes, auto-review-loop,
-review-loop, keep improving, --auto               -> full lifecycle with loop
-inspect, list, status, show probes           -> inspect
+```text
+ref/lifecycle-map.md
 ```
 
 ---
 
-Files Owned by This Hub
-------------------------
+## Probe Folder
 
-```
-SKILL.md                       (this file)
-ref/
-  probe-lifecycle.workflow.js  sandwich lifecycle + loop engine
-diagram/
-  01-probe-lifecycle.txt       architecture diagram (open/task/post loop)
+Probe folders are flat. Do not create probe group folders.
 
-../ref/                        shared across specialists:
-  probe-yaml-schema.md         probe.yaml field spec + validation rules
-  probe-caveats-checklist.txt  8+ confound categories
-  probe-entry-template.txt     per-probe entry template (_haipipe project log)
-  probe-headline-template.txt  headline scoreboard skeleton
-  probe-run-dashboard-template.txt  campaign run dashboard (arms × runs)
-  probe-cycle-audit-template.txt    CYCLE.md — per-probe closed-loop audit
-  probe-status-template.txt    canonical campaign status tracker (4 sections)
-  log-format.md                daily log format
-  _legacy-scope-expmt.md       migrated content reference (read-only)
+Recommended project layout:
+
+```text
+probes/
+├── _index.md
+├── 0605_discretion-gradient/
+│   ├── probe.yaml
+│   ├── status.md
+│   ├── evidence.md
+│   ├── verdict.md
+│   └── return.md
+└── 0621_trait-diabetes/
+    ├── probe.yaml
+    ├── status.md
+    ├── evidence.md
+    ├── verdict.md
+    └── return.md
 ```
+
+File roles:
+
+```text
+probe.yaml  machine-readable contract, refs, structured result/verdict/return
+status.md   human-readable Probe Console panel
+evidence.md Read output: what gathered evidence says
+verdict.md  Judge output: claim support, confidence, caveats
+return.md   Return output: where the verdict went or should go
+```
+
+Optional:
+
+```text
+gather.md              only for complex call/link decisions
+INTEGRITY_AUDIT.md     long independent integrity audit, when useful
+CLAIMS_FROM_RESULTS.md claim-verifier output (Judge gate 3)
+```
+
+No code, notebooks, raw literature bodies, heavy result artifacts, or plots live
+in probe folders. Those belong to task, discovery, or insight and are linked by
+reference.
 
 ---
 
-Where Probes Live (project-level)
------------------------------------
+## Routing
 
-```
-examples/Proj-X/
-├── _haipipe/
-│   ├── project.log.jsonl                  single append-only event log
-│   ├── project.status.yaml                project snapshot
-│   └── project.site.md                    project dashboard
-│
-├── probes/                            ← project-level folder
-│   ├── INDEX.md                            (auto: list all probes)
-│   ├── coverage.md                         (auto: /explore coverage output)
-│   ├── propose.md                          (auto: /explore proposals)
-│   ├── comparison.md                       (auto: /result render output)
-│   ├── STATUS.md                           (optional: /inspect status persist)
-│   ├── RUNS.md                             (optional: /inspect runs persist)
-│   │
-│   ├── 0601_framing_loss-aversion/        ← active folder-per-probe
-│   │   ├── probe.yaml                      source of truth (claim + arms + result)
-│   │   ├── review.md                       structural QA
-│   │   ├── INTEGRITY_AUDIT.md              Codex fraud-pattern check
-│   │   ├── CLAIMS_FROM_RESULTS.md          Codex semantic verdict
-│   │   ├── status.yaml                     current probe snapshot
-│   │   ├── site.md                         human-readable probe page
-│   │   └── CYCLE.md                        closed-loop audit (derived)
-│   │
-│   └── 2026-archive/                       inactive/completed probes
-│       └── 0501_social-norm/
-│
-├── discoveries/...                         (external evidence, discover owns)
-├── tasks/...                               (internal execution, task owns)
-├── insights/...                            (deferred export layer; not core N/P/T)
-└── paper/...                               (claims feed paper)
+Route arguments in this order:
+
+```text
+0. Resolve legacy-verb aliases to their v4 verb first (Commands alias table):
+   design->plan, bridge/dispatch->gather, harvest->read, post/resume->read+judge,
+   review->judge, file->gather/plan. There are no fn/<legacy>.md files.
+1. If first token is a v4 lifecycle verb (or the utility verb `feedback`), read fn/<verb>.md and execute that procedure.
+2. If first token resolves to a probe, open fn/console.md for that probe.
+3. If active console exists and input is free text, route via fn/console.md.
+4. If no active console exists and input is free text, route to fn/plan.md.
+5. If no args, render project-level probe dashboard and active console state.
 ```
 
-Naming: active probe folders use `<MMDD>_<short-name>/` where `MMDD` is
-the creation date. Same-day collision gets a letter suffix (`0601` → `0601b`).
-Canonical ref: `P.<MMDD>` (e.g. `P.0601`).
-Resolver accepts: `P.0601 | 0601 | probes/0601_framing_loss-aversion/`.
-Inactive probes move to `probes/<YYYY>-archive/`.
+Resolver accepts:
 
-NO code in probe folders. Literature/source evidence lives in discoveries/.
-Figures/tables/notebooks live in tasks/. Both are referenced from probe.yaml.
+```text
+P.0605
+0605
+probes/0605_discretion-gradient/
+```
+
+Resolve relative to the active project root. If the current working directory is
+inside a nested project, prefer that project's `probes/`. If multiple project
+roots contain a matching probe ref, ask the user to choose.
+
+If a probe ref appears only in `probes/FILING.md` as a proposal such as
+`P.06xx_trait-diabetes`, do not treat it as an existing probe. Ask whether to
+create/select the actual probe before linking artifacts.
 
 ---
 
-Routing Logic
---------------
+## Boundaries
 
+```text
+task      executes internal work
+discovery checks outside evidence
+insight   stores judged knowledge
+probe     plans, gathers, reads, judges, and returns claim-level verdicts
 ```
-Step 1: Parse $ARGUMENTS.
-Step 2: If probe ref + no verb → full lifecycle (probe-lifecycle.workflow.js).
-        If probe ref + --auto   → full lifecycle, auto mode.
-        If verb                 → resolve to specialist via verb map.
-        If no args              → dashboard (list probes + status).
-Step 3: Validate target (probe ref/folder/path or project path).
-Step 4: Dispatch:
-        lifecycle → Workflow("probe-lifecycle.workflow.js", args={...})
-        specialist → Skill("haipipe-probe-<specialist>", args="<verb> <rest>")
-Step 5: Surface specialist tail or lifecycle summary.
-```
+
+Probe may call task/discovery during `Gather`. Probe may call insight during
+`Return`. Probe does not execute code, search literature bodies directly, or
+store final paper prose as its own artifact.
+
+For artifact-first inputs, `Gather` must apply `ref/probe-attach.md` before
+editing `evidence_refs`. If the artifact does not strongly match the active
+probe, propose an existing/new probe and ask before changing anything.
 
 ---
 
-Specialist Return Contract
----------------------------
+## Copilot Policy
 
+Default mode is `copilot`.
+
+The Probe Console may automatically:
+
+```text
+read files
+summarize status
+classify user input
+suggest link targets
+detect missing evidence
+draft evidence/verdict/return text
 ```
+
+It must ask before:
+
+```text
+creating costly tasks
+running PHI/full-data work
+changing the claim target
+declaring a final yes/no verdict
+editing paper/application text
+filing insight memory as accepted knowledge
+```
+
+Auto mode should be implemented later as a policy on the same lifecycle, not as
+a separate workflow.
+
+---
+
+## Return Contract
+
+Every procedure returns a short tail:
+
+```text
 status:    ok | blocked | failed
-summary:   2-3 sentences
-artifacts: [paths created / read]
-next:      suggested next command
-```
-
----
-
-Relation to Other Layers
--------------------------
-
-```
-discover    provides discoveries/ → external evidence linked into probe evidence_refs
-task        provides tasks/runs   → internal execution linked into probe evidence_refs
-              neither layer interprets probe claims
-insight     deferred export layer (parked while focusing on N/P/T)
-paper       consumes confirmed claims for paper writing and lifecycle backfill
-application consumes confirmed claims/caveats for audience-specific delivery
-
-probe is the central research hub: opens research contracts, pauses while
-discoveries/tasks run, resumes to write claims/verdicts that feed delivery
-lifecycle backfill.
+summary:   1-3 sentences
+artifacts: [paths read/written/created]
+next:      suggested next command or question
 ```

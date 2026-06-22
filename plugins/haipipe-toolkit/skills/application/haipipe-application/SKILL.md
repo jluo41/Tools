@@ -26,7 +26,7 @@ Do not route application story through a project-level narrative layer.
 Shared interface:
 
 ```text
-../../_shared/delivery-need-interface.md
+ref/delivery-need.md
 ```
 
 ```
@@ -393,3 +393,13 @@ paper       parallel external artifact (academic-only twin of report)
 application is the **session hub** of the toolkit. Anything
 question-driven, anything that produces a closed artifact with a
 journey, lives here.
+
+---
+
+## Feedback
+
+`/haipipe-application feedback "<text>"` captures a complaint / confusion / wish about THIS
+skill into `feedback/` (one dated file per item, `status: open`) to fix in a
+later revision pass. `/haipipe-application feedback list` shows the open items. This is
+feedback about the tool, not the work it produces. Route a `feedback` first-token
+here before other parsing. Full convention: `feedback/README.md`.

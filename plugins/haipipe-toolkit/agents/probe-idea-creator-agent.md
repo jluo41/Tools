@@ -1,1 +1,0 @@
-../skills/D_probe/haipipe-probe/agents/creators/probe-idea-creator-agent.md

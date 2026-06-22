@@ -12,12 +12,12 @@ Two organizing axes
 The toolkit is laid out along **two orthogonal axes**. They are not siblings — they meet at one point (a `task` run), and you usually use both.
 
 ```
-Numbered  0–6   ENGINEERING substrate — "how data becomes a model and ships"
+Task      0–6   ENGINEERING substrate — "how data becomes a model and ships"
                 1_data → 2_nn → 3_end → 4_individual
                 produces the Stores (RawData → … → Endpoint).
                 Driven by /haipipe-data, /haipipe-nn, /haipipe-end,
                 /haipipe-individual, /haipipe-project.
-                ► THIS README documents the numbered axis.
+                ► THIS README documents the task-domain axis.
 
 Research        RESEARCH lifecycle — "how to turn runs into trustworthy,
                 publishable science"
@@ -29,7 +29,9 @@ Research        RESEARCH lifecycle — "how to turn runs into trustworthy,
                 ► See blueprints/ for expected end-to-end project run shapes.
 ```
 
-The seam between the axes is `task`: a task's `run.sh` *executes* a stage of the numbered pipeline and emits `metrics.json`; the research layer wraps those runs with scientific bookkeeping (DIKW cards, probe arms, claims).
+The seam between the axes is `task`: a task's `run.sh` *executes* a stage of
+the task-domain pipeline and emits `metrics.json`; the research layer wraps
+those runs with scientific bookkeeping (DIKW cards, probe arms, claims).
 
 Glossary (one concept, three names you will see):
 
@@ -79,53 +81,57 @@ Specialists each have their own `SKILL.md` and can be invoked directly for power
 Folder layout
 --------------
 
-Skills are grouped into family folders under `skills/`. Folder names are pure organization — only the `name:` field in each SKILL.md frontmatter identifies the skill. Numeric prefixes follow the data flow order (data → nn → end), then cross-cutting (project), then inference-time (individual).
+Skills are grouped into family folders under `skills/`. Folder names are pure
+organization — only the `name:` field in each SKILL.md frontmatter identifies
+the skill. Data, NN, endpoint, and individual inference now live inside
+`task/` as task-domain families.
 
 ```
 skills/
-├── 1_data/
-│   ├── haipipe-data/                (umbrella — orchestrator)
-│   ├── haipipe-data-source/         Stage 1 (SourceFn, HumanFn)
-│   ├── haipipe-data-record/         Stage 2 (RecordFn, TriggerFn)
-│   ├── haipipe-data-case/           Stage 3 (CaseFn)
-│   └── haipipe-data-aidata/         Stage 4 (TfmFn, SplitFn)
-│
-├── 2_nn/
-│   ├── haipipe-nn/                  (umbrella)
-│   ├── haipipe-nn-algo/             L1 (Algorithm)
-│   ├── haipipe-nn-tuner/            L2 (Tuner / hyperparameter sweep)
-│   ├── haipipe-nn-instance/         L3 (ModelInstance materialization)
-│   └── haipipe-nn-modelset/         L4 (ModelSet / pipeline composition)
-│
-├── 3_end/
-│   ├── haipipe-end/                  (umbrella — 3-axis router)
+├── task/
+│   ├── haipipe-task/                lifecycle hub: Plan / Build / Execute / Report
+│   ├── haipipe-task-for-*/          task-type bridge specialists
 │   │
-│   ├── haipipe-end-endpointset/      artifact-as-whole: package, test, review, dashboard
+│   ├── 1_data/
+│   │   ├── haipipe-data/            (umbrella — orchestrator)
+│   │   ├── haipipe-data-source/     Stage 1 (SourceFn, HumanFn)
+│   │   ├── haipipe-data-record/     Stage 2 (RecordFn, TriggerFn)
+│   │   ├── haipipe-data-case/       Stage 3 (CaseFn)
+│   │   └── haipipe-data-aidata/     Stage 4 (TfmFn, SplitFn)
 │   │
-│   ├── haipipe-end-meta/             per-Fn-type: MetaFn (model metadata)
-│   ├── haipipe-end-trig/             per-Fn-type: TrigFn (trigger detection)
-│   ├── haipipe-end-post/             per-Fn-type: PostFn (response formatting)
-│   ├── haipipe-end-src2input/        per-Fn-type: Src2InputFn (record → payload)
-│   ├── haipipe-end-input2src/        per-Fn-type: Input2SrcFn (payload → record)
+│   ├── 2_nn/
+│   │   ├── haipipe-nn/              (umbrella)
+│   │   ├── haipipe-nn-algo/         L1 (Algorithm)
+│   │   ├── haipipe-nn-tuner/        L2 (Tuner / hyperparameter sweep)
+│   │   ├── haipipe-nn-instance/     L3 (ModelInstance materialization)
+│   │   └── haipipe-nn-modelset/     L4 (ModelSet / pipeline composition)
 │   │
-│   ├── haipipe-end-deploy-sagemaker/   deploy → AWS SageMaker
-│   ├── haipipe-end-deploy-databricks/  deploy → Databricks Model Serving
-│   ├── haipipe-end-deploy-local/       deploy → local (Flask / FastAPI / Docker)
-│   └── haipipe-end-deploy-mlflow/      deploy → MLflow registry + serve  (DEFERRED)
+│   ├── 3_end/
+│   │   ├── haipipe-end/             (umbrella — 4-axis router)
+│   │   ├── haipipe-end-endpointset/ artifact-as-whole
+│   │   ├── haipipe-end-meta/        per-Fn-type: MetaFn
+│   │   ├── haipipe-end-trig/        per-Fn-type: TrigFn
+│   │   ├── haipipe-end-post/        per-Fn-type: PostFn
+│   │   ├── haipipe-end-src2input/   per-Fn-type: Src2InputFn
+│   │   ├── haipipe-end-input2src/   per-Fn-type: Input2SrcFn
+│   │   └── haipipe-end-deploy-*/    deploy targets
+│   │
+│   └── 4_individual/
+│       ├── haipipe-individual/                  per-individual data contract
+│       ├── haipipe-individual-inference/        per-individual inference run
+│       ├── haipipe-individual-inference-report/ report persona
+│       └── haipipe-individual-inference-judge/  judge persona
 │
 ├── project/                       (cross-cutting — research axis)
 │   ├── haipipe-project/             (umbrella)
 │   ├── haipipe-project-inspect/     READ: review, summarize, inventory, overview
 │   └── haipipe-project-organize/    MODIFY: reorganize files
-│
-└── 4_individual/
-    ├── haipipe-individual/                  standalone (per-individual inference contract)
-    ├── haipipe-individual-inference/        per-individual inference run
-    ├── haipipe-individual-inference-report/ report persona
-    └── haipipe-individual-inference-judge/  judge persona
 ```
 
-Note: the research families (`discover/`, `project/`, `task/`, `probe/`, `insight/`, `paper/`, `application/`, `narrative/`) live alongside the numbered ones under `skills/`. Folder name is organization only — a skill is identified solely by its `name:` frontmatter.
+Note: research families (`discover/`, `project/`, `task/`, `probe/`,
+`insight/`, `paper/`, `application/`, `narrative/`) live under `skills/`.
+The numbered execution families are now nested under `task/`. Folder name is
+organization only — a skill is identified solely by its `name:` frontmatter.
 
 
 Stage map

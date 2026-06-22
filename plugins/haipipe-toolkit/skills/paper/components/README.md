@@ -25,7 +25,7 @@ components/
 │
 ├── compile/         Build pipeline (LaTeX → PDF)
 │   └── paper-compile/
-│       (overleaf sync moved to 3-edit/haipipe-paper-edit-to-overleaf)
+│       (overleaf sync moved to 3-write-edit/haipipe-paper-edit-to-overleaf)
 │
 └── diff/            Change-set production (vs prior submission / commit / branch)
     ├── haipipe-paper-edit-diffpdf/      Two .tex files → colored-diff PDF
@@ -40,5 +40,5 @@ Why these are components, not stages
 - **compile**: every stage may need a PDF to inspect; build is not a stage in itself.
 - **diff**: produced after revise, surfaced during respond — cross-stage artifact.
 
-Lifecycle stages (1-narrative … 7-present) call these components as
-needed; venue specialists in `0-workflow/` may also call them directly.
+Lifecycle stages (1-narrative … 6-present) call these components as
+needed; venue specialists in `_venue/` may also call them directly.

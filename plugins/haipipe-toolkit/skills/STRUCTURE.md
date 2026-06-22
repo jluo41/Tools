@@ -70,7 +70,7 @@ Current top-level folders are the working structure:
 0_*           utilities, connectors, venue playbooks
 discover   external evidence capability + durable discovery artifacts
 project    project umbrella, inspect, organize, workflow helpers
-task       task lifecycle hub and task-type specialists
+task       inside-execution layer: lifecycle hub + task-domain families
 probe      claim lifecycle hub
 insight    reusable synthesis from evidence + probe verdicts
 paper      paper deliverables
@@ -78,20 +78,21 @@ application application/report/message deliverables
 narrative  story lifecycle
 ```
 
-`1_data`, `2_nn`, `3_end`, and `4_individual` stay as top-level task-domain
-families. They work with `task`, but they are not being moved under it.
-
-Read them as task-domain families in the current stable folder layout:
+`1_data`, `2_nn`, `3_end`, and `4_individual` live inside `task/` as
+task-domain families. They are still independent user-facing umbrellas by
+skill name, but their folder home now reflects that they are all execution
+domains under the task layer.
 
 ```
-1_data        data task family
-2_nn          model/algorithm task family
-3_end         endpoint/deployment task family
-4_individual  individual/inference task family
+task/1_data        data task family
+task/2_nn          model/algorithm task family
+task/3_end         endpoint/deployment task family
+task/4_individual  individual/inference task family
 ```
 
-Do not plan a prefix migration for these folders. Keep existing skill paths and
-references stable.
+Keep skill `name:` values stable. Folder movement changes paths only; commands
+such as `/haipipe-data`, `/haipipe-nn`, `/haipipe-end`, and
+`/haipipe-individual` remain unchanged.
 
 
 Skill Identity And Refresh

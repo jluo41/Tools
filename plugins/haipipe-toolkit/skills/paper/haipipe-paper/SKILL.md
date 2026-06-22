@@ -2,7 +2,7 @@
 name: haipipe-paper
 description: "Run any paper-lifecycle work. Use `/haipipe-paper enter <paper-path>` or `/haipipe-paper status [paper-path]` to preload an open-needs paper dashboard from STATUS.md, 0-lifecycle, 1-rounds, 0-displays, 0-sections, and git state. Paper lifecycle owns paper-specific story, angle, claims, narrative, displays, minimap, maturity, and dated work rounds; open GAP/NEED items can call probe/discover/task/insight directly through the shared delivery-need interface. Also parses intent (venue + phase) and dispatches to specialists for writing/revising/rebutting papers targeting ICLR, NeurIPS, ICML, Nature, PNAS, MISQ, ISR. Trigger: paper, enter paper, paper status, open needs, claim gap, figure table gap, round, paper round, work round, write paper, paper pipeline, paper writing, draft paper, revise paper, polish tex, rebuttal, reply to reviewers, 写论文, 论文流程, /haipipe-paper."
 argument-hint: "[enter|status|venue|phase] [paper-path-or-args...]"
-allowed-tools: Bash, Read, Grep, Glob, Skill
+allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
   version: "1.3.0"
   last_updated: "2026-06-21"
@@ -24,7 +24,7 @@ the paper in probes, discoveries, tasks, and insights.
 
 When the paper hits a gap, record or surface a delivery need and route directly
 to the relevant evidence worker. Do not route through a project-level narrative
-layer. Use `../../_shared/delivery-need-interface.md` when creating or interpreting
+layer. Use `../ref/delivery-need.md` when creating or interpreting
 GAP/NEED records.
 
 This orchestrator parses intent and dispatches to the right venue specialist
@@ -32,8 +32,7 @@ via `Skill()`. Lifecycle phase skills (pitch, claims, narrative, display,
 write, compile, revise, review, present) are called by the specialist, not by
 this orchestrator directly.
 
-For teaching and internalization, use `play/`: it contains stage-by-stage
-walkthrough folders and images for Stage 00, Stage 01, and Stage 02.
+For the canonical paper structure, read `README.md` at the paper skill root.
 
 Read these references when the task touches lifecycle shape, rounds, or skill
 organization:
@@ -54,12 +53,13 @@ ref/paper-skill-structure.md
 /haipipe-paper prospectus "<project-or-paper>"  -> create/inspect paper-prospectus folder
 /haipipe-paper create "<plan-dir>"          -> draft fresh tex paragraph-by-paragraph
 /haipipe-paper revise "<tex-root>"          -> polish existing tex paragraph-by-paragraph
+/haipipe-paper feedback "<text>"            -> capture skill feedback to feedback/ (fix later); `feedback list` shows open items
 /haipipe-paper "<natural language>"         -> infer venue from keywords, dispatch
 ```
 
 Examples:
 ```
-/haipipe-paper conference "lifecycle/stage03_evidence-backed-narrative/current.md" — venue: ICLR
+/haipipe-paper conference "0-lifecycle/3-narrative/3-narrative.tex", venue: ICLR
 /haipipe-paper enter "examples/ProjB-PhyTrait-OpioidRx/paper/Paper-Personality-Opioid-MedJournal"
 /haipipe-paper status
 /haipipe-paper journal                       (no input → Nature default)
@@ -89,7 +89,7 @@ haipipe-paper-enter       Status-aware paper session loader
                            report current layer, maturity, open needs, open gates, next commands)
 haipipe-paper-structure-bootstrap
                           Paper folder bootstrap, including prospectus mode
-                          (README.md + lifecycle/stage00... + lifecycle/stage01...)
+                          (STATUS.md + sparse 0-lifecycle, no manuscript obligations)
                           and manuscript mode (full 0-/1-prefix tex scaffold)
 haipipe-paper-create      Fresh-draft pipeline, venue-agnostic at workflow
                           (narrative+plan → scaffold tex → paragraph-by-paragraph draft)
@@ -115,7 +115,7 @@ reviewer comments, review-response, R1 revision        -> rebuttal
 enter, status, dashboard, preload, session,
 paper status, enter paper, aware mode                   -> enter
 round, rounds, paper round, work round, latest round,
-todo, decisions, applied                                -> enter
+todo, decisions, applied                                -> round
 prospectus, paper prospectus, topic appears, project seed,
 paper seed, paper folder, bootstrap folder              -> structure-bootstrap
 create, draft tex, write tex, from narrative,
@@ -136,6 +136,17 @@ create, draft, new, scaffold               -> create
 revise, polish, walk                       -> revise
 ```
 
+Lifecycle stage verbs (positional), forwarded to the stage procedures:
+```
+seed                                       -> structure seed
+pitch                                      -> structure pitch
+claims, claim, ledger                      -> structure claims
+narrative                                  -> structure narrative
+figures, figures-tables, display           -> structure display
+minimap                                    -> structure minimap
+round, rounds                              -> round (haipipe-paper-round)
+```
+
 Note: `create` and `revise` are task aliases, not venues. They are
 venue-agnostic at the workflow level — the underlying templates and
 section playbooks know the venue.
@@ -151,6 +162,11 @@ Step 1: Parse $ARGUMENTS.
 Step 2: Resolve venue/task:
   - First positional matches a venue/task alias?      -> dispatch target = that
   - First positional is "enter" or "status"            -> target = enter
+  - First positional is a lifecycle stage verb
+    (seed/pitch/claims/narrative/figures/display/
+    minimap)                                          -> target = structure <verb>
+  - First positional is "round" or "rounds"            -> target = round
+  - First positional is "feedback"                     -> target = feedback (utility verb)
   - Else scan keyword map across all positional args.
   - Phrase contains "reply to reviewers" / "rebuttal"
     / review-related verbs                            -> target = rebuttal
@@ -166,7 +182,7 @@ Step 2: Resolve venue/task:
   - Topic mentions ICLR/NeurIPS/ICML etc.             -> target = conference
   - Topic mentions Nature/PNAS                        -> target = journal
   - Topic mentions MISQ/ISR/IS journal                -> target = is
-  - Default if a lifecycle stage03 narrative exists with no
+  - Default if a 0-lifecycle/3-narrative exists with no
     venue hint                                        -> ASK (don't guess)
 
 Step 3: Decide handling:
@@ -183,6 +199,14 @@ Step 4: Dispatch:
       Skill("haipipe-paper-enter", args="<remaining_args or .>")
     Else if target = structure-bootstrap:
       Skill("haipipe-paper-structure-bootstrap", args="<remaining_args>")
+    Else if target = "structure <verb>":
+      Skill("haipipe-paper-structure", args="<verb> <remaining_args>")
+    Else if target = round:
+      Skill("haipipe-paper-round", args="<remaining_args>")
+    Else if target = feedback:
+      Read fn/feedback.md and run it inline: capture "<text>" to feedback/ as one
+      dated file, or `feedback list` to print open items. This orchestrator
+      handles feedback directly; no sub-skill, no fix attempted on the spot.
     Else:
       Skill("haipipe-paper-<target>", args="<remaining_args>")
 
@@ -217,7 +241,7 @@ Only if no paper root is found, do not fan out. Emit a compact venue chooser:
 
   conference  → ICLR / NeurIPS / ICML / CVPR / ACL / AAAI
                 Full automated pipeline: narrative → PDF (Phase 1-6 with audits)
-                Best when you have a stage03 evidence narrative and want a submission-ready PDF.
+                Best when you have a filled 0-lifecycle/3-narrative and want a submission-ready PDF.
 
   journal     → Nature portfolio / PNAS / biomedical journals
                 Nature-style routing advisor: which skill to use next.
@@ -233,7 +257,7 @@ Only if no paper root is found, do not fan out. Emit a compact venue chooser:
 
   create      → fresh draft from narrative + plan (venue-agnostic)
                 Scaffolds tex root, walks sections, drafts paragraph-by-paragraph.
-                Best when you have stage03 evidence narrative + stage05 paper plan and want
+                Best when you have a filled 0-lifecycle/3-narrative + 5-minimap and want
                 a compileable first draft.
 
   revise      → polish an existing tex (venue-agnostic)
@@ -253,7 +277,7 @@ Disambiguation Rules
   - Venue unclear → list the 4 options, wait. Do NOT default to conference
     or journal silently — venue choice drives style file, page limit, and
     structure decisions that are expensive to redo.
-  - User says "paper" with no venue + provides a stage03 narrative →
+  - User says "paper" with no venue + provides a 0-lifecycle/3-narrative →
     ASK which venue.
   - User says "rebuttal" + provides paper path → dispatch to rebuttal
     immediately (rebuttal is venue-agnostic).
@@ -290,13 +314,13 @@ before recommending more writing.
 Use this shared reference when interpreting or creating need records:
 
 ```
-../../_shared/delivery-need-interface.md
+../ref/delivery-need.md
 ```
 
 Routing hints:
 
 ```
-claim needs a verdict or robustness check       -> /haipipe-probe open <need>
+claim needs a verdict or robustness check       -> /haipipe-probe plan from-need <need>
 claim needs outside literature/context          -> /haipipe-discover <question>
 claim/display needs a run or data artifact      -> /haipipe-task <contract>
 figure/table needs materialized output          -> /haipipe-task-for-display <need>
@@ -311,62 +335,33 @@ story.
 Relation to Lifecycle Stage Skills, Sections, and Components
 -------------------------------------------------------------
 
-The orchestrator and venue specialists in `0-workflow/` operate at the
-**workflow** level. Underneath they coordinate three kinds of skills:
-
-**Lifecycle stages** — `paper/{1-structure,2-build,3-edit,6-respond,7-present}/`
-(unified `haipipe-paper-<stage>-<topic>` names; 6-respond/7-present keep their current slugs):
-
-```
-1-structure/  haipipe-paper-structure (orchestrator) routes to:
-              haipipe-paper-folder (scaffold Paper-<Name>-<Venue><Year>/),
-              -structure-narrative, -structure-architecture, -structure-plan,
-              -structure-diagram, -structure-incubator, -structure-figure-planner,
-              -structure-figure, -structure-figure-spec,
-              -structure-illustration, -structure-illustration-image2
-2-build/      haipipe-paper-build-scaffold, -build-restructure, -build-check
-3-edit/       haipipe-paper-edit (orchestrator) + topic subs -edit-content, -edit-values,
-              -edit-citation, -edit-consistency, -edit-format, -edit-typeset;
-              tools: -edit-diffpdf, -edit-to-overleaf;
-              drafting: -edit-write, -edit-write-scientific, -edit-write-conference, -edit-write-systems;
-              revision: -edit-weaving, -edit-optimizer, -edit-improve-loop, -edit-results-revision;
-              audits: -edit-claim-audit, -edit-reviewer, -edit-proof-checker, -edit-submission-audit,
-              -edit-manual-review-citations, -edit-manual-review-values, -edit-check-reference
-6-respond/    paper-rebuttal, rebuttal-response
-7-present/    paper-slides, paper-poster
-```
-
-**Per-section playbooks** — `paper/sections/` (Dimension B, reference material):
+The orchestrator and the venue profiles in `_venue/` operate at the workflow
+level. Underneath, skills are grouped to mirror the lifecycle spine. The
+canonical tree is in `README.md` and `ref/paper-skill-structure.md`; the
+stage-to-procedure map is in `ref/lifecycle-map.md`. In brief:
 
 ```
-section-intro / -methods / -results / -discussion /
-section-abstract / -related-work / -appendix
+0-enter/        haipipe-paper-enter (Paper Console)
+1-lifecycle/    haipipe-paper-structure (orchestrator) + one skill per stage:
+                -structure-{seed,pitch,claims,narrative,display,minimap}
+                helpers: -figure-planner/-figure/-figure-spec/-illustration*,
+                -architecture/-plan (feed minimap), -diagram, -incubator
+2-rounds/       haipipe-paper-round (enter/new/triage/apply/close)
+3-write-edit/   haipipe-paper-edit (orchestrator) + write* + edit topic subs +
+                the self-review audit cluster (-edit-claim-audit, -edit-reviewer,
+                -edit-proof-checker, -edit-submission-audit, -edit-manual-review-*,
+                -edit-check-reference) + sections/ per-section playbooks
+4-build-submit/ haipipe-paper-folder (scaffold) + -build-{scaffold,restructure,check}
+5-respond/      paper-rebuttal, rebuttal-response
+6-present/      paper-slides, paper-poster
+components/     citation (audit/verifier/guide), compile, diff (cross-cutting)
 ```
 
-These are guidance docs read by 3-write / 4-revise / 5-review when they
-target a specific .tex file under `0-sections/` in the paper folder.
-
-**Cross-cutting components** — `paper/components/`:
-
-```
-components/citation/  citation-audit, citation-verifier, reference-audit-guide
-components/compile/   paper-compile
-components/diff/      haipipe-paper-edit-diffpdf (one-PDF colored diff; SKILL.md lives in 3-edit/haipipe-paper-edit-diffpdf/),
-                      paper-diff-folder (writes 1-diff/vs-<ref>/ tree)
-```
-
-(Figure skills moved to `1-structure/` under the `haipipe-paper-structure-figure*` /
-`-illustration*` names; see the lifecycle stage list above.)
-
-Components are invoked by multiple stages (figures touched during
-write/revise/review; citations touched during write/review; etc.).
-
-Power users can invoke any stage / section / component skill directly
-via its slash command — stage 1-3 slugs follow the unified
-`haipipe-paper-<stage>-<topic>` scheme; later stages keep their current
-slugs until they are moved into the target structure. The orchestrator
-is the right entry point when you don't yet know which stage you're
-in or which venue you're targeting.
+Per-section playbooks live in `3-write-edit/sections/` and are read by the
+write/edit/review skills when they target a specific `.tex` under `0-sections/`.
+Components are cross-cutting: figures and citations are touched during
+write/review. Power users can invoke any skill directly by its slash command;
+the orchestrator is the right entry when you do not yet know the stage or venue.
 
 Paper-folder contract
 ----------------------
@@ -418,7 +413,7 @@ Composing with Other Workflows
 /run-probe       → experiment results
 /auto-review-loop     → AUTO_REVIEW.md
 /result-to-claim      → CLAIMS_FROM_RESULTS.md
-/haipipe-paper-structure-narrative     → lifecycle/stage03_evidence-backed-narrative/current.md
+/haipipe-paper-structure-narrative     → 0-lifecycle/3-narrative/3-narrative.tex
         │
         ▼
 /haipipe-paper        ← you are here (router)
@@ -430,3 +425,13 @@ Composing with Other Workflows
         ├─► /haipipe-paper-create      (narrative+plan → fresh tex)
         └─► /haipipe-paper-revise      (existing tex → polish via haipipe-paper-edit-weaving)
 ```
+
+---
+
+## Feedback
+
+`/haipipe-paper feedback "<text>"` captures a complaint / confusion / wish about THIS
+skill into `feedback/` (one dated file per item, `status: open`) to fix in a
+later revision pass. `/haipipe-paper feedback list` shows the open items. This is
+feedback about the tool, not the work it produces. Route a `feedback` first-token
+here before other parsing. Full convention: `feedback/README.md`.

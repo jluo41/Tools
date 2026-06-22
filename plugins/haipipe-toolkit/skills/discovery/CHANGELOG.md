@@ -36,6 +36,11 @@ history also lives in each `SKILL.md` frontmatter `changelog:`.
   rules), SKILL.md, and `ref/discovery-yaml-schema.md`.
 
 ### Added
+- **`feedback/` inbox + `feedback` utility verb (1.9.0, mirrors probe).**
+  `/haipipe-discovery feedback "<text>"` captures a complaint/confusion/wish about
+  the skill into `feedback/<date>_<slug>.md` (capture-only); `feedback list`
+  reviews open items. Fixing is a separate revision pass, so users can improve the
+  skill as they use it.
 - **`ref/lifecycle-map.md`** — the canonical verb-based lifecycle table
   (Status / Open / Search / Read / Review / Verdict / Post), isomorphic to the
   probe lifecycle map: per verb, the question, action, reads, writes, external

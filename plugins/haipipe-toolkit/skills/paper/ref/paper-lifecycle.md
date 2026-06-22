@@ -76,7 +76,7 @@ paper GAP -> delivery need -> evidence worker -> verdict/artifact -> paper backf
 Common routes:
 
 ```text
-claim needs verdict/robustness       -> /haipipe-probe open <need>
+claim needs verdict/robustness       -> /haipipe-probe plan from-need <need>
 claim needs outside context/citation -> /haipipe-discover <question>
 display needs materialized result    -> /haipipe-task-for-display <need>
 finished evidence needs reusable K/W -> /haipipe-insight <artifact>

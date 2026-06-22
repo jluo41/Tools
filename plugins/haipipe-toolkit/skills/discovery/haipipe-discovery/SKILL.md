@@ -4,8 +4,8 @@ description: "Router for Stage A (discovery) literature/idea discovery. Dispatch
 argument-hint: "[bucket] [specialist] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "1.8.0"
-  last_updated: "2026-06-21"
+  version: "1.9.0"
+  last_updated: "2026-06-22"
   summary: "Single entry for discovery: capability router plus per-topic discovery-folders (mirror task-folders)."
   changelog:
     - "1.0.0 (2026-05-31): baseline metadata added."
@@ -17,6 +17,7 @@ metadata:
     - "1.6.0 (2026-06-21): add ref/lifecycle-map.md as the canonical verb table (SKILL/DESIGN point to it, not restate it); retire the narrative parent (parents are now delivery paper/application or probe); folder renamed discover -> discovery."
     - "1.7.0 (2026-06-21): revert v1.5 single-file default. A discovery is one research topic = its own FOLDER (discovery.yaml + sources/notes/verdict + status/site), mirroring a task-folder; lifecycle-map.md recast as open -> search -> read -> review/idea -> post filling the folder's IO files."
     - "1.8.0 (2026-06-21): rename skill haipipe-discover -> haipipe-discovery to match the haipipe-<noun> sibling convention; inner folder, refs, and command (/haipipe-discovery) updated."
+    - "1.9.0 (2026-06-22): add the feedback utility verb + feedback/ inbox (mirrors probe). /haipipe-discovery feedback captures skill feedback (capture-only), feedback list reviews open items; fixing is a separate revision pass."
 ---
 
 Skill: haipipe-discovery (orchestrator)
@@ -29,12 +30,12 @@ This skill has two modes:
 
 ```
 1. Durable project work
-   Operate on lightweight discovery markdown files under
+   Operate on per-topic discovery-folders under
    examples/<PROJECT>/discoveries/.
 
 2. Capability routing
    Dispatch to search/read/review/idea specialists for one-off discovery, or
-   for work inside the current discovery markdown file.
+   for work inside the current discovery-folder.
 ```
 
 In project workflows, discovery is **external evidence work**. It is not a
@@ -63,6 +64,7 @@ Invocation:
 /haipipe-discovery read <discovery>             -> write notes.md
 /haipipe-discovery review <discovery>           -> write verdict.md (or idea)
 /haipipe-discovery post <discovery>             -> link verdict to parent if it exists
+/haipipe-discovery feedback "<text>"            -> capture skill feedback to feedback/ (fix later); `feedback list` shows open items
 
 /haipipe-discovery <bucket>                     -> list specialists
 /haipipe-discovery <specialist> [args]          -> dispatch specialist
@@ -236,9 +238,10 @@ Routing Logic
 
 ```
 1. First positional is a lifecycle verb    -> durable discovery operation.
+   The utility verb `feedback` captures skill feedback into feedback/ (fix later).
 2. First positional is an existing path:
-     discovery markdown -> run requested stage or full lifecycle.
-     discovery-group    -> iterate/summarize child discovery files.
+     discovery-folder -> run requested stage or full lifecycle.
+     discovery-group  -> iterate/summarize child discovery-folders.
 3. First positional is a specialist name  -> dispatch directly.
 4. arXiv ID / arxiv URL in args            -> 2_read.
      "summarize|explain"   -> alphaxiv (default)
@@ -439,6 +442,7 @@ Durable:
   open <role> <question>
   open-group <slug>
   search | read | review | post <discovery>   (review -> verdict.md, or idea)
+  feedback "<text>" | feedback list           (capture / review skill feedback)
 
 Specialists:
   1_search   arxiv | semantic-scholar | exa-search
@@ -450,6 +454,34 @@ Pipeline:  /idea-discovery   (research-lit -> idea-creator -> novelty-check)
 ```
 
 Suggest the most likely next command based on context.
+
+---
+
+Feedback (capture skill feedback, fix later)
+--------------------------------------------
+
+Capture a complaint / confusion / wish about the discovery SKILL itself (clunky
+step, confusing output, missing verb, wrong bucket dispatch) into this skill's
+`feedback/` folder. Capture-only: filing never fixes on the spot; fixing is a
+separate revision pass. Feedback is about the TOOL, not a discovery finding.
+
+Capture: `/haipipe-discovery feedback "<text>"`
+```
+1. Write one file: feedback/<YYYY-MM-DD>_<short-slug>.md
+   frontmatter: status: open | created | context (stage/bucket or "general") | fixed_in: ""
+   body: the feedback in the reporter's words, then a trailing "Fix:" line.
+2. Confirm captured. Do NOT attempt a fix now.
+```
+
+List: `/haipipe-discovery feedback list`
+```
+Grep feedback/*.md for `status: open` and print them (newest first) with context,
+so a revision pass knows what to fix.
+```
+
+Resolve happens during a revision pass (not via this verb): set status: fixed +
+fixed_in: <skill version> + a one-line Fix note; keep the file as history. Full
+contract: `feedback/README.md`.
 
 ---
 
@@ -487,3 +519,13 @@ D_patent/   patent work. Skills: /prior-art-search,
             /patent-novelty-check, /patent-review, /jurisdiction-format,
             /specification-writing. Full flow: /patent-pipeline.
 ```
+
+---
+
+## Feedback
+
+`/haipipe-discovery feedback "<text>"` captures a complaint / confusion / wish about THIS
+skill into `feedback/` (one dated file per item, `status: open`) to fix in a
+later revision pass. `/haipipe-discovery feedback list` shows the open items. This is
+feedback about the tool, not the work it produces. Route a `feedback` first-token
+here before other parsing. Full convention: `feedback/README.md`.

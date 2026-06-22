@@ -291,10 +291,10 @@ task report (per-task observability)         skills/task/haipipe-task/fn/workflo
 Run.sh wrapper internals                     skills/task/haipipe-task/ref/run-sh-template.sh
 probe.yaml schema                       skills/probe/haipipe-probe/ref/probe-yaml-schema.md
 Probe bridge operation                       skills/probe/haipipe-probe/fn/bridge.md
-Pipeline (Stages 1-4)                        skills/1_data/haipipe-data/SKILL.md
-Pipeline (Stage 5 NN)                        skills/2_nn/haipipe-nn/SKILL.md
-Pipeline (Stage 6 endpoints)                 skills/3_end/haipipe-end/SKILL.md
-Per-individual contract (Stages 0-2)            skills/4_individual/haipipe-individual/SKILL.md
+Pipeline (Stages 1-4)                        skills/task/1_data/haipipe-data/SKILL.md
+Pipeline (Stage 5 NN)                        skills/task/2_nn/haipipe-nn/SKILL.md
+Pipeline (Stage 6 endpoints)                 skills/task/3_end/haipipe-end/SKILL.md
+Per-individual contract (Stages 0-2)            skills/task/4_individual/haipipe-individual/SKILL.md
 Task Reviewer (pre-flight agent)             skills/task/agents/haipipe-task-reviewer-agent.md
 ```
 

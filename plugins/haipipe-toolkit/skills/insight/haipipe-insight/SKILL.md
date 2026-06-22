@@ -503,3 +503,13 @@ CREATES files under `examples/<project>/insights/`. Never deletes cards — only
 
 `export-okf` deletes and rebuilds only derived `insights/okf/` output. It never
 edits source cards under D/I/K/W.
+
+---
+
+## Feedback
+
+`/haipipe-insight feedback "<text>"` captures a complaint / confusion / wish about THIS
+skill into `feedback/` (one dated file per item, `status: open`) to fix in a
+later revision pass. `/haipipe-insight feedback list` shows the open items. This is
+feedback about the tool, not the work it produces. Route a `feedback` first-token
+here before other parsing. Full convention: `feedback/README.md`.

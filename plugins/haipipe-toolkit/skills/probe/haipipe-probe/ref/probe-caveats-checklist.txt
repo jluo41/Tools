@@ -1,114 +1,76 @@
-⚠️ Caveats & confounds checklist
+⚠️ Caveats & confounds checklist  (domain-general)
 
-For every probe entry, walk this list before saving.  Each YES
-becomes a bullet in the "Caveats and confounds" section of the log.
+Walked by Judge (structural gate) before a verdict is committed. Each YES
+becomes a caveat in verdict.md and an entry in probe.yaml.verdict.caveats.
 
-THIS IS NOT OPTIONAL.  The differentiator vs MLflow / W&B is that this
-log records what is *uncertain* about each result, not just what
-happened.  If you can't find any caveats, write "no confounds
-identified" explicitly so the reader knows you looked.
+THIS IS NOT OPTIONAL. The point of a probe is to record what is UNCERTAIN
+about a claim, not just what was found. If you can't find any caveat, write
+"no confounds identified" explicitly so the reader knows you looked.
 
-
-─§ Apples-to-apples comparison checks ────────────────────────────────
-
-The most common confound: the result is compared to a baseline trained
-under different conditions.  Flag if ANY of these differ from the
-comparison group:
-
-  ☐ Framework            (PyTorch vs Nixtla vs JAX vs ...)
-  ☐ Hyperparameter tuning (Optuna sweep vs hand-set)
-  ☐ Parameter count       (within 2× is roughly comparable; bigger
-                            differences should be flagged)
-  ☐ Optimizer / schedule  (AdamW cosine vs SGD constant vs ...)
-  ☐ Epochs / steps        (training budget difference)
-  ☐ Batch size            (affects effective learning rate)
-  ☐ Loss objective        (MSE vs MAE vs quantile vs custom)
-  ☐ Auxiliary losses      (event-focused / post-event reweighting / etc.)
-  ☐ Data filter           (DE-only vs all events vs ...)
-  ☐ Data split version    (different aidata version)
-  ☐ Random seed           (single seed → noise floor unknown)
+The categories below are domain-neutral: they apply to a regression on claims
+data, an ML comparison, a literature synthesis, or any other evidence. Use the
+examples as prompts, not as the only forms a confound can take.
 
 
-─§ Statistical confidence ────────────────────────────────────────────
+─§ 1. Comparability (apples-to-apples) ───────────────────────────────
 
-  ☐ Single seed?           → flag noise floor uncertainty.  Cite
-                              expected std from similar probes.
-  ☐ N < 5 seeds?           → flag low statistical power; t-test will
-                              be sensitive to outliers.
-  ☐ Outlier seed present?  → diagnose what went wrong (training
-                              failure / bad init / OOM); report both
-                              raw and outlier-excluded numbers.
-  ☐ Variance large vs Δ?   → flag — effect could be seed noise.
-  ☐ Cross-split variance?  → if val helps but test-id doesn't, flag.
+The most common confound: the two things being compared were produced under
+different conditions. Flag if ANY of these differ across the compared sides:
 
-
-─§ Data / preprocessing pitfalls ─────────────────────────────────────
-
-  ☐ Recent parser bug?     → cite the fix; note whether old numbers
-                              in the log used the buggy parser.
-  ☐ Cache invalidation?    → if features were precomputed, did they
-                              get regenerated after the bug fix?
-  ☐ Filter drift?          → has the data filter changed across
-                              entries (e.g. Med5Min inclusion)?
-  ☐ Train/test leakage?    → did patient IDs span train and test?
-                              were features derived from future data?
+  ☐ Definition        same outcome / metric / variable defined the same way?
+                      (e.g. same MME formula, same coding of the outcome)
+  ☐ Population        same cohort / sample / inclusion-exclusion filters?
+  ☐ Time window       same period / follow-up / alignment?
+  ☐ Specification     same controls / fixed effects / covariates / model form?
+  ☐ Data version      same upstream dataset version on both sides?
+  ☐ Code version      same analysis code / git SHA on both sides?
+  ☐ Single draw       single seed / single split / single run -> noise floor unknown?
 
 
-─§ Architecture / training pitfalls ──────────────────────────────────
+─§ 2. Statistical confidence ─────────────────────────────────────────
 
-  ☐ Training stability?    → did some seeds fail to converge?  flag
-                              the training-stability finding separately
-                              from the headline metric.
-  ☐ Convergence?           → did val loss plateau at the end, or was
-                              it still trending?  may indicate
-                              under-training.
-  ☐ Overfit?               → train loss << val loss?  flag.
-  ☐ Mixed-precision?       → bf16 vs fp32 can subtly affect numbers.
+  ☐ Small N?              flag low power; the test is outlier-sensitive.
+  ☐ Single draw/seed?     flag noise-floor uncertainty; cite expected variation.
+  ☐ Effect vs variance?   is |effect| small relative to its variability? could be noise.
+  ☐ Multiple comparisons? many outcomes/subgroups tested -> some "hits" by chance?
+  ☐ Outlier present?      report both raw and outlier-excluded numbers.
 
 
-─§ Inference pitfalls ────────────────────────────────────────────────
+─§ 3. Provenance ─────────────────────────────────────────────────────
 
-  ☐ Rollout vs direct?     → rollout numbers should NOT be compared
-                              to direct-head numbers.  Flag clearly
-                              which inference regime is being used.
-  ☐ Context window match?  → for time-series forecasting, did the
-                              eval use the same input window as the
-                              baseline?  (e.g. B92 uses 552-bin context
-                              while B91/C01 uses 287-bin trigger
-                              alignment — these are different tasks.)
-  ☐ Horizon match?         → comparing H24 to H48 numbers without
-                              flagging the horizon difference?
-  ☐ Eval split definition? → did the test set get re-filtered?
+  ☐ Outcome source?    does the outcome / ground truth come from the DATA, not
+                       from a model's own output or a circular definition?
+  ☐ Measurement?       is the measured quantity a valid stand-in for the concept
+                       the claim is about? (construct validity)
 
 
-─§ Evaluation metric pitfalls ────────────────────────────────────────
+─§ 4. Leakage ────────────────────────────────────────────────────────
 
-  ☐ Aggregation method?    → Method A (per-sample trajectory rmse) vs
-                              Method B (pooled MSE then sqrt) give
-                              different numbers.  Be consistent.
-  ☐ Outlier handling?      → did you clip predictions to a sensible
-                              range (e.g. [0, 400] for CGM)?
-  ☐ Per-horizon focus?     → did the aggregate metric mask a
-                              horizon-specific failure?  add a brief
-                              per-horizon note if relevant.
+  ☐ Split leakage?     does a unit (patient, physician, encounter) span both
+                       sides of a train/test or comparison split?
+  ☐ Look-ahead?        were any features / controls derived from information
+                       not available at the time the outcome was determined?
 
 
-─§ Reproducibility pitfalls ──────────────────────────────────────────
+─§ 5. Scope (claim vs evidence) ──────────────────────────────────────
 
-  ☐ Code version?          → record git commit SHA (if applicable)
-                              when the result was generated.
-  ☐ Env / deps?            → flag if torch / transformers / framework
-                              version differs from other entries.
-  ☐ Hardware?              → A100 vs RTX 4090 vs CPU can affect bf16
-                              numerics.
+  ☐ Overreach?         does the claim wording generalize beyond what was tested
+                       (how many cohorts / settings / periods actually backed it)?
+  ☐ Conditional?       does the result hold only on a sub-sample or under one
+                       specification? say so in the claim.
+
+
+─§ 6. Reproducibility ────────────────────────────────────────────────
+
+  ☐ Code version?      git SHA recorded for the analysis that produced the result?
+  ☐ Environment?       relevant tool / package / data versions noted if they differ?
 
 
 ─§ "But..." catch-all ────────────────────────────────────────────────
 
-Before saving, ask: "If a peer reviewer challenged this entry, what
-would I have to admit?"  That answer goes in the caveats.
+Before committing the verdict, ask: "If a peer reviewer challenged this claim,
+what would I have to admit?" That answer goes in the caveats.
 
-If you genuinely can't think of one, write:
-   ⚠️ No confounds identified — single-seed run on standard pipeline.
-   (i.e. acknowledge the single-seed limitation as a default caveat
-    for any probe that isn't multi-seed)
+If you genuinely can't think of one, write it explicitly, e.g.:
+   ⚠️ No confounds identified beyond the single-specification limitation.
+(acknowledging the default limitation rather than leaving the section blank).
