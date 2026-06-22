@@ -1,8 +1,8 @@
 discovery — External Evidence Layer (DESIGN)
 =============================================
 
-Status: v1.8.0 (2026-06-21) - skill renamed haipipe-discover -> haipipe-discovery
-        (haipipe-<noun> convention); discovery = one research topic per FOLDER.
+Status: v1.9.0 (2026-06-22) - feedback verb + feedback/ inbox added (mirrors
+        probe); skill is haipipe-discovery; discovery = one topic per FOLDER.
 Owner:  jluo41
 Scope:  search/read/review/idea discovery work and its durable artifact
         contract inside project folders.
@@ -91,6 +91,7 @@ discovery/
 ├── CHANGELOG.md               layer-scoped change history
 ├── haipipe-discovery/          router + durable artifact contract
 │   ├── SKILL.md
+│   ├── feedback/               skill-feedback inbox (capture, fix later)
 │   └── ref/
 │       ├── lifecycle-map.md          canonical verb lifecycle table
 │       └── discovery-yaml-schema.md
@@ -269,3 +270,6 @@ Decision Log
             application); supersedes the "name stays" note above. Inner folder,
             .claude symlink, and all refs updated; the command is now
             /haipipe-discovery.
+2026-06-22  Added: feedback utility verb + feedback/ inbox (mirrors haipipe-probe).
+            /haipipe-discovery feedback "<text>" captures skill feedback (capture-
+            only), feedback list reviews open items; fixing is a separate pass.

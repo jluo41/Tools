@@ -1,1 +1,1 @@
-../skills/E_insight/agents/reviewers/card-reviewer-wisdom-agent.md
+../skills/insight/agents/reviewers/card-reviewer-wisdom-agent.md

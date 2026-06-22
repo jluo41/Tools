@@ -1,1 +1,1 @@
-../skills/D_probe/haipipe-probe/agents/reviewers/probe-structural-reviewer-agent.md
+../skills/probe/haipipe-probe/agents/reviewers/probe-structural-reviewer-agent.md

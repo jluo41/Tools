@@ -81,7 +81,7 @@ Related skills
 ---------------
 
 - `haipipe-paper-edit-diffpdf` (`components/diff/`) — single-PDF colored diff
-- `1-narrative/narrative-report` — what the paper claims; this skill
+- `1-lifecycle/haipipe-paper-structure-narrative` — what the paper claims; this skill
   shows whether those claims changed
-- `6-respond/paper-rebuttal` — consumes summary.md to draft "what we
+- `5-respond/paper-rebuttal` — consumes summary.md to draft "what we
   changed" block in the rebuttal

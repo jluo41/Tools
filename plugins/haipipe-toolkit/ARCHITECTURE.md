@@ -244,5 +244,5 @@ Where to go from here
 probe ↔ task boundary:       skills/probe/MENTAL_MODEL.md
 insight card schema:           skills/insight/ref/insight-md-schema.md
 application session skeleton:  skills/application/haipipe-application/SKILL.md
-data / source layer:             skills/1_data/haipipe-data/SKILL.md
+data / source layer:             skills/task/1_data/haipipe-data/SKILL.md
 ```

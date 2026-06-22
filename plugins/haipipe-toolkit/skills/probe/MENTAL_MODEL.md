@@ -1,353 +1,277 @@
-probe ↔ task — Mental Model
-=================================
+probe - Mental Model
+====================
 
-Onboarding doc. Read this BEFORE writing your first probe / probe, or
-when something feels like it could go in either tasks/ or probes/
-and you're not sure which.
+What a probe is
+===============
 
-Naming note: the current folder and command names still say
-`probe`, `probes/`, and `/haipipe-probe` for
-compatibility. Conceptually, this layer is **probe**: a
-claim-directed probe that asks reality a focused question.
-
-
-TL;DR
-=====
+A probe is a CLAIM-LEVEL EVIDENCE CONTRACT, not an execution unit.
 
 ```
-task    =  DO     layer   "did this run work?"
-probe   =  MEAN   layer   "across these runs, does the hypothesis hold?"
-                          "what did this probe teach us?"
-
-bridge skill (D → C):  scaffold probe arms as tasks
-arms[] pointer (D → C):  probe reads tasks' metrics.json
-tasks NEVER reference probes.
+task       =  DO        "did this run work?"               runs code
+discovery  =  LOOK OUT  "what does outside evidence say?"  inspects literature/prior art
+insight    =  REMEMBER  "what do we already know?"         preserves judged knowledge
+probe      =  JUDGE     "does the available evidence support this claim,
+                         under what scope, with what caveats?"
 ```
 
-If you can ask **"did this run work?"** about something, it's a task.
-If you can ask **"does this hypothesis / story direction survive contact
-with reality?"** about it, it's a probe.
+A probe does not run code, search literature bodies, or store paper prose. It sits above those layers and asks a single question of whatever evidence exists. The probe layer stays small, readable, and auditable. It is not a task runner, a literature archive, or a paper-writing layer.
 
-
-The two pipelines, side by side
-================================
+Read these for the authoritative contract; this file is the intuition:
 
 ```
-╔═══════════════════════════════════════════╗  ╔══════════════════════════════════════════╗
-║  task — EXECUTION                       ║  ║  probe — RESEARCH                      ║
-║                                           ║  ║                                          ║
-║  unit:        task / run                   ║  ║  unit:        probe (research thread)     ║
-║  asks:        "did THIS run work?"        ║  ║  asks:        "does the HYPOTHESIS hold ║
-║                                           ║  ║                across these runs?"       ║
-║                                           ║  ║                                          ║
-║  artifacts:   code (*.py)                  ║  ║  artifacts:   probe.yaml             ║
-║               configs/<RUN>.yaml           ║  ║               review.md                  ║
-║               runs/<RUN>.sh                ║  ║               CLAIMS_FROM_RESULTS.md     ║
-║               results/<RUN>/runtime.yaml   ║  ║               logs/<DATE>.md (daily)      ║
-║               results/<RUN>/metrics.json   ║  ║                                          ║
-║               notebooks/<RUN>.ipynb        ║  ║                                          ║
-║               task-log.md (derived)        ║  ║                                          ║
-║                                           ║  ║                                          ║
-║  location:    examples/Proj-X/tasks/...    ║  ║  location:    examples/Proj-X/probes║
-║                                           ║  ║                                          ║
-║  has code?    YES — *.py runs, helpers     ║  ║  has code?    NO — pure steering state    ║
-║                                           ║  ║                                          ║
-║  mood:        "how / what / when"          ║  ║  mood:        "why / what next"          ║
-║                                           ║  ║                "what did reality answer?"║
-╚═══════════════════════════════════════════╝  ╚══════════════════════════════════════════╝
+../PHILOSOPHY.md
+haipipe-probe/SKILL.md
+haipipe-probe/ref/lifecycle-map.md
+haipipe-probe/ref/probe-yaml-schema.md
 ```
 
 
-The 4 boundary rules
-=====================
+The lifecycle - five steps
+==========================
 
 ```
-Rule 1 — probes/ folder has NO code, NO notebook, NO metric calculation.
-         All computation lives in tasks/. Probes only hold
-         steering state (plan + verdict + narrative).
-
-Rule 2 — probe.yaml is STEERING state, not a result archive.
-         result: block holds *aggregated references* to per-run
-         metrics that physically live in tasks/.../metrics.json.
-
-Rule 3 — Strict one-way dependency: probes READ tasks; tasks
-         do NOT reference probes.
-         - Delete a probe → no impact on tasks.
-         - Delete a task → linked probe becomes invalid (caught by review).
-
-Rule 4 — Tasks are ATOMIC; probes COMPOSE.
-         - A single task/run can be referenced by multiple probes
-           (as a member of different arms in different threads).
-         - A probe cites multiple runs across multiple tasks.
+1. Plan    define the claim and what evidence would settle it
+2. Gather  call missing task/discovery work; link existing artifacts
+3. Read    summarize the gathered evidence into evidence.md + probe.yaml.result
+4. Judge   run structural + integrity + claim gates into verdict.md + probe.yaml.verdict
+5. Return  send the verdict back to source/memory into return.md + probe.yaml.return
 ```
 
+Plan absorbs intake and framing. Input can be a paper claim gap, an application question, a reviewer objection, a task path, a discovery note, an insight card, or a loose idea. Plan turns that into an existing-probe attachment, a new claim contract, or a standalone note.
 
-The bridge — only one direction crosses C ↔ D
-================================================
-
-```
-probe side                             task side
-─────────────────                       ──────────────
- probe.yaml                         tasks/A01_*/
-   arms:                                   ├── 01_pretrain_baseline/
-     baseline: []   ← placeholder          │   ├── configs/run_seed42.yaml
-     lhm:      []                          │   ├── runs/run_seed42.sh
-                                           │   └── results/run_seed42/
-                                           │       ├── runtime.yaml ─────┐
-                                           │       └── metrics.json ────┐│
-                                           └── 02_pretrain_lhm/         ││
-                                               └── ...                  ││
-                                                                        ││
-   ① bridge skill (D → C, only direction):                              ││
-        Skill("haipipe-task", "task-folder training ...")               ││
-      scaffolds the arms as task tasks                                ││
-                                                                        ││
-   ② design link (D side only, after runs complete):                    ││
-        arms.baseline.append("tasks/A01/01_pretrain_baseline/...")      ││
-        arms.lhm     .append("tasks/A01/02_pretrain_lhm/...")           ││
-                                                                        ││
-   ③ result aggregate (D reads C via arms[] pointers):                  ││
-        for arm in arms:                                                ││
-            for run in arm.runs:                                        ││
-                metric = read(run/results/.../metrics.json) ◀───────────┘│
-        write result: block in probe.yaml                           │
-                                                                         │
-   ④ review reads everything (D side only):                              │
-        validates result: matches metrics ◀─────────────────────────────┘
-        writes review.md + CLAIMS_FROM_RESULTS.md
-```
-
-Tasks never know a probe is reading them. They produce their
-own metrics; the probe is just a downstream consumer.
-
-
-One probe, full lifecycle
-=========================
+Gather has two internal actions:
 
 ```
-[t=0]  💡 Researcher has a question: "does architecture X beat baseline?"
-         This is a probe: a focused kick at reality.
-         │
-[t=1]  📐 /haipipe-probe design new x_vs_baseline --date 0602
-         │   writes probes/0602_x_vs_baseline/probe.yaml
-         │     - hypothesis, claim_target
-         │     - arms.baseline = []  (placeholder)
-         │     - arms.x        = []  (placeholder)
-         │     - aggregation spec (metric, statistic, noise_floor)
-         │
-[t=2]  🌉 /haipipe-probe bridge P.0602
-         │   for each arm:
-         │     Skill("haipipe-task", "task-folder training arm-baseline-seed42")
-         │     Skill("haipipe-task", "task-folder training arm-x-seed42")
-         │     ... (one task-folder per arm × seed)
-         │   sanity arm runs first, then deploy rest
-         │   ── task side now has 6 task-folders with run.sh ready ──
-         │
-[t=3]  ⚙️  task runs the training
-         │   each run writes results/<RUN>/runtime.yaml + metrics.json
-         │   ── pure task territory; probe is asleep ──
-         │
-[t=4]  🔗 /haipipe-probe design link P.0602 <run-path>
-         │   (called by bridge automatically, or manually for stragglers)
-         │   appends the run-path to the correct arm in probe.yaml
-         │
-[t=5]  📊 /haipipe-probe result aggregate P.0602
-         │   scans arms[*].runs[*]/results/<RUN>/metrics.json
-         │   computes mean / std / paired-t / sign-test
-         │   writes result: block in probe.yaml
-         │     status: pending → confirmed | inconclusive | refuted
-         │
-[t=6]  🔍 /haipipe-probe review P.0602
-         │   structural QA: arms ≥1, metric set, caveats present, ...
-         │   Codex semantic verdict (out-of-family review)
-         │   writes review.md + CLAIMS_FROM_RESULTS.md
-         │
-[t=7]  📝 /haipipe-probe result claim P.0602
-         │   final 1-2 sentence statement with stats + caveats
-         │   "Treatment X beats baseline by Δ ± std (p=Y, N=3). +caveat."
-         │
-[t=8]  🗺️  /haipipe-probe explore (optional)
-         │   coverage map across all probes
-         │   proposes next probe to ask
-         │
-[t=9]  🔄 /haipipe-probe loop P.0602 (optional)
-         │   review → fix → re-aggregate → re-review, until verdict is clean
-
-[done] probe.yaml is the canonical probe record. task artifacts are the
-       evidence. insight files D + K cards; paper consumes K + W downstream.
+Call  create missing task/discovery work
+Link  attach existing task/discovery/insight artifacts
 ```
 
-
-Filesystem layout — both worlds at the same project
-=====================================================
+Read and Judge stay separate on purpose:
 
 ```
-examples/Proj-X/
-│
-├── tasks/                                  💼 task — execution
-│   ├── A01_pretraining_clm/
-│   │   ├── 01_pretrain_baseline/
-│   │   │   ├── 01_pretrain_baseline.py
-│   │   │   ├── configs/
-│   │   │   ├── runs/
-│   │   │   ├── results/
-│   │   │   │   ├── run_seed42/
-│   │   │   │   │   ├── runtime.yaml    ← per-run source of truth
-│   │   │   │   │   └── metrics.json     ← per-run measurements
-│   │   │   │   └── run_seed7/
-│   │   │   ├── notebooks/
-│   │   │   └── task-log.md              ← derived, per-task summary
-│   │   └── 02_pretrain_lhm/...
-│   ├── B01_evaluation_clm/...
-│   └── ...
-│
-├── probes/                            📊 probe — research
-│   ├── INDEX.md                            ← auto: list all probes
-│   ├── coverage.md                         ← auto: gaps + proposals
-│   ├── comparison.md                       ← auto: cross-probe view
-│   │
-│   ├── 0601_baseline_noise_floor/
-│   │   ├── probe.yaml                 ← steering state (this thread)
-│   │   ├── review.md                       ← latest QA
-│   │   ├── CLAIMS_FROM_RESULTS.md          ← Codex verdict snapshot
-│   │   └── logs/<DATE>.md                  ← daily captain's-log
-│   └── 0602_x_vs_baseline/...
-│
-└── paper/                                  📰 paper — writing
-    └── Paper-X-icml/...                    (consumes probes' claims)
+Read  = what did the evidence say?
+Judge = what claim can we honestly make?
 ```
 
-Note: same project, four worlds, four folders. No code in
-probes/ or insights/. No claims in tasks/. No mixing. The folder is still
-named probes/; conceptually each folder is one probe thread.
-
-```
-examples/Proj-X/
-├── tasks/      💼 task      code + results + D cards (via Stage 5)
-├── probes/     📊 probe     steering state + K cards (via convergence)
-├── insights/   🧠 insight   DIKW knowledge base (D/I/K/W cards + INDEX)
-└── paper/      📰 paper     consumes K + W for publication
-```
+Return is not Report. Report makes a result inspectable; Return sends a judged verdict to the place that needed it: a paper claim, application answer, reviewer response, insight memory, or the next evidence need.
 
 
-Common confusions — FAQ
-========================
-
-**Q: I have a Jupyter notebook that aggregates 5 runs into a plot.
-     Where does it go?**
-A: tasks/ — specifically a `display`-type task-folder (C-series).
-   The aggregation logic is CODE; it belongs in task.
-   The probe then references the plot via `evidence:` in
-   probe.yaml. The CLAIM (in plain English) lives in the
-   probe; the PLOT lives in a task.
-
-**Q: Can one task be referenced by two probes?**
-A: Yes. Tasks are atomic. Probes compose. E.g., one
-   `01_pretrain_baseline/run_seed42` can serve as a baseline arm in
-   P.0602 AND as a control arm in P.0603. They share the same run-path.
-
-**Q: Can one probe span multiple projects?**
-A: Not in this design. `examples/Proj-X/probes/` is project-
-   scoped. Cross-project comparison happens in a higher-level
-   skill (paper, or a meta-probe), not in probe.yaml.
-
-**Q: What about exploratory runs that aren't part of any probe?**
-A: Fine — they live in tasks/ alone, unlinked. No requirement to
-   create a probe for every run. Probes exist for runs
-   that test a specific claim.
-
-**Q: When does a task-folder become a task-algo (X_algo demo)?**
-A: When the run's purpose is "verify the algorithm class doesn't
-   crash" — not "produce a result for a claim." A task-algo demo
-   typically isn't linked to any probe.
-
-**Q: probe.yaml has a `result:` block with numbers. Isn't that
-     a result file then?**
-A: No — those numbers are AGGREGATED REFERENCES to per-run metrics.
-   The numbers are computed; the source of truth is each run's
-   `metrics.json`. If you regenerate the probe.yaml result
-   block, you'd read the same per-run metrics and recompute.
-
-**Q: Where do daily notes about a probe go?**
-A: `probes/<MMDD>_<slug>/logs/<YYYY-MM-DD>.md`. Append-only,
-   one per day. Captain's-log style: what was tried, what surprised,
-   what's next. Reviewed by `-loop` when iterating.
-
-
-Where probes meet insights (task ↔ probe ↔ insight)
-============================================================
-
-The three layers form a knowledge pipeline. Each layer produces DIKW cards at its natural scope:
-
-```
-task (execution)     produces → 🟦 D observation    "this task's data showed X"
-probe (research)     produces → 🟨 K belief          "this probe confirms/refutes X"
-insight (knowledge)  synthesizes → 🟩 I pattern      "across tasks, the pattern is X"
-                       synthesizes → 🟧 W action       "based on what we know, do X"
-```
-
-Concrete wiring:
-
-```
-task Stage 5 (Insight)  →  Skill("haipipe-insight-data")  →  🟦 D card
-  trigger:  task lifecycle completes with results (eval, fit, stata-reg, stata-data)
-  source:   results/<run>/metrics.json + workflow/report*.yaml
-  scope:    one task/run
-
-probe convergence       →  card-creator-knowledge-agent   →  🟨 K card
-  trigger:  probe result.status = confirmed or refuted
-  source:   probe.yaml claim + result block
-  scope:    one probe claim
-  optional: chains card-creator-wisdom-agent → 🟧 W per-probe next-step
-```
-
-The DIKW partition principle: atomic layers (D, K) are filed automatically by their producers. Synthesis layers (I, W) require cross-source context and are owned by insight.
-
-**Q: Can a task produce a K card directly?**
-A: No. K requires a controlled comparison (a probe with arms × seeds × test). One task run is an observation (D), not a belief (K). Even if a single eval shows AUC=0.95, that's a D card until a probe formally compares it against a baseline.
-
-**Q: Can a probe produce an I card?**
-A: No. I is a cross-D pattern ("5 tasks all show the same trend"). A single probe sees only its own arms, not other probes' findings. I-level synthesis is insight's job.
-
-**Q: What about the per-probe D + K in CYCLE.md?**
-A: CYCLE.md is a DERIVED audit view that lists which D and K cards a probe produced. It does not file them — task Stage 5 files D, probe convergence files K. CYCLE.md just links to the filed cards via grep on `sources:`.
-
-
-Cross-references
+The Probe Console
 =================
 
+`/haipipe-probe <probe>` opens a Probe Console: a context-aware working session for one active probe.
+
 ```
-task overall                  task/DESIGN.md
-task task-folder shape        task/haipipe-task/ref/hierarchy.md
-task per-run runtime.yaml     task/haipipe-task/ref/runtime-yaml-schema.md
-
-probe overall            probe/haipipe-probe/SKILL.md
-probe bridge skill       probe/haipipe-probe-bridge/SKILL.md
-probe.yaml schema          probe/haipipe-probe/ref/probe-yaml-schema.md
-probe caveats checklist  probe/haipipe-probe/ref/probe-caveats-checklist.txt
-probe legacy migration   probe/haipipe-probe/ref/_legacy-scope-expmt.md
-
-insight overall               insight/DESIGN.md
-insight DIKW boundaries       insight/ref/dikw-boundaries.md
-insight card schema           insight/ref/insight-md-schema.md
-
-Project umbrella (3 worlds)     project/haipipe-project/SKILL.md
+1. resolve the active probe
+2. load probe.yaml + lifecycle artifacts + linked refs
+3. render status.md / a console panel
+4. record active state in .probe-console.yaml
+5. route later free-form user input through the lifecycle
 ```
+
+Console state is session state, not research evidence. It lives in `.probe-console.yaml` at the PROJECT ROOT, defined as the nearest directory containing `probes/` (for example `examples/ProjB-PhyTrait-OpioidRx/`, not necessarily the repo root).
+
+Copilot is the default mode. The console makes low-risk progress automatically (read files, summarize status, classify input, suggest links, detect missing evidence, draft text) and pauses before costly, irreversible, or claim-committing actions (creating costly tasks, PHI/full-data work, changing the claim target, declaring a final yes/no verdict, editing paper/application text, filing insight memory).
+
+
+The two no-arg / file entry points
+==================================
+
+```
+/haipipe-probe              no-arg DASHBOARD: a derive-from-disk preflight
+/haipipe-probe file "<x>"   FILE scattered work into the evidence base
+```
+
+The dashboard orients before any step acts. Its golden rule:
+
+```
+Never report a step done because probe.yaml says so.
+A step is done only when its expected artifact resolves on disk.
+When stored status and disk disagree, disk wins and the gap is flagged DRIFT.
+```
+
+It runs a shallow drift check (resolve path-like refs, flag missing ones), never a heavy parse or integrity audit. The frontier is the first step whose disk predicate fails.
+
+`/haipipe-probe file` files a loose thought or one-off work at creation time so nothing falls on the floor. Three dispositions:
+
+```
+ATTACH      work shares an existing probe's claim (entity AND outcome at claim level) -> wire as evidence
+NEW         claim-bearing but no probe fits -> propose a probe.yaml stub, ask one confirm
+STANDALONE  not claim-bearing (prep/infra/display) -> no probe; log reason; shows UNLINKED in dashboard
+```
+
+ATTACH and STANDALONE auto-apply and report; NEW is a commitment and takes a confirm. Every decision appends a row to `probes/FILING.md`.
+
+
+The flat probe folder
+=====================
+
+Probe folders are flat. Do not create probe group folders. Organize with tags, source refs, status, and `_index.md`.
+
+```
+probes/
+├── _index.md
+├── 0605_discretion-gradient/
+│   ├── probe.yaml      machine-readable contract: refs + structured result/verdict/return
+│   ├── status.md       human-readable Probe Console panel
+│   ├── evidence.md     Read output: what the gathered evidence says
+│   ├── verdict.md      Judge output: claim support, confidence, caveats
+│   └── return.md       Return output: where the verdict went or should go
+└── 0621_trait-diabetes/
+    └── ...
+```
+
+Optional sidecars only when useful:
+
+```
+gather.md              complex call/link decisions
+INTEGRITY_AUDIT.md     long independent integrity audit
+CLAIMS_FROM_RESULTS.md claim-verifier output (Judge gate 3)
+```
+
+No code, notebooks, raw literature bodies, heavy results, or plots in probe folders. Those live in task/discovery/insight and are linked by reference. One probe folder equals one claim-level thread. Canonical ref is `P.<MMDD>` (for example `P.0605`); same-day collisions append a lowercase suffix (`P.0605b`).
+
+
+Judge - builder is not judge
+============================
+
+Judge is the claim-commitment gate. It runs three INDEPENDENT reviewers so the planner cannot rubber-stamp its own work:
+
+```
+1. structural  required evidence exists, compared roles comparable, results match the
+               intended contrast, discovery verdicts accounted for, caveats cover confounds
+               -> probe-structural-reviewer-agent (or inline by a fresh reviewer)
+
+2. integrity   provenance of outcome/ground truth, metric/table consistency, no phantom
+               results, claim scope matches evidence scope, no leakage
+               -> probe-integrity-auditor-agent (Codex, PATHS only so the builder can't rationalize)
+
+3. claim       yes/partial/no/blocked, confidence, supported vs unsupported scope, caveats,
+               next needs
+               -> claim-verifier-agent (Codex)
+```
+
+Hard rule: integrity = fail BLOCKS the claim gate. Output is `verdict.md` plus the structured `probe.yaml.verdict` block. Judge stops if integrity fails, required evidence is missing, the claim would overreach, or a final yes/no needs user approval.
+
+
+How probe relates to the other layers
+=====================================
+
+Evidence is the shared, durable core of a project. It holds four sibling folders:
+
+```
+project-root/
+├── probes/        claim-level evidence contracts (this layer)
+├── tasks/         executed internal work (code + results)
+├── discoveries/   outside-evidence checks (literature, prior art)
+└── insights/      judged knowledge (DIKW cards)
+```
+
+Probe READS the others; the others do not reference probes. Delete a probe and tasks/discoveries are untouched; delete a linked task and the probe's ref goes stale (the dashboard flags it as DRIFT). Tasks/discoveries are atomic; one task can be cited by several probes. Probe calls task/discovery during Gather and may call insight during Return.
+
+DELIVERY lifecycles are SIBLINGS that consume the evidence core, not layers above it:
+
+```
+                       ┌──────────────────────────────────────────┐
+                       │  EVIDENCE CORE (durable, shared)          │
+                       │  probes / tasks / discoveries / insights  │
+                       └──────────────────────────────────────────┘
+                            ^                          ^
+                            │ calls probe from a       │ calls probe from a
+                            │ claims-ledger gap        │ claims-ledger gap
+                   ┌────────┴────────┐        ┌────────┴──────────────┐
+                   │ paper-lifecycle │        │ application-lifecycle  │
+                   │ (a delivery)    │        │ (a delivery)           │
+                   └─────────────────┘        └────────────────────────┘
+```
+
+A delivery (paper, application) keeps a claims ledger. When a claim has an evidence gap, the delivery calls a probe; the probe judges and returns a verdict the delivery files back into the ledger. Multiple papers can share the SAME evidence core; they do not share framing.
+
+The old "narrative" was a separate live LAYER above probes. It is retired. Narrative now survives only as a STAGE inside a delivery lifecycle. Papers share evidence, not narrative framing.
+
+
+One probe, full lifecycle (illustrative)
+========================================
+
+```
+[Plan]    Paper claim gap: "Agreeableness effect attenuates as discretion falls."
+          /haipipe-probe plan ...
+          writes probe.yaml with claim + evidence_plan; status: planned
+
+[Gather]  /haipipe-probe gather P.0605 ...
+          Call  -> haipipe-task: low-discretion regression (missing comparator)
+          Link  -> existing high-discretion regression table; prior-art discovery
+          writes probe.yaml.evidence_refs + calls; status: gathering / waiting_for_evidence
+
+[Read]    /haipipe-probe read P.0605
+          summarizes linked tables, missingness, contradictions, scope
+          writes evidence.md + probe.yaml.result; status: read
+
+[Judge]   /haipipe-probe judge P.0605
+          structural + integrity(Codex, paths-only) + claim(Codex) gates
+          writes verdict.md + probe.yaml.verdict; status: judged
+
+[Return]  /haipipe-probe return P.0605
+          backfills the paper claim / files insight memory / emits next need
+          writes return.md + probe.yaml.return; status: returned
+```
+
+probe.yaml is the canonical record of the contract. The evidence itself lives in the task/discovery/insight folders it links.
+
+
+FAQ
+===
+
+Q: I have a notebook that aggregates runs into a plot. Where does it go?
+A: A task (a display-type task-folder). Aggregation is code; it belongs to task. The probe links the plot as evidence; the plain-English claim lives in the probe verdict.
+
+Q: Can one task be referenced by two probes?
+A: Yes. Tasks are atomic; probes compose. The same task path can be linked as evidence by multiple probes.
+
+Q: probe.yaml has a result block with numbers. Is it a result archive?
+A: No. result is a Read summary that references evidence living in task/discovery folders. It does not own or move artifacts.
+
+Q: Where do daily working notes go now?
+A: There is no per-probe daily log in v4. The current state lives in status.md (panel) and the structured probe.yaml blocks. Scattered thoughts get filed via `/haipipe-probe file` into FILING.md.
+
+Q: What about exploratory work not tied to any claim?
+A: It stays in tasks/discoveries unlinked, or is filed STANDALONE. Not every run needs a probe; probes exist for claims.
+
+Q: Where does paper prose / framing live?
+A: In the delivery lifecycle (paper-lifecycle / application-lifecycle), not in the probe. The probe returns a judged verdict; the delivery writes the prose.
+
+
+Retired in v4 (do not use)
+==========================
+
+The following v3 concepts are GONE. They are listed only so old references are recognizable as legacy:
+
+```
+sandwich lifecycle                          -> replaced by Plan/Gather/Read/Judge/Return
+8 stages (design/bridge/run/aggregate/      -> the 5 lifecycle verbs
+  review/claim/fileK/explore)
+Mode A / Mode B                             -> single copilot policy on one lifecycle
+arms / aggregation / run_specs /            -> probe no longer runs or aggregates; it links evidence
+  paired-t-as-the-point
+inspect / explore specialists               -> removed
+idea-creator / idea-reviewer / explorer     -> removed
+  agents
+three-layer pyramid with narrative          -> evidence core + delivery siblings; narrative is a
+  as a live layer                              stage inside a delivery, not a layer
+```
+
+Legacy verb aliases still route for compatibility: design->plan, bridge/dispatch->gather, harvest->read, post/resume->read+judge, review->judge, file->gather/plan.
 
 
 One-line rules of thumb
-========================
+=======================
 
-- New code? → tasks/  (never probes/)
-- New claim? → probes/  (never tasks/)
-- New plot? → tasks/display/  (referenced by probes/<X>/probe.yaml evidence:)
-- New hypothesis? → probes/<MMDD>_<slug>/probe.yaml hypothesis: field
-- New metric measurement? → tasks/<X>/results/<RUN>/metrics.json
-- New per-run record? → tasks/<X>/results/<RUN>/runtime.yaml (atomic by run.sh)
-- New cross-run statistic? → probes/<X>/probe.yaml result: (via /result aggregate)
-- New "this didn't work, here's why" narrative? → probes/<X>/logs/<DATE>.md
-- New CGM trace for one patient? → tasks/individual/  (never probes/)
-- New observation from a task run? → insights/D_data/  (filed by task Stage 5)
-- New belief from a confirmed probe? → insights/K_knowledge/  (filed by probe convergence)
-- New cross-task pattern? → insights/I_information/  (synthesized by insight)
-- New actionable recommendation? → insights/W_wisdom/  (synthesized by insight)
+- New code or run?             -> tasks/ (never probes/)
+- New outside-evidence check?  -> discoveries/ (never probes/)
+- New claim to test?           -> probes/<MMDD>_<slug>/probe.yaml (Plan)
+- Missing evidence?            -> Gather Call (task/discovery), then Link
+- "What did the evidence say?" -> Read -> evidence.md
+- "What can we honestly claim?"-> Judge -> verdict.md (integrity=fail blocks claim)
+- "Where does the verdict go?" -> Return -> return.md (backfill / file memory / next need)
+- Scattered thought or one-off work? -> /haipipe-probe file (ATTACH / NEW / STANDALONE)
+- Lost the thread?             -> /haipipe-probe (no-arg dashboard, disk wins over stored state)

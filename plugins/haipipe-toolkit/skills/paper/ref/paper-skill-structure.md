@@ -1,52 +1,59 @@
 # Paper Skill Structure
 
-Target organization for `Tools/plugins/haipipe-toolkit/skills/paper`.
+How `Tools/plugins/haipipe-toolkit/skills/paper` is organized. The reconstruction
+to this layout is complete.
 
-The skill tree should mirror the paper folder's durable lifecycle:
+The skill tree mirrors the lifecycle spine (`paper-lifecycle.md`,
+`lifecycle-map.md`). Skills stay flat inside each group (depth 2,
+`paper/<group>/<skill>/SKILL.md`), so `../../ref/` and skill-local refs resolve
+uniformly. Stage identity is carried by the skill name, not a nested stage folder.
 
 ```text
 paper/
-├── haipipe-paper/               main router
+├── haipipe-paper/        router + Paper Console front door
+├── PHILOSOPHY.md         design philosophy
+├── README.md             canonical structure pointer
 ├── ref/
-│   ├── paper-lifecycle.md
-│   ├── paper-rounds.md
+│   ├── paper-lifecycle.md      stage spine + maturity
+│   ├── lifecycle-map.md        stage -> procedure/reads/writes/calls/gate
+│   ├── paper-dashboard.md      derive-from-disk frontier
+│   ├── paper-rounds.md         1-rounds/ contract
+│   ├── delivery-need.md        paper <-> probe/evidence interface
 │   └── paper-skill-structure.md
-├── 0-enter/
-│   └── haipipe-paper-enter/
-├── 1-lifecycle/
-│   ├── 0-seed/
-│   ├── 1-pitch/
-│   ├── 2-claims/
-│   ├── 3-narrative/
-│   ├── 4-figures-tables/
-│   └── 5-minimap/
-├── 2-rounds/
-│   ├── haipipe-paper-round-enter/
-│   ├── haipipe-paper-round-new/
-│   ├── haipipe-paper-round-triage/
-│   ├── haipipe-paper-round-apply/
-│   └── haipipe-paper-round-close/
-├── 3-write-edit/
-├── 4-build-submit/
-├── 5-respond/
-└── 6-present/
+├── 0-enter/             haipipe-paper-enter (Console)
+├── 1-lifecycle/         one skill per stage + helpers
+│     structure-{seed,pitch,claims,narrative,display,minimap}
+│     + figure-planner/figure/figure-spec/illustration/illustration-image2
+│     + architecture/plan/diagram/incubator + structure (orchestrator)
+├── 2-rounds/            haipipe-paper-round (enter/new/triage/apply/close)
+├── 3-write-edit/        edit family + write* + review cluster + sections/ playbooks
+│     review cluster: edit-{claim-audit,reviewer,proof-checker,submission-audit,
+│                     manual-review-citations,manual-review-values,check-reference}
+├── 4-build-submit/      haipipe-paper-folder + build-{scaffold,restructure,check}
+├── 5-respond/           paper-rebuttal + rebuttal-response
+├── 6-present/           paper-slides + paper-poster
+├── _venue/              conference/journal/is + create/revise (profiles, not stages)
+└── components/          citation, compile, diff (cross-cutting)
 ```
 
-## Current-To-Target Mapping
+## Stage to Procedure
 
-Do not rename all folders in one change. Keep existing skill names stable until
-the target wrappers exist.
+Lifecycle stages map 1:1 to skills (full table in `lifecycle-map.md`):
 
-| Current | Target |
-|---|---|
-| `1-structure/haipipe-paper-enter` | `0-enter/haipipe-paper-enter` |
-| `1-structure/*pitch*` | `1-lifecycle/1-pitch/` |
-| `1-structure/*narrative*` | `1-lifecycle/3-narrative/` |
-| `1-structure/*display*`, `*figure*`, `*table*` | `1-lifecycle/4-figures-tables/` |
-| `3-edit/*` | `3-write-edit/` |
-| `2-build/*check*`, compile components | `4-build-submit/` |
-| `6-respond/*` | `5-respond/` |
-| `7-present/*` | `6-present/` |
+```text
+enter             -> 0-enter/haipipe-paper-enter
+0-seed            -> 1-lifecycle/haipipe-paper-structure-seed
+1-pitch           -> 1-lifecycle/haipipe-paper-structure-pitch
+2-claims          -> 1-lifecycle/haipipe-paper-structure-claims
+3-narrative       -> 1-lifecycle/haipipe-paper-structure-narrative
+4-figures-tables  -> 1-lifecycle/haipipe-paper-structure-display (+ figure*/diagram)
+5-minimap         -> 1-lifecycle/haipipe-paper-structure-minimap (+ architecture/plan)
+write/edit        -> 3-write-edit/*
+review            -> 3-write-edit/ (the audit cluster)
+round             -> 2-rounds/haipipe-paper-round
+respond           -> 5-respond/*
+present           -> 6-present/*
+```
 
 ## Router Rule
 
@@ -54,13 +61,16 @@ the target wrappers exist.
 actions by the user's intended lifecycle object:
 
 ```text
-status / enter / preload        -> 0-enter
-seed / pitch / claims / minimap -> 1-lifecycle
-round / todo / decisions        -> 2-rounds
-write / edit / polish           -> 3-write-edit
-compile / check / submit        -> 4-build-submit
-rebuttal / response             -> 5-respond
-slides / poster                 -> 6-present
+status / enter / preload              -> 0-enter
+seed / pitch / claims / narrative
+  / figures / minimap                 -> 1-lifecycle
+round / todo / decisions              -> 2-rounds
+write / edit / review / polish        -> 3-write-edit
+scaffold / build / check / compile    -> 4-build-submit
+rebuttal / response                   -> 5-respond
+slides / poster                       -> 6-present
+venue (conference/journal/is)
+  / create / revise                   -> _venue
 ```
 
 ## Maturity Rule

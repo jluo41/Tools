@@ -1,1 +1,0 @@
-../skills/D_probe/haipipe-probe/agents/advancers/probe-explorer-agent.md

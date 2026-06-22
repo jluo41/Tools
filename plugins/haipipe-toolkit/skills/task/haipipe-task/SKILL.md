@@ -71,6 +71,8 @@ Commands
 /haipipe-task <existing-task-group-path>              iterate: full lifecycle on each child task-folder
 /haipipe-task <stage> <existing-task-group-path>      iterate: that stage on each child task-folder
 /haipipe-task task-folder <type> [args...]            scaffold a NEW task-folder via type specialist
+/haipipe-task feedback "<text>"                       capture skill feedback to feedback/ (fix later)
+/haipipe-task feedback list                           list open feedback items
 ```
 
 For project scaffolding (creating `examples/Proj{...}/`), use `/haipipe-project`.
@@ -183,6 +185,9 @@ Step 0: Read `ref/hierarchy.md` first. It's the conceptual model for the task hi
 Step 1: Detect AUTO_MODE. Any of these flips it on: `--auto` anywhere in args, env var `CLAUDE_AUTO_HANDOFF=1` or `AUTO_MODE=1`, parent skill passed `--auto`. AUTO_MODE changes "ASK" steps into "accept best inference or return blocked"; it never changes what gets written.
 
 Step 2: Resolve scope. Cascade:
+  (0) UTILITY VERB — first positional is `feedback` (route this BEFORE any other parsing; it is NOT a lifecycle scope, so do not continue to Step 3):
+      - `feedback "<text>"` → write one file `feedback/<YYYY-MM-DD>_<slug>.md` with `status: open` per the template in `feedback/README.md`; capture-only, do NOT attempt a fix now; confirm and stop.
+      - `feedback list` → grep `feedback/*.md` for `status: open` and print them newest-first with their `context:`; stop.
   (1) explicit stage command (`plan` / `build` / `execute` / `report`) as first positional → check the path argument:
       - path is an existing task-folder → scope=single-stage on that folder (Step 3c).
       - path is an existing task-group → scope=task-group-iterate with stages=[that stage] (Step 3d).
@@ -395,3 +400,13 @@ Risk Profile
 CREATES files under `examples/{PROJECT_ID}/`. For scope=project with new code stubs, also creates files under `code-dev/` and `code/hainn/`. Refuse to overwrite existing names — abort and recommend `-organize`.
 
 When dispatching to a task-type specialist, the same blast radius applies — specialists also CREATE files under `examples/`.
+
+---
+
+## Feedback
+
+`/haipipe-task feedback "<text>"` captures a complaint / confusion / wish about THIS
+skill into `feedback/` (one dated file per item, `status: open`) to fix in a
+later revision pass. `/haipipe-task feedback list` shows the open items. This is
+feedback about the tool, not the work it produces. Route a `feedback` first-token
+here before other parsing. Full convention: `feedback/README.md`.

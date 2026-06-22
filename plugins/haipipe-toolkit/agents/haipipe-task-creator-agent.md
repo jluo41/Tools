@@ -1,1 +1,1 @@
-../skills/C_task/agents/haipipe-task-creator-agent.md
+../skills/task/agents/haipipe-task-creator-agent.md

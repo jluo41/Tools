@@ -205,3 +205,13 @@ ref/code-structure.md      Track A layout (code-dev/, hainn/, haifn/) + paired-e
 ```
 
 These ref files are SHARED across specialists. Each specialist reads them when its function depends on the rules. The inventory helper scripts (`ref/inventory/*.py`) live with `haipipe-project-inspect` since only that specialist uses them.
+
+---
+
+## Feedback
+
+`/haipipe-project feedback "<text>"` captures a complaint / confusion / wish about THIS
+skill into `feedback/` (one dated file per item, `status: open`) to fix in a
+later revision pass. `/haipipe-project feedback list` shows the open items. This is
+feedback about the tool, not the work it produces. Route a `feedback` first-token
+here before other parsing. Full convention: `feedback/README.md`.

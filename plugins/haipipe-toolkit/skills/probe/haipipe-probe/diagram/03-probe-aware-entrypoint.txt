@@ -1,0 +1,75 @@
+================================================================================
+  /haipipe-probe  -  probe-aware entrypoint                        [design sketch]
+================================================================================
+
+(1) COLLAPSED ARCHITECTURE   narrative dissolved; evidence is the shared core
+--------------------------------------------------------------------------------
+
+    DELIVERY SIDE   each owns its OWN story; papers share EVIDENCE, not framing
+
+   +---------------------------+        +----------------------------+
+   | paper/<P>/0-lifecycle/    |        | application/<A>/lifecycle/ |
+   |  seed -> pitch -> claims   |        |  intent -> audience ->     |
+   |  -> [narrative] -> figs    |        |  claims -> [narrative]     |
+   |  -> minimap                |        |  -> message -> ...         |
+   +-------------+-------------+         +-------------+--------------+
+                 |   claims GAP row  --> call probe    |
+                 +------------------+------------------+
+                                    |
+                                    v
+    EVIDENCE CORE   project-level . shared . durable . the only spine
+   +----------------------------------------------------------------------+
+   |  probes/   <-- the HUB: joins everything below into a claim verdict   |
+   |     |   arms->          refs->            files->                     |
+   |     v                   v                 v                           |
+   |  tasks/             discoveries/       insights/                      |
+   |  (DO: runs,         (outside world,    (K/W reusable meaning,         |
+   |   metrics)           lit, web)          venue-neutral -- NOT story)   |
+   +----------------------------------------------------------------------+
+
+   narrative the LAYER  = X deleted      narrative the STAGE = kept inside delivery
+
+
+(2) PROBE-AWARE PREFLIGHT   what /haipipe-probe (no args) does
+--------------------------------------------------------------------------------
+
+   type  /haipipe-probe
+         |
+         v
+   +------------------------------------------------------------------+
+   |  DERIVE FROM DISK    golden rule: never trust the stored verdict |
+   +------------------------------------------------------------------+
+         |   for each probe, walk the ladder; FIRST failing check = frontier
+         v
+    Plan   -->   Gather   -->   Read    -->   Judge    -->   Return
+   claim +      evidence_refs  evidence.md   verdict.md     return.md +
+   evidence_    RESOLVE on     + result      + structural/   verdict sent
+   plan in yaml disk (call/    grounded in   integrity/      to source/
+                link)          live paths    claim gates     memory
+         |
+         v
+    FRONTIER  ----------------->  the ONE next-action     (state decides guidance,
+         +                                                 not a fixed script)
+    evidence under no probe --->  dashboard UNLINKED + /haipipe-probe file
+                                  (ProjB now: 15 tasks, 0 wired)
+
+
+(3) GROUNDED ON P.0605      stored != reality   (exactly why we derive)
+--------------------------------------------------------------------------------
+
+   the probe.yaml SAYS                preflight DERIVES from disk
+   --------------------               ------------------------------------------
+   verdict mechanics=confirmed X -->  Gather: 5/5 evidence paths BROKEN
+   "all 5 tables emit"         X -->          (R01_Regression -> R01_Reg rename)
+   cohorts Musc, Osteo, ...    X -->          disk has neither Musc nor Osteo
+   1 table survives            X -->          and it sits in results/_archive/
+   verdict filled              X -->  Judge:  never ran (folder = only probe.yaml)
+
+   ladder:  Plan [v] | Gather [X] <==FRONTIER | Read [ ] | Judge [ ] | Return [ ]
+
+   next-action:  /haipipe-probe gather P.0605 <real evidence paths>  (file/link)
+
+   the lie it catches: a dashboard that ECHOES probe.yaml would report "confirmed,
+   all good". the one that DERIVES reports "your done probe is actually broken".
+
+================================================================================

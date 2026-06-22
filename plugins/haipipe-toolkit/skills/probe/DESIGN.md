@@ -1,454 +1,472 @@
-probe — Research Probe Pipeline (DESIGN)
-=============================================
+probe - Claim-Level Evidence Contract (DESIGN)
+================================================
 
-Status: v3.0.0 (2026-06-11) — hub-centric; 5-stage lifecycle + loop; fn/ procedures + 6 agents; two-mode Design
+Status: v4.0.0 (2026-06-22) - Probe Console + lifecycle Plan/Gather/Read/Judge/Return; flat probe folders; 3 reviewer agents.
 Owner:  jluo41
-Scope:  probe lifecycle (Design → Materialize → Harvest → Judge → Close),
-        with loop-back from Judge → Explore → Design.
-        NO code execution — pure steering state on top of task.
+Scope:  the probe layer as a claim-level evidence contract. The probe owns the
+        question before the work and the interpretation after. It executes no
+        code; tasks and discoveries do the work and are linked by reference.
 
 
-Conceptual Layering
+Authority
+=========
+
+This DESIGN.md is the internals/rationale doc. It must agree with the canonical
+files; if they disagree, those win:
+
+```text
+PHILOSOPHY.md                       core position + policy
+haipipe-probe/SKILL.md              entry point, commands, routing
+haipipe-probe/ref/lifecycle-map.md  per-step contract (the implementation map)
+haipipe-probe/ref/probe-yaml-schema.md  machine contract field spec
+haipipe-probe/fn/*.md               one procedure per lifecycle verb
+haipipe-probe/ref/probe-dashboard.md    no-arg derive-from-disk panel
+haipipe-probe/ref/probe-attach.md       filing judge for scattered work
+haipipe-probe/agents/README.md          the 3 Judge reviewers
+```
+
+`MENTAL_MODEL.md` (sibling) remains the boundary doc between task and probe.
+
+
+Core Position
+=============
+
+A probe is not an execution unit. A probe is a claim-level evidence contract.
+
+```text
+task      runs code (internal work)
+discovery inspects outside evidence
+insight   preserves judged knowledge
+probe     plans, gathers, reads, judges, and returns claim-level verdicts
+```
+
+The probe sits between execution and synthesis and asks one question:
+
+```text
+Does the available evidence support this claim, under what scope, and with what caveats?
+```
+
+The probe owns the question before the work and the interpretation after. It
+does not own the work itself. The layer must stay small, readable, auditable. It
+must not become a task runner, a literature archive, or a paper-writing layer.
+
+
+Lifecycle
+=========
+
+Every probe has the same lifecycle, run inside a Probe Console:
+
+```text
+1. Plan   - define the claim and evidence needed to test it
+2. Gather - call missing task/discovery work and link existing artifacts
+3. Read   - summarize the gathered evidence
+4. Judge  - decide what the evidence honestly supports
+5. Return - send the verdict back to the source or memory
+```
+
+Two boundaries are load-bearing:
+
+```text
+Read vs Judge    Read = what did the evidence say?
+                 Judge = what claim can we honestly make?
+Return vs Report Report makes a result inspectable.
+                 Return sends a judged verdict, with caveats, to the place that needed it.
+```
+
+`Plan` absorbs intake/framing. The input may be a paper claim gap, an
+application question, a reviewer objection, a task path, a discovery note, an
+insight card, or a loose idea. Plan turns it into one of: attach to an existing
+probe, a new claim contract, or a standalone note.
+
+`Gather` is evidence acquisition, not interpretation. It has two internal
+actions:
+
+```text
+Call - create missing task/discovery work
+Link - attach existing task/discovery/insight artifacts
+```
+
+
+Probe Console
+=============
+
+`/haipipe-probe <probe>` opens a Probe Console: a context-aware working session
+for one active probe. It is the front door for the lifecycle.
+
+```text
+1. resolve the active probe (P.0605 | 0605 | probes/0605_slug/)
+2. load probe.yaml + lifecycle artifacts
+3. render status.md / a console panel
+4. record active state in .probe-console.yaml
+5. route later free-form user input through Plan -> Gather -> Read -> Judge -> Return
+```
+
+Console state is session state, not research evidence. It lives at the project
+root, defined as the nearest directory containing `probes/` (for example
+`examples/ProjB-PhyTrait-OpioidRx/`, not necessarily the repo root):
+
+```text
+.probe-console.yaml
+```
+
+The console derives the current lifecycle stage from disk:
+
+```text
+no probe.yaml contract            -> Plan
+evidence missing / refs absent    -> Gather
+evidence linked but no evidence.md -> Read
+evidence present but no verdict.md -> Judge
+verdict present but no return action -> Return
+return complete                   -> closed / ready for next probe
+```
+
+
+Commands and Routing
 ====================
 
-A `project` is the umbrella for one cohesive research effort. Inside it live parallel worlds:
+```text
+/haipipe-probe <probe>            open Probe Console for probe
+/haipipe-probe console <probe>    explicit console open
+/haipipe-probe                    no-arg derive-from-disk dashboard + active console resume
+/haipipe-probe file "<work>"      filing judge for scattered work (attach/new/standalone)
 
-For a concrete end-to-end project shape, see
-`../../blueprints/end-to-end-sandwich-run.md`.
+/haipipe-probe plan <args...>     Plan
+/haipipe-probe gather <probe> ... Gather (call/link/check)
+/haipipe-probe read <probe>       Read
+/haipipe-probe judge <probe>      Judge
+/haipipe-probe return <probe>     Return
 
-```
-📦 examples/Proj{Series}-{Cat}-{Num}-{Name}/    <- project (umbrella)
-|
-|-- 📁 tasks/        <- 💼 task      build & run things (CODE lives here)
-|-- 📁 probes/       <- 📊 probe     cross-run aggregation (CLAIMS live here) <- THIS SECTION
-|-- 📁 insights/     <- 🧠 insight   DIKW cards from probes
-|-- 📁 paper/        <- 📰 paper     what we publish
-```
-
-probe sits between execution (task) and synthesis (insight / paper):
-
-```
-discover → probe → task (via bridge, one-way)
-                ↑ reads metrics.json / runtime.yaml
-                ↓ writes claims
-             insight ← consumes confirmed claims (K cards)
-             paper   ← consumes confirmed claims (narrative spine)
+/haipipe-probe status [<probe>]   render status panel
+/haipipe-probe "<free text>"      route via active console, else Plan
 ```
 
-See **MENTAL_MODEL.md** (sibling file) for the authoritative boundary rules between task and probe.
+Resolution order (see SKILL.md Routing):
 
-
-Current State (v3.0.0)
-========================
-
-Hub-centric structure: the hub owns the lifecycle engine, phase procedures,
-agents, and all shared schemas. Only tools with genuine standalone value
-(explore, inspect) keep their own skill directory.
-
-```
-probe/                                <- probe-scope layer (THIS SECTION)
-|-- DESIGN.md                           (this file — internals)
-|-- MENTAL_MODEL.md                     (boundary doc — task ↔ probe)
-|-- CHANGELOG.md
-|
-|-- haipipe-probe/                      🧭 hub — THE skill (lifecycle + routing)
-|   |-- SKILL.md                        entry point, routing, lifecycle dispatch
-|   |
-|   |-- ref/                            📚 ALL schemas + templates + workflow engine
-|   |   |-- probe-lifecycle.workflow.js 5-stage lifecycle + loop-back logic
-|   |   |-- probe-yaml-schema.md        probe.yaml field spec + validation rules
-|   |   |-- probe-caveats-checklist.txt confound walk (consumed by judge + harvest)
-|   |   |-- probe-entry-template.txt    per-probe rendering format
-|   |   |-- probe-headline-template.txt scoreboard template
-|   |   |-- probe-run-dashboard-template.txt  planned-vs-done runs per arm
-|   |   |-- probe-cycle-audit-template.txt    per-probe closed-loop audit (CYCLE.md)
-|   |   |-- probe-status-template.txt   campaign status tracker (4 sections)
-|   |   |-- workflow-plan-sample.yaml   IPO template: 6 domain phases
-|   |   |-- log-format.md              daily log format
-|   |   |-- _legacy-scope-expmt.md     migration notes (read-only)
-|   |
-|   |-- fn/                             🔧 phase procedures (called by workflow.js)
-|   |   |-- design.md                   Stage 1: hypothesis + arms (Mode A/B)
-|   |   |-- bridge.md                   Stage 2: scaffold arms → task + deploy
-|   |   |-- harvest.md                  Stage 3: link + aggregate + claim
-|   |   |-- judge.md                    Stage 4: structural + integrity + claim verdict
-|   |
-|   |-- agents/                         🤖 probe's own agents (3 families)
-|   |   |-- creators/
-|   |   |   |-- probe-idea-creator-agent.md      (Design Mode B — auto)
-|   |   |-- reviewers/
-|   |   |   |-- probe-idea-reviewer-agent.md     (Design Mode B — auto)
-|   |   |   |-- probe-structural-reviewer-agent.md
-|   |   |   |-- probe-integrity-auditor-agent.md (Codex-backed)
-|   |   |   |-- claim-verifier-agent.md          (Codex-backed)
-|   |   |-- advancers/
-|   |   |   |-- probe-explorer-agent.md
-|   |   |-- README.md
-|   |
-|   |-- diagram/
-|       |-- 01-probe-lifecycle.txt      architecture diagram (lifecycle + loop)
-|
-|-- haipipe-probe-explore/              🗺️  standalone: coverage map + propose next
-|   |-- SKILL.md                        (independent value — useful outside lifecycle)
-|
-|-- haipipe-probe-inspect/              👁️  standalone: read-only query layer
-    |-- SKILL.md                        (independent value — status, list, refs, audit)
+```text
+0. resolve legacy aliases to a v4 verb first
+1. v4 lifecycle verb         -> read fn/<verb>.md, execute
+2. token resolves to a probe -> fn/console.md for that probe
+3. active console + free text -> fn/console.md router
+4. no console + free text    -> fn/plan.md
+5. no args                   -> dashboard (ref/probe-dashboard.md)
 ```
 
 
-Hub-Centric Architecture
-==========================
+Legacy Alias Table
+==================
 
-The hub IS the skill. Phase procedures live in `fn/`, agents in `agents/`,
-schemas in `ref/`. Only tools with genuine standalone value (explore, inspect)
-keep their own skill directory.
+Legacy verbs have NO separate procedure files. The router maps each to a v4
+procedure via this table, then reads that procedure.
 
-**haipipe-probe (hub)** owns:
-
-- Command routing and scope resolution
-- Dashboard (list probes, status)
-- Probe identity resolution (`P.0601 | 0601 | probes/0601_framing.../`)
-- The 5-stage lifecycle engine (`ref/probe-lifecycle.workflow.js`)
-- Loop-back logic (while loop in workflow.js)
-- Phase procedures (`fn/design.md`, `fn/bridge.md`, `fn/harvest.md`, `fn/judge.md`)
-- All 6 agents in 3 families (`agents/creators/`, `agents/reviewers/`, `agents/advancers/`)
-- All shared schemas and templates (`ref/`)
-
-**Lifecycle stages → fn/ procedures:**
-
-```
-Stage         Procedure       Mood            Writes to
-───────────   ──────────────  ──────────────  ──────────────────────
-1 DESIGN      fn/design.md    "what to ask"   probe.yaml (new / link)
-              + idea agents   (Mode B: auto)
-2 MATERIALIZE fn/bridge.md    "make it run"   task tasks/ (via Skill)
-3 HARVEST     fn/harvest.md   "what answered" probe.yaml (result + claim)
-4 JUDGE       fn/judge.md     "is it honest?" review.md, INTEGRITY_AUDIT.md,
-                                               CLAIMS_FROM_RESULTS.md
-5 INSIGHT     (insight)     "what did we    insights/ D + I + K + W cards
-                               learn?"        (full DIKW cascade)
-```
-
-**Standalone skills (independent value outside lifecycle):**
-
-```
-haipipe-probe-explore    🗺️ coverage map + propose next (used between loop rounds)
-haipipe-probe-inspect    👁️ read-only query layer (status, list, refs, audit)
-```
-
-```
-                   +──────────────────────────────────────────+
-                   |         haipipe-probe (hub)               |
-                   |                                          |
-                   |  SKILL.md    routing + lifecycle dispatch |
-                   |  ref/        schemas + workflow.js        |
-                   |  fn/         4 phase procedures           |
-                   |  agents/     6 agents in 3 families       |
-                   |  diagram/    architecture visuals          |
-                   +──────────────────────────────────────────+
-                          |                     |
-                   standalone skills:    standalone skills:
-                   +──────────────+      +──────────────+
-                   |   explore    |      |   inspect    |
-                   +──────────────+      +──────────────+
+```text
+design   -> plan
+bridge   -> gather call
+dispatch -> gather call
+harvest  -> read
+post     -> read + judge
+resume   -> read + judge
+review   -> judge
+file     -> gather link / plan   (or the probe-attach filing judge)
 ```
 
 
-Two Ways to Enter
-------------------
+Skill Procedures (fn/)
+======================
 
-```
-Path 1 — Via hub (recommended):  /haipipe-probe <verb> P.0601
-  hub parses verb → reads fn/<stage>.md → dispatches via workflow.js
+One procedure file per lifecycle verb. No code engine, no per-stage slash
+commands.
 
-Path 2 — Standalone tool:        /haipipe-probe-explore
-                                  /haipipe-probe-inspect P.0601
-  independent tools with their own SKILL.md
-```
-
-The 4 lifecycle stages (design, materialize, harvest, judge) are accessed
-ONLY through the hub. They no longer have their own slash commands.
-
-
-Agent Families
-===============
-
-probe has three agent families: creators, reviewers, and advancers.
-
-**The Design stage has TWO modes — this drives the creator family:**
-
-```
-task builders → always agents     code authoring is BATCHABLE and fans out per
-                                    task TYPE (13 specialists). Always automated.
-
-probe Design → MODE A or B        the FIRST probe needs human judgment (framing
-                                    a research question). FOLLOW-UP probes (fill a
-                                    coverage gap, confirm single-seed, test opposite
-                                    direction) can be automated — the explore agent
-                                    already does 80% of the design work.
-```
-
-Mode A (interactive, default for round 1): human writes probe.yaml via design skill.
-Mode B (auto, default for round >= 2 or --auto): probe-idea-creator-agent generates,
-probe-idea-reviewer-agent checks, creator-reviewer loop (max 2 rounds).
-
-**Three families, one axis each:**
-
-```
-creator   agents CREATE probe ideas          idea-creator (Design Mode B only)
-reviewer  agents JUDGE                       idea-reviewer · structural · integrity · claim
-advancer  agents PROPOSE direction           explore
-```
-
-**Creator agent (1 — Design Mode B only):**
-
-```
-Agent                       Fires in     Input                           Output
-─────────────────────────   ──────────   ─────────────────────────────   ──────────────
-probe-idea-creator-agent    Mode B only  explore proposals,              probe.yaml with
-                                         existing probes,                hypothesis + arms
-                                         insights K/W,                   + aggregation spec
-                                         project research question
-```
-
-**Reviewer agents (4):**
-
-```
-Agent                              Gate         Backed by   Deliverable
-──────────────────────────────────  ──────────  ─────────   ──────────────────────
-probe-idea-reviewer-agent           idea QA     self        pass / revise / fail
-  checks: falsifiable? not dup?     (Mode B)                (within Design stage)
-  arms ok? worth compute?
-probe-structural-reviewer-agent     structural  self        review.md
-probe-integrity-auditor-agent       integrity   Codex       INTEGRITY_AUDIT.md
-claim-verifier-agent                claim       Codex       CLAIMS_FROM_RESULTS.md
-```
-
-Idea-reviewer fires in Design Mode B. The other 3 fire in Judge stage,
-order: structural → integrity → claim. `integrity = fail` blocks `claim`.
-
-**Advancer agent (1 — probe's unique third family):**
-
-```
-Agent                    Deliverable                      Does NOT
-─────────────────────    ─────────────────────────────    ──────────────────────
-probe-explorer-agent     ranked next-probe list +         write probe.yaml (→ creator)
-                         coverage map                     judge claims (→ reviewers)
-```
-
-**Knowledge home:** agents are THIN pointers — judgment logic stays in the specialist SKILL.md and ref/ (no duplicated checklists). Plugin top-level `agents/` holds flat symlinks for `subagent_type` dispatch.
-
-
-Probe Lifecycle (5 stages + loop)
-===================================
-
-Orchestrated by `haipipe-probe/ref/probe-lifecycle.workflow.js`.
-See `haipipe-probe/diagram/01-probe-lifecycle.txt` for the full architecture diagram.
-
-```
-╔═══════════════════════════════════════════════════════════════════════════╗
-║  Stage 1: DESIGN — "what question to ask reality?"                       ║
-║                                                                          ║
-║  Mode A (interactive, round 1 default):                                  ║
-║    🧑 human writes hypothesis + arms via haipipe-probe-design skill      ║
-║                                                                          ║
-║  Mode B (auto, round ≥2 default or --auto):                              ║
-║    💡 probe-idea-creator-agent generates probe.yaml                       ║
-║    🔍 probe-idea-reviewer-agent checks (falsifiable? dup? worth it?)     ║
-║    ↺ creator-reviewer loop (max 2 rounds)                                ║
-║                                                                          ║
-║  Produces: probe.yaml (hypothesis + arms + aggregation spec)             ║
-╠═══════════════════════════════════════════════════════════════════════════╣
-║  Stage 2: MATERIALIZE — "scaffold arms and make them run"                ║
-║                                                                          ║
-║    🌉 haipipe-probe-bridge scaffolds arms as task tasks                ║
-║    📝 Run Script Reviewer agent checks code (creator-reviewer loop)      ║
-║    🚀 sanity arm first → deploy rest → link runs to arms                 ║
-║                                                                          ║
-║  ═══════ task handoff: probe is asleep while task runs ═══════    ║
-║                                                                          ║
-║  Produces: tasks/<arm>/ with configs/, runs/, results/                   ║
-╠═══════════════════════════════════════════════════════════════════════════╣
-║  Stage 3: HARVEST — "what did reality answer?"                           ║
-║                                                                          ║
-║    📊 haipipe-probe-result links runs + aggregates stats + writes claim  ║
-║    🛡️ probe-structural-reviewer checks (N≥3, arms paired, caveats)       ║
-║                                                                          ║
-║  Produces: probe.yaml result: block + claim: sentence                    ║
-╠═══════════════════════════════════════════════════════════════════════════╣
-║  Stage 4: JUDGE — "is the answer honest?"                                ║
-║                                                                          ║
-║    3 sequential gates (each independent reviewer):                       ║
-║      🛡️ structural reviewer → review.md                                  ║
-║      🔬 integrity auditor  → INTEGRITY_AUDIT.md (Codex)                  ║
-║      ⚖️  claim verifier    → CLAIMS_FROM_RESULTS.md (Codex)              ║
-║    Fail at any gate → stop.                                              ║
-║                                                                          ║
-║  Verdict: yes → Stage 5 (Insight)                                          ║
-║           partial/no → Explore → loop back to Stage 1 (Design)           ║
-╠═══════════════════════════════════════════════════════════════════════════╣
-║  Stage 5: INSIGHT — "what did we learn?" (full DIKW cascade)             ║
-║                                                                          ║
-║    Step 1: 🟦 D_data — per-arm observations                              ║
-║      reads task I cards (or metrics.json directly)                     ║
-║      card-creator-data-agent → card-reviewer-data-agent                  ║
-║                                                                          ║
-║    Step 2: 🟩 I_information — cross-arm patterns (needs ≥2 D cards)      ║
-║      card-creator-information-agent → card-reviewer-information-agent    ║
-║                                                                          ║
-║    Step 3: 🟨 K_knowledge — validated belief from confirmed claim        ║
-║      card-creator-knowledge-agent → card-reviewer-knowledge-agent        ║
-║                                                                          ║
-║    Step 4: 🟧 W_wisdom — actionable recommendation (optional)            ║
-║      card-creator-wisdom-agent → card-reviewer-wisdom-agent              ║
-║                                                                          ║
-║    Final: 📋 index-integrity-auditor checks cross-ref graph              ║
-║                                                                          ║
-║  Produces: insights/D_data/ + I_information/ + K_knowledge/ + W_wisdom/  ║
-║                                                                          ║
-║  Parallel with task Stage 5 (Insight):                                 ║
-║    task files D + I (per-task level, within one task's runs)            ║
-║    probe files D + I + K + W (per-probe level, across arms)            ║
-║    probe D reads task I as input (task patterns → probe observations)║
-╚═══════════════════════════════════════════════════════════════════════════╝
-```
-
-**The loop:**
-
-```
-Judge verdict = partial/no
-  → 🗺️ Explore (coverage map + propose next probes)
-  → Mode A: 🧑 human gate (approve/reject proposals)
-    Mode B: 💡 idea-creator + 🔍 idea-reviewer (auto-generate + auto-review)
-  → Back to Stage 1 (Design) with the new probe
-  → Repeat until converged or budget exhausted
-```
-
-Stop conditions:
-  ✅ converged — verdict = yes AND structural errors = 0 → Insight
-  🟡 budget_exhausted — hit --rounds N without converging
-  🔴 blocked — all proposals rejected (human or agent)
-  ⏸️  paused — user interrupt
-
-
-The ref/ Shared Schemas
-========================
-
-All specialists read from `ref/` for shared schemas and templates:
-
-```
-Resource                          Consumed by                Purpose
-────────────────────────────────  ─────────────────────────  ─────────────────────────────
-probe-yaml-schema.md              design, result, review     field spec + validation rules
-probe-caveats-checklist.txt       result (claim), review     confound walk before saving
-probe-entry-template.txt          result (render)            per-probe rendering format
-probe-headline-template.txt       result (render)            scoreboard template
-probe-run-dashboard-template.txt  inspect (runs)             planned-vs-done runs per arm
-probe-cycle-audit-template.txt    inspect (cycle)            per-probe closed-loop audit
-probe-status-template.txt         inspect (status)           campaign tracker (4 sections)
-log-format.md                     legacy reference           superseded by _haipipe/project.log.jsonl
+```text
+fn/console.md  Probe Console entrypoint and router
+fn/plan.md     define/revise the claim and evidence contract
+fn/gather.md   call missing work, link existing artifacts, check readiness
+fn/read.md     summarize linked evidence
+fn/judge.md    decide claim support through independent gates
+fn/return.md   return verdict to source or memory
 ```
 
 
-Filesystem Layout (at the project level)
-==========================================
+Probe Lifecycle Map
+==================
 
-```
-examples/Proj-X/
-|-- _haipipe/
-|   |-- project.log.jsonl                  single append-only orchestration log
-|   |-- project.status.yaml                current snapshot
-|   `-- project.site.md                    human dashboard
-|-- narratives/...                         narrative — story layer
-|-- probes/                                probe — research steering
-|   |-- P001_rare-phenotype-lift/
-|   |   |-- probe.yaml                     source of truth (claim + evidence refs)
-|   |   |-- status.yaml                    local current state
-|   |   |-- site.md                        local human summary
-|   |   |-- review.md                      structural QA
-|   |   |-- INTEGRITY_AUDIT.md             integrity check
-|   |   `-- CLAIMS_FROM_RESULTS.md         semantic verdict
-|   `-- 2026-archive/
-|-- discoveries/...                        discover — external evidence
-|-- tasks/...                              task — execution (code + results)
-|-- insights/...                           insight — deferred export layer
-`-- paper/...                              paper — writing
+The per-step contract lives in `haipipe-probe/ref/lifecycle-map.md` and is the
+implementation map for this layer. Summary (the map file is authoritative):
+
+```text
+Step     Procedure       Question                          Writes
+───────  ──────────────  ────────────────────────────────  ─────────────────────────────
+Console  fn/console.md   which probe, what can happen next  .probe-console.yaml, status.md
+Plan     fn/plan.md      what claim, what would settle it   probe.yaml(claim,evidence_plan), status.md
+Gather   fn/gather.md    missing or already present         probe.yaml(evidence_refs,calls), status.md
+Read     fn/read.md      what did the evidence say          evidence.md, probe.yaml.result, status.md
+Judge    fn/judge.md     what claim is honestly supported   verdict.md, probe.yaml.verdict, status.md
+Return   fn/return.md    where the verdict goes             return.md, probe.yaml.return, status.md
 ```
 
-Probe folders do not keep local event logs. Append orchestration events to
-`_haipipe/project.log.jsonl`; keep local probe status in `status.yaml` and
-`site.md`.
+External calls: Gather may call `haipipe-task` / `haipipe-discover`; Judge may
+call reviewer agents / Codex; Return may call `haipipe-insight-*` and edits
+paper/application only with approval. Every other step calls nothing.
 
 
-Cross-Skill References
+Folder Model
+============
+
+Probe folders are FLAT. There are no probe group folders. Organization uses
+tags, source refs, status, and `_index.md`.
+
+```text
+probes/
+├── _index.md
+├── 0605_discretion-gradient/
+│   ├── probe.yaml
+│   ├── status.md
+│   ├── evidence.md
+│   ├── verdict.md
+│   └── return.md
+└── 0621_trait-diabetes/
+    └── ...
+```
+
+One probe folder = one claim-level thread. Canonical ref `P.<MMDD>`; same-day
+collisions append a lowercase suffix (`P.0605b`).
+
+No code, notebooks, raw literature bodies, heavy result artifacts, or plots live
+in probe folders. Those belong to task / discovery / insight and are linked by
+reference.
+
+
+File Schemas
+============
+
+Required files:
+
+```text
+probe.yaml   machine contract: claim, evidence_plan, evidence_refs, calls,
+             result, verdict, return
+status.md    human-readable Probe Console panel
+evidence.md  Read output: what gathered evidence says
+verdict.md   Judge output: claim support, confidence, caveats
+return.md    Return output: where the verdict went or should go
+```
+
+Optional sidecars:
+
+```text
+gather.md              only for complex call/link decisions
+INTEGRITY_AUDIT.md     long independent integrity audit (Judge gate 2)
+CLAIMS_FROM_RESULTS.md claim-verifier output (Judge gate 3)
+```
+
+probe.yaml - block ownership (full field spec in ref/probe-yaml-schema.md):
+
+```text
+Block          Owner step   Purpose
+─────────────  ───────────  ──────────────────────────────────────────────
+id/slug/title  Plan         identity
+status         any          lifecycle status enum
+source         Plan         where the need came from + return_target
+claim          Plan         hypothesis, target_sentence, falsification, scope
+evidence_plan  Plan         required/optional evidence + success_criteria
+evidence_refs  Gather       linked task/discovery/insight artifacts (by ref)
+calls          Gather       requested task/discovery work (type=task|discovery)
+result         Read         evidence summary, missing, contradictions, scope
+verdict        Judge        status/confidence/structural/integrity/scope/caveats
+return         Return       target, returned_claim, required_caveats, actions
+```
+
+Insight is never a `calls` type. Insight is called by Return only, after the
+verdict is judged and approved for memory filing.
+
+
+Judge: builder != judge
 =======================
 
-```
-Component                Calls / reads from              Direction
-───────────────────────  ──────────────────────────────  ──────────
-probe-idea-creator       explore proposals + insights/   D reads D + E
-  (agents/creators/)     existing probes                 (Design Mode B)
-probe-idea-reviewer      just-created probe.yaml         D reads D
-  (agents/reviewers/)    existing probes (dup check)     (Design Mode B)
-fn/bridge.md             Skill("haipipe-task")           D → C (scaffold)
-                         task/agents/task-reviewer     D reads C agent (GATE 1)
-fn/harvest.md            tasks/.../metrics.json          D reads C results
-                         tasks/.../runtime.yaml          D reads C status
-fn/judge.md              task/task-reviewer-agent      D delegates per-run QA to C (GATE 2)
-probe-lifecycle.wf.js    card-creator-{D,I,K,W}-agent   D → E (DIKW cascade on convergence)
-haipipe-probe-explore    (reads all probe yamls)         D reads D (coverage map)
+Judge is the claim-commitment gate. It keeps three independent reviewer agents,
+wired from `fn/judge.md`. The planner never grades its own claim.
+
+```text
+Gate  Agent                            Backed by         Deliverable
+────  ───────────────────────────────  ────────────────  ─────────────────────────
+1     probe-structural-reviewer-agent  self              verdict.md (structural) + probe.yaml.verdict.structural
+2     probe-integrity-auditor-agent    Codex, paths-only INTEGRITY_AUDIT.md + probe.yaml.verdict.integrity
+3     claim-verifier-agent             Codex             CLAIMS_FROM_RESULTS.md + probe.yaml.verdict
 ```
 
-**Strict one-way:** task never references probe. Tasks never know a probe is reading them.
+Order: structural -> integrity -> claim. `integrity = fail` blocks `claim`.
+Integrity and claim are out-of-family: the executor passes only file PATHS;
+Codex reads the files and rules, so the builder cannot rationalize its own work.
+
+Real agent files live in `haipipe-probe/agents/reviewers/`; the plugin top-level
+`agents/` holds flat symlinks for `subagent_type` dispatch. Agents are thin
+pointers; judgment logic stays in `fn/judge.md`,
+`ref/probe-caveats-checklist.txt`, and `ref/probe-yaml-schema.md`.
 
 
-Relationship to task — Boundary Summary
-==========================================
+Where probe sits: evidence is the shared core
+=============================================
 
-Full boundary rules live in **MENTAL_MODEL.md** (sibling file). The short version:
+Evidence is the shared, durable core. paper-lifecycle and application-lifecycle
+are DELIVERY SIBLINGS. Each calls probe from a gap in its own claims ledger;
+probe returns a judged verdict that the delivery lifecycle consumes.
 
+```text
+                 ┌──────────────────────────────────────────────┐
+                 │ delivery siblings (each owns a claims ledger)  │
+                 │   skills/paper/         skills/application/     │
+                 └───────────────┬───────────────┬───────────────┘
+                                 │ claim gap     │ claim gap
+                                 ▼               ▼
+                 ┌──────────────────────────────────────────────┐
+                 │ probe  (claim-level evidence contract)         │
+                 │   Plan -> Gather -> Read -> Judge -> Return     │
+                 └───────────────┬───────────────┬───────────────┘
+                          Gather │ Call/Link     │ Return (with approval)
+                                 ▼               ▼
+                 ┌──────────────────────────────────────────────┐
+                 │ task (code) · discovery (outside) · insight     │
+                 └──────────────────────────────────────────────┘
 ```
-Rule 1 — probes/ has NO code.          All computation in tasks/.
-Rule 2 — probe.yaml is steering state. Source metrics live in tasks/.../metrics.json.
-Rule 3 — One-way dependency.           Probes READ tasks; tasks do NOT reference probes.
-Rule 4 — Tasks are ATOMIC.             One task can serve multiple probes.
+
+Consequences:
+
+```text
+- Papers share EVIDENCE, not framing. Two papers can return from the same probe
+  verdict and frame it differently.
+- The narrative LAYER is retired as a live peer of probe. Narrative survives
+  only as a STAGE inside a delivery lifecycle, not as a layer probe answers to.
+- task never references probe. The dependency is one-way: probe reads tasks.
 ```
 
-The bridge is the only crossing point (D → C). The contract:
 
+Boundaries (task <-> probe)
+===========================
+
+Full rules in `MENTAL_MODEL.md`. Short version:
+
+```text
+Rule 1  probes/ has NO code.            All computation lives in tasks/.
+Rule 2  probe.yaml is the contract.     Source metrics live in tasks/.../ results.
+Rule 3  One-way dependency.             Probes READ tasks; tasks do NOT reference probes.
+Rule 4  Tasks are atomic.               One task can serve multiple probes.
 ```
-What D reads from C:
-  - results/<RUN>/metrics.json     per-run measurements (scalar or {point, ci_*})
-  - results/<RUN>/runtime.yaml     per-run status (ok / failed / running)
-  - configs/<RUN>.yaml             git_sha, AIData version (for consistency checks)
 
-What D writes to C (via bridge only):
-  - new task-folders under tasks/   (scaffolded via Skill("haipipe-task"))
-  - configs/<RUN>.yaml              (wired from probe arm run_specs)
-  - runs/<RUN>.sh                   (generated run wrapper)
+probe may call task/discovery during Gather, and insight during Return. probe
+does not execute code, search literature bodies directly, or store final paper
+prose as its own artifact.
 
-What C never sees:
-  - probe.yaml, review.md, CLAIMS_FROM_RESULTS.md, LOOP_LOG.md
-  - any file under probes/
+
+No-arg Dashboard
+================
+
+`/haipipe-probe` with no args is a derive-from-disk preflight
+(`ref/probe-dashboard.md`). Golden rule:
+
+```text
+Never report a step as done because probe.yaml says so.
+A step is done only when its expected artifact resolves on disk.
+When stored status and disk disagree, disk wins and the gap is flagged DRIFT.
+```
+
+The shallow drift check is always on: read probe.yaml, extract path-like refs
+(tasks/ discoveries/ insights/ probes/ paper/ applications/), resolve them
+against the project root, mark missing refs as DRIFT. It does NOT parse heavy
+artifacts or run integrity audits. The frontier is the first step whose disk
+predicate fails. The dashboard also surfaces UNLINKED EVIDENCE: task/discovery
+folders not linked to any active probe.
+
+
+Filing scattered work
+=====================
+
+`/haipipe-probe file "<work>"` is the filing judge (`ref/probe-attach.md`). It
+runs at the moment work is created so nothing falls on the floor unfiled. Three
+dispositions:
+
+```text
+ATTACH      shares an existing probe's claim topic -> wire as that probe's evidence
+NEW         claim-bearing but no probe fits        -> propose a probe.yaml stub, ASK
+STANDALONE  not claim-bearing (infra/prep/display) -> no probe; log reason
+```
+
+ATTACH/STANDALONE auto-apply and report. NEW is a commitment: propose a filled
+stub and take one confirm; never auto-create a probe. STRONG match for a
+relational claim (X affects Y) requires BOTH halves (driver AND outcome) in a
+claim-level field; one half alone is not strong. Every decision appends one line
+to `probes/FILING.md`. A `P.06xx_*` row in FILING.md is a proposal, not an
+existing probe; ask before materializing it.
+
+Also auto-invoked by `haipipe-data` (on task create) and `haipipe-discover` (on
+discovery create).
+
+
+Copilot Policy
+==============
+
+Default mode is `copilot`: context-aware assistance with human gates. The
+console may automatically read files, summarize status, classify input, suggest
+link targets, detect missing evidence, and draft evidence/verdict/return text.
+
+It must ask before:
+
+```text
+creating costly tasks
+running PHI/full-data work
+changing the claim target
+declaring a final yes/no verdict
+editing paper/application text
+filing insight memory as accepted knowledge
+```
+
+Auto mode, if added, is a policy on the same lifecycle, not a forked workflow.
+
+
+Return Contract
+===============
+
+Every procedure returns a short tail:
+
+```text
+status:    ok | blocked | failed
+summary:   1-3 sentences
+artifacts: [paths read/written/created]
+next:      suggested next command or question
 ```
 
 
 Decision Log
-=============
+============
 
 2026-06-11  Created: DESIGN.md v1.0.0 (internals doc, parallel to task/DESIGN.md).
             MENTAL_MODEL.md remains the boundary doc.
-2026-06-11  Upgraded: DESIGN.md v2.0.0 — 5-stage lifecycle (Design/Materialize/Harvest/Judge/Insight).
-            Stage 5 renamed Close → Insight for parallel naming with task Stage 5.
-            Insight stage files full DIKW cascade: D (per-arm) → I (cross-arm) → K (claim) → W (next step).
-            task Insight files D+I (per-task level); probe Insight files D+I+K+W (per-probe level).
-            probe D reads task I as input (task patterns become probe observations).
-            Loop-back from Judge → Explore → Design absorbed into probe-lifecycle.workflow.js.
-            Two-mode Design stage: Mode A (human) / Mode B (probe-idea-creator + reviewer agents).
-            Agent count: 4 → 6 own (+1 creator, +1 reviewer) + 9 borrowed from insight in Stage 5.
-2026-06-11  Restructured: DESIGN.md v3.0.0 — hub-centric consolidation.
-            4 lifecycle specialists (design/bridge/result/review) → fn/ procedures under hub.
-            Shared ref/ merged into hub ref/. agents/ moved under hub.
-            Only explore + inspect keep standalone skill directories.
-            Top-level agent symlinks updated to new paths.
-            probe root: 9 items → 5 (hub + explore + inspect + 3 docs).
+2026-06-11  v2.0.0 - 5-stage lifecycle (Design/Materialize/Harvest/Judge/Insight),
+            DIKW cascade in the Insight stage, loop-back Judge -> Explore -> Design.
+2026-06-11  v3.0.0 - hub-centric consolidation. Lifecycle specialists folded into
+            fn/ under the hub; only explore + inspect kept standalone skills.
+2026-06-22  v4.0.0 - REFRAME. A probe is recast as a claim-level evidence
+            contract, not an execution unit: it owns the question before the work
+            and the interpretation after; tasks/discoveries do the work, linked
+            by reference; insights preserve judged knowledge.
+            - Lifecycle compressed to Plan -> Gather -> Read -> Judge -> Return,
+              run inside a Probe Console (/haipipe-probe <probe>) with
+              .probe-console.yaml state at the project root (nearest dir with probes/).
+            - Probe folders flattened to probe.yaml + status.md + evidence.md +
+              verdict.md + return.md. Group folders removed; no code/notebooks/
+              heavy artifacts in probe folders (linked by reference).
+            - Judge keeps builder != judge with 3 independent reviewers
+              (structural -> integrity -> claim; integrity=fail blocks claim).
+            - Evidence is the shared durable core; paper/application are delivery
+              SIBLINGS that call probe from a claims-ledger gap. Papers share
+              EVIDENCE not framing.
+            - No-arg /haipipe-probe = derive-from-disk dashboard (golden rule:
+              never trust stored verdict; shallow drift check always on).
+              /haipipe-probe file = filing judge for scattered work.
+            - Legacy verbs (design/bridge/dispatch/harvest/post/resume/review/file)
+              get no separate files; the router maps them via the alias table.
+            RETIRED in v4 (legacy vocabulary only): the sandwich lifecycle and its
+            8 stages, Design/Materialize/Harvest/Open/Post/Insight stage names,
+            Mode A / Mode B Design, arms / aggregation / run_specs,
+            probe-lifecycle.workflow.js, the inspect and explore standalone skills,
+            the idea-creator / idea-reviewer / explorer agents, the v3 templates
+            (probe-status-template, probe-entry-template, etc.), and the
+            three-layer pyramid with narrative as a live layer (narrative now
+            survives only as a stage inside a delivery lifecycle).

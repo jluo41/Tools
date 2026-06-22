@@ -1,1 +1,1 @@
-../skills/E_insight/agents/creators/card-creator-wisdom-agent.md
+../skills/insight/agents/creators/card-creator-wisdom-agent.md
