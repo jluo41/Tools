@@ -16,7 +16,8 @@ Rollup lives in the plugin-level `CHANGELOG.md`.
 - **Updated structural docs to the new layout:** DESIGN.md "Current State" tree, `01-architecture.txt` folder tree, and the path-pattern hints in `task-lifecycle.workflow.js` / `haipipe-task-creator-agent.md` / orchestrator SKILL.md (now glob-friendly for the nested specialists).
 
 ### Note
-- Phase 2 (renaming the `for-xxx` skills to domain-consistent names) remains DEFERRED. Two pre-existing dangling refs untouched (out of scope): `haipipe-task-for-inference` (folder never existed) in `3_end/haipipe-end-endpointset/fn/fn-3-profile.md`; `haipipe-task-for-stata-case` in `haipipe-task/fn/workflow-audit.md` (merged in 3.1.0).
+- Phase 2 (renaming the `for-xxx` skills) is REJECTED (decided 2026-06-21): the names stay `haipipe-task-for-xxx` by design, since the `haipipe-task-` prefix keeps each specialist clearly part of the haipipe-task family. The migration is COMPLETE at Phase 1; there will be no skill rename.
+- Fixed 2 pre-existing dangling refs along the way: `for-stata-case` -> `8_stata/haipipe-task-for-stata/ref/config-seed-run.do` (in `haipipe-task/fn/workflow-audit.md`, committed); `for-inference` -> `3_end/haipipe-task-for-endpoint/ref/inference-perf-notes.md` (in `fn-3-profile.md`, which is untracked, so that fix is working-tree-only).
 
 
 ## [5.2.0] — 2026-06-21
