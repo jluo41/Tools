@@ -24,4 +24,11 @@ Where it touches:
 - haipipe-paper-lifecycle (router) + haipipe-paper-enter (console): enforce present-gate -> await-confirm -> advance-STATUS; forbid auto-advance.
 - subsumes [pitch-skill-no-structure-gate] (pitch's content rubric becomes its exit criteria) and complements [console-too-dense-want-stage-progress] (the strip visualizes the gated transitions).
 
+Update (2026-06-22, sharpened by the user):
+- The gate was NEVER enforced. In the current paper the lifecycle advanced all the way to write-edit without the user confirming a single stage. So a current_layer reached without per-stage confirmation is ILLEGITIMATE, not just suboptimal.
+- Requirement: an EXPLICIT confirm to exit each stage AND enter the next. Two-sided: "stage X done?" then "open stage Y?". The system must stop at every boundary, not only announce.
+- Recovery action the user wants now: RESET the paper to the beginning (current_layer -> seed) and RE-WALK the spine one stage at a time, recording each confirmation. Resetting does NOT delete artifacts (pitch/claims/displays already exist on disk); it resets the GATE/confirmation state so each stage is re-validated and explicitly confirmed before advancing.
+- Implication for STATUS.md: it needs a per-stage confirmation ledger (stage -> confirmed? -> date), separate from current_layer, so "confirmed" is tracked, not assumed. current_layer may only advance when the prior stage's ledger entry is user-confirmed.
+- Ties to [stage-strip-in-every-response]: the every-turn strip must reflect the LEDGER (✅ only for user-confirmed stages), not just "artifact exists on disk".
+
 Fix:
