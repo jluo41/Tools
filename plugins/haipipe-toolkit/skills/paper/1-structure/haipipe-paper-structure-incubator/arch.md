@@ -7,8 +7,8 @@
 ## Sources to Read
 
 - `0-sections/*.tex` — paper content for extracting claims, numbers, scope
-- `0-display/Table/` — generated tables for verifying numbers
-- `0-display/Figure/` — generated figures for verifying claims
+- `0-displays/Table/` — generated tables for verifying numbers
+- `0-displays/Figure/` — generated figures for verifying claims
 - `evaluation/results/` — raw evaluation outputs if tables seem stale
 
 ---
@@ -40,7 +40,7 @@
 2. Present the 5 subsections as a numbered list
 3. Ask user which to focus on (or start from top)
 4. Present focal subsection as readable summary
-5. Cross-check numbers against current `0-display/Table/` files
+5. Cross-check numbers against current `0-displays/Table/` files
 6. Flag stale numbers or inconsistencies
 7. User gives feedback → CC updates LaTeX + discussion box
 8. Continue to next subsection or stay

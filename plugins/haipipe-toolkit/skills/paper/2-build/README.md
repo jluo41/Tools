@@ -42,7 +42,7 @@ This is the hop that `0-workflow/haipipe-paper-create` performs inline at its Ph
 
 | Skill | You have | It produces |
 |-------|----------|-------------|
-| `haipipe-paper-build-scaffold` | a plan (or just title + section list), no folder yet | a new conforming folder: driver tex, wrappers, leaf stubs with paragraph banners, `0-display/`, SI driver, `1-compile.sh` |
+| `haipipe-paper-build-scaffold` | a plan (or just title + section list), no folder yet | a new conforming folder: driver tex, wrappers, leaf stubs with paragraph banners, `0-displays/`, SI driver, `1-compile.sh` |
 | `haipipe-paper-build-restructure` | an existing paper that does not conform (monolithic `main.tex`, flat `sections/`, ad-hoc names) | the same paper re-housed in the layout; prose byte-identical, compile verified |
 | `haipipe-paper-build-check` | any paper folder | a ✓/✗ conformance report; routes each finding to the skill that fixes it |
 

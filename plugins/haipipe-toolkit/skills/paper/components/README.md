@@ -10,7 +10,7 @@ Layout
 
 ```
 components/
-├── figure/          Display assets (0-display/Figure, /Table, /AppendixFigure, /AppendixTable)
+├── figure/          Display assets (0-displays/Figure, /Table, /AppendixFigure, /AppendixTable)
 │   ├── haipipe-paper-structure-figure/
 │   ├── haipipe-paper-structure-figure-spec/
 │   ├── haipipe-paper-structure-figure-planner/

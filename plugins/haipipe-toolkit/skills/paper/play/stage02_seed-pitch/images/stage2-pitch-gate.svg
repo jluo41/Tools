@@ -58,9 +58,9 @@
   <text class="label" x="480" y="190">Write Pitch Package</text>
   <text class="text" x="480" y="224">Make the story explicit</text>
   <rect class="file" x="480" y="252" width="250" height="34"/>
-  <text class="small" x="498" y="274">0-pitch/PAPER_PITCH.md</text>
+  <text class="small" x="498" y="274">0-lifecycle/1-pitch/1-pitch.tex</text>
   <rect class="file" x="480" y="298" width="250" height="34"/>
-  <text class="small" x="498" y="320">0-pitch/PITCH_SETTLEMENT.md</text>
+  <text class="small" x="498" y="320">0-lifecycle/1-pitch/PITCH_SETTLEMENT.md</text>
   <text class="tiny" x="480" y="348">Pitch for readers; settlement for internal decisions.</text>
 
   <rect class="note" x="450" y="410" width="330" height="190"/>

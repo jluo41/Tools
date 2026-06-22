@@ -96,7 +96,7 @@ clean_aux_files() {
           *.nav *.snm *.vrb *.thm
 
     # Remove auxiliary files in subdirectories
-    rm -f 0-display/*/*.aux
+    rm -f 0-displays/*/*.aux
     rm -f 0-sections/*.aux
 
     echo -e "${GREEN}✓ Auxiliary files cleaned${NC}"

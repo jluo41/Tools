@@ -185,7 +185,7 @@ def load_bib(bib_files):
 def pick_output_path(paper_dir: Path, override):
     if override:
         return Path(override).resolve()
-    feedback = paper_dir / '1-feedback'
+    feedback = paper_dir / '1-rounds'
     if feedback.is_dir():
         version_dirs = sorted([d for d in feedback.iterdir() if d.is_dir() and d.name.startswith('v')])
         if version_dirs:
@@ -274,7 +274,7 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description='Audit LaTeX paper cross-references.')
     ap.add_argument('paper_root', help='Paper directory or root .tex file.')
     ap.add_argument('-o', '--output', default=None, help='Output report path (.md). '
-                    'Defaults to <paper-dir>/1-feedback/v<latest>/reference-audit.md.')
+                    'Defaults to <paper-dir>/1-rounds/v<latest>/reference-audit.md.')
     args = ap.parse_args(argv)
 
     root_arg = Path(args.paper_root).resolve()

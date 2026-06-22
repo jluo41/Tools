@@ -47,10 +47,10 @@ input into the paper).
 
 **Output: a design contract** the edit cycle realizes.
 
-The lightest artifact in this cycle is `0-pitch/PAPER_PITCH.md`: the current
+The lightest artifact in this cycle is `0-lifecycle/1-pitch/1-pitch.tex`: the current
 one-minute story for this concrete manuscript. It can start from intuition, but
-later pitch shifts should cite the source in `0-pitch/PITCH_LOG.md` and archive
-semantic old versions under `0-pitch/archive/`.
+later pitch shifts should cite the source in `0-lifecycle/1-pitch/1-pitch.tex` and archive
+semantic old versions under `0-lifecycle/1-pitch/`.
 
 Skills today: `1-narrative/narrative-report`, `2-plan/{paper-architecture,
 paper-bootstrap, paper-incubator, paper-plan, paper-structure-diagram}`,
@@ -123,11 +123,11 @@ preview.
   `haipipe-paper-structure-illustration`).
 - **Using** a display happens through `float.tex`: section files should input
   ready display blocks such as
-  `\input{0-display/Figures/fig01-hero/float.tex}`.
+  `\input{0-displays/Figures/fig01-hero/float.tex}`.
 - **Reviewing** a display uses `preview.pdf` plus the same `float.tex`, so the
   caption and visual can be audited without compiling the whole paper.
 
-The display contract lives in `0-display/DISPLAY_INDEX.md`. Keep the *decision*
+The display contract lives in `0-displays/README.md`. Keep the *decision*
 in display/plan and the *production* in the display item folder.
 
 ---
@@ -164,10 +164,10 @@ whole arc: plan → edit → gate → submit → rebuttal → present.
 
 | Folder today | Role | Cycle |
 |--------------|------|-------|
-| `0-pitch` | one-minute story + pitch provenance | ① plan |
+| `0-lifecycle/1-pitch` | one-minute story + pitch provenance | ① plan |
 | `1-narrative` | story / claim contract | ① plan |
 | `2-plan` | architecture, outline, structure-diagram | ① plan |
-| `0-display/DISPLAY_INDEX.md` | display contract: figure/table jobs, sources, status | ① plan |
+| `0-displays/README.md` | display contract: figure/table jobs, sources, status | ① plan |
 | `3-figure` (figure-planner) | display panel roles and main-vs-supplement | ① plan |
 | `3-figure` (figure/spec/illustration) | display production | ② edit |
 | `4-write` | cold-start drafting | ② edit |

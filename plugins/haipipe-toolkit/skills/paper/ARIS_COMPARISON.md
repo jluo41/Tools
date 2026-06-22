@@ -21,7 +21,7 @@ They are compatible, but they organize the work differently.
 | What is the system optimizing? | Autonomous research progress and cross-model audit | Reliable paper story evolution |
 | Main unit | Workflow stage | Paper folder state |
 | Main motion | W1 -> W1.5 -> W2 -> W3 -> W4/W5/W6 | Seed -> pitch -> narrative -> architecture -> plan -> draft -> edit -> review, with loopbacks |
-| Story state | Mostly `NARRATIVE_REPORT.md`, `PAPER_PLAN.md`, review logs | First-class `0-pitch/`, then narrative, architecture, plan |
+| Story state | Mostly `NARRATIVE_REPORT.md`, `PAPER_PLAN.md`, review logs | First-class `0-lifecycle/1-pitch/`, then narrative, architecture, plan |
 | Evidence state | Experiment logs, research wiki, claim audits | HAI-Pipe discoveries/tasks/probes/insights feeding paper narrative |
 | Review model | Cross-model adversarial reviewer is central | Review gate routes the paper back to pitch/narrative/plan/edit |
 | File philosophy | Stage outputs + latest/timestamped artifacts | Concrete manuscript folder with current story plus provenance |
@@ -85,11 +85,11 @@ The current lifecycle is:
 
 Its most important design commitments are:
 
-- **Paper pitch is first-class:** `0-pitch/PAPER_PITCH.md` stores the current
+- **Paper pitch is first-class:** `0-lifecycle/1-pitch/1-pitch.tex` stores the current
   one-minute story. It should be understandable to a random reader in about one
   minute.
-- **Story shifts have provenance:** `0-pitch/PITCH_LOG.md` and
-  `0-pitch/archive/` preserve why the story changed.
+- **Story shifts have provenance:** `0-lifecycle/1-pitch/1-pitch.tex` and
+  `0-lifecycle/1-pitch/` preserve why the story changed.
 - **Evidence constrains narrative:** the paper can start from intuition, but
   later claim/story changes should be tied to discoveries, tasks, probes,
   insights, reviews, or author decisions.
@@ -145,10 +145,10 @@ The difference is not just naming. ARIS's workflow is designed around
 | Entry point | Broad research direction | A concrete paper seed or manuscript folder |
 | Main question | "What should the agent do next?" | "Which paper layer is currently true or broken?" |
 | Default movement | Move forward through W stages | Move forward, but loop back whenever a lower layer breaks |
-| Paper writing starts from | `NARRATIVE_REPORT.md` | `0-pitch/` plus narrative, architecture, and plan |
+| Paper writing starts from | `NARRATIVE_REPORT.md` | `0-lifecycle/1-pitch/` plus narrative, architecture, and plan |
 | Review output means | Fix weaknesses and rerun | Diagnose route: edit, plan, architecture, narrative, pitch, or upstream evidence |
 | Experiments live in | Workflow stages and logs | Outside paper, then imported as evidence |
-| Story evolution lives in | Narrative/review artifacts, implicitly | `0-pitch/PAPER_PITCH.md`, `PITCH_LOG.md`, archive, narrative |
+| Story evolution lives in | Narrative/review artifacts, implicitly | `0-lifecycle/1-pitch/1-pitch.tex`, `PITCH_LOG.md`, archive, narrative |
 | Human readability target | Final reports/paper artifacts | The pitch should be readable in one minute at all times |
 
 ### Key workflow difference
@@ -189,7 +189,7 @@ For our paper skill, that assumption is too coarse. We want to know:
 - whether figures/tables are ready as story-evidence display objects,
 - whether review findings are prose problems or story problems.
 
-That is why HAI-Pipe needs `0-pitch/` before `NARRATIVE_REPORT.md` and before
+That is why HAI-Pipe needs `0-lifecycle/1-pitch/` before `NARRATIVE_REPORT.md` and before
 `PAPER_PLAN.md`.
 
 ### Workflow loopback difference
@@ -213,7 +213,7 @@ Examples:
 
 | Review finding | ARIS-like response | HAI-Pipe response |
 |----------------|-------------------|-------------------|
-| "The intro is unclear" | Rewrite intro | Check pitch first; if pitch is unclear, update `0-pitch/`, then intro |
+| "The intro is unclear" | Rewrite intro | Check pitch first; if pitch is unclear, update `0-lifecycle/1-pitch/`, then intro |
 | "Claim is too strong" | Soften text or add support | Update narrative claim/evidence contract, then plan/edit |
 | "Need more ablation" | Run experiment or add limitation | Create upstream task/probe; after result, update narrative and maybe pitch |
 | "Paper lacks contribution focus" | Rewrite abstract/intro | Reopen pitch and architecture |
@@ -228,7 +228,7 @@ ARIS and HAI-Pipe can be mapped, but they do not have one-to-one stages.
 
 | ARIS stage | Closest HAI-Pipe layer | Notes |
 |------------|------------------------|-------|
-| W1 Idea Discovery | Outside paper -> Seed / Pitch / Narrative | ARIS generates candidate ideas and pilots; HAI-Pipe would store resulting shifts in `0-pitch/` and `NARRATIVE_REPORT.md`. |
+| W1 Idea Discovery | Outside paper -> Seed / Pitch / Narrative | ARIS generates candidate ideas and pilots; HAI-Pipe would store resulting shifts in `0-lifecycle/1-pitch/` and `NARRATIVE_REPORT.md`. |
 | W1.5 Experiment Bridge | Outside paper -> tasks/probes -> Narrative | ARIS implements and runs experiments; HAI-Pipe treats experiment output as evidence entering the paper through narrative. |
 | W2 Auto Review Loop | Review Gate plus outside research loop | ARIS loops research, experiments, and paper fixes; HAI-Pipe would route each finding to edit, plan, narrative, pitch, or upstream tasks/probes. |
 | W3 Paper Writing | Pitch -> Narrative -> Architecture -> Plan -> Draft/Edit | ARIS compresses paper production into a pipeline; HAI-Pipe splits the paper state into more explicit layers. |
@@ -246,8 +246,8 @@ ARIS and HAI-Pipe can be mapped, but they do not have one-to-one stages.
 | `EXPERIMENT_LOG.md` | task/probe logs feeding narrative | Paper should cite evidence summaries, not become an experiment run log. |
 | `NARRATIVE_REPORT.md` | `NARRATIVE_REPORT.md` | Strong overlap. HAI-Pipe should preserve it as the claim/evidence/limitation contract. |
 | `PAPER_PLAN.md` | `PAPER_PLAN.md` | Strong overlap. In HAI-Pipe, plan is downstream of pitch and architecture. |
-| `figures/`, `latex_includes.tex` | `0-display/DISPLAY_INDEX.md`, per-item `DISPLAY.md`, `float.tex`, `preview.pdf` | HAI-Pipe should treat figures/tables as display contracts, not only generated assets. |
-| `AUTO_REVIEW.md` / `REVIEW_STATE.json` | review reports, edit logs, `1-feedback/` | HAI-Pipe should route review findings by layer rather than treating them all as edit tasks. |
+| `figures/`, `latex_includes.tex` | `0-displays/README.md`, per-unit `README.md`, `float.tex`, `preview.pdf` | HAI-Pipe should treat figures/tables as display contracts, not only generated assets. |
+| `AUTO_REVIEW.md` / `REVIEW_STATE.json` | review reports, edit logs, `1-rounds/` | HAI-Pipe should route review findings by layer rather than treating them all as edit tasks. |
 | audit JSON/MD files | Review Gate artifacts | Compatible. HAI-Pipe can adopt the verdict discipline without adopting ARIS's whole folder layout. |
 | `research-wiki/` | HAI-Pipe project KB / discoveries / insights | Similar role, but HAI-Pipe's story path is more explicit: discovery/task/probe -> insight -> narrative/pitch. |
 
@@ -314,7 +314,7 @@ In HAI-Pipe, `PAPER_PLAN.md` should not be the first paper thinking artifact.
 It should come after:
 
 ```
-0-pitch/PAPER_PITCH.md
+0-lifecycle/1-pitch/1-pitch.tex
 NARRATIVE_REPORT.md
 vNN-architecture-minimap.md
 ```
@@ -391,24 +391,24 @@ ARIS-like research work
         |
         v
 HAI-Pipe paper folder
-  0-pitch/PAPER_PITCH.md
-  0-pitch/PITCH_LOG.md
+  0-lifecycle/1-pitch/1-pitch.tex
+  0-lifecycle/1-pitch/1-pitch.tex
   NARRATIVE_REPORT.md
   vNN-architecture-minimap.md
   PAPER_PLAN.md
-  0-display/DISPLAY_INDEX.md
+  0-displays/README.md
   0-sections/*.tex
   review / feedback / rebuttal artifacts
 ```
 
 When upstream research produces new evidence, update paper state in this order:
 
-1. Does the one-minute story change? If yes, update `0-pitch/`.
+1. Does the one-minute story change? If yes, update `0-lifecycle/1-pitch/`.
 2. Do claims/evidence/limitations change? If yes, update `NARRATIVE_REPORT.md`.
 3. Does the paper-shaped argument change? If yes, update architecture/minimap.
 4. Does section/figure/page execution change? If yes, update `PAPER_PLAN.md`.
 5. Do display jobs, captions, labels, sources, or preview status change? If yes,
-   update `0-display/DISPLAY_INDEX.md` and the relevant display item folders.
+   update `0-displays/README.md` and the relevant display item folders.
 6. Then edit the TeX.
 
 ## Bottom line

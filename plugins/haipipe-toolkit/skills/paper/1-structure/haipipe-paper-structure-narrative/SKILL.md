@@ -20,11 +20,11 @@ should trace back to a line in this file. If something is not in the narrative,
 the downstream pipeline (`/haipipe-paper-structure-plan → /haipipe-paper-structure-figure → /haipipe-paper-edit-write`) will not
 invent it.
 
-If the paper folder has `0-pitch/PAPER_PITCH.md`, read it before composing the
+If the paper folder has `0-lifecycle/1-pitch/1-pitch.tex`, read it before composing the
 narrative. The pitch is the one-minute public-facing story for this concrete
 paper; this narrative expands it into evidence-backed claims, figures, and
 limitations. If the evidence forces a different pitch, update
-`0-pitch/PAPER_PITCH.md` through `/haipipe-paper-structure pitch` and log the
+`0-lifecycle/1-pitch/1-pitch.tex` through `/haipipe-paper-structure pitch` and log the
 shift instead of silently diverging.
 
 ## Context: $ARGUMENTS
@@ -47,7 +47,7 @@ Do **not** use when:
 
 The skill discovers whichever of these exist in the project tree:
 
-0. **`0-pitch/PAPER_PITCH.md`** (paper folder, if present) — current
+0. **`0-lifecycle/1-pitch/1-pitch.tex`** (paper folder, if present) — current
    one-minute paper story. Use it as the reader-facing framing constraint, not
    as evidence.
 1. **`CLAIMS_FROM_RESULTS.md`** (best) — validated claim ↔ evidence map from
@@ -77,7 +77,7 @@ AUTO_REVIEW > IDEA_REPORT) and surface the discrepancy as a note in the report.
 The report must contain these six sections, in this order:
 
 0. **Pitch alignment** — the current one-minute pitch, hook, surprise, so what,
-   why-believe, and still-fragile bullets from `0-pitch/PAPER_PITCH.md` if
+   why-believe, and still-fragile bullets from `0-lifecycle/1-pitch/1-pitch.tex` if
    present. Keep this short; it is a constraint, not a full section draft.
 1. **Problem statement and core claim** — one-paragraph problem, one-sentence
    core claim. The core claim is the single sentence the paper exists to
@@ -108,7 +108,7 @@ The report must contain these six sections, in this order:
 ### Step 1: Discover inputs
 
 ```bash
-ls 0-pitch/PAPER_PITCH.md CLAIMS_FROM_RESULTS.md IDEA_REPORT.md review-stage/AUTO_REVIEW.md AUTO_REVIEW.md EXPERIMENT_LOG.md probe-log.txt 2>/dev/null
+ls 0-lifecycle/1-pitch/1-pitch.tex CLAIMS_FROM_RESULTS.md IDEA_REPORT.md review-stage/AUTO_REVIEW.md AUTO_REVIEW.md EXPERIMENT_LOG.md probe-log.txt 2>/dev/null
 find results outputs experiments figures -maxdepth 3 -type f \
     \( -name '*.json' -o -name '*.csv' -o -name '*.tsv' -o -name '*.jsonl' \) 2>/dev/null | head -50
 ```

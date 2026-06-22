@@ -878,7 +878,7 @@ Migration from `paper-revise-section` (legacy `.txt` sidecar format)
 =====================================================================
 
 If the workspace still has `.txt` plan files from the prior format
-(e.g. `1-feedback/v0516/01_introduction_logic.txt`), do the following
+(e.g. `1-rounds/v0516/01_introduction_logic.txt`), do the following
 on the first run of `haipipe-paper-edit-weaving` against the matching `.tex`:
 
 1. Read the legacy `.txt`. Extract:

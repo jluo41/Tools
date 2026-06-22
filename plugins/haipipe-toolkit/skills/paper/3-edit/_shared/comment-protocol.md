@@ -77,7 +77,7 @@ inside the sentence.
   on the line immediately after the target sentence's line.
   ```latex
   Agreeableness showed the strongest positive correlation ($r = 0.62$).
-  %% {CC-values-v0531}: 0.62 here vs 0.747 in the table. | Reconcile against 0-display source. ========>
+  %% {CC-values-v0531}: 0.62 here vs 0.747 in the table. | Reconcile against 0-displays source. ========>
   ```
 - **Wrapped multi-line paragraphs**: put the comment after the paragraph's last
   line and quote a short anchor with `@"…"` so the target is unambiguous.

@@ -136,7 +136,7 @@ Dependencies
 1-config.yaml
      │
      ▼
-evaluation/scripts/*.py → evaluation/results/ → 0-display/Figure/, Table/
+evaluation/scripts/*.py → evaluation/results/ → 0-displays/Figure/, Table/
                                                        │
      01-incubator-arch.tex                             │
             │                                          │

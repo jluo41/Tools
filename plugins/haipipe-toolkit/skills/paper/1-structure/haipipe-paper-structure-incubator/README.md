@@ -34,7 +34,7 @@ Three commands for building and refining the incubator working documents in `0-i
 ## Dependencies
 
 ```
-evaluation/scripts → evaluation/results → 0-display/
+evaluation/scripts → evaluation/results → 0-displays/
                                               ↓
 arch ──canonical numbers──▶ structure ◀── 0-sections/
                                ↕

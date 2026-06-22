@@ -101,7 +101,7 @@ If contracts disagree (plan says 5 sections but narrative implies 6),
    - `0-<paper>.tex`     master shell
    - `0-<paper>.bib`     empty bib (or carry over if found)
    - `0-sections/`       one stub `.tex` per planned section
-   - `0-display/{Figure,Table,AppendixFigure,AppendixTable}/`
+   - `0-displays/{Figure,Table,AppendixFigure,AppendixTable}/`
 3. Emit `OUT_DIR/1-config.yaml` and `OUT_DIR/1-compile.sh` if the venue
    template defines them
 4. Record scaffold paths in `CREATE_STATE.md`

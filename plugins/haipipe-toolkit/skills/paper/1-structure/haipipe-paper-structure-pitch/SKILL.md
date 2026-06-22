@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-structure-pitch
-description: "Create or update the paper folder's 0-pitch/PAPER_PITCH.md: a one-minute, evidence-constrained story for this concrete manuscript. Archives semantic old versions and appends PITCH_LOG.md entries when the pitch shifts. Use for paper pitch, one-minute story, hook/surprise/so-what, story trajectory, pitch provenance."
+description: "Create or update the paper folder's 0-lifecycle/1-pitch/1-pitch.tex: a one-minute, evidence-constrained story for this concrete manuscript. Archives semantic old versions and appends PITCH_LOG.md entries when the pitch shifts. Use for paper pitch, one-minute story, hook/surprise/so-what, story trajectory, pitch provenance."
 argument-hint: "[paper-dir] [--reason <slug>] [--source <path-or-note>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
   version: "1.0.0"
   last_updated: "2026-06-20"
-  summary: "Maintain 0-pitch/ as the one-minute public-facing story and provenance layer for a concrete paper folder."
+  summary: "Maintain 0-lifecycle/1-pitch/ as the one-minute public-facing story and provenance layer for a concrete paper folder."
 ---
 
 Skill: haipipe-paper-structure-pitch
@@ -35,7 +35,7 @@ Location:
 
 ```
 <paper>/
-└── 0-pitch/
+└── 0-lifecycle/1-pitch/
     ├── PAPER_PITCH.md       current one-minute story
     ├── PITCH_LOG.md         short provenance log
     └── archive/             older semantic pitch snapshots
@@ -65,7 +65,7 @@ Workflow
 Accept either the paper root or any path inside it. Find the paper root by
 looking upward for one of:
 
-- `0-pitch/`
+- `0-lifecycle/1-pitch/`
 - a `0-*.tex` master and `0-sections/`
 - `1-compile.sh`
 
@@ -75,7 +75,7 @@ If no paper folder exists, ask the user to run:
 /haipipe-paper-structure folder <paper-root>
 ```
 
-### Step 2: Ensure `0-pitch/` exists
+### Step 2: Ensure `0-lifecycle/1-pitch/` exists
 
 Create missing files with the templates below:
 
@@ -136,7 +136,7 @@ When the user gives a new pitch or asks for a pitch revision:
 
 1. Read the current `PAPER_PITCH.md`.
 2. If the change is semantic, archive the old file first:
-   `0-pitch/archive/vNN_<reason>.md`.
+   `0-lifecycle/1-pitch/vNN_<reason>.md`.
 3. Write the new `PAPER_PITCH.md`.
 4. Append a compact `PITCH_LOG.md` entry.
 
@@ -184,7 +184,7 @@ After updating pitch, report:
 Relationship to other structure skills
 --------------------------------------
 
-`0-pitch/PAPER_PITCH.md` is upstream of the formal writing artifacts:
+`0-lifecycle/1-pitch/1-pitch.tex` is upstream of the formal writing artifacts:
 
 ```
 PAPER_PITCH.md

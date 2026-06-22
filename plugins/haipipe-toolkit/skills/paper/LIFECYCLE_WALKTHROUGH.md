@@ -145,10 +145,10 @@ Files created:
 
 ```text
 <paper>/
-  0-pitch/
+  0-lifecycle/1-pitch/
   0-sections/
-  0-display/
-  1-feedback/
+  0-displays/
+  1-rounds/
   1-compile.sh
   0-<paper>.tex
   0-<paper>.bib
@@ -193,7 +193,7 @@ lifecycle/stage02_seed-pitch/
   assets/
 ```
 
-In manuscript mode, the accepted pitch may also be mirrored into `0-pitch/`, but
+In manuscript mode, the accepted pitch may also be mirrored into `0-lifecycle/1-pitch/`, but
 the lifecycle branch remains the teaching and decision artifact.
 
 Pitch answers:
@@ -371,15 +371,15 @@ Command shape:
 Files changed:
 
 ```text
-0-display/DISPLAY_INDEX.md
-0-display/Figures/<fig-id>/DISPLAY.md
-0-display/Figures/<fig-id>/figure.pdf
-0-display/Figures/<fig-id>/float.tex
-0-display/Figures/<fig-id>/preview.pdf
-0-display/Tables/<tab-id>/DISPLAY.md
-0-display/Tables/<tab-id>/table-body.tex
-0-display/Tables/<tab-id>/float.tex
-0-display/Tables/<tab-id>/preview.pdf
+0-displays/README.md
+0-displays/Figures/<fig-id>/unit README.md
+0-displays/Figures/<fig-id>/figure.pdf
+0-displays/Figures/<fig-id>/float.tex
+0-displays/Figures/<fig-id>/preview.pdf
+0-displays/Tables/<tab-id>/unit README.md
+0-displays/Tables/<tab-id>/table-body.tex
+0-displays/Tables/<tab-id>/float.tex
+0-displays/Tables/<tab-id>/preview.pdf
 ```
 
 Display answers:
@@ -426,7 +426,7 @@ Files changed:
 
 ```text
 0-sections/*.tex
-0-display/
+0-displays/
 1-compile.sh
 ```
 
@@ -470,8 +470,8 @@ Drafting rule:
 How displays enter:
 
 ```latex
-\input{0-display/Figures/fig01-hero/float.tex}
-\input{0-display/Tables/tab01-main-results/float.tex}
+\input{0-displays/Figures/fig01-hero/float.tex}
+\input{0-displays/Tables/tab01-main-results/float.tex}
 ```
 
 Project interaction:
@@ -499,8 +499,8 @@ Files changed:
 
 ```text
 0-sections/*.tex
-0-display/*/float.tex
-0-display/*/preview.pdf
+0-displays/*/float.tex
+0-displays/*/preview.pdf
 diff packages
 edit comments
 ```
@@ -589,7 +589,7 @@ Scene:
 Files changed:
 
 ```text
-1-feedback/<round>/
+1-rounds/<round>/
 response letter
 revision plan
 revised sections
@@ -630,7 +630,7 @@ Presentation reads:
 
 - `lifecycle/stage02_seed-pitch/current.md` first.
 - Then figures/tables from `lifecycle/stage05a_display-contract/` and
-  materialized `0-display/`.
+  materialized `0-displays/`.
 - Then the paper sections.
 
 Why:
@@ -725,10 +725,10 @@ Scene:
 | `lifecycle/stage05_paper-plan/current.md` | Execution plan for sections, figures, citations, page budget. |
 | `lifecycle/stage05a_display-contract/current.md` | Figure/table contract and readiness state. |
 | `lifecycle/stage05a_display-contract/displays/*.md` | One display item's claim, source, caption job, fragility. |
-| `0-display/*/float.tex` | Ready-to-input LaTeX block once manuscript mode is active. |
-| `0-display/*/preview.pdf` | Standalone review artifact for one display once materialized. |
+| `0-displays/*/float.tex` | Ready-to-input LaTeX block once manuscript mode is active. |
+| `0-displays/*/preview.pdf` | Standalone review artifact for one display once materialized. |
 | `0-sections/*.tex` | The actual paper prose. |
-| `1-feedback/` | External comments, rebuttal, revision process. |
+| `1-rounds/` | External comments, rebuttal, revision process. |
 
 ## The rule a newcomer should remember
 

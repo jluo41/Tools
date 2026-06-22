@@ -11,9 +11,9 @@ Forward path
     |
     v
   2 Paper Pitch
-    |        files: 0-pitch/PAPER_PITCH.md
-    |               0-pitch/PITCH_LOG.md
-    |               0-pitch/archive/
+    |        files: 0-lifecycle/1-pitch/1-pitch.tex
+    |               0-lifecycle/1-pitch/1-pitch.tex
+    |               0-lifecycle/1-pitch/
     v
   3 Evidence-Backed Narrative
     |        files: NARRATIVE_REPORT.md
@@ -25,7 +25,7 @@ Forward path
     |        files: PAPER_PLAN.md
     v
   6 Build Skeleton
-    |        files: 0-sections/, 0-display/, 1-compile.sh
+    |        files: 0-sections/, 0-displays/, 1-compile.sh
     v
   7 Write Draft
     |        files: 0-sections/*.tex, 0-*.bib
