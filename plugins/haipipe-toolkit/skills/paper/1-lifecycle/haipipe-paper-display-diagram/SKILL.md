@@ -1,13 +1,14 @@
 ---
-name: haipipe-paper-figure-spec
+name: haipipe-paper-display-diagram
 description: "Generate deterministic publication-quality architecture, workflow, and pipeline diagrams from structured JSON (FigureSpec) into editable SVG. Use when user says \"架构图\", \"workflow 图\", \"pipeline 图\", \"确定性矢量图\", \"figure spec\", \"draw architecture\", or needs precise, editable, publication-ready vector diagrams. Preferred over AI illustration for formal architecture/workflow figures."
 argument-hint: "[description-of-diagram]"
 allowed-tools: Bash(*), Read, Write, Edit
 metadata:
-  version: "1.2.0"
+  version: "1.3.0"
   last_updated: "2026-06-22"
-  summary: "Generate deterministic publication-quality architecture, workflow, and pipeline diagrams from structured JSON (FigureSpec) into editable SVG."
+  summary: "Deterministic vector-diagram renderer of the display family (JSON/FigureSpec -> editable SVG)."
   changelog:
+    - "1.3.0 (2026-06-22): joined the display family as haipipe-paper-display-diagram (was haipipe-paper-figure-spec); the deterministic-vector renderer for architecture/pipeline figures."
     - "1.2.0 (2026-06-22): completed the migration -- vendored the canonical scripts/figure_renderer.py (the 1.1.0 rename dropped it) and repointed invocations from the ARIS-root tools/ path to the skill-local $CLAUDE_SKILL_DIR/scripts/. Now self-contained (pure stdlib, no MCP, no API key)."
     - "1.1.0 (2026-06-05): renamed from figure-spec to haipipe-paper-figure-spec (haipipe-paper-* name unification)."
     - "1.0.0 (2026-05-31): baseline metadata added."
@@ -19,7 +20,7 @@ Generate publication-quality **architecture diagrams**, **workflow pipelines**, 
 
 ## When to Use This Skill
 
-**Use `haipipe-paper-figure-spec`** for:
+**Use `haipipe-paper-display-diagram`** for:
 - System architecture diagrams (layered, hub-and-spoke, multi-plane)
 - Workflow / pipeline figures
 - Audit cascade / flow-control diagrams
@@ -28,8 +29,8 @@ Generate publication-quality **architecture diagrams**, **workflow pipelines**, 
 - Figures where determinism matters (same spec → same SVG)
 
 **Do NOT use for:**
-- Data plots (bar/line/scatter) — use `/haipipe-paper-figure`
-- Natural/qualitative illustrations — use `/haipipe-paper-illustration`
+- Data plots (bar/line/scatter) — use `/haipipe-paper-display-figure`
+- Natural/qualitative illustrations — use `/haipipe-paper-display-illustration-gemini`
 - Quick state-machine / flowchart — use `/mermaid-diagram` (lighter syntax)
 
 ## Core Properties
@@ -221,8 +222,8 @@ Three-stage horizontal cascade with inputs feeding in from top, outputs exiting 
 ## Integration with Other Skills
 
 - **`/paper-writing`** (Workflow 3): when `illustration: figurespec` (default for architecture figures), this skill handles Phase 2b
-- **`/haipipe-paper-figure`**: handles data plots; they complement each other (data + architecture = complete figure set)
-- **`/haipipe-paper-illustration`**: fallback for figures that need natural/qualitative style (method illustrations with photos, qualitative result grids)
+- **`/haipipe-paper-display-figure`**: handles data plots; they complement each other (data + architecture = complete figure set)
+- **`/haipipe-paper-display-illustration-gemini`**: fallback for figures that need natural/qualitative style (method illustrations with photos, qualitative result grids)
 - **`/mermaid-diagram`**: lighter alternative for simple flowcharts
 
 ## Review Tracing

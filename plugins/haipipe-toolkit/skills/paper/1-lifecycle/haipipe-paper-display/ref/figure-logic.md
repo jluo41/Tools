@@ -1,7 +1,7 @@
 # Reference: Figure Logic and Design
 
 > Merged into `haipipe-paper-display` (2026-06-22) from the retired
-> `haipipe-paper-figure-planner` skill. Figure-craft reference for the
+> `haipipe-paper-display-figure-planner` skill. Figure-craft reference for the
 > display stage: one dominant claim per figure, panel-role taxonomy, main-vs-
 > supplement decision rules, legend discipline, and the visual-hygiene pass. Not a
 > standalone skill.

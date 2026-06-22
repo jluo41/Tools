@@ -1,33 +1,40 @@
 ---
-name: haipipe-paper-figure
-description: "Generate publication-quality figures and tables from experiment results. Use when user says \"画图\", \"作图\", \"generate figures\", \"paper figures\", or needs plots for a paper."
+name: haipipe-paper-display-figure
+description: "Generate publication-quality data plots from experiment results (line/bar/scatter/heatmap/box). Use when user says \"画图\", \"作图\", \"generate figures\", \"paper plots\", or needs data-driven plots for a paper. The plot renderer of the display family; tables are rendered by haipipe-paper-display-table."
 argument-hint: "[figure-plan-or-data-path]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-05-31"
-  summary: "Generate publication-quality figures and tables from experiment results."
+  version: "1.2.0"
+  last_updated: "2026-06-22"
+  summary: "Generate publication-quality data plots from experiment results (the plot renderer of the display family)."
   changelog:
+    - "1.2.0 (2026-06-22): joined the display family as haipipe-paper-display-figure; shed table rendering to haipipe-paper-display-table (now plots-only); bumped reviewer model to gpt-5.5."
     - "1.1.0 (2026-06-05): renamed from paper-figure to haipipe-paper-figure (haipipe-paper-* name unification)."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
-# Paper Figure: Publication-Quality Plots from Experiment Data
+# Paper Display Figure: Publication-Quality Plots from Experiment Data
 
-Generate all figures and tables for a paper based on: **$ARGUMENTS**
+Generate the data plots for a paper based on: **$ARGUMENTS**
+
+> **Boundary:** this skill renders **plots only**. For typeset LaTeX tables
+> (coefficient/descriptive/comparison/ablation), use
+> `haipipe-paper-display-table`. For architecture/pipeline diagrams use
+> `haipipe-paper-display-diagram`; for AI concept art use
+> `haipipe-paper-display-illustration`.
 
 ## Scope: What This Skill Can and Cannot Do
 
 | Category | Can auto-generate? | Examples |
 |----------|-------------------|----------|
 | **Data-driven plots** | ✅ Yes | Line plots (training curves), bar charts (method comparison), scatter plots, heatmaps, box/violin plots |
-| **Comparison tables** | ✅ Yes | LaTeX tables comparing prior bounds, method features, ablation results |
+| **Comparison tables** | ➡️ Use `haipipe-paper-display-table` | LaTeX tables (prior bounds, method features, ablation) now live in the dedicated table renderer |
 | **Multi-panel figures** | ✅ Yes | Subfigure grids combining multiple plots (e.g., 3×3 dataset × method) |
 | **Architecture/pipeline diagrams** | ❌ No — manual | Model architecture, data flow diagrams, system overviews. At best can generate a rough TikZ skeleton, but **expect to draw these yourself** using tools like draw.io, Figma, or TikZ |
 | **Generated image grids** | ❌ No — manual | Grids of generated samples (e.g., GAN/diffusion outputs). These come from running your model, not from this skill |
 | **Photographs / screenshots** | ❌ No — manual | Real-world images, UI screenshots, qualitative examples |
 
-**In practice:** For a typical ML paper, this skill handles ~60% of figures (all data plots + tables). The remaining ~40% (hero figure, architecture diagram, qualitative results) need to be created manually and placed in `figures/` before running `/haipipe-paper-edit-write`. The skill will detect these as "existing figures" and preserve them.
+**In practice:** For a typical ML paper, this skill handles the data plots (a large share of the figure set). Tables go to `haipipe-paper-display-table`; the hero figure / architecture diagram / qualitative results are created via the diagram/illustration skills or manually and placed in `figures/` before running `/haipipe-paper-edit-write`. The skill will detect manually-made figures as "existing figures" and preserve them.
 
 ## Constants
 
@@ -37,7 +44,7 @@ Generate all figures and tables for a paper based on: **$ARGUMENTS**
 - **COLOR_PALETTE = `tab10`** — Default matplotlib color cycle. Options: `tab10`, `Set2`, `colorblind` (deuteranopia-safe)
 - **FONT_SIZE = 10** — Base font size (matches typical conference body text)
 - **FIG_DIR = `figures/`** — Output directory for generated figures
-- **REVIEWER_MODEL = `gpt-5.4`** — Model used via Codex MCP for figure quality review.
+- **REVIEWER_MODEL = `gpt-5.5`** — Model used via Codex MCP for figure quality review.
 
 ## Inputs
 
@@ -61,9 +68,9 @@ Parse the Figure Plan table from PAPER_PLAN.md:
 ```
 
 Identify:
-- Which figures can be auto-generated from data
+- Which figures can be auto-generated from data (this skill)
 - Which need manual creation (architecture diagrams, etc.)
-- Which are comparison tables (generate as LaTeX)
+- Which rows are tables -> route those to `haipipe-paper-display-table`, not here
 
 ### Step 2: Set Up Plotting Environment
 
@@ -115,7 +122,7 @@ Use this decision tree for data-driven figures (inspired by Imbad0202/academic-r
 | Matrix / grid values | Heatmap | 0.48\textwidth |
 | Distribution comparison | Box/violin plot | 0.48\textwidth |
 | Multi-dataset results | Multi-panel (subfigure) | 0.95\textwidth |
-| Prior work comparison | LaTeX table | — |
+| Prior work comparison / coefficients | (table) → use `haipipe-paper-display-table` | — |
 
 ### Step 4: Generate Each Figure
 
@@ -153,23 +160,9 @@ for bar, val in zip(bars, values):
 save_fig(fig, 'fig3_comparison')
 ```
 
-**Comparison tables** (LaTeX, for theory papers):
-```latex
-\begin{table}[t]
-\centering
-\caption{Comparison of estimation error bounds. $n$: sample size, $D$: ambient dim, $d$: latent dim, $K$: subspaces, $n_k$: modes.}
-\label{tab:bounds}
-\begin{tabular}{lccc}
-\toprule
-Method & Rate & Depends on $D$? & Multi-modal? \\
-\midrule
-\citet{MinimaxOkoAS23} & $n^{-s'/D}$ & Yes (curse) & No \\
-\citet{ScoreMatchingdistributionrecovery} & $n^{-2/d}$ & No & No \\
-\textbf{Ours} & $\sqrt{\sum n_k d_k / n}$ & No & Yes \\
-\bottomrule
-\end{tabular}
-\end{table}
-```
+**Comparison / coefficient tables** (LaTeX): out of scope — use
+`haipipe-paper-display-table`, which owns booktabs rules, significance stars, SE
+rows, panels, and table notes. Do not emit `.tex` tables from this skill.
 
 **Architecture/pipeline diagrams** (MANUAL — outside this skill's scope):
 - These require manual creation using draw.io, Figma, Keynote, or TikZ
@@ -206,11 +199,11 @@ Save all snippets to `figures/latex_includes.tex` for easy copy-paste into the p
 
 ### Step 7: Figure Quality Review with REVIEWER_MODEL
 
-Send figure descriptions and captions to GPT-5.4 for review:
+Send figure descriptions and captions to GPT-5.5 for review:
 
 ```
 mcp__codex__codex:
-  model: gpt-5.4
+  model: gpt-5.5
   config: {"model_reasoning_effort": "xhigh"}
   prompt: |
     Review these figure/table plans for a [VENUE] submission.
@@ -252,9 +245,9 @@ figures/
 ├── fig1_architecture.pdf        # generated figures
 ├── fig2_training_curves.pdf
 ├── fig3_comparison.pdf
-├── latex_includes.tex           # LaTeX snippets for all figures
-└── TABLE_*.tex                  # standalone table LaTeX files
+└── latex_includes.tex           # LaTeX snippets for all figures
 ```
+(Tables are produced by `haipipe-paper-display-table`, not here.)
 
 ## Key Rules
 
@@ -266,7 +259,7 @@ figures/
 - **Colorblind-safe** — verify with https://davidmathlogic.com/colorblind/ if needed
 - **One script per figure** — easy to re-run individual figures when data changes
 - **No titles inside figures** — captions are in LaTeX only
-- **Comparison tables count as figures** — generate them as standalone .tex files
+- **Tables are not figures** — route any LaTeX table to `haipipe-paper-display-table`
 
 ## Figure Type Reference
 
@@ -280,7 +273,6 @@ figures/
 | Box/violin | Distribution comparison | 0.48\textwidth |
 | Architecture | System overview | 0.95\textwidth |
 | Multi-panel | Combined results (subfigures) | 0.95\textwidth |
-| Comparison table | Prior bounds vs. ours (theory) | full width |
 
 ## Acknowledgements
 

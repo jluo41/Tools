@@ -34,11 +34,14 @@ this orchestrator directly.
 
 For the canonical paper structure, read `README.md` at the paper skill root.
 
-Stage Strip (lead every reply)
+Stage Strip (end every reply)
 ------------------------------
 
-In a paper session, BEGIN every reply with the lifecycle stage strip so the user
-always sees which stage we are in. Spine order is fixed:
+In a paper session, END every reply with the lifecycle stage strip so the user
+always sees which stage we are in. Place it as the VERY LAST line of the reply,
+AFTER the machine-readable return-contract tail (`status` / `paper_root` /
+`current_layer` / `next`). It is the closing line, not the opening one. Spine
+order is fixed:
 
 ```text
 seed -> pitch -> claims -> narrative -> display -> minimap -> write/edit -> review
@@ -70,7 +73,9 @@ organization:
 ```text
 ref/paper-lifecycle.md
 ref/paper-rounds.md
+ref/lifecycle-map.md
 ref/paper-skill-structure.md
+../1-lifecycle/haipipe-paper-display-figure/SKILL.md
 ```
 
 ```
@@ -92,6 +97,7 @@ Examples:
 /haipipe-paper conference "0-lifecycle/3-narrative/3-narrative.tex", venue: ICLR
 /haipipe-paper enter "examples/ProjB-PhyTrait-OpioidRx/paper/Paper-Personality-Opioid-MedJournal"
 /haipipe-paper status
+/haipipe-paper figure "Fig2/3 need data-driven generation"
 /haipipe-paper journal                       (no input → Nature default)
 /haipipe-paper is "MISQ paper on AI adoption"
 /haipipe-paper prospectus "examples/ProjC-LLMRecPhysicain/paper/Paper-LLMPhysicianRanking"
@@ -172,7 +178,13 @@ seed                                       -> structure seed
 pitch                                      -> structure pitch
 claims, claim, ledger                      -> structure claims
 narrative                                  -> structure narrative
-figures, figures-tables, display           -> structure display
+display, figures, figures-tables           -> structure display
+table, tables                              -> structure table       (haipipe-paper-display-table)
+figure, plot                               -> structure figure      (haipipe-paper-display-figure)
+diagram, figure-spec, vector               -> structure diagram     (haipipe-paper-display-diagram)
+illustration, ai-img                       -> structure illustration (default, Codex bridge)
+illustration-gemini, gemini                -> structure illustration-gemini (fallback)
+figure1, framework                         -> structure framework   (display framework mode)
 minimap                                    -> structure minimap
 round, rounds                              -> round (haipipe-paper-round)
 ```
@@ -193,7 +205,8 @@ Step 2: Resolve venue/task:
   - First positional matches a venue/task alias?      -> dispatch target = that
   - First positional is "enter" or "status"            -> target = enter
   - First positional is a lifecycle stage verb
-    (seed/pitch/claims/narrative/figures/display/
+    (seed/pitch/claims/narrative/display/table/figure/diagram/
+    illustration/illustration-gemini/figure1/framework/
     minimap)                                          -> target = structure <verb>
   - First positional is "round" or "rounds"            -> target = round
   - First positional is "feedback"                     -> target = feedback (utility verb)
@@ -327,7 +340,7 @@ status:    ok | blocked | failed
 summary:   2-3 sentences on what the specialist did
 artifacts: [paths created, read, or modified]
 next:      suggested next command (often a lifecycle stage skill like
-           /haipipe-paper-minimap, /haipipe-paper-figure, /haipipe-paper-edit-write, or a re-invocation
+           /haipipe-paper-minimap, /haipipe-paper-display-figure, /haipipe-paper-edit-write, or a re-invocation
            of /haipipe-paper for a different phase)
 ```
 
@@ -374,7 +387,9 @@ stage-to-procedure map is in `ref/lifecycle-map.md`. In brief:
 0-enter/        haipipe-paper-enter (Paper Console)
 1-lifecycle/    haipipe-paper-lifecycle (orchestrator) + one skill per stage:
                 -{seed,pitch,claims,narrative,display,minimap}
-                helpers: -figure/-figure-spec/-illustration*
+                display renderers: -display-table (LaTeX tables), -display-figure
+                (data plots), -display-diagram (vector SVG), -display-illustration
+                (AI concept art, default Codex bridge) + -display-illustration-gemini (fallback)
                 (architecture blueprint + plan outline are now folded into
                  -minimap, figure-planner into -display; see their ref/)
 2-rounds/       haipipe-paper-round (enter/new/triage/apply/close)

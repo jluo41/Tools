@@ -23,7 +23,9 @@ paper/
 ├── 0-enter/             haipipe-paper-enter (Console)
 ├── 1-lifecycle/         one skill per stage + display renderers
 │     haipipe-paper-{seed,pitch,claims,narrative,display,minimap}
-│     + figure/figure-spec/illustration/illustration-image2 (display renderers)
+│     + display renderers: -display-{table,figure,diagram,illustration}
+│       (illustration default = Codex; -display-illustration-gemini = fallback;
+│        framework candidate rounds inside display)
 │     + haipipe-paper-lifecycle (orchestrator)
 │     (architecture+plan folded into minimap/ref; figure-planner into
 │      display/ref; diagram moved to 3-write-edit; incubator retired)
@@ -48,7 +50,7 @@ enter             -> 0-enter/haipipe-paper-enter
 1-pitch           -> 1-lifecycle/haipipe-paper-pitch
 2-claims          -> 1-lifecycle/haipipe-paper-claims
 3-narrative       -> 1-lifecycle/haipipe-paper-narrative
-4-display         -> 1-lifecycle/haipipe-paper-display (+ figure/figure-spec/illustration renderers; figure-logic ref)
+4-display         -> 1-lifecycle/haipipe-paper-display (+ render skills -display-{table,figure,diagram,illustration}[-gemini]; figure-logic ref)
 5-minimap         -> 1-lifecycle/haipipe-paper-minimap (folds in architecture-blueprint + plan-outline refs)
 write/edit        -> 3-write-edit/*
 review            -> 3-write-edit/ (the audit cluster)

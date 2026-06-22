@@ -64,8 +64,8 @@ Step 6 — Cross-skill link
 --------------------------
 
 After scaffolding, suggest:
-- `/haipipe-paper-figure` for figure crafting (axes, palette, legend layout).
-- `/haipipe-paper-illustration` for diagram-style figures.
+- `/haipipe-paper-display-figure` for figure crafting (axes, palette, legend layout).
+- `/haipipe-paper-display-illustration-gemini` for diagram-style figures.
 
 
 Step 7 — Report

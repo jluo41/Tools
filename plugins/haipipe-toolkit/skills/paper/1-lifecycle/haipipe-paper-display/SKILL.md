@@ -1,10 +1,10 @@
 ---
 name: haipipe-paper-display
-description: "Plan, materialize (via task/probe), scaffold, build, audit, and insert paper display items: figures, tables, diagrams, and preview PDFs under 0-displays/. Displays are RENDERED by a paper-display task from evidence, never hand-authored in float.tex. Use for display-unit README files, ready-to-input figure/table blocks, captions, labels, standalone previews, or figure/table story-evidence contracts."
-argument-hint: "[plan|materialize|scaffold|build|audit|insert] [paper-dir-or-display-id] [args...]"
+description: "Plan, materialize (via task/probe), scaffold, run framework candidate rounds, build, audit, and insert paper display items: figures, tables, diagrams, and preview PDFs under 0-displays/. Displays are RENDERED by a paper-display task from evidence, never hand-authored in float.tex. Use for display-unit README files, ready-to-input figure/table blocks, captions, labels, standalone previews, or figure/table story-evidence contracts."
+argument-hint: "[plan|materialize|scaffold|framework|build|audit|insert] [paper-dir-or-display-id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.2.0"
+  version: "1.3.0"
   last_updated: "2026-06-22"
   summary: "Maintain 0-displays/ as a story/evidence display layer with README.md, per-unit README.md, float.tex, and standalone preview PDFs."
 ---
@@ -210,6 +210,52 @@ planned / data-ready / rendered / input-ready / inserted / reviewed
 ```
 
 For table previews, input the table `float.tex` instead.
+
+### `framework`
+
+Use this mode when the bottleneck is **framework/architecture/Figure 1 planning**
+and you want candidate options before final rendering.
+
+Inputs:
+- user request (claim + target section + evidence contract)
+- optional `0-displays` row ID and existing candidate text
+
+Outputs:
+- `0-displays/displayNN-<slug>/README.md` updated with a clear framework claim role
+- candidate pack in:
+  `0-displays/displayNN-<slug>/source/framework-candidates.md`
+- a selected direction in:
+  `0-displays/displayNN-<slug>/source/framework-selection.md`
+- `float.tex` still points to a TODO render target (not final art)
+
+Workflow:
+1. Clarify what job this figure serves in the one-minute story and which claim it
+   must defend.
+2. Offer 3–5 candidate frameworks (ex: pipeline chain, hub-and-spoke, layered
+   stack, audit loop, feedback cycle) with pros/cons and expected reviewer friction.
+3. Record the candidates and selection criteria in `source/framework-candidates.md`.
+4. After selection, hand over for the final render. **Default render target:**
+   `/haipipe-paper-display-illustration` (the Codex bridge gives the most
+   paper-ready CVPR-style Figure 1). Choose `/haipipe-paper-display-diagram`
+   instead when you need a reproducible, editable vector. Fall back to
+   `/haipipe-paper-display-illustration-gemini` if the Codex bridge is unavailable.
+
+Reference hook:
+Load `Tools/references/aris/skills/paper-framework-figure-studio-pro/SKILL.md` and
+follow its candidate-generation loop when generating alternatives and revision
+passes. It is useful when `figure1` requires several concept drafts before settle.
+
+### How this mode compares with the render skills
+
+- If the figure is **conceptual architecture/pipeline** and you are still
+  unsure about the high-level topology or storytelling (multiple options to choose
+  from), use `framework` first to create 3–5 candidates.
+- For the final render of a settled Figure 1, default to
+  `/haipipe-paper-display-illustration` (Codex AI raster, richest result).
+- If the topology is already decided and you need a **reproducible, editable
+  vector**, use `/haipipe-paper-display-diagram` with a FigureSpec JSON.
+- If the Codex bridge is unavailable or you specifically want the Gemini backend,
+  use `/haipipe-paper-display-illustration-gemini`.
 
 ### `materialize`
 

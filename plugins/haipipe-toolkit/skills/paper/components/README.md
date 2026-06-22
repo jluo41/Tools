@@ -11,10 +11,11 @@ Layout
 ```
 components/
 ├── figure/          Display assets (0-displays/Figure, /Table, /AppendixFigure, /AppendixTable)
-│   ├── haipipe-paper-figure/
-│   ├── haipipe-paper-figure-spec/
-│   ├── haipipe-paper-illustration/
-│   ├── haipipe-paper-illustration-image2/
+│   ├── haipipe-paper-display-table/              (data CSV -> LaTeX table)
+│   ├── haipipe-paper-display-figure/             (data CSV -> plot)
+│   ├── haipipe-paper-display-diagram/            (concept -> vector SVG)
+│   ├── haipipe-paper-display-illustration/       (concept -> AI raster, DEFAULT Codex)
+│   ├── haipipe-paper-display-illustration-gemini/ (Gemini fallback)
 │   └── haipipe-paper-edit-diagram/
 │       (figure-inventory planning folded into 1-lifecycle haipipe-paper-display/ref/figure-logic.md)
 │

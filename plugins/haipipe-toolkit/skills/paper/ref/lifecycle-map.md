@@ -14,7 +14,7 @@ separate set of verbs.
 | `1-pitch` | `haipipe-paper-pitch` | What is the paper selling? | Maintain one-minute story + provenance | seed, review, decisions | `0-lifecycle/1-pitch/1-pitch.tex`, STATUS.md | none | pitch | `1-pitch.tex` | abstract/intro sells another story |
 | `2-claims` | `haipipe-paper-claims` | Which claims are supported, weak, or GAP? | Maintain claim ledger, mark needs | pitch, evidence refs, probe verdicts | `0-lifecycle/2-claims/2-claims.tex`, STATUS.md | `/haipipe-probe`, `/haipipe-discover`, `/haipipe-task`, `/haipipe-insight` | claim ledger | `2-claims.tex` | claim unsupported/too strong, no route |
 | `3-narrative` | `haipipe-paper-narrative` | How do claims become a manuscript arc? | Build evidence-backed arc | 2-claims, results | `0-lifecycle/3-narrative/3-narrative.tex`, STATUS.md | none | narrative | `3-narrative.tex` | arc weak -> 1-pitch / 2-claims |
-| `4-display` | `haipipe-paper-display` (+ figure, figure-spec, illustration renderers; figure-logic ref) | What figure/table carries each claim? | Plan display map + units | 2-claims, results, probe verdicts | `0-lifecycle/4-display/4-display.tex`, `0-displays/README.md`, `0-displays/displayNN-<slug>/*`, STATUS.md | `/haipipe-task-for-display` | display map + units | `4-display.tex`, display units | display cannot support claim |
+| `4-display` | `haipipe-paper-display` (+ render skills: -display-table, -display-figure, -display-diagram, -display-illustration[-gemini]; figure-logic ref) | What figure/table carries each claim? | Plan display map + units | 2-claims, results, probe verdicts | `0-lifecycle/4-display/4-display.tex`, `0-displays/README.md`, `0-displays/displayNN-<slug>/*`, STATUS.md | `/haipipe-task-for-display` | display map + units | `4-display.tex`, display units | display cannot support claim |
 | `5-minimap` | `haipipe-paper-minimap` (folds in architecture-blueprint + plan-outline refs) | What job does each paragraph do, and what anchors it? | Map paragraph jobs + evidence anchors | narrative, display map | `0-lifecycle/5-minimap/5-minimap.tex`, STATUS.md | none | minimap | `5-minimap.tex` | paragraph has no job / anchor |
 | `write/edit` | `haipipe-paper-build-*`, `haipipe-paper-edit*`, `haipipe-paper-create/revise`, `sections/*` | Realize the spine as TeX prose | Scaffold, write, polish | 5-minimap, display units, playbooks | `0-sections/*.tex`, `0-displays/*/float.tex`, `0-*.bib`, PDF | compile / overleaf | draft PDF | section files | writing exposes missing evidence -> 2-claims |
 | `review` | `haipipe-paper-edit-{claim-audit,reviewer,proof-checker,submission-audit}`, citation components | Which layer is broken, or ready? | Adversarial audits, route verdict | PDF, lifecycle files, sections | review notes, `1-rounds/<round>/todo.md`, STATUS.md | reviewer agents / Codex | review verdict + routing | STATUS.md maturity | overclaim, broken layer, venue check fails |
@@ -68,8 +68,16 @@ content (see `paper-dashboard.md`).
 /haipipe-paper pitch            -> 1-pitch
 /haipipe-paper claims           -> 2-claims
 /haipipe-paper narrative        -> 3-narrative
-/haipipe-paper figures|display  -> 4-display
+/haipipe-paper display|figures  -> 4-display (display contract + units)
+/haipipe-paper figure1|framework -> 4-display framework mode (Figure 1 candidate rounds)
 /haipipe-paper minimap          -> 5-minimap
+
+# 4-display render verbs (data-driven vs concept), dispatched via haipipe-paper-lifecycle:
+/haipipe-paper table            -> haipipe-paper-display-table        (data CSV -> LaTeX table)
+/haipipe-paper figure           -> haipipe-paper-display-figure       (data CSV -> plot; SINGULAR = plots)
+/haipipe-paper diagram          -> haipipe-paper-display-diagram      (concept -> deterministic vector SVG)
+/haipipe-paper illustration     -> haipipe-paper-display-illustration (concept -> AI raster, DEFAULT Codex bridge)
+/haipipe-paper illustration-gemini -> haipipe-paper-display-illustration-gemini (Gemini fallback)
 /haipipe-paper write|edit       -> write/edit
 /haipipe-paper review           -> review
 /haipipe-paper round            -> round

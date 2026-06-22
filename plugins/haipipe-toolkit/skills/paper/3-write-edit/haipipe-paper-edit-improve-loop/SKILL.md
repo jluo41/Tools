@@ -18,7 +18,7 @@ Autonomously improve the paper at: **$ARGUMENTS**
 
 ## Context
 
-This skill is designed to run **after** Workflow 3 (`/haipipe-paper-minimap` → `/haipipe-paper-figure` → `/haipipe-paper-edit-write` → `/paper-compile`). It takes a compiled paper and iteratively improves it through external LLM review.
+This skill is designed to run **after** Workflow 3 (`/haipipe-paper-minimap` → `/haipipe-paper-display-figure` → `/haipipe-paper-edit-write` → `/paper-compile`). It takes a compiled paper and iteratively improves it through external LLM review.
 
 Unlike `/auto-review-loop` (which iterates on **research** — running experiments, collecting data, rewriting narrative), this skill iterates on **paper writing quality** — fixing theoretical inconsistencies, softening overclaims, adding missing content, and improving presentation.
 
