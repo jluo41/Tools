@@ -86,7 +86,7 @@ All four stages answer one question: **"is the implementation right?"**
 Stage 1: PLAN — the contract (what the script SHOULD do)
   creates:   workflow/plan.yaml              task-level IPO (Run/Gate1/Gate2)
              workflow/plan-script-<name>.yaml script-level IPO (type-specific phases)
-  reads:     *.py (if exists), haipipe-task-for-<type>/ref/workflow-plan-sample.yaml
+  reads:     *.py (if exists), **/haipipe-task-for-<type>/ref/workflow-plan-sample.yaml (nested under its domain folder)
   agents:    creator drafts plan → reviewer checks IPO compliance → ↺ revise
 
 Stage 2: BUILD — the implementation (code that matches the plan)

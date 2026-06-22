@@ -33,19 +33,20 @@
 │   │
 │   └── diagram/                          🎨 you are here
 │
-├── 🔧 haipipe-task-for-{type}/          8️⃣ Python spokes
-│   ├── SKILL.md                          eval / fit / data / display /
-│   ├── ref/config-seed.yaml              individual / agent / algo / inference
-│   ├── ref/workflow-plan-sample.yaml     type-specific IPO phases
-│   └── fn/scaffold.md                    scaffold procedure
+│   (NOTE: post Phase-1 migration the task-type specialists are NESTED under
+│    numbered DOMAIN folders. Skill name: fields unchanged. See DESIGN.md.)
 │
-└── 🔧 haipipe-task-for-stata/           🔩 Stata spoke (unified — cms/case/data/reg internal)
-    ├── SKILL.md                          stage dispatch + per-stage scaffold trees
-    ├── ref/config-seed-{stage}.do        Stata config templates (.do = source of truth)
-    ├── ref/workflow-plan-sample-{stage}.yaml
-    ├── ref/stata-dialect.md              shared engine contract
-    ├── ref/{dispatcher,run-ps1,run-stage-year}-template.*
-    └── fn/scaffold.md                    unified scaffold with stage branches
+├── 📦 1_data/ 2_nn/ 3_end/ 4_individual/   domains 1-4 (run library + task-author leg)
+│   each holds its run library (haipipe-data / -nn / -end / -individual + subs)
+│   PLUS its task-author leg: haipipe-task-for-{data,algo,endpoint,individual}/
+│
+├── 📦 5_fit/ 6_eval/ 7_display/ 9_agent/   domains 5,6,7,9 (task-author leg only, Python)
+│   haipipe-task-for-{fit,eval,display,agent}/   (fit shares 2_nn's /haipipe-nn lib)
+│   each: SKILL.md · ref/config-seed.yaml · ref/workflow-plan-sample.yaml · fn/scaffold.md
+│
+└── 🔩 8_stata/                             domain 8 — Stata engine (unified)
+    haipipe-task-for-stata/   cms/case/data/reg internal · .do templates · stata-dialect.md
+    (ids are append-only; 1-4 pre-existing, 5-9 appended — see DESIGN.md)
 
 
 ─§ 2. Hub-and-Spoke Architecture ──────────────────────────────────

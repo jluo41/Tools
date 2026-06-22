@@ -5,6 +5,50 @@ Layer-scoped changelog for the task (WORK / execution) layer. Newest first.
 Rollup lives in the plugin-level `CHANGELOG.md`.
 
 
+## [6.0.0] — 2026-06-21
+
+### Changed
+- **Phase 1 of the B-domain migration LANDED (folder reorg, skill names unchanged).** The nine `haipipe-task-for-xxx` specialists are now nested under numbered DOMAIN folders, dissolving the parallel "type-spoke" family into the domain family:
+  - `for-data`→`1_data/`, `for-algo`→`2_nn/`, `for-endpoint`→`3_end/`, `for-individual`→`4_individual/` (existing domain folders, unchanged numbers).
+  - `for-fit`→`5_fit/`, `for-eval`→`6_eval/`, `for-display`→`7_display/`, `for-stata`→`8_stata/`, `for-agent`→`9_agent/` (5 new append-only domain folders).
+  - Moved via `git mv` (history preserved). Skill `name:` fields UNCHANGED, so all `/haipipe-*` commands and `Skill("haipipe-task-for-xxx")` calls still resolve. No renumber of existing folders (append-only rule).
+- **Fixed relative hub references in the moved folders.** All 45 `../haipipe-task/` references gained one `../` (mechanical consequence of moving one level deeper); strict refs (SKILL.md, config-seed, stata-dialect) now resolve correctly.
+- **Updated structural docs to the new layout:** DESIGN.md "Current State" tree, `01-architecture.txt` folder tree, and the path-pattern hints in `task-lifecycle.workflow.js` / `haipipe-task-creator-agent.md` / orchestrator SKILL.md (now glob-friendly for the nested specialists).
+
+### Note
+- Phase 2 (renaming the `for-xxx` skills to domain-consistent names) remains DEFERRED. Two pre-existing dangling refs untouched (out of scope): `haipipe-task-for-inference` (folder never existed) in `3_end/haipipe-end-endpointset/fn/fn-3-profile.md`; `haipipe-task-for-stata-case` in `haipipe-task/fn/workflow-audit.md` (merged in 3.1.0).
+
+
+## [5.2.0] — 2026-06-21
+
+### Added
+- **"Target Architecture: B as the Unified Domain Family (v6.0.0, PLANNED)" section in DESIGN.md.** Locks the decision to dissolve axis C (the `haipipe-task-for-xxx` type spokes) into axis B. B becomes a single flat NUMBERED family of 9 task domains, each owning both a run/library leg and a task-author leg. Includes: the APPEND-ONLY numbering rule (id = creation order, permanent, never renumbered; pipeline-flow order is a separate documented attribute, not the id; existing folders fixed at data=1/nn=2/endpoint=3/individual=4, appended fit=5/eval=6/display=7/stata=8/agent=9), the relaxed coverage rule (overlap is fine; every task type must fall into exactly one domain), the nine-domain table, the for-xxx -> domain mapping, the nn/fit shared-library note, the agent scope boundary vs application, and a two-phase migration plan with measured blast radius (~40 files; most are skill-NAME references that survive a folder move; Phase 1 touches zero existing folders).
+- Decision Log entry (2026-06-21) recording the approval, marked as superseding the earlier "type spokes stay unnumbered" line.
+
+### Note
+- This is DESIGN ONLY. No folders have moved yet. The actual migration (Phase 1 folder reorg + Phase 2 optional rename) will land under a future [6.0.0].
+
+
+## [5.1.0] — 2026-06-21
+
+### Added
+- **"Three Orthogonal Axes" section in DESIGN.md.** Makes explicit that `task/` mixes three different organizing axes: (A) the 4-stage lifecycle, (B) the numbered task domains `1_data / 2_nn / 3_end / 4_individual`, and (C) the `haipipe-task-for-xxx` type spokes. A and B are numbered because they are sequenced (time / data-flow DAG); C stays an unnumbered enum because task type is a classification, not a sequence. Also documents that B and C overlap by domain but are two layers (pipeline primitive vs task-folder authoring), not duplicates.
+- Decision Log entry (2026-06-21) recording the axes distinction.
+
+### Changed
+- DESIGN.md status + Current State heading bumped to v5.1.0 (doc-only clarification; no structural or behavioral change).
+
+
+## [5.0.0] — 2026-06-11
+
+### Removed
+- **Stage 5 (Insight) removed from the task lifecycle.** task is now a pure 4-stage code lifecycle (Plan / Build / Execute / Report). Insight filing is `/haipipe-insight`'s responsibility, not task's.
+
+### Changed
+- **Sandwich model adopted.** probe open dispatches discoveries/tasks; discover and task do their own work; probe post resumes and judges the claim. task no longer owns insight filing, and insight export is deferred while focusing on Narrative / Probe / Discovery / Task. (Migration Phase 7 closed.)
+- Task-group iteration updated for the pure 4-stage lifecycle.
+
+
 ## [4.0.0] — 2026-06-11
 
 ### Changed

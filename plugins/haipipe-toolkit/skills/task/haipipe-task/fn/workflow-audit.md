@@ -55,7 +55,7 @@ prefix). Shared configs (`VisitLBP.do`, `_source_synth.do`) are NOT per-run
 configs -- they are the base layer that per-run configs load via `do` include.
 A run without a matching per-run config is flagged `missing_config: FIXABLE`.
 The fix: generate a thin `.do` wrapper that loads the source selector + shared
-config + pins the year (see `haipipe-task-for-stata-case/ref/config-seed-run.do`).
+config + pins the year (see `8_stata/haipipe-task-for-stata/ref/config-seed-run.do`).
 
 ### Step 2 — Check four-sister pairing
 

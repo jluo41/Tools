@@ -1,7 +1,7 @@
 task — Task-Type Specialist Series (DESIGN)
 ==============================================
 
-Status: v5.0.0 (2026-06-11) — 4-stage code lifecycle (Plan/Build/Execute/Report); 13 type specialists aligned
+Status: v5.1.0 (2026-06-21). 4-stage code lifecycle (Plan/Build/Execute/Report); 13 type specialists aligned; three-axes mental model documented.
 Owner:  jluo41
 Scope:  task-folder lifecycle (Plan/Build/Execute/Report) + per-type scaffolding,
         mirroring the /haipipe-data and /haipipe-nn pattern.
@@ -41,15 +41,23 @@ applications/        /haipipe-application-*        application/
 ```
 
 `project/` owns project-scope ops (the umbrella + inspect + organize + project/task-group scaffold).
-`task/` owns task-scope ops — the orchestrator, 13 type specialists, and 2 shared agents.
+`task/` owns the inside-execution layer — the lifecycle orchestrator, task-type
+specialists, shared agents, and the numbered task-domain families.
 
-Structure note: `1_data`, `2_nn`, `3_end`, and `4_individual` remain
-top-level task-domain families. They work with `task`, but they are not being
-moved under it. See `../STRUCTURE.md`.
+Structure note: `1_data`, `2_nn`, `3_end`, and `4_individual` now live under
+`task/`. They keep their skill names and user-facing commands, but their folder
+home reflects that data, NN, endpoint, and individual inference are all task
+execution domains. See `../STRUCTURE.md`.
 
 
-Current State (v5.0.0)
-========================
+Current State (v6.0.0 — Phase 1 landed 2026-06-21)
+====================================================
+
+Phase 1 of the Target Architecture migration has landed: the nine
+`haipipe-task-for-xxx` specialists are now NESTED under their numbered domain
+folders (skill `name:` fields unchanged, so all `/haipipe-*` commands and
+`Skill("haipipe-task-for-xxx")` calls still resolve). Phase 2 (renaming the
+skills to domain-consistent names) is still pending.
 
 ```
 task/                                 <- task-scope skills (THIS SECTION)
@@ -83,16 +91,210 @@ task/                                 <- task-scope skills (THIS SECTION)
 |   |-- diagram/
 |       |-- 01-architecture.txt
 |
-|-- haipipe-task-for-data/              🔧 Python specialists (8)
-|-- haipipe-task-for-algo/
-|-- haipipe-task-for-fit/
-|-- haipipe-task-for-eval/
-|-- haipipe-task-for-inference/
-|-- haipipe-task-for-display/
-|-- haipipe-task-for-individual/
-|-- haipipe-task-for-agent/             (LOW QUALITY — see TODO.md)
-|
-|-- haipipe-task-for-stata/             🔧 Stata (unified — handles cms/case/data/reg internally)
+|-- 1_data/                             📊 domain 1 — data
+|   |-- haipipe-data + sub-skills          run library
+|   |-- haipipe-task-for-data/             task-author leg
+|-- 2_nn/                               🧠 domain 2 — nn (algorithm design + smoke)
+|   |-- haipipe-nn + sub-skills            run library (shared with fit)
+|   |-- haipipe-task-for-algo/             task-author leg
+|-- 3_end/                              🚀 domain 3 — endpoint
+|   |-- haipipe-end + sub-skills           run library
+|   |-- haipipe-task-for-endpoint/         task-author leg
+|-- 4_individual/                       🧍 domain 4 — individual
+|   |-- haipipe-individual + sub-skills    run library
+|   |-- haipipe-task-for-individual/       task-author leg
+|-- 5_fit/                              🏋️ domain 5 — fit (train); shares 2_nn's /haipipe-nn lib
+|   |-- haipipe-task-for-fit/               task-author leg
+|-- 6_eval/                             📈 domain 6 — eval / statistical analysis
+|   |-- haipipe-task-for-eval/              task-author leg
+|-- 7_display/                          🖼️ domain 7 — display (figures / tables)
+|   |-- haipipe-task-for-display/           task-author leg
+|-- 8_stata/                            🔩 domain 8 — stata (engine; cms/case/data/reg internal)
+|   |-- haipipe-task-for-stata/             task-author leg (unified)
+|-- 9_agent/                            🤖 domain 9 — agent (LLM-driven compute)
+|   |-- haipipe-task-for-agent/             task-author leg
+```
+
+(Domain ids are append-only; see "Target Architecture" for the rule. ids 1-4 are
+the pre-existing folders, left unchanged; 5-9 were appended.)
+
+
+Three Orthogonal Axes (read this first)
+=======================================
+
+The folder tree above mixes three DIFFERENT organizing axes. They look alike
+(each is "a list of things under task/") but they are not the same kind of
+thing, which is exactly why some carry numbers and some do not.
+
+```
+Axis              What it is                      Ordered?    Numbered?
+----------------  ------------------------------  ----------  ----------------------------
+A. Lifecycle      process stages a folder runs    yes (time)  yes: 1 Plan ... 4 Report
+   Plan/Build/Execute/Report
+B. Task domains   pipeline layers (the engine)    yes (DAG)   yes: 1_data 2_nn 3_end 4_individual
+   1_data / 2_nn / 3_end / 4_individual
+C. Type spokes    classification of a folder      no (enum)   no: for-data, for-eval, ...
+   haipipe-task-for-xxx
+```
+
+A and B carry numbers because their position carries meaning:
+
+  - A is temporal. You cannot Build before you Plan; the order is the process.
+  - B is a data-flow DAG. 1_data produces AIData, fed to 2_nn for training, fed
+    to 3_end for deployment, used by 4_individual for inference. The number
+    encodes the dependency order.
+
+C is NOT sequenced. It is a type ENUM. The hub detects ONE type per task-folder
+and routes to that single spoke. A project may run only display tasks, or only
+eval tasks, in any order; there is no canonical "for-data then for-algo then
+..." pipeline. Numbering C would:
+
+  1. imply a false ordering that no project actually follows;
+  2. break whenever a new type is added (the whole set re-numbers);
+  3. collide with the 1/2/3/4 already used by axes A and B, putting three
+     competing number lines inside one folder.
+
+Rule of thumb: number a thing only when its position carries meaning. Lifecycle
+stages and pipeline layers have meaningful positions; task types do not.
+
+
+B and C overlap by domain, not by identity
+-------------------------------------------
+
+The type spokes (C) pair with the task domains (B) by subject matter, but they
+are two LAYERS, not duplicates:
+
+```
+domain (B): pipeline engine          type spoke (C): how to author a task-folder
+1_data       /haipipe-data       <->  for-data
+2_nn         /haipipe-nn         <->  for-algo, for-fit
+3_end        /haipipe-end        <->  for-endpoint, for-eval
+4_individual /haipipe-individual <->  for-individual
+(no domain)                      <->  for-display, for-agent, for-stata
+```
+
+  - A domain (B) is the pipeline primitive itself: build a SourceSet, train a
+    model, deploy an endpoint. It is a standalone, user-facing umbrella skill.
+  - A type spoke (C) is the lifecycle hub's knowledge of how to scaffold, build,
+    and lint a TASK-FOLDER that exercises that primitive (scaffold.md,
+    config-seed.yaml, workflow-plan-sample.yaml, type constraints).
+
+So C is keyed by the same subjects as B, but it lives on the authoring side and
+is consumed by the hub at the Plan / Build / Scaffold steps.
+
+NOTE (2026-06-21): the analysis above is kept because it is the reasoning that
+LED to the decision below. The decision went the other way. Rather than keep C
+as a separate unnumbered enum, we DISSOLVE C into B and give every task kind a
+numbered domain. See "Target Architecture" next. The "Backbone + Add-on" /
+hub-spoke / for-xxx sections that follow describe the CURRENT on-disk state and
+are superseded by the target once migration lands.
+
+
+Target Architecture: B as the Unified Domain Family (v6.0.0, PLANNED)
+=====================================================================
+
+Decided 2026-06-21. SUPERSEDES the hub-and-spoke "for-xxx type spoke" model
+once migration lands. Until then the for-xxx folders are still what is on disk.
+
+Decision: dissolve axis C (the `haipipe-task-for-xxx` spokes) into axis B. B
+becomes the single, flat, NUMBERED family of task DOMAINS. There is no parallel
+type-spoke family. Each domain owns both legs:
+
+  - run / library leg   the pipeline capability (e.g. /haipipe-data)
+  - task-author leg     how to scaffold/build/lint a task-folder of this kind
+                        (the content that used to live in haipipe-task-for-xxx)
+
+Numbering rule (APPEND-ONLY)
+----------------------------
+This family will keep growing, so the numbering is append-only and NEVER
+renumbered.
+
+  - id = creation order, PERMANENT. A domain keeps its number forever. A new
+    domain takes the next free integer and is appended; nothing is renumbered,
+    so no existing folder or reference ever moves because of a new domain.
+  - id does NOT encode flow position. The pipeline-flow order is a SEPARATE
+    documented attribute (the "flow group" below), carried in prose, not in the
+    number. ids 1-4 are the pre-existing folders, left unchanged; 5+ are
+    appended in the order we add them.
+
+Founding assignment keeps existing folders fixed (data=1, nn=2, endpoint=3,
+individual=4) and appends the rest (fit=5, eval=6, display=7, stata=8, agent=9).
+The alternative (a one-time renumber so ids match flow order) was rejected: it
+buys a tidy base once but contradicts the append-only rule the day we add the
+next domain.
+
+Coverage rule (relaxed, per 2026-06-21)
+---------------------------------------
+Domains do NOT need clean, non-overlapping boundaries. Overlap is fine. The only
+requirement is COVERAGE: every task type must fall into exactly one domain. When
+a task could fit two domains, pick one and move on. Do not redesign the taxonomy
+to remove an overlap.
+
+The nine domains
+----------------
+Listed in id order (= creation order). The "flow" column is the SEPARATE
+pipeline-order attribute, not the id.
+```
+id  domain      flow         role                         output                     run library / engine
+--  ----------  -----------  ---------------------------  -------------------------  -------------------------
+1   data        flow         build data                   AIData -> store 1-4        /haipipe-data · python
+2   nn          flow         algorithm design + smoke     runs + 1 loss (no durable) /haipipe-nn (algo side) · python
+3   endpoint    flow         package + deploy             endpoint -> store 6        /haipipe-end · python
+4   individual  flow         per-subject inference        inference                  /haipipe-individual · python
+5   fit         flow         real train + sweep           checkpoint -> store 5      /haipipe-nn (tuner/instance) · python
+6   eval        flow         eval / statistical analysis  metrics / tables           (new; none yet) · python
+7   display     flow         figures / tables             figure / table             (none; reads results/) · python
+8   stata       cross-cut    full Stata-engine work       by internal stage          standalone (no python lib) · stata
+9   agent       cross-cut    LLM-driven compute           results / metrics          /claude-api · LLM
+```
+
+Pipeline-flow order (independent of id):
+  data(1) -> nn(2) -> fit(5) -> endpoint(3) -> eval(6) -> display(7) -> individual(4)
+  cross-cutting (no flow position): stata(8), agent(9)
+
+nn (2) and fit (5) are the ONLY two domains sharing one underlying library
+(/haipipe-nn): nn draws on the algo side, fit on the tuner+instance side. This
+is the concrete meaning of "fit belongs to nn." agent (9) is scoped to LLM
+compute that produces task evidence (results/metrics); audience-facing delivery
+stays in the application family, not here.
+
+for-xxx -> domain mapping
+-------------------------
+Each `haipipe-task-for-xxx` becomes the task-author leg of one domain:
+```
+for-data       -> 1 data          for-display    -> 7 display
+for-algo       -> 2 nn            for-stata      -> 8 stata
+for-endpoint   -> 3 endpoint      for-agent      -> 9 agent
+for-individual -> 4 individual
+for-fit        -> 5 fit
+for-eval       -> 6 eval
+```
+
+Migration plan
+--------------
+Blast radius (measured 2026-06-21): ~40 files reference the old for-xxx names.
+MOST are skill-NAME references (invocations) that survive a folder move because
+skill identity is the `name:` field, not the folder path (see ../STRUCTURE.md).
+Only folder-PATH citations need editing. for-stata's 19 hits are mostly internal
+self-references that move with the folder.
+
+```
+Phase 1 (low-risk: folders only, skill names UNCHANGED, append-only)
+  1. Existing run-library folders are LEFT UNCHANGED: 1_data, 2_nn, 3_end,
+     4_individual keep their numbers (they are domains 1-4). No renumber.
+  2. Append 5 NEW domain folders: 5_fit, 6_eval, 7_display, 8_stata, 9_agent.
+  3. git mv each haipipe-task-for-xxx into its domain folder (NO rename):
+     for-data->1_data, for-algo->2_nn, for-endpoint->3_end,
+     for-individual->4_individual, for-fit->5_fit, for-eval->6_eval,
+     for-display->7_display, for-stata->8_stata, for-agent->9_agent.
+  4. Fix folder-PATH references only (DESIGN, STRUCTURE, orchestrator prose,
+     agents, diagram). /haipipe-* command + Skill("haipipe-task-for-xxx") calls
+     keep working untouched.
+  5. Update the orchestrator to think in "domain id" terms for routing.
+
+Phase 2 (optional, later: rename skills to domain-consistent names)
+  5. Rename for-xxx skills (e.g. haipipe-task-for-data -> a domain name) with a
+     full reference sweep. Deferred; not required for the unified mental model.
 ```
 
 
@@ -433,3 +635,6 @@ Decision Log
 2026-06-11  Added: "Downstream Consumer Contract (probe)" section — makes the metrics.json / runtime.yaml / configs contract visible from C's side.
 2026-06-11  Proposed: Stage 5 (Insight) after Report, filing D_data via /haipipe-insight-data.
 2026-06-19  Superseded: Stage 5 removed from task. Sandwich model adopted: probe open dispatches discoveries/tasks, discover and task do their own work, probe post resumes and judges the claim. Insights deferred while focusing on Narrative/Probe/Discovery/Task.
+2026-06-21  Documented: three orthogonal axes (lifecycle / task domains / type spokes). Type spokes stay an unnumbered enum by design; only lifecycle stages and pipeline domains are numbered, because only they are sequenced.
+2026-06-21  Approved (supersedes the line above): dissolve C (for-xxx spokes) into B. B becomes a single flat NUMBERED domain family of 9 domains; every task kind gets a stable domain id. Coverage over clean boundaries: overlap is fine, every task type must fall into exactly one domain. nn and fit split but share /haipipe-nn. stata and agent are their own domains. Migration staged: Phase 1 folder move with skill names unchanged, Phase 2 optional rename. See "Target Architecture" section.
+2026-06-21  Refined (per "we will keep adding domains"): numbering is APPEND-ONLY, never renumbered. id = creation order, permanent; pipeline-flow order is a separate documented attribute, not the id. Founding assignment keeps existing folders fixed (data=1, nn=2, endpoint=3, individual=4) and appends fit=5, eval=6, display=7, stata=8, agent=9. New domains take the next integer; Phase 1 touches zero existing folders. Rejected the one-time tidy renumber as inconsistent with append-only.

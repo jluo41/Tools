@@ -74,7 +74,7 @@ for (let attempt = 0; attempt <= maxRetries; attempt++) {
     `Create IPO-compliant workflow plan files:\n` +
     `1. Check if workflow/plan.yaml already exists — if so, READ it and IMPROVE it (do not start from scratch)\n` +
     `2. Read the main .py script to understand phases\n` +
-    `3. Read type-specific sample: haipipe-task-for-<type>/ref/workflow-plan-sample.yaml\n` +
+    `3. Read type-specific sample (glob **/haipipe-task-for-<type>/ref/workflow-plan-sample.yaml — now nested under its numbered domain folder)\n` +
     `4. Read task-level template: haipipe-task/ref/workflow-template.yaml\n` +
     `5. Generate/update workflow/plan-script-<name>.yaml (script-level, type-specific phases)\n` +
     `6. Generate/update workflow/plan.yaml (task-level: Run/Gate1/Gate2)\n` +
@@ -175,7 +175,7 @@ for (let attempt = 0; attempt <= maxRetries; attempt++) {
         `- Ensure Intent docstring per ref/intent-docstring-template.py\n`
     ) +
     `\nRead: haipipe-task/ref/authoring-conventions.md\n` +
-    `Read: haipipe-task-for-${detectedType}/SKILL.md` + templateRule + retryNote,
+    `Read (glob **/haipipe-task-for-${detectedType}/SKILL.md — nested under its numbered domain folder)` + templateRule + retryNote,
     { label: `build:create:${attempt}`, phase: 'Build', agentType: 'haipipe-task-creator-agent', schema: CREATOR_RESULT }
   )
 
