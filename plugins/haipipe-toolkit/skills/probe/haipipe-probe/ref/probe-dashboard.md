@@ -66,29 +66,67 @@ applications/
 
 ## Render Skeleton
 
+Same shape as the paper dashboard panel (header + one-line story + a lifecycle
+progress bar), so paper and probe read consistently. probe's "story" is the claim.
+
+### Single probe (Console / `/haipipe-probe <probe>`)
+
 ```text
-haipipe-probe - <PROJECT> - <DATE>
+📊 <P.id>  ·  <slug>   [⚠ drift]
 
-ACTIVE CONSOLE
-  active_probe: <P.id or none>
-  mode: copilot
-  stage: <Plan|Gather|Read|Judge|Return|closed>
+  Claim: <one plain sentence: what this probe claims + scope/caveat>
 
-PROBES
-  <P.id> <slug>
-    claim: <one-line claim target or hypothesis>
-    stage: Plan <g> | Gather <g> | Read <g> | Judge <g> | Return <g>
-    disk:  <missing refs or OK>
-    next:  <one command>
-
-UNLINKED EVIDENCE
-  task folders not linked to any active probe: <list or none>
-  discovery folders not linked to any active probe: <list or none>
+  进度  Plan ─ Gather ─ Read ─ Judge ─ Return
+         <g>    <g>      <g>    <g>      <g>
+                ▶️ 这里(<one-clause why this is the frontier>)
 ```
 
+### Project level (no-arg `/haipipe-probe`)
+
+Header, then one compact panel per probe, then un-probed evidence (per the
+"Un-probed evidence" rules above; nag only GAPs, not STANDALONE).
+
+```text
+📊 haipipe-probe  ·  <PROJECT>  ·  <DATE>
+
+  <P.id>  <slug>
+    Claim: <one line>
+    进度  Plan <g> ─ Gather <g> ─ Read <g> ─ Judge <g> ─ Return <g>   [⚠drift]
+          ▶️ 这里(<why>)
+
+  Un-probed evidence:
+    GAP (claim-bearing, no probe): <list or none>   -> /haipipe-probe file ...
+    standalone (prep/display, fine): <count or short list>
+```
+
+Glyphs (derive-from-disk; first non-✅ rung = frontier):
+
+```text
+✅ done       the step's disk predicate passes
+▶️ frontier   the first failing step; annotate "← 这里"
+⬜ todo       not reached
+⚠ drift      stored verdict claims progress but the disk predicate fails
+```
+
+Worked example (P.0605, derived from disk):
+
+```text
+📊 P.0605  ·  discretion-gradient   ⚠ drift
+
+  Claim: 亲和度↑ 阿片处方强度,随临床自由裁量下降而衰减;腰背痛(高裁量)强,
+         癌痛(指南锁死)近零。(待真实数据)
+
+  进度  Plan ─ Gather ─ Read ─ Judge ─ Return
+         ✅    ▶️       ⬜     ⬜      ⬜
+               ← 这里(5/5 证据路径断:R01_Regression → R01_Reg 改名)
+```
+
+Frontier = Gather: Plan is ✅ (probe.yaml has claim + evidence_plan), but the 5
+arm paths do not resolve on disk, so Gather fails first. ⚠ drift because the
+stored verdict says mechanics=confirmed while those paths are gone.
+
 Keep the render concise. The dashboard is an orientation panel, not a report.
-Detailed evidence belongs in `evidence.md`; claim verdicts belong in
-`verdict.md`.
+Detailed evidence belongs in `evidence.md`; claim verdicts belong in `verdict.md`.
 
 ## Writes
 
