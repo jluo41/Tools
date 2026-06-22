@@ -57,7 +57,9 @@ Phase 1 of the Target Architecture migration has landed: the nine
 `haipipe-task-for-xxx` specialists are now NESTED under their numbered domain
 folders (skill `name:` fields unchanged, so all `/haipipe-*` commands and
 `Skill("haipipe-task-for-xxx")` calls still resolve). Phase 2 (renaming the
-skills to domain-consistent names) is still pending.
+skills) is REJECTED by decision (2026-06-21): the names stay
+`haipipe-task-for-xxx` ON PURPOSE, because the `haipipe-task-` prefix keeps each
+specialist clearly part of the haipipe-task family. The migration is COMPLETE.
 
 ```
 task/                                 <- task-scope skills (THIS SECTION)
@@ -292,9 +294,11 @@ Phase 1 (low-risk: folders only, skill names UNCHANGED, append-only)
      keep working untouched.
   5. Update the orchestrator to think in "domain id" terms for routing.
 
-Phase 2 (optional, later: rename skills to domain-consistent names)
-  5. Rename for-xxx skills (e.g. haipipe-task-for-data -> a domain name) with a
-     full reference sweep. Deferred; not required for the unified mental model.
+Phase 2 (REJECTED 2026-06-21: names stay haipipe-task-for-xxx)
+  Renaming was considered and dropped. The skills KEEP the haipipe-task-for-xxx
+  names on purpose: the haipipe-task- prefix signals membership in the
+  haipipe-task family, and a rename buys zero functional gain for a risky atomic
+  sweep of ~40 references. The migration ends at Phase 1.
 ```
 
 
@@ -637,4 +641,5 @@ Decision Log
 2026-06-19  Superseded: Stage 5 removed from task. Sandwich model adopted: probe open dispatches discoveries/tasks, discover and task do their own work, probe post resumes and judges the claim. Insights deferred while focusing on Narrative/Probe/Discovery/Task.
 2026-06-21  Documented: three orthogonal axes (lifecycle / task domains / type spokes). Type spokes stay an unnumbered enum by design; only lifecycle stages and pipeline domains are numbered, because only they are sequenced.
 2026-06-21  Approved (supersedes the line above): dissolve C (for-xxx spokes) into B. B becomes a single flat NUMBERED domain family of 9 domains; every task kind gets a stable domain id. Coverage over clean boundaries: overlap is fine, every task type must fall into exactly one domain. nn and fit split but share /haipipe-nn. stata and agent are their own domains. Migration staged: Phase 1 folder move with skill names unchanged, Phase 2 optional rename. See "Target Architecture" section.
+2026-06-21  Decided: Phase 2 (rename for-xxx skills) REJECTED. Names stay haipipe-task-for-xxx by design; the haipipe-task- prefix keeps each specialist clearly inside the haipipe-task family. Migration is complete at Phase 1 (folder nesting). No skill rename.
 2026-06-21  Refined (per "we will keep adding domains"): numbering is APPEND-ONLY, never renumbered. id = creation order, permanent; pipeline-flow order is a separate documented attribute, not the id. Founding assignment keeps existing folders fixed (data=1, nn=2, endpoint=3, individual=4) and appends fit=5, eval=6, display=7, stata=8, agent=9. New domains take the next integer; Phase 1 touches zero existing folders. Rejected the one-time tidy renumber as inconsistent with append-only.
