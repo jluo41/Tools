@@ -1,8 +1,8 @@
 ---
 status: fixed
 created: 2026-06-22
-context: lifecycle tex generation. Convention source: 3-write-edit/haipipe-paper-edit-content + 3-write-edit/_shared/sentence-format.md (+ paragraph-indexing.md). Generators to fix: haipipe-paper-folder / scripts/init_paper_layout.py (lifecycle_stage_tex + per-stage *_tex) and the stage skills haipipe-paper-structure-{seed,pitch,claims,narrative,minimap}.
-fixed_in: "2026-06-22 revision pass (init_paper_layout.py prose generators + haipipe-paper-structure-pitch template)"
+context: lifecycle tex generation. Convention source: 3-write-edit/haipipe-paper-edit-content + 3-write-edit/_shared/sentence-format.md (+ paragraph-indexing.md). Generators to fix: haipipe-paper-folder / scripts/init_paper_layout.py (lifecycle_stage_tex + per-stage *_tex) and the stage skills haipipe-paper-{seed,pitch,claims,narrative,minimap}.
+fixed_in: "2026-06-22 revision pass (init_paper_layout.py prose generators + haipipe-paper-pitch template)"
 ---
 
 Reporter (JL): lifecycle 的 paper 里,生成这个 tex 的时候,要符合

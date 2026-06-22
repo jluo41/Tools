@@ -63,7 +63,7 @@ Present findings as a table, severity-ranked (✗ before ⚠), each row with its
 |---------|-----------|
 | Numbering gap, orphan, wrapper prose, stray asset | `/haipipe-paper-build-restructure --repair` |
 | Missing folder/driver/compile script (skeleton incomplete) | `/haipipe-paper-build-scaffold` (or restructure if content exists) |
-| Broken `\includegraphics` (figure was never produced) | `1-lifecycle` figure skills (`haipipe-paper-structure-figure`, `haipipe-paper-structure-figure-spec`) |
+| Broken `\includegraphics` (figure was never produced) | `1-lifecycle` figure skills (`haipipe-paper-figure`, `haipipe-paper-figure-spec`) |
 | Broken `\cite` / bib content problems | `components/citation/` (out of scope here; only the `.bib` file's existence is checked) |
 | Prose problems noticed in passing | `3-write-edit` (mention, do not expand) |
 

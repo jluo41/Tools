@@ -87,7 +87,7 @@ haipipe-paper-rebuttal    Submission rebuttal pipeline (venue-agnostic)
 haipipe-paper-enter       Status-aware paper session loader
                           (read STATUS.md + lifecycle/rounds/displays/sections/git,
                            report current layer, maturity, open needs, open gates, next commands)
-haipipe-paper-structure-bootstrap
+haipipe-paper-bootstrap
                           Paper folder bootstrap, including prospectus mode
                           (STATUS.md + sparse 0-lifecycle, no manuscript obligations)
                           and manuscript mode (full 0-/1-prefix tex scaffold)
@@ -198,9 +198,9 @@ Step 4: Dispatch:
     If target = enter:
       Skill("haipipe-paper-enter", args="<remaining_args or .>")
     Else if target = structure-bootstrap:
-      Skill("haipipe-paper-structure-bootstrap", args="<remaining_args>")
+      Skill("haipipe-paper-bootstrap", args="<remaining_args>")
     Else if target = "structure <verb>":
-      Skill("haipipe-paper-structure", args="<verb> <remaining_args>")
+      Skill("haipipe-paper-lifecycle", args="<verb> <remaining_args>")
     Else if target = round:
       Skill("haipipe-paper-round", args="<remaining_args>")
     Else if target = feedback:
@@ -297,7 +297,7 @@ status:    ok | blocked | failed
 summary:   2-3 sentences on what the specialist did
 artifacts: [paths created, read, or modified]
 next:      suggested next command (often a lifecycle stage skill like
-           /haipipe-paper-structure-plan, /haipipe-paper-structure-figure, /haipipe-paper-edit-write, or a re-invocation
+           /haipipe-paper-minimap, /haipipe-paper-figure, /haipipe-paper-edit-write, or a re-invocation
            of /haipipe-paper for a different phase)
 ```
 
@@ -328,7 +328,7 @@ closed evidence needs reusable meaning/caveat   -> /haipipe-insight <artifact>
 wording/section placement needs paper work      -> paper lifecycle stage/edit skill
 ```
 
-The paper backfills resolved evidence into `2-claims`, `4-figures-tables`,
+The paper backfills resolved evidence into `2-claims`, `4-display`,
 `5-minimap`, sections, or round logs. Evidence workers do not own the paper
 story.
 
@@ -342,10 +342,11 @@ stage-to-procedure map is in `ref/lifecycle-map.md`. In brief:
 
 ```
 0-enter/        haipipe-paper-enter (Paper Console)
-1-lifecycle/    haipipe-paper-structure (orchestrator) + one skill per stage:
-                -structure-{seed,pitch,claims,narrative,display,minimap}
-                helpers: -figure-planner/-figure/-figure-spec/-illustration*,
-                -architecture/-plan (feed minimap), -diagram, -incubator
+1-lifecycle/    haipipe-paper-lifecycle (orchestrator) + one skill per stage:
+                -{seed,pitch,claims,narrative,display,minimap}
+                helpers: -figure/-figure-spec/-illustration*
+                (architecture blueprint + plan outline are now folded into
+                 -minimap, figure-planner into -display; see their ref/)
 2-rounds/       haipipe-paper-round (enter/new/triage/apply/close)
 3-write-edit/   haipipe-paper-edit (orchestrator) + write* + edit topic subs +
                 the self-review audit cluster (-edit-claim-audit, -edit-reviewer,
@@ -379,7 +380,7 @@ layout:
 │   ├── 1-pitch/1-pitch.tex
 │   ├── 2-claims/2-claims.tex
 │   ├── 3-narrative/3-narrative.tex
-│   ├── 4-figures-tables/4-figures-tables.tex
+│   ├── 4-display/4-display.tex
 │   └── 5-minimap/5-minimap.tex
 ├── 0-sections/                             manuscript prose .tex files
 ├── 0-displays/                             display units, one folder per figure/table family
@@ -413,7 +414,7 @@ Composing with Other Workflows
 /run-probe       → experiment results
 /auto-review-loop     → AUTO_REVIEW.md
 /result-to-claim      → CLAIMS_FROM_RESULTS.md
-/haipipe-paper-structure-narrative     → 0-lifecycle/3-narrative/3-narrative.tex
+/haipipe-paper-narrative     → 0-lifecycle/3-narrative/3-narrative.tex
         │
         ▼
 /haipipe-paper        ← you are here (router)

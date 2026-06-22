@@ -20,7 +20,7 @@ When stored status and disk disagree, disk wins and the gap is flagged DRIFT.
 The dashboard uses the paper lifecycle spine:
 
 ```text
-0-seed -> 1-pitch -> 2-claims -> 3-narrative -> 4-figures-tables -> 5-minimap
+0-seed -> 1-pitch -> 2-claims -> 3-narrative -> 4-display -> 5-minimap
 -> write/edit -> review
 ```
 
@@ -32,7 +32,7 @@ The frontier is the first stage whose disk predicate fails.
 | `1-pitch` | `0-lifecycle/1-pitch/1-pitch.tex` has a one-line pitch | `/haipipe-paper pitch` |
 | `2-claims` | `0-lifecycle/2-claims/2-claims.tex` ledger non-empty, each row has a status (anchor `planned` still counts as a status; unmaterialized evidence is an open need, not a stage fail) | `/haipipe-paper claims` |
 | `3-narrative` | `0-lifecycle/3-narrative/3-narrative.tex` has an arc | `/haipipe-paper narrative` |
-| `4-figures-tables` | `4-figures-tables.tex` maps claim -> display and display units exist | `/haipipe-paper figures` |
+| `4-display` | `4-display.tex` maps claim -> display and display units exist | `/haipipe-paper figures` |
 | `5-minimap` | `5-minimap.tex` maps paragraph jobs + evidence anchors | `/haipipe-paper minimap` |
 | `write/edit` | `0-sections/*.tex` exist and `0-*.tex` compiles to PDF | `/haipipe-paper write` |
 | `review` | audits pass and venue checks pass | `/haipipe-paper review` |
@@ -56,7 +56,7 @@ For each paper:
 2. For each stage, test its disk predicate above.
 3. Set current_layer to the first failing stage (the frontier).
 4. If STATUS.md current_layer is ahead of the disk frontier, flag DRIFT.
-5. Surface open needs from 2-claims GAP rows, 4-figures-tables missing units,
+5. Surface open needs from 2-claims GAP rows, 4-display missing units,
    5-minimap empty slots, section TODOs, and 1-rounds/<round>/todo.md.
 ```
 
@@ -101,7 +101,7 @@ Worked example (MedJournal, derived from disk on 2026-06-22):
                                           ← 这里(0-displays 只有 display00,01-04 没建)
 ```
 
-Frontier = figures: `4-figures-tables.tex` names Display 01-04 but `0-displays/`
+Frontier = figures: `4-display.tex` names Display 01-04 but `0-displays/`
 has only display00. minimap shows ⬜ because its paragraph anchors point at those
 unbuilt displays; write shows (草稿) because `0-sections/*.tex` have rough prose.
 The Story line is the compressed 1-pitch one-liner; if the pitch is only a flat
@@ -134,7 +134,7 @@ Maturity is separate from the frontier and read from artifacts, not assumed:
 prospectus            seed/pitch only
 scaffold              lifecycle + sections + compile script
 claim-ledger          2-claims has explicit claims
-display-map           4-figures-tables maps claim -> display
+display-map           4-display maps claim -> display
 section-map           5-minimap maps paragraph jobs
 draft                 sections compile with prose
 submission-candidate  audits/checks mostly pass

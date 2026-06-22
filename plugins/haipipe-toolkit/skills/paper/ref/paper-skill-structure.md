@@ -21,10 +21,12 @@ paper/
 │   ├── delivery-need.md        paper <-> probe/evidence interface
 │   └── paper-skill-structure.md
 ├── 0-enter/             haipipe-paper-enter (Console)
-├── 1-lifecycle/         one skill per stage + helpers
-│     structure-{seed,pitch,claims,narrative,display,minimap}
-│     + figure-planner/figure/figure-spec/illustration/illustration-image2
-│     + architecture/plan/diagram/incubator + structure (orchestrator)
+├── 1-lifecycle/         one skill per stage + display renderers
+│     haipipe-paper-{seed,pitch,claims,narrative,display,minimap}
+│     + figure/figure-spec/illustration/illustration-image2 (display renderers)
+│     + haipipe-paper-lifecycle (orchestrator)
+│     (architecture+plan folded into minimap/ref; figure-planner into
+│      display/ref; diagram moved to 3-write-edit; incubator retired)
 ├── 2-rounds/            haipipe-paper-round (enter/new/triage/apply/close)
 ├── 3-write-edit/        edit family + write* + review cluster + sections/ playbooks
 │     review cluster: edit-{claim-audit,reviewer,proof-checker,submission-audit,
@@ -42,12 +44,12 @@ Lifecycle stages map 1:1 to skills (full table in `lifecycle-map.md`):
 
 ```text
 enter             -> 0-enter/haipipe-paper-enter
-0-seed            -> 1-lifecycle/haipipe-paper-structure-seed
-1-pitch           -> 1-lifecycle/haipipe-paper-structure-pitch
-2-claims          -> 1-lifecycle/haipipe-paper-structure-claims
-3-narrative       -> 1-lifecycle/haipipe-paper-structure-narrative
-4-figures-tables  -> 1-lifecycle/haipipe-paper-structure-display (+ figure*/diagram)
-5-minimap         -> 1-lifecycle/haipipe-paper-structure-minimap (+ architecture/plan)
+0-seed            -> 1-lifecycle/haipipe-paper-seed
+1-pitch           -> 1-lifecycle/haipipe-paper-pitch
+2-claims          -> 1-lifecycle/haipipe-paper-claims
+3-narrative       -> 1-lifecycle/haipipe-paper-narrative
+4-display         -> 1-lifecycle/haipipe-paper-display (+ figure/figure-spec/illustration renderers; figure-logic ref)
+5-minimap         -> 1-lifecycle/haipipe-paper-minimap (folds in architecture-blueprint + plan-outline refs)
 write/edit        -> 3-write-edit/*
 review            -> 3-write-edit/ (the audit cluster)
 round             -> 2-rounds/haipipe-paper-round
@@ -78,7 +80,7 @@ venue (conference/journal/is)
 Every paper-aware response should report both:
 
 ```text
-current_layer: 0-seed | 1-pitch | 2-claims | 3-narrative | 4-figures-tables | 5-minimap | sections/edit/build
+current_layer: 0-seed | 1-pitch | 2-claims | 3-narrative | 4-display | 5-minimap | sections/edit/build
 maturity: prospectus | scaffold | claim-ledger | display-map | section-map | draft | submission-candidate | submitted | revision | accepted/published
 ```
 

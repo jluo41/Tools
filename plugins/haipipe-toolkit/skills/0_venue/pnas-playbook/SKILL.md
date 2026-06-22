@@ -126,10 +126,10 @@ PNAS historically had three tracks (Direct, Contributed, Communicated). In pract
 
 After this playbook settles venue fit, classification, article type, and Significance Statement framing, hand off to:
 
-- `haipipe-paper-structure-bootstrap` -- if the project is new or needs a source-of-truth refresh
+- `haipipe-paper-bootstrap` -- if the project is new or needs a source-of-truth refresh
 - `haipipe-paper-edit-optimizer` -- if the paper's claim structure, evidence chain, or terminology needs revision under PNAS framing
 - `haipipe-paper-edit-write-scientific` -- for drafting or section-level rewriting with PNAS classification in mind
-- `haipipe-paper-structure-figure-planner` -- PNAS allows ~6 main figures; plan panel roles against that budget
+- `haipipe-paper-display` -- PNAS allows ~6 main figures; plan panel roles against that budget (figure-inventory planning folded in; see its `ref/figure-logic.md`)
 - `citation-verifier` -- bibliography hygiene
 - `haipipe-paper-edit-submission-audit` -- final pre-submission gate; confirm this playbook's preflight items are satisfied
 

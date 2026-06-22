@@ -54,13 +54,13 @@ marker convention.
 Required Inputs
 ---------------
 
-1. **narrative-report**  — `NARRATIVE_REPORT.md` (from `1-lifecycle/haipipe-paper-structure-narrative`)
-2. **paper plan**         — `PAPER_PLAN.md` / `PAPER_ARCHITECTURE.md` (from `2-plan/`)
+1. **narrative-report**  — `NARRATIVE_REPORT.md` (from `1-lifecycle/haipipe-paper-narrative`)
+2. **paper plan**         — `PAPER_PLAN.md` / minimap (from `1-lifecycle/haipipe-paper-minimap`)
 3. **venue**              — `iclr | neurips | icml | nature | pnas | misq | isr | …`
 
 If any are missing, **pause and route back**:
-- no narrative → `Skill("haipipe-paper-structure-narrative")`
-- no plan      → `Skill("haipipe-paper-structure-plan")` or `Skill("haipipe-paper-structure-architecture")`
+- no narrative → `Skill("haipipe-paper-narrative")`
+- no plan      → `Skill("haipipe-paper-minimap")` (plan outline + architecture blueprint folded in; see its ref/)
 - no venue     → `AskUserQuestion`
 
 Constants
@@ -278,7 +278,7 @@ doesn't have to undo them:
 Workflow-specific additional rules:
 
 8. **Never skip the plan.** If the plan slot for a section is empty,
-   pause and route to `Skill("haipipe-paper-structure-plan")` for that section only.
+   pause and route to `Skill("haipipe-paper-minimap")` for that section only.
 9. **Paragraph gate is hard.** Even in `--resume`, every paragraph
    re-prompts unless `--auto-accept` is explicitly passed.
 10. **No silent overwrite.** Existing files in `OUT_DIR/` halt the run.

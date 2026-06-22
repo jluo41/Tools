@@ -57,7 +57,7 @@ Every `todo.md` item should point to one target:
 | Todo type | Target |
 |---|---|
 | claim unsupported / too strong | `0-lifecycle/2-claims` or probe |
-| display missing / stale | `0-lifecycle/4-figures-tables` or display task |
+| display missing / stale | `0-lifecycle/4-display` or display task |
 | paragraph placement unclear | `0-lifecycle/5-minimap` |
 | wording / flow / style | `0-sections/*.tex` or edit skill |
 | citation needed / wrong citation | discover or citation component |

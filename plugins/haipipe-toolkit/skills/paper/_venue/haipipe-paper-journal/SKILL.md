@@ -29,12 +29,12 @@ When writing follows experiments or analysis performed across multiple sessions,
 ## Routing Map
 
 Use:
-- `haipipe-paper-structure-bootstrap` when a project is new, messy, or missing a source of truth
+- `haipipe-paper-bootstrap` when a project is new, messy, or missing a source of truth
 - `nature-portfolio-playbook` when the target is `Nature`, `Nature Methods`, `Nature Biotechnology`, or the venue fit among those journals is still unclear
 - `haipipe-paper-edit-write-scientific` when drafting or rewriting sections in prose
 - `haipipe-paper-edit-optimizer` when the paper's claim structure, evidence chain, terminology, or prose need revision
 - `haipipe-paper-edit-results-revision` when the Results section is scientifically stable but the subsection flow, paragraph openings, or argument progression still feel jumpy
-- `haipipe-paper-structure-figure-planner` when the main bottleneck is figure logic, panel roles, or legend sync
+- `haipipe-paper-display` when the main bottleneck is figure logic, panel roles, or legend sync (figure-inventory planning is folded in; see its `ref/figure-logic.md`)
 - `citation-verifier` when bibliography hygiene or source verification is the bottleneck
 - `haipipe-paper-edit-submission-audit` when the paper is near submission or resubmission and needs a preflight pass
 - `rebuttal-response` when reviewer comments exist and a response letter plus aligned manuscript edits are needed
@@ -44,11 +44,11 @@ Use:
 
 For most papers under `/data/boom/Papers`, prefer this order:
 
-1. `haipipe-paper-structure-bootstrap`
+1. `haipipe-paper-bootstrap`
 2. `nature-portfolio-playbook` when venue fit or article type is uncertain
 3. Refresh `notes/project_truth.md`, `notes/result_summary.md`, and `notes/paper_handoff.md` after any major experimental or figure update
 4. `haipipe-paper-edit-write-scientific` or `haipipe-paper-edit-optimizer`
-5. `haipipe-paper-structure-figure-planner`
+5. `haipipe-paper-display` (figure-inventory planning folded in; see its `ref/figure-logic.md`)
 6. `haipipe-paper-edit-results-revision` when Results is substantively right but narratively abrupt
 7. `citation-verifier`
 8. `haipipe-paper-edit-submission-audit`

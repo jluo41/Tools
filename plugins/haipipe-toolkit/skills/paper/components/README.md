@@ -11,12 +11,12 @@ Layout
 ```
 components/
 ├── figure/          Display assets (0-displays/Figure, /Table, /AppendixFigure, /AppendixTable)
-│   ├── haipipe-paper-structure-figure/
-│   ├── haipipe-paper-structure-figure-spec/
-│   ├── haipipe-paper-structure-figure-planner/
-│   ├── haipipe-paper-structure-illustration/
-│   ├── haipipe-paper-structure-illustration-image2/
-│   └── haipipe-paper-structure-diagram/
+│   ├── haipipe-paper-figure/
+│   ├── haipipe-paper-figure-spec/
+│   ├── haipipe-paper-illustration/
+│   ├── haipipe-paper-illustration-image2/
+│   └── haipipe-paper-edit-diagram/
+│       (figure-inventory planning folded into 1-lifecycle haipipe-paper-display/ref/figure-logic.md)
 │
 ├── citation/        Bibliography integrity (0-XXX.bib)
 │   ├── citation-audit/

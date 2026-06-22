@@ -24,8 +24,8 @@ editing rules. This doc defines the folder those files live in.
 │   │   └── 2-claims.tex                  claim ledger, support/GAP status
 │   ├── 3-narrative/
 │   │   └── 3-narrative.tex               paper-owned story arc
-│   ├── 4-figures-tables/
-│   │   └── 4-figures-tables.tex          claim -> display map
+│   ├── 4-display/
+│   │   └── 4-display.tex          claim -> display map
 │   └── 5-minimap/
 │       └── 5-minimap.tex                 paragraph jobs + display/evidence anchors
 ├── 0-sections/                           all body prose, split per the grammar below
@@ -87,12 +87,12 @@ so each stage can compile to a reviewable PDF.
 | `1-pitch` | make the one-minute argument | claims need to be made explicit |
 | `2-claims` | maintain support/GAP ledger | unsupported claim needs probe/discover/task |
 | `3-narrative` | shape this paper's story | story needs display map or claim repair |
-| `4-figures-tables` | map displays to claims | display output/source is missing or ready |
+| `4-display` | map displays to claims | display output/source is missing or ready |
 | `5-minimap` | map paragraphs to jobs, displays, evidence | ready for section writing/editing |
 
 The lifecycle is not linear. If a paragraph reveals an unsupported claim, loop
 back to `2-claims`. If a display cannot carry the claim, loop back to
-`4-figures-tables`. If coauthor discussion creates new open work, record it in
+`4-display`. If coauthor discussion creates new open work, record it in
 `1-rounds/<round>/todo.md` and route each item to the right lifecycle stage.
 
 ## Maturity ladder
@@ -105,7 +105,7 @@ current layer.
 | `prospectus` | paper-shaped possibility | seed/pitch |
 | `scaffold` | manuscript folder exists | lifecycle files, sections, compile script |
 | `claim-ledger` | claims are explicit | `2-claims` C-slots and open needs |
-| `display-map` | displays are planned | `4-figures-tables` maps claim -> display |
+| `display-map` | displays are planned | `4-display` maps claim -> display |
 | `section-map` | paragraph jobs are mapped | `5-minimap` maps paragraphs/displays |
 | `draft` | prose exists | main paper compiles with rough sections |
 | `submission-candidate` | checks mostly pass | compile, citations, displays, claims stable |
@@ -172,7 +172,7 @@ status, and placement.
   Section prose owns the lead-in and placement decision.
 - `preview.tex` compiles one display unit to `preview.pdf`; this gives each
   display its own reviewable PDF and lets the same unit be used in
-  `0-lifecycle/4-figures-tables`, `0-lifecycle/5-minimap`, and the main paper.
+  `0-lifecycle/4-display`, `0-lifecycle/5-minimap`, and the main paper.
 - Main/SI paper paths are written relative to the paper root, for example:
   `\input{0-displays/display01-main-gradient/float.tex}`.
 - Do not bake captions into figure PDFs. Assets are clean visual/table exports;

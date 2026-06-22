@@ -334,7 +334,7 @@ Draft each section according to the grant type template. Write **complete prose*
 **What this does:**
 - Writes all required sections in the agency-specific language and tone
 - Pulls content from idea-stage/IDEA_REPORT.md, FINAL_PROPOSAL.md, and literature notes
-- Uses `/haipipe-paper-structure-illustration` for figure generation (if user requests)
+- Uses `/haipipe-paper-illustration` for figure generation (if user requests)
 - Leaves `[TODO]` only for PI-specific information, `[AMOUNT]` for budget figures
 - Outputs `grant-proposal/GRANT_PROPOSAL.md`
 
@@ -357,10 +357,10 @@ Grant proposals benefit greatly from clear diagrams. Generate the following figu
 2. **実験パラダイム図 / Experimental Paradigm** — Visual schematic of each paradigm (stimulus timing, conditions, EEG recording).
 3. **年次計画 / Timeline Gantt Chart** — Year-by-year (or H1/H2) milestones with deliverables.
 
-For AI-generated publication-quality figures, invoke `/haipipe-paper-structure-illustration`:
+For AI-generated publication-quality figures, invoke `/haipipe-paper-illustration`:
 
 ```
-/haipipe-paper-structure-illustration "Overview diagram showing [aims relationship + shared resources] for grant proposal"
+/haipipe-paper-illustration "Overview diagram showing [aims relationship + shared resources] for grant proposal"
 ```
 
 For simpler diagrams (flowcharts, Gantt charts), generate clean SVG or matplotlib directly via code.
@@ -605,7 +605,7 @@ Parameters can be passed inline with `—` separator. They flow to sub-skills wh
 | `/research-lit` | 1 | Literature survey (if not already done) |
 | `/novelty-check` | 1 | Verify the gap is real |
 | `/research-review` | 2, 4 | Structural review + full draft review |
-| `/haipipe-paper-structure-illustration` | 3 | Generate proposal figures (optional) |
+| `/haipipe-paper-illustration` | 3 | Generate proposal figures (optional) |
 
 ### Funding Track (this skill's primary use case)
 
