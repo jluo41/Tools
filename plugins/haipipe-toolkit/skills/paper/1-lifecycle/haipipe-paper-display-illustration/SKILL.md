@@ -275,7 +275,7 @@ Call `mcp__codex-image2__generate_start` with:
 
 - `prompt`: the final image prompt
 - `cwd`: the paper workspace (paper root)
-- `outputPath`: into the unit's `source/`, e.g. `0-displays/displayNN-slug/source/figure_v1.png` (iterations live with the rebuild spec; the accepted one is promoted to `assets/figure.png` by finalize). No-paper fallback: `figures/ai_generated/figure_v1.png`.
+- `outputPath`: `figures/ai_generated/figure_vN.png`. NOTE: the bridge HARD-LOCKS output under `figures/ai_generated/`; it rejects any path outside it (so you cannot render straight into the unit). Iterations render here as scratch; `finalize --display-unit` then promotes the accepted one to `0-displays/displayNN-slug/assets/figure.png` and you copy it to `source/` for provenance.
 - `system`: a short instruction like `Academic paper figure. Prefer crisp English labels.`
 - `timeoutSeconds`: a bounded render timeout such as `180`
 
