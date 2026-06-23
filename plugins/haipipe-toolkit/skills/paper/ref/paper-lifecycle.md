@@ -77,7 +77,7 @@ Common routes:
 
 ```text
 claim needs verdict/robustness       -> /haipipe-probe plan from-need <need>
-claim needs outside context/citation -> /haipipe-discover <question>
+claim needs outside context/citation -> /haipipe-discovery <question>
 display needs materialized result    -> /haipipe-task-for-display <need>
 finished evidence needs reusable K/W -> /haipipe-insight <artifact>
 ```

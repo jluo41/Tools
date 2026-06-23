@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-22
 context: haipipe-paper-pitch (/haipipe-paper pitch); artifact = Paper-Personality-Opioid-MedJournal/0-lifecycle/1-pitch/1-pitch.tex
-fixed_in: ""
+fixed_in: "haipipe-paper-pitch v1.5.0"
 ---
 我觉得这个pitch 不好，你也加到feedback上去吧。不知道是哪个skill跟这个相关的。
 

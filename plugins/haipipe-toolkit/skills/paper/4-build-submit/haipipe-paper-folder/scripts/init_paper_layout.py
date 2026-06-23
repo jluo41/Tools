@@ -410,14 +410,25 @@ def status_md(name: str, venue: str) -> str:
 
         | Field | Value |
         |---|---|
-        | current_layer | 0-seed |
+        | current_layer | seed |
         | maturity | scaffold |
+        | venue | (undecided) |
         | active_round | none |
-        | next_gate | fill 0-lifecycle/0-seed and 1-pitch |
 
-        ## Open Gates
+        ## Gate Ledger
 
-        - Seed, pitch, claims, display map, and minimap need author content.
+        | Stage | Confirmed | Date | Notes |
+        |-------|-----------|------|-------|
+        | seed | no | -- | -- |
+        | pitch | no | -- | -- |
+        | claims | no | -- | -- |
+        | narrative | no | -- | -- |
+        | display | no | -- | -- |
+        | minimap | no | -- | -- |
+
+        ## Open Needs
+
+        - All lifecycle stages need author content.
     """)
 
 
@@ -442,8 +453,11 @@ def lifecycle_stage_tex(stage: str, title: str, body: str) -> str:
     return textwrap.dedent(f"""\
         \\documentclass{{article}}
         \\usepackage[margin=1in]{{geometry}}
+        \\usepackage{{parskip}}
         \\usepackage{{booktabs}}
         \\usepackage{{hyperref}}
+        \\usepackage{{xcolor}}
+        \\newcommand{{\\needprobe}}[1]{{\\textcolor{{red}}{{\\textbf{{[NEED PROBE]}} #1}}}}
 
         \\title{{{title}}}
         \\date{{}}

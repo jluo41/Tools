@@ -23,7 +23,7 @@ Research        RESEARCH lifecycle — "how to turn runs into trustworthy,
                 publishable science"
                 discover → project → task → probe → insight
                 → paper → application
-                Driven by /haipipe-discover, /haipipe-task, /haipipe-probe,
+                Driven by /haipipe-discovery, /haipipe-task, /haipipe-probe,
                 /haipipe-insight, /haipipe-application, and the paper commands.
                 ► See MENTAL_MODEL.md (the model) and USAGE.md (the recipes).
                 ► See blueprints/ for expected end-to-end project run shapes.

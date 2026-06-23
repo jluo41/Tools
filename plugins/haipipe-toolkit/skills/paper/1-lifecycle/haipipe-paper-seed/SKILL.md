@@ -4,9 +4,12 @@ description: "Create or update the paper folder's 0-lifecycle/0-seed/0-seed.tex:
 argument-hint: "[paper-dir] [--source <path-or-note>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   last_updated: "2026-06-22"
   summary: "Maintain 0-lifecycle/0-seed/0-seed.tex as the paper-possibility contract."
+  changelog:
+    - "1.1.0 (2026-06-22): added illuminate+gate+compile protocol (ref/stage-gate.md, ref/stage-illuminate.md, ref/tex-quality.md)"
+    - "1.0.0 (2026-06-22): baseline."
 ---
 
 Skill: haipipe-paper-seed
@@ -26,6 +29,15 @@ possibility alive while the evidence is still forming, and it states the
 conditions under which the paper is promoted or dropped.
 
 Read first: `../../PHILOSOPHY.md`, `../../ref/lifecycle-map.md`.
+
+Shared Protocols
+----------------
+
+This stage follows three shared protocols. Read them once:
+
+- `ref/stage-illuminate.md` -- illuminate + elicit taste before drafting
+- `ref/stage-gate.md` -- exit criteria + confirm-before-advance gate
+- `ref/tex-quality.md` -- self-contained compilable tex with Pn.Sm tags
 
 Location
 --------
@@ -49,6 +61,15 @@ Principles
 
 Workflow
 --------
+
+### Step 0: Illuminate + Elicit
+
+Before drafting, follow `ref/stage-illuminate.md`:
+
+- Present the current state of this stage (what exists on disk, what could change).
+- Identify 2-3 taste-bearing decisions for this stage.
+- Ask the user for their take. Wait for input before proceeding.
+- For a re-walk: surface what is ALREADY there and ask "keep / change / reframe?" per element.
 
 ### Step 1: Resolve paper folder
 
@@ -102,21 +123,30 @@ For each open evidence need, emit a delivery need using
 
 ```text
 claim needs a verdict/robustness check   -> /haipipe-probe open <need>
-claim needs outside context/citation     -> /haipipe-discover <question>
+claim needs outside context/citation     -> /haipipe-discovery <question>
 needs a run or data artifact             -> /haipipe-task <contract>
 finished evidence needs reusable K/W     -> /haipipe-insight <artifact>
 ```
 
 Do not run that work here. Record the need and hand off.
 
-### Step 4: Handoff
+### Step 4: Compile + Exit Gate
+
+1. Compile the stage PDF per `ref/tex-quality.md` (pdflatex twice, clean aux).
+2. Present the exit criteria from `ref/stage-gate.md` with per-item check/fail.
+3. Ask: "Stage seed looks ready -- confirm to close and move to pitch?"
+4. Only on user confirm: update `STATUS.md` `current_layer` and Gate Ledger.
+
+### Step 5: Handoff
 
 Report current seed state and the next command:
 
 ```text
 promote     -> /haipipe-paper pitch <paper-dir>
-get evidence-> /haipipe-probe | /haipipe-discover | /haipipe-task
+get evidence-> /haipipe-probe | /haipipe-discovery | /haipipe-task
 drop        -> archive the seed and stop
 ```
 
 Update `STATUS.md` (`current_layer`, `maturity: prospectus`).
+
+End the reply with the stage strip (run `ref/stage-strip.sh`).

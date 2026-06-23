@@ -41,7 +41,7 @@ Do NOT route through a project-level narrative layer (there isn't one).
 
 ```
 claim needs a verdict or robustness check     -> /haipipe-probe plan from-need <need>
-claim needs outside literature / context      -> /haipipe-discover <question>
+claim needs outside literature / context      -> /haipipe-discovery <question>
 claim or display needs a run / data artifact  -> /haipipe-task <contract>
 finished evidence needs reusable K/W meaning  -> /haipipe-insight <artifact>
 ```

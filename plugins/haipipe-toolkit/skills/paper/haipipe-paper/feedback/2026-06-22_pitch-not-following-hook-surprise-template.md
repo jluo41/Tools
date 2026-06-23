@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-22
 context: haipipe-paper-pitch (the pitch sub-skill) + example output examples/ProjB-PhyTrait-OpioidRx/paper/Paper-Personality-Opioid-MedJournal/0-lifecycle/1-pitch/1-pitch.tex
-fixed_in: ""
+fixed_in: "haipipe-paper-pitch v1.5.0"
 ---
 The pitch this skill produces is weak. The MedJournal 1-pitch.tex is just a flat
 "One-Minute Story" paragraph + "Current Fragility" -- a generic study summary. It

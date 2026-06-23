@@ -24,7 +24,7 @@ evidence base stays organized instead of accumulating orphan tasks (which is the
 default failure: ProjB had 15 tasks, 1 broken probe, nothing filed).
 
 Front door: `/haipipe-probe file "<thought-or-work>"`. Also auto-invoked by
-`haipipe-data` (on task create) and `haipipe-discover` (on discovery create).
+`haipipe-data` (on task create) and `haipipe-discovery` (on discovery create).
 
 
 Disposition rules
@@ -198,7 +198,7 @@ Hook points
 ```
 /haipipe-probe file "<nl>"     front door: classify + file a loose thought/work
 haipipe-data   (task create)   auto-call after scaffolding a task folder
-haipipe-discover (disc create) auto-call after scaffolding a discovery
+haipipe-discovery (disc create) auto-call after scaffolding a discovery
 ```
 
 Run it at creation time, not later - filing a thought while it is fresh is the

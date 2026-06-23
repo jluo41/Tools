@@ -31,7 +31,7 @@ Each core layer has its own specialist family — different sections, no overlap
 
 ```
 project umbrella     /haipipe-project              project/ (sibling)
-discoveries/         /haipipe-discover             discover/
+discoveries/         /haipipe-discovery             discover/
 tasks/               /haipipe-task-*               task/    <- THIS SECTION
 probes/              /haipipe-probe-*              probe/
 insights/            /haipipe-insight-*            insight/ (deferred)

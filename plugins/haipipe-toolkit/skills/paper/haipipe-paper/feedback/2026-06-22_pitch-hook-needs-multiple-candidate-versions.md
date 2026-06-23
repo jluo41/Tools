@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-22
 context: pitch stage (haipipe-paper-pitch) while walking Paper-LLMPhysicianRanking; generated 1-pitch.tex did not follow the updated template
-fixed_in: ""
+fixed_in: "haipipe-paper-pitch v1.5.0"
 ---
 
 Reporter (JL): obviously, the pitch doesn't follow the skill I updated. For the hook section, we should have different versions of the hook, why don't we have it. [follow-up] These hooks should all stay displayed; there is no need to hide them.

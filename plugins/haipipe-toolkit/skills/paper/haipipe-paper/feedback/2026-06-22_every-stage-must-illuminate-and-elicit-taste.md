@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-22
 context: whole lifecycle flow (every stage skill seed/pitch/claims/narrative/display/minimap + haipipe-paper-enter console); felt during the seed re-walk on Paper-Personality-Opioid-MedJournal, where the agent rewrote 0-seed.tex wholesale without first teaching the user the content or drawing out their judgment
-fixed_in: ""
+fixed_in: "paper ref/stage-illuminate.md + all stage skills v2.0.0"
 ---
 I think the problem here is you didn't ask and explain and illuminate the users about this paper, paper need to internalize the content and give their tastes. do you understand? this part is not included in this stage, this should be in every stage of the haipipe-paper's lifecycle and this should be very very important.
 

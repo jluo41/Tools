@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-22
 context: lifecycle stage tex generators (haipipe-paper-{seed,pitch,claims,narrative,display,minimap}); format defined by 3-write-edit/haipipe-paper-edit-content + 3-write-edit/_shared/{paragraph-indexing,sentence-format}.md
-fixed_in: ""
+fixed_in: "paper ref/tex-quality.md + init_paper_layout.py v2.0.0"
 ---
 然后lifecycle的paper里，生成这个tex的时候，要符合 Tools/plugins/haipipe-toolkit/skills/paper/3-write-edit/haipipe-paper-edit-content定义的格式，----Pn.Sn---- 的sentence 然后% 当作sentence 分割符  这个也写到feedback里
 

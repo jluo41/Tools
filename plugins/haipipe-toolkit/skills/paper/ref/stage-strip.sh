@@ -4,13 +4,12 @@
 # always yields the same strip, so the strip can never be mis-ordered or mis-marked.
 #
 # Output (one line):
-#   seed ✅  pitch ✅  ...  →  write/edit ▶️  →  review ⬜
-# Markers: ✅ done   ▶️ current   ⬜ not started.
+#   seed ✅  pitch ✅  ...  →  write/edit 🔥  →  review ⬜
+# Markers: ✅ done   🔥 current   ⬜ not started.
 #
-# Marker semantics (CURRENT, pre-gate-ledger): ✅ = stage sits BEFORE current_layer
-# in the spine order. Once the Stage Gate confirmation ledger exists, switch ✅ to
-# mean "user-confirmed in the ledger" (read the ledger instead of position). See
-# feedback/2026-06-22_stage-advance-needs-user-confirm.md.
+# Marker semantics: ✅ = user-confirmed in the Gate Ledger (preferred) or stage
+# sits BEFORE current_layer (fallback when no ledger exists). 🔥 = current_layer.
+# ⬜ = not started / not confirmed. See ref/stage-gate.md.
 #
 # Usage: sh stage-strip.sh [paper-dir]   (paper-dir defaults to cwd; looks upward
 # for STATUS.md so it also works from inside the paper folder).
@@ -29,10 +28,27 @@ find_status() {
 
 status=$(find_status "$paper") || { echo "stage-strip: no STATUS.md at or above $paper" >&2; exit 1; }
 
-current=$(grep -m1 '^current_layer:' "$status" | sed 's/^current_layer:[[:space:]]*//' | tr -d '[:space:]')
+current=$(grep -m1 '| current_layer |' "$status" | sed 's/.*|[[:space:]]*//' | sed 's/[[:space:]]*|.*//' | tr -d '[:space:]')
+# fallback to old format
+[ -z "$current" ] && current=$(grep -m1 '^current_layer:' "$status" | sed 's/^current_layer:[[:space:]]*//' | tr -d '[:space:]')
 
 # canonical spine order
 keys="seed pitch claims narrative display minimap write-edit review"
+
+# read Gate Ledger: extract confirmed stages into a space-separated string
+confirmed=""
+if grep -q '## Gate Ledger' "$status"; then
+  confirmed=$(awk '/## Gate Ledger/,/^$|^##/' "$status" \
+    | grep '| yes |' \
+    | sed 's/|[[:space:]]*//' | sed 's/[[:space:]]*|.*//' | tr -d '[:space:]' \
+    | tr '\n' ' ')
+fi
+has_ledger=false
+[ -n "$confirmed" ] && has_ledger=true
+
+is_confirmed() {
+  case " $confirmed " in *" $1 "*) return 0 ;; esac; return 1
+}
 
 # locate current_layer index
 cur_idx=-1; i=0
@@ -45,9 +61,14 @@ label() { case "$1" in write-edit) printf 'write/edit' ;; *) printf '%s' "$1" ;;
 
 out=""; i=0
 for k in $keys; do
-  if   [ "$i" -lt "$cur_idx" ]; then m="✅"
-  elif [ "$i" -eq "$cur_idx" ]; then m="▶️"
-  else                               m="⬜"
+  if [ "$i" -eq "$cur_idx" ]; then
+    m="🔥"
+  elif [ "$has_ledger" = true ]; then
+    if is_confirmed "$k"; then m="✅"; else m="⬜"; fi
+  elif [ "$i" -lt "$cur_idx" ]; then
+    m="✅"
+  else
+    m="⬜"
   fi
   seg="$(label "$k") $m"
   if [ -z "$out" ]; then

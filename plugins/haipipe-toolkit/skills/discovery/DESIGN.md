@@ -135,7 +135,6 @@ discovery/
 │   └── ref/
 │       ├── lifecycle-map.md          canonical 2-axis lifecycle + type table
 │       └── discovery-yaml-schema.md
-├── play/                      plain-language explanation by example
 ├── 1_search/                  bucket worker: find sources      (used by 搜)
 │   ├── arxiv/ semantic-scholar/ exa-search/
 ├── 2_read/                    bucket worker: read one source   (used by 搜)

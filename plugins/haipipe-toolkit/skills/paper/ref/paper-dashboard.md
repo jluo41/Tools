@@ -74,7 +74,7 @@ the panel a session sees on enter. Keep it tight; open needs follow below it.
 
   进度  seed ─ pitch ─ claims ─ narrative ─ figures ─ minimap ─ write ─ review
          <g>    <g>     <g>      <g>         <g>       <g>       <g>      <g>
-                                            ▶️ 这里(<one-clause why this is the frontier>)
+                                            🔥 这里(<one-clause why this is the frontier>)
 ```
 
 Per-stage glyph (derive-from-disk; show each stage's TRUE state, not a blanket
@@ -84,7 +84,7 @@ todo downstream):
 ✅ done       the stage predicate passes AND the artifacts it references resolve
 (草稿)         the artifact exists but is rough / incomplete (e.g. sections drafted but thin)
 ⬜ todo       absent, empty, or its referenced anchors do not resolve
-▶️ frontier   the FIRST stage that is not ✅; overlay it and annotate "← 这里"
+🔥 frontier   the FIRST stage that is not ✅; overlay it and annotate "← 这里"
 ⚠️ drift      STATUS.md claims this stage done but the disk predicate fails
 ```
 
@@ -97,7 +97,7 @@ Worked example (MedJournal, derived from disk on 2026-06-22):
          主要走"已开药者剂量"而非开药人数,双重资格人群更明显。(关联,非因果)
 
   进度  seed ─ pitch ─ claims ─ narrative ─ figures ─ minimap ─ write ─ review
-         ✅     ✅      ✅       ✅         ▶️        ⬜        (草稿)   ⬜
+         ✅     ✅      ✅       ✅         🔥        ⬜        (草稿)   ⬜
                                           ← 这里(0-displays 只有 display00,01-04 没建)
 ```
 

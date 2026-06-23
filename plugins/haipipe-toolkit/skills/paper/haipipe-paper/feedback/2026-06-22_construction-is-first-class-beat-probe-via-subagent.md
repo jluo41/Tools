@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-22
 context: haipipe-paper narrative/Methods stage on Paper-Personality-Opioid-MedJournal; the narrative had only a thin "Setting: N≈766k" line and no account of HOW the analytic cohort is built, and the user wanted the construction probe dispatched to a subagent so the paper main line keeps moving
-fixed_in: ""
+fixed_in: "paper ref/evidence-routing.md v2.0.0"
 ---
 "有一项，就是数据集的构建，我觉得应该好仔细说说，应该开一个 probe，这个 probe 去看对应的 stata 的 code，然后生成 report，这样我们才能用。"
 "这个你开个 subagent 去跑吧，我们主线有主线的任务。"

@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-22
 context: haipipe-paper, after setting up per-beat subagent review of the narrative on Paper-Personality-Opioid-MedJournal; user generalizing the discipline to the display stage
-fixed_in: ""
+fixed_in: "haipipe-paper-narrative v1.3.0 + haipipe-paper-display v1.4.0"
 ---
 "so in the narrative 我们拷打每一个 item，在 display 里，我们拷打每一个图或者表。"
 
