@@ -12,7 +12,7 @@
 #
 # Done predicates (disk):
 #   Plan    probe.yaml has a `claim:` block          (probe.yaml IS the plan artifact)
-#   Gather  evidence declared AND every linked ref resolves on disk
+#   Gather  actual evidence items linked (not just evidence_plan) AND every ref resolves
 #   Read    evidence.md exists   (lean atom: a `result:` block in probe.yaml)
 #   Judge   verdict.md exists    (lean atom: a `verdict:` block in probe.yaml)
 #   Deposit deposit.md exists    (lean atom: a `deposit:` block in probe.yaml)
@@ -96,11 +96,24 @@ done
 
 # --- per-step done predicates -------------------------------------------------
 plan_done=0;   has_key claim && plan_done=1
-gather_decl=0
-for k in evidence_refs arms calls evidence_plan links design cells; do
-  has_key "$k" && { gather_decl=1; break; }
+# Gather is done when ACTUAL evidence is linked (not just planned).
+# evidence_plan is a PLAN artifact (written at Plan stage) — it must NOT count.
+# Require at least one real linked/requested item under evidence_refs or calls,
+# with a non-empty list entry (not just a bare yaml key with empty []).
+gather_has_items=0
+for k in evidence_refs arms calls links cells; do
+  has_key "$k" || continue
+  # Check for at least one list-item line (  - ref: / - type: / - role:)
+  if grep -A 20 "^${k}:" "$yaml" | grep -qE '^\s+-\s+(ref|type|role|atom):'; then
+    gather_has_items=1; break
+  fi
+  # Also accept nested keys with non-empty lists (evidence_refs.tasks: [- ref:])
+  if grep -A 40 "^${k}:" "$yaml" | grep -qE '^\s{2,}(tasks|discoveries|insights):' \
+     && grep -A 40 "^${k}:" "$yaml" | grep -qE '^\s{4,}-\s+ref:'; then
+    gather_has_items=1; break
+  fi
 done
-gather_done=0; [ "$gather_decl" -eq 1 ] && [ "$broken" -eq 0 ] && gather_done=1
+gather_done=0; [ "$gather_has_items" -eq 1 ] && [ "$broken" -eq 0 ] && gather_done=1
 # LEAN-ATOM MODE: a leaf atom of a comparison decomposition (declares `parent:`)
 # records its Read/Judge/Deposit COMPACTLY in probe.yaml (result/verdict/deposit
 # blocks) instead of separate .md files. For such atoms the strip reads the yaml
@@ -147,8 +160,8 @@ extra=""; [ "$nkeys" -gt 3 ] && extra=" (+$((nkeys - 3)) more)"
 why=""
 case "$frontier" in
   0) why="probe.yaml has no claim:" ;;
-  1) if [ "$gather_decl" -eq 0 ]; then why="no evidence declared yet"
-     elif [ "$broken" -gt 0 ];    then why="${broken}/${reftotal} linked refs unresolved: ${shown}${extra}"
+  1) if [ "$gather_has_items" -eq 0 ]; then why="no evidence linked yet (only evidence_plan exists)"
+     elif [ "$broken" -gt 0 ];          then why="${broken}/${reftotal} linked refs unresolved: ${shown}${extra}"
      fi ;;
   2) why="no evidence.md (Read not run)" ;;
   3) why="no verdict.md (Judge not run)" ;;

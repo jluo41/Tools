@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-23
 context: PP01/PP02/PP05/PP06 dispatch from /haipipe-paper probe run (JAMANO session)
-fixed_in: ""
+fixed_in: "4.3.0"
 ---
 
 When /haipipe-paper dispatched 4 probe-orchestrator agents in parallel (PP01 persistently low, PP02 robustness, PP05 drug class, PP06 clinical funnel), every orchestrator did ALL the work itself — writing Python analysis code, running it, writing evidence.md, AND self-assessing the verdict — instead of dispatching creator and reviewer agents in the designed triad loop.

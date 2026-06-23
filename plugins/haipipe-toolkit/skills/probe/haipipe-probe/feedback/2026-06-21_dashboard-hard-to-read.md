@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-21
 context: general (project-level dashboard render for examples/ProjB-PhyTrait-OpioidRx; no active .probe-console.yaml)
-fixed_in: ""
+fixed_in: "4.3.0"
 ---
 
 Reporter (JL): 我感觉这个结果很难读。

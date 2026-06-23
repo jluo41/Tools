@@ -1,6 +1,7 @@
 ---
 date: 2026-06-23
-status: open
+status: fixed
+fixed_in: "4.3.0"
 source: process audit of P.0623b/c
 scope: fn/gather.md + agent triad
 ---

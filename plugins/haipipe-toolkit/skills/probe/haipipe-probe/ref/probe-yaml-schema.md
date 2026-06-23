@@ -6,7 +6,7 @@ contract. It is not a task result archive and not a discovery archive.
 The probe lifecycle is:
 
 ```text
-Plan -> Gather -> Read -> Judge -> Return
+Plan -> Gather -> Read -> Judge -> Deposit
 ```
 
 This schema stores the structured state needed by those steps.
@@ -63,6 +63,7 @@ on the next time it is touched, not in a mass rename.
 | `id` | string | Plan | yes | canonical probe ref `P.<LETTER><MMDD>`, e.g. `P.D0622` (D=discovery, T=task); legacy letterless `P.0605` still valid |
 | `slug` | string | Plan | yes | short folder slug |
 | `title` | string | Plan | yes | human title |
+| `kind` | enum | Plan | yes | `atomic` (one effect, one body of evidence) or `comparison` (claim across atomic verdicts) |
 | `status` | enum | any | yes | lifecycle status |
 | `created_at` | ISO string | Plan | yes | creation timestamp |
 | `updated_at` | ISO string | any | yes | last update timestamp |
@@ -74,7 +75,7 @@ on the next time it is touched, not in a mass rename.
 | `calls` | list | Gather | no | requested task/discovery work |
 | `result` | mapping | Read | no | evidence summary |
 | `verdict` | mapping | Judge | no | claim support verdict |
-| `return` | mapping | Return | no | backfill/memory/next action |
+| `deposit` | mapping | Deposit | no | backfill/memory/next action |
 
 ## Status Values
 
@@ -85,11 +86,14 @@ waiting_for_evidence
 ready_to_read
 read
 judged
-returned
+deposited
 loop_needed
 blocked
 closed
 ```
+
+Legacy alias: `returned` is still accepted as equivalent to `deposited` for
+back-compat with pre-v4.1 probes.
 
 ## Skeleton
 
@@ -97,6 +101,7 @@ closed
 id: P.0605
 slug: discretion-gradient
 title: Agreeableness effect attenuates as clinical discretion falls
+kind: comparison
 status: planned
 created_at: 2026-06-05T00:00:00-04:00
 updated_at: 2026-06-05T00:00:00-04:00
@@ -262,13 +267,13 @@ verdict:
   judged_at: 2026-06-22T00:00:00-04:00
 ```
 
-## Return Block
+## Deposit Block
 
-`return` is written by Return.
+`deposit` is written by Deposit.
 
 ```yaml
 deposit:
-  status: pending           # pending|returned|filed_memory|loop_needed|skipped
+  status: pending           # pending|deposited|filed_memory|loop_needed|skipped
   target:
     type: paper             # paper|application|rebuttal|insight|next_probe|none
     ref: paper/Paper-Personality2Opioid-MISQ2026

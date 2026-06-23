@@ -1,6 +1,7 @@
 ---
 date: 2026-06-23
-status: open
+status: fixed
+fixed_in: "4.3.0"
 source: process audit of P.0623a/b/c
 scope: task conventions in probe-gathered scripts
 ---

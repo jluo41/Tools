@@ -29,12 +29,16 @@ Should this become a next probe need instead?
 1. Load `probe.yaml` and `verdict.md`.
 2. Resolve deposit target from `probe.yaml.deposit_target`, CLI args, or user
    instruction.
-3. Prepare the deposited verdict:
-   - claim sentence
-   - supported scope
-   - caveats
-   - confidence
-   - next need if partial/no/blocked
+3. Prepare the deposited verdict as a human-readable summary. The deposit
+   output must be SKIMMABLE — a reader who opens deposit.md cold should
+   understand in 10 seconds what settled and where:
+   - **One-sentence verdict**: what the evidence says, in plain language
+   - **Claim sentence**: the exact reusable sentence for paper/application
+   - **Scope**: what population/context this covers
+   - **Confidence**: high/medium/low with one-line justification
+   - **Caveats**: bulleted, each one actionable
+   - **Next**: if partial/no/blocked, what evidence would change the verdict
+   - **Where it went**: target path + what was filed/edited
 4. If target is paper/application/rebuttal, ask before editing.
 5. If the verdict is a keep-worthy belief, ALWAYS propose the insight handoff in
    the structured-tail `next:` — the literal `/haipipe-insight review <probe-folder>`

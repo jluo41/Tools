@@ -4,10 +4,11 @@ description: "Probe Console and claim-level evidence lifecycle. Opens a context-
 argument-hint: "[console|plan|gather|read|judge|deposit|status] [probe_ref_or_path] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow, Task
 metadata:
-  version: "4.2.0"
-  last_updated: "2026-06-22"
+  version: "4.3.0"
+  last_updated: "2026-06-23"
   summary: "Probe Console + lifecycle map: Plan, Gather, Read, Judge, Deposit."
   changelog:
+    - "4.3.0 (2026-06-23): feedback-driven revision pass (14 items). (1) Plan: kind: field (atomic|comparison); comparison arms must be atom: links. (2) Gather: link+extract lightweight variant; fan-out model (1 probe : N discoveries : N tasks); naming rule (topic not verb); done-predicate strengthened (actual items, not evidence_plan); participant roster at Gather->Read boundary. (3) Read: elevated to stop-and-internalize gate (most participatory step); verdict-language ban in evidence.md. (4) Deposit: output readability template. (5) stage-strip.sh: fixed Gather false-positive (evidence_plan was Plan artifact, not Gather). (6) Dashboard: no-args view trimmed to compact glance. (7) Orchestrator agent: Write/Edit removed from tools (structural anti-monolith enforcement); dispatch prompts use coordinator language. (8) probe-yaml-schema: kind field, deposited status, deposit block heading."
     - "4.2.0 (2026-06-22): completed the Return->Deposit rename (artifact deposit.md, fn/deposit.md, probe.yaml deposit:/status: deposited/deposited_at/deposit_target; stage-strip predicate + accepts deposited|returned|closed). LEAN-ATOM MODE: a leaf probe declaring parent: logs Read/Judge/Deposit as yaml blocks (result:/verdict:/deposit:) and the strip reads them (yaml is disk). Deposit step now ALWAYS proposes the /haipipe-insight review handoff in next: (loop no longer implicit)."
     - "4.1.0 (2026-06-22): source-type letter in the probe ref. P.D<MMDD> discovery-sourced, P.T<MMDD> task-sourced (other source.type derives the letter from the primary evidence_plan kind). Folder becomes probes/<LETTER><MMDD>_<slug>/. Resolver accepts lettered + legacy letterless refs; existing letterless probes migrate lazily. See ref/probe-yaml-schema.md."
     - "4.0.1 (2026-06-22): rename lifecycle step Return -> Deposit (settle the judged verdict into durable memory); legacy command alias return kept; Read reframed as a present-and-internalize stop; Gather-done = participating tasks/discoveries have run, closed by a participant manifest."
@@ -84,11 +85,17 @@ question, task path, discovery note, insight card, or loose idea.
 `Gather` has two internal actions, and a crisp done-line:
 
 ```text
-Call - create missing task/discovery work
-Link - attach existing task/discovery/insight artifacts
-DONE - every participating task AND discovery has FINISHED RUNNING (and every
-       linked artifact resolves). Not "declared a ref" - actually ran.
+Call    - create missing task/discovery work
+Link    - attach existing task/discovery/insight artifacts
+Extract - link + run a small extraction script (lighter than a full task; heavier
+          than a plain link; reviewer spot-checks the output)
+DONE    - every participating task AND discovery has FINISHED RUNNING (and every
+          linked artifact resolves). Not "declared a ref" - actually ran.
 ```
+
+One probe legitimately references N discoveries AND N tasks (fan-out model).
+When Gather spans multiple sub-questions, split into N topic-folders (one
+question per folder). Name folders by TOPIC, never by verb.
 
 `Gather` closes by naming its participant roster: which tasks/discoveries
 actually ran. That manifest is the handoff line into `Read`.
@@ -174,6 +181,21 @@ ref/lifecycle-map.md
 ```
 
 ---
+
+## Probe Kind
+
+Every probe has a `kind:` field set at Plan:
+
+```text
+atomic      one claim about ONE effect/comparison; single body of evidence; simple verdict
+comparison  a claim ABOUT a relationship ACROSS atomic probes' verdicts; arms are atom: links
+```
+
+Heuristic: if the verdict needs "across N cohorts x M outcomes x K methods,"
+it is a comparison sitting on TOP of atoms — split the atoms out.
+
+A comparison probe's `evidence_plan.required` entries should be `atom:`
+references to atomic probe verdicts, not raw task/discovery links.
 
 ## Probe Folder
 
