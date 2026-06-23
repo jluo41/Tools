@@ -82,7 +82,7 @@ If no paper folder exists, ask the user to run:
 
 Create missing files with the templates below:
 
-Every pitch carries the full backbone: Hook, Surprise, Implication (so-what), Audience/Venue Fit, Why Believe (evidence per point), Still Fragile. The venue routing label (journal / conference / is) lives in STATUS.md; only the audience rationale lives here in the pitch. The body follows the sentence-format in `../../3-write-edit/_shared/sentence-format.md`: a paragraph banner per section, one sentence per line, each tagged `%% ---- Pn.Sm ----`.
+Every pitch carries the full backbone: Hook, Surprise, Implication (so-what), Audience/Venue Fit, Why Believe (evidence per point), Still Fragile. The venue routing label (journal / conference / is) lives in STATUS.md; only the audience rationale lives here in the pitch. When a `../../_venue/playbook-<venue>` pack exists for STATUS `venue`, read its `README.md` `-> Claims`/framing for what that venue's readers reward, and let the Audience and Venue Fit section reflect it (who the venue reaches, why this finding matters to them). The body follows the sentence-format in `../../3-write-edit/_shared/sentence-format.md`: a paragraph banner per section, one sentence per line, each tagged `%% ---- Pn.Sm ----`.
 
 ```latex
 % Layout follows ../../3-write-edit/_shared/sentence-format.md.

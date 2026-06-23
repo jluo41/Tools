@@ -72,6 +72,7 @@ Principles
    only as a typed table.
 7. **The stage doc is the gallery.** `0-lifecycle/4-display/4-display.tex` `\input`s each rendered `float.tex`, so the stage PDF doubles as the combined figures-and-tables view; do NOT make a separate `preview-all`. Compile from the paper ROOT so the `0-displays/` paths resolve. Per-unit `preview.pdf` remain as individual review artifacts.
 8. **Two display kinds, both task-rendered.** (a) data-driven: a parser turns server logs/CSVs into `metrics.json`, then a render task turns that into `assets/figure.pdf` / `assets/table-body.tex` (robust parser: handle factor-variable rows, leading-dot numbers, SE/CIs). (b) schematic/flow (study-flow, data-provenance, CONSORT): a diagram render task draws the flow and annotates it with REAL Ns pulled from the data description; still a task output, never hand-drawn.
+9. **Couple to venue.** Read STATUS `venue`; if `../../_venue/playbook-<venue>` exists, consult its `README.md` section `-> Display` for the venue's standard display set and hero rule (e.g. Table 1 + STROBE cohort-flow for clinical, the research-model figure for MISQ, the main-result multi-panel for Nature/PNAS). The `[primary]` claim's display is the hero. A venue change re-runs the display set.
 
 Relationship to ARIS
 --------------------

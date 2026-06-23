@@ -68,9 +68,15 @@ If the arc or outline is missing or stale, derive it here using the folded-in
 blueprints before writing the table:
 
 ```text
-ref/architecture-blueprint.md   5-act arc, contribution emphasis, page budget
-ref/plan-outline.md             section/figure/citation outline, venue constants
+ref/architecture-blueprint.md       5-act arc, contribution emphasis, page budget
+ref/plan-outline.md                 section/figure/citation outline, venue FORMATTING constants
+../../_venue/playbook-<venue>/README  "-> Minimap": venue SECTION structure + abstract shape (if a pack exists for STATUS venue)
 ```
+
+When a `../../_venue/playbook-<venue>` pack exists for STATUS `venue`, its `-> Minimap`
+mapping sets the section skeleton and abstract shape (e.g. clinical IMRAD + structured
+abstract, MISQ theory-forward IMRAD). `plan-outline.md` venue constants stay for the
+formatting and page budget; the pack supplies the section structure.
 
 ### Step 3: Write the minimap
 

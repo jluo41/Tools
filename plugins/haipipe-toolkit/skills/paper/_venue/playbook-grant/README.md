@@ -12,7 +12,7 @@ lifecycle-stage mappings. This is a style corpus, not a citation list.
 - `_venue/README.md` = the venue index (which journal / agency a paper targets).
 - `_venue/playbook-grant` (here) = **HOW** to shape THIS proposal's lifecycle
   artifacts for a funding agency, with verified funded proposals to imitate.
-  Sibling packs: `playbook-misq`, `playbook-isr`, `playbook-ms-is`.
+  Sibling packs: the other venue packs under `_venue/`.
 - The deep agency knowledge (KAKENHI, NSF, NSFC 面上/青年/优青/杰青/海外优青/重点,
   ERC, DFG, SNSF, ARC, NWO, generic) is carried in the `playbook-grant/` skill;
   this pack distills its structure and tone into lifecycle-stage targets.

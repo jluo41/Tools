@@ -5,7 +5,7 @@ style: it holds the knowledge for shaping a document to that player, and real
 examples to imitate. A venue is knowledge, not a skill: no `SKILL.md`, not
 auto-triggered. The paper lifecycle CONSULTS it by path (`_venue/playbook-<venue>`).
 
-`playbook-jama` and `playbook-misq` are the reference implementations.
+`playbook-jama-portfolio` and `playbook-utd-is` are the reference implementations.
 
 ## The structure (identical for every venue)
 
@@ -57,7 +57,7 @@ references/       verified citation candidates (NEVER fabricated)
 Applies to ALL venues, journal and "special paper" alike:
 
 ```text
-journals (style-imitation)   jama · misq · isr · ms-is · pnas · nature-portfolio · clinical-medicine
+journals (style-imitation)   utd-is (MISQ/ISR/MS-IS) · pnas · nature-portfolio · jama-portfolio · clinical-medicine
 special papers               grant   (funding proposal; the agency is the venue)
                              patent  (patent filing; the jurisdiction is the venue)
 ```

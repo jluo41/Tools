@@ -16,7 +16,7 @@ specialize. This is a style corpus, not a citation list.
   (principles: contribution-vs-enabler, primary-claim rule, observational
   framing) AND **HOW** to shape this paper's lifecycle artifacts for the clinical
   family, with verified exemplars to imitate. Cross-family and reusable.
-- `_venue/playbook-jama` is the JAMA-specific specialization of these principles:
+- `_venue/playbook-jama-portfolio` is the JAMA-specific specialization of these principles:
   it points here as its principles source and specializes the stage mappings for
   the JAMA family.
 
@@ -35,7 +35,7 @@ playbook-clinical-medicine/
 At the claims / display / minimap stages, consult this playbook for (a) the
 clinical-shaped target for that artifact and (b) the nearest exemplar paper in
 `exemplars/`. The target venue is set in the paper's `STATUS.md` (`venue`). When
-the paper targets a specific JAMA-family journal, also consult `playbook-jama` for
+the paper targets a specific JAMA-family journal, also consult `playbook-jama-portfolio` for
 the journal-specific specialization.
 
 ---

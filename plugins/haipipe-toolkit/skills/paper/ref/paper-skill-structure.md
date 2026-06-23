@@ -22,7 +22,8 @@ paper/
 │   └── paper-skill-structure.md
 ├── 0-enter/             haipipe-paper-enter (Console)
 ├── 1-lifecycle/         one skill per stage + display renderers
-│     haipipe-paper-{seed,pitch,claims,narrative,display,minimap}
+│     haipipe-paper-{seed,pitch,venue,claims,narrative,display,minimap}
+│       (venue = recommend + pin the best-fit journal, before claims)
 │     + display renderers: -display-{table,figure,diagram,illustration}
 │       (illustration default = Codex; -display-illustration-gemini = fallback;
 │        framework candidate rounds inside display)
@@ -54,6 +55,7 @@ Lifecycle stages map 1:1 to skills (full table in `lifecycle-map.md`):
 enter             -> 0-enter/haipipe-paper-enter
 0-seed            -> 1-lifecycle/haipipe-paper-seed
 1-pitch           -> 1-lifecycle/haipipe-paper-pitch
+venue (choose+pin)-> 1-lifecycle/haipipe-paper-venue (recommend journal, write STATUS venue; before claims)
 2-claims          -> 1-lifecycle/haipipe-paper-claims
 3-narrative       -> 1-lifecycle/haipipe-paper-narrative
 4-display         -> 1-lifecycle/haipipe-paper-display (+ render skills -display-{table,figure,diagram,illustration}[-gemini]; figure-logic ref)
@@ -80,8 +82,8 @@ write / edit / review / polish        -> 3-write-edit
 scaffold / build / check / compile    -> 4-build-submit
 rebuttal / response                   -> 5-respond
 slides / poster                       -> 6-present
-venue fit (misq/isr/ms-is/pnas/
-  nature/jama/clinical/grant/patent)  -> _venue/playbook-<venue>  (paper-internal, consulted)
+venue / which journal / where submit  -> 1-lifecycle/haipipe-paper-venue  (recommend + pin STATUS venue)
+  (the pinned venue's pack             -> _venue/playbook-<venue>, consulted by each stage)
 ```
 
 ## Maturity Rule

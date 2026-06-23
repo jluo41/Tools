@@ -1,4 +1,4 @@
-# JAMA Playbook (paper/_venue)
+# JAMA Portfolio (paper/_venue)
 
 A JAMA-family **style + structure exemplar pack** for the paper pipeline. Its main
 job is to hold the CONTENT of similar-topic JAMA papers (PDFs or extracted text) so
@@ -12,7 +12,7 @@ citation list.
 - `_venue/playbook-clinical-medicine` = **WHAT** clinical venues reward (principles:
   contribution-vs-enabler, primary-claim rule, observational framing). Cross-family,
   reusable.
-- `paper/_venue/playbook-jama` (here) = **HOW** to shape THIS paper's lifecycle
+- `paper/_venue/playbook-jama-portfolio` (here) = **HOW** to shape THIS paper's lifecycle
   artifacts for the JAMA family, with verified exemplars to imitate. Paper-pipeline
   and venue specific.
 
@@ -21,7 +21,7 @@ No duplication: principles live up in `_venue`; exemplars + stage mapping live h
 ## Structure
 
 ```
-playbook-jama/
+playbook-jama-portfolio/
   README.md            this hub + the lifecycle-stage mappings
   style-profile.md     distilled language style + preferences to imitate
   exemplars/           stored CONTENT (PDFs / extracted text) of similar-topic papers
@@ -85,6 +85,27 @@ Imitate how JAMA papers actually read:
 - Read the nearest paper in `exemplars/` and mirror its sentence shapes and section
   moves (its style), not its content.
 - Apply at the write/edit stages (`3-write-edit`), and to the pitch and abstract.
+
+---
+
+## Outlets (per-journal delta)
+
+The within-family tie-break. The whole JAMA Network shares the structure and style
+below; pick the outlet from this table. All use the structured abstract, STROBE
+(observational) / CONSORT (trials), and associational language.
+
+| Dimension | JAMA (flagship) | JAMA Internal Medicine | JAMA Network Open | JAMA specialty (Pediatrics / Surgery / Psychiatry / ...) |
+|-----------|-----------------|------------------------|-------------------|-----------------------------------------------------------|
+| What it rewards | Broad, practice-changing clinical findings of wide interest across medicine | Internal-medicine practice and policy: prescribing, overuse / de-implementation, health services, safety | Methodologically sound, rigorous work of broad scope; soundness over novelty; open access | Clinical relevance within the specialty field |
+| Audience | All physicians | Internists / general internal medicine / health-services | Broad + open (high readership and citation volume) | The specialty community |
+| Impact / acceptance bar | Highest; very selective | High; selective | Moderate; higher acceptance, large volume, APC (open access) | Field-level |
+| Typical study | Major trials, landmark cohorts that change practice | Observational claims and pragmatic trials on practice, prescribing variation, overuse | Solid observational and secondary analyses, well-reported | Field-specific clinical studies |
+| When to pick it | The finding changes general practice and matters to all physicians | Prescribing / overuse / safety / health-services observational claim (the ProjB lane) | Faster, open-access home for a sound observational study; strong backup to JAMA IM | The contribution is specialty-bounded |
+
+Tie-break for an observational prescribing-safety claim (e.g. physician trait ->
+opioid prescribing): PRIMARY `JAMA Internal Medicine`, BACKUP `JAMA Network Open`
+(same family, faster and open access). Once chosen, pin it as `venue_outlet:` in
+`STATUS.md`.
 
 ---
 

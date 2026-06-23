@@ -14,17 +14,25 @@ documented inside the pack.
 ## Family map
 
 ```text
-journal-is     playbook-misq · playbook-isr · playbook-ms-is
+journal-is     playbook-utd-is              (UTD-IS family: MISQ + ISR + MS-IS, per-journal delta inside)
 journal-life   playbook-nature-portfolio · playbook-pnas
-journal-med    playbook-jama · playbook-clinical-medicine
+journal-med    playbook-jama-portfolio · playbook-clinical-medicine
 grant          playbook-grant     (special paper: funding proposal; per-agency deltas)
 patent         playbook-patent    (special paper: patent filing; per-jurisdiction deltas)
 ```
 
 All nine are the same 4-file pack. Folder names use the `playbook-<name>` prefix so
 every venue groups together in the listing. The paper lifecycle consults
-`_venue/playbook-<venue>` directly (`haipipe-paper-claims` and the playbook-jama
+`_venue/playbook-<venue>` directly (`haipipe-paper-claims` and the playbook-jama-portfolio
 README rely on it).
+
+## Choosing a venue
+
+To pick a venue for a paper, run `/haipipe-paper-venue`: it analyzes the topic /
+paper, ranks fit across these packs, recommends a shortlist, and pins `STATUS.md`
+`venue:`. It also owns the venue-label to pack resolution (e.g. "JAMA Internal
+Medicine" -> `playbook-jama-portfolio`). After it pins the venue, every stage consults the
+matching pack automatically.
 
 ## Knowledge, not skills
 
@@ -83,6 +91,6 @@ The venue-routing workflow shells `haipipe-paper-{is,journal,conference}` and th
 prose pipelines `haipipe-paper-{create,revise}` were retired from the venue area:
 venue selection folds into this README, and prose process belongs to
 `paper/3-write-edit/`. The 7 journal venues were each converted from a single flat
-`SKILL.md` into the uniform 4-file pack (`playbook-jama` was the template), then
+`SKILL.md` into the uniform 4-file pack (`playbook-jama-portfolio` was the template), then
 grant and patent were converted the same way (their old `SKILL.md` pipelines folded
 in and archived). Folder names moved to the `playbook-<name>` prefix.
