@@ -31,6 +31,7 @@ Draft a LaTeX paper based on: **$ARGUMENTS**
 3. **Generated figures** — PDF/PNG files in `figures/` (from `/haipipe-paper-display-figure`)
 4. **LaTeX includes** — `figures/latex_includes.tex` (from `/haipipe-paper-display-figure`)
 5. **Bibliography** — existing `.bib` file, or will create one
+6. **Venue style pack**: `../../_venue/playbook-<venue>/style-profile.md` (plus the nearest paper in `exemplars/`) for STATUS `venue`, if a pack exists: imitate the venue's sentence style and section moves. The `TARGET_VENUE` constant above stays for formatting mechanics (style file, page limit, anonymity); the pack supplies the content and language style.
 
 If no PAPER_PLAN.md exists, ask the user to run `/haipipe-paper-minimap` first or provide a brief outline.
 

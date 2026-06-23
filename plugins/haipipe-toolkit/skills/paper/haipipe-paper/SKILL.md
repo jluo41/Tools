@@ -95,31 +95,28 @@ ref/paper-skill-structure.md
 ```
 
 ```
-/haipipe-paper                              -> enter current paper if detectable; else venue dashboard
+/haipipe-paper                              -> enter current paper if detectable; else dashboard
 /haipipe-paper enter "<paper-path>"         -> preload open-needs paper session dashboard
 /haipipe-paper status ["<paper-path>"]      -> same as enter; path optional
-/haipipe-paper <venue>                      -> dispatch to that specialist (no args)
-/haipipe-paper <venue> "<topic-or-input>"   -> dispatch to specialist with input
+/haipipe-paper venue ["<topic|paper>"] [--no-pin]  -> recommend + pin best-fit journal (-> haipipe-paper-venue)
+/haipipe-paper <stage> ["<input>"]          -> seed|pitch|claims|narrative|display|minimap (-> haipipe-paper-lifecycle)
+/haipipe-paper write|edit ["<input>"]       -> draft / polish prose (-> 3-write-edit)
 /haipipe-paper rebuttal "<paper-path>"      -> dispatch to rebuttal specialist
 /haipipe-paper prospectus "<project-or-paper>"  -> create/inspect paper-prospectus folder
-/haipipe-paper create "<plan-dir>"          -> draft fresh tex paragraph-by-paragraph
-/haipipe-paper revise "<tex-root>"          -> polish existing tex paragraph-by-paragraph
-/haipipe-paper feedback "<text>"            -> capture skill feedback to feedback/ (fix later); `feedback list` shows open items
-/haipipe-paper "<natural language>"         -> infer venue from keywords, dispatch
+/haipipe-paper feedback "<text>"            -> capture skill feedback to feedback/ (`feedback list` shows open)
+/haipipe-paper "<natural language>"         -> infer intent from keywords, dispatch
 ```
 
 Examples:
 ```
-/haipipe-paper conference "0-lifecycle/3-narrative/3-narrative.tex", venue: ICLR
+/haipipe-paper venue "examples/ProjB-PhyTrait-OpioidRx/paper/Paper-Personality-Opioid-MedJournal"
+/haipipe-paper venue "physician trait -> opioid prescribing; observational CMS Medicare" --no-pin
 /haipipe-paper enter "examples/ProjB-PhyTrait-OpioidRx/paper/Paper-Personality-Opioid-MedJournal"
 /haipipe-paper status
-/haipipe-paper figure "Fig2/3 need data-driven generation"
-/haipipe-paper journal                       (no input → Nature default)
-/haipipe-paper is "MISQ paper on AI adoption"
+/haipipe-paper claims          (designate the venue-coupled primary claim)
+/haipipe-paper display "Table 1 + STROBE flow + subgroup forest"
 /haipipe-paper prospectus "examples/ProjC-LLMRecPhysicain/paper/Paper-LLMPhysicianRanking"
-/haipipe-paper rebuttal "paper/" — venue: NeurIPS
-/haipipe-paper create "papers/lhm-a/" — venue: iclr
-/haipipe-paper revise "papers/lhm-a/"
+/haipipe-paper rebuttal "paper/"
 ```
 
 ---
@@ -135,6 +132,9 @@ haipipe-paper-bootstrap
                           Paper folder bootstrap, including prospectus mode
                           (STATUS.md + sparse 0-lifecycle, no manuscript obligations)
                           and manuscript mode (full 0-/1-prefix tex scaffold)
+haipipe-paper-venue       Venue-first front door: analyze the topic/paper, recommend
+                          the best-fit journal from the _venue/playbook-* packs, and
+                          pin STATUS venue (run before claims; owns label->pack map)
 haipipe-paper-lifecycle   Stage orchestrator (seed→pitch→claims→narrative→display→minimap)
 3-write-edit/*            Prose: write / edit / polish
                           (haipipe-paper-edit-write drafts, -edit-weaving polishes;
@@ -154,12 +154,10 @@ Venue Keyword Map
 ------------------
 
 ```
-conference, ML conference, NeurIPS, ICLR, ICML, CVPR,
-ACL, AAAI, COLM, IEEE_CONF, AISTATS, KDD               -> conference
-journal, Nature, Nature Methods, Nature Biotechnology,
-PNAS, Science, biomedical journal, broad-impact        -> journal
-IS, MISQ, ISR, Management Science, Information
-Systems, IT artifact, digital systems, UTD24-IS        -> is
+venue, which journal, where to submit, venue fit,
+recommend journal, journal selection, pick venue, 选刊, 投哪,
+MISQ, ISR, Management Science, UTD-IS, Nature, PNAS,
+JAMA, NEJM, Lancet, clinical, grant, patent             -> venue (haipipe-paper-venue)
 rebuttal, reply, response, OpenReview response,
 reviewer comments, review-response, R1 revision        -> rebuttal
 enter, status, dashboard, preload, session,
@@ -168,28 +166,28 @@ round, rounds, paper round, work round, latest round,
 todo, decisions, applied                                -> round
 prospectus, paper prospectus, topic appears, project seed,
 paper seed, paper folder, bootstrap folder              -> structure-bootstrap
-create, draft tex, write tex, from narrative,
-new paper, scaffold paper, 写初稿                       -> create
-revise, polish, polish tex, paragraph polish,
-walk sections, whole-paper revision, 整篇润色           -> revise
+write, draft tex, from narrative, new paper,
+scaffold paper, 写初稿                                  -> write (haipipe-paper-edit-write)
+edit, polish, polish tex, paragraph polish,
+walk sections, whole-paper revision, 整篇润色           -> edit (haipipe-paper-edit-weaving)
 ```
 
 Venue/task aliases (positional):
 ```
-conf, conference, ml, neurips, iclr, icml  -> conference
-journal, nature, pnas, nat                 -> journal
-is, misq, isr, management-science, msis    -> is
+venue, journal, misq, isr, msis, nature,
+pnas, jama, clinical, grant, patent, 选刊  -> venue
 rebuttal, reply, response, rev             -> rebuttal
 enter, status, dashboard, preload          -> enter
 prospectus, folder, bootstrap                  -> structure-bootstrap
-create, draft, new, scaffold               -> create
-revise, polish, walk                       -> revise
+write, draft, new, scaffold                -> write
+edit, polish, walk                         -> edit
 ```
 
 Lifecycle stage verbs (positional), forwarded to the stage procedures:
 ```
 seed                                       -> structure seed
 pitch                                      -> structure pitch
+venue, journal                             -> haipipe-paper-venue (recommend + pin; before claims)
 claims, claim, ledger                      -> structure claims
 narrative                                  -> structure narrative
 display, figures, figures-tables           -> structure display
@@ -203,9 +201,9 @@ minimap                                    -> structure minimap
 round, rounds                              -> round (haipipe-paper-round)
 ```
 
-Note: `create` and `revise` are task aliases, not venues. They are
-venue-agnostic at the workflow level — the underlying templates and
-section playbooks know the venue.
+Note: `write` and `edit` (formerly `create`/`revise`) route to
+`3-write-edit`. The venue is pinned once by `venue` (-> haipipe-paper-venue)
+into STATUS, and each stage consults the matching `_venue/playbook-<venue>` pack.
 
 ---
 
@@ -233,12 +231,12 @@ Step 2: Resolve venue/task:
     "project seed" / "paper folder" / "bootstrap
     folder"                                           -> target = structure-bootstrap
   - Phrase contains "draft tex" / "new paper" /
-    "scaffold" / "from narrative"                     -> target = create
-  - Phrase contains "polish" / "revise" / "walk
-    sections" / "paragraph polish"                    -> target = revise
-  - Topic mentions ICLR/NeurIPS/ICML etc.             -> target = conference
-  - Topic mentions Nature/PNAS                        -> target = journal
-  - Topic mentions MISQ/ISR/IS journal                -> target = is
+    "scaffold" / "from narrative"                     -> target = write (haipipe-paper-edit-write)
+  - Phrase contains "polish" / "edit" / "walk
+    sections" / "paragraph polish"                    -> target = edit (haipipe-paper-edit-weaving)
+  - Topic names a journal/venue (MISQ/ISR/Nature/PNAS/
+    JAMA/clinical/ICLR/NeurIPS/grant/patent) or asks
+    "which journal / where to submit"                 -> target = venue (haipipe-paper-venue)
   - Default if a 0-lifecycle/3-narrative exists with no
     venue hint                                        -> ASK (don't guess)
 
@@ -294,36 +292,23 @@ Only if no paper root is found, do not fan out. Emit a compact venue chooser:
 
 
 ```
-📄 haipipe-paper — pick a venue track:
+📄 haipipe-paper: no paper detected. Pick an entry:
 
-  conference  → ICLR / NeurIPS / ICML / CVPR / ACL / AAAI
-                Full automated pipeline: narrative → PDF (Phase 1-6 with audits)
-                Best when you have a filled 0-lifecycle/3-narrative and want a submission-ready PDF.
+  venue       recommend + pin the best-fit journal for a topic or paper.
+              Analyzes fit across the _venue/playbook-* packs, writes STATUS venue.
+              Start here if the venue is undecided (venue-first).
+              /haipipe-paper venue "<topic or paper-path>" [--no-pin]
 
-  journal     → Nature portfolio / PNAS / biomedical journals
-                Nature-style routing advisor: which skill to use next.
-                Best for prose-first, story-driven manuscripts.
+  prospectus  scaffold an early paper folder (seed-only, no manuscript obligations).
+              /haipipe-paper prospectus "<project-or-paper>"
 
-  is          → MISQ / ISR / Management Science (IS section)
-                IS-specific contribution framing, theory selection.
-                Best for behavioral / design-science / digital-systems papers.
+  enter       open an existing paper's console (status, open needs, frontier).
+              /haipipe-paper enter "<paper-path>"
 
-  rebuttal    → any venue, post-review phase
-                Parses reviews, drafts text-only rebuttal under venue limits.
-                Best after external reviews land.
+  write|edit  draft / polish prose for an existing folder (3-write-edit).
+  rebuttal    parse reviews + draft a rebuttal (any venue, post-review).
 
-  create      → fresh draft from narrative + plan (venue-agnostic)
-                Scaffolds tex root, walks sections, drafts paragraph-by-paragraph.
-                Best when you have a filled 0-lifecycle/3-narrative + 5-minimap and want
-                a compileable first draft.
-
-  revise      → polish an existing tex (venue-agnostic)
-                Discovers sections, walks each through haipipe-paper-edit-weaving's
-                diagnose+plan+apply gates (G1/Q/G2), cross-section audit.
-                Best when you have a draft and want to polish it paragraph-by-
-                paragraph, optionally guided by the active paper round.
-
-Next: /haipipe-paper <venue-or-task> "<input>"
+Next: /haipipe-paper <entry> "<input>"
 ```
 
 ---
@@ -331,16 +316,14 @@ Next: /haipipe-paper <venue-or-task> "<input>"
 Disambiguation Rules
 ---------------------
 
-  - Venue unclear → list the 4 options, wait. Do NOT default to conference
-    or journal silently — venue choice drives style file, page limit, and
-    structure decisions that are expensive to redo.
-  - User says "paper" with no venue + provides a 0-lifecycle/3-narrative →
-    ASK which venue.
-  - User says "rebuttal" + provides paper path → dispatch to rebuttal
-    immediately (rebuttal is venue-agnostic).
-  - Multi-venue request ("port the ICLR paper to PNAS") → dispatch to
-    journal with a note about source material from the conference draft;
-    do NOT chain blindly.
+  - Venue unclear / undecided → run `venue` (haipipe-paper-venue) to recommend and
+    pin. Do NOT default to a venue silently: venue choice drives style, page limit,
+    and structure decisions that are expensive to redo.
+  - User says "paper" with no venue pinned + has a narrative → run `venue` first.
+  - User says "rebuttal" + provides paper path → dispatch to rebuttal immediately
+    (rebuttal is venue-agnostic).
+  - Re-targeting ("move this paper to another journal") → run `venue` to re-pin;
+    `2-claims` then re-couples to the new target. Do NOT chain blindly.
 
 ---
 
