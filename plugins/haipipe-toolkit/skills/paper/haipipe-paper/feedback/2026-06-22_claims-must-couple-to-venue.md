@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-22
 context: haipipe-paper-claims / claims stage; felt on Paper-Personality-Opioid-MedJournal deciding the core claim for JAMA Internal Medicine
-fixed_in: ""
+fixed_in: "haipipe-paper-claims v1.2.0"
 ---
 我们这 llm 出来的东西 肯定不能是方法，因为我们已经有其他的论文在做这件事了。这里肯定以 clinical 为主，所以在这里我感觉 claims 应该要和 venue 挂钩。把这个加入到 feedback 吧
 

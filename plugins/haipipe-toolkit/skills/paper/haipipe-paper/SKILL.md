@@ -1,13 +1,16 @@
 ---
 name: haipipe-paper
-description: "Run any paper-lifecycle work. Use `/haipipe-paper enter <paper-path>` or `/haipipe-paper status [paper-path]` to preload an open-needs paper dashboard from STATUS.md, 0-lifecycle, 1-rounds, 0-displays, 0-sections, and git state. Paper lifecycle owns paper-specific story, angle, claims, narrative, displays, minimap, maturity, and dated work rounds; open GAP/NEED items can call probe/discover/task/insight directly through the shared delivery-need interface. Also parses intent (venue + phase) and dispatches to specialists for writing/revising/rebutting papers targeting ICLR, NeurIPS, ICML, Nature, PNAS, MISQ, ISR. Trigger: paper, enter paper, paper status, open needs, claim gap, figure table gap, round, paper round, work round, write paper, paper pipeline, paper writing, draft paper, revise paper, polish tex, rebuttal, reply to reviewers, 写论文, 论文流程, /haipipe-paper."
+description: "Run any paper-lifecycle work. Use `/haipipe-paper enter <paper-path>` or `/haipipe-paper status [paper-path]` to preload an open-needs paper dashboard from STATUS.md, 0-lifecycle, 1-rounds, 0-displays, 0-sections, and git state. Paper lifecycle owns paper-specific story, angle, claims, narrative, displays, minimap, maturity, and dated work rounds; open GAP/NEED items accumulate as probe plans in 1-probe-plans/ and batch-dispatch to /haipipe-probe (the universal evidence gateway for claims; probe calls task/discover during Gather). Direct task/discover verbs available for non-claim utility work. Also parses intent (venue + phase) and dispatches to specialists for writing/revising/rebutting papers. Trigger: paper, enter paper, paper status, open needs, claim gap, figure table gap, round, paper round, work round, write paper, paper pipeline, paper writing, draft paper, revise paper, polish tex, rebuttal, reply to reviewers, probe, probe run, discover, task, evidence, 写论文, 论文流程, /haipipe-paper."
 argument-hint: "[enter|status|venue|phase] [paper-path-or-args...]"
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "1.3.0"
-  last_updated: "2026-06-21"
+  version: "2.0.0"
+  last_updated: "2026-06-22"
   summary: "Run any paper-lifecycle work."
   changelog:
+    - "2.0.0 (2026-06-22): cross-cutting protocol wiring. All stage skills now reference ref/stage-gate.md (confirm-before-advance), ref/stage-illuminate.md (Socratic taste elicitation), ref/tex-quality.md (self-contained compilable tex), ref/evidence-routing.md (\\needprobe macro + probe handoff). Stage strip end-of-reply convention enforced. Enter dashboard restructured (pitch summary first). 22 feedback items addressed."
+    - "1.5.0 (2026-06-22): probe buffer (1-probe-plans/). Claim-related evidence needs accumulate as probe plans during lifecycle work, then batch-dispatch to /haipipe-probe. Probe is the universal evidence gateway for claims; it calls task/discover during Gather. Direct task/discover verbs kept for non-claim utility work. See fn/probe-plans.md."
+    - "1.4.0 (2026-06-22): added probe/discover/task verbs as evidence-worker dispatchers. Paper orchestrator can now route directly to /haipipe-probe, /haipipe-discovery, /haipipe-task with project context resolved from the paper path. Paper stays story layer; evidence workers do the work."
     - "1.3.0 (2026-06-21): renamed paper working-memory layer from feedback to rounds; added lifecycle, rounds, and skill-structure references."
     - "1.2.0 (2026-06-21): made paper lifecycle the delivery-side owner of story/claims and routed GAP/NEED items through the shared delivery-need interface."
     - "1.1.0 (2026-06-21): added enter/status paper-session loader routing."
@@ -48,11 +51,11 @@ seed -> pitch -> claims -> narrative -> display -> minimap -> write/edit -> revi
 ```
 
 Read `current_layer` from the paper's `STATUS.md`. Mark each stage ✅ before
-current, ▶️ at current, ⬜ after current; arrows sit before `write/edit` and
+current, 🔥 at current, ⬜ after current; arrows sit before `write/edit` and
 `review`. One line, e.g.:
 
 ```text
-seed ✅  pitch ✅  claims ✅  narrative ✅  display ✅  minimap ✅  →  write/edit ▶️  →  review ⬜
+seed ✅  pitch ✅  claims ✅  narrative ✅  display ✅  minimap ✅  →  write/edit 🔥  →  review ⬜
 ```
 
 Render it DETERMINISTICALLY with the helper (never hand-type it; it drifts):
@@ -64,15 +67,15 @@ sh "$CLAUDE_SKILL_DIR/../ref/stage-strip.sh" <paper-dir>   # walks upward for ST
 Closing-block format. End every reply with ONE fenced `text` block: a TITLED top
 rule, the return-contract tail, a plain bottom rule, then the strip as the last
 line. Use box-drawing `─` (U+2500) for the rules (no corners, no side borders).
-The top rule carries the label `📄 paper · <current_layer> ▶️`:
+The top rule carries the label `📄 paper · <current_layer> 🔥`:
 
-    ── 📄 paper · claims ▶️ ───────────────────────
+    ── 📄 paper · claims 🔥 ───────────────────────
     status:        ok|blocked|failed
     paper_root:    <path>
     current_layer: <layer>
     next:          <single recommended command>
     ──────────────────────────────────────────────
-    seed ✅  pitch ✅  claims ▶️  narrative ⬜  display ⬜  minimap ⬜  →  write/edit ⬜  →  review ⬜
+    seed ✅  pitch ✅  claims 🔥  narrative ⬜  display ⬜  minimap ⬜  →  write/edit ⬜  →  review ⬜
 
 The strip line still comes from the helper; only its framing (titled top rule +
 bottom rule) is added here. Every stage / enter skill inherits this closing block.
@@ -101,6 +104,11 @@ ref/paper-skill-structure.md
 /haipipe-paper venue ["<topic|paper>"] [--no-pin]  -> recommend + pin best-fit journal (-> haipipe-paper-venue)
 /haipipe-paper <stage> ["<input>"]          -> seed|pitch|claims|narrative|display|minimap (-> haipipe-paper-lifecycle)
 /haipipe-paper write|edit ["<input>"]       -> draft / polish prose (-> 3-write-edit)
+/haipipe-paper probe ["<need-or-claim>"]    -> add a probe plan to 1-probe-plans/ buffer
+/haipipe-paper probe                        -> show the probe-plan buffer (planned/dispatched/verdicted)
+/haipipe-paper probe run [PPNN]             -> batch dispatch planned probes to /haipipe-probe
+/haipipe-paper discover ["<question>"]      -> dispatch to /haipipe-discovery (non-claim utility work)
+/haipipe-paper task ["<contract>"]          -> dispatch to /haipipe-task (non-claim utility work)
 /haipipe-paper rebuttal "<paper-path>"      -> dispatch to rebuttal specialist
 /haipipe-paper prospectus "<project-or-paper>"  -> create/inspect paper-prospectus folder
 /haipipe-paper feedback "<text>"            -> capture skill feedback to feedback/ (`feedback list` shows open)
@@ -115,6 +123,11 @@ Examples:
 /haipipe-paper status
 /haipipe-paper claims          (designate the venue-coupled primary claim)
 /haipipe-paper display "Table 1 + STROBE flow + subgroup forest"
+/haipipe-paper probe "NEED-1: expand ex ante audit to all 20 messages"
+/haipipe-paper probe run                   (batch dispatch all planned probes)
+/haipipe-paper probe run PP02              (dispatch one specific probe plan)
+/haipipe-paper discover "AI-assisted precision nudging in IS literature"
+/haipipe-paper task "implement causal forest CATE estimator on Stage 2 data"
 /haipipe-paper prospectus "examples/ProjC-LLMRecPhysicain/paper/Paper-LLMPhysicianRanking"
 /haipipe-paper rebuttal "paper/"
 ```
@@ -170,6 +183,12 @@ write, draft tex, from narrative, new paper,
 scaffold paper, 写初稿                                  -> write (haipipe-paper-edit-write)
 edit, polish, polish tex, paragraph polish,
 walk sections, whole-paper revision, 整篇润色           -> edit (haipipe-paper-edit-weaving)
+probe, evidence, verify claim, claim gap,
+evidence gap, hypothesis, need probe                   -> probe (haipipe-probe)
+discover, literature, lit review, find papers,
+related work, need discover                            -> discover (haipipe-discovery)
+task, run analysis, compute, need task,
+implement, data pipeline                               -> task (haipipe-task)
 ```
 
 Venue/task aliases (positional):
@@ -181,6 +200,9 @@ enter, status, dashboard, preload          -> enter
 prospectus, folder, bootstrap                  -> structure-bootstrap
 write, draft, new, scaffold                -> write
 edit, polish, walk                         -> edit
+probe, evidence, verify                    -> probe
+discover, literature, lit                  -> discover
+task, run, compute, implement              -> task
 ```
 
 Lifecycle stage verbs (positional), forwarded to the stage procedures:
@@ -221,6 +243,9 @@ Step 2: Resolve venue/task:
     illustration/illustration-gemini/figure1/framework/
     minimap)                                          -> target = structure <verb>
   - First positional is "round" or "rounds"            -> target = round
+  - First positional is "probe"                        -> target = probe (evidence worker)
+  - First positional is "discover"                     -> target = discover (evidence worker)
+  - First positional is "task"                         -> target = task (evidence worker)
   - First positional is "feedback"                     -> target = feedback (utility verb)
   - Else scan keyword map across all positional args.
   - Phrase contains "reply to reviewers" / "rebuttal"
@@ -258,6 +283,30 @@ Step 4: Dispatch:
       Skill("haipipe-paper-lifecycle", args="<verb> <remaining_args>")
     Else if target = round:
       Skill("haipipe-paper-round", args="<remaining_args>")
+    Else if target = probe:
+      Read fn/probe-plans.md for the full buffer convention.
+      Three sub-modes:
+      a) "probe run [PPNN]": DISPATCH mode. Resolve the project root from
+         the paper path (walk up from paper/ to examples/<Project>/).
+         For each planned probe (or one specific PPNN), call:
+         Skill("haipipe-probe", args="plan from-paper <paper_root> <probe_plan_content>")
+         Update probe plan file: status -> dispatched, probe_ref -> active probe.
+         The paper layer does NOT run the probe itself. It dispatches and
+         records the link. When the probe deposits a verdict, the paper
+         backfills it into 2-claims / sections / round logs.
+      b) "probe" (no args): SHOW mode. List 1-probe-plans/ buffer contents
+         grouped by status (planned / dispatched / verdicted). Suggest
+         "probe run" if planned items exist.
+      c) "probe <claim or need text>": BUFFER mode. Create a new probe plan
+         file in 1-probe-plans/ (PPNN_<slug>.md) with the claim/need text,
+         the source stage, and structured fields per fn/probe-plans.md.
+         Do NOT dispatch yet.
+    Else if target = discover:
+      Direct dispatch for non-claim utility work. Resolve the project root.
+      Skill("haipipe-discovery", args="<remaining_args> --project <project_root>")
+    Else if target = task:
+      Direct dispatch for non-claim utility work. Resolve the project root.
+      Skill("haipipe-task", args="<remaining_args> --project <project_root>")
     Else if target = feedback:
       Read fn/feedback.md and run it inline: capture "<text>" to feedback/ as one
       dated file, or `feedback list` to print open items. This orchestrator
@@ -308,6 +357,13 @@ Only if no paper root is found, do not fan out. Emit a compact venue chooser:
   write|edit  draft / polish prose for an existing folder (3-write-edit).
   rebuttal    parse reviews + draft a rebuttal (any venue, post-review).
 
+  probe       buffer a claim-level evidence need, or batch-dispatch accumulated probes.
+              /haipipe-paper probe "<need>"   (buffer a probe plan)
+              /haipipe-paper probe            (show buffer)
+              /haipipe-paper probe run        (batch dispatch to /haipipe-probe)
+  discover    direct dispatch to /haipipe-discovery (non-claim utility work).
+  task        direct dispatch to /haipipe-task (non-claim utility work).
+
 Next: /haipipe-paper <entry> "<input>"
 ```
 
@@ -351,26 +407,32 @@ round todo item may reveal that the next action is a probe, discovery, task,
 display unit, or insight. The `enter/status` path must surface those needs
 before recommending more writing.
 
-Use this shared reference when interpreting or creating need records:
+Use these shared references when interpreting or creating need records:
 
 ```
-../ref/delivery-need.md
+../ref/delivery-need.md         need record schema + backfill protocol
+../ref/evidence-routing.md      \needprobe{} macro + paper/evidence boundary + subagent dispatch
 ```
 
 Routing hints:
 
 ```
-claim needs a verdict or robustness check       -> /haipipe-probe plan from-need <need>
-claim needs outside literature/context          -> /haipipe-discover <question>
-claim/display needs a run or data artifact      -> /haipipe-task <contract>
-figure/table needs materialized output          -> /haipipe-task-for-display <need>
+claim needs a verdict or robustness check       -> /haipipe-paper probe "<need>"  (buffer first)
+claim needs outside literature/context          -> /haipipe-paper probe "<need>"  (probe gathers via discover)
+claim/display needs a run or data artifact      -> /haipipe-paper probe "<need>"  (probe gathers via task)
+figure/table needs materialized output          -> /haipipe-task-for-display <need>  (direct, not claim-gated)
 closed evidence needs reusable meaning/caveat   -> /haipipe-insight <artifact>
 wording/section placement needs paper work      -> paper lifecycle stage/edit skill
+non-claim utility work (lit scan, data check)   -> /haipipe-paper discover|task   (direct dispatch)
 ```
+
+For claim-related evidence, ALWAYS route through the probe buffer. The probe
+is the claim-level evidence contract; it calls task/discover during its Gather
+step. Direct task/discover verbs are for non-claim utility work only.
 
 The paper backfills resolved evidence into `2-claims`, `4-display`,
 `5-minimap`, sections, or round logs. Evidence workers do not own the paper
-story.
+story. See `fn/probe-plans.md` for the buffer convention.
 
 Relation to Lifecycle Stage Skills, Sections, and Components
 -------------------------------------------------------------
@@ -429,6 +491,10 @@ layout:
 │   ├── display01-<slug>/
 │   ├── display02-<slug>/
 │   └── displayNN-<slug>/
+├── 1-probe-plans/                          evidence-need buffer (accumulated, batch-dispatched)
+│   ├── README.md                           index + dispatch status
+│   ├── PP01_<slug>.md                      one file per planned probe
+│   └── PP02_<slug>.md
 ├── 1-rounds/                               dated paper work rounds
 │   ├── latest.md
 │   └── vYYMMDD/
@@ -465,7 +531,14 @@ Composing with Other Workflows
         ├─► /haipipe-paper-edit-write  (narrative+plan → fresh tex prose)
         ├─► /haipipe-paper-edit-weaving (existing tex → polish)
         ├─► /haipipe-paper-rebuttal    (any venue, post-review)
-        └─► consult _venue/playbook-<venue>  (what the target rewards)
+        ├─► consult _venue/playbook-<venue>  (what the target rewards)
+        │
+        │   Evidence workers (dispatched from paper when a claim hits a gap):
+        ├─► /haipipe-probe    (claim verdict / robustness check)
+        ├─► /haipipe-discovery (outside literature / context)
+        └─► /haipipe-task      (run analysis / compute artifact)
+            │
+            └── verdicts/artifacts backfill into paper 2-claims, sections, round logs
 ```
 
 ---

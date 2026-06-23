@@ -4,10 +4,12 @@ description: "Generate NARRATIVE_REPORT.md — the design contract for /haipipe-
 argument-hint: "[project-dir-or-topic]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-05-31"
+  version: "1.3.0"
+  last_updated: "2026-06-22"
   summary: "Generate NARRATIVE_REPORT.md — the design contract for /haipipe-paper."
   changelog:
+    - "1.3.0 (2026-06-22): added per-beat subagent interrogation protocol (keep/move/demote/cut + small-font comments)"
+    - "1.2.0 (2026-06-22): added illuminate+gate+compile protocol (ref/stage-gate.md, ref/stage-illuminate.md, ref/tex-quality.md)"
     - "1.1.0 (2026-06-05): renamed from narrative-report to haipipe-paper-narrative (haipipe-paper-* name unification)."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
@@ -26,6 +28,14 @@ paper; this narrative expands it into evidence-backed claims, figures, and
 limitations. If the evidence forces a different pitch, update
 `0-lifecycle/1-pitch/1-pitch.tex` through `/haipipe-paper-lifecycle pitch` and log the
 shift instead of silently diverging.
+
+## Shared Protocols
+
+This stage follows three shared protocols. Read them once:
+
+- `ref/stage-illuminate.md` -- illuminate + elicit taste before drafting
+- `ref/stage-gate.md` -- exit criteria + confirm-before-advance gate
+- `ref/tex-quality.md` -- self-contained compilable tex with Pn.Sm tags
 
 ## Context: $ARGUMENTS
 
@@ -103,7 +113,34 @@ The report must contain these six sections, in this order:
    "weaknesses not yet fixed" section. Be honest — this is what saves the
    paper from `/haipipe-paper-edit-improve-loop` round-2 hatchet jobs.
 
+Per-Beat Interrogation (subagent review)
+-----------------------------------------
+
+After drafting the narrative, EACH beat/item in every section is interrogated
+by an independent subagent. The drafting agent does NOT self-author inclusion
+justifications (self-authored "why it's here" comes out limp and circular).
+
+Protocol:
+  1. Dispatch ONE reviewer subagent that sees ALL beats so it can also judge
+     flow, redundancy, and gaps.
+  2. The reviewer returns, per item: verdict (keep | move-to-section |
+     demote-to-Supplement | cut) + one sharp venue-aware comment.
+  3. The drafting agent integrates the returned comments in SMALL FONT
+     (\footnotesize) attached to each beat, visibly subordinate to the beat.
+  4. Recompile the stage PDF after integrating comments.
+
+The reviewer subagent JUDGES; the drafting agent INTEGRATES. Builder != judge.
+
 ## Workflow
+
+### Step 0: Illuminate + Elicit
+
+Before drafting, follow `ref/stage-illuminate.md`:
+
+- Present the current state of this stage (what exists on disk, what could change).
+- Identify 2-3 taste-bearing decisions for this stage.
+- Ask the user for their take. Wait for input before proceeding.
+- For a re-walk: surface what is ALREADY there and ask "keep / change / reframe?" per element.
 
 ### Step 1: Discover inputs
 
@@ -143,19 +180,31 @@ typical conference paper, under ~800 for a journal paper. Density beats
 length: every line should either name a claim, name an evidence file, or set
 context the reader needs to interpret the next line.
 
-### Step 5: Handoff
+After writing, run the per-beat interrogation protocol (see above). Do not
+advance to the exit gate until interrogation comments are integrated.
+
+### Step 5: Compile + Exit Gate
+
+1. Compile the stage PDF per `ref/tex-quality.md` (pdflatex twice, clean aux).
+2. Present the exit criteria from `ref/stage-gate.md` with per-item check/fail.
+3. Ask: "Stage narrative looks ready -- confirm to close and move to minimap?"
+4. Only on user confirm: update `STATUS.md` `current_layer` and Gate Ledger.
+
+### Step 6: Handoff
 
 Print the suggested next command:
 
 ```
-📄 NARRATIVE_REPORT.md generated.
+NARRATIVE_REPORT.md generated.
 
 To write the paper:
-    /haipipe-paper "NARRATIVE_REPORT.md" — venue: <ICLR|NeurIPS|...>
+    /haipipe-paper "NARRATIVE_REPORT.md" -- venue: <ICLR|NeurIPS|...>
 
 To revise:
     edit NARRATIVE_REPORT.md directly, then re-run /haipipe-paper
 ```
+
+End the reply with the stage strip (run `ref/stage-strip.sh`).
 
 ## Composing with other workflows
 

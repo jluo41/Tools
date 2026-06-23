@@ -42,7 +42,7 @@ Do NOT route through a project-level narrative layer (there isn't one).
 
 ```
 answer needs a claim verdict / robustness     -> /haipipe-probe plan from-need <need>
-answer needs outside context / benchmark      -> /haipipe-discover <question>
+answer needs outside context / benchmark      -> /haipipe-discovery <question>
 answer needs a run / data artifact / display  -> /haipipe-task <contract>
 finished evidence needs reusable K/W meaning  -> /haipipe-insight <artifact>
 ```

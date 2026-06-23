@@ -4,10 +4,11 @@ description: "Open the Paper Console for a paper repo. Use for `/haipipe-paper`,
 argument-hint: "[paper-path] [free-form input]"
 allowed-tools: Bash, Read, Grep, Glob, Write, Skill
 metadata:
-  version: "2.0.0"
+  version: "2.1.0"
   last_updated: "2026-06-22"
   summary: "Paper Console: derive-from-disk dashboard + lifecycle router."
   changelog:
+    - "2.1.0 (2026-06-22): dashboard leads with pitch summary + stage strip before operational details; read order prioritizes 1-pitch.tex; return contract enforces structured tail + failed status; stale-deliverable flag from ref/tex-quality.md."
     - "2.0.0 (2026-06-22): reframed as the Paper Console; added derive-from-disk frontier, free-form routing, copilot policy, and .paper-console.yaml session state."
     - "1.2.0 (2026-06-21): open-needs paper session loader."
 ---
@@ -96,9 +97,13 @@ Read only files that exist, in this order:
 
 1. `STATUS.md`
 2. `0-lifecycle/README.md`
-3. Stage TeX files:
+2b. `0-lifecycle/1-pitch/1-pitch.tex` — HIGH PRIORITY for dashboard header.
+   Extract the `\section*{One-Minute Pitch}` paragraph and the
+   `\section*{Hook}` paragraph. These become the 2-3 sentence "what this
+   paper is about" summary at the top of the dashboard. If the file does not
+   exist or lacks these sections, the dashboard says "pitch not yet written".
+3. Stage TeX files (remaining):
    - `0-lifecycle/0-seed/0-seed.tex`
-   - `0-lifecycle/1-pitch/1-pitch.tex`
    - `0-lifecycle/2-claims/2-claims.tex`
    - `0-lifecycle/3-narrative/3-narrative.tex`
    - `0-lifecycle/4-display/4-display.tex`
@@ -178,37 +183,56 @@ Loopback diagnosis follows the paper lifecycle:
 
 ## Output Format
 
-Lead with the emoji-headed sections. END the reply with the lifecycle stage
-strip as the VERY LAST line, AFTER the machine-readable return-contract tail
-(`status` / `paper_root` / `current_layer` / `next`). Render the strip
-deterministically with the helper, never hand-typed:
+The dashboard leads with WHAT THE PAPER IS ABOUT, then WHERE IT STANDS, then
+WHAT TO DO NEXT. Operational details come after orientation.
+
+Render the stage strip deterministically with the helper, never hand-typed:
 
 ```sh
 sh "$CLAUDE_SKILL_DIR/../../ref/stage-strip.sh" <paper-root>
 ```
 
 It prints one line driven by `STATUS.md current_layer`, e.g.
-`seed ✅  pitch ✅  …  →  write/edit ▶️  →  review ⬜`. This strip CLOSES EVERY
-reply in the session, not just the first dashboard (see the orchestrator's "Stage
-Strip" rule). The body:
+`seed ✅  pitch ✅  …  →  write/edit 🔥  →  review ⬜`. This strip appears
+twice: once near the top (orientation) and once as the VERY LAST LINE of the
+reply (closing every reply in the session, not just the first dashboard; see the
+orchestrator's "Stage Strip" rule).
+
+The enter skill reads `ref/tex-quality.md` and flags any stage whose `.tex` is
+newer than its `.pdf` as a stale deliverable in the Open Needs section.
+
+Body order — sections MUST appear in this sequence:
 
 ```markdown
-## 📄 Paper Session
+## 📄 Paper Identity
 
 | Field | Value |
 |---|---|
-| Paper | ... |
+| Paper | <title from STATUS.md> |
+| Venue | <venue from STATUS.md> |
 | Path | ... |
 | Branch | ... |
+
+## 📖 What This Paper Is About
+
+<2-3 sentence summary distilled from the \section*{One-Minute Pitch} paragraph
+and the \section*{Hook} paragraph of 0-lifecycle/1-pitch/1-pitch.tex.
+If no pitch exists, print: "Pitch not yet written — run /haipipe-paper pitch.">
+
+## 📊 Stage Progress
+
+seed ✅  pitch ✅  claims ✅  narrative 🔥  display ⬜  minimap ⬜  →  write/edit ⬜  →  review ⬜
+
+## 🔎 Current State
+
+| Field | Value |
+|---|---|
 | Current layer | ... |
 | Next layer | ... |
 | Maturity | ... |
+| Active round | <vYYMMDD or none> |
 
 ## ✅ Stable
-
-- ...
-
-## ⚠️ Open Gates
 
 - ...
 
@@ -220,7 +244,7 @@ Strip" rule). The body:
 
 ## 🔁 Loopback Diagnosis
 
-- ...
+- ... (omit if none)
 
 ## 🎯 Recommended Next
 
@@ -233,7 +257,7 @@ Strip" rule). The body:
 
 (return-contract tail here)
 
-seed ✅  pitch ✅  claims ✅  narrative ✅  display ✅  minimap ✅  →  write/edit ▶️  →  review ⬜
+seed ✅  pitch ✅  claims ✅  narrative 🔥  display ⬜  minimap ⬜  →  write/edit ⬜  →  review ⬜
 ```
 
 The stage strip is the VERY LAST line, placed after the return-contract tail.
@@ -305,11 +329,20 @@ from disk.
 
 ## Return Contract
 
-End with a machine-readable tail:
+Every reply from a paper specialist (and every enter dashboard) MUST end with
+the structured tail block followed by the stage strip as the very last line.
+This is enforced by the orchestrator; omitting it is a protocol violation.
 
 ```text
-status: ok|blocked
-paper_root: <path or none>
-current_layer: <layer or unknown>
-next: <single recommended command>
+status:        ok | blocked | failed
+paper_root:    <path>
+current_layer: <layer>
+next:          <suggested command>
+
+seed ✅  pitch ✅  claims ✅  narrative 🔥  display ⬜  minimap ⬜  →  write/edit ⬜  →  review ⬜
 ```
+
+The `status` field uses three values: `ok` (dashboard rendered, session ready),
+`blocked` (missing paper root or unresolvable state), `failed` (read error or
+inconsistent disk state). The stage strip on the final line is rendered by the
+helper script, never hand-typed.

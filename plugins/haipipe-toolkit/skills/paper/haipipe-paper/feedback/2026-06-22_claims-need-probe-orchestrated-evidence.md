@@ -14,7 +14,7 @@ Distilled ask:
 Why this matters (links): extends [claims-ledger-thin-no-status-no-evidence]. The earlier item said the ledger lacks status + quantified evidence; this item says the FIX is an orchestration: probe(plan->gather->read->judge->return) where gather calls task/discovery and return files insight, so every claim row traces to a confirmed probe verdict + an insight card, not a "planned Table".
 
 Suggested fix direction (skill, later pass):
-- Make haipipe-paper-claims emit, per weak/GAP claim, a concrete probe contract (claim + evidence needed) and route it: /haipipe-probe plan from-need. Probe Gather calls /haipipe-task (run-X regression) and /haipipe-discover (lit anchor); probe Return files /haipipe-insight (K card) and backfills the verdict path + quantified result into the claim row.
+- Make haipipe-paper-claims emit, per weak/GAP claim, a concrete probe contract (claim + evidence needed) and route it: /haipipe-probe plan from-need. Probe Gather calls /haipipe-task (run-X regression) and /haipipe-discovery (lit anchor); probe Return files /haipipe-insight (K card) and backfills the verdict path + quantified result into the claim row.
 - Adopt the reference libraries' rigor patterns (see the design proposal produced this session): explicit evidence grading, claim-evidence-citation linkage, falsification/limitation per claim.
 - A claim row done-rubric: status + confirmed probe verdict ref + quantified result + insight card ref + caveat. No "planned" anchors.
 

@@ -4,10 +4,11 @@ description: "Create or update the paper folder's 0-lifecycle/5-minimap/5-minima
 argument-hint: "[paper-dir]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
   last_updated: "2026-06-22"
   summary: "Maintain 0-lifecycle/5-minimap/5-minimap.tex as the paragraph job + evidence-anchor map."
   changelog:
+    - "1.2.0 (2026-06-22): added illuminate+gate+compile protocol (ref/stage-gate.md, ref/stage-illuminate.md, ref/tex-quality.md)"
     - "1.1.0 (2026-06-22): absorbed the retired architecture + plan skills as ref/ material (architecture-blueprint.md, plan-outline.md, architecture-examples/); dropped the two Skill() wrapper calls."
     - "1.0.0 (2026-06-22): baseline."
 ---
@@ -38,6 +39,15 @@ ref/architecture-examples/      worked examples (incl. the MISQ2026 opioid paper
 Read first: `../../PHILOSOPHY.md`, `../../ref/lifecycle-map.md`. For paragraph
 ID conventions see `../../3-write-edit/_shared/paragraph-indexing.md`.
 
+Shared Protocols
+----------------
+
+This stage follows three shared protocols. Read them once:
+
+- `ref/stage-illuminate.md` -- illuminate + elicit taste before drafting
+- `ref/stage-gate.md` -- exit criteria + confirm-before-advance gate
+- `ref/tex-quality.md` -- self-contained compilable tex with Pn.Sm tags
+
 Location
 --------
 
@@ -57,6 +67,15 @@ Principles
 
 Workflow
 --------
+
+### Step 0: Illuminate + Elicit
+
+Before drafting, follow `ref/stage-illuminate.md`:
+
+- Present the current state of this stage (what exists on disk, what could change).
+- Identify 2-3 taste-bearing decisions for this stage.
+- Ask the user for their take. Wait for input before proceeding.
+- For a re-walk: surface what is ALREADY there and ask "keep / change / reframe?" per element.
 
 ### Step 1: Resolve paper folder
 
@@ -99,7 +118,14 @@ Cross-check: every `supported` claim in `2-claims` should be carried by at least
 one paragraph, and every planned display in `4-display` should appear in
 at least one slot.
 
-### Step 4: Handoff
+### Step 4: Compile + Exit Gate
+
+1. Compile the stage PDF per `ref/tex-quality.md` (pdflatex twice, clean aux).
+2. Present the exit criteria from `ref/stage-gate.md` with per-item check/fail.
+3. Ask: "Stage minimap looks ready -- confirm to close and move to write?"
+4. Only on user confirm: update `STATUS.md` `current_layer` and Gate Ledger.
+
+### Step 5: Handoff
 
 Report the minimap summary (slot count, unanchored slots, uncarried claims) and
 the next command:
@@ -109,3 +135,5 @@ write the draft -> /haipipe-paper write <paper-dir>
 ```
 
 Update `STATUS.md` (`current_layer`, `maturity: section-map`).
+
+End the reply with the stage strip (run `ref/stage-strip.sh`).

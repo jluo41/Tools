@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-22
 context: whole lifecycle flow (every stage skill seed/pitch/claims/narrative/display/minimap); felt on Paper-Personality-Opioid-MedJournal seed re-walk, where the agent rewrote 0-seed.tex but left 0-seed.pdf stale
-fixed_in: ""
+fixed_in: "paper ref/tex-quality.md + all stage skills v2.0.0"
 ---
 and each lifecycle stage, there is a delievery, everytime, you need to compile the pdf as well. so people can read it.
 

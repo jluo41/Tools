@@ -4,9 +4,11 @@ description: "Plan, materialize (via task/probe), scaffold, run framework candid
 argument-hint: "[plan|materialize|scaffold|framework|build|audit|insert] [paper-dir-or-display-id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.3.0"
+  version: "1.4.0"
   last_updated: "2026-06-22"
   summary: "Maintain 0-displays/ as a story/evidence display layer with README.md, per-unit README.md, float.tex, and standalone preview PDFs."
+  changelog:
+    - "v1.4.0: added illuminate protocol + cross-refs to stage-gate, tex-quality"
 ---
 
 Skill: haipipe-paper-display
@@ -17,6 +19,11 @@ Maintain the **display layer** for a concrete paper folder.
 New here? Read `../README-display.md` first: how a figure/table gets made, which
 renderer to pick (table/figure/diagram/illustration), the unit contract, and the
 hard-won lessons (settle the model upstream; controlled AI illustration).
+
+This stage follows three shared protocols. Read them once:
+- `ref/stage-illuminate.md` -- illuminate + elicit taste before drafting
+- `ref/stage-gate.md` -- exit criteria + confirm-before-advance gate
+- `ref/tex-quality.md` -- self-contained compilable tex with Pn.Sm tags
 
 Display items are figures, tables, diagrams, and other manuscript-visible
 objects that carry evidence and story. A display item is not just a file. It
@@ -99,6 +106,11 @@ Modes
 
 Create or refresh `0-displays/README.md` from the paper state.
 
+**Illuminate.** Before creating/refreshing the display index, follow
+`ref/stage-illuminate.md`. Present the current display set and ask: which
+display is the hero figure? Which are main vs supplement? What visual forms
+(forest plot, panel, flow diagram, table)? Elicit taste before proceeding.
+
 Inputs to read when present:
 
 - `0-lifecycle/1-pitch/1-pitch.tex`
@@ -146,6 +158,10 @@ Display-unit scaffold:
 One display unit can hold one or many concrete results: a main figure, a table
 body, appendix variants, robustness previews, and the source needed to rebuild
 them.
+
+**Per-unit interrogation.** Each display unit is interrogated by an independent
+subagent for inclusion (keep/merge/move-to-Supplement/cut), form, and claim
+mapping. Render the verdict in small font in the unit's `README.md`.
 
 `README.md` template:
 
@@ -323,6 +339,10 @@ Audit questions:
 - Is any display orphaned: asset exists but no index row, or index row exists
   but no asset/float?
 
+**Per-unit interrogation.** Each display unit is interrogated by an independent
+subagent for inclusion (keep/merge/move-to-Supplement/cut), form, and claim
+mapping. Render the verdict in small font in the unit's `README.md`.
+
 Route failures:
 
 | Failure | Route |
@@ -351,6 +371,12 @@ Rules:
 
 Handoff
 -------
+
+Present exit criteria per `ref/stage-gate.md`. Compile `4-display.tex` per
+`ref/tex-quality.md`. Ask for user confirm before advancing to minimap.
+
+Render the **stage strip** showing the current position in the lifecycle
+(see `ref/lifecycle-map.md`).
 
 After any mode, report:
 

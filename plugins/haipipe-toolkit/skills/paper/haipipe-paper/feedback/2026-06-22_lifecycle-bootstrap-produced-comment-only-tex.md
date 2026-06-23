@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-22
 context: bootstrapping Paper-SMSandTiming-IS and Paper-AdaptiveFollowUp-IS lifecycle via haipipe-paper-folder and manual creation. Reference implementation Paper-SuitableMessageForRx-JAMANO.
-fixed_in: ""
+fixed_in: "paper ref/tex-quality.md + init_paper_layout.py v2.0.0"
 ---
 When bootstrapping lifecycle stages for two new papers (Paper-SMSandTiming-IS and Paper-AdaptiveFollowUp-IS), the generated 0-lifecycle/ tex files were written entirely as %% comment blocks — no \documentclass, no \begin{document}, no rendered prose, no compilable PDF output. This violates three established conventions visible in Paper-SuitableMessageForRx-JAMANO:
 

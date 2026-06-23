@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-22
 context: haipipe-paper narrative stage on Paper-Personality-Opioid-MedJournal; after adding self-authored "Why (job)" lines to each narrative point, the user found them limp ("软绵无力") and the per-section content too thin
-fixed_in: ""
+fixed_in: "haipipe-paper-narrative v1.3.0"
 ---
 "感觉每个部分说的太少了，不过可以之后再更新这个 skill 的 writing style。这个 why 有点软绵无力，感觉需要 call subagent 去 review 每个 items，看看要不要放到这里，然后把 comments 用小字加进去。我们就这样做吧。"
 

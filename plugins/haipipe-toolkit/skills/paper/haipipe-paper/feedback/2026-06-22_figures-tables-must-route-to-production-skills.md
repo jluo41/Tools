@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-22
 context: haipipe-paper-structure-display + 4-figures-tables lifecycle stage
-fixed_in: ""
+fixed_in: "haipipe-paper-display v1.4.0"
 ---
 
 The 4-figures-tables lifecycle stage is a PASSIVE inventory — it lists displays with a text status ("ready"/"weak") but doesn't route to any production skill. It's a dead contract.

@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-22
 context: haipipe-paper orchestrator + haipipe-paper-enter
-fixed_in: ""
+fixed_in: "haipipe-paper-enter v2.1.0 + haipipe-paper v2.0.0"
 ---
 
 The orchestrator spec says every specialist dispatch should end with a structured tail block:

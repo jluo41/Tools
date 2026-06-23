@@ -203,7 +203,7 @@ Judge    fn/judge.md     what claim is honestly supported   verdict.md, probe.ya
 Return   fn/return.md    where the verdict goes             return.md, probe.yaml.return, status.md
 ```
 
-External calls: Gather may call `haipipe-task` / `haipipe-discover`; Judge may
+External calls: Gather may call `haipipe-task` / `haipipe-discovery`; Judge may
 call reviewer agents / Codex; Return may call `haipipe-insight-*` and edits
 paper/application only with approval. Every other step calls nothing.
 
@@ -395,7 +395,7 @@ claim-level field; one half alone is not strong. Every decision appends one line
 to `probes/FILING.md`. A `P.06xx_*` row in FILING.md is a proposal, not an
 existing probe; ask before materializing it.
 
-Also auto-invoked by `haipipe-data` (on task create) and `haipipe-discover` (on
+Also auto-invoked by `haipipe-data` (on task create) and `haipipe-discovery` (on
 discovery create).
 
 

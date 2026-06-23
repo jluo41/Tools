@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-22
 context: haipipe-paper-enter dashboard output
-fixed_in: ""
+fixed_in: "haipipe-paper-enter v2.1.0"
 ---
 
 When entering a paper, the dashboard should tell the user what this paper is about — not just the structural state. A new collaborator or a returning user after a break needs to be educated: what is the paper's question, what is the headline finding, who is the audience.

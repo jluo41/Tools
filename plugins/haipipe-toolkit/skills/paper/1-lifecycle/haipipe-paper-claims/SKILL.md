@@ -4,9 +4,11 @@ description: "Create or update the paper folder's 0-lifecycle/2-claims/2-claims.
 argument-hint: "[paper-dir] [--backfill <probe-ref>] [--source <path>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
   last_updated: "2026-06-22"
   summary: "Maintain 0-lifecycle/2-claims/2-claims.tex as the claim/evidence ledger: matrix + per-claim detail, two-stage evidence gate, no aspirational anchors."
+  changelog:
+    - "v1.2.0: added illuminate protocol + cross-refs to stage-gate, tex-quality"
 ---
 
 Skill: haipipe-paper-claims
@@ -29,6 +31,11 @@ probe/discover/task/insight, and confirmed verdicts are backfilled here.
 Read first: `../../PHILOSOPHY.md`, `../../ref/lifecycle-map.md`,
 `../../ref/delivery-need.md`.
 
+This stage follows three shared protocols. Read them once:
+- `ref/stage-illuminate.md` -- illuminate + elicit taste before drafting
+- `ref/stage-gate.md` -- exit criteria + confirm-before-advance gate
+- `ref/tex-quality.md` -- self-contained compilable tex with Pn.Sm tags
+
 Location
 --------
 
@@ -42,6 +49,13 @@ Principles
 ----------
 
 1. One row per claim. Each row has a status and a source ref.
+1b. **Research questions live in claims, not pitch.** RQs are venue-coupled:
+   their wording depends on what the target editor rewards. The pitch is
+   venue-independent (the one-minute story before you pick a venue). Claims
+   are venue-coupled (tailored to the target). Therefore RQs belong in the
+   claims ledger, stated BEFORE the claim-evidence matrix, with an explicit
+   RQ-to-claim mapping table. Each RQ maps to 1-2 claims; each claim maps
+   back to exactly one RQ. The mapping is the skeleton of the Results section.
 2. Status vocabulary: `supported`, `weak`, `GAP`.
 3. A claim is `supported` only when it traces to a CONFIRMED probe verdict or an
    equivalently judged artifact. Never mark `supported` from intuition.
@@ -57,6 +71,13 @@ Principles
 Workflow
 --------
 
+### Step 0: Illuminate + Elicit
+
+Before modifying the ledger, follow `ref/stage-illuminate.md`. Present the
+current claim set and its venue coupling. Identify taste-bearing decisions:
+which claim is PRIMARY for this venue? What frame (clinical/method/policy)?
+Ask the user.
+
 ### Step 1: Resolve paper folder
 
 Accept the paper root or any path inside it (look upward for `0-lifecycle/`).
@@ -68,6 +89,22 @@ Ledger body = a compact MATRIX (index) then ONE `\subsection*` per claim (detail
 Tables get a banner but no `Pn.Sm`; prose paragraphs use the sentence format.
 
 ```latex
+\section*{Research Questions}
+
+\begin{enumerate}
+\item[\textbf{RQ1.}] <question, shaped by what the venue rewards>
+\item[\textbf{RQ2.}] <question>
+\end{enumerate}
+
+\begin{tabularx}{\textwidth}{@{}p{0.06\textwidth}p{0.06\textwidth}X@{}}
+\toprule
+RQ & Claims & Mapping \\
+\midrule
+RQ1 & C1, C2 & <how the claims answer this RQ> \\
+RQ2 & C3     & <how the claims answer this RQ> \\
+\bottomrule
+\end{tabularx}
+
 \section*{Claim-Evidence Matrix}
 % =========================================================
 % Para [claims.ledger] Result -- claim / status at a glance
@@ -114,7 +151,7 @@ statistic. Never write a "planned Table" as if it were evidence.
 
 ```text
 claim needs a verdict/robustness check   -> /haipipe-probe open <need>
-claim needs outside context/citation     -> /haipipe-discover <question>
+claim needs outside context/citation     -> /haipipe-discovery <question>
 claim needs a run or data artifact        -> /haipipe-task <contract>
 ```
 
@@ -133,6 +170,7 @@ A claim row is done when:
 Beyond the per-row gate, the claims stage is NOT complete until the ledger also
 carries these REQUIRED items:
 
+- a **Research Questions** section with RQ-to-claim mapping (principle 1b); and
 - a venue-coupled `[primary]` claim designation (principle 9); and
 - a **Venue Fit** block that justifies, with EVIDENCE, why the primary/supporting
   claims fit the target venue. It states (a) what that venue rewards (from
@@ -145,16 +183,31 @@ carries these REQUIRED items:
   across them); do not put it up front before the claims. Format it as BULLET POINTS
 -- a short list of fit reasons plus a short list of risks / where it may not fit --
 not a single paragraph (bullets read faster than prose here).
+- an **Editor's Chair Alignment** table at the END of the ledger: a three-column
+  table mapping RQ → Claims → Editor's Chair Answer. The editor's chair question
+  (from `_venue/playbook-<venue>`) works twice: once at the top generating RQs
+  (if an RQ doesn't help answer the editor's question, drop it), once at the
+  bottom validating claims (if a claim can't produce a one-sentence answer to
+  the editor, it's wrong for this venue). Diagnostic: any claim missing a column
+  has a problem (no RQ = orphan; no answer = wrong venue; RQ without claim = GAP).
 - `2-claims.pdf` recompiled and current (a stale PDF is a defect; recompile after
   every edit without being asked).
 
+Present exit criteria per `ref/stage-gate.md`. Ask for user confirm before
+advancing. Update `STATUS.md` Gate Ledger on confirm.
+
+Compile `2-claims.pdf` per `ref/tex-quality.md` after every ledger edit.
+
 ### Step 4: Handoff
 
-Report the ledger summary (counts by status) and the next command:
+Report the ledger summary (counts by status) and the next command.
+
+Render the **stage strip** showing the current position in the lifecycle
+(see `ref/lifecycle-map.md`):
 
 ```text
 claims stable      -> /haipipe-paper narrative <paper-dir>
-open needs remain  -> /haipipe-probe | /haipipe-discover | /haipipe-task
+open needs remain  -> /haipipe-probe | /haipipe-discovery | /haipipe-task
 ```
 
 Update `STATUS.md` (`current_layer`, `maturity: claim-ledger` when the ledger is

@@ -6,6 +6,20 @@ first. Rollup lives in the plugin-level `CHANGELOG.md`. Per-skill version
 history also lives in each `SKILL.md` frontmatter `changelog:`.
 
 
+## [2.0.1] — 2026-06-23
+
+### Fixed
+- **4-bucket directory structure created on disk.** Moved alphaxiv/deepxiv/paper-analyzer
+  from `1_search/` to `2_read/`, renamed `2_review/` to `3_review/`, renamed `3_idea/` to
+  `4_idea/`. Now matches DESIGN.md, SKILL.md, and `.claude/skills/` symlinks (which had been
+  broken — 8 of 12 symlinks were dangling).
+- **Cross-layer rename completed.** `haipipe-discover` -> `haipipe-discovery` applied to 12
+  files across paper/probe/application/task/toolkit layers. TODO.md deleted.
+- **Orchestrator Chinese character normalized.** 創 (traditional, U+5275) -> 创 (simplified,
+  U+521B) on line 42, matching all other files.
+- **CODE_REVIEW.md updated.** All 4 WARNs resolved; verdict now PASS.
+- **DESIGN.md `play/` reference removed.** Directory does not exist.
+
 ## [2.0.0] — 2026-06-22
 
 ### Changed (TWO-AXIS redesign, mirrors task)

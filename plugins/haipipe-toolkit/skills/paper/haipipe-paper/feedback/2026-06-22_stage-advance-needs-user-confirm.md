@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-22
 context: whole lifecycle flow (haipipe-paper-lifecycle router + haipipe-paper-enter console + every stage skill seed/pitch/claims/narrative/display/minimap); felt while moving through stages on Paper-Personality-Opioid-MedJournal
-fixed_in: ""
+fixed_in: "paper ref/stage-gate.md + all stage skills v2.0.0"
 ---
 我觉得还有一个问题，就是我感觉进入 Lifecycle 的一个 stage 后，还没怎么着，系统也不通知我什么时候出来，或者说没有让我 confirm 什么时候这个 stage 算是 over 了。我觉得这是一个很大的问题。我的 point 是：应该让我 confirm 这个 stage 是不是 ready 了，才进入下一个 stage。现在感觉系统是迫不及待地进入下个 stage 了，这个体验不好。
 

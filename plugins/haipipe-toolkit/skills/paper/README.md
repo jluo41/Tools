@@ -1,80 +1,45 @@
 # Paper Skill
 
-Canonical reference for the paper lifecycle. This file fixes the structure;
-the `ref/` files carry the detail. If anything elsewhere disagrees with this
-file or `ref/`, this file and `ref/` win.
+Canonical reference. This file + `ref/` win over anything elsewhere.
 
-## What the paper skill is
-
-The paper skill is a delivery lifecycle. It owns one manuscript's story, claim
-wording, displays, paragraph minimap, and section text. It is TeX-first and
-maturity-oriented. It behaves like a claim/evidence contract, the same way a
-probe does, not a loose writing folder.
-
-Project-level evidence does not live in the paper. It lives in probes,
-discoveries, tasks, and insights. When a paper hits a gap, it records a delivery
-need and routes to the relevant evidence worker, then backfills the verdict.
-There is no project-level narrative coordination layer; the paper owns its own
-story.
+A paper is a delivery contract, not a writing folder. It owns one manuscript's story, claims, displays, minimap, and prose. Evidence lives in probes/tasks/discoveries/insights at the project level. Claim gaps buffer in `1-probe-plans/` and batch-dispatch to probe (the universal evidence gateway; probe calls task/discover during Gather). Direct task/discover for non-claim utility work only.
 
 ## Paper-folder layout
 
-Every paper folder follows this shape. See `ref/paper-lifecycle.md` for the
-stage and maturity detail, and `ref/paper-rounds.md` for the rounds detail.
-
 ```text
 <paper-root>/
-├── STATUS.md            current layer, maturity, active round
-├── 0-<paper>.tex/.bib   main manuscript shell
-├── 0-lifecycle/         TeX-first maturation spine
-│   ├── 0-seed/
-│   ├── 1-pitch/
-│   ├── 2-claims/
-│   ├── 3-narrative/
-│   ├── 4-display/
-│   └── 5-minimap/
-├── 0-sections/          manuscript prose .tex files
-├── 0-displays/          reusable figure/table units, one folder per display
-│   └── displayNN-<slug>/
-├── 1-rounds/            dated work rounds (discussion, decisions, todo, applied)
-│   ├── latest.md
-│   └── vYYMMDD/
+├── STATUS.md                current layer, maturity, active round
+├── 0-<paper>.tex/.bib       main manuscript shell
+├── 0-lifecycle/              TeX-first maturation spine
+│   ├── 0-seed/  1-pitch/  2-claims/  3-narrative/  4-display/  5-minimap/
+├── 0-sections/               manuscript prose .tex
+├── 0-displays/displayNN-*/   figure/table units
+├── 1-probe-plans/PPNN_*.md   evidence-need buffer -> batch-dispatch to probe
+├── 1-rounds/vYYMMDD/         work rounds (discussion, decisions, todo, applied)
 ├── 1-config.yaml
 └── 1-compile.sh
 ```
 
-The `0-` prefix is source of truth, what the paper IS and how it is told. The
-`1-` prefix is process, how the paper is built and revised.
+`0-` = source of truth (content). `1-` = process (build + revise).
 
 ## Skill-tree layout
 
-The skill directory mirrors the lifecycle. See `ref/paper-skill-structure.md`
-for the full target organization and the router rule.
-
 ```text
 paper/
-├── haipipe-paper/       router + Paper Console
-├── PHILOSOPHY.md        design philosophy
-├── README.md            this file
-├── ref/                 lifecycle · rounds · lifecycle-map · dashboard · delivery-need · skill-structure
-├── 0-enter/             Paper Console (haipipe-paper-enter)
-├── 1-lifecycle/         the 6 stage procedures + figure/arch/plan/diagram helpers
-├── 2-rounds/            dated work rounds (haipipe-paper-round)
-├── 3-write-edit/        write, edit, self-review skills + section playbooks
-├── 4-build-submit/      scaffold, restructure, check
-├── 5-respond/           rebuttal, response
-├── 6-present/           slides, poster
-├── _venue/             venue profiles (knowledge, consulted) — see _venue/README.md
-└── components/          citation, compile, diff
+├── haipipe-paper/    router + Paper Console
+├── 0-enter/          Paper Console (haipipe-paper-enter)
+├── 1-lifecycle/      6 stage procedures + display renderers
+│                     (-display-table, -display-figure, -display-diagram,
+│                      -display-illustration, -display-illustration-gemini)
+├── 2-rounds/         work rounds (haipipe-paper-round)
+├── 3-write-edit/     write, edit, self-review + section playbooks
+├── 4-build-submit/   scaffold, restructure, check
+├── 5-respond/        rebuttal, response
+├── 6-present/        slides, poster
+├── _venue/           venue profiles (knowledge, not verbs) — see _venue/README.md
+├── components/       citation, compile, diff
+└── ref/              lifecycle, rounds, skill-structure, lifecycle-map
 ```
-
-Venue profiles are a paper-internal area at `_venue/`, not a standalone layer.
-The lifecycle consults `_venue/playbook-<venue>` (misq/isr/ms-is/pnas/
-nature-portfolio/jama/clinical-medicine; grant; patent-*) for what the target
-rewards; venues hold knowledge, never lifecycle verbs. The old flat
-`paper/_venue/` was reshaped into `_venue/`; its venue-routing shells
-(`-conference/-journal/-is`) and prose pipelines (`-create/-revise`) were retired
-(see retired-names below). See `_venue/README.md` and `_venue/_SCHEMA.md`.
 
 ## References
 
@@ -83,18 +48,15 @@ rewards; venues hold knowledge, never lifecycle verbs. The old flat
 | `ref/paper-lifecycle.md` | stage spine, maturity ladder, loopback rule, evidence-worker handoff |
 | `ref/paper-rounds.md` | `1-rounds/` contract, file semantics, triage targets |
 | `ref/paper-skill-structure.md` | skill-tree target, router rule, maturity rule |
+| `ref/lifecycle-map.md` | stage-to-procedure map with reads/writes/calls |
 
 ## Retired names
-
-These names were removed. Do not reintroduce them.
 
 | Retired | Use instead |
 |---|---|
 | `1-feedback/` | `1-rounds/` |
-| `lifecycle/stageNN_slug/current.md` + per-stage `runs/` `feedback/` `assets/` | `0-lifecycle/<N-stage>/<N-stage>.tex` + `1-rounds/vYYMMDD/` |
-| old stage names: `architecture-minimap`, `paper-plan`, `display-contract` | folded into `2-claims`, `3-narrative`, `4-display`, `5-minimap` |
-| `0-displays/Figures/<id>/`, `0-displays/Tables/<id>/` buckets | `0-displays/displayNN-<slug>/` units |
-| project-level narrative coordination layer | the paper owns its own story; route gaps straight to evidence workers |
-| `paper/_venue/` (flat venue profiles) | `_venue/playbook-<venue>` (paper-internal venue area) |
-| `haipipe-paper-{conference,journal,is}` (venue-routing workflow shells) | consult `_venue/playbook-<venue>` + the lifecycle owns the verbs |
-| `haipipe-paper-{create,revise}` (prose pipelines) | `3-write-edit/haipipe-paper-edit-{write,weaving}` |
+| `architecture-minimap`, `paper-plan`, `display-contract` | `2-claims`, `3-narrative`, `4-display`, `5-minimap` |
+| `0-displays/Figures/` `Tables/` buckets | `0-displays/displayNN-<slug>/` |
+| project-level narrative coordination | paper owns its story; gaps route to probe |
+| `haipipe-paper-{conference,journal,is}` | `_venue/playbook-<venue>` + lifecycle verbs |
+| `haipipe-paper-{create,revise}` | `3-write-edit/haipipe-paper-edit-{write,weaving}` |

@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-22
 context: haipipe-paper lifecycle (pitch/claims/surprise etc.); felt on Paper-Personality-Opioid-MedJournal when the agent started grepping two-part logs / variables to verify the C2 "patients already on opioids" claim
-fixed_in: ""
+fixed_in: "paper ref/evidence-routing.md v2.0.0"
 ---
 这个不是你要做的事情，应该留给 probe 去做，你可以列一下计划，之后合适的时候 trigger probe 去做，我觉得这算是一类问题吧，你看看如果加上 feedback 里去，遇到这种情况，应该怎么去丢给 probe 去处理。 现在没有证据，可以先加上 红字 进行解释之类的。
 

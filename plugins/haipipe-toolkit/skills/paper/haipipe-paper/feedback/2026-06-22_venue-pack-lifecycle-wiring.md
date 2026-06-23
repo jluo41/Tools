@@ -1,6 +1,6 @@
 # Venue pack <-> lifecycle wiring
 
-Status: DONE (initial hooks added); two open questions parked here.
+Status: DONE (initial hooks + v2.0.0 cross-refs; open questions parked).
 
 ## What was wired
 

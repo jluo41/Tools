@@ -21,7 +21,7 @@ rewrite it.
 | Section | Lead with | Ceiling / rule |
 |---|---|---|
 | One-Minute Pitch | a short plain-language paragraph a newcomer understands and finds interesting | ~4-6 short sentences; assume no background |
-| Hook | one curiosity move: scene / surprise / paradox+stakes / one question | 2-4 short sentences (grab -> deepen -> bridge); commit to ONE move; never stack questions; any question <=20 words |
+| Hook | >=2 candidate methods, each committing to ONE curiosity move | 2-4 short sentences per candidate; never stack questions within a candidate; any question <=20 words; mark one recommended lead; keep all candidates visible |
 | Finding - Surprise | the unexpected result (sentence 1) | then the tension it creates |
 | Implication - So What | what changes + who can act | in the first two sentences |
 | Audience and Venue Fit | the reader and their need | before naming the venue format |
@@ -65,10 +65,10 @@ to overlap the One-Minute Pitch.
 | Reframe / new lens | views the familiar from a surprising angle | fresh framing | can oversimplify | "[X] is usually [done one way]; what if it already exists [another way]?" |
 
 Choosing:
-- Commit to one method, or a deliberate combination of two; never stack rhetorical questions, which dilutes the punch and reads as undecided.
+- Each candidate hook should commit to ONE narrative move (not a stacked enumeration), but the final artifact keeps all candidate hooks visible.
 - For medical and empirical venues, strongest to weakest: paradox+stakes > surprising fact > vivid scene; gap and single-question are weaker alone; analogy or metaphor is risky in clinical writing.
 - When unsure, draft the hook in two or three methods and compare before committing.
-- During selection, lay the candidates out as `\subsection*` blocks under the Hook section (one per method, the chosen one marked "(selected)"), compile, and compare in the PDF; collapse to the selected hook once it is locked.
+- During selection, lay the candidates out as `\subsection*` blocks under the Hook section (one per method). Keep every hook candidate displayed permanently. Mark the recommended lead with (recommended lead) but do not hide or collapse the alternates. The author chooses at write time.
 
 Worked example (commit to one move):
 BEFORE (four stacked questions): "Why do two patients with the same back pain leave two physicians with very different opioid prescriptions? How much of that gap is the physician rather than the patient? And could the way patients describe a physician online reveal who prescribes more? Millions of patient reviews already describe these physicians, yet prescribing research has barely read them."
@@ -97,7 +97,7 @@ Quoted from a real `1-pitch.tex` (Paper-Personality-Opioid-MedJournal).
 ## Reviewer checklist
 
 - [ ] One-Minute Pitch is a short newcomer paragraph (~4-6 short sentences) opening with a "We study..." framing sentence.
-- [ ] Hook commits to one narrative method (not a stack of questions) and leads the section; any question <=20 words.
+- [ ] Hook has >=2 candidate methods, each committing to one narrative move (not stacked questions); one marked (recommended lead); all retained; any question <=20 words.
 - [ ] Surprise states the unexpected result in sentence 1.
 - [ ] Implication names who can act within the first two sentences.
 - [ ] Audience names the reader and their need before the venue format.

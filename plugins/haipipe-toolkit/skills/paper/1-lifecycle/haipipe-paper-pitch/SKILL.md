@@ -4,8 +4,11 @@ description: "Create or update the paper folder's 0-lifecycle/1-pitch/1-pitch.te
 argument-hint: "[paper-dir] [--reason <slug>] [--source <path-or-note>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.4.0"
+  version: "1.5.0"
   last_updated: "2026-06-22"
+  changelog:
+    - "1.5.0 (2026-06-22): added Title section, multi-hook candidates, template enforcement, quality gate; wired illuminate+gate+compile protocols"
+    - "1.4.0 (2026-06-22): readability rules, section cues, hook catalog"
   summary: "Maintain 0-lifecycle/1-pitch/ as the one-minute public-facing story and provenance layer for a concrete paper folder. Carries readability rules, section cues, and a hook narrative-methods catalog (ref/pitch-readability.md)."
 ---
 
@@ -42,10 +45,19 @@ Location:
     └── archive/             older semantic pitch snapshots (vNN_<reason>.tex)
 ```
 
+Shared Protocols
+-----------------
+
+This stage follows three shared protocols. Read them once:
+
+- `ref/stage-illuminate.md` -- illuminate + elicit taste before drafting
+- `ref/stage-gate.md` -- exit criteria + confirm-before-advance gate
+- `ref/tex-quality.md` -- self-contained compilable tex with Pn.Sm tags
+
 Principles
 ----------
 
-1. **One minute or it failed.** `PAPER_PITCH.md` should be readable in one
+1. **One minute or it failed.** `1-pitch.tex` should be readable in one
    minute. Keep it short enough to fit on one screen.
 2. **Pitch can start as intuition.** A seed pitch may cite author judgment,
    a research review, or a rough direction.
@@ -57,11 +69,24 @@ Principles
    application-first`), not for typo edits.
 5. **Do not write the paper here.** Abstract, intro, section plan, and LaTeX
    belong downstream. This skill only maintains the story kernel.
-6. **Hook is one move, not a stack of questions.** Open with one curiosity-driving move: a vivid concrete scene, a surprising or counterintuitive fact, a paradox tied to stakes, or one sharp question. Commit to ONE move; do not stack multiple rhetorical questions, which dilutes the punch and reads as undecided. A flat statement of background is not a hook. See `ref/pitch-readability.md`.
+5b. **Research questions belong in claims, not pitch.** The pitch is
+   venue-independent (the one-minute story). RQs are venue-coupled (their
+   wording depends on what the target editor rewards). RQs are defined in
+   `2-claims.tex` with an explicit RQ-to-claim mapping. Do not add RQs to
+   the pitch.
+6. **Each hook candidate is one move, not a stack of questions.** Each candidate hook should commit to ONE narrative move (not a stacked enumeration): a vivid concrete scene, a surprising or counterintuitive fact, a paradox tied to stakes, or one sharp question. Do not stack multiple rhetorical questions within a single candidate, which dilutes the punch and reads as undecided. The final artifact keeps all candidate hooks visible (>=2 candidates, one marked as recommended lead). A flat statement of background is not a hook. See `ref/pitch-readability.md`.
 7. **Read it in one minute or rewrite it.** The pitch must be fast and easy to read; if a reader slows down to parse a sentence, rewrite that sentence. Follow the readability rules and per-section cues in `ref/pitch-readability.md`: short sentences, lead with the point, one idea per sentence, plain words, concrete numbers, no AI voice. Readability is part of the pitch done-gate.
 
 Workflow
 --------
+
+### Step 0: Illuminate + Elicit
+
+Before drafting, follow `ref/stage-illuminate.md`:
+
+- Present the current state of this stage (what exists on disk, what could change).
+- Identify 2-3 taste-bearing decisions for this stage.
+- Ask the user before committing to choices that affect narrative direction.
 
 ### Step 1: Resolve paper folder
 
@@ -87,6 +112,14 @@ Every pitch carries the full backbone: Hook, Surprise, Implication (so-what), Au
 ```latex
 % Layout follows ../../3-write-edit/_shared/sentence-format.md.
 % Readability rules + section cues + worked before/after examples: ref/pitch-readability.md.
+\section*{Title}
+% =========================================================
+% Para [pitch.title] Working title
+% Cue: short, specific, evocative; <=15 words; updated as the story sharpens.
+% =========================================================
+%% ---- P0.S1 ----
+Working title for the paper.
+
 \section*{One-Minute Pitch}
 % =========================================================
 % Para [pitch.kernel] One-minute pitch
@@ -112,11 +145,29 @@ Why it matters, and who could use it.
 
 \section*{Hook}
 % =========================================================
-% Para [pitch.hook] Hook -- a vivid, question-led opening that makes the reader curious
-% Cue: one sharp question, <=20 words, before any context sentence.
+% Para [pitch.hook] Hook -- multiple candidate openings, all retained
+% Cue: >=2 candidate methods (e.g. Paradox, Vivid Scene, Surprising Fact, Stakes, Gap).
+%       Each candidate is a \subsection* block, one per narrative method.
+%       ALL candidates are kept permanently displayed -- never collapsed.
+%       Mark one as "(recommended lead)" but do NOT hide the rest.
+%       The author chooses the final lead at write time.
+% Hook section must show >=2 candidate methods, all retained, with a recommended lead marked.
 % =========================================================
-%% ---- P2.S1 ----
-A sharp question, or a concrete scene that ends in one, that makes the reader want the answer. Not a flat statement of background.
+
+\subsection*{Candidate A: Paradox (recommended lead)}
+%% ---- P2a.S1 ----
+A paradox or tension that sets expectation against reality. 2-4 short sentences.
+
+\subsection*{Candidate B: Vivid Scene}
+%% ---- P2b.S1 ----
+A concrete moment with specifics that makes the reader feel it. 2-4 short sentences.
+
+\subsection*{Candidate C: Stakes}
+%% ---- P2c.S1 ----
+What is at risk -- opens with consequence. 2-4 short sentences.
+
+% Add more candidates as needed. Each commits to ONE narrative move.
+% See ref/pitch-readability.md for the full method menu.
 
 \section*{Finding - Surprise}
 % =========================================================
@@ -167,6 +218,11 @@ The weakest point or most important missing evidence.
 What discovery, task, probe, or review should happen next.
 ```
 
+**Template Enforcement:** A pitch is NOT complete unless it contains, as labeled
+`\section*` parts: Title, One-Minute Pitch, Hook (with >=2 candidates), Surprise,
+Implication, Why Believe, Still Fragile. A pitch that is one flat paragraph missing
+these sections must be flagged and restructured before it can pass any gate.
+
 ```markdown
 # Pitch Log
 
@@ -179,7 +235,7 @@ Source:
 - Author intuition / initial review / early project direction.
 
 Pitch:
-- See `PAPER_PITCH.md`.
+- See `1-pitch.tex`.
 
 Why this version:
 - Initial public-facing story before the evidence base is stable.
@@ -226,7 +282,28 @@ Next:
 - ...
 ```
 
-### Step 4: Handoff
+### Step 3b: Quality Gate
+
+Check the pitch against its rubric:
+
+- [ ] Title section present with working title?
+- [ ] Hook section with >=2 candidate methods, all retained?
+- [ ] Surprise section with a non-obvious turn stated?
+- [ ] Implication section with "so what" and audience stated?
+- [ ] Why Believe section with evidence pointers (>=1 per claim)?
+- [ ] Still Fragile section with the weakest point named?
+- [ ] PDF compiled and current?
+
+If any item fails, flag it and offer to fix before advancing.
+
+### Step 4: Compile + Exit Gate
+
+1. Compile the stage PDF per `ref/tex-quality.md` (pdflatex twice, clean aux).
+2. Present the exit criteria from `ref/stage-gate.md` with per-item check/fail.
+3. Ask: "Stage pitch looks ready -- confirm to close and move to claims?"
+4. Only on user confirm: update `STATUS.md` `current_layer` and Gate Ledger.
+
+### Step 5: Handoff
 
 After updating pitch, report:
 
@@ -240,6 +317,8 @@ After updating pitch, report:
 /haipipe-paper claims <paper-dir>      next stage: the claim ledger
 /haipipe-paper narrative <paper-dir>   once claims are stable
 ```
+
+End the reply with the stage strip (run `ref/stage-strip.sh`).
 
 Relationship to other structure skills
 --------------------------------------
