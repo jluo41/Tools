@@ -1,6 +1,10 @@
 ---
 name: chronicle-email
-description: Two modes for MS365 Outlook emails. (1) monthly-index — chronicle a full month into a markdown index file. (2) recent-window — pull last N days as a compact summary (default 7), used as input to chronicle-day-plan Phase 1. Mailbox is junjieluo.jhu@outlook.com via Softeria ms-365-mcp-server. Trigger: "/chronicle-email", "chronicle emails", "last week's emails", "summarize this week's inbox".
+description: >-
+  Indexes MS365 Outlook email in two modes: monthly-index writes a full-month
+  markdown index, and recent-window summarizes the last N days for
+  chronicle-day-plan. Use for /chronicle-email, chronicle emails, last week's
+  emails, or summarize this week's inbox.
 ---
 
 # Chronicle Email

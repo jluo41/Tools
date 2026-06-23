@@ -1,24 +1,11 @@
 ---
 name: haipipe-paper-edit-weaving
 description: >-
-  Orchestrator for paper-revision work on a single LaTeX file. Parses intent
-  across granularity (section / paragraph / sentence) and verb (diagnose / apply
-  / check / write), then either runs the built-in section-diagnose workflow
-  inline or dispatches to a specialist via Skill(). Default route (when intent is
-  unscoped or section-level) embeds an ARC + Roles header at the top of the .tex,
-  per-paragraph 📌 NOW / 🔧 PROPOSE blocks immediately above each `%% ---- PN.S1
-  ----` marker, and an optional 💭 LOGIC DISCUSSION block at the bottom — no
-  sidecar .txt files. Three lifecycle gates: (G1) STOP after embedding the plan
-  and ask the author to review the .tex before any prose edits; (Q) auto-fire
-  quality check after every PROPOSE action is APPLIED — fans out via Skill() to
-  paper-check-numeric / haipipe-paper-edit-check-reference / haipipe-paper-edit-claim-audit (configurable)
-  plus inline cheap scans (em-dash, AI-voice patterns, sentence-length, marker
-  monotonicity); (G2) after Gate Q passes or the author acknowledges its
-  failures, PROMPT the author to manually delete the residual plan blocks (skill
-  never auto-deletes). Use when the user says /haipipe-paper-edit-weaving, asks to weave /
-  revise / diagnose / rework a section, paragraph, or sentence in a .tex file
-  with %% Comments: {INITIALS} annotations, or wants to plan + apply edits to a
-  paper section.
+  Orchestrates paper-revision work on a single LaTeX file. Routes section,
+  paragraph, sentence, diagnose, apply, check, and write intents; embeds
+  section-level revision plans as LaTeX comments; enforces review, quality-check,
+  and cleanup gates. Use for /haipipe-paper-edit-weaving or requests to weave,
+  revise, diagnose, or rework annotated paper prose.
 argument-hint: "[granularity-or-verb] [path] [args...]"
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob, Skill
 metadata:

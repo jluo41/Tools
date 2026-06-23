@@ -21,14 +21,60 @@ it is a style corpus.
 - Discussion structure (principal findings -> prior work -> mechanism -> limitations -> conclusion).
 - Tone, sentence length, jargon level, title pattern.
 
-## Candidate topics to source (similar to this paper)
+## Venue rule (important)
 
-physician trait/behavior -> opioid prescribing; physician-level prescribing
-variation; patient reviews / NLP on physician behavior; two-part prescribing
-models; satisfaction pressure -> opioids. (Verified citations live in
-`../references/README.md` and can double as style sources.)
+Exemplars MUST be JAMA-family (same venue: JAMA, JAMA Internal Medicine, JAMA Network
+Open, JAMA Pediatrics, ...). Adjacent-journal papers (NEJM, JMIR, NBER, AJHE) go to
+`../references/` for citation, NOT here. Topic can be any **physician behavior in the
+JAMA family** (it need not be the exact opioid/trait topic); style is what we imitate.
+
+## Candidate topics to source (JAMA family)
+
+physician behavior / decision-making generally; physician-level prescribing or
+practice variation; physician characteristics and care; online ratings vs quality;
+two-part / variance-decomposition designs in claims or EHR data.
+
+## Article type (match the exemplar to ProjB's chosen type)
+
+- Schroeder 2019 (JAMA IM) = **Original Investigation** (full article, 8 pp).
+- Burns 2024 (JAMA Netw Open) = **Original Investigation** (full article).
+- Gray 2015 (JAMA IM) = **Research Letter** (~3 pp, the short-format option).
+
+Both stored PDFs are FULL Original Investigations. If ProjB is written as a Research
+Letter instead, we still need a JAMA-family Research-Letter exemplar (Gray is the
+candidate, but paywalled / not in PMC).
+
+## Seeded exemplars (JAMA family) - real full text stored
+
+PDFs (older articles have a render-PDF):
+- `schroeder-2019-jamaim-dental-opioid.pdf` (+ `.md`) - **JAMA Internal Medicine**, the
+  TARGET OUTLET, Original Investigation. Prescriber-exposure -> opioid outcome, matched
+  claims cohort, "Association of ... With ..." title, structured abstract, absolute-risk
+  + 95% CI. Author manuscript via Europe PMC (PMC6439650). Mirror this voice most closely.
+- `burns-2024-jamanetworkopen-opioid-variation.pdf` (+ `.md`) - **JAMA Network Open**,
+  Original Investigation, open access. Clinician contribution to opioid-administration
+  variation (ICC decomposition). (PMC10792468.)
+
+Full-text XML (2026 articles: no render-PDF yet, so JATS XML = the real full text):
+- `jamanetworkopen-2026-antipsychotic-by-clinician-type.xml` (+ `.md`) - JAMA Network
+  Open, Original Investigation. Clinician-TYPE -> prescribing in Medicare Part D;
+  closest "clinician attribute -> prescribing in claims" match. (PMC13019238.)
+- `jamanetworkopen-2026-peer-feedback-hospitalist-antibiotic.xml` (+ `.md`) - JAMA
+  Network Open, Original Investigation. "Association Between [factor] and [prescribing]"
+  title pattern + physician prescribing behavior. (PMC13126217.)
+
+## Still wanted (could not fetch - truly paywalled)
+
+- Gray 2015, *JAMA Intern Med* 175(2):291-293 (10.1001/jamainternmed.2014.6291) -
+  online review-site ratings vs quality; closest review-signal precedent in JAMA. NOT
+  in PMC (inEPMC=N), so no open copy exists. Drop the PDF here as
+  `gray-2015-jamaim-website-ratings.pdf` if you have institutional access.
 
 ## Status
 
-- Empty. Populate by dropping PDFs or fetching open-access exemplars, then distill
-  the recurring style patterns into `../style-profile.md`.
+- 4 JAMA-family exemplars stored (all Original Investigations): Schroeder (JAMA IM, PDF),
+  Burns (JAMA Netw Open, PDF), Kim + Witt (JAMA Netw Open, full-text XML). Each has a
+  `.md` style note. Removed the Barnett (NEJM) and Madanay (JMIR) drafts: adjacent
+  venues, citations only in `../references/`. Gray 2015 (JAMA IM Research Letter) still
+  needs a PDF from you (paywalled, not in PMC). Next: distill recurring JAMA voice into
+  `../style-profile.md`.

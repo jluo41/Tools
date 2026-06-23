@@ -109,3 +109,33 @@
 [submodule "papers/Paper-TestToLearn-MS2026"]
 	path = papers/Paper-TestToLearn-MS2026
 	url = git@github.com:jluo41/Paper-TestToLearn-MS2026.git
+[submodule "references/nature-paper-skills"]
+	path = references/nature-paper-skills
+	url = https://github.com/Boom5426/Nature-Paper-Skills
+[submodule "references/paperspine"]
+	path = references/paperspine
+	url = https://github.com/WUBING2023/PaperSpine
+[submodule "references/paper-rag-skill"]
+	path = references/paper-rag-skill
+	url = https://github.com/GeederX/paper-rag-skill
+[submodule "references/cite-guard"]
+	path = references/cite-guard
+	url = https://github.com/jon-chun/cite-guard
+[submodule "references/ieee-latex-writer"]
+	path = references/ieee-latex-writer
+	url = https://github.com/Listen-Sun/ieee-latex-writer
+[submodule "references/research-agent-skills"]
+	path = references/research-agent-skills
+	url = https://github.com/SolomonMg/research-agent-skills
+[submodule "references/reprorun"]
+	path = references/reprorun
+	url = https://github.com/WUBING2023/ReproRun
+[submodule "references/research-co-pilot"]
+	path = references/research-co-pilot
+	url = https://github.com/Marazii/research-co-pilot
+[submodule "references/grant-writer-skills"]
+	path = references/grant-writer-skills
+	url = https://github.com/stamate/grant-writer-skills
+[submodule "references/scipilot-figure-skill"]
+	path = references/scipilot-figure-skill
+	url = https://github.com/Haojae/scipilot-figure-skill
