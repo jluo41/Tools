@@ -19,6 +19,17 @@ metadata:
 Generate publication-quality paper figures using **Claude as the planner/reviewer**
 and a **local Codex app-server MCP bridge** as the raster renderer.
 
+## Output: write into a display unit (not flat figures/)
+
+When the target is a paper (a folder with `0-displays/`), the output goes into a
+`0-displays/displayNN-<slug>/` unit, NOT `figures/ai_generated/`. Follow the
+shared contract: `../haipipe-paper-display/ref/display-unit-output-contract.md`
+(resolve/scaffold the unit, write `assets/` + `source/` + `float.tex`, compile
+`preview.pdf`, set README status). For THIS renderer: asset ->
+`assets/figure.png`; rebuild spec -> `source/prompt.md` (final prompt + bridge
+job + score) + `source/review_log.json`. Finalize with `--display-unit <unit-dir>`
+(Step 7). `figures/ai_generated/` is a fallback only when there is no paper.
+
 ## Fit & Readiness (haipipe)
 
 **Use this for conceptual figures only** — architecture diagrams, method/pipeline
@@ -101,10 +112,10 @@ rather than falling back to a shell/Python bitmap.
 - **OPTIONAL_TEXT_CRITIC = `mcp__codex__codex`** — Optional text-only second opinion for layout/style checks
 - **MAX_ITERATIONS = 5** — Maximum refinement rounds
 - **TARGET_SCORE = 9** — Minimum acceptable score (1-10)
-- **OUTPUT_DIR = `figures/ai_generated/`** — Output directory
+- **OUTPUT_DIR** — for a paper: the display unit `0-displays/displayNN-slug/` (asset -> `assets/figure.png`, iterations + receipts -> `source/`). Only with no paper: the flat fallback `figures/ai_generated/`.
 - **TEXT_LANGUAGE = `English`** — Default figure text language unless the user requests otherwise
 - **NATIVE_IMAGE_REQUIREMENT = `strict`** — Accept only native `imageGeneration` output; reject shell/Python fallbacks
-- **CANONICAL_HELPER = `python3 tools/paper_illustration_image2.py`** — Preflight, finalize, verify, and repair path for this integration
+- **CANONICAL_HELPER = `python3 "$CLAUDE_SKILL_DIR/scripts/paper_illustration_image2.py"`** — Preflight, finalize (`--display-unit`), verify, repair
 
 ## CVPR/ICLR/NeurIPS Top-Tier Conference Style Guide
 
@@ -182,25 +193,28 @@ Render this checklist explicitly before starting:
 
 ```text
 📋 paper-illustration-image2 integration checklist:
-   [ ] 1. python3 tools/paper_illustration_image2.py preflight --workspace <cwd> --json-out figures/ai_generated/preflight.json
+   [ ] 0. Resolve/scaffold the display unit (see the contract): 0-displays/displayNN-slug/
+   [ ] 1. preflight --workspace <paper-root> --json-out 0-displays/displayNN-slug/source/preflight.json
    [ ] 2. Confirm preflight JSON says ok=true before rendering
    [ ] 3. Render via mcp__codex-image2__generate_start + generate_status
-   [ ] 4. Finalize via python3 tools/paper_illustration_image2.py finalize --workspace <cwd> --best-image <best_png>
-   [ ] 5. Verify artifacts via python3 tools/paper_illustration_image2.py verify --workspace <cwd> --json-out figures/ai_generated/verify.json
+   [ ] 4. Finalize into the unit: finalize --workspace <paper-root> --display-unit 0-displays/displayNN-slug --best-image <best_png> (Step 7)
+   [ ] 5. Verify: verify --workspace <paper-root> --display-unit 0-displays/displayNN-slug
 ```
 
-1. Create `figures/ai_generated/` if it does not exist.
+1. Resolve the target display unit (`0-displays/displayNN-slug/`); scaffold it via
+   `Skill("haipipe-paper-display", "scaffold ...")` if it does not exist. Only when
+   there is no paper, fall back to creating `figures/ai_generated/`.
 2. Confirm the request is suitable for a raster illustration:
    - architecture diagram
    - conceptual method figure
    - workflow illustration
 3. Prefer **English figure text** unless the user asked otherwise.
-4. Run:
+4. Run preflight (receipt into the unit's `source/`):
 
 ```bash
-python3 tools/paper_illustration_image2.py preflight \
-  --workspace <cwd> \
-  --json-out figures/ai_generated/preflight.json
+python3 "$CLAUDE_SKILL_DIR/scripts/paper_illustration_image2.py" preflight \
+  --workspace <paper-root> \
+  --json-out 0-displays/displayNN-slug/source/preflight.json
 ```
 
 5. If preflight is not `ok=true`, stop and say so clearly.
@@ -260,8 +274,8 @@ style audit, but do not block on it.
 Call `mcp__codex-image2__generate_start` with:
 
 - `prompt`: the final image prompt
-- `cwd`: current project root or paper workspace
-- `outputPath`: `figures/ai_generated/figure_v1.png`
+- `cwd`: the paper workspace (paper root)
+- `outputPath`: into the unit's `source/`, e.g. `0-displays/displayNN-slug/source/figure_v1.png` (iterations live with the rebuild spec; the accepted one is promoted to `assets/figure.png` by finalize). No-paper fallback: `figures/ai_generated/figure_v1.png`.
 - `system`: a short instruction like `Academic paper figure. Prefer crisp English labels.`
 - `timeoutSeconds`: a bounded render timeout such as `180`
 
@@ -300,35 +314,39 @@ Keep refinement feedback concrete:
 
 ## Step 7: Finalize And Verify
 
-When accepted:
-
-- run the canonical helper to promote the best image to `figure_final.png`
-- let the helper write `latex_include.tex`
-- let the helper write `review_log.json`
-- run helper verification before claiming success
+When accepted, finalize INTO THE DISPLAY UNIT (the contract path; see the "Output:
+write into a display unit" section above and
+`../haipipe-paper-display/ref/display-unit-output-contract.md`). Pass
+`--display-unit <0-displays/displayNN-slug>` so the helper writes
+`assets/figure.png` + `float.tex` (with your caption + label) + `source/review_log.json`,
+then compile `preview.pdf` from the paper root.
 
 ```bash
-python3 tools/paper_illustration_image2.py finalize \
-  --workspace <cwd> \
-  --best-image figures/ai_generated/figure_vN.png \
-  --score 9 \
-  --review-summary "Accepted after strict review; labels and arrows are paper-ready."
+# Paper target — write into the display unit (DEFAULT for a paper):
+python3 "$CLAUDE_SKILL_DIR/scripts/paper_illustration_image2.py" finalize \
+  --workspace <paper-root> \
+  --display-unit <paper-root>/0-displays/displayNN-slug \
+  --best-image <paper-root>/0-displays/displayNN-slug/figure_vN.png \
+  --caption "Paper-ready caption." --label "fig:slug" \
+  --score 9 --review-summary "Accepted after strict review."
 
-python3 tools/paper_illustration_image2.py verify \
-  --workspace <cwd> \
-  --json-out figures/ai_generated/verify.json
+# also drop the rebuild spec the helper does not author:
+#   0-displays/displayNN-slug/source/prompt.md  (final prompt + bridge job + score)
+
+# compile the unit preview from the paper ROOT so 0-displays/ paths resolve:
+pdflatex -interaction=nonstopmode -output-directory 0-displays/displayNN-slug \
+  0-displays/displayNN-slug/preview.tex
+
+python3 "$CLAUDE_SKILL_DIR/scripts/paper_illustration_image2.py" verify \
+  --workspace <paper-root> --display-unit <paper-root>/0-displays/displayNN-slug \
+  --json-out <paper-root>/0-displays/displayNN-slug/source/verify.json
 ```
 
-Suggested LaTeX:
+Fallback (NO paper / scratch only): omit `--display-unit`; the helper writes the
+flat `figures/ai_generated/{figure_final.png,latex_include.tex,review_log.json}`.
 
-```latex
-\begin{figure*}[t]
-    \centering
-    \includegraphics[width=0.95\textwidth]{figures/ai_generated/figure_final.png}
-    \caption{[Replace with a paper-ready caption].}
-    \label{fig:[replace-me]}
-\end{figure*}
-```
+The unit's `float.tex` is `\input` by `0-lifecycle/4-display/4-display.tex`, so a
+correctly filed unit appears in the combined gallery automatically.
 
 ## Key Rules
 
@@ -343,45 +361,62 @@ Suggested LaTeX:
 9. Use specific, actionable refinement feedback instead of vague comments.
 10. Review arrow direction, label clarity, and visual hierarchy every round.
 11. Accept only figures that look paper-ready, not slide-ready.
-12. Always use `tools/paper_illustration_image2.py finalize` to emit the final artifacts.
-13. Always use `tools/paper_illustration_image2.py verify` before claiming success.
+12. Always use `"$CLAUDE_SKILL_DIR/scripts/paper_illustration_image2.py" finalize --display-unit <unit>` to emit the final artifacts into the display unit.
+13. Always use `"$CLAUDE_SKILL_DIR/scripts/paper_illustration_image2.py" verify --display-unit <unit>` before claiming success.
 
 ## Repair Path
 
-If rendering succeeded but final artifacts were skipped, repair the integration explicitly:
+If rendering succeeded but final artifacts were skipped, repair the integration
+explicitly. For a paper, pass `--display-unit` so repair lands in the unit (an
+existing hand-edited `float.tex` is preserved, not clobbered):
 
 ```bash
-python3 tools/paper_illustration_image2.py finalize \
-  --workspace <cwd> \
-  --best-image figures/ai_generated/figure_vN.png
+python3 "$CLAUDE_SKILL_DIR/scripts/paper_illustration_image2.py" finalize \
+  --workspace <paper-root> --display-unit <paper-root>/0-displays/displayNN-slug \
+  --best-image <paper-root>/0-displays/displayNN-slug/assets/figure.png \
+  --caption "..." --label "fig:slug"
 
-python3 tools/paper_illustration_image2.py verify \
-  --workspace <cwd> \
-  --json-out figures/ai_generated/verify.json
+python3 "$CLAUDE_SKILL_DIR/scripts/paper_illustration_image2.py" verify \
+  --workspace <paper-root> --display-unit <paper-root>/0-displays/displayNN-slug
 ```
+
+(No-paper fallback: omit `--display-unit` to repair into flat `figures/ai_generated/`.)
 
 ## Output Structure
 
+Paper target (DEFAULT) — a display unit:
+
+```text
+0-displays/displayNN-slug/
+├── README.md              # claim / kind / caption-job / status: rendered
+├── float.tex              # caption + \label + \includegraphics{assets/figure.png}
+├── preview.tex            # standalone wrapper
+├── preview.pdf            # compiled from the paper root
+├── assets/figure.png      # accepted image (score >= 9)
+└── source/
+    ├── prompt.md          # rebuild spec: final prompt + bridge job + score
+    ├── review_log.json    # review notes / refinement history
+    └── verify.json        # helper verification diagnostic
+```
+
+Fallback (no paper / scratch) — flat:
+
 ```text
 figures/ai_generated/
-├── preflight.json         # Helper preflight receipt
-├── figure_v1.png          # Iteration 1
-├── figure_v2.png          # Iteration 2
-├── figure_v3.png          # Iteration 3
-├── figure_final.png       # Accepted version (copy of best, score ≥ 9)
-├── latex_include.tex      # LaTeX snippet
-├── review_log.json        # Review notes and refinement history
-└── verify.json            # Helper verification diagnostic
+├── figure_v1.png … figure_final.png   # iterations + accepted copy
+├── latex_include.tex                  # LaTeX snippet
+├── review_log.json
+└── verify.json
 ```
 
 ## Model Summary
 
 | Stage | Agent / Tool | Purpose |
 |-------|--------------|---------|
-| Step 0 | `python3 tools/paper_illustration_image2.py preflight` | Observable activation predicate and preflight receipt |
+| Step 0 | `python3 "$CLAUDE_SKILL_DIR/scripts/paper_illustration_image2.py" preflight` | Observable activation predicate and preflight receipt |
 | Step 1 | Claude | Parse request and create the initial figure prompt |
 | Step 2 | Claude (+ optional Codex critique) | Refine layout, grouping, spacing, and arrow routing |
 | Step 3 | Claude (+ optional Codex critique) | Verify academic visual style before rendering |
 | Step 4 | `mcp__codex-image2__generate_start` + `generate_status` | Native raster image generation through Codex app-server |
 | Step 5 | Claude | Strict visual review and scoring |
-| Step 7 | `python3 tools/paper_illustration_image2.py finalize` + `verify` | Emit canonical artifacts and external verification receipt |
+| Step 7 | `python3 "$CLAUDE_SKILL_DIR/scripts/paper_illustration_image2.py" finalize --display-unit` + `verify` | Emit canonical artifacts into the display unit + verification receipt |
