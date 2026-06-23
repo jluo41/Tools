@@ -51,10 +51,13 @@ checklist:
 □ id ↔ layer       every card's `id` letter matches its `layer` (D/I/K/W)
 □ ref_by symmetry  if A.sources lists B, then B.ref_by MUST list A (both ways)
 □ no dangling      every id in any `sources` / `ref_by` resolves to a real file
-□ source legality  D→task/probe ref · I→D ids · K→I ids · W→K ids (no skips)
-□ K → confirmed    every K's source probe (via its I→D chain) was `confirmed`
+□ source legality  D→task/probe ref · I→D ids · K→I ids · W→K ids. ALSO LEGAL: a
+                   cross-population SYNTHESIS K may source sibling K ids (K→K), in
+                   addition to I ids — that is aggregation, not a layer-skip.
+□ K fields present every K has `confidence` AND `claim_type` (no probe gate — a
+                   confirmed probe is NOT required under the current model)
 □ INDEX ↔ files    INDEX.md lists exactly the files on disk (no missing/extra)
-□ status enum      status ∈ {active, stale, superseded}; supersede chains intact
+□ status enum      status ∈ {active, stale, superseded, deposited}; supersede chains intact
 ```
 
 ## Specialist tail

@@ -58,14 +58,23 @@ user to run `/haipipe-paper-lifecycle folder <paper-root>`.
 
 ### Step 2: Ensure `0-lifecycle/0-seed/0-seed.tex` exists
 
-Body section structure (inside the standalone document):
+Copy the canonical template and fill it. The template is the single source of
+truth for section order and the standalone preamble:
+
+```text
+ref/seed-template.tex
+```
+
+Body section structure (fixed order; inside the standalone document):
 
 ```latex
-\section*{Parent Project}
-Path and one-line context.
+\section*{Seed Question}
+The one paper-shaped question this seed exists to answer.
 
-\section*{Prospectus Question}
-The paper-shaped question.
+\section*{Motivations}
+Why this is interesting (puzzle / gap / surprise), what makes the angle novel
+or feasible now, and to whom it is interesting (name the audiences and why each
+cares).
 
 \section*{Tentative Claim Shape}
 What the paper may eventually argue, phrased as a hypothesis, not a finding.
@@ -82,6 +91,9 @@ Concrete conditions for promoting to an active paper seed (then to pitch).
 \section*{Kill Criteria}
 What evidence would make this paper not worth pursuing.
 ```
+
+Do not add a "Parent Project" section; the parent project is recorded in
+`STATUS.md`, not the seed.
 
 ### Step 3: Route open needs
 

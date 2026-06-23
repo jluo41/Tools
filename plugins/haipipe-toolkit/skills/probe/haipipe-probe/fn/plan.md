@@ -35,7 +35,7 @@ Where should the verdict return?
    - `claim.scope`
    - `evidence_plan.required`
    - `evidence_plan.success_criteria.support|partial|refute`
-   - `source.return_target`
+   - `source.deposit_target`
 5. Write `probe.yaml`.
 6. Render `status.md`.
 

@@ -58,14 +58,18 @@ reviewer:         Codex (out-of-family) for accuracy · self for style/boundary
 □ accuracy   the rec follows from the cited K (≥ 1 K in `sources`)
 □ actionable `## How to act` is a concrete command / decision (the "could I
              write it?" test) — not "should think about X"
+□ posture    `## Risk posture` cites the K's confidence and the boldness MATCHES it:
+             bold only for high-confidence K; a low-confidence/negative K must yield a
+             conservative / hedged / "do not yet" action, not a bold one
 □ boundary   an ACTION, not a restatement of the belief (that is K)
 □ grain      one recommendation; not a multi-action roadmap or vague strategy memo
 □ lifecycle  meaningful edits have `## Change log`; stale/acted_on status explained
-□ style      ## Recommendation · ## How to act · ## Why now · ## Decay condition
+□ style      ## Recommendation · ## How to act · ## Risk posture · ## Why now · ## Decay condition
 □ decay      `## Decay condition` states what would make this stale
 ```
 
-Default to **fail** if the rec is vague, restates the K, or cites no K.
+Default to **fail** if the rec is vague, restates the K, cites no K, or its boldness
+does not match the cited K's confidence (e.g. a bold action on a low-confidence K).
 
 ## Specialist tail
 

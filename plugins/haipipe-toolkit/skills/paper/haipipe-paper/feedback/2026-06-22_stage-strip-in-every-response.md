@@ -19,4 +19,6 @@ Proposed mechanism (layered; pick depth):
 
 Recommendation: start with 1+2+3 (source of truth + helper + return-contract rule); add 4 only if it still gets skipped. Note: no Claude Code mechanism can edit the assistant's visible output directly, so "every response" is ultimately a behavioral convention; the helper + return-contract rule + (optional) per-turn hook reminder is the strongest enforcement available.
 
+Update (2026-06-22, placement changed by user): the strip moves from the FIRST line to the LAST line of every reply. It now CLOSES the reply, placed AFTER the machine-readable return-contract tail (status/paper_root/current_layer/next), not opens it. Rule 3 above should read "LAST line", not "FIRST line". Applied: haipipe-paper/SKILL.md section retitled "Stage Strip (end every reply)" with "END every reply ... as the VERY LAST line, AFTER the return-contract tail"; haipipe-paper-enter Output Format now leads with the emoji sections and ends with the strip after the tail. The derive-from-STATUS helper and no-drift rule are unchanged.
+
 Fix:

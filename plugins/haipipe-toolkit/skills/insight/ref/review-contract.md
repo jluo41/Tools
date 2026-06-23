@@ -245,12 +245,18 @@ Folder Boundary
 insights/
 ├── INDEX.md
 ├── views/            optional derived navigation views
+├── _reviews/         apply-time review records: <LAYER>_CARD_REVIEW.md + INDEX_AUDIT.md
+│                     (underscore = not a card layer; provenance of the gate, kept beside the KB)
 ├── D_data/
 ├── I_information/
 ├── K_knowledge/
 ├── W_wisdom/
 └── okf/              optional derived export
 ```
+
+The `_reviews/` folder holds the per-layer card-review and index-audit artifacts
+produced by the reviewers/auditor during `apply`. They are review provenance, not
+source-of-truth cards; the underscore keeps them out of the D/I/K/W card space.
 
 Session plans, logs, and gates belong under `applications/ask/<NN_slug>/`.
 Paper/application claim ledgers belong inside their delivery lifecycle folders.

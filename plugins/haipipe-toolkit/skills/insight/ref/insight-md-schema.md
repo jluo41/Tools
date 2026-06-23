@@ -52,50 +52,83 @@ Conventions:
 Layer-specific frontmatter additions
 ======================================
 
-D layer (Data)
+D layer (Data) — describes ONE dataset
 -----------------------
 
 ```yaml
-source_id: <source-ref>                # WHERE this observation came from
+dataset:   <dataset-name>              # REQUIRED. The dataset this D describes
+                                       # e.g. VisitOsteo_1stPair_af14d
+source_id: <source-ref>                # WHERE the profile came from
                                        # task:T.A01.02 for task-sourced D
                                        # lit:smith2024 for literature-sourced D
-                                       # probe:P.A07 for probe-sourced D (rare)
-headline:  "<one-line number summary>" # e.g. "val: FiLM Δ -0.98 ± 0.27 mg/dL (p=0.018, n=3)"
+                                       # probe:P.A07 for probe-sourced D
+headline:  "<one-line dataset profile>"  # e.g. "VisitOsteo 1st-pair: N=1.2M, 2015-2020 Medicare"
 ```
 
-`headline` is the quick-load summary; specific numbers go in body's
-`## Numbers` table.
+`dataset:` is required — a D card is a statement ABOUT one named dataset.
+Naming convention: a single stable token, snake/Pascal joined by underscores,
+specific enough that the I card for the same dataset reuses it VERBATIM (the
+D↔I `dataset:` match depends on exact string equality). Include the
+distinguishing facets the project slices on, e.g. `VisitOsteo_1stPair_af14d`
+(cohort + sample + window). Do not write a prose phrase ("VisitOsteo 1stPair");
+normalize to the token form.
+`headline` is the quick-load profile; counts/shares go in the body `## Numbers`
+table. D carries NO p-value, NO CI, NO significance: those are descriptions of
+generalization and live at K (see `dikw-boundaries.md`).
 
 Note on `source_id`: D cards cite the source artifact that produced the
-observation. The legacy `exp_id` field name implied D came only from probes;
-that was the old model. New model: D/I describe settled material, while K/W
-record judged beliefs and actions selected through review. For continuity,
-`exp_id` is accepted as a deprecated alias for `source_id` when present; new
-cards should use a namespaced `source_id`.
+profile. The legacy `exp_id` field name implied D came only from probes; that
+was the old model. Current model: D/I describe one named dataset (in-sample),
+while K records whether the pattern generalizes and W acts on it. For continuity,
+`exp_id` is accepted as a deprecated alias for `source_id`; new cards use a
+namespaced `source_id`.
 
 
-I layer (Information)
+I layer (Information) — a pattern IN one dataset
 -------------------
 
 ```yaml
+dataset:   <dataset-name>              # REQUIRED. Same dataset as the D it cites
 pattern:   statistical_regularity | repeated_effect | paired_contrast | null_finding
-n_obs:     <int>                        # number of D entries supporting
 direction: positive | negative | mixed | null
 ```
 
+`dataset:` is required and must match the D card(s) in `sources:`. An I card is
+an in-sample pattern within ONE dataset. It carries the estimate / direction /
+magnitude / shape, but NO p-value, NO CI, NO confidence level — the moment a
+claim asserts the pattern holds beyond the sample it is a K, not an I.
 
-K layer (Knowledge)
+
+K layer (Knowledge) — does the pattern generalize
 --------------------
 
 ```yaml
-claim:      "<one-sentence belief>"
-confidence: high | medium | low | contested
+claim:      "<one-sentence generalization claim>"
+confidence: high | medium | low | contested   # REQUIRED — strength of GENERALIZATION
+claim_type: associational | causal            # REQUIRED — is it a causal claim?
 ```
 
-`claim` is THE belief in one line. Detail and scope go in body sections.
+`claim` is THE generalization belief in one line. K carries TWO orthogonal
+qualifiers (do not conflate them):
+
+- `confidence` (the GENERALIZATION axis): how sure are we the pattern holds beyond
+  the sample. ALWAYS present (high/medium/low/contested); a low-confidence or
+  negative ("does not generalize") K is still recorded.
+- `claim_type` (the CAUSAL axis): is this a causal claim or only an association.
+  Default `associational`. `causal` is allowed ONLY when the body
+  `## Generalization basis` names a valid identification strategy (RCT, a strong/
+  valid instrument, RDD, DiD with the parallel-trends check, etc.). A significant
+  coefficient with a WEAK or invalid instrument stays `associational` — weak-IV is
+  not identification. A high generalization `confidence` does NOT make a claim
+  causal; the two axes are independent.
+
+K has NO admission gate: it needs a generalization basis (the inferential
+evidence: p / CI / robustness across subgroups, or a vetted external claim), not
+a probe. The p-value / CI / significance / confidence appear HERE, in the body
+`## Generalization basis`, never in D or I. Detail and scope go in body sections.
 
 
-W layer (Wisdom)
+W layer (Wisdom) — act, tuned to K confidence
 -----------------
 
 ```yaml
@@ -104,7 +137,9 @@ rec_type:  next_experiment | research_pivot | stop_doing | paper_direction
 cost:      cheap | medium | expensive
 ```
 
-`rec` is THE action in one line. Detail goes in body.
+`rec` is THE action in one line. The body records which K it acts on, that K's
+confidence at the time, and why that confidence justifies this risk posture
+(bold for high-confidence K, conservative/hedged for low). Detail goes in body.
 
 Legacy note: older W cards may use `type:` for the recommendation enum. New
 cards should use `type: Insight Wisdom` plus `rec_type:` so the card remains
@@ -118,24 +153,28 @@ D layer
 --------
 
 ```markdown
-# D{NN}: <one-line title>
+# D{NN}: <one-line dataset-profile title>
 
-## Observation
-<1-2 paragraphs of FACTS only — no interpretation>
+## Profile
+<1-2 paragraphs of FACTS about the dataset — composition, how it was built — no interpretation, no inference>
 
 ## Numbers
-| Metric                                | Value              | CI (95%)                        | Source                         |
-|---------------------------------------|--------------------|---------------------------------|--------------------------------|
-| ...                                   | ...                | ...                             | ...                            |
+| Metric                                | Value              | Source                         |
+|---------------------------------------|--------------------|--------------------------------|
+| ...                                   | ...                | ...                            |
 
 ## Caveats
-- <bulleted, verbatim from probe.yaml caveats[]>
+- <bulleted, verbatim from the source caveats[]>
 
 ## Change log
 - <YYYY-MM-DD> — created from <source-ref>.
 ```
 
-Table formatting: use padded fixed-width columns so all D cards render as a clean grid. Column headers are `Metric` (40 chars), `Value` (20 chars), `CI (95%)` (33 chars), `Source` (32 chars). Pad every cell to its column width with trailing spaces. Use `—` for missing CI values, not `--`.
+The D `## Numbers` table holds DESCRIPTIVE quantities of the dataset only (counts,
+shares, sizes, coverage). NO p-value, NO CI, NO significance — those are
+generalization quantities and belong to K.
+
+Table formatting: use padded fixed-width columns so all D cards render as a clean grid. Column headers are `Metric` (40 chars), `Value` (20 chars), `Source` (32 chars). Pad every cell to its column width with trailing spaces.
 
 Length budget: 30-50 body lines.
 
@@ -147,7 +186,7 @@ I layer
 # I{NN}: <one-line title>
 
 ## Pattern statement
-<the invariant in 1-3 sentences>
+<the in-sample regularity in 1-3 sentences; THIS dataset only>
 
 ## Evidence
 | Source | Metric / Split                 | Δ or Value         | Direction  |
@@ -155,13 +194,13 @@ I layer
 | D01    | ...                            | ...                | ...        |
 
 ## Counter-evidence
-<entries that should show the pattern but don't, OR "none found" with rationale>
+<in-sample entries that should show the pattern but don't, OR "none found" with rationale>
 
 ## Change log
 - <YYYY-MM-DD> — created from <D ids>.
 ```
 
-Table formatting: use padded fixed-width columns consistent with D-layer tables. Column headers are `Source` (8 chars), `Metric / Split` (32 chars), `Δ or Value` (20 chars), `Direction` (12 chars).
+The I `## Evidence` table holds the in-sample estimate / direction / magnitude only. NO p-value, NO CI, NO confidence — asserting the pattern holds beyond the sample is a K. Table formatting: padded fixed-width columns consistent with D-layer tables. Column headers are `Source` (8 chars), `Metric / Split` (32 chars), `Δ or Value` (20 chars), `Direction` (12 chars).
 
 Length budget: 30-60 body lines.
 
@@ -170,19 +209,22 @@ K layer
 --------
 
 ```markdown
-# K{NN}: <one-line title>
+# K{NN}: <one-line generalization claim>
 
 ## Claim
-<1-2 paragraphs: the belief stated fully, with scope qualification>
+<1-2 paragraphs: does the in-sample pattern hold beyond the sample? state it fully, with scope>
 
-## Supporting evidence
-- <bulleted; cite I entries with their key numbers>
+## Generalization basis
+- <the inferential evidence that lets this generalize: p-value / CI / significance,
+   AND any robustness across subgroups/cohorts/time. p and CI appear HERE, not in I.>
+- <cite the I entries whose pattern is being generalized>
 
 ## Counter-evidence
 - <honestly list contradicting findings or "none found" with reason>
 
 ## Confidence rationale
-<why high/medium/low/contested — be specific about what would change confidence>
+<why high/medium/low/contested — statistical-only (weaker) vs robust-across-subgroups
+ (stronger); be specific about what would change confidence>
 
 ## Scope
 <where/when this belief holds; one paragraph>
@@ -206,7 +248,13 @@ W layer
 
 ## How to act
 <exact command / decision / next step. For triggering probes:
- the literal /haipipe-probe design new ... command.>
+ the literal /haipipe-probe plan new ... command.>
+
+## Risk posture
+<which K this acts on, that K's confidence at the time, and WHY that confidence
+ justifies this boldness: high-confidence K → bold; low-confidence K →
+ conservative / hedged / "do not yet do X" / gather more first. This is the
+ provenance that lets a later reader audit the decision.>
 
 ## Why now
 <one paragraph: what makes this timely; which K entries trigger it>
@@ -300,12 +348,16 @@ Validation rules (any layer)
       - internal insight card ids: D01, I02, K03, W01
       - external source refs: task:T.A01.02, probe:P.A07,
         discover:Dsc.03, lit:smith2024, narrative:N01.C2, app:ask:03
-  - D cards cite one settled source ref through `source_id`
-  - I cards cite >=2 D cards unless explicitly marked as rich descriptive
-    synthesis by the INSIGHT_REVIEW.yaml
-  - K cards cite judged evidence: usually a confirmed/refuted probe or vetted
-    literature/review source, plus supporting I cards where useful
-  - W cards cite >=1 K card
+  - D cards name a `dataset:` and cite one settled source via `source_id`;
+    descriptive only (no p-value / CI / significance)
+  - I cards name a `dataset:` matching their cited D card(s); in-sample pattern
+    only (no p-value / CI / confidence)
+  - K cards state a generalization claim with an explicit `confidence` (high /
+    medium / low / contested, never omitted), cite the I card(s) they generalize,
+    and give a generalization basis (p / CI / robustness, or a vetted external
+    claim) in the body. NO probe is required. Negative / low-confidence K are valid.
+  - W cards cite >=1 K card and record the risk posture justified by that K's
+    confidence
   - `ref_by` consistent: if K03 lists `ref_by: [W01]`, W01 MUST list
     `sources: [K03]` (auto-maintained)
   - Lifecycle conforms to `ref/card-lifecycle.md`:

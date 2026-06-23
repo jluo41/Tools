@@ -4,6 +4,13 @@ task — Changelog
 Layer-scoped changelog for the task (WORK / execution) layer. Newest first.
 Rollup lives in the plugin-level `CHANGELOG.md`.
 
+## [Unreleased] — 2026-06-22
+
+### Added
+- Added `README.md` with the concise task mental model: lifecycle mnemonic
+  `规建行报` for Plan / Build / Execute / Report, and domain mnemonic
+  `数算端体训评图统代` for the nine append-only task domains.
+
 
 ## [6.0.0] — 2026-06-21
 

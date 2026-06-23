@@ -14,34 +14,53 @@ This schema stores the structured state needed by those steps.
 ## Location
 
 ```text
-probes/<MMDD>_<slug>/probe.yaml
+probes/<LETTER><MMDD>_<slug>/probe.yaml
 ```
+
+`<LETTER>` encodes the probe's source kind so the ref is self-describing.
+Every probe is one of two letters:
+
+```text
+D   discovery-sourced   source.type: discovery        -> P.D<MMDD>
+T   task-sourced         source.type: task             -> P.T<MMDD>
+```
+
+For a `source.type` that is neither `discovery` nor `task` (e.g.
+`paper_claim_gap`, `human_idea`, `application_question`, `reviewer_objection`,
+`insight`), derive the letter from the probe's PRIMARY `evidence_plan` kind:
+mostly `required.tasks` -> `T`, mostly `required.discoveries` -> `D`. The letter
+records what the claim is settled against, so it is always D or T.
 
 Examples:
 
 ```text
-probes/0605_discretion-gradient/probe.yaml
-probes/0621_trait-diabetes/probe.yaml
+probes/D0622_identity-concordance-steering/probe.yaml   # opened from a discovery
+probes/T0621_trait-diabetes/probe.yaml                   # settled by task runs
 ```
 
 Canonical ref:
 
 ```text
-P.<MMDD>      # P.0605
+P.<LETTER><MMDD>      # P.D0622, P.T0621
 ```
 
 Same-day collisions append a lowercase suffix:
 
 ```text
-P.0605b
-probes/0605b_trait-diabetes/
+P.D0622b
+probes/D0622b_hallucinated-physician-safety/
 ```
+
+Legacy / back-compat: pre-convention probes have no letter
+(`probes/0605_discretion-gradient/`, ref `P.0605`). They remain valid and
+resolvable. Migrate a legacy probe to its letter (`P.0605` -> `P.T0605`) lazily,
+on the next time it is touched, not in a mass rename.
 
 ## Top-Level Fields
 
 | Field | Type | Owner Step | Required | Purpose |
 |---|---|---|---|---|
-| `id` | string | Plan | yes | canonical probe ref, e.g. `P.0605` |
+| `id` | string | Plan | yes | canonical probe ref `P.<LETTER><MMDD>`, e.g. `P.D0622` (D=discovery, T=task); legacy letterless `P.0605` still valid |
 | `slug` | string | Plan | yes | short folder slug |
 | `title` | string | Plan | yes | human title |
 | `status` | enum | any | yes | lifecycle status |
@@ -90,7 +109,7 @@ source:
   type: paper_claim_gap      # paper_claim_gap|application_question|reviewer_objection|human_idea|task|discovery|insight
   ref: paper/Paper-Personality2Opioid-MISQ2026
   question: "Does the agreeableness prescribing signal vanish where guidelines are clear?"
-  return_target: paper/Paper-Personality2Opioid-MISQ2026
+  deposit_target: paper/Paper-Personality2Opioid-MISQ2026
 
 claim:
   hypothesis: >
@@ -139,7 +158,7 @@ calls: []
 
 result: null
 verdict: null
-return: null
+deposit: null
 ```
 
 ## Evidence Refs
@@ -248,7 +267,7 @@ verdict:
 `return` is written by Return.
 
 ```yaml
-return:
+deposit:
   status: pending           # pending|returned|filed_memory|loop_needed|skipped
   target:
     type: paper             # paper|application|rebuttal|insight|next_probe|none
@@ -262,7 +281,7 @@ return:
     - status: skipped
       ref: insights/K_knowledge
       reason: "No judged substantive claim yet."
-  returned_at: null
+  deposited_at: null
 ```
 
 ## Human Files
@@ -273,7 +292,7 @@ The probe folder should keep these human-readable files:
 status.md    current Probe Console panel
 evidence.md  Read output
 verdict.md   Judge output
-return.md    Return output
+deposit.md    Deposit output
 ```
 
 Optional:

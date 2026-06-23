@@ -64,9 +64,17 @@ paper/
 ├── 4-build-submit/      scaffold, restructure, check
 ├── 5-respond/           rebuttal, response
 ├── 6-present/           slides, poster
-├── _venue/              venue profiles (conference/journal/is) + create/revise
+├── _venue/             venue profiles (knowledge, consulted) — see _venue/README.md
 └── components/          citation, compile, diff
 ```
+
+Venue profiles are a paper-internal area at `_venue/`, not a standalone layer.
+The lifecycle consults `_venue/playbook-<venue>` (misq/isr/ms-is/pnas/
+nature-portfolio/jama/clinical-medicine; grant; patent-*) for what the target
+rewards; venues hold knowledge, never lifecycle verbs. The old flat
+`paper/_venue/` was reshaped into `_venue/`; its venue-routing shells
+(`-conference/-journal/-is`) and prose pipelines (`-create/-revise`) were retired
+(see retired-names below). See `_venue/README.md` and `_venue/_SCHEMA.md`.
 
 ## References
 
@@ -87,3 +95,6 @@ These names were removed. Do not reintroduce them.
 | old stage names: `architecture-minimap`, `paper-plan`, `display-contract` | folded into `2-claims`, `3-narrative`, `4-display`, `5-minimap` |
 | `0-displays/Figures/<id>/`, `0-displays/Tables/<id>/` buckets | `0-displays/displayNN-<slug>/` units |
 | project-level narrative coordination layer | the paper owns its own story; route gaps straight to evidence workers |
+| `paper/_venue/` (flat venue profiles) | `_venue/playbook-<venue>` (paper-internal venue area) |
+| `haipipe-paper-{conference,journal,is}` (venue-routing workflow shells) | consult `_venue/playbook-<venue>` + the lifecycle owns the verbs |
+| `haipipe-paper-{create,revise}` (prose pipelines) | `3-write-edit/haipipe-paper-edit-{write,weaving}` |

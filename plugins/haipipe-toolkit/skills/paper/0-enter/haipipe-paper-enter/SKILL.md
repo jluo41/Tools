@@ -178,22 +178,21 @@ Loopback diagnosis follows the paper lifecycle:
 
 ## Output Format
 
-LEAD with the lifecycle stage strip (the first line of the reply), then the
-emoji-headed sections. Render the strip deterministically with the helper, never
-hand-typed:
+Lead with the emoji-headed sections. END the reply with the lifecycle stage
+strip as the VERY LAST line, AFTER the machine-readable return-contract tail
+(`status` / `paper_root` / `current_layer` / `next`). Render the strip
+deterministically with the helper, never hand-typed:
 
 ```sh
 sh "$CLAUDE_SKILL_DIR/../../ref/stage-strip.sh" <paper-root>
 ```
 
 It prints one line driven by `STATUS.md current_layer`, e.g.
-`seed ✅  pitch ✅  …  →  write/edit ▶️  →  review ⬜`. This strip leads EVERY reply
-in the session, not just the first dashboard (see the orchestrator's "Stage Strip"
-rule). Then:
+`seed ✅  pitch ✅  …  →  write/edit ▶️  →  review ⬜`. This strip CLOSES EVERY
+reply in the session, not just the first dashboard (see the orchestrator's "Stage
+Strip" rule). The body:
 
 ```markdown
-seed ✅  pitch ✅  claims ✅  narrative ✅  display ✅  minimap ✅  →  write/edit ▶️  →  review ⬜
-
 ## 📄 Paper Session
 
 | Field | Value |
@@ -231,8 +230,13 @@ seed ✅  pitch ✅  claims ✅  narrative ✅  display ✅  minimap ✅  →  w
 ## 📦 Artifacts Read
 
 - ...
+
+(return-contract tail here)
+
+seed ✅  pitch ✅  claims ✅  narrative ✅  display ✅  minimap ✅  →  write/edit ▶️  →  review ⬜
 ```
 
+The stage strip is the VERY LAST line, placed after the return-contract tail.
 Keep the dashboard concise. The goal is to orient the session, not to rewrite
 the paper.
 

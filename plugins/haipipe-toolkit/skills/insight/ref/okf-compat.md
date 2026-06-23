@@ -63,8 +63,8 @@ These fields are OKF-facing only:
 The layer-specific fields remain load-bearing for haipipe:
 
 ```
-D: headline
-I: pattern / n_obs / direction
+D: dataset / headline
+I: dataset / pattern / direction
 K: claim / confidence
 W: rec / rec_type / cost
 ```

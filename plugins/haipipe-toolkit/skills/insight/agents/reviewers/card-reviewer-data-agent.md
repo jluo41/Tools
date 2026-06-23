@@ -59,15 +59,18 @@ reviewer:         Codex (out-of-family) for accuracy · self for style/boundary
   stable and traceable.
 
 ```
+□ dataset    `dataset:` is present and names the ONE dataset this D profiles
 □ accuracy   every number in `headline` + `## Numbers` traces to a source key
-□ boundary   FACTS ONLY — no pattern / belief / action leaked in (those are I/K/W)
-□ grain      one reusable observation; not a raw row, isolated seed, or task dump
+□ boundary   FACTS ONLY about the dataset — no pattern (→I) / belief (→K) / action (→W),
+             and NO p-value / CI / significance (those are generalization → K)
+□ grain      one reusable dataset profile; not a raw row, isolated seed, or task dump
 □ lifecycle  meaningful edits have `## Change log`; duplicates should merge
-□ style      ## Observation · ## Numbers (table) · ## Caveats (verbatim) present
+□ style      ## Profile · ## Numbers (table) · ## Caveats (verbatim) present
 □ source     source_id resolves; namespaced source ref is settled + traceable
 ```
 
-Default to **fail** if a number is untraceable or interpretation has leaked in.
+Default to **fail** if `dataset:` is missing, a number is untraceable, interpretation
+has leaked in, or an inferential quantity (p / CI) appears (it belongs in K).
 
 ## Specialist tail
 

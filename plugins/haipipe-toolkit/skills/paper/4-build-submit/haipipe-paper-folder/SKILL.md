@@ -71,7 +71,7 @@ Prospectus mode can be created manually or by a future helper:
 
 Do NOT use for:
 - Late-stage section editing within an already-stable structure
-- Conference-template conversion (use haipipe-paper-conference instead)
+- Conference-template conversion (use `haipipe-paper-build-restructure` + the venue profile in `_venue/`)
 
 ## Prospectus Mode Target Layout
 

@@ -131,7 +131,7 @@ This avoids silently attaching evidence to a non-existent proposal while still
 preventing duplicate trait→diabetes proposals.
 
 
-Step 5 - file it (the "归档好" part)
+Step 5 - file it (the well-filed part)
 -----------------------------------
 
 The writes per disposition. ALWAYS also append one line to `probes/FILING.md`.

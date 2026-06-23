@@ -103,12 +103,16 @@ Step 3: Scan scope material.
 
 For task scope:
 - Look for `results/<run>/metrics.json`, `workflow/report*.yaml`, `RUN_AUDIT.md`.
-- Candidate D if a result is not represented in `sources:`.
-- Candidate I if the task report explicitly states a cross-result pattern.
+- Candidate D if a dataset's profile (its name, size, composition) is not yet carded.
+- Candidate I if a result states an in-sample pattern within ONE named dataset.
+- Candidate K if the result carries a generalization basis (a significance test
+  on the pattern, or robustness across subgroups). p/CI belong to the K, not the I.
 
 For probe scope:
 - Read `probe.yaml`, `CLAIMS_FROM_RESULTS.md`, `INTEGRITY_AUDIT.md`, `review.md`.
-- Candidate K only if the probe is judged / confirmed / refuted.
+- Candidate K whenever there is a generalization claim with a basis (p / CI /
+  robustness) and an honest confidence — high, low, OR negative. A probe verdict
+  is one possible basis, NOT a precondition; ns ("does not generalize") is a valid K.
 - Candidate W only if the claim or caveats imply a concrete next step.
 
 For narrative scope:
@@ -156,14 +160,28 @@ insights/INSIGHT_REVIEW.yaml
 
 Step 6: Apply review items only when explicitly requested or `--auto` is present.
 
+PRE-ASSIGN IDS FIRST (parallel-safety — REQUIRED before any fan-out). The layer
+writers and `card-creator-*` agents compute `NN = max-existing + 1` from disk. If
+two creators for the same layer run concurrently on an empty/equal folder, they
+BOTH pick the same NN and collide. So BEFORE dispatching:
+
+```
+1. Count existing cards per layer in insights/{D_data,I_information,K_knowledge,W_wisdom}/.
+2. Walk candidate_cards[] in order; assign each `file` candidate its explicit id
+   (D{next}, I{next}, K{next}, W{next}), incrementing per layer.
+3. Rewrite the INSIGHT_REVIEW.yaml internal refs (sources/ref_by) to those final ids.
+4. Pass `--id <assigned-id>` to every writer call. NEVER let parallel creators
+   auto-pick NN. (Auto-NN is safe ONLY for a single serial write.)
+```
+
 For each `candidate_cards[]` item:
 
 ```
-action file:
-  layer D → Skill("haipipe-insight-data", ...)
-  layer I → Skill("haipipe-insight-information", ...)
-  layer K → Skill("haipipe-insight-knowledge", ...)
-  layer W → Skill("haipipe-insight-wisdom", ...)
+action file (always pass the pre-assigned --id):
+  layer D → Skill("haipipe-insight-data",        "--id D{NN} ...")
+  layer I → Skill("haipipe-insight-information",  "--id I{NN} ...")
+  layer K → Skill("haipipe-insight-knowledge",    "--id K{NN} ...")
+  layer W → Skill("haipipe-insight-wisdom",       "--id W{NN} ...")
 
 action merge/update:
   edit target card in place:
