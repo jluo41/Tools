@@ -1,13 +1,14 @@
 ---
 name: haipipe-paper-narrative
-description: "Generate NARRATIVE_REPORT.md — the design contract for /haipipe-paper. Reads upstream research artifacts (IDEA_REPORT, AUTO_REVIEW, CLAIMS_FROM_RESULTS, experiment results, repo source) and emits a single coherent narrative: problem statement, core claim, method, claim-evidence matrix, figure inventory, limitations. Use when transitioning from research/experiment phase to writing phase, or when the user says 'write narrative report', '生成 narrative', '/haipipe-paper-narrative'."
+description: "Generate 0-lifecycle/3-narrative/3-narrative.tex, the design contract for /haipipe-paper: a one-page evidence-tracked story that mirrors the paper's real sections (Introduction, Methods, Results, Discussion), with every beat carrying a readiness tag ([READY]/[PENDING]/[INFER]/[LIT]/[GAP]) and a small-font interrogation comment. Reads upstream research artifacts (IDEA_REPORT, AUTO_REVIEW, CLAIMS_FROM_RESULTS, experiment results, repo source). Use when transitioning from research/experiment phase to writing phase, or when the user says 'write narrative report', '生成 narrative', '/haipipe-paper-narrative'."
 argument-hint: "[project-dir-or-topic]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.3.1"
+  version: "1.4.0"
   last_updated: "2026-06-23"
-  summary: "Generate NARRATIVE_REPORT.md — the design contract for /haipipe-paper."
+  summary: "Generate 0-lifecycle/3-narrative/3-narrative.tex, the section-mirrored, readiness-tagged design contract for /haipipe-paper."
   changelog:
+    - "1.4.0 (2026-06-23): output is now 0-lifecycle/3-narrative/3-narrative.tex (section-mirrored: Intro/Methods/Results/Discussion, each beat readiness-tagged + interrogation comment), retiring the markdown NARRATIVE_REPORT.md form; extracted ref/narrative-template.tex carrying the readiness legend + comment vocabulary; points to the ProjB exemplar"
     - "v1.3.1: added mandatory compile-after-edit rule; venue awareness note"
     - "1.3.0 (2026-06-22): added per-beat subagent interrogation protocol (keep/move/demote/cut + small-font comments)"
     - "1.2.0 (2026-06-22): added illuminate+gate+compile protocol (ref/stage-gate.md, ref/stage-illuminate.md, ref/tex-quality.md)"
@@ -52,7 +53,7 @@ This stage follows three shared protocols. Read them once:
 Do **not** use when:
 - Experiments are still running (the narrative would be premature)
 - You only have a vague topic — use `/idea-discovery` or `/haipipe-probe judge` first
-- A `NARRATIVE_REPORT.md` already exists and is current — edit it directly
+- A current `0-lifecycle/3-narrative/3-narrative.tex` already exists; edit it directly and recompile
 
 ## Inputs (in priority order)
 
@@ -83,36 +84,34 @@ If multiple inputs disagree (e.g. `IDEA_REPORT` says "X improves Y by 5%" but
 most data-grounded source** (CLAIMS_FROM_RESULTS > experiment files >
 AUTO_REVIEW > IDEA_REPORT) and surface the discrepancy as a note in the report.
 
-## Output: `NARRATIVE_REPORT.md`
+## Output: `0-lifecycle/3-narrative/3-narrative.tex`
 
-The report must contain these six sections, in this order:
+The narrative is a self-contained LaTeX file that compiles to `3-narrative.pdf` (one page for a conference paper, a few for a journal). It is NOT markdown and NOT a `NARRATIVE_REPORT.md`; that older markdown form is retired. Scaffold from `ref/narrative-template.tex` and fill the placeholders. A filled, real-world exemplar to read first: `examples/ProjB-PhyTrait-OpioidRx/paper/Paper-Personality-Opioid-MedJournal/0-lifecycle/3-narrative/3-narrative.tex`.
 
-0. **Pitch alignment** — the current one-minute pitch, hook, surprise, so what,
-   why-believe, and still-fragile bullets from `0-lifecycle/1-pitch/1-pitch.tex` if
-   present. Keep this short; it is a constraint, not a full section draft.
-1. **Problem statement and core claim** — one-paragraph problem, one-sentence
-   core claim. The core claim is the single sentence the paper exists to
-   defend. Everything else supports it.
-2. **Method summary** — what was built, at a level a reviewer can grasp in 30
-   seconds. Not a manual; not an architecture deep-dive. Save the depth for
-   `/haipipe-paper-edit-write`.
-3. **Key quantitative results with evidence for each claim** — table or list
-   with one row per claim:
-   - claim (free text, declarative)
-   - supporting experiment / dataset / metric
-   - effect size + uncertainty
-   - file path to the raw result (the future `/haipipe-paper-edit-claim-audit` will follow
-     this trail)
-4. **Figure / table inventory** — for each figure or table referenced in the
-   above sections:
-   - name, one-line caption
-   - status: `auto` (data plot, generatable from results) / `manual` (needs
-     drawing — architecture, qualitative) / `exists` (already in `figures/`)
-   - data source path (for `auto`) or person responsible (for `manual`)
-5. **Limitations and remaining follow-ups** — what the paper does **not**
-   claim, what failed, what's deferred. Pulled mostly from `AUTO_REVIEW.md`'s
-   "weaknesses not yet fixed" section. Be honest — this is what saves the
-   paper from `/haipipe-paper-edit-improve-loop` round-2 hatchet jobs.
+The file mirrors the paper's REAL sections, in reading order, and has five structural parts:
+
+1. **Readiness legend (top).** Five color-coded tags, defined once via the macros in the template, applied to every beat:
+   - `[READY]` (green): evidence in hand (a confirmed probe or a run we trust).
+   - `[PENDING]` (orange): data exists but a render/check/probe is still open.
+   - `[INFER]` (purple): an inference, grounded in the evidence, reaching one reasoned step beyond, never measured (no probe will confirm it).
+   - `[LIT]` (blue): rests on outside literature, citation-audit pending.
+   - `[GAP]` (red): no evidence yet, needs a probe.
+
+   The tag is not decoration: `[PENDING]` and `[GAP]` beats ARE the open evidence needs, and they route to `/haipipe-probe`.
+
+2. **Spine (throughline).** One paragraph, an arrow chain, the whole paper in one breath: problem, the move this paper makes, the core finding, the so-what. Every beat below must serve this line.
+
+3. **One block per paper section** (Introduction, Methods, Results, Discussion, in reading order), each with:
+   - a `\section*` heading plus a plain-language subtitle (for example "what is known, the gap, and the bet");
+   - a **Flow:** line, the section's own arrow chain;
+   - a **grounded prose paragraph**, draft-quality and in plain language, written one sentence per `%% ---- Pn.Sm ----` tag. This paragraph is the literal opener the manuscript grows from.
+   - a **Key points to cover** enumerate, where each beat is `[TAG] **Label:** one to three sentences`.
+
+4. **Per-beat interrogation comment.** Every beat carries a small-font (`\rev`) comment of the form `verb · role` then one sharp sentence on why the beat is here or what breaks without it. Verbs: `keep · add · demoted · cut · added by author`. Roles: `stakes · validity · contribution · guardrail · safety · defense · mechanism · grounded opener · no-blame anchor · so-what` (extend as the venue needs). These are authored by the interrogation subagent, not self-authored (see below).
+
+5. **Footer ledger.** Three small-font lines: **Reviewer-flagged gaps** (each known reviewer concern and which section beat now threads it, or marked Remaining and routed to a probe), **Arc** (one line: what each section lands on after demotions/parks/folds, and how the spine's peak claim is defended), and **Awaiting review** (beats authored since the last interrogation pass that still need a verdict).
+
+This form absorbs the old markdown buckets: the claim-evidence matrix becomes the readiness-tagged beats; the figure/table inventory becomes Methods/Results beats (a Table 1 beat, a STROBE-flow beat); limitations become Discussion beats; the pitch alignment stays a constraint read from `0-lifecycle/1-pitch/1-pitch.tex`, not a printed section.
 
 Per-Beat Interrogation (subagent review)
 -----------------------------------------
@@ -174,15 +173,11 @@ For each section in the plan, decide:
 - can be auto-generated from a result file → `auto` (note the script if any)
 - needs hand drawing (architecture, qualitative concept, schematic) → `manual`
 
-### Step 4: Write `NARRATIVE_REPORT.md`
+### Step 4: Write `3-narrative.tex`
 
-Use the five-section structure above. Keep it tight — under ~400 lines for a
-typical conference paper, under ~800 for a journal paper. Density beats
-length: every line should either name a claim, name an evidence file, or set
-context the reader needs to interpret the next line.
+Scaffold from `ref/narrative-template.tex` (copy it to `0-lifecycle/3-narrative/3-narrative.tex`), then fill every `<...>` placeholder using the five-part structure above. Keep it tight: one page for a conference paper, a few for a journal. Density beats length: every beat should name a claim, an evidence file, or context the reader needs for the next beat. Tag every beat with its readiness ([READY]/[PENDING]/[INFER]/[LIT]/[GAP]); leave no beat untagged.
 
-After writing, run the per-beat interrogation protocol (see above). Do not
-advance to the exit gate until interrogation comments are integrated.
+After writing, run the per-beat interrogation protocol (see above). Do not advance to the exit gate until interrogation comments are integrated and the PDF is recompiled.
 
 ### Step 5: Compile + Exit Gate
 
@@ -197,13 +192,13 @@ advance to the exit gate until interrogation comments are integrated.
 Print the suggested next command:
 
 ```
-NARRATIVE_REPORT.md generated.
+3-narrative.tex written and compiled to 3-narrative.pdf.
 
-To write the paper:
-    /haipipe-paper "NARRATIVE_REPORT.md" -- venue: <ICLR|NeurIPS|...>
+Next stage:
+    /haipipe-paper-minimap        (paragraph jobs + evidence anchors)
 
 To revise:
-    edit NARRATIVE_REPORT.md directly, then re-run /haipipe-paper
+    edit 0-lifecycle/3-narrative/3-narrative.tex directly, recompile, then re-run downstream stages
 ```
 
 End the reply with the stage strip (run `ref/stage-strip.sh`).
@@ -214,7 +209,7 @@ End the reply with the stage strip (run `ref/stage-strip.sh`).
 Upstream                          This skill                  Downstream
 ────────                          ──────────                  ──────────
 /idea-discovery   ──► IDEA_REPORT ─┐
-                                   ├──► /haipipe-paper-narrative  ──► NARRATIVE_REPORT.md ──► /haipipe-paper
+                                   ├──► /haipipe-paper-narrative  ──► 3-narrative.tex     ──► /haipipe-paper
 implement + experiments            │                                                       │
                                    │                                                       ├──► /haipipe-paper-minimap
 /auto-review-loop ──► AUTO_REVIEW ─┤                                                       ├──► /haipipe-paper-display-figure
@@ -230,7 +225,11 @@ already have the upstream artifacts and only need the narrative.
 
 - **Claim ↔ evidence is non-negotiable.** Every quantitative line in the
   narrative must have a traceable file path. Numbers without sources will
-  fail `/haipipe-paper-edit-claim-audit` later anyway — catch them here.
+  fail `/haipipe-paper-edit-claim-audit` later anyway, so catch them here.
+- **Every beat carries a readiness tag.** No beat is untagged. `[PENDING]` and
+  `[GAP]` beats are the paper's live evidence worklist: surface them and route
+  them to `/haipipe-probe`; never quietly upgrade a beat to `[READY]` without
+  the evidence in hand.
 - **Do not invent claims the data doesn't support.** If `CLAIMS_FROM_RESULTS`
   says partial, do not round up to "yes" in the narrative.
 - **Honest limitations save the paper.** Round-2 reviewers (human or auto)
