@@ -17,9 +17,6 @@ Start here:
 
 - `hai-pipe-stack-concept.png` - visual concept map for Narrative, Probe,
   Discovery, Task, Insight, and sibling folder references.
-- `hai-pipe-one-slide-workflow.md` - one-slide figure brief for explaining
-  HAI-Pipe as both an evidence-to-delivery workflow and a persisted ML asset
-  pipeline.
 - `end-to-end-sandwich-run.md` - one narrative, one probe, two discoveries,
   and three tasks from start to finish.
 - `minimal-dry-run/` - a tiny completed run fixture with project log,
