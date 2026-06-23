@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -97,6 +98,121 @@ def build_latex_include(caption: str, label: str) -> str:
     )
 
 
+def build_float_tex(rel_asset: str, caption: str, label: str) -> str:
+    """float.tex for a display unit: references the asset under assets/."""
+    return "\n".join(
+        [
+            "% Rendered by haipipe-paper-display-illustration; rebuild spec in source/prompt.md.",
+            r"\begin{figure}[t]",
+            r"\centering",
+            f"\\includegraphics[width=\\textwidth]{{{rel_asset}}}",
+            f"\\caption{{{caption}}}",
+            f"\\label{{{label}}}",
+            r"\end{figure}",
+            "",
+        ]
+    )
+
+
+def build_preview_tex(rel_float: str) -> str:
+    return "\n".join(
+        [
+            r"\documentclass{article}",
+            r"\usepackage[margin=1in]{geometry}",
+            r"\usepackage{graphicx}",
+            r"\usepackage{booktabs}",
+            r"\usepackage{subcaption}",
+            r"\usepackage{caption}",
+            r"\begin{document}",
+            f"\\input{{{rel_float}}}",
+            r"\end{document}",
+            "",
+        ]
+    )
+
+
+def run_finalize_unit(
+    workspace: Path,
+    display_unit: Path,
+    *,
+    best_image: Path,
+    caption: str,
+    label: str,
+    score: float | None,
+    review_summary: str | None,
+    json_out: Path | None = None,
+) -> int:
+    """Finalize into a 0-displays/<unit>/ display unit (the contract path)."""
+    best_image = best_image.expanduser().resolve()
+    ensure_png_file(best_image)
+    unit = display_unit.expanduser().resolve()
+    assets = unit / "assets"
+    source = unit / "source"
+    assets.mkdir(parents=True, exist_ok=True)
+    source.mkdir(parents=True, exist_ok=True)
+
+    # paths relative to the paper root, for LaTeX \includegraphics / \input
+    try:
+        unit_rel = unit.relative_to(workspace).as_posix()
+    except ValueError:
+        # unit not under workspace: keep a RELATIVE path (with ../) rather than an
+        # absolute one, so float.tex stays portable when compiled from the paper root.
+        unit_rel = Path(os.path.relpath(unit, workspace)).as_posix()
+    rel_asset = f"{unit_rel}/assets/figure.png"
+    rel_float = f"{unit_rel}/float.tex"
+
+    final_image = assets / "figure.png"
+    float_tex = unit / "float.tex"
+    preview_tex = unit / "preview.tex"
+    review_log = source / "review_log.json"
+
+    shutil.copy2(best_image, final_image)
+    # Do NOT clobber a hand-edited float.tex (caption/label live there). Only
+    # author it on first finalize; on re-finalize the asset is refreshed but the
+    # existing float.tex (and its caption) is preserved.
+    float_written = not float_tex.is_file()
+    if float_written:
+        float_tex.write_text(build_float_tex(rel_asset, caption, label), encoding="utf-8")
+    if not preview_tex.is_file():
+        preview_tex.write_text(build_preview_tex(rel_float), encoding="utf-8")
+
+    review_payload = {
+        "ok": True,
+        "finalizedAt": utc_now(),
+        "workspace": str(workspace),
+        "displayUnit": str(unit),
+        "bestImage": str(best_image),
+        "finalImage": str(final_image),
+        "score": score,
+        "reviewSummary": review_summary,
+        "caption": caption,
+        "label": label,
+    }
+    write_json(review_log, review_payload)
+
+    payload = {
+        "ok": True,
+        "workspace": str(workspace),
+        "displayUnit": str(unit),
+        "artifacts": {
+            "figureFinal": str(final_image),
+            "floatTex": str(float_tex),
+            "floatTexWritten": float_written,
+            "floatTexPreserved": not float_written,
+            "previewTex": str(preview_tex),
+            "reviewLog": str(review_log),
+        },
+        "previewCompileHint": (
+            f"pdflatex -output-directory {unit_rel} {rel_float.replace('float.tex','preview.tex')} "
+            "(run from the paper root)"
+        ),
+        "score": score,
+        "reviewSummary": review_summary,
+        "finalizedAt": review_payload["finalizedAt"],
+    }
+    return emit_json(payload, json_out=json_out)
+
+
 def run_finalize(
     workspace: Path,
     *,
@@ -147,7 +263,42 @@ def run_finalize(
     return emit_json(payload, json_out=json_out)
 
 
-def run_verify(workspace: Path, *, json_out: Path | None = None) -> int:
+def run_verify(workspace: Path, *, display_unit: Path | None = None, json_out: Path | None = None) -> int:
+    if display_unit is not None:
+        unit = display_unit.expanduser().resolve()
+        final_image = unit / "assets" / "figure.png"
+        float_tex = unit / "float.tex"
+        review_log = unit / "source" / "review_log.json"
+        errors: list[str] = []
+        artifacts = {
+            "figureFinal": {"path": str(final_image), "exists": final_image.is_file()},
+            "floatTex": {"path": str(float_tex), "exists": float_tex.is_file()},
+            "reviewLog": {"path": str(review_log), "exists": review_log.is_file()},
+        }
+        if final_image.is_file():
+            try:
+                ensure_png_file(final_image)
+            except (FileNotFoundError, ValueError) as exc:
+                errors.append(str(exc))
+        else:
+            errors.append(f"missing artifact: {final_image}")
+        if float_tex.is_file():
+            if "assets/figure.png" not in float_tex.read_text(encoding="utf-8"):
+                errors.append("float.tex does not reference assets/figure.png")
+        else:
+            errors.append(f"missing artifact: {float_tex}")
+        if not review_log.is_file():
+            errors.append(f"missing artifact: {review_log}")
+        payload = {
+            "ok": not errors,
+            "workspace": str(workspace),
+            "displayUnit": str(unit),
+            "checkedAt": utc_now(),
+            "artifacts": artifacts,
+            "errors": errors,
+        }
+        return emit_json(payload, json_out=json_out)
+
     figures_dir = output_dir(workspace)
     final_image = figures_dir / "figure_final.png"
     latex_include = figures_dir / "latex_include.tex"
@@ -215,10 +366,16 @@ def build_parser() -> argparse.ArgumentParser:
     finalize.add_argument("--label", default="fig:replace-me", help="LaTeX figure label")
     finalize.add_argument("--score", type=float, help="Final review score")
     finalize.add_argument("--review-summary", help="Short review summary for review_log.json")
+    finalize.add_argument(
+        "--display-unit",
+        help="Target 0-displays/<unit>/ dir (contract path). When set, writes assets/figure.png "
+        "+ float.tex + source/review_log.json instead of flat figures/ai_generated/.",
+    )
     finalize.add_argument("--json-out", help="Optional path to save the JSON result")
 
     verify = subparsers.add_parser("verify", help="Verify that final artifacts were emitted correctly")
     verify.add_argument("--workspace", help="Paper or project workspace root")
+    verify.add_argument("--display-unit", help="Verify a 0-displays/<unit>/ unit instead of flat figures/")
     verify.add_argument("--json-out", help="Optional path to save the JSON result")
 
     return parser
@@ -234,6 +391,18 @@ def main() -> int:
         return run_preflight(workspace, json_out=json_out)
 
     if args.command == "finalize":
+        display_unit = getattr(args, "display_unit", None)
+        if display_unit:
+            return run_finalize_unit(
+                workspace,
+                Path(display_unit),
+                best_image=Path(args.best_image),
+                caption=args.caption,
+                label=args.label,
+                score=args.score,
+                review_summary=args.review_summary,
+                json_out=json_out,
+            )
         return run_finalize(
             workspace,
             best_image=Path(args.best_image),
@@ -245,7 +414,12 @@ def main() -> int:
         )
 
     if args.command == "verify":
-        return run_verify(workspace, json_out=json_out)
+        display_unit = getattr(args, "display_unit", None)
+        return run_verify(
+            workspace,
+            display_unit=Path(display_unit) if display_unit else None,
+            json_out=json_out,
+        )
 
     parser.error(f"unknown command: {args.command}")
     return 2

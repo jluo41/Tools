@@ -17,6 +17,16 @@ metadata:
 
 Generate publication-quality illustrations using a **multi-stage workflow** with **Claude as the STRICT supervisor/reviewer**.
 
+## Output: write into a display unit (not flat figures/)
+
+When the target is a paper (a folder with `0-displays/`), the output goes into a
+`0-displays/displayNN-<slug>/` unit, NOT a flat `figures/` directory. Follow the
+shared contract: `../haipipe-paper-display/ref/display-unit-output-contract.md`.
+For THIS renderer: asset -> `assets/figure.png`; rebuild spec ->
+`source/prompt.md` (final prompt + score) + `source/review_log.json`. Wire
+`float.tex`, compile `preview.pdf`, set README status. Flat `figures/` is a
+fallback only when there is no paper.
+
 ## Core Design Philosophy
 
 ```
@@ -77,7 +87,7 @@ Generate publication-quality illustrations using a **multi-stage workflow** with
 - **REASONING_MODEL = `gemini-3-pro-preview`** — Gemini for layout optimization and style checking
 - **MAX_ITERATIONS = 5** — Maximum refinement rounds
 - **TARGET_SCORE = 9** — Minimum acceptable score (1-10) — RAISED FOR QUALITY
-- **OUTPUT_DIR = `figures/ai_generated/`** — Output directory
+- **OUTPUT_DIR = `figures/ai_generated/`** — iteration scratch dir. For a paper the ACCEPTED figure is promoted into the display unit `0-displays/displayNN-slug/` (Step 8); this flat dir is the full output only with no paper.
 - **API_KEY_ENV = `GEMINI_API_KEY`** — Environment variable
 
 ## Optional: Style reference (`— style-ref: <source>`, opt-in)
@@ -674,19 +684,34 @@ Refine this academic diagram. This is iteration {N}.
 ## Generate the improved figure with ALL issues fixed.
 ```
 
-### Step 8: Final Output
+### Step 8: Final Output — promote into the display unit
 
-When figure is accepted (score ≥ 9):
+The iteration scratch above lives in `figures/ai_generated/` (working files).
+When the figure is accepted (score ≥ 9), PROMOTE it into the display unit per the
+contract (`../haipipe-paper-display/ref/display-unit-output-contract.md`):
+
+```bash
+# resolve/scaffold the unit first (0-displays/displayNN-slug/)
+cp figures/ai_generated/figure_final.png 0-displays/displayNN-slug/assets/figure.png
+cp figures/ai_generated/review_log.json  0-displays/displayNN-slug/source/review_log.json
+# record the rebuild spec (final prompt + Gemini models + score):
+#   0-displays/displayNN-slug/source/prompt.md
+```
+
+Then write `0-displays/displayNN-slug/float.tex` (paper-root-relative path):
 
 ```latex
-% === AI-Generated Figure ===
-\begin{figure*}[t]
-    \centering
-    \includegraphics[width=0.95\textwidth]{figures/ai_generated/figure_final.png}
-    \caption{[Caption based on user's original request].}
-    \label{fig:[label]}
-\end{figure*}
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{0-displays/displayNN-slug/assets/figure.png}
+  \caption{[Caption based on user's original request].}
+  \label{fig:slug}
+\end{figure}
 ```
+
+Add `preview.tex`, compile `preview.pdf` from the paper root, set README status
+to `rendered`. Only with no paper, keep the flat `figures/ai_generated/figure_final.png`
++ `latex_include.tex` form.
 
 ## Key Rules (MUST FOLLOW - STRICT)
 
@@ -705,16 +730,19 @@ When figure is accepted (score ≥ 9):
 
 ## Output Structure
 
+Paper target (DEFAULT): the accepted figure is promoted into a display unit
+(`0-displays/displayNN-slug/{assets/figure.png, float.tex, preview.tex, preview.pdf,
+source/{prompt.md, review_log.json}}`); see the contract. The flat dir below holds
+only the iteration SCRATCH (and is the full output only when there is no paper):
+
 ```
-figures/ai_generated/
+figures/ai_generated/            # iteration scratch (paper) / full output (no paper)
 ├── layout_description.txt  # Step 2: Gemini layout optimization output
 ├── style_spec.txt          # Step 3: Gemini style verification output
-├── figure_v1.png           # Iteration 1 (Paperbanana render)
-├── figure_v2.png           # Iteration 2
-├── figure_v3.png           # Iteration 3
-├── figure_final.png        # Accepted version (copy of best, score ≥ 9)
-├── latex_include.tex       # LaTeX snippet
-└── review_log.json         # All review scores and STRICT feedback
+├── figure_v1.png … figure_v3.png   # iterations (Paperbanana render)
+├── figure_final.png        # accepted (score ≥ 9) -> promoted to unit assets/figure.png
+├── latex_include.tex       # no-paper fallback snippet
+└── review_log.json         # all review scores and STRICT feedback
 ```
 
 ## Model Summary

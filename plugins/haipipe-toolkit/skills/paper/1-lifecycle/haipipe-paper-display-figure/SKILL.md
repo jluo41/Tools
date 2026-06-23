@@ -23,6 +23,15 @@ Generate the data plots for a paper based on: **$ARGUMENTS**
 > `haipipe-paper-display-diagram`; for AI concept art use
 > `haipipe-paper-display-illustration`.
 
+## Output: write into a display unit (not flat figures/)
+
+When the target is a paper (a folder with `0-displays/`), the plot goes into a
+`0-displays/displayNN-<slug>/` unit, NOT a flat `figures/` directory. Follow the
+shared contract: `../haipipe-paper-display/ref/display-unit-output-contract.md`.
+For THIS renderer: asset -> `assets/figure.pdf`; rebuild spec -> `source/gen_*.py`
+(+ `source/paper_plot_style.py`). Wire `float.tex`, compile `preview.pdf`, set
+README status. Flat `figures/` is a fallback only when there is no paper.
+
 ## Scope: What This Skill Can and Cannot Do
 
 | Category | Can auto-generate? | Examples |
@@ -43,7 +52,7 @@ Generate the data plots for a paper based on: **$ARGUMENTS**
 - **FORMAT = `pdf`** — Output format. Options: `pdf` (vector, best for LaTeX), `png` (raster fallback)
 - **COLOR_PALETTE = `tab10`** — Default matplotlib color cycle. Options: `tab10`, `Set2`, `colorblind` (deuteranopia-safe)
 - **FONT_SIZE = 10** — Base font size (matches typical conference body text)
-- **FIG_DIR = `figures/`** — Output directory for generated figures
+- **FIG_DIR** — for a paper, the display unit `0-displays/displayNN-slug/` (plot -> `assets/figure.pdf`, scripts -> `source/`). Flat `figures/` only with no paper.
 - **REVIEWER_MODEL = `gpt-5.5`** — Model used via Codex MCP for figure quality review.
 
 ## Inputs
@@ -236,16 +245,26 @@ Before finishing, verify each figure (from pedrohcgs/claude-code-my-workflow):
 
 ## Output
 
+Paper target (DEFAULT) — into the display unit (see the contract):
+
+```
+0-displays/displayNN-slug/
+├── float.tex                    # caption + \label + \includegraphics{assets/figure.pdf}
+├── preview.tex / preview.pdf
+├── assets/figure.pdf            # the rendered plot
+└── source/
+    ├── gen_figNN_*.py           # per-figure script (reproducible)
+    └── paper_plot_style.py      # shared style config
+```
+
+Fallback (no paper / scratch) — flat:
+
 ```
 figures/
-├── paper_plot_style.py          # shared style config
-├── gen_fig1_architecture.py     # per-figure scripts
-├── gen_fig2_training_curves.py
-├── gen_fig3_comparison.py
-├── fig1_architecture.pdf        # generated figures
-├── fig2_training_curves.pdf
-├── fig3_comparison.pdf
-└── latex_includes.tex           # LaTeX snippets for all figures
+├── paper_plot_style.py
+├── gen_figNN_*.py
+├── figNN_*.pdf
+└── latex_includes.tex
 ```
 (Tables are produced by `haipipe-paper-display-table`, not here.)
 

@@ -18,6 +18,16 @@ metadata:
 
 Generate publication-quality **architecture diagrams**, **workflow pipelines**, **audit cascades**, and **system topology** figures as editable SVG vector graphics using a deterministic JSON → SVG renderer.
 
+## Output: write into a display unit (not flat figures/)
+
+When the target is a paper (a folder with `0-displays/`), the diagram goes into a
+`0-displays/displayNN-<slug>/` unit, NOT a flat `figures/` directory. Follow the
+shared contract: `../haipipe-paper-display/ref/display-unit-output-contract.md`.
+For THIS renderer: asset -> `assets/figure.svg` (plus `assets/figure.pdf` if you
+rasterize/convert for LaTeX); rebuild spec -> `source/<name>.json` (the FigureSpec).
+Wire `float.tex`, compile `preview.pdf`, set README status. Flat `figures/` is a
+fallback only when there is no paper.
+
 ## When to Use This Skill
 
 **Use `haipipe-paper-display-diagram`** for:
