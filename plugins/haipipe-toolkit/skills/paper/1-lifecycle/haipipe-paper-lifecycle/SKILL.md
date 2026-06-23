@@ -312,20 +312,15 @@ next:      suggested next /haipipe-paper-lifecycle command
 Relation to Parent Orchestrator
 --------------------------------
 
-`haipipe-paper` (in `paper/_venue/`) is the top-level paper
-router by **venue**. It dispatches to venue specialists
-(`-conference`, `-journal`, `-is`) which in turn call structure
-specialists as needed. This orchestrator (`haipipe-paper-lifecycle`)
-is the direct entry for structural work — either called by a venue
-specialist or by the user directly.
+`haipipe-paper` (in `paper/haipipe-paper/`) is the top-level paper
+router + Console. It resolves status and consults the target's profile in
+`_venue/playbook-<venue>` for venue fit. This orchestrator
+(`haipipe-paper-lifecycle`) is the direct entry for structural work —
+either routed from the Console or invoked by the user directly.
 
 ```
-haipipe-paper (venue router)
-  ├─► haipipe-paper-conference ──┐
-  ├─► haipipe-paper-journal   ───┤── call structure specialists as needed
-  ├─► haipipe-paper-is        ──┘
-  └─► haipipe-paper-create / -revise
-            │
+haipipe-paper (router)  ── consults _venue/playbook-<venue> for venue fit
+            │                (misq/isr/ms-is/pnas/nature-portfolio/jama/clinical; grant; patent-*)
             ▼
 haipipe-paper-lifecycle (this orchestrator)
   ├─► folder

@@ -106,3 +106,6 @@
 [submodule "spaces/Physician-SPACE"]
 	path = spaces/Physician-SPACE
 	url = git@github.com:JHU-CDHAI/Physician-SPACE.git
+[submodule "papers/Paper-TestToLearn-MS2026"]
+	path = papers/Paper-TestToLearn-MS2026
+	url = git@github.com:jluo41/Paper-TestToLearn-MS2026.git

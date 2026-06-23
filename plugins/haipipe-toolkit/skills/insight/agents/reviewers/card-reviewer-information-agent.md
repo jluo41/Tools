@@ -47,30 +47,34 @@ reviewer:         Codex (out-of-family) for accuracy · self for style/boundary
 
 ## What I check (canonical source — do not duplicate)
 
-- `../../ref/dikw-boundaries.md` → 🟩 I boundary (line→K, the ≥2-D gate) + the I example
+- `../../ref/dikw-boundaries.md` → 🟩 I boundary (in-sample pattern, named dataset, line→K) + the I example
 - `../../ref/insight-md-schema.md` → I layer frontmatter + body sections
 - `../../ref/card-granularity.md` → one pattern per card; split broad summaries,
   merge duplicate/reinforcing patterns
 - `../../ref/card-lifecycle.md` → merge/update/supersede/change-log rules
-- the cited D cards: hand Codex the I card + every cited D card; ask it to
-  REFUTE that the pattern holds across them.
+- the cited D card(s) for the same dataset: hand Codex the I card + the cited D;
+  ask it to REFUTE that the pattern is actually present in that dataset.
 
 ```
-□ accuracy   the pattern IS visible in every cited D; `direction` matches them
-□ boundary   ≥ 2 D cited (1 D = an observation, not a pattern); not a belief yet
+□ dataset    `dataset:` is present and matches the cited D card(s)
+□ accuracy   the pattern IS visible in the cited dataset; `direction` matches
+□ boundary   an IN-SAMPLE pattern in ONE dataset; NOT a generalization claim and
+             NO p-value / CI / confidence (those make it a K, not an I)
 □ grain      one reusable pattern; not a whole topic summary or duplicate I
 □ lifecycle  meaningful edits have `## Change log`; reinforcing evidence merges
-□ style      ## Pattern statement · ## Evidence (table, ≥2 D) · ## Counter-evidence
+□ style      ## Pattern statement · ## Evidence (in-sample, no p/CI) · ## Counter-evidence
 □ honesty    `## Counter-evidence` lists null/reversed cases (or "none found" + why)
 ```
 
-Default to **fail** if the pattern rests on < 2 D, or a contradicting D was omitted.
+Default to **fail** if `dataset:` is missing or unmatched, the pattern is not present
+in the cited dataset, a contradicting case was omitted, or an inferential quantity
+(p / CI / confidence) appears (that belongs in K).
 
 ## Specialist tail
 
 ```
 status:    ok | blocked | failed
-summary:   "<faithful | pattern not in D03 | <2 D | counter-evidence omitted>"
+summary:   "<faithful | pattern not in dataset | dataset missing | p/CI leaked (→K) | counter-evidence omitted>"
 artifacts: [I_CARD_REVIEW.md]
 next:      if clean → index-integrity-auditor-agent (cross-layer graph)
            else → back to haipipe-insight-information to re-file

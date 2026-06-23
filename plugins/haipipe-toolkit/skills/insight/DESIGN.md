@@ -61,19 +61,21 @@ Who produces material vs who files memory
 DIKW layers are card labels in the archive, not lifecycle stages.
 
 ```
-Card layer     Material source                              Filing decision
+Card layer     What it is                                   Filing decision
 ─────────────  ───────────────────────────────────────────  ─────────────────
-🟦 D data      task/discover observation                    review
-🟩 I info      pattern across D / rich descriptive material review
-🟨 K knowledge judged probe claim / vetted literature       review
-🟧 W wisdom    K-backed action / strategic synthesis        review
+🟦 D data      one named dataset's profile (in-sample)      review
+🟩 I info      a pattern inside that same dataset           review
+🟨 K knowledge does the pattern generalize, + confidence    review
+🟧 W wisdom    a K-backed action, risk-tuned to K confidence review
 ```
 
-The principle: **upstream layers produce material; review decides archival
-value; insight files and maintains the graph.**
+The principle: **D/I describe one dataset (in-sample, named); K is the
+generalization claim where p/CI/confidence live; W acts on K, tuned to its
+confidence. Review decides archival value; insight files and maintains the graph.**
 
-- A task doesn't produce K (it doesn't test hypotheses — that's a probe's job).
-- A probe doesn't directly mutate `insights/`; it produces verdict material.
+- D and I require a `dataset:` and carry no inferential numbers.
+- K has NO probe gate — a generalization basis (significance / robustness / vetted
+  claim) plus an honest confidence is enough; low-confidence and negative K are recorded.
 - Narrative/application ask/human review is the construction boundary.
 - The D/I/K/W layer skills are low-level writers used by review.
 
@@ -107,7 +109,8 @@ Two reframes settled this session:
    call with zero human-in-the-loop. The creator IS that path.
 2. **E's reviewers go PER-TYPE** — a deliberate departure from C/D's
    type-agnostic reviewers. Each DIKW card has a genuinely different boundary
-   (D traces · I needs ≥2 D · K needs the probe + full counter-evidence · W
+   (D names a dataset + traces · I is an in-sample pattern, no p/CI · K is a
+   generalization claim with confidence + full counter-evidence, no probe gate · W
    must be actionable), so each gets its own card-reviewer enforcing accuracy +
    style against `ref/dikw-boundaries.md`. Only `index-integrity` stays shared
    (the cross-layer graph cannot be per-type).

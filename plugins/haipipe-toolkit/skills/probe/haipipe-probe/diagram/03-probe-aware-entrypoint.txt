@@ -42,7 +42,7 @@
          |   for each probe, walk the ladder; FIRST failing check = frontier
          v
     Plan   -->   Gather   -->   Read    -->   Judge    -->   Return
-   claim +      evidence_refs  evidence.md   verdict.md     return.md +
+   claim +      evidence_refs  evidence.md   verdict.md     deposit.md +
    evidence_    RESOLVE on     + result      + structural/   verdict sent
    plan in yaml disk (call/    grounded in   integrity/      to source/
                 link)          live paths    claim gates     memory

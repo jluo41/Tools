@@ -61,6 +61,22 @@ Render it DETERMINISTICALLY with the helper (never hand-type it; it drifts):
 sh "$CLAUDE_SKILL_DIR/../ref/stage-strip.sh" <paper-dir>   # walks upward for STATUS.md
 ```
 
+Closing-block format. End every reply with ONE fenced `text` block: a TITLED top
+rule, the return-contract tail, a plain bottom rule, then the strip as the last
+line. Use box-drawing `─` (U+2500) for the rules (no corners, no side borders).
+The top rule carries the label `📄 paper · <current_layer> ▶️`:
+
+    ── 📄 paper · claims ▶️ ───────────────────────
+    status:        ok|blocked|failed
+    paper_root:    <path>
+    current_layer: <layer>
+    next:          <single recommended command>
+    ──────────────────────────────────────────────
+    seed ✅  pitch ✅  claims ▶️  narrative ⬜  display ⬜  minimap ⬜  →  write/edit ⬜  →  review ⬜
+
+The strip line still comes from the helper; only its framing (titled top rule +
+bottom rule) is added here. Every stage / enter skill inherits this closing block.
+
 Gate-aware: advancing `current_layer` to the next stage requires an EXPLICIT user
 confirm that the current stage is done (the Stage Gate). Once `STATUS.md` carries
 the gate confirmation ledger, ✅ means "user-confirmed", not merely "before
@@ -112,14 +128,6 @@ Specialists
 -----------
 
 ```
-haipipe-paper-conference  ICLR/NeurIPS/ICML/ML conference paper pipeline
-                          (narrative→plan→figure→write→compile→improve→audit)
-haipipe-paper-journal     Nature/PNAS/biomedical journal manuscript workflow
-                          (bootstrap→article-type→draft→revise→submit→rebuttal)
-haipipe-paper-is          MISQ/ISR/Management Science IS journal paper
-                          (contribution framing → theory → method → submission)
-haipipe-paper-rebuttal    Submission rebuttal pipeline (venue-agnostic)
-                          (parse reviews → strategy → draft → coverage check)
 haipipe-paper-enter       Status-aware paper session loader
                           (read STATUS.md + lifecycle/rounds/displays/sections/git,
                            report current layer, maturity, open needs, open gates, next commands)
@@ -127,11 +135,17 @@ haipipe-paper-bootstrap
                           Paper folder bootstrap, including prospectus mode
                           (STATUS.md + sparse 0-lifecycle, no manuscript obligations)
                           and manuscript mode (full 0-/1-prefix tex scaffold)
-haipipe-paper-create      Fresh-draft pipeline, venue-agnostic at workflow
-                          (narrative+plan → scaffold tex → paragraph-by-paragraph draft)
-haipipe-paper-revise      Whole-paper polish pipeline, venue-agnostic
-                          (discover sections → paragraph-by-paragraph polish
-                           via paper-revise → cross-section audit → diff report)
+haipipe-paper-lifecycle   Stage orchestrator (seed→pitch→claims→narrative→display→minimap)
+3-write-edit/*            Prose: write / edit / polish
+                          (haipipe-paper-edit-write drafts, -edit-weaving polishes;
+                           replaces the retired -create / -revise pipelines)
+haipipe-paper-rebuttal    Submission rebuttal pipeline (venue-agnostic)
+                          (parse reviews → strategy → draft → coverage check)
+
+Venue is knowledge, not a pipeline. Consult _venue/playbook-<venue>
+(misq / isr / ms-is / pnas / nature-portfolio / jama / clinical-medicine;
+ grant; patent-*) for what the target rewards. The retired -conference /
+-journal / -is workflow shells folded into the lifecycle + _venue/README.md.
 ```
 
 ---
@@ -464,12 +478,11 @@ Composing with Other Workflows
         ▼
 /haipipe-paper        ← you are here (router)
         │
-        ├─► /haipipe-paper-conference  (ICLR/NeurIPS/…)
-        ├─► /haipipe-paper-journal     (Nature/PNAS/…)
-        ├─► /haipipe-paper-is          (MISQ/ISR/…)
+        ├─► /haipipe-paper-lifecycle   (seed→…→minimap structural spine)
+        ├─► /haipipe-paper-edit-write  (narrative+plan → fresh tex prose)
+        ├─► /haipipe-paper-edit-weaving (existing tex → polish)
         ├─► /haipipe-paper-rebuttal    (any venue, post-review)
-        ├─► /haipipe-paper-create      (narrative+plan → fresh tex)
-        └─► /haipipe-paper-revise      (existing tex → polish via haipipe-paper-edit-weaving)
+        └─► consult _venue/playbook-<venue>  (what the target rewards)
 ```
 
 ---

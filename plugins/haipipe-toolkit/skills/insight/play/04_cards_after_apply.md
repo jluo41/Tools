@@ -23,27 +23,36 @@ refs:
 confidence: medium
 ---
 
-# K03 - Validation gain does not transfer to OOD
+# K03 - Validation gain does not generalize to OOD
 
 ## Claim
 
-The new model improves validation accuracy, but the improvement does not
-transfer to the tested OOD split.
+The validation-set gain found in-sample does NOT generalize to the tested
+out-of-distribution split. (A generalization claim — note the in-sample gain
+itself, the +X on val, is an I card; whether it carries over is this K.)
 
-## Evidence
+## Generalization basis
 
-- Validation result improved over baseline.
-- OOD result did not improve under the tested split.
-- Probe verdict: confirmed with caveat.
+- The val gain did not reproduce on the OOD split (the inferential test that
+  would let it generalize fails there). p / CI of the OOD comparison go here.
+- Cites the in-sample I card(s) for the val gain.
 
-## Caveats
+## Counter-evidence
 
-- Only one OOD split has been tested.
-- The claim should be revisited after param-matched or multi-split probes.
+- Only one OOD split has been tested; a different split might behave differently.
+
+## Confidence rationale
+
+medium — the non-transfer is clean on the one split tested, but a single split is
+the statistical tier only, not robustness across splits. Multi-split would raise it.
+
+## Scope
+
+The tested OOD split; current training schedule. Does not speak to other shifts.
 
 ## Change log
 
-- 2026-06-21: filed from `probe:P001_model_ood`.
+- 2026-06-21: filed from `probe:P001_model_ood` (one possible basis; no probe is required).
 ```
 
 ## W Card
@@ -67,15 +76,27 @@ confidence: medium
 
 When reporting model quality, separate validation gains from OOD evidence.
 
-## Trigger
+## How to act
 
-Use this recommendation whenever a narrative, application report, or paper
-claims robustness from validation-only improvements.
+In any results table or claim, label val-set and OOD-set numbers separately, and
+do not state OOD robustness unless an OOD test backs it.
 
-## Rationale
+## Risk posture
 
-This follows from K03: the validation gain did not transfer to OOD in the tested
-probe.
+K03 is medium-confidence (non-transfer shown on one OOD split only). That medium
+confidence justifies a conservative rule — "do not claim OOD robustness from val
+gains" — rather than a strong "the model fails OOD" assertion. If a multi-split
+probe later raises K03 to high, the rule can harden.
+
+## Why now
+
+Narratives and papers are most tempted to over-read a val gain at write-up time;
+the rule is needed before the claim is drafted.
+
+## Decay condition
+
+- A multi-split OOD probe lands (re-evaluate K03 and this rule), OR
+- the project stops reporting val-only improvements.
 
 ## Change log
 

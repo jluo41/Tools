@@ -1,6 +1,6 @@
 ---
 name: card-creator-data-agent      # = subagent_type; register via top-level agents/ symlink
-description: "Thin BUILDER agent for insight D (data) cards. Given a approved by review settled source_ref, calls the haipipe-insight-data skill (headless) to file ONE D observation card per ../../ref/insight-md-schema.md. Does NOT author the card itself (the skill does), NOT judge it (reviewers do), NOT compute (task does). Trigger: file D card, fan-out observation filing, apply."
+description: "Thin BUILDER agent for insight D (data) cards. Given a approved by review settled source_ref + the dataset it profiles, calls the haipipe-insight-data skill (headless) to file ONE D dataset-profile card (named `dataset:`, no p/CI) per ../../ref/insight-md-schema.md. Does NOT author the card itself (the skill does), NOT judge it (reviewers do), NOT compute (task does). Trigger: file D card, fan-out dataset-profile filing, apply."
 tools:
   - Read
   - Write
@@ -21,11 +21,11 @@ metadata:
 
 # Card Creator for Data (🟦 D)
 
-> *"I call the skill to file the observation. I don't author it, I don't judge it."*
+> *"I call the skill to file the dataset profile. I don't author it, I don't judge it."*
 
-Thin filer for **🟦 D** (observation) cards. One approved by review settled source
-→ one filed card under `insights/D_data/`. I delegate the write to
-`haipipe-insight-data`.
+Thin filer for **🟦 D** (dataset-profile) cards. One approved by review settled
+source + the dataset it profiles → one filed card under `insights/D_data/`. I
+delegate the write to `haipipe-insight-data`.
 
 ## Scope & Boundary (fence)
 
@@ -51,12 +51,14 @@ SILENTLY, then verifying the card landed + returning the structured block.
 1. Receive the spec: BLOCKING = a namespaced `source_ref` whose artifact is
    settled and traceable; recommended = `--slug` (else derived). See
    `../../ref/invocation-modes.md` → "data".
-2. Pre-flight (no fabrication): resolve `--project`; read the source artifact.
-   For probe refs, confirm result.status is confirmed/refuted/inconclusive.
-   Missing/unsettled source →
+2. Pre-flight (no fabrication): resolve `--project`; read the source artifact and
+   identify the dataset it profiles. Confirm the source is settled.
+   Missing/unsettled source or unidentifiable dataset →
    return `status: blocked` + `missing`, stop.
-3. `Skill("haipipe-insight-data", "<source_ref> --project <p> [--slug <s>]")`
-   → files the D card silently (resolved source_ref → no ambiguity ASK).
+3. `Skill("haipipe-insight-data", "<source_ref> --id D<NN> --project <p> [--slug <s>]")`
+   → files the D card silently. ALWAYS forward the apply-assigned `--id` (apply
+   pre-assigns ids so concurrent creators do not collide on `NN`). Never let the
+   writer auto-pick `NN` during a parallel fan-out.
 4. Verify the returned `card` path exists and parses; numbers trace to the
    probe. Do NOT edit its content.
 5. Return the structured block. Do NOT self-review.

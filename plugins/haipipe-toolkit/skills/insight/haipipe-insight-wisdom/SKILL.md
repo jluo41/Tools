@@ -1,13 +1,14 @@
 ---
 name: haipipe-insight-wisdom
 description: "W-level wisdom specialist of the haipipe-insight family. Reads K_knowledge entries (validated beliefs) and writes one actionable recommendation entry to insights/W_wisdom/ — 'what we should DO next'. Each W entry is one executable action: a proposed next probe, a strategic re-direction, or a stop-doing-X. NO code. Use via /haipipe-insight review/apply, /haipipe-application ask, or directly /haipipe-insight-wisdom. Trigger: W-level, wisdom, recommendations, what next, strategic direction, action items."
-argument-hint: "[--project <path>] [--scope <knowledge-ids>] [--slug <slug>]"
+argument-hint: "[--project <path>] [--id W<NN>] [--scope <knowledge-ids>] [--slug <slug>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-06-20"
+  version: "1.2.0"
+  last_updated: "2026-06-22"
   summary: "W-level wisdom specialist of the haipipe-insight family."
   changelog:
+    - "1.2.0 (2026-06-22): W reads the cited K's confidence to set RISK POSTURE (bold for high, conservative/hedged for low); added ## Risk posture body section. Low-confidence/negative K are still actionable."
     - "1.1.0 (2026-06-20): clarified one-action granularity for W cards."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
@@ -15,8 +16,9 @@ metadata:
 Skill: haipipe-insight-wisdom
 ==============================
 
-W-level of the Insight base (D → I → K → W). Reads validated knowledge
-(K entries) and writes **actionable strategic recommendations**.
+W-level of the Insight base (D → I → K → W). Reads K (generalization beliefs with
+confidence) and writes **actionable recommendations whose boldness is tuned to
+that confidence**.
 
 **Invocation modes** (see `../../ref/invocation-modes.md`): interactive (a
 human steers; the recommendation-triage ASK runs) OR headless (`--scope` ≥ 1 K
@@ -25,10 +27,10 @@ id + `--auto` → file silently), chosen by input completeness.
 no K id → `status: blocked` (never hang). End with the structured return block.
 
 ```
-D — Data:          "what we observed"
-I — Information:       "what patterns emerged"
-K — Knowledge:     "what we now believe is true"     (input)
-W — Wisdom:        "what we should do next"           ← THIS SKILL
+D — Data:          "what one dataset looks like"
+I — Information:   "the pattern inside that dataset"
+K — Knowledge:     "does it generalize, + confidence"  (input)
+W — Wisdom:        "what to do, tuned to confidence"    ← THIS SKILL
 ```
 
 W is the bridge **from understanding to action**. Each W entry should
@@ -64,6 +66,12 @@ Hard rules
   "Stop chasing the +1mg val improvement; it doesn't transfer to test-od",
   "Pivot main figure 3 to focus on FiLM generalization gap".
 - Each W must cite ≥ 1 K it derives from.
+- READ the cited K's `confidence` and tune the recommendation's RISK POSTURE to it:
+  high-confidence K → a bold action is warranted; low-confidence K → a conservative
+  / hedged action, a small pilot, a "do not yet do X", or "gather more evidence
+  first". A low-confidence (or negative) K is still actionable — it just changes
+  the posture. Record the K's confidence at the time and WHY it justifies the
+  posture (the `## Risk posture` section) so the decision is auditable later.
 - W entries decay — they're "what we should do now given what we know
   now". As K updates, W entries may become stale; mark them `status:
   stale` rather than delete.
@@ -82,7 +90,7 @@ Step 1: Parse args (--scope picks which K entries to derive from)
 Step 2: Read scoped K entries (and their counter-evidence sections)
 Step 3: Propose ≥ 1 candidate recommendation per K
 Step 4: Triage (interactive; --auto picks top)
-Step 5: Compose entry; atomic write
+Step 5: Pick NN (`--id W<NN>` if passed by apply for parallel safety, else max+1 serial-only); compose; atomic write
 Step 6: Update INDEX.md and back-links
 ```
 
@@ -104,6 +112,7 @@ frontmatter (≤ 16 lines):
 body sections (in order):
   ## Recommendation    (1-2 paragraphs, sufficient detail to execute)
   ## How to act        (exact command / decision / next step)
+  ## Risk posture      (the cited K's confidence + why it justifies this boldness)
   ## Why now           (timeliness; which K entries trigger this)
   ## Decay condition   (what would change our mind)
   ## Change log        (created/acted_on/stale/update evidence trail)
@@ -123,6 +132,7 @@ Definition of done
 
 - [ ] `insights/W_wisdom/W{NN}_<slug>.md` written
 - [ ] Recommendation is actionable (passes "could I write the command?" test)
+- [ ] `## Risk posture` records the cited K's confidence + why it justifies this boldness
 - [ ] At least 1 K cited; counter-arguments engaged in "What would change..."
 - [ ] `## Change log` records creation source or status/action update
 - [ ] NO Python written, NO command auto-executed (user must act)

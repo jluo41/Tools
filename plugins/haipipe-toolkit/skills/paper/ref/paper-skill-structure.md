@@ -36,9 +36,15 @@ paper/
 ├── 4-build-submit/      haipipe-paper-folder + build-{scaffold,restructure,check}
 ├── 5-respond/           paper-rebuttal + rebuttal-response
 ├── 6-present/           paper-slides + paper-poster
-├── _venue/              conference/journal/is + create/revise (profiles, not stages)
+├── _venue/             venue profiles (knowledge, not stages; consulted)
 └── components/          citation, compile, diff (cross-cutting)
 ```
+
+`_venue/` is a paper-internal area, not a standalone layer. It is the venue
+knowledge the lifecycle consults at pitch/claims/narrative/display/write/submit/
+respond (`_venue/playbook-<venue>`). Venues hold knowledge, never lifecycle
+verbs. The old flat `paper/_venue/` was reshaped into `_venue/`. See
+`_venue/README.md` and `_venue/_SCHEMA.md`.
 
 ## Stage to Procedure
 
@@ -70,11 +76,12 @@ seed / pitch / claims / narrative
   / figures / minimap                 -> 1-lifecycle
 round / todo / decisions              -> 2-rounds
 write / edit / review / polish        -> 3-write-edit
+  (create/revise prose -> haipipe-paper-edit-{write,weaving})
 scaffold / build / check / compile    -> 4-build-submit
 rebuttal / response                   -> 5-respond
 slides / poster                       -> 6-present
-venue (conference/journal/is)
-  / create / revise                   -> _venue
+venue fit (misq/isr/ms-is/pnas/
+  nature/jama/clinical/grant/patent)  -> _venue/playbook-<venue>  (paper-internal, consulted)
 ```
 
 ## Maturity Rule

@@ -1,6 +1,6 @@
 ---
 name: card-creator-information-agent      # = subagent_type; register via top-level agents/ symlink
-description: "Thin BUILDER agent for insight I (information) cards. Given ≥2 D-card ids, calls the haipipe-insight-information skill (headless) to file ONE 🟩 I cross-observation pattern card per ../../ref/insight-md-schema.md. Does NOT author the card itself (the skill does), NOT judge it (reviewers do), NOT compute (task does). Trigger: file I card, fan-out pattern synthesis, ask report phase."
+description: "Thin BUILDER agent for insight I (information) cards. Given a named dataset and its D-card id(s), calls the haipipe-insight-information skill (headless) to file ONE 🟩 I in-sample-pattern card (the pattern WITHIN that one dataset, no p/CI) per ../../ref/insight-md-schema.md. Does NOT author the card itself (the skill does), NOT judge it (reviewers do), NOT compute (task does). Trigger: file I card, fan-out pattern synthesis, ask report phase."
 tools:
   - Read
   - Write
@@ -22,8 +22,9 @@ metadata:
 
 > *"I call the skill to synthesize the pattern. I don't author it, I don't judge it."*
 
-Thin filer for **🟩 I** (pattern) cards. ≥ 2 D cards → one filed card under
-`insights/I_information/`. I delegate the write to `haipipe-insight-information`.
+Thin filer for **🟩 I** (in-sample pattern) cards. One named dataset + its D
+card(s) → one filed card under `insights/I_information/`. I delegate the write to
+`haipipe-insight-information`.
 
 ## Scope & Boundary (fence)
 
@@ -46,16 +47,17 @@ files SILENTLY, then verifying the card landed + returning the structured block.
 
 ## Flow
 
-1. Receive the spec: BLOCKING = `--scope` listing ≥ 2 existing D ids;
+1. Receive the spec: BLOCKING = `--dataset <name>` + the D id(s) profiling it;
    recommended = `--slug`, intended pattern/direction (else auto-picked). See
    `../../ref/invocation-modes.md` → "information".
-2. Pre-flight (no fabrication): resolve `--project`; confirm every scoped D id
-   exists and `--scope` has ≥ 2. Fewer than 2 / missing id → return
+2. Pre-flight (no fabrication): resolve `--project`; confirm the dataset has at
+   least one existing D card. No dataset / no D for it → return
    `status: blocked` + `missing`, stop.
-3. `Skill("haipipe-insight-information", "--scope D01,D03[,...] --project <p> [--slug <s>] --auto")`
-   → files the I card silently (`--auto` skips the triage ASK).
-4. Verify the returned `card` path exists and parses; it cites ≥ 2 D ids.
-   Do NOT edit its content.
+3. `Skill("haipipe-insight-information", "--dataset <name> --id I<NN> --scope D01[,...] --project <p> [--slug <s>] --auto")`
+   → files the I card silently (`--auto` skips the triage ASK). Always forward the
+   apply-assigned `--id` (parallel-safe; no `NN` auto-pick during fan-out).
+4. Verify the returned `card` path exists and parses; it names the dataset and
+   carries NO p/CI. Do NOT edit its content.
 5. Return the structured block. Do NOT self-review.
 
 ## Specialist tail (structured return — see ../../ref/invocation-modes.md)
@@ -64,7 +66,7 @@ files SILENTLY, then verifying the card landed + returning the structured block.
 status:  ok | blocked | failed
 card:    insights/I_information/I<NN>_<slug>.md
 layer:   I
-sources: [D01, D03, ...]
-missing: [scope:<2-D-ids]                  (on blocked)
+sources: [D01, ...]
+missing: [dataset | D-card-for-dataset]    (on blocked)
 next:    card-reviewer-information-agent (GATE 1 fidelity)
 ```

@@ -4,9 +4,9 @@ description: "Create or update the paper folder's 0-lifecycle/1-pitch/1-pitch.te
 argument-hint: "[paper-dir] [--reason <slug>] [--source <path-or-note>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.2.0"
+  version: "1.4.0"
   last_updated: "2026-06-22"
-  summary: "Maintain 0-lifecycle/1-pitch/ as the one-minute public-facing story and provenance layer for a concrete paper folder."
+  summary: "Maintain 0-lifecycle/1-pitch/ as the one-minute public-facing story and provenance layer for a concrete paper folder. Carries readability rules, section cues, and a hook narrative-methods catalog (ref/pitch-readability.md)."
 ---
 
 Skill: haipipe-paper-pitch
@@ -57,7 +57,8 @@ Principles
    application-first`), not for typo edits.
 5. **Do not write the paper here.** Abstract, intro, section plan, and LaTeX
    belong downstream. This skill only maintains the story kernel.
-6. **Hook is a question, not a summary.** Open with a vivid, curiosity-driven hook: a concrete scene or a sharp question that makes the reader want the answer and want to learn more. A flat statement of background is not a hook.
+6. **Hook is one move, not a stack of questions.** Open with one curiosity-driving move: a vivid concrete scene, a surprising or counterintuitive fact, a paradox tied to stakes, or one sharp question. Commit to ONE move; do not stack multiple rhetorical questions, which dilutes the punch and reads as undecided. A flat statement of background is not a hook. See `ref/pitch-readability.md`.
+7. **Read it in one minute or rewrite it.** The pitch must be fast and easy to read; if a reader slows down to parse a sentence, rewrite that sentence. Follow the readability rules and per-section cues in `ref/pitch-readability.md`: short sentences, lead with the point, one idea per sentence, plain words, concrete numbers, no AI voice. Readability is part of the pitch done-gate.
 
 Workflow
 --------
@@ -85,30 +86,50 @@ Every pitch carries the full backbone: Hook, Surprise, Implication (so-what), Au
 
 ```latex
 % Layout follows ../../3-write-edit/_shared/sentence-format.md.
+% Readability rules + section cues + worked before/after examples: ref/pitch-readability.md.
 \section*{One-Minute Pitch}
 % =========================================================
 % Para [pitch.kernel] One-minute pitch
+% Cue: a short plain-language paragraph (~4-6 short sentences) for a NEWCOMER with no
+%      background. Open with a framing sentence ("We study whether/how X relates to Y"),
+%      then the puzzle, the method in plain words, the surprising finding, and why it
+%      matters, so they understand it and feel interested. Not a single terse sentence.
 % =========================================================
 %% ---- P1.S1 ----
-One sentence a non-specialist can repeat after one minute.
+We study whether / how X relates to Y.
+%
+%% ---- P1.S2 ----
+Plain-language context or the puzzle a newcomer needs.
+%
+%% ---- P1.S3 ----
+The method in plain words.
+%
+%% ---- P1.S4 ----
+The surprising finding.
+%
+%% ---- P1.S5 ----
+Why it matters, and who could use it.
 
 \section*{Hook}
 % =========================================================
 % Para [pitch.hook] Hook -- a vivid, question-led opening that makes the reader curious
+% Cue: one sharp question, <=20 words, before any context sentence.
 % =========================================================
 %% ---- P2.S1 ----
 A sharp question, or a concrete scene that ends in one, that makes the reader want the answer. Not a flat statement of background.
 
-\section*{Surprise}
+\section*{Finding - Surprise}
 % =========================================================
 % Para [pitch.surprise] Surprise -- the non-obvious turn
+% Cue: put the unexpected result in sentence 1, then the tension.
 % =========================================================
 %% ---- P3.S1 ----
 The non-obvious turn, tension, or finding.
 
-\section*{Implication}
+\section*{Implication - So What}
 % =========================================================
 % Para [pitch.implication] Implication -- so what, and who can use it
+% Cue: name what changes and who can act in the first two sentences.
 % =========================================================
 %% ---- P4.S1 ----
 What changes if this story is true, and who can use it.
@@ -116,20 +137,23 @@ What changes if this story is true, and who can use it.
 \section*{Audience and Venue Fit}
 % =========================================================
 % Para [pitch.audience] Audience -- who the venue reaches and why they care
+% Cue: name the reader and their need before the venue format.
 % =========================================================
 %% ---- P5.S1 ----
 Who reads the target venue, and why this finding matters to that audience.
 
-\section*{Why Believe}
+\section*{Evidence - Why Believe}
 % =========================================================
 % Para [pitch.evidence] Why believe -- evidence for each point
+% Cue: tie each sentence to a table/display/model/check/source; mark planned as planned.
 % =========================================================
 %% ---- P6.S1 ----
 Evidence for each point above, citing a source per claim (or intuition if seed-stage).
 
-\section*{Still Fragile}
+\section*{Limitation - Still Fragile}
 % =========================================================
 % Para [pitch.fragile] Still fragile -- the weakest point
+% Cue: list only the top three highest-risk weaknesses.
 % =========================================================
 %% ---- P7.S1 ----
 The weakest point or most important missing evidence.
@@ -137,6 +161,7 @@ The weakest point or most important missing evidence.
 \section*{Next Evidence Move}
 % =========================================================
 % Para [pitch.next] Next evidence move
+% Cue: start with a verb and name the artifact this move updates.
 % =========================================================
 %% ---- P8.S1 ----
 What discovery, task, probe, or review should happen next.

@@ -30,7 +30,7 @@ The frontier is the first step whose disk predicate fails.
 | `Gather` | required evidence refs/calls are present and linked/requested artifacts resolve or are explicitly pending | `/haipipe-probe gather <probe> ...` |
 | `Read` | `evidence.md` exists and `probe.yaml.result` is present | `/haipipe-probe read <probe>` |
 | `Judge` | `verdict.md` exists and `probe.yaml.verdict` is present | `/haipipe-probe judge <probe>` |
-| `Return` | `return.md` exists and `probe.yaml.return` has a final status | `/haipipe-probe return <probe>` |
+| `Deposit` | `deposit.md` exists and `probe.yaml.deposit` has a final status | `/haipipe-probe deposit <probe>` |
 
 Glyphs:
 
@@ -69,17 +69,32 @@ applications/
 Same shape as the paper dashboard panel (header + one-line story + a lifecycle
 progress bar), so paper and probe read consistently. probe's "story" is the claim.
 
+The lifecycle strip (the `progress` line) is NOT hand-typed. Render it with the
+deterministic helper so it can never be mis-ordered or mis-marked:
+
+```sh
+sh "$CLAUDE_SKILL_DIR/ref/stage-strip.sh" probes/<probe>
+```
+
+It prints 1-2 lines — the strip, plus a `← here` frontier reason — derived purely
+from disk (the Golden Rule above): a step is ✅ only when its artifact resolves,
+▶️ marks the first failing step, and `⚠ drift` appears when a linked ref no
+longer resolves. Paste that output verbatim as the `progress` block in the skeletons
+below; the glyph table describes exactly what the helper emits. For the no-arg
+project view, run it once per probe folder.
+
 ### Single probe (Console / `/haipipe-probe <probe>`)
 
 ```text
-📊 <P.id>  ·  <slug>   [⚠ drift]
+📊 <P.id>  ·  <slug>
 
   Claim: <one plain sentence: what this probe claims + scope/caveat>
 
-  进度  Plan ─ Gather ─ Read ─ Judge ─ Return
-         <g>    <g>      <g>    <g>      <g>
-                ▶️ 这里(<one-clause why this is the frontier>)
+  progress  Plan ✅ ─ Gather ▶️ ─ Read ⬜ ─ Judge ⬜ ─ Deposit ⬜   ⚠ drift
+        ← here Gather: <one-clause why this is the frontier>
 ```
+
+(the `progress` and `← here` lines are pasted verbatim from `ref/stage-strip.sh`)
 
 ### Project level (no-arg `/haipipe-probe`)
 
@@ -91,8 +106,8 @@ Header, then one compact panel per probe, then un-probed evidence (per the
 
   <P.id>  <slug>
     Claim: <one line>
-    进度  Plan <g> ─ Gather <g> ─ Read <g> ─ Judge <g> ─ Return <g>   [⚠drift]
-          ▶️ 这里(<why>)
+    progress  Plan ✅ ─ Gather ▶️ ─ Read ⬜ ─ Judge ⬜ ─ Deposit ⬜   ⚠ drift
+          ← here Gather: <why>
 
   Un-probed evidence:
     GAP (claim-bearing, no probe): <list or none>   -> /haipipe-probe file ...
@@ -103,7 +118,7 @@ Glyphs (derive-from-disk; first non-✅ rung = frontier):
 
 ```text
 ✅ done       the step's disk predicate passes
-▶️ frontier   the first failing step; annotate "← 这里"
+▶️ frontier   the first failing step; annotate "← here"
 ⬜ todo       not reached
 ⚠ drift      stored verdict claims progress but the disk predicate fails
 ```
@@ -111,19 +126,22 @@ Glyphs (derive-from-disk; first non-✅ rung = frontier):
 Worked example (P.0605, derived from disk):
 
 ```text
-📊 P.0605  ·  discretion-gradient   ⚠ drift
+📊 P.0605  ·  discretion-gradient
 
-  Claim: 亲和度↑ 阿片处方强度,随临床自由裁量下降而衰减;腰背痛(高裁量)强,
-         癌痛(指南锁死)近零。(待真实数据)
+  Claim: Agreeableness raises opioid prescribing intensity, attenuating as clinical
+         discretion falls; strong in low-back-pain (high discretion), near-zero in
+         cancer (guideline-locked). (pending real data)
 
-  进度  Plan ─ Gather ─ Read ─ Judge ─ Return
-         ✅    ▶️       ⬜     ⬜      ⬜
-               ← 这里(5/5 证据路径断:R01_Regression → R01_Reg 改名)
+  progress  Plan ✅ ─ Gather ▶️ ─ Read ⬜ ─ Judge ⬜ ─ Deposit ⬜   ⚠ drift
+        ← here Gather: 5/6 linked refs unresolved: R01_Regression_TraitOpioid
 ```
 
-Frontier = Gather: Plan is ✅ (probe.yaml has claim + evidence_plan), but the 5
-arm paths do not resolve on disk, so Gather fails first. ⚠ drift because the
-stored verdict says mechanics=confirmed while those paths are gone.
+This is the literal output of `ref/stage-strip.sh probes/0605_discretion-gradient`.
+Frontier = Gather: Plan is ✅ (probe.yaml has a claim), but 5 of the 6 arm-table
+paths do not resolve on disk (the task folder was renamed
+`R01_Regression_TraitOpioid` → `R01_Reg_TraitOpioid`), so Gather fails first.
+⚠ drift because those linked refs are gone while the stored verdict still claims
+mechanics=confirmed.
 
 Keep the render concise. The dashboard is an orientation panel, not a report.
 Detailed evidence belongs in `evidence.md`; claim verdicts belong in `verdict.md`.

@@ -16,7 +16,7 @@ Materialize the plan into a **physical paper folder** that follows the gold-stan
 3-write / 3-write-edit  (realize + refine the tex)  →  4/5-revise → 5-review → 5-respond → 6-present
 ```
 
-This is the hop that `_venue/haipipe-paper-create` performs inline at its Phase 2 ("scaffold tex root"). 4-build-submit extracts it as a first-class, reusable stage with a verifiable contract, so any workflow (create, restructure, venue port) can call it and any folder can be audited against it.
+This is the hop that the retired `haipipe-paper-create` once performed inline at its Phase 2 ("scaffold tex root"). 4-build-submit extracts it as a first-class, reusable stage with a verifiable contract, so any workflow (write, restructure, venue port) can call it and any folder can be audited against it. Prose drafting now lives in `3-write-edit/haipipe-paper-edit-write`.
 
 ## Shape of this stage
 
@@ -61,6 +61,6 @@ Everything in this stage obeys one rule, the structural twin of 3-write-edit's c
 | Existing paper, wrong shape | **here** (`haipipe-paper-build-restructure`) |
 | Is this folder conforming? | **here** (`haipipe-paper-build-check`) |
 | What should ONE `.tex` file look like inside | `3-write-edit/_shared/tex-file-anatomy.md` |
-| Write prose into the skeleton | `3-write` / `_venue/haipipe-paper-create` |
+| Write prose into the skeleton | `3-write-edit/haipipe-paper-edit-write` |
 | Improve existing prose | `3-write-edit` |
 | Compile or fix LaTeX errors | the folder's own `1-compile.sh` (shipped by `haipipe-paper-build-scaffold`); `components/compile/` for latexmk-based pipelines |

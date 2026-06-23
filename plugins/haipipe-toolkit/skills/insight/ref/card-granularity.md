@@ -80,16 +80,18 @@ Layer Grain
 ===========
 
 ```text
-D — one important observation from one settled source
-    Not every metric, seed, table row, or log line.
+D — one named dataset's profile (in-sample)
+    What the dataset looks like; not every metric, seed, table row, or log line.
 
-I — one pattern across D cards
-    Usually >=2 D cards. Not a whole topic summary.
+I — one in-sample pattern inside ONE dataset
+    Cites that dataset's D card(s); no p/CI. Not a whole topic summary, and not a
+    cross-dataset regularity (that is robust generalization → a K).
 
-K — one judged belief/claim with scope and confidence
-    Not an entire theory, research area, or paper section.
+K — one generalization claim with scope and confidence
+    Does the pattern hold beyond the sample. p/CI/confidence live here. Not an
+    entire theory, research area, or paper section. Low-confidence/negative K are valid.
 
-W — one actionable recommendation
+W — one actionable recommendation, risk-tuned to its K's confidence
     Not a vague strategy memo; it should imply a concrete command or decision.
 ```
 

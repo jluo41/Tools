@@ -27,7 +27,7 @@ What requires approval?
 2. Resolve the project root as the nearest directory containing `probes/`.
    In nested examples, this is the example project root, not the repo root.
 3. Load `probe.yaml`.
-4. Read lifecycle files if present: `status.md`, `evidence.md`, `verdict.md`, `return.md`.
+4. Read lifecycle files if present: `status.md`, `evidence.md`, `verdict.md`, `deposit.md`.
    Missing `status.md` is not an error; create it when rendering the panel.
 5. Validate linked task/discovery/insight refs shallowly: exists/missing only.
 6. Derive lifecycle stage:
@@ -35,16 +35,27 @@ What requires approval?
    - evidence missing or refs absent -> Gather
    - evidence linked but no `evidence.md` -> Read
    - evidence exists but no `verdict.md` -> Judge
-   - verdict exists but no return action -> Return
-   - return complete -> closed or ready for next probe
+   - verdict exists but no deposit action -> Deposit
+   - deposit complete -> closed or ready for next probe
 7. Write project-root `.probe-console.yaml`.
-8. Render/update `status.md`.
+8. Render/update `status.md`. The panel MUST open with the deterministic
+   lifecycle strip — never hand-type the glyphs:
+
+   ```sh
+   sh "$CLAUDE_SKILL_DIR/ref/stage-strip.sh" probes/<probe>
+   ```
+
+   Paste its 1-2 line output verbatim as the panel header (the `progress` strip plus
+   the `← here` frontier reason), then the claim and any body sections below it.
+   The strip is derive-from-disk: if it disagrees with what `status.md` last
+   said, the strip wins and the stale panel is overwritten. Every console open
+   re-runs it, so progress and drift are always current.
 9. For free-form follow-up input, classify it and route:
    - claim/question/idea -> Plan
    - path/artifact/call/link/check -> Gather
    - "summarize/read/results" -> Read
    - "support/verdict/judge" -> Judge
-   - "backfill/file memory/next" -> Return
+   - "backfill/file memory/next" -> Deposit
 
 ## Files
 
@@ -55,7 +66,7 @@ probes/<probe>/probe.yaml
 probes/<probe>/status.md
 probes/<probe>/evidence.md
 probes/<probe>/verdict.md
-probes/<probe>/return.md
+probes/<probe>/deposit.md
 linked task/discovery/insight refs
 ```
 

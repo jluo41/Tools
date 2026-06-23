@@ -15,7 +15,7 @@ metadata:
 Skill: haipipe-paper-build-scaffold (4-build-submit)
 ================================
 
-Create a **new** paper folder that conforms to `4-build-submit/_shared/paper-folder-anatomy.md`. This skill writes structure only: drivers, wrappers, leaf stubs, directories, the compile script. It never writes a body sentence; prose belongs to `3-write` / `haipipe-paper-create`.
+Create a **new** paper folder that conforms to `4-build-submit/_shared/paper-folder-anatomy.md`. This skill writes structure only: drivers, wrappers, leaf stubs, directories, the compile script. It never writes a body sentence; prose belongs to `3-write-edit/haipipe-paper-edit-write`.
 
 If a folder already exists and merely has the wrong shape, stop and route to `haipipe-paper-build-restructure` instead. Never scaffold over existing content.
 
@@ -88,7 +88,7 @@ Also create an empty `0-<paper>.bib` (a comment header only) and copy the venue 
 
 ### Step 4: Hand off
 
-Report what to run next: `/haipipe-paper-create <plan> --out <out>` to draft prose into the stubs, section by section.
+Report what to run next: `/haipipe-paper-edit-write <plan> --out <out>` to draft prose into the stubs, section by section.
 
 Leaf stub shape (what Step 2 writes)
 ------------------------------------
@@ -99,10 +99,10 @@ Leaf stub shape (what Step 2 writes)
 % =========================================================
 % Para [trait-rating.setup] Setup -- <one-line point from the plan>
 % =========================================================
-% TODO(draft): /haipipe-paper-create fills this paragraph.
+% TODO(draft): /haipipe-paper-edit-write fills this paragraph.
 ```
 
-Banner ids follow `3-write-edit/_shared/paragraph-indexing.md` (`<section-slug>.<para-slug>`, stable, never renumbered). Scaffolding them now means the create/edit stages inherit stable handles for free.
+Banner ids follow `3-write-edit/_shared/paragraph-indexing.md` (`<section-slug>.<para-slug>`, stable, never renumbered). Scaffolding them now means the write/edit stages inherit stable handles for free.
 
 Return contract
 ---------------
@@ -111,5 +111,5 @@ Return contract
 status:    ok | blocked | failed
 summary:   what was scaffolded (sections, leaves, SI yes/no, compile result)
 artifacts: [<out>/ tree]
-next:      /haipipe-paper-create … (draft prose) or /haipipe-paper-build-check (re-audit)
+next:      /haipipe-paper-edit-write … (draft prose) or /haipipe-paper-build-check (re-audit)
 ```

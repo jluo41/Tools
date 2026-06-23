@@ -13,7 +13,7 @@ and stop gates.
 | `Gather` | `fn/gather.md` | Is needed evidence missing or already present? | Call missing work, link existing artifacts, check readiness | `probe.yaml`, candidate task/discovery/insight artifacts | `probe.yaml`, `status.md`, optional `gather.md` | `haipipe-task`, `haipipe-discover` | `status.md`, optional `gather.md` | `probe.yaml.evidence_refs`, `probe.yaml.calls` | costly/PHI work, ambiguous link, approval needed |
 | `Read` | `fn/read.md` | What did gathered evidence say? | Summarize evidence, missingness, contradictions, and scope | linked tasks/discoveries/insights, `probe.yaml` | `evidence.md`, `probe.yaml.result`, `status.md` | none | `evidence.md` | `probe.yaml.result` | missing required evidence, malformed artifacts |
 | `Judge` | `fn/judge.md` | What claim does the evidence honestly support? | Structural check, integrity audit, semantic verdict | `probe.yaml`, `evidence.md`, linked raw artifacts | `verdict.md`, `probe.yaml.verdict`, `status.md` | reviewer agents / Codex when available | `verdict.md` | `probe.yaml.verdict` | integrity fail, overclaim, insufficient evidence |
-| `Return` | `fn/return.md` | Where should this verdict go? | Backfill source, file memory, or emit next need | `verdict.md`, `probe.yaml`, return target | `return.md`, `probe.yaml.return`, `status.md` | optional `haipipe-insight-*`; paper/application edits only with approval | `return.md` | `probe.yaml.return` | no target, user approval needed |
+| `Deposit` | `fn/deposit.md` | Where should this verdict go? | Backfill source, file memory, or emit next need | `verdict.md`, `probe.yaml`, return target | `deposit.md`, `probe.yaml.deposit`, `status.md` | optional `haipipe-insight-*`; paper/application edits only with approval | `deposit.md` | `probe.yaml.deposit` | no target, user approval needed |
 
 ## File Principles
 
@@ -24,7 +24,7 @@ probe.yaml
 status.md
 evidence.md
 verdict.md
-return.md
+deposit.md
 ```
 
 Optional:
@@ -52,7 +52,7 @@ Artifact-first link requests must apply `ref/probe-attach.md` before editing
 /haipipe-probe gather ...       -> Gather
 /haipipe-probe read <probe>     -> Read
 /haipipe-probe judge <probe>    -> Judge
-/haipipe-probe return <probe>   -> Return
+/haipipe-probe deposit <probe>  -> Deposit (alias: return)
 /haipipe-probe "<free text>"    -> active Console router, else Plan
 ```
 
@@ -67,4 +67,5 @@ post     -> read + judge
 resume   -> read + judge
 review   -> judge
 file     -> gather link / plan
+return   -> deposit (renamed 4.0.1)
 ```

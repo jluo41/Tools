@@ -4,10 +4,11 @@ description: "Insight archive orchestrator. Constructs the project's curated per
 argument-hint: "[verb] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.6.0"
-  last_updated: "2026-06-20"
+  version: "3.0.0"
+  last_updated: "2026-06-22"
   summary: "Insight archive orchestrator — review, apply, file, index, audit."
   changelog:
+    - "3.0.0 (2026-06-22): DIKW model recut to in-sample-vs-generalization (JL). D/I describe ONE named dataset (require `dataset:`, no p/CI); K is the generalization layer where p/CI/confidence live and has NO probe gate (low-confidence and negative K are recorded); W reads K confidence to set risk posture. Removed the I->K controlled-comparison-probe gate. Updated dikw-boundaries, insight-md-schema, K writer, K/D/I reviewers, review specialist, agents README."
     - "2.6.0 (2026-06-20): renamed user-facing archive flow to review/apply."
     - "1.0.0 (2026-05-31): baseline metadata added."
     - "2.0.0 (2026-06-11): DIKW producer partition; post-file accumulation check; 3-job design (route + check + dashboard); step-by-step protocol."
@@ -56,20 +57,21 @@ examples/Proj-X/
 └── insights/                               ← insight writes here
     ├── INDEX.md                            (auto: all entries + status)
     ├── views/                              (auto: topic/source/narrative/status views)
+    ├── _reviews/                           (apply-time card-review + index-audit records)
     │
-    ├── D_data/                     "what we observed"        (one source observation)
+    ├── D_data/                     "what one dataset looks like"   (named dataset profile)
     │   ├── D01_<slug>.md
     │   └── ...
     │
-    ├── I_information/                         "what patterns emerged"     (cross-observation)
+    ├── I_information/              "the pattern inside that dataset" (in-sample, same dataset)
     │   ├── I01_<slug>.md
     │   └── ...
     │
-    ├── K_knowledge/                        "what we now believe"       (one judged belief)
+    ├── K_knowledge/                "does it generalize (+confidence)" (generalization claim)
     │   ├── K01_<slug>.md
     │   └── ...
     │
-    └── W_wisdom/                           "what we should do next"    (one K-backed action)
+    └── W_wisdom/                   "what to do, tuned to K confidence" (one K-backed action)
         ├── W01_<slug>.md
         └── ...
 ```
@@ -86,18 +88,20 @@ Who produces material vs who files cards
 DIKW levels are labels on archived cards, not workflow phases.
 
 ```
-Card layer      Material comes from                         Filing decision
+Card layer      What it is                                    Filing decision
 ──────────────  ───────────────────────────────────────────  ─────────────────────
-🟦 D data       task/discover observations                   review
-🟩 I info       patterns across D or rich descriptive work    review
-🟨 K knowledge  judged probe claim or vetted literature       review
-🟧 W wisdom     K-backed next action / strategic synthesis    review
+🟦 D data       one named dataset's profile (in-sample)       review
+🟩 I info       a pattern inside that same dataset            review
+🟨 K knowledge  does the pattern generalize, + confidence     review
+🟧 W wisdom     a K-backed action, risk-tuned to K confidence  review
 ```
 
-- A task does not produce K (no hypothesis testing — that's a probe).
-- A probe does not directly file insight cards; it produces verdict material.
-- Narrative/application ask/human review decides what becomes permanent KB.
-- The low-level D/I/K/W skills are writer APIs called by review.
+- D and I describe ONE dataset and must name it (`dataset:`); they carry no p-value / CI.
+- K is the generalization layer where p-value / CI / confidence live; it has NO
+  admission gate (a probe is not required), and a low-confidence or negative K is
+  still recorded.
+- Material comes from task/probe/discover/literature; review decides what becomes
+  permanent KB. The low-level D/I/K/W skills are writer APIs called by review.
 
 ---
 
@@ -150,9 +154,9 @@ inspect) or **verb-based** (explicit DIKW level).
 /haipipe-insight <task-group-path>               review task-group material
 
 # Verb-based (explicit DIKW level)
-/haipipe-insight data <source>                   D-level: file observation card + check accumulation
-/haipipe-insight information [--scope <D*>]      I-level: synthesize pattern from ≥2 D cards
-/haipipe-insight knowledge <source>              K-level: file judged belief + check for W
+/haipipe-insight data <source>                   D-level: file one dataset's profile + check accumulation
+/haipipe-insight information --dataset <name>    I-level: state the in-sample pattern in one dataset
+/haipipe-insight knowledge <source>              K-level: file generalization claim (+confidence) + check for W
 /haipipe-insight wisdom [--scope <K*>]           W-level: synthesize recommendation from K cards
 
 # Dashboard
@@ -180,7 +184,7 @@ Specialists
 
 ```
 haipipe-insight-data            D-LEVEL:  writer API for observation cards → D*.md
-haipipe-insight-information     I-LEVEL:  writer API for cross-D patterns → I*.md
+haipipe-insight-information     I-LEVEL:  writer API for in-sample patterns (one dataset) → I*.md
 haipipe-insight-knowledge       K-LEVEL:  writer API for judged beliefs → K*.md
 haipipe-insight-wisdom          W-LEVEL:  writer API for recommendations → W*.md
 haipipe-insight-review         REVIEW/APPLY: decide which cards to archive, then call writers
@@ -245,9 +249,13 @@ applications/ask/<slug>/                        -> haipipe-insight-review review
 Step-by-Step Protocol
 ----------------------
 
-Step 0: Read `ref/review-contract.md` and `ref/insight-md-schema.md` first.
-Also read `ref/card-granularity.md` and `ref/card-lifecycle.md` before filing,
-merging, superseding, or reviewing cards. Every card MUST conform to the schema,
+Step 0: Read `../ref/review-contract.md` and `../ref/insight-md-schema.md` first.
+Also read `../ref/card-granularity.md` and `../ref/card-lifecycle.md` before
+filing, merging, superseding, or reviewing cards. (All `ref/` docs live in the
+skill family's `ref/` directory, a sibling of this orchestrator folder — i.e.
+`../ref/` in the source tree. If a relative path does not resolve because the
+skill is reached through a `.claude/skills/` symlink, resolve the skill's real
+install path and read `<insight>/ref/`.) Every card MUST conform to the schema,
 granularity policy, and lifecycle policy; every archive construction should
 pass through review unless the user explicitly asks for a low-level writer.
 
@@ -256,8 +264,9 @@ Step 1: Detect AUTO_MODE. Same contract as task: `--auto` in args, `CLAUDE_AUTO_
 Step 2: Resolve scope. Cascade (highest to lowest confidence):
 
   (1) REVIEW/APPLY — first positional is `review` or `collect`
-      → dispatch to `haipipe-insight-review`. First positional `apply`
-      → dispatch to `haipipe-insight-apply`.
+      → dispatch to `haipipe-insight-review` (review mode). First positional
+      `apply` → dispatch to `haipipe-insight-review` (apply mode); there is no
+      separate `haipipe-insight-apply` skill.
 
   (2) EXPLICIT VERB — first positional is a verb (`data` / `information` / `knowledge` / `wisdom` / `explore`) → dispatch to that specialist.
 
@@ -328,21 +337,25 @@ Step 4a: Lifecycle action choice.
 
 Step 5: Post-file accumulation check (Job 2). Runs ONLY after a successful file (status=ok):
 
-  After filing a 🟦 D card:
-    (1) Count D cards in insights/D_data/ that share the same task-group or tag theme.
-    (2) If count >= 3 and no I card already covers this group:
-        → emit in `next:`: suggest `/haipipe-insight information --scope D{NN}..D{MM}`
+  After filing a 🟦 D card (a dataset profile):
+    (1) Check whether an in-sample pattern in that dataset is already carded (an I).
+    (2) If not, emit in `next:`: suggest `/haipipe-insight information --dataset <name>`
+        to state the pattern inside that dataset.
     (3) Update INDEX.md (add the new D card entry).
 
   After filing a 🟨 K card:
-    (1) Check if this K card is actionable (has concrete scope + confidence > low).
-    (2) If actionable and no W card already derives from this K:
+    (1) Check if this K implies a concrete action. A low-confidence or negative K
+        can still imply a CONSERVATIVE action (a hedge, a pilot, a "do not yet do X",
+        or gather-more) — confidence sets the W's risk posture, not whether a W exists.
+    (2) If an action is implied and no W card already derives from this K:
         → emit in `next:`: suggest `/haipipe-insight wisdom --scope K{NN}`
     (3) Update INDEX.md (add the new K card entry).
 
   After filing a 🟩 I card:
     (1) Update INDEX.md.
-    (2) Note: I does NOT auto-suggest K — K requires a probe (the I→K gate).
+    (2) If the I pattern has a generalization basis (a significance test, or it
+        recurs across datasets/subgroups), suggest in `next:` a K card recording
+        whether it generalizes + at what confidence. No probe is required.
 
   After filing a 🟧 W card:
     (1) Update INDEX.md.
@@ -372,13 +385,18 @@ insight's flow is a funnel, not a pipeline. Finished material arrives at
 different rates. Review decides what deserves permanent memory:
 
 ```
-task/discover material ──▶ INSIGHT_REVIEW.yaml ──▶ D / I cards
-probe/lit verdicts     ──▶ INSIGHT_REVIEW.yaml ──▶ K cards
-K-backed actions       ──▶ INSIGHT_REVIEW.yaml ──▶ W cards
-all cards              ──▶ index + audit ─▶ project KB
+dataset profile + in-sample pattern ──▶ INSIGHT_REVIEW.yaml ──▶ D / I cards
+generalization claims (+confidence)  ──▶ INSIGHT_REVIEW.yaml ──▶ K cards
+K-backed actions                     ──▶ INSIGHT_REVIEW.yaml ──▶ W cards
+all cards                            ──▶ index + audit ─▶ project KB
 ```
 
-Key constraint: the I→K gate requires a controlled comparison (a probe). No amount of I-level patterns can be promoted to K without a probe confirming them. This is what makes K cards load-bearing for paper claims and W recommendations.
+Key constraint: D and I stay in-sample (one named dataset, no p-value / CI). The
+inferential quantities (p-value, CI, confidence) appear only at K, the
+generalization layer. K has NO admission gate — it needs a generalization basis
+(a significance test, robustness across subgroups, or a vetted external claim)
+and an honest confidence, not a probe. Low-confidence and negative K are recorded
+too; confidence, not a gate, is what makes K honest for paper claims and W.
 
 ---
 
@@ -388,14 +406,17 @@ Boundary with probe and task
 **Who produces material and who files permanent cards:**
 
 ```
-task        → D/I material only
-probe       → K/W material only
+task        → dataset profiles + in-sample patterns (D/I material)
+probe       → generalization claims with confidence (K material) + W
 narrative   → story gaps and review intent
 application ask → question-driven review intent
 insight review → D/I/K/W cards + indices + graph audit
 ```
 
-Each DIKW level is partitioned by scope. No layer files cards above its scope: a task does not produce K (no hypothesis testing), a probe does not produce I (no cross-probe view).
+Each DIKW level is partitioned by the in-sample vs generalization cut. D and I
+stay in-sample and named to a dataset; K is the generalization claim (with
+confidence) and W is the K-backed action. The inferential quantities live only
+at K.
 
 **Dependencies:**
 
@@ -433,18 +454,19 @@ patterns (I) and recommendations (W). Source of "what does this project KNOW".
 Files owned by this umbrella
 -----------------------------
 
+(All ref/ docs live in the skill family `ref/` dir = `../ref/` from this orchestrator.)
 ```
-SKILL.md                              (this file)
-ref/insight-md-schema.md              canonical entry schema (D/I/K/W)
-ref/card-granularity.md               card size, merge/split, and flat-folder rules
-ref/card-lifecycle.md                 file/merge/update/supersede/change-log rules
-ref/insight-context-loading.md        loading strategy for callers
-ref/index-templates.md                INDEX.md / K-INDEX / W-INDEX templates
-ref/dikw-boundaries.md                per-layer boundary + worked examples (in ../ref/)
-ref/review-contract.md               how insights/ is constructed from finished material
-ref/invocation-modes.md               dual-mode contract (in ../ref/)
-ref/okf-compat.md                     OKF compatibility contract and export semantics
-scripts/export_okf.py                 derived OKF-style bundle exporter
+haipipe-insight/SKILL.md              (this file)
+../ref/insight-md-schema.md           canonical entry schema (D/I/K/W)
+../ref/card-granularity.md            card size, merge/split, and flat-folder rules
+../ref/card-lifecycle.md              file/merge/update/supersede/change-log rules
+../ref/insight-context-loading.md     loading strategy for callers
+../ref/index-templates.md             INDEX.md / K-INDEX / W-INDEX templates
+../ref/dikw-boundaries.md             per-layer boundary + worked examples
+../ref/review-contract.md             how insights/ is constructed from finished material
+../ref/invocation-modes.md            dual-mode contract
+../ref/okf-compat.md                  OKF compatibility contract and export semantics
+../scripts/export_okf.py              derived OKF-style bundle exporter
 ```
 
 ---
@@ -477,8 +499,8 @@ Invocation examples
 # Low-level: explicit D card from a task
 /haipipe-insight data examples/ProjA/tasks/B03_band4/01_eval_h24/
 
-# Verb-based: synthesize I pattern from accumulated D cards
-/haipipe-insight information --scope D01,D02,D03
+# Verb-based: state the in-sample pattern in one dataset (cites that dataset's D)
+/haipipe-insight information --dataset VisitOsteo_1stPair_af14d --scope D01
 
 # Verb-based: explicit K card from a probe
 /haipipe-insight knowledge P.0602

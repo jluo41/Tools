@@ -24,10 +24,10 @@ reviewers") because run trustworthiness is the same check for any task type.
 **E departs**: each DIKW card has a genuinely DIFFERENT boundary —
 
 ```
-🟦 D  numbers must trace · no interpretation
-🟩 I  a regularity across ≥ 2 D
-🟨 K  claim ⊆ evidence · ALL counter-evidence · + judged-evidence gate
-🟧 W  actionable ("could I write the command?")
+🟦 D  one named dataset's profile · numbers trace · no interpretation · no p/CI
+🟩 I  an in-sample pattern in that dataset · no p/CI (those are K)
+🟨 K  generalization claim · scope ⊆ evidence · ALL counter-evidence · confidence present (no probe gate)
+🟧 W  actionable ("could I write the command?") · risk-tuned to K confidence
 ```
 
 — so E uses a SPECIFIC reviewer per type, each enforcing that layer's accuracy

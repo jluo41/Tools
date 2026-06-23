@@ -52,6 +52,7 @@ Principles
 6. **Matrix plus per-claim detail.** The ledger is a compact MATRIX (ID, claim, status) followed by ONE `\subsection*` per claim; each subsection is a banner-tagged paragraph in the `%% ---- Pn.Sm ----` format with four slots: (S1) claim + verdict, (S2) the verified statistic with spec and N, (S3) one-line interpretation, (S4) caveat + the source file. The matrix is the index; the subsections carry the evidence.
 7. **No aspirational anchors.** "planned Table 1" is not evidence, it is GAP; a `supported` row cites a real value and the file it came from (e.g. `trait_l5 +12.90*** in main-ols_..._mme_ttl.csv`), never a future table.
 8. **Two-stage evidence gate.** Stage 1 deterministic: the cited file exists AND the cited number actually appears in it (catches planned/hallucinated anchors, no model). Stage 2 verdict: a CONFIRMED probe judges the real number supports the claim. `supported` requires both; existence is not support.
+9. **Couple to venue.** Read STATUS `venue` and consult the matching `_venue/playbook-<venue>` (e.g. `playbook-clinical-medicine`, `playbook-nature-portfolio`, `playbook-misq`). Designate ONE PRIMARY claim aligned to what the venue rewards, mark it `[primary]` in the matrix, and demote the rest to supporting. The primary claim drives the pitch thesis and the hero display. A result that is novel elsewhere but already established for this venue's readers is an enabler (it belongs in Methods), not a contribution claim. A venue change re-runs this designation.
 
 Workflow
 --------
@@ -126,6 +127,26 @@ A claim row is done when:
 - it has a status; `supported` requires BOTH stage 1 (cited file exists and the number appears in it) AND stage 2 (a confirmed probe verdict that the number supports the claim);
 - it has its per-claim `\subsection*` paragraph (the four slots), not just a matrix row;
 - `weak`/`GAP` rows carry an open need + route; no row cites a "planned" anchor.
+
+### Stage gate (claims complete means)
+
+Beyond the per-row gate, the claims stage is NOT complete until the ledger also
+carries these REQUIRED items:
+
+- a venue-coupled `[primary]` claim designation (principle 9); and
+- a **Venue Fit** block that justifies, with EVIDENCE, why the primary/supporting
+  claims fit the target venue. It states (a) what that venue rewards (from
+  `_venue/playbook-<venue>`) and (b) 2-3 precedent papers the venue has actually
+  published in this claim space (from `paper/_venue/playbook-<venue>/references`,
+  citation-audited before the manuscript). A claim set that does not say WHY it
+  fits the venue, and show that the venue's reviewers/editors reward this claim
+  type, is not done. (Claims must fit the venue; venue is chosen first.) Place this
+  block at the END of the ledger, AFTER all claims are stated (it synthesizes
+  across them); do not put it up front before the claims. Format it as BULLET POINTS
+-- a short list of fit reasons plus a short list of risks / where it may not fit --
+not a single paragraph (bullets read faster than prose here).
+- `2-claims.pdf` recompiled and current (a stale PDF is a defect; recompile after
+  every edit without being asked).
 
 ### Step 4: Handoff
 

@@ -462,27 +462,55 @@ def seed_tex(name: str, venue: str) -> str:
         "0-seed",
         f"0-seed: {name} ({venue})",
         textwrap.dedent("""\
-            % Layout follows 3-write-edit/_shared/sentence-format.md:
-            % paragraph banner + one sentence per line + %% ---- Pn.Sm ---- tags.
-            \\section*{Seed}
+            % Layout: paragraph banner + one sentence per line + %% ---- Pn.Sm ---- tags.
+            % Canonical structure: see haipipe-paper-seed/ref/seed-template.tex.
+            \\section*{Seed Question}
             % =========================================================
-            % Para [seed.why] Seed -- why this paper might exist
+            % Para [seed.question] Setup -- the paper-shaped question
             % =========================================================
             %% ---- P1.S1 ----
-            Why might this paper exist?
+            What is the one paper-shaped question this seed exists to answer?
 
-            \\section*{Current Evidence}
+            \\section*{Motivations}
+            % =========================================================
+            % Para [seed.motivation] Rationale -- why interesting, and to whom
+            % =========================================================
+            %% ---- P2.S1 ----
+            Why is this interesting, and to whom (clinicians, payers, a research community)?
+
+            \\section*{Tentative Claim Shape}
+            % =========================================================
+            % Para [seed.shape] Rationale -- what the paper may argue, as a hypothesis
+            % =========================================================
+            %% ---- P3.S1 ----
+            What might the paper argue, phrased as a hypothesis rather than a finding?
+
+            \\section*{Current Evidence Status}
             % =========================================================
             % Para [seed.evidence] Current evidence
             % =========================================================
-            %% ---- P2.S1 ----
+            %% ---- P4.S1 ----
             List task, probe, discovery, and insight paths that make this possibility plausible.
+
+            \\section*{Open Evidence Needs}
+            % =========================================================
+            % Para [seed.needs] Action -- what to get next, each with a route
+            % =========================================================
+            %% ---- P5.S1 ----
+            What evidence is needed next, and on which route (probe / discover / task / insight)?
+
+            \\section*{Promotion Gate}
+            % =========================================================
+            % Para [seed.gate] Decision -- conditions to advance to pitch
+            % =========================================================
+            %% ---- P6.S1 ----
+            What must be true to promote this seed to pitch?
 
             \\section*{Kill Criteria}
             % =========================================================
             % Para [seed.kill] Kill criteria
             % =========================================================
-            %% ---- P3.S1 ----
+            %% ---- P7.S1 ----
             What evidence would make this paper not worth pursuing?
         """),
     )

@@ -4,6 +4,65 @@ insight — Changelog
 Layer-scoped changelog for the insight (KNOWLEDGE / archive) layer. Newest
 first. Rollup lives in the plugin-level `CHANGELOG.md`.
 
+## [3.1.0] — 2026-06-22
+
+### Added / fixed (post-apply hardening, JL audit)
+- **Causal axis (new K field).** K cards now carry `claim_type: associational |
+  causal`, ORTHOGONAL to `confidence`. `causal` requires a valid identification
+  (RCT / strong valid IV / RDD / DiD+parallel-trends) named in `## Generalization
+  basis`; weak-IV stays associational; high confidence never licenses causal.
+  Enforced by `card-reviewer-knowledge-agent` and documented in `ref/dikw-boundaries.md`.
+- **Parallel-safe apply (id pre-assignment).** `apply` now pre-assigns every card
+  id before fan-out and passes `--id` to each writer; the four layer writers honor
+  `--id` (auto-NN only for serial writes). Closes the latent collision where
+  concurrent creators all picked `D01`.
+- **K->K synthesis edge formalized.** A cross-population synthesis K may `sources`
+  its sibling per-population K cards (not a layer-skip); `index-integrity-auditor`
+  accepts it and now checks `confidence`+`claim_type` presence INSTEAD of the dead
+  "K needs a confirmed probe" gate.
+- **`_reviews/` folder documented.** `insights/_reviews/` is now the canonical home
+  for `<LAYER>_CARD_REVIEW.md` + `INDEX_AUDIT.md` (review provenance, not cards).
+- **Coverage gaps made explicit** in the project INDEX (one-slice KB is now stated).
+
+## [3.0.0] — 2026-06-22
+
+### Changed (breaking — DIKW model recut, JL)
+- **The cut is now in-sample DESCRIPTION (D/I) vs out-of-sample GENERALIZATION (K).**
+  D describes ONE named dataset's profile; I is a pattern INSIDE that same dataset.
+  Both require a `dataset:` field and carry NO p-value / CI / significance.
+- **K is the generalization layer.** The inferential quantities (p-value, CI,
+  confidence) live ONLY at K. A single regression output now SPLITS: estimate /
+  direction / shape → I; significance / confidence → K.
+- **Removed the I→K controlled-comparison-probe gate.** K has no admission gate.
+  It needs a generalization basis (a significance test, robustness across
+  subgroups, or a vetted external claim) and an explicit confidence — not a probe.
+- **Low-confidence and negative K are recorded, not withheld.** `confidence` is the
+  load-bearing K field, always present. A negative ("does not generalize", ns) K is
+  valid knowledge. Documentation = recording every K regardless of confidence (not a
+  new layer).
+- **W reads K confidence to set risk posture** (bold for high-confidence K,
+  conservative/hedged for low) and records that provenance.
+
+### Files touched
+- `ref/dikw-boundaries.md` (full rewrite), `ref/insight-md-schema.md`,
+  `ref/card-granularity.md`, `ref/okf-compat.md`, `DESIGN.md`, `agents/README.md`,
+  `haipipe-insight/SKILL.md`, all four layer writers
+  (`haipipe-insight-{data,information,knowledge,wisdom}/SKILL.md`),
+  `haipipe-insight-review/SKILL.md`, all four card reviewers + the two card
+  creators (`agents/{reviewers,creators}/card-*-{data,information,knowledge,wisdom}-agent.md`),
+  `play/01_plain_mental_model.md`, `play/04_cards_after_apply.md`.
+
+### Validated
+- Fresh-context subagent (not told the model) independently applied the new cut to
+  a real probe (P.0605 + 4 atoms): coefficients → I, significance + ns → K (ns as
+  negative low-confidence K), datasets named on D/I, K filed with no probe gate.
+  The model is discoverable from the docs alone.
+- Post-validation fixes: removed the stale CONFIRMED-probe gate from
+  `card-creator-knowledge-agent`; made the orchestrator's `ref/` paths consistent
+  (`../ref/`) + symlink-resolution note; fixed the dangling `haipipe-insight-apply`
+  dispatch; pinned the `dataset:` naming convention; added granularity guidance for
+  null-I (optional) and per-population vs cross-population K.
+
 ## [2.6.0] — 2026-06-21
 
 ### Added
