@@ -1,0 +1,70 @@
+# ==============================================================================
+# Source Pipeline Configuration Template
+# ==============================================================================
+# Converts raw data files into a standardized SourceSet.
+#
+# Replace all <Placeholders> with actual values.
+#
+# Usage:
+#   source .venv/bin/activate
+#   source env.sh
+#   haistep-source --config <this_file>.yaml
+#
+# Or via test script:
+#   python test/test_haistep/test_1_source/test_source.py --config <this_file>.yaml
+# ==============================================================================
+
+# External data version (reference data like NDC, NPI codes)
+external_version: "@v1215"
+
+SourceArgs:
+  # -------------------------------------------------------------------
+  # raw_data_name  (REQUIRED)
+  #   Name of the cohort directory in the SourceStore.
+  #   Must match a directory under _WorkSpace/0-RawDataStore/
+  #   or _WorkSpace/1-SourceStore/.
+  #
+  #   To find available cohorts:
+  #     ls _WorkSpace/0-RawDataStore/
+  # -------------------------------------------------------------------
+  raw_data_name: "<CohortName>"
+
+  # -------------------------------------------------------------------
+  # SourceFnName  (REQUIRED)
+  #   Name of the SourceFn to use for processing.
+  #   Must match a file in code/haifn/fn_source/ (without .py).
+  #
+  #   To find available SourceFns:
+  #     ls code/haifn/fn_source/
+  # -------------------------------------------------------------------
+  SourceFnName: "<SourceFnName>"
+
+  # -------------------------------------------------------------------
+  # raw_data_path  (OPTIONAL)
+  #   Path to the raw data directory.
+  #   - null / omitted: auto-discover from SourceStore
+  #   - Local path: absolute or relative path to raw data folder
+  #   - S3 path: "s3://bucket/path/to/data"
+  #   If given, overrides auto-discovery and cleans old @SourceFn caches.
+  # -------------------------------------------------------------------
+  raw_data_path: "_WorkSpace/0-RawDataStore/<CohortName>"
+
+  # -------------------------------------------------------------------
+  # Cache settings  (OPTIONAL)
+  #   use_cache:  If true, skip processing and load from cached SourceSet
+  #   save_cache: If true, save processed output to disk
+  # -------------------------------------------------------------------
+  use_cache: true
+  save_cache: true
+
+
+# ==============================================================================
+# Output location:
+#   _WorkSpace/1-SourceStore/<raw_data_name>/@<SourceFnName>/
+#     <ProcName1>.parquet
+#     <ProcName2>.parquet
+#     ...
+#     manifest.json
+#
+# NOTE: Structure is FLAT (one parquet per ProcName at root level)
+# ==============================================================================

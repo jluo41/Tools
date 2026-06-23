@@ -4,10 +4,11 @@ description: "Create or update the paper folder's 0-lifecycle/2-claims/2-claims.
 argument-hint: "[paper-dir] [--backfill <probe-ref>] [--source <path>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.2.0"
-  last_updated: "2026-06-22"
-  summary: "Maintain 0-lifecycle/2-claims/2-claims.tex as the claim/evidence ledger: matrix + per-claim detail, two-stage evidence gate, no aspirational anchors."
+  version: "1.3.0"
+  last_updated: "2026-06-23"
+  summary: "Maintain 0-lifecycle/2-claims/2-claims.tex as the claim/evidence ledger: editor's chair test, venue-coupled RQs, matrix + per-claim detail, alignment validation, two-stage evidence gate, probe plans buffer."
   changelog:
+    - "v1.3.0: added editor's chair test, RQs in claims (not pitch), RQ→Claim→Answer alignment table, probe plans buffer convention, extracted template to ref/claims-template.tex"
     - "v1.2.0: added illuminate protocol + cross-refs to stage-gate, tex-quality"
 ---
 
@@ -85,60 +86,48 @@ If none exists, ask the user to run `/haipipe-paper-lifecycle folder <paper-root
 
 ### Step 2: Ensure `0-lifecycle/2-claims/2-claims.tex` exists
 
-Ledger body = a compact MATRIX (index) then ONE `\subsection*` per claim (detail).
-Tables get a banner but no `Pn.Sm`; prose paragraphs use the sentence format.
+The full template is in `ref/claims-template.tex` (standalone-compilable,
+~130 lines). Copy it to `0-lifecycle/2-claims/2-claims.tex` and fill in.
 
-```latex
-\section*{Research Questions}
+Reading order of the template:
 
-\begin{enumerate}
-\item[\textbf{RQ1.}] <question, shaped by what the venue rewards>
-\item[\textbf{RQ2.}] <question>
-\end{enumerate}
-
-\begin{tabularx}{\textwidth}{@{}p{0.06\textwidth}p{0.06\textwidth}X@{}}
-\toprule
-RQ & Claims & Mapping \\
-\midrule
-RQ1 & C1, C2 & <how the claims answer this RQ> \\
-RQ2 & C3     & <how the claims answer this RQ> \\
-\bottomrule
-\end{tabularx}
-
-\section*{Claim-Evidence Matrix}
-% =========================================================
-% Para [claims.ledger] Result -- claim / status at a glance
-% =========================================================
-\begin{tabularx}{\textwidth}{@{}p{0.05\textwidth}X p{0.14\textwidth}@{}}
-\toprule
-ID & Claim & Status \\
-\midrule
-C1 & <claim, as the paper states it> & supported \\
-C2 & <claim>                         & weak \\
-\bottomrule
-\end{tabularx}
-
-\section*{Per-claim Detail}
-
-\subsection*{C1. <short title> (supported)}
-% =========================================================
-% Para [claims.c1] Result -- <the point>
-% =========================================================
-%% ---- P1.S1 ----
-<claim statement>.
-%
-%% ---- P1.S2 ----
-<verified statistic, spec, N> (e.g. trait\_l5 $+12.90$***, $N=765{,}701$).
-%
-%% ---- P1.S3 ----
-<one-line interpretation>.
-%
-%% ---- P1.S4 ----
-Source: <real file, e.g. main-ols\_..._mme\_ttl.csv>; <caveat if any>.
+```text
+1. Editor's Chair Test         ← venue question (stated once, from playbook)
+2. Research Questions          ← venue-shaped RQs + RQ→Claim mapping
+                                 (includes "why this RQ for this venue" column)
+3. Claim-Evidence Matrix       ← one row per claim, status at a glance
+4. Per-Claim Detail            ← four-slot paragraphs (S1-S4) per claim
+5. Discussion-Only Interp.     ← interpretive, not Results (optional)
+6. Robustness                  ← Methods, not claimed (optional)
+7. Pending Evidence            ← probes/tasks not yet run + backup venue
+8. Editor's Chair Alignment    ← RQ→Claims→Answer validation table
+                                 + venue fit (scale, strength, risk)
+                                 + diagnostic rules
 ```
+
+Key design: sections 1 and 8 form a bracket. The editor's chair question at
+the top GENERATES RQs (top-down). The alignment table at the bottom VALIDATES
+claims against the same question (bottom-up). Venue Fit is folded into
+section 8 (one section validates everything).
 
 For `weak`/`GAP` claims the subsection states the gap and the route instead of a
 statistic. Never write a "planned Table" as if it were evidence.
+
+### Probe plans buffer (1-probe-plans/)
+
+When the claims ledger identifies GAP/weak claims that need evidence, buffer
+probe plans in `1-probe-plans/` rather than dispatching immediately. Each probe
+plan is one file (`PPNN_<slug>.md`) with frontmatter (id, status, claim,
+source_ref) and structured fields (claim under test, evidence needed, expected
+route, constraints, datasets). The buffer index (`1-probe-plans/README.md`)
+tracks status (planned / dispatched / verdicted) and the dependency chain.
+
+Probe plans are categorized by urgency:
+- **MUST-HAVE**: blocks submission (GAP claims)
+- **STRONGLY RECOMMENDED**: pre-empts reviewer objections
+- **EXPLORATORY**: supplement material, not main claims
+
+When probes return verdicts, backfill into the claims ledger (Step 3).
 
 ### Step 3: Maintain the ledger
 
@@ -172,24 +161,13 @@ carries these REQUIRED items:
 
 - a **Research Questions** section with RQ-to-claim mapping (principle 1b); and
 - a venue-coupled `[primary]` claim designation (principle 9); and
-- a **Venue Fit** block that justifies, with EVIDENCE, why the primary/supporting
-  claims fit the target venue. It states (a) what that venue rewards (from
-  `_venue/playbook-<venue>`) and (b) 2-3 precedent papers the venue has actually
-  published in this claim space (from `paper/_venue/playbook-<venue>/references`,
-  citation-audited before the manuscript). A claim set that does not say WHY it
-  fits the venue, and show that the venue's reviewers/editors reward this claim
-  type, is not done. (Claims must fit the venue; venue is chosen first.) Place this
-  block at the END of the ledger, AFTER all claims are stated (it synthesizes
-  across them); do not put it up front before the claims. Format it as BULLET POINTS
--- a short list of fit reasons plus a short list of risks / where it may not fit --
-not a single paragraph (bullets read faster than prose here).
-- an **Editor's Chair Alignment** table at the END of the ledger: a three-column
-  table mapping RQ → Claims → Editor's Chair Answer. The editor's chair question
-  (from `_venue/playbook-<venue>`) works twice: once at the top generating RQs
-  (if an RQ doesn't help answer the editor's question, drop it), once at the
-  bottom validating claims (if a claim can't produce a one-sentence answer to
-  the editor, it's wrong for this venue). Diagnostic: any claim missing a column
-  has a problem (no RQ = orphan; no answer = wrong venue; RQ without claim = GAP).
+- an **Editor's Chair Alignment** section at the END of the ledger (template
+  section 8) that contains ALL of: (a) the three-column RQ → Claims → Editor's
+  Chair Answer validation table, (b) venue fit bullets (scale, strength, risk —
+  what the venue rewards and where reviewers may push back), and (c) the
+  diagnostic rules (no RQ = orphan; no answer = wrong venue; RQ without claim =
+  GAP). This single section validates the whole ledger against the venue. There
+  is no separate Venue Fit section — it is folded in here.
 - `2-claims.pdf` recompiled and current (a stale PDF is a defect; recompile after
   every edit without being asked).
 

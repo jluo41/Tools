@@ -1,0 +1,37 @@
+# =============================================================================
+# Template for configs/<NAME>.yaml — algo-dev smoke-test
+# =============================================================================
+# Purpose: verify the algorithm class runs end-to-end. NOT a real training run.
+# Tiny config; expect <5 min runtime; expect NO meaningful metric.
+# =============================================================================
+
+_meta:
+  purpose: |
+    Smoke-test <algo_name>: forward + loss + 1-step update don't crash.
+  note: |
+    Tiny aidata, 1 batch, <=5 steps. Not a publishable run.
+  input: |
+    <e.g., aidata tiny_split (100 cases), no checkpoint>
+  output: |
+    results/<run>/loss.json — single loss value confirming the pipeline runs.
+
+
+# =============================================================================
+# Algo-dev params
+# =============================================================================
+
+algo_class: <e.g. te_clm_lhm>           # code/hainn/<algo>/models/<class>/
+
+aidata:
+  name: <dataset>
+  split: tiny                            # use the smallest available split
+  max_cases: 100                         # hard cap
+
+training:
+  batch_size: 1
+  max_steps: 5                           # not epochs — bound by steps
+  precision: bf16
+  device: cuda                           # or cpu
+
+evaluation:
+  skip: true                             # smoke-test doesn't eval

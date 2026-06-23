@@ -4,10 +4,11 @@ description: "Create or update the paper folder's 0-lifecycle/5-minimap/5-minima
 argument-hint: "[paper-dir]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.2.0"
-  last_updated: "2026-06-22"
+  version: "1.2.1"
+  last_updated: "2026-06-23"
   summary: "Maintain 0-lifecycle/5-minimap/5-minimap.tex as the paragraph job + evidence-anchor map."
   changelog:
+    - "v1.2.1: added mandatory compile-after-edit rule; venue awareness note"
     - "1.2.0 (2026-06-22): added illuminate+gate+compile protocol (ref/stage-gate.md, ref/stage-illuminate.md, ref/tex-quality.md)"
     - "1.1.0 (2026-06-22): absorbed the retired architecture + plan skills as ref/ material (architecture-blueprint.md, plan-outline.md, architecture-examples/); dropped the two Skill() wrapper calls."
     - "1.0.0 (2026-06-22): baseline."
@@ -122,8 +123,9 @@ at least one slot.
 
 1. Compile the stage PDF per `ref/tex-quality.md` (pdflatex twice, clean aux).
 2. Present the exit criteria from `ref/stage-gate.md` with per-item check/fail.
-3. Ask: "Stage minimap looks ready -- confirm to close and move to write?"
-4. Only on user confirm: update `STATUS.md` `current_layer` and Gate Ledger.
+3. `5-minimap.pdf` recompiled and current (a stale PDF is a defect; recompile after every edit without being asked).
+4. Ask: "Stage minimap looks ready -- confirm to close and move to write?"
+5. Only on user confirm: update `STATUS.md` `current_layer` and Gate Ledger.
 
 ### Step 5: Handoff
 

@@ -1,0 +1,124 @@
+# workflow-plan-sample-reg.yaml -- Stata reg stage script-level plan
+# Schema: project/haipipe-workflow/ref/plan-schema.md
+# Phases: Setup+Load -> Variable Derivation -> Estimation -> Log+Export
+# DID adds: Policy Merge phase between Setup and Variable Derivation.
+# ALL outputs light (results/), no _WorkSpace writes.
+
+# --- Preview -----------------------------------------------------------
+# reg-pipeline -- estimate trait->outcome models
+#
+# I: _WorkSpace/*-Data-Store/<asset>/ANALYSIS-CMS-Filter.dta
+#    configs/<Cohort>_<Pairing>.do + configs/run_reg_<RUNNAME>.do
+#    (DID only: _WorkSpace/0-External-Store/Policy/Policy-State-Year.dta)
+#
+# +-- P1: Setup+Load
+# |   +-- S1: config dispatch (HAIPIPE_RUN_CONFIG -> per-run .do -> shared .do)
+# |   +-- S2: set thresholds + trait origin
+# |   +-- S3: load ANALYSIS-CMS-Filter.dta
+# |
+# +-- P1b: Policy Merge (DID only)
+# |   +-- S4: merge Policy-State-Year.dta on state_code x year
+# |   +-- S5: derive treat/post/treat_post (+ gvar for CS-DID)
+# |   +-- S6: design check (tab treat post)
+# |
+# +-- P2: Variable Derivation
+# |   +-- S7: derive trait vars (binary >= 0.75, continuous, buckets)
+# |   +-- S8: derive outcomes from bn_<window>_* columns
+# |   +-- S9: define control globals (BENE_DEMO, NPI_DEMO, FE, etc.)
+# |
+# +-- P3: Estimation
+# |   +-- S10: run estimator-specific regression grid
+# |   +-- S11: export tables (esttab .csv/.tex, main-table script only)
+# |
+# +-- P4: Log
+# |   +-- S12: log output to results/<run>/log/*.txt
+#
+# O: results/<run>/log/*.txt
+#    results/<run>/tables/*.{csv,tex}  (main-table script only)
+# -------------------------------------------------------------------
+
+name: reg-<COHORT>-<PAIRING>-<WINDOW>-<FAMILY>
+purpose: "Estimate <FAMILY> models on <WINDOW> outcome window; produce coef tables"
+skill: haipipe-task-for-stata
+
+input:
+  args:
+    run_config: run_reg_<COHORT>_<PAIRING>_<WINDOW>_<FAMILY>
+  files_in:
+    - configs/<COHORT>_<PAIRING>.do
+    - configs/run_reg_<COHORT>_<PAIRING>_<WINDOW>_<FAMILY>.do
+    - scripts/run-*-<FAMILY>-*.do
+    - _WorkSpace/<N>-Data-Store/<COHORT>_<PAIRING>/<VERSION>/ANALYSIS-CMS-Filter.dta
+
+phases:
+
+  - title: "Setup+Load"
+    detail: "config dispatch via HAIPIPE_RUN_CONFIG, load analysis table"
+    steps:
+      - label: "setup:config"
+        type: agent
+        required: true
+        prompt: "Read HAIPIPE_RUN_CONFIG env var -> do configs/<run>.do -> sets ws_root, data_file, outcome_bfaf_window, res_dir"
+        files_in:
+          - configs/run_reg_<RUNNAME>.do
+          - configs/<COHORT>_<PAIRING>.do
+        files_out: []
+      - label: "setup:load"
+        type: agent
+        required: true
+        prompt: "use data_file, clear; count; set thresholds"
+        files_in:
+          - _WorkSpace/<N>-Data-Store/<ASSET>/ANALYSIS-CMS-Filter.dta
+        files_out: []
+
+  - title: "Policy Merge (DID only)"
+    detail: "merge state policy panel, derive DID treatment vars"
+    steps:
+      - label: "policy:merge"
+        type: agent
+        required: false
+        prompt: "merge m:1 state_code year using Policy-State-Year.dta; derive treat/post/treat_post; tab design check"
+        files_in:
+          - _WorkSpace/0-External-Store/Policy/Policy-State-Year.dta
+        files_out: []
+
+  - title: "Variable Derivation"
+    detail: "derive treatment (trait) and outcome variables from raw columns"
+    steps:
+      - label: "vars:trait"
+        type: agent
+        required: true
+        prompt: "trait_l2 = score >= 0.75 (binary); trait_l5 = continuous; run-5 adds buckets/quadratic"
+        files_in: []
+        files_out: []
+      - label: "vars:outcomes"
+        type: agent
+        required: true
+        prompt: "derive mme_ttl, mme_daily, is_hdld, is_high_mme_daily, is_high_mme_total from bn_<window>_* columns"
+        files_in: []
+        files_out: []
+      - label: "vars:controls"
+        type: agent
+        required: true
+        prompt: "encode bene_state; define BENE_DEMO, BENE_VISIT, BENE_CMS, BENE_CONDITION, NPI_DEMO, NPI_REVIEW, FE globals"
+        files_in: []
+        files_out: []
+
+  - title: "Estimation"
+    detail: "run estimator-specific regression grid"
+    steps:
+      - label: "estimate:run-workers"
+        type: agent
+        required: true
+        prompt: "Execute worker .do scripts for <FAMILY> (OLS: progressive/LPM/two-part/windows/traitform/subgroup; IV: main-3SE/grid/overid/subgroup; DID: TWFE/CS-DID)"
+        files_in: []
+        files_out:
+          - results/<RUN>/log/run-*-*.txt
+          - results/<RUN>/tables/main-ols_*.{csv,tex}
+
+output:
+  returns:
+    status: ok
+  files_out:
+    - results/<RUN>/log/run-*-*.txt
+    - results/<RUN>/tables/main-ols_*.{csv,tex}

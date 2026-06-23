@@ -1,0 +1,101 @@
+🏥 ONE <UNIT_OF_OBSERVATION> · ONE <UNIT_OF_OBSERVATION> — DETAILED TIMELINE
+═══════════════════════════════════════════════════════════════════════════════════════════════════════
+
+⏱  时间轴 ──────────────────────────────────────────────────────────────────────────────────────────▶
+
+   <pre-T₀ scale>      T₀              <next time mark>          <next time mark>          <late signal>
+
+
+┌── ⓪ PRE-T₀ ──┬── ① <STAGE 1> ───┬── ② <STAGE 2> ──┬── 🌫️ FOG ───┬── ③ <STAGE 3> ──┐
+│ <icon> <topic> │ <icon> <topic>    │ <icon> <topic>    │ <icon> <topic>│ <icon> <topic>    │
+│ ⏱ <scale>      │ ⏱ <scale>         │ ⏱ <scale>          │ ⏱ <scale>     │ ⏱ <scale>          │
+│ <visibility>   │ <visibility>      │ <visibility>       │ <visibility>  │ <visibility>       │
+└────────────────┴───────────────────┴───────────────────┴───────────────┴───────────────────┘
+
+
+─§ ⓪ PRE-T₀ (背景, 不在 parquet 里) ──────────────────────────────────────────────────────────────
+
+      <upstream events that happen before our data point starts>
+      <e.g., business event, system trigger, vendor handoff>
+       │
+       ▼   ⏳ <gap, if any>
+       │
+       ▼   T₀
+      <event that births the row in the parquet>
+      <which columns get their first values: ...>
+
+
+─§ ① <STAGE 1 NAME> ──────────────────────────────────────────────────────────────────────────────
+
+      T₀
+       │
+       ▼
+      <event 1>
+      <key column stamps>
+       │
+       ▼
+      <branch / decision, if any>
+       │
+       ├── <branch A> ────────────────────────────┐
+       │   <consequence>                           │
+       │                                            │
+       └── <branch B> ────────────────────────────┤
+                                                    │
+                                                    ▼
+
+─§ ② <STAGE 2 NAME> ──────────────────────────────────────────────────────────────────────────────
+
+      <chain of in-data engagement / interaction events>:
+
+      <event a>     →    <event b>     →    <event c>     →    <event d>
+      (col_a=1)          (col_b=1)           (col_c=1)           (col_d=1)
+
+      ⚠️ <eligibility caveat / mixed-source flag / joint-treatment note>
+         <why this matters for downstream analysis>
+
+
+─§ 🌫️ FOG (我们不观测) ────────────────────────────────────────────────────────────────────────────
+
+      <events that happen between observation windows>:
+          <unobservable event 1>
+          <unobservable event 2>
+          <unobservable event 3>
+      时间跨度: <e.g., 几天到几周>
+
+
+─§ ③ <STAGE 3 NAME> ──────────────────────────────────────────────────────────────────────────────
+
+      <late-visible signal — event that loops back into the data after fog>:
+
+      <col_final> = 1            ←──── <business meaning of this signal>
+      <prevalence rate context, e.g., "~X% of all rows reach this">
+
+
+─§ 🚫 <CROSS-CUTTING EVENT NAME> (① 之后任何时刻可触发) ────────────────────────────────────────────
+
+      <event that can happen at any time after T₀>:
+          <col_x> = 1
+          <date_x> 被 stamp
+      → 后续 stage 全部中止 (该 row 在这条岔路上"早夭")
+
+
+─§ 🗒️ Time-related concepts ──────────────────────────────────────────────────────────────────────
+
+   ┌──────────────────────────┬─────────────────────────────────────────────┬───────────────────────────┐
+   │ 名称                      │ 含义                                         │ 数据里                    │
+   ├──────────────────────────┼─────────────────────────────────────────────┼───────────────────────────┤
+   │ <concept 1 name>         │ <definition>                                 │ ✅ <column>                │
+   │ <concept 2 name>         │ <definition>                                 │ ❌ 没存                    │
+   │                          │   = <derivation formula>                     │   ▸ 可自行 derive          │
+   │                          │                                              │   ▸ 也可向 <upstream> 要   │
+   │ <concept 3 name>         │ <definition>                                 │ ✅ <column>                │
+   │                          │                                              │    (caveats: ...)          │
+   └──────────────────────────┴─────────────────────────────────────────────┴───────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════════════════════════════════
+🗒️ Sources (raw store):
+    _WorkSpace/0-RawStore/<cohort>/
+    ├── 📄 <description file 1>     (what each fact came from)
+    ├── 📄 <description file 2>
+    └── 📄 <description file 3>
+═══════════════════════════════════════════════════════════════════════════════════════════════════════

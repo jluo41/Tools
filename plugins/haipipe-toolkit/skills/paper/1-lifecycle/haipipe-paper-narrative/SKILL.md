@@ -4,10 +4,11 @@ description: "Generate NARRATIVE_REPORT.md — the design contract for /haipipe-
 argument-hint: "[project-dir-or-topic]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.3.0"
-  last_updated: "2026-06-22"
+  version: "1.3.1"
+  last_updated: "2026-06-23"
   summary: "Generate NARRATIVE_REPORT.md — the design contract for /haipipe-paper."
   changelog:
+    - "v1.3.1: added mandatory compile-after-edit rule; venue awareness note"
     - "1.3.0 (2026-06-22): added per-beat subagent interrogation protocol (keep/move/demote/cut + small-font comments)"
     - "1.2.0 (2026-06-22): added illuminate+gate+compile protocol (ref/stage-gate.md, ref/stage-illuminate.md, ref/tex-quality.md)"
     - "1.1.0 (2026-06-05): renamed from narrative-report to haipipe-paper-narrative (haipipe-paper-* name unification)."
@@ -187,8 +188,9 @@ advance to the exit gate until interrogation comments are integrated.
 
 1. Compile the stage PDF per `ref/tex-quality.md` (pdflatex twice, clean aux).
 2. Present the exit criteria from `ref/stage-gate.md` with per-item check/fail.
-3. Ask: "Stage narrative looks ready -- confirm to close and move to minimap?"
-4. Only on user confirm: update `STATUS.md` `current_layer` and Gate Ledger.
+3. `3-narrative.pdf` recompiled and current (a stale PDF is a defect; recompile after every edit without being asked).
+4. Ask: "Stage narrative looks ready -- confirm to close and move to minimap?"
+5. Only on user confirm: update `STATUS.md` `current_layer` and Gate Ledger.
 
 ### Step 6: Handoff
 
@@ -238,3 +240,8 @@ already have the upstream artifacts and only need the narrative.
 - **One narrative per paper**, not per probe. Multi-probe projects
   collapse into one story or split into separate papers; don't try to fit two
   stories into one narrative.
+- **Venue-aware arc.** Read STATUS `venue` and consult
+  `_venue/playbook-<venue>` for what the venue rewards in terms of narrative
+  arc and argument structure. The venue playbook shapes which beats are
+  expanded (theory-forward for MISQ, clinical-impact-forward for JAMA) and
+  which are condensed.

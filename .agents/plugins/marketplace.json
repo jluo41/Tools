@@ -1,0 +1,20 @@
+{
+  "name": "drfirst-local",
+  "interface": {
+    "displayName": "DrFirst Local"
+  },
+  "plugins": [
+    {
+      "name": "haipipe-toolkit",
+      "source": {
+        "source": "local",
+        "path": "./codex-plugins/haipipe-toolkit"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

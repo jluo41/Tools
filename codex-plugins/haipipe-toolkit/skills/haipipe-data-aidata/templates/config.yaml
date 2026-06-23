@@ -1,0 +1,179 @@
+# ==============================================================================
+# AIData Pipeline Configuration Template
+# ==============================================================================
+# Converts a CaseSet into ML-ready datasets with train/val/test splits.
+# Uses two-stage TEToken transform for token embedding models.
+#
+# Usage:
+#   source .venv/bin/activate
+#   source env.sh
+#   haistep-aidata --config <this_file>.yaml
+#
+# Or via test script:
+#   python test/test_haistep/test_4_aidata/test_aidata.py --config <this_file>.yaml
+# ==============================================================================
+
+# External data version
+external_version: "@v1215"
+
+# -------------------------------------------------------------------
+# case_set_name: Name of the input CaseSet
+#   Format: "<RecSetName>/@v<N>CaseSet-<TriggerFolder>"
+#   Must match existing CaseSet in _WorkSpace/3-CaseStore/
+# -------------------------------------------------------------------
+case_set_name: "<RecordSetName>/@v<N>CaseSet-<TriggerFolder>"
+
+# -------------------------------------------------------------------
+# AIData naming
+#   Output path: _WorkSpace/4-AIDataStore/<aidata_name>/@<aidata_version>/
+#
+#   To find existing CaseSets:
+#     ls _WorkSpace/3-CaseStore/
+# -------------------------------------------------------------------
+aidata_name: "<aidata_name>"
+aidata_version: "v0"
+
+
+# ==============================================================================
+# Split Configuration (OPTIONAL: omit to skip splitting)
+# ==============================================================================
+# SplitFn adds a 'split_ai' column to df_tag (does NOT return dict of splits).
+# Split_to_Selection then filters by that column.
+#
+# Available SplitMethods: SplitByTimeBin, RandomByPatient, RandomByStratum
+# ==============================================================================
+SplitArgs:
+  # -------------------------------------------------------------------
+  # SplitMethod: Name of the SplitFn to use
+  #   SplitByTimeBin     - Temporal split by time bins
+  #   RandomByPatient    - Random split respecting patients
+  #   RandomByStratum    - Stratified random split
+  # -------------------------------------------------------------------
+  SplitMethod: SplitByTimeBin
+  ColumnName: split_timebin
+
+  # -------------------------------------------------------------------
+  # Split_to_Selection: Maps split names to selection rules
+  #   Each split has Rules (list of [column, operator, value]) and Op (and/or)
+  #   Operators: ==, !=, >, <, >=, <=, in, not in
+  # -------------------------------------------------------------------
+  Split_to_Selection:
+    train:
+      Rules:
+        - ["split_ai", "==", "train"]
+      Op: "and"
+
+    validation:
+      Rules:
+        - ["split_ai", "==", "validation"]
+      Op: "and"
+
+    test-id:
+      Rules:
+        - ["split_ai", "==", "test-id"]
+      Op: "and"
+
+    test-od:
+      Rules:
+        - ["split_ai", "==", "test-od"]
+      Op: "and"
+
+
+# ==============================================================================
+# Input Transform Configuration (REQUIRED)
+# ==============================================================================
+# To find registered input methods (discover at runtime):
+#   ls code/haifn/fn_aidata/entryinput/
+#
+# Signatures (verified from source code):
+#   build_vocab_fn(InputArgs, CF_to_CFVocab) -> feat_vocab dict
+#   tfm_fn(case_features, InputArgs, CF_to_CFvocab, feat_vocab) -> dict
+# ==============================================================================
+InputArgs:
+  # -------------------------------------------------------------------
+  # input_method: Name of the input TfmFn to use
+  # -------------------------------------------------------------------
+  input_method: InputTEToken
+
+  # -------------------------------------------------------------------
+  # input_casefn_list: CaseFn fields to load from CaseSet
+  #   Must match CaseFn names in the input CaseSet
+  # -------------------------------------------------------------------
+  input_casefn_list:
+    - CGMValueBf24h
+    - CGMValueAf24h
+    - DEMEventBf24h
+    - DEMEventAf24h
+    - PDemoBase
+
+  # -------------------------------------------------------------------
+  # input_args: Transform-specific configuration
+  #   Structure depends on input_method
+  # -------------------------------------------------------------------
+  input_args:
+    # Stage 1: Build TEWindow from CaseFn fields
+    window_build:
+      obs_dt: ObsDT
+      obs_dt_index: 287
+      time_series:
+        cgm: [CGMValueBf24h--tid, CGMValueAf24h--tid]
+      static_feat:
+        demographics: PDemoBase
+      event_list:
+        events: [DEMEventBf24h--str, DEMEventAf24h--str]
+
+    # Stage 2: Convert TEWindow to model-ready format
+    tetoken:
+      singlevalue_timestep:
+        cgm_value: {field: cgm, value_range: [0, 400]}
+        cgm_delta1: {field: cgm, transform: [Delta, 1], value_range: [-50, 50]}
+        hour_sin: {field: temporal, transform: [HourSin], value_range: [-1, 1]}
+        hour_cos: {field: temporal, transform: [HourCos], value_range: [-1, 1]}
+
+      singletoken_timestep:
+        cgm_token:
+          field: cgm
+          transform:
+            - CGMVocab
+            - vocab: [0, 401]
+              special_tokens: ['<pad>', '<unk>', '<masked>', '<s>', '<e>']
+
+      multitoken_sparsetimestep:
+        multitoken_events: {field: events, position: event_local_index, type: event_type}
+
+      multitoken_global:
+        demographics:
+          field: demographics
+          transform: [KeyValuePairs, {keys: [gender, age, disease_type]}]
+
+
+# ==============================================================================
+# Output Transform Configuration (OPTIONAL: omit for inference-only pipelines)
+# ==============================================================================
+# To find registered output methods (discover at runtime):
+#   ls code/haifn/fn_aidata/entryoutput/
+#
+# Signature (verified from source code):
+#   tfm_fn(case, OutputArgs) -> dict    (only 2 params!)
+# ==============================================================================
+OutputArgs:
+  # -------------------------------------------------------------------
+  # output_method: Name of the output TfmFn to use
+  # -------------------------------------------------------------------
+  output_method: OutputNextToken
+  output_casefn_list: []
+  output_args: {}
+
+
+# ==============================================================================
+# Output directory structure:
+#
+# _WorkSpace/4-AIDataStore/<aidata_name>/@<aidata_version>/
+# +-- train/                    HuggingFace Dataset (Parquet)
+# +-- validation/
+# +-- test-id/
+# +-- test-od/
+# +-- cf_to_cfvocab.json        Per-CaseFn vocabulary (NOT in vocab/ dir!)
+# +-- feat_vocab.json           Feature vocabulary from build_vocab_fn
+# +-- manifest.json
+# ==============================================================================

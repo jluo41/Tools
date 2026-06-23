@@ -1,0 +1,31 @@
+# =============================================================================
+# Template for configs/<NAME>.yaml — evaluation task
+# =============================================================================
+
+_meta:
+  purpose: |
+    <e.g., Compute next-2h MAE on test-id split for clm_d128_l12 @v0007>
+  note: |
+    <e.g., Compares to baseline A01.02 @v0001 — expect ≤0.5 mg/dL delta>
+  input: |
+    <e.g., ModelInstance clm_d128_l12/@v0007 + AIData EventGlucose/@v0001 test_id>
+  output: |
+    results/<run>/metrics.json — keys: mae, rmse, samples, horizon
+
+
+# =============================================================================
+# Evaluation params
+# =============================================================================
+
+modelinstance_name: <e.g. clm_d128_l12>
+modelinstance_version: <vNNNN>          # pinned, immutable
+
+aidata_name: <e.g. EventGlucose>
+aidata_version: <vNNNN>
+split: test_id                          # val | test_id | test_od
+
+EvaluationArgs:
+  batch_size: 32
+  horizon_bins: [288, 312]              # next-2h positions (matches training)
+  metrics: [mae, rmse]
+  save_predictions: false               # set true to dump per-case preds

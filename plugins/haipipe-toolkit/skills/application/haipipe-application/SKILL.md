@@ -155,6 +155,9 @@ Commands
 /haipipe-application iterate               post-deploy refinement
 /haipipe-application probe run             batch-dispatch probe plans
 /haipipe-application ask <question>        evidence session (legacy/direct)
+/haipipe-application feedback "<text>"     tool feedback (skill bugs/wishes)
+/haipipe-application feedback "<text>" --intervention <name>   intervention feedback
+/haipipe-application feedback list [--intervention <name>]     list open items
 ```
 
 
@@ -176,7 +179,9 @@ draft, write, create, generate, make          → haipipe-application-draft
 review, check, compliance                     → haipipe-application-review
 claim-audit, verify claims                    → haipipe-application-claim-audit
 deploy, ship, go live                         → haipipe-application-deploy
-round, feedback, iteration                    → haipipe-application-round
+round, iteration                              → haipipe-application-round
+feedback "<text>"                             → fn/feedback.md handler (tool or intervention scope)
+feedback list                                 → fn/feedback.md handler (list open items)
 iterate, A/B, performance                     → haipipe-application-iterate
 probe, probe run                              → shared/haipipe-application-ask
 ask, question, research                       → shared/haipipe-application-ask

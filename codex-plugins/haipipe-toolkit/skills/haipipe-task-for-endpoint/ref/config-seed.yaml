@@ -1,0 +1,44 @@
+# =============================================================================
+# Template for configs/run_<task_name>.yaml — C-series endpoint packaging task
+# =============================================================================
+
+_meta:
+  purpose: |
+    <e.g., Package MimicIV31-XGB-Mortality model as a deployable Endpoint_Set
+     with 5 inference Fns, test payloads from training examples.>
+  input: |
+    <e.g., LOCAL_MODELINSTANCE_STORE/MimicIV31-XGB-Mortality/@v0001/>
+  output: |
+    <e.g., LOCAL_ENDPOINT_STORE/mimic.mortality.xgb_v0001/>
+  notebook: thin
+  skip_review: true
+
+# =============================================================================
+# Source model (Stage 5)
+# =============================================================================
+modelinstance_name: "<modelinstance_name>"
+modelinstance_version: "<version>"            # no @ prefix
+
+# =============================================================================
+# Target endpoint (Stage 6)
+# =============================================================================
+endpoint_name: "<endpoint_name>"
+endpoint_version: "<version>"
+
+# =============================================================================
+# 5 Inference function names
+# Must exist in code/haifn/fn_endpoint/{fn_meta,fn_trig,fn_post,fn_src2input,fn_input2src}/
+# Build via code-dev/1-PIPELINE/6-Endpoint-WorkSpace/{a1,b1,c1,d1,e1}_build_*.py
+# =============================================================================
+MetaFn:      "<MetaFnName>"
+TrigFn:      "<TrigFnName>"
+PostFn:      "<PostFnName>"
+Src2InputFn: "<Src2InputFnName>"
+Input2SrcFn: "<Input2SrcFnName>"
+
+# =============================================================================
+# Deployment target (optional — used by /haipipe-end deploy)
+# =============================================================================
+deployment_config:
+  environment: "dev"          # dev | staging | production
+  platform: "local"           # local | databricks | sagemaker

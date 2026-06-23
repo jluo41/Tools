@@ -4,10 +4,11 @@ description: "Create or update the paper folder's 0-lifecycle/0-seed/0-seed.tex:
 argument-hint: "[paper-dir] [--source <path-or-note>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-06-22"
+  version: "1.1.1"
+  last_updated: "2026-06-23"
   summary: "Maintain 0-lifecycle/0-seed/0-seed.tex as the paper-possibility contract."
   changelog:
+    - "v1.1.1: added mandatory compile-after-edit rule; venue awareness note"
     - "1.1.0 (2026-06-22): added illuminate+gate+compile protocol (ref/stage-gate.md, ref/stage-illuminate.md, ref/tex-quality.md)"
     - "1.0.0 (2026-06-22): baseline."
 ---
@@ -58,6 +59,8 @@ Principles
 3. Open evidence needs route out to project workers; the seed never fakes them.
 4. Do not create `0-sections/`, displays, or compile obligations from the seed.
    Those start at manuscript maturity.
+5. **Seed is venue-independent.** Venue selection happens after pitch. Do not
+   reference a target venue here.
 
 Workflow
 --------
@@ -134,8 +137,9 @@ Do not run that work here. Record the need and hand off.
 
 1. Compile the stage PDF per `ref/tex-quality.md` (pdflatex twice, clean aux).
 2. Present the exit criteria from `ref/stage-gate.md` with per-item check/fail.
-3. Ask: "Stage seed looks ready -- confirm to close and move to pitch?"
-4. Only on user confirm: update `STATUS.md` `current_layer` and Gate Ledger.
+3. `0-seed.pdf` recompiled and current (a stale PDF is a defect; recompile after every edit without being asked).
+4. Ask: "Stage seed looks ready -- confirm to close and move to pitch?"
+5. Only on user confirm: update `STATUS.md` `current_layer` and Gate Ledger.
 
 ### Step 5: Handoff
 
