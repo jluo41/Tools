@@ -1,0 +1,34 @@
+{
+  "name": "haipipe-toolkit",
+  "version": "2.3.4+codex.20260623145049",
+  "description": "Skills for the haipipe data, NN, endpoint, project, probe, insight, paper, and application workflows.",
+  "author": {
+    "name": "Junjie Luo",
+    "url": "https://github.com/jluo41"
+  },
+  "license": "MIT",
+  "keywords": [
+    "haipipe",
+    "pipeline",
+    "skills",
+    "research",
+    "ml"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "haipipe Toolkit",
+    "shortDescription": "haipipe workflow and research skills",
+    "longDescription": "Codex skills for haipipe pipeline work, project scaffolding, probes, insight extraction, and paper workflows.",
+    "developerName": "Junjie Luo",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills",
+      "Workflow"
+    ],
+    "defaultPrompt": [
+      "Use haipipe-project to inspect this workspace.",
+      "Plan a haipipe data pipeline task.",
+      "Run a haipipe probe review."
+    ]
+  }
+}

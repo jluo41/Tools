@@ -1,0 +1,36 @@
+# =============================================================================
+# Template for configs/<NAME>.yaml — LLM agent task
+# =============================================================================
+
+_meta:
+  purpose: |
+    <e.g., Summarize eval logs across A01.01..05 runs into a markdown digest>
+  note: |
+    <e.g., Used Opus 4.7; expect ~3k tokens output; cost ≈ $0.10>
+  input: |
+    <e.g., Each run's results/<run>/eval_log.txt; prompts/system.md + user.md>
+  output: |
+    results/<run>/{transcript.json, summary.md}
+
+
+# =============================================================================
+# Agent params
+# =============================================================================
+
+model: claude-opus-4-7                  # or claude-sonnet-4-6 / -haiku-4-5
+max_tokens: 4096
+temperature: 0.0
+
+prompts:
+  system: prompts/system.md
+  user:   prompts/user.md
+
+tools: []                               # e.g. [Read, Bash] for tool-use loops
+
+inputs:                                 # context to inject into user.md placeholders
+  eval_log_dir: tasks/B01_evaluation_clm/
+  date_range:   2026-05-01..2026-05-24
+
+api:
+  base_url: env:ANTHROPIC_BASE_URL      # read from env
+  api_key:  env:ANTHROPIC_API_KEY

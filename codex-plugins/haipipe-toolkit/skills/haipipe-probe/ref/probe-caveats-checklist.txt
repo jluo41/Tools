@@ -1,0 +1,76 @@
+⚠️ Caveats & confounds checklist  (domain-general)
+
+Walked by Judge (structural gate) before a verdict is committed. Each YES
+becomes a caveat in verdict.md and an entry in probe.yaml.verdict.caveats.
+
+THIS IS NOT OPTIONAL. The point of a probe is to record what is UNCERTAIN
+about a claim, not just what was found. If you can't find any caveat, write
+"no confounds identified" explicitly so the reader knows you looked.
+
+The categories below are domain-neutral: they apply to a regression on claims
+data, an ML comparison, a literature synthesis, or any other evidence. Use the
+examples as prompts, not as the only forms a confound can take.
+
+
+─§ 1. Comparability (apples-to-apples) ───────────────────────────────
+
+The most common confound: the two things being compared were produced under
+different conditions. Flag if ANY of these differ across the compared sides:
+
+  ☐ Definition        same outcome / metric / variable defined the same way?
+                      (e.g. same MME formula, same coding of the outcome)
+  ☐ Population        same cohort / sample / inclusion-exclusion filters?
+  ☐ Time window       same period / follow-up / alignment?
+  ☐ Specification     same controls / fixed effects / covariates / model form?
+  ☐ Data version      same upstream dataset version on both sides?
+  ☐ Code version      same analysis code / git SHA on both sides?
+  ☐ Single draw       single seed / single split / single run -> noise floor unknown?
+
+
+─§ 2. Statistical confidence ─────────────────────────────────────────
+
+  ☐ Small N?              flag low power; the test is outlier-sensitive.
+  ☐ Single draw/seed?     flag noise-floor uncertainty; cite expected variation.
+  ☐ Effect vs variance?   is |effect| small relative to its variability? could be noise.
+  ☐ Multiple comparisons? many outcomes/subgroups tested -> some "hits" by chance?
+  ☐ Outlier present?      report both raw and outlier-excluded numbers.
+
+
+─§ 3. Provenance ─────────────────────────────────────────────────────
+
+  ☐ Outcome source?    does the outcome / ground truth come from the DATA, not
+                       from a model's own output or a circular definition?
+  ☐ Measurement?       is the measured quantity a valid stand-in for the concept
+                       the claim is about? (construct validity)
+
+
+─§ 4. Leakage ────────────────────────────────────────────────────────
+
+  ☐ Split leakage?     does a unit (patient, physician, encounter) span both
+                       sides of a train/test or comparison split?
+  ☐ Look-ahead?        were any features / controls derived from information
+                       not available at the time the outcome was determined?
+
+
+─§ 5. Scope (claim vs evidence) ──────────────────────────────────────
+
+  ☐ Overreach?         does the claim wording generalize beyond what was tested
+                       (how many cohorts / settings / periods actually backed it)?
+  ☐ Conditional?       does the result hold only on a sub-sample or under one
+                       specification? say so in the claim.
+
+
+─§ 6. Reproducibility ────────────────────────────────────────────────
+
+  ☐ Code version?      git SHA recorded for the analysis that produced the result?
+  ☐ Environment?       relevant tool / package / data versions noted if they differ?
+
+
+─§ "But..." catch-all ────────────────────────────────────────────────
+
+Before committing the verdict, ask: "If a peer reviewer challenged this claim,
+what would I have to admit?" That answer goes in the caveats.
+
+If you genuinely can't think of one, write it explicitly, e.g.:
+   ⚠️ No confounds identified beyond the single-specification limitation.
+(acknowledging the default limitation rather than leaving the section blank).

@@ -1,0 +1,68 @@
+# =============================================================================
+# Template for configs/<NAME>.yaml — data-pipeline task
+# =============================================================================
+# Inherits the _meta: block convention from
+# ../../../haipipe-task/ref/config-meta-template.yaml.
+# =============================================================================
+
+_meta:
+  purpose: |
+    <e.g., Build CGM 5-min record dataset v3 for WellReadi cohort>
+  note: |
+    <e.g., Stride-4h; clean partitions; mirrors WellDoc v2 schema>
+  input: |
+    <e.g., 1-SourceStore/WellReadi v3; ExternalStore cohort lookup>
+  output: |
+    <e.g., 2-RecStore/CGM5Min/@v0003_wellreadi  (~360k patient-partitions)>
+
+
+# =============================================================================
+# Stage 1 (Source) — no partitions
+# =============================================================================
+# SourceArgs:
+#   SourceFnName: "<SourceFnClassName>"
+#   raw_data_name: "<cohort_name>"
+#   raw_data_path: "_WorkSpace/0-RawDataStore/<cohort>/"
+#   use_cache: true
+#   save_cache: true
+
+# =============================================================================
+# Stage 2 (Record) — partition by patients
+# =============================================================================
+# source_set_name: "<cohort>/@<SourceFnName>"
+# RecordArgs:
+#   record_set_version: 0
+#   record_set_label: 1
+#   partition_number: 20              # split patients into N partitions
+#   use_cache: true                   # skip existing partitions on re-run
+#   save_cache: true
+#   HumanRecords:
+#     <HumanName>:
+#       - <RecordFnName1>
+#       - <RecordFnName2>
+
+# =============================================================================
+# Stage 3 (Case) — follows RecordSet partitions (auto-discovered)
+# =============================================================================
+# record_set_name: "<cohort>_v<N>RecSet"
+# CaseArgs:
+#   case_set_version: 0
+#   use_cache: false
+#   Case_Args:
+#     - TriggerName: '<TriggerFnName>'
+#       TriggerArgs: { ... }
+#   CaseFn_list:
+#     - <CaseFnName1>
+#     - <CaseFnName2>
+
+# =============================================================================
+# Stage 4 (AIData) — merges all CaseSet partitions
+# =============================================================================
+# record_set_name: "<cohort>_v<N>RecSet"    # for multi-partition discovery
+# CaseArgs: { ... }                         # needed to construct CaseSet path
+# aidata_name: "<AIDataName>"
+# aidata_version: "<version>"
+# InputArgs: { ... }
+# OutputArgs: { ... }
+# SplitArgs: { ... }
+# MetaArgs: { ... }

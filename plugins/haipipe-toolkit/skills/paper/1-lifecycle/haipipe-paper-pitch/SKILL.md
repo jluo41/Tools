@@ -4,9 +4,11 @@ description: "Create or update the paper folder's 0-lifecycle/1-pitch/1-pitch.te
 argument-hint: "[paper-dir] [--reason <slug>] [--source <path-or-note>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.5.0"
-  last_updated: "2026-06-22"
+  version: "1.5.2"
+  last_updated: "2026-06-23"
   changelog:
+    - "v1.5.2: extracted template to ref/pitch-template.tex; inline replaced with reading-order summary"
+    - "v1.5.1: added mandatory compile-after-edit rule; venue awareness note"
     - "1.5.0 (2026-06-22): added Title section, multi-hook candidates, template enforcement, quality gate; wired illuminate+gate+compile protocols"
     - "1.4.0 (2026-06-22): readability rules, section cues, hook catalog"
   summary: "Maintain 0-lifecycle/1-pitch/ as the one-minute public-facing story and provenance layer for a concrete paper folder. Carries readability rules, section cues, and a hook narrative-methods catalog (ref/pitch-readability.md)."
@@ -105,117 +107,33 @@ If no paper folder exists, ask the user to run:
 
 ### Step 2: Ensure `0-lifecycle/1-pitch/` exists
 
-Create missing files with the templates below:
+The full template is in `ref/pitch-template.tex` (standalone-compilable,
+~110 lines). Copy it to `0-lifecycle/1-pitch/1-pitch.tex` and fill in.
 
-Every pitch carries the full backbone: Hook, Surprise, Implication (so-what), Audience/Venue Fit, Why Believe (evidence per point), Still Fragile. The venue routing label (journal / conference / is) lives in STATUS.md; only the audience rationale lives here in the pitch. When a `../../_venue/playbook-<venue>` pack exists for STATUS `venue`, read its `README.md` `-> Claims`/framing for what that venue's readers reward, and let the Audience and Venue Fit section reflect it (who the venue reaches, why this finding matters to them). The body follows the sentence-format in `../../3-write-edit/_shared/sentence-format.md`: a paragraph banner per section, one sentence per line, each tagged `%% ---- Pn.Sm ----`.
+Every pitch carries the full backbone: Title, One-Minute Pitch, Hook (>=2
+candidates), Finding-Surprise, Implication, Audience/Venue Fit, Evidence,
+Still Fragile, Next Evidence Move. The body follows the sentence-format in
+`../../3-write-edit/_shared/sentence-format.md`: a paragraph banner per section,
+one sentence per line, each tagged `%% ---- Pn.Sm ----`.
 
-```latex
-% Layout follows ../../3-write-edit/_shared/sentence-format.md.
-% Readability rules + section cues + worked before/after examples: ref/pitch-readability.md.
-\section*{Title}
-% =========================================================
-% Para [pitch.title] Working title
-% Cue: short, specific, evocative; <=15 words; updated as the story sharpens.
-% =========================================================
-%% ---- P0.S1 ----
-Working title for the paper.
+The pitch is venue-AWARE (Audience section names who reads the target journal)
+but NOT venue-COUPLED (RQs and claim framing live in `2-claims.tex`). When a
+`../../_venue/playbook-<venue>` pack exists for STATUS `venue`, read its
+`README.md` for what that venue's readers reward, and let the Audience section
+reflect it.
 
-\section*{One-Minute Pitch}
-% =========================================================
-% Para [pitch.kernel] One-minute pitch
-% Cue: a short plain-language paragraph (~4-6 short sentences) for a NEWCOMER with no
-%      background. Open with a framing sentence ("We study whether/how X relates to Y"),
-%      then the puzzle, the method in plain words, the surprising finding, and why it
-%      matters, so they understand it and feel interested. Not a single terse sentence.
-% =========================================================
-%% ---- P1.S1 ----
-We study whether / how X relates to Y.
-%
-%% ---- P1.S2 ----
-Plain-language context or the puzzle a newcomer needs.
-%
-%% ---- P1.S3 ----
-The method in plain words.
-%
-%% ---- P1.S4 ----
-The surprising finding.
-%
-%% ---- P1.S5 ----
-Why it matters, and who could use it.
+Reading order of the template:
 
-\section*{Hook}
-% =========================================================
-% Para [pitch.hook] Hook -- multiple candidate openings, all retained
-% Cue: >=2 candidate methods (e.g. Paradox, Vivid Scene, Surprising Fact, Stakes, Gap).
-%       Each candidate is a \subsection* block, one per narrative method.
-%       ALL candidates are kept permanently displayed -- never collapsed.
-%       Mark one as "(recommended lead)" but do NOT hide the rest.
-%       The author chooses the final lead at write time.
-% Hook section must show >=2 candidate methods, all retained, with a recommended lead marked.
-% =========================================================
-
-\subsection*{Candidate A: Paradox (recommended lead)}
-%% ---- P2a.S1 ----
-A paradox or tension that sets expectation against reality. 2-4 short sentences.
-
-\subsection*{Candidate B: Vivid Scene}
-%% ---- P2b.S1 ----
-A concrete moment with specifics that makes the reader feel it. 2-4 short sentences.
-
-\subsection*{Candidate C: Stakes}
-%% ---- P2c.S1 ----
-What is at risk -- opens with consequence. 2-4 short sentences.
-
-% Add more candidates as needed. Each commits to ONE narrative move.
-% See ref/pitch-readability.md for the full method menu.
-
-\section*{Finding - Surprise}
-% =========================================================
-% Para [pitch.surprise] Surprise -- the non-obvious turn
-% Cue: put the unexpected result in sentence 1, then the tension.
-% =========================================================
-%% ---- P3.S1 ----
-The non-obvious turn, tension, or finding.
-
-\section*{Implication - So What}
-% =========================================================
-% Para [pitch.implication] Implication -- so what, and who can use it
-% Cue: name what changes and who can act in the first two sentences.
-% =========================================================
-%% ---- P4.S1 ----
-What changes if this story is true, and who can use it.
-
-\section*{Audience and Venue Fit}
-% =========================================================
-% Para [pitch.audience] Audience -- who the venue reaches and why they care
-% Cue: name the reader and their need before the venue format.
-% =========================================================
-%% ---- P5.S1 ----
-Who reads the target venue, and why this finding matters to that audience.
-
-\section*{Evidence - Why Believe}
-% =========================================================
-% Para [pitch.evidence] Why believe -- evidence for each point
-% Cue: tie each sentence to a table/display/model/check/source; mark planned as planned.
-% =========================================================
-%% ---- P6.S1 ----
-Evidence for each point above, citing a source per claim (or intuition if seed-stage).
-
-\section*{Limitation - Still Fragile}
-% =========================================================
-% Para [pitch.fragile] Still fragile -- the weakest point
-% Cue: list only the top three highest-risk weaknesses.
-% =========================================================
-%% ---- P7.S1 ----
-The weakest point or most important missing evidence.
-
-\section*{Next Evidence Move}
-% =========================================================
-% Para [pitch.next] Next evidence move
-% Cue: start with a verb and name the artifact this move updates.
-% =========================================================
-%% ---- P8.S1 ----
-What discovery, task, probe, or review should happen next.
+```text
+1. Title                    ← <=15 words, specific, evocative
+2. One-Minute Pitch         ← 4-6 sentences for a newcomer
+3. Hook                     ← >=2 candidates, one recommended lead
+4. Finding - Surprise       ← the non-obvious turn
+5. Implication - So What    ← what changes and who can act
+6. Audience and Venue Fit   ← venue-aware, not venue-coupled
+7. Evidence - Why Believe   ← source per claim
+8. Limitation - Still Fragile ← top 3 risks
+9. Next Evidence Move       ← verb + artifact
 ```
 
 **Template Enforcement:** A pitch is NOT complete unless it contains, as labeled
@@ -292,7 +210,7 @@ Check the pitch against its rubric:
 - [ ] Implication section with "so what" and audience stated?
 - [ ] Why Believe section with evidence pointers (>=1 per claim)?
 - [ ] Still Fragile section with the weakest point named?
-- [ ] PDF compiled and current?
+- [ ] `1-pitch.pdf` recompiled and current (a stale PDF is a defect; recompile after every edit without being asked).
 
 If any item fails, flag it and offer to fix before advancing.
 
@@ -300,8 +218,9 @@ If any item fails, flag it and offer to fix before advancing.
 
 1. Compile the stage PDF per `ref/tex-quality.md` (pdflatex twice, clean aux).
 2. Present the exit criteria from `ref/stage-gate.md` with per-item check/fail.
-3. Ask: "Stage pitch looks ready -- confirm to close and move to claims?"
-4. Only on user confirm: update `STATUS.md` `current_layer` and Gate Ledger.
+3. `1-pitch.pdf` recompiled and current (a stale PDF is a defect; recompile after every edit without being asked).
+4. Ask: "Stage pitch looks ready -- confirm to close and move to claims?"
+5. Only on user confirm: update `STATUS.md` `current_layer` and Gate Ledger.
 
 ### Step 5: Handoff
 

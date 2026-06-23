@@ -1,0 +1,149 @@
+# workflow-plan-sample-case.yaml -- Stata case stage script-level plan
+# Schema: project/haipipe-workflow/ref/plan-schema.md
+# Phases: Setup -> TriggerCases -> BENE -> PDE -> Claims -> Lines -> Outpt -> Summary
+# Heavy outputs land in _WorkSpace/2-Case-Store/.
+
+# --- Preview -----------------------------------------------------------
+# case-pipeline -- trigger cohort cases + attach BFAF per year
+#
+# I: _WorkSpace/1-CMS-Store/<cms_asset>/year-<year>/ (Neat .dta)
+#    _WorkSpace/0-External-Store/<NDC>/<ICD>
+#    configs/<Cohort>.do + _source_<source>.do
+#
+# +-- 🔧 P1: Setup
+# |   +-- S1: load config (source selector + cohort + per-run)
+# |
+# +-- 🎯 P2: TriggerCases
+# |   +-- S2: identify service events matching cohort ICD codes
+# |
+# +-- 🔗 P3: BENE + enrollment (parallel within)
+# |   +-- S3: bene-year features
+# |   +-- S4: enrollment windows
+# |
+# +-- 💊 P4: PDE chain
+# |   +-- S5: shared_pde -> pde_bene/pde_npi/pde_bn -> opioidrx
+# |
+# +-- 📋 P5: Claims/Lines/Outpt chains (parallel)
+# |   +-- S6: claims chain
+# |   +-- S7: lines chain
+# |   +-- S8: outpt chain
+# |
+# +-- 📋 P6: Summary
+# |   +-- S9: row counts + feature coverage
+#
+# O: _WorkSpace/2-Case-Store/case_<cohort>_<source>/<asset>/year-<year>/
+#    results/<run>/summary.txt + log/
+# -------------------------------------------------------------------
+
+name: case-<COHORT>-<SOURCE>-<YEAR>
+purpose: "Trigger cohort cases and attach BFAF feature panels for <COHORT> <SOURCE> year <YEAR>"
+skill: haipipe-task-for-stata
+
+input:
+  args:
+    config: configs/<COHORT>_<SOURCE>_<YEAR>.do
+    year: <YEAR>
+    source: <SOURCE>
+  files_in:
+    - case_pipeline.do
+    - configs/<COHORT>.do
+    - configs/_source_<SOURCE>.do
+    - configs/<COHORT>_<SOURCE>_<YEAR>.do
+    - _WorkSpace/1-CMS-Store/<CMS_ASSET>/year-<YEAR>/
+    - _WorkSpace/0-External-Store/<NDC_GROUP>/
+    - _WorkSpace/0-External-Store/<ICD_GROUP>/
+
+phases:
+
+  - title: Setup
+    detail: "load three-layer config (source selector + cohort + per-run)"
+    steps:
+      - label: "setup:config"
+        type: agent
+        required: true
+        prompt: "Load source selector, shared cohort config, per-run wrapper; set globals"
+        files_in:
+          - configs/_source_<SOURCE>.do
+          - configs/<COHORT>.do
+          - configs/<COHORT>_<SOURCE>_<YEAR>.do
+        files_out: []
+
+  - title: TriggerCases
+    detail: "identify service events matching cohort ICD codes from CMS claims"
+    steps:
+      - label: "trigger:cases"
+        type: agent
+        required: true
+        prompt: "Run trigger-cases scripts for <COHORT> on CMS year <YEAR> (<SOURCE>)"
+        files_in:
+          - _WorkSpace/1-CMS-Store/<CMS_ASSET>/year-<YEAR>/
+        files_out:
+          - _WorkSpace/2-Case-Store/case_<COHORT>_<SOURCE>/<ASSET>/year-<YEAR>/CASES-<YEAR>.dta
+
+  - title: BENE + enrollment
+    detail: "attach beneficiary demographics and enrollment features (parallel)"
+    steps:
+      - label: "feat:bene-year"
+        type: agent
+        required: true
+        prompt: "Attach bene-year enrollment features from Bene_Info"
+        files_in: []
+        files_out: []
+      - label: "feat:enrollment"
+        type: agent
+        required: true
+        prompt: "Compute enrollment windows and Part D coverage"
+        files_in: []
+        files_out: []
+
+  - title: PDE chain
+    detail: "attach Rx features via shared_pde -> topic workers -> opioidrx"
+    steps:
+      - label: "feat:pde-chain"
+        type: agent
+        required: true
+        prompt: "Run PDE chain: shared_pde -> pde_bene/pde_npi/pde_bn -> opioidrx"
+        files_in:
+          - _WorkSpace/0-External-Store/<NDC_GROUP>/
+        files_out: []
+
+  - title: Claims/Lines/Outpt chains
+    detail: "attach diagnosis features from carrier + outpatient claims (parallel)"
+    steps:
+      - label: "feat:claims-chain"
+        type: agent
+        required: true
+        prompt: "Run claims chain: shared_claims -> claims_bene/npi/bn"
+        files_in: []
+        files_out: []
+      - label: "feat:lines-chain"
+        type: agent
+        required: true
+        prompt: "Run lines chain: shared_lines -> lines_bene/npi/bn"
+        files_in: []
+        files_out: []
+      - label: "feat:outpt-chain"
+        type: agent
+        required: true
+        prompt: "Run outpt chain: shared_outpt -> outpt_bene/npi/bn"
+        files_in: []
+        files_out: []
+
+  - title: Summary
+    detail: "row counts + feature coverage QC"
+    steps:
+      - label: "summary:counts"
+        type: agent
+        required: true
+        prompt: "Count rows per panel, check feature coverage, write summary.txt"
+        files_in: []
+        files_out:
+          - results/<RUN>/summary.txt
+
+output:
+  returns:
+    status: ok
+  files_out:
+    - _WorkSpace/2-Case-Store/case_<COHORT>_<SOURCE>/<ASSET>/year-<YEAR>/
+    - results/<RUN>/summary.txt
+    - results/<RUN>/log/

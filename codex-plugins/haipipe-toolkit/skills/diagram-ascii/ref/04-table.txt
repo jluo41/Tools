@@ -1,0 +1,55 @@
+Tables
+=======
+
+  Use emoji in headers as visual anchors.
+  Cell emoji optional; if used, pad consistently (assume width 2).
+
+
+  Component status
+  ----------------
+
+  +-------------------+----------+-------------------+
+  | 🔧 Component      | 📦 Type  | 🟢 Status         |
+  +-------------------+----------+-------------------+
+  | 📥 Loader         | Service  | ✅ Healthy        |
+  | 🧠 Model          | Worker   | ⏳ Warming up     |
+  | 🗄️ Feature Store  | Storage  | ✅ Healthy        |
+  | 🌐 API Gateway    | Proxy    | ❌ Down           |
+  +-------------------+----------+-------------------+
+
+
+  Comparison matrix  (mark the winner with ⭐)
+  --------------------------------------------
+
+  +----------------+----------+----------+----------+
+  | 🏷️ Feature     | Plan A   | Plan B   | Plan C   |
+  +----------------+----------+----------+----------+
+  | 💰 Cost        | $$       | $        | $$$      |
+  | ⚡ Speed       | Fast     | Slow     | Fast     |
+  | 🔧 Complexity  | Medium   | Low      | High     |
+  | ✅ Recommended |          | ⭐       |          |
+  +----------------+----------+----------+----------+
+
+
+  Decision log
+  ------------
+
+  +------------+--------------------+----------------+
+  | 📅 Date    | 🎯 Decision        | 🟢 Outcome     |
+  +------------+--------------------+----------------+
+  | 2026-04-23 | Switch to Polars   | ✅ +30% speed  |
+  | 2026-04-24 | Add caching        | ⏳ In test     |
+  | 2026-04-25 | Restructure docs   | ✅ Done        |
+  +------------+--------------------+----------------+
+
+
+  Risk grid
+  ---------
+
+  +----------------------+----------+--------+----------+
+  | 🚩 Risk              | 🎯 Likely| 🔥 Imp | 🟢 Owner |
+  +----------------------+----------+--------+----------+
+  | Schema drift         | Med      | High   | data     |
+  | Model staleness      | High     | Med    | ml       |
+  | Endpoint cold-start  | Low      | Low    | infra    |
+  +----------------------+----------+--------+----------+

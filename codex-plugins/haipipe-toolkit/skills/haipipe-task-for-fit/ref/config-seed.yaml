@@ -1,0 +1,49 @@
+# =============================================================================
+# Template for configs/<NAME>.yaml — model-training task
+# =============================================================================
+
+_meta:
+  purpose: |
+    <e.g., Train CLM baseline at d_model=128 / num_layers=12 / lr=1e-4>
+  note: |
+    <e.g., Variant of A01.01; expects MAE ≈ 24.7 at H24 on val split>
+  input: |
+    <e.g., AIData PretrainCGM_Stride4H/@v0002 train split>
+  output: |
+    <e.g., _WorkSpace/5-ModelInstanceStore/clm_d128_l12/@v0007>
+
+
+# =============================================================================
+# Training params
+# =============================================================================
+
+ModelInstanceClass: <e.g. ClmInstance>
+modelinstance_name: <e.g. clm_d128_l12>
+modelinstance_version: <vNNNN>          # immutable once the run starts
+
+model_tuner_name: <e.g. clm_baseline_grid>
+
+aidata_name: <e.g. PretrainCGM_Stride4H>
+aidata_version: <vNNNN>
+
+ModelArgs:
+  d_model: 128
+  num_layers: 12
+  # ... architecture knobs
+
+TrainingArgs:
+  seed: 42
+  batch_size: 16
+  lr: 1.0e-4
+  warmup_steps: 1000
+  epochs: 20
+  precision: bf16
+  gradient_accumulation_steps: 1
+
+InferenceArgs:
+  batch_size: 32
+
+EvaluationArgs:
+  split: val
+  horizon_bins: [288, 312]              # next-2h positions
+  metrics: [mae, rmse]

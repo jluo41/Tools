@@ -4,10 +4,11 @@ description: "Plan, materialize (via task/probe), scaffold, run framework candid
 argument-hint: "[plan|materialize|scaffold|framework|build|audit|insert] [paper-dir-or-display-id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.4.0"
-  last_updated: "2026-06-22"
+  version: "1.4.1"
+  last_updated: "2026-06-23"
   summary: "Maintain 0-displays/ as a story/evidence display layer with README.md, per-unit README.md, float.tex, and standalone preview PDFs."
   changelog:
+    - "v1.4.1: added mandatory compile-after-edit rule; venue awareness note"
     - "v1.4.0: added illuminate protocol + cross-refs to stage-gate, tex-quality"
 ---
 
@@ -79,7 +80,7 @@ Principles
    only as a typed table.
 7. **The stage doc is the gallery.** `0-lifecycle/4-display/4-display.tex` `\input`s each rendered `float.tex`, so the stage PDF doubles as the combined figures-and-tables view; do NOT make a separate `preview-all`. Compile from the paper ROOT so the `0-displays/` paths resolve. Per-unit `preview.pdf` remain as individual review artifacts.
 8. **Two display kinds, both task-rendered.** (a) data-driven: a parser turns server logs/CSVs into `metrics.json`, then a render task turns that into `assets/figure.pdf` / `assets/table-body.tex` (robust parser: handle factor-variable rows, leading-dot numbers, SE/CIs). (b) schematic/flow (study-flow, data-provenance, CONSORT): a diagram render task draws the flow and annotates it with REAL Ns pulled from the data description; still a task output, never hand-drawn.
-9. **Couple to venue.** Read STATUS `venue`; if `../../_venue/playbook-<venue>` exists, consult its `README.md` section `-> Display` for the venue's standard display set and hero rule (e.g. Table 1 + STROBE cohort-flow for clinical, the research-model figure for MISQ, the main-result multi-panel for Nature/PNAS). The `[primary]` claim's display is the hero. A venue change re-runs the display set.
+9. **Couple to venue.** Read STATUS `venue`; if `../../_venue/playbook-<venue>` exists, consult its `README.md` section `-> Display` for the venue's standard display set and hero rule (e.g. Table 1 + STROBE cohort-flow for clinical, the research-model figure for MISQ, the main-result multi-panel for Nature/PNAS). The `[primary]` claim's display is the hero. A venue change re-runs the display set. Also consult the playbook for display style requirements (figure count limits, table format, color guidelines).
 
 Relationship to ARIS
 --------------------
@@ -374,6 +375,8 @@ Handoff
 
 Present exit criteria per `ref/stage-gate.md`. Compile `4-display.tex` per
 `ref/tex-quality.md`. Ask for user confirm before advancing to minimap.
+
+- `4-display.pdf` recompiled and current (a stale PDF is a defect; recompile after every edit without being asked).
 
 Render the **stage strip** showing the current position in the lifecycle
 (see `ref/lifecycle-map.md`).
