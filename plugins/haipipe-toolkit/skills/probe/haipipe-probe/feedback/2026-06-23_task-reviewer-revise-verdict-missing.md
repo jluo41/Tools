@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-23
 context: task/agents/CODE_REVIEW.md finding #5 (discovered during JAMANO probe dispatch review)
-fixed_in: ""
+fixed_in: "4.3.0"
 ---
 
 The task reviewer agent (haipipe-task-reviewer-agent.md) return contract declared verdict: {pass, warn, fail} but the task creator agent (haipipe-task-creator-agent.md) expected verdict == "revise" to trigger the retry-with-feedback loop. The "revise" verdict was absent, making the creator→reviewer retry loop dead code.

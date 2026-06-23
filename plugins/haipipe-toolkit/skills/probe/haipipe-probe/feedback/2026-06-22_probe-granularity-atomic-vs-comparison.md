@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-22
 context: P.0605 discretion-gradient (felt too complex during Judge)
-fixed_in: ""
+fixed_in: "4.3.0"
 ---
 
 JL: "我感觉这一个 probe 有点过于复杂,其实可以有一些小的 probe,比如专门研究 lbp 的 probe 之类的." (this one probe is too complex; we could have smaller probes, e.g. a probe dedicated to LBP.)

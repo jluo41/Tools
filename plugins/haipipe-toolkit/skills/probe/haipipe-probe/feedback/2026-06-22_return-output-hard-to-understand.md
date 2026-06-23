@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-22
 context: Return step (return.md / probe.yaml.return output)
-fixed_in: ""
+fixed_in: "4.3.0"
 ---
 The content that Return produces is hard to understand. Make the returned verdict
 (return.md and the probe.yaml return block) clearer and easier to read for a

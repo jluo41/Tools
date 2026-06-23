@@ -19,7 +19,7 @@ When stored status and disk disagree, disk wins and the gap is flagged DRIFT.
 The dashboard uses the current probe lifecycle:
 
 ```text
-Plan -> Gather -> Read -> Judge -> Return
+Plan -> Gather -> Read -> Judge -> Deposit
 ```
 
 The frontier is the first step whose disk predicate fails.
@@ -98,21 +98,28 @@ project view, run it once per probe folder.
 
 ### Project level (no-arg `/haipipe-probe`)
 
-Header, then one compact panel per probe, then un-probed evidence (per the
-"Un-probed evidence" rules above; nag only GAPs, not STANDALONE).
+The no-arg dashboard is a GLANCE, not a report. One summary line, one status
+line per probe, and a single drift flag. No drift tables, no arm tables, no
+evidence detail — those belong behind explicit `/haipipe-probe status <probe>`
+or `/haipipe-probe gather <probe>`.
 
 ```text
-📊 haipipe-probe  ·  <PROJECT>  ·  <DATE>
+📊 haipipe-probe  ·  <PROJECT>  ·  <DATE>  ·  <N> probes (<M> active)
 
-  <P.id>  <slug>
-    Claim: <one line>
-    progress  Plan ✅ ─ Gather ▶️ ─ Read ⬜ ─ Judge ⬜ ─ Deposit ⬜   ⚠ drift
-          ← here Gather: <why>
+  P.T0605  discretion-gradient     Gather ▶️  (2/6 refs resolved)
+  P.D0622  trait-behavior-matrix   Read ▶️
+  P.T0622  agreeableness-opioid-lbp  Judge ▶️
+  P.T0623a per-arm-theory-fit      Deposit ✅
 
-  Un-probed evidence:
-    GAP (claim-bearing, no probe): <list or none>   -> /haipipe-probe file ...
-    standalone (prep/display, fine): <count or short list>
+  ⚠ drift: P.T0605 (5 broken refs)
+
+  Un-probed: 2 GAP (claim-bearing) → /haipipe-probe file ...
 ```
+
+Each probe line is: `<ref>  <slug>  <frontier step> <frontier glyph>  (<brief why>)`
+— derived from `ref/stage-strip.sh`. No claim text on the project view (save
+that for the single-probe console). Drift is one aggregate line, not a per-arm
+table. Un-probed evidence is a count, not a list.
 
 Glyphs (derive-from-disk; first non-✅ rung = frontier):
 

@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-23
 context: probe + task reviewer agents / G2 integrity gate (discovered during JAMANO probe dispatch review)
-fixed_in: ""
+fixed_in: "4.3.0"
 ---
 
 Both the probe reviewer and task reviewer agents declared Codex MCP tools (mcp__codex__codex, mcp__codex__codex-reply) for out-of-family independence in the Judge gates. But no Codex MCP server is configured in the project settings — those tools silently fail at runtime.

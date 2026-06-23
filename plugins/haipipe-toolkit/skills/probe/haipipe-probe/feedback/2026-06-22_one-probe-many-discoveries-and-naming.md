@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-22
 context: P.0622 trait-behavior-matrix, Gather stage; discovery discoveries/L01_personality-prescribing-landscape/01_field-scan
-fixed_in: ""
+fixed_in: "4.3.0"
 ---
 
 Reporter (JL): 这个其实是不是可以开几个discovery呢？现在这个field-scan这个名字起的很不好，根本不知道干啥. 所以我在想是不是你一个probe可以有n个discovery或者n个tasks folder 你可以再想想

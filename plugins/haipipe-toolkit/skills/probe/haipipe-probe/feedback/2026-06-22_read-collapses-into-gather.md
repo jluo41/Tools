@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-22
 context: P.0605 discretion-gradient / Gather->Read (osteo arm session)
-fixed_in: ""
+fixed_in: "4.3.0"
 ---
 
 JL (reporter's words): "为什么 gather 和 read 就在一起了?很快一下就过去了,是不是 read 没有必要独自存在?" — i.e. the moment Gather was wired, Read flipped ✅ in the same strip render, so Read looked like it had no independent existence and the lifecycle jumped Gather→Read→Judge in one motion.

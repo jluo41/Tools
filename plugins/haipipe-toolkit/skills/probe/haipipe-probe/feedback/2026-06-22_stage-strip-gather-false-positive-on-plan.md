@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-22
 context: ref/stage-strip.sh (gather_done predicate) — hit on three freshly-planned probes in examples/ProjC-LLMRecPhysicain/probes
-fixed_in: ""
+fixed_in: "4.3.0"
 ---
 
 Trigger: ran `plan` for three new probes (P.0622 / P.0622b / P.0622c). Each probe.yaml has a `claim:` and an `evidence_plan:` block, but `evidence_refs` and `calls` are EMPTY (nothing gathered yet — the probe is at the Gather frontier). The stage strip rendered:

@@ -1,6 +1,6 @@
 ---
 name: haipipe-probe-console
-description: "Open a context-aware Probe Console for one active probe. Loads probe.yaml and lifecycle artifacts, renders status.md, records .probe-console.yaml, and routes follow-up free-form user input through Plan/Gather/Read/Judge/Return."
+description: "Open a context-aware Probe Console for one active probe. Loads probe.yaml and lifecycle artifacts, renders status.md, records .probe-console.yaml, and routes follow-up free-form user input through Plan/Gather/Read/Judge/Deposit."
 argument-hint: "[probe_ref_or_path|status|route <text>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 ---
@@ -32,9 +32,11 @@ What requires approval?
 5. Validate linked task/discovery/insight refs shallowly: exists/missing only.
 6. Derive lifecycle stage:
    - no `probe.yaml` contract -> Plan
-   - evidence missing or refs absent -> Gather
-   - evidence linked but no `evidence.md` -> Read
-   - evidence exists but no `verdict.md` -> Judge
+   - no actual evidence items linked (only evidence_plan) -> Gather
+   - evidence linked but not all participants finished running -> Gather
+   - all participants done but no `evidence.md` -> Read (stop-and-internalize)
+   - `evidence.md` exists, user has not reacted -> Read (still at the stop gate)
+   - user has reacted to Read, no `verdict.md` -> Judge
    - verdict exists but no deposit action -> Deposit
    - deposit complete -> closed or ready for next probe
 7. Write project-root `.probe-console.yaml`.
