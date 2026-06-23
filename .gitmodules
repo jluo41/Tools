@@ -139,3 +139,6 @@
 [submodule "references/scipilot-figure-skill"]
 	path = references/scipilot-figure-skill
 	url = https://github.com/Haojae/scipilot-figure-skill
+[submodule "papers/Paper-SuitableMessageForRx-JAMANO"]
+	path = papers/Paper-SuitableMessageForRx-JAMANO
+	url = git@github.com:jluo41/Paper-SuitableMessageForRx-JAMANO.git
