@@ -14,6 +14,10 @@ Skill: haipipe-paper-display
 
 Maintain the **display layer** for a concrete paper folder.
 
+New here? Read `../README-display.md` first: how a figure/table gets made, which
+renderer to pick (table/figure/diagram/illustration), the unit contract, and the
+hard-won lessons (settle the model upstream; controlled AI illustration).
+
 Display items are figures, tables, diagrams, and other manuscript-visible
 objects that carry evidence and story. A display item is not just a file. It
 has a job:
