@@ -137,6 +137,27 @@ Per-journal note (length, abstract shape, structure):
   (analytical) or causal estimates + mechanism channel (empirical); Discussion leads
   with managerial/policy implications derived FROM the formal/identified results.
 
+**Minimap skeleton (shape `ref/minimap-template.tex` to this).** Render the paper
+in miniature with the neutral macros (`\pspine` / `spts` / `\cl` / `\dcall` /
+`\nnote` / `\pfb`); the section order + abstract form are this venue's:
+
+```text
+Abstract            unstructured prose <=150w (MISQ/ISR) | structured <200w (MS-IS);
+                    arc: phenomenon -> gap -> approach -> theoretical + empirical contribution
+1 Introduction      3 paragraphs: phenomenon/stakes -> gap (vs prior work) -> question + contribution-AS-THEORY
+2 Theory & Framing  the construct + ONE named proposition; weave numbered H1..Hk INTO it
+                    (each H -> a named mechanism; resist long H1-H12 lists) + boundary / IS positioning
+3 Methods           design + data/identification by the venue's own standards (state associational vs causal)
+4 Results           R0 sample -> the PRIMARY result first -> supporting results -> rivals ruled out
+5 Discussion        contribution restated -> IS theory/practice implications -> limitations -> conclusion
+  Supplement        eAppendix SYNCED to 0-sections (proofs / robustness / instrument items, online-only)
+```
+
+The `[primary]` claim drives the abstract contribution sentence, the intro
+contribution paragraph, and the first Discussion implication. Numbered hypotheses
+are woven into the Theory proposition, never a separate section. Live worked
+example: `examples/ProjB-PhyTrait-OpioidRx/paper/Paper-Personality2Opioid-MISQ2026/0-lifecycle/5-minimap/5-minimap.tex`.
+
 ### -> Write / Edit (language style & preferences)  [the main purpose]
 
 Imitate how IS papers in the chosen journal actually read:
