@@ -128,7 +128,10 @@ they are added (pull real sentences and mirror their shapes).
 ## Mined from `exemplars/` (real patterns to mirror, tagged by journal)
 
 Distilled 2026-06-24 from the three stored exemplars. Quote the SHAPE, not the
-content. Each pattern names the exemplar it came from.
+content. Each pattern names the exemplar it came from; the `exemplars/<journal>/...`
+tags are short slugs whose PDFs live locally under
+`_WorkSpace/HAIToolLib/1-ExemplarLib/utd-is/<journal>/` (gitignored). Open them there
+to re-mine.
 
 ### MISQ -- Liu, Li & Xu (2021), *Assessing the Unacquainted* [`exemplars/misq/liu-2021-...`]
 

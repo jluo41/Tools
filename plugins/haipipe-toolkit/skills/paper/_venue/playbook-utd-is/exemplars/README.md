@@ -1,31 +1,36 @@
 # UTD-IS Exemplars - content to imitate
 
-Store the CONTENT of similar IS papers here (PDF, or extracted .md/.txt), so the
-writing stages can imitate their **language style and preferences**. This is NOT a
-citation list (that is `../references/README.md`); it is a style corpus.
+A style corpus of similar IS papers, so the writing stages can imitate their
+**language style and preferences**. This is NOT a citation list (that is
+`../references/README.md`).
 
-## Tag by journal (subfolders)
+## Where exemplars live (two layers)
 
-Because this is a FAMILY pack, keep exemplars separated by outlet so a chosen venue
-pulls the right style corpus:
+The binary PDFs are large and often paywalled, and this repo is **public**, so they
+do NOT live here. The split:
 
 ```
-exemplars/
-  misq/    MIS Quarterly exemplars
-  isr/     Information Systems Research exemplars
-  ms-is/   Management Science (IS department) exemplars
+_WorkSpace/HAIToolLib/1-ExemplarLib/utd-is/<journal>/<slug>.pdf   # the PDFs (gitignored, local)
+  ../../<this pack>/exemplars/<journal>/<slug>.md                  # extracted style text (in repo)
 ```
+
+- **PDFs** -> the shared HAIToolLib asset root, `_WorkSpace/HAIToolLib/1-ExemplarLib/utd-is/<journal>/`.
+  Local only, never committed. See `_WorkSpace/HAIToolLib/README.md` for the convention.
+- **Extracted style text** (`<slug>.md`: abstract + contribution paragraph + a few
+  Theory/Model and Discussion paragraphs) -> the journal subfolder *here* in the pack.
+  Small, durable, version-controlled; this is what survives if the PDF is gone.
+- The distilled patterns themselves live in `../style-profile.md` (the real payload).
+
+Journals: `misq/` (MIS Quarterly), `isr/` (Information Systems Research),
+`ms-is/` (Management Science, IS department).
 
 ## How to add
 
-- Drop a PDF into the journal subfolder: `exemplars/<journal>/<slug>.pdf`
-  (e.g. `exemplars/misq/venkatesh-2003-misq-utaut.pdf`,
-  `exemplars/isr/author-year-isr-did-platform.pdf`,
-  `exemplars/ms-is/author-2022-mnsc-platform-pricing.pdf`).
-- Or store extracted text: `exemplars/<journal>/<slug>.md` (the abstract +
-  contribution paragraph + a few Theory/Model and Discussion paragraphs are enough to
-  capture style).
-- Prefer open-access or author-provided PDFs.
+1. Put the PDF at `_WorkSpace/HAIToolLib/1-ExemplarLib/utd-is/<journal>/<slug>.pdf`
+   (e.g. `.../misq/venkatesh-2003-misq-utaut.pdf`). Prefer open-access or
+   author-provided copies.
+2. Distill its style into `../style-profile.md` (tag by journal), and optionally
+   drop the extracted text at `exemplars/<journal>/<slug>.md` for future re-mining.
 
 ## What to capture per exemplar (feeds `../style-profile.md`)
 
@@ -56,9 +61,10 @@ exemplars/
 
 ## Status
 
-Seeded 2026-06-24 from `Paper-Personality2Opioid-MISQ2026/0-extra/sample-paper/`:
+Seeded 2026-06-24 from `Paper-Personality2Opioid-MISQ2026/0-extra/sample-paper/`.
+PDFs stored locally under `_WorkSpace/HAIToolLib/1-ExemplarLib/utd-is/` (gitignored):
 
-| stored file | paper | journal |
+| stored file (under 1-ExemplarLib/utd-is/) | paper | journal |
 |---|---|---|
 | `misq/liu-2021-misq-inferred-personality-review-helpfulness.pdf` | Liu, Li & Xu (2021), *Assessing the Unacquainted* | MISQ |
 | `isr/bao-bardhan-2021-isr-aco-healthit-quality-efficiency.pdf` | Bao & Bardhan (2021), *ACO Performance & Health IT* | ISR |
@@ -71,10 +77,11 @@ Recurring style patterns distilled into `../style-profile.md` (see "Mined from
 
 The Gao & Agarwal discovery surfaced 7 strong exemplar candidates (full corpus +
 DOIs in `../references/README.md`). PDFs are paywalled, so they are NOT yet stored;
-obtain an author/library/open-access copy and drop each at the target path, then
-distill its style into `../style-profile.md` (tag by journal).
+obtain an author/library/open-access copy and drop each at the target path (under
+`_WorkSpace/HAIToolLib/1-ExemplarLib/utd-is/`), then distill its style into
+`../style-profile.md` (tag by journal).
 
-| target path | paper | DOI | why fetch |
+| target path (under 1-ExemplarLib/utd-is/) | paper | DOI | why fetch |
 |---|---|---|---|
 | `misq/gao-2015-misq-vocal-minority-silent-majority.pdf` | Gao, Greenwood, McCullough & Agarwal (2015), MISQ | 10.25300/MISQ/2015/39.3.03 | the closest MISQ anchor: validity/representativeness of online physician ratings |
 | `misq/goh-2016-misq-online-health-community-social-value.pdf` | Goh, Gao & Agarwal (2016), MISQ | 10.25300/MISQ/2016/40.1.11 | MISQ digital-health "social value" theory-forward contribution |
