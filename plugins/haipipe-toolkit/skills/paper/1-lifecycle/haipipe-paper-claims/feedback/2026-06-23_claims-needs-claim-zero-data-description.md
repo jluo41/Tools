@@ -3,6 +3,8 @@ date: 2026-06-23
 status: open
 source: user
 scope: haipipe-paper-claims / 2-claims template
+updated: 2026-06-24
+occurrences: 2
 ---
 
 # Claims should start with Claim 0: dataset description
@@ -30,3 +32,6 @@ Fix: add to the haipipe-paper-claims template:
 - C0 (data description) as a required claim row before H1
 - The claims skill should check: does a data description exist?
 - The display skill should link: is there a Table 1 / dataset overview?
+
+## Recurrences
+- 2026-06-24 (digest, Display-for-Opioid-JAMA): "another think for the claim is what we should have a RQ0 and C0, what is the dataset you used, right? and what is their description, do you want to add this to the tex and update the skills accordingly?"

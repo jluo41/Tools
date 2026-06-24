@@ -131,7 +131,8 @@ knowledge accrues. (Canonical verb `deposit`; legacy alias `return`.)
 /haipipe-probe status [<probe>]         render status panel
 /haipipe-probe link <artifact>          alias: gather link in active console
 /haipipe-probe call <kind> <need>       alias: gather call task|discovery
-/haipipe-probe feedback "<text>"        capture skill feedback to feedback/ (fix later); `feedback list` shows open items
+/haipipe-probe feedback "<text>"        capture skill feedback (MERGE-OR-CREATE), routed to agents/ (agent behavior) or orchestrator (everything else); `feedback list [unit]` / `feedback move <file> <unit>`
+/haipipe-probe digest ["<session-name|id>"] [--dry-run]  digest a session (CURRENT, or a named/id'd PAST session): harvest feedback, dedup, confirm-gate, route to inboxes
 /haipipe-probe "<free text>"            route through active Probe Console if present
 ```
 
@@ -168,10 +169,18 @@ Legacy verbs (`design`/`bridge`/`harvest`/`dispatch`/`post`/`resume`/`review`/
 `file`) have no separate files: the router maps them to the v4 procedures above
 via the alias table in Commands, then reads that procedure.
 
-Utility verb (not a lifecycle step):
+Utility verbs (not lifecycle steps):
 
 ```text
-fn/feedback.md   capture skill feedback into feedback/ ; `feedback list` reviews open items
+fn/feedback.md   capture skill feedback, routed at capture to the unit it concerns
+                 (agents/feedback/ for agent behavior, else the orchestrator
+                 fallback haipipe-probe/feedback/); `feedback list [unit]` aggregates
+                 across both inboxes; `feedback move <file> <unit>` re-routes
+fn/digest.md     digest a session (CURRENT, or a named/id'd PAST session run from
+                 a fresh context): scan the transcript for skill feedback, distill
+                 + dedup discrete items, and after a MANDATORY confirm gate route
+                 each through fn/feedback.md (merge-or-create). The bulk harvester
+                 for feedback. Never auto-files.
 ```
 
 When implementing or revising a step, use the `Probe Lifecycle Map`:
@@ -259,7 +268,37 @@ Route arguments in this order:
 0. Resolve legacy-verb aliases to their v4 verb first (Commands alias table):
    design->plan, bridge/dispatch->gather, harvest->read, post/resume->read+judge,
    review->judge, file->gather/plan. There are no fn/<legacy>.md files.
-1. If first token is a v4 lifecycle verb (or the utility verb `feedback`), read fn/<verb>.md and execute that procedure.
+1. If first token is a v4 lifecycle verb, read fn/<verb>.md and execute that procedure.
+1b. If first token is the utility verb `feedback`, read fn/feedback.md and run it
+    inline (route it here before probe-ref resolution). Three sub-modes:
+      - capture "<text>": infer the target UNIT -- agents (agent behavior) vs
+        the orchestrator fallback (everything else). CROSS-CUTTING GUARD FIRST
+        (a rule true across the whole lifecycle, or a named cross-cutting concern
+        -> orchestrator fallback, overriding any agent keyword); else an agent
+        keyword in the text -> agents/feedback/; else the active context from
+        .probe-console.yaml; else orchestrator fallback. Write one dated file
+        into THAT unit's feedback/ folder (create it + README if missing --
+        agents/feedback/ is created lazily on the first agent item), then confirm
+        where it landed + how it matched.
+      - `feedback list [unit]`: aggregate open items across BOTH feedback/ inboxes
+        under the probe skill root (agents + orchestrator), grouped by unit.
+      - `feedback move <file> <unit>`: re-route a mis-filed item (unit = agents |
+        orchestrator).
+    Capture is MERGE-OR-CREATE: a same-topic complaint updates the existing inbox
+    file (append a dated recurrence, preserve prior wording verbatim, reopen if it
+    was fixed) instead of spawning a duplicate, so inboxes stay self-limiting. No
+    fix on the spot.
+1c. If first token is the utility verb `digest`, read fn/digest.md and run it
+    inline (route it here before probe-ref resolution). RESOLVE THE SESSION FIRST:
+    no arg -> the CURRENT session; a "<session-name|id>" arg -> that PAST session's
+    transcript .jsonl (resolve per fn/digest.md "Resolving the target session", run
+    from a fresh session for clean context). Then scan that session's transcript for
+    tool/skill feedback, distill discrete items, dedup (within-batch + against
+    inboxes via the same-topic test), PRESENT for a MANDATORY confirm gate, then
+    route each approved item through the feedback capture (fn/feedback.md
+    merge-or-create) in BATCH mode (no per-item re-confirm). Honor --dry-run
+    (present only, file nothing). Flag global behavioral prefs for /remember rather
+    than filing them. Never auto-files.
 2. If first token resolves to a probe, open fn/console.md for that probe.
 3. If active console exists and input is free text, route via fn/console.md.
 4. If no active console exists and input is free text, route to fn/plan.md.
@@ -335,6 +374,46 @@ a separate workflow.
 
 ---
 
+## Feedback
+
+`/haipipe-probe feedback "<text>"` captures a complaint / confusion / wish about
+THIS skill (one dated file per item, `status: open`) to fix in a later revision
+pass; it is feedback about the TOOL, not a probe verdict. Probe is the FLAT case:
+capture-time routing sends each item to one of just two units. Feedback about
+agent BEHAVIOR (orchestrator / creator / reviewer dispatch, monolithic collapse,
+nested-agent hangs, creator/reviewer loop skipped, a reviewer's verdict enum,
+broken independence) goes to `agents/feedback/`; everything else -- the lifecycle
+procedures (Plan/Gather/Read/Judge/Deposit), the console/dashboard, the stage
+strip, the return tail, probe id/naming/granularity, the venue editor-chair test,
+compile-tex, any rule true across the whole lifecycle, or anything unclassifiable
+-- falls back to the orchestrator's own `haipipe-probe/feedback/`. A CROSS-CUTTING
+GUARD runs first (a lifecycle-wide rule or named cross-cutting concern -> fallback,
+overriding any agent keyword). The folder IS the record of which unit it concerns;
+there is no `skill:` field.
+
+`/haipipe-probe feedback list [unit]` aggregates open items across BOTH inboxes
+(unit = agents | orchestrator restricts to one); `/haipipe-probe feedback move
+<file> <unit>` re-routes a mis-filed item. Capture is MERGE-OR-CREATE: a same-topic
+complaint updates the existing file (append dated recurrence, preserve prior
+wording verbatim, reopen if fixed) so inboxes stay self-limiting. Route a
+`feedback` first-token here before probe-ref resolution. Full conventions:
+`fn/feedback.md` (agent-keyword->unit map, inbox paths, cross-cutting guard,
+merge-or-create, schema); fallback inbox: `feedback/README.md`; agents inbox:
+`../agents/feedback/README.md`.
+
+`/haipipe-probe digest ["<session-name|id>"] [--dry-run]` is the bulk harvester:
+it digests a session -- the CURRENT one, or a named/id'd PAST session run from a
+fresh context -- scanning the transcript for feedback you gave conversationally,
+distilling discrete items, deduping them, and (after a mandatory confirm gate)
+routing each through the same capture (in BATCH mode, no per-item re-confirm). It
+files only skill-feedback; global behavioral preferences are flagged for
+`/remember`, not filed. Route a `digest` first-token to it before probe-ref
+resolution; resolve the target session first. Full conventions: `fn/feedback.md` (agent-keyword->unit map, inbox
+paths, cross-cutting guard, merge-or-create, schema) and `fn/digest.md` (session
+harvest).
+
+---
+
 ## Return Contract
 
 Every procedure returns a short tail:
@@ -364,3 +443,11 @@ so the strip surfaces drift the stored `probe.yaml` would hide. The strip closes
 EVERY reply in the session, not just the first console open. (`fn/console.md`
 step 8 also pastes it as the `status.md` panel header; both placements use this
 same helper output.)
+
+## Behavioral Preferences (portable)
+
+ALWAYS read and honor `PREFERENCES.md` in this skill's own folder: git-tracked
+global behavioral preferences (e.g. communicate via ASCII diagrams) that survive a
+machine change, unlike the machine-local `~/.claude` auto-memory. Global behavioral
+prefs are kept in sync across all orchestrators by `/haipipe-paper digest`'s
+global-pref fan-out (merge-or-create; one entry per topic).

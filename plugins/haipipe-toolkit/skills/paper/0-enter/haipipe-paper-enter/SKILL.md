@@ -193,7 +193,7 @@ sh "$CLAUDE_SKILL_DIR/../../ref/stage-strip.sh" <paper-root>
 ```
 
 It prints one line driven by `STATUS.md current_layer`, e.g.
-`seed ✅  pitch ✅  …  →  write/edit 🔥  →  review ⬜`. This strip appears
+`seed ✅  pitch ✅  …  →  write/edit 🚀  →  review ⬜`. This strip appears
 twice: once near the top (orientation) and once as the VERY LAST LINE of the
 reply (closing every reply in the session, not just the first dashboard; see the
 orchestrator's "Stage Strip" rule).
@@ -221,7 +221,7 @@ If no pitch exists, print: "Pitch not yet written — run /haipipe-paper pitch."
 
 ## 📊 Stage Progress
 
-seed ✅  pitch ✅  claims ✅  narrative 🔥  display ⬜  minimap ⬜  →  write/edit ⬜  →  review ⬜
+seed ✅  pitch ✅  claims ✅  narrative 🚀  display ⬜  minimap ⬜  →  write/edit ⬜  →  review ⬜
 
 ## 🔎 Current State
 
@@ -257,7 +257,7 @@ seed ✅  pitch ✅  claims ✅  narrative 🔥  display ⬜  minimap ⬜  →  
 
 (return-contract tail here)
 
-seed ✅  pitch ✅  claims ✅  narrative 🔥  display ⬜  minimap ⬜  →  write/edit ⬜  →  review ⬜
+seed ✅  pitch ✅  claims ✅  narrative 🚀  display ⬜  minimap ⬜  →  write/edit ⬜  →  review ⬜
 ```
 
 The stage strip is the VERY LAST line, placed after the return-contract tail.
@@ -339,7 +339,7 @@ paper_root:    <path>
 current_layer: <layer>
 next:          <suggested command>
 
-seed ✅  pitch ✅  claims ✅  narrative 🔥  display ⬜  minimap ⬜  →  write/edit ⬜  →  review ⬜
+seed ✅  pitch ✅  claims ✅  narrative 🚀  display ⬜  minimap ⬜  →  write/edit ⬜  →  review ⬜
 ```
 
 The `status` field uses three values: `ok` (dashboard rendered, session ready),

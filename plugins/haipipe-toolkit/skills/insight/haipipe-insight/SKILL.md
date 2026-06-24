@@ -166,6 +166,12 @@ inspect) or **verb-based** (explicit DIKW level).
 # OKF compatibility export
 /haipipe-insight export-okf [project-path]        write derived insights/okf/ bundle
 
+# Skill feedback (capture-time routed to the sub-skill it concerns)
+/haipipe-insight feedback "<text>"               capture skill feedback (merge-or-create), routed to that sub-skill's feedback/
+/haipipe-insight feedback list [skill]           aggregate open items across all feedback/ inboxes
+/haipipe-insight feedback move <file> <skill>    re-route a mis-filed item
+/haipipe-insight digest ["<session-name|id>"] [--dry-run]   digest a session (CURRENT, or a PAST one by name/id from a fresh session): harvest feedback, dedup, confirm-gate, route to inboxes
+
 # Natural language
 /haipipe-insight "<natural language>"            infer, dispatch
 
@@ -263,6 +269,17 @@ Step 1: Detect AUTO_MODE. Same contract as task: `--auto` in args, `CLAUDE_AUTO_
 
 Step 2: Resolve scope. Cascade (highest to lowest confidence):
 
+  (0) FEEDBACK — first positional is `feedback` → handle inline per `fn/feedback.md`
+      (this orchestrator runs it directly; see Step 4 feedback branch). Check this
+      BEFORE the verb/path cascade so a `feedback` token is never mis-read as a
+      path or DIKW verb.
+
+  (0b) DIGEST — first positional is `digest` → target = digest (utility verb;
+      session harvest). Handle inline per `fn/digest.md` (this orchestrator runs
+      it directly; see Step 4 digest branch). Check this alongside FEEDBACK,
+      BEFORE the verb/path cascade, so a `digest` token is never mis-read as a
+      path or DIKW verb.
+
   (1) REVIEW/APPLY — first positional is `review` or `collect`
       → dispatch to `haipipe-insight-review` (review mode). First positional
       `apply` → dispatch to `haipipe-insight-review` (apply mode); there is no
@@ -314,6 +331,31 @@ Step 3: Resolve project root.
   Infer from the source path (walk up to the `examples/Proj*/` ancestor) or from `--project` arg or from cwd.
 
 Step 4: Dispatch to specialist:
+  - feedback → Read `fn/feedback.md` and run it inline. Three sub-modes:
+      - capture "<text>": infer the target sub-skill (CROSS-CUTTING GUARD first —
+        a rule true across all DIKW layers, or a named cross-cutting concern, goes
+        to the orchestrator fallback, overriding any keyword; else keyword in text;
+        else active layer from .insight-console.yaml; else orchestrator fallback),
+        write one dated file into THAT skill's feedback/ folder (create it + README
+        if missing — inboxes are lazy-created on first capture), then confirm where
+        it landed + how it matched.
+      - `feedback list [skill]`: aggregate open items across ALL feedback/ inboxes
+        under the insight LAYER ROOT (`skills/insight/`, NOT `skills/insight/haipipe-insight`),
+        grouped by skill.
+      - `feedback move <file> <skill>`: re-route a mis-filed item.
+    Capture is MERGE-OR-CREATE: a same-topic complaint updates the existing inbox
+    file (append a dated recurrence, preserve prior wording verbatim, reopen if it
+    was fixed) instead of spawning a duplicate, so inboxes stay self-limiting.
+    This orchestrator handles feedback directly; no fix attempted on the spot.
+  - digest → Read `fn/digest.md` and run it inline: FIRST resolve which session to
+    digest (no arg = CURRENT session; `"<id>"`/`"<name>"` = a PAST session's
+    transcript .jsonl under ~/.claude/projects, run from a fresh session — extract
+    its human turns first), then scan that transcript for tool/skill feedback,
+    distill discrete items, dedup (within-batch + against inboxes via the
+    same-topic test), PRESENT for a mandatory confirm gate, then route each
+    approved item through the feedback capture (merge-or-create). Honor --dry-run
+    (present only, file nothing). Flag global behavioral prefs for /remember rather
+    than filing them. Never auto-files.
   - review scope → `Skill("haipipe-insight-review", args="review <scope>")`
   - apply review → `Skill("haipipe-insight-review", args="apply <INSIGHT_REVIEW.yaml>")`
   - explicit D/I/K/W verb → `Skill("haipipe-insight-<layer>", args="...")`
@@ -531,7 +573,34 @@ edits source cards under D/I/K/W.
 ## Feedback
 
 `/haipipe-insight feedback "<text>"` captures a complaint / confusion / wish about THIS
-skill into `feedback/` (one dated file per item, `status: open`) to fix in a
-later revision pass. `/haipipe-insight feedback list` shows the open items. This is
-feedback about the tool, not the work it produces. Route a `feedback` first-token
-here before other parsing. Full convention: `feedback/README.md`.
+skill (one dated file per item, `status: open`) to fix in a later revision pass.
+Capture-time routing: the complaint is inferred to the specific sub-skill it
+concerns and written into THAT sub-skill's `feedback/` folder (e.g. a K-card gripe
+-> `haipipe-insight-knowledge/feedback/`); cross-cutting or unclassifiable items
+(DIKW boundaries, insight-md schema, INDEX.md, the id<->layer graph) fall back to
+the orchestrator's own `feedback/`. The folder IS the record of which skill it
+concerns. Capture is MERGE-OR-CREATE: a same-topic complaint updates the existing
+file (append dated recurrence, preserve prior wording verbatim, reopen if fixed)
+so inboxes stay self-limiting. `/haipipe-insight feedback list [skill]` aggregates
+open items across ALL inboxes under the insight layer root;
+`/haipipe-insight feedback move <file> <skill>` re-routes a mis-filed item. This is
+feedback about the tool, not the cards it produces. Route a `feedback` first-token
+here before other parsing.
+
+`/haipipe-insight digest ["<session-name|id>"] [--dry-run]` is the bulk harvester:
+it digests a session — the CURRENT one with no arg, or a PAST session named/id'd
+as an argument (run from a fresh session for uncontaminated judgment) — scanning
+the transcript for feedback you gave conversationally, distilling discrete items,
+deduping them, and (after a mandatory confirm gate) routing each through the same
+capture. It files only skill-feedback; global behavioral preferences are flagged
+for `/remember`, not filed. Route a `digest` first-token to it. Full conventions:
+`fn/feedback.md` (keyword->skill map, inbox paths, merge-or-create, schema) and
+`fn/digest.md` (session resolution + harvest); fallback inbox: `feedback/README.md`.
+
+## Behavioral Preferences (portable)
+
+ALWAYS read and honor `PREFERENCES.md` in this skill's own folder: git-tracked
+global behavioral preferences (e.g. communicate via ASCII diagrams) that survive a
+machine change, unlike the machine-local `~/.claude` auto-memory. Global behavioral
+prefs are kept in sync across all orchestrators by `/haipipe-paper digest`'s
+global-pref fan-out (merge-or-create; one entry per topic).

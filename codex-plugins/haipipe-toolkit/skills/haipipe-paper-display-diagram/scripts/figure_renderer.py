@@ -18,7 +18,7 @@ import os
 import re
 import sys
 from pathlib import Path
-from xml.etree.ElementTree import Element, SubElement, tostring
+from xml.etree.ElementTree import Element, SubElement, tostring, fromstring
 from xml.dom.minidom import parseString
 
 
@@ -56,6 +56,7 @@ DEFAULT_EDGE = {
     "color": "#555555",
     "thickness": 2,
     "curve": False,
+    "ortho": False,
 }
 
 
@@ -155,13 +156,264 @@ def clip_to_shape(cx, cy, target_x, target_y, w, h, shape):
         return cx + dx * scale, cy + dy * scale
 
 
+def ortho_route(src, dst):
+    """Right-angle (elbow) connector between two node boxes.
+
+    Picks the routing axis by edge-to-edge clearance (not center distance) so
+    that wide boxes do not produce backtracking jogs: route horizontally when
+    the horizontal gap is larger, vertically otherwise. Exits/enters from the
+    side midpoint facing the bend. Returns a deduped list of (x, y) points.
+    """
+    sxc, syc, sw, sh = src["x"], src["y"], src["width"], src["height"]
+    dxc, dyc, dw, dh = dst["x"], dst["y"], dst["width"], dst["height"]
+    ddx, ddy = dxc - sxc, dyc - syc
+    gap_x = abs(ddx) - (sw + dw) / 2
+    gap_y = abs(ddy) - (sh + dh) / 2
+    if gap_x >= gap_y:  # horizontal-dominant: exit/enter on left|right sides
+        sgn = 1 if ddx >= 0 else -1
+        ex, ey = sxc + sgn * sw / 2, syc
+        ix, iy = dxc - sgn * dw / 2, dyc
+        mx = (ex + ix) / 2
+        pts = [(ex, ey), (mx, ey), (mx, iy), (ix, iy)]
+    else:               # vertical-dominant: exit/enter on top|bottom sides
+        sgn = 1 if ddy >= 0 else -1
+        ex, ey = sxc, syc + sgn * sh / 2
+        ix, iy = dxc, dyc - sgn * dh / 2
+        my = (ey + iy) / 2
+        pts = [(ex, ey), (ex, my), (ix, my), (ix, iy)]
+    out = [pts[0]]
+    for p in pts[1:]:
+        if abs(p[0] - out[-1][0]) > 0.01 or abs(p[1] - out[-1][1]) > 0.01:
+            out.append(p)
+    return out
+
+
+# ============================================================
+# Icon glyphs — local icon library (Lucide) with built-in fallback
+# ============================================================
+#
+# Primary source: a repo-local, OFFLINE icon library at _WorkSpace/0-IconLib
+# (Lucide icons, viewBox 0 0 24 24, stroke=currentColor, fill=none). For a node's
+# `icon` glyph name, the renderer reads the mapped local SVG, strips the <svg>
+# wrapper, recolors + scales the inner art into the node's top-left box. If the lib
+# (or a given glyph) is unavailable, it falls back to the built-in hand-drawn
+# glyphs below, so the renderer still works for papers without a lib.
+#
+# Render-time is offline: only local files under 0-IconLib are read; the library is
+# populated by a one-time download (see _WorkSpace/0-IconLib/README.md).
+
+import xml.etree.ElementTree as _ET  # noqa: E402  (used for namespace-tolerant tag matching)
+
+
+def _draw_builtin_icon(parent, name, gx, gy, size, color):
+    """Draw a simple line-art glyph inside the box [gx,gy , gx+size,gy+size].
+
+    Stroke-only, single color, no fill -> crisp at any scale and grayscale-safe.
+    Used as the offline fallback when the icon library is unavailable.
+    """
+    s = size
+    sw = max(1.2, round(s * 0.09, 2))
+    base = {"stroke": color, "fill": "none", "stroke-width": str(sw),
+            "stroke-linecap": "round", "stroke-linejoin": "round"}
+    cx, cy = gx + s / 2, gy + s / 2
+
+    if name == "clinician":            # head + shoulders (a person)
+        SubElement(parent, "circle", {**base, "cx": f"{cx:.1f}",
+                   "cy": f"{gy + s * 0.30:.1f}", "r": f"{s * 0.17:.1f}"})
+        SubElement(parent, "path", {**base, "d":
+                   f"M {gx + s * 0.20:.1f},{gy + s * 0.88:.1f} "
+                   f"Q {cx:.1f},{gy + s * 0.46:.1f} {gx + s * 0.80:.1f},{gy + s * 0.88:.1f}"})
+    elif name == "star":               # 5-point star (reputation / rating)
+        pts = []
+        for k in range(10):
+            ang = -math.pi / 2 + k * math.pi / 5
+            r = s * 0.46 if k % 2 == 0 else s * 0.19
+            pts.append(f"{cx + r * math.cos(ang):.1f},{cy + r * math.sin(ang):.1f}")
+        SubElement(parent, "polygon", {**base, "points": " ".join(pts)})
+    elif name == "pill":               # capsule + split line (prescribing / dose)
+        g = SubElement(parent, "g", {"transform": f"rotate(-40 {cx:.1f} {cy:.1f})"})
+        w, h = s * 0.92, s * 0.42
+        SubElement(g, "rect", {**base, "x": f"{cx - w / 2:.1f}", "y": f"{cy - h / 2:.1f}",
+                   "width": f"{w:.1f}", "height": f"{h:.1f}", "rx": f"{h / 2:.1f}"})
+        SubElement(g, "line", {**base, "x1": f"{cx:.1f}", "y1": f"{cy - h / 2:.1f}",
+                   "x2": f"{cx:.1f}", "y2": f"{cy + h / 2:.1f}"})
+    elif name in ("clipboard", "doc"):  # clipboard with rule lines (controls)
+        bx, by, bw, bh = gx + s * 0.20, gy + s * 0.18, s * 0.60, s * 0.74
+        SubElement(parent, "rect", {**base, "x": f"{bx:.1f}", "y": f"{by:.1f}",
+                   "width": f"{bw:.1f}", "height": f"{bh:.1f}", "rx": "1.5"})
+        SubElement(parent, "rect", {**base, "x": f"{cx - s * 0.12:.1f}",
+                   "y": f"{by - s * 0.09:.1f}", "width": f"{s * 0.24:.1f}",
+                   "height": f"{s * 0.15:.1f}", "rx": "1"})
+        for k in range(3):
+            yy = by + bh * 0.34 + k * bh * 0.22
+            SubElement(parent, "line", {**base, "x1": f"{bx + s * 0.14:.1f}",
+                       "y1": f"{yy:.1f}", "x2": f"{bx + bw - s * 0.14:.1f}", "y2": f"{yy:.1f}"})
+    elif name in ("fork", "gauge"):    # one line splitting into two (discretion / latitude)
+        SubElement(parent, "path", {**base, "d":
+                   f"M {gx + s * 0.15:.1f},{cy:.1f} L {cx:.1f},{cy:.1f} "
+                   f"M {cx:.1f},{cy:.1f} L {gx + s * 0.85:.1f},{gy + s * 0.20:.1f} "
+                   f"M {cx:.1f},{cy:.1f} L {gx + s * 0.85:.1f},{gy + s * 0.80:.1f}"})
+
+
+# Glyph names the built-in fallback can draw.
+_BUILTIN_ICON_SVG = {"clinician", "star", "pill", "clipboard", "fork", "gauge", "doc"}
+
+
+# ----- Local icon library resolution (cached, offline) -----
+
+_ICON_LIB_DIR = None          # resolved Path to a 0-IconLib dir (or False if none)
+_ICON_MANIFEST = None         # parsed manifest.json: glyph -> relative svg path
+_ICON_INNER_CACHE = {}        # glyph name -> inner svg string (or None if missing)
+
+
+def _find_icon_lib(spec_dir=None):
+    """Resolve the icon library directory, offline. Order:
+
+    1. env HAIPIPE_ICON_LIB (an absolute path to a 0-IconLib dir);
+    2. walk UP from the spec file's dir for a `_WorkSpace/0-IconLib`;
+    3. walk UP from CWD for a `_WorkSpace/0-IconLib`.
+
+    Returns a Path, or None if not found. Caches the result for the process.
+    """
+    global _ICON_LIB_DIR
+    if _ICON_LIB_DIR is not None:
+        return _ICON_LIB_DIR or None
+
+    def _is_lib(p):
+        return p.is_dir() and (p / "manifest.json").is_file()
+
+    # 1. Explicit env override
+    env = os.environ.get("HAIPIPE_ICON_LIB")
+    if env:
+        p = Path(env)
+        if _is_lib(p):
+            _ICON_LIB_DIR = p
+            return p
+
+    # 2 & 3. Walk up from spec dir, then from CWD, for _WorkSpace/0-IconLib
+    starts = []
+    if spec_dir:
+        starts.append(Path(spec_dir).resolve())
+    starts.append(Path.cwd().resolve())
+    for start in starts:
+        d = start
+        while True:
+            cand = d / "_WorkSpace" / "0-IconLib"
+            if _is_lib(cand):
+                _ICON_LIB_DIR = cand
+                return cand
+            if d.parent == d:
+                break
+            d = d.parent
+
+    _ICON_LIB_DIR = False  # negative cache
+    return None
+
+
+def _load_manifest(spec_dir=None):
+    """Load and cache the icon library's manifest.json (glyph -> rel svg path)."""
+    global _ICON_MANIFEST
+    if _ICON_MANIFEST is not None:
+        return _ICON_MANIFEST
+    lib = _find_icon_lib(spec_dir)
+    if not lib:
+        _ICON_MANIFEST = {}
+        return _ICON_MANIFEST
+    try:
+        with open(lib / "manifest.json", encoding="utf-8") as f:
+            data = json.load(f)
+        _ICON_MANIFEST = data if isinstance(data, dict) else {}
+    except Exception:
+        _ICON_MANIFEST = {}
+    return _ICON_MANIFEST
+
+
+def _inner_svg_for(name, spec_dir=None):
+    """Return the inner SVG (children of <svg>) for a glyph name from the lib.
+
+    Reads the mapped local file, strips the <svg ...> wrapper, and caches per name.
+    Returns None if the lib, the manifest entry, or the file is unavailable.
+    """
+    if name in _ICON_INNER_CACHE:
+        return _ICON_INNER_CACHE[name]
+    lib = _find_icon_lib(spec_dir)
+    manifest = _load_manifest(spec_dir)
+    inner = None
+    rel = manifest.get(name) if isinstance(manifest, dict) else None
+    if lib and rel:
+        try:
+            with open(lib / rel, encoding="utf-8") as f:
+                raw = f.read()
+            # Strip the <svg ...> ... </svg> wrapper to get inner content only.
+            m = re.search(r"<svg\b[^>]*>(.*)</svg\s*>", raw, flags=re.DOTALL | re.IGNORECASE)
+            inner = m.group(1).strip() if m else None
+        except Exception:
+            inner = None
+    _ICON_INNER_CACHE[name] = inner
+    return inner
+
+
+def _strip_ns(tag):
+    """Drop any XML namespace prefix from a tag (e.g. '{ns}path' -> 'path')."""
+    return tag.split("}", 1)[1] if "}" in tag else tag
+
+
+def draw_icon(parent, name, gx, gy, size, color, spec_dir=None):
+    """Render glyph `name` into the box [gx,gy , gx+size,gy+size].
+
+    Library path (primary): embed the local Lucide icon's inner SVG, scaled from its
+    24px grid and recolored to `color` (stroke-only). Offline — reads local files only.
+    Fallback: the built-in hand-drawn glyph, when the lib or glyph is unavailable.
+    """
+    inner = _inner_svg_for(name, spec_dir)
+    if inner:
+        scale = size / 24.0
+        # Normalize so the on-screen stroke stays ~2px regardless of icon size.
+        sw = round(2.0 * 24.0 / size, 2) if size else 2.0
+        g = SubElement(parent, "g", {
+            "transform": f"translate({gx},{gy}) scale({scale})",
+            "stroke": color,
+            "fill": "none",
+            "stroke-width": str(sw),
+            "stroke-linecap": "round",
+            "stroke-linejoin": "round",
+        })
+        try:
+            wrapped = fromstring("<g>" + inner + "</g>")
+            for child in list(wrapped):
+                child.tag = _strip_ns(child.tag)
+                g.append(child)
+            return
+        except Exception:
+            # Parse failure -> remove the empty group and fall through to builtin.
+            parent.remove(g)
+
+    # Fallback: built-in hand-drawn glyph.
+    if name in _BUILTIN_ICON_SVG:
+        _draw_builtin_icon(parent, name, gx, gy, size, color)
+
+
+def _icon_names(spec_dir=None):
+    """Union of icon library manifest keys and built-in glyph names."""
+    return set(_load_manifest(spec_dir).keys()) | set(_BUILTIN_ICON_SVG)
+
+
+# Default name set (no spec context): manifest (CWD-resolved) ∪ builtins.
+ICON_NAMES = _icon_names()
+
+
 # ============================================================
 # Validation
 # ============================================================
 
-def validate_spec(spec: dict) -> list:
-    """Validate FigureSpec, return list of issues."""
+def validate_spec(spec: dict, spec_dir=None) -> list:
+    """Validate FigureSpec, return list of issues.
+
+    spec_dir (optional): the FigureSpec file's directory, used to resolve the local
+    icon library so unknown-icon warnings reflect the lib available to the renderer.
+    """
     issues = []
+    icon_names = _icon_names(spec_dir)
 
     # Top-level must be a dict
     if not isinstance(spec, dict):
@@ -243,6 +495,9 @@ def validate_spec(spec: dict) -> list:
         shape = node.get("shape", "rounded")
         if shape not in ALLOWED_SHAPES:
             issues.append(f"WARN: node '{nid}' unknown shape '{shape}', will use 'rounded'")
+        icon = node.get("icon")
+        if icon is not None and icon not in icon_names:
+            issues.append(f"WARN: node '{nid}' unknown icon '{icon}', will be skipped")
 
     for i, edge in enumerate(spec.get("edges", [])):
         if not isinstance(edge, dict):
@@ -337,8 +592,13 @@ def validate_spec(spec: dict) -> list:
 # SVG Renderer
 # ============================================================
 
-def render_svg(spec: dict) -> str:
-    """Render FigureSpec to SVG string."""
+def render_svg(spec: dict, spec_dir=None) -> str:
+    """Render FigureSpec to SVG string.
+
+    spec_dir (optional): the FigureSpec file's directory, used to resolve the local
+    icon library (offline) relative to the spec rather than only the CWD.
+    """
+    icon_names = _icon_names(spec_dir)
     canvas = spec.get("canvas", {})
     width = canvas.get("width", 800)
     height = canvas.get("height", 400)
@@ -476,7 +736,11 @@ def render_svg(spec: dict) -> str:
             dx, dy = clip_to_shape(dst["x"], dst["y"], src["x"], src["y"],
                                    dst["width"], dst["height"], dst.get("shape", "rounded"))
 
-            if e.get("curve"):
+            if e.get("ortho"):
+                # Right-angle elbow routing (Manhattan); ignores the diagonal clip
+                pts = ortho_route(src, dst)
+                path_d = "M " + " L ".join(f"{px:.1f},{py:.1f}" for px, py in pts)
+            elif e.get("curve"):
                 # Quadratic bezier with midpoint offset
                 mx = (sx + dx) / 2
                 my = (sy + dy) / 2
@@ -509,6 +773,14 @@ def render_svg(spec: dict) -> str:
                 _, top_pt = clip_to_shape(src["x"], src["y"], src["x"], src["y"] - 100,
                                           src["width"], src["height"], src_shape)
                 ly = top_pt - SELF_LOOP_RADIUS * 1.2
+            elif e.get("ortho"):
+                pts = ortho_route(src, dst)
+                if len(pts) >= 4:        # label on the middle jog segment
+                    lx = (pts[1][0] + pts[2][0]) / 2
+                    ly = (pts[1][1] + pts[2][1]) / 2 - 8
+                else:
+                    lx = (pts[0][0] + pts[-1][0]) / 2
+                    ly = (pts[0][1] + pts[-1][1]) / 2 - 8
             elif e.get("curve"):
                 # Bezier midpoint at t=0.5: B(0.5) = (1-t)^2*P0 + 2(1-t)t*P1 + t^2*P2
                 mx_ctrl = (sx + dx) / 2
@@ -574,6 +846,12 @@ def render_svg(spec: dict) -> str:
                 "fill": fill, "stroke": stroke,
                 "stroke-width": "2", "rx": rx,
             })
+
+        # Per-construct icon (top-left corner, in the box's free left margin)
+        icon = n.get("icon")
+        if icon in icon_names:
+            isize = min(20.0, h * 0.45, w * 0.16)
+            draw_icon(svg, icon, left + 8, top + 8, isize, stroke, spec_dir=spec_dir)
 
         # Main label (supports \n for multi-line)
         fs = n.get("font_size") or base_fs
@@ -688,7 +966,8 @@ FigureSpec JSON Schema:
     "stroke": "#RRGGBB (auto from palette)",
     "text_color": "#RRGGBB (default #333333)",
     "font_size": int (override),
-    "sublabel": "string (smaller text below label)"
+    "sublabel": "string (smaller text below label)",
+    "icon": "glyph name resolved from the local icon library (_WorkSpace/0-IconLib) with a built-in fallback; top-left corner. Lib glyphs: clinician star pill clipboard fork gauge doc users brain database network chart-line shield scale microscope file-check. Built-in fallback glyphs: clinician star pill clipboard fork gauge doc"
   }],
   "edges": [{
     "from": "node_id (required)",
@@ -697,7 +976,8 @@ FigureSpec JSON Schema:
     "style": "solid | dashed | dotted",
     "color": "#RRGGBB (default #555555)",
     "thickness": int (default 2),
-    "curve": bool (default false)
+    "curve": bool (default false — quadratic bezier),
+    "ortho": bool (default false — right-angle elbow connector; overrides curve)
   }],
   "groups": [{
     "id": "string",
@@ -743,9 +1023,10 @@ def main():
         return
 
     if args.command == "validate":
+        spec_dir = str(Path(args.spec_file).resolve().parent)
         with open(args.spec_file, encoding="utf-8") as f:
             spec = json.load(f)
-        issues = validate_spec(spec)
+        issues = validate_spec(spec, spec_dir=spec_dir)
         critical = sum(1 for i in issues if i.startswith("CRITICAL"))
         if not issues:
             print("✅ FigureSpec is valid")
@@ -756,10 +1037,11 @@ def main():
         sys.exit(1 if critical else 0)
 
     if args.command == "render":
+        spec_dir = str(Path(args.spec_file).resolve().parent)
         with open(args.spec_file, encoding="utf-8") as f:
             spec = json.load(f)
 
-        issues = validate_spec(spec)
+        issues = validate_spec(spec, spec_dir=spec_dir)
         critical = [i for i in issues if i.startswith("CRITICAL")]
         if critical:
             print("❌ Cannot render — critical issues:")
@@ -772,7 +1054,7 @@ def main():
             for i in issues:
                 print(f"  {i}")
 
-        svg_content = render_svg(spec)
+        svg_content = render_svg(spec, spec_dir=spec_dir)
 
         # Output path
         if args.output:

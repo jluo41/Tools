@@ -17,8 +17,11 @@
 # Skills are enumerated dynamically from plugins/**/skills/*/SKILL.md, so adding
 # or moving a plugin needs no edits here — just re-run. Anything under legacy/ is
 # intentionally excluded. The link set is OS/machine-specific; gitignore
-# <project>/.claude/skills/ and <project>/.codex/skills/ and regenerate per
-# machine rather than committing it.
+# <project>/.claude/skills/, <project>/.claude/agents/, and
+# <project>/.codex/skills/ and regenerate per machine rather than committing it.
+# (Committing real agent copies into .claude/agents/ makes the "kept, not a
+# symlink" guard below skip them, so they silently drift from Tools — keep the
+# dir gitignored and regenerate, exactly like .claude/skills/.)
 #
 # Sound hooks work on macOS (afplay) and Linux (paplay/aplay).
 

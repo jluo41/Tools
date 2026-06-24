@@ -56,6 +56,33 @@ exemplars/
 
 ## Status
 
-- Empty. Populate by dropping PDFs into the journal subfolders or fetching exemplars,
-  then distill the recurring style patterns into `../style-profile.md` (tag each
-  pattern by journal).
+Seeded 2026-06-24 from `Paper-Personality2Opioid-MISQ2026/0-extra/sample-paper/`:
+
+| stored file | paper | journal |
+|---|---|---|
+| `misq/liu-2021-misq-inferred-personality-review-helpfulness.pdf` | Liu, Li & Xu (2021), *Assessing the Unacquainted* | MISQ |
+| `isr/bao-bardhan-2021-isr-aco-healthit-quality-efficiency.pdf` | Bao & Bardhan (2021), *ACO Performance & Health IT* | ISR |
+| `isr/zhang-2026-isr-physician-reviews-slm-consultation-demand.pdf` | Zhang, Hao, Zhan & Wu (2026), *Physician Reviews & Consultation Demand* | ISR |
+
+Recurring style patterns distilled into `../style-profile.md` (see "Mined from
+`exemplars/`", tagged by journal).
+
+## Fetch-list (exemplar candidates from discovery S01, 2026-06-24)
+
+The Gao & Agarwal discovery surfaced 7 strong exemplar candidates (full corpus +
+DOIs in `../references/README.md`). PDFs are paywalled, so they are NOT yet stored;
+obtain an author/library/open-access copy and drop each at the target path, then
+distill its style into `../style-profile.md` (tag by journal).
+
+| target path | paper | DOI | why fetch |
+|---|---|---|---|
+| `misq/gao-2015-misq-vocal-minority-silent-majority.pdf` | Gao, Greenwood, McCullough & Agarwal (2015), MISQ | 10.25300/MISQ/2015/39.3.03 | the closest MISQ anchor: validity/representativeness of online physician ratings |
+| `misq/goh-2016-misq-online-health-community-social-value.pdf` | Goh, Gao & Agarwal (2016), MISQ | 10.25300/MISQ/2016/40.1.11 | MISQ digital-health "social value" theory-forward contribution |
+| `misq/agarwal-2000-misq-cognitive-absorption.pdf` | Agarwal & Karahanna (2000), MISQ | 10.2307/3250951 | canonical MISQ construct -> belief prose (writing exemplar) |
+| `isr/goh-2011-isr-adaptive-routinization-healthcare-it.pdf` | Goh, Gao & Agarwal (2011), ISR | 10.1287/isre.1110.0365 | ISR health-IT clinician-behavior framing |
+| `ms-is/shukla-2020-mnsc-wom-doctor-appointment-booking.pdf` | Shukla, Gao & Agarwal (2020), Management Science | 10.1287/mnsc.2020.3604 | **fills the empty ms-is slot**; reviews -> behavior identification |
+| `ms-is/wang-2023-mnsc-ai-worker-teaming.pdf` | Wang, Gao & Agarwal (2023), Management Science | 10.1287/mnsc.2021.00588 | MS-IS AI-in-healthcare-work exemplar |
+| `ms-is/angst-2010-mnsc-social-contagion-emr-diffusion.pdf` | Angst, Agarwal, Sambamurthy & Kelley (2010), Management Science | 10.1287/mnsc.1100.1183 | MS-IS adoption/diffusion identification |
+
+Fetching even one of the three `ms-is/` candidates closes the long-standing MS-IS gap
+(no full-text MS-IS exemplar yet). More MISQ theory-forward exemplars also help.

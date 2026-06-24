@@ -71,8 +71,10 @@ Commands
 /haipipe-task <existing-task-group-path>              iterate: full lifecycle on each child task-folder
 /haipipe-task <stage> <existing-task-group-path>      iterate: that stage on each child task-folder
 /haipipe-task task-folder <type> [args...]            scaffold a NEW task-folder via type specialist
-/haipipe-task feedback "<text>"                       capture skill feedback to feedback/ (fix later)
-/haipipe-task feedback list                           list open feedback items
+/haipipe-task feedback "<text>"                       capture skill feedback (merge-or-create), ROUTED to the domain folder it concerns
+/haipipe-task feedback list [unit]                    aggregate open feedback across ALL inboxes (grouped by unit)
+/haipipe-task feedback move <file> <unit>             re-route a mis-filed feedback item
+/haipipe-task digest ["<session-name|id>"] [--dry-run]  digest a session (current, or a PAST one named/id'd, run from fresh): harvest feedback, dedup, confirm-gate, route to inboxes
 ```
 
 For project scaffolding (creating `examples/Proj{...}/`), use `/haipipe-project`.
@@ -185,9 +187,12 @@ Step 0: Read `ref/hierarchy.md` first. It's the conceptual model for the task hi
 Step 1: Detect AUTO_MODE. Any of these flips it on: `--auto` anywhere in args, env var `CLAUDE_AUTO_HANDOFF=1` or `AUTO_MODE=1`, parent skill passed `--auto`. AUTO_MODE changes "ASK" steps into "accept best inference or return blocked"; it never changes what gets written.
 
 Step 2: Resolve scope. Cascade:
-  (0) UTILITY VERB — first positional is `feedback` (route this BEFORE any other parsing; it is NOT a lifecycle scope, so do not continue to Step 3):
-      - `feedback "<text>"` → write one file `feedback/<YYYY-MM-DD>_<slug>.md` with `status: open` per the template in `feedback/README.md`; capture-only, do NOT attempt a fix now; confirm and stop.
-      - `feedback list` → grep `feedback/*.md` for `status: open` and print them newest-first with their `context:`; stop.
+  (0) UTILITY VERB — first positional is `feedback` or `digest` (route this BEFORE any other parsing; neither is a lifecycle scope, so do not continue to Step 3).
+      If first positional is `feedback` → read `fn/feedback.md` and run it inline. Three sub-modes; capture never attempts a fix on the spot:
+      - `feedback "<text>"` → CAPTURE mode. INFER the target domain folder (the routable unit): (0) cross-cutting guard FIRST — a SEMANTIC test "is this a rule true across all task domains/stages, or a named cross-cutting concern? → fallback, overriding any keyword"; (1) else keyword in TEXT → unit (most specific wins); (2) else active task-type / session context; (3) else orchestrator fallback. Resolve the unit → its `<unit>/feedback/` folder (create it + a one-line README LAZILY if missing; do NOT pre-create empty inboxes), then MERGE-OR-CREATE per `fn/feedback.md`: a same-topic complaint UPDATES the existing inbox file (append a dated recurrence, preserve prior wording verbatim, bump occurrences, reopen if it was fixed) instead of spawning a duplicate; else write one dated file `status: open`. Confirm where it landed (MERGED-vs-NEW) + how it matched + the one-line `move` correction. Stop.
+      - `feedback list [unit]` → LIST mode. AGGREGATE across ALL inboxes under the task skill root (`find <task-skill-root> -type d -name feedback`, then grep each for `status: open`), newest-first, GROUPED BY unit; `[unit]` restricts to one inbox. Stop.
+      - `feedback move <file> <unit>` → MOVE mode. Move `<file>` to `<unit>/feedback/` (create target + README if missing); pure file move, no content edit. Stop.
+      Else if first positional is `digest` → read `fn/digest.md` and run it inline. FIRST RESOLVE the target session (no arg → the CURRENT live conversation; a `"<id>"`/`"<session-name>"` arg → that PAST session's `<uuid>.jsonl` under this repo's `~/.claude/projects/` dir — extract its human turns per the "Resolving the target session" bash block; run from a fresh session for clean context). Then: scan that session's transcript for tool/skill feedback, distill discrete items, dedup (within-batch + against inboxes via the same-topic test), PRESENT for a MANDATORY confirm gate, then route each approved item through the feedback capture (merge-or-create, BATCH mode — no per-item re-confirm). Honor `--dry-run` (present only, file nothing). Flag global behavioral prefs for `/remember` rather than filing them. Never auto-files. Stop.
   (1) explicit stage command (`plan` / `build` / `execute` / `report`) as first positional → check the path argument:
       - path is an existing task-folder → scope=single-stage on that folder (Step 3c).
       - path is an existing task-group → scope=task-group-iterate with stages=[that stage] (Step 3d).
@@ -406,7 +411,37 @@ When dispatching to a task-type specialist, the same blast radius applies — sp
 ## Feedback
 
 `/haipipe-task feedback "<text>"` captures a complaint / confusion / wish about THIS
-skill into `feedback/` (one dated file per item, `status: open`) to fix in a
-later revision pass. `/haipipe-task feedback list` shows the open items. This is
-feedback about the tool, not the work it produces. Route a `feedback` first-token
-here before other parsing. Full convention: `feedback/README.md`.
+skill (one dated file per item, `status: open`) to fix in a later revision pass.
+Capture-time routing: the complaint is inferred to the specific DOMAIN FOLDER it
+concerns (the routable unit — `task/` groups its ~40 specialist skills into 9
+domain folders, plus a shared `agents/` folder) and written into THAT unit's
+`feedback/` folder (e.g. a model gripe -> `2_nn/feedback/`); cross-cutting or
+unclassifiable items fall back to the orchestrator's own `feedback/`. The folder
+IS the record of which unit it concerns. `/haipipe-task feedback list [unit]`
+aggregates open items across ALL inboxes; `/haipipe-task feedback move <file> <unit>`
+re-routes a mis-filed item. Capture is MERGE-OR-CREATE: a same-topic complaint
+updates the existing file (append dated recurrence, preserve prior wording
+verbatim, reopen if fixed) so inboxes stay self-limiting. Inboxes are created
+LAZILY on first capture (no empty inboxes are pre-created). This is feedback
+about the tool, not the work it produces. Route a `feedback` first-token here
+before other parsing.
+
+`/haipipe-task digest ["<session-name|id>"] [--dry-run]` is the bulk harvester:
+it digests a session -- the CURRENT one, or a PAST session named/id'd as an
+argument and run from a fresh session (which keeps its judgment uncontaminated by
+the work it reviews) -- scanning the transcript for feedback you gave
+conversationally, distilling discrete items, deduping them, and (after a
+mandatory confirm gate) routing each through the same capture. It files only
+skill-feedback; global behavioral preferences are flagged for `/remember`, not
+filed. Route a `digest` first-token to it (resolve the target session first).
+Full conventions: `fn/feedback.md` (keyword->unit map, inbox paths,
+merge-or-create, schema) and `fn/digest.md` (session harvest + session
+resolution); fallback inbox: `feedback/README.md`.
+
+## Behavioral Preferences (portable)
+
+ALWAYS read and honor `PREFERENCES.md` in this skill's own folder: git-tracked
+global behavioral preferences (e.g. communicate via ASCII diagrams) that survive a
+machine change, unlike the machine-local `~/.claude` auto-memory. Global behavioral
+prefs are kept in sync across all orchestrators by `/haipipe-paper digest`'s
+global-pref fan-out (merge-or-create; one entry per topic).

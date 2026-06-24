@@ -4,3 +4,6 @@ __pycache__/
 
 # diagram-ascii-canvas intermediate renders
 **/_pngs/
+
+# Venue exemplar PDFs — copyrighted published papers, kept local only (public repo)
+plugins/haipipe-toolkit/skills/paper/_venue/**/exemplars/**/*.pdf

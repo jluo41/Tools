@@ -31,12 +31,29 @@
 \newcommand{\lit}{\textcolor{cLit}{\textbf{[LIT]}}}       % rests on external literature; citation-audit pending
 \newcommand{\gp}{\textcolor{cGap}{\textbf{[GAP]}}}        % no evidence yet; needs a probe
 \newcommand{\infr}{\textcolor{cInfer}{\textbf{[INFER]}}}  % an inference: grounded in evidence, one reasoned step beyond, never measured
-% \rev = small-font interrogation comment attached BELOW a beat.
+% \rev = small-font INTERNAL interrogation comment attached BELOW a beat.
 % #1 = verb $\cdot$ role  (verb in {keep, add, demoted, cut, added by author};
 %      role in {stakes, validity, contribution, guardrail, safety, defense,
 %      mechanism, grounded opener, no-blame anchor, so-what, ...})
 % #2 = one sharp sentence: why this beat is here / what breaks without it.
 \newcommand{\rev}[2]{\\{\footnotesize\color{gray}$\hookrightarrow$~\textbf{#1}~#2}}
+
+% \fb = an EXTERNAL reviewer's comment, threaded onto the beat it concerns
+% (post + comments model). Use when a co-author / advisor / referee reviews the
+% paper and you want each comment tracked at the point where the change happens.
+% Distinct maroon, so it reads apart from the gray internal \rev.
+% #1 = reviewer name        (e.g. Ritu)
+% #2 = status               (done | part | open)
+% #3 = their feedback, VERBATIM (their words; do not paraphrase or compress;
+%      only escape LaTeX specials % & _ $ # { } so it compiles)
+% #4 = how we addressed it  (OUR words; SHORT PLAIN sentences, one idea each)
+% Order on a beat that has both: beat text -> \rev (internal) -> \fb (external).
+% Multiple reviewers: each gets its own footer "External review (<name>, <date>)"
+% line; their \fb lines coexist on a beat (each carries its own name).
+% A comment with no single home beat (e.g. "see comments in Overleaf") stays in
+% the footer ledger, not on a beat.
+\definecolor{cFb}{rgb}{0.55,0.0,0.15}
+\newcommand{\fb}[4]{\\{\footnotesize\color{cFb}$\hookrightarrow$~\textbf{#1}~[\textbf{#2}]~\emph{``#3''}~$\Rightarrow$~#4}}
 
 \title{Narrative: The Paper as One Story}
 \date{<YYYY-MM-DD>}
@@ -61,6 +78,16 @@
 % behind it. Each bullet = readiness tag + bold label + 1-3 sentences + a \rev
 % interrogation comment. The whole walks Intro -> Methods -> Results ->
 % Discussion. Adapt section subtitles, Flow lines, and beats to the venue.
+%
+% COMMENT STYLE (both \rev and \fb): write SHORT PLAIN sentences, one idea each.
+% No run-on lines chained by semicolons, no stacked parentheticals. In \footnotesize
+% a long compound line is unreadable; 2-4 short sentences scan in one pass. Lead
+% with the action, then the open item. (Same readability rule as the pitch.)
+%
+% EXTERNAL REVIEW: when a named reviewer comments on the paper, thread each comment
+% onto the beat it concerns with \fb (see the example under the first Intro beat).
+% Keep their feedback verbatim; keep your resolution short. \fb is for external
+% named reviewers; \rev is the internal interrogation pass.
 
 % =====================================================================
 \section*{Introduction: <what is known, the gap, and the bet>}
@@ -79,6 +106,8 @@
 Key points to cover:
 \begin{enumerate}
 \item \lit~\textbf{<Stakes>:} <the external fact that makes this matter, with a citation>. \rev{keep $\cdot$ stakes}{<why this beat earns its place; the exact link to cite so the stakes do not read as borrowed>.}
+% EXAMPLE of an external reviewer comment threaded onto a beat (delete if unused):
+\fb{<Reviewer>}{part}{<their comment, verbatim>}{<how we addressed it, in short plain sentences. One idea each.>}
 \item \rdy~\textbf{<The gap>:} <draw the white space precisely: what prior work did and did not do>. \rev{keep $\cdot$ contribution setup}{<why this is the strongest Intro beat; what to scope so the contribution is not overclaimed>.}
 \item \rdy~\textbf{<Our contribution>:} <the one-sentence reason this paper exists; name any enabling method as enabler, not contribution>. \rev{keep $\cdot$ contribution}{<keep the scope tight; keep enabler-vs-contribution clear here, not floated to Methods>.}
 \end{enumerate}
@@ -160,10 +189,13 @@ Key points to cover:
 % FOOTER: the cross-cutting ledger. Reviewer-flagged gaps thread back into
 % the beats above; the Arc states how the spine's peak claim is defended;
 % Awaiting review names beats that still need an independent interrogation pass.
+% External reviewer comments (\fb) live ON their beats above; the footer only
+% carries comments with no single home beat (e.g. "see comments in Overleaf").
 % =====================================================================
 \bigskip
 \noindent{\footnotesize\color{gray}\textbf{Reviewer-flagged gaps:} <list each known reviewer concern and where it is now threaded (which section beat), or mark it Remaining and route it to a probe/computation>.
 \textbf{Arc:} <one line: after the demotions/parks/folds above, what does each section land on, and how is the spine's peak claim defended>.
-\textbf{Awaiting review:} <any beat authored since the last interrogation pass that still needs an independent keep/move/demote/cut verdict>.}
+\textbf{Awaiting review:} <any beat authored since the last interrogation pass that still needs an independent keep/move/demote/cut verdict>.
+\textbf{External review (<name>, <date>):} <one line pointing to the threaded \fb comments above + any comment that has no home beat (e.g. "see Overleaf"); source file path>.}
 
 \end{document}
