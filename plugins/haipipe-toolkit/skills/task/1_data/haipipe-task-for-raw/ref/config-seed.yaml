@@ -1,0 +1,54 @@
+# =============================================================================
+# Template for configs/<NAME>.yaml — raw extraction task
+# =============================================================================
+# Inherits the _meta: block convention from
+# ../../../haipipe-task/ref/config-meta-template.yaml.
+# =============================================================================
+
+_meta:
+  purpose: |
+    <e.g., Extract Prediabetes cohort tables from WellDoc Databricks catalog>
+  note: |
+    <e.g., Stage 1 — SQL extraction only; processing in stage2>
+  input: |
+    <e.g., Databricks catalog welldoc_prod, schema claims, tables: encounters, medications, labs>
+  output: |
+    <e.g., _WorkSpace/0-RawStore/prediabetes/ — one parquet per table>
+  skip_review: true
+  notebook: full
+
+
+# =============================================================================
+# Stage
+# =============================================================================
+
+stage: <1|2|3>                          # 1=extract (Databricks)  2=process (local)  3+=optional
+execution: <databricks|local>           # databricks for stage1, local for stage2+
+
+
+# =============================================================================
+# Databricks params (stage1 only)
+# =============================================================================
+
+databricks:
+  catalog: <catalog_name>               # e.g. welldoc_prod
+  schema: <schema_name>                 # e.g. claims
+  volume: <volume_name>                 # e.g. raw_extracts
+  volume_path: "/Volumes/<catalog>/<schema>/<volume>/<cohort>/"
+
+  tables:
+    - name: <table_name>                # e.g. encounters
+      query: |
+        SELECT *
+        FROM <catalog>.<schema>.<table_name>
+        WHERE <filter_condition>
+      output_file: <table_name>.parquet
+
+
+# =============================================================================
+# Local params (stage2+)
+# =============================================================================
+
+local:
+  raw_store_path: "_WorkSpace/0-RawStore/<cohort>/"
+  cohort: <cohort_name>                 # e.g. prediabetes, adhd

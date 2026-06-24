@@ -37,7 +37,7 @@ Chinese mnemonic:
 
 | Folder | Domain | Chinese | Scope |
 | --- | --- | --- | --- |
-| `1_data` | Data | 数 / 数据 | Build data assets: raw/source/record/case/AIData. |
+| `1_data` | Data | 数 / 数据 | Build data assets: raw extraction/source/record/case/AIData. |
 | `2_nn` | Algo / NN | 算 / 算法 | Design and smoke-test algorithms. |
 | `3_end` | Endpoint | 端 / 端点 | Package, deploy, trigger, and postprocess endpoints. |
 | `4_individual` | Individual | 体 / 个体 | Subject-level or patient-level inference, views, and reports. |
