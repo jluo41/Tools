@@ -4,17 +4,24 @@
 # always yields the same strip, so the strip can never be mis-ordered or mis-marked.
 #
 # Output (one line):
-#   seed ✅  pitch ✅  ...  →  write/edit 🔥  →  review ⬜
-# Markers: ✅ done   🔥 current   ⬜ not started.
+#   seed ✅  pitch ✅  ...  →  write/edit 🚀  →  review ⬜
+# Markers: ✅ done   🚀 current (overall frontier)   🔥 worked-this-session   ⬜ not started.
 #
 # Marker semantics: ✅ = user-confirmed in the Gate Ledger (preferred) or stage
-# sits BEFORE current_layer (fallback when no ledger exists). 🔥 = current_layer.
+# sits BEFORE current_layer (fallback when no ledger exists). 🚀 = current_layer,
+# the paper's OVERALL lifecycle frontier (the strip is overall progress, so this
+# is a calm "you-are-here", not "on fire"). 🔥 = the stage worked THIS session
+# (optional 2nd arg); shown only when it DIFFERS from the frontier, so the strip
+# reads as overall progress while 🔥 flags where this session actually worked.
 # ⬜ = not started / not confirmed. See ref/stage-gate.md.
 #
-# Usage: sh stage-strip.sh [paper-dir]   (paper-dir defaults to cwd; looks upward
-# for STATUS.md so it also works from inside the paper folder).
+# Usage: sh stage-strip.sh [paper-dir] [session-stage]   (paper-dir defaults to
+# cwd; looks upward for STATUS.md so it works from inside the paper folder.
+# session-stage is an optional spine key, e.g. "minimap", marked 🔥 when it
+# differs from current_layer.)
 
 paper="${1:-.}"
+session="${2:-}"
 
 # resolve STATUS.md: given dir, else walk upward from it
 find_status() {
@@ -62,6 +69,8 @@ label() { case "$1" in write-edit) printf 'write/edit' ;; *) printf '%s' "$1" ;;
 out=""; i=0
 for k in $keys; do
   if [ "$i" -eq "$cur_idx" ]; then
+    m="🚀"
+  elif [ -n "$session" ] && [ "$k" = "$session" ]; then
     m="🔥"
   elif [ "$has_ledger" = true ]; then
     if is_confirmed "$k"; then m="✅"; else m="⬜"; fi

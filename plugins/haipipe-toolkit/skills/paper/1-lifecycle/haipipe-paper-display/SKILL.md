@@ -4,10 +4,11 @@ description: "Plan, materialize (via task/probe), scaffold, run framework candid
 argument-hint: "[plan|materialize|scaffold|framework|build|audit|insert] [paper-dir-or-display-id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.4.1"
-  last_updated: "2026-06-23"
+  version: "1.5.0"
+  last_updated: "2026-06-24"
   summary: "Maintain 0-displays/ as a story/evidence display layer with README.md, per-unit README.md, float.tex, and standalone preview PDFs."
   changelog:
+    - "v1.5.0: added canonical CHECKLIST.md done-gate (absorbs gallery requirements out of the paper's 4-display.tex); elbow/icon vector-render rules"
     - "v1.4.1: added mandatory compile-after-edit rule; venue awareness note"
     - "v1.4.0: added illuminate protocol + cross-refs to stage-gate, tex-quality"
 ---
@@ -25,6 +26,13 @@ This stage follows three shared protocols. Read them once:
 - `ref/stage-illuminate.md` -- illuminate + elicit taste before drafting
 - `ref/stage-gate.md` -- exit criteria + confirm-before-advance gate
 - `ref/tex-quality.md` -- self-contained compilable tex with Pn.Sm tags
+
+**Done-gate: `CHECKLIST.md`** (this skill's folder) is the canonical, scannable
+done-gate for this stage and the home of the gallery requirements (narrative
+order, section + named subsection per display, venue display set, Parking
+section, JL comment policy, elbow/icon vector rules). The paper's
+`4-display.tex` points here instead of restating them. Walk it before asking for
+the stage gate.
 
 Display items are figures, tables, diagrams, and other manuscript-visible
 objects that carry evidence and story. A display item is not just a file. It
@@ -81,6 +89,7 @@ Principles
 7. **The stage doc is the gallery.** `0-lifecycle/4-display/4-display.tex` `\input`s each rendered `float.tex`, so the stage PDF doubles as the combined figures-and-tables view; do NOT make a separate `preview-all`. Compile from the paper ROOT so the `0-displays/` paths resolve. Per-unit `preview.pdf` remain as individual review artifacts.
 8. **Two display kinds, both task-rendered.** (a) data-driven: a parser turns server logs/CSVs into `metrics.json`, then a render task turns that into `assets/figure.pdf` / `assets/table-body.tex` (robust parser: handle factor-variable rows, leading-dot numbers, SE/CIs). (b) schematic/flow (study-flow, data-provenance, CONSORT): a diagram render task draws the flow and annotates it with REAL Ns pulled from the data description; still a task output, never hand-drawn.
 9. **Couple to venue.** Read STATUS `venue`; if `../../_venue/playbook-<venue>` exists, consult its `README.md` section `-> Display` for the venue's standard display set and hero rule (e.g. Table 1 + STROBE cohort-flow for clinical, the research-model figure for MISQ, the main-result multi-panel for Nature/PNAS). The `[primary]` claim's display is the hero. A venue change re-runs the display set. Also consult the playbook for display style requirements (figure count limits, table format, color guidelines).
+10. **Author/JL comments live in the lifecycle file, not the units.** Author or reviewer comments on a figure/table (preferences, "too thin," "park this," ordering) go ONLY into `0-lifecycle/4-display/4-display.tex` as `%% {JL}: ...` source lines, kept verbatim across iterations. Do NOT append them to a unit's `float.tex`; units stay portable and comment-free, and the lifecycle file is the single commentary / preference log for the display set (alongside the per-display self-check verdicts and the Parked section for kept-but-unused units).
 
 Relationship to ARIS
 --------------------

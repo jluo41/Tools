@@ -1,8 +1,8 @@
-# discovery.yaml — Discovery Folder Schema (v2, two-axis, 3 types: 搜 析 创)
+# discovery.yaml — Discovery Folder Schema (v2, two-axis, 3 types: Search Review Idea)
 
 ## What this file is
 
-`discovery.yaml` is the Plan + Report spec at the root of every discovery-folder. A discovery is one research topic = one folder, a sibling of a task-folder, running the uniform `Plan → Build(opt) → Execute → Report` lifecycle. `type:` names the folder type (`搜`/`析`/`创`); the lifecycle is identical for all three.
+`discovery.yaml` is the Plan + Report spec at the root of every discovery-folder. A discovery is one research topic = one folder, a sibling of a task-folder, running the uniform `Plan → Build(opt) → Execute → Report` lifecycle. `type:` names the folder type (`Search`/`Review`/`Idea`); the lifecycle is identical for all three.
 
 Location:
 
@@ -17,8 +17,8 @@ discovery.yaml   Plan + Report spec (source of truth)
 build/           (optional) instrument authored at Build
 status.yaml      Axis-1 lifecycle progress snapshot
 site.md          human-readable Report record
-sources.md       Execute work product (搜: search)
-notes.md         Execute work product (搜: read)
+sources.md       Execute work product (Search: search)
+notes.md         Execute work product (Search: read)
 verdict.md | landscape.md | ideas.md   Execute TERMINAL (by type)
 ```
 
@@ -27,19 +27,19 @@ No local event log belongs here. Orchestration events go to `_haipipe/project.lo
 ## The two axes as fields
 
 ```
-type:    Axis 2 — the folder type     搜 | 析 | 创      (decides the Execute terminal)
+type:    Axis 2 — the folder type     Search | Review | Idea      (decides the Execute terminal)
 status:  Axis 1 — lifecycle progress  planned | building | executing | reported | ok | inconclusive | blocked
 ```
 
 ## Type values (Axis 2)
 
-| 字 | type | IPO | Execute terminal | roles |
-|---|---|---|---|---|
-| 搜 | source | INPUT | `sources.md` (+ `notes.md`) | source_gather, source_read |
-| 析 | analyze | PROCESS | `verdict.md` (判) / `landscape.md` (综) | prior_art_check, counterevidence, novelty_check → verdict; landscape_review, benchmark_landscape → landscape |
-| 创 | create | OUTPUT | `ideas.md` | idea_generation |
+| type | IPO | Execute terminal | roles |
+|---|---|---|---|
+| Search | INPUT | `sources.md` (+ `notes.md`) | source_gather, source_read |
+| Review | PROCESS | `verdict.md` (judge) / `landscape.md` (synthesize) | prior_art_check, counterevidence, novelty_check → verdict; landscape_review, benchmark_landscape → landscape |
+| Idea | OUTPUT | `ideas.md` | idea_generation |
 
-`type` is authoritative for the terminal. For `析`, `role` picks the verdict-vs-landscape branch.
+`type` is authoritative for the terminal. For `Review`, `role` picks the verdict-vs-landscape branch.
 
 ## Top-level fields
 
@@ -47,15 +47,15 @@ status:  Axis 1 — lifecycle progress  planned | building | executing | reporte
 |---|---|---|---|
 | kind | string | yes | always `discovery` |
 | id | string | yes | e.g. `L01.03` |
-| **type** | enum | yes | **NEW** — folder type (Axis 2): `搜`/`析`/`创` |
-| role | enum | yes | refinement within `type` (esp. 析); see Role Values |
+| **type** | enum | yes | **NEW** — folder type (Axis 2): `Search`/`Review`/`Idea` |
+| role | enum | yes | refinement within `type` (esp. Review); see Role Values |
 | group | mapping | yes | discovery-group metadata |
 | slug | string | yes | discovery-folder slug |
 | title | string | yes | human-readable title |
 | status | enum | yes | lifecycle progress (Axis 1) |
 | parent | mapping | opt | delivery/probe/manual consumer |
 | question | string | yes | external-world question (Plan) |
-| sources | mapping | opt | search scope + selected refs (Plan); for `析`, may reference a `搜` folder |
+| sources | mapping | opt | search scope + selected refs (Plan); for `Review`, may reference a `Search` folder |
 | **build** | mapping | opt | **NEW** — optional instrument (`needed` + `artifact`) |
 | expected_outputs | list | yes | files expected; terminal depends on `type` |
 | **report** | mapping | yes | **RENAMED from `verdict`** — report-to-human outcome block, generalized across types |
@@ -63,13 +63,13 @@ status:  Axis 1 — lifecycle progress  planned | building | executing | reporte
 | created_at | string | yes | quoted ISO8601 |
 | updated_at | string | yes | quoted ISO8601 |
 
-## Skeleton (析 type, synthesize flavor)
+## Skeleton (Review type, synthesize flavor)
 
 ```yaml
 kind: discovery
 id: L01.03
-type: 析                 # 搜 | 析 | 创
-role: landscape_review   # picks landscape.md (综) vs verdict.md (判)
+type: Review                 # Search | Review | Idea
+role: landscape_review   # picks landscape.md (synthesize) vs verdict.md (judge)
 group:
   id: L01
   slug: personality-prescribing-landscape
@@ -90,7 +90,7 @@ question: |
   What is known about physician agreeableness / empathy affecting prescribing outcomes?
 sources:
   requested: [research-lit, semantic-scholar]
-  from_source_folder: ""    # optional: a 搜 folder to reuse instead of searching inline
+  from_source_folder: ""    # optional: a Search folder to reuse instead of searching inline
   local_first: true
   verification_required: true
 build:
@@ -99,32 +99,32 @@ build:
 expected_outputs:
   - sources.md
   - notes.md
-  - landscape.md            # terminal for 析-synthesize (verdict.md for 析-judge)
+  - landscape.md            # terminal for Review-synthesize (verdict.md for Review-judge)
 
 # --- Report (outcome, report-to-human) ---
 report:
   outcome: mapped           # per-type values below (NOT the top-level lifecycle `status:`)
   summary: ""
   confidence: medium
-  supports_claim: null      # 析-judge only
-  contradicts_claim: null   # 析-judge only
+  supports_claim: null      # Review-judge only
+  contradicts_claim: null   # Review-judge only
 
 consumed_by: []
 ```
 
-A `搜` folder omits the `report.supports_claim`/`contradicts_claim` fields and ends at `sources.md`/`notes.md`; a `创` folder ends at `ideas.md` and usually sets `sources.from_source_folder` to the `搜`/`析` it builds on.
+A `Search` folder omits the `report.supports_claim`/`contradicts_claim` fields and ends at `sources.md`/`notes.md`; an `Idea` folder ends at `ideas.md` and usually sets `sources.from_source_folder` to the `Search`/`Review` it builds on.
 
 ## Role values (refinements of type)
 
 ```
-搜  source_gather        broad source scan, curated list          -> sources.md
-搜  source_read          deep read of important source(s)         -> notes.md
-析  prior_art_check      does the claim already exist?  (判)       -> verdict.md
-析  counterevidence      what argues against the claim? (判)       -> verdict.md
-析  novelty_check        is the angle new enough?       (判)       -> verdict.md
-析  landscape_review     map approaches/baselines       (综)       -> landscape.md
-析  benchmark_landscape  standard eval setups           (综)       -> landscape.md
-创  idea_generation      generate + rank candidate claims         -> ideas.md
+Search  source_gather        broad source scan, curated list          -> sources.md
+Search  source_read          deep read of important source(s)         -> notes.md
+Review  prior_art_check      does the claim already exist?  (judge)       -> verdict.md
+Review  counterevidence      what argues against the claim? (judge)       -> verdict.md
+Review  novelty_check        is the angle new enough?       (judge)       -> verdict.md
+Review  landscape_review     map approaches/baselines       (synthesize)       -> landscape.md
+Review  benchmark_landscape  standard eval setups           (synthesize)       -> landscape.md
+Idea  idea_generation      generate + rank candidate claims         -> ideas.md
 ```
 
 ## Status values (Axis 1 lifecycle)
@@ -148,17 +148,17 @@ The report block uses `outcome:`, NOT `status:`. The top-level `status:` is Axis
 `report.outcome` per type:
 
 ```
-搜               gathered      (N sources curated / read)
-析-judge         supports | contradicts | inconclusive
-析-synthesize    mapped        (field organized)
-创               generated     (N candidates ranked)
+Search               gathered      (N sources curated / read)
+Review-judge         supports | contradicts | inconclusive
+Review-synthesize    mapped        (field organized)
+Idea               generated     (N candidates ranked)
 ```
 
-Common fields: `outcome`, `summary`, `confidence` (high/medium/low/unknown). `析-judge` adds `supports_claim` / `contradicts_claim` (bool or null).
+Common fields: `outcome`, `summary`, `confidence` (high/medium/low/unknown). `Review-judge` adds `supports_claim` / `contradicts_claim` (bool or null).
 
 ## Terminal contracts (by type)
 
-### verdict.md — 析-judge (判) → probe
+### verdict.md — Review-judge (judge) → probe
 
 ```md
 # Verdict
@@ -175,7 +175,7 @@ One paragraph answering the discovery question.
 - What this discovery did not check.
 ```
 
-### landscape.md — 析-synthesize (综) → paper / idea-gen
+### landscape.md — Review-synthesize (synthesize) → paper / idea-gen
 
 A map, not a yes/no.
 
@@ -197,7 +197,7 @@ confidence: high | medium | low
 1. <self-contained full citation>      (Review Output Contract rules 1-5)
 ```
 
-### ideas.md — 创 → probe-open / paper-seed
+### ideas.md — Idea → probe-open / paper-seed
 
 A ranked candidate-claim set, not a verdict.
 
@@ -209,10 +209,10 @@ status: generated
 1. <claim> — rationale — novelty: NOVEL | PARTIAL | SEEN (vs <ref>) — testability: <how a probe would test it>
 
 ## Grounding
-- which 搜 / 析 folder this builds on
+- which Search / Review folder this builds on
 ```
 
-### sources.md and notes.md — 搜 (also work products inside 析)
+### sources.md and notes.md — Search (also work products inside Review)
 
 ```md
 # Sources
@@ -221,7 +221,7 @@ status: generated
 | S001 | <full citation or URL> | adjacent method | VERIFIED |
 ```
 
-`notes.md` holds per-source extracted findings, one block per source id. In a `搜` folder these are the terminal; in an `析` folder they are work products feeding the verdict/landscape.
+`notes.md` holds per-source extracted findings, one block per source id. In a `Search` folder these are the terminal; in a `Review` folder they are work products feeding the verdict/landscape.
 
 The full citation and verification discipline follows the Review Output Contract in `haipipe-discovery/SKILL.md` (rule 5: every id/DOI/venue VERIFIED or flagged NEEDS-VERIFICATION).
 

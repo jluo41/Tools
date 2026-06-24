@@ -32,6 +32,8 @@ User-facing entry for project-level work. Routes by **risk profile** (build / re
 /haipipe-project overview [project_id]                    overview of one or all projects
 /haipipe-project organize <project_id>                    reorganize files (modifies!)
 /haipipe-project scan-status <task_dir> [key] [out_txt]   scan B01 eval, update status.json + txt
+/haipipe-project feedback "<text>" | list | move ...      capture skill feedback (merge-or-create, routed)
+/haipipe-project digest ["<session-name|id>"] [--dry-run] harvest skill feedback from a session transcript
 /haipipe-project "<natural language>"                     infer function, dispatch
 ```
 
@@ -146,19 +148,60 @@ Routing Logic
 Step 1: Parse $ARGUMENTS.
 
 Step 2: Resolve function via verb map.
+  - If first positional is "feedback" -> target = feedback (utility verb).
+    Resolve BEFORE other parsing; do not treat "feedback" as a project_id.
+  - If first positional is "digest" -> target = digest (utility verb).
+    Resolve BEFORE other parsing; do not treat "digest" as a project_id.
   - If verb is unambiguous -> done.
   - If first positional looks like a project_id (matches an existing
     examples/{X}/) and no verb -> default to overview for that project.
   - If no args at all -> overview across ALL projects (umbrella inline).
 
 Step 3: Decide specialist:
+  - feedback                             -> this skill, fn/feedback.md (handled inline)
+  - digest                               -> this skill, fn/digest.md (handled inline)
   - project / task-group scaffold        -> this skill (fn/project.md, fn/task-group.md)
   - task-folder / run scaffold           -> haipipe-task (in task/)
   - review/summarize/inventory/overview  -> haipipe-project-inspect
   - organize                             -> haipipe-project-organize
 
 Step 4: Dispatch:
-    Skill("haipipe-project-<specialist>", args="<verb> <remaining_args>")
+    If target = feedback:
+      Read fn/feedback.md and run it inline. Three sub-modes:
+        - capture "<text>": infer the target sub-skill (CROSS-CUTTING GUARD
+          first -- a rule true across all project operations or a named
+          cross-cutting concern -> orchestrator fallback, overriding any
+          keyword; else keyword in text; else active sub-skill from this
+          session; else orchestrator fallback), write one dated file into THAT
+          skill's feedback/ folder (create it + README if missing), then confirm
+          where it landed + how it matched.
+        - `feedback list [skill]`: aggregate open items across ALL feedback/
+          inboxes under the project skill root, grouped by skill.
+        - `feedback move <file> <skill>`: re-route a mis-filed item.
+      Capture is MERGE-OR-CREATE: a same-topic complaint updates the existing
+      inbox file (append a dated recurrence, preserve prior wording verbatim,
+      reopen if it was fixed) instead of spawning a duplicate, so inboxes stay
+      self-limiting. NB: task-folder / run scaffolding lives in /haipipe-task (a
+      different layer); feedback about how THIS orchestrator dispatches to it is
+      cross-cutting -> orchestrator fallback, NOT the task layer. This
+      orchestrator handles feedback directly; no fix on the spot.
+    Else if target = digest:
+      Read fn/digest.md and run it inline. FIRST resolve which session to digest
+      (no arg -> the CURRENT session; "<id>"/"<name>" -> the matching transcript
+      .jsonl, extract its human turns); the project orchestrator keeps no console
+      yaml, so digest works from the transcript alone. Then scan that session's
+      transcript, distill discrete TOOL/SKILL feedback items (drop one-off
+      scaffold/review instructions, project-content talk, and bare paths), dedup
+      (within-batch + against inbox), and PRESENT the candidate list for a
+      MANDATORY confirm gate (grouped by target skill; each line shows source
+      line + any runner-up merge target). NOTHING is written before you confirm.
+      On approval, route each item through fn/feedback.md merge-or-create in
+      BATCH mode (capture does NOT re-confirm per item), then report "N new, M
+      merged, K dropped" grouped by skill. Honor `--dry-run` (present the
+      candidate list, then STOP -- never file even if confirmed). digest NEVER
+      auto-files; global behavioral prefs are FLAGGED for /remember, not filed.
+    Else:
+      Skill("haipipe-project-<specialist>", args="<verb> <remaining_args>")
 
 Step 5: Capture the structured tail and present.
 ```
@@ -210,8 +253,48 @@ These ref files are SHARED across specialists. Each specialist reads them when i
 
 ## Feedback
 
-`/haipipe-project feedback "<text>"` captures a complaint / confusion / wish about THIS
-skill into `feedback/` (one dated file per item, `status: open`) to fix in a
-later revision pass. `/haipipe-project feedback list` shows the open items. This is
-feedback about the tool, not the work it produces. Route a `feedback` first-token
-here before other parsing. Full convention: `feedback/README.md`.
+`/haipipe-project feedback "<text>"` captures a complaint / confusion / wish about
+the project SKILL and ROUTES it at capture time to the specific sub-skill it
+concerns and written into THAT sub-skill's `feedback/` folder (e.g. an overview
+gripe -> `haipipe-project-inspect/feedback/`, an organize gripe ->
+`haipipe-project-organize/feedback/`); cross-cutting or unclassifiable items fall
+back to the orchestrator's own `feedback/`. The folder IS the record of which
+skill it concerns; there is no `skill:` field. `/haipipe-project feedback list
+[skill]` aggregates open items across ALL inboxes; `/haipipe-project feedback move
+<file> <skill>` re-routes a mis-filed item. Capture is MERGE-OR-CREATE: a
+same-topic complaint updates the existing file (appends a dated recurrence,
+preserves prior wording verbatim, reopens if fixed) so inboxes stay
+self-limiting.
+
+`/haipipe-project digest ["<session-name|id>"] [--dry-run]` is the bulk
+harvester: it scans a session's transcript (the CURRENT one, or a PAST session
+named/id'd as an argument and run from a fresh session), distills the TOOL/SKILL
+feedback you gave conversationally (dropping one-off scaffold/review
+instructions, project-content talk, and bare paths), dedups it (within-batch +
+against inbox), and after a MANDATORY confirm gate routes each item through the
+SAME feedback capture (merge-or-create, in BATCH mode so it does not re-confirm
+per item). The project orchestrator keeps no console yaml, so digest works from
+the transcript alone. It NEVER auto-files; `--dry-run` presents the candidate
+list and stops; global behavioral prefs are FLAGGED for `/remember`, not filed.
+Full conventions: `fn/digest.md`.
+
+Routing is CROSS-CUTTING-GUARD-FIRST: a complaint that asserts a rule true
+across ALL project operations, or names a cross-cutting concern (three-level
+hierarchy, group-letter convention, paired-example rule, return-contract tail,
+project / task-group / task-folder SCAFFOLDING, routing to /haipipe-task) ->
+orchestrator fallback, overriding any keyword. Task-folder / run scaffolding
+itself lives in /haipipe-task (a different layer); feedback about how THIS
+orchestrator hands off to it is orchestrator-level, NOT task-layer feedback.
+
+This is feedback about the tool, not the work it produces. Route a `feedback`
+first-token here before other parsing. Inboxes are created LAZILY on first use.
+Full conventions: `fn/feedback.md` (keyword->skill map, inbox paths, schema,
+same-topic test); fallback inbox: `feedback/README.md`.
+
+## Behavioral Preferences (portable)
+
+ALWAYS read and honor `PREFERENCES.md` in this skill's own folder: git-tracked
+global behavioral preferences (e.g. communicate via ASCII diagrams) that survive a
+machine change, unlike the machine-local `~/.claude` auto-memory. Global behavioral
+prefs are kept in sync across all orchestrators by `/haipipe-paper digest`'s
+global-pref fan-out (merge-or-create; one entry per topic).

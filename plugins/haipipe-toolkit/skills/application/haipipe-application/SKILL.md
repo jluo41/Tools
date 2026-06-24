@@ -155,9 +155,10 @@ Commands
 /haipipe-application iterate               post-deploy refinement
 /haipipe-application probe run             batch-dispatch probe plans
 /haipipe-application ask <question>        evidence session (legacy/direct)
-/haipipe-application feedback "<text>"     tool feedback (skill bugs/wishes)
-/haipipe-application feedback "<text>" --intervention <name>   intervention feedback
-/haipipe-application feedback list [--intervention <name>]     list open items
+/haipipe-application feedback "<text>"     capture skill feedback, ROUTED to the sub-skill it concerns
+/haipipe-application feedback list [skill] aggregate open items across ALL inboxes
+/haipipe-application feedback move <file> <skill>   re-route a mis-filed item
+/haipipe-application digest ["<session-name|id>"] [--dry-run]  harvest a session (named/id'd PAST session, or current): distill + dedup + route feedback (confirm-gated)
 ```
 
 
@@ -180,14 +181,55 @@ review, check, compliance                     → haipipe-application-review
 claim-audit, verify claims                    → haipipe-application-claim-audit
 deploy, ship, go live                         → haipipe-application-deploy
 round, iteration                              → haipipe-application-round
-feedback "<text>"                             → fn/feedback.md handler (tool or intervention scope)
-feedback list                                 → fn/feedback.md handler (list open items)
+feedback "<text>"                             → fn/feedback.md handler (capture, route at capture, merge-or-create)
+feedback list [skill]                         → fn/feedback.md handler (aggregate open items)
+feedback move <file> <skill>                  → fn/feedback.md handler (re-route mis-filed item)
+digest ["<session-name|id>"] [--dry-run]      → fn/digest.md handler (harvest a named/id'd PAST or current session, route via feedback)
 iterate, A/B, performance                     → haipipe-application-iterate
 probe, probe run                              → shared/haipipe-application-ask
 ask, question, research                       → shared/haipipe-application-ask
 message, msg                                  → haipipe-application-draft (venue=sms)
 (no verb, intervention path given)            → haipipe-application-enter
 ```
+
+Route a `feedback` first-token to the feedback handler BEFORE other parsing
+(capture is MERGE-OR-CREATE: a same-topic complaint updates the existing inbox
+file instead of spawning a duplicate). Likewise route a `digest` first-positional
+to the digest handler (target=digest) BEFORE other parsing; resolve the target
+session first (no arg = current, id = that .jsonl, name = grep the rename).
+
+
+Feedback dispatch
+==================
+
+When the first token is `feedback`, read `fn/feedback.md` and run it inline.
+This orchestrator handles feedback directly; no fix is attempted on the spot.
+Three sub-modes:
+
+```
+- capture "<text>": infer the target sub-skill (cross-cutting guard first, then
+    keyword in text, else active stage from .intervention-console.yaml, else the
+    orchestrator fallback), write one dated file into THAT skill's feedback/
+    folder (create it + README lazily if missing), then confirm where it landed
+    + how it matched.
+- feedback list [skill]: aggregate open items across ALL feedback/ inboxes under
+    the application skill root (`find <root> -type d -name feedback`, grep
+    `status: open`), grouped by skill; [skill] restricts to one inbox.
+- feedback move <file> <skill>: re-route a mis-filed item to the right skill's
+    feedback/ folder.
+```
+
+Else if the first positional is `digest` (target=digest): read `fn/digest.md`
+and run it inline. RESOLVE the target session FIRST: no arg = the CURRENT session;
+`"<session-name|id>"` = a PAST session -- locate its transcript .jsonl in this
+repo's `~/.claude/projects` dir (id directly, or grep the store for the
+/rename'd name) and extract its human turns as the transcript to scan. Then
+digest distills the discrete TOOL/SKILL feedback you gave, dedups it
+(merge-or-create), and AFTER a mandatory confirm gate routes each approved item
+through the same `fn/feedback.md` capture (in BATCH mode -- no per-item
+re-confirm). Honor `--dry-run` (scan + distill + present the candidate list, then
+STOP without filing). NEVER auto-files: nothing is written before you confirm.
+Best run from a fresh session for clean context.
 
 
 Boundary with insight
@@ -217,3 +259,42 @@ haipipe-application/ref/              shared ref docs
   report-template.md
   delivery-need.md
 ```
+
+
+## Feedback
+
+`/haipipe-application feedback "<text>"` captures a complaint / confusion / wish
+about THIS skill (one dated file per item, `status: open`) to fix in a later
+revision pass. Capture-time routing: the complaint is inferred to the specific
+sub-skill it concerns and written into THAT sub-skill's `feedback/` folder (e.g.
+a pitch gripe -> `1-lifecycle/haipipe-application-pitch/feedback/`); cross-cutting
+or unclassifiable items fall back to the orchestrator's own `feedback/`. The
+folder IS the record of which skill it concerns. Capture is MERGE-OR-CREATE: a
+same-topic complaint updates the existing inbox file (append a dated recurrence,
+preserve prior wording verbatim, reopen if it was fixed) instead of spawning a
+duplicate, so inboxes stay self-limiting. `/haipipe-application feedback list
+[skill]` aggregates open items across ALL inboxes; `/haipipe-application feedback
+move <file> <skill>` re-routes a mis-filed item. This is feedback about the tool,
+not the intervention it produces. Route a `feedback` first-token to the feedback
+handler before other parsing. Full convention (keyword->skill map + inbox paths):
+`fn/feedback.md`; fallback inbox: `feedback/README.md`.
+
+`/haipipe-application digest ["<session-name|id>"] [--dry-run]` is the bulk
+harvester: it scans a session's transcript -- the CURRENT one with no argument,
+or a named/id'd PAST session (located by id or by grepping this repo's
+`~/.claude/projects` store for the /rename'd name, then extracting its human
+turns) -- distills the discrete TOOL/SKILL feedback you gave, dedups it, and
+AFTER a mandatory confirm gate routes each approved item through the same
+`fn/feedback.md` capture (merge-or-create, in BATCH mode). It never auto-files;
+`--dry-run` previews the candidate list without filing; best run from a fresh
+session for clean context. Route a `digest` first-positional to the digest
+handler before other parsing. Full convention: `fn/digest.md`.
+
+
+## Behavioral Preferences (portable)
+
+ALWAYS read and honor `PREFERENCES.md` in this skill's own folder: git-tracked
+global behavioral preferences (e.g. communicate via ASCII diagrams) that survive a
+machine change, unlike the machine-local `~/.claude` auto-memory. Global behavioral
+prefs are kept in sync across all orchestrators by `/haipipe-paper digest`'s
+global-pref fan-out (merge-or-create; one entry per topic).

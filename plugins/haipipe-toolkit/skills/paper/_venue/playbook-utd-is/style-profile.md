@@ -125,16 +125,103 @@ they are added (pull real sentences and mirror their shapes).
 
 ---
 
+## Mined from `exemplars/` (real patterns to mirror, tagged by journal)
+
+Distilled 2026-06-24 from the three stored exemplars. Quote the SHAPE, not the
+content. Each pattern names the exemplar it came from.
+
+### MISQ -- Liu, Li & Xu (2021), *Assessing the Unacquainted* [`exemplars/misq/liu-2021-...`]
+
+The closest analogue in the corpus: Big-Five inferred from text via deep learning,
+then linked to a behavioral outcome. Mirror it for this paper's MISQ submission.
+
+- **ML-measure is the ENABLER, not the claim.** The abstract leads with the question
+  ("who is more likely to provide future helpful reviews"), then: "It trains a deep
+  learning model to infer a reviewer's personality traits. *This enables* analyses to
+  reveal the role of personality traits in review helpfulness." The method enables; the
+  theoretical relationship is the contribution. This is the family's enabler rule shown
+  in practice.
+- **Intro "what is new" move (MISQ signature).** The intro closes its framing with one
+  literal sentence: "Below, we introduce what we do, what is new, and how we do it."
+  Then it delivers exactly those three.
+- **Abstract**: ~150 w, unstructured prose, question -> approach -> findings, ends on
+  "Theoretical and practical implications are discussed." No method bragging at the end.
+- **Hypothesis phrasing (mechanism -> directional prediction), one construct per H**:
+  define the construct (1-2 sentences, cite McCrae/Costa) -> route through a named
+  mechanism stream (the paper uses three: knowledge-sharing propensity, reviewer
+  persuasiveness, opinion-leadership propensity) -> "Therefore, we expect that reviewers
+  high in openness will be more likely to become opinion leaders, meaning that their
+  reviews will be perceived as more helpful." -> "**H1: Reviewer openness is positively
+  related to review helpfulness.**" Clean, directional, no H1-H12 fishing list.
+- **Discussion** leads "Implications for Research": "Our work joins the burgeoning
+  scientific investigations ... that apply new methods of assessing unacquainted
+  individuals," then a scope/generalization paragraph ("Although we only apply ... there
+  is a wide scope of contexts where such methods are applicable").
+
+### ISR (empirical, identification-honest) -- Bao & Bardhan (2021), *ACO Performance & Health IT* [`exemplars/isr/bao-bardhan-2021-...`]
+
+- **Abstract arc**: phenomenon (ACO under the ACA) -> "we study whether (a) ... and (b)
+  ..." -> data + method ("a nationwide sample of ACO data using a two-stage approach
+  based on data envelopment analysis and econometric estimation") -> "We observe that
+  ..." -> ends on policy implication ("healthcare policy needs to incorporate
+  appropriate incentives ...").
+- **Gap / first-study move**: "To the best of our knowledge, ours is one of the first
+  studies to explore ..." (state the void, then claim the slot precisely, not grandly).
+- **Contribution sentence**: "We contribute to the extant literature on the role of
+  effective IT use in value-based healthcare delivery ... Our context-specific
+  conceptualization of health IT use highlights the role of IT-enabled information
+  integration as *the primary mechanism* in resolving tradeoffs ..." -- one named
+  mechanism, foregrounded.
+- **Causality honesty (the ISR move to imitate)**: results use guarded language
+  ("positive association," "we observe"); a dedicated **Endogeneity Concerns**
+  subsection states the threat in the reviewer's voice ("One may argue that MU
+  achievement is endogenous ..."), then "To mitigate endogeneity concerns, we deploy an
+  instrument variable (IV) approach," names the two instruments, and **reports the
+  weak-instrument test statistic** (15.64, p < 0.01). Identification is layered as
+  robustness (IV + Heckman + a Difference-in-Differences analysis on ACO participation +
+  propensity-score matching), not asserted once.
+
+### ISR (methodological-IS, labeled 3-way contribution) -- Zhang, Hao, Zhan & Wu (2026), *Physician Reviews & Consultation Demand* [`exemplars/isr/zhang-2026-...`]
+
+Same domain as this paper (physician reviews + a language model that scores them).
+
+- **Structured 3-way contribution (a clean ISR template)**: "Our research contributes
+  in three ways. **Methodologically**, we develop an SLM (Doc-BERT) ... and demonstrate
+  that a task-aligned, domain-tuned SLM can outperform a wide range of existing NLP
+  approaches, including recent general LLMs ... **Theoretically**, we adapt and refine a
+  healthcare service quality assessment framework ... rarely applied in information
+  systems research. **Empirically**, we identify specific dimensions of service quality
+  that most strongly predict online consultation demand, offering actionable guidance
+  ..." Label each contribution by TYPE.
+- **Measurement-model-as-enabler**: "Our SLM operationalizes a quality evaluation
+  framework ... to extract providers' service quality scores from online physician
+  reviews, *and then* we estimate the relationship between the quality scores and the
+  online consultation demand." The model produces the measure; the estimated
+  relationship is the empirical contribution.
+- **Abstract**: prose (ISR style), opens on the practical tension (LLMs powerful but
+  expensive in specialized domains), closes on actionable guidance for practitioners.
+
+### MS-IS
+
+- Not yet mined as a full-text exemplar. `references/lu2018can` (online physician
+  ratings, cardiac surgeons) is the nearest pointer; add a stored PDF to
+  `exemplars/ms-is/` to mine Proposition/Theorem phrasing and welfare reporting.
+
+---
+
 ## To enrich from `exemplars/` (tag findings by journal)
 
-- [ ] Pull 3-5 real contribution sentences per journal (MISQ theoretical; ISR
-  theoretical / empirical / methodological-IS; MS-IS economic); list them as patterns
-  to mirror.
-- [ ] Record each exemplar's hypothesis-phrasing pattern (mechanism -> prediction).
-- [ ] Record how each ISR/MS-IS empirical exemplar states its identification strategy
-  and hedges causality.
-- [ ] Record each MS-IS analytical exemplar's Proposition/Theorem phrasing and how
-  welfare is stated.
-- [ ] Record the abstract word budget and arc actually used (MISQ/ISR prose <= 150 w;
-  MS-IS structured < 200 w).
-- [ ] Note recurring intro and discussion section moves specific to each journal.
+- [x] Pull 3-5 real contribution sentences per journal -- done for MISQ (Liu) and ISR
+  (Bao; Zhang's labeled 3-way). MS-IS pending an `exemplars/ms-is/` PDF.
+- [x] Record each exemplar's hypothesis-phrasing pattern -- MISQ mechanism -> "H1: X is
+  positively related to Y" captured from Liu.
+- [x] Record how each ISR empirical exemplar states its identification strategy and
+  hedges causality -- captured from Bao (Endogeneity Concerns subsection + IV +
+  weak-instrument F + DiD + PSM, guarded "association" language).
+- [ ] Record an MS-IS analytical exemplar's Proposition/Theorem phrasing and how welfare
+  is stated -- blocked until a stored MS-IS exemplar exists.
+- [x] Record the abstract word budget and arc actually used -- MISQ (Liu) and ISR (Bao,
+  Zhang) prose arcs captured above.
+- [x] Note recurring intro and discussion section moves -- MISQ "what we do / what is
+  new / how" + "Implications for Research"; ISR "to the best of our knowledge, one of
+  the first" gap move.

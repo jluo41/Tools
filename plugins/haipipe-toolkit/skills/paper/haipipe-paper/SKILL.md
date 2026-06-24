@@ -37,6 +37,11 @@ this orchestrator directly.
 
 For the canonical paper structure, read `README.md` at the paper skill root.
 
+ALWAYS read and honor `PREFERENCES.md` (this skill's own folder): portable,
+git-tracked global behavioral preferences (e.g. communicate via ASCII diagrams)
+that survive a machine change, unlike the machine-local `~/.claude` auto-memory.
+`digest` / `feedback` append flagged global prefs there (merge-or-create).
+
 Stage Strip (end every reply)
 ------------------------------
 
@@ -50,24 +55,40 @@ order is fixed:
 seed -> pitch -> claims -> narrative -> display -> minimap -> write/edit -> review
 ```
 
-Read `current_layer` from the paper's `STATUS.md`. Mark each stage ✅ before
-current, 🔥 at current, ⬜ after current; arrows sit before `write/edit` and
-`review`. One line, e.g.:
+The strip is OVERALL PROGRESS (where the paper sits in its lifecycle), not what
+this session happened to touch. Read `current_layer` from the paper's `STATUS.md`.
+Mark each stage ✅ before current, 🚀 at current (the overall frontier, a calm
+"you-are-here"), ⬜ after current; arrows sit before `write/edit` and `review`.
+One line, e.g.:
 
 ```text
-seed ✅  pitch ✅  claims ✅  narrative ✅  display ✅  minimap ✅  →  write/edit 🔥  →  review ⬜
+seed ✅  pitch ✅  claims ✅  narrative ✅  display ✅  minimap ✅  →  write/edit 🚀  →  review ⬜
 ```
+
+Two markers, two places. The STRIP uses 🚀 for the current stage (the overall
+frontier); it never uses 🔥. 🔥 lives in the closing-block TOP-RULE LABEL
+(`📄 paper · <current_layer> 🔥`), which flags the stage this session is actively
+working. Normally the label stage and the strip frontier are the same stage, so
+you see a 🔥 label above a 🚀 strip for that stage. When the session loops back to
+an already-done stage (frontier `write/edit`, session tuning `minimap`), the label
+reads `· minimap 🔥` while the strip still shows `write/edit 🚀` as the frontier,
+so the divergence is visible. (The helper also accepts an optional 2nd arg to mark
+a stage 🔥 inside a bare strip when no label is present, e.g. the enter dashboard.)
 
 Render it DETERMINISTICALLY with the helper (never hand-type it; it drifts):
 
 ```sh
-sh "$CLAUDE_SKILL_DIR/../ref/stage-strip.sh" <paper-dir>   # walks upward for STATUS.md
+sh "$CLAUDE_SKILL_DIR/../ref/stage-strip.sh" <paper-dir>               # walks upward for STATUS.md
+sh "$CLAUDE_SKILL_DIR/../ref/stage-strip.sh" <paper-dir> <session-stage>  # also flag this session's stage with 🔥
 ```
 
 Closing-block format. End every reply with ONE fenced `text` block: a TITLED top
 rule, the return-contract tail, a plain bottom rule, then the strip as the last
 line. Use box-drawing `─` (U+2500) for the rules (no corners, no side borders).
-The top rule carries the label `📄 paper · <current_layer> 🔥`:
+The top rule carries the label `📄 paper · <current_layer> 🔥`. The label uses 🔥
+(the stage this session is actively working), NOT 🚀. The strip BELOW it uses 🚀
+(the overall frontier). So every closing block pairs a 🔥 session label with a 🚀
+progress strip:
 
     ── 📄 paper · claims 🔥 ───────────────────────
     status:        ok|blocked|failed
@@ -75,7 +96,7 @@ The top rule carries the label `📄 paper · <current_layer> 🔥`:
     current_layer: <layer>
     next:          <single recommended command>
     ──────────────────────────────────────────────
-    seed ✅  pitch ✅  claims 🔥  narrative ⬜  display ⬜  minimap ⬜  →  write/edit ⬜  →  review ⬜
+    seed ✅  pitch ✅  claims 🚀  narrative ⬜  display ⬜  minimap ⬜  →  write/edit ⬜  →  review ⬜
 
 The strip line still comes from the helper; only its framing (titled top rule +
 bottom rule) is added here. Every stage / enter skill inherits this closing block.
@@ -111,7 +132,8 @@ ref/paper-skill-structure.md
 /haipipe-paper task ["<contract>"]          -> dispatch to /haipipe-task (non-claim utility work)
 /haipipe-paper rebuttal "<paper-path>"      -> dispatch to rebuttal specialist
 /haipipe-paper prospectus "<project-or-paper>"  -> create/inspect paper-prospectus folder
-/haipipe-paper feedback "<text>"            -> capture skill feedback to feedback/ (`feedback list` shows open)
+/haipipe-paper feedback "<text>"            -> capture skill feedback (merge-or-create) into the right sub-skill inbox (`feedback list` shows open)
+/haipipe-paper digest ["<session-name|id>"] [--dry-run]  -> digest a session (a named/id'd PAST session, or current): harvest feedback, dedup, confirm-gate, route to inboxes
 /haipipe-paper "<natural language>"         -> infer intent from keywords, dispatch
 ```
 
@@ -247,6 +269,7 @@ Step 2: Resolve venue/task:
   - First positional is "discover"                     -> target = discover (evidence worker)
   - First positional is "task"                         -> target = task (evidence worker)
   - First positional is "feedback"                     -> target = feedback (utility verb)
+  - First positional is "digest"                       -> target = digest (utility verb; session harvest)
   - Else scan keyword map across all positional args.
   - Phrase contains "reply to reviewers" / "rebuttal"
     / review-related verbs                            -> target = rebuttal
@@ -308,9 +331,32 @@ Step 4: Dispatch:
       Direct dispatch for non-claim utility work. Resolve the project root.
       Skill("haipipe-task", args="<remaining_args> --project <project_root>")
     Else if target = feedback:
-      Read fn/feedback.md and run it inline: capture "<text>" to feedback/ as one
-      dated file, or `feedback list` to print open items. This orchestrator
-      handles feedback directly; no sub-skill, no fix attempted on the spot.
+      Read fn/feedback.md and run it inline. Three sub-modes:
+        - capture "<text>": infer the target sub-skill (keyword in text, else
+          active stage from .paper-console.yaml, else orchestrator fallback),
+          write one dated file into THAT skill's feedback/ folder (create it +
+          README if missing), then confirm where it landed + how it matched.
+        - `feedback list [skill]`: aggregate open items across ALL feedback/
+          inboxes under the paper skill root, grouped by skill.
+        - `feedback move <file> <skill>`: re-route a mis-filed item.
+      Capture is MERGE-OR-CREATE: a same-topic complaint updates the existing
+      inbox file (append a dated recurrence, preserve prior wording verbatim,
+      reopen if it was fixed) instead of spawning a duplicate, so inboxes stay
+      self-limiting. This orchestrator handles feedback directly; no fix on the spot.
+    Else if target = digest:
+      Read fn/digest.md and run it inline. RESOLVE the target session first: no
+      arg = the CURRENT session; "<session-name|id>" = a PAST session — locate its
+      transcript .jsonl in this repo's ~/.claude/projects dir (id directly, or
+      grep the store for the /rename'd name) and extract its human turns as the
+      transcript to scan. Then scan for tool/skill feedback, distill discrete
+      items, dedup (within-batch + against inboxes via the same-topic test),
+      PRESENT for a mandatory confirm gate, then route each approved item through
+      the feedback capture (merge-or-create). Close with an ITEMIZED report: list
+      every item generated (NEW/MERGED/FLAGGED/DROPPED) + the file each landed in,
+      then the tally. Honor --dry-run (present only, file nothing — but still print
+      the same itemized list marked "preview"). Flag global behavioral prefs for
+      /remember rather than filing them. Never auto-files. Best run from a fresh
+      session for clean context.
     Else:
       Skill("haipipe-paper-<target>", args="<remaining_args>")
 
@@ -546,7 +592,27 @@ Composing with Other Workflows
 ## Feedback
 
 `/haipipe-paper feedback "<text>"` captures a complaint / confusion / wish about THIS
-skill into `feedback/` (one dated file per item, `status: open`) to fix in a
-later revision pass. `/haipipe-paper feedback list` shows the open items. This is
-feedback about the tool, not the work it produces. Route a `feedback` first-token
-here before other parsing. Full convention: `feedback/README.md`.
+skill (one dated file per item, `status: open`) to fix in a later revision pass.
+Capture-time routing: the complaint is inferred to the specific sub-skill it
+concerns and written into THAT sub-skill's `feedback/` folder (e.g. a pitch gripe
+-> `1-lifecycle/haipipe-paper-pitch/feedback/`); cross-cutting or unclassifiable
+items fall back to the orchestrator's own `feedback/`. The folder IS the record
+of which skill it concerns. `/haipipe-paper feedback list [skill]` aggregates open
+items across ALL inboxes; `/haipipe-paper feedback move <file> <skill>` re-routes a
+mis-filed item. Capture is MERGE-OR-CREATE: a same-topic complaint updates the
+existing file (append dated recurrence, preserve prior wording verbatim, reopen
+if fixed) so inboxes stay self-limiting. This is feedback about the tool, not the
+work it produces. Route a `feedback` first-token here before other parsing.
+
+`/haipipe-paper digest ["<session-name|id>"] [--dry-run]` is the bulk harvester:
+typically run from a FRESH session, it names a PAST session to harvest (resolves
+the /rename'd name or id to its transcript .jsonl, extracts the human turns) — or
+digests the CURRENT session if given no argument. It scans for feedback you gave
+conversationally, distills discrete items, dedups them, and (after a mandatory
+confirm gate) routes each through the same capture. It files only skill-feedback;
+global behavioral preferences are fanned out to EVERY orchestrator's portable
+`PREFERENCES.md` (git-tracked, survives a machine change) and optionally
+`/remember`ed, not filed in the inboxes. Route a `digest` first-token to it. Full conventions: `fn/feedback.md` (keyword->skill map,
+inbox paths, merge-or-create, schema) and `fn/digest.md` (session resolution +
+harvest); fallback
+inbox: `feedback/README.md`.
