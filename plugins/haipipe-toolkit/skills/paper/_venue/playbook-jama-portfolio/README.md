@@ -77,6 +77,12 @@ JAMA IMRAD + structured abstract:
 - Mapping rule: the `[primary]` claim drives the abstract Conclusions, the lead
   Results paragraph, and the first Discussion implication.
 
+Render the paper in miniature with the neutral macros in
+`haipipe-paper-minimap/ref/minimap-template.tex`, shaped to the structure above
+(Key Points + structured abstract, then IMRAD; main-text displays inline, the
+eTable/eFigure cited and rendered in the Supplement). Live worked example:
+`examples/ProjB-PhyTrait-OpioidRx/paper/Paper-Personality-Opioid-MedJournal/0-lifecycle/5-minimap/5-minimap.tex`.
+
 ### -> Write / Edit (language style & preferences)  [the main purpose]
 
 Imitate how JAMA papers actually read:
