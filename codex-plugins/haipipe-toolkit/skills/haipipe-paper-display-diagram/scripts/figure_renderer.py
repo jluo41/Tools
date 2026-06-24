@@ -192,15 +192,16 @@ def ortho_route(src, dst):
 # Icon glyphs — local icon library (Lucide) with built-in fallback
 # ============================================================
 #
-# Primary source: a repo-local, OFFLINE icon library at _WorkSpace/0-IconLib
-# (Lucide icons, viewBox 0 0 24 24, stroke=currentColor, fill=none). For a node's
-# `icon` glyph name, the renderer reads the mapped local SVG, strips the <svg>
-# wrapper, recolors + scales the inner art into the node's top-left box. If the lib
-# (or a given glyph) is unavailable, it falls back to the built-in hand-drawn
-# glyphs below, so the renderer still works for papers without a lib.
+# Primary source: a repo-local, OFFLINE icon library at the HAIToolLib asset root,
+# _WorkSpace/HAIToolLib/0-IconLib (Lucide icons, viewBox 0 0 24 24,
+# stroke=currentColor, fill=none). For a node's `icon` glyph name, the renderer
+# reads the mapped local SVG, strips the <svg> wrapper, recolors + scales the inner
+# art into the node's top-left box. If the lib (or a given glyph) is unavailable, it
+# falls back to the built-in hand-drawn glyphs below, so the renderer still works for
+# papers without a lib.
 #
 # Render-time is offline: only local files under 0-IconLib are read; the library is
-# populated by a one-time download (see _WorkSpace/0-IconLib/README.md).
+# populated by a one-time download (see _WorkSpace/HAIToolLib/0-IconLib/README.md).
 
 import xml.etree.ElementTree as _ET  # noqa: E402  (used for namespace-tolerant tag matching)
 
@@ -269,9 +270,11 @@ _ICON_INNER_CACHE = {}        # glyph name -> inner svg string (or None if missi
 def _find_icon_lib(spec_dir=None):
     """Resolve the icon library directory, offline. Order:
 
-    1. env HAIPIPE_ICON_LIB (an absolute path to a 0-IconLib dir);
-    2. walk UP from the spec file's dir for a `_WorkSpace/0-IconLib`;
-    3. walk UP from CWD for a `_WorkSpace/0-IconLib`.
+    1. env HAIPIPE_ICON_LIB (an absolute path straight to a 0-IconLib dir);
+    2. env HAIPIPE_TOOL_LIB (the HAIToolLib asset root) -> <root>/0-IconLib;
+    3. walk UP from the spec file's dir, then CWD, for the icon lib under the
+       HAIToolLib asset root (`_WorkSpace/HAIToolLib/0-IconLib`) or, for
+       back-compat, directly under `_WorkSpace/0-IconLib`.
 
     Returns a Path, or None if not found. Caches the result for the process.
     """
@@ -282,7 +285,7 @@ def _find_icon_lib(spec_dir=None):
     def _is_lib(p):
         return p.is_dir() and (p / "manifest.json").is_file()
 
-    # 1. Explicit env override
+    # 1. Explicit env override: a path straight to a 0-IconLib dir.
     env = os.environ.get("HAIPIPE_ICON_LIB")
     if env:
         p = Path(env)
@@ -290,7 +293,17 @@ def _find_icon_lib(spec_dir=None):
             _ICON_LIB_DIR = p
             return p
 
-    # 2 & 3. Walk up from spec dir, then from CWD, for _WorkSpace/0-IconLib
+    # 2. HAIToolLib asset root (shared convention): the icon lib is 0-IconLib under it.
+    root = os.environ.get("HAIPIPE_TOOL_LIB")
+    if root:
+        p = Path(root) / "0-IconLib"
+        if _is_lib(p):
+            _ICON_LIB_DIR = p
+            return p
+
+    # 3. Walk up from spec dir, then CWD, for the icon lib under the HAIToolLib
+    #    asset root (new) or directly under _WorkSpace (legacy back-compat).
+    rels = [("_WorkSpace", "HAIToolLib", "0-IconLib"), ("_WorkSpace", "0-IconLib")]
     starts = []
     if spec_dir:
         starts.append(Path(spec_dir).resolve())
@@ -298,10 +311,11 @@ def _find_icon_lib(spec_dir=None):
     for start in starts:
         d = start
         while True:
-            cand = d / "_WorkSpace" / "0-IconLib"
-            if _is_lib(cand):
-                _ICON_LIB_DIR = cand
-                return cand
+            for rel in rels:
+                cand = d.joinpath(*rel)
+                if _is_lib(cand):
+                    _ICON_LIB_DIR = cand
+                    return cand
             if d.parent == d:
                 break
             d = d.parent
