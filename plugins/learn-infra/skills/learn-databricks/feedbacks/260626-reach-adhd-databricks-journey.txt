@@ -1,0 +1,228 @@
+🏔️ REACH-ADHD Databricks Deployment — Full Session Journey
+══════════════════════════════════════════════════════════════
+
+📅 2026-06-19 → 2026-06-26
+🎯 Goal: Run the full 6-stage ML pipeline + endpoint deploy on Databricks
+🏥 Project: ProjD-REACH-ADHD (ADHD prediction from EHR)
+
+─§ 🗺️ The Big Picture — What We Were Trying to Do ──────────
+
+  📂 Local REACH-SPACE repo              ☁️ Azure Databricks (eastus)
+  ========================              ========================
+
+  _WorkSpace/                           /Volumes/.../reach_space/_WorkSpace/
+  ├── 0-RawDataStore   ──upload──▶      ├── 0-RawDataStore
+  ├── 1-SourceStore    ◀──run────▶      ├── 1-SourceStore
+  ├── 2-RecStore       ◀──run────▶      ├── 2-RecStore
+  ├── 3-CaseStore      ◀──run────▶      ├── 3-CaseStore
+  ├── 4-AIDataStore    ◀──run────▶      ├── 4-AIDataStore
+  ├── 5-ModelInstance   ◀──run────▶      ├── 5-ModelInstanceStore
+  └── 6-EndpointStore  ◀──run────▶      └── 6-EndpointStore
+                                                 │
+                                                 ▼
+                                        🚀 Model Serving endpoint
+                                           (MLflow + Unity Catalog)
+
+─§ 🧱 Infrastructure Battle — Phase 1 (Day 1) ──────────────
+
+  🤔 "Just spin up a cluster and run notebooks"
+                    ⚡ reality
+      ✗ ✗ ✗ ✗ ✗ ✗ ✗ ✗ ✗
+
+  ⚠️ Issue #1: Azure VM Stockout
+  ┌────────────────────────────────────────────────────────┐
+  │  🖥️ Tried 9+ VM types in eastus region:               │
+  │                                                        │
+  │  DS3_v2    ❌ STOCKOUT    D4ps_v6   ❌ STOCKOUT       │
+  │  D4ds_v6   ❌ STOCKOUT    D4a_v4    ❌ STOCKOUT       │
+  │  E2ds_v6   ❌ STOCKOUT    E4ads_v7  ❌ STOCKOUT       │
+  │  F4s_v2    ❌ STOCKOUT    D4ads_v5  ❌ STOCKOUT       │
+  │  D4s_v4    ❌ STOCKOUT                                │
+  │                                                        │
+  │  ✅ DC4as_v5 (confidential compute, AMD SEV-SNP)      │
+  │     → different capacity pool, available!              │
+  └────────────────────────────────────────────────────────┘
+
+  💡 Lesson: Confidential compute VMs have separate capacity.
+     When standard VMs are out, try DC-series.
+
+─§ 📦 Dependency Hell — Phase 2 (Day 1-2) ──────────────────
+
+  🔄 The Dependency Installation Loop of Pain:
+
+  ┌──────────────────┐
+  │ 📜 Init Scripts  │───▶ ❌ "Not in allowlist"
+  └──────────────────┘         (workspace policy blocks it)
+
+  ┌──────────────────┐
+  │ %pip install     │───▶ ❌ Silently ignored in Job API
+  └──────────────────┘         (only works in interactive UI)
+
+  ┌──────────────────┐
+  │ 📚 Libraries API │───▶ ⚠️ Works for tqdm (1 pkg)
+  │ (10 packages)    │───▶ ❌ "Could not reach driver"
+  └──────────────────┘         (DC4as_v5 crashes with 10+ pkgs)
+
+  ✅ Resolution path:
+
+  +------------------+     +-------------------+     +------------------+
+  │ 🎯 Use Runtime   │     │ 📚 Libraries API  │     │ 🧠 Lazy imports  │
+  │ 17.3 LTS ML      │     │ only for tqdm     │     │ in haiutils/     │
+  │ (pre-installs    │     │ (1 package, safe)  │     │ __init__.py      │
+  │ xgboost, optuna, │     │                   │     │ via __getattr__  │
+  │ shap, sklearn)   │     │                   │     │                  │
+  +------------------+     +-------------------+     +------------------+
+        ⬆️                       ⬆️                        ⬆️
+    solve ML pkgs           solve tqdm              avoid import chains
+
+─§ 🔧 Code Fixes — Phase 3 (Day 2) ─────────────────────────
+
+  📊 pandas 1.5.3 vs 2.x compatibility matrix:
+  (Runtime 15.4 ships pandas 1.5.3; Runtime 16.4+ ships 2.x)
+
+  +------------------------------+------------------+------------------+
+  │ 🐛 Problem                   │ 🔴 pandas 1.5.3  │ 🟢 pandas 2.x   │
+  +------------------------------+------------------+------------------+
+  │ value_counts().reset_index() │ col = orig name  │ col = 'count'    │
+  │ pivot() with duplicates      │ ValueError       │ works            │
+  │ sum() of mixed str/int       │ TypeError        │ auto-coerce      │
+  │ .str.contains() on object   │ AttributeError   │ works            │
+  +------------------------------+------------------+------------------+
+
+  📝 Files fixed:
+  ├── haipipe/record_base/builder/human.py
+  │   ├── pivot() → pivot_table(aggfunc='sum')
+  │   ├── dynamic column name detection for 'count'/'RecNum'
+  │   └── pd.to_numeric() + fillna(0) for type safety
+  │
+  ├── haifn/fn_case/fn_trigger/REACHADHDLabeledVisit.py
+  │   └── .str.contains() → pure Python 'in str(v)'
+  │
+  └── haiutils/__init__.py
+      └── eager imports → lazy __getattr__
+
+─§ 🏗️ Architecture Discovery — Phase 3 (Day 2) ─────────────
+
+  ❌ What DIDN'T work: Orchestrator pattern
+  ┌──────────────────────────────────────────────────────────┐
+  │  📓 run_pipeline.py (orchestrator)                       │
+  │  ├── dbutils.notebook.run("1_source", ...)               │
+  │  ├── dbutils.notebook.run("2_record", ...)               │
+  │  └── dbutils.notebook.run("3_case", ...)                 │
+  │                                                          │
+  │  🐛 Problem: sub-notebooks don't inherit os.environ      │
+  │     from orchestrator → Volume paths not detected         │
+  │     → data written to temp filesystem, silently lost      │
+  └──────────────────────────────────────────────────────────┘
+
+  ✅ What WORKS: Separate job tasks
+  ┌──────────────────────────────────────────────────────────┐
+  │  📋 Databricks Job (resources.yml)                       │
+  │  ├── Task 1: 1_source.py  (own Python process)          │
+  │  ├── Task 2: 2_record.py  (own Python process)          │
+  │  ├── Task 3: 3_case.py    (own Python process)          │
+  │  ├── Task 4: 4_aidata.py  (own Python process)          │
+  │  ├── Task 5: 1_train.py   (own Python process)          │
+  │  └── Task 6: 01_endpoint.py (own Python process)        │
+  │                                                          │
+  │  ✅ Each gets fresh env vars, clean imports              │
+  └──────────────────────────────────────────────────────────┘
+
+  💡 Key: every notebook needs ALL 18 env vars set explicitly:
+     LOCAL_RAW_DATA_STORE, LOCAL_SOURCE_STORE, LOCAL_RECORD_STORE,
+     LOCAL_CASE_STORE, LOCAL_AIDATA_STORE, LOCAL_MODELINSTANCE_STORE,
+     LOCAL_MODEL_STORE, LOCAL_ENDPOINT_STORE, LOCAL_EXTERNAL_STORE,
+     LOCAL_REFERENCE_STORE, REMOTE_ROOT, REMOTE_SOURCE_STORE,
+     REMOTE_RECORD_STORE, REMOTE_CASE_STORE, REMOTE_AIDATA_STORE,
+     REMOTE_MODELINSTANCE_STORE, REMOTE_ENDPOINT_STORE,
+     REMOTE_EXTERNAL_STORE, REMOTE_REFERENCE_STORE, EXTERNAL_VERSION
+
+─§ 📈 Pipeline Progress — Stages 1→6 ───────────────────────
+
+  Timeline of what worked and when:
+
+  Day 1 (Jun 19):
+  📥 Stage 1 (Source)  ──▶ ✅ ran on Runtime 16.4, DC4as_v5
+  📋 Stage 2 (Record)  ──▶ ✅ ran after env var fix
+  🎯 Stage 3 (Case)    ──▶ ✅ ran, but partition format issue
+
+  Day 2 (Jun 20):
+  🧩 Stage 4 (AIData)  ──▶ ⚠️ CaseSet partition mismatch
+  │                          Workaround: uploaded full local
+  │                          CaseStore (10 partitions) to Volume
+  │                          ✅ then succeeded
+  │
+  🧠 Stage 5 (Train)   ──▶ ❌ Runtime 16.4 missing xgboost
+  │                          ❌ Libraries API crash (10 pkgs)
+  │                          💡 Switch to Runtime 17.3 LTS ML
+  │                          ✅ XGBoost + 20 Optuna trials, 7 min
+  │
+  🚀 Stage 6 (Endpoint) ──▶ ✅ Packaged in 7 min on Databricks
+
+  Current session (Jun 26):
+  🔒 Auth token expired → re-authenticated
+  📦 Deploy to Model Serving → ⏳ IN PROGRESS (mlflow → UC → serving)
+
+─§ 🏁 Final Status Board ───────────────────────────────────
+
+  +-----+------------------+--------+---------------------------+
+  │  #  │ 🏷️ Stage         │ Status │ 📝 Notes                  │
+  +-----+------------------+--------+---------------------------+
+  │  1  │ 📥 Source         │  ✅   │ Ran on Databricks         │
+  │  2  │ 📋 Record         │  ✅   │ Ran on Databricks         │
+  │  3  │ 🎯 Case           │  ✅   │ Partitions from local     │
+  │  4  │ 🧩 AIData         │  ✅   │ After CaseStore upload    │
+  │  5  │ 🧠 Train (XGB)    │  ✅   │ Runtime 17.3 ML, 7 min   │
+  │  6  │ 📦 Endpoint Pkg   │  ✅   │ reach.adhd.xgb_v0003      │
+  │  7  │ 🚀 Model Serving  │  ⏳   │ MLflow → UC → Serve       │
+  +-----+------------------+--------+---------------------------+
+
+  Working cluster config:
+  ┌────────────────────────────────────────────────────────┐
+  │  🖥️ Runtime:  17.3.x-cpu-ml-scala2.13                 │
+  │  💻 VM:       Standard_DC4as_v5 (4 cores, 16 GB)      │
+  │  🔧 Mode:     Single Node                             │
+  │  📚 Libs:     tqdm (via libraries API)                 │
+  │  📂 Volume:   /Volumes/cdhai_welldoc_space/haipipe/    │
+  │               reach_space/_WorkSpace                   │
+  │  📋 Job:      Separate tasks per stage                 │
+  └────────────────────────────────────────────────────────┘
+
+─§ 🧠 Lessons Learned (for next Databricks project) ────────
+
+  ┌─────────────────────────────────────────────────────────────┐
+  │  1. 🖥️ Azure VM stockout? Try DC-series (confidential)     │
+  │  2. 📜 Init scripts blocked? Use libraries API (sparingly) │
+  │  3. 📦 Need ML packages? Use Runtime 17.3 LTS ML           │
+  │  4. 🐍 %pip magic? Only works interactively, not Job API   │
+  │  5. 🔄 dbutils.notebook.run()? Sub-notebooks lose env vars │
+  │  6. 📋 Use separate job tasks, not orchestrator pattern     │
+  │  7. 🔢 Set ALL 18+ env vars explicitly per notebook        │
+  │  8. 🐼 Check pandas version (1.5.3 vs 2.x) in your runtime│
+  │  9. 📚 Don't install 10+ pkgs via libraries API on 4-core  │
+  │ 10. 🗄️ CaseStore partitions: upload full local if mismatch │
+  └─────────────────────────────────────────────────────────────┘
+
+─§ 🔀 The Runtime Upgrade Journey ──────────────────────────
+
+  +------------------+     +------------------+     +------------------+
+  │ 🔴 Runtime 15.4  │     │ 🟡 Runtime 16.4  │     │ 🟢 Runtime 17.3  │
+  │ (pandas 1.5.3)   │     │ (pandas 2.2.x)   │     │ LTS ML           │
+  +------------------+     +------------------+     +------------------+
+  │ ❌ pandas compat │     │ ✅ pandas works   │     │ ✅ pandas works   │
+  │ ❌ no xgboost    │     │ ❌ no xgboost    │     │ ✅ xgboost built  │
+  │ ❌ no optuna     │     │ ❌ libs API crash │     │ ✅ optuna built   │
+  │                  │     │                  │     │ ✅ shap built     │
+  +------------------+     +------------------+     +------------------+
+         │                        │                        │
+         └───── ❌ ──────────────└───── ❌ ────────────────└── ✅ WINNER
+
+─§ 📊 Issue Frequency by Category ──────────────────────────
+
+  🏗️ Azure Infra:    ██████████  2 issues (#1 stockout, #4 driver crash)
+  📦 Dependencies:   ████████████████  3 issues (#2 init, #3 tqdm, #6 %pip)
+  🐍 Code Compat:    ████████████  2 issues (#7 pandas, #8 .str accessor)
+  🔧 Architecture:   ████████  2 issues (#5 env vars, #9 partitions)
+  🔒 Auth:           ████  1 issue (token expiry, Jun 26)
+
+  Total: 10 issues resolved over 3 sessions
