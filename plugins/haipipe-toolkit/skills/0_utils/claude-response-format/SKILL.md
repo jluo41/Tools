@@ -1,16 +1,17 @@
 ---
 name: claude-response-format
-description: "Canonical spec for the assistant's chat reply format in this workspace: every substantive reply is organized into `## [emoji] topic-slug` sections (one emoji + a short kebab topic, content beneath); turns that change files end with a git-derived file-change report and a CONDITIONAL 'which files to review' list. The repo CLAUDE.md points here to make it always-on. Trigger: response format, reply format, section headers, emoji headers, file-change report, 回复格式."
+description: "Canonical spec for the assistant's chat reply format in this workspace: every substantive reply is organized into `## [emoji] Short Headline` sections (one emoji + a short readable headline, content beneath); turns that change files end with a git-derived file-change report and a CONDITIONAL 'which files to review' list. The repo CLAUDE.md points here to make it always-on. Trigger: response format, reply format, section headers, emoji headers, file-change report, 回复格式."
 argument-hint: "(reference spec — usually not invoked directly)"
 allowed-tools: Bash, Read
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-06-09"
-  summary: "Emoji section-header format for chat replies + end-of-run file-change & conditional review report."
+  version: "1.2.0"
+  last_updated: "2026-06-26"
+  summary: "Emoji headline format for chat replies + end-of-run file-change & conditional review report."
   changelog:
     - "1.0.0 (2026-06-02): initial spec; referenced by repo CLAUDE.md Rule 5."
     - "1.0.1 (2026-06-02): renamed skill dir response-format -> claude-response-format."
     - "1.1.0 (2026-06-09): merged claude-chat-format; added end-of-run file-change report (📁) and conditional review-list (👀) sections; enabled Bash for git status."
+    - "1.2.0 (2026-06-26): changed section headers from kebab-case slugs to natural readable headlines in title case."
 ---
 
 Skill: claude-response-format (0_utils)
@@ -34,17 +35,18 @@ The format
 Every substantive reply is split into one or more sections. Each section is:
 
 ```
-## [emoji] topic-slug
+## [emoji] Short Headline
 <content for that section>
 ```
 
 - `[emoji]` — ONE emoji that fits the section's role. Suggestive palette (not
-  fixed): 🧩 short-answer · 🎯 recommendation · ⚠️ caveat/risk · 🛠️ how-to ·
-  📋 summary/list · 🔍 findings · ✅ done · 🙋 question-for-user · 📁 file-changes ·
-  👀 which-files-to-review · 🧪 experiment · 💡 idea · 📊 results · 🚧 in-progress.
+  fixed): 🧩 short answer · 🎯 recommendation · ⚠️ caveat/risk · 🛠️ how-to ·
+  📋 summary/list · 🔍 findings · ✅ done · 🙋 question for you · 📁 file changes ·
+  👀 files to review · 🧪 experiment · 💡 idea · 📊 results · 🚧 in progress.
   Pick what fits.
-- `topic-slug` — a short kebab-case topic, ~2-4 words, lowercase, hyphenated
-  (e.g. `my-recommendation`, `what-actually-works`, `next-step`).
+- `Short Headline` — a short, readable, natural-language headline, ~2-5 words,
+  title case (e.g. `My Recommendation`, `What Actually Works`, `Next Step`).
+  NOT kebab-case — write it like a headline a human would scan.
 - Content sits beneath the header: prose, bullets, tables, code — all fine.
 
 Guidance
@@ -54,7 +56,7 @@ Guidance
 - A trivial one-line reply can be a single section, or skip the header entirely
   if it would only add noise — judgment call, don't be robotic about it.
 - Don't over-fragment: ~2-5 sections for a typical reply; each earns its header.
-- Keep slugs honest to the content; don't pad to hit a count.
+- Keep headlines honest to the content; don't pad to hit a count.
 - One emoji per header, at the start, right after `## `.
 
 End-of-run file report (📁)
@@ -86,22 +88,22 @@ Examples
 --------
 
 ```
-## 🧩 short-answer
+## 🧩 Short Answer
 Yes — and one cheap test settles it.
 
-## ⚠️ the-catch
+## ⚠️ The Catch
 A skill alone can't make a behavior always-on; it only runs when invoked.
 
-## 🎯 my-recommendation
+## 🎯 My Recommendation
 Run the back-test first, because it resolves the direction before any build.
 
-## 📁 file-changes
+## 📁 File Changes
 code:    code-dev/1-PIPELINE/3-Case-WorkSpace/builder_x.py
 derived: code/haifn/fn_case/x.py  (rebuilt from builder — skip)
 
-## 👀 which-files-to-review
+## 👀 Files to Review
 builder_x.py — the hand-written CaseFn logic; the generated x.py is derived — skip.
 
-## 🙋 what-i-need-from-you
+## 🙋 What I Need From You
 Pick the model: Bedrock (BAA-covered) vs a local in-VPC model.
 ```
