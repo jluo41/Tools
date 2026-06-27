@@ -14,11 +14,17 @@ Invocation:  /subjective-label <command> [args]
 Sub-commands
 ------------
 
-  init      Create project, define topic + boundaries via dialogue
+  Project lifecycle:
+  init      Elicit guideline from vague seed via three-way conversation
   iterate   Run one iteration: probe → panel labels → analyze → surface
   validate  Benchmark current gallery against public dataset (κ vs human)
   scale     Batch-label full dataset using the converged gallery
   status    Show project state, κ trajectory, gallery stats, next step
+
+  Knowledge layer:
+  lesson    Capture / list / search annotation methodology gotchas
+  feedback  Capture / list skill defects and complaints
+  digest    Bulk harvest lessons + feedback from a session transcript
 
   (no sub-command) Show this menu and ask what the researcher wants.
 
@@ -33,6 +39,9 @@ Parse $ARGUMENTS for the sub-command token. Then invoke the matching sub-skill:
   validate  ->  /sl-validate
   scale     ->  /sl-scale
   status    ->  /sl-status
+  lesson    ->  fn/lesson.md  (capture / list / search)
+  feedback  ->  fn/feedback.md (capture / list / move)
+  digest    ->  fn/digest.md  (harvest → lesson/ + feedback/)
 
 
 Core Model

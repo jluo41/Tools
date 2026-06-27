@@ -1,6 +1,6 @@
 ---
-name: learn-azure-digest
-description: "Utility verb. Digests a session -- the CURRENT one, or a PAST session named/id'd as an argument -- scanning its transcript for BOTH platform lessons (gotchas, surprises, workarounds worth knowing BEFORE next time) AND feedback about the learn-azure skill itself (wiki gaps, wrong info, outdated instructions). Distills, dedups, confirms, then routes each item to lesson/ or feedback/ accordingly. The bulk harvester for both knowledge types. Never auto-files."
+name: subjective-label-digest
+description: "Utility verb. Digests a session -- the CURRENT one, or a PAST session named/id'd as an argument -- scanning its transcript for BOTH methodology lessons (annotation gotchas, LLM behavior surprises, kappa pitfalls) AND feedback about the subjective-label skill itself (clunky steps, missing features). Distills, dedups, confirms, then routes each item to lesson/ or feedback/ accordingly. The bulk harvester for both knowledge types. Never auto-files."
 argument-hint: "[\"<session-name|id>\"] [--dry-run]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 ---
@@ -9,15 +9,16 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 
 Most hard-won knowledge is discovered conversationally and never filed. `digest`
 is the bulk harvester: it reads a session's transcript, distills TWO kinds of
-discrete items — platform LESSONS (gotchas, surprises, workarounds) and skill
-FEEDBACK (wiki/diagram gaps, wrong instructions) — dedups them, and (after you
-confirm) routes each to the right destination: lesson/ or feedback/.
+discrete items — methodology LESSONS (annotation gotchas, persona behavior,
+kappa pitfalls) and skill FEEDBACK (clunky steps, wrong behavior, missing
+features) — dedups them, and (after you confirm) routes each to the right
+destination: lesson/ or feedback/.
 
 Typical usage: from a FRESH session (clean context), name the PAST session to
-harvest -- `/learn-azure digest "Azure-Setup-Session"`. With no argument it
-digests the CURRENT session instead.
+harvest -- `/subjective-label digest "Empathy-Labeling-Init"`. With no argument
+it digests the CURRENT session instead.
 
-## Run: `/learn-azure digest ["<session-name|id>"] [--dry-run]`
+## Run: `/subjective-label digest ["<session-name|id>"] [--dry-run]`
 
 ```
 0. RESOLVE which session to digest:
@@ -25,24 +26,24 @@ digests the CURRENT session instead.
      - "<id>"   -> that transcript .jsonl.
      - "<name>" -> the session /rename'd to that name.
 1. SCAN the target session for TWO signal types:
-     LESSON signals (platform surprises — route to lesson/):
-       - "it turns out Azure does X, which broke Y"
-       - "the workaround is to Z instead of W"
-       - gotchas, silent failures, surprising platform behavior
-       - workarounds discovered through trial and error
+     LESSON signals (methodology surprises — route to lesson/):
+       - "it turns out personas are order-sensitive"
+       - "kappa was misleadingly low because of label imbalance"
+       - "the embedder collapsed humor and sarcasm into one cluster"
+       - gotchas about LLM behavior, statistics, embeddings, datasets
        - anything that would save time if known BEFORE starting
-     FEEDBACK signals (skill/doc defects — route to feedback/):
-       - "this wiki page is wrong/outdated/missing X"
-       - "the diagram doesn't show Y"
-       - "the invite instructions didn't work because Z"
-       - corrections you made to the learning material
-     DROP  - one-off Azure/Databricks operational commands
-           - project-specific discussion (about REACH, not the wiki)
+     FEEDBACK signals (skill defects — route to feedback/):
+       - "sl-iterate is too slow because it retrains every time"
+       - "the init dialogue didn't ask about my purpose"
+       - "the trajectory plot is hard to read"
+       - complaints about the TOOL, not the methodology
+     DROP  - one-off labeling decisions
+           - project-specific discussion (about THIS corpus, not the method)
            - my own narration
 2. DISTILL into discrete candidate items, ONE concern each.
    TAG each as [LESSON] or [FEEDBACK] based on the signal type:
-     [LESSON]   about the PLATFORM being surprising   -> lesson/
-     [FEEDBACK] about the SKILL/DOC being wrong       -> feedback/
+     [LESSON]   about the METHODOLOGY being surprising   -> lesson/
+     [FEEDBACK] about the SKILL being wrong/clunky        -> feedback/
 3. DEDUP each candidate against existing items in its target folder:
      [LESSON]   dedup against lesson/*.md (same-topic -> update existing lesson)
      [FEEDBACK] dedup against feedback/*.md (same-topic -> merge)
@@ -59,17 +60,17 @@ digests the CURRENT session instead.
 6. REPORT as an ITEMIZED LIST of every item produced:
      <NEW|MERGED|DROPPED> · <LESSON|FEEDBACK> · <file.md> · "<one-line title>"
    Then close with the tally "L lessons (l new, l' merged), F feedback (f new,
-   f' merged), D dropped" and "review: /learn-azure lesson list" +
-   "/learn-azure feedback list".
+   f' merged), D dropped" and "review: /subjective-label lesson list" +
+   "/subjective-label feedback list".
 ```
 
-## Scope: platform knowledge + skill feedback (not global prefs)
+## Scope: methodology knowledge + skill feedback (not global prefs)
 
 ```
 digest routes to TWO destinations:
-  platform gotcha  "Graph API is blocked at JHU — use the portal instead" -> lesson/
-  wiki defect      "the invite page is missing the Graph API workaround"  -> feedback/
-  global pref      "always show me a diagram instead of prose"            -> PREFERENCES.md
+  methodology gotcha  "personas order-bias the first option"          -> lesson/
+  skill defect        "sl-init doesn't ask about purpose"             -> feedback/
+  global pref         "always show me a diagram instead of prose"     -> PREFERENCES.md
 ```
 
 ## `--dry-run`
