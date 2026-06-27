@@ -26,8 +26,9 @@ Lessons are guardrails, not just history.
    a. SAME TOPIC -> UPDATE the existing file:
       - add a "## Update YYYY-MM-DD" section with the new detail
       - do NOT overwrite prior content
-   b. NEW TOPIC -> CREATE lesson/<NN>-<short-slug>.md
-      where NN = max existing number + 1, zero-padded to 2 digits.
+   b. NEW TOPIC -> CREATE lesson/<NN>-YYMMDD-<short-slug>.md
+      where NN = max existing number + 1, zero-padded to 2 digits,
+      and YYMMDD is today's date (e.g. 260626).
 3. WRITE the lesson using the schema below.
 4. CONFIRM: show the file path and one-line summary.
 ```
@@ -36,7 +37,7 @@ Lessons are guardrails, not just history.
 
 ```
 Print all lessons, one line each:
-  <NN> · <title> · <when-to-apply one-liner>
+  <NN> · <YYMMDD> · <title> · <when-to-apply one-liner>
 Sorted by number.
 ```
 
