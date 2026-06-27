@@ -1,0 +1,15 @@
+{
+  "name": "jhu-research-it",
+  "owner": {
+    "name": "Junjie Luo",
+    "url": "https://github.com/jluo41"
+  },
+  "plugins": [
+    {
+      "name": "jhu-research-it",
+      "source": "./",
+      "description": "JHU Research-IT helpdesk chatbot over a local WIKI knowledge base (PMAP, SAFE, SAFER, Discovery, Databricks, Epic Cosmos)",
+      "version": "0.1.0"
+    }
+  ]
+}

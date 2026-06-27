@@ -1,8 +1,11 @@
 ---
-status: fixed
+status: open
 created: 2026-06-22
+updated: 2026-06-26
+occurrences: 2
 context: whole lifecycle flow (every stage skill seed/pitch/claims/narrative/display/minimap + haipipe-paper-enter console); felt during the seed re-walk on Paper-Personality-Opioid-MedJournal, where the agent rewrote 0-seed.tex wholesale without first teaching the user the content or drawing out their judgment
 fixed_in: "paper ref/stage-illuminate.md + all stage skills v2.0.0"
+regressed: 2026-06-26
 ---
 I think the problem here is you didn't ask and explain and illuminate the users about this paper, paper need to internalize the content and give their tastes. do you understand? this part is not included in this stage, this should be in every stage of the haipipe-paper's lifecycle and this should be very very important.
 
@@ -31,5 +34,13 @@ Where it touches:
 - new ref/stage-illuminate.md (teach-then-elicit-then-draft protocol + a short "taste-bearing decisions" prompt list per stage).
 - each stage skill (seed/pitch/claims/narrative/display/minimap): add Step 0 "Illuminate + Elicit" before the produce step; for re-walks, diff-and-ask rather than overwrite.
 - haipipe-paper-enter / haipipe-paper-lifecycle: state in their copilot policy that stage drafting is gated on an illuminate+elicit exchange, not just on the final advance-confirm.
+
+## Recurrences
+- 2026-06-26 (REGRESSION, write/edit on Paper-Personality2Opioid-MISQ2026 Introduction): "I feel for the wrting, currently it is just the rubushi, first, no aware of the venue requirements, second no aware of the language writing style. 3. should not write out things all in one. Need the very very detailed discussions, to ellicit the user's prefernces, and cavet, and what should not.... but now it doesn't. It is just very very hard to write."
+  - Sharpens the original ask with THREE concrete facets the v2.0.0 fix did not enforce during prose writing:
+    1. VENUE-AWARENESS: the illuminate step must surface the target venue's requirements (MISQ here: page-1 abstract, theory-forward IMRAD, language norms) BEFORE drafting; the agent wrote intro beats with no reference to the pinned `_venue/playbook-utd-is` pack.
+    2. LANGUAGE-STYLE-AWARENESS: the illuminate step must surface and honor the writing-style contract (plain academic register, no AI-voice, no em-dash, no semicolon, one idea per sentence) BEFORE drafting; the agent produced writerly/AI-flavored prose instead.
+    3. ELICIT WHAT-NOT / CAVEATS: the elicit step must draw out not just "what you want" but the user's CAVEATS and explicit "what should NOT be done" per beat, one beat at a time, via "very very detailed discussions" -- NOT a full multi-paragraph draft dumped at once. The agent dumped all 5 intro beats repeatedly.
+  - Net: the per-stage loop (illuminate -> elicit -> draft) regressed specifically in the WRITE/EDIT phase. The illuminate must now carry {venue requirements + language-style contract + taste decisions}, and the elicit must capture {preferences + caveats + what-not}, one unit at a time, before any prose is written.
 
 Fix:

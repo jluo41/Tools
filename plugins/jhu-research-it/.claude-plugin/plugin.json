@@ -1,0 +1,25 @@
+{
+  "name": "jhu-research-it",
+  "version": "0.1.0",
+  "description": "JHU Research-IT helpdesk chatbot. Answers how-to questions about Johns Hopkins research IT infrastructure (PMAP, SAFE, SAFER, Discovery, Databricks, Crunchr, Epic Cosmos, REACH) by reading a local WIKI/ knowledge base. Invoke as /jhu-research-it.",
+  "author": {
+    "name": "Junjie Luo",
+    "url": "https://github.com/jluo41"
+  },
+  "license": "MIT",
+  "keywords": [
+    "jhu",
+    "johns-hopkins",
+    "pmap",
+    "safe",
+    "safer",
+    "discovery",
+    "databricks",
+    "crunchr",
+    "epic-cosmos",
+    "reach",
+    "research-it",
+    "helpdesk",
+    "wiki"
+  ]
+}
