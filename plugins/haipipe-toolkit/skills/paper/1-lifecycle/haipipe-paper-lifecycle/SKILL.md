@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-lifecycle
-description: "Orchestrator for the paper structure lifecycle (1-lifecycle). Routes to specialists: folder (scaffold), pitch (one-minute story), narrative (design contract), minimap (paragraph jobs + evidence anchors; folds in the architecture blueprint and plan outline), display (figure/table contract + architecture/figure1 framework candidate rounds + preview PDFs; folds in figure-planner inventory), figure (plots/tables), figure-spec (vector diagrams), illustration (AI images). Use when you need any structural work on a paper before or during writing. Trigger: paper structure, paper pitch, scaffold paper, paper outline, paper architecture, display layer, figure plan, /haipipe-paper-lifecycle."
+description: "Orchestrator for the paper structure lifecycle (1-lifecycle). Routes to specialists: folder (scaffold), pitch (one-minute story), narrative (design contract), display (figure/table contract + architecture/figure1 framework candidate rounds + preview PDFs; folds in figure-planner inventory), figure (plots/tables), figure-spec (vector diagrams), illustration (AI images). Use when you need any structural work on a paper before or during writing. Trigger: paper structure, paper pitch, scaffold paper, paper outline, paper architecture, display layer, figure plan, /haipipe-paper-lifecycle."
 argument-hint: "[function] [paper-path-or-input] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
@@ -30,7 +30,6 @@ narrative, outlines, figures, or diagrams itself.
 /haipipe-paper-lifecycle pitch <args>                   -> 0-lifecycle/1-pitch/1-pitch.tex
 /haipipe-paper-lifecycle claims <args>                  -> 0-lifecycle/2-claims/2-claims.tex (claim ledger)
 /haipipe-paper-lifecycle narrative <args>               -> NARRATIVE_REPORT.md (design contract)
-/haipipe-paper-lifecycle minimap <args>                 -> 0-lifecycle/5-minimap/5-minimap.tex (folds in architecture blueprint + plan outline; see its ref/)
 /haipipe-paper-lifecycle display <args>                 -> 0-displays/README.md + ready-to-input display blocks (folds in figure-planner inventory; see its ref/)
 /haipipe-paper-lifecycle table <args>                   -> data-driven LaTeX tables (haipipe-paper-display-table)
 /haipipe-paper-lifecycle figure <args>                  -> data-driven plots (haipipe-paper-display-figure)
@@ -72,18 +71,9 @@ haipipe-paper-narrative     CONTRACT:  generate the evidence-backed arc from the
                                                  inventory, limitations.
 ```
 
-### Architecture & Planning — what the paper says
+### Display & Figures — what the reader sees
 
 ```
-haipipe-paper-minimap       MINIMAP:   maintain 0-lifecycle/5-minimap/5-minimap.tex:
-                                                 each paragraph slot's job + evidence anchor
-                                                 (claim row + display unit). Owns the minimap
-                                                 table. The architecture blueprint (5-act arc,
-                                                 contribution emphasis, page budget) and the
-                                                 plan outline (section-by-section venue budgets)
-                                                 are now folded in as ref/architecture-blueprint.md
-                                                 and ref/plan-outline.md.
-
 haipipe-paper-display       DISPLAY:   0-displays/README.md plus per-unit
                                                  README.md, float.tex, and preview.pdf for
                                                  figures/tables. Keeps display items tied to
@@ -137,16 +127,13 @@ invoked standalone. The typical first-pass order:
 ⑥ display        display contract: figure/table jobs, sources, captions, preview PDFs
                  (figure-inventory planning folded in as its ref/figure-logic.md)
       ↓
-⑦ minimap        paragraph jobs + evidence anchors
-                 (architecture blueprint + plan outline folded in as its ref/)
-      ↓
-⑧ table / figure / diagram / illustration   make the visual assets
+⑦ table / figure / diagram / illustration   make the visual assets
 ```
 
-After ⑦, the paper folder is ready for the **Edit cycle (②)** in the
-paper mental model — the hand-off goes to `4-build-submit/` and `3-write-edit/`
-skills. Structural audit (ASCII zoom diagrams) now lives in the Edit cycle as
-`haipipe-paper-edit-diagram`.
+After ⑦, the paper folder is ready for per-section editing work in
+`0-lifecycle/5-editing/` and the **Edit cycle (②)** skills under
+`3-write-edit/`. Structural audit (ASCII zoom diagrams) lives in the
+Edit cycle as `haipipe-paper-edit-diagram`.
 
 ---
 
@@ -173,7 +160,7 @@ Step 3: Dispatch:
 
     # Lifecycle stages keep the plain haipipe-paper-<stage> name:
     function = else        -> Skill("haipipe-paper-<function>", args)
-        (seed | pitch | claims | narrative | minimap | display)
+        (seed | pitch | claims | narrative | display)
 
     Special: "figure-plan", "framework" -> Skill(
       "haipipe-paper-display", "framework " + args
@@ -202,12 +189,6 @@ claims, claim ledger, supported, weak, GAP,
 
 narrative, story, design contract, NARRATIVE_REPORT,
   claim-evidence matrix, core claim                   -> narrative
-
-minimap, paragraph minimap, paragraph jobs,
-  evidence anchor, section map, paragraph plan,
-  architecture, blueprint, 5-act arc, strategic
-  overview, plan, outline, PAPER_PLAN, section plan,
-  page budget, 写大纲, paper outline                   -> minimap
 
 display, display layer, 0-displays/README.md, 0-displays,
   ready to input, preview pdf, float.tex, caption,
@@ -243,8 +224,6 @@ seed, paper-seed, prospectus                     -> seed
 pitch, paper-pitch, storycard                    -> pitch
 claims, claim, ledger                            -> claims
 narrative, story, contract                       -> narrative
-minimap, paragraph-map, anchors,
-  architecture, arch, blueprint, plan, outline   -> minimap
 display, displays, disp,
   figure-plan, fp, figplan, fw                   -> display
 framework, figureone, fig1                        -> framework
@@ -275,8 +254,6 @@ When invoked with no arguments, emit a compact specialist chooser:
     narrative      3-narrative: evidence-backed arc
     display        4-display: display contract + units
                    (figure-inventory planning folded in; see ref/figure-logic.md)
-    minimap        5-minimap: paragraph jobs + evidence anchors
-                   (architecture blueprint + plan outline folded in; see its ref/)
 
   Display renderers (data-driven):
     table          Data-driven LaTeX tables (booktabs/stars/panels)
@@ -288,7 +265,7 @@ When invoked with no arguments, emit a compact specialist chooser:
     illustration-gemini  AI concept illustration — Gemini fallback
     framework      Candidate framework/architecture figure planning (Figure 1 style)
 
-  Pipeline: folder → seed → pitch → claims → narrative → display → minimap → table/figure/diagram/illustration
+  Pipeline: folder → seed → pitch → claims → narrative → display → table/figure/diagram/illustration
 
 Next: /haipipe-paper-lifecycle <function> "<input>"
 ```
@@ -324,11 +301,12 @@ haipipe-paper (router)  ── consults _venue/playbook-<venue> for venue fit
             ▼
 haipipe-paper-lifecycle (this orchestrator)
   ├─► folder
+  ├─► seed
   ├─► pitch
+  ├─► claims
   ├─► narrative
   ├─► display      (figure-inventory planning folded in; see ref/figure-logic.md)
-  ├─► minimap      (architecture blueprint + plan outline folded in; see its ref/)
   ├─► table / figure / diagram / illustration (+ illustration-gemini fallback)
-  └─► (hands off to 4-build-submit / 3-write-edit when structure is settled;
-       structural ASCII audit now lives there as haipipe-paper-edit-diagram)
+  └─► (hands off to 5-editing/ per-section scaffolds and 3-write-edit/ skills;
+       structural ASCII audit lives there as haipipe-paper-edit-diagram)
 ```
