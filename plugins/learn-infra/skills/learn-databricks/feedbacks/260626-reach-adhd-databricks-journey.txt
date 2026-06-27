@@ -225,4 +225,256 @@
   🔧 Architecture:   ████████  2 issues (#5 env vars, #9 partitions)
   🔒 Auth:           ████  1 issue (token expiry, Jun 26)
 
-  Total: 10 issues resolved over 3 sessions
+  Total: 11 issues resolved over 3 sessions
+
+─§ 🚀 Endpoint Deployment Flow (3 Phases, run from local CLI) ──────────
+
+  🧑‍💻 Local Machine                          ☁️ Azure Databricks
+  ════════════════                          ═══════════════════
+
+  Phase 0: 📤 Upload (skipped if exists)
+  ┌──────────────────────────────┐
+  │ 📦 _WorkSpace/6-EndpointStore│     databricks fs ls     ┌──────────────────────┐
+  │   /reach.adhd.xgb_v0003     │──── exists? ─────────────▶│ 📂 UC Volume         │
+  │   ├── model/                │      │                    │ /Volumes/cdhai_.../   │
+  │   ├── code/                 │   ┌──┴──┐                 │  6-EndpointStore/     │
+  │   ├── examples/             │   │     │                 │   reach.adhd.xgb_v0003│
+  │   └── manifest.json         │  ✅no  ❌yes              └──────────────────────┘
+  └──────────────────────────────┘   │     │
+       │                         upload  skip
+       │                         via CLI  ✅
+       ▼
+  Phase 1: 📦 MLflow → Unity Catalog
+  ┌────────────────────────────────────────────────────────────────────┐
+  │                                                                    │
+  │  mlflow.pyfunc.save_model()          mlflow.log_artifacts()       │
+  │  ┌─────────────────────┐             ┌─────────────────────┐      │
+  │  │ 🧠 EndpointSet      │             │ 📤 Upload 1043      │      │
+  │  │    MLflowModel      │────────────▶│    artifacts to     │      │
+  │  │ + artifacts (model, │  temp dir   │    MLflow experiment│      │
+  │  │   code, examples)   │             │    run_id: 102a7... │      │
+  │  │ + signature:        │             └──────────┬──────────┘      │
+  │  │   payload: string   │                        │                 │
+  │  └─────────────────────┘                        ▼                 │
+  │                                      mlflow.register_model()      │
+  │                                      ┌─────────────────────┐      │
+  │                                      │ 🗄️ Unity Catalog     │      │
+  │                                      │ cdhai_welldoc_space  │      │
+  │                                      │  .haipipe            │      │
+  │                                      │  .reach_adhd_xgb     │      │
+  │                                      │   v2 ✅              │      │
+  │                                      └──────────┬──────────┘      │
+  └─────────────────────────────────────────────────┼─────────────────┘
+                                                    │
+                                                    ▼
+  Phase 2: 🌐 Model Serving
+  ┌────────────────────────────────────────────────────────────────────┐
+  │  from databricks.sdk import WorkspaceClient                       │
+  │                                                                    │
+  │  ws.serving_endpoints.create()                                     │
+  │  ┌─────────────────────────┐      ⏳ poll state       🟢 READY    │
+  │  │ 🚀 ServedEntityInput    │      every 30s           ┌─────────┐ │
+  │  │  entity: ...reach_adhd  │─────────────────────────▶│ 🌐 Live │ │
+  │  │  version: "2"           │      ~3-5 min            │ Endpoint│ │
+  │  │  workload: "Small"      │                          └─────────┘ │
+  │  │  scale_to_zero: true    │                               │      │
+  │  └─────────────────────────┘                               ▼      │
+  │                                                                    │
+  │  🔗 https://adb-740...azuredatabricks.net/                        │
+  │     serving-endpoints/reach-adhd-prediction-dev/invocations        │
+  └────────────────────────────────────────────────────────────────────┘
+
+─§ 🔀 Payload Routing — v1 ❌ vs v2 ✅ ─────────────────────────────
+
+  🤔 v1 attempt: send raw payload directly
+  ═══════════════════════════════════════
+
+  🧑‍💻 Client sends:
+  ┌──────────────────────────────────────────────────────┐
+  │ {                                                     │
+  │   "models": "REACHADHD_ADHDPredictionXGB",           │
+  │   "source_tables": { 13 tables... },     ◀── 🔑 top-level keys
+  │   "dataframe_records": [                             │
+  │     {"EncCSN": 955156, "ObsDT": "2021-03-27", ...}   │
+  │   ]                                                   │
+  │ }                                                     │
+  └───────────────────────┬──────────────────────────────┘
+                          │
+                          ▼
+  ┌─────────────────────────────────────────────────────────────────┐
+  │ 🌐 Databricks Model Serving                                     │
+  │                                                                  │
+  │  1️⃣  Sees top-level "dataframe_records" key                     │
+  │     → extracts as DataFrame rows: [EncCSN, ObsDT, PID, ...]    │
+  │                                                                  │
+  │  2️⃣  Checks signature: expects [dataframe_records, source_tables]│
+  │     → DataFrame has [EncCSN, ObsDT, PID, _metadata]             │
+  │                                                                  │
+  │  ❌ SCHEMA MISMATCH!                                             │
+  │     "Model is missing inputs ['dataframe_records',               │
+  │      'source_tables']. Extra inputs: ['ObsDT','EncCSN',...]"    │
+  └─────────────────────────────────────────────────────────────────┘
+         ⚡ BAD_REQUEST 💥
+
+  ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─
+
+  ✅ v2 fix: JSON passthrough via "payload" column
+  ═════════════════════════════════════════════════
+
+  🧑‍💻 Client wraps entire payload as JSON string:
+  ┌──────────────────────────────────────────────────────┐
+  │ {                                                     │
+  │   "dataframe_records": [                             │
+  │     {                                                 │
+  │       "payload": "{\"models\":\"REACHADHD_...\",     │
+  │                    \"source_tables\":{...},           │
+  │                    \"dataframe_records\":[...]}"      │
+  │     }                               ▲                 │
+  │   ]                                 │                 │
+  │ }                          entire payload as string   │
+  └───────────────────────────┬──────────────────────────┘
+                              │
+                              ▼
+  ┌──────────────────────────────────────────────────────────────┐
+  │ 🌐 Databricks Model Serving                                  │
+  │                                                               │
+  │  1️⃣  Extracts dataframe_records → DataFrame(payload: str)    │
+  │  2️⃣  Checks signature: expects [payload: string] ✅ MATCH   │
+  └──────────────────────────┬───────────────────────────────────┘
+                             │
+                             ▼
+  ┌──────────────────────────────────────────────────────────────┐
+  │ 🧠 EndpointSetMLflowModel.predict(context, DataFrame)        │
+  │                                                               │
+  │  3️⃣  _prepare_payload():                                     │
+  │      detects "payload" column                                 │
+  │      → json.loads(row["payload"])                             │
+  │      → full dict { models, source_tables, dataframe_records } │
+  │                                                               │
+  │  4️⃣  endpoint_set.inference(payload)                          │
+  │      → XGBoost prediction pipeline runs                       │
+  │      → { adhd_risk_score: 0.2753, risk_level: "MODERATE" }   │
+  └──────────────────────────┬───────────────────────────────────┘
+                             │
+                             ▼
+  🧑‍💻 Client receives:
+  ┌──────────────────────────────────────────────────────┐
+  │ { "predictions": {                                    │
+  │     "models": [{                                      │
+  │       "name": "REACHADHD-XGB-ADHDPrediction/@v0003", │
+  │       "predictions": [{                               │
+  │         "adhd_risk_score": 0.2753,   ✅               │
+  │         "risk_level": "MODERATE"     ✅               │
+  │       }]                                              │
+  │     }]                                                │
+  │ }}                                                    │
+  └──────────────────────────────────────────────────────┘
+
+─§ 🧠 Why Complex JSON Needs "Payload Column" Passthrough ──────────
+
+  ⚠️ Two hard constraints (no way around them):
+  ┌──────────────────────────────────────────────────────────┐
+  │ 1. 🗄️ Unity Catalog REQUIRES a model signature           │
+  │    (no signature → MlflowException at registration)      │
+  │                                                          │
+  │ 2. 🌐 Model Serving ENFORCES signature schema            │
+  │    (input must match → or BAD_REQUEST)                   │
+  └──────────────────────────────────────────────────────────┘
+
+  📊 Standard case (flat DataFrame) — works fine:
+  ┌────────────────────────────────────────────────────────────────┐
+  │                                                                │
+  │  Signature: [age: long, weight: double, diagnosis: string]    │
+  │                                                                │
+  │  Client sends:                   Model Serving:                │
+  │  {"dataframe_records": [         extracts rows                │
+  │    {"age":12, "weight":45.2,     → DataFrame(age,weight,diag) │
+  │     "diagnosis":"F90.0"}         → matches signature ✅       │
+  │  ]}                                                            │
+  └────────────────────────────────────────────────────────────────┘
+
+  🐛 Our case (nested JSON) — CANNOT flatten:
+  ┌────────────────────────────────────────────────────────────────┐
+  │                                                                │
+  │  Our payload has 3 top-level keys:                             │
+  │  ┌─────────────────────────────────────────────────┐           │
+  │  │ "models": "REACHADHD_..."         📝 string     │           │
+  │  │ "source_tables": { 13 dicts }     📊 nested obj │           │
+  │  │ "dataframe_records": [ {...} ]    📋 array      │           │
+  │  └─────────────────────────────────────────────────┘           │
+  │                                                                │
+  │  🚩 "dataframe_records" is a RESERVED KEY in Model Serving!   │
+  │     It auto-extracts the array as DataFrame rows.              │
+  │     The other keys (models, source_tables) are LOST.           │
+  │                                                                │
+  └────────────────────────────────────────────────────────────────┘
+
+  🔀 Three attempts → one winner:
+
+  ❌ Attempt 1: no signature
+  ┌─────────────────────┐
+  │ mlflow.register_model│───▶ 💥 "must contain signature metadata"
+  │ (no signature)       │
+  └─────────────────────┘
+
+  ❌ Attempt 2: signature from meta.json properties
+  ┌─────────────────────┐     ┌──────────────────────────────────┐
+  │ inputSchema:         │     │ Signature columns:               │
+  │   properties:        │────▶│   dataframe_records: string      │
+  │     dataframe_records│     │   source_tables: string          │
+  │     source_tables    │     └────────────────┬─────────────────┘
+  └─────────────────────┘                       │
+                                                ▼
+                              🌐 Serving sees "dataframe_records" in payload
+                              → extracts as rows [EncCSN, ObsDT, PID]
+                              → columns ≠ signature → 💥 BAD_REQUEST
+
+  ✅ Attempt 3: payload column passthrough
+  ┌───────────────────────────────────────────────────────────────┐
+  │                                                               │
+  │  Signature: [payload: string]     ← single column            │
+  │                                                               │
+  │  Client:                                                      │
+  │  {"dataframe_records": [          ← Model Serving extracts   │
+  │    {"payload": "<json_string>"}      single "payload" col    │
+  │  ]}                                  matches signature ✅    │
+  │                                                               │
+  │  predict():                                                   │
+  │  json.loads(df["payload"][0])     ← deserializes full dict   │
+  │  → { models, source_tables,         back to original shape   │
+  │      dataframe_records }                                      │
+  │                                                               │
+  └───────────────────────────────────────────────────────────────┘
+
+  💡 General Pattern for PythonModel + Complex JSON:
+  ┌────────────────────────────────────────────────────────────────┐
+  │                                                                │
+  │   📏 RULE: If your input is nested / not a flat table,        │
+  │            use a single string column and serialize.           │
+  │                                                                │
+  │   Signature:    ColSpec("string", "payload")                  │
+  │   Client:       {"dataframe_records": [{"payload": "..."}]}   │
+  │   predict():    json.loads(input["payload"])                   │
+  │                                                                │
+  │   Works for: 🏥 EHR payloads · 🧬 multi-table joins ·        │
+  │              📊 nested configs · any non-tabular input         │
+  │                                                                │
+  └────────────────────────────────────────────────────────────────┘
+
+─§ 🏁 Final Status Board (Updated Jun 26) ──────────────────────────
+
+  +-----+-------------------+--------+────────────────────────────────+
+  │  #  │ 🏷️ Stage          │ Status │ 📝 Notes                       │
+  +-----+-------------------+--------+────────────────────────────────+
+  │  1  │ 📥 Source          │  ✅   │ Ran on Databricks              │
+  │  2  │ 📋 Record          │  ✅   │ Ran on Databricks              │
+  │  3  │ 🎯 Case            │  ✅   │ Partitions from local          │
+  │  4  │ 🧩 AIData          │  ✅   │ After CaseStore upload         │
+  │  5  │ 🧠 Train (XGB)     │  ✅   │ Runtime 17.3 ML, 7 min        │
+  │  6  │ 📦 Endpoint Pkg    │  ✅   │ reach.adhd.xgb_v0003           │
+  │  7  │ 🗄️ MLflow → UC     │  ✅   │ v2, payload passthrough sig   │
+  │  8  │ 🚀 Model Serving   │  ✅   │ reach-adhd-prediction-dev      │
+  │  9  │ 🧪 Smoke Test      │  ✅   │ risk_score=0.2753 MODERATE    │
+  +-----+-------------------+--------+────────────────────────────────+
+
+  🎉 END-TO-END COMPLETE: Data → Model → Serving → Prediction ✅
