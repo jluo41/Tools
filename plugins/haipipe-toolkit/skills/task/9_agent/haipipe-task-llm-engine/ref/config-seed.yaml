@@ -1,0 +1,27 @@
+_meta:
+  purpose: |
+    <describe what this LLM task does>
+  input: prompts/system.md + prompts/user.md
+  output: results/<run>/summary.json + _WorkSpace/LLMCallStore/...
+
+prompts:
+  system: prompts/system.md
+  user: prompts/user.md
+
+transport: auto
+
+transports:
+  claude_sdk:
+    model: haiku
+    max_turns: 1
+  codex_oauth:
+    model: gpt-5.5
+
+store:
+  llm_call_store: _WorkSpace/LLMCallStore
+  sdk_session_dir: _WorkSpace/LLMCallStore/.sdk_sessions
+
+batch:
+  max_workers: 1
+  max_consecutive_failures: 5
+  timeout_seconds: 300
