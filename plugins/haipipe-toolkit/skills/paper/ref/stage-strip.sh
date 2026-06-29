@@ -17,7 +17,7 @@
 #
 # Usage: sh stage-strip.sh [paper-dir] [session-stage]   (paper-dir defaults to
 # cwd; looks upward for STATUS.md so it works from inside the paper folder.
-# session-stage is an optional spine key, e.g. "minimap", marked 🔥 when it
+# session-stage is an optional spine key, e.g. "display", marked 🔥 when it
 # differs from current_layer.)
 
 paper="${1:-.}"
@@ -39,8 +39,8 @@ current=$(grep -m1 '| current_layer |' "$status" | sed 's/.*|[[:space:]]*//' | s
 # fallback to old format
 [ -z "$current" ] && current=$(grep -m1 '^current_layer:' "$status" | sed 's/^current_layer:[[:space:]]*//' | tr -d '[:space:]')
 
-# canonical spine order
-keys="seed pitch claims narrative display minimap write-edit review"
+# canonical spine order (minimap removed; editing scaffolds replaced it)
+keys="seed pitch claims narrative display write-edit review"
 
 # read Gate Ledger: extract confirmed stages into a space-separated string
 confirmed=""
