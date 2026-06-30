@@ -1,13 +1,14 @@
 ---
 name: haipipe-application-narrative
-description: "Stage 3 of the intervention lifecycle. Answers 'how do claims compose into a coherent message/experience?' Maps claim flow to the output's arc structure. Required for complex venues (email, dashboard, ui-card, report); skipped for simple venues where the venue template handles it. Same stage name as paper-narrative. Output: 0-lifecycle/3-narrative.md. Trigger: narrative, arc, story flow, message structure, /haipipe-application narrative."
+description: "Stage 3 of the intervention lifecycle. Answers 'how do claims compose into a coherent message/experience?' Maps claim flow to the output's arc structure. Required for complex venues (email, dashboard, ui-card, report); skipped for simple venues. Output: 0-lifecycle/3-narrative/3-narrative.md + _LOG_3-narrative.md + _DISPLAY_3-narrative.md (which display unit serves each beat). Markdown only. Trigger: narrative, arc, story flow, message structure, /haipipe-application narrative."
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.0.0"
-  last_updated: "2026-06-23"
-  summary: "Stage 3 — how claims compose into a coherent output arc."
+  version: "3.0.0"
+  last_updated: "2026-06-29"
+  summary: "Stage 3 — how claims compose into a coherent output arc. Now with _LOG changelog + _DISPLAY_ tracking (which display unit serves each beat). Borrowed per-stage tracking pattern from paper."
   changelog:
+    - "3.0.0 (2026-06-29): added _LOG, _DISPLAY_ tracking file (beat → display unit mapping). Output folder 3-narrative/ (was flat file). Borrowed per-stage tracking pattern from paper."
     - "2.0.0 (2026-06-23): renamed from design to narrative; match paper vocabulary; venue-gated."
     - "1.0.0 (2026-06-22): initial version as haipipe-application-design."
 ---

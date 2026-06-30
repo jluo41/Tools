@@ -1,13 +1,14 @@
 ---
 name: haipipe-application-claims
-description: "Stage 2 of the intervention lifecycle. Answers 'what must be true for this to work?' (full) or 'which K/W entries inform this output?' (light). Depth is venue-driven: light = select from existing KB, medium = select + gap check, full = claim ledger with probe plans. Always required. Output: 0-lifecycle/2-claims.md. Trigger: claims, claim ledger, what must be true, which K/W, evidence, /haipipe-application claims."
+description: "Stage 2 of the intervention lifecycle. Answers 'what must be true for this to work?' (full) or 'which K/W entries inform this output?' (light). Depth is venue-driven: light = select from existing KB, medium = select + gap check, full = claim ledger with probe plans. Always required. Output: 0-lifecycle/2-claims/2-claims.md + _LOG_2-claims.md + _EVIDENCE_2-claims.md. Probe plans in _PROBE/ subfolder (full depth). Markdown only. Trigger: claims, claim ledger, what must be true, which K/W, evidence, /haipipe-application claims."
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.0.0"
-  last_updated: "2026-06-23"
-  summary: "Stage 2 — claims with venue-driven depth (light/medium/full)."
+  version: "3.0.0"
+  last_updated: "2026-06-29"
+  summary: "Stage 2 — claims with venue-driven depth. Now with _LOG changelog + _EVIDENCE_ tracking (what backs each claim) + _PROBE/ subfolder for claim-spawned probe plans (borrowed from paper v2.0.0)."
   changelog:
+    - "3.0.0 (2026-06-29): added _LOG, _EVIDENCE_ tracking file, _PROBE/ subfolder for claim-gap probe plans (was flat 1-probe-plans/). Output folder 2-claims/ (was flat file). Borrowed per-stage tracking pattern from paper."
     - "2.0.0 (2026-06-23): added claims_depth (light/medium/full) driven by venue profile."
     - "1.0.0 (2026-06-22): initial version modeled on paper-claims."
 ---

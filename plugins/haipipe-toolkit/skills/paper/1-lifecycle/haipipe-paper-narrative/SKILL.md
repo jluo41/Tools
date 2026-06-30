@@ -1,13 +1,14 @@
 ---
 name: haipipe-paper-narrative
-description: "Generate 0-lifecycle/3-narrative/3-narrative.tex, the design contract for /haipipe-paper: a one-page evidence-tracked story that mirrors the paper's real sections (Introduction, Methods, Results, Discussion), with every beat carrying a readiness tag ([READY]/[PENDING]/[INFER]/[LIT]/[GAP]) and a small-font interrogation comment. Reads upstream research artifacts (IDEA_REPORT, AUTO_REVIEW, CLAIMS_FROM_RESULTS, experiment results, repo source). Use when transitioning from research/experiment phase to writing phase, or when the user says 'write narrative report', '生成 narrative', '/haipipe-paper-narrative'."
+description: "Generate 0-lifecycle/3-narrative/3-narrative.md + _LOG_3-narrative.md, the design contract for /haipipe-paper: a section-mirrored, evidence-tracked story (Introduction, Methods, Results, Discussion), with every beat carrying a readiness tag ([READY]/[PENDING]/[INFER]/[LIT]/[GAP]) and an interrogation comment. Markdown only (argument documents don't need .tex compilation). Reads upstream research artifacts (IDEA_REPORT, AUTO_REVIEW, CLAIMS_FROM_RESULTS, experiment results, repo source). Use when transitioning from research/experiment phase to writing phase, or when the user says 'write narrative report', '生成 narrative', '/haipipe-paper-narrative'."
 argument-hint: "[project-dir-or-topic]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.5.0"
-  last_updated: "2026-06-24"
-  summary: "Generate 0-lifecycle/3-narrative/3-narrative.tex, the section-mirrored, readiness-tagged design contract for /haipipe-paper."
+  version: "2.0.0"
+  last_updated: "2026-06-29"
+  summary: "Generate 0-lifecycle/3-narrative/3-narrative.md + _LOG, the section-mirrored, readiness-tagged design contract. Markdown only (argument documents don't need .tex compilation; only display compiles to PDF)."
   changelog:
+    - "2.0.0 (2026-06-29): switched from .tex to .md + _LOG. Argument documents are markdown; only display compiles to PDF. Readiness tags and interrogation comments stay but in markdown format."
     - "1.5.0 (2026-06-24): added the \\fb{name}{status}{feedback}{resolution} macro for EXTERNAL reviewer comments threaded per beat (post + comments model; maroon, distinct from internal gray \\rev), with a slim footer line for no-beat comments; added the short-plain-sentence rule for all comment text (\\rev, \\fb resolutions, footer); both wired into ref/narrative-template.tex"
     - "1.4.0 (2026-06-23): output is now 0-lifecycle/3-narrative/3-narrative.tex (section-mirrored: Intro/Methods/Results/Discussion, each beat readiness-tagged + interrogation comment), retiring the markdown NARRATIVE_REPORT.md form; extracted ref/narrative-template.tex carrying the readiness legend + comment vocabulary; points to the ProjB exemplar"
     - "v1.3.1: added mandatory compile-after-edit rule; venue awareness note"

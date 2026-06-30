@@ -22,7 +22,7 @@ Skill: haipipe-paper (orchestrator)
 
 User-facing entry for the paper lifecycle. The paper lifecycle is a delivery
 owner: it owns this paper's angle, claims, narrative, section map, displays,
-minimap, maturity, and dated work rounds. Project-level evidence lives outside
+maturity, and dated work rounds. Project-level evidence lives outside
 the paper in probes, discoveries, tasks, and insights.
 
 When the paper hits a gap, record or surface a delivery need and route directly
@@ -52,17 +52,17 @@ AFTER the machine-readable return-contract tail (`status` / `paper_root` /
 order is fixed:
 
 ```text
-seed -> pitch -> claims -> narrative -> display -> minimap -> write/edit -> review
+seed -> claims -> pitch -> narrative -> display -> section-edit -> review
 ```
 
 The strip is OVERALL PROGRESS (where the paper sits in its lifecycle), not what
 this session happened to touch. Read `current_layer` from the paper's `STATUS.md`.
 Mark each stage ✅ before current, 🚀 at current (the overall frontier, a calm
-"you-are-here"), ⬜ after current; arrows sit before `write/edit` and `review`.
+"you-are-here"), ⬜ after current; arrows sit before `section-edit` and `review`.
 One line, e.g.:
 
 ```text
-seed ✅  pitch ✅  claims ✅  narrative ✅  display ✅  minimap ✅  →  write/edit 🚀  →  review ⬜
+seed ✅  claims ✅  pitch ✅  narrative ✅  display ✅  →  section-edit 🚀  →  review ⬜
 ```
 
 Two markers, two places. The STRIP uses 🚀 for the current stage (the overall
@@ -70,8 +70,8 @@ frontier); it never uses 🔥. 🔥 lives in the closing-block TOP-RULE LABEL
 (`📄 paper · <current_layer> 🔥`), which flags the stage this session is actively
 working. Normally the label stage and the strip frontier are the same stage, so
 you see a 🔥 label above a 🚀 strip for that stage. When the session loops back to
-an already-done stage (frontier `write/edit`, session tuning `minimap`), the label
-reads `· minimap 🔥` while the strip still shows `write/edit 🚀` as the frontier,
+an already-done stage (frontier `section-edit`, session tuning `minimap`), the label
+reads `· minimap 🔥` while the strip still shows `section-edit 🚀` as the frontier,
 so the divergence is visible. (The helper also accepts an optional 2nd arg to mark
 a stage 🔥 inside a bare strip when no label is present, e.g. the enter dashboard.)
 
@@ -96,7 +96,7 @@ progress strip:
     current_layer: <layer>
     next:          <single recommended command>
     ──────────────────────────────────────────────
-    seed ✅  pitch ✅  claims 🚀  narrative ⬜  display ⬜  minimap ⬜  →  write/edit ⬜  →  review ⬜
+    seed ✅  claims 🚀  pitch ⬜  narrative ⬜  display ⬜  →  section-edit ⬜  →  review ⬜
 
 The strip line still comes from the helper; only its framing (titled top rule +
 bottom rule) is added here. Every stage / enter skill inherits this closing block.
@@ -123,8 +123,8 @@ ref/paper-skill-structure.md
 /haipipe-paper enter "<paper-path>"         -> preload open-needs paper session dashboard
 /haipipe-paper status ["<paper-path>"]      -> same as enter; path optional
 /haipipe-paper venue ["<topic|paper>"] [--no-pin]  -> recommend + pin best-fit journal (-> haipipe-paper-venue)
-/haipipe-paper <stage> ["<input>"]          -> seed|pitch|claims|narrative|display|minimap (-> haipipe-paper-lifecycle)
-/haipipe-paper write|edit ["<input>"]       -> draft / polish prose (-> 3-write-edit)
+/haipipe-paper <stage> ["<input>"]          -> seed|claims|pitch|narrative|display (-> haipipe-paper-lifecycle)
+/haipipe-paper write|edit ["<input>"]       -> draft / polish prose (-> 2-section-edit)
 /haipipe-paper probe ["<need-or-claim>"]    -> add a probe plan to 1-probe-plans/ buffer
 /haipipe-paper probe                        -> show the probe-plan buffer (planned/dispatched/verdicted)
 /haipipe-paper probe run [PPNN]             -> batch dispatch planned probes to /haipipe-probe
@@ -170,10 +170,10 @@ haipipe-paper-bootstrap
 haipipe-paper-venue       Venue-first front door: analyze the topic/paper, recommend
                           the best-fit journal from the _venue/playbook-* packs, and
                           pin STATUS venue (run before claims; owns label->pack map)
-haipipe-paper-lifecycle   Stage orchestrator (seed→pitch→claims→narrative→display→minimap)
-3-write-edit/*            Prose: write / edit / polish
-                          (haipipe-paper-edit-write drafts, -edit-weaving polishes;
-                           replaces the retired -create / -revise pipelines)
+haipipe-paper-lifecycle   Stage orchestrator (seed→claims→pitch→narrative→display)
+2-section-edit/   Per-section DRAFT-GATHER-POLISH-CHECK lifecycle
+                          haipipe-paper-section-edit (combined hub)
+                          gather/ (values, citation) polish/ (write, content, weaving) check/ (audits)
 haipipe-paper-rebuttal    Submission rebuttal pipeline (venue-agnostic)
                           (parse reviews → strategy → draft → coverage check)
 
@@ -246,7 +246,7 @@ round, rounds                              -> round (haipipe-paper-round)
 ```
 
 Note: `write` and `edit` (formerly `create`/`revise`) route to
-`3-write-edit`. The venue is pinned once by `venue` (-> haipipe-paper-venue)
+`2-section-edit`. The venue is pinned once by `venue` (-> haipipe-paper-venue)
 into STATUS, and each stage consults the matching `_venue/playbook-<venue>` pack.
 
 ---
@@ -261,7 +261,7 @@ Step 2: Resolve venue/task:
   - First positional matches a venue/task alias?      -> dispatch target = that
   - First positional is "enter" or "status"            -> target = enter
   - First positional is a lifecycle stage verb
-    (seed/pitch/claims/narrative/display/table/figure/diagram/
+    (seed/claims/pitch/narrative/display/table/figure/diagram/
     illustration/illustration-gemini/figure1/framework/
     minimap)                                          -> target = structure <verb>
   - First positional is "round" or "rounds"            -> target = round
@@ -331,7 +331,10 @@ Step 4: Dispatch:
       Direct dispatch for non-claim utility work. Resolve the project root.
       Skill("haipipe-task", args="<remaining_args> --project <project_root>")
     Else if target = feedback:
-      Read fn/feedback.md and run it inline. Three sub-modes:
+      MANDATORY: Read fn/feedback.md FIRST — it defines the routing protocol,
+      keyword→skill map, merge-or-create rules, and inbox paths. Do NOT default
+      to creating auto-memory files or skip the routing. The fn file IS the spec.
+      Then run it inline. Three sub-modes:
         - capture "<text>": infer the target sub-skill (keyword in text, else
           active stage from .paper-console.yaml, else orchestrator fallback),
           write one dated file into THAT skill's feedback/ folder (create it +
@@ -400,7 +403,7 @@ Only if no paper root is found, do not fan out. Emit a compact venue chooser:
   enter       open an existing paper's console (status, open needs, frontier).
               /haipipe-paper enter "<paper-path>"
 
-  write|edit  draft / polish prose for an existing folder (3-write-edit).
+  write|edit  draft / polish prose for an existing folder (2-section-edit).
   rebuttal    parse reviews + draft a rebuttal (any venue, post-review).
 
   probe       buffer a claim-level evidence need, or batch-dispatch accumulated probes.
@@ -491,25 +494,26 @@ stage-to-procedure map is in `ref/lifecycle-map.md`. In brief:
 ```
 0-enter/        haipipe-paper-enter (Paper Console)
 1-lifecycle/    haipipe-paper-lifecycle (orchestrator) + one skill per stage:
-                -{seed,pitch,claims,narrative,display,minimap}
+                -{seed,claims,pitch,narrative,display}
                 display renderers: -display-table (LaTeX tables), -display-figure
                 (data plots), -display-diagram (vector SVG), -display-illustration
                 (AI concept art, default Codex bridge) + -display-illustration-gemini (fallback)
                 (architecture blueprint + plan outline are now folded into
                  -minimap, figure-planner into -display; see their ref/)
-2-rounds/       haipipe-paper-round (enter/new/triage/apply/close)
-3-write-edit/   haipipe-paper-edit (orchestrator) + write* + edit topic subs +
-                the self-review audit cluster (-edit-claim-audit, -edit-reviewer,
-                -edit-proof-checker, -edit-submission-audit, -edit-manual-review-*,
-                -edit-check-reference) + sections/ per-section playbooks
-4-build-submit/ haipipe-paper-folder (scaffold) + -build-{scaffold,restructure,check}
-5-respond/      paper-rebuttal, rebuttal-response
-6-present/      paper-slides, paper-poster
+2-section-edit/ haipipe-paper-section-edit (combined hub, DRAFT-GATHER-POLISH-CHECK)
+                gather/ (edit-values, edit-citation, edit-check-reference)
+                polish/ (edit-write, edit-content, edit-weaving)
+                check/  (edit-claim-audit, edit-format, edit-submission-audit, etc.)
+                tools/  (edit-diffpdf, edit-to-overleaf, etc.)
+                sections/ per-section playbooks
+3-build-submit/ haipipe-paper-folder (scaffold) + -build-{scaffold,restructure,check}
+4-respond/      paper-rebuttal, rebuttal-response
+5-present/      paper-slides, paper-poster
 components/     citation (audit/verifier/guide), compile, diff (cross-cutting)
 ```
 
-Per-section playbooks live in `3-write-edit/sections/` and are read by the
-write/edit/review skills when they target a specific `.tex` under `0-sections/`.
+Per-section playbooks live in `2-section-edit/sections/` and are read by the
+section-edit/review skills when they target a specific `.tex` under `0-sections/`.
 Components are cross-cutting: figures and citations are touched during
 write/review. Power users can invoke any skill directly by its slash command;
 the orchestrator is the right entry when you do not yet know the stage or venue.
@@ -531,7 +535,7 @@ layout:
 │   ├── 2-claims/2-claims.tex
 │   ├── 3-narrative/3-narrative.tex
 │   ├── 4-display/4-display.tex
-│   └── 5-minimap/5-minimap.tex
+│   └── 5-editing/             per-section scaffolds (DRAFT-GATHER-POLISH-CHECK)
 ├── 0-sections/                             manuscript prose .tex files
 ├── 0-displays/                             display units, one folder per figure/table family
 │   ├── display01-<slug>/
@@ -573,7 +577,7 @@ Composing with Other Workflows
         ▼
 /haipipe-paper        ← you are here (router)
         │
-        ├─► /haipipe-paper-lifecycle   (seed→…→minimap structural spine)
+        ├─► /haipipe-paper-lifecycle   (seed→claims→pitch→narrative→display)
         ├─► /haipipe-paper-edit-write  (narrative+plan → fresh tex prose)
         ├─► /haipipe-paper-edit-weaving (existing tex → polish)
         ├─► /haipipe-paper-rebuttal    (any venue, post-review)

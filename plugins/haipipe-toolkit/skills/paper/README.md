@@ -10,8 +10,8 @@ A paper is a delivery contract, not a writing folder. It owns one manuscript's s
 <paper-root>/
 ├── STATUS.md                current layer, maturity, active round
 ├── 0-<paper>.tex/.bib       main manuscript shell
-├── 0-lifecycle/              TeX-first maturation spine
-│   ├── 0-seed/  1-pitch/  2-claims/  3-narrative/  4-display/  5-minimap/
+├── 0-lifecycle/              maturation spine (md + _LOG; display = tex + pdf)
+│   ├── 0-seed/  1-claims/  2-pitch/  3-narrative/  4-display/  5-editing/
 ├── 0-sections/               manuscript prose .tex
 ├── 0-displays/displayNN-*/   figure/table units
 ├── 1-probe-plans/PPNN_*.md   evidence-need buffer -> batch-dispatch to probe
@@ -28,14 +28,13 @@ A paper is a delivery contract, not a writing folder. It owns one manuscript's s
 paper/
 ├── haipipe-paper/    router + Paper Console
 ├── 0-enter/          Paper Console (haipipe-paper-enter)
-├── 1-lifecycle/      6 stage procedures + display renderers
-│                     (-display-table, -display-figure, -display-diagram,
-│                      -display-illustration, -display-illustration-gemini)
-├── 2-rounds/         work rounds (haipipe-paper-round)
-├── 3-write-edit/     write, edit, self-review + section playbooks
-├── 4-build-submit/   scaffold, restructure, check
-├── 5-respond/        rebuttal, response
-├── 6-present/        slides, poster
+├── 1-lifecycle/      stage procedures (seed, claims, pitch, narrative, display)
+│                     + display renderers (-table, -figure, -diagram, -illustration)
+├── 2-section-edit/   per-section DRAFT-GATHER-POLISH-CHECK lifecycle
+│                     haipipe-paper-section-edit (hub) + gather/ polish/ check/ tools/
+├── 3-build-submit/   scaffold, restructure, check
+├── 4-respond/        rebuttal, response
+├── 5-present/        slides, poster
 ├── _venue/           venue profiles (knowledge, not verbs) — see _venue/README.md
 ├── components/       citation, compile, diff
 └── ref/              lifecycle, rounds, skill-structure, lifecycle-map

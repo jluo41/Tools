@@ -1,13 +1,14 @@
 ---
 name: haipipe-application-display
-description: "Stage 4 of the intervention lifecycle. Answers 'what content element carries each claim?' Maps claims to specific display units (panels, widgets, charts, sections). Required for complex venues (dashboard, ui-card, report); skipped for simple venues. Same stage name as paper-display. Output: 0-lifecycle/4-display.md. Trigger: display, content elements, panels, widgets, /haipipe-application display."
+description: "Stage 4 of the intervention lifecycle. Answers 'what content element carries each claim?' Maps claims to specific display units (panels, widgets, charts, sections). Required for complex venues (dashboard, ui-card, report); skipped for simple venues. Output: 0-lifecycle/4-display/4-display.md + _LOG_4-display.md + _PROBE/ subfolder for display-spawned probes. For complex venues, 4-display.tex + PDF for rendered previews. Trigger: display, content elements, panels, widgets, /haipipe-application display."
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.0.0"
-  last_updated: "2026-06-23"
-  summary: "Stage 4 — what content element carries each claim."
+  version: "3.0.0"
+  last_updated: "2026-06-29"
+  summary: "Stage 4 — what content element carries each claim. Now with _LOG changelog + _PROBE/ subfolder for display-spawned probes. Complex venues get .tex + PDF for rendered previews (same SEE-it-rendered rule as paper-display)."
   changelog:
+    - "3.0.0 (2026-06-29): added _LOG, _PROBE/ subfolder. Output folder 4-display/ (was flat file). Complex venues (dashboard, report) get .tex + PDF for visual preview. Simple venues stay .md only. Borrowed per-stage tracking pattern from paper."
     - "2.0.0 (2026-06-23): renamed from variants to display; match paper vocabulary; venue-gated."
     - "1.0.0 (2026-06-22): initial version as haipipe-application-variants."
 ---

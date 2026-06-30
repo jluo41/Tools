@@ -1,13 +1,14 @@
 ---
 name: haipipe-paper-claims
-description: "Create or update the paper folder's 0-lifecycle/2-claims/2-claims.tex: the claim ledger that tracks which claims are supported, weak, or GAP, each tied to an evidence source (probe verdict / task / discovery / insight). Emits delivery needs for GAP/weak claims and backfills confirmed probe verdicts. This is the paper's claim/evidence contract heart. Use for claim ledger, claims, supported/weak/GAP, claim gap, evidence map, 2-claims."
+description: "Create or update the paper folder's 0-lifecycle/2-claims/2-claims.md + _LOG_2-claims.md: the claim ledger that tracks which claims are supported, weak, or GAP, each tied to an evidence source (probe verdict / task / discovery / insight). Emits delivery needs for GAP/weak claims and backfills confirmed probe verdicts. Markdown only (argument documents don't need .tex compilation). This is the paper's claim/evidence contract heart. Use for claim ledger, claims, supported/weak/GAP, claim gap, evidence map, 2-claims."
 argument-hint: "[paper-dir] [--backfill <probe-ref>] [--source <path>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.3.0"
-  last_updated: "2026-06-23"
-  summary: "Maintain 0-lifecycle/2-claims/2-claims.tex as the claim/evidence ledger: editor's chair test, venue-coupled RQs, matrix + per-claim detail, alignment validation, two-stage evidence gate, probe plans buffer."
+  version: "2.0.0"
+  last_updated: "2026-06-29"
+  summary: "Maintain 0-lifecycle/2-claims/2-claims.md + _LOG as the claim/evidence ledger. Markdown only (argument documents don't need .tex compilation; only display compiles to PDF)."
   changelog:
+    - "2.0.0 (2026-06-29): switched from .tex to .md + _LOG. Argument documents are markdown; only display compiles to PDF. Claims create PP probe plans in 1-probe-plans/ for evidence gaps."
     - "v1.3.0: added editor's chair test, RQs in claims (not pitch), RQ→Claim→Answer alignment table, probe plans buffer convention, extracted template to ref/claims-template.tex"
     - "v1.2.0: added illuminate protocol + cross-refs to stage-gate, tex-quality"
 ---
