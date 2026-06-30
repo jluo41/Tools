@@ -10,28 +10,34 @@ probes, discoveries, tasks, and insights.
 <paper-root>/
 ├── STATUS.md
 ├── 0-lifecycle/
-│   ├── 0-seed/
-│   ├── 1-pitch/
-│   ├── 2-claims/
-│   ├── 3-narrative/
-│   ├── 4-display/
-│   └── 5-minimap/
+│   ├── 0-seed/          venue: FREE
+│   ├── 1-claims/        venue: FREE
+│   ├── 2-pitch/         venue: LIGHT
+│   ├── 3-narrative/     venue: MEDIUM
+│   ├── 4-display/       venue: HEAVY
+│   └── 5-editing/       venue: SPECIFIC (per-section norms)
+├── 1-probe-plans/       cross-paper index (probes live per-stage in _PROBE/)
 ├── 1-rounds/
 ├── 0-displays/
 ├── 0-sections/
 └── 1-compile.sh
 ```
 
+Venue awareness gradient: FREE → FREE → LIGHT → MEDIUM → HEAVY → SPECIFIC.
+Paper-level argument docs (seed, claims, pitch, narrative) are markdown + _LOG.
+Only display compiles to .tex + PDF.
+
 ## Lifecycle Stages
 
-| Stage | Job | Main question | Typical handoff |
-|---|---|---|---|
-| `0-seed` | Keep the paper possibility alive | Why might this paper exist? | back to project evidence or drop |
-| `1-pitch` | Make the one-minute argument | What is the paper selling? | `2-claims` |
-| `2-claims` | Maintain the claim ledger | Which claims are supported, weak, or GAP? | probe/discover/task/insight |
-| `3-narrative` | Shape this paper's story | How do claims become a manuscript arc? | `4-display` or `2-claims` |
-| `4-display` | Design displays | What figure/table carries each claim? | display task or `5-minimap` |
-| `5-minimap` | Map paragraphs | What job does each paragraph do, and what evidence anchors it? | sections/edit/build |
+| Stage | Job | Main question | Venue | Typical handoff |
+|---|---|---|---|---|
+| `0-seed` | Keep the paper possibility alive | Why might this paper exist? | FREE | claims or drop |
+| `1-claims` | Maintain the claim ledger | What must be true? What evidence do we have? | FREE | venue → pitch |
+| `venue` | Pin the target venue | Which venue fits? | (chooser) | pitch |
+| `2-pitch` | Make the one-minute argument for THIS audience | What is the paper selling? | LIGHT | narrative |
+| `3-narrative` | Structure the paper for THIS venue | How do claims become sections? | MEDIUM | display |
+| `4-display` | Design displays per THIS venue's limits | What figure/table carries each claim? | HEAVY | section-edit |
+| `5-editing` | Per-section DRAFT-GATHER-POLISH-CHECK | How to write each section? | SPECIFIC | review |
 
 ## Maturity Ladder
 

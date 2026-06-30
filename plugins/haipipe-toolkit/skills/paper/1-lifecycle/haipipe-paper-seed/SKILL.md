@@ -1,13 +1,14 @@
 ---
 name: haipipe-paper-seed
-description: "Create or update the paper folder's 0-lifecycle/0-seed/0-seed.tex: the earliest stage contract that keeps a paper possibility alive before evidence is mature. States why the paper might exist, current evidence status, open evidence needs (routed to probe/discover/task/insight), a promotion gate, and kill criteria. Use for paper seed, prospectus, why this paper, project seed, kill criteria, 0-seed."
+description: "Create or update the paper folder's 0-lifecycle/0-seed/0-seed.md + _LOG_0-seed.md: the earliest stage contract that keeps a paper possibility alive before evidence is mature. States why the paper might exist, current evidence status, open evidence needs (routed to probe/discover/task/insight), a promotion gate, and kill criteria. Markdown only (no .tex; argument documents don't need compilation). Use for paper seed, prospectus, why this paper, project seed, kill criteria, 0-seed."
 argument-hint: "[paper-dir] [--source <path-or-note>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.1.1"
-  last_updated: "2026-06-23"
-  summary: "Maintain 0-lifecycle/0-seed/0-seed.tex as the paper-possibility contract."
+  version: "2.0.0"
+  last_updated: "2026-06-29"
+  summary: "Maintain 0-lifecycle/0-seed/0-seed.md + _LOG as the paper-possibility contract. Markdown only (argument documents don't need .tex compilation; only display stage compiles to PDF)."
   changelog:
+    - "2.0.0 (2026-06-29): switched from .tex to .md + _LOG. Argument documents are markdown; only display compiles to PDF."
     - "v1.1.1: added mandatory compile-after-edit rule; venue awareness note"
     - "1.1.0 (2026-06-22): added illuminate+gate+compile protocol (ref/stage-gate.md, ref/stage-illuminate.md, ref/tex-quality.md)"
     - "1.0.0 (2026-06-22): baseline."

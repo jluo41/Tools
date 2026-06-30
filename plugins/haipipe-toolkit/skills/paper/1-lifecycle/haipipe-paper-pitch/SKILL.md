@@ -1,12 +1,13 @@
 ---
 name: haipipe-paper-pitch
-description: "Create or update the paper folder's 0-lifecycle/1-pitch/1-pitch.tex: a one-minute, evidence-constrained story for this concrete manuscript. Archives semantic old versions and appends PITCH_LOG.md entries when the pitch shifts. Use for paper pitch, one-minute story, hook/surprise/so-what, audience/venue fit, story trajectory, pitch provenance."
+description: "Create or update the paper folder's 0-lifecycle/1-pitch/1-pitch.md + _LOG_1-pitch.md: a one-minute, evidence-constrained story for this concrete manuscript. Archives semantic old versions in _LOG when the pitch shifts. Markdown only (argument documents don't need .tex compilation). Use for paper pitch, one-minute story, hook/surprise/so-what, audience/venue fit, story trajectory, pitch provenance."
 argument-hint: "[paper-dir] [--reason <slug>] [--source <path-or-note>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.5.2"
-  last_updated: "2026-06-23"
+  version: "2.0.0"
+  last_updated: "2026-06-29"
   changelog:
+    - "2.0.0 (2026-06-29): switched from .tex to .md + _LOG. PITCH_LOG.md merged into _LOG_1-pitch.md. Argument documents are markdown; only display compiles to PDF."
     - "v1.5.2: extracted template to ref/pitch-template.tex; inline replaced with reading-order summary"
     - "v1.5.1: added mandatory compile-after-edit rule; venue awareness note"
     - "1.5.0 (2026-06-22): added Title section, multi-hook candidates, template enforcement, quality gate; wired illuminate+gate+compile protocols"

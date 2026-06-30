@@ -1,13 +1,14 @@
 ---
 name: haipipe-application-seed
-description: "Stage 0 of the intervention lifecycle. Answers 'why might this intervention work?' Documents the opportunity, expected impact, audience, channel, and kill criteria. Output: 0-lifecycle/0-seed.md. Modeled on haipipe-paper-seed. Trigger: seed, opportunity, why this intervention, /haipipe-application seed."
+description: "Stage 0 of the intervention lifecycle. Answers 'why might this intervention work?' Documents the opportunity, expected impact, audience, channel, and kill criteria. Output: 0-lifecycle/0-seed/0-seed.md + _LOG_0-seed.md. Markdown only (argument documents don't need compilation). Modeled on haipipe-paper-seed. Trigger: seed, opportunity, why this intervention, /haipipe-application seed."
 argument-hint: "[intervention-path] [intent...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-06-22"
-  summary: "Stage 0 — intervention possibility + kill criteria."
+  version: "2.0.0"
+  last_updated: "2026-06-29"
+  summary: "Stage 0 — intervention possibility + kill criteria. Now with _LOG changelog (borrowed from paper v2.0.0)."
   changelog:
+    - "2.0.0 (2026-06-29): added _LOG_0-seed.md changelog; output folder 0-seed/ (was flat file); borrowed .md + _LOG pattern from paper-seed v2.0.0."
     - "1.0.0 (2026-06-22): initial version modeled on paper-seed."
 ---
 

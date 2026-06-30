@@ -1,13 +1,14 @@
 ---
 name: haipipe-application-pitch
-description: "Stage 1 of the intervention lifecycle. Answers 'what is this intervention trying to achieve?' One-sentence goal + mechanism hypothesis + audience + channel. Same stage name as paper-pitch. Output: 0-lifecycle/1-pitch.md. Trigger: pitch, goal, story, what are we trying to do, /haipipe-application pitch."
+description: "Stage 1 of the intervention lifecycle. Answers 'what is this intervention trying to achieve?' One-sentence goal + mechanism hypothesis + audience + channel. Same stage name as paper-pitch. Output: 0-lifecycle/1-pitch/1-pitch.md + _LOG_1-pitch.md. Markdown only. Trigger: pitch, goal, story, what are we trying to do, /haipipe-application pitch."
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.0.0"
-  last_updated: "2026-06-23"
-  summary: "Stage 1 — one-sentence goal + mechanism hypothesis."
+  version: "3.0.0"
+  last_updated: "2026-06-29"
+  summary: "Stage 1 — one-sentence goal + mechanism hypothesis. Now with _LOG changelog (borrowed from paper v2.0.0)."
   changelog:
+    - "3.0.0 (2026-06-29): added _LOG_1-pitch.md changelog; output folder 1-pitch/ (was flat file); borrowed .md + _LOG pattern from paper."
     - "2.0.0 (2026-06-23): renamed from rationale to pitch; match paper vocabulary."
     - "1.0.0 (2026-06-22): initial version as haipipe-application-rationale."
 ---

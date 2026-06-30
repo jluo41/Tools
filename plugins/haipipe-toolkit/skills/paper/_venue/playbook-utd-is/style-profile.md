@@ -56,9 +56,13 @@ they are added (pull real sentences and mirror their shapes).
   procedural remedies plus statistical checks; non-response (early vs late) checks.
 - State each as a method executed, not a result narrated.
 
-### Discussion
-- Restate the contribution first, then implications for IS theory and practice, then a
-  dedicated limitations paragraph, then conclusion.
+### Discussion section norms
+- **Substantive subsection titles** (not generic "Theoretical Implications"). Use topic-specific headings: "Implications for Conceptualizing Echo Chambers" not "Implications for Theory." (From 10-paper MISQ exemplar survey: Kitchens 2020, Zhang & Xu 2021, + 8 papers from MISQ Sep 2024.)
+- **Contributions enumerated**: "First... Second... Third..." Each contribution paragraph connects finding back to prior literature.
+- **Research contributions come BEFORE practical implications**, never the reverse.
+- Each limitation paragraph **pairs** one limitation with one future research direction.
+- Standalone Conclusion paragraph is optional (some MISQ papers have it, some don't).
+- Restate the contribution first, then implications for IS theory and practice, then a dedicated limitations paragraph, then conclusion.
 
 ### Tone & reporting
 - Measured, theory-centered, discipline-aware.
