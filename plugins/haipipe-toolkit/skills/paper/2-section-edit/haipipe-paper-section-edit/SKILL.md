@@ -71,7 +71,7 @@ Discovery and task are MECHANISMS feeding the gather layers: discovery finds
 citations (L6), task produces figures (L4) and numbers (L5). They route
 through per-stage `_PROBE/` folders.
 
-**Format rule**: paper-level argument documents (seed, pitch, claims, narrative)
+**Format rule**: paper-level argument documents (seed, claims, pitch, narrative)
 are markdown + _LOG only. The display stage is the ONLY paper-level stage that
 compiles to .tex + PDF (you need to SEE rendered figures/tables). Section-level
 prose syncs to .tex at the end of the per-section lifecycle (after all layers
@@ -90,7 +90,7 @@ section:       3-theory
 section_layer: L6 citation (GATHER)
 next:          <next action>
 ─────────────────────────────────────────────────────
-paper:  seed ✅  pitch ✅  claims ✅  narrative ✅  display ✅  →  section-edit 🚀  →  review ⬜
+paper:  seed ✅  claims ✅  pitch ✅  narrative ✅  display ✅  →  section-edit 🚀  →  review ⬜
 §3:     L1 ✅  L2 ✅  L3 ✅  │  L4 --  L5 --  L6 🚀  │  L7 ⬜  │  L8 ⬜
         ───DRAFT──────────  ───GATHER──────────────  ──POLISH─  ──CHECK──
 ```

@@ -265,7 +265,7 @@ When invoked with no arguments, emit a compact specialist chooser:
     illustration-gemini  AI concept illustration — Gemini fallback
     framework      Candidate framework/architecture figure planning (Figure 1 style)
 
-  Pipeline: folder → seed → pitch → claims → narrative → display → table/figure/diagram/illustration
+  Pipeline: folder → seed → claims → pitch → narrative → display → table/figure/diagram/illustration
 
 Next: /haipipe-paper-lifecycle <function> "<input>"
 ```
