@@ -1,8 +1,9 @@
 % =============================================================================
 % 1-pitch template — standalone-compilable lifecycle stage contract
 %
-% The pitch is venue-INDEPENDENT: the one-minute story before you pick a venue.
-% RQs belong in 2-claims.tex (venue-coupled), not here.
+% The pitch is venue-ALIGNED = cover letter.
+% RQs live here (venue-coupled). Claims holds venue-neutral hypotheses
+% (H1, H2, H3); pitch reframes them as venue-specific RQs for the target editor.
 %
 % Layout follows ../../3-write-edit/_shared/sentence-format.md.
 % Readability rules + section cues + worked examples: ref/pitch-readability.md.
@@ -11,8 +12,9 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{parskip}
 \usepackage{booktabs}
+\usepackage{tabularx}
 \usepackage{hyperref}
-\title{Pitch: <Paper Title>}
+\title{Pitch / Cover Letter: <Paper Title> (<Venue>)}
 \date{YYYY-MM-DD}
 \begin{document}
 \maketitle
@@ -90,14 +92,54 @@ The non-obvious turn, tension, or finding.
 %% ---- P4.S1 ----
 What changes if this story is true, and who can use it.
 
+\section*{Editor's Chair Test}
+% =========================================================
+% Para [pitch.editor] Editor's Chair -- will the editor publish this?
+% Cue: read _venue/playbook-<venue> for the editor's chair question.
+%       Every primary claim must have a one-sentence answer.
+%       Migrated from claims (v3.0.0): this is a venue question, not evidence.
+% =========================================================
+%% ---- P5.S1 ----
+\textbf{<Venue>:} ``<editor's chair question from \_venue/playbook>''
+%
+%% ---- P5.S2 ----
+<One-sentence answer from the primary claim>.
+
+\section*{Primary Claim + RQ Framing}
+% =========================================================
+% Para [pitch.rq] Primary claim and venue-specific RQ framing
+% Cue: read claims (venue-neutral H1, H2, H3), designate ONE primary for
+%       THIS venue, reframe hypotheses as venue-specific RQs.
+%       A venue change re-runs this section.
+% =========================================================
+%% ---- P6.S1 ----
+\textbf{Primary claim for <Venue>:} C<N> -- <claim>. This is primary because <what the venue rewards>.
+%
+%% ---- P6.S2 ----
+Other claims (C<M>, C<K>) are supporting.
+
+\bigskip
+
+% H→RQ mapping: how venue-neutral hypotheses become venue-specific RQs.
+\begin{small}
+\begin{tabularx}{\textwidth}{@{}p{0.04\textwidth}p{0.04\textwidth}X p{0.28\textwidth}@{}}
+\toprule
+H & RQ & Research Question (venue-shaped) & Why this RQ for this venue \\
+\midrule
+H1 & RQ1 & <question, shaped by what the venue rewards> & <why the editor's chair question led to this RQ> \\
+H2 & RQ2 & <question> & <why> \\
+H3 & RQ3 & <question> & <why> \\
+\bottomrule
+\end{tabularx}
+\end{small}
+
 \section*{Audience and Venue Fit}
 % =========================================================
 % Para [pitch.audience] Audience -- who the venue reaches and why they care
 % Cue: name the reader and their need before the venue format.
-% NOTE: this section is venue-AWARE (who reads that journal) but not
-%       venue-COUPLED (RQs and claim framing live in 2-claims.tex).
+%       This section is venue-ALIGNED (the pitch is the cover letter).
 % =========================================================
-%% ---- P5.S1 ----
+%% ---- P7.S1 ----
 Who reads the target venue, and why this finding matters to that audience.
 
 \section*{Evidence - Why Believe}
@@ -105,7 +147,7 @@ Who reads the target venue, and why this finding matters to that audience.
 % Para [pitch.evidence] Why believe -- evidence for each point
 % Cue: tie each sentence to a table/display/model/check/source; mark planned as planned.
 % =========================================================
-%% ---- P6.S1 ----
+%% ---- P8.S1 ----
 Evidence for each point above, citing a source per claim (or intuition if seed-stage).
 
 \section*{Limitation - Still Fragile}
@@ -113,7 +155,7 @@ Evidence for each point above, citing a source per claim (or intuition if seed-s
 % Para [pitch.fragile] Still fragile -- the weakest point
 % Cue: list only the top three highest-risk weaknesses.
 % =========================================================
-%% ---- P7.S1 ----
+%% ---- P9.S1 ----
 The weakest point or most important missing evidence.
 
 \section*{Next Evidence Move}
@@ -121,7 +163,7 @@ The weakest point or most important missing evidence.
 % Para [pitch.next] Next evidence move
 % Cue: start with a verb and name the artifact this move updates.
 % =========================================================
-%% ---- P8.S1 ----
+%% ---- P10.S1 ----
 What discovery, task, probe, or review should happen next.
 
 \end{document}

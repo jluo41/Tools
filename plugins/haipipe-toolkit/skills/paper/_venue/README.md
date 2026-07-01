@@ -83,7 +83,7 @@ write   -> style-profile.md + exemplars/ imitate the venue's style
 ```
 
 The concrete target is pinned in the paper's `STATUS.md` `venue:` field; the venue
-change re-runs the primary-claim designation (claims couple to venue).
+change re-runs the pitch's [primary] designation and RQ framing (pitch couples to venue; claims is venue-free).
 
 ## History
 
