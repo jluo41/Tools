@@ -39,8 +39,8 @@ current=$(grep -m1 '| current_layer |' "$status" | sed 's/.*|[[:space:]]*//' | s
 # fallback to old format
 [ -z "$current" ] && current=$(grep -m1 '^current_layer:' "$status" | sed 's/^current_layer:[[:space:]]*//' | tr -d '[:space:]')
 
-# canonical spine order: venue-awareness gradient FREE→SPECIFIC
-# seed(FREE) claims(FREE) pitch(LIGHT) narrative(MEDIUM) display(HEAVY) section-edit(SPECIFIC) review
+# canonical spine order: venue coupling gradient FREE→ALIGNED→HEAVY→SPECIFIC
+# seed(FREE) claims(FREE) pitch(ALIGNED=cover letter) narrative(ALIGNED) display(HEAVY) section-edit(SPECIFIC) review
 keys="seed claims pitch narrative display section-edit review"
 
 # read Gate Ledger: extract confirmed stages into a space-separated string

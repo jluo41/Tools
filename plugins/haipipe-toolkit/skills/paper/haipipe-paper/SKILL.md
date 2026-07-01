@@ -143,7 +143,7 @@ Examples:
 /haipipe-paper venue "physician trait -> opioid prescribing; observational CMS Medicare" --no-pin
 /haipipe-paper enter "examples/ProjB-PhyTrait-OpioidRx/paper/Paper-Personality-Opioid-MedJournal"
 /haipipe-paper status
-/haipipe-paper claims          (designate the venue-coupled primary claim)
+/haipipe-paper claims          (venue-free evidence inventory)
 /haipipe-paper display "Table 1 + STROBE flow + subgroup forest"
 /haipipe-paper probe "NEED-1: expand ex ante audit to all 20 messages"
 /haipipe-paper probe run                   (batch dispatch all planned probes)
@@ -169,7 +169,7 @@ haipipe-paper-bootstrap
                           and manuscript mode (full 0-/1-prefix tex scaffold)
 haipipe-paper-venue       Venue-first front door: analyze the topic/paper, recommend
                           the best-fit journal from the _venue/playbook-* packs, and
-                          pin STATUS venue (run before claims; owns label->pack map)
+                          pin STATUS venue (run before pitch; owns label->pack map)
 haipipe-paper-lifecycle   Stage orchestrator (seed→claims→pitch→narrative→display)
 2-section-edit/   Per-section DRAFT-GATHER-POLISH-CHECK lifecycle
                           haipipe-paper-section-edit (combined hub)
@@ -179,8 +179,12 @@ haipipe-paper-rebuttal    Submission rebuttal pipeline (venue-agnostic)
 
 Venue is knowledge, not a pipeline. Consult _venue/playbook-<venue>
 (misq / isr / ms-is / pnas / nature-portfolio / jama / clinical-medicine;
- grant; patent-*) for what the target rewards. The retired -conference /
--journal / -is workflow shells folded into the lifecycle + _venue/README.md.
+ grant; patent-*) for what the target rewards. Venue coupling:
+ seed+claims = venue-FREE (evidence foundation, reusable across venues),
+ pitch+narrative = venue-ALIGNED (pitch = cover letter, narrative = arc).
+ Venue pinning happens between claims and pitch.
+The retired -conference / -journal / -is workflow shells folded into the
+lifecycle + _venue/README.md.
 ```
 
 ---
@@ -231,7 +235,7 @@ Lifecycle stage verbs (positional), forwarded to the stage procedures:
 ```
 seed                                       -> structure seed
 pitch                                      -> structure pitch
-venue, journal                             -> haipipe-paper-venue (recommend + pin; before claims)
+venue, journal                             -> haipipe-paper-venue (recommend + pin; before pitch)
 claims, claim, ledger                      -> structure claims
 narrative                                  -> structure narrative
 display, figures, figures-tables           -> structure display
@@ -422,13 +426,16 @@ Disambiguation Rules
 ---------------------
 
   - Venue unclear / undecided → run `venue` (haipipe-paper-venue) to recommend and
-    pin. Do NOT default to a venue silently: venue choice drives style, page limit,
-    and structure decisions that are expensive to redo.
-  - User says "paper" with no venue pinned + has a narrative → run `venue` first.
+    pin. Do NOT default to a venue silently: venue choice drives pitch, narrative,
+    display, and prose decisions that are expensive to redo.
+  - User says "paper" with no venue pinned + has claims done → run `venue` before
+    pitch. Claims is venue-free and does not need a venue.
   - User says "rebuttal" + provides paper path → dispatch to rebuttal immediately
     (rebuttal is venue-agnostic).
   - Re-targeting ("move this paper to another journal") → run `venue` to re-pin;
-    `2-claims` then re-couples to the new target. Do NOT chain blindly.
+    pitch (cover letter) then re-couples to the new target: new [primary],
+    new RQ framing, new Editor's Chair Test. Claims stays unchanged.
+    Do NOT chain blindly.
 
 ---
 

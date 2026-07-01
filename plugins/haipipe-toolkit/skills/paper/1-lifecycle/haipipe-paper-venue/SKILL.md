@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-venue
-description: "Recommend the best-fit venue for a paper or topic, then pin it. Analyzes the paper's contribution/method/topic against every venue pack in _venue/playbook-*, ranks a shortlist with per-venue rationale, and writes the choice into STATUS.md venue (which makes every later stage couple to it). This is the venue-first front door: run it before claims. Also owns the venue-label -> pack resolution map. Trigger: venue, which journal, where to submit, venue fit, recommend journal, journal selection, pick venue, 投哪个期刊, 选刊, 期刊推荐, /haipipe-paper-venue."
+description: "Recommend the best-fit venue for a paper or topic, then pin it. Analyzes the paper's contribution/method/topic against every venue pack in _venue/playbook-*, ranks a shortlist with per-venue rationale, and writes the choice into STATUS.md venue (which makes pitch, narrative, and every later stage couple to it). This is the venue-first front door: run it before pitch (claims is venue-free). Also owns the venue-label -> pack resolution map. Trigger: venue, which journal, where to submit, venue fit, recommend journal, journal selection, pick venue, 投哪个期刊, 选刊, 期刊推荐, /haipipe-paper-venue."
 argument-hint: "[paper-path | free-text topic/abstract] [--no-pin]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
@@ -16,9 +16,13 @@ metadata:
 
 ## Overview
 
-Venue selection is the FIRST design decision (venue-first). Claims, displays, the
-minimap, and prose all couple to the venue, so the venue must be chosen before
-`2-claims`. This skill analyzes a paper or a bare topic against every venue pack in
+Venue selection is the FIRST venue-coupled design decision. Pitch (the cover
+letter), narrative, displays, and prose all couple to the venue, so the venue
+must be chosen before pitch. Claims is venue-FREE and does NOT need a venue.
+The lifecycle order is: seed (FREE) → claims (FREE) → [venue pinned here] →
+pitch (ALIGNED) → narrative (ALIGNED) → display → editing.
+
+This skill analyzes a paper or a bare topic against every venue pack in
 `../../_venue/playbook-*` and recommends a ranked shortlist, then pins the choice in
 `STATUS.md`.
 
@@ -35,9 +39,11 @@ default     recommend a shortlist, then ASK before writing STATUS venue (you con
 
 ## When to use
 
-- "Which journal for this?", "where should I submit?", venue fit, before claims.
+- "Which journal for this?", "where should I submit?", venue fit, before pitch.
 - A new paper whose venue is undecided, or a topic with no folder yet.
 - Reconsidering venue after a reject, a scope change, or a reviewer signal.
+  (On retarget: claims stays unchanged; pitch rewrites with new [primary],
+  RQ framing, and Editor's Chair Test.)
 
 ## Inputs
 
@@ -67,7 +73,8 @@ venue index        ../../_venue/README.md              (family map + IS selectio
 6. **Pin it (unless `--no-pin`).** In default mode, ASK the user, then write
    `venue: <pack-slug>` (plus an optional `venue_outlet:` for the concrete journal)
    into `STATUS.md`. With `--no-pin`, stop after step 5 and write nothing. Pinning is
-   the handoff to `2-claims`, which re-runs its venue-coupled primary-claim designation.
+   the handoff to pitch (the cover letter), which re-runs its [primary] claim
+   designation, RQ framing, and Editor's Chair Test for the new venue.
 
 ## Output contract
 
@@ -117,13 +124,18 @@ find `../../_venue/playbook-<slug>`. Prefer writing the pack slug into STATUS di
 
 ```text
 this skill   recommends a venue and PINS it (STATUS venue); owns label->pack resolution
-2-claims     couples claims to the pinned venue (does not choose it)
+claims       venue-FREE evidence inventory (does NOT read the venue)
+pitch        venue-ALIGNED cover letter; couples to the pinned venue (Editor's Chair,
+             [primary], RQ framing)
+narrative    venue-ALIGNED arc; expands the pitch for this venue
 _venue/*     knowledge packs, read-only here
 ```
 
-It recommends and pins; it does not write claims, displays, or prose. Venue-first.
+It recommends and pins; it does not write claims, pitch, or prose. Venue-first.
+After pinning, the next step is pitch (not claims -- claims is venue-free).
 
 ## Gate
 
 Ask before overwriting an existing `STATUS.md venue:` (a venue change re-runs the
-claims designation and can reshape displays and the minimap).
+pitch's [primary] designation and RQ framing, and can reshape narrative, displays,
+and prose). Claims stays unchanged because it is venue-free.

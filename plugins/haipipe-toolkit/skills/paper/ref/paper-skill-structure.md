@@ -23,7 +23,7 @@ paper/
 ├── 0-enter/             haipipe-paper-enter (Console)
 ├── 1-lifecycle/         one skill per stage + display renderers
 │     haipipe-paper-{seed,pitch,venue,claims,narrative,display,minimap}
-│       (venue = recommend + pin the best-fit journal, before claims)
+│       (venue = recommend + pin the best-fit journal, before pitch; claims is venue-free)
 │     + display renderers: -display-{table,figure,diagram,illustration}
 │       (illustration default = Codex; -display-illustration-gemini = fallback;
 │        framework candidate rounds inside display)
@@ -42,7 +42,7 @@ paper/
 ```
 
 `_venue/` is a paper-internal area, not a standalone layer. It is the venue
-knowledge the lifecycle consults at pitch/claims/narrative/display/write/submit/
+knowledge the lifecycle consults at pitch/narrative/display/write/submit/
 respond (`_venue/playbook-<venue>`). Venues hold knowledge, never lifecycle
 verbs. The old flat `paper/_venue/` was reshaped into `_venue/`. See
 `_venue/README.md` and `_venue/_SCHEMA.md`.
@@ -55,7 +55,7 @@ Lifecycle stages map 1:1 to skills (full table in `lifecycle-map.md`):
 enter             -> 0-enter/haipipe-paper-enter
 0-seed            -> 1-lifecycle/haipipe-paper-seed
 1-pitch           -> 1-lifecycle/haipipe-paper-pitch
-venue (choose+pin)-> 1-lifecycle/haipipe-paper-venue (recommend journal, write STATUS venue; before claims)
+venue (choose+pin)-> 1-lifecycle/haipipe-paper-venue (recommend journal, write STATUS venue; before pitch, claims is venue-free)
 2-claims          -> 1-lifecycle/haipipe-paper-claims
 3-narrative       -> 1-lifecycle/haipipe-paper-narrative
 4-display         -> 1-lifecycle/haipipe-paper-display (+ render skills -display-{table,figure,diagram,illustration}[-gemini]; figure-logic ref)

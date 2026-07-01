@@ -200,7 +200,7 @@ TYPE OF PRIMARY CLAIM decide. Formal model or welfare statement -> MS-IS. New
 construct / theoretical tension with pluralistic method -> MISQ. Tight
 mechanism -> hypotheses -> clean causal identification -> ISR (or MS-IS if the framing
 is explicitly economic). Once chosen, pin it in `STATUS.md` `venue:`; the venue
-change re-runs the primary-claim designation (claims couple to venue).
+change re-runs the pitch's [primary] designation and RQ framing (pitch couples to venue; claims is venue-free).
 
 ---
 

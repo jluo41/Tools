@@ -1,12 +1,11 @@
 % =============================================================================
 % 2-claims template — standalone-compilable lifecycle stage contract
 %
-% Structure: Editor's Chair → RQs → Matrix → Detail → Alignment
-% Format: 1 PRIMARY + N SUPPORTING, venue-coupled
+% Structure: Hypotheses → Matrix → Detail → Alignment
+% Format: venue-FREE evidence inventory; no [primary] designation
 %
-% The editor's chair question works TWICE:
-%   top-down: generates RQs (if an RQ doesn't help answer the editor, drop it)
-%   bottom-up: validates claims (if a claim can't produce a one-sentence answer, wrong venue)
+% Claims is the pure claim/evidence ledger.
+% Venue-specific framing (RQs, editor's chair) lives in pitch.
 % =============================================================================
 \documentclass[11pt]{article}
 \usepackage[margin=1in]{geometry}
@@ -21,55 +20,26 @@
 \newcommand{\gap}{\textcolor{red!70!black}{\status{gap}}}
 \newcommand{\pending}{\textcolor{blue!60!black}{\status{pending}}}
 \newcommand{\needprobe}[1]{\textcolor{red}{\textbf{[NEED PROBE]} #1}}
-\title{Claims: <Paper Title> (<Venue>)}
+\title{Claims: <Paper Title>}
 \date{YYYY-MM-DD}
 \begin{document}
 \maketitle
 
 % ─────────────────────────────────────────────────────────────────────────────
-% 1. EDITOR'S CHAIR TEST
-%    Source: _venue/playbook-<venue>
-%    Every primary claim must have a one-sentence answer.
+% 1. HYPOTHESES
+%    Venue-neutral. RQs and editor's chair framing live in pitch.
 % ─────────────────────────────────────────────────────────────────────────────
-\section*{Editor's Chair Test}
-
-\textbf{<Venue>:} ``<editor's chair question from _venue/playbook>''
-
-Every primary claim must have a one-sentence answer to this question.
-
-% ─────────────────────────────────────────────────────────────────────────────
-% 2. RESEARCH QUESTIONS
-%    Venue-shaped: the wording depends on what the target editor rewards.
-%    RQs live here (claims), not in the pitch (pitch is venue-independent).
-% ─────────────────────────────────────────────────────────────────────────────
-\section*{Research Questions}
+\section*{Hypotheses}
 
 \begin{enumerate}
-\item[\textbf{RQ1.}] <question, shaped by what the venue rewards>
-\item[\textbf{RQ2.}] <question>
-\item[\textbf{RQ3.}] <question>
+\item[\textbf{H1.}] <venue-neutral hypothesis statement>
+\item[\textbf{H2.}] <hypothesis>
+\item[\textbf{H3.}] <hypothesis>
 \end{enumerate}
 
-\bigskip
-
-% RQ-to-Claim mapping: the skeleton of the Results section.
-% "Why this RQ" column makes the venue→RQ generation link explicit.
-\begin{small}
-\begin{tabularx}{\textwidth}{@{}p{0.05\textwidth}p{0.05\textwidth}X p{0.28\textwidth}@{}}
-\toprule
-RQ & Claims & Mapping & Why this RQ for this venue \\
-\midrule
-RQ1 & C1, C2 & <how the claims answer this RQ> & <why the editor's chair question led to this RQ> \\
-RQ2 & C3     & <how the claims answer this RQ> & <why> \\
-RQ3 & C4     & <how the claims answer this RQ> & <why> \\
-\bottomrule
-\end{tabularx}
-\end{small}
-
 % ─────────────────────────────────────────────────────────────────────────────
-% 3. CLAIM-EVIDENCE MATRIX
+% 2. CLAIM-EVIDENCE MATRIX
 %    Index: one row per claim, status at a glance.
-%    One claim marked [primary]; rest are support.
 % ─────────────────────────────────────────────────────────────────────────────
 \section*{Claim-Evidence Matrix}
 
@@ -77,27 +47,27 @@ RQ3 & C4     & <how the claims answer this RQ> & <why> \\
 % Para [claims.ledger] Result -- claim / status at a glance
 % =========================================================
 \begin{small}
-\begin{tabularx}{\textwidth}{@{}p{0.06\textwidth}p{0.08\textwidth}X p{0.12\textwidth}@{}}
+\begin{tabularx}{\textwidth}{@{}p{0.06\textwidth}X p{0.12\textwidth}@{}}
 \toprule
-ID & Role & Claim & Status \\
+ID & Claim & Status \\
 \midrule
-C1 & \textbf{[primary]} & <claim, as the paper states it> & \supported \\
+C1 & <claim, as the paper states it> & \supported \\
 \addlinespace
-C2 & support & <claim> & \weak \\
+C2 & <claim> & \weak \\
 \addlinespace
-C3 & support & <claim> & \gap \\
+C3 & <claim> & \gap \\
 \bottomrule
 \end{tabularx}
 \end{small}
 
 % ─────────────────────────────────────────────────────────────────────────────
-% 4. PER-CLAIM DETAIL
+% 3. PER-CLAIM DETAIL
 %    One \subsection* per claim. Four slots per paragraph:
 %    S1 = claim + verdict, S2 = verified statistic, S3 = interpretation, S4 = source + caveat
 % ─────────────────────────────────────────────────────────────────────────────
 \section*{Per-Claim Detail}
 
-\subsection*{C1. <short title> [primary] (\supported)}
+\subsection*{C1. <short title> (\supported)}
 
 % =========================================================
 % Para [claims.c1] Result -- <the point>
@@ -118,7 +88,7 @@ Source: <real file>; <caveat if any>.
 % For weak/GAP claims: state the gap and the route instead of a statistic.
 
 % ─────────────────────────────────────────────────────────────────────────────
-% 5. DISCUSSION-ONLY INTERPRETATIONS (optional)
+% 4. DISCUSSION-ONLY INTERPRETATIONS (optional)
 %    Interpretive findings that belong in Discussion, not Results.
 %    Explicitly marked to prevent creep into Results claims.
 % ─────────────────────────────────────────────────────────────────────────────
@@ -127,7 +97,7 @@ Source: <real file>; <caveat if any>.
 \textbf{D1. <label> (interpretive):} <description>. No direct measurement; interpretive frame only.
 
 % ─────────────────────────────────────────────────────────────────────────────
-% 6. ROBUSTNESS (optional)
+% 5. ROBUSTNESS (optional)
 %    Reported as a design strength in Methods, not claimed as a finding.
 % ─────────────────────────────────────────────────────────────────────────────
 \section*{Robustness (reported in Methods, not claimed)}
@@ -135,62 +105,33 @@ Source: <real file>; <caveat if any>.
 <sensitivity analyses: clustering, alt specs, multiple testing, exclusion criteria>
 
 % ─────────────────────────────────────────────────────────────────────────────
-% 7. PENDING EVIDENCE
-%    Probes/tasks not yet run. Dependency chain. Backup venue if key evidence weak.
+% 6. PENDING EVIDENCE
+%    Probes/tasks not yet run. Dependency chain.
 % ─────────────────────────────────────────────────────────────────────────────
 \section*{Pending Evidence}
 
 \textbf{<probe id> (<label>, <status>):} <what it will test>. <which claim it upgrades>.
 
-\textbf{Backup}: If <key probe> is weak $\to$ <fallback venue> with <adjusted claim>.
-
 \textbf{Exploratory (supplement):} <analyses held from main claims>.
 
 % ─────────────────────────────────────────────────────────────────────────────
-% 8. EDITOR'S CHAIR ALIGNMENT (at the bottom — validates the whole ledger)
-%    Three-column table: RQ → Claims → Editor's Chair Answer
-%    Merged with Venue Fit: scale, design strength, risks.
-%    Diagnostic: any claim missing a column has a structural problem.
+% 7. HYPOTHESIS-CLAIM ALIGNMENT (at the bottom — validates the whole ledger)
+%    Maps hypotheses to claims. No venue framing.
 % ─────────────────────────────────────────────────────────────────────────────
-\section*{Editor's Chair Alignment}
-
-\textbf{Editor's chair question (<Venue>):} ``<question>''
-
-The editor's chair question works twice: once at the top (generating RQs ---
-if an RQ does not help answer this question, drop it) and once at the bottom
-(validating claims --- if a claim cannot produce a one-sentence answer, it is
-either the wrong claim or the wrong venue).
-
-\bigskip
+\section*{Hypothesis-Claim Alignment}
 
 \begin{small}
-\begin{tabularx}{\textwidth}{@{}p{0.05\textwidth} p{0.26\textwidth} p{0.13\textwidth} X@{}}
+\begin{tabularx}{\textwidth}{@{}p{0.05\textwidth} p{0.30\textwidth} p{0.13\textwidth} X@{}}
 \toprule
-RQ & Research Question & Claims & Editor's Chair Answer \\
+H & Hypothesis & Claims & How claims test this hypothesis \\
 \midrule
-RQ1 & <question> & C1, C2 & ``<one-sentence answer to the editor>'' \\
+H1 & <hypothesis> & C1, C2 & <how the claims provide evidence for/against H1> \\
 \addlinespace
-RQ2 & <question> & C3 & ``<answer>'' \\
+H2 & <hypothesis> & C3 & <how> \\
 \addlinespace
-RQ3 & <question> & C4 & ``<answer>'' \\
+H3 & <hypothesis> & C4 & <how> \\
 \bottomrule
 \end{tabularx}
 \end{small}
-
-\bigskip
-
-\textbf{Venue fit:}
-\begin{itemize}
-\item \textbf{Scale}: <dataset size, design, what makes this competitive>
-\item \textbf{Strength}: <what the venue rewards that this paper delivers>
-\item \textbf{Risk}: <where reviewers may push back>
-\end{itemize}
-
-\textbf{Diagnostic:} Any claim that cannot fill all three columns has a problem.
-\begin{itemize}
-\item No RQ $\to$ orphan finding, not driven by a question.
-\item No editor's chair answer $\to$ wrong claim or wrong venue.
-\item RQ without a claim $\to$ unanswered question (evidence is GAP or aspirational).
-\end{itemize}
 
 \end{document}
