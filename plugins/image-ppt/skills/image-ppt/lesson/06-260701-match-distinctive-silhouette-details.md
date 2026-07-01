@@ -27,3 +27,20 @@ source uses a specific rendering the reader will compare against.
 ## Caveats
 Don't over-fit anti-aliasing/noise; reproduce the *intended* feature, not every stray pixel.
 Match solid vs. outline style to the source (Lesson 03/04 scoring still applies).
+
+## Update 2026-07-01
+More icons that "read as the right thing" but missed the salient feature until fixed on a second
+pass (Figure-2, AI-CPC):
+- **Stethoscope** — first pass read as **scissors / a tuning fork**. The salient anatomy is a
+  binaural headset (two ear-tip nubs → tubes splaying down in an inverted-U) → a single tube to a
+  round **chestpiece** at lower-right → a small **spring loop** at lower-left. Two prongs + a dot is
+  not a stethoscope.
+- **Geriatric pair** — first pass was **bulbous/blobby**. Two *slim, human-proportioned* standing
+  silhouettes (a shorter and a taller figure, a small white heart on the taller one) read as
+  elder-care; wide rounded bodies don't.
+- **Database** — first pass was a plain **barrel/can**. The salient feature is **three stacked disk
+  tiers** (top ellipse cap + two curved white seam lines); without the seams it isn't a database.
+- **Star of Life** — the six-bar star is easy; the salient center is a **legible Rod of Asclepius**
+  (straight staff + a snake in clean S-curves), not a white blob.
+Pattern holds: get the gestalt *and* the one defining detail, and diff to fix that specific detail.
+
