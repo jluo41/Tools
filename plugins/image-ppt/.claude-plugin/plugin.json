@@ -1,0 +1,23 @@
+{
+  "name": "image-ppt",
+  "version": "1.1.0",
+  "description": "Replicate raster figures and icons as clean, editable, hand-authored SVGs. Bundles image-to-svg (one icon crop -> faithful vector) and figure-to-svg-replica (a whole infographic -> master SVG via analyze/crop/vectorize/compose), plus an image-ppt router + knowledge layer (lesson/feedback/digest verbs, with lessons consulted before drawing). Use to vectorize figures for papers and slides so wording, colors, and layout stay editable.",
+  "author": {
+    "name": "Junjie Luo",
+    "url": "https://github.com/jluo41"
+  },
+  "license": "MIT",
+  "keywords": [
+    "svg",
+    "vectorize",
+    "figure",
+    "icon",
+    "infographic",
+    "editable",
+    "image-to-svg",
+    "replica",
+    "lessons",
+    "feedback",
+    "digest"
+  ]
+}
