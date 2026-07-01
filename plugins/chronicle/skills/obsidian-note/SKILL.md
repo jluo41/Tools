@@ -1,14 +1,14 @@
 ---
 name: obsidian-note
-description: "Vault intake router — add free-form chat content to the right note. Triage it through a 3-step pipeline: (1) briefly log to today's diary, (2) archive any raw materials (pasted emails, long dumps, transcripts) to _WorkSpace, (3) write a clean structured note into the correct SPACE (people, meeting, project, paper, etc.). Generates everything, then presents a summary for the user to actively review. Use when the user says /obsidian-note, 'note this', 'add this to my notes', 'log and file this', 'intake this', or dumps content they want captured and routed. Trigger: obsidian-note, note this, add to notes, intake, log and file, capture this, route this note."
+description: "Vault intake router — add free-form chat content to the right note. Triage it through a 3-step pipeline: (1) quick-capture a timestamped line to today's daily note (0-DIARY-SPACE/YYYY-MM/YYYY-MM-DD.md), (2) archive any raw materials (pasted emails, long dumps, transcripts) to _WorkSpace, (3) write a clean structured note into the correct SPACE (people, meeting, project, paper, etc.). Generates everything, then presents a summary for the user to actively review. Use when the user says /obsidian-note, 'note this', 'add this to my notes', 'log and file this', 'intake this', or dumps content they want captured and routed. Trigger: obsidian-note, note this, add to notes, intake, log and file, capture this, route this note."
 argument-hint: "[free-form content to capture and route]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: 1.0.0
-  last_updated: 2026-06-27
-  summary: Chat-in → diary log + raw archive + filed note across the vault's SPACE folders, then user reviews.
+  version: 1.1.0
+  last_updated: 2026-07-01
+  summary: Chat-in → today's daily note (quick captures) + raw archive + filed note across vault's SPACE folders, then user reviews. Simplified workflow (single daily note, no separate scratchpad).
 created: 2026-06-27T23:52
-updated: 2026-06-28T00:08
+updated: 2026-07-01T10:20
 ---
 
 Skill: obsidian-note (vault intake router)
