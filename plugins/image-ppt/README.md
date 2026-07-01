@@ -61,4 +61,8 @@ Verb definitions live in `skills/image-ppt/fn/{lesson,feedback,digest}.md`; the 
 lives in `skills/image-ppt/lesson/` and `skills/image-ppt/feedback/`. Seeded lessons cover:
 organic glyphs resist primitives → switch to stock/raster (01); keep logos/photos raster (02); the
 icon scorer lies on white-on-dark (03); crop_qc over-flags inverted/tiny crops (04); editable-PPT =
-embed the SVG as a native PPTX svgBlip (05); reproduce the distinctive silhouette detail (06).
+embed the SVG as a native PPTX svgBlip (05); reproduce the distinctive silhouette detail (06); draw
+icons axis-aligned — a baked-in rotation reads as tilted (07); single-line labels survive a naïve
+SVG→PPT import as one box each (08); a stylized network sphere is not a photo — vectorize it and lift
+its baked title into real text (09); route hub-and-spoke connectors through a shared bus aligned to
+panel centers (10).
