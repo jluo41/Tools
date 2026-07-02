@@ -1,6 +1,6 @@
 ---
 name: image-ppt-digest
-description: "Utility verb. Digests a session -- the CURRENT one, or a PAST session named/id'd as an argument -- scanning its transcript for BOTH vectorization LESSONS (glyphs that resist primitives, raster fallbacks, scorer/QC gotchas, PPT embedding tricks) AND skill/script FEEDBACK (clunky steps, wrong behavior, missing flags). Distills, dedups, confirms, then routes each item to lesson/ or feedback/. The bulk harvester. Never auto-files."
+description: "Utility verb. Digests a session -- the CURRENT one, or a PAST session named/id'd as an argument -- scanning its transcript for BOTH vectorization LESSONS (glyphs that resist primitives, raster fallbacks, scorer/QC gotchas, crop/resolution gotchas) AND skill/script FEEDBACK (clunky steps, wrong behavior, missing flags). Distills, dedups, confirms, then routes each item to lesson/ or feedback/. The bulk harvester. Never auto-files."
 argument-hint: "[\"<session-name|id>\"] [--dry-run]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 ---
@@ -14,7 +14,7 @@ format needed a trick) and skill/script FEEDBACK (a step is clunky, behavior is 
 is missing) — dedups them, and (after you confirm) routes each to lesson/ or feedback/.
 
 Typical usage: from a FRESH session (clean context), name the PAST session to harvest --
-`/image-ppt digest "Figure3-Editable-PPT"`. With no argument it digests the CURRENT session.
+`/image-ppt digest "Figure3-Vectorize"`. With no argument it digests the CURRENT session.
 
 ## Run: `/image-ppt digest ["<session-name|id>"] [--dry-run]`
 
@@ -29,7 +29,7 @@ Typical usage: from a FRESH session (clean context), name the PAST session to ha
        - "score_icon PASSed but it looked wrong" / "polarity broke the score"
        - "crop_qc over-flagged the white-on-navy icons"
        - "keep the logos/photos as raster"
-       - "to make it an editable PPT we had to embed the svg as an svgBlip"
+       - "a low-res crop still vectorizes fine — resolution-independent output"
        - anything that would save a redraw if known BEFORE starting
      FEEDBACK signals (skill/script defects — route to feedback/):
        - "compose mis-placed the multi-line labels"

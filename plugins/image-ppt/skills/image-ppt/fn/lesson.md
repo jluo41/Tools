@@ -1,6 +1,6 @@
 ---
 name: image-ppt-lesson
-description: "Utility verb. Captures a hard-won lesson about figure/icon VECTORIZATION — which shapes resist primitive hand-authoring, when to keep raster, crop/QC and scorer gotchas, PPTX embedding tricks, fidelity details that matter. Unlike feedback (a skill/script is broken), a lesson is about the CRAFT being surprising. `lesson list` shows all; `lesson search <kw>` finds relevant ones. Consult BEFORE drawing."
+description: "Utility verb. Captures a hard-won lesson about figure/icon VECTORIZATION — which shapes resist primitive hand-authoring, when to keep raster, crop/QC and scorer gotchas, crop-resolution gotchas, fidelity details that matter. Unlike feedback (a skill/script is broken), a lesson is about the CRAFT being surprising. `lesson list` shows all; `lesson search <kw>` finds relevant ones. Consult BEFORE drawing."
 argument-hint: "[\"<what-happened-and-what-to-do>\"] | list | search <keyword>"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 ---
@@ -66,7 +66,7 @@ Use this BEFORE vectorizing to check for gotchas (e.g. "handshake", "logo", "whi
 
 ## When to Apply
 <Triggers — glyph type (organic/interlocking/logo/photo), polarity (white-on-dark), crop size,
-delivery format (PPT), etc.>
+crop resolution, etc.>
 
 ## Caveats
 <Edge cases this fix doesn't cover.>  <Optional — omit if none.>

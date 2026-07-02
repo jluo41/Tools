@@ -21,8 +21,56 @@ This plugin keeps a knowledge layer of hard-won gotchas at `../image-ppt/lesson/
 a figure, scan it (`/image-ppt lesson list`, or `lesson search <keyword>`) and flag any that apply —
 e.g. organic/interlocking glyphs → offer a stock/raster route early (Lesson 01); logos/photos →
 `keep_raster` from the first pass (Lesson 02); white-on-dark bands → don't trust `score_icon`/
-`crop_qc` (Lessons 03–04); "editable PPT" → embed the SVG as a PPTX svgBlip (Lesson 05). When the
+`crop_qc` (Lessons 03–04). When the
 session ends, capture new gotchas with `/image-ppt lesson "<...>"` or `/image-ppt digest`.
+
+## Choosing the icon path: REGENERATE (default for dense figures) vs. crop-from-source
+Two ways to get each icon. The classic path (Steps 1–3 below) **crops** icons out of the source by
+bbox. On **dense multi-icon figures** (icons among text, on coloured panels, touching neighbours)
+that path performs badly — crops land on title text or a neighbour and can't be tightened
+(lesson/13). Prefer **regeneration**:
+
+1. **Split** the figure into per-part sections; save each clean crop as `part.png` (also the gen reference).
+2. **Regenerate** each part's icons as ONE regular grid with `scripts/gen_icon_grid.py` (Codex native
+   image-gen; `part.png` is the reference). Grid size: **3×3 by DEFAULT** (≤9 icons); drop to **2×2**
+   for sections dense in human/photoreal figures (bigger cells = bleed-proof); **never 4×4** (it bleeds
+   — lesson/14). Prompt for ~60% cell fill, large margins, pure-white background, no text (keep only
+   baked readings like "72"/"5.8"/"!").
+3. **Slice** with `scripts/slice_grid.py` (equal division + central-connected-component keep → drops
+   neighbour-bleed; lesson/14).
+4. **Transparentize** with `scripts/transparentize.py` (removes only border-connected white; interior
+   whites survive — lesson/15).
+5. **Compose** each part (embed transparent icons as `<image>`; re-add badge circles / white-on-dark
+   glyphs as vector — lesson/18; sample panel/banner/gradient colours from source — lesson/17), then
+   assemble the master.
+
+Per-part tree:
+```
+subimages/partN/
+├── part.png          # section crop + gen reference
+├── manifest.json     # icons -> grid/cell/desc + text
+├── redraw_icon/      # gen_icon_grid.py output grids
+├── cropped_icon/     # sliced + transparent icons
+└── partN_replica.svg
+```
+**For SVG→PowerPoint** (Insert SVG → right-click → Convert to Shape): emit **one `<text>` per sentence**
+on a single line — PPT collapses `<tspan>` line breaks (lesson/16). Requires the codex-image2 bridge
+(haipipe-toolkit) + `codex` CLI on PATH.
+
+### Deliverable, PPT & QC rules (user preferences — treat as hard constraints)
+- **Icons are transparent by default** (the transparentize step) so they drop onto any panel with no
+  white box. Keep the white-bg slice too (`cropped_icon_raw/`) as a fallback.
+- **Deliverable = editable master SVG.** Convert to PowerPoint ONLY via **Insert SVG → right-click →
+  Convert to Shape**. **NEVER generate PPT with python / python-pptx** — that output was rejected
+  outright ("rubbish, cannot be opened"). No `build_pptx`, no `svgBlip`-from-python.
+- **Two SVG variants from ONE config:** `<part>_replica.svg` = **one `<text>` per sentence** (single
+  line, overflow OK, re-wrap in PPT) for the PowerPoint path (lesson/16); plus a **wrapped** variant
+  for the faithful visual diff. Generate both from the same layout data — don't hand-maintain two files.
+- **Always produce the combined `<stem>_replica_diff.png`** (original | replica, `render_diff.py`) and
+  eyeball it per section — never sign off on the render alone (matches the mandatory eval rule below).
+- **Compose faithfully:** measure panel/banner/gradient colours from the source (lesson/17); embed
+  transparent icons as `<image>`; re-add badge circles and white-on-dark glyphs as vector (lesson/18);
+  match the original's banner, header alignment, panel fills, and layout.
 
 ## Why the pipeline is staged
 A figure is many small drawings plus text plus layout. Doing it in one pass fails — you lose either

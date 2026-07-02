@@ -60,9 +60,13 @@ growing knowledge layer so the craft's gotchas outlive any one session:
 Verb definitions live in `skills/image-ppt/fn/{lesson,feedback,digest}.md`; the filed knowledge
 lives in `skills/image-ppt/lesson/` and `skills/image-ppt/feedback/`. Seeded lessons cover:
 organic glyphs resist primitives → switch to stock/raster (01); keep logos/photos raster (02); the
-icon scorer lies on white-on-dark (03); crop_qc over-flags inverted/tiny crops (04); editable-PPT =
-embed the SVG as a native PPTX svgBlip (05); reproduce the distinctive silhouette detail (06); draw
-icons axis-aligned — a baked-in rotation reads as tilted (07); single-line labels survive a naïve
-SVG→PPT import as one box each (08); a stylized network sphere is not a photo — vectorize it and lift
-its baked title into real text (09); route hub-and-spoke connectors through a shared bus aligned to
-panel centers (10).
+icon scorer lies on white-on-dark (03); crop_qc over-flags inverted/tiny crops (04); reproduce the
+distinctive silhouette detail (06); draw icons axis-aligned — a baked-in rotation reads as tilted
+(07); a stylized network sphere is not a photo — vectorize it and lift its baked title into real
+text (09); route hub-and-spoke connectors through a shared bus aligned to panel centers (10); a
+crop's low resolution is not DPI loss — vectors are resolution-independent (11); cycle diagrams —
+circles/curves + crop bleed (12); **regenerate icons instead of cropping a dense source** (13);
+**regen grid 3×3 by default** (2×2 fallback, never 4×4) + central-component slice (14); transparentize
+only border-connected white (15); SVG→PowerPoint needs one `<text>` per sentence — tspans collapse (16);
+measure panel/banner/gradient colours from source (17); re-add badge circles / white-on-dark glyphs as
+vector at compose (18).
