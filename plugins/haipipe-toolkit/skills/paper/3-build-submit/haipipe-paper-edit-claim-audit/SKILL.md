@@ -8,7 +8,7 @@ metadata:
   last_updated: "2026-05-31"
   summary: "Zero-context verification that every number, comparison, and scope claim in the paper matches raw result files."
   changelog:
-    - "1.1.0 (2026-06-05): renamed from paper-claim-audit to haipipe-paper-edit-claim-audit; consolidated into 3-write-edit/ (haipipe-paper-* name unification)."
+    - "1.1.0 (2026-06-05): renamed from paper-claim-audit to haipipe-paper-edit-claim-audit; consolidated into 3-build-submit/ (haipipe-paper-* name unification)."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
@@ -57,10 +57,7 @@ This is **stricter than reviewer-independence** — it's zero-context evidence a
 
 Locate paper and result files WITHOUT reading or interpreting them.
 
-**Paper files** (claims) — paths shown relative to the shell's working
-directory so you can find them with `ls`; when writing them into
-`audited_input_hashes`, use paths relative to the paper dir (no `paper/`
-prefix) per the "Submission Artifact Emission" section below:
+**Paper files** (claims) — paths shown relative to the shell's working directory so you can find them with `ls`; when writing them into `audited_input_hashes`, use paths relative to the paper dir (no `paper/` prefix) per the "Submission Artifact Emission" section below:
 ```
 paper/main.tex                # → hash key: main.tex
 paper/sections/*.tex          # → hash key: sections/*.tex
@@ -255,12 +252,7 @@ After each `mcp__codex__codex` or `mcp__codex__codex-reply` reviewer call, save 
 
 ## Submission Artifact Emission
 
-This skill **always** writes `paper/PAPER_CLAIM_AUDIT.json`, regardless of
-caller or detector outcome. A detector-negative run (paper has no numeric
-claims) emits verdict `NOT_APPLICABLE`; a paper-with-numeric-claims-but-no-
-raw-results run emits `BLOCKED`. Silent skip is forbidden — `paper-writing`
-Phase 6 and `tools/verify_paper_audits.sh` both rely on this artifact
-existing at a predictable path.
+This skill **always** writes `paper/PAPER_CLAIM_AUDIT.json`, regardless of caller or detector outcome. A detector-negative run (paper has no numeric claims) emits verdict `NOT_APPLICABLE`; a paper-with-numeric-claims-but-no-raw-results run emits `BLOCKED`. Silent skip is forbidden — `paper-writing` Phase 6 and `tools/verify_paper_audits.sh` both rely on this artifact existing at a predictable path.
 
 The artifact conforms to the schema in `shared-references/assurance-contract.md`:
 
@@ -290,20 +282,9 @@ The artifact conforms to the schema in `shared-references/assurance-contract.md`
 
 ### `audited_input_hashes` scope
 
-Hash the **declared input set** passed into this audit invocation — i.e. the
-exact `.tex` files and raw result / config files this run read — not a
-repo-wide union and not the reviewer's self-reported subset. If a caller
-passed only `main.tex` + a single result file, hash those two files and no
-others. The external verifier rehashes these entries; any mismatch flags
-`STALE`.
+Hash the **declared input set** passed into this audit invocation — i.e. the exact `.tex` files and raw result / config files this run read — not a repo-wide union and not the reviewer's self-reported subset. If a caller passed only `main.tex` + a single result file, hash those two files and no others. The external verifier rehashes these entries; any mismatch flags `STALE`.
 
-**Path convention** (must match what `tools/verify_paper_audits.sh`
-expects): keys are **paths relative to the paper directory** (the arg
-passed to the verifier) for in-paper files — so `main.tex`, not
-`paper/main.tex` — and **absolute paths** for out-of-paper files such as
-external `results/` dirs. The verifier resolves relative entries via
-`os.path.join(paper_dir, key)`; prefixing with `paper/` produces
-`paper/paper/main.tex` and false-fails as STALE.
+**Path convention** (must match what `tools/verify_paper_audits.sh` expects): keys are **paths relative to the paper directory** (the arg passed to the verifier) for in-paper files — so `main.tex`, not `paper/main.tex` — and **absolute paths** for out-of-paper files such as external `results/` dirs. The verifier resolves relative entries via `os.path.join(paper_dir, key)`; prefixing with `paper/` produces `paper/paper/main.tex` and false-fails as STALE.
 
 ### Verdict decision table
 
@@ -318,16 +299,8 @@ external `results/` dirs. The verifier resolves relative entries via
 
 ### Thread independence
 
-Every invocation uses a fresh `mcp__codex__codex` thread. Never
-`codex-reply`. Do not accept prior audit outputs (PROOF_AUDIT, CITATION_AUDIT,
-EXPERIMENT_LOG, AUTO_REVIEW summaries) as input to this audit — the fresh
-thread preserves reviewer independence per
-`shared-references/reviewer-independence.md`.
+Every invocation uses a fresh `mcp__codex__codex` thread. Never `codex-reply`. Do not accept prior audit outputs (PROOF_AUDIT, CITATION_AUDIT, EXPERIMENT_LOG, AUTO_REVIEW summaries) as input to this audit — the fresh thread preserves reviewer independence per `shared-references/reviewer-independence.md`.
 
 ### Human-readable sibling
 
-`paper/PAPER_CLAIM_AUDIT.md` is written alongside the JSON for readers.
-The JSON is authoritative for `tools/verify_paper_audits.sh`; the Markdown
-is for humans. The parent skill (`paper-writing` Phase 6) plus the verifier
-decide whether the verdict blocks finalization — this skill itself never
-blocks; it only emits.
+`paper/PAPER_CLAIM_AUDIT.md` is written alongside the JSON for readers. The JSON is authoritative for `tools/verify_paper_audits.sh`; the Markdown is for humans. The parent skill (`paper-writing` Phase 6) plus the verifier decide whether the verdict blocks finalization — this skill itself never blocks; it only emits.

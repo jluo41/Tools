@@ -6,7 +6,7 @@ metadata:
   last_updated: "2026-05-31"
   summary: "Use when a manuscript is close to submission or resubmission and you need a preflight audit for claim support, figure-panel coverage, legend sync, methods references, terminology stability, and venue-facing risks."
   changelog:
-    - "1.1.0 (2026-06-05): renamed from submission-audit to haipipe-paper-edit-submission-audit; consolidated into 3-write-edit/ (haipipe-paper-* name unification)."
+    - "1.1.0 (2026-06-05): renamed from submission-audit to haipipe-paper-edit-submission-audit; consolidated into 3-build-submit/ (haipipe-paper-* name unification)."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 

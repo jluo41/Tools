@@ -1,28 +1,22 @@
 ---
 name: haipipe-paper-edit-typeset
-description: "Fix typesetting defects in a compiled LaTeX draft: widows, orphans, overfull boxes, bad breaks. Topic ⑥ of the 4-edit cycle. Self-contained typeset checks driven by the compiled PDF. STUB — scope defined, checklist to be filled. Trigger: widow orphan, overfull box, fix line breaks, typeset pass, page breaks."
+description: "Fix typesetting defects in a compiled LaTeX draft: widows, orphans, overfull boxes, bad breaks. CHECK-phase whole-paper typeset pass in build-submit. Self-contained typeset checks driven by the compiled PDF. STUB — scope defined, checklist to be filled. Trigger: widow orphan, overfull box, fix line breaks, typeset pass, page breaks."
 metadata:
   version: "0.0.1"
   status: stub
-  stage: 4-edit
-  topic: "⑥ typeset"
+  stage: build-submit
+  topic: typeset
 ---
 
 # haipipe-paper-edit-typeset  (stub)
 
-Topic ⑥ of the `4-edit` cycle — the **last** pass, because every earlier edit
-moves the type. Self-contained: carries its own check logic, driven by the
-compiled PDF and the LaTeX log.
+CHECK-phase whole-paper typeset pass in the build-submit layer — the **last** pass, because every earlier edit moves the type. Self-contained: carries its own check logic, driven by the compiled PDF and the LaTeX log.
 
-Read `../_shared/` first — especially `comment-protocol.md`. Like every 4-edit
-sub-skill it is **comment-first**: Round 1 inserts `%% {CC-typeset-vMMDD}: finding
-| suggestion ========>` and changes no text; apply waits for the human
-`========> {XX}:` reply.
+Like every build-submit sub-skill it is **comment-first**: Round 1 inserts `%% {CC-typeset-vMMDD}: finding | suggestion ========>` and changes no text; apply waits for the human `========> {XX}:` reply.
 
 ## Scope
 
-The compiled document reads cleanly: no widows or orphans, no overfull/underfull
-boxes, no awkward page or column breaks, figures/tables near their references.
+The compiled document reads cleanly: no widows or orphans, no overfull/underfull boxes, no awkward page or column breaks, figures/tables near their references.
 
 ## Intended checks (to be written)
 
@@ -35,13 +29,10 @@ boxes, no awkward page or column breaks, figures/tables near their references.
 
 ## Approach (intended)
 
-Compile with `components/compile/paper-compile` and read the PDF + log (`Overfull` /
-`Underfull` warnings, widow/orphan) — fix at the **prose** level first (tighten a
-sentence to pull a widow back) before reaching for manual break commands. A diff
-of before/after PDFs (`haipipe-paper-edit-diffpdf`) confirms nothing else moved.
+Compile with `components/compile/paper-compile` and read the PDF + log (`Overfull` / `Underfull` warnings, widow/orphan) — fix at the **prose** level first (tighten a sentence to pull a widow back) before reaching for manual break commands. A diff of before/after PDFs (`haipipe-paper-edit-diffpdf`) confirms nothing else moved.
 
 ## Done means
 
-- [ ] No widows/orphans/overfull boxes in the section's pages; ⑥ cell → `done`.
+- [ ] No widows/orphans/overfull boxes in the paper's pages.
 
-> **Status:** stub. Fill the checklist into `ref/` when topic ⑥ is activated.
+> **Status:** stub. Fill the checklist into `ref/` when the typeset pass is activated.
