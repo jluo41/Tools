@@ -24,7 +24,7 @@ That is one edit-cycle. Repeat for the next topic (values, citations, …).
 
 ## A. Whole-draft cycle (the normal path)
 
-You talk to Claude Code; it invokes the **`haipipe-paper-edit`** orchestrator, which runs
+You talk to Claude Code; it invokes the **`haipipe-paper-section-edit`** orchestrator, which runs
 the five stages and fans out the annotator at stage 2. **It first asks for your
 initials and the pass date** — your replies are tagged with those; nothing is
 assumed.
@@ -77,7 +77,7 @@ next cycle.
 
 When you just want to work a single file:
 
-> Use `haipipe-paper-edit-content` to review `0-sections/01_introduction.tex` — comment only.
+> Use `haipipe-paper-section-edit-content` to review `0-sections/01_introduction.tex` — comment only.
 
 This skips the orchestrator and runs one topic's checklist as a stage-2 pass on
 one file. You then reply and ask for improve/clean as above.

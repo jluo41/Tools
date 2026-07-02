@@ -535,7 +535,7 @@ def pitch_tex(name: str, venue: str) -> str:
         "1-pitch",
         f"1-pitch: {name} ({venue})",
         textwrap.dedent("""\
-            % Layout follows 3-write-edit/_shared/sentence-format.md:
+            % Layout follows 2-section-edit/_shared/sentence-format.md:
             % paragraph banner + one sentence per line + %% ---- Pn.Sm ---- tags.
             \\section*{One-Minute Pitch}
             % =========================================================
@@ -605,7 +605,7 @@ def narrative_tex(name: str, venue: str) -> str:
         "3-narrative",
         f"3-narrative: {name} ({venue})",
         textwrap.dedent("""\
-            % Layout follows 3-write-edit/_shared/sentence-format.md.
+            % Layout follows 2-section-edit/_shared/sentence-format.md.
             \\section*{Narrative Arc}
             % =========================================================
             % Para [narrative.arc] Narrative arc -- claims become a story

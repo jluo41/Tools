@@ -3,7 +3,7 @@
 What a whole paper folder should look like. Every paper build skill creates,
 migrates toward, or audits against this contract.
 
-The companion doc `3-write-edit/_shared/tex-file-anatomy.md` defines the anatomy of
+The companion doc `2-section-edit/_shared/tex-file-anatomy.md` defines the anatomy of
 one `.tex` file: driver / wrapper / leaf roles, paragraph banners, and local
 editing rules. This doc defines the folder those files live in.
 
@@ -126,7 +126,7 @@ X_<slug>.tex           SI block, X in A..Z, \input by the SI driver
   papers may use intro, related work, method, experiments, discussion.
 - `MM` starts at `00` and is contiguous: no gaps.
 - The filename is the structural address. See
-  `3-write-edit/_shared/tex-file-anatomy.md` for what goes inside each file role.
+  `2-section-edit/_shared/tex-file-anatomy.md` for what goes inside each file role.
 - When a numbered file is deleted or merged, downstream files are renamed in
   the same pass and every `\input` line is rewired in that same pass.
 

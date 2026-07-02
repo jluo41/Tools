@@ -1,8 +1,8 @@
-# haipipe-paper-section-edit — Feedback Inbox
+# haipipe-paper-section-edit-citation — Feedback Inbox
 
 Feedback about THIS skill, captured by `/haipipe-paper feedback "<text>"` when
 the text or the active stage points here (capture-time routing), or moved here
-via `/haipipe-paper feedback move <file> <skill-name>`.
+via `/haipipe-paper feedback move <file> haipipe-paper-section-edit-citation`.
 
 One file per item: `<YYYY-MM-DD>_<slug>.md` (`status: open|fixed`). Fix in a
 later revision pass; keep files as history (never delete). Shared convention:

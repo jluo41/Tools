@@ -1,110 +1,96 @@
-# 2-section-edit — per-section DRAFT-GATHER-POLISH-CHECK
+# 2-section-edit -- per-section DRAFT-GATHER-POLISH-CHECK
 
 The **section-edit stage** for a paper. The combined hub
 (`haipipe-paper-section-edit`) owns the full per-section lifecycle.
-Layer workers are organized by phase.
+Phase workers are organized by phase.
 
 ```
 Per-section lifecycle:  DRAFT → GATHER → POLISH → CHECK → sync → compile
-                        (L1-L3)  (L4-L6)  (L7)     (L8)
 
-DRAFT lives in the hub (haipipe-paper-section-edit).
-GATHER, POLISH, CHECK live here as layer workers.
+Status strip:
+§1:  draft ✅  │  display --  values --  citation 🚀  │  polish ⬜  │  check ⬜
 ```
 
 ## Structure
 
 ```
-3-write-edit/
-├── README.md                  ← you are here
-├── USAGE.md                   ← recipes, the reply grammar, the effort dial
-├── WIRING.md                  ← routing and dispatch
-├── haipipe-paper-edit/        ← ORCHESTRATOR: catalog + agents + the edit cycle
+2-section-edit/
+├── README.md                    ← you are here
+├── USAGE.md                     ← recipes, the reply grammar, the effort dial
+├── WIRING.md                    ← routing and dispatch
+├── haipipe-paper-section-edit/  ← HUB: per-section lifecycle orchestrator
 │
-├── gather/                    ← L4-L6: display, values, citation
-│   ├── haipipe-paper-edit-values               L5  every number matches its source
-│   ├── haipipe-paper-edit-citation              L6  every \cite resolves and supports its claim
-│   ├── haipipe-paper-edit-check-reference       L6  reference verification (script-backed)
-│   ├── haipipe-paper-edit-manual-review-citations  L6  manual citation review
-│   └── haipipe-paper-edit-manual-review-values     L5  manual values review
+├── gather/                      ← GATHER: one skill per working doc
+│   ├── haipipe-paper-section-edit-display    display  0-displays/ units
+│   ├── haipipe-paper-section-edit-values     values   _VALUES_.md
+│   └── haipipe-paper-section-edit-citation   citation _CITATION_.md
 │
-├── polish/                     ← L7: prose (actual sentence-level writing)
-│   ├── haipipe-paper-edit-write                L7  fresh draft from outline
-│   ├── haipipe-paper-edit-write-conference     L7  conference-style draft
-│   ├── haipipe-paper-edit-write-scientific     L7  scientific-style draft
-│   ├── haipipe-paper-edit-write-systems        L7  systems-style draft
-│   ├── haipipe-paper-edit-weaving              L7  rebuttal-driven revision (paragraph polish)
-│   ├── haipipe-paper-edit-content              L7  content review (what sentences say, de-AI)
-│   └── haipipe-paper-edit-results-revision     L7  results-specific revision
+├── polish/                      ← POLISH: venue-quality prose
+│   ├── haipipe-paper-section-edit-write                fresh draft from outline
+│   ├── haipipe-paper-section-edit-write-conference     conference style
+│   ├── haipipe-paper-section-edit-write-scientific     scientific style
+│   ├── haipipe-paper-section-edit-write-systems        systems style
+│   ├── haipipe-paper-section-edit-content              content review (WHAT)
+│   ├── haipipe-paper-section-edit-humanizer            de-AI audit (HOW)
+│   ├── haipipe-paper-section-edit-weaving              paragraph flow
+│   └── haipipe-paper-section-edit-results-revision     results-specific
 │
-├── check/                     ← L8: checklist (final verification)
-│   ├── haipipe-paper-edit-claim-audit          L8  every claim traceable to evidence
-│   ├── haipipe-paper-edit-consistency          L8  terminology, \label/\ref, notation
-│   ├── haipipe-paper-edit-format               L8  venue style, headings, units
-│   ├── haipipe-paper-edit-typeset              L8  widows, orphans, overfull boxes
-│   ├── haipipe-paper-edit-proof-checker        L8  proof verification
-│   ├── haipipe-paper-edit-reviewer             L8  self-review
-│   └── haipipe-paper-edit-submission-audit     L8  final submission check
+├── check/                       ← CHECK: section-level verification
+│   └── haipipe-paper-section-edit-proof-checker        proof verification
 │
-├── tools/                     ← cross-cutting utilities
-│   ├── haipipe-paper-edit-diffpdf              tracked-changes PDF
-│   ├── haipipe-paper-edit-to-overleaf          export to Overleaf
-│   ├── haipipe-paper-edit-optimizer            optimization pass
-│   ├── haipipe-paper-edit-improve-loop         iterative improvement
-│   └── haipipe-paper-edit-diagram              section logic diagrams
+├── tools/                       ← cross-cutting utilities
+│   └── haipipe-paper-section-edit-diagram              paragraph-level ASCII diagrams
 │
-├── agents/                    ← stage agents (fan out annotators)
-├── sections/                  ← per-section playbooks
-├── scripts/                   ← utility scripts
-├── _shared/                   ← contracts every sub-skill obeys
-└── _test/                     ← tests
+├── sections/                    ← per-section playbooks (intro, methods, etc.)
+├── scripts/                     ← utility scripts
+├── _shared/                     ← contracts (comment-protocol, sentence-format)
+├── _test/                       ← tests
+└── _archive/                    ← retired skills (merged into current ones)
 ```
 
-## The edit cycle within each phase
+Whole-paper skills (consistency, format, typeset, claim-audit, submission-audit,
+diffpdf, optimizer, improve-loop, to-overleaf, reviewer) live in `3-build-submit/`
+as `haipipe-paper-edit-*`.
 
-Each phase follows the comment-first discipline:
+## Naming convention
 
 ```
-GATHER:  L5 values     → annotate numbers needing verification → human confirms → trace to source
-         L6 citation   → annotate missing/wrong cites → human confirms → Scholar verify + place
-
-WRITE:   L7 prose      → draft from outline → comment-first review → human ========> reply → apply
-
-CHECK:   L8 checklist  → annotate issues (format, consistency, claims) → human confirms → fix
+haipipe-paper-section-edit-*     section-level (this directory)
+haipipe-paper-edit-*             whole-paper (3-build-submit/)
 ```
 
-Comment-first means: Round 1 inserts findings as `%% {CC-<topic>-vMMDD}: ...` comments.
-The human replies on the same line: `========> {JL vMMDD}: accept|reject|modify|discuss`.
-A later apply round acts on accepted comments only.
+## The gather phase (AUDIT → SEARCH → CANDIDATE → [HUMAN] → PLACE → REVIEW)
+
+Each gather skill owns one working doc and follows the same 6-phase lifecycle:
+
+```
+GATHER:
+  display   → audit what's needed → plan units → route to task → [human approves] → link
+  values    → audit numbers → trace to source → [human verifies] → place in tex
+  citation  → audit gaps → search candidates → write to _CITATION_ → [human verifies on Scholar] → place \citep{}
+```
+
+Hard boundary: the agent searches and proposes; the human verifies and places.
+The agent NEVER adds to .bib, NEVER fabricates numbers, NEVER creates ad-hoc plots.
 
 ## Progression order
 
 ```
-GATHER first, WRITE second, CHECK last:
+DRAFT first, GATHER second, POLISH third, CHECK last:
 
-  gather/values + gather/citation   (can run in parallel)
+  draft (structure + narrative sentences)
            ↓
-  polish/edit-write or polish/content  (prose uses gathered materials)
+  display + values + citation   (can run in parallel)
            ↓
-  check/format → check/consistency → check/claim-audit → check/submission-audit
+  polish (rewrite draft sentences to venue quality)
+           ↓
+  check (section-level verification)
+           ↓
+  sync to tex → compile
 ```
 
-Review wide in parallel within a phase; advance phases in dependency order.
+## Comment-first discipline (POLISH phase)
 
-## Relationship to the editing scaffold
-
-```
-1-lifecycle/haipipe-paper-editing/    PLAN (L1-L3) + per-section hub
-  ├── L1 paper structure              z-structure scaffold
-  ├── L2 section structure            outline structure block
-  ├── L3 narrative                    ¶ headlines + previews + draft sentences
-  │
-  └── dispatches to 3-write-edit/:
-      ├── gather/   L4-L6             values, citation verification
-      ├── polish/    L7                prose drafting and polishing
-      └── check/    L8                final verification
-```
-
-The editing scaffold tracks progress across all layers. The 3-write-edit/ skills
-are the layer workers that do the actual work. The scaffold owns the _CITATION_
-and _VALUES_ tracking files; the gather/ skills update them.
+Round 1 inserts findings as `%% {CC-<topic>-vMMDD}: ...` comments.
+The human replies: `========> {JL vMMDD}: accept|reject|modify|discuss`.
+A later apply round acts on accepted comments only.

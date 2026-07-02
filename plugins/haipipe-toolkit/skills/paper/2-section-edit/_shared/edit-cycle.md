@@ -2,11 +2,11 @@
 
 One edit-cycle takes a draft through five stages. Stages 2–5 are **collaborative**:
 AI and human share the work, and you choose how much human effort to spend at
-each. The `haipipe-paper-edit` orchestrator drives the cycle and fans out the per-stage
+each. The `haipipe-paper-section-edit` orchestrator drives the cycle and fans out the per-stage
 agents in `../agents/`.
 
 > **Upstream input (not a stage here):** the section → paragraph → sentence map
-> from `1-lifecycle/haipipe-paper-edit-diagram` is a useful diagnostic to hand the
+> from `tools/haipipe-paper-section-edit-diagram` is a useful diagnostic to hand the
 > annotators before Stage 2. It is produced in planning, not in the edit cycle.
 
 ## The five stages

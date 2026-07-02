@@ -53,4 +53,4 @@ TODO
 ----
 
 - Link to `components/figure/` for figure ↔ claim alignment audit
-- Link to `3-write-edit/haipipe-paper-edit-claim-audit/` — every claim cross-checked
+- Link to `3-build-submit/haipipe-paper-edit-claim-audit/` — every claim cross-checked
