@@ -31,7 +31,7 @@ about the vectorization craft.
     panels, text placement, render_diff, evaluate_icons   -> figure-to-svg-replica
   decompose, primitives, score_icon, center_svg,
     render_compare, per-icon draw                          -> image-to-svg
-  pptx, svgBlip, powerpoint, export, convert-to-shape      -> figure-to-svg-replica (compose/export)
+  compose, master-svg, export                              -> figure-to-svg-replica (compose)
   router, menu, lesson/feedback/digest plumbing            -> image-ppt
   NO MATCH                                                  -> general (feedback/ root)
 ```

@@ -71,12 +71,15 @@ def icon_element(it, svg_dir, crops_dir):
 
 
 def connector_element(c):
-    """Draw a figure-level primitive in source coordinates. Currently 'arrow' (also covers
-    plain lines via heads:"none"). Handy for panel-to-panel arrows and dashed bias connectors
-    that are simpler drawn on the master canvas than cropped and vectorized as icons.
+    """Draw a figure-level primitive in source coordinates. 'arrow' (also covers plain lines via
+    heads:"none"). Handy for panel-to-panel arrows and dashed bias connectors that are simpler
+    drawn on the master canvas than cropped and vectorized as icons.
 
     Fields: type("arrow"), x1,y1,x2,y2, color, width, dashed(bool), dash("7 5"),
-            heads("end"|"both"|"none"), head_size, head_width.
+            heads("end"|"both"|"none"), head_size, head_width,
+            curve(float): perpendicular bow offset of a quadratic-Bezier control point from the
+            midpoint — 0 = straight line; +/- bows to one side or the other. Use for the curved
+            arcs in a hub/cycle diagram. Arrowheads follow the curve's end tangent.
     """
     if c.get("type", "arrow") != "arrow":
         return f'  <!-- unknown connector type {esc_attr(c.get("type"))} -->'
@@ -86,26 +89,49 @@ def connector_element(c):
     heads = c.get("heads", "end")
     hs = c.get("head_size", w * 3 + 6)          # arrowhead length along the shaft
     hw = c.get("head_width", hs * 0.8)          # arrowhead base width
+    curve = c.get("curve", 0)
     dx, dy = x2 - x1, y2 - y1
     L = math.hypot(dx, dy) or 1.0
-    ux, uy = dx / L, dy / L                     # shaft direction
+    ux, uy = dx / L, dy / L                     # chord direction
     px, py = -uy, ux                            # perpendicular
+    dash = f' stroke-dasharray="{c.get("dash", "7 5")}"' if c.get("dashed") else ""
+
+    def head(tx, ty, dirx, diry):               # arrowhead pointing along (dirx,diry)
+        pxx, pyy = -diry, dirx
+        bx, by = tx - dirx * hs, ty - diry * hs
+        lx, ly = bx + pxx * hw / 2, by + pyy * hw / 2
+        rx, ry = bx - pxx * hw / 2, by - pyy * hw / 2
+        return (f'<path d="M{tx:.1f} {ty:.1f} L{lx:.1f} {ly:.1f} L{rx:.1f} {ry:.1f} Z" '
+                f'fill="{esc_attr(color)}"/>')
+
+    if curve:
+        mx, my = (x1 + x2) / 2, (y1 + y2) / 2
+        cx, cy = mx + px * curve, my + py * curve       # quadratic control point
+        # end tangent = direction from control to endpoint
+        etx, ety = x2 - cx, y2 - cy
+        el = math.hypot(etx, ety) or 1.0
+        ex, ey = etx / el, ety / el
+        stx, sty = x1 - cx, y1 - cy
+        sl = math.hypot(stx, sty) or 1.0
+        sx_, sy_ = stx / sl, sty / sl                   # start tangent (control->start)
+        e2x, e2y = (x2 - ex * hs, y2 - ey * hs) if heads in ("end", "both") else (x2, y2)
+        s2x_, s2y_ = (x1 - sx_ * hs, y1 - sy_ * hs) if heads == "both" else (x1, y1)
+        out = [f'<path d="M{s2x_:.1f} {s2y_:.1f} Q {cx:.1f} {cy:.1f} {e2x:.1f} {e2y:.1f}" '
+               f'fill="none" stroke="{esc_attr(color)}" stroke-width="{w}"{dash} '
+               f'stroke-linecap="butt"/>']
+        if heads in ("end", "both"):
+            out.append(head(x2, y2, ex, ey))
+        if heads == "both":
+            out.append(head(x1, y1, sx_, sy_))
+        return "  " + "\n  ".join(out)
+
     s1x, s1y, s2x, s2y = x1, y1, x2, y2         # shaft ends, pulled back under heads
     if heads in ("end", "both"):
         s2x, s2y = x2 - ux * hs, y2 - uy * hs
     if heads == "both":
         s1x, s1y = x1 + ux * hs, y1 + uy * hs
-    dash = f' stroke-dasharray="{c.get("dash", "7 5")}"' if c.get("dashed") else ""
     out = [f'<line x1="{s1x:.1f}" y1="{s1y:.1f}" x2="{s2x:.1f}" y2="{s2y:.1f}" '
            f'stroke="{esc_attr(color)}" stroke-width="{w}"{dash} stroke-linecap="butt"/>']
-
-    def head(tx, ty, dirx, diry):
-        bx, by = tx - dirx * hs, ty - diry * hs
-        lx, ly = bx + px * hw / 2, by + py * hw / 2
-        rx, ry = bx - px * hw / 2, by - py * hw / 2
-        return (f'<path d="M{tx:.1f} {ty:.1f} L{lx:.1f} {ly:.1f} L{rx:.1f} {ry:.1f} Z" '
-                f'fill="{esc_attr(color)}"/>')
-
     if heads in ("end", "both"):
         out.append(head(x2, y2, ux, uy))
     if heads == "both":
@@ -162,6 +188,12 @@ def main():
                    f'rx="{p.get("rx", 0)}" fill="{esc_attr(p.get("fill", "none"))}" '
                    f'stroke="{esc_attr(p.get("stroke", "none"))}" '
                    f'stroke-width="{p.get("stroke_width", 1)}"/>')
+
+    for e in data.get("ellipses", []):
+        out.append(f'  <ellipse cx="{e["cx"]}" cy="{e["cy"]}" rx="{e["rx"]}" '
+                   f'ry="{e.get("ry", e["rx"])}" fill="{esc_attr(e.get("fill", "none"))}" '
+                   f'stroke="{esc_attr(e.get("stroke", "none"))}" '
+                   f'stroke-width="{e.get("stroke_width", 1)}"/>')
 
     connectors = data.get("connectors", [])
     for c in connectors:

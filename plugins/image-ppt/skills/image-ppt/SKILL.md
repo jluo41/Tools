@@ -1,13 +1,13 @@
 ---
 name: image-ppt
-description: "Router + knowledge layer for the image-ppt plugin (figure/icon vectorization to editable SVG/PPT). Routes to the two work skills (image-to-svg, figure-to-svg-replica) and exposes the knowledge verbs: `lesson` (hard-won vectorization gotchas, consulted BEFORE drawing), `feedback` (defects in the skills/scripts), `digest` (harvest a session into lessons + feedback). Use when the user says /image-ppt, or wants to capture/list a lesson or feedback, or digest a session."
+description: "Router + knowledge layer for the image-ppt plugin (figure/icon vectorization to editable SVG). Routes to the two work skills (image-to-svg, figure-to-svg-replica) and exposes the knowledge verbs: `lesson` (hard-won vectorization gotchas, consulted BEFORE drawing), `feedback` (defects in the skills/scripts), `digest` (harvest a session into lessons + feedback). Use when the user says /image-ppt, or wants to capture/list a lesson or feedback, or digest a session."
 ---
 
 Skill: image-ppt (router + knowledge layer)
 ===========================================
 
 Entry point for the **image-ppt** plugin — replicate raster figures and icons as clean,
-editable, hand-authored SVGs (and package them as editable PowerPoint). This skill routes to
+editable, hand-authored SVGs. This skill routes to
 the two work skills and owns the shared **knowledge layer** (lessons + feedback).
 
 Invocation:  /image-ppt <command> [args]
@@ -18,7 +18,7 @@ Sub-commands
 
   Do the work:
   vectorize-icon    One raster icon crop  -> faithful hand-authored SVG   -> /image-to-svg
-  vectorize-figure  A whole infographic   -> master SVG (+ editable PPT)  -> /figure-to-svg-replica
+  vectorize-figure  A whole infographic   -> master editable SVG          -> /figure-to-svg-replica
 
   Knowledge layer:
   lesson    Capture / list / search vectorization gotchas (consulted BEFORE drawing)
