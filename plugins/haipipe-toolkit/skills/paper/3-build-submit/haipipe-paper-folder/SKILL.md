@@ -1,5 +1,5 @@
 ---
-name: haipipe-paper-bootstrap
+name: haipipe-paper-folder
 description: Scaffold a new paper folder in prospectus mode or manuscript mode. Prospectus mode creates README.md and STATUS.md plus a sparse 0-lifecycle/ (0-seed, optionally 1-pitch) for an early paper repo/submodule, with no manuscript obligations. Manuscript mode creates the full 0-/1-prefix LaTeX layout matching proven Paper-<Name>-<Venue><Year> folders across ProjA/ProjB.
 metadata:
   version: "2.0.0"

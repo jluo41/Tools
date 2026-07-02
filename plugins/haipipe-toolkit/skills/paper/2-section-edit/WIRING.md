@@ -10,7 +10,7 @@ plugin auto-discovers by convention:
 
 | Piece | Discovered from | How it's invoked |
 |-------|-----------------|------------------|
-| **Skills** | `skills/**/SKILL.md` with a `name:` frontmatter | by skill name (e.g. invoke `haipipe-paper-edit`; `/haipipe-paper-edit` resolves to it) |
+| **Skills** | `skills/**/SKILL.md` with a `name:` frontmatter | by skill name (e.g. invoke `haipipe-paper-section-edit`; `/haipipe-paper-section-edit` resolves to it) |
 | **Agents** | top-level `agents/*.md` | as a `subagent_type` for the Agent tool |
 | **Commands** | top-level `commands/*.md` | as `/command` |
 
@@ -18,12 +18,12 @@ plugin auto-discovers by convention:
 
 | Piece | Path | Registered? |
 |-------|------|-------------|
-| `haipipe-paper-edit` (orchestrator) | `skills/paper/3-write-edit/haipipe-paper-edit/SKILL.md` | ✅ on next reload (valid `name:`) |
-| `haipipe-paper-edit-content` + 5 topic stubs | `skills/paper/3-write-edit/paper-edit-*/SKILL.md` | ✅ on next reload |
-| 4 stage agents | `skills/paper/3-write-edit/agents/*.md` | ⚠️ **not** as `subagent_type` (nested, not in top-level `agents/`) |
-| `/haipipe-paper-edit` command | — | n/a — invoked by skill name, like every skill here |
+| `haipipe-paper-section-edit` (orchestrator) | `skills/paper/2-section-edit/haipipe-paper-section-edit/SKILL.md` | ✅ on next reload (valid `name:`) |
+| `haipipe-paper-section-edit-content` + 5 topic stubs | `skills/paper/2-section-edit/polish/haipipe-paper-section-edit-*/SKILL.md` | ✅ on next reload |
+| 4 stage agents | `skills/paper/2-section-edit/_archive/agents/*.md` | ⚠️ **not** as `subagent_type` (nested, not in top-level `agents/`) |
+| `/haipipe-paper-section-edit` command | — | n/a — invoked by skill name, like every skill here |
 
-> Skills created mid-session aren't hot-loaded; `haipipe-paper-edit` etc. appear in the
+> Skills created mid-session aren't hot-loaded; `haipipe-paper-section-edit` etc. appear in the
 > skill list after the next Claude Code reload. (That's why they're absent from
 > the current session's list — they exist on disk and are valid.)
 
@@ -37,7 +37,7 @@ nested but **not yet symlinked**, so they are not first-class `subagent_type`s.
 **Option A — inline dispatch (default, works today, no registration).**
 The orchestrator spawns each stage by **reading `agents/paper-edit-<stage>.md` and
 passing its body as the Agent-tool prompt**. No `subagent_type` needed; fan-out
-works now. This is what `haipipe-paper-edit/SKILL.md` instructs.
+works now. This is what `haipipe-paper-section-edit/SKILL.md` instructs.
 
 **Option B — register as `subagent_type`s (optional, matches plugin pattern).**
 Add relative symlinks into the top-level `agents/` so they can be dispatched by
@@ -46,7 +46,7 @@ name. From the plugin root (`Tools/plugins/haipipe-toolkit/`):
 ```sh
 cd agents
 for a in format-checker annotator improver cleaner; do
-  ln -s ../skills/paper/3-write-edit/agents/paper-edit-$a.md paper-edit-$a.md
+  ln -s ../skills/paper/2-section-edit/_archive/agents/paper-edit-$a.md paper-edit-$a.md
 done
 ```
 
@@ -69,8 +69,8 @@ after Stage 1 (`--mode words`) and Stage 2 (default) on every touched file.
 
 ## Checklist to go fully live
 
-- [ ] Reload Claude Code so the skills register (then `haipipe-paper-edit` is invocable).
+- [ ] Reload Claude Code so the skills register (then `haipipe-paper-section-edit` is invocable).
 - [ ] (Optional) Symlink the 4 agents into top-level `agents/` for first-class
       `subagent_type` dispatch — otherwise inline dispatch is used.
 - [ ] Wire `scripts/check_comment_only.sh` into the orchestrator's verify step
-      (already referenced in `haipipe-paper-edit/SKILL.md`).
+      (already referenced in `haipipe-paper-section-edit/SKILL.md`).

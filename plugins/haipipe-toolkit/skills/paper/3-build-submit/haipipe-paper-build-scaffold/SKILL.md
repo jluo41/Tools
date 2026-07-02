@@ -102,7 +102,7 @@ Leaf stub shape (what Step 2 writes)
 % TODO(draft): /haipipe-paper-edit-write fills this paragraph.
 ```
 
-Banner ids follow `3-write-edit/_shared/paragraph-indexing.md` (`<section-slug>.<para-slug>`, stable, never renumbered). Scaffolding them now means the write/edit stages inherit stable handles for free.
+Banner ids follow `2-section-edit/_shared/paragraph-indexing.md` (`<section-slug>.<para-slug>`, stable, never renumbered). Scaffolding them now means the write/edit stages inherit stable handles for free.
 
 Return contract
 ---------------

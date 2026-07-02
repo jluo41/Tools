@@ -5,7 +5,7 @@ It reads, diagnoses, and leaves concise inline comments. The human reviews each
 comment and replies in place. Only Round 2 applies changes, and only to comments
 the human accepted.
 
-This protocol is shared by every 4-edit sub-skill and by the `haipipe-paper-edit`
+This protocol is shared by every 4-edit sub-skill and by the `haipipe-paper-section-edit`
 orchestrator. It is what makes safe parallel fan-out possible: a comment-only
 pass cannot corrupt the draft, so many reviewers can run at once.
 
@@ -124,7 +124,7 @@ line changed, the pass violated the protocol.
 ## Heavy sentence surgery stays in-cycle
 
 An earlier `paper-revise` skill handled deep sentence work with its own
-`%% Comments: {INITIALS}` form. **`haipipe-paper-edit` is now the single edit system;
+`%% Comments: {INITIALS}` form. **`haipipe-paper-section-edit` is now the single edit system;
 `paper-revise` is archived at `../../_archive/paper-revise`.** Sentence-level
 apply, reindex, and clean are covered by the stage agents
 (`paper-edit-improver`, `paper-edit-format-checker`, `paper-edit-cleaner`). For

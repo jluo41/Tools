@@ -94,5 +94,5 @@ pass — which is the safety property we want.
 2. **Apply to the real file** — if you accept the format, run Stage 1 on the live
    `02-05…tex` (banners only) and commit as the first migrated section.
 3. **Fix `0-sections/README.md`** to document the banner + `Pn.Sm` convention.
-4. **Wire `/haipipe-paper-edit`** — confirm the orchestrator + `agents/` are invocable in
+4. **Wire `/haipipe-paper-section-edit`** — confirm the orchestrator + `agents/` are invocable in
    the plugin manifest (untested).
