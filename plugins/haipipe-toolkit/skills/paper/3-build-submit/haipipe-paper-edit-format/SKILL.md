@@ -1,27 +1,22 @@
 ---
 name: haipipe-paper-edit-format
-description: "Bring an existing LaTeX draft into line with venue formatting and style conventions. Topic ⑤ of the 4-edit cycle. Self-contained format checks. STUB — scope defined, checklist to be filled. Trigger: format pass, venue style, fix formatting, style conventions."
+description: "Bring an existing LaTeX draft into line with venue formatting and style conventions. CHECK-phase whole-paper format pass in build-submit. Self-contained format checks. STUB — scope defined, checklist to be filled. Trigger: format pass, venue style, fix formatting, style conventions."
 metadata:
   version: "0.0.1"
   status: stub
-  stage: 4-edit
-  topic: "⑤ format"
+  stage: build-submit
+  topic: format
 ---
 
 # haipipe-paper-edit-format  (stub)
 
-Topic ⑤ of the `4-edit` cycle. Runs **after** the substance is settled.
-Self-contained: carries its own style checks.
+CHECK-phase whole-paper format pass in the build-submit layer. Runs **after** per-section editing (DRAFT/GATHER/POLISH/CHECK) is complete and the substance is settled. Self-contained: carries its own style checks.
 
-Read `../_shared/` first — especially `comment-protocol.md`. Like every 4-edit
-sub-skill it is **comment-first**: Round 1 inserts `%% {CC-format-vMMDD}: finding
-| suggestion ========>` and changes no text; apply waits for the human
-`========> {XX}:` reply.
+Like every build-submit sub-skill it is **comment-first**: Round 1 inserts `%% {CC-format-vMMDD}: finding | suggestion ========>` and changes no text; apply waits for the human `========> {XX}:` reply.
 
 ## Scope
 
-Surface conventions: the draft follows the target venue's style for headings,
-abbreviations, units, numbers, capitalization, and reference format.
+Surface conventions: the draft follows the target venue's style for headings, abbreviations, units, numbers, capitalization, and reference format.
 
 ## Intended checks (to be written)
 
@@ -34,6 +29,6 @@ abbreviations, units, numbers, capitalization, and reference format.
 
 ## Done means
 
-- [ ] Section conforms to venue style; the section's ⑤ cell → `done`.
+- [ ] Paper conforms to venue style.
 
-> **Status:** stub. Fill the checklist into `ref/` when topic ⑤ is activated.
+> **Status:** stub. Fill the checklist into `ref/` when the format pass is activated.

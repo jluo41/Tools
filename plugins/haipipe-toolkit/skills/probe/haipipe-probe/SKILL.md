@@ -4,10 +4,11 @@ description: "Probe Console and claim-level evidence lifecycle. Opens a context-
 argument-hint: "[console|plan|gather|read|judge|deposit|status] [probe_ref_or_path] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow, Task
 metadata:
-  version: "4.3.0"
-  last_updated: "2026-06-23"
-  summary: "Probe Console + lifecycle map: Plan, Gather, Read, Judge, Deposit."
+  version: "5.0.0"
+  last_updated: "2026-07-02"
+  summary: "Probe Console + lifecycle map: Plan, Gather, Read, Judge, Deposit. Full/light mode: full runs all 5 steps with insight deposit; light stops at Read for quick lookups. Section-edit gather workers route through light probes."
   changelog:
+    - "5.0.0 (2026-07-02): added mode: full|light. Light probes stop at Read (no Judge, no Deposit, no insight cards). Escalation from light to full supported. Section-edit gather workers (citation, values, display) route evidence needs through light probes. Added Connection to Section-Edit section. Unwrapped hard-wrapped lines."
     - "4.3.0 (2026-06-23): feedback-driven revision pass (14 items). (1) Plan: kind: field (atomic|comparison); comparison arms must be atom: links. (2) Gather: link+extract lightweight variant; fan-out model (1 probe : N discoveries : N tasks); naming rule (topic not verb); done-predicate strengthened (actual items, not evidence_plan); participant roster at Gather->Read boundary. (3) Read: elevated to stop-and-internalize gate (most participatory step); verdict-language ban in evidence.md. (4) Deposit: output readability template. (5) stage-strip.sh: fixed Gather false-positive (evidence_plan was Plan artifact, not Gather). (6) Dashboard: no-args view trimmed to compact glance. (7) Orchestrator agent: Write/Edit removed from tools (structural anti-monolith enforcement); dispatch prompts use coordinator language. (8) probe-yaml-schema: kind field, deposited status, deposit block heading."
     - "4.2.0 (2026-06-22): completed the Return->Deposit rename (artifact deposit.md, fn/deposit.md, probe.yaml deposit:/status: deposited/deposited_at/deposit_target; stage-strip predicate + accepts deposited|returned|closed). LEAN-ATOM MODE: a leaf probe declaring parent: logs Read/Judge/Deposit as yaml blocks (result:/verdict:/deposit:) and the strip reads them (yaml is disk). Deposit step now ALWAYS proposes the /haipipe-insight review handoff in next: (loop no longer implicit)."
     - "4.1.0 (2026-06-22): source-type letter in the probe ref. P.D<MMDD> discovery-sourced, P.T<MMDD> task-sourced (other source.type derives the letter from the primary evidence_plan kind). Folder becomes probes/<LETTER><MMDD>_<slug>/. Resolver accepts lettered + legacy letterless refs; existing letterless probes migrate lazily. See ref/probe-yaml-schema.md."
@@ -69,14 +70,15 @@ Use `status.md` inside each probe folder for the human-readable panel.
 
 ## Lifecycle
 
-Every probe has the same lifecycle:
+Every probe has the same lifecycle. Full-mode probes run all 5 steps; light-mode probes stop at Read.
 
 ```text
-1. Plan   - define the claim and evidence needed to test it
-2. Gather - call/link task & discovery work; DONE once they have run
-3. Read   - present the gathered results; the USER internalizes them
-4. Judge   - decide what claim the evidence supports
-5. Deposit - settle the judged verdict into durable memory / backfill the source
+1. Plan    - define the claim and evidence needed to test it; set mode: full|light
+2. Gather  - call/link task & discovery work; DONE once they have run
+3. Read    - present the gathered results; the USER internalizes them
+─── light probes STOP here (output → caller) ───────────────────────────
+4. Judge   - decide what claim the evidence supports (full only)
+5. Deposit - settle the judged verdict into durable memory / backfill the source (full only)
 ```
 
 `Plan` absorbs intake/framing. Users may enter a paper claim gap, application
@@ -191,6 +193,37 @@ ref/lifecycle-map.md
 
 ---
 
+## Probe Mode: Full vs Light
+
+Every probe has a `mode:` field set at Plan:
+
+```text
+full    Plan → Gather → Read → Judge → Deposit
+        formal 3-gate judge, deposits verdict into insight KB (D/I/K/W cards),
+        backfills the source that needed the evidence.
+
+light   Plan → Gather → Read → DONE
+        no formal judge, no deposit to insight KB.
+        output goes directly to the caller (e.g., _CITATION_ entry, _VALUES_ entry).
+        can ESCALATE to full later if the evidence turns out to need a formal verdict.
+```
+
+When to use each:
+
+```text
+full    H1/H2/H3 claims, reviewer objections, anything needing a formal verdict
+        and durable knowledge in the insight KB. The probe ends with insight cards filed.
+
+light   citation lookups ("find a paper for P2.S3"), number traces ("check this stat"),
+        quick checks ("does gray2021 support this claim?"), section-edit gather needs.
+        The probe ends at Read; the caller (section-edit-citation, section-edit-values)
+        consumes the output directly.
+```
+
+Escalation: a light probe can continue into Judge → Deposit at any time. The user reads the evidence, decides it matters enough, and says "judge this" or "deposit this." The probe resumes from Read.
+
+Default: `mode: full` unless the caller is a section-edit gather worker or the user says "quick check" / "just find me a paper."
+
 ## Probe Kind
 
 Every probe has a `kind:` field set at Plan:
@@ -200,11 +233,9 @@ atomic      one claim about ONE effect/comparison; single body of evidence; simp
 comparison  a claim ABOUT a relationship ACROSS atomic probes' verdicts; arms are atom: links
 ```
 
-Heuristic: if the verdict needs "across N cohorts x M outcomes x K methods,"
-it is a comparison sitting on TOP of atoms — split the atoms out.
+Heuristic: if the verdict needs "across N cohorts x M outcomes x K methods," it is a comparison sitting on TOP of atoms -- split the atoms out.
 
-A comparison probe's `evidence_plan.required` entries should be `atom:`
-references to atomic probe verdicts, not raw task/discovery links.
+A comparison probe's `evidence_plan.required` entries should be `atom:` references to atomic probe verdicts, not raw task/discovery links.
 
 ## Probe Folder
 
@@ -215,29 +246,35 @@ Recommended project layout:
 ```text
 probes/
 ├── _index.md
-├── 0605_discretion-gradient/
-│   ├── probe.yaml
+├── 0605_discretion-gradient/        ← full probe (5 files)
+│   ├── probe.yaml                     mode: full
 │   ├── status.md
 │   ├── evidence.md
 │   ├── verdict.md
 │   └── deposit.md
-└── 0621_trait-diabetes/
-    ├── probe.yaml
+├── 0621_trait-diabetes/             ← full probe
+│   ├── probe.yaml                     mode: full
+│   ├── status.md
+│   ├── evidence.md
+│   ├── verdict.md
+│   └── deposit.md
+└── 0702_lbp-discretion-cite/        ← light probe (3 files, no verdict/deposit)
+    ├── probe.yaml                     mode: light
     ├── status.md
-    ├── evidence.md
-    ├── verdict.md
-    └── deposit.md
+    └── evidence.md
 ```
 
 File roles:
 
 ```text
-probe.yaml  machine-readable contract, refs, structured result/verdict/deposit
-status.md   human-readable Probe Console panel
-evidence.md Read output: gathered results presented for the user to internalize
-verdict.md  Judge output: claim support, confidence, caveats
-deposit.md   Deposit output: where the verdict settled or should
+probe.yaml   machine-readable contract, refs, structured result/verdict/deposit
+status.md    human-readable Probe Console panel
+evidence.md  Read output: gathered results presented for the user to internalize
+verdict.md   Judge output: claim support, confidence, caveats (full only)
+deposit.md   Deposit output: where the verdict settled (full only)
 ```
+
+Light probes produce only `probe.yaml`, `status.md`, and `evidence.md`. If escalated to full, `verdict.md` and `deposit.md` are added at that point.
 
 **Lean atoms.** A leaf probe of a comparison decomposition (one that declares
 `parent: <comparison-probe>`) may log its lifecycle COMPACTLY inside `probe.yaml`
@@ -327,15 +364,27 @@ create/select the actual probe before linking artifacts.
 ## Boundaries
 
 ```text
-task      executes internal work
-discovery checks outside evidence
-insight   stores judged knowledge
+task      executes internal work (code, scripts, data processing)
+discovery checks outside evidence (literature, prior art)
+insight   stores judged knowledge (D/I/K/W cards)
 probe     plans, gathers, reads, judges, and deposits claim-level verdicts
 ```
 
-Probe may call task/discovery during `Gather`. Probe may call insight during
-`Deposit`. Probe does not execute code, search literature bodies directly, or
-store final paper prose as its own artifact.
+Probe may call task/discovery during `Gather`. Probe may call insight during `Deposit` (full mode only). Probe does not execute code, search literature bodies directly, or store final paper prose as its own artifact.
+
+## Connection to Section-Edit Gather Workers
+
+Section-edit gather workers (citation, values, display) route evidence needs through probe:
+
+```text
+section-edit-citation  →  light probe  →  discovery (search for papers)
+section-edit-values    →  light probe  →  task (trace/recompute numbers)
+section-edit-display   →  full probe   →  task (generate figures/tables)
+```
+
+The gather worker identifies what's needed (AUDIT phase). The probe handles the evidence lifecycle (Plan→Gather→Read). The gather worker consumes the probe's Read output (CANDIDATE/PLACE phases).
+
+For quick lookups (single citation, number check), a light probe is sufficient. For claim-level evidence (H1 support, reviewer objection), escalate to full probe with Judge→Deposit.
 
 For artifact-first inputs, `Gather` must apply `ref/probe-attach.md` before
 editing `evidence_refs`. If the artifact does not strongly match the active
