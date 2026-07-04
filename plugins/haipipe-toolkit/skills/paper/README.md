@@ -1,6 +1,6 @@
 # Paper Skill
 
-Canonical reference. This file + `ref/` win over anything elsewhere.
+Canonical reference. This file + `wiki/` win over anything elsewhere.
 
 A paper is a delivery contract, not a writing folder. It owns one manuscript's story, claims, displays, minimap, and prose. Evidence lives in probes/tasks/discoveries/insights at the project level. Claim gaps buffer in `1-probe-plans/` and batch-dispatch to probe (the universal evidence gateway; probe calls task/discover during Gather). Direct task/discover for non-claim utility work only.
 
@@ -30,24 +30,24 @@ paper/
 ├── 0-enter/          Paper Console (haipipe-paper-enter)
 ├── 1-lifecycle/      stage procedures (seed, claims, pitch, narrative, display)
 │                     + display renderers (-table, -figure, -diagram, -illustration)
-├── 2-section-edit/   per-section DRAFT-GATHER-POLISH-CHECK lifecycle
-│                     haipipe-paper-section-edit (hub) + gather/ polish/ check/ tools/
+├── 2-phase/          shared phase workers: DRAFT-PROBE-REVISE-CHECK (DPRC)
+│                     haipipe-paper-{draft,probe,revise,checker} + sub-workers
 ├── 3-build-submit/   scaffold, restructure, check
 ├── 4-respond/        rebuttal, response
 ├── 5-present/        slides, poster
 ├── _venue/           venue profiles (knowledge, not verbs) — see _venue/README.md
 ├── components/       citation, compile, diff
-└── ref/              lifecycle, rounds, skill-structure, lifecycle-map
+└── wiki/             lifecycle, rounds, skill-structure, lifecycle-map
 ```
 
 ## References
 
 | File | Read it for |
 |---|---|
-| `ref/paper-lifecycle.md` | stage spine, maturity ladder, loopback rule, evidence-worker handoff |
-| `ref/paper-rounds.md` | `1-rounds/` contract, file semantics, triage targets |
-| `ref/paper-skill-structure.md` | skill-tree target, router rule, maturity rule |
-| `ref/lifecycle-map.md` | stage-to-procedure map with reads/writes/calls |
+| `wiki/03-paper-lifecycle.md` | stage spine, maturity ladder, loopback rule, evidence-worker handoff |
+| `wiki/07-paper-rounds.md` | `1-rounds/` contract, file semantics, triage targets |
+| `wiki/06-paper-skill-structure.md` | skill-tree target, router rule, maturity rule |
+| `wiki/04-lifecycle-map.md` | stage-to-procedure map with reads/writes/calls |
 
 ## Retired names
 

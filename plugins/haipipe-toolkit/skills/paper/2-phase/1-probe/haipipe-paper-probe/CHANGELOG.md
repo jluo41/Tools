@@ -1,0 +1,33 @@
+haipipe-paper-probe — Changelog
+===============================
+
+Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
+
+
+## [1.6.0] — 2026-07-03
+
+- phase spine renamed DGPC -> DPRC (GATHER->PROBE, POLISH->REVISE). This phase is now named after what it does: dispatch evidence needs through /haipipe-probe. The old name GATHER collided with probe's own internal Gather stage; the rename removes that collision.
+
+## [1.5.0] — 2026-07-03
+
+- probe dispatch rules. (1) mode: light DEFAULT (stops at Read, returns to caller), full only for committed verdicts (claims); escalation supported. (2) reuse-before-create: sweep 1-probe-plans/ + project probes + insight KB, ENRICH an existing probe over creating a near-duplicate. Also: _DISPLAY_{stage}.md declared the display worker's needs registry (need → unit → status), parallel to _CITATION_/_VALUES_; added /haipipe-insight to the downstream lifecycle map (probe deposits at Deposit).
+
+## [1.4.0] — 2026-07-03
+
+- reframed GATHER around two route families. Evidence routes through /haipipe-probe (the universal gateway; probe calls discovery/task during its own Gather). Seed = light probe → discovery (landscape/related-work/novelty, _DISCOVERY_0-seed.md takeaways). Claims = HEAVY probe + task (probe plans per GAP claim, tasks for runs/data, verdicts backfill _EVIDENCE_).
+
+## [1.3.0] — 2026-07-03
+
+- added the seed discovery route (superseded by 1.4.0's probe-gateway framing).
+
+## [1.2.0] — 2026-07-03
+
+- reframed as internal worker. Users invoke stage skills (seed, claims, pitch...), not this skill directly. Stage skills call this during their GATHER phase.
+
+## [1.1.0] — 2026-07-03
+
+- made stage-aware. GATHER now works for all stages, not just section-edit. Added per-stage dispatch table.
+
+## [1.0.0] — 2026-07-03
+
+- new hub skill for the GATHER phase.

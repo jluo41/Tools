@@ -7,9 +7,7 @@ metadata:
   version: "1.1.0"
   last_updated: "2026-05-31"
   summary: "Autonomously improve a generated paper via GPT-5.4 xhigh review → implement fixes → recompile, for 2 rounds."
-  changelog:
-    - "1.1.0 (2026-06-05): renamed from auto-paper-improvement-loop to haipipe-paper-edit-improve-loop; consolidated into 3-write-edit/ (haipipe-paper-* name unification)."
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # Auto Paper Improvement Loop: Review → Fix → Recompile

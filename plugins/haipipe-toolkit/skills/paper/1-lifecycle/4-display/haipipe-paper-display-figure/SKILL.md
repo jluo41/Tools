@@ -7,10 +7,7 @@ metadata:
   version: "1.2.0"
   last_updated: "2026-06-22"
   summary: "Generate publication-quality data plots from experiment results (the plot renderer of the display family)."
-  changelog:
-    - "1.2.0 (2026-06-22): joined the display family as haipipe-paper-display-figure; shed table rendering to haipipe-paper-display-table (now plots-only); bumped reviewer model to gpt-5.5."
-    - "1.1.0 (2026-06-05): renamed from paper-figure to haipipe-paper-figure (haipipe-paper-* name unification)."
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # Paper Display Figure: Publication-Quality Plots from Experiment Data
@@ -57,7 +54,7 @@ README status. Flat `figures/` is a fallback only when there is no paper.
 
 ## Inputs
 
-1. **PAPER_PLAN.md** — figure plan table (from `/haipipe-paper-minimap`; plan outline folded in, see its `ref/plan-outline.md`)
+1. **PAPER_PLAN.md** — figure plan table (figure-inventory planning now lives in the display stage: `/haipipe-paper-display`, see its `ref/figure-logic.md`; lifecycle spine: narrative -> display -> section-edit)
 2. **Experiment data** — JSON files, CSV files, or screen logs in `figures/` or project root
 3. **Existing figures** — any manually created figures to preserve
 

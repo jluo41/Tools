@@ -5,8 +5,7 @@ metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
   summary: "Use when the user asks for citation-verification principles, reference-audit best practices, or guidance on preventing fake or inaccurate citations in academic writing."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # Citation Verification Reference Guide

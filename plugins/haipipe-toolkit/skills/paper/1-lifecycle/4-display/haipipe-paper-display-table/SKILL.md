@@ -7,8 +7,7 @@ metadata:
   version: "1.0.0"
   last_updated: "2026-06-22"
   summary: "Render publication-quality LaTeX tables from aggregated data files into a paper display unit."
-  changelog:
-    - "1.0.0 (2026-06-22): created as the dedicated table renderer of the display family; takes over table duty from haipipe-paper-display-figure (which is now plots-only)."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # Paper Display Table: Publication-Quality LaTeX Tables from Aggregated Data

@@ -1,17 +1,13 @@
 ---
 name: haipipe-paper-section-edit
-description: "Per-section editing hub under 0-lifecycle/5-editing/. Owns the full per-section lifecycle: DRAFT (structure, narrative, draft sentences) → GATHER (display, values, citation) → POLISH (venue-quality prose) → CHECK (checklist). Each section gets four files: outline .md, _LOG changelog, _CITATION_ citation map, _VALUES_ values registry. Dispatches to gather/, polish/, check/ phase workers. Venue-aware with section-type norm digestion. Dual status strip: paper-level + section-level. Trigger: editing, section edit, section scaffold, outline narrative, edit section, 5-editing, /haipipe-paper-section-edit."
+description: "Per-section editing hub under 0-lifecycle/5-section-edit/. Owns the full per-section lifecycle: DRAFT (structure, narrative, draft sentences) → PROBE (display, values, citation) → REVISE (venue-quality prose) → CHECK (checklist). Each section gets four files: outline .md, _LOG changelog, _CITATION_ citation map, _VALUES_ values registry. Dispatches to probe/, revise/, check/ phase workers. Venue-aware with section-type norm digestion. Dual status strip: paper-level + section-level. Trigger: editing, section edit, section scaffold, outline narrative, edit section, 5-section-edit, /haipipe-paper-section-edit."
 argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 metadata:
-  version: "3.0.0"
-  last_updated: "2026-07-02"
-  summary: "Per-section editing hub. Two-axis model: STAGES (1-lifecycle/) x PHASES (2-phase/). DGPC phases are shared across all lifecycle stages. GATHER is agent-only (flag, no human gate). POLISH works on both .md and .tex. CHECK is the human gate (6-axis verification). _LOG tracks cross-phase evolution with [PHASE] tags."
-  changelog:
-    - "3.0.0 (2026-07-02): two-axis restructure. Phase workers moved to 2-phase/ (shared across stages). GATHER becomes agent-only (flag issues, no mid-phase human gate; PLACE moves to CHECK). POLISH works on both outline .md and tex (outline is primary, tex is compiled output). CHECK becomes the single human gate (verify citations on Scholar, verify values, approve displays, 6-axis pass/fail). _LOG format gets [PHASE] tags. Per-stage files: narrative and pitch also get _CITATION_. Citation: no bibtex in _CITATION_ (plain text only), provenance tracking."
-    - "2.1.0 (2026-06-29): renamed phases PLAN→DRAFT, WRITE→POLISH (DRAFT includes draft sentences, POLISH is venue-quality rewrite not cold-start). Added dual status strip (paper-level + section-level). Added section dashboard showing all sections' layer status. Per-stage _PROBE/ folders with 1-probe-plans/ as cross-paper index. Added _EVIDENCE_ for claims, _DISPLAY_ for narrative."
-    - "2.0.0 (2026-06-29): combined haipipe-paper-editing + haipipe-paper-edit into one skill."
-    - "1.4.0-1.0.0: see prior changelog."
+  version: "3.1.0"
+  last_updated: "2026-07-03"
+  summary: "Per-section editing hub. Two-axis model: STAGES (1-lifecycle/) x PHASES (2-phase/). DPRC phases are shared across all lifecycle stages. PROBE is agent-only (flag, no human gate). REVISE works on both .md and .tex. CHECK is the human gate (6-axis verification). _LOG tracks cross-phase evolution with [PHASE] tags."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   predecessors:
     - "haipipe-paper-editing (1-lifecycle/, scaffold hub) — MERGED"
     - "haipipe-paper-edit (3-write-edit/, edit cycle orchestrator) — MERGED"
@@ -20,7 +16,7 @@ metadata:
 Skill: haipipe-paper-section-edit
 ==================================
 
-Combined per-section editing hub. Owns the full per-section lifecycle from scaffold creation through final checklist. Each section the user wants to work on gets a folder under `0-lifecycle/5-editing/` with four files. Dispatches to layer workers in `gather/`, `polish/`, `check/` for execution.
+Combined per-section editing hub. Owns the full per-section lifecycle from scaffold creation through final checklist. Each section the user wants to work on gets a folder under `0-lifecycle/5-section-edit/` with four files. Dispatches to layer workers in `probe/`, `revise/`, `check/` for execution.
 
 ```
 /haipipe-paper-section-edit                     -> dashboard (all sections + layer status)
@@ -34,20 +30,20 @@ Combined per-section editing hub. Owns the full per-section lifecycle from scaff
 ## Artifact Spec
 
 **Files produced per section:**
-- `0-lifecycle/5-editing/{section}/{section}.md` -- outline (primary working document)
-- `0-lifecycle/5-editing/{section}/_LOG_{section}.md` -- changelog with [PHASE] tags
-- `0-lifecycle/5-editing/{section}/_CITATION_{section}.md` -- citation map (plain text, no bibtex)
-- `0-lifecycle/5-editing/{section}/_VALUES_{section}.md` -- values registry
-- `0-lifecycle/5-editing/{section}/_PROBE/` -- probe plans spawned by this section
+- `0-lifecycle/5-section-edit/{section}/{section}.md` -- outline (primary working document)
+- `0-lifecycle/5-section-edit/{section}/_LOG_{section}.md` -- changelog with [PHASE] tags
+- `0-lifecycle/5-section-edit/{section}/_CITATION_{section}.md` -- citation map (plain text, no bibtex)
+- `0-lifecycle/5-section-edit/{section}/_VALUES_{section}.md` -- values registry
+- `0-lifecycle/5-section-edit/{section}/_PROBE/` -- probe plans spawned by this section
 
 **Output:**
-- `0-sections/*.tex` -- venue-quality LaTeX prose with Pn.Sn markers (synced from polished outline)
+- `0-sections/*.tex` -- venue-quality LaTeX prose with Pn.Sn markers (synced from revised outline)
 
 **Content structure (outline .md):**
 - Structure overview at top (subsections with paragraph counts)
 - Per-subsection: `##` heading
 - Per-paragraph: `###` heading with job description, parenthetical preview, narrative sentences (one per line)
-- User inline comments as `> JL: comment text`
+- User inline comments as `> USER: comment text`
 
 **Done-criteria (6-axis gate -- all must PASS):**
 - [ ] structure: outline matches tex, Pn.Sn markers correct
@@ -57,15 +53,15 @@ Combined per-section editing hub. Owns the full per-section lifecycle from scaff
 - [ ] venue: word budget, style, formatting comply
 - [ ] proof: (if applicable) math proofs verified
 
-**DGPC applicability:**
+**DPRC applicability:**
 - DRAFT: structure + draft sentences (content decisions)
-- GATHER: citation map + values registry + display audit (agent-only, flag issues)
-- POLISH: venue-quality prose rewrite, sync outline to tex
+- PROBE: citation map + values registry + display audit (agent-only, flag issues)
+- REVISE: venue-quality prose rewrite, sync outline to tex
 - CHECK: human verifies all flags, agent places verified items, 6-axis gate
 
-## Four phases (DRAFT → GATHER → POLISH → CHECK)
+## Four phases (DRAFT → PROBE → REVISE → CHECK)
 
-Each section progresses through four phases. Not all gather tracks are needed for every section (e.g., pure theory may skip values/display).
+Each section progresses through four phases. Not all probe tracks are needed for every section (e.g., pure theory may skip values/display).
 
 ```
 Phase    What it does                             Where it lives
@@ -74,34 +70,34 @@ DRAFT    what to say: paper structure, section     z-structure scaffold +
          structure (¶ count, H placement), and     N-section.md
          draft sentences (content decisions)
 
-GATHER   what to reference (3 parallel tracks):
+PROBE    what to reference (3 parallel tracks):
   display   figures/tables for this section       → 0-displays/ units
   values    every number, source, verified?       _VALUES_N-section.md
   citation  what's cited where, journal tier      _CITATION_N-section.md
 
-POLISH   how to say it well: rewrite draft        → dispatched to polish/ workers
+REVISE   how to say it well: rewrite draft        → dispatched to revise/ workers
          sentences to venue quality, weaving in
-         gathered citations/values/displays
+         probed citations/values/displays
 
 CHECK    did we get it right: final verification  → dispatched to check/ workers
 ```
 
 DRAFT = what to say (content decisions, including draft sentences)
-GATHER = what to reference (evidence collection via probes)
-POLISH = how to say it well (the draft sentences exist; polish rewrites them to venue quality)
+PROBE = what to reference (evidence collection via probes)
+REVISE = how to say it well (the draft sentences exist; revise rewrites them to venue quality)
 CHECK = did we get it right (verification)
 
 Progression gates:
-- Draft settled (user confirms)? → GATHER (agent gathers aggressively, flags issues)
-- Gathered (all tracks flagged)? → POLISH (agent polishes .md then syncs to .tex)
-- Polished? → CHECK (human verifies flags, agent places verified items, 6-axis gate)
+- Draft settled (user confirms)? → PROBE (agent gathers evidence aggressively, flags issues)
+- Probed (all tracks flagged)? → REVISE (agent revises .md then syncs to .tex)
+- Revised? → CHECK (human verifies flags, agent places verified items, 6-axis gate)
 - All 6 axes PASS? → section done. FAIL? → route back to failing phase.
 
-Discovery and task are MECHANISMS feeding the gather phase: discovery finds citations, task produces figures and numbers. They route through per-stage `_PROBE/` folders. GATHER checks existing evidence FIRST, plans, then probes ONLY if information is missing.
+Discovery and task are MECHANISMS feeding the probe phase: discovery finds citations, task produces figures and numbers. They route through per-stage `_PROBE/` folders. PROBE checks existing evidence FIRST, plans, then probes ONLY if information is missing.
 
-**Format rule**: paper-level argument documents (seed, claims, pitch, narrative) are markdown + _LOG only. The display stage is the ONLY paper-level stage that compiles to .tex + PDF (you need to SEE rendered figures/tables). Section-level outline stays in .md throughout; tex is synced from polished outline during POLISH and updated during CHECK. Rule of thumb: if you need to SEE it rendered, .tex. If you need to READ and edit it, .md.
+**Format rule**: paper-level argument documents (seed, claims, pitch, narrative) are markdown + _LOG only. The display stage is the ONLY paper-level stage that compiles to .tex + PDF (you need to SEE rendered figures/tables). Section-level outline stays in .md throughout; tex is synced from revised outline during REVISE and updated during CHECK. Rule of thumb: if you need to SEE it rendered, .tex. If you need to READ and edit it, .md.
 
-**The outline .md is the primary working document.** DRAFT creates it. GATHER annotates its tracking files. POLISH updates its sentences and syncs to tex. CHECK verifies everything matches. The outline is never "frozen after draft" -- it stays alive through all phases.
+**The outline .md is the primary working document.** DRAFT creates it. PROBE annotates its tracking files. REVISE updates its sentences and syncs to tex. CHECK verifies everything matches. The outline is never "frozen after draft" -- it stays alive through all phases.
 
 ## Dual status strip
 
@@ -112,11 +108,11 @@ Every reply shows TWO strips: paper-level progress AND section-level progress.
 status:        ok
 paper_root:    <path>
 section:       3-theory
-phase:         gather / citation
+phase:         probe / citation
 next:          <next action>
 ─────────────────────────────────────────────────────
 paper:  seed ✅  claims ✅  pitch ✅  narrative ✅  display ✅  →  section-edit 🚀  →  review ⬜
-§3:     draft ✅  │  display --  values --  citation 🚀  │  polish ⬜  │  check ⬜
+§3:     draft ✅  │  probe: cite 🚀  val --  disp --  │  revise ⬜  │  check ⬜
 ```
 
 Strip markers:
@@ -128,10 +124,10 @@ Strip markers:
 
 How to derive status from disk:
 - draft ✅ if outline has structure block with ¶ counts AND narrative sentences
-- display ✅ if no displays needed (--) OR displays linked in 0-displays/
-- values ✅ if no values needed (--) OR _VALUES_ all verified
-- citation ✅ if _CITATION_ all placed and density >= venue norm
-- polish ✅ if prose polished and user confirmed
+- cite ✅ if _CITATION_ all placed and density >= venue norm
+- val ✅ if no values needed (--) OR _VALUES_ all verified
+- disp ✅ if no displays needed (--) OR displays linked in 0-displays/
+- revise ✅ if prose revised (tex synced from outline) and user confirmed
 - check ✅ if _LOG has a checklist entry
 
 ## Dashboard (no-arg mode)
@@ -141,15 +137,15 @@ When invoked without a section argument, show all sections' layer status:
 ```
 /haipipe-paper-section-edit
 
-§   Section         DRAFT   GATHER                       POLISH  CHECK
-──  ──────────────  ──────  ─────────────────────────────  ──────  ─────
-§1  introduction    draft✅  display⬜  values⬜  citation⬜  polish⬜  check⬜
-§2  literature      draft✅  display⬜  values⬜  citation⬜  polish⬜  check⬜
-§3  theory          draft✅  display--  values--  citation🚀  polish⚠️  check⬜
-§4  measurement     draft✅  display⬜  values⬜  citation⬜  polish⬜  check⬜
-§5  empirical       draft⬜  display⬜  values⬜  citation⬜  polish⬜  check⬜
-§6  results         draft⬜  display⬜  values⬜  citation⬜  polish⬜  check⬜
-§7  discussion      draft⬜  display⬜  values⬜  citation⬜  polish⬜  check⬜
+§   Section         DRAFT   PROBE                     REVISE   CHECK
+──  ──────────────  ──────  ────────────────────────  ───────  ─────
+§1  introduction    draft✅  cite⬜  val⬜  disp⬜      revise⬜  check⬜
+§2  literature      draft✅  cite⬜  val⬜  disp⬜      revise⬜  check⬜
+§3  theory          draft✅  cite🚀  val--  disp--      revise⚠️  check⬜
+§4  measurement     draft✅  cite⬜  val⬜  disp⬜      revise⬜  check⬜
+§5  empirical       draft⬜  cite⬜  val⬜  disp⬜      revise⬜  check⬜
+§6  results         draft⬜  cite⬜  val⬜  disp⬜      revise⬜  check⬜
+§7  discussion      draft⬜  cite⬜  val⬜  disp⬜      revise⬜  check⬜
 
 -- = skipped (not applicable for this section)
 ```
@@ -185,7 +181,7 @@ Paper-level stages (0-lifecycle/):
     _LOG_4-display.md
     _PROBE/                    probe plans spawned by display needs
 
-Section-level stages (0-lifecycle/5-editing/):
+Section-level stages (0-lifecycle/5-section-edit/):
 
   z-structure/
     z-structure.md + _LOG                           (base only)
@@ -226,27 +222,25 @@ This skill is a STAGE (the WHAT: per-section editing). It dispatches to PHASE wo
 
 2-phase/                              PHASES (the HOW, shared)
   0-draft/
-    section-edit-draft                  settle structure + draft sentences
-    write-conference                    conference venue style
-    write-scientific                    scientific journal style
-    write-systems                       systems conference style
-  1-gather/
-    section-edit-citation               citation → _CITATION_.md (agent-only, flag)
-    section-edit-values                 values → _VALUES_.md (agent-only, flag)
-    section-edit-display                display → 0-displays/ (agent-only, flag)
-  2-polish/
-    section-edit-content                content review (WHAT sentences say)
-    section-edit-humanizer              de-AI audit (HOW sentences sound)
-    section-edit-weaving                paragraph flow (HOW paragraphs connect)
-    section-edit-results-revision       results-specific revision
+    haipipe-paper-draft                 settle structure + draft sentences
+                                        (venue style comes from _venue/playbook-* packs)
+  1-probe/
+    haipipe-paper-probe-citation        citation → _CITATION_.md (agent-only, flag)
+    haipipe-paper-probe-values          values → _VALUES_.md (agent-only, flag)
+    haipipe-paper-probe-display         display → 0-displays/ (agent-only, flag)
+  2-revise/
+    haipipe-paper-revise-content        content review (WHAT sentences say)
+    haipipe-paper-revise-humanizer      de-AI audit (HOW sentences sound)
+    haipipe-paper-revise-weaving        paragraph flow (HOW paragraphs connect)
+    haipipe-paper-revise-results  results-specific revision
   3-check/
-    section-edit-checker                6-axis verification gate (human + agent)
-    section-edit-proof-checker          math proof verification (specialized)
+    haipipe-paper-check               6-axis verification gate (human + agent)
+    haipipe-paper-proof-checker         math proof verification (specialized)
 
 3-build-submit/                       whole-paper tools (haipipe-paper-edit-*)
 ```
 
-The phase workers are prefixed `section-edit-*` because section-edit is the primary consumer. As other stages (pitch, claims) need dedicated phase workers, they add their own prefixed workers to the same phase directories.
+The phase workers use the pattern `haipipe-paper-{phase}-{what}` (e.g. `haipipe-paper-probe-citation`, `haipipe-paper-revise-content`). The phase name is the primary axis since these workers are shared across lifecycle stages, not just section-edit.
 
 ## Outline-narrative file
 
@@ -281,11 +275,11 @@ Rules:
 - **Preview must be ONE SHORT LINE (~80-120 chars)**, not a mini-abstract. The preview is a scan hook: concept name + one distinguishing phrase. If it reads like a paragraph, compress it.
 - One narrative sentence per line (→ `Pn.Sn` markers in tex).
 - Target 5-6 sentences per paragraph (MISQ/ISR norm).
-- User inline comments as `> JL: comment text`.
+- User inline comments as `> USER: comment text`.
 
 ## _CITATION_ and _VALUES_ specs
 
-**_CITATION_ is plain text only. No bibtex blocks.** _CITATION_ is the MAP (what to cite, where, why). .bib is the DATA (actual bibtex). Agent writes to _CITATION_; human writes to .bib (by copying from Google Scholar). Agent discovers the bibtex key by grepping .bib after the human adds it. See `gather/section-edit-citation/SKILL.md` for the full format spec, provenance tracking, and sync protocol.
+**_CITATION_ is plain text only. No bibtex blocks.** _CITATION_ is the MAP (what to cite, where, why). .bib is the DATA (actual bibtex). Agent writes to _CITATION_; human writes to .bib (by copying from Google Scholar). Agent discovers the bibtex key by grepping .bib after the human adds it. See `2-phase/1-probe/haipipe-paper-probe-citation/SKILL.md` for the full format spec, provenance tracking, and sync protocol.
 
 Status emoji:
 - _CITATION_: `✅ placed` (in bib + tex), `📌 in bib` (not yet placed), `🔍 candidate` (not in bib, needs verification), `⚠️ issue` (wrong paper, drift), `❌ rejected` (kept as audit trail), `📋 pre-existing` (provenance unknown)
@@ -301,34 +295,34 @@ Format: `## YYYY-MM-DD #N ~HH:MM [PHASE]` + trigger quote + bullet changes.
 
 ```markdown
 ## 2026-07-03 #7 ~11:00 [CHECK]
-> JL verified citations, approved displays
+> USER verified citations, approved displays
 - citation: 3 🔍 → 2 ✅ + 1 ❌, placed \citep{} for 2 verified
 - values: no numbers in intro (skipped)
 - 6-axis: all PASS → section CHECK ✅
 
-## 2026-07-02 #5 ~16:00 [POLISH]
-> JL: "polish introduction"
-- Polished outline P1-P6 (32 → 28 sentences)
+## 2026-07-02 #5 ~16:00 [REVISE]
+> USER: "polish introduction"
+- Revised outline P1-P6 (32 → 28 sentences)
 - Synced → 0-sections/01_introduction.tex
 - \citep{} placed for 11 keys already in .bib
 - 3 parenthetical "(Author Year)" left for unverified
 
-## 2026-07-02 #4 ~14:00 [GATHER]
+## 2026-07-02 #4 ~14:00 [PROBE]
 > triggered by: draft confirmed
 - citation: 5 gaps found, 3 🔍 candidates, density 0.44 → need 0.70
 - values: scanned, no numbers in intro (skipped)
 - display: no displays needed (skipped)
 
 ## 2026-07-01 #3 ~10:00 [DRAFT confirmed]
-> JL: "looks good"
+> USER: "looks good"
 - 6 paragraphs, 32 draft sentences confirmed
 - P6 stays at bottom (IS positioning)
 ```
 
 Grep shortcuts:
 - `grep '\[DRAFT\]' _LOG_*.md` → all drafting rounds
-- `grep '\[GATHER\]' _LOG_*.md` → all gather rounds
-- `grep '\[POLISH\]' _LOG_*.md` → all polish rounds
+- `grep '\[PROBE\]' _LOG_*.md` → all probe rounds
+- `grep '\[REVISE\]' _LOG_*.md` → all revise rounds
 - `grep '\[CHECK\]' _LOG_*.md` → all check rounds
 
 ## Workflow
@@ -349,9 +343,9 @@ Grep shortcuts:
 
 4. **Settle narrative**: paragraph headlines, previews, and draft sentences. The draft sentences capture content decisions (what each sentence says), not polished prose.
 
-### GATHER (agent-only -- gather aggressively, flag issues)
+### PROBE (agent-only -- probe aggressively, flag issues)
 
-The agent does all three tracks without waiting for human. Flag everything that needs human attention. Do NOT place \citep{} or weave values into tex during GATHER. Placement happens in CHECK after human verification.
+The agent does all three tracks without waiting for human. Flag everything that needs human attention. Do NOT place \citep{} or weave values into tex during PROBE. Placement happens in CHECK after human verification.
 
 5. **Citation**: create `_CITATION_` file. Audit gaps in the outline. Check existing .bib first. Search for candidates. Write 🔍 entries with Scholar links. Flag everything. Count density vs venue norm. If deeper search needed → write probe plan to `_PROBE/`. Do NOT wait for human, do NOT place \citep{}.
 
@@ -359,19 +353,19 @@ The agent does all three tracks without waiting for human. Flag everything that 
 
 7. **Display**: audit what displays this section needs. Check existing `0-displays/` units. Plan which display serves which claim. If display doesn't exist → route to `/haipipe-task`. Flag missing displays. Do NOT wait for approval.
 
-**Probe escalation**: GATHER checks existing evidence FIRST, then plans, then probes ONLY if the information isn't already available. The flow is: check existing → audit gaps → plan → search (lightweight) → probe (heavyweight, only if needed).
+**Probe escalation**: PROBE checks existing evidence FIRST, then plans, then probes ONLY if the information isn't already available. The flow is: check existing → audit gaps → plan → search (lightweight) → probe (heavyweight, only if needed).
 
-### POLISH (agent-only -- works on BOTH .md and .tex)
+### REVISE (agent-only -- works on BOTH .md and .tex)
 
-8. **Polish outline .md**: sharpen draft sentences to venue-quality wording. Weave in citations that are ALREADY in .bib (place parenthetical "(Author Year)" for unverified candidates). Weave in verified values. Leave (?) for unverified values. Dispatch to `2-phase/2-polish/` workers for de-AI voice, venue style, paragraph flow.
+8. **Revise outline .md**: sharpen draft sentences to venue-quality wording. Weave in citations that are ALREADY in .bib (place parenthetical "(Author Year)" for unverified candidates). Weave in verified values. Leave (?) for unverified values. Dispatch to `2-phase/2-revise/` workers for de-AI voice, venue style, paragraph flow.
 
-9. **Sync to tex**: sync polished sentences from outline → `0-sections/*.tex` with `Pn.Sn` markers. Place `\citep{key}` only for keys already in `.bib`. Leave parenthetical for unverified candidates.
+9. **Sync to tex**: sync revised sentences from outline → `0-sections/*.tex` with `Pn.Sn` markers. Place `\citep{key}` only for keys already in `.bib`. Leave parenthetical for unverified candidates.
 
-The outline .md is always the PRIMARY working document. The tex is the compiled output. Polish updates the outline first, then syncs to tex.
+The outline .md is always the PRIMARY working document. The tex is the compiled output. Revise updates the outline first, then syncs to tex.
 
-The comment-first protocol (used by polish workers):
+The comment-first protocol (used by revise workers):
 - Round 1: insert `%% {CC-<topic>-vMMDD}: finding` comments, change NO prose
-- Human replies: `========> {JL vMMDD}: accept|reject|modify|discuss`
+- Human replies: `========> {USER vMMDD}: accept|reject|modify|discuss`
 - Apply round: act on accepted comments only
 
 ### CHECK (human + agent -- the GATE)
@@ -428,24 +422,24 @@ The caller MUST include concrete file paths and context in the Agent prompt.
 1-lifecycle/ (STAGES)                    2-phase/ (PHASES, shared)
 ─────────────────────                    ────────────────────────
 haipipe-paper-lifecycle                  0-draft/
-  ├─► seed                                section-edit-draft
-  ├─► claims                              write-conference / -scientific / -systems
+  ├─► seed                                haipipe-paper-draft
+  ├─► claims                              (venue style: _venue/playbook-* packs)
   ├─► [venue gate]
-  ├─► pitch                              1-gather/ (agent-only, flag)
-  ├─► narrative                            section-edit-citation  → _CITATION_
-  ├─► display                              section-edit-values    → _VALUES_
-  └─► section-edit (THIS)                  section-edit-display   → 0-displays/
+  ├─► pitch                              1-probe/ (agent-only, flag)
+  ├─► narrative                            haipipe-paper-probe-citation   → _CITATION_
+  ├─► display                              haipipe-paper-probe-values     → _VALUES_
+  └─► section-edit (THIS)                  haipipe-paper-probe-display    → 0-displays/
         │                                    ↓ escalation
-        │   DRAFT → GATHER → POLISH → CHECK  _PROBE/ → /haipipe-probe → /haipipe-task
+        │   DRAFT → PROBE → REVISE → CHECK   _PROBE/ → /haipipe-probe → /haipipe-task
         │
-        │   hub dispatches to              2-polish/ (agent-only, .md + .tex)
-        │   2-phase/ workers                 section-edit-content (WHAT)
-        │   based on frontier phase          section-edit-humanizer (HOW: de-AI)
-        │                                    section-edit-weaving (HOW: flow)
+        │   hub dispatches to              2-revise/ (agent-only, .md + .tex)
+        │   2-phase/ workers                 haipipe-paper-revise-content (WHAT)
+        │   based on frontier phase          haipipe-paper-revise-humanizer (HOW: de-AI)
+        │                                    haipipe-paper-revise-weaving (HOW: flow)
         │
         │                                  3-check/ (human + agent gate)
-        │                                    section-edit-checker (6-axis)
-        │                                    section-edit-proof-checker (math)
+        │                                    haipipe-paper-check (6-axis)
+        │                                    haipipe-paper-proof-checker (math)
         │
         └── section-type/ (knowledge, consumed by all phases)
               section-intro, section-methods, section-results, ...
@@ -453,6 +447,6 @@ haipipe-paper-lifecycle                  0-draft/
 
 Human involvement by phase:
 - **DRAFT**: agent + user (settle content decisions together)
-- **GATHER**: agent only (gather aggressively, flag 🔍⚠️, no human gate)
-- **POLISH**: agent only (polish .md, sync to .tex, comment-first protocol)
+- **PROBE**: agent only (probe aggressively, flag 🔍⚠️, no human gate)
+- **REVISE**: agent only (revise .md, sync to .tex, comment-first protocol)
 - **CHECK**: human + agent (human verifies all flags, agent places verified items, 6-axis gate)

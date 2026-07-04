@@ -1,151 +1,80 @@
-# 4-edit — how to use it
+# 2-phase -- how to use it
 
-Concrete recipes for running the edit-cycle. Paths below use the real example
-manuscript:
+Concrete recipes for the phase engine. You never invoke a phase skill directly: you run a **stage skill** from `1-lifecycle/` and it drives DRAFT → PROBE → REVISE internally, then stops at CHECK for you. Paths below use a real example manuscript:
 
 ```
-PAPER=examples/ProjA-PhyTraitLandScape/paper/Paper-MapPhyTrait-npjDM2025
-SECS=$PAPER/0-sections
+PAPER=examples/ProjB-PhyTrait-OpioidRx/paper/Paper-Personality2Opioid-MISQ2026
+SEC=$PAPER/0-lifecycle/5-section-edit
 ```
 
 ## TL;DR
 
 ```
-1. Ask paper-edit to run a content review over the draft   → it fans out annotators
-2. Open the .tex files; you now see  %% {CC-content-v0531}: … ========>  comments
-3. Reply on each line:               ========> {JL v0531}: accept | reject | modify: …
-4. Ask paper-edit to improve         → it applies only what you accepted
-5. Ask paper-edit to clean           → annotations stripped, clean .tex remains
+1. /haipipe-paper section-edit introduction   → stage skill runs DRAFT → PROBE → REVISE (automatic)
+2. It stops at CHECK: checker report + probe flags (🔍 citations, values, display links)
+3. You reply in the working .md as  > JL: …  threads, or decide: proceed / restart / accept / park
+4. Ask to apply → the stage restarts the affected phase, re-runs everything downstream, re-CHECKs
+5. Loop until CHECK is clean → sync to tex → compile
 ```
 
-That is one edit-cycle. Repeat for the next topic (values, citations, …).
+Same engine behind every stage: `seed | claims | pitch | narrative | display | section-edit`.
 
----
+## A. Run a stage (the normal path)
 
-## A. Whole-draft cycle (the normal path)
+> /haipipe-paper section-edit introduction
 
-You talk to Claude Code; it invokes the **`haipipe-paper-section-edit`** orchestrator, which runs
-the five stages and fans out the annotator at stage 2. **It first asks for your
-initials and the pass date** — your replies are tagged with those; nothing is
-assumed.
+What happens, phase by phase:
 
-**Kick off a content review across all sections:**
+- **DRAFT** 🤖 -- `haipipe-paper-draft` settles structure + draft sentences into `$SEC/1-introduction/1-introduction.md`, picking a write-style worker for the venue (conference / scientific / systems). Content decisions are negotiated with you here.
+- **PROBE** 🤖 -- `haipipe-paper-probe` fans out: `-citation` writes candidates to `_CITATION_1-introduction.md` and flags them 🔍, `-values` traces numbers to source into `_VALUES_…md`, `-display` routes figure/table needs to `0-displays/` units. Evidence questions beyond the documents dispatch through `/haipipe-probe`. Agent-only; nothing gates on you.
+- **REVISE** 🤖 -- `haipipe-paper-revise` changes the prose directly per `REF/prose-quality.md` through `-content`, `-humanizer`, `-weaving` (plus `-results` for results sections), leaving `%% {CC-*}:` why-comments. No comment-first pause.
+- **CHECK** 🧑 -- `haipipe-paper-check` presents the 6-axis report with all probe flags. This is where you come in.
 
-> Run a 4-edit **content** review over `0-sections/` of the npjDM paper. Format-check
-> first, then fan out annotators — comment only, don't change any text.
+## B. Review a CHECK report
 
-What happens:
-- Stage 1 — `paper-edit-format-checker` normalizes each leaf (banners + `Pn.Sm`).
-- Stage 2 — one `paper-edit-annotator` per section runs **in parallel**, inserting
-  `%% {CC-content-v0531}: finding | suggestion ========>` lines.
-- You get a per-section digest of how many comments landed.
+The report lists what passed, what is flagged, and what needs your verdict. Four decisions:
 
-**Then you review (stage 3)** — open the files and append your verdicts:
+| You say | Meaning |
+|---------|---------|
+| proceed | section done, move on |
+| restart <phase> | rerun that phase and everything after it (recipe D) |
+| accept with edits | reply in comment threads (recipe C), then ask to apply |
+| park | leave the section as-is, flags stay open |
 
-```latex
-%% ---- P3.S1 ----
-Agreeableness showed the strongest positive correlation ($r = 0.62$).
-%% {CC-content-v0531}: states correlation as if causal. | hedge to "associated with". ========> {JL v0531}: accept
-%% {CC-values-v0531}: 0.62 here vs 0.747 in Table 2. | reconcile to source. ========> {JL v0531}: modify: use 0.747
+Citation flags 🔍 are yours to close: verify each candidate on Scholar, then add the bibtex yourself. The agent never writes to `.bib`.
+
+## C. Comment threads (`> JL:` / `> CC:`)
+
+Feedback lives as blockquote threads in the working `.md`, directly under the text it refers to. The human actor id is your initials (asked, never assumed):
+
+```markdown
+> JL: this buries the contribution -- lead with the gradient result
+> CC: agreed; moved it to P1.S2 and demoted the old opener to P2
 ```
 
-**Then apply (stage 4):**
+Rules: the agent replies in one line under your comment; the thread stays in place until you confirm; on resolve it moves to `_LOG_1-introduction.md`. Full convention: `../wiki/02-comment-lifecycle.md`.
 
-> Improve `02-05_trait-rating-correlation.tex` from my replies.
+## D. Restart a phase after CHECK feedback
 
-`paper-edit-improver` applies `accept`/`modify`, drops `reject`, leaves anything
-you didn't answer. Run it section by section.
+Phase order is fixed (draft → probe → revise → check), so a restart re-runs the named phase **and everything downstream**:
 
-**Then clean (stage 5), when you're happy:**
+> The Table 2 numbers changed -- re-probe values for the results section.
 
-> Clean `02-05…tex` at keep-index level.
+> Restart revise on the introduction; the humanizer missed P3.
 
-`paper-edit-cleaner` strips the `%% {CC-…} ========>` threads, keeps the `Pn.Sm`
-index and banners.
+> Restart draft -- the outline needs a new beat for the discretion boundary.
 
-**Then build the handoff diff (end of stage 5):**
-
-> Build the tracked-changes PDF of this cycle vs the last baseline.
-
-`haipipe-paper-edit-diffpdf` (now inside `4-edit/`) produces a latexdiff-style PDF showing
-exactly what this cycle changed — for co-author / advisor sign-off before the
-next cycle.
-
----
-
-## B. One section, one topic (manual / low-effort)
-
-When you just want to work a single file:
-
-> Use `haipipe-paper-section-edit-content` to review `0-sections/01_introduction.tex` — comment only.
-
-This skips the orchestrator and runs one topic's checklist as a stage-2 pass on
-one file. You then reply and ask for improve/clean as above.
-
----
-
-## C. Run a single stage agent directly
-
-Each stage is a callable agent in `agents/`. Useful for tight control:
-
-| You want | Say |
-|----------|-----|
-| Just normalize layout | "Run `paper-edit-format-checker` on `02-05…tex`." |
-| Just annotate one file/topic | "Run `paper-edit-annotator` on `02-05…tex`, topic=values, date=v0531." |
-| Just apply my replies | "Run `paper-edit-improver` on `02-05…tex`." |
-| Just strip annotations | "Run `paper-edit-cleaner` on `02-05…tex`, level=full." |
-
----
-
-## D. Your part: the reply grammar (stage 3)
-
-Append to the **same line**, after `========>`:
-
-| Reply | Meaning | Stage 4 does |
-|-------|---------|--------------|
-| `========> {JL v0531}: accept` | take the suggestion as-is | applies it |
-| `========> {JL v0531}: modify: <how>` | apply, but my way | applies your amendment |
-| `========> {JL v0531}: reject` | no | drops the comment |
-| `========> {JL v0531}: discuss: <question>` | talk first | leaves it; AI answers in a new line |
-| *(no reply)* | undecided | **left untouched** — silence ≠ consent |
-
-`{JL}` is the **actor id** — your initials here, but any short id works: a
-coauthor (`RA`, `GG`), a numbered reviewer (`R1`), or another tool (`GPT`). The
-annotating tool likewise stamps its own (`CC` = Claude Code). See
-`_shared/comment-protocol.md` → *Actor ids*. `v0531` = pass tag (MMDD).
-
----
+Restarting DRAFT reopens content decisions with you; PROBE/REVISE restarts run automatic and land back at CHECK.
 
 ## E. The effort dial
 
-Same five stages, scaled to how much you want to do:
+- **Light** -- read the CHECK report, answer proceed/restart. Minutes per section.
+- **Medium** -- thread `> JL:` comments on specific sentences, ask to apply.
+- **Heavy** -- reopen DRAFT, renegotiate the outline, run multiple CHECK rounds.
 
-- **Light** — let it fan out, skim, reply `accept`/`reject` fast, let improve apply
-  everything. Minutes per section.
-- **Medium** — reply with `modify:` notes; spot-check the apply.
-- **Heavy** — open `discuss:` threads and run multiple dated rounds, dropping to
-  sentence-level annotate → improve passes on contested sections.
+## F. Boundaries (always true)
 
----
-
-## F. Order to run topics
-
-Do **content** fully (cycle through stages 1–5) before the rest, then:
-
-```
-① content → ② values → ③ citations → ④ consistency → ⑤ format → ⑥ typeset
-```
-
-Applying a content edit moves numbers, citations, labels, and line breaks — so the
-later topics are reviewed against settled prose, not text about to change. (Today
-only `content` is fully written; the other five are stubs.)
-
----
-
-## G. Safety rules (always true)
-
-- **Stage 2 changes no prose** — if an annotation pass altered body text, it's a bug.
-- **Fan out only stage 2** — format-check, improve, clean run one file at a time.
-- **Nothing is applied without your reply** — `OPEN` comments are never acted on.
-- **Stable `[id]` and `\label` keys never change**, in any stage.
-- **Commit between stages** so each stage's diff is easy to inspect/revert.
+- DRAFT is the only phase that negotiates content with you; PROBE and REVISE never wait on a human.
+- Nothing enters `.bib` and no number is invented -- probe proposes, you verify in CHECK.
+- Unresolved `> JL:` threads keep a section open; silence is not consent.
+- No ad-hoc plots: display needs become `0-displays/` units backed by tasks.

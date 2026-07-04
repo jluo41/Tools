@@ -5,8 +5,7 @@ metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
   summary: "Use when checking manuscript citations, bibliography hygiene, DOI or PMID completeness, placeholder references, or BibTeX consistency before submission or revision."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # Citation Verifier

@@ -34,7 +34,7 @@ agents in `../agents/`.
 
 ### Mapping to the comment protocol
 
-Stages 2–4 are the comment protocol's rounds (`comment-protocol.md`): stage 2 =
+Stages 2–4 are the comment protocol's rounds (`wiki/02-comment-lifecycle.md`): stage 2 =
 Round 1 (comment-only), stage 3 = Round 1.5 (reply), stage 4 = Round 2 (apply).
 Stage 1 is a pre-round normalization; stage 5 is the post-apply teardown plus a
 between-cycles tracked-changes handoff (`haipipe-paper-edit-diffpdf`).

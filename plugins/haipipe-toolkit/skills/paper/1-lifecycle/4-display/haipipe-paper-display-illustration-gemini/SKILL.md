@@ -7,10 +7,7 @@ metadata:
   version: "1.2.0"
   last_updated: "2026-06-22"
   summary: "Gemini-backend AI-illustration renderer (named fallback to the default Codex-bridge haipipe-paper-display-illustration)."
-  changelog:
-    - "1.2.0 (2026-06-22): renamed haipipe-paper-display-illustration-gemini and repositioned as the named Gemini fallback; the default illustration renderer is now the Codex-bridge haipipe-paper-display-illustration."
-    - "1.1.0 (2026-06-05): renamed from paper-illustration to haipipe-paper-illustration (haipipe-paper-* name unification)."
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # Paper Illustration: Multi-Stage Claude-Supervised Figure Generation

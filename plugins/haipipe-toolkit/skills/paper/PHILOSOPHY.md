@@ -7,24 +7,24 @@ Tasks run code. Probes judge claims. Discoveries inspect outside evidence. Insig
 ## Lifecycle
 
 ```text
-enter > 0-seed > 1-pitch > 2-claims > 3-narrative > 4-display > 5-minimap
-        > write/edit > review > submit > round/respond > present
+enter > 0-seed > 1-claims > [venue] > 2-pitch > 3-narrative > 4-display > 5-section-edit
+        > review > submit > round/respond > present
 ```
 
-Each `0-lifecycle/<stage>/<stage>.tex` is standalone-compilable and answers one question:
+Early stages are markdown (argument documents need no compilation); display and section-edit carry tex. Each stage answers one question:
 
 | Stage | Question |
 |---|---|
 | 0-seed | Why might this paper exist? |
-| 1-pitch | What is the paper selling? (one minute) |
-| 2-claims | Which claims are supported, weak, or GAP? |
+| 1-claims | Which claims are supported, weak, or GAP? |
+| 2-pitch | What is the paper selling? (one minute, to the pinned venue) |
 | 3-narrative | How do claims become a manuscript arc? |
 | 4-display | What figure/table carries each claim? |
-| 5-minimap | What job does each paragraph do? |
+| 5-section-edit | Does each section's prose do its job? (per-section DRAFT-PROBE-REVISE-CHECK) |
 
-Two axes stay orthogonal: **layer/frontier** (which stage has the active work) and **maturity** (how real the paper is: prospectus, seed, working, submission-ready, published).
+Two axes stay orthogonal: **layer/frontier** (which stage has the active work) and **maturity** (how real the paper is: seed, working, submission-ready, published).
 
-`2-claims` and `4-display` are the two stages where the paper reaches out for evidence. `review` is the gate that decides which earlier stage is broken.
+`1-claims` and `4-display` are the two stages where the paper reaches out for evidence. `review` is the gate that decides which earlier stage is broken.
 
 ## Evidence routing
 

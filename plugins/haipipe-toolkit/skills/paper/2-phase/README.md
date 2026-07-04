@@ -1,96 +1,90 @@
-# 2-section-edit -- per-section DRAFT-GATHER-POLISH-CHECK
+# 2-phase -- DRAFT-PROBE-REVISE-CHECK (shared across lifecycle stages)
 
-The **section-edit stage** for a paper. The combined hub
-(`haipipe-paper-section-edit`) owns the full per-section lifecycle.
-Phase workers are organized by phase.
+The **phase dimension** of the paper skill architecture. Phase workers are shared across all lifecycle stages (seed, claims, pitch, narrative, display, section-edit). The hub for section-edit lives in `1-lifecycle/5-section-edit/haipipe-paper-section-edit/`.
 
 ```
-Per-section lifecycle:  DRAFT → GATHER → POLISH → CHECK → sync → compile
+Per-stage lifecycle:  DRAFT 🤖 → PROBE 🤖 → REVISE 🤖 → CHECK 🧑
 
 Status strip:
-§1:  draft ✅  │  display --  values --  citation 🚀  │  polish ⬜  │  check ⬜
+phase:   draft ✅  │  probe: cite 🚀  val --  disp --  │  revise ⬜  │  check ⬜
 ```
 
 ## Structure
 
 ```
-2-section-edit/
-├── README.md                    ← you are here
-├── USAGE.md                     ← recipes, the reply grammar, the effort dial
-├── WIRING.md                    ← routing and dispatch
-├── haipipe-paper-section-edit/  ← HUB: per-section lifecycle orchestrator
+2-phase/
+├── README.md                           ← you are here
+├── USAGE.md                            ← recipes, reply grammar, effort dial
+├── WIRING.md                           ← routing and dispatch
+├── REF/                                ← shared references
+│   └── prose-quality.md                ← universal writing rules
 │
-├── gather/                      ← GATHER: one skill per working doc
-│   ├── haipipe-paper-section-edit-display    display  0-displays/ units
-│   ├── haipipe-paper-section-edit-values     values   _VALUES_.md
-│   └── haipipe-paper-section-edit-citation   citation _CITATION_.md
+├── 0-draft/                            ← DRAFT: settle structure + sentences
+│   └── haipipe-paper-draft                 hub: structure + draft sentences
 │
-├── polish/                      ← POLISH: venue-quality prose
-│   ├── haipipe-paper-section-edit-write                fresh draft from outline
-│   ├── haipipe-paper-section-edit-write-conference     conference style
-│   ├── haipipe-paper-section-edit-write-scientific     scientific style
-│   ├── haipipe-paper-section-edit-write-systems        systems style
-│   ├── haipipe-paper-section-edit-content              content review (WHAT)
-│   ├── haipipe-paper-section-edit-humanizer            de-AI audit (HOW)
-│   ├── haipipe-paper-section-edit-weaving              paragraph flow
-│   └── haipipe-paper-section-edit-results-revision     results-specific
+├── 1-probe/                            ← PROBE: agent-only, flag for CHECK
+│   ├── haipipe-paper-probe-citation        citation → _CITATION_.md
+│   ├── haipipe-paper-probe-values          values → _VALUES_.md
+│   └── haipipe-paper-probe-display         display → 0-displays/ units
 │
-├── check/                       ← CHECK: section-level verification
-│   └── haipipe-paper-section-edit-proof-checker        proof verification
+├── 2-revise/                           ← REVISE: venue-quality prose (auto)
+│   ├── haipipe-paper-revise-content        content review (WHAT sentences say)
+│   ├── haipipe-paper-revise-humanizer      de-AI audit (HOW sentences sound)
+│   ├── haipipe-paper-revise-weaving        paragraph flow (HOW paragraphs connect)
+│   └── haipipe-paper-revise-results        results-specific revision
 │
-├── tools/                       ← cross-cutting utilities
-│   └── haipipe-paper-section-edit-diagram              paragraph-level ASCII diagrams
+├── 3-check/                            ← CHECK: human + agent gate
+│   ├── haipipe-paper-check               6-axis verification gate
+│   └── haipipe-paper-proof-checker         math proof verification
 │
-├── sections/                    ← per-section playbooks (intro, methods, etc.)
-├── scripts/                     ← utility scripts
-├── _shared/                     ← contracts (comment-protocol, sentence-format)
-├── _test/                       ← tests
-└── _archive/                    ← retired skills (merged into current ones)
+└── _archive/                           ← retired skills, incl. venue-style write-* skills
+                                          and old draft LaTeX templates (venue knowledge
+                                          now lives in _venue/ packs)
 ```
 
-Whole-paper skills (consistency, format, typeset, claim-audit, submission-audit,
-diffpdf, optimizer, improve-loop, to-overleaf, reviewer) live in `3-build-submit/`
-as `haipipe-paper-edit-*`.
+Whole-paper skills (consistency, format, typeset, claim-audit, submission-audit, diffpdf, optimizer, improve-loop, to-overleaf, reviewer) live in `3-build-submit/` as `haipipe-paper-edit-*`.
 
 ## Naming convention
 
 ```
-haipipe-paper-section-edit-*     section-level (this directory)
-haipipe-paper-edit-*             whole-paper (3-build-submit/)
+haipipe-paper-{phase}-{what}    phase workers (this directory)
+haipipe-paper-edit-*            whole-paper (3-build-submit/)
 ```
 
-## The gather phase (AUDIT → SEARCH → CANDIDATE → [HUMAN] → PLACE → REVIEW)
+## Phase automation
 
-Each gather skill owns one working doc and follows the same 6-phase lifecycle:
+- **DRAFT** 🤖: agent + user settle content decisions together
+- **PROBE** 🤖: agent-only (dispatch evidence needs aggressively, flag for CHECK, no human gate)
+- **REVISE** 🤖: agent-only (change the prose directly per prose-quality.md, leave why-comments, no comment-first)
+- **CHECK** 🧑: human + agent (auto-checkers report, human decides: proceed/restart/accept/park)
+
+## The probe phase (AUDIT → SEARCH → CANDIDATE → FLAG → PLACE → REVIEW)
+
+Each probe-phase document worker owns one working doc and follows the same lifecycle:
 
 ```
-GATHER:
-  display   → audit what's needed → plan units → route to task → [human approves] → link
-  values    → audit numbers → trace to source → [human verifies] → place in tex
-  citation  → audit gaps → search candidates → write to _CITATION_ → [human verifies on Scholar] → place \citep{}
+PROBE:
+  display   → audit what's needed → plan units → route to task → link
+  values    → audit numbers → trace to source → place in tex
+  citation  → audit gaps → search candidates → write to _CITATION_ → flag 🔍 for CHECK
 ```
 
-Hard boundary: the agent searches and proposes; the human verifies and places.
-The agent NEVER adds to .bib, NEVER fabricates numbers, NEVER creates ad-hoc plots.
+Evidence needs beyond the document workers dispatch through `/haipipe-probe` (the project-side evidence gateway, mode light|full); probe calls `/haipipe-discovery` and `/haipipe-task` during its own Gather and files `/haipipe-insight` cards at Deposit.
+
+Hard boundary: the agent searches and proposes; the human verifies in CHECK. The agent NEVER adds to .bib, NEVER fabricates numbers, NEVER creates ad-hoc plots.
 
 ## Progression order
 
 ```
-DRAFT first, GATHER second, POLISH third, CHECK last:
+DRAFT first, PROBE second, REVISE third, CHECK last:
 
   draft (structure + narrative sentences)
            ↓
-  display + values + citation   (can run in parallel)
+  probe: cite + val + disp   (can run in parallel)
            ↓
-  polish (rewrite draft sentences to venue quality)
+  revise (change the prose directly, leave why-comments)
            ↓
-  check (section-level verification)
+  check (verification gate → human decision)
            ↓
   sync to tex → compile
 ```
-
-## Comment-first discipline (POLISH phase)
-
-Round 1 inserts findings as `%% {CC-<topic>-vMMDD}: ...` comments.
-The human replies: `========> {JL vMMDD}: accept|reject|modify|discuss`.
-A later apply round acts on accepted comments only.

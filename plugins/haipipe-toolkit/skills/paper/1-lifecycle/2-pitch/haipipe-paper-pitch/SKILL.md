@@ -2,24 +2,20 @@
 name: haipipe-paper-pitch
 description: "Create or update the paper folder's 0-lifecycle/2-pitch/2-pitch.md + _LOG_2-pitch.md: the venue-ALIGNED cover letter and one-minute story for this concrete manuscript. Absorbs the Editor's Chair Test, [primary] claim designation, and venue-specific RQ framing (migrated from claims). Archives semantic old versions in _LOG when the pitch shifts. Markdown only. Use for paper pitch, cover letter, one-minute story, hook/surprise/so-what, audience/venue fit, editor's chair, primary claim, RQ framing, story trajectory, pitch provenance."
 argument-hint: "[paper-dir] [--reason <slug>] [--source <path-or-note>...]"
-allowed-tools: Bash, Read, Write, Edit, Grep, Glob
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.0.0"
-  last_updated: "2026-07-01"
-  changelog:
-    - "3.0.0 (2026-07-01): pitch is now venue-ALIGNED = cover letter. Absorbs Editor's Chair Test, [primary] claim designation, and venue-specific RQ framing from claims. Claims is now venue-FREE (pure evidence inventory). Pitch reframes venue-neutral hypotheses (H1→RQ1) for the target editor."
-    - "2.0.0 (2026-06-29): switched from .tex to .md + _LOG. PITCH_LOG.md merged into _LOG_2-pitch.md. Argument documents are markdown; only display compiles to PDF."
-    - "v1.5.2: extracted template to ref/pitch-template.tex; inline replaced with reading-order summary"
-    - "v1.5.1: added mandatory compile-after-edit rule; venue awareness note"
-    - "1.5.0 (2026-06-22): added Title section, multi-hook candidates, template enforcement, quality gate; wired illuminate+gate+compile protocols"
-    - "1.4.0 (2026-06-22): readability rules, section cues, hook catalog"
-  summary: "Maintain 0-lifecycle/2-pitch/ as the venue-ALIGNED cover letter and one-minute story. Owns the Editor's Chair Test, [primary] claim designation, and venue-specific RQ framing. Carries readability rules, section cues, and a hook narrative-methods catalog (ref/pitch-readability.md)."
+  version: "3.1.2"
+  last_updated: "2026-07-03"
+  summary: "Pitch stage orchestrator. Defines WHAT (cover letter sections) and drives phases (draft -> probe -> revise -> check) internally. User invokes pitch, not phases."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-paper-pitch
 ====================================
 
-Maintain the **paper pitch** for a concrete manuscript folder (stage 2, venue-ALIGNED). The pitch is the **cover letter**: the venue-ALIGNED document that tells THIS editor why THIS paper fits THEIR journal. It can be sent to an editor as-is.
+Stage orchestrator for the **pitch** stage (stage 2, venue-ALIGNED). The user invokes this skill; it drives the phases internally.
+
+The pitch is the **cover letter**: the venue-ALIGNED document that tells THIS editor why THIS paper fits THEIR journal. It can be sent to an editor as-is.
 
 The pitch is not a paper plan, outline, or claim matrix. It is the version a person can understand in one minute:
 
@@ -36,6 +32,8 @@ Why should we believe it?
 What is still fragile?
 How did the story get here?
 ```
+
+Read first: `../../PHILOSOPHY.md`, `../../wiki/04-lifecycle-map.md`.
 
 ## Artifact Spec
 
@@ -64,83 +62,71 @@ How did the story get here?
 - [ ] All labeled sections present (Title, Hook with >=2 candidates, Surprise, Implication, etc.)
 - [ ] Readable in one minute
 
-**DGPC applicability:**
-- DRAFT: write the cover letter
-- GATHER: consult venue pack + claims ledger for H-to-RQ mapping
-- POLISH: apply readability rules, de-AI voice
-- CHECK: Editor's Chair Test, template enforcement, quality gate
-
 Illustration:
 - `images/stage2-pitch-gate-image2.png` -- Stage 2 as a pitch gate: either return to narrative/project work or proceed to Stage 3 evidence-backed narrative.
 
-Location:
+## Phase Orchestration
+
+When the user invokes `/haipipe-paper pitch`, this skill drives the phases in order. The user does not call phase skills directly.
 
 ```
-<paper>/
-└── 0-lifecycle/2-pitch/
-    ├── 2-pitch.tex          current one-minute story (standalone-compilable contract)
-    ├── PITCH_LOG.md         short provenance sidecar (optional)
-    └── archive/             older semantic pitch snapshots (vNN_<reason>.tex)
+pitch invoked
+  │
+  ▼
+DRAFT ──→ illuminate existing content, elicit taste,
+          write/iterate the cover letter sections with > JL: / > CC: comments;
+          read STATUS venue + _venue/playbook-<venue> to shape
+          Editor's Chair Test, [primary] designation, RQ framing, Audience;
+          read claims ledger for venue-neutral H1/H2/H3
+          (internally calls /haipipe-paper-draft with this artifact spec)
+  │
+  ▼
+PROBE ──→ citation audit for anchor papers cited in Evidence-Why Believe;
+          verify venue pack references; confirm H-to-RQ mapping against claims ledger
+          (internally calls /haipipe-paper-probe)
+  │
+  ▼
+REVISE ─→ refine prose, apply 8 readability rules from ref/pitch-readability.md,
+          de-AI voice, one idea per sentence, lead with the point
+          (internally calls /haipipe-paper-revise)
+  │
+  ▼
+CHECK ──→ present exit gate per ../../wiki/08-stage-gate.md:
+          quality gate checklist (see below), template enforcement,
+          Editor's Chair Test passes, readability rules pass
+          user confirms → advance to narrative
+          (internally calls /haipipe-paper-check)
 ```
 
-Shared Protocols
------------------
+Comment lifecycle per `../../wiki/02-comment-lifecycle.md`: comments live in 2-pitch.md while active, move to _LOG on resolve, each phase starts clean.
 
-This stage follows three shared protocols. Read them once:
+### Quality gate checklist (CHECK phase)
 
-- `ref/stage-illuminate.md` -- illuminate + elicit taste before drafting
-- `ref/stage-gate.md` -- exit criteria + confirm-before-advance gate
-- `ref/tex-quality.md` -- self-contained compilable tex with Pn.Sm tags
+- [ ] Title section present with working title?
+- [ ] Hook section with >=2 candidate methods, all retained?
+- [ ] Surprise section with a non-obvious turn stated?
+- [ ] Implication section with "so what" and audience stated?
+- [ ] Editor's Chair Test present with venue question and one-sentence answer?
+- [ ] Primary Claim + RQ Framing present with [primary] designation and H-to-RQ mapping?
+- [ ] Audience/Venue Fit section names who reads this journal and why they care?
+- [ ] Why Believe section with evidence pointers (>=1 per claim)?
+- [ ] Still Fragile section with the weakest point named?
 
-Principles
-----------
+## Location
 
-1. **One minute or it failed.** `2-pitch.tex` should be readable in one minute. Keep it short enough to fit on one screen.
-2. **Pitch can start as intuition.** A seed pitch may cite author judgment, a research review, or a rough direction.
-3. **Later shifts need sources.** Every semantic shift after the seed should cite a source: `discoveries/`, `tasks/`, `probes/`, `insights/`, reviewer feedback, venue strategy, or an explicit author decision.
-4. **Archive semantic versions only.** Archive when the story state changes (`seed -> discovery-shift`, `accuracy -> robustness`, `method-first -> application-first`), not for typo edits.
-5. **Do not write the paper here.** Abstract, intro, section plan, and LaTeX belong downstream. This skill only maintains the story kernel.
-5b. **Pitch is the cover letter.** The pitch IS the venue-ALIGNED cover letter. It can be sent to the editor as-is. It tells THIS editor why THIS paper fits THEIR journal. Venue pinning (STATUS `venue`) must happen before or during pitch. If no venue is pinned, run `/haipipe-paper venue` first.
-5c. **Editor's Chair Test lives here.** Read `_venue/playbook-<venue>` for the editor's chair question. Every primary claim must have a one-sentence answer. This test was migrated from claims (v3.0.0) because it is a venue question, not an evidence question.
-5d. **[primary] claim designation lives here.** Read the claims ledger (venue-neutral H1, H2, H3) and designate ONE PRIMARY claim aligned to what THIS venue rewards. A result that is novel elsewhere but already established for this venue's readers is an enabler (Methods), not a primary claim. A venue change re-runs this designation.
-5e. **RQ framing lives here.** Venue-neutral hypotheses (H1, H2, H3) live in claims. The pitch reframes them as venue-specific RQs: H1 -> RQ1 worded for what the editor rewards. Include an explicit H->RQ mapping with a "why this RQ for this venue" column.
-6. **Each hook candidate is one move, not a stack of questions.** Each candidate hook should commit to ONE narrative move (not a stacked enumeration): a vivid concrete scene, a surprising or counterintuitive fact, a paradox tied to stakes, or one sharp question. Do not stack multiple rhetorical questions within a single candidate, which dilutes the punch and reads as undecided. The final artifact keeps all candidate hooks visible (>=2 candidates, one marked as recommended lead). A flat statement of background is not a hook. See `ref/pitch-readability.md`.
-7. **Read it in one minute or rewrite it.** The pitch must be fast and easy to read; if a reader slows down to parse a sentence, rewrite that sentence. Follow the readability rules and per-section cues in `ref/pitch-readability.md`: short sentences, lead with the point, one idea per sentence, plain words, concrete numbers, no AI voice. Readability is part of the pitch done-gate.
-
-Workflow
---------
-
-### Step 0: Illuminate + Elicit
-
-Before drafting, follow `ref/stage-illuminate.md`:
-
-- Present the current state of this stage (what exists on disk, what could change).
-- Identify 2-3 taste-bearing decisions for this stage.
-- Ask the user before committing to choices that affect narrative direction.
-
-### Step 1: Resolve paper folder
-
-Accept either the paper root or any path inside it. Find the paper root by looking upward for one of:
-
-- `0-lifecycle/2-pitch/`
-- a `0-*.tex` master and `0-sections/`
-- `1-compile.sh`
-
-If no paper folder exists, ask the user to run:
-
-```
-/haipipe-paper-lifecycle folder <paper-root>
+```text
+<paper>/0-lifecycle/2-pitch/2-pitch.md       cover letter (venue-ALIGNED)
+<paper>/0-lifecycle/2-pitch/_LOG_2-pitch.md   changelog with provenance
+<paper>/0-lifecycle/2-pitch/archive/          older semantic pitch snapshots (vNN_<reason>.md)
 ```
 
-### Step 2: Ensure `0-lifecycle/2-pitch/` exists
+Markdown only (argument documents don't need compilation).
 
-The full template is in `ref/pitch-template.tex` (standalone-compilable, ~110 lines). Copy it to `0-lifecycle/2-pitch/2-pitch.tex` and fill in.
+## Template
 
-Every pitch carries the full backbone: Title, One-Minute Pitch, Hook (>=2 candidates), Finding-Surprise, Implication, Editor's Chair Test, Primary Claim and RQ Framing, Audience/Venue Fit, Evidence, Still Fragile, Next Evidence Move. The body follows the sentence-format in `../../3-write-edit/_shared/sentence-format.md`: a paragraph banner per section, one sentence per line, each tagged `%% ---- Pn.Sm ----`.
+The canonical template is the source of truth for section order: `ref/pitch-template.md`
 
-The pitch is venue-ALIGNED: it reads STATUS `venue` and consults `../../_venue/playbook-<venue>` to shape the Editor's Chair Test, the [primary] claim designation, the RQ framing, and the Audience section. A venue change means the pitch rewrites. (Claims stays unchanged because it is venue-free.)
-
-Reading order of the template:
+Reading order:
 
 ```text
 1. Title                       ← <=15 words, specific, evocative
@@ -156,7 +142,11 @@ Reading order of the template:
 11. Next Evidence Move         ← verb + artifact
 ```
 
-**Template Enforcement:** A pitch is NOT complete unless it contains, as labeled `\section*` parts: Title, One-Minute Pitch, Hook (with >=2 candidates), Surprise, Implication, Editor's Chair Test, Primary Claim + RQ Framing, Audience/Venue Fit, Why Believe, Still Fragile. A pitch that is one flat paragraph missing these sections must be flagged and restructured before it can pass any gate.
+**Template enforcement:** A pitch is NOT complete unless it contains, as labeled sections: Title, One-Minute Pitch, Hook (with >=2 candidates), Surprise, Implication, Editor's Chair Test, Primary Claim + RQ Framing, Audience/Venue Fit, Why Believe, Still Fragile. A pitch that is one flat paragraph missing these sections must be flagged and restructured before it can pass any gate.
+
+The pitch is venue-ALIGNED: it reads STATUS `venue` and consults `_venue/playbook-<venue>` to shape the Editor's Chair Test, the [primary] claim designation, the RQ framing, and the Audience section. A venue change means the pitch rewrites. (Claims stays unchanged because it is venue-free.)
+
+### Pitch Log template (_LOG_2-pitch.md)
 
 ```markdown
 # Pitch Log
@@ -170,7 +160,7 @@ Source:
 - Author intuition / initial review / early project direction.
 
 Pitch:
-- See `2-pitch.tex`.
+- See `2-pitch.md`.
 
 Why this version:
 - Initial public-facing story before the evidence base is stable.
@@ -182,17 +172,7 @@ Next:
 - Identify the first discovery, task, or probe that can strengthen or kill this story.
 ```
 
-### Step 3: Update the current pitch
-
-When the user gives a new pitch or asks for a pitch revision:
-
-1. Read the current `2-pitch.tex`.
-2. If the change is semantic, archive the old file first:
-   `0-lifecycle/2-pitch/archive/vNN_<reason>.tex`.
-3. Write the new `2-pitch.tex`.
-4. Append a compact `PITCH_LOG.md` entry.
-
-Log entry shape:
+Version-to-version log entry shape:
 
 ```markdown
 ## v02 -> v03 -- <reason>
@@ -217,48 +197,23 @@ Next:
 - ...
 ```
 
-### Step 3b: Quality Gate
+## Principles
 
-Check the pitch against its rubric:
+1. **One minute or it failed.** `2-pitch.md` should be readable in one minute. Keep it short enough to fit on one screen.
+2. **Pitch can start as intuition.** A seed pitch may cite author judgment, a research review, or a rough direction.
+3. **Later shifts need sources.** Every semantic shift after the seed should cite a source: `discoveries/`, `tasks/`, `probes/`, `insights/`, reviewer feedback, venue strategy, or an explicit author decision.
+4. **Archive semantic versions only.** Archive when the story state changes (`seed -> discovery-shift`, `accuracy -> robustness`, `method-first -> application-first`), not for typo edits.
+5. **Do not write the paper here.** Abstract, intro, section plan, and LaTeX belong downstream. This skill only maintains the story kernel.
+5b. **Pitch is the cover letter.** The pitch IS the venue-ALIGNED cover letter. It can be sent to the editor as-is. It tells THIS editor why THIS paper fits THEIR journal. Venue pinning (STATUS `venue`) must happen before or during pitch. If no venue is pinned, run `/haipipe-paper venue` first.
+5c. **Editor's Chair Test lives here.** Read `_venue/playbook-<venue>` for the editor's chair question. Every primary claim must have a one-sentence answer. This test was migrated from claims (v3.0.0) because it is a venue question, not an evidence question.
+5d. **[primary] claim designation lives here.** Read the claims ledger (venue-neutral H1, H2, H3) and designate ONE PRIMARY claim aligned to what THIS venue rewards. A result that is novel elsewhere but already established for this venue's readers is an enabler (Methods), not a primary claim. A venue change re-runs this designation.
+5e. **RQ framing lives here.** Venue-neutral hypotheses (H1, H2, H3) live in claims. The pitch reframes them as venue-specific RQs: H1 -> RQ1 worded for what the editor rewards. Include an explicit H->RQ mapping with a "why this RQ for this venue" column.
+6. **Each hook candidate is one move, not a stack of questions.** Each candidate hook should commit to ONE narrative move (not a stacked enumeration): a vivid concrete scene, a surprising or counterintuitive fact, a paradox tied to stakes, or one sharp question. Do not stack multiple rhetorical questions within a single candidate, which dilutes the punch and reads as undecided. The final artifact keeps all candidate hooks visible (>=2 candidates, one marked as recommended lead). A flat statement of background is not a hook. See `ref/pitch-readability.md`.
+7. **Read it in one minute or rewrite it.** The pitch must be fast and easy to read; if a reader slows down to parse a sentence, rewrite that sentence. Follow the readability rules and per-section cues in `ref/pitch-readability.md`: short sentences, lead with the point, one idea per sentence, plain words, concrete numbers, no AI voice. Readability is part of the pitch done-gate.
 
-- [ ] Title section present with working title?
-- [ ] Hook section with >=2 candidate methods, all retained?
-- [ ] Surprise section with a non-obvious turn stated?
-- [ ] Implication section with "so what" and audience stated?
-- [ ] Editor's Chair Test present with venue question and one-sentence answer?
-- [ ] Primary Claim + RQ Framing present with [primary] designation and H→RQ mapping?
-- [ ] Audience/Venue Fit section names who reads this journal and why they care?
-- [ ] Why Believe section with evidence pointers (>=1 per claim)?
-- [ ] Still Fragile section with the weakest point named?
+## Relationship to other structure skills
 
-If any item fails, flag it and offer to fix before advancing.
-
-### Step 4: Compile + Exit Gate
-
-1. Present the exit criteria from `ref/stage-gate.md` with per-item check/fail.
-2. Ask: "Stage pitch looks ready -- confirm to close and move to narrative?"
-3. Only on user confirm: update `STATUS.md` `current_layer` and Gate Ledger.
-
-### Step 5: Handoff
-
-After updating pitch, report:
-
-- current pitch version
-- archived snapshot path, if any
-- sources cited
-- whether the current pitch is seed / working / reliable / paper-ready
-- next structural command, usually:
-
-```
-/haipipe-paper narrative <paper-dir>   next stage: the design contract
-```
-
-End the reply with the stage strip (run `ref/stage-strip.sh`).
-
-Relationship to other structure skills
---------------------------------------
-
-`0-lifecycle/2-pitch/2-pitch.tex` is one stage of the lifecycle spine:
+`0-lifecycle/2-pitch/2-pitch.md` is one stage of the lifecycle spine:
 
 ```
 0-seed.md        why this paper might exist (venue-FREE)
@@ -275,3 +230,13 @@ Relationship to other structure skills
 Upstream: claims (0-lifecycle/1-claims/) provides the venue-neutral hypotheses (H1, H2, H3) and evidence status. Pitch reframes them for the target venue.
 
 Downstream: narrative expands the pitch into a full section-mirrored arc. If a downstream stage disagrees with the pitch, either update the pitch with a logged reason or revise the downstream stage. Do not let abstract, introduction, hero figure, and discussion carry different stories.
+
+## Handoff
+
+On CHECK confirm, update `STATUS.md` (`current_layer`, `maturity: pitch`) and advance:
+
+```text
+promote     -> /haipipe-paper narrative <paper-dir>
+```
+
+End the reply with the stage strip (run `../../wiki/10-stage-strip.sh`).

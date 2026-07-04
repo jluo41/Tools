@@ -7,8 +7,7 @@ metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
   summary: "Generate conference presentation slides (beamer LaTeX → PDF + editable PPTX) from a compiled paper, with speaker notes and full talk script."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # Paper Slides: From Paper to Conference Talk

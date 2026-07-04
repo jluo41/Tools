@@ -5,9 +5,7 @@ metadata:
   version: "1.1.0"
   last_updated: "2026-05-31"
   summary: "Use when acting as a journal or grant reviewer and writing formal reviewer-side evaluations focused on methodology, statistics, reporting standards, reproducibility, and constructive feedback."
-  changelog:
-    - "1.1.0 (2026-06-05): renamed from paper-reviewer to haipipe-paper-edit-reviewer; consolidated into 3-write-edit/ (haipipe-paper-* name unification)."
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # Scientific Critical Evaluation and Peer Review

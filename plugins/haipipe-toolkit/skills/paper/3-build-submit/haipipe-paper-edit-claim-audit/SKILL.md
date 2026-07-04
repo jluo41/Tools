@@ -7,9 +7,7 @@ metadata:
   version: "1.1.0"
   last_updated: "2026-05-31"
   summary: "Zero-context verification that every number, comparison, and scope claim in the paper matches raw result files."
-  changelog:
-    - "1.1.0 (2026-06-05): renamed from paper-claim-audit to haipipe-paper-edit-claim-audit; consolidated into 3-build-submit/ (haipipe-paper-* name unification)."
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # Paper Claim Audit: Zero-Context Evidence Verification

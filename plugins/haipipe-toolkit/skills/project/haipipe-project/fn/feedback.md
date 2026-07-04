@@ -48,7 +48,7 @@ which skill it concerns; there is no separate `skill:` field.
       or new?" rather than guess. (Under digest, the confirm gate decides.)
 5. CONFIRM where it landed, whether it was MERGED (into <file>) or NEW, and how
    it matched; offer the one-line correction:
-   "filed -> haipipe-project-inspect/feedback/ NEW (matched keyword 'review').
+   "filed -> haipipe-project/feedback/ NEW (matched keyword 'repo' -> fn/repo-project).
     wrong target? /haipipe-project feedback move <file> <skill>"
    (When invoked in BATCH by digest, SKIP this per-item confirm: digest's gate
    already approved and its step-6 report is the single confirmation.)
@@ -97,7 +97,7 @@ resolve:
        cross-cutting.
        Contrast: "every new task folder should get a diagram stub" -> fallback
        (project-wide scaffold rule); "the review missed a flat task folder" ->
-       haipipe-project-inspect (one specialist bug).
+       haipipe-project fn/repo-project (one fn bug).
   1. else keyword match in TEXT -> that skill (most specific wins)
   2. else active sub-skill from this session (if known)
   3. else orchestrator fallback
@@ -107,9 +107,9 @@ Keyword -> skill map (first/most-specific match wins):
 
 ```
 inspect, review, summary, summarize, inventory,
-  overview, audit, read-only, scan-status            -> haipipe-project-inspect
+  scan-status, eval status                           -> /haipipe-task (fn moved 2026-07-03)
 organize, reorganize, move files, restructure,
-  relocate, fix structure                            -> haipipe-project-organize
+  relocate, fix structure                            -> retired (originals in project/_archive)
 workflow, IPO, phases, plan workflow                 -> haipipe-workflow
 --------------------------------------------------------------------------
 NO MATCH  (cross-cutting: project / task-group / task-folder SCAFFOLDING &
@@ -159,10 +159,10 @@ orchestrator folder, i.e. `…/skills/project`, NOT
 capture, so a mapped folder not existing yet is expected, not an error.
 
 ```
-haipipe-project-inspect    haipipe-project-inspect/feedback/
-haipipe-project-organize   haipipe-project-organize/feedback/
-haipipe-workflow           haipipe-workflow/feedback/
-ORCHESTRATOR FALLBACK      haipipe-project/feedback/   (this skill's own folder)
+fn/project, fn/repo-project   haipipe-project/feedback/  (tag the fn in the item)
+haipipe-workflow              ../task/haipipe-workflow/feedback/  (lives in task/)
+task-group / scan-status      ../task/haipipe-task/feedback/      (fns moved to task/)
+ORCHESTRATOR FALLBACK         haipipe-project/feedback/  (this skill's own folder)
 ```
 
 New-inbox README template (write only if the folder lacks a README.md):

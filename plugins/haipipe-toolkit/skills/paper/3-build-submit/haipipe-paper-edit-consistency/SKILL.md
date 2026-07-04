@@ -10,7 +10,7 @@ metadata:
 
 # haipipe-paper-edit-consistency  (stub)
 
-CHECK-phase whole-paper consistency pass in the build-submit layer. Runs **after** per-section editing (DRAFT/GATHER/POLISH/CHECK) is complete, because it is cross-section by nature. Self-contained: carries its own checks.
+CHECK-phase whole-paper consistency pass in the build-submit layer. Runs **after** per-section editing (DRAFT/PROBE/REVISE/CHECK) is complete, because it is cross-section by nature. Self-contained: carries its own checks.
 
 Like every build-submit sub-skill it is **comment-first**: Round 1 inserts `%% {CC-consist-vMMDD}: finding | suggestion ========>` and changes no text; apply waits for the human `========> {XX}:` reply.
 
