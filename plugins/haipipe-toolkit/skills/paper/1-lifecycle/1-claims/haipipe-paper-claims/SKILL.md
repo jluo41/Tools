@@ -4,7 +4,7 @@ description: "Stage orchestrator for the paper folder's 0-lifecycle/1-claims/1-c
 argument-hint: "[paper-dir] [--backfill <probe-ref>] [--source <path>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.1.2"
+  version: "3.1.3"
   last_updated: "2026-07-03"
   summary: "Claims stage orchestrator. Defines WHAT (hypothesis matrix, claim-evidence ledger, probe plans) and drives phases (draft -> probe -> revise -> check) internally. User invokes claims, not phases."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -81,6 +81,8 @@ CHECK ──→ present exit gate: all claims backed? no aspirational
           user confirms → advance to venue
           (internally calls /haipipe-paper-check)
 ```
+
+Phase visibility per the Phase Transition Contract in `../../wiki/08-stage-gate.md`: announce every phase boundary (reply line + `[PHASE]` entry in `_LOG` + phase-line 🔥 moves); skip a phase only by an explicit logged verdict (`[PROBE] skipped -- <reason>`, phase line shows `--`); CHECK is never implicit -- it opens by presenting the exit-criteria report and the approval ask.
 
 Comment lifecycle per `../../wiki/02-comment-lifecycle.md`: comments live in 1-claims.md while active, move to _LOG on resolve, each phase starts clean.
 

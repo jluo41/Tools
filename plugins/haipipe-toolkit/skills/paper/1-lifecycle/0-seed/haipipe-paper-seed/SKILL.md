@@ -4,9 +4,9 @@ description: "Create or update the paper folder's 0-lifecycle/0-seed/0-seed.md +
 argument-hint: "[paper-dir] [--source <path-or-note>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.0.1"
+  version: "3.1.0"
   last_updated: "2026-07-03"
-  summary: "Seed stage orchestrator. Defines WHAT (3 sections) and drives phases (draft -> revise -> check) internally. User invokes seed, not phases."
+  summary: "Seed stage orchestrator. Defines WHAT (3 sections) and drives phases (draft -> probe -> revise -> check) internally. User invokes seed, not phases."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -53,12 +53,14 @@ DRAFT ──→ illuminate existing content, elicit taste,
           (internally calls /haipipe-paper-draft with this artifact spec)
   │
   ▼
-PROBE ──→ optional: discover related work, check novelty, understand landscape
+PROBE ──→ DEFAULT RUN for a new seed: landscape / related work / novelty (mode light) --
+          it answers the CHECK questions "who cares?" and "is this new?" before the gate
           (internally calls /haipipe-paper-probe → /haipipe-probe → discovery;
-           takeaways land in _DISCOVERY_0-seed.md, full evidence stays project-side)
+           takeaways land in _DISCOVERY_0-seed.md, full evidence stays project-side;
+           NEVER dispatch discovery/task agents or /haipipe-probe directly from here)
   │
   ▼
-REVISE ─→ refine prose clarity of the 3 sections
+REVISE ─→ refine prose clarity of the 3 sections, weave probe takeaways into Motivations
           (internally calls /haipipe-paper-revise)
   │
   ▼
@@ -66,6 +68,8 @@ CHECK ──→ present exit gate per ../../wiki/08-stage-gate.md
           user confirms → advance to claims
           (internally calls /haipipe-paper-check)
 ```
+
+Phase visibility per the Phase Transition Contract in `../../wiki/08-stage-gate.md`: announce every phase boundary (reply line + `[PHASE]` entry in `_LOG` + phase-line 🔥 moves); PROBE/REVISE may be skipped only on re-entry or minor edits, and only by an explicit logged verdict (`[PROBE] skipped -- <reason>`, phase line shows `--`); CHECK is never implicit -- it opens by presenting the exit-criteria report and the approval ask.
 
 Comment lifecycle per `../../wiki/02-comment-lifecycle.md`: comments live in 0-seed.md while active, move to _LOG on resolve, each phase starts clean.
 

@@ -4,6 +4,14 @@ haipipe-paper-seed — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [3.1.0] — 2026-07-03
+
+Changed (live seed run silently skipped PROBE+REVISE and drifted into CHECK)
+- frontmatter summary listed phases as draft -> revise -> check; PROBE restored to the spine.
+- PROBE no longer "optional": DEFAULT RUN for a new seed (landscape/related-work/novelty, mode light -- it answers the gate's "who cares?" / "is this new?"); skip only on re-entry/minor edits by explicit logged verdict. Direct dispatch of discovery/task agents or /haipipe-probe from the stage is forbidden.
+- REVISE now explicitly weaves probe takeaways into Motivations.
+- Phase visibility pointer added (Phase Transition Contract, wiki/08): announce every boundary, no silent skips, CHECK opens with the exit-criteria report + approval ask.
+
 ## [3.0.1] — 2026-07-03
 
 - phase spine renamed DGPC -> DPRC (GATHER -> PROBE, POLISH -> REVISE; workers haipipe-paper-probe*, haipipe-paper-revise*).

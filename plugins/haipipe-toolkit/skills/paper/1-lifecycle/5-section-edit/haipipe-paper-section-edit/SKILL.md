@@ -4,7 +4,7 @@ description: "Per-section editing hub under 0-lifecycle/5-section-edit/. Owns th
 argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 metadata:
-  version: "3.1.2"
+  version: "3.1.3"
   last_updated: "2026-07-03"
   summary: "Per-section editing hub. Two-axis model: STAGES (1-lifecycle/) x PHASES (2-phase/). DPRC phases are shared across all lifecycle stages. PROBE is agent-only (flag, no human gate). REVISE works on both .md and .tex. CHECK is the human gate (6-axis verification). _LOG tracks cross-phase evolution with [PHASE] tags."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -92,6 +92,8 @@ Progression gates:
 - Probed (all tracks flagged)? → REVISE (agent revises .md then syncs to .tex)
 - Revised? → CHECK (human verifies flags, agent places verified items, 6-axis gate)
 - All 6 axes PASS? → section done. FAIL? → route back to failing phase.
+
+Phase visibility per the Phase Transition Contract in `../../../wiki/08-stage-gate.md`: announce every phase boundary (reply line + `[PHASE]` entry in `_LOG` + phase-line 🔥 moves); skip a phase only by an explicit logged verdict (`[PROBE] skipped -- <reason>`, phase line shows `--`); CHECK is never implicit -- it opens by presenting the exit-criteria report and the approval ask.
 
 Discovery and task are MECHANISMS feeding the probe phase: discovery finds citations, task produces figures and numbers. They route through per-stage `_PROBE/` folders. PROBE checks existing evidence FIRST, plans, then probes ONLY if information is missing.
 

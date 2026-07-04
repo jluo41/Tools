@@ -4,7 +4,7 @@ description: "Generate 0-lifecycle/3-narrative/3-narrative.md + _LOG_3-narrative
 argument-hint: "[paper-dir-or-topic]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.2.2"
+  version: "2.2.3"
   last_updated: "2026-07-03"
   summary: "Narrative stage orchestrator. Defines the section-mirrored, readiness-tagged design contract and drives phases (draft -> probe -> revise -> check) internally. User invokes narrative, not phases."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -92,6 +92,8 @@ CHECK --> present exit gate per ../../wiki/08-stage-gate.md
           user confirms -> advance to display
           (internally calls /haipipe-paper-check)
 ```
+
+Phase visibility per the Phase Transition Contract in `../../wiki/08-stage-gate.md`: announce every phase boundary (reply line + `[PHASE]` entry in `_LOG` + phase-line 🔥 moves); skip a phase only by an explicit logged verdict (`[PROBE] skipped -- <reason>`, phase line shows `--`); CHECK is never implicit -- it opens by presenting the exit-criteria report and the approval ask.
 
 Comment lifecycle per `../../wiki/02-comment-lifecycle.md`: comments live in 3-narrative.md while active, move to _LOG on resolve, each phase starts clean.
 

@@ -60,6 +60,17 @@ The CHECK phase is the ONLY door out of a stage. Its verdicts move in exactly tw
 Going BACK across stages (e.g. redoing seed while the frontier is section-edit) is NOT a CHECK outcome. That is a lifecycle loopback: re-enter the earlier stage directly (`/haipipe-paper seed`; 🔥 moves there, 🚀 stays at the frontier), and that stage runs its own DPRC cycle and its own CHECK gate.
 
 
+Phase Transition Contract (within a stage)
+-------------------------------------------
+
+The gate governs stage EXITS; this contract governs phase VISIBILITY inside the stage. A live seed run silently skipped PROBE and REVISE and drifted into CHECK without ever announcing it -- the user discovered the phase by accident. Every stage skill obeys:
+
+1. **Announce every boundary.** Entering a phase = one line in the reply ("PROBE: dispatching seed landscape...") + a `[PHASE]` entry in the stage `_LOG` + the phase line of the closing block moves 🔥.
+2. **No silent skips.** A phase may be skipped only by an EXPLICIT logged verdict: one reply line with the reason, `[PROBE] skipped -- <reason>` in `_LOG`, and `--` on the phase line. "The draft looks fine" is a verdict to record, not a license to say nothing. Defaults: a NEW stage artifact runs all four phases; skip is for re-entries and minor edits.
+3. **CHECK is never implicit.** Entering CHECK means presenting the exit-criteria report and the approval ask (Steps 3-4 above). An elicitation reply does not become CHECK because the user responds to it; if the user starts giving CHECK-style feedback early, say so and open CHECK properly.
+4. **PROBE dispatches through the probe worker only.** A stage's evidence needs go `Skill("haipipe-paper-probe", ...)` -> `/haipipe-probe` -> discovery/task. Stage skills never call `/haipipe-probe`, discovery agents, or task agents directly.
+
+
 Per-Stage Exit Criteria
 -----------------------
 
