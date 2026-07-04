@@ -4,7 +4,7 @@ description: "Plan, materialize (via task/probe), scaffold, build, audit, and in
 argument-hint: "[paper-dir] [--plan|--scaffold|--framework|--materialize|--build|--audit|--insert] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.6.1"
+  version: "1.6.2"
   last_updated: "2026-07-03"
   summary: "Display stage orchestrator. Plans the display set, materializes via tasks, compiles gallery PDF, and gates exit. User invokes display, not phases."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -91,6 +91,8 @@ CHECK ----> walk CHECKLIST.md, audit display/story/evidence
             consistency, user confirms -> advance to section-edit
             (internally calls /haipipe-paper-check)
 ```
+
+Phase visibility per the Phase Transition Contract in `../../wiki/08-stage-gate.md`: announce every phase boundary (reply line + `[PHASE]` entry in `_LOG` + phase-line 🔥 moves); skip a phase only by an explicit logged verdict (`[PROBE] skipped -- <reason>`, phase line shows `--`); CHECK is never implicit -- it opens by presenting the exit-criteria report and the approval ask.
 
 Comment lifecycle per `../../wiki/02-comment-lifecycle.md`: `%% {USER}: ...` comments live in 4-display.tex while active, move to _LOG_4-display.md on resolve, each phase starts clean.
 

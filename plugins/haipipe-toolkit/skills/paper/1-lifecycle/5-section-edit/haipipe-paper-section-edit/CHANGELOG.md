@@ -4,6 +4,11 @@ haipipe-paper-section-edit — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [3.1.3] — 2026-07-03
+
+Changed
+- Added the Phase Transition Contract pointer (wiki/08): announce every phase boundary, no silent phase skips (explicit logged verdict only), CHECK never implicit.
+
 ## [3.1.2] — 2026-07-03
 
 Fixed

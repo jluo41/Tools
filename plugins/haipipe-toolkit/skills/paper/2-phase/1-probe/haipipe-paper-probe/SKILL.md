@@ -4,7 +4,7 @@ description: "PROBE phase worker (internal). Called by stage skills after DRAFT 
 argument-hint: "[stage-or-section] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.7.1"
+  version: "1.7.2"
   last_updated: "2026-07-03"
   summary: "PROBE phase worker (internal). Two route families: document workers (citation/values/display, each owning a _DOC_ needs registry) + dispatch through /haipipe-probe (mode light by default, full for claims; reuse-before-create)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -76,7 +76,7 @@ All routes are fully automatic dispatch. The agent collects aggressively, flags 
 
 ## Evidence routes (probe gateway)
 
-Never search or compute inline. Evidence work routes through `/haipipe-probe`, the universal evidence gateway; probe dispatches downstream during its own Gather stage.
+Never search or compute inline, and never dispatch discovery/task orchestrator agents directly from a stage skill -- this worker is the ONLY door: stage -> this worker -> `/haipipe-probe` (the universal evidence gateway) -> discovery/task during probe's own Gather stage. A stage that calls `Agent(haipipe-discovery-orchestrator-agent)` or `/haipipe-probe` itself is bypassing the evidence contract (results won't land project-side as a probe).
 
 **Probe dispatch rules (both apply to every dispatch):**
 
@@ -84,7 +84,7 @@ Never search or compute inline. Evidence work routes through `/haipipe-probe`, t
 
 2. **Reuse-before-create.** Before opening a new probe, sweep what exists: `1-probe-plans/` (the cross-paper index), the project's probe folders, and the insight KB. If an existing probe covers the claim (same topic, compatible scope), ENRICH it -- extend its Gather with the new evidence need, re-run Read/Judge -- instead of creating a near-duplicate. Create a new probe only when no existing one covers the topic; when the match is ambiguous, ask rather than fork. Probe sprawl is a mental-model tax: two half-overlapping probes cost more than one enriched one.
 
-**Seed (mode: light, optional).** The seed question needs outside context, not verdicts:
+**Seed (mode: light; DEFAULT RUN for a new seed).** Skip only on re-entry or minor edits, and only by an explicit logged verdict (`[PROBE] skipped -- <reason>` in the stage `_LOG`, phase line shows `--`) -- never silently. The seed question needs outside context, not verdicts:
 
 ```
 landscape ("what does this field look like?")  → probe → discovery Review → landscape.md

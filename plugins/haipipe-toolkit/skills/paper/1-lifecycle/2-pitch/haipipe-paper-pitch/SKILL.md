@@ -4,7 +4,7 @@ description: "Create or update the paper folder's 0-lifecycle/2-pitch/2-pitch.md
 argument-hint: "[paper-dir] [--reason <slug>] [--source <path-or-note>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.1.2"
+  version: "3.1.3"
   last_updated: "2026-07-03"
   summary: "Pitch stage orchestrator. Defines WHAT (cover letter sections) and drives phases (draft -> probe -> revise -> check) internally. User invokes pitch, not phases."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -97,6 +97,8 @@ CHECK ──→ present exit gate per ../../wiki/08-stage-gate.md:
           user confirms → advance to narrative
           (internally calls /haipipe-paper-check)
 ```
+
+Phase visibility per the Phase Transition Contract in `../../wiki/08-stage-gate.md`: announce every phase boundary (reply line + `[PHASE]` entry in `_LOG` + phase-line 🔥 moves); skip a phase only by an explicit logged verdict (`[PROBE] skipped -- <reason>`, phase line shows `--`); CHECK is never implicit -- it opens by presenting the exit-criteria report and the approval ask.
 
 Comment lifecycle per `../../wiki/02-comment-lifecycle.md`: comments live in 2-pitch.md while active, move to _LOG on resolve, each phase starts clean.
 
