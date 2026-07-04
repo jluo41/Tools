@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-folder
-description: "Scaffold a paper folder's CONTENTS, quickly and minimally: README + STATUS.md + .gitignore + four empty container dirs (0-lifecycle, 0-displays, 1-rounds, 1-probe-plans). Stage files are absent-until-written (each stage skill creates its own 0-lifecycle/N-stage/ on first run); manuscript machinery (master tex, 0-sections, compile scripts) is a later on-request upgrade, not part of creation. Reached via /haipipe-paper create -> haipipe-paper-lifecycle folder; repo creation + submodule wiring belong to the create verb, not this skill. Trigger: paper folder, scaffold paper, new paper folder."
+description: "Scaffold a paper folder's CONTENTS, quickly and minimally: README + STATUS.md + .gitignore + four empty container dirs (0-lifecycle, 0-displays, 1-rounds, 1-probe-plans). Stage files are absent-until-written (each stage skill creates its own 0-lifecycle/N-stage/ on first run); manuscript machinery (master tex, 0-sections, compile scripts) is a later on-request upgrade, not part of creation. Reached via /haipipe-paper enter (get-or-create on a missing path) -> haipipe-paper-lifecycle folder; repo creation + submodule wiring belong to enter's get-or-create branch, not this skill. Trigger: paper folder, scaffold paper, new paper folder."
 metadata:
   version: "3.0.0"
   last_updated: "2026-07-03"
@@ -13,7 +13,7 @@ Skill: haipipe-paper-folder (paper folder scaffold)
 
 One job: **scaffold a new paper folder's contents, QUICKLY.** Three small files + four empty dirs, then stop. No questionnaire beyond a one-line working title, no LaTeX, no section stubs, no venue assumptions.
 
-Division of labor: `/haipipe-paper create <Paper-Name> [--org <owner>]` (the front door) handles repo creation + submodule wiring for papers inside Project-* repos (per the papers-inside recipe in `project/haipipe-project/fn/repo-project.md`), then dispatches here via `haipipe-paper-lifecycle folder` to fill the folder. This skill never runs gh or git submodule commands.
+Division of labor: `/haipipe-paper enter <paper-path> [--org <owner>]` (the front door; a missing path confirms then creates) handles repo creation + submodule wiring for papers inside Project-* repos (per the papers-inside recipe in `project/haipipe-project/fn/repo-project.md`), then dispatches here via `haipipe-paper-lifecycle folder` to fill the folder. This skill never runs gh or git submodule commands.
 
 
 Default Scaffold (the whole job)
@@ -111,7 +111,7 @@ Not this skill's job
 ---------------------
 
 ```
-repo + submodule wiring        -> /haipipe-paper create (front door verb)
+repo + submodule wiring        -> /haipipe-paper enter (get-or-create branch)
 stage files (0-seed.md, ...)   -> each stage skill, on first run
 rounds (1-rounds/vYYMMDD/)     -> haipipe-paper-round (contract: ../../wiki/07-paper-rounds.md)
 probe plans (PPNN_*.md)        -> /haipipe-paper probe verbs (fn/probe-plans.md)

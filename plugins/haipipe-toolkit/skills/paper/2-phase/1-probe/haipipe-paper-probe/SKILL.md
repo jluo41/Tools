@@ -4,7 +4,7 @@ description: "PROBE phase worker (internal). Called by stage skills after DRAFT 
 argument-hint: "[stage-or-section] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.6.0"
+  version: "1.7.0"
   last_updated: "2026-07-03"
   summary: "PROBE phase worker (internal). Two route families: document workers (citation/values/display, each owning a _DOC_ needs registry) + dispatch through /haipipe-probe (mode light by default, full for claims; reuse-before-create)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -104,6 +104,10 @@ finished evidence worth keeping            → /haipipe-insight (K/W cards)
 ```
 
 Verdicts backfill the `_EVIDENCE_` slots in 1-claims.md (supported | weak | GAP, citing the probe verdict). The paper owns the NEED; the probe owns the VERDICT. See `../../wiki/12-evidence-routing.md` and `../../wiki/11-delivery-need.md`.
+
+## From-buffer entry (the ONLY path that dispatches the umbrella's probe plans)
+
+`Skill("haipipe-paper-probe", args="from-buffer <paper_root> [PPNN]")` -- invoked by `/haipipe-paper probe run` or by a stage's own PROBE phase. The umbrella NEVER calls `/haipipe-probe` directly; this worker is the single dispatch point. It reads the planned items in `<paper_root>/1-probe-plans/` (or the one named PPNN), applies reuse-before-create per plan, dispatches each to `/haipipe-probe` with the plan's mode, updates the plan file (`status: dispatched`, `probe_ref: <active probe>`), and returns a dispatch summary (plans dispatched / enriched / skipped + refs). Verdicts later backfill 1-claims / sections / round logs per the buffer convention (`../../../haipipe-paper/fn/probe-plans.md`).
 
 ## Section-edit dispatch logic
 

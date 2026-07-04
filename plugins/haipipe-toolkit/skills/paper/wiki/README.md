@@ -18,7 +18,7 @@ Single source of truth for all paper skill conventions, architecture, and protoc
 **Operational protocols**
 8. [Stage Gate](08-stage-gate.md) -- exit criteria + confirm-before-advance gate
 9. [Stage Illuminate](09-stage-illuminate.md) -- illuminate + elicit taste before drafting
-10. [Stage Strip](10-stage-strip.sh) -- deterministic focus strip renderer (shell script)
+10. Stage Strip renderer -- MOVED to haipipe-paper/stage-strip.sh (2026-07-03, co-located with the Closing Block spec); numbering gap kept on purpose
 11. [Delivery Need](11-delivery-need.md) -- need record schema + backfill protocol
 12. [Evidence Routing](12-evidence-routing.md) -- \needprobe macro + paper/evidence boundary
 13. [TeX Quality](13-tex-quality.md) -- self-contained compilable tex with Pn.Sm tags

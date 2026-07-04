@@ -4,7 +4,7 @@ description: "CHECK phase worker (internal). Called by stage skills as the ONLY 
 argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent
 metadata:
-  version: "1.3.0"
+  version: "1.4.0"
   last_updated: "2026-07-03"
   summary: "CHECK phase worker (internal). The ONLY human-involved phase. Called by stage skills to run sub-checkers and gate human review."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -15,7 +15,7 @@ metadata:
 Skill: haipipe-paper-check (internal phase worker)
 =====================================================
 
-CHECK phase worker. Called by stage skills as the auto-gate for the DPRC lifecycle. **CHECK is the ONLY human-involved phase.** DRAFT, PROBE, and REVISE run fully automatic without stopping for human input. CHECK is where the human reviews everything at once.
+CHECK phase worker. Called by stage skills as the auto-gate for the DPRC lifecycle. **CHECK is the ONLY judgment-involved phase.** DRAFT, PROBE, and REVISE run fully automatic without stopping for input. CHECK is where everything is reviewed at once -- by the human (copilot mode, default) or by a reviewer subagent standing in (autopilot mode; see Gate Modes below).
 
 **Not user-facing.** Users invoke stage skills:
 ```
@@ -58,6 +58,29 @@ On restart, the restarted phase (DRAFT, PROBE, or REVISE) reads `> USER:` commen
 3. **Human review**: the human verifies flagged items, copies bibtex to .bib, confirms values, reviews displays, adds `> USER:` comments
 4. **Decide**: proceed / restart / accept / park
 5. **On restart**: the restarted phase (DRAFT/PROBE/REVISE) reads `> USER:` comments from CHECK and responds to them
+
+
+## Gate Modes (copilot | autopilot)
+
+Mode spec is owned by `../../../wiki/08-stage-gate.md` (`gate_mode` in STATUS.md, default copilot). What changes INSIDE this worker:
+
+```
+🧑 copilot     steps 3-4 above run as written: the human reviews and decides.
+🤖 autopilot   after the mechanical report, dispatch ONE fresh-context reviewer subagent
+               (Agent tool) that plays the review seat:
+               - reads the stage artifact + the pass/fail report + exit criteria
+               - leaves > REVIEWER: comments in the working doc (same places a human would)
+               - returns a verdict: proceed | restart-from-<DRAFT|PROBE|REVISE> | accept (+ reasons)
+               - on restart, the restarted phase reads > REVIEWER: comments exactly as it
+                 would read > USER: comments
+               HUMAN-ONLY items are NEVER delegated or silently passed: 🔍 citation
+               verification + bibtex copying (agents never touch .bib) and any item the
+               reviewer marks "needs the human" go to a DEFERRED human queue, listed in the
+               verdict and in the gate-ledger Notes; the human clears the queue at the next
+               copilot touchpoint. The human can reopen any agent-approved gate later.
+```
+
+The judgment step always happens; autopilot only changes WHO sits in the review seat.
 
 
 ## Sub-Checkers
@@ -254,6 +277,8 @@ PASSED: 14   FAILED: 1   WARNING: 1   SKIPPED: 4
 ```
 
 The decision is recorded in the _LOG with the check report, so future sessions know what was decided and why.
+
+**Stage Exit Invariant: CHECK is the ONLY door out of a stage.** Its verdicts move in exactly two directions: ♻️ restart re-opens a PHASE within the SAME stage (DRAFT / PROBE / REVISE -- never another stage); ✅ proceed (or 🤷 accept) crosses the gate to the NEXT stage. Going BACK across stages (e.g. redoing seed while the frontier is section-edit) is NOT a CHECK outcome -- that is a lifecycle loopback: re-enter the earlier stage (🔥 moves there, 🚀 stays at the frontier), and it runs its own DPRC and its own CHECK gate.
 
 
 ## Human Actions During CHECK

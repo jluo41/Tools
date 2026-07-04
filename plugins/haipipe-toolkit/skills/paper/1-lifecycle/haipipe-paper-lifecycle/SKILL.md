@@ -57,7 +57,7 @@ Specialists
 ### Foundation -- what folder + what story
 
 ```
-haipipe-paper-folder                  SCAFFOLD:  minimal quick scaffold (README + STATUS.md + .gitignore + empty 0-lifecycle/ 0-displays/ 1-rounds/ 1-probe-plans/); stage files absent-until-written; master tex / 0-sections / compile scripts are a later on-request upgrade. Repo+submodule wiring belongs to /haipipe-paper create.
+haipipe-paper-folder                  SCAFFOLD:  minimal quick scaffold (README + STATUS.md + .gitignore + empty 0-lifecycle/ 0-displays/ 1-rounds/ 1-probe-plans/); stage files absent-until-written; master tex / 0-sections / compile scripts are a later on-request upgrade. Repo+submodule wiring belongs to /haipipe-paper enter (get-or-create on a missing path).
 
 --- VENUE-FREE (don't change on retarget) ---
 
@@ -311,7 +311,7 @@ artifacts: [paths created, read, or modified]
 next:      suggested next /haipipe-paper-lifecycle command
 ```
 
-Stage skills additionally close every reply with the lifecycle stage strip as the LAST line, rendered from disk via `../../wiki/10-stage-strip.sh`.
+Stage skills additionally close every reply with the lifecycle stage strip as the LAST line, rendered from disk via `../../haipipe-paper/stage-strip.sh`.
 
 ---
 

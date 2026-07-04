@@ -1,10 +1,10 @@
 ---
 name: haipipe-paper-enter
-description: "Open the Paper Console for a paper repo. Use for `/haipipe-paper`, `/haipipe-paper enter <paper-path>`, `/haipipe-paper status [paper-path]`, or when starting work in an existing paper folder. Derives current state from disk (not stored status), renders an open-needs dashboard with the lifecycle frontier, maturity, stable assets, claim/display/round gaps, loopback diagnosis, and next commands, records session state in .paper-console.yaml, and routes free-form follow-up input through the lifecycle in copilot mode."
-argument-hint: "[paper-path] [free-form input]"
+description: "Open the Paper Console for a paper repo. Use for `/haipipe-paper`, `/haipipe-paper enter <paper-path>`, `/haipipe-paper status [paper-path]`, or when starting work in an existing paper folder. GET-OR-CREATE: a missing path offers to create the paper (confirm-gated; org asked, never assumed; repo-backed inside Project-* repos) and continues into the console. Derives current state from disk (not stored status), renders an open-needs dashboard with the lifecycle frontier, maturity, stable assets, claim/display/round gaps, loopback diagnosis, and next commands, records session state in .paper-console.yaml, and routes free-form follow-up input through the lifecycle in copilot mode."
+argument-hint: "[paper-path] [--org <owner>] [free-form input]"
 allowed-tools: Bash, Read, Grep, Glob, Write, Skill
 metadata:
-  version: "3.1.1"
+  version: "3.2.0"
   last_updated: "2026-07-03"
   summary: "Paper Console: derive-from-disk dashboard + lifecycle router."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -22,6 +22,23 @@ The console:
 3. renders a dashboard panel (lifecycle frontier + maturity + open needs)
 4. records session state in .paper-console.yaml at the paper root
 5. routes later free-form user input through the lifecycle
+```
+
+## Missing path = get-or-create (the ONLY way papers are created)
+
+There is no separate create verb. When the given path does not exist, do NOT fail -- offer to create, but CONFIRM FIRST (repo creation is outward-facing; never create off a typo):
+
+```text
+1. CONFIRM: "<path> 不存在。要建这个 paper 吗？" -- and resolve --org (flag or ask,
+   NEVER assume; the paper's owner may differ from the project's org).
+2. Parent is a Project-* repo -> paper is REPO-BACKED: follow the papers-inside
+   recipe in project/haipipe-project/fn/repo-project.md (gh repo create
+   <org>/<Paper-Name> --private + git submodule add at the PROJECT's papers/).
+   Plain projects: just the folder.
+3. Scaffold contents via Skill("haipipe-paper-lifecycle", args="folder <path>").
+4. Repo-backed: double-bump (paper push -> project pointer -> workspace pointer).
+5. Continue straight into the console (steps 1-5 above) -- one command from
+   nothing to dashboard.
 ```
 
 The main job is to expose the paper's current debt board: open claim gaps, display/table gaps, section-edit phase gaps, round todo gaps, and evidence needs that may require probe/discover/task/insight work. The user often does not know the next stage in advance; the dashboard makes the next need visible.
@@ -164,7 +181,7 @@ The dashboard leads with WHAT THE PAPER IS ABOUT, then WHERE IT STANDS, then WHA
 Render the stage strip deterministically with the helper, never hand-typed:
 
 ```sh
-sh "$CLAUDE_SKILL_DIR/../../wiki/10-stage-strip.sh" <paper-root>
+sh "$CLAUDE_SKILL_DIR/../../haipipe-paper/stage-strip.sh" <paper-root>
 ```
 
 It prints one line driven by `STATUS.md current_layer`, e.g. `seed ✅  claims ✅  venue ✅  pitch ✅  narrative ✅  display ⏳  section-edit ⏳`. This strip appears twice: once near the top (orientation) and once as the VERY LAST LINE of the reply (closing every reply in the session, not just the first dashboard; see the orchestrator's "Stage Strip" rule).
