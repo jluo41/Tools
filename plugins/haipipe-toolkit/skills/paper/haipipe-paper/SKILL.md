@@ -1,10 +1,10 @@
 ---
 name: haipipe-paper
-description: "Run any paper-lifecycle work. Use `/haipipe-paper enter <paper-path>` or `/haipipe-paper status [paper-path]` to preload an open-needs paper dashboard from STATUS.md, 0-lifecycle, 1-rounds, 0-displays, 0-sections, and git state. Paper lifecycle owns paper-specific story, angle, claims, narrative, displays, maturity, and dated work rounds; open GAP/NEED items accumulate as probe plans in 1-probe-plans/, consumed by haipipe-paper-probe (each stage's PROBE phase worker), which dispatches to /haipipe-probe (the universal evidence gateway; probe calls task/discover during Gather). Direct task/discover verbs available for non-claim utility work. Also parses intent (venue + stage) and dispatches to specialists for writing/revising/rebutting papers. Trigger: paper, enter paper, paper status, open needs, claim gap, figure table gap, round, paper round, work round, write paper, paper pipeline, paper writing, draft paper, revise paper, polish tex, rebuttal, reply to reviewers, probe, probe run, discover, task, evidence, 写论文, 论文流程, /haipipe-paper."
+description: "Run any paper-lifecycle work. Use `/haipipe-paper enter <paper-path>` or `/haipipe-paper status [paper-path]` to preload an open-needs paper dashboard from STATUS.md, 0-lifecycle, 1-rounds, 0-displays, 0-sections, and git state. Paper lifecycle owns paper-specific story, angle, claims, narrative, displays, maturity, and dated work rounds; open GAP/NEED items accumulate as probe plans in per-stage _PROBE/ folders (1-probe-plans/README.md = index), consumed by haipipe-paper-probe (each stage's PROBE phase worker), which dispatches to /haipipe-probe (the universal evidence gateway; probe calls task/discover during Gather). Direct task/discover verbs available for non-claim utility work. Also parses intent (venue + stage) and dispatches to specialists for writing/revising/rebutting papers. Trigger: paper, enter paper, paper status, open needs, claim gap, figure table gap, round, paper round, work round, write paper, paper pipeline, paper writing, draft paper, revise paper, polish tex, rebuttal, reply to reviewers, probe, probe run, discover, task, evidence, 写论文, 论文流程, /haipipe-paper."
 argument-hint: "[enter|status|venue|stage] [paper-path-or-args...]"
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "2.4.1"
+  version: "2.5.0"
   last_updated: "2026-07-03"
   summary: "Front door for the paper lifecycle: one verbs block, one routing pass, closing block, pointers to owners."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -37,7 +37,7 @@ table | figure | plot | diagram |
   illustration | illustration-gemini |
   figure1 | framework                        -> haipipe-paper-lifecycle <renderer verb> (display renderer family; 做表/画图/架构图)
 round | rounds                               -> haipipe-paper-round (dated work rounds; also "todo", "decisions", "applied")
-probe ["<need>"] | probe | probe run [PPNN]  -> 1-probe-plans/ buffer (BUFFER / SHOW; "run" hands the buffer to haipipe-paper-probe; also "evidence gap", "verify claim", "hypothesis")
+probe ["<need>"] | probe | probe run [PPNN]  -> probe-plan buffer: per-stage _PROBE/ + 1-probe-plans/README.md index (BUFFER / SHOW; "run" hands the buffer to haipipe-paper-probe; also "evidence gap", "verify claim", "hypothesis")
 discover ["<question>"]                      -> /haipipe-discovery (non-claim utility; also "lit review", "find papers", "related work")
 task ["<contract>"]                          -> /haipipe-task (non-claim utility; also "run analysis", "compute", "implement")
 rebuttal                                     -> haipipe-paper-rebuttal (also "reply to reviewers", "reviewer comments", "OpenReview response", "R1 revision")
@@ -88,7 +88,8 @@ enter     Path exists -> Skill("haipipe-paper-enter", args="<path>"). Path MISSI
           Skill("haipipe-paper-lifecycle", args="folder <paper-path>"), double-bump (paper push ->
           project pointer -> workspace pointer), and continue straight into the console.
           Plain projects: folder + scaffold, then console.
-probe     Three sub-modes -- "<text>" BUFFER a plan file in 1-probe-plans/, no args SHOW the buffer,
+probe     Three sub-modes -- "<text>" BUFFER a plan file in the active stage's _PROBE/ (+ index row
+          in 1-probe-plans/README.md), no args SHOW the buffer (from the index),
           "run [PPNN]" -> Skill("haipipe-paper-probe", args="from-buffer <paper_root> [PPNN]").
           This umbrella NEVER calls /haipipe-probe directly: all probe calling happens inside a stage's
           PROBE phase via haipipe-paper-probe, which consumes the buffer and dispatches onward.
@@ -183,7 +184,7 @@ Composing with Evidence Workers
         ├─► /haipipe-paper-rebuttal     (any venue, post-review)
         │
         │   evidence path (a claim hits a gap):
-        └─► 1-probe-plans/ buffer  ─►  haipipe-paper-probe (the PROBE phase worker, run inside a stage's PROBE phase)
+        └─► per-stage _PROBE/ plans (1-probe-plans/README.md index)  ─►  haipipe-paper-probe (the PROBE phase worker, run inside a stage's PROBE phase)
                                             └─► /haipipe-probe  (claim verdict; its Gather calls /haipipe-task + /haipipe-discovery, deposits to /haipipe-insight)
                                                  └── verdicts/artifacts backfill into 1-claims, sections, round logs
 

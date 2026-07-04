@@ -4,7 +4,7 @@ description: "PROBE phase worker (internal). Called by stage skills after DRAFT 
 argument-hint: "[stage-or-section] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.7.2"
+  version: "1.8.0"
   last_updated: "2026-07-03"
   summary: "PROBE phase worker (internal). Two route families: document workers (citation/values/display, each owning a _DOC_ needs registry) + dispatch through /haipipe-probe (mode light by default, full for claims; reuse-before-create)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -67,7 +67,7 @@ All routes are fully automatic dispatch. The agent collects aggressively, flags 
 
 | Stage | citation | values | display | probe → discovery/task | Notes |
 |---|---|---|---|---|---|
-| seed | -- | -- | -- | 🔎 probe mode: light (→ discovery) | landscape / related work / novelty to sharpen the seed question |
+| seed | ○ harvest | -- | -- | 🔎 probe mode: light (→ discovery) | landscape / related work / novelty to sharpen the seed question; when the probe returns sources, citation worker HARVESTs them into _CITATION_0-seed.md |
 | claims | -- | -- | -- | 🏋️ probe mode: full (→ task + discovery) | the core evidence stage: probe plans per GAP claim, tasks for runs/data, verdicts backfill the ledger + deposit to insight |
 | pitch | ✅ | -- | -- | -- | pitch cites anchor papers |
 | narrative | ✅ | -- | ✅ | -- | narrative maps beats to displays |
@@ -92,7 +92,7 @@ related work ("who has done this?")            → probe → discovery Search �
 novelty ("is this idea new?")                  → probe → discovery novelty-check (查新) → verdict.md
 ```
 
-Record the probe/discovery link + 3-5 takeaway lines in `_DISCOVERY_0-seed.md` next to the seed artifact; takeaways feed Motivations and Tentative Claim Shape. Full evidence stays project-side, reusable by claims.
+Record the probe link + 3-5 takeaway lines IN THE PLAN FILE itself (`0-lifecycle/0-seed/_PROBE/PPNN_*.md`, `status: read`); takeaways feed Motivations and Tentative Claim Shape. Sources the probe brought back are HARVESTed by the citation worker into `_CITATION_0-seed.md` (candidates only) so the user can eyeball them paper-side. Full evidence stays project-side, reusable by claims. (`_DISCOVERY_{stage}.md` is retired -- the plan file carries the takeaways.)
 
 **Claims (mode: full).** Every GAP/weak claim emits a probe plan -- but sweep first (reuse-before-create), then probe fans out by need type:
 
@@ -107,7 +107,9 @@ Verdicts backfill the `_EVIDENCE_` slots in 1-claims.md (supported | weak | GAP,
 
 ## From-buffer entry (the ONLY path that dispatches the umbrella's probe plans)
 
-`Skill("haipipe-paper-probe", args="from-buffer <paper_root> [PPNN]")` -- invoked by `/haipipe-paper probe run` or by a stage's own PROBE phase. The umbrella NEVER calls `/haipipe-probe` directly; this worker is the single dispatch point. It reads the planned items in `<paper_root>/1-probe-plans/` (or the one named PPNN), applies reuse-before-create per plan, dispatches each to `/haipipe-probe` with the plan's mode, updates the plan file (`status: dispatched`, `probe_ref: <active probe>`), and returns a dispatch summary (plans dispatched / enriched / skipped + refs). Verdicts later backfill 1-claims / sections / round logs per the buffer convention (`../../../haipipe-paper/fn/probe-plans.md`).
+`Skill("haipipe-paper-probe", args="from-buffer <paper_root> [PPNN]")` -- invoked by `/haipipe-paper probe run` or by a stage's own PROBE phase. The umbrella NEVER calls `/haipipe-probe` directly; this worker is the single dispatch point. It reads the index (`<paper_root>/1-probe-plans/README.md`) and resolves each planned item to its per-stage `_PROBE/PPNN_*.md` file (or the one named PPNN), applies reuse-before-create per plan, then dispatches: DEFAULT via `Agent(haipipe-probe-orchestrator-agent)` with the plan's mode (clean context, background-able); a tiny single lookup (one citation, one number) may inline `Skill("haipipe-probe")`. It updates the plan file (`status: dispatched`, `probe_ref: <active probe>`) and the index row, and returns a dispatch summary (plans dispatched / enriched / skipped + refs).
+
+On return, TRANSLATE (probe is paper-unaware; this worker is the bilingual layer): light probes -- write takeaways (<=5 lines) back into the plan file (`status: read`), and when the Read output carries literature sources, dispatch `haipipe-paper-probe-citation` HARVEST to distill them into `_CITATION_{stage}.md` (candidates only, 🔍, source_ref to the discovery). Full probes -- verdicts backfill 1-claims / sections / round logs (`status: verdicted`). Buffer convention: `../../../haipipe-paper/fn/probe-plans.md`.
 
 ## Section-edit dispatch logic
 

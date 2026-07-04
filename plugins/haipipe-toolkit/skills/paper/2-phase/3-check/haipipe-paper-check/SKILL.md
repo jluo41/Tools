@@ -4,7 +4,7 @@ description: "CHECK phase worker (internal). Called by stage skills as the ONLY 
 argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent
 metadata:
-  version: "1.4.0"
+  version: "1.4.1"
   last_updated: "2026-07-03"
   summary: "CHECK phase worker (internal). The ONLY human-involved phase. Called by stage skills to run sub-checkers and gate human review."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -336,7 +336,7 @@ This checker pattern works for ANY lifecycle stage that follows DRAFT→PROBE→
 
 | Stage | DRAFT checks | PROBE checks | REVISE checks | META checks |
 |---|---|---|---|---|
-| seed | 3 sections filled (question/motivations/claim shape) | _DISCOVERY_ takeaways linked (if probe ran) | seed is readable | ready to advance to claims |
+| seed | 3 sections filled (question/motivations/claim shape) | _PROBE/ plan takeaways backfilled + _CITATION_ candidates eyeballable (if probe ran) | seed is readable | ready to advance to claims |
 | claims | H1/H2/H3 listed | all claims linked to evidence | claims well-stated | no unsupported GAPs |
 | pitch | cover letter drafted | venue pack consulted | readability rules pass | Editor's Chair Test |
 | narrative | design contract drafted | claims linked to beats | arc/flow coherent | all beats [READY] |

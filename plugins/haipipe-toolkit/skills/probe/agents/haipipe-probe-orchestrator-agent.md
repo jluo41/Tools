@@ -12,10 +12,11 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-06-23"
-  summary: "Orchestrator agent — dispatch target for probe lifecycle. Coordinates creator + reviewer, dispatches task-orchestrator during Gather."
+  version: "1.1.0"
+  last_updated: "2026-07-04"
+  summary: "Orchestrator agent — dispatch target for probe lifecycle. Coordinates creator + reviewer, dispatches task-orchestrator during Gather. Step 1.5 SWEEP: Link existing artifacts before Calling new work; never rerun what resolves."
   changelog:
+    - "1.1.0 (2026-07-04): Step 1.5 SWEEP added — before Plan/Gather, scan discoveries/ tasks/ insights/ and sibling probes; Link resolvable artifacts instead of rerunning; rerun only on stale ref or explicit rerun request. Closes the fresh-plan rerun loophole (a new probe's items all start not_started, so the creator would rebuild work that already exists on disk)."
     - "1.0.0 (2026-06-23): initial design. Completes the orchestrator/creator/reviewer triad for probes."
 ---
 
@@ -95,6 +96,24 @@ the source of truth for each step's detailed procedure.
    - evidence.md exists, no verdict.md → stage: read or judge
    - verdict.md exists → stage: deposit (not my job)
 3. Decide what to run based on action + current stage
+```
+
+### Step 1.5: SWEEP — Link before Call, never rerun what exists
+
+A fresh probe's evidence_plan items all start `not_started`, which would send the creator off to BUILD work that may already exist on disk. Before Plan/Gather, sweep the project for existing coverage:
+
+```
+1. Scan: discoveries/ (by topic keywords from the claim/question),
+         tasks/ or the project's task folders (by artifact type),
+         insights/ (settled knowledge), and sibling probes/ (same topic?).
+2. For each evidence item with an existing, RESOLVING artifact:
+   → mark it status: complete + artifact ref in probe.yaml (creator will Link, not build)
+3. Same-topic sibling probe found → STOP and report back "enrich <probe> instead?"
+   rather than duplicating it (reuse-before-create is the caller's rule too;
+   double-checking here is cheap).
+4. Rerun an existing artifact ONLY when (a) its ref does not resolve / is stale
+   (⚠ drift), or (b) the caller explicitly asked for a rerun.
+5. If the sweep covers ALL items → skip straight to Read (present what exists).
 ```
 
 ### Step 2: Plan (if needed)

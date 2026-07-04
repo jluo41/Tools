@@ -4,6 +4,11 @@ haipipe-paper-section-edit — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [3.1.4] — 2026-07-04
+
+Fixed
+- Probe-plan convention wording: `1-probe-plans/README.md` is a cross-STAGE index (was "cross-paper") and the PP numbering authority.
+
 ## [3.1.3] — 2026-07-03
 
 Changed

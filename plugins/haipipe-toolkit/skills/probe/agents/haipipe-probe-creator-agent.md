@@ -12,10 +12,11 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-06-23"
-  summary: "Creator agent — produces artifacts for Plan/Gather/Read stages of a probe."
+  version: "1.1.0"
+  last_updated: "2026-07-04"
+  summary: "Creator agent — produces artifacts for Plan/Gather/Read stages of a probe. Gather rule: look on disk before building (Link > Call)."
   changelog:
+    - "1.1.0 (2026-07-04): Gather not_started rule — check the project for an existing resolvable artifact (discoveries/, tasks, insights) and LINK it before building anything new; rerun only on stale ref or explicit rerun request."
     - "1.0.0 (2026-06-23): initial design. Mirrors haipipe-task-creator-agent for the probe layer."
 ---
 
@@ -70,10 +71,13 @@ Given a claim description or gap from the caller:
 
 Given the probe.yaml with evidence_plan:
 
+LOOK BEFORE BUILDING: for every `not_started` item, first sweep the project for an existing artifact that already answers it (discoveries/ by topic, task outputs by artifact type, insights/). Found + resolves on disk → LINK it (add to evidence_refs, mark complete) instead of building. Rerun only when the ref is stale (⚠ drift) or the caller explicitly asked.
+
 For each evidence item:
 ```
 type: task, status: not_started
-  → Check if task folder + script exist
+  → Sweep for an existing task output that answers it → if found: LINK, done
+  → Else check if task folder + script exist
   → If existing: report "ready to run" (orchestrator dispatches task-orchestrator)
   → If missing: dispatch haipipe-task-creator-agent to build it
   → After run: verify output files exist, add to evidence_refs in probe.yaml
@@ -83,7 +87,8 @@ type: task, status: complete
   → Add to evidence_refs if not already linked
 
 type: discovery, status: not_started
-  → Report "discovery needed" (orchestrator dispatches discovery)
+  → Sweep discoveries/ for an existing folder covering the question → if found: LINK, done
+  → Else report "discovery needed" (orchestrator dispatches discovery)
   → After completion: link results
 
 type: discovery/insight, status: complete

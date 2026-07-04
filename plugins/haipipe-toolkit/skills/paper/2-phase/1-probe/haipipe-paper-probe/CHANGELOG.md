@@ -4,6 +4,12 @@ haipipe-paper-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [1.8.0] — 2026-07-04
+
+Changed
+- From-buffer reads the index then per-stage `_PROBE/` files; default dispatch = Agent(haipipe-probe-orchestrator-agent) (clean context), inline Skill only for tiny single lookups.
+- TRANSLATE step made explicit (probe is paper-unaware; this worker is the bilingual layer): light-probe takeaways backfill the PP plan file (`status: read`, `_DISCOVERY_` retired); sources in the Read output are HARVESTed by haipipe-paper-probe-citation into `_CITATION_{stage}.md`. Seed dispatch row gains `○ harvest` for citation.
+
 ## [1.7.2] — 2026-07-03
 
 Changed
