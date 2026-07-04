@@ -1,26 +1,21 @@
-# 2-section-edit TODO
+# 2-phase TODO
 
-Logged 2026-07-02 after the skill restructure session.
+Logged 2026-07-02 after the skill restructure session. Updated 2026-07-03.
 
-## Hub SKILL.md stale after directory restructure
+## Done (2026-07-03)
 
-The hub (`haipipe-paper-section-edit/SKILL.md`) references the OLD directory layout. Needs updating to match the current numbered-phase structure:
+- [x] Phase spine renamed DGPC -> DPRC (GATHER->PROBE, POLISH->REVISE); folders `1-gather/`->`1-probe/`, `2-polish/`->`2-revise/`; all SKILL.md names, docs, and strips updated
+- [x] Rename all phase workers from `section-edit-*` to `haipipe-paper-{phase}-{what}`
+- [x] Update `name:` fields in all 13 SKILL.md files
+- [x] Update all cross-references across paper skills tree
+- [x] Recreate `.claude/skills/` symlinks (13 new, 13 old removed)
+- [x] Update hub SKILL.md directory tree and relation diagram
+- [x] Update README.md directory tree
+- [x] Update all feedback README.md files
 
-- `gather/` → `1-gather/` (and gather skill folders dropped `haipipe-paper-` prefix)
-- `polish/` → `2-polish/`
-- `check/` → `3-check/` (and `proof-checker` → `checker`)
-- `sections/` → `section-type/`
-- `tools/` → removed (diagram skill location TBD)
-- New `0-draft/` with `section-edit-draft` + write-* skills moved from polish
+## Remaining
 
-Specific items:
-- [ ] Update the phase workers directory tree in the hub SKILL.md
-- [ ] Update the relation diagram at the bottom
-- [ ] Add `section-edit-draft` to the worker list (new skill in 0-draft/)
-- [ ] Rename `proof-checker` → `checker` in all references
-- [ ] Remove `section-edit-write` from polish (moved to 0-draft as `section-edit-draft`)
-- [ ] Remove `section-edit-diagram` references (moved or removed)
-- [ ] Update USAGE.md and WIRING.md to match new paths
-- [ ] Update README.md directory tree (already partially done but may be stale again)
-- [ ] Verify all `name:` fields match folder names for the renamed skills
-- [ ] Run a cross-reference audit (same as the 5-agent audit done earlier) to catch stale refs in the new structure
+- [x] Update USAGE.md and WIRING.md to match new paths (done with the DPRC rename pass)
+- [ ] Verify `description:` fields in all SKILL.md mention the new name pattern
+- [ ] 3-build-submit/README.md doesn't list the 10 moved skills
+- [ ] Display renderer skills (5 in 4-display/) need content unwrap

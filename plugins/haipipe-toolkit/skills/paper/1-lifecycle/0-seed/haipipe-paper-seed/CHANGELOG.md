@@ -1,0 +1,33 @@
+haipipe-paper-seed — Changelog
+==============================
+
+Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
+
+
+## [3.0.1] — 2026-07-03
+
+- phase spine renamed DGPC -> DPRC (GATHER -> PROBE, POLISH -> REVISE; workers haipipe-paper-probe*, haipipe-paper-revise*).
+
+## [3.0.0] — 2026-07-03
+
+- seed becomes stage orchestrator that drives its own phases. Phase skills (draft/polish/check) are internal workers called by this skill, not user-facing. Simplified to 3 sections (question/motivations/claim-shape). Comment lifecycle wired in (wiki/02). All ref/ moved to wiki/.
+
+## [2.1.0] — 2026-07-03
+
+- simplified seed to 4 sections (question/motivations/claim-shape/promotion-gate); removed current-evidence-status, open-evidence-needs, kill-criteria (belong in claims, not seed); removed 'prospectus' terminology.
+
+## [2.0.0] — 2026-06-29
+
+- switched from .tex to .md + _LOG. Argument documents are markdown; only display compiles to PDF.
+
+## [unversioned]
+
+- v1.1.1: added mandatory compile-after-edit rule; venue awareness note
+
+## [1.1.0] — 2026-06-22
+
+- added illuminate+gate+compile protocol (../../wiki/08-stage-gate.md, ../../wiki/09-stage-illuminate.md, ../../wiki/13-tex-quality.md)
+
+## [1.0.0] — 2026-06-22
+
+- baseline.

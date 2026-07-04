@@ -7,9 +7,7 @@ metadata:
   version: "1.1.0"
   last_updated: "2026-06-22"
   summary: "Analyze a topic/paper and recommend + pin the best-fit venue, using the _venue packs as the knowledge base."
-  changelog:
-    - "1.1.0 (2026-06-22): added --no-pin advisory mode + topic-only worked example (from fresh-agent validation); resolution map updated for the utd-is merge and jama-portfolio rename."
-    - "1.0.0 (2026-06-22): new venue-selection front door; reads _venue/playbook-* packs, ranks fit, pins STATUS venue, owns label->pack resolution."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # Paper Venue: recommend + pin the best-fit venue

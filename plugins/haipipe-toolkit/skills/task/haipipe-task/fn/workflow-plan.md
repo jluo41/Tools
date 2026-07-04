@@ -7,8 +7,8 @@ at two levels: per-script and task-level. Both levels MUST follow
 the haipipe-workflow IPO schema.
 
 Schema source of truth:
-  skills/project/haipipe-workflow/ref/plan-schema.md
-  skills/project/haipipe-workflow/ref/concepts.md
+  skills/task/haipipe-workflow/ref/plan-schema.md
+  skills/task/haipipe-workflow/ref/concepts.md
 
 Generic template (fill in the blanks):
   ../ref/workflow-template.yaml

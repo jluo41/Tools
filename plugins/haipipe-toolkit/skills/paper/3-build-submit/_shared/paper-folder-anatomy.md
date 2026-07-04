@@ -15,19 +15,19 @@ editing rules. This doc defines the folder those files live in.
 ├── 0-<paper>.tex                         DRIVER: \documentclass, preamble, \section{} + \input
 ├── 0-<paper>.bib                         bibliography, same stem as the driver
 ├── 0-Supplementary-<paper>.tex           SI DRIVER, optional but standard
-├── 0-lifecycle/                          tex-first paper maturation spine
+├── 0-lifecycle/                          paper maturation spine (markdown-early; stage folders absent until their stage runs)
 │   ├── 0-seed/
-│   │   └── 0-seed.tex                    why this paper might exist
-│   ├── 1-pitch/
-│   │   └── 1-pitch.tex                   one-minute venue-facing argument
-│   ├── 2-claims/
-│   │   └── 2-claims.tex                  claim ledger, support/GAP status
+│   │   └── 0-seed.md                     why this paper might exist (venue-FREE)
+│   ├── 1-claims/
+│   │   └── 1-claims.md                   claim ledger, support/GAP status (venue-FREE)
+│   ├── 2-pitch/
+│   │   └── 2-pitch.md                    cover letter / one-minute story (venue-ALIGNED)
 │   ├── 3-narrative/
-│   │   └── 3-narrative.tex               paper-owned story arc
+│   │   └── 3-narrative.md                paper-owned story arc (venue-ALIGNED)
 │   ├── 4-display/
-│   │   └── 4-display.tex          claim -> display map
-│   └── 5-minimap/
-│       └── 5-minimap.tex                 paragraph jobs + display/evidence anchors
+│   │   └── 4-display.tex                 claim -> display map + gallery PDF
+│   └── 5-section-edit/                   per-section scaffolds (DRAFT-PROBE-REVISE-CHECK)
+│       └── <NN_section>/                 outline .md, _LOG, _CITATION_, _VALUES_
 ├── 0-sections/                           all body prose, split per the grammar below
 │   ├── README.md                         one-screen map of section files
 │   ├── 00_abstract.tex
@@ -50,6 +50,7 @@ editing rules. This doc defines the folder those files live in.
 │   │   └── versions/                     retired exports
 │   └── displayNN-<slug>/
 ├── 0-extra/                              optional cover letter, IRB, checklists
+├── 1-probe-plans/                        evidence-need buffer (PPNN_<slug>.md, batch-dispatched to /haipipe-probe)
 ├── 1-rounds/                             dated work rounds
 │   ├── latest.md                         active round pointer and summary
 │   └── vYYMMDD/
@@ -78,20 +79,19 @@ not submitted unless the venue explicitly asks for them.
 
 ## Lifecycle rules
 
-`0-lifecycle/` is the paper's maturation spine. It is intentionally TeX-first
-so each stage can compile to a reviewable PDF.
+`0-lifecycle/` is the paper's maturation spine. Early stages (seed, claims, pitch, narrative) are MARKDOWN (argument documents need no compilation); display and section-edit carry tex. Venue pins between claims and pitch.
 
 | Stage | Job | Handoff trigger |
 |---|---|---|
-| `0-seed` | record why the paper might exist | paper is viable enough to pitch |
-| `1-pitch` | make the one-minute argument | claims need to be made explicit |
-| `2-claims` | maintain support/GAP ledger | unsupported claim needs probe/discover/task |
-| `3-narrative` | shape this paper's story | story needs display map or claim repair |
+| `0-seed` | record why the paper might exist | viable enough to inventory claims |
+| `1-claims` | maintain support/GAP ledger (venue-FREE) | claims solid enough to pick a venue |
+| `2-pitch` | cover letter / one-minute story (venue-ALIGNED) | story needs an arc |
+| `3-narrative` | shape this paper's story | story needs a display map |
 | `4-display` | map displays to claims | display output/source is missing or ready |
-| `5-minimap` | map paragraphs to jobs, displays, evidence | ready for section writing/editing |
+| `5-section-edit` | per-section DRAFT-PROBE-REVISE-CHECK | sections converge to submission |
 
 The lifecycle is not linear. If a paragraph reveals an unsupported claim, loop
-back to `2-claims`. If a display cannot carry the claim, loop back to
+back to `1-claims`. If a display cannot carry the claim, loop back to
 `4-display`. If coauthor discussion creates new open work, record it in
 `1-rounds/<round>/todo.md` and route each item to the right lifecycle stage.
 
@@ -102,11 +102,11 @@ current layer.
 
 | Maturity | Meaning | Expected artifacts |
 |---|---|---|
-| `prospectus` | paper-shaped possibility | seed/pitch |
+| `seed` | paper-shaped possibility | 0-seed.md only |
 | `scaffold` | manuscript folder exists | lifecycle files, sections, compile script |
-| `claim-ledger` | claims are explicit | `2-claims` C-slots and open needs |
+| `claim-ledger` | claims are explicit | `1-claims` C-slots and open needs |
 | `display-map` | displays are planned | `4-display` maps claim -> display |
-| `section-map` | paragraph jobs are mapped | `5-minimap` maps paragraphs/displays |
+| `section-map` | per-section scaffolds exist | `5-section-edit/<NN_section>/` outlines |
 | `draft` | prose exists | main paper compiles with rough sections |
 | `submission-candidate` | checks mostly pass | compile, citations, displays, claims stable |
 | `submitted` | external venue state exists | submission metadata and frozen PDF |

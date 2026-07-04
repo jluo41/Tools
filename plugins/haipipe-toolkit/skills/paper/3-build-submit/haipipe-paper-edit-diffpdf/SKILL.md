@@ -7,9 +7,7 @@ metadata:
   version: "1.1.0"
   last_updated: "2026-05-31"
   summary: "Build a tracked-changes PDF (latexdiff style) showing what changed between a baseline commit and the current working tree."
-  changelog:
-    - "1.1.0 (2026-06-05): renamed from paper-diff-pdf to haipipe-paper-edit-diffpdf (haipipe-paper-* name unification)."
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # Paper Diff PDF

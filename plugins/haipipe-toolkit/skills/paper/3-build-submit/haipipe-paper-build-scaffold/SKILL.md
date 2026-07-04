@@ -7,9 +7,7 @@ metadata:
   version: "1.1.0"
   last_updated: "2026-06-04"
   summary: "Plan → new conforming paper folder skeleton (structure only, zero prose)."
-  changelog:
-    - "1.1.0 (2026-06-05): renamed from paper-scaffold to haipipe-paper-build-scaffold (haipipe-paper-* name unification)."
-    - "1.0.0 (2026-06-04): initial version, grounded in Paper-MapPhyTrait-npjDM2025."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-paper-build-scaffold (4-build-submit)

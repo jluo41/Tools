@@ -7,9 +7,7 @@ metadata:
   version: "1.1.0"
   last_updated: "2026-06-04"
   summary: "Existing paper → gold layout; prose byte-identical, compile verified."
-  changelog:
-    - "1.1.0 (2026-06-05): renamed from paper-restructure to haipipe-paper-build-restructure (haipipe-paper-* name unification)."
-    - "1.0.0 (2026-06-04): initial version."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-paper-build-restructure (4-build-submit)

@@ -1,42 +1,53 @@
 ---
 name: haipipe-paper-lifecycle
-description: "Orchestrator for the paper structure lifecycle (1-lifecycle). Routes to specialists across the venue-free/venue-aligned boundary: seed and claims are venue-FREE (don't change on retarget); venue pins the journal; pitch, narrative, display, and section-edit are venue-ALIGNED (rewrite on retarget). Also routes to display renderers: table, figure, diagram, illustration. Use when you need any structural work on a paper before or during writing. Trigger: paper structure, paper pitch, scaffold paper, paper outline, paper architecture, display layer, figure plan, /haipipe-paper-lifecycle."
+description: "Orchestrator for the paper structure lifecycle (1-lifecycle). Routes to stage specialists across the venue-free/venue-aligned boundary: seed and claims are venue-FREE (don't change on retarget); venue pins the journal; pitch, narrative, display, and section-edit are venue-ALIGNED (rewrite on retarget). Also routes to display renderers: table, figure, diagram, illustration. Use when you need any structural work on a paper before or during writing. Trigger: paper structure, paper pitch, scaffold paper, paper outline, paper architecture, display layer, figure plan, section edit, /haipipe-paper-lifecycle."
 argument-hint: "[function] [paper-path-or-input] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-06-08"
-  summary: "Orchestrator for 1-lifecycle -- routes to specialists across the venue-free/venue-aligned boundary: folder, seed, claims (venue-FREE), venue (decision gate), pitch, narrative, display (venue-ALIGNED), and figure production."
-  changelog:
-    - "1.0.0 (2026-06-08): created as orchestrator over all 1-lifecycle specialists."
+  version: "2.0.2"
+  last_updated: "2026-07-03"
+  summary: "Router for the 1-lifecycle stage spine: folder, seed (0), claims (1) [venue-FREE] -> venue (gate) -> pitch (2), narrative (3), display (4), section-edit (5) [venue-ALIGNED], plus the display renderer family. Stage skills internally run DRAFT -> PROBE -> REVISE -> CHECK via 2-phase/ workers; this router never routes users to phase skills."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-paper-lifecycle (orchestrator)
 ==============================================
 
-User-facing entry for **paper structural work** -- everything that decides *what the paper is* before prose exists, or when the argument needs rethinking. This is the **Plan cycle** in the paper mental model (see `paper/README.md` and `ref/paper-lifecycle.md`).
+User-facing entry for **paper structural work** -- everything that decides *what the paper is* before prose exists, or when the argument needs rethinking. This is the **Plan cycle** in the paper mental model (see `paper/README.md`, `../../wiki/03-paper-lifecycle.md`, and `../../wiki/04-lifecycle-map.md`).
 
-The lifecycle has a **venue-free / venue-aligned boundary**. Seed and claims are venue-FREE (they don't change when you retarget to a different journal). Venue is the decision gate that pins the target journal. Pitch, narrative, display, and section-edit are venue-ALIGNED (they rewrite when you retarget).
+The lifecycle has a **venue-free / venue-aligned boundary**. Seed and claims are venue-FREE (they don't change when you retarget to a different journal). Venue is the decision gate that pins the target journal in STATUS.md. Pitch, narrative, display, and section-edit are venue-ALIGNED (they rewrite when you retarget).
 
-The orchestrator owns routing only. Each specialist owns its own workflow, inputs, and outputs. The orchestrator never generates narrative, outlines, figures, or diagrams itself.
+The orchestrator owns routing only. Each stage specialist owns its own workflow, inputs, and outputs. The orchestrator never generates narrative, outlines, figures, or diagrams itself.
 
 ```
 /haipipe-paper-lifecycle                                -> dashboard (list specialists + pipeline)
-/haipipe-paper-lifecycle folder <args>                  -> scaffold paper directory
+/haipipe-paper-lifecycle folder <args>                  -> scaffold paper directory (haipipe-paper-folder)
 /haipipe-paper-lifecycle seed <args>                    -> 0-lifecycle/0-seed/0-seed.md (venue-FREE)
 /haipipe-paper-lifecycle claims <args>                  -> 0-lifecycle/1-claims/1-claims.md (venue-FREE claim ledger)
 /haipipe-paper-lifecycle venue <args>                   -> STATUS.md venue pin (decision gate)
 /haipipe-paper-lifecycle pitch <args>                   -> 0-lifecycle/2-pitch/2-pitch.md (venue-ALIGNED cover letter)
-/haipipe-paper-lifecycle narrative <args>               -> NARRATIVE_REPORT.md (design contract)
-/haipipe-paper-lifecycle display <args>                 -> 0-displays/README.md + ready-to-input display blocks (folds in figure-planner inventory; see its ref/)
+/haipipe-paper-lifecycle narrative <args>               -> 0-lifecycle/3-narrative/3-narrative.md (venue-ALIGNED design contract)
+/haipipe-paper-lifecycle display <args>                 -> 0-lifecycle/4-display/4-display.tex + 0-displays/ units (the only compiled stage)
+/haipipe-paper-lifecycle section-edit <args>            -> 0-lifecycle/5-section-edit/{section}/ per-section editing hub
 /haipipe-paper-lifecycle table <args>                   -> data-driven LaTeX tables (haipipe-paper-display-table)
 /haipipe-paper-lifecycle figure <args>                  -> data-driven plots (haipipe-paper-display-figure)
 /haipipe-paper-lifecycle diagram <args>                 -> deterministic vector diagrams / SVG (haipipe-paper-display-diagram)
 /haipipe-paper-lifecycle illustration <args>            -> AI concept illustration, DEFAULT Codex bridge (haipipe-paper-display-illustration)
 /haipipe-paper-lifecycle illustration-gemini <args>     -> AI concept illustration, Gemini fallback (haipipe-paper-display-illustration-gemini)
-/haipipe-paper-lifecycle framework <args>                -> display framework mode (candidate rounds, selection, handoff)
-/haipipe-paper-lifecycle "<natural language>"            -> infer function, dispatch
+/haipipe-paper-lifecycle framework <args>               -> display framework mode (candidate rounds, selection, handoff)
+/haipipe-paper-lifecycle "<natural language>"           -> infer function, dispatch
 ```
+
+---
+
+Two-Axis Model (stages x phases)
+---------------------------------
+
+Stage skills are the USER-FACING surface. Internally, each stage skill drives the shared phase cycle **DRAFT -> PROBE -> REVISE -> CHECK** by dispatching the internal workers in `2-phase/` (`haipipe-paper-draft`, `haipipe-paper-probe*`, `haipipe-paper-revise*`, `haipipe-paper-check`). CHECK is the only human-involved phase; DRAFT settles content with the user, PROBE and REVISE are agent-only.
+
+**This router routes users to STAGE skills only -- never to phase skills.** Phase dispatch is each stage skill's internal business. If a request sounds like a phase ("gather citations for §3", "polish the intro"), route to the owning stage skill (usually section-edit) and let it dispatch.
+
+Stage artifacts are markdown (`N-<stage>.md` + `_LOG_`) for every stage except display, which compiles to `.tex` + PDF (you need to SEE rendered figures/tables). Stage gates and the illuminate loop are shared conventions: `../../wiki/08-stage-gate.md`, `../../wiki/09-stage-illuminate.md`.
 
 ---
 
@@ -46,11 +57,11 @@ Specialists
 ### Foundation -- what folder + what story
 
 ```
-haipipe-paper-folder                  SCAFFOLD:  create Paper-<Name>-<Venue><Year>/ with 0-sections, 0-displays, 1-rounds, compile scripts, .gitignore, section stubs (IRDM/IMRD/IS)
+haipipe-paper-folder                  SCAFFOLD:  minimal quick scaffold (README + STATUS.md + .gitignore + empty 0-lifecycle/ 0-displays/ 1-rounds/ 1-probe-plans/); stage files absent-until-written; master tex / 0-sections / compile scripts are a later on-request upgrade. Repo+submodule wiring belongs to /haipipe-paper create.
 
 --- VENUE-FREE (don't change on retarget) ---
 
-haipipe-paper-seed          SEED (0):    maintain 0-lifecycle/0-seed/0-seed.md: why this paper might exist, evidence status, open needs (routed to probe/discover/task), plus a promotion gate and kill criteria.
+haipipe-paper-seed          SEED (0):    maintain 0-lifecycle/0-seed/0-seed.md: 3 sections (Seed Question, Motivations, Tentative Claim Shape); the venue-FREE contract that keeps a paper possibility alive before evidence matures.
 
 haipipe-paper-claims        CLAIMS (1):  maintain 0-lifecycle/1-claims/1-claims.md, the venue-FREE claim/evidence inventory (supported / weak / GAP), each row tied to an evidence source; venue-neutral H1/H2/H3; emits needs and backfills probe verdicts.
 
@@ -62,16 +73,22 @@ haipipe-paper-venue         VENUE:       recommend + pin the best-fit venue; gat
 
 haipipe-paper-pitch         PITCH (2):   maintain 0-lifecycle/2-pitch/2-pitch.md, the venue-ALIGNED cover letter and one-minute story; owns Editor's Chair Test, [primary] claim designation, venue-specific RQ framing.
 
-haipipe-paper-narrative     NARRATIVE (3): generate the venue-ALIGNED evidence-backed arc from the claim ledger: problem, core claim, method, figure inventory, limitations.
+haipipe-paper-narrative     NARRATIVE (3): maintain 0-lifecycle/3-narrative/3-narrative.md, the venue-ALIGNED, section-mirrored, evidence-tracked story built from the claim ledger; every beat carries a readiness tag.
 ```
 
-### Display & Figures -- what the reader sees (venue-ALIGNED)
+### Display -- what the reader sees (venue-ALIGNED)
 
 ```
-haipipe-paper-display       DISPLAY (4): 0-displays/README.md plus per-unit README.md, float.tex, and preview.pdf for figures/tables. Venue-ALIGNED: keeps display items tied to claim, evidence source, section, and caption. Consults venue playbook for display set and hero rule. Figure-inventory planning (one claim per figure, panel roles, main vs supplement) is folded in as ref/figure-logic.md. Framework/architecture mode handles Figure 1 candidate rounds before final rendering.
+haipipe-paper-display       DISPLAY (4): 0-lifecycle/4-display/4-display.tex + PDF (the gallery, the ONLY compiled stage) plus per-unit README.md, float.tex, and preview.pdf under 0-displays/displayNN-<slug>/. Keeps display items tied to claim, evidence source, section, and caption. Consults venue playbook for display set and hero rule. Figure-inventory planning (one claim per figure, panel roles, main vs supplement) is folded in as its ref/figure-logic.md. Framework/architecture mode handles Figure 1 candidate rounds before final rendering.
 ```
 
-### Figures & Illustrations -- visual assets
+### Section editing -- per-section prose work (venue-ALIGNED)
+
+```
+haipipe-paper-section-edit  SECTION-EDIT (5): per-section editing hub under 0-lifecycle/5-section-edit/. One folder per section with outline .md, _LOG changelog, _CITATION_ map, _VALUES_ registry; runs the full DRAFT -> PROBE -> REVISE -> CHECK cycle per section and syncs revised prose to 0-sections/*.tex.
+```
+
+### Display renderers -- visual assets
 
 ```
 haipipe-paper-display-table           TABLE:   data-driven LaTeX tables (booktabs/stars/panels) from an aggregated CSV/JSON
@@ -95,9 +112,9 @@ The specialists are designed to flow in sequence, though any can be invoked stan
 ```
   VENUE-FREE (don't change on retarget)
   ──────────────────────────────────────
-  folder (0)     scaffold the directory
+  folder         scaffold the directory
       ↓
-  seed (0)       why this paper might exist (prospectus contract)
+  seed (0)       why this paper might exist (venue-FREE)
       ↓
   claims (1)     claim/evidence inventory: supported / weak / GAP, with evidence sources
                  venue-neutral H1/H2/H3 hypotheses; no [primary], no RQ framing
@@ -114,15 +131,16 @@ The specialists are designed to flow in sequence, though any can be invoked stan
       ↓
   narrative (3)  venue-ALIGNED evidence-backed arc from the claim ledger
       ↓
-  display (4)    venue-ALIGNED display contract: figure/table jobs, sources, captions, preview PDFs
-                 (figure-inventory planning folded in as its ref/figure-logic.md)
+  display (4)    venue-ALIGNED display contract: figure/table units, sources, captions, gallery PDF
+                 (renders via table / figure / diagram / illustration as needed)
       ↓
-  table / figure / diagram / illustration   make the visual assets
+  section-edit (5)  per-section DRAFT -> PROBE -> REVISE -> CHECK in 0-lifecycle/5-section-edit/,
+                    syncing venue-quality prose to 0-sections/*.tex
 ```
 
-After display rendering, the paper folder is ready for per-section editing work in `0-lifecycle/5-editing/` and the **Edit cycle** skills under `3-write-edit/`. Structural audit (ASCII zoom diagrams) lives in the Edit cycle as `haipipe-paper-edit-diagram`.
+After the lifecycle spine, whole-paper build/submit tooling lives under `3-build-submit/` (`haipipe-paper-folder`, `haipipe-paper-build-*`, `haipipe-paper-edit-*` for compile checks, restructuring, submission audits).
 
-**Retarget rule:** when the venue changes, claims stays unchanged (venue-FREE). Pitch, narrative, display, and section-edit all rewrite for the new venue.
+**Retarget rule:** when the venue changes, seed and claims stay unchanged (venue-FREE). Pitch, narrative, display, and section-edit all rewrite for the new venue.
 
 ---
 
@@ -138,7 +156,7 @@ Step 2: Resolve function:
   - Default if no match                              -> dashboard (inline)
 
 Step 3: Dispatch:
-    function = "folder"    -> Skill("haipipe-paper-bootstrap", args)
+    function = "folder"    -> Skill("haipipe-paper-folder", args)
 
     # Display renderers carry the display- prefix; map the short verb explicitly:
     function = "table"          -> Skill("haipipe-paper-display-table", args)
@@ -149,13 +167,18 @@ Step 3: Dispatch:
 
     # Lifecycle stages keep the plain haipipe-paper-<stage> name:
     function = else        -> Skill("haipipe-paper-<function>", args)
-        (seed | claims | venue | pitch | narrative | display)
+        (seed | claims | venue | pitch | narrative | display | section-edit)
 
     Special: "figure-plan", "framework" -> Skill(
       "haipipe-paper-display", "framework " + args
     )
-             (figure-inventory planning now lives inside display;
+             (figure-inventory planning lives inside display;
               see haipipe-paper-display/ref/figure-logic.md)
+
+    Special: bare section reference ("§3", "section 3", or a section name
+             like "introduction" / "methods") -> Skill(
+      "haipipe-paper-section-edit", args
+    )
 ```
 
 ---
@@ -167,8 +190,8 @@ Function Keyword Map
 folder, scaffold, bootstrap, init, new paper dir,
   create folder, Paper-*                              -> folder
 
-seed, paper seed, why this paper, prospectus,
-  kill criteria, paper possibility                    -> seed       (venue-FREE)
+seed, paper seed, why this paper,
+  paper possibility                                   -> seed       (venue-FREE)
 
 claims, claim ledger, supported, weak, GAP,
   claim gap, evidence map, overclaim, H1, H2, H3     -> claims     (venue-FREE)
@@ -180,14 +203,19 @@ pitch, paper pitch, one-minute story, hook, surprise,
   so what, story trajectory, pitch provenance,
   cover letter, editor's chair, primary claim         -> pitch      (venue-ALIGNED)
 
-narrative, story, design contract, NARRATIVE_REPORT,
-  claim-evidence matrix, core claim                   -> narrative
+narrative, story, design contract, 3-narrative,
+  claim-evidence matrix, core claim                   -> narrative  (venue-ALIGNED)
 
-display, display layer, 0-displays/README.md, 0-displays,
+display, display layer, 0-displays, 4-display,
   ready to input, preview pdf, float.tex, caption,
-  figure table contract, display contract,
+  figure table contract, display contract, gallery,
   figure planner, figure inventory, panel roles,
-  main vs supplement, what figures                    -> display
+  main vs supplement, what figures                    -> display    (venue-ALIGNED)
+
+section-edit, section edit, edit section, editing,
+  section scaffold, outline narrative, polish section,
+  §N, section N, 5-section-edit, introduction, methods,
+  results section, discussion section                 -> section-edit (venue-ALIGNED)
 
 figure-plan                                           -> display
 framework, figure1, figure 1, 架构图, pipeline图             -> framework
@@ -213,13 +241,14 @@ illustration-gemini, gemini illustration, gemini,
 Function aliases (positional):
 ```
 folder, scaffold, bootstrap, init                -> folder
-seed, paper-seed, prospectus                     -> seed
+seed, paper-seed                                 -> seed
 claims, claim, ledger                            -> claims
 venue, journal, submit-to                        -> venue
 pitch, paper-pitch, storycard, cover-letter      -> pitch
 narrative, story, contract                       -> narrative
 display, displays, disp,
   figure-plan, fp, figplan, fw                   -> display
+section-edit, section, sec, edit, §N             -> section-edit
 framework, figureone, fig1                        -> framework
 table, tbl, tab                                  -> table
 figure, fig, plot                                -> figure
@@ -236,7 +265,7 @@ No-Arg Mode (dashboard, inline)
 When invoked with no arguments, emit a compact specialist chooser:
 
 ```
-📐 haipipe-paper-lifecycle — paper structural work
+📐 haipipe-paper-lifecycle -- paper structural work
 
   Foundation:
     folder         Scaffold Paper-<Name>-<Venue><Year>/ directory
@@ -250,7 +279,8 @@ When invoked with no arguments, emit a compact specialist chooser:
     VENUE-ALIGNED:
       pitch          2-pitch: cover letter + one-minute story (Editor's Chair, [primary], RQ framing)
       narrative      3-narrative: evidence-backed arc
-      display        4-display: display contract + units (figure-inventory planning folded in; see ref/figure-logic.md)
+      display        4-display: display contract + units (only compiled stage; figure-inventory planning via its ref/figure-logic.md)
+      section-edit   5-section-edit: per-section DRAFT->PROBE->REVISE->CHECK hub
 
   Display renderers (data-driven):
     table          Data-driven LaTeX tables (booktabs/stars/panels)
@@ -262,7 +292,7 @@ When invoked with no arguments, emit a compact specialist chooser:
     illustration-gemini  AI concept illustration -- Gemini fallback
     framework      Candidate framework/architecture figure planning (Figure 1 style)
 
-  Pipeline: folder -> seed (FREE) -> claims (FREE) -> [venue] -> pitch (ALIGNED) -> narrative (ALIGNED) -> display (ALIGNED) -> table/figure/diagram/illustration
+  Pipeline: folder -> seed (FREE) -> claims (FREE) -> [venue] -> pitch (ALIGNED) -> narrative (ALIGNED) -> display (ALIGNED, + table/figure/diagram/illustration) -> section-edit (ALIGNED)
 
 Next: /haipipe-paper-lifecycle <function> "<input>"
 ```
@@ -281,6 +311,8 @@ artifacts: [paths created, read, or modified]
 next:      suggested next /haipipe-paper-lifecycle command
 ```
 
+Stage skills additionally close every reply with the lifecycle stage strip as the LAST line, rendered from disk via `../../wiki/10-stage-strip.sh`.
+
 ---
 
 Relation to Parent Orchestrator
@@ -290,20 +322,24 @@ Relation to Parent Orchestrator
 
 ```
 haipipe-paper (router)  -- consults _venue/playbook-<venue> for venue fit
-            |                (misq/isr/ms-is/pnas/nature-portfolio/jama/clinical; grant; patent-*)
+            |                (utd-is: misq/isr/ms-is; pnas; nature-portfolio; jama; clinical; grant; patent)
             v
 haipipe-paper-lifecycle (this orchestrator)
   VENUE-FREE:
-  |-- folder
+  |-- folder             (lives in 3-build-submit/, routed from here)
   |-- seed (0)
   |-- claims (1)
   VENUE DECISION:
-  |-- venue          (pin target journal in STATUS.md)
+  |-- venue              (pin target journal in STATUS.md)
   VENUE-ALIGNED:
-  |-- pitch (2)      (cover letter: Editor's Chair, [primary], RQ framing)
+  |-- pitch (2)          (cover letter: Editor's Chair, [primary], RQ framing)
   |-- narrative (3)
-  |-- display (4)    (figure-inventory planning folded in; see ref/figure-logic.md)
-  |-- table / figure / diagram / illustration (+ illustration-gemini fallback)
-  +-- (hands off to 5-editing/ per-section scaffolds and 3-write-edit/ skills;
-       structural ASCII audit lives there as haipipe-paper-edit-diagram)
+  |-- display (4)        (only compiled stage; renders via table / figure / diagram / illustration
+  |                       + illustration-gemini fallback; planning in its ref/figure-logic.md)
+  +-- section-edit (5)   (per-section hub in 0-lifecycle/5-section-edit/; internally dispatches
+                          2-phase/ DRAFT->PROBE->REVISE->CHECK workers)
+
+Every stage skill runs its phases through the shared 2-phase/ workers
+(haipipe-paper-draft / -probe / -revise / -checker); users never invoke those directly.
+Whole-paper build/submit tools (haipipe-paper-build-*, haipipe-paper-edit-*) live in 3-build-submit/.
 ```

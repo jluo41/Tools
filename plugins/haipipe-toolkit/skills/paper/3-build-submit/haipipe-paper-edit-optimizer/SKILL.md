@@ -5,9 +5,7 @@ metadata:
   version: "1.1.0"
   last_updated: "2026-05-31"
   summary: "Use when reviewing or revising an academic manuscript whose central claim, evidence chain, figures, terminology, and prose may have drifted out of sync before submission or resubmission."
-  changelog:
-    - "1.1.0 (2026-06-05): renamed from manuscript-optimizer to haipipe-paper-edit-optimizer; consolidated into 3-write-edit/ (haipipe-paper-* name unification)."
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # Manuscript Optimizer

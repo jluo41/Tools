@@ -10,7 +10,7 @@ Level 1: Project
 ```
 examples/Proj{Series}-{Category}-{Num}-{Name}/
 ├── tasks/        ← all task-groups live here
-├── diagram/      ← project-level story (01-story, 02-boundary, 03-exploration + project.excalidraw)
+├── diagram/      ← project-level story (01-story, 02-boundary + project.excalidraw; empty until authored)
 └── paper/        ← optional, one per target venue
 ```
 
@@ -97,10 +97,9 @@ Rules:
 
 Validation responsibility:
 
-- `/haipipe-project task` — checks "no collision" at scaffold time;
-  refuses to overwrite an existing index.
-- `/haipipe-project review` (`-inspect`) — audits gap/format issues
-  and suggests `--fix renumber` if the user wants a one-time rebase.
+- `/haipipe-task` (task-group / task-folder scaffolds) checks "no collision"
+  at scaffold time; refuses to overwrite an existing index.
+  (Project-level audit verbs were retired 2026-07-03; originals in project/_archive.)
 
 
 Task-types (orthogonal to group letter)

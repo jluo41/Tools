@@ -4,14 +4,10 @@ description: "Open the Paper Console for a paper repo. Use for `/haipipe-paper`,
 argument-hint: "[paper-path] [free-form input]"
 allowed-tools: Bash, Read, Grep, Glob, Write, Skill
 metadata:
-  version: "3.0.0"
-  last_updated: "2026-07-02"
+  version: "3.1.1"
+  last_updated: "2026-07-03"
   summary: "Paper Console: derive-from-disk dashboard + lifecycle router."
-  changelog:
-    - "3.0.0 (2026-07-02): lifecycle reorder (seed -> claims -> venue -> pitch -> narrative -> display -> section-edit); claims is stage 1 (venue-free), pitch is stage 2 (venue-aligned); minimap removed; section-edit replaces write/edit with per-section DGPC status grid (DRAFT/GATHER/POLISH auto, CHECK human); updated file paths, stage strip, diagnosis rules, free-form routing, and dashboard format."
-    - "2.1.0 (2026-06-22): dashboard leads with pitch summary + stage strip before operational details; read order prioritizes 1-pitch.tex; return contract enforces structured tail + failed status; stale-deliverable flag from ref/tex-quality.md."
-    - "2.0.0 (2026-06-22): reframed as the Paper Console; added derive-from-disk frontier, free-form routing, copilot policy, and .paper-console.yaml session state."
-    - "1.2.0 (2026-06-21): open-needs paper session loader."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # haipipe-paper-enter (Paper Console)
@@ -38,22 +34,22 @@ Read first:
 
 ```text
 ../../PHILOSOPHY.md
-../../ref/lifecycle-map.md
-../../ref/paper-dashboard.md
+../../wiki/04-lifecycle-map.md
+../../wiki/05-paper-dashboard.md
 ```
 
 Then, when the task touches lifecycle shape or rounds:
 
 ```text
-../../ref/paper-lifecycle.md
-../../ref/paper-rounds.md
-../../ref/paper-skill-structure.md
+../../wiki/03-paper-lifecycle.md
+../../wiki/07-paper-rounds.md
+../../wiki/06-paper-skill-structure.md
 ```
 
 When creating or interpreting explicit need records, use:
 
 ```text
-../../ref/delivery-need.md
+../../wiki/11-delivery-need.md
 ```
 
 ## Input
@@ -78,7 +74,7 @@ Look upward from the supplied path until one of these signatures is found:
 If no paper root is found, report `status: blocked` and suggest:
 
 ```text
-/haipipe-paper prospectus "<paper-path>"
+/haipipe-paper seed "<paper-path>"
 /haipipe-paper-lifecycle folder "<paper-path>"
 ```
 
@@ -94,7 +90,7 @@ Read only files that exist, in this order:
    - `0-lifecycle/1-claims/1-claims.tex` (or `.md`)
    - `0-lifecycle/3-narrative/3-narrative.tex`
    - `0-lifecycle/4-display/4-display.tex`
-4. Section-edit outlines: scan `0-lifecycle/5-section-edit/` for per-section outline `.md` files, `_CITATION_*`, `_VALUES_*`, and `_LOG*` files. Derive per-section DGPC status from what exists on disk.
+4. Section-edit outlines: scan `0-lifecycle/5-section-edit/` for per-section outline `.md` files, `_CITATION_*`, `_VALUES_*`, and `_LOG*` files. Derive per-section DPRC status from what exists on disk.
 5. Explicit need records in lifecycle TeX comments or markdown tables. Search for `NEED`, `GAP`, `TODO`, `blocked`, `missing`, and `open`.
 6. `0-displays/README.md`
 7. `0-displays/*/README.md`
@@ -107,13 +103,13 @@ Read only files that exist, in this order:
 
 ## Diagnosis Rules
 
-Derive the current layer from disk, following `../../ref/paper-dashboard.md`. Read `STATUS.md` only as a hint: a stage is done only when its `.tex` or `.md` resolves on disk with real content (not the scaffold stub). The frontier is the first stage whose disk predicate fails. If `STATUS.md` claims more progress than disk shows, flag DRIFT and trust disk.
+Derive the current layer from disk, following `../../wiki/05-paper-dashboard.md`. Read `STATUS.md` only as a hint: a stage is done only when its `.tex` or `.md` resolves on disk with real content (not the scaffold stub). The frontier is the first stage whose disk predicate fails. If `STATUS.md` claims more progress than disk shows, flag DRIFT and trust disk.
 
 Per-stage inference when disk is the source of truth:
 
 | Evidence | Current layer |
 |---|---|
-| only `README.md` / prospectus lifecycle | `0-seed` |
+| only `README.md` / seed lifecycle | `0-seed` |
 | seed exists but claims are absent/thin | `0-seed -> 1-claims` |
 | claims exist but venue is not pinned in STATUS.md | `1-claims -> venue` |
 | venue pinned but pitch is absent/thin | `venue -> 2-pitch` |
@@ -126,11 +122,11 @@ Infer maturity separately from current layer:
 
 | Evidence | Maturity |
 |---|---|
-| seed only | `prospectus` |
+| seed only | `seed` |
 | seed + claims | `claim-ledger` |
 | lifecycle + sections + compile script | `scaffold` |
 | display map exists | `display-map` |
-| section-edit outlines with DGPC in progress | `section-edit` |
+| section-edit outlines with DPRC in progress | `section-edit` |
 | section prose compiles | `draft` |
 | checks/audits mostly pass | `submission-candidate` |
 | active round after external/coauthor review | `revision` |
@@ -141,7 +137,7 @@ Need diagnosis is separate from lifecycle layer. Extract open needs from:
 |---|---|
 | `1-claims` GAP/weak/unsupported rows | probe, discovery, task, insight |
 | `4-display` missing display units | display or task |
-| `5-section-edit` sections with incomplete DGPC phases | section-edit work |
+| `5-section-edit` sections with incomplete DPRC phases | section-edit work |
 | section comments/TODOs | paper edit or evidence need |
 | round `todo.md` unresolved items | paper edit, probe, display, citation |
 
@@ -168,12 +164,12 @@ The dashboard leads with WHAT THE PAPER IS ABOUT, then WHERE IT STANDS, then WHA
 Render the stage strip deterministically with the helper, never hand-typed:
 
 ```sh
-sh "$CLAUDE_SKILL_DIR/../../ref/stage-strip.sh" <paper-root>
+sh "$CLAUDE_SKILL_DIR/../../wiki/10-stage-strip.sh" <paper-root>
 ```
 
 It prints one line driven by `STATUS.md current_layer`, e.g. `seed ✅  claims ✅  venue ✅  pitch ✅  narrative ✅  display ⏳  section-edit ⏳`. This strip appears twice: once near the top (orientation) and once as the VERY LAST LINE of the reply (closing every reply in the session, not just the first dashboard; see the orchestrator's "Stage Strip" rule).
 
-The enter skill reads `ref/tex-quality.md` and flags any stage whose `.tex` is newer than its `.pdf` as a stale deliverable in the Open Needs section.
+The enter skill reads `../../wiki/13-tex-quality.md` and flags any stage whose `.tex` is newer than its `.pdf` as a stale deliverable in the Open Needs section.
 
 Body order -- sections MUST appear in this sequence:
 
@@ -195,45 +191,56 @@ If no pitch exists, print: "Pitch not yet written -- run /haipipe-paper pitch.">
 
 ## Focus Strip (two lines)
 
-The strip shows the FOCAL point: which stage, and which phase within that stage. Always two lines, always at the top of the dashboard and as the last two lines of every reply.
+The strip uses two markers to show both where we are and how far the paper has reached. Full convention in `../../wiki/01-focus-strip-markers.md`.
 
-**Line 1 (stage):** all lifecycle stages with the focal one marked 🚀. If the focal stage is section-edit, append the specific section name in parentheses.
+| Marker | Meaning |
+|---|---|
+| 🔥 | **Active now** -- the stage/phase we are currently working on |
+| 🚀 | **Frontier** -- the farthest stage/phase the paper has ever reached |
 
-**Line 2 (phase):** the DGPC phase status within the focal stage.
+Both markers can appear on the same line. When they land on the same item, collapse to `🔥🚀`.
+
+**Line 1 (stage):** all lifecycle stages. 🔥 marks the active stage, 🚀 marks the frontier. If the active stage is section-edit, append the specific section name in parentheses.
+
+**Line 2 (phase):** the DPRC phase status within the 🔥 stage. 🔥 marks the active phase, 🚀 marks the farthest phase reached at the frontier stage. The probe phase carries its three sub-tracks as `probe: cite X  val X  disp X` when the stage has them (section-edit); stages without sub-tracks show just `probe ⬜` / `probe --`.
 
 Examples:
 
+Redoing seed while paper has reached section-edit (seed has no probe sub-tracks):
 ```
-stage:   seed ✅  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  section-edit (§1 introduction) 🚀
-phase:   draft ✅  │  cite 🔍5  val --  disp --  │  polish ⬜  │  check ⬜
-```
-
-```
-stage:   seed ✅  claims ✅  venue ✅  pitch 🚀  narrative ⬜  display ⬜  section-edit ⬜
-phase:   draft ✅  │  cite ⬜  val --  disp --  │  polish 🚀  │  check ⬜
+stage:   seed 🔥  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  section-edit 🚀
+phase:   draft 🔥  │  probe ⬜  │  revise ⬜  │  check 🚀
 ```
 
+Working at the frontier (active = frontier, markers collapse; section-edit shows probe sub-tracks):
 ```
-stage:   seed ✅  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  section-edit (§3 theory) 🚀
-phase:   draft 🚀  │  cite ⬜  val --  disp --  │  polish ⬜  │  check ⬜
+stage:   seed ✅  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  section-edit (§1 introduction) 🔥🚀
+phase:   draft 🔥🚀  │  probe: cite ⬜  val --  disp --  │  revise ⬜  │  check ⬜
+```
+
+Loopback to pitch while frontier is display:
+```
+stage:   seed ✅  claims ✅  venue ✅  pitch 🔥  narrative ✅  display 🚀  section-edit ⬜
+phase:   draft ✅  │  probe ⬜  │  revise 🔥  │  check 🚀
 ```
 
 How to derive:
-- The focal stage is the lifecycle frontier (first stage not ✅). If the user specifies a section ("work on §3"), the focal becomes that section.
-- The section name comes from the outline file name (e.g., `1-introduction.md` → `§1 introduction`, `3-theory.md` → `§3 theory`).
+- 🔥 stage = what the user is actively working on (explicit request or current task).
+- 🚀 stage = the lifecycle frontier (farthest stage whose disk predicate passed). If the user specifies a section ("work on §3"), the section name appears in parentheses after the stage.
+- The section name comes from the outline file name (e.g., `1-introduction.md` -> `§1 introduction`, `3-theory.md` -> `§3 theory`).
 - Phase status is derived from disk (same rules as before):
   - draft ✅ if outline .md has structure block + draft sentences
-  - cite ✅ if _CITATION_ all placed and density >= venue norm; 🚀 if in progress; 🔍 N if N candidates unverified
+  - cite ✅ if _CITATION_ all placed and density >= venue norm; 🔍 N if N candidates unverified
   - val ✅ if _VALUES_ all verified; -- if skipped (section has no numbers)
   - disp ✅ if all displays linked; -- if skipped (section has no displays)
-  - polish ✅ if prose polished (tex synced from outline)
+  - revise ✅ if prose revised (tex synced from outline)
   - check ✅ if _LOG has a check entry
-- For non-section-edit stages (seed, claims, pitch, etc.), phase status is derived from the stage's artifact spec done-criteria.
+- For non-section-edit stages (seed, claims, pitch, etc.), phase status is derived from the stage's artifact spec done-criteria; their phase line shows just `probe ⬜` / `probe --` (no cite/val/disp sub-tracks).
 
-DGPC phase automation:
-- DRAFT, GATHER, POLISH are automatic (🤖) -- agent runs without stopping for human input
+DPRC phase automation:
+- DRAFT, PROBE, REVISE are automatic (🤖) -- agent runs without stopping for human input
 - CHECK is the only human-involved phase (🧑) -- present a CHECK report for user review
-- When user says "work on §N", run DGP automatically, then present the CHECK report
+- When user says "work on §N", run DPR automatically, then present the CHECK report
 
 Only show the FOCAL stage/section, not a grid of all sections. The user sees one clear focus point, not a spreadsheet.
 
@@ -271,15 +278,15 @@ Only show the FOCAL stage/section, not a grid of all sections. The user sees one
 
 (return-contract tail here)
 
-stage:   seed ✅  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  section-edit (§1 introduction) 🚀
-phase:   draft ✅  │  cite 🔍5  val --  disp --  │  polish ⬜  │  check ⬜
+stage:   seed 🔥  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  section-edit 🚀
+phase:   draft 🔥  │  probe ⬜  │  revise ⬜  │  check 🚀
 ```
 
-The two-line focus strip is the VERY LAST thing, placed after the return-contract tail. It appears at the top of the dashboard AND as the last two lines of every reply. Keep the dashboard concise. The goal is to orient the session, not to rewrite the paper.
+The two-line focus strip is the VERY LAST thing, placed after the return-contract tail. It appears at the top of the dashboard AND as the last two lines of every reply. Keep the dashboard concise. The goal is to orient the session, not to rewrite the paper. Full marker convention in `../../wiki/01-focus-strip-markers.md`.
 
 ## Free-form Routing
 
-After the dashboard, route follow-up input through the lifecycle using the command map in `../../ref/lifecycle-map.md`:
+After the dashboard, route follow-up input through the lifecycle using the command map in `../../wiki/04-lifecycle-map.md`:
 
 ```text
 seed                       -> /haipipe-paper seed         (haipipe-paper-seed)
@@ -289,7 +296,7 @@ pitch / story / sell       -> /haipipe-paper pitch         (haipipe-paper-pitch)
 narrative / arc            -> /haipipe-paper narrative     (haipipe-paper-narrative)
 display / figure / table   -> /haipipe-paper display       (haipipe-paper-display)
 section / edit / §N        -> /haipipe-paper section-edit  (haipipe-paper-section-edit)
-check §N                   -> /haipipe-paper-section-edit-checker
+check §N                   -> /haipipe-paper-check
 round / todo               -> round skills
 rebuttal / respond         -> rebuttal skills
 ```
@@ -343,8 +350,8 @@ paper_root:    <path>
 current_layer: <layer>
 next:          <suggested command>
 
-stage:   seed ✅  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  section-edit (§1 introduction) 🚀
-phase:   draft ✅  │  cite 🔍5  val --  disp --  │  polish ⬜  │  check ⬜
+stage:   seed 🔥  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  section-edit 🚀
+phase:   draft 🔥  │  probe ⬜  │  revise ⬜  │  check 🚀
 ```
 
 The `status` field uses three values: `ok` (dashboard rendered, session ready), `blocked` (missing paper root or unresolvable state), `failed` (read error or inconsistent disk state). The two-line focus strip is the very last thing in every reply. The section name in parentheses comes from the outline file name on disk.

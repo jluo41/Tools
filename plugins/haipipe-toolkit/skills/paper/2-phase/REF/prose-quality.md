@@ -2,7 +2,7 @@
 
 Rules that apply to ALL prose artifacts in the paper lifecycle: seed, claims, pitch, narrative, display captions, section prose. Any phase worker that touches prose reads this file. Venue-specific norms (word budget, tone, section arc) live in `_venue/playbook-*/style-profile.md` and override these where they conflict.
 
-Sourced from JL feedback across multiple sessions. These are non-negotiable preferences, not suggestions.
+Sourced from user feedback across multiple sessions. These are non-negotiable preferences, not suggestions.
 
 ---
 
@@ -31,13 +31,13 @@ Sourced from JL feedback across multiple sessions. These are non-negotiable pref
 
 ## Comment rules
 
-- **Preserve JL comments verbatim.** Never compress, summarize, translate, or replace `> JL:` or `%% Comments: {JL}` lines. Keep them exactly as written, even when applying the edit they request.
-- **One-line CC responses.** When replying to JL inline comments, keep the response to ONE line. Multi-line response blocks make the file unreadable.
+- **Preserve USER comments verbatim.** Never compress, summarize, translate, or replace `> USER:` or `%% Comments: {USER}` lines. Keep them exactly as written, even when applying the edit they request.
+- **One-line CC responses.** When replying to user inline comments, keep the response to ONE line. Multi-line response blocks make the file unreadable.
 - **No elaborate tagging.** Don't add (done)/(old) tags on every comment. Focus effort on prose changes.
 
-## POLISH phase behavior
+## REVISE phase behavior
 
-POLISH applies these rules automatically. The agent does not stop for human review during POLISH. There is no comment-first protocol (no "Round 1 comments, wait for human, Round 2 apply"). The agent reads the prose, applies the rules below directly, and moves on. Human review of the polished prose happens in CHECK, where the human can add `> JL:` comments and restart POLISH if needed.
+REVISE applies these rules automatically. The agent does not stop for human review during REVISE. There is no comment-first protocol (no "Round 1 comments, wait for human, Round 2 apply"). The agent reads the prose, changes it directly, leaves why-comments, and moves on. Human review of the revised prose happens in CHECK, where the human can add `> USER:` comments and restart REVISE if needed.
 
 ## What NOT to do
 
@@ -45,4 +45,4 @@ POLISH applies these rules automatically. The agent does not stop for human revi
 - **Don't reference the current task or fix** in comments ("added for the Y flow", "handles the case from issue #123"). That belongs in the commit message.
 - **Don't produce prose without understanding.** Every sentence must have a clear purpose: what does it DO for the reader and WHY. Production without understanding (知其然不知其所以然) is the root cause of bad writing.
 - **Don't wholesale-rewrite silently.** Illuminate content + elicit user's taste before drafting. Loop = illuminate → elicit → draft → confirm.
-- **Don't use comment-first protocol in POLISH.** POLISH applies rules directly. Human review happens in CHECK.
+- **Don't use comment-first protocol in REVISE.** REVISE applies rules directly. Human review happens in CHECK.

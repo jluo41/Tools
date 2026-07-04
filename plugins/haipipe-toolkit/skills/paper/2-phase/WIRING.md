@@ -1,76 +1,51 @@
-# 4-edit — wiring (how the plugin loads this)
+# 2-phase -- wiring
 
-How the `haipipe` plugin discovers and exposes the pieces of `4-edit`, what is
-live, and the one optional step.
+How the `haipipe` plugin discovers and exposes the phase workers, and how they get invoked at runtime.
 
 ## Discovery model (convention-based)
 
-`.claude-plugin/plugin.json` lists no skills/agents/commands explicitly — the
-plugin auto-discovers by convention:
+`.claude-plugin/plugin.json` lists no skills/agents/commands explicitly -- the plugin auto-discovers by convention:
 
 | Piece | Discovered from | How it's invoked |
 |-------|-----------------|------------------|
-| **Skills** | `skills/**/SKILL.md` with a `name:` frontmatter | by skill name (e.g. invoke `haipipe-paper-section-edit`; `/haipipe-paper-section-edit` resolves to it) |
+| **Skills** | `skills/**/SKILL.md` with a `name:` frontmatter | by skill name via the Skill tool (e.g. `haipipe-paper-revise`) |
 | **Agents** | top-level `agents/*.md` | as a `subagent_type` for the Agent tool |
-| **Commands** | top-level `commands/*.md` | as `/command` |
+| **Commands** | top-level `commands/*.md` | as `/command` (none shipped; skills are invoked by name) |
 
-## Status of 4-edit pieces
+Skills created or renamed mid-session aren't hot-loaded; they appear after the next Claude Code reload.
 
-| Piece | Path | Registered? |
-|-------|------|-------------|
-| `haipipe-paper-section-edit` (orchestrator) | `skills/paper/2-section-edit/haipipe-paper-section-edit/SKILL.md` | ✅ on next reload (valid `name:`) |
-| `haipipe-paper-section-edit-content` + 5 topic stubs | `skills/paper/2-section-edit/polish/haipipe-paper-section-edit-*/SKILL.md` | ✅ on next reload |
-| 4 stage agents | `skills/paper/2-section-edit/_archive/agents/*.md` | ⚠️ **not** as `subagent_type` (nested, not in top-level `agents/`) |
-| `/haipipe-paper-section-edit` command | — | n/a — invoked by skill name, like every skill here |
+## What registers from 2-phase/
 
-> Skills created mid-session aren't hot-loaded; `haipipe-paper-section-edit` etc. appear in the
-> skill list after the next Claude Code reload. (That's why they're absent from
-> the current session's list — they exist on disk and are valid.)
+Each phase folder holds a hub skill plus its workers, every one a `SKILL.md` with a valid `name:`:
 
-## The agents: two ways to run them
+| Folder | Hub | Workers |
+|--------|-----|---------|
+| `0-draft/` | `haipipe-paper-draft` | (none -- the hub reads the stage template from `1-lifecycle/`; retired venue-style write skills live in `_archive/`) |
+| `1-probe/` | `haipipe-paper-probe` | `haipipe-paper-probe-citation` / `-values` / `-display` |
+| `2-revise/` | `haipipe-paper-revise` | `haipipe-paper-revise-content` / `-humanizer` / `-weaving` / `-results` |
+| `3-check/` | `haipipe-paper-check` | `haipipe-paper-proof-checker` (math proofs) |
 
-The plugin registers agents by **symlinking nested `skills/.../agents/*.md` into
-the top-level `agents/`** (e.g. `agents/claim-verifier-agent.md` →
-`../skills/probe/agents/reviewers/claim-verifier-agent.md`). Our 4 agents are
-nested but **not yet symlinked**, so they are not first-class `subagent_type`s.
+Not registered: `REF/` (plain reference .md, no SKILL.md -- workers load it by path) and `_archive/` (retired edit-cycle skills, the old `paper-edit-*` stage agents, the retired venue-style `draft-write-*` skills, and the old draft LaTeX templates; kept for history, nothing routes to them, and they are not symlinked into top-level `agents/`).
 
-**Option A — inline dispatch (default, works today, no registration).**
-The orchestrator spawns each stage by **reading `agents/paper-edit-<stage>.md` and
-passing its body as the Agent-tool prompt**. No `subagent_type` needed; fan-out
-works now. This is what `haipipe-paper-section-edit/SKILL.md` instructs.
+## Dispatch chain (who calls whom)
 
-**Option B — register as `subagent_type`s (optional, matches plugin pattern).**
-Add relative symlinks into the top-level `agents/` so they can be dispatched by
-name. From the plugin root (`Tools/plugins/haipipe-toolkit/`):
+**Phase skills are internal workers called by stage skills via the Skill tool; they are not user entry points.**
 
-```sh
-cd agents
-for a in format-checker annotator improver cleaner; do
-  ln -s ../skills/paper/2-section-edit/_archive/agents/paper-edit-$a.md paper-edit-$a.md
-done
+```
+user → /haipipe-paper <stage>            stage skills live in 1-lifecycle/
+        (seed | claims | pitch | narrative | display | section-edit)
+             │
+             ▼  the stage skill drives the phase engine, in order:
+       haipipe-paper-draft    → drafts from the stage's template in 1-lifecycle/
+       haipipe-paper-probe    → fans out -citation / -values / -display + /haipipe-probe dispatch
+       haipipe-paper-revise   → runs -content / -humanizer / -weaving (+ -results)
+       haipipe-paper-check  → 6-axis report, presented to the human (CHECK 🧑)
 ```
 
-Note (Windows): this repo's existing `agents/` symlinks are git symlinks that
-check out as plain text when `core.symlinks=false`. Create these on a checkout
-with symlinks enabled, or via `git update-index --cacheinfo 120000,…`, so git
-records them as real symlinks. Option A avoids this entirely.
+DRAFT/PROBE/REVISE run automatic; CHECK is the only human gate. Hubs own the fan-out to their workers, so a stage skill only ever names the four hubs.
 
-## Verifier script
+## Related, but not in 2-phase/
 
-`scripts/check_comment_only.sh` gates that a pass changed no prose:
-
-```sh
-scripts/check_comment_only.sh           <orig.tex> <new.tex>   # annotate / comment-only gate (prose byte-identical)
-scripts/check_comment_only.sh --mode words <orig.tex> <new.tex>   # format-check gate (same words, re-wrap allowed)
-```
-
-Exit 0 = pass, 1 = prose changed, 2 = usage error. The orchestrator should run it
-after Stage 1 (`--mode words`) and Stage 2 (default) on every touched file.
-
-## Checklist to go fully live
-
-- [ ] Reload Claude Code so the skills register (then `haipipe-paper-section-edit` is invocable).
-- [ ] (Optional) Symlink the 4 agents into top-level `agents/` for first-class
-      `subagent_type` dispatch — otherwise inline dispatch is used.
-- [ ] Wire `scripts/check_comment_only.sh` into the orchestrator's verify step
-      (already referenced in `haipipe-paper-section-edit/SKILL.md`).
+- Whole-paper passes (`haipipe-paper-edit-consistency`, `-format`, `-typeset`, `-diffpdf`, …) live in `3-build-submit/` -- same discovery convention, different scope.
+- The section-edit stage hub is `1-lifecycle/5-section-edit/haipipe-paper-section-edit/`; its per-paper working files land in the manuscript's `0-lifecycle/5-section-edit/`.
+- Comment threads produced during CHECK follow `../wiki/02-comment-lifecycle.md`.

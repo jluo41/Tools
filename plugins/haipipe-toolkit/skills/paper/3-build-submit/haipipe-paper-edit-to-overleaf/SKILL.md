@@ -7,9 +7,7 @@ metadata:
   version: "1.1.0"
   last_updated: "2026-05-31"
   summary: "Two-way sync between a local paper directory and an Overleaf project via the Overleaf Git bridge (Premium feature)."
-  changelog:
-    - "1.1.0 (2026-06-05): renamed from overleaf-sync to haipipe-paper-edit-to-overleaf; moved from components/compile/ into 3-write-edit/ (haipipe-paper-* name unification)."
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # Overleaf Sync
