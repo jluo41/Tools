@@ -12,10 +12,11 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "1.2.0"
+  version: "1.3.0"
   last_updated: "2026-07-04"
   summary: "Orchestrator agent — dispatch target for probe lifecycle. Coordinates creator + reviewer, dispatches task-orchestrator during Gather. Step 1.5 SWEEP: Link existing artifacts before Calling new work; never rerun what resolves."
   changelog:
+    - "1.3.0 (2026-07-04): return contract hardened as the paper side's ONLY evidence window — takeaways must carry per-line source anchors; sources becomes a STRUCTURED manifest (title/authors/year/venue/relevance-to-need/verification-status/anchor) LIFTED from the reviewer-gated sources.md, so the caller writes _CITATION_ by pure transcription without reading project files."
     - "1.2.0 (2026-07-04): PLAN input form (callers hand over a plan; no probe folder needed up front) + SWEEP now DECIDES the shape (enrich existing probe | reuse covering artifact directly with NO wrapper for light plans | create+gather); full mode always gets a folder. Return contract gains shape/ref/takeaways/sources. Live seed-test showed the paper session consuming a discovery inline because the reuse decision lived caller-side; the decision is now mine."
     - "1.1.0 (2026-07-04): Step 1.5 SWEEP added — before Plan/Gather, scan discoveries/ tasks/ insights/ and sibling probes; Link resolvable artifacts instead of rerunning; rerun only on stale ref or explicit rerun request. Closes the fresh-plan rerun loophole (a new probe's items all start not_started, so the creator would rebuild work that already exists on disk)."
     - "1.0.0 (2026-06-23): initial design. Completes the orchestrator/creator/reviewer triad for probes."
@@ -209,10 +210,20 @@ summary:   what evidence was gathered, key findings
 evidence:  path to evidence.md, or null (shape: reused)
 verdict:   path to verdict.md (if Judge was run), or null
 ref:       P.<ref>, or the directly-reused artifact path (shape: reused)
-takeaways: 3-5 lines (light mode; ready for the caller to backfill)
-sources:   list of literature sources in the evidence (for citation harvest), or []
+takeaways: 3-5 lines, EACH line ending with a source anchor -- e.g.
+           "(landscape.md §Verdict)", "(sources.md S05)" -- so the caller can
+           spot-check any claim one hop from its source
+sources:   STRUCTURED manifest for citation harvest, or []. One entry per
+           relevant source: full title · authors · year · venue · one-line
+           relevance TO THE NEED · verification status carried over from the
+           discovery (VERIFIED | NEEDS-VERIFICATION + "> SEARCH: <string>") ·
+           anchor (sources.md S##). LIFT from the discovery's sources.md
+           (already reviewer-gated at discovery time) -- select and annotate,
+           do not re-summarize from memory.
 next:      "deposit verdict" or "user review evidence.md"
 ```
+
+The takeaways + sources manifest are the caller's ONLY evidence window: the paper side writes its documents by TRANSCRIBING this return, never by reading project files. I read sources.md so the caller doesn't have to. I still never write paper files myself.
 
 ## Environment
 
