@@ -4,6 +4,11 @@ haipipe-paper-probe-citation — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [1.4.1] — 2026-07-04
+
+Changed
+- Harvest card format fixed: one paper per ### with summary + finding + relevance bullets (transcribed from the manifest); identity-only entries are a DEFECTIVE harvest. Numbered one-line entries demoted to bare reference lists in demand-pull phases only.
+
 ## [1.4.0] — 2026-07-04
 
 Changed

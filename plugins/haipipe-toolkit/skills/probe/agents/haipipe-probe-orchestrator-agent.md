@@ -12,10 +12,11 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "1.3.0"
+  version: "1.3.1"
   last_updated: "2026-07-04"
   summary: "Orchestrator agent — dispatch target for probe lifecycle. Coordinates creator + reviewer, dispatches task-orchestrator during Gather. Step 1.5 SWEEP: Link existing artifacts before Calling new work; never rerun what resolves."
   changelog:
+    - "1.3.1 (2026-07-04): manifest entries must carry SUBSTANCE — summary (2-3 lines) + finding (result with numbers) lifted from sources.md, not just identity+relevance; identity-only entries are defective. (JL: harvested _CITATION_ had paper metadata but no findings — the fields existed upstream and were dropped by the manifest spec.)"
     - "1.3.0 (2026-07-04): return contract hardened as the paper side's ONLY evidence window — takeaways must carry per-line source anchors; sources becomes a STRUCTURED manifest (title/authors/year/venue/relevance-to-need/verification-status/anchor) LIFTED from the reviewer-gated sources.md, so the caller writes _CITATION_ by pure transcription without reading project files."
     - "1.2.0 (2026-07-04): PLAN input form (callers hand over a plan; no probe folder needed up front) + SWEEP now DECIDES the shape (enrich existing probe | reuse covering artifact directly with NO wrapper for light plans | create+gather); full mode always gets a folder. Return contract gains shape/ref/takeaways/sources. Live seed-test showed the paper session consuming a discovery inline because the reuse decision lived caller-side; the decision is now mine."
     - "1.1.0 (2026-07-04): Step 1.5 SWEEP added — before Plan/Gather, scan discoveries/ tasks/ insights/ and sibling probes; Link resolvable artifacts instead of rerunning; rerun only on stale ref or explicit rerun request. Closes the fresh-plan rerun loophole (a new probe's items all start not_started, so the creator would rebuild work that already exists on disk)."
@@ -214,12 +215,18 @@ takeaways: 3-5 lines, EACH line ending with a source anchor -- e.g.
            "(landscape.md §Verdict)", "(sources.md S05)" -- so the caller can
            spot-check any claim one hop from its source
 sources:   STRUCTURED manifest for citation harvest, or []. One entry per
-           relevant source: full title · authors · year · venue · one-line
-           relevance TO THE NEED · verification status carried over from the
-           discovery (VERIFIED | NEEDS-VERIFICATION + "> SEARCH: <string>") ·
-           anchor (sources.md S##). LIFT from the discovery's sources.md
-           (already reviewer-gated at discovery time) -- select and annotate,
-           do not re-summarize from memory.
+           relevant source, carrying the SUBSTANCE, not just the identity:
+             meta      full title · authors · year · venue
+             summary   2-3 lines: what the paper does/shows (lift sources.md `summary:`)
+             finding   1-2 lines: the RESULT that matters to the need, with numbers
+                       when the source recorded them (lift sources.md `finding:`)
+             relevance one line: why it matters TO THIS NEED
+             status    VERIFIED | NEEDS-VERIFICATION + "> SEARCH: <string>"
+             anchor    sources.md S##
+           LIFT summary/finding from the discovery's sources.md (already
+           reviewer-gated) -- select and carry over, do not re-summarize from
+           memory, and do not compress them away: an identity-only entry
+           (title+year+venue) is a DEFECTIVE manifest entry.
 next:      "deposit verdict" or "user review evidence.md"
 ```
 

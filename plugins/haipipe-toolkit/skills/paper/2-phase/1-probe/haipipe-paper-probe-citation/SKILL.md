@@ -4,7 +4,7 @@ description: "citation probe worker. One skill, one working doc (_CITATION_). Tw
 argument-hint: "[verb] [section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent, WebFetch, WebSearch
 metadata:
-  version: "1.4.0"
+  version: "1.4.1"
   last_updated: "2026-07-03"
   summary: "Unified citation probe worker. AUDIT→SEARCH→CANDIDATE→PLACE→REVIEW lifecycle (fully automatic, no human gate). Human review happens in CHECK only. Single working doc = _CITATION_ (plain text only, no bibtex ever). Absorbs check-reference + manual-review-citations."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -106,7 +106,7 @@ Two forms -- transcription is the default; reading project files happens only in
 
 ```
 TRANSCRIBE (default, inline)   input = the probe agent's STRUCTURED sources manifest
-                               (from its return: title/authors/year/venue/relevance/
+                               (from its return: meta/summary/finding/relevance/
                                status/anchor per entry). Write _CITATION_ by transcription.
                                NO project files are read in the paper session.
 SUBAGENT (fallback)            manifest >~20 entries, or a multi-discovery merge:
@@ -118,7 +118,19 @@ SUBAGENT (fallback)            manifest >~20 entries, or a multi-discovery merge
 Procedure (both forms):
 
 1. Establish the source set: from the manifest (transcribe form) or by walking `probe_ref` -> probe.yaml `evidence_refs` -> the linked discovery's `sources.md` (subagent form only).
-2. Write/extend `_CITATION_{stage}.md`: NEVER tables. Group by literature/theme (`##` sections); within a group, either one paper per `###` subsection or numbered one-line entries (full title, authors, year, venue, one line on why it matters, Scholar link or `> SEARCH:` marker) -- both satisfy the house rule. Carry a `source_ref:`/header note back to the discovery folder (provenance).
+2. Write/extend `_CITATION_{stage}.md`: NEVER tables. Group by literature/theme (`##` sections); one paper per `###` subsection with FULL title in the heading and bullet fields transcribed from the manifest:
+
+```
+### <Full Title>
+- <authors> (<year>). <venue>. [status: VERIFIED-by-discovery | 🔍 NEEDS-VERIFICATION]
+- summary: <2-3 lines: what the paper does/shows>
+- finding: <1-2 lines: the result that matters here, numbers kept>
+- relevance: <one line: why it matters to this stage's need>
+- Scholar: <link>   (unverified also get `> SEARCH: <string>`)
+- source_ref: <discovery folder> (sources.md S##)
+```
+
+An entry with only identity fields (title/year/venue + one relevance clause) is a DEFECTIVE harvest -- the user must be able to eyeball WHAT each paper found without opening the discovery. Numbered one-line entries remain acceptable ONLY for bare reference lists in the demand-pull phases, never for harvest cards.
 3. Status: 🔍 for everything not verified by the discovery reviewer; entries the discovery marked VERIFIED keep a note saying who verified (still 🔍 until the human confirms on Scholar -- discovery verification is arXiv-level, not bibtex-level).
 4. Do NOT search for new papers in harvest mode -- harvest only what the probe brought back. Gaps noticed while harvesting become probe-plan suggestions, not fresh WebSearch calls.
 5. No placement: early stages are markdown; PLACE only applies when a tex section exists.
