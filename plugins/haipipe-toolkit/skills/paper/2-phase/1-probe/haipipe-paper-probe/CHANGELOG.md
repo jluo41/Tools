@@ -4,6 +4,11 @@ haipipe-paper-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [2.0.0] — 2026-07-04
+
+Changed (JL ruling from the seed-test replication: 不管是啥，probe orchestrator agent 来做)
+- Worker contract narrowed to BOOKKEEP / DISPATCH / TRANSLATE. Dispatch is ALWAYS `Agent(haipipe-probe-orchestrator-agent)` — the tiny-lookup inline carve-out is removed (it was the license for the observed bypass). The worker never sweeps the project or reads discoveries/probes/insights inline; the reuse decision (enrich / reuse-directly-no-wrapper / create+gather) belongs to the agent's SWEEP in clean context. Plan `ref:` may point at a probe or a directly-reused artifact (lean option B).
+
 ## [1.8.0] — 2026-07-04
 
 Changed

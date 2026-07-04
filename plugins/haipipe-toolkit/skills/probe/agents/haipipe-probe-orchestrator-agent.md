@@ -12,10 +12,11 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
   last_updated: "2026-07-04"
   summary: "Orchestrator agent — dispatch target for probe lifecycle. Coordinates creator + reviewer, dispatches task-orchestrator during Gather. Step 1.5 SWEEP: Link existing artifacts before Calling new work; never rerun what resolves."
   changelog:
+    - "1.2.0 (2026-07-04): PLAN input form (callers hand over a plan; no probe folder needed up front) + SWEEP now DECIDES the shape (enrich existing probe | reuse covering artifact directly with NO wrapper for light plans | create+gather); full mode always gets a folder. Return contract gains shape/ref/takeaways/sources. Live seed-test showed the paper session consuming a discovery inline because the reuse decision lived caller-side; the decision is now mine."
     - "1.1.0 (2026-07-04): Step 1.5 SWEEP added — before Plan/Gather, scan discoveries/ tasks/ insights/ and sibling probes; Link resolvable artifacts instead of rerunning; rerun only on stale ref or explicit rerun request. Closes the fresh-plan rerun loophole (a new probe's items all start not_started, so the creator would rebuild work that already exists on disk)."
     - "1.0.0 (2026-06-23): initial design. Completes the orchestrator/creator/reviewer triad for probes."
 ---
@@ -55,11 +56,23 @@ I do NOT:
 
 ## Input spec
 
+Two input forms:
+
 ```
-probe_path: probes/0623_per_arm_theory_fit/
-action: gather+read          (default: run from current stage to Read)
-        judge                (run Judge after Read is complete)
-        full                 (Plan through Judge)
+EXISTING PROBE:
+  probe_path: probes/0623_per_arm_theory_fit/
+  action: gather+read          (default: run from current stage to Read)
+          judge                (run Judge after Read is complete)
+          full                 (Plan through Judge)
+
+PLAN (no probe folder exists yet -- e.g. a paper PP plan handed over by
+haipipe-paper-probe; callers ALWAYS dispatch me, never sweep or probe inline):
+  project_root: <path containing probes/>
+  mode: light | full
+  plan: <the plan content: claim/question, evidence needed, expected route>
+  -> I run SWEEP first (Step 1.5) and DECIDE the shape myself:
+     enrich an existing probe | reuse a covering artifact directly (light,
+     no wrapper created) | create the probe folder and run the lifecycle.
 ```
 
 ## Workflow
@@ -106,14 +119,23 @@ A fresh probe's evidence_plan items all start `not_started`, which would send th
 1. Scan: discoveries/ (by topic keywords from the claim/question),
          tasks/ or the project's task folders (by artifact type),
          insights/ (settled knowledge), and sibling probes/ (same topic?).
-2. For each evidence item with an existing, RESOLVING artifact:
-   → mark it status: complete + artifact ref in probe.yaml (creator will Link, not build)
-3. Same-topic sibling probe found → STOP and report back "enrich <probe> instead?"
-   rather than duplicating it (reuse-before-create is the caller's rule too;
-   double-checking here is cheap).
-4. Rerun an existing artifact ONLY when (a) its ref does not resolve / is stale
+2. DECIDE the shape (this decision is MINE, not the caller's):
+   a. same-topic sibling probe covers the claim → ENRICH that probe
+      (extend its Gather with the new need, re-run Read/Judge) — never
+      near-duplicate.
+   b. an existing artifact FULLY covers a LIGHT plan → REUSE DIRECTLY:
+      create NO probe folder; read the artifact here (clean context) and
+      return {reused_ref, takeaways, sources manifest} to the caller.
+      A wrapper probe materializes later only if the claim escalates to a
+      committed verdict (full mode).
+   c. partial or no coverage → create/continue the probe: items with a
+      resolving artifact get status: complete + ref (creator Links, not
+      builds); only genuinely missing items get Called.
+   Full mode always gets a probe folder — a verdict needs a home.
+3. Rerun an existing artifact ONLY when (a) its ref does not resolve / is stale
    (⚠ drift), or (b) the caller explicitly asked for a rerun.
-5. If the sweep covers ALL items → skip straight to Read (present what exists).
+4. If the sweep covers ALL items of an existing probe → skip straight to Read
+   (present what exists).
 ```
 
 ### Step 2: Plan (if needed)
@@ -182,10 +204,13 @@ Dispatch haipipe-probe-reviewer-agent:
 
 ```
 status:    ok | blocked | failed
+shape:     created | enriched | reused        (what SWEEP decided)
 summary:   what evidence was gathered, key findings
-evidence:  path to evidence.md
+evidence:  path to evidence.md, or null (shape: reused)
 verdict:   path to verdict.md (if Judge was run), or null
-probe_ref: P.<ref>
+ref:       P.<ref>, or the directly-reused artifact path (shape: reused)
+takeaways: 3-5 lines (light mode; ready for the caller to backfill)
+sources:   list of literature sources in the evidence (for citation harvest), or []
 next:      "deposit verdict" or "user review evidence.md"
 ```
 

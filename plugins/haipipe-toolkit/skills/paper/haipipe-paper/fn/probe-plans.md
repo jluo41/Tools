@@ -65,9 +65,11 @@ Statuses
 --------
 
 ```
-planned     filed during lifecycle work; not yet dispatched
-dispatched  sent through haipipe-paper-probe; probe_ref points to the active probe
-read        light probe finished Read; takeaways backfilled into this plan file
+planned     filed during lifecycle work; not yet dispatched (this word, not "buffered")
+dispatched  handed to the orchestrator agent; ref: points at the active probe
+read        light return arrived; takeaways backfilled into this plan file
+            (ref: = probe path, OR the directly-reused artifact when the agent
+             chose no-wrapper reuse)
 verdicted   full probe returned a verdict; paper can backfill into 1-claims
 ```
 
@@ -95,9 +97,9 @@ The probe plan captures the need immediately; dispatch waits for user readiness.
 
 When `/haipipe-paper probe run` dispatches (always via haipipe-paper-probe, the single dispatch point):
 1. Resolve the project root from the paper path
-2. For each planned probe: sweep reuse-before-create, then dispatch via Agent(haipipe-probe-orchestrator-agent) by default (clean context); a tiny single lookup may inline Skill("haipipe-probe")
-3. Update the probe plan file: status -> dispatched, probe_ref -> the active probe path; update the index row
-4. Light probes return at Read: takeaways (<=5 lines) backfill into the plan file (status -> read); when the Read output carries literature sources, haipipe-paper-probe-citation HARVESTs them into _CITATION_{stage}.md
+2. For each planned probe: dispatch `Agent(haipipe-probe-orchestrator-agent)` -- ALWAYS, no matter how small the need. The agent's SWEEP decides the shape in clean context: enrich an existing probe / reuse a covering artifact directly (light, no wrapper) / create the probe and gather. The paper side never sweeps the project or reads its evidence inline.
+3. Update the probe plan file: status -> dispatched, `ref:` -> what the agent returns (probe path, or reused artifact path); update the index row
+4. Light returns at Read: takeaways (<=5 lines) backfill into the plan file (status -> read); when the return carries literature sources, haipipe-paper-probe-citation HARVESTs them into _CITATION_{stage}.md
 5. Full probes deposit a verdict: the paper backfills into 1-claims and sections (status -> verdicted)
 
 Relation to Direct task/discover Verbs

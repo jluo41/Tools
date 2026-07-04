@@ -4,7 +4,7 @@ description: "Create or update the paper folder's 0-lifecycle/0-seed/0-seed.md +
 argument-hint: "[paper-dir] [--source <path-or-note>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.2.0"
+  version: "3.2.1"
   last_updated: "2026-07-03"
   summary: "Seed stage orchestrator. Defines WHAT (3 sections) and drives phases (draft -> probe -> revise -> check) internally. User invokes seed, not phases."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -57,9 +57,11 @@ DRAFT ──→ illuminate existing content, elicit taste,
   ▼
 PROBE ──→ DEFAULT RUN for a new seed: landscape / related work / novelty (mode light) --
           it answers the CHECK questions "who cares?" and "is this new?" before the gate
-          (internally calls /haipipe-paper-probe → Agent(haipipe-probe-orchestrator-agent)
-           → /haipipe-probe → discovery; takeaways backfill the PP plan file in _PROBE/,
-           sources harvest into _CITATION_0-seed.md, full evidence stays project-side;
+          (internally calls /haipipe-paper-probe, which ALWAYS dispatches
+           Agent(haipipe-probe-orchestrator-agent); the agent's SWEEP decides
+           enrich / reuse-directly / create+gather in clean context;
+           takeaways backfill the PP plan file in _PROBE/, sources harvest into
+           _CITATION_0-seed.md, full evidence stays project-side;
            NEVER dispatch discovery/task agents or /haipipe-probe directly from here)
   │
   ▼

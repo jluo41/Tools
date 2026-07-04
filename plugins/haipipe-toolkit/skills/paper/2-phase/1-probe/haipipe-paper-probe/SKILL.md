@@ -4,7 +4,7 @@ description: "PROBE phase worker (internal). Called by stage skills after DRAFT 
 argument-hint: "[stage-or-section] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.8.0"
+  version: "2.0.0"
   last_updated: "2026-07-03"
   summary: "PROBE phase worker (internal). Two route families: document workers (citation/values/display, each owning a _DOC_ needs registry) + dispatch through /haipipe-probe (mode light by default, full for claims; reuse-before-create)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -82,7 +82,7 @@ Never search or compute inline, and never dispatch discovery/task orchestrator a
 
 1. **Mode: light by default.** A light probe stops at Read and returns its evidence to the caller -- right for context questions (seed landscape, section-edit lookups). Request `mode: full` only when the paper needs a COMMITTED verdict that backfills a claim slot and deposits insight cards (the claims stage's normal case). A light probe can escalate to full later; never start heavy for a question that only needs orientation.
 
-2. **Reuse-before-create.** Before opening a new probe, sweep what exists: `1-probe-plans/` (the cross-paper index), the project's probe folders, and the insight KB. If an existing probe covers the claim (same topic, compatible scope), ENRICH it -- extend its Gather with the new evidence need, re-run Read/Judge -- instead of creating a near-duplicate. Create a new probe only when no existing one covers the topic; when the match is ambiguous, ask rather than fork. Probe sprawl is a mental-model tax: two half-overlapping probes cost more than one enriched one.
+2. **Reuse-before-create -- decided by the AGENT, not this worker.** The orchestrator agent's SWEEP step (its Step 1.5) scans the project (probes, discoveries, tasks, insights) in clean context and picks one of three outcomes: (a) an existing probe covers the claim -> ENRICH it (extend its Gather, re-run Read/Judge) instead of near-duplicating; (b) an existing artifact fully covers a LIGHT plan -> REUSE DIRECTLY, no wrapper probe created (the return names the artifact; the plan's `ref:` points at it; a wrapper materializes later only if claims escalates to a committed verdict); (c) partial or no coverage -> create the probe (mode per plan), Gather Links what exists and Calls only what is missing. Full mode always gets a probe folder -- a verdict needs a home. Probe sprawl is a mental-model tax: two half-overlapping probes cost more than one enriched one.
 
 **Seed (mode: light; DEFAULT RUN for a new seed).** Skip only on re-entry or minor edits, and only by an explicit logged verdict (`[PROBE] skipped -- <reason>` in the stage `_LOG`, phase line shows `--`) -- never silently. The seed question needs outside context, not verdicts:
 
@@ -107,9 +107,13 @@ Verdicts backfill the `_EVIDENCE_` slots in 1-claims.md (supported | weak | GAP,
 
 ## From-buffer entry (the ONLY path that dispatches the umbrella's probe plans)
 
-`Skill("haipipe-paper-probe", args="from-buffer <paper_root> [PPNN]")` -- invoked by `/haipipe-paper probe run` or by a stage's own PROBE phase. The umbrella NEVER calls `/haipipe-probe` directly; this worker is the single dispatch point. It reads the index (`<paper_root>/1-probe-plans/README.md`) and resolves each planned item to its per-stage `_PROBE/PPNN_*.md` file (or the one named PPNN), applies reuse-before-create per plan, then dispatches: DEFAULT via `Agent(haipipe-probe-orchestrator-agent)` with the plan's mode (clean context, background-able); a tiny single lookup (one citation, one number) may inline `Skill("haipipe-probe")`. It updates the plan file (`status: dispatched`, `probe_ref: <active probe>`) and the index row, and returns a dispatch summary (plans dispatched / enriched / skipped + refs).
+`Skill("haipipe-paper-probe", args="from-buffer <paper_root> [PPNN]")` -- invoked by `/haipipe-paper probe run` or by a stage's own PROBE phase. The umbrella NEVER calls `/haipipe-probe` directly; this worker is the single dispatch point.
 
-On return, TRANSLATE (probe is paper-unaware; this worker is the bilingual layer): light probes -- write takeaways (<=5 lines) back into the plan file (`status: read`), and when the Read output carries literature sources, dispatch `haipipe-paper-probe-citation` HARVEST to distill them into `_CITATION_{stage}.md` (candidates only, 🔍, source_ref to the discovery). Full probes -- verdicts backfill 1-claims / sections / round logs (`status: verdicted`). Buffer convention: `../../../haipipe-paper/fn/probe-plans.md`.
+This worker does exactly three things -- BOOKKEEP, DISPATCH, TRANSLATE -- and NO evidence work of its own:
+
+1. **BOOKKEEP.** Read the index (`<paper_root>/1-probe-plans/README.md`), resolve each planned item to its per-stage `_PROBE/PPNN_*.md` file (or the one named PPNN). Update plan files and index rows as statuses change.
+2. **DISPATCH -- ALWAYS via `Agent(haipipe-probe-orchestrator-agent)`, no exceptions.** Pass the plan content + mode + project root. The worker NEVER sweeps the project itself, NEVER reads discoveries/probes/insights inline, NEVER inlines `Skill("haipipe-probe")` -- even for a "tiny" lookup. The reuse decision (enrich an existing probe / reuse a covering artifact directly with no wrapper / create-and-gather) belongs to the AGENT's SWEEP step, in clean context; a covering artifact the agent finds is consumed there, not re-read paper-side. Plan file: `status: dispatched`, then per the agent's return.
+3. **TRANSLATE (probe is paper-unaware; this worker is the bilingual layer).** Light returns -- takeaways (<=5 lines) into the plan file (`status: read`; `ref:` = the probe folder, or the directly-reused artifact when the agent chose no-wrapper reuse), and when the return carries literature sources, run `haipipe-paper-probe-citation` HARVEST into `_CITATION_{stage}.md` (candidates only, 🔍, source_ref provenance). Full returns -- verdicts backfill 1-claims / sections / round logs (`status: verdicted`). Buffer convention: `../../../haipipe-paper/fn/probe-plans.md`.
 
 ## Section-edit dispatch logic
 
