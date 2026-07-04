@@ -23,6 +23,8 @@ Plans LIVE in the `_PROBE/` subfolder of the stage that spawned them (stage self
 
 PP numbering is paper-global (PP01, PP02, ... in creation order across stages); the index is the numbering authority.
 
+**Legacy layout migration (on first touch):** a plan file found FLAT in `1-probe-plans/PPNN_*.md` moves into the `_PROBE/` folder of its `source_stage` (from frontmatter, or infer from content) + gets an index row. A legacy `_DISCOVERY_{stage}.md` next to a stage artifact folds into the owning plan file (takeaways -> plan `## Takeaways`; candidate papers -> `_CITATION_{stage}.md` via citation harvest) and is then deleted. Migrate as part of whatever verb touched the file; log the move in the stage `_LOG`.
+
 Probe Plan File Format
 -----------------------
 
