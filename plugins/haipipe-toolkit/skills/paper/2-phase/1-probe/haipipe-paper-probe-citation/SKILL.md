@@ -1,10 +1,10 @@
 ---
 name: haipipe-paper-probe-citation
-description: "citation probe worker for section-edit. One skill, one working doc (_CITATION_), full lifecycle: AUDIT (mechanical cross-ref + gap identification) → SEARCH (find candidates) → CANDIDATE (write to _CITATION_ with SEARCH markers) → PLACE (auto-place verified keys from .bib, flag 🔍 for CHECK) → REVIEW (pre-submission 3-axis walk). Fully automatic -- no human gate. Human review happens in CHECK phase only. Hard boundary: agent NEVER generates bibtex, NEVER adds to .bib. No bibtex in _CITATION_ ever. Trigger: citation, cite, probe citations, check references, audit references, citation review, manual review citations."
+description: "citation probe worker. One skill, one working doc (_CITATION_). Two directions: demand-pull for section-edit (AUDIT mechanical cross-ref + gap identification → SEARCH find candidates → CANDIDATE write to _CITATION_ with SEARCH markers → PLACE auto-place verified keys from .bib, flag 🔍 for CHECK → REVIEW pre-submission 3-axis walk) and supply-push HARVEST for any stage (distill sources a probe/discovery brought back into _CITATION_{stage}.md candidates, no fresh searching). Fully automatic -- no human gate. Human review happens in CHECK phase only. Hard boundary: agent NEVER generates bibtex, NEVER adds to .bib. No bibtex in _CITATION_ ever. Trigger: citation, cite, probe citations, harvest citations, check references, audit references, citation review, manual review citations."
 argument-hint: "[verb] [section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent, WebFetch, WebSearch
 metadata:
-  version: "1.2.0"
+  version: "1.3.0"
   last_updated: "2026-07-03"
   summary: "Unified citation probe worker. AUDIT→SEARCH→CANDIDATE→PLACE→REVIEW lifecycle (fully automatic, no human gate). Human review happens in CHECK only. Single working doc = _CITATION_ (plain text only, no bibtex ever). Absorbs check-reference + manual-review-citations."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -92,6 +92,25 @@ Phase 5: REVIEW       pre-submission 3-axis walk (existence, metadata, context)
 All five phases run automatically without stopping for human input. The agent writes 🔍 candidates and continues. The 🔍 markers are FLAGS for CHECK to verify later, not blocking gates.
 
 Human review happens ONLY in the CHECK phase (haipipe-paper-check). During CHECK, the human clicks Scholar links for 🔍 entries, verifies papers, copies bibtex to .bib, and adds `> USER:` comments. If CHECK restarts the PROBE phase, the agent reads those `> USER:` comments and responds to them.
+
+
+## Harvest mode (supply-push, any stage)
+
+The five phases above are demand-pull: the section's text needs citations, go find them. HARVEST is the reverse direction: a probe already ran and its Read output carries literature sources; this worker distills them into the stage's `_CITATION_` so the user can eyeball them paper-side. Called by haipipe-paper-probe after a gateway probe returns (e.g. the seed landscape probe).
+
+```
+harvest <stage> <probe_ref>       e.g. harvest 0-seed probes/D0703_seed-landscape
+```
+
+Procedure:
+
+1. Walk the chain: `probe_ref` -> probe.yaml `evidence_refs` -> the linked discovery's `sources.md` (and evidence.md for context on why each source matters).
+2. Write/extend `_CITATION_{stage}.md`: one paper per `###` subsection (NEVER tables), full title in the heading, bullet fields (authors, year, venue, one line on why it matters to this stage), a Scholar link, and a `source_ref:` back to the discovery folder (provenance).
+3. Status: 🔍 for everything not verified by the discovery reviewer; entries the discovery marked VERIFIED keep a note saying who verified (still 🔍 until the human confirms on Scholar -- discovery verification is arXiv-level, not bibtex-level).
+4. Do NOT search for new papers in harvest mode -- harvest only what the probe brought back. Gaps noticed while harvesting become probe-plan suggestions, not fresh WebSearch calls.
+5. No placement: early stages are markdown; PLACE only applies when a tex section exists.
+
+All Hard Boundaries above apply unchanged (no bibtex, no .bib edits, 🔍 resolves in CHECK).
 
 
 ## Phase 1: AUDIT

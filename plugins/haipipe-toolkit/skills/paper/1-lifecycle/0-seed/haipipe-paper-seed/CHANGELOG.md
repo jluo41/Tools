@@ -4,6 +4,11 @@ haipipe-paper-seed — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [3.2.0] — 2026-07-04
+
+Changed
+- Artifact spec + Location gain `_PROBE/PPNN_<slug>.md` (probe plans + backfilled takeaways; `_DISCOVERY_0-seed.md` retired) and `_CITATION_0-seed.md` (harvested candidates when the probe returns literature). PROBE step routes via Agent(haipipe-probe-orchestrator-agent).
+
 ## [3.1.0] — 2026-07-03
 
 Changed (live seed run silently skipped PROBE+REVISE and drifted into CHECK)

@@ -4,6 +4,11 @@ haipipe-paper-probe-citation — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [1.3.0] — 2026-07-04
+
+Added
+- HARVEST mode (supply-push, any stage): distill sources a probe brought back into `_CITATION_{stage}.md` — walk probe_ref -> evidence_refs -> discovery sources.md, one paper per ### subsection with source_ref provenance, 🔍 candidates only, NO fresh searching in harvest mode. Called by haipipe-paper-probe after a gateway probe returns (seed landscape case).
+
 ## [1.2.0] — 2026-07-03
 
 - phase spine renamed DGPC -> DPRC (GATHER->PROBE, POLISH->REVISE).

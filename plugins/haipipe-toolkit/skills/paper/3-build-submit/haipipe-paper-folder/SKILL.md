@@ -2,7 +2,7 @@
 name: haipipe-paper-folder
 description: "Scaffold a paper folder's CONTENTS, quickly and minimally: README + STATUS.md + .gitignore + four empty container dirs (0-lifecycle, 0-displays, 1-rounds, 1-probe-plans). Stage files are absent-until-written (each stage skill creates its own 0-lifecycle/N-stage/ on first run); manuscript machinery (master tex, 0-sections, compile scripts) is a later on-request upgrade, not part of creation. Reached via /haipipe-paper enter (get-or-create on a missing path) -> haipipe-paper-lifecycle folder; repo creation + submodule wiring belong to enter's get-or-create branch, not this skill. Trigger: paper folder, scaffold paper, new paper folder."
 metadata:
-  version: "3.0.0"
+  version: "3.0.1"
   last_updated: "2026-07-03"
   summary: "Minimal quick paper-folder scaffold; stage files absent-until-written; manuscript machinery an on-request upgrade."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -27,7 +27,7 @@ Paper-<Name>/
 ├── 0-lifecycle/        # EMPTY -- each stage skill creates its own N-stage/ on first run
 ├── 0-displays/         # EMPTY -- display units land here (owner: display stage + renderers)
 ├── 1-rounds/           # EMPTY -- dated work rounds (owner: haipipe-paper-round)
-└── 1-probe-plans/      # EMPTY -- evidence-need buffer (owner: /haipipe-paper probe verbs)
+└── 1-probe-plans/      # EMPTY -- probe-plan INDEX home (README.md created on first plan; plans themselves live per-stage in 0-lifecycle/<stage>/_PROBE/)
 ```
 
 Absent-until-written: `0-lifecycle/` starts empty. `/haipipe-paper seed` creates `0-seed/`, claims creates `1-claims/`, and so on down the spine (`0-seed, 1-claims, 2-pitch, 3-narrative, 4-display, 5-section-edit`). Early stages are markdown, so a fresh paper contains no tex and needs no compiler.

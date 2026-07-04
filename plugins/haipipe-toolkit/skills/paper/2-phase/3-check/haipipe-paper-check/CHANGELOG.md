@@ -4,6 +4,11 @@ haipipe-paper-check — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [1.4.1] — 2026-07-04
+
+Fixed
+- Seed row PROBE check updated: `_DISCOVERY_ takeaways linked` -> `_PROBE/ plan takeaways backfilled + _CITATION_ candidates eyeballable` (naming unification).
+
 ## [1.4.0] — 2026-07-03
 
 - Gate Modes section added (JL: copilot 人给 comments / autopilot 派 subagent 给 comments，必须有 approval 动作): mode spec owned by wiki/08-stage-gate.md; autopilot dispatches ONE fresh-context reviewer subagent that leaves > REVIEWER: comments + returns proceed|restart|accept; HUMAN-ONLY items (Scholar bibtex verification) are marked DEFERRED into a human queue, never silently passed; humans can reopen agent-approved gates.

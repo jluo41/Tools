@@ -4,6 +4,11 @@ haipipe-paper — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [2.5.0] — 2026-07-04
+
+Changed (probe-plan location unified, JL 2026-06-29 per-stage ruling wins over the flat buffer)
+- Probe plans live in per-stage `_PROBE/` folders; `1-probe-plans/README.md` is a thin cross-stage index (numbering authority). Verb line, dispatch note, evidence-path map, and fn/probe-plans.md all updated; PP statuses gain `read` (light probe returned, takeaways backfilled into the plan file). `_DISCOVERY_{stage}.md` retired.
+
 ## [2.4.1] — 2026-07-03
 
 Fixed

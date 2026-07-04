@@ -16,7 +16,7 @@ lives in probes, discoveries, tasks, and insights.
 │   ├── 3-narrative/     venue: MEDIUM
 │   ├── 4-display/       venue: HEAVY
 │   └── 5-section-edit/  venue: SPECIFIC (per-section norms)
-├── 1-probe-plans/       cross-paper index (probes live per-stage in _PROBE/)
+├── 1-probe-plans/       cross-stage index README.md (plans live per-stage in _PROBE/)
 ├── 1-rounds/
 ├── 0-displays/
 ├── 0-sections/

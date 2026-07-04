@@ -4,7 +4,7 @@ description: "Create or update the paper folder's 0-lifecycle/0-seed/0-seed.md +
 argument-hint: "[paper-dir] [--source <path-or-note>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.1.0"
+  version: "3.2.0"
   last_updated: "2026-07-03"
   summary: "Seed stage orchestrator. Defines WHAT (3 sections) and drives phases (draft -> probe -> revise -> check) internally. User invokes seed, not phases."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -30,6 +30,8 @@ Read first: `../../PHILOSOPHY.md`, `../../wiki/04-lifecycle-map.md`.
 **Files produced:**
 - `0-lifecycle/0-seed/0-seed.md` -- the seed contract
 - `0-lifecycle/0-seed/_LOG_0-seed.md` -- phase progress journal (per `../../wiki/02-comment-lifecycle.md`)
+- `0-lifecycle/0-seed/_PROBE/PPNN_<slug>.md` -- probe plans spawned by this stage (need -> probe_ref -> takeaways, one file per need; indexed in `1-probe-plans/README.md`)
+- `0-lifecycle/0-seed/_CITATION_0-seed.md` -- citation candidates HARVESTed from what the probe brought back (only when the probe returns literature; candidates 🔍, no bibtex)
 
 **Content structure (0-seed.md):**
 - Seed Question -- the one paper-shaped question this seed exists to answer
@@ -55,8 +57,9 @@ DRAFT ──→ illuminate existing content, elicit taste,
   ▼
 PROBE ──→ DEFAULT RUN for a new seed: landscape / related work / novelty (mode light) --
           it answers the CHECK questions "who cares?" and "is this new?" before the gate
-          (internally calls /haipipe-paper-probe → /haipipe-probe → discovery;
-           takeaways land in _DISCOVERY_0-seed.md, full evidence stays project-side;
+          (internally calls /haipipe-paper-probe → Agent(haipipe-probe-orchestrator-agent)
+           → /haipipe-probe → discovery; takeaways backfill the PP plan file in _PROBE/,
+           sources harvest into _CITATION_0-seed.md, full evidence stays project-side;
            NEVER dispatch discovery/task agents or /haipipe-probe directly from here)
   │
   ▼
@@ -76,8 +79,10 @@ Comment lifecycle per `../../wiki/02-comment-lifecycle.md`: comments live in 0-s
 ## Location
 
 ```text
-<paper>/0-lifecycle/0-seed/0-seed.md      seed contract
-<paper>/0-lifecycle/0-seed/_LOG_0-seed.md  phase progress journal
+<paper>/0-lifecycle/0-seed/0-seed.md              seed contract
+<paper>/0-lifecycle/0-seed/_LOG_0-seed.md          phase progress journal
+<paper>/0-lifecycle/0-seed/_PROBE/PPNN_<slug>.md   probe plans + backfilled takeaways
+<paper>/0-lifecycle/0-seed/_CITATION_0-seed.md     harvested citation candidates (when probe returns lit)
 ```
 
 Markdown only (argument documents don't need compilation).

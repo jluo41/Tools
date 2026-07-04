@@ -4,7 +4,7 @@ description: "Per-section editing hub under 0-lifecycle/5-section-edit/. Owns th
 argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 metadata:
-  version: "3.1.3"
+  version: "3.1.4"
   last_updated: "2026-07-03"
   summary: "Per-section editing hub. Two-axis model: STAGES (1-lifecycle/) x PHASES (2-phase/). DPRC phases are shared across all lifecycle stages. PROBE is agent-only (flag, no human gate). REVISE works on both .md and .tex. CHECK is the human gate (6-axis verification). _LOG tracks cross-phase evolution with [PHASE] tags."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -202,7 +202,7 @@ Summary table -- which tracking files each stage uses:
 
 Tracking files are created lazily when the phase activates for that stage.
 
-**Probe plan convention**: probe plans LIVE in the `_PROBE/` subfolder of the stage that spawned them. `1-probe-plans/README.md` is a cross-paper INDEX (links to per-stage `_PROBE/` folders). When creating a new probe plan: add the file to the stage's `_PROBE/` folder AND add a row to the index.
+**Probe plan convention**: probe plans LIVE in the `_PROBE/` subfolder of the stage that spawned them. `1-probe-plans/README.md` is a cross-stage INDEX (links to per-stage `_PROBE/` folders; PP numbering authority). When creating a new probe plan: add the file to the stage's `_PROBE/` folder AND add a row to the index.
 
 ## Two-axis architecture: stages x phases
 
