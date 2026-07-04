@@ -4,6 +4,11 @@ haipipe-paper-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [2.2.0] — 2026-07-04
+
+Changed
+- TRANSLATE: citation harvest now dispatches the harvest SUBAGENT on a pick_list return, then does mechanical acceptance (produce/review split); the worker no longer transcribes source substance itself.
+
 ## [2.1.0] — 2026-07-04
 
 Changed
