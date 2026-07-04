@@ -191,7 +191,7 @@ If no pitch exists, print: "Pitch not yet written -- run /haipipe-paper pitch.">
 
 ## Focus Strip (two lines)
 
-The strip uses two markers to show both where we are and how far the paper has reached. Full convention in `../../wiki/01-focus-strip-markers.md`.
+The strip uses two markers to show both where we are and how far the paper has reached. Full convention in the haipipe-paper umbrella SKILL.md, Closing Block section (the single source of truth).
 
 | Marker | Meaning |
 |---|---|
@@ -282,7 +282,7 @@ stage:   seed 🔥  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅
 phase:   draft 🔥  │  probe ⬜  │  revise ⬜  │  check 🚀
 ```
 
-The two-line focus strip is the VERY LAST thing, placed after the return-contract tail. It appears at the top of the dashboard AND as the last two lines of every reply. Keep the dashboard concise. The goal is to orient the session, not to rewrite the paper. Full marker convention in `../../wiki/01-focus-strip-markers.md`.
+The two-line focus strip is the VERY LAST thing, placed after the return-contract tail. It appears at the top of the dashboard AND as the last two lines of every reply. Keep the dashboard concise. The goal is to orient the session, not to rewrite the paper. Full marker convention in the haipipe-paper umbrella SKILL.md, Closing Block section.
 
 ## Free-form Routing
 

@@ -5,7 +5,7 @@
 #
 # Output (one line):
 #   seed 🔥  claims ✅  pitch ✅  ...  →  section-edit 🚀  →  review ⬜
-# Markers per wiki/01-focus-strip-markers.md:
+# Markers per haipipe-paper/SKILL.md Closing Block (single source of truth):
 #   🔥 = active now (the stage worked THIS session, optional 2nd arg)
 #   🚀 = frontier (current_layer, the farthest stage the paper has reached)
 #   🔥🚀 = collapsed when the session works AT the frontier

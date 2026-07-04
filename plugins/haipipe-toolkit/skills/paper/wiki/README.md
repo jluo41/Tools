@@ -5,7 +5,7 @@ Single source of truth for all paper skill conventions, architecture, and protoc
 ## Index
 
 **Design conventions**
-1. [Focus Strip Markers](01-focus-strip-markers.md) -- 🔥 (active now) + 🚀 (frontier reached) on stage and phase lines
+1. Focus Strip Markers -- ABSORBED into haipipe-paper/SKILL.md Closing Block (2026-07-03); numbering gap kept on purpose
 2. [Comment Convention and Lifecycle](02-comment-lifecycle.md) -- actor ids (never hardcode), two formats (blockquote + tex), anchoring, lifecycle (move to _LOG on resolve), round invariants
 
 **System architecture**
