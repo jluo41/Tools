@@ -4,7 +4,7 @@ description: "citation probe worker. One skill, one working doc (_CITATION_). Tw
 argument-hint: "[verb] [section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent, WebFetch, WebSearch
 metadata:
-  version: "1.3.1"
+  version: "1.4.0"
   last_updated: "2026-07-03"
   summary: "Unified citation probe worker. AUDIT→SEARCH→CANDIDATE→PLACE→REVIEW lifecycle (fully automatic, no human gate). Human review happens in CHECK only. Single working doc = _CITATION_ (plain text only, no bibtex ever). Absorbs check-reference + manual-review-citations."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -102,9 +102,22 @@ The five phases above are demand-pull: the section's text needs citations, go fi
 harvest <stage> <probe_ref>       e.g. harvest 0-seed probes/D0703_seed-landscape
 ```
 
-Procedure:
+Two forms -- transcription is the default; reading project files happens only in the subagent form:
 
-1. Walk the chain: `probe_ref` -> probe.yaml `evidence_refs` -> the linked discovery's `sources.md` (and evidence.md for context on why each source matters).
+```
+TRANSCRIBE (default, inline)   input = the probe agent's STRUCTURED sources manifest
+                               (from its return: title/authors/year/venue/relevance/
+                               status/anchor per entry). Write _CITATION_ by transcription.
+                               NO project files are read in the paper session.
+SUBAGENT (fallback)            manifest >~20 entries, or a multi-discovery merge:
+                               run as a dispatched subagent that walks probe_ref ->
+                               evidence_refs -> sources.md in its OWN clean context,
+                               writes _CITATION_ directly, returns a one-line summary.
+```
+
+Procedure (both forms):
+
+1. Establish the source set: from the manifest (transcribe form) or by walking `probe_ref` -> probe.yaml `evidence_refs` -> the linked discovery's `sources.md` (subagent form only).
 2. Write/extend `_CITATION_{stage}.md`: NEVER tables. Group by literature/theme (`##` sections); within a group, either one paper per `###` subsection or numbered one-line entries (full title, authors, year, venue, one line on why it matters, Scholar link or `> SEARCH:` marker) -- both satisfy the house rule. Carry a `source_ref:`/header note back to the discovery folder (provenance).
 3. Status: 🔍 for everything not verified by the discovery reviewer; entries the discovery marked VERIFIED keep a note saying who verified (still 🔍 until the human confirms on Scholar -- discovery verification is arXiv-level, not bibtex-level).
 4. Do NOT search for new papers in harvest mode -- harvest only what the probe brought back. Gaps noticed while harvesting become probe-plan suggestions, not fresh WebSearch calls.

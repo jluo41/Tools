@@ -4,6 +4,11 @@ haipipe-paper-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [2.1.0] — 2026-07-04
+
+Changed
+- TRANSLATE = pure transcription of the agent's anchored return (takeaways with per-line source anchors; structured sources manifest -> _CITATION_); the worker reads NO project files, may only `ls`-verify returned refs (existence, never content). Large harvests (>~20 entries / multi-discovery) run the citation worker as a subagent. DISPATCH: likely-reuse plans go synchronous, likely-fresh-discovery plans go run_in_background.
+
 ## [2.0.0] — 2026-07-04
 
 Changed (JL ruling from the seed-test replication: 不管是啥，probe orchestrator agent 来做)
