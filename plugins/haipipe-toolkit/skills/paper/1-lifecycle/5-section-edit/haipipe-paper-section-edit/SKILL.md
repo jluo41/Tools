@@ -4,7 +4,7 @@ description: "Per-section editing hub under 0-lifecycle/5-section-edit/. Owns th
 argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 metadata:
-  version: "3.1.1"
+  version: "3.1.2"
   last_updated: "2026-07-03"
   summary: "Per-section editing hub. Two-axis model: STAGES (1-lifecycle/) x PHASES (2-phase/). DPRC phases are shared across all lifecycle stages. PROBE is agent-only (flag, no human gate). REVISE works on both .md and .tex. CHECK is the human gate (6-axis verification). _LOG tracks cross-phase evolution with [PHASE] tags."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -109,7 +109,7 @@ status:  ok · section-edit · §3-theory
 next:    <next action>
 ─────────────────────────────────────────────────────
 stage:   seed ✅  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  →  section-edit 🔥🚀  →  review ⬜
-phase:   §3 draft ✅  │  probe: cite 🚀  val --  disp --  │  revise ⬜  │  check ⬜
+phase:   §3 draft ✅  │  probe: cite 🔥🚀  val --  disp --  │  revise ⬜  │  check ⬜
 ```
 
 Markers and rendering rules live in the umbrella spec (stage line via `stage-strip.sh`, never hand-typed). Section-edit adds one local marker: ⚠️ = done but needs re-sync (outline changed after tex sync).

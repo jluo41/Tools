@@ -4,6 +4,11 @@ haipipe-paper-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [1.7.1] — 2026-07-03
+
+Fixed
+- Strip-form example corrected to `probe: cite 🔥🚀` (was a marker-less `cite ⬜` while probe is the active phase; violates the exactly-one-🔥-one-🚀 rule).
+
 ## [1.7.0] — 2026-07-03
 
 - From-buffer entry added (JL: 不要让 haipipe-paper 直接 call /haipipe-probe，由本 worker 在 stage 的 phase 里 call): Skill(haipipe-paper-probe, args="from-buffer <paper_root> [PPNN]") reads planned items in 1-probe-plans/, applies reuse-before-create, dispatches to /haipipe-probe, writes back status/probe_ref, returns a dispatch summary. The umbrella's probe run verb now routes here; this worker is the single dispatch point.

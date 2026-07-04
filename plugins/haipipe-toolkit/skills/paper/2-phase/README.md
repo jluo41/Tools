@@ -6,7 +6,7 @@ The **phase dimension** of the paper skill architecture. Phase workers are share
 Per-stage lifecycle:  DRAFT 🤖 → PROBE 🤖 → REVISE 🤖 → CHECK 🧑
 
 Status strip:
-phase:   draft ✅  │  probe: cite 🚀  val --  disp --  │  revise ⬜  │  check ⬜
+phase:   draft ✅  │  probe: cite 🔥🚀  val --  disp --  │  revise ⬜  │  check ⬜
 ```
 
 ## Structure

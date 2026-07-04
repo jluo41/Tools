@@ -4,7 +4,7 @@ description: "Open the Paper Console for a paper repo. Use for `/haipipe-paper`,
 argument-hint: "[paper-path] [--org <owner>] [free-form input]"
 allowed-tools: Bash, Read, Grep, Glob, Write, Skill
 metadata:
-  version: "3.2.1"
+  version: "3.2.2"
   last_updated: "2026-07-03"
   summary: "Paper Console: derive-from-disk dashboard + lifecycle router."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -215,7 +215,7 @@ The strip uses two markers to show both where we are and how far the paper has r
 | 🔥 | **Active now** -- the stage/phase we are currently working on |
 | 🚀 | **Frontier** -- the farthest stage/phase the paper has ever reached |
 
-Both markers can appear on the same line. When they land on the same item, collapse to `🔥🚀`.
+Every line carries EXACTLY one 🔥 and EXACTLY one 🚀, never zero. "Reached" means entered, not completed: a virgin paper working its first phase renders `draft 🔥🚀`, not `draft 🔥`. The markers split only on loopback (🚀 stays at the frontier slot while 🔥 moves back); when they land on the same item, collapse to `🔥🚀`.
 
 **Line 1 (stage):** all lifecycle stages. 🔥 marks the active stage, 🚀 marks the frontier. If the active stage is section-edit, append the specific section name in parentheses.
 
@@ -223,16 +223,22 @@ Both markers can appear on the same line. When they land on the same item, colla
 
 Examples:
 
-Redoing seed while paper has reached section-edit (seed has no probe sub-tracks):
+Working at the frontier -- THE default case, e.g. a fresh paper in seed/DRAFT (active = frontier, markers collapse):
 ```
-stage:   seed 🔥  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  section-edit 🚀
-phase:   draft 🔥  │  probe ⬜  │  revise ⬜  │  check 🚀
+stage:   seed 🔥🚀  claims ⬜  venue ⬜  pitch ⬜  narrative ⬜  display ⬜  section-edit ⬜
+phase:   draft 🔥🚀  │  probe ⬜  │  revise ⬜  │  check ⬜
 ```
 
-Working at the frontier (active = frontier, markers collapse; section-edit shows probe sub-tracks):
+Frontier at section-edit (section name appended; probe shows sub-tracks):
 ```
 stage:   seed ✅  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  section-edit (§1 introduction) 🔥🚀
 phase:   draft 🔥🚀  │  probe: cite ⬜  val --  disp --  │  revise ⬜  │  check ⬜
+```
+
+Loopback: redoing seed while paper has reached section-edit (🚀 stays at the frontier; seed has no probe sub-tracks):
+```
+stage:   seed 🔥  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  section-edit 🚀
+phase:   draft 🔥  │  probe ⬜  │  revise ⬜  │  check 🚀
 ```
 
 Loopback to pitch while frontier is display:

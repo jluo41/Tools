@@ -4,6 +4,11 @@ haipipe-paper — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [2.4.1] — 2026-07-03
+
+Fixed
+- Marker rule tightened from "at most one 🔥 and one 🚀 per line" to EXACTLY one of each, never zero (live seed run rendered `draft 🔥` with no 🚀 anywhere). "Reached" defined as entered-not-completed, so a virgin paper's first phase renders `draft 🔥🚀`; a line with 🔥 but no 🚀 is a rendering defect.
+
 ## [2.4.0] — 2026-07-03
 
 - create verb RETIRED, absorbed into enter as GET-OR-CREATE (JL: 直接去掉create，enter的时候没有就call create): a missing path CONFIRMS first (repo creation is outward-facing, never off a typo), then runs the same flow (org resolved per invocation, papers-inside recipe, folder scaffold, double-bump) and continues straight into the console. Verbs block, dispatch notes, examples, chooser, argument-hint updated; lifecycle + folder-skill + wiki/04 cross-references repointed. The create flow itself is unchanged and was validated live (Paper-PhyPatSim run) before the re-homing.

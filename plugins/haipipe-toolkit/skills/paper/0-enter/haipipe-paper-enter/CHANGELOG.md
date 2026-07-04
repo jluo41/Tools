@@ -4,6 +4,11 @@ haipipe-paper-enter — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [3.2.2] — 2026-07-03
+
+Fixed
+- Focus Strip: added the exactly-one-🔥-one-🚀-never-zero rule with the virgin-paper collapse case (`draft 🔥🚀`); examples reordered so the frontier/default case leads and a fresh-paper-at-seed example added (loopback examples kept, labeled as such).
+
 ## [3.2.1] — 2026-07-03
 
 Fixed

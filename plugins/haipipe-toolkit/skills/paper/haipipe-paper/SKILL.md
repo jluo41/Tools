@@ -4,7 +4,7 @@ description: "Run any paper-lifecycle work. Use `/haipipe-paper enter <paper-pat
 argument-hint: "[enter|status|venue|stage] [paper-path-or-args...]"
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "2.4.0"
+  version: "2.4.1"
   last_updated: "2026-07-03"
   summary: "Front door for the paper lifecycle: one verbs block, one routing pass, closing block, pointers to owners."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -113,7 +113,7 @@ stage:   seed 🔥  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅
 phase:   draft 🔥🚀  │  probe: cite ⬜  val --  disp --  │  revise ⬜  │  check ⬜
 ```
 
-Markers: 🔥 active now (what this session works on) · 🚀 frontier (farthest the paper has ever reached) · ✅ done · ⬜ not started · `--` skipped. Rules: 🔥 and 🚀 coexist on a line and collapse to `🔥🚀` when they land on the same slot; at most one 🔥 and one 🚀 per line; the phase line always describes the 🔥 stage's DPRC phases; `cite`/`val`/`disp` are probe's sub-tracks (stages without them show a single `probe` slot). Two markers because loopbacks are normal (redo seed while the frontier is section-edit): one marker cannot show both "where I am" and "how far the paper has gotten".
+Markers: 🔥 active now (what this session works on) · 🚀 frontier (farthest the paper has ever reached) · ✅ done · ⬜ not started · `--` skipped. Rules: EXACTLY one 🔥 and EXACTLY one 🚀 per line, never zero -- "reached" means entered, not completed, so a virgin paper working its first phase renders `draft 🔥🚀`, and any line showing 🔥 without a 🚀 somewhere is a rendering defect; they split only on loopback (the frontier slot keeps 🚀 while 🔥 moves back) and collapse to `🔥🚀` when they land on the same slot; the phase line always describes the 🔥 stage's DPRC phases; `cite`/`val`/`disp` are probe's sub-tracks (stages without them show a single `probe` slot). Two markers because loopbacks are normal (redo seed while the frontier is section-edit): one marker cannot show both "where I am" and "how far the paper has gotten".
 
 Render the stage line DETERMINISTICALLY with the helper (never hand-type it; it drifts): `sh "$CLAUDE_SKILL_DIR/stage-strip.sh" <paper-dir> [<session-stage>]` (the script lives IN this skill folder, next to this spec). The phase line is rendered by the 🔥 stage's skill from its own DPRC progress.
 

@@ -4,6 +4,11 @@ haipipe-paper-section-edit — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [3.1.2] — 2026-07-03
+
+Fixed
+- Closing-block example phase line `probe: cite 🚀` corrected to `probe: cite 🔥🚀` (exactly-one-marker rule: active sub-track at the frontier collapses both markers).
+
 ## [3.1.1] — 2026-07-03
 
 Fixed
