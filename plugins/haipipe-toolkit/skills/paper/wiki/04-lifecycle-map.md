@@ -90,7 +90,7 @@ file resolves on disk with real content (see `paper-dashboard.md`).
 /haipipe-paper rebuttal|respond -> respond
 /haipipe-paper slides|poster    -> present
 /haipipe-paper <venue>          -> apply venue profile (conference/journal/is)
-/haipipe-paper create|revise    -> composite route over the lifecycle
+/haipipe-paper enter (missing path) -> get-or-create, then console
 /haipipe-paper "<free text>"    -> active Console router, else plan at the frontier
 ```
 

@@ -214,4 +214,4 @@ On CHECK confirm, update `STATUS.md` (`current_layer`, `maturity: narrative`) an
 promote     -> /haipipe-paper display <paper-dir>
 ```
 
-End the reply with the stage strip (run `../../wiki/10-stage-strip.sh`).
+End the reply with the stage strip (run `../../../haipipe-paper/stage-strip.sh`).

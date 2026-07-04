@@ -372,4 +372,4 @@ On CHECK confirm, update `STATUS.md` (`current_layer`, `maturity: display`) and 
 promote     -> /haipipe-paper section-edit <paper-dir>
 ```
 
-End the reply with the stage strip (run `../../wiki/10-stage-strip.sh`).
+End the reply with the stage strip (run `../../../haipipe-paper/stage-strip.sh`).

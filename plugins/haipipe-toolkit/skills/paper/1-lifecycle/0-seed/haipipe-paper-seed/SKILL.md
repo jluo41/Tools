@@ -108,4 +108,4 @@ On CHECK confirm, update `STATUS.md` (`current_layer`, `maturity: seed`) and adv
 promote     -> /haipipe-paper claims <paper-dir>
 ```
 
-End the reply with the stage strip (run `../../wiki/10-stage-strip.sh`).
+End the reply with the stage strip (run `../../../haipipe-paper/stage-strip.sh`).

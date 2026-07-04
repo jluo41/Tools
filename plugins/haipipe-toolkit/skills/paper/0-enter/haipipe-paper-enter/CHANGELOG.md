@@ -4,6 +4,10 @@ haipipe-paper-enter — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [3.2.0] — 2026-07-03
+
+- GET-OR-CREATE absorbed (JL: 直接去掉create，enter的时候没有就call create): a missing path now offers to create the paper -- confirm-gated (repo creation is outward-facing), org resolved per invocation, repo-backed inside Project-* repos per the papers-inside recipe, contents scaffolded via haipipe-paper-lifecycle folder, double-bump, then straight into the console. The umbrella's create verb is retired (haipipe-paper 2.4.0).
+
 ## [3.1.1] — 2026-07-03
 
 - phase spine renamed DGPC -> DPRC (GATHER -> PROBE, POLISH -> REVISE); phase strip line now 'draft │ probe: cite val disp │ revise │ check' (stages without sub-tracks show just 'probe').

@@ -1,10 +1,10 @@
 ---
 name: haipipe-paper
 description: "Run any paper-lifecycle work. Use `/haipipe-paper enter <paper-path>` or `/haipipe-paper status [paper-path]` to preload an open-needs paper dashboard from STATUS.md, 0-lifecycle, 1-rounds, 0-displays, 0-sections, and git state. Paper lifecycle owns paper-specific story, angle, claims, narrative, displays, maturity, and dated work rounds; open GAP/NEED items accumulate as probe plans in 1-probe-plans/, consumed by haipipe-paper-probe (each stage's PROBE phase worker), which dispatches to /haipipe-probe (the universal evidence gateway; probe calls task/discover during Gather). Direct task/discover verbs available for non-claim utility work. Also parses intent (venue + stage) and dispatches to specialists for writing/revising/rebutting papers. Trigger: paper, enter paper, paper status, open needs, claim gap, figure table gap, round, paper round, work round, write paper, paper pipeline, paper writing, draft paper, revise paper, polish tex, rebuttal, reply to reviewers, probe, probe run, discover, task, evidence, 写论文, 论文流程, /haipipe-paper."
-argument-hint: "[create|enter|status|venue|stage] [paper-path-or-args...]"
+argument-hint: "[enter|status|venue|stage] [paper-path-or-args...]"
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "2.2.0"
+  version: "2.4.0"
   last_updated: "2026-07-03"
   summary: "Front door for the paper lifecycle: one verbs block, one routing pass, closing block, pointers to owners."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -25,8 +25,7 @@ Verbs
 One block: verb, aliases and trigger keywords, then where it goes.
 
 ```
-enter | status | dashboard | preload         -> haipipe-paper-enter (open-needs console; also "enter paper", "paper status", "aware mode")
-create | folder                              -> create the paper folder (see Dispatch notes; also "create paper", "new paper folder", "scaffold paper folder")
+enter | status | dashboard | preload         -> haipipe-paper-enter (open-needs console; GET-OR-CREATE: a missing path offers to create the paper first, see Dispatch notes; also "enter paper", "paper status", "create paper", "new paper folder")
 venue | journal | 选刊 | any venue name       -> haipipe-paper-venue (recommend + pin; MISQ/ISR/Management Science/Nature/PNAS/JAMA/NEJM/Lancet/clinical/grant/patent all land here)
 seed                                         -> haipipe-paper-lifecycle seed        (also "paper seed", "why this paper")
 claims | claim | ledger                      -> haipipe-paper-lifecycle claims      (also "claim gap", "supported", "GAP", "H1/H2/H3")
@@ -50,8 +49,8 @@ digest [session] [--dry-run]                 -> fn/digest.md   (resolve BEFORE o
 Examples:
 
 ```
-/haipipe-paper create Paper-PhyPatSim --org jluo41
 /haipipe-paper enter "examples/Project-PhyPat-Simulation/papers/Paper-PhyPatSim"
+/haipipe-paper enter papers/Paper-NewIdea --org jluo41    (missing path -> confirms, then creates)
 /haipipe-paper venue "physician trait -> opioid prescribing; observational CMS Medicare" --no-pin
 /haipipe-paper claims
 /haipipe-paper display "Table 1 + STROBE flow + subgroup forest"
@@ -81,11 +80,14 @@ Venue coupling (drives two routing rules): seed + claims are venue-FREE; venue p
 Dispatch notes (only where non-obvious; everything else is `Skill("haipipe-paper-<target>")` or `Skill("haipipe-paper-lifecycle", args="<verb> ...")`):
 
 ```
-create    Resolve the parent project (walk up from cwd, or ask). Project-* repo -> paper is REPO-BACKED:
-          resolve --org FIRST (flag or ask, NEVER assume; the paper's owner may differ from the project's),
-          follow the papers-inside recipe in project/haipipe-project/fn/repo-project.md, then
-          Skill("haipipe-paper-lifecycle", args="folder <paper-path>"), then double-bump
-          (paper push -> project pointer -> workspace pointer). Plain projects: just the folder + scaffold.
+enter     Path exists -> Skill("haipipe-paper-enter", args="<path>"). Path MISSING -> get-or-create:
+          CONFIRM FIRST (creating a repo is outward-facing; never create off a typo). Then resolve the
+          parent project (walk up, or ask). Project-* repo -> paper is REPO-BACKED: resolve --org
+          (flag or ask, NEVER assume; the paper's owner may differ from the project's), follow the
+          papers-inside recipe in project/haipipe-project/fn/repo-project.md, then
+          Skill("haipipe-paper-lifecycle", args="folder <paper-path>"), double-bump (paper push ->
+          project pointer -> workspace pointer), and continue straight into the console.
+          Plain projects: folder + scaffold, then console.
 probe     Three sub-modes -- "<text>" BUFFER a plan file in 1-probe-plans/, no args SHOW the buffer,
           "run [PPNN]" -> Skill("haipipe-paper-probe", args="from-buffer <paper_root> [PPNN]").
           This umbrella NEVER calls /haipipe-probe directly: all probe calling happens inside a stage's
@@ -96,10 +98,6 @@ task      Resolve the project root, Skill("haipipe-task", args="<args> --project
 ```
 
 After dispatch, capture the specialist's structured tail (status / summary / artifacts / next) and present it.
-
-> CC: write/edit 的老路由目标 haipipe-paper-edit-write / edit-weaving 在重构后已不存在（对应能力并入 2-phase/2-revise workers，由 stage 内部调用）。我把 write/edit/polish 这些词全部路由到 section-edit stage 了，对吗？还是这组动词干脆退休不再出现在 Verbs 块里？
-> JL: 是的，旧词不要再出现了，省的误导
-> CC: 已退休全部旧词（write/edit/polish/draft/写初稿/整篇润色），section-edit 行只留 section-edit|section|sec|§N。
 
 Closing Block (end every reply)
 --------------------------------
@@ -117,18 +115,10 @@ phase:   draft 🔥🚀  │  probe: cite ⬜  val --  disp --  │  revise ⬜ 
 
 Markers: 🔥 active now (what this session works on) · 🚀 frontier (farthest the paper has ever reached) · ✅ done · ⬜ not started · `--` skipped. Rules: 🔥 and 🚀 coexist on a line and collapse to `🔥🚀` when they land on the same slot; at most one 🔥 and one 🚀 per line; the phase line always describes the 🔥 stage's DPRC phases; `cite`/`val`/`disp` are probe's sub-tracks (stages without them show a single `probe` slot). Two markers because loopbacks are normal (redo seed while the frontier is section-edit): one marker cannot show both "where I am" and "how far the paper has gotten".
 
-Render the stage line DETERMINISTICALLY with the helper (never hand-type it; it drifts): `sh "$CLAUDE_SKILL_DIR/../wiki/10-stage-strip.sh" <paper-dir> [<session-stage>]`. The phase line is rendered by the 🔥 stage's skill from its own DPRC progress.
+Render the stage line DETERMINISTICALLY with the helper (never hand-type it; it drifts): `sh "$CLAUDE_SKILL_DIR/stage-strip.sh" <paper-dir> [<session-stage>]` (the script lives IN this skill folder, next to this spec). The phase line is rendered by the 🔥 stage's skill from its own DPRC progress.
 
-> JL: 这个应该有两层吧 一个是stage，一层是phase
-> JL: <--- 这里可以弄的再简单一些吗。比如paper root不要了，然后status和current layer放到一起。
-> JL: 我们是不是也有其他的file也在讲这个，要不把他调到这里，我们single source of truth
-> CC: 三条都已落：两层 strip（stage+phase）、tail 简化为 status·stage + next 两行、wiki/01 语义并入本节并删除原文件（enter skill 的引用已改指这里），此节即唯一出处。
 
 Gate-aware: advancing `current_layer` requires an EXPLICIT approval action that the current stage is done (Stage Gate, `../wiki/08-stage-gate.md`) -- by the human (copilot mode) or by a reviewer subagent standing in for the human (autopilot mode); once STATUS.md carries the gate ledger, ✅ means "approved", and the ledger records who approved (human or agent).
-
-> JL: 你要想着我们有两个mode，一个co-pilot 在check phase的时候，人加上comments，一个是auto pilot，在check的时候，call一个subagent，然后让他给comments 你想想这个我们怎么做。但是是的，必须要有一个judgment，就是这个gate-aware，进入下一个stage要非常的明白，要有confirm，要有一个approval的动作（人或者代替人的subagent）
-> CC: 方案在 chat 里：CHECK 增加 mode=copilot|autopilot，autopilot 派 reviewer subagent 给 comments + approve/revise verdict，gate ledger 记 approval actor；你点头后我改 wiki/08 + haipipe-paper-check。
-
 
 
 No-Arg Chooser
@@ -138,9 +128,8 @@ When no paper root is found, do not fan out. Emit a compact chooser (one line pe
 
 ```
 📄 haipipe-paper: no paper detected. Pick an entry:
-  create      /haipipe-paper create "<Paper-Name>" [--org <owner>]
   venue       /haipipe-paper venue "<topic or paper-path>" [--no-pin]
-  enter       /haipipe-paper enter "<paper-path>"
+  enter       /haipipe-paper enter "<paper-path>" [--org <owner>]   (missing path -> offers to create it)
   section-edit | rebuttal | probe | discover | task    (see /haipipe-paper help text above)
 ```
 
@@ -201,15 +190,6 @@ Composing with Evidence Workers
         direct discover/task verbs remain ONLY for non-claim utility work (lit scan, data check)
 ```
 
-> CC: 原文这张图上游还列了 /idea-discovery /run-probe /auto-review-loop /result-to-claim 四个入口，skill 清单里已找不到，我删了。如果它们有新名字（或还想保留占位），告诉我补回。
-
-> CC: 原文头部还有一处孤立引用（"读 lifecycle 参考时也读 ../1-lifecycle/haipipe-paper-display-figure/SKILL.md"），看不出为什么单点名 figure 渲染器，我也删了。有特殊用途的话说一声。
-
-> JL: 我们要不要把所有的wiki的内容也都移到这里来。然后随后把wiki的东西删掉。skill最好还是self-contained
-> CC: 建议不整体搬：wiki/ 本就在 paper 家族内部（家族级 self-contained），02/04/08/10 各有 5-10 个 skill 共用，搬进 umbrella 会让每次调用重新变胖；折中方案已执行 wiki/01（并入本文件）+ 单消费者页可逐个并入唯一消费者，详见 chat。
-
-> JL: 这个的话，我在想，还都是有haipipe-paper-probe 来进行probe calling？不要让haipipe-paper直接call了，他在一个stage的一个phase的阶段来call。
-> CC: 已改：umbrella 不再直连 /haipipe-probe，probe run 交给 haipipe-paper-probe（stage 的 PROBE phase worker）消费 1-probe-plans/ 再向下分发；Verbs 行、dispatch note、上图已同步。
 
 Feedback & Digest
 ------------------

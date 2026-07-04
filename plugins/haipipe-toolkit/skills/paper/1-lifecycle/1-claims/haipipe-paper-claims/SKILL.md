@@ -180,4 +180,4 @@ promote     -> /haipipe-paper venue <paper-dir>    (pin target journal)
 promote     -> /haipipe-paper pitch <paper-dir>    (if venue already pinned)
 ```
 
-End the reply with the stage strip (run `../../wiki/10-stage-strip.sh`).
+End the reply with the stage strip (run `../../../haipipe-paper/stage-strip.sh`).
