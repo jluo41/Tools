@@ -4,6 +4,11 @@ haipipe-paper-section-edit — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [3.1.1] — 2026-07-03
+
+Fixed
+- "Dual status strip" section renamed to "Closing block (section-aware)" and aligned with the umbrella Closing Block spec: simplified tail (status merged with stage + section, no paper_root), stage/phase line labels, marker legend replaced by a pointer to the umbrella (keeping only the local ⚠️ re-sync marker).
+
 ## [3.1.0] — 2026-07-03
 
 - phase spine renamed DGPC -> DPRC (GATHER -> PROBE, POLISH -> REVISE; workers 2-phase/1-probe/haipipe-paper-probe-*, 2-phase/2-revise/haipipe-paper-revise-*); phase strip sub-tracks now render as 'probe: cite/val/disp'.

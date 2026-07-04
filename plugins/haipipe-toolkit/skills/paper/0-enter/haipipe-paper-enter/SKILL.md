@@ -4,7 +4,7 @@ description: "Open the Paper Console for a paper repo. Use for `/haipipe-paper`,
 argument-hint: "[paper-path] [--org <owner>] [free-form input]"
 allowed-tools: Bash, Read, Grep, Glob, Write, Skill
 metadata:
-  version: "3.2.0"
+  version: "3.2.1"
   last_updated: "2026-07-03"
   summary: "Paper Console: derive-from-disk dashboard + lifecycle router."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -359,16 +359,15 @@ This is session state, not manuscript content. A fresh session re-derives it fro
 
 ## Return Contract
 
-Every reply from a paper specialist (and every enter dashboard) MUST end with the structured tail block followed by the stage strip as the very last line. This is enforced by the orchestrator; omitting it is a protocol violation.
+Every reply from a paper specialist (and every enter dashboard) MUST end with the closing block defined in `../../haipipe-paper/SKILL.md` (Closing Block section, the single source of truth). Omitting it is a protocol violation. Shape:
 
 ```text
-status:        ok | blocked | failed
-paper_root:    <path>
-current_layer: <layer>
-next:          <suggested command>
-
-stage:   seed 🔥  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  section-edit 🚀
-phase:   draft 🔥  │  probe ⬜  │  revise ⬜  │  check 🚀
+── 📄 paper · seed 🔥 ─────────────────────────
+status:  ok · seed
+next:    <single recommended command>
+──────────────────────────────────────────────
+stage:   seed 🔥  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  →  section-edit 🚀  →  review ⬜
+phase:   draft 🔥🚀  │  probe: cite ⬜  val --  disp --  │  revise ⬜  │  check ⬜
 ```
 
-The `status` field uses three values: `ok` (dashboard rendered, session ready), `blocked` (missing paper root or unresolvable state), `failed` (read error or inconsistent disk state). The two-line focus strip is the very last thing in every reply. The section name in parentheses comes from the outline file name on disk.
+`status` merges the state and the active stage on one line: `ok` (dashboard rendered, session ready) · `blocked` (missing paper root or unresolvable state) · `failed` (read error or inconsistent disk state). NO `paper_root` or `current_layer` lines in the tail -- the header rule and the stage line already carry them (the retired 4-field tail must not reappear). Render the stage line with `../../haipipe-paper/stage-strip.sh`; the closing block is the very last thing in every reply.
