@@ -4,7 +4,7 @@ description: "Orchestrator for the paper structure lifecycle (1-lifecycle). Rout
 argument-hint: "[function] [paper-path-or-input] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "2.0.2"
+  version: "2.0.3"
   last_updated: "2026-07-03"
   summary: "Router for the 1-lifecycle stage spine: folder, seed (0), claims (1) [venue-FREE] -> venue (gate) -> pitch (2), narrative (3), display (4), section-edit (5) [venue-ALIGNED], plus the display renderer family. Stage skills internally run DRAFT -> PROBE -> REVISE -> CHECK via 2-phase/ workers; this router never routes users to phase skills."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -311,7 +311,7 @@ artifacts: [paths created, read, or modified]
 next:      suggested next /haipipe-paper-lifecycle command
 ```
 
-Stage skills additionally close every reply with the lifecycle stage strip as the LAST line, rendered from disk via `../../haipipe-paper/stage-strip.sh`.
+Stage skills additionally close every reply with the full closing block (simplified tail + stage line + phase line) defined in `../../haipipe-paper/SKILL.md` (Closing Block section); the stage line renders from disk via `../../haipipe-paper/stage-strip.sh`.
 
 ---
 

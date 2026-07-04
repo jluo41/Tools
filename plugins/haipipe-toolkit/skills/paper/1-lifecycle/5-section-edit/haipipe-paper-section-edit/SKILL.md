@@ -4,7 +4,7 @@ description: "Per-section editing hub under 0-lifecycle/5-section-edit/. Owns th
 argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 metadata:
-  version: "3.1.0"
+  version: "3.1.1"
   last_updated: "2026-07-03"
   summary: "Per-section editing hub. Two-axis model: STAGES (1-lifecycle/) x PHASES (2-phase/). DPRC phases are shared across all lifecycle stages. PROBE is agent-only (flag, no human gate). REVISE works on both .md and .tex. CHECK is the human gate (6-axis verification). _LOG tracks cross-phase evolution with [PHASE] tags."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -99,28 +99,20 @@ Discovery and task are MECHANISMS feeding the probe phase: discovery finds citat
 
 **The outline .md is the primary working document.** DRAFT creates it. PROBE annotates its tracking files. REVISE updates its sentences and syncs to tex. CHECK verifies everything matches. The outline is never "frozen after draft" -- it stays alive through all phases.
 
-## Dual status strip
+## Closing block (section-aware)
 
-Every reply shows TWO strips: paper-level progress AND section-level progress.
+Every reply ends with the closing block defined in `../../../haipipe-paper/SKILL.md` (Closing Block section, the single source of truth). In section-edit the header and phase line carry the active section:
 
 ```
 ── 📄 paper · section-edit · §3-theory 🔥 ────────
-status:        ok
-paper_root:    <path>
-section:       3-theory
-phase:         probe / citation
-next:          <next action>
+status:  ok · section-edit · §3-theory
+next:    <next action>
 ─────────────────────────────────────────────────────
-paper:  seed ✅  claims ✅  pitch ✅  narrative ✅  display ✅  →  section-edit 🚀  →  review ⬜
-§3:     draft ✅  │  probe: cite 🚀  val --  disp --  │  revise ⬜  │  check ⬜
+stage:   seed ✅  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  →  section-edit 🔥🚀  →  review ⬜
+phase:   §3 draft ✅  │  probe: cite 🚀  val --  disp --  │  revise ⬜  │  check ⬜
 ```
 
-Strip markers:
-- ✅ complete (user confirmed)
-- 🚀 current (frontier)
-- ⬜ not started
-- ⚠️ done but needs re-sync
-- -- skipped (not applicable for this section type)
+Markers and rendering rules live in the umbrella spec (stage line via `stage-strip.sh`, never hand-typed). Section-edit adds one local marker: ⚠️ = done but needs re-sync (outline changed after tex sync).
 
 How to derive status from disk:
 - draft ✅ if outline has structure block with ¶ counts AND narrative sentences
