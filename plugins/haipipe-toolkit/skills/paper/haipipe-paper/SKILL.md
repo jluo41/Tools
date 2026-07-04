@@ -1,545 +1,198 @@
 ---
 name: haipipe-paper
-description: "Run any paper-lifecycle work. Use `/haipipe-paper enter <paper-path>` or `/haipipe-paper status [paper-path]` to preload an open-needs paper dashboard from STATUS.md, 0-lifecycle, 1-rounds, 0-displays, 0-sections, and git state. Paper lifecycle owns paper-specific story, angle, claims, narrative, displays, maturity, and dated work rounds; open GAP/NEED items accumulate as probe plans in 1-probe-plans/ and batch-dispatch to /haipipe-probe (the universal evidence gateway for claims; probe calls task/discover during Gather). Direct task/discover verbs available for non-claim utility work. Also parses intent (venue + phase) and dispatches to specialists for writing/revising/rebutting papers. Trigger: paper, enter paper, paper status, open needs, claim gap, figure table gap, round, paper round, work round, write paper, paper pipeline, paper writing, draft paper, revise paper, polish tex, rebuttal, reply to reviewers, probe, probe run, discover, task, evidence, 写论文, 论文流程, /haipipe-paper."
-argument-hint: "[create|enter|status|venue|phase] [paper-path-or-args...]"
+description: "Run any paper-lifecycle work. Use `/haipipe-paper enter <paper-path>` or `/haipipe-paper status [paper-path]` to preload an open-needs paper dashboard from STATUS.md, 0-lifecycle, 1-rounds, 0-displays, 0-sections, and git state. Paper lifecycle owns paper-specific story, angle, claims, narrative, displays, maturity, and dated work rounds; open GAP/NEED items accumulate as probe plans in 1-probe-plans/ and batch-dispatch to /haipipe-probe (the universal evidence gateway for claims; probe calls task/discover during Gather). Direct task/discover verbs available for non-claim utility work. Also parses intent (venue + stage) and dispatches to specialists for writing/revising/rebutting papers. Trigger: paper, enter paper, paper status, open needs, claim gap, figure table gap, round, paper round, work round, write paper, paper pipeline, paper writing, draft paper, revise paper, polish tex, rebuttal, reply to reviewers, probe, probe run, discover, task, evidence, 写论文, 论文流程, /haipipe-paper."
+argument-hint: "[create|enter|status|venue|stage] [paper-path-or-args...]"
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "2.0.2"
+  version: "2.1.0"
   last_updated: "2026-07-03"
-  summary: "Run any paper-lifecycle work."
+  summary: "Front door for the paper lifecycle: one verbs block, one routing pass, closing block, pointers to owners."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-paper (orchestrator)
 ====================================
 
-User-facing entry for the paper lifecycle. The paper lifecycle is a delivery owner: it owns this paper's angle, claims, narrative, section map, displays, maturity, and dated work rounds. Project-level evidence lives outside the paper in probes, discoveries, tasks, and insights.
+User-facing entry for the paper lifecycle. The paper lifecycle is a delivery owner: it owns this paper's angle, claims, narrative, section map, displays, maturity, and dated work rounds. Project-level evidence lives outside the paper in probes, discoveries, tasks, and insights; when the paper hits a gap, record a delivery need (`../wiki/11-delivery-need.md`) and route to the evidence worker.
 
-When the paper hits a gap, record or surface a delivery need and route directly to the relevant evidence worker. Do not route through a project-level narrative layer. Use `../wiki/11-delivery-need.md` when creating or interpreting GAP/NEED records.
+This orchestrator parses intent and dispatches to stage/specialist skills via `Skill()`. Stage skills internally drive the DPRC phase workers (`2-phase/`); users and this router never invoke phase skills directly. Canonical structure: `README.md` at the paper skill root + `../wiki/06-paper-skill-structure.md`.
 
-This orchestrator parses intent and dispatches to the right venue specialist via `Skill()`. Lifecycle phase skills (pitch, claims, narrative, display, write, compile, revise, review, present) are called by the specialist, not by this orchestrator directly.
+ALWAYS read and honor `PREFERENCES.md` (this skill's own folder): portable, git-tracked global behavioral preferences that survive a machine change. `digest` / `feedback` append flagged global prefs there (merge-or-create).
 
-For the canonical paper structure, read `README.md` at the paper skill root.
+Verbs
+------
 
-ALWAYS read and honor `PREFERENCES.md` (this skill's own folder): portable, git-tracked global behavioral preferences (e.g. communicate via ASCII diagrams) that survive a machine change, unlike the machine-local `~/.claude` auto-memory. `digest` / `feedback` append flagged global prefs there (merge-or-create).
-
-Stage Strip (end every reply)
-------------------------------
-
-In a paper session, END every reply with the lifecycle stage strip so the user always sees which stage we are in. Place it as the VERY LAST line of the reply, AFTER the machine-readable return-contract tail (`status` / `paper_root` / `current_layer` / `next`). It is the closing line, not the opening one. Spine order is fixed:
-
-```text
-seed -> claims -> pitch -> narrative -> display -> section-edit -> review
-```
-
-The strip is OVERALL PROGRESS (where the paper sits in its lifecycle), not what this session happened to touch. Read `current_layer` from the paper's `STATUS.md`. Mark each stage ✅ before current, 🚀 at current (the overall frontier, a calm "you-are-here"), ⬜ after current; arrows sit before `section-edit` and `review`. One line, e.g.:
-
-```text
-seed ✅  claims ✅  pitch ✅  narrative ✅  display ✅  →  section-edit 🚀  →  review ⬜
-```
-
-Two markers, two places. The STRIP uses 🚀 for the current stage (the overall frontier); it never uses 🔥. 🔥 lives in the closing-block TOP-RULE LABEL (`📄 paper · <current_layer> 🔥`), which flags the stage this session is actively working. Normally the label stage and the strip frontier are the same stage, so you see a 🔥 label above a 🚀 strip for that stage. When the session loops back to an already-done stage (frontier `section-edit`, session tuning `claims`), the label reads `· claims 🔥` while the strip still shows `section-edit 🚀` as the frontier, so the divergence is visible. (The helper also accepts an optional 2nd arg to mark a stage 🔥 inside a bare strip when no label is present, e.g. the enter dashboard.)
-
-Render it DETERMINISTICALLY with the helper (never hand-type it; it drifts):
-
-```sh
-sh "$CLAUDE_SKILL_DIR/../wiki/10-stage-strip.sh" <paper-dir>               # walks upward for STATUS.md
-sh "$CLAUDE_SKILL_DIR/../wiki/10-stage-strip.sh" <paper-dir> <session-stage>  # also flag this session's stage with 🔥
-```
-
-Closing-block format. End every reply with ONE fenced `text` block: a TITLED top rule, the return-contract tail, a plain bottom rule, then the strip as the last line. Use box-drawing `─` (U+2500) for the rules (no corners, no side borders). The top rule carries the label `📄 paper · <current_layer> 🔥`. The label uses 🔥 (the stage this session is actively working), NOT 🚀. The strip BELOW it uses 🚀 (the overall frontier). So every closing block pairs a 🔥 session label with a 🚀 progress strip:
-
-    ── 📄 paper · claims 🔥 ───────────────────────
-    status:        ok|blocked|failed
-    paper_root:    <path>
-    current_layer: <layer>
-    next:          <single recommended command>
-    ──────────────────────────────────────────────
-    seed ✅  claims 🚀  pitch ⬜  narrative ⬜  display ⬜  →  section-edit ⬜  →  review ⬜
-
-The strip line still comes from the helper; only its framing (titled top rule + bottom rule) is added here. Every stage / enter skill inherits this closing block.
-
-Gate-aware: advancing `current_layer` to the next stage requires an EXPLICIT user confirm that the current stage is done (the Stage Gate). Once `STATUS.md` carries the gate confirmation ledger, ✅ means "user-confirmed", not merely "before current". See `../wiki/11-delivery-need.md` (autonomy policy) and the Stage Gate feedback.
-
-Read these references when the task touches lifecycle shape, rounds, or skill organization:
-
-```text
-../wiki/03-paper-lifecycle.md
-../wiki/07-paper-rounds.md
-../wiki/04-lifecycle-map.md
-../wiki/06-paper-skill-structure.md
-../1-lifecycle/haipipe-paper-display-figure/SKILL.md
-```
+One block: verb, aliases and trigger keywords, then where it goes.
 
 ```
-/haipipe-paper                              -> enter current paper if detectable; else dashboard
-/haipipe-paper enter "<paper-path>"         -> preload open-needs paper session dashboard
-/haipipe-paper status ["<paper-path>"]      -> same as enter; path optional
-/haipipe-paper venue ["<topic|paper>"] [--no-pin]  -> recommend + pin best-fit journal (-> haipipe-paper-venue)
-/haipipe-paper <stage> ["<input>"]          -> seed|claims|pitch|narrative|display (-> haipipe-paper-lifecycle)
-/haipipe-paper write|edit ["<input>"]       -> draft / polish prose (-> 2-section-edit)
-/haipipe-paper probe ["<need-or-claim>"]    -> add a probe plan to 1-probe-plans/ buffer
-/haipipe-paper probe                        -> show the probe-plan buffer (planned/dispatched/verdicted)
-/haipipe-paper probe run [PPNN]             -> batch dispatch planned probes to /haipipe-probe
-/haipipe-paper discover ["<question>"]      -> dispatch to /haipipe-discovery (non-claim utility work)
-/haipipe-paper task ["<contract>"]          -> dispatch to /haipipe-task (non-claim utility work)
-/haipipe-paper rebuttal "<paper-path>"      -> dispatch to rebuttal specialist
-/haipipe-paper create "<Paper-Name>" [--org <owner>]  -> create the paper folder (-> haipipe-paper-lifecycle folder). Inside a Project-* repo the paper is REPO-BACKED: resolve --org first (flag or ask, NEVER assume; the paper's owner may differ from the project's), follow the papers-inside recipe in project/haipipe-project/fn/repo-project.md (gh repo create <org>/<name> --private + submodule at the PROJECT's papers/), then scaffold. Plain projects get a plain folder.
-/haipipe-paper feedback "<text>"            -> capture skill feedback (merge-or-create) into the right sub-skill inbox (`feedback list` shows open)
-/haipipe-paper digest ["<session-name|id>"] [--dry-run]  -> digest a session (a named/id'd PAST session, or current): harvest feedback, dedup, confirm-gate, route to inboxes
-/haipipe-paper "<natural language>"         -> infer intent from keywords, dispatch
+enter | status | dashboard | preload         -> haipipe-paper-enter (open-needs console; also "enter paper", "paper status", "aware mode")
+create | folder                              -> create the paper folder (see Dispatch notes; also "create paper", "new paper folder", "scaffold paper folder")
+venue | journal | 选刊 | any venue name       -> haipipe-paper-venue (recommend + pin; MISQ/ISR/Management Science/Nature/PNAS/JAMA/NEJM/Lancet/clinical/grant/patent all land here)
+seed                                         -> haipipe-paper-lifecycle seed        (also "paper seed", "why this paper")
+claims | claim | ledger                      -> haipipe-paper-lifecycle claims      (also "claim gap", "supported", "GAP", "H1/H2/H3")
+pitch                                        -> haipipe-paper-lifecycle pitch       (also "cover letter", "one-minute story", "editor's chair")
+narrative | story | contract                 -> haipipe-paper-lifecycle narrative
+display | figures | figures-tables           -> haipipe-paper-lifecycle display     (also "figure plan", "gallery", "preview pdf")
+section-edit | section | sec | §N            -> haipipe-paper-lifecycle section-edit (also write, edit, polish, draft, 写初稿, 整篇润色, "walk sections")
+table | figure | plot | diagram |
+  illustration | illustration-gemini |
+  figure1 | framework                        -> haipipe-paper-lifecycle <renderer verb> (display renderer family; 做表/画图/架构图)
+round | rounds                               -> haipipe-paper-round (dated work rounds; also "todo", "decisions", "applied")
+probe ["<need>"] | probe | probe run [PPNN]  -> probe-plan buffer (BUFFER / SHOW / DISPATCH; also "evidence gap", "verify claim", "hypothesis")
+discover ["<question>"]                      -> /haipipe-discovery (non-claim utility; also "lit review", "find papers", "related work")
+task ["<contract>"]                          -> /haipipe-task (non-claim utility; also "run analysis", "compute", "implement")
+rebuttal                                     -> haipipe-paper-rebuttal (also "reply to reviewers", "reviewer comments", "OpenReview response", "R1 revision")
+feedback "<text>" | feedback list|move       -> fn/feedback.md (resolve BEFORE other parsing)
+digest [session] [--dry-run]                 -> fn/digest.md   (resolve BEFORE other parsing)
+"<natural language>"                         -> infer via the keywords above, dispatch
 ```
 
 Examples:
+
 ```
-/haipipe-paper venue "examples/ProjB-PhyTrait-OpioidRx/paper/Paper-Personality-Opioid-MedJournal"
+/haipipe-paper create Paper-PhyPatSim --org jluo41
+/haipipe-paper enter "examples/Project-PhyPat-Simulation/papers/Paper-PhyPatSim"
 /haipipe-paper venue "physician trait -> opioid prescribing; observational CMS Medicare" --no-pin
-/haipipe-paper enter "examples/ProjB-PhyTrait-OpioidRx/paper/Paper-Personality-Opioid-MedJournal"
-/haipipe-paper status
-/haipipe-paper claims          (venue-free evidence inventory)
+/haipipe-paper claims
 /haipipe-paper display "Table 1 + STROBE flow + subgroup forest"
 /haipipe-paper probe "NEED-1: expand ex ante audit to all 20 messages"
-/haipipe-paper probe run                   (batch dispatch all planned probes)
-/haipipe-paper probe run PP02              (dispatch one specific probe plan)
+/haipipe-paper probe run PP02
 /haipipe-paper discover "AI-assisted precision nudging in IS literature"
-/haipipe-paper task "implement causal forest CATE estimator on Stage 2 data"
-/haipipe-paper create Paper-PhyPatSim --org jluo41    (inside examples/Project-PhyPat-Simulation)
-/haipipe-paper rebuttal "paper/"
 ```
 
----
+Routing
+--------
 
-Specialists
------------
-
-```
-haipipe-paper-enter       Status-aware paper session loader
-                          (read STATUS.md + lifecycle/rounds/displays/sections/git,
-                           report current layer, maturity, open needs, open gates, next commands)
-haipipe-paper-folder      Paper folder scaffold (3-build-submit/), reached via the
-                          create verb -> haipipe-paper-lifecycle folder
-haipipe-paper-venue       Venue-first front door: analyze the topic/paper, recommend
-                          the best-fit journal from the _venue/playbook-* packs, and
-                          pin STATUS venue (run before pitch; owns label->pack map)
-haipipe-paper-lifecycle   Stage orchestrator (seed→claims→pitch→narrative→display)
-2-section-edit/   Per-section DRAFT-PROBE-REVISE-CHECK lifecycle
-                          haipipe-paper-section-edit (combined hub)
-                          probe/ (values, citation) revise/ (write, content, weaving) check/ (audits)
-haipipe-paper-rebuttal    Submission rebuttal pipeline (venue-agnostic)
-                          (parse reviews → strategy → draft → coverage check)
-
-Venue is knowledge, not a pipeline. Consult _venue/playbook-<venue>
-(misq / isr / ms-is / pnas / nature-portfolio / jama / clinical-medicine;
- grant; patent-*) for what the target rewards. Venue coupling:
- seed+claims = venue-FREE (evidence foundation, reusable across venues),
- pitch+narrative = venue-ALIGNED (pitch = cover letter, narrative = arc).
- Venue pinning happens between claims and pitch.
-The retired -conference / -journal / -is workflow shells folded into the
-lifecycle + _venue/README.md.
-```
-
----
-
-Venue Keyword Map
-------------------
+Resolution order (first match wins):
 
 ```
-venue, which journal, where to submit, venue fit,
-recommend journal, journal selection, pick venue, 选刊, 投哪,
-MISQ, ISR, Management Science, UTD-IS, Nature, PNAS,
-JAMA, NEJM, Lancet, clinical, grant, patent             -> venue (haipipe-paper-venue)
-rebuttal, reply, response, OpenReview response,
-reviewer comments, review-response, R1 revision        -> rebuttal
-enter, status, dashboard, preload, session,
-paper status, enter paper, aware mode                   -> enter
-round, rounds, paper round, work round, latest round,
-todo, decisions, applied                                -> round
-create, create paper, new paper folder, paper folder,
-scaffold paper folder                                   -> create (haipipe-paper-lifecycle folder)
-write, draft tex, from narrative, new paper,
-scaffold paper, 写初稿                                  -> write (haipipe-paper-edit-write)
-edit, polish, polish tex, paragraph polish,
-walk sections, whole-paper revision, 整篇润色           -> edit (haipipe-paper-edit-weaving)
-probe, evidence, verify claim, claim gap,
-evidence gap, hypothesis, need probe                   -> probe (haipipe-probe)
-discover, literature, lit review, find papers,
-related work, need discover                            -> discover (haipipe-discovery)
-task, run analysis, compute, need task,
-implement, data pipeline                               -> task (haipipe-task)
+1. feedback / digest first-token             -> run the fn (before any other parsing)
+2. first positional matches a verb/alias     -> that target
+3. keyword scan over the whole phrase        -> per the trigger keywords in the Verbs block; a named journal/venue anywhere -> venue
+4. no args, cwd inside a paper root          -> enter "."
+5. no args, no paper root                    -> chooser (below)
+6. input but target unclear                  -> ASK; NEVER silently default a venue (venue drives pitch/narrative/display/prose, expensive to redo)
 ```
 
-Venue/task aliases (positional):
-```
-venue, journal, misq, isr, msis, nature,
-pnas, jama, clinical, grant, patent, 选刊  -> venue
-rebuttal, reply, response, rev             -> rebuttal
-enter, status, dashboard, preload          -> enter
-create, folder                             -> create
-write, draft, new, scaffold                -> write
-edit, polish, walk                         -> edit
-probe, evidence, verify                    -> probe
-discover, literature, lit                  -> discover
-task, run, compute, implement              -> task
-```
+A paper root is any directory upward containing `STATUS.md`, `0-lifecycle/`, `0-*.tex` + `0-sections/`, or `1-compile.sh` + `0-sections/`.
 
-Lifecycle stage verbs (positional), forwarded to the stage procedures:
-```
-seed                                       -> structure seed
-pitch                                      -> structure pitch
-venue, journal                             -> haipipe-paper-venue (recommend + pin; before pitch)
-claims, claim, ledger                      -> structure claims
-narrative                                  -> structure narrative
-display, figures, figures-tables           -> structure display
-table, tables                              -> structure table       (haipipe-paper-display-table)
-figure, plot                               -> structure figure      (haipipe-paper-display-figure)
-diagram, figure-spec, vector               -> structure diagram     (haipipe-paper-display-diagram)
-illustration, ai-img                       -> structure illustration (default, Codex bridge)
-illustration-gemini, gemini                -> structure illustration-gemini (fallback)
-figure1, framework                         -> structure framework   (display framework mode)
-round, rounds                              -> round (haipipe-paper-round)
-```
+Venue coupling (drives two routing rules): seed + claims are venue-FREE; venue pins the journal in STATUS.md between claims and pitch; pitch/narrative/display/section-edit are venue-ALIGNED and consult `_venue/playbook-<venue>`. So: "paper" with claims done but no venue pinned -> run `venue` before pitch. Re-targeting ("move to another journal") -> re-run `venue`; pitch re-couples (new [primary], new RQ framing); claims stays unchanged.
 
-Note: `write` and `edit` (formerly `create`/`revise`) route to `2-section-edit`. The venue is pinned once by `venue` (-> haipipe-paper-venue) into STATUS, and each stage consults the matching `_venue/playbook-<venue>` pack.
-
----
-
-Routing Logic
--------------
+Dispatch notes (only where non-obvious; everything else is `Skill("haipipe-paper-<target>")` or `Skill("haipipe-paper-lifecycle", args="<verb> ...")`):
 
 ```
-Step 1: Parse $ARGUMENTS.
-
-Step 2: Resolve venue/task:
-  - First positional matches a venue/task alias?      -> dispatch target = that
-  - First positional is "enter" or "status"            -> target = enter
-  - First positional is a lifecycle stage verb
-    (seed/claims/pitch/narrative/display/table/figure/diagram/
-    illustration/illustration-gemini/figure1/framework)                                          -> target = structure <verb>
-  - First positional is "round" or "rounds"            -> target = round
-  - First positional is "probe"                        -> target = probe (evidence worker)
-  - First positional is "discover"                     -> target = discover (evidence worker)
-  - First positional is "task"                         -> target = task (evidence worker)
-  - First positional is "feedback"                     -> target = feedback (utility verb)
-  - First positional is "digest"                       -> target = digest (utility verb; session harvest)
-  - Else scan keyword map across all positional args.
-  - Phrase contains "reply to reviewers" / "rebuttal"
-    / review-related verbs                            -> target = rebuttal
-  - Phrase contains "enter paper" / "paper status" /
-    "preload" / "dashboard" / "aware mode"             -> target = enter
-  - First positional is "create" or "folder", or phrase
-    contains "create paper" / "new paper folder" /
-    "scaffold paper folder"                           -> target = create
-  - Phrase contains "draft tex" / "new paper" /
-    "scaffold" / "from narrative"                     -> target = write (haipipe-paper-edit-write)
-  - Phrase contains "polish" / "edit" / "walk
-    sections" / "paragraph polish"                    -> target = edit (haipipe-paper-edit-weaving)
-  - Topic names a journal/venue (MISQ/ISR/Nature/PNAS/
-    JAMA/clinical/ICLR/NeurIPS/grant/patent) or asks
-    "which journal / where to submit"                 -> target = venue (haipipe-paper-venue)
-  - Default if a 0-lifecycle/3-narrative exists with no
-    venue hint                                        -> ASK (don't guess)
-
-Step 3: Decide handling:
-  - No args and current directory is a paper root
-    (`STATUS.md`, `0-lifecycle/`, or `0-*.tex` +
-    `0-sections/`)                                    -> target = enter, args="."
-  - No args and no paper root                         -> usage dashboard (inline)
-  - venue/task resolved, no other args                -> dispatch with "(none)"
-  - venue + input/args                                -> dispatch with full args
-  - input but no venue                                -> ASK which venue
-
-Step 4: Dispatch:
-    If target = enter:
-      Skill("haipipe-paper-enter", args="<remaining_args or .>")
-    Else if target = create:
-      Resolve the parent project (walk up from cwd, or ask). If it is a
-      Project-* repo, the paper is REPO-BACKED: resolve --org FIRST (flag or
-      ask, NEVER assume; the paper's owner may differ from the project's org),
-      then follow the papers-inside recipe in
-      project/haipipe-project/fn/repo-project.md (gh repo create
-      <org>/<Paper-Name> --private + git submodule add at the PROJECT's
-      papers/<Paper-Name>). Plain projects: just the folder. Then:
-      Skill("haipipe-paper-lifecycle", args="folder <paper-path>")
-      Repo-backed: finish with the double-bump (paper push -> project pointer
-      -> workspace pointer).
-    Else if target = "structure <verb>":
-      Skill("haipipe-paper-lifecycle", args="<verb> <remaining_args>")
-    Else if target = round:
-      Skill("haipipe-paper-round", args="<remaining_args>")
-    Else if target = probe:
-      Read fn/probe-plans.md for the full buffer convention.
-      Three sub-modes:
-      a) "probe run [PPNN]": DISPATCH mode. Resolve the project root from
-         the paper path (walk up from paper/ to examples/<Project>/).
-         For each planned probe (or one specific PPNN), call:
-         Skill("haipipe-probe", args="plan from-paper <paper_root> <probe_plan_content>")
-         Update probe plan file: status -> dispatched, probe_ref -> active probe.
-         The paper layer does NOT run the probe itself. It dispatches and
-         records the link. When the probe deposits a verdict, the paper
-         backfills it into 2-claims / sections / round logs.
-      b) "probe" (no args): SHOW mode. List 1-probe-plans/ buffer contents
-         grouped by status (planned / dispatched / verdicted). Suggest
-         "probe run" if planned items exist.
-      c) "probe <claim or need text>": BUFFER mode. Create a new probe plan
-         file in 1-probe-plans/ (PPNN_<slug>.md) with the claim/need text,
-         the source stage, and structured fields per fn/probe-plans.md.
-         Do NOT dispatch yet.
-    Else if target = discover:
-      Direct dispatch for non-claim utility work. Resolve the project root.
-      Skill("haipipe-discovery", args="<remaining_args> --project <project_root>")
-    Else if target = task:
-      Direct dispatch for non-claim utility work. Resolve the project root.
-      Skill("haipipe-task", args="<remaining_args> --project <project_root>")
-    Else if target = feedback:
-      MANDATORY: Read fn/feedback.md FIRST — it defines the routing protocol,
-      keyword→skill map, merge-or-create rules, and inbox paths. Do NOT default
-      to creating auto-memory files or skip the routing. The fn file IS the spec.
-      Then run it inline. Three sub-modes:
-        - capture "<text>": infer the target sub-skill (keyword in text, else
-          active stage from .paper-console.yaml, else orchestrator fallback),
-          write one dated file into THAT skill's feedback/ folder (create it +
-          README if missing), then confirm where it landed + how it matched.
-        - `feedback list [skill]`: aggregate open items across ALL feedback/
-          inboxes under the paper skill root, grouped by skill.
-        - `feedback move <file> <skill>`: re-route a mis-filed item.
-      Capture is MERGE-OR-CREATE: a same-topic complaint updates the existing
-      inbox file (append a dated recurrence, preserve prior wording verbatim,
-      reopen if it was fixed) instead of spawning a duplicate, so inboxes stay
-      self-limiting. This orchestrator handles feedback directly; no fix on the spot.
-    Else if target = digest:
-      Read fn/digest.md and run it inline. RESOLVE the target session first: no
-      arg = the CURRENT session; "<session-name|id>" = a PAST session — locate its
-      transcript .jsonl in this repo's ~/.claude/projects dir (id directly, or
-      grep the store for the /rename'd name) and extract its human turns as the
-      transcript to scan. Then scan for tool/skill feedback, distill discrete
-      items, dedup (within-batch + against inboxes via the same-topic test),
-      PRESENT for a mandatory confirm gate, then route each approved item through
-      the feedback capture (merge-or-create). Close with an ITEMIZED report: list
-      every item generated (NEW/MERGED/FLAGGED/DROPPED) + the file each landed in,
-      then the tally. Honor --dry-run (present only, file nothing — but still print
-      the same itemized list marked "preview"). Flag global behavioral prefs for
-      /remember rather than filing them. Never auto-files. Best run from a fresh
-      session for clean context.
-    Else:
-      Skill("haipipe-paper-<target>", args="<remaining_args>")
-
-Step 5: Capture the specialist's structured tail (status / summary /
-        artifacts / next), present it.
+create    Resolve the parent project (walk up from cwd, or ask). Project-* repo -> paper is REPO-BACKED:
+          resolve --org FIRST (flag or ask, NEVER assume; the paper's owner may differ from the project's),
+          follow the papers-inside recipe in project/haipipe-project/fn/repo-project.md, then
+          Skill("haipipe-paper-lifecycle", args="folder <paper-path>"), then double-bump
+          (paper push -> project pointer -> workspace pointer). Plain projects: just the folder + scaffold.
+probe     Three sub-modes -- "<text>" BUFFER a plan file in 1-probe-plans/, no args SHOW the buffer,
+          "run [PPNN]" DISPATCH planned probes via Skill("haipipe-probe", args="plan from-paper ...").
+          The paper layer never runs probes itself; verdicts backfill into 1-claims / sections / round logs.
+          Full buffer convention: fn/probe-plans.md.
+discover  Resolve the project root, Skill("haipipe-discovery", args="<args> --project <project_root>").
+task      Resolve the project root, Skill("haipipe-task", args="<args> --project <project_root>").
 ```
 
----
+After dispatch, capture the specialist's structured tail (status / summary / artifacts / next) and present it.
 
-No-Arg Mode (status first, then usage dashboard)
-------------------------------------------------
+> CC: write/edit 的老路由目标 haipipe-paper-edit-write / edit-weaving 在重构后已不存在（对应能力并入 2-phase/2-revise workers，由 stage 内部调用）。我把 write/edit/polish 这些词全部路由到 section-edit stage 了，对吗？还是这组动词干脆退休不再出现在 Verbs 块里？
 
-When invoked with no arguments, first check whether the current directory is inside a paper root. A paper root is any directory upward containing one of:
+Closing Block (end every reply)
+--------------------------------
 
-- `STATUS.md`
-- `0-lifecycle/`
-- `0-*.tex` plus `0-sections/`
-- `1-compile.sh` plus `0-sections/`
+In a paper session, END every reply with ONE fenced `text` block: a titled top rule, the return-contract tail, a plain bottom rule, then the stage strip as the very last line. Marker semantics (🔥 = session's active stage, 🚀 = overall frontier, 🔥🚀 collapse) are owned by `../wiki/01-focus-strip-markers.md`; render the strip DETERMINISTICALLY with the helper, never hand-type it:
 
-If a paper root is found, dispatch:
-
-```
-Skill("haipipe-paper-enter", args="<detected-paper-root>")
+```sh
+sh "$CLAUDE_SKILL_DIR/../wiki/10-stage-strip.sh" <paper-dir> [<session-stage>]
 ```
 
-Only if no paper root is found, do not fan out. Emit a compact venue chooser:
+```text
+── 📄 paper · claims 🔥 ───────────────────────
+status:        ok|blocked|failed
+paper_root:    <path>
+current_layer: <layer>
+next:          <single recommended command>
+──────────────────────────────────────────────
+seed ✅  claims 🚀  pitch ⬜  narrative ⬜  display ⬜  →  section-edit ⬜  →  review ⬜
+```
 
+Gate-aware: advancing `current_layer` requires an EXPLICIT user confirm that the current stage is done (Stage Gate, `../wiki/08-stage-gate.md`); once STATUS.md carries the gate ledger, ✅ means "user-confirmed". Every stage / enter skill inherits this closing block.
+
+No-Arg Chooser
+---------------
+
+When no paper root is found, do not fan out. Emit a compact chooser (one line per entry; the Verbs block carries the detail):
 
 ```
 📄 haipipe-paper: no paper detected. Pick an entry:
-
-  venue       recommend + pin the best-fit journal for a topic or paper.
-              Analyzes fit across the _venue/playbook-* packs, writes STATUS venue.
-              Start here if the venue is undecided (venue-first).
-              /haipipe-paper venue "<topic or paper-path>" [--no-pin]
-
-  create      create a paper folder (repo-backed inside a Project-* repo; org asked, never assumed).
-              /haipipe-paper create "<Paper-Name>" [--org <owner>]
-
-  enter       open an existing paper's console (status, open needs, frontier).
-              /haipipe-paper enter "<paper-path>"
-
-  write|edit  draft / polish prose for an existing folder (2-section-edit).
-  rebuttal    parse reviews + draft a rebuttal (any venue, post-review).
-
-  probe       buffer a claim-level evidence need, or batch-dispatch accumulated probes.
-              /haipipe-paper probe "<need>"   (buffer a probe plan)
-              /haipipe-paper probe            (show buffer)
-              /haipipe-paper probe run        (batch dispatch to /haipipe-probe)
-  discover    direct dispatch to /haipipe-discovery (non-claim utility work).
-  task        direct dispatch to /haipipe-task (non-claim utility work).
-
-Next: /haipipe-paper <entry> "<input>"
+  create      /haipipe-paper create "<Paper-Name>" [--org <owner>]
+  venue       /haipipe-paper venue "<topic or paper-path>" [--no-pin]
+  enter       /haipipe-paper enter "<paper-path>"
+  section-edit | rebuttal | probe | discover | task    (see /haipipe-paper help text above)
 ```
-
----
-
-Disambiguation Rules
----------------------
-
-  - Venue unclear / undecided → run `venue` (haipipe-paper-venue) to recommend and
-    pin. Do NOT default to a venue silently: venue choice drives pitch, narrative,
-    display, and prose decisions that are expensive to redo.
-  - User says "paper" with no venue pinned + has claims done → run `venue` before
-    pitch. Claims is venue-free and does not need a venue.
-  - User says "rebuttal" + provides paper path → dispatch to rebuttal immediately
-    (rebuttal is venue-agnostic).
-  - Re-targeting ("move this paper to another journal") → run `venue` to re-pin;
-    pitch (cover letter) then re-couples to the new target: new [primary],
-    new RQ framing, new Editor's Chair Test. Claims stays unchanged.
-    Do NOT chain blindly.
-
----
 
 Specialist Return Contract
 ---------------------------
 
-Each specialist should return a tail block:
+Each specialist returns a tail block:
 
 ```
 status:    ok | blocked | failed
 summary:   2-3 sentences on what the specialist did
 artifacts: [paths created, read, or modified]
-next:      suggested next command (often a lifecycle stage skill like
-           /haipipe-paper-display-figure, /haipipe-paper-edit-write, or a re-invocation
-           of /haipipe-paper for a different phase)
+next:      suggested next command
 ```
-
----
 
 Delivery Need Routing
----------------------
-
-Paper work is demand-driven. A paper paragraph, claim, figure, table, or round todo item may reveal that the next action is a probe, discovery, task, display unit, or insight. The `enter/status` path must surface those needs before recommending more writing.
-
-Use these shared references when interpreting or creating need records:
-
-```
-../wiki/11-delivery-need.md         need record schema + backfill protocol
-../wiki/12-evidence-routing.md      \needprobe{} macro + paper/evidence boundary + subagent dispatch
-```
-
-Routing hints:
-
-```
-claim needs a verdict or robustness check       -> /haipipe-paper probe "<need>"  (buffer first)
-claim needs outside literature/context          -> /haipipe-paper probe "<need>"  (probe gathers via discover)
-claim/display needs a run or data artifact      -> /haipipe-paper probe "<need>"  (probe gathers via task)
-figure/table needs materialized output          -> /haipipe-task-for-display <need>  (direct, not claim-gated)
-closed evidence needs reusable meaning/caveat   -> /haipipe-insight <artifact>
-wording/section placement needs paper work      -> paper lifecycle stage/edit skill
-non-claim utility work (lit scan, data check)   -> /haipipe-paper discover|task   (direct dispatch)
-```
-
-For claim-related evidence, ALWAYS route through the probe buffer. The probe is the claim-level evidence contract; it calls task/discover during its Gather step. Direct task/discover verbs are for non-claim utility work only.
-
-The paper backfills resolved evidence into `2-claims`, `4-display`, sections, or round logs. Evidence workers do not own the paper story. See `fn/probe-plans.md` for the buffer convention.
-
-Relation to Lifecycle Stage Skills, Sections, and Components
--------------------------------------------------------------
-
-The orchestrator and the venue profiles in `_venue/` operate at the workflow level. Underneath, skills are grouped to mirror the lifecycle spine. The canonical tree is in `README.md` and `../wiki/06-paper-skill-structure.md`; the stage-to-procedure map is in `../wiki/04-lifecycle-map.md`. In brief:
-
-```
-0-enter/        haipipe-paper-enter (Paper Console)
-1-lifecycle/    haipipe-paper-lifecycle (orchestrator) + one skill per stage:
-                -{seed,claims,pitch,narrative,display}
-                display renderers: -display-table (LaTeX tables), -display-figure
-                (data plots), -display-diagram (vector SVG), -display-illustration
-                (AI concept art, default Codex bridge) + -display-illustration-gemini (fallback)
-                (figure-planner folded into -display; see its ref/)
-2-section-edit/ haipipe-paper-section-edit (combined hub, DRAFT-PROBE-REVISE-CHECK)
-                probe/ (edit-values, edit-citation, edit-check-reference)
-                revise/ (edit-write, edit-content, edit-weaving)
-                check/  (edit-claim-audit, edit-format, edit-submission-audit, etc.)
-                tools/  (edit-diffpdf, edit-to-overleaf, etc.)
-                sections/ per-section playbooks
-3-build-submit/ haipipe-paper-folder (scaffold) + -build-{scaffold,restructure,check}
-4-respond/      paper-rebuttal, rebuttal-response
-5-present/      paper-slides, paper-poster
-components/     citation (audit/verifier/guide), compile, diff (cross-cutting)
-```
-
-Per-section playbooks live in `2-section-edit/sections/` and are read by the section-edit/review skills when they target a specific `.tex` under `0-sections/`. Components are cross-cutting: figures and citations are touched during write/review. Power users can invoke any skill directly by its slash command; the orchestrator is the right entry when you do not yet know the stage or venue.
-
-Paper-folder contract
 ----------------------
 
-All paper skills assume their input is a paper folder following the layout:
+Paper work is demand-driven: a paragraph, claim, figure, or round todo may reveal that the next action is evidence work. The enter/status path surfaces those needs before recommending more writing. Need record schema: `../wiki/11-delivery-need.md`; paper/evidence boundary + `\needprobe{}`: `../wiki/12-evidence-routing.md`.
 
 ```
-<paper>/
-├── STATUS.md                               paper state, maturity, active round
-├── 0-<paper>.tex / .bib                    master shell
-├── 0-Supplementary-<paper>.tex             optional SI master
-├── 0-lifecycle/                            tex-first lifecycle spine
-│   ├── 0-seed/0-seed.md
-│   ├── 1-claims/1-claims.md
-│   ├── 2-pitch/2-pitch.md
-│   ├── 3-narrative/3-narrative.md
-│   ├── 4-display/4-display.tex
-│   └── 5-section-edit/        per-section scaffolds (DRAFT-PROBE-REVISE-CHECK)
-├── 0-sections/                             manuscript prose .tex files
-├── 0-displays/                             display units, one folder per figure/table family
-│   ├── display01-<slug>/
-│   ├── display02-<slug>/
-│   └── displayNN-<slug>/
-├── 1-probe-plans/                          evidence-need buffer (accumulated, batch-dispatched)
-│   ├── README.md                           index + dispatch status
-│   ├── PP01_<slug>.md                      one file per planned probe
-│   └── PP02_<slug>.md
-├── 1-rounds/                               dated paper work rounds
-│   ├── latest.md
-│   └── vYYMMDD/
-│       ├── README.md
-│       ├── discussion.md
-│       ├── decisions.md
-│       ├── todo.md
-│       └── applied.md
-├── 1-config.yaml                           paths + metric definitions
-├── 1-compile.sh                            build script
-├── 1-diff/vs-<ref>/                        diff packages
-└── 1-review/{A-E,DECISIONS.md,HANDOFF.md}/ active review session pipeline
+claim needs a verdict / robustness / literature / data artifact  -> /haipipe-paper probe "<need>"  (buffer first; probe gathers via task+discover, deposits verdicts)
+figure/table needs materialized output (not claim-gated)         -> /haipipe-task-for-display <need>
+closed evidence needs reusable meaning/caveat                    -> /haipipe-insight <artifact>
+wording/section placement                                        -> the owning lifecycle stage skill
+non-claim utility work (lit scan, data check)                    -> /haipipe-paper discover|task
 ```
 
-A revision **session** = a git branch (e.g. `review_v0325`); paper skills are branch-agnostic at the file level.
+For claim-related evidence, ALWAYS route through the probe buffer; direct discover/task verbs are for non-claim utility only. Resolved evidence backfills into `1-claims`, `4-display`, sections, or round logs. Evidence workers never own the paper story.
 
----
+Structure Pointers
+-------------------
 
-Composing with Other Workflows
--------------------------------
+Each area's internal contract lives with its owner; consult, never restate:
 
 ```
-/idea-discovery       → IDEA_REPORT.md
-/run-probe       → experiment results
-/auto-review-loop     → AUTO_REVIEW.md
-/result-to-claim      → CLAIMS_FROM_RESULTS.md
-/haipipe-paper-narrative     → 0-lifecycle/3-narrative/3-narrative.tex
+skill tree (0-enter / 1-lifecycle / 2-phase / 3-build-submit / 4-respond / 5-present / components / wiki)
+                                   -> README.md (skill root) + ../wiki/06-paper-skill-structure.md
+paper-folder layout                -> ../3-build-submit/_shared/paper-folder-anatomy.md (canonical tree, prefix semantics, maturity ladder)
+lifecycle stages + venue coupling  -> ../wiki/03-paper-lifecycle.md + ../wiki/04-lifecycle-map.md
+rounds                             -> ../wiki/07-paper-rounds.md
+venue knowledge                    -> ../_venue/playbook-<venue> packs (venue is knowledge, not a pipeline)
+```
+
+Composing with Evidence Workers
+--------------------------------
+
+```
+/haipipe-paper (router)
+        ├─► /haipipe-paper-lifecycle    (seed -> claims -> [venue] -> pitch -> narrative -> display -> section-edit)
+        ├─► /haipipe-paper-rebuttal     (any venue, post-review)
         │
-        ▼
-/haipipe-paper        ← you are here (router)
-        │
-        ├─► /haipipe-paper-lifecycle   (seed→claims→pitch→narrative→display)
-        ├─► /haipipe-paper-edit-write  (narrative+plan → fresh tex prose)
-        ├─► /haipipe-paper-edit-weaving (existing tex → polish)
-        ├─► /haipipe-paper-rebuttal    (any venue, post-review)
-        ├─► consult _venue/playbook-<venue>  (what the target rewards)
-        │
-        │   Evidence workers (dispatched from paper when a claim hits a gap):
-        ├─► /haipipe-probe    (claim verdict / robustness check)
-        ├─► /haipipe-discovery (outside literature / context)
-        └─► /haipipe-task      (run analysis / compute artifact)
-            │
-            └── verdicts/artifacts backfill into paper 2-claims, sections, round logs
+        │   evidence workers (dispatched when a claim hits a gap):
+        ├─► /haipipe-probe      (claim verdict; calls task/discover in its Gather, deposits to insight)
+        ├─► /haipipe-discovery  (outside literature / context)
+        └─► /haipipe-task       (run analysis / compute artifact)
+            └── verdicts/artifacts backfill into 1-claims, sections, round logs
 ```
 
----
+> CC: 原文这张图上游还列了 /idea-discovery /run-probe /auto-review-loop /result-to-claim 四个入口，skill 清单里已找不到，我删了。如果它们有新名字（或还想保留占位），告诉我补回。
 
-## Feedback
+> CC: 原文头部还有一处孤立引用（"读 lifecycle 参考时也读 ../1-lifecycle/haipipe-paper-display-figure/SKILL.md"），看不出为什么单点名 figure 渲染器，我也删了。有特殊用途的话说一声。
 
-`/haipipe-paper feedback "<text>"` captures a complaint / confusion / wish about THIS skill (one dated file per item, `status: open`) to fix in a later revision pass. Capture-time routing: the complaint is inferred to the specific sub-skill it concerns and written into THAT sub-skill's `feedback/` folder (e.g. a pitch gripe -> `1-lifecycle/haipipe-paper-pitch/feedback/`); cross-cutting or unclassifiable items fall back to the orchestrator's own `feedback/`. The folder IS the record of which skill it concerns. `/haipipe-paper feedback list [skill]` aggregates open items across ALL inboxes; `/haipipe-paper feedback move <file> <skill>` re-routes a mis-filed item. Capture is MERGE-OR-CREATE: a same-topic complaint updates the existing file (append dated recurrence, preserve prior wording verbatim, reopen if fixed) so inboxes stay self-limiting. This is feedback about the tool, not the work it produces. Route a `feedback` first-token here before other parsing.
+Feedback & Digest
+------------------
 
-`/haipipe-paper digest ["<session-name|id>"] [--dry-run]` is the bulk harvester: typically run from a FRESH session, it names a PAST session to harvest (resolves the /rename'd name or id to its transcript .jsonl, extracts the human turns) — or digests the CURRENT session if given no argument. It scans for feedback you gave conversationally, distills discrete items, dedups them, and (after a mandatory confirm gate) routes each through the same capture. It files only skill-feedback; global behavioral preferences are fanned out to EVERY orchestrator's portable `PREFERENCES.md` (git-tracked, survives a machine change) and optionally `/remember`ed, not filed in the inboxes. Route a `digest` first-token to it. Full conventions: `fn/feedback.md` (keyword->skill map, inbox paths, merge-or-create, schema) and `fn/digest.md` (session resolution + harvest); fallback inbox: `feedback/README.md`.
+`/haipipe-paper feedback "<text>"` captures a complaint/wish about THIS skill family, capture-time-routed into the concerned sub-skill's `feedback/` inbox (folder = the record; orchestrator inbox is the fallback), MERGE-OR-CREATE so inboxes stay self-limiting; `feedback list [skill]` aggregates, `feedback move <file> <skill>` re-routes. `/haipipe-paper digest [session] [--dry-run]` harvests a session transcript into discrete feedback items (dedup, mandatory confirm gate, then the same capture; global behavioral prefs fan out to every orchestrator's PREFERENCES.md instead of the inboxes). Full spec: `fn/feedback.md` + `fn/digest.md`; this section is a pointer, not the spec.
