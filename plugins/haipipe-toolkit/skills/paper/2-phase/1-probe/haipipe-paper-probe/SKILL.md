@@ -4,7 +4,7 @@ description: "PROBE phase worker (internal). Called by stage skills after DRAFT 
 argument-hint: "[stage-or-section] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.7.0"
+  version: "1.7.1"
   last_updated: "2026-07-03"
   summary: "PROBE phase worker (internal). Two route families: document workers (citation/values/display, each owning a _DOC_ needs registry) + dispatch through /haipipe-probe (mode light by default, full for claims; reuse-before-create)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -153,7 +153,7 @@ disp ⬜    _DISPLAY_ does not exist
 Strip form (the cite/val/disp sub-tracks belong to the probe phase):
 
 ```
-phase:   draft ✅  │  probe: cite ⬜  val --  disp --  │  revise ⬜  │  check ⬜
+phase:   draft ✅  │  probe: cite 🔥🚀  val --  disp --  │  revise ⬜  │  check ⬜
 ```
 
 ## Relation to other phases
