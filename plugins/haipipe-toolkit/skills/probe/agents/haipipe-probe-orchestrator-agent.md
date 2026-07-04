@@ -12,10 +12,11 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "1.3.1"
+  version: "1.4.0"
   last_updated: "2026-07-04"
   summary: "Orchestrator agent — dispatch target for probe lifecycle. Coordinates creator + reviewer, dispatches task-orchestrator during Gather. Step 1.5 SWEEP: Link existing artifacts before Calling new work; never rerun what resolves."
   changelog:
+    - "1.4.0 (2026-07-04): sources manifest replaced by pick_list (pointer {anchor: sources.md S##, why: one line} per relevant source; note deliberately-skipped groups). Source bodies stay in sources.md; the caller's harvest subagent expands picked entries in its own clean context. I select, I don't haul."
     - "1.3.1 (2026-07-04): manifest entries must carry SUBSTANCE — summary (2-3 lines) + finding (result with numbers) lifted from sources.md, not just identity+relevance; identity-only entries are defective. (JL: harvested _CITATION_ had paper metadata but no findings — the fields existed upstream and were dropped by the manifest spec.)"
     - "1.3.0 (2026-07-04): return contract hardened as the paper side's ONLY evidence window — takeaways must carry per-line source anchors; sources becomes a STRUCTURED manifest (title/authors/year/venue/relevance-to-need/verification-status/anchor) LIFTED from the reviewer-gated sources.md, so the caller writes _CITATION_ by pure transcription without reading project files."
     - "1.2.0 (2026-07-04): PLAN input form (callers hand over a plan; no probe folder needed up front) + SWEEP now DECIDES the shape (enrich existing probe | reuse covering artifact directly with NO wrapper for light plans | create+gather); full mode always gets a folder. Return contract gains shape/ref/takeaways/sources. Live seed-test showed the paper session consuming a discovery inline because the reuse decision lived caller-side; the decision is now mine."
@@ -214,23 +215,17 @@ ref:       P.<ref>, or the directly-reused artifact path (shape: reused)
 takeaways: 3-5 lines, EACH line ending with a source anchor -- e.g.
            "(landscape.md §Verdict)", "(sources.md S05)" -- so the caller can
            spot-check any claim one hop from its source
-sources:   STRUCTURED manifest for citation harvest, or []. One entry per
-           relevant source, carrying the SUBSTANCE, not just the identity:
-             meta      full title · authors · year · venue
-             summary   2-3 lines: what the paper does/shows (lift sources.md `summary:`)
-             finding   1-2 lines: the RESULT that matters to the need, with numbers
-                       when the source recorded them (lift sources.md `finding:`)
-             relevance one line: why it matters TO THIS NEED
-             status    VERIFIED | NEEDS-VERIFICATION + "> SEARCH: <string>"
-             anchor    sources.md S##
-           LIFT summary/finding from the discovery's sources.md (already
-           reviewer-gated) -- select and carry over, do not re-summarize from
-           memory, and do not compress them away: an identity-only entry
-           (title+year+venue) is a DEFECTIVE manifest entry.
+pick_list: for citation harvest, or []. One line per RELEVANT source --
+           pointer + reason, NOT the substance:
+             {anchor: <sources.md S##>, why: "<one line: why it matters to the need>"}
+           Select, don't copy: the summary/finding bodies STAY in sources.md;
+           the caller's harvest subagent expands the picked entries there.
+           Note what was deliberately NOT picked when a whole group is skipped
+           (e.g. "S015-S016 nudge lit: parked, out of scope").
 next:      "deposit verdict" or "user review evidence.md"
 ```
 
-The takeaways + sources manifest are the caller's ONLY evidence window: the paper side writes its documents by TRANSCRIBING this return, never by reading project files. I read sources.md so the caller doesn't have to. I still never write paper files myself.
+The takeaways + pick_list are the caller's ONLY evidence window: takeaways carry the conclusions (anchored), the pick_list carries pointers for the caller's own harvest subagent to expand in its own clean context. I read the evidence so the CALLER's session doesn't have to -- but I never write paper files, and I don't haul source bodies across the return.
 
 ## Environment
 

@@ -4,7 +4,7 @@ description: "citation probe worker. One skill, one working doc (_CITATION_). Tw
 argument-hint: "[verb] [section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent, WebFetch, WebSearch
 metadata:
-  version: "1.4.1"
+  version: "1.5.0"
   last_updated: "2026-07-03"
   summary: "Unified citation probe worker. AUDIT→SEARCH→CANDIDATE→PLACE→REVIEW lifecycle (fully automatic, no human gate). Human review happens in CHECK only. Single working doc = _CITATION_ (plain text only, no bibtex ever). Absorbs check-reference + manual-review-citations."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -102,22 +102,26 @@ The five phases above are demand-pull: the section's text needs citations, go fi
 harvest <stage> <probe_ref>       e.g. harvest 0-seed probes/D0703_seed-landscape
 ```
 
-Two forms -- transcription is the default; reading project files happens only in the subagent form:
+Harvest ALWAYS runs as a dispatched SUBAGENT (produce) and the calling worker reviews the result (mechanical acceptance) -- producer and reviewer are never the same context:
 
 ```
-TRANSCRIBE (default, inline)   input = the probe agent's STRUCTURED sources manifest
-                               (from its return: meta/summary/finding/relevance/
-                               status/anchor per entry). Write _CITATION_ by transcription.
-                               NO project files are read in the paper session.
-SUBAGENT (fallback)            manifest >~20 entries, or a multi-discovery merge:
-                               run as a dispatched subagent that walks probe_ref ->
-                               evidence_refs -> sources.md in its OWN clean context,
-                               writes _CITATION_ directly, returns a one-line summary.
+input     the probe agent's return: ref + pick_list
+          ({anchor: sources.md S##, why: "<one line>"} per relevant source)
+SUBAGENT  in its OWN clean context: opens the ref'd sources.md, reads ONLY the
+          picked S## entries (no free browsing), expands each into a _CITATION_
+          card (format below), writes _CITATION_{stage}.md directly, returns a
+          one-line summary + counts ("12 cards, 5 VERIFIED / 7 🔍").
+WORKER    mechanical acceptance, WITHOUT reading project files:
+          cards == pick_list count? every card has summary/finding/anchor?
+          `grep -c '@' == 0` (no bibtex)? -> log to _LOG + index on pass;
+          re-dispatch the subagent with the failure note on fail.
 ```
 
-Procedure (both forms):
+The paper session never reads sources.md in either role; content-level quality is anchored upstream (sources.md is discovery-reviewer-gated) and checked by the human in CHECK via the per-card anchors.
 
-1. Establish the source set: from the manifest (transcribe form) or by walking `probe_ref` -> probe.yaml `evidence_refs` -> the linked discovery's `sources.md` (subagent form only).
+Procedure (inside the subagent):
+
+1. Establish the source set from the pick_list; open the ref'd discovery's `sources.md` and read only the picked entries.
 2. Write/extend `_CITATION_{stage}.md`: NEVER tables. Group by literature/theme (`##` sections); one paper per `###` subsection with FULL title in the heading and bullet fields transcribed from the manifest:
 
 ```

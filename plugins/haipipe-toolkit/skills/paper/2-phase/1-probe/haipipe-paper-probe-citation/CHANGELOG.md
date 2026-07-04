@@ -4,6 +4,11 @@ haipipe-paper-probe-citation — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [1.5.0] — 2026-07-04
+
+Changed (JL: agent produces, worker reviews)
+- Harvest is ALWAYS a dispatched subagent: input = probe agent's pick_list; the subagent opens only the picked sources.md entries in its own clean context, expands them into _CITATION_ cards, writes the file, returns counts. The calling worker does mechanical acceptance only (card count, summary/finding/anchor present, no bibtex) — producer and reviewer are never the same context. Transcribe-inline form retired.
+
 ## [1.4.1] — 2026-07-04
 
 Changed
