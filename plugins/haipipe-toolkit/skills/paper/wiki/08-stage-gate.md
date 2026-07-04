@@ -68,7 +68,7 @@ The gate governs stage EXITS; this contract governs phase VISIBILITY inside the 
 1. **Announce every boundary.** Entering a phase = one line in the reply ("PROBE: dispatching seed landscape...") + a `[PHASE]` entry in the stage `_LOG` + the phase line of the closing block moves 🔥.
 2. **No silent skips.** A phase may be skipped only by an EXPLICIT logged verdict: one reply line with the reason, `[PROBE] skipped -- <reason>` in `_LOG`, and `--` on the phase line. "The draft looks fine" is a verdict to record, not a license to say nothing. Defaults: a NEW stage artifact runs all four phases; skip is for re-entries and minor edits.
 3. **CHECK is never implicit.** Entering CHECK means presenting the exit-criteria report and the approval ask (Steps 3-4 above). An elicitation reply does not become CHECK because the user responds to it; if the user starts giving CHECK-style feedback early, say so and open CHECK properly.
-4. **PROBE dispatches through the probe worker only.** A stage's evidence needs go `Skill("haipipe-paper-probe", ...)` -> `/haipipe-probe` -> discovery/task. Stage skills never call `/haipipe-probe`, discovery agents, or task agents directly.
+4. **PROBE dispatches through the probe worker only, and the worker always dispatches the agent.** A stage's evidence needs go `Skill("haipipe-paper-probe", ...)` -> `Agent(haipipe-probe-orchestrator-agent)` -> probe lifecycle -> discovery/task. Stage skills never call `/haipipe-probe`, discovery agents, or task agents directly; the worker itself never sweeps the project or reads its evidence inline -- reuse decisions are the agent's SWEEP, made in clean context.
 
 
 Per-Stage Exit Criteria

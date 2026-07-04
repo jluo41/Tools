@@ -4,6 +4,11 @@ haipipe-paper-seed — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [3.2.1] — 2026-07-04
+
+Fixed
+- PROBE step route updated: the worker ALWAYS dispatches the orchestrator agent; the agent's SWEEP decides enrich / reuse-directly / create+gather.
+
 ## [3.2.0] — 2026-07-04
 
 Changed

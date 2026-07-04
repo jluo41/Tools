@@ -4,6 +4,11 @@ haipipe-paper-probe-citation — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [1.3.1] — 2026-07-04
+
+Changed
+- Harvest format relaxed: within a `##` literature group, numbered one-line entries are as valid as per-`###` subsections (house rule allows numbered one-line reference lists); tables remain forbidden.
+
 ## [1.3.0] — 2026-07-04
 
 Added
