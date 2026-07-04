@@ -128,7 +128,7 @@ A fresh probe's evidence_plan items all start `not_started`, which would send th
       near-duplicate.
    b. an existing artifact FULLY covers a LIGHT plan → REUSE DIRECTLY:
       create NO probe folder; read the artifact here (clean context) and
-      return {reused_ref, takeaways, sources manifest} to the caller.
+      return {reused_ref, anchored takeaways, pick_list} to the caller.
       A wrapper probe materializes later only if the claim escalates to a
       committed verdict (full mode).
    c. partial or no coverage → create/continue the probe: items with a
