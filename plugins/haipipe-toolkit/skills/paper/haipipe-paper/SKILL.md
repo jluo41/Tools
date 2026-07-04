@@ -13,60 +13,32 @@ metadata:
 Skill: haipipe-paper (orchestrator)
 ====================================
 
-User-facing entry for the paper lifecycle. The paper lifecycle is a delivery
-owner: it owns this paper's angle, claims, narrative, section map, displays,
-maturity, and dated work rounds. Project-level evidence lives outside
-the paper in probes, discoveries, tasks, and insights.
+User-facing entry for the paper lifecycle. The paper lifecycle is a delivery owner: it owns this paper's angle, claims, narrative, section map, displays, maturity, and dated work rounds. Project-level evidence lives outside the paper in probes, discoveries, tasks, and insights.
 
-When the paper hits a gap, record or surface a delivery need and route directly
-to the relevant evidence worker. Do not route through a project-level narrative
-layer. Use `../wiki/11-delivery-need.md` when creating or interpreting
-GAP/NEED records.
+When the paper hits a gap, record or surface a delivery need and route directly to the relevant evidence worker. Do not route through a project-level narrative layer. Use `../wiki/11-delivery-need.md` when creating or interpreting GAP/NEED records.
 
-This orchestrator parses intent and dispatches to the right venue specialist
-via `Skill()`. Lifecycle phase skills (pitch, claims, narrative, display,
-write, compile, revise, review, present) are called by the specialist, not by
-this orchestrator directly.
+This orchestrator parses intent and dispatches to the right venue specialist via `Skill()`. Lifecycle phase skills (pitch, claims, narrative, display, write, compile, revise, review, present) are called by the specialist, not by this orchestrator directly.
 
 For the canonical paper structure, read `README.md` at the paper skill root.
 
-ALWAYS read and honor `PREFERENCES.md` (this skill's own folder): portable,
-git-tracked global behavioral preferences (e.g. communicate via ASCII diagrams)
-that survive a machine change, unlike the machine-local `~/.claude` auto-memory.
-`digest` / `feedback` append flagged global prefs there (merge-or-create).
+ALWAYS read and honor `PREFERENCES.md` (this skill's own folder): portable, git-tracked global behavioral preferences (e.g. communicate via ASCII diagrams) that survive a machine change, unlike the machine-local `~/.claude` auto-memory. `digest` / `feedback` append flagged global prefs there (merge-or-create).
 
 Stage Strip (end every reply)
 ------------------------------
 
-In a paper session, END every reply with the lifecycle stage strip so the user
-always sees which stage we are in. Place it as the VERY LAST line of the reply,
-AFTER the machine-readable return-contract tail (`status` / `paper_root` /
-`current_layer` / `next`). It is the closing line, not the opening one. Spine
-order is fixed:
+In a paper session, END every reply with the lifecycle stage strip so the user always sees which stage we are in. Place it as the VERY LAST line of the reply, AFTER the machine-readable return-contract tail (`status` / `paper_root` / `current_layer` / `next`). It is the closing line, not the opening one. Spine order is fixed:
 
 ```text
 seed -> claims -> pitch -> narrative -> display -> section-edit -> review
 ```
 
-The strip is OVERALL PROGRESS (where the paper sits in its lifecycle), not what
-this session happened to touch. Read `current_layer` from the paper's `STATUS.md`.
-Mark each stage ✅ before current, 🚀 at current (the overall frontier, a calm
-"you-are-here"), ⬜ after current; arrows sit before `section-edit` and `review`.
-One line, e.g.:
+The strip is OVERALL PROGRESS (where the paper sits in its lifecycle), not what this session happened to touch. Read `current_layer` from the paper's `STATUS.md`. Mark each stage ✅ before current, 🚀 at current (the overall frontier, a calm "you-are-here"), ⬜ after current; arrows sit before `section-edit` and `review`. One line, e.g.:
 
 ```text
 seed ✅  claims ✅  pitch ✅  narrative ✅  display ✅  →  section-edit 🚀  →  review ⬜
 ```
 
-Two markers, two places. The STRIP uses 🚀 for the current stage (the overall
-frontier); it never uses 🔥. 🔥 lives in the closing-block TOP-RULE LABEL
-(`📄 paper · <current_layer> 🔥`), which flags the stage this session is actively
-working. Normally the label stage and the strip frontier are the same stage, so
-you see a 🔥 label above a 🚀 strip for that stage. When the session loops back to
-an already-done stage (frontier `section-edit`, session tuning `claims`), the label
-reads `· claims 🔥` while the strip still shows `section-edit 🚀` as the frontier,
-so the divergence is visible. (The helper also accepts an optional 2nd arg to mark
-a stage 🔥 inside a bare strip when no label is present, e.g. the enter dashboard.)
+Two markers, two places. The STRIP uses 🚀 for the current stage (the overall frontier); it never uses 🔥. 🔥 lives in the closing-block TOP-RULE LABEL (`📄 paper · <current_layer> 🔥`), which flags the stage this session is actively working. Normally the label stage and the strip frontier are the same stage, so you see a 🔥 label above a 🚀 strip for that stage. When the session loops back to an already-done stage (frontier `section-edit`, session tuning `claims`), the label reads `· claims 🔥` while the strip still shows `section-edit 🚀` as the frontier, so the divergence is visible. (The helper also accepts an optional 2nd arg to mark a stage 🔥 inside a bare strip when no label is present, e.g. the enter dashboard.)
 
 Render it DETERMINISTICALLY with the helper (never hand-type it; it drifts):
 
@@ -75,13 +47,7 @@ sh "$CLAUDE_SKILL_DIR/../wiki/10-stage-strip.sh" <paper-dir>               # wal
 sh "$CLAUDE_SKILL_DIR/../wiki/10-stage-strip.sh" <paper-dir> <session-stage>  # also flag this session's stage with 🔥
 ```
 
-Closing-block format. End every reply with ONE fenced `text` block: a TITLED top
-rule, the return-contract tail, a plain bottom rule, then the strip as the last
-line. Use box-drawing `─` (U+2500) for the rules (no corners, no side borders).
-The top rule carries the label `📄 paper · <current_layer> 🔥`. The label uses 🔥
-(the stage this session is actively working), NOT 🚀. The strip BELOW it uses 🚀
-(the overall frontier). So every closing block pairs a 🔥 session label with a 🚀
-progress strip:
+Closing-block format. End every reply with ONE fenced `text` block: a TITLED top rule, the return-contract tail, a plain bottom rule, then the strip as the last line. Use box-drawing `─` (U+2500) for the rules (no corners, no side borders). The top rule carries the label `📄 paper · <current_layer> 🔥`. The label uses 🔥 (the stage this session is actively working), NOT 🚀. The strip BELOW it uses 🚀 (the overall frontier). So every closing block pairs a 🔥 session label with a 🚀 progress strip:
 
     ── 📄 paper · claims 🔥 ───────────────────────
     status:        ok|blocked|failed
@@ -91,17 +57,11 @@ progress strip:
     ──────────────────────────────────────────────
     seed ✅  claims 🚀  pitch ⬜  narrative ⬜  display ⬜  →  section-edit ⬜  →  review ⬜
 
-The strip line still comes from the helper; only its framing (titled top rule +
-bottom rule) is added here. Every stage / enter skill inherits this closing block.
+The strip line still comes from the helper; only its framing (titled top rule + bottom rule) is added here. Every stage / enter skill inherits this closing block.
 
-Gate-aware: advancing `current_layer` to the next stage requires an EXPLICIT user
-confirm that the current stage is done (the Stage Gate). Once `STATUS.md` carries
-the gate confirmation ledger, ✅ means "user-confirmed", not merely "before
-current". See `../wiki/11-delivery-need.md` (autonomy policy) and the Stage Gate
-feedback.
+Gate-aware: advancing `current_layer` to the next stage requires an EXPLICIT user confirm that the current stage is done (the Stage Gate). Once `STATUS.md` carries the gate confirmation ledger, ✅ means "user-confirmed", not merely "before current". See `../wiki/11-delivery-need.md` (autonomy policy) and the Stage Gate feedback.
 
-Read these references when the task touches lifecycle shape, rounds, or skill
-organization:
+Read these references when the task touches lifecycle shape, rounds, or skill organization:
 
 ```text
 ../wiki/03-paper-lifecycle.md
@@ -239,9 +199,7 @@ figure1, framework                         -> structure framework   (display fra
 round, rounds                              -> round (haipipe-paper-round)
 ```
 
-Note: `write` and `edit` (formerly `create`/`revise`) route to
-`2-section-edit`. The venue is pinned once by `venue` (-> haipipe-paper-venue)
-into STATUS, and each stage consults the matching `_venue/playbook-<venue>` pack.
+Note: `write` and `edit` (formerly `create`/`revise`) route to `2-section-edit`. The venue is pinned once by `venue` (-> haipipe-paper-venue) into STATUS, and each stage consults the matching `_venue/playbook-<venue>` pack.
 
 ---
 
@@ -374,8 +332,7 @@ Step 5: Capture the specialist's structured tail (status / summary /
 No-Arg Mode (status first, then usage dashboard)
 ------------------------------------------------
 
-When invoked with no arguments, first check whether the current directory is
-inside a paper root. A paper root is any directory upward containing one of:
+When invoked with no arguments, first check whether the current directory is inside a paper root. A paper root is any directory upward containing one of:
 
 - `STATUS.md`
 - `0-lifecycle/`
@@ -456,10 +413,7 @@ next:      suggested next command (often a lifecycle stage skill like
 Delivery Need Routing
 ---------------------
 
-Paper work is demand-driven. A paper paragraph, claim, figure, table, or
-round todo item may reveal that the next action is a probe, discovery, task,
-display unit, or insight. The `enter/status` path must surface those needs
-before recommending more writing.
+Paper work is demand-driven. A paper paragraph, claim, figure, table, or round todo item may reveal that the next action is a probe, discovery, task, display unit, or insight. The `enter/status` path must surface those needs before recommending more writing.
 
 Use these shared references when interpreting or creating need records:
 
@@ -480,21 +434,14 @@ wording/section placement needs paper work      -> paper lifecycle stage/edit sk
 non-claim utility work (lit scan, data check)   -> /haipipe-paper discover|task   (direct dispatch)
 ```
 
-For claim-related evidence, ALWAYS route through the probe buffer. The probe
-is the claim-level evidence contract; it calls task/discover during its Gather
-step. Direct task/discover verbs are for non-claim utility work only.
+For claim-related evidence, ALWAYS route through the probe buffer. The probe is the claim-level evidence contract; it calls task/discover during its Gather step. Direct task/discover verbs are for non-claim utility work only.
 
-The paper backfills resolved evidence into `2-claims`, `4-display`,
-sections, or round logs. Evidence workers do not own the paper
-story. See `fn/probe-plans.md` for the buffer convention.
+The paper backfills resolved evidence into `2-claims`, `4-display`, sections, or round logs. Evidence workers do not own the paper story. See `fn/probe-plans.md` for the buffer convention.
 
 Relation to Lifecycle Stage Skills, Sections, and Components
 -------------------------------------------------------------
 
-The orchestrator and the venue profiles in `_venue/` operate at the workflow
-level. Underneath, skills are grouped to mirror the lifecycle spine. The
-canonical tree is in `README.md` and `../wiki/06-paper-skill-structure.md`; the
-stage-to-procedure map is in `../wiki/04-lifecycle-map.md`. In brief:
+The orchestrator and the venue profiles in `_venue/` operate at the workflow level. Underneath, skills are grouped to mirror the lifecycle spine. The canonical tree is in `README.md` and `../wiki/06-paper-skill-structure.md`; the stage-to-procedure map is in `../wiki/04-lifecycle-map.md`. In brief:
 
 ```
 0-enter/        haipipe-paper-enter (Paper Console)
@@ -516,17 +463,12 @@ stage-to-procedure map is in `../wiki/04-lifecycle-map.md`. In brief:
 components/     citation (audit/verifier/guide), compile, diff (cross-cutting)
 ```
 
-Per-section playbooks live in `2-section-edit/sections/` and are read by the
-section-edit/review skills when they target a specific `.tex` under `0-sections/`.
-Components are cross-cutting: figures and citations are touched during
-write/review. Power users can invoke any skill directly by its slash command;
-the orchestrator is the right entry when you do not yet know the stage or venue.
+Per-section playbooks live in `2-section-edit/sections/` and are read by the section-edit/review skills when they target a specific `.tex` under `0-sections/`. Components are cross-cutting: figures and citations are touched during write/review. Power users can invoke any skill directly by its slash command; the orchestrator is the right entry when you do not yet know the stage or venue.
 
 Paper-folder contract
 ----------------------
 
-All paper skills assume their input is a paper folder following the
-layout:
+All paper skills assume their input is a paper folder following the layout:
 
 ```
 <paper>/
@@ -563,8 +505,7 @@ layout:
 └── 1-review/{A-E,DECISIONS.md,HANDOFF.md}/ active review session pipeline
 ```
 
-A revision **session** = a git branch (e.g. `review_v0325`); paper
-skills are branch-agnostic at the file level.
+A revision **session** = a git branch (e.g. `review_v0325`); paper skills are branch-agnostic at the file level.
 
 ---
 
@@ -599,28 +540,6 @@ Composing with Other Workflows
 
 ## Feedback
 
-`/haipipe-paper feedback "<text>"` captures a complaint / confusion / wish about THIS
-skill (one dated file per item, `status: open`) to fix in a later revision pass.
-Capture-time routing: the complaint is inferred to the specific sub-skill it
-concerns and written into THAT sub-skill's `feedback/` folder (e.g. a pitch gripe
--> `1-lifecycle/haipipe-paper-pitch/feedback/`); cross-cutting or unclassifiable
-items fall back to the orchestrator's own `feedback/`. The folder IS the record
-of which skill it concerns. `/haipipe-paper feedback list [skill]` aggregates open
-items across ALL inboxes; `/haipipe-paper feedback move <file> <skill>` re-routes a
-mis-filed item. Capture is MERGE-OR-CREATE: a same-topic complaint updates the
-existing file (append dated recurrence, preserve prior wording verbatim, reopen
-if fixed) so inboxes stay self-limiting. This is feedback about the tool, not the
-work it produces. Route a `feedback` first-token here before other parsing.
+`/haipipe-paper feedback "<text>"` captures a complaint / confusion / wish about THIS skill (one dated file per item, `status: open`) to fix in a later revision pass. Capture-time routing: the complaint is inferred to the specific sub-skill it concerns and written into THAT sub-skill's `feedback/` folder (e.g. a pitch gripe -> `1-lifecycle/haipipe-paper-pitch/feedback/`); cross-cutting or unclassifiable items fall back to the orchestrator's own `feedback/`. The folder IS the record of which skill it concerns. `/haipipe-paper feedback list [skill]` aggregates open items across ALL inboxes; `/haipipe-paper feedback move <file> <skill>` re-routes a mis-filed item. Capture is MERGE-OR-CREATE: a same-topic complaint updates the existing file (append dated recurrence, preserve prior wording verbatim, reopen if fixed) so inboxes stay self-limiting. This is feedback about the tool, not the work it produces. Route a `feedback` first-token here before other parsing.
 
-`/haipipe-paper digest ["<session-name|id>"] [--dry-run]` is the bulk harvester:
-typically run from a FRESH session, it names a PAST session to harvest (resolves
-the /rename'd name or id to its transcript .jsonl, extracts the human turns) — or
-digests the CURRENT session if given no argument. It scans for feedback you gave
-conversationally, distills discrete items, dedups them, and (after a mandatory
-confirm gate) routes each through the same capture. It files only skill-feedback;
-global behavioral preferences are fanned out to EVERY orchestrator's portable
-`PREFERENCES.md` (git-tracked, survives a machine change) and optionally
-`/remember`ed, not filed in the inboxes. Route a `digest` first-token to it. Full conventions: `fn/feedback.md` (keyword->skill map,
-inbox paths, merge-or-create, schema) and `fn/digest.md` (session resolution +
-harvest); fallback
-inbox: `feedback/README.md`.
+`/haipipe-paper digest ["<session-name|id>"] [--dry-run]` is the bulk harvester: typically run from a FRESH session, it names a PAST session to harvest (resolves the /rename'd name or id to its transcript .jsonl, extracts the human turns) — or digests the CURRENT session if given no argument. It scans for feedback you gave conversationally, distills discrete items, dedups them, and (after a mandatory confirm gate) routes each through the same capture. It files only skill-feedback; global behavioral preferences are fanned out to EVERY orchestrator's portable `PREFERENCES.md` (git-tracked, survives a machine change) and optionally `/remember`ed, not filed in the inboxes. Route a `digest` first-token to it. Full conventions: `fn/feedback.md` (keyword->skill map, inbox paths, merge-or-create, schema) and `fn/digest.md` (session resolution + harvest); fallback inbox: `feedback/README.md`.
