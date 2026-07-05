@@ -4,6 +4,11 @@ haipipe-paper-check — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [1.5.1] — 2026-07-05
+
+Fixed (audit of 1.5.0: pin contract landed in the front half, back half still spoke pre-pin language — the sections a fresh session reads as the operational contract)
+- On-restart reads pins + replies (unanswered pin = surfaced back, never silently skipped); done criteria gain pin-seeded + pin-replied gates; anti-patterns gain clean-file handover + pin-ignoring; Human Actions entry point = walk the pins (not self-service flag hunting); pin targets include _DISPLAY_; report Summary carries a PINS SEEDED line (count + files).
+
 ## [1.5.0] — 2026-07-05
 
 Added (test-123333333: JL entered 0-seed.md for the CHECK pass and found a clean file — flags lived only in the chat report; JL: "check的时候我需要进去仔细看，然后你加comments 之类的，这些你有做吗")
