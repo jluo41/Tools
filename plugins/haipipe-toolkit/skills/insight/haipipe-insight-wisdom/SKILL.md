@@ -7,10 +7,7 @@ metadata:
   version: "1.2.0"
   last_updated: "2026-06-22"
   summary: "W-level wisdom specialist of the haipipe-insight family."
-  changelog:
-    - "1.2.0 (2026-06-22): W reads the cited K's confidence to set RISK POSTURE (bold for high, conservative/hedged for low); added ## Risk posture body section. Low-confidence/negative K are still actionable."
-    - "1.1.0 (2026-06-20): clarified one-action granularity for W cards."
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-insight-wisdom

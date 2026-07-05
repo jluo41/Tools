@@ -6,8 +6,7 @@ metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
   summary: "Cell-based .py ↔ .ipynb workflow — the .py is source-of-truth, the .ipynb is auto-derived for browser viewing of code + outputs + figures."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: notebook-cell-python

@@ -7,8 +7,7 @@ metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
   summary: "Search and progressively read open-access academic papers through DeepXiv."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # DeepXiv Paper Search & Progressive Reading
@@ -167,11 +166,12 @@ deepxiv sc "SEMANTIC_SCHOLAR_ID" --output json
 
 ### Step 4: Present Results
 
-When searching, present a compact table:
+When searching, present a numbered list, ONE PAPER PER ENTRY (never a table — paper tables are unreadable):
 
 ```text
-| # | ID | Title | Year | Citations | Notes |
-|---|----|-------|------|-----------|-------|
+1. <Title> (<Year>)
+   <ID> · <citations> citations · <note>
+2. ...
 ```
 
 When reading a paper, show:

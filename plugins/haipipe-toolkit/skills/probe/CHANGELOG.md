@@ -48,7 +48,7 @@ Rollup lives in the plugin-level `CHANGELOG.md`.
     → Report.
 
 ### Notes
-- The 4-stage lifecycle is the same universal wrapper from project/haipipe-workflow.
+- The 4-stage lifecycle is the same universal wrapper from task/haipipe-workflow.
   The 6 domain phases are probe-specific - not copied from task. task's eval
   task has Load/Score/Compare/Emit; probe has Design/Bridge/Run/Aggregate/Review/Claim.
 - Builder asymmetry preserved: Design, Bridge, Result remain interactive skills in the

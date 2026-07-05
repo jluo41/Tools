@@ -6,8 +6,7 @@ metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
   summary: "Communications-domain literature review with Claude-style knowledge-base-first retrieval."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # Comm Lit Review Claude Single
@@ -262,12 +261,17 @@ If evidence is weak, say so instead of smoothing it over.
 
 ## Output
 
-Use a literature table with these columns:
+ONE PAPER PER SUBSECTION, full title in the heading — NEVER a literature table (paper tables are unreadable):
 
-| Paper | Venue | Year | Layer | Scenario | Method | Key Result | Limitation | Relevance | Source |
-|---|---|---:|---|---|---|---|---|---|---|
+```md
+### <Authors> (<Year>). <Full title>.
+- <Venue> · layer: <layer> · scenario: <scenario> · source: <source>
+- method: <one line>
+- key result: <one line>
+- limitation: <one line> · relevance: <one line>
+```
 
-`Source` should indicate where the paper came from first:
+`source` should indicate where the paper came from first:
 
 - `zotero`
 - `obsidian`
@@ -277,7 +281,7 @@ Use a literature table with these columns:
 - `acm`
 - `web`
 
-After the table, summarize in this order:
+After the per-paper sections, summarize in this order:
 
 1. what the field is mostly trying to solve
 2. how papers cluster into `2-4` approaches

@@ -4,6 +4,39 @@ haipipe-toolkit — Changelog
 Plugin-level rollup. Per-layer detail lives in each layer's own `skills/<LAYER>/CHANGELOG.md`. Newest first.
 
 
+## [Unreleased] — 2026-07-03
+
+Discovery layer v2.5.0: type specialist skills haipipe-discovery-search /
+-review / -idea created, one heading each bucket (mirrors haipipe-data-source
+etc.); orchestrator Execute dispatches them; Review Output Contract moved into
+haipipe-discovery-review. Also the never-tables-for-papers rule applied across
+all worker output formats, layer docs made self-contained (no upper-layer
+mentions), concrete example slugs. Detail: `skills/discovery/haipipe-discovery/CHANGELOG.md`.
+
+Discovery layer v2.4.0 (JL simplification pass, same day as v2.3.0 below):
+novelty_check re-typed Review -> Idea (buckets = types exactly 1:1);
+parent:/consumed_by: removed — discovery is probe-UNAWARE, references point one
+way downward (the probe organizes and records links on its side); folder
+contract slimmed to discovery.yaml + evidence files (status.yaml/site.md
+dropped; report: block appended at Report). Schema doc rewritten lean.
+Detail: `skills/discovery/haipipe-discovery/CHANGELOG.md`.
+
+Discovery layer v2.3.0: buckets 4 -> 3, one folder per type, English-only.
+
+- Merged `skills/discovery/2_read/` into `1_search/`; renumbered `3_review/` ->
+  `2_review/` and `4_idea/` -> `3_idea/`. Each type (Search/Review/Idea) now maps
+  1:1 to its Execute bucket; `novelty-check` stays in `3_idea/` (serves
+  Review-judge, the one documented exception).
+- Purged residual 搜/析/创 from DESIGN.md, agents/, and live docs (the v2.1.0
+  English rename had missed them); backfilled 2.1.0/2.2.0 changelog entries.
+- Removed dangling references (0_venue/, D_patent/, /idea-discovery,
+  /research-pipeline, /patent-pipeline, agents' fn/plan-build-execute-report
+  reads) and a stray self-symlink; synced the codex-plugins mirror (moot hours
+  later: a parallel session deleted the whole codex-plugins/ tree from the
+  working copy the same day).
+- Detail: `skills/discovery/haipipe-discovery/CHANGELOG.md`.
+
+
 ## [Unreleased] — 2026-06-21
 
 Structure: moved numbered task-domain families under `skills/task/` while
@@ -35,7 +68,7 @@ Structure: discovery layer renamed and the narrative layer retired in discovery 
   lifecycle table (`open -> search -> read -> review/idea -> post`, each stage
   filling one IO file), isomorphic to the probe lifecycle map; SKILL.md and
   DESIGN.md point to it instead of restating it. Added
-  `skills/discovery/CHANGELOG.md` for layer parity. → see [skills/discovery/CHANGELOG.md](skills/discovery/CHANGELOG.md)
+  `skills/discovery/haipipe-discovery/CHANGELOG.md` for layer parity. → see [skills/discovery/haipipe-discovery/CHANGELOG.md](skills/discovery/haipipe-discovery/CHANGELOG.md)
 - Follow-up still open: `skills/STRUCTURE.md` and
   `blueprints/end-to-end-sandwich-run.md` still reference the old `discover`
   path and the narrative layer.

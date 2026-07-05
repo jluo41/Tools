@@ -4,18 +4,10 @@ description: "Probe Console and claim-level evidence lifecycle. Opens a context-
 argument-hint: "[console|plan|gather|read|judge|deposit|status] [probe_ref_or_path] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow, Task
 metadata:
-  version: "5.0.0"
-  last_updated: "2026-07-02"
-  summary: "Probe Console + lifecycle map: Plan, Gather, Read, Judge, Deposit. Full/light mode: full runs all 5 steps with insight deposit; light stops at Read for quick lookups. Section-edit gather workers route through light probes."
-  changelog:
-    - "5.0.0 (2026-07-02): added mode: full|light. Light probes stop at Read (no Judge, no Deposit, no insight cards). Escalation from light to full supported. Section-edit gather workers (citation, values, display) route evidence needs through light probes. Added Connection to Section-Edit section. Unwrapped hard-wrapped lines."
-    - "4.3.0 (2026-06-23): feedback-driven revision pass (14 items). (1) Plan: kind: field (atomic|comparison); comparison arms must be atom: links. (2) Gather: link+extract lightweight variant; fan-out model (1 probe : N discoveries : N tasks); naming rule (topic not verb); done-predicate strengthened (actual items, not evidence_plan); participant roster at Gather->Read boundary. (3) Read: elevated to stop-and-internalize gate (most participatory step); verdict-language ban in evidence.md. (4) Deposit: output readability template. (5) stage-strip.sh: fixed Gather false-positive (evidence_plan was Plan artifact, not Gather). (6) Dashboard: no-args view trimmed to compact glance. (7) Orchestrator agent: Write/Edit removed from tools (structural anti-monolith enforcement); dispatch prompts use coordinator language. (8) probe-yaml-schema: kind field, deposited status, deposit block heading."
-    - "4.2.0 (2026-06-22): completed the Return->Deposit rename (artifact deposit.md, fn/deposit.md, probe.yaml deposit:/status: deposited/deposited_at/deposit_target; stage-strip predicate + accepts deposited|returned|closed). LEAN-ATOM MODE: a leaf probe declaring parent: logs Read/Judge/Deposit as yaml blocks (result:/verdict:/deposit:) and the strip reads them (yaml is disk). Deposit step now ALWAYS proposes the /haipipe-insight review handoff in next: (loop no longer implicit)."
-    - "4.1.0 (2026-06-22): source-type letter in the probe ref. P.D<MMDD> discovery-sourced, P.T<MMDD> task-sourced (other source.type derives the letter from the primary evidence_plan kind). Folder becomes probes/<LETTER><MMDD>_<slug>/. Resolver accepts lettered + legacy letterless refs; existing letterless probes migrate lazily. See ref/probe-yaml-schema.md."
-    - "4.0.1 (2026-06-22): rename lifecycle step Return -> Deposit (settle the judged verdict into durable memory); legacy command alias return kept; Read reframed as a present-and-internalize stop; Gather-done = participating tasks/discoveries have run, closed by a participant manifest."
-    - "4.0.0 (2026-06-22): reframe probe around Probe Console and the concise lifecycle Plan/Gather/Read/Judge/Deposit; flat probe folders; group folders removed."
-    - "3.3.0 (2026-06-21): delivery-need inputs from paper/application and verdict backfill."
-    - "3.1.0 (2026-06-19): sandwich lifecycle around discoveries/tasks."
+  version: "5.0.1"
+  last_updated: "2026-07-03"
+  summary: "Probe Console + lifecycle map: Plan, Gather, Read, Judge, Deposit. Full/light mode: full runs all 5 steps with insight deposit; light stops at Read for quick lookups. Paper probe-phase workers route through light probes."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # Skill: haipipe-probe
@@ -215,14 +207,14 @@ full    H1/H2/H3 claims, reviewer objections, anything needing a formal verdict
         and durable knowledge in the insight KB. The probe ends with insight cards filed.
 
 light   citation lookups ("find a paper for P2.S3"), number traces ("check this stat"),
-        quick checks ("does gray2021 support this claim?"), section-edit gather needs.
-        The probe ends at Read; the caller (section-edit-citation, section-edit-values)
+        quick checks ("does gray2021 support this claim?"), paper probe-phase needs.
+        The probe ends at Read; the caller (haipipe-paper-probe-citation, haipipe-paper-probe-values)
         consumes the output directly.
 ```
 
 Escalation: a light probe can continue into Judge → Deposit at any time. The user reads the evidence, decides it matters enough, and says "judge this" or "deposit this." The probe resumes from Read.
 
-Default: `mode: full` unless the caller is a section-edit gather worker or the user says "quick check" / "just find me a paper."
+Default: `mode: full` unless the caller is a paper probe-phase worker or the user says "quick check" / "just find me a paper."
 
 ## Probe Kind
 
@@ -372,17 +364,17 @@ probe     plans, gathers, reads, judges, and deposits claim-level verdicts
 
 Probe may call task/discovery during `Gather`. Probe may call insight during `Deposit` (full mode only). Probe does not execute code, search literature bodies directly, or store final paper prose as its own artifact.
 
-## Connection to Section-Edit Gather Workers
+## Connection to the Paper PROBE Phase
 
-Section-edit gather workers (citation, values, display) route evidence needs through probe:
+The paper phase spine (DPRC: DRAFT-PROBE-REVISE-CHECK) names its PROBE phase after this skill: the paper's PROBE phase dispatches its evidence needs into this Plan → Gather → Read → Judge → Deposit lifecycle. Paper probe-phase workers (citation, values, display) route evidence needs through probe:
 
 ```text
-section-edit-citation  →  light probe  →  discovery (search for papers)
-section-edit-values    →  light probe  →  task (trace/recompute numbers)
-section-edit-display   →  full probe   →  task (generate figures/tables)
+haipipe-paper-probe-citation  →  light probe  →  discovery (search for papers)
+haipipe-paper-probe-values    →  light probe  →  task (trace/recompute numbers)
+haipipe-paper-probe-display   →  full probe   →  task (generate figures/tables)
 ```
 
-The gather worker identifies what's needed (AUDIT phase). The probe handles the evidence lifecycle (Plan→Gather→Read). The gather worker consumes the probe's Read output (CANDIDATE/PLACE phases).
+The paper-side worker identifies what's needed (AUDIT phase). The probe handles the evidence lifecycle (Plan→Gather→Read). The worker consumes the probe's Read output (CANDIDATE/PLACE phases).
 
 For quick lookups (single citation, number check), a light probe is sufficient. For claim-level evidence (H1 support, reviewer objection), escalate to full probe with Judge→Deposit.
 

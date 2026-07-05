@@ -9,7 +9,7 @@ Axis 1 — LIFECYCLE (uniform; every folder runs it)   Plan → Build(opt) → E
 Axis 2 — TYPE      (what kind of folder this is)      Search · Review · Idea                  (folder kinds)
 ```
 
-The two axes use non-overlapping vocabularies on purpose: the four stages are process verbs every folder runs (Plan/Build/Execute/Report); the three types name the kind of folder (Search/Review/Idea). No word appears in both lists, so the two axes can never be mistaken for each other. The type names also match their primary Execute bucket: Search → 1_search + 2_read, Review → 3_review, Idea → 4_idea.
+The two axes use non-overlapping vocabularies on purpose: the four stages are process verbs every folder runs (Plan/Build/Execute/Report); the three types name the kind of folder (Search/Review/Idea). No word appears in both lists, so the two axes can never be mistaken for each other. Each type maps 1:1 to its Execute bucket: Search → 1_search, Review → 2_review, Idea → 3_idea.
 
 This mirrors task. Task = (Plan/Build/Execute/Report) × (data/nn/fit/...). Discovery = (Plan/Build/Execute/Report) × (Search/Review/Idea). Every type runs every stage; the type only changes what Execute produces.
 
@@ -29,39 +29,22 @@ discovery:  discoveries/<GROUP>/   ⊃  <NN>_<topic>/    (one research topic)
 | **Plan** | design the IPO contract | declare `type` + question + scope + which sources + intended terminal | `discovery.yaml` |
 | **Build** *(optional)* | write the code | author the instrument: query strategy / extraction schema / synthesis rubric. SKIP for a quick lookup | `build/` artifact |
 | **Execute** | run the script | do the work — gather / analyze / create | the work bundle + the terminal file |
-| **Report** | summarize results vs plan | report to a human: outcome, confidence, caveats, handoff | `discovery.yaml` report block + `status.yaml` + `site.md` |
+| **Report** | summarize results vs plan | report to a human: outcome, confidence, caveats, handoff | `discovery.yaml` `report:` block (appended; absent before) + log event |
 
-File ownership is strict. Plan touches `discovery.yaml`. Build touches `build/`. Execute touches the work files. Report touches the report block + `status.yaml` + `site.md`.
+File ownership is strict. Plan writes `discovery.yaml`. Build touches `build/`. Execute writes the evidence files. Report appends the `report:` block. There are no other bookkeeping files.
 
-## Axis 2 — the three types (IPO: gather → analyze → create)
+## Axis 2 — the three types (IPO: Search → Review → Idea)
 
-| type | IPO role | Execute does | terminal | consumer |
-|---|---|---|---|---|
-| **Search** | INPUT (source) | search + read source material | `sources.md` + `notes.md` | Review / Idea, and a reusable source library |
-| **Review** | PROCESS (analyze) | judge a claim **or** map a field | `verdict.md` (judge) / `landscape.md` (synthesize) | **probe** (verdict) / **paper** (landscape) |
-| **Idea** | OUTPUT (create) | generate candidate claims | `ideas.md` | **probe-open** / **paper-seed** |
-
-`Review` is the only type whose terminal branches; `role:` decides verdict (judge, a judgment) vs landscape (synthesize, a map). `Search` merges the old search + read (they are always bound together, and the digested source set is a reusable, accumulating base). `Idea` stays separate because it is divergent (invent new) while Search/Review are convergent (gather and organize what exists).
-
-Role to type to terminal:
-
-```
-Search  source_gather, source_read                          -> sources.md (+ notes.md)
-Review  prior_art_check, counterevidence, novelty_check      -> verdict.md   (judge, -> probe)
-Review  landscape_review, benchmark_landscape                -> landscape.md (synthesize, -> paper)
-Idea  idea_generation                                      -> ideas.md
-```
+The types × roles × terminals table is owned by `ref/discovery-yaml-schema.md` (one home; do not restate). In one line: Search = find + read (sources.md + notes.md); Review = judge (verdict.md) or synthesize (landscape.md); Idea = generate (ideas.md) or novelty_check (verdict.md); `role:` picks the terminal within the type.
 
 ## The folder = one topic, one execution
 
 ```
-Search folder                     Review folder                       Idea folder
-discovery.yaml (type: Search)     discovery.yaml (type: Review, role)  discovery.yaml (type: Idea)
-sources.md   (search)         sources.md   (work product or   ideas.md     (Execute terminal)
-notes.md     (read)           notes.md      referenced from Search) status.yaml
-status.yaml                   verdict.md | landscape.md        site.md
-site.md                       status.yaml
-                              site.md
+Search folder                      Review folder                            Idea folder
+discovery.yaml (type: Search)      discovery.yaml (type: Review, role)      discovery.yaml (type: Idea, role)
+sources.md   (search)              sources.md  (work product, or            ideas.md | verdict.md
+notes.md     (read)                notes.md     referenced from a Search)     (terminal, by role)
+                                   verdict.md | landscape.md
 ```
 
 IO mapping onto a task-folder:
@@ -71,8 +54,6 @@ IO mapping onto a task-folder:
 | `{NN}_task.py` + `configs/<run>.yaml` | `discovery.yaml` |
 | code build | `build/` (optional) |
 | `results/<run>/` | `sources.md` · `notes.md` · terminal |
-| `runtime.yaml` | `status.yaml` |
-| `notebooks/<run>.ipynb` | `site.md` |
 | `workflow/report.yaml` | `discovery.yaml` `report:` block |
 
 ## The chain — Search → Review → Idea
@@ -84,7 +65,7 @@ Search folder ─sources.md+notes.md→ Review folder ─landscape.md→ Idea fo
  (reusable source base)          (verdict/landscape)       (ideas)
 ```
 
-`Search` is the reusable, accumulating source base; multiple `Review` (and `Idea`) folders read from it. A light effort skips the standalone `Search`: a `Review` folder's Execute searches + reads internally (dropping `sources.md` + `notes.md` as work products) and ends on its terminal. Build a standalone `Search` folder when the source base is reused across several analyses — exactly the reason task gives `data` its own type instead of folding it into `fit`.
+`Search` is the reusable, accumulating source base; multiple `Review` (and `Idea`) folders read from it. A light effort skips the standalone `Search`: a `Review` folder's Execute searches + reads internally, WRITING `sources.md` + `notes.md` into its own folder as work products (they appear in `expected_outputs` alongside the terminal, but they are not terminals), and ends on its terminal. Build a standalone `Search` folder when the source base is reused across several analyses — exactly the reason task gives `data` its own type instead of folding it into `fit`.
 
 ## Agents (reused from task)
 
@@ -95,12 +76,9 @@ The task creator → reviewer loop transfers directly:
 
 Citation/synthesis audit is the highest-value gate in discovery (hallucinated references), and it comes for free from the task pattern.
 
-## Parent model
+## Self-contained by design
 
-```
-Delivery-open (paper / application)  ->  Review (landscape / benchmark, synthesize) + Idea (ideas); Search for the source base
-Probe-open                           ->  Review (verdict, judge: prior_art / counterevidence / novelty); Search
-```
+A discovery knows nothing outside its own folder: no `parent` field, no consumer tracking, no reference to any upper layer. It answers its question, writes its terminal, and stops. Whoever needs the terminal records the link on THEIR side; that is entirely their business, not this layer's.
 
 ## Command routing (v2)
 
@@ -115,4 +93,4 @@ Probe-open                           ->  Review (verdict, judge: prior_art / cou
 /haipipe-discovery <specialist> [args]     -> one-off bucket worker (NO folder)
 ```
 
-**Retired**: the `open → search → read → review → post` verb-lifecycle. `search/read/review/idea` are no longer stage verbs. The stages are `Plan/Build/Execute/Report` (shared with task); the types are `Search/Review/Idea`. The four capability buckets (`1_search / 2_read / 3_review / 4_idea`) remain the Execute-stage WORKERS: `Search` uses 1_search + 2_read, `Review` uses 3_review, `Idea` uses 4_idea. Workers (4, capability) and types (3, purpose) are different axes.
+**Retired**: the `open → search → read → review → post` verb-lifecycle. `search/read/review/idea` are no longer stage verbs. The stages are `Plan/Build/Execute/Report` (shared with task); the types are `Search/Review/Idea`. The three buckets (`1_search / 2_review / 3_idea`) are exactly one per type, each headed by a TYPE SPECIALIST skill (haipipe-discovery-search / -review / -idea, since v2.5.0) that Execute dispatches; the specialist picks among the capability workers beside it (the old 2_read bucket merged into 1_search in v2.3.0; novelty_check became an Idea role in v2.4.0).

@@ -7,11 +7,7 @@ metadata:
   version: "4.0.0"
   last_updated: "2026-06-23"
   summary: "Application layer orchestrator — venue-driven lifecycle, single draft skill."
-  changelog:
-    - "4.0.0 (2026-06-23): remove format specialists (message/ui/report) — absorbed into venue profiles; remove context + plan skills — absorbed into lifecycle orchestrator and claims stage; single draft skill reads venue profile."
-    - "3.0.0 (2026-06-23): rename stages to paper vocabulary; add venue; venue-driven stage requirements."
-    - "2.0.0 (2026-06-22): restructured around intervention lifecycle."
-    - "1.0.0 (2026-05-31): baseline."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-application (orchestrator)

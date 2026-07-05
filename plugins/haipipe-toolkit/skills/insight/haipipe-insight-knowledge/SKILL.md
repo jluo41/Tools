@@ -7,10 +7,7 @@ metadata:
   version: "1.2.0"
   last_updated: "2026-06-20"
   summary: "K-level knowledge writer API of the haipipe-insight family."
-  changelog:
-    - "1.2.0 (2026-06-20): repositioned as review-called judged-source writer API."
-    - "1.0.0 (2026-05-31): baseline metadata added."
-    - "1.1.0 (2026-05-31): K sources a confirmed probe's claim (was >=1 I card); cites supporting I cards in the body."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-insight-knowledge
