@@ -4,9 +4,9 @@ description: "PROBE phase worker (internal). Called by stage skills after DRAFT 
 argument-hint: "[stage-or-section] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.2.0"
-  last_updated: "2026-07-03"
-  summary: "PROBE phase worker (internal). Two route families: document workers (citation/values/display, each owning a _DOC_ needs registry) + dispatch through /haipipe-probe (mode light by default, full for claims; reuse-before-create)."
+  version: "2.3.0"
+  last_updated: "2026-07-05"
+  summary: "PROBE phase worker (internal). Two route families: document workers (citation/values/display, each owning a _DOC_ needs registry) + dispatch through /haipipe-probe (mode light by default, full for claims; reuse-before-create). Harvest acceptance is MECHANICAL-FOR-REAL: run the greps, never eyeball."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -113,7 +113,12 @@ This worker does exactly three things -- BOOKKEEP, DISPATCH, TRANSLATE -- and NO
 
 1. **BOOKKEEP.** Read the index (`<paper_root>/1-probe-plans/README.md`), resolve each planned item to its per-stage `_PROBE/PPNN_*.md` file (or the one named PPNN). Update plan files and index rows as statuses change.
 2. **DISPATCH -- ALWAYS via `Agent(haipipe-probe-orchestrator-agent)`, no exceptions.** Pass the plan content + mode + project root. The worker NEVER sweeps the project itself, NEVER reads discoveries/probes/insights inline, NEVER inlines `Skill("haipipe-probe")` -- even for a "tiny" lookup. The reuse decision (enrich an existing probe / reuse a covering artifact directly with no wrapper / create-and-gather) belongs to the AGENT's SWEEP step, in clean context; a covering artifact the agent finds is consumed there, not re-read paper-side. Likely-reuse plans dispatch synchronously (fast); a plan that likely needs a FRESH discovery/task run (real searching, minutes) dispatches with `run_in_background` and TRANSLATE runs when it returns. Plan file: `status: dispatched`, then per the agent's return.
-3. **TRANSLATE (probe is paper-unaware; this worker is the bilingual layer).** The worker reads NO project files; it may verify returned refs resolve with a bare `ls` (existence only, never content). Light returns -- anchored takeaways (<=5 lines, each with its source anchor) transcribe into the plan file (`status: read`; `ref:` = the probe folder, or the directly-reused artifact when the agent chose no-wrapper reuse). When the return carries a `pick_list`, dispatch the citation HARVEST SUBAGENT (`haipipe-paper-probe-citation` harvest form): it expands the picked sources.md entries into `_CITATION_{stage}.md` cards in its own clean context; this worker then does MECHANICAL ACCEPTANCE only (card count == pick_list count, every card has summary/finding/anchor, no bibtex) -- produce and review are never the same context. Full returns -- verdicts backfill 1-claims / sections / round logs (`status: verdicted`). Buffer convention: `../../../haipipe-paper/fn/probe-plans.md`.
+3. **TRANSLATE (probe is paper-unaware; this worker is the bilingual layer).** The worker reads NO project files; it may verify returned refs resolve with a bare `ls` (existence only, never content). Light returns -- anchored takeaways (<=5 lines, each with its source anchor) transcribe into the plan file (`status: read`; `ref:` = the probe folder, or the directly-reused artifact when the agent chose no-wrapper reuse). When the return carries a `pick_list`, dispatch the citation HARVEST SUBAGENT (`haipipe-paper-probe-citation` harvest form; the dispatch prompt PASSES the card-format spec explicitly -- `### <title>` heading + summary/finding/relevance/status/Scholar/source_ref bullets); it expands the picked sources.md entries into `_CITATION_{stage}.md` cards in its own clean context; this worker then does MECHANICAL ACCEPTANCE -- and mechanical means RUN THE COMMANDS, never eyeball (run-3 acceptance claimed "each has anchor + finding" while `grep -c 'finding:'` returned 0):
+   - count: new `^### ` card headings == pick_list length
+   - fields: every new card block greps a `- summary:` AND a `- finding:` line
+   - anchors: every new card's `source_ref` names a sources.md + S##; `grep` that S## heading in that file -- it must EXIST (the agent's fresh evidence landed). An unresolvable anchor is a REJECT, not a warning
+   - no bibtex: `grep -c '@' == 0` on the new cards
+   One reject → re-dispatch the harvest subagent with the defect list (one retry); still failing → mark the plan file `status: read (harvest DEFECTIVE)` and surface it in the stage reply. Produce and review are never the same context. Full returns -- verdicts backfill 1-claims / sections / round logs (`status: verdicted`). Buffer convention: `../../../haipipe-paper/fn/probe-plans.md`.
 
 ## Section-edit dispatch logic
 

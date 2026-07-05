@@ -4,6 +4,12 @@ haipipe-paper-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [2.3.0] — 2026-07-05
+
+Changed (run-3 audit: acceptance claimed "each has anchor + finding" while `grep -c 'finding:'` returned 0)
+- TRANSLATE harvest acceptance is MECHANICAL-FOR-REAL: run the greps, never eyeball. Four checks: card count == pick_list; every new card has `- summary:` + `- finding:`; every `source_ref` S## must EXIST in the named sources.md (unresolvable anchor = REJECT — it means the agent's fresh evidence never landed); no bibtex. One reject → re-dispatch harvest with defect list (one retry), else `status: read (harvest DEFECTIVE)` surfaced in the stage reply.
+- Harvest dispatch prompt now PASSES the card-format spec explicitly (### heading + summary/finding/relevance/status/Scholar/source_ref bullets) instead of assuming the subagent infers it.
+
 ## [2.2.0] — 2026-07-04
 
 Changed
