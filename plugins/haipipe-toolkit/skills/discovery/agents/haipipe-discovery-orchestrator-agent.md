@@ -12,10 +12,11 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "1.4.0"
+  version: "1.5.0"
   last_updated: "2026-07-05"
-  summary: "Orchestrator agent — dispatch target for discovery lifecycle. FULL mode coordinates creator + reviewer; ENRICH mode (light) lands same-topic deltas into an existing discovery with a mandatory reviewer quick-pass. Reviewer follows WRITES; creator follows WORKLOAD."
+  summary: "Orchestrator agent — dispatch target for discovery lifecycle. FULL mode coordinates creator + reviewer; ENRICH mode (light) lands same-topic deltas into an existing discovery with a mandatory reviewer quick-pass. Reviewer follows WRITES; creator follows WORKLOAD. ENRICH batches writes and updates the coverage boundary."
   changelog:
+    - "1.5.0 (2026-07-05): ENRICH batch-write + coverage boundary — the full delta set is drafted then applied in ONE edit pass per file (test-123333333: an 89-turn enrich lane re-read 7.1M cached tokens landing 10 deltas); after appends, the sources.md coverage declaration gains THIS pass's searched AND not-searched channels."
     - "1.4.0 (2026-07-05): LEAN BOOT — Step 0 reads only the Step-by-Step Protocol section for stages this run executes; yaml schema only when touching discovery.yaml; ENRICH reads just ref/source-format.md."
     - "1.3.0 (2026-07-05): ENRICH input form (light mode) — same-topic deltas (verification flips + appended S## sources) land in an EXISTING discovery's sources.md; orchestrator executes deltas itself (creator folded — workload too small to dispatch), reviewer quick-pass MANDATORY (ledger write = second pair of eyes, one pass, no loop unless defect); off-topic deltas rejected → open a new discovery. Live probe-test run-3: a probe agent ran delta searches inline and the results died in its reply because discovery had no light entrance to land them."
     - "1.0.0 (2026-06-23): initial design. Completes the orchestrator/creator/reviewer triad for discovery."
@@ -95,12 +96,23 @@ The two mottos that size this mode:
      identity + Scholar link + role + verification + summary (2-3 lines,
      what the paper does) + finding (1-2 lines, the result that matters).
      An identity-only entry is a DEFECTIVE append.
-3. REVIEWER QUICK-PASS (mandatory, ONE dispatch, no loop unless defect):
+   BATCH the deltas — searches AND writes: independent verifications/searches
+   go out as parallel calls in one turn; then draft the FULL delta set and
+   apply it in ONE edit pass per file (re-verify annotations + appends
+   together). One-entry-per-turn dribble re-reads the whole context every
+   turn (test-123333333: an 89-turn enrich lane re-read 7.1M cached tokens
+   to land a 10-delta pass).
+3. COVERAGE BOUNDARY: after the deltas land, update the sources.md
+   preamble's coverage declaration for THIS pass — channels searched AND
+   channels NOT searched (skipped/deferred passes stay visible), per
+   ref/source-format.md. An enrich note that lists only what was done
+   reads as complete coverage when it isn't.
+4. REVIEWER QUICK-PASS (mandatory, ONE dispatch, no loop unless defect):
    Dispatch haipipe-discovery-reviewer-agent: "Enrich check on <target>:
    (a) spot-check 1-2 flips (do the ids/DOIs resolve?), (b) every appended
    S## has summary + finding, (c) S## numbering continuous, (d) all deltas
    on-topic for discovery.yaml's question." Fix defects, re-check once.
-4. Log one line in notes.md: date + what was flipped/appended + who ordered.
+5. Log one line in notes.md: date + what was flipped/appended + who ordered.
    No report: block rewrite, no discovery.yaml restructure — ENRICH never
    re-opens the lifecycle.
 ```

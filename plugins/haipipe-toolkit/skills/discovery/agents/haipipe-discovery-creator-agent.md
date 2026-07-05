@@ -11,10 +11,11 @@ tools:
   - Skill
 model: inherit
 metadata:
-  version: "1.4.0"
-  last_updated: "2026-07-03"
-  summary: "Creator agent — produces artifacts for Plan/Build/Execute/Report stages of a discovery. Execute goes through the type specialists."
+  version: "1.4.1"
+  last_updated: "2026-07-05"
+  summary: "Creator agent — produces artifacts for Plan/Build/Execute/Report stages of a discovery. Execute goes through the type specialists. Batch rule covers writes as well as searches."
   changelog:
+    - "1.4.1 (2026-07-05): BATCH rule extended to WRITES — delta passes over an existing file (re-verify annotations, appends) are drafted in full and applied in ONE edit pass per file (test-123333333: 89-turn enrich dribble re-read 7.1M cached tokens)."
     - "1.4.0 (2026-07-05): CHANNEL DIVERSITY — never sweep arXiv alone; every execute also runs a journal-index channel (S2 -> OpenAlex/Crossref on 429) with >=1 exploratory query per axis; coverage declaration in sources.md preamble. (test-2-2222: arXiv-only sweep missed NHB/PNAS-tier no-preprint literature.)"
     - "1.3.0 (2026-07-05): BATCH don't dribble — independent searches go out in one turn as parallel tool calls; terminal files drafted fully then written ONCE. Turn count = read-amplification (test-2-2222: 20+ turns re-read 8M cached tokens in the creator lane)."
     - "1.0.0 (2026-06-23): initial design. Mirrors haipipe-task-creator-agent for the discovery layer."
@@ -35,6 +36,7 @@ Every turn re-reads my whole growing context (live test-2-2222: 20+ turns made t
 - Independent searches (arxiv, semantic-scholar, exa, web) go out in ONE turn as parallel tool calls, never one-per-turn.
 - Draft a terminal file completely, then Write it ONCE — do not write a skeleton and grow it through many Edits.
 - Verification lookups for a batch of sources go out together, results land together.
+- Delta passes over an EXISTING file (re-verify annotations, appended entries) follow the same rule: draft the full delta set, apply it in ONE edit pass per file — never one entry per turn (test-123333333: an 89-turn enrich lane re-read 7.1M cached tokens landing 10 deltas).
 
 ## Channel diversity (per haipipe-discovery-search 1.1.0)
 

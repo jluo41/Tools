@@ -4,7 +4,7 @@ description: "PROBE phase worker (internal). Called by stage skills after DRAFT 
 argument-hint: "[stage-or-section] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.4.0"
+  version: "2.4.1"
   last_updated: "2026-07-05"
   summary: "PROBE phase worker (internal). Two route families: document workers (citation/values/display, each owning a _DOC_ needs registry) + dispatch through /haipipe-probe (mode light by default, full for claims; reuse-before-create). Harvest acceptance is MECHANICAL-FOR-REAL: run the greps, never eyeball."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -117,7 +117,7 @@ This worker does exactly three things -- BOOKKEEP, DISPATCH, TRANSLATE -- and NO
    - count: new `^### ` card headings == pick_list length
    - identity: every new card block greps an identity bullet -- a `^- ` line containing a `(YYYY)` year (authors (year). venue · id). Title-only cards are REJECTS (test-2-2222: JL -- "title author 还有 venue 这些都没有呀")
    - fields: every new card block greps a `- summary:` AND a `- finding:` line
-   - status carries provenance: a card whose S## is VERIFIED in sources.md must say `VERIFIED-by-discovery` on its status line (plus 🔍 for the human Scholar/bibtex pass, which never auto-clears); bare "unverified" on a discovery-verified source is a REJECT -- it discards earned provenance
+   - status carries provenance: a card whose S## is VERIFIED in sources.md must say `VERIFIED-by-discovery` on its status line (plus 🔍 for the human Scholar/bibtex pass, which never auto-clears); bare "unverified" on a discovery-verified source is a REJECT -- it discards earned provenance. The grep is LITERAL (`grep -c 'VERIFIED-by-discovery'` == discovery-verified pick count): semantically-equivalent wording (`retrieved ✅ (discovery, ...)`, `JL bibtex ⬜`) is a REJECT too -- test-123333333's harvest synonymized the canonical string and acceptance waved it through on "same meaning"; meaning-judgment is exactly what mechanical acceptance exists to remove. The canonical strings live in the citation skill's spec (VERBATIM rule there).
    - anchors: every new card's `source_ref` names a sources.md + S##; `grep` that S## heading in that file -- it must EXIST (the agent's fresh evidence landed). An unresolvable anchor is a REJECT, not a warning
    - no bibtex: `grep -c '@' == 0` on the new cards
    One reject → re-dispatch the harvest subagent with the defect list (one retry); still failing → mark the plan file `status: read (harvest DEFECTIVE)` and surface it in the stage reply. Produce and review are never the same context. Full returns -- verdicts backfill 1-claims / sections / round logs (`status: verdicted`). Buffer convention: `../../../haipipe-paper/fn/probe-plans.md`.

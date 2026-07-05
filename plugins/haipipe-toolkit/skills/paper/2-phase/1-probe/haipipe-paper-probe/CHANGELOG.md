@@ -4,6 +4,11 @@ haipipe-paper-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [2.4.1] — 2026-07-05
+
+Changed (test-123333333: harvest synonymized the canonical status string — `retrieved ✅ (discovery, ...)` for `VERIFIED-by-discovery (...)` — and acceptance waved it through on semantic equivalence)
+- Provenance acceptance grep made LITERAL: `grep -c 'VERIFIED-by-discovery'` must equal the discovery-verified pick count; same-meaning rewordings are REJECTS. Meaning-judgment is what mechanical acceptance exists to remove; canonical strings are VERBATIM per the citation skill's spec (1.5.2).
+
 ## [2.4.0] — 2026-07-05
 
 Changed (cost pass after test-2-2222: $24 / 28min, 54% of spend = context loading)
