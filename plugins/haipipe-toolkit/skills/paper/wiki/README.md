@@ -4,6 +4,9 @@ Single source of truth for all paper skill conventions, architecture, and protoc
 
 ## Index
 
+**Foundations**
+0. [Evidence Principles (总纲)](00-evidence-principles.md) -- the root goal (trustworthy shared memory) + the four principles (land-at-home, review-on-write, layered orders, trim-ceremony-not-principle) every evidence rule derives from
+
 **Design conventions**
 1. Focus Strip Markers -- ABSORBED into haipipe-paper/SKILL.md Closing Block (2026-07-03); numbering gap kept on purpose
 2. [Comment Convention and Lifecycle](02-comment-lifecycle.md) -- actor ids (never hardcode), two formats (blockquote + tex), anchoring, lifecycle (move to _LOG on resolve), round invariants

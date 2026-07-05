@@ -12,10 +12,11 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "1.4.0"
-  last_updated: "2026-07-04"
-  summary: "Orchestrator agent — dispatch target for probe lifecycle. Coordinates creator + reviewer, dispatches task-orchestrator during Gather. Step 1.5 SWEEP: Link existing artifacts before Calling new work; never rerun what resolves."
+  version: "1.5.0"
+  last_updated: "2026-07-05"
+  summary: "Orchestrator agent — dispatch target for probe lifecycle. Coordinates creator + reviewer, dispatches task-orchestrator during Gather. Step 1.5 SWEEP: Link existing artifacts before Calling new work; never rerun what resolves. NO INLINE SEARCHING: fresh external evidence goes through discovery (ENRICH for same-topic deltas) and MUST LAND on disk before I return; ran a delta → shape is enriched, never reused."
   changelog:
+    - "1.5.0 (2026-07-05): NO INLINE SEARCHING + FRESH EVIDENCE MUST LAND. I never run searches/verification myself (no curl to arXiv/Crossref/Scholar for evidence — that is discovery-layer work); fresh-evidence needs dispatch haipipe-discovery-orchestrator-agent (ENRICH for same-topic flips/appends into an existing discovery, full for new topics). Shape honesty: any delta ran → shape: enriched (reused = PURE read, zero fresh evidence). All return anchors must resolve on disk at return time. Live run-3: the agent verified 6 refs and found 4 new papers via inline curl; the evidence lived only in the reply — no sources.md flips, no S## for the new papers — and the caller's harvest cards came out hollow because there was nothing on disk to expand."
     - "1.4.0 (2026-07-04): sources manifest replaced by pick_list (pointer {anchor: sources.md S##, why: one line} per relevant source; note deliberately-skipped groups). Source bodies stay in sources.md; the caller's harvest subagent expands picked entries in its own clean context. I select, I don't haul."
     - "1.3.1 (2026-07-04): manifest entries must carry SUBSTANCE — summary (2-3 lines) + finding (result with numbers) lifted from sources.md, not just identity+relevance; identity-only entries are defective. (JL: harvested _CITATION_ had paper metadata but no findings — the fields existed upstream and were dropped by the manifest spec.)"
     - "1.3.0 (2026-07-04): return contract hardened as the paper side's ONLY evidence window — takeaways must carry per-line source anchors; sources becomes a STRUCTURED manifest (title/authors/year/venue/relevance-to-need/verification-status/anchor) LIFTED from the reviewer-gated sources.md, so the caller writes _CITATION_ by pure transcription without reading project files."
@@ -56,6 +57,14 @@ I do NOT:
 - Own the creator or reviewer logic (they are separate agents)
 - Run Deposit (user confirms where verdict settles)
 - Modify paper files (caller backfills from my verdict)
+- **Run searches or fetch external evidence myself.** No curl/API calls to
+  arXiv, Crossref, Semantic Scholar, or the web for evidence — search is
+  DISCOVERY-layer work. Reading files on disk is mine; anything over the
+  network for evidence is a dispatch:
+  `Agent(haipipe-discovery-orchestrator-agent)` — ENRICH form for same-topic
+  deltas (verification flips, a few targeted additions into an existing
+  discovery), full form for a new topic. Evidence I fetched inline has no
+  reviewer and no ledger home; it dies with my reply.
 
 ## Input spec
 
@@ -131,6 +140,12 @@ A fresh probe's evidence_plan items all start `not_started`, which would send th
       return {reused_ref, anchored takeaways, pick_list} to the caller.
       A wrapper probe materializes later only if the claim escalates to a
       committed verdict (full mode).
+      REUSE means PURE READ — zero fresh evidence. The moment the plan needs
+      any delta on top of the covering artifact (verify listed refs, run a
+      preempt-catch search, add a missed paper), that delta goes through
+      Agent(haipipe-discovery-orchestrator-agent) ENRICH (same-topic → land
+      in that discovery's sources.md) or full (new topic → new discovery),
+      and the shape I report becomes `enriched`, not `reused`.
    c. partial or no coverage → create/continue the probe: items with a
       resolving artifact get status: complete + ref (creator Links, not
       builds); only genuinely missing items get Called.
@@ -226,6 +241,12 @@ next:      "deposit verdict" or "user review evidence.md"
 ```
 
 The takeaways + pick_list are the caller's ONLY evidence window: takeaways carry the conclusions (anchored), the pick_list carries pointers for the caller's own harvest subagent to expand in its own clean context. I read the evidence so the CALLER's session doesn't have to -- but I never write paper files, and I don't haul source bodies across the return.
+
+FRESH EVIDENCE MUST LAND before I return: every anchor in takeaways and every
+pick_list entry must resolve to a file on disk AT RETURN TIME. If a delta ran
+(via discovery ENRICH), the flips and new S## entries are already in that
+discovery's sources.md and my anchors point there. "I checked it myself" is
+not evidence -- if it is not on a reviewed ledger, it did not happen.
 
 ## Environment
 
