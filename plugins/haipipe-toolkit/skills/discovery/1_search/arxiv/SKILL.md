@@ -93,8 +93,6 @@ Present results as a numbered list, ONE PAPER PER ENTRY (never a table — paper
 When a single paper ID is requested (either directly or from Step 2):
 
 ```bash
-python3 "$SCRIPT" search "id:ARXIV_ID" --max 1
-# or fallback:
 python3 -c "
 import urllib.request, xml.etree.ElementTree as ET
 NS = 'http://www.w3.org/2005/Atom'
@@ -105,6 +103,8 @@ with urllib.request.urlopen(url, timeout=30) as r:
 "
 ```
 
+(`id_list` takes a comma-separated batch — verify MANY ids in ONE call, per the batch rule.)
+
 Display: title, all authors, categories, full abstract, published date, PDF URL, abstract URL.
 
 ### Step 4: Download PDFs
@@ -112,10 +112,6 @@ Display: title, all authors, categories, full abstract, published date, PDF URL,
 When download is requested, for each paper ID to download:
 
 ```bash
-# Using fetch script:
-python3 "$SCRIPT" download ARXIV_ID --dir PAPER_DIR
-
-# Fallback:
 mkdir -p PAPER_DIR && python3 -c "
 import pathlib
 import sys
