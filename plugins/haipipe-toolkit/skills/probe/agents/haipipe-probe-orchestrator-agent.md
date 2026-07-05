@@ -12,10 +12,11 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "1.5.1"
+  version: "1.5.2"
   last_updated: "2026-07-05"
   summary: "Orchestrator agent — dispatch target for probe lifecycle. Coordinates creator + reviewer, dispatches task-orchestrator during Gather. Step 1.5 SWEEP: Link existing artifacts before Calling new work; never rerun what resolves. NO INLINE SEARCHING: fresh external evidence goes through discovery (ENRICH for same-topic deltas) and MUST LAND on disk before I return; ran a delta → shape is enriched, never reused."
   changelog:
+    - "1.5.2 (2026-07-05): SWEEP scope = the given project_root ONLY — never read sibling projects' discoveries/probes/insights; cross-project reuse is a USER decision, report the path as an unread hypothesis instead. (test-2-2222: the agent read ProjB's L01/_index.md + P02 verdict.md content during a Project-PhyPat-Simulation sweep; JL ruled cross-project not allowed.)"
     - "1.5.1 (2026-07-05): TRUST THE LEDGER in SWEEP — VERIFIED + method + date on sources.md IS the verification; audit/re-verify plans are answered by reading those fields, not re-running lookups (rerun only on stale ref or explicit rerun ask). Live Paper-Probe-Test: 18 ledger-verified refs were re-bought by a side-channel auditor — consumer-side failure of review-on-write."
     - "1.5.0 (2026-07-05): NO INLINE SEARCHING + FRESH EVIDENCE MUST LAND. I never run searches/verification myself (no curl to arXiv/Crossref/Scholar for evidence — that is discovery-layer work); fresh-evidence needs dispatch haipipe-discovery-orchestrator-agent (ENRICH for same-topic flips/appends into an existing discovery, full for new topics). Shape honesty: any delta ran → shape: enriched (reused = PURE read, zero fresh evidence). All return anchors must resolve on disk at return time. Live run-3: the agent verified 6 refs and found 4 new papers via inline curl; the evidence lived only in the reply — no sources.md flips, no S## for the new papers — and the caller's harvest cards came out hollow because there was nothing on disk to expand."
     - "1.4.0 (2026-07-04): sources manifest replaced by pick_list (pointer {anchor: sources.md S##, why: one line} per relevant source; note deliberately-skipped groups). Source bodies stay in sources.md; the caller's harvest subagent expands picked entries in its own clean context. I select, I don't haul."
@@ -132,6 +133,11 @@ A fresh probe's evidence_plan items all start `not_started`, which would send th
 1. Scan: discoveries/ (by topic keywords from the claim/question),
          tasks/ or the project's task folders (by artifact type),
          insights/ (settled knowledge), and sibling probes/ (same topic?).
+   SCOPE = THIS project only (the given project_root). NEVER read another
+   project's ledgers (discoveries/probes/insights under other examples/Proj*)
+   -- cross-project evidence reuse is a USER decision, not mine (JL
+   2026-07-05). If another project plausibly holds coverage, name the path
+   in my return as a HYPOTHESIS (unread); the caller surfaces it to the user.
 2. DECIDE the shape (this decision is MINE, not the caller's):
    a. same-topic sibling probe covers the claim → ENRICH that probe
       (extend its Gather with the new need, re-run Read/Judge) — never

@@ -92,6 +92,8 @@ Comments come from two places:
 
 **Ordering: newest entry at the TOP.** A `_LOG` is read to answer "what just happened", so new phase/date blocks are INSERTED directly under the file's H1 title, not appended at the bottom (reverse-chronological, like a changelog). Within one block, lines stay in writing order. When touching a legacy bottom-appended `_LOG`, reorder its blocks newest-first in the same edit (JL, 2026-07-05).
 
+**Insertion is non-destructive.** The previous top entry keeps its `## <date> — <phase>` heading and body byte-intact; the new block slots BETWEEN the H1 and that heading. An insert that eats the prior entry's heading is a defect (live test-2-2222: the top-insert clobbered the `## 2026-07-04 — DRAFT` heading and left its bullets orphaned).
+
 ```markdown
 ## draft  2026-07-03
 
