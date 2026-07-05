@@ -4,6 +4,11 @@ haipipe-paper-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [2.3.2] — 2026-07-05
+
+Changed (test-2-2222: worker went sync on a from-scratch probe; JL's session froze 25 minutes through the 4-layer chain)
+- DISPATCH: fresh runs go `run_in_background`, hard. The "I need the return to TRANSLATE" excuse is named and voided (background return arrives, TRANSLATE runs then). Fresh-vs-reuse judged from plan content alone; when unsure, background.
+
 ## [2.3.1] — 2026-07-05
 
 Changed (Paper-Probe-Test: an elicited AUDIT scope had no named route, so the stage hand-rolled a general-purpose web auditor)
