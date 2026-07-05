@@ -94,6 +94,8 @@ Comments come from two places:
 
 **Insertion is non-destructive.** The previous top entry keeps its `## <date> — <phase>` heading and body byte-intact; the new block slots BETWEEN the H1 and that heading. An insert that eats the prior entry's heading is a defect (live test-2-2222: the top-insert clobbered the `## 2026-07-04 — DRAFT` heading and left its bullets orphaned).
 
+**Block headings carry date + HH:MM** (`## 2026-07-05 13:29 — [PHASE] PROBE — START`), so the `_LOG` doubles as a coarse on-disk timeline of the run (JL, 2026-07-05; fine-grained view = 0_utils/haipipe-run-timeline over the transcripts). Legacy undated/time-less headings stay as-is; only new blocks get stamped.
+
 ```markdown
 ## draft  2026-07-03
 
