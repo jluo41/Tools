@@ -4,6 +4,14 @@ haipipe-discovery-search — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [1.1.0] — 2026-07-05
+
+Changed (JL, test-2-2222: "为什么 nature human behaviour / pnas 之类的没有被搜?" — arXiv-only sweep misses no-preprint journal literature)
+- CHANNEL DIVERSITY mandatory: preprint channel + journal-index channel (semantic-scholar -> OpenAlex/Crossref on rate-limit) every run; knowledge-first confirmations do not count as a sweep.
+- TOP-VENUE PASS in full-mode novelty (queries filtered to field flagship venues); light mode records the skipped pass as a coverage caveat.
+- sources.md preamble carries the COVERAGE DECLARATION (channels searched AND not searched) per ref/source-format.md.
+
+
 ## [1.0.0] — 2026-07-03
 
 ### Added

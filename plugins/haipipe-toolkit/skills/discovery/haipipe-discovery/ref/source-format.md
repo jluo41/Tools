@@ -6,6 +6,18 @@ THE one home for how papers and sources are presented anywhere in the discovery 
 
 ONE SOURCE = ONE SUBSECTION, full title in the heading. NEVER a table — tables of papers are not for humans to read (long titles wrap badly in cells; you cannot scan one source at a glance). Tables stay allowed only for short-field analytical matrices (score grids, confound rankings), never for citation/source metadata.
 
+## Coverage declaration (sources.md preamble, mandatory)
+
+The preamble under `# Sources` states the search's BOUNDARY, not just its method — channels searched, channels NOT searched, and date. A reader must be able to tell what this sweep could not have found (JL, test-2-2222: an arXiv-only sweep read as complete while systematically missing no-preprint journal literature).
+
+```md
+# Sources
+
+Coverage: arXiv API (search + id verification) + OpenAlex (journal index),
+2026-07-05. NOT searched: PubMed, Scholar, top-venue-filtered pass
+(deferred to full-mode 查新). S-ids folder-local.
+```
+
 ## sources.md — papers
 
 ```md
