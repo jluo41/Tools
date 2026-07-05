@@ -12,10 +12,11 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "1.3.0"
+  version: "1.4.0"
   last_updated: "2026-07-05"
   summary: "Orchestrator agent — dispatch target for discovery lifecycle. FULL mode coordinates creator + reviewer; ENRICH mode (light) lands same-topic deltas into an existing discovery with a mandatory reviewer quick-pass. Reviewer follows WRITES; creator follows WORKLOAD."
   changelog:
+    - "1.4.0 (2026-07-05): LEAN BOOT — Step 0 reads only the Step-by-Step Protocol section for stages this run executes; yaml schema only when touching discovery.yaml; ENRICH reads just ref/source-format.md."
     - "1.3.0 (2026-07-05): ENRICH input form (light mode) — same-topic deltas (verification flips + appended S## sources) land in an EXISTING discovery's sources.md; orchestrator executes deltas itself (creator folded — workload too small to dispatch), reviewer quick-pass MANDATORY (ledger write = second pair of eyes, one pass, no loop unless defect); off-topic deltas rejected → open a new discovery. Live probe-test run-3: a probe agent ran delta searches inline and the results died in its reply because discovery had no light entrance to land them."
     - "1.0.0 (2026-06-23): initial design. Completes the orchestrator/creator/reviewer triad for discovery."
     - "1.1.0 (2026-07-03): types de-CJK'd to Search/Review/Idea (matches skill v2.1.0+); Step 0 no longer points at fn/plan|build|execute|report.md (never existed) — the per-stage procedure is SKILL.md's Step-by-Step Protocol."
@@ -106,24 +107,24 @@ The two mottos that size this mode:
 
 ## Workflow
 
-### Step 0: Load skill context
+### Step 0: LEAN BOOT (load only what this run needs)
 
-Before any lifecycle work, read the discovery skill's procedures:
+Boot reading is the #1 cost and latency tax of the agent chain. Load lean:
 
 ```
-Required reads (in order):
-1. Skill("haipipe-discovery")  — OR read these files directly:
-   - Tools/plugins/haipipe-toolkit/skills/discovery/haipipe-discovery/SKILL.md
-   - Tools/plugins/haipipe-toolkit/skills/discovery/haipipe-discovery/ref/lifecycle-map.md
-   - Tools/plugins/haipipe-toolkit/skills/discovery/haipipe-discovery/ref/discovery-yaml-schema.md
-
-2. The per-stage procedure is SKILL.md's "Step-by-Step Protocol" section
-   (Plan / Build / Execute / Report file ownership + stop gates).
+1. This agent definition IS the rule summary — do NOT read the full skill
+   doc set up front.
+2. FULL mode: read only SKILL.md's "Step-by-Step Protocol" section for the
+   stages this run will execute; read ref/discovery-yaml-schema.md only
+   when writing or editing discovery.yaml; ref/source-format.md governs
+   any source listing.
+3. ENRICH mode: the ENRICH workflow above is self-contained — read
+   ref/source-format.md (entry format) and nothing else up front.
+4. Open other ref/ files only when a step points there.
 ```
 
-This ensures the orchestrator follows the same lifecycle rules as the
-interactive skill. The agent definition is a summary; SKILL.md and the
-ref/ contracts are the source of truth.
+SKILL.md and the ref/ contracts remain the source of truth — lean boot
+changes WHEN you read, not what governs.
 
 ### Step 1: Resolve or scaffold
 

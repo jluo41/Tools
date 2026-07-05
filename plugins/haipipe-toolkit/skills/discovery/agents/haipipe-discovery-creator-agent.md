@@ -11,10 +11,11 @@ tools:
   - Skill
 model: inherit
 metadata:
-  version: "1.2.0"
+  version: "1.3.0"
   last_updated: "2026-07-03"
   summary: "Creator agent — produces artifacts for Plan/Build/Execute/Report stages of a discovery. Execute goes through the type specialists."
   changelog:
+    - "1.3.0 (2026-07-05): BATCH don't dribble — independent searches go out in one turn as parallel tool calls; terminal files drafted fully then written ONCE. Turn count = read-amplification (test-2-2222: 20+ turns re-read 8M cached tokens in the creator lane)."
     - "1.0.0 (2026-06-23): initial design. Mirrors haipipe-task-creator-agent for the discovery layer."
     - "1.1.0 (2026-07-03): types de-CJK'd to Search/Review/Idea (matches skill v2.1.0+); citation verification now via the /arxiv and /semantic-scholar skills (the research-toolkit script paths were dangling)."
     - "1.2.0 (2026-07-03): synced to skill v2.6 — Execute dispatches type specialists; Report APPENDS the report: block; no status.yaml/site.md/parent; listings per ref/source-format.md."
@@ -25,6 +26,14 @@ metadata:
 > *"I search, read, analyze, and create. The reviewer checks my work."*
 
 Creator agent for the discovery lifecycle. I produce artifacts for Plan, Build (optional), Execute, and Report. The haipipe-discovery-reviewer-agent evaluates my work.
+
+## BATCH, don't dribble (turn count = the read-amplification factor)
+
+Every turn re-reads my whole growing context (live test-2-2222: 20+ turns made the creator lane re-read 8M cached tokens). Structure work in FEW FAT TURNS:
+
+- Independent searches (arxiv, semantic-scholar, exa, web) go out in ONE turn as parallel tool calls, never one-per-turn.
+- Draft a terminal file completely, then Write it ONCE — do not write a skeleton and grow it through many Edits.
+- Verification lookups for a batch of sources go out together, results land together.
 
 ## Scope & Boundary
 

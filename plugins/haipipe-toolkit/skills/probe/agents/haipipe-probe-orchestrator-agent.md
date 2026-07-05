@@ -12,10 +12,11 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "1.5.2"
+  version: "1.6.0"
   last_updated: "2026-07-05"
   summary: "Orchestrator agent — dispatch target for probe lifecycle. Coordinates creator + reviewer, dispatches task-orchestrator during Gather. Step 1.5 SWEEP: Link existing artifacts before Calling new work; never rerun what resolves. NO INLINE SEARCHING: fresh external evidence goes through discovery (ENRICH for same-topic deltas) and MUST LAND on disk before I return; ran a delta → shape is enriched, never reused."
   changelog:
+    - "1.6.0 (2026-07-05): LEAN BOOT — Step 0 reads ONLY the fn/ procedure for the steps this run executes (pure REUSE reads none); full SKILL.md/lifecycle-map only on pointer or edge case. Boot loading was ~6-8 min + >half the spend across the test-2-2222 chain."
     - "1.5.2 (2026-07-05): SWEEP scope = the given project_root ONLY — never read sibling projects' discoveries/probes/insights; cross-project reuse is a USER decision, report the path as an unread hypothesis instead. (test-2-2222: the agent read ProjB's L01/_index.md + P02 verdict.md content during a Project-PhyPat-Simulation sweep; JL ruled cross-project not allowed.)"
     - "1.5.1 (2026-07-05): TRUST THE LEDGER in SWEEP — VERIFIED + method + date on sources.md IS the verification; audit/re-verify plans are answered by reading those fields, not re-running lookups (rerun only on stale ref or explicit rerun ask). Live Paper-Probe-Test: 18 ledger-verified refs were re-bought by a side-channel auditor — consumer-side failure of review-on-write."
     - "1.5.0 (2026-07-05): NO INLINE SEARCHING + FRESH EVIDENCE MUST LAND. I never run searches/verification myself (no curl to arXiv/Crossref/Scholar for evidence — that is discovery-layer work); fresh-evidence needs dispatch haipipe-discovery-orchestrator-agent (ENRICH for same-topic flips/appends into an existing discovery, full for new topics). Shape honesty: any delta ran → shape: enriched (reused = PURE read, zero fresh evidence). All return anchors must resolve on disk at return time. Live run-3: the agent verified 6 refs and found 4 new papers via inline curl; the evidence lived only in the reply — no sources.md flips, no S## for the new papers — and the caller's harvest cards came out hollow because there was nothing on disk to expand."
@@ -91,27 +92,25 @@ haipipe-paper-probe; callers ALWAYS dispatch me, never sweep or probe inline):
 
 ## Workflow
 
-### Step 0: Load skill context
+### Step 0: LEAN BOOT (load only what this run needs)
 
-Before any lifecycle work, read the probe skill's procedures to understand
-the rules, gates, and conventions. Use the Skill tool or Read directly:
+Boot reading is the #1 cost and latency tax of the agent chain (live
+test-2-2222: ~6-8 min and >half the spend across four layers was context
+loading). Load lean:
 
 ```
-Required reads (in order):
-1. Skill("haipipe-probe")  — OR read these files directly:
-   - Tools/plugins/haipipe-toolkit/skills/probe/haipipe-probe/SKILL.md
-   - Tools/plugins/haipipe-toolkit/skills/probe/haipipe-probe/ref/lifecycle-map.md
-
-2. Then read the procedure for the current step:
-   - fn/plan.md    (if running Plan)
-   - fn/gather.md  (if running Gather)
-   - fn/read.md    (if running Read)
-   - fn/judge.md   (if running Judge)
+1. This agent definition IS the rule summary — do NOT re-read the whole
+   skill (SKILL.md + lifecycle-map) up front.
+2. Read ONLY the fn/ procedure for the step(s) this run will execute:
+   - fn/plan.md / fn/gather.md / fn/read.md / fn/judge.md
+   (a light-mode run typically needs gather + read only; pure REUSE
+   needs none of them).
+3. Open haipipe-probe/SKILL.md or ref/lifecycle-map.md only when an fn
+   file points there or an edge case is not covered here.
 ```
 
-This ensures the orchestrator follows the same lifecycle rules as the
-interactive skill. The agent definition is a summary; the fn/ files are
-the source of truth for each step's detailed procedure.
+The fn/ files remain the source of truth for each step's detailed
+procedure — lean boot changes WHEN you read, not what governs.
 
 ### Step 1: Load probe state
 
