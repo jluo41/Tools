@@ -4,6 +4,11 @@ haipipe-paper-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [2.4.0] — 2026-07-05
+
+Changed (cost pass after test-2-2222: $24 / 28min, 54% of spend = context loading)
+- Harvest subagent dispatches on the CHEAPEST model tier (Agent model: haiku, effort low) — pure transcription guarded by mechanical acceptance; the one acceptance-reject retry escalates one tier up instead of same-tier.
+
 ## [2.3.3] — 2026-07-05
 
 Changed (test-2-2222 harvest: cards had substance but NO authors/year/venue — the worker's own compressed re-enumeration of the citation card spec had dropped the identity bullet, the dispatch prompt followed it, acceptance didn't check identity → passed. JL: "title author 还有 venue 这些都没有呀")
