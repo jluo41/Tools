@@ -1,31 +1,35 @@
-fn-scaffold: Scaffold an inference-performance task-folder
-===========================================================
+fn-scaffold: Scaffold an endpoint-packaging task-folder
+========================================================
 
-Profile a packaged Endpoint_Set's inference latency; produce a per-step breakdown under `results/<run>/`. Group letter default: **P** (Performance).
+Package a trained ModelInstance_Set (Stage 5) into a deployable Endpoint_Set
+(Stage 6) via `Endpoint_Pipeline`. Group letter is PROJECT-SPECIFIC
+(orchestrator rule; follow the project's existing scheme); the default ABC
+convention uses **C** for endpoint groups.
 
-Output: `tasks/P{NN}_<group>/{NN}_<task_name>/`.
+Output: `tasks/C{NN}_<group>/{NN}_<task_name>/` (or the project's letter).
 
 
-Step 1 — Identify project + task-group  (placement decision)
-------------------------------------------------------------
+Step 1 — Identify project + task-group
+---------------------------------------
 
 - Auto-detect project from cwd.
-- DECIDE placement (see SKILL.md "Placement"):
-  * If the project HAS an endpoint group (the one that built the Endpoint_Set, e.g. `C_endpoint/` with a `*_endpoint` build task) → CO-LOCATE there as a sibling: `<EndpointGroup>/<N>_inference_profile/`. Do NOT make a P group. Use the project's local task-numbering (e.g. `C2_inference_profile`) and a cohort-agnostic folder name + per-cohort config.
-  * Else (no endpoint group / standalone) → AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK task-group. Group letter **P**, scaffold `P{NN}_<group_name>/` if needed.
+- AUTO_MODE: infer group from cwd or return `status: blocked`.
+  Interactive: ASK task-group. Scaffold `C{NN}_<group_name>/` if needed
+  (or the project's endpoint letter).
 
 
 Step 2 — Collect metadata
 --------------------------
 
 - 2-digit NN: next free in this group.
-- snake_case task_name (e.g., `profile_smsr4_slearner`, `latency_clickpred`).
-- Target Endpoint_Set: path under `_WorkSpace/6-EndpointStore/`
-  (e.g. `endpoint_sms_clickpred_v0001smsr4-slenteng`).
-- Sample payload: a path to a `payload.json` (usually the endpoint's own
-  `examples/example_001/payload.json`).
-- warm_iterations: how many warm calls to median over (default 5).
-- decompose_model_inference: true → time the per-arm loop sub-components.
+- snake_case task_name (e.g., `package_mortality_xgb`).
+- Source model: `modelinstance_name` + `modelinstance_version` (Stage 5,
+  must have examples from ExampleConfig).
+- Target: `endpoint_name` + `endpoint_version`.
+- The 5 Fn names (MetaFn / TrigFn / PostFn / Src2InputFn / Input2SrcFn) —
+  must exist in `code/haifn/fn_endpoint/`; author missing ones via
+  `/haipipe-end design <fn-type>` first. Src2InputFn + Input2SrcFn are
+  per-platform: pick the pair matching `deployment_config.platform`.
 - `_meta:` block.
 
 
@@ -33,73 +37,69 @@ Step 3 — Create skeleton
 -------------------------
 
 ```
-P{NN}_<group>/
+C{NN}_<group>/
 └── {NN}_<task_name>/
-    ├── {NN}_<task_name>.py
+    ├── 1_<task_name>.py                exact copy of code/scripts/haistepnb/c_endpoint_nb.py
     ├── configs/
-    │   └── profile_<endpoint>.yaml         from ref/config-seed.yaml
+    │   └── run_<task_name>.yaml        from ref/config-seed.yaml
     ├── runs/
-    │   └── profile_<endpoint>.sh
-    ├── results/
-    │   └── <run>/                          latency.json, breakdown.txt
-    └── notebooks/
+    │   └── run_<task_name>.sh          papermill runner
+    ├── results/                        (created at runtime)
+    └── notebooks/                      (created at runtime)
 ```
+
+The task `.py` is an EXACT copy of the template — CONFIG is overridden at
+runtime by papermill, never by editing the file (see SKILL.md).
 
 
 Step 4 — Seed config
 ---------------------
 
-Copy `ref/config-seed.yaml` to `configs/profile_<endpoint>.yaml`. Fill:
+Copy `ref/config-seed.yaml` to `configs/run_<task_name>.yaml`. Fill:
 - `_meta:` block.
-- `endpoint_set_path` (under 6-EndpointStore).
-- `payload_path`.
-- `ProfileArgs:` (warm_iterations, decompose_model_inference, arm_sweep).
+- Source model block (`modelinstance_name`, `modelinstance_version` — no @ prefix).
+- Target endpoint block (`endpoint_name`, `endpoint_version`).
+- The 5 Fn names.
+- `deployment_config` (platform: local | databricks | sagemaker).
 
 
 Step 5 — Run-script
 --------------------
 
-Copy `../../haipipe-task/ref/run-sh-template.sh` to `runs/profile_<endpoint>.sh`.
+Copy `../../../haipipe-task/ref/run-sh-template.sh` to `runs/run_<task_name>.sh`.
 Set `TASK_NAME="{NN}_{task_name}"`. The body sources `.venv` + `env.sh`
-(the profiler loads the real Endpoint_Set, needs the haipipe import path).
+(Endpoint_Pipeline needs the haipipe import path + store env vars).
 
 
-Step 6 — Author the `<TASK>.py` body  (haipipe-task-creator-agent does this)
-----------------------------------------------------------------------------
+Step 6 — Execute + verify (per SKILL.md pipeline flow)
+-------------------------------------------------------
 
-The body MUST:
-- `Endpoint_Set.load_from_disk(endpoint_set_path, SPACE)`.
-- run ONE warm-up call (silences the cold model-load).
-- run `inference(payload, profile=True)` × `warm_iterations`; median each key.
-- if `decompose_model_inference`: monkeypatch `mi._add_treatment_columns` and
-  `mi.model_tuner.infer` with timers to split model_inference into
-  (per-arm dataset-transform) vs (csr build + xgb predict).
-- write `results/<run>/latency.json` + a readable `breakdown.txt`.
-
-See `ref/inference-perf-notes.md` for the harness shape + the anti-patterns.
+`bash runs/run_<task_name>.sh` drives c_endpoint_nb.py:
+load ModelInstance_Set → Endpoint_Pipeline.run() → save to 6-EndpointStore/
+→ verify every example has payload.json → test inference on sample payloads
+→ package .tar.gz. See SKILL.md "Pipeline flow" for the step list and
+`../../haipipe-end/ref/0-overview.md` for the Endpoint_Set layout contract.
 
 
 Step 7 — Cross-skill link + report
 -----------------------------------
 
-After scaffolding, suggest:
-- `/haipipe-end-endpointset profile <endpoint>` for the same breakdown ad-hoc.
-- `/haipipe-task-for-display` to chart latency across model releases.
+After a successful package, suggest:
+- `/haipipe-end deploy <target> <endpoint>` for deployment.
+- `/haipipe-end profile <endpoint>` for an ad-hoc latency breakdown.
 
 ```
 status:    ok
-summary:   Scaffolded inference-perf task <NN>_<name> under P{NN}_<group>.
+summary:   Scaffolded endpoint-packaging task <NN>_<name> under <G>{NN}_<group>.
 artifacts: [paths created]
-next:      run the profile, then /haipipe-task-for-display
+next:      bash runs/run_<task_name>.sh, then /haipipe-end deploy <target>
 ```
 
 
 MUST NOT
 ---------
 
-- Report cold-call latency as "the" number — warm up, report warm medians.
-- Skip the model_inference decomposition — that is the whole point.
-- Use HuggingFace Dataset for any custom timing fixture (it is the thing
-  being diagnosed; use numpy/scipy if you build a synthetic input).
-- Mutate `_WorkSpace/6-EndpointStore/` (read-only).
+- Edit the copied c_endpoint_nb.py body (config-driven only).
+- Package a ModelInstance_Set that has no examples (payload generation needs them).
+- Mutate an existing `_WorkSpace/6-EndpointStore/` entry — new version, new folder.
 - Create `README.md`.

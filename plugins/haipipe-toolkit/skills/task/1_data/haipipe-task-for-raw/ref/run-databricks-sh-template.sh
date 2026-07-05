@@ -91,7 +91,7 @@ if [ $EXIT_CODE -eq 0 ]; then
   echo "    Next steps:"
   echo "    1. Upload notebook to Databricks workspace"
   echo "    2. Attach to a cluster and run"
-  echo "    3. Sync extracted parquet files to local _WorkSpace/0-RawStore/"
+  echo "    3. Sync extracted parquet files to local _WorkSpace/0-RawDataStore/"
   echo ""
 fi
 

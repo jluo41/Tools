@@ -13,7 +13,7 @@ Stores
 ```
 store name              local env var                 remote env var                  typical asset-name pattern
 ----------------------  ----------------------------- ------------------------------- --------------------------------------------
-0-RawStore              LOCAL_RAW_STORE               REMOTE_RAWDATA_STORE            {YYYYMMDD}_{CohortLabel}/
+0-RawDataStore              LOCAL_RAW_STORE               REMOTE_RAWDATA_STORE            {YYYYMMDD}_{CohortLabel}/
 1-SourceStore           LOCAL_SOURCE_STORE            REMOTE_SOURCE_STORE             {CohortName}/@{SourceFnName}/
 2-RecStore              LOCAL_RECORD_STORE            REMOTE_RECORD_STORE             {CohortName}_v{N}RecSet/
 3-CaseStore             LOCAL_CASE_STORE              REMOTE_CASE_STORE               {RecSetName}/@v{N}CaseSet-{TriggerFolder}/
@@ -25,7 +25,7 @@ ExternalStore           LOCAL_EXTERNAL_STORE          REMOTE_EXTERNAL_STORE     
 ExternalStore/@inference LOCAL_REFERENCE_STORE        REMOTE_REFERENCE_STORE          {payload_*.json}
 ```
 
-`LOCAL_RAW_STORE` resolves to `_WorkSpace/0-RawStore`, but
+`LOCAL_RAW_STORE` resolves to `_WorkSpace/0-RawDataStore`, but
 hai-remote-sync's `--rawdata` flag uses `REMOTE_RAWDATA_STORE` --
 note the name asymmetry (RAW vs RAWDATA).
 
@@ -57,7 +57,7 @@ For named-store mode, the matching CLI flag:
 ```
 store                          flag
 ------------------------------ ------------
-0-RawStore                     --rawdata
+0-RawDataStore                     --rawdata
 1-SourceStore                  --source
 2-RecStore                     --record
 3-CaseStore                    --case

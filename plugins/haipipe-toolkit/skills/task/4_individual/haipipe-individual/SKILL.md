@@ -3,11 +3,10 @@ name: haipipe-individual
 description: "Per-individual data contract skill. Builds and manages a single-individual slice of the pipeline at stages 0-2 (RawDataStore, SourceStore, RecStore) under _WorkSpace/A-User-Store/UserGroup-{dataset}/Subject-{id}. Use when the user asks to create, inspect, or clean per-individual folders, build individual samples from a dataset, or prepare data for endpoint inference. Trigger: individual, per-individual, single-individual, UserGroup, Subject-ID, A-User-Store, inference data, endpoint data, sample patient."
 argument-hint: "[command] [args...]"
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-07-04"
   summary: "Per-individual data contract skill."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-individual
@@ -73,7 +72,7 @@ Flattening rules (build script strips these wrapper segments):
 
 Wrapper names preserved in manifest.yaml for provenance (source_set,
 rec_set, rec_partitions_found_in), so you can always trace back to the
-global store that seeded a individual.
+global store that seeded an individual.
 
 
 Naming Convention
@@ -108,8 +107,20 @@ Commands
   /haipipe-individual inspect <Subject-*>     → show folder tree + manifest
   /haipipe-individual build <dataset> <id>    → build one individual folder
   /haipipe-individual build-samples           → build N samples per dataset (config-driven)
-  /haipipe-individual clean <Subject-*>       → remove a individual folder (reversible via rebuild)
+  /haipipe-individual clean <Subject-*>       → remove an individual folder (reversible via rebuild)
   /haipipe-individual spec                    → show full per-stage content spec
+
+
+Sub-skills (inference chain)
+----------------------------
+
+Three sibling skills in this bucket consume the Subject-* folders this skill builds:
+
+  /haipipe-individual-inference          serve one Subject-* through a local endpoint (ctx load + predict)
+  /haipipe-individual-inference-report   render the inference output as a patient-facing report
+  /haipipe-individual-inference-judge    judge report quality (persona panel)
+
+Progression: build (this skill) → inference → report → judge.
 
 
 Build Logic (what `build` does)
@@ -118,7 +129,7 @@ Build Logic (what `build` does)
 Given `{dataset, individual_id}` the build proceeds in 5 steps:
 
   Step 1  — mkdir
-    Create Subject-{DatasetTag}-{id}/ under _WorkSpace/A-User-Store/UserGroup/.
+    Create Subject-{id}/ under _WorkSpace/A-User-Store/UserGroup-{DatasetTag}/.
     If folder exists and manifest is fresh → skip (idempotent).
 
   Step 2  — slice raw
@@ -130,15 +141,15 @@ Given `{dataset, individual_id}` the build proceeds in 5 steps:
     Write into Subject-*/0-RawDataStore/.
 
   Step 3  — filtered source
-    Run the existing fn_source.run() pipeline with a individual filter
+    Run the existing fn_source.run() pipeline with an individual filter
     (Partition_Args['individual_id_filter'] = [individual_id]).
     Reads: Subject-*/0-RawDataStore/ (or global 0-RawDataStore/ + filter).
-    Writes: Subject-*/1-SourceStore/{SourceSet}_v{ver}/.
+    Writes: Subject-*/1-SourceStore/ (FLAT — dataset/source-set wrappers stripped per the flattening rules; names preserved in manifest.yaml).
 
   Step 4  — filtered record
     Run fn_record.run() against the filtered source from Step 3.
     Reads: Subject-*/1-SourceStore/.
-    Writes: Subject-*/2-RecStore/{RecSet}/rec_{id}.parquet.
+    Writes: Subject-*/2-RecStore/ (FLAT Record-* dirs — rec-set wrapper stripped, name preserved in manifest.yaml).
 
   Step 5  — manifest
     Write Subject-*/manifest.yaml with provenance:
@@ -168,8 +179,8 @@ build_args:
 Build Contract
 --------------
 
-The build MUST be deterministic and reproducible. A single script (planned:
-`fn/build_sample_individuals.py`) owns this:
+The build MUST be deterministic and reproducible. A single script
+(`fn/build_sample_individuals.py`) owns this:
 
   1. Read sample config (which datasets, which individual IDs, N per dataset).
   2. For each (dataset, individual_id):
@@ -194,7 +205,7 @@ Consumers
     manifest.yaml       → attribution and provenance
 
   Privacy / deletion:
-    rm -rf Subject-{DatasetTag}-{id}/  → wipes ALL derived data for one individual.
+    rm -rf UserGroup-{DatasetTag}/Subject-{id}/  → wipes ALL derived data for one individual.
     Global stores untouched; re-run build to regenerate.
 
 
@@ -212,14 +223,14 @@ Relationship to Project-Wide Stores
     2-RecStore/                 ← one individual's record
 
   A per-individual folder is a VIEW of the global store, scoped to one ID,
-  built by running the SAME pipeline with a individual filter.
+  built by running the SAME pipeline with an individual filter.
 
 
 Rules
 -----
 
   - NEVER create stages 3-6 inside a Subject-*/ folder. Those are not per-individual.
-  - ALWAYS dataset-qualify the folder name: Subject-{DatasetTag}-{id}.
+  - NEVER dataset-qualify the child folder name: it is Subject-{id}; the dataset tag lives on the parent UserGroup-{DatasetTag}/ (see Naming Convention).
   - ALWAYS write manifest.yaml — it's the provenance record.
   - If a dataset's raw format can't be cleanly sliced (e.g. proprietary binary),
     store a pointer manifest in 0-RawDataStore/ instead of copying.

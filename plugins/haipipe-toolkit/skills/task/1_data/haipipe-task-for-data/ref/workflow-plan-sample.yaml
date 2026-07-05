@@ -1,6 +1,6 @@
 # workflow-plan-sample.yaml — data-pipeline task script-level plan
-# Schema: project/haipipe-workflow/ref/plan-schema.md
-# Task-level template: ../../haipipe-task/ref/workflow-template.yaml
+# Schema: task/haipipe-workflow/ref/plan-schema.md
+# Task-level template: ../../../haipipe-task/ref/workflow-template.yaml
 #
 # Typical data phases: Load → Build → Validate → Export
 # Heavy outputs to _WorkSpace/{1..4}-*Store/; light summaries to results/.

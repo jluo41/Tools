@@ -107,6 +107,5 @@ Backward compatibility
 
 - Existing files with only bare scalars are fully valid — no migration needed.
 - The nested `{point, ci_*, N}` form is purely additive: a scalar reader that
-  predates this schema sees an object and should warn, not crash; the updated
-  probe `result aggregate` extractor (see `haipipe-probe-result/SKILL.md`)
-  handles both shapes.
+  predates this schema sees an object and should warn, not crash. Downstream
+  readers are expected to handle both shapes.

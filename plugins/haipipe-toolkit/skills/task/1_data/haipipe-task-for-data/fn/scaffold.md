@@ -10,7 +10,7 @@ Step 1 — Identify project + task-group
 ---------------------------------------
 
 - Auto-detect project from cwd (look for `examples/Proj*/`).
-- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK task-group. Group letter must be **D**; scaffold a new `D{NN}_<group_name>/` if needed (see `../../haipipe-task/fn/task-group.md`).
+- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK task-group. Group letter is PROJECT-SPECIFIC (orchestrator rule; follow the project's existing scheme). Default **D**; scaffold a new `D{NN}_<group_name>/` if needed (see `../../../haipipe-task/fn/task-group.md`).
 
 
 Step 2 — Collect metadata
@@ -64,7 +64,7 @@ output, not source.
 Step 4 — Seed config
 ---------------------
 
-Copy `ref/config-seed.yaml` to `configs/{stage}_{layer}_{dataset}.yaml`.
+Copy `ref/config-seed.yaml` to `configs/run_<task_name>.yaml` (matches the Step 3 tree and SKILL.md).
 Fill in:
 - `_meta:` (purpose / input / output).
 - `stage:` (1..4).
@@ -75,8 +75,8 @@ Fill in:
 Step 5 — Run-script
 --------------------
 
-Copy `../../haipipe-task/ref/run-sh-template.sh` to
-`runs/{stage}_{layer}_{dataset}.sh`. Set `TASK_NAME="{NN}_{task_name}"`.
+Copy `../../../haipipe-task/ref/run-sh-template.sh` to
+`runs/run_<task_name>.sh`. Set `TASK_NAME="{NN}_{task_name}"`.
 
 
 Step 6 — Cross-skill link
@@ -117,10 +117,10 @@ First-run gate
 ---------------
 
 `runs/<RUN>.sh` blocks execution if `CODE_REVIEW.md` is missing or
-stale (gate inherited from `../../haipipe-task/ref/run-sh-template.sh`).
+stale (gate inherited from `../../../haipipe-task/ref/run-sh-template.sh`).
 For the first run after this scaffold, do ONE of:
 
-  1. **Recommended** — run the Run Script Reviewer agent on this
+  1. **Recommended** — run the haipipe-task-reviewer-agent (Gate 1) on this
      task-folder to produce a fresh `CODE_REVIEW.md`:
      `Tools/plugins/haipipe-toolkit/skills/task/agents/haipipe-task-reviewer-agent.md`
 

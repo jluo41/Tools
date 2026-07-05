@@ -4,18 +4,10 @@ description: "Unified Stata-engine task-folder build specialist. Handles all 4 s
 argument-hint: "[stage] [project_id] [group] [task-name]  OR  [server-check] [task-folder]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.4.0"
-  last_updated: "2026-06-10"
+  version: "2.7.0"
+  last_updated: "2026-07-05"
   summary: "Unified Stata skill — topology-aware templates + contract aligned with production."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline."
-    - "1.1.0 (2026-06-08): add metadata; workflow lifecycle compatible."
-    - "1.2.0 (2026-06-09): unwrap prose; fix agent names to haipipe-task-{creator,reviewer}-agent; add lifecycle paragraph."
-    - "2.0.0 (2026-06-10): unified — absorb all 4 child specialists (cms/case/data/reg) into one skill; no child delegation."
-    - "2.1.0 (2026-06-10): absorb cms-server-checklist from 0_utils; add server check mode with three-gate protocol."
-    - "2.2.0 (2026-06-10): fix 6 issues — rewrite 4 plan samples to match real pipeline phases; remove SSC from build-stata; fix scaffold config extension; update orchestrator template to working version (<=30 lines); fix ~15-><=30 budget; remove helper function references from build-stata."
-    - "2.3.0 (2026-06-10): align templates+contract with production — add topology families (orchestrated vs self-orchestrating) to dialect; soften A5 (accept Resolve-StataExe); scope B2/B3 by topology; expand config-seed-data to production size (~80 globals); add run-data-runner-template.ps1; data-stage synth/real source dimension; STATATMP in orchestrator template; match-existing mode in build-stata."
-    - "2.4.0 (2026-06-10): align reg stage to D01 ground truth — add run-ps1-reg-template.ps1 + config-seed-reg-run.do; rewrite config-seed-reg.do (data path only, controls in workers); fix RUNNAME to include cohort+pairing+source; document DID policy as reg-stage concern (not C-stage); make describe optional for reg; add Step 3b to build-stata (reg runner authoring); fix workflow-plan-sample-reg.yaml (DID policy phase, correct skill name)."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-task-for-stata  (unified Stata engine)
@@ -346,7 +338,7 @@ When `/haipipe-task` targets an EXISTING task-folder of this type, it runs the S
 fn/audit-stata.md    reads: (task folder .do/.ps1 files)
 fn/plan-stata.md     reads: ref/workflow-plan-sample-<stage>.yaml
                             ../../haipipe-task/ref/workflow-template.yaml
-                            project/haipipe-workflow/ref/plan-schema.md
+                            task/haipipe-workflow/ref/plan-schema.md
 fn/build-stata.md    reads: ref/config-seed-<stage>.do (+ ref/config-seed-reg-run.do for reg)
                             ref/dispatcher-do-template.do (cms/case/data)
                             ref/run-ps1-template.ps1 (cms/case) OR ref/run-ps1-reg-template.ps1 (reg)

@@ -92,6 +92,5 @@ When `platform-databrick-training/` is added:
   1. Replace the placeholder procedures in `SKILL.md` with concrete commands.
   2. Update the description frontmatter — drop the `STATUS: DEFERRED` prefix.
   3. Add this skill to the no-args dashboard fan-out in
-     `../haipipe-end/SKILL.md`.
-  4. Update `Tools/plugins/haipipe-toolkit/docs/2-folder-tree.txt` to drop
+     `../../haipipe-end/SKILL.md`.
      the deferred marker.

@@ -1,17 +1,16 @@
 ---
 name: haipipe-end-deploy-sagemaker
-description: "AWS SageMaker deploy specialist for haipipe-end. Wraps an Endpoint_Set into the SageMaker model.tar.gz format, deploys to a SageMaker endpoint, runs live smoke tests, monitors logs, and tears down. Backed by platform-sagemaker-inference/ scripts (system → docker → sagemaker testing ladder, ECR push, dev/prod configs, pressure test). Reads Endpoint_Sets produced by haipipe-end-endpointset; never modifies them. Called by /haipipe-end orchestrator when deploy target is sagemaker."
+description: "AWS SageMaker deploy specialist for haipipe-end. Wraps an Endpoint_Set into the SageMaker model.tar.gz format, deploys to a SageMaker endpoint, runs live smoke tests, monitors logs, and tears down. Backed by platform-sagemaker-inference/ scripts (system → docker → sagemaker testing ladder, ECR push, dev/prod configs, pressure test). Reads Endpoint_Sets produced by haipipe-end-endpointset; never modifies them. Read the SageMaker pitfalls in ../haipipe-end-develop-sagemaker/SKILL.md before any live action (same constraints apply here). Called by /haipipe-end orchestrator when deploy target is sagemaker."
 argument-hint: "[function] [endpoint_set_or_id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-07-04"
   summary: "AWS SageMaker deploy specialist for haipipe-end."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-Skill: haipipe-end-sagemaker
+Skill: haipipe-end-deploy-sagemaker
 =============================
 
 AWS SageMaker deployment specialist. Consumes an Endpoint_Set built by
@@ -26,13 +25,13 @@ Commands
 --------
 
 ```
-/haipipe-end-sagemaker                              -> dashboard: SageMaker endpoints + cost
-/haipipe-end-sagemaker dashboard                    -> same
-/haipipe-end-sagemaker deploy <endpoint_set>        -> push Endpoint_Set to SageMaker
-/haipipe-end-sagemaker test <endpoint_id>           -> hit live SageMaker endpoint
-/haipipe-end-sagemaker monitor <endpoint_id>        -> CloudWatch logs + invocation metrics
-/haipipe-end-sagemaker teardown <endpoint_id>       -> stop endpoint, optional model cleanup
-/haipipe-end-sagemaker review <endpoint_id>         -> audit deploy config (IAM, instance, scaling)
+/haipipe-end-deploy-sagemaker                              -> dashboard: SageMaker endpoints + cost
+/haipipe-end-deploy-sagemaker dashboard                    -> same
+/haipipe-end-deploy-sagemaker deploy <endpoint_set>        -> push Endpoint_Set to SageMaker
+/haipipe-end-deploy-sagemaker test <endpoint_id>           -> hit live SageMaker endpoint
+/haipipe-end-deploy-sagemaker monitor <endpoint_id>        -> CloudWatch logs + invocation metrics
+/haipipe-end-deploy-sagemaker teardown <endpoint_id>       -> stop endpoint, optional model cleanup
+/haipipe-end-deploy-sagemaker review <endpoint_id>         -> audit deploy config (IAM, instance, scaling)
 ```
 
 ---
@@ -43,14 +42,14 @@ Dispatch Table
 ```
 Invocation     Ref file(s)                              Function block
 -------------- ---------------------------------------- -----------------------------------
-dashboard      ref/concepts.md                          dashboard procedure (in this SKILL.md)
-deploy         ref/concepts.md +
-               ../haipipe-end-endpointset/ref/
+dashboard      ../haipipe-end/ref/deploy-overview.md                          dashboard procedure (in this SKILL.md)
+deploy         ../haipipe-end/ref/deploy-overview.md +
+               ../haipipe-end/ref/
                  0-overview.md                          deploy procedure
-test           ref/concepts.md                          test procedure
-monitor        ref/concepts.md                          monitor procedure
-teardown       ref/concepts.md                          teardown procedure
-review         ref/concepts.md                          review procedure
+test           ../haipipe-end/ref/deploy-overview.md                          test procedure
+monitor        ../haipipe-end/ref/deploy-overview.md                          monitor procedure
+teardown       ../haipipe-end/ref/deploy-overview.md                          teardown procedure
+review         ../haipipe-end/ref/deploy-overview.md                          review procedure
 ```
 
 The `deploy` step reads the endpointset overview to know the Endpoint_Set
@@ -61,7 +60,7 @@ layout it consumes.
 Step-by-Step Protocol
 ----------------------
 
-Step 0: Read `ref/concepts.md` for SageMaker-specific conventions
+Step 0: Read `../haipipe-end/ref/deploy-overview.md` for SageMaker-specific conventions
         (instance types, IAM roles, model.tar.gz layout, autoscaling).
 
 Step 1: Parse args. Function vocabulary above. Required arg per function:
@@ -101,7 +100,7 @@ Deploy:
   8. Record endpoint_id + ARN in the project's deploy log.
 
 Test, Monitor, Teardown, Review:
-  See `ref/concepts.md` for the SageMaker-specific procedures and the
+  See `../haipipe-end/ref/deploy-overview.md` for the SageMaker-specific procedures and the
   `aws sagemaker` / `aws cloudwatch` CLI invocations the project uses.
 
 ---

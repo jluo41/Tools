@@ -67,12 +67,13 @@ task/                                 <- task-scope skills (THIS SECTION)
 |-- TODO.md                             open issues + future directions
 |-- CHANGELOG.md
 |
-|-- agents/                             🤖 shared creator-reviewer pair
+|-- agents/                             🤖 shared orchestrator/creator/reviewer triad
+|   |-- haipipe-task-orchestrator-agent.md  dispatch target, coordinates the pair
 |   |-- haipipe-task-creator-agent.md   produces artifacts (plan, code, report)
 |   |-- haipipe-task-reviewer-agent.md  evaluates artifacts (IPO, bugs, accuracy)
 |   |-- README.md
 |
-|-- haipipe-task/                       🧭 task orchestrator (v5.0.0)
+|-- haipipe-task/                       🧭 task orchestrator (v5.3.0)
 |   |-- SKILL.md                        scope resolution + 4-stage code lifecycle dispatch
 |   |-- ref/
 |   |   |-- task-lifecycle.workflow.js  Workflow tool script for the 4-stage loop
@@ -85,17 +86,25 @@ task/                                 <- task-scope skills (THIS SECTION)
 |   |   |-- runtime-yaml-schema.md     run status format
 |   |   |-- intent-docstring-template.py
 |   |   |-- invocation-modes.md        interactive vs headless
+|   |   |-- task-structure.md          group/task-folder layout contract (from project, 2026-07-03)
+|   |   |-- scan_status/               status-scan scripts (from project, 2026-07-03)
 |   |-- fn/
 |   |   |-- workflow-plan.md           procedure for Plan stage
 |   |   |-- workflow-report.md         procedure for Report stage
 |   |   |-- run.md                     procedure for run scaffolding
 |   |   |-- workflow-audit.md          procedure for auditing
+|   |   |-- task-group.md              task-group scaffold (from project, 2026-07-03)
+|   |   |-- scan-status.md             cross-group status scan (from project, 2026-07-03)
+|   |   |-- feedback.md + digest.md    feedback capture + session harvest
 |   |-- diagram/
 |       |-- 01-architecture.txt
+|
+|-- haipipe-workflow/                   📐 IPO plan schema + Workflow API (moved in from project/, 2026-07-03)
 |
 |-- 1_data/                             📊 domain 1 — data
 |   |-- haipipe-data + sub-skills          run library
 |   |-- haipipe-task-for-data/             task-author leg
+|   |-- haipipe-task-for-raw/              raw-extraction task-author leg
 |-- 2_nn/                               🧠 domain 2 — nn (algorithm design + smoke)
 |   |-- haipipe-nn + sub-skills            run library (shared with fit)
 |   |-- haipipe-task-for-algo/             task-author leg
@@ -115,6 +124,7 @@ task/                                 <- task-scope skills (THIS SECTION)
 |   |-- haipipe-task-for-stata/             task-author leg (unified)
 |-- 9_agent/                            🤖 domain 9 — agent (LLM-driven compute)
 |   |-- haipipe-task-for-agent/             task-author leg
+|   |-- haipipe-task-llm-engine/            LLM call engine (shared runner)
 ```
 
 (Domain ids are append-only; see "Target Architecture" for the rule. ids 1-4 are
@@ -188,15 +198,15 @@ NOTE (2026-06-21): the analysis above is kept because it is the reasoning that
 LED to the decision below. The decision went the other way. Rather than keep C
 as a separate unnumbered enum, we DISSOLVE C into B and give every task kind a
 numbered domain. See "Target Architecture" next. The "Backbone + Add-on" /
-hub-spoke / for-xxx sections that follow describe the CURRENT on-disk state and
-are superseded by the target once migration lands.
+hub-spoke / for-xxx sections that follow described the PRE-MIGRATION on-disk
+state and are kept as history; the migration landed 2026-06-21.
 
 
-Target Architecture: B as the Unified Domain Family (v6.0.0, PLANNED)
+Target Architecture: B as the Unified Domain Family (v6.0.0, LANDED 2026-06-21)
 =====================================================================
 
-Decided 2026-06-21. SUPERSEDES the hub-and-spoke "for-xxx type spoke" model
-once migration lands. Until then the for-xxx folders are still what is on disk.
+Decided 2026-06-21; Phase 1 landed the same day (see Current State above).
+SUPERSEDED the hub-and-spoke "for-xxx type spoke" model.
 
 Decision: dissolve axis C (the `haipipe-task-for-xxx` spokes) into axis B. B
 becomes the single, flat, NUMBERED family of task DOMAINS. There is no parallel

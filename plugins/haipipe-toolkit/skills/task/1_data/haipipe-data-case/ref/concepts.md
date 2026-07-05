@@ -335,5 +335,5 @@ Generated TriggerFns: code/haifn/fn_case/fn_trigger/      (discover with ls)
 Generated CaseFns:    code/haifn/fn_case/case_casefn/     (discover with ls)
 Builders (edit here): code-dev/1-PIPELINE/3-Case-WorkSpace/  (discover with ls)
 Store path:           _WorkSpace/3-CaseStore/
-Config template:      templates/3-case/config.yaml
+Config template:      ../templates/config.yaml (this skill's own template)
 ```

@@ -12,7 +12,7 @@ Architecture Position
   (this skill)
 ```
 
-A raw cohort lives at `_WorkSpace/0-RawStore/<cohort_name>/` as a single
+A raw cohort lives at `_WorkSpace/0-RawDataStore/<cohort_name>/` as a single
 extract from upstream — vendor delivery, internal ETL run, partner
 data drop, device export, registry pull, etc. The skill is
 domain-agnostic: a cohort can be a CGM stream, an EHR encounter table,
@@ -20,7 +20,7 @@ a claims line file, a sensor / wearable session log, a messaging or
 engagement extract, a survey panel, etc. Typical contents:
 
 ```
-_WorkSpace/0-RawStore/<cohort>/
+_WorkSpace/0-RawDataStore/<cohort>/
 ├── *.parquet              ← actual rows (or .csv, multi-parquet)
 ├── data_description*.txt  ← what was extracted, by whom, with what
 ├── protocol_*.txt         ← study/extraction protocol, design notes
@@ -33,7 +33,7 @@ Distinct from neighbours:
     device-model / station / SKU lookups in IoT or commerce contexts)
     joined into Stage 1+ assets.
   - `haipipe-data-source` owns Stage 1 — wraps the raw parquet into
-    a HumanSet and lifts it into the pipeline.
+    a SourceSet and lifts it into the pipeline.
   - `haipipe-data-raw` (this skill) owns the *upstream* of all that:
     the cohort-specific event extract itself, and the discipline of
     understanding it before it ever touches SourceFn.
@@ -259,7 +259,7 @@ recur across domains; the patterns matter more than any one example.
 Reference Cohorts
 ------------------
 
-Cohorts already living under `_WorkSpace/0-RawStore/` with a complete
+Cohorts already living under `_WorkSpace/0-RawDataStore/` with a complete
 `datapoint-timeline.txt` are the best worked examples — read whichever
 matches your domain (CGM, EHR, claims, messaging, sensor, etc.). Each
 one will illustrate the 5 zones plus a subset of the three traps above

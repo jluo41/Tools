@@ -427,7 +427,7 @@ if 'dataframe_records' in payload_input and payload_input['dataframe_records']:
 Affected Fns: `TrigFn`, `Input2SrcFn`. PostFn is not affected (reads
 model output, not payload).
 
-**Rule:** Databricks `dataframe_records` unwrapping is not optional —
+**Rule (scope updated 2026-07-05):** under the one-Fn-per-platform ruling (see L16 supersession) the envelope belongs to the platform's own wire pair; the unwrap below remains mandatory for the SHARED Fns that read payload (TrigFn). Databricks `dataframe_records` unwrapping is not optional —
 it's part of the Fn contract. Builder tests must cover BOTH formats:
 ```python
 # Direct format test
@@ -463,6 +463,8 @@ Each layer catches different classes of bugs:
 the exact format the cloud endpoint will receive.
 
 ### L16: Fns are platform-agnostic — no Databricks/SageMaker variants
+
+> ⚠️ SUPERSEDED 2026-07-05 by owner decision (JL: "方案 A: 一个平台一个 Fn. I choose this one."), made with this lesson's incident on the table. Current contract: the wire I/O pair (Src2InputFn + Input2SrcFn) is ONE FN PER PLATFORM per use-case — a SageMaker payload gets a SageMaker impl, a Databricks payload its own. MetaFn/TrigFn/PostFn stay shared (TrigFn keeps the L14 unwrap). The duplicate-maintenance cost below is ACCEPTED; mitigations: platform suffix in the impl name, same-platform pair roundtrip test, keep variants thin over a shared body. Do not "fix" the skills back to one-Fn-per-endpoint. The incident record below stays as history.
 
 **Problem:** The CGM endpoint had separate Fn files for "Databricks" and
 non-Databricks (e.g., `CGMDecoder_Databricks_v260101` vs `CGMDecoder_v260101`).
@@ -500,7 +502,7 @@ time. The "Databricks" suffix on a Fn name (e.g., `CGMDecoder_Databricks_*`)
 indicates this is the variant used for the Databricks-deployed endpoint —
 NOT that the Fn itself has Databricks-specific logic.
 
-### L14: D-prefix dictionary tables must not enter examples or payloads
+### L17: D-prefix dictionary tables must not enter examples or payloads
 
 **Problem:** `extract_example_from_source` copied ALL tables from SourceSet
 into each example's `ProcName_to_ProcDf/` — including D-prefix dictionary

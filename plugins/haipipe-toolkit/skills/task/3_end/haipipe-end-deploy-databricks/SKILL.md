@@ -4,21 +4,21 @@ description: "Databricks Model Serving deploy specialist for haipipe-end. Wraps 
 argument-hint: "[function] [endpoint_set_or_id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-07-04"
   summary: "Databricks Model Serving deploy specialist for haipipe-end."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-Skill: haipipe-end-databricks
+Skill: haipipe-end-deploy-databricks
 ==============================
 
 Databricks Model Serving deployment specialist — one of **two production
 deployment platforms** (the other is SageMaker via `haipipe-end-deploy-sagemaker`).
 
-Consumes the same platform-agnostic Endpoint_Set `.tar.gz` built by
-`haipipe-end-endpointset`, registers it as an MLflow pyfunc in Unity Catalog,
+Consumes an Endpoint_Set `.tar.gz` built by `haipipe-end-endpointset`
+(its wire pair must be the Databricks one; Src2InputFn/Input2SrcFn are
+per-platform by owner decision 2026-07-05), registers it as an MLflow pyfunc in Unity Catalog,
 deploys to Databricks Model Serving, tests live, and cleans up.
 
 **Backing repo:** `platform-databrick-inference/` (submodule of the main repo).
@@ -37,13 +37,13 @@ Commands
 --------
 
 ```
-/haipipe-end-databricks                              -> dashboard: Databricks serving endpoints
-/haipipe-end-databricks dashboard                    -> same
-/haipipe-end-databricks deploy <endpoint_set>        -> register + deploy to Databricks
-/haipipe-end-databricks test <endpoint_id>           -> hit live serving endpoint
-/haipipe-end-databricks monitor <endpoint_id>        -> serving logs + invocation metrics
-/haipipe-end-databricks teardown <endpoint_id>       -> stop endpoint, archive model version
-/haipipe-end-databricks review <endpoint_id>         -> audit serving config + permissions
+/haipipe-end-deploy-databricks                              -> dashboard: Databricks serving endpoints
+/haipipe-end-deploy-databricks dashboard                    -> same
+/haipipe-end-deploy-databricks deploy <endpoint_set>        -> register + deploy to Databricks
+/haipipe-end-deploy-databricks test <endpoint_id>           -> hit live serving endpoint
+/haipipe-end-deploy-databricks monitor <endpoint_id>        -> serving logs + invocation metrics
+/haipipe-end-deploy-databricks teardown <endpoint_id>       -> stop endpoint, archive model version
+/haipipe-end-deploy-databricks review <endpoint_id>         -> audit serving config + permissions
 ```
 
 ---
@@ -54,14 +54,14 @@ Dispatch Table
 ```
 Invocation     Ref file(s)                              Function block
 -------------- ---------------------------------------- -----------------------------------
-dashboard      ref/concepts.md                          dashboard procedure
-deploy         ref/concepts.md +
-               ../haipipe-end-endpointset/ref/
+dashboard      ../haipipe-end/ref/deploy-overview.md                          dashboard procedure
+deploy         ../haipipe-end/ref/deploy-overview.md +
+               ../haipipe-end/ref/
                  0-overview.md                          deploy procedure
-test           ref/concepts.md                          test procedure
-monitor        ref/concepts.md                          monitor procedure
-teardown       ref/concepts.md                          teardown procedure
-review         ref/concepts.md                          review procedure
+test           ../haipipe-end/ref/deploy-overview.md                          test procedure
+monitor        ../haipipe-end/ref/deploy-overview.md                          monitor procedure
+teardown       ../haipipe-end/ref/deploy-overview.md                          teardown procedure
+review         ../haipipe-end/ref/deploy-overview.md                          review procedure
 ```
 
 ---
@@ -69,7 +69,7 @@ review         ref/concepts.md                          review procedure
 Step-by-Step Protocol
 ----------------------
 
-Step 0: Read `ref/concepts.md` for Databricks-specific conventions.
+Step 0: Read `../haipipe-end/ref/deploy-overview.md` for Databricks-specific conventions.
 
 Step 1: Parse args. Required arg per function:
           deploy: <endpoint_set_name>
@@ -109,7 +109,7 @@ Deploy:
   8. Record endpoint URL + model version in the project's deploy log.
 
 Test, Monitor, Teardown, Review:
-  See `ref/concepts.md` for the Databricks-specific commands the project uses
+  See `../haipipe-end/ref/deploy-overview.md` for the Databricks-specific commands the project uses
   (`databricks` CLI or REST API patterns).
 
 ---

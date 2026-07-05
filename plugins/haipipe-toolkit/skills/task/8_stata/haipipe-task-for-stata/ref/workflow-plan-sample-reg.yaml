@@ -1,5 +1,5 @@
 # workflow-plan-sample-reg.yaml -- Stata reg stage script-level plan
-# Schema: project/haipipe-workflow/ref/plan-schema.md
+# Schema: task/haipipe-workflow/ref/plan-schema.md
 # Phases: Setup+Load -> Variable Derivation -> Estimation -> Log+Export
 # DID adds: Policy Merge phase between Setup and Variable Derivation.
 # ALL outputs light (results/), no _WorkSpace writes.

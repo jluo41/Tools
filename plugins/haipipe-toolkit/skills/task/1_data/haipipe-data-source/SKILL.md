@@ -1,14 +1,13 @@
 ---
 name: haipipe-data-source
-description: "Stage 1 (Source) specialist. Builds, runs, and reviews SourceFn / HumanFn; inspects 1-SourceStore; loads source-layer typed frames. Called by /haipipe-data orchestrator. Direct invocation works for stage-scoped work, but /haipipe-data is the recommended entry."
+description: "Stage 1 (Source) specialist. Builds, runs, and reviews SourceFn; inspects 1-SourceStore; loads source-layer typed frames. Called by /haipipe-data orchestrator. Direct invocation works for stage-scoped work, but /haipipe-data is the recommended entry."
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-07-04"
   summary: "Stage 1 (Source) specialist."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-data-source
@@ -73,7 +72,7 @@ Step 1: Parse args after `/haipipe-data-source`. Extract:
           function  in { dashboard, load, cook, design-chef, design-kitchen, review, (none) }
           extras    e.g. `rawdata` for dashboard, file_path for review
         If no args -> dashboard.
-        If only ref-style experiment -> read `ref/concepts.md`, summarize, stop.
+        If the ask is concept-level only -> read `ref/concepts.md`, summarize, stop.
 
 Step 2: Read THIS skill's `ref/concepts.md` for stage-1 specifics.
 
@@ -115,7 +114,7 @@ Stage Scope
 ------------
 
 Owns:
-  - SourceFn / HumanFn builders under `code-dev/1-PIPELINE/1-Source-WorkSpace/`
+  - SourceFn builders under `code-dev/1-PIPELINE/1-Source-WorkSpace/` (HumanFn builders live in Stage 2's 2-Record-WorkSpace)
   - Generated `code/haifn/fn_source/`
   - `_WorkSpace/1-SourceStore/` typed frames
   - `templates/config.yaml` for Source_Pipeline runs

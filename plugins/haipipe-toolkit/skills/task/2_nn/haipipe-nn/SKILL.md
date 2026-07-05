@@ -4,11 +4,10 @@ description: "Run any Stage 5 NN pipeline work. Parses intent (layer + function)
 argument-hint: "[layer] [function] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-07-04"
   summary: "Run any Stage 5 NN pipeline work."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-nn (orchestrator)

@@ -1,15 +1,13 @@
 ---
 name: haipipe-task-for-algo
-description: "algo-dev task-folder build specialist. Scaffolds {NN}_<name>/ task-folders under X-series (paired Track A demo) that smoke-test a newly developed algorithm class end-to-end on a TINY config. NOT for full training — see /haipipe-task-for-fit. Called by /haipipe-task orchestrator when task-type=algo. Cross-references /haipipe-nn-algo."
+description: "algo-dev task-folder build specialist. Scaffolds {NN}_<name>/ task-folders in the project's algo-dev task-group (default `X_algo`; group naming is project-specific) that smoke-test a newly developed algorithm class end-to-end on a TINY config. NOT for full training — see /haipipe-task-for-fit. Called by /haipipe-task orchestrator when task-type=algo. Cross-references /haipipe-nn-algo."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-06-09"
+  version: "1.2.0"
+  last_updated: "2026-07-04"
   summary: "algo-dev task-folder build specialist."
-  changelog:
-    - "1.1.0 (2026-06-09): unwrap prose; fix agent names; add 4-stage lifecycle paragraph."
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-task-for-algo
@@ -103,4 +101,4 @@ ref/workflow-plan-sample.yaml     ← script-level phases for this type
 ```
 
 Schema source of truth:
-  project/haipipe-workflow/ref/plan-schema.md
+  task/haipipe-workflow/ref/plan-schema.md

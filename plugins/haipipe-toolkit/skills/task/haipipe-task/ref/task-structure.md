@@ -100,7 +100,7 @@ sbatch/ rules:
 Skill-Runner Tasks (Exemption)
 ================================
 
-When a task wraps a Claude Code skill (e.g. /haipipe-insight) instead of a .py, the skill executes the work and writes structured outputs elsewhere (e.g. insights/ at project root). The task folder is narrative + launcher.
+When a task wraps a Claude Code skill instead of a .py, the skill executes the work and writes its structured outputs elsewhere (wherever that skill's own contract puts them). The task folder is narrative + launcher.
 
 Exemptions:
   - no *.py, no data/ required.

@@ -1,4 +1,4 @@
-fn-deploy: Deploy Endpoint
+Deploy Overview — shared cross-target reference (read by all 4 deploy specialists)
 ===========================
 
 Deploys a packaged Endpoint_Set to a serving platform.
@@ -11,9 +11,10 @@ Always run /haipipe-end test first. Do NOT deploy an untested endpoint.
 Platform Overview
 ==================
 
-**Fns are platform-agnostic.** All Fns handle both wire formats (direct
-dict and Databricks `dataframe_records`). The platform choice is a deploy-time
-concern — the same `.tar.gz` deploys to any target.
+**The wire I/O pair is platform-specific (owner decision 2026-07-05).**
+Src2InputFn + Input2SrcFn come one-per-platform; MetaFn/TrigFn/PostFn are
+shared (TrigFn keeps the `dataframe_records` unwrap). Deploy the `.tar.gz`
+whose wire pair matches the target platform.
 
 ```
 Platform      Wrapper              Registry              Auth                                Repo

@@ -42,7 +42,7 @@ Claude edits code locally; the user hand-copies to the server and runs.
 ```
 Step 1 — Pre-flight (local, before shipping)
   - Run fn/audit-stata.md
-  - Run /cms-server-checklist (Gate 1 + Gate 2)
+  - Run the SERVER CHECK mode (ref/cms-server-checklist.md) (Gate 1 + Gate 2)
   - Fix any FAIL items
   - Generate CODE_REVIEW.md and SERVER_CHECK.md
 
@@ -63,7 +63,7 @@ Step 4 — Execute (server, user action)
 Step 5 — Feedback loop (user → Claude)
   - User pastes server output / errors back to Claude
   - Claude diagnoses, fixes code locally
-  - Run /cms-server-checklist Gate 3 on server output
+  - Run the SERVER CHECK mode (ref/cms-server-checklist.md) Gate 3 on server output
   - Repeat from Step 1 until clean
 
 Step 6 — Post-run
@@ -114,7 +114,7 @@ Return contract
 status: ok | blocked | manual
 mode: local | server
 executed_runs: [list of RUNNAMEs]
-gate1_verdict: pass | warn | fail    # CODE_REVIEW.md
+gate1_verdict: pass | warn | fail    # Gate 1 = LOCAL SYNTH RUN (checklist L1-L10)
 gate2_verdict: pass | warn | fail    # SERVER_CHECK.md (server mode)
 gate3_verdict: pass | pending | fail # first real-data run (server mode)
 next: "<what to do next>"
