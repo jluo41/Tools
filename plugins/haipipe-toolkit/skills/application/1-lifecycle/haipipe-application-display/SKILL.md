@@ -7,10 +7,7 @@ metadata:
   version: "3.0.0"
   last_updated: "2026-06-29"
   summary: "Stage 4 — what content element carries each claim. Now with _LOG changelog + _PROBE/ subfolder for display-spawned probes. Complex venues get .tex + PDF for rendered previews (same SEE-it-rendered rule as paper-display)."
-  changelog:
-    - "3.0.0 (2026-06-29): added _LOG, _PROBE/ subfolder. Output folder 4-display/ (was flat file). Complex venues (dashboard, report) get .tex + PDF for visual preview. Simple venues stay .md only. Borrowed per-stage tracking pattern from paper."
-    - "2.0.0 (2026-06-23): renamed from variants to display; match paper vocabulary; venue-gated."
-    - "1.0.0 (2026-06-22): initial version as haipipe-application-variants."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-application-display

@@ -7,10 +7,7 @@ metadata:
   version: "2.0.0"
   last_updated: "2026-06-22"
   summary: "I-level in-sample-pattern specialist of the haipipe-insight family."
-  changelog:
-    - "2.0.0 (2026-06-22): recut to the in-sample model (JL). I = a pattern INSIDE ONE named dataset, cites that dataset's D (no >=2-D gate), carries no p/CI. Cross-dataset regularities now belong to K (robust generalization)."
-    - "1.1.0 (2026-06-20): clarified cross-D granularity; one reusable pattern per card."
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-insight-information

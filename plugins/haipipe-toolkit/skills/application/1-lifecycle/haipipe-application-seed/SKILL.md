@@ -7,9 +7,7 @@ metadata:
   version: "2.0.0"
   last_updated: "2026-06-29"
   summary: "Stage 0 — intervention possibility + kill criteria. Now with _LOG changelog (borrowed from paper v2.0.0)."
-  changelog:
-    - "2.0.0 (2026-06-29): added _LOG_0-seed.md changelog; output folder 0-seed/ (was flat file); borrowed .md + _LOG pattern from paper-seed v2.0.0."
-    - "1.0.0 (2026-06-22): initial version modeled on paper-seed."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-application-seed

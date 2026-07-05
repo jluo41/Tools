@@ -7,10 +7,7 @@ metadata:
   version: "3.0.0"
   last_updated: "2026-06-29"
   summary: "Stage 1 — one-sentence goal + mechanism hypothesis. Now with _LOG changelog (borrowed from paper v2.0.0)."
-  changelog:
-    - "3.0.0 (2026-06-29): added _LOG_1-pitch.md changelog; output folder 1-pitch/ (was flat file); borrowed .md + _LOG pattern from paper."
-    - "2.0.0 (2026-06-23): renamed from rationale to pitch; match paper vocabulary."
-    - "1.0.0 (2026-06-22): initial version as haipipe-application-rationale."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-application-pitch

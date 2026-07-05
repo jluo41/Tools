@@ -7,8 +7,7 @@ metadata:
   version: "1.0.0"
   last_updated: "2026-06-22"
   summary: "Artifact review — audience fit, claim traceability, compliance."
-  changelog:
-    - "1.0.0 (2026-06-22): initial version."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-application-review

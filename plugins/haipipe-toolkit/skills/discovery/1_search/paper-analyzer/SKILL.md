@@ -5,8 +5,7 @@ metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
   summary: "Use when deeply analyzing a single paper and producing structured notes on claims, methods, figures, evaluation, strengths, limitations, and related work."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 # Paper Analyzer
 

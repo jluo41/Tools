@@ -1,0 +1,17 @@
+haipipe-application-display — Changelog
+=======================================
+
+Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
+
+
+## [1.0.0] — 2026-06-22
+
+- initial version as haipipe-application-variants.
+
+## [2.0.0] — 2026-06-23
+
+- renamed from variants to display; match paper vocabulary; venue-gated.
+
+## [3.0.0] — 2026-06-29
+
+- added _LOG, _PROBE/ subfolder. Output folder 4-display/ (was flat file). Complex venues (dashboard, report) get .tex + PDF for visual preview. Simple venues stay .md only. Borrowed per-stage tracking pattern from paper.

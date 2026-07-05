@@ -7,8 +7,7 @@ metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
   summary: "Search, download, and summarize academic papers from arXiv."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # arXiv Paper Search & Download
@@ -103,12 +102,12 @@ print(json.dumps(papers, ensure_ascii=False, indent=2))
 PYEOF
 ```
 
-Present results as a table:
+Present results as a numbered list, ONE PAPER PER ENTRY (never a table — paper tables are unreadable):
 
 ```text
-| # | arXiv ID   | Title               | Authors        | Date       | Category |
-|---|------------|---------------------|----------------|------------|----------|
-| 1 | 2301.07041 | Attention Is All... | Vaswani et al. | 2017-06-12 | cs.LG    |
+1. Vaswani et al. (2017). Attention Is All You Need.
+   arXiv 2301.07041 · cs.LG · 2017-06-12
+2. ...
 ```
 
 ### Step 3: Fetch Details for a Specific ID

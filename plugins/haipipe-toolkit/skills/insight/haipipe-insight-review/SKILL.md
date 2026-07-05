@@ -7,9 +7,7 @@ metadata:
   version: "1.1.0"
   last_updated: "2026-06-20"
   summary: "Review/apply contract for constructing insights/."
-  changelog:
-    - "1.1.0 (2026-06-20): renamed user-facing flow to review/apply."
-    - "1.0.0 (2026-06-20): initial review/apply contract."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-insight-review

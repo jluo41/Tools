@@ -7,8 +7,7 @@ metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
   summary: "Quick single-paper lookup via AlphaXiv LLM-optimized summaries with tiered source fallback."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # AlphaXiv Paper Lookup

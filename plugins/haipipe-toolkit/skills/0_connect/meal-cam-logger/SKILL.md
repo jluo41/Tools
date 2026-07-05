@@ -5,8 +5,7 @@ metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
   summary: "Log meals in real time from a webcam or IP camera."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: meal-cam-logger

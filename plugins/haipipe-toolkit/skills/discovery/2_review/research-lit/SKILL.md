@@ -7,8 +7,7 @@ metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
   summary: "Search and analyze research papers, find related work, summarize key ideas."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # Research Literature Review

@@ -5,8 +5,7 @@ metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
   summary: "Connect a Whoop wearable device to the bot."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: whoop-connect

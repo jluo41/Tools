@@ -7,8 +7,7 @@ metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
   summary: "Verify research idea novelty against recent literature."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # Novelty Check Skill
@@ -26,7 +25,7 @@ Parse `$ARGUMENTS` for a `— venues:` directive (e.g. `— venues: utd24-is`):
 - If present, locate the matching venue file under `0_venue/` (e.g. `0_venue/utd24-is-venues.md` for `utd24-is`). Read it and extract the union of `S2 venue strings (any-of match)`.
 - In Phase B, run a **first pass** restricted to those venues: append the venue list to every search query (e.g. `"<claim> venue:\"MIS Quarterly\" OR venue:\"Information Systems Research\" OR venue:\"Management Science\""`) and prefer hits from those journals.
 - If fewer than 5 prior-art hits surface from the venue-restricted pass, expand to broad web/arXiv (Phase B as written) — record both passes separately in the report.
-- In Phase D, add a `Venue` column to the prior-work table (already present) and a sub-section: **"Prior work within target venues"** vs **"Prior work outside target venues"**.
+- In Phase D, every prior-work entry already carries a `venue:` field; add a sub-section split: **"Prior work within target venues"** vs **"Prior work outside target venues"**.
 - If the venue file is missing, fail loudly with the expected path.
 
 If no `— venues:` directive is given, skip this filter (default behavior — search broadly).
@@ -83,8 +82,12 @@ Output a structured report:
 ...
 
 ### Closest Prior Work
-| Paper | Year | Venue | Overlap | Key Difference |
-|-------|------|-------|---------|----------------|
+One paper per subsection, full title in the heading — NEVER a table (paper tables are unreadable):
+
+#### <Authors> (<Year>). <Full title>.
+- venue: <venue> · <locator/URL>
+- overlap: <what it already covers>
+- key difference: <what stays novel>
 
 ### Overall Novelty Assessment
 - Score: X/10

@@ -5,8 +5,7 @@ metadata:
   version: "1.0.0"
   last_updated: "2026-06-12"
   summary: "One-issue-at-a-time QA walkthrough: discover, present, decide, fix, next."
-  changelog:
-    - "1.0.0 (2026-06-12): initial design from CC variable QA session."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /haipipe-qa -- Structured QA Walkthrough

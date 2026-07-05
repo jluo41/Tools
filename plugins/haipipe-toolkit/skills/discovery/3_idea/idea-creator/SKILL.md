@@ -7,8 +7,7 @@ metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
   summary: "Generate and rank research ideas given a broad direction."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # Research Idea Creator
@@ -17,7 +16,7 @@ Generate publishable research ideas for: $ARGUMENTS
 
 ## Overview
 
-Given a broad research direction from the user, systematically generate, validate, and rank concrete research ideas. This skill composes with `/research-lit`, `/novelty-check`, and `/research-review` to form a complete idea discovery pipeline.
+Given a broad research direction from the user, systematically generate, validate, and rank concrete research ideas. This skill composes with `/research-lit` and `/novelty-check` to form a complete idea discovery pipeline.
 
 ## Constants
 
@@ -176,7 +175,7 @@ Before committing to a full research effort, run cheap pilot experiments to get 
    - **Estimate GPU-hours BEFORE launching.** If estimated time > PILOT_MAX_HOURS, reduce scale (fewer epochs, smaller subset) or flag as "needs manual pilot"
    - Clear success metric defined upfront (e.g., "if metric improves by > 1%, signal is positive")
 
-2. **Deploy in parallel**: Use `/run-probe` to launch pilots on different GPUs simultaneously:
+2. **Deploy in parallel**: launch pilots on different GPUs simultaneously (route runs through `/haipipe-task`):
    ```
    GPU 0: Pilot for Idea 1
    GPU 1: Pilot for Idea 2
@@ -246,7 +245,7 @@ Write a structured report to `idea-stage/IDEA_REPORT.md`:
 
 ## Next Steps
 - [ ] Scale up Idea 1 to full experiment (multi-seed, full dataset)
-- [ ] If confirmed, invoke /auto-review-loop for full iteration
+- [ ] If confirmed, scale to a full experiment via /haipipe-task
 ```
 
 ## Phase 7: Write Ideas to Research Wiki (if active)
@@ -303,10 +302,7 @@ After this skill produces the ranked report:
 ```
 /idea-creator "direction"     → ranked ideas
 /novelty-check "top idea"     → deep novelty verification (already done in Phase 4, but user can re-run)
-/research-review "top idea"   → external critical feedback
-implement                     → write code
-/run-probe               → deploy to GPU
-/auto-review-loop             → iterate until submission-ready
+/haipipe-probe                → open a probe on the chosen idea (evidence → verdict)
 ```
 
 ## Review Tracing
