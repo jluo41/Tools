@@ -4,6 +4,11 @@ haipipe-paper-check — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [1.5.2] — 2026-07-05
+
+Changed (JL: 为啥不叫comments — one mechanic, one name)
+- "pin" vocabulary dropped throughout: the feature is plain `> CHECK:` comments (comment family: > USER: / > CC: / > REVIEWER: / %% {CC-worker}: / > CHECK:). Report line renamed PINS SEEDED -> CHECK COMMENTS SEEDED. Mechanics unchanged.
+
 ## [1.5.1] — 2026-07-05
 
 Fixed (audit of 1.5.0: pin contract landed in the front half, back half still spoke pre-pin language — the sections a fresh session reads as the operational contract)

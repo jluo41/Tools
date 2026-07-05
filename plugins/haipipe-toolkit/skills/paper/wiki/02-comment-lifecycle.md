@@ -70,7 +70,7 @@ For wrapped paragraphs, use `@"quote"` to anchor: `%% {CC-content-v0531}: @"we n
 Comments come from three places:
 1. **Inline in the working file**: `> USER:` comments (outline) or `%% {USER}:` comments (tex)
 2. **Session (chat)**: direction, reasoning, taste decisions -- agent writes these into the file as `> USER:` (quoting what the user said)
-3. **CHECK pins**: `> CHECK:` comments seeded by the CHECK worker at every flagged report item's exact spot (issue + judgment needed, concrete values), so the human's in-file pass is guided by the file itself. The human replies `> USER:` under each pin; pins then follow the same lifecycle below (restart responds, user confirms, thread moves to `_LOG`). Direction is the reverse of `> USER:` -- agent asks, human rules.
+3. **`> CHECK:` comments**: seeded by the CHECK worker at every flagged report item's exact spot (issue + judgment needed, concrete values), so the human's in-file pass is guided by the file itself. The human replies `> USER:` under each; the threads then follow the same lifecycle below (restart responds, user confirms, thread moves to `_LOG`). Direction is the reverse of `> USER:` -- agent asks, human rules.
 
 ```
 1. User adds comment in the .md file (or says it in session, agent writes it in)

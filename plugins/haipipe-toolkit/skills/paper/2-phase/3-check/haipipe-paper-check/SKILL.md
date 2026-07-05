@@ -4,9 +4,9 @@ description: "CHECK phase worker (internal). Called by stage skills as the ONLY 
 argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent
 metadata:
-  version: "1.5.1"
+  version: "1.5.2"
   last_updated: "2026-07-05"
-  summary: "CHECK phase worker (internal). The ONLY human-involved phase. Called by stage skills to run sub-checkers, seed > CHECK: pins in-file at every flag site, and gate human review."
+  summary: "CHECK phase worker (internal). The ONLY human-involved phase. Called by stage skills to run sub-checkers, seed > CHECK: comments in-file at every flag site, and gate human review."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   predecessors:
     - "haipipe-paper-proof-checker (mathematical proof verification) — KEPT as sub-checker, not merged"
@@ -26,23 +26,23 @@ CHECK phase worker. Called by stage skills as the auto-gate for the DPRC lifecyc
 
 The check has three parts:
 1. **MECHANICAL** -- the agent runs automated sub-checkers and produces a pass/fail report
-2. **SEED THE PINS** -- every flagged item from the report is planted as a `> CHECK:` comment at its exact spot in the working doc, so the human's in-file pass is guided by the file itself
-3. **HUMAN** -- the human walks the pins, answers with `> USER:` comments, and decides: proceed, restart, or accept
+2. **SEED `> CHECK:` COMMENTS** -- every flagged item from the report is planted as a `> CHECK:` comment at its exact spot in the working doc, so the human's in-file pass is guided by the file itself
+3. **HUMAN** -- the human walks the `> CHECK:` comments, answers with `> USER:` comments, and decides: proceed, restart, or accept
 
-On restart, the restarted phase (DRAFT, PROBE, or REVISE) reads the `> CHECK:` pins with their `> USER:` replies and responds to them.
+On restart, the restarted phase (DRAFT, PROBE, or REVISE) reads the `> CHECK:` comments with their `> USER:` replies and responds to them.
 
 
 ## How It Works
 
 ```
 ┌──────────┐   ┌──────────────┐   ┌───────────────┐   ┌──────────────────────────┐
-│ 🤖 RUN   │──▶│ 📋 REPORT    │──▶│ 📌 SEED PINS  │──▶│ 🧑 HUMAN REVIEW          │
-│ CHECKERS │   │ pass/fail    │   │ > CHECK: at   │   │ (walks the pins in-file) │
+│ 🤖 RUN   │──▶│ 📋 REPORT    │──▶│ 📌 SEED       │──▶│ 🧑 HUMAN REVIEW          │
+│ CHECKERS │   │ pass/fail    │   │ > CHECK: at   │   │ (walks > CHECK: in-file) │
 └──────────┘   └──────────────┘   │ each flag site│   │ 1. verify 🔍 citations   │
                                   └───────────────┘   │ 2. copy bibtex → .bib    │
                                                       │ 3. confirm flagged values │
                                                       │ 4. review displays        │
-                                                      │ 5. reply > USER: per pin  │
+                                                      │ 5. reply > USER: per item │
                                                       │ 6. decide                 │
                                                       └──────────┬───────────────┘
                                                                  │
@@ -51,15 +51,15 @@ On restart, the restarted phase (DRAFT, PROBE, or REVISE) reads the `> CHECK:` p
                                 ✅ ALL PASS                ♻️ RESTART        🤷 ACCEPT
                                 section done               agent re-runs     with known
                                                            phase, reads      issues
-                                                           pins + replies
+                                                           threads + replies
 ```
 
 1. **Run**: execute all applicable sub-checkers mechanically
 2. **Report**: present results as a structured pass/fail table
-2.5. **Seed the pins**: every flagged/🔍/⚠️ item in the report is planted as ONE `> CHECK:` comment at the exact spot in the working doc (outline / _CITATION_ / _VALUES_ / _DISPLAY_ / tex) it refers to -- one line stating the issue + the judgment needed, with concrete values, never an abstract description. The chat report is the map; the in-file pins are what the human actually walks. A CHECK that hands over with a clean file and a chat-only report is DEFECTIVE (test-123333333: JL entered 0-seed.md to review and found nothing to guide the pass)
-3. **Human review**: the human walks the pins, verifies flagged items, copies bibtex to .bib, confirms values, reviews displays, replies `> USER:` under each pin (plus any free `> USER:` comments of their own)
+2.5. **Seed `> CHECK:` comments**: every flagged/🔍/⚠️ item in the report is planted as ONE `> CHECK:` comment at the exact spot in the working doc (outline / _CITATION_ / _VALUES_ / _DISPLAY_ / tex) it refers to -- one line stating the issue + the judgment needed, with concrete values, never an abstract description. The chat report is the map; the in-file `> CHECK:` comments are what the human actually walks. A CHECK that hands over with a clean file and a chat-only report is DEFECTIVE (test-123333333: JL entered 0-seed.md to review and found nothing to guide the pass)
+3. **Human review**: the human walks the `> CHECK:` comments, verifies flagged items, copies bibtex to .bib, confirms values, reviews displays, replies `> USER:` under each (plus any free `> USER:` comments of their own)
 4. **Decide**: proceed / restart / accept / park
-5. **On restart**: the restarted phase (DRAFT/PROBE/REVISE) reads the `> CHECK:` pins and their `> USER:` replies and responds to them; resolved pins archive to `_LOG` per `../../../wiki/02-comment-lifecycle.md`
+5. **On restart**: the restarted phase (DRAFT/PROBE/REVISE) reads the `> CHECK:` comments and their `> USER:` replies and responds to them; resolved threads archive to `_LOG` per `../../../wiki/02-comment-lifecycle.md`
 
 
 ## Gate Modes (copilot | autopilot)
@@ -67,11 +67,11 @@ On restart, the restarted phase (DRAFT, PROBE, or REVISE) reads the `> CHECK:` p
 Mode spec is owned by `../../../wiki/08-stage-gate.md` (`gate_mode` in STATUS.md, default copilot). What changes INSIDE this worker:
 
 ```
-🧑 copilot     steps 2.5-4 above run as written: the worker seeds the pins, the human
+🧑 copilot     steps 2.5-4 above run as written: the worker seeds the `> CHECK:` comments, the human
                reviews and decides.
-🤖 autopilot   pins are seeded the same (step 2.5 is mode-independent), then dispatch
+🤖 autopilot   > CHECK: comments are seeded the same (step 2.5 is mode-independent), then dispatch
                ONE fresh-context reviewer subagent (Agent tool) that plays the review seat:
-               - reads the stage artifact + the pass/fail report + the > CHECK: pins + exit criteria
+               - reads the stage artifact + the pass/fail report + the > CHECK: comments + exit criteria
                - leaves > REVIEWER: comments in the working doc (same places a human would)
                - returns a verdict: proceed | restart-from-<DRAFT|PROBE|REVISE> | accept (+ reasons)
                - on restart, the restarted phase reads > REVIEWER: comments exactly as it
@@ -197,7 +197,7 @@ When proof checks are needed, the checker dispatches to the proof-checker skill 
 
 ## Summary
 PASSED: NN   FAILED: NN   WARNING: NN   SKIPPED: NN
-📌 PINS SEEDED: NN  (in-file `> CHECK:` comments — list the files, e.g. 0-seed.md ×2, _CITATION_ ×3)
+📌 CHECK COMMENTS SEEDED: NN  (list the files, e.g. 0-seed.md ×2, _CITATION_ ×3)
 
 ## 📝 DRAFT
   ✅ structure block present (6 ¶)
@@ -287,7 +287,7 @@ The decision is recorded in the _LOG with the check report, so future sessions k
 
 ## Human Actions During CHECK
 
-CHECK is the ONLY human-involved phase. DRAFT, PROBE, and REVISE run fully automatic. Everything the human needs to do happens here — and the entry point is the pins: open the working docs and walk the `> CHECK:` comments (the report's PINS SEEDED line says which files); each flagged item below is anchored by a pin, so the pass is guided, not a self-service hunt. Reply `> USER:` under each pin as you go:
+CHECK is the ONLY human-involved phase. DRAFT, PROBE, and REVISE run fully automatic. Everything the human needs to do happens here — and the entry point is the `> CHECK:` comments: open the working docs and walk them (the report's CHECK COMMENTS SEEDED line says which files); each flagged item below is anchored by one, so the pass is guided, not a self-service hunt. Reply `> USER:` under each as you go:
 
 ### Citation verification
 
@@ -319,16 +319,16 @@ CHECK is the ONLY human-involved phase. DRAFT, PROBE, and REVISE run fully autom
 
 ### General review
 
-1. Read the CHECK report (pass/fail summary + PINS SEEDED line)
+1. Read the CHECK report (pass/fail summary + CHECK COMMENTS SEEDED line)
 2. Review any ⚠️ warnings
-3. Reply `> USER:` under each `> CHECK:` pin; add free `> USER:` comments anywhere else in the outline, _CITATION_, _VALUES_, _DISPLAY_, or tex
+3. Reply `> USER:` under each `> CHECK:` comment; add free `> USER:` comments anywhere else in the outline, _CITATION_, _VALUES_, _DISPLAY_, or tex
 4. Decide: proceed / restart from a phase / accept with issues / park
 
 ### On restart
 
 When the human decides to restart from a phase (e.g., "restart from PROBE"):
 - The agent re-runs that phase
-- The agent reads ALL `> CHECK:` pins with their `> USER:` replies, plus every free `> USER:` comment added during CHECK, and responds to each (a pin with no reply is surfaced back to the human, never silently skipped)
+- The agent reads ALL `> CHECK:` comments with their `> USER:` replies, plus every free `> USER:` comment added during CHECK, and responds to each (a `> CHECK:` comment with no reply is surfaced back to the human, never silently skipped)
 - For DRAFT restarts: the agent revises the outline based on `> USER:` feedback
 - For PROBE restarts: the agent re-audits, places newly verified keys from .bib, searches for new candidates per `> USER:` requests
 - For REVISE restarts: the agent re-applies prose quality rules, addressing `> USER:` style concerns; each change carries a why-comment
@@ -365,13 +365,13 @@ The checker CALLS the proof-checker when needed. The proof-checker never runs al
 CHECK phase is done when:
 - [ ] All sub-checkers have run
 - [ ] Report produced and presented to human
-- [ ] Every flagged/🔍/⚠️ item seeded as a `> CHECK:` pin in-file (PINS SEEDED line in the report; a clean-file handover is a defective CHECK)
+- [ ] Every flagged/🔍/⚠️ item seeded as a `> CHECK:` comment in-file (CHECK COMMENTS SEEDED line in the report; a clean-file handover is a defective CHECK)
 - [ ] Human has verified 🔍 citation candidates (or deferred)
 - [ ] Human has confirmed flagged values (or deferred)
 - [ ] Human has reviewed generated displays (or deferred)
-- [ ] Every `> CHECK:` pin has a `> USER:` reply, or is covered by the recorded decision (accept/park logs unanswered pins as deferred)
+- [ ] Every `> CHECK:` comment has a `> USER:` reply, or is covered by the recorded decision (accept/park logs unanswered ones as deferred)
 - [ ] Human has decided: proceed / restart / accept
-- [ ] If restart: agent re-runs phase reading the pins + replies and free > USER: comments, then re-checks
+- [ ] If restart: agent re-runs phase reading the `> CHECK:` threads and free > USER: comments, then re-checks
 - [ ] _LOG updated with check result + human actions taken
 
 
@@ -379,14 +379,14 @@ CHECK phase is done when:
 
 - ❌ Skipping the report and declaring "checks pass" without running them
 - ❌ Running only one sub-checker and calling it done
-- ❌ Handing over with a clean file and a chat-only report (flagged items must be pinned in-file as `> CHECK:` comments — test-123333333)
+- ❌ Handing over with a clean file and a chat-only report (flagged items must land in-file as `> CHECK:` comments — test-123333333)
 - ❌ Auto-proceeding without human decision on failures
 - ❌ Treating warnings as failures (warnings are informational)
 - ❌ Using the proof-checker as the general checker (it's one sub-check)
 - ❌ Stopping for human input during DRAFT, PROBE, or REVISE (those are fully automatic; CHECK is the ONLY human gate)
 - ❌ Generating bibtex during CHECK (human copies from Scholar; agent never generates bibtex)
 - ❌ Putting bibtex in _CITATION_ or any markdown (bibtex lives ONLY in .bib)
-- ❌ Ignoring > CHECK: pins or > USER: comments on restart (the restarted phase must read and respond to them; an unanswered pin is surfaced back, never silently dropped)
+- ❌ Ignoring > CHECK: or > USER: comments on restart (the restarted phase must read and respond to them; an unanswered > CHECK: comment is surfaced back, never silently dropped)
 
 
 ## Who calls this skill
