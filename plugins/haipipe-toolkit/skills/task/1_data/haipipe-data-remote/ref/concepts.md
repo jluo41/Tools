@@ -25,12 +25,14 @@ LOCAL_EXTERNAL_STORE         REMOTE_EXTERNAL_STORE
 LOCAL_REFERENCE_STORE        REMOTE_REFERENCE_STORE
 ```
 
-`REMOTE_ROOT` is the prefix shared by all `REMOTE_*` paths. Default
-in this repo:
+`REMOTE_ROOT` is the prefix shared by all `REMOTE_*` paths. Shape:
 
 ```
-s3://rxinform-analytics-personalization/000-RxInform-JHU-AI-Repo/workspace_local_dev
+s3://<bucket>/<repo-prefix>/workspace_local_dev
 ```
+
+The concrete value is EXTERNAL CONFIGURATION: it lives in the workspace's
+gitignored `env.sh` (exported as `$REMOTE_ROOT`), never in skill docs.
 
 Each `REMOTE_*_STORE = ${REMOTE_ROOT}/<store-folder>/`.
 
@@ -139,11 +141,11 @@ unambiguous; named-store mode is fine for explicit pull / push.
 Credentials
 ============
 
-The default REMOTE_ROOT is on DrFirst's AWS account. Users authenticate
-via SSO. When transfers fail with credential errors:
+REMOTE_ROOT typically points at an organization AWS account. Users
+authenticate via SSO. When transfers fail with credential errors:
 
-  - Source the relevant DrFirst SSO portal:
-    https://d-90676d90da.awsapps.com/start/#/?tab=accounts
+  - Open your organization's AWS SSO portal (URL lives in env.sh
+    comments, not in skill docs).
   - Refresh tokens; export `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`,
     `AWS_SESSION_TOKEN` per the SSO flow.
   - Re-source env.sh.

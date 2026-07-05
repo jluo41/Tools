@@ -10,7 +10,7 @@ Step 1 — Identify project + task-group
 ---------------------------------------
 
 - Auto-detect project from cwd.
-- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK task-group. Group letter must be **A**; scaffold a new `A{NN}_<group_name>/` if needed.
+- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK task-group. Group letter is PROJECT-SPECIFIC (orchestrator rule; follow the project's existing scheme). Default **A**; scaffold a new `A{NN}_<group_name>/` if needed.
 
 
 Step 2 — Collect metadata
@@ -57,7 +57,7 @@ Copy `ref/config-seed.yaml` to `configs/5_model_<name>.yaml`. Fill in:
 Step 5 — Run-script
 --------------------
 
-Copy `../../haipipe-task/ref/run-sh-template.sh` for each variant.
+Copy `../../../haipipe-task/ref/run-sh-template.sh` for each variant.
 Set `TASK_NAME="{NN}_{task_name}"`. Variant differences go via
 papermill `-p key value` overrides in the run script.
 
@@ -95,10 +95,10 @@ First-run gate
 ---------------
 
 `runs/<RUN>.sh` blocks execution if `CODE_REVIEW.md` is missing or
-stale (gate inherited from `../../haipipe-task/ref/run-sh-template.sh`).
+stale (gate inherited from `../../../haipipe-task/ref/run-sh-template.sh`).
 For the first run after this scaffold, do ONE of:
 
-  1. **Recommended** — run the Run Script Reviewer agent on this
+  1. **Recommended** — run the haipipe-task-reviewer-agent (Gate 1) on this
      task-folder to produce a fresh `CODE_REVIEW.md`:
      `Tools/plugins/haipipe-toolkit/skills/task/agents/haipipe-task-reviewer-agent.md`
 

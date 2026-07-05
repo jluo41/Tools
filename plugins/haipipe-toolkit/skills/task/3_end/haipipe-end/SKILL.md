@@ -1,14 +1,13 @@
 ---
 name: haipipe-end
-description: "Run any Stage 6 endpoint work. Parses intent across FOUR axes — Fn-type (meta/trig/post/src2input/input2src), artifact-as-whole verb (package/test/review/dashboard), develop target (sagemaker/databricks/local) producing an Endpoint_Set, or deploy target (sagemaker/databricks/local/mlflow) serving one — and dispatches to the right specialist via Skill(). Use for designing inference Fns, packaging Endpoint_Sets, training a build to produce one, local inference tests, or deploying to any target. Trigger: endpoint, deploy, develop, train, package, inference Fn, MetaFn, TrigFn, PostFn, Src2InputFn, Input2SrcFn, /haipipe-end."
+description: "Run any Stage 6 endpoint work. Parses intent across FOUR axes — Fn-type (meta/trig/post/src2input/input2src), artifact-as-whole verb (package/test/profile/review/dashboard), develop target (sagemaker/databricks/local) producing an Endpoint_Set, or deploy target (sagemaker/databricks/local/mlflow) serving one — and dispatches to the right specialist via Skill(). Use for designing inference Fns, packaging Endpoint_Sets, training a build to produce one, local inference tests, or deploying to any target. Trigger: endpoint, deploy, develop, train, package, inference Fn, MetaFn, TrigFn, PostFn, Src2InputFn, Input2SrcFn, /haipipe-end."
 argument-hint: "[target_or_fn_or_verb] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-07-04"
   summary: "Run any Stage 6 endpoint work."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-end (orchestrator)
@@ -20,7 +19,7 @@ User-facing entry for Stage 6. Routes across **four axes**:
 1. Fn-type axis        meta | trig | post | src2input | input2src
                        -> per-Fn-type specialist (one skill per type)
 
-2. Artifact axis       package | test | dashboard | review (overall)
+2. Artifact axis       package | test | profile | dashboard | review (overall)
                        -> haipipe-end-endpointset
 
 3. Develop axis        develop <target>  where target is one of
@@ -62,7 +61,7 @@ PER-FN-TYPE (5)
   haipipe-end-input2src     Input2SrcFn — wire payload → record
 
 ARTIFACT-AS-WHOLE (1)
-  haipipe-end-endpointset   Endpoint_Set lifecycle: package, test, review, dashboard
+  haipipe-end-endpointset   Endpoint_Set lifecycle: package, test, profile, review, dashboard
 
 PER-TARGET DEVELOP (3)        BUILDS the Endpoint_Set
   haipipe-end-develop-sagemaker   AWS SageMaker Pipeline (wraps platform-sagemaker-training/)
@@ -170,7 +169,7 @@ Step 2:  Detect axis (priority order, first match wins):
            e) Deploy verb 'deploy' alone (no target)     -> ASK target
            f) Target alone (no develop/deploy verb)?     -> Deploy ref-only summary (default)
                                                             + soft-ask: "did you mean develop?"
-           g) Artifact verb (package/test/dashboard)?    -> Artifact axis
+           g) Artifact verb (package/test/profile/dashboard)?  -> Artifact axis
            h) Verb 'review' alone, no <id>, no fn-type   -> Artifact axis (review-overall)
            i) Verb 'review <id>'                         -> Deploy axis (review live deploy)
                                                             -> resolve target from local registry
@@ -278,7 +277,7 @@ Files Owned by This Umbrella
 ```
 ref/0-overview.md           Stage 6 architecture + inference pipeline + YAML conventions
                             (read by all 5 per-Fn-type children for context)
-ref/deploy-overview.md      legacy cross-target deploy ref
+ref/deploy-overview.md      shared cross-target deploy ref (read by all 4 deploy specialists)
 
 fn/fn-design.md             SHARED design procedure — read by all 5 per-Fn-type children
                             when handling `design`. Each child supplies its own concepts.md.

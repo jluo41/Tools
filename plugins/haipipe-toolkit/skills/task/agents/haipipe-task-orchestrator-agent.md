@@ -12,10 +12,11 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-06-23"
+  version: "1.1.0"
+  last_updated: "2026-07-04"
   summary: "Orchestrator agent — dispatch target for task lifecycle. Coordinates creator + reviewer in loops."
   changelog:
+    - "1.1.0 (2026-07-04): Step 0 required-reads repointed to files that exist (ref/hierarchy.md; fn/workflow-plan/run/workflow-report) — old list named 5 nonexistent files (skill-set review A4)."
     - "1.0.0 (2026-06-23): initial design. Completes the orchestrator/creator/reviewer triad for tasks."
 ---
 
@@ -76,10 +77,11 @@ Before any lifecycle work, read the task skill's procedures:
 Required reads (in order):
 1. Skill("haipipe-task")  — OR read these files directly:
    - Tools/plugins/haipipe-toolkit/skills/task/haipipe-task/SKILL.md
-   - Tools/plugins/haipipe-toolkit/skills/task/haipipe-task/ref/task-lifecycle-map.md
+   - Tools/plugins/haipipe-toolkit/skills/task/haipipe-task/ref/hierarchy.md
 
 2. Then read the procedure for the current stage:
-   - fn/plan.md, fn/build.md, fn/execute.md, fn/report.md as needed
+   - Plan: fn/workflow-plan.md · Execute: fn/run.md · Report: fn/workflow-report.md
+   - Build has no fn/ file: follow SKILL.md Stage 2 + ref/authoring-conventions.md
 ```
 
 This ensures the orchestrator follows the same lifecycle rules as the

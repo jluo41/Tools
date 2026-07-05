@@ -4,11 +4,10 @@ description: "Local self-hosted deploy specialist for haipipe-end. Wraps an Endp
 argument-hint: "[verb] [endpoint_set_or_id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.3.0"
+  last_updated: "2026-07-05"
   summary: "Local self-hosted deploy specialist for haipipe-end."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-end-deploy-local
@@ -60,16 +59,16 @@ Dispatch Table
 ```
 Verb        Ref                                       Backing platform script (when wired)
 ----------- ----------------------------------------- -------------------------------------
-dashboard   ref/concepts.md                           (none — local registry)
-deploy      ref/concepts.md
+dashboard   ../haipipe-end/ref/deploy-overview.md                           (none — local registry)
+deploy      ../haipipe-end/ref/deploy-overview.md
             ../haipipe-end/ref/0-overview.md
               flask:        platform-sagemaker-inference/scripts/build_endpoint/run_endpoint_system.py
               with-docker:  platform-sagemaker-inference/scripts/build_endpoint/run_endpoint_docker.py
               fastapi:      project-specific (TBD)
-test        ref/concepts.md                           POST a JSON payload to localhost:port/invocations
-monitor     ref/concepts.md                           tail logs (`--logs` flag or `docker logs`)
-teardown    ref/concepts.md                           `--stop` flag or `docker stop`
-review      ref/concepts.md                           Read of generated app + Dockerfile
+test        ../haipipe-end/ref/deploy-overview.md                           POST a JSON payload to localhost:port/invocations
+monitor     ../haipipe-end/ref/deploy-overview.md                           tail logs (`--logs` flag or `docker logs`)
+teardown    ../haipipe-end/ref/deploy-overview.md                           `--stop` flag or `docker stop`
+review      ../haipipe-end/ref/deploy-overview.md                           Read of generated app + Dockerfile
 ```
 
 ---
@@ -77,7 +76,7 @@ review      ref/concepts.md                           Read of generated app + Do
 Step-by-Step Protocol
 ----------------------
 
-Step 0:  Read `ref/concepts.md` for local server conventions (port allocation,
+Step 0:  Read `../haipipe-end/ref/deploy-overview.md` for local server conventions (port allocation,
          pid-file layout, log paths, framework boilerplate).
 
 Step 1:  Parse args. Required arg per verb:
@@ -123,16 +122,20 @@ Deploy (Docker):
 
 Deploy (FastAPI):
   1. Read Endpoint_Set at `_WorkSpace/6-EndpointStore/<endpoint_set>/`.
-  2. Run `scripts/serve_local.py` — generic FastAPI wrapper that calls
+  2. `scripts/serve_local.py` is a REFERENCE TEMPLATE, not a runnable
+     entrypoint: skill-internal code is examples/reference only, never run
+     in-place (owner rule 2026-07-05). COPY it into the serving task-folder
+     first. It is a generic FastAPI wrapper that calls
      `Endpoint_Set.inference()` behind `POST /invocations`. Routes:
        GET  /health       — liveness + endpoint_loaded flag
        GET  /meta         — mirrors MetaFn metadata_response.body
        POST /invocations  — accepts the Endpoint_Set's documented payload
                             (typically `dataframe_records` per Input2SrcFn)
-  3. Invocation:
+  3. Invocation (from the task-folder copy):
+       cp <skill>/scripts/serve_local.py tasks/<G>{NN}_<group>/{NN}_<task>/
        ENDPOINT_PATH=_WorkSpace/6-EndpointStore/<endpoint_set> \
        PORT=8765 \
-           python scripts/serve_local.py
+           python serve_local.py
   4. Smoke-test with `haipipe-individual-inference` (per-individual test) or
      curl `POST http://127.0.0.1:8765/invocations` with a payload.json
      pulled from `<endpoint_set>/inference/`.
@@ -146,7 +149,7 @@ Deploy (FastAPI):
      500 from `Endpoint_Set.inference()` so the caller sees them.
 
 Test, Monitor, Teardown, Review:
-  See `ref/concepts.md` for log paths, pid file conventions, port allocation,
+  See `../haipipe-end/ref/deploy-overview.md` for log paths, pid file conventions, port allocation,
   and the `--logs` / `--stop` / `--cleanup` flags on the backing scripts.
 
 ---

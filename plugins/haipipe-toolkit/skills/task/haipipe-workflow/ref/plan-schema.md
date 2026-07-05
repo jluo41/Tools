@@ -106,7 +106,7 @@ phases:
         type: agent
         required: true
         prompt: "Review build_lbp.py against spec and template"
-        agentType: run-script-reviewer-agent
+        agentType: haipipe-task-reviewer-agent
         files_in:
           - tasks/A01_.../build_lbp.py
           - tasks/A01_.../configs/run_lbp.yaml

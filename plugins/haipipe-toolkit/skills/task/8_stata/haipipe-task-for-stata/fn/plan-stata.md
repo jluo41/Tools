@@ -18,8 +18,8 @@ Procedure
 
 Read (in order):
 1. `ref/stata-dialect.md` — engine contract
-2. `project/haipipe-workflow/ref/plan-schema.md` — canonical IPO shape
-3. `../../haipipe-task/ref/workflow-template.yaml` — task-level template (Run/Gate1/Gate2)
+2. `task/haipipe-workflow/ref/plan-schema.md` — canonical IPO shape
+3. `../../../haipipe-task/ref/workflow-template.yaml` — task-level template (Run/Gate1/Gate2)
 
 ### Step 1 — Detect stage
 
@@ -39,7 +39,7 @@ Scan configs/ and runs/ to build the run matrix:
 **cms:** `run_cms_<year>` — one per year
 **case:** `run_case_<Cohort>_{synth|full}_<year>` — cohort × source × year
 **data:** `run_data_<Spec>` — one per spec (cross-year)
-**reg:** `run_reg_<window>_<family>` — window × estimator grid
+**reg:** `run_reg_<cohort>_<pairing>_{synth_}?<window>_<family>` — cohort × pairing × source × window × family grid
 
 Also discover:
 - Shared configs vs per-run configs

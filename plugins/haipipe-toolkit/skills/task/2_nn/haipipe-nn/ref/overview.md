@@ -9,6 +9,8 @@ Read this FIRST before any layer-specific reference.
 snapshots are labeled as such -- always discover current state at runtime.
 This reference applies equally to any domain or model family.
 
+**Workspace note:** code paths in this bucket (`code/hainn/{algo,tuner,instance}/`, `model_registry.py`) follow the hainn layout of the SPACE-HAI-Pipe / WellDoc-class workspaces. Workspaces with a family-first hainn (e.g. Physician-SPACE: `mlpredictor/ tsforecast/ bandit/ tsfm/`, no registry file) will not resolve these paths — discover the local layout first.
+
 ---
 
 The 4-Layer Architecture
@@ -133,7 +135,7 @@ Step 1: Algorithm (Layer 1)
    [ ] Pure external library (XGBoost, sklearn, Nixtla): no file to create here
    [ ] Custom nn.Module (adds embeddings, fusion, etc.): create
        code/hainn/algo/<family>/algorithm_<name>.py
-       See ref/layer-1-algorithm.md for the algorithm_*.py pattern.
+       See ../../haipipe-nn-algo/ref/concepts.md for the algorithm_*.py pattern.
 
 Step 2: Tuner (Layer 2)
    [ ] Create file: code/hainn/tuner/<family>/tuner_<name>.py

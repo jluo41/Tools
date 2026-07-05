@@ -1,14 +1,13 @@
 ---
 name: haipipe-task-for-raw
-description: "Raw extraction task-folder build specialist. Scaffolds {NN}_<name>/ task-folders under R-series task-groups that extract source tables from Databricks as single parquet files, then process locally with Python. Called by /haipipe-task orchestrator when task-type=raw. Direct invocation works for scoped scaffolding. Cross-references /haipipe-data-raw."
+description: "Raw extraction task-folder build specialist. Scaffolds {NN}_<name>/ task-folders in the project's raw-extraction task-group (default R-series; letters are project-specific) that extract source tables from Databricks as single parquet files, then process locally with Python. Called by /haipipe-task orchestrator when task-type=raw. Direct invocation works for scoped scaffolding. Cross-references /haipipe-data-raw."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-06-10"
+  version: "1.2.0"
+  last_updated: "2026-07-04"
   summary: "Raw extraction task-folder build specialist (Databricks → parquet → local Python)."
-  changelog:
-    - "1.0.0 (2026-06-10): initial version — extract-wide-process-local doctrine."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-task-for-raw
@@ -17,7 +16,7 @@ Skill: haipipe-task-for-raw
 Scaffolds a **raw extraction task-folder** — a runnable example that
 extracts source tables from a Databricks catalog as wide parquet files,
 then optionally processes them locally with Python (pandas). Heavy
-outputs land in `_WorkSpace/0-RawStore/<cohort>/`; the task-folder keeps
+outputs land in `_WorkSpace/0-RawDataStore/<cohort>/`; the task-folder keeps
 scripts, configs, and convert-only notebooks.
 
 **Invocation modes (see `../../haipipe-task/ref/invocation-modes.md`):**
@@ -31,15 +30,15 @@ Position in the series
 ----------------------
 
 ```
-/haipipe-task-for-data            data-pipeline (Stages 1-4)
 /haipipe-task-for-raw         ◀── you are here (Stage 0 — raw extraction)
+/haipipe-task-for-data            data-pipeline (Stages 1-4)
 /haipipe-task-for-algo            algo-dev demo
-/haipipe-task-for-training        model training
+/haipipe-task-for-fit             model training
 /haipipe-task-for-eval            model evaluation
 /haipipe-task-for-display         paper figure / table
 /haipipe-task-for-individual      individual-centric query
 /haipipe-task-for-agent           LLM agent call
-/haipipe-task-for-inference       inference profiling
+/haipipe-task-for-endpoint        package + deploy (absorbed inference profiling)
 ```
 
 
@@ -59,7 +58,7 @@ tasks/R{NN}_<cohort_name>/                   ← group (R-series)
 ```
 
 Group letter default: **R** (raw extraction).
-Heavy outputs land in: `_WorkSpace/0-RawStore/<cohort>/`.
+Heavy outputs land in: `_WorkSpace/0-RawDataStore/<cohort>/`.
 
 
 Extract-Wide-Process-Local Doctrine
@@ -75,7 +74,7 @@ This is the core philosophy. Every raw extraction task MUST follow it:
   2. **Save parquet to Databricks catalog volume.**
      Path pattern: `/Volumes/<catalog>/<schema>/<volume>/<cohort>/<table>.parquet`
 
-  3. **Download/sync parquet to local `_WorkSpace/0-RawStore/<cohort>/`.**
+  3. **Download/sync parquet to local `_WorkSpace/0-RawDataStore/<cohort>/`.**
      One parquet file per source table. No partitioned directories.
 
   4. **Process with Python (pandas), NOT Spark.**
@@ -96,7 +95,7 @@ Workflow:
   2. User uploads `.ipynb` to Databricks workspace (or uses dbx CLI)
   3. User runs the notebook on a Databricks cluster
   4. Extracted parquet files land in the catalog volume
-  5. User syncs parquet to local `_WorkSpace/0-RawStore/<cohort>/`
+  5. User syncs parquet to local `_WorkSpace/0-RawDataStore/<cohort>/`
 
 The run-script template is `ref/run-databricks-sh-template.sh` —
 convert-only, no papermill execute.
@@ -170,7 +169,7 @@ MUST NOT
 ---------
 
 - Place heavy artifacts (`.parquet`, `.csv` > 1 MB) in `results/`.
-  Heavy outputs land in `_WorkSpace/0-RawStore/<cohort>/`.
+  Heavy outputs land in `_WorkSpace/0-RawDataStore/<cohort>/`.
 - Write complex multi-table JOINs in SQL — extract tables separately,
   join in Python downstream.
 - Use Spark for local processing — pandas only once data is local.

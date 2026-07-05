@@ -1,7 +1,7 @@
 // ─── haipipe-workflow template ───────────────────────────────────
 // Copy this file, rename, and fill in the blanks.
-// See: skills/flow/haipipe-workflow/ref/workflow-api.md
-// See: skills/flow/haipipe-workflow/ref/concepts.md
+// See: skills/task/haipipe-workflow/ref/workflow-api.md
+// See: skills/task/haipipe-workflow/ref/concepts.md
 
 export const meta = {
   name: 'WORKFLOW_NAME',

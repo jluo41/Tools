@@ -1,5 +1,5 @@
 # workflow-plan-sample-data.yaml -- Stata data stage script-level plan
-# Schema: project/haipipe-workflow/ref/plan-schema.md
+# Schema: task/haipipe-workflow/ref/plan-schema.md
 # Phases: Setup -> FilterCase -> FilterExternal -> FullVariables -> Describe
 # Heavy outputs land in _WorkSpace/*-Data-Store/.
 

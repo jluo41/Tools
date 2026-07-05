@@ -312,5 +312,5 @@ Generated SplitFns:           code/haifn/fn_aidata/split/       (discover with l
 Builders (edit here):         code-dev/1-PIPELINE/4-AIData-WorkSpace/  (discover with ls)
 
 Store path:                   _WorkSpace/4-AIDataStore/
-Config template:              templates/4-aidata/config.yaml
+Config template:              ../templates/config.yaml (this skill's own template)
 ```

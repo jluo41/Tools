@@ -293,7 +293,7 @@ def load_model_instance_class(model_instance_type):
 ```
 
 **To register a new model:** Add an elif block mapping your MODEL_TYPE
-string(s) to (InstanceClass, ConfigClass). See ref/overview.md for the
+string(s) to (InstanceClass, ConfigClass). See ../../haipipe-nn/ref/overview.md for the
 complete registry listing.
 
 ---

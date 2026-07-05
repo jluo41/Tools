@@ -33,13 +33,19 @@ A task-group holds related task-folders that share context (same model
 family, same evaluation suite, same figure set). They share one diagram
 narrative and one sbatch coordinator.
 
-Group letter (G) signals the **dominant task-type** in the group:
+Group letter (G) signals the **dominant task-type** in the group. Letters
+are PROJECT-SPECIFIC — each project defines its own scheme, and the
+project's scheme always wins. Specialist DEFAULTS for projects with none:
 
 ```
-A-series   model-run         pretraining, finetuning      (A01_pretraining_clm, A21_finetuning_*)
+A-series   fit / model-run   pretraining, finetuning      (A01_pretraining_clm)
 B-series   evaluation        eval, inference, scoring     (B01_evaluation_clm)
-C-series   display           paper figures / tables       (C01_paper_figures, C02_paper_tables)
-D-series   demo              paired examples for Track A  (D_demo/*)
+C-series   display           paper figures / tables       (C01_paper_figures)
+D-series   data              pipeline builds              (D01_build_source)
+E-series   individual        per-subject query/view       (E01_cgm_traces)
+F-series   agent             LLM-agent compute            (F01_llm_labeling)
+R-series   raw               Databricks raw extraction    (R01_extract_claims)
+X_algo     algo-dev          smoke-test demos             (X_algo/*)
 ```
 
 Index NN starts at 01 within each letter; no gaps. A21 is allowed for

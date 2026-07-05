@@ -53,7 +53,7 @@ Task Group → Template Mapping
 ```
 Group letter   Template           Pipeline stage
 ────────────   ──────────         ──────────────
-A01_*          aa/ab/ac/ad_*_nb   Data pipeline (Source→Record→Case→AIData)
+A01_*          a1/a2/a3/a4_*_nb   Data pipeline (Source→Record→Case→AIData)
 B01_*          b_model_nb         Model training (with ExampleConfig for examples)
 C01_*          c_endpoint_nb      Endpoint packaging (Endpoint_Pipeline + Src2InputFn → payload.json)
 ```

@@ -83,8 +83,9 @@ Then bundle:
 Step 4 — Optionally proceed to first task-folder
 -------------------------------------------------
 
-Invoke `fn/task-folder.md` (Scope 3) to seed the first task within
-this group.
+Seed the first task within this group via the orchestrator's task-folder
+scaffold: `Skill("haipipe-task", args="task-folder <type> ...")` (SKILL.md
+Step 3a dispatches to the type specialist).
 
 
 MUST NOT

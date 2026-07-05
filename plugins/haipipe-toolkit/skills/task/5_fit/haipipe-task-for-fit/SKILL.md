@@ -4,12 +4,10 @@ description: "model-fitting task-folder build specialist. Scaffolds {NN}_<name>/
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-06-09"
-  summary: "model-run task-folder build specialist."
-  changelog:
-    - "1.1.0 (2026-06-09): unwrap prose; fix agent names; add 4-stage lifecycle paragraph."
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  version: "1.2.0"
+  last_updated: "2026-07-04"
+  summary: "model-fitting task-folder build specialist."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-task-for-fit
@@ -24,7 +22,7 @@ Scaffolds a **model-training task-folder**. Full training config, heavy outputs 
 Not the same as task-algo
 --------------------------
 
-See `haipipe-task-for-algo/SKILL.md` for the full comparison.
+See `../../2_nn/haipipe-task-for-algo/SKILL.md` for the full comparison.
 Short version: algo-dev = smoke test, training = real run.
 
 
@@ -86,36 +84,18 @@ next:      suggested next command (/haipipe-nn-tuner or run.sh)
 
 
 
-Lessons learned (MIMIC-IV endpoint session)
----------------------------------------------
+Lessons learned
+----------------
 
-### ExampleFn and ExampleConfig
+Canonical lessons live in `LESSON.md` (same folder): L1 temporal-leak filter,
+L2 PID/PatientID format, L4 empty prediction_results.json = silent bug,
+L5 `-p SKIP_TRAINING "true"` fast iteration, L6 what the Step-8 reproducibility
+check actually tests. Read it before building a fit task; do not restate its
+content here.
 
-- Trained models generate examples via `ExampleConfig` in the training YAML.
-- The ExampleFn builder lives in `01_model_fn_develop_mimic/` (same number as
-  the training task — same number = same stage).
-- Builder reference templates at `code/scripts/haibuilder/5-instance/`.
-
-### SKIP_TRAINING parameter
-
-- `b_model_nb.py` supports `-p SKIP_TRAINING "true"` to skip steps 2-3
-  (train + save) and reuse the existing model on disk.
-- Steps 4-9 (verify examples, reload, PreFn, reproducibility, inference)
-  run normally.
-- Use for debugging validation steps without re-training (~20 min to ~20 sec).
-
-### Step 8 reproducibility check
-
-- Compares `model.infer()` on each saved example's PreFn output against
-  `prediction_results.json`.
-- If `prediction_results.json` is empty, that is a bug (see L1/L4 in
-  `3_end/LESSON.md`).
-
-### prediction_results.json
-
-- Must be non-empty after training.
-- If empty, the `_infer_examples` step in `ModelInstance_Pipeline` failed
-  silently — investigate before proceeding to endpoint packaging.
+Quick pointers:
+- ExampleFn builder lives in the same-numbered task as training (same number = same stage); builder templates at `code/scripts/haibuilder/5-instance/` (workspace-dependent path).
+- `prediction_results.json` must be non-empty after training (LESSON.md L4).
 
 
 Workflow plan
@@ -130,4 +110,4 @@ ref/workflow-plan-sample.yaml     ← script-level phases for this type
 ```
 
 Schema source of truth:
-  project/haipipe-workflow/ref/plan-schema.md
+  task/haipipe-workflow/ref/plan-schema.md

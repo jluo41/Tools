@@ -1,14 +1,13 @@
 ---
 name: haipipe-nn-instance
-description: "Layer 3 (Instance) specialist of haipipe-nn. Materializes a trained ModelInstance from a tuner's best-config + checkpoint. Called by /haipipe-nn orchestrator. Direct invocation works for layer-scoped work."
+description: "Layer 3 (Instance) specialist of haipipe-nn. Materializes a trained ModelInstance by driving its Tuners (registry create -> fit -> save_model). Called by /haipipe-nn orchestrator. Direct invocation works for layer-scoped work."
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-07-04"
   summary: "Layer 3 (Instance) specialist of haipipe-nn."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-nn-instance
@@ -75,11 +74,12 @@ Layer Scope
 
 Owns:
   - ModelInstance classes in `code/hainn/instance/`
-  - `_WorkSpace/5-ModelInstanceStore/ModelInstance-*/`
+  - `_WorkSpace/5-ModelInstanceStore/{modelinstance_name}/{version}/` (no ModelInstance- prefix)
   - Trained weights, paired config, metadata
 
 Upstream dependency (L2):
-  Reads tuner output (best_config + ckpt). If materialization fails on
+  Drives the Tuner: creates it via the model_tuner registry, calls
+  fit() / save_model(key, model_dir). If materialization fails on
   config-shape mismatch, escalate to `/haipipe-nn-tuner review`.
 
 Hand-off contract (L3 -> L4):

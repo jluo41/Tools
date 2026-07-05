@@ -4,11 +4,10 @@ description: "LLM-as-judge evaluator for prediction-interpretation Reports. Cons
 argument-hint: "--report-dir <path> --persona <name_or_path> [--model X]"
 allowed-tools: Bash, Read
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-07-04"
   summary: "LLM-as-judge evaluator for prediction-interpretation Reports."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-individual-inference-judge
@@ -31,7 +30,7 @@ Sibling progression in `task/4_individual/`:
 
 | Skill | Adds | Output |
 |-------|------|--------|
-| `haipipe-individual` | (data load) | ctx |
+| `haipipe-individual` | (builds Subject-* data) | Subject folder |
 | `haipipe-individual-inference` | + payload + POST | forecast |
 | `haipipe-individual-inference-report` | + audience persona + LLM | Report |
 | `haipipe-individual-inference-judge` | + judge persona + LLM | **Judgment** |
@@ -55,7 +54,7 @@ scripts/
   judge_report_cli.py   end-to-end CLI: report.json + judge persona → judgment
 
 tests/
-  (smoke against the report.json from 18/patient-friendly/<ts>/)
+  (smoke against the report.json from 18/patient-friendly/<ts>/ — when written; dir not yet on disk)
 ```
 
 ---

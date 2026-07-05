@@ -59,7 +59,7 @@ exists (grep for "from .algorithm_" in the Tuner file). If it does, note it
 now and plan to review it in Step 5 -- the Tuner's transform_fn and forward
 call will reference it.
 
-Read ref/layer-2-tuner.md. Apply its MUST DO checklist and MUST NOT checklist in full.
+Read ../../haipipe-nn-tuner/ref/concepts.md. Apply its MUST DO checklist and MUST NOT checklist in full.
 
 Additional checks (cross-verify against YAML):
 
@@ -82,7 +82,7 @@ grep -n "model_\|os\.path\.join" <TUNER_FILE> | grep -i "save\|load"
 Step 3: Review the Instance (Layer 3)
 =======================================
 
-Read ref/layer-3-instance.md. Apply its MUST DO checklist, MUST NOT list, and
+Read ../../haipipe-nn-instance/ref/concepts.md. Apply its MUST DO checklist, MUST NOT list, and
 infer() routing contract.
 
 Additional checks:
@@ -103,7 +103,7 @@ Additional checks:
 Step 4: Review the Config (Layer 3)
 =====================================
 
-Read ref/layer-3-instance.md "Config Class Contract" section, including
+Read ../../haipipe-nn-instance/ref/concepts.md "Config Class Contract" section, including
 from_aidata_set() and from_yaml() requirements.
 
   [ ] from_yaml() is implemented (base class raises NotImplementedError)
@@ -134,7 +134,7 @@ Step 5: Review the Algorithm (Layer 1)
 
 Skip this step if no custom algorithm_*.py was created (external library only).
 
-Read ref/layer-1-algorithm.md "When You Write Custom Layer 1 Code" section.
+Read ../../haipipe-nn-algo/ref/concepts.md "When You Write Custom Layer 1 Code" section.
 
   [ ] nn.Module subclass with forward(x) -> y implemented
   [ ] Contains ONLY architecture logic -- no training loops, no data loading
@@ -237,10 +237,10 @@ source .venv/bin/activate && source env.sh && python <TEST_DIR>/test_<name>_4_mo
 ```
 
 For test structure details, read:
-  L1 structure -> ref/layer-1-algorithm.md "Test Notebook: What Layer 1 Tests"
-  L2 structure -> ref/layer-2-tuner.md "Test Notebook: What Layer 2 Tests"
-  L3 structure -> ref/layer-3-instance.md "Test Notebook: What Layer 3 Tests"
-  L4 structure -> ref/layer-4-modelset.md "Test Notebook: What Layer 4 Tests"
+  L1 structure -> ../../haipipe-nn-algo/ref/concepts.md "Test Notebook: What Layer 1 Tests"
+  L2 structure -> ../../haipipe-nn-tuner/ref/concepts.md "Test Notebook: What Layer 2 Tests"
+  L3 structure -> ../../haipipe-nn-instance/ref/concepts.md "Test Notebook: What Layer 3 Tests"
+  L4 structure -> ../../haipipe-nn-modelset/ref/concepts.md "Test Notebook: What Layer 4 Tests"
 
 ---
 

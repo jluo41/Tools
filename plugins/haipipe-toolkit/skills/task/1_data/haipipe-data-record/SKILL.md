@@ -1,21 +1,19 @@
 ---
 name: haipipe-data-record
-description: "Stage 2 (Record) specialist. Builds, runs, and reviews RecordFn / TriggerFn; inspects 2-RecStore; loads record-layer assets. Supports multi-partition via patient_ids predicate pushdown. Called by /haipipe-data orchestrator. Direct invocation works for stage-scoped work."
+description: "Stage 2 (Record) specialist. Builds, runs, and reviews HumanFn / RecordFn; inspects 2-RecStore; loads record-layer assets. Supports multi-partition via patient_ids predicate pushdown. Called by /haipipe-data orchestrator. Direct invocation works for stage-scoped work."
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-06-11"
+  version: "1.2.0"
+  last_updated: "2026-07-04"
   summary: "Stage 2 (Record) specialist with multi-partition support."
-  changelog:
-    - "1.1.0 (2026-06-11): add Partition Support section — CLI (--num-partitions, --use-cache), patient_ids predicate pushdown via Ptt.parquet, @i{i}n{n} output naming."
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-data-record
 ==========================
 
-Stage 2 specialist. Owns all RecordFn / TriggerFn work and the 2-RecStore
+Stage 2 specialist. Owns all HumanFn / RecordFn work and the 2-RecStore
 layer. Called by the `/haipipe-data` orchestrator; can also be invoked
 directly.
 
@@ -31,7 +29,7 @@ Commands
 /haipipe-data-record dashboard              -> same
 /haipipe-data-record load                   -> load and inspect existing Record_Set
 /haipipe-data-record cook                   -> run Record_Pipeline with config
-/haipipe-data-record design-chef            -> create new RecordFn / TriggerFn via builder
+/haipipe-data-record design-chef            -> create new HumanFn / RecordFn via builder
 /haipipe-data-record design-kitchen         -> modify Record_Pipeline infrastructure
 /haipipe-data-record review [file_path]     -> structural review of a Record-layer file
 ```
@@ -78,7 +76,7 @@ Stage Scope
 ------------
 
 Owns:
-  - RecordFn / TriggerFn builders under `code-dev/1-PIPELINE/2-Record-WorkSpace/`
+  - HumanFn / RecordFn builders under `code-dev/1-PIPELINE/2-Record-WorkSpace/`
   - Generated `code/haifn/fn_record/`
   - `_WorkSpace/2-RecStore/` records
   - `templates/config.yaml` for Record_Pipeline runs

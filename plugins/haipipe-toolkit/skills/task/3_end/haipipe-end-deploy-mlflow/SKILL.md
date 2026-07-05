@@ -4,14 +4,13 @@ description: "MLflow deploy specialist for haipipe-end. STATUS: DEFERRED — no 
 argument-hint: "[function] [endpoint_set_or_id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-07-04"
   summary: "MLflow deploy specialist for haipipe-end."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-Skill: haipipe-end-mlflow
+Skill: haipipe-end-deploy-mlflow
 ==========================
 
 MLflow registry + serving specialist. Wraps an Endpoint_Set into an
@@ -19,7 +18,7 @@ MLflow `pyfunc` model, logs and registers it, and (optionally) serves it
 via `mlflow models serve`. The registered model can also be the input
 artifact for downstream MLflow-aware deployers.
 
-> Status: scaffolded. Tracking server URI, registry name, and stage
+> Status: DEFERRED — SKILL.md scaffolded as a placeholder; not yet exercised (no backing repo). Tracking server URI, registry name, and stage
 > transition policy below are placeholders for the project to fill in.
 
   Function axis:  dashboard | deploy | test | monitor | teardown | review
@@ -30,14 +29,14 @@ Commands
 --------
 
 ```
-/haipipe-end-mlflow                              -> dashboard: registered models + versions
-/haipipe-end-mlflow dashboard                    -> same
-/haipipe-end-mlflow deploy <endpoint_set>        -> log + register, optionally `mlflow models serve`
-/haipipe-end-mlflow deploy <es> --register-only  -> register but do not start a server
-/haipipe-end-mlflow test <endpoint_id>           -> hit local `mlflow models serve` server
-/haipipe-end-mlflow monitor <endpoint_id>        -> tail mlflow serve logs
-/haipipe-end-mlflow teardown <endpoint_id>       -> stop server, archive model version
-/haipipe-end-mlflow review <endpoint_id>         -> audit registered model + signature
+/haipipe-end-deploy-mlflow                              -> dashboard: registered models + versions
+/haipipe-end-deploy-mlflow dashboard                    -> same
+/haipipe-end-deploy-mlflow deploy <endpoint_set>        -> log + register, optionally `mlflow models serve`
+/haipipe-end-deploy-mlflow deploy <es> --register-only  -> register but do not start a server
+/haipipe-end-deploy-mlflow test <endpoint_id>           -> hit local `mlflow models serve` server
+/haipipe-end-deploy-mlflow monitor <endpoint_id>        -> tail mlflow serve logs
+/haipipe-end-deploy-mlflow teardown <endpoint_id>       -> stop server, archive model version
+/haipipe-end-deploy-mlflow review <endpoint_id>         -> audit registered model + signature
 ```
 
 ---
@@ -48,14 +47,14 @@ Dispatch Table
 ```
 Invocation     Ref file(s)                              Function block
 -------------- ---------------------------------------- -----------------------------------
-dashboard      ref/concepts.md                          dashboard procedure
-deploy         ref/concepts.md +
-               ../haipipe-end-endpointset/ref/
+dashboard      ../haipipe-end/ref/deploy-overview.md                          dashboard procedure
+deploy         ../haipipe-end/ref/deploy-overview.md +
+               ../haipipe-end/ref/
                  0-overview.md                          deploy procedure
-test           ref/concepts.md                          test procedure
-monitor        ref/concepts.md                          monitor procedure
-teardown       ref/concepts.md                          teardown procedure
-review         ref/concepts.md                          review procedure
+test           ../haipipe-end/ref/deploy-overview.md                          test procedure
+monitor        ../haipipe-end/ref/deploy-overview.md                          monitor procedure
+teardown       ../haipipe-end/ref/deploy-overview.md                          teardown procedure
+review         ../haipipe-end/ref/deploy-overview.md                          review procedure
 ```
 
 ---
@@ -63,7 +62,7 @@ review         ref/concepts.md                          review procedure
 Step-by-Step Protocol
 ----------------------
 
-Step 0: Read `ref/concepts.md` for MLflow tracking URI, registry conventions,
+Step 0: Read `../haipipe-end/ref/deploy-overview.md` for MLflow tracking URI, registry conventions,
         and stage transition policy.
 
 Step 1: Parse args. Required arg per function:
@@ -105,7 +104,7 @@ Deploy:
   8. Record endpoint_id (model_name + version) in the project's deploy log.
 
 Test, Monitor, Teardown, Review:
-  See `ref/concepts.md` for the `mlflow` CLI patterns the project uses.
+  See `../haipipe-end/ref/deploy-overview.md` for the `mlflow` CLI patterns the project uses.
 
 ---
 
@@ -122,7 +121,7 @@ Owns:
 Does NOT own:
   - Endpoint_Set content (read-only input from `/haipipe-end-endpointset`)
   - Downstream platform deploy (Databricks Model Serving uses
-    `/haipipe-end-databricks` even though it consumes MLflow registry under
+    `/haipipe-end-deploy-databricks` even though it consumes MLflow registry under
     the hood — keep concerns split for clarity)
 
 If a deploy fails because of an Endpoint_Set issue, escalate to

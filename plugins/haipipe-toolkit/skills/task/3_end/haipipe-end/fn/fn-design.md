@@ -17,23 +17,23 @@ What does your new Fn do?
 
 Defines the model name mapping and available predictions?
   -> MetaFn    (a1_build_metafn_*.py)
-  -> ref/1-meta.md
+  -> ../../haipipe-end-meta/ref/concepts.md
 
 Determines whether to run inference at all?
   -> TrigFn    (b1_build_trigfn_*.py)
-  -> ref/2-trig.md
+  -> ../../haipipe-end-trig/ref/concepts.md
 
 Formats model scores into client JSON response?
   -> PostFn    (c1_build_postfn_*.py)
-  -> ref/3-post.md
+  -> ../../haipipe-end-post/ref/concepts.md
 
 Converts source tables → payload for test examples?
   -> Src2InputFn   (d1_build_src2inputfn_*.py)
-  -> ref/4-src2input.md
+  -> ../../haipipe-end-src2input/ref/concepts.md
 
 Converts payload → source tables at inference time?
   -> Input2SrcFn   (e1_build_input2srcfn_*.py)
-  -> ref/5-input2src.md
+  -> ../../haipipe-end-input2src/ref/concepts.md
 ```
 
 ---
@@ -250,7 +250,7 @@ Key things to customize:
   - Which columns to extract and how to map to payload fields
   - Output payload format (match Input2SrcFn input)
 
-Read ref/4-src2input.md and ref/5-input2src.md together.
+Read ../../haipipe-end-src2input/ref/concepts.md and ../../haipipe-end-input2src/ref/concepts.md together.
 Src2InputFn MUST produce output that Input2SrcFn can parse.
 
 ```python
@@ -288,7 +288,7 @@ Key things to customize:
   - ProcName_to_columns: schema per table
   - Parsing logic: extract payload fields -> DataFrame rows
 
-Read ref/5-input2src.md carefully. ProcName_List and ProcName_to_columns
+Read ../../haipipe-end-input2src/ref/concepts.md carefully. ProcName_List and ProcName_to_columns
 MUST match the schema the model was trained on.
 
 ```python

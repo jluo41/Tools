@@ -1,89 +1,90 @@
-# workflow-plan-sample.yaml — inference-performance task script-level plan
-# Schema: project/haipipe-workflow/ref/plan-schema.md
-# Task-level template: ../../haipipe-task/ref/workflow-template.yaml
+# workflow-plan-sample.yaml — endpoint-packaging task script-level plan
+# Schema: task/haipipe-workflow/ref/plan-schema.md
+# Task-level template: ../../../haipipe-task/ref/workflow-template.yaml
 #
-# Typical inference phases: Setup → Profile → Report
-# All outputs light (results/<run>/latency.json). Reads from 6-EndpointStore.
+# Typical endpoint phases: Setup → Package → Verify → Report
+# Heavy output: _WorkSpace/6-EndpointStore/<ENDPOINT>/ ; light: results/<run>/
 
 # ─── Header ──────────────────────────────────────────────────────
-name: profile-<ENDPOINT>
-purpose: "Profile inference latency of <ENDPOINT> Endpoint_Set"
-skill: haipipe-task-for-inference
+name: package-<ENDPOINT>
+purpose: "Package <MODELINSTANCE> (Stage 5) into deployable Endpoint_Set <ENDPOINT> (Stage 6)"
+skill: haipipe-task-for-endpoint
 
 # ─── I: Input ────────────────────────────────────────────────────
 input:
   args:
-    config: configs/<RUN>.yaml
-    endpoint_path: <_WorkSpace path to Endpoint_Set>
+    config: configs/run_<TASK>.yaml
+    modelinstance: <_WorkSpace path to ModelInstance_Set (with examples)>
   files_in:
     - <NN>_<TASK>.py
-    - configs/<RUN>.yaml
-    - _WorkSpace/6-EndpointStore/<ENDPOINT>
+    - configs/run_<TASK>.yaml
+    - _WorkSpace/5-ModelInstanceStore/<MODELINSTANCE>
 
 # ─── P: Phases ───────────────────────────────────────────────────
 phases:
 
   - title: Setup
-    detail: "load Endpoint_Set, prepare test payload"
+    detail: "load ModelInstance_Set, resolve the 5 Fn names"
     steps:
-      - label: "setup:load-endpoint"
+      - label: "setup:load-modelinstance"
         type: agent
         required: true
-        prompt: "Load Endpoint_Set from _WorkSpace/6-EndpointStore/"
+        prompt: "Load ModelInstance_Set (verify examples_data present)"
+        files_in:
+          - _WorkSpace/5-ModelInstanceStore/<MODELINSTANCE>
+        files_out: []
+      - label: "setup:resolve-fns"
+        type: agent
+        required: true
+        prompt: "Resolve MetaFn/TrigFn/PostFn/Src2InputFn/Input2SrcFn in code/haifn/fn_endpoint/"
+        files_in:
+          - configs/run_<TASK>.yaml
+        files_out: []
+
+  - title: Package
+    detail: "Endpoint_Pipeline.run() → 6-EndpointStore"
+    steps:
+      - label: "package:pipeline"
+        type: agent
+        required: true
+        prompt: "Run Endpoint_Pipeline: Src2InputFn per example → payload.json; assemble model/ code/ examples/ meta.json manifest.json"
+        files_in: []
+        files_out:
+          - _WorkSpace/6-EndpointStore/<ENDPOINT>
+
+  - title: Verify
+    detail: "payloads present + inference test on sample payloads"
+    steps:
+      - label: "verify:payloads"
+        type: agent
+        required: true
+        prompt: "Every examples/example_*/ has payload.json"
         files_in:
           - _WorkSpace/6-EndpointStore/<ENDPOINT>
         files_out: []
-
-      - label: "setup:payload"
+      - label: "verify:inference"
         type: agent
         required: true
-        prompt: "Build representative test payload from examples/"
-        files_in: []
-        files_out: []
-
-  - title: Profile
-    detail: "run N iterations, measure per-step latency"
-    steps:
-      - label: "profile:warmup"
-        type: agent
-        required: true
-        prompt: "Run 5 warmup iterations (discard timings)"
-        files_in: []
-        files_out: []
-
-      - label: "profile:measure"
-        type: agent
-        required: true
-        prompt: "Run N timed iterations, collect per-step latency breakdown"
-        files_in: []
-        files_out: []
-
-  - title: Report
-    detail: "aggregate timings, write latency report"
-    steps:
-      - label: "report:aggregate"
-        type: agent
-        required: true
-        prompt: "Compute p50/p95/p99 per step, identify bottleneck"
+        prompt: "Run inference(payload) on sample payloads; responses parse"
         files_in: []
         files_out:
-          - results/<RUN>/latency.json
+          - results/<RUN>/inference_test.json
 
+  - title: Report
+    detail: "package summary + deploy handoff"
+    steps:
       - label: "report:summary"
         type: agent
         required: true
-        prompt: "Write human-readable latency summary"
-        files_in:
-          - results/<RUN>/latency.json
+        prompt: "Write results/<RUN>/metrics.json + runtime.yaml; note the .tar.gz path and next deploy command"
+        files_in: []
         files_out:
+          - results/<RUN>/metrics.json
           - results/<RUN>/runtime.yaml
 
 # ─── O: Output ───────────────────────────────────────────────────
 output:
-  returns:
-    status: ok
-    bottleneck: "<step with highest p95>"
-    p95_total_ms: <N>
   files_out:
-    - results/<RUN>/latency.json
+    - _WorkSpace/6-EndpointStore/<ENDPOINT>   # heavy
+    - results/<RUN>/metrics.json              # light
     - results/<RUN>/runtime.yaml

@@ -79,7 +79,7 @@ For each step, create `scripts/<subdir>/<worker>.do`:
 - Receives year as arg (from dispatcher) + globals (from config)
 - Reads input from `_WorkSpace/` or prior step's output
 - Writes output to `${year_dir}/` or `${temp_dir}/`
-- NO SSC except `rangejoin` (the ONE allowed exception — installed on CMS server)
+- NO SSC except `rangejoin` (the ONE allowed exception)
 - Uses `egen tag()` for distinct counts (NOT SSC `distinct`)
 - 1-2 line header comment, no banners
 
@@ -90,14 +90,14 @@ case workers: merge cases with CMS claims within BFAF time windows
 data workers: filter + join + derive analysis variables (cross-year)
 reg workers: estimate one model specification (OLS/IV/DID)
 
-### Step 3 — Author orchestrator (cms/case/data stages)
+### Step 3 — Author orchestrator (cms/case stages only — data is SELF-ORCHESTRATING: runs/*.ps1 IS the orchestrator, no year axis; see SKILL.md data section)
 
 Read `ref/run-stage-year-template.ps1` as the starting template.
 
 Build the orchestrator (`run_<stage>_year.ps1`, <=30 lines) with:
 1. Param block: `$cfg`, `$year`, `$source` (case only)
 2. `$ErrorActionPreference = "Stop"`
-3. `$stata` = ONE editable line (no resolver functions)
+3. `$stata` per dialect A5: hardcoded line or Resolve-StataExe, either accepted for any stage
 4. `$dir = $PSScriptRoot` + repo root walk-up for `$ws`
 5. Config validation (`if -not Test-Path configs/$cfg.do`)
 6. `$wsRoot` + `$resultsDir` as named variables
@@ -108,7 +108,7 @@ Build the orchestrator (`run_<stage>_year.ps1`, <=30 lines) with:
 
 **CMS server rules (baked in):**
 - NO `Start-Job` (constrained language mode)
-- `$stata` = ONE editable line, no Resolve-StataExe function
+- `$stata` resolution per dialect A5 (hardcoded or Resolve-StataExe, any stage)
 - Bare `Start-Process ... -PassThru` + `Wait-Process`, no helper functions
 - Pure ASCII in .ps1 (no em-dash, no Unicode)
 
@@ -157,7 +157,7 @@ Build each runner (`runs/run_reg_<RUNNAME>.ps1`) with:
 
 ### Step 5 — Author thin runners + sbatch
 
-**cms/case/data thin runners** (`runs/run_<stage>_<RUNNAME>.ps1`):
+**cms/case thin runners** (`runs/run_<stage>_<RUNNAME>.ps1`) — data has no thin runner (self-orchestrating):
 - 2 lines: comment + call to orchestrator with args
 - From `ref/run-ps1-template.ps1`
 
