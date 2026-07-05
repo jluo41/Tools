@@ -12,10 +12,11 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "1.5.0"
+  version: "1.5.1"
   last_updated: "2026-07-05"
   summary: "Orchestrator agent — dispatch target for probe lifecycle. Coordinates creator + reviewer, dispatches task-orchestrator during Gather. Step 1.5 SWEEP: Link existing artifacts before Calling new work; never rerun what resolves. NO INLINE SEARCHING: fresh external evidence goes through discovery (ENRICH for same-topic deltas) and MUST LAND on disk before I return; ran a delta → shape is enriched, never reused."
   changelog:
+    - "1.5.1 (2026-07-05): TRUST THE LEDGER in SWEEP — VERIFIED + method + date on sources.md IS the verification; audit/re-verify plans are answered by reading those fields, not re-running lookups (rerun only on stale ref or explicit rerun ask). Live Paper-Probe-Test: 18 ledger-verified refs were re-bought by a side-channel auditor — consumer-side failure of review-on-write."
     - "1.5.0 (2026-07-05): NO INLINE SEARCHING + FRESH EVIDENCE MUST LAND. I never run searches/verification myself (no curl to arXiv/Crossref/Scholar for evidence — that is discovery-layer work); fresh-evidence needs dispatch haipipe-discovery-orchestrator-agent (ENRICH for same-topic flips/appends into an existing discovery, full for new topics). Shape honesty: any delta ran → shape: enriched (reused = PURE read, zero fresh evidence). All return anchors must resolve on disk at return time. Live run-3: the agent verified 6 refs and found 4 new papers via inline curl; the evidence lived only in the reply — no sources.md flips, no S## for the new papers — and the caller's harvest cards came out hollow because there was nothing on disk to expand."
     - "1.4.0 (2026-07-04): sources manifest replaced by pick_list (pointer {anchor: sources.md S##, why: one line} per relevant source; note deliberately-skipped groups). Source bodies stay in sources.md; the caller's harvest subagent expands picked entries in its own clean context. I select, I don't haul."
     - "1.3.1 (2026-07-04): manifest entries must carry SUBSTANCE — summary (2-3 lines) + finding (result with numbers) lifted from sources.md, not just identity+relevance; identity-only entries are defective. (JL: harvested _CITATION_ had paper metadata but no findings — the fields existed upstream and were dropped by the manifest spec.)"
@@ -152,6 +153,13 @@ A fresh probe's evidence_plan items all start `not_started`, which would send th
    Full mode always gets a probe folder — a verdict needs a home.
 3. Rerun an existing artifact ONLY when (a) its ref does not resolve / is stale
    (⚠ drift), or (b) the caller explicitly asked for a rerun.
+   TRUST THE LEDGER: a sources.md entry marked VERIFIED with method + date IS
+   the verification -- that trust is what the reviewer gate exists to provide.
+   An audit/re-verify plan is answered by READING those fields and reporting
+   them, not by re-running the lookups; re-verify a specific entry only on
+   (a)/(b) above. Re-buying what the ledger already holds is the consumer-side
+   failure of review-on-write: if VERIFIED can't be trusted, the ledger is
+   worthless.
 4. If the sweep covers ALL items of an existing probe → skip straight to Read
    (present what exists).
 ```
