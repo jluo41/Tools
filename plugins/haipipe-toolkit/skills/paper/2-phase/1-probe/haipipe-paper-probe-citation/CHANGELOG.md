@@ -4,6 +4,11 @@ haipipe-paper-probe-citation — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [1.5.1] — 2026-07-05
+
+Changed (test-2-2222: all 5 harvest cards said "🔍 candidate (unverified)" while sources.md held 15/15 VERIFIED-with-method; JL: "每一个都是unverified的，为什么")
+- Status rule hardened: two levels, never flattened. Discovery-verified sources carry `VERIFIED-by-discovery (<method>, <date>) · 🔍 awaiting JL Scholar+bibtex`; bare "unverified" on a discovery-verified source = defective card (discards earned provenance). 🔍 half never auto-clears (Scholar+bibtex are human-only).
+
 ## [1.5.0] — 2026-07-04
 
 Changed (JL: agent produces, worker reviews)

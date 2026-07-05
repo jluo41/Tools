@@ -4,6 +4,12 @@ haipipe-paper-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [2.3.3] — 2026-07-05
+
+Changed (test-2-2222 harvest: cards had substance but NO authors/year/venue — the worker's own compressed re-enumeration of the citation card spec had dropped the identity bullet, the dispatch prompt followed it, acceptance didn't check identity → passed. JL: "title author 还有 venue 这些都没有呀")
+- DISPATCH-to-harvest: never paraphrase the card spec into the prompt; point the subagent at the citation skill's SKILL.md spec section (single source of truth). Spec-drift by telephone game is the named failure mode.
+- ACCEPTANCE gains two greps: identity bullet per card (a `^- ` line with `(YYYY)`; title-only card = REJECT) and status-carries-provenance (S## VERIFIED in sources.md → card must say `VERIFIED-by-discovery`; bare "unverified" = REJECT).
+
 ## [2.3.2] — 2026-07-05
 
 Changed (test-2-2222: worker went sync on a from-scratch probe; JL's session froze 25 minutes through the 4-layer chain)
