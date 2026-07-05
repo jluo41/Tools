@@ -4,7 +4,7 @@ description: Search, download, and summarize academic papers from arXiv. Use whe
 argument-hint: "[query-or-arxiv-id]"
 allowed-tools: Bash(*), Read, Write
 metadata:
-  version: "1.0.0"
+  version: "1.0.1"
   last_updated: "2026-05-31"
   summary: "Search, download, and summarize academic papers from arXiv."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -18,7 +18,7 @@ Search topic or arXiv paper ID: $ARGUMENTS
 
 - **PAPER_DIR** - Local directory to save downloaded PDFs. Default: `papers/` in the current project directory.
 - **MAX_RESULTS = 10** - Default number of search results.
-- **FETCH_SCRIPT** - `tools/arxiv_fetch.py` relative to the ARIS install, or the same path relative to the current project. Fall back to inline Python if not found.
+- **API** - inline Python against `http://export.arxiv.org/api/query` (search_query for keyword search, id_list for batch verification). No local script exists; do not hunt for one.
 
 > Overrides (append to arguments):
 > - `/arxiv "attention mechanism" - max: 20` - return up to 20 results
@@ -42,29 +42,7 @@ If the argument matches an arXiv ID pattern (`YYMM.NNNNN` or `category/NNNNNNN`)
 
 ### Step 2: Search arXiv
 
-Locate the fetch script:
-
-```bash
-SCRIPT=$(python3 -c "
-import pathlib
-candidates = [
-    pathlib.Path('tools/arxiv_fetch.py'),
-    pathlib.Path.home() / '.claude' / 'skills' / 'arxiv' / 'arxiv_fetch.py',
-]
-for p in candidates:
-    if p.exists():
-        print(p)
-        break
-" 2>/dev/null)
-```
-
-**If SCRIPT is found**, run:
-
-```bash
-python3 "$SCRIPT" search "QUERY" --max MAX_RESULTS
-```
-
-**If SCRIPT is not found**, fall back to inline Python:
+Query the arXiv API directly with inline Python (PRIMARY path — the historical `tools/arxiv_fetch.py` script does not exist in this repo; hunting for it wasted turns in live runs, so don't):
 
 ```bash
 python3 - <<'PYEOF'

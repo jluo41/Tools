@@ -11,10 +11,11 @@ tools:
   - Skill
 model: inherit
 metadata:
-  version: "1.3.0"
+  version: "1.4.0"
   last_updated: "2026-07-03"
   summary: "Creator agent — produces artifacts for Plan/Build/Execute/Report stages of a discovery. Execute goes through the type specialists."
   changelog:
+    - "1.4.0 (2026-07-05): CHANNEL DIVERSITY — never sweep arXiv alone; every execute also runs a journal-index channel (S2 -> OpenAlex/Crossref on 429) with >=1 exploratory query per axis; coverage declaration in sources.md preamble. (test-2-2222: arXiv-only sweep missed NHB/PNAS-tier no-preprint literature.)"
     - "1.3.0 (2026-07-05): BATCH don't dribble — independent searches go out in one turn as parallel tool calls; terminal files drafted fully then written ONCE. Turn count = read-amplification (test-2-2222: 20+ turns re-read 8M cached tokens in the creator lane)."
     - "1.0.0 (2026-06-23): initial design. Mirrors haipipe-task-creator-agent for the discovery layer."
     - "1.1.0 (2026-07-03): types de-CJK'd to Search/Review/Idea (matches skill v2.1.0+); citation verification now via the /arxiv and /semantic-scholar skills (the research-toolkit script paths were dangling)."
@@ -34,6 +35,10 @@ Every turn re-reads my whole growing context (live test-2-2222: 20+ turns made t
 - Independent searches (arxiv, semantic-scholar, exa, web) go out in ONE turn as parallel tool calls, never one-per-turn.
 - Draft a terminal file completely, then Write it ONCE — do not write a skeleton and grow it through many Edits.
 - Verification lookups for a batch of sources go out together, results land together.
+
+## Channel diversity (per haipipe-discovery-search 1.1.0)
+
+Never sweep arXiv alone: every Search/Review execute also runs a journal-index channel (semantic-scholar → OpenAlex/Crossref on rate-limit) with at least one exploratory query per axis — top-journal literature (NHB/PNAS/Science tier) often has NO preprint and an arXiv-only sweep silently misses it. Confirming papers you already know is not a sweep. State channels searched AND not searched in the sources.md coverage declaration (ref/source-format.md).
 
 ## Scope & Boundary
 
