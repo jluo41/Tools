@@ -4,6 +4,11 @@ haipipe-paper-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [2.3.1] — 2026-07-05
+
+Changed (Paper-Probe-Test: an elicited AUDIT scope had no named route, so the stage hand-rolled a general-purpose web auditor)
+- DISPATCH: audit-shaped scopes (re-verify / audit / double-check the existing set) are ordinary plans for the SAME `Agent(haipipe-probe-orchestrator-agent)` dispatch — the agent answers them from the ledger (VERIFIED + method + date IS the verification). Never invent a side-channel worker because a scope has no named row.
+
 ## [2.3.0] — 2026-07-05
 
 Changed (run-3 audit: acceptance claimed "each has anchor + finding" while `grep -c 'finding:'` returned 0)

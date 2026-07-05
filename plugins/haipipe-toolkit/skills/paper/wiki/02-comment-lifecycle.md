@@ -90,6 +90,8 @@ Comments come from two places:
 
 ### _LOG format
 
+**Ordering: newest entry at the TOP.** A `_LOG` is read to answer "what just happened", so new phase/date blocks are INSERTED directly under the file's H1 title, not appended at the bottom (reverse-chronological, like a changelog). Within one block, lines stay in writing order. When touching a legacy bottom-appended `_LOG`, reorder its blocks newest-first in the same edit (JL, 2026-07-05).
+
 ```markdown
 ## draft  2026-07-03
 
