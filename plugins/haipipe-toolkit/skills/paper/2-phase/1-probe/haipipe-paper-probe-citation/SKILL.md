@@ -4,7 +4,7 @@ description: "citation probe worker. One skill, one working doc (_CITATION_). Tw
 argument-hint: "[verb] [section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent, WebFetch, WebSearch
 metadata:
-  version: "1.5.1"
+  version: "1.5.2"
   last_updated: "2026-07-05"
   summary: "Unified citation probe worker. AUDIT→SEARCH→CANDIDATE→PLACE→REVIEW lifecycle (fully automatic, no human gate). Human review happens in CHECK only. Single working doc = _CITATION_ (plain text only, no bibtex ever). Absorbs check-reference + manual-review-citations."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -135,7 +135,7 @@ Procedure (inside the subagent):
 ```
 
 An entry with only identity fields (title/year/venue + one relevance clause) is a DEFECTIVE harvest -- the user must be able to eyeball WHAT each paper found without opening the discovery. Numbered one-line entries remain acceptable ONLY for bare reference lists in the demand-pull phases, never for harvest cards.
-3. Status carries provenance -- two levels, never flattened: `status: VERIFIED-by-discovery (<method>, <date>) · 🔍 awaiting JL Scholar+bibtex` for sources the discovery reviewer verified; `status: 🔍 NEEDS-VERIFICATION` only for sources nobody has checked. Writing bare "unverified" on a discovery-verified source DISCARDS earned provenance and is a defective card (test-2-2222: all 5 cards said "🔍 candidate (unverified)" while sources.md held 15/15 VERIFIED-with-method). The 🔍 half never auto-clears: Scholar confirmation + bibtex are HUMAN-ONLY (house rule -- discovery verification is arXiv-level, not bibtex-level).
+3. Status carries provenance -- two levels, never flattened: `status: VERIFIED-by-discovery (<method>, <date>) · 🔍 awaiting JL Scholar+bibtex` for sources the discovery reviewer verified; `status: 🔍 NEEDS-VERIFICATION` only for sources nobody has checked. These strings are VERBATIM, not templates to reword: acceptance greps them literally, so a semantically-equivalent rendering (`retrieved ✅ (discovery, ...)`, `confirmed at discovery`, `JL bibtex ⬜`) is a DEFECTIVE card even though it carries the same information (test-123333333: harvest synonymized the canonical string; a literal grep would have rejected all 7 cards). Writing bare "unverified" on a discovery-verified source DISCARDS earned provenance and is a defective card (test-2-2222: all 5 cards said "🔍 candidate (unverified)" while sources.md held 15/15 VERIFIED-with-method). The 🔍 half never auto-clears: Scholar confirmation + bibtex are HUMAN-ONLY (house rule -- discovery verification is arXiv-level, not bibtex-level).
 4. Do NOT search for new papers in harvest mode -- harvest only what the probe brought back. Gaps noticed while harvesting become probe-plan suggestions, not fresh WebSearch calls.
 5. No placement: early stages are markdown; PLACE only applies when a tex section exists.
 

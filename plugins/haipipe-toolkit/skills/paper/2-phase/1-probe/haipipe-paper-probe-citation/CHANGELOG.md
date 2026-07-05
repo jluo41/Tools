@@ -4,6 +4,11 @@ haipipe-paper-probe-citation — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [1.5.2] — 2026-07-05
+
+Changed (test-123333333: harvest read the spec but rendered the status as `retrieved ✅ (discovery, arXiv API 2026-07-05) · JL bibtex ⬜` — same meaning, different string)
+- Canonical status strings declared VERBATIM: they are grep anchors, not templates to reword. Semantically-equivalent renderings are defective cards; the probe worker's acceptance grep is literal (worker 2.4.1).
+
 ## [1.5.1] — 2026-07-05
 
 Changed (test-2-2222: all 5 harvest cards said "🔍 candidate (unverified)" while sources.md held 15/15 VERIFIED-with-method; JL: "每一个都是unverified的，为什么")
