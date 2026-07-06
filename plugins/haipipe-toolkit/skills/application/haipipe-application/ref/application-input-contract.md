@@ -95,22 +95,23 @@ What NOT to do
   from it.
 
 
-Triggering insight-session (Phase 3)
-=====================================
+Triggering evidence work on a gap
+==================================
 
-When gap detected:
+When a K/W gap is detected, buffer a probe card and dispatch through the
+PROBE worker (ask retired 2026-07-06; the probe buffer is the door):
 
 ```
-Skill("haipipe-application-ask", args="<Q>")
+/haipipe-application probe "<Q>"      then: /haipipe-application probe run
 
 Q should be:
   - specific:    "Does K03 (FiLM overfit) hold for elderly patient subset?"
                  NOT "What about FiLM?"
   - load-bearing: tied to a concrete claim the artifact needs
-  - bounded:     answerable by ≤ MAX_EXPERIMENTS (3) new probes
+  - bounded:     one card per question; mode full only for committed verdicts
 
-Return contract: the session completes with status=answered (or
-budget/blocked). Phase 4 re-reads INDEX to pick up new K/W.
+Return contract: TRANSLATE lands takeaways/verdict in the PPNN card;
+re-read insights/INDEX.md afterwards to pick up new K/W cards.
 ```
 
 

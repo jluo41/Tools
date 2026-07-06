@@ -1,6 +1,6 @@
 # SOP — Application Paper-Alignment Refactor (2026-07-06)
 
-Status: DRAFT — pending JL review. No file changes executed yet.
+Status: PHASES 1+2 EXECUTED (JL approved 2026-07-06). Commits: 3da6f6a (1a structure moves) · 8d9e3af (1b load-bearing rewrites) · 45f75b2 (2 peripheral sweep) · +close-out commit (persona/attendance/input-contract ask-residue patches, data-contract-schema archived, SOP status). Workspace-side: 7 dangling pre-v4 `.claude/skills/haipipe-application-*` symlinks removed. Remaining: bench exams (§8) → then archive this SOP into haipipe-application/CHANGELOG.md and delete.
 Owner: JL. Executor: CC.
 Decision record: JL 2026-07-06 — R1 spine reorder APPROVED; R2 stage-5 resolution APPROVED (minimap retires, section-edit venue-gated); R3 ask RETIRES ("maybe just retire it" — entry = /haipipe-application enter, paper pattern; recoverable from _archive/ if a batch-research need reappears); R4 DPRC "we will do the same" = FULL 2-phase/ parity with paper.
 
@@ -101,9 +101,16 @@ Scoped commits on Tools main, clustered: (a) structure moves (git mv only), (b) 
 
 ## 9. Done criteria
 
-- [ ] JL reviewed this SOP, resolutions in §3 confirmed
-- [ ] Phase-1 rows 1–21 landed (scoped commits)
-- [ ] Phase-2 sweep landed
+- [x] JL approved execution ("please go ahead and do it", 2026-07-06); §3 resolutions stand unless vetoed on review
+- [x] Phase-1 rows 1–21 landed (3da6f6a + 8d9e3af)
+- [x] Phase-2 sweep landed (45f75b2 + close-out commit)
 - [ ] Light-path exam passed (8.1)
 - [ ] Full-path exam passed (8.2)
 - [ ] This SOP archived into haipipe-application/CHANGELOG.md + deleted (no parallel bookkeeping files long-term)
+
+Execution notes (deliberate, flagged 2026-07-06):
+- `data-contract-schema.md` ARCHIVED with ask (its lifecycle was ask's Phase-1 A1 machinery); `data/contract.yaml` stays in the intervention schema — a data-consuming venue writes a fresh contract doc when one is actually needed.
+- `gate-persona.md` + `attendance-modes.md` kept with the check worker, SESSION_STATE plumbing replaced with flag/Gate-Ledger wiring; the persona/threshold logic preserved verbatim.
+- `fn/digest.md` line "even if confirmed" untouched — that is digest's confirm-gate semantics, not the verdict enum.
+- Latent paper-side bug found+fixed while adapting stage-strip.sh: `| current_layer |` table-row extraction used a greedy sed that returned empty (masked by the old-format fallback); both scripts now use the anchored pattern.
+- Skill re-registration (renamed check/artifact/section-edit, new draft/probe/revise, retired ask/minimap) needs a fresh session to verify in the harness skill list.

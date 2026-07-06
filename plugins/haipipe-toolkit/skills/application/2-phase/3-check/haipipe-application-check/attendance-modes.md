@@ -1,14 +1,12 @@
-Attendance Modes — Who Clicks "Accept" at Each Gate
-=====================================================
+Attendance Modes — Who Clicks "Accept" at Each CHECK
+======================================================
 
-SOFT gates pause for a decision. `unattended_timeout` controls how
-long that pause lasts and whether a human is expected.
+The CHECK phase pauses for a decision. `--unattended[=Ns]` controls how
+long that pause lasts and whether a human is expected. With no flag,
+CHECK is attended (copilot default).
 
-Stored in `SESSION_STATE.unattended_timeout`. Set once at session
-creation; locked for the session.
-
-ONLY applies to SOFT gates. HARSH gates upstream do not auto-accept
-under any timeout.
+ONLY applies to the application-side CHECK phase. HARSH gates upstream
+(task CODE_REVIEW, probe G1/G2/G3) do not auto-accept under any timeout.
 
 
 Three modes
@@ -82,14 +80,8 @@ Auto-accepted gate files include a banner at the top:
 ```
 
 The proposal itself is unchanged — only the auto-accept fact is
-recorded. The `gates[]` entry in SESSION_STATE adds:
-
-```json
-{
-  "auto_accepted": true,
-  "fired_after_ms": 60000
-}
-```
+recorded: the Gate Ledger row's `By` column reads `persona:<preset>`
+and its Notes carry `auto-accepted (timed, 60s)`.
 
 
 CLI flags
@@ -113,21 +105,18 @@ When to use which
                  phase boundary in front of you.
                  → Most interactive sessions.
 
-⏳ timed         You're running a session in the background but want
+⏳ timed         You're running stage work in the background but want
                  the option to intervene.
-                 → "Run the ask while I'm in another meeting; auto-
-                    accept if I haven't responded in 5 minutes."
+                 → "Advance the lifecycle while I'm in another meeting;
+                    auto-accept if I haven't responded in 5 minutes."
 
 🤖 unattended    You're certain the persona is tuned right and want
-                 zero pauses (e.g. CI batch run of N questions).
-                 → "Sweep these 8 questions overnight."
+                 zero pauses (e.g. batch-advancing several interventions).
 ```
 
 
-Legacy default
-===============
+Default
+========
 
-If `unattended_timeout` is missing from SESSION_STATE (pre-attendance
-session), default to `null` (attended) and log a migration note in
-`tmp/migration-<ISO>.log`. The deprecated `--auto` flag is accepted
-as an alias for `unattended_timeout=0`.
+With no flag: attended (CHECK waits for the human). The deprecated
+`--auto` flag is accepted as an alias for `--unattended=0`.
