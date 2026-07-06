@@ -1,6 +1,6 @@
 # SOP — Probe Folderless Refactor (2026-07-05)
 
-Status: PHASE 1 EXECUTED (JL approved 2026-07-05). Commits df962ad, 38a0d21, d3e793f, ebf6411, 34e71ad, 9e2089f. Remaining: phase-2 peripheral sweep (§4) + bench exams (§7).
+Status: PHASES 1+2 EXECUTED (JL approved 2026-07-05/06). Phase 1: df962ad..9e2089f + 9c1cb19/2a6897d/84f1442/44e4dfc. Phase 2a: 5a98b42 (fn/+ref/ deleted, g2+caveats → agents/). Phase 2b: 033d280 (15 peripheral files; 8 insight-file fixes rode into c3688ed). Remaining: bench exams (§7) → then archive this SOP into CHANGELOG and delete.
 Owner: JL. Executor: CC.
 Decision record: JL 2026-07-05 — "probes/ 文件夹删掉,不是 single source of truth;probe 保留,可以 call task/discovery/insight;probe 的内容移到 lifecycle 各 stage 上。"
 
@@ -73,9 +73,15 @@ Every phase-1 step = one scoped commit on Tools main. Rollback = `git revert` th
 
 ## 8. Done criteria
 
-- [ ] Phase-1 files 1-11 landed + committed (scoped commits)
-- [ ] JL reviewed this SOP (this file), decisions confirmed
+- [x] Phase-1 files 1-11 landed + committed (scoped commits)
+- [x] JL reviewed this SOP (this file), decisions confirmed
 - [ ] Bench light-path exam passed (7.2)
-- [ ] Phase-2 sweep landed
+- [x] Phase-2 sweep landed (2a: 5a98b42 · 2b: 033d280; leftovers flagged, see note below)
 - [ ] Full-mode exam passed (first real verdict)
 - [ ] This SOP archived into probe/CHANGELOG.md + deleted (no parallel bookkeeping files long-term)
+
+Phase-2b known leftovers (deliberate, flagged 2026-07-06):
+- `insight/play/01+02` toy examples still use `probes/` paths — insight family just went through its own v3.2.0 review (c3688ed, parallel session); fix belongs to that family's next pass, not this sweep.
+- delivery-need docs still route via the Console-era verb `plan from-need` — the folder-era clauses around it were fixed; whether the verb itself retires is a follow-up ruling.
+- `haipipe-application-ask` uses verdict word "confirmed" where the PPNN enum says "supported" — pointer is correct, enum word drifts; application-ask has deeper Console-era residue for its own pass.
+- `paper-claims/SKILL.md` + `paper-rebuttal/ref/concepts.md` "probes/tasks" = evidence-KIND shorthand, no folder route stated; left as-is.
