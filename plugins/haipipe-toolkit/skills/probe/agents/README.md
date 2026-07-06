@@ -9,8 +9,9 @@ haipipe-probe-orchestrator-agent   🎯 GATEWAY — dispatch target for /haipipe
                                               SWEEPs insights/ + discoveries/ + tasks/, decides shape
                                               (reused | enriched | fresh), dispatches execution + the
                                               reviewer, RETURNS anchored takeaways + (full) verdict. Writes nothing.
-haipipe-probe-reviewer-agent       🔍 REVIEW  — full-mode Judge gates G1 (structural) / G2 (integrity) /
-                                              G3 (claim); judgment is RETURNED as text, not written to files.
+haipipe-probe-reviewer-agent       🔍 REVIEW  — thin Judge SHELL: invokes Skill(haipipe-probe-review)
+                                              headless (the governed G1/G2/G3 rulebook) and RETURNS its
+                                              judgment as text, not written to files.
 ```
 
 The gateway owns no folders; the caller's per-stage `_PROBE/PPNN` card is the single source of truth
@@ -39,7 +40,7 @@ Cross-layer dispatch
 ```
 /haipipe-paper ──▶ probe-orchestrator (gateway) ──┬──▶ discovery-orchestrator   (external evidence)
                                                   ├──▶ task-orchestrator        (runs / code)
-                                                  └──▶ probe-reviewer           (full mode: G1/G2/G3)
+                                                  └──▶ probe-reviewer           (full mode: Skill(haipipe-probe-review) G1/G2/G3)
 ```
 
 Knowledge home
@@ -49,9 +50,9 @@ Agents are THIN — the judgment logic lives in its canonical home:
 
 ```
 layer contract + PPNN card anatomy   → ../haipipe-probe/SKILL.md
-Judge gate logic (G1/G2/G3)          → in haipipe-probe-reviewer-agent.md itself
-G2 integrity computation             → ./g2_integrity_check.py   (deterministic, run by the reviewer)
-confound / caveats walk              → ./probe-caveats-checklist.txt
+Judge gate logic (G1/G2/G3)          → ../haipipe-probe-review/SKILL.md   (the reviewer agent calls it headless)
+G2 integrity computation             → ../haipipe-probe-review/g2_integrity_check.py   (deterministic)
+confound / caveats walk              → ../haipipe-probe-review/probe-caveats-checklist.txt
 folder-era rationale (history)       → ../_archive/  (DESIGN, PHILOSOPHY, MENTAL_MODEL, SKILLSET_REVIEW)
 ```
 

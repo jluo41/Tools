@@ -4,9 +4,9 @@ description: "Evidence gateway (folderless probe). A probe is a PHASE (each stag
 argument-hint: "[\"<question-or-claim>\" [light|full] | contract | card | status]"
 allowed-tools: Bash, Read, Grep, Glob, Agent
 metadata:
-  version: "6.1.1"
-  last_updated: "2026-07-05"
-  summary: "Folderless probe layer: PROBE phase + evidence gateway agent; PPNN card = single source of truth; probes/ folders and Console retired. Skill doubles as the DIRECT-ASK front door for ad-hoc evidence work outside stages."
+  version: "6.2.0"
+  last_updated: "2026-07-06"
+  summary: "Folderless probe layer: PROBE phase + evidence gateway agent; PPNN card = single source of truth; probes/ folders and Console retired. Skill doubles as the DIRECT-ASK front door. Judgment process split out to the sibling skill haipipe-probe-review (G1/G2/G3)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -28,7 +28,8 @@ discovery checks outside evidence (literature, prior art; Review type owns
           project-side judgment artifacts: verdict.md / landscape.md)
 insight   stores judged knowledge (D/I/K/W cards)
 probe     the PROBE phase + the gateway: plans (card), dispatches (gateway),
-          reads (anchored return), judges (reviewer, full mode) — owns no files
+          reads (anchored return) — owns no files. Judging is the sibling
+          skill haipipe-probe-review (full mode; run by the reviewer agent)
 ```
 
 ## How evidence work actually runs
@@ -41,7 +42,8 @@ stage DRAFT finds a gap
        shape: reused | enriched | fresh
        → Agent(haipipe-discovery-orchestrator-agent)         (external evidence)
        → Agent(haipipe-task-orchestrator-agent)              (runs/code)
-       → Agent(haipipe-probe-reviewer-agent)                 (full mode: G1/G2/G3, returned)
+       → Agent(haipipe-probe-reviewer-agent)                 (full mode: runs Skill(haipipe-probe-review)
+                                                              — G1/G2/G3, judgment returned)
     ← anchored takeaways + pick_list + (full) verdict
   → worker TRANSLATE lands everything in the PPNN card (+ claims-ledger flip)
 ```
@@ -84,14 +86,14 @@ No probes/ folder, no PPNN card, no console state is created by a direct ask; wh
 - <one-paragraph reasoning tying refs to the claim>
 ```
 
-Light mode stops at `read` (no committed verdict). Full mode is for claims-stage committed verdicts; the claims ledger (1-claims.md) flips its C-section status in the same TRANSLATE.
+Light mode stops at `read` (no committed verdict). Full mode is for claims-stage committed verdicts; the claims ledger (1-claims.md) flips its C-section status in the same TRANSLATE. How the verdict content is produced (gates, thresholds, vocabulary) is the sibling skill's spec: `../haipipe-probe-review/SKILL.md` — this file only owns where it LANDS.
 
 ## Retired machinery (do not resurrect)
 
 - `probes/<slug>/` folders, `probe.yaml`, `evidence.md`, `status.md`, `verdict.md` — legacy folders in old projects are dead history: SWEEP does not read them, nothing writes them.
 - The interactive Probe Console (`.probe-console.yaml`, console panels).
 - `haipipe-probe-creator-agent` (retired to `../_archive/_old/`).
-- `fn/` and `ref/` folders: DELETED 2026-07-05 (folder-era procedure docs; git history keeps them). The two live pieces moved to `../agents/`: `g2_integrity_check.py` + `probe-caveats-checklist.txt`, both referenced by the reviewer agent.
+- `fn/` and `ref/` folders: DELETED 2026-07-05 (folder-era procedure docs; git history keeps them). The two live pieces now live with the judgment skill at `../haipipe-probe-review/`: `g2_integrity_check.py` + `probe-caveats-checklist.txt`.
 
 ## Status queries
 

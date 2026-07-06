@@ -4,6 +4,17 @@ haipipe-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [6.2.0] — 2026-07-06
+
+Changed (JL: reviewer flow must be governed by a SKILL — "haipipe-probe就只保留 reviewer之外的内容")
+- Judgment process split out to the sibling skill `../haipipe-probe-review/` (G1/G2/G3 gates, thresholds, verdict vocabulary); this skill keeps everything else — layer contract, PPNN card anatomy (incl. where the verdict LANDS), DIRECT ASK.
+- `g2_integrity_check.py` + `probe-caveats-checklist.txt` moved `../agents/` → `../haipipe-probe-review/` (the judgment skill owns its instruments).
+
+## [6.1.1] — 2026-07-05
+
+Changed
+- Legacy probes/ folders INVISIBLE to SWEEP; Agent added to allowed-tools; archive-pass ref repoints. (Rollup of 6.1.x fixes; details in git history.)
+
 ## [6.1.0] — 2026-07-05
 
 Added (JL: "We might still need a haipipe-probe, but we don't need a standalone probes folder")
