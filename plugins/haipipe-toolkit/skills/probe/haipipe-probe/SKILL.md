@@ -18,7 +18,7 @@ A probe is a claim-level evidence contract that asks one question:
 Does the available evidence support this claim, under what scope, and with what caveats?
 ```
 
-Since 2026-07-05 that contract has ONE home: the consumer's per-stage `_PROBE/PPNN_*.md` card (paper or application). There is no `probes/` folder anymore — it duplicated the card and broke single-source-of-truth (JL ruling; see ../SOP-folderless-refactor.md until archived, and ../DESIGN.md).
+Since 2026-07-05 that contract has ONE home: the consumer's per-stage `_PROBE/PPNN_*.md` card (paper or application). There is no `probes/` folder anymore — it duplicated the card and broke single-source-of-truth (JL ruling; see ../_archive/DESIGN.md for the folder-era rationale, and ../SOP-folderless-refactor.md for the migration record).
 
 ## Layer boundaries (unchanged)
 
