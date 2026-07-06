@@ -31,9 +31,9 @@ Standard Top-Level Layout
 
   examples/{PROJECT_ID}/
   ├── tasks/          MANDATORY  execution work (owner: /haipipe-task)
-  ├── probes/         MANDATORY  claim-level evidence contracts (owner: /haipipe-probe)
   ├── discoveries/    MANDATORY  external-evidence topics, one topic = one folder (owner: /haipipe-discovery)
   ├── insights/       MANDATORY  D/I/K/W knowledge base (owner: /haipipe-insight)
+  │                   (probes/ RETIRED 2026-07-05 — folderless probe; legacy probes/ in old projects are read-only history)
   ├── diagram/        MANDATORY  project-level story, high-level only (owner: this skill)
   ├── papers/         OPTIONAL   manuscripts; each Paper-{Name}-{venue}/ often a git submodule (owner: /haipipe-paper-*)
   └── applications/   OPTIONAL   external deliverables: messages / ui / reports (owner: /haipipe-application-*)
@@ -50,7 +50,6 @@ The Seven Worlds
   Folder          Role               One-liner
   --------------  -----------------  ------------------------------------------------------------------------
   tasks/          WORK               execution: code, configs, runs, metrics; one task-folder = one runnable unit
-  probes/         CLAIMS             hypothesis -> evidence -> verdict; one probe = one claim-level contract; no code
   discoveries/    EXTERNAL-EVIDENCE  Search / Review / Idea folders; one topic = one folder; probe-unaware (the calling probe records the link)
   insights/       KNOWLEDGE          cross-probe synthesis cards (D/I/K/W markdown); no code
   papers/         PUBLISH            academic manuscripts
@@ -59,13 +58,11 @@ The Seven Worlds
 
 One-way dependency map (cross-cutting orientation; no single world owns it):
 
-  probes/        READS tasks/ + discoveries/   (links runs and external evidence via evidence:)
-  insights/      READS probes/ + tasks/        (D/I/K/W synthesis)
-  papers/        READS insights/K + W, plus probes/tasks as needed
+  insights/      READS tasks/ + discoveries/ (+ consumer-side _PROBE cards via review)
+  papers/        READS insights/K + W, plus tasks/discoveries as needed
   applications/  READS insights/K + W          (can TRIGGER /haipipe-insight ask to close gaps; NEVER writes back)
-  discoveries/   NEVER read probes/ or insights/ (probe-unaware; the calling probe records the link on its own side)
-  tasks/         NEVER read probes/ discoveries/ insights/ papers/ applications/
-  probes/        NEVER read insights/
+  discoveries/   NEVER read insights/ (consumer-unaware; the caller records the link on its own side)
+  tasks/         NEVER read discoveries/ insights/ papers/ applications/
 
 ---
 
@@ -98,7 +95,6 @@ For anything below the top level, consult the owner; this file never restates th
   World           Owner skill              Schema authority
   --------------  -----------------------  --------------------------------------------------------------------------
   tasks/          /haipipe-task            task/haipipe-task/ref/task-structure.md (layout), plus ref/hierarchy.md + ref/authoring-conventions.md
-  probes/         /haipipe-probe           probe/haipipe-probe/ref/probe-yaml-schema.md
   discoveries/    /haipipe-discovery       discovery/haipipe-discovery/SKILL.md (folder contract: discovery.yaml + evidence files)
   insights/       /haipipe-insight         insight/ref/insight-md-schema.md (+ insight/ref/index-templates.md)
   papers/         /haipipe-paper-*         paper wiki (paper/wiki/) + paper/3-build-submit/haipipe-paper-folder (paper-folder contract)
