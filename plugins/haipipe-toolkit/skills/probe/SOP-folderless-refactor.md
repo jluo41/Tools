@@ -24,7 +24,7 @@ insights/              (deposit)             insights/              (deposit, un
 - The four principles hold: land-at-home (execution evidence lands in discovery/task ledgers; the verdict lands in the consumer's PPNN card), review-on-write (discovery reviewer for ledger writes; probe-reviewer G1/G2/G3 for full-mode verdicts), layered orders (stage → worker → gateway → discovery/task; no inline searching anywhere), trim-ceremony-never-principle.
 - Execution artifacts NEVER move consumer-side: `discoveries/` and `tasks/` stay project-side, multi-paper reusable.
 - All discipline earned from the four replication runs is retained verbatim in the gateway: SWEEP project-local, TRUST THE LEDGER, shape honesty (reused = pure read), FRESH EVIDENCE MUST LAND, background dispatch, batch, lean boot.
-- Legacy `probes/` folders (ProjB etc.): read-only history. SWEEP may read them for reuse; nothing creates or updates them again.
+- Legacy `probes/` folders (ProjB etc.): dead history — SWEEP does not read them, nothing writes them (JL 2026-07-05 tightened from "read-only prior"). Anything valuable in an old probe folder re-enters the system only by a human pointing at it.
 
 ## 3. Change list — load-bearing files (phase 1)
 

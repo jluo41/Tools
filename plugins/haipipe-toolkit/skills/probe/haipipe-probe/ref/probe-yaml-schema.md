@@ -214,7 +214,7 @@ discovery
 ```
 
 Insight is not called as evidence work during Gather. Insight may be called by
-Return after the verdict is judged and approved for memory filing.
+Deposit after the verdict is judged and approved for memory filing.
 
 ## Result Block
 

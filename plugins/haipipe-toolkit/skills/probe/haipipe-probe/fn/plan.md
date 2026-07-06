@@ -43,6 +43,7 @@ Is the evidence primarily task-sourced or discovery-sourced?
    - `task` = evidence comes primarily from running code/pipelines -> letter T
    - `discovery` = evidence comes primarily from literature/external -> letter D
 6. If creating/revising a probe, define:
+   - `id: P.<LETTER><MMDD>` (letter from step 5: T task-sourced, D discovery-sourced)
    - `kind: atomic|comparison`
    - `claim.hypothesis`
    - `claim.target_sentence`
@@ -69,8 +70,8 @@ source paper/application/insight if supplied
 Writes:
 
 ```text
-probes/<MMDD_slug>/probe.yaml
-probes/<MMDD_slug>/status.md
+probes/<LETTER><MMDD>_<slug>/probe.yaml    LETTER: T task-sourced, D discovery-sourced
+probes/<LETTER><MMDD>_<slug>/status.md
 ```
 
 ## Gate

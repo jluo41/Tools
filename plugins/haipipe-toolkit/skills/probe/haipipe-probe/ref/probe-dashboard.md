@@ -48,7 +48,7 @@ For each active probe folder:
 
 1. Read `probe.yaml`.
 2. Extract path-like refs from `source`, `evidence_refs`, `calls`, `result`,
-   `verdict`, and `return`.
+   `verdict`, and `deposit`.
 3. Resolve refs against the project root.
 4. Mark missing refs as drift if stored state depends on them.
 5. Do not parse heavy artifacts or run integrity audits here.
@@ -113,7 +113,7 @@ or `/haipipe-probe gather <probe>`.
 
   ⚠ drift: P.T0605 (5 broken refs)
 
-  Un-probed: 2 GAP (claim-bearing) → /haipipe-probe file ...
+  Un-probed: 2 GAP (claim-bearing) → /haipipe-probe gather ...
 ```
 
 Each probe line is: `<ref>  <slug>  <frontier step> <frontier glyph>  (<brief why>)`

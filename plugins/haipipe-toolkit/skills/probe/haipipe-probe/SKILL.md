@@ -4,7 +4,7 @@ description: "Evidence gateway (folderless probe). A probe is a PHASE (each stag
 argument-hint: "[\"<question-or-claim>\" [light|full] | contract | card | status]"
 allowed-tools: Bash, Read, Grep, Glob, Agent
 metadata:
-  version: "6.1.0"
+  version: "6.1.1"
   last_updated: "2026-07-05"
   summary: "Folderless probe layer: PROBE phase + evidence gateway agent; PPNN card = single source of truth; probes/ folders and Console retired. Skill doubles as the DIRECT-ASK front door for ad-hoc evidence work outside stages."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -37,7 +37,7 @@ probe     the PROBE phase + the gateway: plans (card), dispatches (gateway),
 stage DRAFT finds a gap
   → stage's PROBE phase: Skill(haipipe-paper-probe) worker   (BOOKKEEP: writes PPNN card)
     → Agent(haipipe-probe-orchestrator-agent)                (gateway, clean context, bg)
-       SWEEP discoveries/ tasks/ insights/ (+ legacy probes/ read-only)
+       SWEEP insights/ + discoveries/ + tasks/ (all three, every time)
        shape: reused | enriched | fresh
        → Agent(haipipe-discovery-orchestrator-agent)         (external evidence)
        → Agent(haipipe-task-orchestrator-agent)              (runs/code)
@@ -88,7 +88,7 @@ Light mode stops at `read` (no committed verdict). Full mode is for claims-stage
 
 ## Retired machinery (do not resurrect)
 
-- `probes/<slug>/` folders, `probe.yaml`, `evidence.md`, `status.md`, `verdict.md` — legacy folders on disk are read-only history; SWEEP may read them for reuse, nothing writes them.
+- `probes/<slug>/` folders, `probe.yaml`, `evidence.md`, `status.md`, `verdict.md` — legacy folders in old projects are dead history: SWEEP does not read them, nothing writes them.
 - The interactive Probe Console (`.probe-console.yaml`, console panels).
 - `haipipe-probe-creator-agent` (in `agents/_old/`).
 - `fn/` and `ref/` files in this folder are folder-era procedure docs: LEGACY, kept for the G-gate definitions and schema history they carry (`fn/judge.md`, `fn/g2_integrity_check.py` remain referenced by the reviewer agent). Do not load them for new work except where the reviewer agent points.
