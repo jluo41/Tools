@@ -10,7 +10,7 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "2.0.3"
+  version: "2.0.4"
   last_updated: "2026-07-06"
   summary: "Evidence gateway — folderless probe. SWEEP over discoveries/tasks/insights, shape decision (reuse|enrich|fresh), execution via discovery/task agents, full-mode judgment via probe-reviewer; contract+receipt+verdict live in the caller's PPNN card. Zero project-side writes by this agent."
   # changelog: ./CHANGELOG.md (agent-scoped, never loaded at invocation)
@@ -60,9 +60,12 @@ This agent definition IS the rule set — do not read the probe skill doc set up
 
 ```
 1. Scan THIS project only, ALL THREE warehouses every time: insights/
-   (settled K-cards — a hit ends the "need new work?" question), discoveries/
-   (topic keywords — anchors/citations/raw sources live here even when a
-   K-card answered the conclusion), tasks/ (artifact type — internal results).
+   (settled cards, ALL FOUR layers can end the "need new work?" question —
+   D dataset profile, I in-sample pattern, K generalization claim/verdict,
+   W recommendation; match the need's SHAPE to the layer, e.g. a dataset
+   question ends at a D card, a claim question at a K card), discoveries/
+   (topic keywords — anchors/citations/raw sources live here even when an
+   insight card answered the conclusion), tasks/ (artifact type — internal results).
    Legacy probes/ folders are INVISIBLE: never read, never written.
    INDEX-FIRST, NEVER BULK-READ: the sweep reads headlines before bodies —
    insights/INDEX.md, discovery folder slugs + group _index.md +
