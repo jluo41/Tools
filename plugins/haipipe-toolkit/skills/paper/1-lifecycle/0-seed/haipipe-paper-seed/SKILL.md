@@ -4,9 +4,9 @@ description: "Create or update the paper folder's 0-lifecycle/0-seed/0-seed.md +
 argument-hint: "[paper-dir] [--source <path-or-note>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.2.1"
-  last_updated: "2026-07-03"
-  summary: "Seed stage orchestrator. Defines WHAT (3 sections) and drives phases (draft -> probe -> revise -> check) internally. User invokes seed, not phases."
+  version: "3.3.0"
+  last_updated: "2026-07-06"
+  summary: "Seed stage orchestrator. Defines WHAT (4 sections: question, motivations, claim shape, probes) and drives phases (draft -> probe -> revise -> check) internally. User invokes seed, not phases."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -37,9 +37,15 @@ Read first: `../../PHILOSOPHY.md`, `../../wiki/04-lifecycle-map.md`.
 - Seed Question -- the one paper-shaped question this seed exists to answer
 - Motivations -- why this is interesting, what makes the angle novel, to whom
 - Tentative Claim Shape -- what the paper may eventually argue, phrased as a hypothesis
+- Probes -- landscape/novelty probes that answer "is this new?" and "who cares?", with takeaways inline
+
+**Formatting:**
+- Heading style: `=====` for the document title, `-----` for sections. No `#`/`##`/`###`.
+- One sentence per line (semantic line breaks). No dense multi-sentence paragraphs.
 
 **Done-criteria:**
-- [ ] All three sections filled with real content (not placeholders)
+- [ ] All four sections filled with real content (not placeholders)
+- [ ] Probes section carries at least the novelty/landscape probe result
 - [ ] _LOG entry records the current state
 
 ## Phase Orchestration
@@ -51,7 +57,7 @@ seed invoked
   │
   ▼
 DRAFT ──→ illuminate existing content, elicit taste,
-          write/iterate the 3 sections with > JL: / > CC: comments
+          write/iterate the 4 sections with > JL: / > CC: comments
           (internally calls /haipipe-paper-draft with this artifact spec)
   │
   ▼
@@ -60,12 +66,14 @@ PROBE ──→ DEFAULT RUN for a new seed: landscape / related work / novelty (
           (internally calls /haipipe-paper-probe, which ALWAYS dispatches
            Agent(haipipe-probe-orchestrator-agent); the agent's SWEEP decides
            enrich / reuse-directly / create+gather in clean context;
-           takeaways backfill the PP plan file in _PROBE/, sources harvest into
-           _CITATION_0-seed.md, full evidence stays project-side;
+           takeaways backfill the PP plan file in _PROBE/ AND the Probes section
+           in 0-seed.md, sources harvest into _CITATION_0-seed.md,
+           full evidence stays project-side;
            NEVER dispatch discovery/task agents or /haipipe-probe directly from here)
   │
   ▼
-REVISE ─→ refine prose clarity of the 3 sections, weave probe takeaways into Motivations
+REVISE ─→ refine prose clarity of the 4 sections, weave probe takeaways into Motivations
+          AND into the Probes section
           (internally calls /haipipe-paper-revise)
   │
   ▼
@@ -94,14 +102,30 @@ Markdown only (argument documents don't need compilation).
 The canonical template is the source of truth for section order: `ref/seed-template.md`
 
 ```markdown
-## Seed Question
+0-seed: <working title>
+========================
+
+Date: YYYY-MM-DD
+Status: DRAFT
+
+Seed Question
+-------------
 The one paper-shaped question this seed exists to answer.
 
-## Motivations
-Why this is interesting (puzzle / gap / surprise), what makes the angle novel or feasible now, and to whom it is interesting (name the audiences and why each cares).
+Motivations
+-----------
+Why this is interesting (puzzle / gap / surprise).
+What makes the angle novel or feasible now.
+To whom it is interesting (name the audiences and why each cares).
 
-## Tentative Claim Shape
+Tentative Claim Shape
+---------------------
 What the paper may eventually argue, phrased as a hypothesis, not a finding.
+
+Probes
+------
+Landscape/novelty probes that answer "is this new?" and "who cares?"
+Each probe as a **bold** sub-item with type, status, and takeaways inline.
 ```
 
 ## Principles
@@ -110,6 +134,9 @@ What the paper may eventually argue, phrased as a hypothesis, not a finding.
 2. Do not create `0-sections/`, displays, or compile obligations from the seed. Those start later.
 3. **Seed is venue-FREE.** Venue selection happens after claims (seed -> claims -> [venue] -> pitch). Do not reference a target venue here.
 4. Evidence inventory, routing, and gap analysis belong in the claims stage, not here.
+5. **Probes are explicit.** The Probes section makes the landscape/novelty check visible in the seed document itself, not buried in a satellite file. The `_PROBE/` files carry the execution detail.
+6. **One sentence per line.** Semantic line breaks for readability. No dense multi-sentence paragraphs.
+7. **Heading style.** `=====` for the document title, `-----` for sections. No `#`/`##`/`###`.
 
 ## Handoff
 

@@ -4,6 +4,18 @@ haipipe-paper-claims — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [4.0.0] — 2026-07-06
+
+Changed (major restructure: claims as evidence campaign brain)
+- Claims is now the evidence campaign brain: plans evidence needs, commissions work (tasks/discoveries), tracks results. Three jobs: plan, outsource, collect.
+- Content structure changed from (Hypotheses, Claims with inline design, Pending Evidence, H-C Alignment) to three sections + summary: Hypotheses, Claims (short: statement + status + probe ref), Probes (full evidence plan per PP number), Evidence Campaign (dispatch order + summary).
+- Removed Hypothesis-Claim Alignment section (alignment visible in tags: `C1 (H1)`, `PP03 (C1/C3/C7)`).
+- Removed Discussion-Only Interpretations, Robustness, and Pending Evidence sections (probes absorb these roles).
+- Added _VALUES_ satellite file for verified numbers backing each supported claim.
+- Heading style changed from `#`/`##`/`###` to `=====`/`-----` underlines + `**bold**` sub-items for paper artifacts.
+- One-sentence-per-line convention added as a formatting principle.
+- Updated ref/claims-template.md to match.
+
 ## [3.2.0] - 2026-07-05
 
 Changed

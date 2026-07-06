@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-claims
-description: "Stage orchestrator for the paper folder's 0-lifecycle/1-claims/1-claims.md + _LOG_1-claims.md: the venue-FREE claim/evidence inventory that tracks which claims are supported, weak, or GAP, each tied to an evidence source (probe verdict / task / discovery / insight). Emits delivery needs for GAP/weak claims and backfills confirmed probe verdicts. Venue-neutral hypotheses (H1, H2, H3) live here; venue-specific RQ framing, Editor's Chair Test, and [primary] designation live in pitch (the cover letter). Markdown only. Use for claim ledger, claims, supported/weak/GAP, claim gap, evidence map, 1-claims."
+description: "Stage orchestrator for the paper folder's 0-lifecycle/1-claims/1-claims.md + _LOG_1-claims.md: the venue-FREE claim/evidence inventory and evidence campaign brain. Three sections: Hypotheses (what we test), Claims (what must be true, with status and probe reference), Probes (the evidence plan, one per PP, full detail). Plans what evidence to collect, commissions the work via tasks/discoveries, and tracks results as they return. Markdown only. Use for claim ledger, claims, supported/weak/GAP, claim gap, evidence plan, probes, 1-claims."
 argument-hint: "[paper-dir] [--backfill <probe-ref>] [--source <path>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.2.0"
-  last_updated: "2026-07-05"
-  summary: "Claims stage orchestrator. Defines WHAT (venue-neutral hypotheses, prose claim/evidence ledger, probe plans) and drives phases (draft -> probe -> revise -> check) internally. User invokes claims, not phases."
+  version: "4.0.0"
+  last_updated: "2026-07-06"
+  summary: "Claims stage orchestrator. The evidence campaign brain: plans evidence needs, commissions work (tasks/discoveries), tracks results. Three sections (Hypotheses, Claims, Probes) + Evidence Campaign summary. Drives phases (draft -> probe -> revise -> check) internally."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -21,34 +21,66 @@ It answers one question:
 Which claims are supported, weak, or GAP, and what evidence settles each?
 ```
 
-Every claim the paper wants to make is its own prose subsection with a status and a source. The paper does not produce evidence; it selects judged evidence and tracks what is still missing. Unsupported or too-strong claims become delivery needs routed to probe/discover/task/insight, and confirmed verdicts are backfilled here.
+Claims is the **evidence campaign brain**. It does three jobs in sequence:
+
+```text
+1. PLAN        what must be true? (hypotheses, claims)
+               what evidence would settle each? (probe plan per claim)
+
+2. OUTSOURCE   dispatch to tasks/ and discoveries/
+               each GAP claim → a probe that routes to task or discovery
+               claims writes the NEED, not the execution spec
+
+3. COLLECT     results come back from tasks/discoveries
+               backfill status: GAP → weak → supported
+               verified numbers go to _VALUES_
+               claims RECEIVES evidence, never PRODUCES it
+```
+
+The paper does not produce evidence; claims designs the campaign, commissions the work, and tracks what returns. Unsupported or too-strong claims become probe plans routed to task/discover/insight, and confirmed verdicts are backfilled here.
 
 Read first: `../../PHILOSOPHY.md`, `../../wiki/04-lifecycle-map.md`, `../../wiki/11-delivery-need.md`, `../../wiki/02-comment-lifecycle.md`.
 
 ## Artifact Spec
 
 **Files produced:**
-- `0-lifecycle/1-claims/1-claims.md` -- claim/evidence inventory
+- `0-lifecycle/1-claims/1-claims.md` -- claim/evidence inventory and probe plans
 - `0-lifecycle/1-claims/_LOG_1-claims.md` -- phase progress journal (per `../../wiki/02-comment-lifecycle.md`)
-- `0-lifecycle/1-claims/_EVIDENCE_1-claims.md` -- evidence backing per claim
-- `0-lifecycle/1-claims/_PROBE/` -- probe plans for evidence gaps
+- `0-lifecycle/1-claims/_CITATION_1-claims.md` -- citation candidates harvested from probes/discoveries
+- `0-lifecycle/1-claims/_VALUES_1-claims.md` -- verified numbers backing each supported claim
+- `0-lifecycle/1-claims/_PROBE/` -- probe plan files (execution detail per PP)
 
-**Content structure (1-claims.md):** prose only, no tables.
-- Hypotheses -- venue-neutral H1, H2, H3 (what the paper tests), as a bullet list
-- Claims -- one `### C<n>` subsection per claim; each is a four-slot paragraph (S1 claim+verdict, S2 verified statistic, S3 interpretation, S4 caveat+source). The subsections are the index; there is no separate matrix table.
-- Discussion-Only Interpretations -- interpretive claims not in Results (optional)
-- Robustness -- methods-level robustness checks (optional)
-- Pending Evidence -- probes/tasks not yet run
-- Hypothesis-Claim Alignment -- a paragraph mapping each H to its claims, orphan check (not a table)
+**Content structure (1-claims.md) -- three sections + summary:**
+
+```text
+Hypotheses (venue-neutral)     what we test (H1, H2, H3), venue-free
+Claims                         one **C<n>** per claim: statement + status + → PP reference
+Probes                         one **PP<nn>** per probe: full evidence plan, organized by probe number
+Evidence Campaign              dispatch order + summary (compact overview)
+```
+
+- **Hypotheses** are venue-neutral statements of what the paper tests. The same H1 can become RQ1 for JAMA or MISQ -- that reframing happens in pitch, not here.
+- **Claims** are short: the testable statement, current status (supported/weak/GAP), and which probe settles it. No inline study design.
+- **Probes** carry the full evidence plan per PP number: type (task/discovery), which claims it settles, dependencies, what work to do, design decisions. This is where the brain thinks.
+- **Evidence Campaign** is a compact dispatch-order diagram + summary table showing all probes, status, and dependencies.
+
+No separate Hypothesis-Claim Alignment section. The alignment is in the tags: `C1 (H1)`, `PP03 (C1/C3/C7)`.
+
+**Formatting:**
+- Heading style: `=====` for the document title, `-----` for sections. No `#`/`##`/`###`.
+- Sub-items within sections: `**bold**` text (e.g. `**C1 - title - status**`, `**PP03 - title - status**`).
+- One sentence per line (semantic line breaks). No dense multi-sentence paragraphs.
+- Probes separated by `---` horizontal rules.
 
 **Done-criteria:**
 - [ ] All claims have evidence status (supported/weak/GAP)
-- [ ] No unaddressed GAP without a probe plan in _PROBE/
+- [ ] No unaddressed GAP without a probe plan in the Probes section
 - [ ] Every supported claim has both stage 1 (file+number exist) and stage 2 (confirmed probe verdict)
 - [ ] Hypotheses section with venue-neutral H1, H2, H3
-- [ ] Hypothesis-Claim Alignment paragraph maps each H to its claims
-- [ ] Every claim has its own `### C<n>` prose subsection (no matrix/table anywhere)
-- [ ] Evidence sources linked in _EVIDENCE_
+- [ ] Every claim has its own `**C<n>**` sub-item with status and probe reference
+- [ ] Every probe has its own `**PP<nn>**` sub-item with full evidence plan
+- [ ] Evidence Campaign shows dispatch order and dependencies
+- [ ] Verified numbers recorded in _VALUES_
 
 ## Phase Orchestration
 
@@ -59,8 +91,8 @@ claims invoked
   │
   ▼
 DRAFT ──→ illuminate existing claims, elicit taste,
-          list hypotheses (H1, H2, H3), write one prose subsection
-          per claim (S1-S4) -- no matrix table
+          list hypotheses (H1, H2, H3), write claims (short, with → PP ref),
+          write probes (full evidence plan per PP), write evidence campaign
           (internally calls /haipipe-paper-draft with this artifact spec)
   │
   ▼
@@ -70,13 +102,13 @@ PROBE ──→ link probes/tasks/discoveries to each claim,
           (internally calls /haipipe-paper-probe)
   │
   ▼
-REVISE ─→ refine claim statements, evidence descriptions,
-          and hypothesis wording for clarity
+REVISE ─→ refine claim statements, probe plan clarity,
+          evidence descriptions, and hypothesis wording
           (internally calls /haipipe-paper-revise)
   │
   ▼
 CHECK ──→ present exit gate: all claims backed? no aspirational
-          anchors? hypothesis-claim alignment complete?
+          anchors? probe plans complete for all GAPs?
           user confirms → advance to venue
           (internally calls /haipipe-paper-check)
 ```
@@ -88,10 +120,11 @@ Comment lifecycle per `../../wiki/02-comment-lifecycle.md`: comments live in 1-c
 ## Location
 
 ```text
-<paper>/0-lifecycle/1-claims/1-claims.md           claim/evidence inventory
-<paper>/0-lifecycle/1-claims/_LOG_1-claims.md       phase progress journal
-<paper>/0-lifecycle/1-claims/_EVIDENCE_1-claims.md  evidence backing per claim
-<paper>/0-lifecycle/1-claims/_PROBE/                probe plans for evidence gaps
+<paper>/0-lifecycle/1-claims/1-claims.md            claim/evidence inventory + probe plans
+<paper>/0-lifecycle/1-claims/_LOG_1-claims.md        phase progress journal
+<paper>/0-lifecycle/1-claims/_CITATION_1-claims.md   citation candidates from probes/discoveries
+<paper>/0-lifecycle/1-claims/_VALUES_1-claims.md     verified numbers backing each claim
+<paper>/0-lifecycle/1-claims/_PROBE/                 probe plan files (execution detail)
 ```
 
 Markdown only (argument documents don't need compilation).
@@ -100,78 +133,129 @@ Markdown only (argument documents don't need compilation).
 
 The canonical template is the source of truth for section order: `ref/claims-template.md`
 
-Reading order of the template:
+```markdown
+1-claims: <paper title> (venue-free claim/evidence inventory)
+==============================================================
 
-```text
-1. Hypotheses                  <- venue-neutral H1, H2, H3 (what we test), bullets
-2. Claims                      <- one ### C<n> prose subsection per claim (S1-S4)
-3. Discussion-Only Interp.     <- interpretive, not Results (optional)
-4. Robustness                  <- Methods, not claimed (optional)
-5. Pending Evidence            <- probes/tasks not yet run
-6. Hypothesis-Claim Alignment  <- paragraph, H->Claims validation (no table, no venue framing)
+Date: YYYY-MM-DD
+Status: DRAFT
+This ledger plans what evidence to collect, commissions the work, and tracks results as they return.
+
+
+Hypotheses (venue-neutral)
+--------------------------
+
+- **H1 (core).** ...
+- **H2 (boundary).** ...
+- **H3 (mechanism).** ...
+
+
+Claims
+------
+
+**C1 - <title> (H1, <role>) - <status>**
+
+<claim statement, one sentence per line>
+Evidence: -> PP<nn> (<short description>).
+
+**C2 - ...**
+
+...
+
+
+Probes
+------
+
+**PP01 - <title> - <status>**
+
+Type: <task | discovery>.
+Claims: <which claims this settles>.
+Status: <planned | dispatched | done>.
+
+<full evidence plan, one sentence per line>
+Detail: `_PROBE/PP01_<slug>.md`
+
+---
+
+**PP02 - ...**
+
+...
+
+
+Evidence Campaign
+-----------------
+
+(dispatch order diagram + summary table)
 ```
 
-The ledger is prose only: no markdown tables anywhere. The `### C<n>` subsections are their own index; there is no separate claim-evidence matrix.
+## Probe Plans
 
-The hypotheses are venue-neutral statements of what the paper tests. The same H1 can become RQ1 worded for JAMA or RQ1 worded for MISQ -- that reframing happens in pitch (the cover letter), not here.
+Each claim's GAP/weak status generates a probe plan in the Probes section. The Probes section is the primary record of what evidence work to commission. The `_PROBE/` files carry the execution detail for dispatch.
 
-For `weak`/`GAP` claims the subsection states the gap and the route instead of a statistic. Never write a "planned Table" as if it were evidence.
-
-## Probe Plans Buffer
-
-When the claims ledger identifies GAP/weak claims that need evidence, buffer probe plans in `_PROBE/` rather than dispatching immediately. Each probe plan is one file (`PPNN_<slug>.md`) with frontmatter (id, status, claim, source_ref) and structured fields (claim under test, evidence needed, expected route, constraints, datasets). The buffer index (`_PROBE/README.md`) tracks status (planned / dispatched / verdicted) and the dependency chain.
-
-Probe plans are categorized by urgency:
-- **MUST-HAVE**: blocks submission (GAP claims)
+Probes are categorized by urgency:
+- **MUST-HAVE**: blocks the main experimental line
 - **STRONGLY RECOMMENDED**: pre-empts reviewer objections
 - **EXPLORATORY**: supplement material, not main claims
 
-When probes return verdicts, backfill into the claims ledger.
+When probes return verdicts, backfill into:
+- The claim's status line (GAP -> weak -> supported)
+- `_VALUES_` with the verified number
+- The probe's status (planned -> done) with takeaways inline
+
+## _VALUES_ Satellite
+
+`_VALUES_1-claims.md` holds the verified numbers backing each supported claim. One section per claim with fields: statistic, spec, source, verified. Claims.md says "supported" and points here. This keeps claims.md clean prose while numbers are auditable in one place.
 
 ## Ledger Maintenance
 
-- New claim: add a `### C<n>` subsection, set status from the cited source (default `GAP`).
-- `--backfill <probe-ref>`: read the probe verdict; if confirmed, move the claim to `supported` with the verdict path and any caveats; if refuted/partial, keep `weak` and note scope.
+- New claim: add a `**C<n>**` sub-item in Claims, set status from the cited source (default `GAP`), add a probe entry in Probes.
+- `--backfill <probe-ref>`: read the probe verdict; if confirmed, move the claim to `supported` with the verdict path and any caveats; if refuted/partial, keep `weak` and note scope. Record the number in `_VALUES_`.
 - Emit a delivery need for every `weak`/`GAP` claim using the delivery-need interface, with the route:
 
 ```text
-claim needs a verdict/robustness check   -> /haipipe-probe open <need>
-claim needs outside context/citation     -> /haipipe-discovery <question>
-claim needs a run or data artifact        -> /haipipe-task <contract>
+claim needs a verdict/robustness check   -> probe (task type)
+claim needs outside context/citation     -> probe (discovery type)
+claim needs a run or data artifact       -> probe (task type)
 ```
 
-Do not run evidence work here. Record needs and backfill verdicts.
+Do not run evidence work here. Design the campaign, commission the work, record results.
 
 ## Evidence Gate
 
-A claim subsection is done when:
+A claim sub-item is done when:
 
 - it has a status; `supported` requires BOTH stage 1 (cited file exists and the number appears in it) AND stage 2 (a confirmed probe verdict that the number supports the claim);
-- it is a four-slot prose paragraph (S1-S4), not a table cell;
-- `weak`/`GAP` claims carry an open need + route; no claim cites a "planned" anchor.
+- `weak`/`GAP` claims have a corresponding probe entry in the Probes section with a clear plan;
+- no claim cites a "planned" anchor as evidence.
 
 ## Stage Gate
 
-Beyond the per-row gate, the claims stage is NOT complete until the ledger also carries these REQUIRED items:
+The claims stage is NOT complete until:
 
-- a **Hypotheses** section with venue-neutral H1, H2, H3 (principle 1b); and
-- a **Hypothesis-Claim Alignment** paragraph that maps each H to its claims and checks for orphan claims (no H) or unanswered hypotheses (claims all GAP); and
-- every claim has its own `### C<n>` prose subsection (no matrix, no table anywhere in the ledger).
+- a **Hypotheses** section with venue-neutral H1, H2, H3;
+- every claim has its own `**C<n>**` sub-item with status and probe reference;
+- every GAP/weak claim has a corresponding probe in the Probes section;
+- the **Evidence Campaign** shows dispatch order and dependencies;
+- no aspirational anchors cited as evidence.
 
 Venue-specific items (Editor's Chair Test, [primary] designation, RQ framing) are NOT required here. They belong in pitch (the cover letter).
 
 ## Principles
 
-1. One `### C<n>` subsection per claim. Each carries a status and a source ref.
-1b. **Venue-neutral hypotheses live here.** Claims holds hypotheses (H1, H2, H3) as venue-neutral statements of what the paper tests. Venue-specific RQ framing, the Editor's Chair Test, and [primary] designation live in pitch (the cover letter). The same hypotheses yield different RQ wording for different venues, but the underlying claim-evidence inventory stays the same.
-2. Status vocabulary: `supported`, `weak`, `GAP`.
-3. A claim is `supported` only when it traces to a CONFIRMED probe verdict or an equivalently judged artifact. Never mark `supported` from intuition.
-4. `weak`/`GAP` rows must carry an open need and a route. They are first-class open needs surfaced by the Paper Console.
-5. The paper must not overclaim. If evidence is `I` (information) but the claim needs `K` (knowledge), keep it `weak` and route a probe.
-6. **Prose subsections, no tables.** The ledger is prose only. Each claim is ONE `### C<n> - <title> (<H>, <role>) - <status>` subsection whose body is a paragraph with four slots: (S1) claim + verdict, (S2) the verified statistic with spec and N, (S3) one-line interpretation, (S4) caveat + the source file. The subsections are their own index; do NOT add a claim-evidence matrix, a hypothesis-claim table, or any other markdown table. (Per JL, repeatedly: papers and their ledgers never group claims/evidence in tables.)
-7. **No aspirational anchors.** "planned Table 1" is not evidence, it is GAP; a `supported` claim cites a real value and the file it came from (e.g. `trait_l5 +12.90*** in main-ols_..._mme_ttl.csv`), never a future table.
-8. **Two-stage evidence gate.** Stage 1 deterministic: the cited file exists AND the cited number actually appears in it (catches planned/hallucinated anchors, no model). Stage 2 verdict: a CONFIRMED probe judges the real number supports the claim. `supported` requires both; existence is not support.
-9. **Venue-FREE.** The claims ledger is a pure evidence inventory, reusable across venues. It does NOT designate a [primary] claim, does NOT carry an Editor's Chair Test, and does NOT shape RQs to a venue. Those venue-aligned items live in pitch (the cover letter). If the paper retargets from venue A to venue B, the claims ledger stays unchanged; only pitch, narrative, display, and section-edit rewrite.
+1. **Claims is the evidence campaign brain.** It plans what evidence is needed, commissions the work, and tracks results. Three jobs: plan, outsource, collect.
+2. **Three sections.** Hypotheses (what we test), Claims (what must be true), Probes (the evidence plan). Plus Evidence Campaign (birds-eye summary). No separate H-C Alignment section -- the tags do the work.
+3. **Claims are short.** Statement + status + probe reference. The thinking lives in the Probes section, not inline in each claim.
+4. **Probes carry the full plan.** Each probe is its own sub-item with type, claims, status, dependencies, and the full evidence design. This is where the brain thinks.
+5. Status vocabulary: `supported`, `weak`, `GAP`.
+6. A claim is `supported` only when it traces to a CONFIRMED probe verdict or an equivalently judged artifact. Never mark `supported` from intuition.
+7. `weak`/`GAP` claims must have a corresponding probe. They are first-class open needs surfaced by the Paper Console.
+8. The paper must not overclaim. If evidence is `I` (information) but the claim needs `K` (knowledge), keep it `weak` and route a probe.
+9. **No tables for claims.** The ledger is prose only. Sub-items, not table cells. (The Evidence Campaign summary table is the exception -- it is a compact overview, not the primary record.)
+10. **No aspirational anchors.** "planned Table 1" is not evidence, it is GAP.
+11. **Two-stage evidence gate.** Stage 1 deterministic: the cited file exists AND the cited number actually appears in it. Stage 2 verdict: a CONFIRMED probe judges the real number supports the claim. `supported` requires both.
+12. **Venue-FREE.** The claims ledger is a pure evidence inventory, reusable across venues. No [primary] claim, no Editor's Chair Test, no venue-specific RQ framing. Those live in pitch.
+13. **One sentence per line.** Semantic line breaks for readability. No dense multi-sentence paragraphs.
+14. **Heading style.** `=====` for the document title, `-----` for sections. Sub-items as `**bold**`. No `#`/`##`/`###`.
 
 ## Handoff
 

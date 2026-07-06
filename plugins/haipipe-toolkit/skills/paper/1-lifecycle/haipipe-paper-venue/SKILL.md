@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-venue
-description: "Recommend the best-fit venue for a paper or topic, then pin it. Analyzes the paper's contribution/method/topic against every venue pack in _venue/playbook-*, ranks a shortlist with per-venue rationale, and writes the choice into STATUS.md venue (which makes pitch, narrative, and every later stage couple to it). This is the venue-first front door: run it before pitch (claims is venue-free). Also owns the venue-label -> pack resolution map. Trigger: venue, which journal, where to submit, venue fit, recommend journal, journal selection, pick venue, 投哪个期刊, 选刊, 期刊推荐, /haipipe-paper-venue."
+description: "Recommend the best-fit venue for a paper or topic, then pin it. Produces 0-lifecycle/2-venue/2-venue.md with venue choice, writing principles (section structure, length norms, citation density, results conventions, display limits), fit assessment, and probes. Writes the choice into STATUS.md. This is the venue-first front door: run it before pitch (claims is venue-free). Trigger: venue, which journal, where to submit, venue fit, recommend journal, journal selection, pick venue, 投哪个期刊, 选刊, 期刊推荐, /haipipe-paper-venue."
 argument-hint: "[paper-path | free-text topic/abstract] [--no-pin]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-06-22"
-  summary: "Analyze a topic/paper and recommend + pin the best-fit venue, using the _venue packs as the knowledge base."
+  version: "2.0.0"
+  last_updated: "2026-07-06"
+  summary: "Venue stage orchestrator. Recommends + pins the best-fit venue, produces 2-venue.md with writing principles and probes. Downstream stages (pitch, narrative, display, section-edit) all read the Writing Principles section."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -14,11 +14,52 @@ metadata:
 
 ## Overview
 
-Venue selection is the FIRST venue-coupled design decision. Pitch (the cover letter), narrative, displays, and prose all couple to the venue, so the venue must be chosen before pitch. Claims is venue-FREE and does NOT need a venue. The lifecycle order is: seed (FREE) → claims (FREE) → [venue pinned here] → pitch (ALIGNED) → narrative (ALIGNED) → display (ALIGNED) → section-edit (ALIGNED).
+Venue selection is the FIRST venue-coupled design decision. Pitch (the cover letter), narrative, displays, and prose all couple to the venue, so the venue must be chosen before pitch. Claims is venue-FREE and does NOT need a venue. The lifecycle order is: seed (FREE) -> claims (FREE) -> [venue pinned here] -> pitch (ALIGNED) -> narrative (ALIGNED) -> display (ALIGNED) -> section-edit (ALIGNED).
 
-This skill analyzes a paper or a bare topic against every venue pack in `../../_venue/playbook-*` and recommends a ranked shortlist, then pins the choice in `STATUS.md`.
+This skill analyzes a paper or a bare topic against every venue pack in `../../_venue/playbook-*`, recommends a ranked shortlist, pins the choice in `STATUS.md`, and produces a stage document (`2-venue.md`) with the venue profile, writing principles, and probes.
 
 The venue packs are knowledge, not skills; this skill is the READER that turns them into a recommendation. It never edits a pack.
+
+## Artifact Spec
+
+**Files produced:**
+- `0-lifecycle/2-venue/2-venue.md` -- venue stage document (venue choice + writing principles + probes)
+- `0-lifecycle/2-venue/_LOG_2-venue.md` -- phase progress journal
+- `0-lifecycle/2-venue/_PROBE/` -- probe plans (recent publications, editor, competing papers)
+- `STATUS.md` -- `venue:` field pinned
+
+**Content structure (2-venue.md):**
+
+```text
+2-venue: <paper title>
+=======================
+
+Venue Choice            which venue, one-line why, backup options
+Venue Profile           audience, scope, what this venue rewards
+Writing Principles      concrete specs that downstream stages consume
+Fit Assessment          how H1/H2/H3 match the venue's scope
+Probes                  venue-level investigation needs
+```
+
+**Writing Principles section (the key downstream contract):**
+- Section structure: how many sections, what they're called, ordering conventions
+- Length norms: word count target, sentence length, paragraph density
+- Citation density: how many refs per section, citation style conventions
+- Results presentation: tables vs figures, statistical reporting, effect size conventions
+- Display limits: max figures, max tables, format requirements (color, resolution)
+- Language/tone: formal vs accessible, jargon level, hedging conventions
+
+This section is what pitch, narrative, display, and section-edit all read from. Once venue is pinned, Writing Principles tells you concretely how to write.
+
+**Formatting:**
+- Heading style: `=====` for the document title, `-----` for sections. No `#`/`##`/`###`.
+- One sentence per line (semantic line breaks).
+
+**Done-criteria:**
+- [ ] Venue pinned in STATUS.md
+- [ ] Writing Principles section filled with concrete specs
+- [ ] Fit Assessment maps H/claims to venue scope
+- [ ] At least one probe planned or done (recent publications check)
 
 ## Modes
 
