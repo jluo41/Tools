@@ -19,3 +19,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 ## [4.0.0] — 2026-07-06
 
 - absorbs minimap: per-unit Job field required; materialization routes through the PROBE worker to /haipipe-task; stage-folder paths; DPRC phases (paper-alignment refactor, ../SOP-paper-alignment.md).
+
+## [4.1.0] — 2026-07-06
+
+- 765696f port: visible Probes section + reads 2-venue.md Artifact Principles + ascii artifact formatting.

@@ -68,7 +68,13 @@ C04 → Section 3 (recommendation)
 Level 1: Summary KPIs      ← C01, C02 (headline metrics)
 Level 2: Detail panels      ← C03, C04 (supporting evidence)
 Level 3: Action items       ← C05 (recommendations)
+
+## Probes
+<narrative-level needs (rare): a beat exposing a NEW evidence gap routes
+back to claims; one line per PP with status if any exist>
 ```
+
+Artifact formatting: `=====` title / `-----` sections (no `#` headings); one sentence per line. Narrative reads the venue stage doc's Artifact Principles (2-venue.md) for arc rules.
 
 Precondition
 =============

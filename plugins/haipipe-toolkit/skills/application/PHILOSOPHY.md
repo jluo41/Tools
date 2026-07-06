@@ -28,7 +28,7 @@ The venue (output modality) gates stages 3-5 and sets the claims SETTLEMENT dept
 
 ## Venue coupling
 
-Seed and claims are venue-FREE: the K/W truth does not change when the channel changes. Venue pins the modality in STATUS.md between claims and pitch. Pitch, narrative, display, and section-edit are venue-ALIGNED: they rewrite on retarget. Retargeting sms -> dashboard keeps the claims ledger and deepens its required settlement; it never invalidates it.
+Seed and claims are venue-FREE: the K/W truth does not change when the channel changes. Venue pins the modality in STATUS.md between claims and pitch and writes the venue stage doc `0-lifecycle/2-venue/2-venue.md`, whose Artifact Principles are the downstream contract the venue-ALIGNED stages read. Pitch, narrative, display, and section-edit are venue-ALIGNED: they rewrite on retarget. Retargeting sms -> dashboard keeps the claims ledger and deepens its required settlement; it never invalidates it.
 
 ## Evidence routing
 

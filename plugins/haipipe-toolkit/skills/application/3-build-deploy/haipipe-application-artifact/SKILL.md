@@ -30,6 +30,7 @@ How it works
 3. Load audience profile:
      _audience/profile-<audience>/README.md tone + citation rules
 4. Load lifecycle inputs:
+     0-lifecycle/2-venue/2-venue.md         Artifact Principles (template/slots, limits, tone, element types, section structure, gate depth) — the venue contract, not re-derived from the pack
      0-lifecycle/1-claims/1-claims.md       the ledger (always)
      0-lifecycle/3-narrative/3-narrative.md arc (if venue required it)
      0-lifecycle/4-display/4-display.md     content elements + jobs (if required)

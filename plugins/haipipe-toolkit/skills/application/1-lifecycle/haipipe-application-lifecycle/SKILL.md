@@ -21,7 +21,7 @@ The lifecycle has a **venue-free / venue-aligned boundary**. Seed and claims are
 /haipipe-application-lifecycle                       -> dashboard (list specialists + pipeline)
 /haipipe-application-lifecycle seed <args>           -> 0-lifecycle/0-seed/0-seed.md (venue-FREE)
 /haipipe-application-lifecycle claims <args>         -> 0-lifecycle/1-claims/1-claims.md (venue-FREE claim ledger)
-/haipipe-application-lifecycle venue <args>          -> STATUS.md venue pin + stages_skipped + claims_settlement (decision gate)
+/haipipe-application-lifecycle venue <args>          -> 0-lifecycle/2-venue/2-venue.md (choice + Artifact Principles) + STATUS.md venue pin (venue + stages_skipped + claims_settlement) (decision gate)
 /haipipe-application-lifecycle pitch <args>          -> 0-lifecycle/2-pitch/2-pitch.md (venue-ALIGNED goal + theory of change)
 /haipipe-application-lifecycle narrative <args>      -> 0-lifecycle/3-narrative/3-narrative.md (venue-gated)
 /haipipe-application-lifecycle display <args>        -> 0-lifecycle/4-display/4-display.md (venue-gated; owns per-unit jobs)
@@ -52,7 +52,7 @@ Natural Pipeline Order
   VENUE DECISION
   ──────────────────────────────────────
       ↓
-  venue          pin modality in STATUS.md; write stages_skipped + claims_settlement
+  venue          pin modality in STATUS.md (stages_skipped + claims_settlement); write 2-venue.md (Artifact Principles)
                  (gate between FREE and ALIGNED)
 
   VENUE-ALIGNED (rewrite on retarget; ° = fires only if the venue requires it)
@@ -133,7 +133,7 @@ haipipe-application-lifecycle (this orchestrator)
   |-- seed (0)
   |-- claims (1)
   VENUE DECISION:
-  |-- venue              (pin modality + stages_skipped + claims_settlement in STATUS.md)
+  |-- venue              (pin modality + stages_skipped + claims_settlement in STATUS.md; write 2-venue/2-venue.md Artifact Principles)
   VENUE-ALIGNED (° = venue-gated):
   |-- pitch (2)
   |-- narrative (3)°

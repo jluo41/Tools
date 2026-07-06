@@ -23,7 +23,7 @@ application/
 │     3-narrative/haipipe-application-narrative      (venue-GATED)
 │     4-display/haipipe-application-display          (venue-GATED; owns per-unit jobs)
 │     5-section-edit/haipipe-application-section-edit (sectioned venues)
-│     + haipipe-application-venue (pin modality + stages_skipped + claims_settlement; after claims, before pitch)
+│     + haipipe-application-venue (pin modality + stages_skipped + claims_settlement; writes 2-venue/2-venue.md Artifact Principles; after claims, before pitch)
 │     + haipipe-application-lifecycle (orchestrator)
 ├── 2-phase/               PHASE workers (internal; driven by stage skills)
 │     0-draft/haipipe-application-draft
@@ -43,7 +43,7 @@ application/
 enter             -> 0-enter/haipipe-application-enter
 0-seed            -> 1-lifecycle/0-seed/haipipe-application-seed
 1-claims          -> 1-lifecycle/1-claims/haipipe-application-claims
-venue (pin)       -> 1-lifecycle/haipipe-application-venue (after claims, before pitch; claims is venue-free)
+venue (pin)       -> 1-lifecycle/haipipe-application-venue (after claims, before pitch; claims is venue-free; writes 0-lifecycle/2-venue/2-venue.md)
 2-pitch           -> 1-lifecycle/2-pitch/haipipe-application-pitch
 3-narrative       -> 1-lifecycle/3-narrative/haipipe-application-narrative      (venue-gated)
 4-display         -> 1-lifecycle/4-display/haipipe-application-display          (venue-gated)

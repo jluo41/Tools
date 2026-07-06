@@ -73,7 +73,13 @@ Every unit carries FOUR required fields -- type, claim, JOB, data source. The Jo
 - **Job:** establish the cohort so later effects are credible
 - **Content:** cohort descriptives
 - **Data source:** task T03
+
+## Probes
+<materialization needs, INLINE and visible: one line per PP with status
+(unit → task route); cards in _PROBE/>
 ```
+
+Artifact formatting: `=====` title / `-----` sections (no `#` headings); one sentence per line. Display reads the venue stage doc's Artifact Principles (2-venue.md) for available element types.
 
 Materialization
 ================
