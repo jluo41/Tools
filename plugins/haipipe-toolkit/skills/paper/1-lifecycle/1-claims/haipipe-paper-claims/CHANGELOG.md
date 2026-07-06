@@ -4,6 +4,11 @@ haipipe-paper-claims — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [3.2.0] - 2026-07-05
+
+Changed
+- Ledger is now PROSE ONLY, no tables. Dropped both markdown tables from ref/claims-template.md: the Claim-Evidence Matrix (`| ID | Claim | Status |`) is replaced by a `## Claims` section of one `### C<n> - <title> (<H>, <role>) - <status>` prose subsection per claim, and the Hypothesis-Claim Alignment table is replaced by a paragraph. Scrubbed all "matrix"/"row" language from SKILL.md (Artifact Spec, done-criteria, DRAFT step, template reading order, gates, Ledger Maintenance) and rewrote principle 6 as "Prose subsections, no tables". Codifies JL's standing rule (papers/ledgers never group claims/evidence in tables) so the template stops regenerating them.
+
 ## [3.1.3] — 2026-07-03
 
 Changed
