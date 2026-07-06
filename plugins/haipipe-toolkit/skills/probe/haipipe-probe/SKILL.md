@@ -2,7 +2,7 @@
 name: haipipe-probe
 description: "Evidence gateway (folderless probe). A probe is a PHASE (each stage's PROBE step) plus a GATEWAY agent, not a place: the consumer's _PROBE/PPNN card is the single source of truth for contract + receipt + verdict; execution artifacts live in discoveries/ and tasks/; probes/ folders and the Probe Console are RETIRED (2026-07-05). Two uses: (1) DIRECT ASK — /haipipe-probe \"<question or claim>\" runs ad-hoc evidence work outside any stage: dispatches the gateway agent, evidence lands project-side, anchored takeaways return in chat; (2) layer contract / PPNN card anatomy reference for stage workers. Trigger: probe, evidence gateway, find evidence for claim, PPNN card, judge claim, /haipipe-probe."
 argument-hint: "[\"<question-or-claim>\" [light|full] | contract | card | status]"
-allowed-tools: Bash, Read, Grep, Glob
+allowed-tools: Bash, Read, Grep, Glob, Agent
 metadata:
   version: "6.1.0"
   last_updated: "2026-07-05"
