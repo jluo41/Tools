@@ -1,11 +1,11 @@
 ---
 name: haipipe-insight
-description: "Insight archive orchestrator. Constructs the project's curated permanent knowledge base under examples/<project>/insights/ through review/apply and D/I/K/W card writers. Preferred path: review finished task/probe/discover/narrative/application material, then apply reviewed cards. Low-level writers remain available for explicit data/information/knowledge/wisdom filing. Never executes code, judges probe truth, or triggers probes."
+description: "Insight archive orchestrator. Constructs the project's curated permanent knowledge base under examples/<project>/insights/ through review/apply and D/I/K/W card writers. Preferred path: review finished task/discover material and consumer-side stage cards, then apply reviewed cards. Low-level writers remain available for explicit data/information/knowledge/wisdom filing. Never executes code, judges probe truth, or triggers probes."
 argument-hint: "[verb] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.0.0"
-  last_updated: "2026-06-22"
+  version: "3.1.0"
+  last_updated: "2026-07-05"
   summary: "Insight archive orchestrator — review, apply, file, index, audit."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -14,12 +14,12 @@ Skill: haipipe-insight (orchestrator)
 ======================================
 
 The project's **permanent knowledge base** — curated D/I/K/W cards filed from
-finished task, probe, discovery, narrative, and application material.
+finished task and discovery material (plus consumer-side stage cards).
 
 ```
-task / probe / discover        produce material
-narrative / application ask    decide what is worth archiving
-insight review                plans + files curated cards
+task / discover / stage cards  produce material
+probe deposit / human review   decide what is worth archiving
+insight review                 plans + files curated cards
 paper / report / message / ui  cite K/W from the archive
 ```
 
@@ -40,7 +40,7 @@ apply <INSIGHT_REVIEW.yaml> = "write the reviewed cards into insights/"
 Internally, this is the same review contract. `INSIGHT_REVIEW.yaml` is the
 reviewable checklist between raw material and permanent cards.
 
-For a beginner-friendly walkthrough, read `play/README.md`.
+For a beginner-friendly walkthrough, read `../play/README.md`.
 
 
 Where the insight base lives (project-level)
@@ -49,10 +49,10 @@ Where the insight base lives (project-level)
 ```
 examples/Proj-X/
 ├── tasks/                                  (task — execution)
-├── probes/                                (probe — research)
+├── discoveries/                            (discovery — external evidence)
 └── insights/                               ← insight writes here
     ├── INDEX.md                            (auto: all entries + status)
-    ├── views/                              (auto: topic/source/narrative/status views)
+    ├── views/                              (topic/source/status views; co-pilot with a human, --auto when agent-called)
     ├── _reviews/                           (apply-time card-review + index-audit records)
     │
     ├── D_data/                     "what one dataset looks like"   (named dataset profile)
@@ -73,7 +73,7 @@ examples/Proj-X/
 ```
 
 **Hard rule:** NO code, no Python, no notebooks, no plots, no session logs
-inside insights/. That work belongs to task, probe, narrative, or
+inside insights/. That work belongs to task, discovery, or
 application folders. insight only stores curated markdown cards and derived
 indices.
 
@@ -96,12 +96,12 @@ Card layer      What it is                                    Filing decision
 - K is the generalization layer where p-value / CI / confidence live; it has NO
   admission gate (a probe is not required), and a low-confidence or negative K is
   still recorded.
-- Material comes from task/probe/discover/literature; review decides what becomes
+- Material comes from task/discover/literature and consumer-side stage cards; review decides what becomes
   permanent KB. The low-level D/I/K/W skills are writer APIs called by review.
 
 ---
 
-Three Jobs
+Five Jobs
 -----------
 
 This orchestrator has five jobs:
@@ -138,7 +138,7 @@ inspect) or **verb-based** (explicit DIKW level).
 
 ```
 # Preferred: user-facing review/apply
-/haipipe-insight review <project|narrative|ask-session|probe|task>
+/haipipe-insight review <project|probe|task|discovery>
 /haipipe-insight apply <INSIGHT_REVIEW.yaml>
 
 # Convenience: review then apply when explicitly requested
@@ -146,7 +146,7 @@ inspect) or **verb-based** (explicit DIKW level).
 
 # Path-based review shorthand
 /haipipe-insight <task-folder-path>              review task material
-/haipipe-insight <probe-folder-path>             review probe material
+/haipipe-insight <discovery-folder-path>         review discovery material
 /haipipe-insight <task-group-path>               review task-group material
 
 # Verb-based (explicit DIKW level)
@@ -214,7 +214,7 @@ insight/agents/
   reviewers/                                 per-type quality gate
     card-reviewer-data-agent.md              🟦 accuracy + D boundary
     card-reviewer-information-agent.md       🟩 accuracy + I boundary
-    card-reviewer-knowledge-agent.md         🟨 accuracy + K boundary + probe gate
+    card-reviewer-knowledge-agent.md         🟨 accuracy + K boundary (confidence + claim_type; no probe gate)
     card-reviewer-wisdom-agent.md            🟧 accuracy + actionability
     index-integrity-auditor-agent.md         🔗 cross-layer: sources↔ref_by, INDEX↔files
 ```
@@ -239,8 +239,7 @@ export-okf, okf, interchange, graph export       -> scripts/export_okf.py
 PATH-BASED (auto-detect source type → review checklist):
 tasks/<group>/<task>/  (has results/)           -> haipipe-insight-review review
 tasks/<group>/         (has child task dirs)     -> haipipe-insight-review review
-probes/<MMDD>_<slug>/  (has probe.yaml)         -> haipipe-insight-review review
-applications/ask/<slug>/                        -> haipipe-insight-review review
+discoveries/<group>/<NN>_<slug>/ (has discovery.yaml) -> haipipe-insight-review review
 
 (ask / question / session / plan / gate / context → /haipipe-application; NOT insight)
 (report / stakeholder doc / message / ui         → /haipipe-application; NOT insight)
@@ -290,7 +289,7 @@ Step 2: Resolve scope. Cascade (highest to lowest confidence):
   (4) QUESTION — first positional is a question ("?" / "does" / "is" / "why" opener) → redirect to `/haipipe-application ask`.
 
   (5) EXPORT — first positional is `export-okf` or `okf` → run
-      `scripts/export_okf.py <project-or-insights-path>` and report artifacts.
+      `../scripts/export_okf.py <project-or-insights-path>` and report artifacts.
 
   (6) NO ARGS → Job 4 (dashboard): run explore to show KB state.
 
@@ -306,16 +305,14 @@ Step 2a: Source-type detection (path-based review).
   ───────────     ──────────────────────────────────────     ─────────────────────────
   task-folder     path under tasks/ + has results/<run>/     haipipe-insight-review
   task-group      path under tasks/ + has child task dirs    haipipe-insight-review
-  probe-folder    path under probes/ + has probe.yaml        haipipe-insight-review
-  ask-session     path under applications/ask/               haipipe-insight-review
+  discovery       path under discoveries/ + has discovery.yaml   haipipe-insight-review
   ```
 
   Detection rules:
     - `ls <path>/results/*/metrics.json` succeeds → task-folder review scope
     - `ls <path>/*/results/*/metrics.json` succeeds → task-group review scope
-    - `ls <path>/probe.yaml` succeeds → probe-folder review scope
-    - path contains `/applications/ask/` → ask-session review scope
-    - path contains `/tasks/` or `/probes/` → matching review scope
+    - `ls <path>/discovery.yaml` succeeds → discovery review scope
+    - path contains `/tasks/` or `/discoveries/` → matching review scope
 
   Low-level direct filing is still available through explicit verbs:
   `/haipipe-insight data <task>`, `/haipipe-insight knowledge <probe>`, etc.
@@ -331,7 +328,7 @@ Step 4: Dispatch to specialist:
       - capture "<text>": infer the target sub-skill (CROSS-CUTTING GUARD first —
         a rule true across all DIKW layers, or a named cross-cutting concern, goes
         to the orchestrator fallback, overriding any keyword; else keyword in text;
-        else active layer from .insight-console.yaml; else orchestrator fallback),
+        else orchestrator fallback),
         write one dated file into THAT skill's feedback/ folder (create it + README
         if missing — inboxes are lazy-created on first capture), then confirm where
         it landed + how it matched.
@@ -373,7 +370,7 @@ Step 4a: Lifecycle action choice.
   All non-file changes MUST append `## Change log` unless they are pure
   generated-index rebuilds.
 
-Step 5: Post-file accumulation check (Job 2). Runs ONLY after a successful file (status=ok):
+Step 5: Post-file accumulation check (Job 3). Runs ONLY after a successful file (status=ok):
 
   After filing a 🟦 D card (a dataset profile):
     (1) Check whether an in-sample pattern in that dataset is already carded (an I).
@@ -446,8 +443,6 @@ Boundary with probe and task
 ```
 task        → dataset profiles + in-sample patterns (D/I material)
 probe       → generalization claims with confidence (K material) + W
-narrative   → story gaps and review intent
-application ask → question-driven review intent
 insight review → D/I/K/W cards + indices + graph audit
 ```
 
@@ -459,11 +454,12 @@ at K.
 **Dependencies:**
 
 ```
-insight is CALLED BY narrative/application ask/human review
+insight is CALLED BY probe (Deposit step) or the user directly
 insight OWNS filing: D/I/K/W cards, INDEX, graph audit
 insight NEVER triggers probe (that's application's ask kind)
-insight NEVER writes to tasks/ or probes/ directly
-insight ONLY writes to insights/
+insight writes PERMANENT artifacts (cards, INDEX, _reviews) only under insights/
+insight MAY drop the INSIGHT_REVIEW.yaml checklist into the reviewed scope
+  folder (the one exception; owner decision 2026-07-05, matches practice)
 task/probe do not mutate insights/ as part of their core lifecycle
 ```
 
@@ -475,12 +471,10 @@ Relation to other top-level skills
 ```
 discover    feeds ideas → seeded questions handled in application ask
 project     project umbrella → owns the examples/Proj-X/ shape
-narrative   CALLS insight review when story gaps need permanent KB refs
 task        PRODUCES D/I material; direct D filing is a low-level manual option
-probe       PRODUCES K/W material; direct K filing is a low-level manual option
+probe       PRODUCES K/W material and CALLS insight review at Deposit
 paper       READS K + W entries → academic publication
-application CALLS insight review in ask Phase 4 → files D/I/K/W cards
-              drives sessions (ask / message / ui / report) that read K/W
+application drives sessions (ask / message / ui / report) that READ K/W
 
 insight is the project's PERMANENT KB. It does NOT run sessions or
 own per-question state. It files cards and synthesizes cross-cutting
@@ -532,7 +526,7 @@ Invocation examples
 
 ```
 # Preferred: review/apply in one run when explicitly requested
-/haipipe-insight review examples/ProjA/applications/ask/03_film_ood --auto
+/haipipe-insight review examples/ProjA/discoveries/P01_film/02_ood_prior_art --auto
 
 # Low-level: explicit D card from a task
 /haipipe-insight data examples/ProjA/tasks/B03_band4/01_eval_h24/

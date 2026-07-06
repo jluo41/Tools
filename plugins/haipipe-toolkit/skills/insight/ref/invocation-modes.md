@@ -35,14 +35,15 @@ source there is nothing to file. Everything else a silent run may auto-derive
 ```
 layer           BLOCKING (no source → blocked)                auto-derivable in --auto
 ──────────────────────────────────────────────────────────────────────────────────────
-🟦 data         one settled source_ref from INSIGHT_REVIEW.yaml            slug · headline · numbers
-🟩 information   --scope: ≥ 2 existing D ids                        slug · pattern · direction
-🟨 knowledge     judged source_ref with claim + confidence basis     slug · supporting I-ids
-🟧 wisdom        --scope: ≥ 1 existing K id                         slug · rec · rec_type · cost
+🟦 data         one review-approved source_ref + the dataset it profiles  slug · headline · numbers
+🟩 information   --dataset <name> + ≥ 1 D id of that same dataset           slug · pattern · direction
+🟨 knowledge     claim + generalization basis + confidence + claim_type     slug · supporting I-ids
+🟧 wisdom        --scope: ≥ 1 existing K id                                 slug · rec · rec_type · cost
 ```
 
-`--project` resolves from cwd if absent (never an ASK). `NN` is always
-auto-assigned (max existing + 1). A silent run that auto-derives a field logs
+`--project` resolves from cwd if absent (never an ASK). `NN`: when apply
+passes a pre-assigned `--id`, use it verbatim (parallel safety); auto-assign
+(max existing + 1) ONLY on a single serial write. A silent run that auto-derives a field logs
 `note: auto-picked top candidate` into the return — never an ASK.
 
 
@@ -58,9 +59,10 @@ Rules
    or an orchestrator) re-dispatches with it filled. NEVER fabricate a
    `source_id`, a `claim`, a `confidence`, or a number.
 4. **A refusal stays a refusal.** `data` refuses unsettled or untraceable
-   sources; `knowledge` refuses unjudged claims, probe claims without
-   confirmed/refuted status, and literature claims without vetting context;
-   `information` still refuses < 2 D entries. In headless mode these return
+   sources; `knowledge` refuses a candidate missing its claim, generalization
+   basis, confidence, or claim_type (a LOW or NEGATIVE confidence is never a
+   refusal; it is recorded); `information` refuses only when no dataset is
+   named or that dataset has no D card. In headless mode these return
    `status: blocked` (with the reason), NOT an ASK and NOT a silent pass.
 
 

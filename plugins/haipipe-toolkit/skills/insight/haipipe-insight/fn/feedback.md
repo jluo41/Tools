@@ -22,8 +22,8 @@ which skill it concerns; there is no separate `skill:` field.
 ## Capture: `/haipipe-insight feedback "<text>"`
 
 ```
-1. Read the active context from .insight-console.yaml if present (active layer /
-   project — the SECONDARY routing signal). insight may have no console; that's fine.
+1. Parse the feedback text (keep the user's wording verbatim; do not paraphrase
+   away specifics).
 2. INFER the target skill (see "Routing the capture" below).
 3. Resolve the skill -> its feedback/ folder PATH (see "Inbox paths").
    If that folder is missing, create it + a one-line README (template below).
@@ -71,7 +71,6 @@ guess: a wrong MERGE buries a distinct concern, a wrong SPLIT regrows the inbox.
 
 ```
 signal A (primary):   a routing keyword appears in the feedback TEXT
-signal B (secondary): the active layer in .insight-console.yaml (if any)
 resolve:
   0. CROSS-CUTTING GUARD (runs BEFORE keyword match). The TEST is SEMANTIC:
      does the complaint assert a rule that holds ACROSS ALL DIKW LAYERS
@@ -95,8 +94,7 @@ resolve:
        (layer-wide rule); "the K writer left out the confidence field" -> a
        single-layer bug -> haipipe-insight-knowledge.
   1. else keyword match in TEXT -> that skill (most specific wins)
-  2. else active-layer skill (from .insight-console.yaml, if any)
-  3. else orchestrator fallback
+  2. else orchestrator fallback
 ```
 
 Keyword -> skill map (first/most-specific match wins):

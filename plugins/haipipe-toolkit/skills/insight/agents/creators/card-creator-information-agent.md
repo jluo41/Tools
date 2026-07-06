@@ -1,6 +1,6 @@
 ---
 name: card-creator-information-agent      # = subagent_type; register via top-level agents/ symlink
-description: "Thin BUILDER agent for insight I (information) cards. Given a named dataset and its D-card id(s), calls the haipipe-insight-information skill (headless) to file ONE 🟩 I in-sample-pattern card (the pattern WITHIN that one dataset, no p/CI) per ../../ref/insight-md-schema.md. Does NOT author the card itself (the skill does), NOT judge it (reviewers do), NOT compute (task does). Trigger: file I card, fan-out pattern synthesis, ask report phase."
+description: "Thin BUILDER agent for insight I (information) cards. Given a named dataset and its D-card id(s), calls the haipipe-insight-information skill (headless) to file ONE 🟩 I in-sample-pattern card (the pattern WITHIN that one dataset, no p/CI) per ../../ref/insight-md-schema.md. Does NOT author the card itself (the skill does), NOT judge it (reviewers do), NOT compute (task does). Trigger: file I card, fan-out pattern synthesis, apply."
 tools:
   - Read
   - Write

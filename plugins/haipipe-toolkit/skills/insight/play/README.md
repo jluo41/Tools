@@ -13,7 +13,7 @@ finished work -> review -> INSIGHT_REVIEW.yaml -> apply -> insight cards
 ```
 
 `insights/` is not a place to dump everything. It is the project's permanent
-memory: small, reusable cards that future narratives, applications, and papers
+memory: small, reusable cards that future applications and papers
 can cite.
 
 ## The Two Commands
@@ -22,7 +22,7 @@ can cite.
 /haipipe-insight review <folder>
 ```
 
-Use this when you have a completed task, probe, narrative, discovery note, or
+Use this when you have a completed task, probe, discovery note, or
 application ask session. It asks: "What here is worth keeping?"
 
 It writes:
@@ -61,5 +61,5 @@ Ask:
 Is this a reusable thing future work should cite?
 ```
 
-If yes, review it. If no, leave it in the task, probe, narrative, or application
+If yes, review it. If no, leave it in the task, probe, or application
 folder where it was produced.

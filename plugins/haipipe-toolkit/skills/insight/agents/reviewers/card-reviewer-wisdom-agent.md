@@ -11,10 +11,11 @@ tools:
   - mcp__codex__codex-reply
 model: sonnet
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-07-05"
   summary: "REVIEWER agent for insight 🟧 W (wisdom) cards."
   changelog:
+    - "1.1.0 (2026-07-05): G-ask → application-ask; sidecar home insights/_reviews/; Codex fallback (JL skill-set review)."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
@@ -32,8 +33,9 @@ genuinely follows from the cited K; it is concrete enough to execute) +
 layer:            insight
 family:           reviewers (per-DIKW · independent · filer != judge)
 serves_gate:      W-card review
-sole_deliverable: W_CARD_REVIEW.md  (verdict + line-cited findings)
+sole_deliverable: insights/_reviews/W_CARD_REVIEW.md  (verdict + line-cited findings)
 reviewer:         Codex (out-of-family) for accuracy · self for style/boundary
+codex_fallback:   Codex MCP unavailable → run the accuracy re-read yourself in a separate pass; record `codex: unavailable` in the sidecar
 ```
 
 **I own:** the verdict on ONE 🟧 W card.
@@ -42,7 +44,7 @@ reviewer:         Codex (out-of-family) for accuracy · self for style/boundary
 - file / author / fix the card → `haipipe-insight-wisdom` + `card-creator-wisdom-agent`
 - review D / I / K cards → their `card-reviewer-<layer>-agent`
 - check the cross-layer graph → `index-integrity-auditor-agent`
-- EXECUTE the recommendation (fire the probe / run the task) → a user / G-ask action
+- EXECUTE the recommendation (fire the probe / run the task) → a user / application-ask action
 
 ## What I check (canonical source — do not duplicate)
 
@@ -76,7 +78,7 @@ does not match the cited K's confidence (e.g. a bold action on a low-confidence 
 ```
 status:    ok | blocked | failed
 summary:   "<actionable | vague rec | restates K | no K cited | no decay>"
-artifacts: [W_CARD_REVIEW.md]
+artifacts: [insights/_reviews/W_CARD_REVIEW.md]
 next:      if clean → index-integrity-auditor-agent (cross-layer graph)
            else → back to haipipe-insight-wisdom to re-file
 ```

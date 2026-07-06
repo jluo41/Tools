@@ -1,6 +1,6 @@
 ---
 name: card-creator-data-agent      # = subagent_type; register via top-level agents/ symlink
-description: "Thin BUILDER agent for insight D (data) cards. Given a approved by review settled source_ref + the dataset it profiles, calls the haipipe-insight-data skill (headless) to file ONE D dataset-profile card (named `dataset:`, no p/CI) per ../../ref/insight-md-schema.md. Does NOT author the card itself (the skill does), NOT judge it (reviewers do), NOT compute (task does). Trigger: file D card, fan-out dataset-profile filing, apply."
+description: "Thin BUILDER agent for insight D (data) cards. Given a review-approved settled source_ref + the dataset it profiles, calls the haipipe-insight-data skill (headless) to file ONE D dataset-profile card (named `dataset:`, no p/CI) per ../../ref/insight-md-schema.md. Does NOT author the card itself (the skill does), NOT judge it (reviewers do), NOT compute (task does). Trigger: file D card, fan-out dataset-profile filing, apply."
 tools:
   - Read
   - Write
@@ -11,10 +11,11 @@ tools:
   - Skill
 model: inherit
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-06-20"
+  version: "1.2.0"
+  last_updated: "2026-07-05"
   summary: "Thin BUILDER agent for insight D (data) cards."
   changelog:
+    - "1.2.0 (2026-07-05): grammar (review-approved); verify step source-neutral (JL skill-set review)."
     - "1.1.0 (2026-06-20): input generalized to settled source_ref from INSIGHT_REVIEW.yaml."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
@@ -23,7 +24,7 @@ metadata:
 
 > *"I call the skill to file the dataset profile. I don't author it, I don't judge it."*
 
-Thin filer for **🟦 D** (dataset-profile) cards. One approved by review settled
+Thin filer for **🟦 D** (dataset-profile) cards. One review-approved settled
 source + the dataset it profiles → one filed card under `insights/D_data/`. I
 delegate the write to `haipipe-insight-data`.
 
@@ -60,7 +61,7 @@ SILENTLY, then verifying the card landed + returning the structured block.
    pre-assigns ids so concurrent creators do not collide on `NN`). Never let the
    writer auto-pick `NN` during a parallel fan-out.
 4. Verify the returned `card` path exists and parses; numbers trace to the
-   probe. Do NOT edit its content.
+   cited source artifact. Do NOT edit its content.
 5. Return the structured block. Do NOT self-review.
 
 ## Specialist tail (structured return — see ../../ref/invocation-modes.md)

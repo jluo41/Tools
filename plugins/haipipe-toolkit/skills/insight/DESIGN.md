@@ -1,13 +1,14 @@
 insight — The Archive Layer (DESIGN)
 ========================================
 
-Status: v2.5.0 (2026-06-20) — review contract established.
-        task/probe/discover produce material; narrative/application/human
-        review decides what becomes permanent KB; insight files reviewed
+Status: v3.1.0 (2026-06-22; skill-set review fixes 2026-07-05): DIKW recut
+        to in-sample (D/I) vs generalization (K: confidence + claim_type).
+        task/probe/discover produce material; probe deposit / human review
+        decides what becomes permanent KB; insight files reviewed
         D/I/K/W cards, indices, and graph audits.
 Owner:  jluo41
 
-Read ARCHITECTURE.md + MENTAL_MODEL.md first. This doc designs the AGENT
+Read the plugin-root `../../ARCHITECTURE.md` first (probe's `../probe/MENTAL_MODEL.md` is useful context). This doc designs the AGENT
 and INVOCATION structure for insight, bringing it to parity with task
 and probe — which both have `agents/` + a top-level design doc; E had
 neither. The pattern is applied THOUGHTFULLY (the way probe departed
@@ -36,16 +37,15 @@ insight does NOT compute or claim. It ARCHIVES. It is called at review
 boundaries to turn finished material into curated permanent memory.
 
 ```
-called by:  narrative review
-            application ask Phase 4
+called by:  probe (Deposit step)
             human/manual review
 owns:       review → apply → card review → index → audit
 writes:     insights/ only (D/I/K/W cards + INDEX + audits + derived exports)
-NEVER:      writes tasks/ or probes/ ; triggers a probe ; judges claim truth
+NEVER:      writes tasks/ or discoveries/ ; triggers a probe ; judges claim truth
 ```
 
-DIKW folders are flat. Topic/source/narrative grouping is generated as views,
-not encoded as subfolders. Card growth is controlled by review review using
+DIKW folders are flat. Topic/source/status grouping is generated as views,
+not encoded as subfolders. Card growth is controlled by review using
 `ref/card-granularity.md`: one card = one reusable knowledge unit; use merge
 for reinforcing evidence, split for broad candidates, and skip for raw/noisy
 material.
@@ -76,7 +76,7 @@ confidence. Review decides archival value; insight files and maintains the graph
 - D and I require a `dataset:` and carry no inferential numbers.
 - K has NO probe gate — a generalization basis (significance / robustness / vetted
   claim) plus an honest confidence is enough; low-confidence and negative K are recorded.
-- Narrative/application ask/human review is the construction boundary.
+- Probe deposit / human review is the construction boundary.
 - The D/I/K/W layer skills are low-level writers used by review.
 
 
@@ -145,7 +145,7 @@ What "complete" means per layer when review calls a writer:
 ```
 D (Data)        source_id (namespaced task/probe/discover/lit ref) + headline + Numbers table + tags
 I (Information)  sources:[D..] (>=1) + pattern + direction + pattern stmt
-K (Knowledge)    sources:[probe/lit refs] MUST be judged + claim + confidence
+K (Knowledge)    claim + generalization basis + confidence + claim_type; sources = I card(s) or probe:/lit:/discover: refs
 W (Wisdom)       sources:[K..] + rec + rec_type + cost + how-to-act
 ```
 
@@ -159,26 +159,25 @@ archive step after a meaningful boundary:
 ```
 task/probe/discover finish material
         ↓
-narrative or application ask reviews
+probe deposit or human review
         ↓
 insight files D/I/K/W cards
         ↓
-narrative/application/paper cite card ids
+paper/application cite card ids
 ```
 
 The concrete paths into insight:
 
 ```
-Path A (application ask):  Phase 4 → review → D/I/K/W cards + report refs
-Path B (narrative):        post/fill → review → K/W refs in claims.md
-Path C (manual):           user calls review on project/probe/task scope
-Path D (low-level):        explicit data/information/knowledge/wisdom writer
+Path A (probe deposit):    probe Deposit → review → D/I/K/W cards + verdict refs
+Path B (manual):           user calls review on project/probe/task scope
+Path C (low-level):        explicit data/information/knowledge/wisdom writer
 ```
 
 Review is the preferred path because it can deduplicate, skip, supersede, and
 audit before the permanent KB changes.
 
-insight never DRIVES a loop. It is always the callee. Narrative/application
+insight never DRIVES a loop. It is always the callee. The calling layers
 decide "go round again"; insight only archives when called.
 
 The headless filing requirement still holds: L1 runs round after round;
@@ -214,7 +213,7 @@ insight/
 │       ├── _TEMPLATE.md
 │       ├── card-reviewer-data-agent.md          🟦 Codex accuracy + D boundary/style
 │       ├── card-reviewer-information-agent.md    🟩
-│       ├── card-reviewer-knowledge-agent.md      🟨 + the ★ probe gate
+│       ├── card-reviewer-knowledge-agent.md      🟨 confidence + claim_type (no probe gate)
 │       ├── card-reviewer-wisdom-agent.md         🟧
 │       └── index-integrity-auditor-agent.md     🔗 cross-layer: sources<->ref_by, INDEX<->files
 └── haipipe-insight*/SKILL.md       ♻️ each gains a dual-mode body + structured return
@@ -266,7 +265,7 @@ Q1. [RESOLVED — build both] Creator is a SEPARATE thin agent AND the
 Q2. [RESOLVED — review gate] probe/task/discover material can become K/D, but
     not automatically. `/haipipe-insight review ...` decides whether the
     material is archive-worthy, deduplicates it, and then calls the writer APIs.
-    🟩 I and strategic 🟧 W accumulate via application/narrative/manual review.
+    🟩 I and strategic 🟧 W accumulate via review (probe deposit / manual).
 
 Q3. Does E need an advancer (synthesis proposer)? Deferred — explore skill
     covers the read/coverage side. Review planning can suggest I-level
@@ -292,7 +291,7 @@ DONE:
 Remaining:
   - I-level auto-synthesis trigger: review can suggest it; decide
     whether application ask should apply it automatically or require review.
-  - Dogfood: run a real task/probe/narrative scope through review → apply
+  - Dogfood: run a real task/probe scope through review → apply
     → reviewer pass → index-integrity pass.
   - Tighten old layer writer docs so they all point back to review as the
     preferred entry.

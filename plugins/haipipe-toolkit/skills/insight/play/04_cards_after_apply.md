@@ -17,10 +17,8 @@ created: 2026-06-21
 updated: 2026-06-21
 sources:
   - probe:P001_model_ood
-refs:
-  - task:T001_validation
-  - task:T002_ood_split
 confidence: medium
+claim_type: associational
 ---
 
 # K03 - Validation gain does not generalize to OOD
@@ -65,9 +63,11 @@ title: "Do not use validation gain as OOD evidence"
 status: active
 created: 2026-06-21
 updated: 2026-06-21
+rec: "Do not use validation gain as OOD evidence"
+rec_type: stop_doing
+cost: cheap
 sources:
   - K03
-confidence: medium
 ---
 
 # W02 - Do not use validation gain as OOD evidence
@@ -90,7 +90,7 @@ probe later raises K03 to high, the rule can harden.
 
 ## Why now
 
-Narratives and papers are most tempted to over-read a val gain at write-up time;
+Papers and reports are most tempted to over-read a val gain at write-up time;
 the rule is needed before the claim is drafted.
 
 ## Decay condition
