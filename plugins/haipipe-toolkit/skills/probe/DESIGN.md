@@ -1,7 +1,7 @@
 probe - Claim-Level Evidence Contract (DESIGN)
 ================================================
 
-Status: v4.0.0 (2026-06-22) - Probe Console + lifecycle Plan/Gather/Read/Judge/Return; flat probe folders; 3 reviewer agents.
+Status: v5.0.0 (2026-07-05) - FOLDERLESS. probes/ folders, probe.yaml/evidence.md/verdict.md, the Probe Console, and haipipe-probe-creator-agent are RETIRED (JL ruling: the folder duplicated the consumer-side _PROBE/PPNN card — not single source of truth). The probe layer is now a PHASE (each stage's PROBE step) + a GATEWAY (haipipe-probe-orchestrator-agent) + a JUDGE (haipipe-probe-reviewer-agent, full mode, judgment returned not written). Contract+receipt+verdict live in the consumer's PPNN card; execution artifacts live in discoveries/ and tasks/. Everything below describing folders is FOLDER-ERA HISTORY kept for rationale; the current contract is haipipe-probe/SKILL.md v6.0.0 + the two agent files. Migration record: SOP-folderless-refactor.md (archived into CHANGELOG.md when done).
 Owner:  jluo41
 Scope:  the probe layer as a claim-level evidence contract. The probe owns the
         question before the work and the interpretation after. It executes no
