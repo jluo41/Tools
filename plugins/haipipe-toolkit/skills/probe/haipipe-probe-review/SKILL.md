@@ -4,9 +4,9 @@ description: "Claim-level judgment process for the folderless probe layer — th
 argument-hint: "\"<claim>\" --refs <evidence artifact paths>   (complete spec only; normal path = gateway full mode)"
 allowed-tools: Read, Grep, Glob, Bash
 metadata:
-  version: "1.0.0"
+  version: "1.0.1"
   last_updated: "2026-07-06"
-  summary: "The G1/G2/G3 judgment process spec, extracted from the reviewer agent so the flow is a governed SKILL (JL 2026-07-06); the agent is a thin dispatch shell that calls this headless."
+  summary: "The G1/G2/G3 judgment process spec, extracted from the reviewer agent so the flow is a governed SKILL (JL 2026-07-06); the agent is a thin dispatch shell that calls this headless. g2 script folder-era CLI flagged as KNOWN GAP."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
