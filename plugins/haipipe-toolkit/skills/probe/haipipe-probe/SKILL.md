@@ -1,12 +1,12 @@
 ---
 name: haipipe-probe
-description: "Evidence-gateway layer doc (folderless probe). A probe is a PHASE (each stage's PROBE step in paper/application DPRC) plus a GATEWAY agent (haipipe-probe-orchestrator-agent), not a place: the consumer's per-stage _PROBE/PPNN card is the single source of truth for contract + receipt + verdict, and execution artifacts live in discoveries/ and tasks/. The old Probe Console and probes/ folders are RETIRED (2026-07-05). Invoke this skill only to consult the layer contract or the PPNN card anatomy; evidence work itself is dispatched by stage workers, never interactively here. Trigger: probe, evidence gateway, PPNN card, claim evidence, judge claim, /haipipe-probe."
-argument-hint: "[contract|card|status]"
+description: "Evidence gateway (folderless probe). A probe is a PHASE (each stage's PROBE step) plus a GATEWAY agent, not a place: the consumer's _PROBE/PPNN card is the single source of truth for contract + receipt + verdict; execution artifacts live in discoveries/ and tasks/; probes/ folders and the Probe Console are RETIRED (2026-07-05). Two uses: (1) DIRECT ASK — /haipipe-probe \"<question or claim>\" runs ad-hoc evidence work outside any stage: dispatches the gateway agent, evidence lands project-side, anchored takeaways return in chat; (2) layer contract / PPNN card anatomy reference for stage workers. Trigger: probe, evidence gateway, find evidence for claim, PPNN card, judge claim, /haipipe-probe."
+argument-hint: "[\"<question-or-claim>\" [light|full] | contract | card | status]"
 allowed-tools: Bash, Read, Grep, Glob
 metadata:
-  version: "6.0.0"
+  version: "6.1.0"
   last_updated: "2026-07-05"
-  summary: "Folderless probe layer: PROBE phase + evidence gateway agent; PPNN card = single source of truth; probes/ folders and the Probe Console retired. This SKILL.md is the layer contract doc, not an interactive console."
+  summary: "Folderless probe layer: PROBE phase + evidence gateway agent; PPNN card = single source of truth; probes/ folders and Console retired. Skill doubles as the DIRECT-ASK front door for ad-hoc evidence work outside stages."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -46,7 +46,27 @@ stage DRAFT finds a gap
   → worker TRANSLATE lands everything in the PPNN card (+ claims-ledger flip)
 ```
 
-Users never invoke evidence work through this skill; stage skills own the phase. Dashboards live in `/haipipe-paper enter` (open needs) — the retired Probe Console's panel duties moved there.
+Inside a paper/application, stage skills own the phase — users work through them. Dashboards live in `/haipipe-paper enter` (open needs) — the retired Probe Console's panel duties moved there.
+
+## Direct ask (ad-hoc evidence work, no stage)
+
+`/haipipe-probe "<question or claim>" [light|full]` — the standalone evidence verb for questions that belong to no paper stage yet:
+
+```text
+1. Frame the ask into a plan (claim/question + evidence needed + route) — shown
+   to the user in one strip, no file written.
+2. Dispatch Agent(haipipe-probe-orchestrator-agent) run_in_background with
+   {project_root, mode (light default), plan}. Same gateway, same discipline:
+   SWEEP, shape reused|enriched|fresh, no inline searching, fresh must land.
+3. Evidence lands project-side as always (discoveries/ sources.md, tasks/) —
+   the durable part is never chat-only.
+4. The anchored takeaways + pick_list (+ full-mode verdict) return IN CHAT —
+   the user is the consumer, so the receipt is the reply, not a card.
+5. If the question later matters to a paper: the stage opens a PPNN card whose
+   refs point at the already-landed artifacts (pure REUSE — nothing re-run).
+```
+
+No probes/ folder, no PPNN card, no console state is created by a direct ask; what persists is exactly what landed in the execution ledgers.
 
 ## PPNN card anatomy (the single source of truth)
 
