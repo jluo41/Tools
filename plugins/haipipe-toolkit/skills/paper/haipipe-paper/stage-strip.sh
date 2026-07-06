@@ -36,6 +36,8 @@ status=$(find_status "$paper") || { echo "stage-strip: no STATUS.md at or above 
 current=$(grep -m1 '^| current_layer |' "$status" | sed 's/^|[^|]*|[[:space:]]*//' | sed 's/[[:space:]]*|.*//' | tr -d '[:space:]')
 # fallback to old format
 [ -z "$current" ] && current=$(grep -m1 '^current_layer:' "$status" | sed 's/^current_layer:[[:space:]]*//' | tr -d '[:space:]')
+# normalize numbered stage-folder names (1-claims -> claims); spine keys are bare
+current=$(printf '%s' "$current" | sed 's/^[0-9]-//')
 
 # canonical spine order: venue coupling gradient FREE→ALIGNED→HEAVY→SPECIFIC
 # seed(FREE) claims(FREE) venue(chooser) pitch(ALIGNED=cover letter) narrative(ALIGNED) display(HEAVY) section-edit(SPECIFIC) review
@@ -47,9 +49,10 @@ v=$(grep -m1 '^| venue |' "$status" | sed 's/^|[^|]*|[[:space:]]*//' | sed 's/[[
 [ -n "$v" ] && venue_pinned=true
 
 # read Gate Ledger: extract confirmed stages into a space-separated string
+# (flag-based scan: the ledger table may sit after a blank line; end only at the next ## heading)
 confirmed=""
 if grep -q '## Gate Ledger' "$status"; then
-  confirmed=$(awk '/## Gate Ledger/,/^$|^##/' "$status" \
+  confirmed=$(awk '/^## Gate Ledger/{f=1;next} f&&/^## /{f=0} f' "$status" \
     | grep '| yes |' \
     | sed 's/|[[:space:]]*//' | sed 's/[[:space:]]*|.*//' | tr -d '[:space:]' \
     | tr '\n' ' ')
