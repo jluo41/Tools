@@ -1,89 +1,80 @@
 ---
-name: haipipe-application-gate
-description: "Phase-transition gate for the intervention lifecycle. Venue-gated: required for complex venues (dashboard, report), optional for medium venues (email, checklist), skip for simple venues (sms, push, reminder). Reviews stage artifacts and proposes approve / revise / done. Supports persona presets and attendance modes. Trigger: gate, review stage, approve, revise, /haipipe-application gate."
-argument-hint: "[stage: seed|pitch|claims|narrative|display|minimap|draft] [--persona strict|balanced|creative|lenient] [--auto]"
+name: haipipe-application-check
+description: "CHECK phase worker (internal) -- the only human-involved phase, run by every application stage skill after REVISE. Presents the stage's exit criteria with per-item marks, proposes approve / revise / done, and on explicit approval writes the Gate Ledger row in STATUS.md and advances current_layer. Venue-scaled depth: simple venues confirm inline, complex venues get a full CHECK report. Persona presets + attendance modes let a stand-in approve ONLY in unattended runs. Renamed from haipipe-application-gate (paper-alignment 2026-07-06). Trigger: check, gate, approve stage, exit criteria, /haipipe-application check."
+argument-hint: "[stage: seed|claims|pitch|narrative|display|section-edit|draft] [--persona strict|balanced|creative|lenient] [--unattended[=Ns]]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.0.0"
-  last_updated: "2026-06-23"
-  summary: "Phase-transition gate — venue-gated, persona-driven."
+  version: "3.0.0"
+  last_updated: "2026-07-06"
+  summary: "Gate skill re-homed as the CHECK phase worker (2-phase/3-check). Adds the Gate Ledger protocol (STATUS.md, ✅ = approved-by-whom); keeps venue-scaled firing + persona/attendance as the application delta. Stage list updated to the new spine (minimap out, section-edit in)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-Skill: haipipe-application-gate
-================================
+Skill: haipipe-application-check (CHECK phase worker)
+======================================================
 
-Phase transition gate. Reviews the artifacts produced during one
-lifecycle stage and proposes the next move:
-
-```
-approve   → proceed to next stage
-revise    → loop back with feedback
-done      → jump to draft (early exit)
-```
-
-
-When gates fire (venue-driven)
-================================
+CHECK phase worker -- the 🧑 phase. Reviews the artifacts produced during one lifecycle stage's DRAFT-PROBE-REVISE and proposes the next move:
 
 ```
-venue complexity    gate behavior
-────────────────    ─────────────────────────────────
-simple (sms,        SKIP — lifecycle flows seed → pitch
-push, reminder)     → claims → draft without gates.
-                    The stages are lightweight enough
-                    that user review between stages
-                    is sufficient.
-
-medium (checklist,  OPTIONAL — user can request gates
-email)              at any stage boundary. Default: no
-                    gates unless --gate flag is passed.
-
-complex (dashboard, REQUIRED — gate fires between every
-ui-card, report)    stage. Full persona + attendance
-                    machinery applies.
+approve   → Gate Ledger row + advance current_layer to the next non-skipped stage
+revise    → loop back with feedback (same stage; upstream problems are named
+            as loopback suggestions, the user decides)
+done      → early exit: jump to draft (artifact) with remaining stages waived
+            (recorded in the ledger notes)
 ```
 
-The venue profile's README.md can declare:
-```yaml
-gate: skip | optional | required
-```
+A stage is only "done" when this approval is EXPLICIT. The system never auto-advances. Full protocol: `../../../wiki/08-stage-gate.md`.
 
+Gate Ledger (STATUS.md)
+========================
 
-Gate outcomes
-==============
+On approve, append/update the row and bump `current_layer`:
 
 ```
-approve   → next stage
-revise    → loop back to the stage with feedback
-done      → skip remaining stages, jump to draft
+## Gate Ledger
+
+| Stage | Confirmed | Date | By | Notes |
+|-------|-----------|------|----|-------|
+| seed | yes | 2026-07-06 | JL | kill criteria set |
+| claims | yes | 2026-07-06 | JL | settlement: light met |
 ```
 
-`revise` always loops back to the **current stage**, not to an
-earlier one. If the problem is upstream (e.g., claims are wrong
-during narrative), the user should explicitly run the upstream
-stage command.
+`By` records who approved: the human (copilot mode) or `persona:<preset>` (unattended mode). The stage strip's ✅ means "confirmed in this ledger", NOT "artifact exists on disk".
 
-
-Per-stage checks
-=================
+Venue-scaled depth (when CHECK fires)
+======================================
 
 ```
-G-seed:      kill criteria present? audience specific?
-G-pitch:     one-sentence goal testable? mechanism plausible?
-G-claims:    (light) K/W coverage complete?
-             (full) all primary claims supported or weak?
-             no GAP claims without probe plans?
-G-narrative: arc follows venue rules? all claims mapped?
-G-display:   every primary claim has a display unit?
-G-minimap:   every display unit decomposed? jobs assigned?
-G-draft:     venue self-review checklist passes?
-             audience constraints met?
+simple (sms, push, reminder)      INLINE — present the exit criteria as one short
+                                  checklist in the reply; user's "ok" = approve.
+medium (checklist, email)         INLINE by default; full report on request (--report).
+complex (dashboard, ui-card,      FULL — render the complete CHECK report (criteria
+report)                           + evidence spot-checks + flags) before the ask.
 ```
 
+The venue profile's README can override with `gate: inline | report`.
 
-Persona presets
-================
+Per-stage exit criteria
+========================
+
+```
+seed:          kill criteria present? audience hunch specific? >=1 evidence path named?
+claims:        every claim a ### C<n> prose subsection with role + status? no load-bearing
+               GAP without a _PROBE/ card? settlement bar met for the pinned depth
+               (light/medium/full — see claims skill §Settlement Gate)?
+pitch:         one-sentence goal testable? mechanism (theory of change) plausible?
+               venue + audience named?
+narrative:     arc follows venue rules? all load-bearing claims mapped to beats?
+display:       every primary claim has a content element? every element has a job +
+               evidence anchor? materialization routed (task refs) where needed?
+section-edit:  every section's prose does its assigned job? flagged NEEDs resolved
+               or explicitly parked?
+draft:         venue self-review checklist passes? audience constraints met? artifact
+               cites only ledger-backed claims (cited_K/W resolve)?
+```
+
+Persona presets (unattended stand-in ONLY)
+============================================
 
 ```
 preset       strictness  ambition  default outcome
@@ -94,14 +85,20 @@ creative     3           8         approve
 lenient      2           3         approve
 ```
 
-Default: `balanced` for new interventions.
+In copilot mode (default) the human decides and personas only SHAPE the report's recommendation. In `--unattended[=Ns]` runs the persona decides after the timeout and the ledger records `persona:<preset>`. Full schema: `./gate-persona.md`; attendance modes: `./attendance-modes.md`.
 
-See `../haipipe-application/ref/gate-persona.md` for full schema
-and `ref/attendance-modes.md` for attended/timed/unattended.
+Return contract
+================
 
+```
+status:    approved | revise | done | awaiting-user
+stage:     <stage-name>
+criteria:  <n passed> / <m total> (+ per-item marks in the report)
+ledger:    <row written or "pending user">
+next:      <next stage command or the revise instruction>
+```
 
 Risk profile
 =============
 
-READ-ONLY on stage artifacts. May append gate history to
-STATUS.md. Does NOT modify lifecycle artifacts.
+READ-ONLY on stage artifacts. Writes ONLY the STATUS.md Gate Ledger + current_layer (on approve) and a `[CHECK]` entry in the stage `_LOG`. Does NOT modify lifecycle artifacts.

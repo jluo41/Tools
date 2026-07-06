@@ -1,228 +1,147 @@
 # Intervention Lifecycle
 
-The intervention lifecycle is the stage spine for application
-deliverables. Uses the **same stage vocabulary** as the paper
-lifecycle (paper/ref/paper-lifecycle.md). The venue profile
-determines which stages fire.
+The application lifecycle is a delivery lifecycle. It owns the intervention-specific story, claim wording, content elements, and artifact text. Project-level evidence lives in discoveries, tasks, and insights. Same stage vocabulary and spine ORDER as paper (`../../paper/wiki/03-paper-lifecycle.md`); the venue profile gates which stages fire.
 
+## Folder Contract
 
-Stage spine
-============
-
-```
-Stage 0  seed         "why might this intervention work?"
-Stage 1  pitch        "what is this intervention trying to achieve?"
-(venue)               pinned in STATUS.md — reshapes everything downstream
-Stage 2  claims       "which K/W entries inform this?" (light)
-                      "what must be true for this to work?" (full)
-Stage 3  narrative    "how do claims compose into a coherent arc?"
-Stage 4  display      "what content element carries each claim?"
-Stage 5  minimap      "what job does each piece of the output do?"
-───────  draft        "realize the output as deployable artifact"
-───────  review       "audience fit + claim traceability"
-───────  round        "stakeholder/clinician feedback"
-───────  iterate      "A/B results → refine"
-───────  deploy       "ship to channel"
-```
-
-Same stage names as paper: seed, pitch, claims, narrative, display,
-minimap. The only difference is what each stage produces — that is
-determined by the venue.
-
-
-Stage requirements per venue
-==============================
-
-The venue profile declares which stages are required, optional,
-or skip. Seed, pitch, and claims are always required.
-
-```
-                    seed   pitch   claims   narrative   display   minimap
-                    ─────  ─────   ──────   ─────────   ───────   ───────
-venue-sms           req    req     req      skip        skip      skip
-venue-push          req    req     req      skip        skip      skip
-venue-reminder      req    req     req      skip        skip      skip
-venue-checklist     req    req     req      optional    skip      skip
-venue-email         req    req     req      req         optional  skip
-venue-dashboard     req    req     req      req         req       req
-venue-ui-card       req    req     req      req         req       optional
-venue-report        req    req     req      req         req       req
-```
-
-Simple venues (SMS, push, reminder): seed → pitch → claims → draft.
-Complex venues (dashboard, report): all 6 stages before draft.
-
-
-Claims depth per venue
-========================
-
-```
-claims_depth    venues                     meaning
-────────────    ──────────────────────     ────────────────────────────
-light           sms, push, reminder        SELECT from existing K/W.
-                                           Map K/W to venue template
-                                           slots. No probe planning.
-
-medium          checklist, email           SELECT + gap check.
-                                           Verify coverage. Optional
-                                           probe if gap is load-bearing.
-
-full            dashboard, ui-card,        Full claim ledger.
-                report                     GAP/weak/supported per claim.
-                                           Probe plans for GAPs.
-```
-
-
-Venue template (simple venues)
-================================
-
-For venues that skip narrative/display/minimap, the venue profile
-includes a fixed template that replaces those stages:
-
-```yaml
-# venue-sms template
-template:
-  - slot: greeting     ← personalization
-  - slot: benefit      ← primary claim (K/W)
-  - slot: CTA          ← action claim (W)
-  - slot: close        ← reassurance / opt-out
-```
-
-The draft skill reads this template directly. No intermediate
-lifecycle artifacts needed.
-
-
-Stage → file mapping
-=====================
-
-```
-stage        file                            skill
-────────     ────────────────────────         ──────────────────────────
-seed         0-lifecycle/0-seed.md            haipipe-application-seed
-pitch        0-lifecycle/1-pitch.md           haipipe-application-pitch
-(venue)      STATUS.md venue: field           haipipe-application-venue
-claims       0-lifecycle/2-claims.md          haipipe-application-claims
-narrative    0-lifecycle/3-narrative.md       haipipe-application-narrative
-display      0-lifecycle/4-display.md         haipipe-application-display
-minimap      0-lifecycle/5-minimap.md         haipipe-application-minimap
-draft        0-artifacts/<slug>-v{N}.md       haipipe-application-draft
-review       0-artifacts/REVIEW-*.md          haipipe-application-review
-round        1-rounds/vYYMMDD/               haipipe-application-round
-iterate      (via round)                     haipipe-application-iterate
-deploy       (channel-specific)              haipipe-application-deploy
-```
-
-
-Maturity ladder
-================
-
-Maturity is derived from disk, not declared.
-
-```
-maturity             condition
-──────────           ───────────────────────────────────
-prospect             0-seed.md exists
-pitched              1-pitch.md exists
-venue-pinned         STATUS.md has venue: <name>
-claim-ledger         2-claims.md exists
-narrated             3-narrative.md exists (if required by venue)
-display-mapped       4-display.md exists (if required by venue)
-minimapped           5-minimap.md exists (if required by venue)
-drafted              0-artifacts/ has at least one artifact
-reviewed             review pass completed
-deployed             artifact shipped to channel
-iterating            post-deploy round open
-retired              kill criterion met; no further work
-```
-
-For simple venues, maturity jumps from `claim-ledger` straight to
-`drafted` (skipping narrated/display-mapped/minimapped).
-
-
-Loopback rule
-==============
-
-```
-symptom                                  → loop back to
-─────────────────────────────────────────────────────────
-evidence missing for claim               → claims
-theory of change wrong                   → pitch
-output structure wrong                   → narrative (or venue)
-content element doesn't fit              → display
-stakeholder review rejects               → round → target stage
-A/B test shows no effect                 → pitch or claims
-kill criterion met                       → STATUS.md → retired
-venue wrong for audience                 → venue (invalidates claims+)
-```
-
-
-Evidence flow (full claims only)
-==================================
-
-```
-Claim GAP in 2-claims.md
-    ↓
-Buffer in 1-probe-plans/PP##_*.md
-    ↓
-/haipipe-probe plan from-intervention
-    ↓
-probe.Gather():
-  ├── task (internal data): cohort HTE, engagement, click rates
-  └── discovery (external): literature, benchmarks
-    ↓
-probe.Judge() → verdict
-    ↓
-/haipipe-insight files K/W cards
-    ↓
-Backfill claims → advance to narrative
-```
-
-Light claims: no evidence flow — select from existing KB only.
-
-
-Paper ↔ application comparison
-================================
-
-```
-paper                     application
-─────                     ──────────────
-same stage names          same stage names
-_venue/ (journal)         _venue/ (output modality)
-venue reshapes all        venue reshapes all + skips stages
-0-sections/ (TeX)         0-artifacts/ (markdown)
-claims always full        claims depth scales with venue
-1-rounds/                 1-rounds/
-1-probe-plans/            1-probe-plans/ (full depth only)
-Paper Console             Intervention Console
-compile + submit          review + deploy
-rebuttal                  iterate (A/B results)
-```
-
-
-Intervention folder schema
-============================
-
-```
-applications/interventions/<NN>_<slug>/
-├── STATUS.md                          venue, maturity, active round
-├── .intervention-console.yaml
+```text
+<intervention-root>/
+├── STATUS.md                 venue, stages_skipped, claims_settlement, current_layer, maturity, Gate Ledger
 ├── 0-lifecycle/
-│   ├── 0-seed.md                      always
-│   ├── 1-pitch.md                     always
-│   ├── 2-claims.md                    always (depth varies)
-│   ├── 3-narrative.md                 if venue requires
-│   ├── 4-display.md                   if venue requires
-│   └── 5-minimap.md                   if venue requires
-├── 0-artifacts/
-│   ├── <slug>-v{N}.md
-│   ├── REVIEW-<slug>.md
-│   └── CLAIM_AUDIT.md
-├── 1-rounds/
-│   ├── latest.md
-│   └── vYYMMDD/
-├── 1-probe-plans/                     full claims only
-│   └── PP##_<slug>.md
-├── data/
-│   └── contract.yaml
-└── report.md                          final DIKW-spine summary
+│   ├── 0-seed/           venue: FREE      0-seed.md + _LOG + _PROBE/
+│   ├── 1-claims/         venue: FREE      1-claims.md + _LOG + _EVIDENCE_ + _PROBE/
+│   ├── 2-pitch/          venue: ALIGNED   2-pitch.md + _LOG + _PROBE/
+│   ├── 3-narrative/      venue: GATED     3-narrative.md + _LOG          (if venue requires)
+│   ├── 4-display/        venue: GATED     4-display.md + _LOG            (if venue requires)
+│   └── 5-section-edit/   venue: GATED     per-section scaffolds + _LOG   (sectioned venues)
+├── 0-sections/               sectioned-venue prose
+├── 0-artifacts/              <slug>-v{N}.md · REVIEW-* · CLAIM_AUDIT.md
+├── 1-probe-plans/README.md   cross-stage INDEX (plans live per-stage in _PROBE/)
+├── 1-rounds/vYYMMDD/         work rounds
+└── data/contract.yaml        input-data contract (data-consuming venues)
+```
+
+Stage docs are markdown + `_LOG` (argument documents need no compilation). `0-` = source of truth, `1-` = process.
+
+## Lifecycle Stages
+
+| Stage | Job | Main question | Venue | Typical handoff |
+|---|---|---|---|---|
+| `0-seed` | Keep the intervention possibility alive | Why might this work? | FREE | claims or drop |
+| `1-claims` | Maintain the claim ledger | What must be true? Which K/W back it? | FREE | venue → pitch |
+| `venue` | Pin the output modality | Which channel fits? | (chooser) | writes venue + stages_skipped + claims_settlement |
+| `2-pitch` | One-minute goal + theory of change | What is this selling, to whom? | ALIGNED | narrative or draft |
+| `3-narrative` | Structure the output's arc | How do claims compose? | GATED | display |
+| `4-display` | Content elements + per-unit jobs | What element carries each claim, and what job does each unit do? | GATED | section-edit or draft |
+| `5-section-edit` | Per-section DPRC on venue-declared sections | Does each section's prose do its job? | GATED | draft |
+| `draft` | Compose the deliverable (haipipe-application-artifact) | Is the artifact venue+audience-true? | ALIGNED | review |
+| `review` / `claim-audit` | Audience fit + claim traceability | Ship it? | -- | deploy or loopback |
+| `deploy` | Ship to channel | -- | -- | iterate |
+| `round` / `iterate` | Feedback + A/B refinement | What did the channel teach us? | -- | target stage |
+
+The retired `minimap` stage's concern (per-unit jobs) lives inside `4-display`.
+
+## Venue Gating
+
+The venue pin (between claims and pitch) writes three STATUS.md rows the whole system reads:
+
+```text
+| venue |             sms | push | reminder | checklist | email | dashboard | ui-card | report
+| stages_skipped |    which of narrative/display/section-edit this venue skips
+| claims_settlement | light | medium | full   (how much of the ledger must settle before draft)
+```
+
+```text
+                 narrative   display   section-edit   claims_settlement   gate depth
+venue-sms        skip        skip      skip           light               inline
+venue-push       skip        skip      skip           light               inline
+venue-reminder   skip        skip      skip           light               inline
+venue-checklist  optional    skip      skip           medium              inline
+venue-email      req         optional  skip           medium              inline
+venue-dashboard  req         req       req            full                report
+venue-ui-card    req         req       optional       full                report
+venue-report     req         req       req            full                report
+```
+
+Authoritative per-venue table: each `_venue/venue-<name>/README.md`. Simple venues: seed → claims → venue → pitch → draft. Complex venues: all stages before draft.
+
+## Venue-FREE / Venue-ALIGNED Boundary
+
+Seed and claims are venue-FREE: written before the pin, unchanged on retarget (the K/W truth does not change with the channel). Pitch, narrative, display, and section-edit are venue-ALIGNED: they rewrite on retarget. Retargeting (sms → dashboard) re-runs venue + pitch and may DEEPEN the claims settlement requirement — it never invalidates the ledger. Slot-mapping (which K/W fills which template slot) is venue-ALIGNED work and happens in draft/display, never in claims.
+
+## Phase Dimension
+
+Stages × phases is a two-axis model. Each stage skill in `1-lifecycle/` defines WHAT the stage delivers; the `2-phase/` workers define HOW: DRAFT → PROBE → REVISE → CHECK (`haipipe-application-{draft,probe,revise,check}`). The PROBE phase dispatches evidence needs through `/haipipe-probe` (the project-side evidence gateway) via the `haipipe-application-probe` worker — the ONLY door. CHECK is the only human-involved phase, venue-scaled (inline for simple venues, full reports for complex). Users invoke stage skills only, never phases.
+
+## Maturity Ladder
+
+Maturity is derived from disk, not declared. Orthogonal to the current stage.
+
+```text
+maturity           condition
+──────────         ─────────────────────────────────────────────
+prospect           0-seed/ exists
+claim-ledger       1-claims/ has C-slots
+venue-pinned       STATUS.md has venue:
+pitched            2-pitch/ gate-approved
+narrated           3-narrative/ gate-approved (if venue requires)
+display-mapped     4-display/ gate-approved (if venue requires)
+section-edit       5-section-edit/ scaffolds with DPRC in progress (sectioned venues)
+drafted            0-artifacts/ has >=1 artifact
+reviewed           review pass completed
+deployed           artifact shipped to channel
+iterating          post-deploy round open with A/B results
+retired            kill criterion met; no further work
+```
+
+For simple venues, maturity jumps from `pitched` straight to `drafted`.
+
+## Loopback Rule
+
+The lifecycle is not linear. When work fails, return to the earliest stage that explains the failure:
+
+| Symptom | Loop back to |
+|---|---|
+| evidence missing for claim | `1-claims` |
+| theory of change wrong | `2-pitch` |
+| output structure wrong | `3-narrative` (or venue) |
+| content element doesn't carry its claim | `4-display` |
+| section prose fails its job | `5-section-edit` |
+| stakeholder/clinician review rejects | `1-rounds` then target stage |
+| A/B test shows no effect | `2-pitch` or `1-claims` |
+| venue wrong for audience | `venue` (re-pin; pitch+ re-couple; claims SURVIVES) |
+| kill criterion met | STATUS.md → `retired` |
+
+## Evidence Flow (folderless probe)
+
+```text
+stage DRAFT flags a NEED
+    ↓
+buffer: _PROBE/PPNN_<slug>.md in the owning stage (+ index row in 1-probe-plans/README.md)
+    ↓
+/haipipe-application probe run [PPNN]  →  haipipe-application-probe (BOOKKEEP → DISPATCH → TRANSLATE)
+    ↓
+Agent(haipipe-probe-orchestrator-agent)   — clean context, bg for fresh work
+    SWEEP insights/ + discoveries/ + tasks/ → shape: reused | enriched | fresh
+    → discovery/task orchestrators for missing evidence
+    → probe-reviewer (full mode: G1/G2/G3 judgment)
+    ↓
+TRANSLATE: takeaways → card (status: read); full verdict → card ## Verdict
+(supported | refuted | inconclusive) + claims-ledger flip; sections/rounds backfill from the card
+```
+
+Light settlement venues rarely dispatch — they select from the existing KB; full venues run the whole chain. There is NO probes/ folder and NO `plan from-need` verb (folderless probe, 2026-07-05).
+
+## Paper ↔ Application Comparison
+
+```text
+paper                                application
+─────                                ──────────────
+same stage names, same spine order   same (seed → claims → [venue] → pitch → narrative → display → section-edit)
+_venue/ = journal playbooks          _venue/ = output modalities + _audience/ axis
+all stages fire; claims fully settle venue gates stages 3-5 + sets claims settlement depth
+0-sections/ TeX → compile → submit   0-artifacts/ markdown → draft → review → deploy
+respond (rebuttal) / present         iterate (A/B results → refine)
+Paper Console                        Intervention Console
+papers repo-backed                   interventions = plain in-project folders
 ```

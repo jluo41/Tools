@@ -1,106 +1,86 @@
 # Intervention Dashboard Contract
 
-The Intervention Console (haipipe-application-enter) derives the
-dashboard from disk. This document specifies what is read and how
-the dashboard is rendered.
-
-Modeled on paper/ref/paper-dashboard.md.
-
+The Intervention Console (haipipe-application-enter) derives the dashboard from disk. This document specifies what is read and how the dashboard is rendered. Modeled on `../../paper/wiki/05-paper-dashboard.md`.
 
 Derive-from-disk rules
 ========================
 
-The Console reads the intervention folder and derives state. It
-NEVER trusts STATUS.md alone — disk wins.
-
+The Console reads the intervention folder and derives state. It NEVER trusts STATUS.md alone — disk wins; STATUS.md drift is flagged.
 
 Stage frontier detection
 ==========================
 
 ```python
-for stage in [0-seed, 1-rationale, 2-claims, 3-design, 4-variants, 5-delivery-plan]:
-    path = f"0-lifecycle/{stage}.md"
-    if not exists(path) or is_empty(path):
-        frontier = stage
-        break
+spine = ["0-seed", "1-claims", "venue", "2-pitch", "3-narrative", "4-display", "5-section-edit"]
+skipped = read_status_row("stages_skipped")          # written at venue pin
+for stage in spine:
+    if stage in skipped: continue                    # venue-skipped: passed over, never a gap
+    if stage == "venue":
+        if not status_has_venue(): frontier = "venue"; break
+    elif not stage_doc_has_content(f"0-lifecycle/{stage}/{stage}.md") or not gate_confirmed(stage):
+        frontier = stage; break
 else:
-    frontier = "post-lifecycle"  # all stages complete
+    frontier = "draft" if no_artifact() else "review" if not_reviewed() else "deploy"
 ```
-
 
 Open needs detection
 =====================
 
 ```
-Source                          Need type
-───────────────────────         ──────────────
-2-claims.md: status=GAP         claim gap → probe plan
-2-claims.md: status=weak        weak claim → optional probe
-1-probe-plans/: status=planned  unstarted probe
-1-probe-plans/: status=dispatched  in-progress probe
-4-variants.md: status=planned   undrafted variant
-0-artifacts/REVIEW-*: verdict=revise   needs revision
-1-rounds/latest: status=open    open round with todo
+Source                                        Need type
+───────────────────────                       ──────────────
+1-claims: status=GAP below settlement bar     claim gap → probe card
+1-claims: status=weak (load-bearing)          weak claim → optional probe
+1-probe-plans/README.md: planned              unstarted probe card
+1-probe-plans/README.md: dispatched           in-progress probe (await TRANSLATE)
+4-display: element without task ref           unmaterialized element
+5-section-edit: DPRC phase incomplete         section work
+0-artifacts/REVIEW-*: verdict=revise          artifact needs revision
+1-rounds/latest: status=open                  open round with todo
 ```
-
 
 Dashboard rendering
 ====================
 
+Body order per `0-enter/haipipe-application-enter/SKILL.md` (Identity → About → Focus Strip → Current State → Stable → Open Needs → Loopback → Next → Artifacts Read). Compact shape:
+
 ```
-Intervention: <name>
-Audience:     <from seed or audience profile>
-Theory:       <one-sentence from rationale, or "(not yet written)")>
+Intervention: 03_refill_reminder
+Venue:        sms · audience: patient · settlement: light
+Theory:       <one sentence from 2-pitch, or "(pitch not yet written)">
 
-Lifecycle:  ✅ seed  ✅ rationale  ▶️ claims  ⬜ design  ⬜ variants  ⬜ delivery
-Maturity:   <derived maturity>
-Round:      <active round or "none">
+stage:   seed ✅  claims 🔥🚀  venue ⬜  pitch ⬜  narrative --  display --  section-edit --  →  draft ⬜  →  review ⬜  →  deploy ⬜
+phase:   draft ✅  │  probe 🔥🚀  │  revise ⬜  │  check ⬜
 
-Claims:     N total: M supported, P weak, Q GAP
-Probes:     N planned, M dispatched, P returned
-Artifacts:  N drafted, M reviewed, P deployed
+Claims:     5 total: 2 supported, 1 weak, 2 GAP (bar: light — 1 load-bearing GAP open)
+Probes:     2 planned, 1 dispatched, 0 verdicted
+Artifacts:  0 drafted, 0 reviewed, 0 deployed
+Round:      v260620 (open, 2 todo remaining)
 
 Open needs:
-  <id>  <type>   <description>   → <suggested route>
+  C02  GAP   "timing matters for refill"  → probe PP01 (dispatched)
 
 Next:
-  <suggested command based on frontier and open needs>
+  /haipipe-application probe run PP01
 ```
 
+Strip symbols
+==============
 
-Progress strip symbols
-=======================
-
-```
-✅  stage file exists and has substantive content
-▶️  current frontier (earliest incomplete stage)
-⬜  not yet started (no file or empty)
-⚠️  stage exists but has issues (GAPs in claims, review failures)
-```
-
+The stage line is rendered ONLY by `haipipe-application/stage-strip.sh` (🔥 active · 🚀 frontier · ✅ ledger-confirmed · ⬜ not started · `--` venue-skipped). Marker convention: haipipe-application/SKILL.md Closing Block, the single source of truth. The old ▶️ frontier symbol is retired.
 
 Session state file (.intervention-console.yaml)
 ==================================================
 
-Written by the Console on entry. Read on re-entry to detect
-changes since last session.
+Written by the Console on entry; a fresh session re-derives everything from disk.
 
 ```yaml
 intervention_root: <path>
-entered_at: <ISO>
-frontier_stage: <stage name>
+active_intervention: <name>
+venue: <pinned venue or "">
+current_layer: <frontier stage>
 maturity: <derived maturity>
-open_needs:
-  - {id: C02, type: GAP, route: "probe PP01"}
-  - {id: V01, type: planned, route: "draft message"}
 active_round: <vYYMMDD or null>
-artifact_count:
-  drafted: 0
-  reviewed: 0
-  deployed: 0
-claims_summary:
-  total: 5
-  supported: 2
-  weak: 1
-  gap: 2
+open_needs: <count>
+updated: <YYMMDD>
 ```

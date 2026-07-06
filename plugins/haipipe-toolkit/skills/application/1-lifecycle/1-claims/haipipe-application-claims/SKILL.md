@@ -1,263 +1,109 @@
 ---
 name: haipipe-application-claims
-description: "Stage 2 of the intervention lifecycle. Answers 'what must be true for this to work?' (full) or 'which K/W entries inform this output?' (light). Depth is venue-driven: light = select from existing KB, medium = select + gap check, full = claim ledger with probe plans. Always required. Output: 0-lifecycle/2-claims/2-claims.md + _LOG_2-claims.md + _EVIDENCE_2-claims.md. Probe plans in _PROBE/ subfolder (full depth). Markdown only. Trigger: claims, claim ledger, what must be true, which K/W, evidence, /haipipe-application claims."
-argument-hint: "[intervention-path]"
+description: "Stage orchestrator for the intervention's 0-lifecycle/1-claims/1-claims.md: the venue-FREE claim/evidence inventory that tracks what must be true for this intervention to work and which K/W/evidence backs each claim (supported / weak / GAP). Written BEFORE the venue is pinned and unchanged on retarget; the pinned venue later sets how much of the ledger must SETTLE before artifact work (light/medium/full). Emits probe plans into _PROBE/ for gaps and backfills verdicts. Markdown only, prose subsections, no tables. Trigger: claims, claim ledger, what must be true, which K/W, evidence, supported, GAP, /haipipe-application claims."
+argument-hint: "[intervention-path] [--backfill <PPNN>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.0.0"
-  last_updated: "2026-06-29"
-  summary: "Stage 2 — claims with venue-driven depth. Now with _LOG changelog + _EVIDENCE_ tracking (what backs each claim) + _PROBE/ subfolder for claim-spawned probe plans (borrowed from paper v2.0.0)."
+  version: "4.0.0"
+  last_updated: "2026-07-06"
+  summary: "Claims stage on the paper-aligned contract: venue-FREE content (moved BEFORE venue in the spine), stage folder with _LOG + _EVIDENCE_ + _PROBE/ cards + 1-probe-plans/README.md index, settlement-depth-at-gate, enum supported|refuted|inconclusive, `plan from-need` retired. Drives DPRC phases internally."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-application-claims
 ==================================
 
-Stage 2 of the intervention lifecycle. Always required, but its
-**depth** scales with venue complexity.
+Stage orchestrator for the **claims** stage (stage 1, venue-FREE). The user invokes this skill; it drives the phases internally.
 
+It answers one question:
 
-Claims depth (venue-driven)
-=============================
-
-The venue profile's `claims_depth` field determines how deep the
-claims stage goes:
-
-```
-claims_depth   venues                    what happens
-────────────   ─────────────────────     ──────────────────────────────
-light          sms, push, reminder       SELECT from existing K/W.
-                                         List which K/W entries inform
-                                         each slot of the venue template.
-                                         No probe planning. If KB is
-                                         empty, use common knowledge
-                                         or trigger ask session first.
-
-medium         checklist, email          SELECT + GAP CHECK.
-                                         Verify K/W covers all items/
-                                         sections. Flag gaps. Optional
-                                         probe if gap is load-bearing.
-
-full           dashboard, ui-card,       FULL CLAIM LEDGER.
-               report                    Every claim gets status
-                                         (supported/weak/GAP). GAPs
-                                         get probe plans in
-                                         1-probe-plans/.
+```text
+What must be true for this intervention to work, and what evidence settles each claim?
 ```
 
+Every claim the intervention relies on is its own prose subsection with a status and a source. The application does not produce evidence; it selects judged evidence (insight K/W cards, task results, discovery findings) and tracks what is still missing. Unsupported claims become probe plans; verdicts are backfilled here.
 
-Question answered (depth-dependent)
-=====================================
+**Venue-FREE.** This ledger is written before the venue is pinned and survives retargeting: the K/W truth does not change when the channel changes. No slot-mapping, no channel framing, no template references here -- those are venue-ALIGNED and live downstream (pitch/display/artifact). What the venue DOES control is the required **settlement depth**, read at the gate (below).
 
-```
-light:   "Which K/W entries inform this message?"
-medium:  "Do we have evidence for every part of this output?"
-full:    "What must be true for this intervention to work?"
-```
+## Artifact Spec
 
+**Files produced:**
+- `0-lifecycle/1-claims/1-claims.md` -- claim/evidence inventory
+- `0-lifecycle/1-claims/_LOG_1-claims.md` -- phase progress journal
+- `0-lifecycle/1-claims/_EVIDENCE_1-claims.md` -- evidence backing per claim
+- `0-lifecycle/1-claims/_PROBE/PPNN_*.md` -- probe plans for evidence gaps (+ index row in `1-probe-plans/README.md`)
 
-Input
-======
+**Content structure (1-claims.md):** prose only, no tables (JL ruling, shared with paper claims).
+- Claims -- one `### C<n> - <title> (<role>) - <status>` subsection per claim; body is a short paragraph: (S1) the claim, (S2) the backing evidence with its concrete anchor (K/W card id, task result path, discovery source), (S3) one-line interpretation for the intervention, (S4) caveat + source ref
+- Pending Evidence -- probe plans not yet returned
+- Coverage note -- a closing paragraph: which claims are load-bearing for the intended intervention and which are nice-to-have
 
-- `0-lifecycle/1-pitch.md` (required)
-- `0-lifecycle/0-seed.md`
-- `STATUS.md` → venue → claims_depth
-- Venue profile from `_venue/venue-<name>/` (template if light)
-- Project KB: insights/INDEX.md, K_knowledge/, W_wisdom/
-- Existing probe plans in `1-probe-plans/` (if any, full only)
+**Claim roles:** `primary` (value proposition depends on it) · `enabling` (works without it, better with it) · `assumption` (taken as given; probe only if challenged).
 
+**Status vocabulary:** `supported` · `weak` · `GAP`. A claim is `supported` only when it traces to a judged artifact (insight K/W card, probe verdict `supported`, or an equivalently reviewed result) -- never from intuition. Verdict words follow the PPNN enum: `supported | refuted | inconclusive` (the word `confirmed` is retired).
 
-Output
-=======
+## Phase Orchestration
 
-```
-<intervention-root>/0-lifecycle/2-claims.md
-<intervention-root>/1-probe-plans/PP##_<slug>.md   (full depth only)
-```
-
-
-Light claims artifact
-======================
-
-For SMS, push, reminder — just map K/W to venue template slots:
-
-```markdown
-# Claims (light): <intervention name>
-
-## K/W selection
-- **Benefit slot** draws on: K03 (timing sensitivity in refill)
-- **CTA slot** draws on: W02 (recommend refill action at T-48h)
-- **Greeting slot**: personalization (common knowledge, no K needed)
-- **Close slot**: standard opt-out (no K needed)
-
-## Coverage
-All template slots covered. No gaps.
-
-## Cited
-- cited_K: [K03]
-- cited_W: [W02]
-```
-
-
-Medium claims artifact
-========================
-
-For checklist, email — selection + gap check:
-
-```markdown
-# Claims (medium): <intervention name>
-
-## Coverage check
-| Section / Item | K/W source | Status |
-|----------------|------------|--------|
-| Context paragraph | K03 | covered |
-| Finding 1 | K05, D01 | covered |
-| Finding 2 | (none) | gap — non-critical, proceed |
-| Recommendation | W02 | covered |
-
-## Gaps
-- Finding 2: no K/W entry covers this. Low priority —
-  use directional language ("emerging evidence suggests...").
-  Optional: trigger ask session to gather evidence.
-
-## Cited
-- cited_K: [K03, K05]
-- cited_W: [W02]
-- cited_D: [D01]
-```
-
-
-Full claims artifact
-=====================
-
-For dashboard, ui-card, report — same as paper's claim ledger:
-
-```markdown
-# Claim Ledger: <intervention name>
-
-## Summary
-N claims: M supported, P weak, Q GAP
-
-## Claims
-
-### C01: <claim statement>
-- **Status:** supported | weak | GAP
-- **Evidence:** K03, D01 (or "none — GAP")
-- **Role:** primary | enabling | assumption
-- **Notes:** <why this matters>
-- **Probe plan:** PP01_... (if GAP)
-
-### C02: ...
-```
-
-
-Workflow (all depths)
-======================
+When the user invokes `/haipipe-application claims`, this skill drives the phases in order. The user does not call phase skills directly.
 
 ```
-Step 1: Read 1-pitch.md. If missing → BLOCK.
-        Read STATUS.md → venue → claims_depth.
-
-Step 2: Read venue profile. Get claims_depth and template (if light).
-
-Step 3: Scan KB for K/W entries relevant to the pitch.
-
-Step 4: Per depth:
-
-        LIGHT:
-          Map K/W to venue template slots.
-          If slot has no K/W → mark "common knowledge" or flag.
-          Write 2-claims.md (light format).
-
-        MEDIUM:
-          Map K/W to sections/items.
-          Gap check: any section with no backing → flag.
-          Decide: proceed with caveat OR trigger ask.
-          Write 2-claims.md (medium format).
-
-        FULL:
-          Extract every testable claim from pitch.
-          Check KB per claim → supported/weak/GAP.
-          For each GAP → write probe plan in 1-probe-plans/.
-          Write 2-claims.md (full format).
-
-Step 5: Present summary to user.
-Step 6: Write (atomic).
+claims invoked
+  │
+  ▼
+DRAFT ──→ illuminate existing claims, elicit taste, extract testable claims
+          from the seed, scan insights/INDEX.md for candidate K/W, write one
+          prose subsection per claim
+          (internally calls haipipe-application-draft with this artifact spec)
+  │
+  ▼
+PROBE ──→ link evidence to each claim, backfill verdicts, buffer probe plans
+          in _PROBE/ for GAPs (+ index rows); dispatch only on `probe run`
+          (internally calls haipipe-application-probe)
+  │
+  ▼
+REVISE ─→ refine claim statements and evidence descriptions for clarity
+          (internally calls haipipe-application-revise)
+  │
+  ▼
+CHECK ──→ present exit gate (below); user confirms → Gate Ledger row → advance to venue
+          (internally calls haipipe-application-check)
 ```
 
+Phase visibility: announce every phase boundary (reply line + `[PHASE]` entry in `_LOG` + phase-line 🔥 moves); skip a phase only by an explicit logged verdict (`[PROBE] skipped -- <reason>`, phase line shows `--`); CHECK is never implicit.
 
-Claim status vocabulary (full depth only)
-==========================================
+## Probe Plans Buffer
 
-```
-supported   K/W entry exists and backs the claim
-weak        K/W entry exists but incomplete or narrow scope
-GAP         no evidence; must gather before advancing
-```
+GAP/weak claims buffer probe plans in `_PROBE/` rather than dispatching immediately. One card per need (`PPNN_<slug>.md`, numbering authority = the `1-probe-plans/README.md` index), statuses `planned | dispatched | read | verdicted`. Card anatomy + buffer convention: `../../../haipipe-application/fn/probe-plans.md` (mirror of paper's). Dispatch happens ONLY through `haipipe-application-probe` (`/haipipe-application probe run [PPNN]`) -- never by calling `/haipipe-probe` from here.
 
+Claims-stage probes default to **mode: full** (the intervention needs committed verdicts, G1/G2/G3-judged); context questions elsewhere in the lifecycle default to light.
 
-Claim roles (full depth only)
-===============================
+On verdict return (TRANSLATE lands it in the card's `## Verdict`): `--backfill <PPNN>` flips the claim's status from the verdict -- `supported` -> supported; `refuted` -> drop or reword the claim (never ship a refuted claim); `inconclusive` -> stays weak/GAP with the caveat recorded.
 
-```
-primary     core value proposition depends on this
-enabling    intervention works without it but better with it
-assumption  taken as given; not worth probing unless challenged
-```
+## Settlement Gate (venue-scaled, read at CHECK)
 
-
-GAP → probe plan buffer (full depth only)
-===========================================
-
-For each GAP claim, write:
+The ledger's CONTENT is venue-free; how much must be SETTLED before artifact work is venue-scaled. CHECK reads `STATUS.md | claims_settlement |` (written at venue pin; absent = not yet pinned, apply `light` provisionally):
 
 ```
-1-probe-plans/PP01_<slug>.md
+light    (sms, push, reminder)      every claim the artifact will lean on is at least
+                                    tied to a named K/W or marked "common knowledge";
+                                    GAPs allowed if not load-bearing
+medium   (checklist, email)         all primary claims supported or weak-with-caveat;
+                                    load-bearing GAPs have probe plans (dispatch optional)
+full     (dashboard, ui-card,       all primary claims supported (judged verdicts);
+          report)                   every GAP has a probe plan, load-bearing ones verdicted
 ```
 
-```markdown
-# Probe Plan: PP01_timing_effect
+Exit criteria (all depths): every claim has a `### C<n>` prose subsection with role + status; no load-bearing GAP without a probe card; `_EVIDENCE_` links resolve; settlement bar (above) met for the pinned or provisional depth. On CHECK confirm, write the Gate Ledger row, set `current_layer` to `venue` (or `2-pitch` if the venue is already pinned).
 
-- **Source claim:** C02
-- **Question:** <what evidence is needed>
-- **Route:** /haipipe-probe plan from-need
-- **Status:** planned | dispatched | returned
-- **Verdict:** <filled on return>
-```
+## Principles
 
+1. One `### C<n>` subsection per claim, prose only, no tables anywhere in the ledger.
+2. Never mark `supported` from intuition; cite the judged artifact and its anchor.
+3. No aspirational anchors: "the dashboard will show X" is not evidence; a supported claim cites a real value in a real file/card.
+4. Overclaim guard: if evidence is I-level (in-sample pattern) but the claim needs K-level (generalizes), keep it `weak` and route a probe.
+5. Venue-FREE: retargeting changes the required settlement, never the ledger's truth. If a claim only matters for one venue, say so in its caveat -- do not delete it on retarget.
+6. The application reads the project KB (insights/INDEX.md first, bodies only when shortlisted) but never writes insight cards from here -- deposits belong to the probe/insight side.
 
-Backfill on probe return (full depth)
-=======================================
+## Handoff
 
-1. Read verdict from the need's PPNN card (the gateway's return lands it there).
-2. Update claim status in 2-claims.md.
-3. Update probe plan status in 1-probe-plans/.
-
-
-Definition of done
-===================
-
-```
-LIGHT:
-  [ ] 2-claims.md exists with K/W → slot mapping
-  [ ] cited_K / cited_W listed
-
-MEDIUM:
-  [ ] 2-claims.md exists with coverage check table
-  [ ] Gaps flagged with decision (proceed/ask)
-  [ ] cited_K / cited_W listed
-
-FULL:
-  [ ] 2-claims.md exists with all claims
-  [ ] Every claim has status (supported/weak/GAP)
-  [ ] Every GAP has probe plan in 1-probe-plans/
-  [ ] Claim roles assigned
-```
-
-
-Risk profile
-=============
-
-WRITES: `0-lifecycle/2-claims.md`.
-FULL depth also writes: `1-probe-plans/PP##_*.md`.
-READ-ONLY on KB and probes.
+On CHECK confirm: `promote -> /haipipe-application venue` (pin modality), or `-> /haipipe-application pitch` if venue already pinned. End the reply with the closing block (stage line via `../../../haipipe-application/stage-strip.sh`).
