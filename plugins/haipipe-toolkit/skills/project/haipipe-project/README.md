@@ -30,7 +30,6 @@ Container Layout
 
   examples/<name>/
   +-- tasks/          owner: /haipipe-task
-  +-- probes/         owner: /haipipe-probe
   +-- discoveries/    owner: /haipipe-discovery
   +-- insights/       owner: /haipipe-insight
   +-- papers/         owner: /haipipe-paper-*  (each paper a submodule; legacy projects use singular paper/)

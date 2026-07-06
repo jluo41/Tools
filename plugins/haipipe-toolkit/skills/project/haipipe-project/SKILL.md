@@ -1,6 +1,6 @@
 ---
 name: haipipe-project
-description: "Quick project setup: create the container folders and stop. Two kinds by name: Project-* = repo-backed (gh repo under a user-chosen org, never assumed; submodule at examples/<name>; if the repo already exists, adopt and pull it) and ProjX-* = plain directory under examples/. Owns ONLY the container layout (tasks/ probes/ discoveries/ insights/ papers/ diagram/); each subfolder's internals belong to its owning skill family. Task/run scaffolding lives in /haipipe-task. Trigger: new project, project scaffold, repo project, project submodule, /haipipe-project."
+description: "Quick project setup: create the container folders and stop. Two kinds by name: Project-* = repo-backed (gh repo under a user-chosen org, never assumed; submodule at examples/<name>; if the repo already exists, adopt and pull it) and ProjX-* = plain directory under examples/. Owns ONLY the container layout (tasks/ discoveries/ insights/ papers/ diagram/; probes/ retired 2026-07-05 — evidence contracts live in each paper/application stage's _PROBE/ cards); each subfolder's internals belong to its owning skill family. Task/run scaffolding lives in /haipipe-task. Trigger: new project, project scaffold, repo project, project submodule, /haipipe-project."
 argument-hint: "[repo|new|feedback|digest] [Project-Name|args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
@@ -41,7 +41,7 @@ eval status scanning (scan-status)           -> /haipipe-task   (task/)
 workflow plan/report schema                  -> task/haipipe-workflow
 paper folders inside a project               -> /haipipe-paper-lifecycle folder
 project audits / reorganization              -> retired; originals in project/_archive
-claims / probes / evidence                   -> /haipipe-probe  (probe/)
+claims / probes / evidence                   -> /haipipe-probe  (gateway layer doc; folderless — _PROBE cards live consumer-side)
 ```
 
 ---
@@ -54,7 +54,6 @@ This skill owns ONLY the top-level container. Each subfolder's INTERNAL structur
 ```
 📦 examples/<name>/   (this skill sets up the container)
    ├── 💼 tasks/          owner: /haipipe-task        three-level hierarchy, group letters, task-folder anatomy
-   ├── 📊 probes/         owner: /haipipe-probe       one probe folder = one claim-level evidence contract
    ├── 🔎 discoveries/    owner: /haipipe-discovery   one topic = one folder (Search / Review / Idea types)
    ├── 💡 insights/       owner: /haipipe-insight     D/I/K/W cards + INDEX
    ├── 📰 papers/         owner: /haipipe-paper-*     paper-folder contract (paper wiki); each paper a submodule (legacy projects use singular paper/; do not migrate)

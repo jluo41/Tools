@@ -78,7 +78,6 @@ examples/<Project-Name>/
 ├── README.md          # repo front page: 2-3 sentences, what this project studies
 ├── .gitignore         # _WorkSpace/, .paper-console.yaml, .probe-console.yaml, *.aux etc.
 ├── tasks/             # internal structure owned by /haipipe-task
-├── probes/            # internal structure owned by /haipipe-probe
 ├── discoveries/       # internal structure owned by /haipipe-discovery
 ├── insights/          # internal structure owned by /haipipe-insight
 ├── diagram/           # EMPTY at setup; authored later via /diagram-ascii on request

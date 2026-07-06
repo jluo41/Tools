@@ -28,7 +28,6 @@ Step 2 -- Create skeleton
 ```
 examples/{PROJECT_ID}/
 ├── tasks/             internal structure owned by /haipipe-task
-├── probes/            internal structure owned by /haipipe-probe
 ├── discoveries/       internal structure owned by /haipipe-discovery
 ├── insights/          internal structure owned by /haipipe-insight
 ├── diagram/           EMPTY at setup; authored later via /diagram-ascii on request
