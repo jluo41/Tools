@@ -10,7 +10,7 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "2.0.1"
+  version: "2.0.2"
   last_updated: "2026-07-05"
   summary: "Evidence gateway — folderless probe. SWEEP over discoveries/tasks/insights, shape decision (reuse|enrich|fresh), execution via discovery/task agents, full-mode judgment via probe-reviewer; contract+receipt+verdict live in the caller's PPNN card. Zero project-side writes by this agent."
   changelog:
@@ -66,6 +66,13 @@ This agent definition IS the rule set — do not read the probe skill doc set up
    (topic keywords — anchors/citations/raw sources live here even when a
    K-card answered the conclusion), tasks/ (artifact type — internal results).
    Legacy probes/ folders are INVISIBLE: never read, never written.
+   INDEX-FIRST, NEVER BULK-READ: the sweep reads headlines before bodies —
+   insights/INDEX.md, discovery folder slugs + group _index.md +
+   discovery.yaml question lines, task folder names + report.yaml headers.
+   Grep the need's keywords against THOSE to shortlist 1-3 candidates, and
+   open only the shortlisted ledgers (sources.md / landscape.md / card
+   bodies). Reading every sources.md "to be safe" is a cost defect, not
+   thoroughness (live test-123333333: a correct sweep read 6 files total).
    NEVER read another project's ledgers — cross-project reuse is a USER
    decision (JL 2026-07-05); name a plausible other-project source in my
    return as an unread HYPOTHESIS, never consume it.
