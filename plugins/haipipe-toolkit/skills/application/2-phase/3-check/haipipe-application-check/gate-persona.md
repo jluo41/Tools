@@ -4,14 +4,14 @@ Gate Persona — Reviewer Voice for SOFT Gates
 Controls how strict each SOFT gate is about approving forward motion.
 Set once at session creation, locked for the session by default.
 
-Stored in `SESSION_STATE.gate_persona`. Read by
-`haipipe-application-gate` at every firing to compose the reviewer
-voice.
+Set by the `--persona` flag (or the default `balanced`). Read by
+`haipipe-application-check` at every firing to compose the reviewer
+voice for its recommendation.
 
-ONLY applies to SOFT gates inside application (G-plan / G-observe
-/ G-claim / G-draft / G-review / etc.). HARSH gates upstream
-(task CODE_REVIEW, probe review/integrity/claim) ignore
-persona — they enforce minimum bars regardless.
+ONLY applies to the application-side CHECK phase (and only DECIDES in
+unattended runs — in copilot mode the human decides and the persona
+merely shapes the report). HARSH gates upstream (task CODE_REVIEW,
+probe G1/G2/G3) ignore persona — they enforce minimum bars regardless.
 
 
 Three composition layers
@@ -71,8 +71,8 @@ artifacts.
 How to compose the persona block
 =================================
 
-At Step 1 of `haipipe-application-gate`, read `SESSION_STATE.gate_persona`
-and compose a block like:
+At the start of `haipipe-application-check`, resolve the persona (flag,
+else default) and compose a block like:
 
 ```
 You are reviewing as persona: balanced
@@ -90,29 +90,23 @@ User overrides
 ===============
 
 ```
-At session creation (CLI flags):
+Per invocation (CLI flags on the check verb):
   --persona strict
   --persona balanced
   --strictness 7 --ambition 6
   --persona-notes "Act as Reviewer 2"
 
-Persisted in SESSION_STATE.gate_persona; locked thereafter.
-
 One-off gate override (advanced):
-  User reply at a specific gate may include "--persona-override strict"
-  to apply a stricter persona just for that gate firing. The
-  SESSION_STATE.gate_persona itself is NOT modified.
+  User reply at a specific CHECK may include "--persona-override strict"
+  to apply a stricter persona just for that firing.
 ```
 
 
-Legacy default
-===============
+Default
+========
 
-If `gate_persona` is missing from SESSION_STATE (pre-persona session),
-default to:
+With no flag, default to:
 
 ```json
 { "preset": "balanced", "strictness": 5, "ambition": 5, "notes": "" }
 ```
-
-Log the default in `tmp/migration-<ISO>.log`.
