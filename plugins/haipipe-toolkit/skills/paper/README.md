@@ -2,7 +2,7 @@
 
 Canonical reference. This file + `wiki/` win over anything elsewhere.
 
-A paper is a delivery contract, not a writing folder. It owns one manuscript's story, claims, displays, minimap, and prose. Evidence lives in probes/tasks/discoveries/insights at the project level. Claim gaps buffer in `1-probe-plans/` and batch-dispatch to probe (the universal evidence gateway; probe calls task/discover during Gather). Direct task/discover for non-claim utility work only.
+A paper is a delivery contract, not a writing folder. It owns one manuscript's story, claims, displays, minimap, and prose. Evidence lives in tasks/discoveries/insights at the project level; each stage's _PROBE/PPNN card carries contract + receipt + verdict. Claim gaps buffer in `1-probe-plans/` and batch-dispatch to probe (the universal evidence gateway; probe calls task/discover during Gather). Direct task/discover for non-claim utility work only.
 
 ## Paper-folder layout
 

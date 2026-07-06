@@ -203,7 +203,7 @@ Next:
 
 1. **One minute or it failed.** `2-pitch.md` should be readable in one minute. Keep it short enough to fit on one screen.
 2. **Pitch can start as intuition.** A seed pitch may cite author judgment, a research review, or a rough direction.
-3. **Later shifts need sources.** Every semantic shift after the seed should cite a source: `discoveries/`, `tasks/`, `probes/`, `insights/`, reviewer feedback, venue strategy, or an explicit author decision.
+3. **Later shifts need sources.** Every semantic shift after the seed should cite a source: `discoveries/`, `tasks/`, stage `_PROBE/` cards, `insights/`, reviewer feedback, venue strategy, or an explicit author decision.
 4. **Archive semantic versions only.** Archive when the story state changes (`seed -> discovery-shift`, `accuracy -> robustness`, `method-first -> application-first`), not for typo edits.
 5. **Do not write the paper here.** Abstract, intro, section plan, and LaTeX belong downstream. This skill only maintains the story kernel.
 5b. **Pitch is the cover letter.** The pitch IS the venue-ALIGNED cover letter. It can be sent to the editor as-is. It tells THIS editor why THIS paper fits THEIR journal. Venue pinning (STATUS `venue`) must happen before or during pitch. If no venue is pinned, run `/haipipe-paper venue` first.

@@ -239,7 +239,7 @@ Sub-workflow steps
 When a Step calls another skill (type: skill), the plan declares only sub_I and sub_O. The callee's internal phases are hidden.
 
 ```yaml
-# In haipipe-probe's plan.yaml
+# In a dispatching workflow's plan.yaml
 phases:
   - title: Bridge
     steps:
@@ -257,7 +257,7 @@ phases:
           folder: { type: string }
           files_created: { type: array }
         files_in:
-          - probes/0608_lr_vs_data/probe.yaml   # arm spec source
+          - configs/0608_lr_vs_data.yaml        # arm spec source
         files_out:
           - tasks/A01_.../                       # task folder created by sub-workflow
 ```

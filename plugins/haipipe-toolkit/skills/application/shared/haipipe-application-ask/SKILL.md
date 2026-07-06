@@ -103,8 +103,8 @@ B. SANITY-CHECK question vs data (THIS WAS MISSING — bug #11)
      before planning task_batch. Sparse-sample subjects → ASK user
      whether to (a) pick a denser individual or (b) reframe to cohort
      scope.
-   - If question is cross-probe, verify probes/ has at
-     least one confirmed probe with matching tags.
+   - If question is cross-probe, verify the stage _PROBE cards
+     hold at least one confirmed verdict with matching tags.
    - If a required data source is missing entirely, gate the plan
      to BLOCKED and surface to user.
 
@@ -170,21 +170,20 @@ For each P in plan.probe_batch:
   1. SESSION_STATE: current_step="task", current_task=P.id
   2. Skill("haipipe-application-context", args="claim <P.id>")
      → checks P.needs (D/I cards required as input) all resolved
-  3. Skill("haipipe-probe design", args="new <P.slug> --group <P.group> --id <P.local_id> --auto")
-  4. Skill("haipipe-probe bridge", args="<P.id>")
-     → scaffolds runs/ + invokes Run Script Reviewer
-       (HARSH gate inside task; bridge handles its own gates)
-     → deploys runs (GPU work; may take hours)
-  5. WAIT for results to land (poll probe.yaml.result.status)
-  6. Skill("haipipe-probe result aggregate", args="<P.id>")
-     → fills result block; status: pending → confirmed
-  7. Skill("haipipe-probe review", args="<P.id>")
-     → HARSH structural + Codex verdict
-  8. Update probe_calls[] in SESSION_STATE.json
+  3. Write P's _PROBE/PPNN card (order: need/why/route), then dispatch
+     Agent(haipipe-probe-orchestrator-agent) with it (mode full)
+     → gateway SWEEPs insights/ + discoveries/ + tasks/, dispatches
+       discovery/task agents for fresh work (HARSH gates live inside
+       those layers; GPU work; may take hours)
+  4. WAIT for the gateway return (background dispatch)
+  5. Land the returned takeaways + verdict in P's PPNN card
+     (status: pending → confirmed); haipipe-probe-reviewer-agent
+     judged the claim (G1/G2/G3) before the return
+  6. Update probe_calls[] in SESSION_STATE.json
 
 Pre-gate artifact check (G-claim):
   For every K/W in plan.insight_yield: verify the sourcing
-  probe's result.status == "confirmed". If any "pending" or
+  PPNN card's verdict == "confirmed". If any "pending" or
   "refuted", override gate to revise.
 
 Skill("haipipe-application-gate", args="G-claim")
@@ -203,7 +202,7 @@ A. FILE DIKW cards (one card per entry in plan.insight_yield)
      Skill("haipipe-insight-<layer>", args="--scope <C.sources>")
        → writes insights/<L>_*/C##_<slug>.md
    D + I cards source from task results/.
-   K + W cards source from probe probe.yaml.
+   K + W cards source from PPNN card verdicts.
 
 B. REBUILD insights/INDEX.md
    Aggregate all cards (incl. existing ones), regenerate top INDEX
@@ -327,7 +326,7 @@ On resume, read SESSION_STATE.json, then:
 1. State-vs-disk consistency check (mandatory before re-entering loop):
    For each `done`/`reused` entry in completed_tasks.*, verify the
    yield artifacts exist on disk (D/I → tasks/.../results/; K/W →
-   probe.yaml.result.status=="confirmed" + corresponding
+   PPNN card verdict "confirmed" + corresponding
    insight card filed). Missing → demote entry to status="failed",
    name re-enters pending_tasks. Log demotions to
    `applications/ask/<NN>/tmp/recovery-<ISO>.log`.
@@ -361,17 +360,17 @@ Risk profile
 WRITES:
 - insights/ (heavy — files D/I/K/W cards, rebuilds INDEX)
 - applications/ask/<NN>/ (plans, gates, SESSION_STATE.json, report.md)
-- via dispatch: tasks/, probes/ (through task / probe)
+- via dispatch: tasks/, discoveries/ (through task / the probe gateway)
 
 CALLS:
-- External LLM (Codex MCP) indirectly via probe-bridge's
-  Run Script Reviewer + review claim. Budget via MAX_EXPERIMENTS.
+- External LLM (Codex MCP) indirectly via the task layer's
+  Run Script Reviewer + probe-reviewer claim judgment. Budget via MAX_EXPERIMENTS.
 
 GATES:
 - 4 SOFT gates inside this session (G-design / G-observe / G-claim /
   G-report) — persona + attendance driven.
 - HARSH gates downstream:
-  - task: CODE_REVIEW.md (bridge invokes Run Script Reviewer)
+  - task: CODE_REVIEW.md (task reviewer Gate 1)
   - probe: review structural + integrity + claim
   - Phase 4: G-report (this session's HARSH gate)
 
@@ -389,7 +388,7 @@ artifacts: [applications/ask/<NN_slug>/{SESSION_STATE.json, plans/, gates/,
             insights/I_information/I*.md (new),
             insights/K_knowledge/K*.md (new / updated),
             insights/W_wisdom/W*.md (if any),
-            probes/<GROUP>_<group_slug>/<NN>_<slug>/ (if new probes scaffolded),
+            _PROBE/PP*_<slug>.md cards (verdicts landed, if probes ran),
             tasks/<G##>/<##>/results/<RUN>/ (per dispatched task)]
 next:      "review report.md + KB updates; if external artifact needed,
             /haipipe-application {message|ui|report}"

@@ -14,16 +14,16 @@ No message bus, no shared contract file. Two channels carry it, and the agent
              /haipipe-probe plan from-need <need>. paper does not call probe
              directly; the agent reads this instruction, invokes probe, brings
              the result back.
-2. Disk      paper writes the need (in 0-lifecycle/2-claims / STATUS); probe
-   (async)   writes its verdict to probes/<id>/probe.yaml; paper reads that
-             verdict to backfill. No handshake, just read/write the same files
-             in turn.
+2. Disk      paper writes the need (in 0-lifecycle/2-claims / STATUS); the
+   (async)   returned verdict lands in the need's _PROBE/PPNN card; paper reads
+             that card to backfill. No handshake, just read/write the same
+             files in turn.
 ```
 
 Who owns which format: paper owns the NEED (loose; probe only reads the gap, no
-strict schema). probe owns the VERDICT (strict, single source of truth in
-`probe/.../ref/probe-yaml-schema.md`). That is why no shared interface file is
-needed: each artifact's shape belongs to the skill that produces it.
+strict schema). probe owns the VERDICT (strict; the PPNN card's `## Verdict`
+anatomy in `probe/haipipe-probe/SKILL.md`). That is why no shared interface
+file is needed: each artifact's shape belongs to the skill that produces it.
 
 ## When to record a need
 
@@ -46,8 +46,8 @@ claim or display needs a run / data artifact  -> /haipipe-task <contract>
 finished evidence needs reusable K/W meaning  -> /haipipe-insight <artifact>
 ```
 
-The probe entry is `plan from-need`: Plan intakes the paper claim gap, then
-decides attach-to-existing-probe / new-probe / standalone and runs the
+The probe entry is `plan from-need`: Plan intakes the paper claim gap, then the
+gateway decides reuse / enrich / fresh and runs the
 Plan -> Gather -> Read -> Judge -> Return lifecycle.
 
 Two entry rules (who the delivery calls):
@@ -71,7 +71,7 @@ backfill     the slot/display to update when the worker returns
 
 ## Backfill (the return direction)
 
-When a probe finishes, its Return step (`probe/.../fn/return.md`) sends the
+When a probe finishes, its Return step sends the
 verdict back here. On backfill:
 
 ```
@@ -82,7 +82,8 @@ verdict back here. On backfill:
 ```
 
 One claim slot can be backed by one probe; multiple papers can cite the SAME
-probe (evidence is shared, framing is not).
+landed evidence in discoveries/ + tasks/, each through its own PPNN card
+(evidence is shared, framing is not).
 
 ## Autonomous drain (the "keep going" loop)
 

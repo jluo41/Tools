@@ -34,7 +34,8 @@ whether the story is ready to hand off.
 Important distinction:
 
 Delivery lifecycles contain their own story/message and record evidence needs
-by reference. Evidence work remains in probes, discoveries, tasks, and insights.
+by reference (each stage's _PROBE/PPNN card). Evidence work remains in
+discoveries, tasks, and insights.
 
 
 Project Folder Contract
@@ -48,7 +49,6 @@ examples/<PROJECT>/
 |   |-- project.log.jsonl      single append-only event log
 |   |-- project.status.yaml    current project snapshot
 |   `-- project.site.md        human dashboard
-|-- probes/
 |-- discoveries/
 |-- tasks/
 |-- insights/
