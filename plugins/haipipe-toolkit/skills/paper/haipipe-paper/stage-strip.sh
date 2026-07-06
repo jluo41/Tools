@@ -54,7 +54,7 @@ confirmed=""
 if grep -q '## Gate Ledger' "$status"; then
   confirmed=$(awk '/^## Gate Ledger/{f=1;next} f&&/^## /{f=0} f' "$status" \
     | grep '| yes |' \
-    | sed 's/|[[:space:]]*//' | sed 's/[[:space:]]*|.*//' | tr -d '[:space:]' \
+    | sed 's/|[[:space:]]*//' | sed 's/[[:space:]]*|.*//' | tr -d ' \t' \
     | tr '\n' ' ')
 fi
 has_ledger=false
