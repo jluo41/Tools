@@ -5,6 +5,24 @@ Layer-scoped changelog for the probe (PROBE / claim) layer. Newest first.
 Rollup lives in the plugin-level `CHANGELOG.md`.
 
 
+## [5.1.0] — 2026-07-06 — Archive pass (folder-era content off the live surface)
+
+Moved to `_archive/` (folder-era history; live contract = haipipe-probe/SKILL.md + the two agents):
+- DESIGN.md, PHILOSOPHY.md, MENTAL_MODEL.md, SKILLSET_REVIEW.md — four folder-era prose docs (~1,100 lines) that still sat at the bucket surface under HISTORICAL banners; DESIGN's Authority block had pointed at the deleted ref/ + fn/.
+- agents/CODE_REVIEW.md — one-time 2026-06-23 review of the old agents.
+- haipipe-probe/diagram/03-probe-aware-entrypoint.txt — folder-era sketch (minimap / arms / Return vocab); empty diagram/ removed.
+- agents/_old/ → _archive/_old/ — creator + the 3 pre-merge Judge reviewers.
+- agents/feedback/ → _archive/agents-feedback/ and haipipe-probe/feedback/ → _archive/skill-feedback/ — folder/Codex-era lesson inboxes, already digested into the refactor.
+- _archive/README.md added: provenance table + "not current" banner.
+
+Changed
+- agents/README.md rewritten off the folder-era roster (creator-as-live, the 5-stage folder lifecycle, dead ../fn/ ../ref/ pointers) to the two live agents + the folderless dispatch flow.
+- haipipe-probe/SKILL.md: the lone live pointer repointed `../DESIGN.md` → `../_archive/DESIGN.md`.
+
+Live surface now = CHANGELOG.md + SOP-folderless-refactor.md (transient) + agents/ (2 agents, g2 script, checklist, README) + haipipe-probe/ (SKILL, CHANGELOG, PREFERENCES).
+Follow-up flagged (not touched): haipipe-probe-reviewer-agent.md body (lines 49-186) is still folder-era procedure under a "treat-as-legacy" disclaimer — a folderless rewrite of its gate sections is the next cleanup.
+
+
 ## [5.0.0] — 2026-07-05 — FOLDERLESS REFACTOR
 
 Removed (JL: probes/ duplicated the paper-side _PROBE card — 不是 single source of truth)
