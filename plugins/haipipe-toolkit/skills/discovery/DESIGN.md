@@ -182,7 +182,6 @@ examples/<PROJECT>/
 │   └── P01_trait-opioid-prior-art/             (claim evidence)
 │       ├── 01_trait-rx-source-base/             (Search -> sources.md + notes.md)
 │       └── 02_agreeableness-rx-prior-art/       (Review, prior_art_check -> verdict.md)
-├── probes/
 ├── tasks/
 ├── insights/
 ├── paper/
@@ -239,7 +238,7 @@ Boundary Rules
 - `discoveries/` stores citations, source notes, verdicts, maps, and ideas.
 - `discoveries/` does not store code, notebooks, runs, or metrics.
 - `tasks/` stores execution artifacts and metrics.
-- `probes/` stores claim contracts and verdict sidecars.
+- Claim contracts and verdicts live in the consumer's per-stage `_PROBE/PPNN` cards (no `probes/` folder).
 - `paper/` and `applications/` own the delivery story and list evidence needs by reference.
 - `_haipipe/project.log.jsonl` is the only orchestration event log.
 - `sources.md` is the default home for source records; a `sources/` subfolder is

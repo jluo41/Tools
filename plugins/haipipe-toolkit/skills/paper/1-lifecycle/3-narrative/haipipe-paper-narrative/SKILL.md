@@ -119,7 +119,7 @@ The skill discovers whichever of these exist in the project tree:
 1. **`CLAIMS_FROM_RESULTS.md`** (best) -- validated claim-evidence map from `/haipipe-probe judge`. If present, use as the spine of the narrative; every listed claim becomes a section in the report.
 2. **`IDEA_REPORT.md`** -- chosen idea, hypothesis, novelty justification (from `/idea-discovery`). Supplies the problem statement and intended contribution.
 3. **`review-stage/AUTO_REVIEW.md`** (fall back to `./AUTO_REVIEW.md`) -- review history, weaknesses fixed, remaining limitations (from `/auto-review-loop`). Supplies the limitations section and reframings.
-4. **Experiment results** -- JSON / CSV / TSV under `figures/`, `results/`, `outputs/`, `probes/`. These are the raw evidence for every quantitative claim. Each number that ends up in the narrative must trace back to one of these files.
+4. **Experiment results** -- JSON / CSV / TSV under `figures/`, `results/`, `outputs/`, `tasks/`. These are the raw evidence for every quantitative claim. Each number that ends up in the narrative must trace back to one of these files.
 5. **`EXPERIMENT_LOG.md` / `probe-log.txt`** -- comparison-first experiment ledger. Useful for cross-probe deltas and baseline-vs-method tables.
 6. **Repo source** -- for the method summary (what was actually built; not what was originally proposed). One short paragraph, not a code dump.
 

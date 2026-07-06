@@ -8,7 +8,7 @@ ARIS is an autonomous research workflow (idea > experiment > review > paper > re
 |---|---|---|
 | Optimizes for | Autonomous forward motion | Story reliability + state correction |
 | Main unit | Workflow stage | Paper folder state |
-| Evidence lives in | Workflow logs, research wiki | Project-level probes/tasks/discoveries; claim gaps buffer in `1-probe-plans/`, batch-dispatch to probe |
+| Evidence lives in | Workflow logs, research wiki | Project-level tasks/discoveries; claim gaps buffer in `1-probe-plans/`, batch-dispatch to probe |
 | Review means | Fix weaknesses, rerun | Diagnose earliest broken layer, loop back |
 | Story state | Implicit in NARRATIVE_REPORT | First-class `0-lifecycle/1-pitch/` with provenance |
 
@@ -17,7 +17,7 @@ ARIS is an autonomous research workflow (idea > experiment > review > paper > re
 ```text
 ARIS                          HAI-Pipe paper
 W1   Idea Discovery      ->   Outside paper > seed/pitch
-W1.5 Experiment Bridge    ->   Outside paper > probes/tasks > narrative
+W1.5 Experiment Bridge    ->   Outside paper > tasks/discoveries > narrative
 W2   Auto Review Loop     ->   Review gate (routes to pitch/narrative/plan/edit)
 W3   Paper Writing        ->   pitch > narrative > minimap > write/edit (the whole convergence loop)
 W4   Rebuttal             ->   respond/revise
@@ -30,7 +30,7 @@ W6   Conference Talk      ->   present (reads pitch first)
 | ARIS artifact | HAI-Pipe equivalent | Note |
 |---|---|---|
 | `IDEA_REPORT.md` | seed, upstream discoveries, pitch seed | Candidate pools stay upstream |
-| `EXPERIMENT_PLAN/LOG.md` | probes/tasks feeding narrative | Paper cites evidence summaries, not run logs |
+| `EXPERIMENT_PLAN/LOG.md` | tasks/discoveries feeding narrative | Paper cites evidence summaries, not run logs |
 | `NARRATIVE_REPORT.md` | `0-lifecycle/3-narrative/3-narrative.tex` | Strong overlap; HAI-Pipe adds pitch upstream |
 | `PAPER_PLAN.md` | `0-lifecycle/5-minimap/5-minimap.tex` | In HAI-Pipe, downstream of pitch + narrative |
 | `figures/`, `latex_includes.tex` | `0-displays/displayNN-*/` | Display units with claim, caption, preview |

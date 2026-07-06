@@ -127,7 +127,7 @@ Protocol (durable project work)
 Walk the lifecycle stages; never hand-place a completed discovery package.
 
 ```
-Step 0  Resolve project root = nearest ancestor with tasks/, paper/, applications/, probes/, or _haipipe/.
+Step 0  Resolve project root = nearest ancestor with tasks/, paper/, applications/, or _haipipe/.
         If ambiguous, ask (AUTO -> blocked).
 Step 1  Resolve scope: folder (has discovery.yaml) -> run stage(s); group -> iterate;
         open-group -> create container; open <type> <question> -> scaffold; specialist -> one-off.

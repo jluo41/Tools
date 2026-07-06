@@ -21,7 +21,6 @@ For a concrete end-to-end project shape, see
 |
 |-- 📁 tasks/        <- 💼 the WORK         build & run things
 |-- 📁 discoveries/  <- 🔍 the OUTSIDE      sources, notes, prior art verdicts
-|-- 📁 probes/       <- 📊 the CLAIMS       cross-run aggregation
 |-- 📁 paper/        <- 📰 the DELIVERABLE  what we publish
 |-- 📁 applications/ <- 💬 the DELIVERABLE  audience-specific reports/messages/UI
 |-- 📁 insights/     <- 🧠 deferred export layer (parked for now)
@@ -33,7 +32,7 @@ Each core layer has its own specialist family — different sections, no overlap
 project umbrella     /haipipe-project              project/ (sibling)
 discoveries/         /haipipe-discovery             discover/
 tasks/               /haipipe-task-*               task/    <- THIS SECTION
-probes/              /haipipe-probe-*              probe/
+stage _PROBE cards   /haipipe-probe-*              probe/
 insights/            /haipipe-insight-*            insight/ (deferred)
 
 paper/               /haipipe-paper-*              paper/
@@ -419,7 +418,7 @@ probe post     harvests discovery + task outputs and judges the claim
 Task outputs are readiness signals for Probe-post: `runtime.yaml`,
 `metrics.json`, `workflow/report*.yaml`, and `RUN_AUDIT.md`. A task may expose
 completion status, but it should not interpret the probe or depend on
-`probes/`.
+consumer-side `_PROBE` cards.
 
 
 The 4-Stage Lifecycle
@@ -463,18 +462,18 @@ artifacts:
 ```
 required:
   results/<run>/runtime.yaml      status=ok
-  results/<run>/metrics.json      contains the metric requested by probe.yaml aggregation.metric
+  results/<run>/metrics.json      contains the metric requested by the dispatching PPNN card
   workflow/report*.yaml           mirrors the plan and records what happened
   RUN_AUDIT.md                    reviewer pass/warn unless explicitly exempt
 
 forbidden:
-  task reads probes/
+  task reads consumer-side _PROBE cards
   task writes narrative/probe conclusions
   task decides whether the probe claim holds
 ```
 
-Probe-post consumes these artifacts later and writes the probe result/claim
-verdict. Insight export is deferred while the core N/P/T stack is being shaped.
+Probe-post consumes these artifacts later and lands the claim verdict in the
+consumer's PPNN card. Insight export is deferred while the core N/P/T stack is being shaped.
 
 
 Per-Specialist Responsibilities

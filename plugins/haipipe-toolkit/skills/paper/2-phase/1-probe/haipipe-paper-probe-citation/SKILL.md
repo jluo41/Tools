@@ -99,7 +99,7 @@ Human review happens ONLY in the CHECK phase (haipipe-paper-check). During CHECK
 The five phases above are demand-pull: the section's text needs citations, go find them. HARVEST is the reverse direction: a probe already ran and its Read output carries literature sources; this worker distills them into the stage's `_CITATION_` so the user can eyeball them paper-side. Called by haipipe-paper-probe after a gateway probe returns (e.g. the seed landscape probe).
 
 ```
-harvest <stage> <probe_ref>       e.g. harvest 0-seed probes/D0703_seed-landscape
+harvest <stage> <probe_ref>       e.g. harvest 0-seed discoveries/D0703_seed-landscape
 ```
 
 Harvest ALWAYS runs as a dispatched SUBAGENT (produce) and the calling worker reviews the result (mechanical acceptance) -- producer and reviewer are never the same context:

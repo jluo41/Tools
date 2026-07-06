@@ -229,7 +229,7 @@ For each GAP claim, write:
 Backfill on probe return (full depth)
 =======================================
 
-1. Read verdict from probes/<id>/probe.yaml.
+1. Read verdict from the need's PPNN card (the gateway's return lands it there).
 2. Update claim status in 2-claims.md.
 3. Update probe plan status in 1-probe-plans/.
 
