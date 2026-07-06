@@ -10,7 +10,8 @@ An intervention is a delivery contract, not a drafting folder. It owns one deliv
 <intervention-root>/
 ├── STATUS.md                 venue, stages_skipped, Gate Ledger, current layer, maturity
 ├── 0-lifecycle/              maturation spine (md + _LOG + per-stage _PROBE/)
-│   ├── 0-seed/  1-claims/  2-pitch/  3-narrative/  4-display/  5-section-edit/
+│   ├── 0-seed/  1-claims/  2-venue/  2-pitch/  3-narrative/  4-display/  5-section-edit/
+│   │   (1-claims: Claims/Probes/Campaign + _VALUES_; 2-venue: choice + Artifact Principles)
 ├── 0-sections/               sectioned-venue prose (report/dashboard-like venues only)
 ├── 0-artifacts/              deliverables: <slug>-v{N}.md, REVIEW-*, CLAIM_AUDIT.md
 ├── 1-probe-plans/README.md   cross-stage INDEX of _PROBE/ cards (index only, no bodies)

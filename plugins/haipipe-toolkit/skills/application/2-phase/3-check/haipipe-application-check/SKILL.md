@@ -59,9 +59,10 @@ Per-stage exit criteria
 
 ```
 seed:          kill criteria present? audience hunch specific? >=1 evidence path named?
-claims:        every claim a ### C<n> prose subsection with role + status? no load-bearing
-               GAP without a _PROBE/ card? settlement bar met for the pinned depth
-               (light/medium/full — see claims skill §Settlement Gate)?
+claims:        every claim a **C<n>** line with role + status + → PP ref? every probe a
+               **PP<nn>** plan? Evidence Campaign complete (dispatch order + deps, no
+               load-bearing GAP without a row)? settlement bar met against the campaign
+               for the pinned depth (light/medium/full — claims skill §Settlement Gate)?
 pitch:         one-sentence goal testable? mechanism (theory of change) plausible?
                venue + audience named?
 narrative:     arc follows venue rules? all load-bearing claims mapped to beats?

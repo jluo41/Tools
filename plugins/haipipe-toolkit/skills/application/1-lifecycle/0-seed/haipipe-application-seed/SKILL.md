@@ -4,7 +4,7 @@ description: "Stage 0 of the intervention lifecycle (venue-FREE). Answers 'why m
 argument-hint: "[intervention-path] [intent...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.0.0"
+  version: "3.1.0"
   last_updated: "2026-07-06"
   summary: "Stage 0 on the paper-aligned contract: stage FOLDER (0-seed.md + _LOG + _PROBE/), venue-FREE marker, DPRC phases via 2-phase/ workers, scaffold via enter get-or-create (dead ref pointer removed)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -63,9 +63,13 @@ the venue decision happens after claims via /haipipe-application venue>
 - <criterion 1: e.g., "no HTE detected in cohort data">
 - <criterion 2: e.g., "click rate < 2% in pilot">
 - <criterion 3: e.g., "clinician review rejects tone/content">
+
+## Probes
+<seed-level investigation needs, INLINE and visible: landscape, prior
+interventions, cohort sanity — one line per PP with status; cards in _PROBE/>
 ```
 
-Venue-FREE: the seed survives retargeting; the channel hunch is context, not a commitment.
+Artifact formatting: `=====` title / `-----` sections (no `#` headings); one sentence per line. Venue-FREE: the seed survives retargeting; the channel hunch is context, not a commitment.
 
 Phases
 =======

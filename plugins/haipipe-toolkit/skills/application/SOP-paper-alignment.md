@@ -99,6 +99,19 @@ Scoped commits on Tools main, clustered: (a) structure moves (git mv only), (b) 
 2. Full path: one report/dashboard intervention through section-edit with ≥1 full-mode claims verdict: G1/G2/G3 land in the card's ## Verdict; ledger flips at TRANSLATE; Gate Ledger rows written; check worker approves.
 3. Console: /haipipe-application enter on both; dashboard derives from disk; closing block renders exactly one 🔥 and one 🚀.
 
+## 9.5 Phase 3 — port of paper 765696f (evidence-campaign claims + venue stage doc; JL approved 2026-07-06)
+
+Paper moved again mid-exam (765696f: claims 4.0.0 evidence-campaign brain, venue 2.0.0 Writing-Principles stage doc, per-stage Probes sections). Port table; rulings: mirror dual-2 numbering (2-venue/ + 2-pitch/, flag collision upstream once) · NO Hypotheses section app-side (mechanism lives in seed/pitch) · _CITATION_ venue-scaled (sectioned venues only), _VALUES_ always · bench resumes ON the ported spec.
+
+| # | File | Change |
+|---|------|--------|
+| P1 | haipipe-application-claims → 5.0.0 | three sections (Claims short / Probes full / Evidence Campaign with dispatch order + deps); _EVIDENCE_ → _VALUES_; settlement gate reads the campaign; `=====`/`-----` + one-sentence-per-line artifact formatting |
+| P2 | haipipe-application-venue → 3.0.0 | produces 0-lifecycle/2-venue/2-venue.md + _LOG + _PROBE/ with Artifact Principles (template/slots, limits, tone-by-audience, element types, section structure, gate depth) as the downstream contract; still writes the 3 STATUS rows |
+| P3 | seed/pitch/narrative/display SKILL.mds | + visible Probes section in the stage doc + artifact formatting block |
+| P4 | probe worker + check | TRANSLATE values → _VALUES_; claims exit criteria = campaign complete |
+| P5 | wiki/03 + wiki/06 + README + router | folder contract rows (2-venue/, _VALUES_), stage table, venue verb line |
+| P6 | bench reconciliation | 04 PP01 reset planned → re-dispatch; both bench ledgers reshaped to campaign format; exam finishes under the ported spec |
+
 ## 9. Done criteria
 
 - [x] JL approved execution ("please go ahead and do it", 2026-07-06); §3 resolutions stand unless vetoed on review

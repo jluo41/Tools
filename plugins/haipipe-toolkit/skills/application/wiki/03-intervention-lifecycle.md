@@ -9,7 +9,8 @@ The application lifecycle is a delivery lifecycle. It owns the intervention-spec
 ├── STATUS.md                 venue, stages_skipped, claims_settlement, current_layer, maturity, Gate Ledger
 ├── 0-lifecycle/
 │   ├── 0-seed/           venue: FREE      0-seed.md + _LOG + _PROBE/
-│   ├── 1-claims/         venue: FREE      1-claims.md + _LOG + _EVIDENCE_ + _PROBE/
+│   ├── 1-claims/         venue: FREE      1-claims.md (Claims/Probes/Campaign) + _LOG + _VALUES_ + _PROBE/ (+ _CITATION_ sectioned venues)
+│   ├── 2-venue/          venue: PIN       2-venue.md (choice + Artifact Principles) + _LOG + _PROBE/
 │   ├── 2-pitch/          venue: ALIGNED   2-pitch.md + _LOG + _PROBE/
 │   ├── 3-narrative/      venue: GATED     3-narrative.md + _LOG          (if venue requires)
 │   ├── 4-display/        venue: GATED     4-display.md + _LOG            (if venue requires)

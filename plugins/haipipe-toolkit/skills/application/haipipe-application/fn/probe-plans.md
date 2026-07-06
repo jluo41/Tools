@@ -1,7 +1,7 @@
 Probe Plans Buffer (application)
 =================================
 
-The intervention accumulates evidence needs as **probe plans** during lifecycle work (seed, claims, display, section-edit). Instead of dispatching each probe immediately (which interrupts story work), stages buffer them and dispatch in batch when the user is ready. Mirror of `../../paper/haipipe-paper/fn/probe-plans.md` — same card anatomy, same statuses, application paths.
+The intervention accumulates evidence needs as **probe plans** during lifecycle work (seed, claims, display, section-edit). Instead of dispatching each probe immediately (which interrupts story work), stages buffer them and dispatch in batch when the user is ready. Mirror of `../../../paper/haipipe-paper/fn/probe-plans.md` — same card anatomy, same statuses, application paths.
 
 Location
 --------

@@ -1,12 +1,12 @@
 ---
 name: haipipe-application-claims
-description: "Stage orchestrator for the intervention's 0-lifecycle/1-claims/1-claims.md: the venue-FREE claim/evidence inventory that tracks what must be true for this intervention to work and which K/W/evidence backs each claim (supported / weak / GAP). Written BEFORE the venue is pinned and unchanged on retarget; the pinned venue later sets how much of the ledger must SETTLE before artifact work (light/medium/full). Emits probe plans into _PROBE/ for gaps and backfills verdicts. Markdown only, prose subsections, no tables. Trigger: claims, claim ledger, what must be true, which K/W, evidence, supported, GAP, /haipipe-application claims."
+description: "Stage orchestrator for the intervention's 0-lifecycle/1-claims/1-claims.md: the venue-FREE claim/evidence inventory and evidence campaign brain. Three sections: Claims (what must be true, short, with status + → PP reference), Probes (the evidence plan, one per PP, full detail), Evidence Campaign (dispatch order + dependencies + summary). Plans what evidence to collect, commissions the work via the probe gateway (tasks/discoveries), and tracks results as they return. The pinned venue later sets how much of the campaign must SETTLE before artifact work (light/medium/full). Markdown only. Trigger: claims, claim ledger, what must be true, evidence plan, probes, supported, GAP, /haipipe-application claims."
 argument-hint: "[intervention-path] [--backfill <PPNN>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.0.0"
+  version: "5.0.0"
   last_updated: "2026-07-06"
-  summary: "Claims stage on the paper-aligned contract: venue-FREE content (moved BEFORE venue in the spine), stage folder with _LOG + _EVIDENCE_ + _PROBE/ cards + 1-probe-plans/README.md index, settlement-depth-at-gate, enum supported|refuted|inconclusive, `plan from-need` retired. Drives DPRC phases internally."
+  summary: "Port of paper claims 4.0.0 (765696f): claims = evidence campaign brain. Three sections (Claims / Probes / Evidence Campaign; no Hypotheses app-side — mechanism lives in seed/pitch); _EVIDENCE_ → _VALUES_; settlement gate reads the campaign; ascii heading + one-sentence-per-line artifact formatting."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -21,89 +21,118 @@ It answers one question:
 What must be true for this intervention to work, and what evidence settles each claim?
 ```
 
-Every claim the intervention relies on is its own prose subsection with a status and a source. The application does not produce evidence; it selects judged evidence (insight K/W cards, task results, discovery findings) and tracks what is still missing. Unsupported claims become probe plans; verdicts are backfilled here.
+Claims is the **evidence campaign brain**. It does three jobs in sequence:
 
-**Venue-FREE.** This ledger is written before the venue is pinned and survives retargeting: the K/W truth does not change when the channel changes. No slot-mapping, no channel framing, no template references here -- those are venue-ALIGNED and live downstream (pitch/display/artifact). What the venue DOES control is the required **settlement depth**, read at the gate (below).
+```text
+1. PLAN        what must be true? (claims)
+               what evidence would settle each? (probe plan per claim)
+
+2. OUTSOURCE   dispatch through the probe gateway to tasks/ and discoveries/
+               each GAP claim → a probe that routes to task or discovery
+               claims writes the NEED, not the execution spec
+
+3. COLLECT     results come back via TRANSLATE
+               backfill status: GAP → weak → supported
+               verified numbers go to _VALUES_
+               claims RECEIVES evidence, never PRODUCES it
+```
+
+**Venue-FREE.** Written before the venue is pinned and unchanged on retarget: the K/W truth does not change when the channel changes. No slot-mapping, no channel framing here. What the venue DOES control is the required **settlement depth**, read at the gate against the Evidence Campaign (below).
 
 ## Artifact Spec
 
 **Files produced:**
-- `0-lifecycle/1-claims/1-claims.md` -- claim/evidence inventory
+- `0-lifecycle/1-claims/1-claims.md` -- claim/evidence inventory + probe plans + campaign
 - `0-lifecycle/1-claims/_LOG_1-claims.md` -- phase progress journal
-- `0-lifecycle/1-claims/_EVIDENCE_1-claims.md` -- evidence backing per claim
-- `0-lifecycle/1-claims/_PROBE/PPNN_*.md` -- probe plans for evidence gaps (+ index row in `1-probe-plans/README.md`)
+- `0-lifecycle/1-claims/_VALUES_1-claims.md` -- verified numbers backing each supported claim
+- `0-lifecycle/1-claims/_CITATION_1-claims.md` -- citation candidates (SECTIONED VENUES ONLY, e.g. report)
+- `0-lifecycle/1-claims/_PROBE/PPNN_*.md` -- probe card files (execution detail per PP; + index row in `1-probe-plans/README.md`)
 
-**Content structure (1-claims.md):** prose only, no tables (JL ruling, shared with paper claims).
-- Claims -- one `### C<n> - <title> (<role>) - <status>` subsection per claim; body is a short paragraph: (S1) the claim, (S2) the backing evidence with its concrete anchor (K/W card id, task result path, discovery source), (S3) one-line interpretation for the intervention, (S4) caveat + source ref
-- Pending Evidence -- probe plans not yet returned
-- Coverage note -- a closing paragraph: which claims are load-bearing for the intended intervention and which are nice-to-have
+**Content structure (1-claims.md) -- three sections + summary:**
 
-**Claim roles:** `primary` (value proposition depends on it) · `enabling` (works without it, better with it) · `assumption` (taken as given; probe only if challenged).
+```text
+Claims                what must be true: one **C<n>** per claim — statement,
+                      role (primary|enabling|assumption), status, → PP reference
+Probes                the evidence plan: one **PP<nn>** per probe — mode,
+                      which claims it settles, dependencies, what work, route
+Evidence Campaign     dispatch order + summary table (probe, status, deps,
+                      settles) — the compact overview the gate reads
+```
 
-**Status vocabulary:** `supported` · `weak` · `GAP`. A claim is `supported` only when it traces to a judged artifact (insight K/W card, probe verdict `supported`, or an equivalently reviewed result) -- never from intuition. Verdict words follow the PPNN enum: `supported | refuted | inconclusive` (the word `confirmed` is retired).
+- **Claims** are short: the testable statement, role, current status (supported/weak/GAP), and which probe settles it. No inline study design.
+- **Probes** carry the full evidence plan per PP number: mode (light/full), route (task/discovery), which claims it settles, dependencies. This is where the brain thinks; the `_PROBE/` card mirrors it as the dispatch contract.
+- **Evidence Campaign** shows all probes with status and dependencies -- the settlement gate evaluates the venue bar against THIS table.
+- No Hypotheses section (application delta vs paper): the intervention's mechanism lives in seed/pitch. Alignment is in the tags: `C1`, `PP03 (C1/C3)`.
+
+**Formatting (artifact, not this spec):**
+- Heading style: `=====` for the document title, `-----` for sections. No `#`/`##`/`###`.
+- Sub-items within sections: `**bold**` text (e.g. `**C1 - title (role) - status**`, `**PP01 - title - status**`).
+- One sentence per line (semantic line breaks). Probes separated by `---` rules.
+
+**Status vocabulary:** `supported` · `weak` · `GAP`. A claim is `supported` only when it traces to a judged artifact (insight K/W card, probe verdict `supported`, or an equivalently reviewed result) -- never from intuition. Verdict words follow the PPNN enum: `supported | refuted | inconclusive`.
 
 ## Phase Orchestration
-
-When the user invokes `/haipipe-application claims`, this skill drives the phases in order. The user does not call phase skills directly.
 
 ```
 claims invoked
   │
   ▼
 DRAFT ──→ illuminate existing claims, elicit taste, extract testable claims
-          from the seed, scan insights/INDEX.md for candidate K/W, write one
-          prose subsection per claim
+          from the seed, scan insights/INDEX.md for candidate K/W;
+          write Claims (short), Probes (full plans), Evidence Campaign
           (internally calls haipipe-application-draft with this artifact spec)
   │
   ▼
-PROBE ──→ link evidence to each claim, backfill verdicts, buffer probe plans
-          in _PROBE/ for GAPs (+ index rows); dispatch only on `probe run`
-          (internally calls haipipe-application-probe)
+PROBE ──→ mirror each planned PP into a _PROBE/ card (+ index row);
+          dispatch on `probe run` via haipipe-application-probe;
+          COLLECT: backfill statuses, land numbers in _VALUES_
   │
   ▼
-REVISE ─→ refine claim statements and evidence descriptions for clarity
+REVISE ─→ refine claim statements, probe plan clarity, campaign ordering
           (internally calls haipipe-application-revise)
   │
   ▼
-CHECK ──→ present exit gate (below); user confirms → Gate Ledger row → advance to venue
+CHECK ──→ present exit gate (settlement bar vs the campaign table);
+          user confirms → Gate Ledger row → advance to venue
           (internally calls haipipe-application-check)
 ```
 
-Phase visibility: announce every phase boundary (reply line + `[PHASE]` entry in `_LOG` + phase-line 🔥 moves); skip a phase only by an explicit logged verdict (`[PROBE] skipped -- <reason>`, phase line shows `--`); CHECK is never implicit.
+Phase visibility: announce every phase boundary (reply line + `[PHASE]` entry in `_LOG` + phase-line 🔥 moves); skip a phase only by an explicit logged verdict; CHECK is never implicit.
 
-## Probe Plans Buffer
+## Probe dispatch (unchanged folderless contract)
 
-GAP/weak claims buffer probe plans in `_PROBE/` rather than dispatching immediately. One card per need (`PPNN_<slug>.md`, numbering authority = the `1-probe-plans/README.md` index), statuses `planned | dispatched | read | verdicted`. Card anatomy + buffer convention: `../../../haipipe-application/fn/probe-plans.md` (mirror of paper's). Dispatch happens ONLY through `haipipe-application-probe` (`/haipipe-application probe run [PPNN]`) -- never by calling `/haipipe-probe` from here.
+Cards live in `_PROBE/`, numbering authority = `1-probe-plans/README.md`, statuses `planned | dispatched | read | verdicted`. Dispatch ONLY through `haipipe-application-probe` (`/haipipe-application probe run [PPNN]`) -- never `/haipipe-probe` from here. Claims-stage probes default to **mode: full** (committed verdicts); orientation questions run light. On verdict return, `--backfill <PPNN>` flips the claim from the verdict: `supported` → supported; `refuted` → drop or reword; `inconclusive` → stays weak/GAP with the caveat recorded. Buffer convention: `../../../haipipe-application/fn/probe-plans.md`.
 
-Claims-stage probes default to **mode: full** (the intervention needs committed verdicts, G1/G2/G3-judged); context questions elsewhere in the lifecycle default to light.
+## Settlement Gate (venue-scaled, read at CHECK against the campaign)
 
-On verdict return (TRANSLATE lands it in the card's `## Verdict`): `--backfill <PPNN>` flips the claim's status from the verdict -- `supported` -> supported; `refuted` -> drop or reword the claim (never ship a refuted claim); `inconclusive` -> stays weak/GAP with the caveat recorded.
-
-## Settlement Gate (venue-scaled, read at CHECK)
-
-The ledger's CONTENT is venue-free; how much must be SETTLED before artifact work is venue-scaled. CHECK reads `STATUS.md | claims_settlement |` (written at venue pin; absent = not yet pinned, apply `light` provisionally):
+CHECK reads `STATUS.md | claims_settlement |` (absent = venue unpinned, apply `light` provisionally) and evaluates the Evidence Campaign table:
 
 ```
-light    (sms, push, reminder)      every claim the artifact will lean on is at least
-                                    tied to a named K/W or marked "common knowledge";
+light    (sms, push, reminder)      every claim the artifact leans on is at least
+                                    tied to a named K/W or "common knowledge";
                                     GAPs allowed if not load-bearing
-medium   (checklist, email)         all primary claims supported or weak-with-caveat;
-                                    load-bearing GAPs have probe plans (dispatch optional)
-full     (dashboard, ui-card,       all primary claims supported (judged verdicts);
-          report)                   every GAP has a probe plan, load-bearing ones verdicted
+medium   (checklist, email)         primary claims supported or weak-with-caveat;
+                                    load-bearing GAPs have campaign rows (dispatch optional)
+full     (dashboard, ui-card,       primary claims supported (judged verdicts);
+          report)                   every GAP in the campaign, load-bearing ones verdicted
 ```
 
-Exit criteria (all depths): every claim has a `### C<n>` prose subsection with role + status; no load-bearing GAP without a probe card; `_EVIDENCE_` links resolve; settlement bar (above) met for the pinned or provisional depth. On CHECK confirm, write the Gate Ledger row, set `current_layer` to `venue` (or `2-pitch` if the venue is already pinned).
+**Done-criteria:**
+- [ ] Every claim has its own `**C<n>**` sub-item with role, status, and → PP reference
+- [ ] Every probe has its own `**PP<nn>**` sub-item with full evidence plan; `_PROBE/` cards mirror them
+- [ ] Evidence Campaign shows dispatch order and dependencies; no load-bearing GAP without a campaign row
+- [ ] Verified numbers recorded in _VALUES_ (with anchors); no aspirational anchors anywhere
+- [ ] Settlement bar met for the pinned (or provisional) depth
 
 ## Principles
 
-1. One `### C<n>` subsection per claim, prose only, no tables anywhere in the ledger.
+1. Claims short, probes full, campaign compact -- one thought, one home; no matrix tables.
 2. Never mark `supported` from intuition; cite the judged artifact and its anchor.
-3. No aspirational anchors: "the dashboard will show X" is not evidence; a supported claim cites a real value in a real file/card.
-4. Overclaim guard: if evidence is I-level (in-sample pattern) but the claim needs K-level (generalizes), keep it `weak` and route a probe.
-5. Venue-FREE: retargeting changes the required settlement, never the ledger's truth. If a claim only matters for one venue, say so in its caveat -- do not delete it on retarget.
-6. The application reads the project KB (insights/INDEX.md first, bodies only when shortlisted) but never writes insight cards from here -- deposits belong to the probe/insight side.
+3. No aspirational anchors: "the dashboard will show X" is not evidence.
+4. Overclaim guard: I-level evidence for a K-level claim stays `weak`, route a probe.
+5. Venue-FREE: retargeting changes the required settlement, never the ledger's truth.
+6. The application reads the project KB (insights/INDEX.md first) but never writes insight cards from here -- deposits belong to the probe/insight side.
 
 ## Handoff
 
-On CHECK confirm: `promote -> /haipipe-application venue` (pin modality), or `-> /haipipe-application pitch` if venue already pinned. End the reply with the closing block (stage line via `../../../haipipe-application/stage-strip.sh`).
+On CHECK confirm: `promote -> /haipipe-application venue` (pin modality + Artifact Principles), or `-> /haipipe-application pitch` if venue already pinned. End the reply with the closing block (stage line via `../../../haipipe-application/stage-strip.sh`).

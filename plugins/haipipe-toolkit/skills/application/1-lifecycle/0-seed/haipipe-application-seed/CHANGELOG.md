@@ -15,3 +15,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 ## [3.0.0] — 2026-07-06
 
 - stage folder contract; venue-FREE marker (channel = hunch, not pin); DPRC phases; scaffolding delegated to enter get-or-create (paper-alignment refactor, ../SOP-paper-alignment.md).
+
+## [3.1.0] — 2026-07-06
+
+- 765696f port: visible Probes section in the seed doc + ascii artifact formatting.

@@ -19,3 +19,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 ## [4.0.0] — 2026-07-06
 
 - stage-folder paths; gating via STATUS.md stages_skipped; settlement-bar precondition; DPRC phases (paper-alignment refactor, ../SOP-paper-alignment.md).
+
+## [4.1.0] — 2026-07-06
+
+- 765696f port: visible Probes section + reads 2-venue.md Artifact Principles + ascii artifact formatting.

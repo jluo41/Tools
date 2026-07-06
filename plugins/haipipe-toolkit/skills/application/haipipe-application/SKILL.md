@@ -26,7 +26,7 @@ One block: verb, aliases and trigger keywords, then where it goes.
 
 ```
 enter | status | dashboard | preload         -> haipipe-application-enter (open-needs console; GET-OR-CREATE: a missing path offers to scaffold the intervention first; also "enter intervention", "new intervention")
-venue | format | modality | channel          -> haipipe-application-venue (recommend + pin; sms/push/reminder/checklist/email/dashboard/ui-card/report all land here; pin writes venue + stages_skipped + claims settlement depth into STATUS.md)
+venue | format | modality | channel          -> haipipe-application-venue (recommend + pin; sms/push/reminder/checklist/email/dashboard/ui-card/report all land here; pin writes venue + stages_skipped + claims_settlement into STATUS.md AND produces 0-lifecycle/2-venue/2-venue.md with Artifact Principles — the downstream contract pitch/display/section-edit read)
 seed                                         -> haipipe-application-lifecycle seed        (also "opportunity", "why might this work", "kill criteria")
 claims | claim | ledger                      -> haipipe-application-lifecycle claims      (also "what must be true", "K/W", "claim gap", "supported", "GAP")
 pitch                                        -> haipipe-application-lifecycle pitch       (also "goal", "one-sentence story", "theory of change")
@@ -75,7 +75,7 @@ Resolution order (first match wins):
 
 An intervention root is any directory upward containing `STATUS.md`, `0-lifecycle/`, or `0-artifacts/`.
 
-Venue coupling (drives two routing rules): seed + claims are venue-FREE; venue pins the modality in STATUS.md between claims and pitch (writing `| venue |`, `| stages_skipped |`, and `| claims_settlement |` rows); pitch/narrative/display/section-edit are venue-ALIGNED and consult `_venue/venue-<name>`. So: "application" with claims done but no venue pinned -> run `venue` before pitch. Re-targeting ("turn this into a dashboard") -> re-run `venue`; pitch re-couples; claims stays unchanged, only its REQUIRED SETTLEMENT deepens or relaxes.
+Venue coupling (drives two routing rules): seed + claims are venue-FREE; venue pins the modality in STATUS.md between claims and pitch (writing `| venue |`, `| stages_skipped |`, and `| claims_settlement |` rows) and writes `0-lifecycle/2-venue/2-venue.md` with Artifact Principles; pitch/narrative/display/section-edit are venue-ALIGNED and read those Artifact Principles (consulting `_venue/venue-<name>` only for detail beyond them). So: "application" with claims done but no venue pinned -> run `venue` before pitch. Re-targeting ("turn this into a dashboard") -> re-run `venue`; pitch re-couples; claims stays unchanged, only its REQUIRED SETTLEMENT deepens or relaxes.
 
 Dispatch notes (only where non-obvious; everything else is `Skill("haipipe-application-<target>")` or `Skill("haipipe-application-lifecycle", args="<verb> ...")`):
 
