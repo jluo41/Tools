@@ -4,6 +4,13 @@ haipipe-paper-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [2.5.0] — 2026-07-05
+
+Changed (probe folderless refactor — probes/ retired; PPNN card = single source of truth)
+- Step 0 RE-INVOKE PER RUN: every stage's PROBE phase invokes this skill fresh (test-123333333 PP02 ran from a 3-hour-old in-context copy missing same-day rules).
+- TRANSLATE: `refs:` always point directly at execution artifacts (discoveries/tasks); full-mode verdicts land in the PPNN card's `## Verdict` (gates + verdict + reasoning) and flip the claims ledger in the same pass.
+- DISPATCH: shape vocabulary aligned to gateway 2.0.0 (reused | enriched | fresh); no shape creates a probe folder.
+
 ## [2.4.1] — 2026-07-05
 
 Changed (test-123333333: harvest synonymized the canonical status string — `retrieved ✅ (discovery, ...)` for `VERIFIED-by-discovery (...)` — and acceptance waved it through on semantic equivalence)
