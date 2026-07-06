@@ -1,11 +1,11 @@
 ---
 name: haipipe-insight-wisdom
-description: "W-level wisdom specialist of the haipipe-insight family. Reads K_knowledge entries (validated beliefs) and writes one actionable recommendation entry to insights/W_wisdom/ — 'what we should DO next'. Each W entry is one executable action: a proposed next probe, a strategic re-direction, or a stop-doing-X. NO code. Use via /haipipe-insight review/apply, /haipipe-application ask, or directly /haipipe-insight-wisdom. Trigger: W-level, wisdom, recommendations, what next, strategic direction, action items."
+description: "W-level wisdom specialist of the haipipe-insight family. Reads K_knowledge entries (generalization claims with confidence) and writes one actionable recommendation entry to insights/W_wisdom/ — 'what we should DO next'. Each W entry is one executable action: a proposed next probe, a strategic re-direction, or a stop-doing-X. NO code. Use via /haipipe-insight review/apply or directly /haipipe-insight-wisdom. Trigger: W-level, wisdom, recommendations, what next, strategic direction, action items."
 argument-hint: "[--project <path>] [--id W<NN>] [--scope <knowledge-ids>] [--slug <slug>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.2.0"
-  last_updated: "2026-06-22"
+  version: "1.3.0"
+  last_updated: "2026-07-05"
   summary: "W-level wisdom specialist of the haipipe-insight family."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -17,7 +17,7 @@ W-level of the Insight base (D → I → K → W). Reads K (generalization belie
 confidence) and writes **actionable recommendations whose boldness is tuned to
 that confidence**.
 
-**Invocation modes** (see `../../ref/invocation-modes.md`): interactive (a
+**Invocation modes** (see `../ref/invocation-modes.md`): interactive (a
 human steers; the recommendation-triage ASK runs) OR headless (`--scope` ≥ 1 K
 id + `--auto` → file silently), chosen by input completeness.
 `card-creator-wisdom-agent` calls this skill headless during fan-out; agent +
@@ -35,7 +35,7 @@ be actionable — translatable into either a new probe (via
 /haipipe-probe), a research pivot, or a stop-doing-X decision.
 Each W card should contain ONE recommendation. If a candidate is a roadmap,
 split it into separate W cards; if it restates an active W, merge/update
-instead of filing a new card (see `../../ref/card-granularity.md`).
+instead of filing a new card (see `../ref/card-granularity.md`).
 
 
 Input
@@ -73,8 +73,7 @@ Hard rules
   now". As K updates, W entries may become stale; mark them `status:
   stale` rather than delete.
 - W never executes anything. To act on a W's recommendation, the user
-  invokes /haipipe-probe design new (or /haipipe-task task-folder)
-  manually. /haipipe-application ask can chain this.
+  invokes /haipipe-probe plan new (or /haipipe-task) manually.
 - W granularity is one executable action. Broad strategy memos should split;
   repeated/reinforcing actions should merge or update an existing W.
 
@@ -95,7 +94,7 @@ Step 6: Update INDEX.md and back-links
 Entry schema
 ------------
 
-Canonical schema: **`../../ref/insight-md-schema.md`** (see "W layer" section).
+Canonical schema: **`../ref/insight-md-schema.md`** (see "W layer" section).
 
 Quick reminder for W entries:
 
@@ -130,7 +129,7 @@ Definition of done
 - [ ] `insights/W_wisdom/W{NN}_<slug>.md` written
 - [ ] Recommendation is actionable (passes "could I write the command?" test)
 - [ ] `## Risk posture` records the cited K's confidence + why it justifies this boldness
-- [ ] At least 1 K cited; counter-arguments engaged in "What would change..."
+- [ ] At least 1 K cited; decay risks stated in `## Decay condition`
 - [ ] `## Change log` records creation source or status/action update
 - [ ] NO Python written, NO command auto-executed (user must act)
 - [ ] Back-links added to cited K entries
@@ -149,8 +148,7 @@ Specialist tail
 
 ```
 status:    ok | blocked | failed
-summary:   "W02_<slug> written: 'Run param-matched LHM re-test'"
+summary:   "W02_<slug> written: 'Run param-matched FiLM re-test'"
 artifacts: [insights/W_wisdom/W02_<slug>.md, INDEX.md, back-links]
 next:      Suggest user runs the recommended command
-           (or /haipipe-application ask can chain it directly)
 ```

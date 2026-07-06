@@ -1,11 +1,11 @@
 ---
 name: haipipe-insight-information
-description: "I-level patterns specialist of the haipipe-insight family. Reads a dataset's D_data profile + its in-sample results and files ONE in-sample pattern (an association/direction/magnitude/shape) WITHIN that one named dataset into insights/I_information/. NO code execution — pure markdown synthesis. NO p-value / CI (those are generalization → K). Use via /haipipe-insight review/apply, /haipipe-application ask, or directly /haipipe-insight-information. Trigger: I-level, in-sample pattern, what pattern is in this dataset."
+description: "I-level patterns specialist of the haipipe-insight family. Reads a dataset's D_data profile + its in-sample results and files ONE in-sample pattern (an association/direction/magnitude/shape) WITHIN that one named dataset into insights/I_information/. NO code execution — pure markdown synthesis. NO p-value / CI (those are generalization → K). Use via /haipipe-insight review/apply or directly /haipipe-insight-information. Trigger: I-level, in-sample pattern, what pattern is in this dataset."
 argument-hint: "[--project <path>] [--dataset <name>] [--id I<NN>] [--scope <D-ids>] [--slug <slug>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.0.0"
-  last_updated: "2026-06-22"
+  version: "2.1.0"
+  last_updated: "2026-07-05"
   summary: "I-level in-sample-pattern specialist of the haipipe-insight family."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -20,9 +20,9 @@ estimate), and states the pattern descriptively. It does NOT claim the pattern
 generalizes — that leap, with its p-value / CI / confidence, is a K.
 Each I card holds ONE reusable pattern for ONE dataset. If a candidate is a whole
 topic summary, split it; if it duplicates an active I card, merge evidence
-instead (see `../../ref/card-granularity.md`).
+instead (see `../ref/card-granularity.md`).
 
-**Invocation modes** (see `../../ref/invocation-modes.md`): interactive (a
+**Invocation modes** (see `../ref/invocation-modes.md`): interactive (a
 human steers; the triage ASK runs) OR headless (`--dataset` + the D id(s) +
 `--auto` → file silently), chosen by input completeness.
 `card-creator-information-agent` calls this skill headless during fan-out; agent
@@ -76,6 +76,8 @@ Workflow
 ```
 Step 1: Parse args
   - --project <path>          optional, else cwd-inferred
+  - --dataset <name>          the dataset whose pattern is stated (else resolve/ASK)
+  - --id I<NN>                optional; apply passes it pre-assigned (use verbatim)
   - --scope <D01,D02,...>     optional; restrict to specific D entries
   - --slug <slug>             optional, descriptive name for the pattern
 
@@ -103,15 +105,15 @@ Step 6: Compose entry (markdown only)
 Step 7: Write
   - insights/I_information/I{NN}_<slug>.md (atomic)
   - Update insights/INDEX.md
-  - Back-link: append "linked patterns: I{NN}" to each cited D entry's
-    Cross-references section
+  - Back-link: add I{NN} to each cited D card's `ref_by:` frontmatter list
+    (no body edits; `ref_by:` is the machine back-link, no "Cross-references" section exists)
 ```
 
 
 Entry schema
 ------------
 
-Canonical schema: **`../../ref/insight-md-schema.md`** (see "I layer" section).
+Canonical schema: **`../ref/insight-md-schema.md`** (see "I layer" section).
 
 Quick reminder for I entries:
 
@@ -145,7 +147,7 @@ Definition of done
       stated explicitly with rationale)
 - [ ] `## Change log` records creation source or meaningful update
 - [ ] NO Python file written, NO script executed
-- [ ] Back-link added to each cited D entry's Cross-references section
+- [ ] I{NN} added to each cited D card's `ref_by:` frontmatter list
 - [ ] `insights/INDEX.md` updated
 
 
@@ -164,8 +166,8 @@ Risk profile
 -------------
 
 WRITES one new file under `insights/I_information/`. APPENDS to
-`insights/INDEX.md`. APPENDS one back-link line to each cited D entry.
-Read-only on probes/ and tasks/.
+`insights/INDEX.md`. UPDATES each cited D card's `ref_by:` frontmatter (back-link only).
+Read-only on discoveries/ and tasks/.
 
 
 Specialist tail

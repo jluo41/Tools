@@ -1,6 +1,6 @@
 ---
 name: card-creator-<layer>-agent      # = subagent_type; register via top-level agents/ symlink
-description: "Thin BUILDER agent for insight <layer> cards. Given a complete spec, calls the haipipe-insight-<layer> skill (headless) to file ONE <LAYER> DIKW card per ../../ref/insight-md-schema.md. Does NOT author the card body itself (the skill does), NOT judge it (reviewers do), NOT compute (task does). Trigger: file <layer> card, fan-out insight filing, ask report phase."
+description: "Thin BUILDER agent for insight <layer> cards. Given a complete spec, calls the haipipe-insight-<layer> skill (headless) to file ONE <LAYER> DIKW card per ../../ref/insight-md-schema.md. Does NOT author the card body itself (the skill does), NOT judge it (reviewers do), NOT compute (task does). Trigger: file <layer> card, fan-out insight filing, apply."
 tools:
   - Read
   - Write
@@ -11,10 +11,11 @@ tools:
   - Skill
 model: inherit
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-07-05"
   summary: "Thin BUILDER agent for insight <layer> cards."
   changelog:
+    - "1.1.0 (2026-07-05): layer-gate table recut (I: one dataset ≥1 D; K: claim+basis+confidence+claim_type); --id forwarding step (JL skill-set review)."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
@@ -53,12 +54,13 @@ the structured block.
 1. Receive the full spec (the BLOCKING source + any recommended fields —
    see `../../ref/invocation-modes.md` → "spec complete" for <layer>).
 2. Pre-flight the source (no fabrication): resolve `--project`; confirm the
-   source exists and satisfies the layer gate — D: one settled traceable source;
-   I: at least two D ids; K: judged source with claim + confidence basis; W:
-   at least one K id. Missing/unsettled/unjudged → return `status: blocked` +
-   `missing`, stop.
-3. `Skill("haipipe-insight-<layer>", "<headless full-spec args> --auto")`
-   → files the card silently (spec complete → no ASK).
+   source exists and satisfies the layer gate — D: one settled traceable source
+   + the dataset it profiles; I: a named dataset + ≥1 D id for it; K: claim +
+   generalization basis + confidence + claim_type; W: at least one K id.
+   Missing/unsettled → return `status: blocked` + `missing`, stop.
+3. `Skill("haipipe-insight-<layer>", "<headless full-spec args> --id <ID> --auto")`
+   → files the card silently (spec complete → no ASK). ALWAYS forward the
+   apply-assigned `--id`; parallel creators must never auto-pick `NN`.
 4. Verify: the returned `card` path exists and parses; sources match. Do NOT
    edit the card's judgment (that is the skill's + the reviewers' domain).
 5. Return the structured block. Do NOT self-review.

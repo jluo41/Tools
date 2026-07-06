@@ -32,9 +32,9 @@ The difference is scope. OKF is a generic catalog format. insight is a
 research archive with strong semantics:
 
 ```
-D = observation
-I = pattern
-K = belief
+D = dataset profile
+I = in-sample pattern
+K = generalization claim
 W = action
 ```
 
@@ -65,7 +65,7 @@ The layer-specific fields remain load-bearing for haipipe:
 ```
 D: dataset / headline
 I: dataset / pattern / direction
-K: claim / confidence
+K: claim / confidence / claim_type
 W: rec / rec_type / cost
 ```
 
@@ -111,7 +111,8 @@ The orchestrator supports:
 Implementation:
 
 ```bash
-python3 plugins/haipipe-toolkit/skills/insight/scripts/export_okf.py \
+# from the workspace root (Tools = the toolkit checkout):
+python3 Tools/plugins/haipipe-toolkit/skills/insight/scripts/export_okf.py \
   examples/<project>
 ```
 

@@ -26,7 +26,7 @@ reviewers") because run trustworthiness is the same check for any task type.
 ```
 🟦 D  one named dataset's profile · numbers trace · no interpretation · no p/CI
 🟩 I  an in-sample pattern in that dataset · no p/CI (those are K)
-🟨 K  generalization claim · scope ⊆ evidence · ALL counter-evidence · confidence present (no probe gate)
+🟨 K  generalization claim · scope ⊆ evidence · ALL counter-evidence · confidence + claim_type present (no probe gate)
 🟧 W  actionable ("could I write the command?") · risk-tuned to K confidence
 ```
 
@@ -79,6 +79,8 @@ reviewers/ (4 per-type + 1 cross-layer)
 | `card-reviewer-knowledge-agent`   | 🟨 K card | Codex + self | `K_CARD_REVIEW.md` |
 | `card-reviewer-wisdom-agent`      | 🟧 W card | Codex + self | `W_CARD_REVIEW.md` |
 | `index-integrity-auditor-agent`   | cross-layer graph | self (checklist) | `INDEX_AUDIT.md` |
+
+All five sidecars are written to `insights/_reviews/` (review provenance, not cards).
 
 Each per-type reviewer checks **accuracy** (card ≤ cited evidence — Codex
 re-reads the sources) + **boundary/style** (conforms to its layer in
