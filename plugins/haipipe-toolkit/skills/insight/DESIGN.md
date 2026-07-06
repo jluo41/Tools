@@ -8,7 +8,7 @@ Status: v3.1.0 (2026-06-22; skill-set review fixes 2026-07-05): DIKW recut
         D/I/K/W cards, indices, and graph audits.
 Owner:  jluo41
 
-Read the plugin-root `../../ARCHITECTURE.md` first (probe's `../probe/MENTAL_MODEL.md` is useful context). This doc designs the AGENT
+Read the plugin-root `../../ARCHITECTURE.md` first (probe's `../probe/_archive/MENTAL_MODEL.md` is folder-era context). This doc designs the AGENT
 and INVOCATION structure for insight, bringing it to parity with task
 and probe — which both have `agents/` + a top-level design doc; E had
 neither. The pattern is applied THOUGHTFULLY (the way probe departed

@@ -598,7 +598,7 @@ Phase 8 — Next                                                OPEN (see TODO.m
 Downstream Consumer Contract (probe)
 ========================================
 
-task artifacts are consumed by probe (the research probe pipeline). Tasks never reference probes — but probes READ task outputs alongside discovery evidence, making certain file formats a **contract**. If you change these formats, check probe/MENTAL_MODEL.md for impact.
+task artifacts are consumed by probe (the research probe pipeline). Tasks never reference probes — but probes READ task outputs alongside discovery evidence, making certain file formats a **contract**. If you change these formats, check the probe layer contract (probe/haipipe-probe/SKILL.md + probe/agents/) for impact.
 
 **What probe reads from task runs:**
 
@@ -632,7 +632,7 @@ Per-run quality auditing           haipipe-task-reviewer-agent (task GATE 2)
                                    "did THIS run produce a trustworthy artifact?" is a task question
 ```
 
-Full boundary rules: **probe/MENTAL_MODEL.md**.
+Full boundary rules: **probe/haipipe-probe/SKILL.md** (folder-era detail archived at probe/_archive/MENTAL_MODEL.md).
 
 
 Decision Log
