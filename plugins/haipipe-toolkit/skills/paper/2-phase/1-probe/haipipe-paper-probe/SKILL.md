@@ -20,9 +20,9 @@ PROBE phase worker. Called by stage skills (seed, claims, pitch, narrative, disp
 The downstream lifecycles are NESTED under probe:
 
 ```
-/haipipe-probe       claim-level evidence gateway, mode: light|full
-                     light (DEFAULT): Plan → Gather → Read, output returns to caller
-                     full: + Judge → Deposit (committed verdict + insight cards)
+/haipipe-probe       evidence gateway (explore+gather), mode: light|full
+                     light (DEFAULT): explore what is known + gather what is missing
+                     full: + judge the claim (G1/G2/G3 via haipipe-probe-review)
         │
         ├── during its Gather, probe calls:
         │     /haipipe-discovery   external evidence: search+read, judge/synthesize, idea
@@ -54,11 +54,11 @@ Document workers (paper-side, one working doc each):
                                        live in 0-displays/, rendered by tasks)
 
 Evidence gateway (project-side lifecycles):
-  /haipipe-probe                   →  claim-level evidence contract; during its
-                                      own Gather, probe calls /haipipe-discovery
-                                      (lit/landscape) and /haipipe-task (runs/data);
-                                      at Deposit it files verdicts into
-                                      /haipipe-insight (D/I/K/W cards)
+  /haipipe-probe                   →  evidence gateway (explore+gather); sweeps
+                                      insights/discoveries/tasks, dispatches
+                                      /haipipe-discovery (lit) and /haipipe-task
+                                      (runs/data) for what is missing; full mode
+                                      adds claim judgment via haipipe-probe-review
 ```
 
 All routes are fully automatic dispatch. The agent collects aggressively, flags uncertain items, and moves on. Human verification happens in CHECK, not here.

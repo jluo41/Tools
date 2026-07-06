@@ -251,7 +251,7 @@ Decision Log
 2026-06-19  Adopted: discoveries/ as durable external-evidence packages.
 2026-06-20  Adopted: discovery-group/discovery-folder hierarchy.
 2026-06-21  Retired: the narrative layer. Parents are now a delivery lifecycle
-            (paper/application) for L* and a probe for claim-level evidence.
+            (paper/application) for L* and a probe for evidence exploration.
 2026-06-21  A discovery is one research topic = its own FOLDER mirroring a
             task-folder. Skill renamed haipipe-discover -> haipipe-discovery.
 2026-06-22  Added: feedback utility verb + feedback/ inbox.

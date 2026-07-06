@@ -1,24 +1,27 @@
 ---
 name: haipipe-probe
-description: "Evidence gateway (folderless probe). A probe is a PHASE (each stage's PROBE step) plus a GATEWAY agent, not a place: the consumer's _PROBE/PPNN card is the single source of truth for contract + receipt + verdict; execution artifacts live in discoveries/ and tasks/; probes/ folders and the Probe Console are RETIRED (2026-07-05). Two uses: (1) DIRECT ASK — /haipipe-probe \"<question or claim>\" runs ad-hoc evidence work outside any stage: dispatches the gateway agent, evidence lands project-side, anchored takeaways return in chat; (2) layer contract / PPNN card anatomy reference for stage workers. Trigger: probe, evidence gateway, find evidence for claim, PPNN card, judge claim, /haipipe-probe."
-argument-hint: "[\"<question-or-claim>\" [light|full] | contract | card | status]"
+description: "Evidence gateway (folderless probe). A probe is the general-purpose EXPLORE + GATHER verb for paper/application stages: sweep what the project already knows (insights D/I/K/W, discoveries, tasks), commission what it lacks, and optionally judge a claim (full mode). Not claim-specific — any evidence question (dataset profile, field norms, run result, claim verdict) enters here. The consumer's _PROBE/PPNN card is the single source of truth for contract + receipt + (full mode) verdict; execution artifacts live in discoveries/ and tasks/. Two uses: (1) DIRECT ASK — /haipipe-probe \"<question>\" runs ad-hoc evidence work outside any stage; (2) layer contract / PPNN card anatomy reference for stage workers. Trigger: probe, evidence, explore, gather, find evidence, PPNN card, /haipipe-probe."
+argument-hint: "[\"<question>\" [light|full] | contract | card | status]"
 allowed-tools: Bash, Read, Grep, Glob, Agent
 metadata:
-  version: "6.2.0"
+  version: "7.0.0"
   last_updated: "2026-07-06"
-  summary: "Folderless probe layer: PROBE phase + evidence gateway agent; PPNN card = single source of truth; probes/ folders and Console retired. Skill doubles as the DIRECT-ASK front door. Judgment process split out to the sibling skill haipipe-probe-review (G1/G2/G3)."
+  summary: "Probe = general-purpose explore+gather verb (not claim-specific). PPNN card = single source of truth. Light = explore+gather (most needs); full = +judge (claims only, via haipipe-probe-review). Folderless."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-# Skill: haipipe-probe (evidence-gateway layer, folderless)
+# Skill: haipipe-probe (evidence gateway, folderless)
 
-A probe is a claim-level evidence contract that asks one question:
+A probe is the general-purpose **explore + gather** verb for paper and application stages:
 
 ```text
-Does the available evidence support this claim, under what scope, and with what caveats?
+What does the project already know about this question,
+what is missing, and (full mode only) does it support this claim?
 ```
 
-Since 2026-07-05 that contract has ONE home: the consumer's per-stage `_PROBE/PPNN_*.md` card (paper or application). There is no `probes/` folder anymore — it duplicated the card and broke single-source-of-truth (JL ruling; see ../_archive/DESIGN.md for the folder-era rationale, and ../SOP-folderless-refactor.md for the migration record).
+Not claim-specific: a probe question can be a dataset profile ("how big is our cohort"), a field-norm survey ("what scales do LLM-sim studies use"), a run-result summary, or a claim verdict. Light mode (the default, most needs) explores and gathers; full mode adds a governed judgment step (G1/G2/G3 via haipipe-probe-review).
+
+The evidence contract has ONE home: the consumer's per-stage `_PROBE/PPNN_*.md` card (paper or application). There is no `probes/` folder (JL ruling 2026-07-05; see ../_archive/DESIGN.md for the folder-era rationale).
 
 ## Layer boundaries (unchanged)
 
@@ -27,9 +30,9 @@ task      executes internal work (code, scripts, data processing)
 discovery checks outside evidence (literature, prior art; Review type owns
           project-side judgment artifacts: verdict.md / landscape.md)
 insight   stores judged knowledge (D/I/K/W cards)
-probe     the PROBE phase + the gateway: plans (card), dispatches (gateway),
-          reads (anchored return) — owns no files. Judging is the sibling
-          skill haipipe-probe-review (full mode; run by the reviewer agent)
+probe     the EXPLORE+GATHER verb: plans (card), sweeps (gateway), dispatches
+          (discovery/task agents), reads (anchored return) — owns no files.
+          Full mode adds judging via haipipe-probe-review (reviewer agent)
 ```
 
 ## How evidence work actually runs
