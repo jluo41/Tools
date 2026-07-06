@@ -1,6 +1,6 @@
 # SOP — Probe Folderless Refactor (2026-07-05)
 
-Status: DRAFT for JL review. Execution paused at step 2.3; steps marked ✅ were applied before this SOP existed and sit UNCOMMITTED pending your sign-off.
+Status: PHASE 1 EXECUTED (JL approved 2026-07-05). Commits df962ad, 38a0d21, d3e793f, ebf6411, 34e71ad, 9e2089f. Remaining: phase-2 peripheral sweep (§4) + bench exams (§7).
 Owner: JL. Executor: CC.
 Decision record: JL 2026-07-05 — "probes/ 文件夹删掉,不是 single source of truth;probe 保留,可以 call task/discovery/insight;probe 的内容移到 lifecycle 各 stage 上。"
 
@@ -33,14 +33,14 @@ insights/              (deposit)             insights/              (deposit, un
 | 1 | probe/agents/haipipe-probe-orchestrator-agent.md | Rewrite → 2.0.0 "evidence gateway": no folder creation; SWEEP = discoveries+tasks+insights (+legacy probes read-only); shape reuse\|enrich\|fresh; full-mode verdict travels in the RETURN; Write/Edit removed from tools (executes the recorded 4.3.0(7) decision; resolves the open C1 thread as option A) | ✅ applied, uncommitted |
 | 2 | probe/agents/haipipe-probe-creator-agent.md | RETIRE → `_old/` (its three outputs probe.yaml/evidence.md/status.md no longer exist; linking absorbed by gateway, presentation absorbed by return contract); `.claude/agents/` symlink removed | ✅ applied, uncommitted |
 | 3 | probe/agents/haipipe-probe-reviewer-agent.md | → 2.0.0: input = claim + evidence refs; judgment RETURNED as text (G1/G2/G3 + verdict + reasoning ¶), never written to probe files; Write/Edit removed; G-gate definitions + g2 script unchanged | ✅ applied, uncommitted |
-| 4 | probe/haipipe-probe/SKILL.md | Rewrite thin → gateway-layer doc: console RETIRED (dashboard folds into /haipipe-paper enter); documents the PPNN-card contract (order/receipt/## Verdict anatomy) and points to the gateway agent; fn/ + ref/ folder-era files marked LEGACY (kept for G-gate/reference value, not loaded) | ⬜ |
-| 5 | paper/2-phase/1-probe/haipipe-paper-probe/SKILL.md | → 2.5.0: (a) refs always point directly at discovery/task artifacts; (b) TRANSLATE lands full-mode verdicts into the PPNN card `## Verdict` section + flips the claims ledger; (c) NEW RULE: every stage's PROBE phase re-invokes this Skill (no running from a stale in-context copy — test-123333333 PP02 ran from a 3-hour-old load) | ⬜ |
-| 6 | project/haipipe-project (SKILL.md, ref/project-structure.md, fn/project.md, fn/repo-project.md, README.md) | Container layout: remove `probes/` from MANDATORY dirs; update the one-way dependency map (insights READS tasks/discoveries/stage cards; delete probes rows) | ⬜ |
-| 7 | paper/wiki/08-stage-gate.md rule 4 | Reword: worker → gateway agent → discovery/task (drop "probe lifecycle" folder language); stage-read ban list says "discoveries/, tasks/, legacy probes/" | ⬜ |
-| 8 | paper/wiki/00-evidence-principles.md | Land-at-home wording: evidence → discovery/task ledgers, verdict → consumer PPNN card | ⬜ |
-| 9 | probe/DESIGN.md | Status → v5.0.0 folderless; Core Position rewritten (phase + gateway, not place); authority list updated (fn/ marked legacy) | ⬜ |
-| 10 | probe/CHANGELOG.md | One rollup entry recording this refactor + the retirements | ⬜ |
-| 11 | Memory: project_probe_aware_entrypoint.md (+ MEMORY.md line) | "probe = evidence hub (folder)" → "probe = PROBE phase + gateway agent; PPNN card = single source of truth; probes/ retired 2026-07-05" | ⬜ |
+| 4 | probe/haipipe-probe/SKILL.md | Rewrite thin → gateway-layer doc: console RETIRED (dashboard folds into /haipipe-paper enter); documents the PPNN-card contract (order/receipt/## Verdict anatomy) and points to the gateway agent; fn/ + ref/ folder-era files marked LEGACY (kept for G-gate/reference value, not loaded) | ✅ applied |
+| 5 | paper/2-phase/1-probe/haipipe-paper-probe/SKILL.md | → 2.5.0: (a) refs always point directly at discovery/task artifacts; (b) TRANSLATE lands full-mode verdicts into the PPNN card `## Verdict` section + flips the claims ledger; (c) NEW RULE: every stage's PROBE phase re-invokes this Skill (no running from a stale in-context copy — test-123333333 PP02 ran from a 3-hour-old load) | ✅ applied |
+| 6 | project/haipipe-project (SKILL.md, ref/project-structure.md, fn/project.md, fn/repo-project.md, README.md) | Container layout: remove `probes/` from MANDATORY dirs; update the one-way dependency map (insights READS tasks/discoveries/stage cards; delete probes rows) | ✅ applied |
+| 7 | paper/wiki/08-stage-gate.md rule 4 | Reword: worker → gateway agent → discovery/task (drop "probe lifecycle" folder language); stage-read ban list says "discoveries/, tasks/, legacy probes/" | ✅ applied |
+| 8 | paper/wiki/00-evidence-principles.md | Land-at-home wording: evidence → discovery/task ledgers, verdict → consumer PPNN card | ✅ applied |
+| 9 | probe/DESIGN.md | Status → v5.0.0 folderless; Core Position rewritten (phase + gateway, not place); authority list updated (fn/ marked legacy) | ✅ applied |
+| 10 | probe/CHANGELOG.md | One rollup entry recording this refactor + the retirements | ✅ applied |
+| 11 | Memory: project_probe_aware_entrypoint.md (+ MEMORY.md line) | "probe = evidence hub (folder)" → "probe = PROBE phase + gateway agent; PPNN card = single source of truth; probes/ retired 2026-07-05" | ✅ applied |
 
 ## 4. Phase 2 — peripheral reference sweep (separate pass, after phase 1 lands)
 
