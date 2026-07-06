@@ -5,6 +5,18 @@ Layer-scoped changelog for the probe (PROBE / claim) layer. Newest first.
 Rollup lives in the plugin-level `CHANGELOG.md`.
 
 
+## [5.0.0] — 2026-07-05 — FOLDERLESS REFACTOR
+
+Removed (JL: probes/ duplicated the paper-side _PROBE card — 不是 single source of truth)
+- probes/ folders (probe.yaml, evidence.md, status.md, verdict.md): the consumer's per-stage _PROBE/PPNN card is now the single home for contract + receipt + verdict (## Verdict section, full mode). Legacy folders stay on disk read-only; SWEEP may read, nothing writes.
+- Probe Console (interactive; .probe-console.yaml): panel duties folded into /haipipe-paper enter.
+- haipipe-probe-creator-agent → agents/_old/ (its three outputs no longer exist; linking absorbed by the gateway, presentation by the return contract).
+
+Changed
+- haipipe-probe-orchestrator-agent 2.0.0 = evidence gateway: SWEEP over discoveries/tasks/insights, shape reuse|enrich|fresh, zero writes anywhere (Write/Edit removed — executes the long-recorded 4.3.0(7) decision, resolving the open C1 thread as A). All run-earned discipline retained (project-local sweep, trust-the-ledger, shape honesty, fresh-must-land, no inline searching, bg dispatch, batch, lean boot).
+- haipipe-probe-reviewer-agent 2.0.0: judges claim + evidence refs; G1/G2/G3 + verdict RETURNED as text, landed by the caller's TRANSLATE.
+- haipipe-probe SKILL.md 6.0.0: thin layer-contract doc (PPNN card anatomy, dispatch map); fn/ + ref/ marked LEGACY (G-gate definitions still referenced by the reviewer).
+
 ## [4.0.0] - 2026-06-22
 
 ### Changed
