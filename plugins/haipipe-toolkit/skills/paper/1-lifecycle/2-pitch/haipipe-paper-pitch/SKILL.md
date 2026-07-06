@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-pitch
-description: "Create or update the paper folder's 0-lifecycle/2-pitch/2-pitch.md + _LOG_2-pitch.md: the venue-ALIGNED cover letter and one-minute story for this concrete manuscript. Absorbs the Editor's Chair Test, [primary] claim designation, and venue-specific RQ framing (migrated from claims). Archives semantic old versions in _LOG when the pitch shifts. Markdown only. Use for paper pitch, cover letter, one-minute story, hook/surprise/so-what, audience/venue fit, editor's chair, primary claim, RQ framing, story trajectory, pitch provenance."
+description: "Create or update the paper folder's 0-lifecycle/2-pitch/2-pitch.md + _LOG_2-pitch.md: the venue-ALIGNED cover letter and one-minute story for this concrete manuscript. Absorbs the Editor's Chair Test, [primary] claim designation, and venue-specific RQ framing. Includes a Probes section for pitch-level investigation (venue fit, framing risk, competing papers). Archives semantic old versions in _LOG when the pitch shifts. Markdown only. Use for paper pitch, cover letter, one-minute story, hook/surprise/so-what, audience/venue fit, editor's chair, primary claim, RQ framing, story trajectory, pitch provenance."
 argument-hint: "[paper-dir] [--reason <slug>] [--source <path-or-note>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.1.3"
-  last_updated: "2026-07-03"
-  summary: "Pitch stage orchestrator. Defines WHAT (cover letter sections) and drives phases (draft -> probe -> revise -> check) internally. User invokes pitch, not phases."
+  version: "4.0.0"
+  last_updated: "2026-07-06"
+  summary: "Pitch stage orchestrator. Defines WHAT (cover letter sections + probes) and drives phases (draft -> probe -> revise -> check) internally. User invokes pitch, not phases."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -40,6 +40,7 @@ Read first: `../../PHILOSOPHY.md`, `../../wiki/04-lifecycle-map.md`.
 **Files produced:**
 - `0-lifecycle/2-pitch/2-pitch.md` -- the cover letter (venue-ALIGNED)
 - `0-lifecycle/2-pitch/_LOG_2-pitch.md` -- changelog with provenance
+- `0-lifecycle/2-pitch/_PROBE/` -- probe plans for pitch-level investigation
 
 **Content structure (2-pitch.md):**
 - Title -- <=15 words, specific, evocative
@@ -53,6 +54,11 @@ Read first: `../../PHILOSOPHY.md`, `../../wiki/04-lifecycle-map.md`.
 - Evidence-Why Believe -- source per claim
 - Limitation-Still Fragile -- top 3 risks
 - Next Evidence Move -- verb + artifact
+- Probes -- pitch-level investigation needs (venue fit, framing risk, competing papers)
+
+**Formatting:**
+- Heading style: `=====` for the document title, `-----` for sections. No `#`/`##`/`###`.
+- One sentence per line (semantic line breaks). No dense multi-sentence paragraphs.
 
 **Done-criteria:**
 - [ ] Editor's Chair Test passes (venue question answered)
@@ -60,6 +66,7 @@ Read first: `../../PHILOSOPHY.md`, `../../wiki/04-lifecycle-map.md`.
 - [ ] [primary] claim designated for THIS venue
 - [ ] RQ framing complete (H-to-RQ mapping with venue rationale)
 - [ ] All labeled sections present (Title, Hook with >=2 candidates, Surprise, Implication, etc.)
+- [ ] Probes section present with pitch-level investigation results
 - [ ] Readable in one minute
 
 Illustration:

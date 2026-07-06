@@ -4,6 +4,14 @@ haipipe-paper-seed — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [3.3.0] — 2026-07-06
+
+Changed
+- Added Probes as a fourth section in the seed content structure. The seed now has: Seed Question, Motivations, Tentative Claim Shape, Probes. Probes carry the landscape/novelty check inline (PP01 takeaways visible in the document, not buried in _PROBE/ only).
+- Heading style changed from `#`/`##` to `=====`/`-----` underlines for paper artifacts.
+- One-sentence-per-line convention added as a formatting principle.
+- Updated ref/seed-template.md to match.
+
 ## [3.2.1] — 2026-07-04
 
 Fixed

@@ -1,68 +1,93 @@
-# Claims: <Paper Title> (venue-free claim/evidence inventory)
+1-claims: <paper title> (venue-free claim/evidence inventory)
+==============================================================
 
-Date: <YYYY-MM-DD>
-Status: <one line -- e.g. DRAFT (first pass); most claims GAP because core run not done>
+Date: YYYY-MM-DD
+Status: DRAFT.
+This ledger plans what evidence to collect, commissions the work, and tracks results as they return.
 
-Venue-FREE evidence inventory. This is the pure claim/evidence ledger; venue-specific framing (RQ wording, Editor's Chair Test, [primary] designation) lives in pitch, the cover letter.
 
-Status vocabulary: `supported` / `weak` / `GAP`. Probe needs are marked inline as `[NEED PROBE] <what evidence is missing>`.
+Hypotheses (venue-neutral)
+--------------------------
 
-**No tables.** This ledger is prose only -- one bulleted hypothesis list and one `###` subsection per claim. Never render claims, evidence, or the hypothesis-claim alignment as a markdown table.
+Venue-neutral statements of what the paper tests.
+The same H1 can become RQ1 for different venues -- that reframing happens in pitch, not here.
 
-## Hypotheses (venue-neutral)
+- **H1 (core).**
+<hypothesis statement, one sentence per line.>
 
-Venue-neutral statements of what the paper tests. The same H1 can become RQ1 worded for different venues; that reframing happens in pitch, not here.
+- **H2 (boundary).**
+<hypothesis statement.>
 
-- **H1 (core).** <venue-neutral hypothesis statement>
-- **H2 (boundary).** <hypothesis>
-- **H3 (mechanism).** <hypothesis>
+- **H3 (mechanism).**
+<hypothesis statement.>
 
-> CC: <optional structural question for the author, e.g. keep H3 separate or fold into H1?>
 
-## Claims
+Claims
+------
 
-Each claim is its own subsection: the claim, its hypothesis, its evidence status, and the route to settle it. No matrix, no table -- the subsections ARE the index.
+Each claim is a short sub-item: the testable statement, current status, and which probe settles it.
+Status vocabulary: `supported` / `weak` / `GAP`.
+No inline study design -- the thinking lives in the Probes section.
 
-Heading convention: `### C<n> - <short title> (<H>, <role>) - <status>`, where `<role>` is core / boundary / mechanism / input / positioning / feasibility / supplement. For a pure support claim (input / positioning / feasibility) that does not test one hypothesis, use its most-related H or `-` in the `<H>` slot, e.g. `(- , input)`.
+**C1 - <title> (H1, core) - <status>**
 
-Each subsection is a paragraph carrying four slots: (S1) the claim + its verdict, (S2) the verified statistic with spec and N, (S3) a one-line interpretation, (S4) the source file + caveat. For `weak`/`GAP` claims, state the gap and the route instead of a statistic. Never cite a "planned Table" as evidence.
+<Claim statement, one sentence per line.>
+Evidence: -> PP<nn> (<short description>).
 
-### C1 - <short title> (H1, core) - supported
+**C2 - <title> (H3, mechanism) - <status>**
 
-<claim statement>. <verified statistic, spec, N>. <one-line interpretation>. Source: <real file>; <caveat if any>.
+<Claim statement.>
+Evidence: -> PP<nn> (<short description>).
 
-### C2 - <short title> (H3, mechanism) - weak
+**C3 - <title> (H2, boundary) - <status>**
 
-<claim statement>. <why current evidence falls short>. <route: probe / task / discovery>. [NEED PROBE] <what the probe must test>.
+<Claim statement.>
+Evidence: -> PP<nn> (<short description>).
 
-### C3 - <short title> (H2, boundary) - GAP
 
-<claim statement>. No evidence yet. [NEED PROBE] <what the probe must test>. Route: <task / discovery, then probe>.
+Probes
+------
 
-> CC: <optional structural question, e.g. are C4/C5/C6 inputs/positioning/feasibility rather than contributions -- keep as claim sections or move to a short "Inputs and Feasibility" block?>
+Each probe is its own sub-item organized by PP number.
+Full evidence plan: type, claims, status, dependencies, what work to do.
+Separated by `---` horizontal rules.
 
-## Discussion-Only Interpretations (optional)
+**PP01 - <title> - <status>**
 
-Interpretive findings that belong in Discussion, not Results. Explicitly marked to prevent creep into Results claims.
+Type: <task | discovery>.
+Claims: <which claims this settles>.
+Status: <planned | dispatched | done>.
+<Dependencies, if any.>
 
-- **D1. <label> (interpretive):** <description>. No direct measurement; interpretive frame only.
+<Full evidence plan, one sentence per line.>
+<What the work produces.>
+<Design decisions to settle.>
+Detail: `_PROBE/PP01_<slug>.md`
 
-## Robustness (optional)
+---
 
-Reported as a design strength in Methods, not claimed as a finding.
+**PP02 - <title> - <status>**
 
-<sensitivity analyses: clustering, alt specs, multiple testing, exclusion criteria>
+Type: <task | discovery>.
+Claims: <which claims>.
+Status: <status>.
 
-## Pending Evidence
+<Evidence plan.>
+Detail: `_PROBE/PP02_<slug>.md`
 
-To be buffered as probe plans in `_PROBE/` during the PROBE phase.
 
-- MUST-HAVE: <GAP claims that block submission>.
-- STRONGLY RECOMMENDED: <claims that pre-empt reviewer objections>.
-- EXPLORATORY: <supplement analyses held from main claims>.
+Evidence Campaign
+-----------------
 
-## Hypothesis-Claim Alignment
+```text
+dispatch order         what it unblocks
+─────────────────      ────────────────
+PP<nn> first           <what it gates>
+  -> PP<nn>            <what it informs>
+  -> PP<nn>            <the main run>
 
-A paragraph (not a table) that maps each hypothesis to the claims that carry it, names support claims by role, and checks for orphan claims (no H) and unanswered hypotheses (claims all GAP). No venue framing.
-
-<e.g. H1 (core) is carried by C1. H2 (boundary) is carried by C3. H3 (mechanism) is carried by C2. C4/C5/C6 are support claims: input, positioning, feasibility. C7 is an optional supplement. Every claim maps to a hypothesis or a support role, and every hypothesis has a claim.>
+PP   type        claims   status     settles
+──   ────        ──────   ──────     ───────
+01   <type>      <Cx>     <status>   <one-line description>
+02   <type>      <Cx>     <status>   <one-line description>
+```

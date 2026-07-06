@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-narrative
-description: "Generate 0-lifecycle/3-narrative/3-narrative.md + _LOG_3-narrative.md, the design contract for /haipipe-paper: a venue-ALIGNED, section-mirrored, evidence-tracked story (Introduction, Methods, Results, Discussion), with every beat carrying a readiness tag ([READY]/[PENDING]/[INFER]/[LIT]/[GAP]) and an interrogation comment. Markdown only (argument documents don't need .tex compilation). Reads upstream research artifacts (IDEA_REPORT, AUTO_REVIEW, CLAIMS_FROM_RESULTS, experiment results, repo source). Use when transitioning from research/experiment phase to writing phase, or when the user says 'write narrative report', '生成 narrative', '/haipipe-paper-narrative'."
+description: "Generate 0-lifecycle/3-narrative/3-narrative.md + _LOG_3-narrative.md, the design contract for /haipipe-paper: a venue-ALIGNED, section-mirrored, evidence-tracked story (Introduction, Methods, Results, Discussion), with every beat carrying a readiness tag and an interrogation comment. Includes a Probes section for narrative-level investigation (evidence gaps per beat, citation needs, arc verification). Markdown only. Use when transitioning from research/experiment phase to writing phase, or when the user says 'write narrative report', '生成 narrative', '/haipipe-paper-narrative'."
 argument-hint: "[paper-dir-or-topic]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.2.3"
-  last_updated: "2026-07-03"
-  summary: "Narrative stage orchestrator. Defines the section-mirrored, readiness-tagged design contract and drives phases (draft -> probe -> revise -> check) internally. User invokes narrative, not phases."
+  version: "3.0.0"
+  last_updated: "2026-07-06"
+  summary: "Narrative stage orchestrator. Defines the section-mirrored, readiness-tagged design contract with explicit Probes section and drives phases (draft -> probe -> revise -> check) internally. User invokes narrative, not phases."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -40,14 +40,20 @@ Read first: `../../PHILOSOPHY.md`, `../../wiki/04-lifecycle-map.md`.
 - Spine (throughline) -- one paragraph, the whole paper in one breath
 - Section blocks (Intro, Methods, Results, Discussion) -- each with heading+subtitle, Flow arrow chain, grounded prose paragraph, Key points with tagged beats
 - Per-beat comments -- \rev interrogation (internal) + \fb feedback (external)
+- Probes -- narrative-level investigation needs: [GAP] beats that need evidence, [LIT] beats that need citations, arc verification questions
 - Footer ledger -- reviewer-flagged gaps, arc summary, awaiting review
+
+**Formatting:**
+- Heading style: `=====` for the document title, `-----` for sections. No `#`/`##`/`###`.
+- One sentence per line (semantic line breaks). No dense multi-sentence paragraphs.
 
 **Done-criteria:**
 - [ ] All beats have readiness tags (no untagged beats)
-- [ ] No [GAP] beat without a probe plan in _PROBE/
+- [ ] No [GAP] beat without a probe plan in the Probes section and _PROBE/
 - [ ] Display needs identified in _DISPLAY_3-narrative.md
 - [ ] Per-beat interrogation complete (subagent reviewed every beat)
 - [ ] Spine throughline present
+- [ ] Probes section present with all [GAP]/[LIT] needs surfaced
 - [ ] Venue playbook consulted for arc shaping
 - [ ] _LOG entry records the current state
 

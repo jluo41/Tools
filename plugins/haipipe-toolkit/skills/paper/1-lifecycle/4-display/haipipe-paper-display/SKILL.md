@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-display
-description: "Plan, materialize (via task/probe), scaffold, build, audit, and insert paper display items: figures, tables, diagrams, and preview PDFs under 0-displays/. Displays are RENDERED by a paper-display task from evidence, never hand-authored in float.tex. Use for display-unit README files, ready-to-input figure/table blocks, captions, labels, standalone previews, or figure/table story-evidence contracts."
+description: "Plan, materialize (via task/probe), scaffold, build, audit, and insert paper display items: figures, tables, diagrams, and preview PDFs under 0-displays/. Displays are RENDERED by a paper-display task from evidence, never hand-authored in float.tex. Includes a Probes section where each probe IS a visualization task dispatch (haipipe-task-for-display). Use for display-unit README files, ready-to-input figure/table blocks, captions, labels, standalone previews, or figure/table story-evidence contracts."
 argument-hint: "[paper-dir] [--plan|--scaffold|--framework|--materialize|--build|--audit|--insert] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.6.2"
-  last_updated: "2026-07-03"
-  summary: "Display stage orchestrator. Plans the display set, materializes via tasks, compiles gallery PDF, and gates exit. User invokes display, not phases."
+  version: "2.0.0"
+  last_updated: "2026-07-06"
+  summary: "Display stage orchestrator. Plans the display set, materializes via task probes (each probe = a haipipe-task-for-display dispatch), compiles gallery PDF, and gates exit. User invokes display, not phases."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -49,15 +49,27 @@ Read first: `../../PHILOSOPHY.md`, `../../wiki/04-lifecycle-map.md`, `../README-
   - `assets/` -- rendered visual assets (figure.pdf, table-body.tex)
   - `source/` -- source data, metrics.json
 
-**Content structure (4-display.tex):**
+**Content structure (4-display.tex + 4-display-probes.md):**
+
+The gallery document (`4-display.tex`) is .tex for compilation:
 - \input{} lines for each display unit's float.tex (gallery of all figures and tables)
 - `%% {USER}: ...` author comments on displays (verbatim, kept across iterations)
 - Parked section for kept-but-unused display units
+
+The probes document (`4-display-probes.md`) is the planning brain:
+- Display Map: claim -> display assignment
+- Probes: each probe IS a visualization task dispatch (haipipe-task-for-display), one per display unit that needs materialization
+- Venue Constraints: max figures/tables, format requirements from 2-venue Writing Principles
+
+**Formatting (for 4-display-probes.md):**
+- Heading style: `=====` for the document title, `-----` for sections. No `#`/`##`/`###`.
+- One sentence per line (semantic line breaks).
 
 **Done-criteria:**
 - [ ] All display units rendered (status >= rendered)
 - [ ] Gallery PDF compiles from paper root
 - [ ] All displays referenced in narrative (_DISPLAY_3-narrative.md)
+- [ ] All probes (task dispatches) completed or planned
 - [ ] USER comments in 4-display.tex addressed or acknowledged
 - [ ] CHECKLIST.md walked and all items pass
 - [ ] No orphan displays (every unit has a claim, source, section)
