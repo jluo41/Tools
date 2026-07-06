@@ -23,8 +23,11 @@ The point is filing, not gatekeeping. Even "no probe" work is recorded, so the
 evidence base stays organized instead of accumulating orphan tasks (which is the
 default failure: ProjB had 15 tasks, 1 broken probe, nothing filed).
 
-Front door: `/haipipe-probe file "<thought-or-work>"`. Also auto-invoked by
-`haipipe-data` (on task create) and `haipipe-discovery` (on discovery create).
+Front door: `/haipipe-probe gather "<thought-or-work>"` (the gather link path
+applies this judge; owner decision 2026-07-05 retired the separate `file` verb).
+The lower layers (task, discovery) never call this: they are probe-UNAWARE by
+design (one-way dependency). Filing happens probe-side at creation time, and the
+no-arg dashboard's UNLINKED EVIDENCE sweep catches anything that slipped.
 
 
 Disposition rules
@@ -144,7 +147,7 @@ ATTACH task       → probe.yaml: add path to evidence_refs.tasks[].
 ATTACH discovery  → probe.yaml: add to evidence_plan.discoveries[] (role) +
                     evidence_refs.discoveries[].
 NEW probe         → after user confirmation, scaffold
-                    probes/<MMDD>_<slug>/probe.yaml via Plan, with
+                    probes/<LETTER><MMDD>_<slug>/probe.yaml via Plan, with
                     claim.target_sentence seeded from the work and the work as
                     first evidence_ref.
 DEDUP-PROPOSAL    → no probe write yet. Ask to materialize/select the proposed
@@ -196,10 +199,11 @@ Hook points
 -----------
 
 ```
-/haipipe-probe file "<nl>"     front door: classify + file a loose thought/work
-haipipe-data   (task create)   auto-call after scaffolding a task folder
-haipipe-discovery (disc create) auto-call after scaffolding a discovery
+/haipipe-probe gather "<nl>"        front door: classify + file a loose thought/work
+gather link <artifact>              applies this judge before touching evidence_refs
+no-arg dashboard                    UNLINKED EVIDENCE sweep surfaces anything unfiled
 ```
 
 Run it at creation time, not later - filing a thought while it is fresh is the
-whole point. The no-arg dashboard (UNLINKED EVIDENCE) still surfaces anything that slipped.
+whole point. task/discovery layers never call this (probe-UNAWARE by design);
+the dashboard sweep is the safety net for work created outside a probe session.

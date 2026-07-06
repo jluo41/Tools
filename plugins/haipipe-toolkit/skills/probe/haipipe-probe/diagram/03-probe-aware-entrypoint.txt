@@ -1,3 +1,13 @@
+> {CC->JL}: 这张旧草图是加历史横幅、重画、还是删掉 (review finding D2)
+> 背景: 这是 v4.0 时代的入口设计草图。里面画着 paper 流水线的 minimap 阶段 (已裁撤, 现行流水线是 folder->seed->pitch->claims->narrative->display->editing), 用着 v3 的 "arms->" 词汇 (已退役), lifecycle 用词也早于 4.0.1 的 Return->Deposit 改名。
+> 原文: "seed -> pitch -> claims -> [narrative] -> figs -> minimap"  和  "|     |   arms->          refs->            files->"
+> 提议: 顶部加一行横幅 "(historical, v4.0-era sketch: minimap / arms / Return 词汇已过时, 仅作设计历史)", 图本身不动。
+> 例子: 新会话按文档索引翻到这张图, 看到 minimap, 会以为 paper 层还有 minimap 阶段, 去找 /haipipe-paper minimap (不存在), 白跑一趟。加横幅后, 第一行就声明这是历史草图, 读者不会把它当现行契约; 而图的主旨 (collapsed architecture: evidence core + delivery siblings) 今天仍然成立, 值得留。
+> 证据: 图自标 [design sketch]; banner-保历史 是 LESSON 被推翻时 SUPERSEDED 横幅惯例的轻量版, 成本一行。
+> 风险: 横幅方案留着过时词汇, 只看截图不看首行的人仍可能被误导; 删图则丢掉唯一一张 collapsed-architecture 总览。
+> 问你: A = 加历史横幅 (我的建议); B = 按 5.x 词汇重画; C = 删掉这张图。
+> JL:
+
 ================================================================================
   /haipipe-probe  -  probe-aware entrypoint                        [design sketch]
 ================================================================================

@@ -27,8 +27,8 @@ Should this become a next probe need instead?
 ## Workflow
 
 1. Load `probe.yaml` and `verdict.md`.
-2. Resolve deposit target from `probe.yaml.deposit_target`, CLI args, or user
-   instruction.
+2. Resolve deposit target from `probe.yaml` `source.deposit_target`, CLI args,
+   or user instruction.
 3. Prepare the deposited verdict as a human-readable summary. The deposit
    output must be SKIMMABLE — a reader who opens deposit.md cold should
    understand in 10 seconds what settled and where:

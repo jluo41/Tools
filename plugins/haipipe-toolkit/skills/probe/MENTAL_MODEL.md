@@ -19,7 +19,7 @@ A probe does not run code, search literature bodies, or store paper prose. It si
 Read these for the authoritative contract; this file is the intuition:
 
 ```
-../PHILOSOPHY.md
+PHILOSOPHY.md
 haipipe-probe/SKILL.md
 haipipe-probe/ref/lifecycle-map.md
 haipipe-probe/ref/probe-yaml-schema.md
@@ -34,7 +34,7 @@ The lifecycle - five steps
 2. Gather  call missing task/discovery work; link existing artifacts
 3. Read    summarize the gathered evidence into evidence.md + probe.yaml.result
 4. Judge   run structural + integrity + claim gates into verdict.md + probe.yaml.verdict
-5. Return  send the verdict back to source/memory into return.md + probe.yaml.return
+5. Deposit settle the verdict into source/memory via deposit.md + probe.yaml.deposit
 ```
 
 Plan absorbs intake and framing. Input can be a paper claim gap, an application question, a reviewer objection, a task path, a discovery note, an insight card, or a loose idea. Plan turns that into an existing-probe attachment, a new claim contract, or a standalone note.
@@ -53,7 +53,7 @@ Read  = what did the evidence say?
 Judge = what claim can we honestly make?
 ```
 
-Return is not Report. Report makes a result inspectable; Return sends a judged verdict to the place that needed it: a paper claim, application answer, reviewer response, insight memory, or the next evidence need.
+Deposit is not Report. Report makes a result inspectable; Deposit settles a judged verdict into the place that needed it: a paper claim, application answer, reviewer response, insight memory, or the next evidence need.
 
 
 The Probe Console
@@ -74,12 +74,14 @@ Console state is session state, not research evidence. It lives in `.probe-conso
 Copilot is the default mode. The console makes low-risk progress automatically (read files, summarize status, classify input, suggest links, detect missing evidence, draft text) and pauses before costly, irreversible, or claim-committing actions (creating costly tasks, PHI/full-data work, changing the claim target, declaring a final yes/no verdict, editing paper/application text, filing insight memory).
 
 
-The two no-arg / file entry points
-==================================
+The two orientation / filing entry points
+=========================================
 
 ```
-/haipipe-probe              no-arg DASHBOARD: a derive-from-disk preflight
-/haipipe-probe file "<x>"   FILE scattered work into the evidence base
+/haipipe-probe                 no-arg DASHBOARD: a derive-from-disk preflight
+/haipipe-probe gather "<x>"    FILE scattered work into the evidence base
+                               (the link path applies ref/probe-attach.md; the
+                                separate `file` verb was retired 2026-07-05)
 ```
 
 The dashboard orients before any step acts. Its golden rule:
@@ -92,7 +94,7 @@ When stored status and disk disagree, disk wins and the gap is flagged DRIFT.
 
 It runs a shallow drift check (resolve path-like refs, flag missing ones), never a heavy parse or integrity audit. The frontier is the first step whose disk predicate fails.
 
-`/haipipe-probe file` files a loose thought or one-off work at creation time so nothing falls on the floor. Three dispositions:
+`/haipipe-probe gather "<x>"` files a loose thought or one-off work at creation time so nothing falls on the floor. Three dispositions:
 
 ```
 ATTACH      work shares an existing probe's claim (entity AND outcome at claim level) -> wire as evidence
@@ -111,13 +113,13 @@ Probe folders are flat. Do not create probe group folders. Organize with tags, s
 ```
 probes/
 ├── _index.md
-├── 0605_discretion-gradient/
-│   ├── probe.yaml      machine-readable contract: refs + structured result/verdict/return
+├── T0605_discretion-gradient/
+│   ├── probe.yaml      machine-readable contract: refs + structured result/verdict/deposit
 │   ├── status.md       human-readable Probe Console panel
 │   ├── evidence.md     Read output: what the gathered evidence says
 │   ├── verdict.md      Judge output: claim support, confidence, caveats
-│   └── return.md       Return output: where the verdict went or should go
-└── 0621_trait-diabetes/
+│   └── deposit.md      Deposit output: where the verdict settled or should settle
+└── T0621_trait-diabetes/
     └── ...
 ```
 
@@ -129,26 +131,27 @@ INTEGRITY_AUDIT.md     long independent integrity audit
 CLAIMS_FROM_RESULTS.md claim-verifier output (Judge gate 3)
 ```
 
-No code, notebooks, raw literature bodies, heavy results, or plots in probe folders. Those live in task/discovery/insight and are linked by reference. One probe folder equals one claim-level thread. Canonical ref is `P.<MMDD>` (for example `P.0605`); same-day collisions append a lowercase suffix (`P.0605b`).
+No code, notebooks, raw literature bodies, heavy results, or plots in probe folders. Those live in task/discovery/insight and are linked by reference. One probe folder equals one claim-level thread. Canonical ref is `P.<LETTER><MMDD>` (T task-sourced, D discovery-sourced, e.g. `P.T0605`); same-day collisions append a lowercase suffix (`P.T0605b`); legacy letterless refs (`P.0605`) stay resolvable.
 
 
 Judge - builder is not judge
 ============================
 
-Judge is the claim-commitment gate. It runs three INDEPENDENT reviewers so the planner cannot rubber-stamp its own work:
+Judge is the claim-commitment gate. It runs three INDEPENDENT gates through the unified `haipipe-probe-reviewer-agent` (one dispatch, full cross-gate context; the planner never grades its own claim):
 
 ```
-1. structural  required evidence exists, compared roles comparable, results match the
+G1 structural  required evidence exists, compared roles comparable, results match the
                intended contrast, discovery verdicts accounted for, caveats cover confounds
-               -> probe-structural-reviewer-agent (or inline by a fresh reviewer)
+               -> reviewer agent reasons fresh (independent of the creator)
 
-2. integrity   provenance of outcome/ground truth, metric/table consistency, no phantom
+G2 integrity   provenance of outcome/ground truth, metric/table consistency, no phantom
                results, claim scope matches evidence scope, no leakage
-               -> probe-integrity-auditor-agent (Codex, PATHS only so the builder can't rationalize)
+               -> deterministic script fn/g2_integrity_check.py (no LLM judgment;
+                  >95% verified = pass, 80-95% = warn, <80% = fail)
 
-3. claim       yes/partial/no/blocked, confidence, supported vs unsupported scope, caveats,
+G3 claim       yes/partial/no/blocked, confidence, supported vs unsupported scope, caveats,
                next needs
-               -> claim-verifier-agent (Codex)
+               -> reviewer agent; G2 warn caps confidence at medium
 ```
 
 Hard rule: integrity = fail BLOCKS the claim gate. Output is `verdict.md` plus the structured `probe.yaml.verdict` block. Judge stops if integrity fails, required evidence is missing, the claim would overreach, or a final yes/no needs user approval.
@@ -167,7 +170,7 @@ project-root/
 └── insights/      judged knowledge (DIKW cards)
 ```
 
-Probe READS the others; the others do not reference probes. Delete a probe and tasks/discoveries are untouched; delete a linked task and the probe's ref goes stale (the dashboard flags it as DRIFT). Tasks/discoveries are atomic; one task can be cited by several probes. Probe calls task/discovery during Gather and may call insight during Return.
+Probe READS the others; the others do not reference probes. Delete a probe and tasks/discoveries are untouched; delete a linked task and the probe's ref goes stale (the dashboard flags it as DRIFT). Tasks/discoveries are atomic; one task can be cited by several probes. Probe calls task/discovery during Gather and may call insight during Deposit.
 
 DELIVERY lifecycles are SIBLINGS that consume the evidence core, not layers above it:
 
@@ -208,12 +211,13 @@ One probe, full lifecycle (illustrative)
           writes evidence.md + probe.yaml.result; status: read
 
 [Judge]   /haipipe-probe judge P.0605
-          structural + integrity(Codex, paths-only) + claim(Codex) gates
+          G1 structural + G2 integrity (deterministic script) + G3 claim gates
+          via haipipe-probe-reviewer-agent
           writes verdict.md + probe.yaml.verdict; status: judged
 
-[Return]  /haipipe-probe return P.0605
+[Deposit] /haipipe-probe deposit P.0605
           backfills the paper claim / files insight memory / emits next need
-          writes return.md + probe.yaml.return; status: returned
+          writes deposit.md + probe.yaml.deposit; status: deposited
 ```
 
 probe.yaml is the canonical record of the contract. The evidence itself lives in the task/discovery/insight folders it links.

@@ -2,7 +2,7 @@
 name: haipipe-probe-gather
 description: "Gather stage for a probe. Calls missing task/discovery work, links existing task/discovery/insight artifacts, and checks whether the evidence set is ready to read."
 argument-hint: "[call|link|check] [probe_ref] [args...]"
-allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Task
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 ---
 
 # Gather
@@ -142,4 +142,4 @@ plan.
 
 If `probes/FILING.md` contains a placeholder such as `P.06xx_trait-diabetes`,
 that is a proposal, not an existing probe. Ask before materializing it into a
-real `probes/<MMDD>_<slug>/` folder and only then link artifacts.
+real `probes/<LETTER><MMDD>_<slug>/` folder and only then link artifacts.

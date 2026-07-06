@@ -12,7 +12,7 @@ and stop gates.
 | `Plan` | `fn/plan.md` | What claim is being tested, and what evidence would settle it? | Intake input, resolve existing/new probe, define claim/evidence contract | user input, source refs, nearby probes | `probe.yaml`, `status.md` | none by default | `status.md` | `probe.yaml` | duplicate, unfalsifiable, unclear source |
 | `Gather` | `fn/gather.md` | Is needed evidence missing or already present? | Call/Link/Extract evidence; emit participant roster when done | `probe.yaml`, candidate task/discovery/insight artifacts | `probe.yaml`, `status.md`, optional `gather.md` | `haipipe-task`, `haipipe-discovery` | `status.md`, participant roster, optional `gather.md` | `probe.yaml.evidence_refs`, `probe.yaml.calls` | costly/PHI work, ambiguous link, approval needed; DONE = all participants finished running |
 | `Read` | `fn/read.md` | What did gathered evidence say? (STOP gate — user internalizes) | Present evidence legibly; STOP for user reaction; no verdict language | linked tasks/discoveries/insights, `probe.yaml` | `evidence.md`, `probe.yaml.result`, `status.md` | none | `evidence.md` (the internalize panel) | `probe.yaml.result` | Gather incomplete, missing evidence, malformed artifacts, ALWAYS stop after writing |
-| `Judge` | `fn/judge.md` | What claim does the evidence honestly support? | Structural check, integrity audit, semantic verdict | `probe.yaml`, `evidence.md`, linked raw artifacts | `verdict.md`, `probe.yaml.verdict`, `status.md` | reviewer agents / Codex when available | `verdict.md` | `probe.yaml.verdict` | integrity fail, overclaim, insufficient evidence |
+| `Judge` | `fn/judge.md` | What claim does the evidence honestly support? | Structural check, integrity audit, semantic verdict | `probe.yaml`, `evidence.md`, linked raw artifacts | `verdict.md`, `probe.yaml.verdict`, `status.md` | `haipipe-probe-reviewer-agent` (G1/G2/G3; G2 via `fn/g2_integrity_check.py`) | `verdict.md` | `probe.yaml.verdict` | integrity fail, overclaim, insufficient evidence |
 | `Deposit` | `fn/deposit.md` | Where should this verdict go? | Backfill source, file memory, or emit next need | `verdict.md`, `probe.yaml`, return target | `deposit.md`, `probe.yaml.deposit`, `status.md` | optional `haipipe-insight-*`; paper/application edits only with approval | `deposit.md` | `probe.yaml.deposit` | no target, user approval needed |
 
 ## File Principles
@@ -52,20 +52,10 @@ Artifact-first link requests must apply `ref/probe-attach.md` before editing
 /haipipe-probe gather ...       -> Gather
 /haipipe-probe read <probe>     -> Read
 /haipipe-probe judge <probe>    -> Judge
-/haipipe-probe deposit <probe>  -> Deposit (alias: return)
+/haipipe-probe deposit <probe>  -> Deposit
 /haipipe-probe "<free text>"    -> active Console router, else Plan
 ```
 
-Legacy aliases:
-
-```text
-design   -> plan
-bridge   -> gather call
-dispatch -> gather call
-harvest  -> read
-post     -> read + judge
-resume   -> read + judge
-review   -> judge
-file     -> gather link / plan
-return   -> deposit (renamed 4.0.1)
-```
+No legacy aliases (owner decision 2026-07-05: "我们就用一个gather得了，把legacy去掉好了。").
+Old v3 verbs do not route; scattered-work filing goes through `gather` (link
+path applies `ref/probe-attach.md`).
