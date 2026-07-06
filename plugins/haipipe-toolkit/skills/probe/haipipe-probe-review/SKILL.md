@@ -77,7 +77,9 @@ Run the deterministic checker (no LLM judgment in the integrity audit):
 python <skills>/probe/haipipe-probe-review/g2_integrity_check.py <evidence artifact paths>
 ```
 
-Thresholds: **>95% verified** → `✅ pass` · **80–95%** → `⚠️ warn` (caps G3 confidence at `medium`) · **<80%** → `❌ fail` (blocks G3). If the script is unavailable, fall back to manual checking: read the source files and confirm each cited number appears there.
+Thresholds: **>95% verified** → `✅ pass` · **80–95%** → `⚠️ warn` (caps G3 confidence at `medium`) · **<80%** → `❌ fail` (blocks G3). If the script is unavailable or shape-incompatible, fall back to manual checking: read the source files and confirm each cited number appears there.
+
+KNOWN GAP (2026-07-06 smoke test): the script's CLI is still folder-era — it expects a legacy probe folder with `evidence.md` + `probe.yaml`, so on folderless refs (sources.md, task results) it exits early and the manual fallback carries G2. Its number↔CSV tracing engine fits task-run metrics, not literature refs. Refit (accept `--doc <file> --sources <paths...>`) is a flagged follow-up; until then, state "manual fallback" in the G2 return line, as the contract requires.
 
 Return `G2: ✅ pass` | `⚠️ warn <reason>` | `❌ fail <reason>`.
 
