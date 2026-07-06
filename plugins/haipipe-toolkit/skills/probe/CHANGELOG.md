@@ -5,6 +5,16 @@ Layer-scoped changelog for the probe (PROBE / claim) layer. Newest first.
 Rollup lives in the plugin-level `CHANGELOG.md`.
 
 
+## [5.2.0] — 2026-07-06 — Judgment process becomes a SKILL: haipipe-probe-review
+
+JL ruling: "haipipe-probe-review可以被新的agent call，但是我们还是需要一个skill来规范流程；haipipe-probe就只保留 reviewer之外的内容."
+
+- NEW skill `haipipe-probe-review/` 1.0.0 — the governed G1/G2/G3 rulebook (gate substance, g2 thresholds, verdict vocabulary, return contract), extracted from the reviewer agent 2.1.0 body. Normal path: invoked headless by the reviewer agent; direct call only with a complete claim + refs spec. Writes nothing.
+- haipipe-probe-reviewer-agent → 3.0.0 thin shell: claim + refs in → Skill(haipipe-probe-review) → judgment returned as text. Skill added to tools. Two-tier review model unchanged (per-layer artifact reviewers vs this claim-level judge).
+- Instruments moved `agents/` → `haipipe-probe-review/`: g2_integrity_check.py + probe-caveats-checklist.txt (the skill owns its own docs).
+- haipipe-probe → 6.2.0: keeps everything EXCEPT the judgment process (layer contract, PPNN card anatomy incl. where the verdict LANDS, DIRECT ASK); judge references now point at the sibling skill. Gateway → 2.0.3 (Step 3 names the rulebook).
+- `.claude/skills/haipipe-probe-review` symlink registered.
+
 ## [5.1.1] — 2026-07-06 — Reviewer agent body folderless-native (closes the [5.1.0] follow-up)
 
 - haipipe-probe-reviewer-agent 2.1.0: rewrote the body off the folder era. Removed the pre-Judge creator-loop gates (Plan review of probe.yaml, Gather/Read review of evidence.md — none of those artifacts exist folderless) and every "write verdict.md / set probe.yaml.verdict" instruction. G1/G2/G3 now RETURN their results as text; the gateway carries the return and the caller lands it in the PPNN card `## Verdict`. Reconciled the G3 verdict vocabulary to the PPNN card's `supported | refuted | inconclusive` (was `yes | partial | no | blocked`). Gate check-substance is unchanged: G1 structural checklist, G2 five fraud-patterns + g2_integrity_check.py thresholds (>95 pass / 80-95 warn / <80 fail), G3 scope / caveats / confidence.
