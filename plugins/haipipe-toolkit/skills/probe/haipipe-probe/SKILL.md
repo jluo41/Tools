@@ -90,7 +90,7 @@ Light mode stops at `read` (no committed verdict). Full mode is for claims-stage
 
 - `probes/<slug>/` folders, `probe.yaml`, `evidence.md`, `status.md`, `verdict.md` — legacy folders in old projects are dead history: SWEEP does not read them, nothing writes them.
 - The interactive Probe Console (`.probe-console.yaml`, console panels).
-- `haipipe-probe-creator-agent` (in `agents/_old/`).
+- `haipipe-probe-creator-agent` (retired to `../_archive/_old/`).
 - `fn/` and `ref/` folders: DELETED 2026-07-05 (folder-era procedure docs; git history keeps them). The two live pieces moved to `../agents/`: `g2_integrity_check.py` + `probe-caveats-checklist.txt`, both referenced by the reviewer agent.
 
 ## Status queries
