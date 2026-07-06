@@ -9,6 +9,9 @@ Versions match each agent's frontmatter `version:`. Newest first, grouped per ag
 haipipe-probe-orchestrator-agent — evidence gateway
 ---------------------------------------------------
 
+## [2.0.5] — 2026-07-06
+Opening quote and layer description recast from "claim-level" to "explore+gather verb" (aligns with haipipe-probe 7.0.0 identity recast).
+
 ## [2.0.4] — 2026-07-06
 SWEEP insights wording de-biased from K-only: ALL FOUR card layers (D/I/K/W) can end the "need new work?" question — match the need's SHAPE to the layer (dataset question → D, claim question → K). JL exam-C review: "for insights, why we only have K card?" — the old "settled K-cards" phrasing could steer an agent past a D/I hit.
 

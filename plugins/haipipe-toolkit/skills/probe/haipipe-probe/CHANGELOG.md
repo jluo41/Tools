@@ -4,6 +4,11 @@ haipipe-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [7.0.0] — 2026-07-06
+
+Changed (JL: "probe is just exploring, can be general; it will be used by paper/application for explore and gather the evidence")
+- Identity recast: probe = general-purpose EXPLORE+GATHER verb, not "claim-level evidence contract". Any evidence question (dataset profile, field norms, run result, claim verdict) enters here; judgment is an optional add-on (full mode only, via haipipe-probe-review). The opening definition, description, layer-boundary block, and all "claim-level" language rewritten.
+
 ## [6.2.0] — 2026-07-06
 
 Changed (JL: reviewer flow must be governed by a SKILL — "haipipe-probe就只保留 reviewer之外的内容")
