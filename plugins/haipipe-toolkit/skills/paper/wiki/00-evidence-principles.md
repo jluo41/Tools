@@ -81,7 +81,10 @@ Where the principles are enforced
 ③  wiki/08-stage-gate.md Phase Transition Contract rule 4 (stage/worker);
    haipipe-probe-orchestrator-agent "no inline searching" (agent level)
 ①  haipipe-probe-orchestrator-agent "fresh evidence must land";
-   haipipe-discovery-orchestrator-agent ENRICH (the light landing entrance)
+   haipipe-discovery-orchestrator-agent ENRICH (the light landing entrance);
+   verdicts land in the consumer's _PROBE/PPNN card ## Verdict (folderless
+   probe 2026-07-05: probes/ retired — the card is the one home for
+   contract + receipt + verdict)
 ②  discovery creator/reviewer loops (full) + reviewer quick-pass (ENRICH);
    probe Judge gates G1/G2/G3; paper-probe worker mechanical acceptance
 ④  probe light reuse (zero-write => zero ceremony);
