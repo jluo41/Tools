@@ -5,6 +5,11 @@ Layer-scoped changelog for the probe (PROBE / claim) layer. Newest first.
 Rollup lives in the plugin-level `CHANGELOG.md`.
 
 
+## [5.1.1] — 2026-07-06 — Reviewer agent body folderless-native (closes the [5.1.0] follow-up)
+
+- haipipe-probe-reviewer-agent 2.1.0: rewrote the body off the folder era. Removed the pre-Judge creator-loop gates (Plan review of probe.yaml, Gather/Read review of evidence.md — none of those artifacts exist folderless) and every "write verdict.md / set probe.yaml.verdict" instruction. G1/G2/G3 now RETURN their results as text; the gateway carries the return and the caller lands it in the PPNN card `## Verdict`. Reconciled the G3 verdict vocabulary to the PPNN card's `supported | refuted | inconclusive` (was `yes | partial | no | blocked`). Gate check-substance is unchanged: G1 structural checklist, G2 five fraud-patterns + g2_integrity_check.py thresholds (>95 pass / 80-95 warn / <80 fail), G3 scope / caveats / confidence.
+
+
 ## [5.1.0] — 2026-07-06 — Archive pass (folder-era content off the live surface)
 
 Moved to `_archive/` (folder-era history; live contract = haipipe-probe/SKILL.md + the two agents):
