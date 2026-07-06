@@ -7,3 +7,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 ## [1.0.0] — 2026-06-22
 
 - initial version modeled on paper-edit-claim-audit.
+
+## [1.1.0] — 2026-07-06
+
+- ledger path updated to the 1-claims stage folder (paper-alignment refactor, ../SOP-paper-alignment.md).

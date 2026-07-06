@@ -21,9 +21,9 @@ stages:
   claims:     required
   narrative:  required
   display:    required
-  minimap:    optional
+  section-edit:    optional
 
-claims_depth: full
+claims_settlement: full
 ```
 
 

@@ -22,9 +22,9 @@ stages:
   claims:     required
   narrative:  required
   display:    required
-  minimap:    required
+  section-edit:    required
 
-claims_depth: full
+claims_settlement: full
 ```
 
 
@@ -44,11 +44,24 @@ Report arc depends on audience:
 Display map: tables (summary stats, comparisons), figures
 (forest plots, trend charts), KPI callouts.
 
-### → Minimap (required)
-Section → paragraph → sentence level job assignments.
-Same depth as paper's minimap — this is the venue closest
-to an academic paper.
+### → Section-edit (required)
+Per-section DPRC on the declared sections; paragraph-level job
+assignments live in each section's outline. This is the venue
+closest to an academic paper.
+
+Default section structure (adjust per intervention in 3-narrative;
+the DIKW-spine layout below originated in the C-group report work):
+
+```yaml
+sections:
+  - 01-subgroup-profile    # who the cohort is (D)
+  - 02-exploration         # what was tried / examined (D/I)
+  - 03-findings            # what the evidence shows (I/K)
+  - 04-messages            # what we say / recommend (K/W)
+  - 05-performance         # how it performed (I/K)
+  - 06-gate-check          # settlement + caveats before shipping
+```
 
 ### → Draft
-Formal report following narrative arc. Full citations.
-Dispatches to haipipe-application-report format specialist.
+Formal report following the narrative arc, assembled from 0-sections/
+by haipipe-application-artifact. Full citations.

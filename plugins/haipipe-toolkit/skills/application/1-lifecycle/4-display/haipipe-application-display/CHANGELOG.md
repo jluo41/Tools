@@ -15,3 +15,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 ## [3.0.0] — 2026-06-29
 
 - added _LOG, _PROBE/ subfolder. Output folder 4-display/ (was flat file). Complex venues (dashboard, report) get .tex + PDF for visual preview. Simple venues stay .md only. Borrowed per-stage tracking pattern from paper.
+
+## [4.0.0] — 2026-07-06
+
+- absorbs minimap: per-unit Job field required; materialization routes through the PROBE worker to /haipipe-task; stage-folder paths; DPRC phases (paper-alignment refactor, ../SOP-paper-alignment.md).

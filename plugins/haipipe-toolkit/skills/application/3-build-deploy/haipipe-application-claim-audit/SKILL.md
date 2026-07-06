@@ -4,9 +4,9 @@ description: "Claim audit for the intervention lifecycle. Verifies that every cl
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-06-22"
-  summary: "Claim-evidence audit — traceability + scope check."
+  version: "1.1.0"
+  last_updated: "2026-07-06"
+  summary: "Claim-evidence audit — traceability + scope check. Paper-alignment sweep: ledger path updated to the 1-claims stage folder."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -27,7 +27,7 @@ Audit scope
 
 ```
 Reads:
-  0-lifecycle/2-claims.md       (claim ledger)
+  0-lifecycle/1-claims/1-claims.md   (claim ledger)
   0-artifacts/*.md              (drafted artifacts)
   insights/K_knowledge/*.md     (K entries cited)
   insights/W_wisdom/*.md        (W entries cited)

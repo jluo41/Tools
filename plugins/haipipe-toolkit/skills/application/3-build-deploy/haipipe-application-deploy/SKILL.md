@@ -4,9 +4,9 @@ description: "Deployment specialist for the intervention lifecycle. STUB. Packag
 argument-hint: "[variant-id] [--channel sms|dashboard|email] [intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-06-22"
-  summary: "Deployment specialist (STUB) — package + ship to channel."
+  version: "1.1.0"
+  last_updated: "2026-07-06"
+  summary: "Deployment specialist (STUB) — package + ship to channel. Paper-alignment sweep: 5-delivery-plan.md prerequisite replaced with Gate Ledger + venue pack notes."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -19,13 +19,14 @@ through the specified channel.
 When implemented:
 
 ```
-Step 1: Verify all deployment prerequisites from 5-delivery-plan.md.
+Step 1: Verify deployment prerequisites: artifact status reviewed, Gate Ledger
+        rows complete, venue pack deployment notes satisfied.
 Step 2: Package artifact for channel (SMS API payload, dashboard
         config, email template).
 Step 3: Deploy to staging / test environment.
 Step 4: Verify delivery (test send, preview render).
 Step 5: On approval: deploy to production.
-Step 6: Update variant status: reviewed → deployed.
+Step 6: Update artifact status: reviewed → deployed.
 Step 7: Log deployment in STATUS.md.
 ```
 

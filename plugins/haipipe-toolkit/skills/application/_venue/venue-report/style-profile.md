@@ -66,7 +66,7 @@ audience=partner     → professional, collaborative tone
 ```
 [ ] Structure matches audience template
 [ ] Every factual claim has citation (format per audience)
-[ ] No contested/superseded K/W cited as confirmed
+[ ] No contested/superseded K/W cited as settled evidence
 [ ] Length within budget for audience
 [ ] Limitations section present (regulator)
 [ ] Data tables/figures have captions
