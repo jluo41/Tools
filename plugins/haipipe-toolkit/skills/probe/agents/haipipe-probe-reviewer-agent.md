@@ -12,11 +12,7 @@ metadata:
   version: "3.0.0"
   last_updated: "2026-07-06"
   summary: "Thin shell: claim + refs in → Skill(haipipe-probe-review) headless → judgment returned as text. Process spec lives in the skill; independence comes from this agent's fresh context."
-  changelog:
-    - "3.0.0 (2026-07-06): PROCESS → SKILL (JL: the agent may be called, but a skill must govern the flow). The G1/G2/G3 rulebook moved to probe/haipipe-probe-review/SKILL.md; this agent is now a thin dispatch shell that invokes it headless and returns the output. Skill added to tools. Instruments (g2_integrity_check.py, probe-caveats-checklist.txt) moved with the skill."
-    - "2.1.0 (2026-07-06): body rewritten folderless-native; G3 vocabulary aligned to the PPNN card (supported|refuted|inconclusive)."
-    - "2.0.0 (2026-07-05): FOLDERLESS REFACTOR — judgment RETURNED as text, never written; Write/Edit removed."
-    - "1.x (2026-06-23): merged 3 retired Judge agents; deterministic G2 script. (Full text in git history.)"
+  # changelog: ./CHANGELOG.md (agent-scoped, never loaded at invocation)
   replaces:
     - "probe-structural-reviewer-agent (Judge G1)"
     - "probe-integrity-auditor-agent (Judge G2)"

@@ -13,10 +13,7 @@ metadata:
   version: "2.0.3"
   last_updated: "2026-07-06"
   summary: "Evidence gateway — folderless probe. SWEEP over discoveries/tasks/insights, shape decision (reuse|enrich|fresh), execution via discovery/task agents, full-mode judgment via probe-reviewer; contract+receipt+verdict live in the caller's PPNN card. Zero project-side writes by this agent."
-  changelog:
-    - "2.0.3 (2026-07-06): Step 3 names the governed rulebook — the reviewer agent is a thin shell over Skill(haipipe-probe-review) (JL: process norms live in a skill)."
-    - "2.0.0 (2026-07-05): FOLDERLESS REFACTOR (JL: probes/ duplicated the paper-side _PROBE card — not single source of truth). This agent no longer creates or updates probes/ folders; the caller's PPNN card is the one home for contract+receipt+verdict. haipipe-probe-creator-agent RETIRED (its probe.yaml/evidence.md/status.md outputs no longer exist; linking absorbed here, presentation absorbed into the return contract). Judge: reviewer returns judgment text; the verdict travels in MY return and the caller lands it. Write/Edit removed from tools — executes the long-recorded 4.3.0(7) decision (open {CC->JL} C1 thread resolved as option A; the refactor made it moot: nothing left for this agent to write). Legacy probes/ folders remain readable in SWEEP, never created/updated. All 1.5.x-1.6.0 discipline retained below."
-    - "1.6.0 (2026-07-05): LEAN BOOT. 1.5.2: SWEEP scope = given project_root only; cross-project = USER decision. 1.5.1: TRUST THE LEDGER. 1.5.0: NO INLINE SEARCHING + FRESH EVIDENCE MUST LAND. 1.4.0: pick_list. 1.3.x: anchored return contract. 1.2.0: PLAN input form + shape decision. 1.1.0: SWEEP. 1.0.0: initial triad. (Full text in git history.)"
+  # changelog: ./CHANGELOG.md (agent-scoped, never loaded at invocation)
 ---
 
 # Evidence Gateway (probe, folderless)
