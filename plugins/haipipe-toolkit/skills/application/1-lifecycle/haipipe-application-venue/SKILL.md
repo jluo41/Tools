@@ -1,25 +1,21 @@
 ---
 name: haipipe-application-venue
-description: "Venue selection for the intervention lifecycle. Chooses the output modality (SMS, checklist, reminder, push, email, dashboard, UI card, report) and pins it in STATUS.md. The venue reshapes every downstream stage: which stages are required/skip, claims depth, content structure, and draft format. Runs after pitch, before claims. Modeled on haipipe-paper-venue. Trigger: venue, format, modality, what format, which channel, /haipipe-application venue."
-argument-hint: "[venue-name] [intervention-path]"
+description: "Venue selection for the intervention lifecycle — the decision gate between the venue-FREE stages (seed, claims) and the venue-ALIGNED stages (pitch, narrative, display, section-edit). Chooses the output modality (sms, push, reminder, checklist, email, dashboard, ui-card, report) and pins it in STATUS.md, writing venue + stages_skipped + claims_settlement. Runs AFTER claims, BEFORE pitch — same position as paper's venue. Re-pin re-couples pitch+; claims SURVIVES. Trigger: venue, format, modality, which channel, /haipipe-application venue."
+argument-hint: "[venue-name] [intervention-path] [--no-pin]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-06-23"
-  summary: "Venue selection — choose output modality, pin in STATUS.md."
+  version: "2.0.0"
+  last_updated: "2026-07-06"
+  summary: "Paper-aligned: venue moves AFTER claims (was after pitch); the pin writes three STATUS.md rows (venue, stages_skipped, claims_settlement) that the strip/lifecycle/gate all read; venue-change rule inverted (claims survives, settlement may deepen); minimap column retired."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-application-venue
 ==================================
 
-Chooses the output modality for the intervention and pins it in
-STATUS.md. The venue determines which lifecycle stages fire, how
-deep the claims stage goes, and what the draft looks like.
+Chooses the output modality for the intervention and pins it in STATUS.md. The venue gates which downstream lifecycle stages fire, how much of the claims ledger must SETTLE before artifact work, and what the artifact looks like.
 
-Runs between **pitch** and **claims** — same position as paper's
-venue selection.
-
+Runs between **claims** and **pitch** -- the same position as paper's venue selection: the truth (seed, claims) is settled venue-free first; everything that SELLS or SHAPES it (pitch onward) is venue-aligned.
 
 Available venues
 =================
@@ -32,131 +28,89 @@ venue-checklist         actionable checklist (5-12 items)
 venue-email             longer-form email with sections
 venue-dashboard         data-rich provider dashboard
 venue-ui-card           in-app card / widget
-venue-report            stakeholder report (formal)
+venue-report            stakeholder report (formal, sectioned)
 ```
 
+What the pin writes (STATUS.md)
+================================
 
-Stage requirements per venue
-==============================
-
-The venue profile declares which lifecycle stages are required,
-optional, or skip:
+Three rows the whole system reads (strip, lifecycle router, claims gate, artifact):
 
 ```
-                    seed   pitch   claims   narrative   display   minimap
-                    ─────  ─────   ──────   ─────────   ───────   ───────
-venue-sms           req    req     req      skip        skip      skip
-venue-push          req    req     req      skip        skip      skip
-venue-reminder      req    req     req      skip        skip      skip
-venue-checklist     req    req     req      optional    skip      skip
-venue-email         req    req     req      req         optional  skip
-venue-dashboard     req    req     req      req         req       req
-venue-ui-card       req    req     req      req         req       optional
-venue-report        req    req     req      req         req       req
+| venue | sms |
+| stages_skipped | narrative display section-edit |
+| claims_settlement | light |
 ```
 
-**seed, pitch, claims** are always required. They are the minimum
-viable lifecycle — you always need to know why (seed), what (pitch),
-and which evidence backs it (claims).
-
-**narrative, display, minimap** scale with output complexity. Simple
-venues (SMS, push) have fixed templates that answer these questions
-implicitly. Complex venues (dashboard, report) need explicit design.
-
-
-Claims depth per venue
-========================
-
-The claims stage is always present but its depth scales:
+Per-venue values (authoritative source: each `_venue/venue-<name>/README.md`):
 
 ```
-claims_depth    venues                     what it means
-────────────    ──────────────────────     ────────────────────────────
-light           sms, push, reminder        SELECT from existing K/W.
-                                           List which K/W entries inform
-                                           each part of the output.
-                                           No probe planning.
-
-medium          checklist, email           SELECT + gap check.
-                                           Verify K/W covers all items.
-                                           Optional probe if gap found.
-
-full            dashboard, ui-card,        Full claim ledger.
-                report                     GAP/weak/supported per claim.
-                                           Probe plans for GAPs.
+                 narrative   display   section-edit   claims_settlement   gate depth
+venue-sms        skip        skip      skip           light               inline
+venue-push       skip        skip      skip           light               inline
+venue-reminder   skip        skip      skip           light               inline
+venue-checklist  optional    skip      skip           medium              inline
+venue-email      req         optional  skip           medium              inline
+venue-dashboard  req         req       req            full                report
+venue-ui-card    req         req       optional       full                report
+venue-report     req         req       req            full                report
 ```
 
-Light claims for SMS example:
-```markdown
-## Claims (light)
-- Benefit sentence draws on: K03 (timing sensitivity)
-- CTA draws on: W02 (recommend refill action)
-- Personalization draws on: K07 (name improves engagement)
-- No gaps — all K/W entries are active and supported.
+**seed and claims** always fire (venue-FREE, already done by the time this runs). **narrative, display, section-edit** scale with output complexity: simple venues have fixed templates that answer those questions implicitly; complex venues need explicit design. An `optional` stage is skipped by default and pulled in on user request (then removed from `stages_skipped`).
+
+Claims settlement (what the depth means)
+==========================================
+
+The ledger's CONTENT is venue-free and already exists; the venue sets the BAR the claims CHECK gate applies before artifact work (spec: claims skill §Settlement Gate):
+
+```
+light    every claim the artifact leans on tied to a named K/W or "common knowledge"
+medium   primary claims supported or weak-with-caveat; load-bearing GAPs have probe cards
+full     primary claims supported by judged verdicts; load-bearing GAPs verdicted
 ```
 
-Full claims for dashboard example:
-```markdown
-## Claims (full)
-### C01: Refill timing predicts adherence
-- Status: supported
-- Evidence: K03
-### C02: Provider dashboard reduces missed refills
-- Status: GAP
-- Probe plan: PP01_dashboard_effectiveness
-```
+Venue template (simple venues)
+================================
 
-
-Venue template (for simple venues)
-=====================================
-
-Simple venues (skip narrative/display/minimap) include a
-**venue template** that replaces those stages. The template
-defines the fixed output structure:
+Simple venues include a **template** in their pack that replaces narrative/display/section-edit. The artifact skill reads it directly:
 
 ```
 venue-sms template:
   Slot 1: greeting     ← personalization
-  Slot 2: benefit      ← primary claim
-  Slot 3: CTA          ← action + timing
+  Slot 2: benefit      ← primary claim (K/W)
+  Slot 3: CTA          ← action + timing (W)
   Slot 4: close        ← reassurance / opt-out
 ```
 
-The draft skill reads this template directly when
-narrative/display/minimap are skip.
-
+The K/W-to-slot mapping happens at draft (venue-ALIGNED), never in claims.
 
 Workflow
 =========
 
 ```
-Step 1: Read 1-pitch.md (channel field suggests venue).
-
-Step 2: If venue obvious from pitch → propose it.
-        If ambiguous → present shortlist with pros/cons.
-
-Step 3: User confirms or overrides.
-
-Step 4: Pin venue in STATUS.md:
-          venue: sms
-          venue_profile: _venue/venue-sms/
-
-Step 5: Report which stages are required/skip for this venue.
+Step 1: Read 0-lifecycle/1-claims/1-claims.md (what evidence exists shapes what
+        venues are viable) + 0-seed's channel hunch.
+Step 2: If venue obvious → propose it. If ambiguous → present a shortlist with
+        pros/cons (evidence depth vs venue demands; audience fit).
+Step 3: User confirms or overrides (--no-pin = recommend only, write nothing).
+Step 4: Pin in STATUS.md: | venue | + | stages_skipped | + | claims_settlement |
+        (from the venue pack's README).
+Step 5: Report which stages fire for this venue + whether the current ledger
+        already meets the settlement bar (if not: name the claims work left).
 ```
 
+Venue change rule (retarget)
+=============================
 
-Venue change rule
-==================
-
-Changing venue after claims exist is a **loopback** — it
-invalidates claims and everything downstream. The skill warns
-and asks for confirmation before re-pinning.
-
+Changing venue later re-couples the venue-ALIGNED stages ONLY: pitch, narrative, display, section-edit rewrite; artifacts re-compose. The claims ledger SURVIVES -- the new venue may raise `claims_settlement` (sms → dashboard: light → full), which is additional settlement work on the SAME ledger, not invalidation. The skill states exactly what re-opens and asks for confirmation before re-pinning.
 
 Definition of done
 ===================
 
 ```
-[ ] STATUS.md has venue: <name> and venue_profile: <path>
-[ ] User saw and confirmed stage requirements
+[ ] STATUS.md has | venue |, | stages_skipped |, | claims_settlement | rows
+[ ] User saw and confirmed the stage requirements + settlement bar
+[ ] If the ledger falls short of the new bar: the gap is named as claims work
 ```
+
+End the reply with the closing block (stage line via `../../haipipe-application/stage-strip.sh`).

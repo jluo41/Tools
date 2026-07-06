@@ -1,12 +1,12 @@
 ---
 name: haipipe-application-iterate
-description: "Post-deploy iteration for the intervention lifecycle. Ingests A/B test results, engagement metrics, or user feedback and routes findings back into the lifecycle for refinement. Opens a new round with performance data and triages to claims/design/variants. Trigger: iterate, A/B results, performance review, refine, /haipipe-application iterate."
+description: "Post-deploy iteration for the intervention lifecycle. Ingests A/B test results, engagement metrics, or user feedback and routes findings back into the lifecycle for refinement. Opens a new round with performance data and triages to claims/pitch/display/artifact. Trigger: iterate, A/B results, performance review, refine, /haipipe-application iterate."
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-06-22"
-  summary: "Post-deploy iteration — A/B results, performance, refinement."
+  version: "1.1.0"
+  last_updated: "2026-07-06"
+  summary: "Post-deploy iteration — A/B results, performance, refinement. Paper-alignment sweep: re-homed to 4-iterate/; triage targets on the new spine (design/variants/rationale words retired); ask-kind reference removed."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -41,23 +41,24 @@ Step 2: Ingest performance data into discussion.md.
         - Opt-out rates
         - Guardrail metrics
 
-Step 3: Compare to success metrics in 5-delivery-plan.md.
+Step 3: Compare to the seed's expected impact + kill criteria (0-seed) and
+        the pitch's testable goal (2-pitch).
         - Primary met?     → note in decisions.md
         - Guardrail breach? → flag for immediate action
-        - Variant comparison → identify winner/loser
+        - Version comparison → identify winner/loser
 
 Step 4: Extract decisions:
-        - Drop underperforming variants
+        - Drop underperforming artifact versions
         - Adjust timing, tone, or content
-        - Add new segments or variants
+        - Add new segments or artifact versions
         - Update claims with real-world evidence
 
 Step 5: Triage decisions to lifecycle stages:
-        - "V02 outperformed V01"        → variants (promote V02)
-        - "48h too early, 24h better"   → design (update timing)
-        - "click rate validates C02"    → claims (GAP → supported)
-        - "no effect on adherence"      → rationale (re-examine theory)
-        - "opt-out rate too high"       → design (change frequency)
+        - "v2 outperformed v1"          → artifact (promote v2, re-draft losers)
+        - "48h too early, 24h better"   → pitch (theory of change) or display (element spec)
+        - "click rate validates C02"    → claims (GAP → supported, cite the A/B result)
+        - "no effect on adherence"      → pitch (re-examine theory) or claims
+        - "opt-out rate too high"       → artifact (frequency/tone re-compose)
 
 Step 6: Route to /haipipe-application round triage.
 
@@ -79,9 +80,9 @@ Unexpected pattern             → file I card
 New recommendation             → file W card
 ```
 
-This is the application → insight write-back path, same as the
-ask kind. The iterate skill is authorized to trigger
-`/haipipe-insight-*` to file cards from deployment evidence.
+This is the application → insight write-back path. The iterate skill is
+authorized to trigger `/haipipe-insight-*` to file cards from deployment
+evidence (ask-gated per the copilot policy).
 
 
 Risk profile

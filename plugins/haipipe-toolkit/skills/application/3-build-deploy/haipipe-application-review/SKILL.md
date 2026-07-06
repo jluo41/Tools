@@ -1,12 +1,12 @@
 ---
 name: haipipe-application-review
 description: "Artifact review for the intervention lifecycle. Checks each drafted artifact against audience requirements, claim traceability, tone/length compliance, and self-review checklist. Parallel to paper's reviewer skills. Trigger: review, review artifacts, check compliance, /haipipe-application review."
-argument-hint: "[variant-id] [intervention-path]"
+argument-hint: "[artifact-id] [intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-06-22"
-  summary: "Artifact review — audience fit, claim traceability, compliance."
+  version: "1.1.0"
+  last_updated: "2026-07-06"
+  summary: "Artifact review — audience fit, claim traceability, compliance. Paper-alignment sweep: old-spine paths (3-design/4-variants/2-claims.md) replaced; retired verdict word removed."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -29,12 +29,13 @@ Per artifact in `0-artifacts/`:
 [ ] Claim traceability: every factual claim in the artifact traces
     to a cited_K or cited_W in frontmatter
 
-[ ] No contested/superseded K/W cited as confirmed
+[ ] No contested/superseded K/W cited as settled evidence
 
 [ ] Citation format matches audience rules
     (patient: no K-id in body; clinician: inline K-id; etc.)
 
-[ ] Content principles from 3-design.md followed
+[ ] Element specs from 0-lifecycle/4-display/4-display.md (when present)
+    and the venue style-profile followed
 
 [ ] No PHI, no PII, no code, no raw data values
 
@@ -80,10 +81,11 @@ Workflow
 
 ```
 Step 1: Read 0-artifacts/ for drafted artifacts.
-Step 2: Read audience profile, 3-design.md, 2-claims.md.
+Step 2: Read the audience profile, 0-lifecycle/1-claims/1-claims.md, and
+        0-lifecycle/4-display/4-display.md (if the venue required it).
 Step 3: Run checklist per artifact.
 Step 4: Write REVIEW-*.md per artifact.
-Step 5: Update variant status: drafted → reviewed (if pass).
+Step 5: Update artifact status frontmatter: draft → reviewed (if pass).
 Step 6: Report summary.
 ```
 
@@ -91,5 +93,5 @@ Step 6: Report summary.
 Risk profile
 =============
 
-WRITES review files to `0-artifacts/`. Updates variant status in
-`0-lifecycle/4-variants.md`. READ-ONLY on everything else.
+WRITES review files to `0-artifacts/` and the reviewed artifact's status
+frontmatter. READ-ONLY on everything else.

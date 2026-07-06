@@ -11,3 +11,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 ## [2.0.0] — 2026-06-23
 
 - removed format specialist dispatch; venue profile carries all drafting instructions.
+
+## [3.0.0] — 2026-07-06
+
+- renamed from haipipe-application-draft (draft is a PHASE name now), re-homed 3-draft/ -> 3-build-deploy/; DPRC composition pass; K/W-to-slot mapping declared venue-ALIGNED (happens here, not in claims) (paper-alignment refactor, ../SOP-paper-alignment.md).

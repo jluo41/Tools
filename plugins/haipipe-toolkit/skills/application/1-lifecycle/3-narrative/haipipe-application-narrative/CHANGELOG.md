@@ -15,3 +15,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 ## [3.0.0] — 2026-06-29
 
 - added _LOG, _DISPLAY_ tracking file (beat → display unit mapping). Output folder 3-narrative/ (was flat file). Borrowed per-stage tracking pattern from paper.
+
+## [4.0.0] — 2026-07-06
+
+- stage-folder paths; gating via STATUS.md stages_skipped; settlement-bar precondition; DPRC phases (paper-alignment refactor, ../SOP-paper-alignment.md).

@@ -1,58 +1,44 @@
 ---
 name: haipipe-application-narrative
-description: "Stage 3 of the intervention lifecycle. Answers 'how do claims compose into a coherent message/experience?' Maps claim flow to the output's arc structure. Required for complex venues (email, dashboard, ui-card, report); skipped for simple venues. Output: 0-lifecycle/3-narrative/3-narrative.md + _LOG_3-narrative.md + _DISPLAY_3-narrative.md (which display unit serves each beat). Markdown only. Trigger: narrative, arc, story flow, message structure, /haipipe-application narrative."
+description: "Stage 3 of the intervention lifecycle (venue-GATED: fires per STATUS.md stages_skipped — required for email/dashboard/ui-card/report, optional for checklist, skipped for sms/push/reminder). Answers 'how do claims compose into a coherent message/experience?' Maps claim flow to the output's arc structure. Output: 0-lifecycle/3-narrative/3-narrative.md + _LOG_3-narrative.md. Markdown only. Trigger: narrative, arc, story flow, message structure, /haipipe-application narrative."
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.0.0"
-  last_updated: "2026-06-29"
-  summary: "Stage 3 — how claims compose into a coherent output arc. Now with _LOG changelog + _DISPLAY_ tracking (which display unit serves each beat). Borrowed per-stage tracking pattern from paper."
+  version: "4.0.0"
+  last_updated: "2026-07-06"
+  summary: "Paper-aligned: stage FOLDER paths (1-claims/, 3-narrative/), gating read from STATUS.md stages_skipped (not venue profile directly), DPRC phases via 2-phase/ workers, precondition restated against the settlement bar."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-application-narrative
 ======================================
 
-Stage 3 of the intervention lifecycle. How claims compose into a
-coherent output structure.
-
-Same role as paper's **narrative** — the evidence-backed arc that
-determines the flow of the final deliverable.
-
-**Required for:** email, dashboard, ui-card, report.
-**Skipped for:** sms, push, reminder (venue template handles arc).
-**Optional for:** checklist.
-
+Stage 3 of the intervention lifecycle (venue-GATED, venue-ALIGNED). How claims compose into a coherent output structure -- the evidence-backed arc that determines the flow of the final deliverable. Same role as paper's narrative.
 
 Question answered
 ==================
 
 "How do claims compose into a coherent message/experience?"
 
-
 When this stage fires
 ======================
 
-Only when the venue profile declares `narrative: required` or
-`narrative: optional`. For simple venues, the venue template
-defines a fixed arc and this stage is skipped.
-
+Read `STATUS.md | stages_skipped |`: if `narrative` is listed, this stage is skipped (simple venues -- the venue template defines a fixed arc). `optional` venues (checklist) pull it in on user request. If invoked while skipped: say so and offer the frontier.
 
 Input
 ======
 
-- `0-lifecycle/2-claims.md` (required)
-- Venue profile from `_venue/venue-<name>/` (arc structure rules)
-- `_audience/profile-<audience>/` (tone/style)
-
+- `0-lifecycle/1-claims/1-claims.md` (always)
+- `0-lifecycle/2-pitch/2-pitch.md` (the primary claim + theory of change anchor the arc)
+- `_venue/venue-<name>/` (arc structure rules) + `_audience/profile-<name>/` (register)
 
 Output
 =======
 
 ```
-<intervention-root>/0-lifecycle/3-narrative.md
+<intervention-root>/0-lifecycle/3-narrative/3-narrative.md
+<intervention-root>/0-lifecycle/3-narrative/_LOG_3-narrative.md
 ```
-
 
 Narrative artifact schema (venue-dependent)
 =============================================
@@ -82,46 +68,36 @@ C04 → Section 3 (recommendation)
 Level 1: Summary KPIs      ← C01, C02 (headline metrics)
 Level 2: Detail panels      ← C03, C04 (supporting evidence)
 Level 3: Action items       ← C05 (recommendations)
-
-## Claim → panel mapping
-C01 → KPI card "Refill Rate"
-C02 → KPI card "At-Risk Count"
-C03 → Detail panel "Timing Analysis"
 ```
-
 
 Precondition
 =============
 
-For full-claims venues: all **primary** claims must be `supported`
-or `weak` (not GAP). If any primary claim is GAP → BLOCK.
+The arc leans only on claims that meet the venue's settlement bar (STATUS.md `claims_settlement`): a load-bearing GAP claim cannot anchor a beat. If one does → BLOCK with a loopback suggestion to claims.
 
-For light-claims venues: this stage is skipped, so not applicable.
-
-
-Workflow
-=========
+Phases
+=======
 
 ```
-Step 1: Check venue profile — is narrative required?
-        If skip → return immediately (no file written).
-        If optional → ask user whether to write it.
-
-Step 2: Read 2-claims.md and venue arc structure rules.
-
-Step 3: Map claims to arc positions per venue rules.
-
-Step 4: Draft 3-narrative.md.
-
-Step 5: Present to user. Write (atomic).
+DRAFT   map claims to arc positions per venue rules (haipipe-application-draft)
+PROBE   rarely fires; a beat exposing a NEW evidence gap routes it back to
+        claims as a _PROBE/ card, never gathers here (haipipe-application-probe)
+REVISE  arc coherence + register pass (haipipe-application-revise)
+CHECK   exit criteria below → Gate Ledger row (haipipe-application-check)
 ```
-
 
 Definition of done
 ===================
 
 ```
-[ ] 0-lifecycle/3-narrative.md exists (if required/optional-and-chosen)
-[ ] Every claim mapped to an arc position
-[ ] Arc structure follows venue rules
+[ ] 0-lifecycle/3-narrative/3-narrative.md exists (when the venue requires it)
+[ ] Every load-bearing claim mapped to an arc position; no beat on a GAP claim
+[ ] Arc structure follows the venue pack's rules
 ```
+
+Handoff: `promote -> /haipipe-application display`. End the reply with the closing block (stage line via `../../../haipipe-application/stage-strip.sh`).
+
+Risk profile
+=============
+
+WRITES the 3-narrative/ stage folder only.

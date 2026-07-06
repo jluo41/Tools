@@ -11,3 +11,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 ## [2.0.0] — 2026-06-29
 
 - added _LOG_0-seed.md changelog; output folder 0-seed/ (was flat file); borrowed .md + _LOG pattern from paper-seed v2.0.0.
+
+## [3.0.0] — 2026-07-06
+
+- stage folder contract; venue-FREE marker (channel = hunch, not pin); DPRC phases; scaffolding delegated to enter get-or-create (paper-alignment refactor, ../SOP-paper-alignment.md).
