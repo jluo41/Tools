@@ -1,67 +1,54 @@
-Stage Gate Protocol
-===================
+Stage Gate Protocol (application)
+==================================
 
-A stage is only "done" when the USER explicitly confirms it. The system must
-never auto-advance to the next stage. This is the user-control mechanism for
-the paper lifecycle.
-
+A stage is only "done" when it is EXPLICITLY approved. The system must never auto-advance. This is the user-control mechanism for the intervention lifecycle. Application rewrite of the paper protocol (`../../paper/wiki/08-stage-gate.md`); the venue scales the gate's DEPTH, never its existence.
 
 Gate Protocol (per-stage loop)
 ------------------------------
 
-0. **Illuminate + Elicit** -- surface taste-bearing choices before drafting
-   (see ref/stage-illuminate.md).
-1. **Produce** the stage artifact (.tex).
-2. **Compile** the stage PDF (see ref/tex-quality.md).
-3. **Present exit criteria** with per-item check/fail marks (see table below).
-4. **ASK** "Stage <X> looks ready -- confirm to close and move to <next>?"
-5. Only on **explicit user confirm**: update STATUS.md current_layer to the
-   next stage.
+1. **Produce** the stage artifact through DRAFT → PROBE → REVISE (2-phase/ workers).
+2. **Present exit criteria** with per-item check/fail marks (per-stage table: `2-phase/3-check/haipipe-application-check/SKILL.md`).
+3. **ASK** "Stage <X> looks ready -- confirm to close and move to <next>?"
+4. Only on **explicit approval**: write the Gate Ledger row and update STATUS.md `current_layer` to the next non-skipped stage.
 
-The system **STOPS at Step 4 and WAITS**. No next-stage work until confirmed.
+The system **STOPS at step 3 and WAITS**. No next-stage work until approved.
 
+Venue-scaled depth
+------------------
 
-Per-Stage Exit Criteria
------------------------
+```
+simple venues (sms/push/reminder)      INLINE gate: exit criteria as one short
+                                       checklist in the reply; user's "ok" approves
+medium venues (checklist/email)        INLINE by default; full report on request
+complex venues (dashboard/ui-card/     FULL gate: complete CHECK report (criteria +
+report)                                evidence spot-checks + flags) before the ask
+```
 
-| Stage | Exit criteria |
-|-----------|---------------------------------------------------------------|
-| seed | Seed question stated? Promotion gate defined? Kill criteria defined? At least one evidence path named? |
-| pitch | Hook section with >=2 candidate hooks? Surprise stated? Implication/so-what stated? Why-believe with evidence pointers? PDF compiled and current? |
-| claims | PRIMARY claim designated? Venue coupling block present? Every claim has status (supported/weak/GAP)? GAP claims have delivery needs recorded? |
-| narrative | All claims carried in the arc? Claim-evidence matrix complete? Figure inventory present? Per-beat subagent review comments in small font? |
-| display | Gallery README present? Every display unit has README + float.tex? Per-unit interrogation verdict present? Preview PDFs compiled? |
-| minimap | Every section/paragraph has a job? Every supported claim anchored in >=1 slot? Every display referenced in >=1 slot? PDF compiled and current? |
-
+Depth changes the REPORT, not the rule: every stage still ends with an explicit approval and a ledger row.
 
 Confirmation Ledger in STATUS.md
 ---------------------------------
 
 STATUS.md carries a **Gate Ledger** -- one row per stage:
 
-    | Stage | Confirmed | Date | Notes |
-    |-------|-----------|------|-------|
-    | seed | yes | 2026-06-22 | promotion gate met |
-    | pitch | yes | 2026-06-22 | 3 hook candidates, A selected |
-    | claims | no | -- | -- |
+    | Stage | Confirmed | Date | By | Notes |
+    |-------|-----------|------|----|-------|
+    | seed | yes | 2026-07-06 | JL | kill criteria set |
+    | claims | yes | 2026-07-06 | JL | settlement: light met |
+    | pitch | no | -- | -- | -- |
 
-The stage strip's checkmark means "user-confirmed in the ledger", NOT "artifact
-exists on disk". A stage with a .tex but no ledger confirmation is unconfirmed.
-
+`By` records who approved: the human (copilot mode, the default) or `persona:<preset>` (unattended runs only -- attendance modes and persona presets live with the check worker). The stage strip's ✅ means "confirmed in the ledger", NOT "artifact exists on disk". A stage with a doc but no ledger row is unconfirmed. Venue-skipped stages never get ledger rows (they render `--` in the strip).
 
 Autonomy Policy
 ---------------
 
 - **Stage TRANSITION** = always PAUSE (ask before advancing).
-- **Work WITHIN a stage** = can be autonomous (read, draft, compile, backfill).
-- **Taste-bearing choices** (framing, emphasis, scope) = PAUSE to elicit
-  (see ref/stage-illuminate.md).
+- **Work WITHIN a stage** = can be autonomous (read, draft, buffer probe cards, backfill).
+- **Taste-bearing choices** (framing, emphasis, scope, venue pick) = PAUSE to elicit.
 - **Mechanical formatting** = autonomous.
-
+- **Evidence dispatch** = the PROBE phase worker is the only door; a stage never reads discoveries/, tasks/, or legacy probes/ inline, and never dispatches discovery/task orchestrator agents itself.
 
 Recovery
 --------
 
-If a paper reached a late stage without per-stage confirmations, the gate state
-is UNCONFIRMED for all stages. A re-walk resets to seed and confirms each stage
-one-by-one. Artifacts on disk are NOT deleted -- only the gate state resets.
+If an intervention reached a late stage without per-stage confirmations, the gate state is UNCONFIRMED for all stages. A re-walk resets to seed and confirms each non-skipped stage one-by-one. Artifacts on disk are NOT deleted -- only the gate state resets.

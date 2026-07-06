@@ -4,9 +4,9 @@ description: "Round management for the intervention lifecycle. Captures stakehol
 argument-hint: "[new|enter|triage|close] [intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-06-22"
-  summary: "Round management — feedback, triage, iteration cycles."
+  version: "1.1.0"
+  last_updated: "2026-07-06"
+  summary: "Round management — feedback, triage, iteration cycles. Re-homed to 0-enter/ (paper pattern); triage targets updated to the paper-aligned spine (design/variants words retired)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -60,13 +60,13 @@ Triage targets
 symptom in todo                          → route to
 ──────────────────────────────────────────────────────
 "claim X not convincing"                 → claims (update status)
-"tone too clinical for patients"         → design (update tone)
-"add a variant for Spanish speakers"     → variants (add V-slot)
-"timing should be 24h not 48h"          → design (update timing)
-"SMS too long"                          → draft (re-draft variant)
-"click rate below threshold"            → claims (re-evaluate) or
-                                           design (change approach)
-"need evidence for X"                   → claims (add GAP + probe plan)
+"tone too clinical for patients"         → draft/artifact (audience pass) or section-edit
+"add a variant for Spanish speakers"     → draft/artifact (new artifact version)
+"timing should be 24h not 48h"          → pitch (theory of change) or display (element spec)
+"SMS too long"                          → draft/artifact (re-compose per venue limits)
+"click rate below threshold"            → iterate → pitch or claims (re-evaluate)
+"need evidence for X"                   → claims (GAP + _PROBE/ card)
+"channel wrong for this audience"       → venue (re-pin; pitch+ re-couple; claims survives)
 ```
 
 
