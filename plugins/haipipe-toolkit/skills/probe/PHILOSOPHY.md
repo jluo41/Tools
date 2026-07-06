@@ -1,3 +1,5 @@
+> **HISTORICAL (2026-07-05).** Folder-era document. probes/ folders, the Probe Console, and creator agent are retired; current contract = haipipe-probe/SKILL.md 6.1.1 + agents/. Kept as rationale-of-record (SKILLSET_REVIEW is the diagnosis that motivated going folderless).
+
 # Probe Design Philosophy
 
 This document defines the design philosophy for the `haipipe-probe` layer.

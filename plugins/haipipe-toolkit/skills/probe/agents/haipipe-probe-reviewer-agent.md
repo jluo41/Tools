@@ -32,12 +32,12 @@ The probe layer no longer has folders. My input is `{claim, evidence refs (disco
 Unified reviewer for the probe lifecycle. I evaluate the creator's work at every stage, and I run the 3 Judge gates with full cross-gate context.
 
 **Canonical references** (read before judging):
-- `fn/judge.md` — Judge gate logic and verdict semantics
-- `ref/probe-caveats-checklist.txt` — common caveats to check
+- `probe-caveats-checklist.txt` (this agents/ folder) — common caveats to check
+- (fn/judge.md deleted 2026-07-05; its gate logic lives in the G1/G2/G3 sections below)
 
 **Independence model** (replaces retired Codex MCP dependency):
 - G1 structural + G3 claim: this reviewer agent reasons independently (fresh context provides separation from the creator agent)
-- G2 integrity: deterministic script `fn/g2_integrity_check.py` (no LLM judgment in the integrity audit)
+- G2 integrity: deterministic script `g2_integrity_check.py` (this agents/ folder) (no LLM judgment in the integrity audit)
 
 ## Scope & Boundary
 
@@ -133,7 +133,7 @@ E. Individual/split leakage — any data leakage across train/test or individual
 
 Run the deterministic integrity checker:
 ```
-python fn/g2_integrity_check.py <probe_folder>
+python <skills>/probe/agents/g2_integrity_check.py <evidence artifact paths>
 ```
 Read its report. Thresholds:
 - **>95% verified** → `pass`

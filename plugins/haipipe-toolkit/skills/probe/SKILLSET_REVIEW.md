@@ -1,3 +1,5 @@
+> **HISTORICAL (2026-07-05).** Folder-era document. probes/ folders, the Probe Console, and creator agent are retired; current contract = haipipe-probe/SKILL.md 6.1.1 + agents/. Kept as rationale-of-record (SKILLSET_REVIEW is the diagnosis that motivated going folderless).
+
 # probe skill-set review
 
 Date: 2026-07-05 · Reviewer: haipipe-skill-diagnose 1.0.0 · Scope: `Tools/plugins/haipipe-toolkit/skills/probe/` (1 skill `haipipe-probe` 5.0.1, 3 agents, 4 root docs, 53 files, ~5.3k lines; whole core read in the main session, no auditor panels). Paths below are bucket-relative.
