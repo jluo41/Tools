@@ -1,6 +1,6 @@
 # SOP — Application Paper-Alignment Refactor (2026-07-06)
 
-Status: PHASES 1+2 EXECUTED (JL approved 2026-07-06). Commits: 3da6f6a (1a structure moves) · 8d9e3af (1b load-bearing rewrites) · 45f75b2 (2 peripheral sweep) · +close-out commit (persona/attendance/input-contract ask-residue patches, data-contract-schema archived, SOP status). Workspace-side: 7 dangling pre-v4 `.claude/skills/haipipe-application-*` symlinks removed. Remaining: bench exams (§8) → then archive this SOP into haipipe-application/CHANGELOG.md and delete.
+Status: PHASES 1+2+3 EXECUTED + BOTH BENCH EXAMS PASSED (JL approved 2026-07-06). Commits (Tools main): 3da6f6a (1a structure moves) · 8d9e3af (1b load-bearing rewrites) · 45f75b2 (2 peripheral sweep) · b1a83cf (close-out ask-residue) · c1ce53f + 1db7a53 (three bench-found stage-strip.sh bugs) · 778dd31 (3 port paper 765696f + 11 audit fixes). Workspace-side: 7 dangling pre-v4 `.claude/skills/haipipe-application-*` symlinks removed. Remaining: archive this SOP into haipipe-application/CHANGELOG.md and delete (once JL signs off on the whole refactor).
 Owner: JL. Executor: CC.
 Decision record: JL 2026-07-06 — R1 spine reorder APPROVED; R2 stage-5 resolution APPROVED (minimap retires, section-edit venue-gated); R3 ask RETIRES ("maybe just retire it" — entry = /haipipe-application enter, paper pattern; recoverable from _archive/ if a batch-research need reappears); R4 DPRC "we will do the same" = FULL 2-phase/ parity with paper.
 
@@ -110,16 +110,21 @@ Paper moved again mid-exam (765696f: claims 4.0.0 evidence-campaign brain, venue
 | P3 | seed/pitch/narrative/display SKILL.mds | + visible Probes section in the stage doc + artifact formatting block |
 | P4 | probe worker + check | TRANSLATE values → _VALUES_; claims exit criteria = campaign complete |
 | P5 | wiki/03 + wiki/06 + README + router | folder contract rows (2-venue/, _VALUES_), stage table, venue verb line |
-| P6 | bench reconciliation | 04 PP01 reset planned → re-dispatch; both bench ledgers reshaped to campaign format; exam finishes under the ported spec |
+| P6 | bench reconciliation | 04 PP01 reset planned → re-dispatch; both bench ledgers reshaped to campaign format; exam finishes under the ported spec | ✅ DONE
+
+Phase-3 landed: Tools commit `778dd31` (port + 11 audit fixes). Audit = a 5-finder + adversarial-verify workflow (`wc8hxe970`, 18 agents): 11 confirmed (4 vocab-drift, 4 campaign-shape, 1 xref, 2 numbering; inbox/registration clean), all applied — pre-existing venue-dashboard/ui-card minimap drift + haipipe-application-ui/-message dead names, and the 2-venue.md read-propagation gap I'd missed in the orchestrator/router/PHILOSOPHY/artifact + a broken ../../paper xref.
 
 ## 9. Done criteria
 
 - [x] JL approved execution ("please go ahead and do it", 2026-07-06); §3 resolutions stand unless vetoed on review
 - [x] Phase-1 rows 1–21 landed (3da6f6a + 8d9e3af)
 - [x] Phase-2 sweep landed (45f75b2 + close-out commit)
-- [ ] Light-path exam passed (8.1)
-- [ ] Full-path exam passed (8.2)
+- [x] Phase-3 port of paper 765696f landed (778dd31) + audit (11 findings) applied
+- [x] Light-path exam PASSED (8.1) — examples/ProjApp-SMSDesign/applications/03_bench_refill_timing_sms: seed→claims→venue→pitch→draft all gated; FRESH light probe (real discovery, 18 verified sources, round-1 fabrication caught+rebuilt); campaign ledger + 2-venue.md + _VALUES_; strip renders narrative/display/section-edit as `--`
+- [x] Full-path exam PASSED (8.2) — examples/ProjApp-SMSDesign/applications/04_bench_timing_report: seed→claims→venue-report→pitch→narrative→display→section-edit→draft all gated; REUSE full probe (~5min vs 47min fresh) → G1/G2/G3 verdict C1 supported (with a real adherence-at-scale scope carve-out) landed in the PPNN card ## Verdict + campaign flip + _VALUES_; report assembled from 0-sections/; strip fires all stages (no `--`)
 - [ ] This SOP archived into haipipe-application/CHANGELOG.md + deleted (no parallel bookkeeping files long-term)
+
+Bench also found + fixed THREE stage-strip.sh bugs (both families), none caught by synthetic tests: greedy-sed current_layer (c1ce53f), awk-range + numbered-name normalization (1db7a53 predecessor), and the tr -d '[:space:]' newline-collapse that made every ledger ✅ render ⬜ (1db7a53). Bench artifacts persist under examples/ProjApp-SMSDesign/ (interventions 03/04 + discoveries/S01) as validation evidence; committing them into that workspace repo is the operator's call.
 
 Execution notes (deliberate, flagged 2026-07-06):
 - `data-contract-schema.md` ARCHIVED with ask (its lifecycle was ask's Phase-1 A1 machinery); `data/contract.yaml` stays in the intervention schema — a data-consuming venue writes a fresh contract doc when one is actually needed.
