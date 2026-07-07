@@ -1,134 +1,102 @@
-# SOP — Application Paper-Alignment Refactor (2026-07-06)
+SOP — Application Paper-Alignment, Round 2 (2026-07-07)
+=========================================================
 
-Status: PHASES 1+2+3 EXECUTED + BOTH BENCH EXAMS PASSED (JL approved 2026-07-06). Commits (Tools main): 3da6f6a (1a structure moves) · 8d9e3af (1b load-bearing rewrites) · 45f75b2 (2 peripheral sweep) · b1a83cf (close-out ask-residue) · c1ce53f + 1db7a53 (three bench-found stage-strip.sh bugs) · 778dd31 (3 port paper 765696f + 11 audit fixes). Workspace-side: 7 dangling pre-v4 `.claude/skills/haipipe-application-*` symlinks removed. Remaining: archive this SOP into haipipe-application/CHANGELOG.md and delete (once JL signs off on the whole refactor).
+Status: PROPOSED — nothing executed; JL reviews §3 resolutions and approves/vetoes before any change lands.
 Owner: JL. Executor: CC.
-Decision record: JL 2026-07-06 — R1 spine reorder APPROVED; R2 stage-5 resolution APPROVED (minimap retires, section-edit venue-gated); R3 ask RETIRES ("maybe just retire it" — entry = /haipipe-application enter, paper pattern; recoverable from _archive/ if a batch-research need reappears); R4 DPRC "we will do the same" = FULL 2-phase/ parity with paper.
+Baseline: application = paper@765696f port (round 1, exams passed 2026-07-06; SOP archived in haipipe-application/CHANGELOG.md §5.0.0). Paper has since moved to b2c5a23 (2026-07-07): probe 3.0.0→3.1.0 mechanical enforcement, check 1.6.0/1.7.0 checks.sh, draft 3.4.0/3.5.0 WebSearch rule, seed 3.5.0 + claims 4.1.0 FORWARD handoff, weaving merged into revise-content, sub-workers 2.0.0 pointer-following recast. Application's 2-phase workers were written against the pre-3.0.0 probe and pre-1.6.0 check contracts and now lag.
 
-## 1. Target mental model
+1. Target mental model
+----------------------
 
-One sentence: application becomes paper's structural twin — same spine order (claims before venue), same venue-FREE/venue-ALIGNED coupling, same DPRC phase workers, same folderless probe door, same console/strip/gate machinery — differing ONLY in its declared deltas (deliverable = venue artifact not manuscript; _audience/ axis; venue-gated stage skipping; claims settlement depth; deploy/iterate tail).
+One sentence: round 1 gave application paper's SKELETON (spine, buckets, DPRC, folderless probe); round 2 gives it paper's ENFORCEMENT — the same "trust nothing that is not mechanically checkable" turn paper took on 07-06/07-07 (checker scripts, PROOF blocks, OWED debts, DRAFT-search/PROBE-dispatch separation, FORWARD pointer ledger), venue-scaled where application's deltas demand it.
 
 ```text
-BEFORE (v4, 2026-06-23)                          AFTER (v5)
-seed → pitch → [venue] → claims → narrative      seed → claims → [venue] → pitch → narrative
-  → display → minimap → draft → review             → display → section-edit° → draft(artifact)
-  → deploy → iterate                               → review → deploy → iterate   (° = venue-gated)
-venue change "invalidates claims+"               claims venue-FREE; retarget re-runs venue + pitch only
-no phase axis; gate fires between stages         every stage runs DRAFT→PROBE→REVISE→CHECK (2-phase/)
-1-probe-plans/PP## flat plan files;              per-stage _PROBE/PPNN cards = single source of truth;
-  route `/haipipe-probe plan from-need`;           1-probe-plans/README.md = index only; the 2-phase
-  verdict word "confirmed"                         probe worker is the ONLY door; enum supported|refuted|inconclusive
-ask = 4-phase session machinery (dead refs:      RETIRED; entry = enter console; ad-hoc questions =
-  -plan/-context/-loop/-bridge)                    /haipipe-probe "<question>" direct ask
-no closing block; ref/stage-strip.sh = stale     Closing Block in router SKILL.md; application
-  PAPER copy (wrong spine for both families)       stage-strip.sh, venue-aware (skipped stages render `--`)
-enter maturity ladder = pre-v4 names             enter rewritten on paper-enter model (gate ledger,
-  (rationale/design/variants/delivery-plan)        get-or-create, derive-from-disk)
+PAPER AT HEAD (b2c5a23)                              APPLICATION TODAY (post round 1)
+probe 3.1.0: BOOKKEEP→DISPATCH→TRANSLATE→VERIFY      probe 1.x: BOOKKEEP→DISPATCH→TRANSLATE, no VERIFY
+  check-probe-cards.sh; PROOF 1-4 blocks;              step, no checker, no PROOF blocks, no lane
+  lane debts `harvest: OWED`; ACQUIRE→HARVEST          debts; harvester model unnamed
+check 1.7.0: checks.sh (8 mechanical checks);        check 3.0.0: persona/attendance gate, prose
+  probe-card FAIL blocks the gate green;               criteria only; no deterministic checks; no
+  > CHECK: comments seeded in working docs             probe-card wiring; READ-ONLY on artifacts
+draft 3.5.0: WebSearch = DRAFT-only orientation      draft 1.0.0: no WebSearch; the DRAFT/PROBE
+  fuel; buffers `status: planned` skeletons;           evidence line exists only as prose
+  "DRAFT may search; PROBE must dispatch"
+seed 3.5.0 + claims 4.1.0: seed probes =             seed 3.1.0 + claims 5.0.0: seed probe scope
+  feasibility only; internal-data needs →              unscoped; no FORWARD pointer contract either
+  [FORWARD → CLAIMS] pointer; claims DRAFT             side
+  consumes pointers; unconsumed fails CHECK
+PREFERENCES: "always run the REAL probe" entry       PREFERENCES: entry absent (rule is family-generic)
 ```
 
-## 2. Invariants (must survive the refactor)
+2. Invariants (must survive round 2)
+------------------------------------
 
-- The four evidence principles (paper/wiki/00-evidence-principles.md): land-at-home, review-on-write, layered orders, trim-ceremony-never-principle.
-- Application's intentional deltas stay: _audience/ axis; venue-gated stage firing; claims settlement depth scales with venue; 0-artifacts/ markdown deliverables; deploy/iterate tail; interventions live in-project (plain folders, no repo backing).
-- Insight boundary: application READS insight always; WRITES via filing at iterate/probe-deposit; insight never reads applications/.
-- Stage skills own WHAT, 2-phase workers own HOW, users invoke stage skills only — phase workers never user-facing.
-- Evidence discipline verbatim from paper: stage → worker → gateway agent → discovery/task; no inline searching anywhere; fresh evidence must land; TRUST THE LEDGER; shape honesty; background dispatch for fresh runs; mechanical acceptance wherever transcription is delegated.
-- probe/discovery/task/insight layers: ZERO upstream contract changes — application adopts, nothing moves on their side.
+- Round-1 invariants all stand: four evidence principles; application deltas (_audience/, venue-gated stages, settlement depth, 0-artifacts/ markdown, deploy/iterate tail, in-project folders); insight boundary; stage-owns-WHAT / phase-worker-owns-HOW; zero upstream contract changes to probe/discovery/task/insight.
+- PPNN card anatomy, `_PROBE/` folder name, `0-lifecycle/<stage>/_PROBE/` tree, 1-probe-plans/README.md index: identical to paper (this is what makes checker reuse cheap).
+- Application keeps NO probe sub-workers (citation/values/display stay venue-scaled hooks inside the one probe worker); `_VALUES_` always, `_CITATION_` sectioned venues only.
+- Bench evidence folders (examples/ProjApp-SMSDesign/applications/03, 04) stay as round-1 validation history; round-2 exams may reuse them but not rewrite their round-1 artifacts.
 
-## 3. Design resolutions (interpret R1–R4; JL vetoes here at review)
+3. Design resolutions (proposed; JL vetoes here at review)
+----------------------------------------------------------
 
-- R1 — claims venue-FREE: the ledger states what must be true + evidence status (C-slots, supported|weak|GAP, roles), NO venue slot-mapping. Venue-scaled depth becomes a SETTLEMENT GATE read at gate time ("how much of the ledger must be supported before artifact work"), not a content mode. Slot-mapping moves to the venue-ALIGNED side (pitch/narrative/artifact composition). Light venues still write a real (small) ledger.
-- R2 — stage 5: minimap RETIRES (unit jobs absorb into 4-display per-unit contracts, paper's move). 5-section-edit = venue-gated final lifecycle stage (req for report/dashboard-like venues; skip for sms/push/reminder), generalized from section-editing v3; its hardcoded 6-section list moves to _venue/venue-report as pack knowledge.
-- R3 — ask RETIRES to _archive/ together with its private refs (session-state-schema.md, report-template.md). Router gains paper-parity discover/task verbs for non-claim utility; ad-hoc evidence questions route to /haipipe-probe direct ask. Legacy applications/ask/<NN>/ folders = dead history: nothing reads, nothing writes (probes/-folder precedent, JL 2026-07-05).
-- R4 — full DPRC: new 2-phase/ bucket with 0-draft, 1-probe, 2-revise, 3-check. Existing gate skill MOVES to 3-check (renamed haipipe-application-check; persona + attendance machinery kept as the application delta; venue-scaled gate depth kept). NEW thin draft + revise workers (ONE revise worker; paper's content/humanizer/weaving split deferred until artifacts demand it). NEW haipipe-application-probe mirrors haipipe-paper-probe's contract: RE-INVOKE PER RUN, BOOKKEEP → DISPATCH (always Agent(haipipe-probe-orchestrator-agent); light default, full for claims verdicts; bg for fresh) → TRANSLATE (anchored takeaways → card; full verdict → ## Verdict + claims-ledger flip in the same pass). No citation/values/display doc-worker sub-skills at first — venue-scaled hooks inside the worker, split out only if a venue needs them.
-- Naming collision: the artifact generator (current 3-draft/haipipe-application-draft) RENAMES to haipipe-application-artifact and re-homes to 3-build-deploy/; the user verb `draft` routes there; the 2-phase DRAFT worker takes the haipipe-application-draft name (paper parallel). Artifact skill keeps the v4 principle "the venue profile IS the instruction set" and runs DPRC internally when composing.
-- Bucket renumber to paper semantics: 0-enter/ (enter + round moves in), 1-lifecycle/ (numbered stage subfolders 0-seed..5-section-edit + venue + lifecycle at bucket root), 2-phase/ (DPRC workers), 3-build-deploy/ (artifact, review, claim-audit, deploy), 4-iterate/, _venue/, _audience/, wiki/ (replaces BOTH ref/ homes), _archive/ (new).
-- Closing block icon: 🎯 application (proposed; JL may swap). Strip spine keys: seed claims venue pitch narrative display section-edit review; venue-skipped stages render `--` (read from the pinned venue's stage table; STATUS.md gate ledger stays the ✅ source).
+- R1 — probe VERIFY, ported: application probe worker gains paper's STEP 4 (run the card checker; FAIL on `status: planned|dispatched|failed`, dangling refs, OWED lanes) and the four PROOF blocks (project-root listing, literal Agent dispatch calls, refs+ls resolution, checker output). Checker = a FORK of paper's check-probe-cards.sh (stage-strip.sh precedent: same conventions, family-local copy): same `0-lifecycle/*/_PROBE/PP*.md` tree and brace-aware ref expansion; lane scan venue-scaled — `_VALUES_` lane always checked, `_CITATION_` lane only when the pinned venue is sectioned, `_DISPLAY_` lane only if the venue's artifact has display units. Paper's ref/per-stage-dispatch.md is re-derived for the application spine (which stage dispatches which mode); harvest-acceptance greps adopted for whichever lanes fire.
+- R2 — check enforcement, ported venue-scaled: application check worker gains (a) gate wiring — step 1 runs the R1 card checker, any FAIL blocks the gate green; (b) a family-local checks.sh with the MARKDOWN-SAFE subset only: em-dash (❌, house rule), AI-voice tells (mawk-safe 1.7.0 grep), TODO/FIXME, bibtex-in-markdown guard; tex checks (\cite, \ref, \label, Pn.Sn, --compile) deliberately NOT ported; (c) `> CHECK:` comment seeding in 0-lifecycle STAGE DOCS ONLY — 0-artifacts/*.md stay clean because the artifact IS the deliverable text (unlike paper's .tex, where % comments never render); artifact-level findings go to the Gate Ledger notes column. RULED: JL 2026-07-07 (stage-docs-only over artifact HTML-comments and over keeping check fully read-only); persona/attendance machinery unchanged on top.
+- R3 — DRAFT/PROBE evidence line, ported: draft worker gains WebSearch+WebFetch as DRAFT-only orientation fuel — findings may shape prose and buffer `status: planned` PPNN skeletons, never write refs/findings into cards; the R1 checker is what makes the rule mechanical (planned cards surviving to CHECK = FAIL). PREFERENCES.md gains the family-generic "always run the REAL probe in the PROBE phase" entry (JL 2026-07-07, paper-side origin, applies verbatim here).
+- R4 — seed feasibility + FORWARD handoff, ported: seed probe scope narrows to feasibility (novelty + external-data obtainability); internal-data needs register as `[FORWARD -> CLAIMS] PPNN_<slug>` pointer lines in _LOG_0-seed.md; claims DRAFT opens by grepping seed's _LOG for pointers and materializing or explicitly declining each; unconsumed pointer fails claims CHECK. For application, "internal data" = the intervention's own cohort/engagement data — same split as paper.
+- R5 — revise and sub-workers, NOT ported: single revise worker stands (round-1 ruling; paper's weaving-into-content merge is a paper-internal consolidation, and weaving/humanizer-catalog knowledge is pulled in only when a sectioned-venue artifact demands it). No citation/values/display sub-skills; instead the probe worker's venue-hook section states the 2.0.0 contract those hooks must follow when they fire: pointer-following + gateway dispatch only, mechanical acceptance greps, no inline search.
+- R6 — standing alignment watch: paper drifted the SAME DAY as the round-1 port; to stop chasing, haipipe-application/PREFERENCES.md gains one line — any commit touching paper/2-phase/ or paper/1-lifecycle/{0-seed,1-claims} triggers an application port review before the next application work round. (Cheap: a grep of `git log` at enter time is enough; no automation proposed.)
 
-## 4. Change list — phase 1 (load-bearing)
-
-| # | File | Change |
-|---|------|--------|
-| 1 | application/README.md | NEW canonical root doc mirroring paper/README.md: intervention = delivery contract; intervention-folder layout (stage FOLDERS + _PROBE/); skill-tree layout; references table; retired-names table |
-| 2 | application/PHILOSOPHY.md | NEW mirroring paper/PHILOSOPHY.md: lifecycle, stage questions, two orthogonal axes, evidence routing, boundaries, console, copilot policy, design prompt (application spine) |
-| 3 | haipipe-application/SKILL.md → 5.0.0 | New spine + venue-coupling rules (seed/claims venue-FREE; venue pins between claims and pitch; downstream venue-ALIGNED); verbs: probe = BUFFER/SHOW/`run` via the 2-phase worker (umbrella NEVER calls /haipipe-probe), discover/task added (non-claim utility), draft → artifact, gate → check alias, ask REMOVED (pointer to /haipipe-probe direct ask); Closing Block section (🎯 · two-line strip · `--` for venue-skipped); routing resolution order; no-arg chooser; specialist return contract; structure pointers; retired-names table |
-| 4 | haipipe-application/stage-strip.sh | NEW venue-aware renderer co-located with the Closing Block spec (paper convention); DELETE ref/stage-strip.sh (stale paper copy with paper's spine) |
-| 5 | 0-enter/haipipe-application-enter → 2.0.0 | Rewrite on paper-enter model: derive-from-disk, Gate-Ledger-aware ✅, get-or-create (confirm-gated scaffold, no repo backing), CURRENT maturity ladder (drop rationale/design/variants/delivery-plan), closing-block inheritance, loopback diagnosis |
-| 6 | 2-rounds/haipipe-application-round | MOVE → 0-enter/ (paper pattern); verify 1-rounds/vYYMMDD contract parity with paper/wiki/07-paper-rounds.md |
-| 7 | 1-lifecycle/ re-bucket | Numbered stage subfolders 0-seed/ 1-claims/ 2-pitch/ 3-narrative/ 4-display/ 5-section-edit/, each holding its skill; haipipe-application-venue + -lifecycle stay at bucket root |
-| 8 | haipipe-application-lifecycle → 3.0.0 | New spine; venue-pin checkpoint moves between claims and pitch; frontier detection on stage FOLDERS; loopback fix ("venue wrong" → re-run venue + pitch, claims survives); each stage drives the 2-phase workers |
-| 9 | haipipe-application-claims → 4.0.0 | Venue-free ledger; body catches up to its own v3 frontmatter: stage folder 0-lifecycle/1-claims/ with 1-claims.md + _LOG + _EVIDENCE_ + _PROBE/PPNN cards + index row in 1-probe-plans/README.md; settlement-depth-at-gate; kill `plan from-need`; enum supported|refuted|inconclusive |
-| 10 | 2-phase/1-probe/haipipe-application-probe | NEW phase worker per §3-R4 (the ONLY evidence door for application stages) |
-| 11 | 2-phase/0-draft + 2-phase/2-revise | NEW thin workers: stage-doc structure + sentences; venue style-profile + audience-profile prose pass |
-| 12 | shared/haipipe-application-gate | MOVE → 2-phase/3-check/haipipe-application-check: CHECK-phase framing, approve/revise/done, writes STATUS.md Gate Ledger rows; persona/attendance kept; gate-persona.md + attendance-modes.md move next to it |
-| 13 | 3-draft/haipipe-application-draft | RENAME → haipipe-application-artifact, MOVE → 3-build-deploy/ (see §3 naming collision); composes 0-artifacts/<slug>-v{N}.md (simple venues: claims + venue template; sectioned venues: assemble from 0-sections/) |
-| 14 | 4-review-deploy/{review,claim-audit,deploy} | MOVE → 3-build-deploy/; old-spine-word sweep rides along |
-| 15 | 5-iterate/haipipe-application-iterate | MOVE → 4-iterate/ |
-| 16 | 1-lifecycle/haipipe-application-minimap | RETIRE → _archive/ (jobs → display per-unit contracts) |
-| 17 | 1-lifecycle/haipipe-application-section-editing | → 5-section-edit/haipipe-application-section-edit: generalize (hardcoded 6-section list → _venue/venue-report), venue-gated, per-section DPRC |
-| 18 | shared/haipipe-application-ask | RETIRE → _archive/ (+ session-state-schema.md, report-template.md) |
-| 19 | wiki/ | NEW single docs home: 03-intervention-lifecycle (rewritten: spine, stage folders, folderless evidence flow, maturity), 05-intervention-dashboard, 06-application-skill-structure (NEW, mirrors paper/wiki/06), 08-stage-gate (application rewrite: Gate Ledger, md artifacts, venue-scaled gates), 11-delivery-need (SINGLE copy; routes = buffer + probe run). DELETE application/ref/ and prune haipipe-application/ref/ (remaining refs re-homed or archived per phase-2 review) |
-| 20 | haipipe-application/fn/probe-plans.md | NEW buffer convention adapted from paper/haipipe-paper/fn/probe-plans.md (per-stage _PROBE/ + index README) |
-| 21 | paper/PHILOSOPHY.md (upstream fix) | Design prompt spine → current (0-seed > 1-claims > [venue] > 2-pitch > 3-narrative > 4-display > 5-section-edit) so application aligns to the true model |
-
-## 5. Phase 2 — peripheral sweep (after phase 1 lands)
-
-- seed/pitch/venue/narrative/display SKILL.mds: stage numbers, stage-file → stage-folder paths, venue-coupling lines (pitch re-couples [primary] + RQ framing on retarget); display absorbs minimap's per-unit job contract.
-- _venue/ packs (8 profiles + _SCHEMA): stage tables (minimap row out, section-edit row in), gate field semantics, slot-mapping ownership note; venue-report gains the report section structure from section-editing v3.
-- fn/feedback.md keyword→skill map (ask/minimap out; probe/check/artifact in); fn/digest.md untouched except examples.
-- Enum + verb sweep: `confirmed` → `supported` (review, venue-report style-profile, digest example); any `plan from-need` stragglers; dead-skill references (-plan/-context/-loop/-bridge) all die with ask's archive.
-- intervention-dashboard.md: strip markers per Closing Block; maturity per new ladder.
-- CHANGELOGs: one rollup entry per touched skill; family-level rollup in haipipe-application/CHANGELOG.md.
-- Registration: confirm retired skills (ask, minimap) drop out of skill discovery and renamed skills (check, artifact, section-edit) register; fresh session to verify.
-
-## 6. What deliberately does NOT change
-
-- _venue/ + _audience/ pack structure (README + style-profile [+ exemplars]); venues/audiences = knowledge, never verbs.
-- 0-artifacts/ versioned artifact naming; data/contract.yaml; .intervention-console.yaml (schema refreshed, name kept).
-- PPNN numbering, _PROBE/ folder name, 1-probe-plans/README.md index name — shared with paper as-is.
-- probe/discovery/task/insight layer contracts.
-- Legacy applications/ask/ + existing intervention folders: dead history, NO migration; the new contract applies to new work; anything valuable re-enters only by a human pointing at it.
-
-## 7. Rollback
-
-Scoped commits on Tools main, clustered: (a) structure moves (git mv only), (b) load-bearing rewrites, (c) phase-2 sweep. Rollback = git revert the cluster; no project-side data migration to undo.
-
-## 8. Exam (bench validation, after phase 1)
-
-1. Light path: one SMS intervention seed → claims(light settlement) → venue → pitch → artifact. Watch: no ask/minimap invoked; claims stage folder + _PROBE/ card + index row; gateway bg dispatch (light); enum correct; strip renders `--` on narrative/display/section-edit; artifact cites K/W.
-2. Full path: one report/dashboard intervention through section-edit with ≥1 full-mode claims verdict: G1/G2/G3 land in the card's ## Verdict; ledger flips at TRANSLATE; Gate Ledger rows written; check worker approves.
-3. Console: /haipipe-application enter on both; dashboard derives from disk; closing block renders exactly one 🔥 and one 🚀.
-
-## 9.5 Phase 3 — port of paper 765696f (evidence-campaign claims + venue stage doc; JL approved 2026-07-06)
-
-Paper moved again mid-exam (765696f: claims 4.0.0 evidence-campaign brain, venue 2.0.0 Writing-Principles stage doc, per-stage Probes sections). Port table; rulings: mirror dual-2 numbering (2-venue/ + 2-pitch/, flag collision upstream once) · NO Hypotheses section app-side (mechanism lives in seed/pitch) · _CITATION_ venue-scaled (sectioned venues only), _VALUES_ always · bench resumes ON the ported spec.
+4. Change list — phase 1 (load-bearing)
+----------------------------------------
 
 | # | File | Change |
 |---|------|--------|
-| P1 | haipipe-application-claims → 5.0.0 | three sections (Claims short / Probes full / Evidence Campaign with dispatch order + deps); _EVIDENCE_ → _VALUES_; settlement gate reads the campaign; `=====`/`-----` + one-sentence-per-line artifact formatting |
-| P2 | haipipe-application-venue → 3.0.0 | produces 0-lifecycle/2-venue/2-venue.md + _LOG + _PROBE/ with Artifact Principles (template/slots, limits, tone-by-audience, element types, section structure, gate depth) as the downstream contract; still writes the 3 STATUS rows |
-| P3 | seed/pitch/narrative/display SKILL.mds | + visible Probes section in the stage doc + artifact formatting block |
-| P4 | probe worker + check | TRANSLATE values → _VALUES_; claims exit criteria = campaign complete |
-| P5 | wiki/03 + wiki/06 + README + router | folder contract rows (2-venue/, _VALUES_), stage table, venue verb line |
-| P6 | bench reconciliation | 04 PP01 reset planned → re-dispatch; both bench ledgers reshaped to campaign format; exam finishes under the ported spec | ✅ DONE
+| 1 | 2-phase/1-probe/haipipe-application-probe/SKILL.md → 2.0.0 | STEP 4 VERIFY; PROOF 1-4 blocks; lane debts `harvest: OWED` (venue-scaled lanes per R1); harvester vocabulary (ACQUIRE→HARVEST, one pipeline); explicit `0-lifecycle/<stage>/_PROBE/` path contract; venue-hook contract per R5; fix frontmatter 1.0.0 vs CHANGELOG 1.1.0 mismatch |
+| 2 | 2-phase/1-probe/haipipe-application-probe/check-probe-cards.sh | NEW fork of paper's checker: same tree + expand_ref; venue-scaled lane scan (reads pinned venue from 2-venue.md / STATUS) |
+| 3 | 2-phase/1-probe/haipipe-application-probe/ref/{per-stage-dispatch,harvest-acceptance}.md | NEW, re-derived for the application spine + venue-scaled lanes |
+| 4 | 2-phase/3-check/haipipe-application-check/SKILL.md → 4.0.0 | Gate wiring (card-checker FAIL blocks green); checks.sh invocation in step 1; `> CHECK:` seeding in stage docs only, artifact findings → Gate Ledger notes (R2c as ruled); persona/attendance untouched |
+| 5 | 2-phase/3-check/haipipe-application-check/checks.sh | NEW markdown-safe subset (em-dash ❌, AI-voice mawk-safe, TODO/FIXME, bibtex-in-md); ✅/⚠️/❌ report lines; exit 0 = no ❌ |
+| 6 | 2-phase/0-draft/haipipe-application-draft/SKILL.md → 1.1.0 | + WebSearch, WebFetch in allowed-tools; DRAFT-only fuel rule + buffered planned skeletons + "DRAFT may search; PROBE must dispatch" principle |
+| 7 | 1-lifecycle/0-seed/haipipe-application-seed/SKILL.md → 3.2.0 | Probe scope = feasibility only; [FORWARD → CLAIMS] pointer registration in _LOG_0-seed.md; PROBE must dispatch the real worker |
+| 8 | 1-lifecycle/1-claims/haipipe-application-claims/SKILL.md → 5.1.0 | DRAFT opens with FORWARD-pointer reader (materialize or decline each); unconsumed pointer added to CHECK done-criteria |
+| 9 | haipipe-application/PREFERENCES.md | + real-probe entry (R3) + alignment-watch line (R6) |
+| 10 | 2-phase/README.md | + ONE-pipeline/HARVEST architecture note (mirrors paper 2-phase/README.md lines 61-76, venue-scaled) |
 
-Phase-3 landed: Tools commit `778dd31` (port + 11 audit fixes). Audit = a 5-finder + adversarial-verify workflow (`wc8hxe970`, 18 agents): 11 confirmed (4 vocab-drift, 4 campaign-shape, 1 xref, 2 numbering; inbox/registration clean), all applied — pre-existing venue-dashboard/ui-card minimap drift + haipipe-application-ui/-message dead names, and the 2-venue.md read-propagation gap I'd missed in the orchestrator/router/PHILOSOPHY/artifact + a broken ../../paper xref.
+5. Phase 2 — peripheral sweep (after phase 1 lands)
+----------------------------------------------------
 
-## 9. Done criteria
+- 2-phase/USAGE.md + WIRING.md: NEW thin application versions (recipes, effort dial, phase-restart, routing) mirroring paper's; SKILLSET_REVIEW.md is a paper process artifact — NOT ported.
+- wiki/03 + wiki/08: probe mechanics paragraphs updated (VERIFY step, OWED, checker as the gate's teeth); wiki/06 skill-tree table gains the two new scripts + ref/ folder.
+- Router SKILL.md + lifecycle orchestrator: one-line mentions of the VERIFY step and checks.sh where the DPRC loop is described; enter console unaffected (Gate Ledger contract unchanged).
+- CHANGELOG rollups per touched skill + family rollup (5.1.0).
+- Registration check in a fresh session (no renames this round, so expected no-op).
 
-- [x] JL approved execution ("please go ahead and do it", 2026-07-06); §3 resolutions stand unless vetoed on review
-- [x] Phase-1 rows 1–21 landed (3da6f6a + 8d9e3af)
-- [x] Phase-2 sweep landed (45f75b2 + close-out commit)
-- [x] Phase-3 port of paper 765696f landed (778dd31) + audit (11 findings) applied
-- [x] Light-path exam PASSED (8.1) — examples/ProjApp-SMSDesign/applications/03_bench_refill_timing_sms: seed→claims→venue→pitch→draft all gated; FRESH light probe (real discovery, 18 verified sources, round-1 fabrication caught+rebuilt); campaign ledger + 2-venue.md + _VALUES_; strip renders narrative/display/section-edit as `--`
-- [x] Full-path exam PASSED (8.2) — examples/ProjApp-SMSDesign/applications/04_bench_timing_report: seed→claims→venue-report→pitch→narrative→display→section-edit→draft all gated; REUSE full probe (~5min vs 47min fresh) → G1/G2/G3 verdict C1 supported (with a real adherence-at-scale scope carve-out) landed in the PPNN card ## Verdict + campaign flip + _VALUES_; report assembled from 0-sections/; strip fires all stages (no `--`)
-- [ ] This SOP archived into haipipe-application/CHANGELOG.md + deleted (no parallel bookkeeping files long-term)
+6. What deliberately does NOT change
+-------------------------------------
 
-Bench also found + fixed THREE stage-strip.sh bugs (both families), none caught by synthetic tests: greedy-sed current_layer (c1ce53f), awk-range + numbered-name normalization (1db7a53 predecessor), and the tr -d '[:space:]' newline-collapse that made every ledger ✅ render ⬜ (1db7a53). Bench artifacts persist under examples/ProjApp-SMSDesign/ (interventions 03/04 + discoveries/S01) as validation evidence; committing them into that workspace repo is the operator's call.
+- Revise worker count (one), no weaving/humanizer/results split, no proof-checker (no theorems in interventions), no Pn.Sn or tex checks, no probe sub-worker skills.
+- Gate Ledger format in STATUS.md; enter console; stage-strip.sh (already in sync — round-1 bug fixes rode both families).
+- _venue/ + _audience/ packs; artifact/deploy/iterate/review skills (3-build-deploy/ and 4-iterate/ untouched this round).
+- Upstream probe/discovery/task/insight contracts; bench folders 03/04 round-1 artifacts.
 
-Execution notes (deliberate, flagged 2026-07-06):
-- `data-contract-schema.md` ARCHIVED with ask (its lifecycle was ask's Phase-1 A1 machinery); `data/contract.yaml` stays in the intervention schema — a data-consuming venue writes a fresh contract doc when one is actually needed.
-- `gate-persona.md` + `attendance-modes.md` kept with the check worker, SESSION_STATE plumbing replaced with flag/Gate-Ledger wiring; the persona/threshold logic preserved verbatim.
-- `fn/digest.md` line "even if confirmed" untouched — that is digest's confirm-gate semantics, not the verdict enum.
-- Latent paper-side bug found+fixed while adapting stage-strip.sh: `| current_layer |` table-row extraction used a greedy sed that returned empty (masked by the old-format fallback); both scripts now use the anchored pattern.
-- Skill re-registration (renamed check/artifact/section-edit, new draft/probe/revise, retired ask/minimap) needs a fresh session to verify in the harness skill list.
+7. Rollback
+-----------
+
+Scoped commits on Tools main, clustered: (a) probe axis (rows 1-3), (b) check axis (rows 4-5), (c) draft/seed/claims axis (rows 6-8), (d) docs/prefs (rows 9-10 + phase 2). Rollback = git revert the cluster; no project-side data migration.
+
+8. Exam (bench validation, after phase 1)
+------------------------------------------
+
+1. Probe VERIFY: on bench 04 (report venue), run one new full-mode probe end-to-end; watch the checker pass on a clean card, then hand-break a card (`status: planned`, dangling ref, OWED lane) and watch VERIFY and the check gate both FAIL it.
+2. Check gate: run the check worker on bench 04 with a planted em-dash + AI-voice tell + TODO (artifact) and one prose issue (stage doc); checks.sh flags all three; the stage-doc issue lands as a `> CHECK:` thread, the artifact findings land in the Gate Ledger notes and the artifact file stays clean; Gate Ledger row written only after fixes.
+3. Light venue scaling: on bench 03 (sms), confirm the checker skips _CITATION_/_DISPLAY_ lanes and checks.sh still fires on the message text; strip and console unchanged.
+4. FORWARD handoff: new mini-seed with one internal-data need; pointer lands in _LOG; claims DRAFT consumes it; delete the consumption and watch claims CHECK fail.
+
+9. Done criteria
+----------------
+
+- [ ] JL approves §3 (R2c RULED 2026-07-07: stage-docs-only seeding; remaining resolutions still open for veto at review)
+- [ ] Phase-1 rows 1-10 landed
+- [ ] Phase-2 sweep landed
+- [ ] Exams 8.1-8.4 pass
+- [ ] This SOP archived into haipipe-application/CHANGELOG.md and deleted (same close-out as round 1)

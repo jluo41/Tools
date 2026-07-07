@@ -18,7 +18,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 ## [4.0.0] — 2026-07-06
 
-- venue-FREE ledger moved BEFORE venue; stage folder + _LOG + _EVIDENCE_ + _PROBE/ cards + index; settlement-depth-at-gate replaces content-depth modes; supported|refuted|inconclusive enum; plan-from-need retired (paper-alignment refactor, ../SOP-paper-alignment.md).
+- venue-FREE ledger moved BEFORE venue; stage folder + _LOG + _EVIDENCE_ + _PROBE/ cards + index; settlement-depth-at-gate replaces content-depth modes; supported|refuted|inconclusive enum; plan-from-need retired (paper-alignment refactor, SOP archived in haipipe-application/CHANGELOG.md §5.0.0).
 
 ## [5.0.0] — 2026-07-06
 

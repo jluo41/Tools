@@ -14,7 +14,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 ## [3.0.0] — 2026-07-06
 
-- stage folder contract; venue-FREE marker (channel = hunch, not pin); DPRC phases; scaffolding delegated to enter get-or-create (paper-alignment refactor, ../SOP-paper-alignment.md).
+- stage folder contract; venue-FREE marker (channel = hunch, not pin); DPRC phases; scaffolding delegated to enter get-or-create (paper-alignment refactor, SOP archived in haipipe-application/CHANGELOG.md §5.0.0).
 
 ## [3.1.0] — 2026-07-06
 
