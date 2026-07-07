@@ -4,9 +4,9 @@ description: "Create or update the paper folder's 0-lifecycle/0-seed/0-seed.md +
 argument-hint: "[paper-dir] [--source <path-or-note>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.3.0"
+  version: "3.4.0"
   last_updated: "2026-07-06"
-  summary: "Seed stage orchestrator. Defines WHAT (4 sections: question, motivations, claim shape, probes) and drives phases (draft -> probe -> revise -> check) internally. User invokes seed, not phases."
+  summary: "Seed stage orchestrator. Defines WHAT (4 sections: question, motivations, claim shape, probes) and drives phases (draft -> probe -> revise -> check) internally. User invokes seed, not phases. v3.4: PROBE phase is exactly one worker call (Skill haipipe-paper-probe); NEVER-do-evidence-itself rule; gate confirms PP cards have refs (outcome, not mechanics)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -47,6 +47,7 @@ Read first: `../../PHILOSOPHY.md`, `../../wiki/04-lifecycle-map.md`.
 - [ ] All four sections filled with real content (not placeholders)
 - [ ] Probes section carries at least the novelty/landscape probe result
 - [ ] _LOG entry records the current state
+- [ ] Probe cards verify clean: `sh ../../../2-phase/1-probe/haipipe-paper-probe/check-probe-cards.sh <paper_root>` exits 0 (refs resolve project-side, no tables, no fat cards -- the gate RUNS the checker and shows its output; it never eyeballs cards)
 
 ## Phase Orchestration
 
@@ -62,14 +63,19 @@ DRAFT ──→ illuminate existing content, elicit taste,
   │
   ▼
 PROBE ──→ DEFAULT RUN for a new seed: landscape / related work / novelty (mode light) --
-          it answers the CHECK questions "who cares?" and "is this new?" before the gate
-          (internally calls /haipipe-paper-probe, which ALWAYS dispatches
-           Agent(haipipe-probe-orchestrator-agent); the agent's SWEEP decides
-           enrich / reuse-directly / create+gather in clean context;
-           takeaways backfill the PP plan file in _PROBE/ AND the Probes section
-           in 0-seed.md, sources harvest into _CITATION_0-seed.md,
-           full evidence stays project-side;
-           NEVER dispatch discovery/task agents or /haipipe-probe directly from here)
+          it answers the CHECK questions "who cares?" and "is this new?" before the gate.
+          This stage does EXACTLY ONE thing here:
+              Skill("haipipe-paper-probe", args="from-buffer <paper_root>")
+          The worker owns everything downstream: PP card creation/format, index
+          bookkeeping, project-root resolution, agent dispatch, refs backfill.
+          THIS STAGE NEVER does evidence work itself -- never searches, never
+          launches search/discovery/task agents, never writes findings into PP
+          cards. Evidence produced any other way than the worker call above has
+          no project-side ledger and is void: the PROBE phase did not happen.
+          After the worker returns: takeaways appear in the PP plan files in
+          _PROBE/ (with refs: pointing at discoveries/ or tasks/) AND get woven
+          into the Probes section in 0-seed.md; sources harvest into
+          _CITATION_0-seed.md; full evidence stays project-side.
   │
   ▼
 REVISE ─→ refine prose clarity of the 4 sections, weave probe takeaways into Motivations

@@ -4,9 +4,9 @@ description: "Evidence gateway (folderless probe). A probe is the general-purpos
 argument-hint: "[\"<question>\" [light|full] | contract | card | status]"
 allowed-tools: Bash, Read, Grep, Glob, Agent
 metadata:
-  version: "7.0.0"
+  version: "7.1.1"
   last_updated: "2026-07-06"
-  summary: "Probe = general-purpose explore+gather verb (not claim-specific). PPNN card = single source of truth. Light = explore+gather (most needs); full = +judge (claims only, via haipipe-probe-review). Folderless."
+  summary: "Probe = general-purpose explore+gather verb (not claim-specific). PPNN card = single source of truth. Light = explore+gather (most needs); full = +judge (claims only, via haipipe-probe-review). Folderless. v7.1: refs REQUIRED once read — takeaways with empty refs = inline-evidence shortcut = status:failed. v7.1.1: card formatting — bullet lines only, no tables, ≤80 lines (mechanically enforced by the paper worker's check-probe-cards.sh)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -79,7 +79,7 @@ No probes/ folder, no PPNN card, no console state is created by a direct ask; wh
 # PPNN — <need title>
 - stage: <stage> · mode: light | full · status: planned | dispatched | read | verdicted
 - claim: <the claim this evidence serves, or the orientation question>
-- refs: <discoveries/L##_.../sources.md · tasks/T##_...>      ← direct, no wrapper
+- refs: <discoveries/L##_.../sources.md · tasks/T##_...>      ← REQUIRED once read; direct, no wrapper
 
 ## Need / ## Why / ## Route        ← the order (written at BOOKKEEP)
 ## Takeaways                       ← the receipt (anchored lines, written at TRANSLATE)
@@ -88,6 +88,16 @@ No probes/ folder, no PPNN card, no console state is created by a direct ask; wh
 - G1 structural ✅/❌ · G2 integrity ✅/❌ · G3 claim ✅/❌
 - <one-paragraph reasoning tying refs to the claim>
 ```
+
+`refs:` is EMPTY at BOOKKEEP and REQUIRED once the card reaches `status: read` (or
+`verdicted`): it points at the durable project-side artifacts the gateway created
+(`discoveries/.../sources.md`, `tasks/...`). Takeaways with an empty `refs:` mean the
+evidence never landed project-side — the card is `status: failed`, not `read`. This is
+the single invariant that separates a real probe from an inline-evidence shortcut.
+
+Formatting: bullet lines only — NO markdown tables anywhere in a PP card (a table is
+pasted findings, i.e. the shortcut), and a card stays under ~80 lines. Both are
+enforced mechanically by the paper worker's `check-probe-cards.sh`.
 
 Light mode stops at `read` (no committed verdict). Full mode is for claims-stage committed verdicts; the claims ledger (1-claims.md) flips its C-section status in the same TRANSLATE. How the verdict content is produced (gates, thresholds, vocabulary) is the sibling skill's spec: `../haipipe-probe-review/SKILL.md` — this file only owns where it LANDS.
 

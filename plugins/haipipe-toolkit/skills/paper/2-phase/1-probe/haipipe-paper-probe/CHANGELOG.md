@@ -4,6 +4,20 @@ haipipe-paper-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [3.0.0] — 2026-07-06
+
+Changed (rethink after the ProjC seed shortcut: rules existed but were prose-only, buried in 15-line paragraphs — the executor compressed them away and searched inline, writing tables into _PROBE/ cards with nothing landed in discoveries/)
+- Rebuilt as a 4-step procedure: BOOKKEEP → DISPATCH → TRANSLATE → VERIFY, each ending in a mandatory PROOF shown in the reply (project_root + ls, the literal Agent call, per-card refs + ls, checker output). A step without its proof did not happen.
+- NEW `check-probe-cards.sh`: deterministic verifier (read/verdicted ⇒ refs resolve under project_root; no markdown tables in any card; ≤80 lines; status:failed surfaced). Run at STEP 4 and re-run by the stage CHECK gate — two enforcement points.
+- project_root resolution corrected: walk-up to first ancestor with discoveries/ ONLY; `git rev-parse --show-toplevel` dropped (repo-backed papers are their own repos, it returns paper_root).
+- Reference prose moved out of the invocation path: `ref/per-stage-dispatch.md` (stage map, seed/claims specifics, section-edit logic, status forms) + `ref/harvest-acceptance.md` (harvest dispatch + literal acceptance greps). Main file 260 → ~150 lines.
+- Hard boundary added: NO markdown tables in PP cards / _CITATION_ / probe-discovery documents (JL standing rule).
+
+## [2.6.0] — 2026-07-06
+
+Changed (first pass at the same incident, prose-only — superseded by 3.0.0 same day)
+- BOOKKEEP resolves project_root + ensures PP-card anatomy by spec path, not memory; DISPATCH shows the concrete Agent input {project_root, mode, plan}; TRANSLATE makes refs MANDATORY (empty refs = failed phase, not green).
+
 ## [2.5.0] — 2026-07-05
 
 Changed (probe folderless refactor — probes/ retired; PPNN card = single source of truth)
