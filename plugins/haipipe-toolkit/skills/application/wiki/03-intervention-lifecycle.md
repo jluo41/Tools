@@ -72,7 +72,7 @@ Seed and claims are venue-FREE: written before the pin, unchanged on retarget (t
 
 ## Phase Dimension
 
-Stages × phases is a two-axis model. Each stage skill in `1-lifecycle/` defines WHAT the stage delivers; the `2-phase/` workers define HOW: DRAFT → PROBE → REVISE → CHECK (`haipipe-application-{draft,probe,revise,check}`). The PROBE phase dispatches evidence needs through `/haipipe-probe` (the project-side evidence gateway) via the `haipipe-application-probe` worker — the ONLY door. CHECK is the only human-involved phase, venue-scaled (inline for simple venues, full reports for complex). Users invoke stage skills only, never phases.
+Stages × phases is a two-axis model. Each stage skill in `1-lifecycle/` defines WHAT the stage delivers; the `2-phase/` workers define HOW: DRAFT → PROBE → REVISE → CHECK (`haipipe-application-{draft,probe,revise,check}`). The PROBE phase dispatches evidence needs through `/haipipe-probe` (the project-side evidence gateway) via the `haipipe-application-probe` worker — the ONLY door — and ends with a VERIFY step: `check-probe-cards.sh` FAILs cards left `planned|dispatched|failed`, dangling refs, and `harvest: OWED` lane debts. The CHECK gate re-runs the same checker (its teeth) and runs `checks.sh` (markdown-safe deterministic checks); `> CHECK:` threads are seeded in stage docs only, and artifact-level findings go to the Gate Ledger notes. CHECK is the only human-involved phase, venue-scaled (inline for simple venues, full reports for complex). Users invoke stage skills only, never phases.
 
 ## Maturity Ladder
 
@@ -120,7 +120,7 @@ stage DRAFT flags a NEED
     ↓
 buffer: _PROBE/PPNN_<slug>.md in the owning stage (+ index row in 1-probe-plans/README.md)
     ↓
-/haipipe-application probe run [PPNN]  →  haipipe-application-probe (BOOKKEEP → DISPATCH → TRANSLATE)
+/haipipe-application probe run [PPNN]  →  haipipe-application-probe (BOOKKEEP → DISPATCH → TRANSLATE → VERIFY)
     ↓
 Agent(haipipe-probe-orchestrator-agent)   — clean context, bg for fresh work
     SWEEP insights/ + discoveries/ + tasks/ → shape: reused | enriched | fresh
@@ -129,6 +129,9 @@ Agent(haipipe-probe-orchestrator-agent)   — clean context, bg for fresh work
     ↓
 TRANSLATE: takeaways → card (status: read); full verdict → card ## Verdict
 (supported | refuted | inconclusive) + claims-ledger flip; sections/rounds backfill from the card
+    ↓
+VERIFY: check-probe-cards.sh — planned/dispatched cards, dangling refs, and OWED lane debts FAIL;
+the stage CHECK gate re-runs the same script before it can go green
 ```
 
 Light settlement venues rarely dispatch — they select from the existing KB; full venues run the whole chain. There is NO probes/ folder and NO `plan from-need` verb (folderless probe, 2026-07-05).

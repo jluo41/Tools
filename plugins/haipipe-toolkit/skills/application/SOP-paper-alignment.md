@@ -1,7 +1,7 @@
 SOP — Application Paper-Alignment, Round 2 (2026-07-07)
 =========================================================
 
-Status: PROPOSED — nothing executed; JL reviews §3 resolutions and approves/vetoes before any change lands.
+Status: PHASES 1+2 EXECUTED (JL approved "can we apply it now", 2026-07-07). Remaining: full DPRC bench exams (§8; mechanical validation done) + archive this SOP into haipipe-application/CHANGELOG.md and delete (round-1 convention).
 Owner: JL. Executor: CC.
 Baseline: application = paper@765696f port (round 1, exams passed 2026-07-06; SOP archived in haipipe-application/CHANGELOG.md §5.0.0). Paper has since moved to b2c5a23 (2026-07-07): probe 3.0.0→3.1.0 mechanical enforcement, check 1.6.0/1.7.0 checks.sh, draft 3.4.0/3.5.0 WebSearch rule, seed 3.5.0 + claims 4.1.0 FORWARD handoff, weaving merged into revise-content, sub-workers 2.0.0 pointer-following recast. Application's 2-phase workers were written against the pre-3.0.0 probe and pre-1.6.0 check contracts and now lag.
 
@@ -95,8 +95,8 @@ Scoped commits on Tools main, clustered: (a) probe axis (rows 1-3), (b) check ax
 9. Done criteria
 ----------------
 
-- [ ] JL approves §3 (R2c RULED 2026-07-07: stage-docs-only seeding; remaining resolutions still open for veto at review)
-- [ ] Phase-1 rows 1-10 landed
-- [ ] Phase-2 sweep landed
-- [ ] Exams 8.1-8.4 pass
+- [x] JL approves §3 (R2c RULED 2026-07-07: stage-docs-only seeding; execution approved "can we apply it now?", 2026-07-07)
+- [x] Phase-1 rows 1-10 landed (4-agent parallel execution, one commit cluster per axis)
+- [x] Phase-2 sweep landed (USAGE/WIRING, wiki 03/06/08, router 5.1.0, family CHANGELOG rollup)
+- [~] Exams: mechanical validation PASSED — checks.sh fixture tests (dirty flags all four checks exit 1, clean exits 0, seeded `> CHECK:` lines don't re-flag); checker forked and dry-run on bench 03/04 with output byte-identical to paper's checker on the same input. Bench cards themselves FAIL as expected-historical: round-1 cards store refs in YAML frontmatter (canonical PPNN anatomy wants `- refs:` bullet) and bench-04 PP02 was deferred pre-dating the planned-FAILs rule — benches left unmodified per §2. Full DPRC exams 8.1-8.4 (live probe run, gate run, FORWARD handoff) PENDING — run on the next real intervention or on-demand.
 - [ ] This SOP archived into haipipe-application/CHANGELOG.md and deleted (same close-out as round 1)

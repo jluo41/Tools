@@ -6,7 +6,7 @@ A stage is only "done" when it is EXPLICITLY approved. The system must never aut
 Gate Protocol (per-stage loop)
 ------------------------------
 
-1. **Produce** the stage artifact through DRAFT → PROBE → REVISE (2-phase/ workers).
+1. **Produce** the stage artifact through DRAFT → PROBE → REVISE (2-phase/ workers). The PROBE phase ends with a VERIFY step: `check-probe-cards.sh` FAILs cards left `planned|dispatched|failed`, dangling refs, and `harvest: OWED` lane debts.
 2. **Present exit criteria** with per-item check/fail marks (per-stage table: `2-phase/3-check/haipipe-application-check/SKILL.md`).
 3. **ASK** "Stage <X> looks ready -- confirm to close and move to <next>?"
 4. Only on **explicit approval**: write the Gate Ledger row and update STATUS.md `current_layer` to the next non-skipped stage.
@@ -25,6 +25,16 @@ report)                                evidence spot-checks + flags) before the 
 ```
 
 Depth changes the REPORT, not the rule: every stage still ends with an explicit approval and a ledger row.
+
+Mechanical teeth
+-----------------
+
+The gate is not prose-only. Before the ask, the check worker (`2-phase/3-check/haipipe-application-check`) runs two deterministic checkers, and any FAIL blocks the gate from going green:
+
+- `check-probe-cards.sh` (re-run of the probe worker's VERIFY step): a `status: planned` card or a `harvest: OWED` lane at the gate means a probe that never ran — FAIL.
+- `checks.sh` (markdown-safe deterministic checks): em-dash (❌ house rule), AI-voice tells, TODO/FIXME, bibtex-in-markdown.
+
+Findings are seeded as `> CHECK:` threads in the STAGE DOCS only; `0-artifacts/*.md` stay clean because the artifact IS the deliverable text — artifact-level findings go to the Gate Ledger `Notes` column instead (JL ruling 2026-07-07).
 
 Confirmation Ledger in STATUS.md
 ---------------------------------

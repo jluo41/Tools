@@ -24,6 +24,10 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 - FAMILY ROLLUP: claims-before-venue spine (R1); minimap retired into display, section-edit venue-gated (R2); ask retired to _archive/, enter console is the entry (R3); full DPRC 2-phase/ bucket — draft/probe/revise workers NEW, gate renamed check (R4). Folderless probe adopted: per-stage _PROBE/PPNN cards + 1-probe-plans/README.md index, plan-from-need + confirmed enum retired. Buckets renumbered 0-enter/1-lifecycle/2-phase/3-build-deploy/4-iterate; wiki/ replaces both ref/ homes; root README+PHILOSOPHY added; Closing Block + venue-aware stage-strip.sh added; draft skill renamed haipipe-application-artifact (paper-alignment refactor; executed SOP archived below).
 
+## [5.1.0] — 2026-07-07
+
+- FAMILY ROLLUP (paper-alignment round 2, porting paper b2c5a23 enforcement): probe worker 2.0.0 gains STEP 4 VERIFY (check-probe-cards.sh fork) + PROOF 1-4 blocks + venue-scaled `harvest: OWED` lane debts (_VALUES_ always, _CITATION_ sectioned venues only, _DISPLAY_ only with display units) + ref/ dispatch tables; check worker 4.0.0 gains gate wiring (card-checker FAIL blocks green) + markdown-safe checks.sh (em-dash, AI-voice tells, TODO/FIXME, bibtex-in-md) + `> CHECK:` seeding in stage docs only, artifact findings → Gate Ledger notes (R2c, JL ruled 2026-07-07); draft 1.1.0 gains WebSearch/WebFetch as DRAFT-only orientation fuel — "DRAFT may search; PROBE must dispatch"; seed 3.2.0 narrows probe scope to feasibility + registers [FORWARD → CLAIMS] pointers in _LOG_0-seed.md, claims 5.1.0 DRAFT consumes them (unconsumed pointer fails claims CHECK); PREFERENCES.md gains the family-generic real-probe entry + the paper-drift alignment-watch line (R6); 2-phase/ gains thin USAGE.md + WIRING.md + the ONE-pipeline/HARVEST note in README.md; router SKILL.md + wiki 03/06/08 one-line mentions. Round-2 SOP archives below on close-out (same convention as round 1).
+
 
 Archived SOP — paper-alignment refactor (2026-07-06, executed; archived 2026-07-07)
 -----------------------------------------------------------------------------------
