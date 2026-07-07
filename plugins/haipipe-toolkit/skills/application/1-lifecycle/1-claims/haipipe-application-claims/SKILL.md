@@ -4,9 +4,9 @@ description: "Stage orchestrator for the intervention's 0-lifecycle/1-claims/1-c
 argument-hint: "[intervention-path] [--backfill <PPNN>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "5.0.0"
-  last_updated: "2026-07-06"
-  summary: "Port of paper claims 4.0.0 (765696f): claims = evidence campaign brain. Three sections (Claims / Probes / Evidence Campaign; no Hypotheses app-side — mechanism lives in seed/pitch); _EVIDENCE_ → _VALUES_; settlement gate reads the campaign; ascii heading + one-sentence-per-line artifact formatting."
+  version: "5.1.0"
+  last_updated: "2026-07-07"
+  summary: "Port of paper claims 4.0.0 (765696f): claims = evidence campaign brain. Three sections (Claims / Probes / Evidence Campaign; no Hypotheses app-side — mechanism lives in seed/pitch); _EVIDENCE_ → _VALUES_; settlement gate reads the campaign; ascii heading + one-sentence-per-line artifact formatting. v5.1 (paper claims 4.1.0 port): DRAFT opens by consuming seed's [FORWARD -> CLAIMS] pointers; any unconsumed pointer fails CHECK."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -77,8 +77,13 @@ Evidence Campaign     dispatch order + summary table (probe, status, deps,
 claims invoked
   │
   ▼
-DRAFT ──→ illuminate existing claims, elicit taste, extract testable claims
-          from the seed, scan insights/INDEX.md for candidate K/W;
+DRAFT ──→ FIRST: consume seed's forward pointers — grep seed's
+          `_LOG_0-seed.md` for `[FORWARD -> CLAIMS]` lines; each becomes a
+          PP entry in the Probes section + an Evidence Campaign row (or is
+          explicitly declined with a `_LOG` note). An unconsumed pointer
+          fails the CHECK done-criteria below.
+          Then: illuminate existing claims, elicit taste, extract testable
+          claims from the seed, scan insights/INDEX.md for candidate K/W;
           write Claims (short), Probes (full plans), Evidence Campaign
           (internally calls haipipe-application-draft with this artifact spec)
   │
@@ -120,6 +125,7 @@ full     (dashboard, ui-card,       primary claims supported (judged verdicts);
 **Done-criteria:**
 - [ ] Every claim has its own `**C<n>**` sub-item with role, status, and → PP reference
 - [ ] Every probe has its own `**PP<nn>**` sub-item with full evidence plan; `_PROBE/` cards mirror them
+- [ ] No unconsumed `[FORWARD -> CLAIMS]` pointer in seed's `_LOG_0-seed.md` -- each is either a PP entry in Probes (with its Evidence Campaign row) or explicitly declined in `_LOG`
 - [ ] Evidence Campaign shows dispatch order and dependencies; no load-bearing GAP without a campaign row
 - [ ] Verified numbers recorded in _VALUES_ (with anchors); no aspirational anchors anywhere
 - [ ] Settlement bar met for the pinned (or provisional) depth

@@ -19,3 +19,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 ## [3.1.0] — 2026-07-06
 
 - 765696f port: visible Probes section in the seed doc + ascii artifact formatting.
+
+## [3.2.0] — 2026-07-07
+
+- Port of paper seed 3.5.0 (paper-alignment round 2, SOP §4 row 7, R3+R4): DRAFT may WebSearch to orient (fuel -> prose + buffered `status: planned` skeletons); PROBE scope narrowed to FEASIBILITY only (novelty + external-data obtainability) and must ALWAYS dispatch the real worker (Skill haipipe-application-probe, from-buffer) -- inline search forbidden in PROBE; internal-data profiling (the intervention's own cohort/engagement data) registers as a `[FORWARD -> CLAIMS] PPNN_<slug>` pointer line in _LOG_0-seed.md (a pointer, not a card; consumed at claims DRAFT); new "Probe scope and FORWARD handoff" section; done-criteria gain the check-probe-cards.sh find-pattern verification.

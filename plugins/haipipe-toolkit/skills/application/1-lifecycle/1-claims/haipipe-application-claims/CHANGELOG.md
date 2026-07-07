@@ -23,3 +23,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 ## [5.0.0] — 2026-07-06
 
 - Port of paper claims 4.0.0 (765696f): evidence-campaign brain — three sections (Claims short / Probes full / Evidence Campaign with dispatch order + deps); no Hypotheses section (app delta, mechanism lives in seed/pitch); _EVIDENCE_ → _VALUES_; _CITATION_ sectioned venues only; settlement gate reads the campaign table; ascii heading + one-sentence-per-line artifact formatting.
+
+## [5.1.0] — 2026-07-07
+
+- Port of paper claims 4.1.0 (paper-alignment round 2, SOP §4 row 8, R4): FORWARD reader clause — claims DRAFT opens by grepping seed's `_LOG_0-seed.md` for `[FORWARD -> CLAIMS]` pointers; each becomes a PP entry in Probes + an Evidence Campaign row or is explicitly declined in `_LOG`; new done-criterion fails CHECK on any unconsumed pointer. Closes the writer-without-reader gap at the seed→claims handoff.
