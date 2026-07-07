@@ -4,32 +4,25 @@ description: "CHECK phase worker (internal). Called by stage skills as the ONLY 
 argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent
 metadata:
-  version: "1.5.2"
-  last_updated: "2026-07-05"
-  summary: "CHECK phase worker (internal). The ONLY human-involved phase. Called by stage skills to run sub-checkers, seed > CHECK: comments in-file at every flag site, and gate human review."
+  version: "1.6.0"
+  last_updated: "2026-07-07"
+  summary: "CHECK phase worker (internal). The ONLY human-involved phase. Runs sub-checkers (./checks.sh for the deterministic ones), seeds > CHECK: comments in-file at every flag site, and gates human review."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
-  predecessors:
-    - "haipipe-paper-proof-checker (mathematical proof verification) — KEPT as sub-checker, not merged"
 ---
 
 Skill: haipipe-paper-check (internal phase worker)
 =====================================================
 
-CHECK phase worker. Called by stage skills as the auto-gate for the DPRC lifecycle. **CHECK is the ONLY judgment-involved phase.** DRAFT, PROBE, and REVISE run fully automatic without stopping for input. CHECK is where everything is reviewed at once -- by the human (copilot mode, default) or by a reviewer subagent standing in (autopilot mode; see Gate Modes below).
+CHECK phase worker. Called by stage skills as the auto-gate for the DPRC lifecycle. **CHECK is the ONLY judgment-involved phase** -- DRAFT, PROBE, and REVISE run fully automatic without stopping for input. CHECK is where everything is reviewed at once: by the human (copilot mode, default) or by a reviewer subagent standing in (autopilot mode; see Gate Modes below).
 
 **Not user-facing.** Users invoke stage skills:
 ```
-/haipipe-paper claims        → claims skill calls this internally for CHECK phase
-/haipipe-paper pitch         → pitch skill calls this internally for CHECK phase
+/haipipe-paper claims           → claims skill calls this internally for CHECK phase
+/haipipe-paper pitch            → pitch skill calls this internally for CHECK phase
 /haipipe-paper section-edit §3  → section-edit skill calls this internally
 ```
 
-The check has three parts:
-1. **MECHANICAL** -- the agent runs automated sub-checkers and produces a pass/fail report
-2. **SEED `> CHECK:` COMMENTS** -- every flagged item from the report is planted as a `> CHECK:` comment at its exact spot in the working doc, so the human's in-file pass is guided by the file itself
-3. **HUMAN** -- the human walks the `> CHECK:` comments, answers with `> USER:` comments, and decides: proceed, restart, or accept
-
-On restart, the restarted phase (DRAFT, PROBE, or REVISE) reads the `> CHECK:` comments with their `> USER:` replies and responds to them.
+The check has three parts: (1) **MECHANICAL** -- run automated sub-checkers, produce a pass/fail report; (2) **SEED `> CHECK:` COMMENTS** -- plant every flagged item at its exact spot in the working doc so the human's in-file pass is guided by the file itself; (3) **HUMAN** -- walk the `> CHECK:` comments, answer with `> USER:` comments, decide (proceed / restart / accept). On restart, the restarted phase reads the `> CHECK:` comments + their `> USER:` replies and responds to them.
 
 
 ## How It Works
@@ -54,12 +47,12 @@ On restart, the restarted phase (DRAFT, PROBE, or REVISE) reads the `> CHECK:` c
                                                            threads + replies
 ```
 
-1. **Run**: execute all applicable sub-checkers mechanically
-2. **Report**: present results as a structured pass/fail table
-2.5. **Seed `> CHECK:` comments**: every flagged/🔍/⚠️ item in the report is planted as ONE `> CHECK:` comment at the exact spot in the working doc (outline / _CITATION_ / _VALUES_ / _DISPLAY_ / tex) it refers to -- one line stating the issue + the judgment needed, with concrete values, never an abstract description. The chat report is the map; the in-file `> CHECK:` comments are what the human actually walks. A CHECK that hands over with a clean file and a chat-only report is DEFECTIVE (test-123333333: JL entered 0-seed.md to review and found nothing to guide the pass)
-3. **Human review**: the human walks the `> CHECK:` comments, verifies flagged items, copies bibtex to .bib, confirms values, reviews displays, replies `> USER:` under each (plus any free `> USER:` comments of their own)
-4. **Decide**: proceed / restart / accept / park
-5. **On restart**: the restarted phase (DRAFT/PROBE/REVISE) reads the `> CHECK:` comments and their `> USER:` replies and responds to them; resolved threads archive to `_LOG` per `../../../wiki/02-comment-lifecycle.md`
+1. **Run**: execute all applicable sub-checkers. For the deterministic text-match checks (em-dash, AI-voice tells, TODO, bibtex-in-markdown, broken `\cite`, broken/orphan `\label`↔`\ref`, Pn.Sn sequence) run `./checks.sh <tex-or-dir> [--md <working-doc>] [--depth N] [--compile]` and paste its ✅/⚠️/❌ lines (`--compile` wraps `./1-compile.sh`; `--depth` widens the tex/bib scan for deep layouts). Judgment checks (citation support, value provenance, display correctness) stay manual.
+2. **Report**: present results as a structured pass/fail table (see Report Format).
+2.5. **Seed `> CHECK:` comments**: every flagged/🔍/⚠️ item is planted as ONE `> CHECK:` comment at the exact spot in the working doc (outline / _CITATION_ / _VALUES_ / _DISPLAY_ / tex) it refers to -- one line stating the issue + the judgment needed, with concrete values, never an abstract description. The chat report is the map; the in-file `> CHECK:` comments are what the human actually walks. A CHECK that hands over with a clean file and a chat-only report is DEFECTIVE (test-123333333: JL entered 0-seed.md to review and found nothing to guide the pass).
+3. **Human review**: the human walks the `> CHECK:` comments and replies `> USER:` under each (see Human Actions During CHECK for the per-track steps).
+4. **Decide**: proceed / restart / new round / accept / park.
+5. **On restart**: the restarted phase (DRAFT/PROBE/REVISE) reads the `> CHECK:` comments and their `> USER:` replies and responds to each; resolved threads archive to `_LOG` per `../../../wiki/02-comment-lifecycle.md`.
 
 
 ## Gate Modes (copilot | autopilot)
@@ -88,11 +81,11 @@ The judgment step always happens; autopilot only changes WHO sits in the review 
 
 ## Sub-Checkers
 
-Five groups of checks. Each group maps to a phase. Checks that don't apply to a section are marked `-- skipped` (e.g., proof checks for a section without proofs, values checks for a section without numbers).
+Five groups of checks, one per phase (+ META, + PROOF). Checks that don't apply to a section are marked `-- skipped` (e.g., proof checks for a section without proofs, values checks for a section without numbers).
 
-### 📝 DRAFT checks
+The deterministic text-match rows below are runnable in one shot: `./checks.sh <tex-or-paper-dir> --md _CITATION_ --md _VALUES_`. The judgment rows (does the citation SUPPORT the claim, is the VALUE traceable, does the DISPLAY match) are human/reviewer work and are described once under **Human Actions During CHECK** -- the tables here only say what gets flagged, not how the human resolves it.
 
-These verify the outline is well-formed.
+### 📝 DRAFT checks — verify the outline is well-formed
 
 | Check | How to verify | Pass condition |
 |---|---|---|
@@ -103,9 +96,9 @@ These verify the outline is well-formed.
 | sentence counts in range | count sentences per ¶ vs venue norm (e.g., 5-7 for MISQ) | all within range or flagged ⚠️ |
 | USER comments resolved | each `> USER:` has a `> CC:` response below it | no orphan USER comments |
 
-### 📚 PROBE checks
+### 📚 PROBE checks — verify the three probe tracks are complete
 
-These verify the three probe tracks (citation/values/display) are complete. Since PROBE runs automatically, some items require human action during CHECK.
+Since PROBE runs automatically, some items require human action during CHECK (see Human Actions During CHECK).
 
 **Citation:**
 
@@ -115,14 +108,8 @@ These verify the three probe tracks (citation/values/display) are complete. Sinc
 | 🔍 candidates listed | grep _CITATION_ for `🔍` status entries | ⚠️ if any remain (human verifies during CHECK) |
 | no ⚠️ remaining | grep _CITATION_ for `⚠️` status entries | zero ⚠️ entries |
 | all factual assertions cited | compare outline factual sentences vs cited sentences | no uncited factual claims |
-| all \cite{key} in .bib | grep tex for \cite, check each key in .bib | zero broken refs |
-| no bibtex in _CITATION_ | grep _CITATION_ for `@article`, `@inproceedings`, etc. | zero bibtex blocks (bibtex lives ONLY in .bib) |
-
-**Citation: human action during CHECK:**
-- Click Scholar links for 🔍 entries, verify papers exist and support assertions
-- Copy bibtex from Scholar to `.bib` (the agent NEVER generates bibtex)
-- Mark verified: `> ✅ SEARCH:` / rejected: `> ❌ SEARCH: reason`
-- On restart, agent auto-places newly verified keys
+| all \cite{key} in .bib | `./checks.sh` (broken \cite) | zero broken refs |
+| no bibtex in _CITATION_ | `./checks.sh --md _CITATION_` | zero bibtex blocks (bibtex lives ONLY in .bib) |
 
 **Values:**
 
@@ -133,12 +120,6 @@ These verify the three probe tracks (citation/values/display) are complete. Sinc
 | 🔍 unknown sources listed | grep _VALUES_ for `🔍` | ⚠️ if any remain (human locates during CHECK) |
 | method claims checked | grep _VALUES_ for `❌` method claims | ⚠️ if any remain (human confirms during CHECK) |
 
-**Values: human action during CHECK:**
-- For ⚠️ entries: check source file, confirm which number is correct
-- For 🔍 entries: locate the source the agent could not find
-- For ❌ method claims: confirm implementation or decide to drop
-- On restart, agent re-traces with human-provided corrections
-
 **Display:**
 
 | Check | How to verify | Pass condition |
@@ -147,46 +128,36 @@ These verify the three probe tracks (citation/values/display) are complete. Sinc
 | no missing displays | compare narrative display needs vs linked units | all covered |
 | pending displays listed | check for ungenerated/failed task outputs | ⚠️ if any remain |
 
-**Display: human action during CHECK:**
-- Review generated display outputs for correctness
-- Confirm display content matches supporting claims
-- Add `> USER:` comments on layout/labeling revisions
-- On restart, agent re-routes failed tasks
-
-### 💎 REVISE checks
-
-These verify prose quality.
+### 💎 REVISE checks — verify prose quality
 
 | Check | How to verify | Pass condition |
 |---|---|---|
-| no AI voice patterns | grep for common AI tells (Furthermore, Moreover, delve, utilize, underscore, landscape, tapestry) | zero matches (or flagged ⚠️) |
-| no em-dashes | grep for `---` or `—` | zero matches |
-| Pn.Sn markers sequential | parse `%% ---- Pn.Sn ----` markers, check sequence | sequential within each ¶ |
+| no AI voice patterns | `./checks.sh` (high-signal tells: delve/utilize/tapestry/seamless/… — noisy connectives excluded) | zero matches (or flagged ⚠️) |
+| no em-dashes | `./checks.sh` (em-dash) | zero matches |
+| Pn.Sn markers sequential | `./checks.sh` (Pn.Sn sequence — flags gaps/dupes per ¶) | sequential within each ¶ |
 | sentence count matches | count Pn.Sn markers vs outline sentence count | counts match |
 | outline ↔ tex synced | compare outline sentences vs tex sentences | content matches |
 | banner points match content | read each `% Para [X.P#]` and verify the ¶ below matches | all match |
 
-### 📐 META checks
-
-These verify whole-section integrity.
+### 📐 META checks — verify whole-section integrity
 
 | Check | How to verify | Pass condition |
 |---|---|---|
 | terms consistent | grep for term variants (e.g., "clinical ambiguity" vs "clinical uncertainty") | one term per concept |
 | claims traceable | each claim sentence has either a citation or is "our study" framing | no unsupported claims |
-| \label/\ref resolve | run check_refs.py or grep-based cross-check | zero broken refs |
-| compiles clean | run ./1-compile.sh, check for errors | zero LaTeX errors |
-| no TODO markers | grep for `TODO`, `FIXME`, `XXX` in tex | zero matches |
+| \label/\ref resolve | `./checks.sh` (broken \ref + orphan \label) | zero broken refs (orphans ⚠️) |
+| compiles clean | `./checks.sh --compile` (wraps ./1-compile.sh) | zero LaTeX errors |
+| no TODO markers | `./checks.sh` (TODO/FIXME/XXX) | zero matches |
 
-### 🔬 PROOF checks
+### 🔬 PROOF checks — only if the section has proofs
 
-Only runs if the section contains `\begin{proof}`, `\begin{theorem}`, or `\begin{lemma}`.
+Runs only if the section contains `\begin{proof}`, `\begin{theorem}`, or `\begin{lemma}`.
 
 | Check | How to verify | Pass condition |
 |---|---|---|
-| proof checker passes | dispatch to haipipe-paper-proof-checker | verdict PASS or WARN |
+| proof checker passes | dispatch to haipipe-paper-proof-checker (Agent tool) | verdict PASS or WARN |
 
-When proof checks are needed, the checker dispatches to the proof-checker skill (sibling in 3-check/) via Agent tool. The proof-checker produces its own detailed report; the checker extracts the verdict.
+The proof-checker (sibling in 3-check/) produces its own detailed report; this checker extracts the verdict. See Relation to sibling.
 
 
 ## Report Format
@@ -287,19 +258,19 @@ The decision is recorded in the _LOG with the check report, so future sessions k
 
 ## Human Actions During CHECK
 
-CHECK is the ONLY human-involved phase. DRAFT, PROBE, and REVISE run fully automatic. Everything the human needs to do happens here — and the entry point is the `> CHECK:` comments: open the working docs and walk them (the report's CHECK COMMENTS SEEDED line says which files); each flagged item below is anchored by one, so the pass is guided, not a self-service hunt. Reply `> USER:` under each as you go:
+CHECK is where every human action in the lifecycle happens. The entry point is the `> CHECK:` comments: open the working docs the report's CHECK COMMENTS SEEDED line names and walk them -- each flagged item below is anchored by one, so the pass is guided, not a self-service hunt. Reply `> USER:` under each as you go (plus any free `> USER:` comments of your own).
 
 ### Citation verification
 
 1. Open _CITATION_ and find all 🔍 entries (agent-found candidates not yet in .bib)
 2. Click the `> SEARCH: [Scholar](url)` link for each 🔍 entry
 3. Read the paper abstract, confirm it supports the assertion stated in _CITATION_
-4. On Scholar, click the cite icon (`"`), select BibTeX, copy the bibtex block
-5. Paste the bibtex into the `.bib` file (bibtex lives ONLY in .bib, never in _CITATION_ or markdown)
-6. In _CITATION_, change `> SEARCH:` to `> ✅ SEARCH:`
-7. For wrong/irrelevant papers: change to `> ❌ SEARCH: reason`
+4. On Scholar, click the cite icon, select BibTeX, copy the bibtex block
+5. Paste the bibtex into the `.bib` file
+6. In _CITATION_, mark verified `> ✅ SEARCH:` / rejected `> ❌ SEARCH: reason`
+7. On restart, the agent auto-places newly verified keys
 
-**The agent NEVER generates bibtex. The human copies bibtex from Google Scholar into .bib. No bibtex block ever appears in _CITATION_.**
+**The agent NEVER generates bibtex — the human copies it from Scholar into `.bib`. Bibtex lives ONLY in `.bib`, never in _CITATION_ or any markdown.**
 
 ### Values verification
 
@@ -307,7 +278,7 @@ CHECK is the ONLY human-involved phase. DRAFT, PROBE, and REVISE run fully autom
 2. For ⚠️ entries: check the source file, confirm which number is correct (prose or source)
 3. For 🔍 entries: locate the source file the agent could not find
 4. For ❌ method claims: confirm the method is implemented or decide to drop the claim
-5. Add `> USER:` comments with corrections or decisions
+5. Add `> USER:` comments with corrections or decisions; on restart the agent re-traces
 
 ### Display review
 
@@ -315,23 +286,21 @@ CHECK is the ONLY human-involved phase. DRAFT, PROBE, and REVISE run fully autom
 2. Check that each display's content matches the claim it supports
 3. Check that numbers in displays match _VALUES_ entries
 4. Add `> USER:` comments on layout, labeling, content, or revisions needed
-5. Flag any pending/failed displays that need task re-runs
+5. Flag any pending/failed displays that need task re-runs; on restart the agent re-routes them
 
-### General review
+### Decide
 
-1. Read the CHECK report (pass/fail summary + CHECK COMMENTS SEEDED line)
-2. Review any ⚠️ warnings
-3. Reply `> USER:` under each `> CHECK:` comment; add free `> USER:` comments anywhere else in the outline, _CITATION_, _VALUES_, _DISPLAY_, or tex
-4. Decide: proceed / restart from a phase / accept with issues / park
+1. Read the CHECK report (pass/fail summary + CHECK COMMENTS SEEDED line), review any ⚠️ warnings
+2. Confirm every `> CHECK:` comment has a `> USER:` reply
+3. Decide: proceed / restart from a phase / new round / accept with issues / park
 
 ### On restart
 
-When the human decides to restart from a phase (e.g., "restart from PROBE"):
-- The agent re-runs that phase
-- The agent reads ALL `> CHECK:` comments with their `> USER:` replies, plus every free `> USER:` comment added during CHECK, and responds to each (a `> CHECK:` comment with no reply is surfaced back to the human, never silently skipped)
-- For DRAFT restarts: the agent revises the outline based on `> USER:` feedback
-- For PROBE restarts: the agent re-audits, places newly verified keys from .bib, searches for new candidates per `> USER:` requests
-- For REVISE restarts: the agent re-applies prose quality rules, addressing `> USER:` style concerns; each change carries a why-comment
+When the human restarts from a phase (e.g., "restart from PROBE"):
+- The agent re-runs that phase and reads ALL `> CHECK:` comments with their `> USER:` replies, plus every free `> USER:` comment, and responds to each (a `> CHECK:` comment with no reply is surfaced back to the human, never silently skipped)
+- DRAFT restart: revise the outline per `> USER:` feedback
+- PROBE restart: re-audit, place newly verified keys from .bib, search for new candidates per `> USER:` requests
+- REVISE restart: re-apply prose quality rules addressing `> USER:` style concerns; each change carries a why-comment
 
 
 ## Applicability Beyond Section-Edit
@@ -346,14 +315,14 @@ This checker pattern works for ANY lifecycle stage that follows DRAFT→PROBE→
 | narrative | design contract drafted | claims linked to beats | arc/flow coherent | all beats [READY] |
 | display | display plan exists | all displays generated | visual quality | all linked in tex |
 
-When invoked for a non-section-edit stage, the checker reads the stage's SKILL.md to discover what its done-gate criteria are, then checks those criteria mechanically.
+When invoked for a non-section-edit stage, the checker reads the stage's SKILL.md to discover its done-gate criteria, then checks those criteria mechanically.
 
 
 ## Relation to sibling
 
 ```
 3-check/
-  haipipe-paper-check/         ← THIS (auto-gate orchestrator)
+  haipipe-paper-check/           ← THIS (auto-gate orchestrator)
   haipipe-paper-proof-checker/   ← sub-checker (math proofs only)
 ```
 
@@ -363,15 +332,15 @@ The checker CALLS the proof-checker when needed. The proof-checker never runs al
 ## Done criteria
 
 CHECK phase is done when:
-- [ ] All sub-checkers have run
+- [ ] All sub-checkers have run (deterministic ones via `./checks.sh`)
 - [ ] Report produced and presented to human
 - [ ] Every flagged/🔍/⚠️ item seeded as a `> CHECK:` comment in-file (CHECK COMMENTS SEEDED line in the report; a clean-file handover is a defective CHECK)
 - [ ] Human has verified 🔍 citation candidates (or deferred)
 - [ ] Human has confirmed flagged values (or deferred)
 - [ ] Human has reviewed generated displays (or deferred)
 - [ ] Every `> CHECK:` comment has a `> USER:` reply, or is covered by the recorded decision (accept/park logs unanswered ones as deferred)
-- [ ] Human has decided: proceed / restart / accept
-- [ ] If restart: agent re-runs phase reading the `> CHECK:` threads and free > USER: comments, then re-checks
+- [ ] Human has decided: proceed / restart / new round / accept / park
+- [ ] If restart: agent re-runs the phase reading the `> CHECK:` threads + free `> USER:` comments, then re-checks
 - [ ] _LOG updated with check result + human actions taken
 
 
@@ -380,13 +349,12 @@ CHECK phase is done when:
 - ❌ Skipping the report and declaring "checks pass" without running them
 - ❌ Running only one sub-checker and calling it done
 - ❌ Handing over with a clean file and a chat-only report (flagged items must land in-file as `> CHECK:` comments — test-123333333)
-- ❌ Auto-proceeding without human decision on failures
+- ❌ Auto-proceeding without a human (or, in autopilot, a reviewer) decision on failures
 - ❌ Treating warnings as failures (warnings are informational)
 - ❌ Using the proof-checker as the general checker (it's one sub-check)
 - ❌ Stopping for human input during DRAFT, PROBE, or REVISE (those are fully automatic; CHECK is the ONLY human gate)
-- ❌ Generating bibtex during CHECK (human copies from Scholar; agent never generates bibtex)
-- ❌ Putting bibtex in _CITATION_ or any markdown (bibtex lives ONLY in .bib)
-- ❌ Ignoring > CHECK: or > USER: comments on restart (the restarted phase must read and respond to them; an unanswered > CHECK: comment is surfaced back, never silently dropped)
+- ❌ Generating bibtex, or putting bibtex anywhere but `.bib` (human copies from Scholar; bibtex lives ONLY in .bib)
+- ❌ Ignoring `> CHECK:` / `> USER:` comments on restart (the restarted phase must read and respond; an unanswered `> CHECK:` comment is surfaced back, never silently dropped)
 
 
 ## Who calls this skill
