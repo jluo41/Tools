@@ -1,27 +1,26 @@
 ---
 name: haipipe-paper-probe-display
-description: "display probe worker. One skill, one working doc (_DISPLAY_{stage}.md, the needs registry: need → unit → status), full lifecycle: AUDIT (what displays does this stage/section need?) → PLAN (record needs in _DISPLAY_, map each to a display unit) → ROUTE (dispatch to /haipipe-task for generation) → LINK (connect generated 0-displays/ unit back to the need) → REVIEW (pre-submission display check). Fully automatic -- no human gate. Human review happens in CHECK phase only. Hard boundary: agent NEVER creates ad-hoc plots inline -- all figures/tables route through display units and task-folders. Trigger: display, figures, tables, what displays, plan displays, link display."
+description: "display HARVESTER (probe lane worker). One skill, one working doc (_DISPLAY_{stage}.md, the needs registry: need → unit → status), lifecycle: AUDIT (what displays does this stage/section need?) → PLAN (record needs in _DISPLAY_, map each to a display unit; generation needs become probe-plan suggestions — unit generation is commissioned PP card → gateway → task orchestrator, NEVER a direct /haipipe-task call from here) → LINK (harvest: connect landed 0-displays/ units back to needs via the PP card's unit_refs) → REVIEW (pre-submission display check). Fully automatic -- no human gate. Hard boundary: agent NEVER creates ad-hoc plots inline. Trigger: display, figures, tables, what displays, plan displays, link display."
 argument-hint: "[verb] [section-name-or-number] [paper-path]"
-allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent, Skill
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-07-03"
-  summary: "display probe worker. AUDIT→PLAN→ROUTE→LINK→REVIEW lifecycle (fully automatic, no human gate). Human review happens in CHECK only. Working doc = _DISPLAY_{stage}.md needs registry; units live in 0-displays/."
+  version: "2.0.0"
+  last_updated: "2026-07-07"
+  summary: "Display HARVESTER. AUDIT→PLAN(gen needs→probe plans)→LINK(harvest unit_refs)→REVIEW. Generation goes PP card → gateway → task orchestrator (SWEEP answers 'does this unit already exist?'); this worker only links what landed. Working doc = _DISPLAY_ registry."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-paper-probe-display
 =========================================
 
-display probe worker for `haipipe-paper-section-edit`. Owns the display lifecycle for one section: identifying what figures/tables the section needs, planning which display units serve which claims, routing generation to task-folders, and linking outputs back to the section.
+display probe worker for `haipipe-paper-section-edit`. Owns the display lifecycle for one section: identifying what figures/tables the section needs, planning which display units serve which claims, commissioning generation through the probe (PP card → gateway → task orchestrator), and linking landed outputs back to the section.
 
 ```
 /haipipe-paper-probe-display                       → status dashboard
 /haipipe-paper-probe-display audit <section>       → Phase 1: what displays needed?
-/haipipe-paper-probe-display plan <section>        → Phase 2: map claims to display units
-/haipipe-paper-probe-display route <section>       → Phase 3: dispatch to task-folders
-/haipipe-paper-probe-display link <section>        → Phase 4: connect outputs to section (automatic)
-/haipipe-paper-probe-display review <section>      → Phase 5: pre-submission display check
+/haipipe-paper-probe-display plan <section>        → Phase 2: map claims to units; gen needs → probe plans
+/haipipe-paper-probe-display link <section>        → Phase 3: harvest — connect landed units to section
+/haipipe-paper-probe-display review <section>      → Phase 4: pre-submission display check
 ```
 
 ## Hard Boundaries
@@ -35,17 +34,23 @@ display probe worker for `haipipe-paper-section-edit`. Owns the display lifecycl
 4. **the user's display comments go into `0-lifecycle/4-display/4-display.tex`** as `%% {USER}: ...` (verbatim, kept across iterations), NOT into per-unit `float.tex`.
 
 
-## Five Phases (fully automatic)
+## Four Phases (fully automatic; direct-ROUTE is RETIRED — JL 2026-07-07 harvester ruling)
 
 ```
 Phase 1: AUDIT        what displays does this section need?
-Phase 2: PLAN         which display unit serves which claim/beat
-Phase 3: ROUTE        dispatch generation to /haipipe-task
-Phase 4: LINK         connect generated display outputs to section tex
-Phase 5: REVIEW       pre-submission display check (content matches claims)
+Phase 2: PLAN         which display unit serves which claim/beat; each unit
+                      that needs GENERATING becomes a probe-plan suggestion
+                      (Need/Why/Route: display task) handed to the PROBE hub —
+                      PP card → gateway → task orchestrator. The gateway's
+                      SWEEP answers "does this unit already exist?" (reuse)
+                      before any new task is commissioned. This worker NEVER
+                      calls /haipipe-task or task agents directly.
+Phase 3: LINK         harvest — expand the PP card's unit_refs: connect landed
+                      0-displays/ units back to needs + section tex
+Phase 4: REVIEW       pre-submission display check (content matches claims)
 ```
 
-All five phases run automatically without stopping for human input. The agent audits, plans, routes to task-folders, links outputs to tex, and continues. Human review of generated displays happens ONLY in the CHECK phase (haipipe-paper-check). During CHECK, the human reviews displays, adds `> USER:` comments, and decides. If CHECK restarts PROBE, the agent reads those `> USER:` comments and re-routes.
+All phases run automatically without stopping for human input. Human review of generated displays happens ONLY in the CHECK phase (haipipe-paper-check). During CHECK, the human reviews displays, adds `> USER:` comments, and decides. If CHECK restarts PROBE, the agent reads those `> USER:` comments and re-plans.
 
 
 ## Phase 1: AUDIT
@@ -79,19 +84,7 @@ Write the plan to `_DISPLAY_N-section.md` (or update the narrative's
 `_DISPLAY_` file if it exists at the paper level).
 
 
-## Phase 3: ROUTE
-
-For each planned display that needs generation:
-
-1. Check if a task-folder already exists for this display
-2. If not, scaffold one via `/haipipe-task` (type = display)
-3. If yes, check if the task has run and produced output
-4. Dispatch to `/haipipe-task` for execution if needed
-
-The agent does NOT generate the display itself. It routes to the task system.
-
-
-## Phase 4: LINK (automatic)
+## Phase 3: LINK (harvest, automatic)
 
 The agent links generated display outputs to the section tex without waiting for human approval. The human reviews the linked displays during CHECK.
 
@@ -104,7 +97,7 @@ The agent links generated display outputs to the section tex without waiting for
 If a task-folder has not produced output yet (still running or failed), the agent flags that display as pending and continues. Pending displays are reported in CHECK.
 
 
-## Phase 5: REVIEW (pre-submission)
+## Phase 4: REVIEW (pre-submission)
 
 For each display referenced in the section:
 
@@ -133,7 +126,7 @@ For each display referenced in the section:
 | Generate a table | /haipipe-paper-display-table |
 | Generate a diagram | /haipipe-paper-display-diagram |
 | Generate an illustration | /haipipe-paper-display-illustration |
-| Scaffold a display task-folder | /haipipe-task (type=display) |
+| Commission unit generation | probe-plan → PROBE hub → gateway → task orchestrator (never direct) |
 | Paper-level display planning | /haipipe-paper-display (4-display stage) |
 
 
@@ -141,7 +134,7 @@ For each display referenced in the section:
 
 - [ ] All display needs identified
 - [ ] All displays planned and mapped to units
-- [ ] All display tasks routed and executed (or flagged as pending for CHECK)
+- [ ] All generation needs commissioned via probe plans (or flagged as pending for CHECK)
 - [ ] All available display outputs linked in section tex
 - [ ] Pending/failed displays flagged for CHECK (not blocking)
 - [ ] _LOG updated with display probe summary

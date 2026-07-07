@@ -4,9 +4,9 @@ description: "Evidence gateway (folderless probe). A probe is the general-purpos
 argument-hint: "[\"<question>\" [light|full] | contract | card | status]"
 allowed-tools: Bash, Read, Grep, Glob, Agent
 metadata:
-  version: "7.1.1"
-  last_updated: "2026-07-06"
-  summary: "Probe = general-purpose explore+gather verb (not claim-specific). PPNN card = single source of truth. Light = explore+gather (most needs); full = +judge (claims only, via haipipe-probe-review). Folderless. v7.1: refs REQUIRED once read — takeaways with empty refs = inline-evidence shortcut = status:failed. v7.1.1: card formatting — bullet lines only, no tables, ≤80 lines (mechanically enforced by the paper worker's check-probe-cards.sh)."
+  version: "7.2.0"
+  last_updated: "2026-07-07"
+  summary: "Probe = general-purpose explore+gather verb (not claim-specific). PPNN card = single source of truth. Light = explore+gather (most needs); full = +judge (claims only, via haipipe-probe-review). Folderless. v7.1: refs REQUIRED once read — takeaways with empty refs = inline-evidence shortcut = status:failed. v7.1.1: card formatting — bullet lines only, no tables, ≤80 lines (mechanically enforced by the paper worker's check-probe-cards.sh). v7.2: harvester lane lines (pick_list/value_refs/unit_refs · harvest: OWED→accepted) added to the card anatomy — the paper workers are the HARVEST step of the one probe pipeline (JL Part-0 ruling); an OWED lane at the gate is a checker FAIL."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -48,7 +48,11 @@ stage DRAFT finds a gap
        → Agent(haipipe-probe-reviewer-agent)                 (full mode: runs Skill(haipipe-probe-review)
                                                               — G1/G2/G3, judgment returned)
     ← anchored takeaways + pick_list + (full) verdict
-  → worker TRANSLATE lands everything in the PPNN card (+ claims-ledger flip)
+  → worker TRANSLATE lands everything in the PPNN card (+ claims-ledger flip),
+    writes per-lane harvest obligations (pick_list/value_refs/unit_refs ·
+    harvest: OWED), and dispatches the HARVESTERS (citation/values/display
+    workers — transcription only, pointer-following) to pay them; mechanical
+    acceptance flips OWED → accepted
 ```
 
 Inside a paper/application, stage skills own the phase — users work through them. Dashboards live in `/haipipe-paper enter` (open needs) — the retired Probe Console's panel duties moved there.
@@ -80,6 +84,9 @@ No probes/ folder, no PPNN card, no console state is created by a direct ask; wh
 - stage: <stage> · mode: light | full · status: planned | dispatched | read | verdicted
 - claim: <the claim this evidence serves, or the orientation question>
 - refs: <discoveries/L##_.../sources.md · tasks/T##_...>      ← REQUIRED once read; direct, no wrapper
+- pick_list:  S01,S02 · harvest: OWED | accepted (<n> cards, <doc>)   ← citation lane, ONLY when the return names sources
+- value_refs: <tasks/...> · harvest: OWED | accepted (...)            ← values lane, ONLY when the return names value files
+- unit_refs:  <0-displays/...> · harvest: OWED | accepted (...)       ← display lane, ONLY when the return names units
 
 ## Need / ## Why / ## Route        ← the order (written at BOOKKEEP)
 ## Takeaways                       ← the receipt (anchored lines, written at TRANSLATE)
@@ -88,6 +95,12 @@ No probes/ folder, no PPNN card, no console state is created by a direct ask; wh
 - G1 structural ✅/❌ · G2 integrity ✅/❌ · G3 claim ✅/❌
 - <one-paragraph reasoning tying refs to the claim>
 ```
+
+Lane lines (harvester model, JL 2026-07-07): written by the paper worker's
+TRANSLATE the moment a return carries harvestable content — the debt exists on
+disk BEFORE the harvest runs. Acceptance flips OWED → accepted; a line still
+OWED at VERIFY or the CHECK gate is a `check-probe-cards.sh` FAIL (harvest
+skipped). Omit a lane line entirely when the return carries nothing for it.
 
 `refs:` is EMPTY at BOOKKEEP and REQUIRED once the card reaches `status: read` (or
 `verdicted`): it points at the durable project-side artifacts the gateway created

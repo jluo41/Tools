@@ -1,7 +1,7 @@
-# 4-edit / shared — paragraph indexing
+# 2-phase / shared — paragraph indexing
 
 The standard for tagging paragraphs so each one has a **stable handle** to edit,
-track, and reference across edit rounds. Every 4-edit sub-skill uses it.
+track, and reference across edit rounds. Every phase worker that touches section .tex/.md uses it.
 
 This formalizes the existing `0-sections/` banner. One change from the original:
 the identifying token is no longer the **positional** `P1/P2` (which renumbered on
@@ -80,10 +80,10 @@ One role per paragraph. If two fit, the paragraph is doing two jobs — split it
 
 ## Going finer: sentence-level work
 
-The banner is the **paragraph** unit, which is the grain 4-edit operates at. When
+The banner is the **paragraph** unit, which is the grain the phase workers operate at. When
 a job needs **sentence surgery** (rewriting, splitting, annotating individual
-sentences), the Stage-1 `paper-edit-format-checker` nests sentence tags under the
-paragraph and the `paper-edit-improver` edits them:
+sentences), the DRAFT/REVISE workers nest sentence tags under the
+paragraph and edit them there (see sentence-format.md):
 
 ```latex
 % =========================================================
@@ -96,7 +96,7 @@ Violin shapes tighten at higher trait levels...
 ```
 
 `P3.S1` is positional and local to the paragraph; the banner's `[stable-id]` is
-the durable handle for the paragraph as a whole. Use banners for 4-edit content
+the durable handle for the paragraph as a whole. Use banners for paragraph-level content
 passes; use `Pn.Sm` only when you have descended into sentence editing.
 
 ## Banner hygiene checklist

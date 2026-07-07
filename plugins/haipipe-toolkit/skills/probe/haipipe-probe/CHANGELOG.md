@@ -4,6 +4,11 @@ haipipe-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [7.2.0] — 2026-07-07
+
+Added (paper 2-phase skillset-diagnose, Part-0 harvester ruling — JL: "they are the harveste agents... just one step within the whole probe")
+- PPNN card anatomy: three optional LANE LINES (`pick_list:` / `value_refs:` / `unit_refs:`, each `· harvest: OWED | accepted (...)`) written by the paper worker's TRANSLATE when a return carries harvestable content. The debt exists on disk before the harvest runs; check-probe-cards.sh FAILs an OWED line at VERIFY/the CHECK gate. Flow diagram updated: TRANSLATE dispatches the citation/values/display HARVESTERS (transcription-only, pointer-following) and mechanically accepts.
+
 ## [7.0.0] — 2026-07-06
 
 Changed (JL: "probe is just exploring, can be general; it will be used by paper/application for explore and gather the evidence")

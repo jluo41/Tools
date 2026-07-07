@@ -16,30 +16,30 @@ phase:   draft ✅  │  probe: cite 🔥🚀  val --  disp --  │  revise ⬜ 
 ├── README.md                           ← you are here
 ├── USAGE.md                            ← recipes, reply grammar, effort dial
 ├── WIRING.md                           ← routing and dispatch
-├── REF/                                ← shared references
-│   └── prose-quality.md                ← universal writing rules
+├── REF/                                ← shared references (prose-quality, comment-protocol,
+│                                         paragraph-indexing, sentence-format, tex-file-anatomy)
 │
 ├── 0-draft/                            ← DRAFT: settle structure + sentences
 │   └── haipipe-paper-draft                 hub: structure + draft sentences
 │
 ├── 1-probe/                            ← PROBE: agent-only, flag for CHECK
-│   ├── haipipe-paper-probe-citation        citation → _CITATION_.md
-│   ├── haipipe-paper-probe-values          values → _VALUES_.md
-│   └── haipipe-paper-probe-display         display → 0-displays/ units
+│   ├── haipipe-paper-probe                 hub: BOOKKEEP → DISPATCH → TRANSLATE → VERIFY
+│   ├── haipipe-paper-probe-citation        citation harvester → _CITATION_.md
+│   ├── haipipe-paper-probe-values          values harvester → _VALUES_.md
+│   └── haipipe-paper-probe-display         display harvester → _DISPLAY_ + 0-displays/ links
 │
 ├── 2-revise/                           ← REVISE: venue-quality prose (auto)
-│   ├── haipipe-paper-revise-content        content review (WHAT sentences say)
+│   ├── haipipe-paper-revise                hub: routes the pass
+│   ├── haipipe-paper-revise-content        content + ¶-flow (WHAT sentences say, HOW ¶s weave)
 │   ├── haipipe-paper-revise-humanizer      de-AI audit (HOW sentences sound)
-│   ├── haipipe-paper-revise-weaving        paragraph flow (HOW paragraphs connect)
 │   └── haipipe-paper-revise-results        results-specific revision
 │
-├── 3-check/                            ← CHECK: human + agent gate
-│   ├── haipipe-paper-check               6-axis verification gate
-│   └── haipipe-paper-proof-checker         math proof verification
-│
-└── _archive/                           ← retired skills, incl. venue-style write-* skills
-                                          and old draft LaTeX templates (venue knowledge
-                                          now lives in _venue/ packs)
+└── 3-check/                            ← CHECK: human + agent gate
+    ├── haipipe-paper-check               6-axis verification gate
+    └── haipipe-paper-proof-checker         math proof verification
+
+(retired skills — venue-style write-*, old edit-cycle agents, old draft LaTeX
+templates — live in the paper-root `_archive/`, not under 2-phase/)
 ```
 
 Whole-paper skills (consistency, format, typeset, claim-audit, submission-audit, diffpdf, optimizer, improve-loop, to-overleaf, reviewer) live in `3-build-submit/` as `haipipe-paper-edit-*`.
@@ -58,20 +58,23 @@ haipipe-paper-edit-*            whole-paper (3-build-submit/)
 - **REVISE** 🤖: agent-only (change the prose directly per prose-quality.md, leave why-comments, no comment-first)
 - **CHECK** 🧑: human + agent (auto-checkers report, human decides: proceed/restart/accept/park)
 
-## The probe phase (AUDIT → SEARCH → CANDIDATE → FLAG → PLACE → REVIEW)
+## The probe phase (ONE pipeline: acquire via gateway → harvest paper-side)
 
-Each probe-phase document worker owns one working doc and follows the same lifecycle:
+ALL acquisition goes PP card → gateway (`Agent(haipipe-probe-orchestrator-agent)`)
+→ discovery/task orchestrators; the workers are HARVESTERS that transcribe what
+landed (JL 2026-07-07 ruling — they never search, grep-discover, or dispatch tasks):
 
 ```
 PROBE:
-  display   → audit what's needed → plan units → route to task → link
-  values    → audit numbers → trace to source → place in tex
-  citation  → audit gaps → search candidates → write to _CITATION_ → flag 🔍 for CHECK
+  citation  → audit gaps → route to probe plans → harvest pick_list → _CITATION_ → 🔍 for CHECK
+  values    → audit numbers → route unsourced to probe plans → harvest value_refs → _VALUES_
+  display   → audit needs → plan (generation via probe) → link landed units → _DISPLAY_ + tex
 ```
 
-Evidence needs beyond the document workers dispatch through `/haipipe-probe` (the project-side evidence gateway, mode light|full); probe calls `/haipipe-discovery` and `/haipipe-task` during its own Gather and files `/haipipe-insight` cards at Deposit.
+Every lane obligation is written into the PP card (`harvest: OWED → accepted`);
+`check-probe-cards.sh` FAILs an OWED lane or a planned card at VERIFY and at the CHECK gate.
 
-Hard boundary: the agent searches and proposes; the human verifies in CHECK. The agent NEVER adds to .bib, NEVER fabricates numbers, NEVER creates ad-hoc plots.
+Hard boundary: the gateway finds, the harvesters follow pointers, the human verifies in CHECK. The agent NEVER adds to .bib, NEVER fabricates numbers, NEVER creates ad-hoc plots, NEVER searches inline during PROBE.
 
 ## Progression order
 

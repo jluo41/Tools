@@ -1,8 +1,48 @@
-Citation harvest acceptance (haipipe-paper-probe, TRANSLATE step)
-===================================================================
+Harvest acceptance (haipipe-paper-probe, TRANSLATE step) -- all three lanes
+============================================================================
 
-Loaded on demand when a dispatch return carries a `pick_list`. Every rule here
-was added after a live failure -- keep the greps LITERAL.
+Loaded when a dispatch return carries harvestable content (a `pick_list`,
+value refs, or display unit refs). Every rule here was added after a live
+failure -- keep the greps LITERAL.
+
+Lane protocol (identical for all three; JL 2026-07-07 harvester ruling)
+------------------------------------------------------------------------
+
+1. TRANSLATE writes the lane line into the PP card FIRST:
+   `- pick_list: ... · harvest: OWED` / `- value_refs: ... · harvest: OWED`
+   / `- unit_refs: ... · harvest: OWED`. The debt exists on disk before any
+   harvest runs -- check-probe-cards.sh FAILs an OWED line, so a skipped
+   harvest can never pass VERIFY or the CHECK gate.
+2. Dispatch the lane's harvester subagent (cheapest tier; it READS its worker
+   SKILL.md headless -- citation/values/display respectively; NEVER paraphrase
+   the spec into the prompt).
+3. Run the lane's mechanical acceptance below. One reject -> re-dispatch ONE
+   TIER UP with the defect list (one retry); still failing -> mark the card
+   `status: read (harvest DEFECTIVE)` and surface it in the stage reply.
+4. On acceptance flip the card line: `harvest: accepted (<n> entries, <doc>)`.
+
+Values lane acceptance (value_refs -> _VALUES_{stage}.md)
+----------------------------------------------------------
+
+- **count**: new `### ` entry headings == numbers named in the return.
+- **source**: every entry names a source path under tasks/ (or a display CSV);
+  `ls <project_root>/<path>` resolves for each.
+- **number-matches-source**: for each entry, the literal value string greps in
+  its named source file (`grep -F '<value>' <source>`) -- a value with no
+  source hit is a REJECT (fabrication guard; the parquet/script decides).
+- **no tables**: `grep -c '^|'` == 0 on the new entries.
+
+Display lane acceptance (unit_refs -> _DISPLAY_{stage}.md + tex)
+-----------------------------------------------------------------
+
+- **count**: new registry rows == units named in the return.
+- **paths**: every row's unit path exists on disk (`ls`), and any tex link
+  added (`\input`/`\includegraphics`) points at that existing path.
+- **need-linkage**: every row names the need/claim it serves -- an orphan unit
+  row is a REJECT.
+
+Citation lane -- dispatch + acceptance (the original, unchanged)
+-----------------------------------------------------------------
 
 Dispatch the harvest subagent
 ------------------------------

@@ -1,6 +1,6 @@
-# 4-edit / shared — sentence format (Stage 1: format-check)
+# 2-phase / shared — sentence format
 
-Stage 1 of the edit-cycle normalizes a leaf `.tex` into the canonical working
+The format pass normalizes a leaf `.tex` into the canonical working
 layout so the later stages have stable anchors to attach comments to. It changes
 **layout only — never wording**.
 
@@ -32,7 +32,7 @@ A multiple regression confirmed each trait contributes independently.
   sentence; a lone `%` line may separate sentences for readability.
 
 This is the same `Pn.Sm` convention the real npjDM `0-sections/` files already
-use — Stage 1 makes every leaf consistent with it.
+use — the format pass makes every leaf consistent with it.
 
 ## What format-check does (and does not) do
 
@@ -51,17 +51,17 @@ before and after must yield identical prose.
 
 `Pn` restarts at 1 in each `.tex` file (do not continue across `\input`). `Sm`
 restarts at 1 in each paragraph. This keeps tags stable when sub-files are
-rearranged. Reindexing after splits/merges is done by the
-`paper-edit-format-checker` (it renumbers `Pn.Sm` and forward cross-references
-but never touches sentence text or comments).
+rearranged. Reindexing after splits/merges is a mechanical REVISE-side step: renumber
+`Pn.Sm` and forward cross-references but never touch sentence text or comments
+(checks.sh flags out-of-sequence markers at CHECK).
 
-## Why this is Stage 1
+## Why format runs first
 
-Stages 2–4 attach comments to specific sentences (`%% {CC-…}` below a
+REVISE workers attach comments to specific sentences (`%% {CC-…}` below a
 `%% ---- Pn.Sm ----` line) and apply edits to specific sentences. Without the
 one-sentence-per-line + `Pn.Sm` layout, a comment cannot point cleanly at its
-target and the improve stage cannot apply a change to a single sentence. So
-format-check runs first, once, before annotation.
+target and an edit cannot land on a single sentence. So the format pass runs
+first, once, before any annotation or revision.
 
 ## Quick checklist
 

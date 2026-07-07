@@ -1,15 +1,15 @@
 ---
 name: haipipe-paper-probe-values
-description: "values probe worker for section-edit. One skill, one working doc (_VALUES_), full lifecycle: AUDIT (identify every number) → TRACE (link to source) → CANDIDATE (write entries) → PLACE (auto-place source-verified values, flag uncertain for CHECK) → REVIEW (pre-submission re-derivation walk). Fully automatic -- no human gate. Human review happens in CHECK phase only. Hard boundary: agent NEVER fabricates a number. The parquet/script decides, not the prose. Trigger: values, numbers, check numbers, numeric consistency, reconcile values, verify stats, manual review values."
+description: "values HARVESTER (probe lane worker) for section-edit. One skill, one working doc (_VALUES_), lifecycle: AUDIT (identify every number) → ROUTE (numbers with no named source → probe-plan suggestions; discovery of 'which task has this number' is gateway SWEEP work) → CANDIDATE (harvest: expand the PP card's value_refs into entries — pointer-following, reads ONLY named paths) → PLACE (auto-place source-verified values, flag uncertain for CHECK) → REVIEW (pre-submission re-derivation walk). Fully automatic -- no human gate. Hard boundary: agent NEVER fabricates a number. The parquet/script decides, not the prose. Trigger: values, numbers, check numbers, numeric consistency, reconcile values, verify stats, manual review values."
 argument-hint: "[verb] [section-name-or-number] [paper-path]"
-allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-07-03"
-  summary: "Unified values probe worker. AUDIT→TRACE→CANDIDATE→PLACE→REVIEW lifecycle (fully automatic, no human gate). Human review happens in CHECK only. Single working doc = _VALUES_. Absorbs manual-review-values."
+  version: "2.0.0"
+  last_updated: "2026-07-07"
+  summary: "Values HARVESTER. AUDIT→ROUTE(unsourced numbers→probe plans)→CANDIDATE(harvest value_refs, pointer-following)→PLACE→REVIEW. Never greps tasks/ to discover sources — the gateway finds, this worker follows. Single working doc = _VALUES_."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   predecessors:
-    - "haipipe-paper-probe-values (pre-submission number-by-number walk) — MERGED as Phase 5"
+    - "haipipe-paper-manual-review-values (pre-submission number-by-number walk) — MERGED here as Phase 5"
 ---
 
 Skill: haipipe-paper-probe-values
@@ -20,7 +20,8 @@ values probe worker for `haipipe-paper-section-edit`. One skill owns the full va
 ```
 /haipipe-paper-probe-values                       → status dashboard
 /haipipe-paper-probe-values audit <section>       → Phase 1: identify every number
-/haipipe-paper-probe-values trace <section>       → Phase 2-3: link to sources, write entries
+/haipipe-paper-probe-values route <section>       → Phase 2: match to named sources, route gaps to probe plans
+/haipipe-paper-probe-values harvest <stage> <ref> → Phase 3: expand value_refs → _VALUES_ entries
 /haipipe-paper-probe-values place <section>       → Phase 4: auto-place verified, flag uncertain for CHECK
 /haipipe-paper-probe-values review <section>      → Phase 5: pre-submission re-derivation walk
 ```
@@ -40,8 +41,11 @@ values probe worker for `haipipe-paper-section-edit`. One skill owns the full va
 
 ```
 Phase 1: AUDIT        identify every number in the section
-Phase 2: TRACE        link each number to its source (task output, display CSV, script)
-Phase 3: CANDIDATE    write entries to _VALUES_ with source + status
+Phase 2: ROUTE        match numbers to ALREADY-NAMED sources (PP card refs,
+                      _DISPLAY_ registry, _CITATION_); anything unmatched →
+                      probe-plan suggestion for the hub (NO discovery-grepping)
+Phase 3: CANDIDATE    harvest: expand value_refs into _VALUES_ entries
+                      (pointer-following — read ONLY the named paths)
 Phase 4: PLACE        auto-place source-verified values; flag uncertain for CHECK
 Phase 5: REVIEW       pre-submission re-derivation walk (from manual-review-values)
 ```
@@ -69,22 +73,24 @@ P#.S# | exact phrase | number(s) | claim type | expected source
 Skip `%%` comment lines. Do NOT skip table/figure captions.
 
 
-## Phase 2: TRACE
+## Phase 2: ROUTE (trace-as-grep is RETIRED — JL 2026-07-07 harvester ruling)
 
-For each number from Phase 1, identify the canonical source:
+Pointer-following only: this worker may READ a path that is already NAMED
+somewhere (a PP card's `refs:`/`value_refs:`, a `_DISPLAY_` registry row, a
+`_CITATION_` entry, an explicit path in the tex comment). It may NOT grep
+`tasks/`/`code/` to DISCOVER which task holds a number — "which task has this
+number" is an evidence question, answered by the gateway's SWEEP in clean
+context (index-first discipline lives there, not here).
 
-| Source type | Where to look |
+For each Phase-1 number:
+
+| Situation | Action |
 |---|---|
-| Display output | `0-displays/displayNN/results/<run>/*.csv` |
-| Task output | `tasks/<task>/results/<run>/` |
-| Regression log | Stata `.log` files, Python script output |
-| External reference | Cited paper (cross-ref with _CITATION_) |
-| Computed inline | Derived from other values (document the arithmetic) |
+| A named source covers it (PP refs / _DISPLAY_ row / _CITATION_ / inline derivation) | record the pointer; proceed to Phase 3 |
+| No named source anywhere | write a probe-plan suggestion (Need: "source for <phrase>" / Why / Route: task-results sweep) and hand it to the PROBE hub — the gateway SWEEPs tasks/ and returns `value_refs` |
 
-For method claims, grep the codebase:
-```bash
-grep -rni "<method keyword>" tasks/ code/
-```
+Method claims ("Holm-Bonferroni corrected", "cluster-robust SEs") route the
+same way: unverifiable-from-named-sources → probe plan, not a codebase grep.
 
 
 ## Phase 3: CANDIDATE → _VALUES_

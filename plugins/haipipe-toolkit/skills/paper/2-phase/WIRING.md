@@ -20,12 +20,12 @@ Each phase folder holds a hub skill plus its workers, every one a `SKILL.md` wit
 
 | Folder | Hub | Workers |
 |--------|-----|---------|
-| `0-draft/` | `haipipe-paper-draft` | (none -- the hub reads the stage template from `1-lifecycle/`; retired venue-style write skills live in `_archive/`) |
+| `0-draft/` | `haipipe-paper-draft` | (none -- the hub reads the stage template from `1-lifecycle/`; retired venue-style write skills live in the paper-root `_archive/`) |
 | `1-probe/` | `haipipe-paper-probe` | `haipipe-paper-probe-citation` / `-values` / `-display` |
-| `2-revise/` | `haipipe-paper-revise` | `haipipe-paper-revise-content` / `-humanizer` / `-weaving` / `-results` |
+| `2-revise/` | `haipipe-paper-revise` | `haipipe-paper-revise-content` / `-humanizer` / `-results` (weaving merged into content 2026-07-07) |
 | `3-check/` | `haipipe-paper-check` | `haipipe-paper-proof-checker` (math proofs) |
 
-Not registered: `REF/` (plain reference .md, no SKILL.md -- workers load it by path) and `_archive/` (retired edit-cycle skills, the old `paper-edit-*` stage agents, the retired venue-style `draft-write-*` skills, and the old draft LaTeX templates; kept for history, nothing routes to them, and they are not symlinked into top-level `agents/`).
+Not registered: `REF/` (plain reference .md, no SKILL.md -- workers load it by path) and the paper-root `_archive/` (retired edit-cycle skills, the old `paper-edit-*` stage agents, the retired venue-style `draft-write-*` skills, and the old draft LaTeX templates; kept for history, nothing routes to them, and they are not symlinked into top-level `agents/`).
 
 ## Dispatch chain (who calls whom)
 
@@ -38,7 +38,7 @@ user → /haipipe-paper <stage>            stage skills live in 1-lifecycle/
              ▼  the stage skill drives the phase engine, in order:
        haipipe-paper-draft    → drafts from the stage's template in 1-lifecycle/
        haipipe-paper-probe    → fans out -citation / -values / -display + /haipipe-probe dispatch
-       haipipe-paper-revise   → runs -content / -humanizer / -weaving (+ -results)
+       haipipe-paper-revise   → runs -content / -humanizer (+ -results)
        haipipe-paper-check  → 6-axis report, presented to the human (CHECK 🧑)
 ```
 

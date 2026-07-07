@@ -4,6 +4,19 @@ haipipe-paper-revise-humanizer — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [2.3.0] — 2026-07-07
+
+Changed (JL: "Could you copy the content from refences to our skillset? Our skill should never refer to the references content.")
+- Pattern catalog VENDORED into the skill: `ref/pattern-catalog.md` (from AIScientists-Dev/academic-humanizer @ 02281d8, MIT) + `ref/before-after.md` examples. All runtime pointers at `Tools/references/...` removed; the references/ submodule is archival provenance only. House rule codified in the Reference section: skills are self-contained, never depend on references/ content at runtime.
+- Relation box updated: weaving merged into content (T7).
+
+## [2.2.0] — 2026-07-07
+
+Fixed (skillset-diagnose T6, JL: "做B" — re-vendor now, don't soften)
+- The "empty catalog" mystery solved: `Tools/references/academic-humanizer/` was a half-registered git SUBMODULE (gitlink 02281d8 committed, but no .gitmodules mapping — so fresh checkouts silently got an empty dir). Fixed by cloning AIScientists-Dev/academic-humanizer at the exact pinned commit and adding the missing .gitmodules entry. The full pattern catalog (SKILL.md + examples/ + assets/) is on disk again; C7/C8 contradictions dissolve because the assertions are now true.
+- NOTE rewritten: documents the submodule + `git submodule update --init` recovery, keeps the inline Six-layer audit as the offline fallback.
+- Added the missing `feedback/` inbox (C12 — was the only revise worker without one).
+
 ## [2.1.1] — 2026-07-07
 
 Fixed (skill-family quality sweep)

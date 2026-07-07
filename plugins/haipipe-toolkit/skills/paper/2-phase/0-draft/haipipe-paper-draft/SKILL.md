@@ -4,7 +4,7 @@ description: "DRAFT phase worker (internal). Called by stage skills to produce t
 argument-hint: "[stage-or-section] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, WebSearch, WebFetch
 metadata:
-  version: "3.4.0"
+  version: "3.5.0"
   last_updated: "2026-07-07"
   summary: "DRAFT phase worker (internal). Called by stage skills to produce first-pass artifacts. Generic process, stage-specific output. v3.4: DRAFT MAY use inline WebSearch for orientation -- but its output is drafting fuel (prose + buffered probe plans) only, NEVER durable evidence (no refs/findings into PP cards). Real evidence is the PROBE phase's job."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -27,7 +27,7 @@ DRAFT phase worker. Called by stage skills (seed, claims, pitch, narrative, disp
 
 DRAFT = settle WHAT to say. The first pass at producing a stage's artifact. Content decisions, not polished prose.
 
-Each stage has its own artifact spec (in `1-lifecycle/{stage}/SKILL.md`) that defines:
+Each stage has its own artifact spec (in `1-lifecycle/{stage}/haipipe-paper-{stage}/SKILL.md`) that defines:
 - What files to produce
 - What content structure to follow
 - What done-criteria to meet
@@ -46,14 +46,14 @@ Determine which stage is being drafted, then read TWO things from `1-lifecycle/`
 
 | Stage | Artifact spec | Template |
 |---|---|---|
-| seed | `1-lifecycle/0-seed/haipipe-paper-seed/SKILL.md` | `../ref/seed-template.md` |
-| claims | `1-lifecycle/1-claims/haipipe-paper-claims/SKILL.md` | `../ref/claims-template.md` |
-| pitch | `1-lifecycle/2-pitch/haipipe-paper-pitch/SKILL.md` | `../ref/pitch-template.md` |
-| narrative | `1-lifecycle/3-narrative/haipipe-paper-narrative/SKILL.md` | `../ref/narrative-template.md` |
+| seed | `1-lifecycle/0-seed/haipipe-paper-seed/SKILL.md` | `ref/seed-template.md` |
+| claims | `1-lifecycle/1-claims/haipipe-paper-claims/SKILL.md` | `ref/claims-template.md` |
+| pitch | `1-lifecycle/2-pitch/haipipe-paper-pitch/SKILL.md` | `ref/pitch-template.md` |
+| narrative | `1-lifecycle/3-narrative/haipipe-paper-narrative/SKILL.md` | `ref/narrative-template.md` |
 | display | `1-lifecycle/4-display/haipipe-paper-display/SKILL.md` | display-unit contracts in that skill's `ref/` |
-| section name (e.g. `introduction`) | `1-lifecycle/5-section-edit/haipipe-paper-section-edit/SKILL.md` | `../ref/outline-format.md` |
+| section name (e.g. `introduction`) | `1-lifecycle/5-section-edit/haipipe-paper-section-edit/SKILL.md` | `ref/outline-format.md` |
 
-(Template paths are relative to each stage skill's folder.)
+(Template paths are relative to each stage skill's OWN folder — the same folder as its SKILL.md, e.g. `1-lifecycle/0-seed/haipipe-paper-seed/ref/seed-template.md`.)
 
 ### Step 2. Consult upstream artifacts
 
@@ -133,17 +133,20 @@ When confirmed:
 
 ### seed
 - Output: `0-lifecycle/0-seed/0-seed.md`
-- May WebSearch to orient the angle; weave the landscape into prose and BUFFER
-  the feasibility probes (novelty + external-data-obtainable) as `status:
-  planned` PP skeletons. Do NOT run them here -- the seed PROBE phase does.
+- WebSearch-to-orient + buffer rule: see Step 4 (the one normative home); seed's
+  buffered probes are the FEASIBILITY pair (novelty + external-data-obtainable).
 - PROBE (seed): FEASIBILITY only -- "can this paper exist at all?" (is it
   novel? does the external labeled data exist?). Profiling OUR OWN data is
   claims-stage task work; register it as a `[FORWARD -> CLAIMS]` pointer in
-  `_LOG`, do not dispatch it in seed.
+  `_LOG`, do not dispatch it in seed. The claims stage CONSUMES these pointers
+  at its open (reader clause in haipipe-paper-claims SKILL) -- an unconsumed
+  pointer fails the claims done-criteria.
 - Short document: seed question + motivations + tentative claim shape
 
 ### claims
 - Output: `0-lifecycle/1-claims/1-claims.md`
+- On open: grep seed `_LOG` for `[FORWARD -> CLAIMS]` pointers; each becomes a
+  PP entry in the Probes section (or is explicitly declined in `_LOG`)
 - PROBE: link evidence sources, spawn probes for GAPs
 - Hypotheses are venue-neutral (H1, H2, H3)
 
@@ -179,7 +182,7 @@ DRAFT settles content, not style. Style inputs come from elsewhere:
 | Per-section structure norms | `1-lifecycle/5-section-edit/section-type/` | DRAFT (structure) |
 | Prose quality rules | `2-phase/REF/prose-quality.md` | REVISE |
 
-Old venue LaTeX templates and the write-conference/scientific/systems style skills were archived to `2-phase/_archive/` (venue knowledge belongs in `_venue/` packs).
+Old venue LaTeX templates and the write-conference/scientific/systems style skills were archived to the paper-root `_archive/` (venue knowledge belongs in `_venue/` packs).
 
 
 ## Relation to other phases

@@ -9,6 +9,11 @@ Versions match each agent's frontmatter `version:`. Newest first, grouped per ag
 haipipe-probe-orchestrator-agent — evidence gateway
 ---------------------------------------------------
 
+## [2.0.6] — 2026-07-07  (haipipe-probe-orchestrator-agent)
+
+Changed (Part-0 harvester ruling)
+- Return contract: the pick_list pointer discipline generalized to all three harvest lanes — value-shaped/display-shaped needs must name the value-bearing files / display units explicitly in refs, which the caller records as value_refs/unit_refs lane lines (harvest: OWED) and pays via the matching harvester.
+
 ## [2.0.5] — 2026-07-06
 Opening quote and layer description recast from "claim-level" to "explore+gather verb" (aligns with haipipe-probe 7.0.0 identity recast).
 

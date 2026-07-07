@@ -27,14 +27,15 @@ The downstream lifecycles are NESTED under probe:
                                    across papers instead of re-collected
 ```
 
-Per-stage table
+Per-stage table (workers = HARVESTERS: they transcribe landed evidence,
+never acquire; acquisition is always PP card -> gateway)
 ----------------
-- **seed** -- probe mode light (-> discovery): landscape / related work / novelty to sharpen the seed question; returned sources HARVEST into _CITATION_0-seed.md. No values/display workers.
-- **claims** -- probe mode FULL (-> task + discovery): the core evidence stage; probe plans per GAP claim, verdicts backfill the ledger + deposit to insight.
-- **pitch** -- citation worker only (anchor papers).
-- **narrative** -- citation + display workers (beats map to displays).
-- **display** -- display worker; routes unit generation to /haipipe-task.
-- **section-edit** -- full document probe: citation + values + display.
+- **seed** -- probe mode light (-> discovery): landscape / related work / novelty to sharpen the seed question; returned sources HARVEST into _CITATION_0-seed.md. No values/display lanes.
+- **claims** -- probe mode FULL (-> task + discovery): the core evidence stage; probe plans per GAP claim (INCLUDING seed's `[FORWARD -> CLAIMS]` pointers, consumed at stage open — see haipipe-paper-claims), verdicts backfill the ledger + deposit to insight.
+- **pitch** -- citation lane only (anchor papers).
+- **narrative** -- citation + display lanes (beats map to displays).
+- **display** -- display lane; unit GENERATION is commissioned like any evidence need: PP card -> gateway -> task orchestrator (SWEEP answers "does this unit already exist?"); the harvester only LINKs what landed.
+- **section-edit** -- full document probe: citation + values + display lanes.
 
 Dispatch rules (both apply to every dispatch)
 ----------------------------------------------
@@ -84,7 +85,7 @@ finished evidence worth keeping            -> /haipipe-insight (K/W cards)
 
 Verdicts backfill the _EVIDENCE_ slots in 1-claims.md (supported | weak | GAP,
 citing the probe verdict). The paper owns the NEED; the probe owns the VERDICT.
-See ../../wiki/12-evidence-routing.md + ../../wiki/11-delivery-need.md.
+See ../../../../wiki/12-evidence-routing.md + ../../../../wiki/11-delivery-need.md.
 
 Section-edit worker logic
 --------------------------
@@ -114,3 +115,9 @@ Strip form (cite/val/disp sub-tracks belong to the probe phase):
 ```
 phase:   draft ✅  │  probe: cite 🔥🚀  val --  disp --  │  revise ⬜  │  check ⬜
 ```
+
+GATE RULE (JL 2026-07-07, the seed incident): the probe phase may NOT show ✅
+while any lane is OWED. A lane is OWED when a PP card carries its lane line
+with `harvest: OWED`, or when a return named harvestable content for a lane
+whose doc (⬜) does not exist. `probe ✅ (cite ⬜ ...)` -- the exact strip the
+incident shipped -- is a contradiction: run check-probe-cards.sh, it FAILs.

@@ -4,6 +4,15 @@ haipipe-paper-probe-citation — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [2.0.0] — 2026-07-07
+
+Changed (Part-0 harvester ruling, JL: "they are the harveste agents... just one step within the whole probe" + "I think search should be done with haipipe-discovery-orchestrated agent")
+- BREAKING: Phase 2 SEARCH retired → Phase 2 ROUTE. This worker NEVER searches (no WebSearch, no Semantic Scholar, no side-channel agents); Phase-1 gaps become probe-plan suggestions handed to the PROBE hub, which dispatches the gateway (SWEEP: reuse | ENRICH — the cheap path for one-off lookups | fresh). Every citation now enters _CITATION_ through exactly one door: gateway → discovery → pick_list → HARVEST → mechanical acceptance. Resolves B8 (the inline-search contradiction with the probe hard boundary) and the "light probe = WebSearch" vocabulary collision (light/full now mean only the gateway modes).
+- allowed-tools: WebSearch/Agent dropped; WebFetch retained for pointer-following only (verify a KNOWN DOI/publisher URL in Phase 5 REVIEW).
+- Provenance legend: `agent-found via WebSearch` retired → `harvested` (gateway provenance); historical agent-found entries downgraded to 📋-grade until REVIEW verifies.
+- B7: the _CITATION_ file-organization template's "Density by paragraph" markdown table → bullet lines (the template was teaching a format its own acceptance grep rejects).
+- Sibling shape description updated to the harvester model (all three workers = harvest step; citation/values now share AUDIT→ROUTE→CANDIDATE→PLACE→REVIEW; display = AUDIT→PLAN→LINK→REVIEW).
+
 ## [1.6.0] — 2026-07-07
 
 Fixed

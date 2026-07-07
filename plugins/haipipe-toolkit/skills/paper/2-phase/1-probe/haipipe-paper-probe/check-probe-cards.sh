@@ -7,6 +7,12 @@
 #   2. no markdown tables in any card (inline-evidence smell; JL standing rule: no tables in probes)
 #   3. card <= 80 lines (a fat card = findings pasted inline instead of landed project-side)
 #   4. status: failed is surfaced as FAIL (the gate must not go green over it)
+#   5. status planned|dispatched -> FAIL probe-not-run (a buffered/in-flight card
+#      must not survive to VERIFY or the CHECK gate; JL 2026-07-07)
+#   6. "harvest: OWED" on any lane line (pick_list/value_refs/unit_refs) -> FAIL
+#      harvest-owed (the harvester was skipped; Part-0 harvester ruling)
+# Plus a working-doc pass: _CITATION_/_VALUES_/_DISPLAY_ carry no bibtex entries;
+# _CITATION_ carries no markdown tables (durable mirror of harvest acceptance).
 #
 # Exit 0 = all PASS. Exit 1 = any FAIL. RUN this, never eyeball the checks.
 # Called at the worker's STEP 4 (VERIFY) and again by the stage CHECK gate.
@@ -81,7 +87,20 @@ for card in "$paper_root"/0-lifecycle/*/_PROBE/PP*.md; do
     failed)
       problems="$problems status-failed(surface-it);"
       ;;
+    planned|dispatched)
+      # A planned/dispatched card at VERIFY or the CHECK gate means the probe
+      # was never run (DRAFT-buffered skeleton or in-flight dispatch never
+      # TRANSLATEd). The gate must NOT go green over it (JL 2026-07-07, T1).
+      problems="$problems status-$status(probe-not-run);"
+      ;;
   esac
+
+  # Lane obligations (harvester model, JL 2026-07-07 Part-0 ruling): TRANSLATE
+  # records what each lane owes as "harvest: OWED" on the pick_list /
+  # value_refs / unit_refs line; acceptance flips it to "harvest: accepted".
+  # An OWED lane surviving to VERIFY / the gate = the harvest was skipped.
+  owed=$(grep -c 'harvest: OWED' "$card")
+  [ "$owed" -gt 0 ] && problems="$problems harvest-owed(${owed}-lane);"
 
   if [ -n "$problems" ]; then
     echo "FAIL  $name  --$problems"
@@ -92,5 +111,24 @@ for card in "$paper_root"/0-lifecycle/*/_PROBE/PP*.md; do
 done
 
 [ "$found" -eq 0 ] && echo "WARN  no _PROBE/PP*.md cards under $paper_root/0-lifecycle/"
+
+# Working-doc pass (B10): the no-bibtex / no-tables rules must hold durably,
+# not only during a harvest run. Mirrors the harvest-acceptance greps.
+for doc in "$paper_root"/0-lifecycle/*/_CITATION_*.md "$paper_root"/0-lifecycle/*/_VALUES_*.md "$paper_root"/0-lifecycle/*/_DISPLAY_*.md; do
+  [ -e "$doc" ] || continue
+  dname=${doc#"$paper_root"/}
+  dprob=""
+  bib=$(grep -cE '^[[:space:]]*@[A-Za-z]+\{[^,}]+,' "$doc")
+  [ "$bib" -gt 0 ] && dprob="$dprob bibtex-entry(${bib});"
+  case "$doc" in *_CITATION_*)
+    dtab=$(grep -c '^|' "$doc")
+    [ "$dtab" -gt 0 ] && dprob="$dprob markdown-table(${dtab}-lines);"
+  ;; esac
+  if [ -n "$dprob" ]; then
+    echo "FAIL  $dname  --$dprob"
+    fail=1
+  fi
+done
+
 echo "project_root: $project_root"
 exit $fail

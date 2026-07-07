@@ -1,4 +1,4 @@
-# haipipe-paper-polish -- Feedback Inbox
+# haipipe-paper-revise -- Feedback Inbox
 
 Drop correction/preference files here. They are picked up by `/haipipe-paper feedback`
-via `/haipipe-paper feedback move <file> haipipe-paper-polish`.
+via `/haipipe-paper feedback move <file> haipipe-paper-revise`.
