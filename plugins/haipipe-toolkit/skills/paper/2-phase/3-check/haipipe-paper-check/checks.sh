@@ -86,8 +86,9 @@ fi
 #    legitimate in academic prose and drowned the real tells on live papers)
 AI_TELLS='delve|tapestry|realm|seamless|showcase|intricate|nuanced|utilize|underscore|leverage'
 # comments stripped (same as em-dash): a "delve" inside a % comment is noise, not prose
+# portable (mawk-safe): lowercase + explicit non-letter boundaries, no gawk \< \> / IGNORECASE
 aivoice=$(for f in "${TEX_FILES[@]}"; do
-  awk -v F="$f" -v P="$AI_TELLS" 'BEGIN{IGNORECASE=1} { l=$0; sub(/(^|[^\\])%.*$/,"",l); if (l ~ ("\\<(" P ")\\>")) printf "%s:%d:%s\n", F, NR, $0 }' "$f" 2>/dev/null
+  awk -v F="$f" -v P="$AI_TELLS" '{ l=$0; sub(/(^|[^\\])%.*$/,"",l); if (tolower(l) ~ ("(^|[^a-z])(" P ")([^a-z]|$)")) printf "%s:%d:%s\n", F, NR, $0 }' "$f" 2>/dev/null
 done)
 if [[ -z "$aivoice" ]]; then
   echo "✅ no AI-voice tells"
