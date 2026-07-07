@@ -1,12 +1,15 @@
 ---
 name: haipipe-paper-probe-citation
-description: "citation probe worker. One skill, one working doc (_CITATION_). Two directions: demand-pull for section-edit (AUDIT mechanical cross-ref + gap identification → SEARCH find candidates → CANDIDATE write to _CITATION_ with SEARCH markers → PLACE auto-place verified keys from .bib, flag 🔍 for CHECK → REVIEW pre-submission 3-axis walk) and supply-push HARVEST for any stage (distill sources a probe/discovery brought back into _CITATION_{stage}.md candidates, no fresh searching). Fully automatic -- no human gate. Human review happens in CHECK phase only. Hard boundary: agent NEVER generates bibtex, NEVER adds to .bib. No bibtex in _CITATION_ ever. Trigger: citation, cite, probe citations, harvest citations, check references, audit references, citation review, manual review citations."
+description: "citation HARVESTER (probe lane worker). One skill, one working doc (_CITATION_). The harvest step of the ONE probe pipeline: acquisition is always PP card → gateway → discovery (this worker NEVER searches — no WebSearch, no Semantic Scholar); this worker transcribes the gateway's pick_list into _CITATION_{stage}.md cards (supply-push HARVEST), plus AUDIT (gap → probe-plan suggestions), PLACE (auto-place keys already in .bib, flag 🔍 for CHECK) and REVIEW (pre-submission 3-axis walk). Fully automatic -- no human gate. Hard boundary: agent NEVER generates bibtex, NEVER adds to .bib. No bibtex in _CITATION_ ever. Trigger: citation, cite, probe citations, harvest citations, check references, audit references, citation review, manual review citations."
 argument-hint: "[verb] [section-name-or-number] [paper-path]"
-allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent, WebFetch, WebSearch
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob, WebFetch
+# WebFetch = pointer-following ONLY (fetch a KNOWN DOI/publisher URL to verify an
+# entry in Phase 5 REVIEW). WebSearch is deliberately ABSENT: finding is the
+# gateway's monopoly (JL 2026-07-07 one-door ruling).
 metadata:
-  version: "1.6.0"
+  version: "2.0.0"
   last_updated: "2026-07-07"
-  summary: "Unified citation probe worker. AUDIT→SEARCH→CANDIDATE→PLACE→REVIEW lifecycle (fully automatic, no human gate). Human review happens in CHECK only. Single working doc = _CITATION_. Absorbs check-reference + manual-review-citations."
+  summary: "Citation HARVESTER. AUDIT→ROUTE(gaps→probe plans)→CANDIDATE(harvest from gateway pick_list)→PLACE→REVIEW. Never searches — one door: gateway. Single working doc = _CITATION_."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   predecessors:
     - "haipipe-paper-edit-check-reference (mechanical \\label/\\ref/\\cite audit) — MERGED as Phase 1"
@@ -26,7 +29,8 @@ citation probe worker for `haipipe-paper-section-edit`. One skill owns the full 
 ```
 /haipipe-paper-probe-citation                            → status dashboard
 /haipipe-paper-probe-citation audit <section>            → Phase 1: mechanical check + gap ID
-/haipipe-paper-probe-citation search <section>           → Phase 2-3: find candidates, write to _CITATION_
+/haipipe-paper-probe-citation route <section>            → Phase 2: gaps → probe-plan suggestions (NO searching)
+/haipipe-paper-probe-citation harvest <stage> <ref>      → Phase 3: expand gateway pick_list → _CITATION_ cards
 /haipipe-paper-probe-citation place <section>            → Phase 4: auto-place verified keys, flag 🔍 for CHECK
 /haipipe-paper-probe-citation review <section>           → Phase 5: pre-submission 3-axis walk
 ```
@@ -68,11 +72,15 @@ Every _CITATION_ entry carries a **Source** field recording how the paper was fo
 
 ```
 🧑 scholar-copied    human found and copied bibtex from Scholar → .bib (SAFE)
-🤖 agent-found       agent found via WebSearch, wrote to _CITATION_ only
-                      (SAFE -- agent never touched .bib; human must verify)
+🤖 harvested         came in through gateway → discovery → pick_list → harvest
+                      (SAFE -- discovery-reviewer-checked at arXiv/DOI level;
+                      agent never touched .bib; human Scholar pass in CHECK)
 📋 pre-existing      was already in .bib when _CITATION_ was created
                       (provenance UNKNOWN until verified via DOI/DBLP)
 ```
+
+(Historical entries marked `agent-found via WebSearch` predate the 2026-07-07
+one-door ruling; treat them as 📋-grade until REVIEW verifies them.)
 
 Pre-existing entries (📋) may include LLM-generated bibtex from a prior session before the hard boundary was established. Phase 5 REVIEW catches these by verifying existence + metadata against publisher pages.
 
@@ -81,8 +89,9 @@ Pre-existing entries (📋) may include LLM-generated bibtex from a prior sessio
 
 ```
 Phase 1: AUDIT        mechanical cross-ref + identify uncited factual assertions
-Phase 2: SEARCH       find candidate papers for gaps
-Phase 3: CANDIDATE    write 🔍 entries to _CITATION_ with > SEARCH markers
+Phase 2: ROUTE        gaps → probe-plan suggestions for the hub (NO searching;
+                      acquisition = gateway → discovery, the only door)
+Phase 3: CANDIDATE    HARVEST the gateway's pick_list → 🔍 entries in _CITATION_
 Phase 4: PLACE        auto-place keys already in .bib; flag 🔍 for CHECK
 Phase 5: REVIEW       pre-submission 3-axis walk (existence, metadata, context)
 ```
@@ -205,29 +214,34 @@ P#.S# | sentence text | gap type (uncited / wrong-context / weak)
 Also process any `> USER:` comments requesting citations (e.g., "needs cite here", "find a paper about X").
 
 
-## Phase 2: SEARCH
+## Phase 2: ROUTE (search is RETIRED — JL 2026-07-07: "search should be done with haipipe-discovery-orchestrated agent")
 
-For each gap from Phase 1, search for candidate papers.
+This worker NEVER searches. Not WebSearch, not Semantic Scholar, not a
+side-channel agent — a citation found any way other than the gateway has no
+reviewer and no ledger home, and skips the mechanical acceptance that guards
+_CITATION_. There is exactly ONE door for a citation to enter this document:
 
-### Search routing
+```
+Phase-1 gap  →  probe-plan suggestion (PP skeleton: Need / Why / Route)
+             →  the PROBE hub (haipipe-paper-probe) dispatches
+                Agent(haipipe-probe-orchestrator-agent)
+             →  gateway SWEEP: reuse an existing discovery | ENRICH it
+                (small deltas — the cheap path for "one cite for this
+                sentence") | fresh discovery for a new topic
+             →  sources land in discoveries/<...>/sources.md, reviewer-checked
+             →  the return's pick_list → HARVEST (below) → _CITATION_ cards
+```
 
-All evidence needs prefer routing through /haipipe-probe. Use light mode for quick lookups, full mode for claim-level questions.
-
-| Gap type | Probe mode | Gather mechanism |
-|---|---|---|
-| Single paper lookup ("find the JAMA paper about X") | light | WebSearch agent |
-| Targeted topic ("IS papers on physician reviews") | light | WebSearch + Semantic Scholar |
-| Broad field gap (needs literature landscape) | light | /haipipe-discovery |
-| Claim-level evidence question ("does H1 hold?") | full | /haipipe-probe → task/discovery |
-
-Light probes stop at Read: the output goes directly into a _CITATION_ candidate entry. Full probes continue through Judge→Deposit and file insight cards.
-
-For WebSearch agents within a light probe, launch them in parallel (one per gap) via the Agent tool. Each agent returns: candidate paper(s) with title, authors, year, journal, and a 2-3 sentence summary.
+Phase 2 therefore produces probe-plan suggestions, not papers: for each Phase-1 gap
+write the one-line Need (+ Why + Route hint: single-lookup → ENRICH; landscape
+→ discovery Review; claim question → mode full) and hand the list to the hub.
+"light"/"full" mean ONLY the gateway modes (light = explore+gather, full =
++judge) — never an inline shortcut tier.
 
 
 ## Phase 3: CANDIDATE → _CITATION_
 
-Write search results as 🔍 CANDIDATE entries in `_CITATION_N-section.md`.
+Write harvested results (from the gateway's pick_list, via HARVEST above) as 🔍 CANDIDATE entries in `_CITATION_N-section.md`.
 
 ### Candidate entry format (agent-found, NOT in .bib yet)
 
@@ -439,10 +453,11 @@ Venue norm: [venue-specific sentence-with-cite ratio]
 
 ## Density by paragraph
 
-| P | Sentences | Cited | Keys | Density | Note |
-|---|---|---|---|---|---|
-| P1 | 7 | 4 | 5 | 0.71 | ... |
-| P2 | 5 | 1 | 2 | 0.40 | ... |
+(bullet lines, one per paragraph — NEVER a markdown table; the harvest
+acceptance grep `grep -c '^|' == 0` runs on this whole file)
+
+- P1: 7 sentences · 4 cited · 5 keys · density 0.71 — <note>
+- P2: 5 sentences · 1 cited · 2 keys · density 0.40 — <note>
 
 ## Open items
 
@@ -464,10 +479,12 @@ Organization rules:
   haipipe-paper-probe-display      ← display, 0-displays/ units
 ```
 
-The three do NOT share one shape — each has its own lifecycle:
-- citation: AUDIT → SEARCH → CANDIDATE → PLACE → REVIEW
-- values:   AUDIT → TRACE → CANDIDATE → PLACE → REVIEW
-- display:  AUDIT → PLAN → ROUTE → LINK → REVIEW
+All three are HARVESTERS (the harvest step of the one probe pipeline — they
+follow pointers the gateway return names, never find things), each with its
+own document lifecycle:
+- citation: AUDIT → ROUTE → CANDIDATE(harvest) → PLACE → REVIEW
+- values:   AUDIT → ROUTE → CANDIDATE(harvest) → PLACE → REVIEW
+- display:  AUDIT → PLAN(route via probe) → LINK(harvest) → REVIEW
 
 Each owns one working-doc type. All three are fully automatic (human review happens in CHECK only).
 
@@ -476,10 +493,9 @@ Each owns one working-doc type. All three are fully automatic (human review happ
 
 | If the author wants ... | Use |
 |---|---|
-| Probe citations for a section (search + candidate + place) | **this skill**, Phase 1-4 (automatic) |
+| Probe citations for a section (audit + route + harvest + place) | **this skill**, Phase 1-4 (automatic) |
 | Pre-submission citation walk | **this skill**, Phase 5 |
-| Broad literature search (field landscape) | /haipipe-discovery |
-| Claim-level evidence question | /haipipe-probe |
+| ANY citation acquisition (single lookup, topic, landscape, claim) | the PROBE hub → gateway (the only door) |
 | Quick bib hygiene (placeholders, duplicates) | /citation-verifier |
 | Cross-model autonomous citation audit | /citation-audit |
 

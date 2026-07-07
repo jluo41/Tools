@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-revise-content
-description: "Review and edit the prose CONTENT of an existing draft at section -> paragraph -> sentence. REVISE phase (fully automatic). Applies changes directly, leaves %% {CC-content}: comments explaining WHY each change was made for CHECK review. Self-contained: carries its own structure/claim/flow checks. Reads REF/prose-quality.md for universal rules. Trigger: edit content, review content, tighten section, restructure paragraphs, /haipipe-paper-revise-content."
+description: "Review and edit the prose CONTENT of an existing draft at section -> paragraph -> weave -> sentence. REVISE phase (fully automatic). Applies changes directly, leaves %% {CC-content}: comments explaining WHY each change was made for CHECK review. Self-contained: carries its own structure/claim/flow checks INCLUDING the weave step (paragraph-to-paragraph flow: arc, hinges, rhythm — absorbed from the retired revise-weaving skill). Reads REF/prose-quality.md for universal rules. Trigger: edit content, review content, tighten section, restructure paragraphs, weave, paragraph flow, transitions, /haipipe-paper-revise-content."
 argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.1.1"
+  version: "1.2.0"
   last_updated: "2026-07-07"
-  summary: "REVISE worker: edit prose CONTENT at section->¶->sentence, change directly + leave why-comments. Self-contained structure/claim/flow checks. Fully automatic."
+  summary: "REVISE worker: edit prose CONTENT at section->¶->weave->sentence, change directly + leave why-comments. Absorbs the retired revise-weaving skill (¶-flow: arc/hinges/rhythm, ref/weaving.md). Fully automatic."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -38,11 +38,12 @@ Trivial changes (whitespace, marker fixes) do not need comments. Only explain ch
 
 ## The pass, top-down
 
-Work **section -> paragraph -> sentence**. Get the section's job right, then each paragraph's point, then the sentences. Fixing sentences inside a paragraph that should not exist is wasted work.
+Work **section -> paragraph -> weave -> sentence**. Get the section's job right, then each paragraph's point, then how the paragraphs connect, then the sentences. Fixing sentences inside a paragraph that should not exist is wasted work.
 
 1. **Section** -- state the section's one job in a sentence; make the paragraph banner skeleton (`grep '^% Para '`) tell the section's story; fix boundaries and order.
 2. **Paragraph** -- one paragraph = one point (its banner's point); topic sentence first; merge/split so each banner is true.
-3. **Sentence** -- one assertion each; cut filler; concrete over vague; one term per concept.
+3. **Weave** -- paragraph-to-paragraph flow: ARC (order/logic/redundancy, 🔴 first), HINGES (each Pn->Pn+1 seam picks up what Pn put down; content linkage, never bare connectives), RHYTHM (role variety). Method + severity discipline + role vocabulary: `ref/weaving.md` (merged from the retired revise-weaving skill, JL 2026-07-07).
+4. **Sentence** -- one assertion each; cut filler; concrete over vague; one term per concept.
 
 ## Flag, don't fabricate
 
@@ -67,4 +68,7 @@ These are grep targets for the PROBE phase (values and citation workers). Leavin
 ## Reference
 
 - `ref/content-edit.md` -- the section / paragraph / sentence checklists in full.
+- `ref/weaving.md` -- the weave step: paragraph-flow diagnosis (ARC / HINGES / RHYTHM, severity + roles).
+- `ref/write-principles.md` -- condensed revision rule sheet (comment preservation, hard rules).
+- `ref/example-intro-logic-flow.txt` -- worked logic-flow example for an intro.
 - `../../REF/prose-quality.md` -- universal prose rules.

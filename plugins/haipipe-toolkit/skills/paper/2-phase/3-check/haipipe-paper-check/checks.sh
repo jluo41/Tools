@@ -22,6 +22,10 @@
 #                            for LaTeX errors (opt-in; slow; needs a TeX toolchain)
 #
 # Exit code: 0 if no ❌ (FAIL) items, 1 if any ❌. ⚠️ never fails the run.
+# ❌ tier: em-dash, TODO/FIXME, bibtex-in-md, broken \cite, broken \ref, compile.
+# ⚠️ tier: AI-voice, orphan \label, Pn.Sn sequence, cite-with-no-bib-found.
+# Caveat: .bib discovery is bounded by --depth; a split .bib deeper than DEPTH
+# makes its keys report as broken \cite — raise --depth rather than trusting a red.
 # ============================================================================
 set -uo pipefail
 
@@ -37,8 +41,9 @@ DEPTH=2
 COMPILE=0
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --md) shift; [[ -n "${1:-}" ]] && MD_FILES+=("$1") ;;
-    --depth) shift; DEPTH="${1:-2}" ;;
+    --md) shift; if [[ -z "${1:-}" || "${1:-}" == --* ]]; then echo "--md needs a file argument" >&2; exit 2; fi; MD_FILES+=("$1") ;;
+    --depth) shift; DEPTH="${1:-2}"
+             if ! [[ "$DEPTH" =~ ^[0-9]+$ ]]; then echo "--depth needs a numeric argument, got: $DEPTH" >&2; exit 2; fi ;;
     --compile) COMPILE=1 ;;
     *) echo "unknown arg: $1" >&2; exit 2 ;;
   esac
@@ -65,20 +70,25 @@ echo "# target: $TARGET   tex files: ${#TEX_FILES[@]}   md files: ${#MD_FILES[@]
 echo "─────────────────────────────────────────────"
 
 # ── REVISE: em-dashes (comments stripped so %% ---- Pn.Sn ---- markers don't hit)
+#    ❌ FAIL, not ⚠️: the house rule is absolute (prose-quality.md), same tier as
+#    TODO markers (JL 2026-07-07: "统一提议" on making the exit code match the rule).
 emdash=$(for f in "${TEX_FILES[@]}"; do
   awk -v F="$f" '{ l=$0; sub(/(^|[^\\])%.*$/,"",l); if (l ~ /---/ || l ~ /—/) printf "%s:%d:%s\n", F, NR, $0 }' "$f" 2>/dev/null
 done)
 if [[ -z "$emdash" ]]; then
   echo "✅ no em-dashes"
 else
-  echo "⚠️ em-dashes found:"; echo "$emdash" | sed 's/^/    /'
+  echo "❌ em-dashes found (recast as commas/colons/parens):"; echo "$emdash" | sed 's/^/    /'; FAIL=1
 fi
 
 # ── REVISE: AI-voice tells (high-signal only; noisy connectives like
 #    Furthermore/Moreover/Additionally are intentionally EXCLUDED — they're
 #    legitimate in academic prose and drowned the real tells on live papers)
 AI_TELLS='delve|tapestry|realm|seamless|showcase|intricate|nuanced|utilize|underscore|leverage'
-aivoice=$(for f in "${TEX_FILES[@]}"; do grep -nHiE "\b($AI_TELLS)\b" "$f" 2>/dev/null; done)
+# comments stripped (same as em-dash): a "delve" inside a % comment is noise, not prose
+aivoice=$(for f in "${TEX_FILES[@]}"; do
+  awk -v F="$f" -v P="$AI_TELLS" 'BEGIN{IGNORECASE=1} { l=$0; sub(/(^|[^\\])%.*$/,"",l); if (l ~ ("\\<(" P ")\\>")) printf "%s:%d:%s\n", F, NR, $0 }' "$f" 2>/dev/null
+done)
 if [[ -z "$aivoice" ]]; then
   echo "✅ no AI-voice tells"
 else
@@ -86,16 +96,22 @@ else
 fi
 
 # ── META: TODO markers ───────────────────────────────────────────────────────
-todos=$(for f in "${TEX_FILES[@]}"; do grep -nHE '\b(TODO|FIXME|XXX)\b' "$f" 2>/dev/null; done)
+#    Comments deliberately NOT stripped: % TODO[values] / % TODO[cite] flags are
+#    planted in comments by DRAFT and MUST block the gate until PROBE fills them.
+#    XXX deliberately EXCLUDED: it collides with double-blind anonymization
+#    placeholders (\author{XXX}, "XXX University") that are legitimate at submission.
+todos=$(for f in "${TEX_FILES[@]}"; do grep -nHE '\b(TODO|FIXME)\b' "$f" 2>/dev/null; done)
 if [[ -z "$todos" ]]; then
-  echo "✅ no TODO/FIXME/XXX markers"
+  echo "✅ no TODO/FIXME markers"
 else
   echo "❌ TODO markers remain:"; echo "$todos" | sed 's/^/    /'; FAIL=1
 fi
 
 # ── PROBE/citation: no bibtex in markdown working docs ───────────────────────
 if [[ ${#MD_FILES[@]} -gt 0 ]]; then
-  bibleak=$(for f in "${MD_FILES[@]}"; do [[ -f "$f" ]] && grep -nHE '^\s*@(article|inproceedings|book|misc|incollection|phdthesis|techreport)\{' "$f" 2>/dev/null; done)
+  # any entry type: @word{key, — anchored to the entry-plus-brace-plus-key-comma
+  # shape so venue names with bare @ (e.g. "KHD@IJCAI workshop") don't false-hit
+  bibleak=$(for f in "${MD_FILES[@]}"; do [[ -f "$f" ]] && grep -nHE '^\s*@[A-Za-z]+\{[^,}]+,' "$f" 2>/dev/null; done)
   if [[ -z "$bibleak" ]]; then
     echo "✅ no bibtex in markdown (bibtex lives ONLY in .bib)"
   else
@@ -105,8 +121,14 @@ fi
 
 # ── META/PROBE: broken \cite (key not in any .bib) ───────────────────────────
 mapfile -t BIB_FILES < <(find "$PAPER_DIR" -maxdepth "$DEPTH" -name '*.bib' -not -path '*/_archive/*' -not -path '*/_external/*' 2>/dev/null | sort)
+has_cites=$(for f in "${TEX_FILES[@]}"; do strip_comments "$f"; done | grep -cE '\\cite' || true)
 if [[ ${#BIB_FILES[@]} -eq 0 ]]; then
-  echo "-- \\cite check skipped (no .bib found under $PAPER_DIR)"
+  if [[ "$has_cites" -gt 0 ]]; then
+    # NOT a silent skip: \cite with no discoverable .bib is a real gap
+    echo "⚠️ \\cite present but NO .bib found under $PAPER_DIR (depth $DEPTH) — missing bib, or raise --depth"
+  else
+    echo "-- \\cite check skipped (no .bib and no \\cite in target)"
+  fi
 else
   bibkeys=$(grep -hoE '@[A-Za-z]+\{[^,]+' "${BIB_FILES[@]}" 2>/dev/null | sed -E 's/@[A-Za-z]+\{//; s/[[:space:]]//g' | sort -u)
   citekeys=$(for f in "${TEX_FILES[@]}"; do strip_comments "$f"; done \

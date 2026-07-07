@@ -62,6 +62,8 @@ haipipe-paper-draft          draft a new section from PAPER_PLAN.md outline
 
 `/haipipe-paper-revise` is a sibling, not a child. haipipe-paper-revise-weaving routes to it when the user asks for a broad multi-pass review rather than a single diagnose + plan pass.
 
+(2026-07-07: skill RETIRED per JL "maybe just go into Content" — flow/transition diagnostics merged into haipipe-paper-revise-content; this folder is archived.)
+
 ---
 
 Routing

@@ -4,7 +4,7 @@ description: "CHECK phase worker (internal). Called by stage skills as the ONLY 
 argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent
 metadata:
-  version: "1.6.0"
+  version: "1.7.0"
   last_updated: "2026-07-07"
   summary: "CHECK phase worker (internal). The ONLY human-involved phase. Runs sub-checkers (./checks.sh for the deterministic ones), seeds > CHECK: comments in-file at every flag site, and gates human review."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -22,7 +22,7 @@ CHECK phase worker. Called by stage skills as the auto-gate for the DPRC lifecyc
 /haipipe-paper section-edit §3  → section-edit skill calls this internally
 ```
 
-The check has three parts: (1) **MECHANICAL** -- run automated sub-checkers, produce a pass/fail report; (2) **SEED `> CHECK:` COMMENTS** -- plant every flagged item at its exact spot in the working doc so the human's in-file pass is guided by the file itself; (3) **HUMAN** -- walk the `> CHECK:` comments, answer with `> USER:` comments, decide (proceed / restart / accept). On restart, the restarted phase reads the `> CHECK:` comments + their `> USER:` replies and responds to them.
+The check has three parts: (1) **MECHANICAL** -- run automated sub-checkers, produce a pass/fail report; (2) **SEED `> CHECK:` COMMENTS** -- plant every flagged item at its exact spot in the working doc so the human's in-file pass is guided by the file itself; (3) **HUMAN** -- walk the `> CHECK:` comments, answer with `> USER:` comments, decide (proceed / restart / new round / accept / park -- see What Each Decision Does). On restart, the restarted phase reads the `> CHECK:` comments + their `> USER:` replies and responds to them.
 
 
 ## How It Works
@@ -45,9 +45,11 @@ The check has three parts: (1) **MECHANICAL** -- run automated sub-checkers, pro
                                 section done               agent re-runs     with known
                                                            phase, reads      issues
                                                            threads + replies
+        (diagram shows the 3 common branches; 🆕 NEW ROUND and ⏸️ PARK
+         complete the 5 outcomes -- see What Each Decision Does)
 ```
 
-1. **Run**: execute all applicable sub-checkers. For the deterministic text-match checks (em-dash, AI-voice tells, TODO, bibtex-in-markdown, broken `\cite`, broken/orphan `\label`↔`\ref`, Pn.Sn sequence) run `./checks.sh <tex-or-dir> [--md <working-doc>] [--depth N] [--compile]` and paste its ✅/⚠️/❌ lines (`--compile` wraps `./1-compile.sh`; `--depth` widens the tex/bib scan for deep layouts). Judgment checks (citation support, value provenance, display correctness) stay manual.
+1. **Run**: execute all applicable sub-checkers. For the deterministic text-match checks (em-dash, AI-voice tells, TODO, bibtex-in-markdown, broken `\cite`, broken/orphan `\label`↔`\ref`, Pn.Sn sequence) run `./checks.sh <tex-or-dir> [--md <working-doc>] [--depth N] [--compile]` and paste its ✅/⚠️/❌ lines (`--compile` wraps `./1-compile.sh`; `--depth` widens the tex/bib scan for deep layouts). For the PROBE-card invariants (planned/dispatched cards, unresolved refs, owed harvest lanes, bibtex/tables in working docs) run `sh ../../1-probe/haipipe-paper-probe/check-probe-cards.sh <paper_root>` — any FAIL line means the gate CANNOT go green (a `status: planned` card or a `harvest: OWED` lane at this gate = a probe that never ran). Judgment checks (citation support, value provenance, display correctness) stay manual.
 2. **Report**: present results as a structured pass/fail table (see Report Format).
 2.5. **Seed `> CHECK:` comments**: every flagged/🔍/⚠️ item is planted as ONE `> CHECK:` comment at the exact spot in the working doc (outline / _CITATION_ / _VALUES_ / _DISPLAY_ / tex) it refers to -- one line stating the issue + the judgment needed, with concrete values, never an abstract description. The chat report is the map; the in-file `> CHECK:` comments are what the human actually walks. A CHECK that hands over with a clean file and a chat-only report is DEFECTIVE (test-123333333: JL entered 0-seed.md to review and found nothing to guide the pass).
 3. **Human review**: the human walks the `> CHECK:` comments and replies `> USER:` under each (see Human Actions During CHECK for the per-track steps).
@@ -138,6 +140,10 @@ Since PROBE runs automatically, some items require human action during CHECK (se
 | sentence count matches | count Pn.Sn markers vs outline sentence count | counts match |
 | outline ↔ tex synced | compare outline sentences vs tex sentences | content matches |
 | banner points match content | read each `% Para [X.P#]` and verify the ¶ below matches | all match |
+
+(em-dash is a ❌ FAIL in checks.sh -- absolute house rule, same tier as TODO;
+AI-voice and Pn.Sn stay ⚠️ because they have legitimate false-positive room.
+JL 2026-07-07: "统一提议。")
 
 ### 📐 META checks — verify whole-section integrity
 

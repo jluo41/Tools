@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-revise
-description: "REVISE phase worker (internal). Called by stage skills to rewrite draft prose to venue-quality after PROBE. REVISE = the agent CHANGES the prose directly AND leaves %% {CC-*}: why-comments explaining each change; the human gives preferences in CHECK. Dispatches content, humanizer, weaving, and results workers. Fully automatic (no human gate). Users invoke stage skills (pitch, narrative, section-edit...), not this skill directly."
+description: "REVISE phase worker (internal). Called by stage skills to rewrite draft prose to venue-quality after PROBE. REVISE = the agent CHANGES the prose directly AND leaves %% {CC-*}: why-comments explaining each change; the human gives preferences in CHECK. Dispatches content, humanizer, and results workers (weaving merged into content 2026-07-07). Fully automatic (no human gate). Users invoke stage skills (pitch, narrative, section-edit...), not this skill directly."
 argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.2.0"
+  version: "1.3.0"
   last_updated: "2026-07-03"
-  summary: "REVISE phase worker (internal). Called by stage skills to rewrite draft prose to venue-quality: change directly, leave why-comments. Dispatches content/humanizer/weaving/results workers."
+  summary: "REVISE phase worker (internal). Called by stage skills to rewrite draft prose to venue-quality: change directly, leave why-comments. Dispatches content/humanizer/results workers (weaving merged into content)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -31,7 +31,6 @@ REVISE = rewrite draft sentences to venue-quality prose, applying changes direct
 ```
 haipipe-paper-revise-content              WHAT sentences say (accuracy, completeness, claims)
 haipipe-paper-revise-humanizer            HOW sentences sound (de-AI audit, voice)
-haipipe-paper-revise-weaving              HOW paragraphs connect (transitions, flow, arc)
 haipipe-paper-revise-results              results-specific (figure narration, effect reporting)
 ```
 
@@ -39,7 +38,7 @@ All four apply rules directly. No comment-first protocol, no human gate. The age
 
 ## Universal rules
 
-All revise workers read and enforce `REF/prose-quality.md`:
+All revise workers read and enforce `../../REF/prose-quality.md`:
 
 - One idea per sentence
 - No em-dashes
@@ -61,10 +60,9 @@ Read the section outline and tex to determine which workers to run:
 |---|---|---|
 | content | always | never |
 | humanizer | always | never (AI-authored prose reliably contains patterns) |
-| weaving | section has 3+ paragraphs | single-paragraph section |
 | results | section is Results or contains figure/table narration | non-results sections |
 
-When no specific worker is named, run in order: content → humanizer → weaving → results (if applicable).
+When no specific worker is named, run in order: content (incl. its weave step for ¶-flow) → humanizer → results (if applicable).
 
 ## Automation
 
@@ -94,7 +92,6 @@ DRAFT → PROBE → REVISE (this) → CHECK
                     │
                     ├── haipipe-paper-revise-content     (WHAT: accuracy, claims)
                     ├── haipipe-paper-revise-humanizer   (HOW: de-AI voice)
-                    ├── haipipe-paper-revise-weaving     (HOW: paragraph flow)
                     └── haipipe-paper-revise-results     (results-specific)
 ```
 
@@ -105,7 +102,7 @@ REVISE reads PROBE outputs (citations placed, values verified, displays linked) 
 ```
 status:    ok | blocked
 section:   <section-name>
-workers:   content <status> │ humanizer <status> │ weaving <status> │ results <status>
+workers:   content <status> │ humanizer <status> │ results <status>
 next:      <suggested command>
 ```
 
@@ -118,7 +115,7 @@ Stage skills call this as their REVISE phase:
 |---|---|
 | haipipe-paper-pitch | cover letter prose (readability rules) |
 | haipipe-paper-narrative | story beat prose (arc/flow coherence) |
-| haipipe-paper-section-edit | section tex (full revise: content + humanizer + weaving + results) |
+| haipipe-paper-section-edit | section tex (full revise: content + humanizer + results) |
 
 Note: seed and claims produce argument docs that skip REVISE (markdown only, no venue-quality prose needed).
 

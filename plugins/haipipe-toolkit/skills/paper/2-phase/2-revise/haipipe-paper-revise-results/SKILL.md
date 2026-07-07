@@ -1,9 +1,11 @@
 ---
 name: haipipe-paper-revise-results
 description: "REVISE phase worker for Results sections. Fully automatic. Repairs subsection flow, paragraph openings, reader guidance, and argumentative progression when figures/evidence/claims are fixed but narration reads figure-by-figure. Applies fixes directly, leaves %% {CC-results}: comments explaining WHY for CHECK review. Trigger: results revision, fix results flow, /haipipe-paper-revise-results."
+argument-hint: "[section-name-or-number] [paper-path]"
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "2.1.0"
-  last_updated: "2026-07-03"
+  version: "2.2.0"
+  last_updated: "2026-07-07"
   summary: "REVISE worker for Results sections. Fixes narration flow. Fully automatic."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -13,6 +15,8 @@ metadata:
 ## Overview
 
 Use this skill for late-stage Results revision when the science is mostly stable but the writing architecture is not. It is narrower than `haipipe-paper-draft` and `haipipe-paper-edit-optimizer`: the job here is to repair subsection titles, bridge paragraphs, paragraph openings, and local argumentative flow.
+
+Before you start, read the shared prose rules: `../../REF/prose-quality.md` (one idea per sentence, no em-dash, compress not split, no AI voice, <=6 sentences/paragraph, Pn.Sn markers) — all revise workers enforce them; the checks below are results-specific ADDITIONS, not replacements.
 
 Use `haipipe-paper-draft` for general prose drafting or rewriting (venue style comes from the pinned `_venue/playbook-*` pack). Use `haipipe-paper-edit-optimizer` when the claim hierarchy, evidence chain, or figure logic is still unstable. Use this skill when the section is largely right but still reads like stitched figure captions rather than a controlled argument.
 

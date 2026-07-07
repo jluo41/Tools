@@ -142,3 +142,6 @@
 [submodule "papers/Paper-SuitableMessageForRx-JAMANO"]
 	path = papers/Paper-SuitableMessageForRx-JAMANO
 	url = git@github.com:jluo41/Paper-SuitableMessageForRx-JAMANO.git
+[submodule "references/academic-humanizer"]
+	path = references/academic-humanizer
+	url = https://github.com/AIScientists-Dev/academic-humanizer

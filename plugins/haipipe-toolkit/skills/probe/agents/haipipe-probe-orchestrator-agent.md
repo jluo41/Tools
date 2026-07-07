@@ -10,8 +10,8 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "2.0.5"
-  last_updated: "2026-07-06"
+  version: "2.0.6"
+  last_updated: "2026-07-07"
   summary: "Evidence gateway — folderless probe. SWEEP over discoveries/tasks/insights, shape decision (reuse|enrich|fresh), execution via discovery/task agents, full-mode judgment via probe-reviewer; contract+receipt+verdict live in the caller's PPNN card. Zero project-side writes by this agent."
   # changelog: ./CHANGELOG.md (agent-scoped, never loaded at invocation)
 ---
@@ -124,7 +124,11 @@ takeaways: 3-5 lines, EACH ending with a source anchor ("(sources.md S05)",
 pick_list: for citation harvest, or []. Pointers, not substance:
            {anchor: <sources.md S##>, why: "<one line>"}; note deliberately
            skipped groups. The caller's harvest subagent expands entries in
-           its own clean context.
+           its own clean context. Same pointer discipline for the other two
+           harvest lanes: when the need was value-shaped or display-shaped,
+           name the value-bearing files / display units EXPLICITLY in refs
+           (the caller records them as value_refs/unit_refs lane lines with
+           harvest: OWED and dispatches the matching harvester).
 next:      what the caller should land (card status, claims-ledger flip)
 ```
 

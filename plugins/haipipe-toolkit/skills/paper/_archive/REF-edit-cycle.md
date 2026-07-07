@@ -1,3 +1,13 @@
+(archived from 2-phase/REF/ on 2026-07-07 per JL "挪走吧。" — taught the retired comment-first 5-stage cycle)
+
+# 4-edit / shared — the edit cycle (5 stages) … Stages 2–5 are collaborative…"
+> 提议: 挪去 paper/_archive/(内容作为历史保留),REF/ 里不留;若其中"人类投入可调"的思想值得留,提炼一段进 wiki/02 或 prose-quality 即可。
+> 例子: 新 session 被 REF/ 目录引导读到它,会按 comment-first 停下等人——正是 revise-content CHANGELOG 1.0.0 里已废除的行为回魂。
+> 证据: prose-quality(活契约)+ DPRC CHANGELOG(1.0.0 废除记录)双重压倒;文内指涉全部 404。
+> 风险: 归档后若有别处链接 edit-cycle.md 会断(A 桶 grep 未见活引用,仅 REF/ 自身)。
+> 问你: A=整档挪 paper/_archive/(推荐) / B=就地重写成 DPRC 相位引擎参考?
+> JL:
+
 # 4-edit / shared — the edit cycle (5 stages)
 
 One edit-cycle takes a draft through five stages. Stages 2–5 are **collaborative**:

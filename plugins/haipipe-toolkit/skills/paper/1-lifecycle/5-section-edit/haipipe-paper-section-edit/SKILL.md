@@ -225,7 +225,6 @@ This skill is a STAGE (the WHAT: per-section editing). It dispatches to PHASE wo
   2-revise/
     haipipe-paper-revise-content        content review (WHAT sentences say)
     haipipe-paper-revise-humanizer      de-AI audit (HOW sentences sound)
-    haipipe-paper-revise-weaving        paragraph flow (HOW paragraphs connect)
     haipipe-paper-revise-results  results-specific revision
   3-check/
     haipipe-paper-check               6-axis verification gate (human + agent)
@@ -429,7 +428,6 @@ haipipe-paper-lifecycle                  0-draft/
         │   hub dispatches to              2-revise/ (agent-only, .md + .tex)
         │   2-phase/ workers                 haipipe-paper-revise-content (WHAT)
         │   based on frontier phase          haipipe-paper-revise-humanizer (HOW: de-AI)
-        │                                    haipipe-paper-revise-weaving (HOW: flow)
         │
         │                                  3-check/ (human + agent gate)
         │                                    haipipe-paper-check (6-axis)

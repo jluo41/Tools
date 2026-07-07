@@ -4,7 +4,13 @@ haipipe-paper-check — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
-## [1.6.0] — 2026-07-07
+## [1.7.0] — 2026-07-07
+
+Changed (skillset-diagnose FIX round; threads T1/T10 + findings D2-D9)
+- Gate wiring (T1, JL: "同意你的意见"): step 1 Run now ALSO runs the probe checker `check-probe-cards.sh <paper_root>` — a FAIL line (planned/dispatched card, unresolved ref, `harvest: OWED` lane, bibtex/table in a working doc) means the gate cannot go green. Closes the seed-stage incident class (probe ✅ shown over an unrun probe; three sibling docs had promised this wiring, code was absent).
+- em-dash upgraded ⚠️→❌ in checks.sh (T10, JL: "统一提议。") — absolute house rule, same tier as TODO; AI-voice/Pn.Sn stay ⚠️ (false-positive room). SKILL row note added.
+- Decision enumeration: intro line 25 (D2) and the flow diagram (D3) reconciled to the full 5 outcomes (proceed/restart/new round/accept/park).
+- checks.sh hardening: bibtex-leak grep matches ANY entry type via `@word{key,` shape (D4; was 7 hardcoded types); XXX dropped from TODO tier — collides with double-blind placeholders (D5); `\cite` present + no .bib found is now a loud ⚠️ with a --depth hint, not a silent skip, and the split-bib-below-depth false-positive caveat is documented (D6); AI-voice grep runs on comment-stripped text like em-dash (D8); `--depth`/`--md` argument parsing guarded against flag-swallowing (D9).
 
 Changed (skill-quality pass: contract was sound but prose was ~412 lines with each rule stated 4-6×, guaranteeing drift on the next edit)
 - De-duplicated: "CHECK is the ONLY human phase" collapsed from ~6 statements to 2 (intro + one anti-pattern); bibtex rule collapsed from ~6 to 2 (one bolded rule + one anti-pattern, anti-patterns 387/388 merged); the per-track "human action during CHECK" blocks that duplicated the standalone section removed from the Sub-Checker tables and folded into a single **Human Actions During CHECK** home; the "three parts" list folded into the intro so the flow is shown once as diagram + one step list.

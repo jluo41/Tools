@@ -4,6 +4,11 @@ haipipe-paper-claims — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [4.1.0] — 2026-07-07
+
+Added (skillset-diagnose T3, JL: "同意。")
+- FORWARD reader clause: the `[FORWARD -> CLAIMS]` pointers that seed/draft register in `_LOG_0-seed.md` (internal-data probes deferred out of seed) now have a consumer — claims DRAFT opens by grepping seed's `_LOG` for them; each becomes a PP entry in Probes or is explicitly declined; a new done-criterion fails CHECK on any unconsumed pointer. Closes the writer-without-reader gap (A5/B9): the deferred probe used to die silently at the seed→claims handoff.
+
 ## [4.0.0] — 2026-07-06
 
 Changed (major restructure: claims as evidence campaign brain)

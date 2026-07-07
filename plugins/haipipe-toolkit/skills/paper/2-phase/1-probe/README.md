@@ -1,54 +1,38 @@
-paper/sections — Per-Section Playbooks (Dimension B)
-=======================================================
+1-probe — the PROBE phase (hub + three harvesters)
+====================================================
 
-Each playbook here is **reference material for a specific section**:
-which angles exist, common framings, what to avoid, what a strong
-version looks like. Read by lifecycle skills (3-write / 4-revise /
-5-review) when they target a particular .tex file under `0-sections/`.
-
-Each playbook is a thin SKILL.md with slug `section-<name>` — invocable
-directly for guidance, or pulled in by a stage skill as context.
-
-Layout
-------
+ONE probe pipeline (JL 2026-07-07 harvester ruling). Acquisition has one door;
+the workers are the HARVEST step, transcribing landed evidence into the
+paper-side working docs. Paper-side may FOLLOW pointers; only the gateway may
+FIND things.
 
 ```
-sections/
-├── section-intro/           hooks, motivation framings, contribution claim
-├── section-methods/         formal vs operational angles, reproducibility
-├── section-results/         story arc, claim mapping, figure choice
-├── section-discussion/      limitation framing, implication framing, future-work
-├── section-abstract/        condensation strategies (which 3 sentences to keep)
-├── section-related-work/    positioning angles
-└── section-appendix/        which extras live in appendix vs main paper
+haipipe-paper-probe (hub)         BOOKKEEP → DISPATCH → TRANSLATE → VERIFY
+  ACQUIRE   Agent(haipipe-probe-orchestrator-agent)  ← the ONLY door
+            → gateway SWEEP (reuse|enrich|fresh) → discovery/task orchestrators
+            → evidence LANDS in discoveries/ tasks/ insights/ 0-displays/
+  HARVEST   per-lane, from the return's pointers, OWED→accepted in the PP card:
+    haipipe-paper-probe-citation   pick_list  → _CITATION_{stage}.md
+    haipipe-paper-probe-values     value_refs → _VALUES_{stage}.md
+    haipipe-paper-probe-display    unit_refs  → _DISPLAY_{stage}.md + tex links
 ```
 
-These map to file groups under `0-sections/` in a real paper folder:
+The PP card (`0-lifecycle/<stage>/_PROBE/PPNN_*.md`, anatomy owned by
+`../../probe/haipipe-probe/SKILL.md`) is the single source of truth:
+need/route at BOOKKEEP, refs + takeaways + lane lines at TRANSLATE,
+verdict (full mode) for claims.
 
-```
-0-sections/00_abstract.tex          ← section-abstract
-0-sections/01_introduction.tex      ← section-intro
-0-sections/02*.tex (Results)        ← section-results
-0-sections/03*.tex (Discussion)     ← section-discussion
-0-sections/04*.tex (Methods)        ← section-methods
-0-sections/05_back-matter.tex       ← (covered by section-discussion / -appendix)
-0-sections/A_*.tex .. E_*.tex       ← section-appendix
-```
+Enforcement is mechanical (`check-probe-cards.sh`, run at VERIFY and re-run by
+the CHECK gate): planned/dispatched cards FAIL (probe-not-run), `harvest: OWED`
+lane lines FAIL (harvest skipped), unresolved refs FAIL, tables/bibtex in
+cards or working docs FAIL. A green PROBE over any of these is a defect.
 
-What playbooks are NOT
------------------------
+Per-stage worker/mode map, seed/claims specifics, strip forms:
+`haipipe-paper-probe/ref/per-stage-dispatch.md`. Harvest dispatch + literal
+acceptance greps: `haipipe-paper-probe/ref/harvest-acceptance.md`.
 
-- NOT a writing skill — they don't produce prose. They provide guidance
-  consumed by writing/revising skills.
-- NOT venue-specific — venue conventions live in `_venue/` specialists.
-- NOT tied to a stage — the same intro playbook informs both writing
-  (3-write) and revising (4-revise).
+Not user-facing: users invoke stage skills (seed, claims, ...); stages call
+the hub; the hub dispatches the gateway and the harvesters.
 
-Open questions (not yet decided)
----------------------------------
-
-- Should there also be `section-title/` and `section-cover-letter/`?
-  Cover letter is in `0-extra/`, not `0-sections/`, so it may belong
-  elsewhere.
-- Are 7 sections enough? Real papers may have `limitations/`,
-  `ethics/`, `reproducibility/` as standalone sub-sections.
+(The per-section playbooks doc that previously occupied this file was
+migration debris; it is archived at `../../_archive/README-sections-playbooks.md`.)

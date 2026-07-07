@@ -4,6 +4,14 @@ haipipe-paper-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [3.1.0] — 2026-07-07
+
+Changed (Part-0 harvester ruling; JL: "they are the harveste agents to check the content and genearte the report accordingly. The don't need to restart the whole probe process, they are just one step within the whole probe" / "Yes, this is true! Pelase go ahead for it")
+- ONE-pipeline framing replaces "two route families": ACQUIRE (gateway, the only door) → HARVEST (citation/values/display, pointer-following transcribers). Paper-side may follow pointers; only the gateway may find things.
+- STEP 3 lane obligations: a return carrying harvestable content is FIRST written into the PP card as a lane line (`pick_list:`/`value_refs:`/`unit_refs:` · `harvest: OWED`), THEN the matching harvester subagent is dispatched (cheap tier, reads its worker SKILL headless — the citation-harvest pattern extended to all three lanes) and mechanically accepted; acceptance flips the line to `harvest: accepted (...)`. Fixes the seed-stage incident class (B5): a skipped harvest used to leave zero disk residue.
+- PROOF 3 extended: every lane line requires the harvester Agent call + acceptance-grep output in the reply.
+- STEP 4 / checker: check-probe-cards.sh now FAILs `status: planned|dispatched` cards (probe-not-run — the invariant three sibling docs promised, T1/B6), FAILs `harvest: OWED` lane lines, and scans working docs for bibtex/tables (B10). The CHECK gate re-runs it (wired in haipipe-paper-check 1.7.0).
+
 ## [3.0.2] — 2026-07-07
 
 Changed

@@ -1,24 +1,25 @@
 ---
 name: haipipe-paper-revise-humanizer
-description: "Remove AI-writing patterns from academic prose while preserving scholarly precision, evidence-tied claims, and venue-appropriate voice. Six-layer audit: (1) general AI-tells, (2) academic AI-tells, (3) preserve legitimate constructs, (4) claim-evidence discipline, (5) voice/venue matching, (6) funding-proposal mode (conditional). Fully automatic: applies fixes directly, leaves %% {CC-humanizer}: comments explaining WHY for CHECK review. Reads the academic-humanizer reference for the full pattern catalog. Trigger: humanize, de-AI, remove AI tells, academic voice, humanizer, /haipipe-paper-revise-humanizer."
+description: "Remove AI-writing patterns from academic prose while preserving scholarly precision, evidence-tied claims, and venue-appropriate voice. Six-layer audit: (1) general AI-tells, (2) academic AI-tells, (3) preserve legitimate constructs, (4) claim-evidence discipline, (5) voice/venue matching, (6) funding-proposal mode (conditional). Fully automatic: applies fixes directly, leaves %% {CC-humanizer}: comments explaining WHY for CHECK review. Reads its VENDORED ref/pattern-catalog.md for the full pattern catalog. Trigger: humanize, de-AI, remove AI tells, academic voice, humanizer, /haipipe-paper-revise-humanizer."
 argument-hint: "[section-or-file] [--grant] [--venue <venue>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "2.1.1"
+  version: "2.3.0"
   last_updated: "2026-07-07"
   summary: "De-AI academic prose via 6-layer audit. Fully automatic. REVISE worker."
-  source: "Based on AIScientists-Dev/academic-humanizer (MIT license). Reference copy at Tools/references/academic-humanizer/"
+  source: "Based on AIScientists-Dev/academic-humanizer (MIT license). Catalog VENDORED at ./ref/pattern-catalog.md (upstream submodule under references/ is provenance only)"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # haipipe-paper-revise-humanizer
 
-Remove AI-writing patterns from academic prose while preserving scholarly precision and voice. This is a REVISE worker that runs alongside `revise-content` (what sentences say) and `revise-weaving` (paragraph flow). This skill reviews HOW sentences sound.
+Remove AI-writing patterns from academic prose while preserving scholarly precision and voice. This is a REVISE worker that runs alongside `revise-content` (what sentences say + how paragraphs weave). This skill reviews HOW sentences sound.
 
 ## Reference
 
-The full pattern catalog lives in `Tools/references/academic-humanizer/SKILL.md`.
-Read it before every audit pass. It contains:
+The full pattern catalog is VENDORED in this skill: `ref/pattern-catalog.md`
+(+ `ref/before-after.md` worked examples). Read it before every audit pass.
+It contains:
 - 12+ general AI-tell patterns with before/after examples
 - 11 academic-specific AI-tell categories with examples
 - Constructs to preserve (hedging, passive voice, citations, numbers)
@@ -26,9 +27,11 @@ Read it before every audit pass. It contains:
 - Voice/venue matching guidance
 - Funding-proposal mode (NSF/NIH)
 
-Canonical path: `Tools/references/academic-humanizer/SKILL.md` (repo-root relative), i.e. `../../../../../../../references/academic-humanizer/SKILL.md` from this skill's folder.
-
-NOTE: if that catalog file is absent (the reference copy has not been vendored into this checkout), the inline **Six-layer audit** below is self-sufficient — apply it directly. Restoring the full catalog is a separate vendoring task, not a blocker for a humanizer pass.
+House rule (JL 2026-07-07): skills are SELF-CONTAINED — a SKILL never depends
+on `references/` content at runtime. The upstream source
+(AIScientists-Dev/academic-humanizer, a submodule under `references/`) is
+archival provenance only; refresh the vendored copy from it deliberately,
+never point at it from a workflow.
 
 ## Six-layer audit
 
@@ -104,13 +107,13 @@ Every empirical claim must: (a) be backed by a number/figure/table/citation, (b)
 
 ```
 REVISE phase:
-  revise-content     -> WHAT sentences say (structure, claims, flow)
+  revise-content     -> WHAT sentences say + HOW paragraphs weave
+                        (structure, claims, flow, transitions)
   revise-humanizer   -> HOW sentences sound (AI patterns, voice)  <- THIS
-  revise-weaving     -> HOW paragraphs flow (transitions, rhythm)
   revise-results     -> results-specific narration
 
-Typical order: content first, then humanizer, then weaving.
-Content decisions before language cleanup before paragraph flow.
+Typical order: content first (incl. its weave step), then humanizer.
+Content decisions before language cleanup.
 ```
 
 ## Venue-specific calibration

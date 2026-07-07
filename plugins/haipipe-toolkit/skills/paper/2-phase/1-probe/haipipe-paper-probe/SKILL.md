@@ -4,9 +4,9 @@ description: "PROBE phase worker (internal). Called by stage skills after DRAFT 
 argument-hint: "[from-buffer <paper_root> [PPNN] | stage-or-section [paper-path]]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.0.2"
+  version: "3.1.0"
   last_updated: "2026-07-07"
-  summary: "PROBE phase worker rebuilt as a 4-step procedure (BOOKKEEP -> DISPATCH -> TRANSLATE -> VERIFY), each step ending in a mandatory PROOF shown in the reply, plus a deterministic checker (check-probe-cards.sh) run at VERIFY and re-run by the stage gate. Reference prose moved to ref/. v3.0: enforcement is mechanical, not prose -- a step without its proof did not happen. v3.0.1 (post test-12334535): checker brace-aware; fresh dispatch forces background; no-bibtex grep anchored. v3.0.2: hard boundary clarified -- no inline search in PROBE (DRAFT may search for orientation; the line is card durability, not the verb)."
+  summary: "PROBE phase worker rebuilt as a 4-step procedure (BOOKKEEP -> DISPATCH -> TRANSLATE -> VERIFY), each step ending in a mandatory PROOF shown in the reply, plus a deterministic checker (check-probe-cards.sh) run at VERIFY and re-run by the stage gate. Reference prose moved to ref/. v3.0: enforcement is mechanical, not prose -- a step without its proof did not happen. v3.0.1 (post test-12334535): checker brace-aware; fresh dispatch forces background; no-bibtex grep anchored. v3.0.2: hard boundary clarified -- no inline search in PROBE. v3.1: harvester model (JL Part-0 ruling) -- ONE pipeline, workers are the HARVEST step; TRANSLATE writes per-lane OWED obligations into the card before paying them; PROOF 3 covers harvest; checker FAILs owed lanes + planned cards."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -16,16 +16,23 @@ Skill: haipipe-paper-probe (PROBE phase worker, internal)
 Called by stage skills (seed, claims, pitch, narrative, display, section-edit)
 after DRAFT to collect what the draft needs but does not have.
 The stage defines WHAT needs collecting; this skill defines HOW.
-Two route families:
+ONE pipeline (JL 2026-07-07 harvester ruling: the workers "are the harvester
+agents... they don't restart the whole probe process, they are just one step
+within the whole probe"):
 
 ```
-document workers (paper-side)    haipipe-paper-probe-citation -> _CITATION_{stage}.md
-                                 haipipe-paper-probe-values   -> _VALUES_{stage}.md
-                                 haipipe-paper-probe-display  -> _DISPLAY_{stage}.md
-evidence gateway (project-side)  /haipipe-probe, reached ONLY via
-                                 Agent(haipipe-probe-orchestrator-agent)
-                                 -> discovery/task during its Gather, insight at Deposit
+ACQUIRE (project-side, the ONLY door)   Agent(haipipe-probe-orchestrator-agent)
+                                        -> gateway SWEEP (reuse|enrich|fresh)
+                                        -> discovery/task orchestrators
+                                        -> evidence LANDS in discoveries/ tasks/ insights/
+HARVEST (paper-side, pointer-following) citation  pick_list  -> _CITATION_{stage}.md
+                                        values    value refs -> _VALUES_{stage}.md
+                                        display   unit refs  -> _DISPLAY_{stage}.md + tex links
 ```
+
+Paper-side may FOLLOW pointers the return names; only the gateway may FIND
+things. A harvester that notices a gap reports it as a probe-plan suggestion,
+never fills it itself.
 
 Not user-facing: users invoke stage skills; stages call this.
 Which stage runs which workers/mode, seed/claims specifics, section-edit
@@ -100,14 +107,28 @@ PROOF 2: the literal Agent(...) call(s) visible in the transcript -- one per PP 
   means the evidence never landed project-side: the card goes
   `status: failed (no project-side evidence)` and the phase is NOT green.
   Takeaways with empty `refs:` are the exact shortcut this contract prevents.
-- `pick_list` in the return -> dispatch the citation harvest subagent and
-  accept MECHANICALLY per `ref/harvest-acceptance.md` (run the greps, never eyeball).
+- **LANE OBLIGATIONS -- write the debt into the card FIRST, then pay it.**
+  When the return carries harvestable content, IMMEDIATELY record it on the
+  card as a lane line (this is what makes a skipped harvest checkable):
+  ```
+  - pick_list:  S01,S02,S03 · harvest: OWED        (citation lane)
+  - value_refs: tasks/T03/results/summary.csv · harvest: OWED   (values lane)
+  - unit_refs:  0-displays/fig-overview · harvest: OWED         (display lane)
+  ```
+  Then dispatch the matching harvester subagent (cheap tier, reads its worker
+  SKILL.md headless -- same pattern for all three lanes) and accept
+  MECHANICALLY per `ref/harvest-acceptance.md` (run the greps, never eyeball).
+  On acceptance flip the line: `harvest: accepted (<n> entries, <doc>)`.
+  A lane line still saying `OWED` at VERIFY is a checker FAIL -- the phase
+  cannot go green over a skipped harvest (seed-incident rule, JL 2026-07-07).
 - Full return: verdict block (G1/G2/G3 + verdict + reasoning + judged-by +
   date) lands in the card's `## Verdict`; `status: verdicted`; the claims
   ledger's C-section flips in the same pass.
 - This worker reads no project files; `ls` for existence only, never content.
 
-PROOF 3: per-card `refs:` line + the `ls` results.
+PROOF 3: per-card `refs:` line + the `ls` results, PLUS -- for every lane line
+written -- the harvester Agent(...) call and its acceptance-grep output. A card
+with a lane line and no harvest proof means STEP 3 did not finish.
 
 **STEP 4 -- VERIFY** (deterministic; the stage CHECK gate re-runs the same script).
 
@@ -115,9 +136,12 @@ PROOF 3: per-card `refs:` line + the `ls` results.
 sh <this-skill-dir>/check-probe-cards.sh <paper_root> [<project_root>]
 ```
 
-Checks: read/verdicted cards have resolving refs; no markdown tables in any
-card; no card over 80 lines; `status: failed` surfaced. Any FAIL -> fix or
-surface it; NEVER report a green PROBE over a FAIL.
+Checks: read/verdicted cards have resolving refs; planned/dispatched cards FAIL
+(probe-not-run); `harvest: OWED` lane lines FAIL (harvest skipped); no markdown
+tables in any card; no card over 80 lines; `status: failed` surfaced; working
+docs (_CITATION_/_VALUES_/_DISPLAY_) carry no bibtex, _CITATION_ no tables.
+Any FAIL -> fix or surface it; NEVER report a green PROBE over a FAIL.
+The stage CHECK gate re-runs this same script (wired in haipipe-paper-check).
 
 PROOF 4: the checker output pasted in the reply.
 

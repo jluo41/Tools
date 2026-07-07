@@ -4,8 +4,8 @@ description: "Stage orchestrator for the paper folder's 0-lifecycle/1-claims/1-c
 argument-hint: "[paper-dir] [--backfill <probe-ref>] [--source <path>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.0.0"
-  last_updated: "2026-07-06"
+  version: "4.1.0"
+  last_updated: "2026-07-07"
   summary: "Claims stage orchestrator. The evidence campaign brain: plans evidence needs, commissions work (tasks/discoveries), tracks results. Three sections (Hypotheses, Claims, Probes) + Evidence Campaign summary. Drives phases (draft -> probe -> revise -> check) internally."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -75,6 +75,7 @@ No separate Hypothesis-Claim Alignment section. The alignment is in the tags: `C
 **Done-criteria:**
 - [ ] All claims have evidence status (supported/weak/GAP)
 - [ ] No unaddressed GAP without a probe plan in the Probes section
+- [ ] No unconsumed `[FORWARD -> CLAIMS]` pointer in seed's `_LOG_0-seed.md` — each is either a PP entry in Probes or explicitly declined in `_LOG`
 - [ ] Every supported claim has both stage 1 (file+number exist) and stage 2 (confirmed probe verdict)
 - [ ] Hypotheses section with venue-neutral H1, H2, H3
 - [ ] Every claim has its own `**C<n>**` sub-item with status and probe reference
@@ -90,7 +91,11 @@ When the user invokes `/haipipe-paper claims`, this skill drives the phases in o
 claims invoked
   │
   ▼
-DRAFT ──→ illuminate existing claims, elicit taste,
+DRAFT ──→ FIRST: consume seed's forward pointers — grep `_LOG_0-seed.md` for
+          `[FORWARD -> CLAIMS]` lines; each becomes a PP entry in the Probes
+          section (or is explicitly declined with a `_LOG` note). An
+          unconsumed pointer fails the CHECK done-criteria below.
+          Then: illuminate existing claims, elicit taste,
           list hypotheses (H1, H2, H3), write claims (short, with → PP ref),
           write probes (full evidence plan per PP), write evidence campaign
           (internally calls /haipipe-paper-draft with this artifact spec)

@@ -1,9 +1,9 @@
-# 4-edit / shared — tex file anatomy
+# 2-phase / shared — tex file anatomy
 
 What **one `.tex` file** should look like in a `0-sections/`-style manuscript.
 Grounded in `examples/ProjA-PhyTraitLandScape/paper/Paper-MapPhyTrait-npjDM2025/`.
 
-Every 4-edit sub-skill assumes this layout. Read it once; the topic skills refer
+Every phase worker assumes this layout. Read it once; the topic skills refer
 back here instead of repeating it.
 
 ## The three kinds of `.tex`
