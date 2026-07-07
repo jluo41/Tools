@@ -4,9 +4,9 @@ description: "Recommend the best-fit venue for a paper or topic, then pin it. Pr
 argument-hint: "[paper-path | free-text topic/abstract] [--no-pin]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.0.0"
-  last_updated: "2026-07-06"
-  summary: "Venue stage orchestrator. Recommends + pins the best-fit venue, produces 2-venue.md with writing principles and probes. Downstream stages (pitch, narrative, display, section-edit) all read the Writing Principles section."
+  version: "3.0.0"
+  last_updated: "2026-07-07"
+  summary: "Venue stage orchestrator. Recommends + pins the best-fit venue, produces 2-venue.md with writing principles, structural blueprint (per-section quantitative norms), and probes. Downstream stages (pitch, narrative, display, section-edit) all read the Structural Blueprint and Writing Principles sections."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -36,20 +36,47 @@ The venue packs are knowledge, not skills; this skill is the READER that turns t
 
 Venue Choice            which venue, one-line why, backup options
 Venue Profile           audience, scope, what this venue rewards
-Writing Principles      concrete specs that downstream stages consume
+Structural Blueprint    per-section quantitative norms (THE construction spec)
+Writing Principles      prose-level specs (tone, citation style, language)
 Fit Assessment          how H1/H2/H3 match the venue's scope
 Probes                  venue-level investigation needs
 ```
 
-**Writing Principles section (the key downstream contract):**
-- Section structure: how many sections, what they're called, ordering conventions
-- Length norms: word count target, sentence length, paragraph density
-- Citation density: how many refs per section, citation style conventions
-- Results presentation: tables vs figures, statistical reporting, effect size conventions
-- Display limits: max figures, max tables, format requirements (color, resolution)
-- Language/tone: formal vs accessible, jargon level, hedging conventions
+**Structural Blueprint section (the key downstream contract):**
 
-This section is what pitch, narrative, display, and section-edit all read from. Once venue is pinned, Writing Principles tells you concretely how to write.
+The structural blueprint is a per-section quantitative spec derived from exemplar papers at this venue. Every section gets its own block with:
+
+```text
+Section: <name> (<role in the paper>)
+  Subsections: <count> (<subsection names>)
+  Paragraphs per subsection: <count or range>
+  Sentences per paragraph: <count or range>
+  Avg sentence length: <words>
+  Citation density: <citations per sentence>
+  Results reported: <yes/no>
+  Results detail: <what kind: coefficients, p-values, effect sizes, none>
+  Display units: <which figures/tables belong here>
+```
+
+This section is the single source of truth for paper structure. Pitch reads it to frame the contribution. Narrative reads it to allocate story beats. Section-edit reads it to know how many paragraphs each section gets and what each paragraph does.
+
+**How to derive the blueprint:**
+1. Read the venue playbook (`../../_venue/playbook-<venue>/`) for general norms.
+2. Read stored exemplars (`../../_venue/playbook-<venue>/exemplars/`) for real section structures.
+3. If exemplars are sparse, read 2-3 published papers at this venue (via the paper's own `0-extra/` or by searching) and count: sections, subsections, paragraphs, sentences, sentence length, citations per sentence, where results appear.
+4. Synthesize into the per-section spec above.
+5. Adapt the generic blueprint to THIS paper's claim structure (e.g., H1/H2/H3 map to specific theory subsections).
+
+The blueprint is venue-ALIGNED: retargeting to a different venue rewrites the blueprint.
+
+**Writing Principles section (prose-level specs):**
+- Language/tone: formal vs accessible, jargon level, hedging conventions
+- Citation style: in-text format, bibliography conventions
+- Results presentation: tables vs figures, statistical reporting, effect size conventions
+- Display limits: max figures, max tables, format requirements
+- Abstract conventions: word limit, structure (prose vs labeled), arc
+
+Writing Principles is the prose companion to the Structural Blueprint. The blueprint says HOW MANY sentences; Writing Principles says HOW TO WRITE them.
 
 **Formatting:**
 - Heading style: `=====` for the document title, `-----` for sections. No `#`/`##`/`###`.
@@ -57,9 +84,11 @@ This section is what pitch, narrative, display, and section-edit all read from. 
 
 **Done-criteria:**
 - [ ] Venue pinned in STATUS.md
-- [ ] Writing Principles section filled with concrete specs
+- [ ] Structural Blueprint section filled with per-section quantitative norms (every section has: subsection count, paragraphs, sentences/paragraph, sentence length, citation density, results reported, display units)
+- [ ] Writing Principles section filled with prose-level specs (tone, citation style, abstract conventions)
 - [ ] Fit Assessment maps H/claims to venue scope
 - [ ] At least one probe planned or done (recent publications check)
+- [ ] Blueprint adapted to THIS paper's claim structure (H1/H2/H3 mapped to specific sections/subsections)
 
 ## Modes
 
@@ -93,6 +122,12 @@ venue index        ../../_venue/README.md              (family map + IS selectio
 4. **Rank and shortlist** the top 3. For each: a fit rationale, what to emphasize for that venue, and the main why-not / risk.
 5. **Recommend ONE primary** + 1-2 backups. The primary is the one whose rewards the paper's strongest claim most directly satisfies.
 6. **Pin it (unless `--no-pin`).** In default mode, ASK the user, then write `venue: <pack-slug>` (plus an optional `venue_outlet:` for the concrete journal) into `STATUS.md`. With `--no-pin`, stop after step 5 and write nothing. Pinning is the handoff to pitch (the cover letter), which re-runs its [primary] claim designation, RQ framing, and Editor's Chair Test for the new venue.
+7. **Derive the structural blueprint.** After pinning, build the per-section quantitative spec:
+   a. Read the venue playbook's style-profile and exemplars.
+   b. If exemplars exist, count real structures: sections, subsections, paragraphs per subsection, sentences per paragraph, average sentence length, citations per sentence, where results are reported and how.
+   c. If exemplars are sparse, search for 2-3 published papers at this venue in the same contribution type (theory-forward empirical, causal, design science, etc.) and count the same metrics.
+   d. Synthesize into the Structural Blueprint section of 2-venue.md: one block per section, adapted to THIS paper's claim structure.
+   e. The blueprint must be concrete enough that section-edit can use it without further guessing: "Introduction has 4 subsections, each 2 paragraphs, each 5-6 sentences" not "Introduction should be well-structured."
 
 ## Output contract
 
