@@ -4,6 +4,14 @@ haipipe-paper-seed — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [3.5.0] — 2026-07-07
+
+Changed (DRAFT-searches / PROBE-runs-real split + seed-vs-claims probe layering -- reference behavior: the Paper-CGMtoCyclePhase session; JL: "always run the real probes in the probe phase")
+- DRAFT phase MAY WebSearch to orient: weave into prose + buffer feasibility probes as `status: planned` skeletons; never findings/refs into a PP card.
+- PROBE phase scope narrowed to FEASIBILITY: novelty + external-data-obtainable ("can this paper exist at all?"). ALWAYS run the real orchestrator; inline search forbidden here.
+- Internal-data profiling is claims-stage task work -> register a `[FORWARD -> CLAIMS] PPNN` pointer in _LOG, do not dispatch in seed.
+- New principles 5a (feasibility-only) + 5b (DRAFT may search; PROBE must dispatch; the line is card state, checker-enforced).
+
 ## [3.3.0] — 2026-07-06
 
 Changed

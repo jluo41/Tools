@@ -2,11 +2,11 @@
 name: haipipe-paper-draft
 description: "DRAFT phase worker (internal). Called by stage skills to produce the first-pass artifact. Reads the stage's artifact spec (from 1-lifecycle/) to know WHAT the result should look like, then runs the generic drafting process: consult upstream → settle structure → draft content → iterate with user → confirm. Users invoke stage skills (seed, claims, pitch...), not this skill directly."
 argument-hint: "[stage-or-section] [paper-path]"
-allowed-tools: Bash, Read, Write, Edit, Grep, Glob
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob, WebSearch, WebFetch
 metadata:
-  version: "3.3.0"
-  last_updated: "2026-07-03"
-  summary: "DRAFT phase worker (internal). Called by stage skills to produce first-pass artifacts. Generic process, stage-specific output."
+  version: "3.4.0"
+  last_updated: "2026-07-07"
+  summary: "DRAFT phase worker (internal). Called by stage skills to produce first-pass artifacts. Generic process, stage-specific output. v3.4: DRAFT MAY use inline WebSearch for orientation -- but its output is drafting fuel (prose + buffered probe plans) only, NEVER durable evidence (no refs/findings into PP cards). Real evidence is the PROBE phase's job."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -94,6 +94,28 @@ Fill in the structure with first-pass content:
 - Flag uncertain content with `(?)` or `> CC: need to verify`
 - One idea per sentence, one sentence per line (for sections)
 
+**Inline WebSearch is ALLOWED here -- as drafting fuel, NOT as evidence.**
+DRAFT may search the web to orient (is this field crowded? does a dataset
+exist? who are the anchor names?) and to sharpen the draft. But a seed is
+allowed to be intuition (seed principle 1), so what that search produces has
+exactly two legal destinations:
+1. **PROSE** in the stage artifact (Motivations, Claim Shape, ...) -- phrased
+   as orientation, with `(Author Year)` placeholders, never as settled fact.
+2. **BUFFERED probe plans** -- when the search reveals a gap the paper must
+   later verify, write it as a PP-card SKELETON (Need / Why / Route, `status:
+   planned`, EMPTY `refs:`) in `_PROBE/` + an index row, per the buffer
+   convention `../../1-probe/haipipe-paper-probe/` reads. This HANDS the gap to
+   the PROBE phase; it does not answer it.
+
+FORBIDDEN in DRAFT: writing findings, `refs:`, or takeaways INTO a PP card, or
+treating an inline result as a landed probe. Inline search results have no
+project-side ledger -- per the probe contract, evidence gathered any way other
+than the PROBE-phase orchestrator dispatch means "the PROBE phase did not
+happen." The line is the CARD STATE: DRAFT leaves `status: planned` skeletons;
+only PROBE flips them to `read` with resolving `discoveries/` refs. The CHECK
+gate runs `check-probe-cards.sh` and cannot go green over planned/empty-ref
+cards -- so DRAFT search can never masquerade as evidence.
+
 ### Step 5. Iterate with user
 
 The user reads the draft and adds `> USER:` comments. Respond with `> CC:` underneath each. Iterate until content decisions are settled.
@@ -111,7 +133,13 @@ When confirmed:
 
 ### seed
 - Output: `0-lifecycle/0-seed/0-seed.md`
-- PROBE: n/a (evidence inventory belongs in claims)
+- May WebSearch to orient the angle; weave the landscape into prose and BUFFER
+  the feasibility probes (novelty + external-data-obtainable) as `status:
+  planned` PP skeletons. Do NOT run them here -- the seed PROBE phase does.
+- PROBE (seed): FEASIBILITY only -- "can this paper exist at all?" (is it
+  novel? does the external labeled data exist?). Profiling OUR OWN data is
+  claims-stage task work; register it as a `[FORWARD -> CLAIMS]` pointer in
+  `_LOG`, do not dispatch it in seed.
 - Short document: seed question + motivations + tentative claim shape
 
 ### claims

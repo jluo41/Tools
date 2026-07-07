@@ -4,9 +4,9 @@ description: "Create or update the paper folder's 0-lifecycle/0-seed/0-seed.md +
 argument-hint: "[paper-dir] [--source <path-or-note>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.4.0"
-  last_updated: "2026-07-06"
-  summary: "Seed stage orchestrator. Defines WHAT (4 sections: question, motivations, claim shape, probes) and drives phases (draft -> probe -> revise -> check) internally. User invokes seed, not phases. v3.4: PROBE phase is exactly one worker call (Skill haipipe-paper-probe); NEVER-do-evidence-itself rule; gate confirms PP cards have refs (outcome, not mechanics)."
+  version: "3.5.0"
+  last_updated: "2026-07-07"
+  summary: "Seed stage orchestrator. Defines WHAT (4 sections: question, motivations, claim shape, probes) and drives phases (draft -> probe -> revise -> check) internally. User invokes seed, not phases. v3.4: PROBE is exactly one worker call; NEVER-do-evidence-itself; gate confirms refs. v3.5: DRAFT may WebSearch to orient (fuel -> prose + buffered planned skeletons), PROBE must ALWAYS run the real orchestrator; seed probes are FEASIBILITY only (novelty + external-data-obtainable), internal-data profiling forward-points to CLAIMS via a _LOG pointer."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -58,20 +58,34 @@ seed invoked
   │
   ▼
 DRAFT ──→ illuminate existing content, elicit taste,
-          write/iterate the 4 sections with > JL: / > CC: comments
+          write/iterate the 4 sections with > JL: / > CC: comments.
+          MAY WebSearch inline to ORIENT the angle (crowded field? dataset
+          exist? anchor names?) -- the result is drafting fuel: weave it into
+          the prose (as orientation, `(Author Year)` placeholders) AND buffer
+          the feasibility probes as `status: planned` PP skeletons (empty
+          refs). NEVER write findings/refs into a PP card here -- that is the
+          PROBE phase's job (the seed is allowed to be intuition; probe makes
+          it evidence). The line is card state: DRAFT leaves planned skeletons.
           (internally calls /haipipe-paper-draft with this artifact spec)
   │
   ▼
-PROBE ──→ DEFAULT RUN for a new seed: landscape / related work / novelty (mode light) --
-          it answers the CHECK questions "who cares?" and "is this new?" before the gate.
-          This stage does EXACTLY ONE thing here:
+PROBE ──→ DEFAULT RUN for a new seed: FEASIBILITY probes (mode light) --
+          they answer "can this paper exist at all?": is it NOVEL (landscape /
+          related work / 查新) and does the EXTERNAL labeled data EXIST. That is
+          the seed's whole probe scope. Profiling OUR OWN data belongs in
+          claims (task work on our AIData) -- if the draft surfaced such a need,
+          it was registered as a `[FORWARD -> CLAIMS] PPNN` pointer in _LOG at
+          DRAFT, NOT dispatched here.
+          ALWAYS run the real probes -- this stage does EXACTLY ONE thing here:
               Skill("haipipe-paper-probe", args="from-buffer <paper_root>")
           The worker owns everything downstream: PP card creation/format, index
           bookkeeping, project-root resolution, agent dispatch, refs backfill.
           THIS STAGE NEVER does evidence work itself -- never searches, never
           launches search/discovery/task agents, never writes findings into PP
-          cards. Evidence produced any other way than the worker call above has
-          no project-side ledger and is void: the PROBE phase did not happen.
+          cards. (Inline WebSearch was fine in DRAFT as orientation fuel; here
+          in PROBE it is forbidden -- durability is the whole point.) Evidence
+          produced any other way than the worker call above has no project-side
+          ledger and is void: the PROBE phase did not happen.
           After the worker returns: takeaways appear in the PP plan files in
           _PROBE/ (with refs: pointing at discoveries/ or tasks/) AND get woven
           into the Probes section in 0-seed.md; sources harvest into
@@ -141,6 +155,8 @@ Each probe as a **bold** sub-item with type, status, and takeaways inline.
 3. **Seed is venue-FREE.** Venue selection happens after claims (seed -> claims -> [venue] -> pitch). Do not reference a target venue here.
 4. Evidence inventory, routing, and gap analysis belong in the claims stage, not here.
 5. **Probes are explicit.** The Probes section makes the landscape/novelty check visible in the seed document itself, not buried in a satellite file. The `_PROBE/` files carry the execution detail.
+5a. **Seed probes are FEASIBILITY only.** A seed probe answers "can this paper exist at all?" -- novelty (is the angle new?) and external-data-obtainability (does the labeled data the paper needs exist and is it accessible?). Both are `discover` (lit/repo) work. Profiling OUR OWN data (cohort size, field coverage, label availability in our AIData) is `task` work that belongs in the CLAIMS stage. When DRAFT surfaces an internal-data question, DO NOT open a seed probe for it -- record a `[FORWARD -> CLAIMS] PPNN_<slug>` pointer line in `_LOG_0-seed.md` (need + why, no dispatch); it fires when claims opens. This keeps the seed's cost bounded to the feasibility question and stops the seed from doing claims-stage evidence work early.
+5b. **DRAFT may search; PROBE must dispatch.** Inline WebSearch is legitimate DRAFT fuel (orientation -> prose + buffered `status: planned` PP skeletons), but it is NEVER evidence. The PROBE phase must ALWAYS run the real orchestrator (`Skill(haipipe-paper-probe, from-buffer ...)`); inline results with no project-side ledger mean the PROBE phase did not happen. The invariant that separates the two is card state: planned skeleton (DRAFT) vs `read` + resolving `discoveries/` refs (PROBE), mechanically enforced by `check-probe-cards.sh` at the CHECK gate.
 6. **One sentence per line.** Semantic line breaks for readability. No dense multi-sentence paragraphs.
 7. **Heading style.** `=====` for the document title, `-----` for sections. No `#`/`##`/`###`.
 

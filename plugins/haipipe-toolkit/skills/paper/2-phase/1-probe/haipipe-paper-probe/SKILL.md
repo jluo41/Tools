@@ -4,9 +4,9 @@ description: "PROBE phase worker (internal). Called by stage skills after DRAFT 
 argument-hint: "[from-buffer <paper_root> [PPNN] | stage-or-section [paper-path]]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.0.1"
+  version: "3.0.2"
   last_updated: "2026-07-07"
-  summary: "PROBE phase worker rebuilt as a 4-step procedure (BOOKKEEP -> DISPATCH -> TRANSLATE -> VERIFY), each step ending in a mandatory PROOF shown in the reply, plus a deterministic checker (check-probe-cards.sh) run at VERIFY and re-run by the stage gate. Reference prose moved to ref/. v3.0: enforcement is mechanical, not prose -- a step without its proof did not happen. v3.0.1 (post test-12334535): checker is brace-aware in refs; fresh dispatch forces background; no-bibtex grep anchored to @entry{ pattern."
+  summary: "PROBE phase worker rebuilt as a 4-step procedure (BOOKKEEP -> DISPATCH -> TRANSLATE -> VERIFY), each step ending in a mandatory PROOF shown in the reply, plus a deterministic checker (check-probe-cards.sh) run at VERIFY and re-run by the stage gate. Reference prose moved to ref/. v3.0: enforcement is mechanical, not prose -- a step without its proof did not happen. v3.0.1 (post test-12334535): checker brace-aware; fresh dispatch forces background; no-bibtex grep anchored. v3.0.2: hard boundary clarified -- no inline search in PROBE (DRAFT may search for orientation; the line is card durability, not the verb)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -127,6 +127,10 @@ Hard boundaries (inherited by all workers)
 - NEVER fabricate numbers; NEVER create ad-hoc plots inline
 - NO markdown tables in PP cards, _CITATION_, or any probe/discovery document
   (JL standing rule) -- bullet lines only, one per source
+- NO inline search in the PROBE phase -- durability is the whole point here;
+  the orchestrator dispatch is the only door. (DRAFT may WebSearch to orient;
+  the difference is card durability, not the search verb. DRAFT search feeds
+  prose + `status: planned` skeletons; PROBE lands `read` cards with refs.)
 - All flags (🔍 unverified citations, ⚠️ uncertain values) resolve in CHECK, not here
 
 Return contract
