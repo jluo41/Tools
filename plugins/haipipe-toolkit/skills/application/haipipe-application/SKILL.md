@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
   version: "5.0.0"
   last_updated: "2026-07-06"
-  summary: "Front door for the intervention lifecycle, paper-aligned: claims-before-venue spine, DPRC phases, folderless probe door, closing block + venue-aware focus strip. SOP: ../SOP-paper-alignment.md."
+  summary: "Front door for the intervention lifecycle, paper-aligned: claims-before-venue spine, DPRC phases, folderless probe door, closing block + venue-aware focus strip. Alignment record: ./CHANGELOG.md (archived SOP under 5.0.0)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

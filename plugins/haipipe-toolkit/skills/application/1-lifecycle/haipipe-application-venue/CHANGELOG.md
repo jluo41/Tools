@@ -10,7 +10,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 ## [2.0.0] — 2026-07-06
 
-- moved AFTER claims (was after pitch); pin writes venue + stages_skipped + claims_settlement; retarget rule inverted (claims survives, settlement may deepen); minimap column retired (paper-alignment refactor, ../SOP-paper-alignment.md).
+- moved AFTER claims (was after pitch); pin writes venue + stages_skipped + claims_settlement; retarget rule inverted (claims survives, settlement may deepen); minimap column retired (paper-alignment refactor, SOP archived in haipipe-application/CHANGELOG.md §5.0.0).
 
 ## [3.0.0] — 2026-07-06
 

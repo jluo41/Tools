@@ -14,7 +14,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 ## [3.0.0] — 2026-07-06
 
-- renamed from haipipe-application-gate, re-homed shared/ -> 2-phase/3-check/ as the CHECK phase worker; Gate Ledger protocol (STATUS.md, By column); stage list on the new spine; persona/attendance kept (unattended stand-in only) (paper-alignment refactor, ../SOP-paper-alignment.md).
+- renamed from haipipe-application-gate, re-homed shared/ -> 2-phase/3-check/ as the CHECK phase worker; Gate Ledger protocol (STATUS.md, By column); stage list on the new spine; persona/attendance kept (unattended stand-in only) (paper-alignment refactor, SOP archived in haipipe-application/CHANGELOG.md §5.0.0).
 
 ## [3.1.0] — 2026-07-06
 

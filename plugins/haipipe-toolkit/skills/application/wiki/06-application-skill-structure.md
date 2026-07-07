@@ -1,6 +1,6 @@
 # Application Skill Structure
 
-How `Tools/plugins/haipipe-toolkit/skills/application` is organized. Mirrors `../../paper/wiki/06-paper-skill-structure.md`; the paper-alignment refactor to this layout landed 2026-07-06 (`../SOP-paper-alignment.md`).
+How `Tools/plugins/haipipe-toolkit/skills/application` is organized. Mirrors `../../paper/wiki/06-paper-skill-structure.md`; the paper-alignment refactor to this layout landed 2026-07-06 (SOP archived in `../haipipe-application/CHANGELOG.md` §5.0.0).
 
 The skill tree mirrors the lifecycle spine on two axes: `1-lifecycle/` holds the STAGE orchestrators (user-facing; define WHAT each stage delivers) and `2-phase/` holds the PHASE workers (internal; define HOW: DRAFT -> PROBE -> REVISE -> CHECK). Inside those two groups each numbered stage/phase folder holds its skills; support groups stay flat.
 
