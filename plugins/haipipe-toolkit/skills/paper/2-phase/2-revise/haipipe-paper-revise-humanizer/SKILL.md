@@ -4,8 +4,8 @@ description: "Remove AI-writing patterns from academic prose while preserving sc
 argument-hint: "[section-or-file] [--grant] [--venue <venue>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "2.1.0"
-  last_updated: "2026-07-03"
+  version: "2.1.1"
+  last_updated: "2026-07-07"
   summary: "De-AI academic prose via 6-layer audit. Fully automatic. REVISE worker."
   source: "Based on AIScientists-Dev/academic-humanizer (MIT license). Reference copy at Tools/references/academic-humanizer/"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -26,7 +26,9 @@ Read it before every audit pass. It contains:
 - Voice/venue matching guidance
 - Funding-proposal mode (NSF/NIH)
 
-Path: `../../../../references/academic-humanizer/SKILL.md` (from this skill's location)
+Canonical path: `Tools/references/academic-humanizer/SKILL.md` (repo-root relative), i.e. `../../../../../../../references/academic-humanizer/SKILL.md` from this skill's folder.
+
+NOTE: if that catalog file is absent (the reference copy has not been vendored into this checkout), the inline **Six-layer audit** below is self-sufficient — apply it directly. Restoring the full catalog is a separate vendoring task, not a blocker for a humanizer pass.
 
 ## Six-layer audit
 

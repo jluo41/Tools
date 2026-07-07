@@ -4,8 +4,8 @@ description: Rigorous mathematical proof verification and fixing workflow. Reads
 argument-hint: "[path-to-tex-file or proof-description]"
 allowed-tools: Bash(*), Read, Grep, Glob, Write, Edit, Agent, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-05-31"
+  version: "1.1.1"
+  last_updated: "2026-07-07"
   summary: "Rigorous mathematical proof verification and fixing workflow."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -20,7 +20,7 @@ Systematically verify a mathematical proof via cross-model adversarial review, f
 
 - MAX_REVIEW_ROUNDS = 3
 - REVIEWER_MODEL = `gpt-5.4` via Codex MCP, reasoning effort always `xhigh`
-- **REVIEWER_BACKEND = `codex`** — Default: Codex MCP (xhigh). Override with `— reviewer: oracle-pro` for GPT-5.4 Pro via Oracle MCP. See `shared-references/reviewer-routing.md`.
+- **REVIEWER_BACKEND = `codex`** — Default: Codex MCP (xhigh). Override with `— reviewer: oracle-pro` for GPT-5.4 Pro via Oracle MCP. See `Tools/legacy/dikw-full/research-toolkit/skills/00_meta/shared-references/reviewer-routing.md`.
 - AUDIT_DOC: `PROOF_AUDIT.md` at the paper directory root, alongside `main.tex` (cumulative log; when invoked via `/paper-writing`, this is `paper/PROOF_AUDIT.md`)
 - REPORT_TEX: `proof_audit_report.tex` (formal before/after PDF)
 - STATE_FILE: `PROOF_CHECK_STATE.json` (for recovery)
@@ -416,9 +416,9 @@ Write `PROOF_CHECK_STATE.json`:
 
 ## Submission Artifact Emission
 
-This skill **always** writes `PROOF_AUDIT.json` at the paper directory root (i.e. `paper/PROOF_AUDIT.json` when invoked from `/paper-writing` with paper-dir `paper/`; `<your-paper-dir>/PROOF_AUDIT.json` when invoked standalone), regardless of caller or whether the paper contains theorems. A paper with no `\begin{theorem}` / `\begin{lemma}` / `\begin{proof}` emits verdict `NOT_APPLICABLE`; silent skip is forbidden. `paper-writing` Phase 6 and `tools/verify_paper_audits.sh` both rely on this artifact existing at `<paper-dir>/PROOF_AUDIT.json`.
+This skill **always** writes `PROOF_AUDIT.json` at the paper directory root (i.e. `paper/PROOF_AUDIT.json` when invoked from `/paper-writing` with paper-dir `paper/`; `<your-paper-dir>/PROOF_AUDIT.json` when invoked standalone), regardless of caller or whether the paper contains theorems. A paper with no `\begin{theorem}` / `\begin{lemma}` / `\begin{proof}` emits verdict `NOT_APPLICABLE`; silent skip is forbidden. `paper-writing` Phase 6 and `Tools/legacy/dikw-full/research-toolkit/tools/verify_paper_audits.sh` both rely on this artifact existing at `<paper-dir>/PROOF_AUDIT.json`.
 
-The artifact conforms to the schema in `shared-references/assurance-contract.md`:
+The artifact conforms to the schema in `Tools/legacy/dikw-full/research-toolkit/skills/00_meta/shared-references/assurance-contract.md`:
 
 ```json
 {
@@ -449,7 +449,7 @@ The artifact conforms to the schema in `shared-references/assurance-contract.md`
 
 Hash the **declared input set** actually reviewed — the theorem-bearing `.tex` files passed into this invocation — not a repo-wide union and not the reviewer's self-reported opened subset. The external verifier rehashes these entries; any mismatch flags `STALE`.
 
-**Path convention** (must match `tools/verify_paper_audits.sh`): keys are **paths relative to the paper directory** (no `paper/` prefix — the verifier resolves relative to the paper dir; prefixing produces `paper/paper/...` and false-fails as STALE). Use **absolute paths** for files outside the paper dir.
+**Path convention** (must match `Tools/legacy/dikw-full/research-toolkit/tools/verify_paper_audits.sh`): keys are **paths relative to the paper directory** (no `paper/` prefix — the verifier resolves relative to the paper dir; prefixing produces `paper/paper/...` and false-fails as STALE). Use **absolute paths** for files outside the paper dir.
 
 ### Verdict decision table
 
@@ -466,7 +466,7 @@ MAJOR issues alone map to `WARN` or `FAIL` at the reviewer's discretion and must
 
 ### Thread independence
 
-Every invocation uses a fresh `mcp__codex__codex` thread. Never `codex-reply` across haipipe-paper-proof-checker runs. Do not accept prior audit outputs (PAPER_CLAIM_AUDIT, CITATION_AUDIT, EXPERIMENT_LOG) as input — the fresh thread preserves reviewer independence per `shared-references/reviewer-independence.md`.
+Every invocation uses a fresh `mcp__codex__codex` thread. Never `codex-reply` across haipipe-paper-proof-checker runs. Do not accept prior audit outputs (PAPER_CLAIM_AUDIT, CITATION_AUDIT, EXPERIMENT_LOG) as input — the fresh thread preserves reviewer independence per `Tools/legacy/dikw-full/research-toolkit/skills/00_meta/shared-references/reviewer-independence.md`.
 
 This skill never blocks by itself; `paper-writing` Phase 6 plus the verifier decide whether the verdict blocks finalization based on the `assurance` level.
 

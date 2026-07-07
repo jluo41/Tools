@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-revise-content
 description: "Review and edit the prose CONTENT of an existing draft at section -> paragraph -> sentence. REVISE phase (fully automatic). Applies changes directly, leaves %% {CC-content}: comments explaining WHY each change was made for CHECK review. Self-contained: carries its own structure/claim/flow checks. Reads REF/prose-quality.md for universal rules. Trigger: edit content, review content, tighten section, restructure paragraphs, /haipipe-paper-revise-content."
+argument-hint: "[section-name-or-number] [paper-path]"
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-07-03"
-  status: active
-  stage: revise
-  topic: "content"
+  version: "1.1.1"
+  last_updated: "2026-07-07"
+  summary: "REVISE worker: edit prose CONTENT at section->¶->sentence, change directly + leave why-comments. Self-contained structure/claim/flow checks. Fully automatic."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
