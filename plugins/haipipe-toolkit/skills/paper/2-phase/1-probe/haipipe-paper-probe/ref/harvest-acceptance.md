@@ -42,7 +42,11 @@ Mechanical acceptance -- RUN the commands, never eyeball
 - **anchors**: every new card's `source_ref` names a sources.md + S##; grep
   that S## heading in that file -- it must EXIST (the agent's fresh evidence
   landed). An unresolvable anchor is a REJECT, not a warning.
-- **no bibtex**: `grep -c '@'` == 0 on the new cards.
+- **no bibtex**: no bibtex ENTRY on the new cards --
+  `grep -cE '@(article|inproceedings|book|misc|incollection|techreport|phdthesis|conference|proceedings)\{'`
+  == 0. (A bare `@` is NOT bibtex: venue names carry it, e.g. `KHD@IJCAI
+  workshop` -- test-12334535 harvested a legit card with that venue and a bare
+  `@` grep would false-reject it. Anchor to the entry-type-plus-brace pattern.)
 - **no tables**: `grep -c '^|'` == 0 on _CITATION_ (JL standing rule --
   bullet lines only, one per source).
 
