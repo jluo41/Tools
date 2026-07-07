@@ -4,6 +4,11 @@ haipipe-paper-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [3.0.2] — 2026-07-07
+
+Changed
+- Hard boundaries: explicit "no inline search in the PROBE phase" -- durability is the whole point; the orchestrator dispatch is the only door. DRAFT may WebSearch for orientation; the difference is card durability (planned skeleton vs read+refs), not the search verb.
+
 ## [3.0.1] — 2026-07-07
 
 Changed (post test-12334535 -- the v3.0 chain ran clean end-to-end in a fresh session; these four are the minor gaps the run surfaced, none a correctness hole in the enforcement)
