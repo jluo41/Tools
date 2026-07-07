@@ -26,10 +26,11 @@ application/
 │     + haipipe-application-venue (pin modality + stages_skipped + claims_settlement; writes 2-venue/2-venue.md Artifact Principles; after claims, before pitch)
 │     + haipipe-application-lifecycle (orchestrator)
 ├── 2-phase/               PHASE workers (internal; driven by stage skills)
+│     README.md + USAGE.md + WIRING.md    (bucket-root docs: architecture, recipes, wiring)
 │     0-draft/haipipe-application-draft
-│     1-probe/haipipe-application-probe   (the ONLY evidence door)
+│     1-probe/haipipe-application-probe   (the ONLY evidence door; + check-probe-cards.sh, ref/)
 │     2-revise/haipipe-application-revise
-│     3-check/haipipe-application-check   (+ gate-persona.md, attendance-modes.md)
+│     3-check/haipipe-application-check   (+ checks.sh, gate-persona.md, attendance-modes.md)
 ├── 3-build-deploy/        haipipe-application-artifact (the `draft` verb) + review + claim-audit + deploy
 ├── 4-iterate/             haipipe-application-iterate (post-deploy A/B refinement)
 ├── _venue/                venue packs (knowledge, not stages; README + style-profile [+ exemplars])

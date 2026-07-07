@@ -4,9 +4,9 @@ description: "Run any intervention-lifecycle work (the application umbrella). Us
 argument-hint: "[enter|status|venue|stage|draft] [intervention-path-or-args...]"
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "5.0.0"
-  last_updated: "2026-07-06"
-  summary: "Front door for the intervention lifecycle, paper-aligned: claims-before-venue spine, DPRC phases, folderless probe door, closing block + venue-aware focus strip. Alignment record: ./CHANGELOG.md (archived SOP under 5.0.0)."
+  version: "5.1.0"
+  last_updated: "2026-07-07"
+  summary: "Front door for the intervention lifecycle, paper-aligned: claims-before-venue spine, DPRC phases, folderless probe door, closing block + venue-aware focus strip. 5.1.0 (round 2): probe VERIFY + mechanical check gate. Alignment record: ./CHANGELOG.md (archived SOP under 5.0.0)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -15,7 +15,7 @@ Skill: haipipe-application (orchestrator)
 
 User-facing entry for the intervention lifecycle. The application lifecycle is a delivery owner: it owns this intervention's story, claims, narrative, displays, artifact text, maturity, and dated work rounds. Project-level evidence lives outside the intervention in discoveries, tasks, and insights; when a stage hits a gap, record a delivery need (`../wiki/11-delivery-need.md`) and route to the evidence worker.
 
-This orchestrator parses intent and dispatches to stage/specialist skills via `Skill()`. Stage skills internally drive the DPRC phase workers (`2-phase/`); users and this router never invoke phase skills directly. Canonical structure: `README.md` at the application skill root + `../wiki/06-application-skill-structure.md`.
+This orchestrator parses intent and dispatches to stage/specialist skills via `Skill()`. Stage skills internally drive the DPRC phase workers (`2-phase/`); users and this router never invoke phase skills directly. PROBE ends with a VERIFY step (the probe worker's deterministic card checker), and CHECK runs `checks.sh` plus re-runs the card checker as the gate's teeth. Canonical structure: `README.md` at the application skill root + `../wiki/06-application-skill-structure.md`.
 
 ALWAYS read and honor `PREFERENCES.md` (this skill's own folder): portable, git-tracked global behavioral preferences that survive a machine change. `digest` / `feedback` append flagged global prefs there (merge-or-create).
 
