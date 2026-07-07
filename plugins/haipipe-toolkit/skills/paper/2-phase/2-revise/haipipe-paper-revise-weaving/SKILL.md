@@ -4,8 +4,8 @@ description: "REVISE phase worker for paragraph flow and transitions. Orchestrat
 argument-hint: "[granularity-or-verb] [path] [args...]"
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob, Skill
 metadata:
-  version: "2.1.0"
-  last_updated: "2026-07-03"
+  version: "2.2.0"
+  last_updated: "2026-07-07"
   summary: "REVISE worker for paragraph flow and transitions. Fully automatic."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -35,11 +35,11 @@ Usage
 /haipipe-paper-revise-weaving                                -> dispatch help (lists specialists)
 /haipipe-paper-revise-weaving <path>.tex                     -> default: section-level diagnose, embed in .tex
 /haipipe-paper-revise-weaving section <path>.tex             -> same as above (explicit granularity)
-/haipipe-paper-revise-weaving paragraph <path>.tex P<n>      -> dispatch to paper-revise-paragraph
-/haipipe-paper-revise-weaving sentence <path>.tex P<n>.S<m>  -> dispatch to paper-revise-sentence
-/haipipe-paper-revise-weaving check numeric <path>.tex       -> dispatch to paper-check-numeric
+/haipipe-paper-revise-weaving paragraph <path>.tex P<n>      -> dispatch to haipipe-paper-revise-content
+/haipipe-paper-revise-weaving sentence <path>.tex P<n>.S<m>  -> dispatch to haipipe-paper-revise-content
+/haipipe-paper-revise-weaving check numeric <path>.tex       -> dispatch to haipipe-paper-probe-values
 /haipipe-paper-revise-weaving check reference <path>.tex     -> dispatch to haipipe-paper-probe-citation
-/haipipe-paper-revise-weaving write <path>.tex               -> dispatch to paper-write
+/haipipe-paper-revise-weaving write <path>.tex               -> dispatch to haipipe-paper-draft
 /haipipe-paper-revise-weaving check <path>.tex               -> Gate Q on demand (runs all configured checks)
 /haipipe-paper-revise-weaving cleanup <path>.tex             -> Gate G2: prompt author to delete plan blocks
 /haipipe-paper-revise-weaving "<natural language>"           -> infer granularity + verb, route accordingly
@@ -52,15 +52,15 @@ Specialists
 
 ```
 haipipe-paper-revise-weaving (this)         section-level diagnose + plan embedded in .tex  (DEFAULT route)
-paper-revise-paragraph       paragraph-level rewrites + comment iteration
-paper-revise-sentence        sentence-level edits, user %% Comments: dialogue
-paper-revise                 broader multi-pass interactive revision flow
-paper-check-numeric          verify every quantitative claim against raw results
+haipipe-paper-revise-content paragraph-level rewrites + comment iteration
+haipipe-paper-revise-content sentence-level edits, user %% Comments: dialogue
+haipipe-paper-revise         broader multi-pass interactive revision flow
+haipipe-paper-probe-values   verify every quantitative claim against raw results
 haipipe-paper-probe-citation        verify every citation against bib + venue metadata
-paper-write                  draft a new section from PAPER_PLAN.md outline
+haipipe-paper-draft          draft a new section from PAPER_PLAN.md outline
 ```
 
-`/paper-revise` is a sibling, not a child. haipipe-paper-revise-weaving routes to it when the user asks for a broad multi-pass review rather than a single diagnose + plan pass.
+`/haipipe-paper-revise` is a sibling, not a child. haipipe-paper-revise-weaving routes to it when the user asks for a broad multi-pass review rather than a single diagnose + plan pass.
 
 ---
 
@@ -107,12 +107,12 @@ Step 2. Verb = check (Gate Q on demand)?      -> Run Gate Q substeps Q1+Q2+Q3 ag
 Step 3. Resolve granularity:
   - No granularity inferred, path ends .tex     -> SECTION (default route)
   - granularity = section / unspecified         -> SECTION (default route)
-  - granularity = paragraph                     -> dispatch to paper-revise-paragraph
-  - granularity = sentence                      -> dispatch to paper-revise-sentence
-  - granularity = write                         -> dispatch to paper-write
+  - granularity = paragraph                     -> dispatch to haipipe-paper-revise-content
+  - granularity = sentence                      -> dispatch to haipipe-paper-revise-content
+  - granularity = write                         -> dispatch to haipipe-paper-draft
 
 Step 4. If verb suggests a specific check (not generic Q), override granularity:
-  - verb = check-numeric                        -> dispatch to paper-check-numeric only
+  - verb = check-numeric                        -> dispatch to haipipe-paper-probe-values only
   - verb = check-reference                      -> dispatch to haipipe-paper-probe-citation only
 
 Step 5. Dispatch (when not SECTION):
@@ -132,7 +132,7 @@ If only a verb resolves and no path is given, ask which file (don't guess across
 Default route: section diagnose
 ================================
 
-This is the work the skill does inline when the SECTION route fires. Produces a severity-ranked diagnosis (in chat) and embeds the plan **directly into the .tex file** as LaTeX comments. Does NOT apply prose edits — applying is gated on G1 author approval, and is typically done by `/paper-revise` or by hand-picking actions from the embedded plan.
+This is the work the skill does inline when the SECTION route fires. Produces a severity-ranked diagnosis (in chat) and embeds the plan **directly into the .tex file** as LaTeX comments. Does NOT apply prose edits — applying is gated on G1 author approval, and is typically done by `/haipipe-paper-revise` or by hand-picking actions from the embedded plan.
 
 The point is to make the **revision plan** visible and reviewable BEFORE any prose changes. The embedded plan IS the deliverable.
 
@@ -396,7 +396,7 @@ The skill enforces **two human-in-the-loop gates** so the author always controls
 
 **Triggered**: at the end of Step 4 (default SECTION route), after all plan blocks have been embedded into the .tex.
 
-**Skill behavior**: STOP. Do NOT propose prose edits, do NOT call `/paper-revise`, do NOT touch any `%% ---- PN.SN ----` content. End the turn with a fixed end-of-turn message:
+**Skill behavior**: STOP. Do NOT propose prose edits, do NOT call `/haipipe-paper-revise`, do NOT touch any `%% ---- PN.SN ----` content. End the turn with a fixed end-of-turn message:
 
 ```
 ✅ Plan embedded in <path>.tex
@@ -420,7 +420,7 @@ The skill enforces **two human-in-the-loop gates** so the author always controls
 
 End the turn. Do not auto-continue. The author's next message is the gate decision.
 
-If the author says (a), proceed to apply edits one sentence at a time (respecting the user memory `feedback_one_sentence_at_a_time`) — or hand off to `/paper-revise` if the author prefers the broader workflow.
+If the author says (a), proceed to apply edits one sentence at a time (respecting the user memory `feedback_one_sentence_at_a_time`) — or hand off to `/haipipe-paper-revise` if the author prefers the broader workflow.
 
 After every PROPOSE action transitions to `[APPLIED]` (i.e., the apply round is complete), automatically fire Gate Q before offering Gate G2.
 
@@ -452,7 +452,7 @@ Each matched item gets reported as `🟡 inline:<check>` with `PN.SN` and the of
 Call sibling check skills in parallel via `Skill()`. Default check list:
 
 ```
-Skill("paper-check-numeric",   args="<path>.tex")
+Skill("haipipe-paper-probe-values",   args="<path>.tex")
 Skill("haipipe-paper-probe-citation", args="<path>.tex")
 ```
 
@@ -482,7 +482,7 @@ Inline scan (Substep Q1):
   🟡 AI-voice anti-pattern (P2.S3: "specifically,"; P5.S1: "\emph{Significance}")
 
 Skill checks (Substep Q2):
-  paper-check-numeric:    ✅ PASS  (12/12 numbers re-derived; report: <link>)
+  haipipe-paper-probe-values:    ✅ PASS  (12/12 numbers re-derived; report: <link>)
   haipipe-paper-probe-citation:  🟡 FAIL  (2 unverified refs: doe2024foo, smith2025bar)
 
 Overall: 🟡 ATTENTION — 3 inline issues + 2 unverified refs.
@@ -517,7 +517,7 @@ haipipe-paper-revise-weaving:
       - ai-voice
     # Skill fan-out (Substep Q2) — list of sibling skills to call
     skills:
-      - paper-check-numeric
+      - haipipe-paper-probe-values
       - haipipe-paper-probe-citation
       # - haipipe-paper-edit-claim-audit          # uncomment for pre-submission rounds
       # - haipipe-paper-probe-values
@@ -685,15 +685,15 @@ When to invoke this skill vs. neighbours
 | If the author wants ... | Use |
 |---|---|
 | diagnose one section + plan the revision, embedded in .tex | **haipipe-paper-revise-weaving** (this, default route) |
-| rework a paragraph, iterate sentences inside it | `Skill(paper-revise-paragraph)` via haipipe-paper-revise-weaving |
-| rewrite a single sentence | `Skill(paper-revise-sentence)` via haipipe-paper-revise-weaving |
-| verify every quantitative claim against raw results | `Skill(paper-check-numeric)` via haipipe-paper-revise-weaving |
+| rework a paragraph, iterate sentences inside it | `Skill(haipipe-paper-revise-content)` via haipipe-paper-revise-weaving |
+| rewrite a single sentence | `Skill(haipipe-paper-revise-content)` via haipipe-paper-revise-weaving |
+| verify every quantitative claim against raw results | `Skill(haipipe-paper-probe-values)` via haipipe-paper-revise-weaving |
 | verify every citation against bib + venue metadata | `Skill(haipipe-paper-probe-citation)` via haipipe-paper-revise-weaving |
 | run all quality checks on demand (without an apply round) | `/haipipe-paper-revise-weaving check <path>.tex` (Gate Q) |
 | clean up the embedded plan blocks before submission | `/haipipe-paper-revise-weaving cleanup <path>.tex` (Gate G2) |
-| interactive multi-pass revision with sentence-level annotations + apply | `/paper-revise` (sibling, not a child) |
+| interactive multi-pass revision with sentence-level annotations + apply | `/haipipe-paper-revise` (sibling, not a child) |
 | draft a section from an outline | `/haipipe-paper-draft` |
-| critique paper-wide structure, not one section | `/paper-structure-planning` |
+| critique paper-wide structure, not one section | `/haipipe-paper-lifecycle` |
 | build a TikZ figure for the published paper | `/haipipe-paper-display-diagram` or `/diagram-drawio` |
 
 ---

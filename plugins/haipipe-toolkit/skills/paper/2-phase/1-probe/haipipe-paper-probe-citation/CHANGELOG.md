@@ -4,6 +4,16 @@ haipipe-paper-probe-citation — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [1.6.0] — 2026-07-07
+
+Fixed
+- Phase 1b tool repointed from the never-shipped `check_refs.py` to the sibling `checks.sh` (bash, stdlib only) at `../../3-check/haipipe-paper-check/`; audits `\label`/`\ref`/`\cite` resolution and bibtex-in-markdown, with `--md`/`--depth` options.
+- `predecessors:` frontmatter corrected — was self-referencing this skill; now names the two archived skills it absorbed (`haipipe-paper-edit-check-reference` Phase 1, `haipipe-paper-edit-manual-review-citations` Phase 5).
+- Sibling-shape claim corrected: citation/values/display do NOT share one lifecycle (values uses TRACE, display uses PLAN→ROUTE→LINK); each owns one working-doc type.
+
+Changed
+- No-bibtex rule de-duplicated (was restated ~10×): kept in the frontmatter `description`, one Hard Boundaries rule, and one anti-pattern; removed the pure-repeat restatements (summary parenthetical, Hard Boundaries Rule 5, CHECK-tips parenthetical, redundant anti-pattern).
+
 ## [1.5.2] — 2026-07-05
 
 Changed (test-123333333: harvest read the spec but rendered the status as `retrieved ✅ (discovery, arXiv API 2026-07-05) · JL bibtex ⬜` — same meaning, different string)

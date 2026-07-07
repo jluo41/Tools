@@ -4,13 +4,13 @@ description: "citation probe worker. One skill, one working doc (_CITATION_). Tw
 argument-hint: "[verb] [section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent, WebFetch, WebSearch
 metadata:
-  version: "1.5.2"
-  last_updated: "2026-07-05"
-  summary: "Unified citation probe worker. AUDIT→SEARCH→CANDIDATE→PLACE→REVIEW lifecycle (fully automatic, no human gate). Human review happens in CHECK only. Single working doc = _CITATION_ (plain text only, no bibtex ever). Absorbs check-reference + manual-review-citations."
+  version: "1.6.0"
+  last_updated: "2026-07-07"
+  summary: "Unified citation probe worker. AUDIT→SEARCH→CANDIDATE→PLACE→REVIEW lifecycle (fully automatic, no human gate). Human review happens in CHECK only. Single working doc = _CITATION_. Absorbs check-reference + manual-review-citations."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   predecessors:
-    - "haipipe-paper-probe-citation (mechanical \\label/\\ref/\\cite audit) — MERGED as Phase 1"
-    - "haipipe-paper-probe-citation (pre-submission 3-axis walk) — MERGED as Phase 5"
+    - "haipipe-paper-edit-check-reference (mechanical \\label/\\ref/\\cite audit) — MERGED as Phase 1"
+    - "haipipe-paper-edit-manual-review-citations (pre-submission 3-axis walk) — MERGED as Phase 5"
   absorbs_feedback:
     - "2026-07-01_no-bibtex-in-citation-map.md → Rule 1"
     - "2026-07-01_citation-map-format-unified.md → _CITATION_ format spec"
@@ -42,8 +42,6 @@ These are non-negotiable. Every agent invoking this skill must obey them.
 3. **Auto-place only for keys already in `.bib`.** During PLACE, the agent greps `.bib` for each candidate. If the key exists, the agent places `\citep{}` in tex. If the key does NOT exist, the agent leaves the entry as 🔍 and flags it for CHECK. The human verifies 🔍 entries and copies bibtex to `.bib` during CHECK.
 
 4. **NEVER remove USER comments from the outline.** Preserve `> USER:` comments verbatim. When a comment is resolved, add a `> CC:` response below it explaining the resolution. The comment itself stays.
-
-5. **NO bibtex in _CITATION_.** The _CITATION_ file is a plain-text MAP (what to cite, where, why). The .bib file is the DATA (actual bibtex entries). These are separate concerns. _CITATION_ contains paper descriptions for identification; .bib contains machine-readable bibtex for LaTeX. The agent never copies bibtex between the two.
 
 
 ## The .bib ↔ _CITATION_ separation
@@ -180,12 +178,16 @@ Scan the section's tex file for marker integrity:
 - No `\label`/`\ref` breaks in the section
 - `\phantomsection\label{}` positioned correctly relative to `\section*{}`
 
-Tool: run `check_refs.py` (co-located in this skill folder) on the paper root.
-The script is Python stdlib only, no external deps.
+Tool: run the sibling `checks.sh` (bash, stdlib only — NOT Python) on the paper root.
+It audits `\label`/`\ref`/`\cite` resolution and flags bibtex leaked into markdown.
 
 ```bash
-python3 <skill-dir>/check_refs.py <paper-root-dir> -o <output.md>
+bash ../../3-check/haipipe-paper-check/checks.sh <paper-root-dir>
 ```
+
+Optionally add `--md _CITATION_<stage>.md` to also scan the working doc for leaked
+bibtex, or `--depth N` for deeply nested layouts. Audit criteria (as above): every
+`\cite` resolves to a `.bib` entry, no orphan bib entries, no `\label`/`\ref` breaks.
 
 ### 1c. Gap identification
 
@@ -462,8 +464,12 @@ Organization rules:
   haipipe-paper-probe-display      ← display, 0-displays/ units
 ```
 
-All three follow the same shape: AUDIT → SEARCH → CANDIDATE → PLACE → REVIEW.
-Each owns one working document type. All three are fully automatic (no human gate). Human review happens in CHECK only.
+The three do NOT share one shape — each has its own lifecycle:
+- citation: AUDIT → SEARCH → CANDIDATE → PLACE → REVIEW
+- values:   AUDIT → TRACE → CANDIDATE → PLACE → REVIEW
+- display:  AUDIT → PLAN → ROUTE → LINK → REVIEW
+
+Each owns one working-doc type. All three are fully automatic (human review happens in CHECK only).
 
 
 ## Relation to other skills
@@ -499,7 +505,7 @@ The agent runs PROBE automatically and leaves 🔍 CANDIDATE entries in _CITATIO
 1. Click the `> SEARCH: [Scholar](url)` link in _CITATION_
 2. Find the paper on Scholar, read the abstract, confirm it supports the assertion
 3. Click the `"` cite icon on Scholar, select BibTeX, copy the bibtex block
-4. Paste the bibtex into your `.bib` file (bibtex lives ONLY in .bib, never in _CITATION_)
+4. Paste the bibtex into your `.bib` file
 5. In _CITATION_, change `> SEARCH:` to `> ✅ SEARCH:`
 6. If CHECK restarts PROBE, the agent auto-places the newly verified keys
 
@@ -555,7 +561,6 @@ Best practices:
 
 - ❌ Putting bibtex blocks in _CITATION_ (bibtex lives ONLY in .bib)
 - ❌ Proposing a bibtex key on candidate entries (the key is determined by Scholar when the human copies; the agent discovers it later by grepping .bib)
-- ❌ Generating bibtex from memory or search results (hallucination risk)
 - ❌ Adding entries to .bib directly (human-only operation)
 - ❌ Placing \citep{} for papers whose key is not in .bib (agent checks with grep)
 - ❌ Writing one-line summaries ("Evaluates the effect of X") instead of method + finding + relevance
