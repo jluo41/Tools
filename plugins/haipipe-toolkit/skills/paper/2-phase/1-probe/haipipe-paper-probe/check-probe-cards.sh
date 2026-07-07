@@ -28,6 +28,25 @@ if [ -z "$project_root" ]; then
   project_root=$d
 fi
 
+# expand_ref: emit one path per line from a ref token.
+#   prefix/{a,b,c}  -> prefix/a prefix/b prefix/c   (agents write this shorthand)
+#   a,b             -> a b                           (top-level comma list)
+#   a               -> a
+expand_ref() {
+  t=$1
+  case "$t" in
+    *'{'*'}'*)
+      pre=${t%%\{*}; rest=${t#*\{}; inner=${rest%%\}*}; post=${rest#*\}}
+      oIFS=$IFS; IFS=,
+      for item in $inner; do printf '%s\n' "${pre}${item}${post}"; done
+      IFS=$oIFS ;;
+    *)
+      oIFS=$IFS; IFS=,
+      for item in $t; do printf '%s\n' "$item"; done
+      IFS=$oIFS ;;
+  esac
+}
+
 fail=0
 found=0
 for card in "$paper_root"/0-lifecycle/*/_PROBE/PP*.md; do
@@ -51,8 +70,11 @@ for card in "$paper_root"/0-lifecycle/*/_PROBE/PP*.md; do
       if [ -z "$refs" ] || printf '%s' "$refs" | grep -q '<'; then
         problems="$problems empty-refs(status:$status);"
       else
-        for ref in $(printf '%s\n' "$refs" | tr '·,' '  '); do
-          [ -e "$project_root/$ref" ] || problems="$problems unresolved-ref($ref);"
+        for ref in $(printf '%s\n' "$refs" | tr '·' ' '); do
+          for eref in $(expand_ref "$ref"); do
+            [ -n "$eref" ] || continue
+            [ -e "$project_root/$eref" ] || problems="$problems unresolved-ref($eref);"
+          done
         done
       fi
       ;;

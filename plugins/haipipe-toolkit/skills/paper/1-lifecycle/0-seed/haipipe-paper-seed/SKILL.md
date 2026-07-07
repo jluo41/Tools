@@ -47,7 +47,7 @@ Read first: `../../PHILOSOPHY.md`, `../../wiki/04-lifecycle-map.md`.
 - [ ] All four sections filled with real content (not placeholders)
 - [ ] Probes section carries at least the novelty/landscape probe result
 - [ ] _LOG entry records the current state
-- [ ] Probe cards verify clean: `sh ../../../2-phase/1-probe/haipipe-paper-probe/check-probe-cards.sh <paper_root>` exits 0 (refs resolve project-side, no tables, no fat cards -- the gate RUNS the checker and shows its output; it never eyeballs cards)
+- [ ] Probe cards verify clean: locate the checker layout-agnostically (installed skills flatten the tree, so the `../../../2-phase/...` relative path is NOT reliable) -- `CHK=$(find ~/.claude/skills "$CLAUDE_PLUGIN_ROOT" -name check-probe-cards.sh 2>/dev/null | head -1)` then `sh "$CHK" <paper_root>` exits 0 (refs resolve project-side, no tables, no fat cards -- the gate RUNS the checker and shows its output; it never eyeballs cards)
 
 ## Phase Orchestration
 

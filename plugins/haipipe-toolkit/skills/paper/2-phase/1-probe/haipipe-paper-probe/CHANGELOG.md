@@ -4,6 +4,14 @@ haipipe-paper-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [3.0.1] — 2026-07-07
+
+Changed (post test-12334535 -- the v3.0 chain ran clean end-to-end in a fresh session; these four are the minor gaps the run surfaced, none a correctness hole in the enforcement)
+- check-probe-cards.sh brace-aware: refs like `.../{sources.md,notes.md,landscape.md,verdict.md}` (the shorthand agents naturally write) now expand + resolve instead of false-FAILing; also handles top-level comma lists. Regression-tested: brace card PASSes, empty-refs+table card still FAILs.
+- DISPATCH rule: when `discoveries/` is empty (or only .gitkeep) every plan is fresh -> force `run_in_background=true` on all; and never label a dispatch "background" unless the flag was actually set (test-12334535 ran three sync dispatches while PROOF 2 claimed "all background").
+- Harvest no-bibtex acceptance anchored: `grep -cE '@(article|inproceedings|...)\{'` == 0, not bare `@` (venue names like `KHD@IJCAI workshop` carry a legit `@`; bare grep false-rejected a real card).
+- Seed CHECK gate locates the checker layout-agnostically via `find ~/.claude/skills ...` (installed skills flatten the tree; the `../../../2-phase/...` relative path is unreliable there).
+
 ## [3.0.0] — 2026-07-06
 
 Changed (rethink after the ProjC seed shortcut: rules existed but were prose-only, buried in 15-line paragraphs — the executor compressed them away and searched inline, writing tables into _PROBE/ cards with nothing landed in discoveries/)

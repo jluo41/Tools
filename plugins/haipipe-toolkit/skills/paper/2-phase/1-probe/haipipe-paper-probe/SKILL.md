@@ -4,9 +4,9 @@ description: "PROBE phase worker (internal). Called by stage skills after DRAFT 
 argument-hint: "[from-buffer <paper_root> [PPNN] | stage-or-section [paper-path]]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.0.0"
-  last_updated: "2026-07-06"
-  summary: "PROBE phase worker rebuilt as a 4-step procedure (BOOKKEEP -> DISPATCH -> TRANSLATE -> VERIFY), each step ending in a mandatory PROOF shown in the reply, plus a deterministic checker (check-probe-cards.sh) run at VERIFY and re-run by the stage gate. Reference prose moved to ref/. v3.0: enforcement is mechanical, not prose -- a step without its proof did not happen."
+  version: "3.0.1"
+  last_updated: "2026-07-07"
+  summary: "PROBE phase worker rebuilt as a 4-step procedure (BOOKKEEP -> DISPATCH -> TRANSLATE -> VERIFY), each step ending in a mandatory PROOF shown in the reply, plus a deterministic checker (check-probe-cards.sh) run at VERIFY and re-run by the stage gate. Reference prose moved to ref/. v3.0: enforcement is mechanical, not prose -- a step without its proof did not happen. v3.0.1 (post test-12334535): checker is brace-aware in refs; fresh dispatch forces background; no-bibtex grep anchored to @entry{ pattern."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -84,6 +84,11 @@ Agent(haipipe-probe-orchestrator-agent, run_in_background=<true for fresh>, prom
 - Likely-fresh plans (new searches / landscape / task run) dispatch
   `run_in_background=true`; sync on a fresh run froze a session 25 minutes
   (test-2-2222). When unsure, go background; TRANSLATE runs when it returns.
+  RULE OF THUMB: if `<project_root>/discoveries/` is empty (or holds only
+  `.gitkeep`), EVERY plan is fresh -- set `run_in_background=true` on all of
+  them, and do not report a dispatch as "background" unless the call actually
+  carried the flag (test-12334535 ran three sync dispatches while PROOF 2
+  claimed "all background" -- the label must match the call).
 - Card `status: dispatched`; update the index row.
 
 PROOF 2: the literal Agent(...) call(s) visible in the transcript -- one per PP card.
