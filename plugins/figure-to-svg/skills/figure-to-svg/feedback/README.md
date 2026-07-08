@@ -1,6 +1,6 @@
-# image-ppt — Feedback Inbox
+# figure-to-svg plugin — Feedback Inbox
 
-Capture complaints, confusions, and wishes about the image-ppt SKILLS or their SCRIPTS while
+Capture complaints, confusions, and wishes about the figure-to-svg plugin SKILLS or their SCRIPTS while
 using them, then fix them later in a revision pass. This is feedback about the TOOL (a script is
 clunky, compose mis-places text, a flag is missing), NOT about the vectorization craft (that's
 `lesson/`).
@@ -8,13 +8,13 @@ clunky, compose mis-places text, a flag is missing), NOT about the vectorization
 ## How
 
 ```
-capture   /image-ppt feedback "<what bugged you>"
+capture   /figure-to-svg feedback "<what bugged you>"
           -> infers the target sub-skill/script, merges or creates in feedback/.
-digest    /image-ppt digest
+digest    /figure-to-svg digest
           -> bulk harvest from a session -> lesson/ + feedback/.
-list      /image-ppt feedback list
+list      /figure-to-svg feedback list
           -> shows open items, newest first.
-move      /image-ppt feedback move <file> <target>
+move      /figure-to-svg feedback move <file> <target>
           -> re-route a mis-filed item.
 resolve   during a revision: set status: fixed + fixed_in + a one-line Fix note.
 ```

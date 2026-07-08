@@ -1,18 +1,18 @@
 ---
-name: image-ppt-feedback
-description: "Utility verb. Captures a complaint/confusion/wish about the image-ppt SKILLS or SCRIPTS themselves (a step is clunky, compose mis-places text, crop_qc over-flags, a flag is missing), ROUTED at capture time to the right sub-skill/script. `feedback list` shows open items; `feedback move` re-routes a mis-filed item."
+name: figure-to-svg-feedback
+description: "Utility verb. Captures a complaint/confusion/wish about the figure-to-svg plugin SKILLS or SCRIPTS themselves (a step is clunky, compose mis-places text, crop_qc over-flags, a flag is missing), ROUTED at capture time to the right sub-skill/script. `feedback list` shows open items; `feedback move` re-routes a mis-filed item."
 argument-hint: "[\"<text>\" | list | move <file> <target>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 ---
 
 # Feedback (capture skill/script defects, route at capture, fix later)
 
-Captures feedback about the image-ppt SKILLS or their scripts (a step is clunky, output is
+Captures feedback about the figure-to-svg plugin SKILLS or their scripts (a step is clunky, output is
 wrong, a feature is missing) and FILES IT in the `feedback/` folder. Does NOT fix anything;
 fixing is a separate revision pass. Distinguish from lessons: feedback is about the TOOL, not
 about the vectorization craft.
 
-## Capture: `/image-ppt feedback "<text>"`
+## Capture: `/figure-to-svg feedback "<text>"`
 
 ```
 1. INFER the target sub-skill/script from the text (see "Routing" below).
@@ -28,11 +28,11 @@ about the vectorization craft.
 
 ```
   analyze, grid, bbox, items.json, crop, crop_qc, compose, connectors,
-    panels, text placement, render_diff, evaluate_icons   -> figure-to-svg-replica
+    panels, text placement, render_diff, evaluate_icons   -> figure-to-svg
   decompose, primitives, score_icon, center_svg,
-    render_compare, per-icon draw                          -> image-to-svg
-  compose, master-svg, export                              -> figure-to-svg-replica (compose)
-  router, menu, lesson/feedback/digest plumbing            -> image-ppt
+    render_compare, per-icon draw                          -> icon-to-svg
+  compose, master-svg, export                              -> figure-to-svg (compose)
+  router, menu, lesson/feedback/digest plumbing            -> figure-to-svg (entry/verbs)
   NO MATCH                                                  -> general (feedback/ root)
 ```
 
@@ -56,13 +56,13 @@ regressed: ""
 Fix: <added when resolved>
 ```
 
-## List: `/image-ppt feedback list`
+## List: `/figure-to-svg feedback list`
 
 ```
 Grep feedback/*.md for `status: open`, print newest-first.
 ```
 
-## Move: `/image-ppt feedback move <file> <target>`
+## Move: `/figure-to-svg feedback move <file> <target>`
 
 ```
 Re-tag the context field.

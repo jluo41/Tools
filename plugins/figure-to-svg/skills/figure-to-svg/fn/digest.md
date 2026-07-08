@@ -1,5 +1,5 @@
 ---
-name: image-ppt-digest
+name: figure-to-svg-digest
 description: "Utility verb. Digests a session -- the CURRENT one, or a PAST session named/id'd as an argument -- scanning its transcript for BOTH vectorization LESSONS (glyphs that resist primitives, raster fallbacks, scorer/QC gotchas, crop/resolution gotchas) AND skill/script FEEDBACK (clunky steps, wrong behavior, missing flags). Distills, dedups, confirms, then routes each item to lesson/ or feedback/. The bulk harvester. Never auto-files."
 argument-hint: "[\"<session-name|id>\"] [--dry-run]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
@@ -14,9 +14,9 @@ format needed a trick) and skill/script FEEDBACK (a step is clunky, behavior is 
 is missing) — dedups them, and (after you confirm) routes each to lesson/ or feedback/.
 
 Typical usage: from a FRESH session (clean context), name the PAST session to harvest --
-`/image-ppt digest "Figure3-Vectorize"`. With no argument it digests the CURRENT session.
+`/figure-to-svg digest "Figure3-Vectorize"`. With no argument it digests the CURRENT session.
 
-## Run: `/image-ppt digest ["<session-name|id>"] [--dry-run]`
+## Run: `/figure-to-svg digest ["<session-name|id>"] [--dry-run]`
 
 ```
 0. RESOLVE which session to digest:
@@ -52,7 +52,7 @@ Typical usage: from a FRESH session (clean context), name the PAST session to ha
      [FEEDBACK] -> fn/feedback.md capture (merge-or-create in feedback/)
 6. REPORT an ITEMIZED LIST of every item produced:
      <NEW|MERGED|DROPPED> · <LESSON|FEEDBACK> · <file.md> · "<one-line title>"
-   Close with the tally and "review: /image-ppt lesson list" + "/image-ppt feedback list".
+   Close with the tally and "review: /figure-to-svg lesson list" + "/figure-to-svg feedback list".
 ```
 
 ## Scope: craft knowledge + skill feedback (not global prefs)

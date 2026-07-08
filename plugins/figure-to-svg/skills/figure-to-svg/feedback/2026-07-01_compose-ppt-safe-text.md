@@ -1,10 +1,10 @@
 ---
-status: open
+status: fixed
 created: 2026-07-01
-updated: 2026-07-01
+updated: 2026-07-04
 occurrences: 1
-context: figure-to-svg-replica
-fixed_in: ""
+context: figure-to-svg
+fixed_in: "v1.2.0"
 regressed: ""
 ---
 compose_svg emits multi-line labels as tspans, which COLLAPSE to overlapping text when the SVG is
@@ -18,4 +18,9 @@ gray-blue panel was wrong; the originals were white panels with a darker navy ba
 gradient headers. compose_svg should take measured panel fill + gradient endpoints.
 See lesson/16, lesson/17.
 
-Fix:
+Fix: 2026-07-04 — compose_svg.py now writes BOTH variants in one run: the main output is PPT-safe
+(one absolutely-positioned <text> per line; an optional per-item `content_ppt` list gives one
+single-line <text> per sentence) and `*_wrapped.svg` keeps tspans for the visual diff
+(`--no-wrapped` to skip). Panels also accept a measured `gradient` field
+(`{"from","to","direction"}`) emitted as a <linearGradient>, so banner/header gradients come from
+sampled colours instead of guessed flat fills.

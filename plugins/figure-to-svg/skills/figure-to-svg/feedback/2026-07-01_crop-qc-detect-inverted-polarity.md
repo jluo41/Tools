@@ -3,7 +3,7 @@ status: open
 created: 2026-07-01
 updated: 2026-07-01
 occurrences: 1
-context: figure-to-svg-replica
+context: figure-to-svg
 fixed_in: ""
 regressed: ""
 ---
