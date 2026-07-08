@@ -1,31 +1,31 @@
 ---
 name: haipipe-insight-explore
-description: "Coverage / readability scanner of the haipipe-insight family. Reads the project's probes/ and existing insights/ folders; reports which probes are CONFIRMED and ready for synthesis, what's already in the insight base, and which gaps a session could close. NO code execution. Use to plan the next /haipipe-application ask, or as a standalone read-only audit. Trigger: explore, scan, coverage, what can we synthesize, what's missing, /haipipe-insight-explore."
-argument-hint: "[--project <path>]"
+description: "Coverage / gap scanner of the haipipe-insight family (the KB dashboard). Reads the project's insights/ cards plus the discoveries/ and tasks/ material folders; reports what each named dataset already has (D profile, I pattern), which I patterns could support a K (generalization + confidence), which K imply an action but have no W, and which settled material was never reviewed. NO code execution, read-only. Runs as the no-args dashboard behind /haipipe-insight, or standalone. Trigger: explore, scan, coverage, what can we synthesize, what's missing, /haipipe-insight-explore."
+argument-hint: "[--project <path>] [--out]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
-  summary: "Coverage / readability scanner of the haipipe-insight family."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  version: "2.0.0"
+  last_updated: "2026-07-05"
+  summary: "Coverage / gap scanner of the haipipe-insight family."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-insight-explore
 ================================
 
-The **coverage scanner** for insight. Maps:
+The **coverage scanner** for insight, recut to the in-sample vs generalization
+model (D/I describe one named dataset; K generalizes with confidence +
+claim_type; W acts on K). It answers four questions:
 
 ```
-probes/           which ones are confirmed and ready to feed observations?
-insights/D_data/   which probes already have D entries?
-insights/I_information/       which observations already feed a pattern?
-insights/K_knowledge/      which patterns elevated to knowledge?
-insights/W_wisdom/         which knowledge prompted action items?
+per dataset      does it have a D profile? an I pattern stated inside it?
+per I pattern    is a K on file saying whether it generalizes (any confidence)?
+per K claim      does it imply an action, and is a W on file for it?
+per material     which settled discoveries / task results were never reviewed?
 ```
 
-Read-only. Writes one transient summary to stdout (and optionally
-`insights/coverage.md`).
+Read-only. Writes one transient summary to stdout; `--out` additionally writes
+`insights/coverage.md` (transient, overwritten each run).
 
 
 Workflow
@@ -34,86 +34,80 @@ Workflow
 ```
 Step 1: Resolve project root (--project or cwd-inferred)
 
-Step 2: Scan probes/
-  - For each probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml:
-    - status = result.status (pending | confirmed | inconclusive | refuted | exploratory)
-    - has CLAIMS_FROM_RESULTS.md? has INTEGRITY_AUDIT.md?
-    - bucketize: ready_for_synthesis (confirmed) | not_ready | failed
+Step 2: Scan insights/ (frontmatter only)
+  - Glob insights/{D_data,I_information,K_knowledge,W_wisdom}/*.md
+  - Per card collect: id, layer, dataset (D/I), claim + confidence + claim_type (K),
+    rec (W), status, sources, ref_by
+  - Build the chain per dataset: D → I (same `dataset:`) → K (cites the I) → W (cites the K)
 
-Step 3: Scan insights/
-  - For each layer (D / I / K / W):
-    - List entries (D*.md, I*.md, K*.md, W*.md)
-    - Read each entry's source_experiment / scoped fields
-  - Build cross-reference:
-    - which probes already produced D entries
-    - which D entries feed I entries
-    - which I entries feed K entries
-    - which K entries spawned W entries
+Step 3: Scan material folders (read-only, shallow)
+  - tasks/**/results/<run>/            → settled task runs (metrics.json present)
+  - discoveries/*/discovery.yaml       → reviewed external claims (if the dir exists)
+  - Cross-reference: which settled material is cited by NO card (`sources` and
+    D `source_id` carry the namespaced refs)
 
-Step 4: Compute gaps
-  - probes confirmed but no D entry yet      → "ready for observations"
-  - D entries without a P link                     → "candidate pattern source"
-  - I entries without a K link                     → "candidate knowledge source"
-  - K entries without a W link                     → "candidate action source"
-  - K entries with conflicting evidence            → "needs review"
+Step 4: Compute gaps (the DIKW chain, no admission gates)
+  - dataset has D but no I               → "pattern not yet stated"
+  - I has a stated basis but no K        → "generalization not yet recorded
+                                            (file K at ANY confidence; negative
+                                            and low-confidence K count)"
+  - K implies an action, no W cites it   → "action not yet recorded (a low or
+                                            negative K still tunes a conservative W)"
+  - K with status contested/stale        → "needs review"
+  - settled material cited by no card    → "never reviewed: candidate scope for
+                                            /haipipe-insight review"
 
-Step 5: Emit summary (stdout) + optionally write insights/coverage.md
+Step 5: Emit summary (stdout); with --out also write insights/coverage.md
 ```
 
 
-Output schema (stdout + optional insights/coverage.md)
--------------------------------------------------------
+Output schema (stdout; `--out` mirrors to insights/coverage.md)
+----------------------------------------------------------------
 
 ```markdown
 # Insight Base Coverage — <project>
 
-Scanned at: <ISO>
+## Chain per dataset
 
-## Probes
+| Dataset                  | D    | I    | K (confidence, type)      | W    |
+|--------------------------|------|------|---------------------------|------|
+| VisitOsteo_1stPair_af14d | D01  | I01  | K01 (medium, assoc.)      | W01  |
+| VisitLBP_1stPair_bd02c   | D02  | —    | —                         | —    |
 
-| ID | Slug              | Status       | D entry?  | Notes               |
-|----|-------------------|--------------|-----------|---------------------|
-| 02 | lhm_vs_baseline   | confirmed    | D01       | -                   |
-| 04 | film_test_id      | confirmed    | (none)    | READY FOR SYNTHESIS |
-| 07 | param_matched     | inconclusive | (none)    | not ready           |
-| 12 | lhm_retest        | pending      | (none)    | runs in progress    |
+## Unreviewed settled material
 
-## Insight base summary
+- discoveries/P01_rx/02_agreeableness-metformin (status: ok): cited by no card
+- tasks/D01_reg/03_lbp_visit results/v0618: cited by no card
 
-- D_data:  3 entries (D01, D02, D03)
-- I_information:      2 entries (I01, I02)
-- K_knowledge:     1 entry  (K01)
-- W_wisdom:        0 entries
+## Gaps (next moves)
 
-## Gaps (synthesis opportunities)
-
-- probe 04 (confirmed) → review candidate for D/K
-- D02 not yet referenced by any I entry
-- I02 references D01, D02 but no K entry has elevated it
-- K01 has no W entry yet
-
-## Suggested next moves
-
-- `/haipipe-insight review probe:04`        (decide whether to archive D/K)
-- `/haipipe-insight-information --scope D02,D03`  (extract pattern from these)
-- `/haipipe-insight-knowledge --scope I02`        (elevate I02 → knowledge)
+- D02 has no I: /haipipe-insight information --dataset VisitLBP_1stPair_bd02c --scope D02
+- I01 basis unrecorded beyond K01 scope: consider a per-population K
+- K01 has no W: /haipipe-insight wisdom --scope K01
+- unreviewed discovery: /haipipe-insight review examples/<project>/discoveries/P01_rx/02_agreeableness-metformin
 ```
 
 
 Hard rules
 ----------
 
-- READ-ONLY. Never writes to D/I/K/W folders.
-- Only optional write is `insights/coverage.md` (transient, overwritten
-  on each run).
+- READ-ONLY on cards and material. Never writes to D/I/K/W folders, discoveries/, tasks/.
+- The only write is `insights/coverage.md`, and only when `--out` is passed
+  (transient, overwritten on each run).
 - Counts and links MUST reflect actual files on disk (no caching).
+- No admission gates: a probe does NOT need any particular verdict for its
+  material to be reviewable, and an I needs no p-value to deserve a K entry;
+  K records generalization at WHATEVER confidence the basis supports
+  (negative and low-confidence K are first-class, see
+  `../ref/dikw-boundaries.md` "Negative and uncertain K").
 
 
 Risk profile
 -------------
 
-Read-only on `probes/` and `insights/`. May write
-`insights/coverage.md`. Does NOT modify D/I/K/W entries.
+Read-only on `tasks/`, `discoveries/`, and `insights/` cards. May
+write `insights/coverage.md` when `--out` is passed. Does NOT modify D/I/K/W
+entries.
 
 
 Specialist tail
@@ -121,7 +115,9 @@ Specialist tail
 
 ```
 status:    ok | blocked | failed
-summary:   "3 probes confirmed, 2 still need D entries; 1 P→K elevation pending"
-artifacts: [stdout summary, insights/coverage.md (if --out)]
-next:      Pick a gap to close: /haipipe-insight-data <probe_ref> | /haipipe-insight-information ...
+summary:   "4 datasets: 2 full chains, 1 missing I, 1 missing K; 2 settled discoveries unreviewed"
+artifacts: [stdout summary, insights/coverage.md (only with --out)]
+next:      Pick a gap to close: /haipipe-insight review <scope> |
+           /haipipe-insight information --dataset <name> |
+           /haipipe-insight wisdom --scope K<NN>
 ```

@@ -65,7 +65,7 @@ Output: `workflow/plan.yaml` + `workflow/plan-script-<name>.yaml`.
 3. Read the task-level template at `haipipe-task/ref/workflow-template.yaml`.
 4. Generate `workflow/plan-script-<name>.yaml` with type-specific phases (from the sample), using canonical IPO fields: `label`, `type`, `required`, `prompt`, `files_in`, `files_out`.
 5. Generate `workflow/plan.yaml` task-level rollup (Run/Gate1/Gate2 phases).
-6. Both files MUST follow `project/haipipe-workflow/ref/plan-schema.md`.
+6. Both files MUST follow `task/haipipe-workflow/ref/plan-schema.md`.
 
 Return:
 ```yaml
@@ -121,7 +121,7 @@ Output: `workflow/report.yaml` + `workflow/report-script-<name>.yaml`.
 1. Read `workflow/plan.yaml` and `workflow/plan-script-*.yaml` (the contracts).
 2. Read execution evidence: `results/<run>/`, `CODE_REVIEW.md`, `RUN_AUDIT.md`.
 3. Mirror the plan structure, filling in `status`, `output`, `note` per step.
-4. Follow `project/haipipe-workflow/ref/plan-schema.md` Report schema.
+4. Follow `task/haipipe-workflow/ref/plan-schema.md` Report schema.
 
 Return:
 ```yaml

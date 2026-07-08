@@ -30,13 +30,36 @@ from haipipe.endpoint_base import Endpoint_Set
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 log = logging.getLogger("haipipe-end-deploy-local")
 
-WORKSPACE_ROOT = Path(os.environ.get("WORKSPACE_PATH", "/home/jluo41/WellDoc-SPACE"))
-ENDPOINT_PATH = Path(
-    os.environ.get(
-        "ENDPOINT_PATH",
-        WORKSPACE_ROOT / "_WorkSpace/6-EndpointStore/endpoint_cgm_patchtst_ohio_v0001",
+def _find_workspace_root() -> Path:
+    env = os.environ.get("WORKSPACE_PATH")
+    if env:
+        return Path(env)
+    for p in (Path.cwd(), *Path.cwd().parents):
+        if (p / "pyproject.toml").exists():
+            return p
+    raise SystemExit(
+        "Cannot locate the workspace root: set WORKSPACE_PATH, or run from inside "
+        "a haipipe workspace (a directory tree containing pyproject.toml)."
     )
-)
+
+
+def _resolve_endpoint_path(workspace_root: Path) -> Path:
+    env = os.environ.get("ENDPOINT_PATH")
+    if env:
+        return Path(env)
+    store = workspace_root / "_WorkSpace" / "6-EndpointStore"
+    candidates = sorted(d for d in store.iterdir() if d.is_dir()) if store.is_dir() else []
+    if len(candidates) == 1:
+        log.info("ENDPOINT_PATH not set; using the only endpoint found: %s", candidates[0])
+        return candidates[0]
+    listing = "\n  ".join(c.name for c in candidates) or "(none found)"
+    raise SystemExit(
+        f"Set ENDPOINT_PATH to one endpoint under {store}:\n  {listing}"
+    )
+
+
+WORKSPACE_ROOT = _find_workspace_root()
+ENDPOINT_PATH = _resolve_endpoint_path(WORKSPACE_ROOT)
 
 app = FastAPI(title="haipipe-endpoint-local", version="0.1.0")
 

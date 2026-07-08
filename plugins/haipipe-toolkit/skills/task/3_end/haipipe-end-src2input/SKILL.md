@@ -1,14 +1,13 @@
 ---
 name: haipipe-end-src2input
-description: "Src2InputFn specialist — design and review of the record-to-wire-payload function in an Endpoint_Set (serializes a ProcessedDF record into JSON the model can ingest). One of 5 inference Fn-types. TARGET-AWARE: SageMaker uses builders d1_*, Databricks uses builders f2_* (different wire formats). Pass --target sagemaker (default) or --target databricks. Called by /haipipe-end orchestrator when intent references Src2InputFn, record-to-payload serialization, or `src2input` keyword."
-argument-hint: "[verb] [use_case] [--target sagemaker|databricks] [args...]"
+description: "Src2InputFn specialist — design and review of the record-to-wire-payload function in an Endpoint_Set (serializes a ProcessedDF record into JSON the model can ingest). One of 5 inference Fn-types. PLATFORM-SPECIFIC by owner decision 2026-07-05 (supersedes LESSON L16): ONE Src2InputFn per deploy platform per use-case — SageMaker payload gets a SageMaker impl (flat JSON), Databricks its own (dataframe_records envelope); --platform selects which platform's Fn to design/review (default sagemaker). Called by /haipipe-end orchestrator when intent references Src2InputFn, record-to-payload serialization, or `src2input` keyword."
+argument-hint: "[verb] [use_case] [--platform sagemaker|databricks] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "2.0.0"
+  last_updated: "2026-07-05"
   summary: "Src2InputFn specialist — design and review of the record-to-wire-payload function in an Endpoint_Set (serializes a ProcessedDF record into JSON the model can ingest)."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-end-src2input
@@ -23,9 +22,16 @@ See `ref/concepts.md` for Src2InputFn semantics.
   Verb axis:    design | review | list | concepts
   Use case:     each Src2InputFn impl is scoped to ONE encoding (CGM, weight, generic
                 inference). `design` and `review` take a use_case argument.
-  Target flag:  --target sagemaker  (default — uses d1_build_src2inputfn_InferenceV*)
-                --target databricks (uses f2_build_src2inputfn_databricks_v1)
-                The two targets emit DIFFERENT wire formats. Pick deliberately.
+  Platform:     ONE Src2InputFn PER PLATFORM per use-case (owner decision
+                2026-07-05, supersedes LESSON L16): a SageMaker payload gets
+                a SageMaker impl (flat JSON); a Databricks payload gets its
+                own impl ({'dataframe_records': [...]} envelope). Put the
+                platform in the impl name (e.g. *_Databricks_*; sagemaker
+                unmarked). Keep variants thin over a shared body: every fix
+                must be applied to each platform's file; that cost is
+                accepted (L16 history + supersession note).
+                `--platform sagemaker|databricks` picks which platform's Fn
+                a design/review targets (default sagemaker).
 
 ---
 
@@ -36,9 +42,10 @@ Commands
 /haipipe-end-src2input                                                  -> show Src2InputFn ref
 /haipipe-end-src2input concepts                                         -> same
 /haipipe-end-src2input list                                             -> list use-case impls
-/haipipe-end-src2input design <use_case> [endpoint_set]                 -> SageMaker variant (d1_*)
-/haipipe-end-src2input design <use_case> --target databricks [es]       -> Databricks variant (f2_*)
-/haipipe-end-src2input review <use_case> [endpoint_set]                 -> structural audit
+/haipipe-end-src2input design <use_case> [endpoint_set] [--platform sagemaker|databricks]  -> design that platform's Fn
+/haipipe-end-src2input review <use_case> [endpoint_set] [--platform sagemaker|databricks]  -> structural audit of that platform's Fn
+# --platform selects WHICH platform's impl to design/review (default sagemaker);
+# one Fn per platform per use-case (owner decision 2026-07-05)
 ```
 
 Use cases (concrete impls in code/haifn/fn_endpoint/fn_src2input/, as of 2026-04-25)
@@ -52,13 +59,12 @@ WellDocWeight_Src2OldFormat_v260318             weight encoder (legacy)  (sagema
 DatabricksV1                                🚩  generic Databricks       (databricks)
 CGMDecoder_Databricks_Src2Payload_v260101          🚩  CGM Databricks variant   (databricks)
 
-🚩 = target-specific variant (Databricks)
+🚩 = Databricks-platform impl (one wire-Fn per platform by design; sagemaker unmarked)
 ```
 
 If `<use_case>` is omitted, the skill should `Bash("ls code/haifn/fn_endpoint/fn_src2input/")`
-and ask the user to pick. If `--target` is omitted on a use case that has both variants
-(e.g. CGM has `CGMInverse_v260101` for SageMaker and `CGMDecoder_Databricks_Src2Payload_v260101`
-for Databricks), confirm before proceeding.
+and confirm the impl with the user before proceeding (the snapshot above goes stale;
+disk is the truth).
 
 ---
 
@@ -105,8 +111,9 @@ Does NOT own:
 
 Pair invariant
 ---------------
-For any record R: `Input2SrcFn(Src2InputFn(R)) == R`.
-Changes here typically require a paired update in `-input2src`.
+For any record R and platform P: `Input2SrcFn_P(Src2InputFn_P(R)) == R`
+(the SAME-platform pair must roundtrip). Changes here typically require
+a paired update in `-input2src` for the same platform.
 
 Roundtrip test (REQUIRED for design and review)
 -------------------------------------------------

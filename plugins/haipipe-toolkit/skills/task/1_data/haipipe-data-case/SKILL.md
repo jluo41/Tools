@@ -1,15 +1,13 @@
 ---
 name: haipipe-data-case
-description: "Stage 3 (Case) specialist. Builds, runs, and reviews CaseFn; inspects 3-CaseStore; loads case-layer assets. Supports multi-partition with parallel workers (embarrassingly parallel). Called by /haipipe-data orchestrator. Direct invocation works for stage-scoped work."
+description: "Stage 3 (Case) specialist. Builds, runs, and reviews TriggerFn / CaseFn; inspects 3-CaseStore; loads case-layer assets. Supports multi-partition with parallel workers (embarrassingly parallel). Called by /haipipe-data orchestrator. Direct invocation works for stage-scoped work."
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-06-11"
+  version: "1.2.0"
+  last_updated: "2026-07-04"
   summary: "Stage 3 (Case) specialist with multi-partition + parallel support."
-  changelog:
-    - "1.1.0 (2026-06-11): add Partition Support section — CLI (--num-partitions 0 auto-discover, --num-workers N parallel), embarrassingly parallel pattern, partition discovery via glob."
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-data-case

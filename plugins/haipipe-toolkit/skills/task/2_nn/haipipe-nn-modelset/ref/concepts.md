@@ -117,7 +117,7 @@ ExampleConfig:
   num_examples: 10
 ```
 
-**See ref/overview.md for complete YAML templates per model type.**
+**See ../../haipipe-nn/ref/overview.md for complete YAML templates per model type.**
 
 ---
 

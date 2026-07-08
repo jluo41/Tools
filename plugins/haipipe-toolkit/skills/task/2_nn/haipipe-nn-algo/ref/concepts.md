@@ -206,7 +206,7 @@ You do NOT write code at Layer 1. Install the library and wrap it in a Tuner.
 
 3. Import the algorithm ONLY in that file
 
-4. Implement the Tuner interface (see ref/layer-2-tuner.md)
+4. Implement the Tuner interface (see ../../haipipe-nn-tuner/ref/concepts.md)
 
 5. Register the Tuner in the Instance's MODEL_TUNER_REGISTRY
 ```
@@ -227,7 +227,7 @@ You DO write Layer 1 code. Create an algorithm file alongside the Tuner.
    - Imports Algorithm: from hainn.algo.<family>.algorithm_<name> import MyAlgorithm
    - Tuner instantiates Algorithm inside _ensure_model_loaded() or fit()
 
-3. Implement the Tuner interface (see ref/layer-2-tuner.md)
+3. Implement the Tuner interface (see ../../haipipe-nn-tuner/ref/concepts.md)
 
 4. Register the Tuner in the Instance's MODEL_TUNER_REGISTRY
 ```
@@ -287,7 +287,7 @@ MUST:
   - Inherit from nn.Module or another Algorithm class
   - Only import: torch, torch.nn, other algorithm_*.py files
   - Implement forward() as the primary interface
-  - Be stateless with respect to training (no optimizer, no loss computation)
+  - Be stateless with respect to training (no optimizer, no training loop; computing loss INSIDE forward() is allowed and is the family norm — see the TSCLM example)
 
 MUST NOT:
   - Import ModelTuner, ModelInstance, or any pipeline class

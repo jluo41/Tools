@@ -1,15 +1,13 @@
 ---
 name: haipipe-task-for-display
-description: "display task-folder build specialist. Scaffolds {NN}_<name>/ task-folders under C-series task-groups that produce paper figures and tables — outputs to results/<run>/{*.pdf, *.png, *.tex, source_data.csv}. Called by /haipipe-task orchestrator when task-type=display."
+description: "display task-folder build specialist. Scaffolds {NN}_<name>/ task-folders in the project's display task-group (default C-series; letters are project-specific) that produce paper figures and tables — outputs to results/<run>/{*.pdf, *.png, *.tex, source_data.csv}. Called by /haipipe-task orchestrator when task-type=display."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-06-09"
+  version: "1.2.0"
+  last_updated: "2026-07-04"
   summary: "display task-folder build specialist."
-  changelog:
-    - "1.1.0 (2026-06-09): unwrap prose; fix agent names; add 4-stage lifecycle paragraph."
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-task-for-display
@@ -44,7 +42,7 @@ Heavy outputs: none.
 Cross-reference to pipeline skill
 ----------------------------------
 
-No corresponding pipeline skill — display tasks are independent; they read from upstream `results/<run>/` and write final artifacts. Useful adjacent skills: `/haipipe-paper-display-figure`, `/haipipe-paper-display-illustration-gemini`.
+No corresponding pipeline skill — display tasks are independent; they read from upstream `results/<run>/` and write final artifacts (paper-ready figures/tables). Which document consumes them is the caller's business; this skill names no upper-layer skill.
 
 
 Scaffold flow
@@ -68,7 +66,7 @@ Return contract
 status:    ok | blocked | failed
 summary:   2-3 sentences on what was scaffolded
 artifacts: [paths created]
-next:      suggested next command (run.sh / /haipipe-paper-display-figure)
+next:      suggested next command (usually bash runs/<run>.sh)
 ```
 
 
@@ -84,4 +82,4 @@ ref/workflow-plan-sample.yaml     ← script-level phases for this type
 ```
 
 Schema source of truth:
-  project/haipipe-workflow/ref/plan-schema.md
+  task/haipipe-workflow/ref/plan-schema.md

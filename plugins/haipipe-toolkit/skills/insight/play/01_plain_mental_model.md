@@ -9,8 +9,7 @@ Working memory is where things happen:
 ```text
 tasks/          runs, metrics, artifacts
 probes/         hypotheses, verdicts, caveats
-discover/       papers, external sources, notes
-narratives/     story drafts, claim gaps, arguments
+discoveries/    papers, external sources, notes
 applications/   question-driven sessions and reports
 ```
 

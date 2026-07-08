@@ -5,12 +5,13 @@ description: "How to wire the LLM engine into a task .py script"
 
 # Wiring the LLM engine into a task script
 
-## Before code/haiutils/llm_engine/ exists (current state)
+## Getting the engine
 
-Copy the transport functions from the proof-of-concept:
-```
-examples/ProjC-LLMRecPhysicain/tasks/B01_llm_open_rec/00_llm_engine_test/00_llm_engine_test.py
-```
+The engine ships with this skill: if `code/haiutils/llm_engine/` is missing,
+CREATE it from `../ref/engine/` (the skill's reference implementation — see
+SKILL.md CHECK/CREATE flow). Do NOT hand-copy transport code from project
+PoCs; the PoC at examples/ProjC-LLMRecPhysicain/.../00_llm_engine_test.py is
+historical only.
 
 Key patterns to follow:
 
@@ -28,7 +29,7 @@ SDK_SESSION_DIR = LLMCALL_STORE / ".sdk_sessions"
 
 ### 2. Call store path convention
 ```
-_WorkSpace/LLMCallStore/<project>/<task_group>/<task>/<run>/<transport>/
+_WorkSpace/LLMCallStore/<project>/<task_group>/<task>/<run>/<case_id>/   (leaf = case, per SKILL.md)
     input.json, response.json, meta.json
 ```
 

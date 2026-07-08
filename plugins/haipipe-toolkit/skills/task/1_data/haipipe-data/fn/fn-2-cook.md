@@ -80,10 +80,10 @@ Stage-Independent Steps
 **Step 3: Write or Find a Config YAML**
 
   Start from a template:
-    templates/1-source/config.yaml
-    templates/2-record/config.yaml
-    templates/3-case/config.yaml
-    templates/4-aidata/config.yaml
+    ../../haipipe-data-source/templates/config.yaml
+    ../../haipipe-data-record/templates/config.yaml
+    ../../haipipe-data-case/templates/config.yaml
+    ../../haipipe-data-aidata/templates/config.yaml
 
   Or copy an existing config from config/ and modify it.
   See Per-Stage Reference below for required config keys per stage.
@@ -177,7 +177,7 @@ _______________________________________________
 
 **Config template:**
 
-  templates/1-source/config.yaml
+  ../../haipipe-data-source/templates/config.yaml
 
 **Discover SourceFns:**
 
@@ -261,7 +261,7 @@ _______________________________________________
 
 **Config template:**
 
-  templates/2-record/config.yaml
+  ../../haipipe-data-record/templates/config.yaml
 
 **Discover HumanFns and RecordFns:**
 
@@ -334,12 +334,14 @@ _______________________________________________
   record_set_name: '<CohortName>_v<N>RecSet'
 
   CaseArgs:
-    Case_Args:                          # list of case extraction configs
-      - TriggerName: '<TriggerFnName>'
-        CaseFnList:
-          - '<CaseFnName1>'
-          - '<CaseFnName2>'
-        case_set_version: <N>           # integer version number
+    case_set_version: <N>               # integer version, CaseArgs level
+    Case_Args:                          # list of OPERATION blocks (see the shipped template)
+      - TriggerName: '<TriggerFnName>'  # trigger op: WHEN cases happen
+        TriggerArgs: { ... }
+      - CaseFnName: '<CaseFnName>'      # feature op: WHAT to compute per case
+        CaseFnList: ['<Fn1>', '<Fn2>']
+        CaseFnArgs: { ... }
+    # authoritative shape: ../../haipipe-data-case/templates/config.yaml
 
 **LTS Trigger extra config (CGM5MinLTS only):**
 
@@ -372,7 +374,7 @@ _______________________________________________
 
 **Config template:**
 
-  templates/3-case/config.yaml
+  ../../haipipe-data-case/templates/config.yaml
 
 **Discover TriggerFns and CaseFns:**
 
@@ -485,7 +487,7 @@ _______________________________________________
 
 **Config template:**
 
-  templates/4-aidata/config.yaml
+  ../../haipipe-data-aidata/templates/config.yaml
 
 **Discover Input TfmFns and SplitFns:**
 

@@ -1,7 +1,7 @@
 haipipe-nn -- Unified NN Pipeline Skill
 ========================================
 
-Covers all 4 layers of the haipipe-nn pipeline in one skill.
+Dispatcher for the 4-layer haipipe-nn pipeline: routes to the four specialist skills (haipipe-nn-algo / -tuner / -instance / -modelset), each owning its layer's reference in ref/concepts.md.
 Functions: dashboard, review, generate, test.
 
 ---
@@ -47,10 +47,10 @@ File Map
   SKILL.md             <- router + dispatch table
   README.md            <- this file
   ref/overview.md      <- L0: architecture, registry, YAML, test conventions
-  ref/layer-1-algorithm.md       <- L1: algorithm reference
-  ref/layer-2-tuner.md       <- L2: tuner reference
-  ref/layer-3-instance.md       <- L3: instance reference
-  ref/layer-4-modelset.md       <- L4: modelset reference
+  ../haipipe-nn-algo/ref/concepts.md      <- L1: algorithm reference (specialist-owned)
+  ../haipipe-nn-tuner/ref/concepts.md     <- L2: tuner reference (specialist-owned)
+  ../haipipe-nn-instance/ref/concepts.md  <- L3: instance reference (specialist-owned)
+  ../haipipe-nn-modelset/ref/concepts.md  <- L4: modelset reference (specialist-owned)
   fn/fn-dashboard.md   <- dashboard function
   fn/fn-review.md      <- review function (8 steps + sign-off)
   fn/fn-generate.md    <- generate function (new model scaffolding)

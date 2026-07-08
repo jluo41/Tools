@@ -1,6 +1,6 @@
 # workflow-plan-sample.yaml — eval task script-level plan
-# Schema: project/haipipe-workflow/ref/plan-schema.md
-# Task-level template: ../../haipipe-task/ref/workflow-template.yaml
+# Schema: task/haipipe-workflow/ref/plan-schema.md
+# Task-level template: ../../../haipipe-task/ref/workflow-template.yaml
 #
 # Typical eval phases: Load → Score → Compare → Emit
 # All outputs light (results/<run>/), no _WorkSpace writes.

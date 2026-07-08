@@ -14,12 +14,12 @@ Skill: haipipe-paper-round
 
 Manage `1-rounds/`, the paper's working-memory layer. A round is a dated cycle
 of author/agent discussion, coauthor or reviewer comments, decisions, todo
-items, and what was applied. The contract is in `../../ref/paper-rounds.md`.
+items, and what was applied. The contract is in `../../wiki/07-paper-rounds.md`.
 
 Use `round`, not `feedback`: the contents are broader than external feedback.
 
-Read first: `../../PHILOSOPHY.md`, `../../ref/paper-rounds.md`,
-`../../ref/lifecycle-map.md`.
+Read first: `../../PHILOSOPHY.md`, `../../wiki/07-paper-rounds.md`,
+`../../wiki/04-lifecycle-map.md`.
 
 Folder contract
 ---------------
@@ -67,7 +67,7 @@ subtrees; `haipipe-paper-rebuttal` adds those for external-review rounds.
 
 Read `discussion.md` (raw review/meeting text). Extract decisions into
 `decisions.md` and open needs into `todo.md`. Every todo item points to one
-target, per `../../ref/paper-rounds.md`:
+target, per `../../wiki/07-paper-rounds.md`:
 
 ```text
 claim unsupported / too strong   -> 0-lifecycle/2-claims or probe

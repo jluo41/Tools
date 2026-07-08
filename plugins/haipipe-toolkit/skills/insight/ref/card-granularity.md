@@ -10,7 +10,7 @@ One card = one reusable knowledge unit.
 ```
 
 A card is not a raw note, not a whole report, and not a folder substitute. It
-should be small enough to cite from a narrative or paper, but rich enough that
+should be small enough to cite from a paper or application, but rich enough that
 a future reader understands the evidence, caveats, and scope without reopening
 every upstream artifact.
 
@@ -36,7 +36,7 @@ Do not create topic subfolders such as `K_knowledge/film/` or
 ```yaml
 tags: [film, ood, generalization, cgm]
 sources: [probe:P.0619_film_ood, I02]
-ref_by: [W01, narrative:N01.C2]
+ref_by: [W01, app:ask:03]
 ```
 
 Navigation belongs in derived views:
@@ -44,7 +44,6 @@ Navigation belongs in derived views:
 ```text
 insights/views/by_topic.md
 insights/views/by_source.md
-insights/views/by_narrative.md
 insights/views/by_status.md
 ```
 
@@ -56,7 +55,7 @@ Before filing a new card, the INSIGHT_REVIEW.yaml MUST answer these tests.
 
 ```text
 1. Reuse test
-   Will a future narrative, paper, ask session, or decision cite this exact unit?
+   Will a future paper, ask session, or decision cite this exact unit?
 
 2. One-sentence test
    Can the card's contribution be stated in one sentence without "and also"?
@@ -102,16 +101,19 @@ Examples
 Too fine:
 
 ```text
-D01: seed 1 MAE = 3.2
-D02: seed 2 MAE = 3.4
-D03: seed 3 MAE = 3.3
+D01: val split seed-1 row count
+D02: val split seed-2 row count
+D03: val split seed-3 row count
 ```
 
 Good:
 
 ```text
-D01: FiLM validation MAE is lower across 3 seeds
+D01: CGM_OOD_v2 profile: N=1.2k patients, 3 seeds x 3 splits, 2019-2021
 ```
+
+(The cross-seed comparison "validation MAE is lower across 3 seeds" is an
+in-sample PATTERN: it belongs on an I card for that dataset, never on a D.)
 
 Too coarse:
 
@@ -144,10 +146,10 @@ Size Budgets
 These are review targets, not hard parser limits.
 
 ```text
-D body: 30-70 lines
-I body: 40-90 lines
-K body: 60-140 lines
-W body: 40-90 lines
+D body: 30-50 lines
+I body: 30-60 lines
+K body: 40-80 lines
+W body: 30-60 lines
 
 Most files: <= 160 lines total
 Absolute max: 200 lines total

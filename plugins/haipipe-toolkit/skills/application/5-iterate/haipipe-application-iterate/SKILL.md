@@ -7,8 +7,7 @@ metadata:
   version: "1.0.0"
   last_updated: "2026-06-22"
   summary: "Post-deploy iteration — A/B results, performance, refinement."
-  changelog:
-    - "1.0.0 (2026-06-22): initial version."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-application-iterate

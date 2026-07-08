@@ -9,7 +9,7 @@ Step 1 — Identify project + task-group
 ---------------------------------------
 
 - Auto-detect project from cwd (look for `examples/Proj*/`).
-- ASK task-group if not given. Group letter must be **R**;
+- ASK task-group if not given. Group letter is PROJECT-SPECIFIC (orchestrator rule; follow the project's existing scheme). Default **R**;
   scaffold a new `R{NN}_<cohort_name>/` if needed
   (see `../../../haipipe-task/fn/task-group.md`).
 
@@ -93,6 +93,6 @@ MUST NOT
   source table, keep it simple.
 - Use `spark.sql()` for local processing — Spark is extraction-only.
   Once data is local, use pandas.
-- Place `.parquet` files in `results/` — they go to `_WorkSpace/0-RawStore/`.
+- Place `.parquet` files in `results/` — they go to `_WorkSpace/0-RawDataStore/`.
 - Skip the `_meta:` block.
 - Create `README.md`.

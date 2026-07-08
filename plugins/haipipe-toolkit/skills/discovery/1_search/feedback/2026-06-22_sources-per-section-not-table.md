@@ -1,8 +1,10 @@
 ---
-status: open
+status: fixed
 created: 2026-06-22
+updated: 2026-07-03
+occurrences: 2
 context: search stage / sources.md layout
-fixed_in: ""
+fixed_in: "2.4.0"
 ---
 
 Reporter (JL): 这个source 可以让他一个source 一个section吗，不要放到一个大表里，一点都不好读
@@ -27,3 +29,8 @@ Fix:
 - Reserve tables for short-field summaries (e.g. the group _index roll-up),
   not for per-source full citations.
 - Decide in a revision pass; also retro-apply to existing sources.md files.
+
+## Recurrences
+- 2026-07-03: (JL, inline in ref/discovery-yaml-schema.md after the v2.4 rewrite reintroduced the table template) "new have this. I prefer to have a paper for one single paragraph or subsection, never never use the table to group the papers or the sources together, it is not for the human to read, get it?????"
+
+Fix: v2.4.0 — sources.md template is now ONE SOURCE = ONE SUBSECTION (`###` heading carrying the full paper title, bullet fields, Scholar link), and the same never-a-table rule is applied across the layer: arxiv / semantic-scholar / exa-search / deepxiv result presentation, comm-lit-review literature output, novelty-check Closest Prior Work. Existing sources.md files retro-apply on next edit.

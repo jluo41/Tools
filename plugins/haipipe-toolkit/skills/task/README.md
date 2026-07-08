@@ -50,15 +50,16 @@ Chinese mnemonic:
 The number is a permanent domain id, not a full pipeline order. New domains are
 appended and existing ids are not renumbered.
 
-## Boundary
+## Boundary (self-contained by design)
 
-Tasks execute internal work. They do not judge research claims, preserve
-long-term insight memory, or write paper/application prose.
+Tasks execute internal work: a task ends at Report, having produced `results/`, and stops. Whoever consumes a task's results records the link on THEIR side; this layer tracks no consumers, and its working docs (SKILL/ref/fn) never route upward.
+
+For the human reader, the wider mental model:
 
 ```text
-task       = execute work
-probe      = judge claim-level evidence
-discovery  = inspect outside evidence
-insight    = preserve judged knowledge
+task       = execute internal work (code, runs, metrics)
+probe      = explore + gather evidence (optionally judge a claim)
+discovery  = inspect outside evidence (literature, prior art)
+insight    = preserve reusable knowledge (D/I/K/W cards)
 paper/app  = deliver audience-facing narrative
 ```

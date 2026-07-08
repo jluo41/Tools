@@ -4,11 +4,10 @@ description: "AWS SageMaker develop specialist for haipipe-end. Runs Stage 5 tra
 argument-hint: "[verb] [endpoint_set_or_run_id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-07-04"
   summary: "AWS SageMaker develop specialist for haipipe-end."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-end-develop-sagemaker
@@ -58,7 +57,7 @@ Verb        Ref file(s)                              Backing platform script
 ----------- ---------------------------------------- ----------------------------------------------------
 dashboard   ref/concepts.md                          (none — list pipelines + ModelPackageGroup contents)
 develop     ref/concepts.md +                        platform-sagemaker-training/scripts/
-            ../haipipe-end-endpointset/ref/            run_training_pipeline/run_training_pipeline.py
+            ../haipipe-end/ref/            run_training_pipeline/run_training_pipeline.py
               0-overview.md
 test        ref/concepts.md                          --stage system:
                                                        run_training_pipeline/run_train_local_system.py

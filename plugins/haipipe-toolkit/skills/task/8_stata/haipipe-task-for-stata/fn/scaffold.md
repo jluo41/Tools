@@ -42,11 +42,12 @@ Stage-specific tree (see SKILL.md for the full tree per stage). Common elements:
     |- configs/              Stata .do configs (source of truth) + YAML _meta wrappers
     |- runs/                 THIN .ps1 entries (from ref/run-ps1-template.ps1)
     |- sbatch/               multi-run batchers (optional)
-    |- results/              log/ + summary.txt (no ceremony -- no manifest.json)
+    |- results/              log/ + summary.txt + config_snapshot.do (+ manifest.json for self-orchestrating stages per dialect B3)
     +- diagram/              doc surface (never README.md)
 
 Stage differences:
-- cms/case/data: have a dispatcher .do (from ref/dispatcher-do-template.do) + orchestrator .ps1 (from ref/run-stage-year-template.ps1) + scripts/ subdirs
+- cms/case: dispatcher .do (from ref/dispatcher-do-template.do) + orchestrator .ps1 (from ref/run-stage-year-template.ps1) + scripts/ subdirs
+- data: dispatcher .do + scripts/ numbered subdirs, NO orchestrator (self-orchestrating: runs/*.ps1 IS the orchestrator)
 - reg: DISPATCHER-LESS -- .ps1 runners call worker .do scripts directly; no orchestrator
 
 

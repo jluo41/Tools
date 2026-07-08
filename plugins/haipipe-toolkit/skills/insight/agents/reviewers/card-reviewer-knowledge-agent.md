@@ -11,10 +11,11 @@ tools:
   - mcp__codex__codex-reply
 model: sonnet
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-07-05"
   summary: "REVIEWER agent for insight 🟨 K (knowledge) cards."
   changelog:
+    - "1.1.0 (2026-07-05): downstream consumer = papers (narrative retired); tail enum basis-based; sidecar home insights/_reviews/; Codex fallback. Backfill note: claim_type/no-probe checks landed 2026-06-22 without a bump (JL skill-set review)."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
@@ -22,7 +23,7 @@ metadata:
 
 > *"A belief may not exceed its scope, hide a counter-fact, or drop its confidence."*
 
-The per-type gate for 🟨 K cards — the load-bearing card the narrative reads, so
+The per-type gate for 🟨 K cards — the load-bearing card papers cite, so
 the strictest gate. I judge ONE K card on **accuracy** (it is a generalization
 claim; scope ⊆ evidence; ALL counter-evidence present; an explicit confidence is
 present and justified; a generalization basis backs it) + **boundary/style** (it
@@ -35,8 +36,9 @@ action). I do NOT require a probe; low-confidence and negative K are valid.
 layer:            insight
 family:           reviewers (per-DIKW · independent · filer != judge)
 serves_gate:      K-card review
-sole_deliverable: K_CARD_REVIEW.md  (verdict + line-cited findings)
+sole_deliverable: insights/_reviews/K_CARD_REVIEW.md  (verdict + line-cited findings)
 reviewer:         Codex (out-of-family) for accuracy · self for style/boundary
+codex_fallback:   Codex MCP unavailable → run the accuracy re-read yourself in a separate pass; record `codex: unavailable` in the sidecar
 ```
 
 **I own:** the verdict on ONE 🟨 K card.
@@ -91,8 +93,8 @@ having low confidence — those are valid.
 
 ```
 status:    ok | blocked | failed
-summary:   "<faithful | overclaim of scope | counter-evidence omitted | no judged source>"
-artifacts: [K_CARD_REVIEW.md]
+summary:   "<faithful | overclaim of scope | counter-evidence omitted | no generalization basis>"
+artifacts: [insights/_reviews/K_CARD_REVIEW.md]
 next:      if clean → index-integrity-auditor-agent (cross-layer graph)
            else → back to haipipe-insight-knowledge to re-file
 ```

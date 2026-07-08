@@ -7,8 +7,7 @@ metadata:
   version: "1.0.0"
   last_updated: "2026-06-22"
   summary: "Round management — feedback, triage, iteration cycles."
-  changelog:
-    - "1.0.0 (2026-06-22): initial version modeled on paper-round."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-application-round

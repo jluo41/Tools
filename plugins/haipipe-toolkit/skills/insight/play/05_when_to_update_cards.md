@@ -38,7 +38,7 @@ does not change.
 Example:
 
 ```text
-Add a new narrative reference to `ref_by`.
+Add a new caller reference (paper / application) to `ref_by`.
 ```
 
 ## Supersede
@@ -53,7 +53,7 @@ New stronger probe: gain transfers across five OOD splits.
 Action: mark K03 as superseded and create a replacement K card.
 ```
 
-Do not delete the old card. Link it to the replacement so old narratives and
+Do not delete the old card. Link it to the replacement so old citations and
 reports still have an evidence trail.
 
 ## Skip

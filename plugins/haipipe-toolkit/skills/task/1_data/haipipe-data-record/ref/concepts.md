@@ -223,5 +223,5 @@ Generated HumanFns:   code/haifn/fn_record/human/     (discover with ls)
 Generated RecordFns:  code/haifn/fn_record/record/    (discover with ls)
 Builders (edit here): code-dev/1-PIPELINE/2-Record-WorkSpace/  (discover with ls)
 Store path:           _WorkSpace/2-RecStore/
-Config template:      templates/2-record/config.yaml
+Config template:      ../templates/config.yaml (this skill's own template)
 ```

@@ -4,18 +4,17 @@ description: "Cross-stage transport specialist. Pushes / pulls cohort assets bet
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Grep, Glob
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.2.0"
+  last_updated: "2026-07-05"
   summary: "Cross-stage transport specialist."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-data-remote
 ==========================
 
 Cross-stage transport specialist. Operates on every store
-(0-RawStore, 1-SourceStore, 2-RecStore, 3-CaseStore, 4-AIDataStore,
+(0-RawDataStore, 1-SourceStore, 2-RecStore, 3-CaseStore, 4-AIDataStore,
 5-ModelInstanceStore, 6-EndpointStore, 7-AgentWorkspace,
 ExternalStore, ExternalStore/@inference). Wraps the
 `hai-remote-sync` CLI; does not implement transfer logic itself.
@@ -50,7 +49,7 @@ Commands
 Stores recognized:
 
 ```
-0-RawStore           5-ModelInstanceStore
+0-RawDataStore           5-ModelInstanceStore
 1-SourceStore        6-EndpointStore
 2-RecStore           7-AgentWorkspace
 3-CaseStore          ExternalStore
@@ -123,7 +122,7 @@ MUST DO / MUST NOT
 
 - ALWAYS read `ref/concepts.md` and `ref/store-map.md` before any verb.
 - ALWAYS dry-run before a real push / pull.
-- ALWAYS surface AWS SSO error hints (the DrFirst SSO URL is in
+- ALWAYS surface AWS SSO error hints (the SSO portal URL is in
   env.sh comments) when transfers fail with credential errors.
 - NEVER pass `--sync` to hai-remote-sync.
 - NEVER call `aws s3 ls` / `aws s3 rm` directly. Use hai-remote-sync.

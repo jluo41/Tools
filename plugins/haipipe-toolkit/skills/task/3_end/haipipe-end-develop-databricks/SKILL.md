@@ -4,11 +4,10 @@ description: "Databricks develop specialist for haipipe-end. STATUS: DEFERRED â€
 argument-hint: "[verb] [config_or_run_id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-07-04"
   summary: "Databricks develop specialist for haipipe-end."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-end-develop-databricks
@@ -56,7 +55,7 @@ Verb        Ref file(s)                              Backing platform script (wh
 ----------- ---------------------------------------- -------------------------------------
 dashboard   ref/concepts.md                          (none â€” list Jobs + UC models via databricks CLI)
 develop     ref/concepts.md +                        platform-databrick-training/scripts/
-            ../haipipe-end-endpointset/ref/            run_training_job/run_databricks_job.py  (TBD)
+            ../haipipe-end/ref/            run_training_job/run_databricks_job.py  (TBD)
               0-overview.md
 test        ref/concepts.md                          --stage system:  run_train_local_system.py (TBD)
                                                      --stage cluster: databricks notebook run (TBD)

@@ -7,10 +7,7 @@ metadata:
   version: "3.0.0"
   last_updated: "2026-06-29"
   summary: "Stage 2 — claims with venue-driven depth. Now with _LOG changelog + _EVIDENCE_ tracking (what backs each claim) + _PROBE/ subfolder for claim-spawned probe plans (borrowed from paper v2.0.0)."
-  changelog:
-    - "3.0.0 (2026-06-29): added _LOG, _EVIDENCE_ tracking file, _PROBE/ subfolder for claim-gap probe plans (was flat 1-probe-plans/). Output folder 2-claims/ (was flat file). Borrowed per-stage tracking pattern from paper."
-    - "2.0.0 (2026-06-23): added claims_depth (light/medium/full) driven by venue profile."
-    - "1.0.0 (2026-06-22): initial version modeled on paper-claims."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-application-claims
@@ -232,7 +229,7 @@ For each GAP claim, write:
 Backfill on probe return (full depth)
 =======================================
 
-1. Read verdict from probes/<id>/probe.yaml.
+1. Read verdict from the need's PPNN card (the gateway's return lands it there).
 2. Update claim status in 2-claims.md.
 3. Update probe plan status in 1-probe-plans/.
 

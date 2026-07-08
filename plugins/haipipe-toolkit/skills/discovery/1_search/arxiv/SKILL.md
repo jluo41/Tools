@@ -4,11 +4,10 @@ description: Search, download, and summarize academic papers from arXiv. Use whe
 argument-hint: "[query-or-arxiv-id]"
 allowed-tools: Bash(*), Read, Write
 metadata:
-  version: "1.0.0"
+  version: "1.0.1"
   last_updated: "2026-05-31"
   summary: "Search, download, and summarize academic papers from arXiv."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # arXiv Paper Search & Download
@@ -19,7 +18,7 @@ Search topic or arXiv paper ID: $ARGUMENTS
 
 - **PAPER_DIR** - Local directory to save downloaded PDFs. Default: `papers/` in the current project directory.
 - **MAX_RESULTS = 10** - Default number of search results.
-- **FETCH_SCRIPT** - `tools/arxiv_fetch.py` relative to the ARIS install, or the same path relative to the current project. Fall back to inline Python if not found.
+- **API** - inline Python against `http://export.arxiv.org/api/query` (search_query for keyword search, id_list for batch verification). No local script exists; do not hunt for one.
 
 > Overrides (append to arguments):
 > - `/arxiv "attention mechanism" - max: 20` - return up to 20 results
@@ -43,29 +42,7 @@ If the argument matches an arXiv ID pattern (`YYMM.NNNNN` or `category/NNNNNNN`)
 
 ### Step 2: Search arXiv
 
-Locate the fetch script:
-
-```bash
-SCRIPT=$(python3 -c "
-import pathlib
-candidates = [
-    pathlib.Path('tools/arxiv_fetch.py'),
-    pathlib.Path.home() / '.claude' / 'skills' / 'arxiv' / 'arxiv_fetch.py',
-]
-for p in candidates:
-    if p.exists():
-        print(p)
-        break
-" 2>/dev/null)
-```
-
-**If SCRIPT is found**, run:
-
-```bash
-python3 "$SCRIPT" search "QUERY" --max MAX_RESULTS
-```
-
-**If SCRIPT is not found**, fall back to inline Python:
+Query the arXiv API directly with inline Python (PRIMARY path — the historical `tools/arxiv_fetch.py` script does not exist in this repo; hunting for it wasted turns in live runs, so don't):
 
 ```bash
 python3 - <<'PYEOF'
@@ -103,12 +80,12 @@ print(json.dumps(papers, ensure_ascii=False, indent=2))
 PYEOF
 ```
 
-Present results as a table:
+Present results as a numbered list, ONE PAPER PER ENTRY (never a table — paper tables are unreadable):
 
 ```text
-| # | arXiv ID   | Title               | Authors        | Date       | Category |
-|---|------------|---------------------|----------------|------------|----------|
-| 1 | 2301.07041 | Attention Is All... | Vaswani et al. | 2017-06-12 | cs.LG    |
+1. Vaswani et al. (2017). Attention Is All You Need.
+   arXiv 2301.07041 · cs.LG · 2017-06-12
+2. ...
 ```
 
 ### Step 3: Fetch Details for a Specific ID
@@ -116,8 +93,6 @@ Present results as a table:
 When a single paper ID is requested (either directly or from Step 2):
 
 ```bash
-python3 "$SCRIPT" search "id:ARXIV_ID" --max 1
-# or fallback:
 python3 -c "
 import urllib.request, xml.etree.ElementTree as ET
 NS = 'http://www.w3.org/2005/Atom'
@@ -128,6 +103,8 @@ with urllib.request.urlopen(url, timeout=30) as r:
 "
 ```
 
+(`id_list` takes a comma-separated batch — verify MANY ids in ONE call, per the batch rule.)
+
 Display: title, all authors, categories, full abstract, published date, PDF URL, abstract URL.
 
 ### Step 4: Download PDFs
@@ -135,10 +112,6 @@ Display: title, all authors, categories, full abstract, published date, PDF URL,
 When download is requested, for each paper ID to download:
 
 ```bash
-# Using fetch script:
-python3 "$SCRIPT" download ARXIV_ID --dir PAPER_DIR
-
-# Fallback:
 mkdir -p PAPER_DIR && python3 -c "
 import pathlib
 import sys

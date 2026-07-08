@@ -9,10 +9,11 @@ tools:
   - Write
 model: sonnet
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-07-05"
   summary: "REVIEWER agent for insight."
   changelog:
+    - "1.1.0 (2026-07-05): status enum + source-legality realigned to the schema (was an invented enum with probe-layer `deposited`); sidecar home insights/_reviews/ (JL skill-set review)."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
@@ -30,7 +31,7 @@ is the fidelity reviewer). A mechanical, deterministic checklist.
 layer:            insight
 family:           reviewers (independent judgments — filer != judge)
 serves_gate:      integrity
-sole_deliverable: INDEX_AUDIT.md  (per-edge / per-entry pass·fail list)
+sole_deliverable: insights/_reviews/INDEX_AUDIT.md  (per-edge / per-entry pass·fail list)
 reviewer:         self (checklist — deterministic, no Codex needed)
 ```
 
@@ -51,13 +52,18 @@ checklist:
 □ id ↔ layer       every card's `id` letter matches its `layer` (D/I/K/W)
 □ ref_by symmetry  if A.sources lists B, then B.ref_by MUST list A (both ways)
 □ no dangling      every id in any `sources` / `ref_by` resolves to a real file
-□ source legality  D→task/probe ref · I→D ids · K→I ids · W→K ids. ALSO LEGAL: a
-                   cross-population SYNTHESIS K may source sibling K ids (K→K), in
-                   addition to I ids — that is aggregation, not a layer-skip.
+□ source legality  per the schema's Validation rules: D cites a namespaced
+                   settled source (task:/probe:/discover:/lit:); I cites the D
+                   id(s) of its named dataset; K cites the I card(s) it
+                   generalizes OR a probe:/lit:/discover: origin (owner decision
+                   2026-07-05: external-sourced K is legal); W cites >=1 K id.
+                   ALSO LEGAL: a cross-population SYNTHESIS K may source sibling
+                   K ids (K→K): aggregation, not a layer-skip.
 □ K fields present every K has `confidence` AND `claim_type` (no probe gate — a
                    confirmed probe is NOT required under the current model)
 □ INDEX ↔ files    INDEX.md lists exactly the files on disk (no missing/extra)
-□ status enum      status ∈ {active, stale, superseded, deposited}; supersede chains intact
+□ status enum      status matches the schema enum (`active | stale | superseded
+                   | contested | acted_on`); supersede chains intact
 ```
 
 ## Specialist tail
@@ -65,7 +71,7 @@ checklist:
 ```
 status:    ok | blocked | failed
 summary:   "<N entries audited · M graph violations>"
-artifacts: [INDEX_AUDIT.md]
+artifacts: [insights/_reviews/INDEX_AUDIT.md]
 next:      if clean → card is a trustworthy KB entry
            if violations → back to the haipipe-insight-<layer> skill to fix links/INDEX
 ```

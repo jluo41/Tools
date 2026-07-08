@@ -7,9 +7,7 @@ metadata:
   version: "1.1.0"
   last_updated: "2026-06-04"
   summary: "Existing paper → gold layout; prose byte-identical, compile verified."
-  changelog:
-    - "1.1.0 (2026-06-05): renamed from paper-restructure to haipipe-paper-build-restructure (haipipe-paper-* name unification)."
-    - "1.0.0 (2026-06-04): initial version."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-paper-build-restructure (4-build-submit)
@@ -72,7 +70,7 @@ Naming decisions (`NN` order per venue, slugs from subsection titles) are made h
 ### Phase 3: Execute
 
 1. `git mv` / copy content per the table; cut at heading boundaries only, taking each heading's trailing comments and floats with it.
-2. Build the driver: preamble + `\section{}` + `\input` lines (driver owns headings; strip `\section{}`/`\subsection{}` lines that became filenames or remain as the leaf's first line, per `3-write-edit/_shared/tex-file-anatomy.md`).
+2. Build the driver: preamble + `\section{}` + `\input` lines (driver owns headings; strip `\section{}`/`\subsection{}` lines that became filenames or remain as the leaf's first line, per `2-section-edit/_shared/tex-file-anatomy.md`).
 3. Build wrappers for sections with multiple leaves; pure `\input` lines.
 4. Rewrite every path that moved: `\includegraphics`, table `\input`, `\bibliography`.
 5. Install `1-compile.sh` from `../haipipe-paper-build-scaffold/templates/compile.sh.tpl` if no conforming build script exists; `chmod +x`.

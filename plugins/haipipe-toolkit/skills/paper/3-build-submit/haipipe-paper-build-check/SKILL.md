@@ -7,9 +7,7 @@ metadata:
   version: "1.1.0"
   last_updated: "2026-06-04"
   summary: "Conformance audit for the gold-standard paper folder layout; report-only."
-  changelog:
-    - "1.1.0 (2026-06-05): renamed from paper-structure-check to haipipe-paper-build-check (haipipe-paper-* name unification)."
-    - "1.0.0 (2026-06-04): initial version; script verified green on Paper-MapPhyTrait-npjDM2025."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-paper-build-check (4-build-submit)

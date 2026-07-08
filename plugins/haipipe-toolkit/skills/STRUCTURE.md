@@ -11,17 +11,18 @@ Core Stack
 The core execution model is a stacked sandwich:
 
 ```
-narrative   story layer        decides what claims the project needs
-probe       claim layer        opens a claim contract, then closes it after evidence
+narrative   story layer        decides what the project needs to say
+probe       evidence verb      explores what is known, gathers what is missing,
+                               optionally judges a claim (full mode)
 discover    outside evidence   sources, notes, prior art, novelty, verdicts
 task        inside execution   code, runs, metrics, reports
-insight     synthesis layer    reusable meaning, caveats, claim wording
+insight     synthesis layer    reusable D/I/K/W cards
 ```
 
-`discover` and `task` are sibling filling under a probe. A probe can dispatch
-one discovery, many discoveries, one task, many tasks, or a mix of both. The
-probe does not contain the task or discovery; it references their artifacts and
-resumes after they are ready.
+`discover` and `task` are sibling execution layers dispatched by probe. A probe
+can dispatch one discovery, many discoveries, one task, many tasks, or a mix.
+The probe does not contain them; it references their artifacts and resumes after
+they are ready.
 
 `insight` is the synthesis layer after Probe-post. It does not replace raw
 discovery/task evidence and it does not re-judge the claim. It turns evidence
@@ -34,7 +35,8 @@ whether the story is ready to hand off.
 Important distinction:
 
 Delivery lifecycles contain their own story/message and record evidence needs
-by reference. Evidence work remains in probes, discoveries, tasks, and insights.
+by reference (each stage's _PROBE/PPNN card). Evidence work remains in
+discoveries, tasks, and insights.
 
 
 Project Folder Contract
@@ -48,7 +50,6 @@ examples/<PROJECT>/
 |   |-- project.log.jsonl      single append-only event log
 |   |-- project.status.yaml    current project snapshot
 |   `-- project.site.md        human dashboard
-|-- probes/
 |-- discoveries/
 |-- tasks/
 |-- insights/

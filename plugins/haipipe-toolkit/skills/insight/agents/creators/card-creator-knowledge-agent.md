@@ -11,13 +11,14 @@ tools:
   - Skill
 model: inherit
 metadata:
-  version: "1.2.0"
-  last_updated: "2026-06-20"
+  version: "1.3.0"
+  last_updated: "2026-07-05"
   summary: "Thin BUILDER agent for insight K (knowledge) cards."
   changelog:
+    - "1.3.0 (2026-07-05): downstream consumer = papers (narrative retired); changelog reordered newest-first (JL skill-set review)."
     - "1.2.0 (2026-06-20): input generalized to judged source_ref from INSIGHT_REVIEW.yaml."
-    - "1.0.0 (2026-05-31): baseline metadata added."
     - "1.1.0 (2026-05-31): input = confirmed probe_ref; files the probe's claim as K (was >=1 I id)."
+    - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
 # Card Creator for Knowledge (🟨 K)
@@ -30,7 +31,7 @@ is the inferential evidence (a significance test, robustness across subgroups, o
 a vetted literature/review claim) — a probe is one possible basis, NOT a
 requirement. Low-confidence and negative ("does not generalize") K are recorded.
 I delegate the write to `haipipe-insight-knowledge`. K is the load-bearing card:
-it is what narrative reads.
+it is what papers cite.
 
 ## Scope & Boundary (fence)
 

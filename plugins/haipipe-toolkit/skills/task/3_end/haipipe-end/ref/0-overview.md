@@ -6,7 +6,7 @@ Transforms a trained ModelInstance_Set into a self-contained, production-ready
 Endpoint_Set that can run inference from a raw JSON payload.
 
 **Scope:** Architecture, inference pipeline, directory layout, YAML config,
-payload/response schemas, SPACE keys. Per-Fn-type contracts are in ref/1-5.md.
+payload/response schemas, SPACE keys. Per-Fn-type contracts live with the specialists: `../../haipipe-end-{meta,trig,post,src2input,input2src}/ref/concepts.md`.
 
 ---
 
@@ -227,29 +227,29 @@ The Fn is loaded dynamically via Base.load_module_variables(pypath).
 Deployment Platforms
 =====================
 
-**Fns are platform-agnostic.** There is ONE set of 5 Fns per endpoint —
-not separate Databricks/SageMaker variants. Every TrigFn and Input2SrcFn
-handles both wire formats (direct dict AND Databricks `dataframe_records`)
-via the standard unwrapping pattern:
+**The wire I/O pair is platform-specific (owner decision 2026-07-05,
+supersedes LESSON L16).** Src2InputFn + Input2SrcFn are written ONE PER
+PLATFORM per use-case: a SageMaker payload gets a SageMaker impl (flat
+JSON), a Databricks payload its own impl (`dataframe_records` envelope).
+Put the platform in the impl name (e.g. `CGMDecoder_Databricks_*`).
+MetaFn / TrigFn / PostFn stay SHARED across platforms; TrigFn keeps the
+L14 unwrap so it reads payload on either platform:
 
 ```python
 if 'dataframe_records' in payload_input and payload_input['dataframe_records']:
     payload_input = payload_input['dataframe_records'][0]
 ```
 
-The platform distinction lives in the **deploy wrappers**, not in the Fns:
-
 ```
-Fns (platform-agnostic, one set)      Deploy wrappers (platform-specific)
-├── MetaFn                             ├── platform-databrick-inference/  (MLflow pyfunc)
-├── TrigFn                             └── platform-sagemaker-inference/  (Docker + Flask)
-├── Input2SrcFn
-├── Src2InputFn                        Both call: endpoint_set.inference(payload)
-└── PostFn
+Shared Fns (one set)         Per-platform wire pair        Deploy wrappers
+├── MetaFn                   ├── Src2InputFn_<platform>    ├── platform-databrick-inference/
+├── TrigFn (L14 unwrap)      └── Input2SrcFn_<platform>    └── platform-sagemaker-inference/
+└── PostFn                       (same-platform pair
+                                  must roundtrip)          Both call: endpoint_set.inference(payload)
 ```
 
-The `.tar.gz` is the universal handoff artifact — haipipe produces it,
-deployment platforms consume it. The same `.tar.gz` deploys to any target.
+The `.tar.gz` remains the handoff artifact; package it with the wire pair
+matching the deploy target.
 
 ```
                 SageMaker                          Databricks

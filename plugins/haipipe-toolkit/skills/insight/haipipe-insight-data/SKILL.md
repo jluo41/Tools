@@ -1,16 +1,13 @@
 ---
 name: haipipe-insight-data
-description: "D-level dataset-profile writer API of the haipipe-insight family. Files one named dataset's profile (what the dataset looks like: size, structure, composition, coverage) into insights/D_data/ from a approved by review task/probe/discover/lit source. NO code execution — pure markdown synthesis. NO p-value / CI (those are generalization → K). Prefer /haipipe-insight review; call this directly only with a complete source spec."
+description: "D-level dataset-profile writer API of the haipipe-insight family. Files one named dataset's profile (what the dataset looks like: size, structure, composition, coverage) into insights/D_data/ from a review-approved task/probe/discover/lit source. NO code execution — pure markdown synthesis. NO p-value / CI (those are generalization → K). Prefer /haipipe-insight review; call this directly only with a complete source spec."
 argument-hint: "[source_ref] [--dataset <name>] [--id D<NN>] [--project <path>] [--slug <slug>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.0.0"
-  last_updated: "2026-06-22"
+  version: "2.1.0"
+  last_updated: "2026-07-05"
   summary: "D-level dataset-profile writer API of the haipipe-insight family."
-  changelog:
-    - "2.0.0 (2026-06-22): recut to the in-sample model (JL). D = ONE named dataset's profile (require `dataset:`, no p/CI). A null/ns finding is no longer an 'inconclusive D' — it is a K (does not generalize)."
-    - "1.1.0 (2026-06-20): repositioned as review-called writer API; source_ref may be task/probe/discover/lit."
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-insight-data
@@ -18,11 +15,11 @@ Skill: haipipe-insight-data
 
 D-level of the Insight base (D → I → K → W). Writes ONE named dataset's profile:
 what the dataset looks like (size, structure, variable definitions, composition,
-coverage, balance), from a approved by review, traceable source. Prefer
+coverage, balance), from a review-approved, traceable source. Prefer
 `/haipipe-insight review ...`; direct calls to this skill are the low-level
 writer path when the caller already has a complete source spec.
 
-**Invocation modes** (see `../../ref/invocation-modes.md`): interactive (a
+**Invocation modes** (see `../ref/invocation-modes.md`): interactive (a
 human steers; a missing/ambiguous `source_ref` or `dataset` gets ASKed) OR
 headless (a full spec → file the card silently, no ASK), chosen by input
 completeness. Review apply or `card-creator-data-agent` calls this skill headless
@@ -55,9 +52,7 @@ One source ref from `INSIGHT_REVIEW.yaml`, usually one of:
   lit:<citekey>
 
 For probe sources:
-examples/<project>/probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml
-examples/<project>/probes/<GROUP>_<group_slug>/<NN>_<slug>/CLAIMS_FROM_RESULTS.md   (if any)
-examples/<project>/probes/<GROUP>_<group_slug>/<NN>_<slug>/INTEGRITY_AUDIT.md       (if any)
+the consumer-side stage `_PROBE/PPNN_*.md` card (order + receipt + `## Verdict`)
 examples/<project>/tasks/.../results/<run>/metrics.json             (optional;
                                                                      read for
                                                                      specific
@@ -86,7 +81,7 @@ Hard rules
 - NO p-value, NO CI, NO significance, NO `verdict:` on a D card. Those are
   generalization quantities and belong to K. A null / ns finding is NOT an
   "inconclusive D" — it is a K that says the pattern does NOT generalize (see
-  `../../ref/dikw-boundaries.md` "Negative and uncertain K"). D stays purely the
+  `../ref/dikw-boundaries.md` "Negative and uncertain K"). D stays purely the
   dataset description.
 - Numbers cited (counts, shares, sizes) must reference an exact source:
   source ref + metric/table/key.
@@ -99,7 +94,7 @@ Hard rules
 - D granularity is one important reusable observation, not one raw row, one
   seed, or a whole task dump. If the source only adds evidence to an existing
   D/I/K, prefer `merge` during review/apply (see
-  `../../ref/card-granularity.md`).
+  `../ref/card-granularity.md`).
 
 
 Workflow
@@ -108,6 +103,8 @@ Workflow
 ```
 Step 1: Parse args
   - <source_ref>        required (e.g. task:T.A01.02, probe:P.A01, lit:smith2024)
+  - --dataset <name>    optional; else resolved from the source in Step 3
+  - --id D<NN>          optional; apply passes it pre-assigned (use verbatim)
   - --project <path>    optional, else cwd-inferred
   - --slug <slug>       optional, else derived from source title
 
@@ -121,7 +118,7 @@ Step 3: Validate source + resolve the dataset
   - Accept any settled source (a task result, a probe with a settled run, a vetted
     discover/lit); refuse only unsettled sources (report the status). A null / ns
     finding is NOT recorded here — that is a K (does not generalize), not a D.
-  - Check `../../ref/card-granularity.md`: block or merge if the candidate is
+  - Check `../ref/card-granularity.md`: block or merge if the candidate is
     too fine, too broad, or duplicates an active card.
 
 Step 4: Pick output NN
@@ -144,7 +141,7 @@ Step 6: Write
 Entry schema
 ------------
 
-Canonical schema: **`../../ref/insight-md-schema.md`** (see "D layer" section).
+Canonical schema: **`../ref/insight-md-schema.md`** (see "D layer" section).
 
 Quick reminder for D entries:
 
@@ -210,7 +207,7 @@ Risk profile
 
 WRITES one new file under `examples/<project>/insights/D_data/`.
 APPENDS one line to `insights/INDEX.md`. Read-only on everything else.
-Never modifies probes/ or tasks/ contents.
+Never modifies discoveries/ or tasks/ contents.
 
 
 Specialist tail

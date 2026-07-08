@@ -1,8 +1,12 @@
 discovery — External Evidence Layer (DESIGN)
 =============================================
 
-Status: v2.0.0 (2026-06-22) - TWO-AXIS redesign mirroring task. Uniform lifecycle
-        Plan -> Build(opt) -> Execute -> Report, crossed with 3 folder types 搜/析/创.
+Status: v2.6.0 (2026-07-03) - TWO-AXIS model mirroring task. Uniform lifecycle
+        Plan -> Build(opt) -> Execute -> Report, crossed with 3 folder types
+        Search / Review / Idea. 3 buckets, exactly one per type, each headed
+        by a type specialist (haipipe-discovery-search/-review/-idea).
+        Self-contained folders: no parent field, no upward references. Folder
+        contract = discovery.yaml + evidence files only. Group letters S/L/P.
         Skill is haipipe-discovery; discovery = one topic per FOLDER.
 Owner:  jluo41
 Scope:  external-evidence discovery work and its durable artifact contract inside
@@ -14,9 +18,6 @@ Why this layer exists
 
 `discovery` answers what the outside world already knows. It is not a task
 execution stage and it does not judge probe claims by itself.
-
-For a concrete end-to-end project shape, see
-`../../blueprints/end-to-end-sandwich-run.md`.
 
 ```
 discovery   outside-world evidence   sources, notes, verdicts, maps, ideas
@@ -32,16 +33,20 @@ Two Parts
 ```
 1. Skill interface layer
    /haipipe-discovery is the single entry. It runs the durable discovery lifecycle
-   (Plan/Build/Execute/Report) and routes to search/read/review/idea bucket workers.
+   (Plan/Build/Execute/Report) and routes to search/review/idea bucket workers.
 
 2. Durable artifact layer
    discoveries/<group>/<NN>_<topic>/ stores external evidence when it belongs to a
    project probe or delivery (paper/application) stack.
 ```
 
-Do not create a new discovery skill family per type. The existing capability
-buckets remain the workers; `discoveries/` is just the persistent package they
-fill. Workers (4 buckets) and folder types (3) are different axes.
+Each type has a TYPE SPECIALIST skill at the head of its bucket
+(haipipe-discovery-search / -review / -idea, v2.5.0), mirroring the sibling
+layers (haipipe-data-source etc.): it owns that type's Execute procedure and
+output contracts and dispatches the capability workers beside it.
+`discoveries/` is the persistent package they fill. (The v2.0.0 decision NOT
+to create a per-type family was made when workers != types; it dissolved when
+buckets became 1:1 with types.)
 
 
 The Two-Axis Model (mirrors task)
@@ -51,16 +56,17 @@ Discovery has the SAME two axes as task: a uniform lifecycle crossed with a
 folder type.
 
 ```
-Axis 1 — LIFECYCLE (uniform; every folder runs it)   Plan -> Build(opt) -> Execute -> Report   (English)
-Axis 2 — TYPE      (what kind of folder this is)      搜 · 析 · 创                              (Chinese)
+Axis 1 — LIFECYCLE (uniform; every folder runs it)   Plan -> Build(opt) -> Execute -> Report   (process verbs)
+Axis 2 — TYPE      (what kind of folder this is)      Search · Review · Idea                    (folder kinds)
 
 Task = (Plan/Build/Execute/Report) × (data/nn/fit/...)
-Discovery = (Plan/Build/Execute/Report) × (搜/析/创)
+Discovery = (Plan/Build/Execute/Report) × (Search/Review/Idea)
 ```
 
-The type axis is named in Chinese single characters and the stage axis in
-English so the two can never be confused (the historical mistake was using
-search/read/review/idea as BOTH the stages and the types).
+The two axes use non-overlapping vocabularies on purpose: the stages are
+process verbs every folder runs, the types name the kind of folder, and no
+word appears in both lists, so they can never be confused (the historical
+mistake was using search/read/review/idea as BOTH the stages and the types).
 
 One simplification versus task: a task-folder holds MANY runs; a discovery-folder
 holds ONE execution per topic — one Plan, one Execute, one Report.
@@ -83,43 +89,47 @@ Discovery: discoveries/<GROUP>/   ⊃   <NN>_<topic>/    -> one research topic
 
 ```
 discovery-group    A directory grouping related research topics.
-discovery-folder   One research topic = one folder. Its IO files (discovery.yaml +
-                   sources.md / notes.md / verdict.md|landscape.md|ideas.md +
-                   status.yaml / site.md) mirror a task-folder's configs / results /
-                   runtime / notebooks.
+discovery-folder   One research topic = one folder: discovery.yaml (Plan + Report)
+                   + sources.md / notes.md (work products) + the terminal
+                   (verdict.md | landscape.md | ideas.md). Nothing else.
 source row         One paper/webpage/report/dataset citation inside sources.md.
 ```
 
-Group letters (L/P/B/C/S) are organizational hints only. `type:` and `role:` in
-discovery.yaml are authoritative.
+Group letters (S source base / L landscape / P proof-prior-art) are
+organizational hints only. `type:` and `role:` in discovery.yaml are
+authoritative.
 
 
-The Three Types (Axis 2, IPO: gather -> analyze -> create)
-==========================================================
+The Three Types (Axis 2, IPO: Search -> Review -> Idea)
+========================================================
 
 ```
-字   type      IPO       Execute does                   terminal              consumer
---   -------   -------   ----------------------------   -------------------   ------------------------
-搜   source    INPUT     search + read source material  sources.md+notes.md   析 / 创, reusable source base
-析   analyze   PROCESS   judge a claim OR map a field   verdict.md / landscape.md   probe (verdict) / paper (landscape)
-创   create    OUTPUT    generate candidate claims      ideas.md              probe-open / paper-seed
+type     IPO       Execute does                      terminal
+------   -------   -------------------------------   -------------------------------------------
+Search   INPUT     search + read source material     sources.md + notes.md (reusable source base)
+Review   PROCESS   judge a claim OR map a field      verdict.md / landscape.md
+Idea     OUTPUT    generate ideas OR check novelty   ideas.md / verdict.md
 ```
 
 Merge decisions:
-- 搜 = search + read merged. They are always bound together (you read what you
-  searched), and the digested source set is a reusable, accumulating base — the
-  reason task gives `data` its own type instead of folding it into `fit`.
-- 析 = judge + synthesize merged. Identical mechanics (read many -> combine ->
-  conclude); the only difference is output shape. `role:` picks verdict (判, a
-  judgment -> probe) vs landscape (综, a map -> paper). One type, two flavors.
-- 创 stays separate: it is divergent (invent new) while 搜/析 are convergent.
+- Search = search + read merged. They are always bound together (you read what
+  you searched), and the digested source set is a reusable, accumulating base —
+  the reason task gives `data` its own type instead of folding it into `fit`.
+- Review = judge + synthesize merged. Identical mechanics (read many -> combine
+  -> conclude); the only difference is output shape. `role:` picks verdict (a
+  judgment) vs landscape (a map). One type, two flavors.
+- Idea = generate + novelty-check merged (v2.4.0). They are the two halves of
+  the ideation loop (invent, then evaluate what was invented); `role:` picks
+  ideas.md vs verdict.md. Idea stays separate from Review because ideation is
+  divergent while Search/Review are convergent.
 
 ```
 role -> type -> terminal
-搜  source_gather, source_read                       -> sources.md (+ notes.md)
-析  prior_art_check, counterevidence, novelty_check    -> verdict.md   (判 -> probe)
-析  landscape_review, benchmark_landscape              -> landscape.md (综 -> paper)
-创  idea_generation                                    -> ideas.md
+Search  source_gather, source_read               -> sources.md (+ notes.md)
+Review  prior_art_check, counterevidence         -> verdict.md   (judge)
+Review  landscape_review, benchmark_landscape    -> landscape.md (synthesize)
+Idea    idea_generation                          -> ideas.md
+Idea    novelty_check                            -> verdict.md   (is this idea new?)
 ```
 
 
@@ -128,25 +138,32 @@ Skill Structure
 
 ```
 discovery/
-├── CHANGELOG.md               layer-scoped change history
 ├── haipipe-discovery/          router + durable artifact contract
 │   ├── SKILL.md
-│   ├── feedback/               skill-feedback inbox (capture, fix later)
+│   ├── CHANGELOG.md            skill-scoped history (not loaded; read on demand)
+│   ├── PREFERENCES.md          portable behavioral preferences
+│   ├── fn/                     utility-verb contracts (feedback.md, digest.md)
+│   ├── feedback/               orchestrator fallback feedback inbox
 │   └── ref/
 │       ├── lifecycle-map.md          canonical 2-axis lifecycle + type table
 │       └── discovery-yaml-schema.md
-├── 1_search/                  bucket worker: find sources      (used by 搜)
+├── agents/                    orchestrator / creator / reviewer agent triad
+├── 1_search/                  Search bucket
+│   ├── haipipe-discovery-search/   TYPE SPECIALIST (owns the Search Execute)
 │   ├── arxiv/ semantic-scholar/ exa-search/
-├── 2_read/                    bucket worker: read one source   (used by 搜)
 │   ├── alphaxiv/ deepxiv/ paper-analyzer/
-├── 3_review/                  bucket worker: analyze sources   (used by 析)
+├── 2_review/                  Review bucket
+│   ├── haipipe-discovery-review/   TYPE SPECIALIST (owns the Review Execute + Output Contract)
 │   ├── research-lit/ comm-lit-review/ academic-researcher/
-└── 4_idea/                    bucket worker: ideate / validate (used by 创)
+└── 3_idea/                    Idea bucket
+    ├── haipipe-discovery-idea/     TYPE SPECIALIST (owns the Idea Execute)
     ├── idea-creator/ novelty-check/
 ```
 
-The 4 buckets are the Execute-stage WORKERS, not folder types: `搜` calls
-1_search + 2_read, `析` calls 3_review, `创` calls 4_idea.
+Buckets and types are exactly 1:1, each headed by its type specialist: Execute
+dispatches haipipe-discovery-<type>, which picks among the capability workers
+beside it. No exceptions: since v2.4.0 novelty_check is an Idea role — the
+evaluation half of the ideation loop.
 
 
 Project Folder Contract
@@ -159,13 +176,12 @@ examples/<PROJECT>/
 │   ├── project.status.yaml
 │   └── project.site.md
 ├── discoveries/
-│   ├── L01_initial-landscape/         (parent = paper)
-│   │   ├── 01_landscape-review/        (析, landscape_review -> landscape.md)
-│   │   └── 02_novelty-check/           (析, novelty_check -> verdict.md)
-│   └── P01_rare-phenotype-lift/        (parent = probe)
-│       ├── 01_source-base/             (搜 -> sources.md + notes.md)
-│       └── 02_prior-art/               (析, prior_art_check -> verdict.md)
-├── probes/
+│   ├── L01_personality-prescribing-landscape/  (landscape / context work)
+│   │   ├── 01_empathy-agreeableness-outcomes/   (Review, landscape_review -> landscape.md)
+│   │   └── 02_trait-signal-novelty/             (Idea, novelty_check -> verdict.md)
+│   └── P01_trait-opioid-prior-art/             (claim evidence)
+│       ├── 01_trait-rx-source-base/             (Search -> sources.md + notes.md)
+│       └── 02_agreeableness-rx-prior-art/       (Review, prior_art_check -> verdict.md)
 ├── tasks/
 ├── insights/
 ├── paper/
@@ -173,8 +189,8 @@ examples/<PROJECT>/
 ```
 
 The single orchestration log remains `_haipipe/project.log.jsonl`. A
-discovery-folder keeps its own `status.yaml` / `site.md` snapshot (like a
-task-folder), not an event log.
+discovery-folder keeps NO bookkeeping files of its own: lifecycle progress is
+`discovery.yaml status:`, the human summary is `report.summary`.
 
 
 Discovery Lifecycle (Axis 1)
@@ -187,44 +203,33 @@ discovery.yaml  build/ instrument    sources/notes + terminal    report block + 
 
 `Plan` scaffolds the folder and declares the type; `Build` (optional) authors a
 reusable instrument; `Execute` runs the bucket worker for the type and writes the
-terminal file; `Report` reports to a human and hands the terminal to the parent.
+terminal file; `Report` reports to a human and returns the terminal to the caller.
 The canonical per-stage IO lives in `ref/lifecycle-map.md`.
 
 The chain — types compose like task types (`data -> fit -> eval`):
 
 ```
-搜 folder ─sources/notes→ 析 folder ─landscape.md→ 创 folder
- (reusable source base)    (verdict/landscape)       (ideas)
+Search folder ─sources/notes→ Review folder ─landscape.md→ Idea folder
+ (reusable source base)        (verdict/landscape)          (ideas)
 ```
 
-A light effort skips the standalone `搜`: an `析` folder's Execute searches +
-reads inline. Build a standalone `搜` when the source base is reused across
-several analyses.
+A light effort skips the standalone `Search`: a `Review` folder's Execute
+searches + reads inline. Build a standalone `Search` when the source base is
+reused across several analyses.
 
 
-How It Combines With Probe
-==========================
+Self-Contained By Design
+========================
 
-```
-Probe-open
-  evidence_plan:
-    discoveries:
-      - { type: 搜, role: source_gather }      "assemble the source base"
-      - { type: 析, role: prior_art_check }    "does this already exist?"  -> verdict.md
-    tasks:
-      - baseline_eval
+A discovery-folder knows nothing outside itself: no `parent` field, no
+consumer tracking, no reference to any upper layer. It answers its question,
+writes its terminal, and stops (JL principle: task and discovery run freely;
+organizing happens one level up). Whoever needs the terminal records the link
+in their OWN files and appends `discovery.consumed` to the project log; that
+bookkeeping never enters the discovery-folder.
 
-Probe-post
-  reads discoveries/<group>/<NN>_<topic>/verdict.md   (析, 判)
-  reads tasks/<id>/results/*/metrics.json
-  writes probe result + claim verdict
-```
-
-`probe` references discoveries; it does not own their lifecycle. `discovery`
-writes external evidence; it does not close probe claims.
-
-A delivery lifecycle (paper/application) dispatches `析 综` (landscape/benchmark)
-and `创` (ideas) during Delivery-open, plus `搜` for a shared source base.
+`discovery` writes external evidence; it does not judge project claims — the
+claim-level judgment lives with whoever consumes the terminal.
 
 
 Boundary Rules
@@ -233,7 +238,7 @@ Boundary Rules
 - `discoveries/` stores citations, source notes, verdicts, maps, and ideas.
 - `discoveries/` does not store code, notebooks, runs, or metrics.
 - `tasks/` stores execution artifacts and metrics.
-- `probes/` stores claim contracts and verdict sidecars.
+- Claim contracts and verdicts live in the consumer's per-stage `_PROBE/PPNN` cards (no `probes/` folder).
 - `paper/` and `applications/` own the delivery story and list evidence needs by reference.
 - `_haipipe/project.log.jsonl` is the only orchestration event log.
 - `sources.md` is the default home for source records; a `sources/` subfolder is
@@ -246,7 +251,7 @@ Decision Log
 2026-06-19  Adopted: discoveries/ as durable external-evidence packages.
 2026-06-20  Adopted: discovery-group/discovery-folder hierarchy.
 2026-06-21  Retired: the narrative layer. Parents are now a delivery lifecycle
-            (paper/application) for L* and a probe for claim-level evidence.
+            (paper/application) for L* and a probe for evidence exploration.
 2026-06-21  A discovery is one research topic = its own FOLDER mirroring a
             task-folder. Skill renamed haipipe-discover -> haipipe-discovery.
 2026-06-22  Added: feedback utility verb + feedback/ inbox.
@@ -261,3 +266,48 @@ Decision Log
             specialists are NOT created (workers != types). New terminal files
             landscape.md + ideas.md alongside verdict.md. Old folders (role +
             verdict, no type) remain readable; migrate lazily.
+2026-06-24  Type axis renamed to English (v2.1.0): 搜 -> Search, 析 -> Review,
+            创 -> Idea. Both axes are now English; orthogonality comes from
+            non-overlapping word lists (process verbs vs folder kinds), not
+            different scripts. All existing discovery folders migrated. Chinese
+            TRIGGER phrases (查新/找idea) kept.
+2026-07-03  Buckets 4 -> 3, one per type (v2.3.0). 2_read merged into 1_search
+            (read is half of the Search type; only ever used together);
+            3_review -> 2_review; 4_idea -> 3_idea. novelty-check stays in
+            3_idea by choice (pairs with ideation) while serving Review-judge —
+            the one documented bucket/type exception. English-only pass purged
+            residual 搜/析/创 from DESIGN.md, agents/, and the live docs (history
+            entries keep their original wording). Dropped dangling references:
+            0_venue/, D_patent/, /idea-discovery, /research-pipeline,
+            /patent-pipeline, and the agents' fn/plan-build-execute-report
+            reads; deleted the stray haipipe-discovery self-symlink.
+2026-07-03  JL simplification pass (v2.4.0). (1) novelty_check re-typed
+            Review -> Idea: it is the evaluation half of the ideation loop, so
+            Idea branches by role (idea_generation -> ideas.md, novelty_check ->
+            verdict.md) and buckets = types exactly 1:1 (the v2.3.0 exception
+            dissolved). (2) parent:/consumed_by: fields REMOVED — task and
+            discovery are probe-UNAWARE (JL principle: they run freely; the
+            probe level organizes). References point one way, downward: probe
+            records its discovery/task links in its own files; a discovery
+            never tracks who commissioned or consumed it. (3) Folder contract
+            slimmed to discovery.yaml + evidence files: status.yaml + site.md
+            dropped (redundant with discovery.yaml status: and report.summary);
+            report: block appended at Report, absent before. Schema doc
+            rewritten lean per JL's "keep it as concise as possible".
+2026-07-03  Group letters 5 -> 3 (v2.6.0, JL). S source base / L landscape
+            (absorbs B) / P proof-prior-art (absorbs C). S/R/I rejected: the
+            letter tags the GROUP's purpose while type: tags each folder, and
+            groups mix types. Letters kept (task mirror, ls clustering,
+            compact ids); existing B/C folders stay named as-is. Same day:
+            SKILL.md dedup rewrite (v2.6.0, ~50% smaller) and the toolkit-wide
+            changelog convention (per-skill CHANGELOG.md, frontmatter carries
+            version + pointer only).
+2026-07-03  Type specialist skills (v2.5.0, JL). Created haipipe-discovery-search
+            / -review / -idea, one at the head of each bucket, mirroring the
+            sibling layers (haipipe-data-source etc.). Each owns its type's
+            Execute procedure and output contracts and dispatches the workers
+            beside it; the orchestrator's Execute dispatches the type skill.
+            Review Output Contract moved into haipipe-discovery-review.
+            Reverses the v2.0.0 "no per-type skill family" decision, whose
+            rationale (workers != types) dissolved when buckets became 1:1
+            with the types.

@@ -1,172 +1,134 @@
-# discovery.yaml — Discovery Folder Schema (v2, two-axis, 3 types: Search Review Idea)
+# discovery.yaml — Discovery Folder Schema (v2.6)
 
-## What this file is
+## The whole model
 
-`discovery.yaml` is the Plan + Report spec at the root of every discovery-folder. A discovery is one research topic = one folder, a sibling of a task-folder, running the uniform `Plan → Build(opt) → Execute → Report` lifecycle. `type:` names the folder type (`Search`/`Review`/`Idea`); the lifecycle is identical for all three.
-
-Location:
+One research topic = one folder. One file matters: `discovery.yaml` — Plan writes it, Report appends the outcome to it. Execute writes the evidence files next to it. That is the entire contract.
 
 ```
-examples/<PROJECT>/discoveries/<GROUP_slug>/<NN_slug>/discovery.yaml
+examples/<PROJECT>/discoveries/<GROUP_slug>/<NN_slug>/
+├── discovery.yaml    Plan spec + Report outcome (source of truth)
+├── build/            optional instrument (only if Build ran)
+├── sources.md        work product: what was found   (Search: terminal)
+├── notes.md          work product: what was read    (Search: terminal)
+└── verdict.md | landscape.md | ideas.md   TERMINAL (by type + role)
 ```
 
-Sibling files:
+NOT part of the contract: `status.yaml`, `site.md`, per-folder logs. Lifecycle progress is discovery.yaml `status:`; the human summary is `report.summary`; events go to the project-level `_haipipe/project.log.jsonl`.
+
+## Types × roles → terminal
 
 ```
-discovery.yaml   Plan + Report spec (source of truth)
-build/           (optional) instrument authored at Build
-status.yaml      Axis-1 lifecycle progress snapshot
-site.md          human-readable Report record
-sources.md       Execute work product (Search: search)
-notes.md         Execute work product (Search: read)
-verdict.md | landscape.md | ideas.md   Execute TERMINAL (by type)
+type    role                 question                          terminal
+------  -------------------  --------------------------------  ------------
+Search  source_gather        what sources exist?               sources.md
+Search  source_read          what do the key sources say?      notes.md
+Review  prior_art_check      does the claim already exist?     verdict.md
+Review  counterevidence      what argues against the claim?    verdict.md
+Review  landscape_review     map approaches / baselines        landscape.md
+Review  benchmark_landscape  standard eval setups              landscape.md
+Idea    idea_generation      generate + rank candidate claims  ideas.md
+Idea    novelty_check        is this idea new enough?          verdict.md
 ```
 
-No local event log belongs here. Orchestration events go to `_haipipe/project.log.jsonl`.
+`type` is the folder kind (Axis 2); `role` picks the terminal within it. `novelty_check` sits under `Idea` — it is the evaluation half of the ideation loop (generate → check novelty), even though its terminal is a verdict.
 
-## The two axes as fields
+## Fields
 
-```
-type:    Axis 2 — the folder type     Search | Review | Idea      (decides the Execute terminal)
-status:  Axis 1 — lifecycle progress  planned | building | executing | reported | ok | inconclusive | blocked
-```
+| Field | Required | Notes |
+|---|---|---|
+| kind | yes | always `discovery` |
+| id | yes | `<GROUP-id>.<NN>`, mirrors the path: `discoveries/L01_x/03_y/` -> `L01.03` |
+| type | yes | `Search` / `Review` / `Idea` |
+| role | yes | see table above |
+| group | yes | `{id, slug, title}` of the discovery-group |
+| slug, title | yes | folder slug + human title |
+| status | yes | lifecycle progress, see below |
+| question | yes | the external-world question (Plan) |
+| sources | opt | search scope; `from_source_folder` reuses a Search folder |
+| build | opt | `{needed, artifact}` — only for a systematic instrument |
+| expected_outputs | yes | files Execute will write (work products + terminal) |
+| report | at Report | outcome block, APPENDED at Report — absent before |
+| created_at, updated_at | yes | quoted ISO8601 strings |
 
-## Type values (Axis 2)
+**No parent field — a discovery is self-contained.** It knows nothing outside its own folder: whoever needs the terminal records the link in THEIR OWN files; the discovery just answers its question and never tracks who commissioned or consumed it. Same principle for tasks.
 
-| type | IPO | Execute terminal | roles |
-|---|---|---|---|
-| Search | INPUT | `sources.md` (+ `notes.md`) | source_gather, source_read |
-| Review | PROCESS | `verdict.md` (judge) / `landscape.md` (synthesize) | prior_art_check, counterevidence, novelty_check → verdict; landscape_review, benchmark_landscape → landscape |
-| Idea | OUTPUT | `ideas.md` | idea_generation |
-
-`type` is authoritative for the terminal. For `Review`, `role` picks the verdict-vs-landscape branch.
-
-## Top-level fields
-
-| Field | Type | Required | Notes |
-|---|---|---|---|
-| kind | string | yes | always `discovery` |
-| id | string | yes | e.g. `L01.03` |
-| **type** | enum | yes | **NEW** — folder type (Axis 2): `Search`/`Review`/`Idea` |
-| role | enum | yes | refinement within `type` (esp. Review); see Role Values |
-| group | mapping | yes | discovery-group metadata |
-| slug | string | yes | discovery-folder slug |
-| title | string | yes | human-readable title |
-| status | enum | yes | lifecycle progress (Axis 1) |
-| parent | mapping | opt | delivery/probe/manual consumer |
-| question | string | yes | external-world question (Plan) |
-| sources | mapping | opt | search scope + selected refs (Plan); for `Review`, may reference a `Search` folder |
-| **build** | mapping | opt | **NEW** — optional instrument (`needed` + `artifact`) |
-| expected_outputs | list | yes | files expected; terminal depends on `type` |
-| **report** | mapping | yes | **RENAMED from `verdict`** — report-to-human outcome block, generalized across types |
-| consumed_by | list | opt | project-relative parents that used the terminal |
-| created_at | string | yes | quoted ISO8601 |
-| updated_at | string | yes | quoted ISO8601 |
-
-## Skeleton (Review type, synthesize flavor)
+## Skeleton
 
 ```yaml
 kind: discovery
-id: L01.03
-type: Review                 # Search | Review | Idea
-role: landscape_review   # picks landscape.md (synthesize) vs verdict.md (judge)
+id: P01.02
+type: Review              # Search | Review | Idea
+role: prior_art_check     # picks the terminal (see table)
 group:
-  id: L01
-  slug: personality-prescribing-landscape
-  title: Personality x prescribing landscape
-slug: empathy-agreeableness-outcomes
-title: Empathy / agreeableness effects on prescribing outcomes
-status: ok
-created_at: "2026-06-22T10:00:00-04:00"
-updated_at: "2026-06-22T11:30:00-04:00"
+  id: P01
+  slug: rare-phenotype-lift
+  title: Rare phenotype lift (claim evidence)
+slug: prior-art-adaptive-sampling
+title: Does adaptive sampling for rare phenotypes already exist?
+status: planned
+created_at: "2026-07-03T10:00:00-04:00"
+updated_at: "2026-07-03T10:00:00-04:00"
 
-parent:
-  type: paper
-  path: paper/MISQ2026/0-lifecycle/2-claims
-  role: required_evidence
-
-# --- Plan (intent) ---
 question: |
-  What is known about physician agreeableness / empathy affecting prescribing outcomes?
+  Has adaptive sampling for rare-phenotype detection been published?
 sources:
   requested: [research-lit, semantic-scholar]
-  from_source_folder: ""    # optional: a Search folder to reuse instead of searching inline
+  from_source_folder: ""    # optional: reuse a Search folder instead of searching inline
   local_first: true
   verification_required: true
 build:
-  needed: false             # true only for a systematic query string / extraction schema
-  artifact: ""              # e.g. build/query-strategy.md
+  needed: false
+  artifact: ""
 expected_outputs:
-  - sources.md
-  - notes.md
-  - landscape.md            # terminal for Review-synthesize (verdict.md for Review-judge)
+  - sources.md              # work product (inline search)
+  - notes.md                # work product (inline read)
+  - verdict.md              # terminal for this role
 
-# --- Report (outcome, report-to-human) ---
+# --- appended at Report ---
 report:
-  outcome: mapped           # per-type values below (NOT the top-level lifecycle `status:`)
-  summary: ""
+  outcome: supports         # per-type vocabulary below
+  summary: >
+    One line a human can act on.
   confidence: medium
-  supports_claim: null      # Review-judge only
-  contradicts_claim: null   # Review-judge only
-
-consumed_by: []
+  supports_claim: true      # judge roles only
+  contradicts_claim: false  # judge roles only
 ```
 
-A `Search` folder omits the `report.supports_claim`/`contradicts_claim` fields and ends at `sources.md`/`notes.md`; an `Idea` folder ends at `ideas.md` and usually sets `sources.from_source_folder` to the `Search`/`Review` it builds on.
-
-## Role values (refinements of type)
+## Lifecycle status (Axis 1)
 
 ```
-Search  source_gather        broad source scan, curated list          -> sources.md
-Search  source_read          deep read of important source(s)         -> notes.md
-Review  prior_art_check      does the claim already exist?  (judge)       -> verdict.md
-Review  counterevidence      what argues against the claim? (judge)       -> verdict.md
-Review  novelty_check        is the angle new enough?       (judge)       -> verdict.md
-Review  landscape_review     map approaches/baselines       (synthesize)       -> landscape.md
-Review  benchmark_landscape  standard eval setups           (synthesize)       -> landscape.md
-Idea  idea_generation      generate + rank candidate claims         -> ideas.md
+planned -> building (opt) -> executing -> reported -> ok | inconclusive | blocked
 ```
 
-## Status values (Axis 1 lifecycle)
+`ok` = terminal complete and usable. Reuse by any number of consumers is recorded on THEIR side, never here; there is no `consumed` status.
+
+## Report block (appended at Report — absent before)
+
+The block does not exist until Report writes it: a discovery.yaml WITH a `report:` block has been reported; one WITHOUT has not. `report.outcome` is the per-type result (never confuse with the top-level lifecycle `status:`):
 
 ```
-planned       Plan written (discovery.yaml exists), not executed
-building      Build instrument in progress (optional stage)
-executing     Execute in progress
-reported      Report written, outcome being finalized
-ok            terminal complete and usable by the parent
-inconclusive  evidence exists but does not settle the question
-blocked       missing access, missing sources, or unresolved ambiguity
+Search             gathered      (N sources curated / read)
+Review-judge       supports | contradicts | inconclusive
+Review-synthesize  mapped
+Idea-generate      generated     (N candidates ranked)
+Idea-novelty       novel | partial | preempted | inconclusive
 ```
 
-A discovery can be reused by multiple parents. Keep `status: ok` (or `inconclusive`) and append consumers to `consumed_by`; never use `consumed` as the status.
+Common fields: `outcome`, `summary`, `confidence` (high/medium/low). Judge roles (prior_art/counterevidence/novelty) add `supports_claim` / `contradicts_claim`.
 
-## Report block (was `verdict`) — report to a human
 
-The report block uses `outcome:`, NOT `status:`. The top-level `status:` is Axis-1 lifecycle progress (planned/executing/ok/...); `report.outcome` is the per-type result. Two distinct fields, deliberately different names so they never collide.
 
-`report.outcome` per type:
+## Terminal templates
 
-```
-Search               gathered      (N sources curated / read)
-Review-judge         supports | contradicts | inconclusive
-Review-synthesize    mapped        (field organized)
-Idea               generated     (N candidates ranked)
-```
-
-Common fields: `outcome`, `summary`, `confidence` (high/medium/low/unknown). `Review-judge` adds `supports_claim` / `contradicts_claim` (bool or null).
-
-## Terminal contracts (by type)
-
-### verdict.md — Review-judge (judge) → probe
+### verdict.md (Review-judge; Idea-novelty)
 
 ```md
 # Verdict
-status: supports | contradicts | inconclusive
+status: supports | contradicts | inconclusive    (novelty: novel | partial | preempted)
 confidence: high | medium | low
 
 ## Answer
-One paragraph answering the discovery question.
+One paragraph answering the question.
 
 ## Evidence
 - Full citation / URL / id — one-line finding — VERIFIED | NEEDS-VERIFICATION
@@ -175,56 +137,46 @@ One paragraph answering the discovery question.
 - What this discovery did not check.
 ```
 
-### landscape.md — Review-synthesize (synthesize) → paper / idea-gen
-
-A map, not a yes/no.
+### landscape.md (Review-synthesize) — a map, not a yes/no
 
 ```md
 # Landscape: <topic>
-status: mapped
 confidence: high | medium | low
 
 ## Approaches (taxonomy)
 - <cluster> — what it does — exemplar refs
 
-## Baselines / datasets / metrics      (for benchmark_landscape)
-- <name> — what it measures — used by <refs>
-
 ## Gaps / open questions
 - <gap> — why it is open
 
 ## References (full, verified)
-1. <self-contained full citation>      (Review Output Contract rules 1-5)
+1. <self-contained full citation>     (Review Output Contract rules 1-5)
 ```
 
-### ideas.md — Idea → probe-open / paper-seed
-
-A ranked candidate-claim set, not a verdict.
+### ideas.md (Idea-generate) — ranked candidates, not a verdict
 
 ```md
 # Ideas: <prompt>
-status: generated
 
 ## Candidates (ranked)
-1. <claim> — rationale — novelty: NOVEL | PARTIAL | SEEN (vs <ref>) — testability: <how a probe would test it>
+1. <claim> — rationale — novelty: NOVEL | PARTIAL | SEEN (vs <ref>) — testability: <how it could be tested>
 
 ## Grounding
 - which Search / Review folder this builds on
 ```
 
-### sources.md and notes.md — Search (also work products inside Review)
+### sources.md + notes.md (Search terminals; work products elsewhere)
 
-```md
-# Sources
-| id | citation / URL | role | verification |
-|----|----------------|------|--------------|
-| S001 | <full citation or URL> | adjacent method | VERIFIED |
+Format lives in ONE place: `ref/source-format.md` — one source = one `###` subsection with the full title in the heading; venue/locator first line, Scholar link, role, verification flag, a 2-4 sentence `summary:` of the paper itself, and a one-line `finding:` for our question; NEVER a table. Heavy artifacts (PDFs, snapshots) go in an optional `sources/` subfolder.
+
+
+
+## Log events (project-level, `_haipipe/project.log.jsonl`)
+
+```
+discovery.opened     {"ts", "event", "discovery_group", "discovery_folder", "type", "role"}
+discovery.completed  {"ts", "event", "discovery_group", "discovery_folder", "status", "outcome"}
+discovery.consumed   {"ts", "event", "discovery_group", "discovery_folder", "consumed_by"}
 ```
 
-`notes.md` holds per-source extracted findings, one block per source id. In a `Search` folder these are the terminal; in a `Review` folder they are work products feeding the verdict/landscape.
-
-The full citation and verification discipline follows the Review Output Contract in `haipipe-discovery/SKILL.md` (rule 5: every id/DOI/venue VERIFIED or flagged NEEDS-VERIFICATION).
-
-## Source records
-
-Sources normally live as rows in `sources.md`, not as directories. Only create `sources/Sxxx_slug/` when the project must keep heavy artifacts (PDFs, HTML snapshots, per-source annotations).
+One JSON object per line. `discovery.consumed` is appended by the CONSUMER when it links the terminal — consistent with one-way references; the discovery itself never writes it. Old lines (append-only history) may carry `discovery_file`/`verdict`/`parent` fields — readers tolerate them; never rewrite the log.

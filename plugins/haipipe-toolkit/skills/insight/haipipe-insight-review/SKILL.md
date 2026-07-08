@@ -1,15 +1,13 @@
 ---
 name: haipipe-insight-review
-description: "Review/apply coordinator for the insight archive. Scans completed task/probe/discover/narrative/application material, decides which D/I/K/W cards are worth archiving, emits a reviewable INSIGHT_REVIEW.yaml, or applies that review through the layer writers. User-facing commands are review and apply. Trigger: review folder, collect insights, archive cards, construct insights, file curated memory."
+description: "Review/apply coordinator for the insight archive. Scans completed task/discover material and consumer-side stage cards, decides which D/I/K/W cards are worth archiving, emits a reviewable INSIGHT_REVIEW.yaml, or applies that review through the layer writers. User-facing commands are review and apply. Trigger: review folder, collect insights, archive cards, construct insights, file curated memory."
 argument-hint: "[review|apply|<scope-path>] [--project <path>] [--out <path>] [--auto]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-06-20"
+  version: "2.0.0"
+  last_updated: "2026-07-05"
   summary: "Review/apply contract for constructing insights/."
-  changelog:
-    - "1.1.0 (2026-06-20): renamed user-facing flow to review/apply."
-    - "1.0.0 (2026-06-20): initial review/apply contract."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-insight-review
@@ -21,7 +19,7 @@ This skill is the missing middle layer between finished evidence and card
 writers:
 
 ```
-task / probe / discover material
+task / discover material + consumer-side stage cards
         ↓
 review checklist / INSIGHT_REVIEW.yaml  ← this skill
         ↓
@@ -47,12 +45,12 @@ Canonical References
 Read before acting:
 
 ```
-ref/review-contract.md        review/apply semantics + INSIGHT_REVIEW.yaml schema
-ref/insight-md-schema.md       card schema
-ref/card-granularity.md        card size, merge/split, and flat-folder rules
-ref/card-lifecycle.md          file/merge/update/supersede/change-log rules
-ref/dikw-boundaries.md         D/I/K/W boundaries
-ref/index-templates.md         derived index shape
+../ref/review-contract.md        review/apply semantics + INSIGHT_REVIEW.yaml schema
+../ref/insight-md-schema.md       card schema
+../ref/card-granularity.md        card size, merge/split, and flat-folder rules
+../ref/card-lifecycle.md          file/merge/update/supersede/change-log rules
+../ref/dikw-boundaries.md         D/I/K/W boundaries
+../ref/index-templates.md         derived index shape
 ```
 
 
@@ -61,7 +59,7 @@ Commands
 
 ```bash
 # Review only: inspect a scope and emit INSIGHT_REVIEW.yaml
-/haipipe-insight review <project|narrative|ask-session|probe|task>
+/haipipe-insight review <project|probe|task|discovery>
 
 # Apply an existing review checklist
 /haipipe-insight apply <INSIGHT_REVIEW.yaml>
@@ -74,8 +72,7 @@ Scope examples:
 
 ```bash
 /haipipe-insight review examples/ProjA
-/haipipe-insight review examples/ProjA/applications/ask/03_film_ood
-/haipipe-insight review examples/ProjA/probes/0619_film_ood
+/haipipe-insight review examples/ProjA/discoveries/P01_film/02_ood_prior_art
 /haipipe-insight review examples/ProjA/tasks/A01_eval/02_ood_split
 ```
 
@@ -86,9 +83,9 @@ Workflow
 Step 1: Resolve project root and scope kind.
 
 ```
-scope path contains /applications/ask/  → application_ask
-scope path contains /probes/            → probe
+scope path contains /_PROBE/            → probe (a stage PPNN card)
 scope path contains /tasks/             → task
+scope path contains /discoveries/       → discovery
 scope path is project root              → project
 ```
 
@@ -108,24 +105,21 @@ For task scope:
 - Candidate K if the result carries a generalization basis (a significance test
   on the pattern, or robustness across subgroups). p/CI belong to the K, not the I.
 
-For probe scope:
-- Read `probe.yaml`, `CLAIMS_FROM_RESULTS.md`, `INTEGRITY_AUDIT.md`, `review.md`.
+For probe scope (a consumer-side stage `_PROBE/PPNN` card):
+- Read the card's order + receipt + `## Verdict`, plus the stage's claims ledger row.
 - Candidate K whenever there is a generalization claim with a basis (p / CI /
   robustness) and an honest confidence — high, low, OR negative. A probe verdict
   is one possible basis, NOT a precondition; ns ("does not generalize") is a valid K.
 - Candidate W only if the claim or caveats imply a concrete next step.
 
-For narrative scope:
-- Read `claims.md`, `story.md`, `ignite-log.md`.
-- Candidate K/W from GAP/weak claim slots that now have probe/lit support.
-- Update narrative refs only after cards are filed.
-
-For application ask scope:
-- Read `plans/plan-v*.yaml`, SESSION_STATE, and `report.md` if present.
-- Use `insight_yield` as the candidate card contract.
+For discovery scope:
+- Read `discovery.yaml` and its terminal files (sources.md / verdict.md /
+  landscape.md / ideas.md).
+- Candidate K from a vetted external claim (`lit:` / `discover:` basis +
+  an honest confidence); candidate D only if a source yields a dataset profile.
 
 For project scope:
-- Run the above scans shallowly over tasks, probes, narratives, and ask sessions.
+- Run the above scans shallowly over tasks and discoveries.
 - Prefer producing a plan over applying automatically.
 
 Step 4: Deduplicate.
@@ -140,8 +134,8 @@ Step 4: Deduplicate.
 - If a new K contradicts an existing K, use `action: supersede`.
 - If material is incomplete, use `action: blocked`.
 - Never create a card just because a file exists; require an archive reason.
-Apply `ref/card-granularity.md` before layer assignment is finalized.
-Apply `ref/card-lifecycle.md` before choosing `file` over `merge`, `update`,
+Apply `../ref/card-granularity.md` before layer assignment is finalized.
+Apply `../ref/card-lifecycle.md` before choosing `file` over `merge`, `update`,
 or `supersede`.
 
 Step 5: Emit review checklist / INSIGHT_REVIEW.yaml.
@@ -209,7 +203,7 @@ Definition of Done
 ------------------
 
 - [ ] `INSIGHT_REVIEW.yaml` emitted or applied.
-- [ ] Every candidate has `file`, `update`, `supersede`, `skip`, or `blocked`.
+- [ ] Every candidate has `file`, `merge`, `update`, `supersede`, `skip`, or `blocked`.
 - [ ] Every `file` action has a reason and source refs.
 - [ ] Every `merge`, `update`, or `supersede` action has a target and `change`
       block.
@@ -219,7 +213,7 @@ Definition of Done
 - [ ] Over-broad candidates are split before apply.
 - [ ] Meaningful card edits append `## Change log`.
 - [ ] Superseded cards are linked, not deleted.
-- [ ] Applied cards conform to `ref/insight-md-schema.md`.
+- [ ] Applied cards conform to `../ref/insight-md-schema.md`.
 - [ ] Per-card reviewers passed or produced explicit failure artifacts.
 - [ ] INDEX files rebuilt.
 - [ ] `index-integrity-auditor-agent` run after apply.
@@ -242,10 +236,11 @@ insights/INDEX.md
 insights/views/*.md
 insights/K_knowledge/INDEX.md
 insights/W_wisdom/INDEX.md
-insights/INDEX_AUDIT.md
+insights/_reviews/<LAYER>_CARD_REVIEW.md
+insights/_reviews/INDEX_AUDIT.md
 ```
 
-It never writes code, task results, probe verdicts, or narrative conclusions.
+It never writes code, task results, or probe verdicts.
 
 
 Specialist Tail
@@ -254,8 +249,8 @@ Specialist Tail
 ```text
 status:    ok | blocked | failed
 summary:   "<N candidates · M filed · K skipped · B blocked>"
-artifacts: [INSIGHT_REVIEW.yaml, insights/INDEX.md, insights/INDEX_AUDIT.md]
+artifacts: [INSIGHT_REVIEW.yaml, insights/INDEX.md, insights/_reviews/INDEX_AUDIT.md]
 cards:     [D03, I02, K04, W02]
 blocked:   [candidate_id:reason]
-next:      "Update narrative claims.md / application report refs with filed card ids"
+next:      "Return filed card ids to the caller (probe deposit / application report)"
 ```

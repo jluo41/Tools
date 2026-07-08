@@ -33,7 +33,7 @@ Stages
 
   0-raw       Raw cohort extract -> single-data-point lifecycle understanding
               Specialist: haipipe-data-raw  |  Output: datapoint-timeline.txt
-              Store:      _WorkSpace/0-RawStore/
+              Store:      _WorkSpace/0-RawDataStore/
               Domain-agnostic: CGM streams, EHR encounters, claims lines,
               sensor sessions, messaging extracts, vendor drops, etc.
               (Run BEFORE 1-source design-chef when onboarding a new cohort.)
@@ -62,10 +62,8 @@ File Map
   SKILL.md                  <- router + dispatch table
   README.md                 <- this file
   ref/0-overview.md         <- architecture map + cooking metaphor
-  ref/1-source.md           <- source layer reference
-  ref/2-record.md           <- record layer reference
-  ref/3-case.md             <- case layer reference
-  ref/4-aidata.md           <- aidata layer reference
+  Per-stage references (specialist-owned):
+    ../haipipe-data-{source,record,case,aidata}/ref/concepts.md
   fn/fn-0-dashboard.md      <- dashboard function
   fn/fn-1-load.md           <- load function (all stages)
   fn/fn-2-cook.md           <- cook function (all stages)
@@ -73,10 +71,8 @@ File Map
   fn/fn-4-design-kitchen.md <- design-kitchen function (all stages)
   fn/fn-explain.md          <- explain function (25-concept pool, ask-then-explain)
   fn/fn-review.md           <- review function (detect type, apply checklist, PASS/WARN/FAIL)
-  templates/1-source/       <- config.yaml template for 1-source cook
-  templates/2-record/       <- config.yaml template for 2-record cook
-  templates/3-case/         <- config.yaml template for 3-case cook
-  templates/4-aidata/       <- config.yaml template for 4-aidata cook
+  Config templates (specialist-owned):
+    ../haipipe-data-{source,record,case,aidata}/templates/config.yaml
 
 ---
 
@@ -222,7 +218,7 @@ Use Cases
 
 **16. Understand a new raw cohort BEFORE pipeline-building**
 
-  Situation:  A new raw extract just landed in _WorkSpace/0-RawStore/<cohort>/
+  Situation:  A new raw extract just landed in _WorkSpace/0-RawDataStore/<cohort>/
               (parquet/csv + description .txts). The extract can be from any
               domain -- CGM stream, EHR encounter table, claims lines, sensor
               session log, messaging / engagement extract, vendor drop, etc.

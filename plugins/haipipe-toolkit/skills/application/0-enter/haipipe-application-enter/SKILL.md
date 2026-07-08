@@ -7,8 +7,7 @@ metadata:
   version: "1.0.0"
   last_updated: "2026-06-22"
   summary: "Intervention Console — derive-from-disk dashboard + lifecycle router."
-  changelog:
-    - "1.0.0 (2026-06-22): initial version modeled on paper-enter."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-application-enter (Intervention Console)

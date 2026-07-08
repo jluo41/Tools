@@ -1,95 +1,51 @@
 haipipe-project
 ===============
 
-Skill for creating, reviewing, and summarizing haipipe research projects.
-Covers both the probe side (examples/) and the code side (code/ + code-dev/)
-in one unified flow.
+Quick project setup: create the container folders and stop. Two kinds by name; everything else (task scaffolding, audits, summaries) moved out or retired.
 
 ---
 
 Commands
 --------
 
-  /haipipe-project task [project|task-group|task-folder]
-      Three scopes (matching the project hierarchy):
-        project       -- full project from scratch (folder + first task-group + first task-folder)
-        task-group    -- add a task-group {G}{NN}_{name}/ to an existing project
-        task-folder   -- add a task-folder {NN}_{name}/ to an existing task-group
-                         (asks task-type: model-run / evaluation / display / data-pipeline / other)
-      If scope omitted: asks which one. With no args at all: defaults to task-folder.
-      For "project": also asks about pipeline stages, datasets, and whether
-      new Track A stubs are needed (code-dev/ + hainn/). Checks code/INDEX.md
-      to suggest reusing existing Fns or models.
+  /haipipe-project repo <Project-Name> [--org <owner>]
+      REPO-BACKED project: gh repo under a user-chosen org (never assumed) +
+      submodule at examples/<name> + scaffold + push + workspace pointer bump.
+      If the repo already exists, ADOPT: skip create, submodule add pulls it.
+      Recipe: fn/repo-project.md. Papers inside are submodules OF THE PROJECT.
 
-      Group letter convention:
-        A-series  model-run    (pretraining, finetuning)
-        B-series  evaluation   (eval, inference, scoring)
-        C-series  display      (paper figures, paper tables)
-        D-series  demo         (paired examples for Track A)
+  /haipipe-project new <ProjX-Name>
+      PLAIN-DIRECTORY project under examples/. Recipe: fn/project.md.
 
-  /haipipe-project overview [path]
-      Print a task-by-task overview of what the project does.
-      Reads every task's README.md and produces a structured table
-      per group: task name, what it does, paper/rebuttal reference, status.
-      Read-only -- does not write any files.
+  /haipipe-project feedback "<text>"       capture skill feedback (merge-or-create)
+  /haipipe-project digest [session] [--dry-run]   harvest feedback from a transcript
+  /haipipe-project                         list projects + the two setup paths
 
-  /haipipe-project review [path]
-      Inspect an existing project and generate any missing standard docs.
-      Auto-detects the current project from git status if no path is given.
-
-      What it checks (read-only):
-        - Project naming convention and folder structure
-        - Task-level config YAML validity and stage declarations
-        - Run-result alignment per task
-        - Code sync: config FnClass/ModelClass -> code/ resolution
-
-      What it generates (writes to docs/ and README.md files only):
-        - docs/TODO.md, docs/data-map.md, docs/dependency-report.md
-        - tasks/README.md, group README.md, and per-task README.md
-
-  /haipipe-project summarize [path]
-      Generate a plain-English post-development summary. Writes
-      docs/project-summary.md with a short description, key results table,
-      and an ASCII pipeline flow chart. Updates README.md status tables.
-
-  /haipipe-project organize [path]
-      Inventory all project files, propose reorganization to match the
-      standard layout, and -- if approved -- apply moves then verify
-      that all imports and paths still work.
-
-  /haipipe-project organize verify [path]
-      Skip inventory and proposal; run only post-reorganization
-      verification (import resolution, config check, relative paths).
+Setup is QUICK by default: folders ready (plus README + .gitignore for the repo kind), then stop. No metadata questionnaire, no diagram authoring, no seed tasks. Retired verbs (task/overview/review/summarize/organize) live in project/_archive/.
 
 ---
 
-Standard Project Layout
--------------------------
+Container Layout
+-----------------
 
-  examples/Proj{Series}-{Category}-{Num}-{Name}/
-  +-- tasks/              MANDATORY. Two-level hierarchy.
-  |   +-- README.md       Project-level task overview
-  |   +-- {G}{GN}_{group}/   Group folders (e.g., A_data/, B_training/)
-  |   |   +-- README.md   Group overview
-  |   |   +-- {NN}_{name}/  Task folders (*.py, config/, runs/, results/)
-  |   +-- sbatch/         Cross-task SLURM scripts (optional)
-  +-- paper/              OPTIONAL. Manuscripts, figures, LaTeX.
-  +-- docs/               OPTIONAL. TODO.md, data-map.md, project-summary.md
-  +-- cc-archive/         OPTIONAL. CC session history (cc_*.md, di_*.md)
-  +-- _old/               OPTIONAL. Archived legacy files.
+  examples/<name>/
+  +-- tasks/          owner: /haipipe-task
+  +-- discoveries/    owner: /haipipe-discovery
+  +-- insights/       owner: /haipipe-insight
+  +-- papers/         owner: /haipipe-paper-*  (each paper a submodule; legacy projects use singular paper/)
+  +-- diagram/        owner: this skill via /diagram-ascii (EMPTY at setup, authored on request)
 
-  Note: config/ is inside each task folder (each task owns its own), not at the project or group level.
+Forbidden at top level: docs/, cc-archive/, _old/, configs/, results/ (plain-dir kind also forbids README.md).
 
 ---
 
 Skill Files
------------
+------------
 
   SKILL.md                    Router and dispatch table
-  ref/project-structure.md    Standard layout, naming, task-folder rules
-  ref/code-structure.md       code-dev/ builder pattern, hainn/ model layout
-  fn/fn-new.md                Scaffold flow (both tracks, reuse check)
-  fn/fn-overview.md           Task-by-task project overview (read-only)
-  fn/fn-review.md             Gap analysis + doc generation + code sync check
-  fn/fn-summarize.md          Post-development summary + ASCII flow chart
-  fn/fn-organize.md           File inventory + reorganization + verification
+  fn/repo-project.md          Repo-backed setup (preflight, ADOPT mode, scaffold, double-bump)
+  fn/project.md               Plain-directory setup (3 steps + on-request extras)
+  fn/feedback.md, fn/digest.md  Feedback capture + session harvest
+  ref/project-structure.md    Top-level container contract only (tasks/ internals: task/haipipe-task/ref/task-structure.md)
+  ref/code-structure.md       Track A layout + paired-example rule
+  CHANGELOG.md                Version history

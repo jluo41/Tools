@@ -78,7 +78,7 @@ for (let attempt = 0; attempt <= maxRetries; attempt++) {
     `4. Read task-level template: haipipe-task/ref/workflow-template.yaml\n` +
     `5. Generate/update workflow/plan-script-<name>.yaml (script-level, type-specific phases)\n` +
     `6. Generate/update workflow/plan.yaml (task-level: Run/Gate1/Gate2)\n` +
-    `Schema: project/haipipe-workflow/ref/plan-schema.md\n` +
+    `Schema: task/haipipe-workflow/ref/plan-schema.md\n` +
     `Fields: label, type, required, prompt, files_in, files_out\n\n` +
     `IMPORTANT: Every plan YAML MUST start with a comment block showing the IPO tree preview:\n` +
     `# <task-name> — <purpose>\n` +
@@ -105,7 +105,7 @@ for (let attempt = 0; attempt <= maxRetries; attempt++) {
     `- workflow/plan.yaml\n` +
     `- workflow/plan-script-*.yaml\n\n` +
     `Check:\n` +
-    `1. Does the plan follow project/haipipe-workflow/ref/plan-schema.md? (Header/I/P[S]/O)\n` +
+    `1. Does the plan follow task/haipipe-workflow/ref/plan-schema.md? (Header/I/P[S]/O)\n` +
     `2. Are all step fields canonical? (label, type, required, prompt, files_in, files_out)\n` +
     `3. Do phases match the type-specific sample for this task type?\n` +
     `4. Are files_in/files_out accurate (check actual _WorkSpace paths)?\n` +
@@ -277,7 +277,7 @@ if (!runReport) {
       `1. Read workflow/plan.yaml and workflow/plan-script-*.yaml\n` +
       `2. Read execution evidence: results/, CODE_REVIEW.md, RUN_AUDIT.md\n` +
       `3. Mirror plan structure with status/output/note per step\n` +
-      `4. Follow project/haipipe-workflow/ref/plan-schema.md Report schema\n\n` +
+      `4. Follow task/haipipe-workflow/ref/plan-schema.md Report schema\n\n` +
       `IMPORTANT: Every report YAML MUST start with a comment block showing the IPO tree with status emojis:\n` +
       `# <task-name> — execution report\n` +
       `#\n` +

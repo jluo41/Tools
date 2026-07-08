@@ -1,6 +1,6 @@
 # workflow-plan-sample.yaml — algo-dev task script-level plan
-# Schema: project/haipipe-workflow/ref/plan-schema.md
-# Task-level template: ../../haipipe-task/ref/workflow-template.yaml
+# Schema: task/haipipe-workflow/ref/plan-schema.md
+# Task-level template: ../../../haipipe-task/ref/workflow-template.yaml
 #
 # Typical algo phases: Setup → SmokeTest → Verify
 # Tiny config, minutes not hours. No heavy outputs. Proves the class works.
@@ -75,7 +75,7 @@ phases:
         prompt: "Write smoke test summary (pass/fail, shapes, loss curve)"
         files_in: []
         files_out:
-          - results/<RUN>/smoke_test.json
+          - results/<RUN>/loss.json
 
 # ─── O: Output ───────────────────────────────────────────────────
 output:
@@ -83,4 +83,4 @@ output:
     status: ok
     verdict: <pass | fail>
   files_out:
-    - results/<RUN>/smoke_test.json
+    - results/<RUN>/loss.json

@@ -60,7 +60,7 @@ Everything in this stage obeys one rule, the structural twin of 3-write-edit's c
 | No folder yet: build the skeleton | **here** (`haipipe-paper-build-scaffold`) |
 | Existing paper, wrong shape | **here** (`haipipe-paper-build-restructure`) |
 | Is this folder conforming? | **here** (`haipipe-paper-build-check`) |
-| What should ONE `.tex` file look like inside | `3-write-edit/_shared/tex-file-anatomy.md` |
+| What should ONE `.tex` file look like inside | `2-section-edit/_shared/tex-file-anatomy.md` |
 | Write prose into the skeleton | `3-write-edit/haipipe-paper-edit-write` |
 | Improve existing prose | `3-write-edit` |
 | Compile or fix LaTeX errors | the folder's own `1-compile.sh` (shipped by `haipipe-paper-build-scaffold`); `components/compile/` for latexmk-based pipelines |

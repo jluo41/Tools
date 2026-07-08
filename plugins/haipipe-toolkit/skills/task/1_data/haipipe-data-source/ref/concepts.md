@@ -307,5 +307,5 @@ Builders (edit here): code-dev/1-PIPELINE/1-Source-WorkSpace/      <- discover w
 
 Test configs:         config/                                       <- discover with ls config/
 Store path:           _WorkSpace/1-SourceStore/
-Config template:      templates/1-source/config.yaml
+Config template:      ../templates/config.yaml (this skill's own template)
 ```

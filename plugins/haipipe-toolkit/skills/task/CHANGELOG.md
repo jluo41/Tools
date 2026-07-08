@@ -4,6 +4,16 @@ task — Changelog
 Layer-scoped changelog for the task (WORK / execution) layer. Newest first.
 Rollup lives in the plugin-level `CHANGELOG.md`.
 
+## [Unreleased] — 2026-07-04
+
+### Changed
+- README Boundary section reworded self-contained-style (JL: task is unaware of
+  discovery/insight/probe): states the hand-off principle without naming upper
+  layers, mirroring discovery's "self-contained by design" convention. Layer
+  guidance in haipipe-task SKILL.md/ref cleaned the same way (see
+  haipipe-task/CHANGELOG.md 5.5.0).
+
+
 ## [Unreleased] — 2026-06-22
 
 ### Added

@@ -31,9 +31,9 @@ The 3 types (Axis 2)
 ---------------------
 
 ```
-搜 (source)    search + read → sources.md, notes.md
-析 (analyze)   judge claim → verdict.md, or synthesize field → landscape.md
-创 (idea)      generate novel angles → ideas.md
+Search (source)    search + read → sources.md, notes.md
+Review (analyze)   judge claim → verdict.md, or synthesize field → landscape.md
+Idea (generate)    generate novel angles → ideas.md
 ```
 
 
@@ -56,4 +56,5 @@ Registration
 ------------
 
 Real files live here (toolkit source of truth). `.claude/agents/` holds
-copies so each is callable as a `subagent_type` by the harness.
+symlinks to these files so each is callable as a `subagent_type` by the
+harness.

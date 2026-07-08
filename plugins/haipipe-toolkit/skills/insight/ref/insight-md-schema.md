@@ -43,7 +43,7 @@ Conventions:
   - `sources` and `ref_by` use structured refs, NOT prose
     - internal insight refs are bare IDs: `D01`, `I02`, `K03`, `W01`
     - external refs are namespaced: `task:T.A01.02`, `probe:P.0619_film_ood`,
-      `lit:smith2024`, `discover:Dsc.03`, `narrative:N01.C2`, `app:ask:03`
+      `lit:smith2024`, `discover:Dsc.03`, `app:ask:03`
   - Frontmatter total length target: ≤ 16 lines
   - Lifecycle fields are optional; use them only when status/evidence history
     requires machine-readable routing
@@ -319,11 +319,16 @@ N=3 seeds each. Eval on val / test-id / test-od.
 ## How to act
 
 ```
-/haipipe-probe design new 12 \
+/haipipe-probe plan new \
     --title "Param-matched FiLM re-test" \
     --hypothesis "FiLM in-dist benefit survives param-matching"
-/haipipe-probe bridge 12
 ```
+
+## Risk posture
+
+Acts on K03 (confidence: medium at filing time). Medium confidence warrants a
+cheap re-test before any architecture decision, not a pivot: run the
+param-matched probe first, do not change the default arch yet.
 
 ## Why now
 
@@ -347,15 +352,19 @@ Validation rules (any layer)
   - `sources` field accepts structured refs only:
       - internal insight card ids: D01, I02, K03, W01
       - external source refs: task:T.A01.02, probe:P.A07,
-        discover:Dsc.03, lit:smith2024, narrative:N01.C2, app:ask:03
+        discover:Dsc.03, lit:smith2024, app:ask:03
   - D cards name a `dataset:` and cite one settled source via `source_id`;
     descriptive only (no p-value / CI / significance)
   - I cards name a `dataset:` matching their cited D card(s); in-sample pattern
     only (no p-value / CI / confidence)
   - K cards state a generalization claim with an explicit `confidence` (high /
-    medium / low / contested, never omitted), cite the I card(s) they generalize,
-    and give a generalization basis (p / CI / robustness, or a vetted external
-    claim) in the body. NO probe is required. Negative / low-confidence K are valid.
+    medium / low / contested, never omitted) and an explicit `claim_type`
+    (associational | causal; causal only with a named identification strategy),
+    cite in `sources` the I card(s) they generalize OR a namespaced external
+    origin (probe: / lit: / discover:) when no I card exists (owner decision
+    2026-07-05: external-sourced K is legal), and give a generalization basis
+    (p / CI / robustness, or a vetted external claim) in the body. NO probe is
+    required. Negative / low-confidence K are valid.
   - W cards cite >=1 K card and record the risk posture justified by that K's
     confidence
   - `ref_by` consistent: if K03 lists `ref_by: [W01]`, W01 MUST list
