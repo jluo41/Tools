@@ -4,8 +4,8 @@ description: "Stage 1 (Source) specialist. Builds, runs, and reviews SourceFn; i
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-07-04"
+  version: "1.2.0"
+  last_updated: "2026-07-08"
   summary: "Stage 1 (Source) specialist."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -13,7 +13,7 @@ metadata:
 Skill: haipipe-data-source
 ==========================
 
-Stage 1 specialist. Owns all SourceFn / HumanFn work and the 1-SourceStore
+Stage 1 specialist. Owns all SourceFn work and the 1-SourceStore
 layer of the pipeline. Called by the `/haipipe-data` orchestrator; can also
 be invoked directly.
 

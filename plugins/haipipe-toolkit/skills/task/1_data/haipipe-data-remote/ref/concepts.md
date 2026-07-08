@@ -141,17 +141,24 @@ unambiguous; named-store mode is fine for explicit pull / push.
 Credentials
 ============
 
-REMOTE_ROOT typically points at an organization AWS account. Users
-authenticate via SSO. When transfers fail with credential errors:
+Credential handling is BACKEND-CONDITIONAL — read the REMOTE_ROOT prefix
+first and give the matching guidance:
 
-  - Open your organization's AWS SSO portal (URL lives in env.sh
-    comments, not in skill docs).
-  - Refresh tokens; export `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`,
-    `AWS_SESSION_TOKEN` per the SSO flow.
-  - Re-source env.sh.
+  gdrive: (rclone / Google Drive — the default in this workspace)
+    - Auth failures usually mean an expired rclone token:
+      re-run `rclone authorize "drive"` and update the rclone config.
+    - Shared-drive selection comes from `RCLONE_CONFIG_GDRIVE_TEAM_DRIVE`
+      in env.sh (ID from the Drive folder URL).
+
+  s3: (AWS)
+    - Open the organization's AWS SSO portal (URL lives in env.sh
+      comments, not in skill docs); refresh tokens; export
+      `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`;
+      re-source env.sh.
 
 The skill does NOT actively check credentials. When a transfer fails
-with an auth error, surface the SSO URL and exit cleanly.
+with an auth error, surface the backend-appropriate hint above and exit
+cleanly.
 
 ---
 
@@ -177,7 +184,7 @@ MUST DO
 1. Source env.sh before any hai-remote-sync invocation.
 2. Always dry-run before a real push or pull.
 3. Surface SSO URL on credential errors.
-4. Honor `--version @{tag}` for ExternalStore where the user pinned.
+4. Honor ExternalStore version pins via the path form: `--path ExternalStore/@{version}/...` (the CLI has NO --version flag; versioning is path-based per ref/store-map.md).
 
 ---
 

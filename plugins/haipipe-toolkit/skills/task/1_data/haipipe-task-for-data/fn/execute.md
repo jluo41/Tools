@@ -62,20 +62,20 @@ papermill ... -p NUM_PARTITIONS 20 -p PARTITION_INDEX 5
 
 ```bash
 # Stage 1 — no partitions
-python -m scripts.haistep.source --config <config>
+python -m scripts.haistepcli.source --config <config>
 
 # Stage 2 — partition by patients
-python -m scripts.haistep.record --config <config> --num-partitions 20 --use-cache
+python -m scripts.haistepcli.record --config <config> --num-partitions 20 --use-cache
 
 # Stage 3 — auto-discover + parallel
-python -m scripts.haistep.case --config <config> --num-partitions 0 --num-workers 4 --use-cache
+python -m scripts.haistepcli.case --config <config> --num-partitions 0 --num-workers 4 --use-cache
 
 # Stage 4 — auto-discover CaseSet partitions
-python -m scripts.haistep.aidata --config <config>
+python -m scripts.haistepcli.aidata --config <config>
 
 # Retry a single failed partition:
-python -m scripts.haistep.record --config <config> --num-partitions 20 --partition-index 5
-python -m scripts.haistep.case --config <config> --num-partitions 0 --partition-index 5
+python -m scripts.haistepcli.record --config <config> --num-partitions 20 --partition-index 5
+python -m scripts.haistepcli.case --config <config> --num-partitions 0 --partition-index 5
 ```
 
 

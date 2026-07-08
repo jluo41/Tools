@@ -17,13 +17,20 @@ store name              local env var                 remote env var            
 1-SourceStore           LOCAL_SOURCE_STORE            REMOTE_SOURCE_STORE             {CohortName}/@{SourceFnName}/
 2-RecStore              LOCAL_RECORD_STORE            REMOTE_RECORD_STORE             {CohortName}_v{N}RecSet/
 3-CaseStore             LOCAL_CASE_STORE              REMOTE_CASE_STORE               {RecSetName}/@v{N}CaseSet-{TriggerFolder}/
-4-AIDataStore           LOCAL_AIDATA_STORE            REMOTE_AIDATA_STORE             {aidata_name}/@{aidata_version}/
+4-AIDataStore           LOCAL_AIDATA_STORE            REMOTE_AIDATA_STORE             {ParentSetName}/@v{N}AIData-{aidata_name}/
 5-ModelInstanceStore    LOCAL_MODELINSTANCE_STORE     REMOTE_MODELINSTANCE_STORE      {model_name}/
 6-EndpointStore         LOCAL_ENDPOINT_STORE          REMOTE_ENDPOINT_STORE           {endpoint_name}/
-7-AgentWorkspace        LOCAL_AGENTWORKSPACE_STORE    REMOTE_AGENTWORKSPACE_STORE     (varies)
+7-AgentWorkspace ⚙opt   LOCAL_AGENTWORKSPACE_STORE    REMOTE_AGENTWORKSPACE_STORE     (varies)
 ExternalStore           LOCAL_EXTERNAL_STORE          REMOTE_EXTERNAL_STORE           @{version}/{asset}/
-ExternalStore/@inference LOCAL_REFERENCE_STORE        REMOTE_REFERENCE_STORE          {payload_*.json}
+ExternalStore/@inference ⚙opt LOCAL_REFERENCE_STORE   REMOTE_REFERENCE_STORE          {payload_*.json}
 ```
+
+⚙opt = OPTIONAL store: listed for addressing, but not exported by every
+workspace's env.sh and often absent on disk. `status` probes only the
+stores whose env vars are actually exported — do not report an un-exported
+optional store as "missing". Also on disk but DELIBERATELY NOT SYNCED
+(no store-map row, no env pair): `_WorkSpace/LearnStore/`,
+`_WorkSpace/0-REACH-RAW-Store/`.
 
 `LOCAL_RAW_STORE` resolves to `_WorkSpace/0-RawDataStore`, but
 hai-remote-sync's `--rawdata` flag uses `REMOTE_RAWDATA_STORE` --

@@ -9,10 +9,7 @@
 # Usage:
 #   source .venv/bin/activate
 #   source env.sh
-#   haistep-case --config <this_file>.yaml
-#
-# Or via test script:
-#   python test/test_haistep/test_3_case/test_case.py --config <this_file>.yaml
+#   python -m scripts.haistepcli.case --config <this_file>.yaml
 #
 # Output structure (all files at ROOT level, NO subdirectory):
 #   _WorkSpace/3-CaseStore/{RecSetName}/@v{N}CaseSet-{TriggerFolderName}/

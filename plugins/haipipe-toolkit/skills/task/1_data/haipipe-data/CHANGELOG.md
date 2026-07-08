@@ -4,6 +4,11 @@ haipipe-data — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [1.3.0] — 2026-07-08
+
+- skill-diagnose fixes: dead `scripts.haistep.*` module paths -> `scripts.haistepcli.*` (SKILL + fn-2-cook; the old module no longer exists); broken `haistep-*` console-script examples replaced with `python -m` form; stale `ProjD-EHR-1-Mimic` worked-example path -> `Project-EHR-Mimic`; repo-root `config/` references retired everywhere (README, 0-overview snapshot section, fn-2-cook, fn-3-design-chef, fn-4-design-kitchen, fn-review path patterns -> `**/configs/**/*.yaml`); fn-3-design-chef body swept to BUILDER HOME / fn_develop-first and now points at the `code/scripts/haibuilder/` seed library; fn-2-cook template-path contradiction (line 22) aligned; frontmatter description now lists all 7 specialists.
+- Cross-stage dashboard: external/remote exclusion made explicit (JL: "ok, go ahead and fix all of them" — approved recommended option: keep 5-stage fan-out + written exclusion note).
+
 ## [1.2.0] — 2026-07-04
 
 - deep-audit fixes: Fn-type ownership corrected (HumanFn=Stage 2 with RecordFn, TriggerFn=Stage 3 with CaseFn — dispatcher had them one stage early, contradicting every fn/ doc and shipped template); haipipe-data-external + haipipe-data-remote WIRED into the dispatcher (specialists list, keyword map, aliases — both existed on disk unrouted); README file map rewritten (ref/1-4.md + templates/N-stage/ were fiction); fn-2-cook template paths -> specialist-local templates/config.yaml; fn-2-cook CaseArgs schema aligned to the shipped case template (case_set_version at CaseArgs level, operation blocks); 0-RawStore -> 0-RawDataStore; fan-out summary 5-line; 0-rawdata alias -> raw dashboard Panel 0.

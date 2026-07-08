@@ -1,82 +1,61 @@
-Worked example: OptTime v2 fu7d datapoint description
-=======================================================
+Worked example: MIMIC-IV mortality datapoint description
+==========================================================
 
 The canonical "good" instance of SKILL.md's mandatory datapoint
-description. Project-specific by nature (an SMS follow-up send-time
-RCT); use it as a filled-in model, not as content to copy verbatim.
+description. Based on a REAL asset in this repo — every claim below can be
+checked on disk:
 
-Worked example — OptTime v2 fu7d (the template's canonical "good" instance)
+```
+config: examples/Project-EHR-Mimic/tasks/A01_data_pipeline_mimic/
+        04_aidata_mimiciv_mortality/configs/run_aidata_mortality.yaml
+asset:  _WorkSpace/4-AIDataStore/MimicIV31_MimicAdmissionEntry/
+        @v0AIData-MimicMortality/   (train/ validation/ test/ +
+        cf_to_cfvocab.json + feat_vocab.json + manifest.json)
+```
+
+Use it as a filled-in model, not as content to copy verbatim.
+
+Worked example — MimicMortality (the template's canonical "good" instance)
 ---------------------------------------------------------------------------
 
-   A datapoint is one specific patient who was enrolled in the
-   "2026_Optimal_Timing_Personalization" experiment, who received an
-   initial SMS invitation at time `ObsDT` (`invitation_type=N/A`, the
-   LINKMESSAGE type), who did NOT click the initial within the
-   cancellation window so a follow-up SMS was queued, who was then
-   UNIFORMLY RANDOMLY assigned (`π(T|X) = 1/20`) to one of 20 follow-up
-   send-time arms `T ∈ {FT_08_00, FT_08_30, ..., FT_17_30}` (column
-   `experiment_config`, every 30 min from 08:00 to 17:30 local), and
-   for whom the follow-up was actually delivered (`minutes_to_followup > 0`,
-   `follow_up_invitation_id` set, `follow_up_deliver_on_date` recorded);
-   the binary outcome `Y = clicked_follow_up_7d` answers "did the patient
-   click any link in the FOLLOW-UP message within 7 days of
-   `follow_up_deliver_on_date`" (verified by checking
-   `first_follow_up_clicked_date` falls inside that window), with
-   population mean Y ≈ 0.459 on test.
+   A datapoint is one hospital ADMISSION of one MIMIC-IV 3.1 patient:
+   the trigger `MimicAdmissionEntry` fires at admission time
+   (`ObsDT = AdmitTime`, keyed by `PID` + `HadmID`), and the binary
+   outcome `Y = hospital_expire_flag` answers "did this patient die
+   during THIS hospital stay" (`OutputMimicMortality`, label CaseFn
+   `MimicHospExpireFlag`). One patient with 5 admissions contributes
+   5 datapoints, each labeled by its own stay's outcome.
 
-   The input features X are 12 CaseFn groups encoded as one 1,995-dim
-   sparse vector with ~58 non-zero entries per row:
-     - PAge5                 — age in 5-yr buckets, from DfPtt.ageBucketBy5
-     - Pgender               — M/F/U, from DfPtt.gender
-     - PZip3FixedLen         — first-3 zip digits, from DfPtt.zipcode3
-     - InvCrntTimeFixedLen   — ★ THE TREATMENT — one-hot of FT_HH_MM from
-                               DfInv.experiment_config (S-Learner pattern:
-                               treatment folded into X; for counterfactual
-                               inference this slot is re-set to other arms)
-     - PhmFixedLen           — patient's pharmacy NCPDP code
-     - NPIFixedLen           — prescribing provider NPI
-     - NPITraitFixedLen      — provider attributes (specialty, taxonomy)
-     - RxCrntNDCRxFixedLen   — current Rx (NDC + dosage form + refill bucket)
-     - Zip3EngFixedLen       — HISTORICAL engagement aggregated by zip3
-     - NcpdpEngFixedLen      — HISTORICAL engagement by pharmacy
-     - NpiEngFixedLen        — HISTORICAL engagement by provider
-     - NdcEngFixedLen        — HISTORICAL engagement by drug
+   The input features X are 14 CaseFn groups encoded by
+   `CatInputMultiCFSparse` into one sparse vector (vocab in
+   `cf_to_cfvocab.json` — 15 groups incl. the label CaseFn):
+     - MimicPAge / MimicPGender / MimicPRace   — demographics at admission
+     - MimicAdmitTimeFeat / MimicAdmitType     — when + what kind of admission
+     - MimicLabStatsBf{1d,7d,14d,30d}          — lab-value statistics over
+                                                 lookback windows BEFORE ObsDT
+     - MimicVitalStatsBf{1d,7d,14d}            — vital-sign statistics, same
+     - MimicMedCountBf{7d,30d}                 — medication counts, same
 
-   (The 4 *Eng* features are HISTORICAL, not contemporaneous, so they
-   do not leak the current invitation's click.)
+   (All Bf* features are STRICTLY BEFORE the admission timestamp — nothing
+   from inside the stay leaks into X; the label is about the stay itself.)
 
-   Selection filters (Stage 4 SplitArgs.Split_to_Selection, applied to
-   BOTH train and test):
-     1. messaged == 1                          — SMS was actually sent
-     2. experiment_config in {20 FT_HH_MM arms} — valid OptTime arm
-     3. minutes_to_followup > 0                 — FU was actually delivered
-                                                  (not cancelled because the
-                                                  patient clicked the initial
-                                                  inside the cancel window)
+   Selection: no row filters — every triggered admission enters the pool
+   (`Split_to_Selection` merely routes rows by their `split` tag).
 
    INTENTIONALLY NOT FILTERED ON:
-     - `clicked` (whether they ever clicked the original invitation) —
-       deliberately KEPT IN the cohort. The label clicked_follow_up_7d
-       is specifically about the FU message, not the original, so filtering
-       on `clicked` would be selection-on-a-correlated-outcome and is bias-
-       inducing. Two patients can have clicked=1 AND clicked_follow_up_7d=1
-       (clicked both) or clicked=1 AND clicked_follow_up_7d=0 (clicked only
-       the original) or clicked=0 AND clicked_follow_up_7d=1 (FU-only) —
-       all three are valid datapoints in this cohort.
+     - prior mortality-risk proxies (e.g. previous ICU stays, DNR codes) —
+       they are features, not eligibility gates; filtering on them would
+       select on outcome correlates and bias the cohort.
 
    Split policy:
-     SplitMethod = RandomByStratum
-     Stratification columns: [experiment_config, clicked_follow_up_7d,
-                              authenticated_follow_up_7d]
-     Ratio = 80/20, seed = 42
-     Train: 99,206 rows  |  Test: 24,845 rows
-     Per-arm test counts: 1,193 - 1,297 (verified uniform-random)
-     Label positive rate: ≈ 45.9% in both splits
+     SplitMethod = RandomByPatient          ← split by PATIENT, not by row,
+     Ratio = 70/15/15, random_state = 42       so the same patient's multiple
+                                               admissions never straddle
+                                               train and test (leakage guard)
+     Train: 381,976 rows | Validation: 82,027 | Test: 82,025
 
-   Worked example row (test idx 0):
-     PID 10000000012, Male, age 70.  ObsDT = 2026-04-06 17:21.
-     T = FT_10_30 (arm idx 5).  FU delivered 2026-04-07 13:55 (~20.6 hrs later).
-     7-day window: 2026-04-07 13:55 → 2026-04-14 13:55.
-     first_follow_up_clicked_date = NaT → Y = 0.
-
-
+   Provenance chain (manifest.json records it end-to-end):
+     SourceSet mimiciv-3.1 (SourceFn MIMICIVv31, 29 tables)
+       → RecordSet mimiciv-3.1_v3RecSet (80 partitions @i{i}n80)
+       → CaseSet @v0CaseSet-MimicAdmissionEntry (per partition)
+       → this AIDataSet (partitions auto-discovered and merged, streaming).

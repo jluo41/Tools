@@ -1,6 +1,10 @@
 fn-3-design-chef: Scaffold a new external builder
 ==================================================
 
+> NOTE: `code-dev/0-EXTERNAL/` is the WellDoc-SPACE builder home. Workspaces
+> without it (e.g. REACH-SPACE — zero external builders on disk) host any new
+> external builder in a project task folder, same `e{N}_build_external_*` naming.
+
 Creates a new `e{N+1}_build_external_<asset>.py` under
 `code-dev/0-EXTERNAL/`. In Phase 1 (no helper extraction yet), this
 copies the closest existing builder and customizes it.

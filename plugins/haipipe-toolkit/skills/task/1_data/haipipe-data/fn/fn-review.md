@@ -50,7 +50,7 @@ to clarify which type it is.
   */04_aidata_fn_develop_*/c*.py             TfmFn builder
   */04_aidata_fn_develop_*/s*.py             SplitFn builder
   code-dev/1-PIPELINE/**/*.py                any builder (legacy home)
-  config/**/*.yaml                              YAML config (stage auto-detected)
+  **/configs/**/*.yaml                        YAML config in a task folder (stage auto-detected)
 
   For YAML configs: inspect the top-level keys to determine stage:
     Has SourceArgs        -> Source config
@@ -86,8 +86,8 @@ Present this message:
   Builder scripts (project fn_develop task folders; legacy: code-dev/1-PIPELINE/)
     Any builder:   examples/<Project>/tasks/<pipe-group>/NN_<stage>_fn_develop_<cohort>/<builder>.py
 
-  Pipeline configs (config/)
-    Any config:    config/<path>/<name>.yaml
+  Pipeline configs (task-folder configs/)
+    Any config:    <task>/configs/<name>.yaml
   ---------------------------------------------------------------
 
 Wait for the user to provide a path, then go to Step R2.
@@ -357,7 +357,7 @@ ___________________________________________________________________________
          (no _WorkSpace/ absolute paths)                  should be portable
 
 ___________________________________________________________________________
-CHECKLIST: Source YAML config   (config/**/*.yaml with SourceArgs)
+CHECKLIST: Source YAML config   (**/configs/**/*.yaml with SourceArgs)
 ___________________________________________________________________________
 
   ID     Check                                           Rule
@@ -367,7 +367,7 @@ ___________________________________________________________________________
   YS-3   SourceArgs.SourceFnName present and non-empty   required key
 
 ___________________________________________________________________________
-CHECKLIST: Record YAML config   (config/**/*.yaml with HumanRecords)
+CHECKLIST: Record YAML config   (**/configs/**/*.yaml with HumanRecords)
 ___________________________________________________________________________
 
   ID     Check                                           Rule
@@ -380,7 +380,7 @@ ___________________________________________________________________________
   YR-4   HumanRecords values are lists                   format requirement
 
 ___________________________________________________________________________
-CHECKLIST: Case YAML config   (config/**/*.yaml with CaseArgs)
+CHECKLIST: Case YAML config   (**/configs/**/*.yaml with CaseArgs)
 ___________________________________________________________________________
 
   ID     Check                                           Rule
@@ -392,7 +392,7 @@ ___________________________________________________________________________
   YC-5   Each Case_Args entry has CaseFnList (a list)    required key
 
 ___________________________________________________________________________
-CHECKLIST: AIData YAML config   (config/**/*.yaml with InputArgs)
+CHECKLIST: AIData YAML config   (**/configs/**/*.yaml with InputArgs)
 ___________________________________________________________________________
 
   ID     Check                                           Rule

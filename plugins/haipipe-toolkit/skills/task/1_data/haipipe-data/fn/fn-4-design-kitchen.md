@@ -77,13 +77,14 @@ regression before proceeding.
 **Step 5: Test End-to-End with Real Data**
 
 ```bash
-haistep-source --config config/test-haistep-ohio/1_test_source.yaml
-haistep-record --config config/test-haistep-ohio/2_test_record.yaml
-haistep-case   --config config/test-haistep-ohio/3_test_case.yaml
-haistep-aidata --config config/test-haistep-ohio/4_test_aidata.yaml
+python -m scripts.haistepcli.source --config <task>/configs/<run>.yaml
+python -m scripts.haistepcli.record --config <task>/configs/<run>.yaml
+python -m scripts.haistepcli.case   --config <task>/configs/<run>.yaml
+python -m scripts.haistepcli.aidata --config <task>/configs/<run>.yaml
 ```
 
-Use the Ohio test config as the standard end-to-end validation path.
+Use an existing pipeline task's configs/ as the end-to-end validation path
+(e.g. examples/Project-EHR-Mimic/tasks/A01_data_pipeline_mimic/*/configs/).
 
 ---
 

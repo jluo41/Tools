@@ -7,10 +7,7 @@
 # Usage:
 #   source .venv/bin/activate
 #   source env.sh
-#   haistep-aidata --config <this_file>.yaml
-#
-# Or via test script:
-#   python test/test_haistep/test_4_aidata/test_aidata.py --config <this_file>.yaml
+#   python -m scripts.haistepcli.aidata --config <this_file>.yaml
 # ==============================================================================
 
 # External data version
@@ -168,7 +165,7 @@ OutputArgs:
 # ==============================================================================
 # Output directory structure:
 #
-# _WorkSpace/4-AIDataStore/<aidata_name>/@<aidata_version>/
+# _WorkSpace/4-AIDataStore/<ParentSetName>/@v<N>AIData-<aidata_name>/
 # +-- train/                    HuggingFace Dataset (Parquet)
 # +-- validation/
 # +-- test-id/

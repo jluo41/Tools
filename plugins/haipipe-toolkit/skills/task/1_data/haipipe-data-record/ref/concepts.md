@@ -14,7 +14,7 @@ Cooking Metaphor
 ```
 Kitchen  = Record_Pipeline class      (code/haipipe/record_base/)
 Chef     = HumanFn + RecordFn         (code/haifn/fn_record/)  GENERATED
-Recipe   = YAML config file           (config/ or tutorials/config/)
+Recipe   = YAML config file           (the pipeline task's configs/)
 Dish     = RecordSet asset            (_WorkSpace/2-RecStore/)
 Academy  = Builder scripts            (tasks/<pipe-group>/02_record_fn_develop_<cohort>/ in the project)
 ```

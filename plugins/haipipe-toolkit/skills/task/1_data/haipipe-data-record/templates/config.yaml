@@ -8,10 +8,7 @@
 # Usage:
 #   source .venv/bin/activate
 #   source env.sh
-#   haistep-record --config <this_file>.yaml
-#
-# Or via test script:
-#   python test/test_haistep/test_2_record/test_record.py --config <this_file>.yaml
+#   python -m scripts.haistepcli.record --config <this_file>.yaml
 # ==============================================================================
 
 # External data version (from env.sh)

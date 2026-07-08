@@ -22,8 +22,10 @@ _meta:
 # Stage
 # =============================================================================
 
-stage: <1|2|3>                          # 1=extract (Databricks)  2=process (local)  3+=optional
-execution: <databricks|local>           # databricks for stage1, local for stage2+
+stage: <1|2|3>                          # Pattern 1: 1=extract (Databricks)  2=process (local)  3+=optional
+execution: <databricks|local>           # Pattern 1: databricks for stage1, local for stage2+
+                                        # Pattern 2 (PHI server-resident): databricks for EVERY
+                                        # stage — nothing runs or lands locally
 
 
 # =============================================================================
@@ -46,9 +48,14 @@ databricks:
 
 
 # =============================================================================
-# Local params (stage2+)
+# Local params (Pattern 1, stage2+ only — OMIT this block for Pattern 2:
+# PHI raw data never syncs to a local _WorkSpace)
 # =============================================================================
 
 local:
   raw_store_path: "_WorkSpace/0-RawDataStore/<cohort>/"
   cohort: <cohort_name>                 # e.g. prediabetes, adhd
+
+# Pattern 2 output instead goes to the catalog volume, aligned to what the
+# Stage-1 SourceFn config reads (cohort-slug case matters):
+#   volume_path: "<VOLUME_BASE>/0-RawDataStore/<cohort-slug>/"   # e.g. reach-adhd

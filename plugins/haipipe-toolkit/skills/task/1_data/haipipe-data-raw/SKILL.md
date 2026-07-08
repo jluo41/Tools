@@ -4,8 +4,8 @@ description: "Stage 0' (raw cohort) specialist. Helps researchers and presenters
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-07-04"
+  version: "1.2.0"
+  last_updated: "2026-07-08"
   summary: "Stage 0' (raw cohort) specialist."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -105,8 +105,18 @@ at "here's what SourceFn must do for this cohort."
 Stage Scope
 ------------
 
+VOLUME-RESIDENT COHORTS (PHI): some raw cohorts never exist under the
+local `_WorkSpace/` — PHI raw data lives ONLY on a Databricks catalog
+volume (`<VOLUME_BASE>/0-RawDataStore/<cohort-slug>/`, e.g. REACH's
+`reach-adhd`). For those cohorts, `dashboard`/`load` must look at the
+volume path (run on the Databricks side, or work from schema docs) —
+a missing local folder does NOT mean the cohort doesn't exist. Only
+aggregated/derived summaries may come local. See
+`../haipipe-task-for-raw/SKILL.md` "Pattern 2".
+
 Owns:
-  - `_WorkSpace/0-RawDataStore/<cohort>/` folders
+  - `_WorkSpace/0-RawDataStore/<cohort>/` folders (and their
+    volume-resident equivalents for PHI cohorts, as above)
   - The discipline of writing a single-data-point lifecycle diagram
   - The hand-off contract from Stage 0' → Stage 1
 

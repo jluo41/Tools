@@ -40,7 +40,7 @@ Concept    Pipeline Term              Location
 ---------  -------------------------  ------------------------------------------
 Kitchen    Source_Pipeline class       code/haipipe/source_base/
 Chef       SourceFn functions         code/haifn/fn_source/           (GENERATED)
-Recipe     YAML config file           config/ or tutorials/config/
+Recipe     YAML config file           the pipeline task's configs/
 Dish       SourceSet asset            _WorkSpace/1-SourceStore/
 Academy    Builder scripts            tasks/<pipe-group>/01_source_fn_develop_<cohort>/  (in the project)
 ```
@@ -341,7 +341,7 @@ Builders (edit here): examples/<Project>/tasks/<pipe-group>/01_source_fn_develop
                       A01_data_pipeline_reachadhd/01_source_fn_develop_reachadhd/;
                       legacy workspaces may still carry code-dev/1-PIPELINE/1-Source-WorkSpace/)
 
-Test configs:         config/                                       <- discover with ls config/
+Test configs:         <pipeline task>/configs/  (reference templates: code/scripts/haistepconfig/)
 Store path:           _WorkSpace/1-SourceStore/
 Config template:      ../templates/config.yaml (this skill's own template)
 ```

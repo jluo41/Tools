@@ -1,6 +1,10 @@
 fn-2-cook: Run an external builder script
 ==========================================
 
+> NOTE: `code-dev/0-EXTERNAL/` is the WellDoc-SPACE builder home. Workspaces
+> without it (e.g. REACH-SPACE — zero external builders on disk) host any new
+> external builder in a project task folder, same `e{N}_build_external_*` naming.
+
 Executes one `e{N}_build_external_<asset>.py` to produce or refresh
 the asset triplet under the active release.
 
