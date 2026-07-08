@@ -4,8 +4,8 @@ description: "TrigFn specialist — design and review of the trigger-detection f
 argument-hint: "[verb] [use_case] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-07-08"
   summary: "TrigFn specialist — design and review of the trigger-detection function in an Endpoint_Set."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -36,7 +36,7 @@ Commands
 /haipipe-end-trig review <use_case> [endpoint_set]      -> structural audit of one use-case impl
 ```
 
-Use cases (concrete impls in code/haifn/fn_endpoint/fn_trig/, as of 2026-04-25)
+Use cases (concrete impls in code/haifn/fn_endpoint/fn_trig/, as of 2026-04-25 — discover current impls with ls code/haifn/fn_endpoint/)
 --------------------------------------------------------------------------------
 
 ```
@@ -100,5 +100,5 @@ code/scripts/haibuilder/6-endpoint/b1_build_trigfn_weightdayentry.py   ← WellD
 
 Project-specific builders live in the task folder:
 ```
-examples/<project>/tasks/C01_*/00_endpoint_set_fn_develop/b1_build_trigfn.py
+examples/<project>/tasks/C01_*/00_endpoint_set_fn_develop_<cohort>/b1_build_trigfn*.py
 ```

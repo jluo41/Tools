@@ -28,7 +28,9 @@ endpoint_version: "<version>"
 # =============================================================================
 # 5 Inference function names
 # Must exist in code/haifn/fn_endpoint/{fn_meta,fn_trig,fn_post,fn_src2input,fn_input2src}/
-# Build via code-dev/1-PIPELINE/6-Endpoint-WorkSpace/{a1,b1,c1,d1,e1}_build_*.py
+# Build via the endpoint fn_develop task folder ({a1,b1,c1,d1,e1}_build_*.py in
+# tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/; legacy workspaces:
+# code-dev/1-PIPELINE/6-Endpoint-WorkSpace/)
 # =============================================================================
 MetaFn:      "<MetaFnName>"
 TrigFn:      "<TrigFnName>"

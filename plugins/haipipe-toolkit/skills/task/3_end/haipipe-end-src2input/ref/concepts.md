@@ -26,7 +26,7 @@ Endpoint_Pipeline.run()
   Phase 2: Generate JSON payloads
              for each example:
                payload = Src2InputFn(ProcName_to_ProcDf, SPACE)
-               save as examples/example_{i}_{uuid}/payload.json
+               save as examples/example_{i:03d}/payload.json
   Phase 3: Package into Endpoint_Set
 ```
 
@@ -50,7 +50,14 @@ Function Contract
     Workspace paths (may be needed for reference data lookups)
 
 **Output:**
-  Dict representing the JSON payload that a client would send:
+  Dict representing the JSON payload that a client would send.
+  PLATFORM-SPECIFIC (owner decision 2026-07-05, supersedes L16): ONE
+  Src2InputFn per deploy platform, selected via --platform (default:
+  sagemaker). The default sagemaker shape is FLAT JSON:
+  ```json
+  { "patient_id": "12345", "timestamp": "2025-02-24T10:30:00", "models": "[\"ModelName\"]" }
+  ```
+  The databricks impl instead wraps the same fields in the envelope:
   ```json
   {
     "dataframe_records": [{
@@ -221,12 +228,12 @@ endpoint_set = Endpoint_Set.load_from_disk(path, SPACE)
 
 # Load a training example
 import json
-with open('examples/example_000_{uuid}/ProcName_to_ProcDf/Ptt.parquet', 'rb') as f:
+with open('examples/example_000/ProcName_to_ProcDf/Ptt.parquet', 'rb') as f:
     df_ptt = pd.read_parquet(f)
 # Load other tables similarly
 
 # Check payload was generated
-with open('examples/example_000_{uuid}/payload.json') as f:
+with open('examples/example_000/payload.json') as f:
     payload = json.load(f)
 
 print("Payload keys:", list(payload.keys()))

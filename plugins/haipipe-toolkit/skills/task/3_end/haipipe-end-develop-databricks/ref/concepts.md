@@ -1,19 +1,22 @@
 haipipe-end-develop-databricks — Concepts (DEFERRED)
 ======================================================
 
-Placeholder for the Databricks training-target specialist. To be filled in
-when `platform-databrick-training/` is added to the project.
+Placeholder for the Databricks training-target specialist. The backing repo
+`platforms/platform-databrick-training/` EXISTS; this doc awaits wiring.
 
 ---
 
 Expected backing repo
 ---------------------
 
-`platform-databrick-training/` (sibling of this checkout, not yet present).
-Anticipated layout (mirrors `platform-sagemaker-training/`):
+`platforms/platform-databrick-training/` — PRESENT on disk. Actual layout
+(differs from the anticipated sketch below — real scripts are
+`scripts/{submit_job.py, setup_cluster.sh, build_wheels.sh, run_v6_sequential.ps1}`
+plus `config/`, `notebooks/`, `CLAUDE.md`, `README.md`; the sketch is kept
+only as the wiring target):
 
 ```
-platform-databrick-training/
+platforms/platform-databrick-training/
 ├── notebooks/                       Databricks notebooks (training entry)
 ├── wheels/                          packaged training wheel(s)
 ├── scripts/
@@ -88,7 +91,7 @@ them.
 Lifting "deferred"
 -------------------
 
-When `platform-databrick-training/` is added:
+When `platforms/platform-databrick-training/` is added:
   1. Replace the placeholder procedures in `SKILL.md` with concrete commands.
   2. Update the description frontmatter — drop the `STATUS: DEFERRED` prefix.
   3. Add this skill to the no-args dashboard fan-out in

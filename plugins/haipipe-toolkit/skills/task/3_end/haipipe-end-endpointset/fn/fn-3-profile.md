@@ -18,7 +18,7 @@ vectorization fix), scaffold a durable task instead via `/haipipe-task-for-endpo
 placement: co-locate it in the project's ENDPOINT group as a sibling of the
 endpoint-build task (e.g. `tasks/C_endpoint/C2_inference_profile/` next to
 `C1_endpoint/`), so the group owns build → profile. Real example:
-`examples/ProjA-Click-01-ClickPred/tasks/C_endpoint/C2_inference_profile/`.
+`<project>/tasks/<endpoint-group>/NN_inference_profile/ (illustrative — original lived in a retired WellDoc project)`.
 
 
 Procedure (local)

@@ -4,8 +4,8 @@ description: "MLflow deploy specialist for haipipe-end. STATUS: DEFERRED — no 
 argument-hint: "[function] [endpoint_set_or_id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-07-04"
+  version: "1.2.0"
+  last_updated: "2026-07-08"
   summary: "MLflow deploy specialist for haipipe-end."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -91,7 +91,8 @@ Procedures (placeholder — fill from project conventions)
 
 Deploy:
   1. Read Endpoint_Set at `_WorkSpace/6-EndpointStore/<endpoint_set>/`.
-  2. Wrap `fn_endpoint/` + ModelInstance into an `mlflow.pyfunc.PythonModel`.
+  (input contract, all deploy skills: canonical input = the folder; a .tar.gz twin is a wire form only)
+  2. Wrap `fn_endpoint/` + ModelInstance into an `mlflow.pyfunc.PythonModel`. (logical bundle name; physically materialized as code/ + model/ in the set)
   3. `mlflow.start_run()` and log:
      - The pyfunc model with signature inferred from Endpoint_Set's manifest.
      - The Endpoint_Set's manifest as a run artifact.

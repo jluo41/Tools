@@ -4,8 +4,8 @@ description: "endpoint task-folder build specialist. Scaffolds AND executes {NN}
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.2.0"
-  last_updated: "2026-07-04"
+  version: "2.3.0"
+  last_updated: "2026-07-08"
   summary: "endpoint task-folder specialist (scaffold + execute + deploy prep)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---

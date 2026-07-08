@@ -4,6 +4,10 @@ haipipe-end-deploy-local — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [1.4.0] — 2026-07-08
+
+- skill-diagnose fixes: platforms/ prefix on all runnable platform paths (incl. scripts/serve_local.py docstring); uniform input-contract note (folder canonical; .tar.gz = wire form).
+
 ## [1.3.0] — 2026-07-05
 
 ### Changed (JL: "这个skill内部的code，还是不要运行，只是当作examples reference来用，到最后还是要写到task folder里的")

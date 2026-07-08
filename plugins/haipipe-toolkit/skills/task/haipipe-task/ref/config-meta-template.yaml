@@ -29,6 +29,14 @@ _meta:
   output: |
     <e.g., metrics.json · best.ckpt @ epoch 20; expect MAE ≈ 24.7>
 
+  # notebook — OPTIONAL. Runtime-notebook retention (run-sh-template greps it).
+  #   full (default) | thin (strip heavy outputs) | off (no notebooks/ record)
+  # notebook: full
+
+  # skip_review — OPTIONAL. true = bypass the pre-flight CODE_REVIEW gate
+  # in run.sh (use only for scaffolds / convert-only runs).
+  # skip_review: true
+
 
 # =============================================================================
 # Actual config params below — whatever your script needs.

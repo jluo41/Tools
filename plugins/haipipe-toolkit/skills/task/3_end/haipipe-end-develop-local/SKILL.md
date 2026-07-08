@@ -4,8 +4,8 @@ description: "Local develop specialist for haipipe-end. Thin wrapper that runs S
 argument-hint: "[verb] [config_or_modelset] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-07-08"
   summary: "Local develop specialist for haipipe-end."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---

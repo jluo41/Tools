@@ -1,11 +1,11 @@
 ---
 name: haipipe-end-deploy-local
-description: "Local self-hosted deploy specialist for haipipe-end. Wraps an Endpoint_Set into a local HTTP server — Flask (default), FastAPI, or local Docker container. For dev, integration testing, demos, and DIY deployments. Backed in part by platform-sagemaker-inference/scripts/build_endpoint/run_endpoint_{system,docker}.py for the Flask + Docker testing ladder. Reads Endpoint_Sets produced by haipipe-end-endpointset; never modifies them. Called by /haipipe-end orchestrator when deploy target is local / flask / fastapi / localhost."
+description: "Local self-hosted deploy specialist for haipipe-end. Wraps an Endpoint_Set into a local HTTP server — Flask (default), FastAPI, or local Docker container. For dev, integration testing, demos, and DIY deployments. Backed in part by platforms/platform-sagemaker-inference/scripts/build_endpoint/run_endpoint_{system,docker}.py for the Flask + Docker testing ladder. Reads Endpoint_Sets produced by haipipe-end-endpointset; never modifies them. Called by /haipipe-end orchestrator when deploy target is local / flask / fastapi / localhost."
 argument-hint: "[verb] [endpoint_set_or_id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.3.0"
-  last_updated: "2026-07-05"
+  version: "1.4.0"
+  last_updated: "2026-07-08"
   summary: "Local self-hosted deploy specialist for haipipe-end."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -19,7 +19,7 @@ deployment target; the framework (Flask / FastAPI) and the optional
 Docker wrap are implementation choices.
 
 > Status: scaffolded. Procedures below are placeholders to be wired
-> through `platform-sagemaker-inference/scripts/build_endpoint/run_endpoint_{system,docker}.py`
+> through `platforms/platform-sagemaker-inference/scripts/build_endpoint/run_endpoint_{system,docker}.py`
 > (the Flask + Docker testing scripts that already exist in this project)
 > when the project picks a stable local-deploy convention.
 
@@ -62,8 +62,8 @@ Verb        Ref                                       Backing platform script (w
 dashboard   ../haipipe-end/ref/deploy-overview.md                           (none — local registry)
 deploy      ../haipipe-end/ref/deploy-overview.md
             ../haipipe-end/ref/0-overview.md
-              flask:        platform-sagemaker-inference/scripts/build_endpoint/run_endpoint_system.py
-              with-docker:  platform-sagemaker-inference/scripts/build_endpoint/run_endpoint_docker.py
+              flask:        platforms/platform-sagemaker-inference/scripts/build_endpoint/run_endpoint_system.py
+              with-docker:  platforms/platform-sagemaker-inference/scripts/build_endpoint/run_endpoint_docker.py
               fastapi:      project-specific (TBD)
 test        ../haipipe-end/ref/deploy-overview.md                           POST a JSON payload to localhost:port/invocations
 monitor     ../haipipe-end/ref/deploy-overview.md                           tail logs (`--logs` flag or `docker logs`)
@@ -106,7 +106,8 @@ Procedures (placeholder — fill in once local-deploy convention settles)
 
 Deploy (Flask, default):
   1. Read Endpoint_Set at `_WorkSpace/6-EndpointStore/<endpoint_set>/`.
-  2. Defer to `python platform-sagemaker-inference/scripts/build_endpoint/run_endpoint_system.py
+  (input contract, all deploy skills: canonical input = the folder; a .tar.gz twin is a wire form only)
+  2. Defer to `python platforms/platform-sagemaker-inference/scripts/build_endpoint/run_endpoint_system.py
      --endpoint-path <path> --test` for the Flask path (it already does
      env setup, port :5000, /ping + /invocations smoke).
   3. Record (endpoint_set, port=5000, pid) in the local registry.
@@ -115,7 +116,7 @@ Deploy (Docker):
   1. Read Endpoint_Set at `_WorkSpace/6-EndpointStore/<endpoint_set>/`.
   2. Build (or reuse) a local Docker image via the SageMaker Docker scripts
      (`build_docker_inference.py --image docker-inference-lite --variant lite`).
-  3. Defer to `python platform-sagemaker-inference/scripts/build_endpoint/run_endpoint_docker.py
+  3. Defer to `python platforms/platform-sagemaker-inference/scripts/build_endpoint/run_endpoint_docker.py
      --endpoint-path <path> --image docker-inference-lite --test` for the
      Docker path (port :8080).
   4. Record (endpoint_set, port=8080, container_id) in the local registry.
@@ -169,7 +170,7 @@ Does NOT own:
   - Production-grade serving infra — for managed serving see `-deploy-sagemaker`
     or `-deploy-databricks`
   - SageMaker / ECR / cloud auth — those are `-deploy-sagemaker`'s concerns.
-    This skill MAY shell out to `platform-sagemaker-inference/scripts/build_endpoint/`
+    This skill MAY shell out to `platforms/platform-sagemaker-inference/scripts/build_endpoint/`
     for the Flask + local-Docker paths, since those scripts work fine without
     any cloud creds.
 

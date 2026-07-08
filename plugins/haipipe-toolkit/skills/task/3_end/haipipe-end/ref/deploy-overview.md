@@ -19,8 +19,8 @@ whose wire pair matches the target platform.
 ```
 Platform      Wrapper              Registry              Auth                                Repo
 ────────────  ───────────────────  ────────────────────  ──────────────────────────────────  ────────────────────────────────
-Databricks    MLflow PythonModel   Unity Catalog (UC)    DATABRICKS_HOST + TOKEN + USER      platform-databrick-inference/
-SageMaker     Flask + Docker       S3 + SageMaker        AWS IAM                             platform-sagemaker-inference/
+Databricks    MLflow PythonModel   Unity Catalog (UC)    DATABRICKS_HOST + TOKEN + USER      platforms/platform-databrick-inference/
+SageMaker     Flask + Docker       S3 + SageMaker        AWS IAM                             platforms/platform-sagemaker-inference/
 Local         direct Python call   filesystem            none                                (main repo)
 ```
 
@@ -33,7 +33,7 @@ Only the wrapper (MLflow vs Flask) and registry differ.
 DATABRICKS DEPLOYMENT
 ======================
 
-The platform-databrick-inference/ submodule handles Databricks deployment.
+The platforms/platform-databrick-inference/ submodule handles Databricks deployment.
 It is a separate subproject from the main codebase.
 
 **Scripts reference:**
@@ -61,12 +61,12 @@ Databricks Step 1: Set Up Environment
 =======================================
 
 ```bash
-cd platform-databrick-inference
+cd platforms/platform-databrick-inference
 source env.sh      # sets DATABRICKS_HOST, DATABRICKS_TOKEN, DATABRICKS_USER, etc.
 ```
 
 NOTE: source env.sh does NOT persist across Bash tool calls.
-Always chain: cd platform-databrick-inference && source env.sh && python <script>
+Always chain: cd platforms/platform-databrick-inference && source env.sh && python <script>
 
 Required env.sh variables:
 ```bash
@@ -77,7 +77,7 @@ export DATABRICKS_USER="your.email@domain.com"
 
 Verify connection:
 ```bash
-cd platform-databrick-inference && source env.sh && python -c "
+cd platforms/platform-databrick-inference && source env.sh && python -c "
 from databricks.sdk import WorkspaceClient
 client = WorkspaceClient()
 print('Connected to:', client.config.host)
@@ -94,16 +94,16 @@ This simulates exactly what happens in EndpointSetMLflowModel.predict()
 but without the MLflow overhead (~10 seconds vs 5+ minutes).
 
 ```bash
-cd platform-databrick-inference && source env.sh && python scripts/test_local.py \
-    --endpoint-path "../_WorkSpace/6-EndpointStore/endpoint_cgm_decoder_ohio_v0001" \
+cd platforms/platform-databrick-inference && source env.sh && python scripts/test_local.py \
+    --endpoint-path "../../_WorkSpace/6-EndpointStore/endpoint_cgm_decoder_ohio_v0001" \
     --payload examples/cgm_payload.json \
     --profile
 ```
 
 With performance testing (10 requests):
 ```bash
-cd platform-databrick-inference && source env.sh && python scripts/test_local.py \
-    --endpoint-path "../_WorkSpace/6-EndpointStore/endpoint_cgm_decoder_ohio_v0001" \
+cd platforms/platform-databrick-inference && source env.sh && python scripts/test_local.py \
+    --endpoint-path "../../_WorkSpace/6-EndpointStore/endpoint_cgm_decoder_ohio_v0001" \
     --payload examples/cgm_payload.json \
     --num-requests 10
 ```
@@ -125,7 +125,7 @@ Databricks Step 3: Create Config File
 Create or edit config/cgm_ohio_dev.yaml (or staging.yaml / prod.yaml):
 
 ```yaml
-# platform-databrick-inference/config/cgm_ohio_dev.yaml
+# platforms/platform-databrick-inference/config/cgm_ohio_dev.yaml
 
 # Model and registry
 model_name: "cgm-decoder-ohio"          # Short name -> UC: workspace.default.cgm_decoder_ohio
@@ -135,8 +135,8 @@ model_version: null                     # null = use latest version
 # Serving endpoint
 endpoint_name: "cgm-decoder-ohio-dev"
 
-# Source endpoint package (relative to platform-databrick-inference/)
-endpoint_path: "../_WorkSpace/6-EndpointStore/endpoint_cgm_decoder_ohio_v0001"
+# Source endpoint package (relative to platforms/platform-databrick-inference/)
+endpoint_path: "../../_WorkSpace/6-EndpointStore/endpoint_cgm_decoder_ohio_v0001"
 
 # Compute
 workload_size: "Small"                  # Small (4GB) | Medium (8GB) | Large (16GB)
@@ -170,8 +170,8 @@ Databricks Step 4: Package to Unity Catalog
 ============================================
 
 ```bash
-cd platform-databrick-inference && source env.sh && python scripts/package.py \
-    --endpoint-path "../_WorkSpace/6-EndpointStore/endpoint_cgm_decoder_ohio_v0001" \
+cd platforms/platform-databrick-inference && source env.sh && python scripts/package.py \
+    --endpoint-path "../../_WorkSpace/6-EndpointStore/endpoint_cgm_decoder_ohio_v0001" \
     --model-name "cgm-decoder-ohio" \
     --uc-catalog "workspace" \
     --uc-schema "default"
@@ -179,14 +179,14 @@ cd platform-databrick-inference && source env.sh && python scripts/package.py \
 
 Or using config file:
 ```bash
-cd platform-databrick-inference && source env.sh && python scripts/package.py \
+cd platforms/platform-databrick-inference && source env.sh && python scripts/package.py \
     --config config/cgm_ohio_dev.yaml
 ```
 
-With --copy-to-local (copies endpoint to platform-databrick-inference/_WorkSpace/ first):
+With --copy-to-local (copies endpoint to platforms/platform-databrick-inference/_WorkSpace/ first):
 ```bash
-cd platform-databrick-inference && source env.sh && python scripts/package.py \
-    --endpoint-path "../_WorkSpace/6-EndpointStore/endpoint_cgm_decoder_ohio_v0001" \
+cd platforms/platform-databrick-inference && source env.sh && python scripts/package.py \
+    --endpoint-path "../../_WorkSpace/6-EndpointStore/endpoint_cgm_decoder_ohio_v0001" \
     --model-name "cgm-decoder-ohio" \
     --copy-to-local
 ```
@@ -231,9 +231,9 @@ Databricks Step 5: Test MLflow Model Locally (Optional)
 Test the MLflow model before committing to Databricks Model Serving:
 
 ```bash
-cd platform-databrick-inference && source env.sh && python scripts/test.py \
+cd platforms/platform-databrick-inference && source env.sh && python scripts/test.py \
     --model-uri "models:/workspace.default.cgm_decoder_ohio/3" \
-    --payload "../_WorkSpace/6-EndpointStore/endpoint_cgm_decoder_ohio_v0001/examples/example_000_xxx/payload.json"
+    --payload "../../_WorkSpace/6-EndpointStore/endpoint_cgm_decoder_ohio_v0001/examples/example_000/payload.json"
 ```
 
 This loads the MLflow model and runs predict(), simulating the full Databricks path.
@@ -244,7 +244,7 @@ Databricks Step 6: Deploy to Model Serving
 ===========================================
 
 ```bash
-cd platform-databrick-inference && source env.sh && python scripts/deploy.py \
+cd platforms/platform-databrick-inference && source env.sh && python scripts/deploy.py \
     --model-name "workspace.default.cgm_decoder_ohio" \
     --version 3 \
     --endpoint-name "cgm-decoder-ohio-dev" \
@@ -277,15 +277,15 @@ Databricks Step 7: Test the Deployed Endpoint
 ===============================================
 
 ```bash
-cd platform-databrick-inference && source env.sh && python scripts/test.py \
+cd platforms/platform-databrick-inference && source env.sh && python scripts/test.py \
     --endpoint-url "https://your-workspace.azuredatabricks.net/serving-endpoints/cgm-decoder-ohio-dev/invocations" \
-    --payload "../_WorkSpace/6-EndpointStore/endpoint_cgm_decoder_ohio_v0001/examples/example_000_xxx/payload.json" \
+    --payload "../../_WorkSpace/6-EndpointStore/endpoint_cgm_decoder_ohio_v0001/examples/example_000/payload.json" \
     --token "$DATABRICKS_TOKEN"
 ```
 
 Or benchmark with multiple requests:
 ```bash
-cd platform-databrick-inference && source env.sh && python scripts/test.py \
+cd platforms/platform-databrick-inference && source env.sh && python scripts/test.py \
     --endpoint-url "..." \
     --payload "..." \
     --benchmark \
@@ -298,8 +298,8 @@ Full Pipeline Script (Package + Deploy + Test in One Command)
 ==============================================================
 
 ```bash
-cd platform-databrick-inference && source env.sh && python scripts/run_pipeline.py \
-    --endpoint-path "../_WorkSpace/6-EndpointStore/endpoint_cgm_decoder_ohio_v0001" \
+cd platforms/platform-databrick-inference && source env.sh && python scripts/run_pipeline.py \
+    --endpoint-path "../../_WorkSpace/6-EndpointStore/endpoint_cgm_decoder_ohio_v0001" \
     --model-name "cgm-decoder-ohio" \
     --endpoint-name "cgm-decoder-ohio-dev" \
     --payload examples/cgm_payload.json
@@ -307,7 +307,7 @@ cd platform-databrick-inference && source env.sh && python scripts/run_pipeline.
 
 Skip packaging (use existing UC model version):
 ```bash
-cd platform-databrick-inference && source env.sh && python scripts/run_pipeline.py \
+cd platforms/platform-databrick-inference && source env.sh && python scripts/run_pipeline.py \
     --skip-package \
     --model-name "workspace.default.cgm_decoder_ohio" \
     --model-version 3 \
@@ -360,7 +360,7 @@ Hyphens in model_name are converted to underscores automatically.
 
 To list versions:
 ```bash
-cd platform-databrick-inference && source env.sh && python -c "
+cd platforms/platform-databrick-inference && source env.sh && python -c "
 from mlflow import MlflowClient
 client = MlflowClient()
 versions = client.search_model_versions(\"name='workspace.default.cgm_decoder_ohio'\")
@@ -397,9 +397,9 @@ print(json.dumps(response, indent=2))
 
 Or use test_local.py directly (no VENV change needed):
 ```bash
-source .venv/bin/activate && source env.sh && python platform-databrick-inference/scripts/test_local.py \
+source .venv/bin/activate && source env.sh && python platforms/platform-databrick-inference/scripts/test_local.py \
     --endpoint-path "_WorkSpace/6-EndpointStore/endpoint_cgm_decoder_ohio_v0001" \
-    --payload "_WorkSpace/6-EndpointStore/endpoint_cgm_decoder_ohio_v0001/examples/example_000_xxx/payload.json" \
+    --payload "_WorkSpace/6-EndpointStore/endpoint_cgm_decoder_ohio_v0001/examples/example_000/payload.json" \
     --profile
 ```
 
@@ -441,7 +441,7 @@ MUST DO
 
 1. Always run /haipipe-end test before deploying
 2. Run test_local.py first -- it's 30x faster than packaging to MLflow
-3. Source env.sh in platform-databrick-inference/ before running scripts
+3. Source env.sh in platforms/platform-databrick-inference/ before running scripts
 4. Set DATABRICKS_HOST, DATABRICKS_TOKEN, DATABRICKS_USER in env.sh (all 3 required)
 5. Note the Unity Catalog model version after packaging -- needed for deploy
 6. Wait for endpoint to reach READY state (5-10 min) before testing

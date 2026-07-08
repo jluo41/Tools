@@ -97,9 +97,10 @@ Headline extraction
 `results/<NAME>/metrics.json` (priority order):
 
 1. `summary.headline` if explicitly set by the script
-2. `summary.best_val` / `summary.best_test_id` / etc. (first match)
-3. The largest metric value in `metrics.json`
-4. fallback: `-`
+2. fallback: `-`
+
+(That is ALL the shipped run-sh-template.sh implements — emit
+`summary.headline` from your script if you want a headline.)
 
 The headline does NOT replace metrics.json — it's a scannable shortcut.
 

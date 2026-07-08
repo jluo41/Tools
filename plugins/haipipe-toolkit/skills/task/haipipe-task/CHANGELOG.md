@@ -4,6 +4,11 @@ haipipe-task — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [5.6.0] — 2026-07-08
+
+- skill-diagnose fixes (3_end+core round): dead `fn/project.md` refs -> Skill("haipipe-project"); task-group letter table aligned to the SKILL top-NOTE defaults (+R raw, A=fit; "enforced consistency" claim removed); retired `/haipipe-project log task` dropped from fn/run.md; workflow-audit example no longer infers type from the group letter (and its cascade now mirrors Step 3a incl. raw/endpoint); `run`+`audit` added to Commands (were dispatchable but undiscoverable); ProjA-* examples -> Project-REACH-ADHD; run-row reads-list corrected.
+- ref/: CONFIG NAMING UNIFIED — config filename == run filename everywhere (task-structure example rewritten, "freestyle" line removed; hierarchy type-table relabeled "config skeleton"; workflow-template <CONFIG>-><RUN>) — matches run-sh-template.sh and every real task on disk (JL: "yes, please go ahead and fix them"). hierarchy blesses the A00 stage-0 group index; runtime-yaml headline doc trimmed to shipped behavior; metrics-json-schema gains the `summary` object; config-meta-template gains notebook:/skip_review:; AIData token, footer 0-RawDataStore glob, D_demo note, databricks-execution illustrative values synced.
+
 ## [5.5.0] — 2026-07-04
 
 ### Changed (JL: "task其实不aware of discovery insight probe, 对吗")

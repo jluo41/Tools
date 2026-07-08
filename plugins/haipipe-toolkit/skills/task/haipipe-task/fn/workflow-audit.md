@@ -90,10 +90,13 @@ run_build_roberta    ❌       ❌           ✅       ❌
 Use the router's inference cascade:
 1. Explicit: caller said type
 2. Script-inferred: read `<TASK>.py` and `scripts/*.py` imports/content
+   Abbreviated — the full cascade is SKILL.md Step 3a (single source):
    - `from haipipe` / `SourceFn` / `RecordFn` → data
-   - `import torch` / `Trainer` / `sweep` → training
+   - `databricks` / `spark.sql` / `dbutils` → raw
+   - `import torch` / `Trainer` / `sweep` → fit
    - `eval` / `metrics` / `score` → eval
    - `plt.` / `fig` / `savefig` / `.tex` → display
+   - `Endpoint_Set` / `inference(` / deploy → endpoint
    - `stata` / `.do` / `preserve` → stata (delegate)
    - `agent` / `claude` / `anthropic` → agent
 3. Keyword-inferred: scan args for type keywords
@@ -116,7 +119,7 @@ Output a structured audit:
 
 ```
 📋 Audit: A01_build_physician
-   type: external (inferred from A00_ group)
+   type: data (inferred from SourceFn import in the script)
    
    Four-sister check:
      run_build_physician:  configs ❌  runs ✅  results ✅  notebooks ✅

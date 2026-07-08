@@ -168,7 +168,9 @@ After saving, check the directory structure:
 
 ```bash
 ls _WorkSpace/6-EndpointStore/{endpoint_name}/
-# Expected: model/ code/ external/ examples/ manifest.json meta.json
+# Expected: the Stage-6 layout per ../haipipe-end/ref/0-overview.md
+#   (model/ code/ examples/ manifest.json meta.json; external//inference/ only
+#    for endpoints shipping reference data)
 
 ls _WorkSpace/6-EndpointStore/{endpoint_name}/examples/
 # Expected: example_000_{uuid}/ example_001_{uuid}/ ...

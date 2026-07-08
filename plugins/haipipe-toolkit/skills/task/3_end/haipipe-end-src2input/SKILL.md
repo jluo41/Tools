@@ -4,8 +4,8 @@ description: "Src2InputFn specialist — design and review of the record-to-wire
 argument-hint: "[verb] [use_case] [--platform sagemaker|databricks] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "2.0.0"
-  last_updated: "2026-07-05"
+  version: "2.1.0"
+  last_updated: "2026-07-08"
   summary: "Src2InputFn specialist — design and review of the record-to-wire-payload function in an Endpoint_Set (serializes a ProcessedDF record into JSON the model can ingest)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -56,7 +56,7 @@ CGMInverse_v260101                              CGM inverse encoder      (sagema
 InferenceInverseV1219                           generic inference v1219  (sagemaker)
 WellDocWeight_Src2Payload_v260305               weight encoder           (sagemaker)
 WellDocWeight_Src2OldFormat_v260318             weight encoder (legacy)  (sagemaker)
-DatabricksV1                                🚩  generic Databricks       (databricks)
+<YourDatabricksFn>                                🚩  generic Databricks       (databricks)
 CGMDecoder_Databricks_Src2Payload_v260101          🚩  CGM Databricks variant   (databricks)
 
 🚩 = Databricks-platform impl (one wire-Fn per platform by design; sagemaker unmarked)

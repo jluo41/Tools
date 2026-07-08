@@ -42,7 +42,8 @@ Signal 1 -- Structural completeness
   Check for required top-level items:
     model/          <- model weights (required)
     code/           <- codebase snapshot (required)
-    external/       <- reference data (required)
+    external/       <- reference data (CONDITIONAL — only endpoints that
+                       ship reference data have it; absent from XGB sets)
     examples/       <- test payloads (required)
     manifest.json   <- config + lineage (required)
     meta.json       <- MetaFn output (required)
@@ -65,7 +66,7 @@ Signal 3 -- Inference function names (from manifest.json)
 Signal 4 -- Deployment status
   Check for Databricks-specific artifacts:
     If mlruns/ or mlflow_model/ exists alongside: DEPLOYED (MLflow)
-    Check platform-databrick-inference/ for recent deploy configs
+    Check platforms/platform-databrick-inference/ for recent deploy configs
   Report: LOCAL | DATABRICKS | SAGEMAKER | UNKNOWN
 
 **0d. Render the status table**

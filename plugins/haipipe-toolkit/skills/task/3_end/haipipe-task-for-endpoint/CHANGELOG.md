@@ -4,6 +4,10 @@ haipipe-task-for-endpoint — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [2.3.0] — 2026-07-08
+
+- skill-diagnose fixes: config-seed build pointer -> endpoint fn_develop task folder (was unqualified retired code-dev path); ref/inference-perf-notes.md retitled as the knowledge base behind /haipipe-end profile (kept — endpointset fn-3-profile reads it; task-side profiling scope was retired in 2.2.0).
+
 ## [2.2.0] — 2026-07-04
 
 - CONFIRMED by JL 2026-07-05 ("ok 我同意。"); review thread removed from fn/scaffold.md.
