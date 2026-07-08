@@ -133,5 +133,5 @@ only 4 of 19 tables and Input2SrcFn creates empty stubs for the rest,
 CaseFns that read the missing tables produce zero features → different
 predictions. This is silent — no error, just wrong scores.
 
-The builder script (code-dev/ e1_build_*) must include this test paired
+The builder script (e1_build_* in the endpoint fn_develop task folder) must include this test paired
 with the Src2InputFn. If the roundtrip fails, neither Fn is production-ready.

@@ -16,7 +16,7 @@ Kitchen  = Case_Pipeline class        (code/haipipe/case_base/)
 Chef     = TriggerFn + CaseFn         (code/haifn/fn_case/)  GENERATED
 Recipe   = YAML config file           (config/caseset/ or tutorials/config/)
 Dish     = CaseSet asset              (_WorkSpace/3-CaseStore/)
-Academy  = Builder scripts            (code-dev/1-PIPELINE/3-Case-WorkSpace/)
+Academy  = Builder scripts            (tasks/<pipe-group>/03_case_fn_develop_<cohort>/ in the project)
 ```
 
 
@@ -217,8 +217,8 @@ Discovering Available Fns
 ```bash
 ls code/haifn/fn_case/fn_trigger/
 ls code/haifn/fn_case/case_casefn/
-ls code-dev/1-PIPELINE/3-Case-WorkSpace/a*.py    # TriggerFn builders
-ls code-dev/1-PIPELINE/3-Case-WorkSpace/c*.py    # CaseFn builders
+ls examples/*/tasks/*/03_case_fn_develop_*/a*.py    # TriggerFn builders
+ls examples/*/tasks/*/03_case_fn_develop_*/c*.py    # CaseFn builders
 ```
 
 
@@ -333,7 +333,8 @@ Fn loaders:           code/haipipe/case_base/builder/triggerfn.py
                       code/haipipe/case_base/builder/rotools.py
 Generated TriggerFns: code/haifn/fn_case/fn_trigger/      (discover with ls)
 Generated CaseFns:    code/haifn/fn_case/case_casefn/     (discover with ls)
-Builders (edit here): code-dev/1-PIPELINE/3-Case-WorkSpace/  (discover with ls)
+Builders (edit here): examples/<Project>/tasks/<pipe-group>/03_case_fn_develop_<cohort>/
+                      (legacy workspaces: code-dev/1-PIPELINE/3-Case-WorkSpace/)
 Store path:           _WorkSpace/3-CaseStore/
 Config template:      ../templates/config.yaml (this skill's own template)
 ```
