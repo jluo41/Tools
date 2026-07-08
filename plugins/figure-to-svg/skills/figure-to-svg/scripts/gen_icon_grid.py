@@ -18,9 +18,19 @@ large margins, pure white background, no text.
 import importlib.util, os, sys
 from pathlib import Path
 
-DEFAULT_BRIDGE = ("/Users/floydluo/Desktop/FrameworkDesign/Tools/plugins/"
-                  "haipipe-toolkit/mcp-servers/codex-image2/server.py")
+# haipipe-toolkit is a sibling plugin of figure-to-svg: this file sits at
+# <plugins>/figure-to-svg/skills/figure-to-svg/scripts/, so parents[4] is <plugins>/.
+# Override with CODEX_IMAGE2_SERVER when the plugins live elsewhere.
+DEFAULT_BRIDGE = str(Path(__file__).resolve().parents[4]
+                     / "haipipe-toolkit" / "mcp-servers" / "codex-image2" / "server.py")
 BRIDGE = os.environ.get("CODEX_IMAGE2_SERVER", DEFAULT_BRIDGE)
+
+if not Path(BRIDGE).is_file():
+    sys.exit(
+        f"ERROR: codex-image2 bridge not found: {BRIDGE}\n"
+        "This is a hard prerequisite of the pipeline. Install the haipipe-toolkit plugin "
+        "next to the figure-to-svg plugin, or set CODEX_IMAGE2_SERVER to its "
+        "mcp-servers/codex-image2/server.py, then rerun.")
 
 spec = importlib.util.spec_from_file_location("codex_image2_server", BRIDGE)
 mod = importlib.util.module_from_spec(spec)

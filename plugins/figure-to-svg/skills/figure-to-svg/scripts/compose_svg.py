@@ -2,13 +2,27 @@
 """Assemble a master SVG from items.json + the per-icon SVGs.
 
 Usage:
-    compose_svg.py <items.json> <svg_dir> <out.svg> [--crops DIR]
+    compose_svg.py <items.json> <svg_dir> <out.svg> [--crops DIR] [--no-wrapped] [--no-raster]
+
+Writes up to THREE variants per run:
+  <out>.svg          vector icons, PPT-safe text  (the editable deliverable)
+  <out>_wrapped.svg  tspan-wrapped text           (for visual diff only)
+  <out>_raster.svg   every icon embedded as its PNG crop; text/panels/connectors stay
+                     vector (max icon fidelity — icons stay pictures in PPT)
 
 Reads the inventory (items.json), nests each icon's hand-authored SVG at its bbox, embeds any
-`keep_raster` icons as PNGs, paints panel/background rects, and emits a <text> element for every
-label. The canvas is sized to the original figure (width/height in items.json).
+`keep_raster` icons as PNGs, paints panel/background rects, and emits <text> for every label.
+The canvas is sized to the original figure (width/height in items.json).
 
-  --crops DIR   folder of raster crops for keep_raster items (default: <items_dir>/crop_images)
+TWO variants from one config (lesson/16 - PowerPoint collapses <tspan> line breaks):
+  <out.svg>              PPT-SAFE: every line is its own absolutely-positioned <text>, so
+                         Insert SVG -> Convert to Shape yields one editable text box per line.
+                         If an item has "content_ppt" (a list of sentences), each sentence
+                         becomes one single-line <text> instead (overflow OK, re-wrap in PPT).
+  <out>_wrapped.svg      tspan line breaks (classic), for the faithful visual diff.
+
+  --crops DIR    folder of raster crops for keep_raster items (default: <items_dir>/crop_images)
+  --no-wrapped   skip the _wrapped variant
 
 Only Python stdlib is used (no cairosvg needed here; render_diff.py does the rasterizing).
 The icons stay as inline, editable SVG shapes so the master remains fully editable.
@@ -49,10 +63,10 @@ def read_icon_svg(path):
     return None, inner
 
 
-def icon_element(it, svg_dir, crops_dir):
+def icon_element(it, svg_dir, crops_dir, force_raster=False):
     x, y, w, h = it["bbox"]
     preserve = it.get("preserve", "xMidYMid meet")
-    if it.get("keep_raster"):
+    if it.get("keep_raster") or force_raster:
         png = os.path.join(crops_dir, it["id"] + ".png")
         if not os.path.exists(png):
             return f'  <!-- MISSING raster crop for {esc_attr(it["id"])} -->'
@@ -139,7 +153,12 @@ def connector_element(c):
     return "  " + "\n  ".join(out)
 
 
-def text_element(it):
+def text_element(it, ppt=False):
+    """One label -> SVG text. ppt=False: multi-line via tspans (renders faithfully, but PPT
+    collapses the line breaks). ppt=True: one absolutely-positioned <text> per line, so each
+    becomes its own editable text box after Convert to Shape; if the item carries "content_ppt"
+    (a list of sentences), each sentence is one single-line <text> (overflow OK, re-wrap in PPT).
+    """
     x, y, w, h = it["bbox"]
     anchor = it.get("anchor", "start")
     tx = {"start": x, "middle": x + w / 2, "end": x + w}.get(anchor, x)
@@ -149,16 +168,89 @@ def text_element(it):
     weight = it.get("weight", "normal")
     color = it.get("color", "#000000")
     family = it.get("font_family", "Helvetica, Arial, sans-serif")
-    lines = str(it.get("content", "")).split("\n")
     attrs = (f'x="{tx:.1f}" font-size="{size}" font-weight="{esc_attr(weight)}" '
              f'font-family="{esc_attr(family)}" fill="{esc_attr(color)}" '
              f'text-anchor="{esc_attr(anchor)}"')
+    if ppt and it.get("content_ppt"):
+        lines = [str(s) for s in it["content_ppt"]]
+    else:
+        lines = str(it.get("content", "")).split("\n")
     if len(lines) == 1:
         return f'  <text {attrs} y="{baseline:.1f}">{esc_text(lines[0])}</text>'
+    if ppt:
+        return "\n".join(
+            f'  <text {attrs} y="{baseline + i * size * 1.2:.1f}">{esc_text(ln)}</text>'
+            for i, ln in enumerate(lines))
     spans = "".join(
         f'<tspan x="{tx:.1f}" dy="{0 if i == 0 else size * 1.2:.1f}">{esc_text(ln)}</tspan>'
         for i, ln in enumerate(lines))
     return f'  <text {attrs} y="{baseline:.1f}">{spans}</text>'
+
+
+def build(data, svg_dir, crops_dir, ppt, force_raster=False):
+    """Compose one full SVG document; ppt picks the text mode (see text_element).
+    force_raster embeds EVERY icon as its PNG crop (the raster-icon variant): icons keep the
+    generated image's fidelity, while text/panels/connectors stay vector and PPT-editable."""
+    W, H = data["width"], data["height"]
+    out = [f'<svg xmlns="{SVG_NS}" xmlns:xlink="{XLINK}" '
+           f'width="{W}" height="{H}" viewBox="0 0 {W} {H}">']
+
+    bg = data.get("background")
+    if bg:
+        out.append(f'  <rect x="0" y="0" width="{W}" height="{H}" fill="{esc_attr(bg)}"/>')
+
+    # Panels may carry a measured gradient (lesson/17) instead of a flat fill:
+    #   "gradient": {"from": "#0B5FA5", "to": "#1F2E5A", "direction": "horizontal"|"vertical"}
+    defs, panel_rects = [], []
+    for i, p in enumerate(data.get("panels", [])):
+        x, y, w, h = p["bbox"]
+        fill = esc_attr(p.get("fill", "none"))
+        g = p.get("gradient")
+        if g:
+            gid = f"panel-grad-{i}"
+            gx2, gy2 = ("0", "1") if g.get("direction") == "vertical" else ("1", "0")
+            defs.append(f'    <linearGradient id="{gid}" x1="0" y1="0" x2="{gx2}" y2="{gy2}">'
+                        f'<stop offset="0" stop-color="{esc_attr(g["from"])}"/>'
+                        f'<stop offset="1" stop-color="{esc_attr(g["to"])}"/></linearGradient>')
+            fill = f"url(#{gid})"
+        panel_rects.append(f'  <rect x="{x}" y="{y}" width="{w}" height="{h}" '
+                           f'rx="{p.get("rx", 0)}" fill="{fill}" '
+                           f'stroke="{esc_attr(p.get("stroke", "none"))}" '
+                           f'stroke-width="{p.get("stroke_width", 1)}"/>')
+    if defs:
+        out.append("  <defs>\n" + "\n".join(defs) + "\n  </defs>")
+    out.extend(panel_rects)
+
+    for e in data.get("ellipses", []):
+        out.append(f'  <ellipse cx="{e["cx"]}" cy="{e["cy"]}" rx="{e["rx"]}" '
+                   f'ry="{e.get("ry", e["rx"])}" fill="{esc_attr(e.get("fill", "none"))}" '
+                   f'stroke="{esc_attr(e.get("stroke", "none"))}" '
+                   f'stroke-width="{e.get("stroke_width", 1)}"/>')
+
+    for c in data.get("connectors", []):
+        out.append(connector_element(c))
+
+    n_icon = n_raster = n_text = n_missing = 0
+    for it in data.get("items", []):
+        t = it.get("type")
+        if t == "icon":
+            el = icon_element(it, svg_dir, crops_dir, force_raster=force_raster)
+            if "MISSING" in el:
+                n_missing += 1
+            elif it.get("keep_raster") or force_raster:
+                n_raster += 1
+            else:
+                n_icon += 1
+            out.append(el)
+        elif t == "text":
+            out.append(text_element(it, ppt=ppt))
+            n_text += 1
+
+    out.append("</svg>\n")
+    stats = (f"({W}x{H})  icons={n_icon} raster={n_raster} text={n_text} "
+             f"panels={len(data.get('panels', []))}"
+             + (f"  MISSING={n_missing}" if n_missing else ""))
+    return "\n".join(out), stats
 
 
 def main():
@@ -169,58 +261,34 @@ def main():
     ap.add_argument("--crops", default=None,
                     help="folder of raster crops for keep_raster items "
                          "(default: <items_dir>/crop_images)")
+    ap.add_argument("--no-wrapped", action="store_true",
+                    help="skip the tspan-wrapped variant (<out>_wrapped.svg)")
+    ap.add_argument("--no-raster", action="store_true",
+                    help="skip the raster-icon variant (<out>_raster.svg)")
     a = ap.parse_args()
 
     data = json.load(open(a.items, encoding="utf-8"))
-    W, H = data["width"], data["height"]
     crops_dir = a.crops or os.path.join(os.path.dirname(os.path.abspath(a.items)), "crop_images")
 
-    out = [f'<svg xmlns="{SVG_NS}" xmlns:xlink="{XLINK}" '
-           f'width="{W}" height="{H}" viewBox="0 0 {W} {H}">']
-
-    bg = data.get("background")
-    if bg:
-        out.append(f'  <rect x="0" y="0" width="{W}" height="{H}" fill="{esc_attr(bg)}"/>')
-
-    for p in data.get("panels", []):
-        x, y, w, h = p["bbox"]
-        out.append(f'  <rect x="{x}" y="{y}" width="{w}" height="{h}" '
-                   f'rx="{p.get("rx", 0)}" fill="{esc_attr(p.get("fill", "none"))}" '
-                   f'stroke="{esc_attr(p.get("stroke", "none"))}" '
-                   f'stroke-width="{p.get("stroke_width", 1)}"/>')
-
-    for e in data.get("ellipses", []):
-        out.append(f'  <ellipse cx="{e["cx"]}" cy="{e["cy"]}" rx="{e["rx"]}" '
-                   f'ry="{e.get("ry", e["rx"])}" fill="{esc_attr(e.get("fill", "none"))}" '
-                   f'stroke="{esc_attr(e.get("stroke", "none"))}" '
-                   f'stroke-width="{e.get("stroke_width", 1)}"/>')
-
-    connectors = data.get("connectors", [])
-    for c in connectors:
-        out.append(connector_element(c))
-
-    n_icon = n_raster = n_text = n_missing = 0
-    for it in data.get("items", []):
-        t = it.get("type")
-        if t == "icon":
-            el = icon_element(it, a.svg_dir, crops_dir)
-            if "MISSING" in el:
-                n_missing += 1
-            elif it.get("keep_raster"):
-                n_raster += 1
-            else:
-                n_icon += 1
-            out.append(el)
-        elif t == "text":
-            out.append(text_element(it))
-            n_text += 1
-
-    out.append("</svg>\n")
+    doc, stats = build(data, a.svg_dir, crops_dir, ppt=True)
     with open(a.out, "w", encoding="utf-8") as f:
-        f.write("\n".join(out))
-    print(f"wrote {a.out}  ({W}x{H})  "
-          f"icons={n_icon} raster={n_raster} text={n_text} panels={len(data.get('panels', []))}"
-          + (f"  MISSING={n_missing}" if n_missing else ""))
+        f.write(doc)
+    print(f"wrote {a.out}  {stats}  [ppt-safe text]")
+
+    root, ext = os.path.splitext(a.out)
+    if not a.no_wrapped:
+        wrapped = root + "_wrapped" + (ext or ".svg")
+        doc, stats = build(data, a.svg_dir, crops_dir, ppt=False)
+        with open(wrapped, "w", encoding="utf-8") as f:
+            f.write(doc)
+        print(f"wrote {wrapped}  {stats}  [tspan-wrapped text]")
+
+    if not a.no_raster:
+        raster = root + "_raster" + (ext or ".svg")
+        doc, stats = build(data, a.svg_dir, crops_dir, ppt=True, force_raster=True)
+        with open(raster, "w", encoding="utf-8") as f:
+            f.write(doc)
+        print(f"wrote {raster}  {stats}  [raster icons]")
 
 
 if __name__ == "__main__":

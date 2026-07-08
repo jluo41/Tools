@@ -59,7 +59,7 @@ Key points:
   masks and the top score is usually the whole icon.
 - **Clip-to-box** (`mask & clip`) guarantees SAM never annexes a neighboring icon that touches the
   box edge — the recorded bbox stays the hard boundary.
-- Export **RGBA with the mask as alpha** so the transparent crop drops straight into `image-to-svg`;
+- Export **RGBA with the mask as alpha** so the transparent crop drops straight into `icon-to-svg`;
   the transparent background makes shape/color decomposition cleaner than a boxed crop with
   background pixels.
 
@@ -68,5 +68,5 @@ Key points:
 - You only have a few icons and can nudge `bbox`es by hand faster than setting up torch.
 - The figure is small/simple → the 375 MB download and model load dwarf the benefit.
 
-Downstream steps are unchanged: transparent SAM crops still go through `image-to-svg`, and
+Downstream steps are unchanged: transparent SAM crops still go through `icon-to-svg`, and
 `compose_svg.py` places them by `bbox` exactly as it does rectangular crops.

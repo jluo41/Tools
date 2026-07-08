@@ -1,10 +1,10 @@
 ---
-status: open
+status: fixed
 created: 2026-07-01
-updated: 2026-07-01
+updated: 2026-07-04
 occurrences: 1
-context: figure-to-svg-replica
-fixed_in: ""
+context: figure-to-svg
+fixed_in: "v1.2.0"
 regressed: ""
 ---
 figure-to-svg-replica is built entirely around CROPPING icons out of the source
@@ -25,4 +25,11 @@ build_pipeline.py — vendor them into the skill as scripts, and document the pe
 (subimages/partN/{part.png,manifest.json,redraw_icon/,cropped_icon/,partN_replica.svg}).
 See lesson/13, lesson/14, lesson/15, lesson/18.
 
-Fix:
+Fix: 2026-07-04 — scripts vendored (`gen_icon_grid.py`, `slice_grid.py`, `transparentize.py`) and
+the per-part tree documented. SKILL.md now structures this as "Path A — regenerate (default for
+dense figures)" vs "Path B — crop from source", with an availability check (bridge missing → Path B,
+enforced by a clear error in `gen_icon_grid.py`, whose bridge path is now resolved relative to the
+plugin instead of a hardcoded home directory) and a new Path-A step 5: vectorize each sliced icon
+via image-to-svg so PPT Convert-to-Shape yields editable shapes.
+Later the same day (v1.3.0): regeneration became the ONLY pipeline — the crop path was retired to
+references/legacy-crop-path.md, and a mandatory fresh-subagent review loop was added after compose.

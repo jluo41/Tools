@@ -1,29 +1,31 @@
 ---
-name: image-to-svg
+name: icon-to-svg
 description: >-
   Faithfully replicate a single raster icon/graphic image as a hand-authored SVG — reproducing
   the actual drawing, NOT swapping in a similar stock glyph. Use this whenever the user wants to
   "vectorize", "redraw as SVG", "replicate this icon as svg", "hand-write an svg of this", "make an
   editable/scalable version of this icon", or turn a cropped PNG/JPG of a logo, icon, or small
   graphic into clean vector code. Prefer this over grabbing a Font Awesome/Tabler/Material icon
-  whenever fidelity to the original matters. Also used as the per-crop worker for the
-  figure-to-svg-replica skill.
+  whenever fidelity to the original matters. Also used as the per-icon worker for the
+  figure-to-svg skill.
 ---
 
-# image-to-svg
+# icon-to-svg
 
 Turn one raster image of an icon or small graphic into an SVG that **looks like that specific
 image**. The goal is replication, not "find a close-enough icon." A stock glyph is a different
 drawing; here we reproduce the shapes, colors, and proportions actually present in the crop.
 
-## Before you start — consult the lessons (mandatory)
-This plugin keeps hard-won gotchas at `../image-ppt/lesson/` (`/image-ppt lesson list` /
-`lesson search <keyword>`). Scan them before drawing. The load-bearing one: **organic/interlocking
-glyphs** (handshakes, clasped hands, faces, gestures) have a LOW ceiling for primitive
-hand-authoring — if the user rejects your drawing on look twice, STOP re-drawing and switch methods
-(a recolored open-license stock glyph, or keep the crop as raster), or ask which they prefer
-(Lesson 01). Judge white-on-dark icons by eye, not `score_icon` (Lesson 03). Capture new gotchas at
-session end with `/image-ppt lesson "<...>"`.
+## Hard-won rules (baked in — no need to read anything first)
+- **Organic/interlocking glyphs** (handshakes, clasped hands, faces, gestures) have a LOW ceiling
+  for primitive hand-authoring. If the user rejects your drawing on look twice, STOP re-drawing
+  and **switch methods** — a recolored open-license stock glyph (Font Awesome / Tabler / Material,
+  note the license), or keep the crop as raster — or ask which they prefer. Repeated identical
+  feedback means the *method* is wrong, not the parameters.
+- **White-on-dark icons**: judge by eye, not by `score_icon` — the scorer assumes dark-on-light
+  and lies on inverted polarity.
+- Learn something new the hard way? File it with `/figure-to-svg lesson "<...>"` at session end, and
+  merge the rule into the step of the skill where it applies — that's how these two got here.
 
 ## Why hand-author instead of auto-trace
 
