@@ -4,6 +4,11 @@ haipipe-paper-revise-results — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [2.3.0] — 2026-07-08
+
+Changed (venue lockfile wiring)
+- Venue results conventions now read from the paper's `0-lifecycle/2-venue/2-venue.md` (Structural Blueprint Results block + Writing Principles); pinned `_venue/playbook-*` pack demoted to fallback when 2-venue.md is absent; no pack -> skip venue norms.
+
 ## [2.2.0] — 2026-07-07
 
 Fixed (skillset-diagnose C5/C6)

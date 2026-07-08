@@ -4,6 +4,11 @@ haipipe-paper — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [2.6.0] — 2026-07-08
+
+Changed (venue lockfile wiring)
+- Venue coupling rule updated: venue stage compiles the pack into `0-lifecycle/2-venue/2-venue.md`; the venue-ALIGNED stages consult 2-venue.md first, with direct `_venue/playbook-<venue>` reads demoted to fallback (2-venue.md absent) or deep dives via its `[source: ...]` tags.
+
 ## [2.5.0] — 2026-07-04
 
 Changed (probe-plan location unified, JL 2026-06-29 per-stage ruling wins over the flat buffer)

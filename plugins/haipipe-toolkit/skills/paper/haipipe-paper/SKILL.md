@@ -4,8 +4,8 @@ description: "Run any paper-lifecycle work. Use `/haipipe-paper enter <paper-pat
 argument-hint: "[enter|status|venue|stage] [paper-path-or-args...]"
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "2.5.0"
-  last_updated: "2026-07-03"
+  version: "2.6.0"
+  last_updated: "2026-07-08"
   summary: "Front door for the paper lifecycle: one verbs block, one routing pass, closing block, pointers to owners."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -75,7 +75,7 @@ Resolution order (first match wins):
 
 A paper root is any directory upward containing `STATUS.md`, `0-lifecycle/`, `0-*.tex` + `0-sections/`, or `1-compile.sh` + `0-sections/`.
 
-Venue coupling (drives two routing rules): seed + claims are venue-FREE; venue pins the journal in STATUS.md between claims and pitch; pitch/narrative/display/section-edit are venue-ALIGNED and consult `_venue/playbook-<venue>`. So: "paper" with claims done but no venue pinned -> run `venue` before pitch. Re-targeting ("move to another journal") -> re-run `venue`; pitch re-couples (new [primary], new RQ framing); claims stays unchanged.
+Venue coupling (drives two routing rules): seed + claims are venue-FREE; venue pins the journal in STATUS.md between claims and pitch AND compiles the pack into the paper's `0-lifecycle/2-venue/2-venue.md`; pitch/narrative/display/section-edit are venue-ALIGNED and consult 2-venue.md (direct `_venue/playbook-<venue>` reads = fallback when 2-venue.md is absent, or deep dives via its `[source: ...]` tags). So: "paper" with claims done but no venue pinned -> run `venue` before pitch. Re-targeting ("move to another journal") -> re-run `venue`; pitch re-couples (new [primary], new RQ framing); claims stays unchanged.
 
 Dispatch notes (only where non-obvious; everything else is `Skill("haipipe-paper-<target>")` or `Skill("haipipe-paper-lifecycle", args="<verb> ...")`):
 

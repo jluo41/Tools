@@ -4,6 +4,11 @@ haipipe-paper-section-edit — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [3.2.0] -- 2026-07-08
+
+Changed
+- Venue consumption rewired to lockfile semantics: DRAFT step 1 reads the paper's 0-lifecycle/2-venue/2-venue.md FIRST (this section's Structural Blueprint block + Writing Principles); pack style-profile/per-section style.md resolution demoted to fallback when 2-venue.md is absent, or reached as deep dives via its [source] tags; stale provenance -> note "venue contract stale", never silent pack re-reads (norm-digestion harvest noted as a staleness source).
+
 ## [3.1.4] — 2026-07-04
 
 Fixed

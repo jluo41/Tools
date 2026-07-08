@@ -4,8 +4,8 @@ description: "Plan, materialize (via task/probe), scaffold, build, audit, and in
 argument-hint: "[paper-dir] [--plan|--scaffold|--framework|--materialize|--build|--audit|--insert] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.0.0"
-  last_updated: "2026-07-06"
+  version: "2.1.0"
+  last_updated: "2026-07-08"
   summary: "Display stage orchestrator. Plans the display set, materializes via task probes (each probe = a haipipe-task-for-display dispatch), compiles gallery PDF, and gates exit. User invokes display, not phases."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -59,7 +59,7 @@ The gallery document (`4-display.tex`) is .tex for compilation:
 The probes document (`4-display-probes.md`) is the planning brain:
 - Display Map: claim -> display assignment
 - Probes: each probe IS a visualization task dispatch (haipipe-task-for-display), one per display unit that needs materialization
-- Venue Constraints: max figures/tables, format requirements from 2-venue Writing Principles
+- Venue Constraints: max figures/tables, format requirements from the paper's 2-venue.md (Writing Principles display limits + Structural Blueprint display units; pack fallback only if 2-venue.md is absent)
 
 **Formatting (for 4-display-probes.md):**
 - Heading style: `=====` for the document title, `-----` for sections. No `#`/`##`/`###`.
@@ -359,7 +359,7 @@ planned / data-ready / rendered / input-ready / inserted / reviewed
 6. **A display is materialized by a task, never hand-authored.** The asset (`assets/figure.pdf` for a figure, `assets/table-body.tex` for a table) is RENDERED by a paper-display task from evidence (a probe verdict, a parser's `metrics.json`, a result table), and `float.tex` only references it via `\includegraphics` or `\input`. Numbers typed directly into `float.tex` are a placeholder, not a display: route them through PROBE. A figure-bearing claim should be shown as a figure (forest, dose-response curve, panel), not only as a typed table.
 7. **The stage doc is the gallery.** `0-lifecycle/4-display/4-display.tex` `\input`s each rendered `float.tex`, so the stage PDF doubles as the combined figures-and-tables view; do NOT make a separate `preview-all`. Compile from the paper ROOT so the `0-displays/` paths resolve. Per-unit `preview.pdf` remain as individual review artifacts.
 8. **Two display kinds, both task-rendered.** (a) data-driven: a parser turns server logs/CSVs into `metrics.json`, then a render task turns that into `assets/figure.pdf` / `assets/table-body.tex` (robust parser: handle factor-variable rows, leading-dot numbers, SE/CIs). (b) schematic/flow (study-flow, data-provenance, CONSORT): a diagram render task draws the flow and annotates it with REAL Ns pulled from the data description; still a task output, never hand-drawn.
-9. **Venue-ALIGNED: couple to venue.** Read STATUS `venue`; if `../../_venue/playbook-<venue>` exists, consult its `README.md` section `-> Display` for the venue's standard display set and hero rule (e.g. Table 1 + STROBE cohort-flow for clinical, the research-model figure for MISQ, the main-result multi-panel for Nature/PNAS). The `[primary]` claim's display is the hero. A venue change re-runs the display set. Also consult the playbook for display style requirements (figure count limits, table format, color guidelines).
+9. **Venue-ALIGNED: couple to venue.** Read STATUS `venue`, then the paper's `0-lifecycle/2-venue/2-venue.md` FIRST: the Structural Blueprint's per-section `Display units` rows give the venue's standard display set and hero rule (e.g. Table 1 + STROBE cohort-flow for clinical, the research-model figure for MISQ, the main-result multi-panel for Nature/PNAS), and Writing Principles gives the display limits (figure count caps, table format, color guidelines). The `[primary]` claim's display is the hero. A venue change re-runs the display set. Fall back to the pack only when `2-venue.md` is absent (venue stage not yet run, or a pack-less venue): if `../../_venue/playbook-<venue>` exists, consult its `README.md` section `-> Display`; if no pack exists either, proceed without venue inputs. Deep dives follow the `[source: ...]` tags in `2-venue.md` into `_venue/playbook-<slug>/<journal>/...`. If `2-venue.md`'s recorded pack commit is behind the current `_venue` HEAD, note "venue contract stale -- consider /haipipe-paper-venue refresh" but still use `2-venue.md` (never silently re-read packs).
 10. **Author/USER comments live in the lifecycle file, not the units.** Author or reviewer comments on a figure/table (preferences, "too thin," "park this," ordering) go ONLY into `0-lifecycle/4-display/4-display.tex` as `%% {USER}: ...` source lines, kept verbatim across iterations. Do NOT append them to a unit's `float.tex`; units stay portable and comment-free, and the lifecycle file is the single commentary / preference log for the display set (alongside the per-display self-check verdicts and the Parked section for kept-but-unused units).
 
 ## Relationship to ARIS

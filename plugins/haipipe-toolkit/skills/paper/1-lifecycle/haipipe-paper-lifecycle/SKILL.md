@@ -4,8 +4,8 @@ description: "Orchestrator for the paper structure lifecycle (1-lifecycle). Rout
 argument-hint: "[function] [paper-path-or-input] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "2.0.3"
-  last_updated: "2026-07-03"
+  version: "2.1.0"
+  last_updated: "2026-07-08"
   summary: "Router for the 1-lifecycle stage spine: folder, seed (0), claims (1) [venue-FREE] -> venue (gate) -> pitch (2), narrative (3), display (4), section-edit (5) [venue-ALIGNED], plus the display renderer family. Stage skills internally run DRAFT -> PROBE -> REVISE -> CHECK via 2-phase/ workers; this router never routes users to phase skills."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -24,7 +24,7 @@ The orchestrator owns routing only. Each stage specialist owns its own workflow,
 /haipipe-paper-lifecycle folder <args>                  -> scaffold paper directory (haipipe-paper-folder)
 /haipipe-paper-lifecycle seed <args>                    -> 0-lifecycle/0-seed/0-seed.md (venue-FREE)
 /haipipe-paper-lifecycle claims <args>                  -> 0-lifecycle/1-claims/1-claims.md (venue-FREE claim ledger)
-/haipipe-paper-lifecycle venue <args>                   -> STATUS.md venue pin (decision gate)
+/haipipe-paper-lifecycle venue <args>                   -> STATUS.md venue pin + 0-lifecycle/2-venue/2-venue.md venue contract (decision gate)
 /haipipe-paper-lifecycle pitch <args>                   -> 0-lifecycle/2-pitch/2-pitch.md (venue-ALIGNED cover letter)
 /haipipe-paper-lifecycle narrative <args>               -> 0-lifecycle/3-narrative/3-narrative.md (venue-ALIGNED design contract)
 /haipipe-paper-lifecycle display <args>                 -> 0-lifecycle/4-display/4-display.tex + 0-displays/ units (the only compiled stage)
@@ -67,7 +67,7 @@ haipipe-paper-claims        CLAIMS (1):  maintain 0-lifecycle/1-claims/1-claims.
 
 --- VENUE DECISION (pins target journal in STATUS.md) ---
 
-haipipe-paper-venue         VENUE:       recommend + pin the best-fit venue; gate between venue-free and venue-aligned stages.
+haipipe-paper-venue         VENUE:       recommend + pin the best-fit venue; compiles pack knowledge into 0-lifecycle/2-venue/2-venue.md (Venue Profile + Structural Blueprint + Writing Principles + Fit Assessment, provenance header naming pack + outlet + _venue commit) -- the venue contract the aligned stages read FIRST; gate between venue-free and venue-aligned stages.
 
 --- VENUE-ALIGNED (rewrite on retarget) ---
 
@@ -79,7 +79,7 @@ haipipe-paper-narrative     NARRATIVE (3): maintain 0-lifecycle/3-narrative/3-na
 ### Display -- what the reader sees (venue-ALIGNED)
 
 ```
-haipipe-paper-display       DISPLAY (4): 0-lifecycle/4-display/4-display.tex + PDF (the gallery, the ONLY compiled stage) plus per-unit README.md, float.tex, and preview.pdf under 0-displays/displayNN-<slug>/. Keeps display items tied to claim, evidence source, section, and caption. Consults venue playbook for display set and hero rule. Figure-inventory planning (one claim per figure, panel roles, main vs supplement) is folded in as its ref/figure-logic.md. Framework/architecture mode handles Figure 1 candidate rounds before final rendering.
+haipipe-paper-display       DISPLAY (4): 0-lifecycle/4-display/4-display.tex + PDF (the gallery, the ONLY compiled stage) plus per-unit README.md, float.tex, and preview.pdf under 0-displays/displayNN-<slug>/. Keeps display items tied to claim, evidence source, section, and caption. Consults 2-venue.md for the display set and hero rule (Structural Blueprint display units + Writing Principles display limits; pack fallback when 2-venue.md is absent). Figure-inventory planning (one claim per figure, panel roles, main vs supplement) is folded in as its ref/figure-logic.md. Framework/architecture mode handles Figure 1 candidate rounds before final rendering.
 ```
 
 ### Section editing -- per-section prose work (venue-ALIGNED)
@@ -123,6 +123,7 @@ The specialists are designed to flow in sequence, though any can be invoked stan
   ──────────────────────────────────────
       ↓
   venue          pin target journal in STATUS.md (gate between FREE and ALIGNED)
+                 + compile 0-lifecycle/2-venue/2-venue.md, the venue contract the ALIGNED stages read first
 
   VENUE-ALIGNED (rewrite on retarget)
   ──────────────────────────────────────
@@ -141,6 +142,8 @@ The specialists are designed to flow in sequence, though any can be invoked stan
 After the lifecycle spine, whole-paper build/submit tooling lives under `3-build-submit/` (`haipipe-paper-folder`, `haipipe-paper-build-*`, `haipipe-paper-edit-*` for compile checks, restructuring, submission audits).
 
 **Retarget rule:** when the venue changes, seed and claims stay unchanged (venue-FREE). Pitch, narrative, display, and section-edit all rewrite for the new venue.
+
+**Venue consumption rule:** the venue-aligned stages read the paper's `0-lifecycle/2-venue/2-venue.md` FIRST -- pitch: Venue Profile + Fit Assessment; narrative: Structural Blueprint beats + Writing Principles; display: Structural Blueprint display units + Writing Principles display limits; section-edit: the per-section Structural Blueprint block + Writing Principles. Direct `_venue/` pack reads are (a) the fallback when `2-venue.md` is absent (venue stage not yet run, or a pack-less venue; no pack at all = no venue inputs) and (b) deep dives following the `[source: ...]` tags recorded in `2-venue.md` into `_venue/playbook-<slug>/<journal>/...`. If `2-venue.md`'s recorded pack commit is behind the current `_venue` HEAD, stages note "venue contract stale -- consider /haipipe-paper-venue refresh" but still use `2-venue.md` (never silently re-read packs).
 
 ---
 
@@ -318,10 +321,10 @@ Stage skills additionally close every reply with the full closing block (simplif
 Relation to Parent Orchestrator
 --------------------------------
 
-`haipipe-paper` (in `paper/haipipe-paper/`) is the top-level paper router + Console. It resolves status and consults the target's profile in `_venue/playbook-<venue>` for venue fit. This orchestrator (`haipipe-paper-lifecycle`) is the direct entry for structural work -- either routed from the Console or invoked by the user directly.
+`haipipe-paper` (in `paper/haipipe-paper/`) is the top-level paper router + Console. It resolves status and consults the paper's `0-lifecycle/2-venue/2-venue.md` for venue fit (falling back to the target's profile in `_venue/playbook-<venue>` only when no venue contract exists yet). This orchestrator (`haipipe-paper-lifecycle`) is the direct entry for structural work -- either routed from the Console or invoked by the user directly.
 
 ```
-haipipe-paper (router)  -- consults _venue/playbook-<venue> for venue fit
+haipipe-paper (router)  -- consults 2-venue.md for venue fit (pack fallback pre-pin)
             |                (utd-is: misq/isr/ms-is; pnas; nature-portfolio; jama; clinical; grant; patent)
             v
 haipipe-paper-lifecycle (this orchestrator)

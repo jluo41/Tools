@@ -4,8 +4,8 @@ description: "Per-section editing hub under 0-lifecycle/5-section-edit/. Owns th
 argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 metadata:
-  version: "3.1.4"
-  last_updated: "2026-07-03"
+  version: "3.2.0"
+  last_updated: "2026-07-08"
   summary: "Per-section editing hub. Two-axis model: STAGES (1-lifecycle/) x PHASES (2-phase/). DPRC phases are shared across all lifecycle stages. PROBE is agent-only (flag, no human gate). REVISE works on both .md and .tex. CHECK is the human gate (6-axis verification). _LOG tracks cross-phase evolution with [PHASE] tags."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   predecessors:
@@ -217,7 +217,8 @@ This skill is a STAGE (the WHAT: per-section editing). It dispatches to PHASE wo
 2-phase/                              PHASES (the HOW, shared)
   0-draft/
     haipipe-paper-draft                 settle structure + draft sentences
-                                        (venue style comes from _venue/playbook-* packs)
+                                        (venue style comes from 0-lifecycle/2-venue/2-venue.md;
+                                         _venue/playbook-* packs = fallback + deep dive)
   1-probe/
     haipipe-paper-probe-citation        citation → _CITATION_.md (agent-only, flag)
     haipipe-paper-probe-values          values → _VALUES_.md (agent-only, flag)
@@ -322,13 +323,16 @@ Grep shortcuts:
 
 ### DRAFT
 
-1. **Consult venue**: read `_venue/playbook-<pack>/style-profile.md` for general venue norms. Then resolve the per-section style guide:
-   - From `STATUS.md venue:` extract the outlet (e.g., "MISQ 2026" → outlet "MISQ", pack "playbook-utd-is")
-   - Map the current section type to the outlet dir suffix (abstract→abstract, introduction→introduction, theory→theory, methods→methods, results→results, discussion→discussion, related-work→related-work, theory-model→theory-model)
-   - Read `_venue/playbook-<pack>/<outlet>/<outlet>-<section>/style.md` if it exists
-   - This file contains word budget, arc, signature moves, exemplar sentences, anti-patterns, and paragraph structure mined from real papers. It OVERRIDES the general style-profile.md for this specific section.
-   - Example: editing MISQ theory → read `_venue/playbook-utd-is/MISQ/MISQ-theory/style.md`
-   - Example: editing NMI results → read `_venue/playbook-nature-portfolio/NMI/NMI-results/style.md`
+1. **Consult venue**: read the paper's `0-lifecycle/2-venue/2-venue.md` FIRST -- this section's Structural Blueprint block (subsections, paragraphs per subsection, sentences per paragraph, sentence length, citation density, results detail, display units) plus the Writing Principles block (tone, citation style, results presentation). If `2-venue.md`'s recorded pack commit is behind the current `_venue` HEAD, note "venue contract stale -- consider /haipipe-paper-venue refresh" but still use it (never silently re-read packs).
+   - Deep dive: follow the block's `[source: ...]` tag to `_venue/playbook-<pack>/<outlet>/<outlet>-<section>/style.md` for what the blueprint does not transcribe (arc, signature moves, exemplar sentences, anti-patterns).
+   - Fallback (ONLY if `2-venue.md` is absent -- venue stage not yet run, or a pack-less venue): read `_venue/playbook-<pack>/style-profile.md` for general venue norms, then resolve the per-section style guide:
+     - From `STATUS.md venue:` extract the outlet (e.g., "MISQ 2026" → outlet "MISQ", pack "playbook-utd-is")
+     - Map the current section type to the outlet dir suffix (abstract→abstract, introduction→introduction, theory→theory, methods→methods, results→results, discussion→discussion, related-work→related-work, theory-model→theory-model)
+     - Read `_venue/playbook-<pack>/<outlet>/<outlet>-<section>/style.md` if it exists
+     - This file contains word budget, arc, signature moves, exemplar sentences, anti-patterns, and paragraph structure mined from real papers. It OVERRIDES the general style-profile.md for this specific section.
+     - Example: editing MISQ theory → read `_venue/playbook-utd-is/MISQ/MISQ-theory/style.md`
+     - Example: editing NMI results → read `_venue/playbook-nature-portfolio/NMI/NMI-results/style.md`
+     - If no pack exists either, proceed without venue inputs.
 
 2. **Create scaffold**: folder + outline + _LOG. Populate from existing tex if available.
 
@@ -396,7 +400,7 @@ Section-type norms learned during editing flow into the venue pack:
 1. Captured in `_LOG` during editing.
 2. `lesson` subagent harvests norms → per-section `style.md` at `_venue/playbook-<pack>/<outlet>/<outlet>-<section>/style.md`.
 3. Each outlet accumulates its own section-level style guides across papers (e.g., `MISQ/MISQ-theory/style.md`, `NMI/NMI-results/style.md`).
-4. Future sessions consult the per-section style guide at draft phase, supplementing the general `style-profile.md`.
+4. Future sessions reach the per-section style guide via the `[source: ...]` tags in `2-venue.md` (or directly, when no `2-venue.md` exists). A harvest that changes the pack leaves existing `2-venue.md` contracts stale -- refresh via `/haipipe-paper-venue refresh`.
 5. The per-section files are mined from real exemplar PDFs stored in `_WorkSpace/HAIToolLib/1-ExemplarLib/<family>/<outlet>/`. See `_venue/_SCHEMA.md` for the full resolution path and section-type mapping.
 
 ## Subagent verbs: lesson, digest, feedback
@@ -416,7 +420,7 @@ The caller MUST include concrete file paths and context in the Agent prompt.
 ─────────────────────                    ────────────────────────
 haipipe-paper-lifecycle                  0-draft/
   ├─► seed                                haipipe-paper-draft
-  ├─► claims                              (venue style: _venue/playbook-* packs)
+  ├─► claims                              (venue style: 2-venue.md; packs = fallback)
   ├─► [venue gate]
   ├─► pitch                              1-probe/ (agent-only, flag)
   ├─► narrative                            haipipe-paper-probe-citation   → _CITATION_

@@ -4,6 +4,11 @@ haipipe-paper-lifecycle — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [2.1.0] -- 2026-07-08
+
+Changed
+- Routing description adopts venue lockfile semantics: venue stage compiles 0-lifecycle/2-venue/2-venue.md (the venue contract with pack+outlet+commit provenance); new Venue consumption rule -- aligned stages read 2-venue.md FIRST (pitch: Venue Profile + Fit Assessment; narrative: Blueprint beats + Writing Principles; display: display units + limits; section-edit: per-section Blueprint block), packs only as fallback when 2-venue.md is absent or as deep dives via its [source] tags; stale provenance -> "venue contract stale" note, never silent pack re-reads.
+
 ## [2.0.3] — 2026-07-03
 
 Fixed

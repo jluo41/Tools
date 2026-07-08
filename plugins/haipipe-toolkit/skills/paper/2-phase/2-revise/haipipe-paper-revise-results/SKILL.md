@@ -4,8 +4,8 @@ description: "REVISE phase worker for Results sections. Fully automatic. Repairs
 argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "2.2.0"
-  last_updated: "2026-07-07"
+  version: "2.3.0"
+  last_updated: "2026-07-08"
   summary: "REVISE worker for Results sections. Fixes narration flow. Fully automatic."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -18,7 +18,9 @@ Use this skill for late-stage Results revision when the science is mostly stable
 
 Before you start, read the shared prose rules: `../../REF/prose-quality.md` (one idea per sentence, no em-dash, compress not split, no AI voice, <=6 sentences/paragraph, Pn.Sn markers) — all revise workers enforce them; the checks below are results-specific ADDITIONS, not replacements.
 
-Use `haipipe-paper-draft` for general prose drafting or rewriting (venue style comes from the pinned `_venue/playbook-*` pack). Use `haipipe-paper-edit-optimizer` when the claim hierarchy, evidence chain, or figure logic is still unstable. Use this skill when the section is largely right but still reads like stitched figure captions rather than a controlled argument.
+Also read the venue's results conventions from the paper's `0-lifecycle/2-venue/2-venue.md`: the Structural Blueprint's Results block (results reported + detail, display units) and the Writing Principles (statistical reporting, effect sizes, tables vs figures). Fall back to the pinned `_venue/playbook-*` pack only when 2-venue.md is absent; no pack -> skip venue norms (the results-specific checks below still apply).
+
+Use `haipipe-paper-draft` for general prose drafting or rewriting (venue style comes from the paper's `0-lifecycle/2-venue/2-venue.md`, with the pinned `_venue/playbook-*` pack as fallback). Use `haipipe-paper-edit-optimizer` when the claim hierarchy, evidence chain, or figure logic is still unstable. Use this skill when the section is largely right but still reads like stitched figure captions rather than a controlled argument.
 
 ## Quick Checks
 

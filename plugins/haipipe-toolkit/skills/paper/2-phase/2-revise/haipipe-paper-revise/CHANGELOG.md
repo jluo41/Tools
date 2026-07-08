@@ -4,6 +4,11 @@ haipipe-paper-revise — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [1.4.0] — 2026-07-08
+
+Changed (venue lockfile wiring)
+- Venue norms + venue guard repointed: primary read = the paper's `0-lifecycle/2-venue/2-venue.md` (Writing Principles + Structural Blueprint block); direct `_venue/playbook-*` reads demoted to fallback (2-venue.md absent) or deep dives via its `[source: ...]` tags; STOP/warning semantics unchanged.
+
 ## [1.3.0] — 2026-07-07
 
 Changed (T7, JL: "maybe just go into Content")

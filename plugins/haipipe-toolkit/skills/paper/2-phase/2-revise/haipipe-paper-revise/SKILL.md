@@ -4,8 +4,8 @@ description: "REVISE phase worker (internal). Called by stage skills to rewrite 
 argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.3.0"
-  last_updated: "2026-07-03"
+  version: "1.4.0"
+  last_updated: "2026-07-08"
   summary: "REVISE phase worker (internal). Called by stage skills to rewrite draft prose to venue-quality: change directly, leave why-comments. Dispatches content/humanizer/results workers (weaving merged into content)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -48,9 +48,9 @@ All revise workers read and enforce `../../REF/prose-quality.md`:
 - <=6 sentences per paragraph
 - Pn.Sn markers on every sentence
 
-Venue-specific norms (word budget, tone, section arc) from `_venue/playbook-*/style-profile.md` override where they conflict.
+Venue-specific norms (word budget, tone, section arc) come from the paper's `0-lifecycle/2-venue/2-venue.md` (Writing Principles + the relevant Structural Blueprint block) and override where they conflict. Read `_venue/playbook-*/style-profile.md` directly only as fallback when 2-venue.md is absent, or as a deep dive via its `[source: ...]` tags.
 
-**Venue guard** (same rule as DRAFT): when revising a venue-ALIGNED artifact, no `venue:` pinned in STATUS.md or no matching `_venue/playbook-*` pack -> STOP with `status: blocked` and point the user to `/haipipe-paper venue`. Pack present but per-section style file missing -> revise with the general style-profile and flag the gap in `_LOG` + the CHECK report. Never silently invent venue norms.
+**Venue guard** (same rule as DRAFT): when revising a venue-ALIGNED artifact, no `venue:` pinned in STATUS.md -> STOP with `status: blocked` and point the user to `/haipipe-paper venue`. Venue pinned -> read the paper's `0-lifecycle/2-venue/2-venue.md` FIRST; fall back to the pinned `_venue/playbook-*` pack only when it is absent (no matching pack either -> STOP the same way). Fallback pack present but per-section style file missing -> revise with the general style-profile and flag the gap in `_LOG` + the CHECK report. Never silently invent venue norms.
 
 ## Dispatch logic
 

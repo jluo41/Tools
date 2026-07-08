@@ -4,6 +4,11 @@ haipipe-paper-draft — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [3.6.0] — 2026-07-08
+
+Changed (venue lockfile wiring)
+- Venue guard + style-source table repointed: primary venue read = the paper's `0-lifecycle/2-venue/2-venue.md` (Writing Principles + Structural Blueprint block); direct `_venue/` pack reads demoted to fallback (2-venue.md absent) or deep dives via its `[source: ...]` tags; pinned-but-no-pack STOP kept in the fallback branch.
+
 ## [3.5.0] — 2026-07-07
 
 Fixed (skillset-diagnose FIX round; findings A1/A2/A4/A6 + thread T3)
