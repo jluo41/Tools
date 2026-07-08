@@ -38,6 +38,8 @@ Existing Lessons
   11  Unity Catalog requires model signature
   12  "dataframe_records" is reserved — use payload passthrough
   13  Databricks CLI auth tokens expire (~1 hour)
+  14  Agent workspace on Databricks — use Claude Agent SDK
+  15  Policy-locked Standard (USER_ISOLATION) clusters forbid jobs — run inline
 
 Verbs
 -----
