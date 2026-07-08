@@ -4,6 +4,12 @@ haipipe-discovery-search — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [1.2.0] — 2026-07-08
+
+Changed (JL: pin the mechanical sweep half to Haiku so wide fan-out runs cheap)
+- FIND step: wide sweeps (2+ channels or 3+ queries/channel) MAY fan out `haipipe-discovery-search-worker-agent` (new, `model: haiku`, no Write/Edit) one per channel in parallel, when the running context has the Agent tool. Workers harvest + transcribe + verify only; the dispatcher keeps relevance curation, cross-channel dedup, and all writes to sources.md/notes.md.
+
+
 ## [1.1.0] — 2026-07-05
 
 Changed (JL, test-2-2222: "为什么 nature human behaviour / pnas 之类的没有被搜?" — arXiv-only sweep misses no-preprint journal literature)

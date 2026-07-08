@@ -12,10 +12,11 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "1.5.0"
-  last_updated: "2026-07-05"
-  summary: "Orchestrator agent — dispatch target for discovery lifecycle. FULL mode coordinates creator + reviewer; ENRICH mode (light) lands same-topic deltas into an existing discovery with a mandatory reviewer quick-pass. Reviewer follows WRITES; creator follows WORKLOAD. ENRICH batches writes and updates the coverage boundary."
+  version: "1.6.0"
+  last_updated: "2026-07-08"
+  summary: "Orchestrator agent — dispatch target for discovery lifecycle. FULL mode coordinates creator + reviewer; ENRICH mode (light) lands same-topic deltas into an existing discovery with a mandatory reviewer quick-pass. Reviewer follows WRITES; creator follows WORKLOAD. Mechanical sweep/verify fan-out goes to the Haiku search worker. ENRICH batches writes and updates the coverage boundary."
   changelog:
+    - "1.6.0 (2026-07-08): HAIKU WORKER — haipipe-discovery-search-worker-agent joins the roster; ENRICH may fan verification batches and targeted-append sweeps out to it (I still curate + write every delta myself); in FULL mode the creator owns the fan-out during Execute."
     - "1.5.0 (2026-07-05): ENRICH batch-write + coverage boundary — the full delta set is drafted then applied in ONE edit pass per file (test-123333333: an 89-turn enrich lane re-read 7.1M cached tokens landing 10 deltas); after appends, the sources.md coverage declaration gains THIS pass's searched AND not-searched channels."
     - "1.4.0 (2026-07-05): LEAN BOOT — Step 0 reads only the Step-by-Step Protocol section for stages this run executes; yaml schema only when touching discovery.yaml; ENRICH reads just ref/source-format.md."
     - "1.3.0 (2026-07-05): ENRICH input form (light mode) — same-topic deltas (verification flips + appended S## sources) land in an EXISTING discovery's sources.md; orchestrator executes deltas itself (creator folded — workload too small to dispatch), reviewer quick-pass MANDATORY (ledger write = second pair of eyes, one pass, no loop unless defect); off-topic deltas rejected → open a new discovery. Live probe-test run-3: a probe agent ran delta searches inline and the results died in its reply because discovery had no light entrance to land them."
@@ -45,6 +46,7 @@ layer:            discovery
 role:             orchestrator (dispatch target)
 dispatches:       haipipe-discovery-creator-agent (Plan/Build/Execute/Report)
                   haipipe-discovery-reviewer-agent (quality gates)
+                  haipipe-discovery-search-worker-agent (Haiku; ENRICH sweep/verify fan-out)
 input:            discovery folder path, OR question + type (Search/Review/Idea)
 output:           terminal file (sources.md / verdict.md / landscape.md / ideas.md) + report
 ```
@@ -97,7 +99,10 @@ The two mottos that size this mode:
      what the paper does) + finding (1-2 lines, the result that matters).
      An identity-only entry is a DEFECTIVE append.
    BATCH the deltas — searches AND writes: independent verifications/searches
-   go out as parallel calls in one turn; then draft the FULL delta set and
+   go out as parallel calls in one turn; when the batch is big (3+ flips or
+   2+ appends) fan the mechanical half out to
+   haipipe-discovery-search-worker-agent (Haiku — verify mode for flips, one
+   channel-sweep job per append) and keep curation + every ledger write here; then draft the FULL delta set and
    apply it in ONE edit pass per file (re-verify annotations + appends
    together). One-entry-per-turn dribble re-reads the whole context every
    turn (test-123333333: an 89-turn enrich lane re-read 7.1M cached tokens
