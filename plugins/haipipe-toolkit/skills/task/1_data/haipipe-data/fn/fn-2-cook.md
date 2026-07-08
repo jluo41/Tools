@@ -18,7 +18,7 @@ execute it. Each pipeline stage has:
   - A registered set of Fn modules (SourceFns, RecordFns, CaseFns, etc.)
   - A CLI command (haistep-<stage>) that runs the stage end-to-end
   - A Python API for programmatic control
-  - A config template at templates/<N>-<stage>/config.yaml
+  - A config template at ../../haipipe-data-<stage>/templates/config.yaml
 
 Stages run sequentially. Each stage consumes the output of the previous stage:
 
@@ -85,7 +85,7 @@ Stage-Independent Steps
     ../../haipipe-data-case/templates/config.yaml
     ../../haipipe-data-aidata/templates/config.yaml
 
-  Or copy an existing config from config/ and modify it.
+  Or copy an existing config from a sibling pipeline task's configs/ and modify it.
   See Per-Stage Reference below for required config keys per stage.
 
 **Step 3.5: MANDATORY — Show YAML and Get User Confirmation (ALL Pipeline Commands)**
@@ -150,7 +150,7 @@ _______________________________________________
 
 **CLI command:**
 
-  haistep-source --config <your_config>.yaml
+  python -m scripts.haistepcli.source --config <your_config>.yaml
 
 **Python API:**
 
@@ -191,10 +191,10 @@ _______________________________________________
     hai-remote-sync --pull --rawdata --path 0-RawDataStore/{CohortName}
   SourceFnName must match an existing file in code/haifn/fn_source/
 
-**Test script:**
+**Direct CLI:**
 
   source .venv/bin/activate && source env.sh
-  python test/test_haistep/test_1_source/test_source.py \
+  python -m scripts.haistepcli.source \
       --config <your_config>.yaml
 
 **Verify:**
@@ -211,12 +211,12 @@ _______________________________________________
 
 **CLI command:**
 
-  haistep-record --config <your_config>.yaml
+  python -m scripts.haistepcli.record --config <your_config>.yaml
 
-**Test script:**
+**Direct CLI:**
 
   source .venv/bin/activate && source env.sh
-  python test/test_haistep/test_2_record/test_record.py \
+  python -m scripts.haistepcli.record \
       --config <your_config>.yaml
 
 **Python API:**
@@ -290,11 +290,11 @@ _______________________________________________
   For datasets that OOM on full SourceSet load, use multi-partition:
 
   # CLI — sequential, patient_ids filtered per partition:
-  python -m scripts.haistep.record \
+  python -m scripts.haistepcli.record \
       --config <config>.yaml --num-partitions 20 --use-cache
 
   # Retry a single failed partition:
-  python -m scripts.haistep.record \
+  python -m scripts.haistepcli.record \
       --config <config>.yaml --num-partitions 20 --partition-index 5
 
   Config: set `RecordArgs.partition_number: 20` and `RecordArgs.use_cache: true`
@@ -308,12 +308,12 @@ _______________________________________________
 
 **CLI command:**
 
-  haistep-case --config <your_config>.yaml
+  python -m scripts.haistepcli.case --config <your_config>.yaml
 
-**Test script:**
+**Direct CLI:**
 
   source .venv/bin/activate && source env.sh
-  python test/test_haistep/test_3_case/test_case.py \
+  python -m scripts.haistepcli.case \
       --config <your_config>.yaml
 
 **Python API:**
@@ -408,11 +408,11 @@ _______________________________________________
   Embarrassingly parallel — each partition loads a small RecordSet (~100MB).
 
   # CLI — auto-discover + 4 parallel workers:
-  python -m scripts.haistep.case \
+  python -m scripts.haistepcli.case \
       --config <config>.yaml --num-partitions 0 --num-workers 4
 
   # Retry a single failed partition:
-  python -m scripts.haistep.case \
+  python -m scripts.haistepcli.case \
       --config <config>.yaml --num-partitions 0 --partition-index 5
 
   Notebook: set `NUM_PARTITIONS=0` (auto) and `NUM_WORKERS=4` in parameters
@@ -424,12 +424,12 @@ _______________________________________________
 
 **CLI command:**
 
-  haistep-aidata --config <your_config>.yaml
+  python -m scripts.haistepcli.aidata --config <your_config>.yaml
 
-**Test script:**
+**Direct CLI:**
 
   source .venv/bin/activate && source env.sh
-  python test/test_haistep/test_4_aidata/test_aidata.py \
+  python -m scripts.haistepcli.aidata \
       --config <your_config>.yaml
 
 **Python API:**
@@ -553,8 +553,8 @@ _______________________________________________
   When upstream CaseSets are partitioned, AIData auto-discovers and merges:
 
   # CLI:
-  python -m scripts.haistep.aidata --config <config>.yaml
-  python -m scripts.haistep.aidata --config <config>.yaml --use-cache
+  python -m scripts.haistepcli.aidata --config <config>.yaml
+  python -m scripts.haistepcli.aidata --config <config>.yaml --use-cache
 
   Config must have `record_set_name` + `CaseArgs` (instead of `case_set_name`)
   to trigger partition discovery. See haipipe-data-aidata SKILL.md for details.

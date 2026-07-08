@@ -84,7 +84,7 @@ Step 4: Render
 
 ```
 Remote: $REMOTE_ROOT
-Probing 10 stores via hai-remote-sync --dry-run (live, ~30s)...
+Probing {N} stores (those with env vars exported in env.sh) via hai-remote-sync --dry-run (live, ~30s)...
 
 store               local-only   remote-only   in-sync   out-of-sync
 0-RawDataStore          2 sets       -             7         -

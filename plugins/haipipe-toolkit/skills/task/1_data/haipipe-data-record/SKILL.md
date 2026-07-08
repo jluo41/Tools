@@ -4,8 +4,8 @@ description: "Stage 2 (Record) specialist. Builds, runs, and reviews HumanFn / R
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.2.0"
-  last_updated: "2026-07-04"
+  version: "1.3.0"
+  last_updated: "2026-07-08"
   summary: "Stage 2 (Record) specialist with multi-partition support."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -98,8 +98,8 @@ processes a subset of patients, reducing peak memory.
 
 **CLI:**
 ```bash
-python -m scripts.haistep.record --config <config> --num-partitions 20 --use-cache
-python -m scripts.haistep.record --config <config> --num-partitions 20 --partition-index 5  # retry one
+python -m scripts.haistepcli.record --config <config> --num-partitions 20 --use-cache
+python -m scripts.haistepcli.record --config <config> --num-partitions 20 --partition-index 5  # retry one
 ```
 
 **Notebook parameter:** `NUM_PARTITIONS` in the `# %% [parameters]` cell.

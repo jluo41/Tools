@@ -4,8 +4,8 @@ description: "Stage 0 (External) specialist. Builds, runs, and reviews ExternalF
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-07-04"
+  version: "1.2.0"
+  last_updated: "2026-07-08"
   summary: "Stage 0 (External) specialist."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -63,7 +63,7 @@ Dispatch Table
 After parsing, read these files:
 
 ```
-Invocation     This skill's ref                  Umbrella's fn doc
+Invocation     This skill's ref                  fn doc to read
 -------------- --------------------------------- ----------------------------------
 dashboard      ref/concepts.md +
                ref/asset-catalog.md              ../haipipe-data/fn/fn-0-dashboard.md
@@ -136,7 +136,7 @@ _WorkSpace/ExternalStore/
 
 Versioning: latest release wins by default. Pin with `--version @{tag}`.
 Current builders live in `code-dev/0-EXTERNAL/e{N}_build_external_*.py`
-(WellDoc-SPACE; workspaces without `code-dev/` host external builders in a
+(WellDoc-SPACE; workspaces without `code-dev/0-EXTERNAL/` host external builders in a
 project task folder instead — same `e{N}_build_external_*` naming).
 
 ---

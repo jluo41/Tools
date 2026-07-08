@@ -4,8 +4,8 @@ description: "Stage 4 (AIData) specialist. Builds, runs, and reviews TfmFn / Spl
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.3.0"
-  last_updated: "2026-07-05"
+  version: "1.4.0"
+  last_updated: "2026-07-08"
   summary: "Stage 4 (AIData) specialist with multi-partition CaseSet merge."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -100,8 +100,8 @@ all CaseSet partitions and merges them into a single AIDataSet.
 
 **CLI:**
 ```bash
-python -m scripts.haistep.aidata --config <config>
-python -m scripts.haistep.aidata --config <config> --use-cache  # skip if exists
+python -m scripts.haistepcli.aidata --config <config>
+python -m scripts.haistepcli.aidata --config <config> --use-cache  # skip if exists
 ```
 
 **Config (multi-partition mode):**
@@ -127,7 +127,7 @@ case_set_name: "mimiciv-3.1_v3RecSet/@v0CaseSet-MimicAdmissionEntry"
 - Loads all non-empty CaseSets (skips empty partitions)
 - Passes `case_set_list=[...]` to `AIData_Pipeline.run()`
 - Streaming HF Dataset conversion (memory-efficient, no pandas concat)
-- Output: `4-AIDataStore/{name}/@{version}/`
+- Output: `4-AIDataStore/{ParentSetName}/@v{N}AIData-{aidata_name}/`
 
 ---
 

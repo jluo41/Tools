@@ -52,7 +52,7 @@ base class (code/haipipe/assets.py) handles all I/O uniformly.
 ```
 Kitchen  = Pipeline class         (code/haipipe/<layer>_base/)
 Chef     = Domain function (Fn)   (code/haifn/<fn_layer>/)     GENERATED
-Recipe   = YAML config file       (config/)
+Recipe   = YAML config file       (the pipeline task's configs/)
 Dish     = Set asset              (_WorkSpace/<N>-<Layer>Store/)
 Academy  = Builder scripts        (tasks/<pipe-group>/NN_<stage>_fn_develop_<cohort>/ in the project)
 ```
@@ -270,18 +270,13 @@ ls _WorkSpace/5-ModelInstanceStore/     # available trained models
 Current Config Structure
 ========================
 
+Pipeline configs live INSIDE each pipeline task folder — there is no
+repo-root config/ directory:
+
 ```bash
-ls config/    # all YAML config directories
-```
-
-Snapshot (as of 2026-02-21):
-
-```
-config/
-+-- haipipe-process-aidata/    Production AIData configs
-+-- haipipe-process-record/    Production Record configs
-+-- test-haistep-fairglucose/  Test configs for WellDoc FairGlucose project
-+-- test-haistep-ohio/         Test configs for OhioT1DM dataset
+ls examples/*/tasks/*/*/configs/          # all pipeline run configs
+ls code/scripts/haistepconfig/            # framework reference templates ONLY
+                                          # (never put real project configs here)
 ```
 
 ---

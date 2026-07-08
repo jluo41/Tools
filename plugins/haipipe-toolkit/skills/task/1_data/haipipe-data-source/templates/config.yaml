@@ -8,10 +8,7 @@
 # Usage:
 #   source .venv/bin/activate
 #   source env.sh
-#   haistep-source --config <this_file>.yaml
-#
-# Or via test script:
-#   python test/test_haistep/test_1_source/test_source.py --config <this_file>.yaml
+#   python -m scripts.haistepcli.source --config <this_file>.yaml
 # ==============================================================================
 
 # External data version (reference data like NDC, NPI codes)

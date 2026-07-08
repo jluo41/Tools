@@ -1,6 +1,10 @@
 ExternalStore Asset Catalog
 ============================
 
+> NOTE: `code-dev/0-EXTERNAL/` is the WellDoc-SPACE builder home. Workspaces
+> without it (e.g. REACH-SPACE — zero external builders on disk) host any new
+> external builder in a project task folder, same `e{N}_build_external_*` naming.
+
 Lightweight index of the externally-built assets. Schemas live in each
 asset's auto-generated README; this file carries only what the skill
 needs to dispatch (slug, family, primary key, builder).
@@ -21,7 +25,7 @@ cat _WorkSpace/ExternalStore/$EXTERNAL_VERSION/{asset}/README.md
 
 ---
 
-Current Builders (code-dev/0-EXTERNAL/)
+Current Builders (WellDoc-SPACE snapshot; code-dev/0-EXTERNAL/)
 ========================================
 
 Discovered via `ls code-dev/0-EXTERNAL/e*.py`. The 11 entries below are
@@ -78,7 +82,7 @@ npi                 prescriber_npi, npi (provider), provider_npi
 ncpdp               pharmacy_ncpdp_id, ncpdp_provider_id, pharmacy_id
 zip3                patient_zip3, zipcode3, zip3
 zip5                patient_zip5, patient_zipcode, zipcode5, zip5, npi_zip5
-patient_id          patient_id, patient_id_encoded
+patient_id          patient_id_encoded (join key; external column becomes patient_id_original)
 ```
 
 The engagement variants share the same join columns as their

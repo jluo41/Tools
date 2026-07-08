@@ -165,7 +165,7 @@ Use Cases
               check it for structural issues before running it.
   Command:    /haipipe-data review code/haifn/fn_case/case_casefn/MyFn.py
               /haipipe-data review examples/<Project>/tasks/<pipe-group>/03_case_fn_develop_<cohort>/c5_build_casefn_myfeature.py
-              /haipipe-data review config/caseset/pipeline/my_caseset.yaml
+              /haipipe-data review <task>/configs/my_caseset.yaml
   What it does: Auto-detects the file type, applies the matching checklist
                 (70+ criteria across all Fn types), and reports
                 PASS / WARN / FAIL per criterion with a score.
@@ -174,7 +174,7 @@ Use Cases
 
   Situation:  A pipeline run failed with a cryptic error. You suspect the
               YAML config has a wrong key name or missing required section.
-  Command:    /haipipe-data review config/aidata/my_aidata.yaml
+  Command:    /haipipe-data review <task>/configs/my_aidata.yaml
   What it does: Checks SplitArgs structure, InputArgs/OutputArgs keys,
                 method names, casefn_list entries, and split_ai values.
 

@@ -4,6 +4,12 @@ haipipe-data-remote — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [1.3.0] — 2026-07-08
+
+- skill-diagnose fixes: nonexistent `--version @{tag}` CLI flag claim removed — ExternalStore pinning is path-based (`--path ExternalStore/@{version}/...`), matching store-map; store-map AIData pattern corrected to `{ParentSetName}/@v{N}AIData-{aidata_name}/`.
+- Credentials/error guidance made BACKEND-CONDITIONAL (gdrive: rclone token refresh; s3: AWS SSO) — the workspace default is rclone/GDrive, the old text was AWS-only (JL: "ok, go ahead and fix all of them" — approved recommended option A).
+- store-map: 7-AgentWorkspace and ExternalStore/@inference marked ⚙opt (optional; probe only env-exported stores); LearnStore / 0-REACH-RAW-Store noted as on-disk-but-not-synced; fn-status probe count now dynamic (JL: same ruling).
+
 ## [1.2.0] — 2026-07-05
 
 ### Changed (JL: "这些东西要general，不是固定到一个项目的。不要出现具体的名字或者什么的")

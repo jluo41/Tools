@@ -1,11 +1,11 @@
 ---
 name: haipipe-data
-description: "Run any Stage 1-4 data pipeline work. Parses intent (stage + function) and dispatches to the right specialist (haipipe-data-source/-record/-case/-aidata). Use for SourceFn/RecordFn/CaseFn/TfmFn/SplitFn builds, pipeline runs, dashboards, reviews, or any natural-language data-pipeline question. Trigger: data pipeline, source, record, case, aidata, fn build, cook, /haipipe-data."
+description: "Run any Stage 1-4 data pipeline work. Parses intent (stage + function) and dispatches to the right specialist (haipipe-data-source/-record/-case/-aidata, plus raw/external/remote). Use for SourceFn/RecordFn/CaseFn/TfmFn/SplitFn builds, pipeline runs, dashboards, reviews, or any natural-language data-pipeline question. Trigger: data pipeline, source, record, case, aidata, fn build, cook, /haipipe-data."
 argument-hint: "[stage] [function] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "1.2.0"
-  last_updated: "2026-07-04"
+  version: "1.3.0"
+  last_updated: "2026-07-08"
   summary: "Run any Stage 1-4 data pipeline work."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -81,12 +81,12 @@ by `convert_to_notebooks.py` — it is intermediate output, not source.
 
 CLI alternative (supports `--num-workers` for parallel execution):
 ```
-python -m scripts.haistep.record --config <config> --num-partitions 20 --use-cache
+python -m scripts.haistepcli.record --config <config> --num-partitions 20 --use-cache
 python code/scripts/haistepcli/case.py   --config <config> --num-partitions 0 --num-workers 4
 python code/scripts/haistepcli/aidata.py --config <config>
 ```
 
-Worked example: `examples/ProjD-EHR-1-Mimic/tasks/A01_data_pipeline_mimic/`
+Worked example: `examples/Project-EHR-Mimic/tasks/A01_data_pipeline_mimic/`
   - `02_record_mimiciv/2_record_mimiciv31.py` (from `a2_record_nb.py`, 80 partitions)
   - `03_case_mimiciv_mortality/3_case_mimiciv31_mortality.py` (from `a3_case_nb.py`, auto-discover)
 
@@ -186,6 +186,12 @@ Skill("haipipe-data-aidata",  args="dashboard")
 
 Then emit a 5-line summary (one per stage) plus an overall header that
 points the user at their next likely command.
+
+DELIBERATE EXCLUSION: external and remote are NOT fanned into the
+dashboard — they are sideways/transport specialists, not pipeline stages,
+and the remote probe needs network round-trips that would slow the default
+no-arg path. Inspect them explicitly: `/haipipe-data external` /
+`/haipipe-data remote`.
 
 ---
 

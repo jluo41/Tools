@@ -24,7 +24,7 @@ Args:
 ```
 <asset>            external asset slug (e.g. npi)
 --to <set>         path to a SourceSet/RecordSet/CaseSet
-                   (e.g. _WorkSpace/1-SourceStore/20250829_SMSR3Full/@SMSParquetV250211)
+                   (e.g. _WorkSpace/1-SourceStore/<CohortName>/@<SourceFnName>)
 --table <name>     optional: which ProcName/table inside the set
 --on <column>      optional: cohort column to join on
                    (defaults: see asset-catalog Common Cohort Columns)

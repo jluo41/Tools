@@ -34,7 +34,7 @@ Cooking Metaphor
 ```
 Kitchen  = AIData_Pipeline class        (code/haipipe/aidata_base/)
 Chef     = TfmFn + SplitFn             (code/haifn/fn_aidata/)  GENERATED
-Recipe   = YAML config file            (config/aidata/ or tutorials/config/)
+Recipe   = YAML config file            (the pipeline task's configs/)
 Dish     = AIDataSet asset             (_WorkSpace/4-AIDataStore/)
 Academy  = Builder scripts             (tasks/<pipe-group>/04_aidata_fn_develop_<cohort>/ in the project)
 ```
@@ -62,11 +62,14 @@ aidata_set.transform_info   # Transform configuration
 **On-disk layout:**
 
 ```
-_WorkSpace/4-AIDataStore/{aidata_name}/@{aidata_version}/
+_WorkSpace/4-AIDataStore/{ParentSetName}/@v{N}AIData-{aidata_name}/
+     (ParentSetName = RecSet+Trigger combined, e.g.
+      MimicIV31_MimicAdmissionEntry/@v0AIData-MimicMortality/ —
+      mirrors CaseStore's @v{N}CaseSet-{Trigger} scheme)
 +-- train/                    (HuggingFace Dataset, Parquet format)
 +-- validation/
-+-- test-id/
-+-- test-od/                  (optional)
++-- test-id/                  (split names are config-driven; the shipped
++-- test-od/                   MIMIC example uses train/validation/test)
 +-- cf_to_cfvocab.json        (Per-CaseFn vocabulary -- at ROOT)
 +-- feat_vocab.json            (Feature vocabulary -- at ROOT)
 +-- manifest.json

@@ -122,8 +122,11 @@ ncpdp       ncpdp               7-digit string    leading zeros must be preserve
 zip3        zip3                3-char string     derived from zip5[:3]
 zip5        zip5                5-char string     9-digit ZIP+4 must be truncated
                                                   to 5 chars; preserve leading zeros
-patient_id  patient_id_encoded  hash/UUID         cohort uses patient_id_encoded
-                                                  (not raw patient_id) for joins
+patient_id  patient_id_encoded  hash/UUID         cohort side joins on
+                                                  patient_id_encoded (never raw
+                                                  patient_id); after the join the
+                                                  external asset's own column is
+                                                  suffixed -> patient_id_original
 ```
 
 When a join's match rate is unexpectedly low, the first thing to check

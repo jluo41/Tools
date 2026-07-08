@@ -4,8 +4,8 @@ description: "data-pipeline task-folder specialist. Scaffolds AND executes {NN}_
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.2.0"
-  last_updated: "2026-07-04"
+  version: "2.3.0"
+  last_updated: "2026-07-08"
   summary: "data-pipeline task-folder specialist (scaffold + execute + partition)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -73,10 +73,10 @@ Two execution paths:
 
 **(b) CLI (direct)** — for parallel workers or scripted pipelines:
   ```
-  python -m scripts.haistep.source --config <config>
-  python -m scripts.haistep.record --config <config> --num-partitions 20 --use-cache
-  python -m scripts.haistep.case   --config <config> --num-partitions 0 --num-workers 4
-  python -m scripts.haistep.aidata --config <config>
+  python -m scripts.haistepcli.source --config <config>
+  python -m scripts.haistepcli.record --config <config> --num-partitions 20 --use-cache
+  python -m scripts.haistepcli.case   --config <config> --num-partitions 0 --num-workers 4
+  python -m scripts.haistepcli.aidata --config <config>
   ```
 
 See `fn/execute.md` for the detailed stage-aware execution protocol.
@@ -173,7 +173,7 @@ See `fn/execute.md` for the detailed step-by-step. Summary:
 
   1. Detect stage from script imports (SourceSet/RecordSet/CaseSet/AIData).
   2. Read config for partition_number and stage-specific args.
-  3. Execute via notebook (run.sh) or CLI (python -m scripts.haistep.{stage}).
+  3. Execute via notebook (run.sh) or CLI (python -m scripts.haistepcli.{stage}).
   4. Write results/<RUN>/runtime.yaml.
   5. Emit return contract.
 

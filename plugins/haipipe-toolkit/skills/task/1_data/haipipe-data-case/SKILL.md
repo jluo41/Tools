@@ -4,8 +4,8 @@ description: "Stage 3 (Case) specialist. Builds, runs, and reviews TriggerFn / C
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.2.0"
-  last_updated: "2026-07-04"
+  version: "1.3.0"
+  last_updated: "2026-07-08"
   summary: "Stage 3 (Case) specialist with multi-partition + parallel support."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -97,8 +97,8 @@ partition loads a small RecordSet (~100MB), no shared state.
 
 **CLI:**
 ```bash
-python -m scripts.haistep.case --config <config> --num-partitions 0 --num-workers 4
-python -m scripts.haistep.case --config <config> --num-partitions 0 --partition-index 5  # retry one
+python -m scripts.haistepcli.case --config <config> --num-partitions 0 --num-workers 4
+python -m scripts.haistepcli.case --config <config> --num-partitions 0 --partition-index 5  # retry one
 ```
 
 `--num-partitions 0` = auto-discover from `2-RecStore/{name}/@i*n*`.

@@ -4,9 +4,9 @@ description: "Raw extraction task-folder build specialist. Scaffolds {NN}_<name>
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.3.0"
+  version: "1.4.0"
   last_updated: "2026-07-08"
-  summary: "Raw extraction task-folder build specialist (Databricks → parquet → local Python)."
+  summary: "Raw extraction task-folder build specialist (Pattern 1 local / Pattern 2 PHI server-resident)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -14,10 +14,12 @@ Skill: haipipe-task-for-raw
 =================================
 
 Scaffolds a **raw extraction task-folder** — a runnable example that
-extracts source tables from a Databricks catalog as wide parquet files,
-then optionally processes them locally with Python (pandas). Heavy
-outputs land in `_WorkSpace/0-RawDataStore/<cohort>/`; the task-folder keeps
-scripts, configs, and convert-only notebooks.
+extracts source tables from a Databricks catalog as wide parquet files.
+In **Pattern 1** (non-PHI) the parquet is then processed locally with
+Python (pandas) and heavy outputs land in `_WorkSpace/0-RawDataStore/<cohort>/`;
+in **Pattern 2** (PHI, server-resident — see below) everything stays on the
+catalog volume. The task-folder keeps scripts, configs, and convert-only
+notebooks either way.
 
 **Invocation modes (see `../../haipipe-task/ref/invocation-modes.md`):**
 interactive (a human steers; missing fields get ASKed) OR headless (a full

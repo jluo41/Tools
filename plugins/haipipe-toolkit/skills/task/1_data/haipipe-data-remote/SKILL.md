@@ -4,8 +4,8 @@ description: "Cross-stage transport specialist. Pushes / pulls cohort assets bet
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Grep, Glob
 metadata:
-  version: "1.2.0"
-  last_updated: "2026-07-05"
+  version: "1.3.0"
+  last_updated: "2026-07-08"
   summary: "Cross-stage transport specialist."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -122,8 +122,10 @@ MUST DO / MUST NOT
 
 - ALWAYS read `ref/concepts.md` and `ref/store-map.md` before any verb.
 - ALWAYS dry-run before a real push / pull.
-- ALWAYS surface AWS SSO error hints (the SSO portal URL is in
-  env.sh comments) when transfers fail with credential errors.
+- ALWAYS surface backend-appropriate credential hints when transfers
+  fail with auth errors: gdrive: -> rclone token refresh
+  (`rclone authorize "drive"`); s3: -> AWS SSO portal (URL in env.sh
+  comments). Read the REMOTE_ROOT prefix to pick.
 - NEVER pass `--sync` to hai-remote-sync.
 - NEVER call `aws s3 ls` / `aws s3 rm` directly. Use hai-remote-sync.
 - NEVER auto-delete local-only or remote-only assets discovered by

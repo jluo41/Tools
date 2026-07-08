@@ -45,7 +45,7 @@ Cooking Metaphor
 Concept    Pipeline Term              Location
 ---------  -------------------------  ------------------------------------------
 Pantry     ExternalStore              _WorkSpace/ExternalStore/@{version}/
-Recipe     e_build_external_*.py      code-dev/0-EXTERNAL/
+Recipe     e_build_external_*.py      code-dev/0-EXTERNAL/ (WellDoc; else project task folder)
 Pantry     ExternalFn                 (NOT YET A CLASS -- Phase 2 promotion)
   Chef                                Currently: top-level scripts that import
                                       from haipipe.base
@@ -118,7 +118,7 @@ differently for staleness and rebuild triggers.
 
 **engagement** -- cohort-aggregated stats keyed by an external dimension.
 
-  Source:    a cohort SourceSet (e.g. 20250218_SMSAll/...)
+  Source:    a cohort SourceSet (e.g. reach-adhd/... or mimiciv-3.1/...)
   Refresh:   when the source cohort changes
   Examples:  ndc_engagement, npi_engagement, ncpdp_engagement,
              zip3_engagement, zip5_engagement, patient_engagement
@@ -151,8 +151,8 @@ _WorkSpace/ExternalStore/
   - Old releases are kept for reproducibility (RecordFn / CaseFn configs
     can pin a specific release). Never overwrite an existing release
     folder without explicit user confirmation.
-  - Naming convention observed in the repo: `@{YYMMDD}R{N}`
-    (e.g. @260104R4 = 4th release on 2026-01-04). Not enforced.
+  - WellDoc used `@{YYMMDD}R{N}` tags (e.g. @260104R4). Not enforced —
+    discover the active tag via `echo $EXTERNAL_VERSION` (e.g. `@v1215`).
 
 ---
 

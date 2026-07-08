@@ -14,7 +14,7 @@ Cooking Metaphor
 ```
 Kitchen  = Case_Pipeline class        (code/haipipe/case_base/)
 Chef     = TriggerFn + CaseFn         (code/haifn/fn_case/)  GENERATED
-Recipe   = YAML config file           (config/caseset/ or tutorials/config/)
+Recipe   = YAML config file           (the pipeline task's configs/)
 Dish     = CaseSet asset              (_WorkSpace/3-CaseStore/)
 Academy  = Builder scripts            (tasks/<pipe-group>/03_case_fn_develop_<cohort>/ in the project)
 ```
@@ -26,7 +26,9 @@ What Is a CaseSet
 Output of Layer 3. Contains `df_case.parquet` + one `@`-prefixed parquet per CaseFn at ROOT level.
 
 ```
-_WorkSpace/3-CaseStore/{RecSetName}/@v{N}CaseSet-{TriggerFolder}/
+_WorkSpace/3-CaseStore/{RecSetName}/[@i{i}n{n}/]@v{N}CaseSet-{TriggerFolder}/
+     (@i{i}n{n} = optional partition level — present in ALL real multi-partition
+      stores, e.g. MimicIV31/@i75n80/@v0CaseSet-MimicAdmissionEntry/)
 +-- df_case.parquet              (main file, NOT case_data.parquet)
 +-- df_lts.parquet               (optional, for LTS triggers)
 +-- df_Human_Info.parquet        (optional)

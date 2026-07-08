@@ -16,7 +16,9 @@ below:
     folder, `examples/<Project>/tasks/<pipe-group>/NN_<stage>_fn_develop_<cohort>/`
     (e.g. `Project-REACH-ADHD/tasks/A01_data_pipeline_reachadhd/01_source_fn_develop_reachadhd/`).
   - Legacy central (e.g. WellDoc-SPACE): `code-dev/1-PIPELINE/<N>-<Stage>-WorkSpace/`.
-  Discover with: `ls examples/*/tasks/*/*_fn_develop_*/` or `ls code-dev/1-PIPELINE/`.
+  Seed library (copy sources, all workspaces): `code/scripts/haibuilder/<N>-<stage>/`
+  — real builders (MIMIC, Ohio, CGM...) to copy as starting points.
+  Discover with: `ls examples/*/tasks/*/*_fn_develop_*/` or `ls code/scripts/haibuilder/`.
 
 ---
 
@@ -53,10 +55,12 @@ Apply these steps regardless of which stage you are building.
 **Step 0: Inspect Existing Builders and Source Table**
 
 ```bash
-ls code-dev/1-PIPELINE/1-Source-WorkSpace/   # stage 1
-ls code-dev/1-PIPELINE/2-Record-WorkSpace/   # stage 2
-ls code-dev/1-PIPELINE/3-Case-WorkSpace/     # stage 3
-ls code-dev/1-PIPELINE/4-AIData-WorkSpace/   # stage 4
+ls examples/*/tasks/*/01_source_fn_develop_*/   # stage 1 project builders
+ls examples/*/tasks/*/02_record_fn_develop_*/   # stage 2
+ls examples/*/tasks/*/03_case_fn_develop_*/     # stage 3
+ls examples/*/tasks/*/04_aidata_fn_develop_*/   # stage 4
+ls code/scripts/haibuilder/<N>-<stage>/         # cross-project SEED LIBRARY
+                                                # (real builders: MIMIC, Ohio, CGM...)
 ```
 
 Find the closest existing builder to use as a starting point.
@@ -108,8 +112,8 @@ Or call venv Python directly: .venv/bin/python script.py
 **Step 3: Copy Closest Existing Builder as Starting Point**
 
 ```bash
-cp code-dev/1-PIPELINE/3-Case-WorkSpace/c2_build_casefn_cgmvalue.py \
-   code-dev/1-PIPELINE/3-Case-WorkSpace/c5_build_casefn_myfeature.py
+cp code/scripts/haibuilder/3-case/c2_build_casefn_cgmvalue.py \
+   <BUILDER_HOME>/c5_build_casefn_myfeature.py
 ```
 
 Do not start from scratch. Always copy and modify.
@@ -135,7 +139,7 @@ RUN_TEST = True   # <-- must be True
 Then run:
 
 ```bash
-python code-dev/1-PIPELINE/3-Case-WorkSpace/c5_build_casefn_myfeature.py
+python <BUILDER_HOME>/c5_build_casefn_myfeature.py
 ```
 
 **Step 6: Verify Generated File in code/haifn/**
@@ -153,11 +157,12 @@ Do not skip this — the pipeline will not pick up unregistered Fns.
 **Step 8: Test End-to-End with the Matching Pipeline**
 
 ```bash
-haistep-case   --config config/test-haistep-ohio/3_test_case.yaml
-haistep-aidata --config config/test-haistep-ohio/4_test_aidata.yaml
+python -m scripts.haistepcli.case   --config <task>/configs/<run>.yaml
+python -m scripts.haistepcli.aidata --config <task>/configs/<run>.yaml
 ```
 
-Use the matching haistep-* command for your stage.
+Use the matching scripts.haistepcli.<stage> module for your stage; configs
+live in the pipeline task's configs/ folder.
 
 ---
 
@@ -169,7 +174,7 @@ standardized DataFrames per table type (CGM, Diet, Medication, Exercise, ...).
 
 **Builder Location**:
 ```
-code-dev/1-PIPELINE/1-Source-WorkSpace/
+<BUILDER_HOME>  (01_source_fn_develop_*/; seeds: code/scripts/haibuilder/1-source/)
 ```
 
 **Builder Naming**:
@@ -280,8 +285,8 @@ Build a **RecordFn** when:
 
 **Builder Locations**:
 ```
-code-dev/1-PIPELINE/2-Record-WorkSpace/h{N}_build_human_{name}.py   (HumanFn)
-code-dev/1-PIPELINE/2-Record-WorkSpace/r{N}_build_record_{name}.py  (RecordFn)
+<BUILDER_HOME>/h{N}_build_human_{name}.py   (HumanFn; seeds: haibuilder/2-record/)
+<BUILDER_HOME>/r{N}_build_record_{name}.py  (RecordFn)
 ```
 
 **Generated Output**:
@@ -456,8 +461,8 @@ builders.
 
 **Builder Locations**:
 ```
-code-dev/1-PIPELINE/3-Case-WorkSpace/a{N}_build_trigger_{name}.py   (TriggerFn)
-code-dev/1-PIPELINE/3-Case-WorkSpace/c{N}_build_casefn_{feature}.py (CaseFn)
+<BUILDER_HOME>/a{N}_build_trigger_{name}.py   (TriggerFn; seeds: haibuilder/3-case/)
+<BUILDER_HOME>/c{N}_build_casefn_{feature}.py (CaseFn)
 ```
 
 - - -
@@ -625,7 +630,7 @@ transforms), or SplitFn (train/val/test splitting). Three separate types.
 
 **Builder Location**:
 ```
-code-dev/1-PIPELINE/4-AIData-WorkSpace/
+<BUILDER_HOME>  (04_aidata_fn_develop_*/; seeds: code/scripts/haibuilder/4-aidata/)
   c<N>_build_transforms_<type>.py    (Input/Output TfmFn builders -- discover with ls)
   s<N>_build_splitfn_<method>.py     (SplitFn builders -- discover with ls)
 ```
@@ -642,8 +647,8 @@ code-dev/1-PIPELINE/4-AIData-WorkSpace/
 Start by copying the closest existing builder:
 
 ```bash
-ls code-dev/1-PIPELINE/4-AIData-WorkSpace/c*.py   # TfmFn builders
-ls code-dev/1-PIPELINE/4-AIData-WorkSpace/s*.py   # SplitFn builders
+ls <BUILDER_HOME>/c*.py   # TfmFn builders
+ls <BUILDER_HOME>/s*.py   # SplitFn builders
 ```
 
 - - -
@@ -774,14 +779,15 @@ Quick Reference: Stage Summary
 ================================
 
 ```
-Stage | What You Build         | Builder Dir            | Generated In
-------+------------------------+------------------------+---------------------------
-  1   | SourceFn               | 1-Source-WorkSpace/    | fn_source/
-  2   | HumanFn or RecordFn    | 2-Record-WorkSpace/    | fn_record/human/ or record/
-  3   | TriggerFn or CaseFn    | 3-Case-WorkSpace/      | fn_case/fn_trigger/ or
-      |                        |                        |   case_casefn/
-  4   | InputTfmFn, OutputTfmFn| 4-AIData-WorkSpace/    | fn_aidata/entryinput/,
-      | or SplitFn             |                        |   entryoutput/, or split/
+Stage | What You Build         | Builder Home (fn_develop)     | Generated In
+------+------------------------+-------------------------------+---------------------------
+  1   | SourceFn               | 01_source_fn_develop_*/       | fn_source/
+  2   | HumanFn or RecordFn    | 02_record_fn_develop_*/       | fn_record/human/ or record/
+  3   | TriggerFn or CaseFn    | 03_case_fn_develop_*/         | fn_case/fn_trigger/ or
+      |                        |                               |   case_casefn/
+  4   | InputTfmFn, OutputTfmFn| 04_aidata_fn_develop_*/       | fn_aidata/entryinput/,
+      | or SplitFn             |                               |   entryoutput/, or split/
+Seeds for every stage: code/scripts/haibuilder/<N>-<stage>/
 ```
 
 ```
