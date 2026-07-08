@@ -4,8 +4,8 @@ description: "Recommend the best-fit venue for a paper or topic, then pin it. Pr
 argument-hint: "[paper-path | free-text topic/abstract] [--no-pin]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.0.0"
-  last_updated: "2026-07-07"
+  version: "3.1.0"
+  last_updated: "2026-07-08"
   summary: "Venue stage orchestrator. Recommends + pins the best-fit venue, produces 2-venue.md with writing principles, structural blueprint (per-section quantitative norms), and probes. Downstream stages (pitch, narrative, display, section-edit) all read the Structural Blueprint and Writing Principles sections."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -60,12 +60,12 @@ Section: <name> (<role in the paper>)
 
 This section is the single source of truth for paper structure. Pitch reads it to frame the contribution. Narrative reads it to allocate story beats. Section-edit reads it to know how many paragraphs each section gets and what each paragraph does.
 
-**How to derive the blueprint:**
-1. Read the venue playbook (`../../_venue/playbook-<venue>/`) for general norms.
-2. Read stored exemplars (`../../_venue/playbook-<venue>/exemplars/`) for real section structures.
-3. If exemplars are sparse, read 2-3 published papers at this venue (via the paper's own `0-extra/` or by searching) and count: sections, subsections, paragraphs, sentences, sentence length, citations per sentence, where results appear.
-4. Synthesize into the per-section spec above.
-5. Adapt the generic blueprint to THIS paper's claim structure (e.g., H1/H2/H3 map to specific theory subsections).
+**How to derive the blueprint (source priority):**
+1. Read the pinned outlet's per-section guides (`../../_venue/playbook-<venue>/<journal>/<journal>-<section>/style.md`). Each carries word budget, arc, paragraph-structure table, and a measured `## Micro-norms` block (paragraphs, sentences per paragraph, words per sentence, citation density) -- TRANSCRIBE these into the spec above; do not re-mine what is already measured.
+2. Read `<journal>/taste.md` (desk signals) and the pack `style-profile.md` for the Writing Principles side.
+3. ONLY if the outlet has no section guides (or a section is missing): count 2-3 stored exemplars from `<journal>/examples/` yourself (sections, paragraphs, sentences, sentence length, citations per sentence, where results appear), or search published papers as a last resort.
+4. Adapt the generic blueprint to THIS paper's claim structure (e.g., H1/H2/H3 map to specific theory subsections).
+5. Where a Micro-norms block flags a measured-vs-budget clash or a "to verify" marker, carry that caveat into the blueprint rather than silently picking one number.
 
 The blueprint is venue-ALIGNED: retargeting to a different venue rewrites the blueprint.
 
@@ -111,22 +111,24 @@ default     recommend a shortlist, then ASK before writing STATUS venue (you con
 paper root         reads 0-lifecycle/{0-seed,1-claims,2-pitch} for the contribution profile
    or topic text   a free-text topic / abstract when there is no folder yet
 venue packs        ../../_venue/playbook-*/README.md   ("-> Claims" rewards + fit signals)
+outlet taste       ../../_venue/playbook-*/<journal>/taste.md   (desk-accept/reject signals + one-sentence test)
+section norms      ../../_venue/playbook-*/<journal>/<journal>-<section>/style.md   (quantitative norms + Micro-norms)
 venue index        ../../_venue/README.md              (family map + IS selection table)
 ```
 
 ## Procedure
 
 1. **Build the paper's contribution profile.** From the seed/claims (or the topic text), extract: the central contribution, the method, the topic/domain, the evidence strength, and the intended audience. If these are unclear, ask one round of questions before scoring.
-2. **Read the candidate packs.** For each `../../_venue/playbook-<venue>/README.md`, read the `-> Claims` mapping (what it rewards, contribution vs enabler) and the fit signals; read `../../_venue/README.md` for the family map and IS selection table.
+2. **Read the candidate packs.** For each `../../_venue/playbook-<venue>/README.md`, read the `-> Claims` mapping (what it rewards, contribution vs enabler) and the fit signals; read `../../_venue/README.md` for the family map and IS selection table. A pack is family-granular; to pick the OUTLET inside a family, read each candidate `<journal>/taste.md` and score the paper against its desk-accept/desk-reject signals and one-sentence test.
 3. **Score each venue** on five dimensions, each High/Med/Low with a one-line reason: contribution-type match, method match, topic/domain match, evidence-bar match, audience match. Record any hard disqualifier (e.g. "design science -> not ISR").
 4. **Rank and shortlist** the top 3. For each: a fit rationale, what to emphasize for that venue, and the main why-not / risk.
 5. **Recommend ONE primary** + 1-2 backups. The primary is the one whose rewards the paper's strongest claim most directly satisfies.
 6. **Pin it (unless `--no-pin`).** In default mode, ASK the user, then write `venue: <pack-slug>` (plus an optional `venue_outlet:` for the concrete journal) into `STATUS.md`. With `--no-pin`, stop after step 5 and write nothing. Pinning is the handoff to pitch (the cover letter), which re-runs its [primary] claim designation, RQ framing, and Editor's Chair Test for the new venue.
 7. **Derive the structural blueprint.** After pinning, build the per-section quantitative spec:
-   a. Read the venue playbook's style-profile and exemplars.
-   b. If exemplars exist, count real structures: sections, subsections, paragraphs per subsection, sentences per paragraph, average sentence length, citations per sentence, where results are reported and how.
-   c. If exemplars are sparse, search for 2-3 published papers at this venue in the same contribution type (theory-forward empirical, causal, design science, etc.) and count the same metrics.
-   d. Synthesize into the Structural Blueprint section of 2-venue.md: one block per section, adapted to THIS paper's claim structure.
+   a. Read the pinned outlet's `<journal>-<section>/style.md` guides; transcribe each guide's word budget, paragraph-structure table, and measured Micro-norms block (paragraphs, sentences/paragraph, words/sentence, citation density) into the per-section spec.
+   b. Read `<journal>/taste.md` + the pack `style-profile.md` for Writing Principles (tone, citation style, abstract conventions).
+   c. ONLY where section guides are missing: count 2-3 stored exemplars in `<journal>/examples/` yourself, or search published papers at this venue in the same contribution type, and measure the same metrics.
+   d. Synthesize into the Structural Blueprint section of 2-venue.md: one block per section, adapted to THIS paper's claim structure; carry over any measured-vs-budget clash or "to verify" caveat the guides flag.
    e. The blueprint must be concrete enough that section-edit can use it without further guessing: "Introduction has 4 subsections, each 2 paragraphs, each 5-6 sentences" not "Introduction should be well-structured."
 
 ## Output contract
@@ -138,7 +140,7 @@ venue            fit   why (one line)                         emphasize / why-no
 playbook-jama-portfolio    HIGH  patient-safety opioid outcome, obs.    Table1+STROBE; assoc-not-causal
 playbook-utd-is    LOW   thin IS theory contribution            would need a theory pivot
 ...
-PRIMARY: playbook-jama-portfolio (outlet: JAMA Internal Medicine)   BACKUP: playbook-clinical-medicine
+PRIMARY: playbook-jama-portfolio (outlet: JAMA Internal Medicine)   BACKUP: jama-netopen (same pack)
 -> write STATUS.md: venue: jama / venue_outlet: JAMA Internal Medicine ?
 ```
 
@@ -148,7 +150,7 @@ PRIMARY: playbook-jama-portfolio (outlet: JAMA Internal Medicine)   BACKUP: play
 predicts higher opioid prescribing; observational, CMS Medicare 2015-2020" --no-pin`
 
 1. Build the profile from the text (no seed/claims to read): contribution = a clinical prescribing-safety association; method = the LLM trait measure (an enabler); design = observational; audience = clinical / policy.
-2-5. Score the packs, shortlist, recommend (here: `playbook-jama-portfolio` -> JAMA Internal Medicine primary, `playbook-clinical-medicine` backup).
+2-5. Score the packs, shortlist, recommend (here: `playbook-jama-portfolio` -> JAMA Internal Medicine primary, `jama-netopen` in the same pack as backup).
 6. `--no-pin`, so report only and stop; offer to scaffold a paper folder and pin if the user then wants one.
 
 ## Venue label -> pack resolution
@@ -156,14 +158,16 @@ predicts higher opioid prescribing; observational, CMS Medicare 2015-2020" --no-
 A human venue name maps to one pack (family granularity; the concrete outlet is a delta inside the pack). This skill owns the map:
 
 ```text
-MISQ / ISR / Management Science (IS) [UTD-IS]-> playbook-utd-is   (pick the outlet via the in-pack delta)
-Nature / Nature Methods / Nature Biotech      -> playbook-nature-portfolio
-PNAS                                          -> playbook-pnas
-JAMA / JAMA Internal Medicine / JAMA Netw Open-> playbook-jama-portfolio
-NEJM / Lancet / Annals / BMJ (clinical)       -> playbook-clinical-medicine
-grant (NSF / NSFC / KAKENHI / ERC / ...)      -> playbook-grant
-patent (CNIPA / USPTO / EPO)                   -> playbook-patent
+MISQ / ISR / MS-IS / MS-Marketing [UTD-IS]     -> playbook-utd-is          (journals: MISQ, ISR, MS-IS, MS-Marketing)
+NMI / Nat Comms / Nat Med / npj DM / NHB       -> playbook-nature-portfolio (journals: NMI, nature-communications, nature-medicine, npj-digital-medicine, nature-human-behaviour)
+PNAS                                           -> playbook-pnas            (journal: pnas)
+JAMA / JAMA Internal Medicine / JAMA Netw Open -> playbook-jama-portfolio  (journals: jama-flagship, jama-im, jama-netopen)
+Diabetes Care (specialty clinical)             -> playbook-medical-journals (journal: diabetes-care; extension point for more)
+grant (NSF / NSFC / KAKENHI / ERC / ...)       -> playbook-grant           (agency deltas in README, no journal dirs)
+patent (CNIPA / USPTO / EPO)                   -> playbook-patent          (jurisdiction deltas in README, no journal dirs)
 ```
+
+A named venue with no pack (NEJM, Lancet, ICLR, NeurIPS, ...) stays a bare `venue_outlet:` formatting target: recommend honestly, note no pack exists, and the lifecycle wiring no-ops.
 
 When `STATUS.md venue:` is a human label, every stage resolves it through this map to find `../../_venue/playbook-<slug>`. Prefer writing the pack slug into STATUS directly.
 
