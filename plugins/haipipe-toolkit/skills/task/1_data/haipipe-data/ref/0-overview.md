@@ -30,7 +30,7 @@ haifn      Production functions (GENERATED -- NEVER edit directly)
 The builder pattern bridges haipipe and haifn:
 
 ```
-code-dev/1-PIPELINE/           <-- edit these (Academy)
+tasks/<pipe-group>/NN_<stage>_fn_develop_<cohort>/   <-- edit these (Academy; per-project task folders)
     |  run builder scripts
     v
 code/haifn/                    <-- auto-generated (DO NOT EDIT)
@@ -54,7 +54,7 @@ Kitchen  = Pipeline class         (code/haipipe/<layer>_base/)
 Chef     = Domain function (Fn)   (code/haifn/<fn_layer>/)     GENERATED
 Recipe   = YAML config file       (config/)
 Dish     = Set asset              (_WorkSpace/<N>-<Layer>Store/)
-Academy  = Builder scripts        (code-dev/1-PIPELINE/<N>-WorkSpace/)
+Academy  = Builder scripts        (tasks/<pipe-group>/NN_<stage>_fn_develop_<cohort>/ in the project)
 ```
 
 The metaphor makes the roles unambiguous: you write the Recipe (config) and
@@ -64,7 +64,9 @@ choose which Chefs (Fns) to use. The Kitchen (Pipeline) does the rest.
 
 All domain-specific functions (SourceFn, HumanFn, RecordFn, TriggerFn,
 CaseFn, TfmFn, SplitFn, EndpointFn) live in code/haifn/ as generated Python
-files. The source of truth is the builder scripts in code-dev/1-PIPELINE/.
+files. The source of truth is the builder scripts in the project's
+NN_<stage>_fn_develop_<cohort>/ task folders (legacy workspaces:
+code-dev/1-PIPELINE/).
 
 ```
 Developer edits builder -> runs builder -> production Fn is regenerated
@@ -137,7 +139,7 @@ Discover at runtime (always prefer ls over relying on this snapshot):
 ls code/haipipe/          # core pipeline base classes
 ls code/hainn/            # ML models and predictors
 ls code/haifn/            # generated production functions
-ls code-dev/1-PIPELINE/   # builder workspaces
+ls examples/*/tasks/*/*_fn_develop_*/   # builder task folders (per project)
 ```
 
 Snapshot (as of 2026-02-21):
@@ -189,32 +191,41 @@ code/
 Current Builder Structure
 =========================
 
+Builders live INSIDE each project as `*_fn_develop_*` task folders, paired
+with the pipeline stage they generate for:
+
 ```bash
-ls code-dev/1-PIPELINE/    # all builder workspaces
+ls examples/*/tasks/*/*_fn_develop_*/    # all builder task folders
 ```
 
-Snapshot (as of 2026-02-21):
+Example (Project-REACH-ADHD, as of 2026-07):
 
 ```
-code-dev/1-PIPELINE/
-+-- 1-Source-WorkSpace/     SourceFn builders      (c<N>_build_source_*.py)
-+-- 2-Record-WorkSpace/     HumanFn + RecordFn builders
-|                               h<N>_build_human_*.py
-|                               r<N>_build_record_*.py
-+-- 3-Case-WorkSpace/       TriggerFn + CaseFn builders
-|                               a<N>_build_trigger_*.py
-|                               c<N>_build_casefn_*.py
-+-- 4-AIData-WorkSpace/     TfmFn + SplitFn builders
-|                               c<N>_build_transforms_*.py
-|                               s<N>_build_splitfn_*.py
-+-- 5-Instance-WorkSpace/   ExampleFn builders for ModelInstance
-+-- 6-Endpoint-WorkSpace/   EndpointFn builders
-                                a<N>_build_metafn_*.py
-                                b<N>_build_trigfn_*.py
-                                c<N>_build_postfn_*.py
-                                d<N>_build_src2inputfn_*.py
-                                e<N>_build_input2srcfn_*.py
+examples/Project-REACH-ADHD/tasks/
++-- A01_data_pipeline_reachadhd/
+|   +-- 01_source_fn_develop_reachadhd/    SourceFn builders   (c<N>_build_source_*.py)
+|   +-- 02_record_fn_develop_reachadhd/    HumanFn + RecordFn builders
+|   |                                          h<N>_build_human_*.py
+|   |                                          r<N>_build_records_*.py
+|   +-- 03_case_fn_develop_reachadhd/      TriggerFn + CaseFn builders
+|   |                                          a<N>_build_trigger_*.py
+|   |                                          c<N>_build_casefn_*.py
+|   +-- 04_aidata_fn_develop_reachadhd/    TfmFn + SplitFn builders
+|                                              c<N>_build_transforms_*.py
+|                                              s<N>_build_splitfn_*.py
++-- B01_training_xgboost_adhd/
+|   +-- 00_model_fn_develop_reachadhd/     ModelFn builders
++-- C01_endpoint_reachadhd/
+    +-- 00_endpoint_set_fn_develop_reachadhd/  EndpointFn builders
+                                               a<N>_build_metafn_*.py
+                                               b<N>_build_trigfn_*.py ...
 ```
+
+Each fn_develop folder is a standard task folder (configs/ runs/ results/
+notebooks/) whose .py builders regenerate the corresponding `code/haifn/`
+files. Legacy workspaces (e.g. WellDoc-SPACE) may still keep builders in a
+central `code-dev/1-PIPELINE/<N>-<Stage>-WorkSpace/` — same builder pattern,
+different home.
 
 ---
 

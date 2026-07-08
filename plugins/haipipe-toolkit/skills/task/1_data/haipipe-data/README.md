@@ -112,8 +112,8 @@ Use Cases
               see use case 16.)
   Command:    /haipipe-data design-chef 1-source
   What it does: Guides you through creating and running the builder script
-                in code-dev/1-PIPELINE/1-Source-WorkSpace/ that generates
-                the SourceFn in code/haifn/fn_source/.
+                in the project's NN_source_fn_develop_<cohort>/ task folder
+                that generates the SourceFn in code/haifn/fn_source/.
 
 **5. Add a new patient record type (new sensor / new data stream)**
 
@@ -164,7 +164,7 @@ Use Cases
   Situation:  You've written a new CaseFn or RecordFn builder and want to
               check it for structural issues before running it.
   Command:    /haipipe-data review code/haifn/fn_case/case_casefn/MyFn.py
-              /haipipe-data review code-dev/1-PIPELINE/3-Case-WorkSpace/c5_build_casefn_myfeature.py
+              /haipipe-data review examples/<Project>/tasks/<pipe-group>/03_case_fn_develop_<cohort>/c5_build_casefn_myfeature.py
               /haipipe-data review config/caseset/pipeline/my_caseset.yaml
   What it does: Auto-detects the file type, applies the matching checklist
                 (70+ criteria across all Fn types), and reports
@@ -288,6 +288,6 @@ Key Files (codebase)
   AIData_Pipeline:    code/haipipe/aidata_base/aidata_pipeline.py
   Asset base:         code/haipipe/assets.py
   Generated Fns:      code/haifn/        (NEVER edit directly)
-  Builder scripts:    code-dev/1-PIPELINE/
+  Builder scripts:    examples/<Project>/tasks/*/*_fn_develop_*/  (legacy: code-dev/1-PIPELINE/)
 
   Always activate .venv first: source .venv/bin/activate && source env.sh

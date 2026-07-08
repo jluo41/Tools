@@ -74,7 +74,7 @@ Stage Scope
 ------------
 
 Owns:
-  - CaseFn builders under `code-dev/1-PIPELINE/3-Case-WorkSpace/`
+  - CaseFn builders in the project's `NN_case_fn_develop_<cohort>/` task folder (legacy workspaces: `code-dev/1-PIPELINE/3-Case-WorkSpace/`)
   - Generated `code/haifn/fn_case/`
   - `_WorkSpace/3-CaseStore/` cases (cohort sampling)
   - `templates/config.yaml` for Case_Pipeline runs

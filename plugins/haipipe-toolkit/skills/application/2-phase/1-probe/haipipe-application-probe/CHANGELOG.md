@@ -1,0 +1,25 @@
+haipipe-application-probe — Changelog
+================================
+
+Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
+
+
+## [2.0.0] — 2026-07-07
+
+Changed (round-2 paper-alignment SOP §4 rows 1-3, resolutions R1 + R5; port of paper probe 3.1.0 enforcement)
+- Rebuilt as the 4-step procedure: BOOKKEEP -> DISPATCH -> TRANSLATE -> VERIFY, each step ending in a mandatory PROOF shown in the reply (project_root + ls, the literal Agent call(s), per-card refs + ls + harvest proofs, checker output). A step without its proof did not happen.
+- NEW `check-probe-cards.sh` (family-local fork of paper's, stage-strip.sh precedent): read/verdicted ⇒ refs resolve under project_root (brace-aware expand_ref); planned/dispatched cards FAIL (probe-not-run); `harvest: OWED` lane lines FAIL (harvest skipped); no tables, ≤80 lines, status:failed surfaced; working docs scanned for bibtex/tables. Presence-driven exactly like paper's — venue-scaling happens at lane CREATION, so the fork needs no venue lookup. Run at STEP 4 and re-run by the stage CHECK gate.
+- Lane obligations: TRANSLATE writes `harvest: OWED` on the lane line FIRST, then dispatches the harvester hook and accepts mechanically; acceptance flips the line to `harvest: accepted (...)`. A skipped harvest now leaves disk residue the checker FAILs.
+- Harvester vocabulary: ONE pipeline — ACQUIRE (gateway, the only door) -> HARVEST (venue-scaled lane hooks, pointer-following transcribers). Intervention-side may follow pointers; only the gateway may find things.
+- Venue-hook contract (R5, application delta): still NO sub-worker skills — the lanes are hooks that fire venue-scaled (_VALUES_ always; _CITATION_ sectioned venues only; _DISPLAY_ only if the artifact has display units; simple venues have no document lanes) and, when they fire, MUST follow paper's 2.0.0 sub-worker contract: pointer-following + gateway dispatch only, mechanical acceptance greps, no inline search.
+- NEW `ref/per-stage-dispatch.md` (re-derived for the application spine: 0-seed, 1-claims, 2-venue, 2-pitch, 3-narrative, 4-display, 5-section-edit; modes light default / full for claims verdicts / background for fresh runs; venue-scaled lane rules; strip forms + OWED gate rule) and `ref/harvest-acceptance.md` (paper's literal greps adapted per lane; citation card format spec stays paper-side, single source of truth).
+- Application deltas preserved: claims C-line + Evidence Campaign row flip at TRANSLATE (enum supported | refuted | inconclusive); `_VALUES_` landing; venue scaling; `fn/probe-plans.md` buffer convention.
+- Housekeeping: frontmatter still said 1.0.0 while this CHANGELOG already had 1.1.0 (the 765696f port bumped the log only) — resolved by this 2.0.0 bump; entry order corrected to newest-first.
+
+## [1.1.0] — 2026-07-06
+
+- 765696f port: TRANSLATE lands verified numbers in _VALUES_ and flips the Evidence Campaign row alongside the C-line.
+
+## [1.0.0] — 2026-07-06
+
+- NEW phase worker (paper-alignment refactor, SOP archived in haipipe-application/CHANGELOG.md §5.0.0; full-DPRC ruling R4).

@@ -177,10 +177,11 @@ Content is the full return dict from MetaFn(SPACE).
 Builder Pattern
 ===============
 
-**Step 1: Edit builder in code-dev/6-Endpoint-WorkSpace/**
+**Step 1: Edit builder in the endpoint fn_develop task folder**
 
 ```
-code-dev/1-PIPELINE/6-Endpoint-WorkSpace/a1_build_metafn_{description}.py
+tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/a1_build_metafn_{description}.py
+(legacy workspaces: code-dev/1-PIPELINE/6-Endpoint-WorkSpace/)
 ```
 
 **Step 2: Configure at top of builder:**
@@ -199,7 +200,7 @@ Define the MetaFn function exactly as shown in "File Structure" above.
 
 ```bash
 source .venv/bin/activate && source env.sh && python \
-  code-dev/1-PIPELINE/6-Endpoint-WorkSpace/a1_build_metafn_{description}.py
+  <builder-dir>/a1_build_metafn_{description}.py
 ```
 
 NOTE: source .venv/bin/activate does NOT persist across Bash tool calls.
