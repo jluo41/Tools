@@ -37,6 +37,22 @@ Group folder contents:
 
 No README.md in group folders. If sibling tasks are unrelated, fall back to per-task diagrams instead of group/diagram/.
 
+Databricks-native group exceptions (groups whose stages run ON a cluster,
+e.g. A00_rawstore_<cohort>/ — full dialect: ref/databricks-execution.md):
+  run_pipeline_*.py(+.ipynb)   group-root orchestrator (the platform has no
+                               shell, so this replaces group/sbatch/).
+  _databricks/                 converted .ipynb copies of every stage; what
+                               the workspace import executes (.py stays the
+                               source of truth).
+  README.md                    allowed at group root — the group is imported
+                               into Databricks standalone, where diagram/
+                               .txt files don't render.
+
+Workflow artifacts (written by /haipipe-workflow when it plans/audits a
+group): workflow-report.md at group root, workflow/ inside task folders.
+Legitimate residents — do not flag them as structure violations; they are
+generated records, regenerate rather than hand-edit.
+
 ---
 
 Task Naming
