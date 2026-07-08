@@ -4,8 +4,8 @@ description: "Search type specialist for the discovery layer: find AND read sour
 argument-hint: "[<discovery-folder> | \"<question>\"]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-07-05"
+  version: "1.2.0"
+  last_updated: "2026-07-08"
   summary: "Type specialist owning Search: find + read sources -> sources.md + notes.md. Channel diversity mandatory: preprint channel + journal-index channel every run (OpenAlex/Crossref when S2 rate-limits); top-venue pass in full-mode novelty; coverage declaration in the sources.md preamble."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -37,7 +37,7 @@ Procedure (Execute of a Search folder)
 --------------------------------------
 
 1. Read `discovery.yaml`: the `question` and `sources` scope. If `local_first`, sweep existing `discoveries/` and project evidence BEFORE any web call.
-2. FIND: dispatch the right find worker(s) — preprints -> arxiv, published venues/citations -> semantic-scholar, grey literature -> exa-search. A question spanning categories dispatches several; stop when the question is answerable, not at a source quota.
+2. FIND: dispatch the right find worker(s) — preprints -> arxiv, published venues/citations -> semantic-scholar, grey literature -> exa-search. A question spanning categories dispatches several; stop when the question is answerable, not at a source quota. WIDE sweeps (2+ channels or 3+ queries/channel), when the running context has the Agent tool: fan out `haipipe-discovery-search-worker-agent` (Haiku, cheap) one per channel in parallel instead of running every channel inline; workers return raw candidate entries + coverage notes, and the dispatcher keeps relevance curation, cross-channel dedup, and ALL file writes.
 3. READ: for each kept source, extract findings through a read worker (alphaxiv for speed, deepxiv for sections, paper-analyzer for depth).
 4. Write `sources.md` per `haipipe-discovery/ref/source-format.md`: one source = one subsection, full title in the heading, NEVER a table. The preamble carries the COVERAGE DECLARATION (channels searched AND channels not searched -- see source-format.md); a silent cap reads as "covered everything" when it didn't.
 5. Write `notes.md`: per-source finding blocks keyed by S-id (template in the same source-format ref). `role: source_gather` centers on sources.md, `source_read` on notes.md; both files are normally written together.
