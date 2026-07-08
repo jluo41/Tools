@@ -4,8 +4,8 @@ description: "DRAFT phase worker (internal). Called by stage skills to produce t
 argument-hint: "[stage-or-section] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, WebSearch, WebFetch
 metadata:
-  version: "3.5.0"
-  last_updated: "2026-07-07"
+  version: "3.6.0"
+  last_updated: "2026-07-08"
   summary: "DRAFT phase worker (internal). Called by stage skills to produce first-pass artifacts. Generic process, stage-specific output. v3.4: DRAFT MAY use inline WebSearch for orientation -- but its output is drafting fuel (prose + buffered probe plans) only, NEVER durable evidence (no refs/findings into PP cards). Real evidence is the PROBE phase's job."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -66,13 +66,14 @@ Each stage reads from its predecessors:
 | pitch | seed + claims + venue |
 | narrative | seed + claims + pitch |
 | display | narrative + claims |
-| section | z-structure + narrative + claims + section-type + venue pack |
+| section | z-structure + narrative + claims + section-type + venue (2-venue.md) |
 
 **Venue guard.** For venue-ALIGNED stages (pitch, narrative, display, section), resolve the venue before drafting:
 
 1. No `venue:` pinned in STATUS.md -> **STOP with an error**. Report `status: blocked` and tell the user to run `/haipipe-paper venue` first. Never draft a venue-ALIGNED artifact against an invented venue.
-2. Venue pinned but no matching `_venue/playbook-*` pack -> **STOP with an error**. Name the pinned venue, list available packs, ask the user to fix the pin or add a pack.
-3. Pack exists but lacks the per-section style file -> **proceed with a visible warning**: use the pack's general style-profile, flag the missing file in the draft output and `_LOG`, and surface it again in the CHECK report. Never silently invent word budgets or structure norms.
+2. Venue pinned and the paper's `0-lifecycle/2-venue/2-venue.md` exists -> **read it FIRST** (the venue stage's compiled doc): Writing Principles + the Structural Blueprint block for the artifact being drafted. Direct `_venue/` pack reads are deep dives only, following the `[source: ...]` tags recorded there.
+3. `2-venue.md` absent (venue stage not run) -> fall back to the pinned pack directly. No matching `_venue/playbook-*` pack either -> **STOP with an error**. Name the pinned venue, list available packs, ask the user to fix the pin, add a pack, or run `/haipipe-paper venue`.
+4. Fallback pack exists but lacks the per-section style file -> **proceed with a visible warning**: use the pack's general style-profile, flag the missing file in the draft output and `_LOG`, and surface it again in the CHECK report. Never silently invent word budgets or structure norms.
 
 Venue-FREE stages (seed, claims) skip this guard entirely.
 
@@ -153,7 +154,7 @@ When confirmed:
 ### pitch
 - Output: `0-lifecycle/2-pitch/2-pitch.md`
 - PROBE: citation audit for anchor papers
-- Venue-ALIGNED: reads the pinned venue's playbook
+- Venue-ALIGNED: reads the venue stage's 2-venue.md (pack fallback per the venue guard)
 
 ### narrative
 - Output: `0-lifecycle/3-narrative/3-narrative.md`
@@ -169,7 +170,7 @@ When confirmed:
 - Output: `0-lifecycle/5-section-edit/{section}/{section}.md`
 - Format: paragraph outline per `ref/outline-format.md` in section-edit hub
 - PROBE: citation + values + display (three parallel tracks)
-- Reads section-type norms and venue pack for per-section style
+- Reads section-type norms and 2-venue.md's per-section blueprint block for style (pack fallback per the venue guard)
 
 
 ## Where style guidance lives (NOT here)
@@ -178,7 +179,7 @@ DRAFT settles content, not style. Style inputs come from elsewhere:
 
 | Guidance | Lives in | Used by |
 |---|---|---|
-| Venue style, word budget, arc | `_venue/playbook-<pack>/` | DRAFT reads budget; REVISE applies style |
+| Venue style, word budget, arc | `0-lifecycle/2-venue/2-venue.md` (compiled from `_venue/playbook-<pack>/`; pack = fallback / deep dive) | DRAFT reads budget; REVISE applies style |
 | Per-section structure norms | `1-lifecycle/5-section-edit/section-type/` | DRAFT (structure) |
 | Prose quality rules | `2-phase/REF/prose-quality.md` | REVISE |
 

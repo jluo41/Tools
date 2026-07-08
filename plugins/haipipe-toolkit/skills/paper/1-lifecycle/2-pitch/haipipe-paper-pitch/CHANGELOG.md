@@ -4,6 +4,11 @@ haipipe-paper-pitch — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [4.1.0] -- 2026-07-08
+
+Changed
+- Venue consumption rewired to lockfile semantics: read the paper's 0-lifecycle/2-venue/2-venue.md (Venue Profile + Fit Assessment) FIRST; _venue/ packs only as fallback when 2-venue.md is absent or as deep dives via its [source] tags; stale provenance -> note "venue contract stale", never silent pack re-reads.
+
 ## [3.1.3] — 2026-07-03
 
 Changed

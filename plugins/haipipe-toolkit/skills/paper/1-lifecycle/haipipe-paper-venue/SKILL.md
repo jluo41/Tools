@@ -4,9 +4,9 @@ description: "Recommend the best-fit venue for a paper or topic, then pin it. Pr
 argument-hint: "[paper-path | free-text topic/abstract] [--no-pin]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.1.0"
+  version: "3.2.0"
   last_updated: "2026-07-08"
-  summary: "Venue stage orchestrator. Recommends + pins the best-fit venue, produces 2-venue.md with writing principles, structural blueprint (per-section quantitative norms), and probes. Downstream stages (pitch, narrative, display, section-edit) all read the Structural Blueprint and Writing Principles sections."
+  summary: "Venue stage orchestrator. Recommends + pins the best-fit venue, produces 2-venue.md (skeleton: ref/venue-template.md) with venue choice, structural blueprint (per-section quantitative norms transcribed from pack Micro-norms), writing principles, fit assessment, and probes. 2-venue.md is the intended single consumption point for the venue-aligned stages (pitch, narrative, display, section-edit)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -23,42 +23,31 @@ The venue packs are knowledge, not skills; this skill is the READER that turns t
 ## Artifact Spec
 
 **Files produced:**
-- `0-lifecycle/2-venue/2-venue.md` -- venue stage document (venue choice + writing principles + probes)
+- `0-lifecycle/2-venue/2-venue.md` -- venue stage document; full fill-in skeleton: `ref/venue-template.md`
 - `0-lifecycle/2-venue/_LOG_2-venue.md` -- phase progress journal
 - `0-lifecycle/2-venue/_PROBE/` -- probe plans (recent publications, editor, competing papers)
 - `STATUS.md` -- `venue:` field pinned
 
-**Content structure (2-venue.md):**
+**Content structure (2-venue.md)** -- six blocks, per `ref/venue-template.md`:
 
 ```text
 2-venue: <paper title>
 =======================
+Provenance header       pack slug @ _venue commit, outlet dir, blueprint-derived date
 
-Venue Choice            which venue, one-line why, backup options
-Venue Profile           audience, scope, what this venue rewards
+Venue Choice            which venue, one-line why, backup options, nearest rejected
+Venue Profile           audience, rewards, desk-reject risks, one-sentence test (from taste.md)
 Structural Blueprint    per-section quantitative norms (THE construction spec)
 Writing Principles      prose-level specs (tone, citation style, language)
 Fit Assessment          how H1/H2/H3 match the venue's scope
-Probes                  venue-level investigation needs
+Probes                  venue-level investigation needs (PPNN cards)
 ```
 
 **Structural Blueprint section (the key downstream contract):**
 
-The structural blueprint is a per-section quantitative spec derived from exemplar papers at this venue. Every section gets its own block with:
+One block per manuscript section, fields per the template: subsections, paragraphs, sentences/paragraph, avg sentence length, citation density, results reported + detail, display units, this-paper adaptation, and a `[source: ...]` tag naming the guide each number came from.
 
-```text
-Section: <name> (<role in the paper>)
-  Subsections: <count> (<subsection names>)
-  Paragraphs per subsection: <count or range>
-  Sentences per paragraph: <count or range>
-  Avg sentence length: <words>
-  Citation density: <citations per sentence>
-  Results reported: <yes/no>
-  Results detail: <what kind: coefficients, p-values, effect sizes, none>
-  Display units: <which figures/tables belong here>
-```
-
-This section is the single source of truth for paper structure. Pitch reads it to frame the contribution. Narrative reads it to allocate story beats. Section-edit reads it to know how many paragraphs each section gets and what each paragraph does.
+This section is the design contract for paper structure: the venue-aligned stages (pitch for framing, narrative for beat allocation, display for exhibit budgets, section-edit for paragraph counts) read it here rather than re-deriving from the packs. The provenance header makes staleness detectable: if `_venue` has moved past the recorded commit, re-derive the blueprint without changing the pin.
 
 **How to derive the blueprint (source priority):**
 1. Read the pinned outlet's per-section guides (`../../_venue/playbook-<venue>/<journal>/<journal>-<section>/style.md`). Each carries word budget, arc, paragraph-structure table, and a measured `## Micro-norms` block (paragraphs, sentences per paragraph, words per sentence, citation density) -- TRANSCRIBE these into the spec above; do not re-mine what is already measured.
@@ -78,9 +67,7 @@ The blueprint is venue-ALIGNED: retargeting to a different venue rewrites the bl
 
 Writing Principles is the prose companion to the Structural Blueprint. The blueprint says HOW MANY sentences; Writing Principles says HOW TO WRITE them.
 
-**Formatting:**
-- Heading style: `=====` for the document title, `-----` for sections. No `#`/`##`/`###`.
-- One sentence per line (semantic line breaks).
+**Formatting:** per `ref/venue-template.md` (`=====` title, `-----` sections, no `#` headings, one sentence per line).
 
 **Done-criteria:**
 - [ ] Venue pinned in STATUS.md
@@ -96,6 +83,11 @@ Writing Principles is the prose companion to the Structural Blueprint. The bluep
 default     recommend a shortlist, then ASK before writing STATUS venue (you confirm the pin)
 --no-pin    advisory only: recommend and stop; never write any file
             (for "just tell me which journal" / a bare topic with no folder)
+refresh     re-derive ONLY: keep the existing pin, re-transcribe the Structural Blueprint +
+            Writing Principles from the current pack state, update the provenance header
+            (new _venue commit + derived date), and log the delta in _LOG_2-venue.md.
+            Use when _venue has moved past the recorded commit (pack norms improved) or
+            when 2-venue.md predates the provenance header. Never re-opens the venue choice.
 ```
 
 ## When to use
@@ -141,7 +133,7 @@ playbook-jama-portfolio    HIGH  patient-safety opioid outcome, obs.    Table1+S
 playbook-utd-is    LOW   thin IS theory contribution            would need a theory pivot
 ...
 PRIMARY: playbook-jama-portfolio (outlet: JAMA Internal Medicine)   BACKUP: jama-netopen (same pack)
--> write STATUS.md: venue: jama / venue_outlet: JAMA Internal Medicine ?
+-> write STATUS.md: venue: playbook-jama-portfolio / venue_outlet: jama-im ?
 ```
 
 ## Topic-only example (no paper folder yet)
@@ -178,6 +170,8 @@ this skill   recommends a venue and PINS it (STATUS venue); owns label->pack res
 claims       venue-FREE evidence inventory (does NOT read the venue)
 pitch        venue-ALIGNED cover letter; couples to the pinned venue (Editor's Chair, [primary], RQ framing)
 narrative    venue-ALIGNED arc; expands the pitch for this venue
+display      venue-ALIGNED exhibit set; reads the blueprint's display units and limits
+section-edit venue-ALIGNED prose; reads the blueprint's per-section paragraph/sentence spec
 _venue/*     knowledge packs, read-only here
 ```
 

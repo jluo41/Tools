@@ -4,6 +4,11 @@ haipipe-paper-display — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [2.1.0] -- 2026-07-08
+
+Changed
+- Venue consumption rewired to lockfile semantics (SKILL.md principle 9 + Venue Constraints + CHECKLIST.md venue-set item): read the paper's 0-lifecycle/2-venue/2-venue.md (Structural Blueprint display units + Writing Principles display limits) FIRST; pack README -> Display only as fallback when 2-venue.md is absent or as deep dives via its [source] tags; stale provenance -> note "venue contract stale", never silent pack re-reads.
+
 ## [1.6.2] — 2026-07-03
 
 Changed

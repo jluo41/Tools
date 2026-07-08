@@ -4,8 +4,8 @@ description: "Create or update the paper folder's 0-lifecycle/2-pitch/2-pitch.md
 argument-hint: "[paper-dir] [--reason <slug>] [--source <path-or-note>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.0.0"
-  last_updated: "2026-07-06"
+  version: "4.1.0"
+  last_updated: "2026-07-08"
   summary: "Pitch stage orchestrator. Defines WHAT (cover letter sections + probes) and drives phases (draft -> probe -> revise -> check) internally. User invokes pitch, not phases."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -48,7 +48,7 @@ Read first: `../../PHILOSOPHY.md`, `../../wiki/04-lifecycle-map.md`.
 - Hook -- >=2 candidate methods, one recommended lead
 - Finding-Surprise -- the non-obvious turn
 - Implication-So What -- what changes and who can act
-- Editor's Chair Test -- venue question from playbook, one-sentence answer per primary claim
+- Editor's Chair Test -- venue question from the 2-venue.md Venue Profile, one-sentence answer per primary claim
 - Primary Claim + RQ Framing -- [primary] designation, H-to-RQ mapping for THIS venue
 - Audience and Venue Fit -- who reads this journal, why they care
 - Evidence-Why Believe -- source per claim
@@ -82,14 +82,18 @@ pitch invoked
   ▼
 DRAFT ──→ illuminate existing content, elicit taste,
           write/iterate the cover letter sections with > JL: / > CC: comments;
-          read STATUS venue + _venue/playbook-<venue> to shape
-          Editor's Chair Test, [primary] designation, RQ framing, Audience;
+          read STATUS venue + the paper's 0-lifecycle/2-venue/2-venue.md
+          (Venue Profile + Fit Assessment blocks) to shape
+          Editor's Chair Test, [primary] designation, RQ framing, Audience
+          (fallback: _venue/playbook-<venue> only if 2-venue.md is absent);
           read claims ledger for venue-neutral H1/H2/H3
           (internally calls /haipipe-paper-draft with this artifact spec)
   │
   ▼
 PROBE ──→ citation audit for anchor papers cited in Evidence-Why Believe;
-          verify venue pack references; confirm H-to-RQ mapping against claims ledger
+          verify 2-venue.md provenance (if its recorded _venue commit is behind
+          HEAD, note "venue contract stale -- consider /haipipe-paper-venue refresh");
+          confirm H-to-RQ mapping against claims ledger
           (internally calls /haipipe-paper-probe)
   │
   ▼
@@ -143,7 +147,7 @@ Reading order:
 3. Hook                        ← >=2 candidates, one recommended lead
 4. Finding - Surprise          ← the non-obvious turn
 5. Implication - So What       ← what changes and who can act
-6. Editor's Chair Test         ← venue question from playbook; one-sentence answer per primary claim
+6. Editor's Chair Test         ← venue question from 2-venue.md Venue Profile; one-sentence answer per primary claim
 7. Primary Claim + RQ Framing  ← [primary] designation + H→RQ mapping for THIS venue
 8. Audience and Venue Fit      ← venue-ALIGNED: who reads this journal, why they care
 9. Evidence - Why Believe      ← source per claim
@@ -153,7 +157,7 @@ Reading order:
 
 **Template enforcement:** A pitch is NOT complete unless it contains, as labeled sections: Title, One-Minute Pitch, Hook (with >=2 candidates), Surprise, Implication, Editor's Chair Test, Primary Claim + RQ Framing, Audience/Venue Fit, Why Believe, Still Fragile. A pitch that is one flat paragraph missing these sections must be flagged and restructured before it can pass any gate.
 
-The pitch is venue-ALIGNED: it reads STATUS `venue` and consults `_venue/playbook-<venue>` to shape the Editor's Chair Test, the [primary] claim designation, the RQ framing, and the Audience section. A venue change means the pitch rewrites. (Claims stays unchanged because it is venue-free.)
+The pitch is venue-ALIGNED: it reads STATUS `venue` and the paper's `0-lifecycle/2-venue/2-venue.md` (Venue Profile + Fit Assessment blocks) to shape the Editor's Chair Test, the [primary] claim designation, the RQ framing, and the Audience section. `2-venue.md` is the compiled venue contract; read it FIRST. Fall back to reading `_venue/playbook-<venue>` directly only when `2-venue.md` does not exist (venue stage not yet run, or a pack-less venue); if no pack exists either, proceed without venue inputs. Deep dives follow the `[source: ...]` tags recorded in `2-venue.md` into `_venue/playbook-<slug>/<journal>/...`. If the provenance commit in `2-venue.md` is older than the current `_venue` HEAD, note "venue contract stale -- consider /haipipe-paper-venue refresh" but still use `2-venue.md` (never silently re-read packs). A venue change means the pitch rewrites. (Claims stays unchanged because it is venue-free.)
 
 ### Pitch Log template (_LOG_2-pitch.md)
 
@@ -214,7 +218,7 @@ Next:
 4. **Archive semantic versions only.** Archive when the story state changes (`seed -> discovery-shift`, `accuracy -> robustness`, `method-first -> application-first`), not for typo edits.
 5. **Do not write the paper here.** Abstract, intro, section plan, and LaTeX belong downstream. This skill only maintains the story kernel.
 5b. **Pitch is the cover letter.** The pitch IS the venue-ALIGNED cover letter. It can be sent to the editor as-is. It tells THIS editor why THIS paper fits THEIR journal. Venue pinning (STATUS `venue`) must happen before or during pitch. If no venue is pinned, run `/haipipe-paper venue` first.
-5c. **Editor's Chair Test lives here.** Read `_venue/playbook-<venue>` for the editor's chair question. Every primary claim must have a one-sentence answer. This test was migrated from claims (v3.0.0) because it is a venue question, not an evidence question.
+5c. **Editor's Chair Test lives here.** Read the Venue Profile block of `0-lifecycle/2-venue/2-venue.md` (its one-sentence test) for the editor's chair question; fall back to `_venue/playbook-<venue>` only if `2-venue.md` is absent. Every primary claim must have a one-sentence answer. This test was migrated from claims (v3.0.0) because it is a venue question, not an evidence question.
 5d. **[primary] claim designation lives here.** Read the claims ledger (venue-neutral H1, H2, H3) and designate ONE PRIMARY claim aligned to what THIS venue rewards. A result that is novel elsewhere but already established for this venue's readers is an enabler (Methods), not a primary claim. A venue change re-runs this designation.
 5e. **RQ framing lives here.** Venue-neutral hypotheses (H1, H2, H3) live in claims. The pitch reframes them as venue-specific RQs: H1 -> RQ1 worded for what the editor rewards. Include an explicit H->RQ mapping with a "why this RQ for this venue" column.
 6. **Each hook candidate is one move, not a stack of questions.** Each candidate hook should commit to ONE narrative move (not a stacked enumeration): a vivid concrete scene, a surprising or counterintuitive fact, a paradox tied to stakes, or one sharp question. Do not stack multiple rhetorical questions within a single candidate, which dilutes the punch and reads as undecided. The final artifact keeps all candidate hooks visible (>=2 candidates, one marked as recommended lead). A flat statement of background is not a hook. See `ref/pitch-readability.md`.

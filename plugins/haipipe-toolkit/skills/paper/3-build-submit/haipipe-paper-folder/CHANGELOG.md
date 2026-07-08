@@ -4,6 +4,11 @@ haipipe-paper-folder — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [3.1.0] — 2026-07-08
+
+Changed (venue lockfile wiring)
+- Manuscript Upgrade section format now consults the paper's `0-lifecycle/2-venue/2-venue.md` Structural Blueprint first; direct `_venue/playbook-<venue>` read demoted to fallback when 2-venue.md is absent.
+
 ## [3.0.1] — 2026-07-04
 
 Fixed

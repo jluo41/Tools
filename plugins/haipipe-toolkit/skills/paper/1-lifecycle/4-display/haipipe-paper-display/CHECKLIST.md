@@ -13,7 +13,7 @@ Done-gate for the **display** stage (`haipipe-paper-display`). The stage is comp
 - [ ] Ordered to the NARRATIVE flow: Introduction/Theory -> Methods -> Results -> Discussion.
 - [ ] TWO heading levels so the reader is never lost: a `\section*{<paper section>}` banner, then a named `\subsection*{Figure N. <name>}` / `Table N. <name>` per display.
 - [ ] Figures/tables numbered by order of appearance.
-- [ ] Shaped to the VENUE display set (read STATUS `venue`; consult `../../_venue/playbook-<venue>` `-> Display`). For UTD-IS (MISQ/ISR/MS-IS): research-model figure as the hero, a research-design figure, a hypothesis-test table, descriptives.
+- [ ] Shaped to the VENUE display set (read STATUS `venue`; consult the paper's `0-lifecycle/2-venue/2-venue.md` Structural Blueprint display units + Writing Principles display limits; fall back to `../../_venue/playbook-<venue>` `-> Display` only if 2-venue.md is absent). For UTD-IS (MISQ/ISR/MS-IS): research-model figure as the hero, a research-design figure, a hypothesis-test table, descriptives.
 - [ ] The `[primary]` claim's display is the HERO (first figure).
 - [ ] A PARKING section at the end keeps superseded / alternative displays for history; never `\input` into the manuscript.
 - [ ] Per-display `%% {USER}: ...` preference comments kept VERBATIM inline beside each display's `\input`, across iterations. They live ONLY here, not in the unit `float.tex` (units stay portable, comment-free).

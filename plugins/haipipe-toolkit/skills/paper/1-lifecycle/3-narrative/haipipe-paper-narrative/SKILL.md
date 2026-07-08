@@ -4,8 +4,8 @@ description: "Generate 0-lifecycle/3-narrative/3-narrative.md + _LOG_3-narrative
 argument-hint: "[paper-dir-or-topic]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.0.0"
-  last_updated: "2026-07-06"
+  version: "3.1.0"
+  last_updated: "2026-07-08"
   summary: "Narrative stage orchestrator. Defines the section-mirrored, readiness-tagged design contract with explicit Probes section and drives phases (draft -> probe -> revise -> check) internally. User invokes narrative, not phases."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -54,7 +54,7 @@ Read first: `../../PHILOSOPHY.md`, `../../wiki/04-lifecycle-map.md`.
 - [ ] Per-beat interrogation complete (subagent reviewed every beat)
 - [ ] Spine throughline present
 - [ ] Probes section present with all [GAP]/[LIT] needs surfaced
-- [ ] Venue playbook consulted for arc shaping
+- [ ] Venue contract (2-venue.md; pack fallback if absent) consulted for arc shaping
 - [ ] _LOG entry records the current state
 
 **DPRC applicability:**
@@ -90,7 +90,7 @@ PROBE --> identify citation needs per beat ([LIT] tags),
 REVISE -> refine prose clarity across all beats,
           sharpen arc and flow between sections,
           apply short-plain-sentence rule to all comments,
-          ensure venue playbook arc shaping is applied
+          ensure venue-contract (2-venue.md) arc shaping is applied
           (internally calls /haipipe-paper-revise)
   |
   v
@@ -142,7 +142,7 @@ The narrative mirrors the paper's REAL sections, in reading order, and has five 
    - `[LIT]` (blue): rests on outside literature, citation-audit pending.
    - `[GAP]` (red): no evidence yet, needs a probe.
 
-   The tag is not decoration: `[PENDING]` and `[GAP]` beats ARE the open evidence needs, and they route to `/haipipe-probe`. The narrative is venue-ALIGNED -- it reads STATUS `venue` and consults the playbook to shape the arc.
+   The tag is not decoration: `[PENDING]` and `[GAP]` beats ARE the open evidence needs, and they route to `/haipipe-probe`. The narrative is venue-ALIGNED -- it reads STATUS `venue` and consults the venue contract (2-venue.md) to shape the arc.
 
 2. **Spine (throughline).** One paragraph, an arrow chain, the whole paper in one breath: problem, the move this paper makes, the core finding, the so-what. Every beat below must serve this line.
 
@@ -210,7 +210,7 @@ The canonical template is the source of truth for structure: `ref/narrative-temp
 4. **Honest limitations save the paper.** Round-2 reviewers (human or auto) punish overclaiming far harder than they punish modest claims.
 5. **The narrative is editable.** Treat the first generation as a draft -- expect a human pass before downstream stages consume it.
 6. **One narrative per paper**, not per probe. Multi-probe projects collapse into one story or split into separate papers; don't try to fit two stories into one narrative.
-7. **Venue-ALIGNED arc.** The narrative is explicitly venue-aligned: read STATUS `venue` and consult `_venue/playbook-<venue>` for what the venue rewards in terms of narrative arc and argument structure. The venue playbook shapes which beats are expanded (theory-forward for MISQ, clinical-impact-forward for JAMA) and which are condensed.
+7. **Venue-ALIGNED arc.** The narrative is explicitly venue-aligned: read STATUS `venue` and the paper's `0-lifecycle/2-venue/2-venue.md` FIRST -- the Structural Blueprint blocks (section roles, beat allocation, paragraph budgets) plus Writing Principles -- for what the venue rewards in terms of narrative arc and argument structure. This contract shapes which beats are expanded (theory-forward for MISQ, clinical-impact-forward for JAMA) and which are condensed. Fall back to `_venue/playbook-<venue>` directly only when `2-venue.md` is absent (venue stage not yet run, or a pack-less venue); if no pack exists either, proceed without venue inputs. Deep dives follow the `[source: ...]` tags in `2-venue.md` into `_venue/playbook-<slug>/<journal>/...`. If `2-venue.md`'s recorded pack commit is behind the current `_venue` HEAD, note "venue contract stale -- consider /haipipe-paper-venue refresh" but still use `2-venue.md` (never silently re-read packs).
 8. **Comment text is short and plain.** All comment text (interrogation, external comments, footer ledger lines) uses short declarative sentences, one idea each. No run-on lines chained by semicolons, no stacked parentheticals; compress rather than nest, split rather than join. A long compound line is unreadable, and the comment thread exists to scan at a glance. Same readability discipline as the pitch. (Reviewer feedback quoted verbatim stays verbatim; only OUR resolution prose follows this rule.)
 9. **External reviewer comments thread per beat.** When a named reviewer comments on the paper, attach each comment to the beat it concerns; do not collapse them into one footer paragraph. Internal = interrogation; external = named reviewer. A comment with no home beat stays in the footer.
 

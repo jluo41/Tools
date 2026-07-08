@@ -2,8 +2,8 @@
 name: haipipe-paper-folder
 description: "Scaffold a paper folder's CONTENTS, quickly and minimally: README + STATUS.md + .gitignore + four empty container dirs (0-lifecycle, 0-displays, 1-rounds, 1-probe-plans). Stage files are absent-until-written (each stage skill creates its own 0-lifecycle/N-stage/ on first run); manuscript machinery (master tex, 0-sections, compile scripts) is a later on-request upgrade, not part of creation. Reached via /haipipe-paper enter (get-or-create on a missing path) -> haipipe-paper-lifecycle folder; repo creation + submodule wiring belong to enter's get-or-create branch, not this skill. Trigger: paper folder, scaffold paper, new paper folder."
 metadata:
-  version: "3.0.1"
-  last_updated: "2026-07-03"
+  version: "3.1.0"
+  last_updated: "2026-07-08"
   summary: "Minimal quick paper-folder scaffold; stage files absent-until-written; manuscript machinery an on-request upgrade."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -94,7 +94,7 @@ When the paper reaches tex-bearing work (display units, section-edit prose), add
 1-config.yaml                  # optional: figure/table paths
 ```
 
-Section format follows the pinned venue (consult `_venue/playbook-<venue>`):
+Section format follows the pinned venue (consult the paper's `0-lifecycle/2-venue/2-venue.md` Structural Blueprint first; fallback: `_venue/playbook-<venue>` when 2-venue.md is absent):
 
 | Venue format | Sections (in order) |
 |---|---|
