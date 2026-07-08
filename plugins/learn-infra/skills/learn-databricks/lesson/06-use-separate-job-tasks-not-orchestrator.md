@@ -92,3 +92,10 @@ Each arrow is a `depends_on` relationship. If stage3 fails, stages 4-6 don't run
 - **Always** for multi-stage pipelines (more than 2 notebooks)
 - Even for 2-notebook pipelines, separate tasks give you better logs and retry
 - The only reason to use `dbutils.notebook.run()` is for truly dynamic notebook selection at runtime (rare)
+
+## Update 2026-07-08 (see Lesson 15)
+
+This lesson assumes a **jobs-capable** cluster. On a policy-locked **Standard
+(USER_ISOLATION)** cluster that forbids jobs workload (REACH), you cannot use
+job tasks OR `dbutils.notebook.run()` at all — run stages **in-process** via
+`exec()` instead. See Lesson 15.

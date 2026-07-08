@@ -23,15 +23,15 @@ stages:
   claims:     required
   narrative:  skip
   display:    skip
-  minimap:    skip
+  section-edit:    skip
 
-claims_depth: light
+claims_settlement: light
 ```
 
 
 ## Venue template
 
-Replaces narrative/display/minimap for SMS:
+Replaces narrative/display/section-edit for SMS:
 
 ```yaml
 template:

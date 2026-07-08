@@ -42,7 +42,7 @@ Kitchen    Source_Pipeline class       code/haipipe/source_base/
 Chef       SourceFn functions         code/haifn/fn_source/           (GENERATED)
 Recipe     YAML config file           config/ or tutorials/config/
 Dish       SourceSet asset            _WorkSpace/1-SourceStore/
-Academy    Builder scripts            code-dev/1-PIPELINE/1-Source-WorkSpace/
+Academy    Builder scripts            tasks/<pipe-group>/01_source_fn_develop_<cohort>/  (in the project)
 ```
 
 The Kitchen (Source_Pipeline) orchestrates execution. The Chef (SourceFn) does
@@ -243,8 +243,8 @@ Do not rely on a hardcoded list -- always discover at runtime:
 # Registered SourceFns
 ls code/haifn/fn_source/
 
-# Corresponding builder scripts
-ls code-dev/1-PIPELINE/1-Source-WorkSpace/
+# Corresponding builder scripts (per-project fn_develop task folders)
+ls examples/*/tasks/*/01_source_fn_develop_*/
 
 # Inspect a SourceFn's ProcName_List
 head -20 code/haifn/fn_source/<SourceFnName>.py
@@ -265,6 +265,39 @@ Never run Python without .venv activated. Never skip env.sh.
 **NOTE:** `source .venv/bin/activate` does NOT persist across Bash tool calls.
 Always chain: `source .venv/bin/activate && source env.sh && python <script>`
 Or call venv python directly: `.venv/bin/python script.py`
+
+---
+
+Large Tables That Don't Fit in RAM
+===================================
+
+When a raw table is bigger than available memory (hundreds of millions of
+rows; typical on small Databricks nodes with 16 GB), the SourceFn must
+stream it instead of loading it wholesale. Canonical reference
+implementation: Project-EHR-Mimic
+`.../01_source_fn_develop_mimic/c7_build_source_mimiciv31.py`.
+
+The pattern:
+
+  1. **Declare the big tables** in a `CHUNKED_TABLES` map at the top of the
+     builder: `{'LabEvent': ('labevents', 10_000_000), ...}` — ProcName →
+     (raw table, chunk rows). Everything not listed loads normally.
+  2. **Stream-read**: `pd.read_csv(..., chunksize=N)` for CSV, or
+     `pyarrow.parquet.ParquetFile(...).iter_batches()` for parquet.
+  3. **Write parts, not one frame**: each chunk is processed and appended
+     as `<ProcName>/part_NNNN.parquet` under the streaming output path;
+     `del` the chunk + `gc.collect()` between iterations.
+  4. **Mark completion** with a `_SUCCESS` file per table so a re-run
+     resumes instead of recomputing finished tables.
+
+Two related memory rules already in the framework (don't undo them):
+
+  - The manifest step fingerprints tables from the parquet FOOTER
+    (row count, schema) + a streaming file-byte MD5 — it must never load
+    the table as a DataFrame (code/haipipe/source_base/source_pipeline.py).
+  - Freed pandas memory is not always returned to the OS (glibc retention);
+    a sequence of near-limit loads can creep into OOM even when each load
+    individually "fits". Chunking is the fix, not bigger gc.
 
 ---
 
@@ -303,7 +336,10 @@ Pipeline framework:   code/haipipe/source_base/source_pipeline.py
 Fn loader:            code/haipipe/source_base/builder/sourcefn.py
 
 Generated SourceFns:  code/haifn/fn_source/                        <- discover with ls
-Builders (edit here): code-dev/1-PIPELINE/1-Source-WorkSpace/      <- discover with ls
+Builders (edit here): examples/<Project>/tasks/<pipe-group>/01_source_fn_develop_<cohort>/
+                      (per-project task folder, e.g. Project-REACH-ADHD/tasks/
+                      A01_data_pipeline_reachadhd/01_source_fn_develop_reachadhd/;
+                      legacy workspaces may still carry code-dev/1-PIPELINE/1-Source-WorkSpace/)
 
 Test configs:         config/                                       <- discover with ls config/
 Store path:           _WorkSpace/1-SourceStore/

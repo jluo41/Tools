@@ -1,7 +1,6 @@
 # SMS Style Profile
 
-Drafting guide for SMS artifacts. Absorbed from the former
-haipipe-application-message specialist.
+Drafting guide for SMS artifacts: voice, tone, and template rules for the SMS venue.
 
 
 ## Voice examples

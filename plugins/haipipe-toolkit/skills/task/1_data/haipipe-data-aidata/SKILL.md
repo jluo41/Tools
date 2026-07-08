@@ -77,7 +77,7 @@ Stage Scope
 ------------
 
 Owns:
-  - TfmFn / SplitFn builders under `code-dev/1-PIPELINE/4-AIData-WorkSpace/`
+  - TfmFn / SplitFn builders in the project's `NN_aidata_fn_develop_<cohort>/` task folder (legacy workspaces: `code-dev/1-PIPELINE/4-AIData-WorkSpace/`)
   - Generated `code/haifn/fn_aidata/`
   - `_WorkSpace/4-AIDataStore/` tensors and split definitions
   - `templates/config.yaml` for AIData_Pipeline runs

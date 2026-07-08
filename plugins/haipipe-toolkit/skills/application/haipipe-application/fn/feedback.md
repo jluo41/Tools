@@ -104,26 +104,31 @@ Keyword -> skill map (first/most-specific match wins):
 ```
 seed                                    -> haipipe-application-seed
 pitch                                   -> haipipe-application-pitch
-venue, journal, profile                 -> haipipe-application-venue
-claims, claim, K/W select               -> haipipe-application-claims
+venue, modality, channel pick           -> haipipe-application-venue
+claims, claim, K/W select, settlement   -> haipipe-application-claims
 narrative                               -> haipipe-application-narrative
-display, panel, widget, content elem    -> haipipe-application-display
-minimap                                 -> haipipe-application-minimap
+display, panel, widget, content elem,
+  minimap, unit job                     -> haipipe-application-display
+section-edit, section, §N               -> haipipe-application-section-edit
 lifecycle orchestration                 -> haipipe-application-lifecycle
-draft, write, generate SMS, the message -> haipipe-application-draft
+draft, write, generate SMS, the message,
+  artifact, compose                     -> haipipe-application-artifact
+probe, evidence dispatch, PPNN card     -> haipipe-application-probe
 review                                  -> haipipe-application-review
 deploy, ship, send, go live             -> haipipe-application-deploy
 claim-audit, evidence check             -> haipipe-application-claim-audit
 iterate                                 -> haipipe-application-iterate
 round, rounds                           -> haipipe-application-round
 enter, console, dashboard, status       -> haipipe-application-enter
-ask, research question                  -> haipipe-application-ask
-gate, stage gate                        -> haipipe-application-gate
+gate, check, stage gate, approve        -> haipipe-application-check
 --------------------------------------------------------------------------
 NO MATCH  (cross-cutting: stage strip, illuminate-every-stage, gate
           discipline, status tail, depth-by-venue, anything true across all
           stages) ............................ -> orchestrator fallback (this folder)
 ```
+
+(Retired targets: `-ask` and `-minimap` live in `_archive/`; feedback about
+their old behavior files to the fallback with a note.)
 
 When more than one keyword matches, prefer the MOST SPECIFIC. When the only
 signal is the active stage and the complaint is plainly cross-cutting, prefer
@@ -160,24 +165,26 @@ orchestrator folder, i.e. `…/skills/application`, NOT
 capture, so a mapped folder not existing yet is expected, not an error.
 
 ```
-haipipe-application-seed         1-lifecycle/haipipe-application-seed/feedback/
-haipipe-application-pitch        1-lifecycle/haipipe-application-pitch/feedback/
-haipipe-application-venue        1-lifecycle/haipipe-application-venue/feedback/
-haipipe-application-claims       1-lifecycle/haipipe-application-claims/feedback/
-haipipe-application-narrative    1-lifecycle/haipipe-application-narrative/feedback/
-haipipe-application-display      1-lifecycle/haipipe-application-display/feedback/
-haipipe-application-minimap      1-lifecycle/haipipe-application-minimap/feedback/
-haipipe-application-lifecycle    1-lifecycle/haipipe-application-lifecycle/feedback/
-haipipe-application-draft        3-draft/haipipe-application-draft/feedback/
-haipipe-application-review       4-review-deploy/haipipe-application-review/feedback/
-haipipe-application-deploy       4-review-deploy/haipipe-application-deploy/feedback/
-haipipe-application-claim-audit  4-review-deploy/haipipe-application-claim-audit/feedback/
-haipipe-application-iterate      5-iterate/haipipe-application-iterate/feedback/
-haipipe-application-round        2-rounds/haipipe-application-round/feedback/
-haipipe-application-enter        0-enter/haipipe-application-enter/feedback/
-haipipe-application-ask          shared/haipipe-application-ask/feedback/
-haipipe-application-gate         shared/haipipe-application-gate/feedback/
-ORCHESTRATOR FALLBACK            haipipe-application/feedback/   (this skill's own folder)
+haipipe-application-seed          1-lifecycle/0-seed/haipipe-application-seed/feedback/
+haipipe-application-claims        1-lifecycle/1-claims/haipipe-application-claims/feedback/
+haipipe-application-pitch         1-lifecycle/2-pitch/haipipe-application-pitch/feedback/
+haipipe-application-narrative     1-lifecycle/3-narrative/haipipe-application-narrative/feedback/
+haipipe-application-display       1-lifecycle/4-display/haipipe-application-display/feedback/
+haipipe-application-section-edit  1-lifecycle/5-section-edit/haipipe-application-section-edit/feedback/
+haipipe-application-venue         1-lifecycle/haipipe-application-venue/feedback/
+haipipe-application-lifecycle     1-lifecycle/haipipe-application-lifecycle/feedback/
+haipipe-application-draft         2-phase/0-draft/haipipe-application-draft/feedback/
+haipipe-application-probe         2-phase/1-probe/haipipe-application-probe/feedback/
+haipipe-application-revise        2-phase/2-revise/haipipe-application-revise/feedback/
+haipipe-application-check         2-phase/3-check/haipipe-application-check/feedback/
+haipipe-application-artifact      3-build-deploy/haipipe-application-artifact/feedback/
+haipipe-application-review        3-build-deploy/haipipe-application-review/feedback/
+haipipe-application-claim-audit   3-build-deploy/haipipe-application-claim-audit/feedback/
+haipipe-application-deploy        3-build-deploy/haipipe-application-deploy/feedback/
+haipipe-application-iterate       4-iterate/haipipe-application-iterate/feedback/
+haipipe-application-round         0-enter/haipipe-application-round/feedback/
+haipipe-application-enter         0-enter/haipipe-application-enter/feedback/
+ORCHESTRATOR FALLBACK             haipipe-application/feedback/   (this skill's own folder)
 ```
 
 New-inbox README template (write only if the folder lacks a README.md):

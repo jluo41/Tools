@@ -53,7 +53,7 @@ Step E1-B: Discovery mode -- ask first, then explain
     1.  Cooking metaphor (Kitchen / Chef / Recipe / Dish / Academy)
     2.  4-stage pipeline flow  (Source -> Record -> Case -> AIData)
     3.  _WorkSpace layout  (what each Store folder holds)
-    4.  Builder pattern  (code-dev/ generates code/haifn/)
+    4.  Builder pattern  (fn_develop task folders generate code/haifn/)
     5.  YAML @ reference system
 
   Stage 1 — Source
@@ -166,7 +166,7 @@ Concept Pool (internal keyword map for Step E1-A)
   "workspace" / "_workspace" / "store" / "sourcestore" / "recstore" / "casestore" / "aidatastore"
     -> Concept 3
 
-  "builder" / "code-dev" / "generated" / "haifn" / "builder pattern" / "generate code"
+  "builder" / "fn_develop" / "code-dev" / "generated" / "haifn" / "builder pattern" / "generate code"
     -> Concept 4
 
   "yaml" / "@ reference" / "@meta" / "resolve" / "@ prefix"

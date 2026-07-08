@@ -114,7 +114,7 @@ Stage Scope
 ------------
 
 Owns:
-  - SourceFn builders under `code-dev/1-PIPELINE/1-Source-WorkSpace/` (HumanFn builders live in Stage 2's 2-Record-WorkSpace)
+  - SourceFn builders in the project's `NN_source_fn_develop_<cohort>/` task folder (HumanFn builders live in Stage 2's fn_develop task; legacy workspaces: `code-dev/1-PIPELINE/1-Source-WorkSpace/`)
   - Generated `code/haifn/fn_source/`
   - `_WorkSpace/1-SourceStore/` typed frames
   - `templates/config.yaml` for Source_Pipeline runs

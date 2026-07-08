@@ -6,8 +6,17 @@ pipeline stages. This covers SourceFn, HumanFn/RecordFn, TriggerFn/CaseFn,
 and InputTfmFn/OutputTfmFn/SplitFn — all via the builder pattern.
 
 **Rule #1**: NEVER edit `code/haifn/` directly. All production functions are
-generated. Edit builders in `code-dev/1-PIPELINE/`, run them, and the output
-lands in `code/haifn/`.
+generated. Edit builders in the BUILDER HOME, run them, and the output lands
+in `code/haifn/`.
+
+**BUILDER HOME** — where builder scripts live; resolve once, then substitute
+for the `code-dev/1-PIPELINE/<N>-<Stage>-WorkSpace/` paths in the examples
+below:
+  - Project-local (current convention): the project's paired fn_develop task
+    folder, `examples/<Project>/tasks/<pipe-group>/NN_<stage>_fn_develop_<cohort>/`
+    (e.g. `Project-REACH-ADHD/tasks/A01_data_pipeline_reachadhd/01_source_fn_develop_reachadhd/`).
+  - Legacy central (e.g. WellDoc-SPACE): `code-dev/1-PIPELINE/<N>-<Stage>-WorkSpace/`.
+  Discover with: `ls examples/*/tasks/*/*_fn_develop_*/` or `ls code-dev/1-PIPELINE/`.
 
 ---
 
@@ -15,11 +24,11 @@ Overview: The Builder Pattern
 ------------------------------
 
 ```
-code-dev/1-PIPELINE/          <-- SOURCE OF TRUTH (edit here)
-    1-Source-WorkSpace/
-    2-Record-WorkSpace/
-    3-Case-WorkSpace/
-    4-AIData-WorkSpace/
+BUILDER HOME                  <-- SOURCE OF TRUTH (edit here)
+    NN_source_fn_develop_*/       (or 1-Source-WorkSpace/)
+    NN_record_fn_develop_*/       (or 2-Record-WorkSpace/)
+    NN_case_fn_develop_*/         (or 3-Case-WorkSpace/)
+    NN_aidata_fn_develop_*/       (or 4-AIData-WorkSpace/)
          |
          | (run builder script)
          v

@@ -33,6 +33,13 @@
       "version": "0.3.0",
       "source": "./plugins/subjective-label",
       "category": "research"
+    },
+    {
+      "name": "figure-to-svg",
+      "description": "Replicate raster figures and icons as clean, editable, hand-authored SVGs for papers and slides: figure-to-svg (whole infographic via regenerate/vectorize/compose + fresh-eyes review, plus lesson/feedback/digest knowledge verbs) and icon-to-svg (one icon)",
+      "version": "2.0.0",
+      "source": "./plugins/figure-to-svg",
+      "category": "productivity"
     }
   ]
 }
