@@ -268,6 +268,39 @@ Or call venv python directly: `.venv/bin/python script.py`
 
 ---
 
+Large Tables That Don't Fit in RAM
+===================================
+
+When a raw table is bigger than available memory (hundreds of millions of
+rows; typical on small Databricks nodes with 16 GB), the SourceFn must
+stream it instead of loading it wholesale. Canonical reference
+implementation: Project-EHR-Mimic
+`.../01_source_fn_develop_mimic/c7_build_source_mimiciv31.py`.
+
+The pattern:
+
+  1. **Declare the big tables** in a `CHUNKED_TABLES` map at the top of the
+     builder: `{'LabEvent': ('labevents', 10_000_000), ...}` — ProcName →
+     (raw table, chunk rows). Everything not listed loads normally.
+  2. **Stream-read**: `pd.read_csv(..., chunksize=N)` for CSV, or
+     `pyarrow.parquet.ParquetFile(...).iter_batches()` for parquet.
+  3. **Write parts, not one frame**: each chunk is processed and appended
+     as `<ProcName>/part_NNNN.parquet` under the streaming output path;
+     `del` the chunk + `gc.collect()` between iterations.
+  4. **Mark completion** with a `_SUCCESS` file per table so a re-run
+     resumes instead of recomputing finished tables.
+
+Two related memory rules already in the framework (don't undo them):
+
+  - The manifest step fingerprints tables from the parquet FOOTER
+    (row count, schema) + a streaming file-byte MD5 — it must never load
+    the table as a DataFrame (code/haipipe/source_base/source_pipeline.py).
+  - Freed pandas memory is not always returned to the OS (glibc retention);
+    a sequence of near-limit loads can creep into OOM even when each load
+    individually "fits". Chunking is the fix, not bigger gc.
+
+---
+
 MUST DO
 =======
 
