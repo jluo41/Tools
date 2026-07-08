@@ -1,11 +1,11 @@
 ---
 name: haipipe-end-deploy-sagemaker
-description: "AWS SageMaker deploy specialist for haipipe-end. Wraps an Endpoint_Set into the SageMaker model.tar.gz format, deploys to a SageMaker endpoint, runs live smoke tests, monitors logs, and tears down. Backed by platform-sagemaker-inference/ scripts (system → docker → sagemaker testing ladder, ECR push, dev/prod configs, pressure test). Reads Endpoint_Sets produced by haipipe-end-endpointset; never modifies them. Read the SageMaker pitfalls in ../haipipe-end-develop-sagemaker/SKILL.md before any live action (same constraints apply here). Called by /haipipe-end orchestrator when deploy target is sagemaker."
+description: "AWS SageMaker deploy specialist for haipipe-end. Wraps an Endpoint_Set into the SageMaker model.tar.gz format, deploys to a SageMaker endpoint, runs live smoke tests, monitors logs, and tears down. Backed by platforms/platform-sagemaker-inference/ scripts (system → docker → sagemaker testing ladder, ECR push, dev/prod configs, pressure test). Reads Endpoint_Sets produced by haipipe-end-endpointset; never modifies them. Read the SageMaker pitfalls in ../haipipe-end-develop-sagemaker/SKILL.md before any live action (same constraints apply here). Called by /haipipe-end orchestrator when deploy target is sagemaker."
 argument-hint: "[function] [endpoint_set_or_id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-07-04"
+  version: "1.2.0"
+  last_updated: "2026-07-08"
   summary: "AWS SageMaker deploy specialist for haipipe-end."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -90,7 +90,8 @@ Procedures (placeholder — fill from project's actual SageMaker conventions)
 
 Deploy:
   1. Read Endpoint_Set at `_WorkSpace/6-EndpointStore/<endpoint_set>/`.
-  2. Build `model.tar.gz` containing `fn_endpoint/` + ModelInstance + an
+  (input contract, all deploy skills: canonical input = the folder; a .tar.gz twin is a wire form only)
+  2. Build `model.tar.gz` containing `fn_endpoint/` + ModelInstance + an (logical bundle name; physically materialized as code/ + model/ in the set)
      `inference.py` entry point conforming to SageMaker's contract.
   3. Upload to S3 (project-configured bucket).
   4. Register a SageMaker Model pointing at the S3 artifact + execution role.

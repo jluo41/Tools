@@ -4,8 +4,8 @@ description: "Run any Stage 6 endpoint work. Parses intent across FOUR axes — 
 argument-hint: "[target_or_fn_or_verb] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-07-04"
+  version: "1.2.0"
+  last_updated: "2026-07-08"
   summary: "Run any Stage 6 endpoint work."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -64,13 +64,13 @@ ARTIFACT-AS-WHOLE (1)
   haipipe-end-endpointset   Endpoint_Set lifecycle: package, test, profile, review, dashboard
 
 PER-TARGET DEVELOP (3)        BUILDS the Endpoint_Set
-  haipipe-end-develop-sagemaker   AWS SageMaker Pipeline (wraps platform-sagemaker-training/)
-  haipipe-end-develop-databricks  Databricks Job  ⚠️ deferred (no platform repo)
+  haipipe-end-develop-sagemaker   AWS SageMaker Pipeline (wraps platforms/platform-sagemaker-training/)
+  haipipe-end-develop-databricks  Databricks Job  ⚠️ deferred (repo platforms/platform-databrick-training/ exists; wiring + Lesson-15 reconciliation pending)
   haipipe-end-develop-local       local sequencer (delegates to /haipipe-nn modelset + endpointset package)
 
 PER-TARGET DEPLOY (4)         SERVES the Endpoint_Set
-  haipipe-end-deploy-sagemaker    AWS SageMaker (wraps platform-sagemaker-inference/)
-  haipipe-end-deploy-databricks   Databricks Model Serving (wraps platform-databrick-inference/)
+  haipipe-end-deploy-sagemaker    AWS SageMaker (wraps platforms/platform-sagemaker-inference/)
+  haipipe-end-deploy-databricks   Databricks Model Serving (wraps platforms/platform-databrick-inference/)
   haipipe-end-deploy-local        local self-hosted (Flask / FastAPI / Docker)
   haipipe-end-deploy-mlflow       MLflow registry + serve   ⚠️ deferred (no platform repo)
 ```

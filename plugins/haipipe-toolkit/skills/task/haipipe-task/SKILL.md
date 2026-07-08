@@ -4,8 +4,8 @@ description: "Task-folder and task-group orchestrator. For a task-folder: runs t
 argument-hint: "[scope] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "5.5.0"
-  last_updated: "2026-07-04"
+  version: "5.6.0"
+  last_updated: "2026-07-08"
   summary: "Build orchestrator with 4-stage code lifecycle for task-folders and task-groups."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -66,6 +66,8 @@ Commands
 /haipipe-task <stage> <existing-task-group-path>      iterate: that stage on each child task-folder
 /haipipe-task task-folder <type> [args...]            scaffold a NEW task-folder via type specialist
 /haipipe-task task-group <group-path|name>            scaffold a NEW task-group (fn/task-group.md)
+/haipipe-task run <task-folder-path> [run-name]       execute one runs/*.sh with logging conventions (fn/run.md)
+/haipipe-task audit <task-group-or-folder-path>       structural audit vs the four-sister contract (fn/workflow-audit.md)
 /haipipe-task scan-status [project-path]              status scan across task-groups (fn/scan-status.md)
 /haipipe-task feedback "<text>"                       capture skill feedback (merge-or-create), ROUTED to the domain folder it concerns
 /haipipe-task feedback list [unit]                    aggregate open feedback across ALL inboxes (grouped by unit)
@@ -161,7 +163,7 @@ task-group (scaffold) this skill                            fn/task-group.md
 scan-status      this skill                                 fn/scan-status.md
                  reads: ref/scan_status/ scripts
 run              this skill                                 fn/run.md
-                 reads: ref/hierarchy.md, ref/config-meta-template.yaml, ref/run-sh-template.sh
+                 reads: ref/invocation-modes.md, ref/config-meta-template.yaml, ref/run-sh-template.sh
 audit            this skill                                 fn/workflow-audit.md
 plan             this skill                                 fn/workflow-plan.md
                  reads: ref/workflow-template.yaml
@@ -351,24 +353,24 @@ Invocation examples
 
 ```
 # 4-stage lifecycle on existing task folder
-/haipipe-task examples/ProjA/tasks/B03_band4/01_band4
+/haipipe-task examples/Project-REACH-ADHD/tasks/B03_band4/01_band4
 
 # single stage
-/haipipe-task plan examples/ProjA/tasks/B03_band4/01_band4
-/haipipe-task build examples/ProjA/tasks/B03_band4/01_band4
-/haipipe-task execute examples/ProjA/tasks/B03_band4/01_band4
-/haipipe-task report examples/ProjA/tasks/B03_band4/01_band4
+/haipipe-task plan examples/Project-REACH-ADHD/tasks/B03_band4/01_band4
+/haipipe-task build examples/Project-REACH-ADHD/tasks/B03_band4/01_band4
+/haipipe-task execute examples/Project-REACH-ADHD/tasks/B03_band4/01_band4
+/haipipe-task report examples/Project-REACH-ADHD/tasks/B03_band4/01_band4
 
 # task-GROUP: iterate lifecycle over all children (01_band4, 02_eval, ...)
-/haipipe-task examples/ProjA/tasks/B03_band4
+/haipipe-task examples/Project-REACH-ADHD/tasks/B03_band4
 
 # task-GROUP with single stage: run that stage on each child
-/haipipe-task plan examples/ProjA/tasks/B03_band4
-/haipipe-task report examples/ProjA/tasks/B03_band4
+/haipipe-task plan examples/Project-REACH-ADHD/tasks/B03_band4
+/haipipe-task report examples/Project-REACH-ADHD/tasks/B03_band4
 
 # scaffold a NEW task-folder (dispatches to type specialist)
 /haipipe-task task-folder data
-/haipipe-task task-folder eval --project-id ProjA-Timing-01-OptTime --group B03_band4
+/haipipe-task task-folder eval --project-id Project-REACH-ADHD --group B03_band4
 
 # direct specialist (bypass orchestrator)
 /haipipe-task-for-data

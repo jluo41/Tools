@@ -4,6 +4,10 @@ haipipe-end-input2src — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [2.1.0] — 2026-07-08
+
+- skill-diagnose fixes: concepts.md caught up with the v2.0.0 platform-specific contract — "two supported formats in one Fn" replaced by one-Fn-per-platform (--platform, default sagemaker); "NOT inside MetaDict" contradiction fixed (top-level AND mirrored into MetaDict); phantom DatabricksV1 marked placeholder; entry-point wording qualified (Step 2, after TrigFn). Records the 7-08 builder-dir edit.
+
 ## [2.0.0] — 2026-07-05
 
 ### Changed (JL: "方案 A: 一个平台一个 Fn. I choose this one.", decided on the ASCII diagram showing envelope-only diff + both L14/L16 incidents)

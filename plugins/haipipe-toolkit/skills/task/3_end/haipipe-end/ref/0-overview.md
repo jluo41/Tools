@@ -242,8 +242,8 @@ if 'dataframe_records' in payload_input and payload_input['dataframe_records']:
 
 ```
 Shared Fns (one set)         Per-platform wire pair        Deploy wrappers
-├── MetaFn                   ├── Src2InputFn_<platform>    ├── platform-databrick-inference/
-├── TrigFn (L14 unwrap)      └── Input2SrcFn_<platform>    └── platform-sagemaker-inference/
+├── MetaFn                   ├── Src2InputFn_<platform>    ├── platforms/platform-databrick-inference/
+├── TrigFn (L14 unwrap)      └── Input2SrcFn_<platform>    └── platforms/platform-sagemaker-inference/
 └── PostFn                       (same-platform pair
                                   must roundtrip)          Both call: endpoint_set.inference(payload)
 ```
@@ -297,8 +297,8 @@ VALIDATE → UPLOAD → REGISTER → DEPLOY → SMOKE TEST → STRESS TEST → P
 **Platform repos:**
 
 ```
-platform-sagemaker-inference/       AWS SageMaker (Docker + S3 + ECR)
-platform-databrick-inference/       Databricks (MLflow + Unity Catalog + Model Serving)
+platforms/platform-sagemaker-inference/       AWS SageMaker (Docker + S3 + ECR)
+platforms/platform-databrick-inference/       Databricks (MLflow + Unity Catalog + Model Serving)
 ```
 
 Both repos follow the same config pattern:
@@ -521,8 +521,8 @@ Fn loaders (builder/):    code/haipipe/endpoint_base/builder/
   Input2SrcFn loader:       builder/input2srcfn.py
 Generated Fns:            code/haifn/fn_endpoint/    <- NEVER edit directly
 Builder scripts:          tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/  (legacy: code-dev/1-PIPELINE/6-Endpoint-WorkSpace/)
-YAML configs:             config/test-haistep-*/6_test_endpoint.yaml
-Databricks platform:      platform-databrick-inference/
+YAML configs:             <endpoint task>/configs/run_*.yaml  (platform configs: platforms/platform-*/config/)
+Databricks platform:      platforms/platform-databrick-inference/
   MLflow wrapper:           code/mlflow_model.py
   Package script:           scripts/package.py
   Deploy script:            scripts/deploy.py

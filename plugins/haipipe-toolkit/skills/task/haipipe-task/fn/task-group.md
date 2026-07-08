@@ -15,23 +15,26 @@ Resolve the parent project:
   - cwd inside `examples/Proj*/`                   → use it.
   - missing
       AUTO mode  → if `--project-id` given but no folder exists,
-                   recursively invoke `fn/project.md` to scaffold it,
-                   then continue here.
+                   scaffold it via Skill("haipipe-project",
+                   args="<PROJECT_ID> --auto"), then continue here.
                    If no project_id at all → status: blocked,
                    reason: "no parent project; pass --project-id or cd in."
-      interactive → ASK which project (or scaffold one via fn/project.md).
+      interactive → ASK which project (or scaffold one via /haipipe-project).
 
 
 Step 2 — Collect metadata
 --------------------------
 
-  Group letter (G)    A / B / C / D / E / F / X
-                      A = model-run        (pretraining, finetuning)
-                      B = evaluation       (eval, inference, scoring)
+  Group letter (G)    A / B / C / D / E / F / R / X  (DEFAULTS — the
+                      project's existing scheme always wins; SKILL.md top NOTE)
+                      A = fit              (training: pretraining, finetuning)
+                      B = eval             (evaluation, inference, scoring)
                       C = display          (paper figures, paper tables)
                       D = data-pipeline    (Stage 1-4 builders)
                       E = individual       (individual-centric query / visualization)
                       F = agent            (LLM agent / prompt task)
+                      R = raw              (Stage 0 extraction; embedded rawstore
+                                            groups often use A00_rawstore_<cohort>)
                       X = algo-dev demo    (paired Track A smoke-test;
                                             X_algo/ — typically one per project)
 
@@ -48,8 +51,9 @@ Step 2 — Collect metadata
 
   Check existing groups under `tasks/` to avoid index collision.
 
-  Letter ↔ task-type consistency (enforced when invoked by a type
-  specialist): see the mapping table in `../SKILL.md` Step 3a.
+  Letters are DEFAULTS, not type indicators — never infer task-type
+  from the letter. The default scheme lives in `../SKILL.md` top NOTE;
+  the project's own scheme always wins.
 
 
 Step 3 — Create skeleton

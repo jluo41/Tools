@@ -35,9 +35,14 @@ Function Contract
 
 **Input:**
   payload_input_json : Dict
-    Raw JSON payload from client. Two supported formats:
-    - Databricks: {"dataframe_records": [{...}]}
-    - Legacy:     {"field1": ..., "field2": ..., "models": [...]}
+    Raw JSON payload from client. PLATFORM-SPECIFIC (owner decision
+    2026-07-05, supersedes L16): ONE Input2SrcFn per deploy platform —
+    the impl reads ONLY its own platform's shape, selected at design
+    time via --platform (default: sagemaker):
+    - sagemaker (default): flat JSON  {"field1": ..., "models": [...]}
+    - databricks:          {"dataframe_records": [{...}]} envelope
+    (Do NOT write one Fn that unwraps both — that was the superseded
+    v1.x design.)
 
   SPACE : Dict
     Workspace paths (needed for external data lookups, e.g., NDC, NPI tables)
@@ -89,7 +94,7 @@ ProcName_to_columns = {
 SAMPLE_VERSION = 'v260101'
 ```
 
-These are NOT inside MetaDict. They are top-level module variables.
+These are top-level module variables AND are ALSO mirrored into MetaDict (see the MetaDict example below + MUST DO #3).
 
 ---
 

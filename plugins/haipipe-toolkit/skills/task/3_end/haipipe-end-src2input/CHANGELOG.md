@@ -4,6 +4,10 @@ haipipe-end-src2input — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [2.1.0] — 2026-07-08
+
+- skill-diagnose fixes: concepts.md caught up with the v2.0.0 platform-specific contract — Output section now shows BOTH shapes (sagemaker flat JSON = default, databricks envelope) instead of presenting the envelope as the only form; phantom DatabricksV1 marked placeholder; example_000 naming (no uuid suffix). Records the 7-08 builder-dir edit.
+
 ## [2.0.0] — 2026-07-05
 
 ### Changed (JL: "方案 A: 一个平台一个 Fn. I choose this one.", decided on the ASCII diagram showing envelope-only diff + both L14/L16 incidents)

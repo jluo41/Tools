@@ -1,9 +1,10 @@
 Inference Performance — harness shape + anti-patterns
 ======================================================
 
-What an inference-perf task body looks like, the per-step timing model, and
-the known bottlenecks this task type exists to catch. Source of truth for
-the profiler the `haipipe-task-creator-agent` writes.
+The per-step timing model and the known bottlenecks profiling exists to
+catch. Kept as the knowledge base behind `/haipipe-end profile`
+(endpointset fn/fn-3-profile.md reads this); the old task-side
+inference-profiling scope was retired in task-for-endpoint 2.2.0.
 
 
 The per-step timing model

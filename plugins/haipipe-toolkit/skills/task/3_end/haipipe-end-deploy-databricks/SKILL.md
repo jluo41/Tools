@@ -1,11 +1,11 @@
 ---
 name: haipipe-end-deploy-databricks
-description: "Databricks Model Serving deploy specialist for haipipe-end. Wraps an Endpoint_Set into MLflow pyfunc + Unity Catalog model, deploys to Databricks Model Serving, runs live smoke tests, monitors, and tears down. Backed by platform-databrick-inference/. Reads Endpoint_Sets produced by haipipe-end-endpointset; never modifies them. Called by /haipipe-end orchestrator when deploy target is databricks."
+description: "Databricks Model Serving deploy specialist for haipipe-end. Wraps an Endpoint_Set into MLflow pyfunc + Unity Catalog model, deploys to Databricks Model Serving, runs live smoke tests, monitors, and tears down. Backed by platforms/platform-databrick-inference/. Reads Endpoint_Sets produced by haipipe-end-endpointset; never modifies them. Called by /haipipe-end orchestrator when deploy target is databricks."
 argument-hint: "[function] [endpoint_set_or_id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-07-04"
+  version: "1.2.0"
+  last_updated: "2026-07-08"
   summary: "Databricks Model Serving deploy specialist for haipipe-end."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -16,18 +16,20 @@ Skill: haipipe-end-deploy-databricks
 Databricks Model Serving deployment specialist — one of **two production
 deployment platforms** (the other is SageMaker via `haipipe-end-deploy-sagemaker`).
 
-Consumes an Endpoint_Set `.tar.gz` built by `haipipe-end-endpointset`
+Consumes an Endpoint_Set built by `haipipe-end-endpointset` (canonical
+input = the folder `_WorkSpace/6-EndpointStore/<endpoint_set>/`; the
+`.tar.gz` twin is only the wire form uploaded to Databricks)
 (its wire pair must be the Databricks one; Src2InputFn/Input2SrcFn are
 per-platform by owner decision 2026-07-05), registers it as an MLflow pyfunc in Unity Catalog,
 deploys to Databricks Model Serving, tests live, and cleans up.
 
-**Backing repo:** `platform-databrick-inference/` (submodule of the main repo).
+**Backing repo:** `platforms/platform-databrick-inference/` (submodule of the main repo).
 Contains `opt_program/mlflow_model.py` (MLflow wrapper), `opt_program/mlflow_packaging.py`
 (UC registration), `scripts/build_endpoint/` (deploy pipeline), and per-product
 configs under `config/<product>/<version>/dev.yaml`.
 
 > Status: active. Deployment scripts implemented and tested with CGM + MIMIC
-> endpoints. See `platform-databrick-inference/CLAUDE.md` for full reference.
+> endpoints. See `platforms/platform-databrick-inference/CLAUDE.md` for full reference.
 
   Function axis:  dashboard | deploy | test | monitor | teardown | review
 
@@ -75,6 +77,12 @@ Step 1: Parse args. Required arg per function:
           deploy: <endpoint_set_name>
           test/monitor/teardown/review: <serving_endpoint_id>
 
+HOST NOTE: CLI + Model Serving require a serving-capable workspace — the
+CDHAI host (`databricks.yml` profile `cdhai-new`), where the live
+`reach-adhd-prediction-dev` endpoint runs. The REACH workspace itself is
+browser-only, policy-locked USER_ISOLATION, no jobs/serving
+(learn-databricks Lesson 15) — it cannot host what this skill deploys.
+
 Step 2: Verify Databricks context:
           - DATABRICKS_HOST + DATABRICKS_TOKEN available
           - Unity Catalog reachable; catalog + schema configured
@@ -98,7 +106,7 @@ Procedures (placeholder — fill from project's actual Databricks setup)
 
 Deploy:
   1. Read Endpoint_Set at `_WorkSpace/6-EndpointStore/<endpoint_set>/`.
-  2. Wrap `fn_endpoint/` + ModelInstance into an `mlflow.pyfunc` model.
+  2. Wrap `fn_endpoint/` + ModelInstance into an `mlflow.pyfunc` model. (logical bundle name; physically materialized as code/ + model/ in the set)
   3. Log model to MLflow tracking; register into Unity Catalog
      (`<catalog>.<schema>.<endpoint_set>`).
   4. Promote new version through configured stage transitions.
@@ -117,7 +125,7 @@ Test, Monitor, Teardown, Review:
 Platform repo and scripts
 --------------------------
 
-The actual deployment scripts live in `platform-databrick-inference/`
+The actual deployment scripts live in `platforms/platform-databrick-inference/`
 (git submodule). The platform-level skill doc is at
 `Tools/skills/databricks-deploy/SKILL.md` (inside the platform repo).
 

@@ -26,7 +26,7 @@ a profile; the profile decides VOLUME_BASE, which stages run, and how:
   -----------------  -----------------------------------  --------  ----------
   local              <repo>/_WorkSpace                    A01-C01   subprocess
   cdhai-databricks   /Volumes/<catalog>/.../_WorkSpace    A01-C01   in-notebook
-  reach-databricks   /Volumes/reach_users/.../_workspace  A00-C01   in-notebook
+  reach-databricks   /Volumes/reach_users/jluo41/_reach_workspace  A00-C01   in-notebook
 
 Profile fields worth standardizing: volume_base, stages (ordered list of
 task .py paths relative to repo root), pip (packages to install when the
@@ -46,7 +46,7 @@ dbutils.widgets is the notebook-native param surface; os.environ is the
 script-native one. Read BOTH so the same file works everywhere:
 
 ```python
-def _param(name, default=""):
+def _param(name, default):
     try:
         v = dbutils.widgets.get(name)          # Databricks widget
         if v: return v

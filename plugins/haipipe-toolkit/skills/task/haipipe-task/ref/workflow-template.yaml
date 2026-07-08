@@ -18,11 +18,11 @@ task_folder: <PATH_TO_TASK_FOLDER>       # relative to project root
 # ─── I: Input ────────────────────────────────────────────────────
 input:
   args:
-    config: configs/<CONFIG>.yaml        # the frozen config for this task
+    config: configs/<RUN>.yaml        # the frozen config for this task
     # add task-specific args here
   files_in:
     - <SCRIPT>.py                        # main computation script
-    - configs/<CONFIG>.yaml              # per-run config
+    - configs/<RUN>.yaml              # per-run config
     # - _WorkSpace/...                   # upstream data dependencies
 
 # ─── P: Phases ───────────────────────────────────────────────────
@@ -38,7 +38,7 @@ phases:
           <What this step does. Be specific about computation.>
         files_in:
           - <SCRIPT>.py
-          - configs/<CONFIG>.yaml
+          - configs/<RUN>.yaml
           # - _WorkSpace/...             # upstream dependencies
         files_out:
           - results/<RUN>/<OUTPUT>       # light artifacts (in-repo)
@@ -54,7 +54,7 @@ phases:
         prompt: "gate 1: review <SCRIPT>.py for intent-vs-implementation bugs"
         files_in:
           - <SCRIPT>.py
-          - configs/<CONFIG>.yaml
+          - configs/<RUN>.yaml
         files_out:
           - CODE_REVIEW.md
         schema:

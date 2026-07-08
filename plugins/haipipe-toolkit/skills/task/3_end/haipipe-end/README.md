@@ -17,7 +17,7 @@ Stage 6 in the haipipe pipeline:
       ↓  /haipipe-end test
   Verified endpoint
       ↓  /haipipe-end deploy
-  Live serving endpoint (Databricks Model Serving or local)
+  Live serving endpoint (local / databricks / sagemaker / mlflow)
 
 The skill also covers designing and reviewing the 5 inference functions (Fn types)
 that define how each endpoint handles requests.
@@ -30,7 +30,7 @@ Quick Commands
   /haipipe-end dashboard     Scan EndpointStore, show status of all endpoints
   /haipipe-end package       Run Endpoint_Pipeline to build an Endpoint_Set
   /haipipe-end test          Test Endpoint_Set.inference() with profiling
-  /haipipe-end design        Build a new inference function (Fn type)
+  /haipipe-end design <fn-type>   Build a new inference function (design alone does not route — name the Fn type: design meta|trig|post|src2input|input2src)
   /haipipe-end deploy        Deploy packaged endpoint to Databricks or local
   /haipipe-end review        Review Fn files for correctness and cross-consistency
 
@@ -87,9 +87,9 @@ NEVER edit code/haifn/fn_endpoint/ directly.
 
   1. TrigFn          payload_json → df_case_raw | None
   2. Input2SrcFn     payload_json → ProcName_to_ProcDf
-  3. CaseFn          ProcDf → case features (via PreFnPipeline)
-  4. TfmFn           case features → model input tensor/DataFrame
-  5. SplitFn         model input → per-model inputs
+  3. PreFnPipeline   ProcName_to_ProcDf → RecordSet (record layer rebuild)
+  4. PreFnPipeline   RecordSet → CaseSet (trigger + case features)
+  5. PreFnPipeline   CaseSet → model_input (entry transforms)
   6. ModelInfer      model input → DataFrame with score__{action} columns
   7. PostFn          DataFrame → client response JSON
 
@@ -168,7 +168,7 @@ Key Directories
   _WorkSpace/5-ModelInstanceStore/  Stage 5 input (trained models)
   _WorkSpace/6-EndpointStore/       Stage 6 output (packaged endpoints)
 
-  platform-databrick-inference/     Databricks deployment submodule
+  platforms/platform-databrick-inference/     Databricks deployment submodule
     scripts/package.py              Package to Unity Catalog
     scripts/deploy.py               Deploy to Model Serving
     scripts/test.py                 Test MLflow model or deployed URL

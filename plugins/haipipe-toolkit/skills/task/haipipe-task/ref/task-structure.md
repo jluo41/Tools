@@ -213,7 +213,7 @@ Template A: direct .py + tee log (nbconvert mode / no notebooks/):
       echo "[_WorkSpace stage writes since run start]"
       find "${WORKSPACE_PATH:-${PROJ_ROOT}/_WorkSpace}" \
            -maxdepth 6 -type f -newermt "@${START_TS}" \
-           \( -path "*/1-SourceStore/*" -o -path "*/2-RecStore/*" \
+           \( -path "*/0-RawDataStore/*" -o -path "*/1-SourceStore/*" -o -path "*/2-RecStore/*" \
               -o -path "*/3-CaseStore/*" -o -path "*/4-AIDataStore*/*" \
               -o -path "*/5-ModelInstanceStore*/*" -o -path "*/6-EndpointStore/*" \) \
            -not -path "*/__pycache__/*" -not -name "*.pyc" \
@@ -253,22 +253,23 @@ Relationship: runs/ <-> results/ <-> notebooks/ <-> sbatch/
   train_num_nb.py ──────────────────────> train_num_nb.ipynb  (template, task root)
                                           (rebuilt by every run via convert_to_notebooks.py)
 
-  configs/B5_model_cgm_num_1m.yaml  ──┐
+  configs/run_1m.yaml ───────────────┐
   runs/run_1m.sh ────────────────────┼──> notebooks/run_1m.ipynb        (runtime record)
                                      │    results/run_1m/              (light artifacts)
                                      │      ├─ 0-run_1m.log (nbconvert mode only)
                                      │      └─ metrics.json (optional)
-  configs/B5_model_cgm_num_5m.yaml  ──┐
+  configs/run_5m.yaml ───────────────┐
   runs/run_5m.sh ────────────────────┼──> notebooks/run_5m.ipynb
                                      │    results/run_5m/
                                      │
   sbatch/gpu0.sh ────────────────────┴──> calls runs/run_1m.sh, runs/run_5m.sh, ...
                                           (one sbatch coordinates one or several runs)
 
-  - configs/ holds the YAML for each run (config naming is freestyle)
+  - configs/ holds the YAML for each run; CONFIG FILENAME == RUN FILENAME
+    (run-sh-template.sh hard-codes CONFIG="configs/${RUN_NAME}.yaml")
   - runs/ holds one script per config (atomic, self-contained)
   - notebooks/ holds one <run_name>.ipynb per runs/<run_name>.sh (runtime record with outputs); the template <stem>.ipynb sits at task root
-  - results/ holds one dir per run (name-paired with runs/, NOT configs/)
+  - results/ holds one dir per run (name-paired with runs/ AND configs/ — all four sisters share the <NAME> token)
   - sbatch/ coordinates one or several runs (orchestration only)
   - one task = one .py template, multiple configs, multiple runs, multiple runtime-recorded notebooks; sbatch/ scripts orchestrate which runs go on which GPU.
 

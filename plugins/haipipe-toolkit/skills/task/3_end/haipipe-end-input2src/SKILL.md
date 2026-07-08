@@ -4,8 +4,8 @@ description: "Input2SrcFn specialist — design and review of the wire-payload-t
 argument-hint: "[verb] [use_case] [--platform sagemaker|databricks] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "2.0.0"
-  last_updated: "2026-07-05"
+  version: "2.1.0"
+  last_updated: "2026-07-08"
   summary: "Input2SrcFn specialist — design and review of the wire-payload-to-record function in an Endpoint_Set (deserializes JSON request into a ProcessedDF row)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -56,7 +56,7 @@ InferenceV240727                                generic inference         (sagem
 CGMExamples_v260101                             CGM examples decoder      (sagemaker)
 WellDocWeight_Payload2Src_v260305               weight decoder            (sagemaker)
 WellDocWeight_OldFormat2Src_v260318             weight decoder (legacy)   (sagemaker)
-DatabricksV1                                🚩  generic Databricks         (databricks)
+<YourDatabricksFn>                                🚩  generic Databricks         (databricks)
 CGMDecoder_Databricks_Payload2Src_v260101          🚩  CGM Databricks variant     (databricks)
 
 🚩 = Databricks-platform impl (one wire-Fn per platform by design; sagemaker unmarked)

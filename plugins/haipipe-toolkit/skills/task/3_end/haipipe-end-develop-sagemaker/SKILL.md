@@ -1,11 +1,11 @@
 ---
 name: haipipe-end-develop-sagemaker
-description: "AWS SageMaker develop specialist for haipipe-end. Runs Stage 5 training as a managed SageMaker Pipeline (Preprocess → Train → Reorganize → RegisterModel) and produces a deployable Endpoint_Set / registered model package. Backed by platform-sagemaker-training/ scripts (system → docker → pipeline testing ladder, ECR push, ModelPackageGroup registration). Writes Endpoint_Sets that haipipe-end-endpointset and the deploy specialists consume. Called by /haipipe-end orchestrator when develop target is sagemaker."
+description: "AWS SageMaker develop specialist for haipipe-end. Runs Stage 5 training as a managed SageMaker Pipeline (Preprocess → Train → Reorganize → RegisterModel) and produces a deployable Endpoint_Set / registered model package. Backed by platforms/platform-sagemaker-training/ scripts (system → docker → pipeline testing ladder, ECR push, ModelPackageGroup registration). Writes Endpoint_Sets that haipipe-end-endpointset and the deploy specialists consume. Called by /haipipe-end orchestrator when develop target is sagemaker."
 argument-hint: "[verb] [endpoint_set_or_run_id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-07-04"
+  version: "1.2.0"
+  last_updated: "2026-07-08"
   summary: "AWS SageMaker develop specialist for haipipe-end."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -56,7 +56,7 @@ Dispatch Table
 Verb        Ref file(s)                              Backing platform script
 ----------- ---------------------------------------- ----------------------------------------------------
 dashboard   ref/concepts.md                          (none — list pipelines + ModelPackageGroup contents)
-develop     ref/concepts.md +                        platform-sagemaker-training/scripts/
+develop     ref/concepts.md +                        platforms/platform-sagemaker-training/scripts/
             ../haipipe-end/ref/            run_training_pipeline/run_training_pipeline.py
               0-overview.md
 test        ref/concepts.md                          --stage system:
@@ -114,7 +114,7 @@ Procedures (placeholder — fill from project's actual SageMaker conventions)
 
 Develop (full pipeline, default):
   1. Load `<config.yaml>` (e.g. `config/config_raw_to_endpoint_ctr_r20.yaml`).
-  2. Defer to `python platform-sagemaker-training/scripts/run_training_pipeline/run_training_pipeline.py
+  2. Defer to `python platforms/platform-sagemaker-training/scripts/run_training_pipeline/run_training_pipeline.py
      --config <config.yaml>` which builds + runs the 3-step Pipeline:
          a) PreprocessStep  — raw → AIData (cohort partitioning)
          b) TrainingStep    — AIData → trained model + Endpoint_Set bundle
@@ -128,12 +128,12 @@ Develop (full pipeline, default):
      project's develop log.
 
 Test (--stage system):
-  1. Defer to `python platform-sagemaker-training/scripts/run_training_pipeline/run_train_local_system.py
+  1. Defer to `python platforms/platform-sagemaker-training/scripts/run_training_pipeline/run_train_local_system.py
      --config <config.yaml>`. Runs training in the local Python env. Output
      to `opt_ml/model/`. No Docker, no AWS — fastest iteration.
 
 Test (--stage docker):
-  1. Defer to `python platform-sagemaker-training/scripts/run_training_pipeline/run_train_local_docker.py
+  1. Defer to `python platforms/platform-sagemaker-training/scripts/run_training_pipeline/run_train_local_docker.py
      --config <config.yaml>`. Runs training inside the local Docker training
      image — validates the container's training contract before pushing to
      ECR.
@@ -226,7 +226,7 @@ read both pitfalls before running any SageMaker action.
 
    Cleanest fix: attach AWS-managed `AmazonSageMakerFullAccess` to the
    SSO permission set. Curated alternative in
-   `examples/ProjA-Timing-01-OptTime/tasks/C01_endpoint/01_endpoint/IAM_REQUEST.md`.
+   `<project>/tasks/<endpoint-group>/01_endpoint_*/IAM_REQUEST.md (illustrative — from a retired WellDoc project)`.
 
 **2. Multi-arch OCI manifests break SageMaker.** If a training image is
    built with `docker buildx` defaults (multi-arch + provenance + SBOM),
@@ -239,7 +239,7 @@ read both pitfalls before running any SageMaker action.
    ```
 
    Build training images with the documented flags
-   (`platform-sagemaker-training/CLAUDE.md` mirrors the inference doc):
+   (`platforms/platform-sagemaker-training/CLAUDE.md` mirrors the inference doc):
 
    ```bash
    docker buildx build \

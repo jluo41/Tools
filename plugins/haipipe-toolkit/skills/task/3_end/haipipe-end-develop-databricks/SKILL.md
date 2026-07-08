@@ -1,11 +1,11 @@
 ---
 name: haipipe-end-develop-databricks
-description: "Databricks develop specialist for haipipe-end. STATUS: DEFERRED — no platform-databrick-training repo backs this yet; SKILL.md kept as a placeholder for parity with -develop-sagemaker. Would run Stage 5 training as a Databricks Job (notebook or wheel task) with model logged to Unity Catalog and exported as an Endpoint_Set under 6-EndpointStore/. The umbrella's no-args dashboard skips this skill while deferred."
+description: "Databricks develop specialist for haipipe-end. STATUS: DEFERRED — the backing repo platforms/platform-databrick-training/ EXISTS (submit_job.py, setup_cluster.sh, notebooks/) but this skill is not wired to it yet, and the job-based design must be reconciled with jobs-blocked clusters (learn-databricks Lesson 15). Would run Stage 5 training as a Databricks Job (notebook or wheel task) with model logged to Unity Catalog and exported as an Endpoint_Set under 6-EndpointStore/. The umbrella's no-args dashboard skips this skill while deferred."
 argument-hint: "[verb] [config_or_run_id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-07-04"
+  version: "1.2.0"
+  last_updated: "2026-07-08"
   summary: "Databricks develop specialist for haipipe-end."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -18,16 +18,23 @@ Databricks Job, logs the resulting model to Unity Catalog (or the workspace
 MLflow registry), and exports an Endpoint_Set under `6-EndpointStore/` for
 the deploy specialists to consume.
 
-> Status: DEFERRED. No `platform-databrick-training/` repo exists yet. This
-> SKILL.md is a placeholder for parity with `-develop-sagemaker` and will be
-> wired up when the platform repo is added. The `/haipipe-end` umbrella's
-> no-args dashboard skips this skill while deferred.
+> Status: DEFERRED — but the backing repo `platforms/platform-databrick-training/`
+> EXISTS (scripts/{submit_job.py, setup_cluster.sh, build_wheels.sh}, config/,
+> notebooks/; README: "runs data prep pipeline (Stages 1-4)"). Deferral is now
+> about WIRING, not existence: (a) this skill's verbs are not yet mapped to the
+> repo's scripts, and (b) the job-based ladder below only works on jobs-capable
+> hosts (WellDoc/CDHAI) — policy-locked USER_ISOLATION clusters (REACH) forbid
+> jobs entirely and need the inline-exec pattern instead (learn-databricks
+> Lesson 15; ../../haipipe-task/ref/databricks-execution.md). The `/haipipe-end`
+> umbrella's no-args dashboard skips this skill while deferred.
 
   Verb axis:        dashboard | develop | test | monitor | teardown | review
 
   Stage flag:       --stage system   (local Python, no cluster — fastest)
                     --stage cluster  (Databricks all-purpose / job cluster)
-                    --stage job      (managed Databricks Job — default for `develop`)
+                    --stage job      (managed Databricks Job — default for `develop`
+                                      on jobs-capable hosts ONLY; on USER_ISOLATION
+                                      clusters use inline exec, Lesson 15)
 
 ---
 
@@ -54,7 +61,7 @@ Dispatch Table (planned)
 Verb        Ref file(s)                              Backing platform script (when wired)
 ----------- ---------------------------------------- -------------------------------------
 dashboard   ref/concepts.md                          (none — list Jobs + UC models via databricks CLI)
-develop     ref/concepts.md +                        platform-databrick-training/scripts/
+develop     ref/concepts.md +                        platforms/platform-databrick-training/scripts/
             ../haipipe-end/ref/            run_training_job/run_databricks_job.py  (TBD)
               0-overview.md
 test        ref/concepts.md                          --stage system:  run_train_local_system.py (TBD)
@@ -115,7 +122,7 @@ Does NOT own:
 Why deferred
 -------------
 
-The `platform-databrick-training/` repo doesn't exist yet. When it does, the
+The `platforms/platform-databrick-training/` repo doesn't exist yet. When it does, the
 expected pattern is the same 3-stage testing ladder used for SageMaker:
 
 ```

@@ -105,7 +105,6 @@ Print:
 Next:
    1. Fill params in configs/<NAME>.yaml (below _meta:)
    2. bash runs/<NAME>.sh
-   3. /haipipe-project log task         (after run completes, for narrative)
 ```
 
 

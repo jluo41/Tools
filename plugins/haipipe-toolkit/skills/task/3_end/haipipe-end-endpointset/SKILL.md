@@ -4,8 +4,8 @@ description: "Endpoint_Set artifact-as-whole specialist. Owns target-agnostic op
 argument-hint: "[verb] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.2.0"
-  last_updated: "2026-07-04"
+  version: "1.3.0"
+  last_updated: "2026-07-08"
   summary: "Endpoint_Set artifact-as-whole specialist."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -93,7 +93,7 @@ Artifact Scope
 Owns:
   - `code/haifn/fn_endpoint/` packaging (running the pipeline)
   - endpoint fn_develop builders (artifact-level; legacy: `code-dev/1-PIPELINE/6-Endpoint-WorkSpace/`)
-  - `_WorkSpace/6-EndpointStore/Endpoint-*/` packaged Endpoint_Sets
+  - `_WorkSpace/6-EndpointStore/{endpoint_name}/` packaged Endpoint_Sets
   - Local `inference()` smoke tests (artifact-level)
   - Structural review of the artifact as a whole
 
@@ -131,13 +131,13 @@ This reduced `.tar.gz` from 160 MB to 14 MB.
 Hand-off Contract (Endpoint_Set → deploy specialists)
 ------------------------------------------------------
 
-Each Endpoint_Set in `_WorkSpace/6-EndpointStore/Endpoint-{name}/` is the
+Each Endpoint_Set in `_WorkSpace/6-EndpointStore/{endpoint_name}/` is the
 SINGLE artifact that flows downstream:
 
 ```
 _WorkSpace/6-EndpointStore/{endpoint_name}/
 ├── model/                     trained ModelInstance snapshot
-├── code/                      codebase snapshot (haipipe, hainn, haifn/fn_endpoint 5 Fn-types)
+├── code/                      codebase snapshot (haipipe, hainn, haifn/fn_endpoint — 5 Fn-types + fn_example helper dir)
 ├── examples/                  test examples + payload.json
 ├── meta.json                  MetaFn output (name mappings + metadata)
 └── manifest.json              config + lineage — everything a deploy specialist needs

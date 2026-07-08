@@ -118,6 +118,8 @@ def MetaFn(SPACE):
         'External_to_Local_ModelSeries': External_to_Local_ModelSeries,
         'modelMetadata': modelMetadata,
         'metadata_response': metadata_response,
+        'inputSchema': inputSchema,      # required — see MUST DO #3
+        'outputSchema': outputSchema,    # required — see MUST DO #3
     }
 
 MetaDict = {
@@ -183,6 +185,10 @@ Builder Pattern
 tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/a1_build_metafn_{description}.py
 (legacy workspaces: code-dev/1-PIPELINE/6-Endpoint-WorkSpace/)
 ```
+
+<builder-dir> = the project's endpoint fn_develop task folder
+(tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/; legacy
+workspaces: code-dev/1-PIPELINE/6-Endpoint-WorkSpace/).
 
 **Step 2: Configure at top of builder:**
 

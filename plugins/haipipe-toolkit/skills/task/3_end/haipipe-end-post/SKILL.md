@@ -4,8 +4,8 @@ description: "PostFn specialist — design and review of the response-formatting
 argument-hint: "[verb] [use_case] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-07-08"
   summary: "PostFn specialist — design and review of the response-formatting function in an Endpoint_Set."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -36,7 +36,7 @@ Commands
 /haipipe-end-post review <use_case> [endpoint_set]      -> structural audit of one use-case impl
 ```
 
-Use cases (concrete impls in code/haifn/fn_endpoint/fn_post/, as of 2026-04-25)
+Use cases (concrete impls in code/haifn/fn_endpoint/fn_post/, as of 2026-04-25 — discover current impls with ls code/haifn/fn_endpoint/)
 --------------------------------------------------------------------------------
 
 ```

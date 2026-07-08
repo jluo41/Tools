@@ -9,11 +9,11 @@ before running any verb.
 Backing repo
 ------------
 
-`platform-sagemaker-training/` (sibling of this checkout) is the platform
+`platforms/platform-sagemaker-training/` (sibling of this checkout) is the platform
 layer this skill wraps. Its layout:
 
 ```
-platform-sagemaker-training/
+platforms/platform-sagemaker-training/
 ├── docker/                              training image Dockerfile + entry
 ├── scripts/
 │   ├── build_docker/
@@ -34,7 +34,7 @@ platform-sagemaker-training/
 ```
 
 The 3-stage testing ladder (system → docker → pipeline) mirrors
-`platform-sagemaker-inference`'s endpoint testing ladder. Always promote
+`platforms/platform-sagemaker-inference`'s endpoint testing ladder. Always promote
 upward — fix breakages at the lowest rung first.
 
 ---

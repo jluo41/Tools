@@ -102,6 +102,20 @@ contract fails fast for genuine omissions:
 ```
 
 
+The optional `summary` object
+------------------------------
+
+Consumed by run-sh-template.sh and runtime-yaml-schema.md's headline
+extraction — emit it if you want a scannable one-liner in runtime.yaml:
+
+```json
+{ "auroc": 0.87, "summary": { "headline": "AUROC 0.87 (test), n=82,025" } }
+```
+
+Only `summary.headline` (a string) is read by the shipped tooling; other
+`summary.*` keys are free-form.
+
+
 Backward compatibility
 -----------------------
 

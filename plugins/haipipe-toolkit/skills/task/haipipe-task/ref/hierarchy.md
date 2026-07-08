@@ -48,6 +48,11 @@ R-series   raw               Databricks raw extraction    (R01_extract_claims)
 X_algo     algo-dev          smoke-test demos             (X_algo/*)
 ```
 
+(`D` doubles as the default home for auto-example DEMO tasks —
+`tasks/D_demo/D{N}_test_*` pairing `code/hainn` stubs, see
+task-structure.md "Auto-Example Rule"; a data-pipeline D-group and a
+D_demo group can coexist.)
+
 Index NN starts at 01 within each letter; no gaps. A21 is allowed for
 "finetuning bucket within A-series" — it groups a sub-family without
 breaking the letter convention.
@@ -87,8 +92,11 @@ Rules:
 
 - **2 digits.** Always `01`, `02`, ..., `09`, `10`, ... — never `1`, `2`,
   never `001`. Sorts cleanly up to 99 per bucket.
-- **Start at 01.** Indices are 1-based; `00` is reserved (used only when
-  a slot must be at the very top, e.g. `00-index.txt` in `diagram/`).
+- **Start at 01.** Indices are 1-based; `00` is reserved for slots that
+  must sort at the very top: `00-index.txt` in `diagram/`, a group-level
+  `00` index for stage-0 work that precedes the pipeline (e.g. the
+  embedded raw-extraction group `A00_rawstore_<cohort>/` sorting above
+  `A01_data_pipeline_*`), and `00_*_fn_develop_*` builder tasks.
 - **No gaps when scaffolding.** Pick the next free NN within the bucket.
 - **Forward-fill on deletion.** If `02_foo` is removed, do NOT renumber
   `03_bar` → `02_bar`. Existing references (papers, runs, notebooks)
@@ -115,15 +123,18 @@ A task-folder is one of these. Letter convention is a hint, not a hard
 rule — a B-group can hold a display task if it makes narrative sense.
 
 ```
-TYPE            CONFIG FILE(S)              RESULTS LAND IN
+TYPE            CONFIG SKELETON (contents)  RESULTS LAND IN
 --------------- --------------------------  --------------------------------------
-model-run       5_model_{name}.yaml         _WorkSpace/5-ModelInstanceStore/
-evaluation      eval_{target}.yaml          results/<run>/{metrics.json, ...}
-display         figure_{name}.yaml or       results/<run>/{*.pdf, *.png, *.tex}
-                table_{name}.yaml
-data-pipeline   {1..4}_{layer}_{ds}.yaml    _WorkSpace/{1..4}-*Store/
+fit (model-run) model/training keys         _WorkSpace/5-ModelInstanceStore/
+evaluation      eval-target keys            results/<run>/{metrics.json, ...}
+display         figure/table keys           results/<run>/{*.pdf, *.png, *.tex}
+data-pipeline   Stage 1-4 pipeline keys     _WorkSpace/{1..4}-*Store/
 other           (none required)             results/<run>/
 ```
+
+The task TYPE decides the config's SKELETON (which keys it carries), never
+its FILENAME — the filename is always the run name (configs/<run>.yaml,
+matching runs/<run>.sh; see RUNNAME below and run-sh-template.sh).
 
 Running process — papermill, always
 ------------------------------------

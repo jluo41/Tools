@@ -39,7 +39,7 @@ Confounds declared
 
 Inputs / Outputs
 ----------------
-- Input AIData:  PretrainCGM_Stride4H @v0002_WellReadi_tewindow (Samsung)
+- Input AIData:  PretrainCGM_Stride4H/@v0002AIData-WellReadi_tewindow (Samsung)
 - Output:        results/<RUN>/{metrics.json, runtime.yaml, checkpoints/}
 
 References

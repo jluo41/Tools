@@ -4,8 +4,8 @@ description: "MetaFn specialist — design and review of the model-metadata-look
 argument-hint: "[verb] [use_case] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-07-08"
   summary: "MetaFn specialist — design and review of the model-metadata-lookup function in an Endpoint_Set."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -39,7 +39,7 @@ Use cases (concrete impls in code/haifn/fn_endpoint/fn_meta/)
 --------------------------------------------------------------
 
 ```
-AutoMetaFn                                  generic auto-built MetaFn
+AutoMetaFn (conceptual pattern, not a file)                                  generic auto-built MetaFn
 BanditSMS_v250225                           SMS bandit
 BanditSMSnNudge_v0620                       SMS+Nudge bandit
 CGMDecoder_v260101                          CGM decoder (SageMaker)
