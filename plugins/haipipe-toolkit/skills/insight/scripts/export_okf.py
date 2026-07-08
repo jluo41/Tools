@@ -285,8 +285,9 @@ def write_graph(entries: list[Entry], out_dir: Path, id_to_path: dict[str, Path]
             else:
                 warnings.append(f"{entry.id}: dangling source {source_id}")
         for ref_id in list_value(entry.frontmatter.get("ref_by")):
-            if ref_id not in ids:
-                warnings.append(f"{entry.id}: dangling ref_by {ref_id}")
+            if ref_id in ids or is_external_ref(ref_id):
+                continue
+            warnings.append(f"{entry.id}: dangling ref_by {ref_id}")
     graph = {
         "nodes": nodes,
         "edges": edges,
@@ -323,6 +324,12 @@ def main() -> int:
         raise SystemExit(f"No insight entries found under {insights_dir}")
 
     if out_dir.exists():
+        if out_dir.name != "okf" and any(out_dir.iterdir()):
+            raise SystemExit(
+                f"Refusing to delete {out_dir}: --out must point at an 'okf' "
+                "directory (or an empty one). This guard keeps a stray --out "
+                "from wiping an arbitrary folder."
+            )
         shutil.rmtree(out_dir)
     out_dir.mkdir(parents=True)
 

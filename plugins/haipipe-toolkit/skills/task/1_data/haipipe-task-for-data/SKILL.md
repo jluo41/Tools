@@ -4,13 +4,10 @@ description: "data-pipeline task-folder specialist. Scaffolds AND executes {NN}_
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.0.0"
-  last_updated: "2026-06-11"
+  version: "2.2.0"
+  last_updated: "2026-07-04"
   summary: "data-pipeline task-folder specialist (scaffold + execute + partition)."
-  changelog:
-    - "2.0.0 (2026-06-11): add execute path, notebook template pattern, multi-partition support."
-    - "1.1.0 (2026-06-09): unwrap prose; fix agent names; add 4-stage lifecycle paragraph."
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-task-for-data
@@ -203,4 +200,4 @@ ref/workflow-plan-sample.yaml     ← script-level phases for this type
 ```
 
 Schema source of truth:
-  project/haipipe-workflow/ref/plan-schema.md
+  task/haipipe-workflow/ref/plan-schema.md

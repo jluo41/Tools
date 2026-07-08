@@ -7,9 +7,7 @@ metadata:
   version: "2.0.0"
   last_updated: "2026-06-23"
   summary: "Stage orchestrator — venue-aware dispatch to lifecycle skills."
-  changelog:
-    - "2.0.0 (2026-06-23): renamed stages to paper vocabulary; venue-aware stage skipping."
-    - "1.0.0 (2026-06-22): initial version modeled on paper-lifecycle."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-application-lifecycle (stage orchestrator)

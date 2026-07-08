@@ -297,6 +297,7 @@ created:   2026-06-22
 updated:   2026-06-22
 claim:     "Agreeableness->opioid intensity generalizes in the osteo population (assoc., medium)"
 confidence: medium
+claim_type: associational
 sources:   [I01]
 ref_by:    [W01]
 ---

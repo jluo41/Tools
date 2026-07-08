@@ -93,12 +93,12 @@ examples/ProjToy/insights/views/
 
 ## Step 4: Future Work Cites Cards
 
-A later narrative can cite:
+A later paper or report can cite:
 
 ```text
 K03: Validation gain does not transfer to OOD.
 W02: Do not use validation gain as OOD evidence.
 ```
 
-The narrative does not need to reread the whole probe folder. It can cite the
+The paper does not need to reread the whole probe folder. It can cite the
 stable insight cards.

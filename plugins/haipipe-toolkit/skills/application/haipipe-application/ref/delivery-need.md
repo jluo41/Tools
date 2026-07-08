@@ -15,16 +15,17 @@ No message bus, no shared contract file. Two channels carry it, and the agent
              /haipipe-probe plan from-need <need>. application does not call
              probe directly; the agent reads this instruction, invokes probe,
              brings the result back.
-2. Disk      application writes the need (in its plan / session state); probe
-   (async)   writes its verdict to probes/<id>/probe.yaml; application reads
-             that verdict to backfill the answer. No handshake, just read/write
-             the same files in turn.
+2. Disk      application writes the need (in its plan / session state); the
+   (async)   returned verdict lands in the need's _PROBE/PPNN card; application
+             reads that card to backfill the answer. No handshake, just
+             read/write the same files in turn.
 ```
 
 Who owns which format: application owns the NEED (loose; probe only reads the
-gap, no strict schema). probe owns the VERDICT (strict, single source of truth
-in `probe/.../ref/probe-yaml-schema.md`). That is why no shared interface file
-is needed: each artifact's shape belongs to the skill that produces it.
+gap, no strict schema). probe owns the VERDICT (strict; the PPNN card's
+`## Verdict` anatomy in `probe/haipipe-probe/SKILL.md`). That is why no shared
+interface file is needed: each artifact's shape belongs to the skill that
+produces it.
 
 ## When to record a need
 
@@ -48,8 +49,8 @@ finished evidence needs reusable K/W meaning  -> /haipipe-insight <artifact>
 ```
 
 The probe entry is `plan from-need`: Plan intakes the application question gap,
-decides attach / new / standalone, and runs Plan -> Gather -> Read -> Judge ->
-Return.
+the gateway decides reuse / enrich / fresh, and runs Plan -> Gather -> Read ->
+Judge -> Return.
 
 ## Need record
 
@@ -75,5 +76,5 @@ When a probe finishes, its Return step sends the verdict back here. On backfill:
   the application decides how to phrase it for its audience
 ```
 
-The same probe verdict can serve both a paper and an application; each frames it
-for its own audience.
+The same landed evidence can serve both a paper and an application; each frames
+it for its own audience.

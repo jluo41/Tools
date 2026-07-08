@@ -5,6 +5,51 @@ Layer-scoped changelog for the probe (PROBE / claim) layer. Newest first.
 Rollup lives in the plugin-level `CHANGELOG.md`.
 
 
+## [5.2.0] — 2026-07-06 — Judgment process becomes a SKILL: haipipe-probe-review
+
+JL ruling: "haipipe-probe-review可以被新的agent call，但是我们还是需要一个skill来规范流程；haipipe-probe就只保留 reviewer之外的内容."
+
+- NEW skill `haipipe-probe-review/` 1.0.0 — the governed G1/G2/G3 rulebook (gate substance, g2 thresholds, verdict vocabulary, return contract), extracted from the reviewer agent 2.1.0 body. Normal path: invoked headless by the reviewer agent; direct call only with a complete claim + refs spec. Writes nothing.
+- haipipe-probe-reviewer-agent → 3.0.0 thin shell: claim + refs in → Skill(haipipe-probe-review) → judgment returned as text. Skill added to tools. Two-tier review model unchanged (per-layer artifact reviewers vs this claim-level judge).
+- Instruments moved `agents/` → `haipipe-probe-review/`: g2_integrity_check.py + probe-caveats-checklist.txt (the skill owns its own docs).
+- haipipe-probe → 6.2.0: keeps everything EXCEPT the judgment process (layer contract, PPNN card anatomy incl. where the verdict LANDS, DIRECT ASK); judge references now point at the sibling skill. Gateway → 2.0.3 (Step 3 names the rulebook).
+- `.claude/skills/haipipe-probe-review` symlink registered.
+
+## [5.1.1] — 2026-07-06 — Reviewer agent body folderless-native (closes the [5.1.0] follow-up)
+
+- haipipe-probe-reviewer-agent 2.1.0: rewrote the body off the folder era. Removed the pre-Judge creator-loop gates (Plan review of probe.yaml, Gather/Read review of evidence.md — none of those artifacts exist folderless) and every "write verdict.md / set probe.yaml.verdict" instruction. G1/G2/G3 now RETURN their results as text; the gateway carries the return and the caller lands it in the PPNN card `## Verdict`. Reconciled the G3 verdict vocabulary to the PPNN card's `supported | refuted | inconclusive` (was `yes | partial | no | blocked`). Gate check-substance is unchanged: G1 structural checklist, G2 five fraud-patterns + g2_integrity_check.py thresholds (>95 pass / 80-95 warn / <80 fail), G3 scope / caveats / confidence.
+
+
+## [5.1.0] — 2026-07-06 — Archive pass (folder-era content off the live surface)
+
+Moved to `_archive/` (folder-era history; live contract = haipipe-probe/SKILL.md + the two agents):
+- DESIGN.md, PHILOSOPHY.md, MENTAL_MODEL.md, SKILLSET_REVIEW.md — four folder-era prose docs (~1,100 lines) that still sat at the bucket surface under HISTORICAL banners; DESIGN's Authority block had pointed at the deleted ref/ + fn/.
+- agents/CODE_REVIEW.md — one-time 2026-06-23 review of the old agents.
+- haipipe-probe/diagram/03-probe-aware-entrypoint.txt — folder-era sketch (minimap / arms / Return vocab); empty diagram/ removed.
+- agents/_old/ → _archive/_old/ — creator + the 3 pre-merge Judge reviewers.
+- agents/feedback/ → _archive/agents-feedback/ and haipipe-probe/feedback/ → _archive/skill-feedback/ — folder/Codex-era lesson inboxes, already digested into the refactor.
+- _archive/README.md added: provenance table + "not current" banner.
+
+Changed
+- agents/README.md rewritten off the folder-era roster (creator-as-live, the 5-stage folder lifecycle, dead ../fn/ ../ref/ pointers) to the two live agents + the folderless dispatch flow.
+- haipipe-probe/SKILL.md: the lone live pointer repointed `../DESIGN.md` → `../_archive/DESIGN.md`.
+
+Live surface now = CHANGELOG.md + SOP-folderless-refactor.md (transient) + agents/ (2 agents, g2 script, checklist, README) + haipipe-probe/ (SKILL, CHANGELOG, PREFERENCES).
+Follow-up flagged (not touched): haipipe-probe-reviewer-agent.md body (lines 49-186) is still folder-era procedure under a "treat-as-legacy" disclaimer — a folderless rewrite of its gate sections is the next cleanup.
+
+
+## [5.0.0] — 2026-07-05 — FOLDERLESS REFACTOR
+
+Removed (JL: probes/ duplicated the paper-side _PROBE card — 不是 single source of truth)
+- probes/ folders (probe.yaml, evidence.md, status.md, verdict.md): the consumer's per-stage _PROBE/PPNN card is now the single home for contract + receipt + verdict (## Verdict section, full mode). Legacy folders stay on disk read-only; SWEEP may read, nothing writes.
+- Probe Console (interactive; .probe-console.yaml): panel duties folded into /haipipe-paper enter.
+- haipipe-probe-creator-agent → agents/_old/ (its three outputs no longer exist; linking absorbed by the gateway, presentation by the return contract).
+
+Changed
+- haipipe-probe-orchestrator-agent 2.0.0 = evidence gateway: SWEEP over discoveries/tasks/insights, shape reuse|enrich|fresh, zero writes anywhere (Write/Edit removed — executes the long-recorded 4.3.0(7) decision, resolving the open C1 thread as A). All run-earned discipline retained (project-local sweep, trust-the-ledger, shape honesty, fresh-must-land, no inline searching, bg dispatch, batch, lean boot).
+- haipipe-probe-reviewer-agent 2.0.0: judges claim + evidence refs; G1/G2/G3 + verdict RETURNED as text, landed by the caller's TRANSLATE.
+- haipipe-probe SKILL.md 6.0.0: thin layer-contract doc (PPNN card anatomy, dispatch map); fn/ + ref/ marked LEGACY (G-gate definitions still referenced by the reviewer).
+
 ## [4.0.0] - 2026-06-22
 
 ### Changed
@@ -48,7 +93,7 @@ Rollup lives in the plugin-level `CHANGELOG.md`.
     → Report.
 
 ### Notes
-- The 4-stage lifecycle is the same universal wrapper from project/haipipe-workflow.
+- The 4-stage lifecycle is the same universal wrapper from task/haipipe-workflow.
   The 6 domain phases are probe-specific - not copied from task. task's eval
   task has Load/Score/Compare/Emit; probe has Design/Bridge/Run/Aggregate/Review/Claim.
 - Builder asymmetry preserved: Design, Bridge, Result remain interactive skills in the

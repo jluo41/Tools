@@ -6,13 +6,13 @@ This contract defines how `insights/` is constructed.
 The key decision:
 
 ```
-task / probe / discover produce material.
-narrative / application ask / human review decides what is worth archiving.
+task / discover produce material; stage _PROBE cards carry judged verdicts.
+probe deposit / human review decides what is worth archiving.
 insight writes curated cards only.
 ```
 
 `insights/` is the project-level permanent memory. It is not a task log, probe
-log, narrative draft, or application session folder.
+log, or application session folder.
 
 
 Roles
@@ -24,8 +24,6 @@ Layer / actor        Owns                         Does NOT own
 task                 run artifacts, metrics       permanent KB decisions
 probe                verdicts, claims, caveats    permanent KB decisions
 discover             literature/source findings   permanent KB decisions
-narrative            story gaps, ignite choice    raw evidence computation
-application ask      question-driven case plan    external artifact finalization
 insight review       review file + card filing    original research judgment
 ```
 
@@ -52,7 +50,6 @@ Canonical Flow
    - task results are complete
    - probe verdict is judged
    - discover/literature source is resolved
-   - narrative has claim slots / gaps
 
 2. Review scans material
    - find unarchived candidates
@@ -69,7 +66,6 @@ Canonical Flow
    - run index-integrity audit
 
 4. Callers cite the cards
-   - narrative `claims.md` cites K/W ids
    - application reports cite D/I/K/W ids
    - paper uses K/W plus evidence trail
 ```
@@ -82,7 +78,7 @@ Use review after a meaningful boundary, not after every tiny edit.
 
 Good review boundaries:
 
-- after `/haipipe-probe post <probe>` has a judged verdict
+- after a stage's PROBE phase lands a judged verdict in its _PROBE/PPNN card
 - after a paper/application lifecycle needs to backfill claim slots from evidence
 - during `/haipipe-application ask` Phase 4
 - manually, after several completed tasks/probes need archiving
@@ -91,7 +87,6 @@ Bad review boundaries:
 
 - before a task has `results/<run>/`
 - before a probe has been judged
-- while a narrative is still drafting the claim language
 - for raw notes, temporary ideas, or one-line observations too small to keep
 
 
@@ -104,19 +99,19 @@ A review run SHOULD create or emit this shape:
 review_id: R20260620_film_ood
 project: examples/ProjA
 scope:
-  kind: narrative | application_ask | probe | task | project | manual
-  ref: narrative:N01 | app:ask:03 | probe:P.0619_film_ood | task:T.A01.02
+  kind: probe | task | discovery | project | manual
+  ref: probe:P.0619_film_ood | task:T.A01.02
 
 candidate_cards:
   - candidate_id: C1
     layer: D
-    title: "OOD split error by arm"
+    title: "CGM_OOD_v2 dataset profile"
     sources: [task:T.A01.02]
-    reason: "completed task result not yet archived"
+    reason: "completed task's dataset not yet profiled in D_data"
     granularity:
       unit: observation
       decision: file
-      rationale: "one reusable metric observation, not a raw seed row"
+      rationale: "one named dataset's profile (the by-arm error contrast is an I candidate, not this D)"
     action: file
 
   - candidate_id: C2
@@ -128,7 +123,7 @@ candidate_cards:
     granularity:
       unit: claim
       decision: file
-      rationale: "one scoped belief used by the narrative"
+      rationale: "one scoped belief cited downstream"
     action: file
 
   - candidate_id: C3
@@ -202,7 +197,6 @@ task:T.A01.02
 probe:P.0619_film_ood
 lit:smith2024
 discover:Dsc.03
-narrative:N01.C2
 app:ask:03
 ```
 
@@ -228,7 +222,7 @@ ref_by: [K01]
 
 # K card from a judged probe, with supporting evidence in body
 sources: [probe:P.0619_film_ood]
-ref_by: [W01, narrative:N01.C2]
+ref_by: [W01, app:ask:03]
 
 # strategic W across multiple K cards
 sources: [K01, K03, K05]
@@ -258,9 +252,9 @@ The `_reviews/` folder holds the per-layer card-review and index-audit artifacts
 produced by the reviewers/auditor during `apply`. They are review provenance, not
 source-of-truth cards; the underscore keeps them out of the D/I/K/W card space.
 
-Session plans, logs, and gates belong under `applications/ask/<NN_slug>/`.
+Session plans, logs, and gates belong to the application layer's own folders.
 Paper/application claim ledgers belong inside their delivery lifecycle folders.
-Task/probe execution artifacts stay under `tasks/` and `probes/`.
+Task/discovery execution artifacts stay under `tasks/` and `discoveries/`.
 
 
 Review Contract
@@ -273,8 +267,7 @@ Review is complete only when:
 3. `K_knowledge/INDEX.md` and `W_wisdom/INDEX.md` are rebuilt if touched.
 4. `index-integrity-auditor-agent` passes or records explicit violations.
 5. The caller records the new card ids in its own artifact:
-   - narrative: `claims.md`
-   - application ask: `report.md` and SESSION_STATE
+   - probe: its Deposit record (verdict / deposit refs)
    - paper/application output: citation/reference list
 
 For `merge`, `update`, or `supersede`, the card's `## Change log` must record
@@ -289,7 +282,7 @@ Review does not:
 - run experiments
 - compute new metrics
 - judge whether a probe claim is true
-- decide a narrative is ready to publish
+- decide whether a paper story is ready to publish
 - write external artifacts
 
 Those happen upstream or downstream. Review only archives.

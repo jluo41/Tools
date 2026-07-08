@@ -49,7 +49,6 @@ When to Create Track A Stubs
   Purely experimental/reuse?  -> Track A not needed
 
 Every Track A stub auto-generates a paired Track B example task with the standard layout (including diagram/). Status is tracked in:
-  - {PROJECT}/diagram/03-exploration.txt   (under "active" or "backlog")
   - {task}/diagram/03-runs.txt             (Status = "stub" until implemented)
 The paired task does NOT contain a README.md — diagram/ is the doc surface.
 

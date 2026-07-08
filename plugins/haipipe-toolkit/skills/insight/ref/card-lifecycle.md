@@ -65,7 +65,7 @@ When To Update
 
 Use `update` for same-card maintenance:
 
-- add `ref_by` from a narrative/application/paper
+- add `ref_by` from an application/paper consumer
 - correct a typo or stale title
 - clarify scope wording without changing the underlying claim
 - mark `status: stale` for an old W whose action window passed

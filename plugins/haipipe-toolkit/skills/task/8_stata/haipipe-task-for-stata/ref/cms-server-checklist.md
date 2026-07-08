@@ -215,8 +215,8 @@ Start-Process $stata "/e $base pde $year $tail" -WorkingDirectory $dir -PassThru
 | ID | Check | Rule | Detail |
 |----|-------|------|--------|
 | F1 | Header | 1-2 comment lines: what + args/usage | No banners, no `===`/`---` walls, no ASCII-art, no box-drawing chars |
-| F2 | Size | orchestrator `.ps1` <= ~30 lines; `runs/` entry as small as possible (ideal: 2-3 lines -- comment + call orchestrator); `sbatch/` batcher <= ~10 lines | worker `.do` = one focused step. `runs/` entries should be thin dispatch-only: set the year, call the orchestrator. All logic (path resolution, dir creation, validation) lives in the orchestrator. |
-| F3 | No ceremony | No `runtime.yaml`/`manifest.json`/config snapshots in runners | Stata logs + `summary.txt` are the record |
+| F2 | Size | orchestrator `.ps1` <= ~30 lines; `runs/` entry as small as possible (ideal: 2-3 lines -- comment + call orchestrator); `sbatch/` batcher <= ~10 lines | worker `.do` = one focused step. `runs/` entries should be thin dispatch-only: set the year, call the orchestrator. All logic (path resolution, dir creation, validation) lives in the orchestrator (orchestrated stages; data/reg self-orchestrating runners hold their own logic per B3). |
+| F3 | No ceremony in RUNNERS | Runners/orchestrators write no `runtime.yaml`/`manifest.json`/snapshot logic inline | The record = Stata logs + `summary.txt` + `results/<run>/config_snapshot.do` (L3/L8; + `manifest.json` for self-orchestrating stages per dialect B3) |
 | F4 | Dispatcher braces | Multi-line braces only | `else if "step" == "x" {` then body indented, then `}` on own line. No one-liners |
 | F5 | No patch markers | No `// CHANGE (n)` in committed code | Give patch instructions in chat, not as in-file markers |
 | F6 | Orchestrator reads as | Variable block, then action lines | No interleaved logic/declarations |

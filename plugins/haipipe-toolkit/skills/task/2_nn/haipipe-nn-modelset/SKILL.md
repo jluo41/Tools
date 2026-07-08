@@ -4,11 +4,10 @@ description: "Layer 4 (ModelSet / Pipeline) specialist of haipipe-nn. Composes m
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-07-04"
   summary: "Layer 4 (ModelSet / Pipeline) specialist of haipipe-nn."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-nn-modelset
@@ -70,12 +69,12 @@ Layer Scope
 -----------
 
 Owns:
-  - ModelSet definitions in `code/hainn/nn/` (pipeline composition)
+  - ModelSet definitions in `code/haipipe/model_base/` (modelinstance_set.py, modelinstance_pipeline.py)
   - Registry of which instances participate in which set
   - Cross-instance routing / ensemble logic
 
 Upstream dependency (L3):
-  Reads `_WorkSpace/5-ModelInstanceStore/ModelInstance-*/` directories.
+  Reads `_WorkSpace/5-ModelInstanceStore/{modelinstance_name}/{version}/` directories.
   A ModelSet is a referenced registry; if an instance is missing, escalate
   to `/haipipe-nn-instance review`.
 

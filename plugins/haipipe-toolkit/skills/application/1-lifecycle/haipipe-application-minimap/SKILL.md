@@ -7,9 +7,7 @@ metadata:
   version: "2.0.0"
   last_updated: "2026-06-23"
   summary: "Stage 5 — job + evidence anchor per output unit."
-  changelog:
-    - "2.0.0 (2026-06-23): renamed from delivery to minimap; match paper vocabulary; venue-gated."
-    - "1.0.0 (2026-06-22): initial version as haipipe-application-delivery."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-application-minimap

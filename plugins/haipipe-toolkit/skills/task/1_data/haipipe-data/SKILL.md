@@ -4,12 +4,10 @@ description: "Run any Stage 1-4 data pipeline work. Parses intent (stage + funct
 argument-hint: "[stage] [function] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-06-11"
+  version: "1.2.0"
+  last_updated: "2026-07-04"
   summary: "Run any Stage 1-4 data pipeline work."
-  changelog:
-    - "1.1.0 (2026-06-11): update notebook section — retire 0_data_nb, add partition params (NUM_PARTITIONS/PARTITION_INDEX/NUM_WORKERS), CLI alternative, MIMIC-IV worked example; add partition mode to fn-2-cook.md for Record/Case/AIData."
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-data (orchestrator)
@@ -34,11 +32,13 @@ Specialists
 -----------
 
 ```
-haipipe-data-raw        Stage 0' (raw cohort): single-data-point timeline, 0-RawStore
-haipipe-data-source     Stage 1: SourceFn, HumanFn, 1-SourceStore
-haipipe-data-record     Stage 2: RecordFn, TriggerFn, 2-RecStore
-haipipe-data-case       Stage 3: CaseFn, 3-CaseStore
+haipipe-data-raw        Stage 0' (raw cohort): single-data-point timeline, 0-RawDataStore
+haipipe-data-source     Stage 1: SourceFn, 1-SourceStore
+haipipe-data-record     Stage 2: HumanFn, RecordFn, 2-RecStore
+haipipe-data-case       Stage 3: TriggerFn, CaseFn, 3-CaseStore
 haipipe-data-aidata     Stage 4: TfmFn, SplitFn, 4-AIDataStore
+haipipe-data-external   External reference data (NDC, NPI, ...): load/cook/join, ExternalStore
+haipipe-data-remote     Remote storage sync (rclone/GDrive): status/pull/push, all stores
 ```
 
 ---
@@ -104,6 +104,8 @@ SourceFn, HumanFn, ingest, raw frame, source layer    -> source
 RecordFn, TriggerFn, record, record-centered          -> record
 CaseFn, case, cohort, sampling, trigger event         -> case
 TfmFn, SplitFn, AIData, tensor, split, model input    -> aidata
+external, NDC, NPI, reference data, join external     -> external
+remote, rclone, gdrive, sync, pull, push              -> remote
 ```
 
 Stage aliases (positional):
@@ -114,7 +116,9 @@ Stage aliases (positional):
 3, 3-case, case             -> case
 4, 4-aidata, aidata         -> aidata
 0, overview, 0-overview     -> umbrella inline (cross-stage explainer)
-rawdata, 0-rawdata          -> source (dashboard rawdata mode; legacy alias)
+rawdata, 0-rawdata          -> raw dashboard Panel 0 (raw store scan; see fn/fn-0-dashboard.md)
+external                    -> external
+remote                      -> remote
 ```
 
 ---
@@ -126,7 +130,7 @@ Function Verb Map
 build, create, design, scaffold, new          -> design-chef
 modify pipeline, change pipeline, kitchen     -> design-kitchen
 run, execute, cook, process                   -> cook
-notebook, nb, papermill, databricks notebook   -> notebook-wrapper (see ★ section; code/scripts/haistepnb/)
+notebook, nb, papermill, databricks notebook   -> notebook-wrapper (see ★ section; code/scripts/haistepnb/ — workspace-dependent, absent in some repos)
 review, audit, check, validate, verify        -> review
 load, inspect, show, view, look               -> load
 status, dashboard, what's there               -> dashboard
@@ -180,7 +184,7 @@ Skill("haipipe-data-case",    args="dashboard")
 Skill("haipipe-data-aidata",  args="dashboard")
 ```
 
-Then emit a 4-line summary (one per stage) plus an overall header that
+Then emit a 5-line summary (one per stage) plus an overall header that
 points the user at their next likely command.
 
 ---

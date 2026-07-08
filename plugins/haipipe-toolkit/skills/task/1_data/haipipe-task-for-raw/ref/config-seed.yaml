@@ -13,7 +13,7 @@ _meta:
   input: |
     <e.g., Databricks catalog welldoc_prod, schema claims, tables: encounters, medications, labs>
   output: |
-    <e.g., _WorkSpace/0-RawStore/prediabetes/ — one parquet per table>
+    <e.g., _WorkSpace/0-RawDataStore/prediabetes/ — one parquet per table>
   skip_review: true
   notebook: full
 
@@ -50,5 +50,5 @@ databricks:
 # =============================================================================
 
 local:
-  raw_store_path: "_WorkSpace/0-RawStore/<cohort>/"
+  raw_store_path: "_WorkSpace/0-RawDataStore/<cohort>/"
   cohort: <cohort_name>                 # e.g. prediabetes, adhd

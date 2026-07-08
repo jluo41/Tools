@@ -69,7 +69,7 @@ Two deliberate departures from the Python mold:
 runtime.yaml — OPTIONAL task-log integration
 ---------------------------------------------
 
-Under the Stata dialect the execution record is the per-step Stata log + `summary.txt`; runners stay THIN and write no bookkeeping (see the script style contract below). `results/<run>/runtime.yaml` is OPTIONAL — add one after a run (by hand or tooling, never in the runner hot path) only when the unified `task-log.md` from `haipipe-task-logging/ref/regen_task_log.py` is wanted. Flat schema:
+Under the Stata dialect the execution record is the per-step Stata log + `summary.txt`; runners stay THIN and write no bookkeeping (see the script style contract below). `results/<run>/runtime.yaml` is OPTIONAL — add one after a run (by hand or tooling, never in the runner hot path) only when a unified `task-log.md` (regeneration tooling retired; keep the log by hand) is wanted. Flat schema:
 
 ```yaml
 status:     ok                              # running | ok | failed
@@ -131,16 +131,18 @@ A2  ASCII-only .ps1/.do. PS 5.1 reads ANSI: an em-dash or box-drawing char
     -> "Unexpected token" parse error. If non-ASCII is truly unavoidable,
     save UTF-8 WITH BOM.
 A3  No installs, no network: no winget / pip / ssc install anywhere.
-A4  No SSC commands in .do: no `distinct` (use egen tag() + count); built-ins
-    only; capture-guard optional variables.
-A5  Stata exe resolution -- two accepted patterns (scoped by topology):
-    (a) HARDCODED (server-optimized): $stata = "C:\...\StataMP-64.exe"
-        Another machine edits that one line. Preferred for cms-stage.
-    (b) RESOLVER (multi-machine): Resolve-StataExe function (~10 lines,
-        checks $env:HAIPIPE_STATA then scans Program Files). Standard for
-        data/reg/case-stage runners that also run on laptop during dev.
-    The reviewer accepts either. On the CMS server the user can always
-    override via $env:HAIPIPE_STATA.
+A4  No SSC commands in .do, ONE exception: `rangejoin`. No `distinct`
+    (use egen tag() + count); otherwise built-ins only; capture-guard
+    optional variables.
+
+
+
+A5  Stata exe resolution -- two accepted patterns, either OK for ANY stage:
+    (a) HARDCODED: $stata = "C:\...\StataMP-64.exe" (one editable line;
+        another machine edits that line).
+    (b) RESOLVER: Resolve-StataExe function (~10 lines, checks
+        $env:HAIPIPE_STATA then scans Program Files).
+    The reviewer accepts either. $env:HAIPIPE_STATA always overrides.
 A6  Output paths from the ABSOLUTE _WorkSpace (pyproject.toml walk-up).
     Never a relative "_WorkSpace", never ..\.. depth counting. Genuinely
     fixed raw inputs (G:\CMS\DATA) stay absolute in the config.
@@ -343,12 +345,12 @@ D   reg     coef tables (.tex/.csv)   results/      (LIGHT)
 So `B01/C01/D01` = one study's case→data→reg folders; the disease-agnostic `cms` stage (run once, reused) sits alone with `NN` as a plain sequence (`A01`, `A02`). These task-folder letters reuse `A/B/C/D` (which mean training/eval/display/data at the GROUP level) — no functional clash, since they live at a different hierarchy level and the logging map keys on the GROUP letter. Note it in the project `diagram/` so it reads clearly.
 
 
-RUNNAME grammar by stage (see each specialist for detail)
+RUNNAME grammar by stage (stages unified in this skill since 2.0.0; SKILL.md carries the authoritative grammars)
 ----------------------------------------------------------
 
 ```
-cms    run_cms_<year>                                  axis: year
-case   run_case_<Cohort>_<year>                        axes: cohort × year
-data   run_data_<Spec>                                 axis: analysis-spec (no year — cross-year)
-reg    run_reg_<Condition>_<Pairing>_<Trait>[-ols|-iv] axes: condition × pairing × trait × estimator
+cms    run_cms_<year>                                        axis: year
+case   run_case_<Cohort>_{synth|full}_<year>                 axes: cohort × source × year
+data   run_data_<Spec>                                       axis: analysis-spec (no year — cross-year)
+reg    run_reg_<cohort>_<pairing>_{synth_}?<window>_<family> axes: cohort × pairing × source × window × family
 ```

@@ -1,6 +1,6 @@
 ---
 name: card-reviewer-data-agent      # = subagent_type; register via top-level agents/ symlink
-description: "REVIEWER agent for insight 🟦 D (data) cards. Judges ONE D card for (a) ACCURACY — every number traces to the cited probe/metrics, no interpretation leaked — and (b) BOUNDARY/STYLE — conforms to the D layer of ../../ref/dikw-boundaries.md + ../../ref/insight-md-schema.md — independently of whoever filed it (filer != judge). Codex-backed for the accuracy re-read. Writes D_CARD_REVIEW.md. Trigger: review D card, D-card gate, observation accuracy."
+description: "REVIEWER agent for insight 🟦 D (data) cards. Judges ONE D card for (a) ACCURACY — every number traces to the cited source artifact, no interpretation leaked — and (b) BOUNDARY/STYLE — conforms to the D layer of ../../ref/dikw-boundaries.md + ../../ref/insight-md-schema.md — independently of whoever filed it (filer != judge). Codex-backed for the accuracy re-read. Writes D_CARD_REVIEW.md. Trigger: review D card, D-card gate, observation accuracy."
 tools:
   - Read
   - Grep
@@ -11,10 +11,11 @@ tools:
   - mcp__codex__codex-reply
 model: sonnet
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-07-05"
   summary: "REVIEWER agent for insight 🟦 D (data) cards."
   changelog:
+    - "1.1.0 (2026-07-05): source-neutral trace wording; settled-probe = top-level status; sidecar home insights/_reviews/; Codex fallback (JL skill-set review)."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
@@ -33,8 +34,9 @@ probe's job upstream; I judge the CARD.
 layer:            insight
 family:           reviewers (per-DIKW · independent · filer != judge)
 serves_gate:      D-card review
-sole_deliverable: D_CARD_REVIEW.md  (verdict + line-cited findings)
+sole_deliverable: insights/_reviews/D_CARD_REVIEW.md  (verdict + line-cited findings)
 reviewer:         Codex (out-of-family) for accuracy · self for style/boundary
+codex_fallback:   Codex MCP unavailable → run the accuracy re-read yourself in a separate pass; record `codex: unavailable` in the sidecar
 ```
 
 **I own:** the verdict on ONE 🟦 D card.
@@ -54,9 +56,9 @@ reviewer:         Codex (out-of-family) for accuracy · self for style/boundary
 - `../../ref/card-lifecycle.md` → merge/update/supersede/change-log rules
 - the cited source (`task:*`, `probe:*`, `discover:*`, or `lit:*`): hand Codex
   the card + source paths and ask it to REFUTE accuracy. For probe sources,
-  the probe must have a settled result.status (`confirmed`, `refuted`, or
-  `inconclusive`); for task/discover/lit sources, the cited artifact must be
-  stable and traceable.
+  the probe must be settled (probe.yaml top-level `status:` shows it has passed
+  Judge, e.g. `deposited`); for task/discover/lit sources, the cited artifact
+  must be stable and traceable.
 
 ```
 □ dataset    `dataset:` is present and names the ONE dataset this D profiles
@@ -77,7 +79,7 @@ has leaked in, or an inferential quantity (p / CI) appears (it belongs in K).
 ```
 status:    ok | blocked | failed
 summary:   "<faithful | untraceable number at <line> | interpretation leaked>"
-artifacts: [D_CARD_REVIEW.md]
+artifacts: [insights/_reviews/D_CARD_REVIEW.md]
 next:      if clean → index-integrity-auditor-agent (cross-layer graph)
            else → back to haipipe-insight-data to re-file
 ```

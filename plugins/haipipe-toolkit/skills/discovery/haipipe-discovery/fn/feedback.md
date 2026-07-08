@@ -21,17 +21,17 @@ it lands in the orchestrator fallback `feedback/`. The folder a file lives in IS
 the record of which unit it concerns; there is no separate `skill:` field.
 
 The routable UNIT is the BUCKET FOLDER (each groups several capability skills),
-plus the shared `agents/` folder. Five units total.
+plus the shared `agents/` folder. Four routable units total (1_search, 2_review,
+3_idea, agents); the orchestrator fallback inbox is the catch-all DESTINATION
+for cross-cutting items, not a fifth unit.
 
 ## Capture: `/haipipe-discovery feedback "<text>"`
 
 ```
-1. Read the active discovery + frontier from .discovery-console.yaml if present
-   (the active type/stage is the SECONDARY routing signal).
-2. INFER the target unit (see "Routing the capture" below).
-3. Resolve the unit -> its feedback/ folder PATH (see "Inbox paths").
+1. INFER the target unit (see "Routing the capture" below).
+2. Resolve the unit -> its feedback/ folder PATH (see "Inbox paths").
    If that folder is missing, create it + a one-line README (template below).
-4. MERGE-OR-CREATE (an inbox must NOT grow without bound):
+3. MERGE-OR-CREATE (an inbox must NOT grow without bound):
    a. Read the OPEN (and fixed) items already in the resolved inbox
       (small set: one unit's folder).
    b. SAME-TOPIC test: is the new item the same underlying concern as an
@@ -48,7 +48,7 @@ plus the shared `agents/` folder. Five units total.
       (frontmatter + body per "One file per item" below).
    e. AMBIGUOUS near-match (manual capture) -> ASK "looks like <file> -- merge
       or new?" rather than guess. (Under digest, the confirm gate decides.)
-5. CONFIRM where it landed, whether it was MERGED (into <file>) or NEW, and how
+4. CONFIRM where it landed, whether it was MERGED (into <file>) or NEW, and how
    it matched; offer the one-line correction:
    "filed -> 1_search/feedback/ NEW (matched keyword 'sources.md').
     wrong target? /haipipe-discovery feedback move <file> <unit>"
@@ -73,8 +73,8 @@ guess: a wrong MERGE buries a distinct concern, a wrong SPLIT regrows the inbox.
 ### Routing the capture (cross-cutting guard first, then keyword, then context)
 
 ```
-signal A (primary):   a routing keyword appears in the feedback TEXT
-signal B (secondary): the active type/stage in .discovery-console.yaml
+signal: a routing keyword in the feedback TEXT (plus the conversation's active
+        type/stage as secondary context)
 resolve:
   0. CROSS-CUTTING GUARD (runs BEFORE keyword match). The TEST is SEMANTIC:
      does the complaint assert a rule TRUE ACROSS ALL discovery types AND stages
@@ -87,8 +87,8 @@ resolve:
            stage", "across the lifecycle", "throughout", "always ... before
            done", or the same idea with no trigger word at all.
          - names a known cross-cutting concern: the Plan/Build/Execute/Report
-           lifecycle, the Search/Review/Idea (搜/析/创) type field, the
-           discovery.yaml schema, status.yaml, the report block, the stage
+           lifecycle, the Search/Review/Idea type field, the
+           discovery.yaml schema, the report block, the stage
            strip, the dashboard, the group-letter hints, the project.log.jsonl.
        Rule of thumb: "would this complaint be equally true for a Search folder,
        a Review folder, AND an Idea folder?" If yes, it is cross-cutting.
@@ -96,21 +96,21 @@ resolve:
        (the type axis is layer-wide schema); "sources.md is an unreadable wide
        table" -> 1_search (one bucket's output).
   1. else keyword match in TEXT -> that unit (most specific wins)
-  2. else active type/stage context -> that unit
+  2. else the conversation's active type/stage -> that unit
   3. else orchestrator fallback
 ```
 
 Keyword -> unit map (first/most-specific match wins; unit = the bucket folder):
 
 ```
-search, find paper, arxiv, semantic scholar, exa, sources.md  -> 1_search/feedback/
-read, summarize paper, alphaxiv, deepxiv, analyze paper, notes -> 2_read/feedback/
-review, lit review, landscape, verdict, synthesize, novelty   -> 3_review/feedback/
-idea, idea-creator, generate ideas, ideas.md                  -> 4_idea/feedback/
+search, find paper, arxiv, semantic scholar, exa, sources.md,
+read, summarize paper, alphaxiv, deepxiv, analyze paper, notes -> 1_search/feedback/
+review, lit review, landscape, verdict, synthesize            -> 2_review/feedback/
+idea, idea-creator, generate ideas, ideas.md, novelty, 查新    -> 3_idea/feedback/
 creator/orchestrator/reviewer agent, dispatch                 -> agents/feedback/
 --------------------------------------------------------------------------------
 NO MATCH (cross-cutting: the Plan/Build/Execute/Report lifecycle, the
-Search/Review/Idea (搜/析/创) type field, the discovery.yaml schema, status.yaml,
+Search/Review/Idea type field, the discovery.yaml schema,
 the report block, the stage strip, the dashboard, anything true across all
 types) ......................... -> orchestrator fallback (haipipe-discovery/feedback/)
 ```
@@ -151,10 +151,10 @@ capture, so a mapped folder not existing yet is expected, not an error. Do NOT
 pre-create empty inboxes; create one only when a file is actually filed there.
 
 ```
-1_search    (arxiv, semantic-scholar, exa-search)              1_search/feedback/
-2_read      (alphaxiv, deepxiv, paper-analyzer)                2_read/feedback/
-3_review    (research-lit, comm-lit-review, academic-research) 3_review/feedback/
-4_idea      (idea-creator, novelty-check)                      4_idea/feedback/
+1_search    (arxiv, semantic-scholar, exa-search,
+             alphaxiv, deepxiv, paper-analyzer)                1_search/feedback/
+2_review    (research-lit, comm-lit-review, academic-research) 2_review/feedback/
+3_idea      (idea-creator, novelty-check)                      3_idea/feedback/
 agents      (creator / orchestrator / reviewer dispatch)       agents/feedback/
 ORCHESTRATOR FALLBACK                                          haipipe-discovery/feedback/
 ```

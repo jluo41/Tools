@@ -428,7 +428,7 @@ MUST NOT
 
 **infer() return type (Tuner level):** Family-specific. Check existing Tuners
 in your model family for the expected format. The Instance above you handles
-output routing -- see ref/layer-3-instance.md for the standard routing contract.
+output routing -- see ../../haipipe-nn-instance/ref/concepts.md for the standard routing contract.
 
 ---
 

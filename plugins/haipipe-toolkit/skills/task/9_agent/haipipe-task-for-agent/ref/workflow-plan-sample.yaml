@@ -1,6 +1,6 @@
 # workflow-plan-sample.yaml — agent task script-level plan
-# Schema: project/haipipe-workflow/ref/plan-schema.md
-# Task-level template: ../../haipipe-task/ref/workflow-template.yaml
+# Schema: task/haipipe-workflow/ref/plan-schema.md
+# Task-level template: ../../../haipipe-task/ref/workflow-template.yaml
 #
 # Typical agent phases: Setup → Execute → Parse
 # All outputs light (results/<run>/{transcript.json, summary.md}).

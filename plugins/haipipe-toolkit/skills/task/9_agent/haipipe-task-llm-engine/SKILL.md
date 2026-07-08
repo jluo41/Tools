@@ -2,6 +2,11 @@
 name: haipipe-task-llm-engine
 description: "Owns code/haiutils/llm_engine/ -- the unified LLM call runtime for agent task-folders. Two OAuth transports (Claude Agent SDK + Codex OAuth) with API-key fallback. On trigger: CHECK the deployed code exists, CREATE it from ref/engine/ if missing, EVALUATE it if present, UPDATE if stale."
 trigger: llm engine, llm call, llm transport, oauth engine, call claude, call codex, engine test, engine status
+metadata:
+  version: "1.2.0"
+  last_updated: "2026-07-04"
+  summary: "Owner of code/haiutils/llm_engine/ — unified LLM call runtime for agent task-folders."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # haipipe-task-llm-engine
@@ -43,9 +48,9 @@ codex_oauth     ~/.codex/auth.json       $0 (ChatGPT sub)   codex_oauth
 model string               transport
 ─────────────────────────  ─────────────────
 "opus" / "sonnet" / "haiku"  claude_sdk (OAuth)
-"claude-opus-4-7"            claude_sdk (OAuth)
+"claude-opus-4-8"            claude_sdk (OAuth)
 "codex/gpt-5.5"              codex_oauth
-"api:claude-opus-4-7"        claude_api (force API key)
+"api:claude-opus-4-8"        claude_api (force API key)
 ```
 
 ## Data storage

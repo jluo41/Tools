@@ -6,8 +6,8 @@ per-script and task-level. Each report mirrors its corresponding
 plan — same phases, same steps — filled with what actually happened.
 
 Schema source of truth:
-  skills/project/haipipe-workflow/ref/plan-schema.md  (Report schema section)
-  skills/project/haipipe-workflow/ref/concepts.md     (Report = plan's echo)
+  skills/task/haipipe-workflow/ref/plan-schema.md  (Report schema section)
+  skills/task/haipipe-workflow/ref/concepts.md     (Report = plan's echo)
 
 The report uses the SAME structure as the plan, adding per-step
 result fields: status, output, note, reason.

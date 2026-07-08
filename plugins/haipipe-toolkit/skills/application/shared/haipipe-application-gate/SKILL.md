@@ -7,9 +7,7 @@ metadata:
   version: "2.0.0"
   last_updated: "2026-06-23"
   summary: "Phase-transition gate — venue-gated, persona-driven."
-  changelog:
-    - "2.0.0 (2026-06-23): venue-gated; updated stage names to paper vocabulary; simplified for lifecycle model."
-    - "1.0.0 (2026-05-31): baseline."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-application-gate

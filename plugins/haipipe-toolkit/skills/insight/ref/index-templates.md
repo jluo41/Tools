@@ -2,8 +2,11 @@ Insight Base INDEX Templates
 =============================
 
 Templates for the auto-maintained INDEX and view files. The card folders stay
-flat by DIKW layer. Topic/source/narrative/status navigation is generated under
-`insights/views/`, not encoded as subfolders.
+flat by DIKW layer. Topic/source/status navigation is generated under
+`insights/views/`, not encoded as subfolders. Views follow the family dual-mode
+contract (`ref/invocation-modes.md`): a human-driven run builds them co-pilot
+(pick and confirm the views together); a subagent/headless caller runs `--auto`
+and writes them silently.
 
 Per Q-b confirmed: top-level INDEX.md + K_knowledge/INDEX.md +
 W_wisdom/INDEX.md. D_data and I_information do NOT get sub-indexes (grep tags
@@ -26,8 +29,8 @@ Last rebuild: <ISO>
 ### <topic-1>
 - K03 — "<one-line claim>"                 [confidence: high]
 - W01 — "<one-line rec>"                   [rec_type: next_experiment]
-- I02 — pattern across 3 D entries         [direction: mixed]
-- D01, D02, D03 — observations             (3 entries)
+- I02 — in-sample pattern in <dataset>     [direction: mixed]
+- D01 — <dataset> dataset profile          (1 entry)
 
 ### <topic-2>
 ...
@@ -151,7 +154,6 @@ rebuilt from card frontmatter.
 insights/views/
 ├── by_topic.md
 ├── by_source.md
-├── by_narrative.md
 └── by_status.md
 ```
 
@@ -187,18 +189,6 @@ Group by `tags`. A card appears under every tag it declares.
 
 Group by `sources` and D-layer `source_id`.
 
-### views/by_narrative.md
-
-```markdown
-# Insight View — By Narrative
-
-## narrative:N01.C2
-- K03 — "<claim>"
-- W01 — "<rec>"
-```
-
-Group by `ref_by` entries that start with `narrative:`.
-
 ### views/by_status.md
 
 ```markdown
@@ -224,18 +214,19 @@ Any layer skill that writes/updates an entry rebuilds:
   - wisdom writes/updates      → top INDEX.md + W_wisdom/INDEX.md
   - any write/update           → insights/views/*.md when view rebuild exists
 
-Manual rebuild: `/haipipe-insight rebuild-index` (umbrella verb).
+Manual rebuild: run a review `apply` (INDEX files are rebuilt after filing),
+or follow the procedure below by hand.
 
 Rebuild procedure (idempotent):
   1. Glob insights/{D,I,K,W}_*/*.md
   2. Read frontmatter of each (one YAML parse per file)
   3. Group by tags (topic), by layer, by status, by created date
-  4. Group by source, narrative ref, and status for views/
+  4. Group by source and status for views/
   5. Render into the templates above
   6. Atomic write (tmp → mv)
 
 The entries themselves are source of truth; INDEX files are derived
-state. If they ever disagree, `rebuild-index` trusts the entries.
+state. If they ever disagree, the rebuild trusts the entries.
 
 
 Don't hand-edit

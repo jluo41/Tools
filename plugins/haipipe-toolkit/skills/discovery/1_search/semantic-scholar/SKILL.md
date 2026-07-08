@@ -7,8 +7,7 @@ metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
   summary: "Search published venue papers (IEEE, ACM, Springer, etc.) via Semantic Scholar API."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # Semantic Scholar Paper Search
@@ -125,12 +124,12 @@ For each result, check `externalIds.ArXiv`:
 
 ### Step 5: Present Results
 
-Present results as a table:
+Present results as a numbered list, ONE PAPER PER ENTRY (never a table — paper tables are unreadable):
 
 ```text
-| # | Title | Venue | Year | Citations | Authors | Type |
-|---|-------|-------|------|-----------|---------|------|
-| 1 | Deep Learning Enabled... | IEEE Trans. Signal Process. | 2021 | 1364 | Xie et al. | Journal |
+1. Xie et al. (2021). Deep Learning Enabled Semantic Communication Systems.
+   IEEE Trans. Signal Process. · Journal · 1364 citations
+2. ...
 ```
 
 For each paper, also show:

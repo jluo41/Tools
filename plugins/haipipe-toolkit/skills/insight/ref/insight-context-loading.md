@@ -147,10 +147,10 @@ Case 3 — "Show me the evidence behind K03"  (deep dive)
 Step 1: Read K03 (already loaded in case 1)
 Step 2: Read K03.sources → I02
         Read insights/I_information/I02_*.md                (~60 lines)
-Step 3: Read I02.sources → D01, D02, D03
-        Read insights/D_data/{D01,D02,D03}_*.md   (~150 lines)
+Step 3: Read I02.sources → D01 (the named dataset's profile)
+        Read insights/D_data/D01_*.md             (~50 lines)
 
-TOTAL: ~250 additional lines on top of case 1.
+TOTAL: ~110 additional lines on top of case 1.
 ```
 
 Case 4 — "What FiLM-tagged entries are stale?"  (filter query)
@@ -191,7 +191,7 @@ INDEX files (top + K/W sub) are auto-rebuilt:
        - knowledge writes/updates   → rebuild top + K_knowledge/INDEX
        - wisdom writes/updates      → rebuild top + W_wisdom/INDEX
   2. After explore skill scans (it rebuilds top INDEX as a side effect)
-  3. Manual rebuild: `/haipipe-insight rebuild-index` (from umbrella)
+  3. Manual rebuild: via a review `apply` run (INDEX rebuilt after filing)
 
 INDEX is derived state; the entries themselves are source of truth. If
 INDEX disagrees with entries, the rebuild command trusts entries.
@@ -204,8 +204,8 @@ Don't do
   - Don't full-text grep across body (slow, noisy); use frontmatter tags
   - Don't try to load all entries' bodies at once (>= 50 entries)
   - Don't hand-edit INDEX — it's derived
-  - Don't store insights smaller than one paragraph (collapse into
-    sibling entry's Notes section instead)
+  - Don't store insights smaller than one paragraph (merge into the
+    sibling card's evidence + `## Change log` instead)
 
 
 When to scale up (future, not now)

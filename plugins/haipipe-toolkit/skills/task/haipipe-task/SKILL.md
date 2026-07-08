@@ -1,20 +1,13 @@
 ---
 name: haipipe-task
-description: "Task-folder and task-group orchestrator. For a task-folder: runs the 4-stage code lifecycle (Plan → Build → Execute → Report) or dispatches to type specialists for scaffolding. For a task-group: iterates over each child task-folder and runs the lifecycle on each one. For insight (filing D_data observation cards from results), use /haipipe-insight with the task-folder path."
+description: "Task-folder and task-group orchestrator. For a task-folder: runs the 4-stage code lifecycle (Plan → Build → Execute → Report) or dispatches to type specialists for scaffolding. For a task-group: iterates over each child task-folder and runs the lifecycle on each one."
 argument-hint: "[scope] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "5.0.0"
-  last_updated: "2026-06-11"
+  version: "5.5.0"
+  last_updated: "2026-07-04"
   summary: "Build orchestrator with 4-stage code lifecycle for task-folders and task-groups."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
-    - "2.0.0 (2026-06-08): add workflow lifecycle — audit, plan, report. New fn/ procedures. New ref: workflow-template.yaml."
-    - "2.1.0 (2026-06-08): three-layer plans; per-script IPO; Stata four-sister; wire reviewer+auditor agents."
-    - "3.0.0 (2026-06-09): 4-stage lifecycle (Plan/Build/Execute/Report) via task-lifecycle.workflow.js; creator-reviewer agent loop at each stage; all plans follow haipipe-workflow IPO schema; type-specific workflow-plan-sample.yaml in every specialist; project/task-group scope moved to haipipe-project."
-    - "4.0.0 (2026-06-11): 5-stage lifecycle — add Stage 5 (Insight), optional, files D_data observation card via /haipipe-insight-data for insight-worthy types. Code lifecycle (1-4) + data lifecycle (5)."
-    - "4.1.0 (2026-06-11): task-group iteration — when given a task-group path, enumerate child task-folders and run lifecycle on each one sequentially (Step 3d). Removed project/task-group redirects to /haipipe-project; this skill now owns both task-folder and task-group scope."
-    - "5.0.0 (2026-06-11): remove Stage 5 (Insight) from task lifecycle — insight is /haipipe-insight's responsibility, not task's. This skill is now a pure 4-stage code lifecycle (Plan/Build/Execute/Report). Task-group iteration updated accordingly."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-task (orchestrator)
@@ -28,22 +21,23 @@ project           examples/Proj{...}/
         └── task-folder  {NN}_{name}/{*.py, configs/, runs/, results/, notebooks/}
 ```
 
-This skill owns **task-folder** and **task-group** scope. For a task-folder, it runs the 4-stage code lifecycle (Plan → Build → Execute → Report) or dispatches to a type specialist for scaffolding. For a task-group, it iterates over each child task-folder and runs the lifecycle on each one. For filing observations from results, use `/haipipe-insight` separately. Type specialists (one per type):
+This skill owns **task-folder** and **task-group** scope. For a task-folder, it runs the 4-stage code lifecycle (Plan → Build → Execute → Report) or dispatches to a type specialist for scaffolding. For a task-group, it iterates over each child task-folder and runs the lifecycle on each one. Type specialists (one per type):
 
 ```
 task-type     Specialist                              Cross-skill
 ------------  --------------------------------------  --------------------------
 data          /haipipe-task-for-data              /haipipe-data
+raw           /haipipe-task-for-raw               /haipipe-data-raw (Stage 0: Databricks → parquet)
 algo          /haipipe-task-for-algo              /haipipe-nn-algo
 fit           /haipipe-task-for-fit               /haipipe-nn-tuner+instance
 eval          /haipipe-task-for-eval              (project-local; future)
 display       /haipipe-task-for-display           (independent)
 individual    /haipipe-task-for-individual        /haipipe-individual
-agent         /haipipe-task-for-agent             (none yet)
+agent         /haipipe-task-for-agent             /haipipe-task-llm-engine (LLM call runtime)
 endpoint      /haipipe-task-for-endpoint          /haipipe-end (package + deploy)
 ```
 
-NOTE: group letters (A01_, B01_, C01_) are project-specific organizational prefixes, NOT type indicators. Each project defines its own letter scheme. Type is detected from script content, not from group letters. The recommended convention is A=data, B=fit, C=endpoint.
+NOTE: group letters (A01_, B01_, C01_) are project-specific organizational prefixes, NOT type indicators. Each project defines its own letter scheme. Type is detected from script content, not from group letters. Specialists carry a DEFAULT letter for projects with no scheme (data D, fit A, eval B, display C, individual E, agent F, raw R, algo group X_algo); the project's existing scheme always wins.
 
 Stata specialist (engine = Stata + PowerShell + logs, NOT papermill):
 
@@ -51,11 +45,11 @@ Stata specialist (engine = Stata + PowerShell + logs, NOT papermill):
 engine = Stata   →  /haipipe-task-for-stata   (unified — handles cms/case/data/reg internally)
 ```
 
-ANY engine=Stata request is delegated to **`/haipipe-task-for-stata`**, a unified Stata specialist that handles all 4 stages internally (cms/case/data/reg), owns the `{LNN}` stage-letter alphabet, and keeps the shared engine contract in **its own `ref/`** (`haipipe-task-for-stata/ref/`: `stata-dialect.md` + the Stata templates). This skill does NOT route stata stages itself — it hands off once the engine is detected as Stata.
+This skill does NOT route stata stages itself — once the engine is detected as Stata it hands off wholesale; the specialist owns the `{LNN}` stage-letter alphabet and the engine contract in its own `ref/` (`stata-dialect.md` + templates).
 
-Routing principle: this skill is the HIGH-LEVEL router — it owns only the engine-agnostic invariants (`ref/hierarchy.md`, authoring conventions). Each `/haipipe-task-for-<engine>` child owns its OWN `ref/` (templates + dialect); route to the child and read the child's `ref/`, never keep engine specifics here.
+Routing principle: this skill is the HIGH-LEVEL router. It owns only the engine-agnostic invariants (`ref/hierarchy.md`, `ref/task-structure.md` for task-group / task-folder / diagram / run-script layout, authoring conventions). Each `/haipipe-task-for-<engine>` child owns its OWN `ref/` (templates + dialect); route to the child and read the child's `ref/`, never keep engine specifics here.
 
-For audit / read see `/haipipe-project-inspect`; for moves see `/haipipe-project-organize`.
+Project setup (Project-*/ProjX-* containers) lives in `/haipipe-project`. This skill received fn/task-group.md and fn/scan-status.md (+ ref/scan_status/ scripts) from the project layer 2026-07-03.
 
 ---
 
@@ -71,13 +65,13 @@ Commands
 /haipipe-task <existing-task-group-path>              iterate: full lifecycle on each child task-folder
 /haipipe-task <stage> <existing-task-group-path>      iterate: that stage on each child task-folder
 /haipipe-task task-folder <type> [args...]            scaffold a NEW task-folder via type specialist
+/haipipe-task task-group <group-path|name>            scaffold a NEW task-group (fn/task-group.md)
+/haipipe-task scan-status [project-path]              status scan across task-groups (fn/scan-status.md)
 /haipipe-task feedback "<text>"                       capture skill feedback (merge-or-create), ROUTED to the domain folder it concerns
 /haipipe-task feedback list [unit]                    aggregate open feedback across ALL inboxes (grouped by unit)
 /haipipe-task feedback move <file> <unit>             re-route a mis-filed feedback item
 /haipipe-task digest ["<session-name|id>"] [--dry-run]  digest a session (current, or a PAST one named/id'd, run from fresh): harvest feedback, dedup, confirm-gate, route to inboxes
 ```
-
-For project scaffolding (creating `examples/Proj{...}/`), use `/haipipe-project`.
 
 ---
 
@@ -121,19 +115,22 @@ Stage 4: REPORT — summarize (what actually happened vs the plan)
 
 File ownership is strict: Plan touches only `workflow/plan*.yaml`. Build touches only code/configs/runs. Execute touches only `results/` and `notebooks/`. Report touches only `workflow/report*.yaml` and `RUN_AUDIT.md`.
 
-To file observations from task results ("what did the data teach us?"), use `/haipipe-insight <task-folder-path>` after the code lifecycle completes.
+The `workflow/` folder is the task's observability surface: Plan = intent, Report = evidence, same IPO shape at both levels (schema: `task/haipipe-workflow/ref/plan-schema.md`).
+
+A task ends at Report: it produces `results/` and stops. Whoever consumes those results records the link on THEIR side — this layer tracks no consumers.
 
 ---
 
 Agents
 ------
 
-Two agents in `task/agents/` power stages 1, 2, and 4. They always work as a pair — creator produces, reviewer evaluates, loop if revise.
+Three agents in `task/agents/` form the orchestrator/creator/reviewer triad. Creator and reviewer always work as a pair — creator produces, reviewer evaluates, loop if revise; the orchestrator agent is the non-interactive dispatch target that coordinates them.
 
 ```
 task/agents/
-  haipipe-task-creator-agent.md     produces artifacts (plan, code, report)
-  haipipe-task-reviewer-agent.md    evaluates artifacts (IPO compliance, code bugs, result accuracy)
+  haipipe-task-orchestrator-agent.md  dispatch target — runs the lifecycle by coordinating the pair
+  haipipe-task-creator-agent.md       produces artifacts (plan, code, report)
+  haipipe-task-reviewer-agent.md      evaluates artifacts (IPO compliance, code bugs, result accuracy)
 ```
 
 The lifecycle workflow (`ref/task-lifecycle.workflow.js`) orchestrates the loop:
@@ -145,7 +142,7 @@ The lifecycle workflow (`ref/task-lifecycle.workflow.js`) orchestrates the loop:
 
 The creator never reviews its own work. The reviewer never produces artifacts. This separation is the core invariant.
 
-The reviewer catches **intent-vs-implementation mismatches** — silent semantic bugs where the code runs but doesn't measure what the writer intended. Two-stage internally: Claude drafts, Codex (xhigh, out-of-family) independently reviews.
+The reviewer catches **intent-vs-implementation mismatches** — silent semantic bugs where the code runs but doesn't measure what the writer intended. Independence comes from fresh-agent reasoning: the reviewer starts with clean context, never the creator's (Codex two-stage was removed in reviewer v1.1.0).
 
 Author convention: `<TASK_NAME>.py` MUST have an `Intent` section in its docstring (template: `ref/intent-docstring-template.py`). Skip mechanisms for the run.sh pre-flight gate: `_meta.skip_review: true` in config, or `HAIPIPE_SKIP_REVIEW=1` env var.
 
@@ -157,16 +154,12 @@ Dispatch Table
 ```
 Scope            Owner / route                              Function file
 ---------------- ------------------------------------------ ----------------------
-task-group       → this skill: iterate children             Step 3d
-task-folder      → dispatch by task-type to one of:
-                     /haipipe-task-for-data
-                     /haipipe-task-for-algo
-                     /haipipe-task-for-fit
-                     /haipipe-task-for-eval
-                     /haipipe-task-for-display
-                     /haipipe-task-for-individual
-                     /haipipe-task-for-agent
-                 (legacy monolithic flow at fn/task-folder.md is DEPRECATED)
+task-group (iterate)  → this skill: iterate children        Step 3d
+task-folder      → dispatch by task-type to its specialist
+                 (the 9-row type table at the top of this file)
+task-group (scaffold) this skill                            fn/task-group.md
+scan-status      this skill                                 fn/scan-status.md
+                 reads: ref/scan_status/ scripts
 run              this skill                                 fn/run.md
                  reads: ref/hierarchy.md, ref/config-meta-template.yaml, ref/run-sh-template.sh
 audit            this skill                                 fn/workflow-audit.md
@@ -188,16 +181,14 @@ Step 1: Detect AUTO_MODE. Any of these flips it on: `--auto` anywhere in args, e
 
 Step 2: Resolve scope. Cascade:
   (0) UTILITY VERB — first positional is `feedback` or `digest` (route this BEFORE any other parsing; neither is a lifecycle scope, so do not continue to Step 3).
-      If first positional is `feedback` → read `fn/feedback.md` and run it inline. Three sub-modes; capture never attempts a fix on the spot:
-      - `feedback "<text>"` → CAPTURE mode. INFER the target domain folder (the routable unit): (0) cross-cutting guard FIRST — a SEMANTIC test "is this a rule true across all task domains/stages, or a named cross-cutting concern? → fallback, overriding any keyword"; (1) else keyword in TEXT → unit (most specific wins); (2) else active task-type / session context; (3) else orchestrator fallback. Resolve the unit → its `<unit>/feedback/` folder (create it + a one-line README LAZILY if missing; do NOT pre-create empty inboxes), then MERGE-OR-CREATE per `fn/feedback.md`: a same-topic complaint UPDATES the existing inbox file (append a dated recurrence, preserve prior wording verbatim, bump occurrences, reopen if it was fixed) instead of spawning a duplicate; else write one dated file `status: open`. Confirm where it landed (MERGED-vs-NEW) + how it matched + the one-line `move` correction. Stop.
-      - `feedback list [unit]` → LIST mode. AGGREGATE across ALL inboxes under the task skill root (`find <task-skill-root> -type d -name feedback`, then grep each for `status: open`), newest-first, GROUPED BY unit; `[unit]` restricts to one inbox. Stop.
-      - `feedback move <file> <unit>` → MOVE mode. Move `<file>` to `<unit>/feedback/` (create target + README if missing); pure file move, no content edit. Stop.
-      Else if first positional is `digest` → read `fn/digest.md` and run it inline. FIRST RESOLVE the target session (no arg → the CURRENT live conversation; a `"<id>"`/`"<session-name>"` arg → that PAST session's `<uuid>.jsonl` under this repo's `~/.claude/projects/` dir — extract its human turns per the "Resolving the target session" bash block; run from a fresh session for clean context). Then: scan that session's transcript for tool/skill feedback, distill discrete items, dedup (within-batch + against inboxes via the same-topic test), PRESENT for a MANDATORY confirm gate, then route each approved item through the feedback capture (merge-or-create, BATCH mode — no per-item re-confirm). Honor `--dry-run` (present only, file nothing). Flag global behavioral prefs for `/remember` rather than filing them. Never auto-files. Stop.
+      `feedback` → read `fn/feedback.md` and run it inline (capture / list / move; routing rules, merge-or-create, inbox paths all live THERE). Stop.
+      `digest` → read `fn/digest.md` and run it inline (resolve the target session first; mandatory confirm gate before filing). Stop.
+  (0.5) UTILITY VERB `scan-status` — first positional is `scan-status` → read `fn/scan-status.md` and run it inline. Stop.
   (1) explicit stage command (`plan` / `build` / `execute` / `report`) as first positional → check the path argument:
       - path is an existing task-folder → scope=single-stage on that folder (Step 3c).
       - path is an existing task-group → scope=task-group-iterate with stages=[that stage] (Step 3d).
-  (2) `task-folder` as first positional → scope=new task-folder (scaffold).
-  (3) first positional is a known task-type (`data` / `algo` / `fit` / `eval` / `display` / `individual` / `agent`) → scope=task-folder, task-type=that positional.
+  (2) `task-folder` as first positional → scope=new task-folder (scaffold). `task-group` as first positional → scope=new task-group: read `fn/task-group.md` and run it inline. Stop.
+  (3) first positional is a known task-type (`data` / `raw` / `algo` / `fit` / `eval` / `display` / `individual` / `agent` / `endpoint`) → scope=task-folder, task-type=that positional.
   (4) first positional is a path to an existing task-group → scope=task-group-iterate (Step 3d).
   (5) first positional is a path to an existing task-folder → scope=full lifecycle (all 4 stages via Step 3c).
   (6) no args at all → default:
@@ -215,7 +206,7 @@ Step 3: Branch by scope:
   - scope=report → run Stage 4 only (creator drafts report.yaml, reviewer checks)
   - scope=full lifecycle → run all 4 stages via Step 3c (Workflow tool)
   - scope=task-group-iterate → enumerate children, run per-child via Step 3d
-  - scope=task-folder (new) → resolve task-type via Step 3a cascade, then Skill("haipipe-task-<type>", args="<remaining_args> [--auto]")
+  - scope=task-folder (new) → resolve task-type via Step 3a cascade, then Skill("haipipe-task-for-<type>", args="<remaining_args> [--auto]")
 
 
 Step 3a (scope=task-folder only): Task-type inference cascade.
@@ -226,18 +217,22 @@ Step 3a (scope=task-folder only): Task-type inference cascade.
 
   (2) SCRIPT-INFERRED — if pwd is inside an existing task-folder, read the main `*.py` script and `scripts/*.py` files. Detect type from imports and content:
     - `from haipipe` / `SourceFn` / `RecordFn` → data
+    - `databricks` / `spark.sql` / `dbutils` / catalog extract → raw
     - `import torch` / `Trainer` / `sweep` → fit
     - `eval` / `metrics` / `score` → eval
     - `plt.` / `fig` / `savefig` / `.tex` → display
     - `stata` / `.do` / `preserve` → stata (delegate)
     - `agent` / `claude` / `anthropic` → agent
+    - `Endpoint_Set` / `deploy` / `sagemaker` / `serve` → endpoint
   Confidence: high. AUTO → accept; log "inferred from script: <type>". Interactive → propose; one-line ASK to confirm.
-  NOTE: the group letter ({A}{NN}, {B}{NN}, etc.) is purely organizational — each project chooses its own letter scheme. Do NOT infer task-type from the group letter. Always use script analysis or explicit type instead.
+  NOTE: never infer task-type from the group letter (letters are project-specific — see the NOTE under the type table).
 
   (3) KEYWORD-INFERRED — scan free-text args for keywords (table below). First match (left-to-right in args) wins.
 
         ┌────────────┬─────────────────────────────────────────────────────────────────┐
-        │ data       │ build · source · record · dataset · cgm · raw · ingest ·        │
+        │ raw        │ raw · ingest · extract table · databricks pull · catalog ·      │
+        │            │ 0-RawDataStore · database 拿数据                                     │
+        │ data       │ build · source · record · dataset · cgm ·                       │
         │            │ pipeline 1·2·3·4 · fn build                                     │
         │ algo       │ smoke · smoke-test · verify algorithm · test algo · algo dev ·  │
         │            │ algo class · forward pass · loss class                          │
@@ -250,6 +245,8 @@ Step 3a (scope=task-folder only): Task-type inference cascade.
         │ individual │ subject · patient · individual · one user · single subject ·    │
         │            │ cgm trace · treatment event · view                              │
         │ agent      │ agent · llm · prompt · claude · gpt · tool use · system prompt  │
+        │ endpoint   │ endpoint · deploy · package · serve · sagemaker · databricks ·  │
+        │            │ mlflow · Endpoint_Set · inference api                           │
         ├────────────┼─────────────────────────────────────────────────────────────────┤
         │ STATA      │ stata · do-file · .do · cms · case-pipeline · trigger cases ·   │
         │ (engine)   │ analysis table · reg · regression · ols · iv · neat · bene_info │
@@ -258,7 +255,7 @@ Step 3a (scope=task-folder only): Task-type inference cascade.
   Stata engine-detect → DELEGATE: hand off to `/haipipe-task-for-stata` which owns stage disambiguation: `Skill("haipipe-task-for-stata", args="<remaining_args> [--auto]")`
   Confidence: medium. AUTO → accept. Interactive → propose; one-line ASK to confirm.
 
-  (4) STILL UNKNOWN: AUTO → status: blocked. Interactive → ASK with all 7 options.
+  (4) STILL UNKNOWN: AUTO → status: blocked. Interactive → ASK with all 9 type options (plus Stata engine).
 
 
 Step 3b (scope=task-folder only): Parent existence cascade.
@@ -267,11 +264,11 @@ Step 3b (scope=task-folder only): Parent existence cascade.
 
   Resolve target paths: PROJECT_PATH = `examples/{PROJECT_ID}/`, GROUP_PATH = `PROJECT_PATH/tasks/{LETTER}{NN}_<group_name>/` (letter is project-specific, NOT tied to task-type).
 
-  (1) Project check: EXISTS → continue. MISSING + `--project-id` given → scaffold via `Skill("haipipe-task", args="project <PROJECT_ID> --auto")`. MISSING + no `--project-id` → blocked (AUTO) or ASK (interactive).
+  (1) Project check: EXISTS → continue. MISSING + `--project-id` given → scaffold via `Skill("haipipe-project", args="<PROJECT_ID> --auto")` (project setup lives in /haipipe-project). MISSING + no `--project-id` → blocked (AUTO) or ASK (interactive).
 
-  (2) Group check: EXISTS → continue. MISSING + `--group` given → scaffold via `Skill("haipipe-task", args="task-group ...")`. MISSING + no `--group` → blocked (AUTO) or ASK (interactive).
+  (2) Group check: EXISTS → continue. MISSING + `--group` given → scaffold via `Skill("haipipe-task", args="task-group <group> --auto")` (fn/task-group.md). MISSING + no `--group` → blocked (AUTO) or ASK (interactive).
 
-  Only after both checks pass: `Skill("haipipe-task-<type>", args="<remaining_args> --project-id <PROJECT_ID> --group <group_id> [--auto]")`
+  Only after both checks pass: `Skill("haipipe-task-for-<type>", args="<remaining_args> --project-id <PROJECT_ID> --group <group_id> [--auto]")`
 
 
 Step 3c: Full lifecycle or single stage.
@@ -291,7 +288,7 @@ Step 3c: Full lifecycle or single stage.
 
   For single-stage commands (`/haipipe-task plan <path>`), pass only that stage: `stages: ["plan"]`.
 
-  All generated plan/report files follow the haipipe-workflow IPO schema at `project/haipipe-workflow/ref/plan-schema.md`. Every plan YAML starts with an IPO tree preview comment with emojis.
+  All generated plan/report files follow the haipipe-workflow IPO schema at `task/haipipe-workflow/ref/plan-schema.md`. Every plan YAML starts with an IPO tree preview comment with emojis.
 
 
 Step 3d: Task-group iteration (scope=task-group-iterate).
@@ -380,29 +377,10 @@ Invocation examples
 
 ---
 
-Per-task observability (workflow/ folder)
-------------------------------------------
-
-Task-level observability is handled by the **workflow/ folder**:
-
-```
-<task-folder>/workflow/
-  plan.yaml                            task-level IPO (Run/Gate1/Gate2 phases)
-  plan-script-<name>.yaml              per-script IPO (type-specific phases)
-  report.yaml                          task-level report mirroring plan
-  report-script-<name>.yaml            per-script report mirroring plan-script
-```
-
-Plan = intent. Report = evidence. Same IPO shape at both levels, following `project/haipipe-workflow/ref/plan-schema.md`.
-
-Generated by the lifecycle workflow (`ref/task-lifecycle.workflow.js`) or manually via `/haipipe-task plan` and `/haipipe-task report`.
-
----
-
 Risk Profile
 -------------
 
-CREATES files under `examples/{PROJECT_ID}/`. For scope=project with new code stubs, also creates files under `code-dev/` and `code/hainn/`. Refuse to overwrite existing names — abort and recommend `-organize`.
+CREATES files under `examples/{PROJECT_ID}/`. Refuse to overwrite existing names — abort and recommend `-organize`.
 
 When dispatching to a task-type specialist, the same blast radius applies — specialists also CREATE files under `examples/`.
 
@@ -410,38 +388,14 @@ When dispatching to a task-type specialist, the same blast radius applies — sp
 
 ## Feedback
 
-`/haipipe-task feedback "<text>"` captures a complaint / confusion / wish about THIS
-skill (one dated file per item, `status: open`) to fix in a later revision pass.
-Capture-time routing: the complaint is inferred to the specific DOMAIN FOLDER it
-concerns (the routable unit — `task/` groups its ~40 specialist skills into 9
-domain folders, plus a shared `agents/` folder) and written into THAT unit's
-`feedback/` folder (e.g. a model gripe -> `2_nn/feedback/`); cross-cutting or
-unclassifiable items fall back to the orchestrator's own `feedback/`. The folder
-IS the record of which unit it concerns. `/haipipe-task feedback list [unit]`
-aggregates open items across ALL inboxes; `/haipipe-task feedback move <file> <unit>`
-re-routes a mis-filed item. Capture is MERGE-OR-CREATE: a same-topic complaint
-updates the existing file (append dated recurrence, preserve prior wording
-verbatim, reopen if fixed) so inboxes stay self-limiting. Inboxes are created
-LAZILY on first capture (no empty inboxes are pre-created). This is feedback
-about the tool, not the work it produces. Route a `feedback` first-token here
-before other parsing.
-
-`/haipipe-task digest ["<session-name|id>"] [--dry-run]` is the bulk harvester:
-it digests a session -- the CURRENT one, or a PAST session named/id'd as an
-argument and run from a fresh session (which keeps its judgment uncontaminated by
-the work it reviews) -- scanning the transcript for feedback you gave
-conversationally, distilling discrete items, deduping them, and (after a
-mandatory confirm gate) routing each through the same capture. It files only
-skill-feedback; global behavioral preferences are flagged for `/remember`, not
-filed. Route a `digest` first-token to it (resolve the target session first).
-Full conventions: `fn/feedback.md` (keyword->unit map, inbox paths,
-merge-or-create, schema) and `fn/digest.md` (session harvest + session
-resolution); fallback inbox: `feedback/README.md`.
+`/haipipe-task feedback "<text>"` captures a complaint / confusion / wish about THIS skill, not the work it produces.
+Each item is routed at capture time into the `feedback/` inbox of the domain folder it concerns (9 domains + `agents/`; the folder IS the record), with the orchestrator's own `feedback/` as the cross-cutting fallback.
+`feedback list [unit]` aggregates open items across all inboxes; `feedback move <file> <unit>` re-routes a mis-filed one.
+`/haipipe-task digest ["<session-name|id>"] [--dry-run]` is the bulk harvester: it scans a session transcript for conversational feedback and routes each confirmed item through the same capture.
+ALL mechanics (cross-cutting guard, keyword→unit map, merge-or-create, lazy inboxes, session resolution, confirm gate) live in `fn/feedback.md` and `fn/digest.md` — read those, do not re-derive from here.
 
 ## Behavioral Preferences (portable)
 
-ALWAYS read and honor `PREFERENCES.md` in this skill's own folder: git-tracked
-global behavioral preferences (e.g. communicate via ASCII diagrams) that survive a
-machine change, unlike the machine-local `~/.claude` auto-memory. Global behavioral
-prefs are kept in sync across all orchestrators by `/haipipe-paper digest`'s
-global-pref fan-out (merge-or-create; one entry per topic).
+ALWAYS read and honor `PREFERENCES.md` in this skill's own folder.
+It holds git-tracked global behavioral preferences (e.g. communicate via ASCII diagrams) that survive a machine change, unlike the machine-local `~/.claude` auto-memory.
+Global prefs are kept in sync across all orchestrators by the toolkit-wide digest global-pref fan-out (merge-or-create; one entry per topic).

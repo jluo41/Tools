@@ -1,22 +1,19 @@
 ---
 name: haipipe-task-for-endpoint
-description: "endpoint task-folder build specialist. Scaffolds AND executes C-series {NN}_<name>/ task-folders that package a trained ModelInstance_Set into a deployable Endpoint_Set (Stage 6) using c_endpoint_nb.py template. Called by /haipipe-task orchestrator when task-type=endpoint. Cross-references /haipipe-end for Fn authoring and deploy targets."
+description: "endpoint task-folder build specialist. Scaffolds AND executes {NN}_<name>/ task-folders in the project's endpoint task-group (letters are project-specific) that package a trained ModelInstance_Set into a deployable Endpoint_Set (Stage 6) using c_endpoint_nb.py template. Called by /haipipe-task orchestrator when task-type=endpoint. Cross-references /haipipe-end for Fn authoring and deploy targets."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.0.0"
-  last_updated: "2026-06-12"
-  summary: "C-series endpoint task-folder specialist (scaffold + execute + deploy prep)."
-  changelog:
-    - "2.0.0 (2026-06-12): rewritten from inference-profiling to endpoint-building scope. Renamed from haipipe-task-for-inference."
-    - "1.1.0 (2026-06-09): unwrap prose; fix agent names; add 4-stage lifecycle paragraph."
-    - "1.0.0 (2026-06-01): created as haipipe-task-for-inference (latency profiling)."
+  version: "2.2.0"
+  last_updated: "2026-07-04"
+  summary: "endpoint task-folder specialist (scaffold + execute + deploy prep)."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-task-for-endpoint
 =================================
 
-Scaffolds a **C-series endpoint task-folder**. Takes a trained
+Scaffolds an **endpoint task-folder** (default C-series; letters are project-specific). Takes a trained
 ModelInstance_Set (Stage 5, with examples) and packages it into a
 self-contained Endpoint_Set (Stage 6) using `Endpoint_Pipeline`.
 
@@ -102,7 +99,7 @@ Pipeline flow (c_endpoint_nb.py steps)
 Output structure:
 
 ```
-6-EndpointStore/{endpoint_name}_{version}/
+6-EndpointStore/{endpoint_name}/   (canonical layout: ../../haipipe-end/ref/0-overview.md)
 ├── model/                    ← copied from ModelInstance_Set
 ├── code/                     ← codebase snapshot (haipipe, hainn, haifn)
 ├── examples/                 ← from ModelInstance_Set + payload.json
@@ -165,7 +162,7 @@ After packaging → deploy
 
 Latency profiling (formerly this skill's scope) is now a verb:
 ```
-/haipipe-end endpointset test --profile <endpoint>
+/haipipe-end profile <endpoint>
 ```
 
 

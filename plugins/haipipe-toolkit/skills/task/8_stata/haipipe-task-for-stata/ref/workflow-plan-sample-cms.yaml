@@ -1,5 +1,5 @@
 # workflow-plan-sample-cms.yaml -- Stata CMS stage script-level plan
-# Schema: project/haipipe-workflow/ref/plan-schema.md
+# Schema: task/haipipe-workflow/ref/plan-schema.md
 # Phases: Setup -> Extract (parallel) -> Bene -> Summary
 # Heavy outputs land in _WorkSpace/1-CMS-Store/.
 

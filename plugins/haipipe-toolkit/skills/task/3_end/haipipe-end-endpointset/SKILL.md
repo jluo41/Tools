@@ -4,12 +4,10 @@ description: "Endpoint_Set artifact-as-whole specialist. Owns target-agnostic op
 argument-hint: "[verb] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-06-01"
+  version: "1.2.0"
+  last_updated: "2026-07-04"
   summary: "Endpoint_Set artifact-as-whole specialist."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
-    - "1.1.0 (2026-06-01): added `profile` verb (latency breakdown + per-arm decomposition; fn-3-profile.md). Durable/reproducible version of the same profile lives in task /haipipe-task-for-inference."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-end-endpointset
@@ -137,12 +135,14 @@ Each Endpoint_Set in `_WorkSpace/6-EndpointStore/Endpoint-{name}/` is the
 SINGLE artifact that flows downstream:
 
 ```
-Endpoint-{name}/
-├── meta.json                  configuration + model registry pointers
-├── fn_endpoint/               compiled inference Fn code (5 Fn-types)
-├── ModelInstance/             trained weights snapshot (or pointer)
-└── manifest.yaml              everything a deploy specialist needs
+_WorkSpace/6-EndpointStore/{endpoint_name}/
+├── model/                     trained ModelInstance snapshot
+├── code/                      codebase snapshot (haipipe, hainn, haifn/fn_endpoint 5 Fn-types)
+├── examples/                  test examples + payload.json
+├── meta.json                  MetaFn output (name mappings + metadata)
+└── manifest.json              config + lineage — everything a deploy specialist needs
 ```
+(Canonical layout: `../haipipe-end/ref/0-overview.md` "Stage 6 (output)" — do not restate elsewhere.)
 
 Deploy specialists (`-deploy-*`) READ this artifact and never modify it.
 If a deploy fails because of a missing/malformed field here, the fix
@@ -153,7 +153,7 @@ lives in this skill (or a per-Fn-type sibling), not in the deploy skill.
 Task-folder lifecycle (00_develop → 01_package)
 -------------------------------------------------
 
-In the /haipipe-task convention, endpoint work lives under C-series groups:
+In the /haipipe-task convention, endpoint work lives in the project's endpoint task-group (default C-series):
 
 ```
 examples/<project>/tasks/C01_endpoint_*/

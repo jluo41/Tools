@@ -36,7 +36,7 @@ candidate_cards:
     granularity:
       unit: recommendation
       decision: file
-      rationale: "one action future experiments and narratives can follow"
+      rationale: "one action future experiments and papers can follow"
     action: file
 
   - candidate_id: C3
@@ -46,7 +46,7 @@ candidate_cards:
       - task:T001_validation
     reason: "run metadata is already preserved in task logs and is not reusable"
     granularity:
-      unit: run note
+      unit: observation
       decision: skip
       rationale: "too small and not useful as permanent knowledge"
     action: skip

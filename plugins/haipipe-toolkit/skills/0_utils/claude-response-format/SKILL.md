@@ -7,11 +7,7 @@ metadata:
   version: "1.2.0"
   last_updated: "2026-06-26"
   summary: "Emoji headline format for chat replies + end-of-run file-change & conditional review report."
-  changelog:
-    - "1.0.0 (2026-06-02): initial spec; referenced by repo CLAUDE.md Rule 5."
-    - "1.0.1 (2026-06-02): renamed skill dir response-format -> claude-response-format."
-    - "1.1.0 (2026-06-09): merged claude-chat-format; added end-of-run file-change report (📁) and conditional review-list (👀) sections; enabled Bash for git status."
-    - "1.2.0 (2026-06-26): changed section headers from kebab-case slugs to natural readable headlines in title case."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: claude-response-format (0_utils)

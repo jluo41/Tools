@@ -51,19 +51,16 @@ File Map
 
   ref/
     0-overview.md           Architecture, 7-step inference pipeline, formats
-    1-meta.md               MetaFn contract and implementation guide
-    2-trig.md               TrigFn contract and implementation guide
-    3-post.md               PostFn contract and implementation guide
-    4-src2input.md          Src2InputFn contract and implementation guide
-    5-input2src.md          Input2SrcFn contract and implementation guide
+    deploy-overview.md      Shared cross-target deploy reference (all 4 deploy targets)
 
   fn/
-    fn-0-dashboard.md       Dashboard: scan EndpointStore status
-    fn-1-package.md         Package: run Endpoint_Pipeline
-    fn-2-test.md            Test: inference test protocol with profiling
-    fn-3-design.md          Design: build new Fn files (all 5 types)
-    fn-4-deploy.md          Deploy: Databricks (MLflow + Unity Catalog) or local
-    fn-review.md            Review: per-Fn checklists + cross-consistency
+    fn-design.md            Design: build new Fn files (all 5 types)
+
+  Per-Fn-type contracts (specialist-owned):
+    ../haipipe-end-{meta,trig,post,src2input,input2src}/ref/concepts.md
+
+  Artifact verbs (endpointset-owned):
+    ../haipipe-end-endpointset/fn/{fn-0-dashboard,fn-1-package,fn-2-test,fn-3-profile,fn-review}.md
 
 ---
 

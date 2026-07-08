@@ -11,7 +11,7 @@ Step 1 — Identify project + task-group
 ---------------------------------------
 
 - Auto-detect project from cwd.
-- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK task-group. Group letter must be **C**; scaffold a new `C{NN}_<group_name>/` if needed.
+- AUTO_MODE: infer from cwd or return `status: blocked`. Interactive: ASK task-group. Group letter is PROJECT-SPECIFIC (orchestrator rule; follow the project's existing scheme). Default **C**; scaffold a new `C{NN}_<group_name>/` if needed.
 
 
 Step 2 — Collect metadata
@@ -56,16 +56,16 @@ Copy `ref/config-seed.yaml` to `configs/<kind>_<name>.yaml`. Fill in:
 Step 5 — Run-script
 --------------------
 
-Copy `../../haipipe-task/ref/run-sh-template.sh` to `runs/<kind>_<name>.sh`.
+Copy `../../../haipipe-task/ref/run-sh-template.sh` to `runs/<kind>_<name>.sh`.
 Set `TASK_NAME="{NN}_{task_name}"`.
 
 
-Step 6 — Cross-skill link
---------------------------
+Step 6 — Next step
+-------------------
 
-After scaffolding, suggest:
-- `/haipipe-paper-display-figure` for figure crafting (axes, palette, legend layout).
-- `/haipipe-paper-display-illustration-gemini` for diagram-style figures.
+After scaffolding, suggest running the task (`bash runs/<run>.sh`). Figure
+crafting standards (axes, palette, legend layout) live with whatever document
+layer consumes the output; this skill only guarantees the results/ contract.
 
 
 Step 7 — Report
@@ -92,10 +92,10 @@ First-run gate
 ---------------
 
 `runs/<RUN>.sh` blocks execution if `CODE_REVIEW.md` is missing or
-stale (gate inherited from `../../haipipe-task/ref/run-sh-template.sh`).
+stale (gate inherited from `../../../haipipe-task/ref/run-sh-template.sh`).
 For the first run after this scaffold, do ONE of:
 
-  1. **Recommended** — run the Run Script Reviewer agent on this
+  1. **Recommended** — run the haipipe-task-reviewer-agent (Gate 1) on this
      task-folder to produce a fresh `CODE_REVIEW.md`:
      `Tools/plugins/haipipe-toolkit/skills/task/agents/haipipe-task-reviewer-agent.md`
 

@@ -13,7 +13,7 @@ Two ways to run it; same instrumentation underneath
                                   app_predictor logs the timing summary per request.
 
 For a DURABLE, versioned profile (tracked across model releases, or to A/B a
-vectorization fix), scaffold a task instead via `/haipipe-task-for-inference`
+vectorization fix), scaffold a durable task instead via `/haipipe-task-for-endpoint` (profiling folded into the endpoint domain)
 (task) — same breakdown, recorded as `results/<run>/latency.json`. Preferred
 placement: co-locate it in the project's ENDPOINT group as a sibling of the
 endpoint-build task (e.g. `tasks/C_endpoint/C2_inference_profile/` next to
@@ -103,5 +103,5 @@ summary:   Profiled <endpoint>: warm total <X> ms, slowest_step <step>.
            model_inference split: add_cols <A> ms / predict <B> ms.
 artifacts: [endpoint path, the per-step breakdown]
 next:      if add_cols dominates → vectorize _compute_scores (hainn fix),
-           then /haipipe-task-for-inference to record the speedup.
+           then /haipipe-task-for-endpoint to record the speedup.
 ```

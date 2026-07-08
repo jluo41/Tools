@@ -1,7 +1,7 @@
 fn-status: Cross-store local↔remote drift
 ==========================================
 
-Default verb (no-arg). Experiments every store via two `hai-remote-sync`
+Default verb (no-arg). Probes every store via two `hai-remote-sync`
 dry-runs and renders a one-screen drift summary.
 
 Always live. Always thin (uses only hai-remote-sync, never direct
@@ -35,7 +35,7 @@ If `REMOTE_ROOT` is unset, abort with an env.sh hint.
 
 ---
 
-Step 2: Experiment each store with two dry-runs
+Step 2: Probe each store with two dry-runs
 -------------------------------------------
 
 For each store path (e.g. `1-SourceStore`):
@@ -84,10 +84,10 @@ Step 4: Render
 
 ```
 Remote: $REMOTE_ROOT
-Probing 9 stores via hai-remote-sync --dry-run (live, ~30s)...
+Probing 10 stores via hai-remote-sync --dry-run (live, ~30s)...
 
 store               local-only   remote-only   in-sync   out-of-sync
-0-RawStore          2 sets       -             7         -
+0-RawDataStore          2 sets       -             7         -
 1-SourceStore       -            10 sets       2         -
 2-RecStore          -            4 sets        0         -
 3-CaseStore         -            3 sets        0         -
@@ -100,7 +100,7 @@ Hints (no automatic action):
   - Newer ExternalStore release on remote: review with /haipipe-data-external
 ```
 
-If a store experiment fails with an auth error, mark that row as `auth?`
+If a store probe fails with an auth error, mark that row as `auth?`
 and append the SSO URL hint at the bottom.
 
 ---

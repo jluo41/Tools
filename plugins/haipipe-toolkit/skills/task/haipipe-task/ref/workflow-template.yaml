@@ -2,8 +2,8 @@
 # Generic IPO template for any haipipe task folder.
 # Copy to <task-folder>/workflow/plan.yaml and fill in the blanks.
 #
-# Schema: project/haipipe-workflow/ref/plan-schema.md
-# Concepts: project/haipipe-workflow/ref/concepts.md
+# Schema: task/haipipe-workflow/ref/plan-schema.md
+# Concepts: task/haipipe-workflow/ref/concepts.md
 # Lifecycle: Plan → Build → Execute → Report
 #
 # Type-specific samples (if the specialist has one):

@@ -14,7 +14,6 @@ input material -> review -> INSIGHT_REVIEW.yaml -> apply -> DIKW cards
 
 Input material can come from:
 
-- narrative
 - probe
 - task
 - discovery / literature

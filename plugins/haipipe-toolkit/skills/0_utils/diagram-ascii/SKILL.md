@@ -5,8 +5,7 @@ metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
   summary: "Fast emoji-rich ASCII diagrams for brainstorming, folder/code overviews, and experiment progress tracking."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # /diagram-ascii — Brainstorm & Progress Diagrams

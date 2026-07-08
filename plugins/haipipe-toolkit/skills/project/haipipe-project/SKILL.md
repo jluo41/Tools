@@ -1,143 +1,67 @@
 ---
 name: haipipe-project
-description: "Run any project-level work in the haipipe workspace. Parses intent (build vs read vs modify) and dispatches to the right specialist (/haipipe-task for scaffolding tasks under examples/, /haipipe-project-inspect for review/summary/inventory/overview, /haipipe-project-organize for reorganizing files). Use for creating new projects/task-groups/task-folders (data / algo / training / eval / display / individual / agent) under examples/, auditing structure, generating docs, reorganizing. Trigger: project scaffold, new task, new figure task, new evaluation task, project review, project summary, organize project, reorganize files, /haipipe-project."
-argument-hint: "[function] [project_id] [args...]"
+description: "Quick project setup: create the container folders and stop. Two kinds by name: Project-* = repo-backed (gh repo under a user-chosen org, never assumed; submodule at examples/<name>; if the repo already exists, adopt and pull it) and ProjX-* = plain directory under examples/. Owns ONLY the container layout (tasks/ discoveries/ insights/ papers/ diagram/; probes/ retired 2026-07-05 — evidence contracts live in each paper/application stage's _PROBE/ cards); each subfolder's internals belong to its owning skill family. Task/run scaffolding lives in /haipipe-task. Trigger: new project, project scaffold, repo project, project submodule, /haipipe-project."
+argument-hint: "[repo|new|feedback|digest] [Project-Name|args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
-  summary: "Run any project-level work in the haipipe workspace."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  version: "3.0.0"
+  last_updated: "2026-07-03"
+  summary: "Project SETUP only: Project-* repo-backed submodules + ProjX-* plain dirs. Everything else moved out or retired."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-Skill: haipipe-project (orchestrator)
-======================================
+Skill: haipipe-project (project setup)
+=======================================
 
-User-facing entry for project-level work. Routes by **risk profile** (build / read / modify) — the three specialists differ in `allowed-tools` and blast radius.
-
-```
-/haipipe-project                                          overview of all projects under examples/
-/haipipe-project task                                     scaffold (asks: project / task-group / task-folder)
-/haipipe-project task project <project_id>                scaffold a new project
-/haipipe-project task task-group                          scaffold a new task-group
-/haipipe-project task task-folder                         scaffold a new task-folder (asks task-type, dispatches)
-/haipipe-project task task-folder <type> [args...]        scaffold task-folder of given task-type directly:
-                                                            type ∈ {data, algo, training, eval,
-                                                                    display, individual, agent}
-/haipipe-project task run [task-path] [name]              scaffold a new run (asks _meta)
-/haipipe-project review <project_id>                      structural audit
-/haipipe-project summarize <project_id>                   generate summary doc
-/haipipe-project inventory [project_id]                   file inventory
-/haipipe-project overview [project_id]                    overview of one or all projects
-/haipipe-project organize <project_id>                    reorganize files (modifies!)
-/haipipe-project scan-status <task_dir> [key] [out_txt]   scan B01 eval, update status.json + txt
-/haipipe-project feedback "<text>" | list | move ...      capture skill feedback (merge-or-create, routed)
-/haipipe-project digest ["<session-name|id>"] [--dry-run] harvest skill feedback from a session transcript
-/haipipe-project "<natural language>"                     infer function, dispatch
-```
-
----
-
-Specialists
------------
+One job: **set up a well-formed project container, QUICKLY.** Setup = folders ready (plus README + .gitignore for the repo kind) and stop. No metadata questionnaire, no diagram authoring, no seed tasks -- those are on-request extras. The name decides the kind:
 
 ```
-Lives in project/  (project-scope work):
+/haipipe-project repo <Project-Name> [--org <owner>]
+                                         REPO-BACKED project (fn/repo-project.md)
+                                           gh repo create <org>/<name> --private
+                                           + submodule at examples/<name>
+                                           + scaffold + push + workspace pointer bump
+                                           papers inside are submodules OF THE PROJECT
+                                           org resolved per invocation (flag or ask;
+                                           NO default org -- skill serves many owners)
 
-  haipipe-project-inspect    READ:   review, summarize, inventory, overview (no writes)
-  haipipe-project-organize   MODIFY: reorganize files (mv/rename, dry-run supported)
+/haipipe-project new <ProjX-Name>        PLAIN-DIRECTORY project (fn/project.md)
+                                           examples/<ProjX-Name>/ container folders (papers/ etc.)
 
-Lives in task/  (task-scope work — sibling section):
-
-  haipipe-task               BUILD orchestrator: task-folder lifecycle + run scaffold +
-                                     task-folder dispatch to the 7 type specialists below.
-  haipipe-task-for-data          data-pipeline (Stage 1-4)           D-series  → /haipipe-data
-  haipipe-task-for-algo          algo-dev smoke-test                 X_algo    → /haipipe-nn-algo
-  haipipe-task-for-training      model training (Stage 5)            A-series  → /haipipe-nn-tuner+instance
-  haipipe-task-for-eval          evaluation                          B-series  → (project-local; future)
-  haipipe-task-for-display       paper figures / tables              C-series  → (independent)
-  haipipe-task-for-individual    individual-centric query               E-series  → /haipipe-individual
-  haipipe-task-for-agent         LLM agent call                      F-series  → (none yet)
-
-(Per-run logging is automatic via runs/<NAME>.sh → results/<NAME>/runtime.yaml.
- For probe-level claims + aggregation, see probe/* skills.)
+/haipipe-project feedback "<text>"       capture skill feedback (merge-or-create)
+/haipipe-project digest [session] [--dry-run]   harvest feedback from a transcript
+/haipipe-project                         list projects under examples/ + the two setup paths
 ```
 
-Conceptual layering — a `project` is the umbrella, containing five parallel worlds. Each world has its own specialist family:
+Not this skill's job (where it lives instead):
 
 ```
-📦 project (umbrella)            /haipipe-project              ← this skill
-   │
-   ├── 💼 tasks/                  /haipipe-task-*               (task/)
-   │       "did THIS run work?"   — code + runs + per-run metrics
-   │
-   ├── 📊 probes/            /haipipe-probe           (probe/)
-   │       "does the HYPOTHESIS   — steering state; NO code, only
-   │        hold?"                  arms[] pointers into tasks/
-   │
-   ├── 💡 insights/               /haipipe-insight              (insight/)
-   │       "what does the         — cross-probe synthesis
-   │        PROJECT know?"          D/I/K/W markdown layers
-   │
-   ├── 📰 paper/                   /paper-*                     (separate section)
-   │       "what claims ship      — consumes K/W from insights/
-   │        to academia?"
-   │
-   └── 📬 applications/           /haipipe-application-*         (application/)
-           "what do we deliver    — patient/clinician messages,
-            to non-academic         UI sketches, stakeholder reports;
-            audiences?"            reads insights/K + W (NEVER writes back);
-                                   can TRIGGER /haipipe-insight ask to
-                                   close knowledge gaps mid-draft
+task-group / task-folder / run scaffolding   -> /haipipe-task   (task/)
+eval status scanning (scan-status)           -> /haipipe-task   (task/)
+workflow plan/report schema                  -> task/haipipe-workflow
+paper folders inside a project               -> /haipipe-paper-lifecycle folder
+project audits / reorganization              -> retired; originals in project/_archive
+claims / probes / evidence                   -> /haipipe-probe  (gateway layer doc; folderless — _PROBE cards live consumer-side)
 ```
-
-**For the boundary between task and probe** (the most-confused pair, since both touch results/), see `probe/MENTAL_MODEL.md` — onboarding doc with FAQ + "rules of thumb" + walkthrough of one probe's full lifecycle.
 
 ---
 
-Two Structural Rules (cross-cutting; ref'd by all specialists)
----------------------------------------------------------------
+Container Layout + Structure Ownership
+----------------------------------------
 
-Rule 1 — Three-level hierarchy (project → task-group → task-folder):
-  `examples/{PROJECT_ID}/tasks/` contains task-groups: `{G}{NN}_{group_name}/`
-    (e.g., `A01_pretraining_clm/`, `B01_evaluation_clm/`, `C01_paper_figures/`).
-  Each task-group contains task-folders: `{NN}_{task_name}/`
-    (e.g., `01_train_clm_num_modelsize/` inside `A01_pretraining_clm/`).
-  Each task-folder is self-contained: `*.py`, `configs/`, `runs/`, `results/`,
-    `notebooks/` (NO README.md — doc surface is `diagram/`).
-  No flat task folders directly in `tasks/` — they must be inside a task-group.
-  Group letter convention: A=training (model-run), B=evaluation, C=display,
-                           D=data-pipeline, E=individual, F=agent, X=algo-dev (X_algo).
-
-Rule 2 — Code always has a paired example:
-  Every new pipeline Fn stub or ML model stub in Track A auto-generates
-  a paired example task in `tasks/`.
-
-These rules live in `ref/project-structure.md` and `ref/code-structure.md`,
-which all three specialists read.
-
----
-
-Function Verb Map
-------------------
+This skill owns ONLY the top-level container. Each subfolder's INTERNAL structure is owned by its skill family; when setup or a question needs the details, CONSULT (infer from) the owner listed below -- never restate its rules here.
 
 ```
-project, new project, scaffold project        -> this skill, fn/project.md (project-scope)
-task-group, new group, scaffold group         -> this skill, fn/task-group.md (project-scope)
-task, task-folder, new task, scaffold task     -> haipipe-task (task/) — task-folder + below only
-  (for scope=task-folder, -task dispatches to one of:
-     haipipe-task-{data,algo,training,eval,display,individual,agent})
-run, new run                                  -> haipipe-task (task/) — run scaffold
-review, audit, check, validate, lint          -> haipipe-project-inspect (review)
-summarize, summary, docs                      -> haipipe-project-inspect (summarize)
-inventory, list files, files                  -> haipipe-project-inspect (inventory)
-overview, show, status                        -> haipipe-project-inspect (overview)
-organize, reorganize, fix structure, move     -> haipipe-project-organize
-scan-status, scan eval, eval status           -> haipipe-project-inspect (scan-status)
-
-(claims / probes / comparison: → /haipipe-probe under probe/)
+📦 examples/<name>/   (this skill sets up the container)
+   ├── 💼 tasks/          owner: /haipipe-task        three-level hierarchy, group letters, task-folder anatomy
+   ├── 🔎 discoveries/    owner: /haipipe-discovery   one topic = one folder (Search / Review / Idea types)
+   ├── 💡 insights/       owner: /haipipe-insight     D/I/K/W cards + INDEX
+   ├── 📰 papers/         owner: /haipipe-paper-*     paper-folder contract (paper wiki); each paper a submodule (legacy projects use singular paper/; do not migrate)
+   ├── 📬 applications/   owner: /haipipe-application-*  non-academic deliverables
+   └── 🗺️ diagram/        owner: this skill (via /diagram-ascii)  01-story, 02-boundary -- EMPTY at setup, authored on request
 ```
+
+Two refs live here: `ref/project-structure.md` (the top-level container contract only: naming, standard layout, the seven-worlds table + dependency map, project-level diagram/, structure-ownership pointers) and `ref/code-structure.md` (Track A layout + the paired-example rule: every new pipeline Fn or ML model stub gets a paired example task). The tasks/ internals (group folders, task naming, task-folder anatomy, run scripts) live at `task/haipipe-task/ref/task-structure.md`, moved there 2026-07-03.
 
 ---
 
@@ -146,155 +70,60 @@ Routing Logic
 
 ```
 Step 1: Parse $ARGUMENTS.
-
-Step 2: Resolve function via verb map.
-  - If first positional is "feedback" -> target = feedback (utility verb).
-    Resolve BEFORE other parsing; do not treat "feedback" as a project_id.
-  - If first positional is "digest" -> target = digest (utility verb).
-    Resolve BEFORE other parsing; do not treat "digest" as a project_id.
-  - If verb is unambiguous -> done.
-  - If first positional looks like a project_id (matches an existing
-    examples/{X}/) and no verb -> default to overview for that project.
-  - If no args at all -> overview across ALL projects (umbrella inline).
-
-Step 3: Decide specialist:
-  - feedback                             -> this skill, fn/feedback.md (handled inline)
-  - digest                               -> this skill, fn/digest.md (handled inline)
-  - project / task-group scaffold        -> this skill (fn/project.md, fn/task-group.md)
-  - task-folder / run scaffold           -> haipipe-task (in task/)
-  - review/summarize/inventory/overview  -> haipipe-project-inspect
-  - organize                             -> haipipe-project-organize
-
-Step 4: Dispatch:
-    If target = feedback:
-      Read fn/feedback.md and run it inline. Three sub-modes:
-        - capture "<text>": infer the target sub-skill (CROSS-CUTTING GUARD
-          first -- a rule true across all project operations or a named
-          cross-cutting concern -> orchestrator fallback, overriding any
-          keyword; else keyword in text; else active sub-skill from this
-          session; else orchestrator fallback), write one dated file into THAT
-          skill's feedback/ folder (create it + README if missing), then confirm
-          where it landed + how it matched.
-        - `feedback list [skill]`: aggregate open items across ALL feedback/
-          inboxes under the project skill root, grouped by skill.
-        - `feedback move <file> <skill>`: re-route a mis-filed item.
-      Capture is MERGE-OR-CREATE: a same-topic complaint updates the existing
-      inbox file (append a dated recurrence, preserve prior wording verbatim,
-      reopen if it was fixed) instead of spawning a duplicate, so inboxes stay
-      self-limiting. NB: task-folder / run scaffolding lives in /haipipe-task (a
-      different layer); feedback about how THIS orchestrator dispatches to it is
-      cross-cutting -> orchestrator fallback, NOT the task layer. This
-      orchestrator handles feedback directly; no fix on the spot.
-    Else if target = digest:
-      Read fn/digest.md and run it inline. FIRST resolve which session to digest
-      (no arg -> the CURRENT session; "<id>"/"<name>" -> the matching transcript
-      .jsonl, extract its human turns); the project orchestrator keeps no console
-      yaml, so digest works from the transcript alone. Then scan that session's
-      transcript, distill discrete TOOL/SKILL feedback items (drop one-off
-      scaffold/review instructions, project-content talk, and bare paths), dedup
-      (within-batch + against inbox), and PRESENT the candidate list for a
-      MANDATORY confirm gate (grouped by target skill; each line shows source
-      line + any runner-up merge target). NOTHING is written before you confirm.
-      On approval, route each item through fn/feedback.md merge-or-create in
-      BATCH mode (capture does NOT re-confirm per item), then report "N new, M
-      merged, K dropped" grouped by skill. Honor `--dry-run` (present the
-      candidate list, then STOP -- never file even if confirmed). digest NEVER
-      auto-files; global behavioral prefs are FLAGGED for /remember, not filed.
-    Else:
-      Skill("haipipe-project-<specialist>", args="<verb> <remaining_args>")
-
-Step 5: Capture the structured tail and present.
+Step 2: Resolve verb.
+  - "feedback" first token -> fn/feedback.md (resolve BEFORE other parsing)
+  - "digest" first token   -> fn/digest.md   (resolve BEFORE other parsing)
+  - "repo" or a Project-*  name              -> fn/repo-project.md
+  - "new" / "project" or a ProjX-* name      -> fn/project.md
+  - task/task-group/task-folder/run verbs    -> tell the user: /haipipe-task
+  - review/organize/inventory/overview verbs -> tell the user: retired
+                                                (originals in project/_archive)
+  - no args -> list examples/ projects (one line each) + the two setup commands
+Step 3: Run the fn. Step 4: Present with the return contract tail.
 ```
 
----
-
-Cross-Project Overview (no-arg case)
--------------------------------------
-
-When invoked with no arguments, list all projects under `examples/` with
-a one-line status per project (task count, last-modified, violations
-flagged). Inline (no specialist dispatch needed for this lightweight view).
-
----
-
-Disambiguation Rules
----------------------
-
-  - Verb missing, project_id present -> default to `overview` for that id.
-  - Verb missing, no args            -> cross-project overview (inline).
-  - `organize` without project_id    -> ASK which project. Don't guess.
-  - Multi-project ops (e.g. "review all") -> dispatch sequentially per project.
-
----
-
-Specialist Return Contract
----------------------------
+Return contract:
 
 ```
 status:    ok | blocked | failed
 summary:   2-3 sentences on what was done
-artifacts: [paths created / read / moved]
+artifacts: [paths created]
 next:      suggested next command
 ```
-
----
-
-Files Owned by This Umbrella
------------------------------
-
-```
-ref/project-structure.md   Track B layout (tasks/, configs/, runs/, results/, paper)
-ref/code-structure.md      Track A layout (code-dev/, hainn/, haifn/) + paired-example rule
-```
-
-These ref files are SHARED across specialists. Each specialist reads them when its function depends on the rules. The inventory helper scripts (`ref/inventory/*.py`) live with `haipipe-project-inspect` since only that specialist uses them.
 
 ---
 
 ## Feedback
 
 `/haipipe-project feedback "<text>"` captures a complaint / confusion / wish about
-the project SKILL and ROUTES it at capture time to the specific sub-skill it
-concerns and written into THAT sub-skill's `feedback/` folder (e.g. an overview
-gripe -> `haipipe-project-inspect/feedback/`, an organize gripe ->
-`haipipe-project-organize/feedback/`); cross-cutting or unclassifiable items fall
-back to the orchestrator's own `feedback/`. The folder IS the record of which
-skill it concerns; there is no `skill:` field. `/haipipe-project feedback list
-[skill]` aggregates open items across ALL inboxes; `/haipipe-project feedback move
-<file> <skill>` re-routes a mis-filed item. Capture is MERGE-OR-CREATE: a
-same-topic complaint updates the existing file (appends a dated recurrence,
-preserves prior wording verbatim, reopens if fixed) so inboxes stay
-self-limiting.
+the project SKILL, recorded in this skill's `feedback/` folder with the fn named
+in the item (e.g. a repo-scaffold gripe -> tagged fn/repo-project); workflow items
+route to `task/haipipe-workflow/feedback/`. There is no `skill:` field -- the
+folder plus fn tag is the record. `feedback list` aggregates open items;
+`feedback move <file> <skill>` re-routes a mis-filed item. Capture is
+MERGE-OR-CREATE: a same-topic complaint updates the existing file (appends a
+dated recurrence, preserves prior wording verbatim, reopens if fixed) so
+inboxes stay self-limiting.
 
 `/haipipe-project digest ["<session-name|id>"] [--dry-run]` is the bulk
-harvester: it scans a session's transcript (the CURRENT one, or a PAST session
-named/id'd as an argument and run from a fresh session), distills the TOOL/SKILL
-feedback you gave conversationally (dropping one-off scaffold/review
-instructions, project-content talk, and bare paths), dedups it (within-batch +
-against inbox), and after a MANDATORY confirm gate routes each item through the
-SAME feedback capture (merge-or-create, in BATCH mode so it does not re-confirm
-per item). The project orchestrator keeps no console yaml, so digest works from
-the transcript alone. It NEVER auto-files; `--dry-run` presents the candidate
-list and stops; global behavioral prefs are FLAGGED for `/remember`, not filed.
-Full conventions: `fn/digest.md`.
+harvester: scans a session transcript (CURRENT session, or a named/id'd past
+one), distills discrete TOOL/SKILL feedback (dropping one-off instructions,
+project-content talk, bare paths), dedups (within-batch + against inbox), and
+after a MANDATORY confirm gate routes each item through the SAME capture
+(merge-or-create, BATCH mode, no per-item re-confirm). It NEVER auto-files;
+`--dry-run` presents the list and stops; global behavioral prefs are FLAGGED
+for `/remember`, not filed. Full conventions: `fn/digest.md`.
 
-Routing is CROSS-CUTTING-GUARD-FIRST: a complaint that asserts a rule true
-across ALL project operations, or names a cross-cutting concern (three-level
-hierarchy, group-letter convention, paired-example rule, return-contract tail,
-project / task-group / task-folder SCAFFOLDING, routing to /haipipe-task) ->
-orchestrator fallback, overriding any keyword. Task-folder / run scaffolding
-itself lives in /haipipe-task (a different layer); feedback about how THIS
-orchestrator hands off to it is orchestrator-level, NOT task-layer feedback.
-
-This is feedback about the tool, not the work it produces. Route a `feedback`
-first-token here before other parsing. Inboxes are created LAZILY on first use.
-Full conventions: `fn/feedback.md` (keyword->skill map, inbox paths, schema,
-same-topic test); fallback inbox: `feedback/README.md`.
+Routing is CROSS-CUTTING-GUARD-FIRST: a complaint asserting a rule true across
+all project operations, or naming a cross-cutting concern (three-level
+hierarchy, group letters, paired-example rule, return-contract tail, routing to
+/haipipe-task) -> this skill's own inbox, overriding any keyword. Feedback about
+how this skill HANDS OFF to /haipipe-task is orchestrator-level, not task-layer.
+Full conventions: `fn/feedback.md`; fallback inbox: `feedback/README.md`.
 
 ## Behavioral Preferences (portable)
 
 ALWAYS read and honor `PREFERENCES.md` in this skill's own folder: git-tracked
-global behavioral preferences (e.g. communicate via ASCII diagrams) that survive a
-machine change, unlike the machine-local `~/.claude` auto-memory. Global behavioral
-prefs are kept in sync across all orchestrators by `/haipipe-paper digest`'s
-global-pref fan-out (merge-or-create; one entry per topic).
+global behavioral preferences (e.g. communicate via ASCII diagrams) that survive
+a machine change, unlike the machine-local `~/.claude` auto-memory. Kept in sync
+across orchestrators by digest's global-pref fan-out (merge-or-create).

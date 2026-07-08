@@ -7,8 +7,7 @@ metadata:
   version: "1.0.0"
   last_updated: "2026-05-31"
   summary: "AI-powered web search via Exa with content extraction."
-  changelog:
-    - "1.0.0 (2026-05-31): baseline metadata added."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 # Exa AI-Powered Web Search
@@ -116,11 +115,13 @@ python3 "$SCRIPT" get-contents "URL1" "URL2" --content text
 
 ### Step 4: Present Results
 
-Format results as a structured table:
+Format results as a numbered list, ONE RESULT PER ENTRY (never a table — result tables are unreadable):
 
 ```
-| # | Title | Authors | Venue/Publisher | URL | Date | Key Content |
-|---|-------|---------|-----------------|-----|------|-------------|
+1. <Authors> (<Date>). <Title>.
+   <Venue/Publisher> · <URL>
+   <one-line key content>
+2. ...
 ```
 
 For each result:

@@ -7,10 +7,7 @@ metadata:
   version: "3.0.0"
   last_updated: "2026-06-29"
   summary: "Stage 3 — how claims compose into a coherent output arc. Now with _LOG changelog + _DISPLAY_ tracking (which display unit serves each beat). Borrowed per-stage tracking pattern from paper."
-  changelog:
-    - "3.0.0 (2026-06-29): added _LOG, _DISPLAY_ tracking file (beat → display unit mapping). Output folder 3-narrative/ (was flat file). Borrowed per-stage tracking pattern from paper."
-    - "2.0.0 (2026-06-23): renamed from design to narrative; match paper vocabulary; venue-gated."
-    - "1.0.0 (2026-06-22): initial version as haipipe-application-design."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-application-narrative

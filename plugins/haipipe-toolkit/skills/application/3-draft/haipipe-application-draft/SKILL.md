@@ -7,9 +7,7 @@ metadata:
   version: "2.0.0"
   last_updated: "2026-06-23"
   summary: "Single generic draft skill — venue profile is the instruction set."
-  changelog:
-    - "2.0.0 (2026-06-23): removed format specialist dispatch; venue profile carries all drafting instructions."
-    - "1.0.0 (2026-06-22): initial version with format specialist dispatch."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-application-draft

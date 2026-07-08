@@ -7,8 +7,7 @@ metadata:
   version: "1.0.0"
   last_updated: "2026-06-22"
   summary: "Claim-evidence audit — traceability + scope check."
-  changelog:
-    - "1.0.0 (2026-06-22): initial version modeled on paper-edit-claim-audit."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-application-claim-audit

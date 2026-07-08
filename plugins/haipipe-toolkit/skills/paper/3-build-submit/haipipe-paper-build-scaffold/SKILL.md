@@ -7,9 +7,7 @@ metadata:
   version: "1.1.0"
   last_updated: "2026-06-04"
   summary: "Plan → new conforming paper folder skeleton (structure only, zero prose)."
-  changelog:
-    - "1.1.0 (2026-06-05): renamed from paper-scaffold to haipipe-paper-build-scaffold (haipipe-paper-* name unification)."
-    - "1.0.0 (2026-06-04): initial version, grounded in Paper-MapPhyTrait-npjDM2025."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-paper-build-scaffold (4-build-submit)
@@ -102,7 +100,7 @@ Leaf stub shape (what Step 2 writes)
 % TODO(draft): /haipipe-paper-edit-write fills this paragraph.
 ```
 
-Banner ids follow `3-write-edit/_shared/paragraph-indexing.md` (`<section-slug>.<para-slug>`, stable, never renumbered). Scaffolding them now means the write/edit stages inherit stable handles for free.
+Banner ids follow `2-section-edit/_shared/paragraph-indexing.md` (`<section-slug>.<para-slug>`, stable, never renumbered). Scaffolding them now means the write/edit stages inherit stable handles for free.
 
 Return contract
 ---------------

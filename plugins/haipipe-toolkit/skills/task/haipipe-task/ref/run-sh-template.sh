@@ -52,7 +52,7 @@ HOST="$(hostname)/$(whoami)"
 CMD="bash $(realpath "$0")"
 
 # ─── 2a. Pre-flight code review gate ───────────────────────────────────────
-# Block launch unless a fresh CODE_REVIEW.md (produced by the Run Script Reviewer
+# Block launch unless a fresh CODE_REVIEW.md (produced by the haipipe-task-reviewer-agent (Gate 1)
 # agent) exists for this task-folder and matches the current git_sha.
 # Skip mechanisms (any one):
 #   • _meta.skip_review: true   in configs/<RUN_NAME>.yaml

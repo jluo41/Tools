@@ -4,6 +4,20 @@ insight — Changelog
 Layer-scoped changelog for the insight (KNOWLEDGE / archive) layer. Newest
 first. Rollup lives in the plugin-level `CHANGELOG.md`.
 
+## [3.2.0] — 2026-07-05
+
+### Fixed (skill-set review, JL; ledger = SKILLSET_REVIEW.md)
+
+- **Narrative layer purged family-wide** (JL: "现在已经没有narrative了，insight只会被probe call。直接都删掉。"): ~40 references deleted across orchestrator, review skill (its narrative scope block replaced by a discovery scope), ref/ (namespace `narrative:` removed from schema + review-contract; `by_narrative` view removed from index-templates), play/, DESIGN, and the two K agent files. Caller model everywhere: probe (Deposit step) or the user directly.
+- **Recut stragglers closed**: `ref/invocation-modes.md` rewritten (was still ≥2-D I gate + judged-K gate; now dataset-based I rule, K = claim + basis + confidence + claim_type, `--id` pre-assignment honored); K writer gains `claim_type` end-to-end (2.0.0); explore FULLY REWRITTEN to the recut model (2.0.0, JL: "重新写吧"); schema K validation now checks claim_type and its W example gained the required `## Risk posture` + current `plan new` verb; dikw-boundaries K01 example + play/04 example cards made schema-valid; old-D examples in review-contract + card-granularity re-labeled (metric contrasts are I, not D); body budgets unified on the schema's.
+- **K source rule settled to option B** (JL: "我也倾向B。"): K `sources` may cite the I card(s) generalized OR a namespaced external origin (probe:/lit:/discover:) when no I exists; schema + index-integrity-auditor aligned.
+- **Contract-drift fixes**: index-integrity-auditor's invented status enum replaced by the schema enum (`deposited` was probe vocabulary; `contested`/`acted_on` were being false-flagged) and its source-legality row widened to the schema's; wisdom creator now forwards the apply-assigned `--id` (the one creator missing it: parallel W fan-out collided); review sidecars' home `insights/_reviews/` stated in all 5 reviewers + README + review skill; Codex fallback line added to the 4 card reviewers (JL: "okay。没有的话就fallback"); "G-ask" renamed to application-ask (JL: "改成现在的吧"); `.insight-console.yaml` fictional routing signal removed (JL: "删掉吧"); views/ reworded to the dual-mode contract (co-pilot with a human; --auto when a subagent calls; JL).
+- **Dead paths zeroed**: 4 writers' `../../ref/` and review's bare `ref/` (24 pointers) now resolve; orchestrator play/scripts depths fixed; okf-compat example command rooted.
+- **export_okf.py**: external-ref carve-out now applied to `ref_by` (spurious "dangling ref_by" warnings gone); `--out` rmtree guarded (refuses non-`okf`, non-empty targets).
+- **Ledgers trued up**: all 7 skill changelogs actually newest-first; knowledge/review versions bumped past bodies that had outrun them; DESIGN header at v3.1.0 with real read-first pointers.
+- D1 follow-up resolved (JL: "delete it."): ask-session removed as a review scope family-wide (orchestrator + review skill + review-contract); application keeps only READ-side citations (`app:ask:` refs stay legal) and the outbound question redirect; "ask report phase" trigger phrases and "can chain this" caller claims scrubbed from creators + writers.
+- E5 resolved option A (JL: "我记得我说了选A"): the checklist stays with the reviewed material; orchestrator boundary reworded to "permanent artifacts only under insights/".
+
 ## [3.1.0] — 2026-06-22
 
 ### Added / fixed (post-apply hardening, JL audit)

@@ -1,6 +1,6 @@
 ---
 name: card-creator-wisdom-agent      # = subagent_type; register via top-level agents/ symlink
-description: "Thin BUILDER agent for insight W (wisdom) cards. Given ≥1 K-card id, calls the haipipe-insight-wisdom skill (headless) to file ONE 🟧 W actionable-recommendation card per ../../ref/insight-md-schema.md. Does NOT author the card itself (the skill does), NOT judge it (reviewers do), NOT execute the recommendation. Trigger: file W card, fan-out recommendation filing, ask report phase."
+description: "Thin BUILDER agent for insight W (wisdom) cards. Given ≥1 K-card id, calls the haipipe-insight-wisdom skill (headless) to file ONE 🟧 W actionable-recommendation card per ../../ref/insight-md-schema.md. Does NOT author the card itself (the skill does), NOT judge it (reviewers do), NOT execute the recommendation. Trigger: file W card, fan-out recommendation filing, apply."
 tools:
   - Read
   - Write
@@ -11,10 +11,11 @@ tools:
   - Skill
 model: inherit
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
+  version: "1.1.0"
+  last_updated: "2026-07-05"
   summary: "Thin BUILDER agent for insight W (wisdom) cards."
   changelog:
+    - "1.1.0 (2026-07-05): forward the apply-assigned --id (was the one creator missing it: parallel W fan-out collided on NN); G-ask → application-ask (JL skill-set review)."
     - "1.0.0 (2026-05-31): baseline metadata added."
 ---
 
@@ -44,7 +45,7 @@ files SILENTLY, then verifying the card landed + returning the structured block.
 - judge faithfulness → `card-reviewer-wisdom-agent` (filer≠judge)
 - check the cross-ref graph → `index-integrity-auditor-agent`
 - EXECUTE the recommendation (fire a probe / run a task) → that is a user /
-  G-ask action; a W card only RECORDS the recommended next step
+  application-ask action; a W card only RECORDS the recommended next step
 
 ## Flow
 
@@ -53,8 +54,10 @@ files SILENTLY, then verifying the card landed + returning the structured block.
    `../../ref/invocation-modes.md` → "wisdom".
 2. Pre-flight (no fabrication): resolve `--project`; confirm every scoped K id
    exists. None / missing id → return `status: blocked` + `missing`, stop.
-3. `Skill("haipipe-insight-wisdom", "--scope K03[,...] --project <p> [--slug <s>] --auto")`
+3. `Skill("haipipe-insight-wisdom", "--scope K03[,...] --id W<NN> --project <p> [--slug <s>] --auto")`
    → files the W card silently (`--auto` picks the top recommendation, skips ASK).
+   ALWAYS forward the apply-assigned `--id` (apply pre-assigns ids so concurrent
+   creators do not collide on `NN`). Never auto-pick `NN` in a parallel fan-out.
 4. Verify the returned `card` path exists and parses; `## How to act` is
    concrete. Do NOT edit its content, and do NOT run the command it names.
 5. Return the structured block. Do NOT self-review.

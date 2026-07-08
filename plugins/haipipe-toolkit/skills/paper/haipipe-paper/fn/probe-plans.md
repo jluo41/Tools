@@ -9,14 +9,21 @@ when the user is ready.
 Location
 --------
 
+Plans LIVE in the `_PROBE/` subfolder of the stage that spawned them (stage self-containment, JL 2026-06-29 ruling). `1-probe-plans/README.md` is a thin cross-stage INDEX only -- one row per plan, no plan bodies.
+
 ```
 <paper>/
+├── 0-lifecycle/
+│   ├── 0-seed/_PROBE/PP01_<slug>.md          plans live with their stage
+│   ├── 1-claims/_PROBE/PP02_<slug>.md
+│   └── 5-section-edit/{section}/_PROBE/...
 └── 1-probe-plans/
-    ├── README.md              index + dispatch status
-    ├── PP01_<slug>.md         one file per planned probe
-    ├── PP02_<slug>.md
-    └── ...
+    └── README.md              INDEX: | id | stage | status | probe_ref | -- created on first plan
 ```
+
+PP numbering is paper-global (PP01, PP02, ... in creation order across stages); the index is the numbering authority.
+
+**Legacy layout migration (on first touch):** a plan file found FLAT in `1-probe-plans/PPNN_*.md` moves into the `_PROBE/` folder of its `source_stage` (from frontmatter, or infer from content) + gets an index row. A legacy `_DISCOVERY_{stage}.md` next to a stage artifact folds into the owning plan file (takeaways -> plan `## Takeaways`; candidate papers -> `_CITATION_{stage}.md` via citation harvest) and is then deleted. Migrate as part of whatever verb touched the file; log the move in the stage `_LOG`.
 
 Probe Plan File Format
 -----------------------
@@ -58,10 +65,15 @@ Statuses
 --------
 
 ```
-planned     filed during lifecycle work; not yet dispatched
-dispatched  sent to /haipipe-probe; probe_ref points to the active probe
-verdicted   probe returned a verdict; paper can backfill into 2-claims
+planned     filed during lifecycle work; not yet dispatched (this word, not "buffered")
+dispatched  handed to the orchestrator agent; ref: points at the active probe
+read        light return arrived; takeaways backfilled into this plan file
+            (ref: = probe path, OR the directly-reused artifact when the agent
+             chose no-wrapper reuse)
+verdicted   full probe returned a verdict; paper can backfill into 1-claims
 ```
+
+The plan file is the need's WHOLE paper-side lifecycle in one place: need -> dispatch record (probe_ref) -> takeaways (<=5 lines, written back after Read). There is no separate `_DISCOVERY_` takeaways file (retired 2026-07-04).
 
 Commands
 --------
@@ -83,11 +95,12 @@ Any lifecycle stage can surface a probe plan:
 
 The probe plan captures the need immediately; dispatch waits for user readiness.
 
-When `/haipipe-paper probe run` dispatches:
+When `/haipipe-paper probe run` dispatches (always via haipipe-paper-probe, the single dispatch point):
 1. Resolve the project root from the paper path
-2. For each planned probe, call Skill("haipipe-probe", args="plan from-paper <paper_root> <probe_plan_content>")
-3. Update the probe plan file: status -> dispatched, probe_ref -> the active probe path
-4. When the probe deposits a verdict, the paper backfills into 2-claims and sections
+2. For each planned probe: dispatch `Agent(haipipe-probe-orchestrator-agent)` -- ALWAYS, no matter how small the need. The agent's SWEEP decides the shape in clean context: enrich an existing probe / reuse a covering artifact directly (light, no wrapper) / create the probe and gather. The paper side never sweeps the project or reads its evidence inline.
+3. Update the probe plan file: status -> dispatched, `ref:` -> what the agent returns (probe path, or reused artifact path); update the index row
+4. Light returns at Read: takeaways (<=5 lines) backfill into the plan file (status -> read); when the return carries literature sources, haipipe-paper-probe-citation HARVESTs them into _CITATION_{stage}.md
+5. Full probes deposit a verdict: the paper backfills into 1-claims and sections (status -> verdicted)
 
 Relation to Direct task/discover Verbs
 ---------------------------------------

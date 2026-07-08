@@ -13,18 +13,18 @@ Paper-Personality-Opioid-MedJournal walkthrough. Four implementation waves.
 
 ### Added (new ref docs)
 
-- **ref/stage-gate.md** -- Stage Gate protocol. Every stage transition requires
+- **wiki/08-stage-gate.md** -- Stage Gate protocol. Every stage transition requires
   explicit user confirmation. Per-stage exit criteria table. Gate Ledger in
   STATUS.md tracks confirmed/date per stage. Strip checkmark means
   user-confirmed, not artifact-exists. Autonomy policy: boundary = PAUSE.
-- **ref/stage-illuminate.md** -- Illuminate + Elicit protocol. Socratic
+- **wiki/09-stage-illuminate.md** -- Illuminate + Elicit protocol. Socratic
   teach-then-elicit-then-draft loop before every stage draft. Per-stage
   taste-bearing decision examples. Re-walks diff-and-ask, not overwrite.
-- **ref/tex-quality.md** -- Lifecycle TeX Quality Standard. Three rules:
+- **wiki/13-tex-quality.md** -- Lifecycle TeX Quality Standard. Three rules:
   SELF-CONTAINED (standalone compilable), REAL PROSE (not comment blocks),
   SENTENCE-INDEXED (Pn.Sm tags from birth). Compile rule: pdflatex after every
   edit, clean aux, stale PDF is a defect.
-- **ref/evidence-routing.md** -- Evidence Routing Protocol. Paper/evidence
+- **wiki/12-evidence-routing.md** -- Evidence Routing Protocol. Paper/evidence
   boundary: paper owns story, probe owns evidence. The \\needprobe{} LaTeX
   macro marks claims lacking evidence with a red flag in the compiled PDF.
   Handoff protocol (stop, mark, record, route, backfill). Heavy probes
@@ -55,7 +55,7 @@ Paper-Personality-Opioid-MedJournal walkthrough. Four implementation waves.
 ### Changed (orchestrator + enter)
 
 - **haipipe-paper v2.0.0** -- version bump, cross-reference to
-  ref/evidence-routing.md in Delivery Need Routing section. Probe/discover/task
+  wiki/12-evidence-routing.md in Delivery Need Routing section. Probe/discover/task
   verbs already existed from v1.4.0-1.5.0.
 - **haipipe-paper-enter v2.1.0** -- restructured dashboard output: pitch summary
   first (what the paper is about), then stage strip, then compact operational
@@ -70,7 +70,7 @@ Paper-Personality-Opioid-MedJournal walkthrough. Four implementation waves.
 
 ### Changed (infrastructure)
 
-- **ref/stage-strip.sh** -- reads Gate Ledger from STATUS.md when present.
+- **wiki/10-stage-strip.sh** -- reads Gate Ledger from STATUS.md when present.
   Checkmark = ledger-confirmed (preferred) or before-current (fallback).
 
 ### Feedback items resolved (22)
