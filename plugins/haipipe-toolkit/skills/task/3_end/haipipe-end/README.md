@@ -75,7 +75,9 @@ The 5 Inference Function Types
   Src2InputFn   Src2InputFn(ProcName_to_ProcDf, SPACE)        ProcDf → payload (packaging only)
   Input2SrcFn   Input2SrcFn(payload_json, SPACE)              Payload → ProcDf (inference entry)
 
-All 5 are generated from builders in code-dev/1-PIPELINE/6-Endpoint-WorkSpace/.
+All 5 are generated from builders in the project's endpoint fn_develop task
+folder (`tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/`; legacy
+workspaces: `code-dev/1-PIPELINE/6-Endpoint-WorkSpace/`).
 NEVER edit code/haifn/fn_endpoint/ directly.
 
 ---
@@ -155,7 +157,8 @@ Key Directories
     fn_src2input/                   Src2InputFn files
     fn_input2src/                   Input2SrcFn files
 
-  code-dev/1-PIPELINE/6-Endpoint-WorkSpace/    Builders (EDIT HERE)
+  tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/    Builders (EDIT HERE)
+  (legacy workspaces: code-dev/1-PIPELINE/6-Endpoint-WorkSpace/)
     a1_build_metafn_*.py
     b1_build_trigfn_*.py
     c1_build_postfn_*.py

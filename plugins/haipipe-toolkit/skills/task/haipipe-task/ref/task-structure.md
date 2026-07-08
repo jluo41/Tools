@@ -261,10 +261,14 @@ Every Track A stub gets a paired example task in tasks/ (group D by default). Tr
 
   Track A stub                              Track B paired task
   --------------------                      -------------------------
-  code-dev/1-PIPELINE/.../build_*.py    ->  tasks/D_demo/D{N}_test_*/
   code/hainn/algo/{family}/*.py         ->  tasks/D_demo/D{N}_test_{name}/
   code/hainn/tuner/{family}/*.py
   code/hainn/instance/{family}/*.py
+
+Fn builders (build_*.py) need no demo pairing: they live in the project's
+NN_<stage>_fn_develop_<cohort>/ task folders, which are already runnable
+tasks with the standard layout. (Legacy workspaces keeping builders in
+code-dev/1-PIPELINE/ still pair them with tasks/D_demo/D{N}_test_*/.)
 
 The paired task contains the standard task layout including diagram/. Status tracked in:
   - {task}/diagram/03-runs.txt            (Status = "stub" until implemented)

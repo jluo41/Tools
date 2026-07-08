@@ -42,7 +42,7 @@ Kitchen    Source_Pipeline class       code/haipipe/source_base/
 Chef       SourceFn functions         code/haifn/fn_source/           (GENERATED)
 Recipe     YAML config file           config/ or tutorials/config/
 Dish       SourceSet asset            _WorkSpace/1-SourceStore/
-Academy    Builder scripts            code-dev/1-PIPELINE/1-Source-WorkSpace/
+Academy    Builder scripts            tasks/<pipe-group>/01_source_fn_develop_<cohort>/  (in the project)
 ```
 
 The Kitchen (Source_Pipeline) orchestrates execution. The Chef (SourceFn) does
@@ -243,8 +243,8 @@ Do not rely on a hardcoded list -- always discover at runtime:
 # Registered SourceFns
 ls code/haifn/fn_source/
 
-# Corresponding builder scripts
-ls code-dev/1-PIPELINE/1-Source-WorkSpace/
+# Corresponding builder scripts (per-project fn_develop task folders)
+ls examples/*/tasks/*/01_source_fn_develop_*/
 
 # Inspect a SourceFn's ProcName_List
 head -20 code/haifn/fn_source/<SourceFnName>.py
@@ -303,7 +303,10 @@ Pipeline framework:   code/haipipe/source_base/source_pipeline.py
 Fn loader:            code/haipipe/source_base/builder/sourcefn.py
 
 Generated SourceFns:  code/haifn/fn_source/                        <- discover with ls
-Builders (edit here): code-dev/1-PIPELINE/1-Source-WorkSpace/      <- discover with ls
+Builders (edit here): examples/<Project>/tasks/<pipe-group>/01_source_fn_develop_<cohort>/
+                      (per-project task folder, e.g. Project-REACH-ADHD/tasks/
+                      A01_data_pipeline_reachadhd/01_source_fn_develop_reachadhd/;
+                      legacy workspaces may still carry code-dev/1-PIPELINE/1-Source-WorkSpace/)
 
 Test configs:         config/                                       <- discover with ls config/
 Store path:           _WorkSpace/1-SourceStore/

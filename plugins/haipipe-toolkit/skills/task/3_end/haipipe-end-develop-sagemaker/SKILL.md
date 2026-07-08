@@ -161,7 +161,7 @@ Target Scope
 -------------
 
 Owns:
-  - Wrapping the project's `code-dev/1-PIPELINE/6-Endpoint-WorkSpace/` build
+  - Wrapping the project's endpoint-fn build
     into a SageMaker Pipeline (Preprocess → Train → Reorganize)
   - Training ECR image lifecycle (delegates to `build_docker_training.py`)
   - SageMaker Pipeline parameters (ModelPackageGroupName, image URI, role,

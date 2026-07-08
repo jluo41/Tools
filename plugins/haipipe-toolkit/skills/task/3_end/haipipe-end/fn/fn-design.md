@@ -5,7 +5,10 @@ Guides creation of new inference function files via the builder pattern.
 Applies to all 5 Fn types: MetaFn, TrigFn, PostFn, Src2InputFn, Input2SrcFn.
 
 NEVER edit code/haifn/fn_endpoint/ directly.
-Always use builders in code-dev/1-PIPELINE/6-Endpoint-WorkSpace/.
+Always use builders in the project's endpoint fn_develop task folder
+(`tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/`; legacy
+workspaces: `code-dev/1-PIPELINE/6-Endpoint-WorkSpace/`). The path examples
+below use `<BUILDER_DIR>` for whichever of the two applies.
 
 ---
 
@@ -52,9 +55,9 @@ Before Writing Any Builder
 
 2. Read the ref file for your Fn type (loaded from dispatch table).
 
-3. Check existing builders in code-dev/1-PIPELINE/6-Endpoint-WorkSpace/:
+3. Check existing builders in <BUILDER_DIR>:
    ```bash
-   ls code-dev/1-PIPELINE/6-Endpoint-WorkSpace/
+   ls examples/*/tasks/*/*endpoint*fn_develop*/    # or legacy code-dev/1-PIPELINE/6-Endpoint-WorkSpace/
    ```
    Find the builder prefix matching your Fn type (a1/b1/c1/d1/e1).
 
@@ -66,7 +69,7 @@ Universal Builder Template
 Every builder script follows this structure regardless of Fn type:
 
 ```python
-# code-dev/1-PIPELINE/6-Endpoint-WorkSpace/{prefix}_build_{fn-type}_{description}.py
+# <BUILDER_DIR>/{prefix}_build_{fn-type}_{description}.py
 
 import os, sys
 SPACE_ROOT = os.environ.get('SPACE', '.')
@@ -337,7 +340,7 @@ Running the Builder
 
 ```bash
 source .venv/bin/activate && source env.sh && python \
-  code-dev/1-PIPELINE/6-Endpoint-WorkSpace/{prefix}_build_{fn-type}_{description}.py
+  <BUILDER_DIR>/{prefix}_build_{fn-type}_{description}.py
 ```
 
 NOTE: source .venv/bin/activate does NOT persist across Bash tool calls.

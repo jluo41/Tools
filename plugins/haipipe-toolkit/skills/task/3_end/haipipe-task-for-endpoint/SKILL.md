@@ -123,7 +123,7 @@ Prerequisites
    - Each example has `ProcName_to_ProcDf/` (real patient source data as parquet)
 
 2. **5 Fns authored** in `code/haifn/fn_endpoint/`:
-   - Build via `code-dev/1-PIPELINE/6-Endpoint-WorkSpace/{a1,b1,c1,d1,e1}_build_*.py`
+   - Build via the endpoint fn_develop task folder’s `{a1,b1,c1,d1,e1}_build_*.py` (legacy: `code-dev/1-PIPELINE/6-Endpoint-WorkSpace/`)
    - OR use `/haipipe-end <fn-type> design` interactively
 
 3. **ExampleConfig in B-series training config**:

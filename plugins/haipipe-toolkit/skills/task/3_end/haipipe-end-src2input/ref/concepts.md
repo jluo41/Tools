@@ -175,8 +175,12 @@ Builder Pattern
 **Step 1: Edit builder:**
 
 ```
-code-dev/1-PIPELINE/6-Endpoint-WorkSpace/d1_build_src2inputfn_{description}.py
+<builder-dir>/d1_build_src2inputfn_{description}.py
 ```
+
+<builder-dir> = the project's endpoint fn_develop task folder
+(tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/; legacy
+workspaces: code-dev/1-PIPELINE/6-Endpoint-WorkSpace/).
 
 **Step 2: Configure at top:**
 
@@ -190,7 +194,7 @@ RUN_TEST = True
 
 ```bash
 source .venv/bin/activate && source env.sh && python \
-  code-dev/1-PIPELINE/6-Endpoint-WorkSpace/d1_build_src2inputfn_{description}.py
+  <builder-dir>/d1_build_src2inputfn_{description}.py
 ```
 
 NOTE: source .venv/bin/activate does NOT persist across Bash tool calls.
