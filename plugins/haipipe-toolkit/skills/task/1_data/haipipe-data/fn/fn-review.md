@@ -5,8 +5,9 @@ fn-review: Structural Code Review for haipipe-data Pipeline Functions
 config) and check it against the haipipe-data structural contract. Reports
 PASS / WARN / FAIL per criterion. Read-only: does NOT modify any files.
 
-**Scope**: Generated Fns in code/haifn/, builder scripts in code-dev/1-PIPELINE/,
-and YAML pipeline configs.
+**Scope**: Generated Fns in code/haifn/, builder scripts in the project's
+`*_fn_develop_*` task folders (legacy: code-dev/1-PIPELINE/), and YAML
+pipeline configs.
 
 ---
 
@@ -41,13 +42,14 @@ to clarify which type it is.
   code/haifn/fn_aidata/entryinput/*.py       InputTfmFn
   code/haifn/fn_aidata/entryoutput/*.py      OutputTfmFn
   code/haifn/fn_aidata/split/*.py            SplitFn
-  code-dev/1-PIPELINE/1-Source-WorkSpace/*.py  SourceFn builder
-  code-dev/1-PIPELINE/2-Record-WorkSpace/h*.py HumanFn builder
-  code-dev/1-PIPELINE/2-Record-WorkSpace/r*.py RecordFn builder
-  code-dev/1-PIPELINE/3-Case-WorkSpace/a*.py   TriggerFn builder
-  code-dev/1-PIPELINE/3-Case-WorkSpace/c*.py   CaseFn builder
-  code-dev/1-PIPELINE/4-AIData-WorkSpace/c*.py TfmFn builder
-  code-dev/1-PIPELINE/4-AIData-WorkSpace/s*.py SplitFn builder
+  */01_source_fn_develop_*/c*.py             SourceFn builder
+  */02_record_fn_develop_*/h*.py             HumanFn builder
+  */02_record_fn_develop_*/r*.py             RecordFn builder
+  */03_case_fn_develop_*/a*.py               TriggerFn builder
+  */03_case_fn_develop_*/c*.py               CaseFn builder
+  */04_aidata_fn_develop_*/c*.py             TfmFn builder
+  */04_aidata_fn_develop_*/s*.py             SplitFn builder
+  code-dev/1-PIPELINE/**/*.py                any builder (legacy home)
   config/**/*.yaml                              YAML config (stage auto-detected)
 
   For YAML configs: inspect the top-level keys to determine stage:
@@ -81,8 +83,8 @@ Present this message:
     OutputTfmFn    code/haifn/fn_aidata/entryoutput/<TfmFnName>.py
     SplitFn        code/haifn/fn_aidata/split/<SplitFnName>.py
 
-  Builder scripts (code-dev/1-PIPELINE/)
-    Any builder:   code-dev/1-PIPELINE/<N>-*-WorkSpace/<builder>.py
+  Builder scripts (project fn_develop task folders; legacy: code-dev/1-PIPELINE/)
+    Any builder:   examples/<Project>/tasks/<pipe-group>/NN_<stage>_fn_develop_<cohort>/<builder>.py
 
   Pipeline configs (config/)
     Any config:    config/<path>/<name>.yaml
@@ -340,7 +342,7 @@ ___________________________________________________________________________
          (NOT a dict of split DataFrames)
 
 ___________________________________________________________________________
-CHECKLIST: Builder script   (code-dev/1-PIPELINE/**/*.py)
+CHECKLIST: Builder script   (*_fn_develop_*/ or legacy code-dev/1-PIPELINE/)
 ___________________________________________________________________________
 
   ID     Check                                           Rule

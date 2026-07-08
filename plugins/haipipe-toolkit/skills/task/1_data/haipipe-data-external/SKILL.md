@@ -135,7 +135,9 @@ _WorkSpace/ExternalStore/
 ```
 
 Versioning: latest release wins by default. Pin with `--version @{tag}`.
-Current builders live in `code-dev/0-EXTERNAL/e{N}_build_external_*.py`.
+Current builders live in `code-dev/0-EXTERNAL/e{N}_build_external_*.py`
+(WellDoc-SPACE; workspaces without `code-dev/` host external builders in a
+project task folder instead — same `e{N}_build_external_*` naming).
 
 ---
 

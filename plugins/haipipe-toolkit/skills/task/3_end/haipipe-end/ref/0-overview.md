@@ -520,7 +520,7 @@ Fn loaders (builder/):    code/haipipe/endpoint_base/builder/
   Src2InputFn loader:       builder/src2inputfn.py
   Input2SrcFn loader:       builder/input2srcfn.py
 Generated Fns:            code/haifn/fn_endpoint/    <- NEVER edit directly
-Builder scripts:          code-dev/1-PIPELINE/6-Endpoint-WorkSpace/
+Builder scripts:          tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/  (legacy: code-dev/1-PIPELINE/6-Endpoint-WorkSpace/)
 YAML configs:             config/test-haistep-*/6_test_endpoint.yaml
 Databricks platform:      platform-databrick-inference/
   MLflow wrapper:           code/mlflow_model.py

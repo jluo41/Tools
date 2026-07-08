@@ -1,25 +1,21 @@
 ---
 name: haipipe-application-venue
-description: "Venue selection for the intervention lifecycle. Chooses the output modality (SMS, checklist, reminder, push, email, dashboard, UI card, report) and pins it in STATUS.md. The venue reshapes every downstream stage: which stages are required/skip, claims depth, content structure, and draft format. Runs after pitch, before claims. Modeled on haipipe-paper-venue. Trigger: venue, format, modality, what format, which channel, /haipipe-application venue."
-argument-hint: "[venue-name] [intervention-path]"
+description: "Venue selection for the intervention lifecycle — the decision gate between the venue-FREE stages (seed, claims) and the venue-ALIGNED stages (pitch, narrative, display, section-edit). Chooses the output modality (sms, push, reminder, checklist, email, dashboard, ui-card, report), pins it in STATUS.md (venue + stages_skipped + claims_settlement), and produces 0-lifecycle/2-venue/2-venue.md with Artifact Principles — the concrete downstream contract (template/slots, limits, tone-by-audience, element types, section structure, gate depth) that pitch/display/section-edit/artifact all read. Runs AFTER claims, BEFORE pitch. Re-pin re-couples pitch+; claims SURVIVES. Trigger: venue, format, modality, which channel, /haipipe-application venue."
+argument-hint: "[venue-name] [intervention-path] [--no-pin]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-06-23"
-  summary: "Venue selection — choose output modality, pin in STATUS.md."
+  version: "3.0.0"
+  last_updated: "2026-07-06"
+  summary: "Port of paper venue 2.0.0 (765696f): venue becomes an artifact-producing stage — 2-venue/2-venue.md + _LOG + _PROBE/ with Artifact Principles as the downstream contract. Still writes the 3 STATUS rows (strip/lifecycle/gate read those). Dual-2 numbering mirrors paper (2-venue + 2-pitch)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-application-venue
 ==================================
 
-Chooses the output modality for the intervention and pins it in
-STATUS.md. The venue determines which lifecycle stages fire, how
-deep the claims stage goes, and what the draft looks like.
+Chooses the output modality for the intervention, pins it in STATUS.md, and DISTILLS the venue pack + audience profile into a stage document the downstream stages consume. The venue gates which stages fire, how much of the claims campaign must settle, and what the artifact looks like.
 
-Runs between **pitch** and **claims** — same position as paper's
-venue selection.
-
+Runs between **claims** and **pitch** -- the truth (seed, claims) is settled venue-free first; everything that SELLS or SHAPES it (pitch onward) is venue-aligned. The venue packs are knowledge, not skills; this skill is the READER that turns them into a pinned contract. It never edits a pack.
 
 Available venues
 =================
@@ -32,131 +28,95 @@ venue-checklist         actionable checklist (5-12 items)
 venue-email             longer-form email with sections
 venue-dashboard         data-rich provider dashboard
 venue-ui-card           in-app card / widget
-venue-report            stakeholder report (formal)
+venue-report            stakeholder report (formal, sectioned)
 ```
 
+## Artifact Spec
 
-Stage requirements per venue
-==============================
+**Files produced:**
+- `0-lifecycle/2-venue/2-venue.md` -- venue stage document (choice + Artifact Principles + fit + probes)
+- `0-lifecycle/2-venue/_LOG_2-venue.md` -- phase progress journal
+- `0-lifecycle/2-venue/_PROBE/` -- venue-level probe cards (channel capability, compliance constraints, prior sends on this channel)
+- `STATUS.md` -- the three pinned rows (below)
 
-The venue profile declares which lifecycle stages are required,
-optional, or skip:
+**Content structure (2-venue.md):**
 
-```
-                    seed   pitch   claims   narrative   display   minimap
-                    ─────  ─────   ──────   ─────────   ───────   ───────
-venue-sms           req    req     req      skip        skip      skip
-venue-push          req    req     req      skip        skip      skip
-venue-reminder      req    req     req      skip        skip      skip
-venue-checklist     req    req     req      optional    skip      skip
-venue-email         req    req     req      req         optional  skip
-venue-dashboard     req    req     req      req         req       req
-venue-ui-card       req    req     req      req         req       optional
-venue-report        req    req     req      req         req       req
-```
+```text
+2-venue: <intervention name>
+=============================
 
-**seed, pitch, claims** are always required. They are the minimum
-viable lifecycle — you always need to know why (seed), what (pitch),
-and which evidence backs it (claims).
-
-**narrative, display, minimap** scale with output complexity. Simple
-venues (SMS, push) have fixed templates that answer these questions
-implicitly. Complex venues (dashboard, report) need explicit design.
-
-
-Claims depth per venue
-========================
-
-The claims stage is always present but its depth scales:
-
-```
-claims_depth    venues                     what it means
-────────────    ──────────────────────     ────────────────────────────
-light           sms, push, reminder        SELECT from existing K/W.
-                                           List which K/W entries inform
-                                           each part of the output.
-                                           No probe planning.
-
-medium          checklist, email           SELECT + gap check.
-                                           Verify K/W covers all items.
-                                           Optional probe if gap found.
-
-full            dashboard, ui-card,        Full claim ledger.
-                report                     GAP/weak/supported per claim.
-                                           Probe plans for GAPs.
+Venue Choice            which venue, one-line why, backup options
+Venue Profile           audience, channel mechanics, what this venue rewards
+Artifact Principles     concrete specs that downstream stages consume
+Fit Assessment          claims campaign vs venue demands + settlement-bar delta
+Probes                  venue-level investigation needs
 ```
 
-Light claims for SMS example:
-```markdown
-## Claims (light)
-- Benefit sentence draws on: K03 (timing sensitivity)
-- CTA draws on: W02 (recommend refill action)
-- Personalization draws on: K07 (name improves engagement)
-- No gaps — all K/W entries are active and supported.
-```
+**Artifact Principles section (the key downstream contract):**
+- Template/slots or section structure: the output's fixed shape (slots for simple venues; section list for sectioned venues)
+- Length limits: char/word budgets per slot/section/segment
+- Tone: register from the audience profile (reading level, jargon rules, citation visibility)
+- Element types: which display elements the venue supports (sectioned venues)
+- Settlement + gate depth: the claims bar this venue demands and whether CHECK runs inline or as a report
+- Compliance rails: opt-out, PHI, program guardrails
 
-Full claims for dashboard example:
-```markdown
-## Claims (full)
-### C01: Refill timing predicts adherence
-- Status: supported
-- Evidence: K03
-### C02: Provider dashboard reduces missed refills
-- Status: GAP
-- Probe plan: PP01_dashboard_effectiveness
-```
+This section is what pitch, display, section-edit, and artifact all read. Once venue is pinned, Artifact Principles tells you concretely how to shape the deliverable -- no re-deriving from the pack per stage.
 
+**Formatting (artifact):** `=====` title / `-----` sections, no `#` headings; one sentence per line.
 
-Venue template (for simple venues)
-=====================================
+What the pin writes (STATUS.md)
+================================
 
-Simple venues (skip narrative/display/minimap) include a
-**venue template** that replaces those stages. The template
-defines the fixed output structure:
+Three rows the whole system reads (strip, lifecycle router, claims gate, artifact):
 
 ```
-venue-sms template:
-  Slot 1: greeting     ← personalization
-  Slot 2: benefit      ← primary claim
-  Slot 3: CTA          ← action + timing
-  Slot 4: close        ← reassurance / opt-out
+| venue | sms |
+| stages_skipped | narrative display section-edit |
+| claims_settlement | light |
 ```
 
-The draft skill reads this template directly when
-narrative/display/minimap are skip.
+Per-venue values (authoritative source: each `_venue/venue-<name>/README.md`):
 
+```
+                 narrative   display   section-edit   claims_settlement   gate depth
+venue-sms        skip        skip      skip           light               inline
+venue-push       skip        skip      skip           light               inline
+venue-reminder   skip        skip      skip           light               inline
+venue-checklist  optional    skip      skip           medium              inline
+venue-email      req         optional  skip           medium              inline
+venue-dashboard  req         req       req            full                report
+venue-ui-card    req         req       optional       full                report
+venue-report     req         req       req            full                report
+```
+
+An `optional` stage is skipped by default and pulled in on user request (then removed from `stages_skipped`).
 
 Workflow
 =========
 
 ```
-Step 1: Read 1-pitch.md (channel field suggests venue).
-
-Step 2: If venue obvious from pitch → propose it.
-        If ambiguous → present shortlist with pros/cons.
-
-Step 3: User confirms or overrides.
-
-Step 4: Pin venue in STATUS.md:
-          venue: sms
-          venue_profile: _venue/venue-sms/
-
-Step 5: Report which stages are required/skip for this venue.
+Step 1: Read 0-lifecycle/1-claims/1-claims.md (the campaign shapes which venues
+        are viable) + 0-seed's channel hunch.
+Step 2: If venue obvious → propose it. If ambiguous → present a shortlist with
+        pros/cons (evidence depth vs venue demands; audience fit).
+Step 3: User confirms or overrides (--no-pin = recommend only, write nothing).
+Step 4: Pin in STATUS.md (three rows, from the venue pack's README) AND write
+        0-lifecycle/2-venue/2-venue.md: distill the pack + audience profile
+        into Artifact Principles; run the Fit Assessment against the campaign.
+Step 5: Report which stages fire + whether the campaign already meets the
+        settlement bar (if not: name the claims work left). Venue-level probes
+        (channel capability, compliance) buffer in 2-venue/_PROBE/.
 ```
 
+Venue change rule (retarget)
+=============================
 
-Venue change rule
-==================
+Changing venue later re-couples the venue-ALIGNED stages ONLY: 2-venue.md rewrites (new principles), pitch/narrative/display/section-edit rewrite, artifacts re-compose. The claims ledger SURVIVES -- the new venue may raise `claims_settlement`, which is additional settlement work on the SAME campaign, not invalidation. The skill states exactly what re-opens and asks for confirmation before re-pinning.
 
-Changing venue after claims exist is a **loopback** — it
-invalidates claims and everything downstream. The skill warns
-and asks for confirmation before re-pinning.
+**Done-criteria:**
+- [ ] STATUS.md has | venue |, | stages_skipped |, | claims_settlement | rows
+- [ ] 2-venue.md exists with Artifact Principles filled with concrete specs (no "see pack" hand-waves)
+- [ ] Fit Assessment maps the claims campaign to the venue's demands; settlement delta named
+- [ ] User saw and confirmed the stage requirements + settlement bar
 
-
-Definition of done
-===================
-
-```
-[ ] STATUS.md has venue: <name> and venue_profile: <path>
-[ ] User saw and confirmed stage requirements
-```
+End the reply with the closing block (stage line via `../../haipipe-application/stage-strip.sh`; the venue slot renders ✅ from the pinned STATUS field).

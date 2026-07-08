@@ -36,7 +36,7 @@ Kitchen  = AIData_Pipeline class        (code/haipipe/aidata_base/)
 Chef     = TfmFn + SplitFn             (code/haifn/fn_aidata/)  GENERATED
 Recipe   = YAML config file            (config/aidata/ or tutorials/config/)
 Dish     = AIDataSet asset             (_WorkSpace/4-AIDataStore/)
-Academy  = Builder scripts             (code-dev/1-PIPELINE/4-AIData-WorkSpace/)
+Academy  = Builder scripts             (tasks/<pipe-group>/04_aidata_fn_develop_<cohort>/ in the project)
 ```
 
 ---
@@ -251,7 +251,7 @@ Discovering Available Fns
 ls code/haifn/fn_aidata/entryinput/
 ls code/haifn/fn_aidata/entryoutput/
 ls code/haifn/fn_aidata/split/
-ls code-dev/1-PIPELINE/4-AIData-WorkSpace/
+ls examples/*/tasks/*/04_aidata_fn_develop_*/
 ```
 
 ---
@@ -281,7 +281,7 @@ Or call venv python directly: `.venv/bin/python script.py`
 MUST NOT
 ========
 
-1. NEVER edit `code/haifn/` directly -- edit builders in `code-dev/1-PIPELINE/4-AIData-WorkSpace/`
+1. NEVER edit `code/haifn/` directly -- edit builders in the project's `04_aidata_fn_develop_<cohort>/` task folder
 2. NEVER run Python without `.venv` activated
 3. NEVER invent CaseFn names that don't exist in the CaseSet
 4. NEVER assume a `vocab/` subdirectory exists (files are at ROOT)
@@ -309,7 +309,8 @@ Generated Input Transforms:   code/haifn/fn_aidata/entryinput/  (discover with l
 Generated Output Transforms:  code/haifn/fn_aidata/entryoutput/ (discover with ls)
 Generated SplitFns:           code/haifn/fn_aidata/split/       (discover with ls)
 
-Builders (edit here):         code-dev/1-PIPELINE/4-AIData-WorkSpace/  (discover with ls)
+Builders (edit here):         examples/<Project>/tasks/<pipe-group>/04_aidata_fn_develop_<cohort>/
+                              (legacy workspaces: code-dev/1-PIPELINE/4-AIData-WorkSpace/)
 
 Store path:                   _WorkSpace/4-AIDataStore/
 Config template:              ../templates/config.yaml (this skill's own template)

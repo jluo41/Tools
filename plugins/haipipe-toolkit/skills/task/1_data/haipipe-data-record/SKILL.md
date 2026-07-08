@@ -76,7 +76,7 @@ Stage Scope
 ------------
 
 Owns:
-  - HumanFn / RecordFn builders under `code-dev/1-PIPELINE/2-Record-WorkSpace/`
+  - HumanFn / RecordFn builders in the project's `NN_record_fn_develop_<cohort>/` task folder (legacy workspaces: `code-dev/1-PIPELINE/2-Record-WorkSpace/`)
   - Generated `code/haifn/fn_record/`
   - `_WorkSpace/2-RecStore/` records
   - `templates/config.yaml` for Record_Pipeline runs

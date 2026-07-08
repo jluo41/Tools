@@ -8,6 +8,7 @@ Read together with the sister refs, which stay authoritative for what they alrea
   ref/hierarchy.md               conceptual model: project -> task-group -> task-folder -> run; 2-digit indexing rules; RUNNAME spine; two notebooks two roles
   ref/authoring-conventions.md   cross-type code conventions: four sister files (§1), _meta contract (§2), heavy-artifact rule (§3), reproducibility (§4), first-run gate (§5), author scope (§6), notebooks + papermill retention/commit policy (§7)
   ref/run-sh-template.sh         canonical papermill run.sh template (runtime.yaml snapshot, pre-flight CODE_REVIEW gate, notebook policy)
+  ref/databricks-execution.md    Template C: running tasks ON Databricks (dual-mode drivers, widgets, inline exec, _databricks/ bundles)
 
 ---
 
@@ -35,6 +36,22 @@ Group folder contents:
   {NN}_{name}/    task folders.
 
 No README.md in group folders. If sibling tasks are unrelated, fall back to per-task diagrams instead of group/diagram/.
+
+Databricks-native group exceptions (groups whose stages run ON a cluster,
+e.g. A00_rawstore_<cohort>/ — full dialect: ref/databricks-execution.md):
+  run_pipeline_*.py(+.ipynb)   group-root orchestrator (the platform has no
+                               shell, so this replaces group/sbatch/).
+  _databricks/                 converted .ipynb copies of every stage; what
+                               the workspace import executes (.py stays the
+                               source of truth).
+  README.md                    allowed at group root — the group is imported
+                               into Databricks standalone, where diagram/
+                               .txt files don't render.
+
+Workflow artifacts (written by /haipipe-workflow when it plans/audits a
+group): workflow-report.md at group root, workflow/ inside task folders.
+Legitimate residents — do not flag them as structure violations; they are
+generated records, regenerate rather than hand-edit.
 
 ---
 
@@ -223,6 +240,11 @@ Template B: papermill (notebooks/ papermill mode). The canonical template is ref
 
 Never mix Template A and Template B within the same task.
 
+Template C: Databricks execution (no bash runner). When the task runs ON a
+Databricks cluster — dual-mode drivers, widget params, inline exec on
+policy-locked clusters, `_databricks/` .ipynb bundles, convert-only runs/ —
+see ref/databricks-execution.md.
+
 ---
 
 Relationship: runs/ <-> results/ <-> notebooks/ <-> sbatch/
@@ -261,10 +283,14 @@ Every Track A stub gets a paired example task in tasks/ (group D by default). Tr
 
   Track A stub                              Track B paired task
   --------------------                      -------------------------
-  code-dev/1-PIPELINE/.../build_*.py    ->  tasks/D_demo/D{N}_test_*/
   code/hainn/algo/{family}/*.py         ->  tasks/D_demo/D{N}_test_{name}/
   code/hainn/tuner/{family}/*.py
   code/hainn/instance/{family}/*.py
+
+Fn builders (build_*.py) need no demo pairing: they live in the project's
+NN_<stage>_fn_develop_<cohort>/ task folders, which are already runnable
+tasks with the standard layout. (Legacy workspaces keeping builders in
+code-dev/1-PIPELINE/ still pair them with tasks/D_demo/D{N}_test_*/.)
 
 The paired task contains the standard task layout including diagram/. Status tracked in:
   - {task}/diagram/03-runs.txt            (Status = "stub" until implemented)

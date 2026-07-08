@@ -92,7 +92,7 @@ Artifact Scope
 
 Owns:
   - `code/haifn/fn_endpoint/` packaging (running the pipeline)
-  - `code-dev/1-PIPELINE/6-Endpoint-WorkSpace/` builders (artifact-level)
+  - endpoint fn_develop builders (artifact-level; legacy: `code-dev/1-PIPELINE/6-Endpoint-WorkSpace/`)
   - `_WorkSpace/6-EndpointStore/Endpoint-*/` packaged Endpoint_Sets
   - Local `inference()` smoke tests (artifact-level)
   - Structural review of the artifact as a whole
@@ -122,7 +122,7 @@ This reduced `.tar.gz` from 160 MB to 14 MB.
 
 ### Three-level Src2InputFn / Input2SrcFn roundtrip enforcement
 
-1. **Design time:** builder roundtrip test (`code-dev f1_roundtrip_test`).
+1. **Design time:** builder roundtrip test (`f1_roundtrip_test` in the builder folder).
 2. **Packaging time:** step 5b in `c_endpoint_nb.py`.
 3. **Skill docs:** required in `haipipe-end-src2input` + `haipipe-end-input2src`
    SKILL.md.

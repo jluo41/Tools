@@ -88,8 +88,8 @@ After scaffolding, suggest one of:
 - `/haipipe-data-case`     (stage 3)
 - `/haipipe-data-aidata`   (stage 4)
 
-These specialists author the actual builder logic in
-`code-dev/1-PIPELINE/{stage}-*-WorkSpace/`.
+These specialists author the actual builder logic in the group's paired
+`NN_<stage>_fn_develop_<cohort>/` task folder.
 
 
 Step 7 — Report
