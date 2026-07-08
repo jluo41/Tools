@@ -21,9 +21,9 @@ stages:
   claims:     required
   narrative:  required
   display:    required
-  minimap:    optional
+  section-edit:    optional
 
-claims_depth: full
+claims_settlement: full
 ```
 
 
@@ -40,12 +40,15 @@ Hierarchical arc:
 
 ### → Display (required)
 Widget map: header type, body elements (gauge, list, chart),
-action button, data sources.
+action button, data sources. Each unit carries a per-unit Job:
+one sentence on what the reader must see or do (the absorbed
+minimap concern) — if the card has sub-widgets, one Job per widget.
 
-### → Minimap (optional)
-If the card has sub-widgets, assign jobs per widget.
-Simple cards (header + body + button) may skip.
+### → Section-edit (optional)
+Per-widget review pass on multi-widget cards; simple cards
+(header + body + button) skip.
 
 ### → Draft
-UI spec with layout, content, interaction, and data binding.
-May include ASCII wireframe.
+UI spec with layout, content, interaction, and data binding,
+produced by haipipe-application-artifact reading the venue profile.
+May include an ASCII wireframe.

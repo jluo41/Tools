@@ -154,5 +154,5 @@ catches: tables dropped by Src2InputFn (only 4 of 19 serialized), datetime
 serialization issues, multi-admission patients getting wrong admission at
 iloc[0], dtype mismatches (int vs float vs string).
 
-The builder script (code-dev/ d1_build_*) must include this test. If the
+The builder script (d1_build_* in the endpoint fn_develop task folder) must include this test. If the
 roundtrip fails, the Fn is not production-ready.

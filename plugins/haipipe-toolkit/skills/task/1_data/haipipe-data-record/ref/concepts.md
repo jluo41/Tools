@@ -16,7 +16,7 @@ Kitchen  = Record_Pipeline class      (code/haipipe/record_base/)
 Chef     = HumanFn + RecordFn         (code/haifn/fn_record/)  GENERATED
 Recipe   = YAML config file           (config/ or tutorials/config/)
 Dish     = RecordSet asset            (_WorkSpace/2-RecStore/)
-Academy  = Builder scripts            (code-dev/1-PIPELINE/2-Record-WorkSpace/)
+Academy  = Builder scripts            (tasks/<pipe-group>/02_record_fn_develop_<cohort>/ in the project)
 ```
 
 
@@ -168,8 +168,8 @@ Discovering Available Fns
 ```bash
 ls code/haifn/fn_record/human/
 ls code/haifn/fn_record/record/
-ls code-dev/1-PIPELINE/2-Record-WorkSpace/h*.py
-ls code-dev/1-PIPELINE/2-Record-WorkSpace/r*.py
+ls examples/*/tasks/*/02_record_fn_develop_*/h*.py    # HumanFn builders
+ls examples/*/tasks/*/02_record_fn_develop_*/r*.py    # RecordFn builders
 ```
 
 
@@ -221,7 +221,8 @@ Fn loaders:           code/haipipe/record_base/builder/human.py
                       code/haipipe/record_base/builder/record.py
 Generated HumanFns:   code/haifn/fn_record/human/     (discover with ls)
 Generated RecordFns:  code/haifn/fn_record/record/    (discover with ls)
-Builders (edit here): code-dev/1-PIPELINE/2-Record-WorkSpace/  (discover with ls)
+Builders (edit here): examples/<Project>/tasks/<pipe-group>/02_record_fn_develop_<cohort>/
+                      (legacy workspaces: code-dev/1-PIPELINE/2-Record-WorkSpace/)
 Store path:           _WorkSpace/2-RecStore/
 Config template:      ../templates/config.yaml (this skill's own template)
 ```

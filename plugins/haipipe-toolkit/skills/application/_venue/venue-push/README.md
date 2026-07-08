@@ -21,9 +21,9 @@ stages:
   claims:     required
   narrative:  skip
   display:    skip
-  minimap:    skip
+  section-edit:    skip
 
-claims_depth: light
+claims_settlement: light
 ```
 
 

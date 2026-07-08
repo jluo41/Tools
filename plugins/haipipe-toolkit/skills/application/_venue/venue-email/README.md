@@ -22,9 +22,9 @@ stages:
   claims:     required
   narrative:  required
   display:    optional
-  minimap:    skip
+  section-edit:    skip
 
-claims_depth: medium
+claims_settlement: medium
 ```
 
 

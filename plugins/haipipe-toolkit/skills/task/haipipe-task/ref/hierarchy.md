@@ -261,5 +261,7 @@ Mandatory rules (cross-cutting)
   go under `_WorkSpace/`, never `results/`.
 - The doc surface is `diagram/`, never `README.md`. Diagram .txt content
   is authored via `/diagram-ascii`, bundled via `/diagram-ascii-canvas`.
-- Code stubs in `code-dev/` or `code/hainn/` get a paired example task
-  in `tasks/D_demo/` (Track A ↔ Track B coupling).
+- Code stubs in `code/hainn/` (or a legacy `code-dev/`) get a paired example
+  task in `tasks/D_demo/` (Track A ↔ Track B coupling). Fn builders live in
+  the project's `NN_<stage>_fn_develop_<cohort>/` task folders, which are
+  their own runnable tasks — no extra demo pairing needed.

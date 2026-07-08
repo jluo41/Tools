@@ -1,11 +1,11 @@
 ---
 name: haipipe-task-for-raw
-description: "Raw extraction task-folder build specialist. Scaffolds {NN}_<name>/ task-folders in the project's raw-extraction task-group (default R-series; letters are project-specific) that extract source tables from Databricks as single parquet files, then process locally with Python. Called by /haipipe-task orchestrator when task-type=raw. Direct invocation works for scoped scaffolding. Cross-references /haipipe-data-raw."
+description: "Raw extraction task-folder build specialist. Scaffolds {NN}_<name>/ task-folders in the project's raw-extraction task-group (default R-series; letters are project-specific). Two patterns: extract-wide-process-local (Databricks → parquet → local Python; non-PHI) and server-resident (all-Spark multi-stage pipeline that stays on the catalog volume; PHI cohorts, e.g. A00_rawstore_* groups). Called by /haipipe-task orchestrator when task-type=raw. Direct invocation works for scoped scaffolding. Cross-references /haipipe-data-raw."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.2.0"
-  last_updated: "2026-07-04"
+  version: "1.3.0"
+  last_updated: "2026-07-08"
   summary: "Raw extraction task-folder build specialist (Databricks → parquet → local Python)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -57,14 +57,27 @@ tasks/R{NN}_<cohort_name>/                   ← group (R-series)
     └── notebooks/                           .ipynb for Databricks upload (convert-only)
 ```
 
-Group letter default: **R** (raw extraction).
-Heavy outputs land in: `_WorkSpace/0-RawDataStore/<cohort>/`.
+Group letter default: **R** (raw extraction). When raw extraction is
+embedded in a cohort project as pipeline stage 0, the group is commonly
+named `A00_rawstore_<cohort>/` (e.g. Project-REACH-ADHD) — the letter is
+project-specific either way.
+Heavy outputs land in: `_WorkSpace/0-RawDataStore/<cohort>/` (or the
+catalog-volume equivalent for server-resident cohorts — see Pattern 2).
 
 
-Extract-Wide-Process-Local Doctrine
-------------------------------------
+Two patterns — pick by data-governance
+---------------------------------------
 
-This is the core philosophy. Every raw extraction task MUST follow it:
+  Pattern 1  extract-wide-process-local   data may leave the server
+             (doctrine below)             (de-identified / synthetic / licensed-local)
+  Pattern 2  server-resident              PHI: raw data NEVER leaves the
+             (A00 rawstore)               server/volume; all stages run on Databricks
+
+
+Pattern 1: Extract-Wide-Process-Local Doctrine
+-----------------------------------------------
+
+The default for non-PHI cohorts. Every such task MUST follow it:
 
   1. **One SQL query per source table → one large parquet file.**
      Keep SQL simple: `SELECT columns FROM single_table WHERE filters`.
@@ -83,6 +96,40 @@ This is the core philosophy. Every raw extraction task MUST follow it:
      local, everything is pandas.
 
 
+Pattern 2: Server-resident rawstore (PHI cohorts)
+--------------------------------------------------
+
+When the cohort is PHI, step 3 above is FORBIDDEN — raw data never leaves
+the server. The whole extraction pipeline runs on Databricks and writes to
+the catalog volume. Live example: Project-REACH-ADHD
+`tasks/A00_rawstore_reachadhd/`.
+
+Shape:
+
+```
+tasks/A00_rawstore_<cohort>/
+├── run_pipeline_<cohort>_raw.py(+.ipynb)   ← group-root orchestrator (sequences stages)
+├── 01_stage1_universe/                     ← cohort universe (Spark SQL on deid tables)
+├── 02_stage2_phenotype/                    ← phenotype definition (parallelizable sub-steps)
+├── 03_stage3_features/                     ← feature tables
+├── _databricks/                            ← .ipynb copies of every stage (what the
+│                                             workspace import executes)
+└── README.md                               ← allowed here (Databricks-native group)
+```
+
+Rules:
+  - Stages can be all-Spark (the local-pandas rule of Pattern 1 does not
+    apply — nothing comes local).
+  - **Output path MUST align to what the Stage-1 SourceFn reads**:
+    `<VOLUME_BASE>/0-RawDataStore/<cohort-slug>/...` with the exact
+    `<cohort-slug>` the SourceFn config expects (e.g. `reach-adhd`, not
+    `REACH-ADHD`). Misalignment here is the classic silent failure.
+  - Orchestration + stage launching (jobs vs inline exec, sequential-only
+    caveats, widget params): `../../haipipe-task/ref/databricks-execution.md`.
+  - Only aggregated/derived summaries may move off-server; raw and
+    row-level intermediates stay on the volume.
+
+
 Execution model — Databricks notebooks
 ---------------------------------------
 
@@ -92,10 +139,16 @@ the `.py` to `.ipynb` — it does NOT execute locally.
 
 Workflow:
   1. `runs/<RUN>.sh` converts `.py` → `.ipynb` and writes `runtime.yaml`
-  2. User uploads `.ipynb` to Databricks workspace (or uses dbx CLI)
-  3. User runs the notebook on a Databricks cluster
+  2. User uploads `.ipynb` to Databricks workspace (browser Import when no
+     CLI is allowed; keep converted stage notebooks in the group's
+     `_databricks/` folder)
+  3. User runs the notebook on a Databricks cluster (Pattern 2: run the
+     group orchestrator or the project's `run_<project>.py` driver instead
+     of individual notebooks)
   4. Extracted parquet files land in the catalog volume
-  5. User syncs parquet to local `_WorkSpace/0-RawDataStore/<cohort>/`
+  5. Pattern 1 only: user syncs parquet to local
+     `_WorkSpace/0-RawDataStore/<cohort>/` (Pattern 2 skips this — PHI
+     stays on the volume and Stage 1 reads it there)
 
 The run-script template is `ref/run-databricks-sh-template.sh` —
 convert-only, no papermill execute.
@@ -113,10 +166,14 @@ R01_prediabetes/
 └── sbatch/
 ```
 
-Convention:
+Convention (Pattern 1):
   - `stage1` = extract SQL tables → parquet (Databricks)
   - `stage2` = read parquet, clean/transform with pandas (local)
   - `stage3+` = optional further processing stages
+
+Convention (Pattern 2, all stages on Databricks — see A00 shape above):
+  - `stage1` = cohort universe, `stage2` = phenotype, `stage3` = features;
+    stage meaning is cohort-specific, ordering is what matters.
 
 Stage numbering is cohort-specific. Different cohorts may have different
 numbers of stages depending on complexity.
@@ -169,12 +226,16 @@ MUST NOT
 ---------
 
 - Place heavy artifacts (`.parquet`, `.csv` > 1 MB) in `results/`.
-  Heavy outputs land in `_WorkSpace/0-RawDataStore/<cohort>/`.
+  Heavy outputs land in `_WorkSpace/0-RawDataStore/<cohort>/` (or the
+  catalog volume for Pattern 2).
 - Write complex multi-table JOINs in SQL — extract tables separately,
   join in Python downstream.
 - Use Spark for local processing — pandas only once data is local.
+- Sync PHI raw data to a laptop / local `_WorkSpace` (Pattern 2 cohorts are
+  server-only; only aggregated outputs move).
 - Skip the `_meta:` block.
-- Create `README.md`.
+- Create `README.md` in task folders. (Pattern 2 exception: a group-root
+  README is allowed for Databricks-native groups.)
 
 
 First-run gate

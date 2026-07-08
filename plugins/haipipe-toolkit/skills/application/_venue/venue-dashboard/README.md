@@ -21,9 +21,9 @@ stages:
   claims:     required
   narrative:  required
   display:    required
-  minimap:    required
+  section-edit:    required
 
-claims_depth: full
+claims_settlement: full
 ```
 
 
@@ -41,15 +41,17 @@ Drill-down arc:
 - Level 3: Action items (what to do about it)
 
 ### → Display (required)
-Display map: each panel gets a type (metric-card, line-chart,
-bar-chart, table, action-list), a claim, and a data source.
+Display map: each panel/widget gets a type (metric-card, line-chart,
+bar-chart, table, action-list), a claim, a per-unit Job ("show
+current vs target"), an evidence anchor (K-id), and a data source
+(task or endpoint). The per-unit Job is the absorbed minimap concern.
 
-### → Minimap (required)
-Widget-level job assignments within each panel. Every widget
-has a job ("show current vs target"), an evidence anchor (K-id),
-and a data source (task or endpoint).
+### → Section-edit (required)
+Dashboard copy settles to final wording: panel titles, KPI labels,
+action-list phrasing, drill-down captions.
 
 ### → Draft
 Dashboard spec document with panel layouts, widget specs, data
-bindings, and interaction rules. May dispatch to
-haipipe-application-ui for wireframe.
+bindings, and interaction rules. Produced by the draft(artifact)
+stage via haipipe-application-artifact reading the venue profile;
+render a display unit through /haipipe-task if a wireframe is needed.

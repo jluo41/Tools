@@ -72,8 +72,9 @@ You are designing the haipipe-paper layer.
 
 Treat a paper as a delivery contract, not a writing folder.
 The paper lifecycle is the stage spine:
-0-seed > 1-pitch > 2-claims > 3-narrative > 4-display > 5-minimap,
-then write/edit > review > submit > round/respond > present.
+0-seed > 1-claims > [venue] > 2-pitch > 3-narrative > 4-display > 5-section-edit,
+then review > submit > round/respond > present. Seed and claims are
+venue-FREE; pitch through section-edit are venue-ALIGNED.
 
 For each lifecycle stage, specify: what question it answers, which skill
 procedure owns it, which files it reads/writes, whether it calls
