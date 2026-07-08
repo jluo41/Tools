@@ -8,6 +8,7 @@ Read together with the sister refs, which stay authoritative for what they alrea
   ref/hierarchy.md               conceptual model: project -> task-group -> task-folder -> run; 2-digit indexing rules; RUNNAME spine; two notebooks two roles
   ref/authoring-conventions.md   cross-type code conventions: four sister files (§1), _meta contract (§2), heavy-artifact rule (§3), reproducibility (§4), first-run gate (§5), author scope (§6), notebooks + papermill retention/commit policy (§7)
   ref/run-sh-template.sh         canonical papermill run.sh template (runtime.yaml snapshot, pre-flight CODE_REVIEW gate, notebook policy)
+  ref/databricks-execution.md    Template C: running tasks ON Databricks (dual-mode drivers, widgets, inline exec, _databricks/ bundles)
 
 ---
 
@@ -222,6 +223,11 @@ Template B: papermill (notebooks/ papermill mode). The canonical template is ref
   - results/${RUN_NAME}/ still produced by the .py for light artifacts.
 
 Never mix Template A and Template B within the same task.
+
+Template C: Databricks execution (no bash runner). When the task runs ON a
+Databricks cluster — dual-mode drivers, widget params, inline exec on
+policy-locked clusters, `_databricks/` .ipynb bundles, convert-only runs/ —
+see ref/databricks-execution.md.
 
 ---
 
