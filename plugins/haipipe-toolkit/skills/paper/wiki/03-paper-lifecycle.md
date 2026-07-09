@@ -43,7 +43,7 @@ Only display compiles to .tex + PDF.
 
 Stages x phases is a two-axis model. Each stage skill in `1-lifecycle/` defines
 WHAT the stage delivers; the `2-phase/` workers define HOW: DRAFT -> PROBE ->
-REVISE -> CHECK (`haipipe-paper-{draft,probe,revise,checker}`). The PROBE phase
+REVISE -> CHECK (`haipipe-paper-{draft,probe,revise,check}`). The PROBE phase
 dispatches evidence needs into the project-side `/haipipe-probe` lifecycle.
 Phases are internal workers driven by the stage skill; CHECK is the only
 human-involved gate. Users invoke stage skills only (`/haipipe-paper seed`, `/haipipe-paper
