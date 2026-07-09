@@ -4,6 +4,8 @@
 Date: YYYY-MM-DD
 Status: DRAFT
 The earliest-stage contract: keeps the intervention possibility alive before evidence is mature.
+How to use: copy to `<intervention>/0-lifecycle/0-seed/0-seed.md`, replace every `<...>`, delete unused sub-items (the DRAFT worker does this during the stage's DPRC).
+
 
 
 Opportunity

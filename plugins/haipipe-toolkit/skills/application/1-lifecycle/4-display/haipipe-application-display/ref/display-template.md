@@ -8,6 +8,8 @@ Fires only if the pinned venue requires it (STATUS.md stages_skipped).
 Every unit carries FOUR required fields -- Type, Claim, Job, Data source.
 The Job field is the minimap absorption: one sentence on what this unit must make the reader see/do.
 Unit GENERATION is commissioned through the probe (PP card -> gateway -> task); this doc plans and links.
+How to use: copy to `<intervention>/0-lifecycle/4-display/4-display.md`, replace every `<...>`, delete unused sub-items (the DRAFT worker does this during the stage's DPRC).
+
 
 
 Display units

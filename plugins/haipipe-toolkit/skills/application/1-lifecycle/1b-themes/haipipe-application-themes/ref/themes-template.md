@@ -5,6 +5,8 @@ Date: YYYY-MM-DD
 Status: DRAFT
 Ladder rung 1b: which patterns/topics emerge from the described data and the field.
 Every theme cites >=1 D id from 1a or a project-side discovery source; ungrounded patterns go to Parked.
+How to use: copy to `<intervention>/0-lifecycle/1b-themes/1b-themes.md`, replace every `<...>`, delete unused sub-items (the DRAFT worker does this during the stage's DPRC).
+
 
 
 Themes

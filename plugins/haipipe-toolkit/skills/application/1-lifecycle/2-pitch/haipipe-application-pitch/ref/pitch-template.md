@@ -5,6 +5,8 @@ Date: YYYY-MM-DD
 Status: DRAFT
 Venue: <pinned venue> · Audience: <audience profile>
 Rewrites on retarget. Reads 2-venue.md Artifact Principles + 1d-principles (the directives it sells).
+How to use: copy to `<intervention>/0-lifecycle/2-pitch/2-pitch.md`, replace every `<...>`, delete unused sub-items (the DRAFT worker does this during the stage's DPRC).
+
 
 
 One-sentence goal
