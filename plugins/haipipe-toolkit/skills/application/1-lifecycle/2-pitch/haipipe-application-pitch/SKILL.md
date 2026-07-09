@@ -23,7 +23,8 @@ Question answered
 Input
 ======
 
-- `0-lifecycle/1-claims/1-claims.md` (required -- the ledger feeds the story)
+- `0-lifecycle/1d-principles/1d-principles.md` (required -- the ladder's deliverable feeds the story)
+- `0-lifecycle/1c-claims/1c-claims.md` (the evidence backstop behind each principle)
 - `0-lifecycle/0-seed/0-seed.md`
 - `STATUS.md` -> pinned venue + audience (required; if venue unpinned -> BLOCK: "run /haipipe-application venue first")
 - `_venue/venue-<name>/` + `_audience/profile-<name>/` (framing expectations)
@@ -38,6 +39,8 @@ Output
 
 Pitch artifact schema
 ======================
+
+Canonical template (source of truth for section order + placeholders): `ref/pitch-template.md`.
 
 ```markdown
 # Pitch: <intervention name>

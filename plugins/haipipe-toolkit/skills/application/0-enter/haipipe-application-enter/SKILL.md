@@ -75,7 +75,7 @@ Read only files that exist, in this order:
 
 1. `STATUS.md` (venue, stages_skipped, claims_settlement, current_layer, maturity, Gate Ledger)
 2. `0-lifecycle/2-pitch/2-pitch.md` -- HIGH PRIORITY for the dashboard header: extract the goal/theory-of-change paragraph as the 2-3 sentence "what this intervention is about" summary. If absent, the dashboard says "pitch not yet written".
-3. Remaining stage docs: `0-lifecycle/0-seed/0-seed.md`, `1-claims/1-claims.md`, `3-narrative/3-narrative.md`, `4-display/4-display.md`
+3. Remaining stage docs: `0-lifecycle/0-seed/0-seed.md`, the ladder (`1a-descriptions/1a-descriptions.md`, `1b-themes/1b-themes.md`, `1c-claims/1c-claims.md`, `1d-principles/1d-principles.md`), `3-narrative/3-narrative.md`, `4-display/4-display.md`
 4. Section-edit scaffolds (sectioned venues): scan `0-lifecycle/5-section-edit/` for per-section outline `.md`, `_LOG*` files; derive per-section DPRC status from disk.
 5. Probe state: `1-probe-plans/README.md` index + per-stage `_PROBE/*.md` card statuses (planned/dispatched/read/verdicted).
 6. Explicit need records: search stage docs for `NEED`, `GAP`, `TODO`, `blocked`, `missing`, `open`.
@@ -92,8 +92,11 @@ Per-stage inference (venue-skipped stages are passed over, never counted as gaps
 | Evidence | Current layer |
 |---|---|
 | only README / seed doc | `0-seed` |
-| seed exists but claims absent/thin | `0-seed -> 1-claims` |
-| claims exist but venue not pinned in STATUS.md | `1-claims -> venue` |
+| seed exists but ladder absent/thin | `0-seed -> 1a-descriptions` (suggest the `ladder` sweep) |
+| descriptions exist but themes absent/thin | `1a-descriptions -> 1b-themes` |
+| themes exist but claims absent/thin | `1b-themes -> 1c-claims` |
+| claims exist but principles absent/thin | `1c-claims -> 1d-principles` |
+| ladder gated but venue not pinned in STATUS.md | `1d-principles -> venue` |
 | venue pinned but pitch absent/thin | `venue -> 2-pitch` |
 | pitch exists but narrative absent (venue requires it) | `2-pitch -> 3-narrative` |
 | narrative exists but display absent (venue requires it) | `3-narrative -> 4-display` |
@@ -107,7 +110,9 @@ Maturity, derived separately from disk:
 | Evidence | Maturity |
 |---|---|
 | seed only | `prospect` |
-| seed + claims ledger with C-slots | `claim-ledger` |
+| 1a with anchored D entries | `data-described` |
+| 1c ledger with C-slots | `claim-ledger` |
+| 1d with derived P entries (ladder gate passed) | `principled` |
 | venue pinned in STATUS.md | `venue-pinned` |
 | pitch onward per venue's required stages | `pitched` / `narrated` / `display-mapped` / `section-edit` |
 | 0-artifacts/ has >=1 artifact | `drafted` |
@@ -120,7 +125,10 @@ Need diagnosis is separate from lifecycle layer. Extract open needs from:
 
 | Surface | Typical need |
 |---|---|
-| `1-claims` GAP/weak rows below the venue's required settlement | probe, discovery, task, insight |
+| `1a-descriptions` stale/undated entries; unresolved `[STALE]` tags in any ladder doc | data refresh (1a probe) |
+| `1b-themes` ungrounded themes | ground or park |
+| `1c-claims` GAP/weak rows below the venue's required settlement | probe, discovery, task |
+| `1d-principles` under-derived P entries | settle the cited claims |
 | `4-display` elements without materialized output | display task |
 | `5-section-edit` sections with incomplete DPRC phases | section-edit work |
 | artifact review flags / claim-audit failures | revise or loop back |
@@ -134,10 +142,11 @@ Loopback diagnosis:
 |---|---|
 | wording, tone, stale number in artifact | `draft` (artifact) or `5-section-edit` |
 | content element does not carry its claim | `4-display` |
-| unsupported or too-strong claim | `1-claims` / `3-narrative` |
+| unsupported or too-strong claim | `1c-claims` / `3-narrative` |
+| principle doesn't follow from its claims | `1d-principles` |
 | theory of change wrong / goal fuzzy | `2-pitch` |
-| venue wrong for audience | `venue` (re-pin; pitch+ re-couple; claims survives) |
-| A/B shows no effect | `2-pitch` or `1-claims` |
+| venue wrong for audience | `venue` (re-pin; pitch+ re-couple; the ladder survives) |
+| A/B shows no effect | `2-pitch` or `1c-claims` (backfill A/B data into `1a` first) |
 | kill criterion met | `0-seed` -> STATUS.md `retired` |
 
 ## Output Format

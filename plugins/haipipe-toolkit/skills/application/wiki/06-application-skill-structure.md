@@ -18,7 +18,10 @@ application/
 ├── 0-enter/               haipipe-application-enter (Console) + haipipe-application-round
 ├── 1-lifecycle/           STAGE orchestrators, one numbered folder per stage
 │     0-seed/haipipe-application-seed                (venue-FREE)
-│     1-claims/haipipe-application-claims            (venue-FREE)
+│     1a-descriptions/haipipe-application-descriptions (venue-FREE, ladder rung: anchored data profile)
+│     1b-themes/haipipe-application-themes           (venue-FREE, ladder rung: grounded patterns)
+│     1c-claims/haipipe-application-claims           (venue-FREE, ladder rung: ledger + campaign)
+│     1d-principles/haipipe-application-principles   (venue-FREE, ladder rung: design directives — deliverable)
 │     2-pitch/haipipe-application-pitch              (venue-ALIGNED)
 │     3-narrative/haipipe-application-narrative      (venue-GATED)
 │     4-display/haipipe-application-display          (venue-GATED; owns per-unit jobs)
@@ -43,8 +46,12 @@ application/
 ```text
 enter             -> 0-enter/haipipe-application-enter
 0-seed            -> 1-lifecycle/0-seed/haipipe-application-seed
-1-claims          -> 1-lifecycle/1-claims/haipipe-application-claims
-venue (pin)       -> 1-lifecycle/haipipe-application-venue (after claims, before pitch; claims is venue-free; writes 0-lifecycle/2-venue/2-venue.md)
+ladder (sweep)    -> haipipe-application-lifecycle ladder (runs 1a->1d; venue-scaled gate batching)
+1a-descriptions   -> 1-lifecycle/1a-descriptions/haipipe-application-descriptions
+1b-themes         -> 1-lifecycle/1b-themes/haipipe-application-themes
+1c-claims         -> 1-lifecycle/1c-claims/haipipe-application-claims
+1d-principles     -> 1-lifecycle/1d-principles/haipipe-application-principles
+venue (pin)       -> 1-lifecycle/haipipe-application-venue (after the ladder, before pitch; the ladder is venue-free; writes 0-lifecycle/2-venue/2-venue.md)
 2-pitch           -> 1-lifecycle/2-pitch/haipipe-application-pitch
 3-narrative       -> 1-lifecycle/3-narrative/haipipe-application-narrative      (venue-gated)
 4-display         -> 1-lifecycle/4-display/haipipe-application-display          (venue-gated)
@@ -71,7 +78,8 @@ CHECK  -> 2-phase/3-check/haipipe-application-check   (the only human-involved p
 
 ```text
 status / enter / preload                    -> 0-enter
-seed / claims / venue / pitch
+seed / ladder / descriptions / themes
+  / claims / principles / venue / pitch
   / narrative / display / section-edit      -> 1-lifecycle
 round / todo / decisions                    -> 0-enter/haipipe-application-round
 draft / write / make the <venue>            -> 3-build-deploy/haipipe-application-artifact
@@ -87,8 +95,8 @@ venue / which channel                       -> 1-lifecycle/haipipe-application-v
 Every application-aware response should report both:
 
 ```text
-current_layer: 0-seed | 1-claims | venue | 2-pitch | 3-narrative | 4-display | 5-section-edit | draft | review | deploy
-maturity: prospect | claim-ledger | venue-pinned | pitched | narrated | display-mapped | section-edit | drafted | reviewed | deployed | iterating | retired
+current_layer: 0-seed | 1a-descriptions | 1b-themes | 1c-claims | 1d-principles | venue | 2-pitch | 3-narrative | 4-display | 5-section-edit | draft | review | deploy
+maturity: prospect | data-described | claim-ledger | principled | venue-pinned | pitched | narrated | display-mapped | section-edit | drafted | reviewed | deployed | iterating | retired
 ```
 
 Layer answers "where is the active work?" Maturity answers "how real is the intervention?"

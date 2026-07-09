@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "3.0.0"
   last_updated: "2026-07-06"
-  summary: "Renamed draft->artifact, re-homed 3-draft/ -> 3-build-deploy/. Keeps v2's venue-profile-is-the-instruction-set core; adds: DPRC composition pass (compose -> probe values/claim-refs -> revise per style/audience -> check via the CHECK worker), new spine paths (1-claims folder, no minimap), Gate Ledger row on approve."
+  summary: "Renamed draft->artifact, re-homed 3-draft/ -> 3-build-deploy/. Keeps v2's venue-profile-is-the-instruction-set core; adds: DPRC composition pass (compose -> probe values/claim-refs -> revise per style/audience -> check via the CHECK worker), new spine paths (1c-claims folder, no minimap), Gate Ledger row on approve."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -31,7 +31,8 @@ How it works
      _audience/profile-<audience>/README.md tone + citation rules
 4. Load lifecycle inputs:
      0-lifecycle/2-venue/2-venue.md         Artifact Principles (template/slots, limits, tone, element types, section structure, gate depth) — the venue contract, not re-derived from the pack
-     0-lifecycle/1-claims/1-claims.md       the ledger (always)
+     0-lifecycle/1d-principles/1d-principles.md  design principles (always -- content-WHAT; each move traces P<-C)
+     0-lifecycle/1c-claims/1c-claims.md     the ledger (always -- the evidence backstop)
      0-lifecycle/3-narrative/3-narrative.md arc (if venue required it)
      0-lifecycle/4-display/4-display.md     content elements + jobs (if required)
      0-sections/*.md|.tex                   section prose (sectioned venues)

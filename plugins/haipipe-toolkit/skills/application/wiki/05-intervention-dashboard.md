@@ -11,7 +11,7 @@ Stage frontier detection
 ==========================
 
 ```python
-spine = ["0-seed", "1-claims", "venue", "2-pitch", "3-narrative", "4-display", "5-section-edit"]
+spine = ["0-seed", "1a-descriptions", "1b-themes", "1c-claims", "1d-principles", "venue", "2-pitch", "3-narrative", "4-display", "5-section-edit"]
 skipped = read_status_row("stages_skipped")          # written at venue pin
 for stage in spine:
     if stage in skipped: continue                    # venue-skipped: passed over, never a gap
@@ -29,8 +29,12 @@ Open needs detection
 ```
 Source                                        Need type
 ───────────────────────                       ──────────────
-1-claims: status=GAP below settlement bar     claim gap → probe card
-1-claims: status=weak (load-bearing)          weak claim → optional probe
+1a-descriptions: entry stale or undated       data refresh → 1a probe card
+1b-themes: theme without grounding            ungrounded theme → ground or park
+1c-claims: status=GAP below settlement bar    claim gap → probe card
+1c-claims: status=weak (load-bearing)         weak claim → optional probe
+1d-principles: P below settlement bar         under-derived principle → settle its claims
+any ladder doc: unresolved [STALE] tag        staleness → re-confirm or revise the entry
 1-probe-plans/README.md: planned              unstarted probe card
 1-probe-plans/README.md: dispatched           in-progress probe (await TRANSLATE)
 4-display: element without task ref           unmaterialized element

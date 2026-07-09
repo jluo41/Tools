@@ -27,7 +27,7 @@ Dispatch chain (who calls whom)
 
 ```
 user → /haipipe-application <stage>            stage skills live in 1-lifecycle/
-        (seed | claims | venue | pitch | narrative° | display° | section-edit°)    ° = venue-gated
+        (seed | descriptions | themes | claims | principles | venue | pitch | narrative° | display° | section-edit°)    ° = venue-gated
              │
              ▼  the stage skill drives the phase engine, in order:
        haipipe-application-draft    → drafts the stage doc from the stage's template (may WebSearch; buffers planned PPNN skeletons)

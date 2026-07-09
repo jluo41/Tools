@@ -35,7 +35,8 @@ Input
 - `STATUS.md` → venue, stages_skipped (BLOCK if this stage is skipped)
 - `_venue/venue-<name>/README.md` → section list + per-section jobs
 - `0-lifecycle/4-display/4-display.md` → element-to-section mapping
-- `0-lifecycle/1-claims/1-claims.md` → the ledger (claims language must not outrun it)
+- `0-lifecycle/1c-claims/1c-claims.md` → the ledger (claims language must not outrun it)
+- `0-lifecycle/1d-principles/1d-principles.md` → the directives each section executes
 - `0-sections/*` → the prose under edit
 
 Output
