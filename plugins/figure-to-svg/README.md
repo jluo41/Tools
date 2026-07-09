@@ -4,24 +4,25 @@ Replicate raster figures and icons as clean, **editable** SVGs — so a PNG figu
 or slide deck becomes something whose wording, colors, and layout you can still change, and that
 survives PowerPoint's **Insert SVG → Convert to Shape** as editable shapes and text boxes.
 
-Two skills — the figure pipeline calls the icon painter once per icon:
+Two skills — the figure pipeline calls the icon painter only in `svg` mode:
 
 ```
 figure-to-svg      whole figure → master SVG (entry point + knowledge verbs)
-  └── icon-to-svg  one icon image → faithful hand-authored SVG
+  └── icon-to-svg  one icon image → faithful hand-authored SVG (svg mode only)
 ```
 
 ## `figure-to-svg` — whole figure → master SVG
 
-One pipeline: **split → regenerate (codex image-gen) → slice → transparentize → vectorize (per
-icon, via `icon-to-svg`) → compose → fresh-eyes review loop**. Icons are never cropped out of a
-dense source — they're regenerated as clean grids with the section as style reference, sliced,
-made transparent, then hand-vectorized so Convert-to-Shape yields editable shapes. A fresh
-subagent (no run context) judges every original|replica diff and reopens steps until it passes.
-The result is a single master `.svg` sized to the original: panels (fills/gradients measured from
-source) + each icon nested at its bbox + real `<text>` labels. Per-part `manifest.json` is the
-source of truth. Requires the codex-image2 bridge (sibling `haipipe-toolkit` plugin) + `codex`
-CLI — a hard prerequisite, resolved before starting.
+One pipeline: **split → regenerate (codex image-gen) → slice → transparentize → [vectorize if
+svg mode] → compose → fresh-eyes review loop**. Icons are never cropped out of a dense source —
+they're regenerated as clean grids with the section as style reference, sliced, and made
+transparent. By default icons embed as transparent PNGs (fast, visually faithful — text/panels/
+connectors are still editable vector); pass `svg` to hand-vectorize each icon via `icon-to-svg`
+for full editability. A fresh subagent (no run context) judges every original|replica diff and
+reopens steps until it passes. The result is a single master `.svg` sized to the original:
+panels (fills/gradients measured from source) + each icon nested at its bbox + real `<text>`
+labels. Per-part `manifest.json` is the source of truth. Requires the codex-image2 bridge
+(sibling `haipipe-toolkit` plugin) + `codex` CLI — a hard prerequisite, resolved before starting.
 
 - `scripts/gen_icon_grid.py` / `slice_grid.py` / `transparentize.py` — the regeneration trio:
   codex image-gen grid → slice (central connected component) → border-connected-white transparency.
