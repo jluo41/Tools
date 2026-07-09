@@ -42,6 +42,8 @@ Pitch artifact schema
 
 Canonical template (source of truth for section order + placeholders): `ref/pitch-template.md`.
 
+> CC: the schema block below uses `#`/`##` headings while the formatting note + template are ascii — align or bless as example-only (same issue in seed/narrative/display schemas).
+
 ```markdown
 # Pitch: <intervention name>
 

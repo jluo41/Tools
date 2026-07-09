@@ -47,6 +47,9 @@ Display artifact schema (venue-dependent)
 
 Canonical template (source of truth for section order + placeholders): `ref/display-template.md`.
 
+> CC: id collision needs your ruling — the illustration below names display units `D01/D02`, but `D<n>` now belongs to 1a description ids (ladder restage). ref/display-template.md uses `U<nn>` to avoid the clash; if you agree, rename the units in the schema blocks below to U (my recommendation), else rename 1a's ids.
+> CC: the schema blocks below also use `#`/`##` headings while the formatting note + template are ascii (`=====`/`-----`) — align the illustrations or bless the divergence as example-only.
+
 Every unit carries FOUR required fields -- type, claim, JOB, data source. The Job field is the minimap absorption: one sentence on what this unit must make the reader see/do.
 
 **venue-dashboard:**

@@ -46,6 +46,8 @@ Narrative artifact schema (venue-dependent)
 
 Canonical template (source of truth for section order + placeholders): `ref/narrative-template.md`.
 
+> CC: the schema blocks below use `#`/`##` headings while the formatting note + template are ascii — align or bless as example-only.
+
 **venue-email:**
 ```markdown
 # Narrative: <intervention name>
