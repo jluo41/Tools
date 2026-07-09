@@ -91,6 +91,8 @@ CHECK --> exit gate (may be BATCHED into the ladder gate per the venue,
 
 Phase visibility: announce every phase boundary (reply line + `[PHASE]` entry in `_LOG`); skip a phase only by an explicit logged verdict; CHECK is never implicit (batching changes WHERE approval happens, not whether).
 
+> CC: token ruling needed — `[FORWARD -> CLAIMS]` is kept VERBATIM for grep-stability (SOP R5) even though this rung (1a) now consumes it. Rename to `[FORWARD -> LADDER]` across seed + here + SOP, or keep the legacy token? Keeping means the token name lies slightly; renaming breaks greps on old interventions.
+
 ## Refresh + staleness stamp duty (the dynamic-data contract)
 
 `--refresh <Dnn>` (or iterate's backfill) re-runs the entry's probe and updates the line + as-of date. AFTER any refresh, this skill stamps downstream dependents: grep `1b-themes.md`, `1c-claims.md`, `1d-principles.md` for the refreshed `D<n>` id and append `[STALE D<n> refreshed <date>]` to each citing entry. A rung's CHECK fails on unresolved STALE tags in its own doc -- the tag is removed only by that rung re-confirming or revising the entry. Record the stamp pass in this doc's Refresh Log.

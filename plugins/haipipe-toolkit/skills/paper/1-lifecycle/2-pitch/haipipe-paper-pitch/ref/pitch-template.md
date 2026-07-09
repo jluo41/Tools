@@ -4,6 +4,8 @@ Date: <YYYY-MM-DD>
 
 Venue-ALIGNED cover letter. Read STATUS `venue` and `_venue/playbook-<venue>` before filling this in. Claims holds venue-neutral hypotheses (H1, H2, H3); this pitch reframes them as venue-specific RQs for the target editor. Readability rules, per-section cues, and worked examples: `ref/pitch-readability.md`.
 
+> CC: heading-style inconsistency across paper templates — this file and narrative-template.md use `#`/`##`, while seed/claims/venue templates use ascii (`=====`/`-----`) and venue-template.md line 4 explicitly declares the ascii convention as "same as sibling stage templates". The application family's 9 templates are uniformly ascii. Decide which convention wins paper-side; reformatting this file ripples into pitch skills that quote it, so left untouched (found 2026-07-09 during the application template comparison).
+
 ## Title
 
 Short, specific, evocative; <=15 words; updated as the story sharpens.

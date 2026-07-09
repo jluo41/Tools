@@ -51,6 +51,8 @@ digest [session] [--dry-run]                 -> fn/digest.md   (resolve BEFORE o
 "<natural language>"                         -> infer via the keywords above, dispatch
 ```
 
+> CC: verb ruling — bare `claims` now routes to rung 1c ONLY; the full 1a-1d sweep is `ladder`. If you expect "claims" to mean "do stage-1 work" (the old habit), the router should suggest `ladder` when the ladder is virgin; confirm which default you want.
+
 Examples:
 
 ```

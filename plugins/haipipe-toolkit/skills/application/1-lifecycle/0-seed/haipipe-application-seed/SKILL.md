@@ -41,6 +41,8 @@ Seed artifact schema
 
 Canonical template (source of truth for section order + placeholders): `ref/seed-template.md`.
 
+> CC: the illustration block below uses `#`/`##` headings while the formatting rule + ref/seed-template.md are ascii (`=====`/`-----`) — align the illustration or bless the divergence as example-only.
+
 ```markdown
 # Intervention Seed: <name>
 

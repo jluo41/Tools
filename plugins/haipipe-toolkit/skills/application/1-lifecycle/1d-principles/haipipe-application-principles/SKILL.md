@@ -98,6 +98,9 @@ medium   load-bearing P cite supported-or-weak-with-caveat; others may caveat
 full     every P cites supported claims (judged verdicts) only
 ```
 
+> CC: these derivation bars are CC defaults (no ruling) — confirm the three levels, especially "GAP-derived forbidden even at light".
+> CC: P status vocabulary `active | caveated | stale` (see ref/principles-template.md) is also invented — confirm or rename.
+
 ## Done-criteria
 
 - [ ] Every `**P<n>**` has a directive sentence, derivation (>=1 resolving C id), scope, status

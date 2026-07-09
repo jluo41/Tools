@@ -100,3 +100,5 @@ maturity: prospect | data-described | claim-ledger | principled | venue-pinned |
 ```
 
 Layer answers "where is the active work?" Maturity answers "how real is the intervention?"
+
+> CC: maturity values `data-described` and `principled` are CC-invented names for the new ladder rungs — confirm or rename (they also appear in wiki/03 and the enter console).

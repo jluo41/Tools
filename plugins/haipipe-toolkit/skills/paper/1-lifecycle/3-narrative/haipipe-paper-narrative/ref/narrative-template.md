@@ -6,6 +6,8 @@ The design contract for ONE paper: a one-page, evidence-tracked story. It is NOT
 
 How to use: copy this file to `<paper>/0-lifecycle/3-narrative/3-narrative.md`, then replace every `<...>` placeholder. Delete beats you do not need; add beats the paper needs. Keep the readiness legend and the comment vocabulary. A filled real-world exemplar (older .tex form, same structure) lives at `examples/ProjB-PhyTrait-OpioidRx/paper/Paper-Personality-Opioid-MedJournal/0-lifecycle/3-narrative/3-narrative.tex`.
 
+> CC: heading-style inconsistency — this file uses `#`/`##` while seed/claims/venue templates are ascii (see the matching CC note in pitch-template.md; decide once for both).
+
 ## Readiness Legend
 
 Each beat gets exactly one tag. The tag couples the beat to its evidence status and routes [PENDING]/[GAP] beats to /haipipe-probe.

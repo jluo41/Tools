@@ -40,6 +40,8 @@ full     four individual gates, one per rung
 
 Venue unpinned (the normal case -- the ladder is venue-FREE and runs before the pin): apply `light` batching provisionally; a later pin to a deeper venue re-opens only the GATE (re-present criteria at the deeper bar), not the content.
 
+> CC: the batching depths (light = one gate at 1d; medium = 1c + 1d; full = four) are CC defaults from SOP R6 — confirm, especially whether medium should gate at 1c or at 1b.
+
 Mechanical teeth
 -----------------
 
