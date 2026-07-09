@@ -2,30 +2,33 @@
 name: figure-to-svg
 description: >-
   Turn a whole figure/diagram/infographic PNG into an editable master SVG that recreates it —
-  icons regenerated clean via codex image-gen and vectorized, plus real <text> labels at their
-  original positions. Use this whenever the user says /figure-to-svg, wants to "replicate this
-  figure as svg", "turn this figure/diagram into an editable svg", "regenerate this infographic
-  as vector", "rebuild this graphic so I can edit it", or vectorize a multi-item figure (panels
-  of icons + labels). Pipeline: split → regenerate icons → slice → transparentize → vectorize
-  (via icon-to-svg) → compose → fresh-eyes review loop. Also home of the plugin's knowledge
-  verbs — lesson (capture craft gotchas), feedback (file skill/script defects), digest (harvest
-  a session) — use it for those too. Prefer this over one-shot tracing whenever the user wants
-  an editable, clean, recolorable result.
+  icons regenerated clean via codex image-gen, plus real <text> labels at their original
+  positions. Default mode embeds icons as transparent PNGs (fast, visually faithful); pass
+  `svg` to hand-vectorize each icon for full editability. Use this whenever the user says
+  /figure-to-svg, wants to "replicate this figure as svg", "turn this figure/diagram into an
+  editable svg", "regenerate this infographic as vector", "rebuild this graphic so I can edit
+  it", or vectorize a multi-item figure (panels of icons + labels). Pipeline: split →
+  regenerate icons → slice → transparentize → [vectorize if svg mode] → compose → fresh-eyes
+  review loop. Also home of the plugin's knowledge verbs — lesson (capture craft gotchas),
+  feedback (file skill/script defects), digest (harvest a session) — use it for those too.
+  Prefer this over one-shot tracing whenever the user wants an editable, clean, recolorable
+  result.
 ---
 
 # figure-to-svg
 
-Rebuild a figure image as an **editable SVG**: every icon becomes clean vector art, every label
-becomes real `<text>`, and everything is placed where it was in the original. The output is a
-single master `.svg` that reads as a faithful copy of the source but can be edited, recolored,
-and rescaled — and survives PowerPoint's **Insert SVG → Convert to Shape** as editable shapes
-and text boxes.
+Rebuild a figure image as an **editable SVG**: every label becomes real `<text>`, panels and
+connectors become vector, and icons are embedded as transparent PNGs (default) or hand-vectorized
+(with `svg` flag). The output is a single master `.svg` that reads as a faithful copy of the
+source but can be edited, recolored, and rescaled — and survives PowerPoint's **Insert SVG →
+Convert to Shape** as editable shapes and text boxes (icons stay as pictures in default mode;
+with `svg` they become editable shapes too).
 
 ## Invocation
 
 ```
-/figure-to-svg <figure.png>          run the pipeline below on the whole figure
-/figure-to-svg <figure.png> png      fast mode: skip vectorize, icons stay PNG (see Step 4)
+/figure-to-svg <figure.png>          run the pipeline (DEFAULT: icons stay PNG — fast, faithful)
+/figure-to-svg <figure.png> svg      full vectorize: hand-author every icon as SVG via icon-to-svg
 /figure-to-svg <icon.png>            single icon/logo crop? hand it to /icon-to-svg instead
 /figure-to-svg lesson "<...>"        capture a craft gotcha            -> fn/lesson.md
 /figure-to-svg lesson list|search    browse / search the archive       -> fn/lesson.md
@@ -37,11 +40,15 @@ Bare image path, no verb: open it and route by what it is — a whole figure (pa
 several icons) runs this pipeline; a single icon/logo crop goes to **icon-to-svg**. If genuinely
 ambiguous, ask, showing which you'd pick.
 
-The pipeline, one path:
+The pipeline:
 
 ```
-split → regenerate → slice → transparentize → vectorize → compose → review (loop until pass)
+split → regenerate → slice → transparentize → [vectorize if svg mode] → compose → review (loop until pass)
 ```
+
+Default mode (bare path) skips vectorize — icons embed as transparent PNGs. Text, panels, and
+connectors are still editable vector. Pass `svg` to hand-vectorize every icon for full
+editability (expensive: ~2× wall-clock, subagent fleet, context-exhaustion risk).
 
 The hard-won rules from past runs are **baked into the steps below** — you don't need to go read
 a lessons folder before starting. `lesson/` (in this skill) is the capture inbox and archive:
@@ -159,21 +166,22 @@ lands. The prompt matters:
   on a shield, highlights) survive. Icons are transparent by default so they drop onto any panel
   fill; keep the white-bg slices (`cropped_icon_raw/`) as fallback.
 
-## Step 4 — Vectorize each icon (via icon-to-svg)
+## Step 4 — Vectorize each icon (via icon-to-svg) — SVG MODE ONLY
 
-**PNG mode skips this step entirely.** If the user asked for the fast path (`png` after the
-figure path, or "就用 PNG icon"), set `"keep_raster": true` on every icon item and go straight
-to Step 5 — every compose variant then embeds the transparent PNG crops. The result is visually
-faithful and the text/panels/arrows are still editable in PPT; only the icons stay pictures.
-This trades roughly half the wall-clock time for icon editability — offer it when the user cares
-more about speed than recolorable icons.
+**Default mode skips this step entirely.** Set `"keep_raster": true` on every icon item and go
+straight to Step 5 — every compose variant embeds the transparent PNG crops. The result is
+visually faithful and the text/panels/arrows are still editable in PPT; only the icons stay
+pictures. This is the right trade-off for most paper→slides conversions: you want to fix a
+label or recolor a panel, not redraw an icon.
 
-Otherwise, for every sliced icon, use the **icon-to-svg** skill to hand-author a faithful SVG →
+**SVG mode** (user passed `svg` after the figure path, or said "vectorize the icons" / "全部矢量化"):
+for every sliced icon, use the **icon-to-svg** skill to hand-author a faithful SVG →
 `svg/<id>.svg`. The regenerated icons are the ideal input for it: pure-white background, no
 neighbours, no text, generous resolution.
 
-This step is what makes the final PPT editable: **Convert to Shape only converts vector shapes —
-an embedded PNG stays a picture** whose colours can never be fixed in PPT.
+This step is what makes icons editable in PPT: **Convert to Shape only converts vector shapes —
+an embedded PNG stays a picture** whose colours can never be changed in PPT. Only worth the cost
+when the user specifically needs to recolor or reshape individual icons.
 
 - **Fan the icons out to parallel subagents — this is the default, not an option.** Hand-drawing
   37 icons serially is an hour by itself; it is the pipeline's dominant cost and the step where
@@ -202,14 +210,14 @@ an embedded PNG stays a picture** whose colours can never be fixed in PPT.
 ```
 
 `compose_svg.py` sizes the canvas, paints panels (flat fill or measured `gradient`), draws
-`connectors`, nests each icon SVG at its bbox, embeds `keep_raster` PNGs, and emits real `<text>`
-per label. It writes **three variants in one run**: the main output is **PPT-safe** (one
-absolutely-positioned `<text>` per line, or one per `content_ppt` sentence — PPT collapses
-`<tspan>` line breaks); `*_wrapped.svg` (tspans) for the visual diff; and `*_raster.svg`,
-which embeds EVERY icon as its transparent PNG crop while text/panels/connectors stay vector —
-maximum icon fidelity for users who prefer the generated look over hand-drawn vectors (icons
-stay pictures in PPT; white-on-dark icons may need `keep_raster` judgement as usual). Ship the
-main one and the raster one as the two deliverables; diff the wrapped one.
+`connectors`, nests each icon SVG at its bbox (or embeds PNG crops in default mode), and emits
+real `<text>` per label. It writes **three variants in one run**: the main output is **PPT-safe**
+(one absolutely-positioned `<text>` per line, or one per `content_ppt` sentence — PPT collapses
+`<tspan>` line breaks); `*_wrapped.svg` (tspans) for the visual diff; and `*_raster.svg`, which
+embeds EVERY icon as its transparent PNG crop while text/panels/connectors stay vector. In
+default (PNG) mode the main and raster variants are identical — both embed PNG icons. In `svg`
+mode the main variant nests vector icons (editable in PPT) while raster preserves the generated
+look. Ship the main one; diff the wrapped one.
 
 - **Re-add stripped context as vector at compose**: badge circles, white-on-dark footer glyphs —
   anything the regeneration deliberately left out — comes back here as cheap vector shapes.
