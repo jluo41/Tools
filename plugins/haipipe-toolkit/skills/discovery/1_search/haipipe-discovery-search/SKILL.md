@@ -4,7 +4,7 @@ description: "Search type specialist for the discovery layer: find AND read sour
 argument-hint: "[<discovery-folder> | \"<question>\"]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.2.0"
+  version: "1.3.0"
   last_updated: "2026-07-08"
   summary: "Type specialist owning Search: find + read sources -> sources.md + notes.md. Channel diversity mandatory: preprint channel + journal-index channel every run (OpenAlex/Crossref when S2 rate-limits); top-venue pass in full-mode novelty; coverage declaration in the sources.md preamble."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -18,14 +18,21 @@ Owns the `Search` type: the Execute stage of a Search discovery-folder, or a one
 Workers (pick by need; several per run is normal):
 
 ```
-find   arxiv              preprint search + PDF download
-       semantic-scholar   published venues, citation counts (rate-limits hard;
-                          on 429 fall through to OpenAlex/Crossref, below)
+find   arxiv              preprint search + PDF download (no key)
+       semantic-scholar   published venues, citation counts. Uses
+                          SEMANTIC_SCHOLAR_API_KEY (env.sh / env.ps1) when
+                          non-empty -- keyed = higher rate limits, sweep S2
+                          confidently; keyless = ~1 req/s, 429s hard, fall
+                          through to OpenAlex/Crossref below
        OpenAlex/Crossref  journal-index APIs, direct curl -- free, no key,
                           venue-filterable; the reliable JOURNAL channel
                           (api.openalex.org/works?search=...  /
-                           api.crossref.org/works?query=...)
-       exa-search         broad web (blogs / news / docs)
+                           api.crossref.org/works?query=...); append
+                          &mailto=$OPENALEX_MAILTO when set (polite pool)
+       exa-search         broad web (blogs / news / docs); requires
+                          EXA_API_KEY (env.sh / env.ps1) -- empty means the
+                          channel is UNAVAILABLE: skip it and record that in
+                          the coverage declaration, don't burn turns on it
 read   alphaxiv           fast LLM summary of one paper
        deepxiv            progressive section reading
        paper-analyzer     deep structured note

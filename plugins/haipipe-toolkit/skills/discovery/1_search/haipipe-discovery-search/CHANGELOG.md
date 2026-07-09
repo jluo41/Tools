@@ -4,6 +4,12 @@ haipipe-discovery-search — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [1.3.0] — 2026-07-08
+
+Changed (JL: API keys now live in env.sh / env.ps1 — make the channels key-aware)
+- Workers block documents the env contract: `SEMANTIC_SCHOLAR_API_KEY` (non-empty = keyed S2, sweep confidently; empty = ~1 req/s, fall through to OpenAlex/Crossref on 429), `EXA_API_KEY` (empty = exa channel UNAVAILABLE — skip and record in the coverage declaration instead of burning turns), `OPENALEX_MAILTO` (append `&mailto=` for the polite pool).
+
+
 ## [1.2.0] — 2026-07-08
 
 Changed (JL: pin the mechanical sweep half to Haiku so wide fan-out runs cheap)
