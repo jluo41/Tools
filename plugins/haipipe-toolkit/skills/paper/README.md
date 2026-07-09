@@ -4,6 +4,15 @@ Canonical reference. This file + `wiki/` win over anything elsewhere.
 
 A paper is a delivery contract, not a writing folder. It owns one manuscript's story, claims, displays, minimap, and prose. Evidence lives in tasks/discoveries/insights at the project level; each stage's _PROBE/PPNN card carries contract + receipt + verdict. Claim gaps buffer in `1-probe-plans/` and batch-dispatch to probe (the universal evidence gateway; probe calls task/discover during Gather). Direct task/discover for non-claim utility work only.
 
+## The mission-controller metaphor
+
+Each lifecycle stage is a **mission controller for one aim** — its artifact and that artifact's done-criteria — releasing probes as satellites until the result is solid (JL 2026-07-09).
+
+- Same control room everywhere: every stage drives DRAFT → PROBE → REVISE → CHECK; only the mission target changes (seed doc, claims ledger, pitch, narrative, display map, section prose).
+- Satellites, not sorties: during PROBE the stage launches probe plans through the evidence gateway into project space — task probes fly internal space (runs, data, models), discovery probes fly external space (literature). Mission control never leaves home: it plans, dispatches, collects returns, backfills.
+- Rounds until green: DPRC cycles repeat until the CHECK gate passes, then the controller hands off to the next stage.
+- Fleet sizes differ: `1-claims` runs the biggest constellation — mission control targeting solid claims, exit gate "every claim solid or scheduled"; `4-display` is the other heavy-launch stage (units materialized via tasks); pitch/narrative fly light audit probes over territory the claims fleet already mapped.
+
 ## Paper-folder layout
 
 ```text
@@ -31,7 +40,7 @@ paper/
 ├── 1-lifecycle/      stage procedures (seed, claims, pitch, narrative, display)
 │                     + display renderers (-table, -figure, -diagram, -illustration)
 ├── 2-phase/          shared phase workers: DRAFT-PROBE-REVISE-CHECK (DPRC)
-│                     haipipe-paper-{draft,probe,revise,checker} + sub-workers
+│                     haipipe-paper-{draft,probe,revise,check} + sub-workers
 ├── 3-build-submit/   scaffold, restructure, check
 ├── 4-respond/        rebuttal, response
 ├── 5-present/        slides, poster

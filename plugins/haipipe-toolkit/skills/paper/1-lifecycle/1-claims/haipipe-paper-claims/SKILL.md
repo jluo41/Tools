@@ -4,9 +4,9 @@ description: "Stage orchestrator for the paper folder's 0-lifecycle/1-claims/1-c
 argument-hint: "[paper-dir] [--backfill <probe-ref>] [--source <path>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.1.0"
-  last_updated: "2026-07-07"
-  summary: "Claims stage orchestrator. The evidence campaign brain: plans evidence needs, commissions work (tasks/discoveries), tracks results. Three sections (Hypotheses, Claims, Probes) + Evidence Campaign summary. Drives phases (draft -> probe -> revise -> check) internally."
+  version: "4.2.0"
+  last_updated: "2026-07-09"
+  summary: "Claims stage orchestrator. The evidence campaign brain: plans evidence needs, commissions work (tasks/discoveries), tracks results. Three sections (Hypotheses, Claims, Probes) + Evidence Campaign summary + optional Data Context preamble (v4.2: absorbed D/I rungs — the manuscript's Methods/Results carry them; application's ladder restage 2026-07-09 externalizes them as stages 1a/1b instead, an intentional twin delta). Drives phases (draft -> probe -> revise -> check) internally."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -50,15 +50,18 @@ Read first: `../../PHILOSOPHY.md`, `../../wiki/04-lifecycle-map.md`, `../../wiki
 - `0-lifecycle/1-claims/_VALUES_1-claims.md` -- verified numbers backing each supported claim
 - `0-lifecycle/1-claims/_PROBE/` -- probe plan files (execution detail per PP)
 
-**Content structure (1-claims.md) -- three sections + summary:**
+**Content structure (1-claims.md) -- three sections + summary (+ optional preamble):**
 
 ```text
+Data Context (optional)        a few anchored lines grounding the hypotheses:
+                               cohort N, arms, outcome base rates -> task-result pointers
 Hypotheses (venue-neutral)     what we test (H1, H2, H3), venue-free
 Claims                         one **C<n>** per claim: statement + status + → PP reference
 Probes                         one **PP<nn>** per probe: full evidence plan, organized by probe number
 Evidence Campaign              dispatch order + summary (compact overview)
 ```
 
+- **Data Context** (optional, absorbed D/I) -- when the hypotheses need grounding, open with a FEW anchored description lines (statistic + task-result pointer), never raw data or inline computation. Kept as a preamble, NOT a stage: by writing time the dataset is frozen and the manuscript's own Methods/Results sections carry the D/I rungs. (The application family, whose artifacts carry no D/I body and whose data is dynamic, externalizes these as full stages `1a-descriptions`/`1b-themes` -- an intentional twin delta, SOP-ladder-restage 2026-07-09; Hypotheses play the theme role here.)
 - **Hypotheses** are venue-neutral statements of what the paper tests. The same H1 can become RQ1 for JAMA or MISQ -- that reframing happens in pitch, not here.
 - **Claims** are short: the testable statement, current status (supported/weak/GAP), and which probe settles it. No inline study design.
 - **Probes** carry the full evidence plan per PP number: type (task/discovery), which claims it settles, dependencies, what work to do, design decisions. This is where the brain thinks.
@@ -145,6 +148,13 @@ The canonical template is the source of truth for section order: `ref/claims-tem
 Date: YYYY-MM-DD
 Status: DRAFT
 This ledger plans what evidence to collect, commissions the work, and tracks results as they return.
+
+
+Data Context (optional)
+-----------------------
+
+- cohort N = ..., arms = ... -> `tasks/<task>/results/<file>` (as-of YYYY-MM-DD)
+- outcome base rate = ... -> `tasks/<task>/results/<file>`
 
 
 Hypotheses (venue-neutral)

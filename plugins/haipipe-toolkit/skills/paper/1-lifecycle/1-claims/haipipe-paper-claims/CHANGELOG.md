@@ -4,6 +4,10 @@ haipipe-paper-claims — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [4.2.0] — 2026-07-09
+
+- Optional **Data Context** preamble added to the artifact spec + template (absorbed D/I rungs): a few anchored description lines (statistic + task-result pointer + as-of date) grounding the Hypotheses when needed; never raw data or inline computation. Ruling context (JL 2026-07-09, application ladder restage): for a paper the dataset is frozen by writing time and the manuscript's Methods/Results carry D/I, so descriptions/themes stay ABSORBED here (Hypotheses play the theme role); the application family externalizes them as full stages 1a-descriptions/1b-themes (intentional twin delta — see application/SOP-ladder-restage.md; its alignment watch maps paper claims-stage changes onto rung 1c).
+
 ## [4.1.0] — 2026-07-07
 
 Added (skillset-diagnose T3, JL: "同意。")
