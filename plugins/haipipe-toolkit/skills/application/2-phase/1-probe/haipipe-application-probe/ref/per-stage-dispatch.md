@@ -26,10 +26,13 @@ Per-stage list (lane hooks = HARVESTERS: they transcribe landed evidence, never 
 Spine folder names are the intervention's `0-lifecycle/` stage folders (dual-2 numbering mirrors paper: 2-venue + 2-pitch).
 
 - **0-seed** (venue-FREE) -- mode light (-> discovery), DEFAULT RUN for a new seed: landscape / prior interventions / benchmarks / cohort sanity to sharpen the seed question. No venue pinned yet: source anchors stay in the card takeaways; no citation/display lanes.
-- **1-claims** (venue-FREE) -- mode FULL (-> task + discovery): the core evidence stage; one plan per GAP claim; verdicts backfill the C-line AND the Evidence Campaign row at TRANSLATE (enum: supported | refuted | inconclusive) + deposit to insight. Verified numbers the returns carry land in `_VALUES_1-claims.md` (values lane fires here even pre-pin). The pinned venue's settlement bar later reads THIS campaign.
+- **1a-descriptions** (venue-FREE, ladder rung) -- mode light (-> task): data-profile probes ("profile the cohort", "pull engagement summary"); TRANSLATE lands anchored numbers (statistic + pointer + as-of date) directly as D entries -- the 1a doc IS the values doc, no separate satellite. Consumes seed's FORWARD pointers at DRAFT.
+- **1b-themes** (venue-FREE, ladder rung) -- mode light (-> discovery, task for quick in-data confirmations): field-pattern probes ("what messaging levers does the literature name?"); TRANSLATE lands grounding refs onto T entries.
+- **1c-claims** (venue-FREE, ladder rung) -- mode FULL (-> task + discovery): the core evidence rung; one plan per GAP claim; verdicts backfill the C-line AND the Evidence Campaign row at TRANSLATE (enum: supported | refuted | inconclusive); insight deposit optional (ladder restage R7). Verified numbers the returns carry land in `_VALUES_1c-claims.md` (values lane fires here even pre-pin). The pinned venue's settlement bar later reads THIS campaign.
+- **1d-principles** (venue-FREE, ladder rung) -- rarely fires: derivation is in-stage work; a principle exposing a NEW evidence gap routes back as a `1c-claims/_PROBE/` card, never gathers here.
 - **2-venue** -- mode light: venue-level investigation needs -- channel capability, compliance constraints, prior sends on this channel; cards in `2-venue/_PROBE/`.
 - **2-pitch** -- light, rare: anchor evidence for the theory of change if the ledger lacks it.
-- **3-narrative** -- rarely fires; a beat exposing a NEW evidence gap routes back to claims as a `1-claims/_PROBE/` card, never gathers here.
+- **3-narrative** -- rarely fires; a beat exposing a NEW evidence gap routes back to claims as a `1c-claims/_PROBE/` card, never gathers here.
 - **4-display** (venue-GATED: dashboard/ui-card/report; optional email; skipped sms/push/reminder/checklist) -- display lane; unit GENERATION is commissioned like any evidence need: PP card -> gateway -> task orchestrator (SWEEP answers "does this unit already exist?"); the hook only LINKs what landed into `_DISPLAY_4-display.md` + the artifact.
 - **5-section-edit** (sectioned venues only) -- full document probe: values + citation lanes per section, display lane where the section references units.
 
@@ -50,18 +53,18 @@ cohort sanity ("does the population exist?")    -> probe -> task (light data pro
 
 Takeaways feed the opportunity, mechanism hypothesis, and kill criteria in 0-seed.md. Full evidence stays project-side, reusable by claims.
 
-Claims specifics (mode full)
------------------------------
+Claims specifics (rung 1c, mode full)
+--------------------------------------
 Every GAP/weak claim emits a probe plan -- sweep first (reuse-before-create), then probe fans out by need type:
 
 ```
 claim needs a verdict / robustness check   -> probe (Plan -> Gather -> Read -> Judge)
 probe needs a run / data artifact          -> probe -> /haipipe-task
 probe needs outside context / benchmarks   -> probe -> /haipipe-discovery
-finished evidence worth keeping            -> /haipipe-insight (K/W cards)
+finished evidence worth keeping            -> /haipipe-insight (K/W cards; OPTIONAL deposit, ladder restage R7 -- 1d owns on-request W deposits)
 ```
 
-Verdicts flip the C-line and the Evidence Campaign row in 1-claims.md in the same TRANSLATE (enum: supported | refuted | inconclusive, citing the probe verdict). The intervention owns the NEED; the probe owns the VERDICT. The venue gate later evaluates its settlement bar (light/medium/full) against the campaign table.
+Verdicts flip the C-line and the Evidence Campaign row in 1c-claims.md in the same TRANSLATE (enum: supported | refuted | inconclusive, citing the probe verdict). The intervention owns the NEED; the probe owns the VERDICT. The venue gate later evaluates its settlement bar (light/medium/full) against the campaign table and through 1d's derivations.
 
 Venue-scaled lane rules (which lanes exist, decided at lane CREATION)
 ----------------------------------------------------------------------

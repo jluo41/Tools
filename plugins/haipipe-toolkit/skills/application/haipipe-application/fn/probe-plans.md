@@ -12,7 +12,8 @@ Plans LIVE in the `_PROBE/` subfolder of the stage that spawned them (stage self
 <intervention>/
 ├── 0-lifecycle/
 │   ├── 0-seed/_PROBE/PP01_<slug>.md          plans live with their stage
-│   ├── 1-claims/_PROBE/PP02_<slug>.md
+│   ├── 1a-descriptions/_PROBE/PP02_<slug>.md (ladder rungs are stages like any other)
+│   ├── 1c-claims/_PROBE/PP03_<slug>.md
 │   └── 5-section-edit/{section}/_PROBE/...
 └── 1-probe-plans/
     └── README.md              INDEX: | id | stage | status | refs | -- created on first plan
@@ -31,7 +32,7 @@ id: PP01
 status: planned | dispatched | read | verdicted
 mode: light | full
 claim: "<the claim this probe tests, or the orientation question>"
-source_stage: "<lifecycle stage that surfaced this need, e.g. 1-claims>"
+source_stage: "<lifecycle stage that surfaced this need, e.g. 1c-claims>"
 source_ref: "<C<n> row or NEED label>"
 created: YYYY-MM-DD
 dispatched_at: ""

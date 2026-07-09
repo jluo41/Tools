@@ -4,7 +4,7 @@
 # always yields the same strip, so it can never be mis-ordered or mis-marked.
 #
 # Output (one line):
-#   seed ✅  claims 🔥🚀  venue ⬜  pitch ⬜  narrative --  display --  section-edit --  →  draft ⬜  →  review ⬜  →  deploy ⬜
+#   seed ✅  descriptions ✅  themes ✅  claims 🔥🚀  principles ⬜  venue ⬜  pitch ⬜  narrative --  display --  section-edit --  →  draft ⬜  →  review ⬜  →  deploy ⬜
 # Markers per haipipe-application/SKILL.md Closing Block (single source of truth):
 #   🔥 = active now (the stage worked THIS session, optional 2nd arg)
 #   🚀 = frontier (current_layer, the farthest stage the intervention has reached)
@@ -39,12 +39,13 @@ status=$(find_status "$app") || { echo "stage-strip: no STATUS.md at or above $a
 current=$(grep -m1 '^| current_layer |' "$status" | sed 's/^|[^|]*|[[:space:]]*//' | sed 's/[[:space:]]*|.*//' | tr -d '[:space:]')
 # fallback to old format
 [ -z "$current" ] && current=$(grep -m1 '^current_layer:' "$status" | sed 's/^current_layer:[[:space:]]*//' | tr -d '[:space:]')
-# normalize numbered stage-folder names (1-claims -> claims); spine keys are bare
-current=$(printf '%s' "$current" | sed 's/^[0-9]-//')
+# normalize numbered stage-folder names (1c-claims -> claims, 0-seed -> seed); spine keys are bare
+current=$(printf '%s' "$current" | sed 's/^[0-9][a-z]*-//')
 
 # canonical spine order: venue coupling gradient FREE→FREE→(pin)→ALIGNED, then delivery tail
-# seed(FREE) claims(FREE) venue(chooser) pitch narrative display section-edit(ALIGNED, venue-gated) draft review deploy
-keys="seed claims venue pitch narrative display section-edit draft review deploy"
+# seed(FREE) ladder 1a-1d: descriptions themes claims principles (FREE) venue(chooser)
+# pitch narrative display section-edit(ALIGNED, venue-gated) draft review deploy
+keys="seed descriptions themes claims principles venue pitch narrative display section-edit draft review deploy"
 
 # venue is confirmed by a pinned `| venue |` field in STATUS.md, not a ledger row
 venue_pinned=false
