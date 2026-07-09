@@ -7,6 +7,8 @@ Venue: <pinned venue>
 Fires only if the pinned venue requires it (STATUS.md stages_skipped).
 The arc leans only on claims meeting the venue's settlement bar; a load-bearing GAP claim cannot anchor a beat.
 Arc rules come from 2-venue.md Artifact Principles; the beats compose 1d principles.
+How to use: copy to `<intervention>/0-lifecycle/3-narrative/3-narrative.md`, replace every `<...>`, delete unused sub-items (the DRAFT worker does this during the stage's DPRC).
+
 
 
 Arc structure

@@ -6,6 +6,8 @@ Status: DRAFT
 Ladder rung 1d, the DELIVERABLE: actionable directives, each derived from >=1 claim in the 1c ledger.
 Content-WHAT (survives retarget) -- distinct from 2-venue.md Artifact Principles (channel-HOW).
 Every P must pass the W-actionability test: could the artifact stage write the exact move from this line?
+How to use: copy to `<intervention>/0-lifecycle/1d-principles/1d-principles.md`, replace every `<...>`, delete unused sub-items (the DRAFT worker does this during the stage's DPRC).
+
 
 
 Principles

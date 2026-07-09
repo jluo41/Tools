@@ -5,6 +5,8 @@ Date: YYYY-MM-DD
 Status: DRAFT
 Ladder rung 1a: what the data looks like, every number anchored and dated.
 No raw data, no inline computation -- the doc quotes what probes landed.
+How to use: copy to `<intervention>/0-lifecycle/1a-descriptions/1a-descriptions.md`, replace every `<...>`, delete unused sub-items (the DRAFT worker does this during the stage's DPRC).
+
 
 
 Datasets

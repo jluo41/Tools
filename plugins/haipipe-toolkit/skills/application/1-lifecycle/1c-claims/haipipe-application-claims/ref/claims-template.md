@@ -6,6 +6,8 @@ Status: DRAFT
 Ladder rung 1c: which claims generalize -- supported / weak / GAP -- and what evidence settles each.
 This ledger plans what evidence to collect, commissions the work, and tracks results as they return.
 (No Hypotheses section -- mechanism lives in seed/pitch; the theme space lives in 1b.)
+How to use: copy to `<intervention>/0-lifecycle/1c-claims/1c-claims.md`, replace every `<...>`, delete unused sub-items (the DRAFT worker does this during the stage's DPRC).
+
 
 
 Claims
