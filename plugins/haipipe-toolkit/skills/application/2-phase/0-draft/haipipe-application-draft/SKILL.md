@@ -4,9 +4,9 @@ description: "DRAFT phase worker (internal). Called first by every application s
 argument-hint: "[stage <stage-name>] [intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, WebSearch, WebFetch
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-07-07"
-  summary: "NEW thin DRAFT worker (paper parity). Settles stage-doc structure + sentences; the calling stage supplies the artifact spec. The old artifact-generator of this name moved to 3-build-deploy/haipipe-application-artifact. v1.1: DRAFT MAY use inline WebSearch for orientation -- but its output is drafting fuel (stage-doc prose + buffered planned PPNN skeletons) only, NEVER durable evidence (no refs/findings into PP cards). Real evidence is the PROBE phase's job."
+  version: "1.2.0"
+  last_updated: "2026-07-09"
+  summary: "NEW thin DRAFT worker (paper parity). Settles stage-doc structure + sentences; the calling stage supplies the artifact spec. The old artifact-generator of this name moved to 3-build-deploy/haipipe-application-artifact. v1.1: DRAFT MAY use inline WebSearch for orientation -- but its output is drafting fuel (stage-doc prose + buffered planned PPNN skeletons) only, NEVER durable evidence (no refs/findings into PP cards). Real evidence is the PROBE phase's job. v1.2 (ladder restage follow-up): template registry added -- every stage skill now carries ref/<stage>-template.md (paper draft parity); WRITE reads the template, this worker carries none of its own."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -31,9 +31,28 @@ DRAFT phase worker. Every stage skill calls this first. The calling stage passes
 
 DRAFT settles WHAT the doc says. It does NOT collect evidence (PROBE), polish prose (REVISE), or approve anything (CHECK).
 
+## Template registry (WRITE reads the stage's canonical template)
+
+At WRITE, read TWO things from `1-lifecycle/`: the calling stage's SKILL.md artifact spec (WHAT to produce, done-criteria) and its canonical template (section order, placeholders, formatting). This worker carries NO templates of its own -- the stage owns its format.
+
+| Stage | Artifact spec | Template |
+|---|---|---|
+| seed | `1-lifecycle/0-seed/haipipe-application-seed/SKILL.md` | `ref/seed-template.md` |
+| descriptions | `1-lifecycle/1a-descriptions/haipipe-application-descriptions/SKILL.md` | `ref/descriptions-template.md` |
+| themes | `1-lifecycle/1b-themes/haipipe-application-themes/SKILL.md` | `ref/themes-template.md` |
+| claims | `1-lifecycle/1c-claims/haipipe-application-claims/SKILL.md` | `ref/claims-template.md` |
+| principles | `1-lifecycle/1d-principles/haipipe-application-principles/SKILL.md` | `ref/principles-template.md` |
+| venue | `1-lifecycle/haipipe-application-venue/SKILL.md` | `ref/venue-template.md` |
+| pitch | `1-lifecycle/2-pitch/haipipe-application-pitch/SKILL.md` | `ref/pitch-template.md` |
+| narrative | `1-lifecycle/3-narrative/haipipe-application-narrative/SKILL.md` | `ref/narrative-template.md` |
+| display | `1-lifecycle/4-display/haipipe-application-display/SKILL.md` | `ref/display-template.md` |
+| section name | `1-lifecycle/5-section-edit/haipipe-application-section-edit/SKILL.md` | per-section scaffolds in that skill |
+
+(Template paths are relative to each stage skill's OWN folder, e.g. `1-lifecycle/1a-descriptions/haipipe-application-descriptions/ref/descriptions-template.md`. Artifact formatting is uniform: `=====` title / `-----` sections / `**bold**` sub-items, one sentence per line, no `#` headings.)
+
 ## Boundaries
 
-- Venue-FREE stages (seed, claims): do not read venue packs; the doc must survive retargeting.
+- Venue-FREE stages (seed + the 1a-1d ladder: descriptions, themes, claims, principles): do not read venue packs; the doc must survive retargeting.
 - Venue-ALIGNED stages (pitch, narrative, display, section-edit): read `_venue/venue-<name>` + `_audience/profile-<name>` for structure and tone expectations.
 - Never invent evidence: an unbacked statement is written as a flagged NEED, not asserted.
 - Stage docs are markdown, one physical line per paragraph/bullet.

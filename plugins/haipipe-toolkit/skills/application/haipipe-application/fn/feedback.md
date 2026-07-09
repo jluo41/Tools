@@ -103,9 +103,14 @@ Keyword -> skill map (first/most-specific match wins):
 
 ```
 seed                                    -> haipipe-application-seed
+descriptions, data profile, D entry     -> haipipe-application-descriptions
+themes, theme, T entry                  -> haipipe-application-themes
 pitch                                   -> haipipe-application-pitch
 venue, modality, channel pick           -> haipipe-application-venue
-claims, claim, K/W select, settlement   -> haipipe-application-claims
+claims, claim, settlement               -> haipipe-application-claims
+principles, principle, P entry,
+  design principle, W deposit           -> haipipe-application-principles
+ladder, ladder sweep, gate batching     -> haipipe-application-lifecycle
 narrative                               -> haipipe-application-narrative
 display, panel, widget, content elem,
   minimap, unit job                     -> haipipe-application-display
@@ -166,7 +171,10 @@ capture, so a mapped folder not existing yet is expected, not an error.
 
 ```
 haipipe-application-seed          1-lifecycle/0-seed/haipipe-application-seed/feedback/
-haipipe-application-claims        1-lifecycle/1-claims/haipipe-application-claims/feedback/
+haipipe-application-descriptions  1-lifecycle/1a-descriptions/haipipe-application-descriptions/feedback/
+haipipe-application-themes        1-lifecycle/1b-themes/haipipe-application-themes/feedback/
+haipipe-application-claims        1-lifecycle/1c-claims/haipipe-application-claims/feedback/
+haipipe-application-principles    1-lifecycle/1d-principles/haipipe-application-principles/feedback/
 haipipe-application-pitch         1-lifecycle/2-pitch/haipipe-application-pitch/feedback/
 haipipe-application-narrative     1-lifecycle/3-narrative/haipipe-application-narrative/feedback/
 haipipe-application-display       1-lifecycle/4-display/haipipe-application-display/feedback/

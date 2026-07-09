@@ -104,8 +104,8 @@ Venue-hook contract (application delta: hooks, not sub-worker skills)
 
 Application keeps NO probe sub-worker skills; the three HARVEST lanes are venue-scaled hooks inside this worker. Which lanes fire is decided at lane CREATION (TRANSLATE), from the pinned venue -- the checker stays presence-driven and needs no venue lookup:
 
-- `_VALUES_` lane -- ALWAYS eligible: any venue's artifact quotes numbers, and claims-stage verified values land in `_VALUES_1-claims.md` regardless of venue.
-- `_CITATION_` lane -- SECTIONED venues only (report/dashboard-like, per the venue profile). Pre-pin stages (seed, claims are venue-FREE) keep source anchors in the card takeaways; no _CITATION_ doc exists before a sectioned venue is pinned.
+- `_VALUES_` lane -- ALWAYS eligible: any venue's artifact quotes numbers, and claims-rung verified values land in `_VALUES_1c-claims.md` regardless of venue (1a-descriptions needs no satellite: its doc IS the anchored-numbers doc).
+- `_CITATION_` lane -- SECTIONED venues only (report/dashboard-like, per the venue profile). Pre-pin stages (seed and the 1a-1d ladder are venue-FREE) keep source anchors in the card takeaways; no _CITATION_ doc exists before a sectioned venue is pinned.
 - `_DISPLAY_` lane -- only if the venue's artifact has display units (panels, charts, figures). Simple venues (sms/push/reminder) have no document lanes at all: their PROBE phase is claims-evidence only.
 
 When a hook fires it MUST follow paper's 2.0.0 sub-worker contract (haipipe-paper-probe-citation/-values/-display): pointer-following + gateway dispatch only, mechanical acceptance greps, no inline search -- the hook NEVER searches (no WebSearch, no Semantic Scholar; finding is the gateway's monopoly), transcribes only what the gateway's return points at, and is accepted by the LITERAL greps in `ref/harvest-acceptance.md`. Card format specs are read from their single source of truth, never paraphrased into the dispatch prompt.

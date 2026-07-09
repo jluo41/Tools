@@ -11,3 +11,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 ## [1.0.0] — 2026-07-06
 
 - NEW phase worker (paper-alignment refactor, SOP archived in haipipe-application/CHANGELOG.md §5.0.0; full-DPRC ruling R4).
+
+## [1.2.0] — 2026-07-09
+
+- Template registry added (ladder restage follow-up, JL: stage skills had "no ref/ no template"): WRITE now reads the calling stage's canonical `ref/<stage>-template.md` alongside its SKILL.md artifact spec — 10-row registry table covering seed, the 1a-1d rungs, venue, pitch, narrative, display, section-edit. This worker carries no templates of its own (paper draft parity). The 9 template files live with their stage skills.
