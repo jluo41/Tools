@@ -1,6 +1,6 @@
 # Intervention Lifecycle
 
-The application lifecycle is a delivery lifecycle. It owns the intervention-specific story, claim wording, content elements, and artifact text. Project-level evidence lives in discoveries, tasks, and insights. Same stage vocabulary and spine ORDER as paper (`../../paper/wiki/03-paper-lifecycle.md`); the venue profile gates which stages fire.
+The application lifecycle is a delivery lifecycle. It owns the intervention-specific story, the stage-1 evidence ladder, content elements, and artifact text. Project-level evidence lives in discoveries and tasks (insights = optional deposit). Same spine ORDER as paper (`../../paper/wiki/03-paper-lifecycle.md`) with one intentional delta: paper's single `1-claims` stage is here the four-rung ladder `1a-1d` (SOP-ladder-restage.md); the venue profile gates which stages fire.
 
 ## Folder Contract
 
@@ -9,7 +9,10 @@ The application lifecycle is a delivery lifecycle. It owns the intervention-spec
 ├── STATUS.md                 venue, stages_skipped, claims_settlement, current_layer, maturity, Gate Ledger
 ├── 0-lifecycle/
 │   ├── 0-seed/           venue: FREE      0-seed.md + _LOG + _PROBE/
-│   ├── 1-claims/         venue: FREE      1-claims.md (Claims/Probes/Campaign) + _LOG + _VALUES_ + _PROBE/ (+ _CITATION_ sectioned venues)
+│   ├── 1a-descriptions/  venue: FREE      1a-descriptions.md (anchored data summaries + as-of dates) + _LOG + _PROBE/
+│   ├── 1b-themes/        venue: FREE      1b-themes.md (grounded themes T←D) + _LOG + _PROBE/
+│   ├── 1c-claims/        venue: FREE      1c-claims.md (Claims/Probes/Campaign, C←T) + _LOG + _VALUES_ + _PROBE/ (+ _CITATION_ sectioned venues)
+│   ├── 1d-principles/    venue: FREE      1d-principles.md (design directives P←C — the ladder's deliverable) + _LOG + _PROBE/
 │   ├── 2-venue/          venue: PIN       2-venue.md (choice + Artifact Principles) + _LOG + _PROBE/
 │   ├── 2-pitch/          venue: ALIGNED   2-pitch.md + _LOG + _PROBE/
 │   ├── 3-narrative/      venue: GATED     3-narrative.md + _LOG          (if venue requires)
@@ -28,8 +31,11 @@ Stage docs are markdown + `_LOG` (argument documents need no compilation). `0-` 
 
 | Stage | Job | Main question | Venue | Typical handoff |
 |---|---|---|---|---|
-| `0-seed` | Keep the intervention possibility alive | Why might this work? | FREE | claims or drop |
-| `1-claims` | Maintain the claim ledger | What must be true? Which K/W back it? | FREE | venue → pitch |
+| `0-seed` | Keep the intervention possibility alive | Why might this work? | FREE | ladder (1a) or drop |
+| `1a-descriptions` | Anchored data profile (the D rung) | What does the data look like, dated? | FREE | themes |
+| `1b-themes` | Grounded pattern space (the I rung) | Which patterns/topics emerge? | FREE | claims |
+| `1c-claims` | Claim ledger + evidence campaign (the K rung) | Which claims generalize? | FREE | principles |
+| `1d-principles` | Design directives (the W rung, the deliverable) | What should the content do, derived from which claims? | FREE | venue → pitch |
 | `venue` | Pin the output modality | Which channel fits? | (chooser) | writes venue + stages_skipped + claims_settlement |
 | `2-pitch` | One-minute goal + theory of change | What is this selling, to whom? | ALIGNED | narrative or draft |
 | `3-narrative` | Structure the output's arc | How do claims compose? | GATED | display |
@@ -64,11 +70,11 @@ venue-ui-card    req         req       optional       full                report
 venue-report     req         req       req            full                report
 ```
 
-Authoritative per-venue table: each `_venue/venue-<name>/README.md`. Simple venues: seed → claims → venue → pitch → draft. Complex venues: all stages before draft.
+Authoritative per-venue table: each `_venue/venue-<name>/README.md`. Simple venues: seed → ladder → venue → pitch → draft. Complex venues: all stages before draft. The venue also batches the LADDER's gates (light: one combined gate at 1d; medium: 1c + 1d; full: four) — see `08-stage-gate.md`.
 
 ## Venue-FREE / Venue-ALIGNED Boundary
 
-Seed and claims are venue-FREE: written before the pin, unchanged on retarget (the K/W truth does not change with the channel). Pitch, narrative, display, and section-edit are venue-ALIGNED: they rewrite on retarget. Retargeting (sms → dashboard) re-runs venue + pitch and may DEEPEN the claims settlement requirement — it never invalidates the ledger. Slot-mapping (which K/W fills which template slot) is venue-ALIGNED work and happens in draft/display, never in claims.
+Seed and the evidence ladder (1a-1d) are venue-FREE: written before the pin, unchanged on retarget (data truth, patterns, claims, and content-level design principles do not change with the channel). Pitch, narrative, display, and section-edit are venue-ALIGNED: they rewrite on retarget. Retargeting (sms → dashboard) re-runs venue + pitch and may DEEPEN the ladder's settlement requirement — it never invalidates it. Slot-mapping (which principle fills which template slot) is venue-ALIGNED work and happens in draft/display, never in the ladder.
 
 ## Phase Dimension
 
@@ -82,7 +88,9 @@ Maturity is derived from disk, not declared. Orthogonal to the current stage.
 maturity           condition
 ──────────         ─────────────────────────────────────────────
 prospect           0-seed/ exists
-claim-ledger       1-claims/ has C-slots
+data-described     1a-descriptions/ has anchored D entries
+claim-ledger       1c-claims/ has C-slots
+principled         1d-principles/ has derived P entries (ladder gate passed)
 venue-pinned       STATUS.md has venue:
 pitched            2-pitch/ gate-approved
 narrated           3-narrative/ gate-approved (if venue requires)
@@ -103,14 +111,17 @@ The lifecycle is not linear. When work fails, return to the earliest stage that 
 
 | Symptom | Loop back to |
 |---|---|
-| evidence missing for claim | `1-claims` |
+| data profile stale / number unanchored | `1a-descriptions` |
+| theme ungrounded / pattern space wrong | `1b-themes` |
+| evidence missing for claim | `1c-claims` |
+| principle doesn't follow from its claims | `1d-principles` |
 | theory of change wrong | `2-pitch` |
 | output structure wrong | `3-narrative` (or venue) |
 | content element doesn't carry its claim | `4-display` |
 | section prose fails its job | `5-section-edit` |
 | stakeholder/clinician review rejects | `1-rounds` then target stage |
-| A/B test shows no effect | `2-pitch` or `1-claims` |
-| venue wrong for audience | `venue` (re-pin; pitch+ re-couple; claims SURVIVES) |
+| A/B test shows no effect | `2-pitch` or `1c-claims` (backfill the A/B data into `1a` first) |
+| venue wrong for audience | `venue` (re-pin; pitch+ re-couple; the ladder SURVIVES) |
 | kill criterion met | STATUS.md → `retired` |
 
 ## Evidence Flow (folderless probe)
@@ -141,11 +152,15 @@ Light settlement venues rarely dispatch — they select from the existing KB; fu
 ```text
 paper                                application
 ─────                                ──────────────
-same stage names, same spine order   same (seed → claims → [venue] → pitch → narrative → display → section-edit)
+same spine order                     stage 1 differs by design: paper = single 1-claims ledger
+                                     (Hypotheses play the theme role; the manuscript's own
+                                     Methods/Results carry D/I) — paper delivers K;
+                                     application = the 1a-1d evidence ladder — delivers W
 _venue/ = journal playbooks          _venue/ = output modalities + _audience/ axis
-all stages fire; claims fully settle venue gates stages 3-5 + sets claims settlement depth
+all stages fire; claims fully settle venue gates stages 3-5 + sets settlement depth + batches ladder gates
+insights = first-class deposit       insights = optional deposit (judgment in PP verdicts)
 0-sections/ TeX → compile → submit   0-artifacts/ markdown → draft → review → deploy
-respond (rebuttal) / present         iterate (A/B results → refine)
+respond (rebuttal) / present         iterate (A/B results → refine; backfills 1a, staleness P←C←T←D)
 Paper Console                        Intervention Console
 papers repo-backed                   interventions = plain in-project folders
 ```

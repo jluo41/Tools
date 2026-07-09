@@ -1,0 +1,47 @@
+4-display: <intervention name> (content elements + unit jobs, venue-GATED)
+===========================================================================
+
+Date: YYYY-MM-DD
+Status: DRAFT
+Venue: <pinned venue>
+Fires only if the pinned venue requires it (STATUS.md stages_skipped).
+Every unit carries FOUR required fields -- Type, Claim, Job, Data source.
+The Job field is the minimap absorption: one sentence on what this unit must make the reader see/do.
+Unit GENERATION is commissioned through the probe (PP card -> gateway -> task); this doc plans and links.
+
+
+Display units
+-------------
+
+One **U<nn>** per unit. Element types come from the venue profile (metric-card, line-chart, table, ...).
+
+**U01 - <element name, e.g. KPI Card: Refill Rate>**
+
+Type: <element type>.
+Claim: C<n> (via P<n> where a principle drives it).
+Job: <one sentence: what the reader must see/do because of this unit>.
+Content: <what it shows, one line>.
+Data source: <task ref, e.g. tasks/T01/results/...> · Status: <planned | commissioned (PP<nn>) | landed>.
+
+**U02 - <element name>**
+
+Type: <type>.
+Claim: C<n>.
+Job: <job sentence>.
+Content: <content>.
+Data source: <ref> · Status: <status>.
+
+
+Unit -> section mapping (sectioned venues)
+------------------------------------------
+
+- U01 -> <section> (<why there>)
+- U02 -> <section>
+
+
+Probes
+------
+
+<Materialization needs: one line per PP with status; cards in _PROBE/. The _DISPLAY_ lane links what landed.>
+
+- PP<nn> - materialize U<nn> - <status>

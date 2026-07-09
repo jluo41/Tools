@@ -18,7 +18,7 @@ TL;DR
 5. Loop until the gate is green → explicit approval → Gate Ledger row → next stage
 ```
 
-Same engine behind every stage: `seed | claims | venue | pitch | narrative | display | section-edit` — venue-GATED stages (narrative, display, section-edit) fire only if the pinned venue requires them.
+Same engine behind every stage: `seed | descriptions | themes | claims | principles | venue | pitch | narrative | display | section-edit` — venue-GATED stages (narrative, display, section-edit) fire only if the pinned venue requires them.
 
 A. Run a stage (the normal path)
 ---------------------------------

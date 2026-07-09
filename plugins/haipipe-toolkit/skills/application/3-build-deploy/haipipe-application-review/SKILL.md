@@ -81,7 +81,8 @@ Workflow
 
 ```
 Step 1: Read 0-artifacts/ for drafted artifacts.
-Step 2: Read the audience profile, 0-lifecycle/1-claims/1-claims.md, and
+Step 2: Read the audience profile, 0-lifecycle/1d-principles/1d-principles.md,
+        0-lifecycle/1c-claims/1c-claims.md, and
         0-lifecycle/4-display/4-display.md (if the venue required it).
 Step 3: Run checklist per artifact.
 Step 4: Write REVIEW-*.md per artifact.

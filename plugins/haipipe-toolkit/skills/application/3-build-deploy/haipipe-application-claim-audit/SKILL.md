@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
   version: "1.1.0"
   last_updated: "2026-07-06"
-  summary: "Claim-evidence audit — traceability + scope check. Paper-alignment sweep: ledger path updated to the 1-claims stage folder."
+  summary: "Claim-evidence audit — traceability + scope check. Paper-alignment sweep: ledger path updated to the 1c-claims stage folder (ladder restage 2026-07-09)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -27,14 +27,17 @@ Audit scope
 
 ```
 Reads:
-  0-lifecycle/1-claims/1-claims.md   (claim ledger)
+  0-lifecycle/1d-principles/1d-principles.md  (design principles -- the P<-C chain)
+  0-lifecycle/1c-claims/1c-claims.md          (claim ledger)
   0-artifacts/*.md              (drafted artifacts)
-  insights/K_knowledge/*.md     (K entries cited)
-  insights/W_wisdom/*.md        (W entries cited)
+  insights/K_knowledge/*.md     (K entries, when cited)
+  insights/W_wisdom/*.md        (W entries, when cited)
 
 Writes:
   0-artifacts/CLAIM_AUDIT.md    (audit report)
 ```
+
+Trace chain: every artifact move -> the `P<n>` it executes -> the `C<n>` each P derives from -> the claim's anchor. A break anywhere in artifact -> P -> C -> anchor is a finding.
 
 
 Audit checklist per artifact

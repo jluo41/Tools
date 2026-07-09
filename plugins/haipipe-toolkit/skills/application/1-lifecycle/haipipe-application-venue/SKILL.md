@@ -64,6 +64,8 @@ This section is what pitch, display, section-edit, and artifact all read. Once v
 
 **Formatting (artifact):** `=====` title / `-----` sections, no `#` headings; one sentence per line.
 
+**Canonical template (source of truth for 2-venue.md section order + placeholders):** `ref/venue-template.md`.
+
 What the pin writes (STATUS.md)
 ================================
 
@@ -95,8 +97,9 @@ Workflow
 =========
 
 ```
-Step 1: Read 0-lifecycle/1-claims/1-claims.md (the campaign shapes which venues
-        are viable) + 0-seed's channel hunch.
+Step 1: Read 0-lifecycle/1c-claims/1c-claims.md (the campaign shapes which venues
+        are viable) + 0-lifecycle/1d-principles/1d-principles.md (the directives
+        the venue must carry) + 0-seed's channel hunch.
 Step 2: If venue obvious → propose it. If ambiguous → present a shortlist with
         pros/cons (evidence depth vs venue demands; audience fit).
 Step 3: User confirms or overrides (--no-pin = recommend only, write nothing).

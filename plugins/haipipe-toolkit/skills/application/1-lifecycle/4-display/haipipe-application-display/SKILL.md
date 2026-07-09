@@ -29,7 +29,8 @@ Input
 ======
 
 - `0-lifecycle/3-narrative/3-narrative.md` (required if narrative fired)
-- `0-lifecycle/1-claims/1-claims.md` (always)
+- `0-lifecycle/1d-principles/1d-principles.md` (always -- elements carry principles)
+- `0-lifecycle/1c-claims/1c-claims.md` (always -- the evidence anchor behind each element)
 - Venue profile (available display element types)
 
 Output
@@ -43,6 +44,8 @@ Output
 
 Display artifact schema (venue-dependent)
 ==========================================
+
+Canonical template (source of truth for section order + placeholders): `ref/display-template.md`.
 
 Every unit carries FOUR required fields -- type, claim, JOB, data source. The Job field is the minimap absorption: one sentence on what this unit must make the reader see/do.
 

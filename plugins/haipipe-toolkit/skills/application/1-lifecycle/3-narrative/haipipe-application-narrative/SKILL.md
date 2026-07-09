@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "4.0.0"
   last_updated: "2026-07-06"
-  summary: "Paper-aligned: stage FOLDER paths (1-claims/, 3-narrative/), gating read from STATUS.md stages_skipped (not venue profile directly), DPRC phases via 2-phase/ workers, precondition restated against the settlement bar."
+  summary: "Paper-aligned: stage FOLDER paths (1c-claims/, 3-narrative/), gating read from STATUS.md stages_skipped (not venue profile directly), DPRC phases via 2-phase/ workers, precondition restated against the settlement bar."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -28,7 +28,8 @@ Read `STATUS.md | stages_skipped |`: if `narrative` is listed, this stage is ski
 Input
 ======
 
-- `0-lifecycle/1-claims/1-claims.md` (always)
+- `0-lifecycle/1d-principles/1d-principles.md` (always -- the directives the arc composes)
+- `0-lifecycle/1c-claims/1c-claims.md` (the evidence backstop)
 - `0-lifecycle/2-pitch/2-pitch.md` (the primary claim + theory of change anchor the arc)
 - `_venue/venue-<name>/` (arc structure rules) + `_audience/profile-<name>/` (register)
 
@@ -42,6 +43,8 @@ Output
 
 Narrative artifact schema (venue-dependent)
 =============================================
+
+Canonical template (source of truth for section order + placeholders): `ref/narrative-template.md`.
 
 **venue-email:**
 ```markdown
