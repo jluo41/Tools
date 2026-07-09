@@ -26,6 +26,20 @@ report)                                evidence spot-checks + flags) before the 
 
 Depth changes the REPORT, not the rule: every stage still ends with an explicit approval and a ledger row.
 
+Ladder gate batching (stage-1 family, ladder restage R6)
+---------------------------------------------------------
+
+The evidence ladder (1a-descriptions -> 1b-themes -> 1c-claims -> 1d-principles) batches its gates by venue depth -- approval is batched, never skipped, and every rung still gets its own ledger row:
+
+```
+light    ONE combined inline gate at 1d covering all four rungs;
+         one approval writes four ledger rows
+medium   combined gate at 1c (covers 1a-1c) + own gate at 1d
+full     four individual gates, one per rung
+```
+
+Venue unpinned (the normal case -- the ladder is venue-FREE and runs before the pin): apply `light` batching provisionally; a later pin to a deeper venue re-opens only the GATE (re-present criteria at the deeper bar), not the content.
+
 Mechanical teeth
 -----------------
 

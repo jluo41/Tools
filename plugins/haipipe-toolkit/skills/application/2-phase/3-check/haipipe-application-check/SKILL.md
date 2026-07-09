@@ -1,7 +1,7 @@
 ---
 name: haipipe-application-check
 description: "CHECK phase worker (internal) -- the only human-involved phase, run by every application stage skill after REVISE. Opens with a mechanical Run step (./checks.sh markdown checks + the probe-card checker) whose ❌/FAIL blocks the gate green, seeds > CHECK: comments in stage docs (0-artifacts/*.md stay clean; artifact findings go to the Gate Ledger notes), presents the stage's exit criteria with per-item marks, proposes approve / revise / done, and on explicit approval writes the Gate Ledger row in STATUS.md and advances current_layer. Venue-scaled depth: simple venues confirm inline, complex venues get a full CHECK report. Persona presets + attendance modes let a stand-in approve ONLY in unattended runs. Renamed from haipipe-application-gate (paper-alignment 2026-07-06). Trigger: check, gate, approve stage, exit criteria, /haipipe-application check."
-argument-hint: "[stage: seed|claims|pitch|narrative|display|section-edit|draft] [--persona strict|balanced|creative|lenient] [--unattended[=Ns]]"
+argument-hint: "[stage: seed|descriptions|themes|claims|principles|pitch|narrative|display|section-edit|draft] [--persona strict|balanced|creative|lenient] [--unattended[=Ns]]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "4.0.0"
@@ -42,7 +42,7 @@ A mechanical ❌/FAIL is not a judgment call: no persona preset, no `--unattende
 `> CHECK:` comment seeding (stage docs ONLY)
 =============================================
 
-Every flagged item that lives in a 0-lifecycle stage doc (0-seed.md, 1-claims.md, ...) is planted as ONE `> CHECK:` comment at its exact spot -- one line stating the issue + the judgment needed, with concrete values, never an abstract description. The chat report is the map; the in-file threads are what the human walks.
+Every flagged item that lives in a 0-lifecycle stage doc (0-seed.md, 1a-descriptions.md, 1c-claims.md, ...) is planted as ONE `> CHECK:` comment at its exact spot -- one line stating the issue + the judgment needed, with concrete values, never an abstract description. The chat report is the map; the in-file threads are what the human walks.
 
 0-artifacts/*.md are NEVER annotated: the artifact IS the deliverable text (unlike paper's .tex, where % comments never render), so a seeded comment would ship. Artifact-level findings go into the Gate Ledger notes column instead, quoted with file:line so they stay actionable (R2c RULED, JL 2026-07-07).
 
@@ -83,10 +83,20 @@ Per-stage exit criteria
 
 ```
 seed:          kill criteria present? audience hunch specific? >=1 evidence path named?
-claims:        every claim a **C<n>** line with role + status + → PP ref? every probe a
-               **PP<nn>** plan? Evidence Campaign complete (dispatch order + deps, no
-               load-bearing GAP without a row)? settlement bar met against the campaign
-               for the pinned depth (light/medium/full — claims skill §Settlement Gate)?
+descriptions:  every **D<n>** entry anchored (statistic + resolving pointer + as-of
+               date)? no raw data / inline computation? no unconsumed
+               [FORWARD -> CLAIMS] pointer in seed's _LOG?
+themes:        every **T<n>** grounded (>=1 D id or project-side source)? hooks or
+               context-only note per theme? Parked honest? no unresolved [STALE] tags?
+claims:        every claim a **C<n>** line with theme tag + role + status + → PP ref?
+               theme tags resolve to 1b? every probe a **PP<nn>** plan? Evidence
+               Campaign complete (dispatch order + deps, no load-bearing GAP without a
+               row)? settlement bar met against the campaign for the pinned depth
+               (light/medium/full — claims skill §Settlement Gate)? no [STALE] tags?
+principles:    every **P<n>** derived from >=1 resolving C id at/above the settlement
+               bar? W-actionability passed? Rejected section honest? no [STALE] tags?
+               (the LADDER GATE lands here for light/medium venues — batching per
+               wiki/08; one approval writes the batched rungs' ledger rows)
 pitch:         one-sentence goal testable? mechanism (theory of change) plausible?
                venue + audience named?
 narrative:     arc follows venue rules? all load-bearing claims mapped to beats?
