@@ -51,7 +51,21 @@ digest [session] [--dry-run]                 -> fn/digest.md   (resolve BEFORE o
 "<natural language>"                         -> infer via the keywords above, dispatch
 ```
 
-> CC: verb ruling — bare `claims` now routes to rung 1c ONLY; the full 1a-1d sweep is `ladder`. If you expect "claims" to mean "do stage-1 work" (the old habit), the router should suggest `ladder` when the ladder is virgin; confirm which default you want.
+> CC: 🗣️ verb ruling — bare `claims` now routes to rung 1c ONLY; the full 1a-1d sweep is `ladder`. Your old habit of "claims = do stage-1 work" would silently skip 1a/1b.
+>
+>     🧑 "/haipipe-application claims"
+>             │
+>             ▼
+>        🔍 is the ladder virgin? (no 1a/1b docs)
+>        ├── no  ──▶ 🧾 rung 1c directly              (precision)
+>        └── yes ──▶ 💬 "1a/1b are empty — run `ladder`
+>                         for the sweep, or 1c anyway?"  (habit-safe)
+>
+>     A    always → 1c silently (as shipped; habit silently skips 1a/1b)
+>     B ✅ soft redirect on a virgin ladder (matches the router's existing offer-the-frontier pattern; one sentence in Dispatch notes)
+>     C    make `claims` alias the full sweep (loses precise 1c addressing)
+>
+> CC: my rec = B. Reply `> USER:` below.
 
 Examples:
 

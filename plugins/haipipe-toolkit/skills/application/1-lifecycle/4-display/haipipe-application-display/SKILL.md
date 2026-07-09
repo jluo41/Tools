@@ -47,8 +47,24 @@ Display artifact schema (venue-dependent)
 
 Canonical template (source of truth for section order + placeholders): `ref/display-template.md`.
 
-> CC: id collision needs your ruling — the illustration below names display units `D01/D02`, but `D<n>` now belongs to 1a description ids (ladder restage). ref/display-template.md uses `U<nn>` to avoid the clash; if you agree, rename the units in the schema blocks below to U (my recommendation), else rename 1a's ids.
-> CC: the schema blocks below also use `#`/`##` headings while the formatting note + template are ascii (`=====`/`-----`) — align the illustrations or bless the divergence as example-only.
+> CC: 🆔 id collision needs your ruling — the illustration below names display units `D01/D02`, but `D<n>` now belongs to 1a description ids (ladder restage).
+>
+>     🆔 id namespaces after the restage
+>       1a-descriptions        1b       1c       1d        4-display
+>     +-----------------+   +------+ +------+ +------+  +----------------+
+>     | 📊 DS<n> dataset |   | 🧩 T |▶| 🧾 C |▶| 🎯 P |  | 🖼️ units:      |
+>     | 📈 D<n>  entry   |──▶+------+ +------+ +------+  |  SKILL: D01 ⚡ |
+>     +-----------------+                                |  ref/:  U01 ✅ |
+>             ▲                                          +----------------+
+>             └──────── ⚡ two meanings of "D" ──────────────────┘
+>
+>     A ✅ rename display units to U<nn> (template already does; 1 schema block to fix; no filled display docs exist yet)
+>     B    rename 1a entries instead (e.g. A<n>; re-edits 5 fresh files + SOP; loses the D-rung DIKW echo)
+>     C    keep both namespaces (zero cost now, but claim-audit greps D<n> cross-rung and will misfire)
+>
+> CC: my rec = A. Reply `> USER:` below.
+
+> CC: 🎨 heading-style: the schema blocks below use `#`/`##` while the formatting note + template are ascii — ONE ruling covers seed/pitch/narrative/display; the full options thread lives in `1-lifecycle/0-seed/haipipe-application-seed/SKILL.md` (reply there).
 
 Every unit carries FOUR required fields -- type, claim, JOB, data source. The Job field is the minimap absorption: one sentence on what this unit must make the reader see/do.
 

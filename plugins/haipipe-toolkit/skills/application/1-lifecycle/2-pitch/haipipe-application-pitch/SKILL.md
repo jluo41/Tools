@@ -42,7 +42,7 @@ Pitch artifact schema
 
 Canonical template (source of truth for section order + placeholders): `ref/pitch-template.md`.
 
-> CC: the schema block below uses `#`/`##` headings while the formatting note + template are ascii — align or bless as example-only (same issue in seed/narrative/display schemas).
+> CC: 🎨 heading-style thread — the schema block below uses `#`/`##` vs the declared ascii rule; ONE ruling covers seed/pitch/narrative/display. Full options + diagram live in `1-lifecycle/0-seed/haipipe-application-seed/SKILL.md` (reply there).
 
 ```markdown
 # Pitch: <intervention name>

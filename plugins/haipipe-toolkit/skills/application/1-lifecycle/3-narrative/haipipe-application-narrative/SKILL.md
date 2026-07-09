@@ -46,7 +46,7 @@ Narrative artifact schema (venue-dependent)
 
 Canonical template (source of truth for section order + placeholders): `ref/narrative-template.md`.
 
-> CC: the schema blocks below use `#`/`##` headings while the formatting note + template are ascii — align or bless as example-only.
+> CC: 🎨 heading-style thread — the schema blocks below use `#`/`##` vs the declared ascii rule; ONE ruling covers seed/pitch/narrative/display. Full options + diagram live in `1-lifecycle/0-seed/haipipe-application-seed/SKILL.md` (reply there).
 
 **venue-email:**
 ```markdown
