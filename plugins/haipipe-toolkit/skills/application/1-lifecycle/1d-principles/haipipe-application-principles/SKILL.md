@@ -98,8 +98,33 @@ medium   load-bearing P cite supported-or-weak-with-caveat; others may caveat
 full     every P cites supported claims (judged verdicts) only
 ```
 
-> CC: these derivation bars are CC defaults (no ruling) — confirm the three levels, especially "GAP-derived forbidden even at light".
-> CC: P status vocabulary `active | caveated | stale` (see ref/principles-template.md) is also invented — confirm or rename.
+> CC: ⚖️ these derivation bars are CC defaults (no ruling) — confirm the three levels.
+>
+>     🎯 P may cite...       light 📱   medium 📧      full 📊
+>     +--------------------+---------+--------------+--------+
+>     | ✅ supported claims |   ✔️     |     ✔️        |   ✔️   |
+>     | 🟡 weak + caveat    |   ✔️     | load-bearing⚠️|   ❌   |
+>     | 🔴 GAP-derived      |   ❌     |     ❌        |   ❌   |
+>     +--------------------+---------+--------------+--------+
+>       └─ the anti-fabrication floor: a P resting on NO evidence
+>          is a 🌱 seed hunch, not a principle
+>
+>     A ✅ keep as written (GAP floor is the ladder's whole point)
+>     B    allow GAP-derived at light with a 🚩 flag (faster SMS drafting; re-opens the vibes-principle hole)
+>     C    tighten medium to supported-only (slows email work for little gain)
+>
+> CC: my rec = A. Reply `> USER:` below.
+
+> CC: 🏷️ P status vocabulary `active | caveated | stale` is CC-invented — and while diagramming this I noticed a redundancy worth fixing:
+>
+>     status: stale 🏷️            [STALE D3 refreshed 07-09] 🏷️
+>     (P header field)     ⚡ vs   (mechanical tag, checker-enforced)
+>          └──── two mechanisms for ONE concept = drift bait ────┘
+>
+>     A    keep active | caveated | stale (as shipped)
+>     C ✅ drop `stale` from the enum → `active | caveated`; staleness lives SOLELY in the [STALE] tag (one mechanism, already checker-enforced)
+>
+> CC: my rec = C (improves on my own draft; the status copy would rot). Reply `> USER:` below.
 
 ## Done-criteria
 

@@ -40,7 +40,20 @@ full     four individual gates, one per rung
 
 Venue unpinned (the normal case -- the ladder is venue-FREE and runs before the pin): apply `light` batching provisionally; a later pin to a deeper venue re-opens only the GATE (re-present criteria at the deeper bar), not the content.
 
-> CC: the batching depths (light = one gate at 1d; medium = 1c + 1d; full = four) are CC defaults from SOP R6 — confirm, especially whether medium should gate at 1c or at 1b.
+> CC: 🚪 the batching depths are CC defaults from SOP R6 — confirm.
+>
+>     🪜 ladder:      1a ──▶ 1b ──▶ 1c ──▶ 1d
+>     light  📱 :      ·      ·      ·     🚪  (one gate, 4 ledger rows)
+>     medium 📧 :      ·      ·     🚪     🚪
+>     full   📊 :     🚪     🚪     🚪     🚪
+>                                   ▲
+>                     💸 1c is where money is spent (full-mode probes)
+>
+>     A ✅ keep: medium gates at 1c — a human eyeballs the campaign where cost concentrates, 1b is cheap so it folds into the 1c gate
+>     B    medium at 1b+1d: earlier check on theme DIRECTION, but low value for the extra pause
+>     C    one gate at 1d for every venue: simplest, but deep venues lose rung-level control
+>
+> CC: my rec = A. Reply `> USER:` below.
 
 Mechanical teeth
 -----------------

@@ -4,7 +4,19 @@ Date: <YYYY-MM-DD>
 
 Venue-ALIGNED cover letter. Read STATUS `venue` and `_venue/playbook-<venue>` before filling this in. Claims holds venue-neutral hypotheses (H1, H2, H3); this pitch reframes them as venue-specific RQs for the target editor. Readability rules, per-section cues, and worked examples: `ref/pitch-readability.md`.
 
-> CC: heading-style inconsistency across paper templates — this file and narrative-template.md use `#`/`##`, while seed/claims/venue templates use ascii (`=====`/`-----`) and venue-template.md line 4 explicitly declares the ascii convention as "same as sibling stage templates". The application family's 9 templates are uniformly ascii. Decide which convention wins paper-side; reformatting this file ripples into pitch skills that quote it, so left untouched (found 2026-07-09 during the application template comparison).
+> CC: 📄 PRIMARY THREAD (one ruling covers this file + narrative-template.md): heading-style inconsistency across paper templates, found 2026-07-09 during the application template comparison.
+>
+>     📄 paper/1-lifecycle templates
+>       seed ✅ ascii   claims ✅ ascii   venue ✅ ascii (+ DECLARES the rule!)
+>       pitch ⚡ #/##   narrative ⚡ #/##
+>                            │
+>       📜 project CLAUDE.md rule 4: "Docs use ASCII style, not ##/###"
+>       📜 application family: all 9 templates uniformly ascii
+>
+>     A ✅ convert pitch + narrative templates to ascii (aligns with venue-template's own declaration, the app family, and CLAUDE.md rule 4 — done carefully, since section-edit/pitch skills quote these templates)
+>     B    declare #/## the paper-template standard (contradicts rule 4 + venue-template's text; touches 3 files instead of 2)
+>
+> CC: my rec = A. Reply `> USER:` below.
 
 ## Title
 

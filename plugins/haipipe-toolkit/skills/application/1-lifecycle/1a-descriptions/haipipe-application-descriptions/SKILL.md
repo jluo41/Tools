@@ -91,7 +91,21 @@ CHECK --> exit gate (may be BATCHED into the ladder gate per the venue,
 
 Phase visibility: announce every phase boundary (reply line + `[PHASE]` entry in `_LOG`); skip a phase only by an explicit logged verdict; CHECK is never implicit (batching changes WHERE approval happens, not whether).
 
-> CC: token ruling needed — `[FORWARD -> CLAIMS]` is kept VERBATIM for grep-stability (SOP R5) even though this rung (1a) now consumes it. Rename to `[FORWARD -> LADDER]` across seed + here + SOP, or keep the legacy token? Keeping means the token name lies slightly; renaming breaks greps on old interventions.
+> CC: 🏷️ token ruling needed — `[FORWARD -> CLAIMS]` is kept VERBATIM (SOP R5) even though this rung (1a) now consumes it.
+>
+>     🌱 seed _LOG                        🪜 ladder
+>     +------------------------+  consume  +--------------------------+
+>     | [FORWARD -> CLAIMS] 🏷️ | ────────▶ | 1a DRAFT routes each:    |
+>     | PPNN_<slug>            |           |  📊 data need → 1a plan  |
+>     +------------------------+           |  🧾 verdict   → 1c PP    |
+>             ▲                            +--------------------------+
+>        📄 paper twin writes the SAME token (its consumer IS claims)
+>
+>     A ✅ keep [FORWARD -> CLAIMS]: grep-stable AND identical to paper's token, so alignment-watch ports stay 1:1; name lies slightly (consumer is 1a, documented here)
+>     B    rename [FORWARD -> LADDER]: accurate, but diverges from paper + old interventions need a sed at migration
+>     C    write new token, read both: smooth but two tokens forever = drift bait
+>
+> CC: my rec = A (paper-twin symmetry outweighs naming purity). Reply `> USER:` below.
 
 ## Refresh + staleness stamp duty (the dynamic-data contract)
 

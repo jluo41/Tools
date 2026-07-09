@@ -101,4 +101,13 @@ maturity: prospect | data-described | claim-ledger | principled | venue-pinned |
 
 Layer answers "where is the active work?" Maturity answers "how real is the intervention?"
 
-> CC: maturity values `data-described` and `principled` are CC-invented names for the new ladder rungs — confirm or rename (they also appear in wiki/03 and the enter console).
+> CC: 📶 maturity values `data-described` and `principled` are CC-invented names for the new ladder rungs (also in wiki/03 + the enter console) — confirm or rename.
+>
+>     📶 prospect → data-described → claim-ledger → principled → venue-pinned → ...
+>                   ▲ CC-invented ▲                ▲ CC-invented ▲
+>
+>     A ✅ keep both (finer console diagnosis; application already diverges from paper intentionally)
+>     B    mechanical names (1a-done / 1d-done): self-explanatory but ugly
+>     C    drop both, keep only claim-ledger (leanest — the strip already shows rung progress; defensible if you feel vocabulary creep)
+>
+> CC: my rec = A, with C as the lean alternative. Reply `> USER:` below.
