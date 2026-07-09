@@ -39,6 +39,8 @@ Output
 Seed artifact schema
 =====================
 
+Canonical template (source of truth for section order + placeholders): `ref/seed-template.md`.
+
 ```markdown
 # Intervention Seed: <name>
 
@@ -53,7 +55,8 @@ Seed artifact schema
 
 ## Channel hunch
 <SMS, push, in-app UI, provider dashboard, email — a HUNCH, not a pin;
-the venue decision happens after claims via /haipipe-application venue>
+the venue decision happens after the evidence ladder (1a-1d) via
+/haipipe-application venue>
 
 ## Mechanism hypothesis
 <one sentence: why this audience + this content might respond>
@@ -110,7 +113,7 @@ Probe scope and FORWARD handoff
 ================================
 
 **Seed probes are FEASIBILITY only.** A seed probe answers "can this intervention exist at all?" -- novelty (is the angle new, or did a prior intervention already try it?) and external-data obtainability (do the outside benchmarks / field norms / labeled data the intervention needs exist and are they accessible?). Both are `discover` (lit/landscape) work.
-Profiling OUR OWN data (the intervention's cohort size, engagement rates, field coverage) is `task` work that belongs in the CLAIMS stage. When DRAFT surfaces an internal-data question, DO NOT open a seed probe for it -- record a `[FORWARD -> CLAIMS] PPNN_<slug>` pointer line in `_LOG_0-seed.md` (need + why; a pointer, NOT a probe card, no dispatch); it fires when claims opens. The claims stage CONSUMES these pointers at its DRAFT open -- an unconsumed pointer fails the claims CHECK. This keeps the seed's cost bounded to the feasibility question and stops the seed from doing claims-stage evidence work early.
+Profiling OUR OWN data (the intervention's cohort size, engagement rates, field coverage) is `task` work that belongs in the evidence LADDER (rung 1a-descriptions). When DRAFT surfaces an internal-data question, DO NOT open a seed probe for it -- record a `[FORWARD -> CLAIMS] PPNN_<slug>` pointer line in `_LOG_0-seed.md` (token unchanged for grep-stability; need + why; a pointer, NOT a probe card, no dispatch); it fires when the ladder opens. Rung 1a CONSUMES these pointers at its DRAFT open (data-profile needs -> 1a probe plans; verdict-shaped needs -> planned PP skeletons in 1c's Probes section) -- an unconsumed pointer fails the 1a CHECK. This keeps the seed's cost bounded to the feasibility question and stops the seed from doing ladder evidence work early.
 **DRAFT may search; PROBE must dispatch.** Inline WebSearch is legitimate DRAFT fuel (orientation -> prose + buffered `status: planned` PP skeletons), but it is NEVER evidence. The PROBE phase must ALWAYS run the real worker (`Skill(haipipe-application-probe, from-buffer ...)`); inline results with no project-side ledger mean the PROBE phase did not happen. The invariant that separates the two is card state: planned skeleton (DRAFT) vs `read` + resolving refs (PROBE), mechanically enforced by `check-probe-cards.sh` at the probe worker's VERIFY step and the CHECK gate.
 
 Definition of done
@@ -130,7 +133,7 @@ Definition of done
     the gate RUNS the checker and shows its output; it never eyeballs cards)
 ```
 
-Handoff: `promote -> /haipipe-application claims`. End the reply with the closing block (stage line via `../../../haipipe-application/stage-strip.sh`).
+Handoff: `promote -> /haipipe-application ladder` (the 1a-1d sweep; or `descriptions` to start rung-by-rung). End the reply with the closing block (stage line via `../../../haipipe-application/stage-strip.sh`).
 
 Risk profile
 =============
