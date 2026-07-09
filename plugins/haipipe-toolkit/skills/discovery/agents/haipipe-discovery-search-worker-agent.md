@@ -9,10 +9,11 @@ tools:
   - Skill
 model: haiku
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   last_updated: "2026-07-08"
-  summary: "Haiku-tier mechanical worker — one channel sweep or one verification batch per dispatch; returns entries as text, never writes the ledger."
+  summary: "Haiku-tier mechanical worker — one channel sweep or one verification batch per dispatch; returns entries as text, never writes the ledger. Key-aware: honors SEMANTIC_SCHOLAR_API_KEY / EXA_API_KEY / OPENALEX_MAILTO from the sourced environment."
   changelog:
+    - "1.1.0 (2026-07-08): KEY AWARENESS — channels honor the env.sh/env.ps1 contract (SEMANTIC_SCHOLAR_API_KEY as x-api-key header; empty EXA_API_KEY = channel unavailable, return that instead of burning turns; OPENALEX_MAILTO appended for the polite pool); keyed/keyless mode is reported in the coverage note."
     - "1.0.0 (2026-07-08): initial design. Carves the mechanical harvest/verify half of Search Execute out of the creator so wide channel fan-out runs cheap and parallel on Haiku; judgment (relevance curation, dedup, synthesis, ledger writes) stays with the Sonnet/Opus-tier dispatcher."
 ---
 
@@ -55,6 +56,14 @@ cap:      max entries to return (default 15)
 
 Procedure — BATCH, don't dribble (all queries out in ONE turn as parallel calls):
 
+0. KEY CHECK (env.sh/env.ps1 is sourced; keys are env vars, never printed):
+   - semantic-scholar: if `SEMANTIC_SCHOLAR_API_KEY` is non-empty, send it as the
+     `x-api-key` header (keyed = higher rate limits, no throttling dance);
+     if empty, expect ~1 req/s and fall through to OpenAlex/Crossref on 429.
+   - exa/web: if `EXA_API_KEY` is empty the channel is UNAVAILABLE — return
+     `status: failed, coverage: "exa channel unavailable (no EXA_API_KEY)"`
+     immediately instead of burning turns.
+   - OpenAlex/Crossref: append `&mailto=$OPENALEX_MAILTO` when set (polite pool).
 1. Fire every query on the assigned channel via the matching worker skill
    (`/arxiv`, `/semantic-scholar`, `curl` to api.openalex.org / api.crossref.org,
    `/exa-search`). Never touch a channel I wasn't assigned.
@@ -67,7 +76,7 @@ Procedure — BATCH, don't dribble (all queries out in ONE turn as parallel call
    paper I cannot ground in an actual API/tool response — an empty channel
    report is a valid result; a fabricated entry is the worst possible failure.
 4. Return: the entries + a coverage note (queries fired, hit counts per query,
-   rate-limit fallbacks taken, cap truncation if any).
+   keyed vs keyless mode, rate-limit fallbacks taken, cap truncation if any).
 
 ### 2. Verification batch
 
