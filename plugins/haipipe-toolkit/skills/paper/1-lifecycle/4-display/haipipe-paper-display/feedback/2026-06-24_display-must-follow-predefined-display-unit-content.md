@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-24
 context: display stage, ProjB Paper-Personality2Opioid-MISQ2026
-fixed_in: ""
+fixed_in: "haipipe-paper-display v3.0.0"
 ---
 "display must make the content follow the predefined display content"
 
@@ -24,4 +24,6 @@ legacy flat `0-display(s)/` assets INTO `displayNN-<slug>/` units, and (b) requi
 every new/rendered display to be filed as a unit per the contract before it counts
 as a current-cycle display. No loose assets; the unit IS the deliverable.
 
-Fix:
+Fix: v3.0.0 — DRAFT step 0 is a stage-entry RECONCILE (run once, [MIGRATE] logged):
+legacy flat assets each get a Display Map row (unitized now, or parked with a legacy
+note); no loose asset stays unmapped. CHECKLIST gates on it.

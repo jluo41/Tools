@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-24
 context: display stage; the 4-display.tex gallery PDF for Paper-Personality-Opioid-MedJournal
-fixed_in: ""
+fixed_in: "haipipe-paper-display v3.0.0"
 ---
 The display PDF should flow in the logic of the mini-map or the narrative. They should be consistent.
 
@@ -12,3 +12,7 @@ How to apply (later revision pass of the display stage skill, haipipe-paper-disp
 - Derive the gallery order from the minimap's per-paragraph display anchors (or the narrative beat order) rather than hand-set it; at minimum, cross-check the gallery order against the minimap/narrative and flag drift.
 - Keep Main vs Supplement, but within each, order by first-reference in the narrative/minimap.
 - Add a consistency check: every display referenced in the minimap appears in the gallery in reference order, and vice versa (no orphan displays, no out-of-order floats).
+
+Fix: v3.0.0 — the gallery order is no longer hand-set: Display Map row order in
+4-display.md = narrative order = gallery order, and the tex is regenerated wholesale
+by sync from the map. Orphan/out-of-order checks are CHECKLIST exit items.
