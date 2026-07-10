@@ -4,9 +4,9 @@ description: "DRAFT phase worker (internal). Called by stage skills to produce t
 argument-hint: "[stage-or-section] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, WebSearch, WebFetch
 metadata:
-  version: "3.6.0"
-  last_updated: "2026-07-08"
-  summary: "DRAFT phase worker (internal). Called by stage skills to produce first-pass artifacts. Generic process, stage-specific output. v3.4: DRAFT MAY use inline WebSearch for orientation -- but its output is drafting fuel (prose + buffered probe plans) only, NEVER durable evidence (no refs/findings into PP cards). Real evidence is the PROBE phase's job."
+  version: "3.9.0"
+  last_updated: "2026-07-10"
+  summary: "DRAFT phase worker (internal). Called by stage skills to produce first-pass artifacts. Generic process, stage-specific output. v3.9: citations are REAL \\citep{} keys grepped from the paper's .bib, \\cite{TOADD} when missing (supersedes [CITE:]/(Author Year)). v3.7: section drafts are REAL prose (complete sentences, {VAL:?} placeholders) per the stage's template; DRAFT ends at a hard STOP for the user's structure review (the stage logs the [GATE]). v3.4: inline WebSearch = drafting fuel only, never durable evidence."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -25,7 +25,7 @@ DRAFT phase worker. Called by stage skills (seed, claims, pitch, narrative, disp
 
 ## What DRAFT means
 
-DRAFT = settle WHAT to say. The first pass at producing a stage's artifact. Content decisions, not polished prose.
+DRAFT = settle WHAT to say. The first pass at producing a stage's artifact. For argument docs (seed, claims, pitch, narrative) that means content decisions in working prose. For SECTIONS it means a REAL draft — complete academic sentences close to submission register, with real `\citep{key}` citations for keys already in the paper's .bib and `{VAL:?}` / `\cite{TOADD}` placeholders for everything unverified — because the user reviews structure by reading real prose, not a skeleton. In both cases: content-complete, unverified, unpolished (polish is REVISE's job).
 
 Each stage has its own artifact spec (in `1-lifecycle/{stage}/haipipe-paper-{stage}/SKILL.md`) that defines:
 - What files to produce
@@ -91,9 +91,10 @@ Present the structural plan to the user before writing content:
 
 Fill in the structure with first-pass content:
 - Write to settle WHAT is being said, not HOW it sounds
-- Use rough prose, parenthetical citations "(Author Year)" where needed
-- Flag uncertain content with `(?)` or `> CC: need to verify`
-- One idea per sentence, one sentence per line (for sections)
+- Argument docs: working prose. Sections: REAL prose per the stage's template (`ref/outline-format.md`) — complete sentences, one per line, blank line between
+- Citations real, never guessed: grep the paper's .bib (and `_CITATION_`) FIRST and write `\citep{key}` for keys that exist; `\cite{TOADD}` (+ a `_CITATION_` row naming the topic) where no key fits; `{VAL:? <what>}` for unverified numbers. A key that does not grep in .bib is an invented citation
+- Never invent a number or citation to avoid a placeholder
+- One idea per sentence
 
 **Inline WebSearch is ALLOWED here -- as drafting fuel, NOT as evidence.**
 DRAFT may search the web to orient (is this field crowded? does a dataset
@@ -101,7 +102,7 @@ exist? who are the anchor names?) and to sharpen the draft. But a seed is
 allowed to be intuition (seed principle 1), so what that search produces has
 exactly two legal destinations:
 1. **PROSE** in the stage artifact (Motivations, Claim Shape, ...) -- phrased
-   as orientation, with `(Author Year)` placeholders, never as settled fact.
+   as orientation, with `\cite{TOADD}` slots, never as settled fact.
 2. **BUFFERED probe plans** -- when the search reveals a gap the paper must
    later verify, write it as a PP-card SKELETON (Need / Why / Route, `status:
    planned`, EMPTY `refs:`) in `_PROBE/` + an index row, per the buffer
@@ -117,17 +118,17 @@ only PROBE flips them to `read` with resolving `discoveries/` refs. The CHECK
 gate runs `check-probe-cards.sh` and cannot go green over planned/empty-ref
 cards -- so DRAFT search can never masquerade as evidence.
 
-### Step 5. Iterate with user
+### Step 5. ⛔ STOP — present for review, then iterate
 
-The user reads the draft and adds `> USER:` comments. Respond with `> CC:` underneath each. Iterate until content decisions are settled.
+Writing done → STOP and end the turn: present the draft (structure + where the placeholders are) and hand the floor to the user. The user reviews STRUCTURE and adds `> USER:` comments. Respond with `> CC:` underneath each (never delete or reword a user comment). Iterate until the user advances. Do NOT start PROBE, REVISE, or any commit on your own — the user's verb/"go" is the gate.
 
 ### Step 6. Confirm and hand off
 
-When confirmed:
+When the user approves:
 1. Move resolved comment threads to `_LOG` (if applicable)
-2. Write a draft phase summary entry to `_LOG`
+2. Write a draft phase summary entry to `_LOG` + the `[GATE] draft-review: approved` line quoting the user
 3. Mark draft ✅
-4. Hand off to PROBE (or skip to REVISE if PROBE is n/a for this stage)
+4. Hand off to PROBE (or skip to REVISE if PROBE is n/a for this stage — logged verdict required)
 
 
 ## Stage-specific notes
@@ -162,13 +163,14 @@ When confirmed:
 - Section-mirrored story with readiness tags
 
 ### display
-- Output: `0-lifecycle/4-display/4-display.tex` (the ONLY stage with .tex)
-- PROBE: route display units to task-folders
-- Plan what figures/tables exist, which claims they serve
+- Output: `0-lifecycle/4-display/4-display.md` (the BRAIN; `4-display.tex` is GENERATED from it by sync at REVISE — never drafted by hand)
+- DRAFT runs the stage's step-0 reconcile first (legacy probes/preview/tex-comments merge), then authors the md: Venue Set, Display Map, one block per display with method candidates + ASCII sketch
+- PROBE: evidence lane (tasks/probes) + render lane (renderer skills, candidate mode)
 
 ### section-edit
 - Output: `0-lifecycle/5-section-edit/{section}/{section}.md`
-- Format: paragraph outline per `ref/outline-format.md` in section-edit hub
+- Format: REAL prose per `ref/outline-format.md` in section-edit hub
+- Ends with the "Probes proposed by this draft" block: every {VAL:?}/\cite{TOADD} rolled up with its expected source, display needs per paragraph, heavier needs (new task run, lit sweep) BUFFERED as planned PP skeletons in `_PROBE/` + index row. DRAFT proposes; PROBE executes after the gate. The STOP presentation includes this block.
 - PROBE: citation + values + display (three parallel tracks)
 - Reads section-type norms and 2-venue.md's per-section blueprint block for style (pack fallback per the venue guard)
 
@@ -208,7 +210,7 @@ Stage skills call this as their DRAFT phase:
 | haipipe-paper-claims | 1-claims.md (hypothesis list + evidence matrix) |
 | haipipe-paper-pitch | 2-pitch.md (cover letter) |
 | haipipe-paper-narrative | 3-narrative.md (story beats) |
-| haipipe-paper-display | 4-display.tex (figure/table plan) |
+| haipipe-paper-display | 4-display.md (display map + per-display blocks with candidates) |
 | haipipe-paper-section-edit | {section}.md (paragraph outline) |
 
 ## Sibling phase workers
