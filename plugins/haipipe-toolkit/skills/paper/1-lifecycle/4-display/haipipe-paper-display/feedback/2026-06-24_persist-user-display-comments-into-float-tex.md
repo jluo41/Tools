@@ -1,10 +1,10 @@
 ---
-status: open
+status: fixed
 created: 2026-06-24
 context: display stage, ProjB Paper-Personality2Opioid-MISQ2026
 updated: 2026-06-24
 occurrences: 2
-fixed_in: ""
+fixed_in: "haipipe-paper-display v3.0.0"
 ---
 "everytime I add my comments to certain displays, please also add my comments in
 the comment format as %{XX}: xxx to the tex and keep them for every[figure], this
@@ -31,7 +31,11 @@ enforce the gallery requirements JL stated: order to the NARRATIVE flow, meet th
 venue display set, and end with a PARKING section for superseded/alternative
 displays.
 
-Fix:
+Fix: v3.0.0 — rule kept, HOME MOVED: the stage is md-first and the tex is generated,
+so user display comments persist VERBATIM as `> USER:` lines in that display's block
+in 4-display.md (the single commentary/preference log; units + generated tex stay
+comment-free). Legacy `%% {USER}:` lines in an existing tex are migrated verbatim at
+stage entry. Narrative order + venue set + Parking are enforced by sync + CHECKLIST.
 
 ## Recurrences
 - 2026-06-24 (digest, Display-for-Opioid-JAMA): "no, you should only add the comments to examples/ProjB-PhyTrait-OpioidRx/paper/Paper-Personality-Opioid-MedJournal/0-lifecycle/4-display/4-display.tex in the lifecycle, please mark this down in the skills."

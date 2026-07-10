@@ -4,6 +4,28 @@ haipipe-paper-display — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [3.0.0] -- 2026-07-10
+
+Changed (JL ruling 2026-07-10: md-first display stage — "we should have 4-display.md as other stages, for quick review and modification; real assets stay in 0-displays/; probe should call the illustration skills as well; try different methods of making the plot")
+- Stage doc becomes the md → tex → pdf trio: `4-display.md` is THE BRAIN (Venue Set + gallery config, Display Map, one block per display with takeaway / evidence / METHOD-CANDIDATES table / ASCII sketch / caption job / fragility / `> USER:` threads, Parking); `4-display.tex` is GENERATED wholesale by sync (section banners, named subsections, small-font verdicts, `\input`s, Parking; hand-editing it is a defect); `4-display.pdf` compiled from paper root.
+- Retired + absorbed into the md: `4-display-probes.md` (planning brain), `4-display-preview.txt` (ASCII contact sheet — block sketches are the contact sheet now), `%% {USER}:` comments in the tex (now `> USER:` threads in md blocks). DRAFT step 0 = stage-entry reconcile: migrate all three VERBATIM, create missing `_LOG`, map legacy flat assets (closes 2026-06-24 feedback: predefined-unit-content, ascii-contact-sheet, persist-user-comments, plan-boilerplate-too-heavy, gallery-section-names, pdf-order-follow-narrative).
+- PROBE reshaped into two lanes: EVIDENCE lane (`/haipipe-task-for-display`, `/haipipe-probe` — numbers come from a task, never from the agent) + RENDER lane (direct Skill dispatch to figure / table / diagram / ILLUSTRATION renderers, one per candidate row, in new candidate mode → unit `candidates/`; promotion is REVISE's decision). New status `candidates`; new unit dir `candidates/`.
+- REVISE = pick winners (rationale recorded per block; a `> USER:` preference stands) + promote/demote + sync + compile. CHECK formalizes the render-review subagent (builder ≠ judge, reads compiled PDFs, keep-main/keep-supplement/fix/demote/cut; closes 2026-06-24 render-review-loop + per-unit-selfcheck feedback).
+- Gallery sizing knobs move to the md's gallery config (emitted into generated tex preamble; closes 2026-06-24 gallery-owns-sizing). Comment + sizing principles rewritten (principle 7 md-is-brain, principle 8 try-different-methods, principle 10 commentary-in-md).
+- `ref/display-unit-output-contract.md`: added candidate mode (render to `candidates/<letter>-<form>.<ext>`, spec to `source/`, no touch of `assets/`/`float.tex`); renderers never edit stage docs.
+- CHECKLIST.md rewritten around the trio (stage-doc / per-block / per-unit sections, migration + inbox items).
+- Dropped stale references: `../README-display.md` (file does not exist) and the ARIS `paper-framework-figure-studio-pro` hook (folder does not exist; the 3–5-option framework-candidate loop is described inline). Validated 2026-07-10 via fresh-subagent DRAFT run on a sandbox paper (migration, inbox, gate-stop all conforming).
+
+## [2.3.0] -- 2026-07-10
+
+Changed (JL 2026-07-10 display-request ruling)
+- New artifact: `_DISPLAY_REQUEST.md` -- the stage's request INBOX. Sections file DR rows for units they need but must not create. DRAFT/Plan reads the inbox FIRST: accept (index row + scaffold, flip `accepted`) or decline (reason written back); on rendered/input-ready flip `done (unit: <path>)`. Only this stage advances DR statuses.
+
+## [2.2.0] -- 2026-07-09
+
+Changed (JL ruling 2026-07-09 (LLMTrait-Section session postmortem): normalize the writing process)
+- Phase VERBS on the stage (`display <paper-dir> [draft|probe|revise|check]`); hard gates + binding comment rules inlined (STOP after DRAFT with [GATE] log; Skill() dispatch proof; [REVISE] workers line; never delete `> USER:` comments; surgical edits only).
+
 ## [2.1.0] -- 2026-07-08
 
 Changed
