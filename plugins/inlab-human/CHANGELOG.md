@@ -15,3 +15,9 @@
 - `/inlab-human-console` skill; tier-1 `/inlab-human` re-routed (console default; bundle/review/report = study mode).
 - Patient-store contract: extractor scrubs outcome fields (Label/Split/ground_truth*) from all tables — caught a real gold leak in PD2D's Cohort table — and stores per-endpoint trigger records.
 - Verified live: reach-200020×PD2D → 0.1977 MODERATE; reach-100060×ADHD → 0.795 HIGH; cross-model (ADHD patient × PD2D model) runs with explicit missing-tables gaps.
+
+## 0.2.1 — 2026-07-10
+Fixes found by monitoring a real console session that spent ~80s on discovery instead of inference:
+- `predict_cli.py`: console verbs added (`list-patients`, `get-patient`, `list-models`, `prepare-payload`, `predict-for-patient`) — the fallback path previously exposed only the 3 network verbs, so a session without live MCP tools had nothing to fall back to.
+- `predict_cli.py`: config auto-resolution (flags → `INLAB_*` env → the repo's `.mcp.json`). **No env vars required** — the previous flow forced the agent to grep server.py and .mcp.json to find the stores.
+- `inlab-human-console` SKILL.md: explicit copy-paste commands + "DO NOT go exploring"; stale-MCP detection (only ping/predict/predict_packaged_example exposed ⇒ server started pre-v0.2 ⇒ tell the user to restart the session, use the CLI meanwhile); warm the endpoint up front (model load ~20-40s).
