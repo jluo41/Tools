@@ -4,8 +4,8 @@ description: "Stage orchestrator for the paper folder's 0-lifecycle/1-claims/1-c
 argument-hint: "[paper-dir] [--backfill <probe-ref>] [--source <path>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.2.0"
-  last_updated: "2026-07-09"
+  version: "4.3.0"
+  last_updated: "2026-07-10"
   summary: "Claims stage orchestrator. The evidence campaign brain: plans evidence needs, commissions work (tasks/discoveries), tracks results. Three sections (Hypotheses, Claims, Probes) + Evidence Campaign summary. Drives phases (draft -> probe -> revise -> check) internally."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -215,6 +215,19 @@ Probes are categorized by urgency:
 - **STRONGLY RECOMMENDED**: pre-empts reviewer objections
 - **EXPLORATORY**: supplement material, not main claims
 
+Also organize probes by **pipeline stage — one probe = one unit of work = one task type**. Do NOT bundle build + fit + evaluate into a single probe: decompose so each stage is independently runnable and resumable (a stalled fit must not force rebuilding the data). For an experimental (model) claim the stages map to the haipipe task types:
+
+| stage | task type | role |
+|---|---|---|
+| input | `task-for-data` | build / assemble the dataset (AIData) |
+| method | `discovery` + `task-for-algo` | investigate + prototype a method (feeds fit) |
+| fit | `task-for-fit` | train the model -> produces predictions |
+| evaluate | `task-for-eval` | score -> the metrics that SETTLE the claim |
+
+Two rules that follow:
+- **The evaluation probe settles the claim.** A claim's evidence pointer names the eval probe, which chains back fit <- data. Fit makes the model; eval makes the evidence. (A bundled fit+eval probe entangles the verdict — split them.)
+- **Task settles claims; discovery is reserved for method-investigation and external data/context.** Discovery alone never settles an internal experimental claim; it feeds the method (`task-for-algo`) or supplies an external cohort/citation.
+
 When probes return verdicts, backfill into:
 - The claim's status line (GAP -> weak -> supported)
 - `_VALUES_` with the verified number
@@ -231,9 +244,11 @@ When probes return verdicts, backfill into:
 - Emit a delivery need for every `weak`/`GAP` claim using the delivery-need interface, with the route:
 
 ```text
-claim needs a verdict/robustness check   -> probe (task type)
-claim needs outside context/citation     -> probe (discovery type)
-claim needs a run or data artifact       -> probe (task type)
+claim needs a verdict/robustness check   -> probe (task-for-eval; chains fit <- data)
+claim needs outside context/citation     -> probe (discovery)
+claim needs a dataset built              -> probe (task-for-data)
+claim needs a model trained              -> probe (task-for-fit)
+claim needs a new method tried           -> probe (discovery + task-for-algo)
 ```
 
 Do not run evidence work here. Design the campaign, commission the work, record results.

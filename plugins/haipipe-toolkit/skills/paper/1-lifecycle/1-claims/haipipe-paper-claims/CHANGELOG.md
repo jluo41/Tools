@@ -4,6 +4,14 @@ haipipe-paper-claims — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [4.3.0] — 2026-07-10
+
+Added (JL, Paper-CGMtoAge session)
+- Probe Plans now organize by **pipeline stage / task type**, not only urgency: one probe = one unit of work = one haipipe task type (`task-for-data` / `task-for-algo` / `task-for-fit` / `task-for-eval`). Explicit anti-monolith rule — do NOT bundle build+fit+evaluate into one probe; decompose so each stage is independently runnable/resumable (real incident: a bundled build+fit+eval probe had to be stopped and split mid-run).
+- Two rules codified: (a) **the evaluation probe settles the claim** — a claim's evidence pointer names the eval probe, which chains back fit <- data (a bundled fit+eval entangles the verdict); (b) **task settles claims, discovery is reserved for method-investigation + external data/context** (discovery alone never settles an internal experimental claim; it feeds `task-for-algo` or supplies an external cohort/citation).
+- Ledger Maintenance route table expanded to name task types (dataset->for-data, model->for-fit, verdict->for-eval, new method->discovery+for-algo).
+- Layered on top of 4.2.0 (verbs/gates); the two changesets touch disjoint SKILL.md regions, no content overlap.
+
 ## [4.2.0] -- 2026-07-09
 
 Changed (JL ruling 2026-07-09 (LLMTrait-Section session postmortem): normalize the writing process)
