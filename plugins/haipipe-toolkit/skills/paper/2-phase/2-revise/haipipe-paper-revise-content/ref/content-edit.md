@@ -58,7 +58,7 @@ Checklist:
       support it.
 - [ ] **One point only** — no second idea smuggled into the tail.
 - [ ] **Evidence attached or flagged** — a claim that needs a number or citation
-      has one, or is marked `% TODO[values]` / `% TODO[cite]`.
+      has one, or is marked `{VAL:? <what>}` / `\cite{TOADD}` (+ `_CITATION_` row).
 - [ ] **Transitions** — the paragraph connects to the one before and after; the
       `Role` sequence should feel like a path, not a list.
 - [ ] **Length** — roughly 3–8 sentences. A 1-sentence paragraph is a flag; a
@@ -79,7 +79,7 @@ Checklist:
 - [ ] **Cut hedges and filler** — "it is important to note that", "in order to",
       "very", throat-clearing openers ("In this section we…").
 - [ ] **Concrete over vague** — name the thing; replace "performs well" with the
-      number (or `% TODO[values]` if the number isn't here yet).
+      number (or `{VAL:? <what>}` if the number isn't here yet).
 - [ ] **One term per concept** — use a single name per concept; note variants for
       the consistency pass rather than silently picking one across sections.
 - [ ] **Active where it carries** — prefer active voice unless the object is the
@@ -100,12 +100,12 @@ Content editing surfaces work for later passes. Drop an inline marker instead of
 guessing:
 
 ```latex
-The model achieved % TODO[values] accuracy on the held-out set.
-This aligns with prior work % TODO[cite] on trait extraction.
+The model achieved {VAL:? held-out accuracy} accuracy on the held-out set.
+This aligns with prior work \cite{TOADD} on trait extraction.
 ```
 
-`% TODO[values]` → topic ② (`haipipe-paper-probe-values`).
-`% TODO[cite]`   → topic ③ (`haipipe-paper-probe-citation`).
+`{VAL:?}` → topic ② (`haipipe-paper-probe-values`).
+`\cite{TOADD}`   → topic ③ (`haipipe-paper-probe-citation`).
 
 Leaving a flag is correct; inventing a number or a citation is not.
 

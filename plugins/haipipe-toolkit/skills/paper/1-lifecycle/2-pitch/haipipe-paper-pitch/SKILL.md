@@ -4,8 +4,8 @@ description: "Create or update the paper folder's 0-lifecycle/2-pitch/2-pitch.md
 argument-hint: "[paper-dir] [--reason <slug>] [--source <path-or-note>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.1.0"
-  last_updated: "2026-07-08"
+  version: "4.2.0"
+  last_updated: "2026-07-09"
   summary: "Pitch stage orchestrator. Defines WHAT (cover letter sections + probes) and drives phases (draft -> probe -> revise -> check) internally. User invokes pitch, not phases."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -74,7 +74,19 @@ Illustration:
 
 ## Phase Orchestration
 
-When the user invokes `/haipipe-paper pitch`, this skill drives the phases in order. The user does not call phase skills directly.
+When the user invokes `/haipipe-paper pitch`, this skill drives the phases in order. The user does not call phase skills directly — but steers them with VERBS on this stage:
+
+```
+/haipipe-paper pitch <paper-dir>            -> open: status + frontier; advance ONLY on the user's verb
+/haipipe-paper pitch <paper-dir> draft      -> run/redo DRAFT  -> STOP for user review
+/haipipe-paper pitch <paper-dir> probe      -> run/redo PROBE  (agent-only)
+/haipipe-paper pitch <paper-dir> revise     -> dispatch REVISE workers (agent-only, proof-carrying)
+/haipipe-paper pitch <paper-dir> check      -> open the CHECK gate
+```
+
+**Hard gates (binding).** After DRAFT: ⛔ STOP — present the draft for review and end the turn; the user's verb/"go" advances, logged as `[GATE] draft-review: approved` quoting the user. Each phase runs via its `Skill()` dispatch — a phase executed inline did not happen; the `[REVISE]` _LOG entry carries its `workers:` proof line. Never commit or conclude the stage before CHECK opens with its report. The agent never self-advances past a gate.
+
+**Comment rules (binding).** The agent NEVER deletes, rewords, or relocates a `> USER:` comment; it replies `> CC:` underneath; only the user resolves a thread; resolved threads MOVE to `_LOG` verbatim. Working files are edited surgically — no full-file rewrite of a file carrying `> USER:` comments. Background: `../../wiki/02-comment-lifecycle.md`.
 
 ```
 pitch invoked
@@ -88,6 +100,7 @@ DRAFT ──→ illuminate existing content, elicit taste,
           (fallback: _venue/playbook-<venue> only if 2-venue.md is absent);
           read claims ledger for venue-neutral H1/H2/H3
           (internally calls /haipipe-paper-draft with this artifact spec)
+          Ends at ⛔ STOP: user reviews, iterates, approves ([GATE] logged).
   │
   ▼
 PROBE ──→ citation audit for anchor papers cited in Evidence-Why Believe;
@@ -99,7 +112,7 @@ PROBE ──→ citation audit for anchor papers cited in Evidence-Why Believe;
   ▼
 REVISE ─→ refine prose, apply 8 readability rules from ref/pitch-readability.md,
           de-AI voice, one idea per sentence, lead with the point
-          (internally calls /haipipe-paper-revise)
+          (internally calls /haipipe-paper-revise; [REVISE] _LOG entry carries workers: proof)
   │
   ▼
 CHECK ──→ present exit gate per ../../wiki/08-stage-gate.md:

@@ -34,8 +34,10 @@ never acquire; acquisition is always PP card -> gateway)
 - **claims** -- probe mode FULL (-> task + discovery): the core evidence stage; probe plans per GAP claim (INCLUDING seed's `[FORWARD -> CLAIMS]` pointers, consumed at stage open — see haipipe-paper-claims), verdicts backfill the ledger + deposit to insight.
 - **pitch** -- citation lane only (anchor papers).
 - **narrative** -- citation + display lanes (beats map to displays).
-- **display** -- display lane; unit GENERATION is commissioned like any evidence need: PP card -> gateway -> task orchestrator (SWEEP answers "does this unit already exist?"); the harvester only LINKs what landed.
+- **display** -- display lane. From SECTION/NARRATIVE context a missing unit is NEVER commissioned: it becomes a DR row in `0-lifecycle/4-display/_DISPLAY_REQUEST.md` (the display stage's inbox; JL 2026-07-10) and the card closes `answered-local (rerouted: DRNN)`. Only the DISPLAY STAGE itself commissions evidence/render work for its accepted units (via its own PROBE lanes); the harvester LINKs existing/done units.
 - **section-edit** -- full document probe: citation + values + display lanes.
+  (disp statuses include 📨 = DR request pending in the 4-display inbox; the
+   display axis cannot pass CHECK until the row is `done` and the unit linked.)
 
 Dispatch rules (both apply to every dispatch)
 ----------------------------------------------

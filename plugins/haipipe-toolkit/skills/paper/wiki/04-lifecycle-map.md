@@ -10,7 +10,7 @@ separate set of verbs.
 Phase dimension: every stage skill below internally runs DRAFT -> PROBE ->
 REVISE -> CHECK via the `2-phase/` workers
 (`haipipe-paper-{draft,probe,revise,checker}`). Users invoke stage skills
-only; CHECK is the only human-involved phase.
+only; the human gates are the DRAFT structure review (stage STOP) and CHECK.
 
 | Step | Skill Procedure | Question | Action | Reads | Writes | External Calls | Human Output | Machine State | Stop / Gate |
 |---|---|---|---|---|---|---|---|---|---|

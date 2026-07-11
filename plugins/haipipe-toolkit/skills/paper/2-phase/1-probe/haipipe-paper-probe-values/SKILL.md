@@ -4,9 +4,9 @@ description: "values HARVESTER (probe lane worker) for section-edit. One skill, 
 argument-hint: "[verb] [section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "2.0.0"
-  last_updated: "2026-07-07"
-  summary: "Values HARVESTER. AUDIT→ROUTE(unsourced numbers→probe plans)→CANDIDATE(harvest value_refs, pointer-following)→PLACE→REVIEW. Never greps tasks/ to discover sources — the gateway finds, this worker follows. Single working doc = _VALUES_."
+  version: "2.1.2"
+  last_updated: "2026-07-10"
+  summary: "Values HARVESTER. AUDIT→ROUTE(unsourced numbers→probe plans)→CANDIDATE(harvest value_refs, pointer-following)→PLACE→REVIEW. Never greps tasks/ to discover sources — the gateway finds, this worker follows. v2.1: PAPER-LOCAL SWEEP tier in ROUTE (sibling _VALUES_, read PP cards, 0-displays/*/source/, _EVIDENCE_) before any probe plan; adopt the pointer, never the verdict. Single working doc = _VALUES_."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   predecessors:
     - "haipipe-paper-manual-review-values (pre-submission number-by-number walk) — MERGED here as Phase 5"
@@ -55,7 +55,7 @@ All five phases run automatically without stopping for human input. The agent tr
 
 ## Phase 1: AUDIT
 
-Scan the section's tex file and extract every quantitative claim:
+Scan the section's WORKING .md (every `{VAL:? <what>}` slot AND every literal number in the prose); tex only when it exists post-sync. Extract every quantitative claim:
 
 - Sample sizes (N = X)
 - Rates, percentages, proportions
@@ -82,12 +82,18 @@ somewhere (a PP card's `refs:`/`value_refs:`, a `_DISPLAY_` registry row, a
 number" is an evidence question, answered by the gateway's SWEEP in clean
 context (index-first discipline lives there, not here).
 
+EXEMPT from that ban (JL 2026-07-10): the paper's OWN registries. Sweeping the
+closed whitelist below is pointer-following over indexes the lifecycle itself
+curated — the paper deposits verified pointers all through DPRC, and PROBE
+checks its own shelves before paying for a gateway dispatch.
+
 For each Phase-1 number:
 
 | Situation | Action |
 |---|---|
 | A named source covers it (PP refs / _DISPLAY_ row / _CITATION_ / inline derivation) | record the pointer; proceed to Phase 3 |
-| No named source anywhere | write a probe-plan suggestion (Need: "source for <phrase>" / Why / Route: task-results sweep) and hand it to the PROBE hub — the gateway SWEEPs tasks/ and returns `value_refs` |
+| PAPER-LOCAL SWEEP hits — the number appears in a sibling/prior `_VALUES_*.md`, ANY stage's `read\|verdicted` PP card's `value_refs`/`refs` (seed, claims, display included), `0-displays/*/source/` (metrics.json, source_data.csv), or `_EVIDENCE_1-claims.md` | ADOPT THE POINTER, NOT THE VERDICT: copy the `Source:` path, add `Note: pointer via <file> (<status> <date>)`; the entry enters ⬜ and PLACE re-verifies against the ORIGINAL source (Hard Boundary 4 untouched) |
+| No named source and no paper-local hit | write a probe-plan suggestion (Need: "source for <phrase>" / Why / Route: task-results sweep) and hand it to the PROBE hub — the gateway SWEEPs tasks/ and returns `value_refs` |
 
 Method claims ("Holm-Bonferroni corrected", "cluster-robust SEs") route the
 same way: unverifiable-from-named-sources → probe plan, not a codebase grep.
@@ -128,7 +134,7 @@ The agent auto-places values it can verify against source files and flags the re
 
 2. **If the source confirms the value** (exact match or rounding-correct):
    - Update status: ⬜ → ✅
-   - Confirm the number is correctly woven into tex prose
+   - Confirm the number is correctly woven into the section .md (tex follows at sync; never edit tex prose directly)
    - Sync outline if needed
 
 3. **If the source contradicts the value** (⚠️ mismatch):

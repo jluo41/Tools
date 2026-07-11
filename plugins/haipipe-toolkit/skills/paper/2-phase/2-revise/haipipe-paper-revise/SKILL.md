@@ -4,9 +4,9 @@ description: "REVISE phase worker (internal). Called by stage skills to rewrite 
 argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.4.0"
-  last_updated: "2026-07-08"
-  summary: "REVISE phase worker (internal). Called by stage skills to rewrite draft prose to venue-quality: change directly, leave why-comments. Dispatches content/humanizer/results workers (weaving merged into content)."
+  version: "1.5.1"
+  last_updated: "2026-07-09"
+  summary: "REVISE phase worker (internal). v1.5: proof-carrying — stage hubs MUST reach REVISE through this skill (never hand-edit inline); the [REVISE] _LOG entry MUST carry a workers: line; .md-first then sync to tex. Rewrite draft prose to venue-quality: change directly, leave why-comments. Dispatches content/humanizer/results workers."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -16,6 +16,8 @@ Skill: haipipe-paper-revise (internal phase worker)
 REVISE phase worker. Called by stage skills (pitch, narrative, section-edit) to rewrite draft prose to venue-quality after PROBE. The stage defines WHAT was drafted. This skill defines HOW to revise it.
 
 **What the REVISE contract means.** The agent CHANGES the prose directly AND leaves `%% {CC-*}:` comments explaining WHY each non-trivial change was made. The human does not approve changes here; the human gives preferences in CHECK (via `> USER:` comments), and a REVISE restart responds to them.
+
+**Proof-carrying (binding).** A stage hub reaches REVISE ONLY through `Skill(haipipe-paper-revise)` — hand-editing the prose inline is a protocol violation ("the REVISE phase did not happen"). Every run writes a `[REVISE]` entry in the stage's `_LOG` with a workers line: `workers: content ✓ humanizer ✓ results --` (✓ ran · -- skipped-with-reason). `checks.sh --log` FAILs a `[REVISE]` entry without it. Order of operations: revise the working `.md` FIRST, then sync to tex — never tex-first (the .md is the document the human reads and comments in).
 
 **Not user-facing.** Users invoke stage skills:
 ```
@@ -38,7 +40,8 @@ All four apply rules directly. No comment-first protocol, no human gate. The age
 
 ## Universal rules
 
-All revise workers read and enforce `../../REF/prose-quality.md`:
+All revise workers read and enforce `../../REF/prose-quality.md`. Installed skills flatten the tree (symlinks under `~/.claude/skills/`), so that relative path is NOT reliable — locate it layout-agnostically:
+`PQ=$(find ~/.claude/skills "$CLAUDE_PLUGIN_ROOT" -path '*2-phase/REF/prose-quality.md' 2>/dev/null | head -1)` (absent → apply the rules below, note the gap in _LOG). The rules:
 
 - One idea per sentence
 - No em-dashes
@@ -68,12 +71,13 @@ When no specific worker is named, run in order: content (incl. its weave step fo
 
 REVISE is fully automatic. The agent:
 
-1. Reads the outline .md and current .tex
-2. Applies prose-quality.md rules directly, leaving `%% {CC-*}:` why-comments on non-trivial changes
-3. Syncs changes between .md outline and .tex
-4. Moves on to CHECK
+1. Reads the working .md and current .tex
+2. Applies prose-quality.md rules directly TO THE .MD, leaving `%% {CC-*}:` why-comments on non-trivial changes (in the tex after sync; the .md stays markup-free apart from citation commands)
+3. Syncs the revised .md → .tex (Pn.Sn markers; tex prose never edited directly)
+4. Writes the `[REVISE]` _LOG entry with the `workers:` line
+5. Hands back to the stage hub, which OPENS CHECK — never commit or conclude before the CHECK gate opens
 
-No stopping for comments. No waiting for approval. The CHECK phase is where the human reviews everything and states preferences.
+No stopping for comments mid-pass. No waiting for approval. The CHECK phase is where the human reviews everything and states preferences.
 
 ## Phase status
 

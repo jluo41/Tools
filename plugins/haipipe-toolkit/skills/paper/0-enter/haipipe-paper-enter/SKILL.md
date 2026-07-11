@@ -262,7 +262,7 @@ How to derive:
 
 DPRC phase automation:
 - DRAFT, PROBE, REVISE are automatic (🤖) -- agent runs without stopping for human input
-- CHECK is the only human-involved phase (🧑) -- present a CHECK report for user review
+- TWO human gates (🧑): DRAFT ends at a STOP for structure review, and CHECK presents its report for user review; the user's verb advances a gate, never the agent
 - When user says "work on §N", run DPR automatically, then present the CHECK report
 
 Only show the FOCAL stage/section, not a grid of all sections. The user sees one clear focus point, not a spreadsheet.

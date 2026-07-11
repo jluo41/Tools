@@ -4,9 +4,9 @@ description: "Evidence gateway (folderless probe). A probe is the general-purpos
 argument-hint: "[\"<question>\" [light|full] | contract | card | status]"
 allowed-tools: Bash, Read, Grep, Glob, Agent
 metadata:
-  version: "7.2.0"
-  last_updated: "2026-07-07"
-  summary: "Probe = general-purpose explore+gather verb (not claim-specific). PPNN card = single source of truth. Light = explore+gather (most needs); full = +judge (claims only, via haipipe-probe-review). Folderless. v7.1: refs REQUIRED once read — takeaways with empty refs = inline-evidence shortcut = status:failed. v7.1.1: card formatting — bullet lines only, no tables, ≤80 lines (mechanically enforced by the paper worker's check-probe-cards.sh). v7.2: harvester lane lines (pick_list/value_refs/unit_refs · harvest: OWED→accepted) added to the card anatomy — the paper workers are the HARVEST step of the one probe pipeline (JL Part-0 ruling); an OWED lane at the gate is a checker FAIL."
+  version: "7.3.0"
+  last_updated: "2026-07-10"
+  summary: "Probe = general-purpose explore+gather verb (not claim-specific). PPNN card = single source of truth. Light = explore+gather (most needs); full = +judge (claims only, via haipipe-probe-review). Folderless. v7.1: refs REQUIRED once read — takeaways with empty refs = inline-evidence shortcut = status:failed. v7.1.1: card formatting — bullet lines only, no tables, ≤80 lines (mechanically enforced by the paper worker's check-probe-cards.sh). v7.2: harvester lane lines (pick_list/value_refs/unit_refs · harvest: OWED→accepted) added to the card anatomy — the paper workers are the HARVEST step of the one probe pipeline (JL Part-0 ruling); an OWED lane at the gate is a checker FAIL. v7.3: PPNN status vocabulary gains answered-local (paper-side LOCAL SWEEP closes a card from the paper's own registries; no gateway dispatch)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -81,7 +81,9 @@ No probes/ folder, no PPNN card, no console state is created by a direct ask; wh
 
 ```markdown
 # PPNN — <need title>
-- stage: <stage> · mode: light | full · status: planned | dispatched | read | verdicted
+- stage: <stage> · mode: light | full · status: planned | dispatched | read | verdicted | answered-local
+  (answered-local = the need was closed from the paper's OWN registries at the
+   paper-side LOCAL SWEEP — no gateway dispatch; refs may be paper-root-relative)
 - claim: <the claim this evidence serves, or the orientation question>
 - refs: <discoveries/L##_.../sources.md · tasks/T##_...>      ← REQUIRED once read; direct, no wrapper
 - pick_list:  S01,S02 · harvest: OWED | accepted (<n> cards, <doc>)   ← citation lane, ONLY when the return names sources

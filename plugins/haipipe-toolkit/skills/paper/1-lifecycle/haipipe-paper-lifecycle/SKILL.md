@@ -4,8 +4,8 @@ description: "Orchestrator for the paper structure lifecycle (1-lifecycle). Rout
 argument-hint: "[function] [paper-path-or-input] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "2.1.0"
-  last_updated: "2026-07-08"
+  version: "2.2.0"
+  last_updated: "2026-07-09"
   summary: "Router for the 1-lifecycle stage spine: folder, seed (0), claims (1) [venue-FREE] -> venue (gate) -> pitch (2), narrative (3), display (4), section-edit (5) [venue-ALIGNED], plus the display renderer family. Stage skills internally run DRAFT -> PROBE -> REVISE -> CHECK via 2-phase/ workers; this router never routes users to phase skills."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -38,12 +38,14 @@ The orchestrator owns routing only. Each stage specialist owns its own workflow,
 /haipipe-paper-lifecycle "<natural language>"           -> infer function, dispatch
 ```
 
+**Phase-verb pass-through**: a trailing `draft | probe | revise | check` after any stage's args is a PHASE VERB — forward it verbatim to the stage skill (e.g. `section-edit 4-llmtrait revise` → `Skill("haipipe-paper-section-edit", args="4-llmtrait revise")`). The verb picks which phase the stage drives; the stage still dispatches its internal workers.
+
 ---
 
 Two-Axis Model (stages x phases)
 ---------------------------------
 
-Stage skills are the USER-FACING surface. Internally, each stage skill drives the shared phase cycle **DRAFT -> PROBE -> REVISE -> CHECK** by dispatching the internal workers in `2-phase/` (`haipipe-paper-draft`, `haipipe-paper-probe*`, `haipipe-paper-revise*`, `haipipe-paper-check`). CHECK is the only human-involved phase; DRAFT settles content with the user, PROBE and REVISE are agent-only.
+Stage skills are the USER-FACING surface. Internally, each stage skill drives the shared phase cycle **DRAFT -> PROBE -> REVISE -> CHECK** by dispatching the internal workers in `2-phase/` (`haipipe-paper-draft`, `haipipe-paper-probe*`, `haipipe-paper-revise*`, `haipipe-paper-check`). TWO human gates: DRAFT ends at a hard STOP for the user's structure review (`[GATE]` logged; the user's verb advances), and CHECK is the quality gate. PROBE and REVISE are agent-only between them; REVISE is proof-carrying (`workers:` line in `_LOG`). The agent never self-advances past a gate.
 
 **This router routes users to STAGE skills only -- never to phase skills.** Phase dispatch is each stage skill's internal business. If a request sounds like a phase ("gather citations for §3", "polish the intro"), route to the owning stage skill (usually section-edit) and let it dispatch.
 

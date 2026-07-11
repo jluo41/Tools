@@ -4,9 +4,9 @@ description: "PROBE phase worker (internal). Called by stage skills after DRAFT 
 argument-hint: "[from-buffer <paper_root> [PPNN] | stage-or-section [paper-path]]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.1.0"
-  last_updated: "2026-07-07"
-  summary: "PROBE phase worker rebuilt as a 4-step procedure (BOOKKEEP -> DISPATCH -> TRANSLATE -> VERIFY), each step ending in a mandatory PROOF shown in the reply, plus a deterministic checker (check-probe-cards.sh) run at VERIFY and re-run by the stage gate. Reference prose moved to ref/. v3.0: enforcement is mechanical, not prose -- a step without its proof did not happen. v3.0.1 (post test-12334535): checker brace-aware; fresh dispatch forces background; no-bibtex grep anchored. v3.0.2: hard boundary clarified -- no inline search in PROBE. v3.1: harvester model (JL Part-0 ruling) -- ONE pipeline, workers are the HARVEST step; TRANSLATE writes per-lane OWED obligations into the card before paying them; PROOF 3 covers harvest; checker FAILs owed lanes + planned cards."
+  version: "3.3.1"
+  last_updated: "2026-07-10"
+  summary: "PROBE phase worker rebuilt as a 4-step procedure (BOOKKEEP -> DISPATCH -> TRANSLATE -> VERIFY), each step ending in a mandatory PROOF shown in the reply, plus a deterministic checker (check-probe-cards.sh) run at VERIFY and re-run by the stage gate. Reference prose moved to ref/. v3.0: enforcement is mechanical, not prose -- a step without its proof did not happen. v3.0.1 (post test-12334535): checker brace-aware; fresh dispatch forces background; no-bibtex grep anchored. v3.0.2: hard boundary clarified -- no inline search in PROBE. v3.3: display-shaped needs reroute to the 4-display inbox (DR rows), never dispatched. v3.2: paper-local sweep before dispatch — cards answered from the paper's own registries close as answered-local, no gateway call. v3.1: harvester model (JL Part-0 ruling) -- ONE pipeline, workers are the HARVEST step; TRANSLATE writes per-lane OWED obligations into the card before paying them; PROOF 3 covers harvest; checker FAILs owed lanes + planned cards."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -31,7 +31,8 @@ HARVEST (paper-side, pointer-following) citation  pick_list  -> _CITATION_{stage
 ```
 
 Paper-side may FOLLOW pointers the return names; only the gateway may FIND
-things. A harvester that notices a gap reports it as a probe-plan suggestion,
+things. The paper's OWN lifecycle registries count as named pointers (STEP 2
+LOCAL SWEEP) — the heavy dispatch is for what the paper does not already hold. A harvester that notices a gap reports it as a probe-plan suggestion,
 never fills it itself.
 
 Not user-facing: users invoke stage skills; stages call this.
@@ -63,16 +64,38 @@ text is already in context from an earlier stage of the same session
   containing `discoveries/`. Do NOT use `git rev-parse --show-toplevel` --
   repo-backed papers are their own git repos, so it returns paper_root itself.
   (`check-probe-cards.sh` resolves the same way; when in doubt run it.)
-- Ensure each PP card exists with the anatomy from
-  `../../../../probe/haipipe-probe/SKILL.md` ("PPNN card anatomy") -- READ that
-  section, never re-derive from memory. At BOOKKEEP a card carries
+- Ensure each PP card exists with the anatomy from the project probe skill's
+  "PPNN card anatomy" section -- READ it, never re-derive from memory. Locate
+  it layout-agnostically (installed skills flatten the tree):
+  `PB=$(find ~/.claude/skills "$CLAUDE_PLUGIN_ROOT" -path '*haipipe-probe/SKILL.md' -not -path '*paper*' 2>/dev/null | head -1)`. At BOOKKEEP a card carries
   stage/mode/status/claim + Need/Why/Route, an EMPTY `refs:`, and NO tables.
   A card with findings already in it at BOOKKEEP is a shortcut -- reset it.
 
 PROOF 1: print `project_root=<path>` + the output of `ls <project_root>/discoveries/`.
 
 **STEP 2 -- DISPATCH.**
-One call per PP card (batch independent cards in one turn):
+
+LOCAL SWEEP first (JL 2026-07-10: "things are already there before... we don't
+need the heavy probe"). Before dispatching a card, sweep the paper's OWN
+registries — a CLOSED whitelist: sibling/prior `_CITATION_*.md` ·
+`_VALUES_*.md` · `_EVIDENCE_*.md` · PP cards already `read|verdicted` (their
+refs) · `0-displays/` units + index (existence/LINK; `*/source/` metrics.json,
+source_data.csv for numbers) · the paper's
+.bib. These are indexes the lifecycle itself curated — reading them is
+pointer-following, not discovery. Need fully answered -> write the takeaways +
+`refs:` (paper-local paths allowed), set `status: answered-local (from
+<files>)`, update the index row, do NOT dispatch. Partially answered -> narrow
+the card's Need to the remaining gap and dispatch that. Sweeping
+`tasks/`/`code/`/`discoveries/` inline stays FORBIDDEN — project-side discovery
+remains the gateway's job. Adopt the POINTER, never the verdict: a value reused
+from a sibling registry re-verifies against its ORIGINAL source at PLACE.
+Display-shaped needs are REROUTED, not dispatched (JL 2026-07-10: section-edit
+never creates displays): a PP card asking for a display unit that does not
+exist becomes a DR row in `0-lifecycle/4-display/_DISPLAY_REQUEST.md`; close
+the card `status: answered-local` with refs to the inbox file and the takeaway
+`rerouted to display stage: DRNN`. The display stage consumes the inbox.
+
+One call per PP card still open after the sweep (batch independent cards in one turn):
 
 ```
 Agent(haipipe-probe-orchestrator-agent, run_in_background=<true for fresh>, prompt="
@@ -98,7 +121,8 @@ Agent(haipipe-probe-orchestrator-agent, run_in_background=<true for fresh>, prom
   claimed "all background" -- the label must match the call).
 - Card `status: dispatched`; update the index row.
 
-PROOF 2: the literal Agent(...) call(s) visible in the transcript -- one per PP card.
+PROOF 2: per card — the literal Agent(...) call visible in the transcript, or
+(answered-local) the sweep hit lines (grep/ls output) that closed it.
 
 **STEP 3 -- TRANSLATE** (probe is paper-unaware; this worker is the bilingual layer).
 - Light return: <=5 anchored takeaway lines into the card; `status: read`.
@@ -136,7 +160,7 @@ with a lane line and no harvest proof means STEP 3 did not finish.
 sh <this-skill-dir>/check-probe-cards.sh <paper_root> [<project_root>]
 ```
 
-Checks: read/verdicted cards have resolving refs; planned/dispatched cards FAIL
+Checks: read/verdicted/answered-local cards have resolving refs; planned/dispatched cards FAIL
 (probe-not-run); `harvest: OWED` lane lines FAIL (harvest skipped); no markdown
 tables in any card; no card over 80 lines; `status: failed` surfaced; working
 docs (_CITATION_/_VALUES_/_DISPLAY_) carry no bibtex, _CITATION_ no tables.

@@ -4,8 +4,8 @@ description: "Generate 0-lifecycle/3-narrative/3-narrative.md + _LOG_3-narrative
 argument-hint: "[paper-dir-or-topic]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.1.0"
-  last_updated: "2026-07-08"
+  version: "3.2.0"
+  last_updated: "2026-07-09"
   summary: "Narrative stage orchestrator. Defines the section-mirrored, readiness-tagged design contract with explicit Probes section and drives phases (draft -> probe -> revise -> check) internally. User invokes narrative, not phases."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -65,7 +65,19 @@ Read first: `../../PHILOSOPHY.md`, `../../wiki/04-lifecycle-map.md`.
 
 ## Phase Orchestration
 
-When the user invokes `/haipipe-paper narrative`, this skill drives the phases in order. The user does not call phase skills directly.
+When the user invokes `/haipipe-paper narrative`, this skill drives the phases in order. The user does not call phase skills directly — but steers them with VERBS on this stage:
+
+```
+/haipipe-paper narrative <paper-dir>            -> open: status + frontier; advance ONLY on the user's verb
+/haipipe-paper narrative <paper-dir> draft      -> run/redo DRAFT  -> STOP for user review
+/haipipe-paper narrative <paper-dir> probe      -> run/redo PROBE  (agent-only)
+/haipipe-paper narrative <paper-dir> revise     -> dispatch REVISE workers (agent-only, proof-carrying)
+/haipipe-paper narrative <paper-dir> check      -> open the CHECK gate
+```
+
+**Hard gates (binding).** After DRAFT: ⛔ STOP — present the draft for review and end the turn; the user's verb/"go" advances, logged as `[GATE] draft-review: approved` quoting the user. Each phase runs via its `Skill()` dispatch — a phase executed inline did not happen; the `[REVISE]` _LOG entry carries its `workers:` proof line. Never commit or conclude the stage before CHECK opens with its report. The agent never self-advances past a gate.
+
+**Comment rules (binding).** The agent NEVER deletes, rewords, or relocates a `> USER:` comment; it replies `> CC:` underneath; only the user resolves a thread; resolved threads MOVE to `_LOG` verbatim. Working files are edited surgically — no full-file rewrite of a file carrying `> USER:` comments. Background: `../../wiki/02-comment-lifecycle.md`.
 
 ```
 narrative invoked
@@ -78,6 +90,7 @@ DRAFT --> discover inputs (pitch, claims, experiment results, repo source),
           run per-beat interrogation (subagent reviewed every beat),
           integrate interrogation comments
           (internally calls /haipipe-paper-draft with this artifact spec)
+          Ends at ⛔ STOP: user reviews, iterates, approves ([GATE] logged).
   |
   v
 PROBE --> identify citation needs per beat ([LIT] tags),
@@ -91,7 +104,7 @@ REVISE -> refine prose clarity across all beats,
           sharpen arc and flow between sections,
           apply short-plain-sentence rule to all comments,
           ensure venue-contract (2-venue.md) arc shaping is applied
-          (internally calls /haipipe-paper-revise)
+          (internally calls /haipipe-paper-revise; [REVISE] _LOG entry carries workers: proof)
   |
   v
 CHECK --> present exit gate per ../../wiki/08-stage-gate.md

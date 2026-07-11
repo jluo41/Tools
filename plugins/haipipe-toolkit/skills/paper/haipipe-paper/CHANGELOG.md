@@ -4,6 +4,11 @@ haipipe-paper — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [2.7.0] -- 2026-07-09
+
+Changed (JL ruling 2026-07-09 (LLMTrait-Section session postmortem): normalize the writing process)
+- Phase-verb pass-through documented in the routing table: trailing `draft|probe|revise|check` forwards through the lifecycle router to the stage skill; stage skills stop at their human gates and the user's verb advances them.
+
 ## [2.6.0] — 2026-07-08
 
 Changed (venue lockfile wiring)

@@ -53,10 +53,12 @@ haipipe-paper-edit-*            whole-paper (3-build-submit/)
 
 ## Phase automation
 
-- **DRAFT** 🤖: agent + user settle content decisions together
+- **DRAFT** 🤖→🧑: agent writes the REAL draft (sections: complete prose with real `\citep{}` keys from .bib + `{VAL:?}`/`\cite{TOADD}` placeholders) → ⛔ HARD STOP: user reviews structure; the user's verb/"go" is the gate (logged `[GATE]` in _LOG)
 - **PROBE** 🤖: agent-only (dispatch evidence needs aggressively, flag for CHECK, no human gate)
-- **REVISE** 🤖: agent-only (change the prose directly per prose-quality.md, leave why-comments, no comment-first)
-- **CHECK** 🧑: human + agent (auto-checkers report, human decides: proceed/restart/accept/park)
+- **REVISE** 🤖: agent-only and PROOF-CARRYING — reached only via `Skill(haipipe-paper-revise)` (never inline); changes the prose directly per prose-quality.md on the .md FIRST then syncs to tex; leaves why-comments; `[REVISE]` _LOG entry carries `workers: content ✓ humanizer ✓ …`
+- **CHECK** 🧑: human + agent (auto-checkers report, human decides: proceed/restart/accept/park). Never commit before CHECK opens.
+
+The user drives phases with VERBS on the stage skill (`/haipipe-paper-section-edit <section> [draft|probe|revise|check]`); a bare invocation shows status and proposes — never runs — the next phase. The agent never self-advances past a human gate.
 
 ## The probe phase (ONE pipeline: acquire via gateway → harvest paper-side)
 
@@ -68,7 +70,7 @@ landed (JL 2026-07-07 ruling — they never search, grep-discover, or dispatch t
 PROBE:
   citation  → audit gaps → route to probe plans → harvest pick_list → _CITATION_ → 🔍 for CHECK
   values    → audit numbers → route unsourced to probe plans → harvest value_refs → _VALUES_
-  display   → audit needs → plan (generation via probe) → link landed units → _DISPLAY_ + tex
+  display   → audit needs → plan (missing unit → DR row in the 4-display inbox) → link existing/done units → _DISPLAY_ + tex
 ```
 
 Every lane obligation is written into the PP card (`harvest: OWED → accepted`);
@@ -81,13 +83,16 @@ Hard boundary: the gateway finds, the harvesters follow pointers, the human veri
 ```
 DRAFT first, PROBE second, REVISE third, CHECK last:
 
-  draft (structure + narrative sentences)
+  draft (structure + REAL prose, placeholders for unverified)
+           ↓
+  ⛔ user structure review — [GATE] logged, user's verb advances
            ↓
   probe: cite + val + disp   (can run in parallel)
            ↓
-  revise (change the prose directly, leave why-comments)
+  revise (dispatched workers change the .md directly, leave
+          why-comments, sync .md → tex; workers line in _LOG)
            ↓
-  check (verification gate → human decision)
+  check (verification gate → human decision; commits only after)
            ↓
-  sync to tex → compile
+  compile
 ```

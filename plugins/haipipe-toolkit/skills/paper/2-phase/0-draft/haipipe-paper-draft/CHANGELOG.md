@@ -4,6 +4,23 @@ haipipe-paper-draft — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [3.9.0] -- 2026-07-10
+
+Changed (JL ruling: real citations from .bib in the draft)
+- Draft prose writes real `\citep{key}` for keys grep-verified in the paper's .bib (check .bib + _CITATION_ FIRST); `\cite{TOADD}` + `_CITATION_` row where no key fits. Supersedes `[CITE: <topic>]` and "(Author Year)" placeholders. A key that does not grep in .bib is an invented citation.
+
+## [3.8.0] -- 2026-07-09
+
+Changed (JL 2026-07-09: "draft = review the section + propose what probes to do")
+- section-edit stage note: drafts end with the "Probes proposed by this draft" block per the stage template; heavier needs buffered as planned PP skeletons; the STOP presentation includes the block.
+
+## [3.7.0] -- 2026-07-09
+
+Changed (JL ruling 2026-07-09 (LLMTrait-Section session postmortem): normalize the writing process)
+- Section drafts are REAL prose: complete sentences close to submission register, {VAL:? <what>} / [CITE: <topic>] placeholders, never invented numbers/citations. Argument docs unchanged (working prose).
+- Step 5 renamed to "STOP -- present for review, then iterate": writing done -> end the turn; the user's verb/"go" is the gate. Never start PROBE/REVISE/commit on your own.
+- Step 6 hand-off writes the [GATE] draft-review: approved line quoting the user; skips require a logged verdict.
+
 ## [3.6.0] — 2026-07-08
 
 Changed (venue lockfile wiring)

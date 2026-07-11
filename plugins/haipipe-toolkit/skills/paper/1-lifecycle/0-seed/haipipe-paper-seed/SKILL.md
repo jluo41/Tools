@@ -4,8 +4,8 @@ description: "Create or update the paper folder's 0-lifecycle/0-seed/0-seed.md +
 argument-hint: "[paper-dir] [--source <path-or-note>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.5.0"
-  last_updated: "2026-07-07"
+  version: "3.6.1"
+  last_updated: "2026-07-10"
   summary: "Seed stage orchestrator. Defines WHAT (4 sections: question, motivations, claim shape, probes) and drives phases (draft -> probe -> revise -> check) internally. User invokes seed, not phases. v3.4: PROBE is exactly one worker call; NEVER-do-evidence-itself; gate confirms refs. v3.5: DRAFT may WebSearch to orient (fuel -> prose + buffered planned skeletons), PROBE must ALWAYS run the real orchestrator; seed probes are FEASIBILITY only (novelty + external-data-obtainable), internal-data profiling forward-points to CLAIMS via a _LOG pointer."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -51,17 +51,30 @@ Read first: `../../PHILOSOPHY.md`, `../../wiki/04-lifecycle-map.md`.
 
 ## Phase Orchestration
 
-When the user invokes `/haipipe-paper seed`, this skill drives the phases in order. The user does not call phase skills directly.
+When the user invokes `/haipipe-paper seed`, this skill drives the phases in order. The user does not call phase skills directly — but steers them with VERBS on this stage:
+
+```
+/haipipe-paper seed <paper-dir>            -> open: status + frontier; advance ONLY on the user's verb
+/haipipe-paper seed <paper-dir> draft      -> run/redo DRAFT  -> STOP for user review
+/haipipe-paper seed <paper-dir> probe      -> run/redo PROBE  (agent-only)
+/haipipe-paper seed <paper-dir> revise     -> dispatch REVISE workers (agent-only, proof-carrying)
+/haipipe-paper seed <paper-dir> check      -> open the CHECK gate
+```
+
+**Hard gates (binding).** After DRAFT: ⛔ STOP — present the draft for review and end the turn; the user's verb/"go" advances, logged as `[GATE] draft-review: approved` quoting the user. Each phase runs via its `Skill()` dispatch — a phase executed inline did not happen; the `[REVISE]` _LOG entry carries its `workers:` proof line. Never commit or conclude the stage before CHECK opens with its report. The agent never self-advances past a gate.
+
+**Comment rules (binding).** The agent NEVER deletes, rewords, or relocates a `> USER:` comment; it replies `> CC:` underneath; only the user resolves a thread; resolved threads MOVE to `_LOG` verbatim. Working files are edited surgically — no full-file rewrite of a file carrying `> USER:` comments. Background: `../../wiki/02-comment-lifecycle.md`.
 
 ```
 seed invoked
   │
   ▼
 DRAFT ──→ illuminate existing content, elicit taste,
-          write/iterate the 4 sections with > JL: / > CC: comments.
+          write/iterate the 4 sections with > USER: / > CC: comments.
+          Ends at ⛔ STOP: user reviews, iterates, approves ([GATE] logged).
           MAY WebSearch inline to ORIENT the angle (crowded field? dataset
           exist? anchor names?) -- the result is drafting fuel: weave it into
-          the prose (as orientation, `(Author Year)` placeholders) AND buffer
+          the prose (as orientation, `\cite{TOADD}` slots — never invented keys) AND buffer
           the feasibility probes as `status: planned` PP skeletons (empty
           refs). NEVER write findings/refs into a PP card here -- that is the
           PROBE phase's job (the seed is allowed to be intuition; probe makes
@@ -94,7 +107,7 @@ PROBE ──→ DEFAULT RUN for a new seed: FEASIBILITY probes (mode light) --
   ▼
 REVISE ─→ refine prose clarity of the 4 sections, weave probe takeaways into Motivations
           AND into the Probes section
-          (internally calls /haipipe-paper-revise)
+          (internally calls /haipipe-paper-revise; [REVISE] _LOG entry carries workers: proof)
   │
   ▼
 CHECK ──→ present exit gate per ../../wiki/08-stage-gate.md

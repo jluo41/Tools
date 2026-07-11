@@ -47,7 +47,7 @@ Boundaries (unchanged from the content worker's contract)
 
 - Weave fixes MOVE and RESTITCH prose; they never change what a paragraph
   claims (that is the paragraph step) and never invent numbers/citations
-  (flag `% TODO[...]` instead).
+  (flag `{VAL:?}` / `\cite{TOADD}` instead).
 - Banners and Pn.Sn ids are preserved through moves; renumber mechanically
   after splits/merges (../../REF/sentence-format.md).
 - prose-quality.md rules apply throughout (no em-dash, one idea per sentence).

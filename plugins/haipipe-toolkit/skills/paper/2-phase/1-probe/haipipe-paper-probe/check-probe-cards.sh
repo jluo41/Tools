@@ -2,8 +2,11 @@
 # check-probe-cards.sh -- deterministic PP-card verifier for the PROBE phase.
 # Usage: sh check-probe-cards.sh <paper_root> [project_root]
 #
-# Checks every <paper_root>/0-lifecycle/*/_PROBE/PP*.md card:
-#   1. status read|verdicted -> refs: non-empty, no placeholder, every path resolves under project_root
+# Checks every <paper_root>/0-lifecycle/*/_PROBE/PP*.md card, plus the
+# section-level cards one directory deeper (0-lifecycle/*/*/_PROBE/PP*.md):
+#   1. status read|verdicted|answered-local -> refs: non-empty, no placeholder,
+#      every path resolves under project_root (or paper_root: answered-local
+#      cards cite the paper's OWN registries; JL 2026-07-10 paper-local sweep)
 #   2. no markdown tables in any card (inline-evidence smell; JL standing rule: no tables in probes)
 #   3. card <= 80 lines (a fat card = findings pasted inline instead of landed project-side)
 #   4. status: failed is surfaced as FAIL (the gate must not go green over it)
@@ -55,13 +58,13 @@ expand_ref() {
 
 fail=0
 found=0
-for card in "$paper_root"/0-lifecycle/*/_PROBE/PP*.md; do
+for card in "$paper_root"/0-lifecycle/*/_PROBE/PP*.md "$paper_root"/0-lifecycle/*/*/_PROBE/PP*.md; do
   [ -e "$card" ] || continue
   found=1
   name=${card#"$paper_root"/}
   problems=""
 
-  status=$(grep -o 'status: [a-z]*' "$card" | head -1 | awk '{print $2}')
+  status=$(grep -o 'status: [a-z-]*' "$card" | head -1 | awk '{print $2}')
   [ -z "$status" ] && problems="$problems no-status-field;"
 
   tables=$(grep -c '^|' "$card")
@@ -71,7 +74,7 @@ for card in "$paper_root"/0-lifecycle/*/_PROBE/PP*.md; do
   [ "$lines" -gt 80 ] && problems="$problems too-long(${lines}-lines>80);"
 
   case "$status" in
-    read|verdicted)
+    read|verdicted|answered-local)
       refs=$(grep -m1 '^- refs:' "$card" | sed 's/^- refs:[[:space:]]*//')
       if [ -z "$refs" ] || printf '%s' "$refs" | grep -q '<'; then
         problems="$problems empty-refs(status:$status);"
@@ -79,7 +82,7 @@ for card in "$paper_root"/0-lifecycle/*/_PROBE/PP*.md; do
         for ref in $(printf '%s\n' "$refs" | tr '·' ' '); do
           for eref in $(expand_ref "$ref"); do
             [ -n "$eref" ] || continue
-            [ -e "$project_root/$eref" ] || problems="$problems unresolved-ref($eref);"
+            [ -e "$project_root/$eref" ] || [ -e "$paper_root/$eref" ] || problems="$problems unresolved-ref($eref);"
           done
         done
       fi
@@ -114,7 +117,8 @@ done
 
 # Working-doc pass (B10): the no-bibtex / no-tables rules must hold durably,
 # not only during a harvest run. Mirrors the harvest-acceptance greps.
-for doc in "$paper_root"/0-lifecycle/*/_CITATION_*.md "$paper_root"/0-lifecycle/*/_VALUES_*.md "$paper_root"/0-lifecycle/*/_DISPLAY_*.md; do
+for doc in "$paper_root"/0-lifecycle/*/_CITATION_*.md "$paper_root"/0-lifecycle/*/_VALUES_*.md "$paper_root"/0-lifecycle/*/_DISPLAY_*.md \
+           "$paper_root"/0-lifecycle/*/*/_CITATION_*.md "$paper_root"/0-lifecycle/*/*/_VALUES_*.md "$paper_root"/0-lifecycle/*/*/_DISPLAY_*.md; do
   [ -e "$doc" ] || continue
   dname=${doc#"$paper_root"/}
   dprob=""

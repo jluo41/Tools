@@ -50,7 +50,7 @@ Determine which stage is being drafted, then read TWO things from `1-lifecycle/`
 | claims | `1-lifecycle/1-claims/haipipe-paper-claims/SKILL.md` | `ref/claims-template.md` |
 | pitch | `1-lifecycle/2-pitch/haipipe-paper-pitch/SKILL.md` | `ref/pitch-template.md` |
 | narrative | `1-lifecycle/3-narrative/haipipe-paper-narrative/SKILL.md` | `ref/narrative-template.md` |
-| display | `1-lifecycle/4-display/haipipe-paper-display/SKILL.md` | display-unit contracts in that skill's `ref/` |
+| display | `1-lifecycle/4-display/haipipe-paper-display/SKILL.md` | `ref/display-template.md` (unit contracts live in the same `ref/`) |
 | section name (e.g. `introduction`) | `1-lifecycle/5-section-edit/haipipe-paper-section-edit/SKILL.md` | `ref/outline-format.md` |
 
 (Template paths are relative to each stage skill's OWN folder — the same folder as its SKILL.md, e.g. `1-lifecycle/0-seed/haipipe-paper-seed/ref/seed-template.md`.)
@@ -84,7 +84,7 @@ Present the structural plan to the user before writing content:
 - **claims**: the hypothesis list and claim matrix layout
 - **pitch**: the cover letter sections (hook, finding, so-what, editor's chair)
 - **narrative**: the section blocks and story beats
-- **display**: the figure/table inventory
+- **display**: the figure/table inventory (+ the probe-plan rows it implies)
 - **section**: the paragraph skeleton (how many subsections, how many paragraphs, what job each does)
 
 ### Step 4. Draft content
@@ -163,9 +163,10 @@ When the user approves:
 - Section-mirrored story with readiness tags
 
 ### display
-- Output: `0-lifecycle/4-display/4-display.md` (the BRAIN; `4-display.tex` is GENERATED from it by sync at REVISE — never drafted by hand)
-- DRAFT runs the stage's step-0 reconcile first (legacy probes/preview/tex-comments merge), then authors the md: Venue Set, Display Map, one block per display with method candidates + ASCII sketch
-- PROBE: evidence lane (tasks/probes) + render lane (renderer skills, candidate mode)
+- Output: `0-lifecycle/4-display/4-display.md` (the BRAIN; `4-display.tex` is GENERATED from it by sync at REVISE — never drafted by hand); template `ref/display-template.md`
+- DRAFT runs the stage's step-0 reconcile first (legacy probes/preview/tex-comments merge), then authors the md: Venue Set, Display Map, PROBE PLAN (S0/En/Rn rows, ▶ ready / ✋ gated-on-thread), one block per display with method candidates + ASCII sketch
+- The ⛔ STOP presentation = the open threads + the Probe Plan; the user rules on threads and strikes rows; DRAFT proposes, PROBE executes after the gate (the display twin of section-edit's "Probes proposed by this draft" block)
+- PROBE: step-0 cross-stage coverage sweep, then evidence lane (tasks/probes) + render lane (renderer skills, candidate mode) over the approved plan rows
 
 ### section-edit
 - Output: `0-lifecycle/5-section-edit/{section}/{section}.md`
@@ -210,7 +211,7 @@ Stage skills call this as their DRAFT phase:
 | haipipe-paper-claims | 1-claims.md (hypothesis list + evidence matrix) |
 | haipipe-paper-pitch | 2-pitch.md (cover letter) |
 | haipipe-paper-narrative | 3-narrative.md (story beats) |
-| haipipe-paper-display | 4-display.md (display map + per-display blocks with candidates) |
+| haipipe-paper-display | 4-display.md (display map + probe plan + per-display blocks with candidates) |
 | haipipe-paper-section-edit | {section}.md (paragraph outline) |
 
 ## Sibling phase workers

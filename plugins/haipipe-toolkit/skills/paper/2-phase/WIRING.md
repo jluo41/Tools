@@ -29,20 +29,21 @@ Not registered: `REF/` (plain reference .md, no SKILL.md -- workers load it by p
 
 ## Dispatch chain (who calls whom)
 
-**Phase skills are internal workers called by stage skills via the Skill tool; they are not user entry points.**
+**Phase skills are internal workers called by stage skills via the Skill tool; they are not user entry points.** The user steers with phase VERBS on the stage skill (`/haipipe-paper-section-edit <section> [draft|probe|revise|check]`): the verb picks which phase the stage drives; the stage still supplies all context and still dispatches the internal workers.
 
 ```
-user → /haipipe-paper <stage>            stage skills live in 1-lifecycle/
-        (seed | claims | pitch | narrative | display | section-edit)
+user → /haipipe-paper <stage> [<target>] [draft|probe|revise|check]
+        (seed | claims | pitch | narrative | display | section-edit — skills in 1-lifecycle/)
              │
-             ▼  the stage skill drives the phase engine, in order:
-       haipipe-paper-draft    → drafts from the stage's template in 1-lifecycle/
+             ▼  the stage skill (the STAGE CONTRACT: aim + template + rules)
+                dispatches the phase engine via Skill(), in order:
+       haipipe-paper-draft    → drafts from the stage's template → ⛔ STOP: user structure review
        haipipe-paper-probe    → fans out -citation / -values / -display + /haipipe-probe dispatch
-       haipipe-paper-revise   → runs -content / -humanizer (+ -results)
-       haipipe-paper-check  → 6-axis report, presented to the human (CHECK 🧑)
+       haipipe-paper-revise   → runs -content / -humanizer (+ -results); proof: workers line in _LOG
+       haipipe-paper-check    → 6-axis report, presented to the human (CHECK 🧑)
 ```
 
-DRAFT/PROBE/REVISE run automatic; CHECK is the only human gate. Hubs own the fan-out to their workers, so a stage skill only ever names the four hubs.
+Two human gates: after DRAFT (structure) and at CHECK (quality). PROBE/REVISE run automatic between them. The agent never self-advances past a gate — the user's verb is the approval. Hubs own the fan-out to their workers, so a stage skill only ever names the four hubs, and a phase executed without its `Skill()` dispatch did not happen.
 
 ## Related, but not in 2-phase/
 

@@ -4,6 +4,12 @@ haipipe-paper-lifecycle — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [2.2.0] -- 2026-07-09
+
+Changed (JL ruling 2026-07-09 (LLMTrait-Section session postmortem): normalize the writing process)
+- Phase-verb pass-through: trailing `draft|probe|revise|check` after stage args forwards verbatim to the stage skill.
+- Two-axis section updated: TWO human gates (DRAFT structure review + CHECK), REVISE proof-carrying, agent never self-advances (was "CHECK is the only human-involved phase").
+
 ## [2.1.0] -- 2026-07-08
 
 Changed
