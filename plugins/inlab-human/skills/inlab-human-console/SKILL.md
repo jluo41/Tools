@@ -21,22 +21,46 @@ prediction for this patient."* The human drives; the tools answer.
                               endpoint-predict tool: prepare payload → POST → score
 ```
 
-Tooling
--------
+Tooling — DO NOT go exploring
+-----------------------------
 
-Use the `endpoint-predict` MCP tools when registered
-(`mcp__endpoint-predict__*`); otherwise the CLI twin via Bash
-(`mcp-servers/endpoint-predict/predict_cli.py`) or a python one-liner
-importing `server.py`'s tool functions with the `INLAB_*` env vars set
-(INLAB_PATIENT_STORE, INLAB_ENDPOINT_STORE, INLAB_REGISTRY).
+Two interchangeable paths. **Never** grep for stores, read `.mcp.json`, or
+hand-roll python: the CLI twin resolves its own config (flags → `INLAB_*` env →
+the repo's `.mcp.json`), so **no env vars are needed**.
 
-| Step | Tool | Notes |
+A. MCP tools if present: `mcp__endpoint-predict__{list_patients,get_patient,
+   list_models,prepare_payload,predict_for_patient}`.
+   If only `ping`/`predict`/`predict_packaged_example` are exposed, the MCP
+   process is STALE (started before v0.2) — say so, tell the user a session
+   restart picks up the console tools, and use path B meanwhile. Do not
+   investigate further.
+
+B. CLI twin (always works, copy-paste):
+
+```bash
+CLI=Tools/plugins/inlab-human/mcp-servers/endpoint-predict/predict_cli.py   # from repo root
+python3 $CLI list-patients
+python3 $CLI list-models
+python3 $CLI get-patient          --patient-id reach-100060 [--tables Dx Med] [--max-rows 20]
+python3 $CLI prepare-payload      --patient-id reach-100060 --model reach.adhd.xgb
+python3 $CLI predict-for-patient  --patient-id reach-100060 --model reach.adhd.xgb [--obs-dt 2023-06-01]
+```
+
+| Step | Tool / subcommand | Notes |
 |---|---|---|
 | who is available | `list_patients` | id + demographics + table counts |
-| the patient's data | `get_patient` | ALL source tables; use `tables`/`max_rows` for huge charts (MIMIC) |
+| the patient's data | `get_patient` | ALL source tables; `tables`/`max_rows` for huge charts (MIMIC) |
 | what models exist | `list_models` | name, version, required tables, URL, **live?** |
-| run it | `predict_for_patient` | prepares payload → POSTs → score + gaps + trigger info |
-| payload only (inspect) | `prepare_payload` | show the clinician what would be sent |
+| run it | `predict_for_patient` | prepares payload (incl. trigger record) → POSTs → score + gaps |
+| payload only (inspect) | `prepare_payload` | show what would be sent, without calling |
+
+Endpoint not live? Start it (background) and wait for `/ping` — model load takes
+~20-40s, so warm it up BEFORE the user picks a model:
+
+```bash
+.venv/bin/python examples/Project-InLabHumanEval-Reach/tasks/A01_serve_endpoint_local/serve_endpoint.py \
+    --endpoint-path _WorkSpace/6-EndpointStore/<pkg> --port <5050 adhd|5051 pd2d|5052 mimic>
+```
 
 Session flow
 ------------
