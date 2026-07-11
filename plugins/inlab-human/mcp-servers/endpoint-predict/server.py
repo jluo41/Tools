@@ -33,6 +33,10 @@ SERVER_NAME = "endpoint-predict"
 DEFAULT_URL = os.environ.get("INLAB_ENDPOINT_URL", "http://127.0.0.1:5050")
 TOKEN = os.environ.get("INLAB_ENDPOINT_TOKEN", "")
 TIMEOUT_SEC = int(os.environ.get("INLAB_ENDPOINT_TIMEOUT_SEC", "120"))
+# console-mode stores (v0.2): patient store dir, Endpoint_Set store dir, url registry
+PATIENT_STORE = os.environ.get("INLAB_PATIENT_STORE", "")
+ENDPOINT_STORE = os.environ.get("INLAB_ENDPOINT_STORE", "")
+REGISTRY_PATH = os.environ.get("INLAB_REGISTRY", "")
 
 
 # ---------------------------------------------------------------- HTTP layer
@@ -62,6 +66,194 @@ def http_post(url: str, payload: dict[str, Any]) -> dict[str, Any]:
     req = urllib.request.Request(url, data=data, headers=_headers(), method="POST")
     with urllib.request.urlopen(req, timeout=TIMEOUT_SEC) as r:
         return json.loads(r.read().decode("utf-8"))
+
+
+# ---------------------------------------------------------------- console-mode helpers (v0.2)
+def _registry() -> dict[str, str]:
+    if REGISTRY_PATH and os.path.exists(REGISTRY_PATH):
+        with open(REGISTRY_PATH) as f:
+            return json.load(f)
+    return {}
+
+
+def _patient_path(patient_id: str) -> str:
+    if not PATIENT_STORE:
+        raise ValueError("INLAB_PATIENT_STORE is not configured")
+    p = os.path.join(os.path.expanduser(PATIENT_STORE), f"{patient_id}.json")
+    if not os.path.exists(p):
+        raise ValueError(f"unknown patient: {patient_id}")
+    return p
+
+
+def _model_dirs() -> list[str]:
+    if not ENDPOINT_STORE:
+        raise ValueError("INLAB_ENDPOINT_STORE is not configured")
+    root = os.path.expanduser(ENDPOINT_STORE)
+    return sorted(d for d in os.listdir(root)
+                  if os.path.isdir(os.path.join(root, d))
+                  and os.path.exists(os.path.join(root, d, "manifest.json")))
+
+
+def _model_info(pkg: str) -> dict[str, Any]:
+    root = os.path.expanduser(ENDPOINT_STORE)
+    with open(os.path.join(root, pkg, "manifest.json")) as f:
+        manifest = json.load(f)
+    info = {
+        "package": pkg,
+        "endpoint_name": manifest.get("endpoint_name"),
+        "endpoint_version": manifest.get("endpoint_version"),
+        "models_field": None,
+        "required_tables": [],
+    }
+    ex = os.path.join(root, pkg, "examples", "example_000", "payload.json")
+    if os.path.exists(ex):
+        with open(ex) as f:
+            example = json.load(f)
+        info["models_field"] = example.get("models")
+        info["required_tables"] = sorted(example.get("source_tables", {}).keys())
+    return info
+
+
+def _resolve_model(model: str) -> dict[str, Any]:
+    """Accept a package dir name, endpoint_name, or models_field value.
+    Several packages can share an endpoint_name (versions); prefer one with a
+    registered URL, then the highest version."""
+    matches = []
+    for pkg in _model_dirs():
+        info = _model_info(pkg)
+        if model in (pkg, info["endpoint_name"], info["models_field"]):
+            matches.append(info)
+    if not matches:
+        raise ValueError(f"unknown model: {model} (try list_models)")
+    reg = _registry()
+    matches.sort(key=lambda i: (i["package"] in reg or (i["endpoint_name"] or "") in reg,
+                                i["endpoint_version"] or ""), reverse=True)
+    return matches[0]
+
+
+def _pick_trigger(patient: dict[str, Any], pkg: str) -> tuple[dict[str, Any] | None, str]:
+    """Trigger record (PID, ObsDT[, EncCSN]) for the payload's dataframe_records.
+    Prefer the trigger stored for THIS model; else borrow PID/ObsDT from any
+    provenance (cross-model prediction)."""
+    provs = patient.get("provenance", [])
+    for p in provs:
+        if p.get("endpoint_package") == pkg and p.get("triggers"):
+            return dict(p["triggers"][0]), "native"
+    for p in provs:
+        if p.get("triggers"):
+            t = p["triggers"][0]
+            return {k: t[k] for k in ("PID", "ObsDT") if k in t}, \
+                f"borrowed from {p.get('endpoint_package')}"
+    return None, "none available"
+
+
+def _build_payload_for(patient_id: str, model: str,
+                       obs_dt: str | None = None) -> dict[str, Any]:
+    info = _resolve_model(model)
+    with open(_patient_path(patient_id)) as f:
+        patient = json.load(f)
+    have = patient.get("source_tables", {})
+    source_tables, missing, empty = {}, [], []
+    for t in info["required_tables"]:
+        rows = have.get(t)
+        if rows is None:
+            missing.append(t)
+            source_tables[t] = []
+        else:
+            source_tables[t] = rows
+            if not rows:
+                empty.append(t)
+    extra = sorted(set(have) - set(info["required_tables"]))
+    trigger, trigger_source = _pick_trigger(patient, info["package"])
+    if trigger is None:
+        raise ValueError(f"no trigger record (PID/ObsDT) stored for {patient_id}; "
+                         "cannot build dataframe_records")
+    if obs_dt:
+        trigger["ObsDT"] = obs_dt
+        trigger_source += f"; ObsDT overridden to {obs_dt}"
+    return {
+        "payload": {"models": info["models_field"], "source_tables": source_tables,
+                    "dataframe_records": [trigger]},
+        "model": info,
+        "trigger": {"record": trigger, "source": trigger_source},
+        "gaps": {"missing_tables": missing, "empty_tables": empty,
+                 "unused_patient_tables": extra},
+    }
+
+
+# ---------------------------------------------------------------- console-mode tools (v0.2)
+def tool_list_patients(args: dict[str, Any]) -> dict[str, Any]:
+    store = os.path.expanduser(PATIENT_STORE)
+    if not PATIENT_STORE or not os.path.isdir(store):
+        raise ValueError("INLAB_PATIENT_STORE is not configured or missing")
+    out = []
+    for fn in sorted(os.listdir(store)):
+        if not fn.endswith(".json"):
+            continue
+        with open(os.path.join(store, fn)) as f:
+            rec = json.load(f)
+        out.append({"patient_id": rec.get("patient_id", fn[:-5]),
+                    "summary": rec.get("summary", {}),
+                    "seen_by": sorted({p["endpoint_package"] for p in rec.get("provenance", [])})})
+    return {"patient_store": store, "n": len(out), "patients": out}
+
+
+def tool_get_patient(args: dict[str, Any]) -> dict[str, Any]:
+    pid = args.get("patient_id") or ""
+    with open(_patient_path(pid)) as f:
+        rec = json.load(f)
+    tables = args.get("tables")
+    max_rows = int(args.get("max_rows") or 0)
+    st = rec.get("source_tables", {})
+    if tables:
+        st = {t: st.get(t, []) for t in tables}
+    if max_rows:
+        st = {t: (v[:max_rows] if isinstance(v, list) else v) for t, v in st.items()}
+    return {"patient_id": rec.get("patient_id"), "summary": rec.get("summary"),
+            "source_tables": st}
+
+
+def tool_list_models(args: dict[str, Any]) -> dict[str, Any]:
+    reg = _registry()
+    models = []
+    for pkg in _model_dirs():
+        info = _model_info(pkg)
+        url = reg.get(pkg) or reg.get(info["endpoint_name"] or "")
+        live = False
+        if url:
+            try:
+                live = http_get(f"{_base(url)}/ping").get("status") == "healthy"
+            except Exception:
+                live = False
+        info.update({"endpoint_url": url, "live": live})
+        models.append(info)
+    return {"endpoint_store": os.path.expanduser(ENDPOINT_STORE), "models": models}
+
+
+def tool_prepare_payload(args: dict[str, Any]) -> dict[str, Any]:
+    pid = args.get("patient_id") or ""
+    model = args.get("model") or ""
+    if not pid or not model:
+        raise ValueError("patient_id and model are required")
+    return _build_payload_for(pid, model, args.get("obs_dt"))
+
+
+def tool_predict_for_patient(args: dict[str, Any]) -> dict[str, Any]:
+    """The one-shot console verb: prepare the payload for (patient, model),
+    POST it to that model's endpoint, return prediction + gaps report."""
+    pid = args.get("patient_id") or ""
+    model = args.get("model") or ""
+    if not pid or not model:
+        raise ValueError("patient_id and model are required")
+    built = _build_payload_for(pid, model, args.get("obs_dt"))
+    url = args.get("endpoint_url") or _registry().get(built["model"]["package"]) \
+        or _registry().get(built["model"]["endpoint_name"] or "")
+    if not url:
+        raise ValueError(f"no endpoint URL known for {built['model']['package']} "
+                         "(pass endpoint_url or add it to the registry)")
+    response = http_post(f"{_base(url)}/invocations", built["payload"])
+    return {"patient_id": pid, "model": built["model"], "endpoint_url": _base(url),
+            "trigger": built["trigger"], "gaps": built["gaps"], "response": response}
 
 
 # ---------------------------------------------------------------- tools
@@ -110,6 +302,56 @@ def tool_predict_packaged_example(args: dict[str, Any]) -> dict[str, Any]:
 
 
 TOOLS: dict[str, Any] = {
+    "list_patients": {
+        "fn": tool_list_patients,
+        "description": "List patients in the configured patient store (id, demographics summary, table counts, which models' data they carry).",
+        "inputSchema": {"type": "object", "properties": {}},
+    },
+    "get_patient": {
+        "fn": tool_get_patient,
+        "description": "Get one patient's full data (all source tables: Dx, Med, Vital, Lab, Questionnaire, ...). Optionally filter tables or cap rows for large charts.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "patient_id": {"type": "string"},
+                "tables": {"type": "array", "items": {"type": "string"}, "description": "Only these tables."},
+                "max_rows": {"type": "integer", "description": "Cap rows per table (big MIMIC charts)."},
+            },
+            "required": ["patient_id"],
+        },
+    },
+    "list_models": {
+        "fn": tool_list_models,
+        "description": "List available prediction models (Endpoint_Set packages): name, version, required source tables, registered endpoint URL, and whether it is live right now.",
+        "inputSchema": {"type": "object", "properties": {}},
+    },
+    "prepare_payload": {
+        "fn": tool_prepare_payload,
+        "description": "Assemble the inference payload for (patient, model): selects the model's required tables from the patient's data and reports gaps (missing/empty tables). Does NOT call the endpoint.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "patient_id": {"type": "string"},
+                "model": {"type": "string", "description": "Package dir, endpoint name, or models-field value (see list_models)."},
+                "obs_dt": {"type": "string", "description": "Override the as-of prediction date (trigger ObsDT)."},
+            },
+            "required": ["patient_id", "model"],
+        },
+    },
+    "predict_for_patient": {
+        "fn": tool_predict_for_patient,
+        "description": "One-shot console verb: prepare the payload for (patient, model), POST it to that model's registered endpoint, and return the prediction plus a data-gaps report. The score comes from the endpoint verbatim.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "patient_id": {"type": "string"},
+                "model": {"type": "string"},
+                "obs_dt": {"type": "string", "description": "Override the as-of prediction date (trigger ObsDT)."},
+                "endpoint_url": {"type": "string", "description": "Override the registry URL."},
+            },
+            "required": ["patient_id", "model"],
+        },
+    },
     "ping": {
         "fn": tool_ping,
         "description": "Health-check the prediction endpoint (GET /ping).",
