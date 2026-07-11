@@ -1,0 +1,22 @@
+{
+  "name": "inlab-human",
+  "version": "0.1.0",
+  "description": "In-lab human evaluation of deployed prediction endpoints — the Claude Code chat is the reader UI. A clinician reviews de-identified cases in a blind→assisted protocol: estimate risk from raw data alone, then see the model's score + SHAP + agent narrative and re-estimate. Skills freeze a review_bundle.json (case → endpoint-predict MCP tool → narrator agent), run the structured reading session (responses.jsonl), and report decision-influence metrics against gold outcomes. Endpoint-agnostic: any JSON-payload endpoint (local FastAPI, Databricks, SageMaker) is a config, not code.",
+  "author": {
+    "name": "Junjie Luo",
+    "url": "https://github.com/jluo41"
+  },
+  "license": "MIT",
+  "keywords": [
+    "human-evaluation",
+    "clinician",
+    "reader-study",
+    "blind-assisted",
+    "risk-prediction",
+    "endpoint",
+    "shap",
+    "decision-influence",
+    "ground-truth",
+    "human-in-the-loop"
+  ]
+}
