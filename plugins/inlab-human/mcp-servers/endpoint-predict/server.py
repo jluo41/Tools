@@ -76,6 +76,53 @@ def _registry() -> dict[str, str]:
     return {}
 
 
+def _clean(obj: Any) -> Any:
+    """NaN/Infinity are NOT valid JSON (RFC 8259) — Python emits them anyway, and
+    strict consumers (FastAPI, browsers, most JSON parsers) reject the payload.
+    Coerce them to null so every consumer can read a patient."""
+    if isinstance(obj, float):
+        if obj != obj or obj in (float("inf"), float("-inf")):  # NaN / ±Inf
+            return None
+        return obj
+    if isinstance(obj, dict):
+        return {k: _clean(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_clean(v) for v in obj]
+    return obj
+
+
+# Date column per source table, in priority order — used to answer "was this row
+# already on the chart at prediction time?"
+_DATE_KEYS = (
+    "EncContactDate", "ContactDate", "StartDate", "RecordedTime",
+    "ResultDate", "QuestionInstant", "OrderingDttm", "IndexDate",
+)
+
+
+def _row_date(row: dict[str, Any]) -> str | None:
+    for k in _DATE_KEYS:
+        v = row.get(k)
+        if v and str(v) not in ("NaT", "None", "nan"):
+            return str(v)[:10]
+    return None
+
+
+def _index_date(patient: dict[str, Any], pkg: str | None = None) -> str | None:
+    """The prediction trigger date (ObsDT) — the moment the model scores."""
+    provs = patient.get("provenance", [])
+    for p in provs:
+        if pkg and p.get("endpoint_package") != pkg:
+            continue
+        for t in p.get("triggers", []):
+            if t.get("ObsDT"):
+                return str(t["ObsDT"])[:10]
+    for p in provs:
+        for t in p.get("triggers", []):
+            if t.get("ObsDT"):
+                return str(t["ObsDT"])[:10]
+    return None
+
+
 def _patient_path(patient_id: str) -> str:
     if not PATIENT_STORE:
         raise ValueError("INLAB_PATIENT_STORE is not configured")
@@ -195,22 +242,60 @@ def tool_list_patients(args: dict[str, Any]) -> dict[str, Any]:
         out.append({"patient_id": rec.get("patient_id", fn[:-5]),
                     "summary": rec.get("summary", {}),
                     "seen_by": sorted({p["endpoint_package"] for p in rec.get("provenance", [])})})
-    return {"patient_store": store, "n": len(out), "patients": out}
+    return _clean({"patient_store": store, "n": len(out), "patients": out})
 
 
 def tool_get_patient(args: dict[str, Any]) -> dict[str, Any]:
     pid = args.get("patient_id") or ""
     with open(_patient_path(pid)) as f:
         rec = json.load(f)
+
+    index_date = args.get("as_of") or _index_date(rec)
+    include_future = bool(args.get("include_post_index"))
+
     tables = args.get("tables")
-    max_rows = int(args.get("max_rows") or 0)
+    max_rows = int(args.get("max_rows") or 200)   # never ship an unbounded chart
     st = rec.get("source_tables", {})
     if tables:
         st = {t: st.get(t, []) for t in tables}
-    if max_rows:
-        st = {t: (v[:max_rows] if isinstance(v, list) else v) for t, v in st.items()}
-    return {"patient_id": rec.get("patient_id"), "summary": rec.get("summary"),
-            "source_tables": st}
+
+    out: dict[str, list] = {}
+    dropped = 0
+    for t, rows in st.items():
+        if not isinstance(rows, list):
+            out[t] = rows
+            continue
+        keep = rows
+        # A prediction is made AS OF index_date. Showing later rows lets the reader
+        # (human or agent) see the future — leakage. Excluded unless asked for.
+        if index_date and not include_future:
+            keep = [r for r in rows if not (_row_date(r) and _row_date(r) > index_date)]
+            dropped += len(rows) - len(keep)
+        out[t] = keep[:max_rows]
+
+    return _clean({
+        "patient_id": rec.get("patient_id"),
+        "summary": rec.get("summary"),
+        "index_date": index_date,
+        "age_at_index": _age_at(rec.get("summary", {}).get("birth_date"), index_date),
+        "post_index_rows_hidden": dropped,
+        "row_cap": max_rows,
+        "source_tables": out,
+    })
+
+
+def _age_at(birth: str | None, as_of: str | None) -> int | None:
+    """Age at the PREDICTION date — not today. A model scored in 2023 must be read
+    against the patient as they were in 2023."""
+    if not birth or not as_of:
+        return None
+    try:
+        from datetime import date
+        b = date.fromisoformat(str(birth)[:10])
+        a = date.fromisoformat(str(as_of)[:10])
+    except ValueError:
+        return None
+    return (a - b).days // 365
 
 
 def tool_list_models(args: dict[str, Any]) -> dict[str, Any]:
@@ -252,8 +337,8 @@ def tool_predict_for_patient(args: dict[str, Any]) -> dict[str, Any]:
         raise ValueError(f"no endpoint URL known for {built['model']['package']} "
                          "(pass endpoint_url or add it to the registry)")
     response = http_post(f"{_base(url)}/invocations", built["payload"])
-    return {"patient_id": pid, "model": built["model"], "endpoint_url": _base(url),
-            "trigger": built["trigger"], "gaps": built["gaps"], "response": response}
+    return _clean({"patient_id": pid, "model": built["model"], "endpoint_url": _base(url),
+                   "trigger": built["trigger"], "gaps": built["gaps"], "response": response})
 
 
 # ---------------------------------------------------------------- tools
@@ -309,13 +394,15 @@ TOOLS: dict[str, Any] = {
     },
     "get_patient": {
         "fn": tool_get_patient,
-        "description": "Get one patient's full data (all source tables: Dx, Med, Vital, Lab, Questionnaire, ...). Optionally filter tables or cap rows for large charts.",
+        "description": "Get one patient's chart AS OF the prediction date (all source tables: Dx, Med, Vital, Lab, Questionnaire, ...). Rows dated after the trigger are excluded by default (they are the future relative to the score); pass include_post_index to see them. Rows are capped per table.",
         "inputSchema": {
             "type": "object",
             "properties": {
                 "patient_id": {"type": "string"},
                 "tables": {"type": "array", "items": {"type": "string"}, "description": "Only these tables."},
-                "max_rows": {"type": "integer", "description": "Cap rows per table (big MIMIC charts)."},
+                "max_rows": {"type": "integer", "description": "Cap rows per table (default 200; big MIMIC charts)."},
+                "as_of": {"type": "string", "description": "Chart as of this date; defaults to the patient's prediction trigger date."},
+                "include_post_index": {"type": "boolean", "description": "Include rows dated AFTER the prediction date. Default false — those are the future relative to the score."},
             },
             "required": ["patient_id"],
         },
