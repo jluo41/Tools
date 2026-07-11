@@ -1,27 +1,35 @@
 ---
 name: inlab-human
-description: "In-lab human evaluation of a deployed prediction endpoint — the Claude Code chat is the reader UI. Tier-1 orchestrator: parses intent and dispatches to inlab-human-bundle (freeze cases+scores+narratives into review_bundle.json), inlab-human-review (blind→assisted clinician reading session → responses.jsonl), inlab-human-report (decision-influence metrics vs gold). Endpoint-agnostic: local Flask, Databricks, SageMaker — same wire contract. Trigger: inlab, in-lab eval, clinician eval, reader study, human evaluation, /inlab-human."
-argument-hint: "[bundle|review|report|status] [args...]"
+description: "In-lab human interaction with deployed prediction endpoints — the Claude Code chat is the UI. Tier-1 orchestrator with two modes: CONSOLE (default; patient-first on-demand inference: pick patient → see chart → list models → predict via the endpoint-predict tool → analyze) and STUDY (formal reader protocol: bundle → blind/assisted review → decision-influence report). Endpoint-agnostic: local Flask, Databricks, SageMaker — same wire contract. Trigger: inlab, console, get patient, run prediction, clinician eval, reader study, /inlab-human."
+argument-hint: "[console|patient|models|predict | bundle|review|report | status] [args...]"
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "0.1.0"
+  version: "0.2.0"
   last_updated: "2026-07-10"
-  summary: "Tier-1 orchestrator for in-lab clinician evaluation sessions."
+  summary: "Tier-1: console mode (default, on-demand inference) + study mode (reader protocol)."
 ---
 
 Skill: inlab-human (in-lab human evaluation, tier-1)
 =====================================================
 
-One clinician + one Claude Code session + one frozen bundle = one reading
-session. The skill family enforces what free-form chat would not: blinding
-(raw data before model output), structured capture (every judgment → a
-`responses.jsonl` row), and separate ratings for the score vs the explanation.
+Two modes, one plugin:
 
 ```
-/inlab-human status                          -> what bundles/responses exist here
-/inlab-human bundle <endpoint_path> [...]    -> /inlab-human-bundle  (freeze cases)
-/inlab-human review <bundle.json>            -> /inlab-human-review  (run the session)
-/inlab-human report <bundle.json>            -> /inlab-human-report  (metrics + figures)
+CONSOLE (default)  clinician DRIVES: patient → chart → models → on-demand
+                   prediction → analysis.        -> /inlab-human-console
+STUDY              clinician is MEASURED: frozen bundle → blind→assisted
+                   reading → influence metrics.  -> bundle / review / report
+```
+
+```
+/inlab-human                                 -> console (orient: patients + models)
+/inlab-human <patient_id> [model]            -> console (jump straight in)
+/inlab-human console | patient | models | predict ...   -> console verbs
+/inlab-human status                          -> dashboard: patients, models(live?),
+                                                bundles, responses
+/inlab-human bundle <endpoint_path> [...]    -> /inlab-human-bundle  (study: freeze cases)
+/inlab-human review <bundle.json>            -> /inlab-human-review  (study: run session)
+/inlab-human report <bundle.json>            -> /inlab-human-report  (study: metrics)
 ```
 
 Routing
@@ -30,12 +38,14 @@ Routing
 ```
 Step 1: parse $ARGUMENTS.
 Step 2: verb -> dispatch:
+  (nothing) | console | patient | models | predict | a patient id
+          -> Skill inlab-human-console   (DEFAULT — on-demand inference)
   bundle  -> Skill inlab-human-bundle    (needs: endpoint path or live URL)
   review  -> Skill inlab-human-review    (needs: a frozen review_bundle.json)
   report  -> Skill inlab-human-report    (needs: bundle + responses.jsonl)
-  status | no args -> scan cwd + study project for review_bundle*.json and
-    responses*.jsonl; print a one-table dashboard (bundle id, n cases,
-    n responses, readers) and suggest the next verb.
+  status  -> dashboard: list_patients + list_models (via endpoint-predict
+             tools or CLI twin) + scan for review_bundle*.json /
+             responses*.jsonl; suggest the next verb.
 Step 3: relay the specialist's return contract verbatim.
 ```
 

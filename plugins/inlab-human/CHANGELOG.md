@@ -7,3 +7,11 @@
 - `mcp-servers/endpoint-predict/` — dependency-free MCP server (ping, predict, predict_packaged_example) + `predict_cli.py` twin for Bash use; stdio rebinding kept out of the import path so the module doubles as a library.
 - Skills: `/inlab-human` (tier-1), `/inlab-human-bundle` (+ deterministic `scripts/build_bundle.py`, examples-mode v0.1), `/inlab-human-review`, `/inlab-human-report`; `agents/inlab-narrator-agent.md`.
 - Smoke-tested end-to-end against `reach.adhd.xgb_v0003` served locally (Flask, Databricks wire contract): 6-case demo bundle frozen with live scores (0.256–0.864) + narrator narratives; validation OK.
+
+## 0.2.0 — 2026-07-10
+- CONSOLE mode (new default): patient-first on-demand inference, per user direction — get a patient → all their data → list models → "run this model on this patient" → tool prepares payload → endpoint → results + analysis.
+- endpoint-predict v0.2 tools: `list_patients`, `get_patient`, `list_models` (live-status via registry ping), `prepare_payload`, `predict_for_patient` (one-shot: build payload incl. trigger dataframe_records → POST → score + gaps report). Model resolution prefers registered-URL + highest version. `obs_dt` override = "predict as of date X".
+- New env config: INLAB_PATIENT_STORE, INLAB_ENDPOINT_STORE, INLAB_REGISTRY (endpoint-URL registry JSON).
+- `/inlab-human-console` skill; tier-1 `/inlab-human` re-routed (console default; bundle/review/report = study mode).
+- Patient-store contract: extractor scrubs outcome fields (Label/Split/ground_truth*) from all tables — caught a real gold leak in PD2D's Cohort table — and stores per-endpoint trigger records.
+- Verified live: reach-200020×PD2D → 0.1977 MODERATE; reach-100060×ADHD → 0.795 HIGH; cross-model (ADHD patient × PD2D model) runs with explicit missing-tables gaps.
