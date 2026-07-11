@@ -4,6 +4,16 @@ haipipe-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [7.3.0-note] -- 2026-07-10
+
+Fixed (fresh-agent audit, M15)
+- Frontmatter summary now mentions v7.3 answered-local.
+
+## [7.3.0] -- 2026-07-10
+
+Changed (paper-side paper-local sweep, JL 2026-07-10)
+- PPNN card status vocabulary gains `answered-local`: the need was closed from the paper's own registries at the paper-side LOCAL SWEEP (no gateway dispatch); refs may be paper-root-relative. See haipipe-paper-probe 3.2.0 STEP 2.
+
 ## [7.2.0] — 2026-07-07
 
 Added (paper 2-phase skillset-diagnose, Part-0 harvester ruling — JL: "they are the harveste agents... just one step within the whole probe")

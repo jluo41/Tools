@@ -4,6 +4,40 @@ haipipe-paper-display — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [3.4.0] -- 2026-07-10
+
+Changed (JL ruling 2026-07-10: "the probe plan should be like the subsection, and like others, just like seed-template.md -- could we make things consistent?")
+- `Probe Plan` section renamed **`Probes`** and reshaped to the seed/claims family convention: each probe is its own `###` sub-item `<ID> -- <title> -- <status>` with `Lane:` / `Route:` / `Serves:` / `Gated on:` / `Outcome:` field lines, `---` separated; evidence entries carry the family's `Detail: _PROBE/PPNN_<slug>.md` pointer. IDs still number within lane (S sweep / E evidence / R render); status vocabulary spelled out (`▶ ready` · `✋ gated` · `done`). PROBE fills `Outcome:` and flips status.
+- `###` is now used for BOTH display subsections and probe sub-items (the doc's only ATX level); template, SKILL.md (content structure, formatting, DRAFT, PROBE, done-criteria, flow), and CHECKLIST updated together.
+
+## [3.3.0] -- 2026-07-10
+
+Changed (JL ruling 2026-07-10: "never never using tables")
+- NO markdown pipe tables anywhere in `4-display.md`: the Display Map, Probe Plan, method candidates, and Parking become record lines (`- E2 ✋ <action>` + indented `route:` / `serves:` / `gated on:` / `outcome:` fields; `- A <form> via <route> -> <output> · verdict: ...`; map lines `N. Figure N = unit @section · type · claim · status`). Pipe tables fight hand-editing, one-sentence-per-line, and diff review. Aligned plain text inside fenced sketches stays legal (it sketches a LaTeX table, not doc structure).
+- `ref/display-template.md` rewritten table-free; formatting rule + content bullets + CHECKLIST item updated; new probe-plan status `done` (outcome written in) joins ▶/✋.
+- Validated 2026-07-10 via fresh-subagent DRAFT redo on the sandbox paper: template's no-tables rule discovered and applied (pipe-table lines 61 -> 0), map/plan/candidates/Parking all record lines, `> USER:` lines byte-identical, gate stop held. Real-paper migration: Paper-Personality2Opioid-MISQ2026 4-display.md de-tabled the same day ([FORMAT] logged), threads verified intact.
+
+## [3.2.0] -- 2026-07-10
+
+Changed (JL ruling 2026-07-10: "organize each display with the venue section, and each display itself is a subsection")
+- `4-display.md` display blocks are no longer flat: one `-----` group per PAPER SECTION (narrative order), each display a `###` subsection inside its group — the md now mirrors the generated gallery's `\section*`/`\subsection*` structure one-to-one (sync walks the groups; group membership must match the map's `section` column).
+- Every group opens with a `venue expects:` line (that section's display units from the 2-venue.md Structural Blueprint), so a venue-mandated unit with no subsection is a visible GAP in place, not just an audit finding.
+- `ref/display-template.md` restructured accordingly; formatting rule updated (`###` is the only ATX level used; a display's section is stated once, by its group header); SKILL.md content-structure/Plan/sync/flow + CHECKLIST updated.
+
+## [3.1.0] -- 2026-07-10
+
+Changed (JL rulings 2026-07-10: "after the draft, the gate is leaving the questions and checking with the user about what probe to run" + "probe should check other stages, like the sections, whether they need any displays" + template belongs in ref/ like every other stage)
+- New `ref/display-template.md`: canonical 4-display.md template, same `ref/<stage>-template.md` convention as seed/claims/pitch/narrative; the inline SKILL.md template is gone and haipipe-paper-draft's template table points here.
+- New md section **Probe Plan (proposed by this draft)**: one row per proposed probe in three groups — `S0` cross-stage coverage sweep, `En` evidence lane, `Rn` render lane — each `▶ ready` or `✋ gated on <named block thread>`. DRAFT authors it; the ⛔ gate presents open threads + the plan; the user rules/strikes rows ("skip En/Rn"); PROBE executes only what survives and writes each row's outcome back. New done-criteria + CHECKLIST items (no ✋ row silently run or dropped).
+- PROBE step 0 = coverage sweep (S0): read 3-narrative + every section md (+ `_DISPLAY_` registries + `\input`/`\ref` uses), cross-check against map + inbox; unfiled needs become DR rows filed on the section's behalf (`filed-by: display-probe sweep`); map acceptance stays a DRAFT/user decision.
+- haipipe-paper-draft SKILL.md display notes updated to match (template pointer, probe-plan-at-gate, S0 sweep).
+- Validated 2026-07-10 via fresh-subagent DRAFT redo on the sandbox paper: template discovered via `ref/`, Probe Plan authored (S0/En/Rn, ▶/✋ tied to named threads), gate presented threads + plan, migration not repeated, no probe/sync/compile ran, `> USER:` lines preserved verbatim. The subagent's emergent "draft assumptions" move for non-interactive illuminate is codified in DRAFT (record unasked taste questions as assumptions, present at the gate).
+
+## [3.0.1] -- 2026-07-10
+
+Fixed (fresh-agent audit, C3)
+- PROBE section states the authority split: commissioning evidence/render work for accepted units is THIS stage's job; the probe-display worker's ban binds section/narrative context only.
+
 ## [3.0.0] -- 2026-07-10
 
 Changed (JL ruling 2026-07-10: md-first display stage — "we should have 4-display.md as other stages, for quick review and modification; real assets stay in 0-displays/; probe should call the illustration skills as well; try different methods of making the plot")

@@ -1,35 +1,46 @@
-# Section Outline Format Spec
+# Section .md Format Spec (the working document)
 
-The outline is the primary working document for section-edit. It lives at `0-lifecycle/5-section-edit/{section}/{section}.md`. DRAFT creates it, PROBE annotates its tracking files, REVISE updates its sentences and syncs to tex, CHECK verifies everything matches.
+The section `.md` is the primary working document for section-edit. **Scaffold it by copying `ref/section-template.md`** (the fill-in skeleton; this file is its rulebook) — fill the `<slots>`, delete the `<tpl:` guidance lines, and gate on `grep -c '<tpl' = 0`. It lives at `0-lifecycle/5-section-edit/{section}/{section}.md`. DRAFT creates it with REAL prose, PROBE fills its placeholders' sources, REVISE polishes its sentences and syncs to tex, CHECK verifies everything matches.
+
+**The .md holds real paper prose** (JL ruling 2026-07-09, supersedes the "lean plan" model): complete academic sentences the user can review as a paper — not telegraphic notes, not a skeleton. The `.tex` is GENERATED from it by sync; tex prose is never edited directly.
 
 ## File structure
 
 ```markdown
 # Section N: Title -- Structure
 
+venue: MISQ 2026 · section-type: methods (+results flavor)
+blueprint: 0-lifecycle/2-venue/2-venue.md (methods block)   <- BINDING: budget, structure, density
+style: _venue/playbook-utd-is/MISQ/MISQ-methods/style.md · MISQ-results/style.md   (reference only)
+
 \```
 §N.1 Subsection Title (K paragraphs)
-  P1. Short paragraph job description                        N sentences
-  P2. Short paragraph job description                        N sentences
-  P3. Short paragraph job description                        N sentences
+  P1. Short paragraph job description                        5 sentences · ~110 words
+  P2. Short paragraph job description                        5 sentences · ~120 words
+  P3. Short paragraph job description                        4 sentences · ~95 words
+
+§N.2 Subsection Title (K paragraphs)
+  P4. Short paragraph job description                        5 sentences · ~105 words
+
+total: 4 ¶ · 19 sentences · ~430 words   (venue budget for this section: ~500)
 \```
 
 ---
 
 ## §N.1 Subsection Title
 
-### P1. What this paragraph does
+### P1. Why LLM scoring is credible here
 
-(Semicolon-separated preview of key points; short, not a mini-abstract.)
+(enabler framing; cites companion pipeline paper)
 
-> USER: comment text
-> CC: response text
+We score each review with the pipeline validated in \citep{authors2025npjdm}.
 
-Draft sentence one, capturing the first content decision.
+The model recovers human-perceived agreeableness at MAE {VAL:? cross-model MAE}.
 
-Draft sentence two, with a parenthetical citation (Author Year) if known.
+Agreement with human annotators falls within the human-human range.
 
-Draft sentence three.
+> USER: this claim feels strong, soften?
+> CC: softened to "closely tracks" — will land in REVISE.
 
 ---
 
@@ -37,36 +48,68 @@ Draft sentence three.
 
 (Preview of key points.)
 
-Draft sentence one.
+First real sentence of the paragraph.
 
-Draft sentence two.
+Second real sentence, citing prior work as \citep{wang2022reviews} when the key is already in the .bib, or \cite{TOADD} when it is not.
 ```
 
 ## Three elements per paragraph
 
-1. **Heading + preview**: what this paragraph does and why it's here
-2. **Comments**: USER/CC discussion about structural decisions (preserved verbatim)
-3. **Draft sentences**: one sentence per line, capturing CONTENT decisions
+1. **Heading + preview**: what this paragraph does and why it's here (preview = ONE short line, ~80-120 chars, a scan hook)
+2. **Prose sentences**: REAL draft prose, one sentence per line, blank line between sentences
+3. **Comments**: `> USER:` / `> CC:` threads under the sentence they discuss (preserved verbatim; see binding rules)
 
 ## Rules
 
+- **Venue header under the H1** (written ONCE at scaffold by DRAFT): `venue:` (the pin from STATUS.md), `section-type:` (this section's mapping, e.g. 4-llmtrait → methods), `blueprint:` (the paper's 2-venue.md block — the authoritative digest), `style:` (the deep-dive pack file, resolved from the blueprint's `[source:]` tag). Resolve the pack path layout-agnostically — installed skills flatten the tree: `VEN=$(find ~/.claude/skills "$CLAUDE_PLUGIN_ROOT" -type d -path '*skills/paper/_venue' 2>/dev/null | head -1)` — and record the RESOLVED path so later phases (and the user) follow the link instead of re-deriving it. Pack file absent → write `style: (pack missing — blueprint only)` and flag for CHECK. **The blueprint is BINDING** (word budget, ¶ structure, citation density, display limits); **the style file(s) are REFERENCE ONLY** — mine them for arc, signature moves, and exemplar sentences, but deviation is fine and never a CHECK failure. A hybrid section (e.g., a methods section that reports validation results) lists MORE THAN ONE style reference, `·`-separated.
 - **Structure overview at top** (update whenever structure changes)
+- **Counts in the overview**: each `Pn` line carries `N sentences · ~M words` (approximate, `~`); a `total:` line closes the block with ¶ / sentence / word totals against the venue budget from `2-venue.md`. Recount whenever the block is updated (draft, and after REVISE); over budget → flag it, don't silently trim.
 - `##` for subsections, `###` for paragraphs
-- **Preview must be ONE SHORT LINE** (~80-120 chars), not a mini-abstract. It's a scan hook: concept name + one distinguishing phrase.
-- **One draft sentence per line** (these become `Pn.Sn` markers when synced to tex)
+- **Sentences are REAL prose**: complete academic sentences close to submission register. Content-complete; verification and polish come later. If a sentence can't be written because a fact is missing, write it anyway with a placeholder.
+- **One sentence per line, blank line between sentences** (each becomes a `Pn.Sn` marker when synced to tex). Never prefix sentences with numbers (`S1.` etc.) — Pn.Sn indexing lives only in tex.
+- **Citations are REAL, placeholders greppable, nothing guessed** (JL ruling 2026-07-10, supersedes `[CITE: <topic>]` + parenthetical "(Author Year)"; legacy `[CITE:]` markers in old drafts are treated as `\cite{TOADD}`):
+  - `{VAL:? <what the number is>}` — a number that PROBE/values must trace to a source
+  - `\citep{key}` / `\citet{key}` — a real citation whose key EXISTS in the paper's .bib. Grep the .bib (and `_CITATION_`) FIRST; writing a key that does not grep in .bib is inventing a citation
+  - `\cite{TOADD}` — a citation slot with no suitable .bib key yet. EVERY `\cite{TOADD}` is paired with a `_CITATION_` row naming the topic + expected source (the prose stays clean; the map carries the topic). `grep -c TOADD` = open slots; a TOADD surviving into compiled tex fails CHECK (broken-\cite check)
 - **Target 5-6 sentences per paragraph** (MISQ/ISR norm; consult section-type for venue-specific)
-- **USER comments as `> USER:` text**, CC responses as `> CC:` text
-- **Comment lifecycle**: comments live in the working .md while active; when user confirms resolved, the thread moves to `_LOG`; each phase starts with a clean file
-- **Parenthetical citations** like "(Author Year)" are content markers, not verified bibtex keys. PROBE/citation will audit and verify them later.
+- **USER comments as `> USER:` text**, CC responses as `> CC:` text, directly under the sentence discussed
+- **Comment lifecycle (binding)**: the agent NEVER deletes, rewords, or relocates a `> USER:` comment; it replies underneath; only the user declares a thread resolved; resolved threads MOVE to `_LOG` verbatim; each phase starts with a clean file
+- **Surgical edits only**: change the specific lines under discussion. A full-file rewrite of a .md carrying `> USER:` comments is forbidden.
+- **Never a tex mirror**: no LaTeX markup EXCEPT citation commands (`\citep`/`\citet`/`\cite{TOADD}` — the one construct that syncs to tex verbatim), no `%%` markers, no agent monologue in the .md
 
-## Draft sentences are NOT
+## Draft prose is NOT
 
-- NOT polished prose (that's REVISE)
-- NOT LaTeX (that's sync-to-tex after all phases)
-- NOT verified citations (that's PROBE/citation)
-- NOT verified numbers (that's PROBE/values)
+- NOT verified (that's PROBE: `{VAL:?}` and `\cite{TOADD}` stay until traced)
+- NOT venue-polished (that's REVISE: humanizer, sentence economy, weave)
+- NOT LaTeX (that's sync-to-tex after REVISE)
+- NOT the agent's scratchpad (analysis and options belong in the session, not the file)
 
-Draft sentences are rough prose that captures what each sentence SAYS, not how it sounds. REVISE rewrites them to venue quality later.
+DRAFT prose settles WHAT each sentence says, in real sentences. REVISE settles HOW it sounds. If a sentence says the wrong thing, fix it in the .md during DRAFT (or restart DRAFT). If it says the right thing but sounds bad, REVISE fixes it — in the .md first, then sync to tex.
+
+## Probe proposal (the draft's last block)
+
+The draft ENDS by proposing the probe work it just created. DRAFT proposes; PROBE executes (after the gate). The block is the last section of the .md:
+
+```markdown
+---
+
+## Probes proposed by this draft
+
+values:    {VAL:? cross-model MAE}            -> expected source: npjDM Table 2 / tasks/ run
+           {VAL:? mean agreeableness}         -> paper-local: 0-displays/table1-.../source/metrics.json
+citation:  \citep{authors2025npjdm}           -> key in .bib, verify placement only
+           \cite{TOADD} @ P2.S1 (ML trait-measurement priors) -> _CITATION_ row #4; needs discovery sweep (buffered: PP12)
+display:   P2 wants the trait-distribution figure -> 0-displays/ unit exists? LINK : DR request (4-display inbox)
+heavier:   case-mix robustness needs a NEW task run (buffered: PP13)
+```
+
+Rules:
+- Derived from the prose: every `{VAL:?}` and `\cite{TOADD}` placeholder appears here with its EXPECTED source (pointer-following first); `\citep{key}` citations appear only if placement needs verifying. When the draft already SEES the pointer in the paper's own registries, say so — `-> paper-local: _VALUES_6-results.md` / `0-displays/<unit>/source/metrics.json` — and PROBE closes it without a gateway dispatch (`answered-local`).
+- Display needs are stated per paragraph.
+- Anything heavier than pointer-following (a new task run, a lit sweep) is BUFFERED as a `status: planned` PP skeleton at `_PROBE/PP<NN>_<slug>.md` (underscore after the number) + an index row (same buffer convention as seed: Need / Why / Route, EMPTY refs) — DRAFT proposes, it never executes.
+- **Index rows are bullet lines, never markdown tables** (JL standing rule — no tables in probe documents; the checker enforces it inside PP cards). Append one line per PP to `1-probe-plans/README.md`:
+  `- PP<NN> · <stage/section> · <status> · <one-line need> · card: <path>` EXCEPTION: a missing DISPLAY UNIT is never a PP card — it becomes a DR row in `0-lifecycle/4-display/_DISPLAY_REQUEST.md` (section-edit never creates displays; the display stage solves requests).
+- The ⛔ STOP presentation shows this block, so the user reviews the STRUCTURE and the PROBE PLAN at the same gate.
 
 ## Populating from existing tex (backward fill)
 
@@ -74,11 +117,11 @@ When the section already has prose in `0-sections/*.tex`:
 
 1. Read the tex file
 2. Extract paragraph structure (from `% Para [id]` banners or `%% ---- Pn.Sn ----` markers)
-3. For each paragraph: extract the sentences, create the heading + preview + draft sentences in the outline
-4. Preserve any existing `> USER:` comments from prior editing rounds
-5. Present the populated outline to the user for review
+3. For each paragraph: create the heading + preview, then copy the sentences as prose lines (one per line, blank-line separated, markers stripped)
+4. Preserve any existing `> USER:` comments from prior editing rounds exactly where they were
+5. Present the populated .md to the user for review
 
-This is a BACKWARD FILL: tex -> outline. The outline becomes the working document for structural decisions, and tex gets updated when the section syncs after all phases.
+This is a BACKWARD FILL: tex -> .md, done ONCE at scaffold time. From then on the .md is the source and tex is sync output.
 
 ## Inputs for section drafting
 
@@ -86,46 +129,43 @@ This is a BACKWARD FILL: tex -> outline. The outline becomes the working documen
 2. **Narrative**: `0-lifecycle/3-narrative/3-narrative.md` (the story beats)
 3. **Existing tex**: `0-sections/NN_section.tex` (if the section already has prose)
 4. **Section-type**: `section-type/section-{type}/SKILL.md` (structure norms for this section type)
-5. **Venue pack**: `_venue/playbook-<pack>/<outlet>/<outlet>-<section>/style.md` (word budget, paragraph count, style norms)
+5. **Venue contract**: `0-lifecycle/2-venue/2-venue.md` (blueprint + writing principles; `_venue/` packs = fallback / deep dive)
 6. **Claims**: `0-lifecycle/1-claims/1-claims.md` (what claims this section needs to support)
-
-Resolution path for venue:
-- From `STATUS.md venue:` extract the outlet (e.g., "MISQ 2026" -> outlet "MISQ", pack "playbook-utd-is")
-- Read `_venue/playbook-<pack>/<outlet>/<outlet>-<section>/style.md` if it exists
-- This file contains word budget, arc, signature moves, exemplar sentences. It OVERRIDES the general style-profile.md for this section.
 
 ## Done-criteria for section DRAFT
 
-- [ ] Every paragraph has a heading, preview, and draft sentences
+- [ ] `grep -c '<tpl' {section}.md` = 0 (template fully instantiated, no guidance residue)
+- [ ] Every paragraph has a heading, preview, and real prose sentences
 - [ ] Structure overview matches the paragraph blocks
-- [ ] User has confirmed the outline (no open structural `> USER:` questions)
-- [ ] _LOG has a draft summary entry
+- [ ] Every unverified number is a `{VAL:?}`; every citation gap a `\cite{TOADD}` + `_CITATION_` row; every `\citep{key}` greps to a real .bib entry (nothing invented)
+- [ ] "Probes proposed by this draft" block at the end covers every placeholder + display need; heavier needs buffered as planned PP skeletons in `_PROBE/` + index row
+- [ ] ⛔ The user has reviewed the STRUCTURE + PROBE PLAN and approved (no open structural `> USER:` questions)
+- [ ] _LOG has a `[GATE] draft-review: approved` entry quoting the user
 
 ## _LOG entry format for DRAFT
 
 ```markdown
-## draft  YYYY-MM-DD
+## YYYY-MM-DD #N ~HH:MM [GATE] draft-review: approved
+> USER: "looks good, go"
 
-### [section or heading where comment lived]
+## YYYY-MM-DD #N ~HH:MM [DRAFT]
 > USER: original comment
 > CC: response
 -> applied / rejected / deferred
-
-### Summary
-- Created outline with N paragraphs, M sentences
+- Created section .md with N paragraphs, M sentences, K {VAL:?} + J \cite{TOADD} slots, L \citep{} keys from .bib
 - Key decisions: [structural choices from resolved comments]
 ```
 
 ## Relation to REVISE
 
 ```
-DRAFT                                 REVISE
------                                 ------
-settle WHAT to say                    settle HOW to say it
-one sentence per line, rough prose    venue-quality LaTeX, \citep{}, Pn.Sn
-parenthetical "(Author Year)"        verified \citep{key} from .bib
-content decisions                     language quality, voice, flow
-the outline .md file                  the tex file in 0-sections/
+DRAFT                                  REVISE
+-----                                  ------
+settle WHAT to say                     settle HOW to say it
+real prose, one sentence per line      venue-quality prose, humanized
+\citep{key} from .bib + \cite{TOADD}   verified values; TOADD resolved to real keys
+content decisions                      sentence economy, voice, flow
+writes the .md                         revises the .md, THEN syncs to tex
 ```
 
-The draft sentences are the INPUT to REVISE. If a draft sentence says the wrong thing, fix it in the outline (DRAFT). If a draft sentence says the right thing but sounds bad, fix it in tex (REVISE).
+The draft prose is the INPUT to REVISE. Both phases work the `.md`; only sync touches tex.

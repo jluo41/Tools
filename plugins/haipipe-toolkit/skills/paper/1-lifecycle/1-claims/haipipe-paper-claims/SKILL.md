@@ -4,8 +4,8 @@ description: "Stage orchestrator for the paper folder's 0-lifecycle/1-claims/1-c
 argument-hint: "[paper-dir] [--backfill <probe-ref>] [--source <path>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.1.0"
-  last_updated: "2026-07-07"
+  version: "4.2.0"
+  last_updated: "2026-07-09"
   summary: "Claims stage orchestrator. The evidence campaign brain: plans evidence needs, commissions work (tasks/discoveries), tracks results. Three sections (Hypotheses, Claims, Probes) + Evidence Campaign summary. Drives phases (draft -> probe -> revise -> check) internally."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -85,7 +85,19 @@ No separate Hypothesis-Claim Alignment section. The alignment is in the tags: `C
 
 ## Phase Orchestration
 
-When the user invokes `/haipipe-paper claims`, this skill drives the phases in order. The user does not call phase skills directly.
+When the user invokes `/haipipe-paper claims`, this skill drives the phases in order. The user does not call phase skills directly — but steers them with VERBS on this stage:
+
+```
+/haipipe-paper claims <paper-dir>            -> open: status + frontier; advance ONLY on the user's verb
+/haipipe-paper claims <paper-dir> draft      -> run/redo DRAFT  -> STOP for user review
+/haipipe-paper claims <paper-dir> probe      -> run/redo PROBE  (agent-only)
+/haipipe-paper claims <paper-dir> revise     -> dispatch REVISE workers (agent-only, proof-carrying)
+/haipipe-paper claims <paper-dir> check      -> open the CHECK gate
+```
+
+**Hard gates (binding).** After DRAFT: ⛔ STOP — present the draft for review and end the turn; the user's verb/"go" advances, logged as `[GATE] draft-review: approved` quoting the user. Each phase runs via its `Skill()` dispatch — a phase executed inline did not happen; the `[REVISE]` _LOG entry carries its `workers:` proof line. Never commit or conclude the stage before CHECK opens with its report. The agent never self-advances past a gate.
+
+**Comment rules (binding).** The agent NEVER deletes, rewords, or relocates a `> USER:` comment; it replies `> CC:` underneath; only the user resolves a thread; resolved threads MOVE to `_LOG` verbatim. Working files are edited surgically — no full-file rewrite of a file carrying `> USER:` comments. Background: `../../wiki/02-comment-lifecycle.md`.
 
 ```
 claims invoked
@@ -99,6 +111,7 @@ DRAFT ──→ FIRST: consume seed's forward pointers — grep `_LOG_0-seed.md`
           list hypotheses (H1, H2, H3), write claims (short, with → PP ref),
           write probes (full evidence plan per PP), write evidence campaign
           (internally calls /haipipe-paper-draft with this artifact spec)
+          Ends at ⛔ STOP: user reviews, iterates, approves ([GATE] logged).
   │
   ▼
 PROBE ──→ link probes/tasks/discoveries to each claim,
@@ -109,7 +122,7 @@ PROBE ──→ link probes/tasks/discoveries to each claim,
   ▼
 REVISE ─→ refine claim statements, probe plan clarity,
           evidence descriptions, and hypothesis wording
-          (internally calls /haipipe-paper-revise)
+          (internally calls /haipipe-paper-revise; [REVISE] _LOG entry carries workers: proof)
   │
   ▼
 CHECK ──→ present exit gate: all claims backed? no aspirational

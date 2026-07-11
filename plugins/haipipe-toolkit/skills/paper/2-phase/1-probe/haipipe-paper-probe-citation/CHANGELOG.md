@@ -4,6 +4,27 @@ haipipe-paper-probe-citation — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [2.2.2] -- 2026-07-10
+
+Fixed (fresh-agent audit, C6/M13)
+- Phase 4 PLACE made md-first: replace the matching \cite{TOADD} in the .md, then sync (was "place in tex + parenthetical in outline").
+- Adoption rule hardened: a sibling's ✅/📌 triggers a .bib re-grep before PLACE (pointer, not proof).
+
+## [2.2.1] -- 2026-07-10
+
+Changed (JL: "for the citation and the value, we prefer to probe previous stages' outcome")
+- Paper-local sweep scope widened: prior stages' read|verdicted PP cards are adoptable pointers too — their pick_list/refs name already-reviewed discoveries/*/sources.md (pointer-following, not discovery).
+
+## [2.2.0] -- 2026-07-10
+
+Changed (JL: "you can check previous stage's _CITATION instead of do the heavy one")
+- Phase 2 ROUTE: paper-local sweep before any probe plan — grep other stages' _CITATION_*.md maps + the .bib; matches are ADOPTED (`Note: adopted from _CITATION_<stage>.md`, status + provenance carried; ✅/📌 elsewhere -> PLACE directly, 🔍 stays 🔍). Only surviving gaps become probe-plan suggestions.
+
+## [2.1.0] -- 2026-07-10
+
+Changed (JL ruling: real citations from .bib in the draft)
+- New Hard Boundary 4: `\cite{TOADD}` is the draft's citation slot (legacy `[CITE:]` treated the same). PROBE greps TOADD, maps each slot to its `_CITATION_` row, finds candidates; TOADD -> real-key replacement happens in the .md FIRST and only after the human's bibtex lands in .bib. Old boundary 4 (USER comments) renumbered to 5.
+
 ## [2.0.0] — 2026-07-07
 
 Changed (Part-0 harvester ruling, JL: "they are the harveste agents... just one step within the whole probe" + "I think search should be done with haipipe-discovery-orchestrated agent")

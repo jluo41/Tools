@@ -7,8 +7,8 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, WebFetch
 # entry in Phase 5 REVIEW). WebSearch is deliberately ABSENT: finding is the
 # gateway's monopoly (JL 2026-07-07 one-door ruling).
 metadata:
-  version: "2.0.0"
-  last_updated: "2026-07-07"
+  version: "2.2.2"
+  last_updated: "2026-07-10"
   summary: "Citation HARVESTER. AUDIT→ROUTE(gaps→probe plans)→CANDIDATE(harvest from gateway pick_list)→PLACE→REVIEW. Never searches — one door: gateway. Single working doc = _CITATION_."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   predecessors:
@@ -45,7 +45,9 @@ These are non-negotiable. Every agent invoking this skill must obey them.
 
 3. **Auto-place only for keys already in `.bib`.** During PLACE, the agent greps `.bib` for each candidate. If the key exists, the agent places `\citep{}` in tex. If the key does NOT exist, the agent leaves the entry as 🔍 and flags it for CHECK. The human verifies 🔍 entries and copies bibtex to `.bib` during CHECK.
 
-4. **NEVER remove USER comments from the outline.** Preserve `> USER:` comments verbatim. When a comment is resolved, add a `> CC:` response below it explaining the resolution. The comment itself stays.
+4. **`\cite{TOADD}` is the draft's citation slot** (JL ruling 2026-07-10, supersedes `[CITE: <topic>]`; treat legacy `[CITE:]` markers the same). The section .md carries real `\citep{key}` only for keys already in .bib; every missing citation is `\cite{TOADD}` paired with a `_CITATION_` row naming the topic. PROBE greps `TOADD` in the .md (and synced tex), maps each slot to its row, and finds 🔍 candidates. TOADD -> real-key replacement happens in the .md FIRST (then sync), and ONLY after the human's bibtex lands in .bib. A TOADD surviving into compiled tex fails CHECK via the broken-\cite check.
+
+5. **NEVER remove USER comments from the outline.** Preserve `> USER:` comments verbatim. When a comment is resolved, add a `> CC:` response below it explaining the resolution. The comment itself stays.
 
 
 ## The .bib ↔ _CITATION_ separation
@@ -238,6 +240,20 @@ write the one-line Need (+ Why + Route hint: single-lookup → ENRICH; landscape
 "light"/"full" mean ONLY the gateway modes (light = explore+gather, full =
 +judge) — never an inline shortcut tier.
 
+**Paper-local sweep BEFORE any probe plan** (JL 2026-07-10: "you can check
+previous stage's _CITATION instead of do the heavy one"). A gap is only a gap
+if the paper hasn't already solved it: before writing a PP skeleton, grep the
+OTHER stages' `_CITATION_*.md` maps (pitch, narrative, sibling sections), the
+.bib, AND prior stages' `read|verdicted` PP cards for the topic — their
+`pick_list`/`refs` point at already-reviewed `discoveries/*/sources.md`
+(pointer-following: the card names the path, so reading it is legal here). A match is ADOPTED — copy the entry into this section's
+_CITATION_ with `Note: adopted from _CITATION_<stage>.md`, keeping its status
+and provenance: a ✅/📌 elsewhere means the key is in .bib → re-grep the .bib to confirm
+(HB3 — the sibling's verdict is a pointer, not proof), then PLACE it here; a 🔍 there stays 🔍 here (same candidate, same pending human
+verification — no re-discovery). Only gaps that survive this sweep become
+probe-plan suggestions. This is not searching: the maps are the paper's own
+curated indexes.
+
 
 ## Phase 3: CANDIDATE → _CITATION_
 
@@ -350,8 +366,7 @@ The agent auto-places citations for keys that already exist in `.bib` and flags 
    - Learn the key from .bib
    - Add `- **Key:** \`eddy1984variations\` (learned from .bib)` to the _CITATION_ entry
    - Update status: 🔍 → ✅
-   - Place `\citep{key}` in the section tex at the recommended location
-   - Sync the outline (add parenthetical reference)
+   - Replace the matching `\cite{TOADD}` in the section .MD with `\citep{key}` (md-first, per Hard Boundary 4), then sync to tex
    - Update the density table
 
 3. **If the key is NOT in .bib** (new candidate, not yet verified):

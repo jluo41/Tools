@@ -4,6 +4,18 @@ haipipe-paper-seed — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [3.6.1] -- 2026-07-10
+
+Fixed (fresh-agent audit, C9 -- R1 alignment)
+- Orientation-search weaving uses \cite{TOADD} slots (was "(Author Year)" placeholders).
+
+## [3.6.0] -- 2026-07-09
+
+Changed (JL ruling 2026-07-09 (LLMTrait-Section session postmortem): normalize the writing process)
+- Phase VERBS on the stage (`seed <paper-dir> [draft|probe|revise|check]`); bare invocation = status, user's verb advances.
+- Hard gates + binding comment rules inlined (STOP after DRAFT with [GATE] log; Skill() dispatch proof; [REVISE] workers line; never delete `> USER:` comments; surgical edits only).
+- Draft diagram: `> JL:` example unified to `> USER:`.
+
 ## [3.5.0] — 2026-07-07
 
 Changed (DRAFT-searches / PROBE-runs-real split + seed-vs-claims probe layering -- reference behavior: the Paper-CGMtoCyclePhase session; JL: "always run the real probes in the probe phase")

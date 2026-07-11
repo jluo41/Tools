@@ -4,6 +4,18 @@ haipipe-paper-revise — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [1.5.1] -- 2026-07-10
+
+Changed
+- Wording: the .md stays markup-free APART FROM citation commands (real-citation convention, JL 2026-07-10); REVISE resolves `\cite{TOADD}` slots whose keys have landed in .bib.
+
+## [1.5.0] -- 2026-07-09
+
+Changed (JL ruling 2026-07-09 (LLMTrait-Section session postmortem): normalize the writing process; closes feedback/2026-07-09_revise-skipped-humanize-and-outline-first.md)
+- Proof-carrying contract (binding): stage hubs reach REVISE ONLY via Skill(haipipe-paper-revise) -- inline hand-editing = "the REVISE phase did not happen"; every run writes a [REVISE] _LOG entry with `workers: content/humanizer/results` line; checks.sh --log FAILs without it.
+- Order of operations pinned: revise the working .md FIRST, then sync to tex -- never tex-first (the .md is what the human reads/comments).
+- Automation steps now end with "hand back to the stage hub, which OPENS CHECK -- never commit or conclude before the CHECK gate opens".
+
 ## [1.4.0] — 2026-07-08
 
 Changed (venue lockfile wiring)

@@ -4,8 +4,8 @@ description: "Run any paper-lifecycle work. Use `/haipipe-paper enter <paper-pat
 argument-hint: "[enter|status|venue|stage] [paper-path-or-args...]"
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "2.6.0"
-  last_updated: "2026-07-08"
+  version: "2.7.0"
+  last_updated: "2026-07-09"
   summary: "Front door for the paper lifecycle: one verbs block, one routing pass, closing block, pointers to owners."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -45,6 +45,8 @@ feedback "<text>" | feedback list|move       -> fn/feedback.md (resolve BEFORE o
 digest [session] [--dry-run]                 -> fn/digest.md   (resolve BEFORE other parsing)
 "<natural language>"                         -> infer via the keywords above, dispatch
 ```
+
+**Phase-verb pass-through**: a trailing `draft | probe | revise | check` after any stage verb's args is a PHASE VERB — forward it verbatim through the lifecycle router to the stage skill (e.g. `/haipipe-paper edit 4-llmtrait revise` → section-edit drives its REVISE phase). Stage skills stop at their human gates (DRAFT review, CHECK); the user's verb is what advances them — never advance a gate on the user's behalf.
 
 Examples:
 

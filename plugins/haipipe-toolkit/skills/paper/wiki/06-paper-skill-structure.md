@@ -83,7 +83,7 @@ user-invoked directly):
 DRAFT  -> 2-phase/0-draft/haipipe-paper-draft
 PROBE  -> 2-phase/1-probe/haipipe-paper-probe    (dispatches into the project-side /haipipe-probe lifecycle)
 REVISE -> 2-phase/2-revise/haipipe-paper-revise
-CHECK  -> 2-phase/3-check/haipipe-paper-check   (the only human-involved phase)
+CHECK  -> 2-phase/3-check/haipipe-paper-check   (final human gate; DRAFT review is the other)
 ```
 
 ## Router Rule

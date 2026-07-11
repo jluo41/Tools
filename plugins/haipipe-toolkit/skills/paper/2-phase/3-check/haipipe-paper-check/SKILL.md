@@ -1,11 +1,11 @@
 ---
 name: haipipe-paper-check
-description: "CHECK phase worker (internal). Called by stage skills as the ONLY human-involved phase in the DPRC lifecycle. DRAFT, PROBE, and REVISE run fully automatic; CHECK is where the human reviews everything at once. Runs automated sub-checkers, produces a unified pass/fail report, then the human verifies and decides. Users invoke stage skills (seed, claims, pitch...), not this skill directly."
+description: "CHECK phase worker (internal). Called by stage skills as the FINAL human gate in the DPRC lifecycle (the other gate is the stage's DRAFT structure review). PROBE and REVISE run fully automatic; CHECK is where the human reviews quality, flags, and REVISE why-comments at once. Runs automated sub-checkers, produces a unified pass/fail report, then the human verifies and decides. Users invoke stage skills (seed, claims, pitch...), not this skill directly."
 argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent
 metadata:
-  version: "1.7.0"
-  last_updated: "2026-07-07"
+  version: "1.8.1"
+  last_updated: "2026-07-10"
   summary: "CHECK phase worker (internal). The ONLY human-involved phase. Runs sub-checkers (./checks.sh for the deterministic ones), seeds > CHECK: comments in-file at every flag site, and gates human review."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -305,7 +305,7 @@ CHECK is where every human action in the lifecycle happens. The entry point is t
 When the human restarts from a phase (e.g., "restart from PROBE"):
 - The agent re-runs that phase and reads ALL `> CHECK:` comments with their `> USER:` replies, plus every free `> USER:` comment, and responds to each (a `> CHECK:` comment with no reply is surfaced back to the human, never silently skipped)
 - DRAFT restart: revise the outline per `> USER:` feedback
-- PROBE restart: re-audit, place newly verified keys from .bib, search for new candidates per `> USER:` requests
+- PROBE restart: re-audit, place newly verified keys from .bib (in the .md, then sync); new-candidate requests from `> USER:` comments become probe plans → gateway (never inline search)
 - REVISE restart: re-apply prose quality rules addressing `> USER:` style concerns; each change carries a why-comment
 
 

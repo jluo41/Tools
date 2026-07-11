@@ -4,6 +4,20 @@ haipipe-paper-check — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [1.8.1] -- 2026-07-10
+
+Fixed (fresh-agent audit, C5)
+- PROBE-restart guidance: placement is md-first; new-candidate requests become probe plans -> gateway (was "search for new candidates").
+- checks.sh header: TODO[] flags marked legacy (DRAFT plants {VAL:?}/\cite{TOADD} in the .md).
+
+## [1.8.0] -- 2026-07-09
+
+Changed (JL ruling 2026-07-09 (LLMTrait-Section session postmortem): normalize the writing process)
+- checks.sh: new `--log <file>` check -- the newest [REVISE] entry in a _LOG must carry its `workers:` proof line (missing = FAIL; REVISE present without a [GATE] draft-review on record = WARN). Enforces the proof-carrying REVISE dispatch contract.
+
+Fixed
+- checks.sh: `mapfile` replaced with portable while-read loops (macOS /bin/bash 3.2 has no mapfile -- dir-mode tex scan and .bib discovery silently broke, making broken-cite checks unreliable on Macs); empty --log array guarded for set -u under bash 3.2.
+
 ## [1.7.0] — 2026-07-07
 
 Changed (skillset-diagnose FIX round; threads T1/T10 + findings D2-D9)

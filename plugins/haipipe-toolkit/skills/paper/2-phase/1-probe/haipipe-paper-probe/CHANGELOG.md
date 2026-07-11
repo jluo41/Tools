@@ -4,6 +4,25 @@ haipipe-paper-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [3.3.1] -- 2026-07-10
+
+Fixed (fresh-agent audit, C1/M7/M11/M18)
+- ref/per-stage-dispatch.md display row rewritten for R3 (DR reroute from section/narrative; display stage is the only commissioner) + 📨 legend on section-edit row.
+- PPNN-anatomy reference gets a layout-agnostic find pattern (relative path breaks on flattened installs).
+- Whitelist display item widened: 0-displays/ units + index for existence/LINK, */source/ for numbers.
+
+## [3.3.0] -- 2026-07-10
+
+Changed (JL 2026-07-10 display-request ruling)
+- STEP 2: display-shaped PP cards (a display unit that does not exist) are REROUTED to the 4-display inbox as DR rows and closed `answered-local` with takeaway `rerouted to display stage: DRNN` -- never dispatched to the gateway.
+
+## [3.2.0] -- 2026-07-10
+
+Changed (JL: "maybe things are already there before... we don't need the heavy probe")
+- STEP 2 gains a mandatory LOCAL SWEEP before dispatch: closed whitelist of the paper's own registries (sibling/prior _CITATION_/_VALUES_/_EVIDENCE_, read|verdicted PP cards' refs, 0-displays/*/source/, .bib). Need answered there -> `status: answered-local (from <files>)`, no gateway call; partial -> dispatch only the remaining gap. Adopt the pointer, never the verdict (PLACE re-verifies against the original source).
+- PROOF 2 accepts sweep hit lines in place of the Agent() call for answered-local cards.
+- check-probe-cards.sh: accepts answered-local (refs resolve under project_root OR paper_root); status grep now hyphen-aware; card + working-doc globs extended one level deeper (section-level `0-lifecycle/5-section-edit/<section>/_PROBE/` cards and _CITATION_/_VALUES_ docs were previously invisible to the checker).
+
 ## [3.1.0] — 2026-07-07
 
 Changed (Part-0 harvester ruling; JL: "they are the harveste agents to check the content and genearte the report accordingly. The don't need to restart the whole probe process, they are just one step within the whole probe" / "Yes, this is true! Pelase go ahead for it")

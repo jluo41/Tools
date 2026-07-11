@@ -10,14 +10,15 @@ SEC=$PAPER/0-lifecycle/5-section-edit
 ## TL;DR
 
 ```
-1. /haipipe-paper section-edit introduction   → stage skill runs DRAFT → PROBE → REVISE (automatic)
-2. It stops at CHECK: checker report + probe flags (🔍 citations, values, display links)
-3. You reply in the working .md as  > USER: …  threads, or decide: proceed / restart / accept / park
-4. Ask to apply → the stage restarts the affected phase, re-runs everything downstream, re-CHECKs
-5. Loop until CHECK is clean → sync to tex → compile
+1. /haipipe-paper-section-edit introduction draft   → DRAFT writes a REAL prose draft, then ⛔ STOPS
+2. You review the STRUCTURE (¶ jobs, order, coverage) in the .md; comment > USER: inline
+3. Your verb advances:  … introduction probe  → PROBE fills {VAL:?} / \cite{TOADD} sources (agent-only)
+                        … introduction revise → REVISE workers polish + sync to tex (agent-only)
+4. It opens CHECK: checker report + probe flags + %% {CC-*} why-comments to eyeball
+5. You decide: proceed / restart <phase> / accept with edits / park → loop until clean → compile
 ```
 
-Same engine behind every stage: `seed | claims | pitch | narrative | display | section-edit`.
+Two human gates: structure review after DRAFT, quality review at CHECK. The agent never advances past a gate on its own — your verb (or "go") is the approval. Same engine behind every stage: `seed | claims | pitch | narrative | display | section-edit`.
 
 ## A. Run a stage (the normal path)
 
@@ -25,9 +26,9 @@ Same engine behind every stage: `seed | claims | pitch | narrative | display | s
 
 What happens, phase by phase:
 
-- **DRAFT** 🤖 -- `haipipe-paper-draft` settles structure + draft sentences into `$SEC/1-introduction/1-introduction.md`, reading the stage's template from `1-lifecycle/` (venue style is applied later, in REVISE, from the `_venue/` pack). Content decisions are negotiated with you here.
+- **DRAFT** 🤖→🧑 -- `haipipe-paper-draft` settles structure + writes REAL prose (one sentence per line, real `\citep{}` keys from .bib, `{VAL:?}`/`\cite{TOADD}` placeholders) into `$SEC/1-introduction/1-introduction.md`, reading the stage's template from `1-lifecycle/` (venue style is applied later, in REVISE). Then it ⛔ STOPS for your structure review — nothing advances until your verb.
 - **PROBE** 🤖 -- `haipipe-paper-probe` fans out: `-citation` writes candidates to `_CITATION_1-introduction.md` and flags them 🔍, `-values` traces numbers to source into `_VALUES_…md`, `-display` routes figure/table needs to `0-displays/` units. Evidence questions beyond the documents dispatch through `/haipipe-probe`. Agent-only; nothing gates on you.
-- **REVISE** 🤖 -- `haipipe-paper-revise` changes the prose directly per `REF/prose-quality.md` through `-content` (incl. its weave step for paragraph flow), `-humanizer` (plus `-results` for results sections), leaving `%% {CC-*}:` why-comments. No comment-first pause.
+- **REVISE** 🤖 -- `haipipe-paper-revise` changes the prose directly per `REF/prose-quality.md` through `-content` (incl. its weave step for paragraph flow), `-humanizer` (plus `-results` for results sections), leaving `%% {CC-*}:` why-comments. No comment-first pause. Proof-carrying: reached only via `Skill()` dispatch, `.md` first then sync to tex, and the `[REVISE]` `_LOG` entry must carry its `workers:` line.
 - **CHECK** 🧑 -- `haipipe-paper-check` presents the 6-axis report with all probe flags. This is where you come in.
 
 ## B. Review a CHECK report
