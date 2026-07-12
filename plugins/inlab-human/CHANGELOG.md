@@ -14,7 +14,7 @@
 - New env config: INLAB_PATIENT_STORE, INLAB_ENDPOINT_STORE, INLAB_REGISTRY (endpoint-URL registry JSON).
 - `/inlab-human-console` skill; tier-1 `/inlab-human` re-routed (console default; bundle/review/report = study mode).
 - Patient-store contract: extractor scrubs outcome fields (Label/Split/ground_truth*) from all tables — caught a real gold leak in PD2D's Cohort table — and stores per-endpoint trigger records.
-- Verified live: reach-200020×PD2D → 0.1977 MODERATE; reach-100060×ADHD → 0.795 HIGH; cross-model (ADHD patient × PD2D model) runs with explicit missing-tables gaps.
+- Verified live against two locally-served endpoints: scores returned with the expected risk bands, and a cross-model run (a patient scored by the *other* study's model) completes with an explicit missing-tables gap report rather than a silent partial-data prediction. (Per-patient scores are study data — they stay in the study repo, not in this shared plugin.)
 
 ## 0.2.1 — 2026-07-10
 Fixes found by monitoring a real console session that spent ~80s on discovery instead of inference:

@@ -41,9 +41,11 @@ B. CLI twin (always works, copy-paste):
 CLI=Tools/plugins/inlab-human/mcp-servers/endpoint-predict/predict_cli.py   # from repo root
 python3 $CLI list-patients
 python3 $CLI list-models
-python3 $CLI get-patient          --patient-id reach-100060 [--tables Dx Med] [--max-rows 20]
-python3 $CLI prepare-payload      --patient-id reach-100060 --model reach.adhd.xgb
-python3 $CLI predict-for-patient  --patient-id reach-100060 --model reach.adhd.xgb [--obs-dt 2023-06-01]
+python3 $CLI get-patient          --patient-id <ID> [--tables Dx Med] [--max-rows 20]
+python3 $CLI prepare-payload      --patient-id <ID> --model <MODEL>
+python3 $CLI predict-for-patient  --patient-id <ID> --model <MODEL> [--obs-dt 2023-06-01]
+# <ID> / <MODEL> come from list-patients / list-models above — the cohort is the
+# study's, not this plugin's, so nothing study-specific is hard-coded here.
 ```
 
 | Step | Tool / subcommand | Notes |
