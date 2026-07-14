@@ -1,0 +1,72 @@
+The thing — what this is, and the one question it answers
+=========================================================
+Part of: diagram/<YYMMDD>-<topic>/  ·  <N> files, one theme each, no index.
+STATUS: 🟡 DRAFT   ·   flip to → SPEC OF RECORD — <R1-Rn> closed JL <YYYY-MM-DD>. SHIPPED.
+Format: JL comments are `> JL:` · CC replies are `>> CC{MMDD}:` + a diagram.
+
+
+  ⚠️  SKELETON. Delete every <PLACEHOLDER> and every ⚠️ line before this ships.
+      The folder is dated at BIRTH and NEVER re-dated. A later session APPENDS
+      to it (a new ruling in 05, a `>> CC{MMDD}:` reply, a status flip) — it does
+      NOT make a new folder. A NEW FOLDER means a NEW TOPIC.
+
+
+THE THING IN ONE LINE
+=====================
+
+  <one line. If it needs two, you have two topics — split the folder.>
+
+  ❓ the ONE question this folder answers:
+       "<the question, in the words you would actually say out loud>"
+
+  owner: <who>   ·   skill / code it governs: <path>   ·   artifact: <path>
+
+
+① WHAT IT IS
+=============
+
+  <2-6 lines. What the thing IS, not how it works — 03 is for how.>
+
+     ┌──────────────────────────────────────────────────────────────────────┐
+     │ <the shape of the artifact, in a box. What is on disk, exactly.>     │
+     └──────────────────────────────────────────────────────────────────────┘
+
+  🔑 <the one sentence a reader must leave with.>
+
+  ✂️  CUT (<JL | CC>, <MM-DD>): <what was considered and deliberately NOT built>
+     > JL: "<the verbatim line that killed it>"
+
+
+② THE WIRE — end to end
+========================
+
+⚠️  Diagram the THING: the data flow, the before/after, the bug's path. Not prose
+    in a box. Per the diagram-ascii skill — emoji-dense, fenced ```text.
+
+```text
+   🧑 <upstream>            <what it hands over>
+                            │
+   🧱 <THIS THING>          <what it does>
+                            │
+                      ⛔ GATE  👈 <who decides, and what they decide>
+                            │
+                            ▼
+   📄 <downstream>          <what lands on disk>
+```
+
+
+③ WHO WRITES WHAT
+==================
+
+⚠️  If two things write the same file, SAY SO HERE and say why it is safe.
+    An unstated second writer is the bug you will spend a day finding.
+
+```text
+   ✏️  <writer A>   writes  <fields>
+   ✏️  <writer B>   writes  <fields>
+   ⇒ <why they do not collide>
+```
+
+
+  ⇒ this folder is a CONSUMER of <sibling diagram/ folder>, if any. It redefines
+    nothing there. See 06-shipped-owed.txt for the reconciliation.

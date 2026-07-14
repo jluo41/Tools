@@ -315,67 +315,6 @@ code/
 
 Header format: `── [N/TOTAL] Title ──` (dashes fill to ~60 chars). Omit the total if the count isn't fixed upfront.
 
-## Use case: Daily progress log
-
-Pair this skill with a `YYMMDD-progress.md` file in the working folder to track a day's work as a sequence of diagrams. See `ref/07-task-progress.md` for a full worked example.
-
-Conventions:
-
-- **Filename**: `YYMMDD-progress.md` (e.g. `260425-progress.md`).
-- **One section per timestamp**: `## HH:MM  emoji  brief title` (≤ 5 words).
-- **Diagrams ≥ 80% of the page; prose ≤ 20%.** If a sentence can be a diagram, make it one.
-- **Each entry's main diagram shows the work itself** — folder layouts being designed, before/after of a pivot, alternatives compared side-by-side. The status pipeline (`📥 → ⚙️ → 🧠 …`) is a 1-line checkpoint, not the bulk of any entry.
-- **Refresh the punch-list table** at start of day and at wrap-up so the log opens and closes with a clear scoreboard.
-- **Pivots get a before/after**: explicitly show what was tried and abandoned vs. what's being done now, with one line of "why" underneath.
-
-## Use case: Daily session log (.txt + canvas append)
-
-When a working session ends, log it as **one** `.txt` per session and *append* it to the day's Excalidraw canvas. The canvas accumulates session-by-session; prior columns and any manual annotations you drew in Excalidraw are preserved.
-
-**File**: `YYMMDD-session-<slug>.txt` in `Daily/YYYY-MM-DD/`. Slug should be 2–4 hyphenated words naming the topic (e.g. `ref-repo-agent-stack`, `voice-bot-debug`).
-
-**Required sections** (each marked with `─§`):
-
-```
-─§ Timeline & user comments ────
-   ⏰ HH:MM  🧑 "verbatim quote or paraphrase"
-             🤖 one-line action you took
-   ⏰ HH:MM  🧑 next comment ...
-
-─§ What we did / converted ─────
-   📂 list of files / folders touched, before → after
-
-─§ Headline finding / comparison
-   the diagram payload of the session
-
-─§ Decisions ──────────────────
-   ✅ what we decided · ⏳ what we parked · ❌ what we ruled out
-```
-
-Style rules:
-
-- ⏰ timestamps lead every comment line — they're the spine of the file
-- 🧑 / 🤖 emoji split user voice from assistant action
-- One quoted phrase per user comment + one-line description of what changed
-- Decisions section ends every session — readers should know "what now" without reading the rest
-
-**Workflow** (see `diagram-ascii-canvas` SKILL for the scripts):
-
-```
-🤖 write YYMMDD-session-<slug>.txt
-        │
-        ▼
-🧑 review the .txt (Read the file, eyeball sections)
-        │
-        ├── ✏️  tweak           ──▶ 🤖 edit · re-preview · loop
-        │
-        └── ✅ "insert it"      ──▶ 🤖 txt-append-to-canvas.py
-                                     (new column on right edge,
-                                      prior content preserved)
-```
-
-**Important**: do NOT re-run `txt-to-canvas.py` (full rebuild) once the day's canvas exists — that wipes manual annotations. Always use `txt-append-to-canvas.py` for accretion.
-
 ## Logical relations (for argument-style diagrams)
 
 When diagramming a paper section, an idea, or a design rationale, the **logical glue** matters as much as the boxes. Use these primitives so progression / contrast / synthesis are visible at a glance.
@@ -468,5 +407,15 @@ For a worked-through method section using all of the above, see `ref/08-paper-se
 
 ## See Also
 
+- **`haipipe-session`** — owns the **design-note FOLDER**; this skill owns **how to draw the diagrams that go inside it**. Clean split:
+
+  ```
+  📁 haipipe-session   the CONTAINER      diagram/<YYMMDD>-<topic>/  — dated at BIRTH, never re-dated
+                                          one folder per TOPIC, not per session (a later session APPENDS)
+                                          the APPEND-ONLY rulings ledger (05) + shipped/owed (06)
+                                          the comment protocol:  `> JL:`  ·  `>> CC{MMDD}:`
+  ✏️  diagram-ascii     the CONTENT        the boxes, arrows, trees, emoji inside each .txt
+  ```
+
+  When a session produces design decisions that must persist, reach for `haipipe-session` — do **not** invent a per-session log file here.
 - `diagram-ascii-canvas` — when you've produced 3+ `.txt` diagrams in one folder and the user wants to see them all on one canvas (for spatial layout, drawing connections between them, design review). Screenshots each `.txt` and embeds them into a single `.excalidraw` file. After producing multiple `.txt` files, offer this as a follow-up: *"要把这些拼成一张 Excalidraw 大图吗？"*
-- `progress-log` — for image-heavy Markdown progress reports that embed ASCII sketches from this skill alongside PNG figures and tables
