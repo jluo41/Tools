@@ -140,7 +140,7 @@ Harvest ALWAYS runs as a dispatched SUBAGENT (produce) and the calling worker re
 input     the section's `target:` QA file + its `sources:` lane line
           (the QA file's Answer anchors name the sources.md S## entries)
 SUBAGENT  in its OWN clean context: opens the QA file, follows its anchors into
-          the leaf's sources.md, reads ONLY the anchored S## entries (no free
+          the task-folder's sources.md, reads ONLY the anchored S## entries (no free
           browsing), expands each into a _CITATION_ entry (format below), writes
           _CITATION_{stage}.md directly, returns a one-line summary + counts
           ("12 entries, 5 VERIFIED / 7 🔍").
@@ -154,7 +154,7 @@ The paper session never reads sources.md in either role; content-level quality i
 
 Procedure (inside the subagent):
 
-1. Establish the source set from the QA file's `## Answer` anchors; open the leaf's `sources.md` and read ONLY the anchored entries.
+1. Establish the source set from the QA file's `## Answer` anchors; open the task-folder's `sources.md` and read ONLY the anchored entries.
 2. Write/extend `_CITATION_{stage}.md`: NEVER tables. Group by literature/theme (`##` sections); one paper per `###` subsection with FULL title in the heading and bullet fields transcribed from the manifest:
 
 ```
@@ -258,8 +258,8 @@ Phase-1 gap  →  a question SECTION in 1-probes/PPNN_<topic>.md (serves / targe
                 Agent(haipipe-discovery-orchestrator-agent)
                 (💀 the probe GATEWAY agent is RETIRED)
              →  the executor runs its own qa gate; sources land in
-                discoveries/<leaf>/sources.md, reviewer-checked, and the readable
-                digest lands at discoveries/<leaf>/QA/<n>-<slug>.md
+                discoveries/<discovery-group>/<discovery-folder>/sources.md, reviewer-checked, and the readable
+                digest lands at discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md
              →  the section's `target:` points at that QA FILE; its `## Answer`
                 anchors ([→ sources.md#S02]) are what this worker transcribes
                 → HARVEST (below) → _CITATION_ entries
@@ -279,7 +279,7 @@ if the paper hasn't already solved it: before opening a new question SECTION, gr
 OTHER stages' `_CITATION_*.md` maps (pitch, narrative, sibling sections), the
 .bib, AND prior stages' `answered | read | answered-local` probe SECTIONS for the
 topic — their `target:` / `sources:` lanes point at an already-reviewed
-`discoveries/<leaf>/QA/<n>-<slug>.md` and the `sources.md` it anchors
+`discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md` and the `sources.md` it anchors
 (pointer-following: the section names the path, so reading it is legal here). A match is ADOPTED — copy the entry into this section's
 _CITATION_ with `Note: adopted from _CITATION_<stage>.md`, keeping its status
 and provenance: a ✅/📌 elsewhere means the key is in .bib → re-grep the .bib to confirm

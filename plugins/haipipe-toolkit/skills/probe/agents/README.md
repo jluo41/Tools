@@ -31,7 +31,7 @@ Dispatch — DIRECT, no gateway
    ├──▶ Agent(haipipe-task-orchestrator-agent)        runs / code   ⚙️ probe-UNAWARE
    ├──▶ Agent(haipipe-discovery-orchestrator-agent)   literature    ⚙️ probe-UNAWARE
    │        both run the `qa` gate inside:  ① QA scan  ② digest  ③ P-B-E-R
-   │        both return a PATH:  <leaf>/QA/<n>-<slug>.md   ← the EXECUTOR authored it
+   │        both return a PATH:  <task-folder>/QA/<n>-<slug>.md   ← the EXECUTOR authored it
    │
    │  ⑤ INTERPRET — with the QA file in hand, and only for a `mode: full` section
    │

@@ -137,7 +137,7 @@ stage DRAFT RAISES A QUESTION
              THEIR CLEAN CONTEXT IS THE WALL. Inside, each runs its own `qa` gate:
                  ① QA SCAN (already answered?) ② DIGEST (results/ answer it, no digest?)
                  ③ P-B-E-R at the shallowest depth that answers it
-             and WRITES <leaf>/QA/<n>-<slug>.md itself.
+             and WRITES <task-folder>/QA/<n>-<slug>.md itself.
              💀 the probe GATEWAY agent is RETIRED — its SWEEP became step ②.
     ↓
 ④ POINT      the section's `target:` → the answering QA FILE (the file, never the folder)

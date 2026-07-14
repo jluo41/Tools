@@ -1,0 +1,63 @@
+<THE CONSTITUTION> — the one rule that must not break
+=====================================================
+Part of: diagram/<YYMMDD>-<topic>/  ·  6 files, one theme each, no index.
+STATUS: 🟡 DRAFT   ·   flip to → SPEC OF RECORD — R1-Rn closed JL <date>. SHIPPED.
+Theme: the ONE invariant. If it breaks, the design is gone. The rest is detail.
+
+
+  ⚠️  RENAME THIS FILE per topic — never ship it as `04-constitution`.
+        the boundary between two things  →  04-cleavage
+        the laws that must hold          →  04-the-rules
+        what may never cross what        →  04-the-wall
+      Rename the TITLE above too, and re-cut its `===` underline to the new length.
+
+  ⚠️  ONE rule. If you write three, ask which one the other two follow from.
+
+
+THE RULE
+========
+
+```text
+     🧱 <a thing that DOES X>     →   <lands HERE>
+     ⚖️  <a thing that DOES Y>     →   <lands THERE>
+```
+
+  🛑 <THE PROHIBITION, IN CAPS.>
+     That ONE rule is what stops <the failure it prevents>. Without it,
+     <the slow slide that follows> — and <the thing that gets hollowed out>
+     becomes a formatting step.
+
+
+❌ THE ANTI-PATTERN — <the real case where it broke>
+====================================================
+
+  ⚠️  Ground the rule in the incident that proves it. Reuse the case from 02.
+
+```text
+   🏗️  <thing A>   ─┐
+                    ├─ ONE <run | file | writer> ──▶ 📊 <the bad outcome>
+   ⚖️  <thing B>   ─┘                                      │
+                                                            ▼
+                    ❓ <the question nobody could answer>
+                    🤷 UNANSWERABLE. <why the bundling destroyed the signal>
+
+   ✅ SPLIT:  🧱 <A asks its question FIRST>  →  ❌ <the cheap NO>
+                 …and <B> is never dispatched. Cost: 30 seconds.
+```
+
+
+💀 WHAT WE DELIBERATELY DID NOT DO — do not resurrect
+=====================================================
+
+  ⚠️  The REJECTED ledger. Append-only, like 05. Every idea that was considered and
+      killed, with the reason. Without this, the next session rebuilds it.
+
+  💀 <the idea>          <why it died. Who killed it, and when.>
+  💀 <the idea>          <...>
+
+
+> JL (open, see 05-rulings.txt): <the honest objection to this rule, in JL's voice.
+> If nobody has objected yet, WRITE THE STRONGEST OBJECTION YOURSELF. A constitution
+> with no recorded counter-argument has not been tested.>
+
+>> CC{MMDD}: <the reply. Concede what is true. Bound the cost. Do not oversell.>

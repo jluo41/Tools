@@ -5,6 +5,9 @@ Called by `/haipipe-task` as the first step on any existing task folder.
 Read-only scan that reports what's aligned and what's broken.
 
 
+> JL: One line one sentence. 
+
+
 When to call
 ------------
 

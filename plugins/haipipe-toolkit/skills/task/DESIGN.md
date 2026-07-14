@@ -434,7 +434,7 @@ TWO SESSION MODES:
 THE ONE DOOR IN — the `qa` verb (`haipipe-task/fn/qa.md`). A question arrives as ONE
 QUESTION IN GENERAL LANGUAGE and nothing else. The verb answers it (① QA SCAN → ② DIGEST →
 ③ P-B-E-R at the shallowest depth) or REFUSES it, and returns a path to
-`<leaf>/QA/<n>-<slug>.md`. It never learns who asked or why, and must not try to find out.
+`<task-folder>/QA/<n>-<slug>.md`. It never learns who asked or why, and must not try to find out.
 
 The pen never leaves this layer: WE write the QA file. A file in this bank authored by an
 outsider carries the outsider's vocabulary — that is exactly how a task result on disk
@@ -486,7 +486,7 @@ required:
   RUN_AUDIT.md                    reviewer pass/warn unless explicitly exempt
 
 optional:
-  QA/<n>-<slug>.md                the READABLE digest of a direction this leaf explored.
+  QA/<n>-<slug>.md                the READABLE digest of a direction this task-folder explored.
                                   Three reasons only: a question arrived · results/ already
                                   answered one but no digest existed · we judged a finding
                                   worth digesting. A QA/ mirroring every result is noise.
@@ -667,6 +667,6 @@ Decision Log
 2026-06-19  Superseded: Stage 5 removed from task. Sandwich model adopted: probe open dispatches discoveries/tasks, discover and task do their own work, probe post resumes and judges the claim. Insights deferred while focusing on Narrative/Probe/Discovery/Task.
 2026-06-21  Documented: three orthogonal axes (lifecycle / task domains / type spokes). Type spokes stay an unnumbered enum by design; only lifecycle stages and pipeline domains are numbered, because only they are sequenced.
 2026-06-21  Approved (supersedes the line above): dissolve C (for-xxx spokes) into B. B becomes a single flat NUMBERED domain family of 9 domains; every task kind gets a stable domain id. Coverage over clean boundaries: overlap is fine, every task type must fall into exactly one domain. nn and fit split but share /haipipe-nn. stata and agent are their own domains. Migration staged: Phase 1 folder move with skill names unchanged, Phase 2 optional rename. See "Target Architecture" section.
-2026-07-14  Approved (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, rulings R1-R18): the task layer is CONSUMER-UNAWARE, but not question-deaf. DELETED: _ASK/ stubs, _ANS/, the `answers:` report field, external ids anywhere under tasks/, and the probe-aware `asks` verb. ADDED: the `qa` verb (fn/qa.md) — one question in general language in, a path to <leaf>/QA/<n>-<slug>.md out; gate ① QA SCAN ② DIGEST ③ P-B-E-R at the shallowest depth (read | new run | new script | new leaf), or REFUSE. ADDED: the OPTIONAL QA/ folder — the leaf's readable, numbered map of the directions it has explored; authored by THIS layer at Report; three reasons only; no consumer vocabulary. AFFIRMED: the task session's PRIMARY mode is autonomous P-B-E-R with no question pending, and answerability work (digests + code that makes future questions cheap) is task-native. Supersedes the "sandwich model" (2026-06-19) and the "Downstream Consumer Contract" (2026-06-11) entries below.
+2026-07-14  Approved (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, rulings R1-R18): the task layer is CONSUMER-UNAWARE, but not question-deaf. DELETED: _ASK/ stubs, _ANS/, the `answers:` report field, external ids anywhere under tasks/, and the probe-aware `asks` verb. ADDED: the `qa` verb (fn/qa.md) — one question in general language in, a path to <task-folder>/QA/<n>-<slug>.md out; gate ① QA SCAN ② DIGEST ③ P-B-E-R at the shallowest depth (read | new run | new script | new task-folder), or REFUSE. ADDED: the OPTIONAL QA/ folder — the task-folder's readable, numbered map of the directions it has explored; authored by THIS layer at Report; three reasons only; no consumer vocabulary. AFFIRMED: the task session's PRIMARY mode is autonomous P-B-E-R with no question pending, and answerability work (digests + code that makes future questions cheap) is task-native. Supersedes the "sandwich model" (2026-06-19) and the "Downstream Consumer Contract" (2026-06-11) entries below.
 2026-06-21  Decided: Phase 2 (rename for-xxx skills) REJECTED. Names stay haipipe-task-for-xxx by design; the haipipe-task- prefix keeps each specialist clearly inside the haipipe-task family. Migration is complete at Phase 1 (folder nesting). No skill rename.
 2026-06-21  Refined (per "we will keep adding domains"): numbering is APPEND-ONLY, never renumbered. id = creation order, permanent; pipeline-flow order is a separate documented attribute, not the id. Founding assignment keeps existing folders fixed (data=1, nn=2, endpoint=3, individual=4) and appends fit=5, eval=6, display=7, stata=8, agent=9. New domains take the next integer; Phase 1 touches zero existing folders. Rejected the one-time tidy renumber as inconsistent with append-only.

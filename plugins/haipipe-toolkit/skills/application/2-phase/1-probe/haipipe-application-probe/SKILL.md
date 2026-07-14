@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 metadata:
   version: "4.3.0"
   last_updated: "2026-07-14"
-  summary: "v4.3 — R19 HARDENING (four holes closed after the v4.2 review; IDENTICAL to haipipe-paper-probe 4.2.0). (a) R14 IS SCOPED TO `state: answered`: a `working` file's ## Answer is EMPTY BY CONSTRUCTION, so it can never pass R14's literally-answers test, and applying R14 to it sends the reader straight back to DISPATCH — the exact duplicate run R19 exists to kill. A `working` file is matched on its `# Q —` line: if that restated question IS my question it is a HIT-IN-FLIGHT (commission + point, NO dispatch). (b) `owner:`/`eta:` ON THE IN-FLIGHT PATH ARE DERIVED, NEVER INVENTED: owner := the target's `by:` (or `bank`); eta := the target's `started:` + QA_CLAIM_TTL_HOURS. The checker's commissioned-liveness test and the QA claim's TTL become THE SAME CLOCK. (c) THE IN-FLIGHT LOOP IS CLOSED: a `commissioned` section whose target went `answered` (or `superseded`) is now a HARD FAIL — commissioned-target-answered / commissioned-target-superseded. Before this, a section sat GREEN over a landed answer until its eta expired. (d) A QA FILE WITH NO STATE LINE IS MALFORMED, NOT LEGACY: `state:` is MANDATORY, and the grandfather clause let an executor defeat qa-answered-empty BY OMISSION. New codes qa-no-state / read-target-no-state / commissioned-target-no-state. --- v4.2 — THE CONSUMER SIDE OF THE QA STATE LINE (constitution 8.2.0, R19/R20/R21; JL ruling 2026-07-14, Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ PART 3b '>> CC0714'). Identical in vocabulary to haipipe-paper-probe 4.1.0 — the twins must not drift. A QA file is now a TICKET that becomes a RECEIPT: it carries ONE mutable `state:` line (working | answered | superseded-by: QA/<m>-<slug>.md) + `started:` (MANDATORY when working) + optional `by:`. ② MATCH LEARNS THE STATE — existence is no longer the signal, so the worker OPENS every candidate QA file and branches on its state line: `answered` = a T2 HIT; `working` = ⏳ IN FLIGHT, meaning THE QUESTION IS ALREADY BEING ANSWERED, so the section goes `state: commissioned` (with its unconditional BUILD-lane fields), `target:` points at that QA file, and there is NO SECOND DISPATCH — this is the whole point: two consumers asking the same question a week apart must not both pay for the same expensive P-B-E-R run; `superseded-by:` = FOLLOW THE CHAIN to the live answer and NEVER bind target: to a superseded file. ④ POINT: `ls` no longer settles the section's state — the TARGET'S state line does (absent|working ⇒ commissioned · answered ⇒ answered · superseded ⇒ re-point), and a `working` target still `working` past QA_CLAIM_TTL_HOURS=24 means the run is DEAD ⇒ re-dispatch. ⑤ INTERPRET reads ONLY a target that is `answered` and NOT superseded. THE INVARIANT, SAID OUT LOUD: ONE WRITER — the EXECUTOR, and nobody else, EVER. 'Write-once' was never the real rule; ONE WRITER was. This worker must NEVER create, claim, edit, complete or supersede a QA file — not even one it commissioned, not even to clear a zombie claim; a consumer-planted `working` file is the retired _ASK/ stub in a QA/ costume. check-probe-cards.sh GAINS FIVE TEETH, each catching a bug that was SILENT before: read-target-working · read-target-superseded (THE DAY-1/DAY-40 SILENT-FALSE-CLAIM BUG — every file internally consistent, the claim FALSE) · qa-working-no-started · qa-working-expired · qa-answered-empty; the new state-line logic is factored into ONE shared block (QA_STATE) used by both the section-target pass and the bank pass, exactly as the LAW-2 lint (LEAK_AWK) now is, because the two hand-copied twins drifted into identical bugs once already. Fixture-verified against the SAME 7 cases as the paper twin, byte-identical output: clean+bait PASS exit 0 · legit in-flight (commissioned → working, fresh started) PASS exit 0 · all five teeth FAIL exit 1 · LAW-2 commission/bank lints still fire. --- v4.0 (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14 — R1-R18; mirror of the paper PROBE-phase worker, application deltas preserved). A PROBE is an APPLICATION-LEVEL document: applications/<A>/1-probes/PPNN_<topic>.md, one file per TOPIC, one SECTION per question (serves/target/state/commission/reading) + one '## Why' holding the stake. The 4-step card procedure is REPLACED by the FIVE-STEP LOOP: ORGANIZE (collect the DRAFT's questions into probe files by topic) -> MATCH (grep the bank's QA corpus; R14 match ON THE ANSWER, never on the topic) -> DISPATCH (hand the commission block VERBATIM to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent); the probe GATEWAY agent is RETIRED) -> POINT (target: the answering QA FILE) -> INTERPRET (reading + 1-claims.md flips + the harvest lanes). R1 BINDING BY PATH — PP numbers are application-local footnote numbers, no ledger, no PP id ever crosses to the bank. R2 THE BANK IS PROBE-UNAWARE — _ASK/, _ANS/, answers: and PP ids are DEAD; the executor answers through its own `qa` verb and returns <leaf>/QA/<n>-<slug>.md. CC-8 the probe CAUSES a QA file, the EXECUTOR authors it (a bare results/ with no digest gets a DISPATCHED digest-only run, never an inline write). Cost ladder T0 JOIN / T1 LOCAL / T2 REUSE / T3 ENRICH / T4 FRESH — only T3/T4 summon an agent, and MOST sections should land on T2. TWO LAWS: a consumer session never executes bank work inline; lint both surfaces. 'Verdict'/'verdicted' DELETED — claim status lives in 1-claims.md. PRESERVED: the PROOF-per-step enforcement, the BUILD-lane `commissioned` state (owner/eta/blocks/cross-project, future-eta PASSES, overdue HARD FAILs), the venue-scaled harvest lanes as hooks (values always; citation sectioned venues; display display-unit venues), the display-request reroute, check-probe-cards.sh (KEEPS its filename, internals rewritten for question sections). v4.1: the DISPATCH prompt now uses the executor orchestrators' OWN input spelling (action: qa / project: / question: / leaf:) — the v4.0 keys (project_root/qa/target/deliverable) matched none of their four declared input forms; INTERPRET now actually DISPATCHES Agent(haipipe-probe-reviewer-agent) for a `mode: full` section and lands its judgment in 1-claims.md (in v4.0 `mode: full` was unreachable — no live caller); check-probe-cards.sh LAW-2 lint rebuilt on ONE shared awk pattern set (LEAK_AWK) across BOTH surfaces, catching the bare-label leak (`- C6: … -> NO`, the literal A03 form) and slash-joined id pairs (C6/C7, H1/H2) that the v4.0 path-strip ate. Convention pointer repointed: `haipipe-application/fn/probe-plans.md` was RENAMED to `fn/probes.md` (matching the paper twin; 'plans' is retired vocabulary per skills/STRUCTURE.md)."
+  summary: "v4.3 — R19 HARDENING (four holes closed after the v4.2 review; IDENTICAL to haipipe-paper-probe 4.2.0). (a) R14 IS SCOPED TO `state: answered`: a `working` file's ## Answer is EMPTY BY CONSTRUCTION, so it can never pass R14's literally-answers test, and applying R14 to it sends the reader straight back to DISPATCH — the exact duplicate run R19 exists to kill. A `working` file is matched on its `# Q —` line: if that restated question IS my question it is a HIT-IN-FLIGHT (commission + point, NO dispatch). (b) `owner:`/`eta:` ON THE IN-FLIGHT PATH ARE DERIVED, NEVER INVENTED: owner := the target's `by:` (or `bank`); eta := the target's `started:` + QA_WORKING_TTL_HOURS. The checker's commissioned-liveness test and the QA claim's TTL become THE SAME CLOCK. (c) THE IN-FLIGHT LOOP IS CLOSED: a `commissioned` section whose target went `answered` (or `superseded`) is now a HARD FAIL — commissioned-target-answered / commissioned-target-superseded. Before this, a section sat GREEN over a landed answer until its eta expired. (d) A QA FILE WITH NO STATE LINE IS MALFORMED, NOT LEGACY: `state:` is MANDATORY, and the grandfather clause let an executor defeat qa-answered-empty BY OMISSION. New codes qa-no-state / read-target-no-state / commissioned-target-no-state. --- v4.2 — THE CONSUMER SIDE OF THE QA STATE LINE (constitution 8.2.0, R19/R20/R21; JL ruling 2026-07-14, Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ PART 3b '>> CC0714'). Identical in vocabulary to haipipe-paper-probe 4.1.0 — the twins must not drift. A QA file is now a TICKET that becomes a RECEIPT: it carries ONE mutable `state:` line (working | answered | superseded-by: QA/<m>-<slug>.md) + `started:` (MANDATORY when working) + optional `by:`. ② MATCH LEARNS THE STATE — existence is no longer the signal, so the worker OPENS every candidate QA file and branches on its state line: `answered` = a T2 HIT; `working` = ⏳ IN FLIGHT, meaning THE QUESTION IS ALREADY BEING ANSWERED, so the section goes `state: commissioned` (with its unconditional BUILD-lane fields), `target:` points at that QA file, and there is NO SECOND DISPATCH — this is the whole point: two consumers asking the same question a week apart must not both pay for the same expensive P-B-E-R run; `superseded-by:` = FOLLOW THE CHAIN to the live answer and NEVER bind target: to a superseded file. ④ POINT: `ls` no longer settles the section's state — the TARGET'S state line does (absent|working ⇒ commissioned · answered ⇒ answered · superseded ⇒ re-point), and a `working` target still `working` past QA_WORKING_TTL_HOURS=24 means the run is DEAD ⇒ re-dispatch. ⑤ INTERPRET reads ONLY a target that is `answered` and NOT superseded. THE INVARIANT, SAID OUT LOUD: ONE WRITER — the EXECUTOR, and nobody else, EVER. 'Write-once' was never the real rule; ONE WRITER was. This worker must NEVER create, claim, edit, complete or supersede a QA file — not even one it commissioned, not even to clear a expired `working` file; a consumer-planted `working` file is the retired _ASK/ stub in a QA/ costume. check-probe-cards.sh GAINS FIVE TEETH, each catching a bug that was SILENT before: read-target-working · read-target-superseded (THE DAY-1/DAY-40 SILENT-FALSE-CLAIM BUG — every file internally consistent, the claim FALSE) · qa-working-no-started · qa-working-expired · qa-answered-empty; the new state-line logic is factored into ONE shared block (QA_STATE) used by both the section-target pass and the bank pass, exactly as the LAW-2 lint (LEAK_AWK) now is, because the two hand-copied twins drifted into identical bugs once already. Fixture-verified against the SAME 7 cases as the paper twin, byte-identical output: clean+bait PASS exit 0 · legit in-flight (commissioned → working, fresh started) PASS exit 0 · all five teeth FAIL exit 1 · LAW-2 commission/bank lints still fire. --- v4.0 (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14 — R1-R18; mirror of the paper PROBE-phase worker, application deltas preserved). A PROBE is an APPLICATION-LEVEL document: applications/<A>/1-probes/PPNN_<topic>.md, one file per TOPIC, one SECTION per question (serves/target/state/commission/reading) + one '## Why' holding the stake. The 4-step card procedure is REPLACED by the FIVE-STEP LOOP: ORGANIZE (collect the DRAFT's questions into probe files by topic) -> MATCH (grep the bank's QA corpus; R14 match ON THE ANSWER, never on the topic) -> DISPATCH (hand the commission block VERBATIM to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent); the probe GATEWAY agent is RETIRED) -> POINT (target: the answering QA FILE) -> INTERPRET (reading + 1-claims.md flips + the harvest lanes). R1 BINDING BY PATH — PP numbers are application-local footnote numbers, no ledger, no PP id ever crosses to the bank. R2 THE BANK IS PROBE-UNAWARE — _ASK/, _ANS/, answers: and PP ids are DEAD; the executor answers through its own `qa` verb and returns <task-folder>/QA/<n>-<slug>.md. CC-8 the probe CAUSES a QA file, the EXECUTOR authors it (a bare results/ with no digest gets a DISPATCHED digest-only run, never an inline write). Cost ladder T0 JOIN / T1 LOCAL / T2 REUSE / T3 ENRICH / T4 FRESH — only T3/T4 summon an agent, and MOST sections should land on T2. TWO LAWS: a consumer session never executes bank work inline; lint both surfaces. 'Verdict'/'verdicted' DELETED — claim status lives in 1-claims.md. PRESERVED: the PROOF-per-step enforcement, the BUILD-lane `commissioned` state (owner/eta/blocks/cross-project, future-eta PASSES, overdue HARD FAILs), the venue-scaled harvest lanes as hooks (values always; citation sectioned venues; display display-unit venues), the display-request reroute, check-probe-cards.sh (KEEPS its filename, internals rewritten for question sections). v4.1: the DISPATCH prompt now uses the executor orchestrators' OWN input spelling (action: qa / project: / question: / leaf:) — the v4.0 keys (project_root/qa/target/deliverable) matched none of their four declared input forms; INTERPRET now actually DISPATCHES Agent(haipipe-probe-reviewer-agent) for a `mode: full` section and lands its judgment in 1-claims.md (in v4.0 `mode: full` was unreachable — no live caller); check-probe-cards.sh LAW-2 lint rebuilt on ONE shared awk pattern set (LEAK_AWK) across BOTH surfaces, catching the bare-label leak (`- C6: … -> NO`, the literal A03 form) and slash-joined id pairs (C6/C7, H1/H2) that the v4.0 path-strip ate. Convention pointer repointed: `haipipe-application/fn/probe-plans.md` was RENAMED to `fn/probes.md` (matching the paper twin; 'plans' is retired vocabulary per skills/STRUCTURE.md)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -107,7 +107,7 @@ The FIVE section fields, exactly:
 
 - **serves:** — which stage and/or claim of THIS intervention the question is for. The affinity
   field a stage gate greps ("what does 1-claims still owe?"), and what `--stage` filters on.
-- **target:** — a PATH to the answering file. `NEW <leaf-path>` while the leaf does not exist
+- **target:** — a PATH to the answering file. `NEW <task-folder-path>` while the task-folder does not exist
   yet; the QA-file path once it does. Point at the FILE, never the folder — a leaf that answered
   three things cannot tell you which of them is yours.
 - **state:** — `planned | commissioned | answered | read | answered-local | failed`. DERIVED
@@ -146,7 +146,7 @@ PART 2 — The QA file (the executor's side; this worker NEVER writes one)
 ========================================================================
 
 ```text
-   Path:  tasks/<leaf>/QA/<n>-<slug>.md      discoveries/<leaf>/QA/<n>-<slug>.md
+   Path:  tasks/<task-group>/<task-folder>/QA/<n>-<slug>.md      discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md
    <n> = creation order. `ls QA/` IS the index. SLUG ONLY — no PP id in a bank filename, ever.
 
    # Q — <the question, restated by the EXECUTOR in its own words>
@@ -160,7 +160,7 @@ PART 2 — The QA file (the executor's side; this worker NEVER writes one)
 ```
 
 **R19 — A QA FILE IS A TICKET THAT BECOMES A RECEIPT** (JL ruling 2026-07-14). The EXECUTOR
-writes it TWICE: the CLAIM (`state: working` + `started:`, empty `## Answer`) the moment the qa
+writes it TWICE: the START (`state: working` + `started:`, empty `## Answer`) the moment the qa
 gate decides to run ③ P-B-E-R, and the COMPLETION (`state: answered` + the `## Answer` body) at
 REPORT. Gate paths ① SCAN and ② DIGEST never produce a `working` file — ① writes nothing, and
 ②'s facts already exist so its single write is instant and complete.
@@ -178,8 +178,8 @@ is fine. What is forbidden is a SECOND WRITER:
       This worker READS the state line. That is the whole of its relationship with it.
 ```
 
-**QA_CLAIM_TTL_HOURS = 24** — the named constant. A `working` file whose `started:` is older than
-it is STALE: the run that made it is dead, the EXECUTOR's next qa call may RECLAIM it, and
+**QA_WORKING_TTL_HOURS = 24** — the named constant. A `working` file whose `started:` is older than
+it is STALE: the run that made it is dead, the EXECUTOR's next qa call may RESTART it, and
 `check-probe-cards.sh` FAILs it (`qa-working-expired`). **This worker still does not touch it** —
 a dead claim is re-dispatched (③), never repaired in place.
 
@@ -213,17 +213,17 @@ PART 3 — The `qa` verb (the door this worker dispatches into)
 ==============================================================
 
 ```text
-   /haipipe-task qa "<question>" [<leaf>]   ·   /haipipe-discovery qa "<question>" [<leaf>]
+   /haipipe-task qa "<question>" [<task-folder>]   ·   /haipipe-discovery qa "<question>" [<task-folder>]
 
    input: ONE question, GENERAL language — no PP id, no application ref, no stake.
 
-     ① QA SCAN   grep <leaf>/QA/*.md — already answered? → return the QA file PATH        ~0
+     ① QA SCAN   grep <task-folder>/QA/*.md — already answered? → return the QA file PATH        ~0
                  (a `working` hit → "in progress since <started>"; it does NOT re-run)
      ② DIGEST    results/ (or sources.md / verdict.md) answer it, no readable digest?
                  → write QA/<n>-<slug>.md from EXISTING artifacts; run no code          cheap
                  ONE write, COMPLETE, `state: answered`. No claim — the write is instant.
      ③ P-B-E-R   neither → Plan→Build→Execute→Report at the SHALLOWEST depth
-                 writes TWICE: the CLAIM (`state: working` + `started:`) at the moment it
+                 writes TWICE: the START (`state: working` + `started:`) at the moment it
                  decides to run, then the COMPLETION (`state: answered` + `## Answer`) at
                  REPORT.  ⇒ ONLY ③ ever produces a `working` file, and only transiently.
      🚫 REFUSE   out of scope for this executor/leaf → THIS WORKER RE-ROUTES (wrong leaf, or
@@ -231,7 +231,7 @@ PART 3 — The `qa` verb (the door this worker dispatches into)
                  A REFUSE writes NO QA file, and RELEASES any claim it made.
 ```
 
-The ENRICH DEPTH LADDER (R15) — depth 0 READ · 1 NEW RUN · 2 NEW SCRIPT · 3 NEW LEAF — is the
+The ENRICH DEPTH LADDER (R15) — depth 0 READ · 1 NEW RUN · 2 NEW SCRIPT · 3 NEW TASK-FOLDER — is the
 EXECUTOR's private business. **This worker never learns which depth was used, and never asks.**
 It hands a question and gets back a QA-file path.
 
@@ -287,7 +287,7 @@ PROOF 1: `project_root=<path>` + `ls <project_root>/discoveries/` + `ls <interve
   T0  JOIN     another stage's probe already asks this      → add my serves:       ~0
   T1  LOCAL    my OWN registries answer it                  → answered-local       ~0
   T2  REUSE    an existing QA file answers it               → point the section    1 grep + 1 read
-  T3  ENRICH   the leaf exists, but was never asked this    → new section → ③      agent
+  T3  ENRICH   the task-folder exists, but was never asked this    → new section → ③      agent
   T4  FRESH    no leaf                                      → new section → ③      agent
 ```
 
@@ -321,7 +321,7 @@ PROOF 1: `project_root=<path>` + `ls <project_root>/discoveries/` + `ls <interve
                                    exemption was carved for this way in. DERIVE them, never
                                    invent them (the two lines below).
                                  · re-check at the next gate: still `working` past
-                                   QA_CLAIM_TTL_HOURS ⇒ the run is DEAD ⇒ re-dispatch (③).
+                                   QA_WORKING_TTL_HOURS ⇒ the run is DEAD ⇒ re-dispatch (③).
     superseded-by: QA/<m>-…      🔗 FOLLOW THE CHAIN to the LIVE answer, and bind `target:` to
                                  THAT file (repeat until a file carries no `superseded-by:`).
                                  ⛔ NEVER bind target: to a superseded file — that is the
@@ -340,7 +340,7 @@ PROOF 1: `project_root=<path>` + `ls <project_root>/discoveries/` + `ls <interve
 
   ```text
     owner:  := the target QA file's `by:` value  (or `bank` when `by:` is absent)
-    eta:    := the target's `started:` + QA_CLAIM_TTL_HOURS, rendered YYYY-MM-DD
+    eta:    := the target's `started:` + QA_WORKING_TTL_HOURS, rendered YYYY-MM-DD
               — the claim's OWN expiry, the one date the bank actually asserts
     blocks: := the stage(s) this section serves        cross-project: := the usual sweep
   ```
@@ -354,7 +354,7 @@ PROOF 1: `project_root=<path>` + `ls <project_root>/discoveries/` + `ls <interve
   leaves that both "characterize the cohort" can hold zero overlapping facts. If an **`answered`**
   QA file does not answer the question, it is a T3 ENRICH — dispatch it, do NOT point at it.
   ⚠️ **R14 DOES NOT APPLY TO A `working` FILE.** A `working` file's `## Answer` is EMPTY BY
-  CONSTRUCTION — that is what `working` MEANS, and the claim idiom writes it empty on purpose. So
+  CONSTRUCTION — that is what `working` MEANS, and the start idiom writes it empty on purpose. So
   a `working` file can NEVER pass R14's literally-answers test, and applying R14 to it produces
   exactly the duplicate dispatch R19 exists to kill. **Match a `working` file on its `# Q —` line
   instead:** does that restated question BE my question? If yes it is a **HIT-IN-FLIGHT** — ⏳
@@ -390,13 +390,13 @@ Agent(haipipe-task-orchestrator-agent, run_in_background=<true for fresh>, promp
   project: <project_root, from ①>
   question: |
     <the section's `commission:` block, VERBATIM. Nothing else.>
-  leaf: <the section's target: — an existing leaf path, `NEW <path>`, or omit if unknown>
+  leaf: <the section's target: — an existing task-folder path, `NEW <path>`, or omit if unknown>
 ")
 ```
 
 …or `Agent(haipipe-discovery-orchestrator-agent, ...)` for discovery-shaped work (literature,
 prior art, landscape). THEIR CLEAN CONTEXT IS THE WALL. Inside, the orchestrator runs the qa
-gate ①②③ and creates the leaf + its OWN plan.yaml if needed. The return is a PATH to the
+gate ①②③ and creates the task-folder + its OWN plan.yaml if needed. The return is a PATH to the
 answering QA file.
 
 💀 **The probe GATEWAY agent is RETIRED.** `Agent(haipipe-probe-orchestrator-agent)` NO LONGER
@@ -464,7 +464,7 @@ ASYNC PATH (no live return — a `commissioned` section from an earlier session)
 re-resolve each `commissioned` section's `target:`, `ls` its QA file, and READ its state line.
 `answered` → ⑤ INTERPRET it exactly as a live return. `working` → the section stays
 `commissioned` HONESTLY; report it as IN PROGRESS since `<started>`, never as failed — unless
-`started:` is older than QA_CLAIM_TTL_HOURS, in which case the run is DEAD and the question
+`started:` is older than QA_WORKING_TTL_HOURS, in which case the run is DEAD and the question
 goes back through ③ DISPATCH. Absent → still `commissioned` (a hard fail once the eta passes).
 
 ⚠️ **THE ASYNC PATH IS MANDATORY, AND THE CHECKER NOW ENFORCES IT.** The MATCH→`working` route
@@ -545,8 +545,8 @@ The checker now OPENS every target and every bank QA file; existence proves noth
                                ⇒ the artifact's reading is built on a STALE answer
                                  (THE DAY-1/DAY-40 SILENT-FALSE-CLAIM BUG: every file
                                   internally consistent, the claim FALSE, nothing caught it)
-   ❌ qa-working-no-started    a `working` QA file with no `started:`   ⇒ an unexpirable claim
-   ❌ qa-working-expired       a `working` QA file older than QA_CLAIM_TTL_HOURS ⇒ a zombie claim
+   ❌ qa-working-no-started    a `working` QA file with no `started:`   ⇒ an unexpirable `working` file
+   ❌ qa-working-expired       a `working` QA file older than QA_WORKING_TTL_HOURS ⇒ a expired `working` file
    ❌ qa-answered-empty        `state: answered` with an EMPTY `## Answer` ⇒ a lying receipt
 ```
 
@@ -570,7 +570,7 @@ this right now*. Now the reader MUST OPEN THE FILE. An `ls` is not enough.
    state             disk fact
    ──────────────    ─────────────────────────────────────────────────────────
    planned           the section exists · the target leaf is missing (or `NEW …`)
-   commissioned      EITHER the leaf + its plan.yaml exist · no QA file yet
+   commissioned      EITHER the task-folder + its plan.yaml exist · no QA file yet
                      OR     the target QA file exists and is `state: working`
                      — a LIVE question either way. NO SECOND DISPATCH.
    answered          the target QA FILE exists AND is `state: answered`
@@ -580,7 +580,7 @@ this right now*. Now the reader MUST OPEN THE FILE. An `ls` is not enough.
                      — LEGAL ONLY against a target that is `state: answered` and
                        carries NO `superseded-by:`
    answered-local    target points into the intervention's OWN registries; no dispatch
-   failed            a reading with a dead target · the leaf was deleted · qa REFUSEd
+   failed            a reading with a dead target · the task-folder was deleted · qa REFUSEd
    ──────────────    ─────────────────────────────────────────────────────────
    the probe FILE    the aggregate of its sections — the board renders it
    💀 "verdicted"    DELETED (R7) · 💀 "dispatched" DELETED (say `commissioned`)
@@ -622,7 +622,7 @@ Hard boundaries (inherited by all stages)
   note. The probe CAUSES; the executor AUTHORS (CC-8). This is LAW 1, and it is absolute.
 - **NEVER create, CLAIM, edit, complete or supersede a QA file** — not even one this worker
   commissioned, not even to mark it `working`, not even to append `superseded-by:`, not even to
-  clear a zombie claim. **ONE WRITER: the EXECUTOR, and nobody else, EVER.** "Write-once" was
+  clear a expired `working` file. **ONE WRITER: the EXECUTOR, and nobody else, EVER.** "Write-once" was
   never the rule; ONE WRITER was. A consumer-planted `working` file is the retired `_ASK/` stub
   in a `QA/` costume. This worker READS the state line and writes only its OWN section.
 - NEVER generate bibtex; `_CITATION_` is plain text only.

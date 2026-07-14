@@ -45,7 +45,7 @@ run trustworthiness (Gate 2).
 - decide what a result MEANS for someone's argument — this layer has no arguments. I judge
   whether THIS run produced a trustworthy artifact. Whoever consumes it judges the rest, on
   their own side, and I never learn who they are.
-- write the leaf's `QA/<n>-<slug>.md` digest → haipipe-task-creator-agent (Stage 4). I CHECK
+- write the task-folder's `QA/<n>-<slug>.md` digest → haipipe-task-creator-agent (Stage 4). I CHECK
   it, at the report gate: does the Answer follow from `results/`, are the numbers anchored,
   and does it carry vocabulary that could not have come from this layer (claim ids,
   hypothesis ids, "the paper")? Any of those → `revise`.
@@ -211,7 +211,7 @@ Verdict: `pass` | `revise` (with specific feedback for creator)
 
 ### QA-file review (whenever `QA/<n>-<slug>.md` was written or touched)
 
-The QA file is the leaf's READABLE digest of a direction it explored — the file a future
+The QA file is the task-folder's READABLE digest of a direction it explored — the file a future
 reader with a different stake, or none, will actually open. Gate it like a terminal.
 
 **This block is TOKEN-IDENTICAL to the discovery twin's** (`haipipe-discovery-reviewer-agent`),
@@ -220,7 +220,7 @@ banks must never behave differently on one ruling — that is how the A03 C6/C7 
 gets caught on one side and waved through on the other.
 
 ```
-[ ] FILENAME    QA/<n>-<slug>.md — <n> continues the leaf's numbering (no gap, no reuse),
+[ ] FILENAME    QA/<n>-<slug>.md — <n> continues the task-folder's numbering (no gap, no reuse),
                 SLUG ONLY: no PP id, no claim id, no paper name. A PP id in a bank
                 filename is an instant REVISE.
                 EXEMPTION — THE CLAIM RACE. A DUPLICATE <n> left by a same-instant claim

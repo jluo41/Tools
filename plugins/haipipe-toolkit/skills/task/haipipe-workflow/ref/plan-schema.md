@@ -330,7 +330,7 @@ answered. It is gone, along with the mailbox mechanism it served. A report descr
 run did; it never names anyone downstream, because this layer does not know that anyone is
 downstream.
 
-When a run answers a QUESTION, the answer is a FILE — the leaf's readable digest at
-`<leaf>/QA/<n>-<slug>.md` (written at Report; contract in `haipipe-task/fn/qa.md`). Whoever
+When a run answers a QUESTION, the answer is a FILE — the task-folder's readable digest at
+`<task-folder>/QA/<n>-<slug>.md` (written at Report; contract in `haipipe-task/fn/qa.md`). Whoever
 asked reads that file. Nothing is written back, no id is recorded, and no field points
 outward.

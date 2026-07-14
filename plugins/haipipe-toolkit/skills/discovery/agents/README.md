@@ -64,7 +64,7 @@ Cross-layer dispatch — DIRECT, and the context is the wall
              never the probe file                  └── discovery-reviewer  (gates)
              never a PP id                         │
                                                    ▼
-        ◀───── returns ONE PATH ──────  discoveries/<leaf>/QA/<n>-<slug>.md
+        ◀───── returns ONE PATH ──────  discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md
 ```
 
 The orchestrator's **clean context IS the mechanism**. It is not told who asked

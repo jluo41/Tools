@@ -218,7 +218,7 @@ Composing with Evidence Workers
                                Agent(haipipe-task-orchestrator-agent)
                                Agent(haipipe-discovery-orchestrator-agent)   ← their clean context IS the wall
                                💀 the probe GATEWAY agent is RETIRED
-                          ④ POINT  target: ─► the answering QA file  tasks|discoveries/<leaf>/QA/<n>-<slug>.md
+                          ④ POINT  target: ─► the answering QA file  tasks|discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md
                           ⑤ INTERPRET reading: ─► 1-claims.md flips ─► the harvest lanes pay out
 
         direct discover/task verbs remain ONLY for non-claim utility work (lit scan, data check)

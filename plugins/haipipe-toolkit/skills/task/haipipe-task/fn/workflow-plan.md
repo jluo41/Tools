@@ -38,6 +38,9 @@ Both layers use the SAME schema shape from plan-schema.md:
   P: Phases → Steps (label, type, required, prompt, files_in, files_out)
   O: Output (returns, files_out)
 
+
+> JL: one line one sentences.
+
 The config layer (configs/<run>.yaml) is an input FILE, not a separate
 plan layer. It appears in `input.files_in`.
 

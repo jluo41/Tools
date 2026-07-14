@@ -2,7 +2,7 @@
 
 Canonical reference. This file + `wiki/` win over anything elsewhere.
 
-A paper is a delivery contract, not a writing folder. It owns one manuscript's story, claims, displays, minimap, and prose. Evidence lives in tasks/ and discoveries/ at the project level; the paper's `1-probes/PPNN_<topic>.md` probe files hold its QUESTIONS, one SECTION each, and BIND each one BY PATH to the answering `<leaf>/QA/<n>-<slug>.md` in that bank. Claim gaps become sections there; MATCH closes most of them for free, and only the rest are dispatched (the `commission:` block, verbatim) to the task/discovery orchestrators. Direct task/discover for non-claim utility work only.
+A paper is a delivery contract, not a writing folder. It owns one manuscript's story, claims, displays, minimap, and prose. Evidence lives in tasks/ and discoveries/ at the project level; the paper's `1-probes/PPNN_<topic>.md` probe files hold its QUESTIONS, one SECTION each, and BIND each one BY PATH to the answering `<task-folder>/QA/<n>-<slug>.md` in that bank. Claim gaps become sections there; MATCH closes most of them for free, and only the rest are dispatched (the `commission:` block, verbatim) to the task/discovery orchestrators. Direct task/discover for non-claim utility work only.
 
 ## Paper-folder layout
 

@@ -5,6 +5,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 ## [6.2.0] — 2026-07-14 — R19 hardening: the state line is read FIRST
 
+> JL: what is R19? Make it self contained. 
 - **Gate ① reads the STATE LINE *before* the literally-answers test.** The order is load-bearing. A `working` file's `## Answer` is EMPTY BY CONSTRUCTION, so the answer test is a guaranteed miss on it — the caller falls through to ③, allocates a NEW `<n>`, `set -C` never fires (different path), and RUNS THE SAME EXPENSIVE JOB a second time next to the one already in flight. A `working` file is matched on its `# Q —` LINE: same question ⇒ return the path + "in progress since <started>", run nothing.
 - **A QA file with NO `- state:` line is MALFORMED, not legacy** (checker: `qa-no-state`). It is THIS layer's own file, so this layer REPAIRS it: tag `answered` if `## Answer` has a body; RECLAIM it as a zombie if the Answer is empty. A consumer may never do either.
 - **The same-`<n>`/different-slug claim race is NON-FATAL BY RULING and is NOT a reviewer REVISE.** `fn/qa.md` said non-fatal in one paragraph and "the reviewer REVISEs it" twelve lines later. The reviewer's FILENAME check now carries the exemption explicitly, and renaming a QA file to "fix" it is forbidden (the body is frozen; a rename orphans a live claim).

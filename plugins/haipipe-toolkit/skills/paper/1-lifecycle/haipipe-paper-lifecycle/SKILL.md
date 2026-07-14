@@ -170,7 +170,7 @@ The per-stage DRAFT->PROBE->REVISE->CHECK cycle above is DEPTH-FIRST — right f
                   upstream reached `state: answered`. 💀 `answers:` is DELETED
                   from both banks; a DAG that waits on it waits forever.
 ④ RUN             the task/discovery orchestrators run their own qa gate and
-                  write <leaf>/QA/<n>-<slug>.md (often a SEPARATE concurrent
+                  write <task-folder>/QA/<n>-<slug>.md (often a SEPARATE concurrent
                   session — the commission block in the section is the bridge,
                   and it survives a dead session with zero files bank-side)
 ⑤ HARVEST         a PROBE re-run re-resolves each `commissioned` section's

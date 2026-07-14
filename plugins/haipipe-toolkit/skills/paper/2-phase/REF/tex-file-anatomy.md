@@ -92,8 +92,8 @@ Rules:
  (then \bibliography, then \section*{SI-*} appendices A–E)
 ```
 
-To **add** a subsection: create the leaf, add one `\input` to the wrapper in
-reading order. To **reorder**: move the `\input` line and rename the leaf's file
+To **add** a subsection: create the task-folder, add one `\input` to the wrapper in
+reading order. To **reorder**: move the `\input` line and rename the task-folder's file
 to keep `NN-MM` order; keep figure/`\label` keys and paragraph stable-ids.
 
 ## What "good" looks like (quick gate)

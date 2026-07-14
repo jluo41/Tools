@@ -46,7 +46,7 @@ DRAFT raises the questions
                  Agent(haipipe-task-orchestrator-agent)
                  Agent(haipipe-discovery-orchestrator-agent)
                their clean context IS the wall. 💀 the probe GATEWAY agent is RETIRED.
-  ④ POINT      target: → the answering QA file, <leaf>/QA/<n>-<slug>.md
+  ④ POINT      target: → the answering QA file, <task-folder>/QA/<n>-<slug>.md
   ⑤ INTERPRET  reading: → the claim's status flips in 1-claims.md → the lanes harvest
 ```
 

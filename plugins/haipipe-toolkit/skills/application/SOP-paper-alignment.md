@@ -41,7 +41,7 @@ PREFERENCES: "always run the REAL probe" entry       PREFERENCES: entry absent (
 > `../probe/haipipe-probe/SKILL.md` (v8.0.0) + `2-phase/1-probe/haipipe-application-probe/SKILL.md` (v4.0.0).
 
 - Round-1 invariants all stand: four evidence principles; application deltas (_audience/, venue-gated stages, settlement depth, 0-artifacts/ markdown, deploy/iterate tail, in-project folders); stage-owns-WHAT / phase-worker-owns-HOW; zero upstream contract changes to discovery/task.
-- The PROBE LAYER MIRRORS PAPER EXACTLY, and that is the invariant that matters (the structure it names has since changed): probe FILES at `1-probes/PPNN_<topic>.md`, one file per TOPIC, one SECTION per question (`serves`/`target`/`state`/`commission`/`reading`) + one `## Why`; binding by PATH to `<leaf>/QA/<n>-<slug>.md`; dispatch straight to the task/discovery orchestrators. Identical to paper — which is what keeps checker reuse cheap.
+- The PROBE LAYER MIRRORS PAPER EXACTLY, and that is the invariant that matters (the structure it names has since changed): probe FILES at `1-probes/PPNN_<topic>.md`, one file per TOPIC, one SECTION per question (`serves`/`target`/`state`/`commission`/`reading`) + one `## Why`; binding by PATH to `<task-folder>/QA/<n>-<slug>.md`; dispatch straight to the task/discovery orchestrators. Identical to paper — which is what keeps checker reuse cheap.
 - Application keeps NO probe sub-workers (citation/values/display stay venue-scaled hooks inside the one probe worker); `_VALUES_` always, `_CITATION_` sectioned venues only.
 - Bench evidence folders (examples/ProjApp-SMSDesign/applications/03, 04) stay as round-1 validation history; round-2 exams may reuse them but not rewrite their round-1 artifacts.
 

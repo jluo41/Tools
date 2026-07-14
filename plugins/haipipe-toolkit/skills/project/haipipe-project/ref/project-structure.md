@@ -67,7 +67,7 @@ The Five Worlds
 One-way dependency map (cross-cutting orientation; no single world owns it):
 
   papers/        READ tasks/ + discoveries/ BY PATH — a section in the paper's own
-                 1-probes/PPNN_<topic>.md carries `target: <leaf>/QA/<n>-<slug>.md`
+                 1-probes/PPNN_<topic>.md carries `target: <task-folder>/QA/<n>-<slug>.md`
   applications/  same model (applications/<A>/1-probes/); NEVER write back
   discoveries/   consumer-unaware (the consumer records the link on its own side)
   tasks/         NEVER read discoveries/ papers/ applications/
@@ -97,7 +97,7 @@ prohibition, because this skill is the thing that creates folders.
        · <n> = creation order. The NUMBERING IS THE INDEX; `ls QA/` IS the index. No INDEX file.
        · SLUG ONLY. A PP id in a bank filename is the contract broken.
        · WRITER: the EXECUTOR, at its Report stage. Write-once.
-       · NOT SCAFFOLDED AT SETUP. It appears when the leaf has something to say.
+       · NOT SCAFFOLDED AT SETUP. It appears when the task-folder has something to say.
        · Applies to BOTH banks — task and discovery are both executors.
 
   📄 THE CONSUMER holds the questions: papers|applications/<X>/1-probes/PPNN_<topic>.md

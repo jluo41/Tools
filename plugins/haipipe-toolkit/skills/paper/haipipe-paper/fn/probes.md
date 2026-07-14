@@ -74,11 +74,11 @@ States (DERIVED from disk — never asserted)
 
 ```
 planned          the section exists · the target leaf is missing (or `NEW …`)
-commissioned     the leaf + its plan.yaml exist · the QA file is absent
+commissioned     the task-folder + its plan.yaml exist · the QA file is absent
 answered         the target QA FILE exists
 read             the section's reading: is non-empty (+ 1-claims.md flipped, if it serves a claim)
 answered-local   target points into the paper's OWN registries; no dispatch happened
-failed           a reading with a dead target · the leaf was deleted · the qa verb REFUSEd
+failed           a reading with a dead target · the task-folder was deleted · the qa verb REFUSEd
 ```
 
 💀 `verdicted` is DELETED. 💀 `dispatched` is DELETED (say `commissioned`).
@@ -91,7 +91,7 @@ Binding is by PATH, never by id
 A section's `target:` is a PATH to the answering file — a **QA file** in the bank:
 
 ```
-tasks/<leaf>/QA/<n>-<slug>.md          discoveries/<leaf>/QA/<n>-<slug>.md
+tasks/<task-group>/<task-folder>/QA/<n>-<slug>.md          discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md
 ```
 
 The QA file is the EXECUTOR's readable digest of a direction it explored: `# Q` / `## Answer` /

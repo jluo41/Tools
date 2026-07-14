@@ -20,7 +20,7 @@ No message bus, no shared contract file, no mailbox. Two channels carry it:
              💀 the probe GATEWAY agent is RETIRED; there is no tier in between.
 
 2. Disk      the question lives in the SECTION; the ANSWER lives in the bank, as
-   (async)   <leaf>/QA/<n>-<slug>.md -- written by the EXECUTOR, in general
+   (async)   <task-folder>/QA/<n>-<slug>.md -- written by the EXECUTOR, in general
              language. The section's `target:` POINTS at that file (binding is by
              PATH, never by id: no PP id ever crosses to the bank). The section's
              `reading:` interprets it for this intervention.
@@ -37,7 +37,7 @@ Only when the deliverable requires EVIDENCE the project does not yet have. A fra
 
 ```
 stage gap -> a SECTION in 1-probes/ -> MATCH the bank (most stop here) -> commission
-          -> the executor's qa gate -> <leaf>/QA/<n>-<slug>.md -> target: + reading: -> backfill
+          -> the executor's qa gate -> <task-folder>/QA/<n>-<slug>.md -> target: + reading: -> backfill
 ```
 
 ## Routes (v5 verbs)
@@ -59,7 +59,7 @@ Each open question is one SECTION in a probe file (anatomy + states: `haipipe-ap
 
 ```
 serves       which stage / claim of THIS intervention the question is for
-target       a PATH to the answering file -- <leaf>/QA/<n>-<slug>.md (or `NEW <leaf>`)
+target       a PATH to the answering file -- <task-folder>/QA/<n>-<slug>.md (or `NEW <task-folder>`)
 state        planned | commissioned | answered | read | answered-local | failed   (DERIVED from disk)
 commission   the question in GENERAL language. THE DISPATCH PAYLOAD, and nothing else is. FROZEN.
 reading      what the answer MEANS for this intervention. Written at harvest.

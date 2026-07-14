@@ -68,7 +68,7 @@
 #   (b) THE CLAIM'S OWN VALIDITY (R19): NO `- state:` line at all = the field is MANDATORY and
 #   its absence exempts the file from every check below (qa-no-state); `state: working` with no
 #   `started:` = an UNEXPIRABLE claim (qa-working-no-started); `state: working` older than
-#   QA_CLAIM_TTL_HOURS = a ZOMBIE claim (qa-working-expired); `state: answered` with an EMPTY
+#   QA_WORKING_TTL_HOURS = a ZOMBIE claim (qa-working-expired); `state: answered` with an EMPTY
 #   `## Answer` = a LYING RECEIPT (qa-answered-empty).
 #   PASS 3 also FAILs the RETIRED bank machinery: an `_ASK/` or `_ANS/` folder, or a PP id
 #   in a QA filename. The bank is PROBE-UNAWARE (R2): none of those may exist.
@@ -222,7 +222,7 @@ function stake_leak(s,   low) {
 #     ## Answer   <- EMPTY while working. Filled at REPORT.
 #
 # ONE WRITER -- the EXECUTOR, and nobody else, EVER. "Write-once" was never the real rule;
-# ONE WRITER was. The executor writes the CLAIM at the qa gate's (3) decision and the
+# ONE WRITER was. The executor writes the START at the qa gate's (3) decision and the
 # COMPLETION at REPORT. A CONSUMER-planted `working` file is the retired _ASK/ stub in a
 # QA/ costume, and PASS 3 exists partly to make that visible.
 #
@@ -246,8 +246,8 @@ function stake_leak(s,   low) {
 # (consumer side). The file's OWNER -- the executor, never a consumer -- adds the line.
 # ===========================================================================
 
-# THE NAMED CONSTANT. Tune the claim TTL HERE; never hard-code the literal anywhere else.
-QA_CLAIM_TTL_HOURS=24
+# THE NAMED CONSTANT. Tune the working-file TTL HERE; never hard-code the literal anywhere else.
+QA_WORKING_TTL_HOURS=24
 
 qa_state()   { sed -n 's/^- state:[[:space:]]*//p'   "$1" | head -1; }
 qa_started() { sed -n 's/^- started:[[:space:]]*//p' "$1" | head -1; }
@@ -300,8 +300,8 @@ qa_claim_problems() {
           _qa_p="$_qa_p qa-working-no-started(unparseable started: '$_qa_started' -- want YYYY-MM-DDTHH:MM);"
         else
           _qa_age=$(( ( $(date +%s) - _qa_s ) / 3600 ))
-          [ "$_qa_age" -ge "$QA_CLAIM_TTL_HOURS" ] && \
-            _qa_p="$_qa_p qa-working-expired(${_qa_age}h >= QA_CLAIM_TTL_HOURS=${QA_CLAIM_TTL_HOURS}: a ZOMBIE claim -- the next qa call may RECLAIM it);"
+          [ "$_qa_age" -ge "$QA_WORKING_TTL_HOURS" ] && \
+            _qa_p="$_qa_p qa-working-expired(${_qa_age}h >= QA_WORKING_TTL_HOURS=${QA_WORKING_TTL_HOURS}: a ZOMBIE claim -- the next qa call may RESTART it);"
         fi
       fi
       ;;
@@ -489,7 +489,7 @@ for probe in "$paper_root"/1-probes/PP*.md; do
         # decide who owes the deadline (see the in-flight carve-out below).
 
         # R19 OPENS AN IN-FLIGHT LOOP -- AND THIS CLOSES IT. Before R19, `commissioned` meant
-        # "the leaf exists, NO QA file yet", so the branch never had to open anything. Now the
+        # "the task-folder exists, NO QA file yet", so the branch never had to open anything. Now the
         # MATCH->working path DELIBERATELY sets a section to `commissioned` with `target:`
         # pointing at a QA file that ALREADY EXISTS (the claim is written before the run
         # starts) -- and that path issues NO DISPATCH, so it has NO live return, EVER. Without
@@ -520,7 +520,7 @@ for probe in "$paper_root"/1-probes/PP*.md; do
 
         # ACCOUNTABILITY LIVES IN EXACTLY ONE PLACE PER QUESTION.
         #   a `working` QA file exists  -> an EXECUTOR has CLAIMED this question, and its
-        #     `started:` + QA_CLAIM_TTL_HOURS IS the clock (PASS 3's qa-working-expired
+        #     `started:` + QA_WORKING_TTL_HOURS IS the clock (PASS 3's qa-working-expired
         #     enforces it). This section did NOT start that run: it cannot honestly name an
         #     owner or an eta, and demanding one teaches people to INVENT data -- which is
         #     the very laundering the BUILD lane exists to prevent, inverted.
@@ -725,7 +725,7 @@ done
 #     SAME pattern set as the commission lint (LEAK_AWK) -- one rule, two surfaces.
 # (b) THE CLAIM. A `working` file is a LIVE claim on a question, and every other reader
 #     DEFERS to it -- so an invalid claim silently blocks the bank: no `started:` = it can
-#     never expire; older than QA_CLAIM_TTL_HOURS = the run that made it is dead. And an
+#     never expire; older than QA_WORKING_TTL_HOURS = the run that made it is dead. And an
 #     `answered` file with an empty `## Answer` is a receipt for work nobody did.
 #     SAME function block as the PASS-1 target test (QA_STATE) -- one rule, two surfaces.
 # ---------------------------------------------------------------------------
@@ -762,7 +762,7 @@ for qa in "$project_root"/tasks/*/QA/*.md "$project_root"/tasks/*/*/QA/*.md \
     esac
     case "$qprob" in
       *qa-working*|*qa-answered*|*qa-no-state*)
-        echo "      (a QA file is a TICKET that becomes a RECEIPT: 'state:' is MANDATORY; 'working' needs a started: and expires after QA_CLAIM_TTL_HOURS=${QA_CLAIM_TTL_HOURS}h; 'answered' needs a real ## Answer. ONE WRITER: the EXECUTOR completes it -- never a consumer)" ;;
+        echo "      (a QA file is a TICKET that becomes a RECEIPT: 'state:' is MANDATORY; 'working' needs a started: and expires after QA_WORKING_TTL_HOURS=${QA_WORKING_TTL_HOURS}h; 'answered' needs a real ## Answer. ONE WRITER: the EXECUTOR completes it -- never a consumer)" ;;
     esac
     fail=1
   else

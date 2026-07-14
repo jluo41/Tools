@@ -267,7 +267,7 @@ When a probe section's `reading:` lands, write here:
 ## Ledger Maintenance
 
 - New claim: add a `**C<n>**` sub-item in Claims, set status from the cited source (default `GAP`), add a probe entry in Probes.
-- `--backfill <probe-ref>`: **THIS LEDGER IS THE ONLY HOME OF A CLAIM'S STATUS.** There is no probe verdict to read — `## Verdict` and the `verdicted` state are DELETED (R7). Read the probe SECTION's `reading:` (its interpretation, in this paper's vocabulary) and, for a `mode: full` section, the judgment `Agent(haipipe-probe-reviewer-agent)` returned. Write `supported | refuted | inconclusive` + confidence + claim_type + the G1/G2/G3 gates HERE, per-claim, private to this paper. The EVIDENCE POINTER is the section's `target:` — the path of the answering QA file (`tasks|discoveries/<leaf>/QA/<n>-<slug>.md`), which must RESOLVE on disk. Record the number in `_VALUES_`.
+- `--backfill <probe-ref>`: **THIS LEDGER IS THE ONLY HOME OF A CLAIM'S STATUS.** There is no probe verdict to read — `## Verdict` and the `verdicted` state are DELETED (R7). Read the probe SECTION's `reading:` (its interpretation, in this paper's vocabulary) and, for a `mode: full` section, the judgment `Agent(haipipe-probe-reviewer-agent)` returned. Write `supported | refuted | inconclusive` + confidence + claim_type + the G1/G2/G3 gates HERE, per-claim, private to this paper. The EVIDENCE POINTER is the section's `target:` — the path of the answering QA file (`tasks|discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md`), which must RESOLVE on disk. Record the number in `_VALUES_`.
 - Emit a delivery need for every `weak`/`GAP` claim using the delivery-need interface, with the route:
 
 ```text

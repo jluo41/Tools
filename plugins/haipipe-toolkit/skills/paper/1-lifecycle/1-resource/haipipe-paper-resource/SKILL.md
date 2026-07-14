@@ -149,7 +149,7 @@ WORKER     (serves: resource · blocks: N<n> · target: NEW ? · state: planned 
 THE       is what ② MATCH could not close: the section's `commission:` block goes,
 EXECUTOR   VERBATIM, to Agent(haipipe-task-orchestrator-agent) or
            Agent(haipipe-discovery-orchestrator-agent). IT picks the shape and the
-           DEPTH in its own clean context, and answers in <leaf>/QA/<n>-<slug>.md.
+           DEPTH in its own clean context, and answers in <task-folder>/QA/<n>-<slug>.md.
            The answer lands back as the Q's A -- ⑤ INTERPRET writes it there.
            💀 the probe GATEWAY agent is RETIRED; dispatch goes DIRECT.
 ```

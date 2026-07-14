@@ -15,7 +15,7 @@ No message bus, no shared contract file. Two channels carry it, and the agent
              file). The PROBE worker MATCHes it against the bank's QA corpus first, and
              dispatches the `commission:` block only if MATCH cannot close it.
 2. Disk      paper writes the need (in 0-lifecycle/1-claims / STATUS); the executor
-   (async)   writes the answer as <leaf>/QA/<n>-<slug>.md; the section's `target:`
+   (async)   writes the answer as <task-folder>/QA/<n>-<slug>.md; the section's `target:`
              points at that FILE and its `reading:` interprets it. No handshake —
              binding is by PATH, and the file on disk IS the state.
 ```
@@ -78,7 +78,7 @@ backfill     the slot/display to update when the worker returns
 
 ## Backfill (the return direction)
 
-The answer is a FILE: the executor's `<leaf>/QA/<n>-<slug>.md`. The probe
+The answer is a FILE: the executor's `<task-folder>/QA/<n>-<slug>.md`. The probe
 section's `target:` points at it, and its `reading:` says what it MEANS for
 this paper. On backfill:
 

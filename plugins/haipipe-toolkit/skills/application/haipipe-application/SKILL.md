@@ -190,7 +190,7 @@ Composing with Evidence Workers
                     ├─────► Agent(haipipe-task-orchestrator-agent)        ─┐  clean context
                     └─────► Agent(haipipe-discovery-orchestrator-agent)   ─┘  IS the wall
                               └─► the executor runs its own `qa` gate and writes
-                                  <leaf>/QA/<n>-<slug>.md   ← the answer, in GENERAL language
+                                  <task-folder>/QA/<n>-<slug>.md   ← the answer, in GENERAL language
                                     └─► the section's target: points at that FILE; its reading:
                                         interprets it; the CLAIM's status flips in 1-claims.md
 
