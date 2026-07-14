@@ -26,6 +26,7 @@ paper/
 ├── 0-enter/             haipipe-paper-enter (Console) + haipipe-paper-round
 ├── 1-lifecycle/         STAGE orchestrators, one numbered folder per stage
 │     0-seed/haipipe-paper-seed
+│     1-resource/haipipe-paper-resource      (venue-FREE; shares the number 1 with claims)
 │     1-claims/haipipe-paper-claims          (venue-FREE)
 │     2-pitch/haipipe-paper-pitch            (venue-ALIGNED cover letter)
 │     3-narrative/haipipe-paper-narrative
@@ -43,12 +44,12 @@ paper/
 │     2-revise/haipipe-paper-revise (+ -revise-{content,humanizer,results,weaving})
 │     3-check/haipipe-paper-check (+ haipipe-paper-proof-checker)
 ├── 3-build-submit/      haipipe-paper-folder + build-{scaffold,restructure,check}
+│     + paper-compile (LaTeX -> PDF)
 │     + edit family / review cluster: edit-{claim-audit,reviewer,submission-audit,
 │       consistency,diffpdf,format,improve-loop,optimizer,typeset,to-overleaf}
 ├── 4-respond/           haipipe-paper-rebuttal + paper-rebuttal + rebuttal-response
 ├── 5-present/           paper-slides + paper-poster
-├── _venue/             venue playbook packs (knowledge, not stages; consulted)
-└── components/          citation, compile, diff (cross-cutting)
+└── _venue/             venue playbook packs (knowledge, not stages; consulted)
 ```
 
 `_venue/` is a paper-internal area, not a standalone layer. It is the venue
@@ -64,6 +65,7 @@ Lifecycle stages map 1:1 to skills (full table in `04-lifecycle-map.md`):
 ```text
 enter             -> 0-enter/haipipe-paper-enter
 0-seed            -> 1-lifecycle/0-seed/haipipe-paper-seed
+1-resource        -> 1-lifecycle/1-resource/haipipe-paper-resource (venue-FREE; what must EXIST for the paper to be testable; shares the number 1 with claims)
 1-claims          -> 1-lifecycle/1-claims/haipipe-paper-claims
 venue (choose+pin)-> 1-lifecycle/haipipe-paper-venue (recommend journal, write STATUS venue; after claims, before pitch; claims is venue-free)
 2-pitch           -> 1-lifecycle/2-pitch/haipipe-paper-pitch
@@ -81,7 +83,10 @@ user-invoked directly):
 
 ```text
 DRAFT  -> 2-phase/0-draft/haipipe-paper-draft
-PROBE  -> 2-phase/1-probe/haipipe-paper-probe    (dispatches into the project-side /haipipe-probe lifecycle)
+PROBE  -> 2-phase/1-probe/haipipe-paper-probe    (runs the five-step loop ORGANIZE->MATCH->DISPATCH->POINT->INTERPRET;
+                                                  DISPATCH goes DIRECT to Agent(haipipe-task-orchestrator-agent) /
+                                                  Agent(haipipe-discovery-orchestrator-agent) — no gateway, and
+                                                  /haipipe-probe is the CONSTITUTION, never a dispatch tier)
 REVISE -> 2-phase/2-revise/haipipe-paper-revise
 CHECK  -> 2-phase/3-check/haipipe-paper-check   (final human gate; DRAFT review is the other)
 ```
@@ -93,7 +98,7 @@ actions by the user's intended lifecycle object:
 
 ```text
 status / enter / preload              -> 0-enter
-seed / claims / venue / pitch
+seed / resource / claims / venue / pitch
   / narrative / figures / section-edit -> 1-lifecycle
 round / todo / decisions              -> 0-enter/haipipe-paper-round
 write / edit / revise (prose)         -> 1-lifecycle/5-section-edit (drives 2-phase/ workers)
@@ -110,8 +115,8 @@ venue / which journal / where submit  -> 1-lifecycle/haipipe-paper-venue  (recom
 Every paper-aware response should report both:
 
 ```text
-current_layer: 0-seed | 1-claims | venue | 2-pitch | 3-narrative | 4-display | 5-section-edit | review/round
-maturity: seed | scaffold | claim-ledger | display-map | section-edit | draft | submission-candidate | submitted | revision | accepted/published
+current_layer: 0-seed | 1-resource | 1-claims | venue | 2-pitch | 3-narrative | 4-display | 5-section-edit | review/round
+maturity: seed | resource | resource-blocked | scaffold | claim-ledger | display-map | section-edit | draft | submission-candidate | submitted | revision | accepted/published
 ```
 
 Layer answers "where is the active work?"

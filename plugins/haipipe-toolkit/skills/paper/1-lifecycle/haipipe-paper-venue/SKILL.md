@@ -4,9 +4,9 @@ description: "Recommend the best-fit venue for a paper or topic, then pin it. Pr
 argument-hint: "[paper-path | free-text topic/abstract] [--no-pin]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.2.0"
-  last_updated: "2026-07-08"
-  summary: "Venue stage orchestrator. Recommends + pins the best-fit venue, produces 2-venue.md (skeleton: ref/venue-template.md) with venue choice, structural blueprint (per-section quantitative norms transcribed from pack Micro-norms), writing principles, fit assessment, and probes. 2-venue.md is the intended single consumption point for the venue-aligned stages (pitch, narrative, display, section-edit)."
+  version: "3.3.0"
+  last_updated: "2026-07-14"
+  summary: "Venue stage orchestrator. Recommends + pins the best-fit venue, produces 2-venue.md (skeleton: ref/venue-template.md) with venue choice, structural blueprint (per-section quantitative norms transcribed from pack Micro-norms), writing principles, fit assessment, and probes. 2-venue.md is the intended single consumption point for the venue-aligned stages (pitch, narrative, display, section-edit). v3.3 (probe-redesign residue sweep): venue questions are SECTIONS in 1-probes/PPNN_<topic>.md; 'PPNN cards' and 'probe plans' retired."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -14,7 +14,7 @@ metadata:
 
 ## Overview
 
-Venue selection is the FIRST venue-coupled design decision. Pitch (the cover letter), narrative, displays, and prose all couple to the venue, so the venue must be chosen before pitch. Claims is venue-FREE and does NOT need a venue. The lifecycle order is: seed (FREE) -> claims (FREE) -> [venue pinned here] -> pitch (ALIGNED) -> narrative (ALIGNED) -> display (ALIGNED) -> section-edit (ALIGNED).
+Venue selection is the FIRST venue-coupled design decision. Pitch (the cover letter), narrative, displays, and prose all couple to the venue, so the venue must be chosen before pitch. Resource and claims are venue-FREE and do NOT need a venue (what a paper NEEDS to exist does not depend on where you send it). The lifecycle order is: seed (FREE) -> resource (FREE) -> claims (FREE) -> [venue pinned here] -> pitch (ALIGNED) -> narrative (ALIGNED) -> display (ALIGNED) -> section-edit (ALIGNED).
 
 This skill analyzes a paper or a bare topic against every venue pack in `../../_venue/playbook-*`, recommends a ranked shortlist, pins the choice in `STATUS.md`, and produces a stage document (`2-venue.md`) with the venue profile, writing principles, and probes.
 
@@ -25,7 +25,7 @@ The venue packs are knowledge, not skills; this skill is the READER that turns t
 **Files produced:**
 - `0-lifecycle/2-venue/2-venue.md` -- venue stage document; full fill-in skeleton: `ref/venue-template.md`
 - `0-lifecycle/2-venue/_LOG_2-venue.md` -- phase progress journal
-- `0-lifecycle/2-venue/_PROBE/` -- probe plans (recent publications, editor, competing papers)
+- `1-probes/PPNN_<topic>.md` -- the probe FILES; a venue question becomes a SECTION (recent publications, editor, competing papers; `serves: 2-venue`)
 - `STATUS.md` -- `venue:` field pinned
 
 **Content structure (2-venue.md)** -- six blocks, per `ref/venue-template.md`:
@@ -40,7 +40,7 @@ Venue Profile           audience, rewards, desk-reject risks, one-sentence test 
 Structural Blueprint    per-section quantitative norms (THE construction spec)
 Writing Principles      prose-level specs (tone, citation style, language)
 Fit Assessment          how H1/H2/H3 match the venue's scope
-Probes                  venue-level investigation needs (PPNN cards)
+Probes                  venue-level investigation needs (one SECTION per question)
 ```
 
 **Structural Blueprint section (the key downstream contract):**
@@ -74,7 +74,7 @@ Writing Principles is the prose companion to the Structural Blueprint. The bluep
 - [ ] Structural Blueprint section filled with per-section quantitative norms (every section has: subsection count, paragraphs, sentences/paragraph, sentence length, citation density, results reported, display units)
 - [ ] Writing Principles section filled with prose-level specs (tone, citation style, abstract conventions)
 - [ ] Fit Assessment maps H/claims to venue scope
-- [ ] At least one probe planned or done (recent publications check)
+- [ ] At least one question SECTION raised or answered (recent publications check)
 - [ ] Blueprint adapted to THIS paper's claim structure (H1/H2/H3 mapped to specific sections/subsections)
 
 ## Modes

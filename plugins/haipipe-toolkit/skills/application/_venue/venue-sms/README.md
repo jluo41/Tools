@@ -41,11 +41,11 @@ template:
     chars: ~30
   - slot: benefit
     job: state the value proposition
-    claim_source: primary claim (K/W)
+    claim_source: primary claim (C##)
     chars: ~60
   - slot: CTA
     job: specific action + deadline
-    claim_source: action claim (W)
+    claim_source: recommendation (grounded in C##)
     chars: ~50
   - slot: close
     job: reassurance or opt-out
@@ -57,7 +57,7 @@ template:
 ## Lifecycle mappings
 
 ### → Claims (light)
-Select from existing K/W. Each slot maps to one K/W entry.
+Select from the existing ledger. Each slot maps to one supported claim (C##).
 No probe planning — if the KB lacks coverage, either use
 common knowledge or trigger an ask session first.
 
@@ -68,4 +68,4 @@ Tone per audience profile (warm for patient, clinical for clinician).
 
 ### → Review
 Check: within char limit, CTA is actionable, opt-out present,
-no jargon (if patient), cited_K in frontmatter.
+no jargon (if patient), cites: in frontmatter.

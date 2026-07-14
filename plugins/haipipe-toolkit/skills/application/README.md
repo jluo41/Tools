@@ -2,19 +2,21 @@
 
 Canonical reference. This file + `wiki/` win over anything elsewhere. Structural twin of `../paper/` (same spine, same phases, same probe door); deltas listed at the bottom.
 
-An intervention is a delivery contract, not a drafting folder. It owns one deliverable's story, claims, displays, and artifact text. Evidence lives in tasks/discoveries/insights at the project level; each stage's `_PROBE/PPNN` card carries contract + receipt + verdict. Claim gaps buffer per-stage and batch-dispatch to probe (the universal evidence gateway; probe calls task/discover during Gather). Direct task/discover for non-claim utility work only.
+An intervention is a delivery contract, not a drafting folder. It owns one deliverable's story, claims, displays, and artifact text. Evidence lives in tasks/discoveries at the project level, and the intervention never writes there. Its open QUESTIONS live in `1-probes/PPNN_<topic>.md` — one file per topic, one SECTION per question, each bound BY PATH to a QA file in the bank. The PROBE phase matches the bank first and commissions only what is missing, straight to the task/discovery orchestrators. Direct task/discover for non-claim utility work only.
 
 ## Intervention-folder layout
 
 ```text
 <intervention-root>/
 ├── STATUS.md                 venue, stages_skipped, Gate Ledger, current layer, maturity
-├── 0-lifecycle/              maturation spine (md + _LOG + per-stage _PROBE/)
+├── 0-lifecycle/              maturation spine (md + _LOG)
 │   ├── 0-seed/  1-claims/  2-venue/  2-pitch/  3-narrative/  4-display/  5-section-edit/
-│   │   (1-claims: Claims/Probes/Campaign + _VALUES_; 2-venue: choice + Artifact Principles)
+│   │   (1-claims: Claims/Probes/Campaign + _VALUES_ — and THE HOME OF CLAIM STATUS;
+│   │    2-venue: choice + Artifact Principles)
 ├── 0-sections/               sectioned-venue prose (report/dashboard-like venues only)
 ├── 0-artifacts/              deliverables: <slug>-v{N}.md, REVIEW-*, CLAIM_AUDIT.md
-├── 1-probe-plans/README.md   cross-stage INDEX of _PROBE/ cards (index only, no bodies)
+├── 1-probes/                 the probe FILES: PPNN_<topic>.md, one per topic, question
+│                             SECTIONS inside (serves/target/state/commission/reading)
 ├── 1-rounds/vYYMMDD/         work rounds (discussion, decisions, todo, applied)
 └── data/contract.yaml        input-data contract (when the venue consumes data)
 ```
@@ -62,12 +64,14 @@ application/
 
 | Retired | Use instead |
 |---|---|
-| `haipipe-application-ask` (+ SESSION_STATE machinery) | `/haipipe-application enter` console; ad-hoc questions -> `/haipipe-probe "<question>"` |
+| `haipipe-application-ask` (+ SESSION_STATE machinery) | `/haipipe-application enter` console; an ad-hoc question with no intervention behind it goes straight to the executor's own door -> `/haipipe-task qa "<question>"` or `/haipipe-discovery qa "<question>"` (the QA file IS the receipt) |
 | `haipipe-application-minimap` (stage 5) | unit jobs live in `4-display` per-unit contracts |
 | `haipipe-application-gate` | `2-phase/3-check/haipipe-application-check` (the CHECK phase) |
 | `haipipe-application-draft` as artifact generator | `3-build-deploy/haipipe-application-artifact` (verb stays `draft`) |
 | spine `seed → pitch → [venue] → claims → ... → minimap` | `seed → claims → [venue] → pitch → narrative → display → section-edit` |
-| flat `0-lifecycle/N-stage.md` files | stage FOLDERS `0-lifecycle/N-stage/` (md + _LOG + _PROBE/) |
-| `1-probe-plans/PP##_*.md` plan bodies; `/haipipe-probe plan from-need` | per-stage `_PROBE/PPNN_*.md` cards; `1-probe-plans/README.md` = index; `/haipipe-application probe` buffer + `probe run` |
-| verdict word `confirmed` | `supported \| refuted \| inconclusive` (PPNN enum) |
+| flat `0-lifecycle/N-stage.md` files | stage FOLDERS `0-lifecycle/N-stage/` (md + _LOG) |
+| per-stage `_PROBE/PPNN_*.md` cards + `1-probe-plans/README.md` index (retired 2026-07-14) | `1-probes/PPNN_<topic>.md` probe FILES, one per topic, question SECTIONS inside; `ls 1-probes/` is the index; `/haipipe-application probe "<question>"` + `probe run` |
+| the probe GATEWAY agent (`haipipe-probe-orchestrator-agent`, retired 2026-07-14) | DISPATCH goes straight to `Agent(haipipe-task-orchestrator-agent)` / `Agent(haipipe-discovery-orchestrator-agent)`; their clean context IS the wall |
+| a probe card's `## Verdict` block + `verdicted` state (retired 2026-07-14) | the claim's status lives in `0-lifecycle/1-claims/1-claims.md`: `supported \| refuted \| inconclusive` + confidence + claim_type + G1/G2/G3 |
+| `_ASK/` / `_ANS/` mailboxes, `answers:` fields, PP ids in the bank | nothing — the bank is PROBE-UNAWARE; it answers plain questions via its own `qa` verb and writes `<leaf>/QA/<n>-<slug>.md` |
 | `applications/ask/<NN>/` case files | dead history: nothing reads, nothing writes |

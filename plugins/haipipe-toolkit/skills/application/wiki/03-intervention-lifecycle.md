@@ -1,6 +1,6 @@
 # Intervention Lifecycle
 
-The application lifecycle is a delivery lifecycle. It owns the intervention-specific story, claim wording, content elements, and artifact text. Project-level evidence lives in discoveries, tasks, and insights. Same stage vocabulary and spine ORDER as paper (`../../paper/wiki/03-paper-lifecycle.md`); the venue profile gates which stages fire.
+The application lifecycle is a delivery lifecycle. It owns the intervention-specific story, claim wording, content elements, and artifact text. Project-level evidence lives in discoveries and tasks. Same stage vocabulary and spine ORDER as paper (`../../paper/wiki/03-paper-lifecycle.md`); the venue profile gates which stages fire.
 
 ## Folder Contract
 
@@ -8,16 +8,18 @@ The application lifecycle is a delivery lifecycle. It owns the intervention-spec
 <intervention-root>/
 ├── STATUS.md                 venue, stages_skipped, claims_settlement, current_layer, maturity, Gate Ledger
 ├── 0-lifecycle/
-│   ├── 0-seed/           venue: FREE      0-seed.md + _LOG + _PROBE/
-│   ├── 1-claims/         venue: FREE      1-claims.md (Claims/Probes/Campaign) + _LOG + _VALUES_ + _PROBE/ (+ _CITATION_ sectioned venues)
-│   ├── 2-venue/          venue: PIN       2-venue.md (choice + Artifact Principles) + _LOG + _PROBE/
-│   ├── 2-pitch/          venue: ALIGNED   2-pitch.md + _LOG + _PROBE/
+│   ├── 0-seed/           venue: FREE      0-seed.md + _LOG
+│   ├── 1-claims/         venue: FREE      1-claims.md (Claims/Probes/Campaign — AND the home of
+│   │                                      every claim's STATUS) + _LOG + _VALUES_ (+ _CITATION_ sectioned venues)
+│   ├── 2-venue/          venue: PIN       2-venue.md (choice + Artifact Principles) + _LOG
+│   ├── 2-pitch/          venue: ALIGNED   2-pitch.md + _LOG
 │   ├── 3-narrative/      venue: GATED     3-narrative.md + _LOG          (if venue requires)
 │   ├── 4-display/        venue: GATED     4-display.md + _LOG            (if venue requires)
 │   └── 5-section-edit/   venue: GATED     per-section scaffolds + _LOG   (sectioned venues)
 ├── 0-sections/               sectioned-venue prose
 ├── 0-artifacts/              <slug>-v{N}.md · REVIEW-* · CLAIM_AUDIT.md
-├── 1-probe-plans/README.md   cross-stage INDEX (plans live per-stage in _PROBE/)
+├── 1-probes/PPNN_<topic>.md  the probe FILES: one per TOPIC, question SECTIONS inside
+│                             (serves/target/state/commission/reading + one `## Why`)
 ├── 1-rounds/vYYMMDD/         work rounds
 └── data/contract.yaml        input-data contract (data-consuming venues)
 ```
@@ -29,7 +31,7 @@ Stage docs are markdown + `_LOG` (argument documents need no compilation). `0-` 
 | Stage | Job | Main question | Venue | Typical handoff |
 |---|---|---|---|---|
 | `0-seed` | Keep the intervention possibility alive | Why might this work? | FREE | claims or drop |
-| `1-claims` | Maintain the claim ledger | What must be true? Which K/W back it? | FREE | venue → pitch |
+| `1-claims` | Maintain the claim ledger (and every claim's STATUS) | What must be true? Which answer settles it? | FREE | venue → pitch |
 | `venue` | Pin the output modality | Which channel fits? | (chooser) | writes venue + stages_skipped + claims_settlement |
 | `2-pitch` | One-minute goal + theory of change | What is this selling, to whom? | ALIGNED | narrative or draft |
 | `3-narrative` | Structure the output's arc | How do claims compose? | GATED | display |
@@ -68,11 +70,11 @@ Authoritative per-venue table: each `_venue/venue-<name>/README.md`. Simple venu
 
 ## Venue-FREE / Venue-ALIGNED Boundary
 
-Seed and claims are venue-FREE: written before the pin, unchanged on retarget (the K/W truth does not change with the channel). Pitch, narrative, display, and section-edit are venue-ALIGNED: they rewrite on retarget. Retargeting (sms → dashboard) re-runs venue + pitch and may DEEPEN the claims settlement requirement — it never invalidates the ledger. Slot-mapping (which K/W fills which template slot) is venue-ALIGNED work and happens in draft/display, never in claims.
+Seed and claims are venue-FREE: written before the pin, unchanged on retarget (the ledger's truth does not change with the channel). Pitch, narrative, display, and section-edit are venue-ALIGNED: they rewrite on retarget. Retargeting (sms → dashboard) re-runs venue + pitch and may DEEPEN the claims settlement requirement — it never invalidates the ledger. Slot-mapping (which supported claim fills which template slot) is venue-ALIGNED work and happens in draft/display, never in claims.
 
 ## Phase Dimension
 
-Stages × phases is a two-axis model. Each stage skill in `1-lifecycle/` defines WHAT the stage delivers; the `2-phase/` workers define HOW: DRAFT → PROBE → REVISE → CHECK (`haipipe-application-{draft,probe,revise,check}`). The PROBE phase dispatches evidence needs through `/haipipe-probe` (the project-side evidence gateway) via the `haipipe-application-probe` worker — the ONLY door — and ends with a VERIFY step: `check-probe-cards.sh` FAILs cards left `planned|dispatched|failed`, dangling refs, and `harvest: OWED` lane debts. The CHECK gate re-runs the same checker (its teeth) and runs `checks.sh` (markdown-safe deterministic checks); `> CHECK:` threads are seeded in stage docs only, and artifact-level findings go to the Gate Ledger notes. CHECK is the only human-involved phase, venue-scaled (inline for simple venues, full reports for complex). Users invoke stage skills only, never phases.
+Stages × phases is a two-axis model. Each stage skill in `1-lifecycle/` defines WHAT the stage delivers; the `2-phase/` workers define HOW: DRAFT → PROBE → REVISE → CHECK (`haipipe-application-{draft,probe,revise,check}`). The PROBE phase runs the five-step loop (ORGANIZE → MATCH → DISPATCH → POINT → INTERPRET) via the `haipipe-application-probe` worker — the ONLY door — matching the bank's QA corpus before it commissions anything, and dispatching straight to the task/discovery orchestrators (the probe gateway is retired). It ends with a VERIFY step: `check-probe-cards.sh` FAILs `planned` sections, dangling targets, `harvest: OWED` lane debts, OVERDUE commissioned builds, and either LAW-2 leak (the stake crossing into a commission; our claim ids appearing in a bank QA file). The CHECK gate re-runs the same checker (its teeth) and runs `checks.sh` (markdown-safe deterministic checks); `> CHECK:` threads are seeded in stage docs only, and artifact-level findings go to the Gate Ledger notes. CHECK is the only human-involved phase, venue-scaled (inline for simple venues, full reports for complex). Users invoke stage skills only, never phases.
 
 ## Maturity Ladder
 
@@ -113,28 +115,44 @@ The lifecycle is not linear. When work fails, return to the earliest stage that 
 | venue wrong for audience | `venue` (re-pin; pitch+ re-couple; claims SURVIVES) |
 | kill criterion met | STATUS.md → `retired` |
 
-## Evidence Flow (folderless probe)
+## Evidence Flow (the five-step loop)
 
 ```text
-stage DRAFT flags a NEED
+stage DRAFT RAISES A QUESTION
     ↓
-buffer: _PROBE/PPNN_<slug>.md in the owning stage (+ index row in 1-probe-plans/README.md)
+① ORGANIZE   a SECTION in 1-probes/PPNN_<topic>.md (one file per topic; one `## Why` per file,
+             holding the stake — which never leaves it). The `commission` is written here:
+             the question in GENERAL language, stake stripped, FROZEN.
     ↓
-/haipipe-application probe run [PPNN]  →  haipipe-application-probe (BOOKKEEP → DISPATCH → TRANSLATE → VERIFY)
+/haipipe-application probe run [PPNN]  →  haipipe-application-probe
     ↓
-Agent(haipipe-probe-orchestrator-agent)   — clean context, bg for fresh work
-    SWEEP insights/ + discoveries/ + tasks/ → shape: reused | enriched | fresh
-    → discovery/task orchestrators for missing evidence
-    → probe-reviewer (full mode: G1/G2/G3 judgment)
+② MATCH      grep the bank's QA corpus and READ the hits — match ON THE ANSWER, never on the
+             topic. T0 JOIN · T1 LOCAL · T2 REUSE. **MOST QUESTIONS STOP HERE.** The bank fills
+             autonomously from executor sessions, so most answers exist before anyone asks.
     ↓
-TRANSLATE: takeaways → card (status: read); full verdict → card ## Verdict
-(supported | refuted | inconclusive) + claims-ledger flip; sections/rounds backfill from the card
+③ DISPATCH   T3/T4 only: the `commission` block, VERBATIM, and nothing else — never the `## Why`,
+             never the probe file — to
+                 Agent(haipipe-task-orchestrator-agent)
+                 Agent(haipipe-discovery-orchestrator-agent)
+             THEIR CLEAN CONTEXT IS THE WALL. Inside, each runs its own `qa` gate:
+                 ① QA SCAN (already answered?) ② DIGEST (results/ answer it, no digest?)
+                 ③ P-B-E-R at the shallowest depth that answers it
+             and WRITES <leaf>/QA/<n>-<slug>.md itself.
+             💀 the probe GATEWAY agent is RETIRED — its SWEEP became step ②.
     ↓
-VERIFY: check-probe-cards.sh — planned/dispatched cards, dangling refs, and OWED lane debts FAIL;
-the stage CHECK gate re-runs the same script before it can go green
+④ POINT      the section's `target:` → the answering QA FILE (the file, never the folder)
+    ↓
+⑤ INTERPRET  the section's `reading:` → THE CLAIM'S STATUS FLIPS IN 1-claims.md
+             (supported | refuted | inconclusive + confidence + claim_type + G1/G2/G3);
+             the harvest lanes pay out; sections/rounds backfill from the reading.
+             There is no verdict block. "Verdict" is retired as a probe field.
+    ↓
+VERIFY: check-probe-cards.sh — `planned` sections, dangling targets, OWED lanes, OVERDUE
+commissioned builds, and BOTH LAW-2 surfaces (a commission carrying the stake; a bank QA file
+carrying our claim ids) all FAIL. The stage CHECK gate re-runs the same script before green.
 ```
 
-Light settlement venues rarely dispatch — they select from the existing KB; full venues run the whole chain. There is NO probes/ folder and NO `plan from-need` verb (folderless probe, 2026-07-05).
+Light settlement venues rarely dispatch — they select from what the bank already holds; full venues run the whole chain. There is NO probes/ folder, NO per-stage `_PROBE/`, NO `1-probe-plans/` index, and NO `_ASK/`/`_ANS/` mailbox anywhere in the bank.
 
 ## Paper ↔ Application Comparison
 

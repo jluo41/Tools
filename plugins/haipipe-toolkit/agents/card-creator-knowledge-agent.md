@@ -1,1 +1,0 @@
-../skills/insight/agents/creators/card-creator-knowledge-agent.md

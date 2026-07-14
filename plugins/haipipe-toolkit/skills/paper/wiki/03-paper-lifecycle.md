@@ -2,7 +2,7 @@
 
 Paper is a delivery lifecycle. It owns the manuscript-specific story, claim
 wording, displays, section scaffolds, and section text. Project-level evidence
-lives in probes, discoveries, tasks, and insights.
+lives in tasks and discoveries.
 
 ## Folder Contract
 
@@ -16,7 +16,7 @@ lives in probes, discoveries, tasks, and insights.
 │   ├── 3-narrative/     venue: MEDIUM
 │   ├── 4-display/       venue: HEAVY
 │   └── 5-section-edit/  venue: SPECIFIC (per-section norms)
-├── 1-probe-plans/       cross-stage index README.md (plans live per-stage in _PROBE/)
+├── 1-probes/       campaign README.md + PPNN_<topic>.md probe files (flat cross-stage pool)
 ├── 1-rounds/
 ├── 0-displays/
 ├── 0-sections/
@@ -82,18 +82,25 @@ explains the failure:
 
 ## Handoff To Evidence Workers
 
-Handoff to probe/discover/task/insight only when the problem is evidence, not
+Handoff to probe/discover/task only when the problem is evidence, not
 wording.
 
 ```text
-paper GAP -> delivery need -> evidence worker -> verdict/artifact -> paper backfill
+paper GAP -> question SECTION (1-probes/) -> the PROBE phase's MATCH ->
+DISPATCH what MATCH cannot close -> the answering QA file -> the section's
+`reading:` -> the paper backfills (a claim's status flips in 1-claims.md)
 ```
 
 Common routes:
 
 ```text
-claim needs verdict/robustness       -> /haipipe-probe plan from-need <need>
+claim needs its status settled       -> /haipipe-paper probe "<need>"  (raises a question SECTION in
+                                        1-probes/; the stage's PROBE phase MATCHes it, and dispatches
+                                        only what MATCH cannot close)
 claim needs outside context/citation -> /haipipe-discovery <question>
 display needs materialized result    -> /haipipe-task-for-display <need>
-finished evidence needs reusable K/W -> /haipipe-insight <artifact>
+settled claim status                 -> 0-lifecycle/1-claims/1-claims.md (the ONLY
+                                        home of a claim's status; `## Verdict` and
+                                        `verdicted` are DELETED — the probe section
+                                        carries only its `reading:`)
 ```

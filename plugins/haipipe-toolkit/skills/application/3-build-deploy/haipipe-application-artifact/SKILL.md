@@ -4,9 +4,9 @@ description: "Artifact composer for the intervention lifecycle (the `draft` verb
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.0.0"
-  last_updated: "2026-07-06"
-  summary: "Renamed draft->artifact, re-homed 3-draft/ -> 3-build-deploy/. Keeps v2's venue-profile-is-the-instruction-set core; adds: DPRC composition pass (compose -> probe values/claim-refs -> revise per style/audience -> check via the CHECK worker), new spine paths (1-claims folder, no minimap), Gate Ledger row on approve."
+  version: "3.1.0"
+  last_updated: "2026-07-14"
+  summary: "Renamed draft->artifact, re-homed 3-draft/ -> 3-build-deploy/. Keeps v2's venue-profile-is-the-instruction-set core; adds: DPRC composition pass (compose -> probe values/claim-refs -> revise per style/audience -> check via the CHECK worker), new spine paths (1-claims folder, no minimap), Gate Ledger row on approve. v3.1.0 (probe redesign, Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3 approved JL 2026-07-14): the claim-audit line traces a cited claim to a SETTLED claim in 1-claims.md (whose evidence is a probe section's target: QA file), not to a 'verdicted PP card' -- 'verdict'/'verdicted' are deleted as probe vocabulary."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -49,12 +49,12 @@ Output:  one artifact following the template slots
 
 Example (venue-sms):
   Slot 1 (greeting):  "Hi [Name], your [Medication]..."  ← personalization
-  Slot 2 (benefit):   "Refilling on time helps..."       ← K03
-  Slot 3 (CTA):       "Reply REFILL to start"            ← W02
+  Slot 2 (benefit):   "Refilling on time helps..."       ← C03 (PP05)
+  Slot 3 (CTA):       "Reply REFILL to start"            ← recommendation from C03
   Slot 4 (close):     "Reply STOP to opt out"            ← standard
 ```
 
-The K/W-to-slot mapping happens HERE (venue-ALIGNED), not in claims: the ledger says what is true, the template says where it goes.
+The claim-to-slot mapping happens HERE (venue-ALIGNED), not in claims: the ledger says what is true, the template says where it goes.
 
 Sectioned venues (dashboard, report)
 =====================================
@@ -67,7 +67,8 @@ DPRC composition pass
 ```
 COMPOSE (draft)   fill the template/assembly from lifecycle inputs
 PROBE             trace every number to its task-result/card anchor; verify every
-                  cited K/W id resolves in insights/; flag what does not
+                  cited claim resolves to a settled claim in 1-claims.md, whose evidence
+                  is a probe section's target: QA file; flag what does not
 REVISE            style-profile + audience pass (length limits, tone, reading level)
                   via the shared revise worker's rules
 CHECK             run the venue self-review checklist; then hand to
@@ -91,8 +92,7 @@ venue: <pinned venue>
 audience: <audience>
 intent: "<from pitch>"
 created: YYYY-MM-DD
-cited_K: [K03, K05]
-cited_W: [W02]
+cites: [C03 (PP05), C05 (PP07)]
 status: draft | reviewed | deployed
 ---
 ```
@@ -101,9 +101,9 @@ Definition of done
 ===================
 
 ```
-[ ] 0-artifacts/<slug>-v{N}.md exists, frontmatter complete (venue, audience, cited_K/W)
+[ ] 0-artifacts/<slug>-v{N}.md exists, frontmatter complete (venue, audience, cites)
 [ ] Content follows the venue template/structure; tone matches the audience profile
-[ ] Every number and K/W citation traces to a resolvable anchor (no unflagged inventions)
+[ ] Every number and claim citation traces to a resolvable anchor (no unflagged inventions)
 [ ] Venue self-review checklist run (failures noted in ## Review notes)
 [ ] CHECK presented; on approve, Gate Ledger `draft` row written
 ```

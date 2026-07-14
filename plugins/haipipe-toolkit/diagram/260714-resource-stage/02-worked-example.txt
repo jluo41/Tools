@@ -1,0 +1,79 @@
+The whole artifact, REAL — Paper-CGMtoAge
+=========================================
+Part of: diagram/260714-resource-stage/  ·  6 files, one theme each, no index.
+SPEC OF RECORD — the resource stage. C1-C9 closed JL 2026-07-14. SHIPPED.
+
+This is not a mock. It is what 1-resource.md would have held on 2026-07-07, written
+from what the paper already knew that day. Read Q1 and then read the ⚠️ line under it.
+
+
+## Demand
+=========
+
+    N1 (H1)  a CGM corpus with age — at a LIFESPAN range. a clock needs VARIANCE.
+    N2 (H1)  a CGM foundation-model rep to freeze + a non-deep baseline to beat.
+    N3 (H2)  age-related OUTCOMES co-measured with CGM.
+    N4 (H3)  a cohort co-measuring CGM with an established clock.
+
+
+## Questions
+============
+
+    Q1 (N1) ❓ Do we have a CGM corpus with age labels? What age range?
+            ✅ AIREADI @v0 · N=2021 · age 60.9±11.2 · range 40–94 · 0 under-40s
+            ❌ CANNOT CARRY N1 — range-restricted → a mid-to-late-life clock,
+               not a lifespan clock. A fit here returns a null BY CONSTRUCTION.
+               🛑 DO NOT DISPATCH A FIT ON THIS ALONE.
+                  ⬅ ⚠️  THE LINE THAT WOULD HAVE STOPPED PP04
+
+    Q2 (N1) ❓ What else has CGM + age? Any young / healthy tail?
+            ✅ CGMacros · N=45 · age 18–69 · 10 under-40. Too small to train.
+               → HELD-OUT EXTERNAL TEST, nothing more.
+
+    Q3 (N1) ❓ Can we BUILD a wide-age corpus?
+            🏗️  COMMISSIONED · owner JL · eta 2026-07-21 · cross-project: none-found
+               WellDoc N=2,576 · age 6–93 · +811 under-40 → pooled ~4,642 · age 6–94
+               ⚠️  widens N and AGE. Does NOT widen HEALTH (~0% healthy).
+                  Imports a NEW confound (T1D + paediatric).
+
+    Q4 (N2) ❓ Does a masked-LM CGM backbone exist ANYWHERE?
+            ⚠️  checkpoint: NO.   pipeline: YES —
+               cross-project: ProjC-Model-1-ScalingLaw/tasks/A02_pretraining_mlm
+                              (9 subtasks, same PretrainCGM corpus, scaffolded)
+               🗳️  (a) AUTHORIZE reuse → a RUN   (b) build → GPU-WEEKS
+                   (c) cut the MLM arm → ONE SENTENCE
+
+    Q5 (N3,N4) ❓ Does anything co-measure CGM with aging outcomes?
+            🚪 HPP / Pheno.AI · ~10,812 · CGM + ~2yr revisits
+               rung: APPLICATION → DUA → secure enclave. MONTHS OF CALENDAR.
+               ⛔ H2 and H3 are UNFALSIFIABLE until this lands.
+               👤 owner: UNASSIGNED · 📄 UNFILED        ⬅ see 05-rulings.txt (C9)
+
+  🛰️  the PROBE LAYER reads Q1–Q5 and decides the shape:
+        Q1,Q2 → store scan (task, minutes)     Q4 → capability grep (minutes)
+        Q3    → task-for-data (BUILD, days)    Q5 → access rung (discovery)
+
+
+WHY THIS EXAMPLE EXISTS — the PP04 receipt
+==========================================
+
+  The stage is not a hypothetical. The evidence that it was missing is on disk:
+
+```text
+   📅 07-07   PP02 lands:  "AIREADI age range is 40–94. Zero under-40s."
+                            ⬆ THE CORPUS WAS ALREADY KNOWN TO BE RANGE-RESTRICTED
+
+   📅 later   PP04 dispatches anyway:  a full training pass, self-labelled
+                                        "bundled fit+eval"
+                    │
+                    ▼
+   📊 PP04 returns:  INCONCLUSIVE
+                     — and nobody can say whether the null came from the MODEL
+                       or from the CORPUS, because the run BUNDLED both.
+
+   💸 a full training pass was spent RE-DERIVING what PP02 already knew.
+   🛑 Q1's ❌ line above is the one sentence that stops it. It costs 30 seconds.
+```
+
+  ⇒ this is the whole argument for the stage, in one incident. See also
+    04-cleavage.txt, where the bundling of fit+eval is the ANTI-PATTERN.

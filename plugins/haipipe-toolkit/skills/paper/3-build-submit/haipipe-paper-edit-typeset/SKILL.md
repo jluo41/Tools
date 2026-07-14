@@ -29,7 +29,7 @@ The compiled document reads cleanly: no widows or orphans, no overfull/underfull
 
 ## Approach (intended)
 
-Compile with `components/compile/paper-compile` and read the PDF + log (`Overfull` / `Underfull` warnings, widow/orphan) — fix at the **prose** level first (tighten a sentence to pull a widow back) before reaching for manual break commands. A diff of before/after PDFs (`haipipe-paper-edit-diffpdf`) confirms nothing else moved.
+Compile with `paper-compile` (sibling skill in `3-build-submit/`) and read the PDF + log (`Overfull` / `Underfull` warnings, widow/orphan) — fix at the **prose** level first (tighten a sentence to pull a widow back) before reaching for manual break commands. A diff of before/after PDFs (`haipipe-paper-edit-diffpdf`) confirms nothing else moved.
 
 ## Done means
 

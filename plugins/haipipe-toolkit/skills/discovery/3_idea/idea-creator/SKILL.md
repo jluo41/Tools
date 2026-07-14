@@ -4,9 +4,9 @@ description: Generate and rank research ideas given a broad direction. Use when 
 argument-hint: "[research-direction]"
 allowed-tools: Bash(*), Read, Write, Grep, Glob, WebSearch, WebFetch, Agent, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
-  summary: "Generate and rank research ideas given a broad direction."
+  version: "1.0.1"
+  last_updated: "2026-07-14"
+  summary: "Generate and rank research ideas given a broad direction. Composes onward into the executors' `qa` verb (/haipipe-discovery qa, /haipipe-task qa) — the retired probe-gateway pointer is gone."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -302,8 +302,14 @@ After this skill produces the ranked report:
 ```
 /idea-creator "direction"     → ranked ideas
 /novelty-check "top idea"     → deep novelty verification (already done in Phase 4, but user can re-run)
-/haipipe-probe                → open a probe on the chosen idea (evidence → verdict)
+/haipipe-discovery qa "<Q>"   → answer an open evidence question about the chosen idea
+                                (→ discoveries/<leaf>/QA/<n>-<slug>.md)
+/haipipe-task qa "<Q>"        → the same door, for a question our own code/data answers
 ```
+
+A ranked idea is not a claim, and this layer never opens one. If the idea grows into a
+paper, THAT paper raises its own questions in its own `1-probes/PPNN_<topic>.md` probe file
+and judges its own claims in its own `1-claims.md` — we only ever answer the questions.
 
 ## Review Tracing
 

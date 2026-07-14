@@ -3,10 +3,9 @@
 render-deck.py
 ==============
 
-Convert a DIKW-spine report.md (per ../ref/report-template.md) into an
-html-ppt slide deck. One source -> two artifacts: keep report.md /
-report.html as scrolling reference; emit deck/index.html for
-stakeholder presentation.
+Convert a report-venue report.md into an html-ppt slide deck. One source
+-> two artifacts: keep report.md / report.html as scrolling reference;
+emit deck/index.html for stakeholder presentation.
 
 Usage
 -----

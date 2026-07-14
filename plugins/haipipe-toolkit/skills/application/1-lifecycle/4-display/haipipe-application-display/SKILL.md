@@ -1,12 +1,12 @@
 ---
 name: haipipe-application-display
-description: "Stage 4 of the intervention lifecycle (venue-GATED: required for dashboard/ui-card/report, optional for email, skipped for sms/push/reminder/checklist — per STATUS.md stages_skipped). Answers 'what content element carries each claim, and what job does each unit do?' Maps claims to display units (panels, widgets, charts, sections) with per-unit jobs and evidence anchors — the retired minimap stage's concern lives here. Output: 0-lifecycle/4-display/4-display.md + _LOG + _PROBE/. Trigger: display, content elements, panels, widgets, unit jobs, /haipipe-application display."
+description: "Stage 4 of the intervention lifecycle (venue-GATED: required for dashboard/ui-card/report, optional for email, skipped for sms/push/reminder/checklist — per STATUS.md stages_skipped). Answers 'what content element carries each claim, and what job does each unit do?' Maps claims to display units (panels, widgets, charts, sections) with per-unit jobs and evidence anchors — the retired minimap stage's concern lives here. Output: 0-lifecycle/4-display/4-display.md + _LOG; unmaterialized units are raised as question SECTIONS in 1-probes/ (serves: 4-display). Trigger: display, content elements, panels, widgets, unit jobs, /haipipe-application display."
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.0.0"
-  last_updated: "2026-07-06"
-  summary: "Paper-aligned: absorbs minimap (per-unit Job field is now required on every display unit); stage FOLDER paths; gating via STATUS.md stages_skipped; materialization routes through the PROBE worker to /haipipe-task; DPRC phases."
+  version: "4.1.0"
+  last_updated: "2026-07-14"
+  summary: "Paper-aligned: absorbs minimap (per-unit Job field is now required on every display unit); stage FOLDER paths; gating via STATUS.md stages_skipped; materialization routes through the PROBE worker to /haipipe-task; DPRC phases. v4.1.0 (probe redesign, Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3 approved JL 2026-07-14): a unit whose data source does not exist is raised as a question SECTION in 1-probes/ (serves: 4-display); the PROBE worker MATCHes the bank first and commissions the unit only if it does not already exist. Display never writes under tasks/ (LAW 1). The per-stage _PROBE/ folder is RETIRED."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -38,7 +38,7 @@ Output
 ```
 <intervention-root>/0-lifecycle/4-display/4-display.md
 <intervention-root>/0-lifecycle/4-display/_LOG_4-display.md
-<intervention-root>/0-lifecycle/4-display/_PROBE/       (materialization needs)
+<intervention-root>/1-probes/PPNN_<topic>.md            (materialization questions, serves: 4-display)
 ```
 
 Display artifact schema (venue-dependent)
@@ -75,8 +75,8 @@ Every unit carries FOUR required fields -- type, claim, JOB, data source. The Jo
 - **Data source:** task T03
 
 ## Probes
-<materialization needs, INLINE and visible: one line per PP with status
-(unit → task route); cards in _PROBE/>
+<materialization needs, INLINE and visible: one line per PP with its section state
+(unit → task route); the questions live as SECTIONS in 1-probes/, serves: 4-display>
 ```
 
 Artifact formatting: `=====` title / `-----` sections (no `#` headings); one sentence per line. Display reads the venue stage doc's Artifact Principles (2-venue.md) for available element types.
@@ -84,14 +84,15 @@ Artifact formatting: `=====` title / `-----` sections (no `#` headings); one sen
 Materialization
 ================
 
-A unit whose data source does not exist yet is an evidence need: buffer a `_PROBE/` card (kind: artifact, route: task) and dispatch via the PROBE worker -- display never runs `/haipipe-task` or computes inline. Rendered outputs land task-side; the unit's Data source field points at them.
+A unit whose data source does not exist yet is an evidence need: raise it as a question SECTION in `1-probes/` (`serves: 4-display`) and let the PROBE worker bind it -- display never runs `/haipipe-task`, never computes inline, and never writes under `tasks/` (LAW 1). The PROBE phase MATCHes the bank first and commissions the unit only if it does not already exist. Rendered outputs land task-side; the unit's Data source field points at them.
 
 Phases
 =======
 
 ```
 DRAFT   map claims to unit types + jobs per venue rules (haipipe-application-draft)
-PROBE   materialization needs → _PROBE/ cards → task routing (haipipe-application-probe)
+PROBE   materialization needs → question SECTIONS in 1-probes/ → MATCH the bank, then
+        commission to the task orchestrator (haipipe-application-probe)
 REVISE  unit set coherence: one job per unit, no orphan units (haipipe-application-revise)
 CHECK   exit criteria below → Gate Ledger row (haipipe-application-check)
 ```
@@ -103,7 +104,7 @@ Definition of done
 [ ] 0-lifecycle/4-display/4-display.md exists (when the venue requires it)
 [ ] Every primary claim has at least one display unit
 [ ] Every unit has all four fields — type, claim, JOB, data source
-[ ] Unmaterialized data sources have _PROBE/ cards (task-routed)
+[ ] Unmaterialized data sources have a question SECTION in 1-probes/ (serves: 4-display)
 [ ] Display types match the venue's available element types
 ```
 

@@ -4,6 +4,42 @@ task — Changelog
 Layer-scoped changelog for the task (WORK / execution) layer. Newest first.
 Rollup lives in the plugin-level `CHANGELOG.md`.
 
+## [Unreleased] — 2026-07-14 — the task layer becomes consumer-unaware
+
+Spec of record: `Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/` v3 (APPROVED by JL 2026-07-14, rulings R1-R18).
+Constitution: `probe/haipipe-probe/SKILL.md` v8.0.0.
+
+### Removed
+- `haipipe-task/fn/asks.md` — the probe-aware SCREEN/ANSWER verb. Deleted, not archived.
+- The `_ASK/` mailbox, `_ANS/`, the `answers:` report field, and every external id under
+  `tasks/`. Nothing in this bucket references a consumer any more.
+
+### Added
+- `haipipe-task/fn/qa.md` — **the `qa` verb**, the layer's one question door.
+  `/haipipe-task qa "<question>" [<leaf>]`: one question in general language in, a PATH to
+  `<leaf>/QA/<n>-<slug>.md` out. Gate ① QA SCAN → ② DIGEST → ③ P-B-E-R at the shallowest
+  depth (0 read | 1 new run+config | 2 new script | 3 new leaf), or 🚫 REFUSE. Three
+  callers, one identical door: a human, the orchestrator self-directed, or a relayed
+  question.
+- The **OPTIONAL `QA/` folder** on every task-folder: the leaf's readable, numbered map of
+  the directions it has explored. Authored by THIS layer at Report; write-once; slug only;
+  three reasons only; no consumer vocabulary.
+
+### Changed
+- Agents: orchestrator 2.0.0 (clean-context dispatch target, COMMISSION input form, runs
+  the qa gate, returns `qa_file:`, may be self-directed) · creator 3.0.0 (authors the QA
+  digest at Report — the pen never leaves this layer) · reviewer 1.2.0 (the report gate
+  lints the digest). `agents/README.md` rewritten: the wall is the orchestrator's clean
+  context, not a folder.
+- `haipipe-workflow` 2.4.0: `ref/plan-schema.md` drops `answers:` entirely.
+- `DESIGN.md`: "Boundary with probe" → "Boundary: the task layer is CONSUMER-UNAWARE";
+  "Downstream Consumer Contract" → "The read surface"; the sandwich model is superseded.
+  `README.md` + `ref/metrics-json-schema.md` + `fn/workflow-plan.md` swept of upper-layer
+  vocabulary.
+- **The task session's PRIMARY mode is stated plainly for the first time:** autonomous
+  P-B-E-R with NO question pending. Answerability work (digests + code that makes future
+  questions cheap) is task-native. `qa` is a side door, never the engine.
+
 ## [Unreleased] — 2026-07-04
 
 ### Changed

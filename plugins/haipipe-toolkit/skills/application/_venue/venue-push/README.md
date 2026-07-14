@@ -37,7 +37,7 @@ template:
     chars: ~50
   - slot: body
     job: benefit + action hint
-    claim_source: action claim (W)
+    claim_source: recommendation (grounded in C##)
     chars: ~100
 ```
 
@@ -45,7 +45,7 @@ template:
 ## Lifecycle mappings
 
 ### → Claims (light)
-2 K/W entries max — one for the hook, one for the action.
+2 supported claims (C##) max — one for the hook, one for the action.
 
 ### → Draft
 Title grabs attention. Body gives one reason + one action.

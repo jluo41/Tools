@@ -1,12 +1,12 @@
 ---
 name: haipipe-run-timeline
-description: "Rebuild a multi-lane flight-record timeline of any Claude Code session (paper runs, probe/discovery chains, replication tests) from its transcript + subagent transcripts. Lanes = spawn depth (session / probe agent / discovery agent / creator / reviewer); events = Skill calls, Agent dispatches, file Writes/Edits, with mm:ss offsets. No instrumentation needed -- transcripts already carry timestamps. Trigger: run timeline, flight record, session overview, 复盘, audit the run, what happened in session X."
+description: "Rebuild a multi-lane flight-record timeline of any Claude Code session (paper runs, task/discovery dispatch chains, replication tests) from its transcript + subagent transcripts. Lanes = spawn depth (session / task or discovery orchestrator / creator / reviewer); events = Skill calls, Agent dispatches, file Writes/Edits, with mm:ss offsets. No instrumentation needed -- transcripts already carry timestamps. Trigger: run timeline, flight record, session overview, 复盘, audit the run, what happened in session X."
 argument-hint: "<session>.jsonl path (find via grep -l '<session-name>' ~/.claude/projects/<project-dir>/*.jsonl)"
 allowed-tools: Bash, Read
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-07-05"
-  summary: "One-command flight recorder: python3 run_timeline.py <session>.jsonl. Born during the test-2-2222 replication audit (JL: 'how could you log the process... so we can have an overview')."
+  version: "1.1.0"
+  last_updated: "2026-07-14"
+  summary: "One-command flight recorder: python3 run_timeline.py <session>.jsonl. Born during the test-2-2222 replication audit (JL: 'how could you log the process... so we can have an overview'). v1.1: the worked example re-cut to the live dispatch doors — the probe gateway agent was retired 2026-07-14, so a paper session now dispatches DIRECT to haipipe-task-orchestrator-agent / haipipe-discovery-orchestrator-agent, which write <leaf>/QA/<n>-<slug>.md."
 ---
 
 Skill: haipipe-run-timeline
@@ -28,18 +28,33 @@ python3 run_timeline.py /path/to/<session-id>.jsonl
 
 ```
 LANES:
-  L0 = 🎬 d0 paper-session
-  L1 = 🕵️ d1 probe-orchestrator
-  L2 = 📚 d2 discovery-orchestrator
-  L3 = ✍️ d3 discovery-creator
-  L4 = 🔍 d3 discovery-reviewer
+  L0 = 🎬 d0 paper-session          (consumer — holds the stake, dispatches, never executes)
+  L1 = 📚 d1 discovery-orchestrator (executor — clean context, runs the qa gate)
+  L2 = ✍️ d2 discovery-creator
+  L3 = 🔍 d2 discovery-reviewer
 
 00:00 [L0] 🎯 Skill(haipipe-paper-enter)
-03:42 [L0] 🤖 dispatch haipipe-probe-orchestrator-agent (bg=False)
-07:33     [L1] 📝 Write 0705_silicon-physician-novelty/probe.yaml
-10:10             [L3] 🎯 Skill(arxiv)
-17:34             [L3] 📝 Write 01_novelty-verdict-three-axes/sources.md
-19:39         [L2] 🤖 dispatch haipipe-discovery-reviewer-agent (bg=False)
+02:15 [L0] 📝 Write papers/Paper-X/1-probes/PP02_novelty.md      ← the probe file (paper-side)
+03:42 [L0] 🤖 dispatch haipipe-discovery-orchestrator-agent (bg=False)   ← the commission, verbatim
+10:10     [L1] 🎯 Skill(haipipe-discovery)
+17:34         [L2] 📝 Write L01_novelty/01_three-axes/sources.md
+19:39     [L1] 🤖 dispatch haipipe-discovery-reviewer-agent (bg=False)
+26:04     [L1] 📝 Write L01_novelty/01_three-axes/QA/1-three-axis-novelty.md   ← the ANSWER
+27:10 [L0] ✏️  Edit  papers/Paper-X/1-probes/PP02_novelty.md      ← target: + reading:
 ```
 
-Read it for: where time went (per-layer spans), whether dispatches took the mandated doors, sync-vs-background choices (`bg=`), and which files were born when. Complements the on-disk coarse trail (_LOG [PHASE] entries carry date + HH:MM per wiki/02); this is the fine-grained view.
+Read it for: where time went (per-layer spans), sync-vs-background choices (`bg=`), which files
+were born when, and — the audit that matters most — **whether dispatches took the mandated doors**:
+
+```
+✅ the consumer lane (L0) touches ONLY papers/ and applications/.
+✅ every tasks/ or discoveries/ Write happens in an EXECUTOR lane (L1+), under a
+   haipipe-task-orchestrator-agent / haipipe-discovery-orchestrator-agent dispatch.
+❌ a Write into tasks/ or discoveries/ FROM LANE L0 = LAW 1 broken. The paper session did bank
+   work inline, with the stake in its context. That is the leak this timeline exists to catch.
+💀 haipipe-probe-orchestrator-agent (the gateway) was RETIRED 2026-07-14 — a timeline showing it
+   is a pre-v3 session. Dispatch is now DIRECT to the two executor orchestrators.
+```
+
+Complements the on-disk coarse trail (_LOG [PHASE] entries carry date + HH:MM per wiki/02); this
+is the fine-grained view.

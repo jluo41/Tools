@@ -1,246 +1,217 @@
 ---
 name: food-to-description
-description: Convert Shanghai meal strings to USDA nutrition using 4-stage pipeline
+description: "Normalize free-text food descriptions (any cohort's dialect) to USDA nutrition. Use when a Diet ProcName's FoodName column needs Calories/Carbs/Protein/Fat/Fiber, when a SourceFn must enrich diet data, or when the FoodNorm lexicon needs rebuilding. Trigger: food to nutrition, resolve diet to USDA, fill nutrition columns, foodnorm, 食物营养归一化."
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-06-02"
-  stages: 4
-  pipeline: "decompose → retrieve → llm_rerank → aggregate"
-  expected_improvement: "62.8% (stage 2) → 90-95% (with stage 3)"
+  version: "3.1.0"
+  last_updated: "2026-07-12"
+  changelog: CHANGELOG.md
+  summary: "Library = haiutils.food_enrichment (installed). This skill = docs + CLI + tests."
+  measured: "77.4% joinable overall (Shanghai 93.7%, WellDoc 83-91%), no LLM"
 ---
 
-# Skill: food-to-description
+Skill: food-to-description
+================================================================================
 
-Convert Shanghai-style meal descriptions (free text, multi-line) into standardized USDA nutrition data (calories, carbs, protein, fat, fiber) using a 4-stage pipeline.
+Normalize a `Diet.parquet` `FoodName` column into `Calories / Carbs / Protein /
+Fat / Fiber`, whatever dialect it was written in.
 
-## When to Use
 
-- You have a parquet file with `FoodName` column (Shanghai diet descriptions)
-- You need to convert it to structured nutrition (USDA database)
-- You want resumable execution + progress tracking
-- You're willing to wait ~1-2 hours for full pipeline (includes LLM rerank)
+WHERE THE CODE LIVES
+--------------------------------------------------------------------------------
 
-Trigger phrases:
-- "convert Shanghai food to nutrition"
-- "resolve diet to USDA"
-- "fill nutrition columns"
+The library is an installed package. This skill is its docs, CLI and tests.
 
-## Prerequisites
+    code/haiutils/food_enrichment/     <- THE LIBRARY (pyproject.toml, editable)
+        decompose.py       "Egg 50 g\nRice 25 g" -> [("egg",50.0), ("rice",25.0)]
+        retrieve.py        component -> USDA candidates, scored and ranked
+        llm_rerank.py      optional; only for what stage 2 could not resolve
+        aggregate.py       per-100g x grams/100, summed over components
+        usda_db.py         the bank + score_candidate()
+        enrich.py          enrich_food_to_nutrition()  <- the entry point
 
-- Python 3.9+
-- `pandas`, `pyarrow` (parquet support)
-- Anthropic SDK: `pip install anthropic`
-- USDA nutrition database: `usda_nutrition.sqlite` (13 MB, ~200k foods)
-- ANTHROPIC_API_KEY environment variable set
+    Tools/.../food-to-description/     <- THIS SKILL
+        SKILL.md           you are here
+        pipeline.py        CLI wrapper
+        test_foodnorm.py   regression + benchmark suite
 
-## How It Works
+`haiutils` sits in `pyproject.toml` beside `haipipe` / `hainn` / `haifn`, so it
+imports anywhere with no path juggling:
 
-### Stage 1: Decompose
-Parse Shanghai multi-line food strings into (food_name, amount_g) tuples.
+    from haiutils.food_enrichment import enrich_food_to_nutrition
 
-**Input:**
-```
-"Scallion grilled chops 125g\nLotus root soup 70g\nRice 200g"
-```
+Do NOT write `from code.haiutils import ...`. The repo package is named `code`,
+the Python standard library also has a `code` module, and IPython imports the
+stdlib one at startup -- so that form works under plain `python` and dies in any
+notebook.
 
-**Output:**
-```
-[("scallion grilled chops", 125.0), ("lotus root soup", 70.0), ("rice", 200.0)]
-```
 
-**Status metric:** Number of unique food components extracted
+THE PROBLEM
+--------------------------------------------------------------------------------
 
-### Stage 2: Retrieve
-Find USDA matches via multi-tier full-text search (alias dict → prefix → FTS5).
+Eleven cohorts share one Diet column contract. The columns are uniform; what is
+inside `FoodName` is not:
 
-**Input:** Food name from Stage 1 (e.g., "scallion grilled chops")
+    WellDoc    "Toasted Whole Wheat Bread; Decaf Coffee"   item list, full macros
+    Shanghai   "Egg 50 g\nRice 25 g"                       free text + grams, NO macros
+    CGMacros   "Unknown"                                   the food is a photo
+    OhioT1DM   "Unknown"                                   carbs only
+    dubosson   "Unknown"                                   calories only
 
-**Output:** Top-10 USDA candidates with nutrition per 100g
+Five incompatible ways to say what somebody ate. This skill maps them all onto
+one nutrient vector.
 
-**Classification:**
-- `GOOD`: Query tokens fully cover first segment + no extra noise (100% coverage)
-- `OK`: Query tokens fully cover first segment + extra noise (100% coverage)
-- `WEAK`: Partial token coverage (<100%)
-- `MISS`: No candidates found
 
-**v2 Results (current):**
-- 62.8% GOOD/OK (rank-1 match on first try)
-- 35.4% WEAK (top-10 contains truth, needs rerank)
-- 1.7% MISS (even top-10 doesn't help)
+USAGE
+--------------------------------------------------------------------------------
 
-### Stage 3: LLM Rerank
-Use Claude (via Anthropic API) to pick best match from top-10 for WEAK/MISS cases.
+Package (what SourceFn uses):
 
-**Input:** Food name + top-10 USDA candidates
+    from haiutils.food_enrichment import enrich_food_to_nutrition
 
-**Prompt logic:**
-```
-"Given Shanghai food '{food}' and these 10 candidates, pick the best match by:
- 1. Cuisine semantics (does it fit Shanghai?)
- 2. Nutrition plausibility (reasonable for the food?)
- 3. Availability (common in Shanghai?)
- Return: fdc_id, confidence (0-1), reasoning."
-```
+    df = enrich_food_to_nutrition(df, food_col="FoodName", stages="1-2")
+    # -> Calories, Carbs, Protein, Fat, Fiber, NutritionSource, NutritionConf
 
-**Optimization:** Prompt caching to avoid resending top-10 candidates (cost: ~$0.03-0.05 per unique food)
+CLI:
 
-**Expected improvement:** 35.4% WEAK → 90-95% match rate
+    python pipeline.py <Diet.parquet> -o <out.parquet>
+    python pipeline.py --lexicon              # coverage of the pre-resolved lexicon
 
-### Stage 4: Aggregate
-Sum nutrition across all components per meal.
+Lexicon (what SourceFn should JOIN against, rather than re-resolving):
 
-**Input:** Stage 1 components + Stage 2/3 fdc_id mappings
+    python code/scripts/haibuilder/0-external/e12_build_external_foodnorm.py
+    -> _WorkSpace/ExternalStore/@v1215/foodnorm/food_lexicon.parquet
 
-**Processing:**
-1. For each component: look up USDA nutrition (per 100g)
-2. Scale by amount: nutrition × (amount_g / 100)
-3. Sum across all components
-4. Handle missing: fill with 0
+Resolution is slow and its alias table needs human review, so it is done once and
+versioned in ExternalStore -- the same way NDC/NPI reference data works.
 
-**Output:** parquet with added columns: `Calories`, `Carbs`, `Protein`, `Fat`, `Fiber`
 
-## Commands
+HOW RETRIEVAL WORKS
+--------------------------------------------------------------------------------
 
-### Run full pipeline (stages 1-4)
-```bash
-cd Tools/plugins/haipipe-toolkit/skills/0_connect/food-to-description
+Two phases. The SQL/FTS tiers only RECALL; `score_candidate()` scores each
+candidate over its FULL description and re-sorts. **Tier order is not rank
+order** -- the tiers fire in priority order and use `ORDER BY length(description)`,
+which systematically prefers the generic entry ("Cabbage, raw") over the specific
+one ("Cabbage, chinese (pak-choi)").
 
-python pipeline.py <input.parquet> \
-  --output <output.parquet> \
-  --stages 1-4 \
-  -v
-```
+Five scoring terms. Each exists because of a specific nutrition error that
+actually happened -- they are hand-weighted, so `test_foodnorm.py` pins all five:
 
-### Run subset of stages
-```bash
-# Stage 2 only (retrieve)
-python pipeline.py input.parquet --stages 2
+    coverage        of the query by the full description (dominant term)
+    headword        USDA's first segment is the food's head noun, so plain "rice"
+                    must not match "Soup, rice"          28g carbs -> 7g
+    cooking state   "Millet, raw" is 72g carbs, "Millet, cooked" is 23g    (3x)
+    added fat       "Fish, cod, fried" carries 11.7g carbs from the batter
+    concentrated    "Milk, dry" is 52g carbs, fluid milk is 4.8g
 
-# Stages 2-3 (retrieve + rerank)
-python pipeline.py input.parquet --stages 2-3
 
-# Stage 3 only (rerank weak cases found in stage 2)
-python pipeline.py input.parquet --stages 3
-```
+THE CONTRACT
+--------------------------------------------------------------------------------
 
-### Resume from stage N
-```bash
-# If stage 2 failed, resume from stage 3
-python pipeline.py input.parquet --from-stage 3
-```
+Only GOOD / OK / ALIAS may be written into nutrition columns. WEAK and MISS stay
+NULL. **A confidently wrong food is worse than a missing one.**
 
-### Show status (without running)
-```bash
-python pipeline.py --status
-```
+    NutritionSource   bank_usda | none
+    NutritionConf     GOOD | PARTIAL | MISS
 
-### Test a single stage
-```bash
-# Test Stage 1: decompose
-python stages/1_decompose.py
+`PARTIAL` means some component of that meal did not resolve -- its totals
+UNDERSTATE the meal, and downstream must be able to exclude it. Nutrition without
+provenance is indistinguishable from measured nutrition.
 
-# Test Stage 2: retrieve
-python stages/2_retrieve.py
 
-# Test Stage 3: rerank (requires ANTHROPIC_API_KEY)
-python stages/3_llm_rerank.py
-```
+MEASURED
+--------------------------------------------------------------------------------
 
-## Status Tracking
+Joinable coverage, per cohort (`python pipeline.py --lexicon`):
 
-Progress stored in `~/.food-description/status.json`:
+    Shanghai          93.7%     generic ingredients
+    WellDoc2025ALS    90.6%
+    WellDoc2022CGM    85.8%
+    WellDoc2025CVS    85.4%     branded / restaurant food
+    WellDoc2025LLY    82.6%
+    ------------------------
+    all cohorts       77.4%     22,977 components, 128,334 mentions
 
-```json
-{
-  "pipeline": "food-to-description",
-  "created": "2026-06-02T10:30:00",
-  "last_updated": "2026-06-02T12:15:00",
-  "stages": {
-    "stage_1": {"status": "done", "timestamp": "...", "count": 2018, "metric": "2,018 unique components"},
-    "stage_2": {"status": "done", "timestamp": "...", "count": 2018, "metric": "62.8% rank-1 match"},
-    "stage_3": {"status": "done", "timestamp": "...", "count": 1676, "metric": "1,676/1,676 reranked"},
-    "stage_4": {"status": "done", "timestamp": "...", "count": 3470, "metric": "filled 3,470 meal rows"}
-  }
-}
-```
+Accuracy, graded against WellDoc's app-DB macros (`test_foodnorm.py --bench`):
+carb share of energy MAE 12.6 pp, r = 0.705.
 
-Dashboard output:
-```
-🔄 Pipeline: food-to-description
+WellDoc is the only ground truth we have -- its rows carry FoodName AND all five
+macros, filled in by the WellDoc app's own food database. Hide the macros, feed
+only the name, and the normalizer can be graded. Shanghai can never be graded: it
+has no labels. **A resolver earns the right to run on Shanghai by passing on
+WellDoc.**
 
-📥 Stage 1 Decompose: ✅ done — 2,018 components
-📊 Stage 2 Retrieve: ✅ done — 62.8% rank-1 match
-🧠 Stage 3 LLM Rerank: ✅ done — 1,676/1,676 reranked (150 min)
-📤 Stage 4 Aggregate: ✅ done — filled 3,470 meal rows
-```
 
-## Troubleshooting
+STAGE 3 (LLM) IS USUALLY NOT THE ANSWER
+--------------------------------------------------------------------------------
 
-### "ANTHROPIC_API_KEY not set"
-```bash
-export ANTHROPIC_API_KEY="sk-ant-..."
-```
+The old 35% WEAK rate was a scoring bug: `classify()` measured coverage against
+`description.split(",")[0]` only, and USDA's inverted naming puts the
+discriminating words AFTER the comma ("Cabbage, chinese (pak-choi)"). Paying an
+LLM to rerank was paying it to clean up after a broken retriever.
 
-### "usda_nutrition.sqlite not found"
-The DB is at `/home/jluo41/WellDoc-SPACE/_WorkSpace/ExternalStore/@v1215/usda_fdc/usda_nutrition.sqlite`. If you move it, update `utils/constants.py`.
+Fixing retrieval took trusted coverage from 62.9% to 92% on Shanghai, at zero
+cost. What is left is mostly a *vocabulary* gap -- USDA has no entry for hairtail
+(带鱼), crown daisy (茼蒿), pomfret (鲳鱼) at all -- and no amount of reranking a
+candidate list repairs a bank that lacks the food.
 
-### Stage 3 (LLM) too slow
-- Skip stage 3: `--stages 1-2` (will use stage 2 rank-1 for all foods)
-- Run partial: `--stages 3` with smaller dataset to test
 
-### Output parquet is missing nutrition columns
-- Check stage 4 status: `--status`
-- Verify input parquet has `FoodName` column with proper format
+CLOSED GAPS (2026-07-12)
+--------------------------------------------------------------------------------
 
-## Implementation Details
+- `"just carbs"` -- was the lexicon's single biggest entry at 16,573 mentions, 11%
+  of everything, and NOT A FOOD: a WellDoc app entry mode where the user types a
+  carb count and names no food. Now in `PLACEHOLDERS`. Filtering it lifted WellDoc
+  from ~70% to 83-91%. Its rows carry a true user-reported `Carbs` with
+  Calories/Protein/Fat/Fiber = 0 in 100% of cases (vs 8-19% for real foods) --
+  those zeros mean NOT MEASURED. A `NutritionSource="user_reported"` path that
+  trusts Carbs and NULLs the rest is still to be wired into the Diet contract.
 
-### Files
-- `pipeline.py` — Orchestrator (main entry point)
-- `stages/1_decompose.py` — Parse food strings
-- `stages/2_retrieve.py` — USDA FTS5 match
-- `stages/3_llm_rerank.py` — Claude rerank
-- `stages/4_aggregate_writeback.py` — Sum nutrition + write
-- `utils/constants.py` — Regex, stopwords, paths
-- `utils/alias_dict.py` — 17 Shanghai→USDA manual mappings
-- `utils/usda_db.py` — SQLite wrapper
-- `utils/statusline.py` — Progress tracking
+- `food.description` had no usable index, so every LIKE was a full scan of 101k
+  rows and a lexicon build took 76 min. `idx_food_desc_nocase` (COLLATE NOCASE)
+  plus dropping the `lower()` wrapper from the queries: 16.42 ms -> 0.10 ms, 164x.
+  Build is now ~4 min. NOTE: the index must be COLLATE NOCASE and the query must
+  use the bare column -- `lower(description) LIKE ?` is unindexable, and an index
+  on `lower(description)` is not used either, because SQLite's LIKE is already
+  case-insensitive and needs a NOCASE index to match.
 
-### Design Choices
 
-1. **Multi-tier retrieval (Stage 2):** Alias dict + prefix + FTS5 ensures we find foods even if query is slightly off.
-2. **Prompt caching (Stage 3):** Candidates list cached to reduce cost (~50% savings on repeated candidates).
-3. **Resumable:** Statusline.json enables re-running only failed stages.
-4. **Atomic writes:** Temp file → rename pattern prevents partial parquet writes.
+OPEN GAPS
+--------------------------------------------------------------------------------
 
-## Performance
+1. The bank holds ZERO branded foods. USDA publishes 2,007,636 of them, free. This
+   is what the residual 22.6% is made of, essentially without exception:
 
-Rough timing (on 3,470 meals, 2,018 unique foods):
-- Stage 1: <1 min
-- Stage 2: ~5-10 min (FTS5 queries)
-- Stage 3: ~2-3 hours (1,676 Claude API calls @ ~45 calls/min)
-- Stage 4: <1 min
+       657  coffee (brewed from grounds)
+       308  whole grain oatmeal bread (pepperidge farm)
+       238  cold brew iced coffee (venti)
+       144  multi grain cheerios
+       143  honey (sue bee)
+       141  steel cut oats quick 3-minute (quaker)
 
-**Total:** ~2.5-3 hours for full pipeline with rerank.
+   The index above was the prerequisite -- at 20x the rows, unindexed retrieval
+   would be unusable. Importing is now the highest-value move, and its payoff is
+   falsifiable: rerun `test_foodnorm.py --bench` and see whether r moves off 0.705.
 
-## Cost Estimate (Stage 3 only)
+2. Chinese composite dishes (红烧肉, 百叶包) exist in no public food composition
+   table -- every official table, including 中国食物成分表, lists ingredients only.
+   Only consumer databases (e.g. boohee, commercial) carry prepared dishes.
+   Chinese INGREDIENTS that USDA lacks entirely (hairtail 带鱼, crown daisy 茼蒿,
+   pomfret 鲳鱼) would be covered by 中国食物成分表 (1,677 items, free).
 
-~1,676 unique WEAK/MISS foods × $0.03-0.05/call = **$50-84 total**
 
-Use `--stages 1-2` if you want to skip LLM cost (62.8% rank-1 without rerank).
+TESTS
+--------------------------------------------------------------------------------
 
-## See Also
+    python test_foodnorm.py           # L1 contract + L2 golden set
+    python test_foodnorm.py --bench   # + L3 WellDoc held-out benchmark
 
-- `end-to-end-roadmap` skill: Document any E2E project using START/stages/END structure
-- USDA FDC: https://fdc.nal.usda.gov/ (nutrition database)
-- Shanghai diet example: `_WorkSpace/1-SourceStore/Shanghai/@ShanghaiV260419/Diet.parquet`
+    L1  contract    retrieve() returns dicts; an absent food -> MISS, not a
+                    nearest-neighbour guess; decompose() keeps the grams
+    L2  golden set  23 known foods must land within tolerance of their true carbs
+                    AND must not have regressed onto the old wrong match
+    L3  benchmark   floors: coverage >=55%, MAE <=15pp, r >=0.60
 
----
-
-**Specialist tail:**
-
-```
-status:    ok
-summary:   "food-to-description v1.0: decompose → retrieve (62.8%) → rerank (90-95%) → aggregate"
-artifacts: [pipeline.py, stages/*, utils/*, status.json]
-next:      Use end-to-end-roadmap skill to document progress for any E2E project
-```
+Run L2 after touching ANY scoring weight. Two regressions were introduced while
+building the scorer and caught only by eyeballing output -- a wrong match still
+returns a plausible number, so the failures are silent.

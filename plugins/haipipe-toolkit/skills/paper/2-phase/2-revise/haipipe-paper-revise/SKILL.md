@@ -121,7 +121,7 @@ Stage skills call this as their REVISE phase:
 | haipipe-paper-narrative | story beat prose (arc/flow coherence) |
 | haipipe-paper-section-edit | section tex (full revise: content + humanizer + results) |
 
-Note: seed and claims produce argument docs that skip REVISE (markdown only, no venue-quality prose needed).
+Note: seed, resource and claims produce argument docs that skip REVISE (markdown only, no venue-quality prose needed). Resource has ONE exception: a woolly fitness ruling ("probably fine") is a DEFECT, not an answer -- when an **A** does not say what it KILLS, resource does NOT skip REVISE and sharpens it instead.
 
 ## Sibling phase workers
 

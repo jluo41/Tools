@@ -2,8 +2,8 @@ task — Agent Roster
 =====================
 
 Three agents forming the orchestrator / creator / reviewer triad.
-The orchestrator is the dispatch target for cross-layer calls
-(probe-orchestrator, or any skill needing task work in clean context).
+The orchestrator is the dispatch target for any caller that needs task
+work done in CLEAN CONTEXT.
 Creator produces artifacts. Reviewer evaluates artifacts.
 
 ```
@@ -27,20 +27,39 @@ Stage 4: REPORT    creator drafts report.yaml       → reviewer checks report  
 ```
 
 
-Cross-layer dispatch
---------------------
+Dispatch — and the clean-context rule
+--------------------------------------
 
 ```
-probe-orchestrator ──▶ task-orchestrator
-                         │
-                         ├── task-creator
-                         └── task-reviewer
+   any caller ──▶ 🧱 ──▶ task-orchestrator   (clean context)
+   a task spec,     the        │
+   OR one QUESTION  wall       ├── task-creator
+   in general                  └── task-reviewer
+   language
 ```
 
-The task-orchestrator is dispatched during probe Gather when a probe
-needs task work (run a script, create a new analysis). It coordinates
-the full Plan → Build → Execute → Report cycle, or just Execute if
-the task already exists.
+The orchestrator is dispatched whenever a session needs task work done
+without polluting its own context — to run a script, build a new analysis,
+or ANSWER A QUESTION.
+
+A question arrives as ONE QUESTION IN GENERAL LANGUAGE and nothing else:
+no document, no reference to whoever asked, no reason, no external id. The
+orchestrator's clean context IS the boundary. It never learns who asked or
+why, and it never writes anyone else's vocabulary into `tasks/`.
+
+Inside, it runs the qa gate (`haipipe-task/fn/qa.md`):
+
+```
+   ① QA SCAN   already answered?          → return the QA-file PATH        ~0
+   ② DIGEST    results/ answer it, no digest? → write QA/<n>-<slug>.md   cheap
+   ③ P-B-E-R   neither → run the lifecycle at the shallowest depth that
+               answers it, then write the QA file
+   🚫 REFUSE   out of scope for the task layer → the caller re-routes
+```
+
+The orchestrator may also be SELF-DIRECTED: with no question pending, it
+picks a worthwhile direction and explores it (answerability work). Same
+gate, same artifact, no caller at all.
 
 
 Agent details
@@ -48,9 +67,9 @@ Agent details
 
 | Agent | Stages | What it does |
 |-------|--------|-------------|
-| `haipipe-task-orchestrator-agent` | all | Dispatch target. Routes to creator/reviewer per stage. |
-| `haipipe-task-creator-agent` | 1, 2, 4 | Plan: drafts IPO plan. Build: writes/fixes code. Report: drafts report. |
-| `haipipe-task-reviewer-agent` | 1, 2, 4 | Plan: checks IPO. Build: Gate 1 code review. Report: accuracy + Gate 2 result audit. |
+| `haipipe-task-orchestrator-agent` | all | Clean-context dispatch target. Routes to creator/reviewer per stage; runs the qa gate on a question. |
+| `haipipe-task-creator-agent` | 1, 2, 4 | Plan: drafts IPO plan. Build: writes/fixes code. Report: drafts report — and AUTHORS `QA/<n>-<slug>.md` when a digest is due (this layer holds that pen). |
+| `haipipe-task-reviewer-agent` | 1, 2, 4 | Plan: checks IPO. Build: Gate 1 code review. Report: accuracy + Gate 2 result audit + the QA-digest lint. |
 
 
 Shared across task

@@ -33,11 +33,11 @@ claims_settlement: light
 template:
   - slot: prompt
     job: name the action to take
-    claim_source: action claim (W)
+    claim_source: recommendation (grounded in C##)
     chars: ~100
   - slot: motivation
     job: brief reason why (varies per instance)
-    claim_source: primary claim (K)
+    claim_source: primary claim (C##)
     chars: ~80
   - slot: encouragement
     job: positive reinforcement
@@ -49,7 +49,7 @@ template:
 ## Lifecycle mappings
 
 ### → Claims (light)
-1-2 K/W entries. The motivation slot cycles through different
+1-2 supported claims (C##). The motivation slot cycles through different
 framings across reminder instances.
 
 ### → Draft

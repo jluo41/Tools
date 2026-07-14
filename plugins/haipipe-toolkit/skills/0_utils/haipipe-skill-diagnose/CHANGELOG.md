@@ -3,6 +3,10 @@ haipipe-skill-diagnose — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [1.2.1] — 2026-07-14 — probe-redesign residue sweep
+
+Fixed
+- **The exemplar taught a dead command surface.** `ref/thread-protocol.md`'s "Good (option comparison, drawn)" example — the block a session copies when authoring a review thread — was built on `/haipipe-probe file "tasks/R02_…"` (there is no `file` verb; the verbs are contract | anatomy | status | "<question>"), on a first-hop read of `probe-attach.md` (no such file anywhere in the tree), and on a "gather link? 还是 plan?" router that died with the probe-folder era. Re-cut against a live decision: MATCH first (`/haipipe-task qa "<Q>" --check-only` → T2 REUSE, 1 grep + 1 read, zero agent) vs skipping MATCH straight to a T4 commission (a new leaf + full P-B-E-R — the unbudgeted-spend smell). The diagram FORM — side-by-side option boxes with real values — is the point of the doc and is unchanged.
 
 ## [1.2.0] — 2026-07-05
 

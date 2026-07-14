@@ -31,8 +31,17 @@ PREFERENCES: "always run the REAL probe" entry       PREFERENCES: entry absent (
 2. Invariants (must survive round 2)
 ------------------------------------
 
-- Round-1 invariants all stand: four evidence principles; application deltas (_audience/, venue-gated stages, settlement depth, 0-artifacts/ markdown, deploy/iterate tail, in-project folders); insight boundary; stage-owns-WHAT / phase-worker-owns-HOW; zero upstream contract changes to probe/discovery/task/insight.
-- PPNN card anatomy, `_PROBE/` folder name, `0-lifecycle/<stage>/_PROBE/` tree, 1-probe-plans/README.md index: identical to paper (this is what makes checker reuse cheap).
+> ⚠️ SUPERSEDED IN PART — the PROBE LAYER (2026-07-14). `Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/` v3 (approved JL,
+> rulings R1-R18) replaced the card/gateway model this SOP ported. Everything below about PPNN
+> *cards*, per-stage `_PROBE/` folders, the `1-probe-plans/` index, `status: dispatched|verdicted`,
+> and the probe *gateway* is HISTORY: read it as a record of what was, not as a contract.
+> What SURVIVES intact: the mirror-paper-exactly principle, the four PROOF blocks, the
+> family-local checker fork (`check-probe-cards.sh`, same filename), the venue-scaled lane HOOKS
+> (no probe sub-workers), and the DRAFT/PROBE evidence line. Current contract:
+> `../probe/haipipe-probe/SKILL.md` (v8.0.0) + `2-phase/1-probe/haipipe-application-probe/SKILL.md` (v4.0.0).
+
+- Round-1 invariants all stand: four evidence principles; application deltas (_audience/, venue-gated stages, settlement depth, 0-artifacts/ markdown, deploy/iterate tail, in-project folders); stage-owns-WHAT / phase-worker-owns-HOW; zero upstream contract changes to discovery/task.
+- The PROBE LAYER MIRRORS PAPER EXACTLY, and that is the invariant that matters (the structure it names has since changed): probe FILES at `1-probes/PPNN_<topic>.md`, one file per TOPIC, one SECTION per question (`serves`/`target`/`state`/`commission`/`reading`) + one `## Why`; binding by PATH to `<leaf>/QA/<n>-<slug>.md`; dispatch straight to the task/discovery orchestrators. Identical to paper — which is what keeps checker reuse cheap.
 - Application keeps NO probe sub-workers (citation/values/display stay venue-scaled hooks inside the one probe worker); `_VALUES_` always, `_CITATION_` sectioned venues only.
 - Bench evidence folders (examples/ProjApp-SMSDesign/applications/03, 04) stay as round-1 validation history; round-2 exams may reuse them but not rewrite their round-1 artifacts.
 
@@ -44,7 +53,7 @@ PREFERENCES: "always run the REAL probe" entry       PREFERENCES: entry absent (
 - R3 — DRAFT/PROBE evidence line, ported: draft worker gains WebSearch+WebFetch as DRAFT-only orientation fuel — findings may shape prose and buffer `status: planned` PPNN skeletons, never write refs/findings into cards; the R1 checker is what makes the rule mechanical (planned cards surviving to CHECK = FAIL). PREFERENCES.md gains the family-generic "always run the REAL probe in the PROBE phase" entry (JL 2026-07-07, paper-side origin, applies verbatim here).
 - R4 — seed feasibility + FORWARD handoff, ported: seed probe scope narrows to feasibility (novelty + external-data obtainability); internal-data needs register as `[FORWARD -> CLAIMS] PPNN_<slug>` pointer lines in _LOG_0-seed.md; claims DRAFT opens by grepping seed's _LOG for pointers and materializing or explicitly declining each; unconsumed pointer fails claims CHECK. For application, "internal data" = the intervention's own cohort/engagement data — same split as paper.
 - R5 — revise and sub-workers, NOT ported: single revise worker stands (round-1 ruling; paper's weaving-into-content merge is a paper-internal consolidation, and weaving/humanizer-catalog knowledge is pulled in only when a sectioned-venue artifact demands it). No citation/values/display sub-skills; instead the probe worker's venue-hook section states the 2.0.0 contract those hooks must follow when they fire: pointer-following + gateway dispatch only, mechanical acceptance greps, no inline search.
-- R6 — standing alignment watch: paper drifted the SAME DAY as the round-1 port; to stop chasing, haipipe-application/PREFERENCES.md gains one line — any commit touching paper/2-phase/ or paper/1-lifecycle/{0-seed,1-claims} triggers an application port review before the next application work round. (Cheap: a grep of `git log` at enter time is enough; no automation proposed.)
+- R6 — standing alignment watch: paper drifted the SAME DAY as the round-1 port; to stop chasing, haipipe-application/PREFERENCES.md gains one line — any commit touching paper/2-phase/ or paper/1-lifecycle/{0-seed,1-resource,1-claims} triggers an application port review before the next application work round. (Cheap: a grep of `git log` at enter time is enough; no automation proposed.) FIRED 2026-07-14 — paper added `1-resource`; reviewed, port DEFERRED, divergence stated in §6.
 
 4. Change list — phase 1 (load-bearing)
 ----------------------------------------
@@ -74,6 +83,7 @@ PREFERENCES: "always run the REAL probe" entry       PREFERENCES: entry absent (
 6. What deliberately does NOT change
 -------------------------------------
 
+- **DIVERGENCE, STATED (2026-07-14): paper's new `1-resource` stage is NOT ported.** Paper's spine is now `seed > resource > claims > [venue] > pitch > ...` (JL resource ruling, 2026-07-14: what must EXIST for the paper to be testable, does it exist, can it CARRY the claim). Application's spine stays `seed > claims > [venue] > pitch > ...` — SEVEN stages, no resource. This is a KNOWN, DELIBERATE divergence, not drift: R6's alignment watch fires on it (paper/1-lifecycle/ changed), and the port is DEFERRED pending a JL ruling on whether an intervention has a prerequisite question worth its own stage. Until that ruling lands, any claim in this family that the application spine "mirrors paper" means: mirrors it EXCEPT for resource. Do not port the stage on a CC judgement call.
 - Revise worker count (one), no weaving/humanizer/results split, no proof-checker (no theorems in interventions), no Pn.Sn or tex checks, no probe sub-worker skills.
 - Gate Ledger format in STATUS.md; enter console; stage-strip.sh (already in sync — round-1 bug fixes rode both families).
 - _venue/ + _audience/ packs; artifact/deploy/iterate/review skills (3-build-deploy/ and 4-iterate/ untouched this round).

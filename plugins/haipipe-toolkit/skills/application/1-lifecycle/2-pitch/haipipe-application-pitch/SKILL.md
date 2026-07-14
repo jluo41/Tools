@@ -4,9 +4,9 @@ description: "Stage 2 of the intervention lifecycle (venue-ALIGNED, first stage 
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.1.0"
-  last_updated: "2026-07-06"
-  summary: "Paper-aligned renumber: pitch moves from stage 1 to stage 2 (AFTER claims + venue pin; was before claims in v3). Now venue-ALIGNED: reads the pinned venue + audience packs, re-couples on retarget. Stage folder 0-lifecycle/2-pitch/. 4.1.0 (765696f port): visible Probes section + reads 2-venue.md Artifact Principles + ascii formatting."
+  version: "4.2.0"
+  last_updated: "2026-07-14"
+  summary: "Paper-aligned renumber: pitch moves from stage 1 to stage 2 (AFTER claims + venue pin; was before claims in v3). Now venue-ALIGNED: reads the pinned venue + audience packs, re-couples on retarget. Stage folder 0-lifecycle/2-pitch/. 4.1.0 (765696f port): visible Probes section + reads 2-venue.md Artifact Principles + ascii formatting. v4.2.0 (probe redesign, Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3 approved JL 2026-07-14): pitch-level questions are SECTIONS in 1-probes/ (serves: 2-pitch); the per-stage _PROBE/ folder is RETIRED."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -63,7 +63,8 @@ lives HERE, venue-aligned — not in the venue-free ledger)>
 
 ## Probes
 <pitch-level investigation needs, INLINE: channel fit, framing risk,
-competing programs — one line per PP with status; cards in _PROBE/>
+competing programs — one line per PP with its section state; the questions live
+as SECTIONS in 1-probes/, serves: 2-pitch>
 ```
 
 Artifact formatting: `=====` title / `-----` sections (no `#` headings); one sentence per line. Pitch reads the venue stage doc's Artifact Principles (0-lifecycle/2-venue/2-venue.md) rather than re-deriving from the pack.

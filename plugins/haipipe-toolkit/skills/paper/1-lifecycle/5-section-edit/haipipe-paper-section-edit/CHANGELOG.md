@@ -4,7 +4,18 @@ haipipe-paper-section-edit — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 5.1.0 — 2026-07-14
+
+- "Probe escalation": sweep paper-local -> raise a question SECTION -> ② MATCH -> ③ DISPATCH only what MATCH cannot close. The "gateway probe" tier is gone; no inline-search tier exists at any depth.
+- The DRAFT ⛔ STOP presents STRUCTURE + the QUESTIONS RAISED (ref/outline-format.md + ref/section-template.md updated to match).
+- Citation provenance `🤖 harvested` = came via DISPATCH -> discovery -> the QA file (was "via gateway").
+- ref/outline-format.md: the 1-probes/README.md board row carries a `state` and a `file:` pointer (was `status` + `card:`).
+
 ## [4.5.1] -- 2026-07-10
+## 5.0.0 — 2026-07-14
+
+- PROBE REDESIGN (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14 — R1-R18). 1-probe-plans/ -> 1-probes/ (PPNN_<topic>.md, one file per TOPIC, one SECTION per question: serves/target/state/commission/reading + ONE `## Why` per file holding the stake). Binding is by PATH: a section's `target:` points at the answering `<leaf>/QA/<n>-<slug>.md` in the bank. DELETED: `## Verdict`, the `verdicted` and `dispatched` states, `_ASK/`/`_ANS/` stubs, `answers:`, and Agent(haipipe-probe-orchestrator-agent) (the GATEWAY — archived + de-registered). A claim's STATUS now lives ONLY in 0-lifecycle/1-claims/1-claims.md. Dispatch is now DIRECT: the section's `commission:` block, VERBATIM, to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent).
+- The probe convention block, the 'Probes proposed by this draft' block, and the citation/values gap routes all move to question SECTIONS in 1-probes/. The search door is now the PROBE phase's dispatch to Agent(haipipe-discovery-orchestrator-agent), not the retired gateway.
 
 Fixed (fresh-agent template DRAFT test, fix5 fixture)
 - The index-row FORMAT was specified nowhere a DRAFT-phase agent loads, so the tester invented a 6-column markdown table in 1-probe-plans/README.md (JL standing rule: no tables in probe documents). Template + outline-format + hub now give the literal bullet-row shape, and the PP filename convention `PP<NN>_<slug>.md` (underscore) that the tester also missed (wrote PP01-results-regression.md).

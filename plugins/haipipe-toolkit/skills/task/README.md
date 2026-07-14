@@ -52,14 +52,19 @@ appended and existing ids are not renumbered.
 
 ## Boundary (self-contained by design)
 
-Tasks execute internal work: a task ends at Report, having produced `results/`, and stops. Whoever consumes a task's results records the link on THEIR side; this layer tracks no consumers, and its working docs (SKILL/ref/fn) never route upward.
+Tasks execute internal work: a task ends at Report, having produced `results/`, and stops. Whoever consumes a task's results records the link on THEIR side; this layer tracks no consumers, names none, and its working docs (SKILL/ref/fn) never route upward.
+
+Self-contained is not deaf, though. Questions arrive through exactly ONE door — `/haipipe-task qa "<question>" [<leaf>]` (`haipipe-task/fn/qa.md`) — as one question in general language, with no id, no reference to whoever asked, and no stake attached. The verb answers it (① scan the leaf's `QA/` → ② digest what `results/` already hold → ③ run P-B-E-R at the shallowest depth that answers it) or REFUSES it, and hands back a path to `<leaf>/QA/<n>-<slug>.md`. It never learns who asked, or why.
+
+That door is a SIDE door. The task session's primary mode is autonomous Plan → Build → Execute → Report with no question pending at all.
 
 For the human reader, the wider mental model:
 
 ```text
+⚙️ the executors — they run; the bank grows here, mostly with nobody asking
 task       = execute internal work (code, runs, metrics)
-probe      = explore + gather evidence (optionally judge a claim)
 discovery  = inspect outside evidence (literature, prior art)
-insight    = preserve reusable knowledge (D/I/K/W cards)
+
+📄 the consumers — they ask, and they interpret; we never see them
 paper/app  = deliver audience-facing narrative
 ```

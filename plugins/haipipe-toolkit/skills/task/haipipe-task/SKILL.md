@@ -1,12 +1,12 @@
 ---
 name: haipipe-task
-description: "Task-folder and task-group orchestrator. For a task-folder: runs the 4-stage code lifecycle (Plan → Build → Execute → Report) or dispatches to type specialists for scaffolding. For a task-group: iterates over each child task-folder and runs the lifecycle on each one."
-argument-hint: "[scope] [args...]"
+description: "Internal-execution layer, and one of the two EXECUTORS (discovery is the other — same shape, same rules). Task-folder and task-group orchestrator: for a task-folder it runs the 4-stage code lifecycle (Plan → Build → Execute → Report) or dispatches to type specialists for scaffolding; for a task-group it iterates the lifecycle over each child. Its PRIMARY mode is autonomous P-B-E-R — no question pending. CONSUMER-UNAWARE but not question-deaf: the `qa` verb (/haipipe-task qa \"<question>\" [<leaf>]) takes ONE question in general language and returns tasks/<leaf>/QA/<n>-<slug>.md — the leaf's readable digest of a direction it has explored. A QA file is a TICKET that becomes a RECEIPT: it carries ONE mutable `state:` line (working | answered | superseded-by:), CLAIMED at the qa gate's ③ decision and COMPLETED at Report — ONE WRITER, this layer, always. A `working` file means SOMEONE IS ALREADY ON IT: do not duplicate the work. Trigger: task, task folder, task group, plan, build, execute, report, run, scan-status, qa, QA file, question, state, working, claim, superseded, /haipipe-task."
+argument-hint: "[scope] [args...] | qa \"<question>\" [<leaf>] [--check-only]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "5.6.0"
-  last_updated: "2026-07-08"
-  summary: "Build orchestrator with 4-stage code lifecycle for task-folders and task-groups."
+  version: "6.2.0"
+  last_updated: "2026-07-14"
+  summary: "Build orchestrator with the 4-stage code lifecycle (Plan → Build → Execute → Report) for task-folders and task-groups. v6.1 — THE QA FILE GAINS ONE MUTABLE FIELD, a `state:` line, and becomes a TICKET THAT BECOMES A RECEIPT (JL ruling 2026-07-14; probe SKILL 8.2.0 PART 3a R19/R20/R21). THE HOLE IT CLOSES: two consumers ask the same question a week apart; the first dispatches an expensive P-B-E-R run; the second, while that run is STILL GOING, sees no QA file and dispatches THE SAME RUN AGAIN — because a QA file used to be written ONCE, at Report, complete, and its EXISTENCE was the only signal. Now: `- state: working | answered | superseded-by: QA/<m>-<slug>.md` + `- started: YYYY-MM-DDTHH:MM` (MANDATORY on a working file) + optional `- by:`. Gate ③ P-B-E-R now CLAIMS FIRST (writes the QA file with `state: working` + `started:` + an EMPTY `## Answer` under `set -C` noclobber) and COMPLETES it at Report (`state: answered` + the body). Gate ① SCAN branches on the state line (answered → path · working → 'in progress since <started>', DO NOT RE-RUN · working+EXPIRED → zombie, RECLAIM · superseded-by → follow the chain to the live answer). Gate ② DIGEST still writes ONCE, complete, `answered` — no claim, nothing to race. THE LOAD-BEARING INVARIANT IS *ONE WRITER*, NOT *WRITE-ONCE*: two writes by the same owner is fine; a CONSUMER creating/claiming/editing a QA file is the retired _ASK/ stub in a QA/ costume and is FORBIDDEN. TTL = the named constant QA_CLAIM_TTL_HOURS = 24 (a claim with no `started:` can never expire and is a zombie by construction). RACE GUARD = `set -C` and nothing more — the loser re-scans and defers; no lock dirs, no lease servers, no ledgers. SUPERSESSION: a re-run whose answer CHANGES writes QA/<n+1> and APPENDS `superseded-by:` to the old file's state line — R15 (ENRICH never mutates) still holds FOR THE BODY; only the state line is mutable, and only its own owner edits it. Checker HARD-FAILs: qa-working-no-started · qa-working-expired · qa-answered-empty (+ the consumer-side read-target-working / read-target-superseded). v6.0 (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3): THE TASK LAYER IS CONSUMER-UNAWARE — _ASK/ stubs, _ANS/, `answers:`, PP ids and the probe-aware `asks` verb all DELETED; PRIMARY mode is autonomous P-B-E-R; ANSWERABILITY WORK is legitimate task-native work with no question pending; the `qa` verb (fn/qa.md) is the one question door — ① QA SCAN · ② DIGEST · ③ P-B-E-R at the SHALLOWEST depth (0 read | 1 new run+config | 2 new script | 3 new leaf) · 🚫 REFUSE; three callers, one identical door; QA/<n>-<slug>.md, numbering IS the index, slug only, no consumer vocabulary, three legal reasons only (commissioned · digest-only · executor's own). v6.2/v3.2 (R19 HARDENING): gate ① now READS THE STATE LINE **BEFORE** the literally-answers test. A `working` file's ## Answer is EMPTY BY CONSTRUCTION, so testing it for an answer is a guaranteed miss that drops through to ③ and RE-RUNS the job someone is already running (a new <n>, a different slug, `set -C` never fires) — the duplicate run, executed by obeying the rules. A `working` file is matched on its `# Q —` LINE instead. A QA file with NO `- state:` line is MALFORMED, not legacy (checker: qa-no-state): this layer OWNS it, so it REPAIRS it (tag `answered` if the Answer has a body, else RECLAIM as a zombie). The same-<n>/different-slug claim race is NON-FATAL BY RULING and is NOT a reviewer REVISE — the reviewers now carry the exemption explicitly."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -69,6 +69,7 @@ Commands
 /haipipe-task run <task-folder-path> [run-name]       execute one runs/*.sh with logging conventions (fn/run.md)
 /haipipe-task audit <task-group-or-folder-path>       structural audit vs the four-sister contract (fn/workflow-audit.md)
 /haipipe-task scan-status [project-path]              status scan across task-groups (fn/scan-status.md)
+/haipipe-task qa "<question>" [<leaf>]                THE QUESTION DOOR: one general question in, a QA-file PATH out (fn/qa.md)
 /haipipe-task feedback "<text>"                       capture skill feedback (merge-or-create), ROUTED to the domain folder it concerns
 /haipipe-task feedback list [unit]                    aggregate open feedback across ALL inboxes (grouped by unit)
 /haipipe-task feedback move <file> <unit>             re-route a mis-filed feedback item
@@ -86,7 +87,8 @@ All four stages answer one question: **"is the implementation right?"**
 Stage 1: PLAN — the contract (what the script SHOULD do)
   creates:   workflow/plan.yaml              task-level IPO (Run/Gate1/Gate2)
              workflow/plan-script-<name>.yaml script-level IPO (type-specific phases)
-  reads:     *.py (if exists), **/haipipe-task-for-<type>/ref/workflow-plan-sample.yaml (nested under its domain folder)
+  reads:     *.py (if exists),
+             **/haipipe-task-for-<type>/ref/workflow-plan-sample.yaml (nested under its domain folder)
   agents:    creator drafts plan → reviewer checks IPO compliance → ↺ revise
 
 Stage 2: BUILD — the implementation (code that matches the plan)
@@ -111,15 +113,104 @@ Stage 4: REPORT — summarize (what actually happened vs the plan)
   creates:   workflow/report.yaml            task-level report mirroring plan
              workflow/report-script-<name>.yaml script-level report
              RUN_AUDIT.md                    Gate 2 review (reviewer creates)
+  completes: QA/<n>-<slug>.md                the CLAIM raised at the qa gate's ③ decision
+                                             becomes the RECEIPT here: `state: answered`
+                                             + the `## Answer` body. On gate ② (digest) it
+                                             is CREATED here, once, complete.
+                                             (see "The QA/ folder" below)
   reads:     workflow/plan*.yaml, results/<run>/*, CODE_REVIEW.md
   agents:    creator drafts report → reviewer checks accuracy → ↺ revise
 ```
 
-File ownership is strict: Plan touches only `workflow/plan*.yaml`. Build touches only code/configs/runs. Execute touches only `results/` and `notebooks/`. Report touches only `workflow/report*.yaml` and `RUN_AUDIT.md`.
+File ownership is strict: Plan touches only `workflow/plan*.yaml`. Build touches only code/configs/runs. Execute touches only `results/` and `notebooks/`. Report touches only `workflow/report*.yaml`, `RUN_AUDIT.md`, and — when one is due — `QA/`.
+
+**The ONE exception, and it is the qa gate's:** on gate ③ the QA file is CLAIMED before Plan runs — `state: working` + `started:`, an empty `## Answer` — and COMPLETED at Report. That is TWO writes, by the SAME owner (this layer), to a file in its OWN folder. It does not break file ownership; it is what file ownership MEANS. See `fn/qa.md` (Step 3a).
 
 The `workflow/` folder is the task's observability surface: Plan = intent, Report = evidence, same IPO shape at both levels (schema: `task/haipipe-workflow/ref/plan-schema.md`).
 
 A task ends at Report: it produces `results/` and stops. Whoever consumes those results records the link on THEIR side — this layer tracks no consumers.
+
+---
+
+The task session's two modes
+-----------------------------
+
+**PRIMARY — autonomous P-B-E-R.** The task session runs Plan → Build → Execute → Report for its own sake: train, sweep, profile, scan. No question is pending. No one asked. This IS the project's research, and the bank grows here, autonomously.
+
+**ANSWERABILITY WORK — also task-native, also with no question pending.** A task session may legitimately:
+
+- write a `QA/` digest for a finding worth digesting, and
+- build or refactor code so that FUTURE questions are cheap to answer.
+
+It does not know WHICH questions will come. It makes the bank EASIER TO ASK. That is task work, not anyone else's.
+
+**THE SIDE DOOR — the `qa` verb.** Questions arrive through exactly one door, `fn/qa.md`, and they arrive as ONE QUESTION IN GENERAL LANGUAGE — never an id, never a stake, never a reference to whoever asked. The verb answers it or REFUSES it, and returns a path. It never learns who asked, or why, and must not try to find out.
+
+```
+/haipipe-task qa "<question>" [<leaf>]
+
+  ① QA SCAN    grep <leaf>/QA/*.md — READ THE STATE LINE:                       ~0
+                 state: answered  → return the PATH
+                 state: working   → SOMEONE IS ALREADY ON IT. Return the path +
+                                    "in progress since <started>". DO NOT RE-RUN.
+                 working, EXPIRED past QA_CLAIM_TTL_HOURS → 🧟 zombie: RECLAIM it
+                 superseded-by: X → follow the chain, return the LIVE answer
+  ② DIGEST     results/ answer it, no readable digest? → write QA/<n>-<slug>.md cheap
+               ONCE, COMPLETE, `state: answered`, from EXISTING artifacts; run no code
+  ③ P-B-E-R    neither → ⚑ CLAIM FIRST (write the QA file with `state: working` +
+               `started:` under `set -C`), then run the lifecycle at the SHALLOWEST depth
+               that answers it (0 READ · 1 NEW RUN+config · 2 NEW SCRIPT · 3 NEW LEAF),
+               and COMPLETE the same file at Report (`state: answered` + `## Answer`)
+  🚫 REFUSE    out of scope for the task layer (e.g. a literature question) — say so;
+               RELEASE any claim; the caller re-routes
+```
+
+Three callers, one identical door: a human steering an exploration, the orchestrator agent self-directed, or a relayed question from elsewhere. None of them gets a special path.
+
+Full contract: `fn/qa.md`.
+
+---
+
+The QA/ folder (OPTIONAL, per task-folder)
+-------------------------------------------
+
+```
+tasks/<group>/<NN>_<name>/
+  ├── workflow/plan.yaml       the question, code-oriented       (task layer's own)
+  ├── results/                 the answer, code-oriented         (task layer's own)
+  └── QA/                      the answer, READABLE + indexed    (task layer's own) — OPTIONAL
+        ├── 1-cycle-indicator.md
+        └── 2-female-cgm-volume.md
+```
+
+**A QA file is a TICKET that becomes a RECEIPT.** It carries exactly ONE mutable field — the **state line** — and everything below it is written once and never touched again:
+
+```markdown
+# Q — <the question, restated by the executor in its own words>
+- state:   working | answered | superseded-by: QA/<m>-<slug>.md
+- started: 2026-07-14T09:12          ← MANDATORY when state: working
+- by:      <run id | agent | human>  ← optional provenance
+
+## Answer     EMPTY while state: working. Filled at REPORT.
+## Caveats
+## Not-done
+```
+
+- `QA/<n>-<slug>.md`, `<n>` = creation order. **The numbering IS the index** — `ls QA/` is the index; there is no INDEX file. `QA/` now reads as a menu of BOTH: what this leaf has established, **and what it is establishing right now**.
+- **SLUG ONLY.** No external id ever appears in a bank filename.
+- **⚠️ THE LOAD-BEARING INVARIANT IS *ONE WRITER*, NOT *WRITE-ONCE*.** This layer writes the file TWICE — the CLAIM at the qa gate's ③ decision, the COMPLETION at Report. Two writes by the same owner is fine. **A CONSUMER (probe/paper/application) must NEVER create, claim, edit, complete, or supersede a QA file** — a consumer-planted `working` file is the retired `_ASK/` stub wearing a `QA/` costume, and it is FORBIDDEN.
+- **WRITER: this layer.** Only gate ③ ever produces a `working` file, and only transiently. Gate ① writes nothing; gate ② writes once, complete.
+- **THE CLAIM MUST EXPIRE.** `started:` is MANDATORY on a `working` file (a claim that cannot expire is a zombie by construction). TTL = the named constant **`QA_CLAIM_TTL_HOURS = 24`**. Past it the claim is STALE and the next qa call may RECLAIM it.
+- **RACE GUARD:** create the claim under `set -C` (noclobber). The loser re-scans and defers. No lock dirs, no lease servers, no ledgers.
+- **SUPERSESSION:** a later run whose answer CHANGES writes `QA/<n+1>-<slug>.md` and APPENDS `superseded-by:` to the old file's state line — by this layer, never by a consumer. A QA file's BODY is never edited.
+- **THREE REASONS a QA file may exist, and no fourth:** a question arrived · a digest was missing though `results/` already answered it · a task session judged a finding worth digesting. A `QA/` that mirrors every result file is noise, not an index.
+- **NO CONSUMER VOCABULARY.** A QA file carries no claim ids, no hypothesis ids, no "the paper". This layer never saw one and cannot honestly write one.
+
+STATUS is derived from the STATE LINE, not from mere existence: no file = not answered · `working` = IN PROGRESS since `<started>` · `answered` = answered · `superseded-by: X` = answered but STALE, the live answer is X.
+
+The checker (`check-probe-cards.sh`) HARD-FAILs three defects this layer can write: `qa-working-no-started` (unexpirable claim) · `qa-working-expired` (zombie past `QA_CLAIM_TTL_HOURS`) · `qa-answered-empty` (a lying receipt).
+
+Not every leaf has a `QA/`. That is fine and normal.
 
 ---
 
@@ -160,6 +251,8 @@ task-group (iterate)  → this skill: iterate children        Step 3d
 task-folder      → dispatch by task-type to its specialist
                  (the 9-row type table at the top of this file)
 task-group (scaffold) this skill                            fn/task-group.md
+qa               this skill                                 fn/qa.md
+                 reads: <leaf>/QA/*.md, results/, workflow/plan.yaml
 scan-status      this skill                                 fn/scan-status.md
                  reads: ref/scan_status/ scripts
 run              this skill                                 fn/run.md
@@ -186,6 +279,10 @@ Step 2: Resolve scope. Cascade:
       `feedback` → read `fn/feedback.md` and run it inline (capture / list / move; routing rules, merge-or-create, inbox paths all live THERE). Stop.
       `digest` → read `fn/digest.md` and run it inline (resolve the target session first; mandatory confirm gate before filing). Stop.
   (0.5) UTILITY VERB `scan-status` — first positional is `scan-status` → read `fn/scan-status.md` and run it inline. Stop.
+  (0.6) QUESTION DOOR `qa` — first positional is `qa` → read `fn/qa.md` and run it inline (the ①②③ gate; the remaining args are the question, an OPTIONAL leaf path, and the OPTIONAL flag `--check-only`). It is not a lifecycle scope: do not continue to Step 3. Stop.
+        `--check-only` runs ① and ② DETECTION only: report which path the question would take, execute nothing, write nothing — including NO CLAIM — and NEVER fall through to ③. This is the door the probe's MATCH step calls, and MATCH is defined as a FREE detection pass — a qa call that fell through to ③ there would spawn an unbudgeted P-B-E-R run, plant a claim, and write into the bank during a step whose whole purpose was to cost nothing. The discovery twin spells the flag IDENTICALLY; keep them in step.
+        On gate ① the state line decides, not the file's existence: `state: answered` → return the path · `state: working` → SOMEONE IS ALREADY ON IT, return the path + "in progress since <started>" and DO NOT RE-RUN (this is the duplicate-work fix) · `working` past `QA_CLAIM_TTL_HOURS` → a zombie claim, RECLAIM it · `superseded-by:` → follow the chain to the live answer.
+        If the question arrives carrying an external id, a claim reference, or a stake, IGNORE those tokens — answer the question on its own terms or REFUSE. This layer does not know what they mean and must not try to find out.
   (1) explicit stage command (`plan` / `build` / `execute` / `report`) as first positional → check the path argument:
       - path is an existing task-folder → scope=single-stage on that folder (Step 3c).
       - path is an existing task-group → scope=task-group-iterate with stages=[that stage] (Step 3d).
@@ -371,6 +468,10 @@ Invocation examples
 # scaffold a NEW task-folder (dispatches to type specialist)
 /haipipe-task task-folder data
 /haipipe-task task-folder eval --project-id Project-REACH-ADHD --group B03_band4
+
+# the QUESTION DOOR — one general question in, a QA-file PATH out
+/haipipe-task qa "Do any WellDoc tables carry a menstrual or cycle column?"
+/haipipe-task qa "What is the fit exponent on the 4-model sweep?" examples/ProjA/tasks/B01_scaling/B4_fit_scaling_law
 
 # direct specialist (bypass orchestrator)
 /haipipe-task-for-data

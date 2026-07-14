@@ -1,4 +1,37 @@
 insight — Changelog
+===================
+
+## [TOMBSTONE MAINTENANCE] — 2026-07-14
+
+The layer stays retired; only the tombstone's FORWARD POINTERS were corrected. `README.md`'s
+"Where the functions went" section had been written against machinery that has itself since been
+retired (`Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/` v3, JL 2026-07-14): the PPNN card's `## Verdict`, the `_ASK/` stub
+chain, and the gateway agent's SWEEP. All three are dead.
+
+- **K** no longer "→ the PPNN card's `## Verdict`". It SPLITS: the general, reusable FACT →
+  the executor's `<leaf>/QA/<n>-<slug>.md`; the paper-specific JUDGMENT → that paper's own
+  `1-claims.md`. (A K card tried to be both at once — which is why it was never written.)
+- **W** no longer "→ PPNN card → `_ASK/` stub chain". It is a SECTION in the paper's own
+  `1-probes/PPNN_<topic>.md`, whose `commission:` reaches the executor's `qa` verb.
+- **Cross-consumer reuse** is no longer "the gateway's SWEEP item 1b" (there is no gateway). It is
+  a plain `grep {tasks,discoveries}/**/QA/*.md` — the bank's readable corpus, general by
+  construction.
+- No skill, agent or archived file changed. Nothing was resurrected.
+
+
+## [RETIRED] — 2026-07-12
+
+**The insight layer is fully retired (JL ruling).** All skills, agents, refs and scripts moved to `_archive/` and de-registered (7 `/haipipe-insight*` skill symlinks + 9 `card-*` / `index-integrity-auditor` agent symlinks removed). This folder is now a tombstone: README + this CHANGELOG + `_archive/`.
+
+Why: zero K cards and zero W cards had ever been written, in any project; zero `insights/INDEX.md` files existed. The DIKW ladder was a design promise, never a practice — so retiring it cost nothing at runtime.
+
+Where the functions went, and what replaced the one real loss (cross-consumer reuse of a settled judgment): see `README.md` in this folder, and `probe/haipipe-probe/CHANGELOG.md` [7.9.0].
+
+Everything below this line is the history of the layer while it was live.
+
+---
+
+insight — Changelog
 ======================
 
 Layer-scoped changelog for the insight (KNOWLEDGE / archive) layer. Newest

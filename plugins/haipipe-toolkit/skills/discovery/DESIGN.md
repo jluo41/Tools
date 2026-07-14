@@ -17,14 +17,22 @@ Why this layer exists
 =====================
 
 `discovery` answers what the outside world already knows. It is not a task
-execution stage and it does not judge probe claims by itself.
+execution stage and it judges nobody's claims.
 
 ```
-discovery   outside-world evidence   sources, notes, verdicts, maps, ideas
-task        inside-world execution   code, runs, metrics, reports
-probe       claim hub                opens a claim, dispatches discovery + task, closes a verdict
-paper/app   delivery (story)         owns the message, lists evidence needs by reference
+discovery   outside-world evidence   sources, notes, verdicts, maps, ideas   ⚙️ EXECUTOR
+task        inside-world execution   code, runs, metrics, reports            ⚙️ EXECUTOR
+probe       a PAPER-LEVEL document   papers/<P>/1-probes/PPNN_<topic>.md —   📄 CONSUMER
+                                     one question per SECTION, holding the
+                                     stake it never lets out; binds to an
+                                     answer BY PATH
+paper/app   delivery (story)         owns the message, judges its own claims in 1-claims.md
 ```
+
+The two EXECUTORS are the same shape and follow the same rules (task = discovery).
+Both are **probe-UNAWARE**: they run their own lifecycle for their own reasons, and
+they answer plain questions through their own `qa` verb. Nothing under `discoveries/`
+ever learns that a probe, a paper, or a claim exists.
 
 
 Two Parts
@@ -36,8 +44,14 @@ Two Parts
    (Plan/Build/Execute/Report) and routes to search/review/idea bucket workers.
 
 2. Durable artifact layer
-   discoveries/<group>/<NN>_<topic>/ stores external evidence when it belongs to a
-   project probe or delivery (paper/application) stack.
+   discoveries/<group>/<NN>_<topic>/ stores external evidence — for the project, not
+   for any one consumer of it. The optional QA/ folder is its readable face.
+
+3. The question door
+   /haipipe-discovery qa "<question>" (fn/qa.md) — one question in general language,
+   one QA file out. Three callers, none of them special: a consumer's probe dispatch
+   (via the orchestrator agent, whose clean context is the wall), a human exploring a
+   direction, or the orchestrator itself doing answerability work with nothing pending.
 ```
 
 Each type has a TYPE SPECIALIST skill at the head of its bucket
@@ -183,7 +197,6 @@ examples/<PROJECT>/
 │       ├── 01_trait-rx-source-base/             (Search -> sources.md + notes.md)
 │       └── 02_agreeableness-rx-prior-art/       (Review, prior_art_check -> verdict.md)
 ├── tasks/
-├── insights/
 ├── paper/
 └── applications/
 ```
@@ -235,11 +248,17 @@ claim-level judgment lives with whoever consumes the terminal.
 Boundary Rules
 ==============
 
-- `discoveries/` stores citations, source notes, verdicts, maps, and ideas.
+- `discoveries/` stores citations, source notes, verdicts, maps, ideas — and the OPTIONAL
+  `QA/<n>-<slug>.md` readable digests (`fn/qa.md`).
 - `discoveries/` does not store code, notebooks, runs, or metrics.
-- `tasks/` stores execution artifacts and metrics.
-- Claim contracts and verdicts live in the consumer's per-stage `_PROBE/PPNN` cards (no `probes/` folder).
-- `paper/` and `applications/` own the delivery story and list evidence needs by reference.
+- `discoveries/` NEVER stores a trace of who asked: no `_ASK/`, no `_ANS/`, no `answers:`
+  field, no PP id, no claim id. The bank is probe-unaware (R2). A caller's question arrives
+  in general language, is answered on its own terms, and the answer is a FILE they point at.
+- `tasks/` stores execution artifacts and metrics — and its own `QA/` digests, identically.
+- A paper's evidence questions live in ITS OWN `1-probes/PPNN_<topic>.md` probe file, with
+  the stake in a `## Why` that never leaves it; its claim statuses live in ITS OWN
+  `1-claims.md`. Neither is ever written, read, or resolved from this layer.
+- `paper/` and `applications/` own the delivery story and bind to our answers by PATH.
 - `_haipipe/project.log.jsonl` is the only orchestration event log.
 - `sources.md` is the default home for source records; a `sources/` subfolder is
   optional and only for heavy artifacts (PDFs, HTML snapshots).
@@ -281,6 +300,28 @@ Decision Log
             0_venue/, D_patent/, /idea-discovery, /research-pipeline,
             /patent-pipeline, and the agents' fn/plan-build-execute-report
             reads; deleted the stray haipipe-discovery self-symlink.
+2026-07-14  PROBE-UNAWARE, AND THE QA VERB (v3.0.0). Spec of record:
+            Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ (v3, approved JL
+            2026-07-14, R1-R18); constitution: probe/haipipe-probe/SKILL.md 8.0.0.
+            (1) DELETED the probe handoff bridge whole — `_ASK/` stub folders, the
+            `answers: [PPNN]` return field, and every PP id under discoveries/.
+            v2.7/2.8/2.8.1 built a two-footed bridge into this layer; R2 rules the
+            bank probe-UNAWARE, so both feet come out. (2) ADDED the `qa` verb
+            (fn/qa.md): one question in GENERAL language, gate ① QA SCAN → ② DIGEST
+            → ③ lifecycle at the shallowest depth (READ | ENRICH | NEW FOLDER | NEW
+            GROUP) → 🚫 REFUSE (task-shaped re-routes to /haipipe-task qa). It
+            returns discoveries/<leaf>/QA/<n>-<slug>.md. (3) ADDED the optional QA/
+            folder to the leaf contract — numbered = the index, slug only,
+            write-once, three legal reasons to exist (commissioned · digest-only ·
+            executor's own). THE EXECUTOR HOLDS THE PEN (CC-8): a consumer may CAUSE
+            a QA file; this layer AUTHORS it — a consumer session writing a bank file
+            with the stake in context is exactly how tasks/A03_.../result.md ended up
+            carrying "C6"/"C7". (4) The probe GATEWAY agent is RETIRED; the
+            discovery-orchestrator is now the DIRECT dispatch target, and its clean
+            context IS the wall. (5) Task and discovery are BOTH EXECUTORS — same
+            shape, same rules (JL-10). (6) A Review-type verdict.md is THIS layer's
+            own terminal and SURVIVES; it is not the retired probe "Verdict" (R7).
+
 2026-07-03  JL simplification pass (v2.4.0). (1) novelty_check re-typed
             Review -> Idea: it is the evaluation half of the ideation loop, so
             Idea branches by role (idea_generation -> ideas.md, novelty_check ->

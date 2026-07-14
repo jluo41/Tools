@@ -1,28 +1,28 @@
-Harvest acceptance (haipipe-paper-probe, TRANSLATE step) -- all three lanes
-============================================================================
+Harvest acceptance (haipipe-paper-probe, ⑤ INTERPRET) -- all three lanes
+=========================================================================
 
-Loaded when a dispatch return carries harvestable content (a `pick_list`,
-value refs, or display unit refs). Every rule here was added after a live
+Loaded when an answering QA file carries harvestable content (source anchors,
+value anchors, or display unit links). Every rule here was added after a live
 failure -- keep the greps LITERAL.
 
 Lane protocol (identical for all three; JL 2026-07-07 harvester ruling)
 ------------------------------------------------------------------------
 
-1. TRANSLATE writes the lane line into the PP card FIRST:
-   `- pick_list: ... · harvest: OWED` / `- value_refs: ... · harvest: OWED`
-   / `- unit_refs: ... · harvest: OWED`. The debt exists on disk before any
+1. ⑤ INTERPRET writes the lane line into the probe SECTION FIRST:
+   `- sources: S01,S02 · harvest: OWED` / `- values: <path> · harvest: OWED`
+   / `- displays: <unit> · harvest: OWED`. The debt exists on disk before any
    harvest runs -- check-probe-cards.sh FAILs an OWED line, so a skipped
    harvest can never pass VERIFY or the CHECK gate.
 2. Dispatch the lane's harvester subagent (cheapest tier; it READS its worker
    SKILL.md headless -- citation/values/display respectively; NEVER paraphrase
    the spec into the prompt).
 3. Run the lane's mechanical acceptance below. One reject -> re-dispatch ONE
-   TIER UP with the defect list (one retry); still failing -> mark the card
-   `status: read (harvest DEFECTIVE)` and surface it in the stage reply.
-4. On acceptance flip the card line: `harvest: accepted (<n> entries, <doc>)`.
+   TIER UP with the defect list (one retry); still failing -> leave the section
+   at `state: read` with `harvest: DEFECTIVE` and surface it in the stage reply.
+4. On acceptance flip the lane line: `harvest: accepted (<n> entries, <doc>)`.
 
-Values lane acceptance (value_refs -> _VALUES_{stage}.md)
-----------------------------------------------------------
+Values lane acceptance (the section's values: lane -> _VALUES_{stage}.md)
+--------------------------------------------------------------------------
 
 - **count**: new `### ` entry headings == numbers named in the return.
 - **source**: every entry names a source path under tasks/ (or a display CSV);
@@ -32,8 +32,8 @@ Values lane acceptance (value_refs -> _VALUES_{stage}.md)
   source hit is a REJECT (fabrication guard; the parquet/script decides).
 - **no tables**: `grep -c '^|'` == 0 on the new entries.
 
-Display lane acceptance (unit_refs -> _DISPLAY_{stage}.md + tex)
------------------------------------------------------------------
+Display lane acceptance (the section's displays: lane -> _DISPLAY_{stage}.md + tex)
+-----------------------------------------------------------------------------------
 
 - **count**: new registry rows == units named in the return.
 - **paths**: every row's unit path exists on disk (`ls`), and any tex link
@@ -51,20 +51,21 @@ Dispatch the harvest subagent
   transcription from sources.md; the mechanical acceptance below catches
   failures. If the one acceptance-reject retry is needed, re-dispatch ONE TIER
   UP instead of same-tier.
-- The dispatch prompt tells the subagent to READ the card spec in that skill's
+- The dispatch prompt tells the subagent to READ the entry spec in that skill's
   SKILL.md -- NEVER paraphrase the spec into the prompt. A compressed
   re-enumeration is exactly how the identity bullet (authors/year/venue) got
   dropped in test-2-2222 (spec-drift by telephone game; the spec file is the
   single source of truth).
-- The subagent expands the picked sources.md entries into `_CITATION_{stage}.md`
-  cards in its own clean context. Produce and review are never the same context.
+- The subagent follows the QA file's anchors into the leaf's sources.md and
+  expands the anchored entries into `_CITATION_{stage}.md` entries in its own
+  clean context. Produce and review are never the same context.
 
 Mechanical acceptance -- RUN the commands, never eyeball
 ---------------------------------------------------------
 (run-3 acceptance claimed "each has anchor + finding" while
 `grep -c 'finding:'` returned 0.)
 
-- **count**: new `^### ` card headings == pick_list length.
+- **count**: new `^### ` entry headings == the anchors the QA file named.
 - **identity**: every new card block greps an identity bullet -- a `^- ` line
   containing a `(YYYY)` year (authors (year). venue · id). Title-only cards
   are REJECTS (test-2-2222: JL -- "title author 还有 venue 这些都没有呀").
@@ -79,7 +80,7 @@ Mechanical acceptance -- RUN the commands, never eyeball
   canonical string and acceptance waved it through on "same meaning";
   meaning-judgment is exactly what mechanical acceptance exists to remove.
   Canonical strings live in the citation skill's spec (VERBATIM rule there).
-- **anchors**: every new card's `source_ref` names a sources.md + S##; grep
+- **anchors**: every new entry's `source_ref` names a sources.md + S##; grep
   that S## heading in that file -- it must EXIST (the agent's fresh evidence
   landed). An unresolvable anchor is a REJECT, not a warning.
 - **no bibtex**: no bibtex ENTRY on the new cards --
@@ -91,5 +92,5 @@ Mechanical acceptance -- RUN the commands, never eyeball
   bullet lines only, one per source).
 
 One reject -> re-dispatch the harvest subagent with the defect list (one
-retry); still failing -> mark the PP card `status: read (harvest DEFECTIVE)`
-and surface it in the stage reply.
+retry); still failing -> leave the section at `state: read` with
+`harvest: DEFECTIVE` and surface it in the stage reply.

@@ -13,7 +13,7 @@ Each beat gets exactly one tag. The tag couples the beat to its evidence status 
 - **[READY]** evidence in hand: a confirmed probe or a run we trust
 - **[PENDING]** data exists but a render/check/probe is still open
 - **[INFER]** an inference: grounded in the evidence, one reasoned step beyond, never measured (no probe will confirm it)
-- **[LIT]** rests on outside literature; citation-audit pending
+- **[LIT]** rests on outside literature; citation audit pending
 - **[GAP]** no evidence yet; needs a probe
 
 Comment vocabulary (attached below each beat, visibly subordinate to it):

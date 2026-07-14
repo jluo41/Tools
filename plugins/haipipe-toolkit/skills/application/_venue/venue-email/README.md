@@ -32,7 +32,7 @@ claims_settlement: medium
 
 ### → Claims (medium)
 Select + gap check. Each section's core statement should trace to
-a K/W entry. If a section has no backing, flag the gap.
+a supported claim (C##). If a section has no backing, flag the gap.
 
 ### → Narrative (required)
 Letter-style arc:

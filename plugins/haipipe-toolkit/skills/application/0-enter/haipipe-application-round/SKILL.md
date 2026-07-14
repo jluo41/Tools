@@ -4,9 +4,9 @@ description: "Round management for the intervention lifecycle. Captures stakehol
 argument-hint: "[new|enter|triage|close] [intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-07-06"
-  summary: "Round management — feedback, triage, iteration cycles. Re-homed to 0-enter/ (paper pattern); triage targets updated to the paper-aligned spine (design/variants words retired)."
+  version: "1.2.0"
+  last_updated: "2026-07-14"
+  summary: "Round management — feedback, triage, iteration cycles. Re-homed to 0-enter/ (paper pattern); triage targets updated to the paper-aligned spine (design/variants words retired). v1.2.0 (probe redesign, Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3 approved JL 2026-07-14): an evidence need routes to claims as a question SECTION in 1-probes/, not a _PROBE/ card (retired)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -65,7 +65,7 @@ symptom in todo                          → route to
 "timing should be 24h not 48h"          → pitch (theory of change) or display (element spec)
 "SMS too long"                          → draft/artifact (re-compose per venue limits)
 "click rate below threshold"            → iterate → pitch or claims (re-evaluate)
-"need evidence for X"                   → claims (GAP + _PROBE/ card)
+"need evidence for X"                   → claims (GAP + a question SECTION in 1-probes/)
 "channel wrong for this audience"       → venue (re-pin; pitch+ re-couple; claims survives)
 ```
 

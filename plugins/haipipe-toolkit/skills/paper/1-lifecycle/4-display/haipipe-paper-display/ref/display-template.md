@@ -47,11 +47,11 @@ Outcome: <PROBE writes the DR rows filed on each section's behalf>.
 ### E1 -- <title> -- <▶ ready | ✋ gated | done>
 
 Lane: evidence.
-Route: </haipipe-probe or /haipipe-task-for-display>.
+Route: <a question SECTION in 1-probes/ (the PROBE phase dispatches it) or /haipipe-task-for-display>.
 Serves: <Fig/Tab N (displayNN-slug)>.
 Gated on: <omit when ready; else the gating display subsection thread>.
 Outcome: <PROBE writes the artifact path + one-line takeaway>.
-Detail: `_PROBE/PPNN_<slug>.md`
+Detail: `1-probes/PPNN_<topic>.md` (the question's SECTION)
 
 ---
 

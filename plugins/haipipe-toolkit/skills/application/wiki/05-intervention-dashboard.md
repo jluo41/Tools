@@ -29,10 +29,11 @@ Open needs detection
 ```
 Source                                        Need type
 ───────────────────────                       ──────────────
-1-claims: status=GAP below settlement bar     claim gap → probe card
-1-claims: status=weak (load-bearing)          weak claim → optional probe
-1-probe-plans/README.md: planned              unstarted probe card
-1-probe-plans/README.md: dispatched           in-progress probe (await TRANSLATE)
+1-claims: status=GAP below settlement bar     claim gap → raise a question
+1-claims: status=weak (load-bearing)          weak claim → optional question
+1-probes/: section state=planned              question raised, never bound
+1-probes/: section state=commissioned         answer in flight (OVERDUE past its eta = FAIL)
+1-probes/: section state=answered             the QA file landed, nobody read it yet
 4-display: element without task ref           unmaterialized element
 5-section-edit: DPRC phase incomplete         section work
 0-artifacts/REVIEW-*: verdict=revise          artifact needs revision
@@ -53,12 +54,12 @@ stage:   seed ✅  claims 🔥🚀  venue ⬜  pitch ⬜  narrative --  display 
 phase:   draft ✅  │  probe 🔥🚀  │  revise ⬜  │  check ⬜
 
 Claims:     5 total: 2 supported, 1 weak, 2 GAP (bar: light — 1 load-bearing GAP open)
-Probes:     2 planned, 1 dispatched, 0 verdicted
+Probes:     PP01-PP02 · 4 questions: 1 read, 1 answered, 1 commissioned, 1 planned
 Artifacts:  0 drafted, 0 reviewed, 0 deployed
 Round:      v260620 (open, 2 todo remaining)
 
 Open needs:
-  C02  GAP   "timing matters for refill"  → probe PP01 (dispatched)
+  C02  GAP   "timing matters for refill"  → probe PP01 (commissioned)
 
 Next:
   /haipipe-application probe run PP01

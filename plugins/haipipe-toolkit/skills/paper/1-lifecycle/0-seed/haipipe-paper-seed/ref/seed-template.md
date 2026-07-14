@@ -43,4 +43,4 @@ Status: <planned | done>.
 Source: <discovery path if done>.
 
 <Takeaways, one sentence per line.>
-Detail: `_PROBE/PP01_<slug>.md`
+Detail: `1-probes/PP01_<topic>.md` (the question's SECTION)

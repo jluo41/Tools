@@ -104,12 +104,12 @@ heavier:   case-mix robustness needs a NEW task run (buffered: PP13)
 ```
 
 Rules:
-- Derived from the prose: every `{VAL:?}` and `\cite{TOADD}` placeholder appears here with its EXPECTED source (pointer-following first); `\citep{key}` citations appear only if placement needs verifying. When the draft already SEES the pointer in the paper's own registries, say so — `-> paper-local: _VALUES_6-results.md` / `0-displays/<unit>/source/metrics.json` — and PROBE closes it without a gateway dispatch (`answered-local`).
+- Derived from the prose: every `{VAL:?}` and `\cite{TOADD}` placeholder appears here with its EXPECTED source (pointer-following first); `\citep{key}` citations appear only if placement needs verifying. When the draft already SEES the pointer in the paper's own registries, say so — `-> paper-local: _VALUES_6-results.md` / `0-displays/<unit>/source/metrics.json` — and PROBE closes it with nothing dispatched (`answered-local`).
 - Display needs are stated per paragraph.
-- Anything heavier than pointer-following (a new task run, a lit sweep) is BUFFERED as a `status: planned` PP skeleton at `_PROBE/PP<NN>_<slug>.md` (underscore after the number) + an index row (same buffer convention as seed: Need / Why / Route, EMPTY refs) — DRAFT proposes, it never executes.
-- **Index rows are bullet lines, never markdown tables** (JL standing rule — no tables in probe documents; the checker enforces it inside PP cards). Append one line per PP to `1-probe-plans/README.md`:
-  `- PP<NN> · <stage/section> · <status> · <one-line need> · card: <path>` EXCEPTION: a missing DISPLAY UNIT is never a PP card — it becomes a DR row in `0-lifecycle/4-display/_DISPLAY_REQUEST.md` (section-edit never creates displays; the display stage solves requests).
-- The ⛔ STOP presentation shows this block, so the user reviews the STRUCTURE and the PROBE PLAN at the same gate.
+- Anything heavier than pointer-following (a new task run, a lit sweep) is RAISED as a `state: planned` question SECTION in `1-probes/PP<NN>_<topic>.md` (one file per TOPIC) + a Status board row. The section carries serves: / target: / state: / commission: (the question in GENERAL language — no claim ids, no stake), and an EMPTY reading: — DRAFT proposes, it never executes.
+- **Board rows are bullet lines, never markdown tables** (JL standing rule — no tables in probe documents; the checker enforces it inside probe files). Append one line per probe file to `1-probes/README.md`:
+  `- PP<NN> · <stage/section> · <state> · <one-line need> · file: <path>` EXCEPTION: a missing DISPLAY UNIT never becomes a question SECTION — it becomes a DR row in `0-lifecycle/4-display/_DISPLAY_REQUEST.md` (section-edit never creates displays; the display stage solves requests).
+- The ⛔ STOP presentation shows this block, so the user reviews the STRUCTURE and the QUESTIONS RAISED at the same gate.
 
 ## Populating from existing tex (backward fill)
 
@@ -138,8 +138,8 @@ This is a BACKWARD FILL: tex -> .md, done ONCE at scaffold time. From then on th
 - [ ] Every paragraph has a heading, preview, and real prose sentences
 - [ ] Structure overview matches the paragraph blocks
 - [ ] Every unverified number is a `{VAL:?}`; every citation gap a `\cite{TOADD}` + `_CITATION_` row; every `\citep{key}` greps to a real .bib entry (nothing invented)
-- [ ] "Probes proposed by this draft" block at the end covers every placeholder + display need; heavier needs buffered as planned PP skeletons in `_PROBE/` + index row
-- [ ] ⛔ The user has reviewed the STRUCTURE + PROBE PLAN and approved (no open structural `> USER:` questions)
+- [ ] "Probes proposed by this draft" block at the end covers every placeholder + display need; heavier needs buffered as planned PP skeletons in `1-probes/` + Status board row
+- [ ] ⛔ The user has reviewed the STRUCTURE + the QUESTIONS RAISED and approved (no open structural `> USER:` questions)
 - [ ] _LOG has a `[GATE] draft-review: approved` entry quoting the user
 
 ## _LOG entry format for DRAFT

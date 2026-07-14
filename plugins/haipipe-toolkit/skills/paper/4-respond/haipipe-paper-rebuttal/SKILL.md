@@ -4,9 +4,9 @@ description: "Submission rebuttal pipeline specialist (was: rebuttal). Parses ex
 argument-hint: "[paper-path-or-review-bundle]"
 allowed-tools: Bash(*), Read, Grep, Glob, Write, Edit, Agent, Skill, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
-  summary: "Submission rebuttal pipeline specialist (was: rebuttal)."
+  version: "1.1.0"
+  last_updated: "2026-07-14"
+  summary: "Submission rebuttal pipeline specialist (was: rebuttal). v1.1 (probe-redesign residue sweep): a supplementary experiment is raised as a question SECTION and MATCHed before it is commissioned; the 'evidence gateway' is gone."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -50,7 +50,7 @@ Workflow 4:   rebuttal (post-submission external reviews)
 - **MAX_INTERNAL_DRAFT_ROUNDS = 2** — draft → lint → revise.
 - **MAX_STRESS_TEST_ROUNDS = 1** — One Codex MCP critique round.
 - **MAX_FOLLOWUP_ROUNDS = 3** — per reviewer thread.
-- **AUTO_EXPERIMENT = false** — When `true`, automatically invoke `/haipipe-probe gather` to run supplementary experiments when the strategy plan identifies reviewer concerns that require new empirical evidence. When `false` (default), pause and present the evidence gap to the user for manual handling.
+- **AUTO_EXPERIMENT = false** — When `true`, automatically raise a question SECTION for each supplementary experiment the strategy plan identifies and run the PROBE phase (`Skill(haipipe-paper-probe, args="from-buffer <paper_root>")`), which MATCHes each one and commissions only what MATCH cannot close. When `false` (default), pause and present the evidence gap to the user for manual handling.
 - **QUICK_MODE = false** — When `true`, only run Phase 0-3 (parse reviews, atomize concerns, build strategy). Outputs `ISSUE_BOARD.md` + `STRATEGY_PLAN.md` and stops — no drafting, no stress test. Useful for quickly understanding what reviewers want before deciding how to respond.
 - **REBUTTAL_DIR = `rebuttal/`**
 
@@ -124,10 +124,13 @@ If the strategy plan identifies issues that require new empirical evidence (tagg
    - Success criterion (what result would satisfy the reviewer)
    - Estimated GPU-hours
 
-2. Invoke `/haipipe-probe gather` with the mini plan:
+2. Raise one question SECTION per experiment, then run the PROBE phase (the ONLY dispatch door):
    ```
-   /haipipe-probe gather "rebuttal/REBUTTAL_EXPERIMENT_PLAN.md"
+   /haipipe-paper probe "<the mini plan's need>"     # one SECTION per experiment
+   Skill(haipipe-paper-probe, args="from-buffer <paper_root>")
    ```
+   ② MATCH runs first (a rebuttal experiment is often already answered by an existing
+   task's QA file) and only what MATCH cannot close is commissioned.
 
 3. Wait for results, then update `ISSUE_BOARD.md`:
    - Tag completed experiments as `user_confirmed_result`

@@ -4,6 +4,27 @@ haipipe-paper-enter — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 4.0.1 — 2026-07-14
+
+- Need-diagnosis table: "a BUILD card whose eta: has passed" -> "a BUILD section"; "the gateway mints the PP and picks the type" -> "the PROBE worker opens the SECTION and routes it".
+
+## [3.3.0] — 2026-07-14
+## 4.0.0 — 2026-07-14
+
+- PROBE REDESIGN (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14 — R1-R18). 1-probe-plans/ -> 1-probes/ (PPNN_<topic>.md, one file per TOPIC, one SECTION per question: serves/target/state/commission/reading + ONE `## Why` per file holding the stake). Binding is by PATH: a section's `target:` points at the answering `<leaf>/QA/<n>-<slug>.md` in the bank. DELETED: `## Verdict`, the `verdicted` and `dispatched` states, `_ASK/`/`_ANS/` stubs, `answers:`, and Agent(haipipe-probe-orchestrator-agent) (the GATEWAY — archived + de-registered). A claim's STATUS now lives ONLY in 0-lifecycle/1-claims/1-claims.md. Dispatch is now DIRECT: the section's `commission:` block, VERBATIM, to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent).
+- 'landing a settled verdict in a 1-probe-plans/PPNN card' -> 'landing a settled claim status in 0-lifecycle/1-claims/1-claims.md'.
+
+Fixed
+- **The console shipped the 7-stage spine and contradicted its own script.** `stage-strip.sh` had rendered 9 stages since the resource ruling landed, while this SKILL.md mentioned `resource` zero times — every strip example, the frontier table, the maturity table and the routing table were all pre-resource. Repaired throughout.
+- Frontier-diagnosis table: `seed exists but claims are absent/thin -> 0-seed -> 1-claims` (seed handing straight to claims) SPLIT into `0-seed -> 1-resource` and `1-resource -> 1-claims`.
+- **Resource exemption carried into the console (`n/a` COUNTS AS PASS).** Every live paper predates the stage (shipped 2026-07-14); without the exemption every one of their frontiers REGRESSES to `resource` and the console reports DRIFT on seeds JL personally approved. Backwards-only and per-paper: a paper seeded after 2026-07-14 gets no exemption. Also states that `resource ⬜` in the strip is the strip's artifact test, not drift.
+- Maturity table: added the `resource` and `resource-blocked` rungs (the latter from the stage's `park` exit).
+- Free-form routing table: added the `resource` verb (+ prereq / "do we have the data" / "does the checkpoint exist").
+- Open-needs table: added the `1-resource` surface (unanswered `Q<n>`, or a BUILD card whose `eta:` has passed).
+- Loopback table: added `1-resource` (resource cannot carry the claim) and `0-seed` via resource's `reseed` exit (every demand row unobtainable).
+- Read Order: added `0-lifecycle/1-resource/1-resource.md`.
+- All six stage-strip examples regenerated to the real 9-stage output of `stage-strip.sh` (verified against live papers Paper-ScalingGlucose-NatSeries2026 and Paper-PersonalizedGlucoseModel), including a new resource-stage example.
+
 ## [3.2.2] — 2026-07-03
 
 Fixed

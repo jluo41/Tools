@@ -4,37 +4,38 @@ Per-stage dispatch reference (haipipe-paper-probe)
 Loaded on demand from SKILL.md. Which stage runs which workers/mode, stage
 specifics, section-edit worker logic, and phase-status strip forms.
 
-Why this phase is called PROBE
--------------------------------
-The phase is named after what it does: dispatch evidence needs through
-/haipipe-probe, the project-side evidence gateway (mode light|full). The
-previous name, GATHER, collided with probe's own internal stage 2 (probe's
-lifecycle is Plan -> Gather -> Read -> Judge -> Deposit); that collision is
-why the paper phase was renamed. "Probe's own Gather" means that internal
-probe stage, not this paper phase.
-
-The downstream lifecycles are NESTED under probe:
+Where a dispatched question goes
+---------------------------------
+This worker owns the paper side of the question. The EXECUTOR owns the work:
 
 ```
-/haipipe-probe       evidence gateway (explore+gather), mode: light|full
+the section's `commission:` block, VERBATIM
         |
-        +-- during its Gather, probe calls:
-        |     /haipipe-discovery   external evidence: search+read, judge/synthesize, idea
-        |     /haipipe-task        9 task domains (data, nn, end, individual, fit,
-        |                          eval, display, stata, agent)
-        +-- at Deposit, probe files:
-              /haipipe-insight     DIKW cards; settled evidence is reusable
-                                   across papers instead of re-collected
+        +-- Agent(haipipe-task-orchestrator-agent)        internal work: 9 task domains
+        |                                                 (data, nn, end, individual, fit,
+        |                                                  eval, display, stata, agent)
+        +-- Agent(haipipe-discovery-orchestrator-agent)   external evidence: search + read,
+        |                                                 judge/synthesize, idea
+        |     💀 the probe GATEWAY agent is RETIRED — its SWEEP is now ② MATCH,
+        |        and dispatch goes DIRECT to the two orchestrators above.
+        |
+        +-- on return, this worker writes NOTHING project-side:
+              the section's `reading:` is the paper's record of what the answer
+              MEANS; the CLAIM's status lives in 0-lifecycle/1-claims/1-claims.md.
+              The reusable artifact is the EXECUTOR's <leaf>/QA/<n>-<slug>.md,
+              which any paper's MATCH can find and read (T2 REUSE).
 ```
 
-Per-stage table (workers = HARVESTERS: they transcribe landed evidence,
-never acquire; acquisition is always PP card -> gateway)
+Per-stage table (workers = HARVESTERS: they transcribe landed evidence, never
+acquire; acquisition is always a question SECTION -> its `commission:` -> the
+task/discovery orchestrator -> the answering QA file)
 ----------------
 - **seed** -- probe mode light (-> discovery): landscape / related work / novelty to sharpen the seed question; returned sources HARVEST into _CITATION_0-seed.md. No values/display lanes.
-- **claims** -- probe mode FULL (-> task + discovery): the core evidence stage; probe plans per GAP claim (INCLUDING seed's `[FORWARD -> CLAIMS]` pointers, consumed at stage open — see haipipe-paper-claims), verdicts backfill the ledger + deposit to insight.
+- **resource** -- probe mode light for SCAN questions, FULL for BUILD questions (-> task + discovery): the prerequisite stage (`what must EXIST for this paper to be testable, does it exist, can it CARRY the claim?`). The stage ASKS (Q\<n\>, keyed to a demand row N\<n\>); THIS WORKER's ① ORGANIZE stage intake opens one SECTION per approved Q and writes the `-> PP<NN>` backlink into 1-resource.md; ② MATCH then resolves it against the bank, and only an unmatched section is DISPATCHED to the task/discovery orchestrator, which picks the shape and depth in its own clean context. Two lanes, SCAN (blocking) and BUILD (non-blocking) -- see Resource specifics. `task-for-eval` is FORBIDDEN here (that is claims). NO harvest lanes at all (see below).
+- **claims** -- probe mode FULL (-> task + discovery): the core evidence stage; one question SECTION per GAP claim. A full-mode section's answer is judged by Agent(haipipe-probe-reviewer-agent) and the judgment lands in `0-lifecycle/1-claims/1-claims.md` — the ONLY home of a claim's status. `## Verdict` and `verdicted` are DELETED. Claims does NOT consume seed's `[FORWARD -> ...]` pointers — RESOURCE is their sole consumer; claims only picks up the ones resource explicitly DECLINED to it (per `_LOG_1-resource.md`).
 - **pitch** -- citation lane only (anchor papers).
 - **narrative** -- citation + display lanes (beats map to displays).
-- **display** -- display lane. From SECTION/NARRATIVE context a missing unit is NEVER commissioned: it becomes a DR row in `0-lifecycle/4-display/_DISPLAY_REQUEST.md` (the display stage's inbox; JL 2026-07-10) and the card closes `answered-local (rerouted: DRNN)`. Only the DISPLAY STAGE itself commissions evidence/render work for its accepted units (via its own PROBE lanes); the harvester LINKs existing/done units.
+- **display** -- display lane. From SECTION/NARRATIVE context a missing unit is NEVER commissioned: it becomes a DR row in `0-lifecycle/4-display/_DISPLAY_REQUEST.md` (the display stage's inbox; JL 2026-07-10) and the SECTION closes `answered-local` with the reading `rerouted to display stage: DRNN`. Only the DISPLAY STAGE itself commissions evidence/render work for its accepted units (via its own PROBE lanes); the harvester LINKs existing/done units.
 - **section-edit** -- full document probe: citation + values + display lanes.
   (disp statuses include 📨 = DR request pending in the 4-display inbox; the
    display axis cannot pass CHECK until the row is `done` and the unit linked.)
@@ -43,50 +44,115 @@ Dispatch rules (both apply to every dispatch)
 ----------------------------------------------
 1. **Mode: light by default.** A light probe stops at Read and returns evidence
    to the caller -- right for context questions (seed landscape, section-edit
-   lookups). Request `mode: full` only when the paper needs a COMMITTED verdict
-   that backfills a claim slot and deposits insight cards (claims stage's
-   normal case). Light can escalate to full later; never start heavy for a
-   question that only needs orientation.
-2. **Reuse-before-create -- decided by the AGENT, not the worker.** The
-   gateway's SWEEP scans discoveries/tasks/insights in clean context and picks
-   the shape: REUSED (existing artifact covers the need; refs point at it),
-   ENRICHED (same-topic deltas into an existing discovery's ledger), or FRESH
-   (new discovery/task work). No shape creates a probe folder (folderless
-   refactor 2026-07-05); a full-mode verdict's home is the PPNN card's
-   `## Verdict`. Duplication is a mental-model tax: two half-overlapping
-   evidence sets cost more than one enriched one.
+   lookups). Request `mode: full` only when the paper needs a COMMITTED claim
+   status: the answer is judged by Agent(haipipe-probe-reviewer-agent) and the
+   judgment lands in `0-lifecycle/1-claims/1-claims.md` (claims stage's normal
+   case). Light can escalate to full later; never start heavy for a question that
+   only needs orientation.
+2. **Reuse-before-create -- the MATCH is the WORKER's, the DEPTH is the EXECUTOR's.**
+   💀 The gateway's SWEEP is RETIRED. The worker itself runs ② MATCH over the
+   bank's READABLE QA corpus (`{tasks,discoveries}/**/QA/*.md`) and READS the
+   hits -- R14: match ON THE ANSWER, never on the topic. A hit is a T2 REUSE
+   (point the section's `target:` at that QA file; nothing runs). Only what MATCH
+   cannot close is dispatched, and then the EXECUTOR picks the shallowest depth
+   in its own clean context (read | new run | new script | new leaf) -- the worker
+   never learns which, and never asks. MOST SECTIONS SHOULD LAND ON T2: the bank
+   fills autonomously from the executor side, so a commission is the EXCEPTION.
+   Duplication is a mental-model tax: two half-overlapping evidence sets cost more
+   than one enriched one.
 
 Seed specifics (mode light; DEFAULT RUN for a new seed)
 --------------------------------------------------------
 Skip only on re-entry or minor edits, and only by an explicit logged verdict
 (`[PROBE] skipped -- <reason>` in the stage _LOG; phase line shows `--`) --
-never silently. The seed question needs outside context, not verdicts:
+never silently. The seed question needs outside context, not settled claims:
 
 ```
-landscape ("what does this field look like?")  -> probe -> discovery Review -> landscape.md
-related work ("who has done this?")            -> probe -> discovery Search -> sources.md
-novelty ("is this idea new?")                  -> probe -> discovery novelty-check -> verdict.md
+landscape ("what does this field look like?")  -> discovery Review -> landscape.md
+related work ("who has done this?")            -> discovery Search -> sources.md
+novelty ("is this idea new?")                  -> discovery novelty-check -> verdict.md
+(all three via Agent(haipipe-discovery-orchestrator-agent); the leaf's readable
+ digest of each is its QA/<n>-<slug>.md, and that is what the section points at)
 ```
 
-Takeaways feed Motivations and Tentative Claim Shape in 0-seed.md. Sources the
-probe brought back HARVEST into _CITATION_0-seed.md (candidates only) so the
-user can eyeball them paper-side. Full evidence stays project-side, reusable
-by claims. (_DISCOVERY_{stage}.md is retired -- the PP card carries takeaways.)
+The `reading:` feeds Motivations and Tentative Claim Shape in 0-seed.md. Sources the
+answer brought back HARVEST into _CITATION_0-seed.md (candidates only) so the user
+can eyeball them paper-side. Full evidence stays executor-side, reusable by claims.
+(_DISCOVERY_{stage}.md is retired -- the probe SECTION carries the reading.)
+NOTE: a discovery leaf's own `verdict.md` is executor-native and SURVIVES; it is a
+different thing from the deleted probe `## Verdict`.)
+
+Resource specifics (mode light for SCAN, full for BUILD)
+---------------------------------------------------------
+The stage hands over paper-space QUESTIONS (Q1, Q2, ...), never PP ids and never
+probe topics. THIS WORKER reads 1-resource.md at ① ORGANIZE and opens one SECTION
+per GATE-1-approved Q (`serves: resource` · `blocks: N<n>` · `target: NEW ?` ·
+`state: planned` · `commission:` = the Q re-posed as a self-contained evidence
+question), writing the `-> PP<NN>` backlink back into the Q -- the section can be
+opened nowhere else, since the stage is forbidden to mint a PP id. ② MATCH then
+resolves what the bank already answers; only the rest is DISPATCHED, and ⑤ INTERPRET
+writes the answer back as the Q's **A**. A BUILD lands a committed answer that flips
+a demand row, so it runs `mode: full`; a SCAN only needs orientation, so `mode: light`.
+
+```
+SCAN  -- minutes. GATE-BLOCKING. This is what makes the stage DECIDABLE.
+    inventory / store scan            -> route: task
+    capability grep                   -> route: task
+      ("does code emitting metric X exist?" -- score a capability ONLY off a
+       landed results/*/metrics.json KEY, never a filename match)
+    access-rung / prior-art           -> route: discovery
+      (rungs: PUBLIC | REGISTER | DUA | APPLICATION)
+    cross-project sweep               -> route: discovery/task sweep
+      (MATCH may NAME a sibling-project source as an UNREAD hypothesis;
+       it may NOT consume it -- that is JL's decision at the DRAFT gate)
+    HARD RULE: a SCAN question whose route exceeds ~1 HOUR is MISFILED.
+    Re-route it to BUILD, or shrink the question until it fits the hour.
+
+BUILD -- days to weeks. NON-BLOCKING, ALWAYS.
+    task-for-data / task-for-algo / task-for-fit
+    LONG ACQUISITIONS (a DUA or IRB application -- an ETA in MONTHS, a CALENDAR
+      cost, not a compute cost)
+    The SECTION carries (BUILD-lane fields, only at state: commissioned):
+        state: commissioned
+        owner: <name>
+        eta: YYYY-MM-DD
+        blocks: N<n>
+        cross-project: <path | none-found>     MANDATORY -- empty is a FAIL
+```
+
+FORBIDDEN in resource: **`task-for-eval`**. That is CLAIMS. A section whose
+commission is eval-shaped while it `serves: resource` is mis-scoped by definition --
+fit makes the model, eval makes the evidence, and a bundled fit+eval entangles the
+judgment (Paper-CGMtoAge's PP04: you cannot tell whether the null came from the
+MODEL or from the CORPUS).
+
+HARVEST LANES: **none**. Resource is a ledger doc with exactly two sections
+(Demand + Questions), and it has NO sidecars by design -- no _CITATION_1-resource.md,
+no _VALUES_1-resource.md, no display units. The Q's **A** IS the settled record.
+So the harvest lanes never fire (no `sources:` / `values:` / `displays:` lane line is
+written, and none is owed), and the phase strip reads `cite --  val --  disp --`.
+Access-rung and prior-art SCANs still route through discovery; their return is
+transcribed into the A, not into a _CITATION_ doc.
 
 Claims specifics (mode full)
 -----------------------------
-Every GAP/weak claim emits a probe plan -- sweep first (reuse-before-create),
-then probe fans out by need type:
+Every GAP/weak claim raises one question SECTION -- MATCH first
+(reuse-before-create), then the unmatched ones fan out by shape:
 
 ```
-claim needs a verdict / robustness check   -> probe (Plan -> Gather -> Read -> Judge)
-probe needs a run / data artifact          -> probe -> /haipipe-task
-probe needs outside context / citation     -> probe -> /haipipe-discovery
-finished evidence worth keeping            -> /haipipe-insight (K/W cards)
+claim needs its status settled     -> a SECTION whose commission is task-shaped
+                                      -> Agent(haipipe-task-orchestrator-agent)
+question needs a run / artifact    -> same door (the executor picks the depth)
+question needs outside context     -> Agent(haipipe-discovery-orchestrator-agent)
+settled claim status               -> 0-lifecycle/1-claims/1-claims.md (the ONLY home
+                                      of a claim's status; the probe section carries
+                                      only its `reading:`)
 ```
 
-Verdicts backfill the _EVIDENCE_ slots in 1-claims.md (supported | weak | GAP,
-citing the probe verdict). The paper owns the NEED; the probe owns the VERDICT.
+At ⑤ INTERPRET the section's `reading:` lands, and the CLAIM's status is written in
+1-claims.md (supported | refuted | inconclusive + confidence + claim_type + G1/G2/G3),
+citing the section's `target:` QA file. The paper owns the NEED and the JUDGMENT; the
+executor owns the FACT.
 See ../../../../wiki/12-evidence-routing.md + ../../../../wiki/11-delivery-need.md.
 
 Section-edit worker logic
@@ -119,7 +185,7 @@ phase:   draft ✅  │  probe: cite 🔥🚀  val --  disp --  │  revise ⬜ 
 ```
 
 GATE RULE (JL 2026-07-07, the seed incident): the probe phase may NOT show ✅
-while any lane is OWED. A lane is OWED when a PP card carries its lane line
+while any lane is OWED. A lane is OWED when a probe SECTION carries its lane line
 with `harvest: OWED`, or when a return named harvestable content for a lane
 whose doc (⬜) does not exist. `probe ✅ (cite ⬜ ...)` -- the exact strip the
 incident shipped -- is a contradiction: run check-probe-cards.sh, it FAILs.

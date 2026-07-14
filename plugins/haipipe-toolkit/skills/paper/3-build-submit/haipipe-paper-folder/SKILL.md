@@ -1,10 +1,10 @@
 ---
 name: haipipe-paper-folder
-description: "Scaffold a paper folder's CONTENTS, quickly and minimally: README + STATUS.md + .gitignore + four empty container dirs (0-lifecycle, 0-displays, 1-rounds, 1-probe-plans). Stage files are absent-until-written (each stage skill creates its own 0-lifecycle/N-stage/ on first run); manuscript machinery (master tex, 0-sections, compile scripts) is a later on-request upgrade, not part of creation. Reached via /haipipe-paper enter (get-or-create on a missing path) -> haipipe-paper-lifecycle folder; repo creation + submodule wiring belong to enter's get-or-create branch, not this skill. Trigger: paper folder, scaffold paper, new paper folder."
+description: "Scaffold a paper folder's CONTENTS, quickly and minimally: README + STATUS.md + .gitignore + four empty container dirs (0-lifecycle, 0-displays, 1-rounds, 1-probes). Stage files are absent-until-written (each stage skill creates its own 0-lifecycle/N-stage/ on first run); manuscript machinery (master tex, 0-sections, compile scripts) is a later on-request upgrade, not part of creation. Reached via /haipipe-paper enter (get-or-create on a missing path) -> haipipe-paper-lifecycle folder; repo creation + submodule wiring belong to enter's get-or-create branch, not this skill. Trigger: paper folder, scaffold paper, new paper folder."
 metadata:
-  version: "3.1.0"
-  last_updated: "2026-07-08"
-  summary: "Minimal quick paper-folder scaffold; stage files absent-until-written; manuscript machinery an on-request upgrade."
+  version: "4.0.1"
+  last_updated: "2026-07-14"
+  summary: "Minimal quick paper-folder scaffold; stage files absent-until-written; manuscript machinery an on-request upgrade. v4.0.1 (probe-redesign residue sweep): the not-my-job table points at the probe FILES and `fn/probes.md`."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -27,10 +27,10 @@ Paper-<Name>/
 ├── 0-lifecycle/        # EMPTY -- each stage skill creates its own N-stage/ on first run
 ├── 0-displays/         # EMPTY -- display units land here (owner: display stage + renderers)
 ├── 1-rounds/           # EMPTY -- dated work rounds (owner: haipipe-paper-round)
-└── 1-probe-plans/      # EMPTY -- probe-plan INDEX home (README.md created on first plan; plans themselves live per-stage in 0-lifecycle/<stage>/_PROBE/)
+└── 1-probes/           # EMPTY -- the probe-file pool (README.md + flat PPNN_<topic>.md probe files, created on first probe; one cross-stage pool, one file per TOPIC)
 ```
 
-Absent-until-written: `0-lifecycle/` starts empty. `/haipipe-paper seed` creates `0-seed/`, claims creates `1-claims/`, and so on down the spine (`0-seed, 1-claims, 2-pitch, 3-narrative, 4-display, 5-section-edit`). Early stages are markdown, so a fresh paper contains no tex and needs no compiler.
+Absent-until-written: `0-lifecycle/` starts empty. `/haipipe-paper seed` creates `0-seed/`, resource creates `1-resource/`, claims creates `1-claims/`, and so on down the spine (`0-seed, 1-resource, 1-claims, 2-pitch, 3-narrative, 4-display, 5-section-edit` -- resource and claims SHARE the number 1, as `2-venue/` and `2-pitch/` already do; the number is decoration and nothing renumbers). Early stages are markdown, so a fresh paper contains no tex and needs no compiler.
 
 STATUS.md template (the stage strip and the enter console parse this; keep the shape):
 
@@ -114,7 +114,7 @@ Not this skill's job
 repo + submodule wiring        -> /haipipe-paper enter (get-or-create branch)
 stage files (0-seed.md, ...)   -> each stage skill, on first run
 rounds (1-rounds/vYYMMDD/)     -> haipipe-paper-round (contract: ../../wiki/07-paper-rounds.md)
-probe plans (PPNN_*.md)        -> /haipipe-paper probe verbs (fn/probe-plans.md)
+probe files (PPNN_<topic>.md)  -> /haipipe-paper probe verbs (fn/probes.md)
 display units                  -> display stage + renderer family
 venue knowledge                -> _venue/playbook-<venue> packs
 ```

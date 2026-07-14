@@ -23,7 +23,7 @@ phase:   draft ✅  │  probe: cite 🔥🚀  val --  disp --  │  revise ⬜ 
 │   └── haipipe-paper-draft                 hub: structure + draft sentences
 │
 ├── 1-probe/                            ← PROBE: agent-only, flag for CHECK
-│   ├── haipipe-paper-probe                 hub: BOOKKEEP → DISPATCH → TRANSLATE → VERIFY
+│   ├── haipipe-paper-probe                 hub: ORGANIZE → MATCH → DISPATCH → POINT → INTERPRET
 │   ├── haipipe-paper-probe-citation        citation harvester → _CITATION_.md
 │   ├── haipipe-paper-probe-values          values harvester → _VALUES_.md
 │   └── haipipe-paper-probe-display         display harvester → _DISPLAY_ + 0-displays/ links
@@ -60,23 +60,29 @@ haipipe-paper-edit-*            whole-paper (3-build-submit/)
 
 The user drives phases with VERBS on the stage skill (`/haipipe-paper-section-edit <section> [draft|probe|revise|check]`); a bare invocation shows status and proposes — never runs — the next phase. The agent never self-advances past a human gate.
 
-## The probe phase (ONE pipeline: acquire via gateway → harvest paper-side)
+## The probe phase (ONE pipeline: MATCH first, dispatch what is left, harvest paper-side)
 
-ALL acquisition goes PP card → gateway (`Agent(haipipe-probe-orchestrator-agent)`)
-→ discovery/task orchestrators; the workers are HARVESTERS that transcribe what
-landed (JL 2026-07-07 ruling — they never search, grep-discover, or dispatch tasks):
+ALL acquisition goes: probe SECTION → ② MATCH against the bank's QA corpus → and only what MATCH
+cannot close → ③ DISPATCH the section's `commission:` block, VERBATIM, to
+`Agent(haipipe-task-orchestrator-agent)` / `Agent(haipipe-discovery-orchestrator-agent)`.
+(💀 the probe GATEWAY agent is RETIRED; the reuse decision IS the paper-side MATCH.) The three
+lane workers are HARVESTERS that transcribe what landed — they never search, grep-discover, or
+dispatch tasks themselves (JL 2026-07-07 ruling):
 
 ```
 PROBE:
-  citation  → audit gaps → route to probe plans → harvest pick_list → _CITATION_ → 🔍 for CHECK
-  values    → audit numbers → route unsourced to probe plans → harvest value_refs → _VALUES_
-  display   → audit needs → plan (missing unit → DR row in the 4-display inbox) → link existing/done units → _DISPLAY_ + tex
+  citation  → audit gaps → unmet gap becomes a question SECTION → harvest the answering QA
+              file's source anchors → _CITATION_ → 🔍 for CHECK
+  values    → audit numbers → unsourced number becomes a question SECTION → harvest the QA
+              file's value anchors → _VALUES_
+  display   → audit needs → missing unit → DR row in the 4-display inbox → link existing/done
+              units → _DISPLAY_ + tex
 ```
 
-Every lane obligation is written into the PP card (`harvest: OWED → accepted`);
-`check-probe-cards.sh` FAILs an OWED lane or a planned card at VERIFY and at the CHECK gate.
+Every lane obligation is written into the probe SECTION (`harvest: OWED → accepted`);
+`check-probe-cards.sh` FAILs an OWED lane or a `planned` section at VERIFY and at the CHECK gate.
 
-Hard boundary: the gateway finds, the harvesters follow pointers, the human verifies in CHECK. The agent NEVER adds to .bib, NEVER fabricates numbers, NEVER creates ad-hoc plots, NEVER searches inline during PROBE.
+Hard boundary: the DISPATCHED executor finds, the harvesters follow pointers, the human verifies in CHECK. The agent NEVER adds to .bib, NEVER fabricates numbers, NEVER creates ad-hoc plots, NEVER searches inline during PROBE.
 
 ## Progression order
 

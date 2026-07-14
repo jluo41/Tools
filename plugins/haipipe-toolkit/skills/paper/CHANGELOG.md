@@ -5,6 +5,31 @@ Layer-scoped changelog for the paper (DELIVERY) layer. Newest first.
 Rollup lives in the plugin-level CHANGELOG.md.
 
 
+[2.1.0] -- 2026-07-14
+-----------------------
+
+components/ retired (was already half-migrated: figure/ had moved to
+1-lifecycle display, edit-diffpdf to 3-build-submit).
+
+### Moved
+
+- **paper-compile** (+ its feedback inbox) -> 3-build-submit/paper-compile.
+  Feedback-router bucket renamed components/compile -> paper-compile.
+
+### Removed
+
+- **citation-audit**, **citation-verifier**, **reference-audit-guide** --
+  superseded by the citation probe lane (haipipe-paper-probe-citation:
+  AUDIT / PLACE / REVIEW verbs; acquisition via the discovery orchestrator).
+  All dispatch references rewired (probe-citation, diffpdf, to-overleaf,
+  narrative, section-related-work, build-check, 6 _venue playbooks,
+  feedback router).
+- **paper-diff-folder** -- orphan; no inbound references
+  (haipipe-paper-edit-diffpdf covers the diff need).
+- **components/README.md** and the components/ container itself; structure
+  docs updated (paper README, wiki/04, wiki/06).
+
+
 [2.0.0] -- 2026-06-22
 -----------------------
 

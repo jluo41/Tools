@@ -2,7 +2,7 @@
 
 Canonical reference. This file + `wiki/` win over anything elsewhere.
 
-A paper is a delivery contract, not a writing folder. It owns one manuscript's story, claims, displays, minimap, and prose. Evidence lives in tasks/discoveries/insights at the project level; each stage's _PROBE/PPNN card carries contract + receipt + verdict. Claim gaps buffer in `1-probe-plans/` and batch-dispatch to probe (the universal evidence gateway; probe calls task/discover during Gather). Direct task/discover for non-claim utility work only.
+A paper is a delivery contract, not a writing folder. It owns one manuscript's story, claims, displays, minimap, and prose. Evidence lives in tasks/ and discoveries/ at the project level; the paper's `1-probes/PPNN_<topic>.md` probe files hold its QUESTIONS, one SECTION each, and BIND each one BY PATH to the answering `<leaf>/QA/<n>-<slug>.md` in that bank. Claim gaps become sections there; MATCH closes most of them for free, and only the rest are dispatched (the `commission:` block, verbatim) to the task/discovery orchestrators. Direct task/discover for non-claim utility work only.
 
 ## Paper-folder layout
 
@@ -11,10 +11,10 @@ A paper is a delivery contract, not a writing folder. It owns one manuscript's s
 ├── STATUS.md                current layer, maturity, active round
 ├── 0-<paper>.tex/.bib       main manuscript shell
 ├── 0-lifecycle/              maturation spine (md + _LOG; display = tex + pdf)
-│   ├── 0-seed/  1-claims/  2-pitch/  3-narrative/  4-display/  5-editing/
+│   ├── 0-seed/  1-resource/  1-claims/  2-pitch/  3-narrative/  4-display/  5-editing/
 ├── 0-sections/               manuscript prose .tex
 ├── 0-displays/displayNN-*/   figure/table units
-├── 1-probe-plans/PPNN_*.md   evidence-need buffer -> batch-dispatch to probe
+├── 1-probes/PPNN_<topic>.md   the paper's questions, one SECTION each -> bound BY PATH to a QA file
 ├── 1-rounds/vYYMMDD/         work rounds (discussion, decisions, todo, applied)
 ├── 1-config.yaml
 └── 1-compile.sh
@@ -32,11 +32,10 @@ paper/
 │                     + display renderers (-table, -figure, -diagram, -illustration)
 ├── 2-phase/          shared phase workers: DRAFT-PROBE-REVISE-CHECK (DPRC)
 │                     haipipe-paper-{draft,probe,revise,checker} + sub-workers
-├── 3-build-submit/   scaffold, restructure, check
+├── 3-build-submit/   scaffold, restructure, check, compile, edit family
 ├── 4-respond/        rebuttal, response
 ├── 5-present/        slides, poster
 ├── _venue/           venue profiles (knowledge, not verbs) — see _venue/README.md
-├── components/       citation, compile, diff
 └── wiki/             lifecycle, rounds, skill-structure, lifecycle-map
 ```
 

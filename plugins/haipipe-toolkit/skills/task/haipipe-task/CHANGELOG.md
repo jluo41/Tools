@@ -3,6 +3,111 @@ haipipe-task — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [6.2.0] — 2026-07-14 — R19 hardening: the state line is read FIRST
+
+- **Gate ① reads the STATE LINE *before* the literally-answers test.** The order is load-bearing. A `working` file's `## Answer` is EMPTY BY CONSTRUCTION, so the answer test is a guaranteed miss on it — the caller falls through to ③, allocates a NEW `<n>`, `set -C` never fires (different path), and RUNS THE SAME EXPENSIVE JOB a second time next to the one already in flight. A `working` file is matched on its `# Q —` LINE: same question ⇒ return the path + "in progress since <started>", run nothing.
+- **A QA file with NO `- state:` line is MALFORMED, not legacy** (checker: `qa-no-state`). It is THIS layer's own file, so this layer REPAIRS it: tag `answered` if `## Answer` has a body; RECLAIM it as a zombie if the Answer is empty. A consumer may never do either.
+- **The same-`<n>`/different-slug claim race is NON-FATAL BY RULING and is NOT a reviewer REVISE.** `fn/qa.md` said non-fatal in one paragraph and "the reviewer REVISEs it" twelve lines later. The reviewer's FILENAME check now carries the exemption explicitly, and renaming a QA file to "fix" it is forbidden (the body is frozen; a rename orphans a live claim).
+- Reviewer twin (`haipipe-task-reviewer-agent` 1.3.0) gains the FULL QA-file review block it had been advertising and never had — token-identical to the discovery reviewer's.
+- Twin: `haipipe-discovery` 3.2.0, character-identical.
+
+## [6.1.0] — 2026-07-14 — THE CLAIM: a QA file becomes a TICKET that becomes a RECEIPT
+
+Ruling of record: JL, 2026-07-14 (`Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/` PART 3b, the `>> CC0714` block).
+Constitution: `probe/haipipe-probe/SKILL.md` v8.2.0, PART 3a — R19 (the claim) · R20 (supersession) · R21 (the three readers).
+
+**THE HOLE IT CLOSES.** A QA file used to be written ONCE, at Report, complete. Its EXISTENCE meant "answered", and there was NO way to say *"someone is working on this right now."* So: two consumers ask the same question a week apart. The first dispatches an expensive P-B-E-R run. The second, **while that run is still going**, sees no QA file — and dispatches THE SAME RUN AGAIN. Nothing prevented it.
+
+Added
+- **ONE MUTABLE FIELD — the `state:` line.** A QA file now carries `- state: working | answered | superseded-by: QA/<m>-<slug>.md`, `- started: YYYY-MM-DDTHH:MM` (MANDATORY when `working`), and an optional `- by:`. Everything below the state line — `# Q —` / `## Answer` / `## Caveats` / `## Not-done` — is written once and never touched again.
+- **Gate ③ P-B-E-R now CLAIMS FIRST.** At the moment it decides to run — before Plan, before any code — it writes the QA file with `state: working` + `started:` + an EMPTY `## Answer`, and COMPLETES it at Report (`state: answered` + the body). Gate ② DIGEST still writes ONCE, complete, `answered` (the facts are already in `results/`; zero code runs, so there is nothing to claim and nothing to race). Gate ① writes NOTHING. **Only gate ③ ever produces a `working` file, and only transiently.**
+- **Gate ① SCAN now branches on the STATE LINE, not on existence.** `answered` → return the path · `working` → **DO NOT RE-RUN**, return the path + "in progress since `<started>`" (this is the duplicate-work fix; an expensive run is SAVED at ~0 cost) · `working` past the TTL → 🧟 ZOMBIE, RECLAIM it · `superseded-by: X` → follow the chain (possibly multi-hop) and return the LIVE answer's path.
+- **`QA_CLAIM_TTL_HOURS = 24`** — the named constant. A `working` file whose `started:` is older is STALE: RECLAIMABLE by the next qa call (rewrite the claim with a fresh `started:`, record the abandoned attempt in `## Not-done`) and a HARD FAIL for the checker. **A `working` file with no `started:` can never expire — it is a zombie by construction, and it is INVALID.** Never hard-code the literal `24` anywhere; reference the name.
+- **RACE GUARD: `set -C` (noclobber), and nothing more.** Two qa calls can decide ③ at the same instant and both pick `QA/3-`. The loser sees the file already exists, re-runs gate ① **ONCE**, and DEFERS — it never loops back into ③. This shrinks the race window from THE WHOLE RUN to microseconds. The residual same-instant/different-slug collision is NON-FATAL (gate ① finds both files). **No lock dirs, no lease servers, no ledgers, no flock** — all retired machinery in a new hat.
+- **R20 SUPERSESSION.** A later run whose answer CHANGES writes `QA/<n+1>-<slug>.md` and APPENDS `superseded-by:` to the OLD file's state line (`- state: answered · superseded-by: QA/2-cycle.md`) — the only edit ever permitted to a frozen file, and only by its own owner. Supersede ONLY when the answer changed; a deeper cut or a different subset is just `QA/<n+1>`, and the old file stays live.
+- **A REFUSE RELEASES its claim.** Never leave a `working` file behind a refusal — it tells every future reader that work is underway when nothing is.
+
+Changed
+- **⚠️ THE LOAD-BEARING INVARIANT IS *ONE WRITER*, NOT *WRITE-ONCE*.** The executor writes the file TWICE — the CLAIM at the ③ decision, the COMPLETION at Report. Two writes by the SAME owner, in its OWN folder, is fine. **A CONSUMER (probe/paper/application) must NEVER create, claim, edit, complete, or supersede a QA file.** A consumer-planted `working` file is the retired `_ASK/` stub wearing a `QA/` costume, and it is FORBIDDEN — the same violation as the A03 C6/C7 leak. "Write-once" was never the real rule.
+- **R15 (ENRICH never mutates) still holds — FOR THE BODY.** Only the state line is ever mutable. Two edits in a file's whole life: `working → answered`, and `answered → + superseded-by:`.
+- **STATUS is derived from the state line, not from mere existence.** `ls QA/` is no longer enough — the reader must OPEN THE FILE. No file = not answered · `working` = IN PROGRESS since `<started>` · `answered` = answered · `superseded-by: X` = answered but STALE, the live answer is X.
+- **Stage 4 REPORT's file-ownership line gains its one exception:** on gate ③ the QA file is CLAIMED before Plan runs and COMPLETED at Report. That is two writes by the same owner — it does not break file ownership, it is what file ownership MEANS.
+- `--check-only` now explicitly writes **NO CLAIM** (it already wrote nothing else). A qa call that fell through to ③ during the probe's MATCH step — a FREE detection pass — would otherwise spawn an unbudgeted run AND plant a claim.
+
+Enforced (the checker's new teeth — the whole point is that these become MACHINE-DETECTABLE)
+- `qa-working-no-started` — a `working` QA file with no `started:` → an UNEXPIRABLE claim.
+- `qa-working-expired` — a `working` QA file older than `QA_CLAIM_TTL_HOURS` → a ZOMBIE.
+- `qa-answered-empty` — `state: answered` with an EMPTY `## Answer` → a LYING RECEIPT.
+- (consumer-side, in `check-probe-cards.sh`) `read-target-working` and `read-target-superseded` — a probe section at `state: read` whose `target:` resolves to an UNFINISHED or STALE QA file. **The latter is the day-1/day-40 silent-false-claim bug: every file internally consistent, the claim FALSE, and nothing caught it before.**
+
+Files
+- `fn/qa.md` — rewritten: the state line, the gate-path write contract, the CLAIM (Step 3a, with the `set -C` idiom and what the loser does), the RECLAIM path (Step 3b), SUPERSESSION, the three readers, status derivation, the five checker codes. `qa_state:` added to the return.
+- `SKILL.md` — the qa-verb block, the QA/ folder contract, Stage 4 REPORT, the Step-2 `qa` routing note, description + summary.
+- `agents/haipipe-task-orchestrator-agent.md` → 2.1.0 (I own the CLAIM; gate ① reads the state line; the loser defers without looping).
+- `agents/haipipe-task-creator-agent.md` → 3.1.0 (at Report I COMPLETE the claim on gate ③, CREATE once on gate ②; never a lying receipt; never touch someone else's `working` file).
+
+Twin parity: the discovery twin (`discovery/haipipe-discovery/fn/qa.md`, v3.1.0) states every field name, state value, TTL constant, flag spelling and bash idiom **character-identically**. Verified: all three bash blocks (grep/parse form, the `set -C` claim idiom, the staleness test) diff clean between the twins. They drifted before; they must not again.
+
+## [6.0.2] — 2026-07-14 — probe-redesign residue sweep
+
+Fixed
+- **The task layer's own orientation diagram taught the exact behavior the redesign banned.** `diagram/01-architecture.txt:84-85` read: "the consumer (a paper/application stage, **via its PPNN card**) **reads the artifacts** and judges them." Two dead things in one sentence: (a) cards are retired — a consumer's question is a SECTION in `1-probes/PPNN_<topic>.md`; (b) under LAW 1 a consumer session NEVER reads bank artifacts inline (`paper/wiki/08-stage-gate.md` rule 4: "opening results/, reading a plan.yaml, grepping the code is bank work and breaks LAW 1"). The consumer reads the **QA file the EXECUTOR authored**. Rewritten to say exactly that, with the LAW-1 line stated inline so the diagram carries the rule and not just the shape. (The migration passes checked `SKILL.md` and `fn/`; `diagram/` was never swept.)
+
+## [6.0.0] — 2026-07-14 — The `qa` verb: the task layer becomes consumer-unaware
+## 6.0.1 — 2026-07-14
+
+- **`--check-only` ADDED to the `qa` verb.** The constitution (probe/haipipe-probe/SKILL.md) and both PROBE workers instruct the MATCH step to "call qa in CHECK-ONLY mode: detect ①/②, execute nothing". The discovery twin implemented the flag; the task twin did NOT — its qa verb had exactly one optional positional (`<leaf>`), so `--check-only` was consumed AS a leaf path. That path never resolves, gate ① has no leaf to grep, gate ② finds no results/ there, and the verb falls through to ③ P-B-E-R: the MATCH step — defined as a FREE detection pass (T2: 1 grep + 1 read) — would silently SPAWN a full Plan->Build->Execute->Report run and WRITE into the bank. Now spelled identically to discovery's.
+- **`<n>` ALLOCATION RULE ADDED.** Nothing allocated `<n>`, while parallel backgrounded orchestrators are the DESIGNED dispatch mode and two can be T3 ENRICH on the same leaf at once: both `ls QA/`, both see 2 files, both compute n=3, both write. The index invariant dies, the reviewer REVISEs a file that is correct in content, and on a slug collision the second Write silently CLOBBERS an answer that was never supposed to be editable. Rule: n = (highest existing n) + 1, computed IMMEDIATELY BEFORE the write; if the filename is taken, re-scan and take the next free n — never overwrite.
+
+Spec of record: `Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/` v3 (APPROVED by JL 2026-07-14, rulings R1-R18). Constitution: `probe/haipipe-probe/SKILL.md` v8.0.0.
+
+**BREAKING — the mailbox is gone.** `_ASK/` stubs, `_ANS/`, the `answers:` report field, external ids anywhere under `tasks/`, and the probe-aware `asks` verb are all DELETED. Nothing in this layer references a consumer, and nothing needs to. The task layer can now run with no idea that consumers exist — which is the point: evidence shaped by one consumer's frame is evidence the next one cannot reuse.
+
+- **DELETED `fn/asks.md`** — the SCREEN/ANSWER verb. It read consumer-authored stubs and resolved consumer ids: probe-AWARE by construction, and unfixable as such.
+- **NEW `fn/qa.md`** — the question door, and the layer's only one. `/haipipe-task qa "<question>" [<leaf>]` takes ONE question in general language (no id, no reference to whoever asked, no stake) and returns a PATH.
+  - Gate, in order: **① QA SCAN** (grep `<leaf>/QA/*.md` — already answered? return the path, cost ~0; a hit counts only if the file LITERALLY answers the question — topic similarity is not an answer) · **② DIGEST** (`results/` already answer it but no readable digest exists → write `QA/<n>-<slug>.md` from the existing artifacts, run no code) · **③ P-B-E-R** (neither → run the lifecycle) · **🚫 REFUSE** (out of scope — e.g. a literature question — say so and stop; the caller re-routes).
+  - **ENRICH depth ladder** on ③, shallowest first: depth 0 READ (enter at Report) · depth 1 NEW RUN (enter at Execute: `+configs/<new>.yaml` `+runs/<new>/`, never edit an old run) · depth 2 NEW SCRIPT (enter at Build: `+<new>.py` `+plan-script-<new>.yaml`) · depth 3 NEW LEAF (full P-B-E-R in a sibling). Scope test 2-vs-3: does it fit THIS leaf's `plan.yaml` IPO — same inputs, same process family?
+  - **THREE CALLERS, one identical door:** a human steering an exploration · the orchestrator agent self-directed · a question relayed from elsewhere. None gets a special path, and the verb cannot tell them apart.
+  - ACCRETES: QA files, configs, runs, scripts, leaves. FROZEN: past `results/`, existing QA files. LIVING: `plan.yaml`.
+- **NEW `QA/` folder (OPTIONAL, per task-folder)** — `QA/<n>-<slug>.md`, `<n>` = creation order. **The numbering IS the index**; `ls QA/` is the index; there is no INDEX file. Slug only. Write-once — a later question ADDS `QA/<n+1>-…`. Sections, exactly: `# Q —` / `## Answer` (plain words + `[→ results/…]` anchors) / `## Caveats` / `## Not-done`. **The task layer authors it**, at Report.
+  - **THREE REASONS, no fourth:** a question arrived · a digest was missing though `results/` already answered one · a task session judged a finding worth digesting. A `QA/` mirroring every result is noise, not an index.
+  - **NO CONSUMER VOCABULARY** — no claim ids, no hypothesis ids, no "claims-stage", no "the paper". This layer never saw one and cannot honestly write one. (A task result file on disk today asserts a consumer's claim ids. That file is why this rule exists.)
+- **TWO SESSION MODES stated plainly.** The task session's PRIMARY mode is AUTONOMOUS P-B-E-R — no question pending, no ask; this IS the project's research, and the bank grows here. ANSWERABILITY WORK (writing digests, building code so future questions are cheap) is legitimate task-native work with no question pending. `qa` is the SIDE door, never the engine. Consequence: most questions should land on gate ① or ②; a gate-③ run is the exception.
+- Agents: orchestrator 2.0.0 (clean-context dispatch target; COMMISSION input form; runs the qa gate; returns `qa_file:` instead of `answers:`; may be self-directed), creator 3.0.0 (authors the QA digest at Report — the pen never leaves this layer), reviewer 1.2.0 (report gate lints the digest: anchored numbers, no vocabulary this layer could not have produced).
+- Schema: `haipipe-workflow/ref/plan-schema.md` drops `answers:` entirely (haipipe-workflow 2.4.0).
+- Swept: `fn/workflow-plan.md` (`probe_ref:` arg), `ref/metrics-json-schema.md` (an upper layer's aggregation contract), `DESIGN.md` (the "sandwich model" + "Downstream Consumer Contract" sections), `README.md`, `agents/README.md`.
+
+## [5.10.1] — 2026-07-12 — Audit repair
+
+- fn/asks.md Boundary said "this verb writes nothing" while its own ANSWER mode runs the full write-heavy lifecycle. Now scoped: SCREEN is read-only; ANSWER writes only inside the receiving task-folder (plan/report/script/configs/results) and still never edits the stub or the consumer's cards.
+- `answers:` harvest greps made shape-agnostic; the field's schema (flow list of bare PP ids) is owned by probe/haipipe-probe/SKILL.md and pointed at, not restated.
+- Frontmatter summary carried an impossible glob (`tasks/**/discoveries/**`) — the scan has two roots.
+- Agents: creator 2.1.0 writes `answers: [PP04]` (list, not the ambiguous scalar); orchestrator's do-not list no longer names the retired `probe.yaml`.
+
+## [5.10.0] — 2026-07-12 — `asks run <PPNN>`: screen an ask, then answer it
+
+JL 2026-07-12: "could haipipe-task screen the _ASK, find an ask that is not finished, and then answer it by updating the code and run scripts." The SCREEN half shipped in 5.9.0; this is the ANSWER half. `asks run <PPNN>` resolves the stub → its task-folder and runs the normal 4-stage lifecycle with the stub as the contract — no new machinery:
+- Stage selection by folder state: zeroth (only `_ASK/`) → Plan→Build→Execute→Report; existing code needing new analysis → Plan→Build (extend script + new `configs/<run>.yaml`)→Execute→Report; answerable by a new run alone → Plan→Execute→Report.
+- The stub's `Do-not` lines are BUILD scope guards: if answering honestly requires crossing one (a retrain, a new sweep), STOP and report the conflict — never silently exceed the ask.
+- `Pre-accepted` names the answer SPACE: a negative result is a COMPLETED ask, not a failure.
+- Report writes `answers: PPNN`. The verb never notifies or touches the consumer's card — they harvest on their own schedule (the point of the file bridge).
+
+## [5.9.0] — 2026-07-12 — `asks` verb: the task-side ask inbox
+
+JL 2026-07-12 ("make haipipe-task aware of the PROBE _ASK", second half): the two-session workflow's task session needs an opening move — "which asks are waiting for me?". New `fn/asks.md`: scan `tasks/**` + `discoveries/**` for `_ASK/PP*.md` stubs (+ legacy flat), cross-check each PPNN against answering reports (`answers: PPNN` in report.yaml / discovery.yaml), print a pending-first bullet inbox with pickup commands. Read-only, consumer-blind — never opens the consumer's 1-probe-plans/ cards; PPNN stays an opaque token.
+
+Same session, agent conformance fix (the awareness existed only in this SKILL): haipipe-task-creator-agent 2.1.0 (Stage 1 seeds plan.yaml from stubs; Stage 4 writes `answers: PPNN`), haipipe-task-orchestrator-agent 1.2.0 (stub-seeded zeroth-state input form; PLAN dispatch names the stubs; return carries `answers:`).
+
+## [5.8.0] — 2026-07-12 — Ask stubs move into an _ASK/ container
+
+JL ruling 2026-07-12 ("加一个 ask folder，把它们放到一块儿"; pairs with haipipe-probe 7.7.0): stubs live at `<task-folder>/_ASK/PPNN_<slug>.md` — one file per ask, the container keeps the task root clean when several consumers ask. The stub filename mirrors the consumer's `1-probe-plans/PPNN_<slug>.md` card, so `grep -r PPNN` finds both feet of the bridge. Zeroth state re-phrased: a folder whose only content is `_ASK/`. Legacy flat `_ASK_PPNN.md` at the root is read the same way and moved into `_ASK/` on first touch. All v5.7 semantics unchanged: read-only, Plan seeds from it, Report answers with `answers: PPNN`, this layer still tracks no consumers.
+
+## [5.7.0] — 2026-07-11 — Probe handoff stubs (_ASK_PPNN.md)
+
+Added (two-footed-bridge ruling, JL 2026-07-11; pairs with haipipe-probe 7.4.0)
+- Stage 1 PLAN reads: `_ASK_*.md` (if present) — a READ-ONLY probe handoff stub dropped by an upstream consumer; Need seeds the intent, Deliverable the outputs, Do-not the out-of-scope list. A folder holding only a stub is a task in its zeroth state.
+- Stage 4 REPORT: when a stub exists, report.yaml carries a top-level `answers: PPNN` — the disk signal the consumer greps to harvest.
+- New "Probe handoff" paragraph after the ends-at-Report rule: the task never edits the stub, never writes the consumer's card, never reaches upward — "tracks no consumers" stays intact because the one consumer link on disk was written BY the consumer. Stub anatomy lives in the probe layer (haipipe-probe/SKILL.md "The handoff stub").
 
 ## [5.6.0] — 2026-07-08
 

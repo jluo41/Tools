@@ -32,8 +32,8 @@ Available audiences
 ====================
 
 ```
-patient       end-user (warm, plain, ≤ 200 words, no K-id in body)
-clinician     provider (clinical precision, ≤ 400 words, inline K-id)
+patient       end-user (warm, plain, ≤ 200 words, no C-id in body)
+clinician     provider (clinical precision, ≤ 400 words, inline C-id)
 regulator     FDA/IRB (formal, ≤ 1500 words, footnote citations)
 executive     leadership (direct, ≤ 600 words, endnote citations)
 designer      UX/product (visual, ≤ 300 words + sketch)

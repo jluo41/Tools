@@ -1,1 +1,0 @@
-../skills/insight/agents/creators/card-creator-data-agent.md

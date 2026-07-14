@@ -8,7 +8,7 @@ and next steps.
 - Length: ≤ 600 words
 - Jargon: minimal; translate to business impact
 - Reading level: professional/business
-- Citations: endnote — "See knowledge entry K03."
+- Citations: endnote — "See ledger claim C03 (PP05)."
 
 ## Lifecycle mappings
 
