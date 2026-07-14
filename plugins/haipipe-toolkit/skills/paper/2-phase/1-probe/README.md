@@ -15,7 +15,7 @@ haipipe-paper-probe (hub)   ① ORGANIZE → ② MATCH → ③ DISPATCH → ④ 
                  Agent(haipipe-discovery-orchestrator-agent)    external evidence
                Their CLEAN CONTEXT is the wall. 💀 the probe GATEWAY agent is RETIRED — its
                SWEEP became ② MATCH, and dispatch now goes direct.
-  ④ POINT      the section's `target:` → the answering QA file <leaf>/QA/<n>-<slug>.md
+  ④ POINT      the section's `target:` → the answering QA file <task-folder>/QA/<n>-<slug>.md
   ⑤ INTERPRET  the section's `reading:` → 1-claims.md flips → the lanes pay out:
      haipipe-paper-probe-citation   source anchors → _CITATION_{stage}.md
      haipipe-paper-probe-values     value anchors  → _VALUES_{stage}.md

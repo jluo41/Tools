@@ -303,7 +303,7 @@ After this skill produces the ranked report:
 /idea-creator "direction"     → ranked ideas
 /novelty-check "top idea"     → deep novelty verification (already done in Phase 4, but user can re-run)
 /haipipe-discovery qa "<Q>"   → answer an open evidence question about the chosen idea
-                                (→ discoveries/<leaf>/QA/<n>-<slug>.md)
+                                (→ discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md)
 /haipipe-task qa "<Q>"        → the same door, for a question our own code/data answers
 ```
 

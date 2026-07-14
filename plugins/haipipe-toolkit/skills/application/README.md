@@ -73,5 +73,5 @@ application/
 | per-stage `_PROBE/PPNN_*.md` cards + `1-probe-plans/README.md` index (retired 2026-07-14) | `1-probes/PPNN_<topic>.md` probe FILES, one per topic, question SECTIONS inside; `ls 1-probes/` is the index; `/haipipe-application probe "<question>"` + `probe run` |
 | the probe GATEWAY agent (`haipipe-probe-orchestrator-agent`, retired 2026-07-14) | DISPATCH goes straight to `Agent(haipipe-task-orchestrator-agent)` / `Agent(haipipe-discovery-orchestrator-agent)`; their clean context IS the wall |
 | a probe card's `## Verdict` block + `verdicted` state (retired 2026-07-14) | the claim's status lives in `0-lifecycle/1-claims/1-claims.md`: `supported \| refuted \| inconclusive` + confidence + claim_type + G1/G2/G3 |
-| `_ASK/` / `_ANS/` mailboxes, `answers:` fields, PP ids in the bank | nothing — the bank is PROBE-UNAWARE; it answers plain questions via its own `qa` verb and writes `<leaf>/QA/<n>-<slug>.md` |
+| `_ASK/` / `_ANS/` mailboxes, `answers:` fields, PP ids in the bank | nothing — the bank is PROBE-UNAWARE; it answers plain questions via its own `qa` verb and writes `<task-folder>/QA/<n>-<slug>.md` |
 | `applications/ask/<NN>/` case files | dead history: nothing reads, nothing writes |

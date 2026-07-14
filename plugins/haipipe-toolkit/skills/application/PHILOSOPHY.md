@@ -42,7 +42,7 @@ The application does not execute code, search literature directly, or store raw 
 task        executes internal work            ─┐ the two EXECUTORS. Same shape, same rules.
 discovery   checks outside evidence           ─┘ Both PROBE-UNAWARE: they answer plain
                                                  questions through their own `qa` verb and
-                                                 write the answer as <leaf>/QA/<n>-<slug>.md
+                                                 write the answer as <task-folder>/QA/<n>-<slug>.md
 probe       the application-level Q/A MAP: it binds each question to a QA file by PATH.
             It JUDGES NOTHING — a claim's status lives in 1-claims.md, per-consumer,
             private. ("Verdict" is retired as a probe field.)

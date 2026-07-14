@@ -15,7 +15,7 @@
 │   │
 │   ├── fn/                               📝 procedures (Claude follows these)
 │   │   ├── qa.md                         ❓ THE QUESTION DOOR — one general question in,
-│   │   │                                    a path to <leaf>/QA/<n>-<slug>.md out
+│   │   │                                    a path to <task-folder>/QA/<n>-<slug>.md out
 │   │   │                                    ① scan → ② digest → ③ P-B-E-R → 🚫 refuse
 │   │   ├── run.md                           scaffold a new run
 │   │   ├── workflow-audit.md                four-sister consistency check
@@ -83,7 +83,7 @@ Three entry paths:
 All four stages care about the engineering: correct, structured, runnable, documented.
 What the RESULTS mean is not task's question — the consumer (a paper/application stage,
 via a question SECTION in its 1-probes/PPNN_<topic>.md probe file) reads the QA file
-THIS layer authored — tasks/<leaf>/QA/<n>-<slug>.md — and judges THAT.
+THIS layer authored — tasks/<task-group>/<task-folder>/QA/<n>-<slug>.md — and judges THAT.
 ⛔ It never reads results/ inline. LAW 1: a consumer session never executes bank work
    itself; it dispatches, and the EXECUTOR holds the pen.
 

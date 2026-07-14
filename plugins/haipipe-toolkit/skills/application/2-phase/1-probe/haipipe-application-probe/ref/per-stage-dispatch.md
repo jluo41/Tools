@@ -24,7 +24,7 @@ The executor layers sit BELOW, and they are probe-UNAWARE:
         └── Agent(haipipe-discovery-orchestrator-agent)   external evidence
                   │  each runs its own `qa` gate: ① QA SCAN ② DIGEST ③ P-B-E-R
                   ▼
-            <leaf>/QA/<n>-<slug>.md      the answer, in GENERAL language
+            <task-folder>/QA/<n>-<slug>.md      the answer, in GENERAL language
                   │
                   ▼
    📄 the section's `target:` points at that FILE; `reading:` interprets it;
@@ -52,9 +52,9 @@ A section's `serves:` field is what binds it to a stage — never its path. All 
 Dispatch rules
 ---------------
 
-1. **CHEAPEST DOOR FIRST — and most sections should never reach an agent.** Walk the cost ladder in order: T0 JOIN (another stage already asks this — add my `serves:`) · T1 LOCAL (my own registries answer it — `answered-local`) · T2 REUSE (an existing QA file answers it — point the section) · T3 ENRICH (the leaf exists, was never asked this) · T4 FRESH (no leaf). **Only T3/T4 summon an agent.** The bank fills AUTONOMOUSLY from executor sessions (R17), so in a healthy project most answers exist before anyone asks: a commission is the EXCEPTION, not the norm. A probe file whose every section is T3/T4 is a smell — say so.
+1. **CHEAPEST DOOR FIRST — and most sections should never reach an agent.** Walk the cost ladder in order: T0 JOIN (another stage already asks this — add my `serves:`) · T1 LOCAL (my own registries answer it — `answered-local`) · T2 REUSE (an existing QA file answers it — point the section) · T3 ENRICH (the task-folder exists, was never asked this) · T4 FRESH (no leaf). **Only T3/T4 summon an agent.** The bank fills AUTONOMOUSLY from executor sessions (R17), so in a healthy project most answers exist before anyone asks: a commission is the EXCEPTION, not the norm. A probe file whose every section is T3/T4 is a smell — say so.
 2. **MATCH ON THE ANSWER, NEVER ON THE TOPIC (R14).** A QA file counts as a hit only if it LITERALLY ANSWERS the question. Two leaves that both "characterize the cohort" can hold zero overlapping facts. READ the QA file. Topic similarity is not evidence — if it does not answer the question, it is a T3 ENRICH: dispatch it, do not point at it.
-3. **The DEPTH is the executor's private business (R15).** Read / new run / new script / new leaf — the executor picks the shallowest that answers the question. This worker never learns which, and never asks. It hands a question and gets back a QA-file path.
+3. **The DEPTH is the executor's private business (R15).** Read / new run / new script / new task-folder — the executor picks the shallowest that answers the question. This worker never learns which, and never asks. It hands a question and gets back a QA-file path.
 4. **Background the fresh work.** Likely-fresh dispatches (a new search, a landscape, a task run) always carry `run_in_background=true`; a sync fresh run froze a session 25 minutes. If `<project_root>/discoveries/` is empty, EVERY question is T4 — background them all. The label in the reply must match the call.
 
 Seed specifics (DEFAULT RUN for a new seed)

@@ -1,14 +1,17 @@
 The thing — what this is, and the one question it answers
 =========================================================
-Part of: diagram/<YYMMDD>-<topic>/  ·  <N> files, one theme each, no index.
-STATUS: 🟡 DRAFT   ·   flip to → SPEC OF RECORD — <R1-Rn> closed JL <YYYY-MM-DD>. SHIPPED.
+Part of: diagram/<YYMMDD>-<topic>/  ·  6 files, one theme each, no index.
+STATUS: 🟡 DRAFT   ·   flip to → SPEC OF RECORD — R1-Rn closed JL <date>. SHIPPED.
 Format: JL comments are `> JL:` · CC replies are `>> CC{MMDD}:` + a diagram.
 
 
   ⚠️  SKELETON. Delete every <PLACEHOLDER> and every ⚠️ line before this ships.
-      The folder is dated at BIRTH and NEVER re-dated. A later session APPENDS
-      to it (a new ruling in 05, a `>> CC{MMDD}:` reply, a status flip) — it does
-      NOT make a new folder. A NEW FOLDER means a NEW TOPIC.
+      LAW 1 — ONE FOLDER PER TOPIC, NOT PER SESSION. This folder is dated at BIRTH
+      and NEVER re-dated. A later session APPENDS to it: a new ruling in 05, a
+      `>> CC{MMDD}:` reply under a `> JL:` line, a status flip in 06. It opens a NEW
+      folder only for a NEW TOPIC. The session is the INPUT; this note is the OUTPUT.
+      On the flip: line 4 becomes `SPEC OF RECORD — <topic>. R1-Rn closed JL <date>.
+      SHIPPED.` — and line 4 is byte-identical in all six files.
 
 
 THE THING IN ONE LINE
@@ -19,11 +22,11 @@ THE THING IN ONE LINE
   ❓ the ONE question this folder answers:
        "<the question, in the words you would actually say out loud>"
 
-  owner: <who>   ·   skill / code it governs: <path>   ·   artifact: <path>
+  owner: <who>  ·  governs: <skill / code path>  ·  artifact: <path it produces>
 
 
 ① WHAT IT IS
-=============
+============
 
   <2-6 lines. What the thing IS, not how it works — 03 is for how.>
 
@@ -38,28 +41,28 @@ THE THING IN ONE LINE
 
 
 ② THE WIRE — end to end
-========================
+=======================
 
-⚠️  Diagram the THING: the data flow, the before/after, the bug's path. Not prose
-    in a box. Per the diagram-ascii skill — emoji-dense, fenced ```text.
+  ⚠️  Diagram the THING — the data flow, the before/after, the path through the
+      pipeline. Not prose in a box. Emoji-dense, per the diagram-ascii skill.
 
 ```text
-   🧑 <upstream>            <what it hands over>
+   🧑 <upstream>          <what it hands over>
                             │
-   🧱 <THIS THING>          <what it does>
+   🧱 <THIS THING>        <what it does>
                             │
-                      ⛔ GATE  👈 <who decides, and what they decide>
+                      ⛔ GATE   👈 <who decides, and what they decide>
                             │
                             ▼
-   📄 <downstream>          <what lands on disk>
+   📄 <downstream>        <what lands on disk>
 ```
 
 
 ③ WHO WRITES WHAT
-==================
+=================
 
-⚠️  If two things write the same file, SAY SO HERE and say why it is safe.
-    An unstated second writer is the bug you will spend a day finding.
+  ⚠️  If two things write the same file, SAY SO HERE and say why it is safe.
+      An unstated second writer is the bug you will spend a day finding.
 
 ```text
    ✏️  <writer A>   writes  <fields>
@@ -67,6 +70,5 @@ THE THING IN ONE LINE
    ⇒ <why they do not collide>
 ```
 
-
-  ⇒ this folder is a CONSUMER of <sibling diagram/ folder>, if any. It redefines
-    nothing there. See 06-shipped-owed.txt for the reconciliation.
+  ⇒ this folder is a CONSUMER of <sibling topic folder>, if any. It redefines
+    nothing there. The reconciliation lives in 06-shipped-owed.txt.

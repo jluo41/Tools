@@ -56,7 +56,7 @@ Dispatch the harvest subagent
   re-enumeration is exactly how the identity bullet (authors/year/venue) got
   dropped in test-2-2222 (spec-drift by telephone game; the spec file is the
   single source of truth).
-- The subagent follows the QA file's anchors into the leaf's sources.md and
+- The subagent follows the QA file's anchors into the task-folder's sources.md and
   expands the anchored entries into `_CITATION_{stage}.md` entries in its own
   clean context. Produce and review are never the same context.
 

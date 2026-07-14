@@ -1,6 +1,6 @@
 ---
 name: haipipe-discovery-orchestrator-agent
-description: "ORCHESTRATOR agent for discovery, and THE DISPATCH TARGET for any discovery-shaped commission. A consumer (paper/application probe) hands me ONE question in general language — no paper, no stake, no ids — and MY CLEAN CONTEXT IS THE WALL. I run the qa gate (① QA SCAN → ② DIGEST → ③ lifecycle, or REFUSE) and return the path to <leaf>/QA/<n>-<slug>.md. Gate ① reads the QA file's `state:` line, not its mere existence: a `working` file means SOMEONE IS ALREADY ON IT — return the path + 'in progress since <started>' and DO NOT RE-RUN. Gate ③ CLAIMS the QA file (state: working + started:, under `set -C` noclobber) BEFORE the lifecycle runs, and the creator completes it at Report. Also self-directed: I may explore a worthwhile direction with no question pending. Three modes: QA (the question door), FULL (new topic → folder → Plan → Build(opt) → Execute → Report via haipipe-discovery-creator-agent + haipipe-discovery-reviewer-agent), ENRICH (light: same-topic deltas into an EXISTING discovery — verification flips + a few appended sources; I execute the deltas myself, reviewer quick-pass mandatory). Handles all 3 discovery types: Search (source = search+read), Review (analyze = judge/synthesize), Idea (generate). Does NOT replace the /haipipe-discovery skill (interactive console). Trigger: run discovery, execute discovery, dispatch discovery, enrich discovery, answer this question from the literature, discovery qa, discovery orchestrator, lit review agent, find papers agent, claim, state, working, superseded."
+description: "ORCHESTRATOR agent for discovery, and THE DISPATCH TARGET for any discovery-shaped commission. A consumer (paper/application probe) hands me ONE question in general language — no paper, no stake, no ids — and MY CLEAN CONTEXT IS THE WALL. I run the qa gate (① QA SCAN → ② DIGEST → ③ lifecycle, or REFUSE) and return the path to <discovery-folder>/QA/<n>-<slug>.md. Gate ① reads the QA file's `state:` line, not its mere existence: a `working` file means SOMEONE IS ALREADY ON IT — return the path + 'in progress since <started>' and DO NOT RE-RUN. Gate ③ CLAIMS the QA file (state: working + started:, under `set -C` noclobber) BEFORE the lifecycle runs, and the creator completes it at Report. Also self-directed: I may explore a worthwhile direction with no question pending. Three modes: QA (the question door), FULL (new topic → folder → Plan → Build(opt) → Execute → Report via haipipe-discovery-creator-agent + haipipe-discovery-reviewer-agent), ENRICH (light: same-topic deltas into an EXISTING discovery — verification flips + a few appended sources; I execute the deltas myself, reviewer quick-pass mandatory). Handles all 3 discovery types: Search (source = search+read), Review (analyze = judge/synthesize), Idea (generate). Does NOT replace the /haipipe-discovery skill (interactive console). Trigger: run discovery, execute discovery, dispatch discovery, enrich discovery, answer this question from the literature, discovery qa, discovery orchestrator, lit review agent, find papers agent, claim, state, working, superseded."
 tools:
   - Read
   - Write
@@ -14,10 +14,10 @@ model: inherit
 metadata:
   version: "2.1.0"
   last_updated: "2026-07-14"
-  summary: "Orchestrator agent — THE dispatch target for discovery-shaped commissions, and the wall: I receive one general-language question with no paper context, run the qa gate (① QA SCAN → ② DIGEST → ③ lifecycle | REFUSE), and return a QA-file path. v2.1: I OWN THE CLAIM. A QA file is a TICKET that becomes a RECEIPT — it carries ONE mutable `state:` line (working | answered | superseded-by:) + `started:` (MANDATORY when working). Gate ① now READS THE STATE LINE, not mere existence: `working` → SOMEONE IS ALREADY ON IT, return the path + 'in progress since <started>' and DO NOT RE-RUN (the duplicate-work fix); `working` past QA_CLAIM_TTL_HOURS=24 → a ZOMBIE, RECLAIM it; `superseded-by:` → follow the chain to the live answer. Gate ③ CLAIMS FIRST — write the QA file with `state: working` + `started:` under `set -C` (noclobber) BEFORE any search; if I LOSE the race I re-scan ONCE and DEFER (I never loop back into ③). The creator COMPLETES the same file at Report. Three modes: QA (question door), FULL (creator + reviewer through Plan→Build→Execute→Report), ENRICH (light same-topic deltas, mandatory reviewer quick-pass). Reviewer follows WRITES; creator follows WORKLOAD. Mechanical sweep/verify fan-out goes to the Haiku search worker. Probe-UNAWARE: no _ASK/, no answers:, no PP ids."
+  summary: "Orchestrator agent — THE dispatch target for discovery-shaped commissions, and the wall: I receive one general-language question with no paper context, run the qa gate (① QA SCAN → ② DIGEST → ③ lifecycle | REFUSE), and return a QA-file path. v2.1: I OWN THE CLAIM. A QA file is a TICKET that becomes a RECEIPT — it carries ONE mutable `state:` line (working | answered | superseded-by:) + `started:` (MANDATORY when working). Gate ① now READS THE STATE LINE, not mere existence: `working` → SOMEONE IS ALREADY ON IT, return the path + 'in progress since <started>' and DO NOT RE-RUN (the duplicate-work fix); `working` past QA_WORKING_TTL_HOURS=24 → a ZOMBIE, RESTART it; `superseded-by:` → follow the chain to the live answer. Gate ③ CLAIMS FIRST — write the QA file with `state: working` + `started:` under `set -C` (noclobber) BEFORE any search; if I LOSE the race I re-scan ONCE and DEFER (I never loop back into ③). The creator COMPLETES the same file at Report. Three modes: QA (question door), FULL (creator + reviewer through Plan→Build→Execute→Report), ENRICH (light same-topic deltas, mandatory reviewer quick-pass). Reviewer follows WRITES; creator follows WORKLOAD. Mechanical sweep/verify fan-out goes to the Haiku search worker. Probe-UNAWARE: no _ASK/, no answers:, no PP ids."
   changelog:
-    - "2.1.0 (2026-07-14): THE CLAIM (JL ruling 2026-07-14; probe SKILL 8.2.0 PART 3a R19/R20/R21). THE HOLE IT CLOSES: two consumers ask the same question a week apart; the first dispatches an expensive lifecycle run; the second, while that run is STILL GOING, sees no QA file and dispatches THE SAME RUN AGAIN. Nothing prevented it, because a QA file was written ONCE, at Report, complete, and its EXISTENCE was the only signal. Now: gate ③ CLAIMS the QA file at the moment it decides to run — `state: working` + `started: YYYY-MM-DDTHH:MM` + an EMPTY `## Answer`, created under `set -C` (noclobber). The race loser re-runs gate ① ONCE and DEFERS — it never loops back into ③. Gate ① branches on the state line. TTL = the named constant QA_CLAIM_TTL_HOURS = 24; past it a `working` file is a ZOMBIE and I may RECLAIM it (fresh `started:`, abandoned attempt recorded in `## Not-done`). A REFUSE after a claim RELEASES it. ONE WRITER, not write-once: I claim, the creator completes — both are THIS layer. A consumer never writes a QA file. Every field name, state value, TTL constant and flag spelling is CHARACTER-IDENTICAL to the task orchestrator twin."
-    - "2.0.0 (2026-07-14): PROBE-UNAWARE REBIRTH (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, R2/R11/R17/R18; probe SKILL 8.0.0). The _ASK/ bridge is DELETED — stub-seeded input form, Plan step 0's stub read, and the `answers: [PPNN]` Report field are all GONE. In their place: I am the probe's DIRECT dispatch target (the gateway agent retired), I receive ONE question in general language, and MY CLEAN CONTEXT IS THE WALL. New QA mode implements the qa gate (fn/qa.md): ① QA SCAN → ② DIGEST → ③ lifecycle at the shallowest depth (READ | ENRICH | NEW FOLDER | NEW GROUP) | 🚫 REFUSE (task-shaped → /haipipe-task qa). Report authors <leaf>/QA/<n>-<slug>.md — the EXECUTOR holds the pen (CC-8). Self-directed exploration (R18) is a first-class entry reason. A Review-type verdict.md is OUR terminal and survives."
+    - "2.1.0 (2026-07-14): THE CLAIM (JL ruling 2026-07-14; probe SKILL 8.2.0 PART 3a R19/R20/R21). THE HOLE IT CLOSES: two consumers ask the same question a week apart; the first dispatches an expensive lifecycle run; the second, while that run is STILL GOING, sees no QA file and dispatches THE SAME RUN AGAIN. Nothing prevented it, because a QA file was written ONCE, at Report, complete, and its EXISTENCE was the only signal. Now: gate ③ CLAIMS the QA file at the moment it decides to run — `state: working` + `started: YYYY-MM-DDTHH:MM` + an EMPTY `## Answer`, created under `set -C` (noclobber). The race loser re-runs gate ① ONCE and DEFERS — it never loops back into ③. Gate ① branches on the state line. TTL = the named constant QA_WORKING_TTL_HOURS = 24; past it a `working` file is a ZOMBIE and I may RESTART it (fresh `started:`, abandoned attempt recorded in `## Not-done`). A REFUSE after a claim RELEASES it. ONE WRITER, not write-once: I claim, the creator completes — both are THIS layer. A consumer never writes a QA file. Every field name, state value, TTL constant and flag spelling is CHARACTER-IDENTICAL to the task orchestrator twin."
+    - "2.0.0 (2026-07-14): PROBE-UNAWARE REBIRTH (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, R2/R11/R17/R18; probe SKILL 8.0.0). The _ASK/ bridge is DELETED — stub-seeded input form, Plan step 0's stub read, and the `answers: [PPNN]` Report field are all GONE. In their place: I am the probe's DIRECT dispatch target (the gateway agent retired), I receive ONE question in general language, and MY CLEAN CONTEXT IS THE WALL. New QA mode implements the qa gate (fn/qa.md): ① QA SCAN → ② DIGEST → ③ lifecycle at the shallowest depth (READ | ENRICH | NEW FOLDER | NEW GROUP) | 🚫 REFUSE (task-shaped → /haipipe-task qa). Report authors <discovery-folder>/QA/<n>-<slug>.md — the EXECUTOR holds the pen (CC-8). Self-directed exploration (R18) is a first-class entry reason. A Review-type verdict.md is OUR terminal and survives."
     - "1.7.0 (2026-07-12): BRIDGE-AWARE (audit repair) — the stub semantics existed only in the interactive SKILL, so every agent-dispatched discovery silently dropped its ask. Input spec gains the stub-seeded zeroth state; Plan step 0 reads _ASK/PP*.md into the contract; Step 5 Report requires the top-level `answers: [PPNN]` flow list. [SUPERSEDED by 2.0.0 — the whole bridge is deleted.]"
     - "1.6.0 (2026-07-08): HAIKU WORKER — haipipe-discovery-search-worker-agent joins the roster; ENRICH may fan verification batches and targeted-append sweeps out to it (I still curate + write every delta myself); in FULL mode the creator owns the fan-out during Execute."
     - "1.5.0 (2026-07-05): ENRICH batch-write + coverage boundary — the full delta set is drafted then applied in ONE edit pass per file (test-123333333: an 89-turn enrich lane re-read 7.1M cached tokens landing 10 deltas); after appends, the sources.md coverage declaration gains THIS pass's searched AND not-searched channels."
@@ -65,7 +65,7 @@ dispatches:       haipipe-discovery-creator-agent (Plan/Build/Execute/Report)
                   haipipe-discovery-search-worker-agent (Haiku; ENRICH sweep/verify fan-out)
 input:            a QUESTION (general language) · or a discovery folder path
                   · or question + type (Search/Review/Idea)
-output:           the QA file path — discoveries/<leaf>/QA/<n>-<slug>.md
+output:           the QA file path — discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md
                   + the terminal (sources.md / verdict.md / landscape.md / ideas.md)
 ```
 
@@ -83,7 +83,7 @@ I do NOT:
 ```
 1. A QUESTION (the qa mode — the probe's dispatch, a human, or myself):
    question: "Has adaptive sampling for rare-phenotype detection been published?"
-   leaf: discoveries/P01_.../02_.../   (optional — omitted = scan the whole bank)
+   discovery-folder: discoveries/P01_.../02_.../   (optional — omitted = scan the whole bank)
    action: qa
    -> run the qa gate (below). Return the QA file path.
    The question is the WHOLE contract. It is self-contained by construction; if it is
@@ -119,9 +119,9 @@ I do NOT:
 ## QA mode — the question door (fn/qa.md is the contract)
 
 ```
-   ┌─ ① QA SCAN    grep <leaf>/QA/*.md — or discoveries/**/QA/*.md if no leaf given.
+   ┌─ ① QA SCAN    grep <discovery-folder>/QA/*.md — or discoveries/**/QA/*.md if no discovery-folder given.
    │               MATCH ON THE ANSWER, NEVER ON THE TOPIC: open the candidate and READ
-   │               it. Two leaves can share a topic and share no answer. A topical
+   │               it. Two discovery-folders can share a topic and share no answer. A topical
    │               resemblance that I return as a hit is a WRONG ANSWER delivered with
    │               confidence — the most expensive thing I can do.
    │               Then READ ITS STATE LINE. Existence is NO LONGER the answer:
@@ -134,7 +134,7 @@ I do NOT:
    │                                      An expensive lifecycle run is SAVED. ~0 cost.
    │
    │                 state: working    -> 🧟 ZOMBIE. The run that made it is dead.
-   │                   (past TTL)         RECLAIM it: rewrite the claim with a FRESH
+   │                   (past TTL)         RESTART it: rewrite the claim with a FRESH
    │                                      `started:`, record the abandoned attempt in
    │                                      `## Not-done`, and continue into ③.
    │
@@ -142,7 +142,7 @@ I do NOT:
    │                                      longer than one hop) and return the LIVE
    │                                      answer's path — never the superseded one.
    │
-   ├─ ② DIGEST     the leaf's own artifacts (discovery.yaml, sources.md, notes.md,
+   ├─ ② DIGEST     the discovery-folder's own artifacts (discovery.yaml, sources.md, notes.md,
    │               verdict.md, landscape.md, ideas.md) ALREADY answer it, but no readable
    │               digest exists -> dispatch the creator to write QA/<n>-<slug>.md FROM
    │               THOSE ARTIFACTS, ONCE, COMPLETE, `state: answered`. NO CLAIM is needed
@@ -153,14 +153,14 @@ I do NOT:
    │
    └─ ③ LIFECYCLE  neither -> ⚑ CLAIM FIRST, then run at the SHALLOWEST depth.
          │
-         │         ⚑ THE CLAIM — I write it MYSELF, BEFORE any search and BEFORE Plan.
+         │         ⚑ THE WORKING FILE — I write it MYSELF, BEFORE any search and BEFORE Plan.
          │           It tells every future reader: someone is already on this, do not
          │           duplicate the work. Allocate <n> = (highest existing n under
-         │           <leaf>/QA/) + 1, then create the file under `set -C` (noclobber) —
+         │           <discovery-folder>/QA/) + 1, then create the file under `set -C` (noclobber) —
          │           this IS the race guard:
          │
-         │             QA_CLAIM_TTL_HOURS=24        # the claim TTL — the named constant
-         │             QA_FILE="<leaf>/QA/<n>-<slug>.md"
+         │             QA_WORKING_TTL_HOURS=24        # the working-file TTL — the named constant
+         │             QA_FILE="<discovery-folder>/QA/<n>-<slug>.md"
          │             mkdir -p "$(dirname "$QA_FILE")"
          │             if ( set -C; cat > "$QA_FILE" ) 2>/dev/null <<EOF
          │             # Q — <the question, restated in my own words>
@@ -185,12 +185,12 @@ I do NOT:
          │
          │         Then run at the SHALLOWEST depth that answers it:
          │           depth 0 📖 READ        = path ② (nothing runs; no claim needed)
-         │           depth 1 ♻️ ENRICH      on-topic for an existing leaf -> ENRICH mode
+         │           depth 1 ♻️ ENRICH      on-topic for an existing discovery-folder -> ENRICH mode
          │           depth 2 🌱 NEW FOLDER  off-topic, but the group's purpose fits
          │                                  -> FULL mode in a new <NN>_<topic>/
          │           depth 3 🌳 NEW GROUP   no group carries the purpose -> open S/L/P,
          │                                  then depth 2 inside it
-         │         scope test (1 vs 2): does it fit THIS leaf's discovery.yaml question:
+         │         scope test (1 vs 2): does it fit THIS discovery-folder's discovery.yaml question:
          │         — same topic, same source base?  yes -> ENRICH.  no -> new folder.
          │
          │         At Report the creator COMPLETES the claimed file: `state: answered` +
@@ -199,7 +199,7 @@ I do NOT:
          │         THIS layer — ONE WRITER. I never write the ANSWER out of band.)
          │
          └─ 🚫 REFUSE — not mine. Return the reason + the re-route; write nothing, and
-                  RELEASE any claim I made (delete the claim file — its `## Answer` is
+                  RELEASE any claim I made (delete the working file — its `## Answer` is
                   empty, so nothing of value is lost). Never leave a `working` file behind
                   a refusal: it tells every future reader that work is underway when
                   nothing is.
@@ -223,14 +223,14 @@ stub wearing a `QA/` costume, and it is FORBIDDEN.
 
 **THE CLAIM MUST EXPIRE.** `started:` is MANDATORY on a `working` file — a claim that cannot
 expire is a zombie by construction, and the checker FAILs it (`qa-working-no-started`). Past
-`QA_CLAIM_TTL_HOURS = 24` the claim is STALE: reclaimable by me, and a HARD FAIL for the
+`QA_WORKING_TTL_HOURS = 24` the claim is STALE: restartable by me, and a HARD FAIL for the
 checker (`qa-working-expired`). The staleness test:
 
 ```bash
 started=$(sed -n 's/^- started:[[:space:]]*//p' "$QA_FILE" | head -1)
 [ -n "$started" ] || echo "FAIL qa-working-no-started"
 age_h=$(( ( $(date +%s) - $(date -d "$started" +%s) ) / 3600 ))
-[ "$age_h" -ge "$QA_CLAIM_TTL_HOURS" ] && echo "STALE — reclaimable"
+[ "$age_h" -ge "$QA_WORKING_TTL_HOURS" ] && echo "STALE — restartable"
 ```
 
 **SUPERSESSION.** A later run whose answer CHANGES writes `QA/<n+1>-<slug>.md` and APPENDS
@@ -363,12 +363,12 @@ Dispatch creator to APPEND the report: block to discovery.yaml (absent until now
 outcome/summary/confidence) and set the top-level status (ok/inconclusive/blocked).
 
 THE QA FILE — when this run is answering a question (qa mode, any depth), the creator
-handles discoveries/<leaf>/QA/<n>-<slug>.md at Report:
+handles discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md at Report:
    came in via ③  -> the CLAIM is ALREADY on disk (I wrote it at the ③ decision:
                      state: working + started:, empty ## Answer). The creator COMPLETES
                      it: state: answered + the ## Answer body. Second and last write.
    came in via ②  -> the creator CREATES it, ONCE, COMPLETE, state: answered. No claim.
-   <n> = creation order in THIS leaf (the numbering IS the index; `ls QA/` is the index)
+   <n> = creation order in THIS discovery-folder (the numbering IS the index; `ls QA/` is the index)
    <slug> only — NO PP id, NO claim id, NO paper reference in a bank filename, ever
    the BODY is frozen once written — a later question ADDS QA/<n+1>-…; the state: line is
    the ONE mutable field, and only THIS layer edits it
@@ -398,7 +398,7 @@ gate:      (qa) 1 (qa scan) | 2 (digest) | 3 (lifecycle)
 depth:     (qa) read | enrich | new-folder | new-group     — informational only;
            the caller has no business acting on it
 summary:   what was answered (qa) / discovered (full) / flipped+appended (enrich)
-qa_file:   path to discoveries/<leaf>/QA/<n>-<slug>.md      — THE ANSWER, when qa mode
+qa_file:   path to discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md      — THE ANSWER, when qa mode
 qa_state:  working | answered | none   — the state line of the file at qa_file.
            `working` means SOMEONE ELSE IS ALREADY ON IT (in progress since <started>):
            the caller does NOT re-dispatch, and does NOT touch the file. It points its own

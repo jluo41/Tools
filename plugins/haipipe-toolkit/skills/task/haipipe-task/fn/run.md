@@ -1,6 +1,9 @@
 fn-run: Scaffold a New Run
 ============================
 
+
+> JL: do not break the sentences. One line one sentence.
+
 A run is the unit of execution within a task-folder. The four sister files
 share one NAME token:
 

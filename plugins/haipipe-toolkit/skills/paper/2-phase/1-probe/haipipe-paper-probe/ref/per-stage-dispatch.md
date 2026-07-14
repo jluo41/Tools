@@ -22,7 +22,7 @@ the section's `commission:` block, VERBATIM
         +-- on return, this worker writes NOTHING project-side:
               the section's `reading:` is the paper's record of what the answer
               MEANS; the CLAIM's status lives in 0-lifecycle/1-claims/1-claims.md.
-              The reusable artifact is the EXECUTOR's <leaf>/QA/<n>-<slug>.md,
+              The reusable artifact is the EXECUTOR's <task-folder>/QA/<n>-<slug>.md,
               which any paper's MATCH can find and read (T2 REUSE).
 ```
 
@@ -55,7 +55,7 @@ Dispatch rules (both apply to every dispatch)
    hits -- R14: match ON THE ANSWER, never on the topic. A hit is a T2 REUSE
    (point the section's `target:` at that QA file; nothing runs). Only what MATCH
    cannot close is dispatched, and then the EXECUTOR picks the shallowest depth
-   in its own clean context (read | new run | new script | new leaf) -- the worker
+   in its own clean context (read | new run | new script | new task-folder) -- the worker
    never learns which, and never asks. MOST SECTIONS SHOULD LAND ON T2: the bank
    fills autonomously from the executor side, so a commission is the EXCEPTION.
    Duplication is a mental-model tax: two half-overlapping evidence sets cost more
@@ -71,7 +71,7 @@ never silently. The seed question needs outside context, not settled claims:
 landscape ("what does this field look like?")  -> discovery Review -> landscape.md
 related work ("who has done this?")            -> discovery Search -> sources.md
 novelty ("is this idea new?")                  -> discovery novelty-check -> verdict.md
-(all three via Agent(haipipe-discovery-orchestrator-agent); the leaf's readable
+(all three via Agent(haipipe-discovery-orchestrator-agent); the task-folder's readable
  digest of each is its QA/<n>-<slug>.md, and that is what the section points at)
 ```
 

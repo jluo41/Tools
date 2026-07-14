@@ -111,7 +111,7 @@ When NOT to use application
 "explain to me what we know about X"     → /haipipe-task qa "<question>"      (internal evidence)
                                            /haipipe-discovery qa "<question>" (external evidence)
                                            — the executor's own question door; it
-                                             returns a <leaf>/QA/<n>-<slug>.md path
+                                             returns a <task-folder>/QA/<n>-<slug>.md path
 "write a paper section on X"             → /haipipe-paper (paper)
 "settle whether X holds"                 → /haipipe-application probe "<question>"
                                            — raises a question SECTION; the PROBE phase

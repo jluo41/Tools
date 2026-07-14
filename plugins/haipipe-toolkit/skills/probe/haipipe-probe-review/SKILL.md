@@ -30,7 +30,7 @@ PROBE-phase worker dispatches at ⑤ INTERPRET for a question section on a `mode
    📄 CONSUMER (paper / application)                    ⚙️ BANK (probe-unaware)
    ─────────────────────────────────                    ──────────────────────
    PROBE worker ⑤ INTERPRET
-   a `mode: full` section, answered           ◀──────── <leaf>/QA/<n>-<slug>.md
+   a `mode: full` section, answered           ◀──────── <task-folder>/QA/<n>-<slug>.md
         │                                               (the executor wrote it)
         │  dispatches, with claim + evidence refs
         ▼
@@ -78,7 +78,7 @@ Input spec
 ```text
 claim:  the exact sentence to judge (and, implicitly, what would refute it)
 refs:   evidence artifact paths on disk — the section's target: QA file
-        (<leaf>/QA/<n>-<slug>.md) plus the artifacts it anchors:
+        (<task-folder>/QA/<n>-<slug>.md) plus the artifacts it anchors:
         tasks/<...>/results/... · discoveries/<...>/sources.md · verdict.md · landscape.md
 ```
 

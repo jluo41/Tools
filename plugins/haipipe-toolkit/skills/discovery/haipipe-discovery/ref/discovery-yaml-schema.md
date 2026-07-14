@@ -15,7 +15,7 @@ examples/<PROJECT>/discoveries/<GROUP_slug>/<NN_slug>/
                       written at Report, by THIS layer. Contract: fn/qa.md.
 ```
 
-`QA/` is optional; not every leaf has one. `<n>` = creation order, and the numbering IS the index (`ls QA/` is the index). Slug only — no PP id, no claim id, no paper reference in a bank filename, ever. Write-once: a later question ADDS `QA/<n+1>-<slug>.md`.
+`QA/` is optional; not every discovery-folder has one. `<n>` = creation order, and the numbering IS the index (`ls QA/` is the index). Slug only — no PP id, no claim id, no paper reference in a bank filename, ever. Write-once: a later question ADDS `QA/<n+1>-<slug>.md`.
 
 NOT part of the contract: `status.yaml`, `site.md`, per-folder logs, `_ASK/`, `_ANS/`. Lifecycle progress is discovery.yaml `status:`; the human summary is `report.summary`; events go to the project-level `_haipipe/project.log.jsonl`.
 
@@ -131,7 +131,7 @@ Do not resurrect them, and do not write them into a new discovery.yaml. What rep
      papers/<P>/1-probes/PPNN_<topic>.md — a `commission:` block per question
   it hands us that block, VERBATIM, and nothing else
   we answer it through the `qa` verb (fn/qa.md) and return ONE PATH:
-     discoveries/<leaf>/QA/<n>-<slug>.md
+     discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md
   the consumer's section points at that path. Nothing points back.
 ```
 
@@ -191,7 +191,7 @@ Format lives in ONE place: `ref/source-format.md` — one source = one `###` sub
 
 ### `QA/<n>-<slug>.md` (optional readable digest — NOT a terminal)
 
-A QA file is not a terminal and never replaces one: it is the READABLE digest of one direction this leaf has explored, anchored back into the artifacts. Exactly three sections, no markdown tables, general language only (LAW 2 — no `C\d`, no `H\d`, no "the paper"). List it in `expected_outputs` when a commission names it.
+A QA file is not a terminal and never replaces one: it is the READABLE digest of one direction this discovery-folder has explored, anchored back into the artifacts. Exactly three sections, no markdown tables, general language only (LAW 2 — no `C\d`, no `H\d`, no "the paper"). List it in `expected_outputs` when a commission names it.
 
 ```md
 # Q — <the question, self-contained, general language>

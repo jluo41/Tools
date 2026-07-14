@@ -36,7 +36,7 @@ The contract is `delivery-need.md` (paper-owned; no cross-skill shared file).
 ```text
 1-claims GAP  ──out──▶  /haipipe-paper probe "<need>"   (a question SECTION in 1-probes/)
                           PROBE phase: ORGANIZE → MATCH → DISPATCH → POINT → INTERPRET
-                          the executor answers in <leaf>/QA/<n>-<slug>.md
+                          the executor answers in <task-folder>/QA/<n>-<slug>.md
 1-claims slot ◀─backfill─  the section's `reading:` lands; THE CLAIM'S STATUS IS
                            WRITTEN IN 1-claims.md; the executor never edits paper prose
 ```
@@ -46,7 +46,7 @@ needs a run), and `review`/`respond` when an evidence gap surfaces. All route
 through `delivery-need.md`. The inbound backfill writes the claim's status in
 `0-lifecycle/1-claims/1-claims.md` (supported | refuted | inconclusive), citing the
 section's `target:` QA file. Ownership split: the paper owns the NEED and the
-JUDGMENT; the EXECUTOR owns the FACT (its `<leaf>/QA/<n>-<slug>.md`, general
+JUDGMENT; the EXECUTOR owns the FACT (its `<task-folder>/QA/<n>-<slug>.md`, general
 language, reusable by any paper). Anatomy: `probe/haipipe-probe/SKILL.md`.
 
 ## File Principles

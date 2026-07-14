@@ -42,7 +42,7 @@ Binding is by PATH, never by id: `target:` points at a QA file in the bank.
 The bank (`tasks/` + `discoveries/`) is **PROBE-UNAWARE**: no `_ASK/`, no `_ANS/`,
 no `answers:` field, no PP id anywhere. It answers plain questions through its own
 `qa` verb — `/haipipe-task qa`, `/haipipe-discovery qa` — which returns
-`<leaf>/QA/<n>-<slug>.md`: the executor's READABLE digest, numbered so that
+`<task-folder>/QA/<n>-<slug>.md`: the executor's READABLE digest, numbered so that
 `ls QA/` IS the index.
 
 **The probe CAUSES a QA file; the EXECUTOR AUTHORS it.** A consumer session never

@@ -6,7 +6,7 @@ Loaded when an answering QA file carries harvestable content (value anchors, sou
 The harvest reads the ANSWER, not the bank
 -------------------------------------------
 
-A harvest hook follows the anchors the QA file names (`[→ results/<file>]`, `[→ sources.md#S02]`) and transcribes what they point at. It does NOT search, does NOT sweep, does NOT open the leaf and go looking. Finding is the EXECUTOR's job, and it is reached by DISPATCH, never by reading around.
+A harvest hook follows the anchors the QA file names (`[→ results/<file>]`, `[→ sources.md#S02]`) and transcribes what they point at. It does NOT search, does NOT sweep, does NOT open the task-folder and go looking. Finding is the EXECUTOR's job, and it is reached by DISPATCH, never by reading around.
 
 ```
    QA/<n>-<slug>.md   ## Answer   ... [→ results/summary.csv]  [→ sources.md#S02]

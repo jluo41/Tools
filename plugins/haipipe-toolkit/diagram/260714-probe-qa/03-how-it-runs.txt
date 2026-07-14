@@ -17,7 +17,7 @@ THE LOOP — five steps
         │
         ├──────────────┬───────────────┬────────────────┐
         ▼              ▼               ▼                ▼
-     ✅ a QA file   🟡 answers Q1,  🟠 the leaf      🔴 nothing
+     ✅ a QA file   🟡 answers Q1,  🟠 the task-folder      🔴 nothing
         answers it     not Q2          exists but         exists
         │              │               never asked        │
         │              └───────┬───────────────┘          │
@@ -37,25 +37,25 @@ THE LOOP — five steps
 How much each door costs
 -------------------------
 
-Try the cheap ones first. Only the last two summon an agent.
+Try the cheap ones first.
+Only the last two summon an agent.
 
 ```text
    T0  JOIN     another stage in my paper already asks this   add a serves:      ~0
    T1  LOCAL    my own registries answer it                   answered-local     ~0
    T2  REUSE    an existing QA file answers it                point the section  1 grep
-   T3  ENRICH   the leaf exists, but was never asked this     dispatch           agent
-   T4  FRESH    no leaf at all                                dispatch           agent
+   T3  ENRICH   the task-folder exists, but was never asked this     dispatch           agent
+   T4  FRESH    no task-folder at all                                dispatch           agent
 ```
 
-In a healthy project most questions land on T2, because the bank grew on its own
-before anyone asked (see 01, "two kinds of session").
+In a healthy project most questions land on T2, because the bank grew on its own before anyone asked (see 01, "two kinds of session").
 
 
-⚠️  MATCH ON THE ANSWER — NEVER ON THE TOPIC
+⚠️ MATCH ON THE ANSWER — NEVER ON THE TOPIC
 ---------------------------------------------
 
-This is the rule that stops step ② from destroying evidence. The trap is live on
-your disk right now:
+This is the rule that stops step ② from destroying evidence.
+The trap is live on your disk right now:
 
 ```text
    Paper CGMtoAge     PP03  "profile the WellDoc cohorts"
@@ -75,9 +75,9 @@ your disk right now:
    Nobody would ever notice.
 ```
 
-Why does this happen? Because the commission is a LOSSY projection of the question —
-we strip the stake on purpose. Two different questions can project down to the same
-innocent-looking topic.
+Why does this happen?
+Because the commission is a LOSSY projection of the question — we strip the stake on purpose.
+Two different questions can project down to the same innocent-looking topic.
 
     ⇒ Open the QA file. Read it. Does it literally answer THIS question?
       If not, it is not a hit — it is a T3 ENRICH.
@@ -88,12 +88,17 @@ innocent-looking topic.
 THE DOOR — /haipipe-task qa
 ============================
 
-    /haipipe-task qa "<question>" [<leaf>]
-    /haipipe-discovery qa "<question>" [<leaf>]
+    /haipipe-task qa "<question>" [<task-folder>]
+    /haipipe-discovery qa "<question>" [<task-folder>]
 
-One question, in general language. No paper reference. No id. No stake.
+One question, in general language.
+No paper reference.
+No id.
+No stake.
 
-The verb does not know who is asking, or why. It answers questions. That is all.
+The verb does not know who is asking, or why.
+It answers questions.
+That is all.
 
 ```text
    🚪 qa "<question>"
@@ -111,10 +116,12 @@ The verb does not know who is asking, or why. It answers questions. That is all.
                                         the DEPTH is the entry point ↓
 ```
 
-Steps ① and ② run ZERO code. That is the entire value of having a door.
+Steps ① and ② run ZERO code.
+That is the entire value of having a door.
 
 
-How deep do we go? (step ③)
+How deep do we go?
+(step ③)
 ----------------------------
 
 The executor picks the SHALLOWEST depth that honestly answers the question.
@@ -129,33 +136,34 @@ The depth IS the entry point into Plan → Build → Execute → Report.
                                + configs/<new>.yaml  + runs/<new>/
                                same code. Never edit an old run.
 
-   depth 2   🔧 NEW SCRIPT   in scope for this leaf, but nothing computes it
+   depth 2   🔧 NEW SCRIPT   in scope for this task-folder, but nothing computes it
                              → enter at BUILD
                                + <new>.py  + plan-script-<new>.yaml
 
-   depth 3   🌱 NEW LEAF     outside this leaf's scope entirely
-                             → full lifecycle, in a sibling leaf
+   depth 3   🌱 NEW TASK-FOLDER     outside this task-folder's scope entirely
+                             → full lifecycle, in a sibling task-folder
 
-   The scope test (2 vs 3):  does the question fit THIS leaf's plan.yaml IPO —
-   same inputs, same process family?   yes → new script.   no → new leaf.
+   The scope test (2 vs 3):  does the question fit THIS task-folder's plan.yaml IPO —
+   same inputs, same process family?   yes → new script.   no → new task-folder.
 ```
 
 The discovery twin has the same ladder, adapted:
 `0 READ · 1 ENRICH · 2 NEW FOLDER · 3 NEW GROUP`.
 
-The probe NEVER LEARNS which depth was used. It hands over a question and gets back
-a file path. The depth is the executor's private business — which is what "the bank
-is probe-unaware" buys you in the other direction.
+The probe NEVER LEARNS which depth was used.
+It hands over a question and gets back a file path.
+The depth is the executor's private business — which is what "the bank is probe-unaware" buys you in the other direction.
 
 
 Nothing is ever mutated
 ------------------------
 
-A new question to an old leaf is a NEW section and a NEW commission. The executor
-adds QA/<n+1>. Nothing frozen is ever edited.
+A new question to an old task-folder is a NEW section and a NEW commission.
+The executor adds QA/<n+1>.
+Nothing frozen is ever edited.
 
 ```text
-   ACCRETES (add only)   QA files · configs · runs/ · scripts · leaves
+   ACCRETES (add only)   QA files · configs · runs/ · scripts · task-folders
    FROZEN                past results/ · finished QA bodies · the commission
    LIVING (one writer)   plan.yaml · the QA file's `state:` line
 ```
@@ -169,7 +177,7 @@ Exactly the two that already owned the question and the answer.
 ```text
    📋 PLAN      ✅  the question IS its objective.
                     (a commission seeds plan.yaml — and plan.yaml was ALWAYS
-                     this leaf's question)
+                     this task-folder's question)
 
    🔧 BUILD     ⛔  writes code. Does not care why.
    ⚙️ EXECUTE   ⛔  runs code. Does not care why.
@@ -177,13 +185,15 @@ Exactly the two that already owned the question and the answer.
    📊 REPORT    ✅  AUTHORS the QA file, when one is due.
 ```
 
-Plan owns the Q. Report owns the A. Build and Execute are blind.
+Plan owns the Q.
+Report owns the A.
+Build and Execute are blind.
 
-Nothing was bolted on here. `plan.yaml` was already the question and `results/` was
-already the answer — a task was always a Q/A unit. The `qa` verb added exactly two
-things: a READABLE answer, and a way in.
+Nothing was bolted on here.
+`plan.yaml` was already the question and `results/` was
+already the answer — a task was always a Q/A unit.
+The `qa` verb added exactly two things: a READABLE answer, and a way in.
 
-That is also why `qa` is a DOOR and not a fifth stage. A fifth stage would mean every
-task needs a question — but the executor's primary mode has no question at all. And
-steps ① and ② exist precisely to AVOID running the lifecycle; you cannot skip a
-lifecycle from inside one of its own stages.
+That is also why `qa` is a DOOR and not a fifth stage.
+A fifth stage would mean every task needs a question — but the executor's primary mode has no question at all.
+And steps ① and ② exist precisely to AVOID running the lifecycle; you cannot skip a lifecycle from inside one of its own stages.

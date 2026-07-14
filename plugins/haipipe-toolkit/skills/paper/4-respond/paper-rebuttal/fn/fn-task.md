@@ -130,14 +130,14 @@ Step 5: DISPATCH each task to the executor — never author it here
         <ONE question, in GENERAL language. No reviewer id. No point id. No claim id.
          No 'the reviewer asks'. No hoped-for answer. Just the question, as anyone
          in the world might ask it.>
-      leaf: <an existing leaf path, `NEW <path>`, or omit if unknown>
+      leaf: <an existing task-folder path, `NEW <path>`, or omit if unknown>
     ")
 
   …or Agent(haipipe-discovery-orchestrator-agent, ...) for literature-shaped points
   (prior art, "you missed reference X", landscape).
 
-  THE EXECUTOR scaffolds the leaf, names it, runs Plan → Build → Execute → Report, and
-  returns a PATH to `tasks|discoveries/<leaf>/QA/<n>-<slug>.md` — the answer. Record THAT
+  THE EXECUTOR scaffolds the task-folder, names it, runs Plan → Build → Execute → Report, and
+  returns a PATH to `tasks|discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md` — the answer. Record THAT
   PATH in B-rebuttal-task/README.md's Task column. The bank never learns a rebuttal exists.
 
   ⚠️ READ THE RETURNED QA FILE'S `- state:` LINE before quoting it (R19/R20):

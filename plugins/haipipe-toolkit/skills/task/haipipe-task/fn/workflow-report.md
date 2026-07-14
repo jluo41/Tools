@@ -71,6 +71,9 @@ Report schema.** For each step in the plan, fill in:
   note       free-text observation (optional)
   reason     why skipped (required if status=skipped)
 
+
+> JL: One line one sentence. 
+
 Do NOT use ad-hoc fields like `id`, `name`, `outputs`, `exists`,
 `rows`, `size_kb`. Those are not in the schema. File existence and
 size go in `note` or `output`.

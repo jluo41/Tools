@@ -5,17 +5,19 @@
   This file is the one to read if you read only one.
 
 
-⚠️  WHAT YOU MUST DECIDE
+⚠️ WHAT YOU MUST DECIDE
 =========================
 
 🔴 BLOCKING — settle these before running ANYTHING against real project data
 --------------------------------------------------------------------------
 
 ```text
-  1. COMMIT?
-     288+ files sit uncommitted in the Tools submodule. Three sessions of design and
-     implementation. Right now a bad run has NO ROLLBACK.
-     Everything below assumes this happens first.
+  1. COMMIT.                                              ✅ DONE (2026-07-14)
+     Already committed by a concurrent session: e9e65de, 342 files.
+     ⚠️ 53 uncommitted DELETIONS remain, made OUTSIDE this session:
+        52 × skills/insight/**  (the whole bucket, incl. the _archive/ I created)
+         1 × diagram-ascii/ref/07-task-progress.md
+        Consistent with "fully retire insight" — but not my change. Land or revert it.
 
 
   2. THE LEGACY DATA — three projects are in a shape the new skills REJECT.
@@ -36,25 +38,26 @@
         Not dangerous — but you would be doing the migration BY ACCIDENT.
 
 
-  3. THE TASK-FOLDER NAMING LAW IS A FICTION.       ← I had this filed as "parked".
-                                                       It is not. It blocks STEP 2.
+  3. THE TASK-FOLDER NAMING LAW WAS A FICTION.            ✅ FIXED (2026-07-14)
 
-     the spec says:    tasks/<group>/<NN>_<name>/       e.g.  01_column_scan
-     your disk says:   B4_fit_scaling_law
-                       C3-Visual-ForecastScaling         ← hyphens, not underscores
-                       B6a1_fairness
-                       B0_store_inspect … B6f_crosscompare
+     The spec said task-folders are `tasks/<group>/<NN>_<name>/`, and haipipe-task/SKILL.md:399
+     shipped a LITERAL GLOB on it:  `ls -d <group-path>/{NN}_*/`
 
-     NOT ONE real leaf in ScalingLaw matches {NN}_.
+     Measured against the real bank:
+        {NN}_<name>                  235 task-folders  (69%)
+        {L}{d}[x]_<name> / -<Name>   107 task-folders  (31%)   B4_fit_scaling_law
+                                                         C3-Visual-ForecastScaling
+                                                         B6f_crosscompare
+     ⇒ On ScalingLaw's B01 group that glob returned ZERO task-folders. All 18 are letter-prefixed
+       — including B4_fit_scaling_law, the STEP 2 target. ① QA SCAN would have been
+       silently blind to a third of the bank.
 
-     ⇒ any glob on `[0-9][0-9]_*` finds NOTHING there — and ScalingLaw is the
-       STEP 2 target.
-     ⇒ at depth-3 the qa verb would MINT `07_foo` into a project whose own
-       convention is `B7_foo`.
+     THE FIX: detect a task-folder by STRUCTURE, never by NAME. A task-folder is any directory that
+     holds work (a *.py, workflow/, results/, configs/ or runs/). That also excludes
+     __pycache__/, figures/, sbatch/ and diagram/ for free, because they hold no work.
+     At depth-3 a NEW task-folder is named to match its SIBLINGS, not to match the spec.
 
-     ⇒ Fix the SPEC to match reality (accept `<letter><digit>*` and hyphens)?
-       Or rename 18 live task folders to match the spec?
-       The spec is almost certainly the thing that is wrong.
+     Verified on disk: old glob → 0 task-folders. New test → all 18 task-folders.
 ```
 
 
@@ -112,7 +115,7 @@
 ```
 
 
-🆕 A NEW SKILL: haipipe-session   (JL proposed 2026-07-14)
+🆕 A NEW SKILL: haipipe-session (JL proposed 2026-07-14)
 -----------------------------------------------------------
 
 ```text
@@ -158,7 +161,8 @@
 IS IT OK TO RUN?
 =================
 
-Short answer: safe for a SCOPED SMOKE TEST. Not safe to point at a real paper yet.
+Short answer: safe for a SCOPED SMOKE TEST.
+Not safe to point at a real paper yet.
 
 ```text
    ✅ VERIFIED BY ACTUAL EXECUTION            ❌ NEVER RUN, NOT ONCE
@@ -173,7 +177,8 @@ Short answer: safe for a SCOPED SMOKE TEST. Not safe to point at a real paper ye
 ```
 
 `fn/qa.md` is a SPEC DOCUMENT. No agent has ever executed it.
-The gate is real. The machine is untested.
+The gate is real.
+The machine is untested.
 
 
 The order to run it in
@@ -194,7 +199,7 @@ The order to run it in
        · fully reversible — it is one new file
 
    3️⃣  STEP 2 — convert ScalingLaw PP04 to the new shape.
-       ⚠️ BLOCKED ON DECISION 3 (the naming law) — its target leaf is B4_fit_scaling_law.
+       ⚠️ BLOCKED ON DECISION 3 (the naming law) — its target task-folder is B4_fit_scaling_law.
        This is where it gets real: a dispatch, a commission, a harvest.
 ```
 
