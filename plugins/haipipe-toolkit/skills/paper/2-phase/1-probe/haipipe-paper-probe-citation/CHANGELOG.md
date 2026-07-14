@@ -4,7 +4,25 @@ haipipe-paper-probe-citation — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 3.1.0 — 2026-07-14 — the HARVEST gate reads the target's state line (R19/R20)
+
+The harvester opened a QA file and transcribed its `## Answer` anchors with NO state check. On the normal path paper-probe's ⑤ INTERPRET gates it, but the DIRECT invocation form (`harvest <stage> <qa_file>`) is published and was unguarded:
+
+- pointed at a `working` file (whose `## Answer` is EMPTY BY CONSTRUCTION) it harvested ZERO anchors and reported a silent no-op — HIDING a live claim;
+- pointed at a `superseded-by:` file it transcribed STALE sources into `_CITATION_{stage}.md`, where PLACE then auto-places any key already in `.bib` INTO THE MANUSCRIPT. That is the day-1/day-40 stale-read bug arriving through the HARVEST lane, where the checker's `read-target-superseded` tooth cannot see it.
+
+HARVEST now reads `sed -n 's/^- state:[[:space:]]*//p' <file> | head -1` first: REFUSE on `working` (report "in progress since <started>"), FOLLOW THE CHAIN on `superseded-by:`, REFUSE on a missing state line (`qa-no-state`). Read-only — the harvester still NEVER writes a QA file. Twin: `haipipe-paper-probe-values` 3.1.0.
+
+## 3.0.1 — 2026-07-14
+
+- Harvest mode: input is `harvest <stage> <qa_file>` — the subagent follows the QA file's anchors into the leaf's `sources.md`. The `pick_list` return field is gone (nothing produces it).
+- "probe plan" -> question SECTION in ROUTE, the paper-local sweep, and the report template.
+
 ## [2.2.2] -- 2026-07-10
+## 3.0.0 — 2026-07-14
+
+- PROBE REDESIGN (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14 — R1-R18). 1-probe-plans/ -> 1-probes/ (PPNN_<topic>.md, one file per TOPIC, one SECTION per question: serves/target/state/commission/reading + ONE `## Why` per file holding the stake). Binding is by PATH: a section's `target:` points at the answering `<leaf>/QA/<n>-<slug>.md` in the bank. DELETED: `## Verdict`, the `verdicted` and `dispatched` states, `_ASK/`/`_ANS/` stubs, `answers:`, and Agent(haipipe-probe-orchestrator-agent) (the GATEWAY — archived + de-registered). A claim's STATUS now lives ONLY in 0-lifecycle/1-claims/1-claims.md. Dispatch is now DIRECT: the section's `commission:` block, VERBATIM, to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent).
+- SUPPLIER DEADLOCK FIXED. This worker is hard-bounded to NEVER search, and its ONLY acquisition door was Agent(haipipe-probe-orchestrator-agent) — which no longer exists, so a citation gap was unfillable: it could not search, and the one door it was told to wait on could not be opened. Acquisition is now: question SECTION -> its `commission:` block, verbatim -> Agent(haipipe-discovery-orchestrator-agent) -> the answering QA file, whose `## Answer` anchors ([→ sources.md#S02]) are the pick_list this worker transcribes. The dead `read|verdicted` sweep predicate becomes `answered | read | answered-local`.
 
 Fixed (fresh-agent audit, C6/M13)
 - Phase 4 PLACE made md-first: replace the matching \cite{TOADD} in the .md, then sync (was "place in tex + parenthetical in outline").

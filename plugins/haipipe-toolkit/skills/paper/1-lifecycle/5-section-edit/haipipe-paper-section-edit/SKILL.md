@@ -4,9 +4,9 @@ description: "Per-section editing hub under 0-lifecycle/5-section-edit/. STAGE C
 argument-hint: "[section-name-or-number] [draft|probe|revise|check] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 metadata:
-  version: "4.5.1"
-  last_updated: "2026-07-10"
-  summary: "Combined per-section hub = STAGE CONTRACT (aim + template + rules); 2-phase workers execute via Skill() dispatch. v4.3: citations in the .md are REAL \\citep{} keys grepped from .bib; \\cite{TOADD} + _CITATION_ row when missing (supersedes [CITE:] / (Author Year)). Verb grammar, hard gates after DRAFT and at CHECK, proof-carrying REVISE."
+  version: "5.1.0"
+  last_updated: "2026-07-14"
+  summary: "Combined per-section hub = STAGE CONTRACT (aim + template + rules); 2-phase workers execute via Skill() dispatch. v4.3: citations in the .md are REAL \\citep{} keys grepped from .bib; \\cite{TOADD} + _CITATION_ row when missing (supersedes [CITE:] / (Author Year)). Verb grammar, hard gates after DRAFT and at CHECK, proof-carrying REVISE. v5.1 (probe-redesign residue sweep): PROBE escalation ends at MATCH-then-DISPATCH (no 'gateway probe' tier); the DRAFT gate presents the QUESTIONS RAISED (not a 'probe plan'); harvested citations come via DISPATCH -> discovery -> the answering QA file."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   predecessors:
     - "haipipe-paper-editing (1-lifecycle/, scaffold hub) — MERGED"
@@ -62,7 +62,7 @@ Bare `<section>` (no verb) shows where the section stands and proposes the next 
 - `0-lifecycle/5-section-edit/{section}/_LOG_{section}.md` -- changelog with [PHASE] tags
 - `0-lifecycle/5-section-edit/{section}/_CITATION_{section}.md` -- citation map (plain text, no bibtex)
 - `0-lifecycle/5-section-edit/{section}/_VALUES_{section}.md` -- values registry
-- `0-lifecycle/5-section-edit/{section}/_PROBE/` -- probe plans spawned by this section
+- `1-probes/PPNN_<topic>.md` -- the probe FILES; a question this section raises becomes a SECTION (flat cross-stage pool at the paper root; `serves: 5-section-edit/{section}`)
 
 **Output:**
 - `0-sections/*.tex` -- venue-quality LaTeX prose with Pn.Sn markers (synced from revised outline)
@@ -74,7 +74,7 @@ Bare `<section>` (no verb) shows where the section stands and proposes the next 
 - Per-paragraph: `###` heading with job description, one-line preview, then REAL prose sentences — complete academic sentences close to submission register, ONE per line, BLANK LINE between them
 - Citations are REAL `\citep{key}` for keys already in .bib; placeholders are greppable: `{VAL:?}` for an unverified number, `\cite{TOADD}` (+ `_CITATION_` row) for a missing citation — these are what PROBE fills
 - User inline comments as `> USER: comment text` under the sentence they discuss
-- "Probes proposed by this draft" block at the END: placeholders rolled up with expected sources, display needs (missing units → DR requests, not PP cards), heavier needs buffered as planned PP skeletons in `_PROBE/`
+- "Questions raised by this draft" block at the END: placeholders rolled up with expected sources, display needs (missing units → DR requests, never a probe section), heavier needs raised as `state: planned` question SECTIONS in `1-probes/`
 
 **Done-criteria (6-axis gate -- all must PASS):**
 - [ ] structure: outline matches tex, Pn.Sn markers correct
@@ -101,7 +101,7 @@ DRAFT    what to say: structure (¶ count, H         z-structure scaffold +
          placement) + REAL prose sentences with     N-section.md
          .bib-real \citep{} + {VAL:?} / \cite{TOADD}
          + "Probes proposed by this draft" block
-         ⛔ STOP: user reviews STRUCTURE + probe plan
+         ⛔ STOP: user reviews STRUCTURE + the questions raised
 
 PROBE    what to reference (3 parallel tracks):
   display   link existing 0-displays/ units; a       → 0-displays/ links +
@@ -131,7 +131,7 @@ Progression gates (each crossing = a `[GATE]` line in _LOG quoting the user):
 
 Phase visibility per the Phase Transition Contract in `../../../wiki/08-stage-gate.md`: announce every phase boundary (reply line + `[PHASE]` entry in `_LOG` + phase-line 🔥 moves); skip a phase only by an explicit logged verdict (`[PROBE] skipped -- <reason>`, phase line shows `--`); CHECK is never implicit -- it opens by presenting the exit-criteria report and the approval ask.
 
-Discovery and task are MECHANISMS feeding the probe phase: discovery finds citations, task produces figures and numbers. They route through per-stage `_PROBE/` folders. PROBE checks existing evidence FIRST, plans, then probes ONLY if information is missing.
+Discovery and task are the two EXECUTORS the PROBE phase dispatches into: discovery finds citations, task produces figures and numbers. The paper's `1-probes/` sections bind to their answers BY PATH. PROBE runs ② MATCH against the bank's QA corpus FIRST, and dispatches ONLY what MATCH cannot close.
 
 **Format rule**: paper-level argument documents (seed, claims, pitch, narrative) are markdown + _LOG only. The display stage is the ONLY paper-level stage that compiles to .tex + PDF (you need to SEE rendered figures/tables). Section-level outline stays in .md throughout; tex is synced from revised outline during REVISE and updated during CHECK. Rule of thumb: if you need to SEE it rendered, .tex. If you need to READ and edit it, .md.
 
@@ -146,7 +146,7 @@ Every reply ends with the closing block defined in `../../../haipipe-paper/SKILL
 status:  ok · section-edit · §3-theory
 next:    <next action>
 ─────────────────────────────────────────────────────
-stage:   seed ✅  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  →  section-edit 🔥🚀  →  review ⬜
+stage:   seed ✅  resource ✅  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  →  section-edit 🔥🚀  →  review ⬜
 phase:   §3 draft ✅  │  probe: cite 🔥🚀  val --  disp --  │  revise ⬜  │  check ⬜
 ```
 
@@ -193,23 +193,19 @@ Paper-level stages (0-lifecycle/):
   1-claims/
     1-claims.md + _LOG
     _EVIDENCE_1-claims.md      what evidence backs each claim
-    _PROBE/                    probe plans spawned by claim gaps
 
   2-pitch/
     2-pitch.md + _LOG
     _CITATION_2-pitch.md       citation map (pitch cites anchor papers)
-    _PROBE/                    probe plans spawned by pitch needs
 
   3-narrative/
     3-narrative.md + _LOG
     _CITATION_3-narrative.md   citation map (narrative beats cite prior work)
     _DISPLAY_3-narrative.md    which display unit serves each beat
-    _PROBE/                    probe plans spawned by narrative needs
 
   4-display/
     4-display.tex + pdf        (the ONLY compiled stage)
     _LOG_4-display.md
-    _PROBE/                    probe plans spawned by display needs
 
 Section-level stages (0-lifecycle/5-section-edit/):
 
@@ -221,13 +217,12 @@ Section-level stages (0-lifecycle/5-section-edit/):
     _LOG_{section}.md          changelog (all phases, with [PHASE] tags)
     _CITATION_{section}.md     citation map (plain text, no bibtex)
     _VALUES_{section}.md       values registry
-    _PROBE/                    probe plans spawned by this section
 ```
 
 Summary table -- which tracking files each stage uses:
 
 ```
-                     .md  _LOG  _CITATION  _VALUES  _EVIDENCE  _DISPLAY  _PROBE
+                     .md  _LOG  _CITATION  _VALUES  _EVIDENCE  _DISPLAY
   seed               ✅    ✅
   claims             ✅    ✅                          ✅                   ✅
   pitch              ✅    ✅    ✅                                         ✅
@@ -238,7 +233,7 @@ Summary table -- which tracking files each stage uses:
 
 Tracking files are created lazily when the phase activates for that stage.
 
-**Probe plan convention**: probe plans LIVE in the `_PROBE/` subfolder of the stage that spawned them. `1-probe-plans/README.md` is a cross-stage INDEX (links to per-stage `_PROBE/` folders; PP numbering authority). When creating a new probe plan: add the file to the stage's `_PROBE/` folder as `PP<NN>_<slug>.md` AND append ONE bullet row to the index — `- PP<NN> · <stage/section> · <status> · <need> · card: <path>` — never a markdown table (JL standing rule: no tables in probe documents).
+**Probe convention**: ALL probe files live FLAT in `1-probes/` — `PP<NN>_<topic>.md`, ONE FILE PER TOPIC, beside the campaign `README.md`. Each question is one SECTION inside it (`serves:` / `target:` / `state:` / `commission:` / `reading:`), plus ONE `## Why` per file holding the stake. Stage/section affinity is the SECTION's `serves:` field, never the file's path. When raising a new question: add a SECTION to the right topic's probe file (creating `1-probes/PP<NN>_<topic>.md` if the topic is new) AND regenerate its Status board row in the README — `- PP<NN> · serves: <stage/section> · <state> · <question>` — never a markdown table (JL standing rule: no tables in probe documents), and never a `card`, `row` or `table` (retired vocabulary).
 
 ## Two-axis architecture: stages x phases
 
@@ -324,7 +319,7 @@ Status emoji:
 - _CITATION_: `✅ placed` (in bib + tex), `📌 in bib` (not yet placed), `🔍 candidate` (not in bib, needs verification), `⚠️ issue` (wrong paper, drift), `❌ rejected` (kept as audit trail), `📋 pre-existing` (provenance unknown)
 - _VALUES_: `✅ verified`, `⬜ unverified`, `⚠️ mismatch`, `🔍 source unknown`
 
-Provenance source: `🧑 scholar-copied` (human added), `🤖 harvested` (came via gateway → discovery, human must verify), `📋 pre-existing` (was in .bib, unknown origin)
+Provenance source: `🧑 scholar-copied` (human added), `🤖 harvested` (came via DISPATCH → discovery → the answering QA file, human must verify), `📋 pre-existing` (was in .bib, unknown origin)
 
 ## _LOG changelog
 
@@ -385,21 +380,21 @@ Grep shortcuts:
 
 4. **Write the real draft**: paragraph headlines, previews, and REAL prose sentences — complete academic sentences the user can judge as a paper, with real `\citep{key}` for keys already in .bib and `{VAL:?}` / `\cite{TOADD}` placeholders for everything unverified. Content-complete, unpolished, unverified. Run via `Skill(haipipe-paper-draft)`.
 
-5. **Propose the probes**: end the .md with the "Probes proposed by this draft" block (per `ref/outline-format.md`): every placeholder rolled up with its expected source, display needs per paragraph, and anything heavier than pointer-following (new task run, lit sweep) BUFFERED as a `status: planned` PP skeleton in `_PROBE/` + an index row. EXCEPTION: a missing display unit is never a PP card — propose it as a DR request for the 4-display inbox (PROBE files the row). DRAFT proposes; PROBE executes after the gate.
+5. **Raise the questions**: end the .md with the "Questions raised by this draft" block (per `ref/outline-format.md`): every placeholder rolled up with its expected source, display needs per paragraph, and anything heavier than pointer-following (new task run, lit sweep) RAISED as a `state: planned` question SECTION in `1-probes/PP<NN>_<topic>.md` + a Status board row. EXCEPTION: a missing display unit is never a probe section — propose it as a DR request for the 4-display inbox (PROBE files the row). DRAFT proposes; PROBE binds each question to an answer after the gate.
 
-6. **⛔ STOP — structure review gate**: present the draft AND the probe proposal, end the turn. The user reviews structure (¶ jobs, order, coverage) and the probe plan, flags sentences inline. Iterate here until the user advances (verb or "go"); log `[GATE] draft-review: approved` with the user's words.
+6. **⛔ STOP — structure review gate**: present the draft AND the questions it raises, end the turn. The user reviews structure (¶ jobs, order, coverage) and the questions, flags sentences inline. Iterate here until the user advances (verb or "go"); log `[GATE] draft-review: approved` with the user's words.
 
 ### PROBE (agent-only -- probe aggressively, flag issues)
 
 The agent consumes the draft's probe proposal (placeholders + buffered PP skeletons) and does all three tracks without waiting for human. Flag everything that needs human attention. Do NOT place \citep{} or weave values into tex during PROBE. Placement happens in CHECK after human verification.
 
-7. **Citation**: create `_CITATION_` file. Audit `\cite{TOADD}` slots (each must have a `_CITATION_` row) and existing `\citep{}` keys in the .md. Paper-local sweep first: the .bib and prior stages' `_CITATION_` maps (adopt matches; only surviving gaps become probe plans). Write 🔍 entries with Scholar links. Flag everything. Count density vs venue norm. Surviving gaps → probe plan in `_PROBE/` (the gateway is the ONLY search door — no inline search at any depth). Do NOT wait for human, do NOT place \citep{}.
+7. **Citation**: create `_CITATION_` file. Audit `\cite{TOADD}` slots (each must have a `_CITATION_` row) and existing `\citep{}` keys in the .md. Paper-local sweep first: the .bib and prior stages' `_CITATION_` maps (adopt matches; only surviving gaps become questions). Write 🔍 entries with Scholar links. Flag everything. Count density vs venue norm. Surviving gaps → a question SECTION in `1-probes/` (the PROBE phase's DISPATCH to Agent(haipipe-discovery-orchestrator-agent) is the ONLY search door — no inline search at any depth; 💀 the probe GATEWAY agent is RETIRED). Do NOT wait for human, do NOT place \citep{}.
 
-8. **Values**: create `_VALUES_` file. Scan every `{VAL:?}` placeholder and every number in the .md. Trace each to a source (task output, display CSV, script). Flag ⚠️ mismatches and 🔍 unknown sources. If source not found → write probe plan to `_PROBE/`. Do NOT wait for human.
+8. **Values**: create `_VALUES_` file. Scan every `{VAL:?}` placeholder and every number in the .md. Trace each to a source (task output, display CSV, script). Flag ⚠️ mismatches and 🔍 unknown sources. If source not found → raise a question SECTION in `1-probes/`. Do NOT wait for human.
 
-9. **Display**: audit what displays this section needs. Sweep existing `0-displays/` units first (paper-local). Plan which unit serves which claim. Unit doesn't exist → file a DR row in `0-lifecycle/4-display/_DISPLAY_REQUEST.md` (the display stage's inbox) and mark it 📨 — section-edit NEVER creates displays (no `/haipipe-task`, no gateway commissioning; JL 2026-07-10). Do NOT wait for approval.
+9. **Display**: audit what displays this section needs. Sweep existing `0-displays/` units first (paper-local). Plan which unit serves which claim. Unit doesn't exist → file a DR row in `0-lifecycle/4-display/_DISPLAY_REQUEST.md` (the display stage's inbox) and mark it 📨 — section-edit NEVER creates displays (no `/haipipe-task`, no commissioning of any kind; JL 2026-07-10). Do NOT wait for approval.
 
-**Probe escalation**: PROBE checks existing evidence FIRST, then plans, then probes ONLY if the information isn't already available. The flow is: sweep paper-local (registries, .bib, finished PP cards, 0-displays/) → audit surviving gaps → plan → gateway probe (only if needed). No inline-search tier exists.
+**Probe escalation**: PROBE checks existing evidence FIRST, and dispatches ONLY what nothing already answers. The flow is: sweep paper-local (registries, .bib, `read` probe sections, 0-displays/) → audit the surviving gaps → raise a question SECTION for each → ② MATCH the bank's QA corpus → ③ DISPATCH only what MATCH cannot close. No inline-search tier exists at any depth.
 
 ### REVISE (agent-only -- .md first, then sync to tex)
 
@@ -471,7 +466,7 @@ haipipe-paper-lifecycle                  0-draft/
   ├─► display                              haipipe-paper-probe-values     → _VALUES_
   └─► section-edit (THIS)                  haipipe-paper-probe-display    → 0-displays/
         │                                    ↓ escalation
-        │   DRAFT → PROBE → REVISE → CHECK   _PROBE/ → /haipipe-probe → /haipipe-task
+        │   DRAFT → PROBE → REVISE → CHECK   1-probes/ → commission → /haipipe-task qa | /haipipe-discovery qa
         │
         │   hub dispatches to              2-revise/ (agent-only, .md + .tex)
         │   2-phase/ workers                 haipipe-paper-revise-content (WHAT)

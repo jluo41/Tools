@@ -26,10 +26,10 @@
 #                 checks); repeatable — use for docs outside the target tree
 #   --depth N     find maxdepth for *.md when target is a dir (default 3:
 #                 reaches 0-lifecycle/<stage>/0-<stage>.md AND 0-artifacts/*.md
-#                 from the intervention root). _PROBE/ cards are excluded at
-#                 any depth — they belong to check-probe-cards.sh; _LOG* and
-#                 _archive/ / _external/ trees are excluded so archived threads
-#                 quoting old findings don't re-flag.
+#                 from the intervention root). 1-probes/ probe files (and legacy
+#                 _PROBE/ cards) are excluded at any depth — they belong to
+#                 check-probe-cards.sh; _LOG* and _archive/ / _external/ trees
+#                 are excluded so archived threads quoting old findings don't re-flag.
 #
 # Exit code: 0 if no ❌ (FAIL) items, 1 if any ❌. ⚠️ never fails the run.
 # ❌ tier: em-dash, TODO/FIXME, bibtex-in-md.   ⚠️ tier: AI-voice.
@@ -74,7 +74,7 @@ SCAN_FILES=()
 if [[ -f "$TARGET" ]]; then
   SCAN_FILES=("$TARGET")
 elif [[ -d "$TARGET" ]]; then
-  while IFS= read -r f; do SCAN_FILES+=("$f"); done < <(find "$TARGET" -maxdepth "$DEPTH" -name '*.md' -not -path '*/_archive/*' -not -path '*/_external/*' -not -path '*/_PROBE/*' -not -name '_LOG*' | sort)
+  while IFS= read -r f; do SCAN_FILES+=("$f"); done < <(find "$TARGET" -maxdepth "$DEPTH" -name '*.md' -not -path '*/_archive/*' -not -path '*/_external/*' -not -path '*/1-probes/*' -not -path '*/1-probe-plans/*' -not -path '*/_PROBE/*' -not -name '_LOG*' | sort)
 else
   echo "not a file or dir: $TARGET" >&2
   exit 2

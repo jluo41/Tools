@@ -50,13 +50,13 @@ total: <p> ¶ · <s> sentences · ~<w> words   (venue budget for this section: <
 
 ## Probes proposed by this draft
 
-<tpl: derived FROM the prose — every {VAL:?} and \cite{TOADD} above appears here with its EXPECTED source. Pointer-following first: if the draft already sees the pointer in the paper's own registries, say `-> paper-local: <file>` and PROBE closes it answered-local, no gateway dispatch.>
+<tpl: derived FROM the prose — every {VAL:?} and \cite{TOADD} above appears here with its EXPECTED source. Pointer-following first: if the draft already sees the pointer in the paper's own registries, say `-> paper-local: <file>` and PROBE closes it `answered-local` — nothing is dispatched.>
 
 values:    {VAL:? <what>}                       -> <expected source: paper-local _VALUES_/metrics.json | tasks/ run>
 citation:  \cite{TOADD} @ P<n>.S<n> (<topic>)   -> <check prior stages' _CITATION_ / .bib first | discovery sweep (buffered: PP<NN>)>
 display:   P<n> wants <display>                 -> 0-displays/ unit exists? LINK : DR request (4-display inbox)
-heavier:   <need requiring a new task run / lit sweep>  (buffered: PP<NN>, status: planned)
-<tpl: heavier needs -> `status: planned` PP skeleton at `_PROBE/PP<NN>_<slug>.md` (underscore after PPNN; Need/Why/Route, EMPTY refs) + ONE index row appended to `1-probe-plans/README.md`. EXCEPTION: a missing display unit is never a PP card — it is a DR row for the 4-display inbox (PROBE files it; section-edit never creates displays).>
+heavier:   <need requiring a new task run / lit sweep>  (raised: PP<NN>, state: planned)
+<tpl: heavier needs -> a `state: planned` question SECTION in `1-probes/PP<NN>_<topic>.md` (one file per TOPIC; the section carries serves:/target:/state:/commission:, with an EMPTY reading:) + its Status board row in `1-probes/README.md`. EXCEPTION: a missing display unit is never a probe section — it is a DR row for the 4-display inbox (PROBE files it; section-edit never creates displays).>
 <tpl: index row = a BULLET LINE, never a markdown table (JL standing rule: no tables in probe documents). Shape — append verbatim, one per PP:>
 <tpl: - PP<NN> · <stage/section> · <status> · <one-line need> · card: <path>              >
-<tpl: after filling: verify `grep -c '<tpl' {section}.md` -> 0, then present structure + probe plan and ⛔ STOP for the user's review. Do not advance without the user's verb.>
+<tpl: after filling: verify `grep -c '<tpl' {section}.md` -> 0, then present structure + the questions raised and ⛔ STOP for the user's review. Do not advance without the user's verb.>

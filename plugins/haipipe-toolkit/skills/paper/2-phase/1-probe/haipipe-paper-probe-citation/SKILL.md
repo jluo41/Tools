@@ -1,15 +1,15 @@
 ---
 name: haipipe-paper-probe-citation
-description: "citation HARVESTER (probe lane worker). One skill, one working doc (_CITATION_). The harvest step of the ONE probe pipeline: acquisition is always PP card → gateway → discovery (this worker NEVER searches — no WebSearch, no Semantic Scholar); this worker transcribes the gateway's pick_list into _CITATION_{stage}.md cards (supply-push HARVEST), plus AUDIT (gap → probe-plan suggestions), PLACE (auto-place keys already in .bib, flag 🔍 for CHECK) and REVIEW (pre-submission 3-axis walk). Fully automatic -- no human gate. Hard boundary: agent NEVER generates bibtex, NEVER adds to .bib. No bibtex in _CITATION_ ever. Trigger: citation, cite, probe citations, harvest citations, check references, audit references, citation review, manual review citations."
+description: "citation HARVESTER (probe lane worker). One skill, one working doc (_CITATION_). The harvest step of the ONE probe pipeline: acquisition is always probe SECTION → its `commission:` block → Agent(haipipe-discovery-orchestrator-agent) → the answering QA file (this worker NEVER searches — no WebSearch, no Semantic Scholar); this worker transcribes the answering QA file's source anchors into _CITATION_{stage}.md entries (supply-push HARVEST), plus AUDIT (gap → a new question SECTION in 1-probes/), PLACE (auto-place keys already in .bib, flag 🔍 for CHECK) and REVIEW (pre-submission 3-axis walk). Fully automatic -- no human gate. Hard boundary: agent NEVER generates bibtex, NEVER adds to .bib. No bibtex in _CITATION_ ever. Trigger: citation, cite, probe citations, harvest citations, check references, audit references, citation review, manual review citations."
 argument-hint: "[verb] [section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, WebFetch
 # WebFetch = pointer-following ONLY (fetch a KNOWN DOI/publisher URL to verify an
 # entry in Phase 5 REVIEW). WebSearch is deliberately ABSENT: finding is the
-# gateway's monopoly (JL 2026-07-07 one-door ruling).
+# one-door rule: the PROBE phase's DISPATCH is the only acquisition door (JL 2026-07-07).
 metadata:
-  version: "2.2.2"
-  last_updated: "2026-07-10"
-  summary: "Citation HARVESTER. AUDIT→ROUTE(gaps→probe plans)→CANDIDATE(harvest from gateway pick_list)→PLACE→REVIEW. Never searches — one door: gateway. Single working doc = _CITATION_."
+  version: "3.1.0"
+  last_updated: "2026-07-14"
+  summary: "Citation HARVESTER. AUDIT→ROUTE(gaps→question SECTIONS in 1-probes/)→CANDIDATE(harvest the answering QA file's source anchors)→PLACE→REVIEW. Never searches — one door: the PROBE phase's DISPATCH to Agent(haipipe-discovery-orchestrator-agent). 💀 the probe GATEWAY agent is RETIRED. Single working doc = _CITATION_. v3.0.1 (probe-redesign residue sweep): HARVEST takes the answering QA FILE (its `## Answer` anchors), not a `pick_list` from a probe agent's return; gaps become question SECTIONS, not 'probe plans'. v3.1.0 (R19/R20 HARVEST GATE): HARVEST now READS the target QA file's `- state:` line first and REFUSES a `working` target (its ## Answer is EMPTY BY CONSTRUCTION — harvesting it is a silent no-op that HIDES a live claim) and FOLLOWS the chain off a `superseded-by:` target (transcribing stale sources into _CITATION_ lets PLACE auto-place them into the manuscript — the day-1/day-40 stale-read bug arriving through the harvest lane, where read-target-superseded cannot see it). A QA file with NO state line is REFUSED (qa-no-state). Read-only: this worker still NEVER writes a QA file."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   predecessors:
     - "haipipe-paper-edit-check-reference (mechanical \\label/\\ref/\\cite audit) — MERGED as Phase 1"
@@ -29,8 +29,8 @@ citation probe worker for `haipipe-paper-section-edit`. One skill owns the full 
 ```
 /haipipe-paper-probe-citation                            → status dashboard
 /haipipe-paper-probe-citation audit <section>            → Phase 1: mechanical check + gap ID
-/haipipe-paper-probe-citation route <section>            → Phase 2: gaps → probe-plan suggestions (NO searching)
-/haipipe-paper-probe-citation harvest <stage> <ref>      → Phase 3: expand gateway pick_list → _CITATION_ cards
+/haipipe-paper-probe-citation route <section>            → Phase 2: gaps → question SECTIONS for the hub (NO searching)
+/haipipe-paper-probe-citation harvest <stage> <ref>      → Phase 3: expand the answering QA file's source anchors → _CITATION_ entries
 /haipipe-paper-probe-citation place <section>            → Phase 4: auto-place verified keys, flag 🔍 for CHECK
 /haipipe-paper-probe-citation review <section>           → Phase 5: pre-submission 3-axis walk
 ```
@@ -74,7 +74,7 @@ Every _CITATION_ entry carries a **Source** field recording how the paper was fo
 
 ```
 🧑 scholar-copied    human found and copied bibtex from Scholar → .bib (SAFE)
-🤖 harvested         came in through gateway → discovery → pick_list → harvest
+🤖 harvested         came in through DISPATCH → discovery → the QA file's anchors → harvest
                       (SAFE -- discovery-reviewer-checked at arXiv/DOI level;
                       agent never touched .bib; human Scholar pass in CHECK)
 📋 pre-existing      was already in .bib when _CITATION_ was created
@@ -91,9 +91,9 @@ Pre-existing entries (📋) may include LLM-generated bibtex from a prior sessio
 
 ```
 Phase 1: AUDIT        mechanical cross-ref + identify uncited factual assertions
-Phase 2: ROUTE        gaps → probe-plan suggestions for the hub (NO searching;
-                      acquisition = gateway → discovery, the only door)
-Phase 3: CANDIDATE    HARVEST the gateway's pick_list → 🔍 entries in _CITATION_
+Phase 2: ROUTE        gaps → question SECTIONS for the hub (NO searching;
+                      acquisition = the PROBE phase's DISPATCH → discovery, the only door)
+Phase 3: CANDIDATE    HARVEST the answering QA file's anchors → 🔍 entries in _CITATION_
 Phase 4: PLACE        auto-place keys already in .bib; flag 🔍 for CHECK
 Phase 5: REVIEW       pre-submission 3-axis walk (existence, metadata, context)
 ```
@@ -105,23 +105,47 @@ Human review happens ONLY in the CHECK phase (haipipe-paper-check). During CHECK
 
 ## Harvest mode (supply-push, any stage)
 
-The five phases above are demand-pull: the section's text needs citations, go find them. HARVEST is the reverse direction: a probe already ran and its Read output carries literature sources; this worker distills them into the stage's `_CITATION_` so the user can eyeball them paper-side. Called by haipipe-paper-probe after a gateway probe returns (e.g. the seed landscape probe).
+The five phases above are demand-pull: the section's text needs citations, go find them. HARVEST is the reverse direction: a question SECTION was answered and the answering QA file carries literature sources; this worker distills them into the stage's `_CITATION_` so the user can eyeball them paper-side. Called by haipipe-paper-probe at ⑤ INTERPRET, once a section's `target:` resolves (e.g. the seed landscape question).
 
 ```
-harvest <stage> <probe_ref>       e.g. harvest 0-seed discoveries/D0703_seed-landscape
+harvest <stage> <qa_file>    e.g. harvest 0-seed discoveries/D0703_seed-landscape/QA/1-cgm-fm-landscape.md
 ```
+
+⚠️ **PRECONDITION — READ THE TARGET'S STATE LINE BEFORE HARVESTING (R19/R20).** A QA file is a
+TICKET that becomes a RECEIPT. The normal caller (paper-probe ⑤ INTERPRET) already gates this,
+but the direct invocation above is published and must gate itself:
+
+```
+state=$(sed -n 's/^- state:[[:space:]]*//p' "$qa_file" | head -1)
+```
+
+```
+  state: answered        ✅ HARVEST. (and it carries no `superseded-by:`)
+  state: working         🚫 REFUSE. The `## Answer` is EMPTY BY CONSTRUCTION — the run is still
+                         in flight. Harvesting yields ZERO anchors and reports a silent no-op,
+                         which HIDES a live claim. Report "in progress since <started>" and stop.
+  … superseded-by: X     🔗 FOLLOW THE CHAIN and harvest the LIVE file instead. Transcribing a
+                         superseded file's sources puts STALE references into _CITATION_, and
+                         PLACE then auto-places any key already in .bib INTO THE MANUSCRIPT —
+                         the day-1/day-40 stale-read bug arriving through the HARVEST lane,
+                         where the checker's read-target-superseded tooth cannot see it.
+  NO state line          🚫 REFUSE. `state:` is MANDATORY (checker: qa-no-state).
+```
+
+This is READ-ONLY. This worker still NEVER writes the QA file — ONE WRITER, the executor, always.
 
 Harvest ALWAYS runs as a dispatched SUBAGENT (produce) and the calling worker reviews the result (mechanical acceptance) -- producer and reviewer are never the same context:
 
 ```
-input     the probe agent's return: ref + pick_list
-          ({anchor: sources.md S##, why: "<one line>"} per relevant source)
-SUBAGENT  in its OWN clean context: opens the ref'd sources.md, reads ONLY the
-          picked S## entries (no free browsing), expands each into a _CITATION_
-          card (format below), writes _CITATION_{stage}.md directly, returns a
-          one-line summary + counts ("12 cards, 5 VERIFIED / 7 🔍").
+input     the section's `target:` QA file + its `sources:` lane line
+          (the QA file's Answer anchors name the sources.md S## entries)
+SUBAGENT  in its OWN clean context: opens the QA file, follows its anchors into
+          the leaf's sources.md, reads ONLY the anchored S## entries (no free
+          browsing), expands each into a _CITATION_ entry (format below), writes
+          _CITATION_{stage}.md directly, returns a one-line summary + counts
+          ("12 entries, 5 VERIFIED / 7 🔍").
 WORKER    mechanical acceptance, WITHOUT reading project files:
-          cards == pick_list count? every card has summary/finding/anchor?
+          entries == anchor count? every entry has summary/finding/anchor?
           `grep -c '@' == 0` (no bibtex)? -> log to _LOG + index on pass;
           re-dispatch the subagent with the failure note on fail.
 ```
@@ -130,7 +154,7 @@ The paper session never reads sources.md in either role; content-level quality i
 
 Procedure (inside the subagent):
 
-1. Establish the source set from the pick_list; open the ref'd discovery's `sources.md` and read only the picked entries.
+1. Establish the source set from the QA file's `## Answer` anchors; open the leaf's `sources.md` and read ONLY the anchored entries.
 2. Write/extend `_CITATION_{stage}.md`: NEVER tables. Group by literature/theme (`##` sections); one paper per `###` subsection with FULL title in the heading and bullet fields transcribed from the manifest:
 
 ```
@@ -219,34 +243,44 @@ Also process any `> USER:` comments requesting citations (e.g., "needs cite here
 ## Phase 2: ROUTE (search is RETIRED — JL 2026-07-07: "search should be done with haipipe-discovery-orchestrated agent")
 
 This worker NEVER searches. Not WebSearch, not Semantic Scholar, not a
-side-channel agent — a citation found any way other than the gateway has no
+side-channel agent — a citation found any way other than the PROBE phase's DISPATCH has no
 reviewer and no ledger home, and skips the mechanical acceptance that guards
 _CITATION_. There is exactly ONE door for a citation to enter this document:
 
 ```
-Phase-1 gap  →  probe-plan suggestion (PP skeleton: Need / Why / Route)
-             →  the PROBE hub (haipipe-paper-probe) dispatches
-                Agent(haipipe-probe-orchestrator-agent)
-             →  gateway SWEEP: reuse an existing discovery | ENRICH it
-                (small deltas — the cheap path for "one cite for this
-                sentence") | fresh discovery for a new topic
-             →  sources land in discoveries/<...>/sources.md, reviewer-checked
-             →  the return's pick_list → HARVEST (below) → _CITATION_ cards
+Phase-1 gap  →  a question SECTION in 1-probes/PPNN_<topic>.md (serves / target /
+                state / commission / reading)
+             →  the PROBE hub (haipipe-paper-probe) runs ② MATCH against the bank's
+                QA corpus first — a citation already established by an existing
+                discovery is a T2 REUSE and costs one grep and one read
+             →  only if MATCH cannot close it, the hub DISPATCHES the section's
+                `commission:` block, VERBATIM, to
+                Agent(haipipe-discovery-orchestrator-agent)
+                (💀 the probe GATEWAY agent is RETIRED)
+             →  the executor runs its own qa gate; sources land in
+                discoveries/<leaf>/sources.md, reviewer-checked, and the readable
+                digest lands at discoveries/<leaf>/QA/<n>-<slug>.md
+             →  the section's `target:` points at that QA FILE; its `## Answer`
+                anchors ([→ sources.md#S02]) are what this worker transcribes
+                → HARVEST (below) → _CITATION_ entries
 ```
 
-Phase 2 therefore produces probe-plan suggestions, not papers: for each Phase-1 gap
+Phase 2 therefore produces question SECTIONS, not papers: for each Phase-1 gap
 write the one-line Need (+ Why + Route hint: single-lookup → ENRICH; landscape
 → discovery Review; claim question → mode full) and hand the list to the hub.
-"light"/"full" mean ONLY the gateway modes (light = explore+gather, full =
-+judge) — never an inline shortcut tier.
+"light"/"full" are the PROBE FILE's `mode:` (light = the answer is read and
+interpreted; full = the answer is additionally JUDGED by
+Agent(haipipe-probe-reviewer-agent), and the judgment lands in 1-claims.md) —
+never an inline shortcut tier.
 
-**Paper-local sweep BEFORE any probe plan** (JL 2026-07-10: "you can check
+**Paper-local sweep BEFORE raising any question** (JL 2026-07-10: "you can check
 previous stage's _CITATION instead of do the heavy one"). A gap is only a gap
-if the paper hasn't already solved it: before writing a PP skeleton, grep the
+if the paper hasn't already solved it: before opening a new question SECTION, grep the
 OTHER stages' `_CITATION_*.md` maps (pitch, narrative, sibling sections), the
-.bib, AND prior stages' `read|verdicted` PP cards for the topic — their
-`pick_list`/`refs` point at already-reviewed `discoveries/*/sources.md`
-(pointer-following: the card names the path, so reading it is legal here). A match is ADOPTED — copy the entry into this section's
+.bib, AND prior stages' `answered | read | answered-local` probe SECTIONS for the
+topic — their `target:` / `sources:` lanes point at an already-reviewed
+`discoveries/<leaf>/QA/<n>-<slug>.md` and the `sources.md` it anchors
+(pointer-following: the section names the path, so reading it is legal here). A match is ADOPTED — copy the entry into this section's
 _CITATION_ with `Note: adopted from _CITATION_<stage>.md`, keeping its status
 and provenance: a ✅/📌 elsewhere means the key is in .bib → re-grep the .bib to confirm
 (HB3 — the sibling's verdict is a pointer, not proof), then PLACE it here; a 🔍 there stays 🔍 here (same candidate, same pending human
@@ -257,7 +291,7 @@ curated indexes.
 
 ## Phase 3: CANDIDATE → _CITATION_
 
-Write harvested results (from the gateway's pick_list, via HARVEST above) as 🔍 CANDIDATE entries in `_CITATION_N-section.md`.
+Write harvested results (from the answering QA file's source anchors, via HARVEST above) as 🔍 CANDIDATE entries in `_CITATION_N-section.md`.
 
 ### Candidate entry format (agent-found, NOT in .bib yet)
 
@@ -476,7 +510,7 @@ acceptance grep `grep -c '^|' == 0` runs on this whole file)
 
 ## Open items
 
-- [describe any remaining gaps, probe plans, or issues]
+- [describe any remaining gaps, open question SECTIONS, or issues]
 ```
 
 Organization rules:
@@ -495,7 +529,7 @@ Organization rules:
 ```
 
 All three are HARVESTERS (the harvest step of the one probe pipeline — they
-follow pointers the gateway return names, never find things), each with its
+follow pointers the answering QA file names, never find things), each with its
 own document lifecycle:
 - citation: AUDIT → ROUTE → CANDIDATE(harvest) → PLACE → REVIEW
 - values:   AUDIT → ROUTE → CANDIDATE(harvest) → PLACE → REVIEW
@@ -510,9 +544,8 @@ Each owns one working-doc type. All three are fully automatic (human review happ
 |---|---|
 | Probe citations for a section (audit + route + harvest + place) | **this skill**, Phase 1-4 (automatic) |
 | Pre-submission citation walk | **this skill**, Phase 5 |
-| ANY citation acquisition (single lookup, topic, landscape, claim) | the PROBE hub → gateway (the only door) |
-| Quick bib hygiene (placeholders, duplicates) | /citation-verifier |
-| Cross-model autonomous citation audit | /citation-audit |
+| ANY citation acquisition (single lookup, topic, landscape, claim) | the PROBE hub → DISPATCH to Agent(haipipe-discovery-orchestrator-agent) (the only door) |
+| Quick bib hygiene (placeholders, duplicates) | **this skill**, AUDIT verb |
 
 
 ## Done criteria

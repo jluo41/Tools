@@ -36,5 +36,5 @@ Panel 1: Summary KPIs (top row, 3 cards)
 [ ] KPI cards have current, trend, target
 [ ] Drill-down paths specified
 [ ] Refresh cadence noted
-[ ] cited_K / cited_W in frontmatter
+[ ] cites: in frontmatter (C## + PP##)
 ```

@@ -4,9 +4,9 @@ description: "CHECK phase worker (internal) -- the only human-involved phase, ru
 argument-hint: "[stage: seed|claims|pitch|narrative|display|section-edit|draft] [--persona strict|balanced|creative|lenient] [--unattended[=Ns]]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.0.0"
-  last_updated: "2026-07-07"
-  summary: "Paper-check 1.7.0 enforcement port (alignment round 2, R2): step 1 Run executes ./checks.sh (markdown-safe subset) + the probe-card checker, any ❌/FAIL blocks the gate green; > CHECK: comments seeded in 0-lifecycle stage docs ONLY (R2c RULED: artifacts stay clean, artifact findings → Gate Ledger notes); revise reads the threads + > USER: replies. Persona/attendance, venue-scaled depth, and the Gate Ledger row format unchanged."
+  version: "4.1.0"
+  last_updated: "2026-07-14"
+  summary: "Paper-check 1.7.0 enforcement port (alignment round 2, R2): step 1 Run executes ./checks.sh (markdown-safe subset) + the probe-card checker, any ❌/FAIL blocks the gate green; > CHECK: comments seeded in 0-lifecycle stage docs ONLY (R2c RULED: artifacts stay clean, artifact findings → Gate Ledger notes); revise reads the threads + > USER: replies. Persona/attendance, venue-scaled depth, and the Gate Ledger row format unchanged. v4.1.0 (probe redesign, Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3 approved JL 2026-07-14): the step-2 checker call now describes the rewritten check-probe-cards.sh, which verifies probe FILES and their question SECTIONS: a `state: planned` section (a question never asked), an OVERDUE `commissioned` section (a build past its eta with no answer), a LAW2-commission-leak (the stake crossing into the executor's payload), and a LAW2-consumer-vocab FAIL on a bank QA/*.md (a consumer session wrote in the bank) each BLOCK the gate green. checks.sh now excludes 1-probes/ from its markdown scan -- probe files belong to the probe checker."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -35,7 +35,7 @@ Two checkers open every CHECK, before the judgment ask. They fire at EVERY venue
 
 1. Deterministic markdown checks -- `./checks.sh <artifact-or-dir> [--md <working-doc>] ...` (this folder; `--md` repeatable, `--depth N` widens the dir scan). Em-dash (❌, house rule), AI-voice tells (⚠️), TODO/FIXME (❌), bibtex-in-markdown (❌). Paste its ✅/⚠️/❌ lines into the CHECK report verbatim; exit 0 = no ❌. Paper's tex checks (`\cite`/`\ref`/`\label`, Pn.Sn, `--compile`) are deliberately absent -- application artifacts are markdown.
 
-2. Probe-card invariants -- `sh ../../1-probe/haipipe-application-probe/check-probe-cards.sh <intervention_root>`. Any FAIL line (a `status: planned|dispatched|failed` card, a dangling ref, a `harvest: OWED` lane) means the gate CANNOT go green: a planned card surviving to CHECK is a probe that never ran.
+2. Probe invariants -- `sh ../../1-probe/haipipe-application-probe/check-probe-cards.sh <intervention_root> [--stage <key>]` (the script keeps its legacy filename; it checks probe FILES and their question SECTIONS). Any FAIL line means the gate CANNOT go green: a `state: planned` section surviving to CHECK is a question that was never asked; an OVERDUE `commissioned` section is a build that missed its eta with no answer; a `LAW2-commission-leak` is the intervention's stake crossing into the executor's payload; a `LAW2-consumer-vocab` FAIL on a bank `QA/*.md` means a consumer session wrote in the bank (LAW 1 broken). Also FAILs a dangling `target:` and a `harvest: OWED` lane.
 
 A mechanical ❌/FAIL is not a judgment call: no persona preset, no `--unattended` timeout, and no venue-profile override can approve over it. Fix (revise), re-run, then proceed to the judgment ask.
 
@@ -95,7 +95,7 @@ display:       every primary claim has a content element? every element has a jo
 section-edit:  every section's prose does its assigned job? flagged NEEDs resolved
                or explicitly parked?
 draft:         venue self-review checklist passes? audience constraints met? artifact
-               cites only ledger-backed claims (cited_K/W resolve)?
+               cites only ledger-backed claims (every cites: entry resolves)?
 ```
 
 Persona presets (unattended stand-in ONLY)

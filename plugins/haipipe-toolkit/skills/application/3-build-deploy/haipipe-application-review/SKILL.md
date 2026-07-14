@@ -4,9 +4,9 @@ description: "Artifact review for the intervention lifecycle. Checks each drafte
 argument-hint: "[artifact-id] [intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-07-06"
-  summary: "Artifact review — audience fit, claim traceability, compliance. Paper-alignment sweep: old-spine paths (3-design/4-variants/2-claims.md) replaced; retired verdict word removed."
+  version: "1.1.1"
+  last_updated: "2026-07-14"
+  summary: "Artifact review — audience fit, claim traceability, compliance. Paper-alignment sweep: old-spine paths (3-design/4-variants/2-claims.md) replaced; retired verdict word removed. v1.1.1 (probe redesign, Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3): the claim-traceability check traced to 'the PP card that settled it' — a RETIRED artifact. It now traces to a supported claim in 1-claims.md plus the probe SECTION (`PP<NN> § Q<n>`) whose `target:` names the answering QA file."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -27,12 +27,14 @@ Per artifact in `0-artifacts/`:
     (per _audience/profile-<audience>/ and ref/audience-requirements.md)
 
 [ ] Claim traceability: every factual claim in the artifact traces
-    to a cited_K or cited_W in frontmatter
+    to a cites: entry in frontmatter — a supported ledger claim (C##)
+    in 1-claims.md, and the probe SECTION whose evidence settled it
+    (`PP<NN> § Q<n>`, whose target: names the answering QA file)
 
-[ ] No contested/superseded K/W cited as settled evidence
+[ ] No weak/GAP/refuted claim cited as settled evidence
 
 [ ] Citation format matches audience rules
-    (patient: no K-id in body; clinician: inline K-id; etc.)
+    (patient: no C-id in body; clinician: inline C-id; etc.)
 
 [ ] Element specs from 0-lifecycle/4-display/4-display.md (when present)
     and the venue style-profile followed

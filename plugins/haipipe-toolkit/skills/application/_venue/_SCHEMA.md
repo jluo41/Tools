@@ -51,19 +51,19 @@ The venue-FREE claims ledger always has the same shape; this field sets
 the SETTLEMENT BAR its CHECK gate applies before artifact work
 (spec: claims skill §Settlement Gate):
 
-- **light**: every claim the artifact leans on tied to a named K/W or
-  "common knowledge"; GAPs allowed if not load-bearing
+- **light**: every claim the artifact leans on tied to a named ledger
+  claim (C##) or "common knowledge"; GAPs allowed if not load-bearing
 - **medium**: primary claims supported or weak-with-caveat; load-bearing
-  GAPs have probe cards
+  GAPs have a question SECTION in 1-probes/
 - **full**: primary claims supported by judged verdicts; load-bearing
-  GAPs verdicted
+  GAPs settled (supported | refuted | inconclusive, in 1-claims.md)
 
 
 Venue template (in README.md)
 ===============================
 
 For venues that skip narrative/display/section-edit, the venue template
-replaces those stages with a fixed output structure (the K/W-to-slot
+replaces those stages with a fixed output structure (the claim-to-slot
 mapping happens at draft, venue-ALIGNED — never in claims):
 
 ```yaml

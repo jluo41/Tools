@@ -43,7 +43,7 @@ Drill-down arc:
 ### → Display (required)
 Display map: each panel/widget gets a type (metric-card, line-chart,
 bar-chart, table, action-list), a claim, a per-unit Job ("show
-current vs target"), an evidence anchor (K-id), and a data source
+current vs target"), an evidence anchor (C## + PP##), and a data source
 (task or endpoint). The per-unit Job is the absorbed minimap concern.
 
 ### → Section-edit (required)

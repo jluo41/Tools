@@ -1,1 +1,0 @@
-../skills/insight/agents/reviewers/index-integrity-auditor-agent.md

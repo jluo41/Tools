@@ -4,9 +4,9 @@ description: "Create or update the paper folder's 0-lifecycle/2-pitch/2-pitch.md
 argument-hint: "[paper-dir] [--reason <slug>] [--source <path-or-note>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.2.0"
-  last_updated: "2026-07-09"
-  summary: "Pitch stage orchestrator. Defines WHAT (cover letter sections + probes) and drives phases (draft -> probe -> revise -> check) internally. User invokes pitch, not phases."
+  version: "4.3.1"
+  last_updated: "2026-07-14"
+  summary: "Pitch stage orchestrator. Defines WHAT (cover letter sections + probes) and drives phases (draft -> probe -> revise -> check) internally. User invokes pitch, not phases. v4.3 (probe-redesign residue sweep): pitch questions are SECTIONS in 1-probes/; a semantic shift cites a landed QA file or a `read` section, not a 'card'. v4.3.1: every shared-convention pointer was off by one `../` — `../../PHILOSOPHY.md` / `../../wiki/<page>.md` resolved to 1-lifecycle/, which holds neither. The stage skills sit TWO levels under skills/paper/ (1-lifecycle/<N>-<stage>/<skill>/), so the correct depth is `../../../`. Every required-read at the top of this skill silently failed. Repointed."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -33,14 +33,14 @@ What is still fragile?
 How did the story get here?
 ```
 
-Read first: `../../PHILOSOPHY.md`, `../../wiki/04-lifecycle-map.md`.
+Read first: `../../../PHILOSOPHY.md`, `../../../wiki/04-lifecycle-map.md`.
 
 ## Artifact Spec
 
 **Files produced:**
 - `0-lifecycle/2-pitch/2-pitch.md` -- the cover letter (venue-ALIGNED)
 - `0-lifecycle/2-pitch/_LOG_2-pitch.md` -- changelog with provenance
-- `0-lifecycle/2-pitch/_PROBE/` -- probe plans for pitch-level investigation
+- `1-probes/PPNN_<topic>.md` -- the probe FILES; a pitch-level question becomes a SECTION (flat cross-stage pool; `serves: 2-pitch`)
 
 **Content structure (2-pitch.md):**
 - Title -- <=15 words, specific, evocative
@@ -86,7 +86,7 @@ When the user invokes `/haipipe-paper pitch`, this skill drives the phases in or
 
 **Hard gates (binding).** After DRAFT: ⛔ STOP — present the draft for review and end the turn; the user's verb/"go" advances, logged as `[GATE] draft-review: approved` quoting the user. Each phase runs via its `Skill()` dispatch — a phase executed inline did not happen; the `[REVISE]` _LOG entry carries its `workers:` proof line. Never commit or conclude the stage before CHECK opens with its report. The agent never self-advances past a gate.
 
-**Comment rules (binding).** The agent NEVER deletes, rewords, or relocates a `> USER:` comment; it replies `> CC:` underneath; only the user resolves a thread; resolved threads MOVE to `_LOG` verbatim. Working files are edited surgically — no full-file rewrite of a file carrying `> USER:` comments. Background: `../../wiki/02-comment-lifecycle.md`.
+**Comment rules (binding).** The agent NEVER deletes, rewords, or relocates a `> USER:` comment; it replies `> CC:` underneath; only the user resolves a thread; resolved threads MOVE to `_LOG` verbatim. Working files are edited surgically — no full-file rewrite of a file carrying `> USER:` comments. Background: `../../../wiki/02-comment-lifecycle.md`.
 
 ```
 pitch invoked
@@ -115,16 +115,16 @@ REVISE ─→ refine prose, apply 8 readability rules from ref/pitch-readability
           (internally calls /haipipe-paper-revise; [REVISE] _LOG entry carries workers: proof)
   │
   ▼
-CHECK ──→ present exit gate per ../../wiki/08-stage-gate.md:
+CHECK ──→ present exit gate per ../../../wiki/08-stage-gate.md:
           quality gate checklist (see below), template enforcement,
           Editor's Chair Test passes, readability rules pass
           user confirms → advance to narrative
           (internally calls /haipipe-paper-check)
 ```
 
-Phase visibility per the Phase Transition Contract in `../../wiki/08-stage-gate.md`: announce every phase boundary (reply line + `[PHASE]` entry in `_LOG` + phase-line 🔥 moves); skip a phase only by an explicit logged verdict (`[PROBE] skipped -- <reason>`, phase line shows `--`); CHECK is never implicit -- it opens by presenting the exit-criteria report and the approval ask.
+Phase visibility per the Phase Transition Contract in `../../../wiki/08-stage-gate.md`: announce every phase boundary (reply line + `[PHASE]` entry in `_LOG` + phase-line 🔥 moves); skip a phase only by an explicit logged verdict (`[PROBE] skipped -- <reason>`, phase line shows `--`); CHECK is never implicit -- it opens by presenting the exit-criteria report and the approval ask.
 
-Comment lifecycle per `../../wiki/02-comment-lifecycle.md`: comments live in 2-pitch.md while active, move to _LOG on resolve, each phase starts clean.
+Comment lifecycle per `../../../wiki/02-comment-lifecycle.md`: comments live in 2-pitch.md while active, move to _LOG on resolve, each phase starts clean.
 
 ### Quality gate checklist (CHECK phase)
 
@@ -207,7 +207,7 @@ Archived:
 - archive/v02_<reason>.md
 
 Source:
-- <author decision / discovery / task / probe / insight / review>
+- <author decision / discovery / task / probe / review>
 
 Change:
 - Old: ...
@@ -227,7 +227,7 @@ Next:
 
 1. **One minute or it failed.** `2-pitch.md` should be readable in one minute. Keep it short enough to fit on one screen.
 2. **Pitch can start as intuition.** A seed pitch may cite author judgment, a research review, or a rough direction.
-3. **Later shifts need sources.** Every semantic shift after the seed should cite a source: `discoveries/`, `tasks/`, stage `_PROBE/` cards, `insights/`, reviewer feedback, venue strategy, or an explicit author decision.
+3. **Later shifts need sources.** Every semantic shift after the seed should cite a source: a landed QA file in `discoveries/` or `tasks/`, a `read` section in `1-probes/`, reviewer feedback, venue strategy, or an explicit author decision.
 4. **Archive semantic versions only.** Archive when the story state changes (`seed -> discovery-shift`, `accuracy -> robustness`, `method-first -> application-first`), not for typo edits.
 5. **Do not write the paper here.** Abstract, intro, section plan, and LaTeX belong downstream. This skill only maintains the story kernel.
 5b. **Pitch is the cover letter.** The pitch IS the venue-ALIGNED cover letter. It can be sent to the editor as-is. It tells THIS editor why THIS paper fits THEIR journal. Venue pinning (STATUS `venue`) must happen before or during pitch. If no venue is pinned, run `/haipipe-paper venue` first.
@@ -243,6 +243,8 @@ Next:
 
 ```
 0-seed.md        why this paper might exist (venue-FREE)
+    ↓
+1-resource.md    what must EXIST for this paper to be testable (venue-FREE)
     ↓
 1-claims.md      claim/evidence inventory (venue-FREE)
     ↓

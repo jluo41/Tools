@@ -4,7 +4,22 @@ haipipe-paper-display — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 4.1.0 — 2026-07-14
+
+- Evidence lane: "claim has no confirmed verdict yet -> buffer a PP card" -> "claim's status not settled yet -> raise a question SECTION"; the stage never dispatches an evidence agent itself.
+- Naming made consistent: the md's fixed section is `Probes` (was "Probe Plan" in the formatting rule, the DRAFT gate line, and the CHECKLIST while the template already said `Probes`).
+- ref/display-template.md: an evidence entry's `Route:` is a question SECTION or `/haipipe-task-for-display` — never `/haipipe-probe`.
+
+## [4.1.1] — 2026-07-14 — the required-reads were off by one `../`
+
+Fixed
+- **The first instruction in this skill pointed at nothing.** `Read first: ../../PHILOSOPHY.md, ../../wiki/04-lifecycle-map.md` — but this skill lives at `skills/paper/1-lifecycle/<N>-<stage>/<skill>/`, so `../../` is `1-lifecycle/`, which holds neither `PHILOSOPHY.md` nor `wiki/`. Both live one level further up, at `skills/paper/`. Every in-body citation (`../../wiki/08-stage-gate.md`, `../../wiki/02-comment-lifecycle.md`, `../../wiki/09-stage-illuminate.md`, `../../wiki/11-delivery-need.md`, `../../_venue/playbook-<venue>`) failed the same way, silently — an agent loading the philosophy and the stage-gate rules got file-not-found and proceeded without them. All repointed to `../../../`; every target verified to resolve on disk.
+
 ## [3.4.0] -- 2026-07-10
+## 4.0.0 — 2026-07-14
+
+- PROBE REDESIGN (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14 — R1-R18). 1-probe-plans/ -> 1-probes/ (PPNN_<topic>.md, one file per TOPIC, one SECTION per question: serves/target/state/commission/reading + ONE `## Why` per file holding the stake). Binding is by PATH: a section's `target:` points at the answering `<leaf>/QA/<n>-<slug>.md` in the bank. DELETED: `## Verdict`, the `verdicted` and `dispatched` states, `_ASK/`/`_ANS/` stubs, `answers:`, and Agent(haipipe-probe-orchestrator-agent) (the GATEWAY — archived + de-registered). A claim's STATUS now lives ONLY in 0-lifecycle/1-claims/1-claims.md. Dispatch is now DIRECT: the section's `commission:` block, VERBATIM, to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent).
+- Display's `Detail:` pointers and the probe-buffer route move to 1-probes/PPNN_<topic>.md sections.
 
 Changed (JL ruling 2026-07-10: "the probe plan should be like the subsection, and like others, just like seed-template.md -- could we make things consistent?")
 - `Probe Plan` section renamed **`Probes`** and reshaped to the seed/claims family convention: each probe is its own `###` sub-item `<ID> -- <title> -- <status>` with `Lane:` / `Route:` / `Serves:` / `Gated on:` / `Outcome:` field lines, `---` separated; evidence entries carry the family's `Detail: _PROBE/PPNN_<slug>.md` pointer. IDs still number within lane (S sweep / E evidence / R render); status vocabulary spelled out (`▶ ready` · `✋ gated` · `done`). PROBE fills `Outcome:` and flips status.

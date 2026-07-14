@@ -105,7 +105,7 @@ Keyword -> skill map (first/most-specific match wins):
 seed                                    -> haipipe-application-seed
 pitch                                   -> haipipe-application-pitch
 venue, modality, channel pick           -> haipipe-application-venue
-claims, claim, K/W select, settlement   -> haipipe-application-claims
+claims, claim, ledger, settlement       -> haipipe-application-claims
 narrative                               -> haipipe-application-narrative
 display, panel, widget, content elem,
   minimap, unit job                     -> haipipe-application-display
@@ -113,7 +113,8 @@ section-edit, section, §N               -> haipipe-application-section-edit
 lifecycle orchestration                 -> haipipe-application-lifecycle
 draft, write, generate SMS, the message,
   artifact, compose                     -> haipipe-application-artifact
-probe, evidence dispatch, PPNN card     -> haipipe-application-probe
+probe, evidence dispatch, probe file,
+  question section, commission          -> haipipe-application-probe
 review                                  -> haipipe-application-review
 deploy, ship, send, go live             -> haipipe-application-deploy
 claim-audit, evidence check             -> haipipe-application-claim-audit

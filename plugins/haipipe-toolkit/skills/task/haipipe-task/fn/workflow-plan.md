@@ -194,7 +194,6 @@ task_folder: <path relative to project root>
 input:
   args:
     config: configs/<run_name>.yaml
-    probe_ref: <if applicable>
   files_in:
     - <script>.py
     - configs/<run_name>.yaml

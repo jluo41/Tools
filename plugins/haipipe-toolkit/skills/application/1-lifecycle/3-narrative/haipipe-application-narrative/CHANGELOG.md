@@ -3,6 +3,10 @@ haipipe-application-narrative — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [4.1.0] — 2026-07-14
+
+Changed (PROBE LAYER REDESIGN — Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14)
+- A beat exposing a NEW evidence gap now RAISES A QUESTION as a SECTION in `1-probes/` (`serves: 1-claims`) — not a card in a per-stage `_PROBE/` folder (RETIRED). Narrative still never gathers evidence here.
 
 ## [1.0.0] — 2026-06-22
 

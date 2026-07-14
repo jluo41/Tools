@@ -4,6 +4,91 @@ haipipe-toolkit — Changelog
 Plugin-level rollup. Per-layer detail lives in each layer's own `skills/<LAYER>/CHANGELOG.md`. Newest first.
 
 
+## [Unreleased] — 2026-07-14
+
+**PROBE LAYER v3 — the probe becomes a paper-level Q/A map; the bank becomes probe-unaware.**
+Spec of record: `Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/` (APPROVED by JL 2026-07-14, rulings R1-R18). The operative
+form is `skills/probe/haipipe-probe/SKILL.md` v8.0.0 — the constitution; where any doc disagrees
+with it, it wins.
+
+The model in one paragraph. A PROBE is a PAPER-LEVEL DOCUMENT and nothing else:
+`papers/<P>/1-probes/PPNN_<topic>.md` (and `applications/<A>/1-probes/`, same shape). One file
+per TOPIC; each question the DRAFT stage raised is ONE SECTION (`serves:` / `target:` / `state:`
+/ `commission:` / `reading:`), plus ONE `## Why` per file holding the stake, which never leaves
+the file. **Binding is by PATH, never by id** (R1): PP numbers are paper-local footnote numbers,
+so two papers may both carry a PP04 and nothing collides — no PP id ever crosses to the bank.
+
+The bank (`tasks/` + `discoveries/`) is **PROBE-UNAWARE** (R2): no `_ASK/`, no `_ANS/`, no
+`answers:` field, no PP id anywhere. It answers plain questions through its own new `qa` verb
+(R11) — `/haipipe-task qa "<question>" [<leaf>]` and `/haipipe-discovery qa` — which gates
+① QA SCAN → ② DIGEST → ③ P-B-E-R (or 🚫 REFUSE) and returns `<leaf>/QA/<n>-<slug>.md`: the
+executor's READABLE digest, numbered so `ls QA/` IS the index (R9, both banks). The `qa` verb has
+THREE callers: a human exploring, the orchestrator itself (self-directed answerability work), and
+a paper's probe DISPATCH (R18). **The probe CAUSES a QA file; the EXECUTOR AUTHORS it** (CC-8).
+
+TWO SESSION MODES (R17): the LEFT executor session runs P-B-E-R for its own sake — the bank grows
+autonomously — and only the RIGHT consumer session asks. So most probes should land on T2 REUSE
+and a commission is the EXCEPTION, not the norm.
+
+TWO LAWS. LAW 1: a consumer session NEVER executes task/discovery work inline — dispatch means
+handing the `commission` block, VERBATIM, and nothing else (never `## Why`, never the probe file,
+never the paper). LAW 2: backstop lint on two surfaces — probe commissions carry no `C\d`/`H\d`/
+stake words; bank `QA/*.md` carry no consumer vocabulary.
+
+RETIRED / DELETED:
+- `haipipe-probe-orchestrator-agent` (the evidence GATEWAY) — archived + de-registered. Its SWEEP
+  became the paper-side MATCH; its dispatch is now a DIRECT `Agent()` call on
+  `haipipe-task-orchestrator-agent` / `haipipe-discovery-orchestrator-agent`, whose clean context
+  IS the wall. SURVIVING: the `haipipe-probe-review` skill + `haipipe-probe-reviewer-agent`
+  (paper-side claim judging).
+- `_ASK/` + `_ANS/` mailboxes · the `answers:` return field · `probes.ledger` · project-unique PP
+  ids · the probe-aware `asks` verb (reborn probe-unaware as `qa`) · "Verdict" / `verdicted` as a
+  probe term (claim status now lives in `1-claims.md`, per-claim, per-paper, private).
+  ⚠️ A DISCOVERY's own `verdict.md` (the Review-type terminal file) is a DIFFERENT thing and it
+  SURVIVES.
+- Vocabulary: `card` → **probe** (allowlist rename only — ~90 of 941 uses in this repo mean other
+  things: poster card styles, venue-ui-card, KPI cards, `_CITATION_` cards, "model card").
+  `1-probe-plans/` → `1-probes/`. "row" / "table" → BANNED; say **Q-paper** / **SECTION**.
+  "Takeaways" → `reading`. `check-probe-cards.sh` KEEPS its filename (65 refs / 33 files); only
+  its internals were rewritten.
+
+Root docs rewritten to v3: `ARCHITECTURE.md` (the probe section, the writer table, the two session
+modes, the five-step loop, the cost ladder, the two LAWS, status derivation, the project layout —
+`QA/` in, `_ASK/` out), `skills/STRUCTURE.md`, `README.md` (the research-axis verbs + glossary),
+`USAGE.md` (the whole probe.yaml-era recipe book replaced: the 4 worlds, the qa verb, the probe
+loop; the dangling `MENTAL_MODEL.md` / `probe-yaml-schema.md` / `fn/bridge.md` refs removed).
+
+Cross-cutting sweep (surfaces outside the layer buckets):
+- `skills/0_utils/haipipe-run-timeline/SKILL.md` 1.0.0 → **1.1.0**. Its worked example dispatched
+  the retired gateway agent and wrote a `probe.yaml`. Re-cut to the live doors (direct
+  `haipipe-task-orchestrator-agent` / `haipipe-discovery-orchestrator-agent`, ending in a
+  `<leaf>/QA/<n>-<slug>.md` write), plus a new LAW-1 audit rule: **a Write into `tasks/` or
+  `discoveries/` from the consumer lane (L0) is the leak this timeline exists to catch.**
+  (The `0_utils` bucket keeps no CHANGELOG.md of its own; the bump is recorded here and in the
+  skill's `metadata.summary`.)
+- `skills/insight/README.md` + `CHANGELOG.md` — the tombstone stays retired; only its forward
+  pointers were corrected. They named the PPNN card's `## Verdict`, the `_ASK/` stub chain, and
+  the gateway SWEEP — all three now dead. K now splits (general FACT → the executor's QA file;
+  paper-specific JUDGMENT → `1-claims.md`); W is a probe SECTION reaching the `qa` verb;
+  cross-consumer reuse is a plain grep of the bank's QA corpus.
+- **`agents/` (plugin root) — 12 of 14 registrations were DANGLING symlinks; removed.** All 12
+  pointed at RETIRED agents whose sources no longer exist at the linked path: the 8 insight
+  `card-creator-*` / `card-reviewer-*` agents + `index-integrity-auditor-agent` (moved to
+  `skills/insight/_archive/` on 2026-07-12 and de-registered from `~/.claude/agents/`, but never
+  from HERE), and `claim-verifier-agent` / `probe-integrity-auditor-agent` /
+  `probe-structural-reviewer-agent` (the three Judge agents merged into
+  `haipipe-probe-reviewer-agent` on 2026-06-23; their `skills/probe/haipipe-probe/agents/` source
+  folder is long gone). A broken symlink in a registration directory is not history — history
+  lives in `_archive/` and in CHANGELOGs. This enforces the standing rule stated in
+  `skills/probe/agents/README.md`: **anything under `_archive/` is NEVER registered.** Two live
+  registrations remain: `haipipe-task-creator-agent`, `haipipe-task-reviewer-agent`. (Predates the
+  probe v3 work — found by its cross-cutting sweep.)
+
+Per-layer detail: `skills/probe/haipipe-probe/CHANGELOG.md`, `skills/probe/agents/CHANGELOG.md`,
+`skills/task/haipipe-task/CHANGELOG.md`, `skills/discovery/haipipe-discovery/CHANGELOG.md`,
+`skills/paper/…`, `skills/application/…`, `skills/project/CHANGELOG.md` (3.2.0).
+
+
 ## [Unreleased] — 2026-07-03
 
 Discovery layer v2.5.0: type specialist skills haipipe-discovery-search /

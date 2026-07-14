@@ -1,0 +1,249 @@
+5 — STATUS AND OPEN ITEMS
+==========================
+
+  Everything you have to decide. What shipped. What is still owed.
+  This file is the one to read if you read only one.
+
+
+⚠️  WHAT YOU MUST DECIDE
+=========================
+
+🔴 BLOCKING — settle these before running ANYTHING against real project data
+--------------------------------------------------------------------------
+
+```text
+  1. COMMIT?
+     288+ files sit uncommitted in the Tools submodule. Three sessions of design and
+     implementation. Right now a bad run has NO ROLLBACK.
+     Everything below assumes this happens first.
+
+
+  2. THE LEGACY DATA — three projects are in a shape the new skills REJECT.
+
+     ScalingLaw         papers/…/1-probe-plans/PP04_stale-headline-numbers.md
+                        (retired folder · uses `status:` not `state:`)
+                        tasks/…/B4_fit_scaling_law/_ASK/PP04_…
+                        (_ASK/ is now a HARD FAIL — the bank must be probe-unaware)
+
+     PersonalizedModel  discoveries/…/_ASK/PP01, PP02        (same)
+
+     everywhere         39 legacy per-stage _PROBE/ cards
+
+     ⇒ Do we migrate these deliberately, in one pass?
+       Or leave them, let the checker fail them, and migrate on first touch?
+
+     ⚠️ If you open /haipipe-paper on ScalingLaw today, this is what it meets.
+        Not dangerous — but you would be doing the migration BY ACCIDENT.
+
+
+  3. THE TASK-FOLDER NAMING LAW IS A FICTION.       ← I had this filed as "parked".
+                                                       It is not. It blocks STEP 2.
+
+     the spec says:    tasks/<group>/<NN>_<name>/       e.g.  01_column_scan
+     your disk says:   B4_fit_scaling_law
+                       C3-Visual-ForecastScaling         ← hyphens, not underscores
+                       B6a1_fairness
+                       B0_store_inspect … B6f_crosscompare
+
+     NOT ONE real leaf in ScalingLaw matches {NN}_.
+
+     ⇒ any glob on `[0-9][0-9]_*` finds NOTHING there — and ScalingLaw is the
+       STEP 2 target.
+     ⇒ at depth-3 the qa verb would MINT `07_foo` into a project whose own
+       convention is `B7_foo`.
+
+     ⇒ Fix the SPEC to match reality (accept `<letter><digit>*` and hyphens)?
+       Or rename 18 live task folders to match the spec?
+       The spec is almost certainly the thing that is wrong.
+```
+
+
+🟠 STRUCTURAL — cheap now, expensive later
+-------------------------------------------
+
+```text
+  4. RENAME THIS FOLDER.
+     `260714-` is a SNAPSHOT name. This is a LIVING spec, and 85 SKILLS CITE THE PATH.
+     Revise the design tomorrow → 260715-*/ → all 85 pointers break again.
+     ⇒ recommend  diagram/probe-qa/  (no date). Dated copies can be snapshots.
+       The path people CITE must never move.
+
+  5. THE G2 REFIT.
+     g2_integrity_check.py's CLI expects the RETIRED probe.yaml + evidence.md. On every
+     shape v3 actually produces — a QA file, sources.md, task results — it EXITS EARLY.
+     The deterministic half of the integrity gate is DARK, and has been for a while.
+     Only bites on `mode: full` claim judging. A manual fallback is documented.
+     ⇒ Schedule the refit (`--doc <file> --sources <paths>`), or keep running manual?
+       Either way: do not trust a "G2 ✅" until this is fixed.
+```
+
+
+🟡 HYGIENE — cheap, do them in one pass
+----------------------------------------
+
+```text
+  6. application never renamed fn/probe-plans.md → fn/probes.md. The paper side did.
+     Must move on BOTH sides in one pass or they desync further.
+
+  7. task's gate ③ is labelled "P-B-E-R"; discovery's is labelled "LIFECYCLE".
+     Purely cosmetic — callers key on ①②③. But cosmetic asymmetry is how real drift starts.
+
+  8. 16 APPLICATION SKILLS ARE REGISTERED NOWHERE.
+     application exposes 4 slash-commands and dispatches 16 specialists via Skill().
+     paper exposes 43. The two consumer families disagree about the umbrella pattern.
+     ⇒ Is application's shape deliberate (and paper over-exposed), or an accident?
+```
+
+
+⬜ DEFERRED — real, but a different conversation
+------------------------------------------------
+
+```text
+  9. The T0625 orphan — a hand-written, JUDGED verdict with `deposit: pending`, aimed at
+     a paper that has zero probes. Retire it, or re-express it?
+
+ 10. Cross-project duplication. The CGM foundation-model landscape has been swept THREE
+     times by three different projects. No design here fixes it (separate repos, two
+     under another org). The cheapest fix is not architecture — it is ONE discoveries/
+     folder the others cite by path.
+
+ 11. ProjB-Bench-2-EventGlucose/insights/_raw/ — six hand-written files sitting under a
+     folder name retired on 2026-07-12.
+```
+
+
+🆕 A NEW SKILL: haipipe-session   (JL proposed 2026-07-14)
+-----------------------------------------------------------
+
+```text
+  The idea: turn a working session into a durable, readable record — this folder's
+  shape, produced on demand.
+
+  It does NOT overlap haipipe-run-timeline. They are complementary:
+
+     🛫 haipipe-run-timeline   MECHANICAL   which agents ran · when · what they wrote
+     📝 haipipe-session        EDITORIAL    what we DECIDED · why · what shipped · what's OPEN
+     ✏️  diagram-ascii          STYLE        the drawing conventions it writes in
+
+  WHERE       skills/0_utils/haipipe-session/    (next to the other two)
+  OUTPUT      <module>/diagram/YYMMDD-<slug>/    — the five files, this shape
+
+  VERBS
+     /haipipe-session write <module> <slug>   scaffold the 5 files from this session
+     /haipipe-session reply                   answer every `> JL:` inline as `>> CC{MMDD}:`
+     /haipipe-session reconcile           ⭐  RE-VERIFY the doc against the actual CODE
+
+  ⭐ `reconcile` is the only verb that really earns its keep. The other two are formatting.
+
+     A DESIGN RECORD THAT IS NOT CHECKED AGAINST THE CODE IS A LIE.
+     This very doc drifted TWICE, and both times it looked authoritative:
+       · it said "write-once" long after we replaced that with claim → complete.
+         An agent obeying it would have REJECTED every completed QA file.
+       · it wrote `superseded-by:` as REPLACING `answered`, when the shipped
+         contract APPENDS it.
+
+  THE CONVENTIONS WORTH CODIFYING (they are why this folder reads well)
+     plain language FIRST — the diagram carries the detail, not the prose
+     ≤250 lines per file · ~25% whitespace
+     spec and dialogue SEPARATED — rules short, reasoning nearby but out of the way
+     `> JL:` comments · `>> CC{MMDD}:` replies, inline, always with a diagram
+     .txt, never .md (monospace survives)
+     NO dense notation — no `**R12 ✅ —`, no inline `(JL-15)` citations
+     THE "WHAT YOU MUST DECIDE" SECTION IS MANDATORY. A session never ends without it.
+
+  ⇒ Build it?
+```
+
+
+IS IT OK TO RUN?
+=================
+
+Short answer: safe for a SCOPED SMOKE TEST. Not safe to point at a real paper yet.
+
+```text
+   ✅ VERIFIED BY ACTUAL EXECUTION            ❌ NEVER RUN, NOT ONCE
+   ─────────────────────────────────          ────────────────────────────────
+   the checker    10 fixtures × 2 copies      the qa verb itself
+                  both directions green       the five-step loop
+   set -C claim   the loser does NOT clobber  the probe → orchestrator dispatch
+   staleness      live / stale / no-started   the harvest loop (working→answered→read)
+   registration   282 resolve · 0 dangling
+   dead vocab     0 live instructions         QA/ folders on disk:      0
+   qa verb        files exist, registered     new-shape probe files:    0
+```
+
+`fn/qa.md` is a SPEC DOCUMENT. No agent has ever executed it.
+The gate is real. The machine is untested.
+
+
+The order to run it in
+-----------------------
+
+```text
+   1️⃣  COMMIT.                                    ← nothing touches examples/ before this
+
+   2️⃣  STEP 4 — `qa` digest-only on A03.          ← the smallest possible real exercise
+
+       /haipipe-task qa "Does WellDoc record any menstrual/cycle indicator?" \
+                        tasks/A03_welldoc_cycle_check
+
+       · writes ONE file (a QA digest)   · touches NO paper, NO probe, NO dispatch
+       · exercises: the qa verb · gate path ② · the QA/ contract · the state line
+                    · the bank vocabulary lint
+       · KILLS THE LIVE C6/C7 LEAK at its source
+       · fully reversible — it is one new file
+
+   3️⃣  STEP 2 — convert ScalingLaw PP04 to the new shape.
+       ⚠️ BLOCKED ON DECISION 3 (the naming law) — its target leaf is B4_fit_scaling_law.
+       This is where it gets real: a dispatch, a commission, a harvest.
+```
+
+
+WHAT SHIPPED
+=============
+
+```text
+   THE SPEC — 288 files
+   ─────────────────────────────────────────────────────────────────────────
+   probe SKILL 8.2 (the constitution) · paper-probe 4.1 · application-probe 4.2
+   🆕 task + discovery fn/qa.md — the question door   💀 fn/asks.md deleted
+   🪦 the gateway agent archived and de-registered
+
+   THE CHECKER — and it was worse than we thought
+   ─────────────────────────────────────────────────────────────────────────
+   The consumer-vocabulary lint had TWO holes that made it blind to the REAL leak: it
+   stripped every slash-bearing token (so `C6/C7` vanished before any regex saw it), and
+   it only flagged a claim id on a line that ALSO carried claim vocabulary — but the real
+   leak form is a bare bullet: `- C6: … → NO`.
+   ⇒ THE GATE WAS PASSING THE EXACT INCIDENT IT EXISTED TO CATCH.
+   Rebuilt. 10 fixtures, both copies, both directions green — including the false-positive
+   test (a commission naming a real path tasks/…/C3-Visual-…/ and horizons H1/H6 must PASS).
+   A gate that fails CORRECT work is worse than one that misses.
+
+   The adversarial pass found 6 more blockers in the state-line change, all real. Two worth
+   knowing: the match rule sent a `working` file back to DISPATCH (obeying the ruling's own
+   text would have caused THE EXACT DUPLICATE RUN it was written to prevent); and the BUILD
+   lane demanded an `eta` from a section that JOINED someone else's run — the legitimate
+   in-flight case FAILED the gate.
+
+   BEYOND THE SPEC — the skillset was dirty
+   ─────────────────────────────────────────────────────────────────────────
+   110 dangling registrations → 0 (a THIRD of the doors opened onto nothing).
+   26 files with dead machinery → 0 (worst: paper/PREFERENCES.md — a STANDING
+       PREFERENCE, loaded EVERY paper session, mandating a DELETED agent).
+   README rewritten — it had documented only half the toolkit.
+```
+
+
+WHAT IS STILL OWED
+===================
+
+All four touch `examples/` — live project data, untouched this session.
+
+```text
+   STEP 2   Convert ScalingLaw PP04 to the new probe-file shape.
+            ⚠️ blocked on DECISION 3.
+   STEP 3   Migrate 39 legacy cards out of 0-lifecycle/*/_PROBE/ into 1-probes/.
+   STEP 4   Run `qa` digest-only on A03.                      ⭐ DO THIS ONE FIRST
+   STEP 6   The full round trip, end to end, on a real paper.
+```

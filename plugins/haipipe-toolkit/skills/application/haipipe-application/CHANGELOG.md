@@ -3,6 +3,21 @@ haipipe-application — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [5.3.0] — 2026-07-14 — probe-redesign residue sweep
+
+Fixed
+- **`fn/probe-plans.md` → `fn/probes.md`.** The paper twin was renamed to `fn/probes.md` during the redesign; the application twin kept the retired-vocabulary filename and justified it in-file ("the FILENAME is legacy and stays"), while `skills/STRUCTURE.md:63` lists `1-probe-plans/` among the layer's dead words. Two names for one thing, with a rationale the other bucket had already falsified. Renamed, and all six live referrers repointed in one pass (`haipipe-application/SKILL.md:94`, `-claims:147`, `-draft:48`, `-probe:498`, `wiki/README.md:19`, `wiki/11-delivery-need.md:58`). The "legacy filename" apologies in `fn/probes.md` and `wiki/README.md` are deleted.
+- **`fn/feedback.md` routing table keyed on a retired noun.** The row read `probe, evidence dispatch, PPNN card -> haipipe-application-probe`. The route target was right, so nothing hard-failed — but this table is the keyword index a session greps to place a piece of feedback, and it advertised "PPNN card" as live vocabulary in a bucket whose own checker (`check-probe-cards.sh` check #10) FAILs card-era words. Exactly the kind of surviving noun that re-seeds the retired model into new writing. Now: `probe, evidence dispatch, probe file, question section, commission`.
+
+## [5.2.0] — 2026-07-14
+
+Changed (PROBE LAYER REDESIGN — Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14)
+- The `probe` verb re-points at `1-probes/PPNN_<topic>.md`: `"<question>"` RAISES it as a SECTION in the right topic's probe file; bare `probe` SHOWS the board (DERIVED from disk, never a stored status); `run [PPNN]` hands the open sections to `haipipe-application-probe`, which runs the five-step loop. The per-stage `_PROBE/` buffer and the `1-probe-plans/README.md` index are RETIRED.
+- The evidence-composition diagram now shows the real path: MATCH the bank's QA corpus first, then dispatch the `commission` block VERBATIM to `Agent(haipipe-task-orchestrator-agent)` / `Agent(haipipe-discovery-orchestrator-agent)`. 💀 the probe GATEWAY agent is retired — there is no tier in between.
+- Delivery-need routing: a question with no intervention behind it goes straight to `/haipipe-task qa` or `/haipipe-discovery qa` (the QA file IS the receipt); a claim's STATUS lands in `1-claims.md`, never in a probe.
+- `enter` get-or-create scaffolds `1-probes/` instead of `1-probe-plans/README.md`.
+- `fn/probe-plans.md` (filename kept — it is referenced from several skills) rewritten as the probe-FILE convention: the flat `1-probes/` pool, the section anatomy, the six derived states, path binding, the QA-file contract, and the loop.
+- States: `verdicted` and `dispatched` are DELETED. `planned | commissioned | answered | read | answered-local | failed`.
 
 ## [1.0.0] — 2026-05-31
 

@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-probe-display
-description: "display HARVESTER (probe lane worker). One skill, one working doc (_DISPLAY_{stage}.md, the needs registry: need → unit → status), lifecycle: AUDIT (what displays does this stage/section need?) → PLAN (record needs in _DISPLAY_, map each to a display unit; a unit that does NOT exist becomes a DR row in 0-lifecycle/4-display/_DISPLAY_REQUEST.md — the display stage's inbox. Section-edit NEVER creates displays, JL 2026-07-10: no /haipipe-task, no gateway commissioning) → LINK (harvest: connect landed 0-displays/ units back to needs via the PP card's unit_refs) → REVIEW (pre-submission display check). Fully automatic -- no human gate. Hard boundary: agent NEVER creates ad-hoc plots inline. Trigger: display, figures, tables, what displays, plan displays, link display."
+description: "display HARVESTER (probe lane worker). One skill, one working doc (_DISPLAY_{stage}.md, the needs registry: need → unit → status), lifecycle: AUDIT (what displays does this stage/section need?) → PLAN (record needs in _DISPLAY_, map each to a display unit; a unit that does NOT exist becomes a DR row in 0-lifecycle/4-display/_DISPLAY_REQUEST.md — the display stage's inbox. Section-edit NEVER creates displays, JL 2026-07-10: no /haipipe-task, no commissioning of any kind) → LINK (harvest: connect landed 0-displays/ units back to needs via the probe section's displays: lane) → REVIEW (pre-submission display check). Fully automatic -- no human gate. Hard boundary: agent NEVER creates ad-hoc plots inline. Trigger: display, figures, tables, what displays, plan displays, link display."
 argument-hint: "[verb] [section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "3.0.1"
-  last_updated: "2026-07-10"
-  summary: "Display HARVESTER. AUDIT→PLAN(missing units→DR requests in the 4-display inbox)→LINK(existing/done units only)→REVIEW. v3.0 (JL 2026-07-10): section-edit never CREATES displays — a missing unit is a _DISPLAY_REQUEST.md row the display stage solves. Working doc = _DISPLAY_ registry."
+  version: "3.0.2"
+  last_updated: "2026-07-14"
+  summary: "Display HARVESTER. AUDIT→PLAN(missing units→DR requests in the 4-display inbox)→LINK(existing/done units only)→REVIEW. v3.0 (JL 2026-07-10): section-edit never CREATES displays — a missing unit is a _DISPLAY_REQUEST.md row the display stage solves. Working doc = _DISPLAY_ registry. v3.0.2 (probe-redesign residue sweep): LINK follows the probe section's `displays:` lane (not 'the PP card's unit_refs'); the no-commissioning ban no longer names a gateway."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -18,7 +18,7 @@ display probe worker for `haipipe-paper-section-edit`. Owns the display lifecycl
 ```
 /haipipe-paper-probe-display                       → status dashboard
 /haipipe-paper-probe-display audit <section>       → Phase 1: what displays needed?
-/haipipe-paper-probe-display plan <section>        → Phase 2: map claims to units; gen needs → probe plans
+/haipipe-paper-probe-display plan <section>        → Phase 2: map claims to units; missing unit → DR row
 /haipipe-paper-probe-display link <section>        → Phase 3: harvest — connect landed units to section
 /haipipe-paper-probe-display review <section>      → Phase 4: pre-submission display check
 ```
@@ -44,10 +44,10 @@ Phase 2: PLAN         which display unit serves which claim/beat; sweep
                       0-displays/ + the display index for an EXISTING unit
                       first (paper-local sweep). A unit that does not exist
                       becomes a DR request row in the 4-display inbox — this
-                      worker NEVER commissions generation (no /haipipe-task,
-                      no PP card -> gateway -> task; RETIRED JL 2026-07-10).
-Phase 3: LINK         harvest — expand the PP card's unit_refs: connect landed
-                      0-displays/ units back to needs + section tex
+                      worker NEVER commissions generation (no /haipipe-task and
+                      no probe dispatch; RETIRED JL 2026-07-10).
+Phase 3: LINK         harvest — follow the probe section's displays: lane; connect
+                      landed 0-displays/ units back to needs + section tex
 Phase 4: REVIEW       pre-submission display check (content matches claims)
 ```
 
@@ -160,7 +160,7 @@ For each display referenced in the section:
 ## Anti-patterns
 
 - ❌ Creating ad-hoc matplotlib plots inline
-- ❌ Commissioning display generation from section-edit (direct /haipipe-task OR PP card → gateway → task) — file a DR request; only the display stage creates units
+- ❌ Commissioning display generation from section-edit (a direct /haipipe-task, or a probe section dispatched at a task) — file a DR request; only the display stage creates units
 - ❌ Editing display content directly instead of re-running the task
 - ❌ Placing `\ref{fig:...}` for a display that hasn't been generated yet
 - ❌ Putting the user's comments into per-unit float.tex or the generated 4-display.tex (they go in 4-display.md as > USER: threads)

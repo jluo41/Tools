@@ -29,7 +29,6 @@ Step 2 -- Create skeleton
 examples/{PROJECT_ID}/
 ├── tasks/             internal structure owned by /haipipe-task
 ├── discoveries/       internal structure owned by /haipipe-discovery
-├── insights/          internal structure owned by /haipipe-insight
 ├── diagram/           EMPTY at setup; authored later via /diagram-ascii on request
 └── papers/            papers land here later (owned by /haipipe-paper-*)
 ```

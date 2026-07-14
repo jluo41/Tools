@@ -36,7 +36,7 @@ template:
     claim_source: pitch
   - slot: items
     job: each item = one action backed by one claim
-    claim_source: one K/W per item
+    claim_source: one supported claim (C##) per item
   - slot: completion
     job: what success looks like
     claim_source: primary claim
@@ -46,7 +46,7 @@ template:
 ## Lifecycle mappings
 
 ### → Claims (medium)
-Each checklist item should trace to a K/W entry. Gap check:
+Each checklist item should trace to a supported claim (C##). Gap check:
 if an item has no evidence backing, flag it. Optional probe
 if the gap is load-bearing.
 

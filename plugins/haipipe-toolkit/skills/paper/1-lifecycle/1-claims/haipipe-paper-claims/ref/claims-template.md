@@ -52,17 +52,17 @@ Each probe is its own sub-item organized by PP number.
 Full evidence plan: type, claims, status, dependencies, what work to do.
 Separated by `---` horizontal rules.
 
-**PP01 - <title> - <status>**
+**PP01 - <title> - <state>**
 
 Type: <task | discovery>.
 Claims: <which claims this settles>.
-Status: <planned | dispatched | done>.
+State: <planned | commissioned | answered | read>   (DERIVED from the probe file, never asserted)
 <Dependencies, if any.>
 
 <Full evidence plan, one sentence per line.>
 <What the work produces.>
 <Design decisions to settle.>
-Detail: `_PROBE/PP01_<slug>.md`
+Detail: `1-probes/PP01_<topic>.md` (the question's SECTION)
 
 ---
 
@@ -73,7 +73,7 @@ Claims: <which claims>.
 Status: <status>.
 
 <Evidence plan.>
-Detail: `_PROBE/PP02_<slug>.md`
+Detail: `1-probes/PP02_<topic>.md` (the question's SECTION)
 
 
 Evidence Campaign

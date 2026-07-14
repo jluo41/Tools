@@ -4,9 +4,9 @@ description: "REVISE phase worker (internal). Called by application stage skills
 argument-hint: "[stage <stage-name>] [intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-07-06"
-  summary: "NEW thin REVISE worker (paper parity, single worker — paper's content/humanizer/weaving split deferred until application artifacts demand it). Venue style-profile + audience profile are the quality spec."
+  version: "1.0.1"
+  last_updated: "2026-07-14"
+  summary: "NEW thin REVISE worker (paper parity, single worker — paper's content/humanizer/weaving split deferred until application artifacts demand it). Venue style-profile + audience profile are the quality spec. v1.0.1 (probe redesign, Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3): WEAVE names the live evidence carriers — a probe section's `reading:`, anchored to the QA file its `target:` points at, or a claim settled in 1-claims.md. The retired 'takeaway'/'verdict-backed' spelling is gone (`## Takeaways` and `## Verdict` are DELETED blocks; check-probe-cards.sh flags both)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -18,9 +18,10 @@ REVISE phase worker. Runs after PROBE, before CHECK. Agent-only: change the text
 ## What REVISE means
 
 ```
-1. WEAVE      fold PROBE's landed evidence into the text: replace flagged
-              NEEDs with the anchored takeaway or verdict-backed statement;
-              a NEED that PROBE could not fill stays flagged for CHECK
+1. WEAVE      fold PROBE's landed evidence into the text: replace each flagged
+              NEED with the probe section's `reading:` (or a claim already
+              settled in 1-claims.md), anchored to the QA file its `target:`
+              names; a NEED that PROBE could not fill stays flagged for CHECK
 2. TIGHTEN    one job per paragraph/element; cut filler; concrete over vague
 3. CONFORM    venue style-profile (_venue/venue-<name>/style-profile.md):
               length limits, structure, register; audience profile

@@ -4,9 +4,9 @@ description: "Stage 3 of the intervention lifecycle (venue-GATED: fires per STAT
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.0.0"
-  last_updated: "2026-07-06"
-  summary: "Paper-aligned: stage FOLDER paths (1-claims/, 3-narrative/), gating read from STATUS.md stages_skipped (not venue profile directly), DPRC phases via 2-phase/ workers, precondition restated against the settlement bar."
+  version: "4.1.0"
+  last_updated: "2026-07-14"
+  summary: "Paper-aligned: stage FOLDER paths (1-claims/, 3-narrative/), gating read from STATUS.md stages_skipped (not venue profile directly), DPRC phases via 2-phase/ workers, precondition restated against the settlement bar. v4.1.0 (probe redesign, Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3 approved JL 2026-07-14): a beat exposing a NEW evidence gap now raises a question SECTION in 1-probes/ (serves: 1-claims), not a card in a per-stage _PROBE/ folder (retired)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -86,8 +86,8 @@ Phases
 
 ```
 DRAFT   map claims to arc positions per venue rules (haipipe-application-draft)
-PROBE   rarely fires; a beat exposing a NEW evidence gap routes it back to
-        claims as a _PROBE/ card, never gathers here (haipipe-application-probe)
+PROBE   rarely fires; a beat exposing a NEW evidence gap raises a question
+        SECTION in 1-probes/ (serves: 1-claims), never gathers here (haipipe-application-probe)
 REVISE  arc coherence + register pass (haipipe-application-revise)
 CHECK   exit criteria below → Gate Ledger row (haipipe-application-check)
 ```

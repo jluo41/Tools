@@ -3,6 +3,10 @@ haipipe-application-round — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [1.2.0] — 2026-07-14
+
+Changed (PROBE LAYER REDESIGN — Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14)
+- A round's "need evidence for X" routes to claims as a question SECTION in `1-probes/`, not a `_PROBE/` card (RETIRED).
 
 ## [1.0.0] — 2026-06-22
 

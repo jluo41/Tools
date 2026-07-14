@@ -5,6 +5,61 @@ Layer-scoped changelog for the probe (PROBE / claim) layer. Newest first.
 Rollup lives in the plugin-level `CHANGELOG.md`.
 
 
+## [6.0.0] — 2026-07-14 — THE PROBE BECOMES A PAPER-LEVEL Q/A MAP; the gateway is retired
+
+Ruling: `Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/` v3 — APPROVED by JL 2026-07-14, R1–R18. That document is the
+SPEC OF RECORD for this layer; the per-skill changelogs carry the detail.
+
+The layer's shape, in one diagram:
+
+```text
+   📄 CONSUMER (paper / application)                  ⚙️ BANK (probe-UNAWARE)
+   papers/<P>/1-probes/PPNN_<topic>.md                tasks/<leaf>/ · discoveries/<leaf>/
+   one file per TOPIC · one SECTION per question      own plan.yaml|discovery.yaml
+   (serves/target/state/commission/reading)           own results/|sources.md
+   + one '## Why' — the stake, never leaves           + OPTIONAL QA/<n>-<slug>.md
+        │                                                       ▲
+        │  ③ DISPATCH the commission VERBATIM, DIRECT ──────────┘
+        │     Agent(haipipe-task-orchestrator-agent)
+        │     Agent(haipipe-discovery-orchestrator-agent)
+        └─ binds by PATH (target:) — no PP id ever crosses
+```
+
+What changed
+- **A probe is a PAPER-LEVEL DOCUMENT**, not a folder and not a card: `1-probes/PPNN_<topic>.md`,
+  one file per topic, one SECTION per question. Binding is by PATH (R1) — PP numbers are
+  consumer-local footnote numbers, so there is no ledger and nothing to renumber.
+- **The bank is PROBE-UNAWARE** (R2). It answers plain questions through its own `qa` verb
+  (`/haipipe-task qa`, `/haipipe-discovery qa`) and returns `<leaf>/QA/<n>-<slug>.md`.
+  The probe CAUSES a QA file; the EXECUTOR authors it (CC-8).
+- **The two LAWS**: a consumer session NEVER executes bank work inline (dispatch only); lint both
+  surfaces (commission blocks; bank QA files) for consumer vocabulary.
+- `haipipe-probe` → **8.0.0** (the constitution: probe file anatomy, path binding, the QA/
+  contract, the qa verb, the five-step loop ORGANIZE→MATCH→DISPATCH→POINT→INTERPRET, the cost
+  ladder, status derivation, the writer table).
+
+RETIRED (see `PART 9` of haipipe-probe/SKILL.md — the full do-not-resurrect list)
+- **`haipipe-probe-orchestrator-agent` — the evidence GATEWAY.** Archived + de-registered. Its
+  SWEEP became the consumer-side MATCH; its dispatch is now a direct `Agent()` call on the two
+  executor orchestrators. It was a third clean context in front of two that already had one.
+- `1-probe-plans/` → `1-probes/` · PPNN "cards" → probe FILES · `_ASK/`+`_ANS/` stubs · the
+  `answers:` field · the `asks` verb (reborn probe-unaware as `qa`) · `## Verdict` + the
+  `verdicted` state · `status:` → `state:`.
+
+SURVIVING, and repaired in the same pass — the claim-judging path, which still runs
+- `haipipe-probe-review` → **2.1.0** and `haipipe-probe-reviewer-agent` → **4.1.0**. The JUDGMENT
+  is unchanged (G1 structural · G2 integrity with the deterministic `g2_integrity_check.py` and
+  its >95 / 80–95 / <80 thresholds · G3 claim · the confidence scale · the `associational |
+  causal` guard). Two things moved, and both files still described the dead world until now:
+  their **CALLER** (the gateway was their only declared dispatcher — they had none; it is now the
+  consumer's PROBE-phase worker at ⑤ INTERPRET, `mode: full`) and their **LANDING SITE** (the
+  judgment lands in the consumer's `0-lifecycle/1-claims/1-claims.md`, per-claim, per-consumer,
+  private — never in a probe file).
+- 产审分离 is preserved and now better grounded: the EXECUTOR assembles the evidence in its own
+  probe-unaware session, and a SEPARATE fresh-context reviewer grades it.
+- ⚠️ A DISCOVERY's own `verdict.md` terminal file is executor-native and SURVIVES. It is not the
+  retired `## Verdict` block; do not delete or rename it.
+
 ## [5.2.0] — 2026-07-06 — Judgment process becomes a SKILL: haipipe-probe-review
 
 JL ruling: "haipipe-probe-review可以被新的agent call，但是我们还是需要一个skill来规范流程；haipipe-probe就只保留 reviewer之外的内容."

@@ -4,6 +4,12 @@ haipipe-application-gate — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [Unreleased] — 2026-07-14
+
+Changed (PROBE LAYER REDESIGN — Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14)
+- The gate's step-2 checker call now describes what the rewritten `check-probe-cards.sh` actually checks: probe FILES and their question SECTIONS. A `state: planned` section = a question never asked; an OVERDUE `commissioned` section = a build that missed its eta with no answer; a `LAW2-commission-leak` = the intervention's stake crossing into the executor's payload; a `LAW2-consumer-vocab` FAIL on a bank `QA/*.md` = a consumer session wrote in the bank (LAW 1 broken). Any FAIL still blocks green.
+- `checks.sh`: the markdown scan now also excludes `1-probes/` (and legacy `1-probe-plans/`) — probe files belong to `check-probe-cards.sh`, and double-scanning them would flag the probe vocabulary as prose defects.
+
 ## [1.0.0] — 2026-05-31
 
 - baseline.

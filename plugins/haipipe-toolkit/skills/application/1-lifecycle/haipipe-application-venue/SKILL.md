@@ -4,9 +4,9 @@ description: "Venue selection for the intervention lifecycle — the decision ga
 argument-hint: "[venue-name] [intervention-path] [--no-pin]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.0.0"
-  last_updated: "2026-07-06"
-  summary: "Port of paper venue 2.0.0 (765696f): venue becomes an artifact-producing stage — 2-venue/2-venue.md + _LOG + _PROBE/ with Artifact Principles as the downstream contract. Still writes the 3 STATUS rows (strip/lifecycle/gate read those). Dual-2 numbering mirrors paper (2-venue + 2-pitch)."
+  version: "3.1.0"
+  last_updated: "2026-07-14"
+  summary: "Port of paper venue 2.0.0 (765696f): venue becomes an artifact-producing stage — 2-venue/2-venue.md + _LOG + _PROBE/ with Artifact Principles as the downstream contract. Still writes the 3 STATUS rows (strip/lifecycle/gate read those). Dual-2 numbering mirrors paper (2-venue + 2-pitch). v3.1.0 (probe redesign, Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3 approved JL 2026-07-14): venue-level questions are SECTIONS with `serves: 2-venue` in 1-probes/PPNN_<topic>.md at the intervention root; the per-stage 0-lifecycle/2-venue/_PROBE/ folder is RETIRED."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -36,7 +36,7 @@ venue-report            stakeholder report (formal, sectioned)
 **Files produced:**
 - `0-lifecycle/2-venue/2-venue.md` -- venue stage document (choice + Artifact Principles + fit + probes)
 - `0-lifecycle/2-venue/_LOG_2-venue.md` -- phase progress journal
-- `0-lifecycle/2-venue/_PROBE/` -- venue-level probe cards (channel capability, compliance constraints, prior sends on this channel)
+- `1-probes/PPNN_<topic>.md` -- venue-level questions raised as SECTIONS with `serves: 2-venue` (channel capability, compliance constraints, prior sends on this channel). Probe files live at the intervention root, one per TOPIC; there is no per-stage `_PROBE/` folder.
 - `STATUS.md` -- the three pinned rows (below)
 
 **Content structure (2-venue.md):**
@@ -104,8 +104,8 @@ Step 4: Pin in STATUS.md (three rows, from the venue pack's README) AND write
         0-lifecycle/2-venue/2-venue.md: distill the pack + audience profile
         into Artifact Principles; run the Fit Assessment against the campaign.
 Step 5: Report which stages fire + whether the campaign already meets the
-        settlement bar (if not: name the claims work left). Venue-level probes
-        (channel capability, compliance) buffer in 2-venue/_PROBE/.
+        settlement bar (if not: name the claims work left). Venue-level questions
+        (channel capability, compliance) are SECTIONS in 1-probes/, serves: 2-venue.
 ```
 
 Venue change rule (retarget)

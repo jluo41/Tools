@@ -1,6 +1,6 @@
 # display stage checklist
 
-Done-gate for the **display** stage (`haipipe-paper-display`). The stage is complete only when every box below is checked AND the user confirms the gate (`../../wiki/08-stage-gate.md`). This checklist is the canonical home of the gallery requirements; the paper's stage files should NOT restate them, they should point here.
+Done-gate for the **display** stage (`haipipe-paper-display`). The stage is complete only when every box below is checked AND the user confirms the gate (`../../../wiki/08-stage-gate.md`). This checklist is the canonical home of the gallery requirements; the paper's stage files should NOT restate them, they should point here.
 
 ## Stage doc (`0-lifecycle/4-display/`) — the md → tex → pdf trio
 - [ ] `4-display.md` present and is the ONLY hand-edited stage file (canonical template `ref/display-template.md`): Venue Set + gallery config, Display Map (row order = narrative order = gallery order), Probes (`###` sub-items, seed/claims shape), one paper-section group per section (`venue expects:` line; each display a `###` subsection; grouping matches the map's `section` column), Parking section.
@@ -11,7 +11,7 @@ Done-gate for the **display** stage (`haipipe-paper-display`). The stage is comp
 - [ ] `4-display.tex` is REGENERATED from the md by sync — never hand-edited: `\section*{<paper section>}` banner at each section change, a named `\subsection*{Figure N. <name>}` / `Table N. <name>` per display, small-font interrogation verdicts, `\input` per unit, Parking section last (parked units never `\input` into the manuscript).
 - [ ] Gallery sizing knobs (width cap, float pinning, spacing) live in the md's gallery config and are emitted into the generated tex preamble — never pushed into a unit's `float.tex` or source spec.
 - [ ] `4-display.pdf` recompiled and current (a stale PDF is a defect; recompile after every edit, from the paper root so `0-displays/` paths resolve).
-- [ ] Shaped to the VENUE display set (read STATUS `venue`; consult the paper's `0-lifecycle/2-venue/2-venue.md` Structural Blueprint display units + Writing Principles display limits; fall back to `../../_venue/playbook-<venue>` `-> Display` only if 2-venue.md is absent). For UTD-IS (MISQ/ISR/MS-IS): research-model figure as the hero, a research-design figure, a hypothesis-test table, descriptives.
+- [ ] Shaped to the VENUE display set (read STATUS `venue`; consult the paper's `0-lifecycle/2-venue/2-venue.md` Structural Blueprint display units + Writing Principles display limits; fall back to `../../../_venue/playbook-<venue>` `-> Display` only if 2-venue.md is absent). For UTD-IS (MISQ/ISR/MS-IS): research-model figure as the hero, a research-design figure, a hypothesis-test table, descriptives.
 - [ ] The `[primary]` claim's display is the HERO (first figure).
 - [ ] Figures/tables numbered by order of appearance.
 
@@ -19,7 +19,7 @@ Done-gate for the **display** stage (`haipipe-paper-display`). The stage is comp
 - [ ] Block present: takeaway, claim, evidence source, section, caption job, fragility, status.
 - [ ] ASCII sketch present (real numbers when available) — the md's sketches ARE the contact sheet; no separate preview file.
 - [ ] Method candidates recorded: 2–3 lettered candidate lines for non-trivial displays (different forms/routes, incl. diagram/illustration where apt); every line PROBE-filled (output + one-line self-assessment) or explicitly struck.
-- [ ] No markdown pipe tables anywhere in `4-display.md` (JL 2026-07-10): map, probe plan, candidates, and Parking are record lines; tabular text appears only inside fenced sketches.
+- [ ] No markdown pipe tables anywhere in `4-display.md` (JL 2026-07-10): map, Probes, candidates, and Parking are record lines; tabular text appears only inside fenced sketches.
 - [ ] No block stuck at `candidates`: winner promoted to `assets/` with a recorded why per loser (losers in `versions/`), or the block is parked. A `> USER:` preference decides — never overruled.
 - [ ] `> USER:` threads kept VERBATIM in the block; every one has a `> CC:` reply or a user resolution (resolved threads moved to `_LOG`). No comments in unit files or the generated tex.
 - [ ] Per-display interrogation verdict recorded (keep-main / keep-supplement / fix / demote / cut + one sharp reason), from the independent render-review subagent (builder ≠ judge).
@@ -46,4 +46,4 @@ Done-gate for the **display** stage (`haipipe-paper-display`). The stage is comp
 - [ ] Display Map consistent with units on disk — no orphans either way (asset without row, row without asset/float).
 - [ ] Every display referenced in narrative (`3-narrative.md`).
 - [ ] Every block + unit + stage-doc item above checked.
-- [ ] Exit criteria presented to the user per `../../wiki/08-stage-gate.md`; user confirmed; `STATUS.md` Gate Ledger updated.
+- [ ] Exit criteria presented to the user per `../../../wiki/08-stage-gate.md`; user confirmed; `STATUS.md` Gate Ledger updated.

@@ -3,6 +3,12 @@ haipipe-application-display — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [4.1.0] — 2026-07-14
+
+Changed (PROBE LAYER REDESIGN — Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14)
+- A unit whose data source does not exist yet is raised as a question SECTION in `1-probes/` (`serves: 4-display`); the PROBE worker MATCHes the bank first and commissions the unit only if it does not already exist. The per-stage `_PROBE/` folder is RETIRED.
+- Display never writes under `tasks/` (LAW 1: a consumer session never executes task/discovery work inline). It never ran `/haipipe-task` inline before; that boundary is now named as the law it always was.
+- ("metric-card" as a display UNIT TYPE is untouched — it is not a probe card, and the rename does not reach it.)
 
 ## [1.0.0] — 2026-06-22
 

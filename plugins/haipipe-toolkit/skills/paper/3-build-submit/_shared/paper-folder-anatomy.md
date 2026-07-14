@@ -18,6 +18,8 @@ editing rules. This doc defines the folder those files live in.
 ├── 0-lifecycle/                          paper maturation spine (markdown-early; stage folders absent until their stage runs)
 │   ├── 0-seed/
 │   │   └── 0-seed.md                     why this paper might exist (venue-FREE)
+│   ├── 1-resource/                       (shares the number 1 with claims, as 2-venue/ and 2-pitch/ share 2)
+│   │   └── 1-resource.md                 what must EXIST for the paper to be testable (venue-FREE)
 │   ├── 1-claims/
 │   │   └── 1-claims.md                   claim ledger, support/GAP status (venue-FREE)
 │   ├── 2-pitch/
@@ -50,7 +52,7 @@ editing rules. This doc defines the folder those files live in.
 │   │   └── versions/                     retired exports
 │   └── displayNN-<slug>/
 ├── 0-extra/                              optional cover letter, IRB, checklists
-├── 1-probe-plans/                        evidence-need buffer (PPNN_<slug>.md, batch-dispatched to /haipipe-probe)
+├── 1-probes/                        the probe-file pool (PPNN_<topic>.md, one file per TOPIC, one SECTION per question)
 ├── 1-rounds/                             dated work rounds
 │   ├── latest.md                         active round pointer and summary
 │   └── vYYMMDD/
@@ -79,11 +81,12 @@ not submitted unless the venue explicitly asks for them.
 
 ## Lifecycle rules
 
-`0-lifecycle/` is the paper's maturation spine. Early stages (seed, claims, pitch, narrative) are MARKDOWN (argument documents need no compilation); display and section-edit carry tex. Venue pins between claims and pitch.
+`0-lifecycle/` is the paper's maturation spine. Early stages (seed, resource, claims, pitch, narrative) are MARKDOWN (argument documents need no compilation); display and section-edit carry tex. Venue pins between claims and pitch.
 
 | Stage | Job | Handoff trigger |
 |---|---|---|
-| `0-seed` | record why the paper might exist | viable enough to inventory claims |
+| `0-seed` | record why the paper might exist | viable enough to ask what it NEEDS |
+| `1-resource` | what must EXIST for the paper to be testable, does it exist, can it CARRY the claim (venue-FREE) | every demand is HAVE+FIT, COMMISSIONED with an owner + date, or a SCOPE CUT said out loud |
 | `1-claims` | maintain support/GAP ledger (venue-FREE) | claims solid enough to pick a venue |
 | `2-pitch` | cover letter / one-minute story (venue-ALIGNED) | story needs an arc |
 | `3-narrative` | shape this paper's story | story needs a display map |
@@ -192,7 +195,7 @@ decision pass, or application of edits.
 - `discussion.md` stores raw discussion and incoming comments.
 - `decisions.md` stores accepted paper intent.
 - `todo.md` stores open needs and their target: lifecycle stage, probe,
-  discover, task, display, insight, or paper edit.
+  discover, task, display, or paper edit.
 - `applied.md` records what changed where after items are handled.
 
 Rounds are process memory, not manuscript source. If a decision changes the

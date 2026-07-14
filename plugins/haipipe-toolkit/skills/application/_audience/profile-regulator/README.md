@@ -7,7 +7,7 @@ Formal, neutral. Spelled-out terminology. Comprehensive.
 - Length: ≤ 1500 words
 - Jargon: spelled out on first use
 - Reading level: professional/legal
-- Citations: footnote + K-id — "...improvement.^1" + "^1 K03_..."
+- Citations: footnote + C-id — "...improvement.^1" + "^1 C03 (PP05)..."
 
 ## Lifecycle mappings
 

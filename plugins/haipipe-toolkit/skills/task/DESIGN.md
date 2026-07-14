@@ -23,21 +23,24 @@ For a concrete end-to-end project shape, see
 |-- 📁 discoveries/  <- 🔍 the OUTSIDE      sources, notes, prior art verdicts
 |-- 📁 paper/        <- 📰 the DELIVERABLE  what we publish
 |-- 📁 applications/ <- 💬 the DELIVERABLE  audience-specific reports/messages/UI
-|-- 📁 insights/     <- 🧠 deferred export layer (parked for now)
 ```
 
 Each core layer has its own specialist family — different sections, no overlap:
 
 ```
 project umbrella     /haipipe-project              project/ (sibling)
-discoveries/         /haipipe-discovery             discover/
-tasks/               /haipipe-task-*               task/    <- THIS SECTION
-stage _PROBE cards   /haipipe-probe-*              probe/
-insights/            /haipipe-insight-*            insight/ (deferred)
 
+⚙️ THE EXECUTORS — the evidence bank; neither knows a consumer exists
+discoveries/         /haipipe-discovery            discover/
+tasks/               /haipipe-task-*               task/    <- THIS SECTION
+
+📄 THE CONSUMERS — they ask; each owns its own evidence questions, privately
 paper/               /haipipe-paper-*              paper/
 applications/        /haipipe-application-*        application/
 ```
+
+The executors answer questions through ONE door each (`/haipipe-task qa`,
+`/haipipe-discovery qa`) and return a PATH to a readable digest. Nothing else crosses.
 
 `project/` owns project-scope ops (the umbrella + inspect + organize + project/task-group scaffold).
 `task/` owns the inside-execution layer — the lifecycle orchestrator, task-type
@@ -383,7 +386,6 @@ BUILD      | type constraints, MUST NOT rules           | SKILL.md
 BUILD      | authoring guidance for this type            | fn/scaffold.md (reference)
 SCAFFOLD   | config template for new folders             | ref/config-seed.yaml
 SCAFFOLD   | step-by-step creation procedure             | fn/scaffold.md (executor)
-INSIGHT    | none; insight export is deferred outside core task
 ```
 
 What each spoke reads from the hub
@@ -399,26 +401,44 @@ ref/config-meta-template.yaml| _meta block template for configs/
 ref/workflow-template.yaml   | task-level IPO template (Run/Gate1/Gate2)
 ```
 
-Boundary with probe / insight
-==================================
+Boundary: the task layer is CONSUMER-UNAWARE
+=============================================
 
-task owns execution only. It does not decide what a run means for a
-research claim, and it does not write narrative/probe conclusions. Discovery
-work lives beside tasks in `discoveries/`; it is not a task stage.
-
-In the sandwich model:
+task owns EXECUTION. It does not decide what a run means for anyone's argument, and it
+writes no conclusions on anyone's behalf. Discovery is its SIBLING, not its superior:
+task and discovery are the two EXECUTORS — same shape, same rules, one runs code, the
+other reads the outside world.
 
 ```
-probe open     designs a research contract and dispatches discovery/task refs
-discover       creates discoveries/<id> external-evidence artifacts
-task           Plan / Build / Execute / Report
-probe post     harvests discovery + task outputs and judges the claim
+   ⚙️ THE EXECUTORS                        📄 SOMEWHERE ELSE
+   tasks/       code, runs, metrics        a consumer, weeks apart
+   discoveries/ literature, prior art      it asks. That is all we ever see of it.
 ```
 
-Task outputs are readiness signals for Probe-post: `runtime.yaml`,
-`metrics.json`, `workflow/report*.yaml`, and `RUN_AUDIT.md`. A task may expose
-completion status, but it should not interpret the probe or depend on
-consumer-side `_PROBE` cards.
+Nothing under `tasks/` names a consumer, points at one, or is shaped by one. There is no
+mailbox, no id, no return field. That is not an accident of layering — it is what makes a
+result REUSABLE: evidence shaped by one consumer's frame is evidence the next one cannot
+use.
+
+TWO SESSION MODES:
+
+```
+   PRIMARY        autonomous Plan → Build → Execute → Report. No question pending, no ask.
+                  This IS the project's research, and the bank grows here.
+   ANSWERABILITY  also task-native, also with no question pending: write readable digests
+                  for findings worth digesting, and build code so FUTURE questions are
+                  cheap. We do not know which questions will come. We make the bank
+                  easier to ask.
+```
+
+THE ONE DOOR IN — the `qa` verb (`haipipe-task/fn/qa.md`). A question arrives as ONE
+QUESTION IN GENERAL LANGUAGE and nothing else. The verb answers it (① QA SCAN → ② DIGEST →
+③ P-B-E-R at the shallowest depth) or REFUSES it, and returns a path to
+`<leaf>/QA/<n>-<slug>.md`. It never learns who asked or why, and must not try to find out.
+
+The pen never leaves this layer: WE write the QA file. A file in this bank authored by an
+outsider carries the outsider's vocabulary — that is exactly how a task result on disk
+today ended up asserting a consumer's claim ids.
 
 
 The 4-Stage Lifecycle
@@ -426,8 +446,8 @@ The 4-Stage Lifecycle
 
 Every existing task folder goes through up to 4 stages. These stages care
 about engineering: is the code correct, structured, runnable, and documented?
-What the data means for delivery is handled by Probe-post and then backfilled
-into paper/application lifecycle artifacts.
+What the numbers MEAN for some downstream argument is not decided here, and
+never has been.
 
 ```
 Stage 1: PLAN — the contract (what the script SHOULD do)
@@ -452,28 +472,31 @@ Stage 4: REPORT — summarize (what happened vs the plan)
 
 Stages 1-4 are orchestrated by `haipipe-task/ref/task-lifecycle.workflow.js` via the Workflow tool. The creator and reviewer agents in `agents/` are paired at each stage — creator never reviews, reviewer never creates.
 
-Task completion signal for Probe-post
--------------------------------------
+What a finished task leaves behind
+-----------------------------------
 
-When a task is part of a probe sandwich, task's job is still only to
-finish execution cleanly. The handoff back to Probe-post is based on concrete
-artifacts:
+A task's job is to finish execution CLEANLY and stop. It leaves concrete artifacts, and
+whoever reads them later does so on their own schedule, without us knowing:
 
 ```
 required:
   results/<run>/runtime.yaml      status=ok
-  results/<run>/metrics.json      contains the metric requested by the dispatching PPNN card
+  results/<run>/metrics.json      the measured numbers, under stable keys
   workflow/report*.yaml           mirrors the plan and records what happened
   RUN_AUDIT.md                    reviewer pass/warn unless explicitly exempt
 
-forbidden:
-  task reads consumer-side _PROBE cards
-  task writes narrative/probe conclusions
-  task decides whether the probe claim holds
-```
+optional:
+  QA/<n>-<slug>.md                the READABLE digest of a direction this leaf explored.
+                                  Three reasons only: a question arrived · results/ already
+                                  answered one but no digest existed · we judged a finding
+                                  worth digesting. A QA/ mirroring every result is noise.
 
-Probe-post consumes these artifacts later and lands the claim verdict in the
-consumer's PPNN card. Insight export is deferred while the core N/P/T stack is being shaped.
+forbidden:
+  reading a consumer's files, of any kind
+  writing conclusions on anyone's behalf
+  deciding whether someone's claim holds
+  putting an external id, a claim id, or a hypothesis id in ANY file under tasks/
+```
 
 
 Per-Specialist Responsibilities
@@ -595,44 +618,38 @@ Phase 8 — Next                                                OPEN (see TODO.m
   - resolve scaffold-vs-lifecycle tension
 
 
-Downstream Consumer Contract (probe)
-========================================
+The read surface (what a later reader can rely on)
+==================================================
 
-task artifacts are consumed by probe (the research probe pipeline). Tasks never reference probes — but probes READ task outputs alongside discovery evidence, making certain file formats a **contract**. If you change these formats, check the probe layer contract (probe/haipipe-probe/SKILL.md + probe/agents/) for impact.
-
-**What probe reads from task runs:**
-
-```
-File                               Read by                  Contract
-─────────────────────────────────  ───────────────────────  ────────────────────────────
-results/<RUN>/metrics.json         probe-result aggregate   scalar value OR {point, ci_lower, ci_upper, N}
-                                                            key must match probe's aggregation.metric
-results/<RUN>/runtime.yaml         probe-result aggregate   status field (ok | failed | running)
-                                   probe-review structural  git_sha, exit_code
-configs/<RUN>.yaml                 probe-review structural  _meta.git_sha, AIData version
-                                                            must be consistent across arms
-```
-
-**What probe creates in task (via bridge, one direction only):**
+A task never references anyone downstream. But its outputs ARE read later — by a future
+task session, by a cross-run comparison, by a QA digest, by a human — which makes certain
+file FORMATS a contract. Change them deliberately.
 
 ```
-Artifact                           Created by               Notes
-─────────────────────────────────  ───────────────────────  ────────────────────────────
-new task-folders under tasks/      probe-bridge             via Skill("haipipe-task")
-configs/<RUN>.yaml                 probe-bridge             wired from probe arm run_specs
-runs/<RUN>.sh                      probe-bridge             generated run wrapper
-CODE_REVIEW.md                     probe-bridge             pre-flight via haipipe-task-reviewer-agent (GATE 1)
+File                          Guarantee
+────────────────────────────  ──────────────────────────────────────────────────────────
+results/<RUN>/metrics.json    the measured numbers under STABLE KEYS. Scalar, or
+                              {point, ci_lower, ci_upper, N}. Keys are the contract —
+                              a renamed key silently breaks every reader.
+                              (schema: haipipe-task/ref/metrics-json-schema.md)
+results/<RUN>/runtime.yaml    machine facts: status (ok|failed|running), git_sha, exit_code
+configs/<RUN>.yaml            frozen parameters + _meta.git_sha — what this run actually ran
+workflow/report*.yaml         the plan, mirrored, filled with what happened
+RUN_AUDIT.md                  Gate 2: did THIS run produce a trustworthy artifact?
+QA/<n>-<slug>.md              OPTIONAL. The readable digest: # Q / ## Answer (with
+                              [→ results/…] anchors) / ## Caveats / ## Not-done.
+                              Numbering IS the index. Write-once. Slug only.
 ```
 
-**What probe delegates back to task:**
+WRITER RULE — every one of these files has exactly ONE writer: THIS LAYER. Nothing outside
+the task layer writes anything under `tasks/`. Not a config, not a run script, not a QA
+file. A caller that needs work done here DISPATCHES it —
+`Agent(haipipe-task-orchestrator-agent)`, clean context, one question or one spec — and
+reads the result afterwards. It does not reach in.
 
-```
-Per-run quality auditing           haipipe-task-reviewer-agent (task GATE 2)
-                                   probe-review "review run" dispatches to this agent
-                                   "did THIS run produce a trustworthy artifact?" is a task question
-```
-
-Full boundary rules: **probe/haipipe-probe/SKILL.md** (folder-era detail archived at probe/_archive/MENTAL_MODEL.md).
+The reverse direction does not exist. There is no field pointing outward, no id, no
+notification, no back-reference. The question comes in through `fn/qa.md`; a PATH goes
+back; the conversation is over.
 
 
 Decision Log
@@ -650,5 +667,6 @@ Decision Log
 2026-06-19  Superseded: Stage 5 removed from task. Sandwich model adopted: probe open dispatches discoveries/tasks, discover and task do their own work, probe post resumes and judges the claim. Insights deferred while focusing on Narrative/Probe/Discovery/Task.
 2026-06-21  Documented: three orthogonal axes (lifecycle / task domains / type spokes). Type spokes stay an unnumbered enum by design; only lifecycle stages and pipeline domains are numbered, because only they are sequenced.
 2026-06-21  Approved (supersedes the line above): dissolve C (for-xxx spokes) into B. B becomes a single flat NUMBERED domain family of 9 domains; every task kind gets a stable domain id. Coverage over clean boundaries: overlap is fine, every task type must fall into exactly one domain. nn and fit split but share /haipipe-nn. stata and agent are their own domains. Migration staged: Phase 1 folder move with skill names unchanged, Phase 2 optional rename. See "Target Architecture" section.
+2026-07-14  Approved (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, rulings R1-R18): the task layer is CONSUMER-UNAWARE, but not question-deaf. DELETED: _ASK/ stubs, _ANS/, the `answers:` report field, external ids anywhere under tasks/, and the probe-aware `asks` verb. ADDED: the `qa` verb (fn/qa.md) — one question in general language in, a path to <leaf>/QA/<n>-<slug>.md out; gate ① QA SCAN ② DIGEST ③ P-B-E-R at the shallowest depth (read | new run | new script | new leaf), or REFUSE. ADDED: the OPTIONAL QA/ folder — the leaf's readable, numbered map of the directions it has explored; authored by THIS layer at Report; three reasons only; no consumer vocabulary. AFFIRMED: the task session's PRIMARY mode is autonomous P-B-E-R with no question pending, and answerability work (digests + code that makes future questions cheap) is task-native. Supersedes the "sandwich model" (2026-06-19) and the "Downstream Consumer Contract" (2026-06-11) entries below.
 2026-06-21  Decided: Phase 2 (rename for-xxx skills) REJECTED. Names stay haipipe-task-for-xxx by design; the haipipe-task- prefix keeps each specialist clearly inside the haipipe-task family. Migration is complete at Phase 1 (folder nesting). No skill rename.
 2026-06-21  Refined (per "we will keep adding domains"): numbering is APPEND-ONLY, never renumbered. id = creation order, permanent; pipeline-flow order is a separate documented attribute, not the id. Founding assignment keeps existing folders fixed (data=1, nn=2, endpoint=3, individual=4) and appends fit=5, eval=6, display=7, stata=8, agent=9. New domains take the next integer; Phase 1 touches zero existing folders. Rejected the one-time tidy renumber as inconsistent with append-only.

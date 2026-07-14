@@ -1,8 +1,8 @@
 # Delivery Need (paper side)
 
-How the paper records a gap as a need and routes it to the right evidence worker,
-then backfills when the verdict/artifact returns. Paper-owned; the application
-skill keeps its own copy. There is no cross-skill shared file.
+How the paper records a gap as a need, routes it to the right evidence worker, and
+backfills when the answer returns. Paper-owned; the application skill keeps its own
+copy. There is no cross-skill shared file.
 
 ## How paper talks to probe
 
@@ -11,19 +11,21 @@ No message bus, no shared contract file. Two channels carry it, and the agent
 
 ```
 1. Command   paper hits a claim gap -> the agent runs
-             /haipipe-probe plan from-need <need>. paper does not call probe
-             directly; the agent reads this instruction, invokes probe, brings
-             the result back.
-2. Disk      paper writes the need (in 0-lifecycle/1-claims / STATUS); the
-   (async)   returned verdict lands in the need's _PROBE/PPNN card; paper reads
-             that card to backfill. No handshake, just read/write the same
-             files in turn.
+             /haipipe-paper probe "<question>" (opens a SECTION in the topic's probe
+             file). The PROBE worker MATCHes it against the bank's QA corpus first, and
+             dispatches the `commission:` block only if MATCH cannot close it.
+2. Disk      paper writes the need (in 0-lifecycle/1-claims / STATUS); the executor
+   (async)   writes the answer as <leaf>/QA/<n>-<slug>.md; the section's `target:`
+             points at that FILE and its `reading:` interprets it. No handshake —
+             binding is by PATH, and the file on disk IS the state.
 ```
 
-Who owns which format: paper owns the NEED (loose; probe only reads the gap, no
-strict schema). probe owns the VERDICT (strict; the PPNN card's `## Verdict`
-anatomy in `probe/haipipe-probe/SKILL.md`). That is why no shared interface
-file is needed: each artifact's shape belongs to the skill that produces it.
+Who owns which format: the paper owns the NEED (loose) and the `reading:` (its own
+vocabulary). The EXECUTOR owns the ANSWER (the QA file: `# Q` / `## Answer` /
+`## Caveats` / `## Not-done`, general language, anatomy in
+`probe/haipipe-probe/SKILL.md`). A CLAIM's status is the paper's alone, and lives in
+`0-lifecycle/1-claims/1-claims.md`. That is why no shared interface file is needed:
+each artifact's shape belongs to the layer that produces it.
 
 ## When to record a need
 
@@ -32,7 +34,9 @@ back inside the paper lifecycle (1-claims / 2-pitch / 3-narrative / 4-display
 / 5-section-edit). A need leaves the paper for an evidence worker.
 
 ```
-paper GAP -> delivery need -> evidence worker -> verdict/artifact -> paper backfill
+paper GAP -> a question SECTION in 1-probes/ -> the PROBE phase MATCHes it ->
+DISPATCH only what MATCH cannot close -> the answering QA file -> the section's
+`reading:` -> the paper backfills (the claim's status flips in 1-claims.md)
 ```
 
 Do NOT route through a project-level narrative layer (there isn't one).
@@ -40,20 +44,23 @@ Do NOT route through a project-level narrative layer (there isn't one).
 ## Routes (v4 verbs)
 
 ```
-claim needs a verdict or robustness check     -> /haipipe-probe plan from-need <need>
+claim needs its status settled                -> /haipipe-paper probe "<need>"  (a question SECTION)
 claim needs outside literature / context      -> /haipipe-discovery <question>
 claim or display needs a run / data artifact  -> /haipipe-task <contract>
-finished evidence needs reusable K/W meaning  -> /haipipe-insight <artifact>
+settled claim status (supported|refuted|      -> 0-lifecycle/1-claims/1-claims.md (the ONLY home of a
+  inconclusive + confidence + claim_type)         claim's status; the probe section carries only its
+                                                  `reading:`. `## Verdict`/`verdicted` are DELETED)
 ```
 
-The probe entry is `plan from-need`: Plan intakes the paper claim gap, then the
-gateway decides reuse / enrich / fresh and runs the
-Plan -> Gather -> Read -> Judge -> Return lifecycle.
+The entry is `/haipipe-paper probe "<need>"`: it opens a question SECTION in the
+right topic's probe file. The PROBE phase then runs the five-step loop — ORGANIZE →
+MATCH (reuse an existing QA file if one answers it) → DISPATCH (the `commission:`
+block, verbatim, to the task/discovery orchestrator) → POINT → INTERPRET.
 
 Two entry rules (who the delivery calls):
 
-- a CLAIM need (needs a judged verdict) -> call PROBE; the probe owns the task call (its Gather step), so the claim is always judged before it lands. The delivery never calls a raw compute task for a claim-bearing need.
-- a pure ARTIFACT / render need (no new claim, e.g. re-render a figure) -> call `/haipipe-task-for-display` directly; the display references the rendered asset.
+- a CLAIM need (a claim's status is at stake) -> raise a question SECTION and let the PROBE phase route it. The paper never calls a raw compute agent for a claim-bearing need, and never executes bank work inline (LAW 1).
+- a pure ARTIFACT / render need (no claim at stake, e.g. re-render a figure) -> call `/haipipe-task-for-display` directly; the display references the rendered asset.
 
 ## Need record
 
@@ -63,27 +70,29 @@ paper STATUS dashboard:
 ```
 need_id      stable handle (e.g. N1, tied to a claim slot C2 or a display)
 gap          which claim slot / display / section has the gap
-kind         verdict | context | artifact | meaning
+kind         evidence | context | artifact | meaning
 route        the command above
-status       open | dispatched | returned
+state        open | commissioned | returned      (mirrors the probe section's derived state)
 backfill     the slot/display to update when the worker returns
 ```
 
 ## Backfill (the return direction)
 
-When a probe finishes, its Return step sends the
-verdict back here. On backfill:
+The answer is a FILE: the executor's `<leaf>/QA/<n>-<slug>.md`. The probe
+section's `target:` points at it, and its `reading:` says what it MEANS for
+this paper. On backfill:
 
 ```
-- update the 1-claims slot status: have | weak | GAP, citing the probe verdict
-- if the verdict narrows the claim, narrow the claim wording in 1-claims
-- a probe NEVER edits paper prose without asking; it returns a verdict, the
-  paper decides how to phrase it
+- write the claim's status in 0-lifecycle/1-claims/1-claims.md — supported |
+  refuted | inconclusive, + confidence + claim_type + G1/G2/G3. THAT ledger is
+  the only home of a claim's status.
+- if the evidence narrows the claim, narrow the claim wording in 1-claims
+- the executor NEVER edits paper prose: it returns a FACT, and the paper decides
+  what the fact means and how to phrase it
 ```
 
-One claim slot can be backed by one probe; multiple papers can cite the SAME
-landed evidence in discoveries/ + tasks/, each through its own PPNN card
-(evidence is shared, framing is not).
+Multiple papers can cite the SAME QA file in discoveries/ + tasks/, each through
+its own section and its own `reading:` — the FACT is shared, the JUDGMENT is not.
 
 ## Autonomous drain (the "keep going" loop)
 
@@ -93,8 +102,9 @@ The console is a derive-from-disk, resumable loop body. To drive a delivery to d
 LOOP until (no open needs) OR (gate hit) OR (only server-blocked left):
   1. enter    derive frontier + open needs from disk (the queue)
   2. pick     the next actionable need (skip server-blocked)
-  3. route    claim -> probe (probe calls task) ; artifact -> task-for-display ; prose -> edit
-  4. execute  write the artifact / verdict (local)
+  3. route    claim -> a question SECTION (the PROBE phase dispatches it) ;
+              artifact -> task-for-display ; prose -> edit
+  4. execute  write the artifact locally, or wait for the dispatched QA file
   5. backfill update the slot/display/section; mark the need returned
   6. -> 1
 ```
@@ -110,8 +120,8 @@ A local need (render, parse, draft, backfill) drains immediately. A need that re
 ```
 AUTO (no asking):  local render/parse, backfill claims/displays, draft a stage tex,
                    compile previews, parse logs, status/ledger updates
-PAUSE + surface:   trigger a server/PHI run; declare a final yes/no verdict;
-                   file insight as accepted knowledge; compile-to-submit;
+PAUSE + surface:   trigger a server/PHI run; declare a final yes/no answer;
+                   settle a claim's status in 1-claims.md; compile-to-submit;
                    destructive round / git ops
 ```
 

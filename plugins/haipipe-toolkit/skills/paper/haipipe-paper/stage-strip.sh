@@ -40,8 +40,22 @@ current=$(grep -m1 '^| current_layer |' "$status" | sed 's/^|[^|]*|[[:space:]]*/
 current=$(printf '%s' "$current" | sed 's/^[0-9]-//')
 
 # canonical spine order: venue coupling gradient FREE→ALIGNED→HEAVY→SPECIFIC
-# seed(FREE) claims(FREE) venue(chooser) pitch(ALIGNED=cover letter) narrative(ALIGNED) display(HEAVY) section-edit(SPECIFIC) review
-keys="seed claims venue pitch narrative display section-edit review"
+# seed(FREE) resource(FREE) claims(FREE) venue(chooser) pitch(ALIGNED=cover letter) narrative(ALIGNED) display(HEAVY) section-edit(SPECIFIC) review
+# resource added 2026-07-14 (JL): what must EXIST for the paper to be testable.
+# The NUMBER is decoration -- this list is the only machine-readable ordering in
+# the toolkit, and line ~40 strips the digit before matching, which is why
+# 1-resource/ and 1-claims/ can share a number (as 2-venue/ and 2-pitch/ already do).
+keys="seed resource claims venue pitch narrative display section-edit review"
+
+# Does this stage have an artifact folder on disk? (0-lifecycle/<N>-<key>/ or
+# 0-lifecycle/<key>/ -- the number varies across papers, so match on the KEY.)
+paper_dir=$(dirname "$status")
+stage_has_artifact() {
+  for d in "$paper_dir"/0-lifecycle/*-"$1" "$paper_dir"/0-lifecycle/"$1"; do
+    [ -d "$d" ] && return 0
+  done
+  return 1
+}
 
 # venue is confirmed by a pinned `| venue |` field in STATUS.md, not a ledger row
 venue_pinned=false
@@ -71,6 +85,16 @@ for k in $keys; do
   i=$((i+1))
 done
 
+# An unknown current_layer used to fail SILENTLY: cur_idx stayed -1, no branch
+# caught it, and the strip rendered EVERY stage ⬜ and exited 0 -- so a paper at
+# its frontier reported as untouched. (Live today: Paper-CGMtoHbA1c's
+# `write/edit` is not a spine key.) Never fail silently about a paper's position.
+if [ "$cur_idx" -eq -1 ]; then
+  echo "stage-strip: WARNING -- current_layer '${current:-<empty>}' is not a spine key." >&2
+  echo "stage-strip:            spine: $keys" >&2
+  echo "stage-strip:            the strip below has NO frontier marker and is not trustworthy." >&2
+fi
+
 label() { case "$1" in write-edit) printf 'write/edit' ;; *) printf '%s' "$1" ;; esac; }
 
 out=""; i=0
@@ -85,7 +109,14 @@ for k in $keys; do
   elif [ "$has_ledger" = true ]; then
     if is_confirmed "$k"; then m="✅"; else m="⬜"; fi
   elif [ "$i" -lt "$cur_idx" ]; then
-    m="✅"
+    # INDEX FALLBACK (fires on every live paper -- zero of them have a machine-
+    # readable Gate Ledger, so `has_ledger` is always false). "Before the frontier"
+    # is only EVIDENCE of doneness, not proof: inserting a new stage into `keys`
+    # would otherwise green-light it instantly on every paper that never ran it.
+    # (Adding `resource` before `claims` would have rendered `resource ✅` on 4
+    # live papers on commit day, for a stage that has never executed.)
+    # So demand an artifact on disk. `review` is post-submission and owns no folder.
+    if [ "$k" = "review" ] || stage_has_artifact "$k"; then m="✅"; else m="⬜"; fi
   else
     m="⬜"
   fi

@@ -3,6 +3,10 @@ haipipe-application-venue — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [3.1.0] — 2026-07-14
+
+Changed (PROBE LAYER REDESIGN — Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14)
+- Venue-level questions (channel capability, compliance constraints, prior sends) are SECTIONS with `serves: 2-venue` in `1-probes/PPNN_<topic>.md` at the intervention root. The per-stage `0-lifecycle/2-venue/_PROBE/` folder is RETIRED — probe files live in ONE flat pool, and stage affinity is the section's `serves:` field, never its path.
 
 ## [1.0.0] — 2026-06-23
 

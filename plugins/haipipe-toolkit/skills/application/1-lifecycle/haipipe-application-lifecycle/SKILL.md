@@ -4,9 +4,9 @@ description: "Orchestrator for the intervention structure lifecycle (1-lifecycle
 argument-hint: "[stage-verb] [intervention-path]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "3.0.0"
-  last_updated: "2026-07-06"
-  summary: "Stage router on the paper-aligned spine: seed (0), claims (1) [venue-FREE] -> venue (gate: pin + stages_skipped + settlement) -> pitch (2), narrative (3), display (4), section-edit (5) [venue-ALIGNED, gated]. Loopback fixed: venue change re-runs venue+pitch, claims survives. Never routes users to phase skills."
+  version: "3.1.0"
+  last_updated: "2026-07-14"
+  summary: "Stage router on the paper-aligned spine: seed (0), claims (1) [venue-FREE] -> venue (gate: pin + stages_skipped + settlement) -> pitch (2), narrative (3), display (4), section-edit (5) [venue-ALIGNED, gated]. Loopback fixed: venue change re-runs venue+pitch, claims survives. Never routes users to phase skills. v3.1.0 (probe redesign, Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3 approved JL 2026-07-14): a stage's open questions live in the flat 1-probes/ pool at the intervention root, bound to a stage by each section's serves: field, never by its path; the per-stage _PROBE/ folder is RETIRED."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -36,7 +36,7 @@ Stage skills are the USER-FACING surface. Internally, each stage skill drives th
 
 **This router routes users to STAGE skills only -- never to phase skills.** If a request sounds like a phase ("gather evidence for claims", "polish the pitch"), route to the owning stage skill and let it dispatch.
 
-Stage artifacts are markdown (`N-<stage>.md` + `_LOG_` + `_PROBE/` in a stage FOLDER). Stage gates: `../../wiki/08-stage-gate.md`.
+Stage artifacts are markdown (`N-<stage>.md` + `_LOG_` in a stage FOLDER). A stage's open QUESTIONS live at the intervention root, in `1-probes/PPNN_<topic>.md` — one flat pool, bound to a stage by each section's `serves:` field, never by its path. Stage gates: `../../wiki/08-stage-gate.md`.
 
 Natural Pipeline Order
 ----------------------
@@ -46,7 +46,7 @@ Natural Pipeline Order
   ──────────────────────────────────────
   seed (0)       why this intervention might work (kill criteria, audience hunch)
       ↓
-  claims (1)     claim/evidence inventory: supported / weak / GAP, tied to K/W and evidence sources
+  claims (1)     claim/evidence inventory: supported / weak / GAP, tied to PP verdicts and evidence sources
                  venue-neutral; no slot-mapping, no channel framing
 
   VENUE DECISION

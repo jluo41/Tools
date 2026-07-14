@@ -1,43 +1,55 @@
 haipipe-toolkit — Usage Guide
 ==============================
 
-Practical guide to USING the toolkit. For an inventory of what skills exist see `README.md`. For task ↔ probe boundary thinking see `skills/probe/MENTAL_MODEL.md`. This file is the workflow recipe book — concrete commands, common flows, gotchas.
+Practical guide to USING the toolkit. For an inventory of what skills exist see `README.md`. For the probe contract see `skills/probe/haipipe-probe/SKILL.md` (the constitution) and `ARCHITECTURE.md` (the whole model). This file is the workflow recipe book — concrete commands, common flows, gotchas.
 
 
-The 3 worlds — one project, three folders
-==========================================
+The 4 worlds — one project, four folders
+=========================================
 
 ```
 📦 examples/Proj{Series}-{Cat}-{Num}-{Name}/
 │
-├── 💼 tasks/         ← the WORK         (task)   code + runs + metrics
-├── 📊 probes/   ← the CLAIMS       (probe)  steering + verdicts
-└── 📰 paper/         ← the DELIVERABLE  (paper)  manuscripts
+├── ⚙️ tasks/         ← the WORK      (task)        code + runs + metrics + QA/ digests
+├── 🔎 discoveries/   ← the EVIDENCE  (discovery)   sources + verdicts + QA/ digests
+├── 📄 papers/        ← the STORY     (paper)       manuscripts + 1-probes/ + 1-claims.md
+└── 📬 applications/  ← the DELIVERY  (application) reports / messages / UI
 ```
 
-Each world has its own specialist family. You can stay in one or cross between them; the cross-world dependency is **strict one-way**:
+`tasks/` + `discoveries/` are the two EXECUTORS — same shape, same rules. Together they are the
+project's evidence BANK. `papers/` + `applications/` are the CONSUMERS.
+
+The cross-world dependency is **strict one-way**, and the arrow is a PATH:
 
 ```
-probes  ──reads──▶  tasks   (via probe.yaml arms[])
-tasks        ──reads──▶  (nothing about probes)
-paper        ──reads──▶  probes (claims) + tasks (figures)
+paper / application  ──reads──▶  tasks/ + discoveries/    via a probe section's `target:`
+                                                          (a PATH to a <leaf>/QA/<n>-<slug>.md)
+tasks / discoveries  ──reads──▶  NOTHING about papers.    The bank is PROBE-UNAWARE:
+                                                          no _ASK/, no _ANS/, no answers:,
+                                                          no PP id, ever.
 ```
+
+**Two session modes.** The LEFT (executor) session just runs Plan→Build→Execute→Report for its
+own sake — no questions, no asks. The bank grows autonomously. The RIGHT (consumer) session is
+the one that asks. So in a healthy project most answers ALREADY EXIST before a paper asks for
+them: a commission is the exception, not the norm.
 
 
 Quick start — your first end-to-end run
 ========================================
 
-You are at the repo root. You want to train a CGM baseline model and aggregate 3 seeds into one claim.
+You are at the repo root. You want to train a CGM baseline model across 3 seeds and leave the bank able to answer "is the baseline reproducible?".
 
 ```bash
 # 0. Activate env (always, per CLAUDE.md)
 source .venv/bin/activate && source env.sh
 
 # 1. Scaffold a project (if not exists)
-/haipipe-project task project ProjA-Bench-1-FairGlucose
+#    ProjX-* = plain dir under examples/    ·    /haipipe-project repo Project-* = repo-backed
+/haipipe-project new ProjA-Bench-1-FairGlucose
 
-# 2. Scaffold a model-training task (cascade auto-creates group)
-/haipipe-task training --auto \
+# 2. Scaffold a model-fit task (cascade auto-creates group). Type is `fit` — "training" is an alias.
+/haipipe-task fit --auto \
     --project-id ProjA-Bench-1-FairGlucose \
     --group A01_pretraining_clm \
     --task 01_train_clm_baseline
@@ -60,20 +72,23 @@ cat task-log.md
 bash runs/5_model_clm_baseline_seed7.sh
 bash runs/5_model_clm_baseline_seed13.sh
 
-# 7. Design a probe to compare the 3 seeds against an LHM arm
-/haipipe-probe design new clm_baseline_reproducibility --id 01 \
-    --title "CLM baseline reproducibility" \
-    --hypothesis "MAE val < 25.0 across 3 seeds, paired-t p<0.05"
+# 7. Ask the leaf a question. It answers from results/ if it can (depth 0),
+#    and writes a READABLE digest either way.
+/haipipe-task qa "Across the 3 baseline seeds, what is the val MAE mean/std, and is the
+                  seed-to-seed spread smaller than the gap to the LHM arm?" \
+              A01_pretraining_clm/01_train_clm_baseline
 
-# 8. Link the 3 runs into the probe as the baseline arm
-/haipipe-probe design link 01 \
-    tasks/A01_pretraining_clm/01_train_clm_baseline/results/run_seed42 \
-    tasks/A01_pretraining_clm/01_train_clm_baseline/results/run_seed7 \
-    tasks/A01_pretraining_clm/01_train_clm_baseline/results/run_seed13
+#    → returns tasks/A01_pretraining_clm/01_train_clm_baseline/QA/1-baseline-seed-spread.md
+#      # Q — <the question>  ##Answer [→ results/…]  ##Caveats  ##Not-done
+#      That file is now the bank's answer, general and reusable — no paper owns it.
 
-# 9. Aggregate stats and write the claim
-/haipipe-probe result aggregate 01
-/haipipe-probe review 01     # structural QA + Codex semantic verdict
+# 8. (later, in a PAPER session) a claim needs that number.
+#    The paper's PROBE phase opens a section in papers/<P>/1-probes/PP02_baseline.md:
+#       - serves: 1-claims (C3)
+#       - target: tasks/A01_pretraining_clm/01_train_clm_baseline/QA/1-baseline-seed-spread.md
+#       - state:  answered           ← DERIVED: the QA file exists
+#       - reading: "spread 0.3 ≪ 1.1 gap ⇒ C3 supported"
+#    T2 REUSE: one grep + one read. Nothing re-runs. This is the NORMAL case.
 ```
 
 
@@ -119,8 +134,8 @@ cd examples/ProjC-Model-1-ScalingLaw/tasks/X_algo/01_test_te_clm_lhm/
 HAIPIPE_SKIP_REVIEW=1 bash runs/algo_te_clm_lhm_tiny.sh
 
 # loss.json present + "didn't crash" → algo class is plumbed correctly
-# now graduate to real training:
-/haipipe-task training --auto ...
+# now graduate to a real training run (type = fit):
+/haipipe-task fit --auto ...
 ```
 
 Workflow C — Evaluate a trained model
@@ -155,33 +170,49 @@ Workflow D — Make a paper figure
 bash runs/figure_main.sh
 ```
 
-Workflow E — Run a full probe (research thread)
------------------------------------------------------
+Workflow E — A paper needs evidence it does not have (the probe loop)
+---------------------------------------------------------------------
 
-```bash
-# 1. Design — declare hypothesis, planned arms, aggregation spec
-/haipipe-probe design new lhm_a_vs_baseline_test_id --id 02 \
-    --title "LHM-A architecture beats baseline on test-id" \
-    --hypothesis "LHM-A MAE < baseline by ≥0.5, paired-t p<0.05, N=3"
+The five steps run INSIDE a paper stage's PROBE phase. You normally invoke the stage skill, not
+these steps by hand — this is what it does under the hood.
 
-# 2. Bridge — scaffold the arms as tasks in task and deploy
-/haipipe-probe bridge 02
-# (this auto-calls Skill("haipipe-task", "task-folder training ..."))
-
-# 3. Wait for training; runs complete; results/<RUN>/metrics.json written
-
-# 4. Link the runs back into the probe (bridge does this auto)
-# (manual fallback: /haipipe-probe design link 02 <run-path>)
-
-# 5. Aggregate
-/haipipe-probe result aggregate 02         # mean/std/paired-t/sign
-
-# 6. Review (structural QA + Codex semantic verdict)
-/haipipe-probe review 02
-
-# 7. Iterate if needed
-/haipipe-probe loop 02           # review → propose → re-materialize
+```text
+📝 DRAFT   the claims stage leaves a GAP: "does LHM-A beat baseline on test-id?"
+              │
+① ORGANIZE  the Q-paper lands as a SECTION in papers/<P>/1-probes/PP05_lhm-arch.md
+              │   ## Why  🔒  "H2 dies if the gain is inside the seed noise."   ← NEVER LEAVES
+              │   ## Q1   serves: 1-claims (C4)
+              │           commission: |            ← T1: the stake is STRIPPED OUT
+              │             Compare LHM-A vs the CLM baseline on the test-id split,
+              │             N=3 paired seeds, same schedule. Report per-seed MAE, the
+              │             paired difference, and its spread.
+              │             Accepted: any direction — magnitude is NOT yours to judge.
+              ▼
+② MATCH     grep {tasks,discoveries}/**/QA/*.md   ← MATCH ON THE ANSWER, never the topic.
+            READ the candidate QA file. A similar-sounding leaf that does not literally
+            answer this question is a MISS, not a hit.
+              ├─ ✅ a QA file answers it   → T2 REUSE. Point at it. STOP. (the normal case)
+              └─ 🔴 nothing                → ③
+              ▼
+③ DISPATCH  hand the `commission` block, VERBATIM, and NOTHING ELSE:
+              Agent(haipipe-task-orchestrator-agent)      ← runs / code
+              Agent(haipipe-discovery-orchestrator-agent) ← literature
+            Their CLEAN CONTEXT is the wall. Never send ## Why. Never send the probe file.
+            Inside, the orchestrator runs the qa gate (① scan ② digest ③ P-B-E-R) and picks
+            the shallowest depth that answers it (read | new run | new script | new leaf).
+            You never learn which. It returns ONE thing: a PATH.
+              ▼
+④ POINT     target: tasks/B01_evaluation_clm/03_lhm_vs_baseline/QA/2-lhm-paired-delta.md
+              ▼
+⑤ INTERPRET reading: |    ← T2: the stake goes back IN
+              paired Δ = −0.7 ± 0.2 over 3 seeds ⇒ outside seed noise ⇒ C4 supported.
+            → 1-claims.md flips C4 (status + confidence + claim_type live THERE, not here)
 ```
+
+🚫 What you must NOT do in a paper session: open `results/`, run the analysis inline, and write
+the digest yourself. That is LAW 1 broken. The probe CAUSES a QA file; the EXECUTOR AUTHORS it.
+If the results already exist but there is no readable digest, DISPATCH a digest-only run — a
+clean-context agent reads `results/` and writes the QA file. No code runs. It is cheap.
 
 
 Auto mode (`--auto`)
@@ -213,18 +244,23 @@ Gotchas
    - `HAIPIPE_SKIP_REVIEW=1 bash runs/<RUN>.sh` (env var, one run).
    - `_meta.skip_review: true` in `configs/<RUN>.yaml` (permanent for that config — only for throwaway / smoke tasks).
 
-2. **Group letter must match task-type.**
-   `/haipipe-task data` only scaffolds under a **D**-series group. Mismatch (e.g., trying to put data into A-series) → blocked in AUTO; warn + ASK in interactive.
+2. **Group letters are PROJECT-specific — never infer task-type from one.**
+   `A01_`, `B01_`, `C01_` are organizational prefixes, NOT type indicators. Each project defines its own scheme, and **the project's existing scheme always wins**. Type is detected from script content or from the explicit type arg — never from the letter (`haipipe-task/SKILL.md:40`, `:294`).
+
+   The letters below are only the **DEFAULT** a specialist picks for a project with no scheme yet:
 
    ```
-   A=training  B=eval  C=display  D=data  E=individual  F=agent  X=algo
+   data D · fit A · eval B · display C · individual E · agent F · raw R · algo X_algo
    ```
 
-3. **Single-direction dependency: probes read tasks, never vice versa.**
-   Don't write `probe.yaml` paths into task configs. Don't import task code from probe scripts (probes have no code at all).
+3. **Single-direction dependency: a paper reads the bank, never vice versa.**
+   Never write a paper path, a PP id, a claim id (`C4`), or a hypothesis id (`H2`) into anything
+   under `tasks/` or `discoveries/`. The bank is PROBE-UNAWARE (no `_ASK/`, no `_ANS/`, no
+   `answers:` field). A QA file that says "claims-stage" or "the paper" has been contaminated —
+   the evidence comes back paper-shaped and the next paper inherits the first one's frame.
 
 4. **`results/` is for LIGHT artifacts only.**
-   Heavy outputs (`.pt`, `.ckpt`, `.npy`, `.parquet > 1 MB`) belong in `_WorkSpace/{N}-*Store/`. `-inspect review` flags violations.
+   Heavy outputs (`.pt`, `.ckpt`, `.npy`, `.parquet > 1 MB`) belong in `_WorkSpace/{N}-*Store/`. Nothing audits this automatically — the project-audit skills are retired; it is a review-time convention.
 
 5. **Run-name pairing is mandatory.**
    `configs/<RUN>.yaml`, `runs/<RUN>.sh`, `results/<RUN>/`, `notebooks/<RUN>.ipynb` must all share the same `<RUN>` token. Renaming one = renaming all four.
@@ -242,21 +278,25 @@ Cheatsheet — scope × command
 ```
 SCOPE          COMMAND                                              EFFECT
 ─────────────  ───────────────────────────────────────────────────  ──────────────────────
-project        /haipipe-project task project new <ID>               scaffold project shell
-project        /haipipe-project review <ID>                         structural audit
-project        /haipipe-project organize <ID>                       reorganize files
-project        /haipipe-project overview [<ID>]                     dashboard
+project        /haipipe-project new <ProjX-ID>                      scaffold plain project shell
+project        /haipipe-project repo <Project-ID> [--org <owner>]   scaffold repo-backed project
+project        /haipipe-project                                     list projects + the 2 setup paths
+                 (review / organize / overview are RETIRED — originals in skills/project/_archive/)
 
 task-group     /haipipe-task task-group <ID> --project-id <PROJ>    scaffold a group
 
 task-folder    /haipipe-task <type> --auto                          orchestrator scaffold
-               /haipipe-task-for-data    --auto                         direct, data-pipeline
-               /haipipe-task-for-algo    --auto                         direct, X_algo smoke
-               /haipipe-task-for-training --auto                        direct, A-series train
-               /haipipe-task-for-eval     --auto                        direct, B-series eval
-               /haipipe-task-for-display  --auto                        direct, C-series fig
-               /haipipe-task-for-individual --auto                      direct, E individual
-               /haipipe-task-for-agent   --auto                         direct, F LLM agent
+                 types: data · raw · algo · fit · eval · display · individual · agent · endpoint
+               /haipipe-task-for-data       --auto                      direct, data pipeline
+               /haipipe-task-for-raw        --auto                      direct, raw ingest
+               /haipipe-task-for-algo       --auto                      direct, X_algo smoke
+               /haipipe-task-for-fit        --auto                      direct, model fit / training / sweep
+               /haipipe-task-for-eval       --auto                      direct, evaluation
+               /haipipe-task-for-display    --auto                      direct, figure / table
+               /haipipe-task-for-individual --auto                      direct, per-individual
+               /haipipe-task-for-endpoint   --auto                      direct, endpoint package
+               /haipipe-task-for-stata      --auto                      direct, Stata engine
+               /haipipe-task-for-agent      --auto                      direct, LLM agent
 
 run            bash runs/<NAME>.sh                                  execute a run
                HAIPIPE_SKIP_REVIEW=1 bash runs/<NAME>.sh            same, skip review
@@ -264,17 +304,26 @@ run            bash runs/<NAME>.sh                                  execute a ru
 task report    /haipipe-task report <task-path>                     summarize runtime + metrics
                cat <task-path>/workflow/report.yaml                 inspect task report
 
-probe     /haipipe-probe design new <slug> --group A       declare new thread
-               /haipipe-probe design link <probe> <run-path>   attach a run to an arm
-               /haipipe-probe bridge <probe>                   scaffold arms + deploy
-               /haipipe-probe result <probe>                   aggregate stats + claim
-               /haipipe-probe review <probe>                   QA + Codex verdict
-               /haipipe-probe explore                          coverage + propose next
-               /haipipe-probe loop <probe>                     iterate until clean
-               /haipipe-probe inspect [<probe>]                list / status
+qa (bank)      /haipipe-task qa "<question>" [<leaf>]               ask the task bank
+               /haipipe-discovery qa "<question>" [<leaf>]          ask the discovery bank
+                 ① QA scan  ② digest from existing artifacts  ③ P-B-E-R  🚫 refuse
+                 → returns <leaf>/QA/<n>-<slug>.md   ·   `ls <leaf>/QA/` IS the index
+                 general language only: no PP id, no claim id, no stake
 
-paper          /paper-workflow / /haipipe-paper-structure-figure / ...                see paper section
+probe (paper)  /haipipe-probe                                       the contract, one screen
+               /haipipe-probe contract | anatomy                    probe-file + QA/ anatomy
+               /haipipe-probe status                                derive states from disk
+               /haipipe-probe "<question>"                          ROUTES to the qa verb;
+                                                                    runs no bank work itself
+
+paper          /haipipe-paper enter <paper-path>                    open-needs dashboard
+               /haipipe-paper status                                lifecycle frontier
 ```
+
+💀 DELETED — do not use, do not resurrect: `/haipipe-probe design|link|bridge|result|review|
+explore|loop|inspect` (the probe.yaml era) · `/haipipe-task asks` (the probe-aware verb, reborn
+as `qa`) · `Agent(haipipe-probe-orchestrator-agent)` (the gateway; dispatch is now a direct
+`Agent()` call on the task/discovery orchestrators).
 
 
 Where to go deeper
@@ -282,19 +331,22 @@ Where to go deeper
 
 ```
 What is this toolkit                         README.md (this folder)
-Project layout, 3 worlds                     skills/project/haipipe-project/SKILL.md
-Task ↔ probe boundary                   skills/probe/MENTAL_MODEL.md  ⭐
+The whole model (KB ⇄ delivery, the probe)   ARCHITECTURE.md               ⭐ read first
+The probe CONSTITUTION                       skills/probe/haipipe-probe/SKILL.md  ⭐ the contract
+The design of record (rulings R1-R18)        Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/
+Claim judging (G1/G2/G3)                     skills/probe/haipipe-probe-review/SKILL.md
+Project layout, the 4 worlds                 skills/project/haipipe-project/SKILL.md
 Task hierarchy + naming                      skills/task/haipipe-task/ref/hierarchy.md
 Task-type series design                      skills/task/DESIGN.md
 runtime.yaml schema                          skills/task/haipipe-task/ref/runtime-yaml-schema.md
 task report (per-task observability)         skills/task/haipipe-task/fn/workflow-report.md
 Run.sh wrapper internals                     skills/task/haipipe-task/ref/run-sh-template.sh
-probe.yaml schema                       skills/probe/haipipe-probe/ref/probe-yaml-schema.md
-Probe bridge operation                       skills/probe/haipipe-probe/fn/bridge.md
+the qa verb (task side)                      skills/task/haipipe-task/fn/qa.md
+the qa verb (discovery side)                 skills/discovery/haipipe-discovery/ (the twin)
 Pipeline (Stages 1-4)                        skills/task/1_data/haipipe-data/SKILL.md
 Pipeline (Stage 5 NN)                        skills/task/2_nn/haipipe-nn/SKILL.md
 Pipeline (Stage 6 endpoints)                 skills/task/3_end/haipipe-end/SKILL.md
-Per-individual contract (Stages 0-2)            skills/task/4_individual/haipipe-individual/SKILL.md
+Per-individual contract (Stages 0-2)         skills/task/4_individual/haipipe-individual/SKILL.md
 Task Reviewer (pre-flight agent)             skills/task/agents/haipipe-task-reviewer-agent.md
 ```
 
@@ -303,16 +355,17 @@ One-line rules of thumb
 ========================
 
 ```
-New code?              → tasks/
-New claim?             → probes/
-New plot?              → tasks/display/  (referenced from probe.yaml evidence:)
-New hypothesis?        → probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml
-New metric value?      → tasks/.../metrics.json
-New per-run record?    → tasks/.../runtime.yaml (atomic, by run.sh)
-New cross-run stat?    → probes/<GROUP>_<group_slug>/<NN>_<slug>/probe.yaml result:
-                         (via result aggregate)
-New "why it failed"?   → probes/<GROUP>_<group_slug>/<NN>_<slug>/logs/<DATE>.md
+New code?                 → tasks/<leaf>/
+New literature?           → discoveries/<leaf>/
+New plot?                 → tasks/ (C-series display task)
+New metric value?         → tasks/.../results/<run>/metrics.json
+New per-run record?       → tasks/.../runtime.yaml (atomic, by run.sh)
+New READABLE answer?      → tasks|discoveries/<leaf>/QA/<n>-<slug>.md   ← the executor writes it
+New question (as a human)?→ /haipipe-task qa "…"  ·  /haipipe-discovery qa "…"
+New question (from a paper)? → a SECTION in papers/<P>/1-probes/PPNN_<topic>.md, then DISPATCH
+New hypothesis / claim?   → papers/<P>/0-lifecycle/1-claims/1-claims.md   (never the bank)
+The stake / why it matters? → the probe file's ONE `## Why`. It never leaves that file.
 New individual view?      → tasks/individual/  (E-series)
-New LLM agent task?    → tasks/agent/  (F-series)
+New LLM agent task?       → tasks/agent/  (F-series)
 First run after scaffold? → HAIPIPE_SKIP_REVIEW=1, or run reviewer agent first
 ```

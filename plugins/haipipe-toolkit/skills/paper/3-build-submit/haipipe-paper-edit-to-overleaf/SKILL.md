@@ -15,7 +15,7 @@ metadata:
 Bridge a local paper directory with an Overleaf project so that:
 
 - **You** can keep editing in the Overleaf web UI (or share editing access with collaborators)
-- **ARIS** can read your changes, run audits (`/haipipe-paper-edit-claim-audit`, `/citation-audit`, `/haipipe-paper-edit-improve-loop`), and push fixes back
+- **ARIS** can read your changes, run audits (`/haipipe-paper-edit-claim-audit`, `/haipipe-paper-probe-citation`, `/haipipe-paper-edit-improve-loop`), and push fixes back
 
 This uses the official **Overleaf Git bridge** (Premium feature). The agent **never sees your authentication token** — you do the one-time auth manually so the token lives in macOS Keychain, not in chat history or `.git/config`.
 
@@ -96,7 +96,7 @@ git diff $LAST..HEAD -- 'sec/*.tex'        # detailed view for prose changes
 - **Typos** that aren't in canonical references (`Lrage` for `Large`)
 - **Commented-out blocks** that may be intentional or may be a stash
 - **Number changes** that should re-trigger `/haipipe-paper-edit-claim-audit`
-- **Cite key changes** that should re-trigger `/citation-audit`
+- **Cite key changes** that should re-trigger `/haipipe-paper-probe-citation`
 
 For each diff hunk, decide one of:
 
@@ -104,7 +104,7 @@ For each diff hunk, decide one of:
 |----------------|--------|
 | Clean editorial improvement | Sync into `paper/`, no audit needed |
 | Numerical / claim change | Sync, then re-run `/haipipe-paper-edit-claim-audit` |
-| New `\cite{...}` | Sync, then re-run `/citation-audit` |
+| New `\cite{...}` | Sync, then re-run `/haipipe-paper-probe-citation` |
 | Half-sentence / obvious typo | Flag to user, do NOT auto-sync |
 | New section / restructure | Stop, ask user before syncing |
 
@@ -145,7 +145,7 @@ git push
 **Commit message protocol**: include the ARIS skill that produced the change so collaborators on Overleaf understand provenance. Examples:
 
 - `paper-write: regenerated sec/3.assurance after audit cascade refactor`
-- `citation-audit: fix 14 metadata entries (madaan2023, lee2024, ...)`
+- `citation audit: fix 14 metadata entries (madaan2023, lee2024, ...)`
 - `haipipe-paper-edit-claim-audit: correct sec/5 numbers vs results/run_2026_04_19.json`
 
 **Confirmation gate**: `push` writes to a shared resource. ALWAYS show the user `git diff --stat` (and a representative hunk for prose changes) before running `git push`. Wait for explicit confirmation unless the user said `auto: true` upfront.
@@ -220,6 +220,6 @@ When in doubt, run `status` first.
 ## See Also
 
 - `/haipipe-paper-edit-claim-audit` — re-run after pulling Overleaf changes that touch numbers
-- `/citation-audit` — re-run after pulling Overleaf changes that add/edit `\cite{...}`
+- `/haipipe-paper-probe-citation` — re-run after pulling Overleaf changes that add/edit `\cite{...}`
 - `/paper-compile` — local LaTeX build; Overleaf compiles independently in the cloud
 - Overleaf Git bridge docs: https://www.overleaf.com/learn/how-to/Using_Git_and_GitHub

@@ -4,6 +4,146 @@ haipipe-paper-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 4.2.0 — 2026-07-14 — R19 hardening (consumer side)
+
+Mirrors constitution `haipipe-probe` 8.3.0; IDENTICAL to `haipipe-application-probe` 4.3.0.
+
+- **② MATCH: R14 is SCOPED to `state: answered`.** A `working` file's `## Answer` is EMPTY BY CONSTRUCTION, so it can never pass R14's literally-answers test — and R14's remedy is DISPATCH. Read as written, the second consumer re-dispatches the run the first is still executing. A `working` file is now matched on its `# Q —` LINE: same question ⇒ HIT-IN-FLIGHT ⇒ commission + point, NO dispatch.
+- **② MATCH: `owner:` and `eta:` for a HIT-IN-FLIGHT are DERIVED from the target**, not invented at the gate: `owner:` := the target's `by:` (or `bank`), `eta:` := its `started:` + QA_CLAIM_TTL_HOURS. One clock, not two.
+- **④ POINT: the ASYNC re-resolve is now ENFORCED.** `commissioned-target-answered` FAILs a section whose answer landed and was never harvested (the in-flight path has no live return, so this is its only road to `read`); `commissioned-target-superseded` FAILs a stale target.
+- **A QA file with NO state line is MALFORMED, not legacy.** Do not bind `target:` at it (`read-target-no-state`); only its owner may complete it.
+- **check-probe-cards.sh:** new codes `qa-no-state` · `read-target-no-state` · `commissioned-target-answered` · `commissioned-target-superseded` · `commissioned-target-no-state`; the `commissioned-overdue` message now reports the target's ACTUAL state instead of asserting "no QA file" about a file that has been on disk for weeks; a missing `<paper_root>` fails fast instead of HANGING FOREVER (the `cd` was unchecked and the ancestor walk spun on `dirname "" → . → .`).
+- Fixtures re-run on BOTH copies: A (clean read→answered) PASS exit 0 · G (legit in-flight commissioned→working) PASS exit 0 · B/C/D/E/F and the four new ones FAIL exit 1.
+
+## 4.1.0 — 2026-07-14 — the consumer side of the QA STATE LINE (R19/R20/R21)
+
+Follows constitution `haipipe-probe` 8.2.0 (JL ruling 2026-07-14; Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ PART 3b, `>> CC0714`). Vocabulary is IDENTICAL to the application twin (4.2.0) and to the task/discovery executors — the field names, the state values, the TTL constant and the FAIL codes are one set, not four.
+
+**The hole this closes.** Two consumers ask the same question a week apart. The first dispatches an expensive P-B-E-R run. The second, while that run is STILL GOING, sees no QA file — because a QA file was written ONCE, at REPORT, complete, and its EXISTENCE was the only signal — and dispatches THE SAME RUN AGAIN. Nothing prevented it.
+
+Added
+- **② MATCH reads the STATE LINE of every candidate QA file. Existence is no longer the signal.** `answered` → a T2 HIT. `working` → ⏳ IN FLIGHT: the question is ALREADY BEING ANSWERED, so the section goes `state: commissioned`, `target:` points at that QA file, and there is **NO SECOND DISPATCH**. `superseded-by:` → FOLLOW THE CHAIN to the live answer; never bind `target:` to a superseded file. No state line → LEGACY (pre-R19), treat as `answered`.
+- **④ POINT: `ls` no longer settles the section's state.** The TARGET'S state line does: absent|`working` ⇒ `commissioned` · `answered` ⇒ `answered` · superseded ⇒ re-point. A target still `working` past `QA_CLAIM_TTL_HOURS` (24) means the run is DEAD ⇒ back through ③ DISPATCH.
+- **⑤ INTERPRET is legal ONLY against a target that is `answered` and NOT superseded.** Reading a `working` file is reading an EMPTY `## Answer`; reading a superseded one is a reading that is true of an answer that is no longer true.
+- **PART 2 states the invariant out loud: ONE WRITER — the EXECUTOR, and nobody else, EVER.** "Write-once" was never the real rule; ONE WRITER was. Two writes by the same owner (the CLAIM at the qa gate's ③ decision, the COMPLETION at REPORT) is fine. This worker must NEVER create, claim, edit, complete or supersede a QA file — not even one it commissioned, not even to clear a zombie claim. A consumer-planted `working` file is the retired `_ASK/` stub wearing a `QA/` costume. Also added as a hard boundary.
+- PROOF 2 and PROOF 4 now require the `- state:` line of the file the worker branched on. A step whose proof is absent did not happen.
+
+**check-probe-cards.sh — FIVE NEW TEETH** (filename unchanged: 65 refs across 33 files; internals only). Each catches a bug that was SILENT before:
+- `read-target-working` — a section at `state: read` whose `target:` is a QA file that is `state: working`. The paper claims it read an UNFINISHED answer.
+- `read-target-superseded` — a section at `state: read` whose `target:` carries `superseded-by:`. **THE DAY-1/DAY-40 SILENT-FALSE-CLAIM BUG**: day 1 the task answers "no cycle column" and the paper reads it as C6-supported; day 40 a re-run finds the column and writes QA/2; the paper's `target:` still points at QA/1. Every file is internally consistent, nothing is a lie, and the claim is now FALSE. Nothing fired before.
+- `qa-working-no-started` — a `working` QA file with no `started:`: an UNEXPIRABLE claim, so every future reader defers to it forever.
+- `qa-working-expired` — a `working` QA file older than `QA_CLAIM_TTL_HOURS`: a ZOMBIE claim from a dead run.
+- `qa-answered-empty` — `state: answered` with an EMPTY `## Answer`: a LYING RECEIPT.
+
+Changed
+- The new state-line logic is factored into **ONE shared block (`QA_STATE`)**, called by the PASS-1 section-target test and the PASS-3 bank scan — exactly as the LAW-2 lint (`LEAK_AWK`) now is. The two hand-copied checkers had already drifted into IDENTICAL bugs once; the state block is byte-identical across both copies (verified by diff), and the TTL is referenced by NAME (`QA_CLAIM_TTL_HOURS=24`), never as a literal.
+- A QA file with no state line asserts NOTHING (legacy, pre-R19). A gate that FAILs correct work is worse than one that misses.
+
+Verified (fixtures under a temp project, BOTH checker copies, byte-identical output)
+- A clean: `state: read` → `state: answered` QA file with a real `## Answer`, **including the false-positive bait** (a commission naming a real path `tasks/.../C3-Visual-ForecastScaling/` and forecast horizons H1/H6) → **PASS exit 0**. The gate was not broken.
+- B `read` → `working` target → FAIL. C `read` → superseded target → FAIL. D `working`, no `started:` → FAIL. E `working`, started 3 days ago → FAIL (`72h >= QA_CLAIM_TTL_HOURS=24`). F `answered`, empty `## Answer` → FAIL. All exit 1.
+- **G LEGIT IN-FLIGHT**: `state: commissioned` section → `state: working` QA file with a FRESH `started:` → **PASS exit 0**. The change WORKS, rather than merely failing things.
+- Regression: the LAW-2 lints still fire on both surfaces — the A03-form bare-label bank leak (`- C6: … → NO`, the slash pair `C6/C7`) and a stake-disclosing commission → FAIL exit 1.
+
+## 4.0.1 — 2026-07-14
+
+- Reference block re-pointed at `haipipe-paper/fn/probes.md` (renamed; "plans" is retired vocabulary). No contract change.
+
+## [3.9.0] -- 2026-07-14 (b) -- BOOKKEEP MINTS the resource stage's cards (the Q -> PP wire had no owner)
+## 4.0.0 — 2026-07-14
+
+- **THE PAPER PROBE WORKER WAS NEVER MIGRATED. This is that migration.** It was still v3.9.0 — the card/gateway model — while the application twin shipped v4.0.0. Its DISPATCH step issued a literal `Agent(haipipe-probe-orchestrator-agent, ...)` call to an agent that had been archived to `probe/agents/_archive/` and de-registered from every registry, and line 24 declared that call "the ONLY door". Every paper stage's PROBE phase (seed/resource/claims/pitch/narrative/display/section-edit) therefore died at DISPATCH with an unknown-agent error: no paper could acquire ANY evidence, and no paper could advance past PROBE.
+- REPLACED the 4-step procedure (BOOKKEEP -> DISPATCH -> TRANSLATE -> VERIFY) with the FIVE-STEP LOOP (ORGANIZE -> MATCH -> DISPATCH -> POINT -> INTERPRET) over `papers/<P>/1-probes/PPNN_<topic>.md` question SECTIONS. MATCH comes BEFORE dispatch: most sections should close on T2 REUSE against the bank's QA corpus, and a commission is now the EXCEPTION, not the norm (the old rule was "dispatch every card, ALWAYS, no matter how small the need").
+- **DELETED the `_ASK/` HANDOFF STUB and DEFERRED HANDOFF.** The worker used to write `_ASK/PPNN_<slug>.md` into the receiving `tasks/`/`discoveries/` folder and called it "the ONLY project-side write this worker is ever permitted". It is now permitted ZERO. That write was a direct LAW-1 / R2 violation; no verb reads `_ASK/` any more (task's `fn/asks.md` is deleted, discovery's stub-seeded input state is gone); and both banks' reviewers plus BOTH checkers now HARD FAIL an `_ASK/` folder on sight — so a paper obeying its own live worker instruction contaminated the bank and redded every downstream gate in the other buckets. The durable dead-session carrier is the `commission:` block IN the section (R6).
+- DISPATCH now uses the executor orchestrators' OWN input spelling (`action: qa` / `project:` / `question:` / `leaf:`). The v4.0 application keys (`project_root`/`qa`/`target`/`deliverable`) matched NONE of their four declared input forms — with no `action:` the qa gate is never selected, and with the leaf under the wrong key a T3 ENRICH gets opened as a NEW leaf (a fresh P-B-E-R run where a new config would have done).
+- `mode: full` now actually reaches a judgment: INTERPRET dispatches `Agent(haipipe-probe-reviewer-agent)` and lands its return in `0-lifecycle/1-claims/1-claims.md`. Nothing dispatched the reviewer before, so a full-mode section could never be judged.
+- PRESERVED: the PROOF-per-step enforcement, the RESOURCE STAGE INTAKE (Q -> SECTION + the `-> PP<NN>` backlink) and its WRITE-BACK (the Q's `A:`), the BUILD-lane `commissioned` state (owner/eta/blocks/cross-project; future eta PASSES, overdue HARD FAILs), the three harvest-lane sub-workers, the display-request reroute.
+- **check-probe-cards.sh: INTERNALS REWRITTEN, FILENAME KEPT** (65 refs across 33 files). It was still globbing `1-probe-plans/PP*.md` and reading a `status:` field, so on any v8-shaped paper it scanned ZERO files, printed `WARN no PP*.md cards` and exited 0 — a VACUOUS GREEN over probes that were entirely unanswered. (Verified: on a fixture with a leaked commission, a dangling target and a contaminated bank file, the old script returned EXIT=0 and found nothing.) Now: 3 passes (per-SECTION state derivation + target resolution on disk; working docs; the bank's QA/*.md), reading `- state:` and handling exactly the six derived states, with `verdicted`/`dispatched` FAILed as dead vocabulary. The paper-only RESOURCE-STAGE PASS is re-attached and re-pointed at 1-probes/.
+
+Adversarial review, BLOCKER 1 — the ROOT one. The new RESOURCE stage could ASK and could not be ANSWERED, because nobody minted the card:
+
+- the resource stage writes `Q<n>` into `0-lifecycle/1-resource/1-resource.md` and is FORBIDDEN to mint a PP id (JL's Q-not-PP ruling);
+- this worker's STEP 1 resolved cards from `1-probe-plans/README.md` planned items to EXISTING PPNN cards, and NEVER read `1-resource.md` — the word "resource" did not appear in this file at all;
+- the gateway takes `correlation_id: PPNN` as an **INPUT**, so a PP id cannot be its OUTPUT.
+
+Nobody minted. The resource stage's PROBE phase made exactly one call (`from-buffer <paper_root>`) into an EMPTY buffer, and the CHECK gate greened over it. Empirically: `check-probe-cards.sh <Paper-CGMtoAge> --stage resource` printed `OK no cards serve stage 'resource'` and exited 0.
+
+Added
+- **STEP 1 (BOOKKEEP) — STAGE INTAKE: RESOURCE.** Runs first, only when the invoking stage is RESOURCE. Read `1-resource.md`; for every `Q<n>` GATE 1 approved (present, not DECLINED in `_LOG_1-resource.md`) that has neither an `A:` nor a `-> PP<NN>` backlink, MINT one card in `1-probe-plans/` (`serves: resource` · `blocks: N<n>` · `target: ?` · `status: planned` · `## Need` = the Q **verbatim** — a resource question is already paper-agnostic: it asks what EXISTS, never which answer is wanted, so it crosses the bridge as written). Then WRITE the `-> PP<NN>` backlink into 1-resource.md. That backlink is the mechanical proof the question was asked, and it is what the CHECK gate tests. This is exactly JL's ruling — *"the probe stage will pick them up"* — and the stage still never mints a PP id and never picks a probe TYPE or TOPIC: the GATEWAY does that in its SWEEP.
+- **STEP 3 (TRANSLATE) — RESOURCE WRITE-BACK.** A card that `serves: resource` writes its landed takeaway back into 1-resource.md as the Q's `A:` (existence AND fitness, and what it KILLS). A BUILD card writes its A the moment the build is BOOKED (`COMMISSIONED · owner · eta · blocks · cross-project`), and the async path overwrites it with the real answer when the receipt arrives. Both receipts are required: the card is the probe-layer one, the Q's `A:` is the consumer-facing one — 1-resource.md is what the human reads at GATE 2, so a stage whose answers live only in cards never sees its own answers. PROOF 3 now also demands the written-back `A:`.
+- **`check-probe-cards.sh` — RESOURCE-STAGE PASS.** Fires only on `--stage resource`, only when `1-resource.md` exists. Every `Q<n>` must carry an `A:`, or a `-> PP<NN>` backlink to a card that EXISTS ON DISK, or a DECLINED line in `_LOG`. None of the three -> `FAIL unasked-question(Q3)`. A backlink to a missing card -> `FAIL dangling-backlink`. And "no cards serve stage resource" while questions are still open no longer prints the reassuring OK — it FAILs as the VACUOUS GREEN. Same class of bug the toolkit already fixed once (a gate going green over an un-run probe, JL 2026-07-07); this time it was the gate going green over a stage that asked NOTHING.
+
+The ownership chain, now stated in both skills: `DRAFT asks (Q) -> GATE 1 approves -> PROBE WORKER mints the card -> GATEWAY picks type + topic -> answer lands -> TRANSLATE writes the A back into the Q`.
+
+Verified on a fixture with an unasked Q, an asked Q (resolving backlink) and an answered Q: the unasked one FAILs by name, the other two PASS; adding the backlink turns the run green; a dangling backlink FAILs; a DECLINED Q is exempt; papers with no `1-resource.md` are unaffected (POSIX `sh` + `dash`, `set -u`-safe).
+
+
+## [3.9.0] -- 2026-07-14 -- TRANSLATE writes `commissioned` (the BUILD lane finally has a producer)
+
+`check-probe-cards.sh` already enforced `status: commissioned` (owner + eta + blocks + cross-project + the C6 future-eta test) for the RESOURCE stage's BUILD lane. But NO step in this worker ever WROTE that status — STEP 2 wrote `dispatched`, STEP 3 wrote `read` / `verdicted` / `answered-local`. A real in-flight resource BUILD therefore sat at `dispatched`, which the checker FAILs as `status-dispatched(probe-not-run)`, reddening the CHECK gate on exactly the work JL ruled NON-BLOCKING, ALWAYS. The C6 anti-laundering guard could never fire, because nothing could enter the state it guards: a status only the checker could read and no producer could write.
+
+Changed
+- **STEP 3 (TRANSLATE) — new BUILD-LANE rule.** A card whose work is a BUILD (`task-for-data` / `task-for-algo` / `task-for-fit`, or a long acquisition such as a DUA/IRB) and whose answer has not landed lands as `status: commissioned` WITH `owner:` + `eta:` (future, YYYY-MM-DD) + `blocks:` + `cross-project:` (a sibling-project path the gateway NAMED, or `none-found` — MANDATORY on every BUILD card, JL ruling C4). A SCAN-lane card (store scan, capability grep, access-rung, literature) is unchanged: `dispatched -> read`, because it returns in minutes.
+- **STEP 3 async path** — a card with no answering report yet stays in its in-flight status honestly: SCAN `dispatched`, BUILD `commissioned`. When the receipt lands it translates like any other return (`commissioned -> read`).
+- **STEP 2 (DISPATCH)** — a BUILD-lane card is never written `dispatched` in the first place (a deferred handoff is BUILD-lane by construction: that is what "long-running" means).
+- **STEP 4 (VERIFY)** — the checker summary now states the commissioned rule: PASS with the four fields + a future eta; FAIL overdue or missing any field.
+
+WHY the split exists at all: `dispatched` FAILing as probe-not-run is CORRECT for a scan (a scan that has not come back in minutes did not run) and WRONG for a build (a 3-week build has not failed, it is working). `commissioned` PASSES the gate while its eta is in the future and goes HARD FAIL the instant that eta passes with no receipt — the date test is the only thing standing between this status and a laundering token.
+
+Companions: haipipe-probe 7.10.0 (status vocabulary + card anatomy: `commissioned` + the four fields, disk-derived like every other status) · haipipe-paper/fn/probe-plans.md (status list mirrored) · check-probe-cards.sh (enforcement already present, unchanged).
+
+
+## [3.8.1] -- 2026-07-12 -- Audit repair
+
+- **`Agent` added to allowed-tools.** The frontmatter granted Bash/Read/Write/Edit/Grep/Glob/Skill but NOT Agent — while the skill's mandated STEP 2 is an `Agent(haipipe-probe-orchestrator-agent)` dispatch and STEP 3 dispatches harvester subagents. The worker could not legally perform its only permitted evidence door.
+- Async-harvest grep made shape-agnostic (`answers:.*\bPPNN\b`) — the literal `answers: PPNN` string never matched a multi-stub list report.
+- check-probe-cards.sh bridge pass now flags CLAIM ids (C1/C3) as well as hypothesis ids: the PAPER-AGNOSTIC rule names "H1/H2/C3" explicitly, but the regex only caught H-ids, so a stub leaking `serves: C1, C2, C3` PASSed (the live ScalingLaw stub did exactly that).
+
+
+## [3.8.0] -- 2026-07-12 -- Routing: cards carry target:, TRANSLATE writes back the actual
+
+JL routing ruling 2026-07-12 (haipipe-probe 7.8.0 companion): the paper must record WHERE each ask is sent, and where its answer will land.
+- BOOKKEEP: the card anatomy now includes `target:` (existing `tasks/<group>/<folder>` or `discoveries/<folder>`, `NEW ...`, or `?`). `?` is fine at DRAFT and still dispatchable (the gateway's SWEEP resolves it), but a card that reached the campaign pass unresolved is reported as a planning gap, not dispatched silently.
+- DISPATCH: the Agent(...) prompt carries `target:` verbatim.
+- TRANSLATE: when the gateway's SWEEP re-routed away from the proposed target (its `handoff:` names the actual landing site), write the ACTUAL back into the card's `target:` — the card must not lie about where its evidence lives.
+
+
+## [3.7.0] -- 2026-07-12 -- Both-banks layout: card pool + _ASK/ container
+
+JL ruling 2026-07-12 (pairs with haipipe-probe 7.7.0; supersedes the 2026-06-29 per-stage layout for PROBE CARDS only):
+- BOOKKEEP resolves cards at `<paper_root>/1-probe-plans/PPNN_*.md` -- flat cross-stage pool beside the campaign README; stage affinity = the card's `serves:` field (header `stage:` -> `serves:`), never its path. Legacy per-stage `0-lifecycle/*/_PROBE/` cards are moved into the pool on first touch (stub `from:` pointers updated).
+- Stub paths -> `<receiving folder>/_ASK/PPNN_<slug>.md` (gateway + DEFERRED HANDOFF both write into the `_ASK/` container; filename mirrors the card's).
+- check-probe-cards.sh: card loop scans `1-probe-plans/PP*.md` FIRST plus the legacy per-stage globs; bridge pass scans `_ASK/PP*.md` plus legacy flat `_ASK_*.md`; WARN message updated. Check semantics unchanged.
+
+
+## [3.6.0] -- 2026-07-12 -- TRANSLATE DOWN: the dispatch plan is paper-agnostic
+
+JL ruling 2026-07-12 (pairs with haipipe-probe 7.6.0). The worker already called itself "the bilingual layer" at STEP 3 — but only translated on the way UP. STEP 2 said to paste `<the PP card's Need + Why + Route, verbatim>` into the gateway plan, and the card's `Why` IS the paper's stake. So the paper's private vocabulary went straight down the bridge, into the `_ASK` stub, and from there into the discovery's own artifacts.
+
+Changed
+- **STEP 2 DISPATCH** — `verbatim` is GONE. The plan now carries `<the PP card's Need + Route -- TRANSLATED, never the Why>`. New TRANSLATE DOWN block: strip claim/hypothesis labels (H1/H2/C3), the words seed/paper/pitch/narrative, the whole `## Why` block, and any hint of the preferred answer; re-pose the need as SELF-CONTAINED evidence questions named Q1/Q2/.... Adds `correlation_id: PPNN` to the dispatch (an opaque routing token carrying no paper semantics).
+- **STEP 3 TRANSLATE** — states the translation is TWO-WAY and that STEP 2 owns the DOWN half; STEP 3 is the UP half (evidence Q1/Q2 → paper H1/H2), landed in the card, the only bilingual document.
+- **check-probe-cards.sh** — NEW bridge pass over the execution bank: every `_ASK_*.md` under `discoveries/` and `tasks/` is grepped for consumer vocabulary and stake disclosure and FAILs on either. Previously the checker inspected only the paper bank, so a contaminated stub passed silently — which is exactly how the 2026-07-11 seed incident went green. Patterns are narrow by design: `- from:` is exempt (legitimate provenance) and "the paper" is not flagged (a discovery legitimately says "the paper reports X" about a SOURCE paper — verified no false positive).
+
+Fixes
+- The 2026-07-11 seed incident (`Paper-PersonalizedGlucoseModel`): both dispatched probes contaminated their discovery, which came back structured around the paper's H1/H2 and was therefore not reusable by any other paper. Re-run clean under this contract.
+
+
+## [3.5.0] -- 2026-07-11 -- Worker obeys the Campaign DAG
+
+Changed (JL cross-stage ruling 2026-07-11; pairs with haipipe-probe 7.5.0 + haipipe-paper 2.8.0)
+- STEP 1 BOOKKEEP: 1-probe-plans/README.md split honored — `Status board` generated (cards win), `Campaign` AUTHORED (by /haipipe-paper probe plan) and OBEYED: it sets the dispatch ORDER. Gating cards first; DAG-dependent cards held until the upstream `answers:` lands (STEP 3 async grep); dispatching the whole buffer flat when a DAG exists is a defect. No Campaign section → flat buffer as before.
+
+## [3.4.0] -- 2026-07-11 -- Deferred handoff + async harvest (two-footed bridge)
+
+Added (JL ruling 2026-07-11, GlucoScaling design session; pairs with haipipe-probe 7.4.0 + gateway 2.1.0)
+- STEP 2 DISPATCH: the gateway now writes an `_ASK_PPNN.md` handoff stub into the receiving tasks//discoveries/ folder before executing — noted, with PROOF 2 extended to cover the stub path from the gateway's `handoff:` return line.
+- STEP 2 DEFERRED HANDOFF mode: for long-running needs (training, multi-day runs) or a two-session workflow (one session on tasks, one on the paper), this worker writes the stub DIRECTLY and stops — its ONLY permitted project-side write; verdict-blind, write-once; a later /haipipe-task or /haipipe-discovery session picks it up. Inline-search ban untouched (a stub carries an ASK, never findings).
+- STEP 3 ASYNC PATH: every run checks each `dispatched` card for an answering report (`answers: PPNN` in report.yaml / discovery report blocks) and TRANSLATEs from the report + artifacts exactly as from a live agent return; no answer → the card stays `dispatched` honestly (waiting, not failed).
+
+Changed
+- STEP 1 BOOKKEEP: `1-probe-plans/README.md` is a GENERATED dashboard — when it disagrees with the cards, the cards win and the index regenerates (statuses derive from cards + stubs + answering reports).
+
 ## [3.3.1] -- 2026-07-10
 
 Fixed (fresh-agent audit, C1/M7/M11/M18)

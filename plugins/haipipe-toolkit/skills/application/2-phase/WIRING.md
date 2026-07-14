@@ -31,7 +31,7 @@ user → /haipipe-application <stage>            stage skills live in 1-lifecycl
              │
              ▼  the stage skill drives the phase engine, in order:
        haipipe-application-draft    → drafts the stage doc from the stage's template (may WebSearch; buffers planned PPNN skeletons)
-       haipipe-application-probe    → BOOKKEEP → DISPATCH (Agent(haipipe-probe-orchestrator-agent) per card) → TRANSLATE → VERIFY (check-probe-cards.sh)
+       haipipe-application-probe    → ORGANIZE (1-probes/) → MATCH (the bank's QA corpus) → DISPATCH (the commission, verbatim, to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent)) → POINT (target: → the QA file) → INTERPRET → VERIFY (check-probe-cards.sh)
        haipipe-application-revise   → venue+audience text pass
        haipipe-application-check    → re-runs the card checker + runs checks.sh, seeds > CHECK: threads in stage docs, gates the human (CHECK 🧑)
 ```

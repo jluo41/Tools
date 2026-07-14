@@ -4,6 +4,11 @@ haipipe-paper-probe-display — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 3.0.2 — 2026-07-14
+
+- "the PP card's unit_refs" -> the probe section's `displays:` lane.
+- Anti-pattern + description: "no PP card -> gateway -> task" -> "no /haipipe-task and no probe dispatch" (the gateway does not exist).
+
 ## [3.0.1] -- 2026-07-10
 
 Fixed (fresh-agent audit, C2/C3/C4/M16)

@@ -50,15 +50,15 @@ assignments live in each section's outline. This is the venue
 closest to an academic paper.
 
 Default section structure (adjust per intervention in 3-narrative;
-the DIKW-spine layout below originated in the C-group report work):
+this layout originated in the C-group report work):
 
 ```yaml
 sections:
-  - 01-subgroup-profile    # who the cohort is (D)
-  - 02-exploration         # what was tried / examined (D/I)
-  - 03-findings            # what the evidence shows (I/K)
-  - 04-messages            # what we say / recommend (K/W)
-  - 05-performance         # how it performed (I/K)
+  - 01-subgroup-profile    # who the cohort is
+  - 02-exploration         # what was tried / examined
+  - 03-findings            # what the evidence shows
+  - 04-messages            # what we say / recommend
+  - 05-performance         # how it performed
   - 06-gate-check          # settlement + caveats before shipping
 ```
 

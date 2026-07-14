@@ -1,12 +1,12 @@
 ---
 name: haipipe-workflow
-description: "IPO workflow designer + builder + reporter. The basic orchestration unit of haipipe-toolkit. Every skill (task, probe, insight, paper, application) is a specific workflow with its own IPO. This skill defines the shared shape: Input → Phases[Steps] → Output, the lifecycle (Plan → Build → Execute → Report), file tracking per step, and the boundary rule for sub-workflows. Trigger: workflow, plan workflow, design workflow, IPO, phases, build workflow, run workflow, report, /haipipe-workflow."
+description: "IPO workflow designer + builder + reporter. The basic orchestration unit of haipipe-toolkit. Every skill (task, discovery, paper, application) is a specific workflow with its own IPO. This skill defines the shared shape: Input → Phases[Steps] → Output, the lifecycle (Plan → Build → Execute → Report), file tracking per step, and the boundary rule for sub-workflows. Trigger: workflow, plan workflow, design workflow, IPO, phases, build workflow, run workflow, report, /haipipe-workflow."
 argument-hint: "[function] [workflow-name-or-path] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
-  version: "2.3.0"
-  last_updated: "2026-07-04"
-  summary: "IPO workflow designer + builder + reporter — the basic orchestration unit."
+  version: "2.4.0"
+  last_updated: "2026-07-14"
+  summary: "IPO workflow designer + builder + reporter — the basic orchestration unit. v2.4: the report schema's `answers:` field is DELETED (the executor layers name no consumer); the skill-family tree drops the retired evidence-gateway hop — a consumer dispatches its question straight to an executor orchestrator and gets a path back."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -15,7 +15,7 @@ Skill: haipipe-workflow (orchestrator)
 
 The **basic orchestration unit** of haipipe-toolkit.
 
-Every haipipe skill (task, probe, insight, narrative) IS a workflow — a specific one with its own domain phases and steps. This skill defines the shared shape they all follow.
+Every haipipe skill (task, discovery, paper, application) IS a workflow — a specific one with its own domain phases and steps. This skill defines the shared shape they all follow.
 
 ```
      ┌─────────┐     ┌───────────────────────────────────┐     ┌──────────┐
@@ -62,7 +62,7 @@ plan.yaml ──(build)──▶ .workflow.js ──(execute)──▶ results �
 Template vs Specific
 ---------------------
 
-This skill defines **templates** — abstract shapes with placeholders. Each domain skill (task, probe, ...) fills in the blanks to make a **specific** workflow with concrete files, concrete steps, concrete prompts.
+This skill defines **templates** — abstract shapes with placeholders. Each domain skill (task, discovery, ...) fills in the blanks to make a **specific** workflow with concrete files, concrete steps, concrete prompts.
 
 ```
 TEMPLATE (this skill):                SPECIFIC (e.g. haipipe-task):
@@ -82,17 +82,15 @@ haipipe-workflow     ← the PATTERN (IPO + lifecycle + file tracking)
     ├── haipipe-task         ← a SPECIFIC workflow (own phases, own steps)
     │     └── haipipe-task-for-data   ← a more specific workflow
     │
-    ├── haipipe-probe        ← a SPECIFIC workflow
-    │     └── calls haipipe-task as sub-workflow (sees only I/O)
-    │
-    ├── haipipe-insight      ← a SPECIFIC workflow
-    │     └── reads probe outputs
+    ├── haipipe-discovery    ← a SPECIFIC workflow
+    │     └── Plan → Build (opt) → Execute → Report on one research topic
     │
     ├── haipipe-paper        ← a SPECIFIC delivery workflow
-    │     └── records evidence needs and calls probe/discover/task/insight
+    │     └── holds its own evidence questions; dispatches them to the executor
+    │         orchestrators as sub-workflows (sees only I/O — a question out, a path back)
     │
     └── haipipe-application  ← a SPECIFIC delivery workflow
-          └── records evidence needs and calls probe/discover/task/insight
+          └── same shape as haipipe-paper
 ```
 
 Each skill:
