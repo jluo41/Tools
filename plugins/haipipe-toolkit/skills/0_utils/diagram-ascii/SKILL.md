@@ -24,7 +24,6 @@ metadata:
 | `ref/04-table.txt` | status table, comparison matrix, decision log, risk grid |
 | `ref/05-progress-tracker.txt` | experiment dashboard, multi-run grid, burn-down |
 | `ref/06-numbered-series.txt` | multi-diagram answers with `[N/TOTAL]` headers |
-| `ref/07-task-progress.md` | daily progress log (`YYMMDD-progress.md`) |
 | `ref/08-paper-section.txt` | argument-style diagram for a paper method section (progression + contrast + synthesis combined) |
 
 ## When to Use
