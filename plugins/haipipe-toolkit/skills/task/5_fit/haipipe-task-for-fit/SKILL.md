@@ -13,9 +13,11 @@ metadata:
 Skill: haipipe-task-for-fit
 =====================================
 
-Scaffolds a **model-training task-folder**. Full training config, heavy outputs to `_WorkSpace/5-ModelInstanceStore/`, designed for cross-run comparison and paper-grade results.
+Scaffolds a **model-training task-folder**.
+Full training config, heavy outputs to `_WorkSpace/5-ModelInstanceStore/`, designed for cross-run comparison and paper-grade results.
 
-**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the `<TASK>.py` body). Always end with the structured return block (status / task_folder / run_name / files).
+**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the `<TASK>.py` body).
+Always end with the structured return block (status / task_folder / run_name / files).
 
 
 
@@ -50,7 +52,8 @@ Heavy outputs land in: `_WorkSpace/5-ModelInstanceStore/`.
 Cross-reference to pipeline skill
 ----------------------------------
 
-`/haipipe-nn-tuner` defines the hyperparameter search space; `/haipipe-nn-instance` materializes a ModelInstance from a tuner sweep. This skill scaffolds the example task that drives both.
+`/haipipe-nn-tuner` defines the hyperparameter search space; `/haipipe-nn-instance` materializes a ModelInstance from a tuner sweep.
+This skill scaffolds the example task that drives both.
 
   1. `/haipipe-nn-algo`   — algorithm class exists.
   2. `/haipipe-nn-tuner`  — author the sweep.
@@ -61,7 +64,8 @@ Cross-reference to pipeline skill
 Scaffold flow
 -------------
 
-See `fn/scaffold.md` for the detailed step-by-step. Summary:
+See `fn/scaffold.md` for the detailed step-by-step.
+Summary:
 
   1. Identify project + task-group.
   2. Collect metadata (NN, name, type-specific extras, _meta block).
@@ -87,11 +91,8 @@ next:      suggested next command (/haipipe-nn-tuner or run.sh)
 Lessons learned
 ----------------
 
-Canonical lessons live in `LESSON.md` (same folder): L1 temporal-leak filter,
-L2 PID/PatientID format, L4 empty prediction_results.json = silent bug,
-L5 `-p SKIP_TRAINING "true"` fast iteration, L6 what the Step-8 reproducibility
-check actually tests. Read it before building a fit task; do not restate its
-content here.
+Canonical lessons live in `LESSON.md` (same folder): L1 temporal-leak filter, L2 PID/PatientID format, L4 empty prediction_results.json = silent bug, L5 `-p SKIP_TRAINING "true"` fast iteration, L6 what the Step-8 reproducibility check actually tests.
+Read it before building a fit task; do not restate its content here.
 
 Quick pointers:
 - ExampleFn builder lives in the same-numbered task as training (same number = same stage); builder templates at `code/scripts/haibuilder/5-instance/` (workspace-dependent path).
@@ -101,8 +102,7 @@ Quick pointers:
 Workflow plan
 --------------
 
-When `/haipipe-task plan` targets an existing task-folder of this type,
-the generated plan-script YAML should follow the type-specific sample:
+When `/haipipe-task plan` targets an existing task-folder of this type, the generated plan-script YAML should follow the type-specific sample:
 
 ```
 ref/workflow-plan-sample.yaml     ← script-level phases for this type
