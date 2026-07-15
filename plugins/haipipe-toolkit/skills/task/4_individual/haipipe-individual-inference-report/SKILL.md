@@ -108,29 +108,23 @@ A persona is a **folder** with three files:
 | `patient-friendly` | `personas/patient-friendly/` (shipped) |
 | `/abs/path/to/cardiologist/` | that exact folder |
 
-This lets external persona libraries (Samsung-internal, IRB-approved
-templates, etc.) live **outside** haipipe-toolkit and still be invoked
-without forking the skill.
+This lets external persona libraries (Samsung-internal, IRB-approved templates, etc.) live **outside** haipipe-toolkit and still be invoked without forking the skill.
 
 Required fields in `persona.yaml`:
 - `audience`  (e.g. patient, clinician, parent)
 - `tone`
-Optional: `model`, `language`, `safety_rules`, anything else the persona
-author wants to track (logged into report `meta.json`).
+Optional: `model`, `language`, `safety_rules`, anything else the persona author wants to track (logged into report `meta.json`).
 
 ---
 
 LLM call mechanics
 -------------------
 
-Uses `claude_agent_sdk` (subprocess to local `claude` CLI). Auth flows
-through `~/.claude` OAuth — same login the user did in this Claude Code
-session. **Cost is reported (`cost_usd_equiv` in telemetry) but not
-billed when subscription auth is active.**
+Uses `claude_agent_sdk` (subprocess to local `claude` CLI).
+Auth flows through `~/.claude` OAuth — same login the user did in this Claude Code session.
+**Cost is reported (`cost_usd_equiv` in telemetry) but not billed when subscription auth is active.**
 
-The script `unset`s `ANTHROPIC_AUTH_TOKEN` and `ANTHROPIC_BASE_URL`
-before the SDK call to avoid the project's CRS proxy diverting the
-request away from OAuth (see repo memory `reference_crs_proxy_gotcha`).
+The script `unset`s `ANTHROPIC_AUTH_TOKEN` and `ANTHROPIC_BASE_URL` before the SDK call to avoid the project's CRS proxy diverting the request away from OAuth (see repo memory `reference_crs_proxy_gotcha`).
 
 ---
 

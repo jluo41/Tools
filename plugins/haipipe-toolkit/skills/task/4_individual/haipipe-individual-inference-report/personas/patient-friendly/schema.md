@@ -1,5 +1,7 @@
-Output exactly one `<report>...</report>` block. Inside, follow this
-structure verbatim. Do not add fields. Do not add prose outside.
+Output exactly one `<report>...</report>` block.
+Inside, follow this structure verbatim.
+Do not add fields.
+Do not add prose outside.
 
 ```xml
 <report>

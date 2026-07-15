@@ -32,9 +32,8 @@ Pipeline:
        forecast JSON
 ```
 
-The wire payload matches the Endpoint_Set's documented `Input2SrcFn`
-contract (Format 1 — dataframe_records). Same payload Databricks Model
-Serving and SageMaker would consume; only `endpoint_url` differs.
+The wire payload matches the Endpoint_Set's documented `Input2SrcFn` contract (Format 1 — dataframe_records).
+Same payload Databricks Model Serving and SageMaker would consume; only `endpoint_url` differs.
 
 ---
 
