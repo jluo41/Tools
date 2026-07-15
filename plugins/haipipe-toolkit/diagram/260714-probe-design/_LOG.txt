@@ -178,6 +178,12 @@ JL comments (`> JL:`) that land in 01-04 move HERE once their edit is applied, v
      or leave it as the one line added this session. JL to decide.
   3. Optional: the two workers are near-identical twins — the shared runbook could move
      to one ref both cite. Not done (they live in separate consumer trees); flag only.
+  3b. VOCAB residual: ~37 bare-noun "commission" refs remain in PERIPHERAL files (claims,
+     orchestrator-agent descriptions, wikis), MIXED with the legit verb "to commission"
+     ("commission the work") and the executor-side "a commission" (the order it receives).
+     A blanket sweep would corrupt the verbs, so these need per-occurrence review. The
+     PROBE-LAYER core (fields, both checkers, constitution, workers, descriptions) is fully
+     q-executor/a-consumer and checker-verified; the residual is cosmetic drift in prose.
   (nothing structural owed on harvest — resolved below.)
 ```
 
