@@ -17,7 +17,7 @@ _meta:
 # Agent params
 # =============================================================================
 
-model: claude-opus-4-7                  # or claude-sonnet-4-6 / -haiku-4-5
+model: claude-opus-4-8                  # or claude-sonnet-5 / claude-haiku-4-5-20251001
 max_tokens: 4096
 temperature: 0.0
 

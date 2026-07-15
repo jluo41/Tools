@@ -7,7 +7,7 @@ Tracked here so future sessions can pick them up without re-discovering.
 haipipe-task-for-agent: LOW QUALITY, needs rethink
 ----------------------------------------------------
 
-- [ ] `ref/config-seed.yaml` is a generic placeholder — model IDs stale (`claude-opus-4-7` → 4.8), `inputs:` example points to a non-existent path, `api:` block uses `env:` prefix syntax that no runner actually parses.
+- [ ] `ref/config-seed.yaml` is a generic placeholder — `inputs:` example points to a non-existent path, `api:` block uses `env:` prefix syntax that no runner actually parses. (Model IDs were stale `claude-opus-4-7`; FIXED → `4-8` / `sonnet-5` on 2026-07-15.)
 - [ ] `fn/scaffold.md` is copy-paste boilerplate — prompts/ dir is the only differentiator from the generic scaffold, and even that is thin.
 - [ ] `ref/workflow-plan-sample.yaml` phases (Setup → Execute → Parse) are too generic — every task could be described this way.
 - [ ] Zero task instances in any project. Never been used end-to-end.
@@ -21,7 +21,7 @@ Specialist architecture: scaffold vs lifecycle tension
 
 - [ ] Path 1 (scaffold new folder) calls `Skill("haipipe-task-for-<type>")` which runs `fn/scaffold.md`. Path 2 (lifecycle on existing folder) runs `task-lifecycle.workflow.js` where the creator agent reads the specialist's `ref/workflow-plan-sample.yaml` + `SKILL.md` as reference only — never calls the specialist as a Skill. Two paths, two roles, one set of files.
 - [ ] Long-term: consider collapsing scaffold into the creator agent (Path 1 becomes a Build stage invocation), eliminating `fn/scaffold.md` as a separate procedure.
-- [ ] `fn/scaffold.md` across 12 specialists is ~90% identical (same 7-step pattern). Extract a shared scaffold-base with per-type overrides.
+- [ ] `fn/scaffold.md` exists in 10 specialists sharing the same 7-step SKELETON, but the bodies have DIVERGED (measured 2026-07-15: ~95 diff-lines / ~120 vs the for-data baseline — the old "~90% identical" figure no longer holds). Decide: extract a shared scaffold-base with per-type overrides, OR accept the divergence as intentional per-type specialization and close this item.
 
 
 Specialist coverage gaps
@@ -36,7 +36,7 @@ Specialist coverage gaps
 Model IDs drift
 ----------------
 
-- [ ] `for-agent` refs `claude-opus-4-7` — latest is `claude-opus-4-8`. Any specialist that hardcodes model IDs will drift. Consider a shared `ref/model-ids.yaml` or just document "use the latest" without pinning.
+- [ ] Model-id drift (general). The concrete `for-agent` + `llm-engine` `claude-opus-4-7` / `claude-sonnet-4-6` residuals were FIXED → `4-8` / `sonnet-5` on 2026-07-15. STILL OPEN — the recurrence risk: any specialist that hardcodes model IDs will drift again. Consider a shared `ref/model-ids.yaml`, or document 'use the latest' without pinning, so this stops coming back.
 
 
 Lifecycle design: validate before expanding (2026-06-11 review)

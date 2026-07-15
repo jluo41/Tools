@@ -42,7 +42,7 @@ import anthropic
 
 client = anthropic.Anthropic(api_key=api_key)
 resp = client.messages.create(
-    model="claude-opus-4-7",
+    model="claude-opus-4-8",
     max_tokens=8192,
     system=system_prompt,
     messages=[{"role": "user", "content": user_message}],
