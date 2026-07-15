@@ -38,6 +38,23 @@ Theme: every decision this topic ever made. 🔒 MANDATORY — never delete, nev
                   DIFFERENT file and was deliberately NOT renamed.
 
 
+✅ JL RULED — 2026-07-14 (session 3 · Stage→Phase, IPO→Process)
+==============================================================
+
+  R8  PHASE      The executor lifecycle P/B/E/R is "PHASE" (mirrors DPRC on the
+                 paper/consumer side). Renamed "Stage"→"Phase" across the DOCS of
+                 both executors + the pattern (task, discovery, haipipe-workflow).
+                 KEPT "Stage": the 6-stage data pipeline, stata's cms/case/data/reg,
+                 the 3-stage testing ladder; KEPT the workflow.js `stages:` code param.
+                 📦 SHIPPED (commit c9abb4e).
+
+  R9  PROCESS    The IPO's "P" is "PROCESS" (classic Input→Process→Output), NOT
+                 "Phase" — so "Phase" is now the LIFECYCLE only. Docs updated in
+                 haipipe-workflow (concepts.md + SKILL.md). KEPT as code: the plan.yaml
+                 `phases:` key + the tool `phase()` grouping.
+                 📦 SHIPPED (commit b98305d). ⬅ this is what freed "Phase" for R8.
+
+
 ⚙️  CC OBSERVED — analysis this session, not yet ruled, nothing shipped
 =======================================================================
 
@@ -85,6 +102,11 @@ Theme: every decision this topic ever made. 🔒 MANDATORY — never delete, nev
    R1  NAMESPACE   "workflow" means 5 things (skill · workflow/ folder ·
                    *.workflow.js · fn/workflow-* verbs · the Workflow tool).
                    👤 owner: JL   📄 status: OPEN   ⛔ blocks: nothing; it is a tax.
+                   ↳ 2026-07-14: R7 removed the "fn/workflow-* verbs" sense (→stage-*/
+                     audit); the SEPARATE phase/stage/process overlap is resolved by
+                     R8 (lifecycle=Phase) + R9 (IPO=Process). Remaining "workflow"
+                     senses (skill name · workflow/ folder · *.workflow.js · the
+                     Workflow tool) still coexist — code/proper-noun, low harm.
 
    R2  AUDIT-NAME  fn/workflow-audit.md instances NO haipipe-workflow verb (its
                    cousin is `inspect`, never cited). Rename to task-structure-audit?
