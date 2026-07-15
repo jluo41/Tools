@@ -1,6 +1,6 @@
 ---
 name: haipipe-session
-description: "Records what a working SESSION settled as a durable topic note under diagram/<YYMMDD>-<topic>/ (LAW 1: one folder per TOPIC, dated at birth, never re-dated — a later session APPENDS). Verbs: new · append · log · check. Trigger: session note, record this session, what did we settle, topic note, rulings ledger, _LOG, comment ledger, lessons, /haipipe-session."
+description: "Records what a working SESSION settled as a durable topic note under diagram/<YYMMDD>-<topic>/ (LAW 1: one folder per TOPIC, dated at birth, never re-dated — a later session APPENDS). Verbs: new · append · log · check. Trigger: session note, record this session, what did we settle, topic note, rulings ledger, _LOG, comment ledger, /haipipe-session."
 argument-hint: "[new <topic> | append [<topic>] | log [<doc>] | check [<folder>]]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
@@ -45,10 +45,11 @@ The folder is `diagram/<YYMMDD>-<topic>/`. The date is stamped at **BIRTH** and 
 **WHY:** the rulings ledger is **APPEND-ONLY**. Its entire value is that *one grep finds
 every ruling this topic ever made*. One-folder-per-session shatters it across dates.
 
-**Then how is a SESSION traced?** By its stamp, never by a folder of its own:
+**Then how is a SESSION traced?** By its date stamp, never by a folder of its own:
 
 ```text
-   🔎 grep -rn '>> CC0714' diagram/260714-probe-qa/    ← everything that session settled
+   🔎 grep -rn '2026-07-14' diagram/260714-probe-qa/   ← everything a session settled
+      (dated rulings in 05 + date-stamped _LOG entries; inline replies carry `>> CC HH:MM:`)
 ```
 
 
@@ -156,6 +157,8 @@ Rename 03 and 04 to the topic (`03-gates` · `04-cleavage`); 01/02/05/06 keep th
 **05 and 06 are MANDATORY.** Four themes are guaranteed in every note: (a) an append-only
 rulings ledger · (b) a shipped-vs-owed / open-decisions file · (c) an anti-pattern
 section · (d) a real worked example.
+`_LOG.txt` is NOT part of this 01→06 arc — it is the EXEMPT meta ledger (moved comment
+threads + the session LESSONS block), and appears only once a `log` step has run.
 
 
 THE LEDGER — the fixed-column ruling record
@@ -185,12 +188,13 @@ THE COMMENT PROTOCOL
 ```text
    > JL:  "we should not design the probes, but design the paper-questions."
      ⬆ JL, VERBATIM, in quotes. Never paraphrased. Inline = 2-space indent;
-       block form = every line prefixed `> `.
+       block form = every line prefixed `> `. NEVER delete a `> JL:` line.
 
-   >> CC0714: the split is FREE when the resource question is answered FIRST, because
-   >> a ❌ on the corpus means the eval never runs at all.
-     ⬆ the assistant's reply + a diagram. `{MMDD}` = the SESSION that replied — this is
-       how a session is traced back out of a topic-dated folder.
+   >> CC 14:32: [SOLVED] the split is FREE when the resource question is answered FIRST.
+     ⬆ the assistant's reply, stamped `CC HH:MM:` + a TAG — [SOLVED] (done) | [PENDING]
+       (needs JL). An un-tagged `> JL:` therefore always reads as genuinely OPEN. Once the
+       body edit LANDS, the whole thread MIGRATES to `_LOG.txt` (the `log` verb), stamped
+       with the full date; grep that date to trace everything a session settled.
 ```
 
 
