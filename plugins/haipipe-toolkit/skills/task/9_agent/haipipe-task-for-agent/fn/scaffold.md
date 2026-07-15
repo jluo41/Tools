@@ -20,7 +20,7 @@ Step 2 — Collect metadata
 - 2-digit NN: next free in this group.
 - snake_case task_name: descriptive
   (e.g., `summarize_eval_logs`, `audit_patient_notes`).
-- Model: `claude-opus-4-8 | claude-sonnet-4-6 | claude-haiku-4-5`.
+- Model: `claude-opus-4-8 | claude-sonnet-5 | claude-haiku-4-5-20251001`.
 - Tools (optional): list of tool names available to the agent.
 - Inputs: what data context the agent reads.
 - `_meta:` block.
