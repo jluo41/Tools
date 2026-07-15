@@ -417,3 +417,20 @@ JL comments (`> JL:`) that land in 01-04 move HERE once their edit is applied, v
   STILL OPEN: application templates (Probes → Q-consumer + this form) · paper SKILL.md body
   refs (hot — JL's live paper-tree reformat; also now display/section body refs to S0/En/Rn +
   the rollup are out of sync with the restructured templates — same deferred sweep).
+
+
+[2026-07-15 05:30 · OPEN] status snapshot at push time
+  Templates VERIFIED clean (no stray "Probes"); the checker does NOT read stage-doc section
+  names, so it needs no change. Carried forward:
+  · claims-template id split — Q-consumer uses Q<n>, but Claims "Evidence: -> PP<nn>" and the
+    Evidence Campaign still use PP<nn>. NOT changed this session — JL to rule (CC rec: a claim
+    cites Q<n>, PP is only the file pointer in the Q-consumer entry).
+  · application — CORRECTION of an earlier claim: application stage templates have NO
+    "Probes"/Q-consumer section, so nothing to rename. Open (non-urgent): whether application
+    stages should ADD a Q-consumer section for symmetry with paper.
+  · approver = a-consumer (CC's read, written into the spec) — JL not yet confirmed.
+  · SKILL.md bodies — JL owns; agreed principle = "point to the template, keep behavior, stop
+    re-describing structure" (permanently kills Probes→Q-consumer style drift). JL's in-flight
+    reformat pass (one-sentence-per-line + summary deflation) is committed alongside this.
+  · older owed still open: owed-1 (89 files cite dated diagram/260714-probe-qa/ → diagram/probe/),
+    owed-3b (~40 application/discovery files with "commission" noun residual). owed-4 DONE.
