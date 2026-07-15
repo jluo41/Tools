@@ -13,9 +13,11 @@ metadata:
 Skill: haipipe-task-for-display
 ====================================
 
-Scaffolds a **display task-folder** — paper figures or paper tables. Consumes `results/<run>/` artifacts from upstream eval / training tasks; produces publication-ready PDF / PNG / TeX.
+Scaffolds a **display task-folder** — paper figures or paper tables.
+Consumes `results/<run>/` artifacts from upstream eval / training tasks; produces publication-ready PDF / PNG / TeX.
 
-**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the `<TASK>.py` body). Always end with the structured return block (status / task_folder / run_name / files).
+**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the `<TASK>.py` body).
+Always end with the structured return block (status / task_folder / run_name / files).
 
 
 
@@ -42,13 +44,15 @@ Heavy outputs: none.
 Cross-reference to pipeline skill
 ----------------------------------
 
-No corresponding pipeline skill — display tasks are independent; they read from upstream `results/<run>/` and write final artifacts (paper-ready figures/tables). Which document consumes them is the caller's business; this skill names no upper-layer skill.
+No corresponding pipeline skill — display tasks are independent; they read from upstream `results/<run>/` and write final artifacts (paper-ready figures/tables).
+Which document consumes them is the caller's business; this skill names no upper-layer skill.
 
 
 Scaffold flow
 -------------
 
-See `fn/scaffold.md` for the detailed step-by-step. Summary:
+See `fn/scaffold.md` for the detailed step-by-step.
+Summary:
 
   1. Identify project + task-group.
   2. Collect metadata (NN, name, type-specific extras, _meta block).
