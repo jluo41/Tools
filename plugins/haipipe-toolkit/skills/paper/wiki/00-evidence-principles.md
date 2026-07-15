@@ -79,12 +79,13 @@ Where the principles are enforced
 
 ```
 ③  wiki/08-stage-gate.md Phase Transition Contract rule 4 (stage/worker);
-   haipipe-probe-orchestrator-agent "no inline searching" (agent level)
-①  haipipe-probe-orchestrator-agent "fresh evidence must land";
-   haipipe-discovery-orchestrator-agent ENRICH (the light landing entrance);
-   verdicts land in the consumer's _PROBE/PPNN card ## Verdict (folderless
-   probe 2026-07-05: probes/ retired — the card is the one home for
-   contract + receipt + verdict)
+   the executor orchestrators' clean context IS the wall (agent level)
+①  haipipe-task-orchestrator-agent / haipipe-discovery-orchestrator-agent
+   "fresh evidence must land" — the answer is a FILE: <leaf>/QA/<n>-<slug>.md,
+   which the section's `target:` then points at;
+   a CLAIM's status lands in 0-lifecycle/1-claims/1-claims.md — per-claim,
+   per-paper, private. 💀 `## Verdict` and `verdicted` are DELETED (R7); the
+   probe section carries only its `reading:`.
 ②  discovery creator/reviewer loops (full) + reviewer quick-pass (ENRICH);
    probe Judge gates G1/G2/G3; paper-probe worker mechanical acceptance
 ④  probe light reuse (zero-write => zero ceremony);

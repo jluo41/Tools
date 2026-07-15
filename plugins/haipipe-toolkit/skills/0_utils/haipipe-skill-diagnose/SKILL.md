@@ -4,9 +4,9 @@ description: "Skill-set health review. Runs a 6-phase diagnose-first pass over O
 argument-hint: "[bucket-path] (e.g. skills/task, skills/discovery, skills/0_utils)"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 metadata:
-  version: "1.2.0"
-  last_updated: "2026-07-05"
-  summary: "Diagnose-first health review of a skill bucket with user-gated fixes and verbatim decision archival."
+  version: "1.2.1"
+  last_updated: "2026-07-14"
+  summary: "Diagnose-first health review of a skill bucket with user-gated fixes and verbatim decision archival. v1.2.1: the 'Good (option comparison, drawn)' worked example in ref/thread-protocol.md is re-cut against a LIVE decision (MATCH via `/haipipe-task qa --check-only` → T2 REUSE, vs a T4 FRESH commission). It was built on `/haipipe-probe file` (no such verb) and `probe-attach.md` (no such file) — the exemplar a session copies was teaching a dead command surface. The diagram FORM, which is the point of the doc, is unchanged."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

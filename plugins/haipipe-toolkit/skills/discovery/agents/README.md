@@ -3,9 +3,9 @@ discovery — Agent Roster
 
 Three agents forming the orchestrator / creator / reviewer triad,
 plus one Haiku-tier mechanical worker for search fan-out.
-The orchestrator is the dispatch target for cross-layer calls
-(probe-orchestrator dispatches during Gather when external evidence
-is needed). Creator produces artifacts. Reviewer evaluates.
+The orchestrator is THE dispatch target for every discovery-shaped
+commission — a consumer's PROBE phase calls it DIRECTLY, and its clean
+context is the wall. Creator produces artifacts. Reviewer evaluates.
 
 ```
 haipipe-discovery-orchestrator-agent   🎯 ORCHESTRATE — dispatch target, coordinates lifecycle
@@ -34,6 +34,8 @@ Stage 1: PLAN      creator writes discovery.yaml   → reviewer checks plan
 Stage 2: BUILD     creator authors instrument (opt) → reviewer checks instrument
 Stage 3: EXECUTE   creator runs bucket workers      → reviewer checks output
 Stage 4: REPORT    creator writes report block      → reviewer checks report
+                   + the QA file, when this run     → + the QA-file gate + the
+                     answered a question               bank-purity check
 ```
 
 
@@ -47,19 +49,34 @@ Idea (generate)    generate novel angles → ideas.md
 ```
 
 
-Cross-layer dispatch
---------------------
+Cross-layer dispatch — DIRECT, and the context is the wall
+----------------------------------------------------------
 
 ```
-probe-orchestrator ──▶ discovery-orchestrator
-                         │
-                         ├── discovery-creator
-                         └── discovery-reviewer
+📄 a paper/application PROBE phase                  ⚙️ this layer
+   holds the question + the STAKE                      never saw a paper
+   ("## Why: C6 dies if …")            🧱 WALL
+        │                                │
+        └── hands ONE commission ────────┴──▶ discovery-orchestrator-agent
+            (general language,                    │  runs the qa gate:
+             VERBATIM, nothing else)               │  ① QA SCAN ② DIGEST ③ lifecycle
+             never ## Why                          ├── discovery-creator   (writes)
+             never the probe file                  └── discovery-reviewer  (gates)
+             never a PP id                         │
+                                                   ▼
+        ◀───── returns ONE PATH ──────  discoveries/<leaf>/QA/<n>-<slug>.md
 ```
 
-Discovery-orchestrator is dispatched during probe Gather when the
-probe needs external evidence (literature, outside claims, field
-landscape). It returns terminal files that the probe creator links.
+The orchestrator's **clean context IS the mechanism**. It is not told who asked
+or why, so it cannot shape the evidence around anyone's story — which is exactly
+what makes the answer reusable by the next consumer, with a different stake.
+
+💀 RETIRED 2026-07-14: `haipipe-probe-orchestrator-agent` (the probe GATEWAY). It
+no longer exists. Its SWEEP became the paper-side MATCH; its dispatch became the
+direct `Agent(haipipe-discovery-orchestrator-agent)` call drawn above. And the
+`_ASK/` stub bridge went with it: no stub folders, no `answers:` field, no PP ids
+anywhere under `discoveries/`. The probe CAUSES a QA file; **the executor AUTHORS
+it**. Constitution: `probe/haipipe-probe/SKILL.md` (v8.0.0).
 
 
 Registration

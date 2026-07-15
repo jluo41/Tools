@@ -41,7 +41,7 @@ arithmetic without hiding substantive changes in the abstract or title.
 | `/haipipe-paper-edit-manual-review-values` | audit log of every numeric claim | before high-stakes submission |
 | `/haipipe-paper-edit-manual-review-citations` | audit log of every cite | before high-stakes submission |
 | **`/haipipe-paper-edit-diffpdf`** | **tracked-changes PDF vs a baseline** | **when sharing changes with co-authors / advisor / reviewers** |
-| `/citation-audit` | autonomous JSON+MD cite verdict | routine pre-submission check |
+| `/haipipe-paper-probe-citation` (REVIEW verb) | pre-submission citation walk | routine pre-submission check |
 
 The manual-review skills tell you *whether each change is correct*; this
 skill *visualizes the changes* for someone else to review.

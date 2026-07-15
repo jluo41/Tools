@@ -51,7 +51,7 @@ Open Items by Skill (need attention)
   haipipe-paper-display-diagram (1 open)
     vector-render-elbow-connectors-and-icons
 
-  components/compile (1 open)
+  paper-compile (1 open)
     preview-build-not-in-compile-sh
 
 Fixed Items (resolved, kept as history)

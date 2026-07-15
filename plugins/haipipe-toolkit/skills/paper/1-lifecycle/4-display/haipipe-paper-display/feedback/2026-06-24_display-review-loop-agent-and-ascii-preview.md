@@ -1,10 +1,10 @@
 ---
-status: open
+status: fixed
 created: 2026-06-24
 context: display stage; after rendering a figure/table, we kept finding render defects (zero-width CI, overflow, ugly layout, conceptual muddle) only by eyeballing the PDF
 updated: 2026-06-24
 occurrences: 2
-fixed_in: ""
+fixed_in: "haipipe-paper-display v3.0.0"
 ---
 The display stage needs a REVIEW LOOP on the COMPILED / rendered figures and tables, not just on the plan. Two parts JL asked for:
 
@@ -16,3 +16,9 @@ How to apply (haipipe-paper-display revision): add a "review rendered displays" 
 
 ## Recurrences
 - 2026-06-24 (digest, Display-for-Opioid-JAMA): "figure 2 is so urgly, please use modern python code to rerun it ... and for the table 2, it is overflowed, please think about how to fix it as well."; "how did you generated the Figure 2??? why it is grey and white, could you make it more modern?"; "关于 Figure 2: 为什么我们图下面也有那么多字？为什么我们有两个 block（一个蓝色一个灰色），它的意义是什么？"; "you see the interaction term overstacked, how could we rearrage it?"
+
+Fix: v3.0.0 — (1) the render-review subagent is formalized in CHECK (builder ≠ judge,
+reads compiled preview/gallery PDFs: overflow, overlap, zero-width CI, legibility,
+five-second test; fix items loop back through REVISE). (2) The ASCII preview + comment
+elicitation lives in 4-display.md itself: block sketches are the preview, comments
+persist as `> USER:` lines there (the tex is generated, comment-free).

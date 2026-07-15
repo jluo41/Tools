@@ -1,0 +1,109 @@
+Rulings C1-C9 — and what is still open
+======================================
+Part of: diagram/260714-resource-stage/  ·  6 files, one theme each, no index.
+SPEC OF RECORD — the resource stage. C1-C9 closed JL 2026-07-14. SHIPPED.
+
+APPEND-ONLY. The value of this file is that ONE grep finds every ruling the stage
+ever made — and every place the closure could still be wrong.
+
+
+✅ JL RULED — 2026-07-14
+========================
+
+  C1  SCOPE          DATA + MODELS + PRODUCING-CODE.
+                     "does the thing exist, can we get it, does it carry the claim?"
+                     about ANY prerequisite.
+                     Data is the bulk; it is NOT the boundary. Q4 (the MLM backbone)
+                     stays in scope.
+
+  C4  CROSS-PROJECT  YES — MANDATORY. `cross-project:` is a required field on every
+                     BUILD question (empty → FAIL). The DRAFT gate asks:
+                     "build it · cut it · or AUTHORIZE cross-project reuse."
+                     ⬅ this WIRES JL's 2026-07-05 ruling to the only human gate in
+                        the lifecycle that authorizes SPEND.
+                     📌 ADOPTED INTO THE PROBE SPEC — probe-qa 02-the-files.txt,
+                        "The BUILD lane — the price of `commissioned` is a DATE".
+
+  C5  PILOT          ❌ NO PILOT. Build for real, migrate in parallel.
+                     >> CC: on the record once — the insight layer was also a stage
+                        nobody doubted, until zero cards had ever been written.
+                        You know your team; I don't. Noted, moving on.
+
+
+⚙️  CC DEFAULTED — live in the build, say so if any is wrong
+============================================================
+
+  C2  CLEAVAGE       04-cleavage.txt as written.
+
+  C3  GATE           03-gates.txt as written.
+
+  C6  OVERDUE        HARD FAIL. A `commissioned` question whose eta has PASSED with
+                     no answer fails the next gate.
+                     ⚠️  WHY: without a date check, `commissioned` becomes the status
+                        EVERY un-run question wears, and the whole feature ships as a
+                        LAUNDERING MECHANISM.
+                     ⚠️  COST: the first time a build slips a week, a gate goes 🔴.
+                     📌 ADOPTED INTO THE PROBE SPEC — same BUILD LANE as C4.
+
+  C7  EXITS          ADD `reseed` + `park`. (amends the Stage Exit Invariant, which
+                     had demanded exactly two exits)
+
+  C8  SHELL FIXES    SHIP FIRST, standalone. They are owed to CLAIMS regardless of
+                     whether the resource stage ever exists.
+                     ✅ SHIPPED — see 06-shipped-owed.txt.
+
+  C9  HPP            ⚠️  STILL UNASSIGNED. STILL UNFILED. Not a code decision.
+                        The clock is CALENDAR-MONTHS and it starts on an email.
+                        ↓ the only ruling still open. Detail below.
+
+
+👀 WHERE THE CLOSURE COULD STILL BE WRONG
+=========================================
+
+  1. ⚠️  C6 HARD FAIL WILL BITE.
+        The first slipped build reds a gate. That is BY DESIGN (without it,
+        `commissioned` launders every un-run question) — but it means a 🔴 gate that
+        is NOT a quality problem, on a paper doing nothing wrong.
+        ❓ Sure? The alternative is a WARN: honest, and ignorable.
+
+  2. ⚠️  THE DRAFT GATE ASKS YOU FOUR QUESTIONS, EVERY TIME A PAPER ENTERS RESOURCE.
+        (demand · scope cuts · cross-project reuse · cost — 03-gates.txt)
+        A real tax on every paper, paid by you personally, forever.
+        ❓ Worth it? Counter-argument: (b) and (d) are exactly the two decisions
+           nobody currently makes ANYWHERE in the lifecycle.
+
+  3. ⚠️  THE FIT/EVAL SPLIT MAY BE BUREAUCRACY.
+        04-cleavage.txt forbids `task-for-eval` in resource. So "train the model" is
+        RESOURCE but "does it beat the baseline" is CLAIMS — even though today your
+        team does them as ONE run (that is what PP04 was).
+        ❓ Real work, or paperwork? It costs a second dispatch when the resource
+           PASSES. It saves a whole training pass when the resource FAILS — which is
+           what happened, and why we are here.
+
+  4. ⚠️  C5: NO PILOT.
+        If this stage turns out to be a section nobody fills, we find out AFTER it is
+        wired into 6 skills and 2 live papers.
+        📌 the honest precedent: the INSIGHT LAYER was also a stage nobody doubted,
+           until zero cards had ever been written and it was retired 2026-07-12.
+
+
+🔴 C9 — HPP / Pheno.AI    THE ONLY OPEN RULING, AND IT IS NOT A CODE DECISION
+=============================================================================
+
+```text
+   🚪 HPP / Pheno.AI · ~10,812 subjects · CGM + ~2yr revisits
+      the ONLY dataset that can carry Paper-CGMtoAge's H2 and H3.
+
+      rung:   APPLICATION → DUA → secure enclave
+      clock:  📅 CALENDAR-MONTHS — and it starts on an EMAIL that nobody has sent
+
+      👤 owner:  UNASSIGNED
+      📄 status: UNFILED
+      ⛔ consequence: H2 and H3 are UNFALSIFIABLE until this lands.
+                      No amount of code changes that.
+
+   ⇒ every week this sits unassigned is a week added to the END of the paper.
+     The highest-leverage item in this folder, and the one thing in it no agent can do.
+```
+
+  👉 JL: ____________________________________________________________________

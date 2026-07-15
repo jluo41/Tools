@@ -1,0 +1,184 @@
+4 — THE RULES
+==============
+
+  Three laws. The status ladder. The words we use. And what we deliberately did NOT do.
+
+
+THE THREE LAWS
+===============
+
+
+LAW 1 — One file, one writer.
+------------------------------
+
+No file in this system has two writers. Not one. That is what lets a paper session and
+a task session run six weeks apart with zero coordination.
+
+```text
+   FILE                                    WRITER            WHO READS IT
+   ─────────────────────────────────────   ───────────────   ────────────────
+   papers/X/1-probes/PPNN_<topic>.md       this paper        this paper
+   papers/X/1-claims.md                    this paper        this paper
+   tasks/<leaf>/workflow/plan.yaml         the task layer    task · probe (match)
+   tasks/<leaf>/results/ · QA/*.md         the task layer    task · probe (harvest)
+   discoveries/<leaf>/terminal · QA/*.md   the discovery     disc · probe (harvest)
+```
+
+Note what this permits and what it forbids:
+
+    ✅ the executor writes its own QA file twice (claim, then complete)  — one writer
+    ❌ a consumer plants a half-file for the executor to finish          — two writers
+
+The second one is the retired `_ASK/` stub wearing a new costume. It is forbidden.
+
+    The probe CAUSES a QA file. The EXECUTOR authors it.
+    Causing a file is not the same as writing one.
+
+
+LAW 2 — The wall is a dispatch rule, not a file.
+-------------------------------------------------
+
+This is the one that actually bit us.
+
+The C6/C7 leak happened with NO probe file involved anywhere. A paper session, holding
+the stake in its context, simply went and did the task work itself. No file layout in
+the world prevents that.
+
+```text
+   ✅ paper ──▶ 🤖 clean-context agent (gets ONLY the commission) ──▶ the bank
+                   the agent's blindness IS the wall
+
+   ❌ paper session greps and edits the bank itself, stake in context
+                   the wall never existed
+```
+
+So the rule is about the ACT, not the tool:
+
+    A consumer session NEVER executes bank work inline.
+    Dispatch means handing over the commission block, verbatim, and nothing else.
+    Never the `## Why`. Never the probe file. Never the paper.
+
+And a backstop lint, on two surfaces:
+
+    📄 probe files — commission blocks carry no claim ids, no stake words
+    ⚙️ the bank    — QA files carry no consumer vocabulary
+                     (no C6, no H2, no "claims-stage", no "the paper")
+
+The lint would have caught A03. The old check never could, because A03 had no `_ASK/`
+file to inspect. We were policing the wrong surface.
+
+
+LAW 3 — Status is derived, never asserted.
+-------------------------------------------
+
+Every state in this system is an `ls` or a `grep`.
+
+No status is an agent's word for it. Agents die. Sessions end. Files persist.
+
+```text
+   A QUESTION SECTION       what makes it true on disk
+   ──────────────────       ────────────────────────────────────────────────
+   planned                  the section exists · no target leaf yet
+   commissioned             the leaf exists · no answered QA file yet
+                            (BUILD-lane sections must also carry a future eta:)
+   answered                 the target QA file exists AND says state: answered
+   read                     the section's reading: is filled in
+   answered-local           closed from the paper's own registries. No dispatch.
+   failed                   a reading with a dead target · the leaf is gone ·
+                            the qa verb REFUSED
+
+   A QA FILE                what makes it true on disk
+   ──────────────────       ────────────────────────────────────────────────
+   (no file)                not answered
+   state: working           IN PROGRESS since <started>
+   state: answered          answered
+   superseded-by: X         answered, but STALE — the live answer is X
+```
+
+The checker fails, hard, on:
+
+    · a section that says `read` but points at a `working` QA file
+      → the paper claims it read an unfinished answer
+
+    · a section that says `read` but points at a `superseded-by:` QA file
+      → the paper's conclusion rests on an answer that has been replaced
+        (this is the silent one — every file stays internally consistent,
+         and the claim is simply false)
+
+    · a `working` QA file with no `started:`     → a claim that can never expire
+    · a `working` QA file older than 24h         → a zombie claim
+    · a QA file that says `answered` but has an empty ## Answer   → a lying receipt
+
+
+THE WORDS
+==========
+
+```text
+   probe            a file in a paper.  Not a "card", not a "row", not a "table".
+   probe file       papers/<P>/1-probes/PPNN_<topic>.md
+   question section one `## Qn` inside a probe file
+   commission       the translated question. The only thing that crosses.
+   reading          what the answer means for MY claims.
+   QA file          <leaf>/QA/<n>-<slug>.md — the executor's readable answer
+   the bank         tasks/ + discoveries/. Both are executors. Same rules.
+
+   💀 DEAD — do not resurrect:
+      "card"  ·  1-probe-plans/  ·  _ASK/  ·  _ANS/  ·  answers:  ·  PPNN stubs
+      "verdict" / "verdicted"    ·  /haipipe-task asks  ·  the probe gateway agent
+      probes/<slug>/ folders     ·  probe.yaml / evidence.md / status.md
+      the insight layer (D/I/K/W cards)
+```
+
+A claim's status — supported | refuted | inconclusive, with confidence and the
+G1/G2/G3 gates — lives in `1-claims.md`. Per claim, per paper, private. It is NOT a
+field on a probe. Two papers judging the same evidence against different claims will
+correctly reach different conclusions, and each re-runs its own review.
+
+
+WHAT WE DELIBERATELY DID NOT DO
+================================
+
+Each of these was proposed, examined, and rejected for a concrete reason.
+
+```text
+   ❌ a project-level probes/ store holding the findings
+      The finding already has one home with one writer: the executor's own
+      results/ and sources.md. A store would be a second telling of it.
+      That is exactly the defect that killed the old probes/ folder.
+
+   ❌ giving each paper a COPY of a shared probe
+      A copy has one writer per copy, so it passes a writer-table audit —
+      and then it drifts. The most seductive idea in the whole design.
+      Each paper keeps a FILE named PP01. It is not a copy. It is an
+      independent harvest: same id, its own stake, its own reading.
+
+   ❌ a project-wide id ledger (probes.ledger)
+      Made unnecessary by path binding. The bug was never "ids collide" —
+      it was "an id used as a cross-bank KEY when a path would do."
+
+   ❌ cross-repo pointers or content hashes
+      Three of the papers are FOREIGN git repos (one on another GitHub
+      account, one on an Overleaf branch). A pointer into a paper repo is
+      unresolvable on a partial clone — and the freshness check then does
+      something worse than fail: it PASSES.
+
+   ❌ a shared, frozen Deliverable / Do-not / Accepted
+      An acceptance space is a function of the STAKE. Freeze the first
+      consumer's version and the evidence comes back paper-shaped forever.
+
+   ❌ deleting the translation step and trusting the regex lint
+      The lint provably misses real leaks. It is a backstop, not the rule.
+
+   ❌ merging CGMtoAge's PP03 with CyclePhase's PP03
+      They look identical under the paper-agnostic projection and they are
+      not the same question. Merging them would delete C6's evidence base.
+
+   ❌ a cross-project tier
+      The biggest duplication IS cross-project (the CGM landscape has been
+      swept three times by three projects). No design here fixes it, and the
+      git topology makes one hard. A project-scoped fix buys ONE avoided run.
+      Handle it separately, or not at all.
+
+   ❌ tables in probe files
+      House rule. Sections and bullets only.
+```

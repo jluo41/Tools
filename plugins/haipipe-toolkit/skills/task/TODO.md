@@ -11,7 +11,8 @@ haipipe-task-for-agent: LOW QUALITY, needs rethink
 - [ ] `fn/scaffold.md` is copy-paste boilerplate — prompts/ dir is the only differentiator from the generic scaffold, and even that is thin.
 - [ ] `ref/workflow-plan-sample.yaml` phases (Setup → Execute → Parse) are too generic — every task could be described this way.
 - [ ] Zero task instances in any project. Never been used end-to-end.
-- [ ] Possible overlap with `application` family (`haipipe-application-ask`, `-message`) which already orchestrates LLM-driven sessions with plans, gates, and DIKW cards. Is `for-agent` a simpler version of the same thing, or a genuinely different scope?
+- [ ] Possible overlap with the `application` family, which already orchestrates LLM-driven sessions with plans and gates. Is `for-agent` a simpler version of the same thing, or a genuinely different scope?
+      ⚠️ PREMISE PARTLY DEAD (2026-07-14) — this item originally compared against `haipipe-application-ask` and "DIKW cards". Neither exists: `haipipe-application-ask` is ARCHIVED (`application/_archive/haipipe-application-ask/`, de-registered) and the insight layer's D/I/K/W cards were RETIRED 2026-07-12. Compare against the CURRENT application family before deciding.
 - [ ] Decision needed: update to be useful, or remove and let `haipipe-application` own agent-driven tasks.
 
 

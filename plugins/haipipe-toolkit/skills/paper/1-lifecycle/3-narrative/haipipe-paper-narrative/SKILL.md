@@ -4,9 +4,9 @@ description: "Generate 0-lifecycle/3-narrative/3-narrative.md + _LOG_3-narrative
 argument-hint: "[paper-dir-or-topic]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.1.0"
-  last_updated: "2026-07-08"
-  summary: "Narrative stage orchestrator. Defines the section-mirrored, readiness-tagged design contract with explicit Probes section and drives phases (draft -> probe -> revise -> check) internally. User invokes narrative, not phases."
+  version: "4.1.1"
+  last_updated: "2026-07-14"
+  summary: "Narrative stage orchestrator. Defines the section-mirrored, readiness-tagged design contract with explicit Probes section and drives phases (draft -> probe -> revise -> check) internally. User invokes narrative, not phases. v4.1 (probe-redesign residue sweep): a [GAP] beat raises a question SECTION in 1-probes/PPNN_<topic>.md; 'probe plans' as a name for those files is retired. v4.1.1: every shared-convention pointer was off by one `../` — `../../PHILOSOPHY.md` / `../../wiki/<page>.md` resolved to 1-lifecycle/, which holds neither. The stage skills sit TWO levels under skills/paper/ (1-lifecycle/<N>-<stage>/<skill>/), so the correct depth is `../../../`. Every required-read at the top of this skill silently failed. Repointed."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -25,15 +25,15 @@ The narrative report is **not** a draft of the paper. It is the **design contrac
 
 If the paper folder has `0-lifecycle/2-pitch/2-pitch.md`, read it before composing the narrative. The pitch is the one-minute public-facing story for this concrete paper; this narrative expands it into evidence-backed claims, figures, and limitations. If the evidence forces a different pitch, update `0-lifecycle/2-pitch/2-pitch.md` through `/haipipe-paper-lifecycle pitch` and log the shift instead of silently diverging.
 
-Read first: `../../PHILOSOPHY.md`, `../../wiki/04-lifecycle-map.md`.
+Read first: `../../../PHILOSOPHY.md`, `../../../wiki/04-lifecycle-map.md`.
 
 ## Artifact Spec
 
 **Files produced:**
 - `0-lifecycle/3-narrative/3-narrative.md` -- the design contract (venue-ALIGNED)
-- `0-lifecycle/3-narrative/_LOG_3-narrative.md` -- phase progress journal (per `../../wiki/02-comment-lifecycle.md`)
+- `0-lifecycle/3-narrative/_LOG_3-narrative.md` -- phase progress journal (per `../../../wiki/02-comment-lifecycle.md`)
 - `0-lifecycle/3-narrative/_DISPLAY_3-narrative.md` -- which display unit serves each beat
-- `0-lifecycle/3-narrative/_PROBE/` -- probe plans spawned by narrative needs
+- `1-probes/PPNN_<topic>.md` -- the probe FILES; a narrative need becomes a question SECTION (flat cross-stage pool; `serves: 3-narrative`)
 
 **Content structure (3-narrative.md):**
 - Readiness legend -- five tags: [READY], [PENDING], [INFER], [LIT], [GAP]
@@ -49,7 +49,7 @@ Read first: `../../PHILOSOPHY.md`, `../../wiki/04-lifecycle-map.md`.
 
 **Done-criteria:**
 - [ ] All beats have readiness tags (no untagged beats)
-- [ ] No [GAP] beat without a probe plan in the Probes section and _PROBE/
+- [ ] No [GAP] beat without an entry in the Probes section and a question SECTION in 1-probes/
 - [ ] Display needs identified in _DISPLAY_3-narrative.md
 - [ ] Per-beat interrogation complete (subagent reviewed every beat)
 - [ ] Spine throughline present
@@ -65,7 +65,19 @@ Read first: `../../PHILOSOPHY.md`, `../../wiki/04-lifecycle-map.md`.
 
 ## Phase Orchestration
 
-When the user invokes `/haipipe-paper narrative`, this skill drives the phases in order. The user does not call phase skills directly.
+When the user invokes `/haipipe-paper narrative`, this skill drives the phases in order. The user does not call phase skills directly — but steers them with VERBS on this stage:
+
+```
+/haipipe-paper narrative <paper-dir>            -> open: status + frontier; advance ONLY on the user's verb
+/haipipe-paper narrative <paper-dir> draft      -> run/redo DRAFT  -> STOP for user review
+/haipipe-paper narrative <paper-dir> probe      -> run/redo PROBE  (agent-only)
+/haipipe-paper narrative <paper-dir> revise     -> dispatch REVISE workers (agent-only, proof-carrying)
+/haipipe-paper narrative <paper-dir> check      -> open the CHECK gate
+```
+
+**Hard gates (binding).** After DRAFT: ⛔ STOP — present the draft for review and end the turn; the user's verb/"go" advances, logged as `[GATE] draft-review: approved` quoting the user. Each phase runs via its `Skill()` dispatch — a phase executed inline did not happen; the `[REVISE]` _LOG entry carries its `workers:` proof line. Never commit or conclude the stage before CHECK opens with its report. The agent never self-advances past a gate.
+
+**Comment rules (binding).** The agent NEVER deletes, rewords, or relocates a `> USER:` comment; it replies `> CC:` underneath; only the user resolves a thread; resolved threads MOVE to `_LOG` verbatim. Working files are edited surgically — no full-file rewrite of a file carrying `> USER:` comments. Background: `../../../wiki/02-comment-lifecycle.md`.
 
 ```
 narrative invoked
@@ -78,11 +90,12 @@ DRAFT --> discover inputs (pitch, claims, experiment results, repo source),
           run per-beat interrogation (subagent reviewed every beat),
           integrate interrogation comments
           (internally calls /haipipe-paper-draft with this artifact spec)
+          Ends at ⛔ STOP: user reviews, iterates, approves ([GATE] logged).
   |
   v
 PROBE --> identify citation needs per beat ([LIT] tags),
           identify display needs per beat (-> _DISPLAY_3-narrative.md),
-          route [GAP]/[PENDING] beats to probe plans (-> _PROBE/),
+          raise [GAP]/[PENDING] beats as question SECTIONS (-> 1-probes/),
           thread external reviewer comments (\fb) onto beats
           (internally calls /haipipe-paper-probe)
   |
@@ -91,17 +104,17 @@ REVISE -> refine prose clarity across all beats,
           sharpen arc and flow between sections,
           apply short-plain-sentence rule to all comments,
           ensure venue-contract (2-venue.md) arc shaping is applied
-          (internally calls /haipipe-paper-revise)
+          (internally calls /haipipe-paper-revise; [REVISE] _LOG entry carries workers: proof)
   |
   v
-CHECK --> present exit gate per ../../wiki/08-stage-gate.md
+CHECK --> present exit gate per ../../../wiki/08-stage-gate.md
           user confirms -> advance to display
           (internally calls /haipipe-paper-check)
 ```
 
-Phase visibility per the Phase Transition Contract in `../../wiki/08-stage-gate.md`: announce every phase boundary (reply line + `[PHASE]` entry in `_LOG` + phase-line 🔥 moves); skip a phase only by an explicit logged verdict (`[PROBE] skipped -- <reason>`, phase line shows `--`); CHECK is never implicit -- it opens by presenting the exit-criteria report and the approval ask.
+Phase visibility per the Phase Transition Contract in `../../../wiki/08-stage-gate.md`: announce every phase boundary (reply line + `[PHASE]` entry in `_LOG` + phase-line 🔥 moves); skip a phase only by an explicit logged verdict (`[PROBE] skipped -- <reason>`, phase line shows `--`); CHECK is never implicit -- it opens by presenting the exit-criteria report and the approval ask.
 
-Comment lifecycle per `../../wiki/02-comment-lifecycle.md`: comments live in 3-narrative.md while active, move to _LOG on resolve, each phase starts clean.
+Comment lifecycle per `../../../wiki/02-comment-lifecycle.md`: comments live in 3-narrative.md while active, move to _LOG on resolve, each phase starts clean.
 
 ## Context: $ARGUMENTS
 
@@ -114,7 +127,7 @@ Comment lifecycle per `../../wiki/02-comment-lifecycle.md`: comments live in 3-n
 
 Do **not** use when:
 - Experiments are still running (the narrative would be premature)
-- You only have a vague topic -- use `/idea-discovery` or `/haipipe-probe judge` first
+- You only have a vague topic -- use `/idea-discovery` or settle the claims stage first
 - A current `0-lifecycle/3-narrative/3-narrative.md` already exists; edit it directly
 
 ## Inputs (in priority order)
@@ -122,7 +135,7 @@ Do **not** use when:
 The skill discovers whichever of these exist in the project tree:
 
 0. **`0-lifecycle/2-pitch/2-pitch.md`** (paper folder, if present) -- current one-minute paper story. Use it as the reader-facing framing constraint, not as evidence.
-1. **`CLAIMS_FROM_RESULTS.md`** (best) -- validated claim-evidence map from `/haipipe-probe judge`. If present, use as the spine of the narrative; every listed claim becomes a section in the report.
+1. **`0-lifecycle/1-claims/1-claims.md`** (best) -- the claim ledger. It is the ONLY home of a claim's status (`supported | refuted | inconclusive` + confidence + claim_type + G1/G2/G3): a probe section carries only its `reading:`, and `## Verdict`/`verdicted` are DELETED. If present, use the ledger as the spine of the narrative; every supported claim becomes a section in the report.
 2. **`IDEA_REPORT.md`** -- chosen idea, hypothesis, novelty justification (from `/idea-discovery`). Supplies the problem statement and intended contribution.
 3. **`review-stage/AUTO_REVIEW.md`** (fall back to `./AUTO_REVIEW.md`) -- review history, weaknesses fixed, remaining limitations (from `/auto-review-loop`). Supplies the limitations section and reframings.
 4. **Experiment results** -- JSON / CSV / TSV under `figures/`, `results/`, `outputs/`, `tasks/`. These are the raw evidence for every quantitative claim. Each number that ends up in the narrative must trace back to one of these files.
@@ -139,7 +152,7 @@ The narrative mirrors the paper's REAL sections, in reading order, and has five 
    - `[READY]` (green): evidence in hand (a confirmed probe or a run we trust).
    - `[PENDING]` (orange): data exists but a render/check/probe is still open.
    - `[INFER]` (purple): an inference, grounded in the evidence, reaching one reasoned step beyond, never measured (no probe will confirm it).
-   - `[LIT]` (blue): rests on outside literature, citation-audit pending.
+   - `[LIT]` (blue): rests on outside literature, citation audit pending.
    - `[GAP]` (red): no evidence yet, needs a probe.
 
    The tag is not decoration: `[PENDING]` and `[GAP]` beats ARE the open evidence needs, and they route to `/haipipe-probe`. The narrative is venue-ALIGNED -- it reads STATUS `venue` and consults the venue contract (2-venue.md) to shape the arc.
@@ -193,7 +206,7 @@ Multiple reviewers: give EACH reviewer its own footer `External review (<name>, 
 <paper>/0-lifecycle/3-narrative/3-narrative.md          design contract
 <paper>/0-lifecycle/3-narrative/_LOG_3-narrative.md      phase progress journal
 <paper>/0-lifecycle/3-narrative/_DISPLAY_3-narrative.md  display needs per beat
-<paper>/0-lifecycle/3-narrative/_PROBE/                  probe plans for [GAP] beats
+<paper>/1-probes/PPNN_<topic>.md                    probe files; one SECTION per [GAP] beat's question
 ```
 
 Markdown only (argument documents don't need compilation).

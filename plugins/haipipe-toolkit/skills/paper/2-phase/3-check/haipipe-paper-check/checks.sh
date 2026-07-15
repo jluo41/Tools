@@ -11,19 +11,24 @@
 # into the CHECK REPORT and seed > CHECK: comments at the reported line numbers.
 #
 # Usage:
-#   checks.sh <tex-file-or-paper-dir> [--md <file> ...] [--depth N] [--compile]
+#   checks.sh <tex-file-or-paper-dir> [--md <file> ...] [--log <file>] [--depth N] [--compile]
 #
 #   <tex-file-or-paper-dir>  a single .tex, OR a paper dir (all *.tex scanned)
 #   --md <file>              a markdown working doc (_CITATION_/_VALUES_/outline)
 #                            to scan for bibtex leakage; repeatable
+#   --log <file>             a _LOG_*.md changelog: verify the newest [REVISE]
+#                            entry carries its `workers:` proof line, and warn
+#                            if REVISE ran with no [GATE] draft-review on record
 #   --depth N                find maxdepth for *.tex / *.bib when target is a dir
 #                            (default 2; raise for deeper layouts / split bibs)
 #   --compile                run ./1-compile.sh in the paper dir and grep its log
 #                            for LaTeX errors (opt-in; slow; needs a TeX toolchain)
 #
 # Exit code: 0 if no ❌ (FAIL) items, 1 if any ❌. ⚠️ never fails the run.
-# ❌ tier: em-dash, TODO/FIXME, bibtex-in-md, broken \cite, broken \ref, compile.
-# ⚠️ tier: AI-voice, orphan \label, Pn.Sn sequence, cite-with-no-bib-found.
+# ❌ tier: em-dash, TODO/FIXME, bibtex-in-md, broken \cite, broken \ref, compile,
+#          [REVISE] entry without workers: line.
+# ⚠️ tier: AI-voice, orphan \label, Pn.Sn sequence, cite-with-no-bib-found,
+#          REVISE-without-[GATE]-draft-review.
 # Caveat: .bib discovery is bounded by --depth; a split .bib deeper than DEPTH
 # makes its keys report as broken \cite — raise --depth rather than trusting a red.
 # ============================================================================
@@ -37,11 +42,13 @@ fi
 shift || true
 
 MD_FILES=()
+LOG_FILES=()
 DEPTH=2
 COMPILE=0
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --md) shift; if [[ -z "${1:-}" || "${1:-}" == --* ]]; then echo "--md needs a file argument" >&2; exit 2; fi; MD_FILES+=("$1") ;;
+    --log) shift; if [[ -z "${1:-}" || "${1:-}" == --* ]]; then echo "--log needs a file argument" >&2; exit 2; fi; LOG_FILES+=("$1") ;;
     --depth) shift; DEPTH="${1:-2}"
              if ! [[ "$DEPTH" =~ ^[0-9]+$ ]]; then echo "--depth needs a numeric argument, got: $DEPTH" >&2; exit 2; fi ;;
     --compile) COMPILE=1 ;;
@@ -56,7 +63,8 @@ if [[ -f "$TARGET" ]]; then
   PAPER_DIR="$(dirname "$TARGET")"
 elif [[ -d "$TARGET" ]]; then
   PAPER_DIR="$TARGET"
-  mapfile -t TEX_FILES < <(find "$TARGET" -maxdepth "$DEPTH" -name '*.tex' -not -path '*/_archive/*' -not -path '*/_external/*' | sort)
+  TEX_FILES=()
+  while IFS= read -r _f; do [[ -n "$_f" ]] && TEX_FILES+=("$_f"); done < <(find "$TARGET" -maxdepth "$DEPTH" -name '*.tex' -not -path '*/_archive/*' -not -path '*/_external/*' | sort)
 else
   echo "not a file or dir: $TARGET" >&2
   exit 2
@@ -97,7 +105,7 @@ else
 fi
 
 # ── META: TODO markers ───────────────────────────────────────────────────────
-#    Comments deliberately NOT stripped: % TODO[values] / % TODO[cite] flags are
+#    Comments deliberately NOT stripped: legacy % TODO[values] / % TODO[cite] flags are
 #    planted in comments by DRAFT and MUST block the gate until PROBE fills them.
 #    XXX deliberately EXCLUDED: it collides with double-blind anonymization
 #    placeholders (\author{XXX}, "XXX University") that are legitimate at submission.
@@ -121,7 +129,8 @@ if [[ ${#MD_FILES[@]} -gt 0 ]]; then
 fi
 
 # ── META/PROBE: broken \cite (key not in any .bib) ───────────────────────────
-mapfile -t BIB_FILES < <(find "$PAPER_DIR" -maxdepth "$DEPTH" -name '*.bib' -not -path '*/_archive/*' -not -path '*/_external/*' 2>/dev/null | sort)
+BIB_FILES=()
+while IFS= read -r _f; do [[ -n "$_f" ]] && BIB_FILES+=("$_f"); done < <(find "$PAPER_DIR" -maxdepth "$DEPTH" -name '*.bib' -not -path '*/_archive/*' -not -path '*/_external/*' 2>/dev/null | sort)
 has_cites=$(for f in "${TEX_FILES[@]}"; do strip_comments "$f"; done | grep -cE '\\cite' || true)
 if [[ ${#BIB_FILES[@]} -eq 0 ]]; then
   if [[ "$has_cites" -gt 0 ]]; then
@@ -201,6 +210,27 @@ for f in "${TEX_FILES[@]}"; do
     echo "✅ $(basename "$f"): $n Pn.Sn markers, sequential"
   else
     echo "⚠️ $(basename "$f"): Pn.Sn out of sequence: $bad"
+  fi
+done
+
+# ── REVISE: proof-carrying dispatch (--log) ──────────────────────────────────
+#    Newest-first _LOG: the FIRST `## … [REVISE]` heading is the latest run.
+#    Its block (up to the next `## ` heading) must carry a `workers:` line —
+#    proof the 2-revise workers were dispatched, not hand-edited inline.
+for lf in ${LOG_FILES[@]+"${LOG_FILES[@]}"}; do
+  if [[ ! -f "$lf" ]]; then
+    echo "⚠️ --log file not found: $lf"; continue
+  fi
+  revise_block=$(awk '/^## .*\[REVISE\]/{grab=1; next} grab && /^## /{exit} grab{print}' "$lf")
+  if ! grep -q '\[REVISE\]' "$lf"; then
+    echo "-- REVISE proof skipped ($(basename "$lf"): no [REVISE] entry yet)"
+  elif echo "$revise_block" | grep -q 'workers:'; then
+    echo "✅ $(basename "$lf"): newest [REVISE] carries its workers: line"
+  else
+    echo "❌ $(basename "$lf"): newest [REVISE] entry has NO workers: line (revise workers not dispatched?)"; FAIL=1
+  fi
+  if grep -q '\[REVISE\]' "$lf" && ! grep -q '\[GATE\] draft-review' "$lf"; then
+    echo "⚠️ $(basename "$lf"): [REVISE] present but no [GATE] draft-review on record (draft gate skipped?)"
   fi
 done
 

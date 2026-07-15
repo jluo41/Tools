@@ -1,10 +1,10 @@
 ---
-status: open
+status: fixed
 created: 2026-06-24
 updated: 2026-06-24
 occurrences: 1
 context: display stage, ProjB Paper-Personality2Opioid-MISQ2026 (compacting the gallery PDF)
-fixed_in: ""
+fixed_in: "haipipe-paper-display v3.0.0"
 regressed: ""
 ---
 "no, don't change things here. please change .../0-lifecycle/4-display/4-display.tex"
@@ -33,4 +33,7 @@ FIX (proposed): haipipe-paper-display must put all gallery-level presentation
 preamble and NEVER mutate a unit float.tex or its source to change how the gallery
 looks; units stay canonical/native size for the manuscript + minimap.
 
-Fix:
+Fix: v3.0.0 — principle kept, HOME MOVED: the tex is now generated, so the sizing
+knobs live in 4-display.md's "gallery config" line and sync EMITS them into the
+generated tex preamble. Still never in a unit's float.tex or source spec
+(SKILL principle 10 + CHECKLIST stage-doc item).

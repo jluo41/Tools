@@ -4,6 +4,46 @@ haipipe-paper-check — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 2.1.0 — 2026-07-14
+
+- "planned/dispatched cards" -> `planned` sections + unresolvable `target:`s; `status: planned card` -> `state: planned` section. (`check-probe-cards.sh` KEEPS its filename; only its internals changed.)
+- PROBE restart: new-candidate requests from `> USER:` comments become question SECTIONS in `1-probes/`, dispatched by the PROBE phase (was "probe plans -> gateway").
+
+## [1.9.0] -- 2026-07-14
+## 2.0.0 — 2026-07-14
+
+- PROBE REDESIGN (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14 — R1-R18). 1-probe-plans/ -> 1-probes/ (PPNN_<topic>.md, one file per TOPIC, one SECTION per question: serves/target/state/commission/reading + ONE `## Why` per file holding the stake). Binding is by PATH: a section's `target:` points at the answering `<leaf>/QA/<n>-<slug>.md` in the bank. DELETED: `## Verdict`, the `verdicted` and `dispatched` states, `_ASK/`/`_ANS/` stubs, `answers:`, and Agent(haipipe-probe-orchestrator-agent) (the GATEWAY — archived + de-registered). A claim's STATUS now lives ONLY in 0-lifecycle/1-claims/1-claims.md. Dispatch is now DIRECT: the section's `commission:` block, VERBATIM, to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent).
+- The seed done-criterion re-stated for probe SECTIONS: every section's `reading:` written and every `target:` resolving on disk.
+
+Added (BLOCKER 10 repair -- the worker that RUNS Gate 2 did not know the resource stage existed)
+
+- **`resource` row in the per-stage gate table** (Applicability Beyond Section-Edit). Before this, a live resource CHECK had NO gate criteria to apply -- the stage shipped a load-bearing sentence that the executing worker had never heard of. The META column now carries it VERBATIM: "Does every hypothesis have a resource that is HAVE+FIT, or a COMMISSIONED build with an owner and a DATE, or a SCOPE CUT the human said out loud?" The PROBE column carries the stage-scoped card pass (`sh "$CHK" <paper_root> --stage resource` exits 0).
+- **Resource gate rulings block**, below the table: `commissioned` + owner + future eta -> PASS; no owner -> FAIL (an unowned build is a wish); eta PASSED with no receipt -> FAIL (C6); a BUILD card with no `cross-project:` -> FAIL (C4); a fitness ruling that does not say what it KILLS -> FAIL; **a demand with NO resource is NOT a failure -- it is a SCOPE CUT, said out loud and logged.** Card-status rulings are checker-enforced (RUN it, never eyeball); fitness + scope cut are `> CHECK:` judgment items.
+- **`haipipe-paper-resource` row in Who calls this skill.**
+
+Changed
+
+- **Stage Exit Invariant AMENDED: two directions for every stage EXCEPT `resource`, which has THREE** (JL ruling C7, 2026-07-14; spec in `wiki/08-stage-gate.md`, which already carried the amendment while the EXECUTING worker did not -- so `reseed` and `park` were UNREACHABLE in practice). ✅ proceed -> claims · 🔥 reseed -> [LOOPBACK -> SEED] · 🅿️ park -> `maturity: resource-blocked`. Rationale: a stage whose PURPOSE is discovering the paper CANNOT BE WRITTEN must be able to SAY SO -- without these it could only `promote -> claims`, mechanically handing a DEAD PAPER FORWARD. The Report Format decision menu gains the two resource-only checkboxes. Does NOT generalize.
+- **seed row's exit fixed**: seed now advances to **resource**, not claims.
+
+Fixed
+
+- **Card-checker locator is now UNAMBIGUOUS** (new section: Locating the card checker). TWO files named `check-probe-cards.sh` exist on disk -- the paper family's and the application family's -- so the old hard-coded `../../1-probe/haipipe-paper-probe/check-probe-cards.sh` (fragile: installed skills flatten the tree) and any bare `find -name check-probe-cards.sh | head -1` could resolve to the WRONG FAMILY and silently check a paper against application invariants. Now: `find ... -path "*haipipe-paper-probe*" -name check-probe-cards.sh | head -1`, plus a LOUD failure when nothing matches (`[ -n "$CHK" ] || { echo "FAIL: paper checker not found"; exit 1; }`) -- a gate that cannot run its checker has not checked anything.
+
+## [1.8.1] -- 2026-07-10
+
+Fixed (fresh-agent audit, C5)
+- PROBE-restart guidance: placement is md-first; new-candidate requests become probe plans -> gateway (was "search for new candidates").
+- checks.sh header: TODO[] flags marked legacy (DRAFT plants {VAL:?}/\cite{TOADD} in the .md).
+
+## [1.8.0] -- 2026-07-09
+
+Changed (JL ruling 2026-07-09 (LLMTrait-Section session postmortem): normalize the writing process)
+- checks.sh: new `--log <file>` check -- the newest [REVISE] entry in a _LOG must carry its `workers:` proof line (missing = FAIL; REVISE present without a [GATE] draft-review on record = WARN). Enforces the proof-carrying REVISE dispatch contract.
+
+Fixed
+- checks.sh: `mapfile` replaced with portable while-read loops (macOS /bin/bash 3.2 has no mapfile -- dir-mode tex scan and .bib discovery silently broke, making broken-cite checks unreliable on Macs); empty --log array guarded for set -u under bash 3.2.
+
 ## [1.7.0] — 2026-07-07
 
 Changed (skillset-diagnose FIX round; threads T1/T10 + findings D2-D9)

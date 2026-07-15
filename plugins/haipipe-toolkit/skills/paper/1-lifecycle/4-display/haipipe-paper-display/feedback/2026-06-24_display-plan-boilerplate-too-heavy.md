@@ -1,10 +1,10 @@
 ---
-status: open
+status: fixed
 created: 2026-06-24
 updated: 2026-06-24
 occurrences: 1
 context: display stage, ProjB Paper-Personality-Opioid-MedJournal (JAMA); reviewing the display plan / worklist
-fixed_in: ""
+fixed_in: "haipipe-paper-display v3.0.0"
 ---
 "I feel a lot of things in Display Unit Rule, and Current Display plan or things before Render Worklist they might not necessary to keep."
 
@@ -19,4 +19,6 @@ template. Drop or fold the "Display Unit Rule" + "Current Display plan" boilerpl
 and keep only the per-unit Render Worklist that maps each display to a claim/beat
 and its build route. Related: [[feedback_display_plan_then_route_to_task]].
 
-Fix:
+Fix: v3.0.0 — 4-display-probes.md is RETIRED; the 4-display.md template is just Venue
+Set + Display Map + one block per display (takeaway/evidence/candidates/sketch) +
+Parking. No Display Unit Rule / Current Display plan preamble.

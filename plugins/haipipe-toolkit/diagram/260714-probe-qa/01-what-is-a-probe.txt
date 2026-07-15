@@ -1,0 +1,169 @@
+1 — WHAT IS A PROBE?
+=====================
+
+  Files here:  01 what is a probe   02 the files   03 how it runs
+               04 the rules         05 status + open items
+
+  Approved JL 2026-07-14. Shipped.
+
+
+A probe is a file in your paper.
+--------------------------------
+
+That is the whole idea. It does not live in tasks/. There is no probes/ folder.
+It lives here:
+
+    papers/Paper-X/1-probes/PP03_welldoc-feasibility.md
+
+One file per TOPIC. Inside it, one SECTION per question.
+
+
+Why it exists
+-------------
+
+Your paper has questions it cannot answer by itself.
+
+    "Does WellDoc record a menstrual-cycle indicator?"
+
+The answer lives somewhere else — in code, in runs, in the literature.
+We call that place the BANK: tasks/ and discoveries/.
+
+The probe is the map between the two.
+
+```text
+   📄 YOUR PAPER                          ⚙️ THE BANK
+   the question                           the answer
+   ─────────────                          ──────────
+   1-probes/PP03.md                       tasks/A03_cycle_check/01_scan/
+     ## Q1  "cycle indicator?"    ────▶     QA/1-cycle-indicator.md
+     target: ─────────────────────────────▶ "none. 40 tables scanned."
+     reading: "⇒ C6 supported"   ◀────────
+```
+
+
+The one thing that makes this work
+-----------------------------------
+
+The bank NEVER LEARNS THAT PROBES EXIST.
+
+No _ASK/ folders. No probe ids. No back-references. Nothing in tasks/ or
+discoveries/ mentions a paper, ever.
+
+So how does a question get across?
+
+    It travels as a STRING, in an agent's prompt. Not as a file.
+    Nothing is planted on disk.
+
+And the answer comes back as a file the executor wrote for its OWN reasons —
+readable, general, with no paper in it.
+
+That asymmetry is the whole design. Everything else follows from it.
+
+
+Why we care so much
+-------------------
+
+Because we already broke it once, and the broken file is still on disk:
+
+```text
+   tasks/A03_welldoc_cycle_check/result.md      ← written by an EXECUTOR
+
+     "Quick recon to answer two claims-stage questions:
+        - C6: does WellDoc record any cycle indicator?  → NO
+        - C7: is there enough CGM to pretrain on?       → YES"
+           ▲▲                                    ▲▲
+           the PAPER'S claim ids, in the TASK bank.
+```
+
+A paper session, holding the stake in its head, went and did the task work itself.
+
+The damage is not that a rule was broken. It is that this evidence — a genuinely
+reusable fact about the WellDoc corpus — came back SHAPED AROUND ONE PAPER'S
+HYPOTHESES. The next paper that reads it inherits a frame it never chose.
+
+Contaminating the bank costs more than the probe did.
+
+
+The two ways a question is born
+-------------------------------
+
+    DRAFT      a stage is writing, hits a gap, marks it     {VAL:?}  GAP
+
+    RESOURCE   "does the thing we need exist, and can it carry the claim?"
+               its Q<n> mints a probe section and gets an A: back
+
+Both feed the PROBE phase, which collects them into probe files, grouped by topic.
+
+
+Two kinds of session, and only one of them asks questions
+----------------------------------------------------------
+
+This is the piece people get wrong.
+
+```text
+   ⚙️ EXECUTOR SESSION                📄 CONSUMER SESSION
+   ──────────────────                 ──────────────────
+   just does the work.                asks questions.
+   train · sweep · profile · review
+                                      DRAFT raises the questions
+   No question pending.               PROBE collects and commissions them
+   No ask. No probe.
+   This IS the research.
+        │                                    │
+        ▼                                    ▼
+   the bank grows on its own    ◀────  most questions land HERE:
+                                       the answer ALREADY EXISTS
+```
+
+The executor also does what we call ANSWERABILITY WORK: writing readable digests,
+refactoring code so future questions become cheap — without knowing which questions
+are coming.
+
+So in a healthy project, most probe questions should hit an answer that is already
+sitting there. Commissioning new work is the EXCEPTION, not the norm.
+
+
+Two people can explore a task. Neither of them is a probe.
+-----------------------------------------------------------
+
+```text
+   🧑 A HUMAN         /haipipe-task qa "what about the female subset?"
+                      → QA/3-female-subset.md
+
+   🤖 THE ORCHESTRATOR   picks a direction itself and explores it
+                         → QA/4-...
+
+   Same verb. Same files. Neither one knows probes exist.
+```
+
+`ls QA/` then reads like a menu: here is what this task has established, and where.
+
+A probe does not get a special door. It reuses the door humans already walk through.
+
+
+The translation, in one picture
+-------------------------------
+
+```text
+        YOUR PAPER'S WORDS                    NEUTRAL WORDS
+   ┌──────────────────────────┐        ┌──────────────────────────┐
+   │  "H2 dies unless the     │──T1──▶ │  "what is α?"            │──▶ the executor
+   │   exponent is < 0.5"     │ strip  │                          │    reads only this
+   │                          │  the   │  this becomes the task's │
+   │                          │ stake  │  own plan.yaml           │
+   └──────────────────────────┘        └──────────────────────────┘
+              ▲                                     │
+              │                                     ▼
+   ┌──────────────────────────┐        ┌──────────────────────────┐
+   │  "α=0.34 < 0.5            │◀──T2──│  "α = 0.34 ± 0.02"       │◀── the executor
+   │   ⇒ H2 supported"        │  add   │  [→ results/fit.json]    │    writes this
+   │                          │ it back│                          │
+   └──────────────────────────┘        └──────────────────────────┘
+```
+
+THE PAPER DOES BOTH TRANSLATIONS. The executor does neither.
+
+That is exactly why the answer stays reusable: Paper-A reads "α = 0.34" and calls H2
+supported. Paper-B reads THE SAME FILE and calls C4 inconclusive.
+
+Same fact. Different readings. Not a contradiction — the correct behavior.

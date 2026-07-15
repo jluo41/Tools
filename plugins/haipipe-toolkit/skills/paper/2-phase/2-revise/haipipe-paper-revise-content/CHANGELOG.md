@@ -4,6 +4,11 @@ haipipe-paper-revise-content — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## [1.3.0] -- 2026-07-10
+
+Changed (fresh-agent audit, C8 -- R1 alignment)
+- Retired % TODO[values] / % TODO[cite] placeholders throughout SKILL + ref/content-edit.md + ref/weaving.md; the conventions are {VAL:? <what>} and \cite{TOADD} (+ _CITATION_ row).
+
 ## [1.2.0] — 2026-07-07
 
 Added (T7, JL: "我们需要weaving吗？如果不需要的话，可以就删掉吗？" → "maybe just go into Content")

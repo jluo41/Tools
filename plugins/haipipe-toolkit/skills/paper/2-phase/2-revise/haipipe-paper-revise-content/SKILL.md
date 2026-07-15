@@ -4,8 +4,8 @@ description: "Review and edit the prose CONTENT of an existing draft at section 
 argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.2.0"
-  last_updated: "2026-07-07"
+  version: "1.3.0"
+  last_updated: "2026-07-10"
   summary: "REVISE worker: edit prose CONTENT at section->¶->weave->sentence, change directly + leave why-comments. Absorbs the retired revise-weaving skill (¶-flow: arc/hinges/rhythm, ref/weaving.md). Fully automatic."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -50,8 +50,8 @@ Work **section -> paragraph -> weave -> sentence**. Get the section's job right,
 When the content needs a number or citation that is not here yet, drop a marker instead of inventing one:
 
 ```latex
-The model achieved % TODO[values] accuracy on the held-out set.
-This aligns with prior work % TODO[cite] on trait extraction.
+The model achieved {VAL:? held-out accuracy} accuracy on the held-out set.
+This aligns with prior work \cite{TOADD} on trait extraction.   % + _CITATION_ row
 ```
 
 These are grep targets for the PROBE phase (values and citation workers). Leaving a flag is correct; guessing a value or a citation is not.
@@ -60,7 +60,7 @@ These are grep targets for the PROBE phase (values and citation workers). Leavin
 
 - [ ] Every paragraph has one clear job matching its banner
 - [ ] One idea per sentence, no filler, concrete over vague
-- [ ] Every missing number/citation is flagged (`% TODO[...]`); none invented
+- [ ] Every missing number is `{VAL:? <what>}`, every missing citation `\cite{TOADD}` (+ `_CITATION_` row); none invented
 - [ ] Non-trivial changes have `%% {CC-content}: <why>` comments for CHECK
 - [ ] Banners present with ids preserved
 - [ ] prose-quality.md rules all applied

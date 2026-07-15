@@ -36,14 +36,18 @@ DEFAULT FORM IS A DIAGRAM (JL 2026-07-05: "你的comments，如果可以用diagr
 Good (option comparison, drawn):
 
 ```
-> 例子:  你输入: /haipipe-probe file "tasks/R02_Reg_TraitDiabetesNDC"
+> 例子:  probe 的 MATCH 步问: "diabetes NDC trait 的 coverage 是多少?"
+>        决策 = 先 MATCH 老库, 还是直接开新 commission?
 >
->        B 现状 (legacy 别名)              A 提议 (正式命令)
->        ┌────────────────────────┐       ┌──────────────────────────────┐
->        │ 路由器先猜:            │       │ 第一跳直读 probe-attach.md   │
->        │ gather link? 还是 plan?│       │ 分类→claim门→STRONG 匹配     │
->        │ ⚠ 三分支判决不保证触发 │       │ ✅ "NEW P.T0622_… (confirm?)"│
->        └────────────────────────┘       └──────────────────────────────┘
+>        B 现状 (跳过 MATCH, 直接 T4)      A 提议 (先 --check-only)
+>        ┌──────────────────────────────┐  ┌────────────────────────────────┐
+>        │ 每个 section 都 commission   │  │ /haipipe-task qa "<Q>" \       │
+>        │ → Agent(task-orchestrator)   │  │     --check-only               │
+>        │ 🔥 新 leaf + 完整 P-B-E-R    │  │ ① grep QA/*.md → 命中          │
+>        │ ⚠ 一次 agent spend, 无预算   │  │ ✅ T2 REUSE: target: 指向       │
+>        │   ARCHITECTURE:231 的 smell  │  │    R02/QA/1-ndc-coverage.md    │
+>        │                              │  │    1 grep + 1 read, 零 agent   │
+>        └──────────────────────────────┘  └────────────────────────────────┘
 ```
 
 Good (values-only case, prose is enough):

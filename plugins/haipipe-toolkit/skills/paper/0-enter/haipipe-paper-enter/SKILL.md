@@ -4,9 +4,9 @@ description: "Open the Paper Console for a paper repo. Use for `/haipipe-paper`,
 argument-hint: "[paper-path] [--org <owner>] [free-form input]"
 allowed-tools: Bash, Read, Grep, Glob, Write, Skill
 metadata:
-  version: "3.2.2"
-  last_updated: "2026-07-03"
-  summary: "Paper Console: derive-from-disk dashboard + lifecycle router."
+  version: "4.0.1"
+  last_updated: "2026-07-14"
+  summary: "Paper Console: derive-from-disk dashboard + lifecycle router. Renders the 9-stage spine (seed resource claims venue pitch narrative display section-edit review); the resource predicate honours the `n/a` exemption for pre-2026-07-14 papers. v4.0.1 (probe-redesign residue sweep): the open-needs table says 'BUILD section' and 'the PROBE worker opens the SECTION and routes it' (the gateway does not exist)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -41,11 +41,11 @@ There is no separate create verb. When the given path does not exist, do NOT fai
    nothing to dashboard.
 ```
 
-The main job is to expose the paper's current debt board: open claim gaps, display/table gaps, section-edit phase gaps, round todo gaps, and evidence needs that may require probe/discover/task/insight work. The user often does not know the next stage in advance; the dashboard makes the next need visible.
+The main job is to expose the paper's current debt board: open claim gaps, display/table gaps, section-edit phase gaps, round todo gaps, and evidence needs that may require probe/discover/task work. The user often does not know the next stage in advance; the dashboard makes the next need visible.
 
 Follow-up paper actions in the same session must treat that dashboard, especially `current_layer`, `next_layer`, and open needs/gates, as the working context. A fresh Claude/Codex session should run `enter` again.
 
-Story ownership rule: this paper owns its own story, claim wording, narrative, displays, and section editing. Shared evidence lives in project-level probes, discoveries, tasks, and insights. Do not look for or require a project-level narrative layer.
+Story ownership rule: this paper owns its own story, claim wording, narrative, displays, and section editing. Shared evidence lives in project-level tasks and discoveries. Do not look for or require a project-level narrative layer.
 
 Read first:
 
@@ -104,6 +104,7 @@ Read only files that exist, in this order:
 2b. `0-lifecycle/2-pitch/2-pitch.tex` (or `.md`) -- HIGH PRIORITY for dashboard header. Extract the `\section*{One-Minute Pitch}` paragraph and the `\section*{Hook}` paragraph. These become the 2-3 sentence "what this paper is about" summary at the top of the dashboard. If the file does not exist or lacks these sections, the dashboard says "pitch not yet written".
 3. Stage TeX/MD files (remaining):
    - `0-lifecycle/0-seed/0-seed.tex`
+   - `0-lifecycle/1-resource/1-resource.md` (venue-FREE prerequisite contract; absent on every pre-2026-07-14 paper -- see the resource exemption below)
    - `0-lifecycle/1-claims/1-claims.tex` (or `.md`)
    - `0-lifecycle/3-narrative/3-narrative.tex`
    - `0-lifecycle/4-display/4-display.tex`
@@ -127,7 +128,8 @@ Per-stage inference when disk is the source of truth:
 | Evidence | Current layer |
 |---|---|
 | only `README.md` / seed lifecycle | `0-seed` |
-| seed exists but claims are absent/thin | `0-seed -> 1-claims` |
+| seed exists but resource is absent/thin (and NOT exempt -- see below) | `0-seed -> 1-resource` |
+| resource settled (or exempt) but claims are absent/thin | `1-resource -> 1-claims` |
 | claims exist but venue is not pinned in STATUS.md | `1-claims -> venue` |
 | venue pinned but pitch is absent/thin | `venue -> 2-pitch` |
 | pitch exists but narrative is absent/thin | `2-pitch -> 3-narrative` |
@@ -135,11 +137,17 @@ Per-stage inference when disk is the source of truth:
 | display plan exists but display units/canonical PDFs are missing | `4-display` |
 | display units exist and placed | ready for `5-section-edit` |
 
+**Resource exemption -- `n/a` COUNTS AS PASS (binding).** Full rule in `../../wiki/05-paper-dashboard.md`. The resource stage shipped 2026-07-14; every paper already on disk predates it and none will get a `1-resource.md` written retroactively. So for the resource predicate, `n/a` is an ACCEPTED PASS: a paper whose seed gate closed BEFORE the stage existed passes by exemption and the frontier walks straight past it to claims. Without this, every live paper's frontier REGRESSES to `resource` and the console reports DRIFT on seeds JL personally approved. The exemption is per-paper and backwards-only -- a paper seeded after 2026-07-14 gets no exemption, and an absent `1-resource.md` is a real frontier.
+
+(The stage strip renders such a paper `resource ⬜` -- that is the strip's artifact-on-disk test, not a frontier claim. `⬜` on an exempt paper is NOT drift; do not flag it.)
+
 Infer maturity separately from current layer:
 
 | Evidence | Maturity |
 |---|---|
 | seed only | `seed` |
+| seed + resource | `resource` |
+| demand is real but the resource is in flight / behind a DUA -- nothing to do but wait | `resource-blocked` |
 | seed + claims | `claim-ledger` |
 | lifecycle + sections + compile script | `scaffold` |
 | display map exists | `display-map` |
@@ -152,7 +160,8 @@ Need diagnosis is separate from lifecycle layer. Extract open needs from:
 
 | Surface | Typical need |
 |---|---|
-| `1-claims` GAP/weak/unsupported rows | probe, discovery, task, insight |
+| `1-resource` unanswered `Q<n>` (no **A**), or a BUILD section whose `eta:` has passed | probe (the PROBE worker opens the SECTION and routes it -- the stage only ASKS) |
+| `1-claims` GAP/weak/unsupported rows | probe, discovery, task |
 | `4-display` missing display units | display or task |
 | `5-section-edit` sections with incomplete DPRC phases | section-edit work |
 | section comments/TODOs | paper edit or evidence need |
@@ -161,7 +170,7 @@ Need diagnosis is separate from lifecycle layer. Extract open needs from:
 Classify each open item using the delivery-need interface:
 
 ```text
-probe | discovery | task | display | insight | paper-edit
+probe | discovery | task | display | paper-edit
 ```
 
 Loopback diagnosis follows the paper lifecycle:
@@ -171,7 +180,9 @@ Loopback diagnosis follows the paper lifecycle:
 | wording, citation, format, stale number | section-edit cycle |
 | figure/table unclear or lacks source/caption/preview | `4-display` |
 | unsupported or too-strong claim | `1-claims` / `3-narrative` |
+| the claim's data/checkpoint/producing-code does not exist, or exists but cannot CARRY the claim | `1-resource` |
 | story not compelling or abstract/intro disagree | `2-pitch` |
+| every demand row is unobtainable -- the paper cannot be written as seeded | `0-seed` (resource's `reseed` exit) |
 | paper no longer viable | `0-seed` |
 
 ## Output Format
@@ -184,7 +195,15 @@ Render the stage strip deterministically with the helper, never hand-typed:
 sh "$CLAUDE_SKILL_DIR/../../haipipe-paper/stage-strip.sh" <paper-root>
 ```
 
-It prints one line driven by `STATUS.md current_layer`, e.g. `seed ✅  claims ✅  venue ✅  pitch ✅  narrative ✅  display ⏳  section-edit ⏳`. This strip appears twice: once near the top (orientation) and once as the VERY LAST LINE of the reply (closing every reply in the session, not just the first dashboard; see the orchestrator's "Stage Strip" rule).
+It prints one line driven by `STATUS.md current_layer`, over the 9-stage spine `seed resource claims venue pitch narrative display section-edit review`. Real output (Paper-ScalingGlucose-NatSeries2026, 2026-07-14):
+
+```text
+seed ✅  resource ⬜  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  →  section-edit 🚀  →  review ⬜
+```
+
+(`resource ⬜` on a live paper is the EXEMPTION, not drift -- the stage postdates the paper. See the resource exemption in Diagnosis Rules.)
+
+This strip appears twice: once near the top (orientation) and once as the VERY LAST LINE of the reply (closing every reply in the session, not just the first dashboard; see the orchestrator's "Stage Strip" rule).
 
 The enter skill reads `../../wiki/13-tex-quality.md` and flags any stage whose `.tex` is newer than its `.pdf` as a stale deliverable in the Open Needs section.
 
@@ -225,25 +244,31 @@ Examples:
 
 Working at the frontier -- THE default case, e.g. a fresh paper in seed/DRAFT (active = frontier, markers collapse):
 ```
-stage:   seed 🔥🚀  claims ⬜  venue ⬜  pitch ⬜  narrative ⬜  display ⬜  section-edit ⬜
+stage:   seed 🔥🚀  resource ⬜  claims ⬜  venue ⬜  pitch ⬜  narrative ⬜  display ⬜  →  section-edit ⬜  →  review ⬜
 phase:   draft 🔥🚀  │  probe ⬜  │  revise ⬜  │  check ⬜
 ```
 
-Frontier at section-edit (section name appended; probe shows sub-tracks):
+Working the resource stage (the venue-FREE prerequisite stage between seed and claims):
 ```
-stage:   seed ✅  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  section-edit (§1 introduction) 🔥🚀
+stage:   seed ✅  resource 🔥🚀  claims ⬜  venue ⬜  pitch ⬜  narrative ⬜  display ⬜  →  section-edit ⬜  →  review ⬜
+phase:   draft 🔥🚀  │  probe ⬜  │  revise ⬜  │  check ⬜
+```
+
+Frontier at section-edit (section name appended; probe shows sub-tracks). `resource ⬜` here is the EXEMPTION -- this paper predates the stage, and that is a PASS, not drift:
+```
+stage:   seed ✅  resource ⬜  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  →  section-edit (§1 introduction) 🔥🚀  →  review ⬜
 phase:   draft 🔥🚀  │  probe: cite ⬜  val --  disp --  │  revise ⬜  │  check ⬜
 ```
 
 Loopback: redoing seed while paper has reached section-edit (🚀 stays at the frontier; seed has no probe sub-tracks):
 ```
-stage:   seed 🔥  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  section-edit 🚀
+stage:   seed 🔥  resource ✅  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  →  section-edit 🚀  →  review ⬜
 phase:   draft 🔥  │  probe ⬜  │  revise ⬜  │  check 🚀
 ```
 
 Loopback to pitch while frontier is display:
 ```
-stage:   seed ✅  claims ✅  venue ✅  pitch 🔥  narrative ✅  display 🚀  section-edit ⬜
+stage:   seed ✅  resource ✅  claims ✅  venue ✅  pitch 🔥  narrative ✅  display 🚀  →  section-edit ⬜  →  review ⬜
 phase:   draft ✅  │  probe ⬜  │  revise 🔥  │  check 🚀
 ```
 
@@ -262,7 +287,7 @@ How to derive:
 
 DPRC phase automation:
 - DRAFT, PROBE, REVISE are automatic (🤖) -- agent runs without stopping for human input
-- CHECK is the only human-involved phase (🧑) -- present a CHECK report for user review
+- TWO human gates (🧑): DRAFT ends at a STOP for structure review, and CHECK presents its report for user review; the user's verb advances a gate, never the agent
 - When user says "work on §N", run DPR automatically, then present the CHECK report
 
 Only show the FOCAL stage/section, not a grid of all sections. The user sees one clear focus point, not a spreadsheet.
@@ -284,7 +309,7 @@ Only show the FOCAL stage/section, not a grid of all sections. The user sees one
 
 | Need | Type | Source | Suggested route |
 |---|---|---|---|
-| ... | probe/display/discovery/task/insight/paper-edit | ... | ... |
+| ... | probe/display/discovery/task/paper-edit | ... | ... |
 
 ## Loopback Diagnosis
 
@@ -301,7 +326,7 @@ Only show the FOCAL stage/section, not a grid of all sections. The user sees one
 
 (return-contract tail here)
 
-stage:   seed 🔥  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  section-edit 🚀
+stage:   seed 🔥  resource ✅  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  →  section-edit 🚀  →  review ⬜
 phase:   draft 🔥  │  probe ⬜  │  revise ⬜  │  check 🚀
 ```
 
@@ -313,6 +338,9 @@ After the dashboard, route follow-up input through the lifecycle using the comma
 
 ```text
 seed                       -> /haipipe-paper seed         (haipipe-paper-seed)
+resource / prereq /        -> /haipipe-paper resource      (haipipe-paper-resource)
+  do we have the data /
+  does the checkpoint exist
 claims / ledger            -> /haipipe-paper claims        (haipipe-paper-claims)
 venue / journal            -> /haipipe-paper venue         (haipipe-paper-venue)
 pitch / story / sell       -> /haipipe-paper pitch         (haipipe-paper-pitch)
@@ -338,7 +366,7 @@ committing a claim verdict or downgrading a claim
 editing prose across many sections at once
 compiling-to-submit or packaging a submission
 opening or closing a revision round destructively
-filing insight memory as accepted knowledge
+landing a settled claim status in 0-lifecycle/1-claims/1-claims.md
 ```
 
 ## Session State
@@ -372,7 +400,7 @@ Every reply from a paper specialist (and every enter dashboard) MUST end with th
 status:  ok · seed
 next:    <single recommended command>
 ──────────────────────────────────────────────
-stage:   seed 🔥  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  →  section-edit 🚀  →  review ⬜
+stage:   seed 🔥  resource ✅  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  →  section-edit 🚀  →  review ⬜
 phase:   draft 🔥🚀  │  probe: cite ⬜  val --  disp --  │  revise ⬜  │  check ⬜
 ```
 

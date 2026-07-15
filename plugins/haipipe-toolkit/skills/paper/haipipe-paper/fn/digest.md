@@ -142,7 +142,7 @@ not a paper-skill defect). Do NOT file those in the inboxes. Instead:
      PREFERENCES.md travels with the Tools submodule). Enumerate the targets:
        find "<toolkit-skills-root>" -maxdepth 3 -name PREFERENCES.md
      where <toolkit-skills-root> is the skills/ dir holding paper/, probe/, task/,
-     discovery/, insight/, application/, project/ -- from this skill it is two
+     discovery/, application/, project/ -- from this skill it is two
      levels up (skills/paper/haipipe-paper -> skills/). Merge-or-create per file
      (one entry per topic; update, don't duplicate).
   2. ALSO suggest you `/remember` it for fast in-session recall (optional).

@@ -1,0 +1,227 @@
+2 — THE FILES
+==============
+
+  What is on disk, exactly. Two files matter: the probe, and the QA file.
+
+
+THE PROBE FILE  (paper side)
+=============================
+
+One file per TOPIC. One SECTION per question.
+
+```text
+   papers/Paper-CGMtoCyclePhase/1-probes/PP03_welldoc-feasibility.md
+
+   # PP03 — WellDoc data feasibility
+   - mode: light | full
+
+   ## Why
+       C6 dies if WellDoc has a cycle label. C7 needs enough CGM.
+       🔒 THE STAKE. It never leaves this file. Never crosses. Never copied.
+
+   ## Q1 — cycle indicator
+   - serves: 1-claims (C6)
+   - target: tasks/A03_welldoc_cycle_check/01_scan/QA/1-cycle-indicator.md
+   - state:  read
+   - commission: |
+       Scan all 40 WellDoc CSV tables for menstrual/cycle/hormone columns.
+       Report which exist, or none.
+       Deliverable: a QA digest + the machine artifact.
+       Do-not: no new data pulls.
+       Accepted: present | absent.
+   - reading: |
+       No cycle column in 40 tables; symptom table empty.
+       ⇒ C6 supported.  → flips 1-claims.md
+
+   ## Q2 — female CGM volume
+   - serves: 1-claims (C7)
+   - target: NEW tasks/A03_welldoc_cycle_check/02_female_cgm_volume
+   - state:  planned
+   - commission: |
+       Count female patients with ≥14d CGM. Report the distribution.
+       Accepted: any count — sufficiency is NOT yours to judge.
+   - reading:          ← empty until answered
+```
+
+Read the section top to bottom and you get the whole life of one question:
+what it serves, where the answer is, how far along it is, what we asked, what
+we concluded.
+
+
+The five fields
+---------------
+
+    serves       which claim or stage of MY paper needs this
+    target       a PATH to the answering file. Never an id.
+    state        derived from disk. Never asserted. (see 04-the-rules)
+    commission   the question, translated. This is what crosses. Frozen once written.
+    reading      what the answer MEANS for my claims. Written when the answer lands.
+
+Plus, once per file: `## Why` — the stake. It is the one thing that must never cross.
+
+
+The commission is the memory
+-----------------------------
+
+A paper session writes a probe on Monday and dies.
+
+Two weeks later, nothing is running. Nobody remembers. But the commission text is
+sitting in the section, ready to hand to an agent verbatim.
+
+    The paper is the memory. That is why the commission lives in the section
+    and not in some agent's head.
+
+
+The BUILD lane — the price of "commissioned" is a DATE
+-------------------------------------------------------
+
+Some questions need real build work, not just an answer. Those sections carry:
+
+```text
+   - state: commissioned
+   - owner:  <who>
+   - eta:    2026-08-01        ← MANDATORY
+   - blocks: <what waits on this>
+   - cross-project: <yes/no>
+
+   ✅ eta in the future, no QA file yet  →  passes the gate
+   ❌ eta has PASSED, still no QA file   →  HARD FAIL
+
+   Without the date, `commissioned` becomes the state every un-run section wears
+   forever — and the mechanism ships as a laundering token. The date is the point.
+```
+
+But there is a second, different way to be `commissioned`, and it owes no date:
+
+```text
+   a `working` QA file ALREADY EXISTS at the target
+   ─────────────────────────────────────────────────
+   Someone else's run is already answering this question. You joined it — you did
+   not start it. You cannot honestly name an owner or an eta.
+
+   ⇒ THE DEADLINE LIVES IN EXACTLY ONE PLACE PER QUESTION:
+       a `working` QA file exists  →  its `started:` + the TTL is the clock
+       no QA file yet              →  THIS section owes owner + eta
+
+   Demanding an eta from a section that did not start the run just teaches people
+   to invent one — which is the same laundering the BUILD lane exists to prevent,
+   only inverted.
+```
+
+
+THE QA FILE  (executor side)
+=============================
+
+The executor's readable answer. It lives in the executor's own folder, and the
+executor is the only thing that ever writes it.
+
+```text
+   tasks/A03_welldoc_cycle_check/01_scan/          discoveries/L03_cycle/01_prior_art/
+   ├── workflow/plan.yaml   the question  (code)   ├── discovery.yaml
+   ├── results/             the answer    (code)   ├── sources.md · verdict.md ·
+   └── QA/                  the answer  (READABLE) │   landscape.md
+       ├── 1-cycle-indicator.md                    └── QA/
+       └── 2-female-cgm-volume.md                      └── 1-cycle-prior-art.md
+```
+
+Both banks. Same shape. Task and discovery are both executors.
+
+The numbering IS the index. `ls QA/` gives you an ordered menu of what this leaf has
+established. No separate index file until a leaf earns one.
+
+
+What's inside one
+-----------------
+
+```text
+   # Q — Does WellDoc record any menstrual/cycle indicator?
+
+   - state:   working | answered | answered · superseded-by: QA/2-cycle-v2.md
+   - started: 2026-07-14T09:12        ← required while `working`
+   - by:      <run id | agent | human>
+
+   ## Answer
+     None. 40 tables scanned; only IsPregnant + Gender.  [→ results/scan.json]
+
+   ## Caveats
+     Value-scan covered survey tables only.
+
+   ## Not-done
+     Female-with-CGM count — needs the Patient↔User join.
+```
+
+The slug names the question. There is no probe id in here, ever. The executor has
+never heard of a paper and cannot honestly write one down.
+
+`## Not-done` earns its place: an executor once wrote *"Not resolved (NOT NEEDED FOR
+THE GATE): exact female-with-CGM count needs the Patient↔User join"* — it declined to
+compute the one number a second paper's claim would have turned on. A future reader
+must be able to see that hole without reading the code.
+
+
+A ticket that becomes a receipt
+--------------------------------
+
+The `state:` line is the ONE mutable field in the file. Everything else is frozen.
+
+```text
+   ③ the executor decides it must actually run something
+        │
+        ▼  it CLAIMS the file first
+     QA/3-foo.md    state: working    started: <now>    ## Answer is empty
+        │
+        │  ... the run happens ...
+        ▼  it COMPLETES the file at Report
+     QA/3-foo.md    state: answered   ## Answer is filled in
+```
+
+Why claim it early? So a second consumer, asking the same question next week, sees
+`state: working` and does not pay for the same run twice.
+
+Two writes. But ONE WRITER — the executor, both times. That distinction is load-bearing:
+
+```text
+   ✅ the EXECUTOR claims its own file, in its own folder      one writer
+   ❌ a CONSUMER plants a half-file for the executor to fill   TWO writers
+                                                               = the retired _ASK/ stub
+                                                                 wearing a new costume
+```
+
+"Write-once" was never the real rule. ONE WRITER was.
+
+
+Two things that can go wrong, and what stops them
+--------------------------------------------------
+
+```text
+   🧟 A ZOMBIE CLAIM
+      A run crashes. `state: working` sits there forever and every future reader
+      politely defers to a dead process.
+      ⇒ `started:` is MANDATORY, and a claim EXPIRES (24h). Past that, the next
+        qa call reclaims it and notes the abandoned attempt in ## Not-done.
+        A claim with no `started:` can never expire — the checker fails it.
+
+   🏁 A RACE
+      Two qa calls decide to run at the same instant; both pick QA/3-.
+      ⇒ create the claim with `set -C` (noclobber). The loser sees the file exists,
+        re-scans, and defers. The race window shrinks from THE WHOLE RUN to
+        microseconds. A residual same-instant collision is possible and harmless.
+        Do not build a lock server.
+```
+
+
+When the answer changes later
+------------------------------
+
+A re-run lands new data. The old answer is now wrong.
+
+We do NOT edit the old file's body. The executor writes QA/<n+1> and APPENDS to the old
+file's state line — `answered` stays; the pointer is added beside it:
+
+    - state:   answered · superseded-by: QA/4-cycle-v2.md
+
+Now a paper still pointing at the old file is MACHINE-DETECTABLE. The checker fails it.
+
+Without this, you get the silent bug: on day 1 the paper reads "no cycle column" and
+writes "C6 supported". On day 40 the truth changes. Every file on disk stays internally
+consistent. The paper's claim is false. Nothing fires.

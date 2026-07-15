@@ -3,9 +3,9 @@ name: paper-rebuttal
 description: "Guide authors through the full rebuttal process for ML conference/journal reviews. Four phases (Understand → Task → Rebuttal → Revise) producing artifacts under 1-review/. Use when the user has received peer reviews and needs to write rebuttal responses, plan experiments to address reviewer concerns, or prepare a revised manuscript. Trigger: rebuttal, reviewer response, author response, review feedback, camera-ready revision."
 allowed-tools: Bash, Read, Write, Edit, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-05-31"
-  summary: "Guide authors through the full rebuttal process for ML conference/journal reviews."
+  version: "1.1.0"
+  last_updated: "2026-07-14"
+  summary: "Guide authors through the full rebuttal process for ML conference/journal reviews. v1.1: LAW 1 — the rebuttal session is a CONSUMER. fn/fn-task Step 5 no longer AUTHORS task folders under the project's tasks/ (that planted rebuttal ids C10/B7 into the reusable bank — the A03 C6/C7 contamination verbatim); it DISPATCHES each point to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent) as ONE question in general language, and the EXECUTOR scaffolds and names the leaf. The return is a QA file path, whose `- state:` line is READ (answered → quote · working → in progress, do not re-dispatch · superseded-by → follow the chain) and NEVER written."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

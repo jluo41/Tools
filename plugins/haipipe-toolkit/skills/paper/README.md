@@ -2,16 +2,7 @@
 
 Canonical reference. This file + `wiki/` win over anything elsewhere.
 
-A paper is a delivery contract, not a writing folder. It owns one manuscript's story, claims, displays, minimap, and prose. Evidence lives in tasks/discoveries/insights at the project level; each stage's _PROBE/PPNN card carries contract + receipt + verdict. Claim gaps buffer in `1-probe-plans/` and batch-dispatch to probe (the universal evidence gateway; probe calls task/discover during Gather). Direct task/discover for non-claim utility work only.
-
-## The mission-controller metaphor
-
-Each lifecycle stage is a **mission controller for one aim** — its artifact and that artifact's done-criteria — releasing probes as satellites until the result is solid (JL 2026-07-09).
-
-- Same control room everywhere: every stage drives DRAFT → PROBE → REVISE → CHECK; only the mission target changes (seed doc, claims ledger, pitch, narrative, display map, section prose).
-- Satellites, not sorties: during PROBE the stage launches probe plans through the evidence gateway into project space — task probes fly internal space (runs, data, models), discovery probes fly external space (literature). Mission control never leaves home: it plans, dispatches, collects returns, backfills.
-- Rounds until green: DPRC cycles repeat until the CHECK gate passes, then the controller hands off to the next stage.
-- Fleet sizes differ: `1-claims` runs the biggest constellation — mission control targeting solid claims, exit gate "every claim solid or scheduled"; `4-display` is the other heavy-launch stage (units materialized via tasks); pitch/narrative fly light audit probes over territory the claims fleet already mapped.
+A paper is a delivery contract, not a writing folder. It owns one manuscript's story, claims, displays, minimap, and prose. Evidence lives in tasks/ and discoveries/ at the project level; the paper's `1-probes/PPNN_<topic>.md` probe files hold its QUESTIONS, one SECTION each, and BIND each one BY PATH to the answering `<leaf>/QA/<n>-<slug>.md` in that bank. Claim gaps become sections there; MATCH closes most of them for free, and only the rest are dispatched (the `commission:` block, verbatim) to the task/discovery orchestrators. Direct task/discover for non-claim utility work only.
 
 ## Paper-folder layout
 
@@ -20,10 +11,10 @@ Each lifecycle stage is a **mission controller for one aim** — its artifact an
 ├── STATUS.md                current layer, maturity, active round
 ├── 0-<paper>.tex/.bib       main manuscript shell
 ├── 0-lifecycle/              maturation spine (md + _LOG; display = tex + pdf)
-│   ├── 0-seed/  1-claims/  2-pitch/  3-narrative/  4-display/  5-editing/
+│   ├── 0-seed/  1-resource/  1-claims/  2-pitch/  3-narrative/  4-display/  5-editing/
 ├── 0-sections/               manuscript prose .tex
 ├── 0-displays/displayNN-*/   figure/table units
-├── 1-probe-plans/PPNN_*.md   evidence-need buffer -> batch-dispatch to probe
+├── 1-probes/PPNN_<topic>.md   the paper's questions, one SECTION each -> bound BY PATH to a QA file
 ├── 1-rounds/vYYMMDD/         work rounds (discussion, decisions, todo, applied)
 ├── 1-config.yaml
 └── 1-compile.sh
@@ -40,12 +31,11 @@ paper/
 ├── 1-lifecycle/      stage procedures (seed, claims, pitch, narrative, display)
 │                     + display renderers (-table, -figure, -diagram, -illustration)
 ├── 2-phase/          shared phase workers: DRAFT-PROBE-REVISE-CHECK (DPRC)
-│                     haipipe-paper-{draft,probe,revise,check} + sub-workers
-├── 3-build-submit/   scaffold, restructure, check
+│                     haipipe-paper-{draft,probe,revise,checker} + sub-workers
+├── 3-build-submit/   scaffold, restructure, check, compile, edit family
 ├── 4-respond/        rebuttal, response
 ├── 5-present/        slides, poster
 ├── _venue/           venue profiles (knowledge, not verbs) — see _venue/README.md
-├── components/       citation, compile, diff
 └── wiki/             lifecycle, rounds, skill-structure, lifecycle-map
 ```
 

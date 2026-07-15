@@ -320,3 +320,17 @@ build time (template → specific):
 | `{{prev.*}}` | Field from the previous step's return value |
 | `{{index}}` | Pipeline item index (0-based) |
 | `{{phase.title}}` | Current phase title |
+
+
+Deleted fields
+===============
+
+`answers:` — **DELETED 2026-07-14.** A top-level report field naming the external ids a run
+answered. It is gone, along with the mailbox mechanism it served. A report describes what a
+run did; it never names anyone downstream, because this layer does not know that anyone is
+downstream.
+
+When a run answers a QUESTION, the answer is a FILE — the leaf's readable digest at
+`<leaf>/QA/<n>-<slug>.md` (written at Report; contract in `haipipe-task/fn/qa.md`). Whoever
+asked reads that file. Nothing is written back, no id is recorded, and no field points
+outward.
