@@ -129,3 +129,11 @@ decides, then moves here too. Newest block at the bottom.
      4 verified compliant (reflow no-op) and tagged >> CC [SOLVED]. Zero untagged > JL
      now remain under task/ (SKILLSET_REVIEW.md + PREFERENCES.md mentions are the
      convention itself, not threads).
+
+[2026-07-14 23:26 · SHIPPED] SKILL.md conciseness pass #1+#2 (of the 6-lever plan)
+  #1 moved the 6 inline > JL/>> CC threads OUT of the body (recorded above; body now
+     has 0 inline comments). #2 collapsed QA from 4 tellings → 1: kept the reframe
+     block's ①②③ summary, shortened THE SIDE DOOR, trimmed the QA/-folder body; the
+     full gate/state-line/TTL/checker live in fn/qa.md. 503 → 452 lines. #3-#6
+     (merge routing tables · compress Four-Phases manifest · dedup Workflow() blocks ·
+     keyword table → ref/) still PENDING JL.
