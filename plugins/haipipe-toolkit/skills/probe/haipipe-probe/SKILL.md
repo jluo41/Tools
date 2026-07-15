@@ -66,6 +66,7 @@ THE FOUR FORMS — a question and its answer, on each side of the wall:
 The probe file holds only the two BRIDGE ends — `q-executor:` (the question OUT) and `a-consumer:` (the answer BACK).
 The two far corners live elsewhere: Q-consumer in `## Why`, A-executor in the QA file's `## Answer`.
 The two arrows are the two loop steps: T1 = ① ORGANIZE (write `q-executor`), T2 = ⑤ INTERPRET (write `a-consumer`).
+Q-consumer, concretely: a PAPER's stage docs raise it under the `Q-Paper` section (was "Probes"); an application keeps the generic `Q-consumer`. Same corner, consumer-named.
 
 
 The probe file

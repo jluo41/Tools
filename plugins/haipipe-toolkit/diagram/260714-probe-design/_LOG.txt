@@ -320,3 +320,30 @@ JL comments (`> JL:`) that land in 01-04 move HERE once their edit is applied, v
   NOTE the route hint: the stage tags each residual section task|discovery at hand-off (it
   knows the question's nature) — no new persisted `route:` field was added (kept minimal;
   a field remains a possible future tightening).
+
+
+[2026-07-15 03:45 · SHIPPED] vocab: the stage-doc "Probes" SECTION → "Q-Paper"
+  JL: "for all the stage's ref/xxx-template ... change the Probes into Q-Paper."
+  The stage-doc section where a stage RAISES its own questions is the Q-consumer of the
+  2×2 — the paper's question before ① ORGANIZE strips it to a q-executor. Naming it for the
+  CONTENT (the paper's questions) not the MECHANISM (probes) makes the vocabulary legible
+  end-to-end, and DISAMBIGUATES the overloaded "probe": the PHASE (DPRC), the `1-probes/`
+  FOLDER + PPNN files, and this SECTION were three different "probe"s. Now: the stage raises
+  Q-Paper · the probe files answer them · the PROBE phase processes them.
+  Renamed in the 6 stage TEMPLATES (ref/*-template — JL's exact scope, and clean of the
+  parallel reformat pass):
+    seed-template · claims-template (heading + the "lives in the Q-Paper section" prose ref) ·
+    venue-template · display-template · section-template + outline-format
+    ("## Q-Paper proposed by this draft", incl. the checklist ref).
+  Anchored back to the 2×2 in the constitution's FOUR FORMS: "Q-consumer, concretely: a
+  paper's stage docs raise it under `Q-Paper`; an application keeps the generic `Q-consumer`."
+  DECISIONS (JL, via AskUserQuestion): sequencing = wire first then this; application-side
+  term = KEEP GENERIC Q-consumer (no coined Q-Intervention).
+  DEFERRED (NOT done — hot files): the SKILL.md BODY refs to the section still say "Probes"
+  (seed:177 · claims:234/362 · display:203/292 · section-edit:351 · venue:9 summary). Those
+  files are inside JL's live parallel reformat of the whole paper tree; editing them now
+  would clobber. Follow-up sweep once that pass settles, to make skill+template agree.
+  WRINKLE flagged: the DISPLAY stage's section mixes questions (S0/En) with RENDER dispatches
+  (Rn), so "Q-Paper" (= questions) is a looser fit there than for seed/claims/venue/section.
+  Renamed for cross-stage consistency; JL to override if display should keep its own label.
+  CHANGELOGs left as history (never rewritten).

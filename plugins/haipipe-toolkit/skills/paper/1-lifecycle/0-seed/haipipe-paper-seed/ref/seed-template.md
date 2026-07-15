@@ -32,7 +32,7 @@ Tentative Claim Shape
 <Any secondary shapes the paper may take, still hedged.>
 
 
-Probes
+Q-Paper
 ------
 
 **PP01 - <title> - <status>**
