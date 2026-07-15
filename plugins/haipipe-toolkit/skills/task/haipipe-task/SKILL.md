@@ -62,11 +62,13 @@ Project setup (Project-*/ProjX-* containers) lives in `/haipipe-project`.
 Commands
 --------
 
+Each verb's full contract lives in its own `fn/` file (cited below) — read that, do not re-derive from here.
+
 ```
-/haipipe-task plan <task-folder-path>                Phase 1: design the IPO contract
+/haipipe-task plan <task-folder-path>                Phase 1: design the IPO contract (fn/stage-plan.md)
 /haipipe-task build <task-folder-path>               Phase 2: implement the contract as code
 /haipipe-task execute <task-folder-path>              Phase 3: run the code (or human runs manually)
-/haipipe-task report <task-folder-path>               Phase 4: summarize results vs plan
+/haipipe-task report <task-folder-path>               Phase 4: summarize results vs plan (fn/stage-report.md)
 
 /haipipe-task <existing-task-folder-path>             full lifecycle (all 4 phases)
 /haipipe-task <existing-task-group-path>              iterate: full lifecycle on each child task-folder
@@ -95,43 +97,18 @@ Four Phases (code lifecycle)
 All four phases answer one question: **"is the implementation right?"**
 
 ```
-Phase 1: PLAN — the contract (what the script SHOULD do)
-  creates:   workflow/plan.yaml              task-level IPO (Run/Gate1/Gate2)
-             workflow/plan-script-<name>.yaml script-level IPO (type-specific phases)
-  reads:     *.py (if exists),
-             **/haipipe-task-for-<type>/ref/workflow-plan-sample.yaml (nested under its domain folder)
-  agents:    creator drafts plan → reviewer checks IPO compliance → ↺ revise
-
-Phase 2: BUILD — the implementation (code that matches the plan)
-  creates:   {NN}_{task_name}.py             main script (or fixes existing)
-             configs/<run>.yaml              frozen parameters
-             runs/<run>.sh                   papermill wrapper
-             notebooks/                      empty dir (populated at runtime)
-             CODE_REVIEW.md                  Gate 1 review (reviewer creates)
-  reads:     workflow/plan.yaml, haipipe-task/ref/authoring-conventions.md
-  agents:    creator writes code → reviewer does Gate 1 code review → ↺ revise
-  after:     human can run directly: bash runs/<run>.sh
-
-Phase 3: EXECUTE — just run (no creation, no modification)
-  generates: results/<run>/metrics.json      output metrics
-             results/<run>/runtime.yaml      run status/timing
-             results/<run>/*.md, *.csv       other outputs
-             notebooks/<run>.ipynb           papermill execution record
-  runs:      bash runs/<run>.sh (human or autoExecute)
-  agents:    none — this is a run, not an agent task
-
-Phase 4: REPORT — summarize (what actually happened vs the plan)
-  creates:   workflow/report.yaml            task-level report mirroring plan
-             workflow/report-script-<name>.yaml script-level report
-             RUN_AUDIT.md                    Gate 2 review (reviewer creates)
-  completes: QA/<n>-<slug>.md                the CLAIM raised at the qa gate's ③ decision
-                                             becomes the RECEIPT here: `state: answered`
-                                             + the `## Answer` body. On gate ② (digest) it
-                                             is CREATED here, once, complete.
-                                             (see "The QA/ folder" below)
-  reads:     workflow/plan*.yaml, results/<run>/*, CODE_REVIEW.md
-  agents:    creator drafts report → reviewer checks accuracy → ↺ revise
+Plan (规)     creates   workflow/plan.yaml + workflow/plan-script-<name>.yaml (task + script IPO)
+              agents    creator drafts → reviewer checks IPO compliance → ↺
+Build (建)    creates   <NN>_<task>.py · configs/<run>.yaml · runs/<run>.sh · notebooks/ ·
+                        CODE_REVIEW.md (Gate 1)
+              agents    creator writes → reviewer Gate-1 review → ↺   · then human: bash runs/<run>.sh
+Execute (行)  generates results/<run>/{metrics.json, runtime.yaml, *.md, *.csv} · notebooks/<run>.ipynb
+              agents    none — just `bash runs/<run>.sh` (human or autoExecute)
+Report (报)   creates   workflow/report.yaml + report-script-<name>.yaml · RUN_AUDIT.md (Gate 2)
+              completes QA/<n>-<slug>.md when the qa gate ③ claimed one (see "The QA/ folder")
+              agents    creator drafts → reviewer checks accuracy → ↺
 ```
+Each phase READS the prior phase's output + its type's `ref/` (plan-sample · authoring-conventions · plan-schema); the exact per-phase reads live in `fn/stage-plan.md` and `fn/stage-report.md`.
 
 
 File ownership is strict: 
@@ -217,28 +194,6 @@ Author convention: `<TASK_NAME>.py` MUST have an `Intent` section in its docstri
 
 ---
 
-Dispatch Table
---------------
-
-Each verb's inputs and full contract live in its own `fn/` file — read that, do not re-derive from here.
-
-```
-Scope                  Owner / route                         Function file
----------------------- ------------------------------------- ----------------------
-task-folder            dispatch by task-type to its           (the 9-row type table
-                       specialist                              at the top of this file)
-task-group (iterate)   this skill: iterate children           Step 3d
-task-group (scaffold)  this skill                             fn/task-group.md
-qa                     this skill                             fn/qa.md
-scan-status            this skill                             fn/scan-status.md
-run                    this skill                             fn/run.md
-audit                  this skill                             fn/audit.md
-plan                   this skill                             fn/stage-plan.md
-report                 this skill                             fn/stage-report.md
-```
-
----
-
 Step-by-Step Protocol
 ----------------------
 
@@ -306,32 +261,15 @@ Step 3a (scope=task-folder only): Task-type inference cascade.
   Confidence: high. AUTO → accept; log "inferred from script: <type>". Interactive → propose; one-line ASK to confirm.
   NOTE: never infer task-type from the group letter (letters are project-specific — see the NOTE under the type table).
 
-  (3) KEYWORD-INFERRED — scan free-text args for keywords (table below). First match (left-to-right in args) wins.
-
-        ┌────────────┬─────────────────────────────────────────────────────────────────┐
-        │ raw        │ raw · ingest · extract table · databricks pull · catalog ·      │
-        │            │ 0-RawDataStore · database 拿数据                                     │
-        │ data       │ build · source · record · dataset · cgm ·                       │
-        │            │ pipeline 1·2·3·4 · fn build                                     │
-        │ algo       │ smoke · smoke-test · verify algorithm · test algo · algo dev ·  │
-        │            │ algo class · forward pass · loss class                          │
-        │ fit        │ train · training · fit · sweep · hyperparam · lr · epoch ·      │
-        │            │ model size · pretrain · finetune · ft                           │
-        │ eval       │ eval · evaluate · evaluation · score · scoring · metrics ·      │
-        │            │ mae · rmse · accuracy · horizon                                 │
-        │ display    │ figure · table · plot · paper figure · paper table · panel ·    │
-        │            │ main figure · ablation table                                    │
-        │ individual │ subject · patient · individual · one user · single subject ·    │
-        │            │ cgm trace · treatment event · view                              │
-        │ agent      │ agent · llm · prompt · claude · gpt · tool use · system prompt  │
-        │ endpoint   │ endpoint · deploy · package · serve · sagemaker · databricks ·  │
-        │            │ mlflow · Endpoint_Set · inference api                           │
-        ├────────────┼─────────────────────────────────────────────────────────────────┤
-        │ STATA      │ stata · do-file · .do · cms · case-pipeline · trigger cases ·   │
-        │ (engine)   │ analysis table · reg · regression · ols · iv · neat · bene_info │
-        └────────────┴─────────────────────────────────────────────────────────────────┘
-
-  Stata engine-detect → DELEGATE: hand off to `/haipipe-task-for-stata` which owns stage disambiguation: `Skill("haipipe-task-for-stata", args="<remaining_args> [--auto]")`
+  (3) KEYWORD-INFERRED — scan free-text args; first match (left-to-right) wins. Quick map
+      (FULL keyword lists per type → `ref/type-inference.md`):
+        raw·ingest·extract·catalog → raw       · build·source·record·dataset·cgm → data
+        smoke·algo·forward-pass → algo          · train·fit·sweep·finetune → fit
+        eval·score·metrics·mae·rmse → eval      · figure·table·plot·panel → display
+        subject·patient·cgm-trace → individual  · agent·llm·prompt·claude → agent
+        endpoint·deploy·package·serve → endpoint
+      STATA (stata·.do·cms·case·reg·ols·iv) → DELEGATE to `/haipipe-task-for-stata`
+        (it owns stage disambiguation): `Skill("haipipe-task-for-stata", args="… [--auto]")`.
   Confidence: medium. AUTO → accept. Interactive → propose; one-line ASK to confirm.
 
   (4) STILL UNKNOWN: AUTO → status: blocked. Interactive → ASK with all 9 type options (plus Stata engine).
@@ -393,17 +331,8 @@ Step 3d: Task-group iteration (scope=task-group-iterate).
 
   (3) ITERATE — for each child task-folder, in order:
       - Log: `── [i/N] <child_name> ──`
-      - Call Workflow with the existing `task-lifecycle.workflow.js`, passing the child path and the requested stages:
-        ```
-        Workflow({
-          scriptPath: "Tools/plugins/haipipe-toolkit/skills/task/haipipe-task/ref/task-lifecycle.workflow.js"
-        }, {
-          task_folder: "<group-path>/<child>/",
-          type: null,
-          stages: <requested stages or ["plan", "build", "execute", "report"]>,
-          autoExecute: false
-        })
-        ```
+      - Call the SAME `Workflow(...)` as Step 3c, with `task_folder: "<group-path>/<child>/"`,
+        `type: null`, and the requested `stages` (default all four).
       - Collect the result. If a child fails (status=failed), log the failure and continue to the next child — do NOT stop the group iteration.
 
   (4) AGGREGATE — after all children complete, emit a group summary: one `[i/N] <child> —
