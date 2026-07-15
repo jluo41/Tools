@@ -48,7 +48,7 @@ total: <p> ¶ · <s> sentences · ~<w> words   (venue budget for this section: <
 
 ---
 
-## Probes proposed by this draft
+## Q-Paper proposed by this draft
 
 <tpl: derived FROM the prose — every {VAL:?} and \cite{TOADD} above appears here with its EXPECTED source. Pointer-following first: if the draft already sees the pointer in the paper's own registries, say `-> paper-local: <file>` and PROBE closes it `answered-local` — nothing is dispatched.>
 
