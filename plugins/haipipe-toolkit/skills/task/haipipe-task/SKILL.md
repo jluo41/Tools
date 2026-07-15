@@ -70,9 +70,9 @@ Commands
 /haipipe-task execute <task-folder-path>              Phase 3: run the code (or human runs manually)
 /haipipe-task report <task-folder-path>               Phase 4: summarize results vs plan
 
-/haipipe-task <existing-task-folder-path>             full lifecycle (all 4 stages)
+/haipipe-task <existing-task-folder-path>             full lifecycle (all 4 phases)
 /haipipe-task <existing-task-group-path>              iterate: full lifecycle on each child task-folder
-/haipipe-task <stage> <existing-task-group-path>      iterate: that stage on each child task-folder
+/haipipe-task <phase> <existing-task-group-path>      iterate: that phase on each child task-folder
 
 /haipipe-task task-folder <type> [args...]            scaffold a NEW task-folder via type specialist
 /haipipe-task task-group <group-path|name>            scaffold a NEW task-group (fn/task-group.md)
@@ -149,7 +149,7 @@ So QA sits ONE LEVEL ABOVE the lifecycle: ①/② read what already exists, ③ 
 所以它更像是 workflow 上面一层的东西，包裹这个phase。你想想这个 logic。
 >> CC 22:40: [SOLVED] Agreed — your framing is better; rewrote it above. QA is NOT a 5th phase; it is the ENTRY-DECISION layer that WRAPS the four phases and points the direction — ①/② read what already exists, ③ decides whether (and how deep) to enter Plan→Build→Execute→Report. Exactly fn/qa.md's gate.
 > JL: I still have a question: for Plan, Build, Execute, Report, do we call them "Stage" or call them "Phase"? I prefer to use Phase. 
->> CC 22:40: [DONE in this file · specialist sweep PENDING] Phase — it reads right with "QA wraps the phases" above. THE LOGIC (one snag): three things want two words — (a) the lifecycle P/B/E/R, (b) the IPO chunks inside a plan.yaml (Run/Gate1/Gate2), (c) the 6-stage DATA pipeline (0-RawDataStore…6-EndpointStore). haipipe-workflow already reserves "Phase" for (b) and "Stage" for (c). RESOLUTION: P/B/E/R = PHASE (your call); "Stage" stays for the 6-stage data pipeline ONLY; Run/Gate1/Gate2 remain the plan's internal IPO detail. Renamed P/B/E/R Stage→Phase in THIS file; the /haipipe-task-for-* scaffold docs still say "Stage 1: PLAN" — that careful cross-file sweep (must NOT touch data-pipeline Stage 0-6) is the next step. NOTE: the dispatch machinery + the workflow.js `stages:` PARAM stay `stages:` for now — that's CODE, renamed only in the deeper sweep. (haipipe-workflow calls P/B/E/R "acts" — cross-skill alignment left for R1.)
+>> CC 22:40: [SOLVED, executor-wide] Phase — P/B/E/R are the executor-side phases (mirroring DPRC on the paper side). Renamed across the DOCS of BOTH executors + the pattern: task, discovery, and haipipe-workflow ("acts"→"phase"). KEPT as "Stage": the 6-stage DATA pipeline (0-RawDataStore…6-EndpointStore), stata's cms/case/data/reg four stages, the "3-stage testing ladder", and the workflow.js `stages:` CODE param + dispatch-machinery `stages` (code, not docs). Residual: inside haipipe-workflow, "Phase" now labels BOTH the lifecycle P/B/E/R and the IPO chunk (Run/Gate1/Gate2) — the known R1 namespace overlap, left for a dedicated pass.
 
 The `workflow/` folder is the task's observability surface: Plan = intent, Report = evidence, same IPO shape at both levels (schema: `task/haipipe-workflow/ref/plan-schema.md`).
 
@@ -305,12 +305,12 @@ Step 2: Resolve scope. Cascade:
   (0.6) QUESTION DOOR `qa` — first positional is `qa` → read `fn/qa.md` and run it inline (the ①②③ gate; remaining args = the question, an OPTIONAL task-folder, OPTIONAL `--check-only`). Not a lifecycle scope: do not continue to Step 3. Stop.
         `--check-only` = DETECTION only (report the path, write nothing incl. NO CLAIM, never fall through to ③) — the probe MATCH step's free pass. Gate ①'s state-line branches, the strip-any-external-id rule, and the identical discovery-twin spelling all live in `fn/qa.md`.
   (1) explicit stage command (`plan` / `build` / `execute` / `report`) as first positional → check the path argument:
-      - path is an existing task-folder → scope=single-stage on that folder (Step 3c).
+      - path is an existing task-folder → scope=single-phase on that folder (Step 3c).
       - path is an existing task-group → scope=task-group-iterate with stages=[that stage] (Step 3d).
   (2) `task-folder` as first positional → scope=new task-folder (scaffold). `task-group` as first positional → scope=new task-group: read `fn/task-group.md` and run it inline. Stop.
   (3) first positional is a known task-type (`data` / `raw` / `algo` / `fit` / `eval` / `display` / `individual` / `agent` / `endpoint`) → scope=task-folder, task-type=that positional.
   (4) first positional is a path to an existing task-group → scope=task-group-iterate (Step 3d).
-  (5) first positional is a path to an existing task-folder → scope=full lifecycle (all 4 stages via Step 3c).
+  (5) first positional is a path to an existing task-folder → scope=full lifecycle (all 4 phases via Step 3c).
   (6) no args at all → default:
       - cwd is inside a task-folder → scope=full lifecycle (Step 3c).
       - cwd is inside a task-group (but not inside a task-folder) → scope=task-group-iterate (Step 3d).
@@ -331,7 +331,7 @@ Step 3: Branch by scope:
   - scope=build → run Stage 2 only (creator writes code, reviewer does Gate 1)
   - scope=execute → run Stage 3 only (bash runs/<run>.sh)
   - scope=report → run Stage 4 only (creator drafts report.yaml, reviewer checks)
-  - scope=full lifecycle → run all 4 stages via Step 3c (Workflow tool)
+  - scope=full lifecycle → run all 4 phases via Step 3c (Workflow tool)
   - scope=task-group-iterate → enumerate children, run per-child via Step 3d
   - scope=task-folder (new) → resolve task-type via Step 3a cascade, then Skill("haipipe-task-for-<type>", args="<remaining_args> [--auto]")
 
@@ -398,7 +398,7 @@ Step 3b (scope=task-folder only): Parent existence cascade.
   Only after both checks pass: `Skill("haipipe-task-for-<type>", args="<remaining_args> --project-id <PROJECT_ID> --group <group_id> [--auto]")`
 
 
-Step 3c: Full lifecycle or single stage.
+Step 3c: Full lifecycle or single phase.
 
   Run via the Workflow tool:
 
@@ -413,7 +413,7 @@ Step 3c: Full lifecycle or single stage.
   })
   ```
 
-  For single-stage commands (`/haipipe-task plan <path>`), pass only that stage: `stages: ["plan"]`.
+  For single-phase commands (`/haipipe-task plan <path>`), pass only that phase: `stages: ["plan"]`.
 
   All generated plan/report files follow the haipipe-workflow IPO schema at `task/haipipe-workflow/ref/plan-schema.md`. Every plan YAML starts with an IPO tree preview comment with emojis.
 
@@ -455,7 +455,7 @@ Step 3d: Task-group iteration (scope=task-group-iterate).
       - Collect the result. If a child fails (status=failed), log the failure and continue to the next child — do NOT stop the group iteration.
 
   (4) AGGREGATE — after all children complete, emit a group summary: one `[i/N] <child> —
-      ok|failed (<per-stage verdicts>)` line per child, then an `Overall: N ok, M failed` tally.
+      ok|failed (<per-phase verdicts>)` line per child, then an `Overall: N ok, M failed` tally.
 
 
 Step 4: Emit the structured tail:
@@ -473,10 +473,10 @@ Invocation examples
 
 ```
 # the SAME path is a task-FOLDER or a task-GROUP; the verb is identical, the scope differs
-/haipipe-task       .../tasks/B03_band4/01_band4    task-FOLDER: all 4 stages
+/haipipe-task       .../tasks/B03_band4/01_band4    task-FOLDER: all 4 phases
 /haipipe-task plan  .../tasks/B03_band4/01_band4    task-FOLDER: one stage
-/haipipe-task       .../tasks/B03_band4            task-GROUP:  all 4 stages on EACH child
-/haipipe-task plan  .../tasks/B03_band4            task-GROUP:  that stage on EACH child
+/haipipe-task       .../tasks/B03_band4            task-GROUP:  all 4 phases on EACH child
+/haipipe-task plan  .../tasks/B03_band4            task-GROUP:  that phase on EACH child
 
 # scaffold a NEW task-folder (dispatches to the type specialist)
 /haipipe-task task-folder data

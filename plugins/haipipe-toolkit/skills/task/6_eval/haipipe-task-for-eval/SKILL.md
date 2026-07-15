@@ -16,7 +16,7 @@ Skill: haipipe-task-for-eval
 Scaffolds an **evaluation task-folder**.
 Consumes a trained ModelInstance + an AIData split; produces metrics + diagnostic plots under `results/<run>/`.
 
-**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the `<TASK>.py` body).
+**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Phase 2: Build, then authors the `<TASK>.py` body).
 Always end with the structured return block (status / task_folder / run_name / files).
 
 

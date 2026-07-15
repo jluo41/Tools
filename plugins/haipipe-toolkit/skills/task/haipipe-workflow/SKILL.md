@@ -46,7 +46,7 @@ Every Step tracks `files_in` (what it reads) and `files_out` (what it creates).
 PLAN  ──▶  BUILD  ──▶  EXECUTE  ──▶  REPORT
 ```
 
-| Act | What | Output |
+| Phase | What | Output |
 |-----|------|--------|
 | **Plan** | Design the IPO. Iterate rounds until frozen. | `plan.yaml` |
 | **Build** | Generate executable script from frozen plan. | `.workflow.js` |

@@ -30,10 +30,10 @@ The lifecycle (uniform across 3 types)
 --------------------------------------
 
 ```
-Stage 1: PLAN      creator writes discovery.yaml   → reviewer checks plan
-Stage 2: BUILD     creator authors instrument (opt) → reviewer checks instrument
-Stage 3: EXECUTE   creator runs bucket workers      → reviewer checks output
-Stage 4: REPORT    creator writes report block      → reviewer checks report
+Phase 1: PLAN      creator writes discovery.yaml   → reviewer checks plan
+Phase 2: BUILD     creator authors instrument (opt) → reviewer checks instrument
+Phase 3: EXECUTE   creator runs bucket workers      → reviewer checks output
+Phase 4: REPORT    creator writes report block      → reviewer checks report
                    + the QA file, when this run     → + the QA-file gate + the
                      answered a question               bank-purity check
 ```

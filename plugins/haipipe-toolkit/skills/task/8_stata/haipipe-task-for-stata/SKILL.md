@@ -19,7 +19,7 @@ Each stage scaffolds a different pipeline phase; all share one engine contract (
 
 Two modes: **BUILD** (scaffold task folders) and **SERVER CHECK** (validate before/after CMS server migration).
 
-**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the worker `.do` files).
+**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Phase 2: Build, then authors the worker `.do` files).
 Always end with the structured return block (status / task_folder / run_name / files).
 
 

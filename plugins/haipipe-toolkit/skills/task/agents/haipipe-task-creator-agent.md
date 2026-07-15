@@ -28,13 +28,13 @@ metadata:
 
 Creator agent for ALL stages of the task lifecycle that need artifact production. Always paired with `haipipe-task-reviewer-agent` in a creator→reviewer loop.
 
-## The 4-stage lifecycle
+## The 4-phase lifecycle
 
 ```
-Stage 1: PLAN      creator drafts plan.yaml        → reviewer checks plan     → loop if revise
-Stage 2: BUILD     creator writes/fixes code+config → reviewer checks code     → loop if revise
-Stage 3: EXECUTE   (run, not creator)               → reviewer checks results  → loop if fail
-Stage 4: REPORT    creator drafts report.yaml       → reviewer checks report   → loop if revise
+Phase 1: PLAN      creator drafts plan.yaml        → reviewer checks plan     → loop if revise
+Phase 2: BUILD     creator writes/fixes code+config → reviewer checks code     → loop if revise
+Phase 3: EXECUTE   (run, not creator)               → reviewer checks results  → loop if fail
+Phase 4: REPORT    creator drafts report.yaml       → reviewer checks report   → loop if revise
 ```
 
 This agent is the **creator** half of stages 1, 2, and 4. Stage 3 (Execute) has no creator — it's a run, but the reviewer still evaluates the results.
@@ -58,7 +58,7 @@ loop_contract:    creator produces → reviewer returns pass|warn|fail|revise
 - run the task → orchestrator / workflow engine
 - decide whether to advance → orchestrator reads reviewer verdict
 
-## Stage 1: PLAN (create plan.yaml)
+## Phase 1: PLAN (create plan.yaml)
 
 Input: task-folder path + detected type.
 Output: `workflow/plan.yaml` + `workflow/plan-script-<name>.yaml`.
@@ -85,7 +85,7 @@ phases: N
 steps: M
 ```
 
-## Stage 2: BUILD (create/fix code + configs)
+## Phase 2: BUILD (create/fix code + configs)
 
 Two modes: **scaffold** (new task) or **fix** (existing task with structural issues).
 
@@ -121,7 +121,7 @@ type: <detected>
 files: [created or modified files]
 ```
 
-## Stage 4: REPORT (create report.yaml — and the QA digest, when one is due)
+## Phase 4: REPORT (create report.yaml — and the QA digest, when one is due)
 
 Input: task-folder path + plan files + execution results + reviewer verdicts from stages 1-3.
 Output: `workflow/report.yaml` + `workflow/report-script-<name>.yaml` — and, when a digest is due, `QA/<n>-<slug>.md`.

@@ -74,7 +74,7 @@ runs/*.sh exists     → Python dialect (may also have .ps1)
 
 ---
 
-## STAGE 1: Plan check → PLAN_REVIEW.md
+## PHASE 1: Plan check → PLAN_REVIEW.md
 
 ### What I check (plan.yaml soundness)
 
@@ -194,7 +194,7 @@ Write CODE_REVIEW.md + hand-port file list.
 
 ---
 
-## STAGE 4: Report check → REPORT_REVIEW.md
+## PHASE 4: Report check → REPORT_REVIEW.md
 
 ### What I check (report.yaml fidelity)
 

@@ -82,7 +82,7 @@ resolve:
            "spine-wide", "always ... before done", or the same idea with no
            trigger word at all (e.g. "the report.yaml never mirrors plan.yaml
            shape" = a lifecycle contract rule -> fallback, NOT -2_nn even mid-nn-task).
-         - names a known cross-cutting concern: the 4-stage lifecycle
+         - names a known cross-cutting concern: the 4-phase lifecycle
            (Plan/Build/Execute/Report), the IPO contract, the task-folder
            scaffold, run conventions (runs/*.sh, papermill, configs/), the
            creator-reviewer loop discipline, stage file-ownership, anything
@@ -111,7 +111,7 @@ agent task (task-for-agent)                                   -> 9_agent
 creator/orchestrator/reviewer agent, dispatch, gate 1,
 gate 2, code review, run audit                                -> agents
 --------------------------------------------------------------------------
-NO MATCH  (cross-cutting: the 4-stage lifecycle Plan/Build/Execute/Report,
+NO MATCH  (cross-cutting: the 4-phase lifecycle Plan/Build/Execute/Report,
           IPO contract, task-folder scaffold, run conventions, anything true
           across all domains) ................. -> orchestrator fallback (this folder)
 ```
