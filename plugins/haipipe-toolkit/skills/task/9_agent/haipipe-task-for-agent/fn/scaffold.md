@@ -1,7 +1,8 @@
 fn-scaffold: Scaffold an LLM-agent task-folder
 =================================================
 
-Call an LLM agent (Claude / GPT) with prompts + tools for an analysis, summarization, or audit task. Group letter default: **F** (agent).
+Call an LLM agent (Claude / GPT) with prompts + tools for an analysis, summarization, or audit task.
+Group letter default: **F** (agent).
 
 Output: `tasks/F{NN}_<group>/{NN}_<task_name>/`.
 
@@ -50,7 +51,8 @@ Note: `prompts/` is unique to agent tasks — keeps prompt content diff-friendly
 Step 4 — Seed config + prompts
 -------------------------------
 
-Copy `ref/config-seed.yaml` to `configs/agent_<name>.yaml`. Fill in:
+Copy `ref/config-seed.yaml` to `configs/agent_<name>.yaml`.
+Fill in:
 - `_meta:` block.
 - `model:`, `max_tokens:`, `temperature:`.
 - `prompts.system:` and `prompts.user:` (paths to prompts/ files).
@@ -70,8 +72,8 @@ Set `TASK_NAME="{NN}_{task_name}"`.
 Step 6 — Cross-skill link
 --------------------------
 
-Engine: `/haipipe-task-llm-engine` (owns code/haiutils/llm_engine/, the LLM call runtime these tasks import). Adjacent: `/claude-api` for Claude
-SDK patterns (caching, tool-use loops, retries).
+Engine: `/haipipe-task-llm-engine` (owns code/haiutils/llm_engine/, the LLM call runtime these tasks import).
+Adjacent: `/claude-api` for Claude SDK patterns (caching, tool-use loops, retries).
 
 
 Step 7 — Report
@@ -98,8 +100,7 @@ MUST NOT
 First-run gate
 ---------------
 
-`runs/<RUN>.sh` blocks execution if `CODE_REVIEW.md` is missing or
-stale (gate inherited from `../../../haipipe-task/ref/run-sh-template.sh`).
+`runs/<RUN>.sh` blocks execution if `CODE_REVIEW.md` is missing or stale (gate inherited from `../../../haipipe-task/ref/run-sh-template.sh`).
 For the first run after this scaffold, do ONE of:
 
   1. **Recommended** — run the haipipe-task-reviewer-agent (Gate 1) on this
@@ -117,5 +118,4 @@ For the first run after this scaffold, do ONE of:
      ```
      (Only appropriate for throwaway / disposable runs.)
 
-Surface this to the user in the orchestrator's `next:` line so they
-know **before** trying to launch.
+Surface this to the user in the orchestrator's `next:` line so they know **before** trying to launch.
