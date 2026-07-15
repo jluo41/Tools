@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-claims
-description: "Stage orchestrator for the paper folder's 0-lifecycle/1-claims/1-claims.md + _LOG_1-claims.md: the venue-FREE claim/evidence inventory and evidence campaign brain, and THE HOME OF EVERY CLAIM'S STATUS (supported | refuted | inconclusive, with confidence and claim_type). Three sections: Hypotheses (what we test), Claims (what must be true, with status and → PP reference), Probes (the evidence plan, one per PP, full detail). Plans what evidence to collect, raises the questions the PROBE phase commissions to the task/discovery bank, and receives each answer as a probe section's `reading:`. Markdown only. Reads the RESOURCE stage's 1-resource.md: input/method/fit are settled there; claims owns evaluate/task-for-eval and marks a claim without its resource BLOCKED-ON-RESOURCE. Use for claim ledger, claims, supported/weak/GAP, blocked-on-resource, claim gap, evidence plan, probes, 1-claims."
+description: "Stage orchestrator for the venue-FREE claim ledger (0-lifecycle/1-claims/) -- THE HOME OF EVERY CLAIM'S STATUS (supported | refuted | inconclusive, + confidence and claim_type). Three sections: Hypotheses, Claims (status + → PP reference), Probes (the evidence plan). Owns evaluate/task-for-eval; raises the questions the PROBE phase commissions; marks a claim BLOCKED-ON-RESOURCE when its resource is unsettled. Use for claim ledger, claims, supported/weak/GAP, blocked-on-resource, claim gap, evidence plan, probes, 1-claims."
 argument-hint: "[paper-dir] [--backfill <PPNN>] [--source <path>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "5.1.1"
   last_updated: "2026-07-14"
-  summary: "Claims stage orchestrator. The evidence campaign brain: plans evidence needs, raises the questions, receives what returns. Three sections (Hypotheses, Claims, Probes) + Evidence Campaign summary. Drives phases (draft -> probe -> revise -> check) internally. Receives from the RESOURCE stage: claims owns evaluate/task-for-eval only; input/method/fit are settled in 1-resource.md, and a claim without its resource is BLOCKED-ON-RESOURCE. v5.1 (probe redesign, Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14; mirrors haipipe-application-claims 5.2.0): THE CLAIM LEDGER IS NOW THE ONLY HOME OF A CLAIM'S STATUS. R7 killed the probe '## Verdict' block and the 'verdicted' state, so supported|refuted|inconclusive + confidence + claim_type land HERE, per-claim, per-paper, private — a probe section's `reading:` FEEDS this ledger and no longer carries a judgment of its own. Probe files live at 1-probes/PPNN_<topic>.md (one file per TOPIC, one SECTION per question); the per-stage _PROBE/ folder and the 1-probe-plans/ index are RETIRED. The PROBE phase runs the five-step loop (ORGANIZE -> MATCH -> DISPATCH -> POINT -> INTERPRET) and commissions to the task/discovery orchestrators direct (the probe gateway is retired). --backfill reads the section's `reading:`, not a verdict block. Ledger PP entries carry a DERIVED `State:` (planned|commissioned|answered|read), never the deleted `dispatched`. v5.1.1: every shared-convention pointer was off by one `../` — `../../PHILOSOPHY.md` / `../../wiki/<page>.md` resolved to 1-lifecycle/, which holds neither. The stage skills sit TWO levels under skills/paper/ (1-lifecycle/<N>-<stage>/<skill>/), so the correct depth is `../../../`. Every required-read at the top of this skill silently failed. Repointed."
+  summary: "Claims stage orchestrator. The evidence campaign brain: plans evidence needs, raises the questions, receives what returns. Three sections (Hypotheses, Claims, Probes) + Evidence Campaign summary. Drives phases (draft -> probe -> revise -> check) internally. Receives from the RESOURCE stage: claims owns evaluate/task-for-eval only; input/method/fit are settled in 1-resource.md, and a claim without its resource is BLOCKED-ON-RESOURCE. v5.1 (probe redesign, Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14; mirrors haipipe-application-claims 5.2.0): THE CLAIM LEDGER IS NOW THE ONLY HOME OF A CLAIM'S STATUS. R7 killed the probe '## Verdict' block and the 'verdicted' state, so supported|refuted|inconclusive + confidence + claim_type land HERE, per-claim, per-paper, private — a probe section's `a-consumer:` FEEDS this ledger and no longer carries a judgment of its own. Probe files live at 1-probes/PPNN_<topic>.md (one file per TOPIC, one SECTION per question); the per-stage _PROBE/ folder and the 1-probe-plans/ index are RETIRED. The PROBE phase runs the five-step loop (ORGANIZE -> MATCH -> DISPATCH -> POINT -> INTERPRET) and commissions to the task/discovery orchestrators direct (the probe gateway is retired). --backfill reads the section's `a-consumer:`, not a verdict block. Ledger PP entries carry a DERIVED `State:` (planned|commissioned|answered|read), never the deleted `dispatched`. v5.1.1: every shared-convention pointer was off by one `../` — `../../PHILOSOPHY.md` / `../../wiki/<page>.md` resolved to 1-lifecycle/, which holds neither. The stage skills sit TWO levels under skills/paper/ (1-lifecycle/<N>-<stage>/<skill>/), so the correct depth is `../../../`. Every required-read at the top of this skill silently failed. Repointed."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -32,13 +32,13 @@ Claims is the **evidence campaign brain**. It does three jobs in sequence:
                QA corpus, and commissions only what is missing to tasks/ or discoveries/
                claims writes the NEED, never the execution spec
 
-3. COLLECT     answers come back as a section's `reading:` at INTERPRET
+3. COLLECT     answers come back as a section's `a-consumer:` at INTERPRET
                THE STATUS LANDS HERE: supported | refuted | inconclusive
                verified numbers go to _VALUES_
                claims RECEIVES evidence, never PRODUCES it
 ```
 
-**THE CLAIM'S STATUS LIVES IN THIS LEDGER, AND NOWHERE ELSE** (R7, 2026-07-14). A probe file does not judge — it carries the evidence's MEANING for this paper (its `reading:`), and that is all. The judgment — `supported | refuted | inconclusive`, plus `confidence` and `claim_type` — is written HERE, per-claim, private to this paper, by the author reading the answered QA file. Two papers reading the SAME bank fact may reach different judgments about their own claims, and that is correct: the fact is shared, the judgment is not.
+**THE CLAIM'S STATUS LIVES IN THIS LEDGER, AND NOWHERE ELSE** (R7, 2026-07-14). A probe file does not judge — it carries the evidence's MEANING for this paper (its `a-consumer:`), and that is all. The judgment — `supported | refuted | inconclusive`, plus `confidence` and `claim_type` — is written HERE, per-claim, private to this paper, by the author reading the answered QA file. Two papers reading the SAME bank fact may reach different judgments about their own claims, and that is correct: the fact is shared, the judgment is not.
 💀 The probe `## Verdict` block and the `verdicted` state are DELETED. Do not write either, and do not wait for one.
 
 Read first: `../../../PHILOSOPHY.md`, `../../../wiki/04-lifecycle-map.md`, `../../../wiki/11-delivery-need.md`, `../../../wiki/02-comment-lifecycle.md`.
@@ -73,7 +73,7 @@ Evidence Campaign              dispatch order + summary (compact overview)
 
 No separate Hypothesis-Claim Alignment section. The alignment is in the tags: `C1 (H1)`, `PP03 (C1/C3/C7)`.
 
-**The judgment fields (written HERE, at INTERPRET, when a probe section's `reading:` lands):**
+**The judgment fields (written HERE, at INTERPRET, when a probe section's `a-consumer:` lands):**
 
 ```text
 status       supported | refuted | inconclusive      (the enum; nothing else is a status)
@@ -95,7 +95,7 @@ The ledger's own progress vocabulary (`supported` · `weak` · `GAP` · `BLOCKED
 - [ ] No unaddressed GAP without an evidence plan in the Probes section and a question SECTION in 1-probes/
 - [ ] No claim asserted whose resource demand row (in `0-lifecycle/1-resource/1-resource.md`) has no resource — that claim is `BLOCKED-ON-RESOURCE`, and it names the `N<n>` it waits on
 - [ ] No pointer that RESOURCE explicitly DECLINED to claims (per `0-lifecycle/1-resource/_LOG_1-resource.md`) is left unconsumed here — each is either a PP entry in Probes or explicitly declined in `_LOG`. Seed's `[FORWARD -> ...]` pointers themselves are NOT checked here: RESOURCE is their sole consumer, and a pointer resource consumed is DONE
-- [ ] Every supported claim has both stage 1 (file+number exist) and stage 2 (a probe SECTION whose `reading:` is written and whose `target:` QA file RESOLVES on disk)
+- [ ] Every supported claim has both stage 1 (file+number exist) and stage 2 (a probe SECTION whose `a-consumer:` is written and whose `target:` QA file RESOLVES on disk)
 - [ ] Hypotheses section with venue-neutral H1, H2, H3
 - [ ] Every claim has its own `**C<n>**` sub-item with status and probe reference
 - [ ] Every probe has its own `**PP<nn>**` sub-item with full evidence plan
@@ -254,7 +254,7 @@ Two rules that follow:
 - **The evaluation probe settles the claim.** A claim's evidence pointer names the eval probe, which chains back fit <- data. Fit makes the model; eval makes the evidence. (A bundled fit+eval probe entangles the verdict — split them.)
 - **Task settles claims; discovery is reserved for method-investigation and external data/context.** Discovery alone never settles an internal experimental claim; it feeds the method (`task-for-algo`) or supplies an external cohort/citation.
 
-When a probe section's `reading:` lands, write here:
+When a probe section's `a-consumer:` lands, write here:
 - The claim's status line — `supported | refuted | inconclusive` + confidence + claim_type. THIS is where a claim's status lives.
 - `_VALUES_` with the verified number.
 - The evidence pointer: the section's `target:`, the path of the answering QA file, which must RESOLVE on disk.
@@ -266,7 +266,7 @@ When a probe section's `reading:` lands, write here:
 ## Ledger Maintenance
 
 - New claim: add a `**C<n>**` sub-item in Claims, set status from the cited source (default `GAP`), add a probe entry in Probes.
-- `--backfill <probe-ref>`: **THIS LEDGER IS THE ONLY HOME OF A CLAIM'S STATUS.** There is no probe verdict to read — `## Verdict` and the `verdicted` state are DELETED (R7). Read the probe SECTION's `reading:` (its interpretation, in this paper's vocabulary) and, for a `mode: full` section, the answered QA file it points at. Write `supported | refuted | inconclusive` + confidence + claim_type HERE, per-claim, private to this paper. The EVIDENCE POINTER is the section's `target:` — the path of the answering QA file (`tasks|discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md`), which must RESOLVE on disk. Record the number in `_VALUES_`.
+- `--backfill <probe-ref>`: **THIS LEDGER IS THE ONLY HOME OF A CLAIM'S STATUS.** There is no probe verdict to read — `## Verdict` and the `verdicted` state are DELETED (R7). Read the probe SECTION's `a-consumer:` (its interpretation, in this paper's vocabulary) and, for a `mode: full` section, the answered QA file it points at. Write `supported | refuted | inconclusive` + confidence + claim_type HERE, per-claim, private to this paper. The EVIDENCE POINTER is the section's `target:` — the path of the answering QA file (`tasks|discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md`), which must RESOLVE on disk. Record the number in `_VALUES_`.
 - Emit a delivery need for every `weak`/`GAP` claim using the delivery-need interface, with the route:
 
 ```text
@@ -287,7 +287,7 @@ Do not run evidence work here. Design the campaign, commission the work, record 
 
 A claim sub-item is done when:
 
-- it has a status; `supported` requires BOTH stage 1 (the cited file exists and the number appears in it) AND stage 2 (a probe SECTION whose `target:` RESOLVES to a QA file on disk and whose `reading:` says that number carries the claim — judged HERE, per the judgment fields above);
+- it has a status; `supported` requires BOTH stage 1 (the cited file exists and the number appears in it) AND stage 2 (a probe SECTION whose `target:` RESOLVES to a QA file on disk and whose `a-consumer:` says that number carries the claim — judged HERE, per the judgment fields above);
 - `weak`/`GAP` claims have a corresponding probe entry in the Probes section with a clear plan;
 - a claim whose resource is UNOBTAINABLE or not yet built is `BLOCKED-ON-RESOURCE`, NOT a "GAP with a plan". It carries no probe entry here; it names the resource row it waits on (`-> N<n>` in `1-resource.md`) and the reason it is unfalsifiable. (Live case: Paper-CGMtoAge's H2 and H3 both depend on a dataset whose access application has not been filed. Calling those GAPs would pretend a plan exists.)
 - no claim cites a "planned" anchor as evidence.
@@ -311,12 +311,12 @@ Venue-specific items (Editor's Chair Test, [primary] designation, RQ framing) ar
 3. **Claims are short.** Statement + status + probe reference. The thinking lives in the Probes section, not inline in each claim.
 4. **Probes carry the full plan.** Each probe is its own sub-item with type, claims, status, dependencies, and the full evidence design. This is where the brain thinks.
 5. Status vocabulary: `supported`, `weak`, `GAP`, `BLOCKED-ON-RESOURCE`. A `GAP` has a plan; a `BLOCKED-ON-RESOURCE` claim is UNFALSIFIABLE until its resource lands, and saying so is the honest state.
-6. A claim is `supported` only when it traces to a QA file in the bank, through a probe section's `target:` and `reading:`. Never mark `supported` from intuition, and never wait for a probe file to say so — probe files no longer judge. **The judgment is OURS; the fact is not:** the bank's QA files speak general language and belong to every consumer, and this ledger interprets them for THIS paper. Never push our claim ids back into the bank.
+6. A claim is `supported` only when it traces to a QA file in the bank, through a probe section's `target:` and `a-consumer:`. Never mark `supported` from intuition, and never wait for a probe file to say so — probe files no longer judge. **The judgment is OURS; the fact is not:** the bank's QA files speak general language and belong to every consumer, and this ledger interprets them for THIS paper. Never push our claim ids back into the bank.
 7. `weak`/`GAP` claims must have a corresponding probe. They are first-class open needs surfaced by the Paper Console.
 8. The paper must not overclaim. If the evidence is in-sample only (a pattern inside one dataset, with no generalization basis) while the claim asserts it holds beyond that sample, keep it `weak` and route a probe.
 9. **No tables for claims.** The ledger is prose only. Sub-items, not table cells. (The Evidence Campaign summary table is the exception -- it is a compact overview, not the primary record.)
 10. **No aspirational anchors.** "planned Table 1" is not evidence, it is GAP.
-11. **Two-stage evidence gate.** Stage 1 deterministic: the cited file exists AND the cited number actually appears in it. Stage 2 judgment: a probe section whose `target:` RESOLVES, whose `reading:` interprets it, and whose judgment (written here) says the number carries the claim. `supported` requires both.
+11. **Two-stage evidence gate.** Stage 1 deterministic: the cited file exists AND the cited number actually appears in it. Stage 2 judgment: a probe section whose `target:` RESOLVES, whose `a-consumer:` interprets it, and whose judgment (written here) says the number carries the claim. `supported` requires both.
 15. **This stage never executes bank work inline** (LAW 1). It raises questions; `haipipe-paper-probe` binds them. A claims session that opens `tasks/.../results/` and starts writing has already broken the wall, whatever it ends up writing.
 12. **Venue-FREE.** The claims ledger is a pure evidence inventory, reusable across venues. No [primary] claim, no Editor's Chair Test, no venue-specific RQ framing. Those live in pitch.
 13. **One sentence per line.** Semantic line breaks for readability. No dense multi-sentence paragraphs.

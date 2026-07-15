@@ -9,25 +9,25 @@ Where a dispatched question goes
 This worker owns the paper side of the question. The EXECUTOR owns the work:
 
 ```
-the section's `commission:` block, VERBATIM
+the section's `q-executor:` block, VERBATIM
         |
         +-- Agent(haipipe-task-orchestrator-agent)        internal work: 9 task domains
         |                                                 (data, nn, end, individual, fit,
         |                                                  eval, display, stata, agent)
         +-- Agent(haipipe-discovery-orchestrator-agent)   external evidence: search + read,
         |                                                 judge/synthesize, idea
-        |     💀 the probe GATEWAY agent is RETIRED — its SWEEP is now ② MATCH,
-        |        and dispatch goes DIRECT to the two orchestrators above.
+        |     The SWEEP is ② MATCH, and dispatch goes DIRECT to the two
+        |        orchestrators above.
         |
         +-- on return, this worker writes NOTHING project-side:
-              the section's `reading:` is the paper's record of what the answer
+              the section's `a-consumer:` is the paper's record of what the answer
               MEANS; the CLAIM's status lives in 0-lifecycle/1-claims/1-claims.md.
               The reusable artifact is the EXECUTOR's <task-folder>/QA/<n>-<slug>.md,
               which any paper's MATCH can find and read (T2 REUSE).
 ```
 
 Per-stage table (workers = HARVESTERS: they transcribe landed evidence, never
-acquire; acquisition is always a question SECTION -> its `commission:` -> the
+acquire; acquisition is always a question SECTION -> its `q-executor:` -> the
 task/discovery orchestrator -> the answering QA file)
 ----------------
 - **seed** -- probe mode light (-> discovery): landscape / related work / novelty to sharpen the seed question; returned sources HARVEST into _CITATION_0-seed.md. No values/display lanes.
@@ -35,7 +35,7 @@ task/discovery orchestrator -> the answering QA file)
 - **claims** -- probe mode FULL (-> task + discovery): the core evidence stage; one question SECTION per GAP claim. A full-mode section's answer is read by the author, who writes the claim status into `0-lifecycle/1-claims/1-claims.md` — the ONLY home of a claim's status (there is no review gate; a probe is communication, not judgment). `## Verdict` and `verdicted` are DELETED. Claims does NOT consume seed's `[FORWARD -> ...]` pointers — RESOURCE is their sole consumer; claims only picks up the ones resource explicitly DECLINED to it (per `_LOG_1-resource.md`).
 - **pitch** -- citation lane only (anchor papers).
 - **narrative** -- citation + display lanes (beats map to displays).
-- **display** -- display lane. From SECTION/NARRATIVE context a missing unit is NEVER commissioned: it becomes a DR row in `0-lifecycle/4-display/_DISPLAY_REQUEST.md` (the display stage's inbox; JL 2026-07-10) and the SECTION closes `answered-local` with the reading `rerouted to display stage: DRNN`. Only the DISPLAY STAGE itself commissions evidence/render work for its accepted units (via its own PROBE lanes); the harvester LINKs existing/done units.
+- **display** -- display lane. From SECTION/NARRATIVE context a missing unit is NEVER commissioned: it becomes a DR row in `0-lifecycle/4-display/_DISPLAY_REQUEST.md` (the display stage's inbox; JL 2026-07-10) and the SECTION closes `answered-local` with the a-consumer `rerouted to display stage: DRNN`. Only the DISPLAY STAGE itself commissions evidence/render work for its accepted units (via its own PROBE lanes); the harvester LINKs existing/done units.
 - **section-edit** -- full document probe: citation + values + display lanes.
   (disp statuses include 📨 = DR request pending in the 4-display inbox; the
    display axis cannot pass CHECK until the row is `done` and the unit linked.)
@@ -50,14 +50,14 @@ Dispatch rules (both apply to every dispatch)
    escalate to full later; never start heavy for a question that
    only needs orientation.
 2. **Reuse-before-create -- the MATCH is the WORKER's, the DEPTH is the EXECUTOR's.**
-   💀 The gateway's SWEEP is RETIRED. The worker itself runs ② MATCH over the
+   The worker itself runs ② MATCH over the
    bank's READABLE QA corpus (`{tasks,discoveries}/**/QA/*.md`) and READS the
    hits -- R14: match ON THE ANSWER, never on the topic. A hit is a T2 REUSE
    (point the section's `target:` at that QA file; nothing runs). Only what MATCH
    cannot close is dispatched, and then the EXECUTOR picks the shallowest depth
    in its own clean context (read | new run | new script | new task-folder) -- the worker
    never learns which, and never asks. MOST SECTIONS SHOULD LAND ON T2: the bank
-   fills autonomously from the executor side, so a commission is the EXCEPTION.
+   fills autonomously from the executor side, so a q-executor is the EXCEPTION.
    Duplication is a mental-model tax: two half-overlapping evidence sets cost more
    than one enriched one.
 
@@ -75,10 +75,10 @@ novelty ("is this idea new?")                  -> discovery novelty-check -> ver
  digest of each is its QA/<n>-<slug>.md, and that is what the section points at)
 ```
 
-The `reading:` feeds Motivations and Tentative Claim Shape in 0-seed.md. Sources the
+The `a-consumer:` feeds Motivations and Tentative Claim Shape in 0-seed.md. Sources the
 answer brought back HARVEST into _CITATION_0-seed.md (candidates only) so the user
 can eyeball them paper-side. Full evidence stays executor-side, reusable by claims.
-(_DISCOVERY_{stage}.md is retired -- the probe SECTION carries the reading.)
+(_DISCOVERY_{stage}.md is retired -- the probe SECTION carries the a-consumer.)
 NOTE: a discovery leaf's own `verdict.md` is executor-native and SURVIVES; it is a
 different thing from the deleted probe `## Verdict`.)
 
@@ -87,7 +87,7 @@ Resource specifics (mode light for SCAN, full for BUILD)
 The stage hands over paper-space QUESTIONS (Q1, Q2, ...), never PP ids and never
 probe topics. THIS WORKER reads 1-resource.md at ① ORGANIZE and opens one SECTION
 per GATE-1-approved Q (`serves: resource` · `blocks: N<n>` · `target: NEW ?` ·
-`state: planned` · `commission:` = the Q re-posed as a self-contained evidence
+`state: planned` · `q-executor:` = the Q re-posed as a self-contained evidence
 question), writing the `-> PP<NN>` backlink back into the Q -- the section can be
 opened nowhere else, since the stage is forbidden to mint a PP id. ② MATCH then
 resolves what the bank already answers; only the rest is DISPATCHED, and ⑤ INTERPRET
@@ -121,7 +121,7 @@ BUILD -- days to weeks. NON-BLOCKING, ALWAYS.
 ```
 
 FORBIDDEN in resource: **`task-for-eval`**. That is CLAIMS. A section whose
-commission is eval-shaped while it `serves: resource` is mis-scoped by definition --
+q-executor is eval-shaped while it `serves: resource` is mis-scoped by definition --
 fit makes the model, eval makes the evidence, and a bundled fit+eval entangles the
 judgment (Paper-CGMtoAge's PP04: you cannot tell whether the null came from the
 MODEL or from the CORPUS).
@@ -140,16 +140,16 @@ Every GAP/weak claim raises one question SECTION -- MATCH first
 (reuse-before-create), then the unmatched ones fan out by shape:
 
 ```
-claim needs its status settled     -> a SECTION whose commission is task-shaped
+claim needs its status settled     -> a SECTION whose q-executor is task-shaped
                                       -> Agent(haipipe-task-orchestrator-agent)
 question needs a run / artifact    -> same door (the executor picks the depth)
 question needs outside context     -> Agent(haipipe-discovery-orchestrator-agent)
 settled claim status               -> 0-lifecycle/1-claims/1-claims.md (the ONLY home
                                       of a claim's status; the probe section carries
-                                      only its `reading:`)
+                                      only its `a-consumer:`)
 ```
 
-At ⑤ INTERPRET the section's `reading:` lands, and the CLAIM's status is written in
+At ⑤ INTERPRET the section's `a-consumer:` lands, and the CLAIM's status is written in
 1-claims.md (supported | refuted | inconclusive + confidence + claim_type),
 citing the section's `target:` QA file. The paper owns the NEED and the JUDGMENT; the
 executor owns the FACT.

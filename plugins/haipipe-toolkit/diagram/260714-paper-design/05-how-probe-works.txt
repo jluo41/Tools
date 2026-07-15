@@ -1,0 +1,111 @@
+5 — HOW PROBE WORKS IN THE PAPER
+=================================
+
+  File 02 said "each stage runs four phases; PROBE is the only one
+  that touches the bank." True — but it leaves a question: if every
+  stage has a PROBE phase, what is the paper-level `probe` verb, and
+  are there two probes? No. There is ONE pool, ONE worker, and TWO
+  scopes that trigger it. This file is that picture.
+
+
+ONE POOL — flat, by TOPIC, not by stage
+----------------------------------------
+
+```text
+   <paper>/1-probes/
+   ├── PP01_welldoc-feasibility.md   one file per TOPIC
+   ├── PP02_cgm-horizon.md           each question is one SECTION inside
+   └── README.md                     a GENERATED board (the files win)
+```
+
+Every stage's DRAFT feeds the SAME pool.
+A section's home is its TOPIC (the file), never its stage.
+Which stage a question serves is a field on the section — `serves:` —
+not the path.
+
+Why by-topic and not by-stage: DEDUP. If seed and claims both need
+"does the corpus carry age labels?", that is ONE section, MATCHed once,
+dispatched at most once. A by-stage pool would ask it twice.
+
+
+ONE WORKER — haipipe-paper-probe, running the constitution
+-----------------------------------------------------------
+
+```text
+   haipipe-probe            THE MODEL (the constitution). Owns the
+   (skills/probe/)          five-step loop, the anatomy, the QA
+                            contract, the LAWS, the states, the
+                            checker codes. Read, never called.
+        │  followed by
+        ▼
+   haipipe-paper-probe      THE PAPER'S EXECUTOR of that model.
+   (2-phase/1-probe/)       COLLECT (①–④) = the constitution's shared
+                            mechanism. HARVEST (⑤) = paper-side only.
+```
+
+`haipipe-probe` is doctrine, not a runtime call. The worker READS it
+and obeys it. So whichever scope triggers probe, the same rules apply —
+there is no second model.
+
+The five-step loop the worker runs:
+
+```text
+   DRAFT raises the questions                    (a stage's DRAFT)
+     ① ORGANIZE   collect into 1-probes/, one section per Q, by topic;
+                  write each `q-executor:` block (the commission — the
+                  question in GENERAL words, no stake, no claim ids)
+     ② MATCH      grep the bank's QA corpus, READ the hits
+                  → MOST sections stop HERE (T2 REUSE). A dispatch is
+                    the EXCEPTION, not the norm.
+     ③ DISPATCH   only what MATCH cannot close: the `q-executor:` block,
+                  VERBATIM, to a clean-context agent
+                    Agent(haipipe-task-orchestrator-agent)
+                    Agent(haipipe-discovery-orchestrator-agent)
+                  their blindness IS the wall (LAW 2)
+     ④ POINT      target: → the answering QA file (verify with ls)
+     ⑤ INTERPRET  reading: → 1-claims.md flips → the harvest lanes pay out
+```
+
+
+TWO SCOPES — the same operation, zoomed
+-----------------------------------------
+
+```text
+   ┌─ STAGE SCOPE ──────────────────────────────────────────────┐
+   │  a stage's PROBE phase (DRAFT→PROBE→REVISE→CHECK)            │
+   │  drains only ITS OWN SLICE — the sections whose `serves:`    │
+   │  names this stage — during this stage's turn.               │
+   └─────────────────────────────┬───────────────────────────────┘
+                                  │   both call the ONE worker
+   ┌─ PAPER SCOPE ────────────────┴───────────────────────────────┐
+   │  /haipipe-paper probe  works the WHOLE pool across all stages │
+   │    probe            SHOW the board (state derived from disk)  │
+   │    probe "<text>"   RAISE a question into the right topic     │
+   │    probe plan       ORDER the cross-stage campaign (dedup +    │
+   │                     dispatch DAG) — a HUMAN GATE, like DRAFT   │
+   │    probe run [PPNN]  DRAIN everything ready at once            │
+   └───────────────────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+                          haipipe-paper-probe  ── the single door to the bank
+```
+
+Neither scope is a second probe, and neither is a leak:
+
+  • the UMBRELLA never touches the bank — it dispatches the worker
+  • a STAGE never touches the bank — its PROBE phase dispatches the worker
+  • only the WORKER crosses, through a probe file + a clean agent
+
+The paper scope exists because the pool is cross-stage: seeing the whole
+board, deduping, and ordering the dispatch DAG cannot be owned by any
+single stage. The stage scope exists because, most of the time, you are
+working one stage and only its questions matter. Same worker, same pool,
+same constitution — you just choose how far to zoom.
+
+
+So, in one line
+---------------
+
+    probe = one flat by-topic pool + one worker (running the haipipe-probe
+    constitution) + two scopes to trigger it (a stage's own slice, or the
+    whole paper). The worker is the only thing that ever reaches the bank.

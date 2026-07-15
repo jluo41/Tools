@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-probe-citation
-description: "citation HARVESTER (probe lane worker). One skill, one working doc (_CITATION_). The harvest step of the ONE probe pipeline: acquisition is always probe SECTION → its `commission:` block → Agent(haipipe-discovery-orchestrator-agent) → the answering QA file (this worker NEVER searches — no WebSearch, no Semantic Scholar); this worker transcribes the answering QA file's source anchors into _CITATION_{stage}.md entries (supply-push HARVEST), plus AUDIT (gap → a new question SECTION in 1-probes/), PLACE (auto-place keys already in .bib, flag 🔍 for CHECK) and REVIEW (pre-submission 3-axis walk). Fully automatic -- no human gate. Hard boundary: agent NEVER generates bibtex, NEVER adds to .bib. No bibtex in _CITATION_ ever. Trigger: citation, cite, probe citations, harvest citations, check references, audit references, citation review, manual review citations."
+description: "citation HARVESTER (probe lane worker). One skill, one working doc (_CITATION_). Transcribes the answering QA file's source anchors into _CITATION_{stage}.md — it NEVER searches (acquisition is the probe SECTION → commission → Agent(haipipe-discovery-orchestrator-agent) → QA file). Plus AUDIT (gap → a new question SECTION), PLACE (auto-place keys already in .bib, flag 🔍 for CHECK), REVIEW (pre-submission 3-axis walk). Fully automatic. Hard boundary: NEVER generates bibtex, NEVER adds to .bib. Trigger: citation, cite, probe citations, harvest citations, check references, audit references, citation review, manual review citations."
 argument-hint: "[verb] [section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, WebFetch
 # WebFetch = pointer-following ONLY (fetch a KNOWN DOI/publisher URL to verify an
@@ -9,7 +9,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, WebFetch
 metadata:
   version: "3.1.0"
   last_updated: "2026-07-14"
-  summary: "Citation HARVESTER. AUDIT→ROUTE(gaps→question SECTIONS in 1-probes/)→CANDIDATE(harvest the answering QA file's source anchors)→PLACE→REVIEW. Never searches — one door: the PROBE phase's DISPATCH to Agent(haipipe-discovery-orchestrator-agent). 💀 the probe GATEWAY agent is RETIRED. Single working doc = _CITATION_. v3.0.1 (probe-redesign residue sweep): HARVEST takes the answering QA FILE (its `## Answer` anchors), not a `pick_list` from a probe agent's return; gaps become question SECTIONS, not 'probe plans'. v3.1.0 (R19/R20 HARVEST GATE): HARVEST now READS the target QA file's `- state:` line first and REFUSES a `working` target (its ## Answer is EMPTY BY CONSTRUCTION — harvesting it is a silent no-op that HIDES a live claim) and FOLLOWS the chain off a `superseded-by:` target (transcribing stale sources into _CITATION_ lets PLACE auto-place them into the manuscript — the day-1/day-40 stale-read bug arriving through the harvest lane, where read-target-superseded cannot see it). A QA file with NO state line is REFUSED (qa-no-state). Read-only: this worker still NEVER writes a QA file."
+  summary: "Citation HARVESTER: AUDIT → ROUTE (gaps → question SECTIONS in 1-probes/) → CANDIDATE (harvest the answering QA file's source anchors) → PLACE → REVIEW. Never searches — one door: the PROBE phase's DISPATCH to Agent(haipipe-discovery-orchestrator-agent). Single working doc = _CITATION_. HARVEST reads the target QA file's `- state:` line first and REFUSES a `working` target (its ## Answer is empty by construction) or a state-less one, and FOLLOWS a `superseded-by:` chain (so stale sources never reach the manuscript). Read-only: NEVER writes a QA file. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   predecessors:
     - "haipipe-paper-edit-check-reference (mechanical \\label/\\ref/\\cite audit) — MERGED as Phase 1"
@@ -249,14 +249,13 @@ _CITATION_. There is exactly ONE door for a citation to enter this document:
 
 ```
 Phase-1 gap  →  a question SECTION in 1-probes/PPNN_<topic>.md (serves / target /
-                state / commission / reading)
+                state / q-executor/a-consumer)
              →  the PROBE hub (haipipe-paper-probe) runs ② MATCH against the bank's
                 QA corpus first — a citation already established by an existing
                 discovery is a T2 REUSE and costs one grep and one read
              →  only if MATCH cannot close it, the hub DISPATCHES the section's
-                `commission:` block, VERBATIM, to
+                `q-executor:` block, VERBATIM, to
                 Agent(haipipe-discovery-orchestrator-agent)
-                (💀 the probe GATEWAY agent is RETIRED)
              →  the executor runs its own qa gate; sources land in
                 discoveries/<discovery-group>/<discovery-folder>/sources.md, reviewer-checked, and the readable
                 digest lands at discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md

@@ -1,12 +1,12 @@
 ---
 name: haipipe-application-claims
-description: "Stage orchestrator for the intervention's 0-lifecycle/1-claims/1-claims.md: the venue-FREE claim/evidence inventory and evidence campaign brain, and THE HOME OF EVERY CLAIM'S STATUS (supported | refuted | inconclusive, with confidence and claim_type). Three sections: Claims (what must be true, short, with status + → PP reference), Probes (the evidence plan, one per PP), Evidence Campaign (dispatch order + dependencies + summary). Plans what evidence to collect, raises the questions the PROBE phase commissions to the task/discovery bank, and receives each answer as a probe section's `reading`. The pinned venue later sets how much of the campaign must SETTLE before artifact work (light/medium/full). Markdown only. Trigger: claims, claim ledger, what must be true, evidence plan, probes, supported, refuted, inconclusive, GAP, /haipipe-application claims."
+description: "Stage orchestrator for the intervention's 0-lifecycle/1-claims/1-claims.md: the venue-FREE claim/evidence inventory and evidence campaign brain, and THE HOME OF EVERY CLAIM'S STATUS (supported | refuted | inconclusive, with confidence and claim_type). Three sections: Claims (what must be true, short, with status + → PP reference), Probes (the evidence plan, one per PP), Evidence Campaign (dispatch order + dependencies + summary). Plans what evidence to collect, raises the questions the PROBE phase commissions to the task/discovery bank, and receives each answer as a probe section's `a-consumer`. The pinned venue later sets how much of the campaign must SETTLE before artifact work (light/medium/full). Markdown only. Trigger: claims, claim ledger, what must be true, evidence plan, probes, supported, refuted, inconclusive, GAP, /haipipe-application claims."
 argument-hint: "[intervention-path] [--backfill <PPNN>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "5.2.1"
   last_updated: "2026-07-14"
-  summary: "Port of paper claims 4.0.0 (765696f): claims = evidence campaign brain. Three sections (Claims / Probes / Evidence Campaign; no Hypotheses app-side — mechanism lives in seed/pitch); _EVIDENCE_ → _VALUES_; settlement gate reads the campaign; ascii heading + one-sentence-per-line artifact formatting. v5.1 (paper claims 4.1.0 port): DRAFT opens by consuming seed's [FORWARD -> CLAIMS] pointers; any unconsumed pointer fails CHECK. v5.2 (probe redesign, Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3 approved JL 2026-07-14): THE CLAIM LEDGER IS NOW THE ONLY HOME OF A CLAIM'S STATUS. R7 killed the probe 'Verdict' block and the 'verdicted' state, so `supported | refuted | inconclusive` + confidence + claim_type land HERE, per-claim, per-consumer, private — a probe section's `reading` FEEDS this ledger and no longer carries a judgment of its own. Probe files live at 1-probes/PPNN_<topic>.md (one file per topic, one SECTION per question); the per-stage _PROBE/ folder and the 1-probe-plans/ index are RETIRED. Evidence is COMMISSIONED to the task/discovery orchestrators (the probe gateway is retired) and returns as a QA file the section's target: points at. --backfill reads the section's reading, not a verdict block. Convention pointer repointed: `haipipe-application/fn/probe-plans.md` was RENAMED to `fn/probes.md` (matching the paper twin; 'plans' is retired vocabulary per skills/STRUCTURE.md)."
+  summary: "Port of paper claims 4.0.0 (765696f): claims = evidence campaign brain. Three sections (Claims / Probes / Evidence Campaign; no Hypotheses app-side — mechanism lives in seed/pitch); _EVIDENCE_ → _VALUES_; settlement gate reads the campaign; ascii heading + one-sentence-per-line artifact formatting. v5.1 (paper claims 4.1.0 port): DRAFT opens by consuming seed's [FORWARD -> CLAIMS] pointers; any unconsumed pointer fails CHECK. v5.2 (probe redesign, Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3 approved JL 2026-07-14): THE CLAIM LEDGER IS NOW THE ONLY HOME OF A CLAIM'S STATUS. R7 killed the probe 'Verdict' block and the 'verdicted' state, so `supported | refuted | inconclusive` + confidence + claim_type land HERE, per-claim, per-consumer, private — a probe section's `a-consumer` FEEDS this ledger and no longer carries a judgment of its own. Probe files live at 1-probes/PPNN_<topic>.md (one file per topic, one SECTION per question); the per-stage _PROBE/ folder and the 1-probe-plans/ index are RETIRED. Evidence is COMMISSIONED to the task/discovery orchestrators (the probe gateway is retired) and returns as a QA file the section's target: points at. --backfill reads the section's reading, not a verdict block. Convention pointer repointed: `haipipe-application/fn/probe-plans.md` was RENAMED to `fn/probes.md` (matching the paper twin; 'plans' is retired vocabulary per skills/STRUCTURE.md)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -32,14 +32,14 @@ Claims is the **evidence campaign brain**. It does three jobs in sequence:
                QA corpus, and commissions only what is missing to tasks/ or discoveries/
                claims writes the NEED, never the execution spec
 
-3. COLLECT     answers come back as a section's `reading` at INTERPRET
+3. COLLECT     answers come back as a section's `a-consumer` at INTERPRET
                THE STATUS LANDS HERE: supported | refuted | inconclusive
                verified numbers go to _VALUES_
                claims RECEIVES evidence, never PRODUCES it
 ```
 
 **THE CLAIM'S STATUS LIVES IN THIS LEDGER, AND NOWHERE ELSE** (R7, 2026-07-14). A probe file
-does not judge — it carries the evidence's MEANING for this intervention (its `reading`), and
+does not judge — it carries the evidence's MEANING for this intervention (its `a-consumer`), and
 that is all. The judgment — `supported | refuted | inconclusive`, plus `confidence` and
 `claim_type` — is written HERE, per-claim, private to this intervention, by the author reading the answered QA file.
 Two consumers reading the SAME bank fact may reach different judgments about their own claims,
@@ -73,7 +73,7 @@ Evidence Campaign     dispatch order + summary table (probe, status, deps,
 - **Evidence Campaign** shows all probes with status and dependencies -- the settlement gate evaluates the venue bar against THIS table.
 - No Hypotheses section (application delta vs paper): the intervention's mechanism lives in seed/pitch. Alignment is in the tags: `C1`, `PP03 (C1/C3)`.
 
-**The judgment fields (written HERE, at INTERPRET, when a probe section's `reading` lands):**
+**The judgment fields (written HERE, at INTERPRET, when a probe section's `a-consumer` lands):**
 
 ```text
 status       supported | refuted | inconclusive      (the enum; nothing else is a status)
@@ -87,7 +87,7 @@ claim_type   associational | causal | in-sample | generalizing   (never upgraded
 - Sub-items within sections: `**bold**` text (e.g. `**C1 - title (role) - status**`, `**PP01 - title - status**`).
 - One sentence per line (semantic line breaks). Probes separated by `---` rules.
 
-**Status vocabulary:** `supported` · `weak` · `GAP` (the ledger's own progress vocabulary), settled by the judgment enum `supported | refuted | inconclusive`. A claim is `supported` only when it traces to a QA file in the bank, through a probe section's `target:` and `reading:` -- never from intuition, and never from a probe file's own say-so (probe files no longer judge).
+**Status vocabulary:** `supported` · `weak` · `GAP` (the ledger's own progress vocabulary), settled by the judgment enum `supported | refuted | inconclusive`. A claim is `supported` only when it traces to a QA file in the bank, through a probe section's `target:` and `a-consumer:` -- never from intuition, and never from a probe file's own say-so (probe files no longer judge).
 
 ## Phase Orchestration
 
@@ -140,7 +140,7 @@ Most questions should never reach an agent at all: the PROBE phase MATCHes the b
 first (T2 REUSE), and in a healthy project most answers already exist. A commission is the
 EXCEPTION.
 
-On return, `--backfill <PPNN>` flips the claim from the section's `reading`:
+On return, `--backfill <PPNN>` flips the claim from the section's `a-consumer`:
 `supported` → supported; `refuted` → drop or reword; `inconclusive` → stays weak/GAP with the
 caveat recorded. The status is WRITTEN HERE — there is no verdict block to copy it from.
 Convention: `../../../haipipe-application/fn/probes.md`.

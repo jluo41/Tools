@@ -30,7 +30,7 @@ Read first: `../../../PHILOSOPHY.md`, `../../../wiki/04-lifecycle-map.md`.
 **Files produced:**
 - `0-lifecycle/0-seed/0-seed.md` -- the seed contract
 - `0-lifecycle/0-seed/_LOG_0-seed.md` -- phase progress journal (per `../../../wiki/02-comment-lifecycle.md`)
-- `1-probes/PPNN_<topic>.md` -- the probe files this stage's questions land in (one file per TOPIC, one SECTION per question: serves/target/state/commission/reading, plus ONE `## Why` per file; flat cross-stage pool at the paper root, the SECTION's `serves:` carries the stage; Status board in `1-probes/README.md`)
+- `1-probes/PPNN_<topic>.md` -- the probe files this stage's questions land in (one file per TOPIC, one SECTION per question: serves/target/state/q-executor/a-consumer, plus ONE `## Why` per file; flat cross-stage pool at the paper root, the SECTION's `serves:` carries the stage; Status board in `1-probes/README.md`)
 - `0-lifecycle/0-seed/_CITATION_0-seed.md` -- citation candidates HARVESTed from what the probe brought back (only when the probe returns literature; candidates 🔍, no bibtex)
 
 **Content structure (0-seed.md):**
@@ -82,7 +82,7 @@ DRAFT ──→ illuminate existing content, elicit taste,
           exist? anchor names?) -- the result is drafting fuel: weave it into
           the prose (as orientation, `\cite{TOADD}` slots — never invented keys) AND raise
           the feasibility questions as `state: planned` SECTIONS in 1-probes/
-          (empty `target:`). NEVER write a `reading:` or a `target:` into a section
+          (empty `target:`). NEVER write a `a-consumer:` or a `target:` into a section
           here -- that is the PROBE phase's job (the seed is allowed to be intuition;
           PROBE makes it evidence). The line is SECTION STATE: DRAFT leaves `planned`.
           (internally calls /haipipe-paper-draft with this artifact spec)
@@ -99,7 +99,7 @@ PROBE ──→ DEFAULT RUN for a new seed: FEASIBILITY probes (mode light) --
               Skill("haipipe-paper-probe", args="from-buffer <paper_root>")
           The worker owns everything downstream: the probe file + its sections,
           project-root resolution, MATCH against the bank, dispatch, and the
-          `target:`/`reading:` backfill.
+          `target:`/`a-consumer:` backfill.
           THIS STAGE NEVER does evidence work itself -- never searches, never
           launches search/discovery/task agents, never writes findings into PP
           cards. (Inline WebSearch was fine in DRAFT as orientation fuel; here
@@ -131,7 +131,7 @@ Comment lifecycle per `../../../wiki/02-comment-lifecycle.md`: comments live in 
 ```text
 <paper>/0-lifecycle/0-seed/0-seed.md              seed contract
 <paper>/0-lifecycle/0-seed/_LOG_0-seed.md          phase progress journal
-<paper>/1-probes/PPNN_<topic>.md              probe files; one SECTION per question, `reading:` written at harvest
+<paper>/1-probes/PPNN_<topic>.md              probe files; one SECTION per question, `a-consumer:` written at harvest
 <paper>/0-lifecycle/0-seed/_CITATION_0-seed.md     harvested citation candidates (when probe returns lit)
 ```
 

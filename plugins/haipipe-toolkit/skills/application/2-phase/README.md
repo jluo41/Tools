@@ -34,7 +34,7 @@ phase:   draft ✅  │  probe 🔥🚀  │  revise ⬜  │  check ⬜
 
 ## The probe phase (the five-step loop: bind every question to an answer)
 
-A PROBE is an APPLICATION-LEVEL document: `1-probes/PPNN_<topic>.md`, one file per TOPIC, one SECTION per question (`serves` / `target` / `state` / `commission` / `reading`), plus one `## Why` holding the stake — which never leaves the file.
+A PROBE is an APPLICATION-LEVEL document: `1-probes/PPNN_<topic>.md`, one file per TOPIC, one SECTION per question (`serves` / `target` / `state` / `q-executor` / `a-consumer`), plus one `## Why` holding the stake — which never leaves the file.
 
 ```
 DRAFT raises the questions
@@ -42,12 +42,12 @@ DRAFT raises the questions
   ② MATCH      grep the bank's QA corpus and READ the hits — match ON THE ANSWER, never
                on the topic. MOST QUESTIONS STOP HERE (T2 REUSE): the bank fills
                autonomously from executor sessions, so a commission is the EXCEPTION.
-  ③ DISPATCH   only what is missing: the `commission` block, VERBATIM, to
+  ③ DISPATCH   only what is missing: the `q-executor` block, VERBATIM, to
                  Agent(haipipe-task-orchestrator-agent)
                  Agent(haipipe-discovery-orchestrator-agent)
                their clean context IS the wall. 💀 the probe GATEWAY agent is RETIRED.
   ④ POINT      target: → the answering QA file, <task-folder>/QA/<n>-<slug>.md
-  ⑤ INTERPRET  reading: → the claim's status flips in 1-claims.md → the lanes harvest
+  ⑤ INTERPRET  a-consumer: → the claim's status flips in 1-claims.md → the lanes harvest
 ```
 
 The bank is PROBE-UNAWARE: no `_ASK/`, no `_ANS/`, no `answers:`, no PP ids under `tasks/` or `discoveries/`. The executor answers plain questions through its own `qa` verb and writes the QA file itself. **The probe CAUSES a QA file; the EXECUTOR authors it.**
@@ -63,7 +63,7 @@ PROBE lanes (fire per pinned venue):
 
 Every firing lane's obligation is written into the SECTION (`harvest: OWED → accepted`); `check-probe-cards.sh` FAILs an OWED lane or a `planned` section at VERIFY and again at the CHECK gate.
 
-Hard boundary — **LAW 1: a consumer session NEVER executes task/discovery work inline.** Dispatch means handing the `commission` block and nothing else; never the `## Why`, never the probe file. The agent NEVER writes under `tasks/` or `discoveries/`, NEVER fabricates numbers, NEVER creates ad-hoc display units, NEVER searches inline during PROBE — "DRAFT may search; PROBE must dispatch".
+Hard boundary — **LAW 1: a consumer session NEVER executes task/discovery work inline.** Dispatch means handing the `q-executor` block and nothing else; never the `## Why`, never the probe file. The agent NEVER writes under `tasks/` or `discoveries/`, NEVER fabricates numbers, NEVER creates ad-hoc display units, NEVER searches inline during PROBE — "DRAFT may search; PROBE must dispatch".
 
 ## Deltas vs paper's 2-phase/
 

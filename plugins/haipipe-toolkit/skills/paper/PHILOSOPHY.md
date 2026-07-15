@@ -31,7 +31,7 @@ Two axes stay orthogonal: **layer/frontier** (which stage has the active work) a
 
 ## Evidence routing
 
-For claim-related evidence, the paper always routes through the PROBE phase. It raises its questions as SECTIONS in `1-probes/`, MATCHes each against the bank's QA corpus (most close there, for free), and dispatches only what MATCH cannot close — handing the section's `commission:` block, VERBATIM, to the task/discovery orchestrators. A standalone utility question a human wants goes to the bank's own `/haipipe-task qa` door, never proxied by the paper.
+For claim-related evidence, the paper always routes through the PROBE phase. It raises its questions as SECTIONS in `1-probes/`, MATCHes each against the bank's QA corpus (most close there, for free), and dispatches only what MATCH cannot close — handing the section's `q-executor:` block, VERBATIM, to the task/discovery orchestrators. A standalone utility question a human wants goes to the bank's own `/haipipe-task qa` door, never proxied by the paper.
 
 The paper does not execute code, search literature directly, or store raw results.
 

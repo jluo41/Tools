@@ -48,10 +48,10 @@ NEVER dispatched. NEVER copied anywhere. It does not leave this file.
 - serves: 1-claims (C6)
 - target: tasks/A03_welldoc_cycle_check/01_column_scan/QA/1-cycle-indicator.md
 - state:  read
-- commission: |
+- q-executor: |
     The question in GENERAL language — no claim ids, no stake, no hint of which
     answer is wanted. This is the DISPATCH PAYLOAD, and nothing else is. FROZEN.
-- reading: |
+- a-consumer: |
     What the answer MEANS for this paper. Written at harvest.
 
 - values: … · sources: … · displays: …     the harvest lanes
@@ -76,7 +76,7 @@ States (DERIVED from disk — never asserted)
 planned          the section exists · the target leaf is missing (or `NEW …`)
 commissioned     the task-folder + its plan.yaml exist · the QA file is absent
 answered         the target QA FILE exists
-read             the section's reading: is non-empty (+ 1-claims.md flipped, if it serves a claim)
+read             the section's a-consumer: is non-empty (+ 1-claims.md flipped, if it serves a claim)
 answered-local   target points into the paper's OWN registries; no dispatch happened
 failed           a reading with a dead target · the task-folder was deleted · the qa verb REFUSEd
 ```
@@ -122,15 +122,15 @@ The loop (owned by haipipe-paper-probe)
 
 ```
 DRAFT raises the questions
-  ① ORGANIZE   collect them into 1-probes/, grouped by topic; write each commission (T1)
+  ① ORGANIZE   collect them into 1-probes/, grouped by topic; write each q-executor (T1)
   ② MATCH      T0 JOIN · T1 LOCAL · T2 REUSE (grep the bank's QA corpus, and READ the hits)
-               → most sections should stop HERE. A commission is the EXCEPTION, not the norm.
-  ③ DISPATCH   T3/T4 only: the commission block, VERBATIM, to
+               → most sections should stop HERE. A q-executor is the EXCEPTION, not the norm.
+  ③ DISPATCH   T3/T4 only: the q-executor block, VERBATIM, to
                  Agent(haipipe-task-orchestrator-agent)
                  Agent(haipipe-discovery-orchestrator-agent)
-               their clean context IS the wall. 💀 the probe GATEWAY agent is RETIRED.
+               their clean context IS the wall; dispatch goes direct.
   ④ POINT      target: → the answering QA FILE (verify with ls)
-  ⑤ INTERPRET  reading: → 1-claims.md flips → the harvest lanes pay out
+  ⑤ INTERPRET  a-consumer: → 1-claims.md flips → the harvest lanes pay out
 ```
 
 ⛔ **MATCH BEFORE DISPATCH.** The pre-v8 rule was "dispatch every planned probe, ALWAYS, no

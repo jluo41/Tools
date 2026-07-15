@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "1.2.2"
   last_updated: "2026-07-14"
-  summary: "Post-deploy iteration — A/B results, performance, refinement. Paper-alignment sweep: re-homed to 4-iterate/; triage targets on the new spine (design/variants/rationale words retired); ask-kind reference removed. v1.2.0 (probe redesign, Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3 approved JL 2026-07-14): A/B results bearing on a claim raise a question SECTION in 1-probes/ (serves: 1-claims); the settled judgment is the CLAIM's status in 1-claims.md — the probe 'verdict' is retired. v1.2.1: the BODY still said 'the gateway does the work, the PP card carries the verdict' — it dispatched a RETIRED agent to write a RETIRED artifact. Deployment evidence now routes the section's `commission:` block straight to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent), returns as a QA file the `target:` points at, and settles in 1-claims.md. v1.2.2: the 'Feeding deployment evidence back' topic sentence no longer names the retired evidence GATEWAY — deployment evidence enters through the PROBE phase, the ONE door (the mechanism block below it already said so; the topic sentence had been left on the dead noun)."
+  summary: "Post-deploy iteration — A/B results, performance, refinement. Paper-alignment sweep: re-homed to 4-iterate/; triage targets on the new spine (design/variants/rationale words retired); ask-kind reference removed. v1.2.0 (probe redesign, Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3 approved JL 2026-07-14): A/B results bearing on a claim raise a question SECTION in 1-probes/ (serves: 1-claims); the settled judgment is the CLAIM's status in 1-claims.md — the probe 'verdict' is retired. v1.2.1: the BODY still said 'the gateway does the work, the PP card carries the verdict' — it dispatched a RETIRED agent to write a RETIRED artifact. Deployment evidence now routes the section's `q-executor:` block straight to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent), returns as a QA file the `target:` points at, and settles in 1-claims.md. v1.2.2: the 'Feeding deployment evidence back' topic sentence no longer names the retired evidence GATEWAY — deployment evidence enters through the PROBE phase, the ONE door (the mechanism block below it already said so; the topic sentence had been left on the dead noun)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -84,10 +84,10 @@ Settled judgment                → the CLAIM's status in 1-claims.md (there is 
 
 Deployment evidence is dispatched, not filed: the intervention records the
 NEED as a question SECTION in `1-probes/PPNN_<topic>.md`, and the PROBE phase
-hands that section's `commission:` block, verbatim, straight to
+hands that section's `q-executor:` block, verbatim, straight to
 `Agent(haipipe-task-orchestrator-agent)` / `Agent(haipipe-discovery-orchestrator-agent)`
 — there is NO probe gateway agent any more (retired 2026-07-14). The answer comes
-back as a QA file the section's `target:` points at; the section's `reading:` says
+back as a QA file the section's `target:` points at; the section's `a-consumer:` says
 what it MEANS, and the claim's STATUS lands in 1-claims.md (ask-gated per the
 copilot policy).
 

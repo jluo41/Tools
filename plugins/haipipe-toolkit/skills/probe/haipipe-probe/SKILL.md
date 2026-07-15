@@ -1,6 +1,6 @@
 ---
 name: haipipe-probe
-description: "The probe layer: a consumer-level Q/A map (papers/<P>/ or applications/<A>/1-probes/PPNN_<topic>.md) that binds each question a paper or application cannot answer itself, by PATH, to a QA file in the probe-unaware task/discovery bank. Owns the probe-file anatomy, the five-step loop, the cost ladder, the QA state-line contract, the two LAWS, and the checker's FAIL conditions. Trigger: probe, probe file, PPNN, commission, reading, QA file, qa verb, state, working, answered, superseded, evidence, /haipipe-probe."
+description: "The probe layer: a consumer-level Q/A map (papers/<P>/ or applications/<A>/1-probes/PPNN_<topic>.md) that binds each question a paper or application cannot answer itself, by PATH, to a QA file in the probe-unaware task/discovery bank. Owns the probe-file anatomy, the five-step loop, the cost ladder, the QA state-line contract, the two LAWS, and the checker's FAIL conditions. Trigger: probe, probe file, PPNN, q-executor, a-consumer, QA file, qa verb, state, working, answered, superseded, evidence, /haipipe-probe."
 argument-hint: "[contract | anatomy | status | \"<question>\"]"
 allowed-tools: Bash, Read, Grep, Glob, Agent, Skill
 metadata:
@@ -32,12 +32,12 @@ What a probe is
    ────────────────────────                ──────────────────────────────────────────
    1-probes/PP03_welldoc.md                tasks/A03_welldoc_cycle_check/01_column_scan/
      ## Q1  "cycle indicator?"               ├── workflow/plan.yaml · results/   (code)
-     - commission ──────────────┐            └── QA/1-cycle-indicator.md         (readable)
+     - q-executor ──────────────┐            └── QA/1-cycle-indicator.md         (readable)
      - target: ─────────────────┼───────────────▶ "none — 40 tables scanned"
-     - reading: "…"  ◀──────────┘   the answer comes back as a FILE the executor wrote
+     - a-consumer: "…"  ◀──────────┘   the answer comes back as a FILE the executor wrote
 ```
 
-The question crosses as a STRING in an agent's prompt (the `commission`), never as a file on the bank side.
+The question crosses as a STRING in an agent's prompt (the `q-executor`), never as a file on the bank side.
 The bank never learns probes exist: no mailbox, no back-reference, no probe id under `tasks/` or `discoveries/`.
 The answer comes back as a QA file the executor wrote for its own reasons — readable, general, with no consumer in it.
 That asymmetry is the whole design: the same answer is reusable, because two consumers read the same file differently.
@@ -45,12 +45,27 @@ That asymmetry is the whole design: the same answer is reusable, because two con
 YOUR QUESTION AND THE EXECUTOR'S QUESTION ARE NOT THE SAME QUESTION.
 Yours carries the STAKE — "does WellDoc have a cycle column? (my claim C6 dies if it does)".
 The executor must never see that stake, or it shapes the answer around your hypothesis.
-So the probe writes a COMMISSION: the SAME question in plain, general language — "scan the WellDoc tables for a cycle column; report present or absent" — with the stake stripped out.
-The commission is the executor-facing question, and the ONLY thing that crosses to the bank.
-Writing it — your question → the commission — is the probe's core act.
+So the probe writes a Q-EXECUTOR: the SAME question in plain, general language — "scan the WellDoc tables for a cycle column; report present or absent" — with the stake stripped out.
+The q-executor is the executor-facing question, and the ONLY thing that crosses to the bank.
+Writing it — your question → the q-executor — is the probe's core act.
 
 The probe does NOT judge.
-It carries the answer's interpretation (`reading`) back to the consumer; whether that settles a claim is the consumer's own business, in its own `1-claims.md`, and never the probe's.
+It carries the answer's interpretation (`a-consumer`) back to the consumer; whether that settles a claim is the consumer's own business, in its own `1-claims.md`, and never the probe's.
+
+THE FOUR FORMS — a question and its answer, on each side of the wall:
+
+```text
+                 CONSUMER (holds the stake)          EXECUTOR (never sees it)
+                 ──────────────────────────          ────────────────────────
+   QUESTION      Q-consumer            ──T1 strip──▶  Q-executor  = the `q-executor:` field
+                 = ## Why + the ## Q                   the ONLY thing sent to the bank
+   ANSWER        A-consumer            ◀──T2 add───   A-executor
+                 = the `a-consumer:` field             = the QA file's ## Answer
+```
+
+The probe file holds only the two BRIDGE ends — `q-executor:` (the question OUT) and `a-consumer:` (the answer BACK).
+The two far corners live elsewhere: Q-consumer in `## Why`, A-executor in the QA file's `## Answer`.
+The two arrows are the two loop steps: T1 = ① ORGANIZE (write `q-executor`), T2 = ⑤ INTERPRET (write `a-consumer`).
 
 
 The probe file
@@ -72,10 +87,10 @@ It is a probe file holding question SECTIONS, and no markdown tables live inside
    - serves: 1-claims (C6)          ← which stage/claim this question is FOR
    - target: tasks/A03_welldoc_cycle_check/01_column_scan/QA/1-cycle-indicator.md
    - state:  read                   ← DERIVED from disk, never asserted
-   - commission: |                  ← the question in general language, FROZEN — the dispatch payload
+   - q-executor: |                  ← the question in general language, FROZEN — the dispatch payload
        Scan all 40 WellDoc CSV tables for menstrual/cycle/hormone columns. Report which exist, or none.
        Deliverable: QA digest + machine artifact. Do-not: no new data pulls. Accepted: present | absent.
-   - reading: |                     ← the answer in the consumer's own words, written at harvest
+   - a-consumer: |                     ← the answer in the consumer's own words, written at harvest
        No cycle column in 40 tables.
 ```
 
@@ -83,8 +98,8 @@ The section fields:
 - `serves:` — which stage or claim of the consumer this question is for; the affinity a stage gate greps.
 - `target:` — a PATH to the answering FILE; `NEW <task-folder-path>` while the task-folder does not exist yet. Point at the FILE, never the folder.
 - `state:` — `planned | commissioned | answered | read | answered-local | failed`; derived from disk, never asserted.
-- `commission:` — the executor-facing question (plain, general, no stake), frozen once written; the ONLY thing dispatched to the bank.
-- `reading:` — the answer in the consumer's own words, written at harvest; empty until answered.
+- `q-executor:` — the executor-facing question (plain, general, no stake), frozen once written; the ONLY thing dispatched to the bank.
+- `a-consumer:` — the answer in the consumer's own words, written at harvest; empty until answered.
 
 `## Why` is the stake, in consumer vocabulary; it NEVER leaves the file and is NEVER handed to an executor.
 
@@ -108,15 +123,15 @@ The five-step loop
 
 ```text
    ① ORGANIZE   collect the DRAFT's questions into probe files (grouped by TOPIC), and
-                write each one's COMMISSION — translate your question into the executor-facing
+                write each one's Q-EXECUTOR — translate your question into the executor-facing
                 form, stripping the stake out. This is the consumer→executor conversion.
    ② MATCH      SCAN the bank's existing QA files FIRST (grep + READ each state line).
                 If one already answers this question, REUSE it (point at it, skip ③) —
                 never make the bank re-do work it already did. Only an unanswered question goes on.
-   ③ DISPATCH   only when ② found nothing: hand the commission VERBATIM to the executor
+   ③ DISPATCH   only when ② found nothing: hand the q-executor VERBATIM to the executor
                 orchestrator → it returns a QA-file PATH (a new answer, written by the executor).
    ④ POINT      set the section's target: at the answering QA file
-   ⑤ INTERPRET  write the reading (the answer in the consumer's own words)
+   ⑤ INTERPRET  write the a-consumer (the answer in the consumer's own words)
 ```
 
 The order is the point: ② always precedes ③, so an existing answer is REUSED and only a genuinely new question ever creates new bank work.
@@ -141,7 +156,7 @@ Agent(haipipe-task-orchestrator-agent, prompt="
   action: qa
   project: <project_root>
   question: |
-    <the section's commission block, VERBATIM. Nothing else.>
+    <the section's q-executor block, VERBATIM. Nothing else.>
   task-folder: <the section's target: — an existing path, `NEW <path>`, or omit if unknown>
 ")
 ```
@@ -189,12 +204,12 @@ The two LAWS
 ============
 
 LAW 1 — A CONSUMER SESSION NEVER RUNS BANK WORK INLINE.
-Dispatch means hand the `commission` block VERBATIM, and nothing else — never `## Why`, never the probe file, never the paper.
+Dispatch means hand the `q-executor` block VERBATIM, and nothing else — never `## Why`, never the probe file, never the paper.
 It is broken the moment a consumer session runs bank work or writes a bank file (including a QA digest it thinks it is being helpful by authoring).
 A read-only grep of `{tasks,discoveries}/**/QA/*.md` is LEGAL and REQUIRED — that IS step ② MATCH. The wall bans the PEN and the RUN, not the EYE.
 
 LAW 2 — BACKSTOP LINT, ON TWO SURFACES.
-Commission blocks carry no claim ids and no stake words ("rescue", "we want", "the hoped-for").
+Q-executor blocks carry no claim ids and no stake words ("rescue", "we want", "the hoped-for").
 The bank's `QA/*.md` carry no consumer vocabulary (claim ids, "the paper" meaning *our* paper).
 
 
@@ -207,7 +222,7 @@ State is never a claim about an agent; it is checkable on disk, and the reader O
    planned         the section exists; the target task-folder is missing (or `NEW …`)
    commissioned    the task-folder exists with no answered QA file yet, OR the target QA file is `working`
    answered        the target QA file exists AND is `state: answered`
-   read            the section's reading: is non-empty — LEGAL ONLY against an `answered`, non-superseded target
+   read            the section's a-consumer: is non-empty — LEGAL ONLY against an `answered`, non-superseded target
    answered-local  target points into the consumer's own registries; no dispatch
    failed          a dead target · the task-folder was deleted · the executor REFUSED
 ```

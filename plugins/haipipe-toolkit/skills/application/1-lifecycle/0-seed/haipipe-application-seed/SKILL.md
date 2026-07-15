@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "3.3.1"
   last_updated: "2026-07-14"
-  summary: "Stage 0 on the paper-aligned contract: stage FOLDER (0-seed.md + _LOG), venue-FREE marker, DPRC phases via 2-phase/ workers, scaffold via enter get-or-create (dead ref pointer removed). v3.2: DRAFT may WebSearch to orient (fuel -> prose + planned question sections), PROBE must ALWAYS run the real worker; seed probes are FEASIBILITY only (novelty + external-data-obtainable), internal-data profiling forward-points to CLAIMS via a _LOG pointer. v3.3.0 (probe redesign, Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3 approved JL 2026-07-14): seed-level questions are SECTIONS in 1-probes/ (serves: 0-seed); the per-stage _PROBE/ folder is RETIRED. v3.3.1: BODY caught up with the frontmatter — the Phases block, the probe-scope rules and the done-criteria still told DRAFT to buffer `status: planned` PP CARDS and to backfill `refs` (both DELETED fields; the checker reads `state:`), so an agent obeying the body wrote a probe file the checker could not see. Now: question SECTIONS at `state: planned` with an EMPTY `target:`, the worker's five-step loop named, and the DRAFT/PROBE line drawn on SECTION STATE (`planned` + empty target vs `read` + a target: resolving to a QA file). 'takeaway'/'verdict' -> `reading:`."
+  summary: "Stage 0 on the paper-aligned contract: stage FOLDER (0-seed.md + _LOG), venue-FREE marker, DPRC phases via 2-phase/ workers, scaffold via enter get-or-create (dead ref pointer removed). v3.2: DRAFT may WebSearch to orient (fuel -> prose + planned question sections), PROBE must ALWAYS run the real worker; seed probes are FEASIBILITY only (novelty + external-data-obtainable), internal-data profiling forward-points to CLAIMS via a _LOG pointer. v3.3.0 (probe redesign, Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3 approved JL 2026-07-14): seed-level questions are SECTIONS in 1-probes/ (serves: 0-seed); the per-stage _PROBE/ folder is RETIRED. v3.3.1: BODY caught up with the frontmatter — the Phases block, the probe-scope rules and the done-criteria still told DRAFT to buffer `status: planned` PP CARDS and to backfill `refs` (both DELETED fields; the checker reads `state:`), so an agent obeying the body wrote a probe file the checker could not see. Now: question SECTIONS at `state: planned` with an EMPTY `target:`, the worker's five-step loop named, and the DRAFT/PROBE line drawn on SECTION STATE (`planned` + empty target vs `read` + a target: resolving to a QA file). 'takeaway'/'verdict' -> `a-consumer:`."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -85,7 +85,7 @@ DRAFT   settle the six sections with the user (haipipe-application-draft).
         prose as orientation AND raise each feasibility question as a
         question SECTION (`state: planned`, EMPTY `target:`) in the right
         topic's `1-probes/PPNN_<topic>.md`. NEVER write a finding or a
-        `reading:` into a section here — that is PROBE's job. When the
+        `a-consumer:` into a section here — that is PROBE's job. When the
         draft surfaces an INTERNAL-data question (our own cohort /
         engagement data), register a `[FORWARD -> CLAIMS] PPNN_<slug>`
         pointer line in _LOG_0-seed.md (need + why; no section, no dispatch).
@@ -97,13 +97,13 @@ PROBE   FEASIBILITY probes only, mode light — they answer "can this
             Skill("haipipe-application-probe", args="from-buffer <intervention_root>")
         The worker owns the whole five-step loop downstream: ORGANIZE the
         sections → MATCH the bank's QA corpus → DISPATCH the commission →
-        POINT target: at the answering QA file → INTERPRET into reading:.
+        POINT target: at the answering QA file → INTERPRET into a-consumer:.
         THIS STAGE NEVER does evidence work itself — inline WebSearch was
         fine in DRAFT as orientation fuel; here in PROBE it is FORBIDDEN
         (durability is the whole point). Evidence produced any other way
         has no project-side ledger and is void: the PROBE phase did not
         happen. Skip only by an explicit logged decision.
-REVISE  tighten wording; weave each section's `reading:` into the Probes
+REVISE  tighten wording; weave each section's `a-consumer:` into the Probes
         section (haipipe-application-revise)
 CHECK   exit criteria below → Gate Ledger row (haipipe-application-check)
 ```

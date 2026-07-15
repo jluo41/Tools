@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-enter
-description: "Open the Paper Console for a paper repo. Use for `/haipipe-paper`, `/haipipe-paper enter <paper-path>`, `/haipipe-paper status [paper-path]`, or when starting work in an existing paper folder. GET-OR-CREATE: a missing path offers to create the paper (confirm-gated; org asked, never assumed; repo-backed inside Project-* repos) and continues into the console. Derives current state from disk (not stored status), renders an open-needs dashboard with the lifecycle frontier, maturity, stable assets, claim/display/round gaps, loopback diagnosis, and next commands, records session state in .paper-console.yaml, and routes free-form follow-up input through the lifecycle in copilot mode."
+description: "Open the Paper Console for a paper repo. Use for `/haipipe-paper`, `/haipipe-paper enter <paper-path>`, `/haipipe-paper status [paper-path]`, or when starting work in an existing paper folder. GET-OR-CREATE: a missing path offers to create the paper (confirm-gated, repo-backed inside Project-* repos). Derives state from disk (not stored status), renders an open-needs dashboard (frontier, maturity, claim/display/round gaps, loopback diagnosis, next commands), records session state in .paper-console.yaml, and routes free-form input through the lifecycle in copilot mode."
 argument-hint: "[paper-path] [--org <owner>] [free-form input]"
 allowed-tools: Bash, Read, Grep, Glob, Write, Skill
 metadata:

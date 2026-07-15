@@ -19,7 +19,7 @@ The application lifecycle is a delivery lifecycle. It owns the intervention-spec
 ├── 0-sections/               sectioned-venue prose
 ├── 0-artifacts/              <slug>-v{N}.md · REVIEW-* · CLAIM_AUDIT.md
 ├── 1-probes/PPNN_<topic>.md  the probe FILES: one per TOPIC, question SECTIONS inside
-│                             (serves/target/state/commission/reading + one `## Why`)
+│                             (serves/target/state/q-executor/a-consumer + one `## Why`)
 ├── 1-rounds/vYYMMDD/         work rounds
 └── data/contract.yaml        input-data contract (data-consuming venues)
 ```
@@ -121,7 +121,7 @@ The lifecycle is not linear. When work fails, return to the earliest stage that 
 stage DRAFT RAISES A QUESTION
     ↓
 ① ORGANIZE   a SECTION in 1-probes/PPNN_<topic>.md (one file per topic; one `## Why` per file,
-             holding the stake — which never leaves it). The `commission` is written here:
+             holding the stake — which never leaves it). The `q-executor` is written here:
              the question in GENERAL language, stake stripped, FROZEN.
     ↓
 /haipipe-application probe run [PPNN]  →  haipipe-application-probe
@@ -130,7 +130,7 @@ stage DRAFT RAISES A QUESTION
              topic. T0 JOIN · T1 LOCAL · T2 REUSE. **MOST QUESTIONS STOP HERE.** The bank fills
              autonomously from executor sessions, so most answers exist before anyone asks.
     ↓
-③ DISPATCH   T3/T4 only: the `commission` block, VERBATIM, and nothing else — never the `## Why`,
+③ DISPATCH   T3/T4 only: the `q-executor` block, VERBATIM, and nothing else — never the `## Why`,
              never the probe file — to
                  Agent(haipipe-task-orchestrator-agent)
                  Agent(haipipe-discovery-orchestrator-agent)
@@ -142,7 +142,7 @@ stage DRAFT RAISES A QUESTION
     ↓
 ④ POINT      the section's `target:` → the answering QA FILE (the file, never the folder)
     ↓
-⑤ INTERPRET  the section's `reading:` → THE CLAIM'S STATUS FLIPS IN 1-claims.md
+⑤ INTERPRET  the section's `a-consumer:` → THE CLAIM'S STATUS FLIPS IN 1-claims.md
              (supported | refuted | inconclusive + confidence + claim_type);
              the harvest lanes pay out; sections/rounds backfill from the reading.
              There is no verdict block. "Verdict" is retired as a probe field.

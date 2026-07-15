@@ -13,11 +13,16 @@ metadata:
 Skill: haipipe-paper (orchestrator)
 ====================================
 
-User-facing entry for the paper lifecycle. The paper lifecycle is a delivery owner: it owns this paper's angle, resources, claims, narrative, section map, displays, maturity, and dated work rounds. Project-level evidence lives outside the paper in tasks and discoveries; when the paper hits a gap, record a delivery need (`../wiki/11-delivery-need.md`) and route to the evidence worker.
+User-facing entry for the paper lifecycle.
+The paper lifecycle is a delivery owner: it owns this paper's angle, resources, claims, narrative, section map, displays, maturity, and dated work rounds.
+Project-level evidence lives outside the paper in tasks and discoveries; when the paper hits a gap, record a delivery need (`../wiki/11-delivery-need.md`) and route to the evidence worker.
 
-This orchestrator parses intent and dispatches to stage/specialist skills via `Skill()`. Stage skills internally drive the DPRC phase workers (`2-phase/`); users and this router never invoke phase skills directly. Canonical structure: `README.md` at the paper skill root + `../wiki/06-paper-skill-structure.md`.
+This orchestrator parses intent and dispatches to stage/specialist skills via `Skill()`.
+Stage skills internally drive the DPRC phase workers (`2-phase/`); users and this router never invoke phase skills directly.
+Canonical structure: `README.md` at the paper skill root + `../wiki/06-paper-skill-structure.md`.
 
-ALWAYS read and honor `PREFERENCES.md` (this skill's own folder): portable, git-tracked global behavioral preferences that survive a machine change. `digest` / `feedback` append flagged global prefs there (merge-or-create).
+ALWAYS read and honor `PREFERENCES.md` (this skill's own folder): portable, git-tracked global behavioral preferences that survive a machine change.
+`digest` / `feedback` append flagged global prefs there (merge-or-create).
 
 The model: stages × four phases
 --------------------------------
@@ -62,7 +67,8 @@ digest [session] [--dry-run]                 -> fn/digest.md   (resolve BEFORE o
 "<natural language>"                         -> infer via the keywords above, dispatch
 ```
 
-**Phase-verb pass-through**: a trailing `draft | probe | revise | check` after any stage verb's args is a PHASE VERB — forward it verbatim through the lifecycle router to the stage skill (e.g. `/haipipe-paper edit 4-llmtrait revise` → section-edit drives its REVISE phase). Stage skills stop at their human gates (DRAFT review, CHECK); the user's verb is what advances them — never advance a gate on the user's behalf.
+**Phase-verb pass-through**: a trailing `draft | probe | revise | check` after any stage verb's args is a PHASE VERB — forward it verbatim through the lifecycle router to the stage skill (e.g. `/haipipe-paper edit 4-llmtrait revise` → section-edit drives its REVISE phase).
+Stage skills stop at their human gates (DRAFT review, CHECK); the user's verb is what advances them — never advance a gate on the user's behalf.
 
 Examples:
 
@@ -92,7 +98,9 @@ Resolution order (first match wins):
 
 A paper root is any directory upward containing `STATUS.md`, `0-lifecycle/`, `0-*.tex` + `0-sections/`, or `1-compile.sh` + `0-sections/`.
 
-Venue coupling (drives two routing rules): seed + resource + claims are venue-FREE; venue pins the journal in STATUS.md between claims and pitch AND compiles the pack into the paper's `0-lifecycle/2-venue/2-venue.md`; pitch/narrative/display/section-edit are venue-ALIGNED and consult 2-venue.md (direct `_venue/playbook-<venue>` reads = fallback when 2-venue.md is absent, or deep dives via its `[source: ...]` tags). So: "paper" with claims done but no venue pinned -> run `venue` before pitch. Re-targeting ("move to another journal") -> re-run `venue`; pitch re-couples (new [primary], new RQ framing); resource and claims stay unchanged (what a paper NEEDS to exist does not depend on where you send it).
+Venue coupling (drives two routing rules): seed + resource + claims are venue-FREE; venue pins the journal in STATUS.md between claims and pitch AND compiles the pack into the paper's `0-lifecycle/2-venue/2-venue.md`; pitch/narrative/display/section-edit are venue-ALIGNED and consult 2-venue.md (direct `_venue/playbook-<venue>` reads = fallback when 2-venue.md is absent, or deep dives via its `[source: ...]` tags).
+So: "paper" with claims done but no venue pinned -> run `venue` before pitch.
+Re-targeting ("move to another journal") -> re-run `venue`; pitch re-couples (new [primary], new RQ framing); resource and claims stay unchanged (what a paper NEEDS to exist does not depend on where you send it).
 
 Dispatch notes (only where non-obvious; everything else is `Skill("haipipe-paper-<target>")` or `Skill("haipipe-paper-lifecycle", args="<verb> ...")`):
 
@@ -105,14 +113,15 @@ enter     Path exists -> Skill("haipipe-paper-enter", args="<path>"). Path MISSI
           Skill("haipipe-paper-lifecycle", args="folder <paper-path>"), double-bump (paper push ->
           project pointer -> workspace pointer), and continue straight into the console.
           Plain projects: folder + scaffold, then console.
-probe     Four sub-modes; the probe FILES at 1-probes/PPNN_<topic>.md are the source of truth and
-          the 1-probes/README.md board is derived from them. "<text>" RAISE a question as a SECTION;
-          no args SHOW the board (state derived from disk); "plan" the cross-stage CAMPAIGN
-          (consolidate → route each section's target: → order the dispatch DAG → author the README
-          Campaign section; a HUMAN GATE like DRAFT — present it and stop); "run [PPNN]" hands the
-          pool to haipipe-paper-probe, which runs the five-step loop MATCH-before-DISPATCH.
-          This umbrella NEVER calls /haipipe-probe directly — all bank contact is inside a stage's
-          PROBE phase, via haipipe-paper-probe. Anatomy + campaign detail: fn/probes.md.
+probe     Operates on the flat cross-stage pool (1-probes/PPNN_<topic>.md; the README board is
+          derived from it). Sub-modes are listed in the Verbs block above (raise · board · plan
+          the campaign · run). It is the SAME operation at two scopes: this paper-level verb
+          works the WHOLE pool (see/plan/drain every open question across all stages), while a
+          stage's PROBE phase works only its own slice — the sections whose `serves:` names that
+          stage — during that stage's DRAFT→PROBE→REVISE→CHECK turn. Both go through the one
+          worker, haipipe-paper-probe, which runs the five-step loop MATCH-before-DISPATCH and is
+          the ONLY thing that touches the bank; the umbrella and the stages never do. That worker
+          follows the shared probe model (the constitution). Anatomy + campaign + model: fn/probes.md.
 ```
 
 After dispatch, capture the specialist's structured tail (status / summary / artifacts / next) and present it.
@@ -120,7 +129,8 @@ After dispatch, capture the specialist's structured tail (status / summary / art
 Closing Block (end every reply)
 --------------------------------
 
-THE single source of truth for the closing block and the focus strip (absorbed wiki/01-focus-strip-markers 2026-07-03; every stage / enter skill inherits this section). In a paper session, END every reply with ONE fenced `text` block: a titled top rule carrying `📄 paper · <active-stage> 🔥`, a two-line simplified tail, a plain bottom rule, then the TWO-LINE focus strip (stage + phase):
+THE single source of truth for the closing block and the focus strip (absorbed wiki/01-focus-strip-markers 2026-07-03; every stage / enter skill inherits this section).
+In a paper session, END every reply with ONE fenced `text` block: a titled top rule carrying `📄 paper · <active-stage> 🔥`, a two-line simplified tail, a plain bottom rule, then the TWO-LINE focus strip (stage + phase):
 
 ```text
 ── 📄 paper · seed 🔥 ─────────────────────────
@@ -131,9 +141,12 @@ stage:   seed 🔥  resource ✅  claims ✅  venue ✅  pitch ✅  narrative �
 phase:   draft 🔥🚀  │  probe: cite ⬜  val --  disp --  │  revise ⬜  │  check ⬜
 ```
 
-Markers: 🔥 active now (what this session works on) · 🚀 frontier (farthest the paper has ever reached) · ✅ done · ⬜ not started · `--` skipped. Rules: EXACTLY one 🔥 and EXACTLY one 🚀 per line, never zero -- "reached" means entered, not completed, so a virgin paper working its first phase renders `draft 🔥🚀`, and any line showing 🔥 without a 🚀 somewhere is a rendering defect; they split only on loopback (the frontier slot keeps 🚀 while 🔥 moves back) and collapse to `🔥🚀` when they land on the same slot; the phase line always describes the 🔥 stage's DPRC phases; `cite`/`val`/`disp` are probe's sub-tracks (stages without them show a single `probe` slot). Two markers because loopbacks are normal (redo seed while the frontier is section-edit): one marker cannot show both "where I am" and "how far the paper has gotten".
+Markers: 🔥 active now (what this session works on) · 🚀 frontier (farthest the paper has ever reached) · ✅ done · ⬜ not started · `--` skipped.
+Rules: EXACTLY one 🔥 and EXACTLY one 🚀 per line, never zero -- "reached" means entered, not completed, so a virgin paper working its first phase renders `draft 🔥🚀`, and any line showing 🔥 without a 🚀 somewhere is a rendering defect; they split only on loopback (the frontier slot keeps 🚀 while 🔥 moves back) and collapse to `🔥🚀` when they land on the same slot; the phase line always describes the 🔥 stage's DPRC phases; `cite`/`val`/`disp` are probe's sub-tracks (stages without them show a single `probe` slot).
+Two markers because loopbacks are normal (redo seed while the frontier is section-edit): one marker cannot show both "where I am" and "how far the paper has gotten".
 
-Render the stage line DETERMINISTICALLY with the helper (never hand-type it; it drifts): `sh "$CLAUDE_SKILL_DIR/stage-strip.sh" <paper-dir> [<session-stage>]` (the script lives IN this skill folder, next to this spec). The phase line is rendered by the 🔥 stage's skill from its own DPRC progress.
+Render the stage line DETERMINISTICALLY with the helper (never hand-type it; it drifts): `sh "$CLAUDE_SKILL_DIR/stage-strip.sh" <paper-dir> [<session-stage>]` (the script lives IN this skill folder, next to this spec).
+The phase line is rendered by the 🔥 stage's skill from its own DPRC progress.
 
 
 Gate-aware: advancing `current_layer` requires an EXPLICIT approval action that the current stage is done (Stage Gate, `../wiki/08-stage-gate.md`) -- by the human (copilot mode) or by a reviewer subagent standing in for the human (autopilot mode); once STATUS.md carries the gate ledger, ✅ means "approved", and the ledger records who approved (human or agent).
@@ -142,7 +155,8 @@ Gate-aware: advancing `current_layer` requires an EXPLICIT approval action that 
 No-Arg Chooser
 ---------------
 
-When no paper root is found, do not fan out. Emit a compact chooser (one line per entry; the Verbs block carries the detail):
+When no paper root is found, do not fan out.
+Emit a compact chooser (one line per entry; the Verbs block carries the detail):
 
 ```
 📄 haipipe-paper: no paper detected. Pick an entry:
@@ -166,17 +180,21 @@ next:      suggested next command
 Delivery Need Routing
 ----------------------
 
-Paper work is demand-driven: a paragraph, claim, figure, or round todo may reveal that the next action is evidence work. The enter/status path surfaces those needs before recommending more writing. Need record schema: `../wiki/11-delivery-need.md`; paper/evidence boundary + `\needprobe{}`: `../wiki/12-evidence-routing.md`.
+Paper work is demand-driven: a paragraph, claim, figure, or round todo may reveal that the next action is evidence work.
+The enter/status path surfaces those needs before recommending more writing.
+Need record schema: `../wiki/11-delivery-need.md`; paper/evidence boundary + `\needprobe{}`: `../wiki/12-evidence-routing.md`.
 
 ```
 claim needs evidence / robustness / literature / a data artifact -> /haipipe-paper probe "<question>"  (a SECTION in 1-probes/; MATCH first, dispatch only what MATCH cannot close)
 figure/table needs materialized output (not claim-gated)         -> /haipipe-task-for-display <need>
-settled claim status (supported|refuted|inconclusive)            -> 0-lifecycle/1-claims/1-claims.md (the ONLY home of a claim's status; the probe section carries only its `reading:`)
+settled claim status (supported|refuted|inconclusive)            -> 0-lifecycle/1-claims/1-claims.md (the ONLY home of a claim's status; the probe section carries only its `a-consumer:`)
 wording/section placement                                        -> the owning lifecycle stage skill
 standalone utility (a HUMAN, not the paper: lit scan, data check) -> /haipipe-task qa | /haipipe-discovery qa (the bank's own door)
 ```
 
-ALL evidence enters through a stage's PROBE phase; the paper never calls the bank directly. Resolved evidence backfills into `1-claims`, `4-display`, sections, or round logs. Evidence workers never own the paper story.
+ALL evidence enters through a stage's PROBE phase; the paper never calls the bank directly.
+Resolved evidence backfills into `1-claims`, `4-display`, sections, or round logs.
+Evidence workers never own the paper story.
 
 Structure Pointers
 -------------------
@@ -204,17 +222,12 @@ Composing with Evidence Workers
         └─► 1-probes/PPNN_<topic>.md (one file per TOPIC, one SECTION per question)
                  └─► haipipe-paper-probe (the PROBE phase worker, run inside a stage's PROBE phase)
                           ② MATCH the bank's QA corpus ──► most sections close HERE (T2 REUSE)
-                          ③ DISPATCH the `commission:` block, VERBATIM, only for what MATCH missed:
+                          ③ DISPATCH the `q-executor:` block, VERBATIM, only for what MATCH missed:
                                Agent(haipipe-task-orchestrator-agent)
                                Agent(haipipe-discovery-orchestrator-agent)   ← their clean context IS the wall
                           ④ POINT  target: ─► the answering QA file  tasks|discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md
-                          ⑤ INTERPRET reading: ─► the harvest lanes pay out
+                          ⑤ INTERPRET a-consumer: ─► the harvest lanes pay out
 
         a stage reaches the bank ONLY through its PROBE phase — no direct discover/task verb
 ```
 
-
-Feedback & Digest
-------------------
-
-`/haipipe-paper feedback "<text>"` captures a complaint/wish about THIS skill family, capture-time-routed into the concerned sub-skill's `feedback/` inbox (folder = the record; orchestrator inbox is the fallback), MERGE-OR-CREATE so inboxes stay self-limiting; `feedback list [skill]` aggregates, `feedback move <file> <skill>` re-routes. `/haipipe-paper digest [session] [--dry-run]` harvests a session transcript into discrete feedback items (dedup, mandatory confirm gate, then the same capture; global behavioral prefs fan out to every orchestrator's PREFERENCES.md instead of the inboxes). Full spec: `fn/feedback.md` + `fn/digest.md`; this section is a pointer, not the spec.

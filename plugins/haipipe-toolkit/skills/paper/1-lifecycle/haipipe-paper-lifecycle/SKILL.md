@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-lifecycle
-description: "Orchestrator for the paper structure lifecycle (1-lifecycle). Routes to stage specialists across the venue-free/venue-aligned boundary: seed, resource and claims are venue-FREE (don't change on retarget); venue pins the journal; pitch, narrative, display, and section-edit are venue-ALIGNED (rewrite on retarget). Also routes to display renderers: table, figure, diagram, illustration. Use when you need any structural work on a paper before or during writing. Trigger: paper structure, paper pitch, scaffold paper, paper outline, paper architecture, resource, prerequisite, display layer, figure plan, section edit, /haipipe-paper-lifecycle."
+description: "Orchestrator for the paper structure lifecycle (1-lifecycle). Routes to stage specialists across the venue-free/venue-aligned boundary: seed, resource, claims are venue-FREE; venue pins the journal; pitch, narrative, display, section-edit are venue-ALIGNED (rewrite on retarget). Also routes to display renderers: table, figure, diagram, illustration. Use for any structural work on a paper before or during writing. Trigger: paper structure, paper pitch, scaffold paper, paper outline, paper architecture, resource, display layer, figure plan, section edit, /haipipe-paper-lifecycle."
 argument-hint: "[function] [paper-path-or-input] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
@@ -171,10 +171,10 @@ The per-stage DRAFT->PROBE->REVISE->CHECK cycle above is DEPTH-FIRST — right f
                   from both banks; a DAG that waits on it waits forever.
 ④ RUN             the task/discovery orchestrators run their own qa gate and
                   write <task-folder>/QA/<n>-<slug>.md (often a SEPARATE concurrent
-                  session — the commission block in the section is the bridge,
+                  session — the q-executor block in the section is the bridge,
                   and it survives a dead session with zero files bank-side)
 ⑤ HARVEST         a PROBE re-run re-resolves each `commissioned` section's
-                  target:, `ls` its QA file, and lands the `reading:` +
+                  target:, `ls` its QA file, and lands the `a-consumer:` +
                   the 1-claims.md flip + the harvest lanes
                   (query-once: landed answers are read from registries, never
                   re-queried) → then REVISE + CHECK stage by stage

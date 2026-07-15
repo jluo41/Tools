@@ -16,7 +16,7 @@ An intervention is a delivery contract, not a drafting folder. It owns one deliv
 ├── 0-sections/               sectioned-venue prose (report/dashboard-like venues only)
 ├── 0-artifacts/              deliverables: <slug>-v{N}.md, REVIEW-*, CLAIM_AUDIT.md
 ├── 1-probes/                 the probe FILES: PPNN_<topic>.md, one per topic, question
-│                             SECTIONS inside (serves/target/state/commission/reading)
+│                             SECTIONS inside (serves/target/state/q-executor/a-consumer)
 ├── 1-rounds/vYYMMDD/         work rounds (discussion, decisions, todo, applied)
 └── data/contract.yaml        input-data contract (when the venue consumes data)
 ```
