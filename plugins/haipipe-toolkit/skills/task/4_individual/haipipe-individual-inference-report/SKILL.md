@@ -1,6 +1,6 @@
 ---
 name: haipipe-individual-inference-report
-description: "Per-individual prediction-interpretation report: loads one individual's data + recent CGM, hits the deployed prediction endpoint, then asks Claude (via claude_agent_sdk) to compose a dual-layer Report -- structured JSON + natural-language text -- for an audience persona (patient / clinician / etc.). Builds on haipipe-individual-inference. Persona library (prompt, schema, safety rules, tone) is pluggable: name a shipped persona or pass a path. Use to test how a prediction reads to an audience, or to generate reports for downstream judge/doctor evaluation. Trigger: individual report, prediction interpretation, generate patient message, /haipipe-individual-inference-report."
+description: "Per-individual prediction-interpretation report: loads one individual's data + recent CGM, hits the deployed prediction endpoint, then asks Claude (via claude_agent_sdk) to compose a dual-layer Report -- structured JSON + natural-language text -- for an audience persona (patient / clinician / etc.). Trigger: individual report, prediction interpretation, generate patient message, /haipipe-individual-inference-report."
 argument-hint: "--individual <id> --persona <name_or_path> [--endpoint-url URL] [--model X]"
 allowed-tools: Bash, Read
 metadata:
@@ -41,7 +41,7 @@ Layout
 
 ```
 src/
-  compose_report.py     SDK call (cribbed from physician judge), XML extract, parse
+  compose_report.py     SDK call, XML extract, parse
   report_schema.py      pydantic Report model
   persona_loader.py     resolve --persona name | path → system_prompt + meta
 

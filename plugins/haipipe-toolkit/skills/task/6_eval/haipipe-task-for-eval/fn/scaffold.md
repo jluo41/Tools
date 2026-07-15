@@ -39,7 +39,7 @@ B{NN}_<group>/
     ├── runs/
     │   └── eval_<target>.sh
     ├── results/
-    │   └── <run>/                           metrics.json, eval_log.txt
+    │   └── <run>/                           metrics.json, eval_log.txt (+ optional plots/, source_data.csv)
     └── notebooks/
 ```
 

@@ -43,7 +43,7 @@ def _write_call_artifacts(call_dir, input_data, response_data, meta):
 The raw per-call data lives in LLMCallStore.
 Task `results/<run>/` holds only aggregated outputs (summary.json, tables, scores).
 
-## After code/haiutils/llm_engine/ exists (future state)
+## Once code/haiutils/llm_engine/ is deployed
 
 ```python
 from haiutils.llm_engine import llm_call, LLMResult

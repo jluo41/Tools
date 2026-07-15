@@ -88,8 +88,7 @@ Step 0: Read `ref/concepts.md` — Src2InputFn semantics, payload schema, encodi
 Step 1: For `design`, also read `../haipipe-end/fn/fn-design.md` + `../haipipe-end/ref/0-overview.md`.
          For `review`, also read `../haipipe-end-endpointset/fn/fn-review.md`.
 Step 2: Execute the procedure scoped to Src2InputFn.
-Should stay in sync with its
-         inverse pair `/haipipe-end-input2src` — the two must round-trip.
+         Should stay in sync with its inverse pair `/haipipe-end-input2src` — the two must round-trip.
 Step 3: Emit the structured tail.
 
 ---

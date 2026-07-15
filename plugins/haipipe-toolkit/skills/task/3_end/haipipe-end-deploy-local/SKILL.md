@@ -17,8 +17,10 @@ Local / self-hosted HTTP deployment specialist.
 Wraps an Endpoint_Set into a small HTTP server running on the local machine.
 "Local" is the deployment target; the framework (Flask / FastAPI) and the optional Docker wrap are implementation choices.
 
-> Status: scaffolded. Procedures below are placeholders to be wired
-> through `platforms/platform-sagemaker-inference/scripts/build_endpoint/run_endpoint_{system,docker}.py`
+> Status: partially live. The FastAPI path is fully specified and runs via
+> `scripts/serve_local.py` (a generic wrapper around `Endpoint_Set.inference()`).
+> The Flask and Docker paths are still placeholders, to be wired through
+> `platforms/platform-sagemaker-inference/scripts/build_endpoint/run_endpoint_{system,docker}.py`
 > (the Flask + Docker testing scripts that already exist in this project)
 > when the project picks a stable local-deploy convention.
 

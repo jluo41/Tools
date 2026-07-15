@@ -21,7 +21,7 @@ Step 2 — Collect metadata
 - 2-digit NN: next free in `X_algo/`.
 - snake_case task_name: typically `test_<algo_name>`
   (e.g., `test_te_clm_lhm`, `test_te_diffusion`).
-- algo_class: the algorithm class under `code/hainn/<algo>/models/<class>/`.
+- algo_class: the algorithm class under `code/hainn/algo/<family>/`.
 - Tiny config knobs: `batch_size=1`, `max_steps≤5`, `aidata.split=tiny`.
 - `_meta:` (purpose explicitly says "smoke-test").
 
