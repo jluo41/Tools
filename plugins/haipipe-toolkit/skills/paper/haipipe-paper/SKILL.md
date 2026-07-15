@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper
-description: "Run any paper-lifecycle work. Use `/haipipe-paper enter <paper-path>` or `/haipipe-paper status` to open an open-needs dashboard derived from STATUS.md, 0-lifecycle, 1-probes, 0-displays and git state. Owns this paper's story, claims, narrative, displays, maturity and dated rounds; evidence questions live as SECTIONS in 1-probes/PPNN_<topic>.md probe files, and each one's `commission:` block is dispatched straight to the task/discovery orchestrators. Also parses intent (venue + stage) and routes to the stage specialists for writing, revising and rebutting. Trigger: paper, enter paper, paper status, open needs, resource, prerequisite, do we have the data, claim gap, figure table gap, round, work round, write paper, draft paper, revise paper, polish tex, rebuttal, reply to reviewers, probe, probe plan, probe run, discover, task, evidence, 写论文, 论文流程, /haipipe-paper."
+description: "Run any paper-lifecycle work: parse intent (venue + stage) and route to the stage specialists. Each stage runs four phases (draft → probe → revise → check); evidence enters ONLY through the PROBE phase, which raises questions as sections in 1-probes/PPNN_<topic>.md and dispatches them through a clean agent. `enter`/`status` open the paper's open-needs dashboard. Trigger: paper, enter paper, paper status, venue, seed, resource, claims, pitch, narrative, display, section-edit, round, rebuttal, probe, evidence, 写论文, 论文流程, /haipipe-paper."
 argument-hint: "[enter|status|venue|stage] [paper-path-or-args...]"
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
   version: "3.1.0"
   last_updated: "2026-07-14"
-  summary: "Front door for the paper lifecycle: one verbs block, one routing pass, closing block, pointers to owners. Parses intent (venue + stage) and dispatches to stage specialists; evidence questions live as sections in 1-probes/PPNN_<topic>.md and route to the task/discovery orchestrators. See CHANGELOG.md for version history."
+  summary: "Front door for the paper lifecycle: parse intent (venue + stage), route to the stage specialists. Each stage runs four phases (draft → probe → revise → check); the paper RAISES evidence questions as sections in 1-probes/, and each stage's PROBE phase dispatches them through a clean agent — the paper never calls the bank directly. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -18,6 +18,23 @@ User-facing entry for the paper lifecycle. The paper lifecycle is a delivery own
 This orchestrator parses intent and dispatches to stage/specialist skills via `Skill()`. Stage skills internally drive the DPRC phase workers (`2-phase/`); users and this router never invoke phase skills directly. Canonical structure: `README.md` at the paper skill root + `../wiki/06-paper-skill-structure.md`.
 
 ALWAYS read and honor `PREFERENCES.md` (this skill's own folder): portable, git-tracked global behavioral preferences that survive a machine change. `digest` / `feedback` append flagged global prefs there (merge-or-create).
+
+The model: stages × four phases
+--------------------------------
+
+The front door exposes STAGES, not executors.
+A user advances a stage; each stage runs the same four phases:
+
+```text
+   DRAFT ──▶ PROBE ──▶ REVISE ──▶ CHECK
+   write &   collect    weave in    human
+   raise     evidence   the answer  gate
+```
+
+PROBE is the ONLY phase that touches the bank, and it reaches it only through a probe file and a clean-context agent — the paper session never runs bank work itself.
+There is no `discover` or `task` verb: calling the bank is the PROBE's job, not the paper's.
+A standalone utility question a human wants (a quick lit scan, a data check) goes to the bank's OWN door — `/haipipe-task qa` or `/haipipe-discovery qa` — typed by a person, never proxied by the paper.
+
 
 Verbs
 ------
@@ -39,8 +56,6 @@ table | figure | plot | diagram |
   figure1 | framework                        -> haipipe-paper-lifecycle <renderer verb> (display renderer family; 做表/画图/架构图)
 round | rounds                               -> haipipe-paper-round (dated work rounds; also "todo", "decisions", "applied")
 probe ["<question>"] | probe | probe plan | probe run [PPNN]  -> the probe-file pool: 1-probes/PPNN_<topic>.md, one file per TOPIC, one SECTION per question (RAISE / SHOW the board / PLAN the cross-stage campaign / RUN the five-step loop; the probe FILES are the source of truth — the README's Status board regenerates from them, its Campaign section is authored by "plan"; "run" hands the pool to haipipe-paper-probe; also "evidence gap", "verify claim", "hypothesis", "probe campaign", "consolidate probes")
-discover ["<question>"]                      -> /haipipe-discovery (non-claim utility; also "lit review", "find papers", "related work")
-task ["<contract>"]                          -> /haipipe-task (non-claim utility; also "run analysis", "compute", "implement")
 rebuttal                                     -> haipipe-paper-rebuttal (also "reply to reviewers", "reviewer comments", "OpenReview response", "R1 revision")
 feedback "<text>" | feedback list|move       -> fn/feedback.md (resolve BEFORE other parsing)
 digest [session] [--dry-run]                 -> fn/digest.md   (resolve BEFORE other parsing)
@@ -59,7 +74,6 @@ Examples:
 /haipipe-paper display "Table 1 + STROBE flow + subgroup forest"
 /haipipe-paper probe "NEED-1: expand ex ante audit to all 20 messages"
 /haipipe-paper probe run PP02
-/haipipe-paper discover "AI-assisted precision nudging in IS literature"
 ```
 
 Routing
@@ -91,42 +105,15 @@ enter     Path exists -> Skill("haipipe-paper-enter", args="<path>"). Path MISSI
           Skill("haipipe-paper-lifecycle", args="folder <paper-path>"), double-bump (paper push ->
           project pointer -> workspace pointer), and continue straight into the console.
           Plain projects: folder + scaffold, then console.
-probe     Four sub-modes -- "<text>" RAISE a question as a SECTION in the right topic's probe file
-          at 1-probes/PPNN_<topic>.md (one file per TOPIC, sections inside; `serves:` carries stage
-          affinity; create the file if the topic is new; regenerate the Status board row in
-          1-probes/README.md — the probe file is the source of truth, the board is derived),
-          no args SHOW the board (derive every state from DISK per the six-state vocabulary:
-          resolve each section's `target:` and `ls` its QA file — never from a stored console
-          state, and never from an `_ASK/` stub: those are DELETED),
-          "plan" -> the CAMPAIGN consolidation pass (cross-stage; best run AFTER a draft sweep of
-          all stages): read ALL stage drafts + ALL 1-probes/ sections, MERGE duplicate questions
-          (one section, many serves: — never a second section for the same question; retire the
-          duplicates), ROUTE each section (set its `target:` — the receiving task-folder /
-          discovery folder, `NEW ...` if it must be created; two sections aimed at one leaf are a
-          merge hint, a section with no plausible home is an under-specified question), order the
-          dispatch DAG (gating sections first — the ones every other question reads;
-          refutation-capable sections early; a DEPENDENT section waits until its upstream
-          section's `target:` QA file EXISTS ON DISK, i.e. state `answered`; query-once —
-          anything already answered by the bank's QA corpus routes to T2 REUSE, never a
-          re-dispatch), then write the Campaign section of 1-probes/README.md (AUTHORED — the one
-          hand-written part; the Status board section stays generated). Campaign is a HUMAN GATE
-          like DRAFT: present it and stop — the user's verb advances to "run".
-          "run" -> haipipe-paper-probe runs the FIVE-STEP LOOP (ORGANIZE -> MATCH -> DISPATCH ->
-          POINT -> INTERPRET). MATCH BEFORE DISPATCH: most sections should close on T2 REUSE
-          against the bank's QA corpus, and a commission is the EXCEPTION, not the norm.
-          Rules: the constitution, probe/haipipe-probe/SKILL.md (v8.0.0).
-          "run [PPNN]" -> Skill("haipipe-paper-probe", args="from-buffer <paper_root> [PPNN]").
-          This umbrella NEVER calls /haipipe-probe directly: all probe calling happens inside a stage's
-          PROBE phase via haipipe-paper-probe, which reads the pool and dispatches onward.
-          Each answer lands as a section's `reading:`, and a CLAIM's status flips in
-          0-lifecycle/1-claims/1-claims.md (the only home of a claim's status).
-          Probe-file convention: fn/probes.md.
-discover  Resolve the project root, Skill("haipipe-discovery", args="<args> --project <project_root>").
-task      Resolve the project root, Skill("haipipe-task", args="<args> --project <project_root>").
+probe     Four sub-modes; the probe FILES at 1-probes/PPNN_<topic>.md are the source of truth and
+          the 1-probes/README.md board is derived from them. "<text>" RAISE a question as a SECTION;
+          no args SHOW the board (state derived from disk); "plan" the cross-stage CAMPAIGN
+          (consolidate → route each section's target: → order the dispatch DAG → author the README
+          Campaign section; a HUMAN GATE like DRAFT — present it and stop); "run [PPNN]" hands the
+          pool to haipipe-paper-probe, which runs the five-step loop MATCH-before-DISPATCH.
+          This umbrella NEVER calls /haipipe-probe directly — all bank contact is inside a stage's
+          PROBE phase, via haipipe-paper-probe. Anatomy + campaign detail: fn/probes.md.
 ```
-
-> JL: maybe we don't call the discover and task from the paper side. It is the probe's task. 
-> JL: what we want are more like the stages' four phases. 
 
 After dispatch, capture the specialist's structured tail (status / summary / artifacts / next) and present it.
 
@@ -161,7 +148,7 @@ When no paper root is found, do not fan out. Emit a compact chooser (one line pe
 📄 haipipe-paper: no paper detected. Pick an entry:
   venue       /haipipe-paper venue "<topic or paper-path>" [--no-pin]
   enter       /haipipe-paper enter "<paper-path>" [--org <owner>]   (missing path -> offers to create it)
-  section-edit | rebuttal | probe | discover | task    (see /haipipe-paper help text above)
+  section-edit | rebuttal | probe    (see /haipipe-paper help text above)
 ```
 
 Specialist Return Contract
@@ -184,12 +171,12 @@ Paper work is demand-driven: a paragraph, claim, figure, or round todo may revea
 ```
 claim needs evidence / robustness / literature / a data artifact -> /haipipe-paper probe "<question>"  (a SECTION in 1-probes/; MATCH first, dispatch only what MATCH cannot close)
 figure/table needs materialized output (not claim-gated)         -> /haipipe-task-for-display <need>
-settled claim status (supported|refuted|inconclusive)            -> 0-lifecycle/1-claims/1-claims.md (the ONLY home of a claim's status; the probe section carries only its `reading:`. `## Verdict` and `verdicted` are DELETED)
+settled claim status (supported|refuted|inconclusive)            -> 0-lifecycle/1-claims/1-claims.md (the ONLY home of a claim's status; the probe section carries only its `reading:`)
 wording/section placement                                        -> the owning lifecycle stage skill
-non-claim utility work (lit scan, data check)                    -> /haipipe-paper discover|task
+standalone utility (a HUMAN, not the paper: lit scan, data check) -> /haipipe-task qa | /haipipe-discovery qa (the bank's own door)
 ```
 
-For claim-related evidence, ALWAYS route through the probe pool; direct discover/task verbs are for non-claim utility only. Resolved evidence backfills into `1-claims`, `4-display`, sections, or round logs. Evidence workers never own the paper story.
+ALL evidence enters through a stage's PROBE phase; the paper never calls the bank directly. Resolved evidence backfills into `1-claims`, `4-display`, sections, or round logs. Evidence workers never own the paper story.
 
 Structure Pointers
 -------------------
@@ -220,11 +207,10 @@ Composing with Evidence Workers
                           ③ DISPATCH the `commission:` block, VERBATIM, only for what MATCH missed:
                                Agent(haipipe-task-orchestrator-agent)
                                Agent(haipipe-discovery-orchestrator-agent)   ← their clean context IS the wall
-                               💀 the probe GATEWAY agent is RETIRED
                           ④ POINT  target: ─► the answering QA file  tasks|discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md
-                          ⑤ INTERPRET reading: ─► 1-claims.md flips ─► the harvest lanes pay out
+                          ⑤ INTERPRET reading: ─► the harvest lanes pay out
 
-        direct discover/task verbs remain ONLY for non-claim utility work (lit scan, data check)
+        a stage reaches the bank ONLY through its PROBE phase — no direct discover/task verb
 ```
 
 

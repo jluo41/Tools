@@ -1,12 +1,12 @@
 ---
 name: haipipe-application
-description: "Run any intervention-lifecycle work (the application umbrella). Use `/haipipe-application enter <intervention-path>` or `status` to preload an open-needs dashboard from STATUS.md, 0-lifecycle, 0-artifacts, 1-rounds, and git state. Application lifecycle owns intervention-specific story, claims, narrative, displays, artifact text, maturity, and dated work rounds; the venue (sms/email/dashboard/report/...) gates which stages fire and how deep claims must settle; open questions accumulate as SECTIONS in probe files under 1-probes/PPNN_<topic>.md, consumed by haipipe-application-probe (each stage's PROBE phase worker), which binds each question to a QA file in the task/discovery bank -- dispatching the commission to the task/discovery orchestrators. Direct task/discover verbs available for non-claim utility work. Trigger: application, intervention, enter, status, seed, claims, venue, pitch, narrative, display, section-edit, draft, sms, message, email, dashboard, report, review, deploy, iterate, round, probe, /haipipe-application."
+description: "Run any intervention-lifecycle work (the application umbrella). Use `/haipipe-application enter <intervention-path>` or `status` to preload an open-needs dashboard from STATUS.md, 0-lifecycle, 0-artifacts, 1-rounds, and git state. Application lifecycle owns intervention-specific story, claims, narrative, displays, artifact text, maturity, and dated work rounds; the venue (sms/email/dashboard/report/...) gates which stages fire and how deep claims must settle; open questions accumulate as SECTIONS in probe files under 1-probes/PPNN_<topic>.md, consumed by haipipe-application-probe (each stage's PROBE phase worker), which binds each question to a QA file in the task/discovery bank by dispatching the commission through a clean agent -- the intervention never calls the bank directly. Trigger: application, intervention, enter, status, seed, claims, venue, pitch, narrative, display, section-edit, draft, sms, message, email, dashboard, report, review, deploy, iterate, round, probe, /haipipe-application."
 argument-hint: "[enter|status|venue|stage|draft] [intervention-path-or-args...]"
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
   version: "5.3.0"
   last_updated: "2026-07-14"
-  summary: "Front door for the intervention lifecycle, paper-aligned: claims-before-venue spine, DPRC phases, closing block + venue-aware focus strip. 5.1.0 (round 2): probe VERIFY + mechanical check gate. 5.2.0 (probe redesign, Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3 approved JL 2026-07-14): the probe verbs re-point at 1-probes/PPNN_<topic>.md -- probe FILES holding question SECTIONS, not per-stage _PROBE/ cards with a 1-probe-plans/ index. Evidence reaches the bank by DISPATCH to the task/discovery orchestrators (the probe GATEWAY agent is RETIRED) and comes back as a QA file the section's target: points at; a claim's status lives in 1-claims.md, never in a probe ('verdict' is DELETED as a probe field). Alignment record: ./CHANGELOG.md (archived SOP under 5.0.0). v5.3: two residue fixes. (a) fn/probe-plans.md RENAMED to fn/probes.md — one name per thing, matching the paper twin (the six inbound pointers were repointed in the same pass); the 'the FILENAME is legacy and stays' rationale is deleted. (b) fn/feedback.md's routing table no longer keys on 'PPNN card' — it keys on 'probe file / question section / commission', so the keyword index a session greps stops advertising card-era vocabulary the checker FAILs."
+  summary: "Front door for the intervention lifecycle (paper-aligned): parse intent (venue + stage), route to the stage specialists. Each stage runs four phases (draft → probe → revise → check); the intervention RAISES evidence questions as sections in 1-probes/, and each stage's PROBE phase dispatches them through a clean agent — the intervention never calls the bank directly. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -40,8 +40,6 @@ deploy | ship | go live                      -> haipipe-application-deploy
 round | rounds                               -> haipipe-application-round (dated work rounds; also "todo", "decisions", "applied")
 iterate | A/B | performance                  -> haipipe-application-iterate
 probe ["<question>"] | probe | probe run [PPNN] -> probe files: 1-probes/PPNN_<topic>.md, one SECTION per question (RAISE / SHOW the board / "run" hands them to haipipe-application-probe; also "evidence gap", "verify claim", "hypothesis")
-discover ["<question>"]                      -> /haipipe-discovery (non-claim utility; also "lit review", "benchmarks", "field norms")
-task ["<contract>"]                          -> /haipipe-task (non-claim utility; also "run analysis", "compute", "pull data")
 feedback "<text>" | feedback list|move       -> fn/feedback.md (resolve BEFORE other parsing)
 digest [session] [--dry-run]                 -> fn/digest.md   (resolve BEFORE other parsing)
 "<natural language>"                         -> infer via the keywords above, dispatch
@@ -56,7 +54,6 @@ Examples:
 /haipipe-application probe "C02: timing matters for refill response"
 /haipipe-application probe run PP01
 /haipipe-application draft
-/haipipe-application discover "SMS nudge benchmarks in medication adherence"
 ```
 
 Routing
@@ -92,8 +89,6 @@ probe     Three sub-modes -- "<question>" RAISE it as a SECTION in the right top
           PROBE phase via haipipe-application-probe, which MATCHes against the bank's QA corpus first and
           only then dispatches a commission onward. Readings backfill into 1-claims / sections / round
           logs -- and a claim's STATUS lands in 1-claims.md, never in a probe. Convention: fn/probes.md.
-discover  Resolve the project root, Skill("haipipe-discovery", args="<args> --project <project_root>").
-task      Resolve the project root, Skill("haipipe-task", args="<args> --project <project_root>").
 ```
 
 After dispatch, capture the specialist's structured tail (status / summary / artifacts / next) and present it.
@@ -127,7 +122,7 @@ When no intervention root is found, do not fan out. Emit a compact chooser (one 
 🎯 haipipe-application: no intervention detected. Pick an entry:
   venue       /haipipe-application venue "<topic or intervention-path>" [--no-pin]
   enter       /haipipe-application enter "<intervention-path>"   (missing path -> offers to scaffold it)
-  draft | probe | discover | task    (see /haipipe-application help text above)
+  draft | probe    (see /haipipe-application help text above)
 ```
 
 Specialist Return Contract
@@ -153,10 +148,9 @@ display element needs materialized output (not claim-gated)      -> /haipipe-tas
 a question with no intervention behind it                        -> /haipipe-task qa "<q>" | /haipipe-discovery qa "<q>"  (the QA file IS the receipt; no probe file needed)
 the claim's STATUS once the evidence lands                       -> 0-lifecycle/1-claims/1-claims.md  (there is no probe "verdict" — the word is retired)
 wording/structure/tone                                           -> the owning lifecycle stage skill (audience profile shapes tone)
-non-claim utility work (lit scan, data check)                    -> /haipipe-application discover|task
 ```
 
-For claim-related evidence, ALWAYS route through a probe file; direct discover/task verbs are for non-claim utility only. Resolved evidence backfills into `1-claims`, `4-display`, sections, or round logs. Executors never own the intervention story — and the intervention never writes in the executors' bank (LAW 1: a consumer session never executes task/discovery work inline).
+ALL evidence enters through a stage's PROBE phase; the intervention never calls the bank directly. Resolved evidence backfills into `1-claims`, `4-display`, sections, or round logs. Executors never own the intervention story — and the intervention never writes in the executors' bank (LAW 1: a consumer session never executes task/discovery work inline).
 
 Structure Pointers
 -------------------
@@ -194,8 +188,7 @@ Composing with Evidence Workers
                                     └─► the section's target: points at that FILE; its reading:
                                         interprets it; the CLAIM's status flips in 1-claims.md
 
-        💀 the probe GATEWAY agent is RETIRED — dispatch goes straight to the executors.
-        direct discover/task verbs remain ONLY for non-claim utility work (lit scan, data check)
+        a stage reaches the bank ONLY through its PROBE phase — no direct discover/task verb
 ```
 
 Feedback & Digest

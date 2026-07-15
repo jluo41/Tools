@@ -44,8 +44,8 @@ stage gap -> a SECTION in 1-probes/ -> MATCH the bank (most stop here) -> commis
 
 ```
 a claim needs evidence / robustness           -> /haipipe-application probe "<question>"  (a SECTION; run binds it)
-outside context / benchmark (non-claim)       -> /haipipe-application discover "<question>"
-run / data artifact / display materialization -> /haipipe-application task "<contract>"  (or /haipipe-task-for-display)
+outside context / benchmark                   -> /haipipe-application probe "<question>"  (a SECTION; or, if standalone, the bank's own door below)
+display materialization (not claim-gated)     -> /haipipe-task-for-display <need>
 a question with no intervention behind it     -> /haipipe-task qa "<q>" | /haipipe-discovery qa "<q>"
                                                  (the everyday explore verb; the QA file IS the receipt.
                                                   If it later matters to a claim, open a section whose
