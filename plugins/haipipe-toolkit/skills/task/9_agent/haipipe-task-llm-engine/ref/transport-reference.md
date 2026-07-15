@@ -78,7 +78,6 @@ Auth waterfall inside codex_oauth:
 2. `CODEX_OAUTH_AUTH_JSON` env var -> custom path
 3. `~/.codex/auth.json` (default)
 
-Supported models: only `gpt-5.5` works via ChatGPT backend.
-gpt-4.1-mini, o4-mini, codex-mini all rejected with 400 error.
+Supported models: only `gpt-5.5` works via ChatGPT backend. gpt-4.1-mini, o4-mini, codex-mini all rejected with 400 error.
 
 Auto JWT refresh: on 401 the client refreshes the token via auth.openai.com/oauth/token and persists the new token back to auth.json.

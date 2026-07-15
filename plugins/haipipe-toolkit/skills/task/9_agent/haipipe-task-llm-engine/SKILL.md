@@ -13,7 +13,8 @@ metadata:
 
 Skill that **owns and maintains** the LLM engine at `code/haiutils/llm_engine/`.
 
-The engine is a Python package that any agent task `.py` script imports to make LLM calls. This skill carries the reference implementation in `ref/engine/` and manages the deployed copy.
+The engine is a Python package that any agent task `.py` script imports to make LLM calls.
+This skill carries the reference implementation in `ref/engine/` and manages the deployed copy.
 
 ## What the engine provides
 
@@ -83,7 +84,10 @@ Task `results/` holds only aggregated outputs (summaries, tables), not raw per-c
 
 ## Anthropic billing status (as of 2026-06-27)
 
-Anthropic planned to meter Agent SDK usage starting June 15, 2026 (separate credit pool at API rates: Max=$100-200/mo). This change was PAUSED. OAuth is still free under subscription. The engine tracks `cost_usd` for when it flips.
+Anthropic planned to meter Agent SDK usage starting June 15, 2026 (separate credit pool at API rates: Max=$100-200/mo).
+This change was PAUSED.
+OAuth is still free under subscription.
+The engine tracks `cost_usd` for when it flips.
 
 ## Commands
 
@@ -109,4 +113,5 @@ Working test at:
 ```
 examples/ProjC-LLMRecPhysicain/tasks/B01_llm_open_rec/00_llm_engine_test/
 ```
-Both transports PASS. Claude ~5s/call, Codex ~50s/call.
+Both transports PASS.
+Claude ~5s/call, Codex ~50s/call.
