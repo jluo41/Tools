@@ -34,7 +34,10 @@ The five-step loop, paper-side
 Each step ends with a PROOF this worker MUST show in its reply; an absent proof means the step did not happen.
 STEP 0 — re-invoke this skill fresh every run, even when its text is already in context (a probe once ran a 3-hour-old contract).
 
-TWO HALVES. ①–④ COLLECT the answer from the bank — the shared probe mechanism, per the constitution (question → answered QA file). ⑤ HARVESTS it — files the answer's artifacts into the paper's OWN registries. Collection is the constitution's model; harvest is this worker's, and the constitution says nothing about it.
+TWO HALVES.
+①–④ COLLECT the answer from the bank — the shared probe mechanism, per the constitution (question → answered QA file).
+⑤ HARVESTS it — files the answer's artifacts into the paper's OWN registries.
+Collection is the constitution's model; harvest is this worker's, and the constitution says nothing about it.
 
 
 ① ORGANIZE — collect the DRAFT's questions into probe files, grouped by TOPIC
@@ -44,72 +47,94 @@ TWO HALVES. ①–④ COLLECT the answer from the bank — the shared probe mech
   Read `<paper_root>/0-lifecycle/1-resource/1-resource.md`.
   For every `Q<n>` that GATE 1 approved (present, not DECLINED in `_LOG_1-resource.md`) and carries NEITHER an `A:` NOR a `-> PP<NN>` backlink, open ONE section under `1-probes/` with `serves: resource` · `blocks: N<n>` (the Q's demand link, verbatim) · `target: NEW ?` · `state: planned`, and a `q-executor:` that re-poses the Q as a self-contained evidence question.
   Then write the backlink into 1-resource.md: `**Q<n> (N<n>) -> PP<NN>**` — that backlink is the mechanical proof the question was asked, and what `check-probe-cards.sh --stage resource` tests.
-  The ownership chain: the STAGE asks (Q<n>) → the HUMAN approves at GATE 1 → this worker opens the section → ② resolves or ③ commissions it → the answer lands → ⑤ writes the A back into the Q. The stage never mints a PP id.
-- Resolve `project_root`: walk UP from `paper_root` to the first ancestor containing `discoveries/`. Do NOT use `git rev-parse` — a repo-backed paper is its own git repo. (The checker resolves the same way.)
+  The ownership chain: the STAGE asks (Q<n>) → the HUMAN approves at GATE 1 → this worker opens the section → ② resolves or ③ commissions it → the answer lands → ⑤ writes the A back into the Q.
+  The stage never mints a PP id.
+- Resolve `project_root`: walk UP from `paper_root` to the first ancestor containing `discoveries/`.
+  Do NOT use `git rev-parse` — a repo-backed paper is its own git repo.
+  (The checker resolves the same way.)
 - Read the DRAFT's open questions: `{VAL:?}` slots, `GAP` markers, the stage's explicit questions (for claims: every GAP/weak claim).
-- Group by TOPIC; write ONE probe file per topic at `<paper_root>/1-probes/PPNN_<topic>.md`, one SECTION per question, one `## Why` per file. Next free PP number is paper-local; `ls 1-probes/` is the authority.
-- Write the `q-executor` here (the constitution's T1): a SEMANTIC strip — no claim/hypothesis labels, no stage words, no `## Why`, no hint of which answer is wanted. What crosses is a self-contained evidence question a stranger could answer. Frozen once written.
+- Group by TOPIC; write ONE probe file per topic at `<paper_root>/1-probes/PPNN_<topic>.md`, one SECTION per question, one `## Why` per file.
+  Next free PP number is paper-local; `ls 1-probes/` is the authority.
+- Write the `q-executor` here (the constitution's T1): a SEMANTIC strip — no claim/hypothesis labels, no stage words, no `## Why`, no hint of which answer is wanted.
+  What crosses is a self-contained evidence question a stranger could answer.
+  Frozen once written.
 - Migrate a legacy `1-probe-plans/` or per-stage `_PROBE/` probe into `1-probes/` in the new shape on first touch only.
 
 PROOF 1: `project_root=<path>` + `ls <project_root>/discoveries/` + `ls <paper_root>/1-probes/`.
 
 
-② MATCH — per question, cheapest door first (the cost ladder T0-T4 is the constitution's)
-----------------------------------------------------------------------------------------
+② MATCH — LOCAL first (inline), then hand the BANK to the q-executor agent
+-------------------------------------------------------------------------
 
-Paper-side specifics:
+The cost ladder T0-T4 is the constitution's. Split it by WHO can run each door — the paper-specific LOCAL doors stay here; the bank doors go to the shared agent.
+
+LOCAL (inline — paper-specific, only the stage can run it):
 - T1 LOCAL — a CLOSED whitelist of the paper's OWN registries: sibling/prior `_CITATION_*.md` · `_VALUES_*.md` · `_EVIDENCE_*.md` · sections already `read` · `0-displays/` units + index · the `.bib`.
-  Fully answered → write the `a-consumer`, set `answered-local`, do NOT dispatch. Partially → narrow the q-executor to the remaining gap and dispatch that. Adopt the POINTER, never the verdict: a reused value re-verifies against its ORIGINAL source at PLACE.
-- T2 REUSE — `grep -rl "<terms>" <project_root>/{tasks,discoveries}/**/QA/*.md`, then READ the hits and branch on the state line (constitution). May call the qa verb in CHECK-ONLY mode (`/haipipe-task qa "<q>" --check-only`): it detects ①/② and runs nothing.
-- DISPLAY-shaped needs are REROUTED, not dispatched (JL 2026-07-10): a question asking for a display unit that does not exist becomes a DR row in `0-lifecycle/4-display/_DISPLAY_REQUEST.md`; close the section `answered-local` with the `a-consumer` "rerouted to display stage: DRNN".
-- Reading anything BEYOND the QA corpus (opening `results/`, a plan.yaml, the code) is bank work and breaks LAW 1. The QA corpus is a readable index the executor published FOR readers; that is why reading it is allowed.
+  Fully answered → write the `a-consumer`, set `answered-local`, do NOT hand to the agent.
+  Partially → narrow the q-executor to the remaining gap; only the gap goes to the agent.
+  Adopt the POINTER, never the verdict: a reused value re-verifies against its ORIGINAL source at PLACE.
+- DISPLAY-shaped needs are REROUTED, not collected (JL 2026-07-10): a question asking for a display unit that does not exist becomes a DR row in `0-lifecycle/4-display/_DISPLAY_REQUEST.md`; close the section `answered-local` with the `a-consumer` "rerouted to display stage: DRNN".
 
-MOST SECTIONS SHOULD LAND ON T2 — the bank fills autonomously, so most answers exist before anyone asks. A probe file whose every section is T3/T4 is a SMELL (lazy MATCH, or a starving bank) — say which, in the reply.
+THE BANK (delegated — T2 REUSE + ③ DISPATCH + ④ POINT run in the agent's clean context):
+- Collect the STILL-COLLECTING sections — state `planned` or `commissioned`, that LOCAL did not resolve — tag each with a route hint (`task | discovery`; you know the question's nature, so the agent never guesses), and hand the SET to the collector:
 
-PROOF 2: per question the tier (T0-T4), and for T1/T2 the literal grep/ls hit lines (for T2, the QA file path READ **and its `- state:` line**).
+  ```text
+  Agent(haipipe-probe-q-executor-agent, prompt="
+    project_root: <from ①>
+    probe_files:  <the PPNN files touched this run>
+    collect:      <section ids still planned/commissioned>, each with route: task|discovery
+  ")
+  ```
 
+  The agent runs the stake-free middle in ITS OWN context and returns `{ section → tier, target: QA-path | in-flight | failed }`, having already written each `target:`.
+  It NEVER reads the paper's registries, the `## Why`, or the stake — its clean context IS the wall; and it never authors a fresh folder (the executor orchestrator picks it, LAW 1).
+  The stage NEVER calls `haipipe-task-orchestrator-agent` / `haipipe-discovery-orchestrator-agent` ITSELF — the collector owns dispatch; a stage that dispatches inline lands results nowhere reviewable.
 
-③ DISPATCH — the q-executor goes, VERBATIM, to the executor orchestrator
------------------------------------------------------------------------
+MOST SECTIONS SHOULD LAND ON T2 — the bank fills autonomously, so most answers exist before anyone asks.
+A batch the agent returns as all-T3/T4 is a SMELL (lazy MATCH, or a starving bank) — say which, in the reply.
+Reading anything BEYOND the QA corpus (opening `results/`, a plan.yaml, the code) is bank work and breaks LAW 1 — and it is the agent's corpus to read, not the stage's.
 
-One call per open question (batch independent ones). The keys are the orchestrators' OWN input spelling — a prompt matching none of their declared forms is undefined behaviour:
-
-```text
-Agent(haipipe-task-orchestrator-agent, run_in_background=<true for fresh>, prompt="
-  action: qa
-  project: <project_root, from ①>
-  question: |
-    <the section's `q-executor:` block, VERBATIM. Nothing else.>
-  leaf: <the section's target: — an existing task-folder path, `NEW <path>`, or omit if unknown>
-")
-```
-
-…or `Agent(haipipe-discovery-orchestrator-agent, ...)` for discovery-shaped work (literature, prior art, landscape). Their clean context IS the wall; they pick shape and depth and return a PATH.
-- Likely-fresh work dispatches `run_in_background=true` (a sync fresh run froze a session 25 minutes); ④ runs when it returns. If `<project_root>/discoveries/` is empty, EVERY question is T4 — background them all. Report a dispatch as background only if the call actually carried the flag.
-- DEFERRED DISPATCH (no agent): for a long build, leave the section `commissioned` with its BUILD-lane fields (owner/eta/blocks/cross-project) and STOP — the `q-executor` block IS the durable order; a later `/haipipe-task qa` session picks it up and a later PROBE re-run harvests it. This worker writes NOTHING project-side, ever — no stub, no mailbox.
-
-PROOF 3: per question the literal `Agent(...)` call, or (deferred) the `commissioned` block showing owner/eta/blocks/cross-project.
+PROOF 2: the LOCAL hits (per T1-resolved section, the literal grep/ls line), and the agent's return block (per delegated section: tier + `target:`).
 
 
-④ POINT — the section's `target:` → the answering QA FILE
+③ DISPATCH — owned by the collector agent, not the stage
 --------------------------------------------------------
 
-Write the returned PATH into `target:` (the FILE, never the folder) and verify with `ls <project_root>/<target>`. A return with no QA-file path means the evidence never landed → `state: failed`, phase not green.
-The section's state is the TARGET'S state line, not the target's existence (constitution) — open the file.
+The agent you called in ② owns dispatch: it sends each MISS to `Agent(haipipe-task-orchestrator-agent)` / `Agent(haipipe-discovery-orchestrator-agent)`, the `q-executor` VERBATIM, `run_in_background` for fresh work, and omits the leaf for fresh (the orchestrator picks the folder and returns the path).
+The stage NEVER calls an orchestrator itself — doing so bypasses this contract (results die with the reply).
 
-ASYNC PATH (MANDATORY). A `commissioned` section from an earlier session has no live return: on every run, re-resolve its `target:`, `ls` the QA file, READ its state line. `answered` → ⑤. `working` → stays `commissioned`, report IN PROGRESS since `<started>` (dead past `QA_WORKING_TTL_HOURS` → re-dispatch ③). A `commissioned` target that has since gone `answered` is a HARD FAIL (`commissioned-target-answered`) — harvest it now, do not wait for the eta.
+DEFERRED / ASYNC is the agent's too: a section it cannot land synchronously comes back `in-flight` and stays `commissioned`; the NEXT PROBE run re-hands it to the agent, whose ② re-matches the now-`working`/`answered` QA file. This worker writes NOTHING under `tasks/` or `discoveries/`, ever — no stub, no mailbox.
 
-PROOF 4: per question the `target:` line, the `ls` that resolves it, and `grep '^- state:' <target>`.
+PROOF 3: the agent's per-section dispatch / in-flight lines (from its return); NO `Agent(haipipe-task-orchestrator-agent)` call appears in THIS worker's own transcript.
 
-════════ COLLECTION (①–④) ends here — the answer is banked. HARVEST (⑤) begins. ════════
+
+④ POINT — the agent wrote `target:`; the stage VERIFIES it on disk
+------------------------------------------------------------------
+
+The agent already wrote each resolved section's `target:` (the FILE, never the folder). Before harvesting, VERIFY — do not trust the return blind (the state is the TARGET's state line, not the target's existence — open the file):
+- `ls <project_root>/<target>` resolves, and `grep '^- state:' <target>` reads `answered` → ⑤.
+- `working` → stays `commissioned`, report IN PROGRESS since `<started>` (dead past `QA_WORKING_TTL_HOURS` → re-hand to the agent next run).
+- no QA-file path returned → `state: failed`, phase not green.
+- a `commissioned` target that has since gone `answered` is a HARD FAIL (`commissioned-target-answered`) — harvest it now, do not wait for the eta.
+
+PROOF 4: per section the `target:` line, the `ls` that resolves it, and `grep '^- state:' <target>`.
+
+════════ COLLECTION (①–④) ends here — the answer is banked.
+HARVEST (⑤) begins. ════════
 
 ⑤ INTERPRET — the a-consumer, the claim status, and HARVEST (the paper's own, not the constitution's)
 -------------------------------------------------------------------------------------------------
 
-- Write the `a-consumer` (translate the general answer UP into the paper's words). ONLY against an `answered`, non-superseded target (constitution).
-- `mode: full` → the AUTHOR writes the claim status (`supported | refuted | inconclusive` + confidence + claim_type) into `0-lifecycle/1-claims/1-claims.md`, never in the probe file. A probe is communication, not judgment — there is no review gate; keep the `claim_type` overclaim check (never causal from associational evidence).
-- RESOURCE WRITE-BACK (`serves: resource`): write the landed reading BACK into `1-resource.md` as the Q's `A:` line — existence AND fitness AND what it KILLS ("probably fine" is a DEFECT, not an answer). A BUILD-lane section writes `A: COMMISSIONED · owner <who> · eta YYYY-MM-DD · blocks N<n> · cross-project: <path|none-found>` at booking; the async path overwrites it on landing. Both receipts: the section is the probe-layer one, the Q's `A:` is what the human reads at GATE 2.
-- LANE OBLIGATIONS — record the debt in the section FIRST (`values:`/`sources:`/`displays:` … `harvest: OWED`), then dispatch the lane's SUB-WORKER (`haipipe-paper-probe-citation` / `-values` / `-display`; cheap, pointer-following) and accept MECHANICALLY per `ref/harvest-acceptance.md` (run the greps, never eyeball). Flip to `harvest: accepted (<n>, <doc>)`. An `OWED` line at the gate FAILs.
+- Write the `a-consumer` (translate the general answer UP into the paper's words).
+  ONLY against an `answered`, non-superseded target (constitution).
+- `mode: full` → the AUTHOR writes the claim status (`supported | refuted | inconclusive` + confidence + claim_type) into `0-lifecycle/1-claims/1-claims.md`, never in the probe file.
+  A probe is communication, not judgment — there is no review gate; keep the `claim_type` overclaim check (never causal from associational evidence).
+- RESOURCE WRITE-BACK (`serves: resource`): write the landed reading BACK into `1-resource.md` as the Q's `A:` line — existence AND fitness AND what it KILLS ("probably fine" is a DEFECT, not an answer).
+  A BUILD-lane section writes `A: COMMISSIONED · owner <who> · eta YYYY-MM-DD · blocks N<n> · cross-project: <path|none-found>` at booking; the async path overwrites it on landing.
+  Both receipts: the section is the probe-layer one, the Q's `A:` is what the human reads at GATE 2.
+- LANE OBLIGATIONS — record the debt in the section FIRST (`values:`/`sources:`/`displays:` … `harvest: OWED`), then dispatch the lane's SUB-WORKER (`haipipe-paper-probe-citation` / `-values` / `-display`; cheap, pointer-following) and accept MECHANICALLY per `ref/harvest-acceptance.md` (run the greps, never eyeball).
+  Flip to `harvest: accepted (<n>, <doc>)`.
+  An `OWED` line at the gate FAILs.
 
 PROOF 5: per section the `a-consumer` line, the claim-ledger diff (if it serves a claim), the `grep -A2 'Q<n>' 1-resource.md` for a resource write-back, and each harvester `Agent(...)` call + its acceptance-grep output.
 
@@ -121,7 +146,9 @@ VERIFY — the checker (the stage CHECK gate re-runs the same script)
 sh <this-skill-dir>/check-probe-cards.sh <paper_root> [<project_root>] [--stage <key>]
 ```
 
-`--stage resource` also runs the resource pass over 1-resource.md: every `Q<n>` must carry an `A:`, a `-> PP<NN>` backlink (to a probe file that EXISTS), or a DECLINED line — none of the three FAILs as `unasked-question`, and "no section serves stage resource" while questions are open FAILs as the VACUOUS GREEN. The FAIL codes are the constitution's. Never report a green PROBE over a FAIL.
+`--stage resource` also runs the resource pass over 1-resource.md: every `Q<n>` must carry an `A:`, a `-> PP<NN>` backlink (to a probe file that EXISTS), or a DECLINED line — none of the three FAILs as `unasked-question`, and "no section serves stage resource" while questions are open FAILs as the VACUOUS GREEN.
+The FAIL codes are the constitution's.
+Never report a green PROBE over a FAIL.
 
 PROOF 6: the checker output, pasted.
 
@@ -132,7 +159,8 @@ Hard boundaries (paper-specific; the wall + ONE-WRITER are the constitution's)
 - NEVER generate bibtex or touch `.bib`; `_CITATION_` is plain text only.
 - NEVER fabricate numbers; NEVER create ad-hoc plots inline.
 - NO markdown tables in probe files, `_CITATION_`, or any probe document — bullet lines and sections only.
-- NO inline search in the PROBE phase — the dispatch is the door. (DRAFT may WebSearch to orient; the difference is DURABILITY, not the search verb.)
+- NO inline search in the PROBE phase — the dispatch is the door.
+  (DRAFT may WebSearch to orient; the difference is DURABILITY, not the search verb.)
 - A stage skill that calls `Agent(haipipe-task-orchestrator-agent)` or an evidence agent ITSELF bypasses this contract — results land nowhere reviewable and die with the reply.
 
 
