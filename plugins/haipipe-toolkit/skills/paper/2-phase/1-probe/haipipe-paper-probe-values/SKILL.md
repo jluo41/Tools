@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-probe-values
-description: "values HARVESTER (probe lane worker) for section-edit. One skill, one working doc (_VALUES_), lifecycle: AUDIT (identify every number) → ROUTE (numbers with no named source → probe-plan suggestions; discovery of 'which task has this number' is gateway SWEEP work) → CANDIDATE (harvest: expand the PP card's value_refs into entries — pointer-following, reads ONLY named paths) → PLACE (auto-place source-verified values, flag uncertain for CHECK) → REVIEW (pre-submission re-derivation walk). Fully automatic -- no human gate. Hard boundary: agent NEVER fabricates a number. The parquet/script decides, not the prose. Trigger: values, numbers, check numbers, numeric consistency, reconcile values, verify stats, manual review values."
+description: "values HARVESTER (probe lane worker) for section-edit. One skill, one working doc (_VALUES_), lifecycle: AUDIT (identify every number) → ROUTE (numbers with no named source → a new question SECTION in 1-probes/; finding 'which task has this number' is the PROBE phase's MATCH + DISPATCH, never this worker's) → CANDIDATE (harvest: expand the section's values: lane / target: QA file into entries — pointer-following, reads ONLY named paths) → PLACE (auto-place source-verified values, flag uncertain for CHECK) → REVIEW (pre-submission re-derivation walk). Fully automatic -- no human gate. Hard boundary: agent NEVER fabricates a number. The parquet/script decides, not the prose. Trigger: values, numbers, check numbers, numeric consistency, reconcile values, verify stats, manual review values."
 argument-hint: "[verb] [section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "2.0.0"
-  last_updated: "2026-07-07"
-  summary: "Values HARVESTER. AUDIT→ROUTE(unsourced numbers→probe plans)→CANDIDATE(harvest value_refs, pointer-following)→PLACE→REVIEW. Never greps tasks/ to discover sources — the gateway finds, this worker follows. Single working doc = _VALUES_."
+  version: "3.1.0"
+  last_updated: "2026-07-14"
+  summary: "Values HARVESTER. AUDIT→ROUTE(unsourced numbers→question SECTIONS in 1-probes/)→CANDIDATE(harvest the section's values: lane / target: QA file, pointer-following)→PLACE→REVIEW. Never greps tasks/ to discover sources — the EXECUTOR finds (reached by the PROBE phase's DISPATCH), this worker follows. v2.1: PAPER-LOCAL SWEEP tier in ROUTE (sibling _VALUES_, `answered|read|answered-local` probe SECTIONS, 0-displays/*/source/, _EVIDENCE_) before raising anything; adopt the pointer, never the verdict. Single working doc = _VALUES_. v3.0.1 (probe-redesign residue sweep): named sources are a probe section's `values:` lane / `target:` QA file (not 'a PP card's refs:'); unmatched numbers become question SECTIONS. v3.1.0 (R19/R20 HARVEST GATE): Phase 3 HARVEST now READS the target QA file's `- state:` line first and REFUSES a `working` target (its ## Answer is EMPTY BY CONSTRUCTION) and FOLLOWS the chain off a `superseded-by:` target (stale numbers would be auto-placed into the manuscript by PLACE). A QA file with NO state line is REFUSED (qa-no-state). Read-only: this worker still NEVER writes a QA file."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
   predecessors:
     - "haipipe-paper-manual-review-values (pre-submission number-by-number walk) — MERGED here as Phase 5"
@@ -20,8 +20,8 @@ values probe worker for `haipipe-paper-section-edit`. One skill owns the full va
 ```
 /haipipe-paper-probe-values                       → status dashboard
 /haipipe-paper-probe-values audit <section>       → Phase 1: identify every number
-/haipipe-paper-probe-values route <section>       → Phase 2: match to named sources, route gaps to probe plans
-/haipipe-paper-probe-values harvest <stage> <ref> → Phase 3: expand value_refs → _VALUES_ entries
+/haipipe-paper-probe-values route <section>       → Phase 2: match to named sources, raise gaps as question SECTIONS
+/haipipe-paper-probe-values harvest <stage> <qa_file> → Phase 3: expand the QA file's value anchors → _VALUES_ entries
 /haipipe-paper-probe-values place <section>       → Phase 4: auto-place verified, flag uncertain for CHECK
 /haipipe-paper-probe-values review <section>      → Phase 5: pre-submission re-derivation walk
 ```
@@ -41,11 +41,11 @@ values probe worker for `haipipe-paper-section-edit`. One skill owns the full va
 
 ```
 Phase 1: AUDIT        identify every number in the section
-Phase 2: ROUTE        match numbers to ALREADY-NAMED sources (PP card refs,
-                      _DISPLAY_ registry, _CITATION_); anything unmatched →
-                      probe-plan suggestion for the hub (NO discovery-grepping)
-Phase 3: CANDIDATE    harvest: expand value_refs into _VALUES_ entries
-                      (pointer-following — read ONLY the named paths)
+Phase 2: ROUTE        match numbers to ALREADY-NAMED sources (a probe section's
+                      values:/target:, the _DISPLAY_ registry, _CITATION_); anything
+                      unmatched → a question SECTION for the hub (NO bank-grepping)
+Phase 3: CANDIDATE    harvest: expand the section's values: lane / target: QA file
+                      into _VALUES_ entries (pointer-following — read ONLY named paths)
 Phase 4: PLACE        auto-place source-verified values; flag uncertain for CHECK
 Phase 5: REVIEW       pre-submission re-derivation walk (from manual-review-values)
 ```
@@ -55,7 +55,7 @@ All five phases run automatically without stopping for human input. The agent tr
 
 ## Phase 1: AUDIT
 
-Scan the section's tex file and extract every quantitative claim:
+Scan the section's WORKING .md (every `{VAL:? <what>}` slot AND every literal number in the prose); tex only when it exists post-sync. Extract every quantitative claim:
 
 - Sample sizes (N = X)
 - Rates, percentages, proportions
@@ -76,24 +76,52 @@ Skip `%%` comment lines. Do NOT skip table/figure captions.
 ## Phase 2: ROUTE (trace-as-grep is RETIRED — JL 2026-07-07 harvester ruling)
 
 Pointer-following only: this worker may READ a path that is already NAMED
-somewhere (a PP card's `refs:`/`value_refs:`, a `_DISPLAY_` registry row, a
-`_CITATION_` entry, an explicit path in the tex comment). It may NOT grep
+somewhere (a probe section's `values:` lane or `target:` QA file, a `_DISPLAY_`
+registry row, a `_CITATION_` entry, an explicit path in a tex comment). It may NOT grep
 `tasks/`/`code/` to DISCOVER which task holds a number — "which task has this
-number" is an evidence question, answered by the gateway's SWEEP in clean
+number" is an evidence question, answered by the EXECUTOR in its own clean
 context (index-first discipline lives there, not here).
+
+EXEMPT from that ban (JL 2026-07-10): the paper's OWN registries. Sweeping the
+closed whitelist below is pointer-following over indexes the lifecycle itself
+curated — the paper deposits verified pointers all through DPRC, and PROBE
+checks its own shelves before paying for a dispatch.
 
 For each Phase-1 number:
 
 | Situation | Action |
 |---|---|
-| A named source covers it (PP refs / _DISPLAY_ row / _CITATION_ / inline derivation) | record the pointer; proceed to Phase 3 |
-| No named source anywhere | write a probe-plan suggestion (Need: "source for <phrase>" / Why / Route: task-results sweep) and hand it to the PROBE hub — the gateway SWEEPs tasks/ and returns `value_refs` |
+| A named source covers it (a probe section's values:/target: / a _DISPLAY_ row / _CITATION_ / an inline derivation) | record the pointer; proceed to Phase 3 |
+| PAPER-LOCAL SWEEP hits — the number appears in a sibling/prior `_VALUES_*.md`, ANY stage's `answered \| read \| answered-local` probe SECTION's `values:` lane / `target:` QA file (seed, claims, display included), `0-displays/*/source/` (metrics.json, source_data.csv), or `_EVIDENCE_1-claims.md` | ADOPT THE POINTER, NOT THE VERDICT: copy the `Source:` path, add `Note: pointer via <file> (<status> <date>)`; the entry enters ⬜ and PLACE re-verifies against the ORIGINAL source (Hard Boundary 4 untouched) |
+| No named source and no paper-local hit | raise a question SECTION in 1-probes/ (commission: "where does the number for <phrase> come from?") and hand it to the PROBE hub — MATCH greps the bank's QA corpus, and only an unmatched question is DISPATCHED |
 
 Method claims ("Holm-Bonferroni corrected", "cluster-robust SEs") route the
-same way: unverifiable-from-named-sources → probe plan, not a codebase grep.
+same way: unverifiable-from-named-sources → a question SECTION, not a codebase grep.
 
 
 ## Phase 3: CANDIDATE → _VALUES_
+
+⚠️ **PRECONDITION — READ THE TARGET QA FILE'S STATE LINE BEFORE HARVESTING (R19/R20).** A QA file
+is a TICKET that becomes a RECEIPT, and `harvest <stage> <qa_file>` is a published direct
+invocation that must gate itself:
+
+```
+state=$(sed -n 's/^- state:[[:space:]]*//p' "$qa_file" | head -1)
+```
+
+```
+  state: answered        ✅ HARVEST. (and it carries no `superseded-by:`)
+  state: working         🚫 REFUSE. The `## Answer` is EMPTY BY CONSTRUCTION — the run is still
+                         in flight. Harvesting yields ZERO anchors and reports a silent no-op,
+                         which HIDES a live claim. Report "in progress since <started>" and stop.
+  … superseded-by: X     🔗 FOLLOW THE CHAIN and harvest the LIVE file instead. A superseded
+                         file's numbers are STALE, and PLACE auto-places verified values INTO
+                         THE MANUSCRIPT — the day-1/day-40 stale-read bug arriving through the
+                         HARVEST lane, where read-target-superseded cannot see it.
+  NO state line          🚫 REFUSE. `state:` is MANDATORY (checker: qa-no-state).
+```
+
+This is READ-ONLY. This worker still NEVER writes the QA file — ONE WRITER, the executor, always.
 
 Write entries to `_VALUES_N-section.md`.
 
@@ -128,7 +156,7 @@ The agent auto-places values it can verify against source files and flags the re
 
 2. **If the source confirms the value** (exact match or rounding-correct):
    - Update status: ⬜ → ✅
-   - Confirm the number is correctly woven into tex prose
+   - Confirm the number is correctly woven into the section .md (tex follows at sync; never edit tex prose directly)
    - Sync outline if needed
 
 3. **If the source contradicts the value** (⚠️ mismatch):

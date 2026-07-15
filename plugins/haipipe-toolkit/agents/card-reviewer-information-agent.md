@@ -1,1 +1,0 @@
-../skills/insight/agents/reviewers/card-reviewer-information-agent.md

@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-23
 context: display stage, ProjB Paper-Personality2Opioid-MISQ2026
-fixed_in: ""
+fixed_in: "haipipe-paper-display v3.0.0"
 ---
 "display is so [off], it should make the plan about how to create the figures,
 and then think about what is the probe and task to generate this plots, but
@@ -33,4 +33,6 @@ the per-display probe/task routing table FIRST, and only dispatch generation to
 tasks; forbid in-paper ad-hoc plotting. The ad-hoc Figure-DiscretionGradient.py
 should be promoted to a Z01 cross-cohort display task.
 
-Fix:
+Fix: v3.0.0 — DRAFT plans the set in 4-display.md (per-display blocks with route rows);
+PROBE runs two lanes: EVIDENCE (task/probe — numbers come from a task, never the agent)
++ RENDER (renderer skills in candidate mode). Ad-hoc in-paper plotting stays a defect.

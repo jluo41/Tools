@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-check
-description: "CHECK phase worker (internal). Called by stage skills as the ONLY human-involved phase in the DPRC lifecycle. DRAFT, PROBE, and REVISE run fully automatic; CHECK is where the human reviews everything at once. Runs automated sub-checkers, produces a unified pass/fail report, then the human verifies and decides. Users invoke stage skills (seed, claims, pitch...), not this skill directly."
+description: "CHECK phase worker (internal). Called by stage skills as the FINAL human gate in the DPRC lifecycle (the other gate is the stage's DRAFT structure review). PROBE and REVISE run fully automatic; CHECK is where the human reviews quality, flags, and REVISE why-comments at once. Runs automated sub-checkers, produces a unified pass/fail report, then the human verifies and decides. Users invoke stage skills (seed, claims, pitch...), not this skill directly."
 argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent
 metadata:
-  version: "1.7.0"
-  last_updated: "2026-07-07"
-  summary: "CHECK phase worker (internal). The ONLY human-involved phase. Runs sub-checkers (./checks.sh for the deterministic ones), seeds > CHECK: comments in-file at every flag site, and gates human review."
+  version: "2.1.0"
+  last_updated: "2026-07-14"
+  summary: "CHECK phase worker (internal). The ONLY human-involved phase. Runs sub-checkers (./checks.sh for the deterministic ones), seeds > CHECK: comments in-file at every flag site, and gates human review. v2.1 (probe-redesign residue sweep): the CHECK gate's probe invariants are stated over SECTIONS (`state: planned`, unresolvable `target:`, owed lanes); a `> USER:` new-candidate request becomes a question SECTION, never a 'probe plan -> gateway'."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -49,12 +49,30 @@ The check has three parts: (1) **MECHANICAL** -- run automated sub-checkers, pro
          complete the 5 outcomes -- see What Each Decision Does)
 ```
 
-1. **Run**: execute all applicable sub-checkers. For the deterministic text-match checks (em-dash, AI-voice tells, TODO, bibtex-in-markdown, broken `\cite`, broken/orphan `\label`↔`\ref`, Pn.Sn sequence) run `./checks.sh <tex-or-dir> [--md <working-doc>] [--depth N] [--compile]` and paste its ✅/⚠️/❌ lines (`--compile` wraps `./1-compile.sh`; `--depth` widens the tex/bib scan for deep layouts). For the PROBE-card invariants (planned/dispatched cards, unresolved refs, owed harvest lanes, bibtex/tables in working docs) run `sh ../../1-probe/haipipe-paper-probe/check-probe-cards.sh <paper_root>` — any FAIL line means the gate CANNOT go green (a `status: planned` card or a `harvest: OWED` lane at this gate = a probe that never ran). Judgment checks (citation support, value provenance, display correctness) stay manual.
+1. **Run**: execute all applicable sub-checkers. For the deterministic text-match checks (em-dash, AI-voice tells, TODO, bibtex-in-markdown, broken `\cite`, broken/orphan `\label`↔`\ref`, Pn.Sn sequence) run `./checks.sh <tex-or-dir> [--md <working-doc>] [--depth N] [--compile]` and paste its ✅/⚠️/❌ lines (`--compile` wraps `./1-compile.sh`; `--depth` widens the tex/bib scan for deep layouts). For the PROBE invariants (`planned` sections, unresolvable `target:`s, owed harvest lanes, bibtex/tables in working docs) run the paper probe checker (locate it per **Locating the card checker** below — the script KEEPS its `check-probe-cards.sh` filename) — any FAIL line means the gate CANNOT go green (a `state: planned` section or a `harvest: OWED` lane at this gate = a probe that never ran). Judgment checks (citation support, value provenance, display correctness) stay manual.
 2. **Report**: present results as a structured pass/fail table (see Report Format).
 2.5. **Seed `> CHECK:` comments**: every flagged/🔍/⚠️ item is planted as ONE `> CHECK:` comment at the exact spot in the working doc (outline / _CITATION_ / _VALUES_ / _DISPLAY_ / tex) it refers to -- one line stating the issue + the judgment needed, with concrete values, never an abstract description. The chat report is the map; the in-file `> CHECK:` comments are what the human actually walks. A CHECK that hands over with a clean file and a chat-only report is DEFECTIVE (test-123333333: JL entered 0-seed.md to review and found nothing to guide the pass).
 3. **Human review**: the human walks the `> CHECK:` comments and replies `> USER:` under each (see Human Actions During CHECK for the per-track steps).
 4. **Decide**: proceed / restart / new round / accept / park.
 5. **On restart**: the restarted phase (DRAFT/PROBE/REVISE) reads the `> CHECK:` comments and their `> USER:` replies and responds to each; resolved threads archive to `_LOG` per `../../../wiki/02-comment-lifecycle.md`.
+
+
+## Locating the card checker
+
+Installed skills flatten the tree, so a hard-coded relative path (`../../1-probe/...`) is NOT reliable. Glob for it — but **glob UNAMBIGUOUSLY**: TWO files named `check-probe-cards.sh` exist on disk (the paper family's, under `haipipe-paper-probe/`, and the application family's, under `haipipe-application-probe/`). A bare `find ... -name check-probe-cards.sh | head -1` can resolve to the WRONG FAMILY and silently check a paper against application invariants. Filter on the path, and fail LOUDLY when nothing matches:
+
+```sh
+CHK=$(find ~/.claude/skills "$CLAUDE_PLUGIN_ROOT" "$CLAUDE_SKILL_DIR/../../../.." \
+        -path "*haipipe-paper-probe*" -name check-probe-cards.sh 2>/dev/null | head -1)
+[ -n "$CHK" ] || { echo "FAIL: paper checker not found"; exit 1; }
+
+sh "$CHK" <paper_root>                      # whole-paper card pass
+sh "$CHK" <paper_root> --stage <stage-key>  # gate-scoped pass (see the per-stage table)
+```
+
+A missing checker is a FAIL, never a silent skip: a gate that cannot run its checker has not checked anything.
+
+`--stage <stage-key>` asserts only the cards whose `serves:` names this stage. Without it, ONE in-flight `commissioned` build reds the gate of EVERY downstream stage for as long as the build runs, and every other stage's un-run cards red THIS one (JL resource-stage ruling C8-i).
 
 
 ## Gate Modes (copilot | autopilot)
@@ -227,6 +245,10 @@ PASSED: 14   FAILED: 1   WARNING: 1   SKIPPED: 4
 - [ ] 🔄 NEW ROUND of this stage (keep artifacts, run another DPRC cycle to deepen)
 - [ ] 🤷 ACCEPT with known issues (log what's deferred)
 - [ ] ⏸️ PARK this section (switch to another section, come back later)
+
+(resource stage ONLY -- add these two, per the Stage Exit Invariant AMENDMENT:)
+- [ ] 🔥 RESEED [LOOPBACK -> SEED] (every demand row is UNOBTAINABLE: the paper cannot be written as seeded)
+- [ ] 🅿️ PARK -> maturity: resource-blocked (the demand is real; the resource is in flight or behind a DUA)
 ```
 
 
@@ -259,7 +281,20 @@ PASSED: 14   FAILED: 1   WARNING: 1   SKIPPED: 4
 
 The decision is recorded in the _LOG with the check report, so future sessions know what was decided and why.
 
-**Stage Exit Invariant: CHECK is the ONLY door out of a stage.** Its verdicts move in exactly two directions: ♻️ restart re-opens a PHASE within the SAME stage (DRAFT / PROBE / REVISE -- never another stage); ✅ proceed (or 🤷 accept) crosses the gate to the NEXT stage. Going BACK across stages (e.g. redoing seed while the frontier is section-edit) is NOT a CHECK outcome -- that is a lifecycle loopback: re-enter the earlier stage (🔥 moves there, 🚀 stays at the frontier), and it runs its own DPRC and its own CHECK gate.
+**Stage Exit Invariant: CHECK is the ONLY door out of a stage.** For every stage EXCEPT `resource`, its verdicts move in exactly two directions: ♻️ restart re-opens a PHASE within the SAME stage (DRAFT / PROBE / REVISE -- never another stage); ✅ proceed (or 🤷 accept) crosses the gate to the NEXT stage. Going BACK across stages (e.g. redoing seed while the frontier is section-edit) is NOT a CHECK outcome -- that is a lifecycle loopback: re-enter the earlier stage (🔥 moves there, 🚀 stays at the frontier), and it runs its own DPRC and its own CHECK gate.
+
+**AMENDMENT -- `resource` only: THREE directions, not two (JL ruling C7, 2026-07-14; spec in `../../../wiki/08-stage-gate.md`).** The two verdicts above admit no KILL. The resource gate adds a third exit:
+
+```
+✅ proceed  -> claims                       the normal forward gate; maturity: resource
+🔥 reseed   -> [LOOPBACK -> SEED]           every demand row is UNOBTAINABLE: the paper cannot be
+                                            written as seeded. 🔥 moves back to seed (🚀 stays at
+                                            the frontier); seed runs its own DPRC cycle.
+🅿️ park     -> maturity: resource-blocked   the demand is real, the resource is in flight or
+                                            behind a DUA, and there is nothing to do but wait.
+```
+
+Rationale: a stage whose PURPOSE is discovering that the paper CANNOT BE WRITTEN must be able to SAY SO. Without `reseed` and `park` this gate could only `promote -> claims`, mechanically handing a DEAD PAPER FORWARD -- the exact failure the stage was built to end. `reseed` and `park` are offered at the resource gate ALONGSIDE the five standard decisions; a CHECK run on resource that does not offer them is DEFECTIVE. The amendment does NOT generalize -- every other stage still has exactly the two directions above.
 
 
 ## Human Actions During CHECK
@@ -305,7 +340,7 @@ CHECK is where every human action in the lifecycle happens. The entry point is t
 When the human restarts from a phase (e.g., "restart from PROBE"):
 - The agent re-runs that phase and reads ALL `> CHECK:` comments with their `> USER:` replies, plus every free `> USER:` comment, and responds to each (a `> CHECK:` comment with no reply is surfaced back to the human, never silently skipped)
 - DRAFT restart: revise the outline per `> USER:` feedback
-- PROBE restart: re-audit, place newly verified keys from .bib, search for new candidates per `> USER:` requests
+- PROBE restart: re-audit, place newly verified keys from .bib (in the .md, then sync); new-candidate requests from `> USER:` comments become question SECTIONS in `1-probes/`, dispatched by the PROBE phase (never inline search)
 - REVISE restart: re-apply prose quality rules addressing `> USER:` style concerns; each change carries a why-comment
 
 
@@ -315,13 +350,33 @@ This checker pattern works for ANY lifecycle stage that follows DRAFT→PROBE→
 
 | Stage | DRAFT checks | PROBE checks | REVISE checks | META checks |
 |---|---|---|---|---|
-| seed | 3 sections filled (question/motivations/claim shape) | _PROBE/ plan takeaways backfilled + _CITATION_ candidates eyeballable (if probe ran) | seed is readable | ready to advance to claims |
+| seed | 3 sections filled (question/motivations/claim shape) | probe `reading:` written on every section, each `target:` resolving on disk (1-probes/) + _CITATION_ candidates eyeballable (if probe ran) | seed is readable | ready to advance to **resource** |
+| resource | 2 sections only — Demand (one `**N<n> (H<n>)**` per hypothesis in the seed's Tentative Claim Shape) + Questions (`**Q<n> (N<n>)**`, no PP ids, no probe types); every seed `[FORWARD -> RESOURCE\|CLAIMS]` pointer consumed (N row, Q, or explicit DECLINE in _LOG); `[GATE] draft-review: approved` in _LOG quoting the user | every approved Q has landed its **A**, or is a `commissioned` BUILD card; cards verify clean SCOPED TO THIS STAGE: `sh "$CHK" <paper_root> --stage resource` exits 0 (locate `$CHK` per **Locating the card checker**) | default `[REVISE] skipped -- ledger doc`; NOT skipped when a fitness ruling is woolly | **the load-bearing sentence, asked verbatim:** "Does every hypothesis have a resource that is HAVE+FIT, or a COMMISSIONED build with an owner and a DATE, or a SCOPE CUT the human said out loud?" |
 | claims | H1/H2/H3 listed | all claims linked to evidence | claims well-stated | no unsupported GAPs |
 | pitch | cover letter drafted | venue pack consulted | readability rules pass | Editor's Chair Test |
 | narrative | design contract drafted | claims linked to beats | arc/flow coherent | all beats [READY] |
 | display | display plan exists | all displays generated | visual quality | all linked in tex |
 
 When invoked for a non-section-edit stage, the checker reads the stage's SKILL.md to discover its done-gate criteria, then checks those criteria mechanically.
+
+**Resource gate — the pass/fail rulings the load-bearing sentence implies** (spec: `../../../1-lifecycle/1-resource/haipipe-paper-resource/SKILL.md`, GATE 2):
+
+```text
+commissioned + owner: + eta: in the FUTURE            -> PASS   (a build in flight must not red the gate)
+commissioned + no owner:                              -> FAIL   (an unowned build is a wish)
+commissioned + eta: PASSED, no receipt                -> FAIL   (C6: `commissioned` is not a laundering token)
+a BUILD card with no `cross-project:`                 -> FAIL   (C4: empty is a FAIL; `none-found` is legal)
+commissioned, no `[GATE] spend-authorized` in _LOG    -> FAIL   (dispatched behind the human's back; a gate
+                                                                 that can be walked around is not a gate)
+a fitness ruling that does not say what it KILLS      -> FAIL   ("probably fine" is a DEFECT, not an answer)
+a demand with NO resource                             -> NOT A FAILURE. It is a SCOPE CUT, said out loud
+                                                                by the human and logged in _LOG. The paper
+                                                                gets smaller; the paper does not get wrong.
+```
+
+The card-status rulings (eta, owner, cross-project) are already enforced mechanically by the checker — RUN it and SHOW its output, never eyeball the cards. The fitness ruling and the scope cut are judgment items: seed them as `> CHECK:` comments and let the human answer.
+
+Resource's decision menu carries THREE exits, not two — see the AMENDMENT under **Stage Exit Invariant**: ✅ proceed -> claims · 🔥 reseed -> [LOOPBACK -> SEED] · 🅿️ park -> `maturity: resource-blocked`.
 
 
 ## Relation to sibling
@@ -370,6 +425,7 @@ Stage skills call this as their CHECK phase:
 | Stage skill | What this skill checks |
 |---|---|
 | haipipe-paper-seed | seed.md done-gate (promotion criteria) |
+| haipipe-paper-resource | Demand + Questions (the load-bearing sentence; `--stage resource` card pass; 3 exits) |
 | haipipe-paper-claims | hypothesis list + evidence linkage |
 | haipipe-paper-pitch | cover letter (Editor's Chair Test, readability) |
 | haipipe-paper-narrative | story beats (all [READY], arc/flow coherence) |

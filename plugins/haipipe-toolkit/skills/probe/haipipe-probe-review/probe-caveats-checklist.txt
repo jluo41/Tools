@@ -1,10 +1,15 @@
 ⚠️ Caveats & confounds checklist  (domain-general)
 
-Walked by Judge (structural gate) before a verdict is committed. Each YES
-becomes a caveat in verdict.md and an entry in probe.yaml.verdict.caveats.
+Walked at G1 (the structural gate) by the reviewer, BEFORE the G3 judgment is
+returned. Each YES becomes a caveat LINE IN THE RETURNED TEXT.
 
-THIS IS NOT OPTIONAL. The point of a probe is to record what is UNCERTAIN
-about a claim, not just what was found. If you can't find any caveat, write
+⛔ THE REVIEWER WRITES NOTHING, ANYWHERE. It returns text. The CALLER transcribes
+the caveats into the claim's entry in `0-lifecycle/1-claims/1-claims.md` (the only
+home of a claim's status) and, where the caveat bears on a probe question, into that
+section's `reading:` in `1-probes/PPNN_<topic>.md`. Never into the bank (LAW 1).
+
+THIS IS NOT OPTIONAL. The point of judging a claim is to record what is UNCERTAIN
+about it, not just what was found. If you can't find any caveat, say
 "no confounds identified" explicitly so the reader knows you looked.
 
 The categories below are domain-neutral: they apply to a regression on claims
@@ -68,8 +73,8 @@ different conditions. Flag if ANY of these differ across the compared sides:
 
 ─§ "But..." catch-all ────────────────────────────────────────────────
 
-Before committing the verdict, ask: "If a peer reviewer challenged this claim,
-what would I have to admit?" That answer goes in the caveats.
+Before returning the G3 judgment, ask: "If a peer reviewer challenged this claim,
+what would I have to admit?" That answer goes in the caveats you return.
 
 If you genuinely can't think of one, write it explicitly, e.g.:
    ⚠️ No confounds identified beyond the single-specification limitation.

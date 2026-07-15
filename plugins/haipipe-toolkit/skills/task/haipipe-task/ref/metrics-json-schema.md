@@ -6,8 +6,9 @@ Owner:    Written by the task's `*.py` / `*.do` at finalize. May be edited by
           re-running the task; never hand-edited.
 Status:   Source-of-truth for the measured NUMBERS of ONE run. `runtime.yaml`
           records machine facts about the run; `metrics.json` records what it
-          measured. The probe `result aggregate` step reads this file and
-          extracts the key named in the probe's `aggregation.metric`.
+          measured. It is the file every later reader — a cross-run comparison,
+          a report, a QA digest — resolves a number out of, by KEY. Keys are
+          therefore a contract: name them stably.
 
 
 Two value shapes
@@ -50,11 +51,11 @@ Nested-metric fields
 | se         | float  | opt      | standard error, if reported instead of/with the CI |
 
 
-Extraction contract (how a reader resolves `aggregation.metric`)
------------------------------------------------------------------
+Extraction contract (how a reader resolves a metric key)
+--------------------------------------------------------
 
 ```
-value = metrics[aggregation.metric]
+value = metrics[<metric_key>]
   - value is a number              → use it directly (legacy/scalar path)
   - value is an object with `point` → use value.point as the estimate;
                                        also carry ci_lower/ci_upper/N if present
@@ -64,17 +65,16 @@ value = metrics[aggregation.metric]
 
 This keeps every existing scalar `metrics.json` working untouched while giving
 off-policy / bootstrapped metrics a canonical slot for their interval, so the
-interval survives into the probe's `result:` block instead of being flattened
-to a bare point (which would let a Δ inside the noise band be mislabeled
-"confirmed").
+interval SURVIVES to the reader instead of being flattened to a bare point
+(which would let a Δ inside the noise band be read as real).
 
 
 Per-split / per-arm nesting
 ---------------------------
 
-Both forms may be nested one level under a split name or an arm name. The
-extractor descends one level when `aggregation.metric` is dotted
-(`split.metric` or `arm.metric`), else reads the top level.
+Both forms may be nested one level under a split name or an arm name. A reader
+descends one level when the metric key is dotted (`split.metric` or
+`arm.metric`), else reads the top level.
 
 ```json
 {
@@ -93,12 +93,12 @@ extractor descends one level when `aggregation.metric` is dotted
 Display-only evals
 ------------------
 
-A task whose only output is plots/tables (no probe will ever aggregate it)
-still writes a `metrics.json` stub so the run↔result pairing holds and the
-contract fails fast for genuine omissions:
+A task whose only output is plots/tables (nothing will ever aggregate a number
+out of it) still writes a `metrics.json` stub, so the run↔result pairing holds
+and the contract fails fast for genuine omissions:
 
 ```json
-{ "note": "display-only", "_meta": { "purpose": "figure generation; probe-ineligible" } }
+{ "note": "display-only", "_meta": { "purpose": "figure generation; no aggregatable metric" } }
 ```
 
 

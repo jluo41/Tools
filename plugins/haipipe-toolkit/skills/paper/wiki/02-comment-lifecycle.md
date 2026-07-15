@@ -2,6 +2,8 @@
 
 Unified rule for inline comments across ALL paper skills. Every phase worker, lifecycle stage, and orchestrator follows this convention.
 
+> **Loaded-context rule (JL 2026-07-09).** This wiki file is BACKGROUND — it is never in context at skill invocation, so it cannot bind behavior by itself. Every skill that touches working files must INLINE its binding subset (never delete/reword `> USER:`; reply `> CC:` underneath; only the user resolves; resolved threads move to `_LOG` verbatim; surgical edits only). The stage hubs carry that block as "Comment rules (binding)"; this file remains the full reference for the long tail (actor ids, marks, anchoring, _LOG format).
+
 ## Actor ids
 
 The `{...}` token names **who** authored that line. Keep it short. One flat namespace:

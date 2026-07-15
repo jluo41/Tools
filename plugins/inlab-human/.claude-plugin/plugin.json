@@ -1,0 +1,22 @@
+{
+  "name": "inlab-human",
+  "version": "0.2.1",
+  "description": "In-lab human interaction with deployed prediction endpoints \u2014 the Claude Code chat is the UI. CONSOLE mode (default): patient-first on-demand inference \u2014 list patients, view the full chart, list available models (Endpoint_Set packages + live status), and run 'this model on this patient': the endpoint-predict MCP tool prepares the payload (required tables + trigger record), POSTs to the endpoint, and returns the score verbatim with a data-gaps report. STUDY mode: formal reader protocol (frozen review_bundle.json, blind\u2192assisted session, decision-influence metrics vs gold). Endpoint-agnostic: local Flask, Databricks, SageMaker \u2014 same wire contract.",
+  "author": {
+    "name": "Junjie Luo",
+    "url": "https://github.com/jluo41"
+  },
+  "license": "MIT",
+  "keywords": [
+    "human-evaluation",
+    "clinician",
+    "reader-study",
+    "blind-assisted",
+    "risk-prediction",
+    "endpoint",
+    "shap",
+    "decision-influence",
+    "ground-truth",
+    "human-in-the-loop"
+  ]
+}

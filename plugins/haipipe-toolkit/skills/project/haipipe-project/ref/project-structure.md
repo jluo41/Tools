@@ -32,8 +32,10 @@ Standard Top-Level Layout
   examples/{PROJECT_ID}/
   ├── tasks/          MANDATORY  execution work (owner: /haipipe-task)
   ├── discoveries/    MANDATORY  external-evidence topics, one topic = one folder (owner: /haipipe-discovery)
-  ├── insights/       MANDATORY  D/I/K/W knowledge base (owner: /haipipe-insight)
-  │                   (probes/ RETIRED 2026-07-05 — folderless probe; legacy probes/ in old projects are read-only history)
+  │                   (probes/ RETIRED 2026-07-05 — the probe owns no folder in the execution tree.
+  │                    insights/ RETIRED 2026-07-12 — the insight layer is fully retired. Legacy
+  │                    probes/ and insights/ folders in old projects are dead history: nothing reads
+  │                    them, nothing writes them; do NOT delete, do NOT scaffold.)
   ├── diagram/        MANDATORY  project-level story, high-level only (owner: this skill)
   ├── papers/         OPTIONAL   manuscripts; each Paper-{Name}-{venue}/ often a git submodule (owner: /haipipe-paper-*)
   └── applications/   OPTIONAL   external deliverables: messages / ui / reports (owner: /haipipe-application-*)
@@ -44,25 +46,63 @@ Forbidden at top level: configs/, results/, docs/, cc-archive/, _old/, and READM
 
 ---
 
-The Seven Worlds
-=================
+The Five Worlds
+================
 
   Folder          Role               One-liner
   --------------  -----------------  ------------------------------------------------------------------------
   tasks/          WORK               execution: code, configs, runs, metrics; one task-folder = one runnable unit
-  discoveries/    EXTERNAL-EVIDENCE  Search / Review / Idea folders; one topic = one folder; probe-unaware (the calling probe records the link)
-  insights/       KNOWLEDGE          cross-probe synthesis cards (D/I/K/W markdown); no code
+  discoveries/    EXTERNAL-EVIDENCE  Search / Review / Idea folders; one topic = one folder; consumer-unaware
   papers/         PUBLISH            academic manuscripts
-  applications/   DELIVER            external artifacts for non-academic audiences; reads K/W, never writes back
+  applications/   DELIVER            external artifacts for non-academic audiences
   diagram/        STORY              high-level project motivation / boundary / exploration
+
+  tasks/ + discoveries/ are the two EXECUTORS — same shape, same rules. Together they are the
+  project's evidence BANK. papers/ + applications/ are the CONSUMERS.
+
+  (insights/ was a sixth world — the D/I/K/W knowledge base — RETIRED 2026-07-12. What a K card
+   was meant to be is now split correctly in two: the general, reusable FACT is the executor's
+   own QA/<n>-<slug>.md; the paper-specific JUDGMENT is that paper's own 1-claims.md entry.)
 
 One-way dependency map (cross-cutting orientation; no single world owns it):
 
-  insights/      READS tasks/ + discoveries/ (+ consumer-side _PROBE cards via review)
-  papers/        READS insights/K + W, plus tasks/discoveries as needed
-  applications/  READS insights/K + W          (can TRIGGER /haipipe-insight ask to close gaps; NEVER writes back)
-  discoveries/   NEVER read insights/ (consumer-unaware; the caller records the link on its own side)
-  tasks/         NEVER read discoveries/ insights/ papers/ applications/
+  papers/        READ tasks/ + discoveries/ BY PATH — a section in the paper's own
+                 1-probes/PPNN_<topic>.md carries `target: <leaf>/QA/<n>-<slug>.md`
+  applications/  same model (applications/<A>/1-probes/); NEVER write back
+  discoveries/   consumer-unaware (the consumer records the link on its own side)
+  tasks/         NEVER read discoveries/ papers/ applications/
+
+---
+
+The Evidence Contract (this skill's ONE hard rule about the bank)
+==================================================================
+
+Owner: /haipipe-probe (skills/probe/haipipe-probe/SKILL.md). Restated here ONLY as a scaffolding
+prohibition, because this skill is the thing that creates folders.
+
+  ⚙️ THE BANK IS PROBE-UNAWARE. Nothing under tasks/ or discoveries/ may carry an _ASK/ folder,
+     an _ANS/ folder, an `answers:` field, or a PP id. THIS SKILL NEVER MINTS ONE. (The _ASK/
+     mailbox of the 2026-07-11 bridge design is DEAD — killed 2026-07-14.)
+
+  ✅ WHAT A LEAF MAY CARRY, optionally:
+
+       tasks/{G}{NN}_{group}/{NN}_{task}/          discoveries/{S|L|P}{NN}_{group}/{NN}_{topic}/
+       ├── workflow/plan.yaml   Q  code            ├── discovery.yaml              Q  spec
+       ├── results/             A  code            ├── sources.md · verdict.md ·
+       └── QA/                  A  readable        │   landscape.md                A  raw
+           ├── 1-<slug>.md                         └── QA/                  A  readable
+           └── 2-<slug>.md                             └── 1-<slug>.md
+
+     QA/<n>-<slug>.md — the executor's READABLE digest of a direction it has explored.
+       · <n> = creation order. The NUMBERING IS THE INDEX; `ls QA/` IS the index. No INDEX file.
+       · SLUG ONLY. A PP id in a bank filename is the contract broken.
+       · WRITER: the EXECUTOR, at its Report stage. Write-once.
+       · NOT SCAFFOLDED AT SETUP. It appears when the leaf has something to say.
+       · Applies to BOTH banks — task and discovery are both executors.
+
+  📄 THE CONSUMER holds the questions: papers|applications/<X>/1-probes/PPNN_<topic>.md
+     (renamed from 1-probe-plans/ on 2026-07-14). Created by the consumer's own PROBE phase,
+     never by this skill. Bound to the bank BY PATH — no id ever crosses.
 
 ---
 
@@ -96,7 +136,6 @@ For anything below the top level, consult the owner; this file never restates th
   --------------  -----------------------  --------------------------------------------------------------------------
   tasks/          /haipipe-task            task/haipipe-task/ref/task-structure.md (layout), plus ref/hierarchy.md + ref/authoring-conventions.md
   discoveries/    /haipipe-discovery       discovery/haipipe-discovery/SKILL.md (folder contract: discovery.yaml + evidence files)
-  insights/       /haipipe-insight         insight/ref/insight-md-schema.md (+ insight/ref/index-templates.md)
   papers/         /haipipe-paper-*         paper wiki (paper/wiki/) + paper/3-build-submit/haipipe-paper-folder (paper-folder contract)
-  applications/   /haipipe-application-*   application/haipipe-application/ref/audience-requirements.md + application-input-contract.md
+  applications/   /haipipe-application-*   application/_audience/audience-requirements.md + the venue playbooks under application/_venue/
   diagram/        this skill               this file (Project-Level diagram/ section above)

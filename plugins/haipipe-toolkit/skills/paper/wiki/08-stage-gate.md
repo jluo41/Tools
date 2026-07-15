@@ -60,6 +60,22 @@ The CHECK phase is the ONLY door out of a stage. Its verdicts move in exactly tw
 Going BACK across stages (e.g. redoing seed while the frontier is section-edit) is NOT a CHECK outcome. That is a lifecycle loopback: re-enter the earlier stage directly (`/haipipe-paper seed`; 🔥 moves there, 🚀 stays at the frontier), and that stage runs its own DPRC cycle and its own CHECK gate.
 
 
+**AMENDMENT -- resource stage only (JL ruling C7, 2026-07-14).** The two verdicts above admit no KILL. The `resource` stage adds two more, scoped to itself:
+
+```
+🔥 reseed  -> [LOOPBACK -> SEED]   every demand row is UNOBTAINABLE: the paper cannot be
+                                   written as seeded. 🔥 moves back to seed (🚀 stays at
+                                   the frontier); seed runs its own DPRC cycle.
+🅿️ park    -> maturity: resource-blocked
+                                   the demand is real, the resource is in flight or behind
+                                   a DUA, and there is nothing to do but wait.
+```
+
+Rationale: a stage whose PURPOSE is discovering that the paper CANNOT BE WRITTEN must be able to SAY SO. Without these two, resource's only exit would be `promote -> claims` -- mechanically handing a DEAD PAPER FORWARD, which is the exact failure the stage was built to end. Live case: if a paper's only viable dataset is refused at DUA, every demand row is unobtainable and the only legal exit today is "proceed".
+
+The amendment does NOT generalize. Every other stage still has exactly the two verdicts above.
+
+
 Phase Transition Contract (within a stage)
 -------------------------------------------
 
@@ -68,7 +84,7 @@ The gate governs stage EXITS; this contract governs phase VISIBILITY inside the 
 1. **Announce every boundary.** Entering a phase = one line in the reply ("PROBE: dispatching seed landscape...") + a `[PHASE]` entry in the stage `_LOG` + the phase line of the closing block moves 🔥.
 2. **No silent skips.** A phase may be skipped only by an EXPLICIT logged verdict: one reply line with the reason, `[PROBE] skipped -- <reason>` in `_LOG`, and `--` on the phase line. "The draft looks fine" is a verdict to record, not a license to say nothing. Defaults: a NEW stage artifact runs all four phases; skip is for re-entries and minor edits.
 3. **CHECK is never implicit.** Entering CHECK means presenting the exit-criteria report and the approval ask (Steps 3-4 above). An elicitation reply does not become CHECK because the user responds to it; if the user starts giving CHECK-style feedback early, say so and open CHECK properly.
-4. **PROBE dispatches through the probe worker only, and the worker always dispatches the agent.** A stage's evidence needs go `Skill("haipipe-paper-probe", ...)` -> `Agent(haipipe-probe-orchestrator-agent)` (the evidence gateway, folderless) -> discovery/task. The worker is the ONLY exit for evidence work -- a stage never dispatches ANY agent for evidence (general-purpose included), and no scope label creates an exception: "audit", "re-verify", "quick check" are evidence work and take the same door. (Live Paper-Probe-Test: an elicited AUDIT scope had no named route, so the stage hand-rolled a general-purpose web auditor -- 18 redundant verifications of ledger entries already marked VERIFIED, with results that had no landing path.) Stage skills never call `/haipipe-probe`, discovery agents, or task agents directly; the worker itself never sweeps the project or reads its evidence inline -- reuse decisions are the agent's SWEEP, made in clean context. STAGES are bound the same way: a stage never reads project evidence (discoveries/, task results, legacy probes/) inline -- it knows WHAT is missing from its own DRAFT content, and the agent's anchored return (takeaways + sources manifest) is the paper side's only evidence window. Evidence scope is PROJECT-LOCAL at every layer: neither stages nor agents scan or read sibling projects' ledgers -- cross-project reuse is a USER decision (JL 2026-07-05); a plausible other-project source is named as an unread hypothesis, never consumed. The same discipline continues below the paper side: the probe agent never runs searches inline -- fresh external evidence goes through discovery (ENRICH or full) and LANDS in sources.md before any return (wiki/00-evidence-principles.md is the general statement).
+4. **PROBE dispatches through the probe worker only, and the worker dispatches the EXECUTOR ORCHESTRATORS directly.** A stage's evidence needs go `Skill("haipipe-paper-probe", ...)` -> its five-step loop -> `Agent(haipipe-task-orchestrator-agent)` / `Agent(haipipe-discovery-orchestrator-agent)`, carrying the section's `commission:` block VERBATIM and nothing else. 💀 The probe GATEWAY (`Agent(haipipe-probe-orchestrator-agent)`) is RETIRED: its SWEEP is now the paper-side MATCH (② of the loop), which greps the bank's QA corpus and READS the hits — so the reuse decision belongs to the worker, and a question that MATCH closes is never dispatched at all. The worker is the ONLY exit for evidence work -- a stage never dispatches ANY agent for evidence (general-purpose included), and no scope label creates an exception: "audit", "re-verify", "quick check" are evidence work and take the same door. (Live Paper-Probe-Test: an elicited AUDIT scope had no named route, so the stage hand-rolled a general-purpose web auditor -- 18 redundant verifications of ledger entries already marked VERIFIED, with results that had no landing path.) Stage skills never call `/haipipe-probe`, discovery agents, or task agents directly; the worker reads the bank's QA corpus (a READABLE index the executor published FOR readers) and NOTHING ELSE inline -- opening `results/`, reading a plan.yaml, grepping the code is bank work and breaks LAW 1; the DEPTH of any dispatched work is the executor's private business, decided in its own clean context. STAGES are bound the same way: a stage never reads project evidence (discoveries/, task results, legacy probes/) inline -- it knows WHAT is missing from its own DRAFT content, and the agent's anchored return (takeaways + sources manifest) is the paper side's only evidence window. Evidence scope is PROJECT-LOCAL at every layer: neither stages nor agents scan or read sibling projects' ledgers -- cross-project reuse is a USER decision (JL 2026-07-05); a plausible other-project source is named as an unread hypothesis, never consumed. The same discipline continues below the paper side: the probe agent never runs searches inline -- fresh external evidence goes through discovery (ENRICH or full) and LANDS in sources.md before any return (wiki/00-evidence-principles.md is the general statement).
 
 
 Per-Stage Exit Criteria
@@ -77,6 +93,7 @@ Per-Stage Exit Criteria
 | Stage | Exit criteria |
 |-----------|---------------------------------------------------------------|
 | seed | Seed question stated? Motivations stated? Tentative claim shape stated? |
+| resource | Does every hypothesis have a resource that is HAVE+FIT, or a COMMISSIONED build with an owner and a DATE, or a SCOPE CUT the human said out loud? Every BUILD question carries `cross-project:` (path or `none-found`)? `check-probe-cards.sh <paper_root> --stage resource` exits 0? |
 | claims | Every claim has status (supported/weak/GAP)? Each claim tied to an evidence source? GAP claims have delivery needs recorded? |
 | venue | Shortlist ranked with per-venue rationale? Venue pinned in STATUS.md? |
 | pitch | Hook section with >=2 candidate hooks? Surprise stated? Implication/so-what stated? Why-believe with evidence pointers? Editor's Chair Test passed? [primary] claim designated? |

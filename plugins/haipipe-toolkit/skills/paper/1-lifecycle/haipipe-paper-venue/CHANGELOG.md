@@ -4,6 +4,10 @@ haipipe-paper-venue — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 3.3.0 — 2026-07-14
+
+- "PPNN cards" / "probe plans" -> question SECTIONS in the probe files; the done-criterion asks for a raised or answered SECTION.
+
 ## [3.2.0] -- 2026-07-08
 
 - added ref/venue-template.md (fill-in 2-venue.md skeleton, matching sibling stage templates) with a provenance header (pack slug @ _venue commit, outlet dir, blueprint-derived date) for staleness detection; SKILL.md Artifact Spec slimmed to point at it; fixed overclaims (downstream stages stated as intended consumers, not current readers); output-contract example writes pack slug + outlet dir; Boundaries block gains display + section-edit rows; new `refresh` mode re-transcribes blueprint from the current pack without re-opening the pin; downstream stage skills repointed to read 2-venue.md first (packs = fallback + deep-dive only).

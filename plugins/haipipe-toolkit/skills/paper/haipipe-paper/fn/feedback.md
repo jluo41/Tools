@@ -90,7 +90,7 @@ resolve:
        Rule of thumb: "would this complaint be equally true at the seed stage,
        the claims stage, AND the display stage?" If yes, it is cross-cutting.
        Contrast: "every stage must recompile its PDF" -> fallback (spine rule);
-       "the compile script crashed on bibtex" -> components/compile (one bug).
+       "the compile script crashed on bibtex" -> paper-compile (one bug).
   1. else keyword match in TEXT -> that skill (most specific wins)
   2. else active-stage skill
   3. else orchestrator fallback
@@ -116,10 +116,10 @@ round, rounds                           -> haipipe-paper-round
 write, draft, scaffold prose            -> haipipe-paper-edit-write
 edit, polish, weave, walk sections      -> haipipe-paper-edit-weaving
 rebuttal, reply, reviewers, response    -> haipipe-paper-rebuttal
-compile this paper, build broke         -> components/compile
-citation, bibtex, references            -> components/citation
+compile this paper, build broke         -> paper-compile
+citation, bibtex, references            -> haipipe-paper-probe-citation
   (NB: "every/each stage must compile a PDF" is the cross-cutting guard,
-   not a components/compile bug -> fallback, per resolve step 0)
+   not a paper-compile bug -> fallback, per resolve step 0)
 --------------------------------------------------------------------------
 NO MATCH  (cross-cutting discipline: stage strip, illuminate-every-stage,
           compile-pdf-every-stage, stage gate / user-confirm, status tail,

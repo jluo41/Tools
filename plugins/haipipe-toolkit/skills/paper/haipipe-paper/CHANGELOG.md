@@ -4,6 +4,50 @@ haipipe-paper — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 3.1.0 — 2026-07-14
+
+- `fn/probe-plans.md` RENAMED to `fn/probes.md` ("plans" is retired vocabulary); the verb table and Dispatch notes re-point at it.
+- Dispatch notes: "Verdicts backfill into 1-claims / sections / round logs" -> the answer lands as a section's `reading:`, and the CLAIM's status flips in `0-lifecycle/1-claims/1-claims.md` (the only home of a claim's status). "Buffer convention" -> "Probe-file convention".
+
+## [2.11.0] -- 2026-07-14
+## 3.0.0 — 2026-07-14
+
+- The `probe` verb is re-pointed at the PROBE-FILE POOL (`1-probes/PPNN_<topic>.md`, one file per TOPIC, one SECTION per question). Before this, every `/haipipe-paper probe` invocation was routed into the dead card/stub model: the routing table sent it to `1-probe-plans/` cards, the `no args SHOW` mode derived statuses from `_ASK/` stubs (which R2 forbids from ever existing, so it would always report zero dispatches even with commissions in flight), and the diagram routed the verdict to the retired gateway.
+- `fn/probe-plans.md` REWRITTEN (legacy filename kept, same precedent as check-probe-cards.sh). It was fully pre-v8: cards in `1-probe-plans/`, the status set `planned | dispatched | verdicted` (two of which are DELETED states), and `dispatch Agent(haipipe-probe-orchestrator-agent) -- ALWAYS, no matter how small the need` — the exact opposite of R13. It now carries the 1-probes/ convention, MATCH-before-DISPATCH, and direct dispatch to the two executor orchestrators.
+- PREFERENCES.md — the highest-authority text in the bucket, loaded on every paper session — re-stated in v8 terms. It MANDATED the retired 4-step procedure and named the archived gateway agent, so a session would obey it, dispatch a nonexistent agent, fail, and (because the preference explicitly forbids substituting an inline scan) have no legal fallback. The INTENT is preserved verbatim: never fake a probe with a web scan.
+- The evidence-routing table's `settled judgment -> the PP card's ## Verdict` route now points at `0-lifecycle/1-claims/1-claims.md`, the ONLY home of a claim's status (R7).
+
+JL resource ruling (pairs with haipipe-paper-resource 1.0.0 + haipipe-paper-lifecycle 2.4.0): RESOURCE registered as a venue-FREE stage between seed and claims. New verb `resource | prereq | prerequisite | need` -> `haipipe-paper-lifecycle resource` -> `0-lifecycle/1-resource/1-resource.md`: what must EXIST for this paper to be testable, does it exist, and can it CARRY the claim (data, model checkpoints, and producing-code alike). The stage ASKS (Q<n>) and the probe gateway ROUTES (mints the PP, picks the type) -- so no new probe lane and no new namespace. Venue-coupling prose now reads seed + resource + claims as venue-FREE and unchanged on retarget; the closing-block stage-strip example and the Composing diagram both carry `resource`. resource SHARES the number 1 with claims (precedented: 2-venue/ and 2-pitch/ already share 2); nothing renumbers.
+
+
+## [2.10.0] -- 2026-07-12
+
+JL routing ruling (haipipe-probe 7.8.0 companion): `probe plan` (the campaign consolidation pass) gains a ROUTE step — resolve every card's `target:` (the receiving task-folder / discovery folder; `NEW ...` when it must be created; `?` only with a stated reason). The campaign pass is the right moment because it is the only one where the whole evidence campaign is visible at once: two cards routed at the same task-folder are a hint they should merge, and a card with no plausible home is a hint the need is under-specified. DRAFT-buffered skeletons may leave `target: ?` — the paper often does not yet know what the project holds.
+
+
+## [2.9.0] -- 2026-07-12
+
+JL both-banks layout ruling (pairs with haipipe-probe 7.7.0; supersedes the 2026-06-29 per-stage layout for PROBE CARDS only):
+- PPNN cards live FLAT in `1-probe-plans/PPNN_<slug>.md` beside the campaign README -- one cross-stage pool, `serves:` carries stage affinity, the whole campaign is one `ls`. The `probe "<text>"` BUFFER sub-mode files new cards there; `probe plan` reads all cards from the pool.
+- Execution-bank stubs live in `_ASK/` containers (`<receiving folder>/_ASK/PPNN_<slug>.md`), filename mirroring the card's.
+- `fn/probe-plans.md` rewritten: location + migration direction reversed (legacy per-stage `_PROBE/` cards move INTO the pool on first touch); card anatomy defers to the probe layer's SKILL.md.
+
+
+## [2.8.0] -- 2026-07-11
+
+Added (JL cross-stage ruling 2026-07-11; pairs with haipipe-probe 7.5.0)
+- `probe plan` sub-mode: the CAMPAIGN consolidation pass, run after a cross-stage draft sweep — read all stage drafts + all _PROBE/ cards, merge duplicate needs (one card, many serves:), author the dispatch DAG (gating first, refutation-capable early, dependents wait, query-once) into the Campaign section of 1-probe-plans/README.md; Status board stays generated. Campaign is a HUMAN GATE like DRAFT — present and stop; the user's verb advances to "run".
+
+## [2.7.1] -- 2026-07-11
+
+Changed (two-footed-bridge ruling, JL 2026-07-11; pairs with haipipe-probe 7.4.0)
+- `1-probe-plans/README.md` demoted everywhere it is mentioned (description, probe verb row, probe dispatch note) to a GENERATED index: the per-stage `_PROBE/` cards are the single source of truth; the index regenerates from cards + `_ASK` stubs + answering reports and is never hand-maintained; on disagreement, cards win.
+
+## [2.7.0] -- 2026-07-09
+
+Changed (JL ruling 2026-07-09 (LLMTrait-Section session postmortem): normalize the writing process)
+- Phase-verb pass-through documented in the routing table: trailing `draft|probe|revise|check` forwards through the lifecycle router to the stage skill; stage skills stop at their human gates and the user's verb advances them.
+
 ## [2.6.0] — 2026-07-08
 
 Changed (venue lockfile wiring)

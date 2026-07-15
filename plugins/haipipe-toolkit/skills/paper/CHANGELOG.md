@@ -5,42 +5,29 @@ Layer-scoped changelog for the paper (DELIVERY) layer. Newest first.
 Rollup lives in the plugin-level CHANGELOG.md.
 
 
-[2.1.0] -- 2026-07-09
+[2.1.0] -- 2026-07-14
 -----------------------
 
-### Added (canonical metaphor)
+components/ retired (was already half-migrated: figure/ had moved to
+1-lifecycle display, edit-diffpdf to 3-build-submit).
 
-- **README.md -- "The mission-controller metaphor" section** (JL ruling, 2026-07-09):
-  each lifecycle stage is a mission controller for one aim (its artifact +
-  done-criteria), releasing probes as satellites until the result is solid.
-  Four load-bearing points: shared DPRC control room with per-stage targets;
-  satellites launched only through the evidence gateway (task probes = internal
-  space, discovery probes = external space; mission control never leaves home);
-  DPRC rounds repeat until CHECK is green, then hand off; fleet sizes differ
-  (1-claims runs the biggest constellation -- "mission control targeting solid
-  claims", exit gate "every claim solid or scheduled"; 4-display is the other
-  heavy-launch stage; pitch/narrative fly light audit probes).
-- Naming ruling recorded in the same session: `1-claims` KEEPS its name --
-  claims are the currency every downstream stage consumes, and stages are named
-  for the artifact they own; the campaign/mission-control character is carried
-  by the epithet, not a rename.
+### Moved
 
-### Changed (stage skills)
+- **paper-compile** (+ its feedback inbox) -> 3-build-submit/paper-compile.
+  Feedback-router bucket renamed components/compile -> paper-compile.
 
-- **haipipe-paper-claims v4.2.0** -- optional Data Context preamble (absorbed
-  D/I rungs: anchored description lines grounding the Hypotheses; the
-  manuscript's Methods/Results carry D/I, so no separate stages here).
-  Companion to the application family's ladder restage (stage 1 there became
-  1a-descriptions -> 1b-themes -> 1c-claims -> 1d-principles; intentional twin
-  delta, see application/SOP-ladder-restage.md).
+### Removed
 
-### Fixed (naming drift)
-
-- **README.md, wiki/03-paper-lifecycle.md, wiki/04-lifecycle-map.md** -- the
-  brace form `haipipe-paper-{draft,probe,revise,checker}` expanded to a skill
-  name that does not exist; the registered name is `haipipe-paper-check`
-  (2-phase/3-check/haipipe-paper-check/SKILL.md). All three canonical docs now
-  read `haipipe-paper-{draft,probe,revise,check}`, matching WIRING.md.
+- **citation-audit**, **citation-verifier**, **reference-audit-guide** --
+  superseded by the citation probe lane (haipipe-paper-probe-citation:
+  AUDIT / PLACE / REVIEW verbs; acquisition via the discovery orchestrator).
+  All dispatch references rewired (probe-citation, diffpdf, to-overleaf,
+  narrative, section-related-work, build-check, 6 _venue playbooks,
+  feedback router).
+- **paper-diff-folder** -- orphan; no inbound references
+  (haipipe-paper-edit-diffpdf covers the diff need).
+- **components/README.md** and the components/ container itself; structure
+  docs updated (paper README, wiki/04, wiki/06).
 
 
 [2.0.0] -- 2026-06-22

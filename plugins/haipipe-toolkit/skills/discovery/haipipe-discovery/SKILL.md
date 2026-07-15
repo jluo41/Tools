@@ -1,12 +1,12 @@
 ---
 name: haipipe-discovery
-description: "External-evidence layer. One research topic = one discovery-folder running Plan -> Build(opt) -> Execute -> Report, typed Search | Review | Idea; buckets 1_search/2_review/3_idea are the Execute workers, 1:1 with the types. Trigger: discover, find paper, lit review, 找idea, 查新, source, verdict, landscape, /haipipe-discovery."
+description: "External-evidence layer, and one of the two EXECUTORS (task is the other — same shape, same rules). One research topic = one discovery-folder running Plan -> Build(opt) -> Execute -> Report, typed Search | Review | Idea; buckets 1_search/2_review/3_idea are the Execute workers, 1:1 with the types. PROBE-UNAWARE but not question-deaf: the `qa` verb (/haipipe-discovery qa \"<question>\") takes ONE question in general language and returns discoveries/<leaf>/QA/<n>-<slug>.md — the leaf's readable digest of a direction it has explored. A QA file is a TICKET that becomes a RECEIPT: it carries ONE mutable `state:` line (working | answered | superseded-by:), CLAIMED at the qa gate's ③ decision and COMPLETED at Report — ONE WRITER, this layer, always. A `working` file means SOMEONE IS ALREADY ON IT: do not duplicate the work. Trigger: discover, find paper, lit review, 找idea, 查新, source, verdict, landscape, qa, QA file, state, working, claim, superseded, /haipipe-discovery."
 argument-hint: "[verb|type] [discovery] [args...]"
-allowed-tools: Bash, Read, Grep, Glob, Skill
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.6.0"
-  last_updated: "2026-07-03"
-  summary: "Two-axis discovery: uniform Plan/Build/Execute/Report lifecycle x 3 folder types (Search/Review/Idea), mirroring task. Each type has a specialist skill (haipipe-discovery-search/-review/-idea) heading its bucket. Self-contained folders (no parent field); contract = discovery.yaml + evidence files only."
+  version: "3.2.0"
+  last_updated: "2026-07-14"
+  summary: "Two-axis discovery: uniform Plan/Build/Execute/Report lifecycle x 3 folder types (Search/Review/Idea), mirroring task. Each type has a specialist skill (haipipe-discovery-search/-review/-idea) heading its bucket. Self-contained folders (no parent field); contract = discovery.yaml + evidence files + the OPTIONAL QA/ folder. v3.1 — THE QA FILE GAINS ONE MUTABLE FIELD, a `state:` line, and becomes a TICKET THAT BECOMES A RECEIPT (JL ruling 2026-07-14; probe SKILL 8.2.0 PART 3a R19/R20/R21). THE HOLE IT CLOSES: two consumers ask the same question a week apart; the first dispatches an expensive lifecycle run; the second, while that run is STILL GOING, sees no QA file and dispatches THE SAME RUN AGAIN — because a QA file used to be written ONCE, at Report, complete, and its EXISTENCE was the only signal. Now: `- state: working | answered | superseded-by: QA/<m>-<slug>.md` + `- started: YYYY-MM-DDTHH:MM` (MANDATORY on a working file) + optional `- by:`. Gate ③ LIFECYCLE now CLAIMS FIRST (writes the QA file with `state: working` + `started:` + an EMPTY `## Answer` under `set -C` noclobber) and COMPLETES it at Report (`state: answered` + the body). Gate ① SCAN branches on the state line (answered → path · working → 'in progress since <started>', DO NOT RE-RUN · working+EXPIRED → zombie, RECLAIM · superseded-by → follow the chain to the live answer). Gate ② DIGEST still writes ONCE, complete, `answered` — no claim, nothing to race. THE LOAD-BEARING INVARIANT IS *ONE WRITER*, NOT *WRITE-ONCE*: two writes by the same owner is fine; a CONSUMER creating/claiming/editing a QA file is the retired _ASK/ stub in a QA/ costume and is FORBIDDEN. TTL = the named constant QA_CLAIM_TTL_HOURS = 24 (a claim with no `started:` can never expire and is a zombie by construction). RACE GUARD = `set -C` and nothing more — the loser re-scans and defers; no lock dirs, no lease servers, no ledgers. SUPERSESSION: a re-run whose answer CHANGES writes QA/<n+1> and APPENDS `superseded-by:` to the old file's state line — R15 (ENRICH never mutates) still holds FOR THE BODY; only the state line is mutable, and only its own owner edits it. Checker HARD-FAILs: qa-working-no-started · qa-working-expired · qa-answered-empty (+ the consumer-side read-target-working / read-target-superseded). Every field name, state value, TTL constant and flag spelling is CHARACTER-IDENTICAL to the task twin. v3.0 (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, R2/R9/R10/R11/R17/R18): THE BANK IS PROBE-UNAWARE — _ASK/ stubs, `answers:` and every PP id DELETED; the `qa` VERB (fn/qa.md) is the one question door — gate ① QA SCAN → ② DIGEST → ③ lifecycle (depth ladder: read | enrich | new folder | new group) → 🚫 REFUSE (task-shaped → /haipipe-task qa), returning <leaf>/QA/<n>-<slug>.md (numbered = the index, slug only, three legal reasons to exist). R17 TWO SESSION MODES: this layer's PRIMARY mode is its own autonomous lifecycle — qa is a SIDE door, and answerability work (digests, reusable source bases) is native executor work. R18 TWO EXPLORERS: a human via the verb, and the orchestrator agent (commissioned by a probe's dispatch, or self-directed) — both probe-unaware, same gate, same files. A Review-type verdict.md is this layer's OWN terminal and SURVIVES (it is not the retired probe 'Verdict'). v6.2/v3.2 (R19 HARDENING): gate ① now READS THE STATE LINE **BEFORE** the literally-answers test. A `working` file's ## Answer is EMPTY BY CONSTRUCTION, so testing it for an answer is a guaranteed miss that drops through to ③ and RE-RUNS the job someone is already running (a new <n>, a different slug, `set -C` never fires) — the duplicate run, executed by obeying the rules. A `working` file is matched on its `# Q —` LINE instead. A QA file with NO `- state:` line is MALFORMED, not legacy (checker: qa-no-state): this layer OWNS it, so it REPAIRS it (tag `answered` if the Answer has a body, else RECLAIM as a zombie). The same-<n>/different-slug claim race is NON-FATAL BY RULING and is NOT a reviewer REVISE — the reviewers now carry the exemption explicitly."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -14,6 +14,8 @@ Skill: haipipe-discovery (orchestrator)
 ======================================
 
 Single entry for the discovery layer: what the outside world already knows (`Search` gather, `Review` analyze) and the new angles drawn from it (`Idea` create). Discovery is **external evidence work**, not a task execution stage. Durable evidence lives under `discoveries/`; whoever needs it references it from their own side — this layer never references upward.
+
+Discovery is one of the **two EXECUTORS** (task is the other). Same shape, same rules: it runs a lifecycle for its OWN sake, it is **PROBE-UNAWARE**, and it answers plain questions through its own `qa` verb. See "Two session modes" below.
 
 Verbs
 -----
@@ -29,11 +31,73 @@ Verbs
 /haipipe-discovery build <discovery>            -> author the optional instrument (build/)
 /haipipe-discovery execute <discovery>          -> do the work, write the terminal file
 /haipipe-discovery report <discovery>           -> append the report block + log event
+/haipipe-discovery qa "<question>" [<leaf>]     -> THE QUESTION DOOR: answer ONE general-language
+                                                   question -> <leaf>/QA/<n>-<slug>.md  (see fn/qa.md)
 /haipipe-discovery feedback "<text>" | list [unit] | move <file> <unit>   -> skill-feedback inbox (see Feedback)
 /haipipe-discovery digest ["<session-name|id>"] [--dry-run]               -> harvest a session's feedback (see Feedback)
 
 /haipipe-discovery <specialist> [args]          -> one-off worker dispatch (NO folder)
 /haipipe-discovery "<natural language>"         -> infer + dispatch (Routing)
+```
+
+The `qa` verb — the question door (R11)
+---------------------------------------
+
+Full contract: `fn/qa.md`. In one screen:
+
+```
+/haipipe-discovery qa "<question>" [<leaf>] [--check-only]
+
+  input: ONE question, GENERAL language. NO PP id, NO paper ref, NO stake, NO claim id.
+         The verb never learns WHO asks or WHY. It answers questions. That is all.
+
+   ① QA SCAN    grep <leaf>/QA/*.md (or all leaves). MATCH ON THE ANSWER, never the
+                topic: READ the file. Then READ ITS STATE LINE:                  ~0
+                  state: answered  -> return the QA file PATH
+                  state: working   -> SOMEONE IS ALREADY ON IT. Return the path +
+                                      "in progress since <started>". DO NOT RE-RUN.
+                  working, EXPIRED past QA_CLAIM_TTL_HOURS -> 🧟 zombie: RECLAIM it
+                  superseded-by: X -> follow the chain, return the LIVE answer
+   ② DIGEST     sources.md / notes.md / verdict.md / landscape.md / ideas.md already
+                answer it, but no readable digest exists -> write QA/<n>-<slug>.md
+                ONCE, COMPLETE, `state: answered`, from EXISTING artifacts.     cheap
+                No searching, no new judgment. No claim — nothing to race.
+   ③ LIFECYCLE  neither -> ⚑ CLAIM FIRST (write the QA file with `state: working` +
+                `started:` under `set -C`), then Plan → Build(opt) → Execute → Report
+                at the SHALLOWEST depth that answers it, and COMPLETE the same file at
+                Report (`state: answered` + the `## Answer` body):
+                  depth 0 READ · depth 1 ENRICH (on-topic, same leaf) ·
+                  depth 2 NEW FOLDER (in the group) · depth 3 NEW GROUP
+   🚫 REFUSE    not discovery-shaped -> the CALLER re-routes. RELEASE any claim.
+                task-shaped (code / runs / metrics on our own data) -> /haipipe-task qa
+
+  THREE CALLERS: a probe's DISPATCH (via the orchestrator agent) · a HUMAN directly ·
+                 the ORCHESTRATOR itself (self-directed). None of them is special.
+```
+
+💀 The old probe-aware bridge is DELETED: no `_ASK/` stubs, no `answers:` field, no PP
+id anywhere under `discoveries/`. The commission lives in the CONSUMER's own probe file
+now; this layer only ever sees a plain question.
+
+Two session modes (R17) — the primary mode is NOT question-driven
+------------------------------------------------------------------
+
+```
+   ⚙️ THIS LAYER (executor)                  📄 the CONSUMER (paper / application)
+   ══════════════════════════               ═══════════════════════════
+   just runs Plan → Build → Execute →       raises its questions, matches them
+   Report on its own research topics        against this bank, commissions the gaps
+   — no question needed, no ask             (its probe files hold the stake; we
+        │                                    never see them)
+        ▼                                        │
+   the bank grows AUTONOMOUSLY  ◀───────────────┘  most questions should already
+   discovery.yaml · sources.md · terminals         be ANSWERED before anyone asks
+        │
+        └─ ANSWERABILITY WORK (native, probe-unaware):
+           · write QA/ digests for notable findings
+           · build reusable source bases so future questions are CHEAP
+           it does not know WHICH questions will come. It makes the bank
+           EASIER TO ASK. That is discovery-native work.
 ```
 
 The Model
@@ -61,6 +125,81 @@ discoveries/<GROUP>/<NN>_<topic>/   -> one research topic per folder, e.g.:
 └── P01_trait-opioid-prior-art/             (claim evidence)
     ├── 01_trait-rx-source-base/             (Search -> sources.md + notes.md)
     └── 02_agreeableness-rx-prior-art/       (Review, prior_art_check -> verdict.md)
+```
+
+The leaf, in full — the `QA/` folder is OPTIONAL and every leaf may carry one (R9):
+
+```
+discoveries/P01_trait-opioid-prior-art/02_agreeableness-rx-prior-art/
+├── discovery.yaml     Q — the spec           (Plan writes · Report appends report:)
+├── build/             the optional instrument
+├── sources.md         A — raw evidence       ┐
+├── notes.md           A — what was read      │ the layer's own terminals; a
+├── verdict.md         A — the TERMINAL       ┘ Review verdict.md is OURS and SURVIVES
+└── QA/                A — READABLE digests   🆕 optional, not every leaf has one
+    ├── 1-trait-rx-prior-art.md
+    └── 2-dose-response-coverage.md
+```
+
+A QA FILE IS A TICKET THAT BECOMES A RECEIPT. It carries exactly ONE mutable field —
+the state line — and everything below it is written once and never touched again:
+
+```markdown
+# Q — <the question, restated by the executor in its own words>
+- state:   working | answered | superseded-by: QA/<m>-<slug>.md
+- started: 2026-07-14T09:12          ← MANDATORY when state: working
+- by:      <run id | agent | human>  ← optional provenance
+
+## Answer     EMPTY while state: working. Filled at REPORT.
+## Caveats
+## Not-done
+```
+
+```
+NAMING IS THE INDEX.  QA/<n>-<slug>.md, n = creation order. `ls QA/` IS the index —
+numbered, ordered, greppable. It now reads as a menu of BOTH: what this leaf has
+established, AND what it is establishing right now. No INDEX file until a leaf's QA
+count earns one.
+
+SLUG ONLY. No PP id, no claim id, no paper ref in a bank filename — ever.
+
+⚠️ THE LOAD-BEARING INVARIANT IS *ONE WRITER*, NOT *WRITE-ONCE*.
+   This layer writes the file TWICE — the CLAIM at the qa gate's ③ decision
+   (state: working + started:), the COMPLETION at Report (state: answered + the
+   ## Answer body). Two writes by the SAME OWNER is fine.
+   ⛔ A CONSUMER (probe / paper / application) must NEVER create, claim, edit,
+      complete, or supersede a QA file. A consumer-planted `working` file is the
+      retired _ASK/ stub wearing a QA/ costume, and it is FORBIDDEN.
+
+WRITER: this layer. Only gate ③ ever produces a `working` file, and only transiently
+        (gate ① writes nothing; gate ② writes once, complete). Anatomy + the three
+        legal reasons a QA file may exist (commissioned · digest-only · executor's
+        own): fn/qa.md.
+
+THE CLAIM MUST EXPIRE. `started:` is MANDATORY on a `working` file — a claim that
+   cannot expire is a zombie by construction. TTL = the named constant
+   QA_CLAIM_TTL_HOURS = 24. Past it the claim is STALE and the next qa call may
+   RECLAIM it (fresh started:, abandoned attempt recorded in ## Not-done).
+RACE GUARD. Create the claim under `set -C` (noclobber). The loser re-scans and
+   DEFERS. No lock dirs, no lease servers, no ledgers.
+SUPERSESSION. A later run whose answer CHANGES writes QA/<n+1>-<slug>.md and APPENDS
+   `superseded-by:` to the OLD file's state line — by this layer, never by a consumer.
+   A QA file's BODY is never edited. The state line is the ONE mutable field.
+
+STATUS reads the STATE LINE, not mere existence:
+   no QA file                 -> not answered
+   state: working             -> IN PROGRESS (since <started>)
+   state: answered            -> answered
+   superseded-by: X           -> answered, but STALE — the live answer is X
+
+⛔ ABUSE GUARD: a QA/ that mirrors every source is noise, not an index.
+⛔ LAW 2 (bank surface): a QA file carries NO consumer vocabulary — no C\d, no H\d,
+   no "claims-stage", no "the paper" meaning someone's paper. Write it for the NEXT
+   reader, who has a different stake, or none.
+⛔ THE CHECKER HARD-FAILS three defects THIS layer can write:
+   qa-working-no-started (unexpirable claim) · qa-working-expired (zombie past
+   QA_CLAIM_TTL_HOURS) · qa-answered-empty (`state: answered` with an EMPTY
+   ## Answer — a lying receipt).
 ```
 
 
@@ -95,6 +234,9 @@ Routing
 -------
 
 ```
+0. First positional is `qa` -> route to fn/qa.md BEFORE any other parsing. Everything after
+     it is ONE general-language question (+ an optional leaf path, + --check-only). Never
+     re-interpret a qa question as a routing keyword.
 1. First positional is a lifecycle verb (open / open-group / plan / build / execute / report / status)
      -> durable operation on the folder. `feedback` and `digest` route to fn/feedback.md /
         fn/digest.md BEFORE any other parsing; neither scaffolds a folder.
@@ -134,7 +276,11 @@ Step 1  Resolve scope: folder (has discovery.yaml) -> run stage(s); group -> ite
 Step 2  Group: purpose letter (S/L/P) + next free two-digit id (no renumbering).
 Step 3  Folder: next free NN_<slug>/ in the group. One topic per folder; slug names the TOPIC.
 Step 4  Run the stages (each owns its files):
-        Plan     write discovery.yaml (type + role + question + sources + expected_outputs);
+        Plan     write discovery.yaml (type + role + question + sources + expected_outputs).
+                 The QUESTION is the whole contract — whether it came from this layer's own
+                 research agenda, from a human, or verbatim from a caller's dispatch. It
+                 arrives in GENERAL language and it is answered on its own terms; there is
+                 no stub to read and nothing upward to look at.
                  NO parent field — self-contained; append discovery.opened to _haipipe/project.log.jsonl
         Build    (optional) author the instrument under build/; set status building
         Execute  dispatch the TYPE SKILL — Search -> haipipe-discovery-search,
@@ -142,10 +288,26 @@ Step 4  Run the stages (each owns its files):
                  inspect local project evidence first unless fresh web search was asked; set status executing
         Report   APPEND the report: block (absent until now; outcome != lifecycle status);
                  set top-level status (ok / inconclusive / blocked);
+                 THE QA FILE — QA/<n>-<slug>.md, for exactly one of the three legal
+                 reasons (commissioned · digest-only · executor's own):
+                   · came in via gate ③  -> the CLAIM already exists on disk
+                     (state: working + started:, empty ## Answer, written at the ③
+                     decision BEFORE Plan ran). COMPLETE it here: rewrite the state line
+                     to `state: answered` and fill the `## Answer` body. That is the
+                     SECOND and LAST write, by the same owner.
+                   · came in via gate ②  -> CREATE it here, ONCE, COMPLETE,
+                     `state: answered`. No claim was needed — the write is instant.
+                 THE EXECUTOR HOLDS THE PEN: whoever asked may have CAUSED this file, but
+                 this layer AUTHORS it — both writes — in general language, with no
+                 consumer vocabulary in it (fn/qa.md · LAW 2). A CONSUMER never writes
+                 a QA file, and never touches its state line;
                  append discovery.completed to the project log
-        Handoff  return the terminal path to the caller; the CALLER records the link on its
-                 own side and appends discovery.consumed — the discovery records nothing upward
-Step 5  Return: {status, discovery_group, discovery_folder, type, files_written, next}.
+        Handoff  return the terminal path (+ the QA file path, if one was written) to the
+                 caller; the CALLER records the link on its own side and appends
+                 discovery.consumed — the discovery records nothing upward. No `answers:`
+                 field, no ask mailbox, no id of any kind: whoever asked harvests the path
+                 on their own schedule.
+Step 5  Return: {status, discovery_group, discovery_folder, type, files_written, qa_file, next}.
 ```
 
 Feedback

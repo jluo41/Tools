@@ -8,7 +8,7 @@ ARIS is an autonomous research workflow (idea > experiment > review > paper > re
 |---|---|---|
 | Optimizes for | Autonomous forward motion | Story reliability + state correction |
 | Main unit | Workflow stage | Paper folder state |
-| Evidence lives in | Workflow logs, research wiki | Project-level tasks/discoveries; claim gaps buffer in `1-probe-plans/`, batch-dispatch to probe |
+| Evidence lives in | Workflow logs, research wiki | Project-level tasks/discoveries; the paper's questions live as SECTIONS in `1-probes/` and bind BY PATH to the bank's `QA/<n>-<slug>.md` answers |
 | Review means | Fix weaknesses, rerun | Diagnose earliest broken layer, loop back |
 | Story state | Implicit in NARRATIVE_REPORT | First-class `0-lifecycle/1-pitch/` with provenance |
 
@@ -35,7 +35,7 @@ W6   Conference Talk      ->   present (reads pitch first)
 | `PAPER_PLAN.md` | `0-lifecycle/5-minimap/5-minimap.tex` | In HAI-Pipe, downstream of pitch + narrative |
 | `figures/`, `latex_includes.tex` | `0-displays/displayNN-*/` | Display units with claim, caption, preview |
 | `AUTO_REVIEW.md` / `REVIEW_STATE.json` | review reports, `1-rounds/` | HAI-Pipe routes findings by layer |
-| `research-wiki/` | project KB / discoveries / insights | HAI-Pipe path: discovery > insight > narrative > pitch |
+| `research-wiki/` | project KB: tasks/ + discoveries/ | HAI-Pipe path: discovery > PPNN verdict > claims > narrative |
 
 ## Review routing (the key difference)
 
@@ -43,7 +43,7 @@ W6   Conference Talk      ->   present (reads pitch first)
 |---|---|---|
 | Unclear intro | Rewrite intro | Check pitch first; if pitch unclear, fix pitch then intro |
 | Claim too strong | Soften text | Update claims/narrative, then edit |
-| Need more ablation | Run experiment | Buffer probe plan > dispatch > verdict backfills |
+| Need more ablation | Run experiment | Raise a question SECTION > MATCH > dispatch what MATCH cannot close > the claim's status flips in 1-claims.md |
 | Lacks contribution focus | Rewrite abstract | Reopen pitch and narrative |
 
 ## Integration model
@@ -58,7 +58,7 @@ HAI-Pipe paper folder
   0-lifecycle/{0-seed..5-minimap}/
   0-sections/*.tex
   0-displays/displayNN-*/
-  1-probe-plans/PPNN_*.md       <- buffered evidence needs, batch-dispatched to probe
+  1-probes/PPNN_<topic>.md <- the paper's questions (one SECTION each), bound by PATH to the bank
   1-rounds/vYYMMDD/
 ```
 

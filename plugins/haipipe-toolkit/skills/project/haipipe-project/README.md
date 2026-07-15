@@ -31,7 +31,6 @@ Container Layout
   examples/<name>/
   +-- tasks/          owner: /haipipe-task
   +-- discoveries/    owner: /haipipe-discovery
-  +-- insights/       owner: /haipipe-insight
   +-- papers/         owner: /haipipe-paper-*  (each paper a submodule; legacy projects use singular paper/)
   +-- diagram/        owner: this skill via /diagram-ascii (EMPTY at setup, authored on request)
 

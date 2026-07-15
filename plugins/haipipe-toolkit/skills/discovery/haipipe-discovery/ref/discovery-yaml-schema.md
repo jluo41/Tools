@@ -1,4 +1,4 @@
-# discovery.yaml — Discovery Folder Schema (v2.6)
+# discovery.yaml — Discovery Folder Schema (v3.0)
 
 ## The whole model
 
@@ -10,10 +10,14 @@ examples/<PROJECT>/discoveries/<GROUP_slug>/<NN_slug>/
 ├── build/            optional instrument (only if Build ran)
 ├── sources.md        work product: what was found   (Search: terminal)
 ├── notes.md          work product: what was read    (Search: terminal)
-└── verdict.md | landscape.md | ideas.md   TERMINAL (by type + role)
+├── verdict.md | landscape.md | ideas.md   TERMINAL (by type + role)
+└── QA/               OPTIONAL readable digests — QA/<n>-<slug>.md
+                      written at Report, by THIS layer. Contract: fn/qa.md.
 ```
 
-NOT part of the contract: `status.yaml`, `site.md`, per-folder logs. Lifecycle progress is discovery.yaml `status:`; the human summary is `report.summary`; events go to the project-level `_haipipe/project.log.jsonl`.
+`QA/` is optional; not every leaf has one. `<n>` = creation order, and the numbering IS the index (`ls QA/` is the index). Slug only — no PP id, no claim id, no paper reference in a bank filename, ever. Write-once: a later question ADDS `QA/<n+1>-<slug>.md`.
+
+NOT part of the contract: `status.yaml`, `site.md`, per-folder logs, `_ASK/`, `_ANS/`. Lifecycle progress is discovery.yaml `status:`; the human summary is `report.summary`; events go to the project-level `_haipipe/project.log.jsonl`.
 
 ## Types × roles → terminal
 
@@ -116,6 +120,22 @@ Idea-novelty       novel | partial | preempted | inconclusive
 
 Common fields: `outcome`, `summary`, `confidence` (high/medium/low). Judge roles (prior_art/counterevidence/novelty) add `supports_claim` / `contradicts_claim`.
 
+## 💀 DELETED: the `answers:` field and the `_ASK/` bridge (v3.0, 2026-07-14)
+
+`answers: [PPNN]` is **gone**, and so is everything it connected to: `_ASK/` stub folders, `_ANS/`, and every PP id under `discoveries/`. **The bank is probe-unaware** (R2). A discovery no longer carries any trace of who asked.
+
+Do not resurrect them, and do not write them into a new discovery.yaml. What replaced them:
+
+```
+  the CONSUMER keeps the question + the stake in ITS OWN probe file
+     papers/<P>/1-probes/PPNN_<topic>.md — a `commission:` block per question
+  it hands us that block, VERBATIM, and nothing else
+  we answer it through the `qa` verb (fn/qa.md) and return ONE PATH:
+     discoveries/<leaf>/QA/<n>-<slug>.md
+  the consumer's section points at that path. Nothing points back.
+```
+
+There is no disk signal to grep for, because there is no id: the answer IS a file, and the caller's `target:` is the pointer to it. Constitution: `probe/haipipe-probe/SKILL.md`.
 
 
 ## Terminal templates
@@ -168,6 +188,26 @@ confidence: high | medium | low
 ### sources.md + notes.md (Search terminals; work products elsewhere)
 
 Format lives in ONE place: `ref/source-format.md` — one source = one `###` subsection with the full title in the heading; venue/locator first line, Scholar link, role, verification flag, a 2-4 sentence `summary:` of the paper itself, and a one-line `finding:` for our question; NEVER a table. Heavy artifacts (PDFs, snapshots) go in an optional `sources/` subfolder.
+
+### `QA/<n>-<slug>.md` (optional readable digest — NOT a terminal)
+
+A QA file is not a terminal and never replaces one: it is the READABLE digest of one direction this leaf has explored, anchored back into the artifacts. Exactly three sections, no markdown tables, general language only (LAW 2 — no `C\d`, no `H\d`, no "the paper"). List it in `expected_outputs` when a commission names it.
+
+```md
+# Q — <the question, self-contained, general language>
+
+## Answer
+Plain words, actionable by a reader who has never opened this folder.
+Anchors: [→ sources.md#S02]  [→ verdict.md#Evidence]  [→ landscape.md#Gaps]
+
+## Caveats
+- What this does NOT establish.
+
+## Not-done
+- What was asked but not resolved, and why.
+```
+
+Full contract — the gate, the depth ladder, the three legal reasons a QA file may exist: `fn/qa.md`.
 
 
 

@@ -1,196 +1,166 @@
-haipipe Plugin
+haipipe-toolkit
 ===============
 
-Skills for the haipipe pipeline — from raw data to trained models to deployed endpoints. Covers all 6 stages plus a per-individual data contract and project scaffolding.
+A skill-set for **turning runs into trustworthy science**.
 
-**v2.0 layout** — five user-facing **umbrella** skills parse intent and dispatch to per-stage / per-target / per-risk-profile **specialists**. You only need to remember the umbrellas; specialists exist as real skills (each with its own `SKILL.md`) but are normally called by the umbrella via `Skill()`.
-
-
-Two organizing axes
--------------------
-
-The toolkit is laid out along **two orthogonal axes**. They are not siblings — they meet at one point (a `task` run), and you usually use both.
+Two things live here, and they meet at one point:
 
 ```
-Task      0–6   ENGINEERING substrate — "how data becomes a model and ships"
-                1_data → 2_nn → 3_end → 4_individual
-                produces the Stores (RawData → … → Endpoint).
-                Driven by /haipipe-data, /haipipe-nn, /haipipe-end,
-                /haipipe-individual, /haipipe-project.
-                ► THIS README documents the task-domain axis.
+   ⚙️ THE ENGINEERING SUBSTRATE                  🔬 THE RESEARCH LIFECYCLE
+   "how data becomes a model and ships"          "how runs become a paper you can defend"
 
-Research        RESEARCH lifecycle — "how to turn runs into trustworthy,
-                publishable science"
-                discover → project → task → probe → insight
-                → paper → application
-                Driven by /haipipe-discovery, /haipipe-task, /haipipe-probe,
-                /haipipe-insight, /haipipe-application, and the paper commands.
-                ► See MENTAL_MODEL.md (the model) and USAGE.md (the recipes).
-                ► See blueprints/ for expected end-to-end project run shapes.
+   1_data → 2_nn → 3_end → 4_individual          task · discovery   (the EXECUTORS — the bank)
+   RawData → … → Endpoint stores                        ⇅
+   /haipipe-data /haipipe-nn /haipipe-end          probe            (the Q/A map)
+   /haipipe-individual /haipipe-project                 ⇅
+                                                 paper · application  (the CONSUMERS)
+                    │                                              │
+                    └──────────────── a task run ──────────────────┘
+                       run.sh emits metrics.json; the research layer
+                       wraps it with QA digests, probe files, and claims
 ```
 
-The seam between the axes is `task`: a task's `run.sh` *executes* a stage of
-the task-domain pipeline and emits `metrics.json`; the research layer wraps
-those runs with scientific bookkeeping (DIKW cards, probe arms, claims).
-
-Glossary (one concept, three names you will see):
-
-```
-probe   = the concept (a claim-directed probe)
-probe = the folder name (skills/probe/, probes/)
-/haipipe-probe = the command
-```
+If you are here to **build a model** → the engineering substrate (below).
+If you are here to **write a paper** → the research lifecycle (below).
+If you want the whole model → **`ARCHITECTURE.md`**. For recipes → **`USAGE.md`**.
 
 
-User-facing surface (memorize only these)
-------------------------------------------
+The research lifecycle, in one screen
+--------------------------------------
+
+Five layers. Two of them execute, two of them consume, and one maps between.
 
 ```
-/haipipe-data        Stages 1-4 orchestrator
-/haipipe-nn          Stage 5 orchestrator
-/haipipe-end         Stage 6 orchestrator (artifact + deploy targets)
-/haipipe-project     project lifecycle orchestrator
-/haipipe-individual     per-individual contract (standalone, not decomposed)
+   ⚙️ EXECUTORS (the bank — grows on its own)     📄 CONSUMERS (ask the questions)
+   ══════════════════════════════════════        ═══════════════════════════════════
+   tasks/<leaf>/          code, runs             papers/<P>/         the manuscript
+     workflow/plan.yaml   the question             0-lifecycle/      stages × DPRC
+     results/             the raw answer           1-probes/         ← the probe files
+     QA/<n>-<slug>.md     the READABLE answer      1-claims.md       ← claim status lives here
+                                                 applications/<A>/   same model, non-academic
+   discoveries/<leaf>/    literature, prior art
+     sources.md · verdict.md · landscape.md
+     QA/<n>-<slug>.md     the READABLE answer
+
+                    ╲                          ╱
+                     ╲   🌉 THE PROBE          ╱
+                      ╲  a PAPER-LEVEL file:  ╱
+                       papers/<P>/1-probes/PPNN_<topic>.md
+                       one file per TOPIC · one SECTION per question
+                       binds by PATH:  target: tasks/…/QA/1-cycle.md
 ```
 
-Each umbrella accepts:
-  - Positional args (`/haipipe-data source cook`)
-  - Flexible arg order (`/haipipe-data cook source`)
-  - Aliases (`/haipipe-data 1 cook`, `/haipipe-data 1-source cook`)
-  - Free-form natural language (`/haipipe-data "build a SourceFn for Dexcom"`)
+**The bank never learns that probes exist.** No `_ASK/`, no ids, no back-references.
+It answers plain questions through its own `qa` verb, and the answer is a file.
+
+**The wall is a dispatch rule, not a file.** A consumer session never runs bank work
+inline — it hands a paper-agnostic `commission:` to a clean-context executor agent,
+and the *executor* writes the answer. The stake (`## Why`, H1/H2/C6) never crosses.
+
+Depth: `skills/probe/haipipe-probe/SKILL.md` is the constitution.
+Design record + the rulings behind it: `Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/`.
 
 
-Tier 1 — user-facing umbrellas
--------------------------------
+Commands
+--------
 
-| Umbrella | Stages | What it covers |
-|---|---|---|
-| `/haipipe-data` | 1-4 (project-wide) | SourceFn, RecordFn, CaseFn, TfmFn, SplitFn — pipeline runs, dashboards, reviews. Routes by stage. |
-| `/haipipe-nn` | 5 | mlpredictor / tsforecast / tefm / tediffusion / bandit; algorithm / tuner / instance / modelset layers. Routes by layer. |
-| `/haipipe-end` | 6 | 3-axis router: per-Fn-type (meta/trig/post/src2input/input2src), artifact-as-whole (endpointset), and deploy target (sagemaker/databricks/local/mlflow). |
-| `/haipipe-project` | — | Project scaffold / review / reorganize. Routes by risk profile (build / read / modify). |
-| `/haipipe-individual` | 0-2 (per individual) | Per-individual `0-RawDataStore`, `1-SourceStore`, `2-RecStore`. Standalone — not decomposed. |
+**Research axis:**
+
+```
+/haipipe-task         the internal executor — Plan → Build → Execute → Report
+/haipipe-task qa "<question>" [<leaf>]          ← THE QUESTION DOOR
+                      One question, GENERAL language (no paper ref, no stake).
+                      ① QA scan → ② digest → ③ P-B-E-R → 🚫 refuse.
+                      Returns tasks/<leaf>/QA/<n>-<slug>.md.
+                      Three callers: a human exploring · the orchestrator
+                      itself (self-directed) · a paper's probe DISPATCH.
+
+/haipipe-discovery    the external executor — Search | Review | Idea
+/haipipe-discovery qa "<question>" [<leaf>]     ← the symmetric door
+
+/haipipe-probe        the probe constitution (anatomy, binding, the two LAWS).
+                      A bare question ROUTES to an executor's qa verb — this
+                      layer never runs bank work itself.
+
+/haipipe-paper        the academic consumer — stages × DPRC, owns 1-probes/
+/haipipe-application  the non-academic consumer — same model, venue-gated
+```
+
+**Engineering axis:**
+
+```
+/haipipe-data         stages 1-4   SourceFn · RecordFn · CaseFn · TfmFn · SplitFn
+/haipipe-nn           stage 5      algo → tuner → instance → modelset
+/haipipe-end          stage 6      Fn-types · endpointset · deploy targets
+/haipipe-individual   stages 0-2 per individual (inference-time data contract)
+/haipipe-project      project container setup:  repo | new | feedback | digest
+```
+
+Every umbrella accepts positional args, flexible order, aliases, and free-form
+natural language: `/haipipe-data "build a SourceFn for Dexcom"`.
 
 
-Tier 2 — specialists (called by umbrellas)
--------------------------------------------
+How skills are organized
+-------------------------
 
-Specialists each have their own `SKILL.md` and can be invoked directly for power-user work, but the recommended entry is always the umbrella.
+**The umbrella pattern.** You memorize the umbrellas. Specialists are real skills
+with their own `SKILL.md`, but the umbrella parses your intent and dispatches to
+them via `Skill()`. Only entry points get a slash-command; specialists are reached
+through their umbrella.
 
+⚠️ The two consumer families are registered inconsistently today: `application`
+follows the umbrella pattern strictly (4 slash-commands, 16 specialists dispatched
+via `Skill()`), while `paper` exposes 43. Both work. The `paper` surface is simply
+wider than the pattern intends.
 
-Folder layout
---------------
-
-Skills are grouped into family folders under `skills/`. Folder names are pure
-organization — only the `name:` field in each SKILL.md frontmatter identifies
-the skill. Data, NN, endpoint, and individual inference now live inside
-`task/` as task-domain families.
+**Folder names are organization only.** A skill is identified *solely* by the
+`name:` field in its `SKILL.md` frontmatter. Moving a folder never renames a skill.
 
 ```
 skills/
-├── task/
-│   ├── haipipe-task/                lifecycle hub: Plan / Build / Execute / Report
-│   ├── haipipe-task-for-*/          task-type bridge specialists
-│   │
-│   ├── 1_data/
-│   │   ├── haipipe-data/            (umbrella — orchestrator)
-│   │   ├── haipipe-data-source/     Stage 1 (SourceFn, HumanFn)
-│   │   ├── haipipe-data-record/     Stage 2 (RecordFn, TriggerFn)
-│   │   ├── haipipe-data-case/       Stage 3 (CaseFn)
-│   │   └── haipipe-data-aidata/     Stage 4 (TfmFn, SplitFn)
-│   │
-│   ├── 2_nn/
-│   │   ├── haipipe-nn/              (umbrella)
-│   │   ├── haipipe-nn-algo/         L1 (Algorithm)
-│   │   ├── haipipe-nn-tuner/        L2 (Tuner / hyperparameter sweep)
-│   │   ├── haipipe-nn-instance/     L3 (ModelInstance materialization)
-│   │   └── haipipe-nn-modelset/     L4 (ModelSet / pipeline composition)
-│   │
-│   ├── 3_end/
-│   │   ├── haipipe-end/             (umbrella — 4-axis router)
-│   │   ├── haipipe-end-endpointset/ artifact-as-whole
-│   │   ├── haipipe-end-meta/        per-Fn-type: MetaFn
-│   │   ├── haipipe-end-trig/        per-Fn-type: TrigFn
-│   │   ├── haipipe-end-post/        per-Fn-type: PostFn
-│   │   ├── haipipe-end-src2input/   per-Fn-type: Src2InputFn
-│   │   ├── haipipe-end-input2src/   per-Fn-type: Input2SrcFn
-│   │   └── haipipe-end-deploy-*/    deploy targets
-│   │
-│   └── 4_individual/
-│       ├── haipipe-individual/                  per-individual data contract
-│       ├── haipipe-individual-inference/        per-individual inference run
-│       ├── haipipe-individual-inference-report/ report persona
-│       └── haipipe-individual-inference-judge/  judge persona
+├── task/              ⚙️ internal execution + the engineering substrate
+│   ├── haipipe-task/       the 4-stage lifecycle hub + the `qa` verb
+│   ├── 1_data/ 2_nn/ 3_end/ 4_individual/    the task-domain families
+│   └── agents/             orchestrator · creator · reviewer
 │
-├── project/                       (cross-cutting — research axis)
-│   ├── haipipe-project/             (umbrella)
-│   ├── haipipe-project-inspect/     READ: review, summarize, inventory, overview
-│   └── haipipe-project-organize/    MODIFY: reorganize files
+├── discovery/         🔍 external evidence — Search | Review | Idea + the `qa` verb
+├── probe/             🌉 the constitution + the claim JUDGE (G1/G2/G3)
+├── paper/             📄 academic consumer — stages × DPRC
+├── application/       📱 non-academic consumer — venue-gated
+├── project/           📦 container setup
+├── 0_utils/ 0_connect/   diagrams, connectors, venue playbooks
+└── insight/           🪦 RETIRED 2026-07-12 — tombstone only
 ```
 
-Note: research families (`discover/`, `project/`, `task/`, `probe/`,
-`insight/`, `paper/`, `application/`, `narrative/`) live under `skills/`.
-The numbered execution families are now nested under `task/`. Folder name is
-organization only — a skill is identified solely by its `name:` frontmatter.
+**`_archive/` is not live.** 39 archived `SKILL.md` files sit inside the tree
+(mostly under `paper/_archive/`). They are unregistered and never loaded — but they
+*do* show up in your greps. Exclude `_archive/` when searching.
 
 
-Stage map
+Where to read next
+------------------
+
+```
+ARCHITECTURE.md          the whole model — the two banks, the probe bridge, the layers
+USAGE.md                 recipes: the commands, in the order you actually use them
+Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/       the probe design record + every ruling behind it
+skills/STRUCTURE.md      the skill-tree mental model
+skills/probe/haipipe-probe/SKILL.md    the probe constitution (read before touching probes)
+```
+
+
+Principles
 ----------
 
-```
-0-RawDataStore   →  1-SourceStore  →  2-RecStore  →  3-CaseStore  →  4-AIDataStore  →  5-ModelInstanceStore  →  6-EndpointStore
-(dataset dumps)     (typed frames)    (records)      (cases)         (train tensors)    (trained weights)         (deployable)
+**The bank grows on its own.** An executor session runs Plan→Build→Execute→Report for
+its own sake — no question pending, no ask. Most probe questions should therefore hit
+an answer that *already exists*. Commissioning new work is the exception, not the norm.
 
-                    └──────── project-wide stores in _WorkSpace/ ────────────┘
+**One file, one writer.** No file in this system has two writers. That is what lets a
+paper session and a task session run weeks apart with zero coordination.
 
-Per-individual slice (/haipipe-individual):
-_WorkSpace/A-User-Store/UserGroup/Subject-{dataset}-{id}/
-├── 0-RawDataStore/   ← individual's raw rows/files
-├── 1-SourceStore/    ← individual's source frames
-└── 2-RecStore/       ← individual's record(s)
-   (3-6 NOT per-individual — those are for model dev; at inference the individual calls the endpoint)
-```
+**Status is derived, never asserted.** Every state in the system is an `ls` or a `grep`.
+No status is an agent's word for it — agents die, sessions end, files persist.
 
-
-Architecture
-------------
-
-**Umbrella → Specialist contract.** Each umbrella SKILL.md owns:
-  - Keyword tables (stage / layer / target / verb)
-  - Intent parsing logic
-  - `Skill("haipipe-<group>-<scope>", args=...)` dispatch
-  - Cross-scope inline behaviors (cross-stage dashboards, overview/explain modes)
-
-Each specialist SKILL.md owns:
-  - Its scope-specific `ref/concepts.md` (or equivalent)
-  - Stage/layer/target-specific procedures
-  - A structured **return tail** the umbrella can parse:
-
-```
-status:    ok | blocked | failed
-summary:   2-3 sentences
-artifacts: [paths created, read, or modified]
-next:      suggested next command
-```
-
-**Discipline.** Specialists never modify state owned by another specialist. For example, target deployers (`-sagemaker`, `-databricks`, etc.) read the Endpoint_Set produced by `-endpointset` but never modify it. If a deploy fails because of an artifact issue, the fix lives in `-endpointset`, not in the target skill.
-
-
-Decomposition axes
--------------------
-
-| Umbrella | Axis | Why |
-|---|---|---|
-| `/haipipe-data` | pipeline stage | 4 stages with distinct concepts and ref content |
-| `/haipipe-nn` | model layer | 4 layers with distinct contracts |
-| `/haipipe-end` | Fn-type / artifact / deploy-target | 5 inference Fn-types (meta/trig/post/src2input/input2src), 1 artifact-as-whole (endpointset), 4 deploy targets (sagemaker/databricks/local/mlflow); umbrella picks axis from intent |
-| `/haipipe-project` | risk profile | build / read / modify need different `allowed-tools` |
-| `/haipipe-individual` | — | content too small; per-individual semantic is the whole point |
-
-
-Principle
----------
-
-**Data contract split.** Project-wide stages 1-4 are for building models. Per-individual stages 0-2 are for serving one individual's data to a deployed endpoint. The split mirrors train-time vs. inference-time: the endpoint doesn't need 4-AIDataStore, it needs a record.
-
-**Skill-first development.** Make a skill work locally first, then wire it into an umbrella's keyword table. The skill prompt is the source of truth.
+**Skill-first development.** Make a skill work standalone, then wire it into an umbrella's
+keyword table. The `SKILL.md` prompt is the source of truth.

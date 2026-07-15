@@ -79,7 +79,6 @@ examples/<Project-Name>/
 ├── .gitignore         # _WorkSpace/, .paper-console.yaml, .probe-console.yaml, *.aux etc.
 ├── tasks/             # internal structure owned by /haipipe-task
 ├── discoveries/       # internal structure owned by /haipipe-discovery
-├── insights/          # internal structure owned by /haipipe-insight
 ├── diagram/           # EMPTY at setup; authored later via /diagram-ascii on request
 └── papers/            # papers land here, each as a submodule of THIS repo (/haipipe-paper-*)
 ```

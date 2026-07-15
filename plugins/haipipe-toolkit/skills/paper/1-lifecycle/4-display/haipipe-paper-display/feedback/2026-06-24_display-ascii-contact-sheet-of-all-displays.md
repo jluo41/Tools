@@ -1,8 +1,8 @@
 ---
-status: open
+status: fixed
 created: 2026-06-24
 context: display stage, ProjB Paper-Personality2Opioid-MISQ2026
-fixed_in: ""
+fixed_in: "haipipe-paper-display v3.0.0"
 ---
 "how about you should have /diagram-ascii to preview the figure and tables and ask
 the user to add the comments?" + "should this be a preview of all the displays in
@@ -36,4 +36,8 @@ contact sheet) as the comment-collection surface, alongside the compiled
 4-display.pdf. Add it to the display CHECKLIST.md done-gate. Pairs with the
 existing rule that USER comments live in 4-display.tex.
 
-Fix:
+Fix: v3.0.0 — HOME MOVED: the contact sheet is absorbed INTO 4-display.md (the md-first
+stage doc): every display block carries the compact ASCII sketch + `> USER:` slot, in
+narrative order, including 🔴 to-build units. The separate 4-display-preview.txt is
+RETIRED (migrated verbatim at stage entry); comments now persist as `> USER:` lines in
+the md, not `%% {USER}:` in the tex (which is generated).

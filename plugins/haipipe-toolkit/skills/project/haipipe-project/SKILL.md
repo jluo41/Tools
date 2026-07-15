@@ -1,12 +1,12 @@
 ---
 name: haipipe-project
-description: "Quick project setup: create the container folders and stop. Two kinds by name: Project-* = repo-backed (gh repo under a user-chosen org, never assumed; submodule at examples/<name>; if the repo already exists, adopt and pull it) and ProjX-* = plain directory under examples/. Owns ONLY the container layout (tasks/ discoveries/ insights/ papers/ diagram/; probes/ retired 2026-07-05 — evidence contracts live in each paper/application stage's _PROBE/ cards); each subfolder's internals belong to its owning skill family. Task/run scaffolding lives in /haipipe-task. Trigger: new project, project scaffold, repo project, project submodule, /haipipe-project."
+description: "Quick project setup: create the container folders and stop. Two kinds by name: Project-* = repo-backed (gh repo under a user-chosen org, never assumed; submodule at examples/<name>; if the repo already exists, adopt and pull it) and ProjX-* = plain directory under examples/. Owns ONLY the container layout (tasks/ discoveries/ papers/ applications/ diagram/; probes/ retired 2026-07-05 and insights/ retired 2026-07-12 — a paper's evidence questions live in its own 1-probes/ PPNN probe files, and the bank answers them in <leaf>/QA/<n>-<slug>.md); each subfolder's internals belong to its owning skill family. Task/run scaffolding lives in /haipipe-task. Trigger: new project, project scaffold, repo project, project submodule, /haipipe-project."
 argument-hint: "[repo|new|feedback|digest] [Project-Name|args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.0.0"
-  last_updated: "2026-07-03"
-  summary: "Project SETUP only: Project-* repo-backed submodules + ProjX-* plain dirs. Everything else moved out or retired."
+  version: "3.2.0"
+  last_updated: "2026-07-14"
+  summary: "Project SETUP only: Project-* repo-backed submodules + ProjX-* plain dirs. Everything else moved out or retired. v3.2 syncs the container contract to the probe v3 model (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/, JL 2026-07-14): a task/discovery LEAF may carry an OPTIONAL QA/ folder (QA/<n>-<slug>.md — the executor's readable digest, numbering IS the index, on BOTH banks); the scaffold NEVER mints _ASK/ or _ANS/ (the bank is PROBE-UNAWARE: no PP ids, no answers: field); a consumer's evidence questions live in papers|applications/<X>/1-probes/PPNN_<topic>.md (renamed from 1-probe-plans/), bound to the bank BY PATH."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -41,7 +41,10 @@ eval status scanning (scan-status)           -> /haipipe-task   (task/)
 workflow plan/report schema                  -> task/haipipe-workflow
 paper folders inside a project               -> /haipipe-paper-lifecycle folder
 project audits / reorganization              -> retired; originals in project/_archive
-claims / probes / evidence                   -> /haipipe-probe  (gateway layer doc; folderless — _PROBE cards live consumer-side)
+claims / evidence questions                  -> /haipipe-probe (the CONSTITUTION; a probe is a
+                                                paper-level file, papers/<P>/1-probes/PPNN_<topic>.md
+                                                -- it owns NO folder in the execution tree)
+asking the bank a question                   -> /haipipe-task qa · /haipipe-discovery qa
 ```
 
 ---
@@ -53,12 +56,29 @@ This skill owns ONLY the top-level container. Each subfolder's INTERNAL structur
 
 ```
 📦 examples/<name>/   (this skill sets up the container)
-   ├── 💼 tasks/          owner: /haipipe-task        three-level hierarchy, group letters, task-folder anatomy
+   ├── ⚙️ tasks/          owner: /haipipe-task        two-level hierarchy, group letters, task-folder anatomy
    ├── 🔎 discoveries/    owner: /haipipe-discovery   one topic = one folder (Search / Review / Idea types)
-   ├── 💡 insights/       owner: /haipipe-insight     D/I/K/W cards + INDEX
-   ├── 📰 papers/         owner: /haipipe-paper-*     paper-folder contract (paper wiki); each paper a submodule (legacy projects use singular paper/; do not migrate)
+   ├── 📄 papers/         owner: /haipipe-paper-*     paper-folder contract (paper wiki); each paper a submodule (legacy projects use singular paper/; do not migrate)
    ├── 📬 applications/   owner: /haipipe-application-*  non-academic deliverables
    └── 🗺️ diagram/        owner: this skill (via /diagram-ascii)  01-story, 02-boundary -- EMPTY at setup, authored on request
+```
+
+**The evidence contract, in the three lines this skill must not get wrong** (owner:
+`/haipipe-probe`; full detail in `skills/probe/haipipe-probe/SKILL.md`):
+
+```
+   ⚙️ THE BANK is PROBE-UNAWARE.  tasks/<leaf>/ and discoveries/<leaf>/ carry NO _ASK/,
+      NO _ANS/, NO `answers:` field, NO PP id -- ever. THIS SKILL NEVER MINTS ONE.
+      A leaf MAY carry an OPTIONAL QA/ folder: QA/<n>-<slug>.md, the executor's readable
+      digest, written by the EXECUTOR at its Report stage. Numbering IS the index.
+      Not scaffolded at setup -- it appears when the leaf has something to say.
+
+   📄 THE CONSUMER holds the questions.  papers|applications/<X>/1-probes/PPNN_<topic>.md
+      (renamed from 1-probe-plans/ on 2026-07-14). One file per TOPIC, one SECTION per
+      question. Created by the consumer's own PROBE phase, never by this skill.
+
+   🔗 THEY BIND BY PATH.  A section's `target:` names a QA file. No id crosses. Nothing
+      to renumber, no ledger, no shared namespace.
 ```
 
 Two refs live here: `ref/project-structure.md` (the top-level container contract only: naming, standard layout, the seven-worlds table + dependency map, project-level diagram/, structure-ownership pointers) and `ref/code-structure.md` (Track A layout + the paired-example rule: every new pipeline Fn or ML model stub gets a paired example task). The tasks/ internals (group folders, task naming, task-folder anatomy, run scripts) live at `task/haipipe-task/ref/task-structure.md`, moved there 2026-07-03.

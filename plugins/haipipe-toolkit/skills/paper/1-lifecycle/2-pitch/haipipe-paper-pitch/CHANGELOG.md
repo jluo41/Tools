@@ -4,6 +4,20 @@ haipipe-paper-pitch — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 4.3.0 — 2026-07-14
+
+- "probe plans" -> the probe FILES; "`1-probes/` cards" -> a `read` section / a landed QA file in tasks|discoveries.
+
+## [4.3.1] — 2026-07-14 — the required-reads were off by one `../`
+
+Fixed
+- **The first instruction in this skill pointed at nothing.** `Read first: ../../PHILOSOPHY.md, ../../wiki/04-lifecycle-map.md` — but this skill lives at `skills/paper/1-lifecycle/<N>-<stage>/<skill>/`, so `../../` is `1-lifecycle/`, which holds neither `PHILOSOPHY.md` nor `wiki/`. Both live one level further up, at `skills/paper/`. Every in-body citation (`../../wiki/08-stage-gate.md`, `../../wiki/02-comment-lifecycle.md`, `../../wiki/09-stage-illuminate.md`, `../../wiki/11-delivery-need.md`, `../../_venue/playbook-<venue>`) failed the same way, silently — an agent loading the philosophy and the stage-gate rules got file-not-found and proceeded without them. All repointed to `../../../`; every target verified to resolve on disk.
+
+## [4.2.0] -- 2026-07-09
+
+Changed (JL ruling 2026-07-09 (LLMTrait-Section session postmortem): normalize the writing process)
+- Phase VERBS on the stage (`pitch <paper-dir> [draft|probe|revise|check]`); hard gates + binding comment rules inlined (STOP after DRAFT with [GATE] log; Skill() dispatch proof; [REVISE] workers line; never delete `> USER:` comments; surgical edits only).
+
 ## [4.1.0] -- 2026-07-08
 
 Changed

@@ -8,6 +8,13 @@ B-rebuttal-task/ is a MAPPING LAYER only. It does not contain task
 implementations. Actual task code, scripts, and results live in the
 project's tasks/ directory (e.g., `examples/{project}/tasks/`).
 
+⛔ AND THIS SESSION DOES NOT WRITE THEM (LAW 1). The rebuttal session is a CONSUMER: it
+CAUSES bank work and never AUTHORS it. Every task is DISPATCHED to
+Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent) with
+ONE question in general language, and the EXECUTOR scaffolds, names, runs and reports the
+leaf. Nothing under `tasks/` or `discoveries/` is written from here — no README, no script,
+no note, no QA file. A rebuttal id (C10, B7) inside a bank file IS the contamination.
+
 ---
 
 Input
@@ -103,19 +110,43 @@ Step 4: Create probe-plan.md
     - BLOCKED: depends on another task
     - NOT NOW: too much effort for rebuttal timeline
 
-Step 5: Create task folders in the project's tasks/ directory
+Step 5: DISPATCH each task to the executor — never author it here
 ----------------------------------------------------------------
 
-  For each new task, create a folder in the project's tasks/ directory.
-  Follow the project's task naming convention (e.g., A2_data_event_alignment,
-  B7_train_fairness_aware, C10_eval_cohort_stratification).
+  ⛔ LAW 1 — A CONSUMER SESSION NEVER WRITES A BANK FILE.
 
-  Each task folder should contain:
-    - README.md: what this task does, inputs, outputs
-    - Scripts/notebooks to run the task
-    - Results (or symlinks to results)
+  A rebuttal session is a CONSUMER (it is the paper, mid-argument). It may CAUSE a task;
+  it may never AUTHOR one. Writing `tasks/C10_eval_cohort_stratification/README.md` from
+  here plants the consumer's own ids and framing (C10 / B7 are CLAIM and REBUTTAL ids) into
+  the reusable bank — that is verbatim the A03 C6/C7 contamination the ONE-WRITER rule
+  exists to prevent, and it makes the evidence single-use.
 
-  Use the /haipipe-project skill if available for task folder structure.
+  So: HAND EACH TASK OVER. One call per task; batch the independent ones.
+
+    Agent(haipipe-task-orchestrator-agent, run_in_background=true, prompt="
+      action: qa
+      project: <project_root>
+      question: |
+        <ONE question, in GENERAL language. No reviewer id. No point id. No claim id.
+         No 'the reviewer asks'. No hoped-for answer. Just the question, as anyone
+         in the world might ask it.>
+      leaf: <an existing leaf path, `NEW <path>`, or omit if unknown>
+    ")
+
+  …or Agent(haipipe-discovery-orchestrator-agent, ...) for literature-shaped points
+  (prior art, "you missed reference X", landscape).
+
+  THE EXECUTOR scaffolds the leaf, names it, runs Plan → Build → Execute → Report, and
+  returns a PATH to `tasks|discoveries/<leaf>/QA/<n>-<slug>.md` — the answer. Record THAT
+  PATH in B-rebuttal-task/README.md's Task column. The bank never learns a rebuttal exists.
+
+  ⚠️ READ THE RETURNED QA FILE'S `- state:` LINE before quoting it (R19/R20):
+    state: answered   → quote it.
+    state: working    → IN PROGRESS since <started>. Do NOT re-dispatch, do NOT quote an
+                        empty Answer. Mark the row `wip` and re-check.
+    superseded-by: X  → follow the chain; quote X, never the stale file.
+
+  Never edit a QA file from this session — not the body, not the state line, not once.
 
 Step 6: Update status as tasks complete
 ------------------------------------------

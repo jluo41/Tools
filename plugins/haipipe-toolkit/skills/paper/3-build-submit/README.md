@@ -63,4 +63,4 @@ Everything in this stage obeys one rule, the structural twin of 3-write-edit's c
 | What should ONE `.tex` file look like inside | `2-section-edit/_shared/tex-file-anatomy.md` |
 | Write prose into the skeleton | `3-write-edit/haipipe-paper-edit-write` |
 | Improve existing prose | `3-write-edit` |
-| Compile or fix LaTeX errors | the folder's own `1-compile.sh` (shipped by `haipipe-paper-build-scaffold`); `components/compile/` for latexmk-based pipelines |
+| Compile or fix LaTeX errors | the folder's own `1-compile.sh` (shipped by `haipipe-paper-build-scaffold`); **here** (`paper-compile`) for latexmk-based pipelines |
