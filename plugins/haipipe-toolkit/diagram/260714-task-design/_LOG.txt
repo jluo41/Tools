@@ -137,3 +137,13 @@ decides, then moves here too. Newest block at the bottom.
      full gate/state-line/TTL/checker live in fn/qa.md. 503 → 452 lines. #3-#6
      (merge routing tables · compress Four-Phases manifest · dedup Workflow() blocks ·
      keyword table → ref/) still PENDING JL.
+
+[2026-07-14 23:35 · SHIPPED] SKILL.md conciseness pass #3-#6 — 452 → 381 lines (503 → 381 total)
+  #3 merged the Dispatch Table into Commands (added the "contract lives in fn/" line +
+     plan→fn/stage-plan.md, report→fn/stage-report.md; deleted the duplicate table).
+  #4 Four-Phases manifest → compact table (kept every creates/agent/gate/QA fact; folded
+     per-phase "reads" into one line + pointer to fn/stage-*).
+  #5 deduped the two identical Workflow() blocks (Step 3d now points to Step 3c's).
+  #6 MOVED the full keyword table → ref/type-inference.md (nothing lost); SKILL.md keeps a
+     quick-map + pointer. NO info lost, NO behavior change; verified fences balanced,
+     no dangling refs, no blank-runs.
