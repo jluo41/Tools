@@ -1,9 +1,3 @@
----
-name: section-abstract
-description: "Playbook for the Abstract. Condensation strategies (which 3 sentences to keep), venue-specific length limits, structured-vs-prose abstract formats. Use when writing or revising 0-sections/00_abstract.tex. Trigger: abstract, /section-abstract."
-allowed-tools: Read, Grep, Glob
----
-
 section-abstract — Playbook (STUB)
 ===================================
 

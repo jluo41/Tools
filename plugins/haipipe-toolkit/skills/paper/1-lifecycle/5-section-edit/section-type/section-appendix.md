@@ -1,9 +1,3 @@
----
-name: section-appendix
-description: "Playbook for Appendix / Supplementary Information. Decides what lives in appendix vs main paper (page-limit overflow / proofs / extra ablations / prompts / negative results), how to letter and reference. Use when writing or revising 0-sections/A_*.tex … E_*.tex. Trigger: appendix, supplementary, SI, /section-appendix."
-allowed-tools: Read, Grep, Glob
----
-
 section-appendix — Playbook (STUB)
 ===================================
 

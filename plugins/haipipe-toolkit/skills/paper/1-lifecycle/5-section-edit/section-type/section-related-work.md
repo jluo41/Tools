@@ -1,9 +1,3 @@
----
-name: section-related-work
-description: "Playbook for the Related Work section. Positioning angles (axis-of-comparison / chronological / closest-prior), how to avoid lit-review-creep, when to use a comparison table. Use when writing or revising 0-sections/02_related_work.tex (or equivalent). Trigger: related work, lit review, positioning, /section-related-work."
-allowed-tools: Read, Grep, Glob
----
-
 section-related-work — Playbook (STUB)
 =======================================
 

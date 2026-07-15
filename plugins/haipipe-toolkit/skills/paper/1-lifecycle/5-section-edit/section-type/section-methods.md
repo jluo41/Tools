@@ -1,9 +1,3 @@
----
-name: section-methods
-description: "Playbook for the Methods section. Lists possible framings (formal-math / operational-narrative / ablation-driven / reproducibility-first), what each venue expects, how to balance precision vs accessibility. Use when writing or revising 0-sections/04*.tex (Methods). Trigger: methods, method, formalism, reproducibility, /section-methods."
-allowed-tools: Read, Grep, Glob
----
-
 section-methods — Playbook (STUB)
 ==================================
 
