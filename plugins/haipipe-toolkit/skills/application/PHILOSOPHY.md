@@ -32,7 +32,7 @@ Seed and claims are venue-FREE: the ledger's truth does not change when the chan
 
 ## Evidence routing
 
-For claim-related evidence, the application RAISES QUESTIONS. A stage's DRAFT raises them; the PROBE phase collects them into probe files (`1-probes/PPNN_<topic>.md`, one file per topic, one SECTION per question), MATCHes each against the answers the bank already holds, and COMMISSIONS only what is missing — straight to the task/discovery orchestrators. Direct task/discover for non-claim utility work only.
+For claim-related evidence, the application RAISES QUESTIONS. A stage's DRAFT raises them; the PROBE phase collects them into probe files (`1-probes/PPNN_<topic>.md`, one file per topic, one SECTION per question), MATCHes each against the answers the bank already holds, and COMMISSIONS only what is missing — straight to the task/discovery orchestrators. A standalone utility question a human wants goes to the bank's own `/haipipe-task qa` door, never proxied by the application.
 
 The application does not execute code, search literature directly, or store raw results. **It never writes in the bank at all** (LAW 1: a consumer session never executes task/discovery work inline).
 
@@ -101,7 +101,7 @@ STATUS.md, 0-lifecycle/<stage>/<stage>.md (+ _LOG), 0-sections/,
 Preserve boundaries:
 - for claim-related evidence, the application RAISES QUESTIONS; the PROBE phase
   matches them against the bank and commissions only what is missing, straight
-  to the task/discovery orchestrators; direct task/discover for non-claim only
+  to the task/discovery orchestrators; there is no direct task/discover verb
 - a stage's DRAFT raises the questions; the PROBE phase binds each to a QA file
 - the application does not execute code, search literature, or store raw results,
   and NEVER writes under tasks/ or discoveries/

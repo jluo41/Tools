@@ -125,12 +125,12 @@ DRAFT raises the questions
   ⑤ INTERPRET  reading: → the claims ledger flips → the harvest lanes pay out
 ```
 
-Relation to the direct task/discover verbs
---------------------------------------------
+A standalone question — one with no intervention behind it
+----------------------------------------------------------
 
-`task` and `discover` remain direct verbs for non-claim utility work. And a question with no
-intervention behind it does not need a probe file at all — hand it straight to the executor's
-own door:
+There is no `task` or `discover` verb on the application front door; the intervention reaches the
+bank only through a stage's PROBE phase. A question with no intervention behind it does not need a
+probe file at all — a HUMAN hands it straight to the executor's own door:
 
 ```
 /haipipe-task qa "<question>"        the everyday "go explore this" verb; the QA file is the receipt

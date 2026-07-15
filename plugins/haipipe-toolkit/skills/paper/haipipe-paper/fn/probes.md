@@ -152,11 +152,12 @@ Any lifecycle stage can raise a question:
 The section captures the question immediately; the MATCH may close it for free, and only a T3/T4
 section is ever dispatched.
 
-Relation to the direct task/discover verbs
---------------------------------------------
+A standalone question — one with no paper behind it
+----------------------------------------------------
 
-`task` and `discover` remain direct verbs for non-claim utility work. And a question with no
-paper behind it does not need a probe file at all — hand it straight to the executor's own door:
+There is no `task` or `discover` verb on the paper front door; the paper reaches the bank only
+through a stage's PROBE phase. A question with no paper behind it does not need a probe file at
+all — a HUMAN hands it straight to the executor's own door:
 
 ```
 /haipipe-task qa "<question>"        the everyday "go explore this" verb; the QA file is the receipt

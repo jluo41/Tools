@@ -2,7 +2,7 @@
 
 Canonical reference. This file + `wiki/` win over anything elsewhere. Structural twin of `../paper/` (same spine, same phases, same probe door); deltas listed at the bottom.
 
-An intervention is a delivery contract, not a drafting folder. It owns one deliverable's story, claims, displays, and artifact text. Evidence lives in tasks/discoveries at the project level, and the intervention never writes there. Its open QUESTIONS live in `1-probes/PPNN_<topic>.md` — one file per topic, one SECTION per question, each bound BY PATH to a QA file in the bank. The PROBE phase matches the bank first and commissions only what is missing, straight to the task/discovery orchestrators. Direct task/discover for non-claim utility work only.
+An intervention is a delivery contract, not a drafting folder. It owns one deliverable's story, claims, displays, and artifact text. Evidence lives in tasks/discoveries at the project level, and the intervention never writes there. Its open QUESTIONS live in `1-probes/PPNN_<topic>.md` — one file per topic, one SECTION per question, each bound BY PATH to a QA file in the bank. The PROBE phase matches the bank first and commissions only what is missing, straight to the task/discovery orchestrators. The intervention reaches the bank only through a stage's PROBE phase; a standalone utility question uses the bank's own `/haipipe-task qa` door, typed by a human.
 
 ## Intervention-folder layout
 
