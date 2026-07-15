@@ -101,12 +101,12 @@ paper        academic deliverables (stages × DPRC phases)
 application  report / message / UI deliverables
 ```
 
-The `probe` bucket holds NO folder in the execution tree and no live gateway. It
-holds two skills — `haipipe-probe` (the constitution: probe-file anatomy, path
-binding, the QA/ contract, the qa verb, the five-step loop, the cost ladder, the
-two LAWS, status derivation, the writer table) and `haipipe-probe-review` (the
-G1/G2/G3 claim-judging rulebook) — plus one live agent,
-`haipipe-probe-reviewer-agent`.
+The `probe` bucket holds NO folder in the execution tree, no live gateway, and no
+agents. It holds ONE skill — `haipipe-probe` (the constitution: probe-file anatomy,
+path binding, the QA/ contract, the qa verb, the five-step loop, the cost ladder, the
+two LAWS, status derivation, the writer table). A probe is communication between a
+consumer and an executor; the claim's status is authored by the consumer, in its own
+`1-claims.md`, from the answered QA file.
 
 There is no `narrative` bucket — narrative is a paper STAGE
 (`paper/1-lifecycle/3-narrative/`), not a layer. The bucket is `discovery`,

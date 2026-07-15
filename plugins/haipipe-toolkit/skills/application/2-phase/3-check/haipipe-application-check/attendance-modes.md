@@ -6,7 +6,7 @@ long that pause lasts and whether a human is expected. With no flag,
 CHECK is attended (copilot default).
 
 ONLY applies to the application-side CHECK phase. HARSH gates upstream
-(task CODE_REVIEW, probe G1/G2/G3) do not auto-accept under any timeout.
+(e.g. task CODE_REVIEW) do not auto-accept under any timeout.
 
 
 Three modes

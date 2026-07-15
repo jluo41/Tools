@@ -269,9 +269,8 @@ Phase 2 therefore produces question SECTIONS, not papers: for each Phase-1 gap
 write the one-line Need (+ Why + Route hint: single-lookup → ENRICH; landscape
 → discovery Review; claim question → mode full) and hand the list to the hub.
 "light"/"full" are the PROBE FILE's `mode:` (light = the answer is read and
-interpreted; full = the answer is additionally JUDGED by
-Agent(haipipe-probe-reviewer-agent), and the judgment lands in 1-claims.md) —
-never an inline shortcut tier.
+interpreted; full = the author additionally writes the claim status into
+1-claims.md from the answer) — never an inline shortcut tier.
 
 **Paper-local sweep BEFORE raising any question** (JL 2026-07-10: "you can check
 previous stage's _CITATION instead of do the heavy one"). A gap is only a gap

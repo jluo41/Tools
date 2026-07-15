@@ -1,12 +1,12 @@
 ---
 name: haipipe-application-probe
-description: "PROBE phase worker (internal). Called by application stage skills after DRAFT to collect the questions the draft raised (Q-papers) into PROBE FILES -- applications/<A>/1-probes/PPNN_<topic>.md, one file per TOPIC, each question one SECTION (serves / target / state / commission / reading) plus one '## Why' holding the stake, which never leaves the file. Runs the five-step loop ORGANIZE -> MATCH -> DISPATCH -> POINT -> INTERPRET. Binding is by PATH: a section's target: points at a QA file in the task/discovery bank. DISPATCH hands the commission block VERBATIM to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent) -- the probe GATEWAY is RETIRED and this worker never executes bank work inline. Harvest lanes (values always; citation for sectioned venues; display for display-unit venues) are venue-scaled hooks, not sub-skills. Fully automatic, human review in CHECK only. Users invoke stage skills (seed, claims, ...), not this skill directly."
+description: "PROBE-phase worker (internal). After DRAFT, collects the questions the draft raised into probe files — applications/<A>/1-probes/PPNN_<topic>.md, one file per topic, each question one SECTION (serves/target/state/commission/reading) + a '## Why' that never leaves. Runs the five-step loop ORGANIZE → MATCH → DISPATCH → POINT → INTERPRET; binds by PATH to a QA file in the task/discovery bank; dispatches the commission verbatim, never running bank work inline. Harvest lanes are venue-scaled. Users invoke stage skills (seed, claims, …), not this directly."
 argument-hint: "[from-buffer <intervention-root> [PPNN] | stage <stage-name>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 metadata:
   version: "4.3.0"
   last_updated: "2026-07-14"
-  summary: "v4.3 — R19 HARDENING (four holes closed after the v4.2 review; IDENTICAL to haipipe-paper-probe 4.2.0). (a) R14 IS SCOPED TO `state: answered`: a `working` file's ## Answer is EMPTY BY CONSTRUCTION, so it can never pass R14's literally-answers test, and applying R14 to it sends the reader straight back to DISPATCH — the exact duplicate run R19 exists to kill. A `working` file is matched on its `# Q —` line: if that restated question IS my question it is a HIT-IN-FLIGHT (commission + point, NO dispatch). (b) `owner:`/`eta:` ON THE IN-FLIGHT PATH ARE DERIVED, NEVER INVENTED: owner := the target's `by:` (or `bank`); eta := the target's `started:` + QA_WORKING_TTL_HOURS. The checker's commissioned-liveness test and the QA claim's TTL become THE SAME CLOCK. (c) THE IN-FLIGHT LOOP IS CLOSED: a `commissioned` section whose target went `answered` (or `superseded`) is now a HARD FAIL — commissioned-target-answered / commissioned-target-superseded. Before this, a section sat GREEN over a landed answer until its eta expired. (d) A QA FILE WITH NO STATE LINE IS MALFORMED, NOT LEGACY: `state:` is MANDATORY, and the grandfather clause let an executor defeat qa-answered-empty BY OMISSION. New codes qa-no-state / read-target-no-state / commissioned-target-no-state. --- v4.2 — THE CONSUMER SIDE OF THE QA STATE LINE (constitution 8.2.0, R19/R20/R21; JL ruling 2026-07-14, Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ PART 3b '>> CC0714'). Identical in vocabulary to haipipe-paper-probe 4.1.0 — the twins must not drift. A QA file is now a TICKET that becomes a RECEIPT: it carries ONE mutable `state:` line (working | answered | superseded-by: QA/<m>-<slug>.md) + `started:` (MANDATORY when working) + optional `by:`. ② MATCH LEARNS THE STATE — existence is no longer the signal, so the worker OPENS every candidate QA file and branches on its state line: `answered` = a T2 HIT; `working` = ⏳ IN FLIGHT, meaning THE QUESTION IS ALREADY BEING ANSWERED, so the section goes `state: commissioned` (with its unconditional BUILD-lane fields), `target:` points at that QA file, and there is NO SECOND DISPATCH — this is the whole point: two consumers asking the same question a week apart must not both pay for the same expensive P-B-E-R run; `superseded-by:` = FOLLOW THE CHAIN to the live answer and NEVER bind target: to a superseded file. ④ POINT: `ls` no longer settles the section's state — the TARGET'S state line does (absent|working ⇒ commissioned · answered ⇒ answered · superseded ⇒ re-point), and a `working` target still `working` past QA_WORKING_TTL_HOURS=24 means the run is DEAD ⇒ re-dispatch. ⑤ INTERPRET reads ONLY a target that is `answered` and NOT superseded. THE INVARIANT, SAID OUT LOUD: ONE WRITER — the EXECUTOR, and nobody else, EVER. 'Write-once' was never the real rule; ONE WRITER was. This worker must NEVER create, claim, edit, complete or supersede a QA file — not even one it commissioned, not even to clear a expired `working` file; a consumer-planted `working` file is the retired _ASK/ stub in a QA/ costume. check-probe-cards.sh GAINS FIVE TEETH, each catching a bug that was SILENT before: read-target-working · read-target-superseded (THE DAY-1/DAY-40 SILENT-FALSE-CLAIM BUG — every file internally consistent, the claim FALSE) · qa-working-no-started · qa-working-expired · qa-answered-empty; the new state-line logic is factored into ONE shared block (QA_STATE) used by both the section-target pass and the bank pass, exactly as the LAW-2 lint (LEAK_AWK) now is, because the two hand-copied twins drifted into identical bugs once already. Fixture-verified against the SAME 7 cases as the paper twin, byte-identical output: clean+bait PASS exit 0 · legit in-flight (commissioned → working, fresh started) PASS exit 0 · all five teeth FAIL exit 1 · LAW-2 commission/bank lints still fire. --- v4.0 (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14 — R1-R18; mirror of the paper PROBE-phase worker, application deltas preserved). A PROBE is an APPLICATION-LEVEL document: applications/<A>/1-probes/PPNN_<topic>.md, one file per TOPIC, one SECTION per question (serves/target/state/commission/reading) + one '## Why' holding the stake. The 4-step card procedure is REPLACED by the FIVE-STEP LOOP: ORGANIZE (collect the DRAFT's questions into probe files by topic) -> MATCH (grep the bank's QA corpus; R14 match ON THE ANSWER, never on the topic) -> DISPATCH (hand the commission block VERBATIM to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent); the probe GATEWAY agent is RETIRED) -> POINT (target: the answering QA FILE) -> INTERPRET (reading + 1-claims.md flips + the harvest lanes). R1 BINDING BY PATH — PP numbers are application-local footnote numbers, no ledger, no PP id ever crosses to the bank. R2 THE BANK IS PROBE-UNAWARE — _ASK/, _ANS/, answers: and PP ids are DEAD; the executor answers through its own `qa` verb and returns <task-folder>/QA/<n>-<slug>.md. CC-8 the probe CAUSES a QA file, the EXECUTOR authors it (a bare results/ with no digest gets a DISPATCHED digest-only run, never an inline write). Cost ladder T0 JOIN / T1 LOCAL / T2 REUSE / T3 ENRICH / T4 FRESH — only T3/T4 summon an agent, and MOST sections should land on T2. TWO LAWS: a consumer session never executes bank work inline; lint both surfaces. 'Verdict'/'verdicted' DELETED — claim status lives in 1-claims.md. PRESERVED: the PROOF-per-step enforcement, the BUILD-lane `commissioned` state (owner/eta/blocks/cross-project, future-eta PASSES, overdue HARD FAILs), the venue-scaled harvest lanes as hooks (values always; citation sectioned venues; display display-unit venues), the display-request reroute, check-probe-cards.sh (KEEPS its filename, internals rewritten for question sections). v4.1: the DISPATCH prompt now uses the executor orchestrators' OWN input spelling (action: qa / project: / question: / leaf:) — the v4.0 keys (project_root/qa/target/deliverable) matched none of their four declared input forms; INTERPRET now actually DISPATCHES Agent(haipipe-probe-reviewer-agent) for a `mode: full` section and lands its judgment in 1-claims.md (in v4.0 `mode: full` was unreachable — no live caller); check-probe-cards.sh LAW-2 lint rebuilt on ONE shared awk pattern set (LEAK_AWK) across BOTH surfaces, catching the bare-label leak (`- C6: … -> NO`, the literal A03 form) and slash-joined id pairs (C6/C7, H1/H2) that the v4.0 path-strip ate. Convention pointer repointed: `haipipe-application/fn/probe-plans.md` was RENAMED to `fn/probes.md` (matching the paper twin; 'plans' is retired vocabulary per skills/STRUCTURE.md)."
+  summary: "The intervention's PROBE-phase worker: the five-step loop (ORGANIZE → MATCH → DISPATCH → POINT → INTERPRET) that binds each DRAFT question to a QA file in the probe-unaware bank and lands the reading in 1-claims.md; harvest lanes are venue-scaled. Contract: ../../../../probe/haipipe-probe/SKILL.md. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -135,9 +135,9 @@ whose job is authorizing SPEND.
 
 **NO "Verdict" (R7).** The word is DEAD and `verdicted` as a state is DELETED. The section's
 `reading` carries the interpretation; the CLAIM's status (`supported | refuted | inconclusive`
-+ confidence + claim_type + the G1/G2/G3 gates) lives in `1-claims.md`, judged per-claim,
-per-consumer, PRIVATE. (Judgment CONTENT is still governed by
-`../../../../probe/haipipe-probe-review/SKILL.md` — only its landing site changed.)
++ confidence + claim_type) lives in `1-claims.md`, judged per-claim, per-consumer, PRIVATE. At
+⑤ INTERPRET the author reads the answered QA file and writes that status directly — a probe is
+communication, not judgment, so there is no review gate.
 ⚠️ A DISCOVERY's own `verdict.md` terminal file is a DIFFERENT thing. It is executor-native and
 it SURVIVES. Do not delete it, do not rename it.
 
@@ -400,9 +400,7 @@ gate ①②③ and creates the task-folder + its OWN plan.yaml if needed. The re
 answering QA file.
 
 💀 **The probe GATEWAY agent is RETIRED.** `Agent(haipipe-probe-orchestrator-agent)` NO LONGER
-EXISTS. Its SWEEP became step ② above; its dispatch is now this direct Agent() call. (The
-`haipipe-probe-review` skill and `haipipe-probe-reviewer-agent` SURVIVE — consumer-side claim
-judging.)
+EXISTS. Its SWEEP became step ② above; its dispatch is now this direct Agent() call.
 
 - **LAW 1 — A CONSUMER SESSION NEVER EXECUTES TASK/DISCOVERY WORK INLINE.** Dispatch means: hand
   the `commission` block, VERBATIM, and nothing else. **Never `## Why`. Never the probe file.
@@ -492,16 +490,11 @@ PROOF 4: per question — the `target:` line, the `ls` that resolves it, and
   vocabularies, and nothing else does.
 - **The claim flip.** When a section `serves:` a claim, the claims ledger's C-line AND its
   Evidence Campaign row flip in the SAME pass, in `0-lifecycle/1-claims/1-claims.md` — that is
-  where the claim's STATUS lives now (`supported | refuted | inconclusive` + confidence +
-  claim_type + G1/G2/G3). It does NOT live in the probe file. There is no `## Verdict` block to
-  write, and no `verdicted` state to set.
-- **`mode: full` → JUDGE IT.** For a section on a `mode: full` probe file, dispatch
-  `Agent(haipipe-probe-reviewer-agent, prompt="<the claim, the QA file path, the evidence>")`.
-  It returns `supported | refuted | inconclusive` + confidence + claim_type + the G1/G2/G3
-  gates, and **the caller lands that return in `0-lifecycle/1-claims/1-claims.md`** — never in
-  the probe file. Judgment CONTENT is governed by
-  `../../../../probe/haipipe-probe-review/SKILL.md`; only its landing site moved. (Without this
-  call `mode: full` is unreachable — nothing else dispatches the reviewer.)
+  where the claim's STATUS lives now (`supported | refuted | inconclusive` + confidence + claim_type).
+  It does NOT live in the probe file — there is no `## Verdict` block to write, and no `verdicted` state to set.
+- **`mode: full` → the author writes the status.** For a `mode: full` section, the author reads the answered QA file and writes `supported | refuted | inconclusive` + confidence + claim_type into `0-lifecycle/1-claims/1-claims.md` — never in the probe file.
+  A probe is communication, not judgment, so there is no review gate.
+  Keep the causal/overclaim check (`claim_type` never upgraded by confidence); integrity is the bank reviewers' job.
 - **LANE OBLIGATIONS — write the debt into the section FIRST, then pay it.** When the return
   carries harvestable content for a lane the venue FIRES, IMMEDIATELY record it (this is what
   makes a skipped harvest checkable):
@@ -657,8 +650,6 @@ Reference
                                                 contract, the qa verb, the two LAWS. Read it.
 ref/per-stage-dispatch.md                       stage→mode map · seed/claims specifics ·
                                                 venue-scaled lane rules · phase-status strips
-../../../../probe/haipipe-probe-review/SKILL.md the judgment (G1/G2/G3, claim_type) for
-                                                `mode: full` — lands in 1-claims.md
 ref/harvest-acceptance.md                       lane-hook dispatch + the LITERAL acceptance greps
 check-probe-cards.sh                            the VERIFY / stage-gate verifier (family-local)
 ../../../haipipe-application/fn/probes.md  the 1-probes/ convention + the board

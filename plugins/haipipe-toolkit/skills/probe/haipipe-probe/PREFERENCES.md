@@ -12,6 +12,25 @@ topic -- update, don't duplicate).
 
 ## Preferences
 
+- **Keep skills CLEAN — a skill is not a graveyard.** Do not write tombstone /
+  "RETIRED 2026-..." prose, do not stuff dead machinery into `_archive/`, do not
+  grow "retired machinery" lists. When something is dropped, DELETE it cleanly
+  (git history is the record) and state only what the skill does NOW. The RATIONALE
+  for a removal belongs in the design record under `diagram/`, never in the skill.
+  (JL, 2026-07-14, probe gate-drop: "always make the skills clean, no tomb things,
+  这个不是垃圾桶，啥都往里面塞".)
+
+- **Metadata stays tiny — never a changelog in a YAML field.** The `summary:` is ONE
+  sentence + `Full contract:`/`History: ./CHANGELOG.md` pointers, like haipipe-task.
+  Version history lives in `./CHANGELOG.md` (never loaded at invocation); the
+  `description:` is a purpose sentence + trigger keywords (~55 words), not mechanics.
+  (JL, 2026-07-14: paper/application-probe carried ~6 KB changelogs in `summary:`.)
+
+- **Body prose: one sentence, one line — no wrapped/broken lines.** Every sentence in
+  body prose sits on its own line; never break a single sentence across lines (drop
+  the 88-col wrap for prose). Diagrams, code fences, tables are untouched. Hold new
+  prose to it and reflow on touch. (JL, 2026-07-14, standing rule; mirrors haipipe-task.)
+
 - **Communicate via ASCII diagrams, not walls of prose.** Show plans, options,
   and "my thinking" as emoji-rich ASCII (boxes + arrows); keep prose to a one-line
   ask. (also mirrored in auto-memory: feedback_communicate_via_diagram_ascii)

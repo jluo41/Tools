@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-claims
-description: "Stage orchestrator for the paper folder's 0-lifecycle/1-claims/1-claims.md + _LOG_1-claims.md: the venue-FREE claim/evidence inventory and evidence campaign brain, and THE HOME OF EVERY CLAIM'S STATUS (supported | refuted | inconclusive, with confidence, claim_type and the G1/G2/G3 gates). Three sections: Hypotheses (what we test), Claims (what must be true, with status and → PP reference), Probes (the evidence plan, one per PP, full detail). Plans what evidence to collect, raises the questions the PROBE phase commissions to the task/discovery bank, and receives each answer as a probe section's `reading:`. Markdown only. Reads the RESOURCE stage's 1-resource.md: input/method/fit are settled there; claims owns evaluate/task-for-eval and marks a claim without its resource BLOCKED-ON-RESOURCE. Use for claim ledger, claims, supported/weak/GAP, blocked-on-resource, claim gap, evidence plan, probes, 1-claims."
+description: "Stage orchestrator for the paper folder's 0-lifecycle/1-claims/1-claims.md + _LOG_1-claims.md: the venue-FREE claim/evidence inventory and evidence campaign brain, and THE HOME OF EVERY CLAIM'S STATUS (supported | refuted | inconclusive, with confidence and claim_type). Three sections: Hypotheses (what we test), Claims (what must be true, with status and → PP reference), Probes (the evidence plan, one per PP, full detail). Plans what evidence to collect, raises the questions the PROBE phase commissions to the task/discovery bank, and receives each answer as a probe section's `reading:`. Markdown only. Reads the RESOURCE stage's 1-resource.md: input/method/fit are settled there; claims owns evaluate/task-for-eval and marks a claim without its resource BLOCKED-ON-RESOURCE. Use for claim ledger, claims, supported/weak/GAP, blocked-on-resource, claim gap, evidence plan, probes, 1-claims."
 argument-hint: "[paper-dir] [--backfill <PPNN>] [--source <path>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "5.1.1"
   last_updated: "2026-07-14"
-  summary: "Claims stage orchestrator. The evidence campaign brain: plans evidence needs, raises the questions, receives what returns. Three sections (Hypotheses, Claims, Probes) + Evidence Campaign summary. Drives phases (draft -> probe -> revise -> check) internally. Receives from the RESOURCE stage: claims owns evaluate/task-for-eval only; input/method/fit are settled in 1-resource.md, and a claim without its resource is BLOCKED-ON-RESOURCE. v5.1 (probe redesign, Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14; mirrors haipipe-application-claims 5.2.0): THE CLAIM LEDGER IS NOW THE ONLY HOME OF A CLAIM'S STATUS. R7 killed the probe '## Verdict' block and the 'verdicted' state, so supported|refuted|inconclusive + confidence + claim_type + G1/G2/G3 land HERE, per-claim, per-paper, private — a probe section's `reading:` FEEDS this ledger and no longer carries a judgment of its own. Probe files live at 1-probes/PPNN_<topic>.md (one file per TOPIC, one SECTION per question); the per-stage _PROBE/ folder and the 1-probe-plans/ index are RETIRED. The PROBE phase runs the five-step loop (ORGANIZE -> MATCH -> DISPATCH -> POINT -> INTERPRET) and commissions to the task/discovery orchestrators direct (the probe gateway is retired). --backfill reads the section's `reading:`, not a verdict block. Ledger PP entries carry a DERIVED `State:` (planned|commissioned|answered|read), never the deleted `dispatched`. v5.1.1: every shared-convention pointer was off by one `../` — `../../PHILOSOPHY.md` / `../../wiki/<page>.md` resolved to 1-lifecycle/, which holds neither. The stage skills sit TWO levels under skills/paper/ (1-lifecycle/<N>-<stage>/<skill>/), so the correct depth is `../../../`. Every required-read at the top of this skill silently failed. Repointed."
+  summary: "Claims stage orchestrator. The evidence campaign brain: plans evidence needs, raises the questions, receives what returns. Three sections (Hypotheses, Claims, Probes) + Evidence Campaign summary. Drives phases (draft -> probe -> revise -> check) internally. Receives from the RESOURCE stage: claims owns evaluate/task-for-eval only; input/method/fit are settled in 1-resource.md, and a claim without its resource is BLOCKED-ON-RESOURCE. v5.1 (probe redesign, Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14; mirrors haipipe-application-claims 5.2.0): THE CLAIM LEDGER IS NOW THE ONLY HOME OF A CLAIM'S STATUS. R7 killed the probe '## Verdict' block and the 'verdicted' state, so supported|refuted|inconclusive + confidence + claim_type land HERE, per-claim, per-paper, private — a probe section's `reading:` FEEDS this ledger and no longer carries a judgment of its own. Probe files live at 1-probes/PPNN_<topic>.md (one file per TOPIC, one SECTION per question); the per-stage _PROBE/ folder and the 1-probe-plans/ index are RETIRED. The PROBE phase runs the five-step loop (ORGANIZE -> MATCH -> DISPATCH -> POINT -> INTERPRET) and commissions to the task/discovery orchestrators direct (the probe gateway is retired). --backfill reads the section's `reading:`, not a verdict block. Ledger PP entries carry a DERIVED `State:` (planned|commissioned|answered|read), never the deleted `dispatched`. v5.1.1: every shared-convention pointer was off by one `../` — `../../PHILOSOPHY.md` / `../../wiki/<page>.md` resolved to 1-lifecycle/, which holds neither. The stage skills sit TWO levels under skills/paper/ (1-lifecycle/<N>-<stage>/<skill>/), so the correct depth is `../../../`. Every required-read at the top of this skill silently failed. Repointed."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -38,7 +38,7 @@ Claims is the **evidence campaign brain**. It does three jobs in sequence:
                claims RECEIVES evidence, never PRODUCES it
 ```
 
-**THE CLAIM'S STATUS LIVES IN THIS LEDGER, AND NOWHERE ELSE** (R7, 2026-07-14). A probe file does not judge — it carries the evidence's MEANING for this paper (its `reading:`), and that is all. The judgment — `supported | refuted | inconclusive`, plus `confidence`, `claim_type`, and the G1/G2/G3 gates — is written HERE, per-claim, private to this paper. Two papers reading the SAME bank fact may reach different judgments about their own claims, and that is correct: the fact is shared, the judgment is not.
+**THE CLAIM'S STATUS LIVES IN THIS LEDGER, AND NOWHERE ELSE** (R7, 2026-07-14). A probe file does not judge — it carries the evidence's MEANING for this paper (its `reading:`), and that is all. The judgment — `supported | refuted | inconclusive`, plus `confidence` and `claim_type` — is written HERE, per-claim, private to this paper, by the author reading the answered QA file. Two papers reading the SAME bank fact may reach different judgments about their own claims, and that is correct: the fact is shared, the judgment is not.
 💀 The probe `## Verdict` block and the `verdicted` state are DELETED. Do not write either, and do not wait for one.
 
 Read first: `../../../PHILOSOPHY.md`, `../../../wiki/04-lifecycle-map.md`, `../../../wiki/11-delivery-need.md`, `../../../wiki/02-comment-lifecycle.md`.
@@ -78,9 +78,8 @@ No separate Hypothesis-Claim Alignment section. The alignment is in the tags: `C
 ```text
 status       supported | refuted | inconclusive      (the enum; nothing else is a status)
 confidence   how strongly the evidence carries the claim
-claim_type   associational | causal | in-sample | generalizing   (never upgraded by confidence)
-gates        G1 / G2 / G3   (judgment CONTENT is governed by the probe-review skill:
-             ../../../../probe/haipipe-probe-review/SKILL.md — only its LANDING SITE is here)
+claim_type   associational | causal | in-sample | generalizing   (never upgraded by confidence —
+             the author's OWN overclaim check; never say "causes" from associational evidence)
 ```
 
 The ledger's own progress vocabulary (`supported` · `weak` · `GAP` · `BLOCKED-ON-RESOURCE`) is what a claim wears while the campaign runs; the enum above is what SETTLES it.
@@ -256,7 +255,7 @@ Two rules that follow:
 - **Task settles claims; discovery is reserved for method-investigation and external data/context.** Discovery alone never settles an internal experimental claim; it feeds the method (`task-for-algo`) or supplies an external cohort/citation.
 
 When a probe section's `reading:` lands, write here:
-- The claim's status line — `supported | refuted | inconclusive` + confidence + claim_type + the G1/G2/G3 gates. THIS is where a claim's status lives.
+- The claim's status line — `supported | refuted | inconclusive` + confidence + claim_type. THIS is where a claim's status lives.
 - `_VALUES_` with the verified number.
 - The evidence pointer: the section's `target:`, the path of the answering QA file, which must RESOLVE on disk.
 
@@ -267,7 +266,7 @@ When a probe section's `reading:` lands, write here:
 ## Ledger Maintenance
 
 - New claim: add a `**C<n>**` sub-item in Claims, set status from the cited source (default `GAP`), add a probe entry in Probes.
-- `--backfill <probe-ref>`: **THIS LEDGER IS THE ONLY HOME OF A CLAIM'S STATUS.** There is no probe verdict to read — `## Verdict` and the `verdicted` state are DELETED (R7). Read the probe SECTION's `reading:` (its interpretation, in this paper's vocabulary) and, for a `mode: full` section, the judgment `Agent(haipipe-probe-reviewer-agent)` returned. Write `supported | refuted | inconclusive` + confidence + claim_type + the G1/G2/G3 gates HERE, per-claim, private to this paper. The EVIDENCE POINTER is the section's `target:` — the path of the answering QA file (`tasks|discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md`), which must RESOLVE on disk. Record the number in `_VALUES_`.
+- `--backfill <probe-ref>`: **THIS LEDGER IS THE ONLY HOME OF A CLAIM'S STATUS.** There is no probe verdict to read — `## Verdict` and the `verdicted` state are DELETED (R7). Read the probe SECTION's `reading:` (its interpretation, in this paper's vocabulary) and, for a `mode: full` section, the answered QA file it points at. Write `supported | refuted | inconclusive` + confidence + claim_type HERE, per-claim, private to this paper. The EVIDENCE POINTER is the section's `target:` — the path of the answering QA file (`tasks|discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md`), which must RESOLVE on disk. Record the number in `_VALUES_`.
 - Emit a delivery need for every `weak`/`GAP` claim using the delivery-need interface, with the route:
 
 ```text

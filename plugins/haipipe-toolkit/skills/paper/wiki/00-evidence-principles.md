@@ -87,7 +87,7 @@ Where the principles are enforced
    per-paper, private. 💀 `## Verdict` and `verdicted` are DELETED (R7); the
    probe section carries only its `reading:`.
 ②  discovery creator/reviewer loops (full) + reviewer quick-pass (ENRICH);
-   probe Judge gates G1/G2/G3; paper-probe worker mechanical acceptance
+   author writes the claim status from the QA file; paper-probe worker mechanical acceptance
 ④  probe light reuse (zero-write => zero ceremony);
    discovery ENRICH (no new folder, creator folded, one review pass)
 ```
