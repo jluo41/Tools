@@ -12,10 +12,9 @@ metadata:
 Skill: haipipe-individual
 ======================
 
-Per-individual data contract covering stages 0-2. One folder per individual, holding
-just the data needed to serve them via a deployed endpoint. Stages 3-6 are for
-model development and never appear per-individual — at inference time the individual
-calls the endpoint directly.
+Per-individual data contract covering stages 0-2.
+One folder per individual, holding just the data needed to serve them via a deployed endpoint.
+Stages 3-6 are for model development and never appear per-individual — at inference time the individual calls the endpoint directly.
 
 
 Why stages 0-2 only
@@ -31,8 +30,8 @@ Why stages 0-2 only
   5-ModelInstance trained weights                   NO   — training artifact
   6-Endpoint      deployable                        NO   — shared by all individuals
 
-A deployed endpoint reads the individual's 2-RecStore, runs inference, and returns
-a prediction. It does NOT need 3-6.
+A deployed endpoint reads the individual's 2-RecStore, runs inference, and returns a prediction.
+It does NOT need 3-6.
 
 
 Folder Layout  (FLAT — no dataset-name or partition wrappers nested inside)
@@ -70,9 +69,7 @@ Flattening rules (build script strips these wrapper segments):
   - partition wrappers `@iXnY/` (individual's data lives in only one partition anyway)
   - cohort nesting inside 0-RawDataStore/ (e.g. `Source/2018/train/` → flat)
 
-Wrapper names preserved in manifest.yaml for provenance (source_set,
-rec_set, rec_partitions_found_in), so you can always trace back to the
-global store that seeded an individual.
+Wrapper names preserved in manifest.yaml for provenance (source_set, rec_set, rec_partitions_found_in), so you can always trace back to the global store that seeded an individual.
 
 
 Naming Convention
@@ -179,8 +176,8 @@ build_args:
 Build Contract
 --------------
 
-The build MUST be deterministic and reproducible. A single script
-(`fn/build_sample_individuals.py`) owns this:
+The build MUST be deterministic and reproducible.
+A single script (`fn/build_sample_individuals.py`) owns this:
 
   1. Read sample config (which datasets, which individual IDs, N per dataset).
   2. For each (dataset, individual_id):
@@ -188,7 +185,8 @@ The build MUST be deterministic and reproducible. A single script
      b. Idempotent: skip if manifest.built_at is fresh.
   3. Emit a build report (what was built, what was skipped, any errors).
 
-Do NOT hand-edit per-individual folders. They are derived, not source of truth.
+Do NOT hand-edit per-individual folders.
+They are derived, not source of truth.
 Source of truth = global _WorkSpace/0-RawDataStore/ + the build script.
 
 
