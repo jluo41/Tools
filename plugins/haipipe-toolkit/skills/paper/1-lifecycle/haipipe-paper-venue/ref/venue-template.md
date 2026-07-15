@@ -76,7 +76,7 @@ Fit Assessment
 | H3 <supporting> | <...> | <...> |
 
 
-Q-Paper
+Q-consumer
 ------
 
 **PP01 - <recent-publications check> - <status>**

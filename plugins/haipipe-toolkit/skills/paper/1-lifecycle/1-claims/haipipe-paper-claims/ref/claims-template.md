@@ -27,7 +27,7 @@ Claims
 
 Each claim is a short sub-item: the testable statement, current status, and which probe settles it.
 Status vocabulary: `supported` / `weak` / `GAP`.
-No inline study design -- the thinking lives in the Q-Paper section.
+No inline study design -- the thinking lives in the Q-consumer section.
 
 **C1 - <title> (H1, core) - <status>**
 
@@ -45,7 +45,7 @@ Evidence: -> PP<nn> (<short description>).
 Evidence: -> PP<nn> (<short description>).
 
 
-Q-Paper
+Q-consumer
 ------
 
 Each probe is its own sub-item organized by PP number.
