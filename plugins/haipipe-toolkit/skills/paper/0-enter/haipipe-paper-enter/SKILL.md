@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Grep, Glob, Write, Skill
 metadata:
   version: "4.0.1"
   last_updated: "2026-07-14"
-  summary: "Paper Console: derive-from-disk dashboard + lifecycle router. Renders the 9-stage spine (seed resource claims venue pitch narrative display section-edit review); the resource predicate honours the `n/a` exemption for pre-2026-07-14 papers. v4.0.1 (probe-redesign residue sweep): the open-needs table says 'BUILD section' and 'the PROBE worker opens the SECTION and routes it' (the gateway does not exist)."
+  summary: "Paper Console: a derive-from-disk dashboard + lifecycle router. Renders the 9-stage spine (seed · resource · claims · venue · pitch · narrative · display · section-edit · review); the resource predicate honours the `n/a` exemption for pre-2026-07-14 papers. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

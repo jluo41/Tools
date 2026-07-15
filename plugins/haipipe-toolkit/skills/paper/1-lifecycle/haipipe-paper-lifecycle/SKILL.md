@@ -81,7 +81,7 @@ haipipe-paper-seed          SEED (0):    maintain 0-lifecycle/0-seed/0-seed.md: 
 
 haipipe-paper-resource      RESOURCE (1a): maintain 0-lifecycle/1-resource/1-resource.md, the venue-FREE prerequisite contract: what must EXIST for this paper to be testable, does it exist, and can it CARRY the claim? Two sections only -- Demand (one N<n> per hypothesis, keyed on H<n>) and Questions (one Q<n>, and its A when the answer lands). Scope is DATA + MODELS + PRODUCING-CODE (data is the bulk, not the boundary). The stage ASKS; the probe layer ROUTES -- it mints no PP ids and picks no probe types. Cleavage: task-for-data / task-for-algo (ingredients) belong HERE; task-for-fit (train the model) + task-for-eval (evaluate) are CLAIMS'. Stage 1a; claims is 1b. Exits: proceed / reseed / park.
 
-haipipe-paper-claims        CLAIMS (1b):  maintain 0-lifecycle/1-claims/1-claims.md, the venue-FREE claim/evidence inventory (supported / weak / GAP), each row tied to an evidence source; venue-neutral H1/H2/H3; emits needs and backfills probe verdicts.
+haipipe-paper-claims        CLAIMS (1b):  maintain 0-lifecycle/1-claims/1-claims.md, the venue-FREE claim ledger AND the home of each claim's status (supported | refuted | inconclusive); venue-neutral H1/H2/H3, each claim tied to a probe section's answering QA file. Claims RUNS THE EXPERIMENT (train the model + evaluate); it reads the section's `a-consumer:`, not a probe verdict.
 
 --- VENUE DECISION (pins target journal in STATUS.md) ---
 
@@ -391,8 +391,8 @@ haipipe-paper-lifecycle (this orchestrator)
   VENUE-FREE:
   |-- folder             (lives in 3-build-submit/, routed from here)
   |-- seed (0)
-  |-- resource (1a)       (prerequisite contract: Demand + Questions; shares the number 1 with
-  |                       claims, as 2-venue/ and 2-pitch/ already share 2)
+  |-- resource (1a)       (prerequisite contract: Demand + Questions; stage 1a, claims is 1b,
+  |                       as 2-venue/ and 2-pitch/ split stage 2)
   |-- claims (1b)
   VENUE DECISION:
   |-- venue              (pin target journal in STATUS.md)

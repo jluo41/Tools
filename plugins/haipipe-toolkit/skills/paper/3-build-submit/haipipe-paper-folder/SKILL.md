@@ -4,7 +4,7 @@ description: "Scaffold a paper folder's CONTENTS, quickly and minimally: README 
 metadata:
   version: "4.0.1"
   last_updated: "2026-07-14"
-  summary: "Minimal quick paper-folder scaffold; stage files absent-until-written; manuscript machinery an on-request upgrade. v4.0.1 (probe-redesign residue sweep): the not-my-job table points at the probe FILES and `fn/probes.md`."
+  summary: "Minimal quick paper-folder scaffold (README + STATUS + .gitignore + empty 0-lifecycle/0-displays/1-rounds/1-probes/); stage files absent-until-written; manuscript machinery is an on-request upgrade. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
