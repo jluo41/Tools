@@ -33,6 +33,8 @@ The five-step loop, application-side
 Each step ends with a PROOF this worker MUST show in its reply; an absent proof means the step did not happen.
 STEP 0 — re-invoke this skill fresh every run, even when its text is already in context (a probe once ran a 3-hour-old contract).
 
+TWO HALVES. ①–④ COLLECT the answer from the bank — the shared probe mechanism, per the constitution (question → answered QA file). ⑤ HARVESTS it — files the answer's artifacts into the intervention's OWN registries. Collection is the constitution's model; harvest is this worker's, and the constitution says nothing about it.
+
 
 ① ORGANIZE — collect the DRAFT's questions into probe files, grouped by TOPIC
 ----------------------------------------------------------------------------
@@ -91,9 +93,10 @@ ASYNC PATH (MANDATORY). A `commissioned` section from an earlier session has no 
 
 PROOF 4: per question the `target:` line, the `ls` that resolves it, and `grep '^- state:' <target>`.
 
+════════ COLLECTION (①–④) ends here — the answer is banked. HARVEST (⑤) begins. ════════
 
-⑤ INTERPRET — the reading, the claim status, the harvest lanes
---------------------------------------------------------------
+⑤ INTERPRET — the reading, the claim status, and HARVEST (the intervention's own, not the constitution's)
+--------------------------------------------------------------------------------------------------------
 
 - Write the `reading` (translate the general answer UP into the intervention's words). ONLY against an `answered`, non-superseded target (constitution).
 - `mode: full` → the AUTHOR writes the claim status (`supported | refuted | inconclusive` + confidence + claim_type) into `0-lifecycle/1-claims/1-claims.md`, never in the probe file. A probe is communication, not judgment — there is no review gate; keep the `claim_type` overclaim check (never causal from associational evidence).

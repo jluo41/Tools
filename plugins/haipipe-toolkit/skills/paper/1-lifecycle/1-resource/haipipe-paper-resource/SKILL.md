@@ -1,13 +1,12 @@
 ---
 name: haipipe-paper-resource
-description: "Stage orchestrator for the paper folder's 0-lifecycle/1-resource/1-resource.md + _LOG_1-resource.md: the venue-FREE prerequisite stage that asks what must EXIST for this paper to be testable, whether it exists, and whether it can CARRY the claim. Two sections only: Demand (one N<n> per hypothesis) and Questions (one Q<n>, and its A when the answer lands). Covers data, model checkpoints, and producing-code alike. Markdown only. Use for resource, prerequisite, do we have the data, does the checkpoint exist, can this corpus carry the claim, 1-resource."
+description: "Stage orchestrator for the venue-FREE prerequisite stage (0-lifecycle/1-resource/): what must EXIST for this paper to be testable, does it exist, and can it CARRY the claim? Two sections only -- Demand (one N<n> per hypothesis) and Questions (one Q<n> + its A). Covers data, model checkpoints, and producing-code alike. Use for resource, prerequisite, do we have the data, does the checkpoint exist, can this corpus carry the claim, 1-resource."
 argument-hint: "[paper-dir] [draft|probe|revise|check]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "2.1.1"
   last_updated: "2026-07-14"
-  summary: "Resource stage orchestrator (stage 1, venue-FREE, shares its number with claims). Answers: what must EXIST for this paper to be testable, does it exist, can it CARRY the claim? Exactly two sections -- Demand (N<n>, keyed on H<n>) and Questions (Q<n> + A). The stage ASKS; the probe layer ROUTES (no PP ids minted here). Ownership chain: DRAFT asks (Q) -> GATE 1 approves -> the PROBE WORKER opens one question SECTION per approved Q in 1-probes/ and writes the `-> PP<NN>` backlink into 1-resource.md -> MATCH resolves it or DISPATCH commissions it to the task/discovery orchestrator (the probe gateway is RETIRED) -> the answer lands as a QA file -> INTERPRET writes the A back into the Q. Two lanes: SCAN (blocking, minutes) and BUILD (non-blocking, days-to-months, cross-project: mandatory). PROBE runs in TWO PASSES with the SPEND gate between them: GATE 1 approves the QUESTIONS, the SCAN pass lands the answers, GATE 1b authorizes the SPEND informed, then the BUILD pass dispatches. CHECK FAILs any Q with neither an A nor a backlink (unasked-question). Exits: proceed / reseed / park. v2.1 (probe-redesign residue sweep): the GATEWAY is gone from the wire. The PROBE WORKER OPENS a question SECTION per approved Q (no 'minting a card'); ② MATCH is what names the `cross-project:` reuse candidate and what GATE 1b reads; ③ DISPATCH commissions the rest DIRECT to the task/discovery orchestrators; ⑤ INTERPRET writes the A back into the Q. `status: commissioned` -> `state: commissioned`. v2.1.1: every shared-convention pointer was off by one `../` — `../../PHILOSOPHY.md` / `../../wiki/<page>.md` resolved to 1-lifecycle/, which holds neither. The stage skills sit TWO levels under skills/paper/ (1-lifecycle/<N>-<stage>/<skill>/), so the correct depth is `../../../`. Every required-read at the top of this skill silently failed. Repointed."
-  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
+  summary: "Resource stage orchestrator (stage 1, venue-FREE, shares its number with claims): what must EXIST for this paper to be testable, does it exist, can it CARRY the claim? Two sections only -- Demand (N<n>, keyed on H<n>) and Questions (Q<n> + A). The stage ASKS; the probe layer ROUTES (no PP ids minted here). Two lanes -- SCAN (blocking, minutes) and BUILD (non-blocking, days-to-months, cross-project: mandatory) -- with the SPEND gate (GATE 1b) between them. History: ./CHANGELOG.md. Design of record: ../../../../diagram/260714-resource-stage/."
 ---
 
 Skill: haipipe-paper-resource
@@ -31,13 +30,10 @@ No other stage renumbers.
 **Scope: DATA + MODELS + PRODUCING-CODE.** Any prerequisite.
 Datasets (AIData / corpora), model checkpoints and backbones, and producing-code ("does code that emits metric X exist?") are the SAME KIND of question.
 Data is the bulk of it; data is NOT the boundary.
-Live proof it must include models: Paper-CGMtoAge needs a masked-LM CGM backbone, no checkpoint exists -- but the pipeline is scaffolded one repo over at `examples/ProjC-Model-1-ScalingLaw/tasks/A02_pretraining_mlm/` (9 subtasks). That is the difference between GPU-WEEKS and a RUN.
-Live proof it must include producing-code: Paper-ScalingGlucose shipped an AUROC claim to its ABSTRACT with NO PRODUCING CODE.
+A checkpoint that does not yet exist is a resource question; a metric claim with no code that emits it is a resource question.
 
-**Why this stage exists (the receipt).** PP02, a SEED probe on Paper-CGMtoAge, landed 2026-07-07 already carrying the ruling in prose: the AIREADI corpus is trainable now, but it yields a mid-to-late-life clock, not a lifespan clock.
-That ruling HAD NOWHERE TO GO -- no stage owned "this corpus cannot carry this claim", and nothing in the lifecycle could BLOCK A DISPATCH.
-PP04 trained on that corpus anyway and returned INCONCLUSIVE (FM MAE 9.313 vs baseline 9.387, p=0.071, negative R2 on all 5 candidates), re-deriving at the cost of a full training pass exactly what PP02 already knew.
-This stage is the place that ruling goes, and the gate that stops the dispatch.
+**Why this stage exists.** It owns the ruling "this resource cannot carry this claim" and is the gate that stops a dispatch before it burns a full training pass re-deriving what an earlier probe already knew.
+The live case is recorded in `../../../../diagram/260714-resource-stage/02-worked-example.txt`.
 
 Read first: `../../../PHILOSOPHY.md`, `../../../wiki/04-lifecycle-map.md`, `../../../wiki/08-stage-gate.md`, `../../../wiki/02-comment-lifecycle.md`.
 
@@ -59,9 +55,7 @@ Questions    what we need to KNOW  one Q<n>, and its A when the answer lands
 
 That is the whole artifact.
 
-**CUT BY JL (2026-07-14). Do not reintroduce, in any form, under any name:**
-Kill Conditions. Setup Contract. Resource Ledger. Resource Binding table. Any sidecar file.
-JL: *"Make it as concise as possible."* *"Don't use Kill Conditions."* *"just keep Demand, and then Probes with QAs. No others."*
+**Do not reintroduce, in any form, under any name:** Kill Conditions, Setup Contract, Resource Ledger, Resource Binding table, any sidecar file.
 
 **Why two sections suffice.** "Do we have it?" AND "does it WORK?" are BOTH the ANSWER.
 So there is no separate existence axis, no separate fitness axis, and no binding table -- the **A** says it.
@@ -112,7 +106,7 @@ evaluate   task-for-eval   -> CLAIMS     produces the VERDICT      <- STAYS IN C
 
 **HARD BOUNDARY 1: resource may NOT commission `task-for-eval`.**
 That one rule is what stops this stage swallowing the paper.
-The live anti-pattern is PP04 in Paper-CGMtoAge, self-labelled "bundled fit+eval" -- and the bundling is exactly why its null was uninterpretable: you cannot tell whether it came from the MODEL or from the CORPUS.
+A bundled fit+eval makes its own null uninterpretable: you cannot tell whether it came from the MODEL or from the CORPUS.
 Fit makes the model. Eval makes the evidence. Resource stops at the model.
 
 **HARD BOUNDARY 2: resource NEVER EXECUTES.**
@@ -120,13 +114,11 @@ It never invokes `/haipipe-data`, `/haipipe-nn`, or `/haipipe-task`.
 It never scaffolds a task folder.
 It never scans a store inline, greps a checkpoint directory inline, or web-searches for a corpus inline during PROBE.
 It writes QUESTIONS; the PROBE WORKER MATCHes them against the bank and DISPATCHES what MATCH cannot close.
-(Standing JL feedback item, precisely this failure mode: *"Always run real probes -- never substitute an inline scan."* An inline scan leaves `1-probes/` empty and the phase did not happen.)
+Always run real probes -- never substitute an inline scan: an inline scan leaves `1-probes/` empty and the phase did not happen.
 
 ## The Stage ASKS. The Probe Layer ROUTES.
 
-JL, 2026-07-14: *"we should not design the probes, but design the paper-questions. then in the probe stage, the probe stage will pick them up, and think what type of probe-topic these questions should be assigned and answered."* -- and: *"In the draft, I will determine whether we want to ask these questions."*
-
-So the division of labour is absolute:
+The division of labour is absolute:
 
 ```text
 THIS STAGE writes   Q1, Q2, Q3 ...        a question, in paper-space, keyed to an N
@@ -151,7 +143,7 @@ EXECUTOR   VERBATIM, to Agent(haipipe-task-orchestrator-agent) or
            Agent(haipipe-discovery-orchestrator-agent). IT picks the shape and the
            DEPTH in its own clean context, and answers in <task-folder>/QA/<n>-<slug>.md.
            The answer lands back as the Q's A -- ⑤ INTERPRET writes it there.
-           💀 the probe GATEWAY agent is RETIRED; dispatch goes DIRECT.
+           Dispatch goes DIRECT; the executor's clean context IS the wall.
 ```
 
 **The ownership chain, end to end.** Read it once; it is the whole wire:
@@ -439,57 +431,7 @@ At CHECK, every Q must carry an `A:` (answered), or a `-> PP<NN>` backlink to a 
 A Q with none of the three is an UNASKED QUESTION and `check-probe-cards.sh --stage resource` FAILs it by name (`unasked-question(Q3)`).
 Neither the backlink nor the A is written BY THIS STAGE: the probe worker writes both. This stage writes only the Q.
 
-**Worked example -- Paper-CGMtoAge, as of the morning of 2026-07-07** (PP02/PP03 had landed; PP04 had NOT yet dispatched). This is what the stage would have said, and PP04 would not have run.
-
-```markdown
-Demand
-------
-
-**N1 (H1)** A CGM corpus with age -- at a LIFESPAN range. A clock needs age VARIANCE.
-**N2 (H1)** A CGM foundation-model rep to freeze, plus a non-deep baseline to beat.
-**N3 (H2)** Age-related OUTCOMES co-measured with CGM.
-**N4 (H3)** A cohort co-measuring CGM with an established clock (PhenoAge / Horvath).
-
-
-Questions
----------
-
-**Q1 (N1)** Do we have a CGM corpus with age labels? What age range?
-
-A: AIREADI @v0 · N=2021 · age 60.9±11.2 · range 40-94 · ZERO under-40s.
-   CANNOT CARRY N1 -- range-restricted, so this is a mid-to-late-life clock, not a
-   lifespan clock. A fit here returns a null BY CONSTRUCTION.
-   DO NOT DISPATCH A FIT ON THIS ALONE.
-
-**Q2 (N1)** What else has CGM + age? Any young/healthy tail?
-
-A: CGMacros · N=45 · age 18-69 · 10 under-40. Too small to train.
-   -> HELD-OUT EXTERNAL TEST, nothing more.
-
-**Q3 (N1)** Can we BUILD a wide-age corpus?
-
-A: COMMISSIONED · owner JL · eta 2026-07-21 · blocks N1 · cross-project: none-found
-   WellDoc N=2,576 · age 6-93 · +811 under-40 -> pooled ~4,642 · age 6-94.
-   Widens N and AGE. Does NOT widen HEALTH (~0% healthy).
-   New confound (T1D + paediatric).
-
-**Q4 (N2)** Does a masked-LM CGM backbone exist ANYWHERE?
-
-A: Checkpoint NO. Pipeline YES --
-   cross-project: ProjC-Model-1-ScalingLaw/tasks/A02_pretraining_mlm (9 subtasks)
-   DECISION AT GATE 1b: (a) authorize reuse -> a RUN
-                        (b) build -> GPU-WEEKS
-                        (c) cut the MLM arm -> ONE SENTENCE
-
-**Q5 (N3,N4)** Does anything co-measure CGM with aging outcomes?
-
-A: HPP / Pheno.AI · ~10,812 · CGM + ~2yr revisits.
-   rung: APPLICATION -> DUA -> secure enclave. MONTHS OF CALENDAR.
-   H2 and H3 are UNFALSIFIABLE until this lands.
-   owner: UNASSIGNED · application: UNFILED
-```
-
-Read Q1's A again. That is the line that would have stopped PP04.
+A full worked instance of this artifact (real, the SPEC OF RECORD) lives in `../../../../diagram/260714-resource-stage/02-worked-example.txt` — read it to see a Q whose `A:` blocks a fit before it burns a training pass.
 
 ## Principles
 

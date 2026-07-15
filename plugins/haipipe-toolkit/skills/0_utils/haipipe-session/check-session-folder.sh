@@ -28,7 +28,9 @@
 #
 # PASS 0: THE FOLDER
 #   1. MAX 6 .txt files      FAIL. The cap IS the point: a 7th file means a THEME needs
-#                            merging, not a new page.
+#                            merging, not a new page. EXEMPT: `_*.txt` meta files (the
+#                            _LOG.txt comment/lessons ledger) -- uncounted, uncapped, no
+#                            NN- underline; only their markdown-table + reference checks run.
 #   2. NO INDEX FILE         FAIL. 00-index.txt / index / README are FORBIDDEN. An index is
 #                            a second place to keep the truth, and it rots first.
 #   3. .md in the folder     WARN (markdown breaks monospace alignment; the house form is .txt).
@@ -175,6 +177,9 @@ esac
 ntxt=0
 for f in "$root"/*.txt; do
   [ -e "$f" ] || continue
+  # _LOG.txt (and any _*.txt) is an EXEMPT META file -- the append-only comment/lessons
+  # ledger, NOT a themed page -- so it does NOT count toward the 6-theme cap.
+  case "$(basename "$f")" in _*) continue ;; esac
   ntxt=$((ntxt + 1))
 done
 [ "$ntxt" -gt "$MAX_FILES" ] && \
@@ -195,6 +200,7 @@ for f in "$root"/*; do
     *.txt)
       case "$b" in
         [0-9][0-9]-[a-z0-9]*.txt) : ;;
+        _*.txt) : ;;   # EXEMPT meta file (_LOG.txt): a ledger, not part of the NN-themed run
         *) echo "WARN  $self/$b  -- name is not NN-<slug>.txt" ;;
       esac ;;
   esac
@@ -233,13 +239,18 @@ for f in "$root"/*.txt; do
   [ -e "$f" ] || continue
   name=$(basename "$f")
   prob=""
+  # _*.txt (e.g. _LOG.txt) is an EXEMPT META ledger: uncapped in length and carrying no
+  # NN- title-underline. Only the correctness checks (markdown-table, references) apply.
+  ismeta=0; case "$name" in _*) ismeta=1 ;; esac
 
-  # -- 6. LENGTH (two tiers; see the header) -------------------------------
+  # -- 6. LENGTH (two tiers; see the header) -- themed files only ----------
   lines=$(wc -l < "$f" | tr -d ' ')
-  if [ "$lines" -gt "$HARD_LINES" ]; then
-    prob="$prob too-long(${lines} lines > HARD ${HARD_LINES}: this file carries TWO themes -- split the THEME, do not shrink the prose);"
-  elif [ "$lines" -gt "$SOFT_LINES" ]; then
-    echo "WARN  $name  -- ${lines} lines, over the ~${SOFT_LINES} house cap (the theme is getting heavy)"
+  if [ "$ismeta" -eq 0 ]; then
+    if [ "$lines" -gt "$HARD_LINES" ]; then
+      prob="$prob too-long(${lines} lines > HARD ${HARD_LINES}: this file carries TWO themes -- split the THEME, do not shrink the prose);"
+    elif [ "$lines" -gt "$SOFT_LINES" ]; then
+      echo "WARN  $name  -- ${lines} lines, over the ~${SOFT_LINES} house cap (the theme is getting heavy)"
+    fi
   fi
 
   # -- 7. MARKDOWN TABLE ---------------------------------------------------
@@ -266,16 +277,18 @@ for f in "$root"/*.txt; do
   [ "$tab" -gt 0 ] && \
     prob="$prob markdown-table(${tab}-lines: JL house rule -- sections + bullets + ASCII boxes, never a table);"
 
-  # -- 8. TITLE UNDERLINE (line 1 / line 2) --------------------------------
-  t1=$(sed -n '1p' "$f")
-  t2=$(sed -n '2p' "$f")
-  case "$t2" in
-    ===*)
-      underline_ok "$t1" "$t2" || \
-        prob="$prob underline-mismatch(line 2 has $(cplen "$t2") '=' for a $(cplen "$t1")-char title -- retype the underline to the title's width);" ;;
-    *)
-      prob="$prob no-title-underline(line 2 must be '=' repeated to the width of line 1);" ;;
-  esac
+  # -- 8. TITLE UNDERLINE (line 1 / line 2) -- themed files only ----------
+  if [ "$ismeta" -eq 0 ]; then
+    t1=$(sed -n '1p' "$f")
+    t2=$(sed -n '2p' "$f")
+    case "$t2" in
+      ===*)
+        underline_ok "$t1" "$t2" || \
+          prob="$prob underline-mismatch(line 2 has $(cplen "$t2") '=' for a $(cplen "$t1")-char title -- retype the underline to the title's width);" ;;
+      *)
+        prob="$prob no-title-underline(line 2 must be '=' repeated to the width of line 1);" ;;
+    esac
+  fi
 
   # -- 9. HOUSE FORM (WARN only) -------------------------------------------
   # Array-based so the ATX rule can LOOK AHEAD one line -- see the whitelist below.
