@@ -9,7 +9,8 @@ Runs both `--pull --dry-run` and `--push --dry-run` for a single asset path; ren
 Step 1: Parse args
 -------------------
 
-Required: `<store>/<name>` (e.g. `1-SourceStore/WellDoc2025CVS`).
+Required: `<store>/<name>` (e.g.
+`1-SourceStore/WellDoc2025CVS`).
 
 ---
 

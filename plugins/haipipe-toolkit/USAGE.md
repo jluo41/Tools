@@ -339,7 +339,7 @@ Project layout, the 4 worlds                 skills/project/haipipe-project/SKIL
 Task hierarchy + naming                      skills/task/haipipe-task/ref/hierarchy.md
 Task-type series design                      skills/task/DESIGN.md
 runtime.yaml schema                          skills/task/haipipe-task/ref/runtime-yaml-schema.md
-task report (per-task observability)         skills/task/haipipe-task/fn/workflow-report.md
+task report (per-task observability)         skills/task/haipipe-task/fn/stage-report.md
 Run.sh wrapper internals                     skills/task/haipipe-task/ref/run-sh-template.sh
 the qa verb (task side)                      skills/task/haipipe-task/fn/qa.md
 the qa verb (discovery side)                 skills/discovery/haipipe-discovery/ (the twin)

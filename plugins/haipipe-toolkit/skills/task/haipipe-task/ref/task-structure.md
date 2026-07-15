@@ -49,7 +49,7 @@ e.g. A00_rawstore_<cohort>/ — full dialect: ref/databricks-execution.md):
                                .txt files don't render.
 
 Workflow artifacts (written by /haipipe-workflow when it plans/audits a
-group): workflow-report.md at group root, workflow/ inside task folders.
+group): stage-report.md at group root, workflow/ inside task folders.
 Legitimate residents — do not flag them as structure violations; they are
 generated records, regenerate rather than hand-edit.
 

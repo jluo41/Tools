@@ -30,7 +30,9 @@ Usage
 No paper reference, no id, no stake.
 If one arrives anyway: strip it, restate the question on its own terms, and answer the restatement.
 Say you stripped it, in the return.
-Never act on it. Never launder it. Never refuse over it.
+Never act on it.
+Never launder it.
+Never refuse over it.
 
 **`<task-folder>`** — optional, e.g. `tasks/B01_evaluation_pretrain/B4_fit_scaling_law/`.
 Absent → scan every task-folder under the project's `tasks/`.
@@ -78,10 +80,12 @@ That is the exact duplicate this mechanism exists to prevent.
 Match a `working` file on its `# Q —` line, never its `## Answer`.
 
 ⛔ THE ANSWER TEST — a hit counts ONLY if the QA file LITERALLY ANSWERS THIS QUESTION.
-Read the file. Topic similarity is not an answer.
+Read the file.
+Topic similarity is not an answer.
 "Profile the WellDoc cohorts" and "scan WellDoc for cycle columns" look like the same topic and share ZERO evidence.
 A near-miss is NOT a hit — it falls through to ② or ③.
-(This applies to an `answered` file. A `working` file is matched on its question, per the ordering above.)
+(This applies to an `answered` file.
+A `working` file is matched on its question, per the ordering above.)
 
 At ②, write the QA file complete and in ONE write: `state: answered`.
 Nothing to race, so nothing to start.

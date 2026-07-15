@@ -1,6 +1,6 @@
 ---
 name: haipipe-nn-algo
-description: "Layer 1 (Algorithm) specialist of haipipe-nn. Defines the algorithm contract — model class, forward pass, loss, metric. Covers mlpredictor, tsforecast, tefm, tediffusion, bandit. Called by /haipipe-nn orchestrator. Direct invocation works for layer-scoped work."
+description: "Layer 1 (Algorithm) specialist of haipipe-nn: defines the algorithm contract (model class, forward pass, loss, metric). Covers mlpredictor, tsforecast, tefm, tediffusion, bandit. Called by /haipipe-nn; direct invocation works layer-scoped."
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
@@ -59,7 +59,8 @@ Step-by-Step Protocol
 
 Step 0: Read `../haipipe-nn/ref/overview.md` for the 4-layer map.
 Mandatory.
-Step 1: Parse args. Function vocabulary: dashboard | review | generate | test.
+Step 1: Parse args.
+Function vocabulary: dashboard | review | generate | test.
 Step 2: Read this skill's `ref/concepts.md` for L1 specifics.
 Step 3: Read the umbrella fn doc.
 Step 4: For `generate`, also read `../haipipe-nn-tuner/ref/concepts.md`.

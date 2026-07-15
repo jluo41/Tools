@@ -1,6 +1,6 @@
 ---
 name: haipipe-data-case
-description: "Stage 3 (Case) specialist. Builds, runs, and reviews TriggerFn / CaseFn; inspects 3-CaseStore; loads case-layer assets. Supports multi-partition with parallel workers (embarrassingly parallel). Called by /haipipe-data orchestrator. Direct invocation works for stage-scoped work."
+description: "Stage 3 (Case) specialist: builds/runs/reviews TriggerFn / CaseFn, inspects 3-CaseStore, loads case-layer assets, runs multi-partition in parallel (embarrassingly parallel). Called by /haipipe-data; direct invocation works stage-scoped."
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:

@@ -10,7 +10,8 @@ NEVER deletes anything; outputs are advisory.
 Step 1: Parse args
 -------------------
 
-Required: `<store>` (e.g. `1-SourceStore`).
+Required: `<store>` (e.g.
+`1-SourceStore`).
 
 ---
 

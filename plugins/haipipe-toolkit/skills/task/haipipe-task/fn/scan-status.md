@@ -1,7 +1,8 @@
 Function: scan-status
 ======================
 
-Scan a B01-style eval task directory, update diagram/status.json, and format a human-readable txt status table. Covers both loss-eval (B1) and forecast-eval (B2) subtask types automatically.
+Scan a B01-style eval task directory, update diagram/status.json, and format a human-readable txt status table.
+Covers both loss-eval (B1) and forecast-eval (B2) subtask types automatically.
 
 Three artefacts produced per run:
   {task_dir}/diagram/status.json       <- machine-readable; one key per storage group
@@ -13,7 +14,8 @@ Execution is fully reproducible: re-run to pick up newly completed evaluations.
 Placement convention
 ---------------------
 
-scan_status.py and scan_groups.json live at the **task-group level** (B01), shared by all subtasks. The formatter script runs per subtask.
+scan_status.py and scan_groups.json live at the **task-group level** (B01), shared by all subtasks.
+The formatter script runs per subtask.
 
   B01_evaluation_pretrain/
   ├── scan_status.py          <- shared scanner (copy from ref/scan_status/)
@@ -90,8 +92,8 @@ Step 2: Run the scanner
     These are stored under status.json["unmapped"][storage_key] and printed
     as WARNING lines to stdout.
 
-If the script errors (missing _WorkSpace, bad regex, etc.), show the error
-and ask the user how to proceed. Do NOT auto-fix the scan_groups.json pattern.
+If the script errors (missing _WorkSpace, bad regex, etc.), show the error and ask the user how to proceed.
+Do NOT auto-fix the scan_groups.json pattern.
 
 Ambiguity resolution — before asking the user, first try to resolve by:
 
@@ -121,11 +123,11 @@ Step 3: Format to txt
   python SKILL_REF/status_formatter.py {task_dir} [out_txt]
 
 If out_txt is not given, the formatter writes to {task_dir}/diagram/status.txt.
-For named files (e.g. 03-status-forecast.txt), pass the path explicitly.
+For named files (e.g.
+03-status-forecast.txt), pass the path explicitly.
 
 
-Txt format rules (MUST always appear):
-.......................................
+Txt format rules (MUST always appear): .......................................
 
   1. Header block — always the first 3 lines:
        Status: {task_dir.name}

@@ -1,6 +1,6 @@
 ---
 name: haipipe-task-for-agent
-description: "agent task-folder build specialist. Scaffolds {NN}_<name>/ task-folders in the project's agent task-group (default F-series; letters are project-specific) that call an LLM agent with prompts + tools — outputs to results/<run>/{transcript.json, summary.md}. Called by /haipipe-task orchestrator when task-type=agent. Engine: /haipipe-task-llm-engine (LLM call runtime)."
+description: "agent task-folder specialist: scaffolds {NN}_<name>/ task-folders in the agent task-group (default F-series) that call an LLM agent with prompts + tools -> results/<run>/{transcript.json, summary.md}. Called by /haipipe-task when task-type=agent. Engine: /haipipe-task-llm-engine."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:

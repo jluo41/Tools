@@ -1,6 +1,6 @@
 ---
 name: haipipe-data-record
-description: "Stage 2 (Record) specialist. Builds, runs, and reviews HumanFn / RecordFn; inspects 2-RecStore; loads record-layer assets. Supports multi-partition via patient_ids predicate pushdown. Called by /haipipe-data orchestrator. Direct invocation works for stage-scoped work."
+description: "Stage 2 (Record) specialist: builds/runs/reviews HumanFn / RecordFn, inspects 2-RecStore, loads record-layer assets, supports multi-partition via patient_ids predicate pushdown. Called by /haipipe-data; direct invocation works stage-scoped."
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:

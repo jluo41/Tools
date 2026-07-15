@@ -1,6 +1,6 @@
 ---
 name: haipipe-task-for-fit
-description: "model-fitting task-folder build specialist. Scaffolds {NN}_<name>/ task-folders that fit/train a model — full hyperparam config, real GPU sweep, checkpoint to _WorkSpace/5-ModelInstanceStore/. NOT for algorithm development — see /haipipe-task-for-algo. Called by /haipipe-task orchestrator when task-type=fit. Cross-references /haipipe-nn-tuner and /haipipe-nn-instance."
+description: "model-fitting task-folder specialist: scaffolds {NN}_<name>/ task-folders that fit/train a model (full hyperparam config, real GPU sweep, checkpoint to _WorkSpace/5-ModelInstanceStore/). NOT algorithm dev -- see /haipipe-task-for-algo. Called by /haipipe-task when task-type=fit. Cross-references /haipipe-nn-tuner and /haipipe-nn-instance."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:

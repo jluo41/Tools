@@ -1,6 +1,6 @@
 ---
 name: haipipe-end
-description: "Run any Stage 6 endpoint work. Parses intent across FOUR axes — Fn-type (meta/trig/post/src2input/input2src), artifact-as-whole verb (package/test/profile/review/dashboard), develop target (sagemaker/databricks/local) producing an Endpoint_Set, or deploy target (sagemaker/databricks/local/mlflow) serving one — and dispatches to the right specialist via Skill(). Use for designing inference Fns, packaging Endpoint_Sets, training a build to produce one, local inference tests, or deploying to any target. Trigger: endpoint, deploy, develop, train, package, inference Fn, MetaFn, TrigFn, PostFn, Src2InputFn, Input2SrcFn, /haipipe-end."
+description: "Run any Stage 6 endpoint work: parses intent across four axes -- Fn-type (meta/trig/post/src2input/input2src), artifact verb (package/test/profile/review/dashboard), develop target (sagemaker/databricks/local), or deploy target (sagemaker/databricks/local/mlflow) -- and dispatches to the right specialist. Use for designing inference Fns, packaging Endpoint_Sets, training a build, local inference tests, or deploying anywhere. Trigger: endpoint, deploy, develop, train, package, inference Fn, MetaFn, TrigFn, PostFn, Src2InputFn, Input2SrcFn, /haipipe-end."
 argument-hint: "[target_or_fn_or_verb] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
@@ -188,7 +188,8 @@ Step 4:  Capture the specialist's structured tail (status / summary /
 Target-alone disambiguation (rule f)
 -------------------------------------
 
-When the user types just a target (e.g. `/haipipe-end sagemaker`), default to the deploy ref-only summary (more common ask) and append a single clarification line:
+When the user types just a target (e.g.
+`/haipipe-end sagemaker`), default to the deploy ref-only summary (more common ask) and append a single clarification line:
 
 ```
 [deploy-sagemaker ref-only summary here]

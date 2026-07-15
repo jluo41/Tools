@@ -1,6 +1,6 @@
 ---
 name: haipipe-nn-tuner
-description: "Layer 2 (Tuner) specialist of haipipe-nn. Defines the hyperparameter search space and the tuner that drives sweeps. Called by /haipipe-nn orchestrator. Direct invocation works for layer-scoped work."
+description: "Layer 2 (Tuner) specialist of haipipe-nn: defines the hyperparameter search space and the tuner that drives sweeps. Called by /haipipe-nn; direct invocation works layer-scoped."
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
@@ -58,7 +58,8 @@ Step-by-Step Protocol
 
 Step 0: Read `../haipipe-nn/ref/overview.md`.
 Mandatory.
-Step 1: Parse args. Function vocabulary: dashboard | review | generate | test.
+Step 1: Parse args.
+Function vocabulary: dashboard | review | generate | test.
 Step 2: Read this skill's `ref/concepts.md` for L2 specifics.
 Step 3: Read the umbrella fn doc.
 Step 4: For `generate`, also read `../haipipe-nn-instance/ref/concepts.md`.

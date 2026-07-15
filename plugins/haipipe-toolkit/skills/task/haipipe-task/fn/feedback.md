@@ -7,19 +7,13 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 
 # Feedback (capture skill feedback, route at capture, fix later)
 
-Captures feedback about the task SKILL (confusing dashboard, clunky stage,
-missing verb, bad routing, hard-to-read output) and FILES IT NEXT TO THE CODE
-THAT NEEDS FIXING. Does NOT fix anything; fixing is a separate revision pass.
-Distinguish from task work: feedback is about the TOOL, not the task-folder it
-builds.
+Captures feedback about the task SKILL (confusing dashboard, clunky stage, missing verb, bad routing, hard-to-read output) and FILES IT NEXT TO THE CODE THAT NEEDS FIXING.
+Does NOT fix anything; fixing is a separate revision pass.
+Distinguish from task work: feedback is about the TOOL, not the task-folder it builds.
 
-Capture-time routing: each complaint is inferred to a specific DOMAIN FOLDER
-(the routable unit — `task/` groups its ~40 specialist skills into 9 domain
-folders, too granular to route to 40 individual skills, plus a shared `agents/`
-folder) and written into THAT unit's `feedback/` folder. When no unit matches
-(cross-cutting discipline, or genuinely unclassifiable), it lands in the
-orchestrator fallback `feedback/`. The folder a file lives in IS the record of
-which unit it concerns; there is no separate `skill:` field.
+Capture-time routing: each complaint is inferred to a specific DOMAIN FOLDER (the routable unit — `task/` groups its ~40 specialist skills into 9 domain folders, too granular to route to 40 individual skills, plus a shared `agents/` folder) and written into THAT unit's `feedback/` folder.
+When no unit matches (cross-cutting discipline, or genuinely unclassifiable), it lands in the orchestrator fallback `feedback/`.
+The folder a file lives in IS the record of which unit it concerns; there is no separate `skill:` field.
 
 ## Capture: `/haipipe-task feedback "<text>"`
 
@@ -122,10 +116,8 @@ NO MATCH  (cross-cutting: the 4-stage lifecycle Plan/Build/Execute/Report,
           across all domains) ................. -> orchestrator fallback (this folder)
 ```
 
-When more than one keyword matches, prefer the MOST SPECIFIC. When the only
-signal is the active task-type and the complaint is plainly cross-cutting,
-prefer the fallback over the domain unit (do not bury a spine-wide rule inside
-one domain).
+When more than one keyword matches, prefer the MOST SPECIFIC.
+When the only signal is the active task-type and the complaint is plainly cross-cutting, prefer the fallback over the domain unit (do not bury a spine-wide rule inside one domain).
 
 ### One file per item (schema)
 
@@ -154,12 +146,9 @@ only when you next merge into it.)
 
 ### Inbox paths (relative to the TASK SKILL ROOT)
 
-The task skill root is the `skills/task/` directory (resolve symlinks: this
-skill is reached via `.claude/skills/haipipe-task` -> `…/skills/task/haipipe-task`,
-so the root is one level ABOVE the orchestrator folder, i.e. `…/skills/task`, NOT
+The task skill root is the `skills/task/` directory (resolve symlinks: this skill is reached via `.claude/skills/haipipe-task` -> `…/skills/task/haipipe-task`, so the root is one level ABOVE the orchestrator folder, i.e. `…/skills/task`, NOT
 `…/skills/task/haipipe-task`). Inboxes are created LAZILY on first capture, so a
-mapped folder not existing yet is expected, not an error -- do NOT pre-create
-empty inboxes.
+mapped folder not existing yet is expected, not an error -- do NOT pre-create empty inboxes.
 
 ```
 1_data        1_data/feedback/
@@ -221,8 +210,8 @@ Keep the file as history; never delete it.
 
 ## Where it lives
 
-There is no single inbox. Each domain folder keeps its OWN `feedback/` folder so
-the report sits right next to the code that needs fixing; the orchestrator's
+There is no single inbox.
+Each domain folder keeps its OWN `feedback/` folder so the report sits right next to the code that needs fixing; the orchestrator's
 `feedback/` is the fallback for cross-cutting and unclassifiable items. There is
-no cross-unit shared feedback. All inboxes travel with the skills in the
-submodule.
+no cross-unit shared feedback.
+All inboxes travel with the skills in the submodule.

@@ -1,6 +1,6 @@
 ---
 name: haipipe-task-for-stata
-description: "Unified Stata-engine task-folder build specialist. Handles all 4 stages internally (cms/case/data/reg). Owns the Stata engine contract, the {LNN} stage-letter alphabet, and stage disambiguation. Also provides SERVER CHECK mode — three-gate migration checklist for the CMS secure server. Called by /haipipe-task when engine=Stata; direct invocation works for any Stata-dialect scaffold. Engine = Stata + PowerShell + logs (NOT Python/papermill)."
+description: "Unified Stata-engine task-folder specialist: handles all 4 stages internally (cms/case/data/reg), owns the Stata engine contract, the {LNN} stage-letter alphabet, and stage disambiguation. Also a SERVER CHECK mode -- three-gate migration checklist for the CMS secure server. Called by /haipipe-task when engine=Stata; direct invocation works for any Stata scaffold. Engine = Stata + PowerShell + logs (not Python/papermill)."
 argument-hint: "[stage] [project_id] [group] [task-name]  OR  [server-check] [task-folder]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
@@ -10,7 +10,7 @@ metadata:
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
-Skill: haipipe-task-for-stata  (unified Stata engine)
+Skill: haipipe-task-for-stata (unified Stata engine)
 =====================================================
 
 This is the UNIFIED Stata skill -- handles all 4 stages (cms/case/data/reg) internally.

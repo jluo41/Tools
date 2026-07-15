@@ -1,16 +1,15 @@
-fn/workflow-report — generate reports mirroring plans
-======================================================
+fn/stage-report — generate reports mirroring plans
+===================================================
 
-Called by `/haipipe-task report`. Generates reports at two levels:
-per-script and task-level. Each report mirrors its corresponding
-plan — same phases, same steps — filled with what actually happened.
+Called by `/haipipe-task report`.
+Generates reports at two levels: per-script and task-level.
+Each report mirrors its corresponding plan — same phases, same steps — filled with what actually happened.
 
 Schema source of truth:
   skills/task/haipipe-workflow/ref/plan-schema.md  (Report schema section)
   skills/task/haipipe-workflow/ref/concepts.md     (Report = plan's echo)
 
-The report uses the SAME structure as the plan, adding per-step
-result fields: status, output, note, reason.
+The report uses the SAME structure as the plan, adding per-step result fields: status, output, note, reason.
 
 
 Two-layer report structure
@@ -22,8 +21,11 @@ task      plan.yaml                  report.yaml
 script    plan-script-<name>.yaml    report-script-<name>.yaml
 ```
 
-Each layer mirrors the one it reports on. Plan = intent. Report = evidence.
-Same phases, same steps. You can diff them to find divergences.
+Each layer mirrors the one it reports on.
+Plan = intent.
+Report = evidence.
+Same phases, same steps.
+You can diff them to find divergences.
 
 
 When to call
@@ -57,11 +59,9 @@ For each `plan-script-<name>.yaml`, gather evidence:
 
 ### Step 3 — Generate per-script reports
 
-For EACH `plan-script-<name>.yaml`, generate a matching
-`report-script-<name>.yaml`.
+For EACH `plan-script-<name>.yaml`, generate a matching `report-script-<name>.yaml`.
 
-**The report MUST mirror the plan structure per plan-schema.md
-Report schema.** For each step in the plan, fill in:
+**The report MUST mirror the plan structure per plan-schema.md Report schema.** For each step in the plan, fill in:
 
   label      same as plan (unchanged)
   status     done | skipped | failed
@@ -74,9 +74,9 @@ Report schema.** For each step in the plan, fill in:
 
 > JL: One line one sentence. 
 
-Do NOT use ad-hoc fields like `id`, `name`, `outputs`, `exists`,
-`rows`, `size_kb`. Those are not in the schema. File existence and
-size go in `note` or `output`.
+Do NOT use ad-hoc fields like `id`, `name`, `outputs`, `exists`, `rows`, `size_kb`.
+Those are not in the schema.
+File existence and size go in `note` or `output`.
 
 **Per-script report format (follows plan-schema.md Report schema):**
 
@@ -132,8 +132,7 @@ summary:
 
 ### Step 4 — Generate task-level report.yaml
 
-The task report mirrors `workflow/plan.yaml` — same phases (Run,
-Gate1, Gate2), same steps, filled with results.
+The task report mirrors `workflow/plan.yaml` — same phases (Run, Gate1, Gate2), same steps, filled with results.
 
 **Task report format (follows plan-schema.md Report schema):**
 

@@ -1,6 +1,6 @@
 ---
 name: haipipe-task-for-eval
-description: "evaluation task-folder build specialist. Scaffolds {NN}_<name>/ task-folders in the project's eval task-group (default B-series; letters are project-specific) that score a trained model against an AIData split — metrics land in results/<run>/metrics.json. Called by /haipipe-task orchestrator when task-type=eval. Cross-references /haipipe-end or future eval skill."
+description: "evaluation task-folder specialist: scaffolds {NN}_<name>/ task-folders in the eval task-group (default B-series) that score a trained model against an AIData split -> results/<run>/metrics.json. Called by /haipipe-task when task-type=eval. Cross-references /haipipe-end or a future eval skill."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:

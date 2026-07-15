@@ -1,6 +1,6 @@
 ---
 name: haipipe-task-for-endpoint
-description: "endpoint task-folder build specialist. Scaffolds AND executes {NN}_<name>/ task-folders in the project's endpoint task-group (letters are project-specific) that package a trained ModelInstance_Set into a deployable Endpoint_Set (Stage 6) using c_endpoint_nb.py template. Called by /haipipe-task orchestrator when task-type=endpoint. Cross-references /haipipe-end for Fn authoring and deploy targets."
+description: "endpoint task-folder specialist: scaffolds AND executes {NN}_<name>/ task-folders that package a trained ModelInstance_Set into a deployable Endpoint_Set (Stage 6) via c_endpoint_nb.py. Called by /haipipe-task when task-type=endpoint. Cross-references /haipipe-end for Fn authoring and deploy targets."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:

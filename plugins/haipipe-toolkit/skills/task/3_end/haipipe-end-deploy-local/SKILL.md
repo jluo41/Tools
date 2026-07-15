@@ -1,6 +1,6 @@
 ---
 name: haipipe-end-deploy-local
-description: "Local self-hosted deploy specialist for haipipe-end. Wraps an Endpoint_Set into a local HTTP server — Flask (default), FastAPI, or local Docker container. For dev, integration testing, demos, and DIY deployments. Backed in part by platforms/platform-sagemaker-inference/scripts/build_endpoint/run_endpoint_{system,docker}.py for the Flask + Docker testing ladder. Reads Endpoint_Sets produced by haipipe-end-endpointset; never modifies them. Called by /haipipe-end orchestrator when deploy target is local / flask / fastapi / localhost."
+description: "Local self-hosted deploy specialist for haipipe-end: wraps an Endpoint_Set into a local HTTP server -- Flask (default), FastAPI, or local Docker container -- for dev, integration testing, demos, and DIY deployments. Reads (never modifies) Endpoint_Sets from haipipe-end-endpointset. Called by /haipipe-end when deploy target is local / flask / fastapi / localhost."
 argument-hint: "[verb] [endpoint_set_or_id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
@@ -74,23 +74,23 @@ review      ../haipipe-end/ref/deploy-overview.md                           Read
 Step-by-Step Protocol
 ----------------------
 
-Step 0:  Read `../haipipe-end/ref/deploy-overview.md` for local server conventions (port allocation,
+Step 0: Read `../haipipe-end/ref/deploy-overview.md` for local server conventions (port allocation,
          pid-file layout, log paths, framework boilerplate).
 
-Step 1:  Parse args.
+Step 1: Parse args.
 Required arg per verb:
            deploy: <endpoint_set_name> [--framework flask|fastapi]
                                        [--with-docker] [--port N] [--bg]
            test/monitor/teardown/review: <endpoint_id>
 
-Step 2:  Choose backing path based on framework + Docker flags.
+Step 2: Choose backing path based on framework + Docker flags.
 For Flask
          without Docker, defer to `run_endpoint_system.py`. For local Docker,
          defer to `run_endpoint_docker.py`. For FastAPI, project-specific.
 
-Step 3:  Execute the procedure.
+Step 3: Execute the procedure.
 
-Step 4:  Emit the structured tail:
+Step 4: Emit the structured tail:
 
 ```
 status:    ok | blocked | failed

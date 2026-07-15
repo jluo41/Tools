@@ -57,13 +57,15 @@ ep.inference(copy.deepcopy(payload))                 # one run to fill acc
 # acc['infer_ms'] = csr build + xgb predict cost
 ```
 
-(`_t` is a tiny timer wrapper that adds elapsed ms to acc[key] and returns the result.) Always restore the monkeypatched methods after.
+(`_t` is a tiny timer wrapper that adds elapsed ms to acc[key] and returns the result.)
+Always restore the monkeypatched methods after.
 
 
-KNOWN ANTI-PATTERN #1 — HuggingFace Dataset in the per-arm loop  (the big one)
+KNOWN ANTI-PATTERN #1 — HuggingFace Dataset in the per-arm loop (the big one)
 -----------------------------------------------------------------------------
 
-Symptom: `model_inference` dominates total (e.g. 98%), and within it the dataset-transform (`_add_treatment_columns`) dwarfs the actual xgb predict.
+Symptom: `model_inference` dominates total (e.g.
+98%), and within it the dataset-transform (`_add_treatment_columns`) dwarfs the actual xgb predict.
 
 Cause: `instance_slearner._compute_scores` rebuilds a HuggingFace `Dataset` per arm and `_add_treatment_columns` calls `Dataset.add_column` once PER ARM inside that loop → O(arms²) Arrow-table copies.
 Measured on the 40-arm SMS ClickPred endpoint (2026-06-01):

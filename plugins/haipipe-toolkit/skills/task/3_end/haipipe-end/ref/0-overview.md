@@ -214,7 +214,8 @@ Deployment Platforms
 =====================
 
 **The wire I/O pair is platform-specific (owner decision 2026-07-05, supersedes LESSON L16).** Src2InputFn + Input2SrcFn are written ONE PER PLATFORM per use-case: a SageMaker payload gets a SageMaker impl (flat JSON), a Databricks payload its own impl (`dataframe_records` envelope).
-Put the platform in the impl name (e.g. `CGMDecoder_Databricks_*`).
+Put the platform in the impl name (e.g.
+`CGMDecoder_Databricks_*`).
 MetaFn / TrigFn / PostFn stay SHARED across platforms; TrigFn keeps the L14 unwrap so it reads payload on either platform:
 
 ```python

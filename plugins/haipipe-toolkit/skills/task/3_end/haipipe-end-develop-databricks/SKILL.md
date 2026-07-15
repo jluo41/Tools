@@ -1,6 +1,6 @@
 ---
 name: haipipe-end-develop-databricks
-description: "Databricks develop specialist for haipipe-end. STATUS: DEFERRED — the backing repo platforms/platform-databrick-training/ EXISTS (submit_job.py, setup_cluster.sh, notebooks/) but this skill is not wired to it yet, and the job-based design must be reconciled with jobs-blocked clusters (learn-databricks Lesson 15). Would run Stage 5 training as a Databricks Job (notebook or wheel task) with model logged to Unity Catalog and exported as an Endpoint_Set under 6-EndpointStore/. The umbrella's no-args dashboard skips this skill while deferred."
+description: "Databricks develop specialist for haipipe-end. STATUS: DEFERRED -- backing repo platforms/platform-databrick-training/ exists but this skill isn't wired to it yet, and the job-based design must be reconciled with jobs-blocked clusters (learn-databricks Lesson 15). Would run Stage 5 training as a Databricks Job with model logged to Unity Catalog and exported as an Endpoint_Set. The umbrella's no-args dashboard skips it while deferred."
 argument-hint: "[verb] [config_or_run_id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:

@@ -1,10 +1,9 @@
-fn/workflow-plan — audit + fix + generate plans
-=================================================
+fn/stage-plan — audit + fix + generate plans
+=============================================
 
-Called by `/haipipe-task plan`. Runs the full pre-plan sequence:
-audit the task folder, fix fixable issues, then generate plans
-at two levels: per-script and task-level. Both levels MUST follow
-the haipipe-workflow IPO schema.
+Called by `/haipipe-task plan`.
+Runs the full pre-plan sequence: audit the task folder, fix fixable issues, then generate plans at two levels: per-script and task-level.
+Both levels MUST follow the haipipe-workflow IPO schema.
 
 Schema source of truth:
   skills/task/haipipe-workflow/ref/plan-schema.md
@@ -41,8 +40,8 @@ Both layers use the SAME schema shape from plan-schema.md:
 
 > JL: one line one sentences.
 
-The config layer (configs/<run>.yaml) is an input FILE, not a separate
-plan layer. It appears in `input.files_in`.
+The config layer (configs/<run>.yaml) is an input FILE, not a separate plan layer.
+It appears in `input.files_in`.
 
 
 When to call
@@ -58,15 +57,14 @@ Procedure
 
 ### Step 1 — Run audit first
 
-Execute `fn/workflow-audit.md` on the task folder (the full 6-step
-procedure). Collect: type, run_names, sisters, shared_configs, issues.
+Execute `fn/audit.md` on the task folder (the full 6-step procedure).
+Collect: type, run_names, sisters, shared_configs, issues.
 
 Report the audit results to the user (the audit progress block).
 
 ### Step 2 — Fix: generate per-run configs
 
-When audit found `shared_configs` (one config serving multiple runs),
-generate a per-run config for each run that's missing one.
+When audit found `shared_configs` (one config serving multiple runs), generate a per-run config for each run that's missing one.
 
 Each per-run config:
 1. Inherits all params from the shared config
@@ -81,8 +79,7 @@ Progress:
 
 ### Step 3 — Fix: generate missing run script counterparts
 
-If a run has `.sh` but no `.ps1` (or vice versa), generate the
-missing counterpart.
+If a run has `.sh` but no `.ps1` (or vice versa), generate the missing counterpart.
 
 ### Step 4 — Fix: notebook naming
 
@@ -90,8 +87,7 @@ Flag mismatches but do NOT rename existing notebooks.
 
 ### Step 5 — Generate per-script plans
 
-For EACH main `.py` (or `.do`) script in the task folder, generate
-a `workflow/plan-script-<name>.yaml`.
+For EACH main `.py` (or `.do`) script in the task folder, generate a `workflow/plan-script-<name>.yaml`.
 
 **How to read a script's internal structure:**
 1. Read the full script file
@@ -101,8 +97,7 @@ a `workflow/plan-script-<name>.yaml`.
 4. Within each Phase, each cell becomes a Step
 5. Map _WorkSpace references to files_in/files_out
 
-**The per-script plan MUST follow plan-schema.md.** Every step uses
-the canonical fields:
+**The per-script plan MUST follow plan-schema.md.** Every step uses the canonical fields:
 
   label      "phase:step-name"  (e.g. "train:fit-xgboost")
   type       agent              (always agent for script-internal steps)
@@ -111,8 +106,8 @@ the canonical fields:
   files_in   files this step reads ([] if none)
   files_out  files this step creates ([] if none)
 
-Do NOT use ad-hoc fields like `id`, `name`, `cell`, `reads`, `does`,
-`outputs`. Those are not in the schema.
+Do NOT use ad-hoc fields like `id`, `name`, `cell`, `reads`, `does`, `outputs`.
+Those are not in the schema.
 
 **Per-script plan format (follows plan-schema.md):**
 
@@ -180,9 +175,8 @@ Progress:
 
 ### Step 6 — Generate task-level plan.yaml
 
-The task plan is ALSO a plan-schema.md-compliant IPO. Its phases
-are the high-level lifecycle steps (Run, Gate1, Gate2), not the
-script-internal phases (those live in the script plan).
+The task plan is ALSO a plan-schema.md-compliant IPO.
+Its phases are the high-level lifecycle steps (Run, Gate1, Gate2), not the script-internal phases (those live in the script plan).
 
 **Task plan format (follows plan-schema.md):**
 

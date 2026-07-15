@@ -88,7 +88,8 @@ ext_cols = [c for c in ext_df.columns
 join_cols = filter_by_columns_arg(ext_cols)   # honor --columns flag
 ```
 
-If the README has logical column groups (e.g. NPI -> Demographics, Geographic, Reviews/Personality), preserve them in the rendered preview.
+If the README has logical column groups (e.g.
+NPI -> Demographics, Geographic, Reviews/Personality), preserve them in the rendered preview.
 
 ---
 

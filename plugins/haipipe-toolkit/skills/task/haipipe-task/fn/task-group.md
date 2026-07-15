@@ -66,8 +66,7 @@ tasks/{G}{NN}_{group_name}/
 └── (no README.md)
 ```
 
-If the group is **cohesive** (multiple related task-folders coming):
-also create `diagram/` and author via `/diagram-ascii`:
+If the group is **cohesive** (multiple related task-folders coming): also create `diagram/` and author via `/diagram-ascii`:
 
 ```
 01-overview.txt    Group purpose / scope / how tasks relate
@@ -87,9 +86,8 @@ Then bundle:
 Step 4 — Optionally proceed to first task-folder
 -------------------------------------------------
 
-Seed the first task within this group via the orchestrator's task-folder
-scaffold: `Skill("haipipe-task", args="task-folder <type> ...")` (SKILL.md
-Step 3a dispatches to the type specialist).
+Seed the first task within this group via the orchestrator's task-folder scaffold: `Skill("haipipe-task", args="task-folder <type> ...")`
+(SKILL.md Step 3a dispatches to the type specialist).
 
 
 MUST NOT

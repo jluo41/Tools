@@ -1,6 +1,6 @@
 ---
 name: haipipe-individual-inference-judge
-description: "LLM-as-judge evaluator for prediction-interpretation Reports. Consumes the report.json produced by haipipe-individual-inference-report and scores it against a rubric persona (e.g. patient-comprehension, safety-review) via claude_agent_sdk. Each judge persona defines its own rubric dimensions, scoring rules, and verdict thresholds — pluggable, can live outside the plugin. Builds on haipipe-individual-inference-report. Use to score reports in CI batches, doctor pre-review, persona ablation studies, or red-team safety checks. Trigger: judge a report, score interpretation, evaluate report, /haipipe-individual-inference-judge."
+description: "LLM-as-judge evaluator for prediction-interpretation Reports: consumes the report.json from haipipe-individual-inference-report and scores it against a rubric persona (e.g. patient-comprehension, safety-review) via claude_agent_sdk. Each persona defines its own rubric dimensions, scoring rules, and thresholds -- pluggable. Use for CI batches, doctor pre-review, persona ablation, or red-team safety checks. Trigger: judge a report, score interpretation, evaluate report, /haipipe-individual-inference-judge."
 argument-hint: "--report-dir <path> --persona <name_or_path> [--model X]"
 allowed-tools: Bash, Read
 metadata:

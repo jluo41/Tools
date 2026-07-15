@@ -1,6 +1,6 @@
 ---
 name: haipipe-task-for-data
-description: "data-pipeline task-folder specialist. Scaffolds AND executes {NN}_<name>/ task-folders that run Stage 1-4 builders (Source / Record / Case / AIData) with multi-partition support. Called by /haipipe-task orchestrator when task-type=data. Cross-references /haipipe-data for Fn authoring."
+description: "data-pipeline task-folder specialist: scaffolds AND executes {NN}_<name>/ task-folders that run Stage 1-4 builders (Source/Record/Case/AIData) with multi-partition support. Called by /haipipe-task when task-type=data. Cross-references /haipipe-data for Fn authoring."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:

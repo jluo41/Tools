@@ -1,6 +1,6 @@
 ---
 name: haipipe-end-endpointset
-description: "Endpoint_Set artifact-as-whole specialist. Owns target-agnostic operations on the deployable artifact: package (Stage 5 → 6), local inference() smoke test, structural review, dashboard. Per-Fn-type design/review lives in sibling skills (haipipe-end-{meta,trig,post,src2input,input2src}); deployment lives in haipipe-end-deploy-*. Called by /haipipe-end orchestrator when the request is about the artifact itself."
+description: "Endpoint_Set artifact-as-whole specialist: target-agnostic operations on the deployable artifact -- package (Stage 5 -> 6), local inference() smoke test, structural review, dashboard. Per-Fn-type design/review lives in haipipe-end-{meta,trig,post,src2input,input2src}; deployment in haipipe-end-deploy-*. Called by /haipipe-end when the request is about the artifact itself."
 argument-hint: "[verb] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
@@ -62,20 +62,20 @@ The umbrella's `ref/0-overview.md` (cross-cutting Stage 6 architecture + inferen
 Step-by-Step Protocol
 ----------------------
 
-Step 0:  Read `../haipipe-end/ref/0-overview.md`.
+Step 0: Read `../haipipe-end/ref/0-overview.md`.
 Mandatory.
          Contains the Endpoint_Set layout + inference pipeline + YAML conventions.
 
-Step 1:  Parse args.
+Step 1: Parse args.
 Verb vocabulary: dashboard / package / test / profile / review.
 
-Step 2:  Read the relevant fn doc per the dispatch table.
+Step 2: Read the relevant fn doc per the dispatch table.
 
-Step 3:  Execute the procedure scoped to the WHOLE artifact (not any
+Step 3: Execute the procedure scoped to the WHOLE artifact (not any
          single Fn-type). For per-Fn-type review, route the user to the
          relevant sibling specialist instead.
 
-Step 4:  Emit the structured tail (orchestrator parses):
+Step 4: Emit the structured tail (orchestrator parses):
 
 ```
 status:    ok | blocked | failed

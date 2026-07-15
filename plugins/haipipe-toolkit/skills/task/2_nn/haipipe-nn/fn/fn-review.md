@@ -274,11 +274,11 @@ Tests            Layer 3 test: all steps PASSED                     [ ]
 Tests            Layer 4 test: all steps PASSED                     [ ]
 ```
 
-PASS:      Zero [BLOCK] or [ERROR] issues.
+PASS: Zero [BLOCK] or [ERROR] issues.
 All test layers green.
 WARN-PASS: Zero [BLOCK]/[ERROR].
 Some [WARN]/[NOTE] -- document and proceed.
-FAIL:      Any [BLOCK] or [ERROR], or any test layer failing.
+FAIL: Any [BLOCK] or [ERROR], or any test layer failing.
 
 ---
 

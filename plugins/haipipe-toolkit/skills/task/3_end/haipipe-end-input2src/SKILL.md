@@ -1,6 +1,6 @@
 ---
 name: haipipe-end-input2src
-description: "Input2SrcFn specialist — design and review of the wire-payload-to-record function in an Endpoint_Set (deserializes JSON request into a ProcessedDF row). One of 5 inference Fn-types. PLATFORM-SPECIFIC by owner decision 2026-07-05 (supersedes LESSON L16): ONE Input2SrcFn per deploy platform per use-case — SageMaker payload gets a SageMaker impl (flat JSON), Databricks its own (dataframe_records envelope); --platform selects which platform's Fn to design/review (default sagemaker). Called by /haipipe-end orchestrator when intent references Input2SrcFn, payload-to-record deserialization, or `input2src` keyword."
+description: "Input2SrcFn specialist -- designs/reviews the wire-payload->record function in an Endpoint_Set (deserializes a JSON request into a ProcessedDF row). Platform-specific: one impl per deploy platform (SageMaker flat JSON vs Databricks dataframe_records); --platform picks (default sagemaker). Called by /haipipe-end when intent references Input2SrcFn, payload-to-record deserialization, or `input2src`."
 argument-hint: "[verb] [use_case] [--platform sagemaker|databricks] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
@@ -84,13 +84,13 @@ concepts   ref/concepts.md  (only)
 Step-by-Step Protocol
 ----------------------
 
-Step 0:  Read `ref/concepts.md` — Input2SrcFn semantics, schema validation, decoding rules.
-Step 1:  For `design`, also read `../haipipe-end/fn/fn-design.md` + `../haipipe-end/ref/0-overview.md`.
+Step 0: Read `ref/concepts.md` — Input2SrcFn semantics, schema validation, decoding rules.
+Step 1: For `design`, also read `../haipipe-end/fn/fn-design.md` + `../haipipe-end/ref/0-overview.md`.
          For `review`, also read `../haipipe-end-endpointset/fn/fn-review.md`.
-Step 2:  Execute the procedure scoped to Input2SrcFn.
+Step 2: Execute the procedure scoped to Input2SrcFn.
 Must stay in sync with its
          inverse pair `/haipipe-end-src2input`.
-Step 3:  Emit the structured tail.
+Step 3: Emit the structured tail.
 
 ---
 

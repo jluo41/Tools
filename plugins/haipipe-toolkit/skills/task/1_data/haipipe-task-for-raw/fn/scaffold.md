@@ -97,8 +97,7 @@ Copy `ref/run-databricks-sh-template.sh` to `runs/<run_name>.sh`.
 Set `TASK_NAME="{NN}_stage{S}_{desc}"`.
 
 This template converts `.py` → `.ipynb` only — no papermill execute.
-The notebook is meant for Databricks upload.
-⚡ P2: place the converted .ipynb in the group's `_databricks/` as well; ignore the template's "sync to local" hint (Pattern 1 only).
+The notebook is meant for Databricks upload. ⚡ P2: place the converted .ipynb in the group's `_databricks/` as well; ignore the template's "sync to local" hint (Pattern 1 only).
 
 
 Step 6 — Cross-skill link

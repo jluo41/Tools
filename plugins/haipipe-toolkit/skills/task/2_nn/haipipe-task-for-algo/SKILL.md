@@ -1,6 +1,6 @@
 ---
 name: haipipe-task-for-algo
-description: "algo-dev task-folder build specialist. Scaffolds {NN}_<name>/ task-folders in the project's algo-dev task-group (default `X_algo`; group naming is project-specific) that smoke-test a newly developed algorithm class end-to-end on a TINY config. NOT for full training — see /haipipe-task-for-fit. Called by /haipipe-task orchestrator when task-type=algo. Cross-references /haipipe-nn-algo."
+description: "algo-dev task-folder specialist: scaffolds {NN}_<name>/ task-folders in the algo-dev task-group (default X_algo) that smoke-test a newly developed algorithm class end-to-end on a TINY config. NOT full training -- see /haipipe-task-for-fit. Called by /haipipe-task when task-type=algo. Cross-references /haipipe-nn-algo."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
