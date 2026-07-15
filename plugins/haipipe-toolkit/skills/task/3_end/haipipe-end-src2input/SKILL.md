@@ -13,10 +13,9 @@ metadata:
 Skill: haipipe-end-src2input
 =============================
 
-Per-Fn-type specialist for **Src2InputFn** — the inference function
-that serializes a ProcessedDF record into the wire-format payload the
-model expects. The "outbound" half of the wire I/O pair (paired with
-Input2SrcFn). One of the 5 inference Fn-types inside an Endpoint_Set.
+Per-Fn-type specialist for **Src2InputFn** — the inference function that serializes a ProcessedDF record into the wire-format payload the model expects.
+The "outbound" half of the wire I/O pair (paired with Input2SrcFn).
+One of the 5 inference Fn-types inside an Endpoint_Set.
 See `ref/concepts.md` for Src2InputFn semantics.
 
   Verb axis:    design | review | list | concepts
@@ -62,9 +61,7 @@ CGMDecoder_Databricks_Src2Payload_v260101          🚩  CGM Databricks variant 
 🚩 = Databricks-platform impl (one wire-Fn per platform by design; sagemaker unmarked)
 ```
 
-If `<use_case>` is omitted, the skill should `Bash("ls code/haifn/fn_endpoint/fn_src2input/")`
-and confirm the impl with the user before proceeding (the snapshot above goes stale;
-disk is the truth).
+If `<use_case>` is omitted, the skill should `Bash("ls code/haifn/fn_endpoint/fn_src2input/")` and confirm the impl with the user before proceeding (the snapshot above goes stale; disk is the truth).
 
 ---
 
@@ -90,7 +87,8 @@ Step-by-Step Protocol
 Step 0:  Read `ref/concepts.md` — Src2InputFn semantics, payload schema, encoding rules.
 Step 1:  For `design`, also read `../haipipe-end/fn/fn-design.md` + `../haipipe-end/ref/0-overview.md`.
          For `review`, also read `../haipipe-end-endpointset/fn/fn-review.md`.
-Step 2:  Execute the procedure scoped to Src2InputFn. Should stay in sync with its
+Step 2:  Execute the procedure scoped to Src2InputFn.
+Should stay in sync with its
          inverse pair `/haipipe-end-input2src` — the two must round-trip.
 Step 3:  Emit the structured tail.
 
@@ -111,15 +109,13 @@ Does NOT own:
 
 Pair invariant
 ---------------
-For any record R and platform P: `Input2SrcFn_P(Src2InputFn_P(R)) == R`
-(the SAME-platform pair must roundtrip). Changes here typically require
-a paired update in `-input2src` for the same platform.
+For any record R and platform P: `Input2SrcFn_P(Src2InputFn_P(R)) == R` (the SAME-platform pair must roundtrip).
+Changes here typically require a paired update in `-input2src` for the same platform.
 
 Roundtrip test (REQUIRED for design and review)
 -------------------------------------------------
 
-Every `design` or `review` MUST include a roundtrip test against **real
-example data** from the ModelInstanceStore — not synthetic/minimal payloads.
+Every `design` or `review` MUST include a roundtrip test against **real example data** from the ModelInstanceStore — not synthetic/minimal payloads.
 
 ```python
 # Load a real example from training
@@ -149,10 +145,8 @@ pred_roundtrip = model.infer(result_roundtrip['all'])
 # Compare scores — delta must be < 0.001
 ```
 
-**Why real data:** Synthetic payloads only test happy-path parsing. Real data
-catches: tables dropped by Src2InputFn (only 4 of 19 serialized), datetime
-serialization issues, multi-admission patients getting wrong admission at
-iloc[0], dtype mismatches (int vs float vs string).
+**Why real data:** Synthetic payloads only test happy-path parsing.
+Real data catches: tables dropped by Src2InputFn (only 4 of 19 serialized), datetime serialization issues, multi-admission patients getting wrong admission at iloc[0], dtype mismatches (int vs float vs string).
 
-The builder script (d1_build_* in the endpoint fn_develop task folder) must include this test. If the
-roundtrip fails, the Fn is not production-ready.
+The builder script (d1_build_* in the endpoint fn_develop task folder) must include this test.
+If the roundtrip fails, the Fn is not production-ready.

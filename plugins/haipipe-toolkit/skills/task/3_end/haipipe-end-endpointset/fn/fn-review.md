@@ -1,8 +1,7 @@
 fn-review: Endpoint Review Protocol
 =====================================
 
-Reviews Fn files in code/haifn/fn_endpoint/ for correctness,
-schema consistency, and cross-compatibility.
+Reviews Fn files in code/haifn/fn_endpoint/ for correctness, schema consistency, and cross-compatibility.
 
 ---
 

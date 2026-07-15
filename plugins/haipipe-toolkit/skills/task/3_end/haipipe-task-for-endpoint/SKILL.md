@@ -13,15 +13,13 @@ metadata:
 Skill: haipipe-task-for-endpoint
 =================================
 
-Scaffolds an **endpoint task-folder** (default C-series; letters are project-specific). Takes a trained
-ModelInstance_Set (Stage 5, with examples) and packages it into a
-self-contained Endpoint_Set (Stage 6) using `Endpoint_Pipeline`.
+Scaffolds an **endpoint task-folder** (default C-series; letters are project-specific).
+Takes a trained ModelInstance_Set (Stage 5, with examples) and packages it into a self-contained Endpoint_Set (Stage 6) using `Endpoint_Pipeline`.
 
 The task `.py` is an exact copy of `code/scripts/haistepnb/c_endpoint_nb.py`.
 CONFIG is overridden at runtime by papermill, NOT by editing the file.
 
-**Invocation modes:** interactive (human steers) OR headless
-(`haipipe-task-creator-agent` calls this skill during Stage 2: Build).
+**Invocation modes:** interactive (human steers) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build).
 
 
 Position in the ABC pipeline

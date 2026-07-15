@@ -3,9 +3,8 @@ PostFn: Response Formatting
 
 One of the 5 inference function types at Stage 6.
 
-PostFn takes the raw model output (per-action score DataFrame) and formats it
-into the client-facing JSON response. It handles action filtering, score
-scaling, ranking, and response schema construction.
+PostFn takes the raw model output (per-action score DataFrame) and formats it into the client-facing JSON response.
+It handles action filtering, score scaling, ranking, and response schema construction.
 
 ---
 
@@ -20,8 +19,8 @@ Endpoint_Set.inference()
            -> response_json   <- the final return to the caller
 ```
 
-PostFn is the last step in the inference pipeline. Its output is returned
-directly by endpoint_set.inference().
+PostFn is the last step in the inference pipeline.
+Its output is returned directly by endpoint_set.inference().
 
 ---
 
@@ -69,8 +68,8 @@ raw_score = dataset_ifr['score__authority'].iloc[0]   # e.g., 0.854
 scaled_score = round(raw_score * 100, 2)              # e.g., 85.4
 ```
 
-The scaling is Fn-specific. Document the convention in the Fn's MetaDict
-comment or docstring.
+The scaling is Fn-specific.
+Document the convention in the Fn's MetaDict comment or docstring.
 
 ---
 
@@ -163,8 +162,7 @@ The filtering logic is domain-specific and lives entirely in PostFn.
 Multi-Model Response
 ====================
 
-When multiple models are registered (multiple entries in ModelArtifactName_to_Inference),
-PostFn can return one entry per model in the "models" list:
+When multiple models are registered (multiple entries in ModelArtifactName_to_Inference), PostFn can return one entry per model in the "models" list:
 
 ```python
 model_entries = []
@@ -206,9 +204,7 @@ Builder Pattern
 <builder-dir>/c1_build_postfn_{description}.py
 ```
 
-<builder-dir> = the project's endpoint fn_develop task folder
-(tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/; legacy
-workspaces: code-dev/1-PIPELINE/6-Endpoint-WorkSpace/).
+<builder-dir> = the project's endpoint fn_develop task folder (tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/; legacy workspaces: code-dev/1-PIPELINE/6-Endpoint-WorkSpace/).
 
 **Step 2: Configure at top:**
 

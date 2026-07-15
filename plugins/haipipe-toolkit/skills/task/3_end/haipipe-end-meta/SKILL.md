@@ -13,10 +13,9 @@ metadata:
 Skill: haipipe-end-meta
 ========================
 
-Per-Fn-type specialist for **MetaFn** — the inference function that
-returns model metadata (model name, version, description, signature)
-without running prediction. One of the 5 inference Fn-types inside an
-Endpoint_Set. See `ref/concepts.md` for MetaFn semantics.
+Per-Fn-type specialist for **MetaFn** — the inference function that returns model metadata (model name, version, description, signature) without running prediction.
+One of the 5 inference Fn-types inside an Endpoint_Set.
+See `ref/concepts.md` for MetaFn semantics.
 
   Verb axis:    design | review | list | concepts
   Use case:     each MetaFn impl is scoped to ONE product use case (CGMDecoder, SMS,
@@ -56,8 +55,7 @@ WeightLossMultiLabel_OldFormat_v260318      weight-loss (legacy format)
 🆕 = added in REACH-SPACE (2026-06)
 ```
 
-If `<use_case>` is omitted, the skill should `Bash("ls code/haifn/fn_endpoint/fn_meta/")`
-and ask the user to pick.
+If `<use_case>` is omitted, the skill should `Bash("ls code/haifn/fn_endpoint/fn_meta/")` and ask the user to pick.
 
 ---
 
@@ -108,8 +106,7 @@ Does NOT own:
   - Whole-artifact verbs (package / test / dashboard) — `/haipipe-end-endpointset`
   - Deployment to any target — `/haipipe-end-deploy-*`
 
-If a design fails because of an Endpoint_Set issue, escalate to
-`/haipipe-end-endpointset review` rather than patching here.
+If a design fails because of an Endpoint_Set issue, escalate to `/haipipe-end-endpointset review` rather than patching here.
 
 Builder examples (ref/examples/)
 ---------------------------------

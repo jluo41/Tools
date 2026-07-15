@@ -3,12 +3,11 @@ Input2SrcFn: Payload to ProcessedDF
 
 One of the 5 inference function types at Stage 6.
 
-Input2SrcFn is the INVERSE of Src2InputFn and the ENTRY POINT of the inference
-pipeline. It converts the incoming JSON payload into ProcName_to_ProcDf (the
-internal source table format that PreFnPipeline expects).
+Input2SrcFn is the INVERSE of Src2InputFn and the ENTRY POINT of the inference pipeline.
+It converts the incoming JSON payload into ProcName_to_ProcDf (the internal source table format that PreFnPipeline expects).
 
-Input2SrcFn is called at INFERENCE TIME (Step 2 of 7). It is the most critical
-Fn type because it defines what fields the endpoint accepts from clients.
+Input2SrcFn is called at INFERENCE TIME (Step 2 of 7).
+It is the most critical Fn type because it defines what fields the endpoint accepts from clients.
 
 ---
 
@@ -76,8 +75,7 @@ Function Contract
 Module-Level Exports (CRITICAL)
 =================================
 
-In addition to the Input2SrcFn function, the generated .py file MUST export
-three module-level variables that Endpoint_Pipeline reads to validate schema:
+In addition to the Input2SrcFn function, the generated .py file MUST export three module-level variables that Endpoint_Pipeline reads to validate schema:
 
 ```python
 # 1. List of table names (order matters -- must match RecordSet expectations)
@@ -169,8 +167,8 @@ MetaDict = {
 Schema Consistency Requirements
 =================================
 
-The columns in ProcName_to_columns MUST match what the trained model's
-PreFnPipeline expects. These come from the SourceSet schema used during training.
+The columns in ProcName_to_columns MUST match what the trained model's PreFnPipeline expects.
+These come from the SourceSet schema used during training.
 
 **Verify schema matches training:**
 
@@ -215,7 +213,8 @@ def Input2SrcFn(payload_input_json, SPACE):
     ...
 ```
 
-This is valid. Input2SrcFn may need external data to enrich the payload.
+This is valid.
+Input2SrcFn may need external data to enrich the payload.
 External data is available at SPACE['LOCAL_EXTERNAL_STORE'] inside the endpoint.
 
 ---
@@ -244,9 +243,7 @@ Builder Pattern
 <builder-dir>/e1_build_input2srcfn_{description}.py
 ```
 
-<builder-dir> = the project's endpoint fn_develop task folder
-(tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/; legacy
-workspaces: code-dev/1-PIPELINE/6-Endpoint-WorkSpace/).
+<builder-dir> = the project's endpoint fn_develop task folder (tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/; legacy workspaces: code-dev/1-PIPELINE/6-Endpoint-WorkSpace/).
 
 **Step 2: Configure at top:**
 

@@ -4,8 +4,8 @@ TrigFn: Trigger Detection
 One of the 5 inference function types at Stage 6.
 
 TrigFn determines whether a given payload should trigger model inference.
-It is the first step in Endpoint_Set.inference(). If TrigFn returns None,
-inference is skipped and a default response is returned immediately.
+It is the first step in Endpoint_Set.inference().
+If TrigFn returns None, inference is skipped and a default response is returned immediately.
 
 ---
 
@@ -92,8 +92,7 @@ MetaDict = {
 Skip Logic
 ==========
 
-When TrigFn returns None, Endpoint_Set.inference() returns a standard
-"no-trigger" response immediately:
+When TrigFn returns None, Endpoint_Set.inference() returns a standard "no-trigger" response immediately:
 
 ```python
 # Inside Endpoint_Set.inference():
@@ -115,8 +114,7 @@ Use None returns for:
 When TrigFn Can Be Omitted
 ============================
 
-If EVERY request should trigger inference (no filtering), TrigFn can be a
-pass-through that always returns a non-None DataFrame:
+If EVERY request should trigger inference (no filtering), TrigFn can be a pass-through that always returns a non-None DataFrame:
 
 ```python
 def TrigFn(payload_input_json):
@@ -152,9 +150,7 @@ Builder Pattern
 <builder-dir>/b1_build_trigfn_{description}.py
 ```
 
-<builder-dir> = the project's endpoint fn_develop task folder
-(tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/; legacy
-workspaces: code-dev/1-PIPELINE/6-Endpoint-WorkSpace/).
+<builder-dir> = the project's endpoint fn_develop task folder (tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/; legacy workspaces: code-dev/1-PIPELINE/6-Endpoint-WorkSpace/).
 
 **Step 2: Configure at top:**
 

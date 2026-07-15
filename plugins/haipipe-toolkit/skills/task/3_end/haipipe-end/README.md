@@ -19,8 +19,7 @@ Stage 6 in the haipipe pipeline:
       ↓  /haipipe-end deploy
   Live serving endpoint (local / databricks / sagemaker / mlflow)
 
-The skill also covers designing and reviewing the 5 inference functions (Fn types)
-that define how each endpoint handles requests.
+The skill also covers designing and reviewing the 5 inference functions (Fn types) that define how each endpoint handles requests.
 
 ---
 
@@ -75,9 +74,7 @@ The 5 Inference Function Types
   Src2InputFn   Src2InputFn(ProcName_to_ProcDf, SPACE)        ProcDf → payload (packaging only)
   Input2SrcFn   Input2SrcFn(payload_json, SPACE)              Payload → ProcDf (inference entry)
 
-All 5 are generated from builders in the project's endpoint fn_develop task
-folder (`tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/`; legacy
-workspaces: `code-dev/1-PIPELINE/6-Endpoint-WorkSpace/`).
+All 5 are generated from builders in the project's endpoint fn_develop task folder (`tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/`; legacy workspaces: `code-dev/1-PIPELINE/6-Endpoint-WorkSpace/`).
 NEVER edit code/haifn/fn_endpoint/ directly.
 
 ---

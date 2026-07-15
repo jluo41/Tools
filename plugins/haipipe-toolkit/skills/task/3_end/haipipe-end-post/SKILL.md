@@ -13,10 +13,9 @@ metadata:
 Skill: haipipe-end-post
 ========================
 
-Per-Fn-type specialist for **PostFn** — the inference function that
-formats the model's raw prediction into the wire response shape
-returned to the caller. One of the 5 inference Fn-types inside an
-Endpoint_Set. See `ref/concepts.md` for PostFn semantics.
+Per-Fn-type specialist for **PostFn** — the inference function that formats the model's raw prediction into the wire response shape returned to the caller.
+One of the 5 inference Fn-types inside an Endpoint_Set.
+See `ref/concepts.md` for PostFn semantics.
 
   Verb axis:    design | review | list | concepts
   Use case:     each PostFn impl is scoped to ONE response shape (CGM forecast, optimal-
@@ -56,8 +55,7 @@ WeightLossMultiLabel_v3_PostFn_v260316           weight-loss v3
 XgboostMultiModels_PostFn_v0610                  xgboost multi-model ensemble
 ```
 
-If `<use_case>` is omitted, the skill should `Bash("ls code/haifn/fn_endpoint/fn_post/")`
-and ask the user to pick.
+If `<use_case>` is omitted, the skill should `Bash("ls code/haifn/fn_endpoint/fn_post/")` and ask the user to pick.
 
 ---
 
