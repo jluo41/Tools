@@ -13,11 +13,14 @@ metadata:
 Skill: haipipe-task-for-stata  (unified Stata engine)
 =====================================================
 
-This is the UNIFIED Stata skill -- handles all 4 stages (cms/case/data/reg) internally. Called by `/haipipe-task` when engine=Stata. Each stage scaffolds a different pipeline phase; all share one engine contract (`ref/stata-dialect.md`).
+This is the UNIFIED Stata skill -- handles all 4 stages (cms/case/data/reg) internally.
+Called by `/haipipe-task` when engine=Stata.
+Each stage scaffolds a different pipeline phase; all share one engine contract (`ref/stata-dialect.md`).
 
 Two modes: **BUILD** (scaffold task folders) and **SERVER CHECK** (validate before/after CMS server migration).
 
-**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the worker `.do` files). Always end with the structured return block (status / task_folder / run_name / files).
+**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the worker `.do` files).
+Always end with the structured return block (status / task_folder / run_name / files).
 
 
 Stage dispatch table
@@ -32,7 +35,8 @@ data    stata-data     C              *-Data-Store  (heavy)
 reg     stata-reg      D              results/      (LIGHT)
 ```
 
-The `{LNN}` letter encodes the stage so a task-folder sorts in pipeline order (`A`cms -> `B`case -> `C`data -> `D`reg). Full definition: the "Task-folder `{LNN}` stage-letter alphabet" section in `ref/stata-dialect.md`.
+The `{LNN}` letter encodes the stage so a task-folder sorts in pipeline order (`A`cms -> `B`case -> `C`data -> `D`reg).
+Full definition: the "Task-folder `{LNN}` stage-letter alphabet" section in `ref/stata-dialect.md`.
 
 
 Stage disambiguation
@@ -260,7 +264,8 @@ report (existing)  fn/report-stata.md         /haipipe-task report
 
 For an EXISTING task folder, the full lifecycle is:
   audit → plan → build → execute → report
-Each stage reads its fn/ file. For explicit commands (`plan`, `audit`, etc.), run ONLY that step.
+Each stage reads its fn/ file.
+For explicit commands (`plan`, `audit`, etc.), run ONLY that step.
 
 For a NEW task folder, only `fn/scaffold.md` runs.
 
@@ -274,7 +279,8 @@ Step 1: Detect AUTO_MODE (same triggers as `/haipipe-task`: `--auto`, env, or pa
 
 Step 2: Resolve stage via the cascade above.
 
-Step 3: Verify ancestors exist (project -> group), mirroring `/haipipe-task` Step 3b. If a `--project-id` / `--group` is given and missing, scaffold via `/haipipe-task` (project / task-group) first; else ASK / block.
+Step 3: Verify ancestors exist (project -> group), mirroring `/haipipe-task` Step 3b.
+If a `--project-id` / `--group` is given and missing, scaffold via `/haipipe-task` (project / task-group) first; else ASK / block.
 
 Step 4: Branch by scope:
   - NEW task folder → read `fn/scaffold.md`, execute
@@ -306,9 +312,12 @@ Three portability rules (DO NOT re-derive per task -- the templates already bake
   2. Run from the task folder (`$PSScriptRoot`); code paths stay relative; folder name is free.
   3. Anchor the DATA root absolute via `ws_root` (config builds paths from `${ws_root}`, never literal `_WorkSpace`).
 
-All `.ps1`/`.do` follow the **"Script style + server constraints"** contract in `ref/stata-dialect.md` -- CMS server is Windows PowerShell 5.1 only (no `pwsh`), ASCII-only files, 1-2 line headers, no ceremony, thin `runs/` + `sbatch/`. `haipipe-task-reviewer-agent` enforces it before any hand-copy to the server (the researcher hand-reads every file).
+All `.ps1`/`.do` follow the **"Script style + server constraints"** contract in `ref/stata-dialect.md` -- CMS server is Windows PowerShell 5.1 only (no `pwsh`), ASCII-only files, 1-2 line headers, no ceremony, thin `runs/` + `sbatch/`.
+`haipipe-task-reviewer-agent` enforces it before any hand-copy to the server (the researcher hand-reads every file).
 
-Every Stata task ALSO ships a read-only **describe / QC run** (`describe` dispatch step -> `scripts/d-<Stage>-Describe.do`, + `runs/run_describe_<...>.ps1`) that writes a human-readable correctness report to `results/`. Built-ins only -- NO SSC (`egen tag` for distinct counts, never `distinct`). See the "Describe / QC run" section in `ref/stata-dialect.md`.
+Every Stata task ALSO ships a read-only **describe / QC run** (`describe` dispatch step -> `scripts/d-<Stage>-Describe.do`, + `runs/run_describe_<...>.ps1`) that writes a human-readable correctness report to `results/`.
+Built-ins only -- NO SSC (`egen tag` for distinct counts, never `distinct`).
+See the "Describe / QC run" section in `ref/stata-dialect.md`.
 
 
 Per-stage ref files
@@ -332,7 +341,8 @@ ref/workflow-plan-sample-reg.yaml     IPO phases for reg stage
 Workflow lifecycle
 ------------------
 
-When `/haipipe-task` targets an EXISTING task-folder of this type, it runs the Stata lifecycle via the fn/ dispatch table above. Each fn/ procedure reads its ref/ inputs:
+When `/haipipe-task` targets an EXISTING task-folder of this type, it runs the Stata lifecycle via the fn/ dispatch table above.
+Each fn/ procedure reads its ref/ inputs:
 
 ```
 fn/audit-stata.md    reads: (task folder .do/.ps1 files)

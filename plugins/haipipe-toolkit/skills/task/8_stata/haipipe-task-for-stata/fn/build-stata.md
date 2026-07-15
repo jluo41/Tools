@@ -1,7 +1,8 @@
 fn/build-stata — Author Stata pipeline code
 =============================================
 
-Extends `fn/scaffold.md` (which creates the skeleton) into full authoring: write dispatcher branches, worker scripts, configs, and orchestrator logic. This is what the creator agent does during Stage 2 of the lifecycle.
+Extends `fn/scaffold.md` (which creates the skeleton) into full authoring: write dispatcher branches, worker scripts, configs, and orchestrator logic.
+This is what the creator agent does during Stage 2 of the lifecycle.
 
 
 When to call
@@ -43,7 +44,8 @@ Procedure
 ### Step 0 — Read the plan
 
 Read `workflow/plan.yaml` and all `workflow/plan-script-*.yaml`.
-These define WHAT to build. The plan's phases and steps map to:
+These define WHAT to build.
+The plan's phases and steps map to:
 - Dispatcher `.do` branches (one `else if` per step)
 - Worker `.do` scripts (one file per step in `scripts/`)
 - Orchestrator `.ps1` blocks (topic grouping + parallelism)
@@ -85,10 +87,7 @@ For each step, create `scripts/<subdir>/<worker>.do`:
 
 **Stage-specific patterns:**
 
-cms workers: extract + clean one CMS file type per year
-case workers: merge cases with CMS claims within BFAF time windows
-data workers: filter + join + derive analysis variables (cross-year)
-reg workers: estimate one model specification (OLS/IV/DID)
+cms workers: extract + clean one CMS file type per year case workers: merge cases with CMS claims within BFAF time windows data workers: filter + join + derive analysis variables (cross-year) reg workers: estimate one model specification (OLS/IV/DID)
 
 ### Step 3 — Author orchestrator (cms/case stages only — data is SELF-ORCHESTRATING: runs/*.ps1 IS the orchestrator, no year axis; see SKILL.md data section)
 
@@ -183,7 +182,9 @@ Stages cms/case/data ship a mandatory describe step:
 - NO SSC (`distinct`, `ftools`, etc.)
 - Writes human-readable report to results/
 
-Reg stage: describe is OPTIONAL. Stata logs + .tex coefficient tables are self-documenting. Skip unless the plan explicitly requests a describe step.
+Reg stage: describe is OPTIONAL.
+Stata logs + .tex coefficient tables are self-documenting.
+Skip unless the plan explicitly requests a describe step.
 
 ### Step 7 — Validate
 

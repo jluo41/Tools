@@ -1,9 +1,12 @@
 Stata Execution Dialect — shared engine contract
 ==================================================
 
-This is the **layer-2 execution contract** for Stata task-folders, owned by `haipipe-task-for-stata` (this skill's `ref/`). The parent `/haipipe-task` is the high-level router (default dialect Python + papermill); this document defines the parallel Stata + PowerShell + `.log` dialect that all 4 Stata stages (cms/case/data/reg) share.
+This is the **layer-2 execution contract** for Stata task-folders, owned by `haipipe-task-for-stata` (this skill's `ref/`).
+The parent `/haipipe-task` is the high-level router (default dialect Python + papermill); this document defines the parallel Stata + PowerShell + `.log` dialect that all 4 Stata stages (cms/case/data/reg) share.
 
-The **structure invariants** (3-level hierarchy, RUNNAME spine, run↔result pairing, light/heavy split, diagram-as-doc) are UNCHANGED. Only the execution engine differs. Read `../../../haipipe-task/ref/hierarchy.md` first for the invariants; this file only describes what swaps out.
+The **structure invariants** (3-level hierarchy, RUNNAME spine, run↔result pairing, light/heavy split, diagram-as-doc) are UNCHANGED.
+Only the execution engine differs.
+Read `../../../haipipe-task/ref/hierarchy.md` first for the invariants; this file only describes what swaps out.
 
 
 Three orthogonal axes
@@ -15,7 +18,8 @@ engine      Python+papermill   |   Stata+PowerShell  (this file picks the 2nd)
 task-type   cms · case · data · reg                  (per-specialist semantics)
 ```
 
-"Stata" is an ENGINE, not a task-type. The four Stata task-types share this one engine but differ in RUNNAME grammar, output destination, and headline meaning — which is why each gets its own specialist.
+"Stata" is an ENGINE, not a task-type.
+The four Stata task-types share this one engine but differ in RUNNAME grammar, output destination, and headline meaning — which is why each gets its own specialist.
 
 
 Stage topology families
@@ -41,7 +45,8 @@ ORCHESTRATED (year axis):                SELF-ORCHESTRATING (no year axis):
             ref/run-stage-year-template.ps1           (reg: inline in runner)
 ```
 
-Rules A5, B2, B3 are SCOPED by topology family -- see each rule for per-family details. Rules A1-A4, A6-A8, B1, B4-B6 apply equally.
+Rules A5, B2, B3 are SCOPED by topology family -- see each rule for per-family details.
+Rules A1-A4, A6-A8, B1, B4-B6 apply equally.
 
 
 The RUNNAME spine — Stata projection
@@ -69,7 +74,9 @@ Two deliberate departures from the Python mold:
 runtime.yaml — OPTIONAL task-log integration
 ---------------------------------------------
 
-Under the Stata dialect the execution record is the per-step Stata log + `summary.txt`; runners stay THIN and write no bookkeeping (see the script style contract below). `results/<run>/runtime.yaml` is OPTIONAL — add one after a run (by hand or tooling, never in the runner hot path) only when a unified `task-log.md` (regeneration tooling retired; keep the log by hand) is wanted. Flat schema:
+Under the Stata dialect the execution record is the per-step Stata log + `summary.txt`; runners stay THIN and write no bookkeeping (see the script style contract below).
+`results/<run>/runtime.yaml` is OPTIONAL — add one after a run (by hand or tooling, never in the runner hot path) only when a unified `task-log.md` (regeneration tooling retired; keep the log by hand) is wanted.
+Flat schema:
 
 ```yaml
 status:     ok                              # running | ok | failed
@@ -106,7 +113,9 @@ Anatomy of a Stata task-folder
 └── diagram/                   ← doc surface (NEVER README.md); see diagram-ascii
 ```
 
-The dispatcher `.do`, the worker `scripts/`, and `run_{stage}_year.ps1` live at the task ROOT — they are the task's entry + execution machinery (the Stata analog of Python's root `{task}.py` + papermill). Only the per-step WORKERS go in `scripts/`. Three ref templates seed them: `run-ps1-template.ps1` (the thin per-run entry), `run-stage-year-template.ps1` (the orchestrator), `dispatcher-do-template.do` (the dispatcher).
+The dispatcher `.do`, the worker `scripts/`, and `run_{stage}_year.ps1` live at the task ROOT — they are the task's entry + execution machinery (the Stata analog of Python's root `{task}.py` + papermill).
+Only the per-step WORKERS go in `scripts/`.
+Three ref templates seed them: `run-ps1-template.ps1` (the thin per-run entry), `run-stage-year-template.ps1` (the orchestrator), `dispatcher-do-template.do` (the dispatcher).
 
 Roles, precisely:
 
@@ -119,7 +128,10 @@ Roles, precisely:
 Script style + server constraints — the review contract
 ---------------------------------------------------------
 
-The CMS secure server is the binding constraint: **Windows PowerShell 5.1 only** (no `pwsh`; installs blocked), clean Stata (no SSC), isolated (no network), and every file is hand-read + hand-copied there by the researcher. Audience is human AND machine. Style reference: `cms_results_v0316/code` (the `_cms-server` snapshot under `_WorkSpace/0-CMS-Store/CMS-Analysis-Results/`). The `haipipe-task-reviewer-agent` enforces these points before any hand-copy.
+The CMS secure server is the binding constraint: **Windows PowerShell 5.1 only** (no `pwsh`; installs blocked), clean Stata (no SSC), isolated (no network), and every file is hand-read + hand-copied there by the researcher.
+Audience is human AND machine.
+Style reference: `cms_results_v0316/code` (the `_cms-server` snapshot under `_WorkSpace/0-CMS-Store/CMS-Analysis-Results/`).
+The `haipipe-task-reviewer-agent` enforces these points before any hand-copy.
 
 Server-runnability (hard blockers):
 
@@ -235,24 +247,30 @@ else if "`step'" == "claims_erase" { do "scripts/feat/_old/shared-claims-erase.d
 else if "`step'" == "bene_year"    local out_file "${out_bene_beneobsdt_year}"
 ```
 
-Section labels (`// PDE`, `// CLAIMS`, …) above a group of branches are fine and encouraged — a full-line `//` comment between a `}` and the next `else if` is tolerated by Stata (verified) and does not break brace matching. The `dispatcher-do-template.do` already encodes this style; keep generated and hand-edited dispatchers consistent with it.
+Section labels (`// PDE`, `// CLAIMS`, …) above a group of branches are fine and encouraged — a full-line `//` comment between a `}` and the next `else if` is tolerated by Stata (verified) and does not break brace matching.
+The `dispatcher-do-template.do` already encodes this style; keep generated and hand-edited dispatchers consistent with it.
 
 
 Idempotency
 -----------
 
-Every worker `.do` (or the dispatcher's skip block) does `capture confirm file <output>.dta` and SKIPs if present. Re-running a finished pipeline is cheap; to recompute, delete the specific `.dta`. Steps with no persistent output (`shared_*`, `describe`, `summary`, `*_erase`) always run.
+Every worker `.do` (or the dispatcher's skip block) does `capture confirm file <output>.dta` and SKIPs if present.
+Re-running a finished pipeline is cheap; to recompute, delete the specific `.dta`.
+Steps with no persistent output (`shared_*`, `describe`, `summary`, `*_erase`) always run.
 
 
 Describe / QC run (every stage ships one)
 ------------------------------------------
 
-Beyond its build steps, every Stata task SHIPS a read-only **describe** run that emits a human-readable QC report so a reviewer can confirm the output is correct without opening Stata. Two pieces:
+Beyond its build steps, every Stata task SHIPS a read-only **describe** run that emits a human-readable QC report so a reviewer can confirm the output is correct without opening Stata.
+Two pieces:
 
 - **`describe` dispatch step** → `scripts/d-<Stage>-Describe.do`. Walks the stage's asset and `file write`s a report into `${results_dir}` (e.g. `case-describe.txt`). No persistent data output, so it is NOT in the skip list — it always runs.
 - **`runs/run_describe_<...>.ps1`** — a describe-ONLY run: same thin shape as any runs/ entry, runs just the `describe` step on the already-built asset (no rebuild). For per-year stages the year arg is a dummy; the worker loops the `year-*` dirs it finds under the asset path.
 
-⚠️ **No SSC dependencies in describe** (it must run on a clean CMS server). Use built-ins: `egen tag()` + `count` for distinct counts — NEVER `distinct` (SSC; aborts `r(199)`). Use `summarize` / `tabulate` / `ds` + `egen rowtotal` for the rest, all `capture`-guarded so a missing optional variable is skipped, not fatal.
+⚠️ **No SSC dependencies in describe** (it must run on a clean CMS server).
+Use built-ins: `egen tag()` + `count` for distinct counts — NEVER `distinct` (SSC; aborts `r(199)`).
+Use `summarize` / `tabulate` / `ds` + `egen rowtotal` for the rest, all `capture`-guarded so a missing optional variable is skipped, not fatal.
 
 What each stage's describe reports (illustrative):
 ```
@@ -270,7 +288,8 @@ reg   coefficient sanity: trait coef + SE + N per spec from the logs
 Runtime portability — three CWD/location-independence rules
 ------------------------------------------------------------
 
-A Stata task must run identically on a laptop and on the secure server, launched from anywhere, regardless of the folder's own name. Three rules (all baked into the ref templates — do NOT re-derive them per task):
+A Stata task must run identically on a laptop and on the secure server, launched from anywhere, regardless of the folder's own name.
+Three rules (all baked into the ref templates — do NOT re-derive them per task):
 
 1. **Stata exe = one resolvable location.** Either a hardcoded line (`$stata = "C:\...\StataMP-64.exe"` -- cms-stage server pattern) or a `Resolve-StataExe` function (~10 lines, checks `$env:HAIPIPE_STATA` then scans Program Files -- data/reg/case pattern for multi-machine dev). See rule A5 for when each is preferred.
 
@@ -282,7 +301,9 @@ Inputs that are genuinely fixed (e.g. real CMS at `G:\CMS\DATA`) stay absolute i
 
 ### reg-stage exception — dispatcher-less, env-var ws_root
 
-The **reg** stage has NO central dispatcher and NO `run_<stage>_year.ps1` orchestrator (there is no year axis). Each `runs/<run>.ps1` calls its estimation `scripts/run-*.do` **directly**, and each `.do` opens with `clear all`. So rules 2–3 take a reg-specific form:
+The **reg** stage has NO central dispatcher and NO `run_<stage>_year.ps1` orchestrator (there is no year axis).
+Each `runs/<run>.ps1` calls its estimation `scripts/run-*.do` **directly**, and each `.do` opens with `clear all`.
+So rules 2–3 take a reg-specific form:
 
 - **ws_root via ENV var, not a `do` arg.** `clear all` would drop a `global` (and is hostile to threading args), so the `.ps1` exports `$env:HAIPIPE_WS_ROOT = "<repo>/_WorkSpace"` and the `.do` reads it AFTER `clear all`:
   ```stata
@@ -302,13 +323,17 @@ Light vs heavy (unchanged from the invariants)
 - 📊 LIGHT (logs, summary.txt, runtime.yaml, coef tables `.tex`/`.csv`,
   `diagram.txt`) → in-repo under `results/<run>/`.
 
-The **reg** stage is the exception that proves the rule: its *primary* output (coefficient tables) is LIGHT and belongs in `results/`. The cms/case/data stages produce HEAVY `.dta` assets and keep only pointers + logs in `results/`.
+The **reg** stage is the exception that proves the rule: its *primary* output (coefficient tables) is LIGHT and belongs in `results/`.
+The cms/case/data stages produce HEAVY `.dta` assets and keep only pointers + logs in `results/`.
 
 
 Pre-hand-copy review (agent, not in-script plumbing)
 -----------------------------------------------------
 
-There is NO in-script review gate — runners stay thin (rule B3). Instead, run `haipipe-task-reviewer-agent` on the task-folder BEFORE hand-copying files to the server. It checks the contract above (structure S, runnability A, readability B, pipeline correctness C) plus a machine pre-flight (PS 5.1 parse-check, non-ASCII byte scan, grep gate for pwsh/ssc/distinct), and writes `CODE_REVIEW.md` + the hand-port file list. For Stata this matters MORE than for Python — silent merge / keep-var / sample-definition bugs run clean and produce numbers.
+There is NO in-script review gate — runners stay thin (rule B3).
+Instead, run `haipipe-task-reviewer-agent` on the task-folder BEFORE hand-copying files to the server.
+It checks the contract above (structure S, runnability A, readability B, pipeline correctness C) plus a machine pre-flight (PS 5.1 parse-check, non-ASCII byte scan, grep gate for pwsh/ssc/distinct), and writes `CODE_REVIEW.md` + the hand-port file list.
+For Stata this matters MORE than for Python — silent merge / keep-var / sample-definition bugs run clean and produce numbers.
 
 Author convention: the dispatcher `.do` carries a 1-2 line header comment (args + step list) — that is the whole "intent block" under this dialect.
 
@@ -316,7 +341,8 @@ Author convention: the dispatcher `.do` carries a 1-2 line header comment (args 
 Project-local letter convention (cms/case/data/reg)
 ----------------------------------------------------
 
-The skill's default group letters (A=training, B=eval, C=display, D=data, E=individual, F=agent, X=algo) describe the ML/CGM world. The CMS/Stata project uses a DIFFERENT, domain-native pipeline ontology that mirrors `CMS-Stata-Project`'s cms → case → data → reg pipelines:
+The skill's default group letters (A=training, B=eval, C=display, D=data, E=individual, F=agent, X=algo) describe the ML/CGM world.
+The CMS/Stata project uses a DIFFERENT, domain-native pipeline ontology that mirrors `CMS-Stata-Project`'s cms → case → data → reg pipelines:
 
 ```
 stage   meaning                              produces                  output store
@@ -327,7 +353,9 @@ data    assemble cross-year analysis table   ANALYSIS-CMS-Filter.dta   *-Data-St
 reg     estimate (OLS / IV / LPM / 2-part)   coef tables (.tex/.csv)   results/      (LIGHT)
 ```
 
-This is an ACCEPTED project-local override. Document it in the project's `diagram/` so an auditor reading `tasks/{letter}{NN}_*/` is not confused by the letter mismatch with the default convention. `regen_task_log.py`'s `LETTER_TO_TYPE` map (keyed on the GROUP letter, `parent[:1]`) is approximate for these folders; the type hint it prints is cosmetic and does not affect correctness.
+This is an ACCEPTED project-local override.
+Document it in the project's `diagram/` so an auditor reading `tasks/{letter}{NN}_*/` is not confused by the letter mismatch with the default convention.
+`regen_task_log.py`'s `LETTER_TO_TYPE` map (keyed on the GROUP letter, `parent[:1]`) is approximate for these folders; the type hint it prints is cosmetic and does not affect correctness.
 
 ### Task-folder `{LNN}` stage-letter alphabet
 
@@ -342,7 +370,9 @@ C   data    ANALYSIS-*.dta            *-Data-Store  (heavy)
 D   reg     coef tables (.tex/.csv)   results/      (LIGHT)
 ```
 
-So `B01/C01/D01` = one study's case→data→reg folders; the disease-agnostic `cms` stage (run once, reused) sits alone with `NN` as a plain sequence (`A01`, `A02`). These task-folder letters reuse `A/B/C/D` (which mean training/eval/display/data at the GROUP level) — no functional clash, since they live at a different hierarchy level and the logging map keys on the GROUP letter. Note it in the project `diagram/` so it reads clearly.
+So `B01/C01/D01` = one study's case→data→reg folders; the disease-agnostic `cms` stage (run once, reused) sits alone with `NN` as a plain sequence (`A01`, `A02`).
+These task-folder letters reuse `A/B/C/D` (which mean training/eval/display/data at the GROUP level) — no functional clash, since they live at a different hierarchy level and the logging map keys on the GROUP letter.
+Note it in the project `diagram/` so it reads clearly.
 
 
 RUNNAME grammar by stage (stages unified in this skill since 2.0.0; SKILL.md carries the authoritative grammars)
