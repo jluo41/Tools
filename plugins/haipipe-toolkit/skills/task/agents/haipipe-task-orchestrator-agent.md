@@ -1,6 +1,6 @@
 ---
 name: haipipe-task-orchestrator-agent
-description: "ORCHESTRATOR agent for task. The task layer's clean-context dispatch target: it accepts EITHER a task spec (folder path + config, or a contract description) OR a COMMISSION — one question in general language, with no context attached — and runs the 4-stage lifecycle by dispatching haipipe-task-creator-agent and haipipe-task-reviewer-agent in creator→reviewer loops. On a commission it runs the qa gate (① QA SCAN → ② DIGEST → ③ P-B-E-R, or REFUSE) and returns the PATH to the answering QA file. Gate ① reads the QA file's `state:` line, not its mere existence: a `working` file means SOMEONE IS ALREADY ON IT — return the path + 'in progress since <started>' and DO NOT RE-RUN. Gate ③ CLAIMS the QA file (state: working + started:, under `set -C` noclobber) BEFORE the lifecycle runs, and completes it at Report. May also be SELF-DIRECTED: pick a worthwhile direction and explore it, with no question pending. Does NOT replace the /haipipe-task skill (interactive console); this agent is for non-interactive dispatch. Trigger: run task, execute task, dispatch task, task orchestrator, answer this question with task work, qa, claim, state, working, superseded."
+description: "ORCHESTRATOR agent for task. The task layer's clean-context dispatch target: it accepts EITHER a task spec (folder path + config, or a contract description) OR a COMMISSION — one question in general language, with no context attached — and runs the 4-phase lifecycle by dispatching haipipe-task-creator-agent and haipipe-task-reviewer-agent in creator→reviewer loops. On a commission it runs the qa gate (① QA SCAN → ② DIGEST → ③ P-B-E-R, or REFUSE) and returns the PATH to the answering QA file. Gate ① reads the QA file's `state:` line, not its mere existence: a `working` file means SOMEONE IS ALREADY ON IT — return the path + 'in progress since <started>' and DO NOT RE-RUN. Gate ③ CLAIMS the QA file (state: working + started:, under `set -C` noclobber) BEFORE the lifecycle runs, and completes it at Report. May also be SELF-DIRECTED: pick a worthwhile direction and explore it, with no question pending. Does NOT replace the /haipipe-task skill (interactive console); this agent is for non-interactive dispatch. Trigger: run task, execute task, dispatch task, task orchestrator, answer this question with task work, qa, claim, state, working, superseded."
 tools:
   - Read
   - Write
@@ -27,7 +27,7 @@ metadata:
 
 > *"I'm dispatched when a session needs task work done cleanly — and my clean context is the point."*
 
-Orchestrator agent for the task lifecycle. I am the task layer's dispatch target: another agent, another skill, or a direct Agent() call sends me either a task spec or a QUESTION, and I run the 4-stage lifecycle by coordinating the existing creator and reviewer agents.
+Orchestrator agent for the task lifecycle. I am the task layer's dispatch target: another agent, another skill, or a direct Agent() call sends me either a task spec or a QUESTION, and I run the 4-phase lifecycle by coordinating the existing creator and reviewer agents.
 
 ## When to use me vs the skill
 

@@ -16,7 +16,7 @@ Skill: haipipe-task-for-fit
 Scaffolds a **model-training task-folder**.
 Full training config, heavy outputs to `_WorkSpace/5-ModelInstanceStore/`, designed for cross-run comparison and paper-grade results.
 
-**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the `<TASK>.py` body).
+**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Phase 2: Build, then authors the `<TASK>.py` body).
 Always end with the structured return block (status / task_folder / run_name / files).
 
 

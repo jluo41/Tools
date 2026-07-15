@@ -34,7 +34,7 @@ unit of work, an `agent()` call.
 Lifecycle: Plan → Build → Execute → Report
 =============================================
 
-Every workflow goes through four acts:
+Every workflow goes through four phases:
 
 ```
 ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐
@@ -50,7 +50,7 @@ Every workflow goes through four acts:
                                               structured record
 ```
 
-| Act | Question | Input | Output |
+| Phase | Question | Input | Output |
 |-----|----------|-------|--------|
 | **Plan** | What will we do? | Purpose + constraints | `plan.yaml` (frozen IPO) |
 | **Build** | How to execute it? | Frozen plan | `.workflow.js` (executable script) |
@@ -64,7 +64,7 @@ plan.yaml ──▶ .workflow.js ──▶ results ──▶ report.yaml
 
 ### Plan (iterate until frozen)
 
-The Plan act designs the IPO. It may take several rounds:
+The Plan phase designs the IPO. It may take several rounds:
 
 ```
 round 1: draft phases and steps
@@ -85,7 +85,7 @@ You read and edit the `plan.yaml`. The `.workflow.js` is generated. You should r
 Run the `.workflow.js` via the Workflow engine:
 `Workflow({ scriptPath: "..." }, args)`.
 
-Each Step calls a subagent (or a sub-workflow skill). The execute act follows the frozen plan — if something unexpected arises, it records the deviation, it doesn't re-plan.
+Each Step calls a subagent (or a sub-workflow skill). The execute phase follows the frozen plan — if something unexpected arises, it records the deviation, it doesn't re-plan.
 
 For manual mode (CMS server, GPU jobs), the `plan.yaml` serves as the checklist. The human follows the phases/steps and records results.
 
@@ -125,7 +125,7 @@ TEMPLATE (in the skill):              SPECIFIC (a real instance):
   prompt: "Create {{type}} script"     prompt: "Create data pipeline for LBP cohort"
 ```
 
-The skill owns the template. Each specific workflow fills in the blanks with concrete file paths, concrete field values, concrete prompts. The Plan act is where template → specific happens.
+The skill owns the template. Each specific workflow fills in the blanks with concrete file paths, concrete field values, concrete prompts. The Plan phase is where template → specific happens.
 
 
 File tracking

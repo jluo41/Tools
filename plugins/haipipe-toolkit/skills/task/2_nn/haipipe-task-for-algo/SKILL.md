@@ -17,7 +17,7 @@ Scaffolds an **algo-dev smoke-test task-folder**.
 Purpose: verify a new algorithm class (forward / loss / metric) runs end-to-end.
 This is NOT a training run — minimal config, minutes-not-hours, just "did it crash + does the loss go down on one batch".
 
-**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the `<TASK>.py` body).
+**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Phase 2: Build, then authors the `<TASK>.py` body).
 Always end with the structured return block (status / task_folder / run_name / files).
 
 

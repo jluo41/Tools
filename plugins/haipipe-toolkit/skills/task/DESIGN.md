@@ -1,7 +1,7 @@
 task — Task-Type Specialist Series (DESIGN)
 ==============================================
 
-Status: v5.1.0 (2026-06-21). 4-stage code lifecycle (Plan/Build/Execute/Report); 13 type specialists aligned; three-axes mental model documented.
+Status: v5.1.0 (2026-06-21). 4-phase code lifecycle (Plan/Build/Execute/Report); 13 type specialists aligned; three-axes mental model documented.
 Owner:  jluo41
 Scope:  task-folder lifecycle (Plan/Build/Execute/Report) + per-type scaffolding,
         mirroring the /haipipe-data and /haipipe-nn pattern.
@@ -76,9 +76,9 @@ task/                                 <- task-scope skills (THIS SECTION)
 |   |-- README.md
 |
 |-- haipipe-task/                       🧭 task orchestrator (v5.3.0)
-|   |-- SKILL.md                        scope resolution + 4-stage code lifecycle dispatch
+|   |-- SKILL.md                        scope resolution + 4-phase code lifecycle dispatch
 |   |-- ref/
-|   |   |-- task-lifecycle.workflow.js  Workflow tool script for the 4-stage loop
+|   |   |-- task-lifecycle.workflow.js  Workflow tool script for the 4-phase loop
 |   |   |-- hierarchy.md               project -> task-group -> task-folder -> run
 |   |   |-- authoring-conventions.md   cell markers, Intent docstring, config-driven
 |   |   |-- workflow-template.yaml     task-level IPO template (Run/Gate1/Gate2)
@@ -321,7 +321,7 @@ The relationship is **hub-and-spoke** — haipipe-task is the hub, specialists a
 
 **haipipe-task (hub)** owns everything that is type-agnostic:
 
-- The 4-stage code lifecycle (Plan / Build / Execute / Report)
+- The 4-phase code lifecycle (Plan / Build / Execute / Report)
 - The creator-reviewer agent loop (`task-lifecycle.workflow.js`)
 - The IPO workflow schema (`ref/workflow-template.yaml`)
 - Scope resolution, routing, AUTO_MODE detection
@@ -340,7 +340,7 @@ The arrows go **both ways**. The hub reads spokes for type knowledge; spokes rea
                    +------------------------------------------+
                    |         haipipe-task (hub)                |
                    |                                          |
-                   |  4-stage lifecycle engine                |
+                   |  4-phase lifecycle engine                |
                    |  creator-reviewer agent loop             |
                    |  scope resolution + routing              |
                    |  shared ref/ (templates, conventions)    |
@@ -360,7 +360,7 @@ Three ways to enter
 
 ```
 Path 1 — Via hub (lifecycle):   /haipipe-task <existing-path>
-  hub detects type -> reads spoke's ref/ as reference -> runs 4-stage lifecycle
+  hub detects type -> reads spoke's ref/ as reference -> runs 4-phase lifecycle
 
 Path 2 — Via hub (scaffold):    /haipipe-task task-folder eval
   hub resolves type -> Skill("haipipe-task-for-eval") -> spoke runs fn/scaffold.md
@@ -441,7 +441,7 @@ outsider carries the outsider's vocabulary — that is exactly how a task result
 today ended up asserting a consumer's claim ids.
 
 
-The 4-Stage Lifecycle
+The 4-Phase Lifecycle
 ======================
 
 Every existing task folder goes through up to 4 stages. These stages care
@@ -450,21 +450,21 @@ What the numbers MEAN for some downstream argument is not decided here, and
 never has been.
 
 ```
-Stage 1: PLAN — the contract (what the script SHOULD do)
+Phase 1: PLAN — the contract (what the script SHOULD do)
   creates:   workflow/plan.yaml, workflow/plan-script-<name>.yaml
   reads:     specialist's ref/workflow-plan-sample.yaml for type-specific phases
   agents:    creator drafts -> reviewer checks IPO compliance -> loop if revise
 
-Stage 2: BUILD — the implementation (code that matches the plan)
+Phase 2: BUILD — the implementation (code that matches the plan)
   creates:   {NN}_{task}.py, configs/<run>.yaml, runs/<run>.sh, CODE_REVIEW.md
   reads:     specialist's SKILL.md for type constraints + MUST NOT rules
   agents:    creator writes code -> reviewer does Gate 1 code review -> loop if revise
 
-Stage 3: EXECUTE — just run (no creation, no modification)
+Phase 3: EXECUTE — just run (no creation, no modification)
   generates: results/<run>/metrics.json, runtime.yaml, notebooks/<run>.ipynb
   runs:      bash runs/<run>.sh (human or autoExecute)
 
-Stage 4: REPORT — summarize (what happened vs the plan)
+Phase 4: REPORT — summarize (what happened vs the plan)
   creates:   workflow/report.yaml, workflow/report-script-<name>.yaml, RUN_AUDIT.md
   reads:     workflow/plan*.yaml to mirror structure
   agents:    creator drafts -> reviewer checks accuracy -> loop if revise
@@ -598,7 +598,7 @@ Phase 3 — Per-type content (scaffold + config-seed)           DONE (2026-05-24
 Phase 4 — Cleanup                                             DONE (2026-06-08)
   - removed legacy fn/task-folder.md from orchestrator
   - moved fn/project.md + fn/task-group.md to project/haipipe-project/fn/
-Phase 5 — 4-stage lifecycle                                   DONE (2026-06-09)
+Phase 5 — 4-phase lifecycle                                   DONE (2026-06-09)
   - task-lifecycle.workflow.js with creator-reviewer loop
   - workflow-plan-sample.yaml in all 13 specialists
   - haipipe-task-batch removed (batch = multiple configs in one Build)
@@ -656,7 +656,7 @@ Decision Log
 ============
 
 2026-05-24  Approved: split into 7 type specialists; group letters A-F + X.
-2026-06-08  Approved: 4-stage lifecycle (Plan/Build/Execute/Report) with creator-reviewer agents.
+2026-06-08  Approved: 4-phase lifecycle (Plan/Build/Execute/Report) with creator-reviewer agents.
 2026-06-08  Approved: move project/task-group scope to project/haipipe-project.
 2026-06-09  Approved: remove haipipe-task-batch (batch = multiple configs in one Build, not a separate skill).
 2026-06-09  Approved: remove haipipe-task-logging (superseded by Report stage).

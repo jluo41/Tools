@@ -42,7 +42,7 @@ Model IDs drift
 Lifecycle design: validate before expanding (2026-06-11 review)
 ----------------------------------------------------------------
 
-The 4-stage lifecycle architecture is sound at the structural level (hub-and-spoke, creator-reviewer separation, IPO schema chain, strict file ownership). But the system has more machinery than battle-tested usage. These items should be revisited after running the lifecycle on 3-5 real tasks.
+The 4-phase lifecycle architecture is sound at the structural level (hub-and-spoke, creator-reviewer separation, IPO schema chain, strict file ownership). But the system has more machinery than battle-tested usage. These items should be revisited after running the lifecycle on 3-5 real tasks.
 
 - [ ] **Execute stage is mostly a fiction.** `autoExecute` defaults to false so Stage 3 always logs "skipped — run manually." The lifecycle is really 3 stages + a manual gap. Either be honest about this (rename to "3+1 lifecycle") or make Execute real for non-GPU tasks.
 - [ ] **No lifecycle state persistence.** Running `/haipipe-task plan <path>`, closing the session, then running `/haipipe-task build <path>` starts fresh — no record that Plan completed with verdict=pass. Add a `workflow/state.yaml` tracking per-stage completion + verdicts for cross-session continuity.
