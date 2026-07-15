@@ -33,14 +33,15 @@ Tentative Claim Shape
 
 
 Q-consumer
-------
+----------
 
-**PP01 - <title> - <status>**
+The seed-level questions this stage raises — one `##` per question: id, title, what it wants.
+The route and who answers are decided at APPROVE (organized into the probe file), not here.
 
-Type: <discovery>.
-Question: <what seed-level question this answers -- typically "is this new?" and "who cares?">.
-Status: <planned | done>.
-Source: <discovery path if done>.
+## Q1 · <question title — typically "is this new?" or "who cares?">
+<what this question wants to know, one sentence per line.>
 
-<Takeaways, one sentence per line.>
-Detail: `1-probes/PP01_<topic>.md` (the question's SECTION)
+## Q2 · <question title>
+<what it wants.>
+
+<APPROVE adds each `→ 1-probes/PPNN_<topic>.md` pointer + derived state.>
