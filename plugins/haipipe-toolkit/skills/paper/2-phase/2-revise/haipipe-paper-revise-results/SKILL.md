@@ -14,13 +14,17 @@ metadata:
 
 ## Overview
 
-Use this skill for late-stage Results revision when the science is mostly stable but the writing architecture is not. It is narrower than `haipipe-paper-draft` and `haipipe-paper-edit-optimizer`: the job here is to repair subsection titles, bridge paragraphs, paragraph openings, and local argumentative flow.
+Use this skill for late-stage Results revision when the science is mostly stable but the writing architecture is not.
+It is narrower than `haipipe-paper-draft` and `haipipe-paper-edit-optimizer`: the job here is to repair subsection titles, bridge paragraphs, paragraph openings, and local argumentative flow.
 
 Before you start, read the shared prose rules: `../../REF/prose-quality.md` (one idea per sentence, no em-dash, compress not split, no AI voice, <=6 sentences/paragraph, Pn.Sn markers) — all revise workers enforce them; the checks below are results-specific ADDITIONS, not replacements.
 
-Also read the venue's results conventions from the paper's `0-lifecycle/2-venue/2-venue.md`: the Structural Blueprint's Results block (results reported + detail, display units) and the Writing Principles (statistical reporting, effect sizes, tables vs figures). Fall back to the pinned `_venue/playbook-*` pack only when 2-venue.md is absent; no pack -> skip venue norms (the results-specific checks below still apply).
+Also read the venue's results conventions from the paper's `0-lifecycle/2-venue/2-venue.md`: the Structural Blueprint's Results block (results reported + detail, display units) and the Writing Principles (statistical reporting, effect sizes, tables vs figures).
+Fall back to the pinned `_venue/playbook-*` pack only when 2-venue.md is absent; no pack -> skip venue norms (the results-specific checks below still apply).
 
-Use `haipipe-paper-draft` for general prose drafting or rewriting (venue style comes from the paper's `0-lifecycle/2-venue/2-venue.md`, with the pinned `_venue/playbook-*` pack as fallback). Use `haipipe-paper-edit-optimizer` when the claim hierarchy, evidence chain, or figure logic is still unstable. Use this skill when the section is largely right but still reads like stitched figure captions rather than a controlled argument.
+Use `haipipe-paper-draft` for general prose drafting or rewriting (venue style comes from the paper's `0-lifecycle/2-venue/2-venue.md`, with the pinned `_venue/playbook-*` pack as fallback).
+Use `haipipe-paper-edit-optimizer` when the claim hierarchy, evidence chain, or figure logic is still unstable.
+Use this skill when the section is largely right but still reads like stitched figure captions rather than a controlled argument.
 
 ## Quick Checks
 
@@ -44,7 +48,8 @@ Each Results subsection should answer two reader questions in order:
 
 If the second question appears before the first, the subsection will feel abrupt.
 
-The first paragraph should bridge from the previous subsection and state why the next analysis is necessary. Later paragraphs should each do one job: sharpen a finding, separate related findings, show a consequence for evaluation or prioritization, or explain what a comparison actually distinguishes.
+The first paragraph should bridge from the previous subsection and state why the next analysis is necessary.
+Later paragraphs should each do one job: sharpen a finding, separate related findings, show a consequence for evaluation or prioritization, or explain what a comparison actually distinguishes.
 
 ## Paragraph Openings
 
@@ -61,7 +66,8 @@ Avoid repeated procedural scaffolds:
 - `We next asked ...`
 - `We then examined ...`
 
-At the start of a new paragraph, avoid vague pronouns unless the referent is unmistakable. Replace `this structure` or `that mismatch` with the explicit noun phrase.
+At the start of a new paragraph, avoid vague pronouns unless the referent is unmistakable.
+Replace `this structure` or `that mismatch` with the explicit noun phrase.
 
 ## Style Rules
 

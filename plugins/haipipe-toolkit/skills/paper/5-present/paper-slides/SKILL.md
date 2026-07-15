@@ -16,23 +16,34 @@ Generate conference presentation slides from: **$ARGUMENTS**
 
 ## Context
 
-This skill runs **after** Workflow 3 (`/paper-writing`). It takes a compiled paper and generates a presentation slide deck for conference oral talks, spotlight presentations, or poster lightning talks.
+This skill runs **after** Workflow 3 (`/paper-writing`).
+It takes a compiled paper and generates a presentation slide deck for conference oral talks, spotlight presentations, or poster lightning talks.
 
-Unlike posters (single page, visual-first), slides tell a **temporal story**: each slide builds on the previous one, with progressive revelation of the research narrative. A good talk makes the audience understand *why this matters* before showing *what was done*.
+Unlike posters (single page, visual-first), slides tell a **temporal story**: each slide builds on the previous one, with progressive revelation of the research narrative.
+A good talk makes the audience understand *why this matters* before showing *what was done*.
 
 ## Constants
 
-- **VENUE = `NeurIPS`** — Target venue, determines color scheme. Supported: `NeurIPS`, `ICML`, `ICLR`, `AAAI`, `ACL`, `EMNLP`, `CVPR`, `ECCV`, `GENERIC`. Override via argument.
-- **TALK_TYPE = `spotlight`** — Talk format. Options: `oral` (15-20 min), `spotlight` (5-8 min), `poster-talk` (3-5 min), `invited` (30-45 min). Determines slide count and content depth.
-- **TALK_MINUTES = 15** — Talk duration in minutes. Auto-adjusts slide count (~1 slide/minute for oral, ~1.5 slides/minute for spotlight). Override explicitly if needed.
-- **ASPECT_RATIO = `16:9`** — Slide aspect ratio. Options: `16:9` (default, modern projectors), `4:3` (legacy).
-- **SPEAKER_NOTES = true** — Generate `\note{}` blocks in beamer and corresponding PPTX notes. Set `false` for clean slides without notes.
+- **VENUE = `NeurIPS`** — Target venue, determines color scheme.
+  Supported: `NeurIPS`, `ICML`, `ICLR`, `AAAI`, `ACL`, `EMNLP`, `CVPR`, `ECCV`, `GENERIC`.
+  Override via argument.
+- **TALK_TYPE = `spotlight`** — Talk format.
+  Options: `oral` (15-20 min), `spotlight` (5-8 min), `poster-talk` (3-5 min), `invited` (30-45 min).
+  Determines slide count and content depth.
+- **TALK_MINUTES = 15** — Talk duration in minutes.
+  Auto-adjusts slide count (~1 slide/minute for oral, ~1.5 slides/minute for spotlight).
+  Override explicitly if needed.
+- **ASPECT_RATIO = `16:9`** — Slide aspect ratio.
+  Options: `16:9` (default, modern projectors), `4:3` (legacy).
+- **SPEAKER_NOTES = true** — Generate `\note{}` blocks in beamer and corresponding PPTX notes.
+  Set `false` for clean slides without notes.
 - **PAPER_DIR = `paper/`** — Directory containing the compiled paper.
 - **OUTPUT_DIR = `slides/`** — Output directory for all slide files.
 - **REVIEWER_MODEL = `gpt-5.4`** — Model used via Codex MCP for slide review.
 - **AUTO_PROCEED = false** — At each checkpoint, **always wait for explicit user confirmation**.
 - **COMPILER = `latexmk`** — LaTeX build tool.
-- **ENGINE = `pdflatex`** — LaTeX engine. Use `xelatex` for CJK text.
+- **ENGINE = `pdflatex`** — LaTeX engine.
+  Use `xelatex` for CJK text.
 
 > 💡 Override: `/paper-slides "paper/" — talk_type: oral, venue: ICML, minutes: 20, aspect: 4:3`
 
@@ -73,7 +84,8 @@ Persist state to `slides/SLIDES_STATE.json` after each phase:
 }
 ```
 
-**On startup**: if `SLIDES_STATE.json` exists with `"status": "in_progress"` and within 24h → resume. Otherwise → fresh start.
+**On startup**: if `SLIDES_STATE.json` exists with `"status": "in_progress"` and within 24h → resume.
+Otherwise → fresh start.
 
 ## Workflow
 
@@ -351,7 +363,8 @@ mcp__codex__codex:
     - Overall: Ready to present? (Yes / Needs revision / Major issues)
 ```
 
-Apply fixes. Recompile if LaTeX was changed.
+Apply fixes.
+Recompile if LaTeX was changed.
 
 > ⚠️ If `mcp__codex__codex` is not available (no OpenAI API key), skip external review and proceed to Phase 6. Note the skip in `SLIDES_STATE.json`.
 
@@ -365,7 +378,8 @@ For each slide, ensure a `\note{}` block exists with:
 
 1. **What to say** (2-3 complete sentences, conversational tone)
 2. **Timing hint** (e.g., "spend 1 minute here", "quick — 20 seconds")
-3. **Transition phrase** to the next slide (e.g., "So how do we actually implement this? Let me show you...")
+3. **Transition phrase** to the next slide (e.g., "So how do we actually implement this?
+   Let me show you...")
 
 Also generate `slides/speaker_notes.md` as a standalone backup:
 
@@ -423,7 +437,8 @@ cd slides && python3 generate_pptx.py
 
 Generate `slides/TALK_SCRIPT.md` — a complete, word-for-word script for the talk.
 
-This is different from speaker notes (brief reminders). The talk script is a **full manuscript** that can be read aloud or used for practice.
+This is different from speaker notes (brief reminders).
+The talk script is a **full manuscript** that can be read aloud or used for practice.
 
 ```markdown
 # Talk Script: [Paper Title]
@@ -546,17 +561,20 @@ Next steps:
 
 ## Key Rules
 
-- **Large file handling**: If the Write tool fails due to file size, immediately retry using Bash (`cat << 'EOF' > file`) to write in chunks. Do NOT ask the user for permission — just do it silently.
+- **Large file handling**: If the Write tool fails due to file size, immediately retry using Bash (`cat << 'EOF' > file`) to write in chunks.
+  Do NOT ask the user for permission — just do it silently.
 - **One message per slide.** If a slide has two ideas, split it into two slides.
 - **Do NOT fabricate data.** All numbers must come from `paper/sections/*.tex`.
-- **Bullet points only** — never full sentences on slides. Sentence fragments are fine.
+- **Bullet points only** — never full sentences on slides.
+  Sentence fragments are fine.
 - **Figure slides: figure ≥60% of slide area.** The figure IS the content.
 - **Progressive disclosure**: Use `\pause` or `\onslide` for complex method slides.
 - **De-AI polish**: Remove watch words from all slide text and talk script.
 - **Do NOT hallucinate citations.** Reference only papers cited in the paper.
 - **Opening hook matters**: Never start with "In this paper, we..." — start with the problem or a provocative question.
 - **Font size minimums**: Title ≥28pt, body ≥20pt, footnotes ≥14pt.
-- **Feishu notifications are optional.** If `~/.claude/feishu.json` exists, send notifications. If absent, skip.
+- **Feishu notifications are optional.** If `~/.claude/feishu.json` exists, send notifications.
+  If absent, skip.
 
 ## Parameter Pass-Through
 

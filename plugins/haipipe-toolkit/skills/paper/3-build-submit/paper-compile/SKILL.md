@@ -16,11 +16,17 @@ Compile the LaTeX paper and fix any issues: **$ARGUMENTS**
 
 ## Constants
 
-- **COMPILER = `latexmk`** — LaTeX build tool. Handles multi-pass compilation automatically.
-- **ENGINE = `pdflatex`** — LaTeX engine. Options: `pdflatex` (default), `xelatex` (for CJK/custom fonts), `lualatex`.
+- **COMPILER = `latexmk`** — LaTeX build tool.
+  Handles multi-pass compilation automatically.
+- **ENGINE = `pdflatex`** — LaTeX engine.
+  Options: `pdflatex` (default), `xelatex` (for CJK/custom fonts), `lualatex`.
 - **MAX_COMPILE_ATTEMPTS = 3** — Maximum attempts to fix errors and recompile.
 - **PAPER_DIR = `paper/`** — Directory containing LaTeX source files.
-- **MAX_PAGES** — Page limit. ML conferences: main body to Conclusion end (excluding references & appendix). ICLR=9, NeurIPS=9, ICML=8. **IEEE venues: references ARE included in page count.** IEEE journal ≈ 12-14 pages, IEEE conference ≈ 5-8 pages (all inclusive).
+- **MAX_PAGES** — Page limit.
+  ML conferences: main body to Conclusion end (excluding references & appendix).
+  ICLR=9, NeurIPS=9, ICML=8.
+  **IEEE venues: references ARE included in page count.**
+  IEEE journal ≈ 12-14 pages, IEEE conference ≈ 5-8 pages (all inclusive).
 
 ## Workflow
 
@@ -82,7 +88,8 @@ LaTeX Warning: Reference `fig:xyz' on page 3 undefined
 ```
 ! LaTeX Error: File `figures/fig1.pdf' not found.
 ```
-→ Check if the file exists with a different extension (.png vs .pdf). Update the `\includegraphics` path.
+→ Check if the file exists with a different extension (.png vs .pdf).
+Update the `\includegraphics` path.
 
 **Citation undefined:**
 ```
@@ -91,13 +98,16 @@ LaTeX Warning: Citation `smith2024' undefined
 → Add the missing entry to `references.bib` or fix the citation key.
 
 **`[VERIFY]` markers in text:**
-→ Search for `[VERIFY]` markers left by `/haipipe-paper-edit-write`. These indicate unverified citations or facts. Search for the correct information or flag to the user.
+→ Search for `[VERIFY]` markers left by `/haipipe-paper-edit-write`.
+These indicate unverified citations or facts.
+Search for the correct information or flag to the user.
 
 **Overfull hbox:**
 ```
 Overfull \hbox (12.5pt too wide) in paragraph at lines 42--45
 ```
-→ Minor: usually ignorable. If severe (>20pt), rephrase the text or adjust figure width.
+→ Minor: usually ignorable.
+If severe (>20pt), rephrase the text or adjust figure width.
 
 **BibTeX errors:**
 ```
@@ -125,7 +135,9 @@ For each error:
 3. Apply the fix
 4. Recompile
 
-**Stuck after 2 attempts?** If Codex plugin is installed, invoke `/codex:rescue` — Codex can independently read the LaTeX source and `compile.log` to spot issues Claude missed (e.g., conflicting packages, encoding problems, subtle macro errors). If not installed, continue with Claude's own diagnosis.
+**Stuck after 2 attempts?**
+If Codex plugin is installed, invoke `/codex:rescue` — Codex can independently read the LaTeX source and `compile.log` to spot issues Claude missed (e.g., conflicting packages, encoding problems, subtle macro errors).
+If not installed, continue with Claude's own diagnosis.
 
 ### Step 5: Post-Compilation Checks
 
@@ -171,9 +183,11 @@ grep -c "Citation.*undefined" compile.log
 
 **CRITICAL**: Verify paper fits within MAX_PAGES.
 
-**For ML conferences (ICLR/NeurIPS/ICML/CVPR/ACL/AAAI):** Main body = first page through end of Conclusion section (not necessarily §5 — could be §6, §7, or §8 depending on structure). References and appendix are NOT counted.
+**For ML conferences (ICLR/NeurIPS/ICML/CVPR/ACL/AAAI):** Main body = first page through end of Conclusion section (not necessarily §5 — could be §6, §7, or §8 depending on structure).
+References and appendix are NOT counted.
 
-**For IEEE venues:** The TOTAL page count (including references) must fit within the limit. There is no separate "main body" counting — everything up to and including the references counts.
+**For IEEE venues:** The TOTAL page count (including references) must fit within the limit.
+There is no separate "main body" counting — everything up to and including the references counts.
 
 **Precise check using `pdftotext`:**
 ```bash
@@ -199,7 +213,8 @@ If Conclusion ends mid-page and References start on the same page, the main body
 If over limit:
 - Identify which sections are longest
 - Suggest specific cuts (move proofs to appendix, compress tables, tighten writing)
-- Report: "Main body is X pages (limit: MAX_PAGES). Suggestion: move [specific content] to appendix."
+- Report: "Main body is X pages (limit: MAX_PAGES).
+  Suggestion: move [specific content] to appendix."
 
 ### Step 6.5: Stale File Detection
 
@@ -258,7 +273,8 @@ For conference submission, additional checks:
 - **Don't suppress warnings** — report them, let the user decide
 - **If LaTeX is not installed**, provide clear installation instructions rather than failing silently
 - **Font embedding is critical** — some venues reject PDFs with non-embedded fonts
-- **Page count rules differ by venue** — ML conferences: main body to Conclusion (refs excluded). **IEEE venues: total pages including references.**
+- **Page count rules differ by venue** — ML conferences: main body to Conclusion (refs excluded).
+  **IEEE venues: total pages including references.**
 
 ## Common Venue Requirements
 

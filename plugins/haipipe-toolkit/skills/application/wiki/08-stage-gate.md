@@ -1,7 +1,7 @@
 Stage Gate Protocol (application)
 ==================================
 
-A stage is only "done" when it is EXPLICITLY approved. The system must never auto-advance. This is the user-control mechanism for the intervention lifecycle. Application rewrite of the paper protocol (`../../paper/wiki/08-stage-gate.md`); the venue scales the gate's DEPTH, never its existence.
+A stage is only "done" when it is EXPLICITLY approved. The system must never auto-advance. This is the user-control mechanism for the intervention lifecycle. Application rewrite of the paper protocol (`../../paper/1-lifecycle/ref/08-stage-gate.md`); the venue scales the gate's DEPTH, never its existence.
 
 Gate Protocol (per-stage loop)
 ------------------------------

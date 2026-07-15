@@ -1,6 +1,6 @@
 # Intervention Lifecycle
 
-The application lifecycle is a delivery lifecycle. It owns the intervention-specific story, claim wording, content elements, and artifact text. Project-level evidence lives in discoveries and tasks. Same stage vocabulary and spine ORDER as paper (`../../paper/wiki/03-paper-lifecycle.md`); the venue profile gates which stages fire.
+The application lifecycle is a delivery lifecycle. It owns the intervention-specific story, claim wording, content elements, and artifact text. Project-level evidence lives in discoveries and tasks. Same stage vocabulary and spine ORDER as paper (`../../paper/1-lifecycle/ref/03-paper-lifecycle.md`); the venue profile gates which stages fire.
 
 ## Folder Contract
 

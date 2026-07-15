@@ -18,22 +18,27 @@ and a **local Codex app-server MCP bridge** as the raster renderer.
 ## Output: write into a display unit (not flat figures/)
 
 When the target is a paper (a folder with `0-displays/`), the output goes into a
-`0-displays/displayNN-<slug>/` unit, NOT `figures/ai_generated/`. Follow the
+`0-displays/displayNN-<slug>/` unit, NOT `figures/ai_generated/`.
+Follow the
 shared contract: `../haipipe-paper-display/ref/display-unit-output-contract.md`
 (resolve/scaffold the unit, write `assets/` + `source/` + `float.tex`, compile
-`preview.pdf`, set README status). For THIS renderer: asset ->
+`preview.pdf`, set README status).
+For THIS renderer: asset ->
 `assets/figure.png`; rebuild spec -> `source/prompt.md` (final prompt + bridge
 job + score) + `source/review_log.json`. Finalize with `--display-unit <unit-dir>`
-(Step 7). `figures/ai_generated/` is a fallback only when there is no paper.
+(Step 7).
+`figures/ai_generated/` is a fallback only when there is no paper.
 
 ## Fit & Readiness (haipipe)
 
 **Use this for conceptual figures only** — architecture diagrams, method/pipeline
-schematics, taxonomy trees. It produces an **AI raster** image.
+schematics, taxonomy trees.
+It produces an **AI raster** image.
 
 **Do NOT use it for data displays.** Tables and result figures (descriptives,
 dose-response, subgroup, etc.) must be rendered from real data by a task
-(the `Z01`-style parse-then-render path) so they are reproducible and exact. An
+(the `Z01`-style parse-then-render path) so they are reproducible and exact.
+An
 AI raster of a data figure is unverifiable and unfit for a data-driven venue.
 For deterministic vector schematics (e.g. a study-flow / CONSORT diagram), prefer
 `haipipe-paper-display-diagram` (JSON -> SVG, no external service) or a
@@ -43,7 +48,8 @@ conference/ML venue.
 
 **Runtime dependency:** needs the `codex-image2` MCP bridge (toolkit
 `mcp-servers/codex-image2/`, install per its README) plus the Codex desktop app
-signed in and the `codex` CLI on PATH. If `mcp__codex-image2__*` tools are not
+signed in and the `codex` CLI on PATH.
+If `mcp__codex-image2__*` tools are not
 present, the bridge is not registered in this session — report that honestly
 rather than falling back to a shell/Python bitmap.
 
@@ -108,7 +114,8 @@ rather than falling back to a shell/Python bitmap.
 - **OPTIONAL_TEXT_CRITIC = `mcp__codex__codex`** — Optional text-only second opinion for layout/style checks
 - **MAX_ITERATIONS = 5** — Maximum refinement rounds
 - **TARGET_SCORE = 9** — Minimum acceptable score (1-10)
-- **OUTPUT_DIR** — for a paper: the display unit `0-displays/displayNN-slug/` (asset -> `assets/figure.png`, iterations + receipts -> `source/`). Only with no paper: the flat fallback `figures/ai_generated/`.
+- **OUTPUT_DIR** — for a paper: the display unit `0-displays/displayNN-slug/` (asset -> `assets/figure.png`, iterations + receipts -> `source/`).
+  Only with no paper: the flat fallback `figures/ai_generated/`.
 - **TEXT_LANGUAGE = `English`** — Default figure text language unless the user requests otherwise
 - **NATIVE_IMAGE_REQUIREMENT = `strict`** — Accept only native `imageGeneration` output; reject shell/Python fallbacks
 - **CANONICAL_HELPER = `python3 "$CLAUDE_SKILL_DIR/scripts/paper_illustration_image2.py"`** — Preflight, finalize (`--display-unit`), verify, repair
@@ -198,7 +205,8 @@ Render this checklist explicitly before starting:
 ```
 
 1. Resolve the target display unit (`0-displays/displayNN-slug/`); scaffold it via
-   `Skill("haipipe-paper-display", "scaffold ...")` if it does not exist. Only when
+   `Skill("haipipe-paper-display", "scaffold ...")` if it does not exist.
+   Only when
    there is no paper, fall back to creating `figures/ai_generated/`.
 2. Confirm the request is suitable for a raster illustration:
    - architecture diagram
@@ -217,7 +225,8 @@ python3 "$CLAUDE_SKILL_DIR/scripts/paper_illustration_image2.py" preflight \
 
 ## Step 1: Claude Plans the Figure
 
-Turn the user request into a **fully specified image prompt**. Include:
+Turn the user request into a **fully specified image prompt**.
+Include:
 
 - figure type
 - exact modules / stages
@@ -232,7 +241,8 @@ clean figure brief before writing the final image prompt.
 
 ## Step 2: Layout Optimization
 
-This step is required. Before rendering, refine the prompt into a concrete
+This step is required.
+Before rendering, refine the prompt into a concrete
 layout plan:
 
 - exact module order
@@ -253,7 +263,8 @@ Use Codex layout critique for:
 
 ## Step 3: Style Verification
 
-This step is also required. Check the prompt against the intended paper style
+This step is also required.
+Check the prompt against the intended paper style
 before rendering:
 
 - palette is restrained and academic
@@ -271,7 +282,8 @@ Call `mcp__codex-image2__generate_start` with:
 
 - `prompt`: the final image prompt
 - `cwd`: the paper workspace (paper root)
-- `outputPath`: `figures/ai_generated/figure_vN.png`. NOTE: the bridge HARD-LOCKS output under `figures/ai_generated/`; it rejects any path outside it (so you cannot render straight into the unit). Iterations render here as scratch; `finalize --display-unit` then promotes the accepted one to `0-displays/displayNN-slug/assets/figure.png` and you copy it to `source/` for provenance.
+- `outputPath`: `figures/ai_generated/figure_vN.png`. NOTE: the bridge HARD-LOCKS output under `figures/ai_generated/`; it rejects any path outside it (so you cannot render straight into the unit).
+  Iterations render here as scratch; `finalize --display-unit` then promotes the accepted one to `0-displays/displayNN-slug/assets/figure.png` and you copy it to `source/` for provenance.
 - `system`: a short instruction like `Academic paper figure. Prefer crisp English labels.`
 - `timeoutSeconds`: a bounded render timeout such as `180`
 
@@ -363,7 +375,8 @@ correctly filed unit appears in the combined gallery automatically.
 ## Repair Path
 
 If rendering succeeded but final artifacts were skipped, repair the integration
-explicitly. For a paper, pass `--display-unit` so repair lands in the unit (an
+explicitly.
+For a paper, pass `--display-unit` so repair lands in the unit (an
 existing hand-edited `float.tex` is preserved, not clobbered):
 
 ```bash

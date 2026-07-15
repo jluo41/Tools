@@ -14,7 +14,8 @@ metadata:
 
 Use this skill to treat a manuscript like a precision instrument: fix the top-level design first, then the evidence chain, then the figures, then the terminology, and only then the sentence-level polish.
 
-This workflow is not tied to a single paper or field. Use it across manuscript projects whenever structure, evidence, figures, and prose need to be brought back into alignment.
+This workflow is not tied to a single paper or field.
+Use it across manuscript projects whenever structure, evidence, figures, and prose need to be brought back into alignment.
 
 Core rule: do not spend effort polishing prose that sits on top of an unstable claim, a broken evidence chain, or inconsistent figures.
 
@@ -130,7 +131,8 @@ Before calling the structure stable, pressure-test the manuscript like a skeptic
 - evaluation completeness
 - method or framework soundness
 
-Do not answer these with intuition alone. Point to concrete sections, figures, tables, or supplementary items.
+Do not answer these with intuition alone.
+Point to concrete sections, figures, tables, or supplementary items.
 
 ### 3. Data Visualization And Figure Expression
 
@@ -168,7 +170,8 @@ Before rewriting figure-linked prose, identify each panel's real role:
 - translational or practical consequence
 - case illustration
 
-Do not flatten a methodological bridge panel into generic motivation. If a panel explains where a metric or evaluation space comes from, say so explicitly in the main text.
+Do not flatten a methodological bridge panel into generic motivation.
+If a panel explains where a metric or evaluation space comes from, say so explicitly in the main text.
 
 When multiple metrics are shown:
 - keep the strongest metric as the primary evidence in the Results paragraph

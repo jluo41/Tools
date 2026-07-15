@@ -10,7 +10,8 @@ metadata:
 
 # haipipe-paper-edit-typeset  (stub)
 
-CHECK-phase whole-paper typeset pass in the build-submit layer — the **last** pass, because every earlier edit moves the type. Self-contained: carries its own check logic, driven by the compiled PDF and the LaTeX log.
+CHECK-phase whole-paper typeset pass in the build-submit layer — the **last** pass, because every earlier edit moves the type.
+Self-contained: carries its own check logic, driven by the compiled PDF and the LaTeX log.
 
 Like every build-submit sub-skill it is **comment-first**: Round 1 inserts `%% {CC-typeset-vMMDD}: finding | suggestion ========>` and changes no text; apply waits for the human `========> {XX}:` reply.
 
@@ -29,7 +30,8 @@ The compiled document reads cleanly: no widows or orphans, no overfull/underfull
 
 ## Approach (intended)
 
-Compile with `paper-compile` (sibling skill in `3-build-submit/`) and read the PDF + log (`Overfull` / `Underfull` warnings, widow/orphan) — fix at the **prose** level first (tighten a sentence to pull a widow back) before reaching for manual break commands. A diff of before/after PDFs (`haipipe-paper-edit-diffpdf`) confirms nothing else moved.
+Compile with `paper-compile` (sibling skill in `3-build-submit/`) and read the PDF + log (`Overfull` / `Underfull` warnings, widow/orphan) — fix at the **prose** level first (tighten a sentence to pull a widow back) before reaching for manual break commands.
+A diff of before/after PDFs (`haipipe-paper-edit-diffpdf`) confirms nothing else moved.
 
 ## Done means
 

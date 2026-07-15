@@ -43,13 +43,13 @@ Length limits (rough)
 - MISQ: 250 words
 - npj journals: 150-200 words
 
-Rule: every claim in abstract must appear (with same magnitude) in
-results.
+Rule: every claim in abstract must appear (with same magnitude) in results.
 
 Common failure modes
 ---------------------
 
-- Two pitches — abstract carries two ideas. Pick one (one paper, one message).
+- Two pitches — abstract carries two ideas.
+  Pick one (one paper, one message).
 - Numbers without anchor (e.g. "improved by 5%") — say baseline
 - Buried headline — main number is in S5 instead of S2/S3
 - Jargon in S1 — should be venue-readable, not subfield-readable
@@ -57,6 +57,5 @@ Common failure modes
 TODO
 ----
 
-- Cross-check with `1-lifecycle/haipipe-paper-narrative` — abstract pitch
-  must equal narrative pitch
+- Cross-check with `1-lifecycle/haipipe-paper-narrative` — abstract pitch must equal narrative pitch
 - Per-venue word counts auto-checked

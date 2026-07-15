@@ -148,7 +148,7 @@ Render the stage line DETERMINISTICALLY with the helper (never hand-type it; it 
 The phase line is rendered by the 🔥 stage's skill from its own DPRC progress.
 
 
-Gate-aware: advancing `current_layer` requires an EXPLICIT approval action that the current stage is done (Stage Gate, `../wiki/08-stage-gate.md`) -- by the human (copilot mode) or by a reviewer subagent standing in for the human (autopilot mode); once STATUS.md carries the gate ledger, ✅ means "approved", and the ledger records who approved (human or agent).
+Gate-aware: advancing `current_layer` requires an EXPLICIT approval action that the current stage is done (Stage Gate, `../1-lifecycle/ref/08-stage-gate.md`) -- by the human (copilot mode) or by a reviewer subagent standing in for the human (autopilot mode); once STATUS.md carries the gate ledger, ✅ means "approved", and the ledger records who approved (human or agent).
 
 
 No-Arg Chooser
@@ -204,7 +204,7 @@ Each area's internal contract lives with its owner; consult, never restate:
 skill tree (0-enter / 1-lifecycle / 2-phase / 3-build-submit / 4-respond / 5-present / components / wiki)
                                    -> README.md (skill root) + ../wiki/06-paper-skill-structure.md
 paper-folder layout                -> ../3-build-submit/_shared/paper-folder-anatomy.md (canonical tree, prefix semantics, maturity ladder)
-lifecycle stages + venue coupling  -> ../wiki/03-paper-lifecycle.md + ../wiki/04-lifecycle-map.md
+lifecycle stages + venue coupling  -> ../1-lifecycle/ref/03-paper-lifecycle.md + ../1-lifecycle/ref/04-lifecycle-map.md
 rounds                             -> ../wiki/07-paper-rounds.md
 venue knowledge                    -> ../_venue/playbook-<venue> packs (venue is knowledge, not a pipeline)
 ```

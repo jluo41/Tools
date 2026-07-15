@@ -26,7 +26,7 @@ THE THING IN ONE LINE
 
      ┌──────────────────────────────────────────────────────────────────────┐
      │ haipipe-workflow   the PATTERN                                        │
-     │   shape:     I → P[S] → O   (Input → Phases[Steps] → Output)          │
+     │   shape:     I → P[S] → O   (Input → Process[Steps] → Output)          │
      │   schema:    ref/plan-schema.md · ref/concepts.md   (source of truth) │
      │   lifecycle: Plan → Build → Execute → Report                          │
      │   verbs:     plan build execute report inspect template   (GENERIC)   │

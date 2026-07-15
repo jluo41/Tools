@@ -34,7 +34,7 @@ Gate Protocol (per-stage loop)
 1. **Produce** the stage artifact (markdown `<stage>.md` + `_LOG`; display
    produces `4-display.tex`).
 2. **Review** the artifact content. Display only: compile the PDF (see
-   13-tex-quality.md). Markdown stages have no compile step; their gate is
+   ../../wiki/13-tex-quality.md). Markdown stages have no compile step; their gate is
    content review.
 3. **Present exit criteria** with per-item check/fail marks (see table below).
 4. **APPROVAL** -- copilot: ASK "Stage <X> looks ready -- confirm to close and

@@ -16,13 +16,11 @@ Generate publication-quality **architecture diagrams**, **workflow pipelines**, 
 
 ## Output: write into a display unit (not flat figures/)
 
-When the target is a paper (a folder with `0-displays/`), the diagram goes into a
-`0-displays/displayNN-<slug>/` unit, NOT a flat `figures/` directory. Follow the
-shared contract: `../haipipe-paper-display/ref/display-unit-output-contract.md`.
-For THIS renderer: asset -> `assets/figure.svg` (plus `assets/figure.pdf` if you
-rasterize/convert for LaTeX); rebuild spec -> `source/<name>.json` (the FigureSpec).
-Wire `float.tex`, compile `preview.pdf`, set README status. Flat `figures/` is a
-fallback only when there is no paper.
+When the target is a paper (a folder with `0-displays/`), the diagram goes into a `0-displays/displayNN-<slug>/` unit, NOT a flat `figures/` directory.
+Follow the shared contract: `../haipipe-paper-display/ref/display-unit-output-contract.md`.
+For THIS renderer: asset -> `assets/figure.svg` (plus `assets/figure.pdf` if you rasterize/convert for LaTeX); rebuild spec -> `source/<name>.json` (the FigureSpec).
+Wire `float.tex`, compile `preview.pdf`, set README status.
+Flat `figures/` is a fallback only when there is no paper.
 
 ## When to Use This Skill
 
@@ -51,7 +49,8 @@ fallback only when there is no paper.
 ## Tool Location
 
 Skill-local at `scripts/figure_renderer.py` (pure stdlib, no network, no API key).
-Resolve it via `$CLAUDE_SKILL_DIR` (CC 1.0+ exposes it). Invoke via:
+Resolve it via `$CLAUDE_SKILL_DIR` (CC 1.0+ exposes it).
+Invoke via:
 
 ```bash
 python3 "$CLAUDE_SKILL_DIR/scripts/figure_renderer.py" render <spec.json> --output <out.svg>
@@ -66,7 +65,8 @@ python3 "$CLAUDE_SKILL_DIR/scripts/figure_renderer.py" schema
 From `$ARGUMENTS` (description or path to `PAPER_PLAN.md` / `NARRATIVE_REPORT.md`), identify:
 - **Purpose**: architecture, workflow, pipeline, audit cascade, topology?
 - **Main entities**: what are the boxes?
-- **Relationships**: how do they connect? (uses, produces, calls, verifies, chains)
+- **Relationships**: how do they connect?
+  (uses, produces, calls, verifies, chains)
 - **Grouping**: do entities cluster into named regions?
 - **Hierarchy vs network**: stacked layers, left-to-right flow, or central hub?
 
@@ -162,7 +162,8 @@ mcp__codex__codex:
     Score each axis 1-10 and list specific issues to fix.
 ```
 
-Iterate until all three axes ≥ 7/10. The ARIS tech report figures went through 5 rounds of this loop to reach C:7/R:7/S:8.
+Iterate until all three axes ≥ 7/10.
+The ARIS tech report figures went through 5 rounds of this loop to reach C:7/R:7/S:8.
 
 ## Schema Quick Reference
 
@@ -234,4 +235,6 @@ Three-stage horizontal cascade with inputs feeding in from top, outputs exiting 
 
 ## Review Tracing
 
-After each `mcp__codex__codex` or `mcp__codex__codex-reply` reviewer call, save the trace following `shared-references/review-tracing.md`. Use `tools/save_trace.sh` or write files directly to `.aris/traces/<skill>/<date>_run<NN>/`. Respect the `--- trace:` parameter (default: `full`).
+After each `mcp__codex__codex` or `mcp__codex__codex-reply` reviewer call, save the trace following `shared-references/review-tracing.md`.
+Use `tools/save_trace.sh` or write files directly to `.aris/traces/<skill>/<date>_run<NN>/`.
+Respect the `--- trace:` parameter (default: `full`).

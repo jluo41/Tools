@@ -13,10 +13,13 @@ metadata:
 Skill: haipipe-paper-build-restructure (4-build-submit)
 ===================================
 
-Re-house an existing paper in the layout defined by `4-build-submit/_shared/paper-folder-anatomy.md` **without changing a single sentence**. Two modes:
+Re-house an existing paper in the layout defined by `4-build-submit/_shared/paper-folder-anatomy.md` **without changing a single sentence**.
+Two modes:
 
-- **Migrate** (default): the folder does not conform at all (monolithic `main.tex`, flat `sections/`, ad-hoc names). Produce the full gold tree.
-- **Repair** (`--repair`): the folder already follows the layout but has drifted: numbering gaps after a delete, a leaf never `\input`, figures outside `0-displays/`. Fix only the findings (usually handed over from `haipipe-paper-build-check`).
+- **Migrate** (default): the folder does not conform at all (monolithic `main.tex`, flat `sections/`, ad-hoc names).
+  Produce the full gold tree.
+- **Repair** (`--repair`): the folder already follows the layout but has drifted: numbering gaps after a delete, a leaf never `\input`, figures outside `0-displays/`.
+  Fix only the findings (usually handed over from `haipipe-paper-build-check`).
 
 Not this skill: building a folder from nothing (`haipipe-paper-build-scaffold`), or any wording change (`3-write-edit`).
 
@@ -85,7 +88,8 @@ Naming decisions (`NN` order per venue, slugs from subsection titles) are made h
 Repair mode (`--repair`)
 ------------------------
 
-Input is a finding list (typically `haipipe-paper-build-check` output). For each finding apply the standard remedy, then re-run both gates once at the end:
+Input is a finding list (typically `haipipe-paper-build-check` output).
+For each finding apply the standard remedy, then re-run both gates once at the end:
 
 | Finding | Remedy |
 |---------|--------|

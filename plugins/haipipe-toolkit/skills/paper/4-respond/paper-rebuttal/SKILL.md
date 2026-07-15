@@ -12,14 +12,11 @@ metadata:
 Skill: paper-rebuttal
 =====================
 
-Guide authors through the full rebuttal process for ML conference and journal
-paper reviews. Four phases from reading reviews to revising the paper, designed
-for multi-author collaboration.
+Guide authors through the full rebuttal process for ML conference and journal paper reviews.
+Four phases from reading reviews to revising the paper, designed for multi-author collaboration.
 
-Use this skill when the user has received peer reviews and needs to write
-rebuttal responses, plan experiments to address reviewer concerns, or prepare
-a revised manuscript. Also use when the user mentions rebuttal, reviewer
-response, author response, review feedback, or camera-ready revision.
+Use this skill when the user has received peer reviews and needs to write rebuttal responses, plan experiments to address reviewer concerns, or prepare a revised manuscript.
+Also use when the user mentions rebuttal, reviewer response, author response, review feedback, or camera-ready revision.
 
 ---
 
@@ -95,7 +92,8 @@ Step 1: Read ref files FIRST (mandatory before proceeding).
   rebuttal/audit:   ref/principles.md + ref/formats.md
   revise:           ref/principles.md
 
-  Confirm: "Loaded: [ref files]. Executing: [subcommand]."
+  Confirm: "Loaded: [ref files].
+  Executing: [subcommand]."
 
 Step 2: Read and follow the function file exactly.
   understand     ->  fn/fn-understand.md
@@ -110,8 +108,7 @@ Step 2: Read and follow the function file exactly.
 Review Directory Structure
 ---------------------------
 
-  The skill produces artifacts in a 4-folder structure inside the
-  paper's review directory (e.g., paper/1-review/):
+  The skill produces artifacts in a 4-folder structure inside the paper's review directory (e.g., paper/1-review/):
 
     1-review/
     +-- README.md                       <- Overview + status
