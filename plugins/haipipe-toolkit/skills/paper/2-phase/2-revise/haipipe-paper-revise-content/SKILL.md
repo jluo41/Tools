@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-revise-content
-description: "Review and edit the prose CONTENT of an existing draft at section -> paragraph -> weave -> sentence. REVISE phase (fully automatic). Applies changes directly, leaves %% {CC-content}: comments explaining WHY each change was made for CHECK review. Self-contained: carries its own structure/claim/flow checks INCLUDING the weave step (paragraph-to-paragraph flow: arc, hinges, rhythm — absorbed from the retired revise-weaving skill). Reads REF/prose-quality.md for universal rules. Trigger: edit content, review content, tighten section, restructure paragraphs, weave, paragraph flow, transitions, /haipipe-paper-revise-content."
+description: "Review and edit prose CONTENT at section → paragraph → weave → sentence. REVISE phase (fully automatic): applies changes directly, leaves %% {CC-content}: why-comments for CHECK. Self-contained — carries its own structure/claim/flow checks including the weave step (¶-to-¶ arc, hinges, rhythm, absorbed from the retired revise-weaving skill). Trigger: edit content, review content, tighten section, restructure paragraphs, weave, paragraph flow, transitions, /haipipe-paper-revise-content."
 argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:

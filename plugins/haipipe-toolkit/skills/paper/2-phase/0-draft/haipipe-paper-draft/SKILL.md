@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, WebSearch, WebFetch
 metadata:
   version: "4.1.0"
   last_updated: "2026-07-14"
-  summary: "DRAFT phase worker (internal). Called by stage skills to produce first-pass artifacts. Generic process, stage-specific output. v3.10: the RESOURCE stage is wired in (artifact-spec + ref/resource-template.md row, upstream row, Step-3 structure line, stage-specific notes; venue-FREE set is now seed/resource/claims). v3.9: citations are REAL \\citep{} keys grepped from the paper's .bib, \\cite{TOADD} when missing (supersedes [CITE:]/(Author Year)). v3.7: section drafts are REAL prose (complete sentences, {VAL:?} placeholders) per the stage's template; DRAFT ends at a hard STOP for the user's structure review (the stage logs the [GATE]). v3.4: inline WebSearch = drafting fuel only, never durable evidence. v4.1 (probe-redesign residue sweep): DRAFT raises `state: planned` question SECTIONS in 1-probes/ (per fn/probes.md) and is FORBIDDEN to write a `reading:` or a `target:` into one; the resource note points at the PROBE worker, not a gateway."
+  summary: "DRAFT phase worker (internal): produce the first-pass artifact for any stage -- consult upstream, settle structure, draft real prose per the stage's template ({VAL:?} placeholders, real \\citep{} keys from the .bib), iterate with the user, STOP at the structure-review gate. Inline WebSearch is drafting fuel only, never durable evidence. Raises what it cannot answer as `state: planned` question SECTIONS in 1-probes/; never writes an answer or a target into one. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -110,12 +110,12 @@ exactly two legal destinations:
    verify, RAISE IT AS A QUESTION. **DRAFT is where the questions are born.**
    Write each one as a SECTION (`state: planned`, EMPTY `target:`) in the right
    topic's probe file at `1-probes/PPNN_<topic>.md` + a Status board row, per
-   `../../../haipipe-paper/fn/probes.md`. Write the `commission:` (the question
+   `../../../haipipe-paper/fn/probes.md`. Write the `q-executor:` (the question
    in GENERAL language — no claim ids, no stake, no hint of which answer is
    wanted); NEVER write the `## Why` into a commission — the stake never leaves
    the probe file. This HANDS the gap to the PROBE phase; it does not answer it.
 
-FORBIDDEN in DRAFT: writing a `reading:`, a `target:`, or any finding INTO a
+FORBIDDEN in DRAFT: writing a `a-consumer:`, a `target:`, or any finding INTO a
 probe section, or treating an inline result as landed evidence. Inline search
 results bind to nothing -- evidence gathered any way other than the PROBE
 phase's dispatch means "the PROBE phase did not happen." The line is the SECTION

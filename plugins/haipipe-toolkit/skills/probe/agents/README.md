@@ -17,7 +17,7 @@ Dispatch — DIRECT, no gateway
 ```
 📄 the PROBE (in the CONSUMER session — a paper or an application)
    │
-   │  ③ DISPATCH — hands the section's `commission` block, VERBATIM
+   │  ③ DISPATCH — hands the section's `q-executor` block, VERBATIM
    │               (LAW 1 — nothing else crosses: never `## Why`, never the paper)
    │
    ├──▶ Agent(haipipe-task-orchestrator-agent)        runs / code   ⚙️ probe-UNAWARE

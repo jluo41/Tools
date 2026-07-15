@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-probe-display
-description: "display HARVESTER (probe lane worker). One skill, one working doc (_DISPLAY_{stage}.md, the needs registry: need → unit → status), lifecycle: AUDIT (what displays does this stage/section need?) → PLAN (record needs in _DISPLAY_, map each to a display unit; a unit that does NOT exist becomes a DR row in 0-lifecycle/4-display/_DISPLAY_REQUEST.md — the display stage's inbox. Section-edit NEVER creates displays, JL 2026-07-10: no /haipipe-task, no commissioning of any kind) → LINK (harvest: connect landed 0-displays/ units back to needs via the probe section's displays: lane) → REVIEW (pre-submission display check). Fully automatic -- no human gate. Hard boundary: agent NEVER creates ad-hoc plots inline. Trigger: display, figures, tables, what displays, plan displays, link display."
+description: "display HARVESTER (probe lane worker). One skill, one working doc (_DISPLAY_{stage}.md, the needs registry: need → unit → status). Lifecycle: AUDIT (what displays does this stage need?) → PLAN (map each need to a unit; a missing unit becomes a DR row in 0-lifecycle/4-display/_DISPLAY_REQUEST.md, the display stage's inbox; section-edit never creates displays) → LINK (connect landed 0-displays/ units back via the section's displays: lane) → REVIEW. Fully automatic. Hard boundary: NEVER creates ad-hoc plots inline. Trigger: display, figures, tables, what displays, plan displays, link display."
 argument-hint: "[verb] [section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
   version: "3.0.2"
   last_updated: "2026-07-14"
-  summary: "Display HARVESTER. AUDIT→PLAN(missing units→DR requests in the 4-display inbox)→LINK(existing/done units only)→REVIEW. v3.0 (JL 2026-07-10): section-edit never CREATES displays — a missing unit is a _DISPLAY_REQUEST.md row the display stage solves. Working doc = _DISPLAY_ registry. v3.0.2 (probe-redesign residue sweep): LINK follows the probe section's `displays:` lane (not 'the PP card's unit_refs'); the no-commissioning ban no longer names a gateway."
+  summary: "display HARVESTER (probe lane worker): AUDIT → PLAN (a missing unit becomes a DR row in the 4-display inbox; section-edit never CREATES displays -- the display stage solves it) → LINK (existing/done units only, via the probe section's `displays:` lane) → REVIEW. Working doc = the _DISPLAY_ registry. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

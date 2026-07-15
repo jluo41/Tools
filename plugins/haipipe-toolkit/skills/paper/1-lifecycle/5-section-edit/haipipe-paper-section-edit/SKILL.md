@@ -233,7 +233,7 @@ Summary table -- which tracking files each stage uses:
 
 Tracking files are created lazily when the phase activates for that stage.
 
-**Probe convention**: ALL probe files live FLAT in `1-probes/` — `PP<NN>_<topic>.md`, ONE FILE PER TOPIC, beside the campaign `README.md`. Each question is one SECTION inside it (`serves:` / `target:` / `state:` / `commission:` / `reading:`), plus ONE `## Why` per file holding the stake. Stage/section affinity is the SECTION's `serves:` field, never the file's path. When raising a new question: add a SECTION to the right topic's probe file (creating `1-probes/PP<NN>_<topic>.md` if the topic is new) AND regenerate its Status board row in the README — `- PP<NN> · serves: <stage/section> · <state> · <question>` — never a markdown table (JL standing rule: no tables in probe documents), and never a `card`, `row` or `table` (retired vocabulary).
+**Probe convention**: ALL probe files live FLAT in `1-probes/` — `PP<NN>_<topic>.md`, ONE FILE PER TOPIC, beside the campaign `README.md`. Each question is one SECTION inside it (`serves:` / `target:` / `state:` / `q-executor:` / `a-consumer:`), plus ONE `## Why` per file holding the stake. Stage/section affinity is the SECTION's `serves:` field, never the file's path. When raising a new question: add a SECTION to the right topic's probe file (creating `1-probes/PP<NN>_<topic>.md` if the topic is new) AND regenerate its Status board row in the README — `- PP<NN> · serves: <stage/section> · <state> · <question>` — never a markdown table (JL standing rule: no tables in probe documents), and never a `card`, `row` or `table` (retired vocabulary).
 
 ## Two-axis architecture: stages x phases
 
@@ -388,7 +388,7 @@ Grep shortcuts:
 
 The agent consumes the draft's probe proposal (placeholders + buffered PP skeletons) and does all three tracks without waiting for human. Flag everything that needs human attention. Do NOT place \citep{} or weave values into tex during PROBE. Placement happens in CHECK after human verification.
 
-7. **Citation**: create `_CITATION_` file. Audit `\cite{TOADD}` slots (each must have a `_CITATION_` row) and existing `\citep{}` keys in the .md. Paper-local sweep first: the .bib and prior stages' `_CITATION_` maps (adopt matches; only surviving gaps become questions). Write 🔍 entries with Scholar links. Flag everything. Count density vs venue norm. Surviving gaps → a question SECTION in `1-probes/` (the PROBE phase's DISPATCH to Agent(haipipe-discovery-orchestrator-agent) is the ONLY search door — no inline search at any depth; 💀 the probe GATEWAY agent is RETIRED). Do NOT wait for human, do NOT place \citep{}.
+7. **Citation**: create `_CITATION_` file. Audit `\cite{TOADD}` slots (each must have a `_CITATION_` row) and existing `\citep{}` keys in the .md. Paper-local sweep first: the .bib and prior stages' `_CITATION_` maps (adopt matches; only surviving gaps become questions). Write 🔍 entries with Scholar links. Flag everything. Count density vs venue norm. Surviving gaps → a question SECTION in `1-probes/` (the PROBE phase's DISPATCH to Agent(haipipe-discovery-orchestrator-agent) is the ONLY search door — no inline search at any depth). Do NOT wait for human, do NOT place \citep{}.
 
 8. **Values**: create `_VALUES_` file. Scan every `{VAL:?}` placeholder and every number in the .md. Trace each to a source (task output, display CSV, script). Flag ⚠️ mismatches and 🔍 unknown sources. If source not found → raise a question SECTION in `1-probes/`. Do NOT wait for human.
 

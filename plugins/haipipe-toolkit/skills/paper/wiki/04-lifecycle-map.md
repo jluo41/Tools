@@ -37,7 +37,7 @@ The contract is `delivery-need.md` (paper-owned; no cross-skill shared file).
 1-claims GAP  ──out──▶  /haipipe-paper probe "<need>"   (a question SECTION in 1-probes/)
                           PROBE phase: ORGANIZE → MATCH → DISPATCH → POINT → INTERPRET
                           the executor answers in <task-folder>/QA/<n>-<slug>.md
-1-claims slot ◀─backfill─  the section's `reading:` lands; THE CLAIM'S STATUS IS
+1-claims slot ◀─backfill─  the section's `a-consumer:` lands; THE CLAIM'S STATUS IS
                            WRITTEN IN 1-claims.md; the executor never edits paper prose
 ```
 

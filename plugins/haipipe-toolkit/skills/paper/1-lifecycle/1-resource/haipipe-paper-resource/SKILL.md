@@ -132,13 +132,13 @@ THE HUMAN  at GATE 1, picks which Q's are worth ASKING.
 
 THE PROBE  picks the approved Q's UP and OPENS one SECTION per Q under 1-probes/
 WORKER     (serves: resource · blocks: N<n> · target: NEW ? · state: planned ·
-           commission: the Q re-posed as a self-contained evidence question),
+           q-executor: the Q re-posed as a self-contained evidence question),
            then writes the `-> PP<NN>` backlink into 1-resource.md. It does NOT
            decide the type, the topic, or the DEPTH -- ② MATCH may close the
            section for free, and an unmatched one is dispatched to the task /
            discovery orchestrator, which picks the shape in its own clean context.
 
-THE       is what ② MATCH could not close: the section's `commission:` block goes,
+THE       is what ② MATCH could not close: the section's `q-executor:` block goes,
 EXECUTOR   VERBATIM, to Agent(haipipe-task-orchestrator-agent) or
            Agent(haipipe-discovery-orchestrator-agent). IT picks the shape and the
            DEPTH in its own clean context, and answers in <task-folder>/QA/<n>-<slug>.md.
@@ -439,7 +439,7 @@ A full worked instance of this artifact (real, the SPEC OF RECORD) lives in `../
 2. **Exactly two sections.** Demand (N<n>) and Questions (Q<n> + A). Kill Conditions, Setup Contract, a Resource Ledger, a Binding table, and every sidecar were CUT BY JL on 2026-07-14. Do not reintroduce them under any name. "Do we have it?" and "does it WORK?" are BOTH the A.
 3. **Keyed on H<n>, not C<n>.** C-ids do not exist yet at resource time. Demanding them forces a retro-fitted claims ledger -- the exact ordering failure this stage prevents.
 4. **The cleavage rule is the constitution.** A question that CHANGES what exists on disk is RESOURCE. A question that READS what exists and MOVES A CLAIM'S STATUS is CLAIMS. `task-for-data` / `task-for-algo` / `task-for-fit` live here; `task-for-eval` does NOT.
-5. **Resource may NOT commission `task-for-eval`.** The one rule that stops the stage swallowing the paper. Fit makes the model; eval makes the evidence; a bundled fit+eval entangles the judgment (PP04's null was uninterpretable precisely because of this).
+5. **Resource may NOT commission `task-for-eval`.** The one rule that stops the stage swallowing the paper. Fit makes the model; eval makes the evidence; a bundled fit+eval entangles the judgment — a null becomes uninterpretable because you cannot tell whether it came from the model or the corpus.
 6. **Resource NEVER EXECUTES.** No `/haipipe-data`, no `/haipipe-nn`, no `/haipipe-task`, no task scaffolding, no inline store scan. It writes questions; the PROBE worker dispatches them (LAW 1).
 7. **DRAFT may orient; PROBE must dispatch.** Inline glob/WebSearch is legitimate DRAFT fuel. It is NEVER evidence and never lands in an A. PROBE is exactly one worker call.
 8. **`cross-project:` is MANDATORY on every BUILD question.** A named sibling-project path or `none-found`. Empty is a FAIL. This is how JL's 2026-07-05 ruling (cross-project reuse is a USER decision; MATCH may NAME a source but not CONSUME it) reaches the gate that authorizes spend -- GATE 1b, which is the only gate that can SEE it, because the MATCH that NAMES it does not run until PROBE.

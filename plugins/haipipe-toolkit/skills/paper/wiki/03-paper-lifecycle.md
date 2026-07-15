@@ -88,7 +88,7 @@ wording.
 ```text
 paper GAP -> question SECTION (1-probes/) -> the PROBE phase's MATCH ->
 DISPATCH what MATCH cannot close -> the answering QA file -> the section's
-`reading:` -> the paper backfills (a claim's status flips in 1-claims.md)
+`a-consumer:` -> the paper backfills (a claim's status flips in 1-claims.md)
 ```
 
 Common routes:
@@ -102,5 +102,5 @@ display needs materialized result    -> /haipipe-task-for-display <need>
 settled claim status                 -> 0-lifecycle/1-claims/1-claims.md (the ONLY
                                         home of a claim's status; `## Verdict` and
                                         `verdicted` are DELETED — the probe section
-                                        carries only its `reading:`)
+                                        carries only its `a-consumer:`)
 ```

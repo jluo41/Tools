@@ -135,7 +135,7 @@ Do **not** use when:
 The skill discovers whichever of these exist in the project tree:
 
 0. **`0-lifecycle/2-pitch/2-pitch.md`** (paper folder, if present) -- current one-minute paper story. Use it as the reader-facing framing constraint, not as evidence.
-1. **`0-lifecycle/1-claims/1-claims.md`** (best) -- the claim ledger. It is the ONLY home of a claim's status (`supported | refuted | inconclusive` + confidence + claim_type): a probe section carries only its `reading:`, and `## Verdict`/`verdicted` are DELETED. If present, use the ledger as the spine of the narrative; every supported claim becomes a section in the report.
+1. **`0-lifecycle/1-claims/1-claims.md`** (best) -- the claim ledger. It is the ONLY home of a claim's status (`supported | refuted | inconclusive` + confidence + claim_type): a probe section carries only its `a-consumer:`, and `## Verdict`/`verdicted` are DELETED. If present, use the ledger as the spine of the narrative; every supported claim becomes a section in the report.
 2. **`IDEA_REPORT.md`** -- chosen idea, hypothesis, novelty justification (from `/idea-discovery`). Supplies the problem statement and intended contribution.
 3. **`review-stage/AUTO_REVIEW.md`** (fall back to `./AUTO_REVIEW.md`) -- review history, weaknesses fixed, remaining limitations (from `/auto-review-loop`). Supplies the limitations section and reframings.
 4. **Experiment results** -- JSON / CSV / TSV under `figures/`, `results/`, `outputs/`, `tasks/`. These are the raw evidence for every quantitative claim. Each number that ends up in the narrative must trace back to one of these files.

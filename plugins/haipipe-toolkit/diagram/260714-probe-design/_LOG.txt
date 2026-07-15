@@ -144,6 +144,29 @@ JL comments (`> JL:`) that land in 01-04 move HERE once their edit is applied, v
        instinct) — is a real lifecycle question I did NOT decide. Flagged below.
 
 
+[2026-07-15 02:15 · SHIPPED] VOCABULARY: commission→q-executor, reading→a-consumer, the 2×2
+  > JL: commission is confusing — rename to something like Q-executor. Do we have
+        Q-consumer, A-consumer, A-executor as well?
+  >> CC: YES — there is a full 2×2, now documented in the constitution ("THE FOUR FORMS"):
+       QUESTION  Q-consumer (## Why + ## Q)  ──T1──▶  Q-executor  = `q-executor:` field
+       ANSWER    A-consumer = `a-consumer:` field  ◀─T2──  A-executor = the QA file's ## Answer
+     The probe file holds only the two BRIDGE ends; the far corners live in ## Why / the QA
+     Answer. T1 = ① ORGANIZE, T2 = ⑤ INTERPRET.
+     JL chose to rename BOTH fields (keep the `commissioned` STATE + the verb "to commission"):
+       commission: → q-executor:   (the noun/field; verb & state kept)   ~35 field sites
+       reading:    → a-consumer:   (its mirror)                          ~69 field sites
+     Renamed across ~57 files: fields, field-lists (serves/target/state/q-executor/a-consumer),
+     backtick noun-refs, both checkers (grep + FAIL codes: LAW2-q-executor-leak,
+     read-with-empty-a-consumer), descriptions + trigger keywords. KEPT: "commissioned"
+     (state), "commissions/commissioning" (verb), "reading" (verb "reading the file").
+     ⚠️ BUG THE FIXTURE CAUGHT: the new field names have a HYPHEN; the checker's field-reset
+     alternation was `(serves|target|state|commission|reading|…):` — after rename the hyphen
+     broke the match, so `- q-executor:` never reset the block scalar and a valid `read`
+     section FAILed (read-with-empty-a-consumer). Fixed the alternation → q-executor|a-consumer.
+     VERIFIED: original checker PASSes the fixture, my first cut FAILed, post-fix PASSes again.
+     This is the FIRST real end-to-end exercise of the checker on the new field shape.
+
+
 ⏳ STILL OWED
 =============
 

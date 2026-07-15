@@ -85,7 +85,7 @@ Where the principles are enforced
    which the section's `target:` then points at;
    a CLAIM's status lands in 0-lifecycle/1-claims/1-claims.md — per-claim,
    per-paper, private. 💀 `## Verdict` and `verdicted` are DELETED (R7); the
-   probe section carries only its `reading:`.
+   probe section carries only its `a-consumer:`.
 ②  discovery creator/reviewer loops (full) + reviewer quick-pass (ENRICH);
    author writes the claim status from the QA file; paper-probe worker mechanical acceptance
 ④  probe light reuse (zero-write => zero ceremony);

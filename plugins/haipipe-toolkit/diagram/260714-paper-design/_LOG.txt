@@ -45,16 +45,39 @@ JL `> JL:` comments move here verbatim once their edit lands.
      gateway; app gateway/verdict). Collapsed the paper `probe` Dispatch note (~30 lines
      re-deriving the campaign) to a pointer at fn/probes.md.
 
+[2026-07-15 · SHIPPED] file 05-how-probe-works.txt added (JL asked for it)
+  >> CC: documents how probe actually works in the paper — ONE flat by-topic pool
+     (1-probes/, stage affinity is the section's `serves:`, never the path), ONE worker
+     (haipipe-paper-probe, running the haipipe-probe CONSTITUTION — doctrine it reads, not
+     a runtime call; COLLECT ①–④ shared, HARVEST ⑤ paper-side), and TWO scopes that trigger
+     it: a stage's PROBE phase (its own `serves:` slice) and the paper-level `probe` verb
+     (whole pool: board / plan the cross-stage campaign / batch-run). Neither scope touches
+     the bank — only the worker crosses, via a probe file + clean agent. Resolves the wrinkle
+     that file 02's "each stage has a PROBE phase" framing read as if there were N probes.
+
+[2026-07-15 · SHIPPED] skills/paper quality-audit cleanup (JL: line count · one-sentence-one-line · meta sizes)
+  >> CC: (a) purged skills/paper/_archive (160 files) + the nested haipipe-paper-folder/_archive
+     — NOTE: these were stale WORKING-TREE cruft already absent from committed HEAD (an earlier
+     commit had dropped them); recoverable from history (commit 7aadb90). Not the "44% win" first
+     billed; housekeeping. (b) resource/SKILL.md 534→476: summary changelog blob, the "why this
+     exists (receipt)" paragraph, the 50-line CGMtoAge worked example, and the dated JL quotes
+     all removed → they already live in diagram/260714-resource-stage/. (c) 2-phase/SKILLSET_REVIEW.md
+     (a dated audit ledger) → diagram/260707-2phase-review/. (d) 8 bloated descriptions trimmed
+     toward ~55 words; probe-citation summary changelog deflated. (e) umbrella one-sentence-one-line
+     pass. Left UNCOMMITTED — JL mid-refactor (commission: → q-executor:).
+
 
 ⏳ STILL OWED
 =============
 
 ```text
-  1. THE OLD GATEWAY TOMBSTONES — "💀 the probe GATEWAY agent is RETIRED" survives in ~11
-     paper/application worker + wiki files (fn/probes, resource, section-edit, probe-citation,
-     2-phase READMEs, per-stage-dispatch, app wikis). Same no-tombstone smell, pre-existing
-     from the probe redesign. Recommend one uniform sweep: drop the clause, keep the live
-     "clean context IS the wall / dispatch goes direct" statement next to it.
+  1. THE OLD GATEWAY TOMBSTONES — PAPER SIDE DONE (2026-07-15): all "💀 …GATEWAY…RETIRED"
+     clauses swept from skills/paper (fn/probes, resource, section-edit, probe-citation ×2,
+     2-phase READMEs, per-stage-dispatch, wiki/08); `grep '💀…GATEWAY'` = 0. The live
+     "clean context IS the wall / dispatch goes direct" statement was kept next to each.
+     STILL OWED: the APPLICATION side (app fn/probes, wikis) — same uniform sweep.
+     (Also flagged but out of scope: 4 separate `💀 verdicted/answers/## Verdict DELETED`
+     tombstones remain in paper — a different retired-state family, JL to say.)
   2. application umbrella description still 1027 ch (only the design-mandated sentence was
      removed). A full ~55-word trim like the paper twin is optional — JL to say.
 ```

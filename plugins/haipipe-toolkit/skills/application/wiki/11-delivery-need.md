@@ -13,7 +13,7 @@ No message bus, no shared contract file, no mailbox. Two channels carry it:
              1-probes/PPNN_<topic>.md. `/haipipe-application probe run` hands the
              open sections to haipipe-application-probe (the PROBE phase worker),
              which MATCHes the bank first and only then DISPATCHes the section's
-             `commission` block -- VERBATIM, and nothing else -- to
+             `q-executor` block -- VERBATIM, and nothing else -- to
                Agent(haipipe-task-orchestrator-agent)
                Agent(haipipe-discovery-orchestrator-agent)
              Stages never dispatch an evidence agent themselves.
@@ -23,11 +23,11 @@ No message bus, no shared contract file, no mailbox. Two channels carry it:
    (async)   <task-folder>/QA/<n>-<slug>.md -- written by the EXECUTOR, in general
              language. The section's `target:` POINTS at that file (binding is by
              PATH, never by id: no PP id ever crosses to the bank). The section's
-             `reading:` interprets it for this intervention.
+             `a-consumer:` interprets it for this intervention.
              No handshake. Two files, two writers, neither shared.
 ```
 
-**Who owns which format.** The application owns the QUESTION (the `commission`, in general language) and the MEANING (the `reading`, in intervention language). The executor owns the FACT (its QA file, in general language). Each artifact's shape belongs to the skill that produces it — which is why no shared interface file is needed, and why the evidence stays reusable by every other consumer.
+**Who owns which format.** The application owns the QUESTION (the `q-executor`, in general language) and the MEANING (the `a-consumer`, in intervention language). The executor owns the FACT (its QA file, in general language). Each artifact's shape belongs to the skill that produces it — which is why no shared interface file is needed, and why the evidence stays reusable by every other consumer.
 
 **The pen never crosses the wall.** The probe CAUSES a QA file; the EXECUTOR AUTHORS it. If the PROBE phase finds a bare `results/` with no readable digest, it does not write the digest — it dispatches a digest-only run. An intervention session that writes in the bank has broken LAW 1, whatever it ends up writing.
 
@@ -37,7 +37,7 @@ Only when the deliverable requires EVIDENCE the project does not yet have. A fra
 
 ```
 stage gap -> a SECTION in 1-probes/ -> MATCH the bank (most stop here) -> commission
-          -> the executor's qa gate -> <task-folder>/QA/<n>-<slug>.md -> target: + reading: -> backfill
+          -> the executor's qa gate -> <task-folder>/QA/<n>-<slug>.md -> target: + a-consumer: -> backfill
 ```
 
 ## Routes (v5 verbs)
@@ -76,7 +76,7 @@ At `state: commissioned`, a BUILD-lane question (days-to-weeks work) also carrie
 The answer lands as a QA file in the bank. INTERPRET flows FROM it:
 
 ```
-- write the section's `reading:` -- what this fact MEANS for this intervention
+- write the section's `a-consumer:` -- what this fact MEANS for this intervention
 - flip the claim in 1-claims.md: supported -> supported; refuted -> drop or reword
   (never ship a refuted claim); inconclusive -> stays weak/GAP with the caveat recorded
 - THE STATUS IS WRITTEN THERE, not in the probe. There is no verdict to copy.

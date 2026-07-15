@@ -39,7 +39,7 @@ user → /haipipe-paper <stage> [<target>] [draft|probe|revise|check]
                 dispatches the phase engine via Skill(), in order:
        haipipe-paper-draft    → drafts from the stage's template → ⛔ STOP: user structure review
        haipipe-paper-probe    → five-step loop (ORGANIZE→MATCH→DISPATCH→POINT→INTERPRET); fans out
-                                -citation / -values / -display; DISPATCH hands the section's `commission:`
+                                -citation / -values / -display; DISPATCH hands the section's `q-executor:`
                                 block VERBATIM to Agent(haipipe-task-orchestrator-agent) /
                                 Agent(haipipe-discovery-orchestrator-agent)   [no gateway]
        haipipe-paper-revise   → runs -content / -humanizer (+ -results); proof: workers line in _LOG

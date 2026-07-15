@@ -40,7 +40,7 @@ LANES:
 17:34         [L2] 📝 Write L01_novelty/01_three-axes/sources.md
 19:39     [L1] 🤖 dispatch haipipe-discovery-reviewer-agent (bg=False)
 26:04     [L1] 📝 Write L01_novelty/01_three-axes/QA/1-three-axis-novelty.md   ← the ANSWER
-27:10 [L0] ✏️  Edit  papers/Paper-X/1-probes/PP02_novelty.md      ← target: + reading:
+27:10 [L0] ✏️  Edit  papers/Paper-X/1-probes/PP02_novelty.md      ← target: + a-consumer:
 ```
 
 Read it for: where time went (per-layer spans), sync-vs-background choices (`bg=`), which files

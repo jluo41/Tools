@@ -128,7 +128,7 @@ Do not resurrect them, and do not write them into a new discovery.yaml. What rep
 
 ```
   the CONSUMER keeps the question + the stake in ITS OWN probe file
-     papers/<P>/1-probes/PPNN_<topic>.md — a `commission:` block per question
+     papers/<P>/1-probes/PPNN_<topic>.md — a `q-executor:` block per question
   it hands us that block, VERBATIM, and nothing else
   we answer it through the `qa` verb (fn/qa.md) and return ONE PATH:
      discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md

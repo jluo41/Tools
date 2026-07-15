@@ -180,12 +180,12 @@ Composing with Evidence Workers
               ①ORGANIZE ②MATCH ③DISPATCH ④POINT ⑤INTERPRET
                     │
                     │  ② MATCH the bank's QA corpus FIRST — most questions stop here (T2 REUSE)
-                    │  ③ only what is left: the `commission` block, VERBATIM, to
+                    │  ③ only what is left: the `q-executor` block, VERBATIM, to
                     ├─────► Agent(haipipe-task-orchestrator-agent)        ─┐  clean context
                     └─────► Agent(haipipe-discovery-orchestrator-agent)   ─┘  IS the wall
                               └─► the executor runs its own `qa` gate and writes
                                   <task-folder>/QA/<n>-<slug>.md   ← the answer, in GENERAL language
-                                    └─► the section's target: points at that FILE; its reading:
+                                    └─► the section's target: points at that FILE; its a-consumer:
                                         interprets it; the CLAIM's status flips in 1-claims.md
 
         a stage reaches the bank ONLY through its PROBE phase — no direct discover/task verb

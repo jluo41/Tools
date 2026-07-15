@@ -350,7 +350,7 @@ This checker pattern works for ANY lifecycle stage that follows DRAFT→PROBE→
 
 | Stage | DRAFT checks | PROBE checks | REVISE checks | META checks |
 |---|---|---|---|---|
-| seed | 3 sections filled (question/motivations/claim shape) | probe `reading:` written on every section, each `target:` resolving on disk (1-probes/) + _CITATION_ candidates eyeballable (if probe ran) | seed is readable | ready to advance to **resource** |
+| seed | 3 sections filled (question/motivations/claim shape) | probe `a-consumer:` written on every section, each `target:` resolving on disk (1-probes/) + _CITATION_ candidates eyeballable (if probe ran) | seed is readable | ready to advance to **resource** |
 | resource | 2 sections only — Demand (one `**N<n> (H<n>)**` per hypothesis in the seed's Tentative Claim Shape) + Questions (`**Q<n> (N<n>)**`, no PP ids, no probe types); every seed `[FORWARD -> RESOURCE\|CLAIMS]` pointer consumed (N row, Q, or explicit DECLINE in _LOG); `[GATE] draft-review: approved` in _LOG quoting the user | every approved Q has landed its **A**, or is a `commissioned` BUILD card; cards verify clean SCOPED TO THIS STAGE: `sh "$CHK" <paper_root> --stage resource` exits 0 (locate `$CHK` per **Locating the card checker**) | default `[REVISE] skipped -- ledger doc`; NOT skipped when a fitness ruling is woolly | **the load-bearing sentence, asked verbatim:** "Does every hypothesis have a resource that is HAVE+FIT, or a COMMISSIONED build with an owner and a DATE, or a SCOPE CUT the human said out loud?" |
 | claims | H1/H2/H3 listed | all claims linked to evidence | claims well-stated | no unsupported GAPs |
 | pitch | cover letter drafted | venue pack consulted | readability rules pass | Editor's Chair Test |

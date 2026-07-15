@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-revise-humanizer
-description: "Remove AI-writing patterns from academic prose while preserving scholarly precision, evidence-tied claims, and venue-appropriate voice. Six-layer audit: (1) general AI-tells, (2) academic AI-tells, (3) preserve legitimate constructs, (4) claim-evidence discipline, (5) voice/venue matching, (6) funding-proposal mode (conditional). Fully automatic: applies fixes directly, leaves %% {CC-humanizer}: comments explaining WHY for CHECK review. Reads its VENDORED ref/pattern-catalog.md for the full pattern catalog. Trigger: humanize, de-AI, remove AI tells, academic voice, humanizer, /haipipe-paper-revise-humanizer."
+description: "Remove AI-writing patterns from academic prose while preserving scholarly precision, evidence-tied claims, and venue voice. Six-layer audit (general AI-tells, academic AI-tells, legitimate constructs, claim-evidence discipline, voice/venue, funding-proposal mode). Fully automatic: applies fixes directly, leaves %% {CC-humanizer}: why-comments for CHECK. Trigger: humanize, de-AI, remove AI tells, academic voice, humanizer, /haipipe-paper-revise-humanizer."
 argument-hint: "[section-or-file] [--grant] [--venue <venue>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
