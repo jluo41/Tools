@@ -143,7 +143,7 @@ stage DRAFT RAISES A QUESTION
 ④ POINT      the section's `target:` → the answering QA FILE (the file, never the folder)
     ↓
 ⑤ INTERPRET  the section's `reading:` → THE CLAIM'S STATUS FLIPS IN 1-claims.md
-             (supported | refuted | inconclusive + confidence + claim_type + G1/G2/G3);
+             (supported | refuted | inconclusive + confidence + claim_type);
              the harvest lanes pay out; sections/rounds backfill from the reading.
              There is no verdict block. "Verdict" is retired as a probe field.
     ↓

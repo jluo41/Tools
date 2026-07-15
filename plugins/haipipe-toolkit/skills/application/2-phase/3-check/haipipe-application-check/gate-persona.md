@@ -10,8 +10,8 @@ voice for its recommendation.
 
 ONLY applies to the application-side CHECK phase (and only DECIDES in
 unattended runs — in copilot mode the human decides and the persona
-merely shapes the report). HARSH gates upstream (task CODE_REVIEW,
-probe G1/G2/G3) ignore persona — they enforce minimum bars regardless.
+merely shapes the report). HARSH gates upstream (e.g. task CODE_REVIEW)
+ignore persona — they enforce minimum bars regardless.
 
 
 Three composition layers

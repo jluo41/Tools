@@ -1,12 +1,12 @@
 ---
 name: haipipe-application-claims
-description: "Stage orchestrator for the intervention's 0-lifecycle/1-claims/1-claims.md: the venue-FREE claim/evidence inventory and evidence campaign brain, and THE HOME OF EVERY CLAIM'S STATUS (supported | refuted | inconclusive, with confidence, claim_type and the G1/G2/G3 gates). Three sections: Claims (what must be true, short, with status + → PP reference), Probes (the evidence plan, one per PP), Evidence Campaign (dispatch order + dependencies + summary). Plans what evidence to collect, raises the questions the PROBE phase commissions to the task/discovery bank, and receives each answer as a probe section's `reading`. The pinned venue later sets how much of the campaign must SETTLE before artifact work (light/medium/full). Markdown only. Trigger: claims, claim ledger, what must be true, evidence plan, probes, supported, refuted, inconclusive, GAP, /haipipe-application claims."
+description: "Stage orchestrator for the intervention's 0-lifecycle/1-claims/1-claims.md: the venue-FREE claim/evidence inventory and evidence campaign brain, and THE HOME OF EVERY CLAIM'S STATUS (supported | refuted | inconclusive, with confidence and claim_type). Three sections: Claims (what must be true, short, with status + → PP reference), Probes (the evidence plan, one per PP), Evidence Campaign (dispatch order + dependencies + summary). Plans what evidence to collect, raises the questions the PROBE phase commissions to the task/discovery bank, and receives each answer as a probe section's `reading`. The pinned venue later sets how much of the campaign must SETTLE before artifact work (light/medium/full). Markdown only. Trigger: claims, claim ledger, what must be true, evidence plan, probes, supported, refuted, inconclusive, GAP, /haipipe-application claims."
 argument-hint: "[intervention-path] [--backfill <PPNN>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "5.2.1"
   last_updated: "2026-07-14"
-  summary: "Port of paper claims 4.0.0 (765696f): claims = evidence campaign brain. Three sections (Claims / Probes / Evidence Campaign; no Hypotheses app-side — mechanism lives in seed/pitch); _EVIDENCE_ → _VALUES_; settlement gate reads the campaign; ascii heading + one-sentence-per-line artifact formatting. v5.1 (paper claims 4.1.0 port): DRAFT opens by consuming seed's [FORWARD -> CLAIMS] pointers; any unconsumed pointer fails CHECK. v5.2 (probe redesign, Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3 approved JL 2026-07-14): THE CLAIM LEDGER IS NOW THE ONLY HOME OF A CLAIM'S STATUS. R7 killed the probe 'Verdict' block and the 'verdicted' state, so `supported | refuted | inconclusive` + confidence + claim_type + G1/G2/G3 land HERE, per-claim, per-consumer, private — a probe section's `reading` FEEDS this ledger and no longer carries a judgment of its own. Probe files live at 1-probes/PPNN_<topic>.md (one file per topic, one SECTION per question); the per-stage _PROBE/ folder and the 1-probe-plans/ index are RETIRED. Evidence is COMMISSIONED to the task/discovery orchestrators (the probe gateway is retired) and returns as a QA file the section's target: points at. --backfill reads the section's reading, not a verdict block. Convention pointer repointed: `haipipe-application/fn/probe-plans.md` was RENAMED to `fn/probes.md` (matching the paper twin; 'plans' is retired vocabulary per skills/STRUCTURE.md)."
+  summary: "Port of paper claims 4.0.0 (765696f): claims = evidence campaign brain. Three sections (Claims / Probes / Evidence Campaign; no Hypotheses app-side — mechanism lives in seed/pitch); _EVIDENCE_ → _VALUES_; settlement gate reads the campaign; ascii heading + one-sentence-per-line artifact formatting. v5.1 (paper claims 4.1.0 port): DRAFT opens by consuming seed's [FORWARD -> CLAIMS] pointers; any unconsumed pointer fails CHECK. v5.2 (probe redesign, Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3 approved JL 2026-07-14): THE CLAIM LEDGER IS NOW THE ONLY HOME OF A CLAIM'S STATUS. R7 killed the probe 'Verdict' block and the 'verdicted' state, so `supported | refuted | inconclusive` + confidence + claim_type land HERE, per-claim, per-consumer, private — a probe section's `reading` FEEDS this ledger and no longer carries a judgment of its own. Probe files live at 1-probes/PPNN_<topic>.md (one file per topic, one SECTION per question); the per-stage _PROBE/ folder and the 1-probe-plans/ index are RETIRED. Evidence is COMMISSIONED to the task/discovery orchestrators (the probe gateway is retired) and returns as a QA file the section's target: points at. --backfill reads the section's reading, not a verdict block. Convention pointer repointed: `haipipe-application/fn/probe-plans.md` was RENAMED to `fn/probes.md` (matching the paper twin; 'plans' is retired vocabulary per skills/STRUCTURE.md)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -40,8 +40,8 @@ Claims is the **evidence campaign brain**. It does three jobs in sequence:
 
 **THE CLAIM'S STATUS LIVES IN THIS LEDGER, AND NOWHERE ELSE** (R7, 2026-07-14). A probe file
 does not judge — it carries the evidence's MEANING for this intervention (its `reading`), and
-that is all. The judgment — `supported | refuted | inconclusive`, plus `confidence`,
-`claim_type`, and the G1/G2/G3 gates — is written HERE, per-claim, private to this intervention.
+that is all. The judgment — `supported | refuted | inconclusive`, plus `confidence` and
+`claim_type` — is written HERE, per-claim, private to this intervention, by the author reading the answered QA file.
 Two consumers reading the SAME bank fact may reach different judgments about their own claims,
 and that is correct: the fact is shared, the judgment is not.
 💀 The probe `## Verdict` block and the `verdicted` state are DELETED. Do not write either.
@@ -78,9 +78,8 @@ Evidence Campaign     dispatch order + summary table (probe, status, deps,
 ```text
 status       supported | refuted | inconclusive      (the enum; nothing else is a status)
 confidence   how strongly the evidence carries the claim
-claim_type   associational | causal | in-sample | generalizing   (never upgraded by confidence)
-gates        G1 / G2 / G3   (judgment CONTENT is governed by the probe-review skill:
-             ../../../../probe/haipipe-probe-review/SKILL.md — only its LANDING SITE is here)
+claim_type   associational | causal | in-sample | generalizing   (never upgraded by confidence —
+             the author's OWN overclaim check; never say "causes" from associational evidence)
 ```
 
 **Formatting (artifact, not this spec):**

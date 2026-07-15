@@ -126,8 +126,8 @@ A section still `planned` two weeks later ⇒ any later session re-dispatches fr
 
 R7 — there is NO "Verdict".
 The word is DEAD; `verdicted` as a state is DELETED.
-The section's `reading` carries A-paper; the CLAIM's status (`supported | refuted | inconclusive`, plus confidence, claim_type, the G1/G2/G3 gates) lives in `1-claims.md`, judged per-claim, per-paper, PRIVATE.
-Judgment CONTENT is still governed by `../haipipe-probe-review/SKILL.md`; only its landing site changed.
+The section's `reading` carries A-paper; the CLAIM's status (`supported | refuted | inconclusive`, plus confidence and claim_type) lives in `1-claims.md`, judged per-claim, per-paper, PRIVATE.
+The CONSUMER authors that status by hand, reading the answered QA file — a probe is COMMUNICATION between consumer and executor, not judgment, so there is no review gate. Integrity is the BANK reviewers' job (task-reviewer Gate 2, discovery-reviewer); the causal/overclaim check (`claim_type`, never upgraded by confidence) is an author check in the claims skill.
 ⚠️ A DISCOVERY's own `verdict.md` (Review-type terminal file) is a DIFFERENT, executor-native thing, and it SURVIVES.
 
 R8 — the probe file is the ONLY bilingual document.
@@ -494,7 +494,8 @@ PART 9 — RETIRED MACHINERY (do not resurrect)
    💀 /haipipe-task asks (probe-aware)         DEAD — reborn probe-unaware as `qa` (R11).
    💀 haipipe-probe-orchestrator-agent         the GATEWAY. RETIRED 2026-07-14: its SWEEP became the paper-side MATCH,
       (the evidence gateway)                   its dispatch a direct Agent() call. Archived, de-registered.
-                                              ✅ SURVIVING: haipipe-probe-review SKILL + haipipe-probe-reviewer-agent.
+   💀 the G1/G2/G3 REVIEW GATE                 a probe is COMMUNICATION, not judgment. Claim status is authored by
+      (probe-review skill + reviewer agent)    the consumer from the QA file; integrity is the bank reviewers' job.
    💀 the DIRECT-ASK gateway dispatch          a direct ask ROUTES to the executor's qa verb (PART 8), runs no evidence work.
    💀 "Verdict" / "verdicted"                  dead (R7); claim status lives in 1-claims.md. A DISCOVERY's own verdict.md SURVIVES.
    💀 "row" / "table" as probe vocabulary      it is a Q-paper, in its own SECTION. No markdown tables in probe/discovery/source docs.
@@ -513,5 +514,4 @@ PART 9 — RETIRED MACHINERY (do not resurrect)
    💀 deleting T1 (translate-down)              the regex lint provably misses real leaks; T1 is semantic, LAW 2 only a backstop.
 ```
 
-Live instruments that survive: `../haipipe-probe-review/SKILL.md` (the G1/G2/G3 gates, `supported | refuted | inconclusive`, `claim_type`), plus its `g2_integrity_check.py` and `probe-caveats-checklist.txt`.
-Judgment CONTENT is that skill's business; where the judgment LANDS (`1-claims.md`, per-claim, per-paper, private) is this file's.
+Where the judgment lands: `1-claims.md`, per-claim, per-consumer, private — authored by the consumer from the answered QA file. A probe transports evidence; it does not grade it.

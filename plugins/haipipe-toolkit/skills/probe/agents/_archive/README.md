@@ -33,13 +33,9 @@ RETIRED 2026-07-14 (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, r
                                           a THIRD clean context in front of two that
                                           already had one — a hop that bought nothing.
 
-   dispatch the reviewer (full mode)     → still Agent(haipipe-probe-reviewer-agent), called
-                                          from the paper side. ✅ THAT AGENT SURVIVES.
+   dispatch the reviewer (full mode)     → the review gate is gone too; the consumer authors
+                                          the claim status from the answered QA file.
 ```
-
-Still live, do not confuse with this: `../haipipe-probe-reviewer-agent.md` and the
-`../../haipipe-probe-review/` skill — paper-side claim judging (G1/G2/G3). They were never
-part of the gateway and were not retired with it.
 
 De-registered from `~/.claude/agents/` and `<repo>/.claude/agents/` at retirement. Do not
 re-symlink: the file's instructions describe `_ASK/` stubs, `answers:` returns and PP ids

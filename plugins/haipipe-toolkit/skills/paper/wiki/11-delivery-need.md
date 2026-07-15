@@ -84,7 +84,7 @@ this paper. On backfill:
 
 ```
 - write the claim's status in 0-lifecycle/1-claims/1-claims.md — supported |
-  refuted | inconclusive, + confidence + claim_type + G1/G2/G3. THAT ledger is
+  refuted | inconclusive, + confidence + claim_type. THAT ledger is
   the only home of a claim's status.
 - if the evidence narrows the claim, narrow the claim wording in 1-claims
 - the executor NEVER edits paper prose: it returns a FACT, and the paper decides

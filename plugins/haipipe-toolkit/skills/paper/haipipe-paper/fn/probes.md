@@ -82,7 +82,7 @@ failed           a reading with a dead target · the task-folder was deleted · 
 ```
 
 💀 `verdicted` is DELETED. 💀 `dispatched` is DELETED (say `commissioned`).
-A claim's STATUS (`supported | refuted | inconclusive` + confidence + claim_type + G1/G2/G3)
+A claim's STATUS (`supported | refuted | inconclusive` + confidence + claim_type)
 lives in `0-lifecycle/1-claims/1-claims.md`. It is not a probe field. There is no `## Verdict`.
 
 Binding is by PATH, never by id

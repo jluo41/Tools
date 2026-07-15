@@ -1,0 +1,89 @@
+Change log — what this session actually did to skills/probe (and its consumers)
+===============================================================================
+Part of: diagram/260714-probe-design/  ·  the audit is files 01-04; THIS is the ledger
+of the edits that executed the audit's ruling.
+
+How it works: files 01-04 hold the AUDIT and JL's ruling (drop the gate).
+This file records each CHANGE as it SHIPPED — timestamped, with the JL ruling behind
+it and a one-line note of what moved on disk. Newest block at the bottom.
+JL comments (`> JL:`) that land in 01-04 move HERE once their edit is applied, verbatim.
+
+
+✅ SHIPPED — 2026-07-14 / 2026-07-15
+====================================
+
+[2026-07-14 23:43 · SHIPPED] the audit itself
+  Files 01-04 written; committed as the record of the ruling. Two decisions taken:
+  JL: keep 260714-probe-design/ as a SEPARATE audit (not folded into probe-qa).
+  JL: the audit covers BOTH the design question AND the concrete defects.
+
+[2026-07-15 00:05 · SHIPPED] DROP THE GATE — the judge is gone
+  > JL: a probe is COMMUNICATION between consumer and executor, not judgment —
+        drop the review/gate entirely.
+  >> CC: executed. A probe is now pure transport; the consumer authors the claim's
+     status (supported | refuted | inconclusive + confidence + claim_type) by hand
+     from the answered QA file, in its own 1-claims.md. What went:
+       · DELETED  skills/probe/haipipe-probe-review/  (SKILL + CHANGELOG +
+                  g2_integrity_check.py + probe-caveats-checklist.txt)
+       · DELETED  skills/probe/agents/haipipe-probe-reviewer-agent.md
+       · de-registered the reviewer agent (~/.claude/agents symlink removed)
+     Safe because examples/ is empty → 0 live 1-claims.md on disk → doc-only,
+     fully git-reversible; nothing broke. CC's flagged loss (the independent
+     causal/overclaim guard) was ACCEPTED by JL; the claim_type check survives as
+     the claims skill's OWN author check (never "causes" from associational evidence).
+
+[2026-07-15 00:05 · SHIPPED] the wiring, swept clean across both consumer families
+  Removed every reference to the deleted judge — DISPATCH calls and G1/G2/G3
+  status-format mentions — so nothing dangles. Files touched:
+       probe        agents/README.md · agents/_archive/README.md · haipipe-probe/SKILL.md
+       paper        paper-probe/SKILL.md · paper-probe/ref/per-stage-dispatch.md ·
+                    paper-probe-citation/SKILL.md · paper-claims/SKILL.md ·
+                    paper/haipipe-paper/fn/probes.md · paper-narrative/SKILL.md ·
+                    paper/wiki/00-evidence-principles.md · paper/wiki/11-delivery-need.md
+       application  application-probe/SKILL.md · application-probe/ref/per-stage-dispatch.md ·
+                    application-claims/SKILL.md · application/haipipe-application/fn/probes.md ·
+                    application/README.md · application/wiki/03-intervention-lifecycle.md ·
+                    check/attendance-modes.md · check/gate-persona.md
+       shared       skills/STRUCTURE.md (probe bucket = ONE skill, no agents)
+  Verified: 0 live refs to haipipe-probe-review / -reviewer-agent / g2_integrity_check
+  remain (only a PART-9 one-liner saying the gate is gone, + one dated history line).
+
+[2026-07-15 00:05 · SHIPPED] no tombstones — deleted, not archived
+  > JL: always make the skills clean, no tomb things — 这个不是垃圾桶，啥都往里面塞.
+  >> CC: reversed course. First pass ARCHIVED the judge to _archive/ with tombstone
+     prose; JL rejected that. Redid it: DELETE cleanly (git history is the record),
+     collapsed the agents/README "Retired" graveyard, cut the verbose PART-9 entry to
+     one line. The RATIONALE lives HERE in diagram/, not stuffed into the skill.
+     Saved as a standing preference (probe/haipipe-probe/PREFERENCES.md).
+
+[2026-07-15 00:08 · SHIPPED] metadata deflation — the real "how could it be that large"
+  > JL: so many rubbish!!! how could it be that large? refer to haipipe-task.
+  >> CC: the two probe WORKERS each carried a ~6 KB CHANGELOG crammed into the
+     always-loaded `summary:` YAML field (paper-probe 5,986 ch · application-probe
+     6,720 ch), duplicating their own CHANGELOG.md. Gutted both to a one-sentence
+     summary + History/Contract pointers, matching haipipe-task (summary 483 ch).
+     Trimmed the two oversized descriptions too. Net: -12.7 KB always-loaded text.
+       paper-probe        desc 936→551 · summary 5,986→307
+       application-probe  desc 1,000→584 · summary 6,720→346
+
+[2026-07-15 00:11 · SHIPPED] one-sentence-per-line saved as a rule
+  > JL: another important thing — one sentence one line, no break lines.
+  >> CC: saved to PREFERENCES.md (mirrors haipipe-task). Held all NEW prose to it.
+     A full one-sentence-per-line REFLOW of the existing probe bodies (517/700/670
+     lines, diagram-heavy) is still OWED — see below.
+
+
+⏳ STILL OWED
+=============
+
+```text
+  1. REFLOW the probe-family bodies to one-sentence-per-line (token-safe pass,
+     fence/diagram-protected), like the haipipe-task fn/ + specialist sweep.
+  2. The BODY bloat proper: haipipe-probe 517 L, paper-probe ~700 L, application-probe
+     ~670 L still re-derive what probe-qa/ owns. A conciseness pass (the haipipe-task
+     levers) after the reflow.
+  3. The audit's other defects (03): the dated spec path cited by 86 files
+     (rename → diagram/probe/), the R21↔R18 + version 8.3↔6.0 drift.
+  4. Q1 (02): fold the claim_type overclaim reminder deeper into the claims skills,
+     or leave it as the one line added this session. JL to decide.
+```

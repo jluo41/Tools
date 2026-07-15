@@ -1,18 +1,10 @@
 probe — Agent Roster
 ======================
 
-The probe layer is a PAPER-LEVEL DOCUMENT plus a set of rules — not a place, and (since
-2026-07-14) not a gateway either. **ONE live agent remains.**
-
-```
-haipipe-probe-reviewer-agent   🔍 REVIEW — thin Judge SHELL: invokes Skill(haipipe-probe-review)
-                                          headless (the governed G1/G2/G3 rulebook) and RETURNS
-                                          its judgment as text, never written to files. Runs on
-                                          the CONSUMER side (paper OR application), dispatched by
-                                          that side's PROBE-phase worker at ⑤ INTERPRET for a
-                                          `mode: full` section; the CALLER lands the claim's
-                                          status in its own 0-lifecycle/1-claims/1-claims.md.
-```
+The probe layer owns **no agents.** A probe is COMMUNICATION between a consumer and an executor:
+it maps a question to an answer and gets out of the way. It dispatches to agents that live in
+OTHER skills (the task and discovery orchestrators), and the consumer authors its own claim
+status. A probe transports evidence; it does not grade it.
 
 The probe writes NO bank file. Its only files are the paper's own
 `papers/<P>/1-probes/PPNN_<topic>.md` probe files. Execution artifacts live in `tasks/` and
@@ -33,41 +25,12 @@ Dispatch — DIRECT, no gateway
    │        both run the `qa` gate inside:  ① QA scan  ② digest  ③ P-B-E-R
    │        both return a PATH:  <task-folder>/QA/<n>-<slug>.md   ← the EXECUTOR authored it
    │
-   │  ⑤ INTERPRET — with the QA file in hand, and only for a `mode: full` section
-   │
-   └──▶ Agent(haipipe-probe-reviewer-agent)           G1/G2/G3 claim judging
-                                                      (consumer-side; reads the QA file, judges
-                                                       MY claim, returns TEXT — writes nothing.
-                                                       The caller lands it in 1-claims.md.)
+   └─ ⑤ INTERPRET — with the QA file in hand, the CONSUMER'S OWN session reads the answer and
+      writes the claim's status into its 0-lifecycle/1-claims/1-claims.md. No agent, no gate.
 ```
 
 THEIR CLEAN CONTEXT IS THE WALL. The old gateway was a third clean context standing in front
 of two that already had one — a hop that bought nothing and cost a stake leak.
-
-
-Retired
--------
-
-```
-haipipe-probe-orchestrator-agent   🎯 the GATEWAY. RETIRED 2026-07-14 (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3,
-   → ./_archive/                      CC-6 / JL-13). Its SWEEP became the paper-side MATCH; its
-                                      dispatch became a direct Agent() call; its _ASK/ stub is a
-                                      spec violation now (the bank is probe-unaware, R2).
-                                      De-registered from ~/.claude/agents/ + <repo>/.claude/agents/.
-                                      Do NOT re-symlink. See ./_archive/README.md.
-
-haipipe-probe-creator-agent        produced probe.yaml / evidence.md / status.md — none of which
-   → ../_archive/_old/                exist in the folderless model.
-```
-
-The reviewer also absorbed three earlier Judge agents (merge predates folderless, 2026-06-23):
-
-```
-RETIRED                              MERGED INTO
-probe-structural-reviewer-agent  →  haipipe-probe-reviewer-agent (G1)
-probe-integrity-auditor-agent    →  haipipe-probe-reviewer-agent (G2)
-claim-verifier-agent             →  haipipe-probe-reviewer-agent (G3)
-```
 
 
 Knowledge home
@@ -79,11 +42,9 @@ Agents are THIN — every rule lives in its canonical home:
 the constitution (probe file anatomy, path binding,   → ../haipipe-probe/SKILL.md
 the QA/ contract, the qa verb, the two LAWS,             ⭐ START HERE
 status derivation, the writer table)
-Judge gate logic (G1/G2/G3)          → ../haipipe-probe-review/SKILL.md   (the reviewer calls it headless)
-G2 integrity computation             → ../haipipe-probe-review/g2_integrity_check.py   (deterministic)
-confound / caveats walk              → ../haipipe-probe-review/probe-caveats-checklist.txt
+the claim's status + claim_type overclaim check       → ../../<consumer>/1-lifecycle/1-claims/
+(authored by the consumer, from the answered QA file)   haipipe-{paper,application}-claims/SKILL.md
 the qa verb's executor-side flow     → ../../task/haipipe-task/fn/qa.md  ·  the discovery twin
-gateway-era + folder-era rationale   → ./_archive/  ·  ../_archive/  (history only)
 ```
 
 

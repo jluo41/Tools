@@ -42,7 +42,7 @@ Spine folder names are the intervention's `0-lifecycle/` stage folders (dual-2 n
 A section's `serves:` field is what binds it to a stage — never its path. All probe files live FLAT in `1-probes/`, one cross-stage pool.
 
 - **0-seed** (venue-FREE) — DEFAULT RUN for a new seed: landscape / prior interventions / benchmarks / cohort sanity, to sharpen the seed question. Mostly discovery-shaped. No venue pinned yet: source anchors stay in the section's `reading`; no citation/display lanes.
-- **1-claims** (venue-FREE) — the core evidence stage; one question per GAP claim. The `reading` feeds the claim, and the CLAIM'S STATUS FLIPS IN `1-claims.md` (`supported | refuted | inconclusive` + confidence + claim_type + G1/G2/G3). There is no `## Verdict` block and no `verdicted` state — both are DELETED. Verified numbers land in `_VALUES_1-claims.md` (values lane fires here even pre-pin).
+- **1-claims** (venue-FREE) — the core evidence stage; one question per GAP claim. The `reading` feeds the claim, and the CLAIM'S STATUS FLIPS IN `1-claims.md` (`supported | refuted | inconclusive` + confidence + claim_type). There is no `## Verdict` block and no `verdicted` state — both are DELETED. Verified numbers land in `_VALUES_1-claims.md` (values lane fires here even pre-pin).
 - **2-venue** — venue-level questions: channel capability, compliance constraints, prior sends on this channel.
 - **2-pitch** — rare: anchor evidence for the theory of change if the ledger lacks it.
 - **3-narrative** — rarely fires; a beat exposing a NEW evidence gap becomes a `serves: 1-claims` section, never gathers here.
