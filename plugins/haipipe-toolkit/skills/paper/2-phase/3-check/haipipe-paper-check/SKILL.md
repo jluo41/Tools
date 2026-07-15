@@ -13,16 +13,21 @@ metadata:
 Skill: haipipe-paper-check (internal phase worker)
 =====================================================
 
-CHECK phase worker. Called by stage skills as the auto-gate for the DPRC lifecycle. **CHECK is the ONLY judgment-involved phase** -- DRAFT, PROBE, and REVISE run fully automatic without stopping for input. CHECK is where everything is reviewed at once: by the human (copilot mode, default) or by a reviewer subagent standing in (autopilot mode; see Gate Modes below).
+CHECK phase worker.
+Called by stage skills as the auto-gate for the DPRC lifecycle.
+**CHECK is the ONLY judgment-involved phase** -- DRAFT, PROBE, and REVISE run fully automatic without stopping for input.
+CHECK is where everything is reviewed at once: by the human (copilot mode, default) or by a reviewer subagent standing in (autopilot mode; see Gate Modes below).
 
-**Not user-facing.** Users invoke stage skills:
+**Not user-facing.**
+Users invoke stage skills:
 ```
 /haipipe-paper claims           → claims skill calls this internally for CHECK phase
 /haipipe-paper pitch            → pitch skill calls this internally for CHECK phase
 /haipipe-paper section-edit §3  → section-edit skill calls this internally
 ```
 
-The check has three parts: (1) **MECHANICAL** -- run automated sub-checkers, produce a pass/fail report; (2) **SEED `> CHECK:` COMMENTS** -- plant every flagged item at its exact spot in the working doc so the human's in-file pass is guided by the file itself; (3) **HUMAN** -- walk the `> CHECK:` comments, answer with `> USER:` comments, decide (proceed / restart / new round / accept / park -- see What Each Decision Does). On restart, the restarted phase reads the `> CHECK:` comments + their `> USER:` replies and responds to them.
+The check has three parts: (1) **MECHANICAL** -- run automated sub-checkers, produce a pass/fail report; (2) **SEED `> CHECK:` COMMENTS** -- plant every flagged item at its exact spot in the working doc so the human's in-file pass is guided by the file itself; (3) **HUMAN** -- walk the `> CHECK:` comments, answer with `> USER:` comments, decide (proceed / restart / new round / accept / park -- see What Each Decision Does).
+On restart, the restarted phase reads the `> CHECK:` comments + their `> USER:` replies and responds to them.
 
 
 ## How It Works
@@ -49,9 +54,14 @@ The check has three parts: (1) **MECHANICAL** -- run automated sub-checkers, pro
          complete the 5 outcomes -- see What Each Decision Does)
 ```
 
-1. **Run**: execute all applicable sub-checkers. For the deterministic text-match checks (em-dash, AI-voice tells, TODO, bibtex-in-markdown, broken `\cite`, broken/orphan `\label`↔`\ref`, Pn.Sn sequence) run `./checks.sh <tex-or-dir> [--md <working-doc>] [--depth N] [--compile]` and paste its ✅/⚠️/❌ lines (`--compile` wraps `./1-compile.sh`; `--depth` widens the tex/bib scan for deep layouts). For the PROBE invariants (`planned` sections, unresolvable `target:`s, owed harvest lanes, bibtex/tables in working docs) run the paper probe checker (locate it per **Locating the card checker** below — the script KEEPS its `check-probe-cards.sh` filename) — any FAIL line means the gate CANNOT go green (a `state: planned` section or a `harvest: OWED` lane at this gate = a probe that never ran). Judgment checks (citation support, value provenance, display correctness) stay manual.
+1. **Run**: execute all applicable sub-checkers.
+   For the deterministic text-match checks (em-dash, AI-voice tells, TODO, bibtex-in-markdown, broken `\cite`, broken/orphan `\label`↔`\ref`, Pn.Sn sequence) run `./checks.sh <tex-or-dir> [--md <working-doc>] [--depth N] [--compile]` and paste its ✅/⚠️/❌ lines (`--compile` wraps `./1-compile.sh`; `--depth` widens the tex/bib scan for deep layouts).
+   For the PROBE invariants (`planned` sections, unresolvable `target:`s, owed harvest lanes, bibtex/tables in working docs) run the paper probe checker (locate it per **Locating the card checker** below — the script KEEPS its `check-probe-cards.sh` filename) — any FAIL line means the gate CANNOT go green (a `state: planned` section or a `harvest: OWED` lane at this gate = a probe that never ran).
+   Judgment checks (citation support, value provenance, display correctness) stay manual.
 2. **Report**: present results as a structured pass/fail table (see Report Format).
-2.5. **Seed `> CHECK:` comments**: every flagged/🔍/⚠️ item is planted as ONE `> CHECK:` comment at the exact spot in the working doc (outline / _CITATION_ / _VALUES_ / _DISPLAY_ / tex) it refers to -- one line stating the issue + the judgment needed, with concrete values, never an abstract description. The chat report is the map; the in-file `> CHECK:` comments are what the human actually walks. A CHECK that hands over with a clean file and a chat-only report is DEFECTIVE (test-123333333: JL entered 0-seed.md to review and found nothing to guide the pass).
+2.5. **Seed `> CHECK:` comments**: every flagged/🔍/⚠️ item is planted as ONE `> CHECK:` comment at the exact spot in the working doc (outline / _CITATION_ / _VALUES_ / _DISPLAY_ / tex) it refers to -- one line stating the issue + the judgment needed, with concrete values, never an abstract description.
+The chat report is the map; the in-file `> CHECK:` comments are what the human actually walks.
+A CHECK that hands over with a clean file and a chat-only report is DEFECTIVE (test-123333333: JL entered 0-seed.md to review and found nothing to guide the pass).
 3. **Human review**: the human walks the `> CHECK:` comments and replies `> USER:` under each (see Human Actions During CHECK for the per-track steps).
 4. **Decide**: proceed / restart / new round / accept / park.
 5. **On restart**: the restarted phase (DRAFT/PROBE/REVISE) reads the `> CHECK:` comments and their `> USER:` replies and responds to each; resolved threads archive to `_LOG` per `../../../wiki/02-comment-lifecycle.md`.
@@ -59,7 +69,10 @@ The check has three parts: (1) **MECHANICAL** -- run automated sub-checkers, pro
 
 ## Locating the card checker
 
-Installed skills flatten the tree, so a hard-coded relative path (`../../1-probe/...`) is NOT reliable. Glob for it — but **glob UNAMBIGUOUSLY**: TWO files named `check-probe-cards.sh` exist on disk (the paper family's, under `haipipe-paper-probe/`, and the application family's, under `haipipe-application-probe/`). A bare `find ... -name check-probe-cards.sh | head -1` can resolve to the WRONG FAMILY and silently check a paper against application invariants. Filter on the path, and fail LOUDLY when nothing matches:
+Installed skills flatten the tree, so a hard-coded relative path (`../../1-probe/...`) is NOT reliable.
+Glob for it — but **glob UNAMBIGUOUSLY**: TWO files named `check-probe-cards.sh` exist on disk (the paper family's, under `haipipe-paper-probe/`, and the application family's, under `haipipe-application-probe/`).
+A bare `find ... -name check-probe-cards.sh | head -1` can resolve to the WRONG FAMILY and silently check a paper against application invariants.
+Filter on the path, and fail LOUDLY when nothing matches:
 
 ```sh
 CHK=$(find ~/.claude/skills "$CLAUDE_PLUGIN_ROOT" "$CLAUDE_SKILL_DIR/../../../.." \
@@ -72,12 +85,14 @@ sh "$CHK" <paper_root> --stage <stage-key>  # gate-scoped pass (see the per-stag
 
 A missing checker is a FAIL, never a silent skip: a gate that cannot run its checker has not checked anything.
 
-`--stage <stage-key>` asserts only the cards whose `serves:` names this stage. Without it, ONE in-flight `commissioned` build reds the gate of EVERY downstream stage for as long as the build runs, and every other stage's un-run cards red THIS one (JL resource-stage ruling C8-i).
+`--stage <stage-key>` asserts only the cards whose `serves:` names this stage.
+Without it, ONE in-flight `commissioned` build reds the gate of EVERY downstream stage for as long as the build runs, and every other stage's un-run cards red THIS one (JL resource-stage ruling C8-i).
 
 
 ## Gate Modes (copilot | autopilot)
 
-Mode spec is owned by `../../../wiki/08-stage-gate.md` (`gate_mode` in STATUS.md, default copilot). What changes INSIDE this worker:
+Mode spec is owned by `../../../1-lifecycle/ref/08-stage-gate.md` (`gate_mode` in STATUS.md, default copilot).
+What changes INSIDE this worker:
 
 ```
 🧑 copilot     steps 2.5-4 above run as written: the worker seeds the `> CHECK:` comments, the human
@@ -101,9 +116,11 @@ The judgment step always happens; autopilot only changes WHO sits in the review 
 
 ## Sub-Checkers
 
-Five groups of checks, one per phase (+ META, + PROOF). Checks that don't apply to a section are marked `-- skipped` (e.g., proof checks for a section without proofs, values checks for a section without numbers).
+Five groups of checks, one per phase (+ META, + PROOF).
+Checks that don't apply to a section are marked `-- skipped` (e.g., proof checks for a section without proofs, values checks for a section without numbers).
 
-The deterministic text-match rows below are runnable in one shot: `./checks.sh <tex-or-paper-dir> --md _CITATION_ --md _VALUES_`. The judgment rows (does the citation SUPPORT the claim, is the VALUE traceable, does the DISPLAY match) are human/reviewer work and are described once under **Human Actions During CHECK** -- the tables here only say what gets flagged, not how the human resolves it.
+The deterministic text-match rows below are runnable in one shot: `./checks.sh <tex-or-paper-dir> --md _CITATION_ --md _VALUES_`.
+The judgment rows (does the citation SUPPORT the claim, is the VALUE traceable, does the DISPLAY match) are human/reviewer work and are described once under **Human Actions During CHECK** -- the tables here only say what gets flagged, not how the human resolves it.
 
 ### 📝 DRAFT checks — verify the outline is well-formed
 
@@ -159,8 +176,7 @@ Since PROBE runs automatically, some items require human action during CHECK (se
 | outline ↔ tex synced | compare outline sentences vs tex sentences | content matches |
 | banner points match content | read each `% Para [X.P#]` and verify the ¶ below matches | all match |
 
-(em-dash is a ❌ FAIL in checks.sh -- absolute house rule, same tier as TODO;
-AI-voice and Pn.Sn stay ⚠️ because they have legitimate false-positive room.
+(em-dash is a ❌ FAIL in checks.sh -- absolute house rule, same tier as TODO; AI-voice and Pn.Sn stay ⚠️ because they have legitimate false-positive room.
 JL 2026-07-07: "统一提议。")
 
 ### 📐 META checks — verify whole-section integrity
@@ -181,7 +197,8 @@ Runs only if the section contains `\begin{proof}`, `\begin{theorem}`, or `\begin
 |---|---|---|
 | proof checker passes | dispatch to haipipe-paper-proof-checker (Agent tool) | verdict PASS or WARN |
 
-The proof-checker (sibling in 3-check/) produces its own detailed report; this checker extracts the verdict. See Relation to sibling.
+The proof-checker (sibling in 3-check/) produces its own detailed report; this checker extracts the verdict.
+See Relation to sibling.
 
 
 ## Report Format
@@ -281,9 +298,13 @@ PASSED: 14   FAILED: 1   WARNING: 1   SKIPPED: 4
 
 The decision is recorded in the _LOG with the check report, so future sessions know what was decided and why.
 
-**Stage Exit Invariant: CHECK is the ONLY door out of a stage.** For every stage EXCEPT `resource`, its verdicts move in exactly two directions: ♻️ restart re-opens a PHASE within the SAME stage (DRAFT / PROBE / REVISE -- never another stage); ✅ proceed (or 🤷 accept) crosses the gate to the NEXT stage. Going BACK across stages (e.g. redoing seed while the frontier is section-edit) is NOT a CHECK outcome -- that is a lifecycle loopback: re-enter the earlier stage (🔥 moves there, 🚀 stays at the frontier), and it runs its own DPRC and its own CHECK gate.
+**Stage Exit Invariant: CHECK is the ONLY door out of a stage.**
+For every stage EXCEPT `resource`, its verdicts move in exactly two directions: ♻️ restart re-opens a PHASE within the SAME stage (DRAFT / PROBE / REVISE -- never another stage); ✅ proceed (or 🤷 accept) crosses the gate to the NEXT stage.
+Going BACK across stages (e.g. redoing seed while the frontier is section-edit) is NOT a CHECK outcome -- that is a lifecycle loopback: re-enter the earlier stage (🔥 moves there, 🚀 stays at the frontier), and it runs its own DPRC and its own CHECK gate.
 
-**AMENDMENT -- `resource` only: THREE directions, not two (JL ruling C7, 2026-07-14; spec in `../../../wiki/08-stage-gate.md`).** The two verdicts above admit no KILL. The resource gate adds a third exit:
+**AMENDMENT -- `resource` only: THREE directions, not two (JL ruling C7, 2026-07-14; spec in `../../../1-lifecycle/ref/08-stage-gate.md`).**
+The two verdicts above admit no KILL.
+The resource gate adds a third exit:
 
 ```
 ✅ proceed  -> claims                       the normal forward gate; maturity: resource
@@ -294,12 +315,17 @@ The decision is recorded in the _LOG with the check report, so future sessions k
                                             behind a DUA, and there is nothing to do but wait.
 ```
 
-Rationale: a stage whose PURPOSE is discovering that the paper CANNOT BE WRITTEN must be able to SAY SO. Without `reseed` and `park` this gate could only `promote -> claims`, mechanically handing a DEAD PAPER FORWARD -- the exact failure the stage was built to end. `reseed` and `park` are offered at the resource gate ALONGSIDE the five standard decisions; a CHECK run on resource that does not offer them is DEFECTIVE. The amendment does NOT generalize -- every other stage still has exactly the two directions above.
+Rationale: a stage whose PURPOSE is discovering that the paper CANNOT BE WRITTEN must be able to SAY SO.
+Without `reseed` and `park` this gate could only `promote -> claims`, mechanically handing a DEAD PAPER FORWARD -- the exact failure the stage was built to end.
+`reseed` and `park` are offered at the resource gate ALONGSIDE the five standard decisions; a CHECK run on resource that does not offer them is DEFECTIVE.
+The amendment does NOT generalize -- every other stage still has exactly the two directions above.
 
 
 ## Human Actions During CHECK
 
-CHECK is where every human action in the lifecycle happens. The entry point is the `> CHECK:` comments: open the working docs the report's CHECK COMMENTS SEEDED line names and walk them -- each flagged item below is anchored by one, so the pass is guided, not a self-service hunt. Reply `> USER:` under each as you go (plus any free `> USER:` comments of your own).
+CHECK is where every human action in the lifecycle happens.
+The entry point is the `> CHECK:` comments: open the working docs the report's CHECK COMMENTS SEEDED line names and walk them -- each flagged item below is anchored by one, so the pass is guided, not a self-service hunt.
+Reply `> USER:` under each as you go (plus any free `> USER:` comments of your own).
 
 ### Citation verification
 
@@ -311,7 +337,8 @@ CHECK is where every human action in the lifecycle happens. The entry point is t
 6. In _CITATION_, mark verified `> ✅ SEARCH:` / rejected `> ❌ SEARCH: reason`
 7. On restart, the agent auto-places newly verified keys
 
-**The agent NEVER generates bibtex — the human copies it from Scholar into `.bib`. Bibtex lives ONLY in `.bib`, never in _CITATION_ or any markdown.**
+**The agent NEVER generates bibtex — the human copies it from Scholar into `.bib`.
+Bibtex lives ONLY in `.bib`, never in _CITATION_ or any markdown.**
 
 ### Values verification
 
@@ -346,7 +373,8 @@ When the human restarts from a phase (e.g., "restart from PROBE"):
 
 ## Applicability Beyond Section-Edit
 
-This checker pattern works for ANY lifecycle stage that follows DRAFT→PROBE→REVISE→CHECK. For non-section-edit stages:
+This checker pattern works for ANY lifecycle stage that follows DRAFT→PROBE→REVISE→CHECK.
+For non-section-edit stages:
 
 | Stage | DRAFT checks | PROBE checks | REVISE checks | META checks |
 |---|---|---|---|---|
@@ -374,7 +402,8 @@ a demand with NO resource                             -> NOT A FAILURE. It is a 
                                                                 gets smaller; the paper does not get wrong.
 ```
 
-The card-status rulings (eta, owner, cross-project) are already enforced mechanically by the checker — RUN it and SHOW its output, never eyeball the cards. The fitness ruling and the scope cut are judgment items: seed them as `> CHECK:` comments and let the human answer.
+The card-status rulings (eta, owner, cross-project) are already enforced mechanically by the checker — RUN it and SHOW its output, never eyeball the cards.
+The fitness ruling and the scope cut are judgment items: seed them as `> CHECK:` comments and let the human answer.
 
 Resource's decision menu carries THREE exits, not two — see the AMENDMENT under **Stage Exit Invariant**: ✅ proceed -> claims · 🔥 reseed -> [LOOPBACK -> SEED] · 🅿️ park -> `maturity: resource-blocked`.
 
@@ -387,7 +416,8 @@ Resource's decision menu carries THREE exits, not two — see the AMENDMENT unde
   haipipe-paper-proof-checker/   ← sub-checker (math proofs only)
 ```
 
-The checker CALLS the proof-checker when needed. The proof-checker never runs alone as the CHECK phase gate.
+The checker CALLS the proof-checker when needed.
+The proof-checker never runs alone as the CHECK phase gate.
 
 
 ## Done criteria

@@ -13,12 +13,14 @@ metadata:
 
 # haipipe-paper-revise-humanizer
 
-Remove AI-writing patterns from academic prose while preserving scholarly precision and voice. This is a REVISE worker that runs alongside `revise-content` (what sentences say + how paragraphs weave). This skill reviews HOW sentences sound.
+Remove AI-writing patterns from academic prose while preserving scholarly precision and voice.
+This is a REVISE worker that runs alongside `revise-content` (what sentences say + how paragraphs weave).
+This skill reviews HOW sentences sound.
 
 ## Reference
 
-The full pattern catalog is VENDORED in this skill: `ref/pattern-catalog.md`
-(+ `ref/before-after.md` worked examples). Read it before every audit pass.
+The full pattern catalog is VENDORED in this skill: `ref/pattern-catalog.md` (+ `ref/before-after.md` worked examples).
+Read it before every audit pass.
 It contains:
 - 12+ general AI-tell patterns with before/after examples
 - 11 academic-specific AI-tell categories with examples
@@ -27,11 +29,8 @@ It contains:
 - Voice/venue matching guidance
 - Funding-proposal mode (NSF/NIH)
 
-House rule (JL 2026-07-07): skills are SELF-CONTAINED — a SKILL never depends
-on `references/` content at runtime. The upstream source
-(AIScientists-Dev/academic-humanizer, a submodule under `references/`) is
-archival provenance only; refresh the vendored copy from it deliberately,
-never point at it from a workflow.
+House rule (JL 2026-07-07): skills are SELF-CONTAINED — a SKILL never depends on `references/` content at runtime.
+The upstream source (AIScientists-Dev/academic-humanizer, a submodule under `references/`) is archival provenance only; refresh the vendored copy from it deliberately, never point at it from a workflow.
 
 ## Six-layer audit
 
@@ -58,7 +57,8 @@ Layer  What it checks                         Action
 
 ## Workflow (automatic apply with explanatory comments)
 
-REVISE is fully automatic. No comment-first, no waiting for human approval.
+REVISE is fully automatic.
+No comment-first, no waiting for human approval.
 
 ```
 1. READ the section tex or outline. Note venue from STATUS.md.
@@ -81,7 +81,8 @@ REVISE is fully automatic. No comment-first, no waiting for human approval.
 
 ## Key rules from the reference
 
-These are the most important rules. For the full catalog with examples, read the reference.
+These are the most important rules.
+For the full catalog with examples, read the reference.
 
 ### Always remove
 - Em-dashes (recast as commas, colons, parentheses, or separate sentences)
@@ -101,7 +102,9 @@ These are the most important rules. For the full catalog with examples, read the
 - Any number, equation, citation, or formal definition
 
 ### Claim-evidence rule
-Every empirical claim must: (a) be backed by a number/figure/table/citation, (b) have verb strength matching evidence strength. "Shows" not "proves". Ranges not point estimates unless method stated.
+Every empirical claim must: (a) be backed by a number/figure/table/citation, (b) have verb strength matching evidence strength.
+"Shows" not "proves".
+Ranges not point estimates unless method stated.
 
 ## Relation to other REVISE workers
 

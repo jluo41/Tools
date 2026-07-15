@@ -19,8 +19,7 @@ ablation-driven        method described as deltas from baseline
 reproducibility-first  explicit configs, seeds, data versions, code refs
 ```
 
-Most papers blend: a formal block for the contribution, an operational
-block for how it was actually run.
+Most papers blend: a formal block for the contribution, an operational block for how it was actually run.
 
 Sub-section pattern (matches 04-XX_*.tex layout)
 -------------------------------------------------

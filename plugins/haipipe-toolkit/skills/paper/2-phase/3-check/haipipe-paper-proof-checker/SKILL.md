@@ -20,8 +20,11 @@ Systematically verify a mathematical proof via cross-model adversarial review, f
 
 - MAX_REVIEW_ROUNDS = 3
 - REVIEWER_MODEL = `gpt-5.4` via Codex MCP, reasoning effort always `xhigh`
-- **REVIEWER_BACKEND = `codex`** — Default: Codex MCP (xhigh). Override with `— reviewer: oracle-pro` for GPT-5.4 Pro via Oracle MCP. See `Tools/legacy/dikw-full/research-toolkit/skills/00_meta/shared-references/reviewer-routing.md`.
-- AUDIT_DOC: `PROOF_AUDIT.md` at the paper directory root, alongside `main.tex` (cumulative log). Primary caller: `haipipe-paper-check` dispatches this skill as its PROOF sub-checker; the legacy `/paper-writing` Phase 6 (retired to Tools/legacy/) used `paper/PROOF_AUDIT.md`.
+- **REVIEWER_BACKEND = `codex`** — Default: Codex MCP (xhigh).
+  Override with `— reviewer: oracle-pro` for GPT-5.4 Pro via Oracle MCP.
+  See `Tools/legacy/dikw-full/research-toolkit/skills/00_meta/shared-references/reviewer-routing.md`.
+- AUDIT_DOC: `PROOF_AUDIT.md` at the paper directory root, alongside `main.tex` (cumulative log).
+  Primary caller: `haipipe-paper-check` dispatches this skill as its PROOF sub-checker; the legacy `/paper-writing` Phase 6 (retired to Tools/legacy/) used `paper/PROOF_AUDIT.md`.
 - REPORT_TEX: `proof_audit_report.tex` (formal before/after PDF)
 - STATE_FILE: `PROOF_CHECK_STATE.json` (for recovery)
 - SKELETON_DOC: `PROOF_SKELETON.md` (micro-claim inventory)
@@ -136,13 +139,17 @@ When the proof invokes any of the following, require explicit verification of AL
 
 ### Phase 0.5: Proof-Obligation Ledger
 
-Build formal accounting artifacts. Save to `PROOF_SKELETON.md`:
+Build formal accounting artifacts.
+Save to `PROOF_SKELETON.md`:
 
 #### 1. Dependency DAG
-Nodes = Definitions / Assumptions / Lemmas / Theorems. Edges = "uses". **Detect cycles** (including semantic circularity where Lemma A uses a corollary that quietly depends on A).
+Nodes = Definitions / Assumptions / Lemmas / Theorems.
+Edges = "uses".
+**Detect cycles** (including semantic circularity where Lemma A uses a corollary that quietly depends on A).
 
 #### 2. Assumption Ledger
-For each theorem/lemma, list every hypothesis with WHERE each is verified (or mark "UNVERIFIED"). Track **usage-minimal assumption sets** — which assumptions were actually used vs merely stated.
+For each theorem/lemma, list every hypothesis with WHERE each is verified (or mark "UNVERIFIED").
+Track **usage-minimal assumption sets** — which assumptions were actually used vs merely stated.
 
 #### 3. Typed Symbol Table
 Each symbol must have a **type signature**:
@@ -226,7 +233,9 @@ mcp__codex__codex:
     [FULL PROOF CONTENT HERE]
 ```
 
-**Save the threadId.** Parse into structured issue list. Write to `PROOF_AUDIT.md`.
+**Save the threadId.**
+Parse into structured issue list.
+Write to `PROOF_AUDIT.md`.
 
 ### Phase 1.5: Counterexample Red Team
 
@@ -247,7 +256,8 @@ Systematically attempt to construct counterexamples using:
 | **Adversarial parameter scaling** | Pick parameters making neglected terms dominate |
 | **Numeric falsification** | Translate lemma to a function, brute-force optimize over small domain |
 
-**Rule**: Label "counterexample found" ONLY if algebraically verified. Otherwise log as "candidate counterexample — needs verification."
+**Rule**: Label "counterexample found" ONLY if algebraically verified.
+Otherwise log as "candidate counterexample — needs verification."
 
 Record all attempts (successful or not) in `PROOF_AUDIT.md`.
 
@@ -297,9 +307,12 @@ pdflatex -interaction=nonstopmode <file>.tex 2>&1 | grep -E "Error|Warning|undef
 
 ### Phase 3: Re-Review (Codex GPT-5.4 xhigh)
 
-Use `codex-reply` with saved threadId. Include fix summaries. Request the same mandatory checklist.
+Use `codex-reply` with saved threadId.
+Include fix summaries.
+Request the same mandatory checklist.
 
-Check acceptance gate. If not met, repeat Phases 2-3 (up to MAX_REVIEW_ROUNDS).
+Check acceptance gate.
+If not met, repeat Phases 2-3 (up to MAX_REVIEW_ROUNDS).
 
 ### Phase 3.5: Global Closure & Independent Verification
 
@@ -341,7 +354,8 @@ If acceptance gate is not met after MAX_REVIEW_ROUNDS, output a **Proof Unrecove
 3. Which parts of the proof are likely still reusable
 4. Recommended next steps for the author
 
-Do NOT silently declare success. The report must be honest.
+Do NOT silently declare success.
+The report must be honest.
 
 ### Phase 4: Audit Report Generation
 
@@ -378,17 +392,25 @@ Write `PROOF_CHECK_STATE.json`:
 ## Key Rules
 
 ### Mathematical rigor
-- **Never accept a proof step on faith**. "Clearly" / "it follows" / "by standard arguments" are red flags — each must spawn a micro-claim.
-- **Hypothesis discharge**: Every time a lemma is APPLIED, verify EACH of its hypotheses at that point. Use the side-condition checklists above.
+- **Never accept a proof step on faith**.
+  "Clearly" / "it follows" / "by standard arguments" are red flags — each must spawn a micro-claim.
+- **Hypothesis discharge**: Every time a lemma is APPLIED, verify EACH of its hypotheses at that point.
+  Use the side-condition checklists above.
 - **Interchange discipline**: Every swap of limit/expectation/derivative/integral must cite a theorem (DCT/MCT/Fubini/Leibniz) and verify its conditions with explicit dominating function or integrability proof.
-- **Uniformity discipline**: Every O(·)/Θ(·) must declare what parameters it is uniform over. "O(1)" that secretly depends on d,n,K is a CONSTANT_DEPENDENCE_HIDDEN issue.
-- **Quantifier discipline**: Check ∀/∃ order. "For sufficiently small κ" must specify: does κ₀ depend on K? On π? On d?
+- **Uniformity discipline**: Every O(·)/Θ(·) must declare what parameters it is uniform over.
+  "O(1)" that secretly depends on d,n,K is a CONSTANT_DEPENDENCE_HIDDEN issue.
+- **Quantifier discipline**: Check ∀/∃ order.
+  "For sufficiently small κ" must specify: does κ₀ depend on K?
+  On π?
+  On d?
 - **Counterexample-first**: Before trying to fix a gap, first try to break it.
-- **WLOG prohibition**: Every "without loss of generality" must have an explicit micro-claim proving the reduction. No free WLOGs.
+- **WLOG prohibition**: Every "without loss of generality" must have an explicit micro-claim proving the reduction.
+  No free WLOGs.
 - **No silent assumption strengthening**: Any fix that adds conditions must propagate to the theorem statement.
 
 ### Cross-model protocol
-- **Claude analyzes, Codex reviews**: Claude reads proof, formulates questions, implements fixes. Codex provides adversarial review.
+- **Claude analyzes, Codex reviews**: Claude reads proof, formulates questions, implements fixes.
+  Codex provides adversarial review.
 - **Codex reasoning always xhigh**: Never downgrade.
 - **Send full content**: Don't summarize — send actual math for line-by-line checking.
 - **Preserve threadId**: Use `codex-reply` for follow-up rounds.
@@ -416,7 +438,9 @@ Write `PROOF_CHECK_STATE.json`:
 
 ## Submission Artifact Emission
 
-This skill **always** writes `PROOF_AUDIT.json` at the paper directory root (`<your-paper-dir>/PROOF_AUDIT.json`; the legacy `/paper-writing` flow used `paper/`), regardless of caller or whether the paper contains theorems. A paper with no `\begin{theorem}` / `\begin{lemma}` / `\begin{proof}` emits verdict `NOT_APPLICABLE`; silent skip is forbidden. The CHECK gate (haipipe-paper-check, the primary caller) and the legacy `Tools/legacy/dikw-full/research-toolkit/tools/verify_paper_audits.sh` both rely on this artifact existing at `<paper-dir>/PROOF_AUDIT.json`.
+This skill **always** writes `PROOF_AUDIT.json` at the paper directory root (`<your-paper-dir>/PROOF_AUDIT.json`; the legacy `/paper-writing` flow used `paper/`), regardless of caller or whether the paper contains theorems.
+A paper with no `\begin{theorem}` / `\begin{lemma}` / `\begin{proof}` emits verdict `NOT_APPLICABLE`; silent skip is forbidden.
+The CHECK gate (haipipe-paper-check, the primary caller) and the legacy `Tools/legacy/dikw-full/research-toolkit/tools/verify_paper_audits.sh` both rely on this artifact existing at `<paper-dir>/PROOF_AUDIT.json`.
 
 The artifact conforms to the schema in `Tools/legacy/dikw-full/research-toolkit/skills/00_meta/shared-references/assurance-contract.md`:
 
@@ -447,9 +471,11 @@ The artifact conforms to the schema in `Tools/legacy/dikw-full/research-toolkit/
 
 ### `audited_input_hashes` scope
 
-Hash the **declared input set** actually reviewed — the theorem-bearing `.tex` files passed into this invocation — not a repo-wide union and not the reviewer's self-reported opened subset. The external verifier rehashes these entries; any mismatch flags `STALE`.
+Hash the **declared input set** actually reviewed — the theorem-bearing `.tex` files passed into this invocation — not a repo-wide union and not the reviewer's self-reported opened subset.
+The external verifier rehashes these entries; any mismatch flags `STALE`.
 
-**Path convention** (must match `Tools/legacy/dikw-full/research-toolkit/tools/verify_paper_audits.sh`): keys are **paths relative to the paper directory** (no `paper/` prefix — the verifier resolves relative to the paper dir; prefixing produces `paper/paper/...` and false-fails as STALE). Use **absolute paths** for files outside the paper dir.
+**Path convention** (must match `Tools/legacy/dikw-full/research-toolkit/tools/verify_paper_audits.sh`): keys are **paths relative to the paper directory** (no `paper/` prefix — the verifier resolves relative to the paper dir; prefixing produces `paper/paper/...` and false-fails as STALE).
+Use **absolute paths** for files outside the paper dir.
 
 ### Verdict decision table
 
@@ -466,7 +492,9 @@ MAJOR issues alone map to `WARN` or `FAIL` at the reviewer's discretion and must
 
 ### Thread independence
 
-Every invocation uses a fresh `mcp__codex__codex` thread. Never `codex-reply` across haipipe-paper-proof-checker runs. Do not accept prior audit outputs (PAPER_CLAIM_AUDIT, CITATION_AUDIT, EXPERIMENT_LOG) as input — the fresh thread preserves reviewer independence per `Tools/legacy/dikw-full/research-toolkit/skills/00_meta/shared-references/reviewer-independence.md`.
+Every invocation uses a fresh `mcp__codex__codex` thread.
+Never `codex-reply` across haipipe-paper-proof-checker runs.
+Do not accept prior audit outputs (PAPER_CLAIM_AUDIT, CITATION_AUDIT, EXPERIMENT_LOG) as input — the fresh thread preserves reviewer independence per `Tools/legacy/dikw-full/research-toolkit/skills/00_meta/shared-references/reviewer-independence.md`.
 
 This skill never blocks by itself; the caller decides whether the verdict blocks — today that is haipipe-paper-check (CHECK gate outcome), historically `/paper-writing` Phase 6 plus the legacy verifier via the `assurance` level.
 

@@ -11,9 +11,12 @@ metadata:
 Skill: haipipe-paper-folder (paper folder scaffold)
 ====================================================
 
-One job: **scaffold a new paper folder's contents, QUICKLY.** Three small files + four empty dirs, then stop. No questionnaire beyond a one-line working title, no LaTeX, no section stubs, no venue assumptions.
+One job: **scaffold a new paper folder's contents, QUICKLY.**
+Three small files + four empty dirs, then stop.
+No questionnaire beyond a one-line working title, no LaTeX, no section stubs, no venue assumptions.
 
-Division of labor: `/haipipe-paper enter <paper-path> [--org <owner>]` (the front door; a missing path confirms then creates) handles repo creation + submodule wiring for papers inside Project-* repos (per the papers-inside recipe in `project/haipipe-project/fn/repo-project.md`), then dispatches here via `haipipe-paper-lifecycle folder` to fill the folder. This skill never runs gh or git submodule commands.
+Division of labor: `/haipipe-paper enter <paper-path> [--org <owner>]` (the front door; a missing path confirms then creates) handles repo creation + submodule wiring for papers inside Project-* repos (per the papers-inside recipe in `project/haipipe-project/fn/repo-project.md`), then dispatches here via `haipipe-paper-lifecycle folder` to fill the folder.
+This skill never runs gh or git submodule commands.
 
 
 Default Scaffold (the whole job)
@@ -30,7 +33,9 @@ Paper-<Name>/
 └── 1-probes/           # EMPTY -- the probe-file pool (README.md + flat PPNN_<topic>.md probe files, created on first probe; one cross-stage pool, one file per TOPIC)
 ```
 
-Absent-until-written: `0-lifecycle/` starts empty. `/haipipe-paper seed` creates `0-seed/`, resource creates `1-resource/`, claims creates `1-claims/`, and so on down the spine (`0-seed, 1-resource, 1-claims, 2-pitch, 3-narrative, 4-display, 5-section-edit` -- resource and claims SHARE the number 1, as `2-venue/` and `2-pitch/` already do; the number is decoration and nothing renumbers). Early stages are markdown, so a fresh paper contains no tex and needs no compiler.
+Absent-until-written: `0-lifecycle/` starts empty.
+`/haipipe-paper seed` creates `0-seed/`, resource creates `1-resource/`, claims creates `1-claims/`, and so on down the spine (`0-seed, 1-resource, 1-claims, 2-pitch, 3-narrative, 4-display, 5-section-edit` -- resource and claims SHARE the number 1, as `2-venue/` and `2-pitch/` already do; the number is decoration and nothing renumbers).
+Early stages are markdown, so a fresh paper contains no tex and needs no compiler.
 
 STATUS.md template (the stage strip and the enter console parse this; keep the shape):
 
@@ -51,7 +56,8 @@ active_round: none
 | created | YYYY-MM-DD |
 ```
 
-Do NOT include a `| venue |` row at creation. `/haipipe-paper-venue` ADDS it when pinning; the stage strip reads the row's absence as venue-unpinned.
+Do NOT include a `| venue |` row at creation.
+`/haipipe-paper-venue` ADDS it when pinning; the stage strip reads the row's absence as venue-unpinned.
 
 .gitignore contract:
 
@@ -84,7 +90,8 @@ Report tree + next step (`/haipipe-paper enter <path>` then `seed`), with the re
 Manuscript Upgrade (on request; NOT part of creation)
 ------------------------------------------------------
 
-When the paper reaches tex-bearing work (display units, section-edit prose), add the manuscript machinery. Typically requested once, at the display or section-edit frontier:
+When the paper reaches tex-bearing work (display units, section-edit prose), add the manuscript machinery.
+Typically requested once, at the display or section-edit frontier:
 
 ```
 0-<Name>-<Venue><Year>.tex     # master shell: venue preamble + \input{} per section
@@ -104,7 +111,8 @@ Section format follows the pinned venue (consult the paper's `0-lifecycle/2-venu
 
 Section-file rules: files hold content only (the master shell owns `\section{}`); meta-files list subsections via `\input{}`; subsections `NN-MM_slug.tex`; SI sections letter-prefixed (`A_*.tex`).
 
-Compile script contract: auto-detect all `0-*.tex` (excluding `-DIFF`), 4-pass `pdflatex -> bibtex -> pdflatex -> pdflatex`, clean aux on exit unless `--keep`, `--clean-only` supported, report PDF size + pages. Canonical implementations to copy: `examples/ProjB-PhyTrait-OpioidRx/paper/Paper-Personality2Opioid-MISQ2026/1-compile.sh` (and `.ps1`).
+Compile script contract: auto-detect all `0-*.tex` (excluding `-DIFF`), 4-pass `pdflatex -> bibtex -> pdflatex -> pdflatex`, clean aux on exit unless `--keep`, `--clean-only` supported, report PDF size + pages.
+Canonical implementations to copy: `examples/ProjB-PhyTrait-OpioidRx/paper/Paper-Personality2Opioid-MISQ2026/1-compile.sh` (and `.ps1`).
 
 
 Not this skill's job

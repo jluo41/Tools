@@ -15,7 +15,9 @@ metadata:
 Skill: haipipe-paper-probe-values
 ========================================
 
-values probe worker for `haipipe-paper-section-edit`. One skill owns the full values lifecycle for one section, from number identification through pre-submission re-derivation. The single working document is `_VALUES_N-section.md`.
+values probe worker for `haipipe-paper-section-edit`.
+One skill owns the full values lifecycle for one section, from number identification through pre-submission re-derivation.
+The single working document is `_VALUES_N-section.md`.
 
 ```
 /haipipe-paper-probe-values                       → status dashboard
@@ -28,13 +30,19 @@ values probe worker for `haipipe-paper-section-edit`. One skill owns the full va
 
 ## Hard Boundaries
 
-1. **NEVER fabricate a number.** Every number in tex must trace to a source (task output, regression log, display CSV, or external reference). The agent never invents, rounds, or interpolates values.
+1. **NEVER fabricate a number.** Every number in tex must trace to a source (task output, regression log, display CSV, or external reference).
+   The agent never invents, rounds, or interpolates values.
 
-2. **Auto-place only source-verified values.** During PLACE, the agent reads the source file (CSV, log, parquet output) and compares. If the number matches the source at displayed precision, the agent places it (status ✅). If the source is missing, ambiguous, or the number does not match, the agent flags it 🔍 or ⚠️ for CHECK. The human confirms flagged values during CHECK.
+2. **Auto-place only source-verified values.** During PLACE, the agent reads the source file (CSV, log, parquet output) and compares.
+   If the number matches the source at displayed precision, the agent places it (status ✅).
+   If the source is missing, ambiguous, or the number does not match, the agent flags it 🔍 or ⚠️ for CHECK.
+   The human confirms flagged values during CHECK.
 
-3. **The parquet/script decides, not the prose.** When the prose says one number and the data source says another, the data source wins. Never pick the majority across sections.
+3. **The parquet/script decides, not the prose.** When the prose says one number and the data source says another, the data source wins.
+   Never pick the majority across sections.
 
-4. **NEVER trust cached outputs alone.** Re-run the analysis script or read the actual data file. A CSV checked into the repo may predate the canonical data.
+4. **NEVER trust cached outputs alone.** Re-run the analysis script or read the actual data file.
+   A CSV checked into the repo may predate the canonical data.
 
 
 ## Five Phases (fully automatic)
@@ -50,12 +58,17 @@ Phase 4: PLACE        auto-place source-verified values; flag uncertain for CHEC
 Phase 5: REVIEW       pre-submission re-derivation walk (from manual-review-values)
 ```
 
-All five phases run automatically without stopping for human input. The agent traces numbers to source files, verifies what it can, and flags the rest for CHECK. Human review happens ONLY in the CHECK phase (haipipe-paper-check). During CHECK, the human confirms flagged numbers against source, adds `> USER:` comments, and decides. If CHECK restarts PROBE, the agent reads those `> USER:` comments and responds.
+All five phases run automatically without stopping for human input.
+The agent traces numbers to source files, verifies what it can, and flags the rest for CHECK.
+Human review happens ONLY in the CHECK phase (haipipe-paper-check).
+During CHECK, the human confirms flagged numbers against source, adds `> USER:` comments, and decides.
+If CHECK restarts PROBE, the agent reads those `> USER:` comments and responds.
 
 
 ## Phase 1: AUDIT
 
-Scan the section's WORKING .md (every `{VAL:? <what>}` slot AND every literal number in the prose); tex only when it exists post-sync. Extract every quantitative claim:
+Scan the section's WORKING .md (every `{VAL:? <what>}` slot AND every literal number in the prose); tex only when it exists post-sync.
+Extract every quantitative claim:
 
 - Sample sizes (N = X)
 - Rates, percentages, proportions
@@ -70,22 +83,17 @@ For each, record:
 P#.S# | exact phrase | number(s) | claim type | expected source
 ```
 
-Skip `%%` comment lines. Do NOT skip table/figure captions.
+Skip `%%` comment lines.
+Do NOT skip table/figure captions.
 
 
 ## Phase 2: ROUTE (trace-as-grep is RETIRED — JL 2026-07-07 harvester ruling)
 
-Pointer-following only: this worker may READ a path that is already NAMED
-somewhere (a probe section's `values:` lane or `target:` QA file, a `_DISPLAY_`
-registry row, a `_CITATION_` entry, an explicit path in a tex comment). It may NOT grep
-`tasks/`/`code/` to DISCOVER which task holds a number — "which task has this
-number" is an evidence question, answered by the EXECUTOR in its own clean
-context (index-first discipline lives there, not here).
+Pointer-following only: this worker may READ a path that is already NAMED somewhere (a probe section's `values:` lane or `target:` QA file, a `_DISPLAY_` registry row, a `_CITATION_` entry, an explicit path in a tex comment).
+It may NOT grep `tasks/`/`code/` to DISCOVER which task holds a number — "which task has this number" is an evidence question, answered by the EXECUTOR in its own clean context (index-first discipline lives there, not here).
 
-EXEMPT from that ban (JL 2026-07-10): the paper's OWN registries. Sweeping the
-closed whitelist below is pointer-following over indexes the lifecycle itself
-curated — the paper deposits verified pointers all through DPRC, and PROBE
-checks its own shelves before paying for a dispatch.
+EXEMPT from that ban (JL 2026-07-10): the paper's OWN registries.
+Sweeping the closed whitelist below is pointer-following over indexes the lifecycle itself curated — the paper deposits verified pointers all through DPRC, and PROBE checks its own shelves before paying for a dispatch.
 
 For each Phase-1 number:
 
@@ -95,15 +103,12 @@ For each Phase-1 number:
 | PAPER-LOCAL SWEEP hits — the number appears in a sibling/prior `_VALUES_*.md`, ANY stage's `answered \| read \| answered-local` probe SECTION's `values:` lane / `target:` QA file (seed, claims, display included), `0-displays/*/source/` (metrics.json, source_data.csv), or `_EVIDENCE_1-claims.md` | ADOPT THE POINTER, NOT THE VERDICT: copy the `Source:` path, add `Note: pointer via <file> (<status> <date>)`; the entry enters ⬜ and PLACE re-verifies against the ORIGINAL source (Hard Boundary 4 untouched) |
 | No named source and no paper-local hit | raise a question SECTION in 1-probes/ (q-executor: "where does the number for <phrase> come from?") and hand it to the PROBE hub — MATCH greps the bank's QA corpus, and only an unmatched question is DISPATCHED |
 
-Method claims ("Holm-Bonferroni corrected", "cluster-robust SEs") route the
-same way: unverifiable-from-named-sources → a question SECTION, not a codebase grep.
+Method claims ("Holm-Bonferroni corrected", "cluster-robust SEs") route the same way: unverifiable-from-named-sources → a question SECTION, not a codebase grep.
 
 
 ## Phase 3: CANDIDATE → _VALUES_
 
-⚠️ **PRECONDITION — READ THE TARGET QA FILE'S STATE LINE BEFORE HARVESTING (R19/R20).** A QA file
-is a TICKET that becomes a RECEIPT, and `harvest <stage> <qa_file>` is a published direct
-invocation that must gate itself:
+⚠️ **PRECONDITION — READ THE TARGET QA FILE'S STATE LINE BEFORE HARVESTING (R19/R20).** A QA file is a TICKET that becomes a RECEIPT, and `harvest <stage> <qa_file>` is a published direct invocation that must gate itself:
 
 ```
 state=$(sed -n 's/^- state:[[:space:]]*//p' "$qa_file" | head -1)
@@ -121,7 +126,8 @@ state=$(sed -n 's/^- state:[[:space:]]*//p' "$qa_file" | head -1)
   NO state line          🚫 REFUSE. `state:` is MANDATORY (checker: qa-no-state).
 ```
 
-This is READ-ONLY. This worker still NEVER writes the QA file — ONE WRITER, the executor, always.
+This is READ-ONLY.
+This worker still NEVER writes the QA file — ONE WRITER, the executor, always.
 
 Write entries to `_VALUES_N-section.md`.
 
@@ -172,12 +178,14 @@ The agent auto-places values it can verify against source files and flags the re
 5. **For ❌ method claims** with no code implementation:
    - Flag for CHECK (the human confirms or drops the claim)
 
-6. Update _VALUES_ statuses and continue. No blocking.
+6. Update _VALUES_ statuses and continue.
+   No blocking.
 
 
 ## Phase 5: REVIEW (pre-submission)
 
-The slow, paranoid, human-paced re-derivation pass. For each number:
+The slow, paranoid, human-paced re-derivation pass.
+For each number:
 
 1. **Re-derive** from raw data (parquet, CSV, script output)
 2. **Compare** at displayed precision
@@ -200,7 +208,9 @@ For every method claim, grep the codebase:
 
 ### Figure audit
 
-Extract numbers embedded in figures via `pdftotext -layout` or visual read. Cross-check against body text. For closed-format figure sources (`.pptx`, `.key`, `.ai`): flag for human action, never edit directly.
+Extract numbers embedded in figures via `pdftotext -layout` or visual read.
+Cross-check against body text.
+For closed-format figure sources (`.pptx`, `.key`, `.ai`): flag for human action, never edit directly.
 
 ### Verification recipes
 
@@ -226,7 +236,9 @@ Extract numbers embedded in figures via `pdftotext -layout` or visual read. Cros
 - `figure_drift_from_body` -- figure embeds a corrected number
 - `unverifiable` -- no script or data source available
 
-**One claim at a time. One approval per fix. No batching.**
+**One claim at a time.
+One approval per fix.
+No batching.**
 
 
 ## _VALUES_ file organization

@@ -43,10 +43,10 @@ paper/
 
 | File | Read it for |
 |---|---|
-| `wiki/03-paper-lifecycle.md` | stage spine, maturity ladder, loopback rule, evidence-worker handoff |
+| `1-lifecycle/ref/03-paper-lifecycle.md` | stage spine, maturity ladder, loopback rule, evidence-worker handoff |
 | `wiki/07-paper-rounds.md` | `1-rounds/` contract, file semantics, triage targets |
 | `wiki/06-paper-skill-structure.md` | skill-tree target, router rule, maturity rule |
-| `wiki/04-lifecycle-map.md` | stage-to-procedure map with reads/writes/calls |
+| `1-lifecycle/ref/04-lifecycle-map.md` | stage-to-procedure map with reads/writes/calls |
 
 ## Retired names
 

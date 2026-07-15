@@ -22,12 +22,11 @@ Generate the data plots for a paper based on: **$ARGUMENTS**
 
 ## Output: write into a display unit (not flat figures/)
 
-When the target is a paper (a folder with `0-displays/`), the plot goes into a
-`0-displays/displayNN-<slug>/` unit, NOT a flat `figures/` directory. Follow the
-shared contract: `../haipipe-paper-display/ref/display-unit-output-contract.md`.
-For THIS renderer: asset -> `assets/figure.pdf`; rebuild spec -> `source/gen_*.py`
-(+ `source/paper_plot_style.py`). Wire `float.tex`, compile `preview.pdf`, set
-README status. Flat `figures/` is a fallback only when there is no paper.
+When the target is a paper (a folder with `0-displays/`), the plot goes into a `0-displays/displayNN-<slug>/` unit, NOT a flat `figures/` directory.
+Follow the shared contract: `../haipipe-paper-display/ref/display-unit-output-contract.md`.
+For THIS renderer: asset -> `assets/figure.pdf`; rebuild spec -> `source/gen_*.py` (+ `source/paper_plot_style.py`).
+Wire `float.tex`, compile `preview.pdf`, set README status.
+Flat `figures/` is a fallback only when there is no paper.
 
 ## Scope: What This Skill Can and Cannot Do
 
@@ -40,16 +39,22 @@ README status. Flat `figures/` is a fallback only when there is no paper.
 | **Generated image grids** | ❌ No — manual | Grids of generated samples (e.g., GAN/diffusion outputs). These come from running your model, not from this skill |
 | **Photographs / screenshots** | ❌ No — manual | Real-world images, UI screenshots, qualitative examples |
 
-**In practice:** For a typical ML paper, this skill handles the data plots (a large share of the figure set). Tables go to `haipipe-paper-display-table`; the hero figure / architecture diagram / qualitative results are created via the diagram/illustration skills or manually and placed in `figures/` before running `/haipipe-paper-edit-write`. The skill will detect manually-made figures as "existing figures" and preserve them.
+**In practice:** For a typical ML paper, this skill handles the data plots (a large share of the figure set).
+Tables go to `haipipe-paper-display-table`; the hero figure / architecture diagram / qualitative results are created via the diagram/illustration skills or manually and placed in `figures/` before running `/haipipe-paper-edit-write`.
+The skill will detect manually-made figures as "existing figures" and preserve them.
 
 ## Constants
 
-- **STYLE = `publication`** — Visual style preset. Options: `publication` (default, clean for print), `poster` (larger fonts), `slide` (bold colors)
+- **STYLE = `publication`** — Visual style preset.
+  Options: `publication` (default, clean for print), `poster` (larger fonts), `slide` (bold colors)
 - **DPI = 300** — Output resolution
-- **FORMAT = `pdf`** — Output format. Options: `pdf` (vector, best for LaTeX), `png` (raster fallback)
-- **COLOR_PALETTE = `tab10`** — Default matplotlib color cycle. Options: `tab10`, `Set2`, `colorblind` (deuteranopia-safe)
+- **FORMAT = `pdf`** — Output format.
+  Options: `pdf` (vector, best for LaTeX), `png` (raster fallback)
+- **COLOR_PALETTE = `tab10`** — Default matplotlib color cycle.
+  Options: `tab10`, `Set2`, `colorblind` (deuteranopia-safe)
 - **FONT_SIZE = 10** — Base font size (matches typical conference body text)
-- **FIG_DIR** — for a paper, the display unit `0-displays/displayNN-slug/` (plot -> `assets/figure.pdf`, scripts -> `source/`). Flat `figures/` only with no paper.
+- **FIG_DIR** — for a paper, the display unit `0-displays/displayNN-slug/` (plot -> `assets/figure.pdf`, scripts -> `source/`).
+  Flat `figures/` only with no paper.
 - **REVIEWER_MODEL = `gpt-5.5`** — Model used via Codex MCP for figure quality review.
 
 ## Inputs
@@ -166,9 +171,8 @@ for bar, val in zip(bars, values):
 save_fig(fig, 'fig3_comparison')
 ```
 
-**Comparison / coefficient tables** (LaTeX): out of scope — use
-`haipipe-paper-display-table`, which owns booktabs rules, significance stars, SE
-rows, panels, and table notes. Do not emit `.tex` tables from this skill.
+**Comparison / coefficient tables** (LaTeX): out of scope — use `haipipe-paper-display-table`, which owns booktabs rules, significance stars, SE rows, panels, and table notes.
+Do not emit `.tex` tables from this skill.
 
 **Architecture/pipeline diagrams** (MANUAL — outside this skill's scope):
 - These require manual creation using draw.io, Figma, Keynote, or TikZ
@@ -292,4 +296,6 @@ figures/
 
 ## Acknowledgements
 
-Design pattern (type × style matrix) inspired by [baoyu-skills](https://github.com/jimliu/baoyu-skills). Publication style defaults and figure rules from [pedrohcgs/claude-code-my-workflow](https://github.com/pedrohcgs/claude-code-my-workflow). Visualization decision tree from [Imbad0202/academic-research-skills](https://github.com/Imbad0202/academic-research-skills).
+Design pattern (type × style matrix) inspired by [baoyu-skills](https://github.com/jimliu/baoyu-skills).
+Publication style defaults and figure rules from [pedrohcgs/claude-code-my-workflow](https://github.com/pedrohcgs/claude-code-my-workflow).
+Visualization decision tree from [Imbad0202/academic-research-skills](https://github.com/Imbad0202/academic-research-skills).

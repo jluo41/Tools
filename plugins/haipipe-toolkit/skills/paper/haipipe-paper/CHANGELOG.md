@@ -138,7 +138,7 @@ Fixed
 
 ## [2.0.0] — 2026-06-22
 
-- cross-cutting protocol wiring. All stage skills now reference ../wiki/08-stage-gate.md (confirm-before-advance), ../wiki/09-stage-illuminate.md (Socratic taste elicitation), ../wiki/13-tex-quality.md (self-contained compilable tex), ../wiki/12-evidence-routing.md (\needprobe macro + probe handoff). Stage strip end-of-reply convention enforced. Enter dashboard restructured (pitch summary first). 22 feedback items addressed.
+- cross-cutting protocol wiring. All stage skills now reference ../1-lifecycle/ref/08-stage-gate.md (confirm-before-advance), ../1-lifecycle/ref/09-stage-illuminate.md (Socratic taste elicitation), ../wiki/13-tex-quality.md (self-contained compilable tex), ../wiki/12-evidence-routing.md (\needprobe macro + probe handoff). Stage strip end-of-reply convention enforced. Enter dashboard restructured (pitch summary first). 22 feedback items addressed.
 
 ## [1.5.0] — 2026-06-22
 

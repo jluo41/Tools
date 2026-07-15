@@ -16,28 +16,40 @@ Generate a conference poster from: **$ARGUMENTS**
 
 ## Context
 
-This skill runs **after** Workflow 3 (`/paper-writing`). It takes a compiled paper and generates a print-ready poster for conference poster sessions. The poster extracts key content from the paper — it does **not** dump the full paper text onto a poster.
+This skill runs **after** Workflow 3 (`/paper-writing`).
+It takes a compiled paper and generates a print-ready poster for conference poster sessions.
+The poster extracts key content from the paper — it does **not** dump the full paper text onto a poster.
 
-Unlike papers (dense prose, 8-15 pages), posters are **visual-first**: one page, 4 columns, bullet points only, figures dominant. A good poster tells the story in 60 seconds.
+Unlike papers (dense prose, 8-15 pages), posters are **visual-first**: one page, 4 columns, bullet points only, figures dominant.
+A good poster tells the story in 60 seconds.
 
 ## Constants
 
-- **VENUE = `NeurIPS`** — Target venue, determines color scheme. Supported: `NeurIPS`, `ICML`, `ICLR`, `AAAI`, `ACL`, `EMNLP`, `CVPR`, `ECCV`, `GENERIC`. Override via argument (e.g., `/paper-poster "— venue: ICML"`).
-- **POSTER_SIZE = `A0`** — Paper size. Options: `A0` (841x1189mm, default), `A1` (594x841mm).
-- **ORIENTATION = `landscape`** — Orientation. Options: `landscape` (default), `portrait`.
-- **COLUMNS = 4** — Number of content columns. Typical: 4 for landscape A0 (IMRAD), **3 for portrait A0** (research consensus), 2 for portrait A1. Portrait A0 should NEVER use 4 columns — text becomes too narrow and unreadable.
+- **VENUE = `NeurIPS`** — Target venue, determines color scheme.
+  Supported: `NeurIPS`, `ICML`, `ICLR`, `AAAI`, `ACL`, `EMNLP`, `CVPR`, `ECCV`, `GENERIC`.
+  Override via argument (e.g., `/paper-poster "— venue: ICML"`).
+- **POSTER_SIZE = `A0`** — Paper size.
+  Options: `A0` (841x1189mm, default), `A1` (594x841mm).
+- **ORIENTATION = `landscape`** — Orientation.
+  Options: `landscape` (default), `portrait`.
+- **COLUMNS = 4** — Number of content columns.
+  Typical: 4 for landscape A0 (IMRAD), **3 for portrait A0** (research consensus), 2 for portrait A1.
+  Portrait A0 should NEVER use 4 columns — text becomes too narrow and unreadable.
 - **PAPER_DIR = `paper/`** — Directory containing the compiled paper (main.tex + figures/).
 - **OUTPUT_DIR = `poster/`** — Output directory for all poster files.
 - **REVIEWER_MODEL = `gpt-5.4`** — Model used via Codex MCP for poster review.
-- **AUTO_PROCEED = false** — At each checkpoint, **always wait for explicit user confirmation**. Set `true` only if user explicitly requests fully autonomous mode.
+- **AUTO_PROCEED = false** — At each checkpoint, **always wait for explicit user confirmation**.
+  Set `true` only if user explicitly requests fully autonomous mode.
 - **COMPILER = `latexmk`** — LaTeX build tool.
-- **ENGINE = `pdflatex`** — LaTeX engine. Use `xelatex` for CJK text.
+- **ENGINE = `pdflatex`** — LaTeX engine.
+  Use `xelatex` for CJK text.
 
 > 💡 Override: `/paper-poster "paper/" — venue: CVPR, size: A1, orientation: portrait, columns: 3`
 
 ## Venue Color Schemes
 
-Use **deep, saturated** colors for primary — pastel/light colors wash out on large posters viewed from distance. Each venue uses a **3-color system**: primary (dark, for title bar), secondary (medium, for section headers), accent (contrast, for highlights).
+Use **deep, saturated** colors for primary — pastel/light colors wash out on large posters viewed from distance.
+Each venue uses a **3-color system**: primary (dark, for title bar), secondary (medium, for section headers), accent (contrast, for highlights).
 
 | Venue | Primary | Secondary | Accent | Background | Text |
 |-------|---------|-----------|--------|------------|------|
@@ -55,7 +67,8 @@ Use **deep, saturated** colors for primary — pastel/light colors wash out on l
 
 ## State Persistence (Compact Recovery)
 
-Poster generation can be long. Persist state to `poster/POSTER_STATE.json` after each phase:
+Poster generation can be long.
+Persist state to `poster/POSTER_STATE.json` after each phase:
 
 ```json
 {
@@ -71,7 +84,8 @@ Poster generation can be long. Persist state to `poster/POSTER_STATE.json` after
 }
 ```
 
-**On startup**: if `POSTER_STATE.json` exists with `"status": "in_progress"` and within 24h → resume from saved phase. Otherwise → fresh start.
+**On startup**: if `POSTER_STATE.json` exists with `"status": "in_progress"` and within 24h → resume from saved phase.
+Otherwise → fresh start.
 
 ## Critical LaTeX Architecture Decisions
 
@@ -109,7 +123,8 @@ Poster generation can be long. Persist state to `poster/POSTER_STATE.json` after
 
 ### Grid System: `rows=20` (Critical)
 
-Use `rows=20` for A0 landscape. Each row ≈ 42mm, giving precise control over section heights.
+Use `rows=20` for A0 landscape.
+Each row ≈ 42mm, giving precise control over section heights.
 
 **Recommended row allocation for 4-column A0 landscape:**
 
@@ -119,7 +134,8 @@ Use `rows=20` for A0 landscape. Each row ≈ 42mm, giving precise control over s
 | Stat banner | 2 | ~84mm | `row4` to `row6` |
 | Body content | 14 | ~588mm | `row6` to `bottom` |
 
-**Key principle**: Always use `between=rowN and rowM` syntax (not `below=name`) for precise vertical placement. The `below=` syntax lets tcolorbox auto-place, which often leaves unwanted gaps.
+**Key principle**: Always use `between=rowN and rowM` syntax (not `below=name`) for precise vertical placement.
+The `below=` syntax lets tcolorbox auto-place, which often leaves unwanted gaps.
 
 ### Row Count Guidance
 
@@ -168,7 +184,8 @@ For portrait posters (841x1189mm), use a **3-column, 3-row-band** layout:
 
 ### Modern Card Design System (Left Accent Stripe)
 
-Instead of rounded boxes with colored headers, use a **left accent stripe** design. This is cleaner, more modern, and avoids the "PowerPoint box" look.
+Instead of rounded boxes with colored headers, use a **left accent stripe** design.
+This is cleaner, more modern, and avoids the "PowerPoint box" look.
 
 Define **4 card styles** using the venue's 3-color system:
 
@@ -227,7 +244,8 @@ Define a consistent macro for all figures to ensure uniform spacing:
 
 ### Content Colorbox Intensity
 
-Inside cards, use `\colorbox{color!N}` for highlighted blocks. The intensity `N` must be **18-25%** (not 8-12% which is too faint):
+Inside cards, use `\colorbox{color!N}` for highlighted blocks.
+The intensity `N` must be **18-25%** (not 8-12% which is too faint):
 
 ```latex
 % TOO FAINT (invisible on print):
@@ -287,7 +305,8 @@ Similarly, `\rowcolor` in tables should use 15% intensity: `\rowcolor{primary!15
 - Maximum **8 words per bullet** when possible
 - Use `$\Rightarrow$` and `$\to$` for causal arrows instead of words
 - Numbers > words: "**42% less memory**" not "reduces memory usage by 42 percent"
-- Colorbox labels: "**vs. Depth:** 4L CoE ≈ 12L MoE, **42% less memory**" (one line)
+- Colorbox labels: "**vs.
+  Depth:** 4L CoE ≈ 12L MoE, **42% less memory**" (one line)
 
 ### Recommended 4-Column IMRAD Layout
 
@@ -649,7 +668,8 @@ cd poster && latexmk -pdf -interaction=nonstopmode main.tex
 **Error handling loop** (max 3 attempts):
 1. Parse error log for the first error
 2. Fix the most likely cause:
-   - `grouping levels=255` → **STOP. Switch from beamer to article class.** This is not fixable by removing styles.
+   - `grouping levels=255` → **STOP.
+     Switch from beamer to article class.** This is not fixable by removing styles.
    - Missing package → `tlmgr install <package>`
    - `File not found: adjustbox.sty` → Remove `\usepackage{adjustbox}` and any `max height` options
    - File not found → verify `poster/figures/` has the file (not a broken symlink)
@@ -882,7 +902,8 @@ which inkscape && inkscape poster/main.pdf --export-type=svg --export-filename=p
 
 > ⚠️ **This is the recommended PPTX export method.** It produces pixel-perfect output (from PDF) while keeping each poster card as an independent, movable/resizable shape in PowerPoint. The python-pptx rebuild (6.1) loses card styles, shadows, and colorboxes; the full-page image (single PNG) cannot be manipulated at all. This method is the best of both worlds.
 
-**How it works**: Crop each posterbox region from the compiled PDF at 300 DPI, then embed each crop as a separate picture shape in PPTX at its exact grid position. Result: 10-15 independent shapes that can be individually selected, moved, resized, or deleted in PowerPoint.
+**How it works**: Crop each posterbox region from the compiled PDF at 300 DPI, then embed each crop as a separate picture shape in PPTX at its exact grid position.
+Result: 10-15 independent shapes that can be individually selected, moved, resized, or deleted in PowerPoint.
 
 ```python
 import fitz, os, tempfile, shutil
@@ -1039,30 +1060,38 @@ Next steps:
 ## Key Rules
 
 ### Architecture
-- **MUST use article class, NEVER beamer.** Beamer + tcbposter with 8+ enhanced boxes triggers `grouping levels=255` overflow. This is an architectural constraint, not fixable by style tweaks.
+- **MUST use article class, NEVER beamer.** Beamer + tcbposter with 8+ enhanced boxes triggers `grouping levels=255` overflow.
+  This is an architectural constraint, not fixable by style tweaks.
 - **NEVER use adjustbox package.** Use plain `\includegraphics[width=...]` only.
-- **NEVER use `\usepackage[most]{tcolorbox}`.** It pulls `listingsutf8.sty` which may not be installed. Use `\tcbuselibrary{poster,skins,fitting}` explicitly.
+- **NEVER use `\usepackage[most]{tcolorbox}`.** It pulls `listingsutf8.sty` which may not be installed.
+  Use `\tcbuselibrary{poster,skins,fitting}` explicitly.
 - **Use `[table]{xcolor}`** not `{xcolor}` — needed for `\rowcolor` in tables.
 
 ### Layout
-- **`rows=20` and `spacing=0mm`** for tight layout. Card separation via left accent stripe + drop shadow, not grid spacing.
+- **`rows=20` and `spacing=0mm`** for tight layout.
+  Card separation via left accent stripe + drop shadow, not grid spacing.
 - **Use `between=rowN and rowM` positioning.** Not `below=name` which leaves auto-sized gaps.
 - **All columns in a row band share identical row boundaries.** Never mix `row6-row11` in col 1 with `row6-row10` in col 2.
-- **Adjust row distribution to match content density.** After trimming text, reduce row allocation proportionally. Cards with `valign=top` show all whitespace at the bottom.
+- **Adjust row distribution to match content density.** After trimming text, reduce row allocation proportionally.
+  Cards with `valign=top` show all whitespace at the bottom.
 
 ### Content
-- **Less text is more.** Target 300-500 words total. Each bullet: 5-8 words max. If it reads like a sentence, it's too long.
+- **Less text is more.** Target 300-500 words total.
+  Each bullet: 5-8 words max.
+  If it reads like a sentence, it's too long.
 - **Do NOT fabricate data.** All numbers must come from `paper/sections/*.tex`.
 - **No abstract paragraph.** Replace with stat banner (3-4 big-number callout boxes).
 - **Figures should occupy 40-50% of poster area.** Posters are visual-first.
 - **Use `\posterfig` macro** for all figures to ensure consistent spacing.
-- **References: author (year). Short title. *Venue*** — no full titles.
+- **References: author (year).
+  Short title. *Venue*** — no full titles.
 - **De-AI polish**: Remove watch words (delve, pivotal, underscore, noteworthy, leverage, facilitate, harness).
 
 ### Color & Design
 - **Card backgrounds must NOT be pure white.** Use subtle tints (e.g., `#FFF5F3`, `#F0F4FF`) that match each card's color family.
 - **Poster background should be tinted** (e.g., `#EDD5D5` for ICML red theme), not white or near-white.
-- **Colorbox intensity: 18-25%**, not 8-12%. Faint colorboxes are invisible on print.
+- **Colorbox intensity: 18-25%**, not 8-12%.
+  Faint colorboxes are invisible on print.
 - **Left accent stripe card design** (`borderline west={5pt}{0pt}{color}`) — cleaner than rounded colored boxes.
 - **4 card styles** (redcard/bluecard/darkcard/highlightcard) create visual rhythm across the poster.
 
@@ -1073,7 +1102,8 @@ Next steps:
 
 ### Export
 - **Copy figures, never symlink.** `cp` not `ln -sf`. pdflatex can't follow symlinks.
-- **Convert PDF figures to PNG for PPTX.** python-pptx cannot embed PDFs. Use `pdf2image` at 300 DPI.
+- **Convert PDF figures to PNG for PPTX.** python-pptx cannot embed PDFs.
+  Use `pdf2image` at 300 DPI.
 - **SVG via PyMuPDF** (`fitz.Page.get_svg_image()`) — works everywhere, no system deps needed.
 - **PPTX/SVG last.** Generate editable exports only after ALL LaTeX revisions are finalized.
 - **Large file handling**: If the Write tool fails due to file size, use Bash (`cat << 'EOF' > file`) silently.
@@ -1082,7 +1112,8 @@ Next steps:
 - **Do NOT hallucinate citations.** Use only references from the paper's bibliography.
 - **Include QR code placeholder** or code link for paper/code repository.
 - **Font size minimums (article class)**: Title ≥84pt, section headers ≥40pt, body ≥34pt, captions ≥26pt, references ≥30pt, stat numbers ≥66pt.
-- **Feishu notifications are optional.** If `~/.claude/feishu.json` exists, send notifications. Otherwise skip.
+- **Feishu notifications are optional.** If `~/.claude/feishu.json` exists, send notifications.
+  Otherwise skip.
 
 ## Parameter Pass-Through
 

@@ -17,7 +17,8 @@ Bridge a local paper directory with an Overleaf project so that:
 - **You** can keep editing in the Overleaf web UI (or share editing access with collaborators)
 - **ARIS** can read your changes, run audits (`/haipipe-paper-edit-claim-audit`, `/haipipe-paper-probe-citation`, `/haipipe-paper-edit-improve-loop`), and push fixes back
 
-This uses the official **Overleaf Git bridge** (Premium feature). The agent **never sees your authentication token** — you do the one-time auth manually so the token lives in macOS Keychain, not in chat history or `.git/config`.
+This uses the official **Overleaf Git bridge** (Premium feature).
+The agent **never sees your authentication token** — you do the one-time auth manually so the token lives in macOS Keychain, not in chat history or `.git/config`.
 
 ## When to Use This Skill
 
@@ -29,7 +30,8 @@ This uses the official **Overleaf Git bridge** (Premium feature). The agent **ne
 
 - **CLONE_DIR_DEFAULT** = `paper-overleaf` (sibling of existing `paper/`, NOT inside `paper/`)
 - **CREDENTIAL_HELPER** = `osxkeychain` (macOS) / `manager` (Windows) / `cache` (Linux fallback)
-- **TOKEN_HANDLING** = **NEVER write token to disk, env var, or chat**. User pastes it once into the terminal credential prompt; the OS keychain stores it from then on.
+- **TOKEN_HANDLING** = **NEVER write token to disk, env var, or chat**.
+  User pastes it once into the terminal credential prompt; the OS keychain stores it from then on.
 
 ## Architecture
 
@@ -40,15 +42,20 @@ This uses the official **Overleaf Git bridge** (Premium feature). The agent **ne
 └─────────────────┘                          └─────────────────┘
 ```
 
-The `paper-overleaf/` directory is a **git clone of the Overleaf project**. The `paper/` directory is the working copy where ARIS skills run. They are kept in sync via `rsync`.
+The `paper-overleaf/` directory is a **git clone of the Overleaf project**.
+The `paper/` directory is the working copy where ARIS skills run.
+They are kept in sync via `rsync`.
 
-**Single-source-of-truth rule**: at any given time, treat *one* of them as authoritative for active editing. Switch directions explicitly with `pull` or `push`, and run a `status` check before either to surface unexpected divergence.
+**Single-source-of-truth rule**: at any given time, treat *one* of them as authoritative for active editing.
+Switch directions explicitly with `pull` or `push`, and run a `status` check before either to surface unexpected divergence.
 
 ## Sub-commands
 
 ### `setup <project-id>` — one-time
 
-Sets up the bridge for a new Overleaf project. **The user runs this in their own terminal, never through the agent.** The skill ships with a hardened setup script that:
+Sets up the bridge for a new Overleaf project.
+**The user runs this in their own terminal, never through the agent.**
+The skill ships with a hardened setup script that:
 
 1. Refuses to run unless stdin/stdout are a TTY (won't run inside an agent harness)
 2. Reads the token from a hidden prompt (no chat history, no shell history)
@@ -90,7 +97,8 @@ git diff --stat $LAST..HEAD
 git diff $LAST..HEAD -- 'sec/*.tex'        # detailed view for prose changes
 ```
 
-**Diff protocol — DO NOT blindly merge into local `paper/`.** Overleaf edits frequently include:
+**Diff protocol — DO NOT blindly merge into local `paper/`.**
+Overleaf edits frequently include:
 
 - **Half-finished sentences** (collaborator clicked save mid-thought)
 - **Typos** that aren't in canonical references (`Lrage` for `Large`)
@@ -142,13 +150,16 @@ git commit -m "<descriptive message — what ARIS changed and why>"
 git push
 ```
 
-**Commit message protocol**: include the ARIS skill that produced the change so collaborators on Overleaf understand provenance. Examples:
+**Commit message protocol**: include the ARIS skill that produced the change so collaborators on Overleaf understand provenance.
+Examples:
 
 - `paper-write: regenerated sec/3.assurance after audit cascade refactor`
 - `citation audit: fix 14 metadata entries (madaan2023, lee2024, ...)`
 - `haipipe-paper-edit-claim-audit: correct sec/5 numbers vs results/run_2026_04_19.json`
 
-**Confirmation gate**: `push` writes to a shared resource. ALWAYS show the user `git diff --stat` (and a representative hunk for prose changes) before running `git push`. Wait for explicit confirmation unless the user said `auto: true` upfront.
+**Confirmation gate**: `push` writes to a shared resource.
+ALWAYS show the user `git diff --stat` (and a representative hunk for prose changes) before running `git push`.
+Wait for explicit confirmation unless the user said `auto: true` upfront.
 
 ### `status` — diagnostic
 
@@ -185,7 +196,8 @@ If `git pull --ff-only` fails because of true divergence:
 
 ## Token Security — Defense in Depth
 
-Behavioral rules alone are not enough — the next agent reading this skill might forget them. The skill therefore relies on **technical guards** that hold even if the agent misbehaves:
+Behavioral rules alone are not enough — the next agent reading this skill might forget them.
+The skill therefore relies on **technical guards** that hold even if the agent misbehaves:
 
 | Layer | Guard | Where enforced |
 |-------|-------|---------------|
@@ -197,10 +209,12 @@ Behavioral rules alone are not enough — the next agent reading this skill migh
 
 Behavioral rules (still apply, but secondary):
 
-- **Never** ask the user to paste a token into chat. If they do anyway: (a) acknowledge it, (b) tell them to revoke it at https://www.overleaf.com/user/settings, (c) recover via keychain if already primed.
+- **Never** ask the user to paste a token into chat.
+  If they do anyway: (a) acknowledge it, (b) tell them to revoke it at https://www.overleaf.com/user/settings, (c) recover via keychain if already primed.
 - **Never** write a token to a file (`.env`, `.netrc`, `tools/*.sh`, etc.) committed to any repo.
 - **Never** include a token in a `git remote -v` URL — strip it after clone.
-- On `401 Unauthorized` from push/pull, tell the user the keychain entry expired and to re-run `overleaf_setup.sh`. Do **not** ask for a fresh token.
+- On `401 Unauthorized` from push/pull, tell the user the keychain entry expired and to re-run `overleaf_setup.sh`.
+  Do **not** ask for a fresh token.
 
 ## Mutual-Exclusion Rule
 

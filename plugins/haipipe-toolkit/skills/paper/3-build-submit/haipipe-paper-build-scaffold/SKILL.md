@@ -13,9 +13,11 @@ metadata:
 Skill: haipipe-paper-build-scaffold (4-build-submit)
 ================================
 
-Create a **new** paper folder that conforms to `4-build-submit/_shared/paper-folder-anatomy.md`. This skill writes structure only: drivers, wrappers, leaf stubs, directories, the compile script. It never writes a body sentence; prose belongs to `3-write-edit/haipipe-paper-edit-write`.
+Create a **new** paper folder that conforms to `4-build-submit/_shared/paper-folder-anatomy.md`. This skill writes structure only: drivers, wrappers, leaf stubs, directories, the compile script.
+It never writes a body sentence; prose belongs to `3-write-edit/haipipe-paper-edit-write`.
 
-If a folder already exists and merely has the wrong shape, stop and route to `haipipe-paper-build-restructure` instead. Never scaffold over existing content.
+If a folder already exists and merely has the wrong shape, stop and route to `haipipe-paper-build-restructure` instead.
+Never scaffold over existing content.
 
 Usage
 -----
@@ -51,7 +53,9 @@ Workflow
 
 ### Step 0: Resolve inputs
 
-Read the plan doc if given; extract title, sections, subsections, SI blocks. Anything unresolved → one `AskUserQuestion` round, not several. Confirm the target directory is empty or absent.
+Read the plan doc if given; extract title, sections, subsections, SI blocks.
+Anything unresolved → one `AskUserQuestion` round, not several.
+Confirm the target directory is empty or absent.
 
 ### Step 1: Create the tree
 
@@ -65,7 +69,8 @@ Read the plan doc if given; extract title, sections, subsections, SI blocks. Any
 
 ### Step 2: Instantiate templates
 
-Templates live in `templates/` next to this SKILL.md; placeholders are `{{LIKE_THIS}}`. Fill every placeholder; grep `{{` afterward to prove none leaked.
+Templates live in `templates/` next to this SKILL.md; placeholders are `{{LIKE_THIS}}`.
+Fill every placeholder; grep `{{` afterward to prove none leaked.
 
 | Template | Becomes | Notes |
 |----------|---------|-------|
@@ -82,7 +87,8 @@ Also create an empty `0-<paper>.bib` (a comment header only) and copy the venue 
 
 1. Driver `\input` list matches the files on disk, in `NN` order; wrappers `\input` their `NN-MM` leaves in order.
 2. Run `../haipipe-paper-build-check/scripts/check_structure.sh <out>` → must exit 0.
-3. Run `./1-compile.sh` inside the folder → every master must produce a PDF (stub pages are fine). If LaTeX is unavailable, say so explicitly; do not claim the skeleton compiles.
+3. Run `./1-compile.sh` inside the folder → every master must produce a PDF (stub pages are fine).
+   If LaTeX is unavailable, say so explicitly; do not claim the skeleton compiles.
 
 ### Step 4: Hand off
 
@@ -100,7 +106,8 @@ Leaf stub shape (what Step 2 writes)
 % TODO(draft): /haipipe-paper-edit-write fills this paragraph.
 ```
 
-Banner ids follow `2-section-edit/_shared/paragraph-indexing.md` (`<section-slug>.<para-slug>`, stable, never renumbered). Scaffolding them now means the write/edit stages inherit stable handles for free.
+Banner ids follow `2-section-edit/_shared/paragraph-indexing.md` (`<section-slug>.<para-slug>`, stable, never renumbered).
+Scaffolding them now means the write/edit stages inherit stable handles for free.
 
 Return contract
 ---------------

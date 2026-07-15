@@ -6,14 +6,15 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "4.1.1"
   last_updated: "2026-07-14"
-  summary: "Seed stage orchestrator. Defines WHAT (4 sections: question, motivations, claim shape, probes) and drives phases (draft -> probe -> revise -> check) internally. User invokes seed, not phases. v3.4: PROBE is exactly one worker call; NEVER-do-evidence-itself; gate confirms refs. v3.5: DRAFT may WebSearch to orient (fuel -> prose + buffered planned skeletons), PROBE must ALWAYS run the real orchestrator; seed probes are FEASIBILITY only (novelty + external-data-obtainable). v3.7: seed hands to RESOURCE (which hands to claims); internal-data profiling / prerequisite work forward-points to RESOURCE via a _LOG pointer. v4.1 (probe-redesign residue sweep): DRAFT raises `state: planned` question SECTIONS (not `status: planned` PP card skeletons); the DRAFT/PROBE line is SECTION STATE, not card state. v4.1.1: every shared-convention pointer was off by one `../` — `../../PHILOSOPHY.md` / `../../wiki/<page>.md` resolved to 1-lifecycle/, which holds neither. The stage skills sit TWO levels under skills/paper/ (1-lifecycle/<N>-<stage>/<skill>/), so the correct depth is `../../../`. Every required-read at the top of this skill silently failed. Repointed."
+  summary: "Seed stage orchestrator (stage 0, venue-FREE): 4 sections -- Seed Question, Motivations, Tentative Claim Shape, Probes -- driving DRAFT -> PROBE -> REVISE -> CHECK internally (the user invokes seed, not the phases). Seed probes are FEASIBILITY only (novelty + is external data obtainable); DRAFT may WebSearch as orientation fuel, but PROBE is exactly one real worker call and never does evidence itself. Seed hands forward to RESOURCE (which hands to claims); prerequisite/internal-data work forward-points to RESOURCE via a _LOG pointer. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-paper-seed
 ===================================
 
-Stage orchestrator for the **seed** stage (stage 0, venue-FREE). The user invokes this skill; it drives the phases internally.
+Stage orchestrator for the **seed** stage (stage 0, venue-FREE).
+The user invokes this skill; it drives the phases internally.
 
 It answers one question:
 
@@ -21,9 +22,10 @@ It answers one question:
 Why might this paper exist?
 ```
 
-The seed is not a pitch, claim ledger, or outline. It keeps a paper-shaped possibility alive while the evidence is still forming.
+The seed is not a pitch, claim ledger, or outline.
+It keeps a paper-shaped possibility alive while the evidence is still forming.
 
-Read first: `../../../PHILOSOPHY.md`, `../../../wiki/04-lifecycle-map.md`.
+Read first: `../../../PHILOSOPHY.md`, `../../ref/04-lifecycle-map.md`.
 
 ## Artifact Spec
 
@@ -40,8 +42,10 @@ Read first: `../../../PHILOSOPHY.md`, `../../../wiki/04-lifecycle-map.md`.
 - Probes -- landscape/novelty probes that answer "is this new?" and "who cares?", with takeaways inline
 
 **Formatting:**
-- Heading style: `=====` for the document title, `-----` for sections. No `#`/`##`/`###`.
-- One sentence per line (semantic line breaks). No dense multi-sentence paragraphs.
+- Heading style: `=====` for the document title, `-----` for sections.
+  No `#`/`##`/`###`.
+- One sentence per line (semantic line breaks).
+  No dense multi-sentence paragraphs.
 
 **Done-criteria:**
 - [ ] All four sections filled with real content (not placeholders)
@@ -57,7 +61,8 @@ Read first: `../../../PHILOSOPHY.md`, `../../../wiki/04-lifecycle-map.md`.
 
 ## Phase Orchestration
 
-When the user invokes `/haipipe-paper seed`, this skill drives the phases in order. The user does not call phase skills directly — but steers them with VERBS on this stage:
+When the user invokes `/haipipe-paper seed`, this skill drives the phases in order.
+The user does not call phase skills directly — but steers them with VERBS on this stage:
 
 ```
 /haipipe-paper seed <paper-dir>            -> open: status + frontier; advance ONLY on the user's verb
@@ -67,9 +72,16 @@ When the user invokes `/haipipe-paper seed`, this skill drives the phases in ord
 /haipipe-paper seed <paper-dir> check      -> open the CHECK gate
 ```
 
-**Hard gates (binding).** After DRAFT: ⛔ STOP — present the draft for review and end the turn; the user's verb/"go" advances, logged as `[GATE] draft-review: approved` quoting the user. Each phase runs via its `Skill()` dispatch — a phase executed inline did not happen; the `[REVISE]` _LOG entry carries its `workers:` proof line. Never commit or conclude the stage before CHECK opens with its report. The agent never self-advances past a gate.
+**Hard gates (binding).**
+After DRAFT: ⛔ STOP — present the draft for review and end the turn; the user's verb/"go" advances, logged as `[GATE] draft-review: approved` quoting the user.
+Each phase runs via its `Skill()` dispatch — a phase executed inline did not happen; the `[REVISE]` _LOG entry carries its `workers:` proof line.
+Never commit or conclude the stage before CHECK opens with its report.
+The agent never self-advances past a gate.
 
-**Comment rules (binding).** The agent NEVER deletes, rewords, or relocates a `> USER:` comment; it replies `> CC:` underneath; only the user resolves a thread; resolved threads MOVE to `_LOG` verbatim. Working files are edited surgically — no full-file rewrite of a file carrying `> USER:` comments. Background: `../../../wiki/02-comment-lifecycle.md`.
+**Comment rules (binding).**
+The agent NEVER deletes, rewords, or relocates a `> USER:` comment; it replies `> CC:` underneath; only the user resolves a thread; resolved threads MOVE to `_LOG` verbatim.
+Working files are edited surgically — no full-file rewrite of a file carrying `> USER:` comments.
+Background: `../../../wiki/02-comment-lifecycle.md`.
 
 ```
 seed invoked
@@ -117,12 +129,12 @@ REVISE ─→ refine prose clarity of the 4 sections, weave probe takeaways into
           (internally calls /haipipe-paper-revise; [REVISE] _LOG entry carries workers: proof)
   │
   ▼
-CHECK ──→ present exit gate per ../../../wiki/08-stage-gate.md
+CHECK ──→ present exit gate per ../../ref/08-stage-gate.md
           user confirms → advance to resource
           (internally calls /haipipe-paper-check)
 ```
 
-Phase visibility per the Phase Transition Contract in `../../../wiki/08-stage-gate.md`: announce every phase boundary (reply line + `[PHASE]` entry in `_LOG` + phase-line 🔥 moves); PROBE/REVISE may be skipped only on re-entry or minor edits, and only by an explicit logged verdict (`[PROBE] skipped -- <reason>`, phase line shows `--`); CHECK is never implicit -- it opens by presenting the exit-criteria report and the approval ask.
+Phase visibility per the Phase Transition Contract in `../../ref/08-stage-gate.md`: announce every phase boundary (reply line + `[PHASE]` entry in `_LOG` + phase-line 🔥 moves); PROBE/REVISE may be skipped only on re-entry or minor edits, and only by an explicit logged verdict (`[PROBE] skipped -- <reason>`, phase line shows `--`); CHECK is never implicit -- it opens by presenting the exit-criteria report and the approval ask.
 
 Comment lifecycle per `../../../wiki/02-comment-lifecycle.md`: comments live in 0-seed.md while active, move to _LOG on resolve, each phase starts clean.
 
@@ -170,23 +182,43 @@ Each probe as a **bold** sub-item with type, status, and takeaways inline.
 
 ## Principles
 
-1. A seed may be intuition. It does not require evidence yet.
-2. Do not create `0-sections/`, displays, or compile obligations from the seed. Those start later.
-3. **Seed is venue-FREE.** Venue selection happens after claims (seed -> resource -> claims -> [venue] -> pitch). Do not reference a target venue here.
+1. A seed may be intuition.
+   It does not require evidence yet.
+2. Do not create `0-sections/`, displays, or compile obligations from the seed.
+   Those start later.
+3. **Seed is venue-FREE.**
+   Venue selection happens after claims (seed -> resource -> claims -> [venue] -> pitch).
+   Do not reference a target venue here.
 4. Evidence inventory, routing, and gap analysis belong in the claims stage, not here.
-5. **Probes are explicit.** The Probes section makes the landscape/novelty check visible in the seed document itself, not buried in a satellite file. The `1-probes/` probe files carry the question SECTIONS and their bindings.
-5a. **Seed probes are FEASIBILITY only.** A seed probe answers "can this paper exist at all?" -- novelty (is the angle new?) and external-data-obtainability (does the labeled data the paper needs exist and is it accessible?). Both are `discover` (lit/repo) work. Profiling OUR OWN data (cohort size, field coverage, label availability in our AIData) is `task` work that belongs in the RESOURCE stage, which asks "what EXACTLY must exist, does it, and can it CARRY the claim?". When DRAFT surfaces an internal-data or other prerequisite question, DO NOT open a seed probe for it -- record a forward pointer line in `_LOG_0-seed.md` (need + why, no dispatch); it fires when resource opens. This keeps the seed's cost bounded to the feasibility question and stops the seed from doing resource-stage evidence work early.
-5b. **DRAFT may search; PROBE must bind.** Inline WebSearch is legitimate DRAFT fuel (orientation -> prose + `state: planned` question SECTIONS), but it is NEVER evidence. The PROBE phase must ALWAYS run the real worker (`Skill(haipipe-paper-probe, from-buffer ...)`); an inline result binds to nothing, so the PROBE phase did not happen. The invariant that separates the two is SECTION STATE: `planned` with an empty `target:` (DRAFT) vs `read` with a `target:` that RESOLVES to a QA file on disk (PROBE), mechanically enforced by `check-probe-cards.sh` at the CHECK gate.
-5c. **The forward pointer has ONE emitted form.** Seed emits, in `_LOG_0-seed.md`, ASCII arrow, destination RESOURCE:
+5. **Probes are explicit.**
+   The Probes section makes the landscape/novelty check visible in the seed document itself, not buried in a satellite file.
+   The `1-probes/` probe files carry the question SECTIONS and their bindings.
+5a. **Seed probes are FEASIBILITY only.**
+    A seed probe answers "can this paper exist at all?" -- novelty (is the angle new?) and external-data-obtainability (does the labeled data the paper needs exist and is it accessible?).
+    Both are `discover` (lit/repo) work.
+    Profiling OUR OWN data (cohort size, field coverage, label availability in our AIData) is `task` work that belongs in the RESOURCE stage, which asks "what EXACTLY must exist, does it, and can it CARRY the claim?".
+    When DRAFT surfaces an internal-data or other prerequisite question, DO NOT open a seed probe for it -- record a forward pointer line in `_LOG_0-seed.md` (need + why, no dispatch); it fires when resource opens.
+    This keeps the seed's cost bounded to the feasibility question and stops the seed from doing resource-stage evidence work early.
+5b. **DRAFT may search; PROBE must bind.**
+    Inline WebSearch is legitimate DRAFT fuel (orientation -> prose + `state: planned` question SECTIONS), but it is NEVER evidence.
+    The PROBE phase must ALWAYS run the real worker (`Skill(haipipe-paper-probe, from-buffer ...)`); an inline result binds to nothing, so the PROBE phase did not happen.
+    The invariant that separates the two is SECTION STATE: `planned` with an empty `target:` (DRAFT) vs `read` with a `target:` that RESOLVES to a QA file on disk (PROBE), mechanically enforced by `check-probe-cards.sh` at the CHECK gate.
+5c. **The forward pointer has ONE emitted form.**
+    Seed emits, in `_LOG_0-seed.md`, ASCII arrow, destination RESOURCE:
 
     ```text
     **[FORWARD -> RESOURCE] PPNN_<slug>**
     <the need, and why it is not a seed question>
     ```
 
-    Resource's DRAFT consumes it with a grep that is GLYPH- and LEGACY-TOLERANT -- `grep -E "\[FORWARD (->|→) (RESOURCE|CLAIMS)\]"` -- because 7 pointers written before the resource stage existed say `CLAIMS`, and one of them uses a unicode arrow (→). Emit the ASCII/RESOURCE form above for anything new; never rewrite a legacy pointer to match, the consume-grep already takes it.
-6. **One sentence per line.** Semantic line breaks for readability. No dense multi-sentence paragraphs.
-7. **Heading style.** `=====` for the document title, `-----` for sections. No `#`/`##`/`###`.
+    Resource's DRAFT consumes it with a grep that is GLYPH- and LEGACY-TOLERANT -- `grep -E "\[FORWARD (->|→) (RESOURCE|CLAIMS)\]"` -- because 7 pointers written before the resource stage existed say `CLAIMS`, and one of them uses a unicode arrow (→).
+    Emit the ASCII/RESOURCE form above for anything new; never rewrite a legacy pointer to match, the consume-grep already takes it.
+6. **One sentence per line.**
+   Semantic line breaks for readability.
+   No dense multi-sentence paragraphs.
+7. **Heading style.**
+   `=====` for the document title, `-----` for sections.
+   No `#`/`##`/`###`.
 
 ## Handoff
 
@@ -196,13 +228,15 @@ On CHECK confirm, update `STATUS.md` (`current_layer`, `maturity: seed`) and adv
 promote     -> /haipipe-paper resource <paper-dir>
 ```
 
-Seed hands to **RESOURCE**, which hands to claims (`seed -> resource -> claims -> [venue] -> pitch`). The boundary between the two venue-free front stages:
+Seed hands to **RESOURCE**, which hands to claims (`seed -> resource -> claims -> [venue] -> pitch`).
+The boundary between the two venue-free front stages:
 
 ```text
 SEED      is this paper WORTH doing, and is the data even OBTAINABLE in principle?
 RESOURCE  what EXACTLY must exist, does it, and can it CARRY the claim?
 ```
 
-Seed KEEPS its own probe policy (novelty + external-data-obtainable feasibility); novelty probes do NOT move to resource. Every `[FORWARD -> RESOURCE]` pointer left in `_LOG_0-seed.md` (principle 5c) is picked up by resource's DRAFT.
+Seed KEEPS its own probe policy (novelty + external-data-obtainable feasibility); novelty probes do NOT move to resource.
+Every `[FORWARD -> RESOURCE]` pointer left in `_LOG_0-seed.md` (principle 5c) is picked up by resource's DRAFT.
 
 End the reply with the stage strip (run `../../../haipipe-paper/stage-strip.sh`).

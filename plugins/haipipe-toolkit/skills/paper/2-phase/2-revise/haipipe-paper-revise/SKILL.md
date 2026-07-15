@@ -13,11 +13,18 @@ metadata:
 Skill: haipipe-paper-revise (internal phase worker)
 ====================================================
 
-REVISE phase worker. Called by stage skills (pitch, narrative, section-edit) to rewrite draft prose to venue-quality after PROBE. The stage defines WHAT was drafted. This skill defines HOW to revise it.
+REVISE phase worker.
+Called by stage skills (pitch, narrative, section-edit) to rewrite draft prose to venue-quality after PROBE.
+The stage defines WHAT was drafted.
+This skill defines HOW to revise it.
 
-**What the REVISE contract means.** The agent CHANGES the prose directly AND leaves `%% {CC-*}:` comments explaining WHY each non-trivial change was made. The human does not approve changes here; the human gives preferences in CHECK (via `> USER:` comments), and a REVISE restart responds to them.
+**What the REVISE contract means.** The agent CHANGES the prose directly AND leaves `%% {CC-*}:` comments explaining WHY each non-trivial change was made.
+The human does not approve changes here; the human gives preferences in CHECK (via `> USER:` comments), and a REVISE restart responds to them.
 
-**Proof-carrying (binding).** A stage hub reaches REVISE ONLY through `Skill(haipipe-paper-revise)` — hand-editing the prose inline is a protocol violation ("the REVISE phase did not happen"). Every run writes a `[REVISE]` entry in the stage's `_LOG` with a workers line: `workers: content ✓ humanizer ✓ results --` (✓ ran · -- skipped-with-reason). `checks.sh --log` FAILs a `[REVISE]` entry without it. Order of operations: revise the working `.md` FIRST, then sync to tex — never tex-first (the .md is the document the human reads and comments in).
+**Proof-carrying (binding).** A stage hub reaches REVISE ONLY through `Skill(haipipe-paper-revise)` — hand-editing the prose inline is a protocol violation ("the REVISE phase did not happen").
+Every run writes a `[REVISE]` entry in the stage's `_LOG` with a workers line: `workers: content ✓ humanizer ✓ results --` (✓ ran · -- skipped-with-reason).
+`checks.sh --log` FAILs a `[REVISE]` entry without it.
+Order of operations: revise the working `.md` FIRST, then sync to tex — never tex-first (the .md is the document the human reads and comments in).
 
 **Not user-facing.** Users invoke stage skills:
 ```
@@ -28,7 +35,8 @@ REVISE phase worker. Called by stage skills (pitch, narrative, section-edit) to 
 
 ## What REVISE means
 
-REVISE = rewrite draft sentences to venue-quality prose, applying changes directly with why-comments. Four workers, each with a different lens:
+REVISE = rewrite draft sentences to venue-quality prose, applying changes directly with why-comments.
+Four workers, each with a different lens:
 
 ```
 haipipe-paper-revise-content              WHAT sentences say (accuracy, completeness, claims)
@@ -36,12 +44,16 @@ haipipe-paper-revise-humanizer            HOW sentences sound (de-AI audit, voic
 haipipe-paper-revise-results              results-specific (figure narration, effect reporting)
 ```
 
-All four apply rules directly. No comment-first protocol, no human gate. The agent reads prose-quality.md + venue style profile, applies fixes, leaves `%% {CC-*}:` why-comments, and moves on. Human review of revised prose happens in CHECK.
+All four apply rules directly.
+No comment-first protocol, no human gate.
+The agent reads prose-quality.md + venue style profile, applies fixes, leaves `%% {CC-*}:` why-comments, and moves on.
+Human review of revised prose happens in CHECK.
 
 ## Universal rules
 
 All revise workers read and enforce `../../REF/prose-quality.md`. Installed skills flatten the tree (symlinks under `~/.claude/skills/`), so that relative path is NOT reliable — locate it layout-agnostically:
-`PQ=$(find ~/.claude/skills "$CLAUDE_PLUGIN_ROOT" -path '*2-phase/REF/prose-quality.md' 2>/dev/null | head -1)` (absent → apply the rules below, note the gap in _LOG). The rules:
+`PQ=$(find ~/.claude/skills "$CLAUDE_PLUGIN_ROOT" -path '*2-phase/REF/prose-quality.md' 2>/dev/null | head -1)` (absent → apply the rules below, note the gap in _LOG).
+The rules:
 
 - One idea per sentence
 - No em-dashes
@@ -51,9 +63,13 @@ All revise workers read and enforce `../../REF/prose-quality.md`. Installed skil
 - <=6 sentences per paragraph
 - Pn.Sn markers on every sentence
 
-Venue-specific norms (word budget, tone, section arc) come from the paper's `0-lifecycle/2-venue/2-venue.md` (Writing Principles + the relevant Structural Blueprint block) and override where they conflict. Read `_venue/playbook-*/style-profile.md` directly only as fallback when 2-venue.md is absent, or as a deep dive via its `[source: ...]` tags.
+Venue-specific norms (word budget, tone, section arc) come from the paper's `0-lifecycle/2-venue/2-venue.md` (Writing Principles + the relevant Structural Blueprint block) and override where they conflict.
+Read `_venue/playbook-*/style-profile.md` directly only as fallback when 2-venue.md is absent, or as a deep dive via its `[source: ...]` tags.
 
-**Venue guard** (same rule as DRAFT): when revising a venue-ALIGNED artifact, no `venue:` pinned in STATUS.md -> STOP with `status: blocked` and point the user to `/haipipe-paper venue`. Venue pinned -> read the paper's `0-lifecycle/2-venue/2-venue.md` FIRST; fall back to the pinned `_venue/playbook-*` pack only when it is absent (no matching pack either -> STOP the same way). Fallback pack present but per-section style file missing -> revise with the general style-profile and flag the gap in `_LOG` + the CHECK report. Never silently invent venue norms.
+**Venue guard** (same rule as DRAFT): when revising a venue-ALIGNED artifact, no `venue:` pinned in STATUS.md -> STOP with `status: blocked` and point the user to `/haipipe-paper venue`.
+Venue pinned -> read the paper's `0-lifecycle/2-venue/2-venue.md` FIRST; fall back to the pinned `_venue/playbook-*` pack only when it is absent (no matching pack either -> STOP the same way).
+Fallback pack present but per-section style file missing -> revise with the general style-profile and flag the gap in `_LOG` + the CHECK report.
+Never silently invent venue norms.
 
 ## Dispatch logic
 
@@ -69,7 +85,8 @@ When no specific worker is named, run in order: content (incl. its weave step fo
 
 ## Automation
 
-REVISE is fully automatic. The agent:
+REVISE is fully automatic.
+The agent:
 
 1. Reads the working .md and current .tex
 2. Applies prose-quality.md rules directly TO THE .MD, leaving `%% {CC-*}:` why-comments on non-trivial changes (in the tex after sync; the .md stays markup-free apart from citation commands)
@@ -77,7 +94,9 @@ REVISE is fully automatic. The agent:
 4. Writes the `[REVISE]` _LOG entry with the `workers:` line
 5. Hands back to the stage hub, which OPENS CHECK — never commit or conclude before the CHECK gate opens
 
-No stopping for comments mid-pass. No waiting for approval. The CHECK phase is where the human reviews everything and states preferences.
+No stopping for comments mid-pass.
+No waiting for approval.
+The CHECK phase is where the human reviews everything and states preferences.
 
 ## Phase status
 
@@ -99,7 +118,8 @@ DRAFT → PROBE → REVISE (this) → CHECK
                     └── haipipe-paper-revise-results     (results-specific)
 ```
 
-REVISE reads PROBE outputs (citations placed, values verified, displays linked) and rewrites draft sentences into final prose. CHECK then verifies the revised result.
+REVISE reads PROBE outputs (citations placed, values verified, displays linked) and rewrites draft sentences into final prose.
+CHECK then verifies the revised result.
 
 ## Return contract
 
@@ -121,7 +141,8 @@ Stage skills call this as their REVISE phase:
 | haipipe-paper-narrative | story beat prose (arc/flow coherence) |
 | haipipe-paper-section-edit | section tex (full revise: content + humanizer + results) |
 
-Note: seed, resource and claims produce argument docs that skip REVISE (markdown only, no venue-quality prose needed). Resource has ONE exception: a woolly fitness ruling ("probably fine") is a DEFECT, not an answer -- when an **A** does not say what it KILLS, resource does NOT skip REVISE and sharpens it instead.
+Note: seed, resource and claims produce argument docs that skip REVISE (markdown only, no venue-quality prose needed).
+Resource has ONE exception: a woolly fitness ruling ("probably fine") is a DEFECT, not an answer -- when an **A** does not say what it KILLS, resource does NOT skip REVISE and sharpens it instead.
 
 ## Sibling phase workers
 

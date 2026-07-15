@@ -36,7 +36,8 @@ Subsection pattern (matches 02-XX_*.tex)
 Claim ↔ figure ↔ subsection
 ----------------------------
 
-Each subsection should answer one question. Map:
+Each subsection should answer one question.
+Map:
 - claim → 1 sentence in 02-XX
 - figure → at most 1 main figure per subsection (others go to appendix)
 - supporting tables → cited inline

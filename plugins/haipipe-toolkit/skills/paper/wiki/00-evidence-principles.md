@@ -78,7 +78,7 @@ Where the principles are enforced
 ---------------------------------
 
 ```
-③  wiki/08-stage-gate.md Phase Transition Contract rule 4 (stage/worker);
+③  ../1-lifecycle/ref/08-stage-gate.md Phase Transition Contract rule 4 (stage/worker);
    the executor orchestrators' clean context IS the wall (agent level)
 ①  haipipe-task-orchestrator-agent / haipipe-discovery-orchestrator-agent
    "fresh evidence must land" — the answer is a FILE: <task-folder>/QA/<n>-<slug>.md,

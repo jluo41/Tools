@@ -16,17 +16,25 @@ Autonomously improve the paper at: **$ARGUMENTS**
 
 ## Context
 
-This skill is designed to run **after** Workflow 3 (`/haipipe-paper-minimap` → `/haipipe-paper-display-figure` → `/haipipe-paper-edit-write` → `/paper-compile`). It takes a compiled paper and iteratively improves it through external LLM review.
+This skill is designed to run **after** Workflow 3 (`/haipipe-paper-minimap` → `/haipipe-paper-display-figure` → `/haipipe-paper-edit-write` → `/paper-compile`).
+It takes a compiled paper and iteratively improves it through external LLM review.
 
 Unlike `/auto-review-loop` (which iterates on **research** — running experiments, collecting data, rewriting narrative), this skill iterates on **paper writing quality** — fixing theoretical inconsistencies, softening overclaims, adding missing content, and improving presentation.
 
 ## Constants
 
-- **MAX_ROUNDS = 2** — Two rounds of review→fix→recompile. Empirically, Round 1 catches structural issues (4→6/10), Round 2 catches remaining presentation issues (6→7/10). Diminishing returns beyond 2 rounds for writing-only improvements.
+- **MAX_ROUNDS = 2** — Two rounds of review→fix→recompile.
+  Empirically, Round 1 catches structural issues (4→6/10), Round 2 catches remaining presentation issues (6→7/10).
+  Diminishing returns beyond 2 rounds for writing-only improvements.
 - **REVIEWER_MODEL = `gpt-5.4`** — Model used via Codex MCP for paper review.
-- **REVIEWER_BIAS_GUARD = true** — When `true`, every review round uses a fresh `mcp__codex__codex` thread with no prior review context. Never use `mcp__codex__codex-reply` for review rounds. Set to `false` only for deliberate debugging of the legacy behavior. **Empirical evidence (April 2026):** running the same paper with `codex-reply` + "since last round we did X" prompts inflated scores from real 3/10 → fake 8/10 across 5 rounds; switching to fresh threads recovered the true 3/10 assessment.
+- **REVIEWER_BIAS_GUARD = true** — When `true`, every review round uses a fresh `mcp__codex__codex` thread with no prior review context.
+  Never use `mcp__codex__codex-reply` for review rounds.
+  Set to `false` only for deliberate debugging of the legacy behavior.
+  **Empirical evidence (April 2026):** running the same paper with `codex-reply` + "since last round we did X" prompts inflated scores from real 3/10 → fake 8/10 across 5 rounds; switching to fresh threads recovered the true 3/10 assessment.
 - **REVIEW_LOG = `PAPER_IMPROVEMENT_LOG.md`** — Cumulative log of all rounds, stored in paper directory.
-- **HUMAN_CHECKPOINT = false** — When `true`, pause after each round's review and present score + weaknesses to the user. The user can approve fixes, provide custom modification instructions, skip specific fixes, or stop early. When `false` (default), runs fully autonomously.
+- **HUMAN_CHECKPOINT = false** — When `true`, pause after each round's review and present score + weaknesses to the user.
+  The user can approve fixes, provide custom modification instructions, skip specific fixes, or stop early.
+  When `false` (default), runs fully autonomously.
 
 > 💡 Override: `/haipipe-paper-edit-improve-loop "paper/" — human checkpoint: true`
 
@@ -37,7 +45,8 @@ Unlike `/auto-review-loop` (which iterates on **research** — running experimen
 
 ## State Persistence (Compact Recovery)
 
-If the context window fills up mid-loop, Claude Code auto-compacts. To recover, this skill writes `PAPER_IMPROVEMENT_STATE.json` after each round:
+If the context window fills up mid-loop, Claude Code auto-compacts.
+To recover, this skill writes `PAPER_IMPROVEMENT_STATE.json` after each round:
 
 ```json
 {
@@ -49,13 +58,17 @@ If the context window fills up mid-loop, Claude Code auto-compacts. To recover, 
 }
 ```
 
-**On startup**: if `PAPER_IMPROVEMENT_STATE.json` exists with `"status": "in_progress"` AND `timestamp` is within 24 hours, read it + `PAPER_IMPROVEMENT_LOG.md` to recover context, then resume from the next round. Otherwise (file absent, `"status": "completed"`, or older than 24 hours), start fresh.
+**On startup**: if `PAPER_IMPROVEMENT_STATE.json` exists with `"status": "in_progress"` AND `timestamp` is within 24 hours, read it + `PAPER_IMPROVEMENT_LOG.md` to recover context, then resume from the next round.
+Otherwise (file absent, `"status": "completed"`, or older than 24 hours), start fresh.
 
-**After each round**: overwrite the state file. **On completion**: set `"status": "completed"`.
+**After each round**: overwrite the state file.
+**On completion**: set `"status": "completed"`.
 
 ## Reviewer Independence Protocol
 
-The reviewer must be context-naive on every round. Prior-round summaries, fix lists, and executor explanations are not evidence; they are a source of confirmation bias. If the reviewer is told what changed, scores tend to drift upward even when the manuscript itself has not materially improved.
+The reviewer must be context-naive on every round.
+Prior-round summaries, fix lists, and executor explanations are not evidence; they are a source of confirmation bias.
+If the reviewer is told what changed, scores tend to drift upward even when the manuscript itself has not materially improved.
 
 Rules:
 - Every round starts with `mcp__codex__codex`, not `mcp__codex__codex-reply`.
@@ -183,7 +196,8 @@ Verify: 0 undefined references, 0 undefined citations.
 
 ### Step 4.5: Restatement Regression Test
 
-After every recompilation, rerun a theorem-statement consistency check so fix rounds cannot reintroduce appendix drift. **Run this after Step 4 and again after Step 7 before the final format check.**
+After every recompilation, rerun a theorem-statement consistency check so fix rounds cannot reintroduce appendix drift.
+**Run this after Step 4 and again after Step 7 before the final format check.**
 
 **Scope**
 - Compare only theorem/lemma/proposition/corollary statements, not proof bodies.
@@ -212,11 +226,14 @@ def normalize(s):
 PY
 ```
 
-**Empirical motivation:** in our April 2026 NeurIPS run, `thm:dsm-oracle` had a 3-case split (w=0/1/>1) in main but no case split in appendix; `nu_T` was named "stationary" in main and "terminal" in appendix. These drifted multiple times across fix rounds because no automated check caught regression.
+**Empirical motivation:** in our April 2026 NeurIPS run, `thm:dsm-oracle` had a 3-case split (w=0/1/>1) in main but no case split in appendix; `nu_T` was named "stationary" in main and "terminal" in appendix.
+These drifted multiple times across fix rounds because no automated check caught regression.
 
 ### Step 5: Round 2 Review
 
-If `REVIEWER_BIAS_GUARD = true` (default), use a **fresh** `mcp__codex__codex` thread for Round 2. Do not reuse the Round 1 threadId for prompting. Save the returned threadId only for recovery bookkeeping.
+If `REVIEWER_BIAS_GUARD = true` (default), use a **fresh** `mcp__codex__codex` thread for Round 2.
+Do not reuse the Round 1 threadId for prompting.
+Save the returned threadId only for recovery bookkeeping.
 
 ```
 mcp__codex__codex:
@@ -260,15 +277,20 @@ If `REVIEWER_BIAS_GUARD = false` (legacy debugging only), use `mcp__codex__codex
 
 Run this only if the paper is theory-heavy (≥5 `\begin{theorem}|\begin{lemma}|\begin{proposition}|\begin{corollary}` environments in the source) and only on the final scheduled round (`current_round == MAX_ROUNDS`).
 
-This is a late-stage adversarial check. It must always use **fresh** `mcp__codex__codex` threads, never `codex-reply`, and it must not reuse any prior review context.
+This is a late-stage adversarial check.
+It must always use **fresh** `mcp__codex__codex` threads, never `codex-reply`, and it must not reuse any prior review context.
 
 **Thread 1: Attack**
 - Use a fresh thread with only the current paper files.
-- Prompt: "Construct the single best argument to reject this paper in 200 words. Focus on theorem validity, assumption mismatch, missing proof obligations, limit-order ambiguity, and claim/evidence gaps. Do not reference prior rounds or fixes."
+- Prompt: "Construct the single best argument to reject this paper in 200 words.
+  Focus on theorem validity, assumption mismatch, missing proof obligations, limit-order ambiguity, and claim/evidence gaps.
+  Do not reference prior rounds or fixes."
 
 **Thread 2: Defense**
 - Use a second fresh thread with the current paper files plus the attack memo.
-- Prompt: "Now defend the paper against the attack memo. For each rejection point, classify it as already fixed, partially fixed, or still unresolved, and cite the current files. Do not reuse prior review context."
+- Prompt: "Now defend the paper against the attack memo.
+  For each rejection point, classify it as already fixed, partially fixed, or still unresolved, and cite the current files.
+  Do not reuse prior review context."
 
 **Merge rule**
 - Dedupe attack points against the Round 2 weakness list by semantic overlap.
@@ -278,17 +300,21 @@ This is a late-stage adversarial check. It must always use **fresh** `mcp__codex
 - Record both memos in `PAPER_IMPROVEMENT_LOG.md`.
 - If `HUMAN_CHECKPOINT = true`, include the merged findings in the checkpoint summary before asking the user to proceed.
 
-This phase feeds directly into Step 6. The attack/defense findings must be merged before the final recompile.
+This phase feeds directly into Step 6.
+The attack/defense findings must be merged before the final recompile.
 
-**Empirical motivation:** in our April 2026 NeurIPS run, after 5 rounds of standard improvement (score 7-8/10), the kill-argument exercise surfaced framing weaknesses that no prior review caught (e.g., "width-w is mostly conditional", "CRF irrelevant to real D-LLMs"). Author rebuttal forced explicit scope qualifications in abstract and discussion.
+**Empirical motivation:** in our April 2026 NeurIPS run, after 5 rounds of standard improvement (score 7-8/10), the kill-argument exercise surfaced framing weaknesses that no prior review caught (e.g., "width-w is mostly conditional", "CRF irrelevant to real D-LLMs").
+Author rebuttal forced explicit scope qualifications in abstract and discussion.
 
 ### Step 5b: Human Checkpoint (if enabled)
 
-**Skip if `HUMAN_CHECKPOINT = false`.** Same as Step 2b — present Round 2 review, wait for user input.
+**Skip if `HUMAN_CHECKPOINT = false`.**
+Same as Step 2b — present Round 2 review, wait for user input.
 
 ### Step 6: Implement Round 2 Fixes
 
-Same process as Step 3. Typical Round 2 fixes:
+Same process as Step 3.
+Typical Round 2 fixes:
 - Add controlled synthetic experiments validating theory
 - Further soften any remaining overclaims
 - Formalize informal arguments (e.g., truncation → formal proposition)
@@ -443,11 +469,13 @@ paper/
 
 ## Key Rules
 
-- **Large file handling**: If the Write tool fails due to file size, immediately retry using Bash (`cat << 'EOF' > file`) to write in chunks. Do NOT ask the user for permission — just do it silently.
+- **Large file handling**: If the Write tool fails due to file size, immediately retry using Bash (`cat << 'EOF' > file`) to write in chunks.
+  Do NOT ask the user for permission — just do it silently.
 
 - **Preserve all PDF versions** — user needs to compare progression
 - **Save FULL raw review text** — do not summarize or truncate GPT-5.4 responses
-- **Reviewer independence (Round 2+)**: when `REVIEWER_BIAS_GUARD = true` (default), use a **fresh** `mcp__codex__codex` thread for every review round; never use `mcp__codex__codex-reply` and never include "since last round" / fix summaries in the prompt. See the Reviewer Independence Protocol section above.
+- **Reviewer independence (Round 2+)**: when `REVIEWER_BIAS_GUARD = true` (default), use a **fresh** `mcp__codex__codex` thread for every review round; never use `mcp__codex__codex-reply` and never include "since last round" / fix summaries in the prompt.
+  See the Reviewer Independence Protocol section above.
 - **Always recompile after fixes** — verify 0 errors before proceeding
 - **Do not fabricate experimental results** — synthetic validation must describe methodology, not invent numbers
 - **Respect the paper's claims** — soften overclaims rather than adding unsupported new claims
@@ -464,8 +492,11 @@ Based on end-to-end testing on a 9-page ICLR 2026 theory paper:
 | Round 2 | 7/10 (content) | Added synthetic validation, formal truncation proposition, stronger limitations |
 | Round 3 | 5→8.5/10 (format) | Removed hero fig, appendix, compressed conclusion, fixed overfull hbox |
 
-**+4.5 points across 3 rounds** (2 content + 1 format) is typical for a well-structured but rough first draft. Final: 8 pages main body, 0 overfull hbox, ICLR-compliant.
+**+4.5 points across 3 rounds** (2 content + 1 format) is typical for a well-structured but rough first draft.
+Final: 8 pages main body, 0 overfull hbox, ICLR-compliant.
 
 ## Review Tracing
 
-After each `mcp__codex__codex` or `mcp__codex__codex-reply` reviewer call, save the trace following `shared-references/review-tracing.md`. Use `tools/save_trace.sh` or write files directly to `.aris/traces/<skill>/<date>_run<NN>/`. Respect the `--- trace:` parameter (default: `full`).
+After each `mcp__codex__codex` or `mcp__codex__codex-reply` reviewer call, save the trace following `shared-references/review-tracing.md`.
+Use `tools/save_trace.sh` or write files directly to `.aris/traces/<skill>/<date>_run<NN>/`.
+Respect the `--- trace:` parameter (default: `full`).

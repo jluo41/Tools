@@ -16,7 +16,9 @@ Verify that every claim in the paper matches raw evidence for: **$ARGUMENTS**
 
 ## Why This Exists
 
-The executor writes experiments AND writes the paper. It "knows" what the results should be. This creates confirmation bias:
+The executor writes experiments AND writes the paper.
+It "knows" what the results should be.
+This creates confirmation bias:
 - Rounding 84.7% up to 85.3%
 - Reporting best seed instead of average
 - Citing metrics from a different experiment config
@@ -34,7 +36,8 @@ A **fresh reviewer with zero prior context** catches these because it has no exp
 
 ## Core Principle
 
-**Zero-context, fresh reviewer.** The auditor receives ONLY:
+**Zero-context, fresh reviewer.**
+The auditor receives ONLY:
 - Paper .tex files (the claims)
 - Raw result files (the evidence)
 
@@ -80,7 +83,8 @@ Any .md file that is an executor-written summary
 
 ### Step 2: Fresh Reviewer Audit (GPT-5.4 — NEW thread, no reply)
 
-**CRITICAL: Use `mcp__codex__codex` (new thread), NEVER `mcp__codex__codex-reply`.** Every run must be a fresh context.
+**CRITICAL: Use `mcp__codex__codex` (new thread), NEVER `mcp__codex__codex-reply`.**
+Every run must be a fresh context.
 
 ```
 mcp__codex__codex:
@@ -238,19 +242,32 @@ Same pattern as `/probe-audit`:
 
 ## Key Rules
 
-- **Fresh thread EVERY run.** Never use `codex-reply`. Never carry context.
-- **Zero executor interpretation.** Only file paths. No summaries.
-- **Only raw results.** No EXPERIMENT_LOG, no AUTO_REVIEW, no human summaries.
-- **Rounding rule.** Only standard rounding to displayed precision. 84.7% → 84.7% or 85% is OK. 84.7% → 85.3% is NOT OK.
-- **Cross-model.** Reviewer must be a different model family from executor.
+- **Fresh thread EVERY run.**
+  Never use `codex-reply`.
+  Never carry context.
+- **Zero executor interpretation.**
+  Only file paths.
+  No summaries.
+- **Only raw results.**
+  No EXPERIMENT_LOG, no AUTO_REVIEW, no human summaries.
+- **Rounding rule.**
+  Only standard rounding to displayed precision.
+  84.7% → 84.7% or 85% is OK.
+  84.7% → 85.3% is NOT OK.
+- **Cross-model.**
+  Reviewer must be a different model family from executor.
 
 ## Review Tracing
 
-After each `mcp__codex__codex` or `mcp__codex__codex-reply` reviewer call, save the trace following `shared-references/review-tracing.md`. Use `tools/save_trace.sh` or write files directly to `.aris/traces/<skill>/<date>_run<NN>/`. Respect the `--- trace:` parameter (default: `full`).
+After each `mcp__codex__codex` or `mcp__codex__codex-reply` reviewer call, save the trace following `shared-references/review-tracing.md`.
+Use `tools/save_trace.sh` or write files directly to `.aris/traces/<skill>/<date>_run<NN>/`.
+Respect the `--- trace:` parameter (default: `full`).
 
 ## Submission Artifact Emission
 
-This skill **always** writes `paper/PAPER_CLAIM_AUDIT.json`, regardless of caller or detector outcome. A detector-negative run (paper has no numeric claims) emits verdict `NOT_APPLICABLE`; a paper-with-numeric-claims-but-no-raw-results run emits `BLOCKED`. Silent skip is forbidden — `paper-writing` Phase 6 and `tools/verify_paper_audits.sh` both rely on this artifact existing at a predictable path.
+This skill **always** writes `paper/PAPER_CLAIM_AUDIT.json`, regardless of caller or detector outcome.
+A detector-negative run (paper has no numeric claims) emits verdict `NOT_APPLICABLE`; a paper-with-numeric-claims-but-no-raw-results run emits `BLOCKED`.
+Silent skip is forbidden — `paper-writing` Phase 6 and `tools/verify_paper_audits.sh` both rely on this artifact existing at a predictable path.
 
 The artifact conforms to the schema in `shared-references/assurance-contract.md`:
 
@@ -280,9 +297,12 @@ The artifact conforms to the schema in `shared-references/assurance-contract.md`
 
 ### `audited_input_hashes` scope
 
-Hash the **declared input set** passed into this audit invocation — i.e. the exact `.tex` files and raw result / config files this run read — not a repo-wide union and not the reviewer's self-reported subset. If a caller passed only `main.tex` + a single result file, hash those two files and no others. The external verifier rehashes these entries; any mismatch flags `STALE`.
+Hash the **declared input set** passed into this audit invocation — i.e. the exact `.tex` files and raw result / config files this run read — not a repo-wide union and not the reviewer's self-reported subset.
+If a caller passed only `main.tex` + a single result file, hash those two files and no others.
+The external verifier rehashes these entries; any mismatch flags `STALE`.
 
-**Path convention** (must match what `tools/verify_paper_audits.sh` expects): keys are **paths relative to the paper directory** (the arg passed to the verifier) for in-paper files — so `main.tex`, not `paper/main.tex` — and **absolute paths** for out-of-paper files such as external `results/` dirs. The verifier resolves relative entries via `os.path.join(paper_dir, key)`; prefixing with `paper/` produces `paper/paper/main.tex` and false-fails as STALE.
+**Path convention** (must match what `tools/verify_paper_audits.sh` expects): keys are **paths relative to the paper directory** (the arg passed to the verifier) for in-paper files — so `main.tex`, not `paper/main.tex` — and **absolute paths** for out-of-paper files such as external `results/` dirs.
+The verifier resolves relative entries via `os.path.join(paper_dir, key)`; prefixing with `paper/` produces `paper/paper/main.tex` and false-fails as STALE.
 
 ### Verdict decision table
 
@@ -297,8 +317,12 @@ Hash the **declared input set** passed into this audit invocation — i.e. the e
 
 ### Thread independence
 
-Every invocation uses a fresh `mcp__codex__codex` thread. Never `codex-reply`. Do not accept prior audit outputs (PROOF_AUDIT, CITATION_AUDIT, EXPERIMENT_LOG, AUTO_REVIEW summaries) as input to this audit — the fresh thread preserves reviewer independence per `shared-references/reviewer-independence.md`.
+Every invocation uses a fresh `mcp__codex__codex` thread.
+Never `codex-reply`.
+Do not accept prior audit outputs (PROOF_AUDIT, CITATION_AUDIT, EXPERIMENT_LOG, AUTO_REVIEW summaries) as input to this audit — the fresh thread preserves reviewer independence per `shared-references/reviewer-independence.md`.
 
 ### Human-readable sibling
 
-`paper/PAPER_CLAIM_AUDIT.md` is written alongside the JSON for readers. The JSON is authoritative for `tools/verify_paper_audits.sh`; the Markdown is for humans. The parent skill (`paper-writing` Phase 6) plus the verifier decide whether the verdict blocks finalization — this skill itself never blocks; it only emits.
+`paper/PAPER_CLAIM_AUDIT.md` is written alongside the JSON for readers.
+The JSON is authoritative for `tools/verify_paper_audits.sh`; the Markdown is for humans.
+The parent skill (`paper-writing` Phase 6) plus the verifier decide whether the verdict blocks finalization — this skill itself never blocks; it only emits.
