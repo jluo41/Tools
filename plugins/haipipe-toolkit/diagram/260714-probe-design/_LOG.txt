@@ -155,8 +155,25 @@ JL comments (`> JL:`) that land in 01-04 move HERE once their edit is applied, v
      or leave it as the one line added this session. JL to decide.
   3. Optional: the two workers are near-identical twins — the shared runbook could move
      to one ref both cite. Not done (they live in separate consumer trees); flag only.
-  4. HARVEST PLACEMENT (JL raised): should the harvest lanes run in the probe worker's ⑤
-     (today) or in the REVISE phase (JL's instinct — probe just completes the Q&A, revise
-     pulls values/cites/figures out of it)? A lifecycle decision touching the workers +
-     revise; not decided. JL to rule.
+  (nothing structural owed on harvest — resolved below.)
 ```
+
+
+✅ SHIPPED (harvest, cont.) — 2026-07-15
+========================================
+
+[2026-07-15 01:20 · SHIPPED] harvest placement settled + the boundary made explicit
+  Q chain: JL first thought harvest belonged in REVISE, then refined to "haipipe-probe
+  collects, haipipe-paper-probe harvests". CC read 2-phase/ and grounded it:
+  · harvest STAYS at PROBE — the evidence stages claims + resource + seed SKIP REVISE
+    (haipipe-paper-revise/SKILL.md:124), yet claims files every number backing every
+    claim into _VALUES_; so harvest must ride with PROBE, the universal intake phase.
+  · the clean split is WITHIN the ONE worker run, not two skills: ①–④ COLLECT the answer
+    (the shared mechanism the haipipe-probe CONSTITUTION governs) · ⑤ HARVEST (the
+    consumer's OWN, not in the constitution). haipipe-probe is the RULEBOOK, not a
+    runtime step; haipipe-paper-probe executes collection AND harvest.
+  · JL: "yes, make it explicit." DONE — both workers now carry, in the five-step loop:
+      a "TWO HALVES" framing line under STEP 0, and a
+      "════ COLLECTION (①–④) ends here — the answer is banked. HARVEST (⑤) begins ════"
+      divider before ⑤, whose heading now reads "…and HARVEST (the <consumer>'s own,
+      not the constitution's)".

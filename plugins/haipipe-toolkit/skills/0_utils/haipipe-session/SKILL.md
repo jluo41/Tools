@@ -1,12 +1,12 @@
 ---
 name: haipipe-session
-description: "Records what a working SESSION settled, as a durable topic note under diagram/<YYMMDD>-<topic>/. LAW 1 — ONE FOLDER PER TOPIC, NOT PER SESSION: dated at birth, never re-dated; a later session APPENDS. Verbs: new <topic> · append (the default) · check. Trigger: session note, record this session, what did we settle, topic note, diagram folder, rulings ledger, append to topic, 会话记录, /haipipe-session."
-argument-hint: "[new <topic> | append [<topic>] | check [<folder>]]"
+description: "Records what a working SESSION settled as a durable topic note under diagram/<YYMMDD>-<topic>/ (LAW 1: one folder per TOPIC, dated at birth, never re-dated — a later session APPENDS). Verbs: new · append · log · check. Trigger: session note, record this session, what did we settle, topic note, rulings ledger, _LOG, comment ledger, lessons, /haipipe-session."
+argument-hint: "[new <topic> | append [<topic>] | log [<doc>] | check [<folder>]]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-07-14"
-  summary: "Session-to-topic-note recorder. LAW 1: one folder per TOPIC, not per session. Codifies the two live reference folders (260714-probe-qa, 260714-resource-stage)."
+  version: "1.1.0"
+  last_updated: "2026-07-15"
+  summary: "Session-to-topic-note recorder. LAW 1: one folder per TOPIC, not per session. v1.1 adds the `log` verb + the `_LOG.txt` comment/lessons ledger (an EXEMPT meta file): review a doc → reply inline `>> CC HH:MM:` [SOLVED]/[PENDING] → migrate resolved threads to _LOG; harvest session lessons (→ _LOG) + portable prefs (→ the owning skill's PREFERENCES.md)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -94,6 +94,19 @@ VERBS
   Run it before calling a note done. A citation that no longer resolves is a **FAIL**,
   not a nit — a rotted cross-reference is how a spec of record quietly stops being one.
 
+**`log`** — the COMMENT LEDGER + LESSONS, in the topic's `_LOG.txt` (an EXEMPT meta file;
+  see the house form). Two uses:
+  1. REVIEW A DOC. JL leaves `> JL:` comments in some doc (a SKILL.md, a manuscript);
+     answer each IN PLACE with `>> CC HH:MM:` + a `[SOLVED]` / `[PENDING]` tag, and NEVER
+     delete the `> JL:` line. Once the body edit LANDS, MOVE the whole thread (the `> JL:`
+     line VERBATIM + the CC reply) out of the doc into `_LOG.txt`, keeping the doc body
+     clean. A `[PENDING]` thread stays inline until JL decides, then migrates too. Each
+     _LOG entry is stamped `[YYYY-MM-DD HH:MM · STATUS]`.
+  2. HARVEST LESSONS at session end. Append a `LESSONS` block to `_LOG.txt` (craft gotchas,
+     one per line). Fan any portable BEHAVIORAL preference out to the owning skill's
+     `PREFERENCES.md` (git-tracked, synced across orchestrators): `_LOG` keeps the
+     session-specific record, `PREFERENCES.md` keeps the reusable rule.
+
 
 THE HOUSE FORM — non-negotiable (JL)
 ====================================
@@ -101,6 +114,10 @@ THE HOUSE FORM — non-negotiable (JL)
 - **`.txt`, never `.md`** — markdown breaks monospace alignment.
 - **MAX 6 files. NO index, no README, no `00-`.** One THEME per file. Six themed files
   ARE the index; a seventh telling of the same thing is the file that goes stale first.
+  ▶ EXEMPT: `_LOG.txt` (and any `_*.txt`) — a META ledger, NOT a themed page. It does not
+    count toward the 6, is UNCAPPED in length, and needs no `NN-` name or title underline;
+    `check` still runs its markdown-table + reference checks. It holds the comment ledger
+    (moved `> JL:`/`>> CC:` threads) + the session LESSONS block. See the `log` verb.
 - **~250 lines max per file. ~88-column wrap; nothing past 91.**
 - **NO markdown tables anywhere.** Sections + bullets + ASCII boxes.
 - **ASCII headings** (`===` sections, `---` subsections) — not `##` / `###`. Underline
