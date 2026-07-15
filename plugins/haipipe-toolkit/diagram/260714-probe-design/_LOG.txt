@@ -240,3 +240,54 @@ JL comments (`> JL:`) that land in 01-04 move HERE once their edit is applied, v
   constitution Pointers line, agents/README line 4. Historical birth entry (above, under
   the old name) left as-is — it was true when written. No symlink to update (this plugin
   discovers agents from its own agents/ folder; `name:` is the registration).
+
+
+[2026-07-15 02:55 · SETTLED] the q-executor-agent's contract — return, routing, trigger
+  Three JL questions in a row pinned down the agent's exact contract. Answers logged
+  as design rulings (no file edits yet beyond the rename; two tightenings proposed below).
+
+  Q1 — "what do we want the agent to return? it will call /haipipe-task qa, right?"
+    · RETURNS POINTERS, NOT READINGS: per q-executor a { id, tier, target: <QA-file path> }
+      map — never the answer text, never an interpretation. The QA file is the executor's
+      durable receipt (single writer); the agent points AT it. Interpreting is ⑤ HARVEST,
+      stake-aware, the stage's job — a returned gist could leak into a claim without the
+      stage ever reading the real evidence. The agent transports a LOCATION; it does not grade.
+    · IT DOES NOT CALL /haipipe-task qa INLINE. It dispatches Agent(haipipe-task-orchestrator-
+      agent) / Agent(haipipe-discovery-orchestrator-agent); THAT agent runs the qa gate
+      (① QA SCAN → ② DIGEST → ③ P-B-E-R) in its OWN clean context and returns the QA path.
+      Two reasons: the wall is a context boundary (inline would dissolve it); and qa is the
+      EXCEPTION path — most q-executors REUSE an existing QA file and never dispatch at all.
+
+  Q2 — "should the agent know which task/discovery folder to go to?"
+    · Split into TWO decisions: ROUTE (task|discovery) vs the SPECIFIC FOLDER.
+    · ROUTE: the agent knows it — a HINT on the q-executor, set by the STAGE at ① ORGANIZE,
+      never guessed (route is ambiguous — "baseline AUC" could be run-it or cite-it — only
+      the consumer's intent disambiguates; guessing is where a routing bias creeps in).
+    · FOLDER, fresh work (T3/T4): the agent does NOT know and MUST NOT choose it. The
+      executor orchestrator OWNS its namespace — it decides ENRICH-existing vs open-NEW,
+      claims QA/<n>-<slug>.md, and RETURNS the path. Picking a bank folder = knowing the
+      bank's naming + what's already there = running bank work = LAW 1 violation.
+    · FOLDER, reuse (T0–T2): the agent DISCOVERS it (read-only grep of {tasks,discoveries}/
+      **/QA/*.md) — learns the path as a search result, never chose where the answer lives.
+    · Refinement: REUSE is family-BLIND (grep both banks — a task-routed question may already
+      be answered by a discovery QA file), DISPATCH is family-ROUTED (route hint picks the
+      orchestrator for a genuine miss). Already in the agent file (lines 68, 71).
+
+  Q3 — "will only the q-executor without an answer trigger this subagent?"
+    · YES — but "without answer" = "not yet BOUND to a target: in the probe file" (state:
+      planned), NOT "no answer exists anywhere" (that is what the agent goes and finds out).
+    · TWO GATES, don't collapse them:
+        GATE 1 (stage → probe agent): triggered by the PLANNED sections. answered/read
+                sections are skipped — nothing left to collect.
+        GATE 2 (agent → executor orchestrator): fires ONLY for true MISSES. planned +
+                answer-in-bank → REUSE (no dispatch); planned + being-worked → in-flight
+                (point it, no dispatch, don't dupe); planned + no-answer → FRESH dispatch.
+    · The trap: "unanswered → will dispatch" is WRONG. unbound → goes to the agent; the
+      AGENT then decides reuse vs dispatch. MATCH-before-DISPATCH exists to keep misses rare.
+
+  TWO FILE TIGHTENINGS PROPOSED (JL to approve; fold into the owed-4 wiring):
+    a. agent "I do NOT" list gains: "choose or author a destination folder for fresh work —
+       the executor orchestrator owns its namespace and returns the path." (implied today,
+       not stated.)
+    b. pin the agent's INPUT to planned-only: the stage collects state: planned (unbound)
+       sections and hands THAT set to the agent. (file says "a SET of q-executors" — vague.)
