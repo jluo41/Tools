@@ -1,6 +1,6 @@
 ---
 name: haipipe-workflow
-description: "IPO workflow designer + builder + reporter. The basic orchestration unit of haipipe-toolkit. Every skill (task, discovery, paper, application) is a specific workflow with its own IPO. This skill defines the shared shape: Input → Process[Steps] → Output, the lifecycle (Plan → Build → Execute → Report), file tracking per step, and the boundary rule for sub-workflows. Trigger: workflow, plan workflow, design workflow, IPO, phases, build workflow, run workflow, report, /haipipe-workflow."
+description: "IPO workflow designer + builder + reporter — the basic orchestration unit of haipipe-toolkit: it defines the shared shape (Input → Process[Steps] → Output) and lifecycle (Plan → Build → Execute → Report) that every skill instantiates. Trigger: workflow, plan workflow, design workflow, IPO, process, phases, build workflow, run workflow, report, /haipipe-workflow."
 argument-hint: "[function] [workflow-name-or-path] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
