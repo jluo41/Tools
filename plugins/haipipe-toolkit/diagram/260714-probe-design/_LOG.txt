@@ -291,3 +291,32 @@ JL comments (`> JL:`) that land in 01-04 move HERE once their edit is applied, v
        not stated.)
     b. pin the agent's INPUT to planned-only: the stage collects state: planned (unbound)
        sections and hands THAT set to the agent. (file says "a SET of q-executors" — vague.)
+
+
+[2026-07-15 03:20 · SHIPPED] owed-4 — the two workers now DISPATCH the q-executor agent
+  JL: "yes, go ahead and wire the workers."
+  The stage worker no longer runs ②T2/③/④ inline. The split by WHO can run each door:
+    STAGE keeps  ① ORGANIZE · T1 LOCAL (the consumer's OWN registries) · display-reroute
+                 (paper) · ⑤ HARVEST — all stake/consumer-specific.
+    AGENT takes  ② T2 REUSE (the bank grep + dedup) · ③ DISPATCH the misses · ④ POINT —
+                 the family-agnostic, stake-free middle, in ONE isolated context.
+  Why T1 LOCAL stays: it reads _CITATION_/_VALUES_/read-sections/0-displays — consumer-
+  specific; the shared agent (paper+application) cannot know a paper's private registries.
+  So the stage runs LOCAL first and hands the agent only the RESIDUAL (still-collecting)
+  sections. The churn we move off the STAGE's context is the bank grep + dispatch + async
+  polling — the bulk of the noise. Files:
+    · haipipe-paper-probe/SKILL.md         ②③④ rewritten (LOCAL inline → Agent(...) for bank)
+    · haipipe-application-probe/SKILL.md    same, mirrored (no display-reroute; intervention regs)
+    · haipipe-probe-q-executor-agent.md     folded in tightenings (a)+(b) from the 02:55 block:
+        input pinned to planned/commissioned (still-collecting); "I do NOT" gains T1-LOCAL
+        and the never-author-a-fresh-folder boundary; ③ omits leaf for fresh (ENRICH only).
+    · agents/README.md                      dispatch diagram redrawn: STAGE → COLLECTOR →
+        executors (was STAGE → executors direct). Kept the still-valid point: the collector
+        is NOT the retired 1:1 gateway — it is batch-level (match/reuse/dedup) and protects
+        the STAGE's context, not the executor's; between it and the executors, still direct.
+  Also in this tree (JL's parallel cleanup, kept): _archive/ DELETED (gateway agent gone,
+  clean-not-graveyard); README _archive pointers dropped; paper worker reflowed to one-
+  sentence-per-line; the 3 harvester sub-workers (-citation/-values/-display) touched by JL.
+  NOTE the route hint: the stage tags each residual section task|discovery at hand-off (it
+  knows the question's nature) — no new persisted `route:` field was added (kept minimal;
+  a field remains a possible future tightening).
