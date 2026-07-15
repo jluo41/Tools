@@ -13,10 +13,9 @@ metadata:
 Skill: haipipe-end-trig
 ========================
 
-Per-Fn-type specialist for **TrigFn** — the inference function that
-decides whether (and when) to run prediction based on incoming data.
-One of the 5 inference Fn-types inside an Endpoint_Set. See
-`ref/concepts.md` for TrigFn semantics.
+Per-Fn-type specialist for **TrigFn** — the inference function that decides whether (and when) to run prediction based on incoming data.
+One of the 5 inference Fn-types inside an Endpoint_Set.
+See `ref/concepts.md` for TrigFn semantics.
 
   Verb axis:    design | review | list | concepts
   Use case:     each TrigFn impl is scoped to ONE input cadence (e.g., CGM 5-minute
@@ -45,8 +44,7 @@ CGM5Min_v260101        CGM 5-minute stream trigger
 WeightDayEntry_v260305 weight day-entry trigger
 ```
 
-If `<use_case>` is omitted, the skill should `Bash("ls code/haifn/fn_endpoint/fn_trig/")`
-and ask the user to pick.
+If `<use_case>` is omitted, the skill should `Bash("ls code/haifn/fn_endpoint/fn_trig/")` and ask the user to pick.
 
 ---
 

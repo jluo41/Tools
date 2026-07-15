@@ -3,10 +3,8 @@ MetaFn: Model Metadata
 
 One of the 5 inference function types at Stage 6.
 
-MetaFn returns model metadata: the external model name mapping, the list of
-available predictions, and the pre-built metadata response for API callers.
-It is called once during packaging (Endpoint_Pipeline.run()) and its output
-is stored in meta.json at the endpoint root.
+MetaFn returns model metadata: the external model name mapping, the list of available predictions, and the pre-built metadata response for API callers.
+It is called once during packaging (Endpoint_Pipeline.run()) and its output is stored in meta.json at the endpoint root.
 
 ---
 
@@ -27,7 +25,8 @@ Endpoint_Pipeline.run()
               Step 7: PostFn
 ```
 
-MetaFn is NOT called per-request. It runs at packaging time only.
+MetaFn is NOT called per-request.
+It runs at packaging time only.
 
 ---
 
@@ -156,16 +155,14 @@ loader = MetaFnLoader(config['MetaFn'], SPACE)
 result = loader.MetaFn(SPACE)
 ```
 
-The loader uses Base.load_module_variables(pypath) to dynamically import the
-generated .py file and extract the MetaFn function from MetaDict.
+The loader uses Base.load_module_variables(pypath) to dynamically import the generated .py file and extract the MetaFn function from MetaDict.
 
 ---
 
 Where meta.json Is Written
 ===========================
 
-After MetaFn(SPACE) is called during packaging, the result is stored as
-meta.json at the Endpoint_Set root:
+After MetaFn(SPACE) is called during packaging, the result is stored as meta.json at the Endpoint_Set root:
 
 ```
 _WorkSpace/6-EndpointStore/{endpoint_name}/
@@ -186,9 +183,7 @@ tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/a1_build_metafn_{desc
 (legacy workspaces: code-dev/1-PIPELINE/6-Endpoint-WorkSpace/)
 ```
 
-<builder-dir> = the project's endpoint fn_develop task folder
-(tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/; legacy
-workspaces: code-dev/1-PIPELINE/6-Endpoint-WorkSpace/).
+<builder-dir> = the project's endpoint fn_develop task folder (tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/; legacy workspaces: code-dev/1-PIPELINE/6-Endpoint-WorkSpace/).
 
 **Step 2: Configure at top of builder:**
 
@@ -269,9 +264,8 @@ Each follows the same structure:
 # region Summary      [BOILERPLATE] usage examples
 ```
 
-When designing a new MetaFn, copy the closest example and change only the
-`[CUSTOMIZE]` sections. The `[BOILERPLATE]` sections are identical across
-all builders.
+When designing a new MetaFn, copy the closest example and change only the `[CUSTOMIZE]` sections.
+The `[BOILERPLATE]` sections are identical across all builders.
 
 **Key differences by use case:**
 
@@ -281,5 +275,4 @@ all builders.
 | Weight multi-label | horizon, horizon_description | ptt, weight_entries, cgm_entries, ... (JSON strings) |
 | MIMIC mortality | performance (auc_roc, auc_pr) | patient_id, admission_id, source_tables |
 
-The inputSchema should match what the paired Src2InputFn produces and
-Input2SrcFn consumes — this is the API contract visible to clients.
+The inputSchema should match what the paired Src2InputFn produces and Input2SrcFn consumes — this is the API contract visible to clients.

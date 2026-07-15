@@ -1,10 +1,8 @@
 Inference Performance — harness shape + anti-patterns
 ======================================================
 
-The per-step timing model and the known bottlenecks profiling exists to
-catch. Kept as the knowledge base behind `/haipipe-end profile`
-(endpointset fn/fn-3-profile.md reads this); the old task-side
-inference-profiling scope was retired in task-for-endpoint 2.2.0.
+The per-step timing model and the known bottlenecks profiling exists to catch.
+Kept as the knowledge base behind `/haipipe-end profile` (endpointset fn/fn-3-profile.md reads this); the old task-side inference-profiling scope was retired in task-for-endpoint 2.2.0.
 
 
 The per-step timing model
@@ -25,8 +23,8 @@ The per-step timing model
   slowest_step      the bottleneck key
 ```
 
-Only `model_inference` (and trivially `post_fn`) scale with the number of
-arms. Everything else is per-request and arm-independent.
+Only `model_inference` (and trivially `post_fn`) scale with the number of arms.
+Everything else is per-request and arm-independent.
 
 
 The harness (what <TASK>.py must do)
@@ -59,20 +57,16 @@ ep.inference(copy.deepcopy(payload))                 # one run to fill acc
 # acc['infer_ms'] = csr build + xgb predict cost
 ```
 
-(`_t` is a tiny timer wrapper that adds elapsed ms to acc[key] and returns the
-result.) Always restore the monkeypatched methods after.
+(`_t` is a tiny timer wrapper that adds elapsed ms to acc[key] and returns the result.) Always restore the monkeypatched methods after.
 
 
 KNOWN ANTI-PATTERN #1 — HuggingFace Dataset in the per-arm loop  (the big one)
 -----------------------------------------------------------------------------
 
-Symptom: `model_inference` dominates total (e.g. 98%), and within it the
-dataset-transform (`_add_treatment_columns`) dwarfs the actual xgb predict.
+Symptom: `model_inference` dominates total (e.g. 98%), and within it the dataset-transform (`_add_treatment_columns`) dwarfs the actual xgb predict.
 
-Cause: `instance_slearner._compute_scores` rebuilds a HuggingFace `Dataset`
-per arm and `_add_treatment_columns` calls `Dataset.add_column` once PER ARM
-inside that loop → O(arms²) Arrow-table copies. Measured on the 40-arm SMS
-ClickPred endpoint (2026-06-01):
+Cause: `instance_slearner._compute_scores` rebuilds a HuggingFace `Dataset` per arm and `_add_treatment_columns` calls `Dataset.add_column` once PER ARM inside that loop → O(arms²) Arrow-table copies.
+Measured on the 40-arm SMS ClickPred endpoint (2026-06-01):
 
 ```
     model_inference  3692 ms
@@ -83,12 +77,10 @@ ClickPred endpoint (2026-06-01):
     TOTAL warm                                            3746 ms
 ```
 
-HuggingFace Dataset (Arrow) is built for large, memory-mapped BATCH
-processing — NOT tight per-request loops. Each `.add_column` / `.remove_columns`
-copies the whole table.
+HuggingFace Dataset (Arrow) is built for large, memory-mapped BATCH processing — NOT tight per-request loops.
+Each `.add_column` / `.remove_columns` copies the whole table.
 
-THE FIX — stay in numpy + scipy.sparse, build shared work once, batch the
-arm variants into ONE predict:
+THE FIX — stay in numpy + scipy.sparse, build shared work once, batch the arm variants into ONE predict:
 
 ```python
 from scipy.sparse import csr_matrix, hstack, identity, vstack
@@ -109,8 +101,7 @@ VERIFIED (2026-06-01, smsr4 endpoint, applied to instance_slearner._compute_scor
     scores: BYTE-IDENTICAL to the loop (max|Δ| = 0.000e+00 over 40 arms × 3 examples)
     all 40 arms kept. prefn_pipeline (the data transform, ~44 ms) is now the
     largest single step — the arm loop is no longer the bottleneck.
-This is the SAME vectorization the offline eval uses to score 40 arms ×
-13,529 patients in ~1 s.
+This is the SAME vectorization the offline eval uses to score 40 arms × 13,529 patients in ~1 s.
 
   → Reducing 40 arms to 10 ALSO lowers latency (the cost is super-linear in
     arms), but it throws away message coverage and leaves the O(arms²) bug in
@@ -120,24 +111,23 @@ This is the SAME vectorization the offline eval uses to score 40 arms ×
 KNOWN ANTI-PATTERN #2 — cold-start reported as steady-state
 -----------------------------------------------------------
 
-The first `inference()` loads + caches the model (seconds). Reporting that as
-"the latency" overstates it. Always warm up once, then median the warm calls.
+The first `inference()` loads + caches the model (seconds).
+Reporting that as "the latency" overstates it.
+Always warm up once, then median the warm calls.
 Note cold vs warm separately if cold matters (serverless scale-from-zero).
 
 
 KNOWN ANTI-PATTERN #3 — per-request data transform when it could be cached
 --------------------------------------------------------------------------
 
-`prefn_pipeline` (Record→Case→AIData) does NDC/NPI/ZIP index lookups. If those
-indexes are rebuilt per request, warm them once at load (see
-`_warmup_external_data_indexes`). On the SMS endpoint this was already cheap
-(~46 ms) — but on heavier feature sets it can dominate; profile before assuming.
+`prefn_pipeline` (Record→Case→AIData) does NDC/NPI/ZIP index lookups.
+If those indexes are rebuilt per request, warm them once at load (see `_warmup_external_data_indexes`).
+On the SMS endpoint this was already cheap (~46 ms) — but on heavier feature sets it can dominate; profile before assuming.
 
 
 Where the actual code fix lives (NOT in this task)
 --------------------------------------------------
 
-This task MEASURES; it does not patch the model. The vectorization fix for
-anti-pattern #1 belongs in `code/hainn/instance/mlpredictor/instance_slearner.py`
-(`_compute_scores` / `_add_treatment_columns`) — editable `hainn`, no `haifn`
-regeneration. After the fix, re-run this task to confirm the speedup.
+This task MEASURES; it does not patch the model.
+The vectorization fix for anti-pattern #1 belongs in `code/hainn/instance/mlpredictor/instance_slearner.py` (`_compute_scores` / `_add_treatment_columns`) — editable `hainn`, no `haifn` regeneration.
+After the fix, re-run this task to confirm the speedup.

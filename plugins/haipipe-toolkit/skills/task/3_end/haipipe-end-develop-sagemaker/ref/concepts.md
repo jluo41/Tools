@@ -1,16 +1,16 @@
 haipipe-end-develop-sagemaker — Concepts
 =========================================
 
-SageMaker training conventions for this project. Read by the SKILL.md
-before running any verb.
+SageMaker training conventions for this project.
+Read by the SKILL.md before running any verb.
 
 ---
 
 Backing repo
 ------------
 
-`platforms/platform-sagemaker-training/` (sibling of this checkout) is the platform
-layer this skill wraps. Its layout:
+`platforms/platform-sagemaker-training/` (sibling of this checkout) is the platform layer this skill wraps.
+Its layout:
 
 ```
 platforms/platform-sagemaker-training/
@@ -33,9 +33,8 @@ platforms/platform-sagemaker-training/
 └── opt_ml/, opt_ml_processing/          local-test output mounts
 ```
 
-The 3-stage testing ladder (system → docker → pipeline) mirrors
-`platforms/platform-sagemaker-inference`'s endpoint testing ladder. Always promote
-upward — fix breakages at the lowest rung first.
+The 3-stage testing ladder (system → docker → pipeline) mirrors `platforms/platform-sagemaker-inference`'s endpoint testing ladder.
+Always promote upward — fix breakages at the lowest rung first.
 
 ---
 
@@ -81,7 +80,8 @@ Required AWS surface
   - S3 bucket:      project-configured workspace bucket
   - ModelPackageGroup: created on first `develop` if absent
 
-Default region in this project: us-east-2. Override per-config.
+Default region in this project: us-east-2.
+Override per-config.
 
 ---
 
@@ -124,8 +124,7 @@ After a successful `develop` run, the deploy specialists can consume EITHER:
   (b) The registered ModelPackage ARN directly (SageMaker-native consumers
       use the registry; Databricks / local consumers use the synced folder).
 
-The deploy specialists do not need to know which path was used — both produce
-the same artifact bytes.
+The deploy specialists do not need to know which path was used — both produce the same artifact bytes.
 
 ---
 
@@ -164,5 +163,6 @@ develop ──────┤
                                   consumes
 ```
 
-This skill is the **left side** of that diagram (build). Deploy specialists
-are the **right side** (serve). They share the Endpoint_Set artifact.
+This skill is the **left side** of that diagram (build).
+Deploy specialists are the **right side** (serve).
+They share the Endpoint_Set artifact.

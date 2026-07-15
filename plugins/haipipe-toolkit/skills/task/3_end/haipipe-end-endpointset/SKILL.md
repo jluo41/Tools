@@ -13,10 +13,9 @@ metadata:
 Skill: haipipe-end-endpointset
 ===============================
 
-Stage 6 **artifact-as-whole** specialist. Handles operations on the
-Endpoint_Set as a unit — packaging, local smoke test, structural review,
-dashboard. Target-agnostic: produces / inspects the artifact; deploying
-it is the deploy specialists' job.
+Stage 6 **artifact-as-whole** specialist.
+Handles operations on the Endpoint_Set as a unit — packaging, local smoke test, structural review, dashboard.
+Target-agnostic: produces / inspects the artifact; deploying it is the deploy specialists' job.
 
   Verb axis:  package | test | profile | review | dashboard
 
@@ -56,18 +55,19 @@ profile    ../haipipe-end/ref/0-overview.md  +  fn/fn-3-profile.md
 review     ../haipipe-end/ref/0-overview.md  +  fn/fn-review.md
 ```
 
-The umbrella's `ref/0-overview.md` (cross-cutting Stage 6 architecture +
-inference pipeline + YAML) is mandatory context for every verb.
+The umbrella's `ref/0-overview.md` (cross-cutting Stage 6 architecture + inference pipeline + YAML) is mandatory context for every verb.
 
 ---
 
 Step-by-Step Protocol
 ----------------------
 
-Step 0:  Read `../haipipe-end/ref/0-overview.md`. Mandatory.
+Step 0:  Read `../haipipe-end/ref/0-overview.md`.
+Mandatory.
          Contains the Endpoint_Set layout + inference pipeline + YAML conventions.
 
-Step 1:  Parse args. Verb vocabulary: dashboard / package / test / profile / review.
+Step 1:  Parse args.
+Verb vocabulary: dashboard / package / test / profile / review.
 
 Step 2:  Read the relevant fn doc per the dispatch table.
 
@@ -110,14 +110,13 @@ Lessons learned (MIMIC-IV endpoint session)
 
 ### Step 5b reproducibility check
 
-`c_endpoint_nb.py` step 5b compares endpoint predictions against training
-`prediction_results.json`. Warns on mismatch (does not block). This catches
-roundtrip data loss early — before the artifact ships to a deploy specialist.
+`c_endpoint_nb.py` step 5b compares endpoint predictions against training `prediction_results.json`.
+Warns on mismatch (does not block).
+This catches roundtrip data loss early — before the artifact ships to a deploy specialist.
 
 ### D-prefix exclusion
 
-`Src2InputFn` and `extract_example_from_source` now skip D-prefix tables
-(`DRGCode`, `DLabItems`, `DIcdDiagnoses`, `DIcdProcedures`, `DHcpcs`, `DItems`).
+`Src2InputFn` and `extract_example_from_source` now skip D-prefix tables (`DRGCode`, `DLabItems`, `DIcdDiagnoses`, `DIcdProcedures`, `DHcpcs`, `DItems`).
 This reduced `.tar.gz` from 160 MB to 14 MB.
 
 ### Three-level Src2InputFn / Input2SrcFn roundtrip enforcement
@@ -131,8 +130,7 @@ This reduced `.tar.gz` from 160 MB to 14 MB.
 Hand-off Contract (Endpoint_Set → deploy specialists)
 ------------------------------------------------------
 
-Each Endpoint_Set in `_WorkSpace/6-EndpointStore/{endpoint_name}/` is the
-SINGLE artifact that flows downstream:
+Each Endpoint_Set in `_WorkSpace/6-EndpointStore/{endpoint_name}/` is the SINGLE artifact that flows downstream:
 
 ```
 _WorkSpace/6-EndpointStore/{endpoint_name}/
@@ -145,8 +143,7 @@ _WorkSpace/6-EndpointStore/{endpoint_name}/
 (Canonical layout: `../haipipe-end/ref/0-overview.md` "Stage 6 (output)" — do not restate elsewhere.)
 
 Deploy specialists (`-deploy-*`) READ this artifact and never modify it.
-If a deploy fails because of a missing/malformed field here, the fix
-lives in this skill (or a per-Fn-type sibling), not in the deploy skill.
+If a deploy fails because of a missing/malformed field here, the fix lives in this skill (or a per-Fn-type sibling), not in the deploy skill.
 
 ---
 
@@ -177,8 +174,7 @@ examples/<project>/tasks/C01_endpoint_*/
 
 **Flow:** develop (00_) → package (01_) → deploy.
 
-The `00_develop` task must pass all 7 runs before the `01_package` task
-is executed. Step 5b in `c_endpoint_nb.py` (reproducibility check) is
-the runtime safety net that catches any remaining roundtrip issues.
+The `00_develop` task must pass all 7 runs before the `01_package` task is executed.
+Step 5b in `c_endpoint_nb.py` (reproducibility check) is the runtime safety net that catches any remaining roundtrip issues.
 
 Start new builders from templates in `code/scripts/haibuilder/6-endpoint/`.

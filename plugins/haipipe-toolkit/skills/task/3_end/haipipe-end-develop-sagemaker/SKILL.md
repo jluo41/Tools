@@ -13,14 +13,11 @@ metadata:
 Skill: haipipe-end-develop-sagemaker
 =====================================
 
-AWS SageMaker development specialist. Runs the project's training pipeline
-as a managed SageMaker Pipeline and produces a deployable Endpoint_Set
-(packaged `model.tar.gz` under `6-EndpointStore/`) plus a registered model
-package in the SageMaker Model Registry.
+AWS SageMaker development specialist.
+Runs the project's training pipeline as a managed SageMaker Pipeline and produces a deployable Endpoint_Set (packaged `model.tar.gz` under `6-EndpointStore/`) plus a registered model package in the SageMaker Model Registry.
 
-The deploy specialists (`-deploy-sagemaker`, `-deploy-databricks`, etc.)
-then consume that Endpoint_Set. This skill OWNS the build side; deploy
-specialists own the serve side.
+The deploy specialists (`-deploy-sagemaker`, `-deploy-databricks`, etc.) then consume that Endpoint_Set.
+This skill OWNS the build side; deploy specialists own the serve side.
 
   Verb axis:        dashboard | develop | test | monitor | teardown | review
 
@@ -44,8 +41,7 @@ Commands
 /haipipe-end-develop-sagemaker review <execution_id_or_arn>    -> audit pipeline run / registered model
 ```
 
-`<execution_id>` is a SageMaker Pipeline execution ARN; `<arn>` for `review`
-may be a ModelPackage ARN.
+`<execution_id>` is a SageMaker Pipeline execution ARN; `<arn>` for `review` may be a ModelPackage ARN.
 
 ---
 
@@ -71,8 +67,7 @@ review      ref/concepts.md                          aws sagemaker describe-pipe
                                                      aws sagemaker describe-model-package
 ```
 
-The `develop` step reads the endpointset overview to know the Endpoint_Set
-layout it must produce.
+The `develop` step reads the endpointset overview to know the Endpoint_Set layout it must produce.
 
 ---
 
@@ -83,7 +78,8 @@ Step 0: Read `ref/concepts.md` for SageMaker training conventions
         (ECR image, IAM role, ModelPackageGroupName, Pipeline parameters,
         S3 workspace layout, RegisterModel contract).
 
-Step 1: Parse args. Required arg per verb:
+Step 1: Parse args.
+Required arg per verb:
           develop:                       <config.yaml>
           test:                          <config.yaml> [--stage system|docker]
           monitor/teardown/review:       <execution_id_or_arn>
@@ -179,19 +175,17 @@ Does NOT own:
   - Model class / Tuner / Instance code — that's `/haipipe-nn`. This skill
     runs whatever ModelSet the project has assembled.
 
-If a develop run fails because of an Endpoint_Set or ModelSet issue, escalate
-to `/haipipe-end-endpointset review` or `/haipipe-nn modelset review` rather
-than patching here.
+If a develop run fails because of an Endpoint_Set or ModelSet issue, escalate to `/haipipe-end-endpointset review` or `/haipipe-nn modelset review` rather than patching here.
 
 ---
 
 Known Pitfalls (verified on this account: 583537983112 dev / us-east-2)
 ------------------------------------------------------------------------
 
-These same constraints apply to the sibling `-deploy-sagemaker` skill —
-read both pitfalls before running any SageMaker action.
+These same constraints apply to the sibling `-deploy-sagemaker` skill — read both pitfalls before running any SageMaker action.
 
-**1. SSO role needs SageMaker action permissions explicitly.** The
+**1.
+SSO role needs SageMaker action permissions explicitly.** The
    `df-rxinform-nonprod-jhuuser` permission set (and most baseline DrFirst
    SSO sets) does NOT grant `sagemaker:*` by default. Without it the first
    `DescribeEndpoint` / `CreatePipeline` call returns:
@@ -228,7 +222,8 @@ read both pitfalls before running any SageMaker action.
    SSO permission set. Curated alternative in
    `<project>/tasks/<endpoint-group>/01_endpoint_*/IAM_REQUEST.md (illustrative — from a retired WellDoc project)`.
 
-**2. Multi-arch OCI manifests break SageMaker.** If a training image is
+**2.
+Multi-arch OCI manifests break SageMaker.** If a training image is
    built with `docker buildx` defaults (multi-arch + provenance + SBOM),
    the resulting ECR tag is an `application/vnd.oci.image.index.v1+json`
    manifest, which SageMaker rejects:
@@ -256,7 +251,8 @@ read both pitfalls before running any SageMaker action.
    # must NOT contain "index" — should be "manifest.v1+json"
    ```
 
-**3. Find the proven-working image before pushing a new one.** Before
+**3.
+Find the proven-working image before pushing a new one.** Before
    building/pushing your own training image, list what's already in use:
 
    ```bash
@@ -276,7 +272,8 @@ read both pitfalls before running any SageMaker action.
    configs at the wrong repo wastes a 10-minute deploy cycle on the
    manifest-format error.
 
-**4. STS session tokens expire mid-deploy.** SSO-assumed STS credentials
+**4.
+STS session tokens expire mid-deploy.** SSO-assumed STS credentials
    are typically ~1 hour. A long `develop` Pipeline run can outlast the
    session and start failing intermittently with `InvalidClientTokenId`.
    Refresh with `aws sso logout && aws sso login` (or use AWS profiles

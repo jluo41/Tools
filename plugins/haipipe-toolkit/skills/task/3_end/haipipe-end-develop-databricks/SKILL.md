@@ -13,10 +13,8 @@ metadata:
 Skill: haipipe-end-develop-databricks
 ======================================
 
-Databricks development specialist (DEFERRED). Runs Stage 5 training as a
-Databricks Job, logs the resulting model to Unity Catalog (or the workspace
-MLflow registry), and exports an Endpoint_Set under `6-EndpointStore/` for
-the deploy specialists to consume.
+Databricks development specialist (DEFERRED).
+Runs Stage 5 training as a Databricks Job, logs the resulting model to Unity Catalog (or the workspace MLflow registry), and exports an Endpoint_Set under `6-EndpointStore/` for the deploy specialists to consume.
 
 > Status: DEFERRED — but the backing repo `platforms/platform-databrick-training/`
 > EXISTS (scripts/{submit_job.py, setup_cluster.sh, build_wheels.sh}, config/,
@@ -80,7 +78,8 @@ Step 0: Read `ref/concepts.md` for Databricks training conventions
         (Unity Catalog vs workspace registry, cluster spec, job parameters,
         wheel-vs-notebook task choice, MLflow integration).
 
-Step 1: Parse args. Same shape as `-develop-sagemaker`.
+Step 1: Parse args.
+Same shape as `-develop-sagemaker`.
 
 Step 2: Verify Databricks context:
           - Workspace URL + token (env or `databricks configure`)
@@ -122,16 +121,13 @@ Does NOT own:
 Why deferred
 -------------
 
-The `platforms/platform-databrick-training/` repo doesn't exist yet. When it does, the
-expected pattern is the same 3-stage testing ladder used for SageMaker:
+The `platforms/platform-databrick-training/` repo doesn't exist yet.
+When it does, the expected pattern is the same 3-stage testing ladder used for SageMaker:
 
 ```
 local-system  →  attached-cluster  →  managed-Job
 ```
 
-with the final stage equivalent to SageMaker's RegisterModel (UC version
-registration via `mlflow.set_registry_uri("databricks-uc")`).
+with the final stage equivalent to SageMaker's RegisterModel (UC version registration via `mlflow.set_registry_uri("databricks-uc")`).
 
-Until that repo lands, the umbrella surfaces this skill in routing-axis
-listings but reports `status: deferred` if invoked, with a pointer to
-`-develop-sagemaker` as the active alternative.
+Until that repo lands, the umbrella surfaces this skill in routing-axis listings but reports `status: deferred` if invoked, with a pointer to `-develop-sagemaker` as the active alternative.

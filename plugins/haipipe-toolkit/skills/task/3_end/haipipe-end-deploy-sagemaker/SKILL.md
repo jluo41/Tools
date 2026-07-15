@@ -13,9 +13,8 @@ metadata:
 Skill: haipipe-end-deploy-sagemaker
 =============================
 
-AWS SageMaker deployment specialist. Consumes an Endpoint_Set built by
-`haipipe-end-endpointset`, packages it for SageMaker, deploys, tests
-live, monitors, and cleans up.
+AWS SageMaker deployment specialist.
+Consumes an Endpoint_Set built by `haipipe-end-endpointset`, packages it for SageMaker, deploys, tests live, monitors, and cleans up.
 
   Function axis:  dashboard | deploy | test | monitor | teardown | review
 
@@ -52,8 +51,7 @@ teardown       ../haipipe-end/ref/deploy-overview.md                          te
 review         ../haipipe-end/ref/deploy-overview.md                          review procedure
 ```
 
-The `deploy` step reads the endpointset overview to know the Endpoint_Set
-layout it consumes.
+The `deploy` step reads the endpointset overview to know the Endpoint_Set layout it consumes.
 
 ---
 
@@ -63,7 +61,9 @@ Step-by-Step Protocol
 Step 0: Read `../haipipe-end/ref/deploy-overview.md` for SageMaker-specific conventions
         (instance types, IAM roles, model.tar.gz layout, autoscaling).
 
-Step 1: Parse args. Function vocabulary above. Required arg per function:
+Step 1: Parse args.
+Function vocabulary above.
+Required arg per function:
           deploy: <endpoint_set_name>     (path under 6-EndpointStore/)
           test/monitor/teardown/review: <sagemaker_endpoint_id>
 
@@ -121,5 +121,4 @@ Does NOT own:
   - Endpoint_Set content (read-only input from `/haipipe-end-endpointset`)
   - ModelInstance training (`/haipipe-nn`)
 
-If a deploy fails because of an Endpoint_Set issue, escalate to
-`/haipipe-end-endpointset review` rather than patching here.
+If a deploy fails because of an Endpoint_Set issue, escalate to `/haipipe-end-endpointset review` rather than patching here.

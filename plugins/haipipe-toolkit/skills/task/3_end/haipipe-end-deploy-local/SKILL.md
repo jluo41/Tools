@@ -13,10 +13,9 @@ metadata:
 Skill: haipipe-end-deploy-local
 ================================
 
-Local / self-hosted HTTP deployment specialist. Wraps an Endpoint_Set
-into a small HTTP server running on the local machine. "Local" is the
-deployment target; the framework (Flask / FastAPI) and the optional
-Docker wrap are implementation choices.
+Local / self-hosted HTTP deployment specialist.
+Wraps an Endpoint_Set into a small HTTP server running on the local machine.
+"Local" is the deployment target; the framework (Flask / FastAPI) and the optional Docker wrap are implementation choices.
 
 > Status: scaffolded. Procedures below are placeholders to be wired
 > through `platforms/platform-sagemaker-inference/scripts/build_endpoint/run_endpoint_{system,docker}.py`
@@ -48,8 +47,7 @@ Commands
 /haipipe-end-deploy-local review <endpoint_id>             -> audit generated app code
 ```
 
-`<endpoint_id>` for a local server is the `(endpoint_set_name, port)` tuple
-or a generated short id; the dashboard lists the local registry.
+`<endpoint_id>` for a local server is the `(endpoint_set_name, port)` tuple or a generated short id; the dashboard lists the local registry.
 
 ---
 
@@ -79,12 +77,14 @@ Step-by-Step Protocol
 Step 0:  Read `../haipipe-end/ref/deploy-overview.md` for local server conventions (port allocation,
          pid-file layout, log paths, framework boilerplate).
 
-Step 1:  Parse args. Required arg per verb:
+Step 1:  Parse args.
+Required arg per verb:
            deploy: <endpoint_set_name> [--framework flask|fastapi]
                                        [--with-docker] [--port N] [--bg]
            test/monitor/teardown/review: <endpoint_id>
 
-Step 2:  Choose backing path based on framework + Docker flags. For Flask
+Step 2:  Choose backing path based on framework + Docker flags.
+For Flask
          without Docker, defer to `run_endpoint_system.py`. For local Docker,
          defer to `run_endpoint_docker.py`. For FastAPI, project-specific.
 
@@ -174,5 +174,4 @@ Does NOT own:
     for the Flask + local-Docker paths, since those scripts work fine without
     any cloud creds.
 
-If a deploy fails because of an Endpoint_Set issue, escalate to
-`/haipipe-end-endpointset review`.
+If a deploy fails because of an Endpoint_Set issue, escalate to `/haipipe-end-endpointset review`.

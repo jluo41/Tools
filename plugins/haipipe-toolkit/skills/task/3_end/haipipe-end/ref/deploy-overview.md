@@ -2,19 +2,19 @@ Deploy Overview — shared cross-target reference (read by all 4 deploy speciali
 ===========================
 
 Deploys a packaged Endpoint_Set to a serving platform.
-Two production platforms: **Databricks** and **SageMaker**. Plus local for testing.
+Two production platforms: **Databricks** and **SageMaker**.
+Plus local for testing.
 
-Always run /haipipe-end test first. Do NOT deploy an untested endpoint.
+Always run /haipipe-end test first.
+Do NOT deploy an untested endpoint.
 
 ---
 
 Platform Overview
 ==================
 
-**The wire I/O pair is platform-specific (owner decision 2026-07-05).**
-Src2InputFn + Input2SrcFn come one-per-platform; MetaFn/TrigFn/PostFn are
-shared (TrigFn keeps the `dataframe_records` unwrap). Deploy the `.tar.gz`
-whose wire pair matches the target platform.
+**The wire I/O pair is platform-specific (owner decision 2026-07-05).** Src2InputFn + Input2SrcFn come one-per-platform; MetaFn/TrigFn/PostFn are shared (TrigFn keeps the `dataframe_records` unwrap).
+Deploy the `.tar.gz` whose wire pair matches the target platform.
 
 ```
 Platform      Wrapper              Registry              Auth                                Repo
@@ -90,8 +90,7 @@ Databricks Step 2: Test Locally (Direct — No MLflow)
 ======================================================
 
 Before packaging to MLflow (which takes 5+ minutes), test the endpoint directly.
-This simulates exactly what happens in EndpointSetMLflowModel.predict()
-but without the MLflow overhead (~10 seconds vs 5+ minutes).
+This simulates exactly what happens in EndpointSetMLflowModel.predict() but without the MLflow overhead (~10 seconds vs 5+ minutes).
 
 ```bash
 cd platforms/platform-databrick-inference && source env.sh && python scripts/test_local.py \
@@ -115,7 +114,8 @@ What test_local.py does:
   4. Runs endpoint_set.inference(payload)
   5. Prints response + latency stats
 
-If this fails, fix the endpoint before packaging. Do NOT proceed to MLflow.
+If this fails, fix the endpoint before packaging.
+Do NOT proceed to MLflow.
 
 ---
 
@@ -322,8 +322,8 @@ Individual step flags: --skip-package, --skip-deploy, --skip-test
 MLflow Payload Format: Critical Gotcha
 ========================================
 
-MLflow converts `dataframe_records` format to a pandas DataFrame when passing
-to predict(). This strips the outer `{"dataframe_records": [...]}` wrapper.
+MLflow converts `dataframe_records` format to a pandas DataFrame when passing to predict().
+This strips the outer `{"dataframe_records": [...]}` wrapper.
 
 EndpointSetMLflowModel._prepare_payload() re-wraps it:
 
@@ -334,9 +334,8 @@ if isinstance(model_input, pd.DataFrame):
     return {'dataframe_records': [record]}   # <- re-wrap preserved
 ```
 
-If you see `KeyError: 'cgm'` or TrigFn returning None for all requests,
-the payload format was stripped and not re-wrapped. This is handled by the
-EndpointSetMLflowModel but check that you are using the current version.
+If you see `KeyError: 'cgm'` or TrigFn returning None for all requests, the payload format was stripped and not re-wrapped.
+This is handled by the EndpointSetMLflowModel but check that you are using the current version.
 
 ---
 

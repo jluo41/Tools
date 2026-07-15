@@ -1,19 +1,16 @@
 haipipe-end-develop-databricks — Concepts (DEFERRED)
 ======================================================
 
-Placeholder for the Databricks training-target specialist. The backing repo
-`platforms/platform-databrick-training/` EXISTS; this doc awaits wiring.
+Placeholder for the Databricks training-target specialist.
+The backing repo `platforms/platform-databrick-training/` EXISTS; this doc awaits wiring.
 
 ---
 
 Expected backing repo
 ---------------------
 
-`platforms/platform-databrick-training/` — PRESENT on disk. Actual layout
-(differs from the anticipated sketch below — real scripts are
-`scripts/{submit_job.py, setup_cluster.sh, build_wheels.sh, run_v6_sequential.ps1}`
-plus `config/`, `notebooks/`, `CLAUDE.md`, `README.md`; the sketch is kept
-only as the wiring target):
+`platforms/platform-databrick-training/` — PRESENT on disk.
+Actual layout (differs from the anticipated sketch below — real scripts are `scripts/{submit_job.py, setup_cluster.sh, build_wheels.sh, run_v6_sequential.ps1}` plus `config/`, `notebooks/`, `CLAUDE.md`, `README.md`; the sketch is kept only as the wiring target):
 
 ```
 platforms/platform-databrick-training/
@@ -74,17 +71,14 @@ After a successful develop run, the consumer (`-deploy-databricks`) gets:
   (a) UC model URI:   `models:/<catalog>.<schema>.<model_name>/<version>`, or
   (b) Workspace URI:  `models:/<model_name>/<version>` (non-UC workspaces)
 
-plus the Endpoint_Set export under `_WorkSpace/6-EndpointStore/<endpoint_set>/`
-for non-Databricks deploy targets.
+plus the Endpoint_Set export under `_WorkSpace/6-EndpointStore/<endpoint_set>/` for non-Databricks deploy targets.
 
 ---
 
 Cross-skill boundaries
 ----------------------
 
-Same boundary as `-develop-sagemaker`: this skill OWNS the build, the deploy
-specialists OWN the serve, the Endpoint_Set artifact is the contract between
-them.
+Same boundary as `-develop-sagemaker`: this skill OWNS the build, the deploy specialists OWN the serve, the Endpoint_Set artifact is the contract between them.
 
 ---
 

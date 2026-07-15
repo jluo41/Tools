@@ -1,29 +1,28 @@
 fn-dashboard: Endpoint Store Status
 =====================================
 
-Scans _WorkSpace/6-EndpointStore/ and renders a status table showing
-what endpoints are packaged, their health signals, and readiness for
-inference or deployment.
+Scans _WorkSpace/6-EndpointStore/ and renders a status table showing what endpoints are packaged, their health signals, and readiness for inference or deployment.
 
 ---
 
 Step 0: Discover Available Endpoints
 ======================================
 
-**0a. Check prerequisites**
+**0a.
+Check prerequisites**
 
 ```bash
 source .venv/bin/activate && source env.sh
 ```
 
 NOTE: source .venv/bin/activate does NOT persist across Bash tool calls.
-Always chain: source .venv/bin/activate && source env.sh && python <script>
-Or call venv Python directly: .venv/bin/python script.py
+Always chain: source .venv/bin/activate && source env.sh && python <script> Or call venv Python directly: .venv/bin/python script.py
 
 Verify env vars are set:
   echo $LOCAL_ENDPOINT_STORE
 
-**0b. Discover all endpoint directories**
+**0b.
+Discover all endpoint directories**
 
 Use Bash (ls) or Glob:
 
@@ -34,7 +33,8 @@ ls _WorkSpace/6-EndpointStore/
 Each top-level directory is an endpoint package.
 Group by model family (from manifest.json if available).
 
-**0c. For each endpoint, gather four signals**
+**0c.
+For each endpoint, gather four signals**
 
 For each endpoint directory PATH:
 
@@ -69,7 +69,8 @@ Signal 4 -- Deployment status
     Check platforms/platform-databrick-inference/ for recent deploy configs
   Report: LOCAL | DATABRICKS | SAGEMAKER | UNKNOWN
 
-**0d. Render the status table**
+**0d.
+Render the status table**
 
 ```
 Endpoint                                  Examples  Signals 1-4       Platform
@@ -80,7 +81,8 @@ endpoint_sms_recommender_v0001           5/5       COMPLETE READY    LOCAL
 endpoint_demo_draft                       0/2       PARTIAL  PARTIAL  LOCAL
 ```
 
-**0e. Show manifest summary for each endpoint**
+**0e.
+Show manifest summary for each endpoint**
 
 For any endpoint with status COMPLETE, print the key manifest fields:
 
@@ -120,8 +122,7 @@ After rendering the table, always provide a one-line recommendation:
 Checking Stage 5 (ModelInstance_Set) Availability
 ===================================================
 
-The dashboard can optionally report what Stage 5 assets are available
-to be packaged into Stage 6:
+The dashboard can optionally report what Stage 5 assets are available to be packaged into Stage 6:
 
 ```bash
 ls _WorkSpace/5-ModelInstanceStore/
