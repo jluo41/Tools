@@ -5,6 +5,13 @@ SPEC OF RECORD — the resource stage. C1-C9 closed JL 2026-07-14. SHIPPED.
 
 This is the stage's constitution. Everything else is detail.
 
+⚠️ AMENDED — JL 2026-07-15: `task-for-fit` MOVED from RESOURCE to CLAIMS.
+   Training this paper's model is the EXPERIMENT (claims), not a prerequisite (resource).
+   The PP04 protection below is UNCHANGED: what catches the wasted run is resource's cheap
+   FITNESS JUDGMENT ("can this corpus CARRY the claim?", a READ), not where the training runs.
+   So resource still judges fitness FIRST; claims trains (fit) + evals only after it passes.
+   The table + the `task-for-eval` box below are updated to reflect this.
+
 
 THE RULE
 ========
@@ -21,14 +28,15 @@ THE RULE
 ```text
         input     task-for-data   → 🧱 RESOURCE   builds an AIData
         method    task-for-algo   → 🧱 RESOURCE   builds a capability
-        fit       task-for-fit    → 🧱 RESOURCE   builds a checkpoint
+        fit       task-for-fit    → ⚖️  CLAIMS     trains the paper's model  (AMENDED 07-15)
         evaluate  task-for-eval   → ⚖️  CLAIMS     produces the claim's STATUS
 ```
 
-  🛑 RESOURCE MAY NOT RUN `task-for-eval`.
-     That ONE rule is what stops the stage swallowing the paper. Without it,
+  🛑 RESOURCE MAY NOT RUN `task-for-fit` OR `task-for-eval` (no training, no eval).
+     That is what stops the stage swallowing the paper. Without it,
      "prepare the resources" expands until it means "do the research", and claims
-     becomes a formatting step.
+     becomes a formatting step. Resource asks whether the ingredients EXIST and can
+     CARRY the claim; the experiment (train + eval) is claims'.
 
   🛑 RESOURCE NEVER EXECUTES ANYTHING.
      No /haipipe-data, no /haipipe-nn, no /haipipe-task, no scaffolding.
