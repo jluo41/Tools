@@ -1,6 +1,6 @@
 ---
 name: haipipe-end
-description: "Run any Stage 6 endpoint work. Parses intent across FOUR axes — Fn-type (meta/trig/post/src2input/input2src), artifact-as-whole verb (package/test/profile/review/dashboard), develop target (sagemaker/databricks/local) producing an Endpoint_Set, or deploy target (sagemaker/databricks/local/mlflow) serving one — and dispatches to the right specialist via Skill(). Use for designing inference Fns, packaging Endpoint_Sets, training a build to produce one, local inference tests, or deploying to any target. Trigger: endpoint, deploy, develop, train, package, inference Fn, MetaFn, TrigFn, PostFn, Src2InputFn, Input2SrcFn, /haipipe-end."
+description: "Run any Stage 6 endpoint work: routes intent to the right specialist across Fn-type, artifact-verb, develop-target, and deploy-target axes. Use for designing inference Fns, packaging Endpoint_Sets, training a build, local inference tests, or deploying anywhere. Trigger: endpoint, deploy, develop, train, package, inference Fn, MetaFn, TrigFn, PostFn, Src2InputFn, Input2SrcFn, /haipipe-end."
 argument-hint: "[target_or_fn_or_verb] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
@@ -13,7 +13,8 @@ metadata:
 Skill: haipipe-end (orchestrator)
 ==================================
 
-User-facing entry for Stage 6. Routes across **four axes**:
+User-facing entry for Stage 6.
+Routes across **four axes**:
 
 ```
 1. Fn-type axis        meta | trig | post | src2input | input2src
@@ -33,8 +34,7 @@ User-facing entry for Stage 6. Routes across **four axes**:
                        SERVES the Endpoint_Set (serve side)
 ```
 
-The develop and deploy axes share targets but operate on different lifecycle
-phases of the same artifact: develop BUILDS, deploy SERVES.
+The develop and deploy axes share targets but operate on different lifecycle phases of the same artifact: develop BUILDS, deploy SERVES.
 
 ```
 /haipipe-end                                -> cross-scope dashboard (artifact + develops + deploys)
@@ -106,9 +106,8 @@ develop, build endpoint_set, train, training pipeline,
 RegisterModel, model package group, build artifact (cloud)  -> develop axis
 ```
 
-Note: bare `package` stays on the artifact axis (endpointset). The develop
-axis is for **running training infrastructure** (SageMaker Pipeline,
-Databricks Job, local nn-modelset run) that PRODUCES an Endpoint_Set.
+Note: bare `package` stays on the artifact axis (endpointset).
+The develop axis is for **running training infrastructure** (SageMaker Pipeline, Databricks Job, local nn-modelset run) that PRODUCES an Endpoint_Set.
 
 Develop target keyword map
 ---------------------------
@@ -189,9 +188,8 @@ Step 4:  Capture the specialist's structured tail (status / summary /
 Target-alone disambiguation (rule f)
 -------------------------------------
 
-When the user types just a target (e.g. `/haipipe-end sagemaker`), default
-to the deploy ref-only summary (more common ask) and append a single
-clarification line:
+When the user types just a target (e.g.
+`/haipipe-end sagemaker`), default to the deploy ref-only summary (more common ask) and append a single clarification line:
 
 ```
 [deploy-sagemaker ref-only summary here]
@@ -199,8 +197,7 @@ clarification line:
 → if you meant the build side, run:  /haipipe-end develop sagemaker [args]
 ```
 
-This keeps the common path zero-friction while making the develop side
-discoverable.
+This keeps the common path zero-friction while making the develop side discoverable.
 
 ---
 
@@ -219,9 +216,8 @@ Skill("haipipe-end-deploy-local",        args="dashboard")    # running locally
 # develop-databricks and deploy-mlflow excluded while deferred
 ```
 
-The 5 per-Fn-type specialists are NOT included in the no-arg dashboard
-(they'd repeat the same artifact-level info). For per-Fn-type status
-use `/haipipe-end-endpointset review`.
+The 5 per-Fn-type specialists are NOT included in the no-arg dashboard (they'd repeat the same artifact-level info).
+For per-Fn-type status use `/haipipe-end-endpointset review`.
 
 ---
 
@@ -283,5 +279,5 @@ fn/fn-design.md             SHARED design procedure — read by all 5 per-Fn-typ
                             when handling `design`. Each child supplies its own concepts.md.
 ```
 
-These files are SHARED — children read them via `../haipipe-end/...`. Each
-child also has its own scope-specific `ref/concepts.md`.
+These files are SHARED — children read them via `../haipipe-end/...`.
+Each child also has its own scope-specific `ref/concepts.md`.

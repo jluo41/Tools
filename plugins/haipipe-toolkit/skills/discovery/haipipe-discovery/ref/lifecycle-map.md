@@ -9,7 +9,7 @@ Axis 1 — LIFECYCLE (uniform; every folder runs it)   Plan → Build(opt) → E
 Axis 2 — TYPE      (what kind of folder this is)      Search · Review · Idea                  (folder kinds)
 ```
 
-The two axes use non-overlapping vocabularies on purpose: the four stages are process verbs every folder runs (Plan/Build/Execute/Report); the three types name the kind of folder (Search/Review/Idea). No word appears in both lists, so the two axes can never be mistaken for each other. Each type maps 1:1 to its Execute bucket: Search → 1_search, Review → 2_review, Idea → 3_idea.
+The two axes use non-overlapping vocabularies on purpose: the four phases are process verbs every folder runs (Plan/Build/Execute/Report); the three types name the kind of folder (Search/Review/Idea). No word appears in both lists, so the two axes can never be mistaken for each other. Each type maps 1:1 to its Execute bucket: Search → 1_search, Review → 2_review, Idea → 3_idea.
 
 This mirrors task. Task = (Plan/Build/Execute/Report) × (data/nn/fit/...). Discovery = (Plan/Build/Execute/Report) × (Search/Review/Idea). Every type runs every stage; the type only changes what Execute produces.
 

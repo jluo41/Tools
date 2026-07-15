@@ -32,7 +32,7 @@ A multiple regression confirmed each trait contributes independently.
   sentence; a lone `%` line may separate sentences for readability.
 
 This is the same `Pn.Sm` convention the real npjDM `0-sections/` files already
-use — the format pass makes every leaf consistent with it.
+use — the format pass makes every task-folder consistent with it.
 
 ## What format-check does (and does not) do
 

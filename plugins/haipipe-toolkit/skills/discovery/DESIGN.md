@@ -310,8 +310,8 @@ Decision Log
             (fn/qa.md): one question in GENERAL language, gate ① QA SCAN → ② DIGEST
             → ③ lifecycle at the shallowest depth (READ | ENRICH | NEW FOLDER | NEW
             GROUP) → 🚫 REFUSE (task-shaped re-routes to /haipipe-task qa). It
-            returns discoveries/<leaf>/QA/<n>-<slug>.md. (3) ADDED the optional QA/
-            folder to the leaf contract — numbered = the index, slug only,
+            returns discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md. (3) ADDED the optional QA/
+            folder to the discovery-folder contract — numbered = the index, slug only,
             write-once, three legal reasons to exist (commissioned · digest-only ·
             executor's own). THE EXECUTOR HOLDS THE PEN (CC-8): a consumer may CAUSE
             a QA file; this layer AUTHORS it — a consumer session writing a bank file

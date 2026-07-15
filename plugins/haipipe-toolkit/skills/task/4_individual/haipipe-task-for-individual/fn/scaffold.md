@@ -1,7 +1,8 @@
 fn-scaffold: Scaffold an individual-query task-folder
 ======================================================
 
-Query / visualize ONE individual's data (CGM trace, meal timeline, treatment events). Group letter default: **E** (individual).
+Query / visualize ONE individual's data (CGM trace, meal timeline, treatment events).
+Group letter default: **E** (individual).
 
 Output: `tasks/E{NN}_<group>/{NN}_<task_name>/`.
 
@@ -46,7 +47,8 @@ E{NN}_<group>/
 Step 4 — Seed config
 ---------------------
 
-Copy `ref/config-seed.yaml` to `configs/individual_<view>.yaml`. Fill in:
+Copy `ref/config-seed.yaml` to `configs/individual_<view>.yaml`.
+Fill in:
 - `_meta:` block.
 - `subject_id:`, `subject_group:`.
 - `view:` (one of the supported view names).
@@ -94,8 +96,7 @@ MUST NOT
 First-run gate
 ---------------
 
-`runs/<RUN>.sh` blocks execution if `CODE_REVIEW.md` is missing or
-stale (gate inherited from `../../../haipipe-task/ref/run-sh-template.sh`).
+`runs/<RUN>.sh` blocks execution if `CODE_REVIEW.md` is missing or stale (gate inherited from `../../../haipipe-task/ref/run-sh-template.sh`).
 For the first run after this scaffold, do ONE of:
 
   1. **Recommended** — run the haipipe-task-reviewer-agent (Gate 1) on this
@@ -113,5 +114,4 @@ For the first run after this scaffold, do ONE of:
      ```
      (Only appropriate for throwaway / disposable runs.)
 
-Surface this to the user in the orchestrator's `next:` line so they
-know **before** trying to launch.
+Surface this to the user in the orchestrator's `next:` line so they know **before** trying to launch.

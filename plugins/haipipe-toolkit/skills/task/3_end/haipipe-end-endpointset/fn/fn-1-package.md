@@ -1,8 +1,7 @@
 fn-package: Run Endpoint_Pipeline
 ===================================
 
-Packages a trained ModelInstance_Set (Stage 5) into a self-contained
-Endpoint_Set (Stage 6) ready for inference or deployment.
+Packages a trained ModelInstance_Set (Stage 5) into a self-contained Endpoint_Set (Stage 6) ready for inference or deployment.
 
 ---
 
@@ -14,8 +13,7 @@ source .venv/bin/activate && source env.sh
 ```
 
 NOTE: source .venv/bin/activate does NOT persist across Bash tool calls.
-Always chain: source .venv/bin/activate && source env.sh && python <script>
-Or call venv Python directly: .venv/bin/python script.py
+Always chain: source .venv/bin/activate && source env.sh && python <script> Or call venv Python directly: .venv/bin/python script.py
 
 Verify env vars:
   echo $LOCAL_MODELINSTANCE_STORE     <- Stage 5 input
@@ -39,8 +37,8 @@ ls _WorkSpace/5-ModelInstanceStore/{model_name}/{version}/
 # Must also see: examples/ (required for payload generation)
 ```
 
-If examples/ is missing from Stage 5, packaging will succeed but no
-test payloads will be generated. Re-run model training with ExampleConfig.
+If examples/ is missing from Stage 5, packaging will succeed but no test payloads will be generated.
+Re-run model training with ExampleConfig.
 
 ---
 
@@ -110,7 +108,8 @@ CRITICAL RULE: Before running ANY haistep-endpoint command, you MUST:
 5. WAIT for explicit user confirmation.
 6. Only AFTER the user says yes, proceed to Step 5.
 
-DO NOT skip this step. DO NOT assume the YAML is correct.
+DO NOT skip this step.
+DO NOT assume the YAML is correct.
 DO NOT run the pipeline without user sign-off on the config.
 
 ---

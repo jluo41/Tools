@@ -15,11 +15,11 @@
 # WHAT IT CHECKS -- three passes, plus a paper-only RESOURCE-STAGE pass.
 #
 # PASS 1: every <paper_root>/1-probes/PP*.md probe file, SECTION BY SECTION
-#   (a section = a `## Q<n>` heading + its serves:/target:/state:/commission:/reading:)
+#   (a section = a `## Q<n>` heading + its serves:/target:/state:/q-executor:/a-consumer:)
 #   1. state read           -> target: non-empty, no placeholder, resolves under
 #                              project_root (or paper_root for answered-local:
 #                              those cite the paper's OWN registries)
-#   2. state answered       -> the target QA file exists but reading: is still empty
+#   2. state answered       -> the target QA file exists but a-consumer: is still empty
 #                              = the harvest never happened. FAIL (answered-not-read).
 #   3. state planned        -> FAIL probe-not-run. A buffered section must not survive
 #                              to VERIFY or the CHECK gate.
@@ -36,7 +36,7 @@
 #                              TTL guards it). Without this a section whose answer landed
 #                              sits GREEN until its eta expires.
 #   5. state failed         -> surfaced as FAIL (the gate must not go green over it)
-#   6. LAW 2 (surface 1)    -> the commission: block carries NO consumer vocabulary and
+#   6. LAW 2 (surface 1)    -> the q-executor: block carries NO consumer vocabulary and
 #                              NO stake disclosure. The commission is the ONLY thing that
 #                              crosses to the executor; `## Why` never does.
 #   7. harvest: OWED        -> FAIL on any lane line (values/sources/displays). The
@@ -68,7 +68,7 @@
 #   (b) THE CLAIM'S OWN VALIDITY (R19): NO `- state:` line at all = the field is MANDATORY and
 #   its absence exempts the file from every check below (qa-no-state); `state: working` with no
 #   `started:` = an UNEXPIRABLE claim (qa-working-no-started); `state: working` older than
-#   QA_CLAIM_TTL_HOURS = a ZOMBIE claim (qa-working-expired); `state: answered` with an EMPTY
+#   QA_WORKING_TTL_HOURS = a ZOMBIE claim (qa-working-expired); `state: answered` with an EMPTY
 #   `## Answer` = a LYING RECEIPT (qa-answered-empty).
 #   PASS 3 also FAILs the RETIRED bank machinery: an `_ASK/` or `_ANS/` folder, or a PP id
 #   in a QA filename. The bank is PROBE-UNAWARE (R2): none of those may exist.
@@ -222,7 +222,7 @@ function stake_leak(s,   low) {
 #     ## Answer   <- EMPTY while working. Filled at REPORT.
 #
 # ONE WRITER -- the EXECUTOR, and nobody else, EVER. "Write-once" was never the real rule;
-# ONE WRITER was. The executor writes the CLAIM at the qa gate's (3) decision and the
+# ONE WRITER was. The executor writes the START at the qa gate's (3) decision and the
 # COMPLETION at REPORT. A CONSUMER-planted `working` file is the retired _ASK/ stub in a
 # QA/ costume, and PASS 3 exists partly to make that visible.
 #
@@ -237,17 +237,17 @@ function stake_leak(s,   low) {
 # (staleness is the thing the reader must act on).
 #
 # A QA file with NO state line is MALFORMED, not "legacy". `state:` is MANDATORY, ALWAYS
-# (constitution PART 3a). The first cut of this file mapped a stateless QA file to the kind
+# (the constitution, "The QA file" section). The first cut of this file mapped a stateless QA file to the kind
 # `legacy` and EXEMPTED it from every claim check -- so an executor could defeat the whole
 # lying-receipt tooth BY OMISSION: drop one line, ship an empty `## Answer`, and the gate
-# goes green while a consumer publishes a `reading:` derived from nothing. The grandfather
+# goes green while a consumer publishes a `a-consumer:` derived from nothing. The grandfather
 # clause had ZERO beneficiaries (no QA file predates the field on disk). It is CLOSED:
 # `qa-no-state` (bank side) / `read-target-no-state` + `commissioned-target-no-state`
 # (consumer side). The file's OWNER -- the executor, never a consumer -- adds the line.
 # ===========================================================================
 
-# THE NAMED CONSTANT. Tune the claim TTL HERE; never hard-code the literal anywhere else.
-QA_CLAIM_TTL_HOURS=24
+# THE NAMED CONSTANT. Tune the working-file TTL HERE; never hard-code the literal anywhere else.
+QA_WORKING_TTL_HOURS=24
 
 qa_state()   { sed -n 's/^- state:[[:space:]]*//p'   "$1" | head -1; }
 qa_started() { sed -n 's/^- started:[[:space:]]*//p' "$1" | head -1; }
@@ -300,8 +300,8 @@ qa_claim_problems() {
           _qa_p="$_qa_p qa-working-no-started(unparseable started: '$_qa_started' -- want YYYY-MM-DDTHH:MM);"
         else
           _qa_age=$(( ( $(date +%s) - _qa_s ) / 3600 ))
-          [ "$_qa_age" -ge "$QA_CLAIM_TTL_HOURS" ] && \
-            _qa_p="$_qa_p qa-working-expired(${_qa_age}h >= QA_CLAIM_TTL_HOURS=${QA_CLAIM_TTL_HOURS}: a ZOMBIE claim -- the next qa call may RECLAIM it);"
+          [ "$_qa_age" -ge "$QA_WORKING_TTL_HOURS" ] && \
+            _qa_p="$_qa_p qa-working-expired(${_qa_age}h >= QA_WORKING_TTL_HOURS=${QA_WORKING_TTL_HOURS}: a ZOMBIE claim -- the next qa call may RESTART it);"
         fi
       fi
       ;;
@@ -357,7 +357,7 @@ for probe in "$paper_root"/1-probes/PP*.md; do
       leak = comm_claimid + comm_stage + comm_stake
       # US (\037) as the field separator, NOT tab: tab is IFS-WHITESPACE, so the shell
       # collapses consecutive tabs into one delimiter and every empty field (an absent
-      # owner:, an empty reading:) silently SHIFTS the rest of the record. That shift is
+      # owner:, an empty a-consumer:) silently SHIFTS the rest of the record. That shift is
       # invisible -- it produces confident wrong answers, not errors.
       printf "SEC%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n", \
         SEP, FN, SEP, qname, SEP, state, SEP, target, SEP, serves, SEP, owner, SEP, eta, \
@@ -374,7 +374,7 @@ for probe in "$paper_root"/1-probes/PP*.md; do
     # CLOSED list: a commission legitimately contains its own nested bullets
     # ("- Accepted: present | absent"), and closing the block on those would hide
     # every leak written below them -- the lint would pass by not looking.
-    /^[[:space:]]*-[[:space:]]*(serves|target|state|commission|reading|owner|eta|blocks|cross-project|values|sources|displays|mode):/ {
+    /^[[:space:]]*-[[:space:]]*(serves|target|state|q-executor|a-consumer|owner|eta|blocks|cross-project|values|sources|displays|mode):/ {
       in_comm=0; in_reading=0
     }
     /^[[:space:]]*-[[:space:]]*serves:/  { serves=$0; sub(/^[^:]*:[[:space:]]*/, "", serves) }
@@ -392,8 +392,8 @@ for probe in "$paper_root"/1-probes/PP*.md; do
       x=$0; sub(/^.*cross-project:[[:space:]]*/, "", x); sub(/[[:space:]]*·.*$/, "", x)
       sub(/[[:space:]]*$/, "", x); xproj=x
     }
-    /^[[:space:]]*-[[:space:]]*commission:/ { in_comm=1; has_commission=1; next }
-    /^[[:space:]]*-[[:space:]]*reading:/ {
+    /^[[:space:]]*-[[:space:]]*q-executor:/ { in_comm=1; has_commission=1; next }
+    /^[[:space:]]*-[[:space:]]*a-consumer:/ {
       in_reading=1
       r=$0; sub(/^[^:]*:[[:space:]]*/, "", r); gsub(/[[:space:]]|\|/, "", r)
       if (r != "") reading_nonempty=1
@@ -431,7 +431,7 @@ for probe in "$paper_root"/1-probes/PP*.md; do
     [ -z "$state" ] && problems="$problems no-state-field;"
     [ "$hascomm" = "0" ] && [ "$state" != "answered-local" ] \
       && problems="$problems no-commission(the dispatch payload is missing);"
-    [ "$leak" -gt 0 ] && problems="$problems LAW2-commission-leak(${leak}: consumer vocab or stake disclosed);"
+    [ "$leak" -gt 0 ] && problems="$problems LAW2-q-executor-leak(${leak}: consumer vocab or stake disclosed);"
     [ "$owed" -gt 0 ] && problems="$problems harvest-owed(${owed}-lane);"
 
     case "$state" in
@@ -477,11 +477,11 @@ for probe in "$paper_root"/1-probes/PP*.md; do
           esac
         fi
         [ "$state" = "read" ] && [ "$reading" = "0" ] \
-          && problems="$problems read-with-empty-reading;"
+          && problems="$problems read-with-empty-a-consumer;"
         ;;
       answered)
         # The QA file landed but nobody interpreted it. The loop is not closed.
-        problems="$problems answered-not-read(the QA file exists; write the reading);"
+        problems="$problems answered-not-read(the QA file exists; write the a-consumer);"
         ;;
       commissioned)
         # THE BUILD-LANE FIELDS BELONG TO WHOEVER COMMISSIONED THE WORK -- NOT TO A SECTION
@@ -489,7 +489,7 @@ for probe in "$paper_root"/1-probes/PP*.md; do
         # decide who owes the deadline (see the in-flight carve-out below).
 
         # R19 OPENS AN IN-FLIGHT LOOP -- AND THIS CLOSES IT. Before R19, `commissioned` meant
-        # "the leaf exists, NO QA file yet", so the branch never had to open anything. Now the
+        # "the task-folder exists, NO QA file yet", so the branch never had to open anything. Now the
         # MATCH->working path DELIBERATELY sets a section to `commissioned` with `target:`
         # pointing at a QA file that ALREADY EXISTS (the claim is written before the run
         # starts) -- and that path issues NO DISPATCH, so it has NO live return, EVER. Without
@@ -509,7 +509,7 @@ for probe in "$paper_root"/1-probes/PP*.md; do
         esac
         case "$ckind" in
           answered)
-            problems="$problems commissioned-target-answered(the answer LANDED at $target -- HARVEST IT: write the reading: and flip the section to state: read);" ;;
+            problems="$problems commissioned-target-answered(the answer LANDED at $target -- HARVEST IT: write the a-consumer: and flip the section to state: read);" ;;
           superseded)
             problems="$problems commissioned-target-superseded(target QA state line reads '$(qa_state "$ctgt")' -- re-point target: at the LIVE QA file);" ;;
           no-state)
@@ -520,7 +520,7 @@ for probe in "$paper_root"/1-probes/PP*.md; do
 
         # ACCOUNTABILITY LIVES IN EXACTLY ONE PLACE PER QUESTION.
         #   a `working` QA file exists  -> an EXECUTOR has CLAIMED this question, and its
-        #     `started:` + QA_CLAIM_TTL_HOURS IS the clock (PASS 3's qa-working-expired
+        #     `started:` + QA_WORKING_TTL_HOURS IS the clock (PASS 3's qa-working-expired
         #     enforces it). This section did NOT start that run: it cannot honestly name an
         #     owner or an eta, and demanding one teaches people to INVENT data -- which is
         #     the very laundering the BUILD lane exists to prevent, inverted.
@@ -725,7 +725,7 @@ done
 #     SAME pattern set as the commission lint (LEAK_AWK) -- one rule, two surfaces.
 # (b) THE CLAIM. A `working` file is a LIVE claim on a question, and every other reader
 #     DEFERS to it -- so an invalid claim silently blocks the bank: no `started:` = it can
-#     never expire; older than QA_CLAIM_TTL_HOURS = the run that made it is dead. And an
+#     never expire; older than QA_WORKING_TTL_HOURS = the run that made it is dead. And an
 #     `answered` file with an empty `## Answer` is a receipt for work nobody did.
 #     SAME function block as the PASS-1 target test (QA_STATE) -- one rule, two surfaces.
 # ---------------------------------------------------------------------------
@@ -762,7 +762,7 @@ for qa in "$project_root"/tasks/*/QA/*.md "$project_root"/tasks/*/*/QA/*.md \
     esac
     case "$qprob" in
       *qa-working*|*qa-answered*|*qa-no-state*)
-        echo "      (a QA file is a TICKET that becomes a RECEIPT: 'state:' is MANDATORY; 'working' needs a started: and expires after QA_CLAIM_TTL_HOURS=${QA_CLAIM_TTL_HOURS}h; 'answered' needs a real ## Answer. ONE WRITER: the EXECUTOR completes it -- never a consumer)" ;;
+        echo "      (a QA file is a TICKET that becomes a RECEIPT: 'state:' is MANDATORY; 'working' needs a started: and expires after QA_WORKING_TTL_HOURS=${QA_WORKING_TTL_HOURS}h; 'answered' needs a real ## Answer. ONE WRITER: the EXECUTOR completes it -- never a consumer)" ;;
     esac
     fail=1
   else

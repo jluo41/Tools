@@ -3,9 +3,9 @@ Layer 2: Tuner
 
 Layer 2 of the 4-layer NN pipeline: Model Tuner.
 
-The universal wrapper contract. Every algorithm gets wrapped in a Tuner
-that provides a uniform interface. This is the ONLY layer that imports
-external algorithm libraries.
+The universal wrapper contract.
+Every algorithm gets wrapped in a Tuner that provides a uniform interface.
+This is the ONLY layer that imports external algorithm libraries.
 
 ---
 
@@ -119,9 +119,8 @@ class MyAlgorithmTuner(ModelTuner):
 The Standalone transform_fn Pattern
 =====================================
 
-**Why standalone?** Instance can call get_transform_fn(tuner_name) to
-access it without instantiating the Tuner. It must be importable as a
-top-level function.
+**Why standalone?** Instance can call get_transform_fn(tuner_name) to access it without instantiating the Tuner.
+It must be importable as a top-level function.
 
 **Input:** One of:
 - HF Dataset (has .to_pandas())
@@ -154,9 +153,8 @@ def transform_fn(data, TfmArgs):
 The 5-Case Data Dispatch (get_tfm_data)
 ========================================
 
-get_tfm_data() is @abstractmethod -- you MUST implement it. The 5-case
-dispatch below is the recommended structure (shown in base class docstring),
-but the exact logic is not enforced -- each Tuner implements its own version.
+get_tfm_data() is @abstractmethod -- you MUST implement it.
+The 5-case dispatch below is the recommended structure (shown in base class docstring), but the exact logic is not enforced -- each Tuner implements its own version.
 
 ```python
 def get_tfm_data(self, dataset):
@@ -269,8 +267,8 @@ def load_model(self, key: str, model_dir: str):
 Tuner Inheritance
 =================
 
-Tuners may inherit from other Tuner subclasses, not only directly from
-ModelTuner. Use this when adding a new input channel to an existing Tuner.
+Tuners may inherit from other Tuner subclasses, not only directly from ModelTuner.
+Use this when adding a new input channel to an existing Tuner.
 
 ```
 ModelTuner (ABC)
@@ -290,16 +288,14 @@ Rules for Tuner subclasses:
 - The domain_format may differ per variant (e.g., "te_clm_tod")
 - A child Tuner file may import from its parent Tuner file
 
-Multiple related Tuners (base + variants) may coexist in one file when
-they share most logic and only diverge on one input channel.
+Multiple related Tuners (base + variants) may coexist in one file when they share most logic and only diverge on one input channel.
 
 ---
 
 Algorithm Splitting (algorithm_*.py)
 =====================================
 
-When your Tuner wraps a **custom nn.Module** (not a pure external library),
-split into two files:
+When your Tuner wraps a **custom nn.Module** (not a pure external library), split into two files:
 
 ```
 algorithm_<name>.py   <- Layer 1: nn.Module only (no training logic)
@@ -313,8 +309,7 @@ The Tuner imports the Algorithm:
 from .algorithm_te_clm_event import TECLMAlgorithm
 ```
 
-Algorithm files form an inheritance chain when building capabilities
-incrementally:
+Algorithm files form an inheritance chain when building capabilities incrementally:
 
 ```
 nn.Module
@@ -349,7 +344,8 @@ def transform_fn_tod(data, TfmArgs): # suffix for ToD variant
     ...
 ```
 
-The base is always named `transform_fn`. Variants use `transform_fn_<suffix>`.
+The base is always named `transform_fn`.
+Variants use `transform_fn_<suffix>`.
 
 ---
 
@@ -358,8 +354,8 @@ Known Patterns (te_clm family)
 
 **min_real_value masking (TSCLMNumTuner):**
 
-In numeric mode, special/missing CGM values (0-10 mg/dL) must be excluded from
-loss and attention. The convention mirrors `num_special_tokens=11` in the token model:
+In numeric mode, special/missing CGM values (0-10 mg/dL) must be excluded from loss and attention.
+The convention mirrors `num_special_tokens=11` in the token model:
 
 ```python
 # In TfmArgs YAML:
@@ -378,8 +374,8 @@ else:
 
 **Registry requirement:**
 
-Every new te_clm Tuner MUST be added to `MODEL_TUNER_REGISTRY` in
-`code/hainn/instance/tefm/instance_tefm.py`. Missing entry → ValueError at `instance.init()`.
+Every new te_clm Tuner MUST be added to `MODEL_TUNER_REGISTRY` in `code/hainn/instance/tefm/instance_tefm.py`.
+Missing entry → ValueError at `instance.init()`.
 
 ---
 
@@ -392,7 +388,8 @@ Known Deviations (existing code)
 - **HFNTPTuner**: Inherits ModelTuner but does not pass **kwargs to
   super().__init__(), only passes TfmArgs.
 
-These are non-canonical. New Tuners MUST follow the standard contract.
+These are non-canonical.
+New Tuners MUST follow the standard contract.
 
 ---
 
@@ -426,9 +423,9 @@ MUST NOT
    may import from its parent Tuner (see Tuner Inheritance above)
 5. **NEVER put transform_fn as a class method** -- it must be importable standalone
 
-**infer() return type (Tuner level):** Family-specific. Check existing Tuners
-in your model family for the expected format. The Instance above you handles
-output routing -- see ../../haipipe-nn-instance/ref/concepts.md for the standard routing contract.
+**infer() return type (Tuner level):** Family-specific.
+Check existing Tuners in your model family for the expected format.
+The Instance above you handles output routing -- see ../../haipipe-nn-instance/ref/concepts.md for the standard routing contract.
 
 ---
 

@@ -1,15 +1,17 @@
 fn-push: Copy local -> remote for one asset
 ============================================
 
-Wraps `hai-remote-sync --push` for a single asset path. Always
-dry-runs first, then asks confirm, then runs. Copy-only.
+Wraps `hai-remote-sync --push` for a single asset path.
+Always dry-runs first, then asks confirm, then runs.
+Copy-only.
 
 ---
 
 Step 1: Parse args
 -------------------
 
-Required: `<store>/<name>` (e.g. `1-SourceStore/MyCohort`).
+Required: `<store>/<name>` (e.g.
+`1-SourceStore/MyCohort`).
 
 Resolve via `ref/store-map.md`:
 
@@ -62,10 +64,10 @@ they no longer exist locally.
 Proceed? (yes / cancel)
 ```
 
-`yes` -> Step 5. Anything else -> exit, no transfer.
+`yes` -> Step 5.
+Anything else -> exit, no transfer.
 
-For push to a SHARED remote, this confirmation is especially
-important -- a wrong --name uploads to a shared bucket.
+For push to a SHARED remote, this confirmation is especially important -- a wrong --name uploads to a shared bucket.
 
 ---
 
@@ -76,7 +78,8 @@ Step 5: Real run
 hai-remote-sync --push --path {store}/{name}
 ```
 
-Stream output. NEVER add `--sync`.
+Stream output.
+NEVER add `--sync`.
 
 ---
 

@@ -82,7 +82,7 @@ THE STAGE IN ONE LINE
                                       🤖 Agent(haipipe-discovery-orchestrator-agent)
                                       💀 no gateway.  🧱 clean context = the wall
                             │
-                      📄 tasks/<leaf>/QA/<n>-<slug>.md    ← the EXECUTOR authors it
+                      📄 tasks/<task-group>/<task-folder>/QA/<n>-<slug>.md    ← the EXECUTOR authors it
                             │
                       ⑤ INTERPRET ──▶ writes the A back into Q<n>
 ```

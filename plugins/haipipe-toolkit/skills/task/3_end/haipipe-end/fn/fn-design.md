@@ -5,10 +5,8 @@ Guides creation of new inference function files via the builder pattern.
 Applies to all 5 Fn types: MetaFn, TrigFn, PostFn, Src2InputFn, Input2SrcFn.
 
 NEVER edit code/haifn/fn_endpoint/ directly.
-Always use builders in the project's endpoint fn_develop task folder
-(`tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/`; legacy
-workspaces: `code-dev/1-PIPELINE/6-Endpoint-WorkSpace/`). The path examples
-below use `<BUILDER_DIR>` for whichever of the two applies.
+Always use builders in the project's endpoint fn_develop task folder (`tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/`; legacy workspaces: `code-dev/1-PIPELINE/6-Endpoint-WorkSpace/`).
+The path examples below use `<BUILDER_DIR>` for whichever of the two applies.
 
 ---
 
@@ -123,9 +121,7 @@ if __name__ == '__main__':
 Step-by-Step for Each Fn Type
 ================================
 
-_______________________________________________
-METAFN
-_______________________________________________
+_______________________________________________ METAFN _______________________________________________
 
 Builder prefix: a1_build_metafn_*.py
 
@@ -160,9 +156,7 @@ def MetaFn(SPACE):
 MetaDict = {"MetaFn": MetaFn}
 ```
 
-_______________________________________________
-TRIGFN
-_______________________________________________
+_______________________________________________ TRIGFN _______________________________________________
 
 Builder prefix: b1_build_trigfn_*.py
 
@@ -192,9 +186,7 @@ def TrigFn(payload_input_json):
 MetaDict = {"TrigFn": TrigFn}
 ```
 
-_______________________________________________
-POSTFN
-_______________________________________________
+_______________________________________________ POSTFN _______________________________________________
 
 Builder prefix: c1_build_postfn_*.py
 
@@ -242,9 +234,7 @@ def PostFn(ModelArtifactName_to_Inference, SPACE):
 MetaDict = {"PostFn": PostFn}
 ```
 
-_______________________________________________
-SRC2INPUTFN
-_______________________________________________
+_______________________________________________ SRC2INPUTFN _______________________________________________
 
 Builder prefix: d1_build_src2inputfn_*.py
 
@@ -280,9 +270,7 @@ def Src2InputFn(ProcName_to_ProcDf, SPACE):
 MetaDict = {"Src2InputFn": Src2InputFn}
 ```
 
-_______________________________________________
-INPUT2SRCFN
-_______________________________________________
+_______________________________________________ INPUT2SRCFN _______________________________________________
 
 Builder prefix: e1_build_input2srcfn_*.py
 
@@ -291,8 +279,8 @@ Key things to customize:
   - ProcName_to_columns: schema per table
   - Parsing logic: extract payload fields -> DataFrame rows
 
-Read ../../haipipe-end-input2src/ref/concepts.md carefully. ProcName_List and ProcName_to_columns
-MUST match the schema the model was trained on.
+Read ../../haipipe-end-input2src/ref/concepts.md carefully.
+ProcName_List and ProcName_to_columns MUST match the schema the model was trained on.
 
 ```python
 FN_NAME = 'CGMDecoder_Databricks_Payload2Src_v260101'
@@ -385,5 +373,4 @@ Always write in this order (Input2SrcFn first since it defines the schema):
   4. TrigFn       (b1)  <- trigger condition
   5. PostFn       (c1)  <- response format
 
-Then package: /haipipe-end package
-Then test:    /haipipe-end test
+Then package: /haipipe-end package Then test: /haipipe-end test

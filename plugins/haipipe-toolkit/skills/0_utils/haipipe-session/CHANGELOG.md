@@ -4,6 +4,35 @@ haipipe-session — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [1.1.0] — 2026-07-15
+
+Adds the `log` verb + the `_LOG.txt` comment/lessons ledger, codifying the review +
+harvest workflow exercised across the 2026-07-14/15 haipipe-task sessions.
+
+**`_LOG.txt` — a first-class EXEMPT meta file.** Not a themed page: it does NOT count
+toward the 6-file cap, is UNCAPPED in length, and needs no `NN-` name or title underline.
+`check` now exempts `_*.txt` from PASS-0 (count/naming/gap) and PASS-1 (length/underline)
+while still running its markdown-table + reference checks. Before, `check` FAILed a folder
+with `too-many-files(7 > 6)` the moment a `_LOG.txt` appeared — the pattern was in use but
+the checker rejected it.
+
+**`log` verb — two uses.**
+- REVIEW A DOC: answer each `> JL:` in place with `>> CC HH:MM:` + a `[SOLVED]`/`[PENDING]`
+  tag (never delete the JL line); once the edit LANDS, migrate the whole thread (JL line
+  verbatim + CC reply) into `_LOG.txt`, keeping the reviewed doc's body clean. `[PENDING]`
+  threads stay inline until JL decides, then migrate too.
+- HARVEST LESSONS at session end: a `LESSONS` block in `_LOG.txt` (craft gotchas) + fan
+  portable behavioral preferences out to the owning skill's `PREFERENCES.md`.
+
+**Comment protocol updated.** `>> CC{MMDD}:` → `>> CC HH:MM:` + `[SOLVED]`/`[PENDING]`; an
+un-tagged `> JL:` now always reads as genuinely OPEN. A session is traced by its DATE
+(dated rulings in 05 + date-stamped `[YYYY-MM-DD HH:MM · STATUS]` _LOG entries), not the
+`>> CC` stamp.
+
+Files: SKILL.md (frontmatter + `log` verb + house-form exemption + comment protocol +
+file-arc note + LAW-1 trace), check-session-folder.sh (`_*.txt` exemption in PASS 0/1).
+
+
 ## [1.0.0] — 2026-07-14
 
 Initial skill. Records what a working SESSION settled, as a durable topic note under

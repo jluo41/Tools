@@ -42,7 +42,7 @@ import anthropic
 
 client = anthropic.Anthropic(api_key=api_key)
 resp = client.messages.create(
-    model="claude-opus-4-7",
+    model="claude-opus-4-8",
     max_tokens=8192,
     system=system_prompt,
     messages=[{"role": "user", "content": user_message}],
@@ -78,7 +78,6 @@ Auth waterfall inside codex_oauth:
 2. `CODEX_OAUTH_AUTH_JSON` env var -> custom path
 3. `~/.codex/auth.json` (default)
 
-Supported models: only `gpt-5.5` works via ChatGPT backend.
-gpt-4.1-mini, o4-mini, codex-mini all rejected with 400 error.
+Supported models: only `gpt-5.5` works via ChatGPT backend. gpt-4.1-mini, o4-mini, codex-mini all rejected with 400 error.
 
 Auto JWT refresh: on 401 the client refreshes the token via auth.openai.com/oauth/token and persists the new token back to auth.json.

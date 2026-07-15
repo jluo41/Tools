@@ -1,14 +1,12 @@
 haipipe Stage 0: External
 ==========================
 
-Stage reference for the External pantry. Externals are reference assets
-that any cohort-scoped Stage 1-4 chef can pull from. They are NOT a layer
-in series with Source -> Record -> Case -> AIData -- they sit sideways.
+Stage reference for the External pantry.
+Externals are reference assets that any cohort-scoped Stage 1-4 chef can pull from.
+They are NOT a layer in series with Source -> Record -> Case -> AIData -- they sit sideways.
 
 **Scope:** Framework patterns and the current implementation reality.
-Does not catalog which specific assets exist (that lives in
-ref/asset-catalog.md, discovered at runtime from
-_WorkSpace/ExternalStore/).
+Does not catalog which specific assets exist (that lives in ref/asset-catalog.md, discovered at runtime from _WorkSpace/ExternalStore/).
 
 ---
 
@@ -31,10 +29,9 @@ Architecture Position
                 Raw  <----------+
 ```
 
-Externals are loaded and joined inside Record / Case / AIData chefs by
-primary key (NPI, NDC, NCPDP, zip3, zip5, patient_id). They are NOT
-chained behind Source. A cohort can be processed end-to-end with no
-externals at all -- they are an enrichment pantry, not a prerequisite.
+Externals are loaded and joined inside Record / Case / AIData chefs by primary key (NPI, NDC, NCPDP, zip3, zip5, patient_id).
+They are NOT chained behind Source.
+A cohort can be processed end-to-end with no externals at all -- they are an enrichment pantry, not a prerequisite.
 
 ---
 
@@ -55,18 +52,15 @@ Output     ExternalAsset triplet      df_{asset}_id.parquet +
 ```
 
 In Phase 1, "Chef" is metaphorical -- there is no `ExternalFn` class.
-Each `e{N}_build_external_<asset>.py` is a self-contained build script
-that imports `setup_workspace` from haipipe.base, defines its inputs,
-and writes the asset triplet. Phase 2 (deferred) would promote these to
-generated `ExternalFn` modules under `code/haifn/fn_external/`.
+Each `e{N}_build_external_<asset>.py` is a self-contained build script that imports `setup_workspace` from haipipe.base, defines its inputs, and writes the asset triplet.
+Phase 2 (deferred) would promote these to generated `ExternalFn` modules under `code/haifn/fn_external/`.
 
 ---
 
 What Is an ExternalAsset
 =========================
 
-An ExternalAsset is the directory of files produced by one
-`e_build_external_<asset>.py` script:
+An ExternalAsset is the directory of files produced by one `e_build_external_<asset>.py` script:
 
 ```
 _WorkSpace/ExternalStore/@{version}/{asset}/
@@ -96,16 +90,16 @@ The primary key is preserved twice in the output:
 {PRIMARY_KEY}            the integer ID (for embedding layers)
 ```
 
-Downstream code joins on `_original`. Embedding-based models read the
-integer column.
+Downstream code joins on `_original`.
+Embedding-based models read the integer column.
 
 ---
 
 Two Asset Families
 ==================
 
-Externals split into two semantically distinct families. Treat them
-differently for staleness and rebuild triggers.
+Externals split into two semantically distinct families.
+Treat them differently for staleness and rebuild triggers.
 
 **dimension** -- vendor-sourced lookup tables.
 
@@ -126,11 +120,9 @@ differently for staleness and rebuild triggers.
              when adding a new cohort if cohort-specific aggregates
              are needed.
 
-The boundary matters because dimension and engagement assets have
-different correctness criteria. A stale dimension asset means "vendor
-data is older than current"; a stale engagement asset means "cohort
-state has drifted from the asset's snapshot". The skill's `review` and
-`refresh` verbs check both kinds of staleness.
+The boundary matters because dimension and engagement assets have different correctness criteria.
+A stale dimension asset means "vendor data is older than current"; a stale engagement asset means "cohort state has drifted from the asset's snapshot".
+The skill's `review` and `refresh` verbs check both kinds of staleness.
 
 ---
 
@@ -177,10 +169,8 @@ gender_id = df_npi.iloc[0]['Gender']
 gender    = vocabs['Gender'][gender_id]
 ```
 
-`SPACE['LOCAL_EXTERNAL_STORE']` resolves to
-`_WorkSpace/ExternalStore/{EXTERNAL_VERSION}` (e.g.
-`_WorkSpace/ExternalStore/@260104R4`). Pin a different release by
-exporting `EXTERNAL_VERSION` before sourcing env.sh.
+`SPACE['LOCAL_EXTERNAL_STORE']` resolves to `_WorkSpace/ExternalStore/{EXTERNAL_VERSION}` (e.g. `_WorkSpace/ExternalStore/@260104R4`).
+Pin a different release by exporting `EXTERNAL_VERSION` before sourcing env.sh.
 
 **Cooking (rebuilding) an asset:**
 
@@ -189,18 +179,16 @@ source .venv/bin/activate && source env.sh
 python code-dev/0-EXTERNAL/e2_build_external_npi.py
 ```
 
-Each builder is self-contained: it reads its raw inputs, writes the
-asset triplet to `SPACE['LOCAL_EXTERNAL_STORE']/{OUTPUT_DIR_NAME}/`,
-and prints a verification block at the end.
+Each builder is self-contained: it reads its raw inputs, writes the asset triplet to `SPACE['LOCAL_EXTERNAL_STORE']/{OUTPUT_DIR_NAME}/`, and prints a verification block at the end.
 
 ---
 
 How Externals Get Used Downstream
 ==================================
 
-Externals are not consumed by Source. Source is cohort-scoped and
-deidentified -- it produces the typed Ptt/invitation/Rx tables. The
-join into externals happens in Record or Case.
+Externals are not consumed by Source.
+Source is cohort-scoped and deidentified -- it produces the typed Ptt/invitation/Rx tables.
+The join into externals happens in Record or Case.
 
 A typical join (illustrative):
 
@@ -220,9 +208,7 @@ RecordFn / CaseFn config:
   - `columns` selects which external columns to add. Defaults to all
     if omitted.
 
-The skill's `join` verb does NOT execute this -- it only previews:
-match rate, top unmatched keys, columns that would be added, and the
-config snippet to paste into the consuming layer.
+The skill's `join` verb does NOT execute this -- it only previews: match rate, top unmatched keys, columns that would be added, and the config snippet to paste into the consuming layer.
 
 ---
 
@@ -238,8 +224,7 @@ ls code-dev/0-EXTERNAL/                               # registered builder scrip
 cat _WorkSpace/ExternalStore/{EXTERNAL_VERSION}/{asset}/README.md
 ```
 
-For the canonical catalog (asset name, primary key, source, columns),
-see ref/asset-catalog.md.
+For the canonical catalog (asset name, primary key, source, columns), see ref/asset-catalog.md.
 
 ---
 
@@ -250,13 +235,11 @@ Prerequisites
 source .venv/bin/activate && source env.sh
 ```
 
-Both required for `cook`, `refresh`, and `load`. The env vars
-`LOCAL_EXTERNAL_STORE` and `EXTERNAL_VERSION` come from env.sh; the
-builders fail without them.
+Both required for `cook`, `refresh`, and `load`.
+The env vars `LOCAL_EXTERNAL_STORE` and `EXTERNAL_VERSION` come from env.sh; the builders fail without them.
 
 `source .venv/bin/activate` does NOT persist across Bash tool calls.
-Always chain: `source .venv/bin/activate && source env.sh && python <script>`
-Or call venv python directly: `.venv/bin/python script.py`
+Always chain: `source .venv/bin/activate && source env.sh && python <script>` Or call venv python directly: `.venv/bin/python script.py`
 
 ---
 

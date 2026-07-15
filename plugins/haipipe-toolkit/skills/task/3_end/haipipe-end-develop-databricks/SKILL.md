@@ -1,6 +1,6 @@
 ---
 name: haipipe-end-develop-databricks
-description: "Databricks develop specialist for haipipe-end. STATUS: DEFERRED — the backing repo platforms/platform-databrick-training/ EXISTS (submit_job.py, setup_cluster.sh, notebooks/) but this skill is not wired to it yet, and the job-based design must be reconciled with jobs-blocked clusters (learn-databricks Lesson 15). Would run Stage 5 training as a Databricks Job (notebook or wheel task) with model logged to Unity Catalog and exported as an Endpoint_Set under 6-EndpointStore/. The umbrella's no-args dashboard skips this skill while deferred."
+description: "Databricks develop specialist for haipipe-end. STATUS: DEFERRED -- backing repo platforms/platform-databrick-training/ exists but this skill isn't wired to it yet. Would run Stage 5 training as a Databricks Job with model logged to Unity Catalog and exported as an Endpoint_Set. The umbrella's no-args dashboard skips it while deferred."
 argument-hint: "[verb] [config_or_run_id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
@@ -13,10 +13,8 @@ metadata:
 Skill: haipipe-end-develop-databricks
 ======================================
 
-Databricks development specialist (DEFERRED). Runs Stage 5 training as a
-Databricks Job, logs the resulting model to Unity Catalog (or the workspace
-MLflow registry), and exports an Endpoint_Set under `6-EndpointStore/` for
-the deploy specialists to consume.
+Databricks development specialist (DEFERRED).
+Runs Stage 5 training as a Databricks Job, logs the resulting model to Unity Catalog (or the workspace MLflow registry), and exports an Endpoint_Set under `6-EndpointStore/` for the deploy specialists to consume.
 
 > Status: DEFERRED — but the backing repo `platforms/platform-databrick-training/`
 > EXISTS (scripts/{submit_job.py, setup_cluster.sh, build_wheels.sh}, config/,
@@ -80,7 +78,8 @@ Step 0: Read `ref/concepts.md` for Databricks training conventions
         (Unity Catalog vs workspace registry, cluster spec, job parameters,
         wheel-vs-notebook task choice, MLflow integration).
 
-Step 1: Parse args. Same shape as `-develop-sagemaker`.
+Step 1: Parse args.
+Same shape as `-develop-sagemaker`.
 
 Step 2: Verify Databricks context:
           - Workspace URL + token (env or `databricks configure`)
@@ -122,16 +121,13 @@ Does NOT own:
 Why deferred
 -------------
 
-The `platforms/platform-databrick-training/` repo doesn't exist yet. When it does, the
-expected pattern is the same 3-stage testing ladder used for SageMaker:
+The `platforms/platform-databrick-training/` repo EXISTS, but this skill's verbs aren't wired to its scripts yet, and the job-based design below must be reconciled with jobs-blocked clusters (learn-databricks Lesson 15).
+Once wired, the expected pattern is the same 3-stage testing ladder used for SageMaker:
 
 ```
 local-system  →  attached-cluster  →  managed-Job
 ```
 
-with the final stage equivalent to SageMaker's RegisterModel (UC version
-registration via `mlflow.set_registry_uri("databricks-uc")`).
+with the final stage equivalent to SageMaker's RegisterModel (UC version registration via `mlflow.set_registry_uri("databricks-uc")`).
 
-Until that repo lands, the umbrella surfaces this skill in routing-axis
-listings but reports `status: deferred` if invoked, with a pointer to
-`-develop-sagemaker` as the active alternative.
+Until that wiring lands, the umbrella surfaces this skill in routing-axis listings but reports `status: deferred` if invoked, with a pointer to `-develop-sagemaker` as the active alternative.

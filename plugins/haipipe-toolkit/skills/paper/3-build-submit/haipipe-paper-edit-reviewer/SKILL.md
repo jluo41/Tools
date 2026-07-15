@@ -12,7 +12,9 @@ metadata:
 
 ## Overview
 
-Peer review is a systematic process for evaluating scientific manuscripts. Assess methodology, statistics, design, reproducibility, ethics, and reporting standards. Apply this skill for manuscript and grant review across disciplines with constructive, rigorous evaluation.
+Peer review is a systematic process for evaluating scientific manuscripts.
+Assess methodology, statistics, design, reproducibility, ethics, and reporting standards.
+Apply this skill for manuscript and grant review across disciplines with constructive, rigorous evaluation.
 
 ## When to Use This Skill
 

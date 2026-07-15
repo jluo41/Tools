@@ -1,0 +1,127 @@
+2 — DROP THE GATE (the ruling)
+===============================
+
+  JL RULED 2026-07-14: a probe is COMMUNICATION between consumer and executor.
+  The G1/G2/G3 review gate is not communication. Drop it entirely.
+
+  This file records the reasoning, exactly what retires, what covers the loss,
+  and the ONE risk CC flagged and JL accepted.
+
+
+The insight: the probe was doing two jobs
+-----------------------------------------
+
+```text
+   ┌── TRANSPORT ───────────────────┐   ┌── JUDGMENT ────────────────────┐
+   │  haipipe-probe                 │   │  haipipe-probe-review          │
+   │  = the communication           │   │  = the G1/G2/G3 gate           │
+   │                                │   │                                │
+   │  bind Q↔A by path · the wall   │   │  "does this evidence support   │
+   │  T1/T2 · the qa verb · state   │   │   MY claim?" supported/refuted │
+   │  MECHANICAL — wants a LINT      │   │  SEMANTIC — wants reasoning    │
+   │                                │   │                                │
+   │  belongs to the transport      │   │  belongs to the CONSUMER       │
+   └────────────────────────────────┘   └────────────────────────────────┘
+             KEEP THIS                          JL: DROP THIS
+```
+
+JL's point: the probe is the MAP between a paper's question and the bank's
+answer. Mapping is transport. Deciding whether the answer proves the claim is
+the paper's own business, not the transport layer's.
+
+
+The design already agreed — this finishes a move in flight
+----------------------------------------------------------
+
+R7 (in the spec) already deleted the `## Verdict` block and the `verdicted`
+state from the probe file, and made haipipe-probe-review "write NOTHING" — its
+judgment already lands in the paper's OWN 0-lifecycle/1-claims/1-claims.md.
+
+So 80% of the judgment had ALREADY left the probe. What remained was a placement
+artifact: the rulebook still physically sat under skills/probe/ even though the
+consumer invoked it and the consumer stored the result.
+
+JL's ruling removes the last 20%: retire the rulebook too. The probe becomes
+pure transport, which is what it always described itself as.
+
+
+What retires (the blast radius)
+-------------------------------
+
+```text
+   💀 skills/probe/haipipe-probe-review/SKILL.md          the G1/G2/G3 rulebook
+   💀 skills/probe/agents/haipipe-probe-reviewer-agent.md the thin judge shell
+   💀 skills/probe/haipipe-probe-review/g2_integrity_check.py     (already dark)
+   💀 skills/probe/haipipe-probe-review/probe-caveats-checklist.txt
+
+   ✂️ strip the judge from ~5 consumer/probe files that still dispatch it:
+        skills/paper/2-phase/1-probe/haipipe-paper-probe/…       ⑤ INTERPRET step
+        skills/application/2-phase/1-probe/haipipe-application-probe/…
+        skills/paper/1-lifecycle/1-claims/haipipe-paper-claims/…
+        skills/application/1-lifecycle/1-claims/haipipe-application-claims/…
+        skills/probe/haipipe-probe/SKILL.md  ("Live instruments that survive")
+
+   🔁 mode: light | full  SURVIVES as a claim-MARKER (which questions gate a
+        claim) but no longer TRIGGERS a review skill. `full` now means: the
+        author reads the answered QA file and writes the status by hand.
+```
+
+
+What covers the loss — why this is safe for integrity
+-----------------------------------------------------
+
+The gate's honesty checks do not vanish; they were mostly redundant already:
+
+```text
+   G2 INTEGRITY   "do the numbers trace to real sources?"
+                  → the BANK already checks this: task-reviewer Gate 2
+                    (RUN_AUDIT.md) and the discovery-reviewer audit the numbers
+                    WHEN PRODUCED. Re-checking at the consumer was belt-and-braces.
+
+   G1 STRUCTURAL  "is the comparison valid?"  → mostly the author's own reading
+                  of an answered QA file; low unique value.
+
+   G3 CLAIM       "does it support the claim?" → the author does this by reading
+                  the QA file's ## Answer and writing supported/refuted into
+                  1-claims.md. No separate skill needed to form that sentence.
+```
+
+Flow after the drop:
+
+```text
+   paper asks ──▶ executor answers ──▶ QA/<n>.md (bank-reviewed at Report)
+                                            │
+   author READS the answered QA file ──────┘
+        └─▶ writes the status straight into 1-claims.md.  No gate in between.
+```
+
+
+The free win
+------------
+
+Dropping the gate DELETES the audit's #1 live defect (see 03, D1): two files
+told the reviewer agent to run the dead g2_integrity_check.py that the skill it
+calls BANS. Retire the judge and the contradiction cannot exist — there is no
+agent left to mis-instruct.
+
+
+⚠️ THE ONE RISK CC FLAGGED — JL ACCEPTED
+----------------------------------------
+
+```text
+   LOST: the independent CAUSAL / OVERCLAIM guard (claim_type).
+         G3 carried a rule: never say "X causes Y" from an observational
+         correlation, however tight the CI — `causal` needs a named
+         identification strategy (RCT, valid IV, RD, DiD).
+         No bank reviewer checks this — the bank does not know the claim.
+         After the drop, nothing catches a paper writing "causes" from a
+         correlation, EXCEPT the author's own discipline + normal paper review.
+```
+
+  >> CC 23:41: I recommended relocate-and-thin (keep this guard on mode:full).
+     JL ruled DROP ENTIRELY. Recorded as the decision. Mitigation if it bites
+     later: revive ONLY the claim_type line as a one-paragraph check inside
+     haipipe-paper-claims — no gate, no skill, just a reminder at claim time.
+
+  > JL: (accept as-is, or want the claim_type mitigation folded into
+        haipipe-paper-claims now?)

@@ -34,7 +34,7 @@ Location — one FLAT pool, one file per TOPIC
 Probe file anatomy
 -------------------
 
-Full spec: the constitution's PART 2. In brief — one `## Why` per FILE, one SECTION per question:
+Full spec: the constitution's "The probe file" section. In brief — one `## Why` per FILE, one SECTION per question:
 
 ```markdown
 # PP01 — WellDoc data feasibility
@@ -48,10 +48,10 @@ NEVER dispatched. NEVER copied anywhere. It does not leave this file.
 - serves: 1-claims (C6)
 - target: tasks/A03_welldoc_cycle_check/01_column_scan/QA/1-cycle-indicator.md
 - state:  read
-- commission: |
+- q-executor: |
     The question in GENERAL language — no claim ids, no stake, no hint of which
     answer is wanted. This is the DISPATCH PAYLOAD, and nothing else is. FROZEN.
-- reading: |
+- a-consumer: |
     What the answer MEANS for this paper. Written at harvest.
 
 - values: … · sources: … · displays: …     the harvest lanes
@@ -74,15 +74,15 @@ States (DERIVED from disk — never asserted)
 
 ```
 planned          the section exists · the target leaf is missing (or `NEW …`)
-commissioned     the leaf + its plan.yaml exist · the QA file is absent
+commissioned     the task-folder + its plan.yaml exist · the QA file is absent
 answered         the target QA FILE exists
-read             the section's reading: is non-empty (+ 1-claims.md flipped, if it serves a claim)
+read             the section's a-consumer: is non-empty (+ 1-claims.md flipped, if it serves a claim)
 answered-local   target points into the paper's OWN registries; no dispatch happened
-failed           a reading with a dead target · the leaf was deleted · the qa verb REFUSEd
+failed           a reading with a dead target · the task-folder was deleted · the qa verb REFUSEd
 ```
 
 💀 `verdicted` is DELETED. 💀 `dispatched` is DELETED (say `commissioned`).
-A claim's STATUS (`supported | refuted | inconclusive` + confidence + claim_type + G1/G2/G3)
+A claim's STATUS (`supported | refuted | inconclusive` + confidence + claim_type)
 lives in `0-lifecycle/1-claims/1-claims.md`. It is not a probe field. There is no `## Verdict`.
 
 Binding is by PATH, never by id
@@ -91,7 +91,7 @@ Binding is by PATH, never by id
 A section's `target:` is a PATH to the answering file — a **QA file** in the bank:
 
 ```
-tasks/<leaf>/QA/<n>-<slug>.md          discoveries/<leaf>/QA/<n>-<slug>.md
+tasks/<task-group>/<task-folder>/QA/<n>-<slug>.md          discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md
 ```
 
 The QA file is the EXECUTOR's readable digest of a direction it explored: `# Q` / `## Answer` /
@@ -122,15 +122,15 @@ The loop (owned by haipipe-paper-probe)
 
 ```
 DRAFT raises the questions
-  ① ORGANIZE   collect them into 1-probes/, grouped by topic; write each commission (T1)
+  ① ORGANIZE   collect them into 1-probes/, grouped by topic; write each q-executor (T1)
   ② MATCH      T0 JOIN · T1 LOCAL · T2 REUSE (grep the bank's QA corpus, and READ the hits)
-               → most sections should stop HERE. A commission is the EXCEPTION, not the norm.
-  ③ DISPATCH   T3/T4 only: the commission block, VERBATIM, to
+               → most sections should stop HERE. A q-executor is the EXCEPTION, not the norm.
+  ③ DISPATCH   T3/T4 only: the q-executor block, VERBATIM, to
                  Agent(haipipe-task-orchestrator-agent)
                  Agent(haipipe-discovery-orchestrator-agent)
-               their clean context IS the wall. 💀 the probe GATEWAY agent is RETIRED.
+               their clean context IS the wall; dispatch goes direct.
   ④ POINT      target: → the answering QA FILE (verify with ls)
-  ⑤ INTERPRET  reading: → 1-claims.md flips → the harvest lanes pay out
+  ⑤ INTERPRET  a-consumer: → 1-claims.md flips → the harvest lanes pay out
 ```
 
 ⛔ **MATCH BEFORE DISPATCH.** The pre-v8 rule was "dispatch every planned probe, ALWAYS, no
@@ -152,11 +152,12 @@ Any lifecycle stage can raise a question:
 The section captures the question immediately; the MATCH may close it for free, and only a T3/T4
 section is ever dispatched.
 
-Relation to the direct task/discover verbs
---------------------------------------------
+A standalone question — one with no paper behind it
+----------------------------------------------------
 
-`task` and `discover` remain direct verbs for non-claim utility work. And a question with no
-paper behind it does not need a probe file at all — hand it straight to the executor's own door:
+There is no `task` or `discover` verb on the paper front door; the paper reaches the bank only
+through a stage's PROBE phase. A question with no paper behind it does not need a probe file at
+all — a HUMAN hands it straight to the executor's own door:
 
 ```
 /haipipe-task qa "<question>"        the everyday "go explore this" verb; the QA file is the receipt

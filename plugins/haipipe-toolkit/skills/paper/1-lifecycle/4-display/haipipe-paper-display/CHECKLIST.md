@@ -1,6 +1,6 @@
 # display stage checklist
 
-Done-gate for the **display** stage (`haipipe-paper-display`). The stage is complete only when every box below is checked AND the user confirms the gate (`../../../wiki/08-stage-gate.md`). This checklist is the canonical home of the gallery requirements; the paper's stage files should NOT restate them, they should point here.
+Done-gate for the **display** stage (`haipipe-paper-display`). The stage is complete only when every box below is checked AND the user confirms the gate (`../../ref/08-stage-gate.md`). This checklist is the canonical home of the gallery requirements; the paper's stage files should NOT restate them, they should point here.
 
 ## Stage doc (`0-lifecycle/4-display/`) — the md → tex → pdf trio
 - [ ] `4-display.md` present and is the ONLY hand-edited stage file (canonical template `ref/display-template.md`): Venue Set + gallery config, Display Map (row order = narrative order = gallery order), Probes (`###` sub-items, seed/claims shape), one paper-section group per section (`venue expects:` line; each display a `###` subsection; grouping matches the map's `section` column), Parking section.
@@ -46,4 +46,4 @@ Done-gate for the **display** stage (`haipipe-paper-display`). The stage is comp
 - [ ] Display Map consistent with units on disk — no orphans either way (asset without row, row without asset/float).
 - [ ] Every display referenced in narrative (`3-narrative.md`).
 - [ ] Every block + unit + stage-doc item above checked.
-- [ ] Exit criteria presented to the user per `../../../wiki/08-stage-gate.md`; user confirmed; `STATUS.md` Gate Ledger updated.
+- [ ] Exit criteria presented to the user per `../../ref/08-stage-gate.md`; user confirmed; `STATUS.md` Gate Ledger updated.

@@ -2,8 +2,7 @@ fn-generate: Code Generation Protocol
 =======================================
 
 This file tells you WHERE to write and WHAT to write at each layer.
-It does not paste full code templates -- Claude Code will write the actual
-code using the ref/*.md files as the specification.
+It does not paste full code templates -- Claude Code will write the actual code using the ref/*.md files as the specification.
 
 ---
 
@@ -23,8 +22,7 @@ For all models:
   Write Layer 4:  test scripts (generated) + YAML config
 ```
 
-If user asks for a SPECIFIC layer only (e.g., `/haipipe-nn generate L2`),
-generate only that layer and note what the adjacent layers must provide.
+If user asks for a SPECIFIC layer only (e.g., `/haipipe-nn generate L2`), generate only that layer and note what the adjacent layers must provide.
 
 ---
 
@@ -44,8 +42,7 @@ Before Writing Anything
 Layer 1: Algorithm File (skip if external library)
 ====================================================
 
-**Only write this if** the model needs a custom nn.Module (e.g., adding
-embeddings, fusion layers, or a specialized forward pass on top of HuggingFace).
+**Only write this if** the model needs a custom nn.Module (e.g., adding embeddings, fusion layers, or a specialized forward pass on top of HuggingFace).
 
 **WHERE to write:**
 
@@ -61,8 +58,7 @@ code/hainn/algo/<family>/<variant>/algorithm_<name>.py
   - No training loops, no data loading, no hainn.* imports
   - Inheritance chain allowed (e.g., base -> +ToD -> +Events)
 
-**Reference:** ../../haipipe-nn-algo/ref/concepts.md "When You Write Custom Layer 1 Code"
-**Example to read first:**
+**Reference:** ../../haipipe-nn-algo/ref/concepts.md "When You Write Custom Layer 1 Code" **Example to read first:**
   code/hainn/algo/tefm/te_clm/algorithm_ts_clm.py
   code/hainn/algo/tefm/te_clm/algorithm_ts_clm_tod.py
 
@@ -78,9 +74,8 @@ code/hainn/tuner/<family>/<variant>/tuner_<name>.py   (tefm, tsforecast-variant 
 code/hainn/tuner/<family>/tuner_<name>.py             (mlpredictor -- no variant subdirectory)
 ```
 
-NOTE: mlpredictor Tuners live directly under tuner/mlpredictor/ with no variant
-subdirectory (e.g., code/hainn/tuner/mlpredictor/tuner_xgboost.py). Only tefm and
-similar families use a variant sublevel (e.g., tuner/tefm/te_clm/tuner_ts_clm.py).
+NOTE: mlpredictor Tuners live directly under tuner/mlpredictor/ with no variant subdirectory (e.g., code/hainn/tuner/mlpredictor/tuner_xgboost.py).
+Only tefm and similar families use a variant sublevel (e.g., tuner/tefm/te_clm/tuner_ts_clm.py).
 
 **WHAT to write (per ../../haipipe-nn-tuner/ref/concepts.md):**
 
@@ -91,8 +86,8 @@ Five abstract methods (ModelTuner contract):
   4. save_model(key, model_dir)
   5. load_model(key, model_dir)
 
-NOTE: _ensure_model_loaded() is NOT an abstract method. It is an optional
-private helper that some Tuner subclasses use internally (e.g., HFNTPTuner).
+NOTE: _ensure_model_loaded() is NOT an abstract method.
+It is an optional private helper that some Tuner subclasses use internally (e.g., HFNTPTuner).
 Do not confuse it with the required contract above.
 
 Plus required class attributes:
@@ -106,13 +101,12 @@ Key conventions to get right:
     version is MOVED into this file as a standalone module-level function
     (not a method). Do not prototype it directly in the Tuner.
 
-**Reference:** ../../haipipe-nn-tuner/ref/concepts.md -- read MUST DO + MUST NOT + standalone transform_fn
-**Example to read first:**
+**Reference:** ../../haipipe-nn-tuner/ref/concepts.md -- read MUST DO + MUST NOT + standalone transform_fn **Example to read first:**
   code/hainn/tuner/mlpredictor/tuner_xgboost.py
   code/hainn/tuner/tsforecast/neuralforecast/modeling_nixtla_nhits.py  (if tsforecast)
 
-WARNING: tsforecast model files use the naming convention modeling_nixtla_<name>.py,
-NOT tuner_<name>.py. Check actual files with:
+WARNING: tsforecast model files use the naming convention modeling_nixtla_<name>.py, NOT tuner_<name>.py.
+Check actual files with:
   Glob: code/hainn/tuner/tsforecast/**/*.py
 
 ---
@@ -149,8 +143,7 @@ infer() routing contract:
 
 Critical: _load_model_base must call self.init() BEFORE tuner.load_model()
 
-**Reference:** ../../haipipe-nn-instance/ref/concepts.md -- all sections
-**Example to read first:**
+**Reference:** ../../haipipe-nn-instance/ref/concepts.md -- all sections **Example to read first:**
   code/hainn/instance/mlpredictor/instance_slearner.py
 
 
@@ -184,8 +177,7 @@ from_aidata_set must build:
   modelinstance_set_name = f"{modelinstance_name}/{modelinstance_version}"
   (version already has @ prefix; do NOT add it again)
 
-**Reference:** ../../haipipe-nn-instance/ref/concepts.md "Config Class Contract" + from_aidata_set() section
-**Example to read first:**
+**Reference:** ../../haipipe-nn-instance/ref/concepts.md "Config Class Contract" + from_aidata_set() section **Example to read first:**
   code/hainn/instance/mlpredictor/configuration_slearner.py
 
 ---
@@ -230,8 +222,8 @@ code/hainn/tuner/<family>/test-modeling-<name>/
 
 **WHAT each test script must contain:**
 
-All 4 scripts share the same 7-step structure. See ref/layer-N.md for
-the exact step list, display rules, and key_metric requirements.
+All 4 scripts share the same 7-step structure.
+See ../../haipipe-nn-{tuner,instance,modelset}/ref/concepts.md for the exact step list, display rules, and key_metric requirements.
 
 Critical for test scripts:
   - ALWAYS use real AIData (load from _WorkSpace/4-AIDataStore/)
@@ -240,8 +232,7 @@ Critical for test scripts:
   - L1 uses "Forward pass" / "Gradient flow" (not "Fit" / "Infer")
   - L2-L4 use "Fit" / "Infer" labels
 
-**Reference:** ../../haipipe-nn-{tuner,instance,modelset}/ref/concepts.md -- each has a
-"Test Notebook: What Layer N Tests" section with the full 7-step structure
+**Reference:** ../../haipipe-nn-{tuner,instance,modelset}/ref/concepts.md -- each has a "Test Notebook: What Layer N Tests" section with the full 7-step structure
 
 ---
 
@@ -281,8 +272,9 @@ Always write in this order (each layer depends on the one below):
   6. YAML config
   7. test scripts (L2 -> L3 -> L4)
 
-Run tests bottom-up: L2 first, then L3, then L4. Fix each layer before
-moving up. If L2 fails, do not proceed to L3.
+Run tests bottom-up: L2 first, then L3, then L4.
+Fix each layer before moving up.
+If L2 fails, do not proceed to L3.
 
 ---
 
@@ -296,8 +288,7 @@ source .venv/bin/activate && source env.sh
 ```
 
 NOTE: source .venv/bin/activate does NOT persist across Bash tool calls.
-Always chain: source .venv/bin/activate && source env.sh && python <script>
-Or call venv Python directly: .venv/bin/python script.py
+Always chain: source .venv/bin/activate && source env.sh && python <script> Or call venv Python directly: .venv/bin/python script.py
 
 ```bash
 source .venv/bin/activate && source env.sh && python -c "

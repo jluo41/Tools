@@ -1,23 +1,29 @@
 ---
 name: haipipe-paper-lifecycle
-description: "Orchestrator for the paper structure lifecycle (1-lifecycle). Routes to stage specialists across the venue-free/venue-aligned boundary: seed, resource and claims are venue-FREE (don't change on retarget); venue pins the journal; pitch, narrative, display, and section-edit are venue-ALIGNED (rewrite on retarget). Also routes to display renderers: table, figure, diagram, illustration. Use when you need any structural work on a paper before or during writing. Trigger: paper structure, paper pitch, scaffold paper, paper outline, paper architecture, resource, prerequisite, display layer, figure plan, section edit, /haipipe-paper-lifecycle."
+description: "Orchestrator for the paper structure lifecycle (1-lifecycle). Routes to stage specialists across the venue-free/venue-aligned boundary: seed, resource, claims are venue-FREE; venue pins the journal; pitch, narrative, display, section-edit are venue-ALIGNED (rewrite on retarget). Also routes to display renderers: table, figure, diagram, illustration. Use for any structural work on a paper before or during writing. Trigger: paper structure, paper pitch, scaffold paper, paper outline, paper architecture, resource, display layer, figure plan, section edit, /haipipe-paper-lifecycle."
 argument-hint: "[function] [paper-path-or-input] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
   version: "3.0.0"
   last_updated: "2026-07-14"
-  summary: "Router for the 1-lifecycle stage spine: folder, seed (0), resource (1), claims (1) [venue-FREE] -> venue (gate) -> pitch (2), narrative (3), display (4), section-edit (5) [venue-ALIGNED], plus the display renderer family. Stage skills internally run DRAFT -> PROBE -> REVISE -> CHECK via 2-phase/ workers; this router never routes users to phase skills. v2.3 (JL cross-stage ruling 2026-07-11): GLOBAL-PASS mode documented — draft all stages breadth-first, consolidate probes once (/haipipe-paper probe plan -> campaign), batch the handoff, harvest, then REVISE/CHECK per stage; depth-first per-stage cycles remain valid for single-stage work. v2.4 (JL resource ruling 2026-07-14): RESOURCE registered as a venue-FREE stage between seed and claims (haipipe-paper-resource) — what must EXIST for the paper to be testable, does it exist, can it CARRY the claim; it SHARES the number 1 with claims (precedented: 2-venue/ and 2-pitch/ already share 2) and renumbers nothing."
+  summary: "Router for the 1-lifecycle stage spine: folder, seed (0), resource (1), claims (1) [venue-FREE] -> venue (gate) -> pitch (2), narrative (3), display (4), section-edit (5) [venue-ALIGNED], plus the display renderer family. Stage skills run DRAFT -> PROBE -> REVISE -> CHECK internally via 2-phase/ workers; this router never routes users to phase skills. Two modes: depth-first per-stage cycles for single-stage work, and GLOBAL-PASS (draft all stages breadth-first, consolidate probes once via `probe plan`, batch the handoff, harvest, then REVISE/CHECK per stage). RESOURCE shares the number 1 with claims (as venue/pitch share 2) and renumbers nothing. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-paper-lifecycle (orchestrator)
 ==============================================
 
-User-facing entry for **paper structural work** -- everything that decides *what the paper is* before prose exists, or when the argument needs rethinking. This is the **Plan cycle** in the paper mental model (see `paper/README.md`, `../../wiki/03-paper-lifecycle.md`, and `../../wiki/04-lifecycle-map.md`).
+User-facing entry for **paper structural work** -- everything that decides *what the paper is* before prose exists, or when the argument needs rethinking.
+This is the **Plan cycle** in the paper mental model (see `paper/README.md`, `../ref/03-paper-lifecycle.md`, and `../ref/04-lifecycle-map.md`).
 
-The lifecycle has a **venue-free / venue-aligned boundary**. Seed, resource and claims are venue-FREE (they don't change when you retarget to a different journal -- what a paper NEEDS to exist does not depend on where you send it). Venue is the decision gate that pins the target journal in STATUS.md. Pitch, narrative, display, and section-edit are venue-ALIGNED (they rewrite when you retarget).
+The lifecycle has a **venue-free / venue-aligned boundary**.
+Seed, resource and claims are venue-FREE (they don't change when you retarget to a different journal -- what a paper NEEDS to exist does not depend on where you send it).
+Venue is the decision gate that pins the target journal in STATUS.md.
+Pitch, narrative, display, and section-edit are venue-ALIGNED (they rewrite when you retarget).
 
-The orchestrator owns routing only. Each stage specialist owns its own workflow, inputs, and outputs. The orchestrator never generates narrative, outlines, figures, or diagrams itself.
+The orchestrator owns routing only.
+Each stage specialist owns its own workflow, inputs, and outputs.
+The orchestrator never generates narrative, outlines, figures, or diagrams itself.
 
 ```
 /haipipe-paper-lifecycle                                -> dashboard (list specialists + pipeline)
@@ -33,24 +39,31 @@ The orchestrator owns routing only. Each stage specialist owns its own workflow,
 /haipipe-paper-lifecycle table <args>                   -> data-driven LaTeX tables (haipipe-paper-display-table)
 /haipipe-paper-lifecycle figure <args>                  -> data-driven plots (haipipe-paper-display-figure)
 /haipipe-paper-lifecycle diagram <args>                 -> deterministic vector diagrams / SVG (haipipe-paper-display-diagram)
-/haipipe-paper-lifecycle illustration <args>            -> AI concept illustration, DEFAULT Codex bridge (haipipe-paper-display-illustration)
-/haipipe-paper-lifecycle illustration-gemini <args>     -> AI concept illustration, Gemini fallback (haipipe-paper-display-illustration-gemini)
+/haipipe-paper-lifecycle illustration <args>            -> AI concept illustration, Codex bridge (haipipe-paper-display-illustration)
 /haipipe-paper-lifecycle framework <args>               -> display framework mode (candidate rounds, selection, handoff)
 /haipipe-paper-lifecycle "<natural language>"           -> infer function, dispatch
 ```
 
-**Phase-verb pass-through**: a trailing `draft | probe | revise | check` after any stage's args is a PHASE VERB — forward it verbatim to the stage skill (e.g. `section-edit 4-llmtrait revise` → `Skill("haipipe-paper-section-edit", args="4-llmtrait revise")`). The verb picks which phase the stage drives; the stage still dispatches its internal workers.
+**Phase-verb pass-through**: a trailing `draft | probe | revise | check` after any stage's args is a PHASE VERB — forward it verbatim to the stage skill (e.g. `section-edit 4-llmtrait revise` → `Skill("haipipe-paper-section-edit", args="4-llmtrait revise")`).
+The verb picks which phase the stage drives; the stage still dispatches its internal workers.
 
 ---
 
 Two-Axis Model (stages x phases)
 ---------------------------------
 
-Stage skills are the USER-FACING surface. Internally, each stage skill drives the shared phase cycle **DRAFT -> PROBE -> REVISE -> CHECK** by dispatching the internal workers in `2-phase/` (`haipipe-paper-draft`, `haipipe-paper-probe*`, `haipipe-paper-revise*`, `haipipe-paper-check`). TWO human gates: DRAFT ends at a hard STOP for the user's structure review (`[GATE]` logged; the user's verb advances), and CHECK is the quality gate. PROBE and REVISE are agent-only between them; REVISE is proof-carrying (`workers:` line in `_LOG`). The agent never self-advances past a gate.
+Stage skills are the USER-FACING surface.
+Internally, each stage skill drives the shared phase cycle **DRAFT -> PROBE -> REVISE -> CHECK** by dispatching the internal workers in `2-phase/` (`haipipe-paper-draft`, `haipipe-paper-probe*`, `haipipe-paper-revise*`, `haipipe-paper-check`).
+TWO human gates: DRAFT ends at a hard STOP for the user's structure review (`[GATE]` logged; the user's verb advances), and CHECK is the quality gate.
+PROBE and REVISE are agent-only between them; REVISE is proof-carrying (`workers:` line in `_LOG`).
+The agent never self-advances past a gate.
 
-**This router routes users to STAGE skills only -- never to phase skills.** Phase dispatch is each stage skill's internal business. If a request sounds like a phase ("gather citations for §3", "polish the intro"), route to the owning stage skill (usually section-edit) and let it dispatch.
+**This router routes users to STAGE skills only -- never to phase skills.**
+Phase dispatch is each stage skill's internal business.
+If a request sounds like a phase ("gather citations for §3", "polish the intro"), route to the owning stage skill (usually section-edit) and let it dispatch.
 
-Stage artifacts are markdown (`N-<stage>.md` + `_LOG_`) for every stage except display, which compiles to `.tex` + PDF (you need to SEE rendered figures/tables). Stage gates and the illuminate loop are shared conventions: `../../wiki/08-stage-gate.md`, `../../wiki/09-stage-illuminate.md`.
+Stage artifacts are markdown (`N-<stage>.md` + `_LOG_`) for every stage except display, which compiles to `.tex` + PDF (you need to SEE rendered figures/tables).
+Stage gates and the illuminate loop are shared conventions: `../ref/08-stage-gate.md`, `../ref/09-stage-illuminate.md`.
 
 ---
 
@@ -66,7 +79,7 @@ haipipe-paper-folder                  SCAFFOLD:  minimal quick scaffold (README 
 
 haipipe-paper-seed          SEED (0):    maintain 0-lifecycle/0-seed/0-seed.md: 3 sections (Seed Question, Motivations, Tentative Claim Shape); the venue-FREE contract that keeps a paper possibility alive before evidence matures.
 
-haipipe-paper-resource      RESOURCE (1): maintain 0-lifecycle/1-resource/1-resource.md, the venue-FREE prerequisite contract: what must EXIST for this paper to be testable, does it exist, and can it CARRY the claim? Two sections only -- Demand (one N<n> per hypothesis, keyed on H<n>) and Questions (one Q<n>, and its A when the answer lands). Scope is DATA + MODELS + PRODUCING-CODE (data is the bulk, not the boundary). The stage ASKS; the probe layer ROUTES -- it mints no PP ids and picks no probe types. Cleavage: task-for-data / task-for-algo / task-for-fit belong HERE; task-for-eval STAYS IN CLAIMS. Shares the number 1 with claims (as 2-venue/ and 2-pitch/ already share 2). Exits: proceed / reseed / park.
+haipipe-paper-resource      RESOURCE (1): maintain 0-lifecycle/1-resource/1-resource.md, the venue-FREE prerequisite contract: what must EXIST for this paper to be testable, does it exist, and can it CARRY the claim? Two sections only -- Demand (one N<n> per hypothesis, keyed on H<n>) and Questions (one Q<n>, and its A when the answer lands). Scope is DATA + MODELS + PRODUCING-CODE (data is the bulk, not the boundary). The stage ASKS; the probe layer ROUTES -- it mints no PP ids and picks no probe types. Cleavage: task-for-data / task-for-algo (ingredients) belong HERE; task-for-fit (train the model) + task-for-eval (evaluate) are CLAIMS'. Shares the number 1 with claims (as 2-venue/ and 2-pitch/ already share 2). Exits: proceed / reseed / park.
 
 haipipe-paper-claims        CLAIMS (1):  maintain 0-lifecycle/1-claims/1-claims.md, the venue-FREE claim/evidence inventory (supported / weak / GAP), each row tied to an evidence source; venue-neutral H1/H2/H3; emits needs and backfills probe verdicts.
 
@@ -102,9 +115,7 @@ haipipe-paper-display-figure          PLOT:    data-driven publication plots fro
 
 haipipe-paper-display-diagram         VECTOR:  deterministic architecture/workflow/pipeline diagrams from structured JSON -> editable SVG
 
-haipipe-paper-display-illustration    AI-IMG:  DEFAULT AI concept illustration via the local Codex app-server bridge (native image gen)
-
-haipipe-paper-display-illustration-gemini  AI-IMG (fallback):  Gemini backend with Claude-supervised refinement; use if the Codex bridge is unavailable or the user asks for Gemini
+haipipe-paper-display-illustration    AI-IMG:  AI concept illustration via the local Codex app-server bridge (native image gen)
 ```
 
 ---
@@ -112,7 +123,8 @@ haipipe-paper-display-illustration-gemini  AI-IMG (fallback):  Gemini backend wi
 Natural Pipeline Order
 ----------------------
 
-The specialists are designed to flow in sequence, though any can be invoked standalone. The typical first-pass order:
+The specialists are designed to flow in sequence, though any can be invoked standalone.
+The typical first-pass order:
 
 ```
   VENUE-FREE (don't change on retarget)
@@ -153,7 +165,8 @@ After the lifecycle spine, whole-paper build/submit tooling lives under `3-build
 Global-pass mode (breadth-first — the whole-paper cycle)
 ---------------------------------------------------------
 
-The per-stage DRAFT->PROBE->REVISE->CHECK cycle above is DEPTH-FIRST — right for maturing one stage. For a whole paper, prefer the GLOBAL-PASS order (JL ruling 2026-07-11): probes planned stage-by-stage duplicate questions and miss shared gating dependencies; the evidence needs of a paper only become visible once every stage has a draft.
+The per-stage DRAFT->PROBE->REVISE->CHECK cycle above is DEPTH-FIRST — right for maturing one stage.
+For a whole paper, prefer the GLOBAL-PASS order (JL ruling 2026-07-11): probes planned stage-by-stage duplicate questions and miss shared gating dependencies; the evidence needs of a paper only become visible once every stage has a draft.
 
 ```text
 ① DRAFT SWEEP     draft ALL stages in pipeline order, gates only on structure
@@ -170,21 +183,25 @@ The per-stage DRAFT->PROBE->REVISE->CHECK cycle above is DEPTH-FIRST — right f
                   upstream reached `state: answered`. 💀 `answers:` is DELETED
                   from both banks; a DAG that waits on it waits forever.
 ④ RUN             the task/discovery orchestrators run their own qa gate and
-                  write <leaf>/QA/<n>-<slug>.md (often a SEPARATE concurrent
-                  session — the commission block in the section is the bridge,
+                  write <task-folder>/QA/<n>-<slug>.md (often a SEPARATE concurrent
+                  session — the q-executor block in the section is the bridge,
                   and it survives a dead session with zero files bank-side)
 ⑤ HARVEST         a PROBE re-run re-resolves each `commissioned` section's
-                  target:, `ls` its QA file, and lands the `reading:` +
+                  target:, `ls` its QA file, and lands the `a-consumer:` +
                   the 1-claims.md flip + the harvest lanes
                   (query-once: landed answers are read from registries, never
                   re-queried) → then REVISE + CHECK stage by stage
 ```
 
-Stage gates are unchanged — a stage's CHECK still verifies ITS cards and registries; the global pass only reorders WHEN drafting and probing happen. Campaign rules live in the probe layer: `probe/haipipe-probe/SKILL.md` "Campaign planning".
+Stage gates are unchanged — a stage's CHECK still verifies ITS cards and registries; the global pass only reorders WHEN drafting and probing happen.
+Campaign rules live in the probe layer: `probe/haipipe-probe/SKILL.md` "Campaign planning".
 
-**Retarget rule:** when the venue changes, seed, resource and claims stay unchanged (venue-FREE). Pitch, narrative, display, and section-edit all rewrite for the new venue.
+**Retarget rule:** when the venue changes, seed, resource and claims stay unchanged (venue-FREE).
+Pitch, narrative, display, and section-edit all rewrite for the new venue.
 
-**Venue consumption rule:** the venue-aligned stages read the paper's `0-lifecycle/2-venue/2-venue.md` FIRST -- pitch: Venue Profile + Fit Assessment; narrative: Structural Blueprint beats + Writing Principles; display: Structural Blueprint display units + Writing Principles display limits; section-edit: the per-section Structural Blueprint block + Writing Principles. Direct `_venue/` pack reads are (a) the fallback when `2-venue.md` is absent (venue stage not yet run, or a pack-less venue; no pack at all = no venue inputs) and (b) deep dives following the `[source: ...]` tags recorded in `2-venue.md` into `_venue/playbook-<slug>/<journal>/...`. If `2-venue.md`'s recorded pack commit is behind the current `_venue` HEAD, stages note "venue contract stale -- consider /haipipe-paper-venue refresh" but still use `2-venue.md` (never silently re-read packs).
+**Venue consumption rule:** the venue-aligned stages read the paper's `0-lifecycle/2-venue/2-venue.md` FIRST -- pitch: Venue Profile + Fit Assessment; narrative: Structural Blueprint beats + Writing Principles; display: Structural Blueprint display units + Writing Principles display limits; section-edit: the per-section Structural Blueprint block + Writing Principles.
+Direct `_venue/` pack reads are (a) the fallback when `2-venue.md` is absent (venue stage not yet run, or a pack-less venue; no pack at all = no venue inputs) and (b) deep dives following the `[source: ...]` tags recorded in `2-venue.md` into `_venue/playbook-<slug>/<journal>/...`.
+If `2-venue.md`'s recorded pack commit is behind the current `_venue` HEAD, stages note "venue contract stale -- consider /haipipe-paper-venue refresh" but still use `2-venue.md` (never silently re-read packs).
 
 ---
 
@@ -206,8 +223,7 @@ Step 3: Dispatch:
     function = "table"          -> Skill("haipipe-paper-display-table", args)
     function = "figure"         -> Skill("haipipe-paper-display-figure", args)
     function = "diagram"        -> Skill("haipipe-paper-display-diagram", args)
-    function = "illustration"   -> Skill("haipipe-paper-display-illustration", args)        # DEFAULT (Codex bridge)
-    function = "illustration-gemini" -> Skill("haipipe-paper-display-illustration-gemini", args)  # fallback
+    function = "illustration"   -> Skill("haipipe-paper-display-illustration", args)        # Codex bridge
 
     # Lifecycle stages keep the plain haipipe-paper-<stage> name:
     function = else        -> Skill("haipipe-paper-<function>", args)
@@ -280,10 +296,7 @@ diagram, figure-spec, vector, SVG, pipeline diagram,
 
 illustration, AI illustration, concept figure, method
   illustration, codex illustration, AI 配图, AI绘图,
-  生成图表                                              -> illustration   (DEFAULT, Codex bridge)
-
-illustration-gemini, gemini illustration, gemini,
-  nano banana, 用 gemini 画                            -> illustration-gemini
+  生成图表                                              -> illustration   (Codex bridge)
 ```
 
 Function aliases (positional):
@@ -302,8 +315,7 @@ framework, figureone, fig1                        -> framework
 table, tbl, tab                                  -> table
 figure, fig, plot                                -> figure
 diagram, figure-spec, spec, vector, svg          -> diagram
-illustration, illust, ai-img, image2, codex      -> illustration          (DEFAULT)
-illustration-gemini, gemini, illust-g, ai-img-g  -> illustration-gemini
+illustration, illust, ai-img, image2, codex      -> illustration
 ```
 
 ---
@@ -338,8 +350,7 @@ When invoked with no arguments, emit a compact specialist chooser:
 
   Display renderers (concept):
     diagram        Deterministic vector diagrams (JSON -> SVG)
-    illustration   AI concept illustration -- DEFAULT, Codex bridge
-    illustration-gemini  AI concept illustration -- Gemini fallback
+    illustration   AI concept illustration -- Codex bridge
     framework      Candidate framework/architecture figure planning (Figure 1 style)
 
   Pipeline: folder -> seed (FREE) -> resource (FREE) -> claims (FREE) -> [venue] -> pitch (ALIGNED) -> narrative (ALIGNED) -> display (ALIGNED, + table/figure/diagram/illustration) -> section-edit (ALIGNED)
@@ -368,7 +379,9 @@ Stage skills additionally close every reply with the full closing block (simplif
 Relation to Parent Orchestrator
 --------------------------------
 
-`haipipe-paper` (in `paper/haipipe-paper/`) is the top-level paper router + Console. It resolves status and consults the paper's `0-lifecycle/2-venue/2-venue.md` for venue fit (falling back to the target's profile in `_venue/playbook-<venue>` only when no venue contract exists yet). This orchestrator (`haipipe-paper-lifecycle`) is the direct entry for structural work -- either routed from the Console or invoked by the user directly.
+`haipipe-paper` (in `paper/haipipe-paper/`) is the top-level paper router + Console.
+It resolves status and consults the paper's `0-lifecycle/2-venue/2-venue.md` for venue fit (falling back to the target's profile in `_venue/playbook-<venue>` only when no venue contract exists yet).
+This orchestrator (`haipipe-paper-lifecycle`) is the direct entry for structural work -- either routed from the Console or invoked by the user directly.
 
 ```
 haipipe-paper (router)  -- consults 2-venue.md for venue fit (pack fallback pre-pin)
@@ -386,8 +399,8 @@ haipipe-paper-lifecycle (this orchestrator)
   VENUE-ALIGNED:
   |-- pitch (2)          (cover letter: Editor's Chair, [primary], RQ framing)
   |-- narrative (3)
-  |-- display (4)        (only compiled stage; renders via table / figure / diagram / illustration
-  |                       + illustration-gemini fallback; planning in its ref/figure-logic.md)
+  |-- display (4)        (only compiled stage; renders via table / figure / diagram / illustration;
+  |                       planning in its ref/figure-logic.md)
   +-- section-edit (5)   (per-section hub in 0-lifecycle/5-section-edit/; internally dispatches
                           2-phase/ DRAFT->PROBE->REVISE->CHECK workers)
 

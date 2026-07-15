@@ -21,17 +21,22 @@
   - config plumbing               - path portability (ws_root)     - PHI-specific edge cases
 ```
 
-All three gates run **in order**. Gate 1 on the laptop with synth. Gate 2 on the laptop before shipping. Gate 3 on the server after the first real run.
+All three gates run **in order**.
+Gate 1 on the laptop with synth.
+Gate 2 on the laptop before shipping.
+Gate 3 on the server after the first real run.
 
 ---
 
 # Gate 1: Local Synth Run
 
-**Purpose:** validate pipeline LOGIC end-to-end before touching the server. Synth data is small and laptop-safe -- errors are cheap to catch here.
+**Purpose:** validate pipeline LOGIC end-to-end before touching the server.
+Synth data is small and laptop-safe -- errors are cheap to catch here.
 
 ## 1.1 How to run
 
-Each pipeline stage has a synth-compatible config. Run the same runner, different config:
+Each pipeline stage has a synth-compatible config.
+Run the same runner, different config:
 
 ```
   STAGE          COMMAND (from task folder)                          SYNTH CONFIG
@@ -42,7 +47,8 @@ Each pipeline stage has a synth-compatible config. Run the same runner, differen
   D  reg         powershell run_reg.ps1 -cfg <Cohort>_1stPair_synth          <Cohort>_1stPair_synth.do
 ```
 
-The synth config sets `cms_source "synth"`, `cms_asset_name "cms_synth"`, `file_physician "PhyReview2021Synth"`. Same runner code, different globals.
+The synth config sets `cms_source "synth"`, `cms_asset_name "cms_synth"`, `file_physician "PhyReview2021Synth"`.
+Same runner code, different globals.
 
 ## 1.2 Post-run checks
 
@@ -87,13 +93,15 @@ Select-String -Path "results\*\log\*.txt" -Pattern 'r\(\d+\)' -Recurse
   Coefficient signs      Too few obs for meaningful estimates    G3.8: direction check
 ```
 
-These ONLY surface at Gate 3. Gate 1 passing does NOT mean the pipeline is correct -- it means the plumbing works.
+These ONLY surface at Gate 3.
+Gate 1 passing does NOT mean the pipeline is correct -- it means the plumbing works.
 
 ---
 
 # Gate 2: Server Pre-flight
 
-**Purpose:** verify that code will PARSE and RUN on the locked-down CMS server environment. All checks run locally before shipping.
+**Purpose:** verify that code will PARSE and RUN on the locked-down CMS server environment.
+All checks run locally before shipping.
 
 ## 2.0 Server Environment (what you are dealing with)
 
@@ -169,7 +177,8 @@ $env:STATATMP = "$dir\results\run_cms_$year\_tmp"
 New-Item -ItemType Directory -Force -Path $env:STATATMP | Out-Null
 ```
 
-Stata resolves temp: `STATATMP` -> `TMP` -> `TMPDIR` -> `TEMP`. Setting `STATATMP` overrides the dead `%TEMP%` for `preserve`/`tempfile`/`postfile`.
+Stata resolves temp: `STATATMP` -> `TMP` -> `TMPDIR` -> `TEMP`.
+Setting `STATATMP` overrides the dead `%TEMP%` for `preserve`/`tempfile`/`postfile`.
 
 ## 2.3 Path Portability (will it find its files on any machine?)
 
@@ -225,7 +234,8 @@ Start-Process $stata "/e $base pde $year $tail" -WorkingDirectory $dir -PassThru
 
 # Gate 3: First Real-Data Run
 
-**Purpose:** validate that the pipeline behaves correctly with real CMS PHI data. These items CANNOT be validated on synth -- they only surface on the server.
+**Purpose:** validate that the pipeline behaves correctly with real CMS PHI data.
+These items CANNOT be validated on synth -- they only surface on the server.
 Check after the first successful run with `cms_production` / `cms_full` config.
 
 ## 3.1 Post-run checks

@@ -38,11 +38,11 @@ Paper-Personality-Opioid-MedJournal walkthrough. Four implementation waves.
 
 ### Added (new ref docs)
 
-- **wiki/08-stage-gate.md** -- Stage Gate protocol. Every stage transition requires
+- **1-lifecycle/ref/08-stage-gate.md** -- Stage Gate protocol. Every stage transition requires
   explicit user confirmation. Per-stage exit criteria table. Gate Ledger in
   STATUS.md tracks confirmed/date per stage. Strip checkmark means
   user-confirmed, not artifact-exists. Autonomy policy: boundary = PAUSE.
-- **wiki/09-stage-illuminate.md** -- Illuminate + Elicit protocol. Socratic
+- **1-lifecycle/ref/09-stage-illuminate.md** -- Illuminate + Elicit protocol. Socratic
   teach-then-elicit-then-draft loop before every stage draft. Per-stage
   taste-bearing decision examples. Re-walks diff-and-ask, not overwrite.
 - **wiki/13-tex-quality.md** -- Lifecycle TeX Quality Standard. Three rules:

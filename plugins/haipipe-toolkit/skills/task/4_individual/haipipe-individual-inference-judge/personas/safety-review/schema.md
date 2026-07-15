@@ -1,5 +1,7 @@
-Output exactly one `<judgment>...</judgment>` block. Inside, follow this
-structure verbatim. Do not add fields. Do not add prose outside.
+Output exactly one `<judgment>...</judgment>` block.
+Inside, follow this structure verbatim.
+Do not add fields.
+Do not add prose outside.
 
 ```xml
 <judgment>

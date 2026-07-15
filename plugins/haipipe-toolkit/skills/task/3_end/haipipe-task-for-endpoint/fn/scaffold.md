@@ -1,10 +1,8 @@
 fn-scaffold: Scaffold an endpoint-packaging task-folder
 ========================================================
 
-Package a trained ModelInstance_Set (Stage 5) into a deployable Endpoint_Set
-(Stage 6) via `Endpoint_Pipeline`. Group letter is PROJECT-SPECIFIC
-(orchestrator rule; follow the project's existing scheme); the default ABC
-convention uses **C** for endpoint groups.
+Package a trained ModelInstance_Set (Stage 5) into a deployable Endpoint_Set (Stage 6) via `Endpoint_Pipeline`.
+Group letter is PROJECT-SPECIFIC (orchestrator rule; follow the project's existing scheme); the default ABC convention uses **C** for endpoint groups.
 
 Output: `tasks/C{NN}_<group>/{NN}_<task_name>/` (or the project's letter).
 
@@ -48,14 +46,14 @@ C{NN}_<group>/
     └── notebooks/                      (created at runtime)
 ```
 
-The task `.py` is an EXACT copy of the template — CONFIG is overridden at
-runtime by papermill, never by editing the file (see SKILL.md).
+The task `.py` is an EXACT copy of the template — CONFIG is overridden at runtime by papermill, never by editing the file (see SKILL.md).
 
 
 Step 4 — Seed config
 ---------------------
 
-Copy `ref/config-seed.yaml` to `configs/run_<task_name>.yaml`. Fill:
+Copy `ref/config-seed.yaml` to `configs/run_<task_name>.yaml`.
+Fill:
 - `_meta:` block.
 - Source model block (`modelinstance_name`, `modelinstance_version` — no @ prefix).
 - Target endpoint block (`endpoint_name`, `endpoint_version`).
@@ -67,18 +65,15 @@ Step 5 — Run-script
 --------------------
 
 Copy `../../../haipipe-task/ref/run-sh-template.sh` to `runs/run_<task_name>.sh`.
-Set `TASK_NAME="{NN}_{task_name}"`. The body sources `.venv` + `env.sh`
-(Endpoint_Pipeline needs the haipipe import path + store env vars).
+Set `TASK_NAME="{NN}_{task_name}"`.
+The body sources `.venv` + `env.sh` (Endpoint_Pipeline needs the haipipe import path + store env vars).
 
 
 Step 6 — Execute + verify (per SKILL.md pipeline flow)
 -------------------------------------------------------
 
-`bash runs/run_<task_name>.sh` drives c_endpoint_nb.py:
-load ModelInstance_Set → Endpoint_Pipeline.run() → save to 6-EndpointStore/
-→ verify every example has payload.json → test inference on sample payloads
-→ package .tar.gz. See SKILL.md "Pipeline flow" for the step list and
-`../../haipipe-end/ref/0-overview.md` for the Endpoint_Set layout contract.
+`bash runs/run_<task_name>.sh` drives c_endpoint_nb.py: load ModelInstance_Set → Endpoint_Pipeline.run() → save to 6-EndpointStore/ → verify every example has payload.json → test inference on sample payloads → package .tar.gz.
+See SKILL.md "Pipeline flow" for the step list and `../../haipipe-end/ref/0-overview.md` for the Endpoint_Set layout contract.
 
 
 Step 7 — Cross-skill link + report

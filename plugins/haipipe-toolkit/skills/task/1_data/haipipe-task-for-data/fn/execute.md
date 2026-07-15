@@ -1,9 +1,8 @@
 fn-execute: Execute a data-pipeline task-folder
 ==================================================
 
-Stage-aware execution of an existing data-pipeline task. Detects the
-pipeline stage from the script, reads partition config, and runs via
-notebook (papermill) or CLI.
+Stage-aware execution of an existing data-pipeline task.
+Detects the pipeline stage from the script, reads partition config, and runs via notebook (papermill) or CLI.
 
 
 Step 1 — Detect stage from script
@@ -38,8 +37,8 @@ CaseArgs:
 Step 3 — Execute
 -----------------
 
-Two execution paths. Notebook is the default; CLI is available for
-parallel workers or scripted pipelines.
+Two execution paths.
+Notebook is the default; CLI is available for parallel workers or scripted pipelines.
 
 ### Path A: Notebook (papermill) — via run.sh
 
@@ -52,8 +51,7 @@ This:
 2. Runs `papermill {template} notebooks/<RUN>.ipynb -p CONFIG {config}`
 3. Writes `results/<RUN>/runtime.yaml`
 
-The `.py` already has `NUM_PARTITIONS` and `PARTITION_INDEX` in its
-parameters cell. papermill can override them:
+The `.py` already has `NUM_PARTITIONS` and `PARTITION_INDEX` in its parameters cell. papermill can override them:
 ```bash
 papermill ... -p NUM_PARTITIONS 20 -p PARTITION_INDEX 5
 ```

@@ -1,9 +1,8 @@
 External Join Contract
 =======================
 
-Defines how an external asset is joined into a cohort layer (Source,
-Record, Case, AIData). The `join` verb in this skill **previews** the
-operation; the actual join happens in the consuming layer.
+Defines how an external asset is joined into a cohort layer (Source, Record, Case, AIData).
+The `join` verb in this skill **previews** the operation; the actual join happens in the consuming layer.
 
 ---
 
@@ -24,10 +23,8 @@ cohort_column   --merged on-->   {PRIMARY_KEY}_original
 (string)                         (string, in the external)
 ```
 
-The merge is a LEFT JOIN from the cohort side. Cohort rows whose key
-has no match in the external get NaN for the new columns; integer ID
-columns can optionally be filled with the asset's `_unknown` token's
-ID (see `on_unmatched` below).
+The merge is a LEFT JOIN from the cohort side.
+Cohort rows whose key has no match in the external get NaN for the new columns; integer ID columns can optionally be filled with the asset's `_unknown` token's ID (see `on_unmatched` below).
 
 ---
 
@@ -45,8 +42,7 @@ match_rate    = len(matched) / max(len(unique_cohort_keys), 1)
 top_unmatched = sorted(unmatched by frequency in cohort, descending)[:20]
 ```
 
-Always coerce both sides to string before set-comparing -- mixed-dtype
-joins are the most common cause of false zero-match.
+Always coerce both sides to string before set-comparing -- mixed-dtype joins are the most common cause of false zero-match.
 
 Report all four numbers in the preview output:
 
@@ -57,17 +53,15 @@ matched:                1,089,432  (88.2%)
 unmatched (top 20):     [...]
 ```
 
-A match rate below 70% should trigger a format-mismatch warning. The
-preview should sample 5 matched + 5 unmatched keys side-by-side so
-the user can eyeball length / leading-zero / case issues.
+A match rate below 70% should trigger a format-mismatch warning.
+The preview should sample 5 matched + 5 unmatched keys side-by-side so the user can eyeball length / leading-zero / case issues.
 
 ---
 
 Recommended Config Snippet (output of `join`)
 ==============================================
 
-The skill emits a YAML block to paste into the consuming layer's
-config:
+The skill emits a YAML block to paste into the consuming layer's config:
 
 ```yaml
 externals:
@@ -129,8 +123,7 @@ patient_id  patient_id_encoded  hash/UUID         cohort side joins on
                                                   suffixed -> patient_id_original
 ```
 
-When a join's match rate is unexpectedly low, the first thing to check
-is format normalization on either side.
+When a join's match rate is unexpectedly low, the first thing to check is format normalization on either side.
 
 ---
 
@@ -144,6 +137,5 @@ What `join` Does NOT Do
     rate as-is and flags suspected format mismatches for the user to
     decide.
 
-The only output is the textual preview (numbers + samples + YAML
-snippet). The user copies the snippet into the appropriate cohort
-layer's config and runs the actual cook there.
+The only output is the textual preview (numbers + samples + YAML snippet).
+The user copies the snippet into the appropriate cohort layer's config and runs the actual cook there.

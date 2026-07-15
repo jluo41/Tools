@@ -1,8 +1,9 @@
 Explain Function
 ================
 
-Purpose: educational mode. Explains haipipe-data concepts with concrete
-codebase examples. Two modes depending on whether the user supplied a topic.
+Purpose: educational mode.
+Explains haipipe-data concepts with concrete codebase examples.
+Two modes depending on whether the user supplied a topic.
 
 ---
 

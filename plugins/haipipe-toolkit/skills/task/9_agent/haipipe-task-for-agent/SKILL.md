@@ -1,6 +1,6 @@
 ---
 name: haipipe-task-for-agent
-description: "agent task-folder build specialist. Scaffolds {NN}_<name>/ task-folders in the project's agent task-group (default F-series; letters are project-specific) that call an LLM agent with prompts + tools — outputs to results/<run>/{transcript.json, summary.md}. Called by /haipipe-task orchestrator when task-type=agent. Engine: /haipipe-task-llm-engine (LLM call runtime)."
+description: "agent task-folder specialist: scaffolds {NN}_<name>/ task-folders in the agent task-group (default F-series) that call an LLM agent with prompts + tools -> results/<run>/{transcript.json, summary.md}. Called by /haipipe-task when task-type=agent. Engine: /haipipe-task-llm-engine."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
@@ -13,9 +13,13 @@ metadata:
 Skill: haipipe-task-for-agent
 ==================================
 
-Scaffolds an **LLM-agent task-folder**. The scaffolded script makes its LLM calls through the domain's engine, `/haipipe-task-llm-engine` (owns `code/haiutils/llm_engine/`). Inputs: prompts + tool spec + (optional) data context. Outputs: transcript + structured result under `results/<run>/`.
+Scaffolds an **LLM-agent task-folder**.
+The scaffolded script makes its LLM calls through the domain's engine, `/haipipe-task-llm-engine` (owns `code/haiutils/llm_engine/`).
+Inputs: prompts + tool spec + (optional) data context.
+Outputs: transcript + structured result under `results/<run>/`.
 
-**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the `<TASK>.py` body). Always end with the structured return block (status / task_folder / run_name / files).
+**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Phase 2: Build, then authors the `<TASK>.py` body).
+Always end with the structured return block (status / task_folder / run_name / files).
 
 
 
@@ -45,13 +49,16 @@ Heavy outputs: none.
 Cross-reference to pipeline skill
 ----------------------------------
 
-Engine: /haipipe-task-llm-engine (LLM call runtime). Agent infra (Claude API client, tool dispatch, transcript logging) is project-owned for now. Adjacent skills: `/claude-api`.
+Engine: /haipipe-task-llm-engine (LLM call runtime).
+Agent infra (Claude API client, tool dispatch, transcript logging) is project-owned for now.
+Adjacent skills: `/claude-api`.
 
 
 Scaffold flow
 -------------
 
-See `fn/scaffold.md` for the detailed step-by-step. Summary:
+See `fn/scaffold.md` for the detailed step-by-step.
+Summary:
 
   1. Identify project + task-group.
   2. Collect metadata (NN, name, type-specific extras, _meta block).
@@ -85,4 +92,4 @@ ref/workflow-plan-sample.yaml     ← script-level phases for this type
 ```
 
 Schema source of truth:
-  task/haipipe-workflow/ref/plan-schema.md
+  ../../haipipe-workflow/ref/plan-schema.md

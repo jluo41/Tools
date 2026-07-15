@@ -9,14 +9,14 @@ things.
 ```
 haipipe-paper-probe (hub)   ① ORGANIZE → ② MATCH → ③ DISPATCH → ④ POINT → ⑤ INTERPRET
   ② MATCH      grep the bank's QA corpus ({tasks,discoveries}/**/QA/*.md), and READ the hits.
-               Most sections close HERE (T2 REUSE) — a commission is the EXCEPTION.
-  ③ DISPATCH   only what MATCH could not close. The section's `commission:` block, VERBATIM:
+               Most sections close HERE (T2 REUSE) — a q-executor is the EXCEPTION.
+  ③ DISPATCH   only what MATCH could not close. The section's `q-executor:` block, VERBATIM:
                  Agent(haipipe-task-orchestrator-agent)         internal work
                  Agent(haipipe-discovery-orchestrator-agent)    external evidence
-               Their CLEAN CONTEXT is the wall. 💀 the probe GATEWAY agent is RETIRED — its
-               SWEEP became ② MATCH, and dispatch now goes direct.
-  ④ POINT      the section's `target:` → the answering QA file <leaf>/QA/<n>-<slug>.md
-  ⑤ INTERPRET  the section's `reading:` → 1-claims.md flips → the lanes pay out:
+               Their CLEAN CONTEXT is the wall. The SWEEP is ② MATCH, and dispatch
+               goes direct.
+  ④ POINT      the section's `target:` → the answering QA file <task-folder>/QA/<n>-<slug>.md
+  ⑤ INTERPRET  the section's `a-consumer:` → 1-claims.md flips → the lanes pay out:
      haipipe-paper-probe-citation   source anchors → _CITATION_{stage}.md
      haipipe-paper-probe-values     value anchors  → _VALUES_{stage}.md
      haipipe-paper-probe-display    unit links     → _DISPLAY_{stage}.md + tex links
@@ -24,7 +24,7 @@ haipipe-paper-probe (hub)   ① ORGANIZE → ② MATCH → ③ DISPATCH → ④ 
 
 The probe FILE (`1-probes/PPNN_<topic>.md`, one file per TOPIC, one SECTION per question;
 anatomy owned by `../../../probe/haipipe-probe/SKILL.md`) is the single source of truth: its
-`commission:` at ORGANIZE, its `target:` at POINT, its `reading:` + lane lines at INTERPRET.
+`q-executor:` at ORGANIZE, its `target:` at POINT, its `a-consumer:` + lane lines at INTERPRET.
 A CLAIM's status is not in it — that lives in `0-lifecycle/1-claims/1-claims.md`.
 
 Enforcement is mechanical (`check-probe-cards.sh`, run at VERIFY and re-run by the CHECK gate):

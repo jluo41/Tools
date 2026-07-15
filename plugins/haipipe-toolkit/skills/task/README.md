@@ -54,7 +54,7 @@ appended and existing ids are not renumbered.
 
 Tasks execute internal work: a task ends at Report, having produced `results/`, and stops. Whoever consumes a task's results records the link on THEIR side; this layer tracks no consumers, names none, and its working docs (SKILL/ref/fn) never route upward.
 
-Self-contained is not deaf, though. Questions arrive through exactly ONE door — `/haipipe-task qa "<question>" [<leaf>]` (`haipipe-task/fn/qa.md`) — as one question in general language, with no id, no reference to whoever asked, and no stake attached. The verb answers it (① scan the leaf's `QA/` → ② digest what `results/` already hold → ③ run P-B-E-R at the shallowest depth that answers it) or REFUSES it, and hands back a path to `<leaf>/QA/<n>-<slug>.md`. It never learns who asked, or why.
+Self-contained is not deaf, though. Questions arrive through exactly ONE door — `/haipipe-task qa "<question>" [<task-folder>]` (`haipipe-task/fn/qa.md`) — as one question in general language, with no id, no reference to whoever asked, and no stake attached. The verb answers it (① scan the task-folder's `QA/` → ② digest what `results/` already hold → ③ run P-B-E-R at the shallowest depth that answers it) or REFUSES it, and hands back a path to `<task-folder>/QA/<n>-<slug>.md`. It never learns who asked, or why.
 
 That door is a SIDE door. The task session's primary mode is autonomous Plan → Build → Execute → Report with no question pending at all.
 

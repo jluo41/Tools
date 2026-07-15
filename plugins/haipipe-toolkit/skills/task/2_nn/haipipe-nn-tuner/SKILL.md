@@ -1,6 +1,6 @@
 ---
 name: haipipe-nn-tuner
-description: "Layer 2 (Tuner) specialist of haipipe-nn. Defines the hyperparameter search space and the tuner that drives sweeps. Called by /haipipe-nn orchestrator. Direct invocation works for layer-scoped work."
+description: "Layer 2 (Tuner) specialist of haipipe-nn: defines the hyperparameter search space and the tuner that drives sweeps. Called by /haipipe-nn; direct invocation works layer-scoped."
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
@@ -13,10 +13,9 @@ metadata:
 Skill: haipipe-nn-tuner
 ========================
 
-Layer 2 specialist. Owns the tuner classes in `code/hainn/tuner/` — search
-space declarations, hyperparameter sampling, and the loop that wraps L1
-algorithms. Called by the `/haipipe-nn` orchestrator; can also be invoked
-directly.
+Layer 2 specialist.
+Owns the tuner classes in `code/hainn/tuner/` — search space declarations, hyperparameter sampling, and the loop that wraps L1 algorithms.
+Called by the `/haipipe-nn` orchestrator; can also be invoked directly.
 
   Function axis:  dashboard | review | generate | test
 
@@ -50,16 +49,17 @@ test          ref/concepts.md        ../haipipe-nn/fn/fn-test.md
 (no fn arg)   ref/concepts.md        (ref-only mode)
 ```
 
-`generate` reads the L3 (instance) ref because the tuner's output
-(best-config + ckpt) becomes the input contract for ModelInstance.
+`generate` reads the L3 (instance) ref because the tuner's output (best-config + ckpt) becomes the input contract for ModelInstance.
 
 ---
 
 Step-by-Step Protocol
 ----------------------
 
-Step 0: Read `../haipipe-nn/ref/overview.md`. Mandatory.
-Step 1: Parse args. Function vocabulary: dashboard | review | generate | test.
+Step 0: Read `../haipipe-nn/ref/overview.md`.
+Mandatory.
+Step 1: Parse args.
+Function vocabulary: dashboard | review | generate | test.
 Step 2: Read this skill's `ref/concepts.md` for L2 specifics.
 Step 3: Read the umbrella fn doc.
 Step 4: For `generate`, also read `../haipipe-nn-instance/ref/concepts.md`.

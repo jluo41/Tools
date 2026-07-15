@@ -5,9 +5,8 @@ fn-3-design-chef: Scaffold a new external builder
 > without it (e.g. REACH-SPACE — zero external builders on disk) host any new
 > external builder in a project task folder, same `e{N}_build_external_*` naming.
 
-Creates a new `e{N+1}_build_external_<asset>.py` under
-`code-dev/0-EXTERNAL/`. In Phase 1 (no helper extraction yet), this
-copies the closest existing builder and customizes it.
+Creates a new `e{N+1}_build_external_<asset>.py` under `code-dev/0-EXTERNAL/`.
+In Phase 1 (no helper extraction yet), this copies the closest existing builder and customizes it.
 
 ---
 
@@ -93,10 +92,8 @@ Then update:
   - The metadata dict that feeds `generate_readme()` -- title,
     description, source, columns, stats, usage_example
 
-Do NOT extract or refactor the duplicated helpers
-(`build_vocabulary`, `convert_to_ids`, `generate_readme`) -- Phase 1
-keeps them inline. Note the duplication with a
-`# TODO: extract helpers (Phase 2)` comment near each.
+Do NOT extract or refactor the duplicated helpers (`build_vocabulary`, `convert_to_ids`, `generate_readme`) -- Phase 1 keeps them inline.
+Note the duplication with a `# TODO: extract helpers (Phase 2)` comment near each.
 
 ---
 
@@ -120,8 +117,7 @@ Add a row for the new asset:
 {slug}    {family}    {primary_key}    e{N+1}_build_external_{slug}.py
 ```
 
-If the asset has new common cohort join keys, add them to the
-"Common cohort columns" table.
+If the asset has new common cohort join keys, add them to the "Common cohort columns" table.
 
 ---
 

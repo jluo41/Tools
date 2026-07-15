@@ -20,7 +20,7 @@ _meta:
 # Algo-dev params
 # =============================================================================
 
-algo_class: <e.g. te_clm_lhm>           # code/hainn/<algo>/models/<class>/
+algo_class: <e.g. te_clm_lhm>           # code/hainn/algo/<family>/
 
 aidata:
   name: <dataset>

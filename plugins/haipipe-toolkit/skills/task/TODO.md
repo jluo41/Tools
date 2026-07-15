@@ -7,7 +7,7 @@ Tracked here so future sessions can pick them up without re-discovering.
 haipipe-task-for-agent: LOW QUALITY, needs rethink
 ----------------------------------------------------
 
-- [ ] `ref/config-seed.yaml` is a generic placeholder — model IDs stale (`claude-opus-4-7` → 4.8), `inputs:` example points to a non-existent path, `api:` block uses `env:` prefix syntax that no runner actually parses.
+- [ ] `ref/config-seed.yaml` is a generic placeholder — `inputs:` example points to a non-existent path, `api:` block uses `env:` prefix syntax that no runner actually parses. (Model IDs were stale `claude-opus-4-7`; FIXED → `4-8` / `sonnet-5` on 2026-07-15.)
 - [ ] `fn/scaffold.md` is copy-paste boilerplate — prompts/ dir is the only differentiator from the generic scaffold, and even that is thin.
 - [ ] `ref/workflow-plan-sample.yaml` phases (Setup → Execute → Parse) are too generic — every task could be described this way.
 - [ ] Zero task instances in any project. Never been used end-to-end.
@@ -21,7 +21,7 @@ Specialist architecture: scaffold vs lifecycle tension
 
 - [ ] Path 1 (scaffold new folder) calls `Skill("haipipe-task-for-<type>")` which runs `fn/scaffold.md`. Path 2 (lifecycle on existing folder) runs `task-lifecycle.workflow.js` where the creator agent reads the specialist's `ref/workflow-plan-sample.yaml` + `SKILL.md` as reference only — never calls the specialist as a Skill. Two paths, two roles, one set of files.
 - [ ] Long-term: consider collapsing scaffold into the creator agent (Path 1 becomes a Build stage invocation), eliminating `fn/scaffold.md` as a separate procedure.
-- [ ] `fn/scaffold.md` across 12 specialists is ~90% identical (same 7-step pattern). Extract a shared scaffold-base with per-type overrides.
+- [ ] `fn/scaffold.md` exists in 10 specialists sharing the same 7-step SKELETON, but the bodies have DIVERGED (measured 2026-07-15: ~95 diff-lines / ~120 vs the for-data baseline — the old "~90% identical" figure no longer holds). Decide: extract a shared scaffold-base with per-type overrides, OR accept the divergence as intentional per-type specialization and close this item.
 
 
 Specialist coverage gaps
@@ -36,15 +36,15 @@ Specialist coverage gaps
 Model IDs drift
 ----------------
 
-- [ ] `for-agent` refs `claude-opus-4-7` — latest is `claude-opus-4-8`. Any specialist that hardcodes model IDs will drift. Consider a shared `ref/model-ids.yaml` or just document "use the latest" without pinning.
+- [ ] Model-id drift (general). The concrete `for-agent` + `llm-engine` `claude-opus-4-7` / `claude-sonnet-4-6` residuals were FIXED → `4-8` / `sonnet-5` on 2026-07-15. STILL OPEN — the recurrence risk: any specialist that hardcodes model IDs will drift again. Consider a shared `ref/model-ids.yaml`, or document 'use the latest' without pinning, so this stops coming back.
 
 
 Lifecycle design: validate before expanding (2026-06-11 review)
 ----------------------------------------------------------------
 
-The 4-stage lifecycle architecture is sound at the structural level (hub-and-spoke, creator-reviewer separation, IPO schema chain, strict file ownership). But the system has more machinery than battle-tested usage. These items should be revisited after running the lifecycle on 3-5 real tasks.
+The 4-phase lifecycle architecture is sound at the structural level (hub-and-spoke, creator-reviewer separation, IPO schema chain, strict file ownership). But the system has more machinery than battle-tested usage. These items should be revisited after running the lifecycle on 3-5 real tasks.
 
-- [ ] **Execute stage is mostly a fiction.** `autoExecute` defaults to false so Stage 3 always logs "skipped — run manually." The lifecycle is really 3 stages + a manual gap. Either be honest about this (rename to "3+1 lifecycle") or make Execute real for non-GPU tasks.
+- [x] **Execute = the human's real run on the cluster/server — BY DESIGN, not a fiction (JL, 2026-07-15).** `autoExecute` defaults to false because the heavy tasks (NN training, big-data, endpoint deploy, edit-local→run-server) execute OUTSIDE this local Claude session — on the real cluster/server, run by the human, eventually and for real. The local lifecycle deliberately wraps Plan/Build/Report AROUND that manual run and records it; it does NOT try to auto-run what it cannot reach. The `autoExecute=true` branch (spawn a runner agent → Gate-2 audit) stays available for genuinely local tasks (data-prep, local stata, display render). ⚠️ DO NOT "fix" this by flipping the default or deleting the stage — the earlier "3+1 fiction" framing was WRONG, and so was any move to DEMOTE it. Execute is a FIRST-CLASS, co-equal phase — arguably the POINT of the whole lifecycle: it is where the task actually runs and produces its results; Plan/Build/Report are scaffolding around it. Keep the full `Plan → Build → Execute → Report` (four equal phases) in the docs — do NOT bracket it as optional `[Execute]`. The only note owed is WHERE it runs: remote/manual on the cluster for heavy tasks (the default), local `autoExecute=true` for light ones — never that it is lesser.
 - [ ] **No lifecycle state persistence.** Running `/haipipe-task plan <path>`, closing the session, then running `/haipipe-task build <path>` starts fresh — no record that Plan completed with verdict=pass. Add a `workflow/state.yaml` tracking per-stage completion + verdicts for cross-session continuity.
 - [ ] **Agent prompts lack worked examples.** The workflow.js tells creators "read the schema, generate the YAML" and reviewers "check 5 things" — but neither prompt includes a concrete example of a good vs. bad artifact. LLM agents do much better with examples than with checklists alone.
 - [ ] **Retry feedback is unstructured.** On revise, feedback is `reviewerResult.feedback || issues.join('; ')` — a concatenated string. No mechanism ensures the creator actually addresses each point vs. regenerating. Structured feedback (`{issues: [{id, severity, file, line, description}]}`) would make retries more reliable.

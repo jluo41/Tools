@@ -1,17 +1,14 @@
 fn-design-chef: Create a New Pipeline Fn via the Builder Pattern
 ================================================================
 
-**Purpose**: Build new pipeline functions (Chef-Fns) for any of the 4 data
-pipeline stages. This covers SourceFn, HumanFn/RecordFn, TriggerFn/CaseFn,
-and InputTfmFn/OutputTfmFn/SplitFn — all via the builder pattern.
+**Purpose**: Build new pipeline functions (Chef-Fns) for any of the 4 data pipeline stages.
+This covers SourceFn, HumanFn/RecordFn, TriggerFn/CaseFn, and InputTfmFn/OutputTfmFn/SplitFn — all via the builder pattern.
 
-**Rule #1**: NEVER edit `code/haifn/` directly. All production functions are
-generated. Edit builders in the BUILDER HOME, run them, and the output lands
-in `code/haifn/`.
+**Rule #1**: NEVER edit `code/haifn/` directly.
+All production functions are generated.
+Edit builders in the BUILDER HOME, run them, and the output lands in `code/haifn/`.
 
-**BUILDER HOME** — where builder scripts live; resolve once, then substitute
-for the `code-dev/1-PIPELINE/<N>-<Stage>-WorkSpace/` paths in the examples
-below:
+**BUILDER HOME** — where builder scripts live; resolve once, then substitute for the `code-dev/1-PIPELINE/<N>-<Stage>-WorkSpace/` paths in the examples below:
   - Project-local (current convention): the project's paired fn_develop task
     folder, `examples/<Project>/tasks/<pipe-group>/NN_<stage>_fn_develop_<cohort>/`
     (e.g. `Project-REACH-ADHD/tasks/A01_data_pipeline_reachadhd/01_source_fn_develop_reachadhd/`).
@@ -65,8 +62,8 @@ ls code/scripts/haibuilder/<N>-<stage>/         # cross-project SEED LIBRARY
 
 Find the closest existing builder to use as a starting point.
 
-For stages 2-3 (RecordFn, CaseFn): also inspect the input data before writing
-any logic. This reveals column names, dtypes, and density of the raw data:
+For stages 2-3 (RecordFn, CaseFn): also inspect the input data before writing any logic.
+This reveals column names, dtypes, and density of the raw data:
 
 ```python
 from haipipe.source_base import SourceSet
@@ -103,11 +100,11 @@ source .venv/bin/activate
 source env.sh
 ```
 
-Both are required. Builders need SPACE paths from `env.sh`.
+Both are required.
+Builders need SPACE paths from `env.sh`.
 
 NOTE: source .venv/bin/activate does NOT persist across Bash tool calls.
-Always chain: source .venv/bin/activate && source env.sh && python <script>
-Or call venv Python directly: .venv/bin/python script.py
+Always chain: source .venv/bin/activate && source env.sh && python <script> Or call venv Python directly: .venv/bin/python script.py
 
 **Step 3: Copy Closest Existing Builder as Starting Point**
 
@@ -116,11 +113,13 @@ cp code/scripts/haibuilder/3-case/c2_build_casefn_cgmvalue.py \
    <BUILDER_HOME>/c5_build_casefn_myfeature.py
 ```
 
-Do not start from scratch. Always copy and modify.
+Do not start from scratch.
+Always copy and modify.
 
 **Step 4: Edit [CUSTOMIZE] Sections Only**
 
-Open the copied builder. Change only the `[CUSTOMIZE]` tagged sections:
+Open the copied builder.
+Change only the `[CUSTOMIZE]` tagged sections:
 - Output file name / Fn name
 - Schema definitions
 - Processing logic
@@ -161,16 +160,14 @@ python -m scripts.haistepcli.case   --config <task>/configs/<run>.yaml
 python -m scripts.haistepcli.aidata --config <task>/configs/<run>.yaml
 ```
 
-Use the matching scripts.haistepcli.<stage> module for your stage; configs
-live in the pipeline task's configs/ folder.
+Use the matching scripts.haistepcli.<stage> module for your stage; configs live in the pipeline task's configs/ folder.
 
 ---
 
 Stage Reference: 1-source
 ===========================
 
-**What You Build**: SourceFn — loads raw files from disk and produces
-standardized DataFrames per table type (CGM, Diet, Medication, Exercise, ...).
+**What You Build**: SourceFn — loads raw files from disk and produces standardized DataFrames per table type (CGM, Diet, Medication, Exercise, ...).
 
 **Builder Location**:
 ```
@@ -218,9 +215,8 @@ SourceArgs:
 
 **Downstream Contract** (satisfies 2-record stage):
 
-All SourceFns for the same domain MUST output identical column schemas
-for shared table types. Schema consistency is mandatory across all source
-versions of the same domain.
+All SourceFns for the same domain MUST output identical column schemas for shared table types.
+Schema consistency is mandatory across all source versions of the same domain.
 
 Standard column counts to check before designing:
 
@@ -263,8 +259,7 @@ Diet: 15 columns
 Stage Reference: 2-record
 ===========================
 
-**What You Build**: HumanFn (patient identity mapping) OR RecordFn (time-series
-signal alignment for one signal type).
+**What You Build**: HumanFn (patient identity mapping) OR RecordFn (time-series signal alignment for one signal type).
 
 **Which to Build: HumanFn or RecordFn?**
 
@@ -441,9 +436,8 @@ HumanRecords:
 
 **Downstream Contract** (satisfies 3-case stage):
 
-`attr_cols` must include all columns that downstream CaseFns will access
-via `ROName_to_RONameInfo`. Changing `attr_cols` after CaseFns are built
-breaks all CaseFns that reference removed columns.
+`attr_cols` must include all columns that downstream CaseFns will access via `ROName_to_RONameInfo`.
+Changing `attr_cols` after CaseFns are built breaks all CaseFns that reference removed columns.
 
 **MUST**:
 - Choose the correct signal pattern (A/B/C/D) before writing any code
@@ -455,9 +449,8 @@ breaks all CaseFns that reference removed columns.
 Stage Reference: 3-case
 =========================
 
-**What You Build**: TriggerFn (when to create a case) OR CaseFn (what features
-to extract at the trigger point). These are two separate types with different
-builders.
+**What You Build**: TriggerFn (when to create a case) OR CaseFn (what features to extract at the trigger point).
+These are two separate types with different builders.
 
 **Builder Locations**:
 ```
@@ -595,8 +588,9 @@ Bf7d     | -10080    | 5       | -2016    | 1      | 7 days before trigger
 Base     | 0         | 0       | 0        | 0      | Static (no window)
 ```
 
-DistStart/DistEnd are in minutes from trigger. StartIdx/EndIdx are in domain
-time units (5-min slots for CGM domain). Positive = after trigger, Negative = before.
+DistStart/DistEnd are in minutes from trigger.
+StartIdx/EndIdx are in domain time units (5-min slots for CGM domain).
+Positive = after trigger, Negative = before.
 
 **Register in Config**:
 ```yaml
@@ -610,9 +604,8 @@ CaseArgs:
 
 **Downstream Contract** (satisfies 4-aidata stage):
 
-Output suffix keys (`--tid`, `--wgt`) must match what downstream InputTfmFns
-expect via `input_casefn_list`. If you rename a suffix, update the AIData
-config and TfmFn accordingly.
+Output suffix keys (`--tid`, `--wgt`) must match what downstream InputTfmFns expect via `input_casefn_list`.
+If you rename a suffix, update the AIData config and TfmFn accordingly.
 
 **MUST**:
 - Use 3-part ROName format exactly: `h<Human>.r<Record>.c<Ckpd>`
@@ -625,8 +618,8 @@ config and TfmFn accordingly.
 Stage Reference: 4-aidata
 ===========================
 
-**What You Build**: InputTfmFn (feature transforms), OutputTfmFn (label/target
-transforms), or SplitFn (train/val/test splitting). Three separate types.
+**What You Build**: InputTfmFn (feature transforms), OutputTfmFn (label/target transforms), or SplitFn (train/val/test splitting).
+Three separate types.
 
 **Builder Location**:
 ```

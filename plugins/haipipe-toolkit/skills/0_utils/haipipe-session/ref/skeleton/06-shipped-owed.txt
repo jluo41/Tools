@@ -1,0 +1,99 @@
+Shipped and owed — the reconciliation
+=====================================
+Part of: diagram/<YYMMDD>-<topic>/  ·  6 files, one theme each, no index.
+STATUS: 🟡 DRAFT   ·   flip to → SPEC OF RECORD — R1-Rn closed JL <date>. SHIPPED.
+Theme: what is ON DISK vs what is still OWED. 🔒 MANDATORY — the honesty ledger.
+
+
+  🔒 MANDATORY FILE. Every topic folder has an 06. No exceptions.
+
+  🔒 ✅ means VERIFIED ON DISK — you ran the command and read the output.
+     🟠 means NOT DONE. Not "mostly done", not "designed". A design is not a ship.
+     A later session flips 🟠 → ✅ here IN PLACE. That flip is the whole point of
+     one-folder-per-topic: the scoreboard stays in ONE file across every session.
+
+
+✅ SHIPPED — <TRACK 1 · the name>
+=================================
+
+  🐛 THE BUG IT FIXED: <the failure, stated as it was observed>
+     $ <the command>   →   <the output BEFORE>
+     <one line on why it was worse than it looked>
+
+  <file / script>
+    ① <the change>     <what it now does>
+                       ⬅ <the thing it made real for the FIRST time>
+    ② <the change>     <...>
+
+  📊 RESULT: <BEFORE → AFTER, in numbers>. <regressions across N consumers.>
+
+
+✅ SHIPPED — <TRACK 2 · the name>
+=================================
+
+  🆕 <new file / skill / folder>                       (v<x.y.z>)
+  🔧 <edited file>         <what changed in it>
+  🔧 <edited file>         <what changed in it>
+  🔗 <the wiring step nobody remembers>  ⬅ without this the thing was UNREACHABLE.
+
+
+🚨 THE TRAPS — why those fixes exist
+====================================
+
+  ⚠️  Every trap here FAILS SILENTLY: it does not error, it reports success while
+      checking nothing. Keep them on the record so nobody "simplifies" one away.
+
+  🚨 TRAP 1 — <THE NAME>   ⬅ <the consequence, had it shipped>
+     <what the code actually did.>
+     LIVE PROOF: <the real artifact on disk that demonstrates it.>
+     ✅ FIX: <what now happens instead.>
+        VERIFIED: <the command you ran, and what it printed.>
+
+  🚨 TRAP 2 — <THE NAME>
+     <...>
+
+```text
+   🚨 all <n> are the SAME SHAPE:
+
+        the check RUNS  ✅     the check PASSES  ✅     …and it checked NOTHING
+
+   ⇒ a gate that cannot fail is not a gate. It is a decoration that costs money.
+```
+
+
+🟠 STILL OWED
+=============
+
+  ⚠️  Be brutal. The value of this section is inversely proportional to how good it
+      makes the session look.
+
+  <TRACK n> · <the name>
+     <what still has to happen>
+     ⚠️  <the honest size of it — "this is the BULK of the value and it has NOT
+        started" is a sentence you must be willing to write.>
+
+  R<n> · <the open ruling>   →  05-rulings.txt. <not code. still unfiled.>
+
+  <COMMIT STATE: what is committed, what is sitting in a dirty submodule.>
+
+
+🤝 RECONCILIATION WITH <the concurrent work>
+============================================
+
+  ⚠️  Delete this section if nothing ran alongside. If another session changed the
+      ground under this topic, reconcile it HERE — survived vs died, explicitly. Do
+      not leave the reader to guess whether this folder was built on a foundation
+      that has since been replaced.
+
+```text
+   ✅ WHAT SURVIVED — and is CREDITED in <the other spec>
+   ═══════════════════════════════════════════════════════════════════════════
+   <the idea>      → <where it now lives, quoted>
+
+   ☠️ WHAT DIED — and was REPLACED BY SOMETHING BETTER
+   ═══════════════════════════════════════════════════════════════════════════
+   <the idea>      → <what replaced it, and the ruling id that killed it>
+
+   📌 <was the DESIGN neutral, and only the PLUMBING swept?>
+      Verified on disk <MM-DD>: <the grep that proves the residue is gone>.
+```

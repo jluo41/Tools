@@ -12,14 +12,13 @@ metadata:
 Skill: haipipe-paper-round
 ==========================
 
-Manage `1-rounds/`, the paper's working-memory layer. A round is a dated cycle
-of author/agent discussion, coauthor or reviewer comments, decisions, todo
-items, and what was applied. The contract is in `../../wiki/07-paper-rounds.md`.
+Manage `1-rounds/`, the paper's working-memory layer.
+A round is a dated cycle of author/agent discussion, coauthor or reviewer comments, decisions, todo items, and what was applied.
+The contract is in `../../wiki/07-paper-rounds.md`.
 
 Use `round`, not `feedback`: the contents are broader than external feedback.
 
-Read first: `../../PHILOSOPHY.md`, `../../wiki/07-paper-rounds.md`,
-`../../wiki/04-lifecycle-map.md`.
+Read first: `../../PHILOSOPHY.md`, `../../wiki/07-paper-rounds.md`, `../../1-lifecycle/ref/04-lifecycle-map.md`.
 
 Folder contract
 ---------------
@@ -35,8 +34,8 @@ Folder contract
     └── applied.md       backfill log: what changed where
 ```
 
-The round id is the date, `vYYMMDD` (e.g. `v260621`). Do not nest a branch level
-above it.
+The round id is the date, `vYYMMDD` (e.g. `v260621`).
+Do not nest a branch level above it.
 
 Subcommands
 -----------
@@ -51,23 +50,23 @@ Subcommands
 
 ### enter
 
-Read `1-rounds/latest.md`, then the active round's README/discussion/decisions/
-todo/applied. Render the round panel: source, status, and unresolved todo with
-their targets. Read-only. Defer the broader paper dashboard to the Paper Console
-(`haipipe-paper-enter`).
+Read `1-rounds/latest.md`, then the active round's README/discussion/decisions/todo/applied.
+Render the round panel: source, status, and unresolved todo with their targets.
+Read-only.
+Defer the broader paper dashboard to the Paper Console (`haipipe-paper-enter`).
 
 ### new
 
-Create `1-rounds/vYYMMDD/` with the five contract files (README header plus
-discussion/decisions/todo/applied stubs). Point `1-rounds/latest.md` at it. Ask
-for the round source/purpose if not given. Do not pre-create rebuttal/submission
-subtrees; `haipipe-paper-rebuttal` adds those for external-review rounds.
+Create `1-rounds/vYYMMDD/` with the five contract files (README header plus discussion/decisions/todo/applied stubs).
+Point `1-rounds/latest.md` at it.
+Ask for the round source/purpose if not given.
+Do not pre-create rebuttal/submission subtrees; `haipipe-paper-rebuttal` adds those for external-review rounds.
 
 ### triage
 
-Read `discussion.md` (raw review/meeting text). Extract decisions into
-`decisions.md` and open needs into `todo.md`. Every todo item points to one
-target, per `../../wiki/07-paper-rounds.md`:
+Read `discussion.md` (raw review/meeting text).
+Extract decisions into `decisions.md` and open needs into `todo.md`.
+Every todo item points to one target, per `../../wiki/07-paper-rounds.md`:
 
 ```text
 claim unsupported / too strong   -> 0-lifecycle/2-claims or probe
@@ -80,16 +79,14 @@ reviewer response                -> respond/rebuttal skill
 
 ### apply
 
-For each todo item, route to its target stage or evidence worker (Skill/Task),
-or apply it directly when low-risk. Record each change in `applied.md` as a
-backfill log (what changed, where, which todo it closes). Gate costly or
-claim-committing actions per the copilot policy.
+For each todo item, route to its target stage or evidence worker (Skill/Task), or apply it directly when low-risk.
+Record each change in `applied.md` as a backfill log (what changed, where, which todo it closes).
+Gate costly or claim-committing actions per the copilot policy.
 
 ### close
 
-Mark the round `status: closed` in its README, summarize what was applied and
-what carried over, and update `latest.md` (point to a new active round or
-`none`). Carry unresolved todo items into the next round.
+Mark the round `status: closed` in its README, summarize what was applied and what carried over, and update `latest.md` (point to a new active round or `none`).
+Carry unresolved todo items into the next round.
 
 Routing
 -------

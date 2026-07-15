@@ -1,8 +1,8 @@
 fn-review: Deep Per-Model Review Protocol
 ==========================================
 
-Steps 1-8 for a thorough review of a single model after picking it from
-the dashboard. Run fn-dashboard first to fill in the slots below.
+Steps 1-8 for a thorough review of a single model after picking it from the dashboard.
+Run fn-dashboard first to fill in the slots below.
 
 **Severity tags:**
   [BLOCK]  Must fix before the model can run at all
@@ -40,9 +40,11 @@ Then check:
   [ ] model_tuner_name value exactly matches the Tuner class name
       [BLOCK if typo -- Instance registry lookup will KeyError]
   [ ] Required top-level keys present:
-        ModelInstanceClass, ModelArgs, TrainingArgs, InferenceArgs,
-        EvaluationArgs, aidata_name, aidata_version,
-        modelinstance_name, modelinstance_version
+        ModelInstanceClass, ModelArgs, TrainingArgs
+        [BLOCK if any missing]
+  [ ] Optional top-level keys, if present, are well-formed:
+        EvaluationArgs, InferenceArgs, ExampleConfig
+        [do NOT block on their absence -- Eval/Inference are optional]
   [ ] No unresolved @ YAML references left in the file
 
 ```bash
@@ -54,12 +56,11 @@ cat <YAML_FILE>
 Step 2: Review the Tuner (Layer 2)
 ====================================
 
-NOTE: Before diving into the Tuner, check whether a custom algorithm_*.py
-exists (grep for "from .algorithm_" in the Tuner file). If it does, note it
-now and plan to review it in Step 5 -- the Tuner's transform_fn and forward
-call will reference it.
+NOTE: Before diving into the Tuner, check whether a custom algorithm_*.py exists (grep for "from .algorithm_" in the Tuner file).
+If it does, note it now and plan to review it in Step 5 -- the Tuner's transform_fn and forward call will reference it.
 
-Read ../../haipipe-nn-tuner/ref/concepts.md. Apply its MUST DO checklist and MUST NOT checklist in full.
+Read ../../haipipe-nn-tuner/ref/concepts.md.
+Apply its MUST DO checklist and MUST NOT checklist in full.
 
 Additional checks (cross-verify against YAML):
 
@@ -82,8 +83,8 @@ grep -n "model_\|os\.path\.join" <TUNER_FILE> | grep -i "save\|load"
 Step 3: Review the Instance (Layer 3)
 =======================================
 
-Read ../../haipipe-nn-instance/ref/concepts.md. Apply its MUST DO checklist, MUST NOT list, and
-infer() routing contract.
+Read ../../haipipe-nn-instance/ref/concepts.md.
+Apply its MUST DO checklist, MUST NOT list, and infer() routing contract.
 
 Additional checks:
 
@@ -103,8 +104,7 @@ Additional checks:
 Step 4: Review the Config (Layer 3)
 =====================================
 
-Read ../../haipipe-nn-instance/ref/concepts.md "Config Class Contract" section, including
-from_aidata_set() and from_yaml() requirements.
+Read ../../haipipe-nn-instance/ref/concepts.md "Config Class Contract" section, including from_aidata_set() and from_yaml() requirements.
 
   [ ] from_yaml() is implemented (base class raises NotImplementedError)
       [BLOCK if missing]
@@ -150,7 +150,8 @@ Step 6: Cross-Layer Consistency
 
 These checks span multiple files.
 
-**6a. YAML -> Registry -> Instance -> Config chain**
+**6a.
+YAML -> Registry -> Instance -> Config chain**
 
 ```bash
 python -c "
@@ -165,7 +166,8 @@ print('Config:  ', cfg.__name__)
   [ ] cls.__name__ matches INSTANCE_FILE class name
   [ ] cfg.__name__ matches CONFIG_FILE class name
 
-**6b. YAML -> Instance -> Tuner chain**
+**6b.
+YAML -> Instance -> Tuner chain**
 
 ```bash
 python -c "
@@ -193,7 +195,8 @@ grep -n "save_model\|load_model" <INSTANCE_FILE>
   [ ] Key matches what Tuner's save_model(key, ...) will create
       (e.g., 'MAIN' -> model_MAIN/ directory)
 
-**6d. YAML TrainingArgs flow**
+**6d.
+YAML TrainingArgs flow**
 
 ```bash
 grep -n "TrainingArgs" <INSTANCE_FILE>
@@ -216,11 +219,11 @@ grep -n "modelinstance_set_name\|modelinstance_version" <CONFIG_FILE>
 Step 7: Test Run Sequence
 ==========================
 
-Run in this order. Fix failures before proceeding to the next layer.
+Run in this order.
+Fix failures before proceeding to the next layer.
 
 NOTE: source .venv/bin/activate does NOT persist across Bash tool calls.
-Always chain: source .venv/bin/activate && source env.sh && python <script>
-Or call venv Python directly: .venv/bin/python script.py
+Always chain: source .venv/bin/activate && source env.sh && python <script> Or call venv Python directly: .venv/bin/python script.py
 
 ```bash
 # (optional) Layer 1 -- only for custom nn.Module
@@ -247,7 +250,8 @@ For test structure details, read:
 Step 8: Sign-Off
 =================
 
-Complete this table. PASS requires all rows green.
+Complete this table.
+PASS requires all rows green.
 
 ```
 Area             Check                                             Status
@@ -272,9 +276,11 @@ Tests            Layer 3 test: all steps PASSED                     [ ]
 Tests            Layer 4 test: all steps PASSED                     [ ]
 ```
 
-PASS:      Zero [BLOCK] or [ERROR] issues. All test layers green.
-WARN-PASS: Zero [BLOCK]/[ERROR]. Some [WARN]/[NOTE] -- document and proceed.
-FAIL:      Any [BLOCK] or [ERROR], or any test layer failing.
+PASS: Zero [BLOCK] or [ERROR] issues.
+All test layers green.
+WARN-PASS: Zero [BLOCK]/[ERROR].
+Some [WARN]/[NOTE] -- document and proceed.
+FAIL: Any [BLOCK] or [ERROR], or any test layer failing.
 
 ---
 

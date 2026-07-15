@@ -2,11 +2,10 @@ Stage 6: Endpoint Deployment
 =============================
 
 Stage 6 of the haipipe data pipeline.
-Transforms a trained ModelInstance_Set into a self-contained, production-ready
-Endpoint_Set that can run inference from a raw JSON payload.
+Transforms a trained ModelInstance_Set into a self-contained, production-ready Endpoint_Set that can run inference from a raw JSON payload.
 
-**Scope:** Architecture, inference pipeline, directory layout, YAML config,
-payload/response schemas, SPACE keys. Per-Fn-type contracts live with the specialists: `../../haipipe-end-{meta,trig,post,src2input,input2src}/ref/concepts.md`.
+**Scope:** Architecture, inference pipeline, directory layout, YAML config, payload/response schemas, SPACE keys.
+Per-Fn-type contracts live with the specialists: `../../haipipe-end-{meta,trig,post,src2input,input2src}/ref/concepts.md`.
 
 ---
 
@@ -54,22 +53,17 @@ Step 6  ModelInfer     model_input                  -> DataFrame (score__{action
 Step 7  PostFn         ModelArtifact_to_Inference   -> response_json
 ```
 
-**Step 1 — TrigFn (optional skip):**
-If TrigFn returns None, inference is skipped and a default response is returned.
-Use when not every incoming request should invoke the model (e.g., only 5-min CGM
-entries should trigger forecast, not every heartbeat).
+**Step 1 — TrigFn (optional skip):** If TrigFn returns None, inference is skipped and a default response is returned.
+Use when not every incoming request should invoke the model (e.g., only 5-min CGM entries should trigger forecast, not every heartbeat).
 
-**Steps 2-5 — the preprocessing chain:**
-These run the same PreFnPipeline that was attached to the model during training.
-The pipeline lives inside the Endpoint_Set's model/ directory and is loaded once
-at warmup(). It converts raw source tables → feature vector the model expects.
+**Steps 2-5 — the preprocessing chain:** These run the same PreFnPipeline that was attached to the model during training.
+The pipeline lives inside the Endpoint_Set's model/ directory and is loaded once at warmup().
+It converts raw source tables → feature vector the model expects.
 
-**Step 6 — Model Inference:**
-Calls model_instance.infer(model_input_data, InferenceArgs).
+**Step 6 — Model Inference:** Calls model_instance.infer(model_input_data, InferenceArgs).
 Returns a DataFrame with columns: score__{action}, best_action, [uplift__{action}].
 
-**Step 7 — PostFn:**
-Takes the per-action score DataFrame and formats the client-facing JSON response.
+**Step 7 — PostFn:** Takes the per-action score DataFrame and formats the client-facing JSON response.
 Handles action filtering, score scaling, and response schema formatting.
 
 ---
@@ -116,21 +110,14 @@ ExampleFn     e4_build_...    fn_model/fn_example/       Example selection strat
 - During packaging: Src2InputFn converts training examples → test payloads
 - During inference: Input2SrcFn converts incoming payload → ProcName_to_ProcDf
 
-**ROUNDTRIP INVARIANT (enforced):**
-`Input2SrcFn(Src2InputFn(ProcName_to_ProcDf)) ≈ ProcName_to_ProcDf`
+**ROUNDTRIP INVARIANT (enforced):** `Input2SrcFn(Src2InputFn(ProcName_to_ProcDf)) ≈ ProcName_to_ProcDf`
 
-Both builder scripts (d1 + e1) MUST include a roundtrip test using **real
-example data** from ModelInstanceStore — not synthetic payloads. The test
-loads a training example, serializes with Src2InputFn, deserializes with
-Input2SrcFn, then verifies: (a) all non-empty tables survive, and (b)
-model predictions match within tolerance. Without this test, data loss in
-the roundtrip (e.g., serializing only 4 of 19 tables) goes undetected
-until deployment — producing silently wrong predictions.
+Both builder scripts (d1 + e1) MUST include a roundtrip test using **real example data** from ModelInstanceStore — not synthetic payloads.
+The test loads a training example, serializes with Src2InputFn, deserializes with Input2SrcFn, then verifies: (a) all non-empty tables survive, and (b) model predictions match within tolerance.
+Without this test, data loss in the roundtrip (e.g., serializing only 4 of 19 tables) goes undetected until deployment — producing silently wrong predictions.
 
-The endpoint template (`c_endpoint_nb.py` step 5b) also checks this at
-packaging time by comparing endpoint predictions against training
-`prediction_results.json`. This is the runtime safety net; the builder
-roundtrip test is the design-time prevention.
+The endpoint template (`c_endpoint_nb.py` step 5b) also checks this at packaging time by comparing endpoint predictions against training `prediction_results.json`.
+This is the runtime safety net; the builder roundtrip test is the design-time prevention.
 
 ---
 
@@ -216,8 +203,7 @@ deployment_config:
   platform: "local"            # local | databricks | sagemaker
 ```
 
-**Function name resolution:**
-Each Fn name (e.g., "CGMDecoder_Databricks_v260101") maps to a .py file in:
+**Function name resolution:** Each Fn name (e.g., "CGMDecoder_Databricks_v260101") maps to a .py file in:
   code/haifn/fn_endpoint/fn_{type}/{FnName}.py
 
 The Fn is loaded dynamically via Base.load_module_variables(pypath).
@@ -227,13 +213,10 @@ The Fn is loaded dynamically via Base.load_module_variables(pypath).
 Deployment Platforms
 =====================
 
-**The wire I/O pair is platform-specific (owner decision 2026-07-05,
-supersedes LESSON L16).** Src2InputFn + Input2SrcFn are written ONE PER
-PLATFORM per use-case: a SageMaker payload gets a SageMaker impl (flat
-JSON), a Databricks payload its own impl (`dataframe_records` envelope).
-Put the platform in the impl name (e.g. `CGMDecoder_Databricks_*`).
-MetaFn / TrigFn / PostFn stay SHARED across platforms; TrigFn keeps the
-L14 unwrap so it reads payload on either platform:
+**The wire I/O pair is platform-specific (owner decision 2026-07-05, supersedes LESSON L16).** Src2InputFn + Input2SrcFn are written ONE PER PLATFORM per use-case: a SageMaker payload gets a SageMaker impl (flat JSON), a Databricks payload its own impl (`dataframe_records` envelope).
+Put the platform in the impl name (e.g.
+`CGMDecoder_Databricks_*`).
+MetaFn / TrigFn / PostFn stay SHARED across platforms; TrigFn keeps the L14 unwrap so it reads payload on either platform:
 
 ```python
 if 'dataframe_records' in payload_input and payload_input['dataframe_records']:
@@ -248,8 +231,7 @@ Shared Fns (one set)         Per-platform wire pair        Deploy wrappers
                                   must roundtrip)          Both call: endpoint_set.inference(payload)
 ```
 
-The `.tar.gz` remains the handoff artifact; package it with the wire pair
-matching the deploy target.
+The `.tar.gz` remains the handoff artifact; package it with the wire pair matching the deploy target.
 
 ```
                 SageMaker                          Databricks
@@ -269,9 +251,7 @@ Test:           test_endpoint_sage.py              test_endpoint_databricks.py
 Stress:         sagemaker_load_test.py             test_endpoint_databricks.py
 ```
 
-**Key difference:** SageMaker needs a Docker image (ECR) as the runtime
-container; Databricks doesn't — MLflow pyfunc wraps the endpoint code at
-registration time, and Databricks manages the runtime environment.
+**Key difference:** SageMaker needs a Docker image (ECR) as the runtime container; Databricks doesn't — MLflow pyfunc wraps the endpoint code at registration time, and Databricks manages the runtime environment.
 
 **Verb lifecycle (shared across platforms):**
 
@@ -291,8 +271,9 @@ VALIDATE → UPLOAD → REGISTER → DEPLOY → SMOKE TEST → STRESS TEST → P
 | stress test | Capacity: throughput, p95/p99, errors | sagemaker_load_test.py               | test_endpoint_databricks.py --benchmark |
 | teardown    | Cleanup                               | aws sagemaker delete-endpoint        | API call to delete serving endpoint     |
 
-**Smoke test** = does it return the right answer? (one request, assert format + values)
-**Stress test** = does it hold up under load? (concurrent requests, latency percentiles, error rate)
+**Smoke test** = does it return the right answer?
+(one request, assert format + values) **Stress test** = does it hold up under load?
+(concurrent requests, latency percentiles, error rate)
 
 **Platform repos:**
 
@@ -301,8 +282,7 @@ platforms/platform-sagemaker-inference/       AWS SageMaker (Docker + S3 + ECR)
 platforms/platform-databrick-inference/       Databricks (MLflow + Unity Catalog + Model Serving)
 ```
 
-Both repos follow the same config pattern:
-`config/<product>/<release>/{dev,prod}.yaml`
+Both repos follow the same config pattern: `config/<product>/<release>/{dev,prod}.yaml`
 
 ---
 
@@ -395,8 +375,8 @@ MODEL_ENDPOINT             "{endpoint_name}/{endpoint_version}"      set at infe
 SPACE                      full SPACE dict                           all components
 ```
 
-The SPACE dict is constructed from env.sh env vars. Inside the Endpoint_Set
-(at serving time), paths are relative to the endpoint directory itself.
+The SPACE dict is constructed from env.sh env vars.
+Inside the Endpoint_Set (at serving time), paths are relative to the endpoint directory itself.
 In Databricks, SPACE is constructed from context.artifacts['endpoint'].
 
 ---

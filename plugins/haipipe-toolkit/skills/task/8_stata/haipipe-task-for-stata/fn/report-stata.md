@@ -1,7 +1,8 @@
 fn/report-stata — Stata-specific execution report
 ===================================================
 
-Mirrors `fn/plan-stata.md` structure, filled with what actually happened. Reads Stata logs, summary.txt, and config_snapshot.do — NOT runtime.yaml or notebooks (those are Python/papermill concepts).
+Mirrors `fn/plan-stata.md` structure, filled with what actually happened.
+Reads Stata logs, summary.txt, and config_snapshot.do — NOT runtime.yaml or notebooks (those are Python/papermill concepts).
 
 
 When to call
@@ -16,7 +17,9 @@ Procedure
 
 ### Step 0 — Read the plans
 
-Read `workflow/plan.yaml` and all `workflow/plan-script-*.yaml`. These are the contracts to report against. If plans don't exist, run `fn/plan-stata.md` first.
+Read `workflow/plan.yaml` and all `workflow/plan-script-*.yaml`.
+These are the contracts to report against.
+If plans don't exist, run `fn/plan-stata.md` first.
 
 ### Step 1 — Scan execution evidence
 
@@ -71,8 +74,8 @@ summary:
 
 ### Step 3 — Generate task-level report.yaml
 
-Roll up script reports. Use the same IPO preview tree as plan.yaml but annotated
-with completion status:
+Roll up script reports.
+Use the same IPO preview tree as plan.yaml but annotated with completion status:
 
 ```yaml
 # --- Preview -----------------------------------------------------------

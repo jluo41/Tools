@@ -1,0 +1,101 @@
+1 — THE ONE DOOR
+=================
+
+  Files here:  01 the one door   02 the four phases
+               03 before / after   04 the edit set
+
+  Approved JL 2026-07-14. Edits pending.
+  Builds directly on 260714-probe-qa (read that first — this is one ruling on top of it).
+
+
+The ruling, in one sentence.
+----------------------------
+
+    A paper — and an application — may call ONLY the probe.
+
+Not the task layer.
+Not the discovery layer.
+The probe, and nothing else.
+
+
+What that removes
+-----------------
+
+The paper front door has two escape hatches today:
+
+    /haipipe-paper discover "..."   ──▶  /haipipe-discovery
+    /haipipe-paper task "..."       ──▶  /haipipe-task
+
+The application front door has the same two. Both are labelled
+"non-claim utility work (lit scan, data check)."
+
+Both are DELETED.
+
+The paper skill will no longer proxy a call into the bank.
+There is no "non-claim" exception. There is no small enough need.
+
+
+Why — this is the same wound as C6/C7
+--------------------------------------
+
+260714-probe-qa, LAW 2:
+
+    "The C6/C7 leak happened with NO probe file involved anywhere.
+     A paper session, holding the stake in its context, simply went
+     and did the task work itself."
+
+The `discover` / `task` verbs are the PAVED ROAD to that leak.
+
+```text
+   ❌  /haipipe-paper task "quick recon on the WellDoc cycle field"
+           │
+           ▼
+       a paper session, stake in context, drives /haipipe-task itself
+       → the QA file comes back shaped around THIS paper's hypotheses
+       → the bank is contaminated for the next paper
+```
+
+The wall (LAW 2) says a consumer NEVER executes bank work inline.
+But the front door was handing out a verb that does exactly that.
+
+We were policing the act while advertising the shortcut.
+Close the shortcut.
+
+
+JL's two lines, decoded
+-----------------------
+
+  > "maybe we don't call the discover and task from the paper side.
+  >  It is the probe's task."
+
+    Calling the bank is the PROBE's job, not the paper's.
+    The paper raises a question; the probe decides reuse-vs-dispatch
+    and — only through a clean-context agent — reaches the bank.
+
+  > "what we want are more like the stages' four phases."
+
+    What the front door SHOULD expose is stages, and inside each stage
+    the four phases DRAFT · PROBE · REVISE · CHECK.
+    Evidence enters through the PROBE phase. There is no separate
+    top-level verb that jumps the bank. See file 02.
+
+
+What does NOT change
+--------------------
+
+The bank still has its own front door, for humans and orchestrators:
+
+    /haipipe-task qa "what about the female subset?"     ──▶  QA/3-female-subset.md
+    /haipipe-discovery qa "CGM landscape?"               ──▶  QA/...
+
+260714-probe-qa already blesses this ("Two people can explore a task.
+Neither of them is a probe."). That door stays open.
+
+The difference is WHO knocks:
+
+    ✅  a human types  /haipipe-task qa "..."     — a person using the bank
+    ❌  a paper types  /haipipe-paper task "..."  — the paper proxying the bank
+
+The first is a human at the bank's counter.
+The second is the paper reaching over the counter.
+We are removing the second, only.

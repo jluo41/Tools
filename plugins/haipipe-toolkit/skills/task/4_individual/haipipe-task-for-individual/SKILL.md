@@ -1,6 +1,6 @@
 ---
 name: haipipe-task-for-individual
-description: "individual-query task-folder build specialist. Scaffolds {NN}_<name>/ task-folders in the project's individual task-group (default E-series; letters are project-specific) that query / visualize ONE individual's data (CGM trace, meal timeline, treatment events) — outputs to results/<run>/{plot.pdf, table.csv}. Called by /haipipe-task orchestrator when task-type=individual. Cross-references /haipipe-individual."
+description: "individual-query task-folder specialist: scaffolds {NN}_<name>/ task-folders in the individual task-group (default E-series) that query/visualize ONE individual's data (CGM trace, meal timeline, treatment events) -> results/<run>/{plot.pdf, table.csv}. Called by /haipipe-task when task-type=individual. Cross-references /haipipe-individual."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
@@ -13,9 +13,11 @@ metadata:
 Skill: haipipe-task-for-individual
 =======================================
 
-Scaffolds a **individual-centric query task-folder**. Pulls one patient's Source / Record data, applies a view (timeline, treatment-event plot, meal-vs-glucose overlay), and writes a small PDF + CSV to `results/<run>/`.
+Scaffolds an **individual-centric query task-folder**.
+Pulls one individual's Source / Record data, applies a view (timeline, treatment-event plot, meal-vs-glucose overlay), and writes a small PDF + CSV to `results/<run>/`.
 
-**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the `<TASK>.py` body). Always end with the structured return block (status / task_folder / run_name / files).
+**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Phase 2: Build, then authors the `<TASK>.py` body).
+Always end with the structured return block (status / task_folder / run_name / files).
 
 
 
@@ -42,13 +44,15 @@ Heavy outputs: none.
 Cross-reference to pipeline skill
 ----------------------------------
 
-`/haipipe-individual` owns per-individual data access (Subject-* folders under `_WorkSpace/A-User-Store/`). This skill scaffolds the example view; the view logic typically calls `/haipipe-individual` helpers.
+`/haipipe-individual` owns per-individual data access (Subject-* folders under `_WorkSpace/A-User-Store/`).
+This skill scaffolds the example view; the view logic typically calls `/haipipe-individual` helpers.
 
 
 Scaffold flow
 -------------
 
-See `fn/scaffold.md` for the detailed step-by-step. Summary:
+See `fn/scaffold.md` for the detailed step-by-step.
+Summary:
 
   1. Identify project + task-group.
   2. Collect metadata (NN, name, type-specific extras, _meta block).
@@ -74,8 +78,7 @@ next:      suggested next command (run.sh / /haipipe-individual)
 Workflow plan
 --------------
 
-When `/haipipe-task plan` targets an existing task-folder of this type,
-the generated plan-script YAML should follow the type-specific sample:
+When `/haipipe-task plan` targets an existing task-folder of this type, the generated plan-script YAML should follow the type-specific sample:
 
 ```
 ref/workflow-plan-sample.yaml     ← script-level phases for this type

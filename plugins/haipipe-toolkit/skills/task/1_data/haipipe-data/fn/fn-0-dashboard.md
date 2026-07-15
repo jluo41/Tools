@@ -7,21 +7,19 @@ Full visibility scan across 3 dimensions:
   Panel B -- Asset Status Table       ("what has been built")
   Panel C -- Asset Detail Report      ("what is inside each asset")
 
-Run this before any pipeline cook, before any debugging. Read-only -- no
-files are modified.
+Run this before any pipeline cook, before any debugging.
+Read-only -- no files are modified.
 
 ---
 
 Overview
 ========
 
-**Purpose:** Full pipeline visibility at a glance. Three panels give
-increasing levels of detail -- from registered Fns to asset existence to
-per-asset schema and settings.
+**Purpose:** Full pipeline visibility at a glance.
+Three panels give increasing levels of detail -- from registered Fns to asset existence to per-asset schema and settings.
 
 **Entry point:** Always run the full dashboard at the start of a session.
-It orients you to both what is available (Fns) and what has been produced
-(assets) before taking any action.
+It orients you to both what is available (Fns) and what has been produced (assets) before taking any action.
 
 ---
 
@@ -35,7 +33,8 @@ If invoked with a stage qualifier (e.g., "dashboard 1-source"):
   - Run ONLY the Panel C detail for that stage (if PRESENT)
   - Skip all other stages entirely
 
-This is the fast path. Use it when you already know which stage to inspect.
+This is the fast path.
+Use it when you already know which stage to inspect.
 
   dashboard 0-rawdata ->  Panel 0 only (raw files, no manifest check)
   dashboard 1-source  ->  A1 + B(SourceStore only)  + C1
@@ -51,8 +50,7 @@ Stage-filtered dashboard is always fast -- no confirmation needed.
 Full-Dashboard Confirmation Gate
 ==================================
 
-When invoked WITHOUT a stage qualifier (full dashboard), STOP before running
-any commands and do the following:
+When invoked WITHOUT a stage qualifier (full dashboard), STOP before running any commands and do the following:
 
 Step G1: Check for cached results.
 
@@ -138,8 +136,8 @@ Panel 0: RawDataStore Scan
 ==========================
 
 Lists what raw cohort data is available before any pipeline processing.
-RawDataStore has no manifest.json -- status is PRESENT (files exist) or
-MISSING (no directory). No EMPTY state.
+RawDataStore has no manifest.json -- status is PRESENT (files exist) or MISSING (no directory).
+No EMPTY state.
 
 Step P0: Scan cohorts and files.
 
@@ -257,8 +255,7 @@ For HumanFns in code/haifn/fn_record/human/:
 head -30 code/haifn/fn_record/human/<HumanFnName>.py
 ```
 
-Report: `OneHuman_Args['HumanName']`, `OneHuman_Args['HumanID']`,
-`Excluded_RawNameList` (tables skipped when building entity roster).
+Report: `OneHuman_Args['HumanName']`, `OneHuman_Args['HumanID']`, `Excluded_RawNameList` (tables skipped when building entity roster).
 
 Output format:
 
@@ -297,9 +294,7 @@ For TriggerFns in code/haifn/fn_case/fn_trigger/:
 head -40 code/haifn/fn_case/fn_trigger/<TriggerFnName>.py
 ```
 
-Report: `Trigger`, key `Trigger_Args` fields (case_id_columns, HumanID_list,
-ObsDT, ROName_to_RONameArgs keys, and any LTS-specific fields like
-`min_segment_length`, `stride`).
+Report: `Trigger`, key `Trigger_Args` fields (case_id_columns, HumanID_list, ObsDT, ROName_to_RONameArgs keys, and any LTS-specific fields like `min_segment_length`, `stride`).
 
 Output format:
 
@@ -397,8 +392,8 @@ Next action: exact haistep-* command for the first gap
 Panel C: Asset Detail Report
 =============================
 
-For each PRESENT asset, run a deeper inspection. This answers the per-stage
-questions the dashboard is designed to reveal.
+For each PRESENT asset, run a deeper inspection.
+This answers the per-stage questions the dashboard is designed to reveal.
 
 **Step C1: Stage 1 (Source) -- ProcName detail**
 
@@ -614,8 +609,7 @@ Run and report in this order:
 4. Save results to _WorkSpace/.haipipe_dashboard_cache.md
 ```
 
-Panel C only runs for assets with status PRESENT in Panel B. Skip EMPTY
-and MISSING assets in Panel C (nothing to inspect).
+Panel C only runs for assets with status PRESENT in Panel B. Skip EMPTY and MISSING assets in Panel C (nothing to inspect).
 
 ---
 

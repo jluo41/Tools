@@ -3,8 +3,8 @@ Layer 3: Instance
 
 Layer 3 of the 4-layer NN pipeline: Model Instance.
 
-The orchestrator contract. Instance manages one or more Tuners and
-provides HuggingFace-style save_pretrained/from_pretrained API.
+The orchestrator contract.
+Instance manages one or more Tuners and provides HuggingFace-style save_pretrained/from_pretrained API.
 It should be a THIN orchestrator: it knows WHAT to do, Tuners know HOW.
 
 ---
@@ -62,16 +62,11 @@ class ModelInstance(ABC):
     def from_pretrained(cls, model_dir, SPACE): ...  # Loads via metadata auto-detection
 ```
 
-**5 abstract methods, 1 class attribute (MODEL_TYPE), 3 instance attributes
-set in __init__ (model_base, prefn_pipeline, model_path) + 1 set by
-from_pretrained (modelinstance_dir = parent of model_dir).**
+**5 abstract methods, 1 class attribute (MODEL_TYPE), 3 instance attributes set in __init__ (model_base, prefn_pipeline, model_path) + 1 set by from_pretrained (modelinstance_dir = parent of model_dir).**
 
-**What is prefn_pipeline?** PreFnPipeline is a chain of preprocessing
-functions (feature transformers, normalizers, encoders) that Layer 4
-attaches to the Instance before saving. At Layer 3, you only carry the
-field -- you do not implement or call it yourself. Layer 4 sets it via
-`instance.prefn_pipeline = PreFnPipeline(...)` and save_pretrained() /
-from_pretrained() persist it automatically as `prefn_*.json`.
+**What is prefn_pipeline?** PreFnPipeline is a chain of preprocessing functions (feature transformers, normalizers, encoders) that Layer 4 attaches to the Instance before saving.
+At Layer 3, you only carry the field -- you do not implement or call it yourself.
+Layer 4 sets it via `instance.prefn_pipeline = PreFnPipeline(...)` and save_pretrained() / from_pretrained() persist it automatically as `prefn_*.json`.
 See code/hainn/instance/prefn_pipeline.py for the implementation.
 
 ---
@@ -81,7 +76,8 @@ Three Composition Patterns
 
 **Pattern A: Single Tuner**
 
-One algorithm, one model. The simplest and most common pattern.
+One algorithm, one model.
+The simplest and most common pattern.
 
 ```python
 # Used by: TSForecast, TEFM (Tuner mode)
@@ -100,8 +96,7 @@ def infer(self, dataset, InferenceArgs=None):
 
 **Pattern B: Single Tuner + Input Encoding**
 
-One algorithm, but the Instance encodes treatment/context as an
-additional input feature before passing to the Tuner.
+One algorithm, but the Instance encodes treatment/context as an additional input feature before passing to the Tuner.
 
 ```python
 # Used by: S-Learner (treatment as feature)
@@ -263,15 +258,12 @@ def from_aidata_set(cls, aidata_set, modelinstance_name,
     )
 ```
 
-**IMPORTANT:** If your Config uses the BASE from_aidata_set(), your @dataclass
-MUST accept ALL the fields above as constructor arguments, otherwise it will
-crash with unexpected keyword arguments. However, subclasses MAY override
-from_aidata_set() entirely (e.g., TSForecastConfig extracts time-series
-specific parameters instead of treatment-effect metadata).
+**IMPORTANT:** If your Config uses the BASE from_aidata_set(), your @dataclass MUST accept ALL the fields above as constructor arguments, otherwise it will crash with unexpected keyword arguments.
+However, subclasses MAY override from_aidata_set() entirely (e.g., TSForecastConfig extracts time-series specific parameters instead of treatment-effect metadata).
 
-**modelinstance_set_name format:** `f"{modelinstance_name}/{modelinstance_version}"` where
-version includes the `@` prefix. Standard: `"MyModel/@v0001-demo"`. Write
-`modelinstance_version: '@v0001-...'` in YAML configs (never bare `v0001`).
+**modelinstance_set_name format:** `f"{modelinstance_name}/{modelinstance_version}"` where version includes the `@` prefix.
+Standard: `"MyModel/@v0001-demo"`.
+Write `modelinstance_version: '@v0001-...'` in YAML configs (never bare `v0001`).
 
 ---
 
@@ -292,9 +284,8 @@ def load_model_instance_class(model_instance_type):
         raise ValueError(f"Model type {model_instance_type} not found")
 ```
 
-**To register a new model:** Add an elif block mapping your MODEL_TYPE
-string(s) to (InstanceClass, ConfigClass). See ../../haipipe-nn/ref/overview.md for the
-complete registry listing.
+**To register a new model:** Add an elif block mapping your MODEL_TYPE string(s) to (InstanceClass, ConfigClass).
+See ../../haipipe-nn/ref/overview.md for the complete registry listing.
 
 ---
 
@@ -344,7 +335,8 @@ Phase 3 -- Hardcoded fallback map:
   - If all fail: raises NotImplementedError
 
 **For new models:** Follow the `*Instance` -> `*Config` naming convention.
-Phase 1 + 2 will find it automatically. No override needed.
+Phase 1 + 2 will find it automatically.
+No override needed.
 
 **AutoModelInstance** (like HuggingFace's AutoModel):
 
@@ -363,9 +355,8 @@ model = AutoModelInstance.from_pretrained('path/to/model', SPACE)
 MLPredictor-Specific Patterns
 ==============================
 
-**AIData loading:** mlpredictor bypasses the AIDataSet wrapper. Layer 3 tests
-load HF Dataset splits directly (not via AIDataSet) because S-Learner
-counterfactual inference requires direct Dataset manipulation:
+**AIData loading:** mlpredictor bypasses the AIDataSet wrapper.
+Layer 3 tests load HF Dataset splits directly (not via AIDataSet) because S-Learner counterfactual inference requires direct Dataset manipulation:
 
 ```python
 # mlpredictor Layer 3 test (not the general pattern)
@@ -376,12 +367,12 @@ data_fit   = {'train': train_ds}
 data_infer = {'test':  test_ds}
 ```
 
-**Step count:** mlpredictor Layer 3 test uses 6 steps (not 7). "Prepare Data"
-(Step 4 in the general pattern) is folded into "Load AIData" because there
-is no subset selection -- the full real splits are used directly.
+**Step count:** mlpredictor Layer 3 test uses 6 steps (not 7).
+"Prepare Data" (Step 4 in the general pattern) is folded into "Load AIData" because there is no subset selection -- the full real splits are used directly.
 
-**Real-data-only:** mlpredictor Layer 3 tests use real AIData. No synthetic
-data step. The test script name reflects this: `*_3_instance_realdata.py`.
+**Real-data-only:** mlpredictor Layer 3 tests use real AIData.
+No synthetic data step.
+The test script name reflects this: `*_3_instance_realdata.py`.
 
 ---
 
@@ -405,8 +396,7 @@ split dict {str → Dataset}        isinstance dict + values are DS    {split_na
 Single inputs (one dataset or one case) → `pd.DataFrame`.
 Multi-split inputs (AIData_Set or `{split: Dataset}`) → `{split_name: pd.DataFrame}`.
 
-Instance's `infer()` detects the input type, routes to the Tuner(s),
-and converts/packages the output into the standard return shape.
+Instance's `infer()` detects the input type, routes to the Tuner(s), and converts/packages the output into the standard return shape.
 
 **Pipeline also passes NO TrainingArgs to fit():**
 
@@ -459,8 +449,7 @@ class TSForecastInstance(ModelInstance):
             tuner.load_model(key, model_dir)  # Then load weights
 ```
 
-**Why this is the reference:** Calls super().__init__(), uses model_base dict,
-delegates everything to Tuner, no algorithm imports, clean registry.
+**Why this is the reference:** Calls super().__init__(), uses model_base dict, delegates everything to Tuner, no algorithm imports, clean registry.
 
 ---
 
@@ -480,8 +469,8 @@ Known Deviations (existing code)
 - **tefm (tuner mode)**: Follows canonical pattern except inference() not infer()
   and _save/_load_model_base are stubs.
 
-These are non-canonical. **New models MUST follow the TSForecast pattern.**
-Existing code should be migrated toward the standard over time.
+These are non-canonical.
+**New models MUST follow the TSForecast pattern.** Existing code should be migrated toward the standard over time.
 
 ---
 

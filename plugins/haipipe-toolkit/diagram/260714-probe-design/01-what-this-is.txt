@@ -1,0 +1,64 @@
+1 — WHAT THIS FOLDER IS
+========================
+
+  Files here:  01 what this is        02 drop the gate (the ruling)
+               03 the defects         04 status + what to do
+
+  An IMPLEMENTATION AUDIT of skills/probe, session 2026-07-14 (JL + CC).
+  STATUS: 🟡 DRAFT — one ruling settled (drop the gate), the rest owed.
+
+
+This is an audit, not a spec
+----------------------------
+
+There are two probe folders on this date. They are NOT duplicates:
+
+```text
+   diagram/260714-probe-qa/     THE SPEC     what the probe layer SHOULD be.
+                                (5 files, v3, approved JL, R1-R21.)
+                                Cited by 86 files. haipipe-probe/SKILL.md IS its
+                                operative form. ← the thing being audited.
+
+   diagram/260714-probe-design/ THIS AUDIT   does the code match the spec, and is
+                                the spec still the design we want? ← you are here.
+```
+
+Read the SPEC in probe-qa/. Read the VERDICT here.
+Where the two disagree, probe-qa/ is the record of intent; this folder is the
+record of "here is where reality and intent came apart, and what JL decided."
+
+
+The one thing this audit changed
+--------------------------------
+
+JL ruled ONE structural thing this session, and it is big:
+
+```text
+   A PROBE IS FOR COMMUNICATION BETWEEN CONSUMER AND EXECUTOR.
+   The G1/G2/G3 review gate is NOT communication — DROP IT.
+```
+
+The full reasoning, what it retires, and the one risk CC flagged are in 02.
+
+
+The audit verdict, in one paragraph
+-----------------------------------
+
+The probe DESIGN is the strongest in the toolkit — the state-line contract
+(ticket→receipt, one-writer, TTL, set -C race guard) is genuinely sound, and
+产审分离 (whoever assembles evidence does not grade it) is clean.
+
+But the layer carries TWO jobs under one roof — TRANSPORT (the communication)
+and JUDGMENT (the claim gate) — and JL has now ruled the layer down to the first.
+
+And the code has drifted from the spec in small, checkable ways (03): a dead
+script two files still tell an agent to run, a ruling count that says R21 in one
+file and R18 in three others, a version number two majors ahead of its own
+changelog, and a spec path baked into 86 files by its DATE.
+
+None of the engine has ever run. 0 QA/ folders on disk, 0 new-shape probe files.
+The checker is verified; the machine is a spec.
+
+
+> JL: (space kept for your comments — CC replies inline as `>> CC HH:MM`, and
+      moves the thread to 04's ledger once the edit lands.)

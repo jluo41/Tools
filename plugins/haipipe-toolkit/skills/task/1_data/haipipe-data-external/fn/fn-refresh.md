@@ -1,8 +1,8 @@
 fn-refresh: Rebuild stale external assets
 ==========================================
 
-Composite verb: runs `review` to detect staleness, then `cook` for each
-stale asset. Always confirms before rebuilding.
+Composite verb: runs `review` to detect staleness, then `cook` for each stale asset.
+Always confirms before rebuilding.
 
 ---
 
@@ -17,7 +17,8 @@ Step 1: Resolve scope
 Step 2: Run staleness audit
 ----------------------------
 
-Delegate to `fn-review.md` Step 4 for each in-scope asset. Collect:
+Delegate to `fn-review.md` Step 4 for each in-scope asset.
+Collect:
 
 ```
 stale     = [assets where raw or cohort newer than output]
@@ -57,8 +58,9 @@ Proceed? (yes / dry-run / cancel)
 Step 4: Rebuild each stale asset
 ---------------------------------
 
-For each: delegate to `fn-2-cook.md`. Stream output. Capture status
-per asset.
+For each: delegate to `fn-2-cook.md`.
+Stream output.
+Capture status per asset.
 
 If a cook fails, pause and ask whether to:
 

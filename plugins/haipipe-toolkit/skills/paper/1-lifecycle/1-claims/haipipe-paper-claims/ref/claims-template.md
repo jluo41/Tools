@@ -27,7 +27,7 @@ Claims
 
 Each claim is a short sub-item: the testable statement, current status, and which probe settles it.
 Status vocabulary: `supported` / `weak` / `GAP`.
-No inline study design -- the thinking lives in the Probes section.
+No inline study design -- the thinking lives in the Q-consumer section.
 
 **C1 - <title> (H1, core) - <status>**
 
@@ -45,35 +45,20 @@ Evidence: -> PP<nn> (<short description>).
 Evidence: -> PP<nn> (<short description>).
 
 
-Probes
-------
+Q-consumer
+----------
 
-Each probe is its own sub-item organized by PP number.
-Full evidence plan: type, claims, status, dependencies, what work to do.
-Separated by `---` horizontal rules.
+The evidence questions this stage raises — one `##` per question: id, title, what it wants.
+The route (task/discovery) and the approver (which claim reads the answer) are organized at APPROVE, into the probe file — not here.
 
-**PP01 - <title> - <state>**
+## Q1 · <question title>
+<what this question wants to know, one sentence per line.>
+<which claim it is meant to settle, if that helps frame it.>
 
-Type: <task | discovery>.
-Claims: <which claims this settles>.
-State: <planned | commissioned | answered | read>   (DERIVED from the probe file, never asserted)
-<Dependencies, if any.>
+## Q2 · <question title>
+<what it wants.>
 
-<Full evidence plan, one sentence per line.>
-<What the work produces.>
-<Design decisions to settle.>
-Detail: `1-probes/PP01_<topic>.md` (the question's SECTION)
-
----
-
-**PP02 - <title> - <status>**
-
-Type: <task | discovery>.
-Claims: <which claims>.
-Status: <status>.
-
-<Evidence plan.>
-Detail: `1-probes/PP02_<topic>.md` (the question's SECTION)
+<APPROVE adds each `→ 1-probes/PPNN_<topic>.md` pointer + derived state.>
 
 
 Evidence Campaign

@@ -1,10 +1,9 @@
 haipipe-end-develop-local — Concepts
 ======================================
 
-Local develop conventions. This skill is a thin sequencer over
-`/haipipe-nn modelset` + `/haipipe-end-endpointset package`, so most of the
-"how it works" is in those skills. This file covers the small amount of
-state this wrapper owns directly.
+Local develop conventions.
+This skill is a thin sequencer over `/haipipe-nn modelset` + `/haipipe-end-endpointset package`, so most of the "how it works" is in those skills.
+This file covers the small amount of state this wrapper owns directly.
 
 ---
 
@@ -19,15 +18,16 @@ _WorkSpace/.haipipe-end/develop-local-registry.tsv
 run_id    timestamp_iso8601    modelset    endpoint_set_path    pid    log_path    status
 ```
 
-Used by `dashboard`, `monitor`, `teardown`. Treat the file as append-only
-during a run; rotate or clean up via `teardown <run_id>`.
+Used by `dashboard`, `monitor`, `teardown`.
+Treat the file as append-only during a run; rotate or clean up via `teardown <run_id>`.
 
 ---
 
 Pid + log layout
 ----------------
 
-For background runs (`develop ... --bg`):
+For background runs (`develop ...
+--bg`):
 
 ```
 _WorkSpace/.haipipe-end/develop-local/<run_id>/
@@ -36,8 +36,7 @@ _WorkSpace/.haipipe-end/develop-local/<run_id>/
 └── manifest.yaml             run config snapshot (modelset, endpoint_set, args)
 ```
 
-`monitor <run_id>`        →  `tail -f run.log`
-`teardown <run_id>`       →  `kill $(cat run.pid)` then optional cleanup of
+`monitor <run_id>`        →  `tail -f run.log` `teardown <run_id>`       →  `kill $(cat run.pid)` then optional cleanup of
                               the run directory
 
 ---
@@ -52,9 +51,8 @@ Step 1: nn modelset run     ──► must complete with status: ok
 Step 2: endpointset package  ──► consumes Step 1's output
 ```
 
-If Step 1 fails, do NOT attempt Step 2. The combined `status` returned by
-this skill is `failed` in that case, with `summary` pointing at the failed
-step and `next` suggesting `/haipipe-nn modelset review`.
+If Step 1 fails, do NOT attempt Step 2.
+The combined `status` returned by this skill is `failed` in that case, with `summary` pointing at the failed step and `next` suggesting `/haipipe-nn modelset review`.
 
 ---
 
@@ -87,7 +85,8 @@ Use sagemaker for:
 Cross-skill boundaries
 ----------------------
 
-This is a SEQUENCER skill. The boundary is sharp:
+This is a SEQUENCER skill.
+The boundary is sharp:
 
 ```
                  ┌────────────────────┐         ┌─────────────────────────┐

@@ -13,7 +13,9 @@ metadata:
 Skill: haipipe-paper-build-check (4-build-submit)
 =======================================
 
-Answer one question: **does this folder conform to `4-build-submit/_shared/paper-folder-anatomy.md`?** Report-only; this skill never edits a file. It is the structural twin of 5-review's content audits, and the verification step `haipipe-paper-build-scaffold` and `haipipe-paper-build-restructure` run before they may report `ok`.
+Answer one question: **does this folder conform to `4-build-submit/_shared/paper-folder-anatomy.md`?**
+Report-only; this skill never edits a file.
+It is the structural twin of 5-review's content audits, and the verification step `haipipe-paper-build-scaffold` and `haipipe-paper-build-restructure` run before they may report `ok`.
 
 Usage
 -----
@@ -32,7 +34,8 @@ Workflow
 scripts/check_structure.sh <paper-dir>
 ```
 
-Exit 0 = conforms, 1 = findings, 2 = not a paper folder. The script covers:
+Exit 0 = conforms, 1 = findings, 2 = not a paper folder.
+The script covers:
 
 | Block | Checks |
 |-------|--------|

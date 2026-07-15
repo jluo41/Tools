@@ -9,10 +9,8 @@ Covers architecture, design principles, and current project structure.
 What Is haipipe
 ===============
 
-haipipe is a healthcare AI platform built around a **6-layer sequential data
-pipeline** that takes raw clinical data all the way to deployed ML models.
-The system is entirely config-driven and follows a consistent cooking metaphor
-at every layer.
+haipipe is a healthcare AI platform built around a **6-layer sequential data pipeline** that takes raw clinical data all the way to deployed ML models.
+The system is entirely config-driven and follows a consistent cooking metaphor at every layer.
 
 The three core packages:
 
@@ -41,13 +39,15 @@ code/haifn/                    <-- auto-generated (DO NOT EDIT)
 Design Principles
 =================
 
-**1. Sequential layers with persisted intermediate assets**
+**1.
+Sequential layers with persisted intermediate assets**
 
-Each layer reads from the previous layer's output and saves its own output
-to _WorkSpace/. Nothing is recomputed unless explicitly requested. The Asset
-base class (code/haipipe/assets.py) handles all I/O uniformly.
+Each layer reads from the previous layer's output and saves its own output to _WorkSpace/.
+Nothing is recomputed unless explicitly requested.
+The Asset base class (code/haipipe/assets.py) handles all I/O uniformly.
 
-**2. Cooking metaphor -- consistent across all 6 layers**
+**2.
+Cooking metaphor -- consistent across all 6 layers**
 
 ```
 Kitchen  = Pipeline class         (code/haipipe/<layer>_base/)
@@ -57,16 +57,14 @@ Dish     = Set asset              (_WorkSpace/<N>-<Layer>Store/)
 Academy  = Builder scripts        (tasks/<pipe-group>/NN_<stage>_fn_develop_<cohort>/ in the project)
 ```
 
-The metaphor makes the roles unambiguous: you write the Recipe (config) and
-choose which Chefs (Fns) to use. The Kitchen (Pipeline) does the rest.
+The metaphor makes the roles unambiguous: you write the Recipe (config) and choose which Chefs (Fns) to use.
+The Kitchen (Pipeline) does the rest.
 
-**3. Builder pattern -- generated code, never edited directly**
+**3.
+Builder pattern -- generated code, never edited directly**
 
-All domain-specific functions (SourceFn, HumanFn, RecordFn, TriggerFn,
-CaseFn, TfmFn, SplitFn, EndpointFn) live in code/haifn/ as generated Python
-files. The source of truth is the builder scripts in the project's
-NN_<stage>_fn_develop_<cohort>/ task folders (legacy workspaces:
-code-dev/1-PIPELINE/).
+All domain-specific functions (SourceFn, HumanFn, RecordFn, TriggerFn, CaseFn, TfmFn, SplitFn, EndpointFn) live in code/haifn/ as generated Python files.
+The source of truth is the builder scripts in the project's NN_<stage>_fn_develop_<cohort>/ task folders (legacy workspaces: code-dev/1-PIPELINE/).
 
 ```
 Developer edits builder -> runs builder -> production Fn is regenerated
@@ -74,26 +72,29 @@ Developer edits builder -> runs builder -> production Fn is regenerated
 
 This enforces consistency (schema, interface) across all Fns.
 
-**4. Config-driven execution**
+**4.
+Config-driven execution**
 
-All pipelines read YAML configs. The @ reference system resolves cross-config
-dependencies at runtime (e.g., "@meta.selected_actions" pulls a list from
-another section). Every pipeline stage has its own config format.
+All pipelines read YAML configs.
+The @ reference system resolves cross-config dependencies at runtime (e.g., "@meta.selected_actions" pulls a list from another section).
+Every pipeline stage has its own config format.
 
-**5. Schema consistency within a domain**
+**5.
+Schema consistency within a domain**
 
-All SourceFns for a domain must produce identical column schemas for shared
-table types. This is what allows Layer 2 (Record) to process any dataset
-from a domain without knowing which specific SourceFn produced it.
+All SourceFns for a domain must produce identical column schemas for shared table types.
+This is what allows Layer 2 (Record) to process any dataset from a domain without knowing which specific SourceFn produced it.
 
-**6. Human-AI collaboration mandatory**
+**6.
+Human-AI collaboration mandatory**
 
 All code changes require:
 1. AI presents plan (files to edit, changes to make, builders to run)
 2. User approves
 3. AI executes
 
-Never edit code/haifn/ directly. Never commit without explicit request.
+Never edit code/haifn/ directly.
+Never commit without explicit request.
 
 ---
 
@@ -191,8 +192,7 @@ code/
 Current Builder Structure
 =========================
 
-Builders live INSIDE each project as `*_fn_develop_*` task folders, paired
-with the pipeline stage they generate for:
+Builders live INSIDE each project as `*_fn_develop_*` task folders, paired with the pipeline stage they generate for:
 
 ```bash
 ls examples/*/tasks/*/*_fn_develop_*/    # all builder task folders
@@ -221,11 +221,9 @@ examples/Project-REACH-ADHD/tasks/
                                                b<N>_build_trigfn_*.py ...
 ```
 
-Each fn_develop folder is a standard task folder (configs/ runs/ results/
-notebooks/) whose .py builders regenerate the corresponding `code/haifn/`
-files. Legacy workspaces (e.g. WellDoc-SPACE) may still keep builders in a
-central `code-dev/1-PIPELINE/<N>-<Stage>-WorkSpace/` — same builder pattern,
-different home.
+Each fn_develop folder is a standard task folder (configs/ runs/ results/ notebooks/) whose .py builders regenerate the corresponding `code/haifn/` files.
+Legacy workspaces (e.g.
+WellDoc-SPACE) may still keep builders in a central `code-dev/1-PIPELINE/<N>-<Stage>-WorkSpace/` — same builder pattern, different home.
 
 ---
 
@@ -270,8 +268,7 @@ ls _WorkSpace/5-ModelInstanceStore/     # available trained models
 Current Config Structure
 ========================
 
-Pipeline configs live INSIDE each pipeline task folder — there is no
-repo-root config/ directory:
+Pipeline configs live INSIDE each pipeline task folder — there is no repo-root config/ directory:
 
 ```bash
 ls examples/*/tasks/*/*/configs/          # all pipeline run configs
@@ -290,7 +287,8 @@ Every haipipe operation requires these two commands run together:
 source .venv/bin/activate && source env.sh
 ```
 
-Never run Python without .venv activated. Never skip env.sh.
+Never run Python without .venv activated.
+Never skip env.sh.
 The env.sh sets all _WorkSpace path environment variables.
 
 ---

@@ -1,15 +1,17 @@
 fn-prune: Surface local-only / remote-only asymmetries
 =======================================================
 
-Read-only verb. Lists assets in one store that exist locally but not
-remotely (or vice versa). NEVER deletes anything; outputs are advisory.
+Read-only verb.
+Lists assets in one store that exist locally but not remotely (or vice versa).
+NEVER deletes anything; outputs are advisory.
 
 ---
 
 Step 1: Parse args
 -------------------
 
-Required: `<store>` (e.g. `1-SourceStore`).
+Required: `<store>` (e.g.
+`1-SourceStore`).
 
 ---
 

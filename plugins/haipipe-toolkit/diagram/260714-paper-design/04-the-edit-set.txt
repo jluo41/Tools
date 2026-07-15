@@ -1,0 +1,126 @@
+4 — THE EDIT SET
+=================
+
+  File-by-file, what changes when this ships. Plus the open questions
+  that need a JL word before the edits land.
+
+
+THE FILES
+=========
+
+  ⚠️ Nothing below is applied yet. This is the plan. Approved in
+     principle 2026-07-14; edits pending a green light on the open
+     questions at the bottom.
+
+
+skills/paper/haipipe-paper/SKILL.md
+-----------------------------------
+
+    frontmatter description   drop "discover, task" from the trigger list;
+                              reword "dispatched straight to the task/
+                              discovery orchestrators" -> "the PROBE phase
+                              dispatches; the paper only raises."
+    frontmatter summary       same reword (paper RAISES, probe DISPATCHES).
+    verb block (42-43)        DELETE both verb rows.
+    example (62)              DELETE the `discover` example.
+    phase-verb list (164)     draft | probe | discover | task
+                              -> draft | probe
+    Dispatch notes (124-125)  DELETE the discover + task note rows.
+    routing table (189)       DELETE "non-claim utility -> discover|task".
+    closing note (192, 227)   DELETE "direct discover/task verbs remain
+                              ONLY for non-claim utility"; replace with
+                              "a stage reaches the bank only through its
+                              PROBE phase."
+
+
+skills/application/haipipe-application/SKILL.md
+-----------------------------------------------
+
+    frontmatter description   drop "Direct task/discover verbs available
+                              for non-claim utility work." entirely.
+    verb block (43-44)        DELETE both verb rows.
+    example (59)              DELETE the `discover` example.
+    phase-verb list (130)     draft | probe | discover | task
+                              -> draft | probe
+    Dispatch notes (95-96)    DELETE the discover + task note rows.
+    routing table (156)       DELETE "non-claim utility -> discover|task".
+    routing table (153)       KEEP. This is the bank's own qa door, human-
+                              driven, no intervention in the loop. (file 03)
+    closing note (159, 198)   reword to "the PROBE phase is the only bank
+                              contact; the intervention never runs bank
+                              work inline (LAW 1)."
+
+
+skills/*/haipipe-*/fn/probes.md  (both twins)
+---------------------------------------------
+
+    Any narration that says the paper/application "dispatches to the
+    executors" as a top-level act -> the PROBE phase dispatches. The
+    consumer raises; PROBE commissions. Keep the MATCH-before-DISPATCH
+    text; it already lives in the right layer.
+
+
+fn/feedback.md  (both twins)
+----------------------------
+
+    Routing keys off "probe file / question section / commission" — not
+    "PPNN card". (Residue from the probe redesign; fold into this commit
+    so the greppable keyword index is clean when the checker runs.)
+
+
+wiki (if referenced)
+--------------------
+
+    grep the paper/application wiki for "discover|task verb" and
+    "non-claim utility". Any prose that teaches the removed verbs as a
+    sanctioned path gets the same treatment. (Scope TBD — list, don't
+    guess.)
+
+
+THE CHECK THAT PROVES IT
+========================
+
+After the edits, one grep should come back empty on both skills:
+
+    grep -nE '^(discover|task) ' SKILL.md
+    grep -n  'non-claim utility' SKILL.md
+
+And the phase-verb lists should read `draft | probe` with nothing after.
+
+
+OPEN QUESTIONS  (need a JL word)
+================================
+
+```text
+   Q1  Trigger keywords.  Drop "discover"/"task" from the frontmatter
+       trigger list too?  (They no longer route anywhere from the front
+       door — leaving them advertises a dead path.)
+       LEAN: drop them.
+
+   Q2  The "non-claim utility" row.  Delete outright, or repoint it at
+       the bank's own qa door with an explicit "a HUMAN types this, not
+       the paper" caption?
+       LEAN: repoint + caption — the need is real, the OWNER is wrong.
+       That teaches the correct door instead of leaving a hole.
+
+   Q3  Does `enter`/status still surface a hint that ad-hoc bank
+       exploration goes through /haipipe-task qa directly?  Or is that
+       out of scope for the console?
+       LEAN: one line in the console's "other doors" footer. No more.
+
+   Q4  Folder name.  Created as 260714-paper-design (6-digit YYMMDD,
+       matching its two siblings). Your note said 2060714 — confirm the
+       6-digit form or I rename.
+```
+
+
+STATUS
+======
+
+    01 the one door        written
+    02 the four phases     written
+    03 before / after      written
+    04 the edit set        written  (this file)
+
+    Ruling                 approved in principle, JL 2026-07-14
+    Edits                  NOT started — waiting on Q1-Q4

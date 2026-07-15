@@ -1,6 +1,6 @@
 ---
 name: haipipe-end-develop-local
-description: "Local develop specialist for haipipe-end. Thin wrapper that runs Stage 5 training on the local machine and produces an Endpoint_Set under 6-EndpointStore/. For dev iteration, smoke tests, and DIY builds without managed pipelines. Mostly delegates to /haipipe-nn modelset for the actual training; this skill exists for symmetry with -deploy-local and to give the haipipe-end umbrella a uniform develop axis. Reads from /haipipe-nn output; writes Endpoint_Sets that haipipe-end-endpointset and the deploy specialists consume."
+description: "Local develop specialist for haipipe-end: runs Stage 5 training on the local machine and produces an Endpoint_Set under 6-EndpointStore/, for dev iteration, smoke tests, and DIY builds. Mostly delegates to /haipipe-nn modelset for training; exists for symmetry with -deploy-local and a uniform develop axis. Reads /haipipe-nn output; writes Endpoint_Sets that endpointset + deploy specialists consume."
 argument-hint: "[verb] [config_or_modelset] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
@@ -13,18 +13,17 @@ metadata:
 Skill: haipipe-end-develop-local
 =================================
 
-Local development specialist. Builds an Endpoint_Set on the local machine
-without any managed training pipeline. Most heavy lifting is done by
-`/haipipe-nn modelset` — this skill is a thin orchestration layer that:
+Local development specialist.
+Builds an Endpoint_Set on the local machine without any managed training pipeline.
+Most heavy lifting is done by `/haipipe-nn modelset` — this skill is a thin orchestration layer that:
 
   1. Invokes the project's local ModelSet pipeline.
   2. Packages the resulting trained model into an Endpoint_Set under
      `_WorkSpace/6-EndpointStore/<endpoint_set>/` via the standard
      `haipipe-end-endpointset package` flow.
 
-It exists for symmetry with `-deploy-local` and to give `/haipipe-end` a
-uniform develop axis (sagemaker / databricks / local). When local develop
-is sufficient, prefer this skill over `-develop-sagemaker` for fast iteration.
+It exists for symmetry with `-deploy-local` and to give `/haipipe-end` a uniform develop axis (sagemaker / databricks / local).
+When local develop is sufficient, prefer this skill over `-develop-sagemaker` for fast iteration.
 
   Verb axis:        dashboard | develop | test | monitor | teardown | review
 
@@ -43,8 +42,7 @@ Commands
 /haipipe-end-develop-local review <endpoint_set>           -> audit a locally-built Endpoint_Set
 ```
 
-`<run_id>` for local runs is a generated short id; the dashboard lists the
-local develop registry.
+`<run_id>` for local runs is a generated short id; the dashboard lists the local develop registry.
 
 ---
 
@@ -65,9 +63,8 @@ review      ref/concepts.md                       Skill("haipipe-end-endpointset
                                                               "review <endpoint_set>")
 ```
 
-This skill **delegates** rather than reimplementing. The "local develop"
-flow is just `nn modelset run` followed by `endpointset package` — both are
-already first-class skills, so this wrapper just sequences them.
+This skill **delegates** rather than reimplementing.
+The "local develop" flow is just `nn modelset run` followed by `endpointset package` — both are already first-class skills, so this wrapper just sequences them.
 
 ---
 
@@ -77,7 +74,8 @@ Step-by-Step Protocol
 Step 0: Read `ref/concepts.md` for local develop conventions (pid file
         layout, log paths, registry location).
 
-Step 1: Parse args. Required arg per verb:
+Step 1: Parse args.
+Required arg per verb:
           develop / test:           <modelset_or_config>
           monitor / teardown:       <run_id>
           review:                   <endpoint_set_name>
@@ -111,8 +109,8 @@ next:      suggested next command (typically /haipipe-end deploy local <endpoint
 Why this skill is thin
 -----------------------
 
-The actual training work lives in `/haipipe-nn` and the actual packaging
-lives in `/haipipe-end-endpointset`. This skill exists for two reasons:
+The actual training work lives in `/haipipe-nn` and the actual packaging lives in `/haipipe-end-endpointset`.
+This skill exists for two reasons:
 
   1. **Symmetry.** `-deploy-local` exists alongside `-deploy-sagemaker /
      -databricks / -mlflow`. For the `-develop-` axis to be uniform,
@@ -122,9 +120,8 @@ lives in `/haipipe-end-endpointset`. This skill exists for two reasons:
      orchestrator special-casing local. Having this specialist gives the
      develop dispatch table a uniform shape.
 
-If you find yourself adding non-trivial local-only logic here, that's a
-signal it probably belongs in `/haipipe-nn` or `/haipipe-end-endpointset`
-instead. Keep this skill thin.
+If you find yourself adding non-trivial local-only logic here, that's a signal it probably belongs in `/haipipe-nn` or `/haipipe-end-endpointset` instead.
+Keep this skill thin.
 
 ---
 
@@ -142,6 +139,6 @@ Does NOT own:
   - Cloud / managed training — see `-develop-sagemaker` (or future
     `-develop-databricks`).
 
-If a develop fails because of a training issue, escalate to `/haipipe-nn
-modelset review`. If it fails because of a packaging issue, escalate to
-`/haipipe-end-endpointset review`. This skill should not patch either.
+If a develop fails because of a training issue, escalate to `/haipipe-nn modelset review`.
+If it fails because of a packaging issue, escalate to `/haipipe-end-endpointset review`.
+This skill should not patch either.
