@@ -1,10 +1,12 @@
 probe — Agent Roster
 ======================
 
-The probe layer owns **no agents.** A probe is COMMUNICATION between a consumer and an executor:
-it maps a question to an answer and gets out of the way. It dispatches to agents that live in
-OTHER skills (the task and discovery orchestrators), and the consumer authors its own claim
-status. A probe transports evidence; it does not grade it.
+The probe layer owns **ONE agent** — `haipipe-probe-worker-agent`, a stake-free, family-agnostic
+QUESTION-LEVEL collector. Given a batch of q-executors it runs the stake-free middle of the loop
+(② MATCH → ③ DISPATCH → ④ POINT) in an isolated context and returns the answered QA paths; the
+stake-aware halves (① writing the q-executor, ⑤ harvest) stay with the consumer/stage. A probe is
+COMMUNICATION: it maps questions to answers and gets out of the way. It transports evidence; it
+does not grade it. (The old gateway + judge agents were retired — see `./_archive/`.)
 
 The probe writes NO bank file. Its only files are the paper's own
 `papers/<P>/1-probes/PPNN_<topic>.md` probe files. Execution artifacts live in `tasks/` and
