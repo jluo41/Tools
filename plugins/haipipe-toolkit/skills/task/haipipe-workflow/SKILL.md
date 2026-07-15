@@ -1,6 +1,6 @@
 ---
 name: haipipe-workflow
-description: "IPO workflow designer + builder + reporter. The basic orchestration unit of haipipe-toolkit. Every skill (task, discovery, paper, application) is a specific workflow with its own IPO. This skill defines the shared shape: Input → Phases[Steps] → Output, the lifecycle (Plan → Build → Execute → Report), file tracking per step, and the boundary rule for sub-workflows. Trigger: workflow, plan workflow, design workflow, IPO, phases, build workflow, run workflow, report, /haipipe-workflow."
+description: "IPO workflow designer + builder + reporter. The basic orchestration unit of haipipe-toolkit. Every skill (task, discovery, paper, application) is a specific workflow with its own IPO. This skill defines the shared shape: Input → Process[Steps] → Output, the lifecycle (Plan → Build → Execute → Report), file tracking per step, and the boundary rule for sub-workflows. Trigger: workflow, plan workflow, design workflow, IPO, phases, build workflow, run workflow, report, /haipipe-workflow."
 argument-hint: "[function] [workflow-name-or-path] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
@@ -19,7 +19,7 @@ Every haipipe skill (task, discovery, paper, application) IS a workflow — a sp
 
 ```
      ┌─────────┐     ┌───────────────────────────────────┐     ┌──────────┐
-     │  INPUT   │ ──▶ │  PHASES                           │ ──▶ │  OUTPUT  │
+     │  INPUT   │ ──▶ │  PROCESS                          │ ──▶ │  OUTPUT  │
      │  (args)  │     │  P1 [S1,S2,..] → P2 [S1,..] → …  │     │ (return) │
      │  (files) │     │  each step: files_in → files_out   │     │ (files)  │
      └─────────┘     └───────────────────────────────────┘     └──────────┘
@@ -33,8 +33,8 @@ Two things this skill provides
 
 ```
 I = Input       args + files the workflow starts with
-P = Phase       coarse-grained chunk (NOT "Process" — that's the whole middle)
-S = Step        atomic action in a phase (NOT "Stage" — that's the 6-stage pipeline)
+P = Process     the transformation between Input and Output (its ordered Steps)
+S = Step        atomic action in the Process (NOT "Stage" — that's the 6-stage pipeline)
 O = Output      return value + files the workflow produced
 ```
 
@@ -94,9 +94,9 @@ haipipe-workflow     ← the PATTERN (IPO + lifecycle + file tracking)
 ```
 
 Each skill:
-- **Owns** its own Phases and Steps (full internal IPO)
+- **Owns** its own Process and Steps (full internal IPO)
 - **Declares** only I and O when calling a sub-workflow
-- **Hides** its internal Phases from its caller
+- **Hides** its internal Process from its caller
 
 
 Commands
