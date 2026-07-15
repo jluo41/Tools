@@ -395,3 +395,25 @@ JL comments (`> JL:`) that land in 01-04 move HERE once their edit is applied, v
       forced this pass — JL to rule.
     · application templates still say "Probes" — rename + this same form (generic Q-consumer).
     · paper SKILL.md body refs still say "Probes" (hot — JL's live reformat of the paper tree).
+
+
+[2026-07-15 05:00 · SHIPPED] APPROVE = human gate (explicit) + display/section-edit done
+  JL: "APPROVE 谁要做? draft 完之后我自己看一遍 → approved 的才 organize，对吧?" — YES.
+  APPROVE is the human gate right after DRAFT (the agent never self-advances); only the
+  questions the human approves get organized + dispatched. Made EXPLICIT in the constitution
+  spec, plus the TWO-approvals distinction:
+    · APPROVE (the gate)   = the human, after DRAFT, approves which QUESTIONS to pursue.
+    · `approver` (a field) = the a-consumer (a claim/section), later, at harvest, approves the
+                             ANSWER settles the question. Different actor, different time.
+  DISPLAY + SECTION-EDIT — the two WRINKLE stages, done to the model. Ruling (CC's position,
+  JL endorsed): the Q-consumer section holds ONLY true bank-questions; stage MECHANICS get
+  their own home.
+    · display-template — evidence (E) lane → `## Q<n>` questions under Q-consumer; the sweep
+      (S0) + render (R) lanes moved to a sibling "Render & sweep — display mechanics (NOT bank
+      questions)" block (they dispatch renderer skills / a PROBE step, never the bank).
+    · section-edit outline-format + section-template — HEAVIER needs (a task run, a discovery
+      sweep) → `## Q<n>` questions; the paper-local placeholder rollup (values/citation/display
+      that resolve pointer-following) stays as its own block, explicitly "NOT bank questions".
+  STILL OPEN: application templates (Probes → Q-consumer + this form) · paper SKILL.md body
+  refs (hot — JL's live paper-tree reformat; also now display/section body refs to S0/En/Rn +
+  the rollup are out of sync with the restructured templates — same deferred sweep).

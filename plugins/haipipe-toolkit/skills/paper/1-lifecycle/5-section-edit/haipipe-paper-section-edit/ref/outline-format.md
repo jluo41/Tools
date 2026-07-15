@@ -95,12 +95,19 @@ The draft ENDS by proposing the probe work it just created. DRAFT proposes; PROB
 
 ## Q-consumer proposed by this draft
 
-values:    {VAL:? cross-model MAE}            -> expected source: npjDM Table 2 / tasks/ run
-           {VAL:? mean agreeableness}         -> paper-local: 0-displays/table1-.../source/metrics.json
-citation:  \citep{authors2025npjdm}           -> key in .bib, verify placement only
-           \cite{TOADD} @ P2.S1 (ML trait-measurement priors) -> _CITATION_ row #4; needs discovery sweep (buffered: PP12)
-display:   P2 wants the trait-distribution figure -> 0-displays/ unit exists? LINK : DR request (4-display inbox)
-heavier:   case-mix robustness needs a NEW task run (buffered: PP13)
+The bank questions this draft raises — one `##` per question: id, title, what it wants.
+Only needs HEAVIER than pointer-following land here (a NEW task run, a discovery sweep); the paper-local rollup below is NOT questions.
+
+### Q1 · case-mix robustness
+Needs a NEW task run; will fill {VAL:? case-mix robustness}.
+
+### Q2 · ML trait-measurement priors
+Needs a discovery sweep; will fill \cite{TOADD} @ P2.S1.
+
+Placeholder rollup (pointer-following — resolves paper-local, NOT bank questions):
+values:    {VAL:? mean agreeableness}  -> paper-local: 0-displays/table1-.../source/metrics.json
+citation:  \citep{authors2025npjdm}    -> key in .bib, verify placement only
+display:   P2 wants the trait-distribution figure -> LINK 0-displays/ unit : DR request (4-display inbox)
 ```
 
 Rules:
