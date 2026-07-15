@@ -68,6 +68,23 @@ The two far corners live elsewhere: Q-consumer in `## Why`, A-executor in the QA
 The two arrows are the two loop steps: T1 = ① ORGANIZE (write `q-executor`), T2 = ⑤ INTERPRET (write `a-consumer`).
 Q-consumer is where a stage RAISES its questions: literally the `Q-consumer` section in a stage doc (was "Probes"), the same in paper and application — one term, matching the `q-executor:`/`a-consumer:` fields.
 
+The `Q-consumer` section lives at the END of every stage doc — the DRAFT-time list of the questions the stage raises, one `##` subsection each, nothing but an id, a title, and what the question wants:
+
+```text
+   ## Q1 · <question title>
+   <what this question wants to know — plain words, one sentence per line>
+```
+
+DRAFT writes only that: the title and the intent. It does NOT pick the route or who answers — unknown yet.
+At APPROVE, ① ORGANIZE turns each `Q<n>` into a question SECTION in a probe file (below), organizing it into three:
+- `Q`        → the `q-executor:` (the stake stripped out)
+- `executor` → the route, `task | discovery`
+- `approver` → the `serves:` / `a-consumer` owner — which claim/beat/section will read + APPROVE the answer
+
+The `Q<n>` line then gains a `→ 1-probes/PPnn` pointer, and its state is DERIVED from that file.
+The structured trio lives in the PROBE FILE, never copied back — the stage doc keeps only the human question + the pointer.
+Id: `Q<n>`, scoped to the stage doc (cross-referenced as "<stage> Q1"); the `resource` stage already numbers this way.
+
 
 The probe file
 ==============

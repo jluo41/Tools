@@ -363,3 +363,35 @@ JL comments (`> JL:`) that land in 01-04 move HERE once their edit is applied, v
   STILL OPEN: application stage templates still say "Probes" (never renamed) — to finish the
   unification they should also go → `Q-consumer`. And the deferred paper SKILL.md body refs
   (seed/claims/display/section-edit/venue) now target "Q-consumer", not "Q-Paper".
+
+
+[2026-07-15 04:30 · SHIPPED] the Q-consumer SECTION form — a TWO-PHASE, low-burden shape
+  JL walked the design in: first "too simple" (my one-line list), then the real model —
+    · each question is its OWN `##` subsection (not a bullet), with an ID.
+    · the ID is stage-scoped `Q<n>` ("which stage's which question"); `resource` already
+      numbers this way. Cross-referenced as "<stage> Q1". Binds to a `1-probes/PPnn` at approve.
+    · DRAFT writes ONLY: id + title + what the question wants. It does NOT decide the route
+      or who answers — "在 draft 的时候我们并没有决定".
+    · at APPROVE, ① ORGANIZE organizes each Q<n> into THREE, landing in the probe file:
+        Q        → q-executor (stake stripped)
+        executor → the route (task | discovery)
+        approver → the a-consumer / serves owner (which claim/beat/section reads + APPROVES
+                   the answer).  [CC read "approver" as the a-consumer; JL to correct if
+                   they meant the human gate approver.]
+    · the structured trio lives in the PROBE FILE, never copied back — the stage doc keeps
+      only the human question + a `→ 1-probes/PPnn` pointer + derived state. No duplication.
+  WHY this shape (JL's steer, saved): "make it simple, easier to read, think about the human's
+  cognitive burden." The old per-PP field blocks (Type/State/Deps/full-plan) were the burden;
+  they belong in the probe file (one source of truth), not echoed in the stage doc.
+  APPLIED this pass (clean, pure-question stages + the definition):
+    · constitution haipipe-probe/SKILL.md — the canonical Q-consumer spec (draft form + the
+      approve-time organize into Q/executor/approver), right where Q-consumer is introduced.
+    · seed-template · claims-template · venue-template — heavy per-PP blocks → the `## Q<n> ·
+      title + what-it-wants` draft form. (claims' Evidence Campaign left as-is for now.)
+  DEFERRED / OPEN:
+    · display + section-edit are WRINKLE stages — their sections mix true bank-questions with
+      stage MECHANICS (display: S sweep + R render lanes; section-edit: paper-local placeholder
+      rollup). Only the question items are Q-consumer; the mechanics need their own home. Not
+      forced this pass — JL to rule.
+    · application templates still say "Probes" — rename + this same form (generic Q-consumer).
+    · paper SKILL.md body refs still say "Probes" (hot — JL's live reformat of the paper tree).

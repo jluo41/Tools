@@ -77,16 +77,15 @@ Fit Assessment
 
 
 Q-consumer
-------
+----------
 
-**PP01 - <recent-publications check> - <status>**
+The venue-fit questions this stage raises — one ## per question: id, title, what it wants.
+(Route + who answers organized at APPROVE, into the probe file.)
 
-Type: discovery.
-<Has this venue published adjacent work in the last 2-3 years; who edited it; what does that imply for framing.>
+## Q1 · <recent-publications check>
+<Has this venue published adjacent work in the last 2-3 years; who edited it; what it implies for framing.>
 
-**PP02 - <competing-paper / editor check> - <status>**
-
-Type: discovery.
+## Q2 · <competing-paper / editor check>
 <...>
 ```
 
