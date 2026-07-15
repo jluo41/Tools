@@ -16,8 +16,6 @@ Skill: haipipe-task (orchestrator)
 Build orchestrator organized around the **task hierarchy**:
 
 
-> JL: I think we can also add the QA folder. but QA folder is optional, only when we have haipipe-task qa is called. 
->> CC 22:40: [SOLVED] Added QA/ to the structure, marked OPTIONAL (appears only once `qa` writes a digest).
 ```
 project           examples/Proj{...}/
   └── task-group  tasks/{G}{NN}_{name}/
@@ -145,18 +143,11 @@ Report touches only `workflow/report*.yaml`, `RUN_AUDIT.md`, and — when one is
 **QA is the DIRECTION-POINTER above the four phases — it WRAPS them and decides whether to enter them at all.** 
 A `qa` question hits a 3-way gate: ① an existing `QA/` answer → return it; ② the answer already sits in `results/` → digest it, no run; ③ neither → ENTER Plan → Build → Execute → Report at the shallowest depth that answers it. 
 So QA sits ONE LEVEL ABOVE the lifecycle: ①/② read what already exists, ③ enters the phases (writing a `working` claim before Plan, the answer at Report). See `fn/qa.md`.
-> JL: 我觉得这 QA 的描述不是很准确，你更应该说它是一个指明方向的东西。 就是说，QA 可以去“要不要进入 Plan、Build、Execution、Report”的东西，当然也可以直接去读现有 Task Folder 内部的结果。
-所以它更像是 workflow 上面一层的东西，包裹这个phase。你想想这个 logic。
->> CC 22:40: [SOLVED] Agreed — your framing is better; rewrote it above. QA is NOT a 5th phase; it is the ENTRY-DECISION layer that WRAPS the four phases and points the direction — ①/② read what already exists, ③ decides whether (and how deep) to enter Plan→Build→Execute→Report. Exactly fn/qa.md's gate.
-> JL: I still have a question: for Plan, Build, Execute, Report, do we call them "Stage" or call them "Phase"? I prefer to use Phase. 
->> CC 22:40: [SOLVED, executor-wide] Phase — P/B/E/R are the executor-side phases (mirroring DPRC on the paper side). Renamed across the DOCS of BOTH executors + the pattern: task, discovery, and haipipe-workflow ("acts"→"phase"). KEPT as "Stage": the 6-stage DATA pipeline (0-RawDataStore…6-EndpointStore), stata's cms/case/data/reg four stages, the "3-stage testing ladder", and the workflow.js `stages:` CODE param + dispatch-machinery `stages` (code, not docs). Residual: inside haipipe-workflow, "Phase" now labels BOTH the lifecycle P/B/E/R and the IPO chunk (Run/Gate1/Gate2) — the known R1 namespace overlap, left for a dedicated pass.
 
 The `workflow/` folder is the task's observability surface: Plan = intent, Report = evidence, same IPO shape at both levels (schema: `task/haipipe-workflow/ref/plan-schema.md`).
 
 A task ends at Report: it produces `results/` and stops. 
 
-> JL: for the following, saying: if QA is called, it will use results to answer the QA-task.md.
->> CC 22:40: [SOLVED] Yes — that's gate ②: when `qa` is called and `results/` already hold the answer, it READS results/ and writes the readable `QA/<n>-<slug>.md` digest (no run). That digest IS the answer a consumer reads — never `results/` directly.
 The readable answer to any question about those results is the `QA/` digest this layer writes; a consumer reads THAT, never `results/` directly. This layer tracks no consumers.
 
 ---
@@ -177,64 +168,23 @@ A task session may legitimately:
 
 It does not know WHICH questions will come. 
 It makes the bank EASIER TO ASK. 
-Making the bank easy to query is the executor's OWN work — a consumer (paper/application) never reaches in to do it. 
-> JL: That is task work, not anyone else's.  这句话有点奇怪，你怎么理解这句话呀？要删掉吗？
->> CC 23:12: [SOLVED] It meant: answerability work (writing digests, refactoring so future questions are cheap) belongs to the EXECUTOR itself — a consumer never does it. The line was too terse; reworded above to say that plainly. Kept, not deleted — the ownership boundary is worth stating.
-> JL: for QA, we might also want to include P-B-E-R, when we need to do it.
->> CC 23:12: [SOLVED] Exactly — that IS gate ③. When a qa question isn't answered by ① (an existing QA file) or ② (results/ already hold it), the qa verb ENTERS Plan→Build→Execute→Report at the shallowest depth that answers it, then completes the QA file at Report. Spelled out in the reframed QA block above (③) and in fn/qa.md.
+Making the bank easy to query is the executor's OWN work — a consumer (paper/application) never reaches in to do it.
 
 
 **THE SIDE DOOR — the `qa` verb.** 
-Questions arrive through exactly one door, `fn/qa.md`, 
-and they arrive as ONE QUESTION IN GENERAL LANGUAGE — never an id, never a stake, never a reference to whoever asked. 
-The verb answers it or REFUSES it, and returns a path. 
-It never learns who asked, or why, and must not try to find out.
-
-
-```
-/haipipe-task qa "<question>" [<task-folder>]
-
-  ① QA SCAN    grep <task-folder>/QA/*.md — READ THE STATE LINE:                       ~0
-                 state: answered  → return the PATH
-                 state: working   → SOMEONE IS ALREADY ON IT. Return the path +
-                                    "in progress since <started>". DO NOT RE-RUN.
-                 working, EXPIRED past QA_WORKING_TTL_HOURS → zombie: RESTART it
-                 superseded-by: X → follow the chain, return the LIVE answer
-  ② DIGEST     results/ answer it, no readable digest? → write QA/<n>-<slug>.md cheap
-               ONCE, COMPLETE, `state: answered`, from EXISTING artifacts; run no code
-  ③ P-B-E-R    neither → ⚑ CLAIM FIRST (write the QA file with `state: working` +
-               `started:` under `set -C`), then run the lifecycle at the SHALLOWEST depth
-               that answers it (0 READ · 1 NEW RUN+config · 2 NEW SCRIPT · 3 NEW TASK-FOLDER),
-               and COMPLETE the same file at Report (`state: answered` + `## Answer`)
-  🚫 REFUSE    out of scope for the task layer (e.g. a literature question) — say so;
-               RELEASE any claim; the caller re-routes
-```
-
-Three callers, one identical door: a human steering an exploration, the orchestrator agent self-directed, or a relayed question from elsewhere. 
-None of them gets a special path.
-
-Full contract: `fn/qa.md`.
+Questions arrive through exactly ONE door: one question in general language (no id, no stake, no reference to whoever asked), a QA-file PATH out. 
+The verb answers it via the ①②③ gate above, or REFUSES it (out of scope — e.g. a literature question). 
+Three callers — a human, the orchestrator agent (self-directed), a relayed question — one identical door; none gets a special path. 
+It never learns who asked, or why. Full contract: `fn/qa.md`.
 
 ---
 
 The QA/ folder (OPTIONAL, per task-folder)
 -------------------------------------------
 
-```
-tasks/<group>/<NN>_<name>/
-  ├── workflow/plan.yaml       the question, code-oriented       (task layer's own)
-  ├── results/                 the answer, code-oriented         (task layer's own)
-  └── QA/                      the answer, READABLE + indexed    (task layer's own) — OPTIONAL
-        ├── 1-cycle-indicator.md
-        └── 2-female-cgm-volume.md
-```
-
-**A QA file is a TICKET that becomes a RECEIPT** — ONE mutable `state:` line (`working | answered | superseded-by:`) that this layer CLAIMS at the qa gate's ③ decision and COMPLETES at Report; the body below it is written once.
-⚠️ ONE WRITER = this layer. A CONSUMER (probe/paper/application) must NEVER create, claim, edit, or supersede a QA file — a consumer-planted `working` file is the retired `_ASK/` stub in a `QA/` costume, and is FORBIDDEN.
-It is the HUMAN-readable answer: plain prose + `[→ results/…]` anchors, and NO consumer vocabulary (no claim ids, no "the paper").
-Everything mechanical — the file template, `<n>`-numbering (the index), the `set -C` race guard, `started:`/TTL expiry, supersession, the three reasons a QA file may exist, status derivation, the checker codes — lives in `fn/qa.md`. Read it before touching a QA file.
-
-Not every task-folder has a `QA/`. That is fine and normal.
+The readable answer, per task-folder: `QA/<n>-<slug>.md` — one mutable `state:` line, ONE WRITER (this layer); a CONSUMER (probe/paper/application) NEVER writes one.
+Plain prose + `[→ results/…]` anchors, no consumer vocabulary (no claim ids, no "the paper"). Not every task-folder has a `QA/`, and that is normal.
+The file template, the state-line + `started:`/TTL, supersession, and the checker codes live in `fn/qa.md` — read it before touching a QA file.
 
 ---
 
