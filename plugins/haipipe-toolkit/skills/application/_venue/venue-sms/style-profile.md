@@ -23,7 +23,7 @@ tap here to refill: [ShortURL]. STOP to opt out.
 **Clinician, concise:**
 ```
 [ProviderName]: 12 patients in your panel have refills
-due within 72h. 4 are high-risk for lapse (K03). Review
+due within 72h. 4 are high-risk for lapse (C3). Review
 list: [DashboardURL].
 ```
 
@@ -44,7 +44,7 @@ list: [DashboardURL].
    `[ProviderName]`, `[DashboardURL]`
 
 4. Every factual claim maps to a K/W entry in the claims stage.
-   Patient body: no K-id visible. Clinician body: inline K-id.
+   Patient body: no C-id visible. Clinician body: inline C-id.
 
 5. Always include opt-out mechanism (STOP keyword or equivalent).
 
@@ -56,8 +56,8 @@ list: [DashboardURL].
 ## Audience pairing
 
 ```
-audience=patient     → warm, plain, 6th grade, no K-id in body
-audience=clinician   → precise, clinical, inline K-id
+audience=patient     → warm, plain, 6th grade, no C-id in body
+audience=clinician   → precise, clinical, inline C-id
 ```
 
 Read `_audience/profile-<audience>/README.md` for full tone rules.
@@ -71,7 +71,7 @@ Read `_audience/profile-<audience>/README.md` for full tone rules.
 [ ] Opt-out present
 [ ] No jargon (if patient)
 [ ] Personalization variables are available in the data pipeline
-[ ] cited_K / cited_W in artifact frontmatter
+[ ] adopted_A / declined_A in artifact frontmatter
 [ ] Tone matches audience profile
 ```
 
@@ -85,8 +85,7 @@ venue: sms
 audience: patient | clinician
 intent: "<one-line>"
 created: YYYY-MM-DD
-cited_K: [K03]
-cited_W: [W02]
+adopted_A: [A1, A2]
 status: draft | reviewed | deployed
 ---
 ```

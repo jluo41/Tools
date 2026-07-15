@@ -4,9 +4,9 @@ description: "Open the Intervention Console for an intervention folder. Use for 
 argument-hint: "[intervention-path] [free-form input]"
 allowed-tools: Bash, Read, Grep, Glob, Write, Skill
 metadata:
-  version: "2.0.0"
+  version: "2.2.0"
   last_updated: "2026-07-06"
-  summary: "Intervention Console rewritten on the paper-enter model: paper-aligned spine (claims before venue), Gate Ledger awareness, get-or-create, closing block inheritance. Replaces the pre-v4 maturity ladder (rationale/design/variants/delivery-plan)."
+  summary: "2.2.0 (feedback inbox item 2026-07-09): dashboard gains a dedicated Releasable Probes block -- every planned+unblocked PPNN with stage/mode/deps + exact release command, never buried in Recommended Next. 2.1.0 (bench rulings 2026-07-09): get-or-create scaffolds the venue-FREE spine EAGERLY (0-seed + 1a-1d rung folders; venue-aligned stages stay lazy); legacy pre-ladder layouts (0-lifecycle/1-claims/) get a confirm-gated one-shot migration offer at enter. 2.0.0: Intervention Console rewritten on the paper-enter model: paper-aligned spine (claims before venue), Gate Ledger awareness, get-or-create, closing block inheritance. Replaces the pre-v4 maturity ladder (rationale/design/variants/delivery-plan)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -31,9 +31,15 @@ There is no separate create verb. When the given path does not exist, do NOT fai
 ```text
 1. CONFIRM: "<path> does not exist. Scaffold this intervention?"
 2. Interventions are plain folders (no repo backing, unlike papers). Scaffold:
-   STATUS.md (venue unpinned, current_layer 0-seed, empty Gate Ledger),
-   0-lifecycle/ (stage folders absent-until-written), 0-artifacts/,
-   1-rounds/, 1-probe-plans/README.md (empty index).
+   STATUS.md (venue unpinned, current_layer 0-seed, empty Gate Ledger).
+   0-lifecycle/ with the venue-FREE spine EAGER (bench ruling 2026-07-09:
+   "why don't we have the correct folders at the beginning?"):
+   0-seed/ 1a-descriptions/ 1b-themes/ 1c-claims/ 1d-advice/, each with an
+   empty _PROBE/ -- folders only, NO stub .md (the console judges progress
+   by real doc content, so an empty rung reads as not-started, never done).
+   Venue-ALIGNED stages (2-venue/2-pitch/3-narrative/4-display/5-section-edit)
+   stay absent-until-written: which exist depends on the pinned venue.
+   Also: 0-artifacts/, 1-rounds/, 1-probe-plans/README.md (empty index).
    Default home: <project>/applications/interventions/<NN>_<slug>/.
 3. Continue straight into the console (steps 1-5 above) -- one command from
    nothing to dashboard.
@@ -75,7 +81,7 @@ Read only files that exist, in this order:
 
 1. `STATUS.md` (venue, stages_skipped, claims_settlement, current_layer, maturity, Gate Ledger)
 2. `0-lifecycle/2-pitch/2-pitch.md` -- HIGH PRIORITY for the dashboard header: extract the goal/theory-of-change paragraph as the 2-3 sentence "what this intervention is about" summary. If absent, the dashboard says "pitch not yet written".
-3. Remaining stage docs: `0-lifecycle/0-seed/0-seed.md`, the ladder (`1a-descriptions/1a-descriptions.md`, `1b-themes/1b-themes.md`, `1c-claims/1c-claims.md`, `1d-principles/1d-principles.md`), `3-narrative/3-narrative.md`, `4-display/4-display.md`
+3. Remaining stage docs: `0-lifecycle/0-seed/0-seed.md`, the ladder (`1a-descriptions/1a-descriptions.md`, `1b-themes/1b-themes.md`, `1c-claims/1c-claims.md`, `1d-advice/1d-advice.md`), `3-narrative/3-narrative.md`, `4-display/4-display.md`
 4. Section-edit scaffolds (sectioned venues): scan `0-lifecycle/5-section-edit/` for per-section outline `.md`, `_LOG*` files; derive per-section DPRC status from disk.
 5. Probe state: `1-probe-plans/README.md` index + per-stage `_PROBE/*.md` card statuses (planned/dispatched/read/verdicted).
 6. Explicit need records: search stage docs for `NEED`, `GAP`, `TODO`, `blocked`, `missing`, `open`.
@@ -87,6 +93,24 @@ Read only files that exist, in this order:
 
 Derive the current layer from disk. Read `STATUS.md` only as a hint: a stage is done only when its `.md` resolves on disk with real content (not a scaffold stub) AND its Gate Ledger row is confirmed. The frontier is the first non-skipped stage whose disk predicate fails. If `STATUS.md` claims more progress than disk shows, flag DRIFT and trust disk.
 
+## Legacy layout = offer the one-shot migration (confirm-gated)
+
+Pre-ladder interventions (scaffolded before 2026-07-09) show `0-lifecycle/1-claims/` and no rung folders. Flag LAYOUT DRIFT on the dashboard and OFFER the migration -- never migrate silently, and never let a rung skill scaffold `1a-descriptions/` NEXT TO a stale `1-claims/` (the bench hit exactly this: "we should have 1a-descriptions!!!!"). On the user's yes:
+
+```text
+1. rename 0-lifecycle/1-claims/ -> 0-lifecycle/1c-claims/
+   (inside: 1-claims.md -> 1c-claims.md, _LOG_1-claims.md -> _LOG_1c-claims.md)
+2. scaffold the missing rungs 1a-descriptions/ 1b-themes/ 1d-advice/ (+ empty _PROBE/)
+3. re-file probes by SHAPE: data-profile cards (cohort size, engagement summary,
+   field coverage) move to 1a-descriptions/_PROBE/ with stage: descriptions and
+   settle D ids, not C ids; verdict-shaped cards stay in 1c-claims/_PROBE/
+4. update every touched index row in 1-probe-plans/README.md (stage, settles, path)
+5. consume seed [FORWARD -> CLAIMS] pointers per the 1a contract; log the migration
+   in each touched rung's _LOG (worked example: designs/Project-Application-SMSDesign/
+   applications/01_sms_young_male, _LOG_1a-descriptions.md v260709)
+6. STATUS.md keeps its Gate Ledger; the move marks nothing as done
+```
+
 Per-stage inference (venue-skipped stages are passed over, never counted as gaps):
 
 | Evidence | Current layer |
@@ -95,8 +119,8 @@ Per-stage inference (venue-skipped stages are passed over, never counted as gaps
 | seed exists but ladder absent/thin | `0-seed -> 1a-descriptions` (suggest the `ladder` sweep) |
 | descriptions exist but themes absent/thin | `1a-descriptions -> 1b-themes` |
 | themes exist but claims absent/thin | `1b-themes -> 1c-claims` |
-| claims exist but principles absent/thin | `1c-claims -> 1d-principles` |
-| ladder gated but venue not pinned in STATUS.md | `1d-principles -> venue` |
+| claims exist but advice absent/thin | `1c-claims -> 1d-advice` |
+| ladder gated but venue not pinned in STATUS.md | `1d-advice -> venue` |
 | venue pinned but pitch absent/thin | `venue -> 2-pitch` |
 | pitch exists but narrative absent (venue requires it) | `2-pitch -> 3-narrative` |
 | narrative exists but display absent (venue requires it) | `3-narrative -> 4-display` |
@@ -112,7 +136,7 @@ Maturity, derived separately from disk:
 | seed only | `prospect` |
 | 1a with anchored D entries | `data-described` |
 | 1c ledger with C-slots | `claim-ledger` |
-| 1d with derived P entries (ladder gate passed) | `principled` |
+| 1d with derived A entries (ladder gate passed) | `advised` |
 | venue pinned in STATUS.md | `venue-pinned` |
 | pitch onward per venue's required stages | `pitched` / `narrated` / `display-mapped` / `section-edit` |
 | 0-artifacts/ has >=1 artifact | `drafted` |
@@ -128,7 +152,7 @@ Need diagnosis is separate from lifecycle layer. Extract open needs from:
 | `1a-descriptions` stale/undated entries; unresolved `[STALE]` tags in any ladder doc | data refresh (1a probe) |
 | `1b-themes` ungrounded themes | ground or park |
 | `1c-claims` GAP/weak rows below the venue's required settlement | probe, discovery, task |
-| `1d-principles` under-derived P entries | settle the cited claims |
+| `1d-advice` under-derived A entries | settle the cited claims |
 | `4-display` elements without materialized output | display task |
 | `5-section-edit` sections with incomplete DPRC phases | section-edit work |
 | artifact review flags / claim-audit failures | revise or loop back |
@@ -143,7 +167,7 @@ Loopback diagnosis:
 | wording, tone, stale number in artifact | `draft` (artifact) or `5-section-edit` |
 | content element does not carry its claim | `4-display` |
 | unsupported or too-strong claim | `1c-claims` / `3-narrative` |
-| principle doesn't follow from its claims | `1d-principles` |
+| advice entry does not follow from its claims | `1d-advice` |
 | theory of change wrong / goal fuzzy | `2-pitch` |
 | venue wrong for audience | `venue` (re-pin; pitch+ re-couple; the ladder survives) |
 | A/B shows no effect | `2-pitch` or `1c-claims` (backfill A/B data into `1a` first) |
@@ -201,6 +225,20 @@ source of truth). Venue-skipped stages render `--` and never carry 🔥/🚀.>
 |---|---|---|---|
 | ... | probe/display/discovery/task/insight/edit | ... | ... |
 
+## Releasable Probes
+
+<from the probe state read (index + per-stage `_PROBE/` cards). Releasable =
+`status: planned` AND dependencies met -- these are held for the user's go
+(release gate, probe worker STEP 1.5). One row per card; never bury this in
+Recommended Next (feedback 2026-07-09: "you should let me know what probes
+to release"). Omit the section only when zero cards exist anywhere.>
+
+| PP | Stage | Mode | Need (one line) | Deps | Release |
+|---|---|---|---|---|---|
+| PPNN | ... | light/full | ... | met / blocked on <what> | `/haipipe-application probe run PPNN` |
+
+<then one summary line for the rest of the roster: `dispatched: PPNN ... · read: PPNN ... · verdicted: PPNN ...`>
+
 ## Loopback Diagnosis
 
 - ... (omit if none)
@@ -225,7 +263,11 @@ After the dashboard, route follow-up input through the lifecycle:
 
 ```text
 seed                       -> /haipipe-application seed
+ladder / 1a-1d sweep       -> /haipipe-application ladder
+descriptions / profile     -> /haipipe-application descriptions
+themes / patterns          -> /haipipe-application themes
 claims / ledger            -> /haipipe-application claims
+advice / recommendations   -> /haipipe-application advice
 venue / channel            -> /haipipe-application venue
 pitch / goal               -> /haipipe-application pitch
 narrative / arc            -> /haipipe-application narrative
@@ -282,7 +324,7 @@ Every reply from an application specialist (and every enter dashboard) MUST end 
 status:  ok · claims
 next:    <single recommended command>
 ──────────────────────────────────────────────
-stage:   seed ✅  claims 🔥🚀  venue ⬜  pitch ⬜  narrative --  display --  section-edit --  →  draft ⬜  →  review ⬜  →  deploy ⬜
+stage:   seed ✅  descriptions ✅  themes ✅  claims 🔥🚀  advice ⬜  venue ⬜  pitch ⬜  narrative --  display --  section-edit --  →  draft ⬜  →  review ⬜  →  deploy ⬜
 phase:   draft ✅  │  probe 🔥🚀  │  revise ⬜  │  check ⬜
 ```
 

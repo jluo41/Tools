@@ -1,6 +1,8 @@
 Application Input Contract — reading K/W from insight
 ========================================================
 
+RETIRED (ladder restage, family 6.1.1, 2026-07-09): superseded — the artifact input is `0-lifecycle/1d-advice/1d-advice.md` (adopted A entries, 1c ledger backstop; claim-audit chain artifact -> adopted A -> C -> anchor) and insights are an OPTIONAL deposit (R7). Nothing references this file; kept only as historical reference.
+
 How kind-specialists locate, load, and cite knowledge entries.
 
 

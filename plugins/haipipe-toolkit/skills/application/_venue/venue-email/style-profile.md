@@ -34,7 +34,7 @@ Subject: Weekly refill risk summary — 4 patients flagged
 Dr. [Name],
 
 This week, 4 patients in your panel are at elevated risk
-for refill lapse based on timing analysis (K03).
+for refill lapse based on timing analysis (C3).
 
 Key findings:
 • 2 patients have < 48h until Rx expiry with no refill
@@ -64,5 +64,5 @@ Recommended actions:
 [ ] 200-800 words (per audience)
 [ ] Sections follow narrative arc
 [ ] Every claim cites K/W (format per audience)
-[ ] cited_K / cited_W in frontmatter
+[ ] adopted_A / declined_A in frontmatter
 ```

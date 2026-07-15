@@ -29,7 +29,7 @@ Depth changes the REPORT, not the rule: every stage still ends with an explicit 
 Ladder gate batching (stage-1 family, ladder restage R6)
 ---------------------------------------------------------
 
-The evidence ladder (1a-descriptions -> 1b-themes -> 1c-claims -> 1d-principles) batches its gates by venue depth -- approval is batched, never skipped, and every rung still gets its own ledger row:
+The evidence ladder (1a-descriptions -> 1b-themes -> 1c-claims -> 1d-advice) batches its gates by venue depth -- approval is batched, never skipped, and every rung still gets its own ledger row:
 
 ```
 light    ONE combined inline gate at 1d covering all four rungs;
@@ -40,20 +40,9 @@ full     four individual gates, one per rung
 
 Venue unpinned (the normal case -- the ladder is venue-FREE and runs before the pin): apply `light` batching provisionally; a later pin to a deeper venue re-opens only the GATE (re-present criteria at the deeper bar), not the content.
 
-> CC: 🚪 the batching depths are CC defaults from SOP R6 — confirm.
->
->     🪜 ladder:      1a ──▶ 1b ──▶ 1c ──▶ 1d
->     light  📱 :      ·      ·      ·     🚪  (one gate, 4 ledger rows)
->     medium 📧 :      ·      ·     🚪     🚪
->     full   📊 :     🚪     🚪     🚪     🚪
->                                   ▲
->                     💸 1c is where money is spent (full-mode probes)
->
->     A ✅ keep: medium gates at 1c — a human eyeballs the campaign where cost concentrates, 1b is cheap so it folds into the 1c gate
->     B    medium at 1b+1d: earlier check on theme DIRECTION, but low value for the extra pause
->     C    one gate at 1d for every venue: simplest, but deep venues lose rung-level control
->
-> CC: my rec = A. Reply `> USER:` below.
+Within the ladder, a rung's CHECK routes like any gate: **approve** advances to the next rung (1c → 1d); **revise** reruns the same rung; upstream symptoms **loop back** (1c → 1a for stale/missing data, 1c → 1b for a wrong theme) per the loopback rule. Whatever the batching, the ladder EXITS to venue only through the 1d gate (JL invariant, 2026-07-09).
+
+Rounds within a rung (breadth/depth contract, JL 2026-07-09): REVISE ends with a self-assessment -- did this round surface anything new? If yes, another DRAFT->PROBE->REVISE lap runs BEFORE CHECK (`[ROUND n]` in the rung's `_LOG`); CHECK fires only when a round comes up dry. Venue-scaled round depth: light -- one round suffices unless the rung self-assesses a blocker; medium -- loop-until-dry on 1c; full -- loop-until-dry on every rung. Mid-phase back-routing (`[ROUTE -> <rung>]`) files the upstream slot/card immediately and never waits for a gate -- rounds are internal; only CHECK involves the user. And the gate itself is a lens (JL 2026-07-09): at a GROW-loop rung's CHECK the user is asked which data topics are still missing; a `grow` verdict converts the answers to new slots + planned probes and re-opens DRAFT as [ROUND n+1] -- approve means saturated AND the user added nothing.
 
 Mechanical teeth
 -----------------

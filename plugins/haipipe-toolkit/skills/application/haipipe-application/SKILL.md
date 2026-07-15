@@ -1,12 +1,12 @@
 ---
 name: haipipe-application
-description: "Run any intervention-lifecycle work (the application umbrella). Use `/haipipe-application enter <intervention-path>` or `status` to preload an open-needs dashboard from STATUS.md, 0-lifecycle, 0-artifacts, 1-rounds, and git state. Application lifecycle owns intervention-specific story, the stage-1 evidence ladder (1a-descriptions -> 1b-themes -> 1c-claims -> 1d-principles), narrative, displays, artifact text, maturity, and dated work rounds; the venue (sms/email/dashboard/report/...) gates which stages fire and how deep claims must settle; open GAP/NEED items accumulate as probe plans in per-stage _PROBE/ folders (1-probe-plans/README.md = index), consumed by haipipe-application-probe (each stage's PROBE phase worker), which dispatches to /haipipe-probe (the universal evidence gateway; probe calls task/discover during Gather). Direct task/discover verbs available for non-claim utility work. Trigger: application, intervention, enter, status, seed, ladder, descriptions, themes, claims, principles, venue, pitch, narrative, display, section-edit, draft, sms, message, email, dashboard, report, review, deploy, iterate, round, probe, /haipipe-application."
+description: "Run any intervention-lifecycle work (the application umbrella). Use `/haipipe-application enter <intervention-path>` or `status` to preload an open-needs dashboard from STATUS.md, 0-lifecycle, 0-artifacts, 1-rounds, and git state. Application lifecycle owns intervention-specific story, the stage-1 evidence ladder (1a-descriptions -> 1b-themes -> 1c-claims -> 1d-advice), narrative, displays, artifact text, maturity, and dated work rounds; the venue (sms/email/dashboard/report/...) gates which stages fire and how deep claims must settle; open GAP/NEED items accumulate as probe plans in per-stage _PROBE/ folders (1-probe-plans/README.md = index), consumed by haipipe-application-probe (each stage's PROBE phase worker), which dispatches to /haipipe-probe (the universal evidence gateway; probe calls task/discover during Gather). Direct task/discover verbs available for non-claim utility work. Trigger: application, intervention, enter, status, seed, ladder, descriptions, themes, claims, advice, venue, pitch, narrative, display, section-edit, draft, sms, message, email, dashboard, report, review, deploy, iterate, round, probe, /haipipe-application."
 argument-hint: "[enter|status|venue|stage|draft] [intervention-path-or-args...]"
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "6.0.0"
+  version: "6.4.0"
   last_updated: "2026-07-09"
-  summary: "Front door for the intervention lifecycle. 6.0.0 (ladder restage, SOP-ladder-restage.md): stage 1 split into the venue-FREE evidence ladder 1a-descriptions -> 1b-themes -> 1c-claims -> 1d-principles (echoes D->I->K->W; paper delivers K, application delivers W); new verbs descriptions/themes/principles + composite ladder; venue-scaled gate batching. 5.1.0 (round 2): probe VERIFY + mechanical check gate. Alignment record: ./CHANGELOG.md."
+  summary: "Front door for the intervention lifecycle. 6.4.0 (GROW loop): 1a rounds = saturation engine (lens-rotating question storms, blind self-test, dry-stop), Field Disposition + _DESCRIPTIONS sheets, `grow` verdict at CHECK. 6.3.0 (round-2 close-out): eager spine scaffold + legacy migration at enter; probe RELEASE GATE + PHI restricted-columns default. 6.2.0 (breadth round): the ladder runs as a FLYWHEEL -- multi-round DPRC (loop-until-dry), coverage lenses + reservoirs per rung, mid-phase back-routing, 1d explore|exploit role tags. 6.0.0 (ladder restage, SOP-ladder-restage.md): stage 1 split into the venue-FREE evidence ladder 1a-descriptions -> 1b-themes -> 1c-claims -> 1d-advice (echoes D->I->K->W; paper delivers K, application delivers W); new verbs descriptions/themes/advice + composite ladder; venue-scaled gate batching. 5.1.0 (round 2): probe VERIFY + mechanical check gate. Alignment record: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -32,7 +32,7 @@ ladder                                       -> haipipe-application-lifecycle la
 descriptions | describe                      -> haipipe-application-lifecycle descriptions (rung 1a; also "data profile", "how does the data look", "cohort size", "refresh D<n>")
 themes | theme                               -> haipipe-application-lifecycle themes      (rung 1b; also "topic space", "what patterns emerge", "thematic")
 claims | claim | ledger                      -> haipipe-application-lifecycle claims      (rung 1c; also "what must be true", "what generalizes", "claim gap", "supported", "GAP")
-principles | principle                       -> haipipe-application-lifecycle principles  (rung 1d, the ladder's deliverable; also "design principles", "social norms", "what should the message do")
+advice | advise | recommendation              -> haipipe-application-lifecycle advice     (rung 1d, the ladder's deliverable; also "design advice", "social norms", "what should the message do", "principles" (legacy))
 pitch                                        -> haipipe-application-lifecycle pitch       (also "goal", "one-sentence story", "theory of change")
 narrative | arc | structure                  -> haipipe-application-lifecycle narrative
 display | elements | panels | widgets        -> haipipe-application-lifecycle display     (also "content plan", "unit jobs" — the retired minimap concern lives here)
@@ -51,29 +51,13 @@ digest [session] [--dry-run]                 -> fn/digest.md   (resolve BEFORE o
 "<natural language>"                         -> infer via the keywords above, dispatch
 ```
 
-> CC: 🗣️ verb ruling — bare `claims` now routes to rung 1c ONLY; the full 1a-1d sweep is `ladder`. Your old habit of "claims = do stage-1 work" would silently skip 1a/1b.
->
->     🧑 "/haipipe-application claims"
->             │
->             ▼
->        🔍 is the ladder virgin? (no 1a/1b docs)
->        ├── no  ──▶ 🧾 rung 1c directly              (precision)
->        └── yes ──▶ 💬 "1a/1b are empty — run `ladder`
->                         for the sweep, or 1c anyway?"  (habit-safe)
->
->     A    always → 1c silently (as shipped; habit silently skips 1a/1b)
->     B ✅ soft redirect on a virgin ladder (matches the router's existing offer-the-frontier pattern; one sentence in Dispatch notes)
->     C    make `claims` alias the full sweep (loses precise 1c addressing)
->
-> CC: my rec = B. Reply `> USER:` below.
-
 Examples:
 
 ```
 /haipipe-application enter "examples/Project-SMSR/applications/interventions/03_refill_reminder"
 /haipipe-application venue "timing-aware refill nudge for patients" --no-pin
 /haipipe-application claims
-/haipipe-application probe "C02: timing matters for refill response"
+/haipipe-application probe "C2: timing matters for refill response"
 /haipipe-application probe run PP01
 /haipipe-application draft
 /haipipe-application discover "SMS nudge benchmarks in medication adherence"
@@ -95,7 +79,7 @@ Resolution order (first match wins):
 
 An intervention root is any directory upward containing `STATUS.md`, `0-lifecycle/`, or `0-artifacts/`.
 
-Venue coupling (drives two routing rules): seed + the evidence ladder (1a-descriptions/1b-themes/1c-claims/1d-principles) are venue-FREE; venue pins the modality in STATUS.md between the ladder and pitch (writing `| venue |`, `| stages_skipped |`, and `| claims_settlement |` rows) and writes `0-lifecycle/2-venue/2-venue.md` with Artifact Principles (channel-HOW — distinct from 1d's design principles, content-WHAT); pitch/narrative/display/section-edit are venue-ALIGNED and read those Artifact Principles (consulting `_venue/venue-<name>` only for detail beyond them). So: "application" with the ladder gated but no venue pinned -> run `venue` before pitch. Re-targeting ("turn this into a dashboard") -> re-run `venue`; pitch re-couples; the ladder stays unchanged, only its REQUIRED SETTLEMENT deepens or relaxes.
+Venue coupling (drives two routing rules): seed + the evidence ladder (1a-descriptions/1b-themes/1c-claims/1d-advice) are venue-FREE; venue pins the modality in STATUS.md between the ladder and pitch (writing `| venue |`, `| stages_skipped |`, and `| claims_settlement |` rows) and writes `0-lifecycle/2-venue/2-venue.md` with Artifact Principles (channel-HOW — distinct from 1d's design advice, content-WHAT); pitch/narrative/display/section-edit are venue-ALIGNED and read those Artifact Principles (consulting `_venue/venue-<name>` only for detail beyond them). So: "application" with the ladder gated but no venue pinned -> run `venue` before pitch. Re-targeting ("turn this into a dashboard") -> re-run `venue`; pitch re-couples; the ladder stays unchanged, only its REQUIRED SETTLEMENT deepens or relaxes.
 
 Dispatch notes (only where non-obvious; everything else is `Skill("haipipe-application-<target>")` or `Skill("haipipe-application-lifecycle", args="<verb> ...")`):
 
@@ -104,6 +88,9 @@ enter     Path exists -> Skill("haipipe-application-enter", args="<path>"). Path
           CONFIRM FIRST (never create off a typo). Interventions are plain folders (no repo backing):
           scaffold STATUS.md + 0-lifecycle/ + 0-artifacts/ + 1-rounds/ + 1-probe-plans/README.md under
           the project's applications/interventions/<NN>_<slug>/, then continue straight into the console.
+claims    Ladder-virgin guard (JL-agreed thread B, 2026-07-09): if 1a/1b docs are absent, do not
+          silently dispatch 1c -- offer the choice: "1a/1b are empty; run `ladder` for the sweep,
+          or 1c anyway?" A non-virgin ladder dispatches 1c directly.
 probe     Three sub-modes -- "<text>" BUFFER a plan card in the active stage's _PROBE/ (+ index row
           in 1-probe-plans/README.md), no args SHOW the buffer (from the index),
           "run [PPNN]" -> Skill("haipipe-application-probe", args="from-buffer <intervention_root> [PPNN]").
@@ -126,7 +113,7 @@ THE single source of truth for the closing block and the focus strip in applicat
 status:  ok · claims            (status and active stage merged on one line; intervention_root dropped)
 next:    <single recommended command>
 ──────────────────────────────────────────────
-stage:   seed ✅  descriptions ✅  themes ✅  claims 🔥🚀  principles ⬜  venue ⬜  pitch ⬜  narrative --  display --  section-edit --  →  draft ⬜  →  review ⬜  →  deploy ⬜
+stage:   seed ✅  descriptions ✅  themes ✅  claims 🔥🚀  advice ⬜  venue ⬜  pitch ⬜  narrative --  display --  section-edit --  →  draft ⬜  →  review ⬜  →  deploy ⬜
 phase:   draft ✅  │  probe 🔥🚀  │  revise ⬜  │  check ⬜
 ```
 
@@ -195,7 +182,7 @@ Composing with Evidence Workers
 
 ```
 /haipipe-application (router)
-        ├─► /haipipe-application-lifecycle   (seed -> 1a-descriptions -> 1b-themes -> 1c-claims -> 1d-principles -> [venue] -> pitch -> narrative° -> display° -> section-edit°)
+        ├─► /haipipe-application-lifecycle   (seed -> 1a-descriptions -> 1b-themes -> 1c-claims -> 1d-advice -> [venue] -> pitch -> narrative° -> display° -> section-edit°)
         ├─► /haipipe-application-artifact    (draft the deliverable from the venue profile + lifecycle stages)
         │
         │   evidence path (a claim hits a gap):

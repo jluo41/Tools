@@ -7,7 +7,7 @@ Tasks run code. Probes judge claims. Discoveries inspect outside evidence. Insig
 ## Lifecycle
 
 ```text
-enter > 0-seed > [the evidence ladder: 1a-descriptions > 1b-themes > 1c-claims > 1d-principles]
+enter > 0-seed > [the evidence ladder: 1a-descriptions > 1b-themes > 1c-claims > 1d-advice]
         > [venue] > 2-pitch > 3-narrative° > 4-display° > 5-section-edit°
         > draft(artifact) > review > deploy > round/iterate          (° = venue-gated)
 ```
@@ -20,13 +20,13 @@ All stages are markdown (argument documents need no compilation). Each stage ans
 | 1a-descriptions | What does the data look like, anchored and dated? (venue-FREE) |
 | 1b-themes | Which patterns/topics emerge from the data and the field? (venue-FREE) |
 | 1c-claims | Which claims generalize — supported, weak, GAP? (venue-FREE) |
-| 1d-principles | Which design directives follow, each derived from a claim? (venue-FREE, the ladder's deliverable) |
+| 1d-advice | Which design advice follow, each derived from a claim? (venue-FREE, the ladder's deliverable) |
 | 2-pitch | What is this intervention selling? (one minute, to the pinned venue + audience) |
 | 3-narrative | How do claims compose into the output's arc? |
 | 4-display | What content element carries each claim, and what job does each unit do? |
 | 5-section-edit | Does each section's prose do its job? (per-section DRAFT-PROBE-REVISE-CHECK) |
 
-Stage 1 is the **evidence ladder** — Descriptions/Themes/Claims/Principles echo D→I→K→W without reusing the insight-KB letter names. The manuscript form carries D/I in its own Methods/Results sections, so paper stops its stage 1 at claims (paper delivers K); an intervention artifact carries none of the ladder in its body and lives on dynamic data, so the application climbs one more rung to principles (application delivers W). Each rung is independently re-runnable: iterate's fresh A/B data backfills 1a, staleness tags propagate down the citation chain (P ← C ← T ← D), and only affected rungs reopen.
+Stage 1 is the **evidence ladder** — Descriptions/Themes/Claims/Advice echo D→I→K→W without reusing the insight-KB letter names. The manuscript form carries D/I in its own Methods/Results sections, so paper stops its stage 1 at claims (paper delivers K); an intervention artifact carries none of the ladder in its body and lives on dynamic data, so the application climbs one more rung to advice (application delivers W). Each rung is independently re-runnable: iterate's fresh A/B data backfills 1a, staleness tags propagate down the citation chain (A ← C ← T ← D), and only affected rungs reopen.
 
 Two axes stay orthogonal: **layer/frontier** (which stage has the active work) and **maturity** (how real the intervention is: prospect, drafted, deployed, iterating, retired).
 
@@ -34,7 +34,7 @@ The venue (output modality) gates stages 3-5, sets the claims SETTLEMENT depth, 
 
 ## Venue coupling
 
-Seed and the evidence ladder are venue-FREE: data truth, patterns, claims, and content-level design principles do not change when the channel changes. Venue pins the modality in STATUS.md between the ladder and pitch and writes the venue stage doc `0-lifecycle/2-venue/2-venue.md`, whose Artifact Principles are the downstream contract the venue-ALIGNED stages read (channel-HOW — distinct from 1d's design principles, which are content-WHAT). Pitch, narrative, display, and section-edit are venue-ALIGNED: they rewrite on retarget. Retargeting sms -> dashboard keeps the ladder and deepens its required settlement; it never invalidates it.
+Seed and the evidence ladder are venue-FREE: data truth, patterns, claims, and content-level design advice does not change when the channel changes. Venue pins the modality in STATUS.md between the ladder and pitch and writes the venue stage doc `0-lifecycle/2-venue/2-venue.md`, whose Artifact Principles are the downstream contract the venue-ALIGNED stages read (channel-HOW — distinct from 1d's design advice, which is content-WHAT). Pitch, narrative, display, and section-edit are venue-ALIGNED: they rewrite on retarget. Retargeting sms -> dashboard keeps the ladder and deepens its required settlement; it never invalidates it.
 
 ## Evidence routing
 
@@ -51,7 +51,7 @@ probe       judges claim-level verdicts (universal evidence gateway)
 insight     optional deposit layer for cross-intervention knowledge (ladder restage R7:
             judgment lives in PP-card verdicts; the ladder docs are the primary record;
             1d deposits W cards on-request)
-application selects evidence, climbs it to design principles (the ladder), shapes it
+application selects evidence, climbs it to design advice (the ladder), shapes it
             for a venue + audience, delivers, iterates
 ```
 
@@ -85,11 +85,11 @@ You are designing the haipipe-application layer.
 
 Treat an intervention as a delivery contract, not a drafting folder.
 The intervention lifecycle is the stage spine:
-0-seed > 1a-descriptions > 1b-themes > 1c-claims > 1d-principles > [venue]
+0-seed > 1a-descriptions > 1b-themes > 1c-claims > 1d-advice > [venue]
 > 2-pitch > 3-narrative > 4-display > 5-section-edit,
 then draft(artifact) > review > deploy > round/iterate.
 Stage 1 is the evidence ladder (echoes D->I->K->W; the deliverable rung is
-1d: design principles derived from claims). The venue gates stages 3-5,
+1d: design advice derived from claims). The venue gates stages 3-5,
 sets claims settlement depth, and batches the ladder's gates; seed and the
 ladder are venue-FREE and survive retargeting.
 
@@ -100,7 +100,7 @@ it updates, and when it must stop and ask the user.
 
 Keep the intervention folder fixed:
 STATUS.md, 0-lifecycle/<stage>/<stage>.md (+ _LOG + _PROBE/; ladder rungs
-1a-descriptions/ 1b-themes/ 1c-claims/ 1d-principles/ are stage folders like
+1a-descriptions/ 1b-themes/ 1c-claims/ 1d-advice/ are stage folders like
 any other), 0-sections/, 0-artifacts/<slug>-v{N}.md,
 1-probe-plans/README.md,
 1-rounds/vYYMMDD/{README,discussion,decisions,todo,applied}.md.

@@ -4,9 +4,9 @@ description: "DRAFT phase worker (internal). Called first by every application s
 argument-hint: "[stage <stage-name>] [intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, WebSearch, WebFetch
 metadata:
-  version: "1.2.0"
+  version: "1.3.0"
   last_updated: "2026-07-09"
-  summary: "NEW thin DRAFT worker (paper parity). Settles stage-doc structure + sentences; the calling stage supplies the artifact spec. The old artifact-generator of this name moved to 3-build-deploy/haipipe-application-artifact. v1.1: DRAFT MAY use inline WebSearch for orientation -- but its output is drafting fuel (stage-doc prose + buffered planned PPNN skeletons) only, NEVER durable evidence (no refs/findings into PP cards). Real evidence is the PROBE phase's job. v1.2 (ladder restage follow-up): template registry added -- every stage skill now carries ref/<stage>-template.md (paper draft parity); WRITE reads the template, this worker carries none of its own."
+  summary: "1.3 (JL bench ruling 2026-07-09): DRAFT step 5 PRESENT -- every draft ends with the RELEASE MENU (buffered planned cards, one line each) and stops for the user's release picks; return contract gains the probes: line. NEW thin DRAFT worker (paper parity). Settles stage-doc structure + sentences; the calling stage supplies the artifact spec. The old artifact-generator of this name moved to 3-build-deploy/haipipe-application-artifact. v1.1: DRAFT MAY use inline WebSearch for orientation -- but its output is drafting fuel (stage-doc prose + buffered planned PPNN skeletons) only, NEVER durable evidence (no refs/findings into PP cards). Real evidence is the PROBE phase's job. v1.2 (ladder restage follow-up): template registry added -- every stage skill now carries ref/<stage>-template.md (paper draft parity); WRITE reads the template, this worker carries none of its own."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -27,6 +27,12 @@ DRAFT phase worker. Every stage skill calls this first. The calling stage passes
                 0-lifecycle/<N-stage>/<N-stage>.md + a [DRAFT] entry in _LOG
 4. FLAG         every spot where the draft needs evidence it does not have
                 ("NEED: ...") -- these become PROBE's work list
+5. PRESENT      end the phase reply with the RELEASE MENU (JL 2026-07-09):
+                every buffered planned card, one line each --
+                PP id -- question -- mode -- route -- what it fills/settles --
+                then STOP and ask which to release. Dispatch is the user's
+                call; the probe worker's STEP 1.5 gate enforces the same rule
+                as backstop. No buffered cards -> say "release menu: none".
 ```
 
 DRAFT settles WHAT the doc says. It does NOT collect evidence (PROBE), polish prose (REVISE), or approve anything (CHECK).
@@ -41,7 +47,7 @@ At WRITE, read TWO things from `1-lifecycle/`: the calling stage's SKILL.md arti
 | descriptions | `1-lifecycle/1a-descriptions/haipipe-application-descriptions/SKILL.md` | `ref/descriptions-template.md` |
 | themes | `1-lifecycle/1b-themes/haipipe-application-themes/SKILL.md` | `ref/themes-template.md` |
 | claims | `1-lifecycle/1c-claims/haipipe-application-claims/SKILL.md` | `ref/claims-template.md` |
-| principles | `1-lifecycle/1d-principles/haipipe-application-principles/SKILL.md` | `ref/principles-template.md` |
+| advice | `1-lifecycle/1d-advice/haipipe-application-advice/SKILL.md` | `ref/advice-template.md` |
 | venue | `1-lifecycle/haipipe-application-venue/SKILL.md` | `ref/venue-template.md` |
 | pitch | `1-lifecycle/2-pitch/haipipe-application-pitch/SKILL.md` | `ref/pitch-template.md` |
 | narrative | `1-lifecycle/3-narrative/haipipe-application-narrative/SKILL.md` | `ref/narrative-template.md` |
@@ -52,7 +58,7 @@ At WRITE, read TWO things from `1-lifecycle/`: the calling stage's SKILL.md arti
 
 ## Boundaries
 
-- Venue-FREE stages (seed + the 1a-1d ladder: descriptions, themes, claims, principles): do not read venue packs; the doc must survive retargeting.
+- Venue-FREE stages (seed + the 1a-1d ladder: descriptions, themes, claims, advice): do not read venue packs; the doc must survive retargeting.
 - Venue-ALIGNED stages (pitch, narrative, display, section-edit): read `_venue/venue-<name>` + `_audience/profile-<name>` for structure and tone expectations.
 - Never invent evidence: an unbacked statement is written as a flagged NEED, not asserted.
 - Stage docs are markdown, one physical line per paragraph/bullet.
@@ -77,5 +83,6 @@ status:    ok | blocked
 stage:     <stage-name>
 artifact:  <path written>
 needs:     <count of flagged NEEDs for PROBE>
-next:      PROBE
+probes:    <RELEASE MENU: each buffered planned PPNN -- question -- mode -- fills/settles; or "none">
+next:      PROBE (dispatches only the user's release picks)
 ```

@@ -36,3 +36,8 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 - Insight KB downgraded to optional anchor (R7): `supported` requires a full-mode probe verdict or equivalently reviewed result; K/W cards valid when present, never required. New done-criteria: theme tags resolve; no unresolved `[STALE ...]` tags (1a refresh stamps, R3).
 - Handoff changed: promote -> principles (1d derives the directives); venue/pitch move after the ladder gate.
 - ref/claims-template.md added (canonical artifact template adapted from paper's: theme tags, no Hypotheses, mode/route probe fields; JL follow-up 2026-07-09) + SKILL.md pointer line.
+
+## [6.1.0] — 2026-07-09
+
+- BREADTH ROUND (JL flywheel discussion): full hook consumption — every 1b hook becomes a C entry or a line in the new Declined-hooks section (the rung's reservoir, re-mined at every DRAFT open). Every primary claim carries a Rival line (the strongest alternative explanation); its probe plan must be refute-capable (Refutes-if: states the result that would FLIP the claim, not only confirm it).
+- Multi-round DPRC (self-assess -> [ROUND n] -> CHECK when dry; medium+ venues loop-until-dry on THIS rung) + mid-phase back-routing ([ROUTE -> themes], [ROUTE -> descriptions]) per wiki/08 Rounds.

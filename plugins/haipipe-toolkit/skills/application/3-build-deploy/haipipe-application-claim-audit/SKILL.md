@@ -1,6 +1,6 @@
 ---
 name: haipipe-application-claim-audit
-description: "Claim audit for the intervention lifecycle. Verifies that every claim in the intervention's artifacts is traceable to a supported K/W entry and that no claim exceeds the evidence scope. Parallel to paper's claim-audit skill. Trigger: claim audit, verify claims, evidence check, /haipipe-application claim-audit."
+description: "Claim audit for the intervention lifecycle. Verifies that every claim in the intervention's artifacts is traceable to an adopted A entry (A -> C -> anchor) and that no claim exceeds the evidence scope. Parallel to paper's claim-audit skill. Trigger: claim audit, verify claims, evidence check, /haipipe-application claim-audit."
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
@@ -27,7 +27,7 @@ Audit scope
 
 ```
 Reads:
-  0-lifecycle/1d-principles/1d-principles.md  (design principles -- the P<-C chain)
+  0-lifecycle/1d-advice/1d-advice.md  (design advice -- the A<-C chain)
   0-lifecycle/1c-claims/1c-claims.md          (claim ledger)
   0-artifacts/*.md              (drafted artifacts)
   insights/K_knowledge/*.md     (K entries, when cited)
@@ -37,7 +37,7 @@ Writes:
   0-artifacts/CLAIM_AUDIT.md    (audit report)
 ```
 
-Trace chain: every artifact move -> the `P<n>` it executes -> the `C<n>` each P derives from -> the claim's anchor. A break anywhere in artifact -> P -> C -> anchor is a finding.
+Trace chain: every artifact move -> the `A<n>` it executes -> the `C<n>` each A derives from -> the claim's anchor. A break anywhere in artifact -> adopted A -> C -> anchor is a finding.
 
 
 Audit checklist per artifact

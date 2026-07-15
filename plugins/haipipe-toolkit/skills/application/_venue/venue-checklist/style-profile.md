@@ -18,7 +18,7 @@ Before Your Next Visit
 
 **Clinician panel review checklist:**
 ```
-Weekly Panel Review (K03, K05)
+Weekly Panel Review (C3, C5)
 ──────────────────────────────
 ☐ Review 4 high-risk refill patients (Dashboard → At Risk)
 ☐ Send refill reminders to patients at T-48h
@@ -43,5 +43,5 @@ Weekly Panel Review (K03, K05)
 [ ] Each item starts with action verb
 [ ] Each item has clear done/not-done state
 [ ] Order is logical (if sequential)
-[ ] cited_K / cited_W in frontmatter
+[ ] adopted_A / declined_A in frontmatter
 ```

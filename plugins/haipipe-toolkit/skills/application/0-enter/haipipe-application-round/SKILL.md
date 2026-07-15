@@ -66,7 +66,7 @@ symptom in todo                          → route to
 "SMS too long"                          → draft/artifact (re-compose per venue limits)
 "click rate below threshold"            → iterate → pitch or claims (re-evaluate)
 "need evidence for X"                   → claims (GAP + _PROBE/ card)
-"channel wrong for this audience"       → venue (re-pin; pitch+ re-couple; claims survives)
+"channel wrong for this audience"       → venue (re-pin; pitch+ re-couple; the ladder survives)
 ```
 
 

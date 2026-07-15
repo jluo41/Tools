@@ -11,7 +11,7 @@ Bottom line: Timing-aware refill SMS increases 7-day
 adherence by 8.2pp (95% CI: 4.1–12.3pp) among high-risk
 patients. Projected annual savings: $2.4M across the
 current panel. Recommended: expand to all eligible patients
-in Q3. (See K03, W02.)
+in Q3. (See C3, A2.)
 ```
 
 **Regulatory finding (regulator audience):**
@@ -24,7 +24,7 @@ improvement in 7-day refill adherence (OR = 1.42, 95% CI:
 age and gender subgroups (Table 2). No adverse events were
 reported during the pilot period.
 
-¹ K03: Timing sensitivity in prescription refill behavior.
+¹ C3: Timing sensitivity in prescription refill behavior.
   Based on probe P.A12, N = 4,230 patients, 2025-Q4 cohort.
 ```
 
@@ -38,7 +38,7 @@ reported during the pilot period.
    - Partner: context → joint findings → next steps
 
 2. Every factual statement must cite a K/W entry.
-   - Regulator: footnote (¹ K03_...)
+   - Regulator: footnote (¹ C3: ...)
    - Executive: endnote
    - Partner: inline parenthetical
 
@@ -70,5 +70,5 @@ audience=partner     → professional, collaborative tone
 [ ] Length within budget for audience
 [ ] Limitations section present (regulator)
 [ ] Data tables/figures have captions
-[ ] cited_K / cited_W in frontmatter
+[ ] adopted_A / declined_A in frontmatter
 ```

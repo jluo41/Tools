@@ -12,7 +12,7 @@ The application lifecycle is a delivery lifecycle. It owns the intervention-spec
 │   ├── 1a-descriptions/  venue: FREE      1a-descriptions.md (anchored data summaries + as-of dates) + _LOG + _PROBE/
 │   ├── 1b-themes/        venue: FREE      1b-themes.md (grounded themes T←D) + _LOG + _PROBE/
 │   ├── 1c-claims/        venue: FREE      1c-claims.md (Claims/Probes/Campaign, C←T) + _LOG + _VALUES_ + _PROBE/ (+ _CITATION_ sectioned venues)
-│   ├── 1d-principles/    venue: FREE      1d-principles.md (design directives P←C — the ladder's deliverable) + _LOG + _PROBE/
+│   ├── 1d-advice/        venue: FREE      1d-advice.md (design advice A←C — the ladder's deliverable) + _LOG + _PROBE/
 │   ├── 2-venue/          venue: PIN       2-venue.md (choice + Artifact Principles) + _LOG + _PROBE/
 │   ├── 2-pitch/          venue: ALIGNED   2-pitch.md + _LOG + _PROBE/
 │   ├── 3-narrative/      venue: GATED     3-narrative.md + _LOG          (if venue requires)
@@ -34,8 +34,8 @@ Stage docs are markdown + `_LOG` (argument documents need no compilation). `0-` 
 | `0-seed` | Keep the intervention possibility alive | Why might this work? | FREE | ladder (1a) or drop |
 | `1a-descriptions` | Anchored data profile (the D rung) | What does the data look like, dated? | FREE | themes |
 | `1b-themes` | Grounded pattern space (the I rung) | Which patterns/topics emerge? | FREE | claims |
-| `1c-claims` | Claim ledger + evidence campaign (the K rung) | Which claims generalize? | FREE | principles |
-| `1d-principles` | Design directives (the W rung, the deliverable) | What should the content do, derived from which claims? | FREE | venue → pitch |
+| `1c-claims` | Claim ledger + evidence campaign (the K rung) | Which claims generalize? | FREE | advice |
+| `1d-advice` | Design advice (the W rung, the deliverable) | What should the content do, derived from which claims? | FREE | venue → pitch |
 | `venue` | Pin the output modality | Which channel fits? | (chooser) | writes venue + stages_skipped + claims_settlement |
 | `2-pitch` | One-minute goal + theory of change | What is this selling, to whom? | ALIGNED | narrative or draft |
 | `3-narrative` | Structure the output's arc | How do claims compose? | GATED | display |
@@ -50,7 +50,7 @@ The retired `minimap` stage's concern (per-unit jobs) lives inside `4-display`.
 
 ## Venue Gating
 
-The venue pin (between claims and pitch) writes three STATUS.md rows the whole system reads:
+The venue pin (between the ladder's 1d gate and pitch) writes three STATUS.md rows the whole system reads:
 
 ```text
 | venue |             sms | push | reminder | checklist | email | dashboard | ui-card | report
@@ -74,7 +74,7 @@ Authoritative per-venue table: each `_venue/venue-<name>/README.md`. Simple venu
 
 ## Venue-FREE / Venue-ALIGNED Boundary
 
-Seed and the evidence ladder (1a-1d) are venue-FREE: written before the pin, unchanged on retarget (data truth, patterns, claims, and content-level design principles do not change with the channel). Pitch, narrative, display, and section-edit are venue-ALIGNED: they rewrite on retarget. Retargeting (sms → dashboard) re-runs venue + pitch and may DEEPEN the ladder's settlement requirement — it never invalidates it. Slot-mapping (which principle fills which template slot) is venue-ALIGNED work and happens in draft/display, never in the ladder.
+Seed and the evidence ladder (1a-1d) are venue-FREE: written before the pin, unchanged on retarget (data truth, patterns, claims, and content-level design advice does not change with the channel). Pitch, narrative, display, and section-edit are venue-ALIGNED: they rewrite on retarget. Retargeting (sms → dashboard) re-runs venue + pitch and may DEEPEN the ladder's settlement requirement — it never invalidates it. Slot-mapping (which advice entry fills which template slot) is venue-ALIGNED work and happens in draft/display, never in the ladder.
 
 ## Phase Dimension
 
@@ -90,7 +90,7 @@ maturity           condition
 prospect           0-seed/ exists
 data-described     1a-descriptions/ has anchored D entries
 claim-ledger       1c-claims/ has C-slots
-principled         1d-principles/ has derived P entries (ladder gate passed)
+advised         1d-advice/ has derived A entries (ladder gate passed)
 venue-pinned       STATUS.md has venue:
 pitched            2-pitch/ gate-approved
 narrated           3-narrative/ gate-approved (if venue requires)
@@ -114,7 +114,7 @@ The lifecycle is not linear. When work fails, return to the earliest stage that 
 | data profile stale / number unanchored | `1a-descriptions` |
 | theme ungrounded / pattern space wrong | `1b-themes` |
 | evidence missing for claim | `1c-claims` |
-| principle doesn't follow from its claims | `1d-principles` |
+| advice entry does not follow from its claims | `1d-advice` |
 | theory of change wrong | `2-pitch` |
 | output structure wrong | `3-narrative` (or venue) |
 | content element doesn't carry its claim | `4-display` |
@@ -160,7 +160,7 @@ _venue/ = journal playbooks          _venue/ = output modalities + _audience/ ax
 all stages fire; claims fully settle venue gates stages 3-5 + sets settlement depth + batches ladder gates
 insights = first-class deposit       insights = optional deposit (judgment in PP verdicts)
 0-sections/ TeX → compile → submit   0-artifacts/ markdown → draft → review → deploy
-respond (rebuttal) / present         iterate (A/B results → refine; backfills 1a, staleness P←C←T←D)
+respond (rebuttal) / present         iterate (A/B results → refine; backfills 1a, staleness A←C←T←D)
 Paper Console                        Intervention Console
 papers repo-backed                   interventions = plain in-project folders
 ```

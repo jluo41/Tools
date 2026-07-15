@@ -82,8 +82,27 @@ Scoped commits on Tools main, clustered: (a) new rung skills + mv (rows 1-4), (b
 3. Staleness: refresh a 1a entry → dependents in 1b/1c/1d gain STALE tags → downstream CHECK fails until resolved.
 4. Traceability: claim-audit walks artifact → P → C → anchor on a drafted artifact.
 
-9. Done criteria
-----------------
+9. Round-1 walkthrough rulings (JL, 2026-07-09, in-file > CC:/> JL: threads)
+-----------------------------------------------------------------------------
+
+- Display-unit ids: D<nn> -> U<nn> (T1, EXECUTED). Illustration blocks: ascii `====`/`----` style (T8, EXECUTED across seed/pitch/narrative/display).
+- FORWARD token stays `[FORWARD -> CLAIMS]` (T2, paper-twin symmetry).
+- P status enum: `stale` DROPPED -> `active | caveated`; staleness lives solely in the [STALE] tag (T4, EXECUTED).
+- Bare `claims` verb: ladder-virgin guard added to router dispatch notes (T6, EXECUTED).
+- Gate batching depths: PARKED, test at the 01_sms_young_male bench (T5).
+- Ladder routing invariant codified in wiki/08: rung CHECK = approve advances / revise reruns / loopback upstream (1c -> 1a stale data, 1c -> 1b wrong theme); ladder exits to venue ONLY through the 1d gate.
+
+10. Round-2 candidates (JL walkthrough thoughts, 2026-07-09 — NOT yet designed)
+--------------------------------------------------------------------------------
+
+- **Cumulative DIKW reading (ADOPTED as canon):** descriptions=D, themes=D+I, claims=D+I+K, principles=D+I+K+W — each rung CONTAINS its lower layers, not just sits atop. Consequence: a theme may carry theme-scoped descriptive content in its own part (anchored: pointer + date); numbers that become load-bearing across rungs promote to 1a D entries.
+- **1d rename question (RESOLVED 2026-07-09, executed same session):** JL ruled **ADVICE** ("rename the principles to advise... later we can use them or not use them") — folder `1d-advice`, skill `haipipe-application-advice`, ids `A<n>`, maturity `advised`, verbs advice|advise|recommendation (+ legacy `principles` alias). The ruling's second half became the ADOPTION contract: advice is counsel, not mandate; venue-ALIGNED stages record adopted/declined A-ids with a why; declined entries persist; claim-audit chain = artifact -> adopted A -> C -> anchor. ("insights" was REJECTED — collides with the insight KB layer.)
+- **explore | exploit role tag on P (PROPOSED, 1d thread):** derivation bars apply to exploit-Ps; an explore-P may derive from weak/GAP claims IF tagged, bounded by compliance rails, and wired to the C<n> its deployed arm settles (iterate -> 1a backfill -> C flips -> explore-P graduates or moves to Rejected). Deploy becomes an evidence probe (test-to-learn).
+- **Design lifecycle stage (PROPOSED, wiki/06 + router threads):** for design venues (message set + design report), the venue-ALIGNED middle becomes pitch(light: venue-fit) -> 2-design -> draft; 2-design owns the design matrix (segments x arms x framings, cells cite P ids + explore/exploit tags); narrative/display skipped via the venue pack. Also needs a venue-design-doc pack (message set + rationale). Spec source: run the bench with the current spine first; where pitch/draft strain IS the spec.
+- **Per-rung maturity (`themed`) (OPEN, lean no):** maturity marks capability jumps only; the strip already shows rungs.
+
+11. Done criteria
+-----------------
 
 - [x] JL approval to execute (2026-07-09, "go ahead ... very clean results")
 - [x] Phase-1 rows 1-10 landed

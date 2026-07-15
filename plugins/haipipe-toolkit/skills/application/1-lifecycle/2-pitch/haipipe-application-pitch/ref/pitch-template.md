@@ -4,7 +4,7 @@
 Date: YYYY-MM-DD
 Status: DRAFT
 Venue: <pinned venue> · Audience: <audience profile>
-Rewrites on retarget. Reads 2-venue.md Artifact Principles + 1d-principles (the directives it sells).
+Rewrites on retarget. Reads 2-venue.md Artifact Principles + 1d-advice (the advice entries it sells).
 How to use: copy to `<intervention>/0-lifecycle/2-pitch/2-pitch.md`, replace every `<...>`, delete unused sub-items (the DRAFT worker does this during the stage's DPRC).
 
 
@@ -20,7 +20,7 @@ Theory of change
 ----------------
 
 <Why this should work -- the causal chain from message to behavior.
-Anchor each link in a 1d principle (P<n>) or a supported ledger claim (C<n>).>
+Anchor each link in a 1d advice entry (A<n>) or a supported ledger claim (C<n>).>
 
 
 Audience frame

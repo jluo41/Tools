@@ -18,6 +18,21 @@ One **DS<n>** per data source: name, scope, where it lives.
 - **DS2 - <name>.** <scope.> -> `<pointer>`
 
 
+Coverage
+--------
+
+The breadth floor: each facet is filled (list the D ids) or waived with a one-line why.
+Waivers are the reservoir -- the next round's DRAFT re-mines them.
+
+- cohort (N, demographics): <D ids | waived -- why>
+- arms/treatments (variants in play): <D ids | waived -- why>
+- outcomes (base rates, all outcome vars): <D ids | waived -- why>
+- time window / seasonality: <D ids | waived -- why>
+- data quality (missingness, field coverage): <D ids | waived -- why>
+- benchmark (segment vs population / external): <D ids | waived -- why>
+- field disposition: `_DESCRIPTIONS/DS<n>_<name>.md` -- 100% of the schema dispositioned (profiled | waived | excluded) as-of YYYY-MM-DD
+
+
 Descriptions
 ------------
 
@@ -30,6 +45,15 @@ DS1:
 
 DS2:
 - **D3** - <statistic> -> `<pointer>` (as-of YYYY-MM-DD)
+
+
+Probes
+------
+
+<This rung's probe roster (cards in _PROBE/, index row in 1-probe-plans/README.md): one line per PP with status.
+D-slots reference these via [AWAITING PP<nn>] until the probe lands. Roster must match disk.>
+
+- PP<nn> - <data-profile question> - <status>
 
 
 Refresh Log

@@ -4,7 +4,7 @@
 # always yields the same strip, so it can never be mis-ordered or mis-marked.
 #
 # Output (one line):
-#   seed ✅  descriptions ✅  themes ✅  claims 🔥🚀  principles ⬜  venue ⬜  pitch ⬜  narrative --  display --  section-edit --  →  draft ⬜  →  review ⬜  →  deploy ⬜
+#   seed ✅  descriptions ✅  themes ✅  claims 🔥🚀  advice ⬜  venue ⬜  pitch ⬜  narrative --  display --  section-edit --  →  draft ⬜  →  review ⬜  →  deploy ⬜
 # Markers per haipipe-application/SKILL.md Closing Block (single source of truth):
 #   🔥 = active now (the stage worked THIS session, optional 2nd arg)
 #   🚀 = frontier (current_layer, the farthest stage the intervention has reached)
@@ -43,9 +43,9 @@ current=$(grep -m1 '^| current_layer |' "$status" | sed 's/^|[^|]*|[[:space:]]*/
 current=$(printf '%s' "$current" | sed 's/^[0-9][a-z]*-//')
 
 # canonical spine order: venue coupling gradient FREE→FREE→(pin)→ALIGNED, then delivery tail
-# seed(FREE) ladder 1a-1d: descriptions themes claims principles (FREE) venue(chooser)
+# seed(FREE) ladder 1a-1d: descriptions themes claims advice (FREE) venue(chooser)
 # pitch narrative display section-edit(ALIGNED, venue-gated) draft review deploy
-keys="seed descriptions themes claims principles venue pitch narrative display section-edit draft review deploy"
+keys="seed descriptions themes claims advice venue pitch narrative display section-edit draft review deploy"
 
 # venue is confirmed by a pinned `| venue |` field in STATUS.md, not a ledger row
 venue_pinned=false

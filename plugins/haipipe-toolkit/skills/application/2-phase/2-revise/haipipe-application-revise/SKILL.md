@@ -32,7 +32,7 @@ REVISE phase worker. Runs after PROBE, before CHECK. Agent-only: change the text
 ## Boundaries
 
 - Never introduce new claims or numbers -- REVISE rearranges and polishes what DRAFT + PROBE settled.
-- Venue-FREE stages (seed + the 1a-1d ladder: descriptions, themes, claims, principles): skip step 3's venue half; clarity rules still apply.
+- Venue-FREE stages (seed + the 1a-1d ladder: descriptions, themes, claims, advice): skip step 3's venue half; clarity rules still apply.
 - Do not resolve CHECK-level questions (approval, scope changes) here.
 
 ## Return contract

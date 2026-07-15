@@ -39,5 +39,5 @@ Body:  Refill lapse risk detected. Tap to review panel.
 [ ] Body ≤ 100 chars
 [ ] Deep link target specified
 [ ] Tone matches audience
-[ ] cited_K / cited_W in frontmatter
+[ ] adopted_A / declined_A in frontmatter
 ```

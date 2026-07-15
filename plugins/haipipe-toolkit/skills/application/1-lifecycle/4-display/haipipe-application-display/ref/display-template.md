@@ -20,10 +20,10 @@ One **U<nn>** per unit. Element types come from the venue profile (metric-card, 
 **U01 - <element name, e.g. KPI Card: Refill Rate>**
 
 Type: <element type>.
-Claim: C<n> (via P<n> where a principle drives it).
+Claim: C<n> (via A<n> where an advice entry drives it).
 Job: <one sentence: what the reader must see/do because of this unit>.
 Content: <what it shows, one line>.
-Data source: <task ref, e.g. tasks/T01/results/...> · Status: <planned | commissioned (PP<nn>) | landed>.
+Data source: <task ref, e.g. tasks/X01_<slug>/results/...> · Status: <planned | commissioned (PP<nn>) | landed>.
 
 **U02 - <element name>**
 

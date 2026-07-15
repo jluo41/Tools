@@ -31,7 +31,7 @@ How it works
      _audience/profile-<audience>/README.md tone + citation rules
 4. Load lifecycle inputs:
      0-lifecycle/2-venue/2-venue.md         Artifact Principles (template/slots, limits, tone, element types, section structure, gate depth) — the venue contract, not re-derived from the pack
-     0-lifecycle/1d-principles/1d-principles.md  design principles (always -- content-WHAT; each move traces P<-C)
+     0-lifecycle/1d-advice/1d-advice.md  design advice (always -- content-WHAT; each move traces A<-C)
      0-lifecycle/1c-claims/1c-claims.md     the ledger (always -- the evidence backstop)
      0-lifecycle/3-narrative/3-narrative.md arc (if venue required it)
      0-lifecycle/4-display/4-display.md     content elements + jobs (if required)
@@ -45,17 +45,17 @@ Simple venues (sms, push, reminder)
 For venues that skip narrative/display/section-edit, compose directly from the ledger + venue template:
 
 ```
-Input:   claims (light settlement) + venue template + audience profile
+Input:   1d-advice adopted entries (1c ledger as backstop) + venue template + audience profile
 Output:  one artifact following the template slots
 
 Example (venue-sms):
   Slot 1 (greeting):  "Hi [Name], your [Medication]..."  ← personalization
-  Slot 2 (benefit):   "Refilling on time helps..."       ← K03
-  Slot 3 (CTA):       "Reply REFILL to start"            ← W02
+  Slot 2 (benefit):   "Refilling on time helps..."       ← A1
+  Slot 3 (CTA):       "Reply REFILL to start"            ← A2
   Slot 4 (close):     "Reply STOP to opt out"            ← standard
 ```
 
-The K/W-to-slot mapping happens HERE (venue-ALIGNED), not in claims: the ledger says what is true, the template says where it goes.
+The advice-to-slot mapping happens HERE (venue-ALIGNED), not in the ladder: the advice says what the content should do, the template says where it goes. Record every adopted A id -- and each declined one, with a one-line why -- in the artifact frontmatter; declined entries persist for the next venue/round. An adopted EXPLORE entry keeps its tag in the list (e.g. `A3 (explore)`) -- the artifact knowingly ships a bet, and iterate reads the tag to route the A/B result back to the claim it settles.
 
 Sectioned venues (dashboard, report)
 =====================================
@@ -92,8 +92,8 @@ venue: <pinned venue>
 audience: <audience>
 intent: "<from pitch>"
 created: YYYY-MM-DD
-cited_K: [K03, K05]
-cited_W: [W02]
+adopted_A: [A1, A2]
+declined_A: [A3]   # one-line why per declined id
 status: draft | reviewed | deployed
 ---
 ```
@@ -102,9 +102,9 @@ Definition of done
 ===================
 
 ```
-[ ] 0-artifacts/<slug>-v{N}.md exists, frontmatter complete (venue, audience, cited_K/W)
+[ ] 0-artifacts/<slug>-v{N}.md exists, frontmatter complete (venue, audience, adopted_A/declined_A)
 [ ] Content follows the venue template/structure; tone matches the audience profile
-[ ] Every number and K/W citation traces to a resolvable anchor (no unflagged inventions)
+[ ] Every number and adopted A traces through its C to a resolvable anchor (no unflagged inventions)
 [ ] Venue self-review checklist run (failures noted in ## Review notes)
 [ ] CHECK presented; on approve, Gate Ledger `draft` row written
 ```

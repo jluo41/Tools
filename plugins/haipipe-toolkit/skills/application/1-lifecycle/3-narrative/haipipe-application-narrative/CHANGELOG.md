@@ -23,3 +23,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 ## [4.1.0] — 2026-07-06
 
 - 765696f port: visible Probes section + reads 2-venue.md Artifact Principles + ascii artifact formatting.
+
+## [4.2.0] — 2026-07-09
+
+- ladder restage + review sweep (family 6.0.0-6.1.1): primary input is 1d-advice (A entries) with 1c-claims as backstop; inline schema blocks converted to ascii ====/---- (JL heading ruling); id examples unpadded (C1/A1).
