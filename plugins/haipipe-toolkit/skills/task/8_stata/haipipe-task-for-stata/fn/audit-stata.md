@@ -1,14 +1,15 @@
 fn/audit-stata — Stata-aware pre-flight audit
 ===============================================
 
-Extends the generic four-sister audit (`../../../haipipe-task/fn/workflow-audit.md`) with Stata-engine-specific checks. Runs as an overlay — the generic audit runs first, then this adds Stata items.
+Extends the generic four-sister audit (`../../../haipipe-task/fn/audit.md`) with Stata-engine-specific checks.
+Runs as an overlay — the generic audit runs first, then this adds Stata items.
 
 
 When to call
 ------------
 
-Automatically as part of the `/haipipe-task` lifecycle on any existing Stata task folder. Also callable standalone:
-`/haipipe-task-for-stata audit <task-folder-path>`
+Automatically as part of the `/haipipe-task` lifecycle on any existing Stata task folder.
+Also callable standalone: `/haipipe-task-for-stata audit <task-folder-path>`
 
 
 Procedure
@@ -16,11 +17,12 @@ Procedure
 
 ### Step 0 — Run generic audit first
 
-Execute `../../../haipipe-task/fn/workflow-audit.md` Steps 1-6 to get the baseline four-sister report (run_names, sisters, issues, type detection).
+Execute `../../../haipipe-task/fn/audit.md` Steps 1-6 to get the baseline four-sister report (run_names, sisters, issues, type detection).
 
 ### Step 1 — Detect stage
 
-Same cascade as `fn/plan-stata.md` Step 1. Must know stage before checking stage-specific patterns.
+Same cascade as `fn/plan-stata.md` Step 1.
+Must know stage before checking stage-specific patterns.
 
 ### Step 2 — Three-layer config check (case stage)
 
@@ -66,7 +68,8 @@ rangejoin  distinct  ftools  gtools  fmerge  fcollapse
 estout  outreg2  coefplot  reghdfe  binscatter  ssc
 ```
 
-Each hit is a potential FAIL on the CMS server (clean Stata + rangejoin, no other SSC, no internet). EXCEPTION: `rangejoin` is the ONE allowed SSC command; a rangejoin hit is PASS, everything else FAILs.
+Each hit is a potential FAIL on the CMS server (clean Stata + rangejoin, no other SSC, no internet).
+EXCEPTION: `rangejoin` is the ONE allowed SSC command; a rangejoin hit is PASS, everything else FAILs.
 
 Issue types:
 - `ssc_dependency` — FAIL per command found (file, line, command); rangejoin exempt
@@ -97,7 +100,8 @@ Quick scan for the most common CMS server failure modes:
 | Exit code checking | grep orchestrator for `ExitCode` | WARN if absent |
 | Stata exe resolution | grep orchestrator for Resolve-StataExe or `$stata` | INFO |
 
-These overlap with SERVER CHECK Gate 2 items B1-F6. This audit is a quick scan; the full checklist is the definitive check.
+These overlap with SERVER CHECK Gate 2 items B1-F6.
+This audit is a quick scan; the full checklist is the definitive check.
 
 ### Step 7 — Orphan / stale results
 

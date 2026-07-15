@@ -1,12 +1,10 @@
 # NDC drug-type feature pattern
 
-Reference for case-pipeline feat builders that merge NDC crosswalks to generate
-per-drug-class features (opioidrx, diabetesrx, etc.).
+Reference for case-pipeline feat builders that merge NDC crosswalks to generate per-drug-class features (opioidrx, diabetesrx, etc.).
 
 ## Pattern: per-class binary flags + n_distinct
 
-When a PDE feat builder (bfaf-{bt,nt,bnt}-pde-*rx.do) merges an NDC crosswalk,
-it can produce two tiers of drug-type features:
+When a PDE feat builder (bfaf-{bt,nt,bnt}-pde-*rx.do) merges an NDC crosswalk, it can produce two tiers of drug-type features:
 
 ### Tier 1: potency/class flags (always reliable)
 
@@ -20,8 +18,8 @@ Diabetes: drug class membership (one NDC file per class: metformin, insulin, glp
 
 ### Tier 2: named-drug flags (partial coverage)
 
-Computed via `strpos(lower(generic_name), "<drug>")`. Coverage depends on
-FDA NDC Directory match rate (~28% for opioid crosswalk as of 2026-06).
+Computed via `strpos(lower(generic_name), "<drug>")`.
+Coverage depends on FDA NDC Directory match rate (~28% for opioid crosswalk as of 2026-06).
 Unmatched NDCs get all named-drug flags = 0.
 
 ```
@@ -32,7 +30,8 @@ Opioid:   has_fentanyl, has_oxycodone, has_hydrocodone, has_morphine,
 ### Tier 3: diversity count
 
 Post-collapse sum of tier-2 flags: `n_distinct_opioid`.
-Max = number of tier-2 drug categories. Useful as polypharmacy proxy.
+Max = number of tier-2 drug categories.
+Useful as polypharmacy proxy.
 
 
 ## Opioid crosswalk coverage (NDC_opioid_named.dta)
@@ -79,8 +78,7 @@ DPP-4i          NDC_dpp4.dta          dpp4        Januvia, Tradjenta, etc.
 Sulfonylurea    NDC_sulfonylurea.dta  sulf        Glipizide, Glyburide, etc.
 ```
 
-Config driver: `global diabetes_drug_classes "metformin insulin glp1 sglt2 dpp4 sulf"`
-Each class produces: `{level}_{win}_{class}_rx_num`, `_days_suply`, `_qty`, `_has_rx`
+Config driver: `global diabetes_drug_classes "metformin insulin glp1 sglt2 dpp4 sulf"` Each class produces: `{level}_{win}_{class}_rx_num`, `_days_suply`, `_qty`, `_has_rx`
 
 
 ## Infection/antibiotic crosswalk (NDC_antibiotic_oral.dta)
@@ -108,8 +106,8 @@ No dead flags -- all 8 categories have substantial NDC counts.
 
 ## Stata 32-character variable name limit
 
-Long class tokens (e.g., `antibiotic_oral` = 15 chars) combined with window
-prefix + flag name can exceed 32 chars. Use short class tokens in the config:
+Long class tokens (e.g., `antibiotic_oral` = 15 chars) combined with window prefix + flag name can exceed 32 chars.
+Use short class tokens in the config:
 
 ```
 Stata var pattern:  {prefix}_{window}_{class}_{flag}

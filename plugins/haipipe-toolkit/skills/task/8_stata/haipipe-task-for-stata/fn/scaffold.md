@@ -1,7 +1,8 @@
 fn-scaffold: Scaffold a Stata task-folder
 ==========================================
 
-Unified scaffold for all 4 Stata stages. Read `ref/stata-dialect.md` first for the engine contract.
+Unified scaffold for all 4 Stata stages.
+Read `ref/stata-dialect.md` first for the engine contract.
 
 Output: `tasks/{G}{NN}_<group>/{LNN}_{task_name}/` where {L} = stage letter (A=cms, B=case, C=data, D=reg).
 
@@ -36,7 +37,8 @@ Step 3 -- Collect metadata
 Step 4 -- Create skeleton
 --------------------------
 
-Stage-specific tree (see SKILL.md for the full tree per stage). Common elements:
+Stage-specific tree (see SKILL.md for the full tree per stage).
+Common elements:
 
     {LNN}_{task_name}/
     |- configs/              Stata .do configs (source of truth) + YAML _meta wrappers
@@ -54,7 +56,9 @@ Stage differences:
 Step 5 -- Seed configs
 -----------------------
 
-Copy `ref/config-seed-<stage>.do` to `configs/<cfg>.do`. Fill in Stata globals (keep-vars, paths, flags). The `.do` is the source of truth; a companion `.yaml` carries only the `_meta:` discipline block.
+Copy `ref/config-seed-<stage>.do` to `configs/<cfg>.do`.
+Fill in Stata globals (keep-vars, paths, flags).
+The `.do` is the source of truth; a companion `.yaml` carries only the `_meta:` discipline block.
 
 Stage-specific seeding:
 - cms: one config per year. `stata_config:` points to shared `cms_production.do`.
@@ -77,11 +81,14 @@ Stage-specific seeding:
 Step 6 -- Run-scripts
 ----------------------
 
-**cms/case:** Copy `ref/run-ps1-template.ps1` to `runs/<run>.ps1` for each RUNNAME. Thin entries that delegate to the orchestrator .ps1.
+**cms/case:** Copy `ref/run-ps1-template.ps1` to `runs/<run>.ps1` for each RUNNAME.
+Thin entries that delegate to the orchestrator .ps1.
 
-**data:** Copy `ref/run-data-runner-template.ps1` to `runs/<run>.ps1`. Self-orchestrating entries.
+**data:** Copy `ref/run-data-runner-template.ps1` to `runs/<run>.ps1`.
+Self-orchestrating entries.
 
-**reg:** Copy `ref/run-ps1-reg-template.ps1` to `runs/<run>.ps1`. Self-contained runners with Resolve-StataExe + HAIPIPE_RUN_CONFIG + worker list.
+**reg:** Copy `ref/run-ps1-reg-template.ps1` to `runs/<run>.ps1`.
+Self-contained runners with Resolve-StataExe + HAIPIPE_RUN_CONFIG + worker list.
 
 For cms/case: also copy `ref/run-stage-year-template.ps1` as the orchestrator .ps1.
 For data/reg: no separate orchestrator -- the runner IS the orchestrator.
@@ -112,4 +119,5 @@ MUST NOT
 First-run gate
 ---------------
 
-Before hand-copy to the CMS server, run `haipipe-task-reviewer-agent` on the task folder. The reviewer enforces the "Script style + server constraints" contract in `ref/stata-dialect.md` (Windows PowerShell 5.1 only, ASCII files, thin headers, no ceremony).
+Before hand-copy to the CMS server, run `haipipe-task-reviewer-agent` on the task folder.
+The reviewer enforces the "Script style + server constraints" contract in `ref/stata-dialect.md` (Windows PowerShell 5.1 only, ASCII files, thin headers, no ceremony).
