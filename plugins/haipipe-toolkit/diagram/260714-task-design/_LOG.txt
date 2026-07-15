@@ -99,3 +99,23 @@ decides, then moves here too. Newest block at the bottom.
      KEPT the numbered (0)–(7) cascade and the structure-not-name block with its
      examples + 31% stat INTACT (that's the info you worried about losing). A 20-line
      cut would have removed real routing info, so I stopped short — as you flagged.
+
+[2026-07-14 22:40 · SOLVED] QA reframe + adopt "Phase" + optional QA/ + gate-②  (SKILL.md L19/146/148/154, still inline)
+  >> CC: QA reframed as the DIRECTION-POINTER that WRAPS the 4 phases — ①/② read what
+     exists, ③ ENTERS Plan→Build→Execute→Report. Adopted "Phase" for P/B/E/R. Added
+     optional QA/ to the task-folder structure. gate-② clarified (qa reads results/ →
+     writes the readable QA/<n>). commit 3759e60.
+
+[2026-07-14 22:30 · SHIPPED] executor-wide Phase sweep + IPO "P" = Process
+  Stage→Phase across task + discovery + haipipe-workflow DOCS (05-rulings R8, commit
+  c9abb4e); IPO "P" renamed Phase→Process, freeing "Phase" for the lifecycle (R9, commit
+  b98305d). KEPT as code: data-pipeline Stage 0-6, stata's four stages, the workflow.js
+  `stages:` param, the plan.yaml `phases:` key, the tool `phase()`.
+
+[2026-07-14 23:12 · SOLVED] two more QA notes  (SKILL.md L181/182, still inline)
+  > JL: "That is task work, not anyone else's." 这句话有点奇怪…要删掉吗？
+  >> CC: reworded to "making the bank easy to query is the executor's OWN work — a
+     consumer never does it" (kept, not deleted).
+  > JL: for QA, we might also want to include P-B-E-R, when we need to do it.
+  >> CC: yes — that IS gate ③ (qa enters P→B→E→R at the shallowest depth when ①/② can't
+     answer, then completes the QA file at Report).

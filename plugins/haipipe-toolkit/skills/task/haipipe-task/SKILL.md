@@ -177,9 +177,11 @@ A task session may legitimately:
 
 It does not know WHICH questions will come. 
 It makes the bank EASIER TO ASK. 
-That is task work, not anyone else's. 
+Making the bank easy to query is the executor's OWN work — a consumer (paper/application) never reaches in to do it. 
 > JL: That is task work, not anyone else's.  这句话有点奇怪，你怎么理解这句话呀？要删掉吗？
+>> CC 23:12: [SOLVED] It meant: answerability work (writing digests, refactoring so future questions are cheap) belongs to the EXECUTOR itself — a consumer never does it. The line was too terse; reworded above to say that plainly. Kept, not deleted — the ownership boundary is worth stating.
 > JL: for QA, we might also want to include P-B-E-R, when we need to do it.
+>> CC 23:12: [SOLVED] Exactly — that IS gate ③. When a qa question isn't answered by ① (an existing QA file) or ② (results/ already hold it), the qa verb ENTERS Plan→Build→Execute→Report at the shallowest depth that answers it, then completes the QA file at Report. Spelled out in the reframed QA block above (③) and in fn/qa.md.
 
 
 **THE SIDE DOOR — the `qa` verb.** 
