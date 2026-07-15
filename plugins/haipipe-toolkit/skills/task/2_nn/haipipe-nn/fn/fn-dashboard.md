@@ -20,21 +20,23 @@ Two modes -- run whichever fits your need:
 Step 0: Codebase Status Dashboard
 ===================================
 
-Run this first -- always. Even in review mode, the dashboard tells you the
-context around the model you are about to review.
+Run this first -- always.
+Even in review mode, the dashboard tells you the context around the model you are about to review.
 
-**0a. Discover all test directories**
+**0a.
+Discover all test directories**
 
 Use the Glob tool to find every test directory:
 
   Pattern: `code/hainn/**/test-modeling-*`  (recursive, directories only)
 
-Collect the full path for each result. Group them by family (the segment of
-the path immediately after `code/hainn/`):
+Collect the full path for each result.
+Group them by family (the segment of the path immediately after `code/hainn/`):
 
   mlpredictor, tefm, tsforecast, tediffusion, bandit, (others)
 
-**0b. For each test directory, gather three signals**
+**0b.
+For each test directory, gather three signals**
 
 For each directory PATH found above:
 
@@ -63,7 +65,8 @@ For each directory PATH found above:
     Not found, but grep finds `RecStore|read_parquet`  ->  RecStore  (gap)
     Neither found  ->  Unknown (scripts may not load data at L1/L2)
 
-**0c. Determine status for each directory**
+**0c.
+Determine status for each directory**
 
 Apply this decision table:
 
@@ -77,7 +80,8 @@ Apply this decision table:
                  in a TODO_*.md file in the directory
   NO SCRIPTS  -- zero script files found at all (new/empty directory)
 
-**0d. Render the dashboard**
+**0d.
+Render the dashboard**
 
 Print this table (fill in real values from signals above):
 
@@ -112,14 +116,13 @@ HAIPIPE-NN STATUS DASHBOARD
  Legend:  ✅ canonical   ❌ needs work   🔄 partial   ? not applicable at L1/L2
 ```
 
-NOTE: The table above is a starting snapshot (as of 2026-02-22). Always
-re-run the discovery commands above to get the live current state -- the
-table will drift as models are updated.
+NOTE: The table above is a starting snapshot (as of 2026-02-22).
+Always re-run the discovery commands above to get the live current state -- the table will drift as models are updated.
 
-**0e. Print navigation paths**
+**0e.
+Print navigation paths**
 
-After the table, print the absolute path to each test directory so the user
-can click to open it directly:
+After the table, print the absolute path to each test directory so the user can click to open it directly:
 
 ```
 PATHS
@@ -188,7 +191,8 @@ bandit / BanditV1
   code/hainn/tuner/bandit/test-modeling-bandit/
 ```
 
-**0f. Suggest the next action**
+**0f.
+Suggest the next action**
 
 After the table and paths, recommend what to work on next using this priority:
 
@@ -197,10 +201,11 @@ After the table and paths, recommend what to work on next using this priority:
   2. L1/L2 ONLY -- building L3/L4 is real engineering; ask user before starting
   3. BLOCKED -- do not attempt until the blocker is resolved; refer to TODO_*.md
 
-Then ask: "Which model would you like to review in depth? (Or type 'update' to
-start updating the next NEEDS UPDATE directory.)"
+Then ask: "Which model would you like to review in depth?
+(Or type 'update' to start updating the next NEEDS UPDATE directory.)"
 
-**0g. Fill in slots for per-model review (if user selects a model)**
+**0g.
+Fill in slots for per-model review (if user selects a model)**
 
 Once the user picks a model, fill in these slots using discovered paths above.
 All steps in fn-review.md use these:

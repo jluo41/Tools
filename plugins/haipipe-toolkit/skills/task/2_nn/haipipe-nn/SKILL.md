@@ -13,8 +13,8 @@ metadata:
 Skill: haipipe-nn (orchestrator)
 =================================
 
-User-facing entry for Stage 5. Parses intent, dispatches to the right
-layer specialist via `Skill()`.
+User-facing entry for Stage 5.
+Parses intent, dispatches to the right layer specialist via `Skill()`.
 
 ```
 /haipipe-nn                       -> cross-layer dashboard
@@ -108,8 +108,7 @@ Step 5: Capture the specialist's structured tail (status / summary /
 Cross-Layer Dashboard (no-arg case)
 ------------------------------------
 
-When invoked with no arguments, fan out to every specialist's dashboard
-in a single message (parallel) and concatenate:
+When invoked with no arguments, fan out to every specialist's dashboard in a single message (parallel) and concatenate:
 
 ```
 Skill("haipipe-nn-algo",      args="dashboard")
@@ -166,5 +165,5 @@ fn/fn-generate.md        generate procedure (used by every specialist)
 fn/fn-test.md            test procedure (used by every specialist)
 ```
 
-These fn docs are SHARED across specialists. Each specialist reads its own
-`ref/concepts.md` plus the relevant umbrella fn doc.
+These fn docs are SHARED across specialists.
+Each specialist reads its own `ref/concepts.md` plus the relevant umbrella fn doc.

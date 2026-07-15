@@ -1,7 +1,9 @@
 fn-scaffold: Scaffold an algo-dev demo task-folder
 ====================================================
 
-Purpose: verify a newly developed algorithm class (forward / loss / metric) runs end-to-end on a TINY config. NOT for full training — see `/haipipe-task-for-fit` for that. Group letter default: **X** (X_algo).
+Purpose: verify a newly developed algorithm class (forward / loss / metric) runs end-to-end on a TINY config.
+NOT for full training — see `/haipipe-task-for-fit` for that.
+Group letter default: **X** (X_algo).
 
 Output: `tasks/X_algo/{NN}_test_<algo_name>/`.
 
@@ -53,8 +55,8 @@ Fill in:
 Step 5 — Run-script
 --------------------
 
-Copy `../../../haipipe-task/ref/run-sh-template.sh` to
-`runs/algo_<algo_name>_tiny.sh`. Set `TASK_NAME="{NN}_test_<algo_name>"`.
+Copy `../../../haipipe-task/ref/run-sh-template.sh` to `runs/algo_<algo_name>_tiny.sh`.
+Set `TASK_NAME="{NN}_test_<algo_name>"`.
 
 
 Step 6 — Cross-skill link
@@ -89,8 +91,7 @@ MUST NOT
 First-run gate
 ---------------
 
-`runs/<RUN>.sh` blocks execution if `CODE_REVIEW.md` is missing or
-stale (gate inherited from `../../../haipipe-task/ref/run-sh-template.sh`).
+`runs/<RUN>.sh` blocks execution if `CODE_REVIEW.md` is missing or stale (gate inherited from `../../../haipipe-task/ref/run-sh-template.sh`).
 For the first run after this scaffold, do ONE of:
 
   1. **Recommended** — run the haipipe-task-reviewer-agent (Gate 1) on this
@@ -108,5 +109,4 @@ For the first run after this scaffold, do ONE of:
      ```
      (Only appropriate for throwaway / disposable runs.)
 
-Surface this to the user in the orchestrator's `next:` line so they
-know **before** trying to launch.
+Surface this to the user in the orchestrator's `next:` line so they know **before** trying to launch.

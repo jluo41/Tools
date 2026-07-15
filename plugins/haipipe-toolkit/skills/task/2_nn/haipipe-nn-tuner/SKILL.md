@@ -13,10 +13,9 @@ metadata:
 Skill: haipipe-nn-tuner
 ========================
 
-Layer 2 specialist. Owns the tuner classes in `code/hainn/tuner/` — search
-space declarations, hyperparameter sampling, and the loop that wraps L1
-algorithms. Called by the `/haipipe-nn` orchestrator; can also be invoked
-directly.
+Layer 2 specialist.
+Owns the tuner classes in `code/hainn/tuner/` — search space declarations, hyperparameter sampling, and the loop that wraps L1 algorithms.
+Called by the `/haipipe-nn` orchestrator; can also be invoked directly.
 
   Function axis:  dashboard | review | generate | test
 
@@ -50,15 +49,15 @@ test          ref/concepts.md        ../haipipe-nn/fn/fn-test.md
 (no fn arg)   ref/concepts.md        (ref-only mode)
 ```
 
-`generate` reads the L3 (instance) ref because the tuner's output
-(best-config + ckpt) becomes the input contract for ModelInstance.
+`generate` reads the L3 (instance) ref because the tuner's output (best-config + ckpt) becomes the input contract for ModelInstance.
 
 ---
 
 Step-by-Step Protocol
 ----------------------
 
-Step 0: Read `../haipipe-nn/ref/overview.md`. Mandatory.
+Step 0: Read `../haipipe-nn/ref/overview.md`.
+Mandatory.
 Step 1: Parse args. Function vocabulary: dashboard | review | generate | test.
 Step 2: Read this skill's `ref/concepts.md` for L2 specifics.
 Step 3: Read the umbrella fn doc.

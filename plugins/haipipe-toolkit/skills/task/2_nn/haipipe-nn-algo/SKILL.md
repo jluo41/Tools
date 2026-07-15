@@ -13,10 +13,10 @@ metadata:
 Skill: haipipe-nn-algo
 =======================
 
-Layer 1 specialist. Owns the algorithm definitions in `code/hainn/algo/`.
-Algorithms are the model classes — forward pass, loss, metric — without
-any hyperparameter sweep or training loop logic. Called by the
-`/haipipe-nn` orchestrator; can also be invoked directly.
+Layer 1 specialist.
+Owns the algorithm definitions in `code/hainn/algo/`.
+Algorithms are the model classes — forward pass, loss, metric — without any hyperparameter sweep or training loop logic.
+Called by the `/haipipe-nn` orchestrator; can also be invoked directly.
 
   Function axis:  dashboard | review | generate | test
 
@@ -50,15 +50,15 @@ test           ref/concepts.md       ../haipipe-nn/fn/fn-test.md
 (no fn arg)    ref/concepts.md       (ref-only mode)
 ```
 
-`generate` reads the L2 (tuner) ref because a new algorithm must satisfy
-the tuner's expected `__init__` signature for hyperparameter binding.
+`generate` reads the L2 (tuner) ref because a new algorithm must satisfy the tuner's expected `__init__` signature for hyperparameter binding.
 
 ---
 
 Step-by-Step Protocol
 ----------------------
 
-Step 0: Read `../haipipe-nn/ref/overview.md` for the 4-layer map. Mandatory.
+Step 0: Read `../haipipe-nn/ref/overview.md` for the 4-layer map.
+Mandatory.
 Step 1: Parse args. Function vocabulary: dashboard | review | generate | test.
 Step 2: Read this skill's `ref/concepts.md` for L1 specifics.
 Step 3: Read the umbrella fn doc.

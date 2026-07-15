@@ -13,9 +13,12 @@ metadata:
 Skill: haipipe-task-for-algo
 =================================
 
-Scaffolds an **algo-dev smoke-test task-folder**. Purpose: verify a new algorithm class (forward / loss / metric) runs end-to-end. This is NOT a training run — minimal config, minutes-not-hours, just "did it crash + does the loss go down on one batch".
+Scaffolds an **algo-dev smoke-test task-folder**.
+Purpose: verify a new algorithm class (forward / loss / metric) runs end-to-end.
+This is NOT a training run — minimal config, minutes-not-hours, just "did it crash + does the loss go down on one batch".
 
-**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the `<TASK>.py` body). Always end with the structured return block (status / task_folder / run_name / files).
+**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Stage 2: Build, then authors the `<TASK>.py` body).
+Always end with the structured return block (status / task_folder / run_name / files).
 
 
 
@@ -56,7 +59,9 @@ Heavy outputs: none (tiny / disposable).
 Cross-reference to pipeline skill
 ----------------------------------
 
-`/haipipe-nn-algo` owns the algorithm class itself (Layer 1: model, forward, loss, metric). This skill scaffolds the smoke-test demo that exercises it. Typical flow:
+`/haipipe-nn-algo` owns the algorithm class itself (Layer 1: model, forward, loss, metric).
+This skill scaffolds the smoke-test demo that exercises it.
+Typical flow:
 
   1. `/haipipe-nn-algo` — author the algorithm class.
   2. `/haipipe-task-for-algo` — scaffold the paired demo.
@@ -67,7 +72,8 @@ Cross-reference to pipeline skill
 Scaffold flow
 -------------
 
-See `fn/scaffold.md` for the detailed step-by-step. Summary:
+See `fn/scaffold.md` for the detailed step-by-step.
+Summary:
 
   1. Identify project + task-group.
   2. Collect metadata (NN, name, type-specific extras, _meta block).
