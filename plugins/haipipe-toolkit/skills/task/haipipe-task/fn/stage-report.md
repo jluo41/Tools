@@ -73,6 +73,7 @@ For EACH `plan-script-<name>.yaml`, generate a matching `report-script-<name>.ya
 
 
 > JL: One line one sentence. 
+>> CC 23:17: [SOLVED] Done — this file is authored one sentence per line (verified: reflow is a no-op). Now a standing convention in haipipe-task/PREFERENCES.md.
 
 Do NOT use ad-hoc fields like `id`, `name`, `outputs`, `exists`, `rows`, `size_kb`.
 Those are not in the schema.
