@@ -252,5 +252,7 @@ Pointers
    spec + rationale (why it is built this way)  → ../../../diagram/260714-probe-qa/
    the PROBE-phase workers that run the loop     → ../../paper/2-phase/1-probe/haipipe-paper-probe/
                                                    ../../application/2-phase/1-probe/haipipe-application-probe/
+   the question-level collector agent (②③④,       → ../agents/haipipe-probe-worker-agent.md
+     stake-free, shared, isolated context)
    the executor-side qa verb (writes QA files)   → ../../task/haipipe-task/fn/qa.md  ·  the discovery twin
 ```

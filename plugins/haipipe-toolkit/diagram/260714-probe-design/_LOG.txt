@@ -167,6 +167,22 @@ JL comments (`> JL:`) that land in 01-04 move HERE once their edit is applied, v
      This is the FIRST real end-to-end exercise of the checker on the new field shape.
 
 
+[2026-07-15 02:05 · SHIPPED] a probe AGENT — question-level, stake-free, shared
+  > JL: where is the agent? we want an agent for it. But the probe will only handle
+        the question level, right? Q-executor.
+  >> CC: right. Created haipipe-probe-worker-agent — the probe layer's ONE live agent
+     (gateway + judge stay retired). It is the SCOPING JL nailed: because a q-executor
+     has the stake ALREADY stripped, an agent at the q-executor level never sees the
+     ## Why, so it is a CLEAN-CONTEXT agent (like the executor orchestrators) and can be
+     SHARED across paper + application. It runs the stake-free middle of the loop —
+     ② MATCH (bank + dedup) → ③ DISPATCH unmatched to the task/discovery orchestrators →
+     ④ POINT — in an isolated context, and returns {q-executor → answered QA path}. The
+     stake-AWARE halves stay with the stage: ① writing the q-executor (T1) and ⑤ harvest
+     (T2). NOT the retired gateway (that was a 1:1 hop; this MATCHes the whole batch first,
+     so an answered question is REUSED not re-run). Registered (~/.claude/agents symlink);
+     rostered in agents/README + the constitution Pointers block.
+
+
 ⏳ STILL OWED
 =============
 
@@ -184,6 +200,10 @@ JL comments (`> JL:`) that land in 01-04 move HERE once their edit is applied, v
      A blanket sweep would corrupt the verbs, so these need per-occurrence review. The
      PROBE-LAYER core (fields, both checkers, constitution, workers, descriptions) is fully
      q-executor/a-consumer and checker-verified; the residual is cosmetic drift in prose.
+  4. WIRE THE PROBE AGENT IN: haipipe-probe-worker-agent EXISTS + is registered, but nothing
+     dispatches it yet — the two worker skills still run ②③④ inline. To USE it, their ②③④
+     steps delegate to Agent(haipipe-probe-worker-agent) (the stage keeps ① + ⑤). Mechanical
+     follow-up across the 2 workers. JL to say go.
   (nothing structural owed on harvest — resolved below.)
 ```
 
