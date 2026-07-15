@@ -32,7 +32,7 @@ Location — one FLAT pool, one file per TOPIC
 Probe file anatomy
 -------------------
 
-Full spec: the constitution's PART 2. In brief — one `## Why` per FILE, one SECTION per question:
+Full spec: the constitution's "The probe file" section. In brief — one `## Why` per FILE, one SECTION per question:
 
 ```markdown
 # PP01 — refill timing feasibility

@@ -238,7 +238,7 @@ function stake_leak(s,   low) {
 # (staleness is the thing the reader must act on).
 #
 # A QA file with NO state line is MALFORMED, not "legacy". `state:` is MANDATORY, ALWAYS
-# (constitution PART 3a). The first cut of this file mapped a stateless QA file to the kind
+# (the constitution, "The QA file" section). The first cut of this file mapped a stateless QA file to the kind
 # `legacy` and EXEMPTED it from every claim check -- so an executor could defeat the whole
 # lying-receipt tooth BY OMISSION: drop one line, ship an empty `## Answer`, and the gate
 # goes green while a consumer publishes a `reading:` derived from nothing. The grandfather
