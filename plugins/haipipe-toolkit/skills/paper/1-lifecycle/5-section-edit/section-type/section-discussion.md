@@ -1,9 +1,3 @@
----
-name: section-discussion
-description: "Playbook for the Discussion section. Lists framings (limitation-first / implication-first / future-first / counter-claim), the 'don't overclaim' rule, how to acknowledge limits without weakening contribution. Use when writing or revising 0-sections/03*.tex (Discussion). Trigger: discussion, limitations, implications, future work, /section-discussion."
-allowed-tools: Read, Grep, Glob
----
-
 section-discussion — Playbook (STUB)
 =====================================
 

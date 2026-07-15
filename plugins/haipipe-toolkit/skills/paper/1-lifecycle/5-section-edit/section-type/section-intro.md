@@ -1,9 +1,3 @@
----
-name: section-intro
-description: "Playbook for the Introduction section. Lists possible hooks (motivation / problem-statement / gap / story / surprising-result), how to lead with one-message pitch, common failure modes (over-claim, no clear contribution, lit-review-creep). Use when writing or revising 0-sections/01_introduction.tex or when picking an angle for a new paper's intro. Trigger: intro, introduction, hook, motivation, contribution claim, /section-intro."
-allowed-tools: Read, Grep, Glob
----
-
 section-intro — Playbook (STUB)
 ================================
 

@@ -1,9 +1,3 @@
----
-name: section-results
-description: "Playbook for the Results section. Lists arcs (figure-driven / claim-driven / comparison-driven / surprise-first), how to map claims to subsections, common ordering. Use when writing or revising 0-sections/02*.tex (Results). Trigger: results, results section, figure mapping, claim mapping, /section-results."
-allowed-tools: Read, Grep, Glob
----
-
 section-results — Playbook (STUB)
 ==================================
 
