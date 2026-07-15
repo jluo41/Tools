@@ -93,7 +93,7 @@ The draft ENDS by proposing the probe work it just created. DRAFT proposes; PROB
 ```markdown
 ---
 
-## Q-Paper proposed by this draft
+## Q-consumer proposed by this draft
 
 values:    {VAL:? cross-model MAE}            -> expected source: npjDM Table 2 / tasks/ run
            {VAL:? mean agreeableness}         -> paper-local: 0-displays/table1-.../source/metrics.json
@@ -138,7 +138,7 @@ This is a BACKWARD FILL: tex -> .md, done ONCE at scaffold time. From then on th
 - [ ] Every paragraph has a heading, preview, and real prose sentences
 - [ ] Structure overview matches the paragraph blocks
 - [ ] Every unverified number is a `{VAL:?}`; every citation gap a `\cite{TOADD}` + `_CITATION_` row; every `\citep{key}` greps to a real .bib entry (nothing invented)
-- [ ] "Q-Paper proposed by this draft" block at the end covers every placeholder + display need; heavier needs buffered as planned PP skeletons in `1-probes/` + Status board row
+- [ ] "Q-consumer proposed by this draft" block at the end covers every placeholder + display need; heavier needs buffered as planned PP skeletons in `1-probes/` + Status board row
 - [ ] ⛔ The user has reviewed the STRUCTURE + the QUESTIONS RAISED and approved (no open structural `> USER:` questions)
 - [ ] _LOG has a `[GATE] draft-review: approved` entry quoting the user
 

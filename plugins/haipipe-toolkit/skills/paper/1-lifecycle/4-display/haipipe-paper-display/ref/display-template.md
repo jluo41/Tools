@@ -26,7 +26,7 @@ Row order = narrative order = gallery order; each display's `@<paper section>` m
 <status vocabulary: planned -> data-ready -> candidates -> rendered -> input-ready -> inserted -> reviewed>
 
 
-Q-Paper
+Q-consumer
 ------
 
 Each probe is its own sub-item, numbered within its lane: `S` sweep (coverage first), `E` evidence (numbers come from tasks/probes, never typed by the agent), `R` render (candidates land in the unit's `candidates/`; `assets/` untouched until REVISE).

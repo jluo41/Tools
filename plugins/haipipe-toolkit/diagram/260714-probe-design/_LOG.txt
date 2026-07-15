@@ -347,3 +347,19 @@ JL comments (`> JL:`) that land in 01-04 move HERE once their edit is applied, v
   (Rn), so "Q-Paper" (= questions) is a looser fit there than for seed/claims/venue/section.
   Renamed for cross-stage consistency; JL to override if display should keep its own label.
   CHANGELOGs left as history (never rewritten).
+
+
+[2026-07-15 04:00 · SHIPPED] vocab, cont.: Q-Paper → Q-consumer (drop the concrete alias)
+  JL: "for Q-paper, we also call it Q-consumer, how do you think?"
+  CC: agreed, and for a stronger reason than brevity — the FIELDS are `q-executor:` and
+  `a-consumer:` (consumer/executor language). "Q-Paper" would be the ONLY spot using
+  paper/intervention naming while everything around it says consumer/executor; it also left
+  a lopsided paper=Q-Paper / app=Q-consumer split. "Q-consumer" makes the section heading
+  match the field it feeds and collapses both families onto ONE 2×2 term. "consumer" is
+  already core vocabulary (a-consumer, consumer-level, consumer session) — not a new concept.
+  Reverted the 03:45 rename: the same 6 templates Q-Paper → `Q-consumer`; the FOUR FORMS
+  line simplified to "Q-consumer is where a stage raises its questions … the same in paper
+  and application — one term, matching the q-executor:/a-consumer: fields."
+  STILL OPEN: application stage templates still say "Probes" (never renamed) — to finish the
+  unification they should also go → `Q-consumer`. And the deferred paper SKILL.md body refs
+  (seed/claims/display/section-edit/venue) now target "Q-consumer", not "Q-Paper".
