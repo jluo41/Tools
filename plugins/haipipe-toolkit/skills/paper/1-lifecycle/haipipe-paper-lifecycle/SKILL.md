@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
   version: "3.0.0"
   last_updated: "2026-07-14"
-  summary: "Router for the 1-lifecycle stage spine: folder, seed (0), resource (1), claims (1) [venue-FREE] -> venue (gate) -> pitch (2), narrative (3), display (4), section-edit (5) [venue-ALIGNED], plus the display renderer family. Stage skills run DRAFT -> PROBE -> REVISE -> CHECK internally via 2-phase/ workers; this router never routes users to phase skills. Two modes: depth-first per-stage cycles for single-stage work, and GLOBAL-PASS (draft all stages breadth-first, consolidate probes once via `probe plan`, batch the handoff, harvest, then REVISE/CHECK per stage). RESOURCE shares the number 1 with claims (as venue/pitch share 2) and renumbers nothing. History: ./CHANGELOG.md."
+  summary: "Router for the 1-lifecycle stage spine: folder, seed (0), resource (1a), claims (1b) [venue-FREE] -> venue (gate) -> pitch (2), narrative (3), display (4), section-edit (5) [venue-ALIGNED], plus the display renderer family. Stage skills run DRAFT -> PROBE -> REVISE -> CHECK internally via 2-phase/ workers; this router never routes users to phase skills. Two modes: depth-first per-stage cycles for single-stage work, and GLOBAL-PASS (draft all stages breadth-first, consolidate probes once via `probe plan`, batch the handoff, harvest, then REVISE/CHECK per stage). Resource is stage 1a and claims is 1b (like 2-venue then 2-pitch within stage 2); nothing renumbers. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -79,9 +79,9 @@ haipipe-paper-folder                  SCAFFOLD:  minimal quick scaffold (README 
 
 haipipe-paper-seed          SEED (0):    maintain 0-lifecycle/0-seed/0-seed.md: 3 sections (Seed Question, Motivations, Tentative Claim Shape); the venue-FREE contract that keeps a paper possibility alive before evidence matures.
 
-haipipe-paper-resource      RESOURCE (1): maintain 0-lifecycle/1-resource/1-resource.md, the venue-FREE prerequisite contract: what must EXIST for this paper to be testable, does it exist, and can it CARRY the claim? Two sections only -- Demand (one N<n> per hypothesis, keyed on H<n>) and Questions (one Q<n>, and its A when the answer lands). Scope is DATA + MODELS + PRODUCING-CODE (data is the bulk, not the boundary). The stage ASKS; the probe layer ROUTES -- it mints no PP ids and picks no probe types. Cleavage: task-for-data / task-for-algo (ingredients) belong HERE; task-for-fit (train the model) + task-for-eval (evaluate) are CLAIMS'. Shares the number 1 with claims (as 2-venue/ and 2-pitch/ already share 2). Exits: proceed / reseed / park.
+haipipe-paper-resource      RESOURCE (1a): maintain 0-lifecycle/1-resource/1-resource.md, the venue-FREE prerequisite contract: what must EXIST for this paper to be testable, does it exist, and can it CARRY the claim? Two sections only -- Demand (one N<n> per hypothesis, keyed on H<n>) and Questions (one Q<n>, and its A when the answer lands). Scope is DATA + MODELS + PRODUCING-CODE (data is the bulk, not the boundary). The stage ASKS; the probe layer ROUTES -- it mints no PP ids and picks no probe types. Cleavage: task-for-data / task-for-algo (ingredients) belong HERE; task-for-fit (train the model) + task-for-eval (evaluate) are CLAIMS'. Stage 1a; claims is 1b. Exits: proceed / reseed / park.
 
-haipipe-paper-claims        CLAIMS (1):  maintain 0-lifecycle/1-claims/1-claims.md, the venue-FREE claim/evidence inventory (supported / weak / GAP), each row tied to an evidence source; venue-neutral H1/H2/H3; emits needs and backfills probe verdicts.
+haipipe-paper-claims        CLAIMS (1b):  maintain 0-lifecycle/1-claims/1-claims.md, the venue-FREE claim/evidence inventory (supported / weak / GAP), each row tied to an evidence source; venue-neutral H1/H2/H3; emits needs and backfills probe verdicts.
 
 --- VENUE DECISION (pins target journal in STATUS.md) ---
 
@@ -133,11 +133,11 @@ The typical first-pass order:
       ↓
   seed (0)       why this paper might exist (venue-FREE)
       ↓
-  resource (1)   what must EXIST for this paper to be testable, does it exist, can it CARRY
+  resource (1a)   what must EXIST for this paper to be testable, does it exist, can it CARRY
                  the claim? Demand (N<n> per H<n>) + Questions (Q<n> + A). Data, models, and
                  producing-code alike. Shares the number 1 with claims; renumbers nothing.
       ↓
-  claims (1)     claim/evidence inventory: supported / weak / GAP, with evidence sources
+  claims (1b)     claim/evidence inventory: supported / weak / GAP, with evidence sources
                  venue-neutral H1/H2/H3 hypotheses; no [primary], no RQ framing
 
   VENUE DECISION
@@ -391,9 +391,9 @@ haipipe-paper-lifecycle (this orchestrator)
   VENUE-FREE:
   |-- folder             (lives in 3-build-submit/, routed from here)
   |-- seed (0)
-  |-- resource (1)       (prerequisite contract: Demand + Questions; shares the number 1 with
+  |-- resource (1a)       (prerequisite contract: Demand + Questions; shares the number 1 with
   |                       claims, as 2-venue/ and 2-pitch/ already share 2)
-  |-- claims (1)
+  |-- claims (1b)
   VENUE DECISION:
   |-- venue              (pin target journal in STATUS.md)
   VENUE-ALIGNED:

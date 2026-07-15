@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "2.1.1"
   last_updated: "2026-07-14"
-  summary: "Resource stage (stage 1, venue-FREE): do the paper's prerequisites EXIST and can they CARRY the claim? It is INVENTORY + FEASIBILITY, not the experiment -- training this paper's model and evaluating it is the CLAIMS stage's job. Two sections -- Demand + Questions. The stage ASKS; the probe layer ROUTES. History: ./CHANGELOG.md."
+  summary: "Resource stage (stage 1a, venue-FREE): do the paper's prerequisites EXIST and can they CARRY the claim? It is INVENTORY + FEASIBILITY, not the experiment -- training this paper's model and evaluating it is the CLAIMS stage's job. Two sections -- Demand + Questions. The stage ASKS; the probe layer ROUTES. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

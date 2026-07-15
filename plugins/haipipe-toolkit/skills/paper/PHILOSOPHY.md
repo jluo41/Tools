@@ -27,7 +27,7 @@ Early stages are markdown (argument documents need no compilation); display and 
 
 Two axes stay orthogonal: **layer/frontier** (which stage has the active work) and **maturity** (how real the paper is: seed, working, submission-ready, published).
 
-`1-resource`, `1-claims` and `4-display` are the three stages where the paper reaches out for evidence. They cleave cleanly: a question that CHANGES what exists on disk (`task-for-data` / `task-for-algo` / `task-for-fit`) is RESOURCE; a question that READS what exists and MOVES A CLAIM'S STATUS (`task-for-eval`) is CLAIMS. Resource may never commission `task-for-eval`. `review` is the gate that decides which earlier stage is broken.
+`1-resource`, `1-claims` and `4-display` are the three stages where the paper reaches out for evidence. They cleave cleanly: resource asks whether the ingredients EXIST and can CARRY the claim (`task-for-data` / `task-for-algo`); claims RUNS THE EXPERIMENT — training this paper's model (`task-for-fit`) and evaluating it (`task-for-eval`) — that MOVES a claim's status. Resource may never train or evaluate. `review` is the gate that decides which earlier stage is broken.
 
 ## Evidence routing
 

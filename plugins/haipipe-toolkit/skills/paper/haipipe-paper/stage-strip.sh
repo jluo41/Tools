@@ -37,14 +37,14 @@ current=$(grep -m1 '^| current_layer |' "$status" | sed 's/^|[^|]*|[[:space:]]*/
 # fallback to old format
 [ -z "$current" ] && current=$(grep -m1 '^current_layer:' "$status" | sed 's/^current_layer:[[:space:]]*//' | tr -d '[:space:]')
 # normalize numbered stage-folder names (1-claims -> claims); spine keys are bare
-current=$(printf '%s' "$current" | sed 's/^[0-9]-//')
+current=$(printf '%s' "$current" | sed -E 's/^[0-9]+[a-z]?-//')
 
 # canonical spine order: venue coupling gradient FREE→ALIGNED→HEAVY→SPECIFIC
 # seed(FREE) resource(FREE) claims(FREE) venue(chooser) pitch(ALIGNED=cover letter) narrative(ALIGNED) display(HEAVY) section-edit(SPECIFIC) review
 # resource added 2026-07-14 (JL): what must EXIST for the paper to be testable.
 # The NUMBER is decoration -- this list is the only machine-readable ordering in
-# the toolkit, and line ~40 strips the digit before matching, which is why
-# 1-resource/ and 1-claims/ can share a number (as 2-venue/ and 2-pitch/ already do).
+# the toolkit, and line ~40 strips the numeric+letter prefix before matching.
+# The SKILL folders are 1a-resource/ and 1b-claims/; the paper's 0-lifecycle/ folders stay 1-resource/1-claims/.
 keys="seed resource claims venue pitch narrative display section-edit review"
 
 # Does this stage have an artifact folder on disk? (0-lifecycle/<N>-<key>/ or

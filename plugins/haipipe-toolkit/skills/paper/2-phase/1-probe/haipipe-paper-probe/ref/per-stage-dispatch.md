@@ -31,7 +31,7 @@ acquire; acquisition is always a question SECTION -> its `q-executor:` -> the
 task/discovery orchestrator -> the answering QA file)
 ----------------
 - **seed** -- probe mode light (-> discovery): landscape / related work / novelty to sharpen the seed question; returned sources HARVEST into _CITATION_0-seed.md. No values/display lanes.
-- **resource** -- probe mode light for SCAN questions, FULL for BUILD questions (-> task + discovery): the prerequisite stage (`what must EXIST for this paper to be testable, does it exist, can it CARRY the claim?`). The stage ASKS (Q\<n\>, keyed to a demand row N\<n\>); THIS WORKER's ① ORGANIZE stage intake opens one SECTION per approved Q and writes the `-> PP<NN>` backlink into 1-resource.md; ② MATCH then resolves it against the bank, and only an unmatched section is DISPATCHED to the task/discovery orchestrator, which picks the shape and depth in its own clean context. Two lanes, SCAN (blocking) and BUILD (non-blocking) -- see Resource specifics. `task-for-eval` is FORBIDDEN here (that is claims). NO harvest lanes at all (see below).
+- **resource** -- probe mode light for SCAN questions, FULL for BUILD questions (-> task + discovery): the prerequisite stage (`what must EXIST for this paper to be testable, does it exist, can it CARRY the claim?`). The stage ASKS (Q\<n\>, keyed to a demand row N\<n\>); THIS WORKER's ① ORGANIZE stage intake opens one SECTION per approved Q and writes the `-> PP<NN>` backlink into 1-resource.md; ② MATCH then resolves it against the bank, and only an unmatched section is DISPATCHED to the task/discovery orchestrator, which picks the shape and depth in its own clean context. Two lanes, SCAN (blocking) and BUILD (non-blocking) -- see Resource specifics. `task-for-fit` and `task-for-eval` are FORBIDDEN here -- training and evaluating are claims' (resource stops at "do the ingredients exist and can they carry the claim?"). NO harvest lanes at all (see below).
 - **claims** -- probe mode FULL (-> task + discovery): the core evidence stage; one question SECTION per GAP claim. A full-mode section's answer is read by the author, who writes the claim status into `0-lifecycle/1-claims/1-claims.md` — the ONLY home of a claim's status (there is no review gate; a probe is communication, not judgment). `## Verdict` and `verdicted` are DELETED. Claims does NOT consume seed's `[FORWARD -> ...]` pointers — RESOURCE is their sole consumer; claims only picks up the ones resource explicitly DECLINED to it (per `_LOG_1-resource.md`).
 - **pitch** -- citation lane only (anchor papers).
 - **narrative** -- citation + display lanes (beats map to displays).
@@ -109,7 +109,7 @@ SCAN  -- minutes. GATE-BLOCKING. This is what makes the stage DECIDABLE.
     Re-route it to BUILD, or shrink the question until it fits the hour.
 
 BUILD -- days to weeks. NON-BLOCKING, ALWAYS.
-    task-for-data / task-for-algo / task-for-fit
+    task-for-data / task-for-algo   (ingredients; task-for-fit is claims' now)
     LONG ACQUISITIONS (a DUA or IRB application -- an ETA in MONTHS, a CALENDAR
       cost, not a compute cost)
     The SECTION carries (BUILD-lane fields, only at state: commissioned):
@@ -120,9 +120,10 @@ BUILD -- days to weeks. NON-BLOCKING, ALWAYS.
         cross-project: <path | none-found>     MANDATORY -- empty is a FAIL
 ```
 
-FORBIDDEN in resource: **`task-for-eval`**. That is CLAIMS. A section whose
-q-executor is eval-shaped while it `serves: resource` is mis-scoped by definition --
-fit makes the model, eval makes the evidence, and a bundled fit+eval entangles the
+FORBIDDEN in resource: **`task-for-fit`** and **`task-for-eval`**. Those are CLAIMS
+(training and evaluating are the experiment). A section whose q-executor is fit- or
+eval-shaped while it `serves: resource` is mis-scoped by definition --
+a bundled fit+eval entangles the
 judgment (Paper-CGMtoAge's PP04: you cannot tell whether the null came from the
 MODEL or from the CORPUS).
 

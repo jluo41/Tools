@@ -56,8 +56,8 @@ This skill carries NO templates of its own -- the stage owns its format.
 | Stage | Artifact spec | Template |
 |---|---|---|
 | seed | `1-lifecycle/0-seed/haipipe-paper-seed/SKILL.md` | `ref/seed-template.md` |
-| resource | `1-lifecycle/1-resource/haipipe-paper-resource/SKILL.md` | `ref/resource-template.md` |
-| claims | `1-lifecycle/1-claims/haipipe-paper-claims/SKILL.md` | `ref/claims-template.md` |
+| resource | `1-lifecycle/1a-resource/haipipe-paper-resource/SKILL.md` | `ref/resource-template.md` |
+| claims | `1-lifecycle/1b-claims/haipipe-paper-claims/SKILL.md` | `ref/claims-template.md` |
 | pitch | `1-lifecycle/2-pitch/haipipe-paper-pitch/SKILL.md` | `ref/pitch-template.md` |
 | narrative | `1-lifecycle/3-narrative/haipipe-paper-narrative/SKILL.md` | `ref/narrative-template.md` |
 | display | `1-lifecycle/4-display/haipipe-paper-display/SKILL.md` | `ref/display-template.md` (unit contracts live in the same `ref/`) |
@@ -161,7 +161,7 @@ When the user approves:
 
 ### resource
 - Output: `0-lifecycle/1-resource/1-resource.md`; template `ref/resource-template.md`
-- Venue-FREE, and it sits BETWEEN seed and claims — it shares the number 1 with claims on disk (precedented by `2-venue/` + `2-pitch/`).
+- Venue-FREE, and it sits BETWEEN seed and claims — it is stage 1a, just before claims (1b) on disk (precedented by `2-venue/` + `2-pitch/`).
   Nothing renumbers.
 - EXACTLY TWO SECTIONS: **Demand** (one `**N<n> (H<n>)**` per prerequisite the seed's Tentative Claim Shape implies -- keyed on H, never C) and **Questions** (one `**Q<n> (N<n>)**`, its `-> PP<NN>` backlink once the PROBE worker opens the section, and its `A:` when the answer lands).
   NO Kill Conditions, NO Setup Contract, NO Resource Ledger, NO Binding table — JL cut them 2026-07-14.
@@ -182,7 +182,7 @@ When the user approves:
 - Output: `0-lifecycle/1-claims/1-claims.md`
 - On open: do NOT grep seed's `_LOG` for forward pointers — RESOURCE is their sole consumer, and re-consuming one it already took DOUBLE-DISPATCHES the same build.
   Read `_LOG_1-resource.md` instead: only the pointers resource explicitly DECLINED to claims become PP entries in the Probes section (or are declined again in `_LOG`)
-- Reads the resource stage's `1-resource.md`: input/method/fit are settled there; a claim whose resource is missing is marked BLOCKED-ON-RESOURCE, not re-asked
+- Reads the resource stage's `1-resource.md`: the ingredients (data / reusable model / code) are settled there, but training this paper's model (fit) + eval are claims' own experiment; a claim whose ingredients are missing is marked BLOCKED-ON-RESOURCE, not re-asked
 - PROBE: link evidence sources, spawn probes for GAPs
 - Hypotheses are venue-neutral (H1, H2, H3)
 

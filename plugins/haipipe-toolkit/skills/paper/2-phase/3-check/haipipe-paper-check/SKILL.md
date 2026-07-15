@@ -387,7 +387,7 @@ For non-section-edit stages:
 
 When invoked for a non-section-edit stage, the checker reads the stage's SKILL.md to discover its done-gate criteria, then checks those criteria mechanically.
 
-**Resource gate — the pass/fail rulings the load-bearing sentence implies** (spec: `../../../1-lifecycle/1-resource/haipipe-paper-resource/SKILL.md`, GATE 2):
+**Resource gate — the pass/fail rulings the load-bearing sentence implies** (spec: `../../../1-lifecycle/1a-resource/haipipe-paper-resource/SKILL.md`, GATE 2):
 
 ```text
 commissioned + owner: + eta: in the FUTURE            -> PASS   (a build in flight must not red the gate)

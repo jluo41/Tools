@@ -25,8 +25,8 @@ paper/
 ├── 1-lifecycle/         STAGE orchestrators, one numbered folder per stage
 │     ref/               lifecycle references (03-paper-lifecycle, 04-lifecycle-map, 08-stage-gate, 09-stage-illuminate)
 │     0-seed/haipipe-paper-seed
-│     1-resource/haipipe-paper-resource      (venue-FREE; shares the number 1 with claims)
-│     1-claims/haipipe-paper-claims          (venue-FREE)
+│     1a-resource/haipipe-paper-resource     (venue-FREE; stage 1a)
+│     1b-claims/haipipe-paper-claims         (venue-FREE; stage 1b)
 │     2-pitch/haipipe-paper-pitch            (venue-ALIGNED cover letter)
 │     3-narrative/haipipe-paper-narrative
 │     4-display/haipipe-paper-display + renderers
@@ -64,8 +64,8 @@ Lifecycle stages map 1:1 to skills (full table in `../1-lifecycle/ref/04-lifecyc
 ```text
 enter             -> 0-enter/haipipe-paper-enter
 0-seed            -> 1-lifecycle/0-seed/haipipe-paper-seed
-1-resource        -> 1-lifecycle/1-resource/haipipe-paper-resource (venue-FREE; what must EXIST for the paper to be testable; shares the number 1 with claims)
-1-claims          -> 1-lifecycle/1-claims/haipipe-paper-claims
+1-resource        -> 1-lifecycle/1a-resource/haipipe-paper-resource (venue-FREE; what must EXIST for the paper to be testable; is stage 1a, just before claims (1b))
+1-claims          -> 1-lifecycle/1b-claims/haipipe-paper-claims
 venue (choose+pin)-> 1-lifecycle/haipipe-paper-venue (recommend journal, write STATUS venue; after claims, before pitch; claims is venue-free)
 2-pitch           -> 1-lifecycle/2-pitch/haipipe-paper-pitch
 3-narrative       -> 1-lifecycle/3-narrative/haipipe-paper-narrative

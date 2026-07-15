@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "5.1.1"
   last_updated: "2026-07-14"
-  summary: "Claims stage (stage 1, venue-FREE) -- the ONLY home of a claim's status (supported|refuted|inconclusive + confidence + claim_type, per-claim, private; no '## Verdict', no 'verdicted' state). It OWNS the experiment: train this paper's model (fit) + evaluate (eval) -> the verdict; resource supplies the ingredients (data/models/code), and a claim without them is BLOCKED-ON-RESOURCE. Three sections -- Hypotheses, Claims, Probes + Evidence Campaign. The PROBE phase raises questions as SECTIONS in 1-probes/ and runs the five-step loop; a section's a-consumer FEEDS this ledger. History: ./CHANGELOG.md."
+  summary: "Claims stage (stage 1b, venue-FREE) -- the ONLY home of a claim's status (supported|refuted|inconclusive + confidence + claim_type, per-claim, private; no '## Verdict', no 'verdicted' state). It OWNS the experiment: train this paper's model (fit) + evaluate (eval) -> the verdict; resource supplies the ingredients (data/models/code), and a claim without them is BLOCKED-ON-RESOURCE. Three sections -- Hypotheses, Claims, Probes + Evidence Campaign. The PROBE phase raises questions as SECTIONS in 1-probes/ and runs the five-step loop; a section's a-consumer FEEDS this ledger. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
