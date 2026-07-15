@@ -1,6 +1,6 @@
 ---
 name: haipipe-application-venue
-description: "Venue selection for the intervention lifecycle — the decision gate between the venue-FREE stages (seed, claims) and the venue-ALIGNED stages (pitch, narrative, display, section-edit). Chooses the output modality (sms, push, reminder, checklist, email, dashboard, ui-card, report), pins it in STATUS.md (venue + stages_skipped + claims_settlement), and produces 0-lifecycle/2-venue/2-venue.md with Artifact Principles — the concrete downstream contract (template/slots, limits, tone-by-audience, element types, section structure, gate depth) that pitch/display/section-edit/artifact all read. Runs AFTER claims, BEFORE pitch. Re-pin re-couples pitch+; claims SURVIVES. Trigger: venue, format, modality, which channel, /haipipe-application venue."
+description: "Venue selection for the intervention lifecycle — the decision gate between the venue-FREE stages (seed, the 1a-1d evidence ladder) and the venue-ALIGNED stages (pitch, narrative, display, section-edit). Chooses the output modality (sms, push, reminder, checklist, email, dashboard, ui-card, report), pins it in STATUS.md (venue + stages_skipped + claims_settlement), and produces 0-lifecycle/2-venue/2-venue.md with Artifact Principles — the concrete downstream contract (template/slots, limits, tone-by-audience, element types, section structure, gate depth) that pitch/display/section-edit/artifact all read. Runs AFTER the ladder (1d gate), BEFORE pitch. Re-pin re-couples pitch+; the ladder SURVIVES. Trigger: venue, format, modality, which channel, /haipipe-application venue."
 argument-hint: "[venue-name] [intervention-path] [--no-pin]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
@@ -15,7 +15,7 @@ Skill: haipipe-application-venue
 
 Chooses the output modality for the intervention, pins it in STATUS.md, and DISTILLS the venue pack + audience profile into a stage document the downstream stages consume. The venue gates which stages fire, how much of the claims campaign must settle, and what the artifact looks like.
 
-Runs between **claims** and **pitch** -- the truth (seed, claims) is settled venue-free first; everything that SELLS or SHAPES it (pitch onward) is venue-aligned. The venue packs are knowledge, not skills; this skill is the READER that turns them into a pinned contract. It never edits a pack.
+Runs between **the ladder** and **pitch** -- the truth (seed, the 1a-1d ladder) is settled venue-free first; everything that SELLS or SHAPES it (pitch onward) is venue-aligned. The venue packs are knowledge, not skills; this skill is the READER that turns them into a pinned contract. It never edits a pack.
 
 Available venues
 =================
@@ -98,7 +98,7 @@ Workflow
 
 ```
 Step 1: Read 0-lifecycle/1c-claims/1c-claims.md (the campaign shapes which venues
-        are viable) + 0-lifecycle/1d-principles/1d-principles.md (the directives
+        are viable) + 0-lifecycle/1d-advice/1d-advice.md (the advice entries
         the venue must carry) + 0-seed's channel hunch.
 Step 2: If venue obvious → propose it. If ambiguous → present a shortlist with
         pros/cons (evidence depth vs venue demands; audience fit).
@@ -114,7 +114,7 @@ Step 5: Report which stages fire + whether the campaign already meets the
 Venue change rule (retarget)
 =============================
 
-Changing venue later re-couples the venue-ALIGNED stages ONLY: 2-venue.md rewrites (new principles), pitch/narrative/display/section-edit rewrite, artifacts re-compose. The claims ledger SURVIVES -- the new venue may raise `claims_settlement`, which is additional settlement work on the SAME campaign, not invalidation. The skill states exactly what re-opens and asks for confirmation before re-pinning.
+Changing venue later re-couples the venue-ALIGNED stages ONLY: 2-venue.md rewrites (new Artifact Principles), pitch/narrative/display/section-edit rewrite, artifacts re-compose. The claims ledger SURVIVES -- the new venue may raise `claims_settlement`, which is additional settlement work on the SAME campaign, not invalidation. The skill states exactly what re-opens and asks for confirmation before re-pinning.
 
 **Done-criteria:**
 - [ ] STATUS.md has | venue |, | stages_skipped |, | claims_settlement | rows

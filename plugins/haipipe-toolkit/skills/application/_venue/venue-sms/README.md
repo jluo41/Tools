@@ -68,4 +68,4 @@ Tone per audience profile (warm for patient, clinical for clinician).
 
 ### → Review
 Check: within char limit, CTA is actionable, opt-out present,
-no jargon (if patient), cited_K in frontmatter.
+no jargon (if patient), adopted_A in frontmatter.

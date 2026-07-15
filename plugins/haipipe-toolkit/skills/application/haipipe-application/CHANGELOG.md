@@ -1,7 +1,7 @@
 haipipe-application — Changelog
 ===============================
 
-Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
+Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Oldest first (append at the bottom).
 
 
 ## [1.0.0] — 2026-05-31
@@ -49,3 +49,237 @@ Condensed from the executed SOP-paper-alignment.md (deleted per its own close-ou
 - Wiring: router 6.0.0 (verbs descriptions/themes/principles + composite `ladder`), lifecycle orchestrator 4.0.0, stage-strip.sh keys + `1a-` prefix normalization (tested: frontier collapse + loopback split render correctly), probe ref/per-stage-dispatch 1a-1d rows, check worker per-rung exit criteria + argument-hint, seed FORWARD consumer note + handoff -> ladder, iterate Step 4 backfills fresh A/B numbers into 1a BEFORE triage, enter console read-order/diagnosis/maturity/needs/loopback, wiki 03/05/06/08, PHILOSOPHY + README (delta table + retired-names rows), fn/probe-plans + fn/feedback paths, PREFERENCES alignment-watch ladder caveat (ports map paper claims-stage changes onto 1c, never re-converge).
 - Migration: legacy interventions rename `0-lifecycle/1-claims/` -> `0-lifecycle/1c-claims/` (+ create sibling rung folders) on next open; skills do not dual-read old layouts. Live bench exam (SOP §8) pending on the next real intervention.
 - Templates (JL follow-up, same session: "no ref/ no template ... what the stage generated markdown looks like"): every 1-lifecycle stage skill gains `ref/<stage>-template.md` (seed, descriptions, themes, claims, principles, pitch, narrative, display, venue — 9 files, paper convention), each SKILL.md gains a canonical-template pointer line, and draft worker 1.2.0 gains the template registry table (WRITE reads the stage's template; the worker carries none of its own).
+
+## [6.1.0] — 2026-07-09
+
+- FAMILY ROLLUP (walkthrough rulings + advice rename, same session as 6.0.0): rung 1d RENAMED principles -> ADVICE (haipipe-application-advice 1.1.0; JL: advice is counsel downstream stages adopt or decline — declined entries persist; also kills the principles-vs-Artifact-Principles double-use). Ids P<n> -> A<n>, maturity `principled` -> `advised`, verbs advice|advise|recommendation (+ legacy principles alias), full-tree sweep (router, lifecycle, strip keys, wikis 03/05/06/08, enter, draft registry, check criteria, fn maps, downstream readers, templates).
+- Other executed rulings: display units D<nn> -> U<nn> + all four inline schema blocks converted to ascii ====/---- (JL heading ruling); P/A status enum drops `stale` (staleness = the [STALE] tag alone); router gains the ladder-virgin guard on bare `claims`; wiki/08 codifies the ladder routing invariant (rung CHECK: approve advances / revise reruns / loopback upstream; exit to venue ONLY via the 1d gate) + gate depths parked for the bench.
+- Cumulative DIKW reading adopted as canon (descriptions=D, themes=D+I, claims=D+I+K, advice=D+I+K+W — each rung CONTAINS its lower layers). Round-2 candidates recorded in SOP-ladder-restage.md §10: explore|exploit role tags, 2-design stage + venue-design-doc pack, per-rung maturity.
+- Resolved/parked `> JL:` / `> CC:` walkthrough threads archived below verbatim and removed from the working files (paper-family comment-lifecycle convention); OPEN threads stay in-file awaiting `> USER:` — 1d derivation bars + explore|exploit proposal (1d-advice SKILL.md) and maturity vocab data-described/advised (wiki/06).
+
+
+Archived comment threads — ladder walkthrough (2026-07-09, verbatim)
+----------------------------------------------------------------------
+
+Resolved/parked `> CC:` / `> JL:` threads from the 6.0.0-6.1.0 walkthrough, moved here so the working files stay clean (paper-family comment-lifecycle convention). OPEN threads still live in-file awaiting `> USER:`: 1d derivation bars + explore|exploit proposal (1d-advice SKILL.md) and maturity vocab data-described/advised (wiki/06).
+
+**@ 1-lifecycle/0-seed/haipipe-application-seed/SKILL.md — schema-block heading style (PRIMARY thread; one ruling covered seed/pitch/narrative/display)**
+
+> CC: 🎨 PRIMARY THREAD (one ruling covers seed / pitch / narrative / display): the inline schema blocks use `#`/`##` headings while each skill's formatting rule + its ref/<stage>-template.md are ascii (`=====`/`-----`).
+>
+>             SKILL.md                        ref/<stage>-template.md
+>     +------------------------+            +------------------------+
+>     | 📄 inline schema block |            | 📄 canonical template  |
+>     |    #/## headings ⚡    |     vs     |    ascii =====/-----   |
+>     |    full placeholders   |            |    full placeholders   |
+>     +------------------------+            +------------------------+
+>          └── ⑥ 复述漂移: same format stated 2×, edits WILL diverge ──┘
+>
+>     A    rewrite the 4 illustration blocks to ascii (consistent, keeps the duplication)
+>     B    bless as "example-only" with a one-line note (cheapest, drift stays possible)
+>     C ✅ shrink each inline schema to a section-NAME skeleton + "full form: ref/<stage>-template.md" (single source of truth — kills the drift class the skillset reviews hunt as ⑥)
+>
+> CC: my rec = C. Reply `> USER:` below; I will apply the same ruling to all four files.
+> JL (via the display-file thread): heading use "---" and "====" styles.
+> CC: ✅ executed as A per that ruling — all four illustration blocks converted to ascii, mirroring each ref/<stage>-template.md.
+
+**@ 1-lifecycle/2-pitch/haipipe-application-pitch/SKILL.md — heading-style pointer stub (resolved at the seed thread)**
+
+> CC: 🎨 heading-style thread — the schema block below uses `#`/`##` vs the declared ascii rule; ONE ruling covers seed/pitch/narrative/display. Full options + diagram live in `1-lifecycle/0-seed/haipipe-application-seed/SKILL.md` (reply there).
+
+**@ 1-lifecycle/3-narrative/haipipe-application-narrative/SKILL.md — heading-style pointer stub (resolved at the seed thread)**
+
+> CC: 🎨 heading-style thread — the schema blocks below use `#`/`##` vs the declared ascii rule; ONE ruling covers seed/pitch/narrative/display. Full options + diagram live in `1-lifecycle/0-seed/haipipe-application-seed/SKILL.md` (reply there).
+
+**@ 1-lifecycle/4-display/haipipe-application-display/SKILL.md — display-unit id collision D01 -> U<nn> + local heading-style ruling**
+
+> CC: 🆔 id collision needs your ruling — the illustration below names display units `D01/D02`, but `D<n>` now belongs to 1a description ids (ladder restage).
+>
+>     🆔 id namespaces after the restage
+>       1a-descriptions        1b       1c       1d        4-display
+>     +-----------------+   +------+ +------+ +------+  +----------------+
+>     | 📊 DS<n> dataset |   | 🧩 T |▶| 🧾 C |▶| 🎯 P |  | 🖼️ units:      |
+>     | 📈 D<n>  entry   |──▶+------+ +------+ +------+  |  SKILL: D01 ⚡ |
+>     +-----------------+                                |  ref/:  U01 ✅ |
+>             ▲                                          +----------------+
+>             └──────── ⚡ two meanings of "D" ──────────────────┘
+>
+>     A ✅ rename display units to U<nn> (template already does; 1 schema block to fix; no filled display docs exist yet)
+>     B    rename 1a entries instead (e.g. A<n>; re-edits 5 fresh files + SOP; loses the D-rung DIKW echo)
+>     C    keep both namespaces (zero cost now, but claim-audit greps D<n> cross-rung and will misfire)
+>
+> CC: my rec = A. Reply `> USER:` below.
+> JL: Yes, I agree. please go ahead. 
+> CC: ✅ done — units renamed to U<nn> and the blocks below converted to ascii per your heading ruling; they now mirror ref/display-template.md.
+
+> CC: 🎨 heading-style: ONE ruling covers seed/pitch/narrative/display; the full options thread lives in `1-lifecycle/0-seed/haipipe-application-seed/SKILL.md`.
+> JL: heading use "---" and "====" styles. 
+> CC: ✅ applied to THIS file's blocks below; if this ruling is global (ascii illustrations in all four SKILLs), confirm at the seed thread and I'll sweep pitch/narrative too.
+
+**@ 1-lifecycle/1a-descriptions/haipipe-application-descriptions/SKILL.md — [FORWARD -> CLAIMS] token kept verbatim**
+
+> CC: 🏷️ token ruling needed — `[FORWARD -> CLAIMS]` is kept VERBATIM (SOP R5) even though this rung (1a) now consumes it.
+>
+>     🌱 seed _LOG                        🪜 ladder
+>     +------------------------+  consume  +--------------------------+
+>     | [FORWARD -> CLAIMS] 🏷️ | ────────▶ | 1a DRAFT routes each:    |
+>     | PPNN_<slug>            |           |  📊 data need → 1a plan  |
+>     +------------------------+           |  🧾 verdict   → 1c PP    |
+>             ▲                            +--------------------------+
+>        📄 paper twin writes the SAME token (its consumer IS claims)
+>
+>     A ✅ keep [FORWARD -> CLAIMS]: grep-stable AND identical to paper's token, so alignment-watch ports stay 1:1; name lies slightly (consumer is 1a, documented here)
+>     B    rename [FORWARD -> LADDER]: accurate, but diverges from paper + old interventions need a sed at migration
+>     C    write new token, read both: smooth but two tokens forever = drift bait
+>
+> CC: my rec = A (paper-twin symmetry outweighs naming purity). Reply `> USER:` below.
+> JL: ok, I agree. 
+> CC: ✅ resolved — token stays `[FORWARD -> CLAIMS]`; no file changes needed.
+
+**@ 1-lifecycle/1d-advice/haipipe-application-advice/SKILL.md — status enum drops `stale` (staleness = [STALE] tag alone)**
+
+> CC: 🏷️ status vocabulary `active | caveated | stale` was CC-invented — and while diagramming this I noticed a redundancy worth fixing:
+>
+>     status: stale 🏷️            [STALE D3 refreshed 07-09] 🏷️
+>     (entry header field)  ⚡ vs   (mechanical tag, checker-enforced)
+>          └──── two mechanisms for ONE concept = drift bait ────┘
+>
+>     A    keep active | caveated | stale (as shipped)
+>     C ✅ drop `stale` from the enum → `active | caveated`; staleness lives SOLELY in the [STALE] tag (one mechanism, already checker-enforced)
+>
+> CC: my rec = C (improves on my own draft; the status copy would rot). Reply `> USER:` below.
+> JL: I agree.
+> CC: ✅ done — enum is now `active | caveated` in ref/advice-template.md; staleness lives solely in the [STALE] tag.
+
+**@ haipipe-application/SKILL.md — bare `claims` verb: ladder-virgin soft redirect**
+
+> CC: 🗣️ verb ruling — bare `claims` now routes to rung 1c ONLY; the full 1a-1d sweep is `ladder`. Your old habit of "claims = do stage-1 work" would silently skip 1a/1b.
+>
+>     🧑 "/haipipe-application claims"
+>             │
+>             ▼
+>        🔍 is the ladder virgin? (no 1a/1b docs)
+>        ├── no  ──▶ 🧾 rung 1c directly              (precision)
+>        └── yes ──▶ 💬 "1a/1b are empty — run `ladder`
+>                         for the sweep, or 1c anyway?"  (habit-safe)
+>
+>     A    always → 1c silently (as shipped; habit silently skips 1a/1b)
+>     B ✅ soft redirect on a virgin ladder (matches the router's existing offer-the-frontier pattern; one sentence in Dispatch notes)
+>     C    make `claims` alias the full sweep (loses precise 1c addressing)
+>
+> CC: my rec = B. Reply `> USER:` below.
+> JL: I agree.
+> CC: ✅ done — soft-redirect rule added to the Dispatch notes below.
+
+**@ haipipe-application/SKILL.md — venue for DESIGN-type interventions (ROUTED: Round-2 candidate in SOP-ladder-restage.md §10 — venue-design-doc pack, possibly a 2-design stage)**
+
+> JL: /haipipe-application venue "timing-aware refill nudge for patients" --no-pin <--- I think we need to think about what is the good venue here. My understanding is the Design artifacts requirements. Like the report. Like the final report of the generated messages. 
+> CC: agreed — for DESIGN-type interventions the deliverable is really TWO artifacts: the message set itself + the design report that justifies it (A←C traces). Current packs cover the report half (venue-report) but not the message-set-with-rationale form. Captured as Round-2 candidate in SOP-ladder-restage.md §10 (a venue-design-doc pack, possibly paired with a 2-design stage — see the wiki/06 thread); the bench run on 01_sms_young_male will show what the current packs lack.
+
+**@ wiki/08-stage-gate.md — ladder gate-batching depths (PARKED: bench run on 01_sms_young_male is the test; revisit at bench close-out, tracked in SOP-ladder-restage.md §10)**
+
+> CC: 🚪 the batching depths are CC defaults from SOP R6 — confirm.
+>
+>     🪜 ladder:      1a ──▶ 1b ──▶ 1c ──▶ 1d
+>     light  📱 :      ·      ·      ·     🚪  (one gate, 4 ledger rows)
+>     medium 📧 :      ·      ·     🚪     🚪
+>     full   📊 :     🚪     🚪     🚪     🚪
+>                                   ▲
+>                     💸 1c is where money is spent (full-mode probes)
+>
+>     A ✅ keep: medium gates at 1c — a human eyeballs the campaign where cost concentrates, 1b is cheap so it folds into the 1c gate
+>     B    medium at 1b+1d: earlier check on theme DIRECTION, but low value for the extra pause
+>     C    one gate at 1d for every venue: simplest, but deep venues lose rung-level control
+>
+> CC: my rec = A. Reply `> USER:` below.
+> JL: I am not sure here, but we can test it during the real use case. 
+> CC: ✅ parked — depths stay as shipped; the 01_sms_young_male bench run is the test. Revisit this thread after it.
+
+**@ wiki/06-application-skill-structure.md — cumulative DIKW reading + 1d rename principles -> ADVICE (both executed)**
+
+> JL: I am thinking about how to distinguish D I K W with description theme claims and principles. So it is like description align to D, theme align to D + I, claims align to D + I + K, and principles aligns to D + I + K + W. I am not sure whether we want to have the name of principles, maybe insights or maybe what else? I think there are some design directions or insights which can help us to use in the later stage of Tools/plugins/haipipe-toolkit/skills/application/1-lifecycle/5-section-edit
+> CC: your CUMULATIVE alignment is better than my rung=letter framing — each rung CONTAINS its lower layers (a claim carries its D grounding + I pattern + K generalization; a principle carries all four). Adopting this as the canonical reading (SOP §10). On the 1d name: NOT "insights" — it collides head-on with the insight KB layer (/haipipe-insight, insights/ folders), the exact vocabulary clash we avoided by not reusing the D/I/K/W letters. Your own phrase "design directions" is the strong candidate: `1d-directions` (the 1d pun is free), it kills the standing double-use of "principles" vs venue Artifact Principles, and "directions" reads naturally as the thing section-edit/artifact CONSUME. Cost: ~20-mention sweep, cheap while nothing is filled. My rec: rename to 1d-directions before the bench run, or explicitly re-bless "principles". Reply `> USER:` with your pick.
+> JL (chat, 2026-07-09): rename to ADVICE — "later we can use them or not use them".
+> CC: ✅ executed — `1d-advice` / `haipipe-application-advice` / `A<n>` ids / maturity `advised`, plus the ADOPTION contract your ruling implies (advice = counsel, not mandate: downstream venue-ALIGNED stages record adopted/declined A-ids with a why; declined entries persist for the next venue/round; claim-audit chain = artifact -> adopted A -> C -> anchor). "principles" survives only as a legacy verb alias.
+
+**@ wiki/06-application-skill-structure.md — pitch/narrative/display fit for design tasks + a 2-design stage (ROUTED: Round-2 candidate in SOP-ladder-restage.md §10; bench run supplies the spec)**
+
+> JL: for now, I am not sure whether 2-pitch 3-narrarive 4-display is useful for the application design tasks. We can ignore it for now. 
+> JL: but we still need pitch like to fit with the venue. and then we have the design. Maybe we need to have a design lifecycle stage. How do you think? 
+> CC: agreed on both halves. Ignoring is already cheap: narrative/display are venue-GATED, so a design-type venue pack can set stages_skipped and they never fire — no surgery needed to "ignore for now". On the design stage: yes, I think it's real. Sketch (Round-2 candidate, SOP §10): for design venues (message set + design report), the venue-ALIGNED middle becomes  pitch(light: venue-fit only) -> 2-design -> draft. The 2-design stage owns the DESIGN MATRIX — segments x arms x framings, every cell citing the A<n> it applies and tagged exploit|explore (ties into the 1d strategy thread: explore arms are deliberate bets that the deployed A/B settles). Rather than build it blind, run the 01_sms_young_male bench with the current spine first; where pitch/draft strain to hold the matrix is exactly the spec for 2-design.
+
+## [6.1.1] — 2026-07-09
+
+- REVIEW SWEEP (fresh-eyes subagent audit after 6.1.0; all findings fixed same day). BLOCKER: the P->A id sweep had corrupted the literal `PP01` to `PA01` in 10 spots (claims SKILL + template, router example, fn/probe-plans, wiki/05) — card ids the check-probe-cards.sh `PP*.md` glob can never see; restored to PP01.
+- Trace contract completed onto the adoption chain (finishes R7/R9): artifact frontmatter `cited_K/cited_W` -> `adopted_A`/`declined_A`, slot examples cite A ids, review/check/claim-audit criteria now trace artifact -> adopted A -> C -> anchor; no insight-card citation is mandatory anywhere.
+- check-probe-cards.sh gains the two-level glob `0-lifecycle/*/*/_PROBE/PP*.md` (section-edit cards were invisible to VERIFY and the gate; the paper twin has the same blind spot — alignment-watch port candidate).
+- Residue sweep: 5 stray P ids -> A (wiki/03, wiki/05, enter, claim-audit, iterate — iterate also fixes chain order to T/C/A); venue placement wording "after the ladder (1d gate), before pitch" (venue SKILL, wiki/03, wiki/06); enter console gains ladder/descriptions/themes/advice verb rows; 13-key strip examples regenerated (enter, wiki/05); narrative-template "1d principles" -> advice; PHILOSOPHY "design principles" -> "design advice" (2x); "directives" -> "advice entries" (venue SKILL, pitch template); id examples unpadded C1/A1 (narrative, display, wiki/05); example task refs T<nn> -> X<nn>_<slug> (display, probe — T is the theme namespace); 1d-advice column re-padded in 7 ladder blocks; round triage gains advice + descriptions rung rows; README retired-spine row now shows the ladder; CHANGELOG titles fixed (advice/artifact/check); lifecycle CHANGELOG gains its missing 4.0.0 entry; versions bumped: router 6.1.1, narrative 4.2.0, display 4.2.0.
+- NOT fixed (user decision pending): `_archive/{haipipe-application-ask,haipipe-application-minimap}` is deleted in the working tree by an external change while wiki/06 + fn/feedback.md still point at it — restore or update the docs.
+
+Archived comment threads — open at time of parking (2026-07-09, verbatim)
+--------------------------------------------------------------------------
+
+Parked at user request before the bench run; NO ruling yet on either. Both decisions remain live: the explore|exploit role tag is a Round-2 candidate (SOP-ladder-restage.md §10, pairs with the 2-design stage idea); the maturity vocab stands as written (`data-described` / `advised`) until renamed. Reply by reopening a `> USER:` thread in the source file or ruling at bench close-out.
+
+**@ 1-lifecycle/1d-advice/haipipe-application-advice/SKILL.md — derivation bars (CC defaults, unconfirmed) + explore|exploit role-tag proposal (OPEN)**
+
+> CC: ⚖️ these derivation bars are CC defaults (no ruling) — confirm the three levels.
+>
+>     🎯 A may cite...       light 📱   medium 📧      full 📊
+>     +--------------------+---------+--------------+--------+
+>     | ✅ supported claims |   ✔️     |     ✔️        |   ✔️   |
+>     | 🟡 weak + caveat    |   ✔️     | load-bearing⚠️|   ❌   |
+>     | 🔴 GAP-derived      |   ❌     |     ❌        |   ❌   |
+>     +--------------------+---------+--------------+--------+
+>       └─ the anti-fabrication floor: advice resting on NO evidence
+>          is a 🌱 seed hunch, not advice
+>
+>     A ✅ keep as written (GAP floor is the ladder's whole point)
+>     B    allow GAP-derived at light with a 🚩 flag (faster SMS drafting; re-opens the vibes hole)
+>     C    tighten medium to supported-only (slows email work for little gain)
+>
+> CC: my rec = A. Reply `> USER:` below.
+> JL: so the gap means this is not supported? right? and if so, sometime the message design can be really aggressive, like exploit something that is not supported? or something that is weak or not sufficient evidence? How do you think? That is the difference strategies. 
+> CC: yes, GAP = no judged evidence yet. And your point is right — deliberately betting on unproven directions is a legitimate STRATEGY (test-to-learn), not a violation. Proposal: give every A a role tag `exploit | explore`. The bars above apply to EXPLOIT entries only; an EXPLORE entry may derive from weak/GAP claims PROVIDED it (a) carries the explore tag visibly, (b) states which C<n> the deployed arm will settle, and (c) stays inside compliance rails. The A/B result then flows back: iterate → 1a backfill → C flips → the explore entry either graduates to exploit or moves to Rejected. That makes deploy itself an evidence probe. Reply `> USER:` if you want this designed in (pairs with the 2-design stage idea -- Round-2 candidate in SOP-ladder-restage.md §10; that thread is archived in haipipe-application/CHANGELOG.md).
+
+**@ wiki/06-application-skill-structure.md — maturity vocab `data-described`/`advised` (CC-invented, unconfirmed; JL follow-up answered, no ruling) (OPEN)**
+
+> CC: 📶 maturity values `data-described` and `advised` are CC-invented names for the new ladder rungs (also in wiki/03 + the enter console) — confirm or rename.
+>
+>     📶 prospect → data-described → claim-ledger → advised → venue-pinned → ...
+>                   ▲ CC-invented ▲                ▲ CC-invented ▲
+>
+>     A ✅ keep both (finer console diagnosis; application already diverges from paper intentionally)
+>     B    mechanical names (1a-done / 1d-done): self-explanatory but ugly
+>     C    drop both, keep only claim-ledger (leanest — the strip already shows rung progress; defensible if you feel vocabulary creep)
+>
+> CC: my rec = A, with C as the lean alternative. Reply `> USER:` below.
+
+> JL: why it is here? I think we might have data, theme as well. what is the gap between the theme. I don't know. For the theme, it is supported by the description topics. but it can cover the content related to the descriptions in its own part. 
+> CC: it's here because this file defines the maturity vocab. On "data, theme as well": maturity is deliberately COARSER than the strip — the strip already shows every rung, so maturity only marks capability jumps (data-described = grounded exploration possible; advised = artifact work possible). A `themed` value is easy to add if you want per-rung maturity; my lean is no. On the theme/description gap: your cumulative-DIKW reading answers it (adopted as canon; that thread is archived in `../haipipe-application/CHANGELOG.md`) — a theme may carry its OWN theme-scoped descriptive content (its D-layer) inside its part, as long as numbers stay anchored (pointer + date); a number that becomes load-bearing across rungs gets promoted to a 1a D entry.
+
+## [6.1.2] — 2026-07-09
+
+- BENCH FINDING (first live run, 01_sms_young_male): Probes roster section made uniform across all four ladder rungs. Only seed + 1c-claims stage docs listed their probes; 1a/1b/1d had none, so the user could not see a rung's probe sessions in the stage doc (JL: "we should also have the probe sessions like we have in 0-seed.md"). Templates + SKILL content-structure + done-criteria updated (descriptions 1.1.0, themes 1.1.0, advice 1.2.0); roster must match _PROBE/ on disk; in 1a the section sits between Descriptions and Refresh Log, with D-slots referencing entries via [AWAITING PP<nn>].
+- Live-intervention bookkeeping (01_sms_young_male): 0-seed.md PP01 roster line refreshed dispatched -> read with the landed answer (novelty gap confirmed, backs C5). The 1a Probes section + the 1c-claims folder migration + index re-point were done by the operator's parallel session; the 1a template ordering follows that live doc.
+- Still open from the bench (Round-2 spec, not yet implemented): migrate step for legacy paper-style interventions (enter offers it on drift), eager scaffold of the venue-FREE spine at get-or-create, probe-release-requires-approval encoded in the probe worker, PHI column-scope defaults to restricted allow-list without asking.
+
+## [6.2.0] — 2026-07-09
+
+- BREADTH ROUND (JL flywheel discussion, same day as the bench run): the ladder is codified as an insight-discovery FLYWHEEL — three nested loops (inner: multi-round DPRC within a rung, loop-until-dry; middle: routing rounds across rungs, mid-phase [ROUTE -> <rung>] legal; outer: deploy/iterate -> new data -> 1a refresh). README gains "The ladder is a flywheel" section (diagrams + lens/reservoir table); wiki/08 gains the Rounds contract (venue-scaled round depth: light one round, medium loop-until-dry on 1c, full everywhere); lifecycle sweep re-enters routed-to rungs (4.1.0).
+- Per-rung breadth contracts: 1a Coverage six facets filled-or-waived (1.2.0); 1b three lenses incl. counter-hunt + full D-consumption (1.2.0); 1c full hook consumption (Declined-hooks section) + Rival line + refute-capable probes (6.1.0); 1d full C-consumption + No-action line + negative advice (1.3.0). Every rung names its reservoir (waived facets / Parked / Declined hooks / Rejected), re-mined at each DRAFT open.
+- EXPLORE|EXPLOIT ADOPTED at 1d (resolves the parked derivation-bars thread in the open-thread archive above): settlement bars scope to exploit entries; explore = tagged test-to-learn bet naming its settling C + rails; graduates via iterate; adopted explore entries keep the tag in artifact frontmatter (artifact SKILL updated). Deploy itself becomes an evidence probe.
+
+## [6.3.0] — 2026-07-09
+
+- ROUND-2 CLOSE-OUT (the four still-open bench findings from 6.1.1/6.2.0, all encoded): enter 2.1.0 — eager venue-FREE spine scaffold at get-or-create + confirm-gated one-shot legacy migration (1-claims -> 1c-claims, rung scaffold, probe re-file by shape); probe worker 2.1.0 — STEP 1.5 RELEASE GATE (user releases planned cards; roster + stop otherwise) + PHI restricted-columns-by-default on task dispatches; PREFERENCES.md gains the release rule as a portable global pref; README retired-names row points at the enter migration.
+- Session-role note (JL): skill-dev sessions update the skills; running interventions belongs to operator/test sessions. The 01_sms_young_male state advanced earlier this session (seed REVISE, 1a coverage round) stands as the worked example; its two pending gates (seed approval, PP02 release) belong to the test session.
+- Follow-up (JL, same day): "at the end of each draft, it should let me know what probes to release as well" -> draft worker 1.3.0 gains step 5 PRESENT (every DRAFT ends with the RELEASE MENU -- buffered planned cards, one line each -- and stops for picks; return contract gains `probes:`); probe worker STEP 1.5 stays as the backstop for DRAFT-skipping paths; PREFERENCES entry updated.
+- Follow-up (JL, same day): default reply mode for all family skills = /diagram-ascii (PREFERENCES entry strengthened from "communicate via ASCII diagrams" to THE default mode: emoji-rich diagrams carry the substance, prose reduced to one-line asks).
+
+## [6.4.0] — 2026-07-09
+
+- GROW LOOP at 1a (JL: "iterate to build and grow up until you have more and more probes to better understand the data to describe the data, and then go to the next stage" + "after the check, they can think about adding more probes in the draft"): descriptions 1.3.0 — rounds run as a saturation engine (question storms with rotating lenses per new ref/interrogation-battery.md, answerable-filter, blind self-test, venue-scaled dry-stop; landed numbers feed the next round, so the probe roster grows lap by lap); Field Disposition (100% of schema: profiled | waived | excluded, column names only) with new `_DESCRIPTIONS/DS<n>` per-dataset profile sheets as the home; probe worker 2.2.0 redirects the values lane there for rung 1a; check worker 4.1.0 gains the `grow` verdict (the gate asks for missing topics — the USER lens; grow re-opens DRAFT as [ROUND n+1]; approve = saturated AND user added nothing); wiki/08 + README updated.
+- Follow-up (JL, same day: "some probes can just be the task folder, no need to have a new task group folder"): granularity ladder encoded at three points -- task-orchestrator agent 1.1.0 gains the LAND rung (config variant > new task in group > new group last-resort, one need = one task/config), probe worker 2.3.0 dispatch prompt carries task_landing, battery rails note GROW grows probes not folders. Trigger: SMSDesign tasks/ grew 7 full scaffolds for 7 profile queries on one parquet.
+- Feedback-inbox loop goes live (bench-invented convention, adopted): skills carry a `feedback/` inbox (`<YYYY-MM-DD>_<slug>.md`, `status: open|fixed`, filed via `/haipipe-application feedback` at capture-time routing); the skill-dev session processes items and records `fixed_in`. First item processed: enter 2.2.0 Releasable Probes dashboard block.
+- Follow-up (JL, same day: "different config and different run.sh can mean different subgroups... tasks should be flexible with config.yaml and run.sh"): the ladder's rung (a) gets its mechanism, grounded in /haipipe-task ref/task-structure.md (one config = one run.sh, results name-paired). Task-orchestrator agent 1.2.0: LAND naming rule -- task folders segment/dataset-agnostic (`01_arm_engagement`, never `01_young_male_arm_engagement`); segment filters + input dataset paths are config keys; hardcoded slices get externalized in a BUILD touch-up, not cloned. Probe worker 2.4.0: task_landing dispatch line carries the same rule. Battery rail: a new cohort re-runs the whole battery by adding configs, never by re-scaffolding.

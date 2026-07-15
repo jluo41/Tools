@@ -1,12 +1,12 @@
 ---
 name: haipipe-application-themes
-description: "Stage orchestrator for the intervention's 0-lifecycle/1b-themes/1b-themes.md: rung 1b of the venue-FREE evidence ladder (1a-descriptions -> 1b-themes -> 1c-claims -> 1d-principles). Thematic extraction: which patterns/topics emerge from the described data and the outside literature. Every theme cites at least one D id or discovery source. Discovery-probe lane. Markdown only. Trigger: themes, theme, topic space, what patterns emerge, thematic, /haipipe-application themes."
+description: "Stage orchestrator for the intervention's 0-lifecycle/1b-themes/1b-themes.md: rung 1b of the venue-FREE evidence ladder (1a-descriptions -> 1b-themes -> 1c-claims -> 1d-advice). Thematic extraction: which patterns/topics emerge from the described data and the outside literature. Every theme cites at least one D id or discovery source. Discovery-probe lane. Markdown only. Trigger: themes, theme, topic space, what patterns emerge, thematic, /haipipe-application themes."
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
+  version: "1.2.0"
   last_updated: "2026-07-09"
-  summary: "New rung skill from the ladder restage (SOP-ladder-restage.md): 1b = the I rung: themes extracted from 1a descriptions + discovery probes, each grounded by D ids or sources; the exploration frame that spawns 1c claims."
+  summary: "1.2.0 (breadth round, JL 2026-07-09): three sweep lenses (data / field / counter-hunt), full D-consumption rule, Parked as reservoir (re-mined at DRAFT), multi-round DPRC + mid-phase back-routing. 1.1.0 (bench finding, 01_sms_young_male): stage doc gains a Probes roster section (uniform across all rungs, mirroring seed) -- one line per PP with status, matching _PROBE/ on disk. 1.0.0: new rung skill from the ladder restage (SOP-ladder-restage.md): 1b = the I rung: themes extracted from 1a descriptions + discovery probes, each grounded by D ids or sources; the exploration frame that spawns 1c claims."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -27,7 +27,7 @@ The evidence ladder (stage-1 family, all venue-FREE):
 1a-descriptions   what the data looks like
 1b-themes         what patterns/topics emerge     <- THIS RUNG
 1c-claims         what generalizes (the ledger)
-1d-principles     what to do (the deliverable)
+1d-advice         what the evidence advises (the deliverable)
 ```
 
 Themes are the exploration frame in the thematic-analysis sense: pattern-clusters extracted from described data and literature, not free-floating brainstorm topics. A theme with no grounding is a hunch -- it goes back to seed, not here.
@@ -47,6 +47,8 @@ Themes are the exploration frame in the thematic-analysis sense: pattern-cluster
 Themes            one **T<n>** per theme: name, the pattern in one sentence,
                   grounding (D ids and/or discovery sources), candidate-claim hooks
 Parked            patterns noticed but not pursued, with a one-line why
+Probes            this rung's probe roster: one line per PP (question + status),
+                  matching _PROBE/ on disk
 ```
 
 - **One theme, one sub-item:** `**T1 - social influence**` / pattern sentence / `Grounding: D3, D7; discoveries/2026-07-01_sms-norms/sources.md S02.` / `Hooks: norm framing may lift response (-> claim candidate).`
@@ -61,11 +63,14 @@ Parked            patterns noticed but not pursued, with a one-line why
 themes invoked
   |
   v
-DRAFT --> read 1a-descriptions.md (the grounding floor); elicit taste on
-          which theme directions matter for this intervention; draft T slots
-          with grounding hooks; buffer discovery-probe plans for field
-          patterns the data alone cannot show ("what messaging levers does
-          the mhealth literature name?")
+DRAFT --> re-mine the reservoir (last round's Parked patterns -- did new D
+          entries ground any?); read 1a-descriptions.md (the grounding
+          floor); elicit taste on which theme directions matter; sweep the
+          three lenses -- data patterns (from D entries), field patterns
+          (discovery: "what messaging levers does the mhealth literature
+          name?"), counter-hunt (patterns AGAINST the seed hypothesis) --
+          drafting T slots with grounding hooks; buffer discovery-probe
+          plans for what the data alone cannot show
           (internally calls haipipe-application-draft with this artifact spec)
   |
   v
@@ -85,11 +90,16 @@ CHECK --> exit gate (may be BATCHED into the ladder gate per the venue,
 
 Phase visibility: announce every phase boundary (reply line + `[PHASE]` entry in `_LOG`); skip a phase only by an explicit logged verdict; CHECK is never implicit.
 
+Rounds + routing (breadth contract, wiki/08-stage-gate.md): REVISE ends with a self-assessment -- did this round surface new patterns, hooks, or gaps? If yes, run another DRAFT->PROBE->REVISE lap (`[ROUND n]` in `_LOG`); CHECK fires only when a round comes up dry (venue-scaled). Mid-phase back-routing is legal: a theme needing a number files the 1a D slot immediately and logs `[ROUTE -> descriptions]` -- never wait for a gate to report a discovery.
+
 ## Done-criteria
 
 - [ ] Every `**T<n>**` theme cites >=1 resolving `D<n>` id or project-side source
 - [ ] Every theme carries at least one candidate-claim hook (or an explicit "context-only" note)
 - [ ] Parked section lists dropped patterns with a why (may be empty)
+- [ ] Every 1a `D<n>` id is cited by >=1 theme or listed in Parked as context-only (with a why)
+- [ ] Counter-hunt ran: >=1 lens pass looked for patterns AGAINST the seed hypothesis (a null result is recorded in Parked, not omitted)
+- [ ] Probes section lists every `_PROBE/` card with its current status (roster matches disk)
 - [ ] No unresolved `[STALE ...]` tags in this doc
 - [ ] Every probe card read/verdicted with resolving refs (checker-verified)
 

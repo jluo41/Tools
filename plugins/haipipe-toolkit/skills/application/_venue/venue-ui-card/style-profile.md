@@ -24,7 +24,7 @@ Drafting guide for in-app card/widget artifacts.
 │ 📊  Panel Refill Risk           │
 │                                 │
 │ 4 of 47 patients are high-risk  │
-│ for refill lapse (K03).         │
+│ for refill lapse (C3).         │
 │                                 │
 │ Avg days to expiry: 2.3         │
 │ Highest risk: [PatientList]     │
@@ -47,7 +47,7 @@ Drafting guide for in-app card/widget artifacts.
 
 ```
 audience=patient     → warm, simple, large tap targets
-audience=clinician   → data-dense, inline K-id, actionable
+audience=clinician   → data-dense, inline C-id, actionable
 audience=designer    → annotated wireframe, component names
 audience=dev         → interface spec, data binding, events
 ```
@@ -61,5 +61,5 @@ audience=dev         → interface spec, data binding, events
 [ ] Body provides enough context to act
 [ ] CTA is specific (not "Learn More")
 [ ] Data sources specified for live elements
-[ ] cited_K / cited_W in frontmatter
+[ ] adopted_A / declined_A in frontmatter
 ```

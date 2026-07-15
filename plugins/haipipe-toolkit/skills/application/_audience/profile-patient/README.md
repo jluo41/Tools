@@ -8,7 +8,7 @@ but not condescending. Actionable.
 - Length: ≤ 200 words
 - Jargon: avoid all medical/technical jargon
 - Reading level: 6th grade
-- Citations: NO K-id visible in body; cited_K in frontmatter only
+- Citations: NO C-id visible in body; adopted_A in frontmatter only
 
 ## Lifecycle mappings
 

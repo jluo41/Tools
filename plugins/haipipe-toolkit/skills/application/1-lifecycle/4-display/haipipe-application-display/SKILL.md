@@ -4,7 +4,7 @@ description: "Stage 4 of the intervention lifecycle (venue-GATED: required for d
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.0.0"
+  version: "4.2.0"
   last_updated: "2026-07-06"
   summary: "Paper-aligned: absorbs minimap (per-unit Job field is now required on every display unit); stage FOLDER paths; gating via STATUS.md stages_skipped; materialization routes through the PROBE worker to /haipipe-task; DPRC phases."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -29,7 +29,7 @@ Input
 ======
 
 - `0-lifecycle/3-narrative/3-narrative.md` (required if narrative fired)
-- `0-lifecycle/1d-principles/1d-principles.md` (always -- elements carry principles)
+- `0-lifecycle/1d-advice/1d-advice.md` (always -- elements carry advice)
 - `0-lifecycle/1c-claims/1c-claims.md` (always -- the evidence anchor behind each element)
 - Venue profile (available display element types)
 
@@ -47,56 +47,44 @@ Display artifact schema (venue-dependent)
 
 Canonical template (source of truth for section order + placeholders): `ref/display-template.md`.
 
-> CC: 🆔 id collision needs your ruling — the illustration below names display units `D01/D02`, but `D<n>` now belongs to 1a description ids (ladder restage).
->
->     🆔 id namespaces after the restage
->       1a-descriptions        1b       1c       1d        4-display
->     +-----------------+   +------+ +------+ +------+  +----------------+
->     | 📊 DS<n> dataset |   | 🧩 T |▶| 🧾 C |▶| 🎯 P |  | 🖼️ units:      |
->     | 📈 D<n>  entry   |──▶+------+ +------+ +------+  |  SKILL: D01 ⚡ |
->     +-----------------+                                |  ref/:  U01 ✅ |
->             ▲                                          +----------------+
->             └──────── ⚡ two meanings of "D" ──────────────────┘
->
->     A ✅ rename display units to U<nn> (template already does; 1 schema block to fix; no filled display docs exist yet)
->     B    rename 1a entries instead (e.g. A<n>; re-edits 5 fresh files + SOP; loses the D-rung DIKW echo)
->     C    keep both namespaces (zero cost now, but claim-audit greps D<n> cross-rung and will misfire)
->
-> CC: my rec = A. Reply `> USER:` below.
-
-> CC: 🎨 heading-style: the schema blocks below use `#`/`##` while the formatting note + template are ascii — ONE ruling covers seed/pitch/narrative/display; the full options thread lives in `1-lifecycle/0-seed/haipipe-application-seed/SKILL.md` (reply there).
-
 Every unit carries FOUR required fields -- type, claim, JOB, data source. The Job field is the minimap absorption: one sentence on what this unit must make the reader see/do.
 
 **venue-dashboard:**
 ```markdown
-# Display Map: <intervention name>
+Display Map: <intervention name>
+=================================
 
-## Display units
+Display units
+-------------
 
-### D01: KPI Card — Refill Rate
-- **Type:** metric-card
-- **Claim:** C01
-- **Job:** show current vs target at a glance; alert color when below
-- **Content:** current rate, trend arrow, target
-- **Data source:** task T01
+**U01 - KPI Card: Refill Rate**
 
-### D02: Panel — Timing Analysis
-- **Type:** line-chart
-- **Claim:** C03
-- **Job:** make the timing window visible (rate by hours-before-expiry)
-- **Data source:** task T02
+Type: metric-card.
+Claim: C1.
+Job: show current vs target at a glance; alert color when below.
+Content: current rate, trend arrow, target.
+Data source: task X01_refill_rate.
+
+**U02 - Panel: Timing Analysis**
+
+Type: line-chart.
+Claim: C3.
+Job: make the timing window visible (rate by hours-before-expiry).
+Data source: task X02_timing_curve.
 ```
 
 **venue-report:**
 ```markdown
-### D01: Table 1 — Summary Statistics
-- **Claim:** C01, C02
-- **Job:** establish the cohort so later effects are credible
-- **Content:** cohort descriptives
-- **Data source:** task T03
+**U01 - Table 1: Summary Statistics**
 
-## Probes
+Type: table.
+Claim: C1, C2.
+Job: establish the cohort so later effects are credible.
+Content: cohort descriptives.
+Data source: task X03_cohort_summary.
+
+Probes
+------
 <materialization needs, INLINE and visible: one line per PP with status
 (unit → task route); cards in _PROBE/>
 ```

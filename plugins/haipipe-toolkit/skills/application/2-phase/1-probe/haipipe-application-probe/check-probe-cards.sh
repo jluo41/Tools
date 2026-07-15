@@ -6,7 +6,8 @@
 # manuscript -> artifact).
 # Usage: sh check-probe-cards.sh <intervention_root> [project_root]
 #
-# Checks every <intervention_root>/0-lifecycle/*/_PROBE/PP*.md card:
+# Checks every <intervention_root>/0-lifecycle/*/_PROBE/PP*.md card
+# (and */*/_PROBE/ for section-level cards under 5-section-edit/):
 #   1. status read|verdicted -> refs: non-empty, no placeholder, every path resolves under project_root
 #   2. no markdown tables in any card (inline-evidence smell; JL standing rule: no tables in probes)
 #   3. card <= 80 lines (a fat card = findings pasted inline instead of landed project-side)
@@ -66,7 +67,7 @@ expand_ref() {
 
 fail=0
 found=0
-for card in "$intervention_root"/0-lifecycle/*/_PROBE/PP*.md; do
+for card in "$intervention_root"/0-lifecycle/*/_PROBE/PP*.md "$intervention_root"/0-lifecycle/*/*/_PROBE/PP*.md; do
   [ -e "$card" ] || continue
   found=1
   name=${card#"$intervention_root"/}

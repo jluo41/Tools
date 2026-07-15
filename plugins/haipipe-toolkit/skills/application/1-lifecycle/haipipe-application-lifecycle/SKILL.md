@@ -1,12 +1,12 @@
 ---
 name: haipipe-application-lifecycle
-description: "Orchestrator for the intervention structure lifecycle (1-lifecycle). Routes to stage specialists across the venue-free/venue-aligned boundary: seed and the evidence ladder (1a-descriptions, 1b-themes, 1c-claims, 1d-principles) are venue-FREE (don't change on retarget); venue pins the modality and gates stages 3-5; pitch, narrative, display, and section-edit are venue-ALIGNED (rewrite on retarget). The `ladder` verb runs 1a->1d as one sweep with venue-scaled gate batching. Stage skills internally run DRAFT -> PROBE -> REVISE -> CHECK via 2-phase/ workers. Trigger: lifecycle, advance, next stage, ladder, intervention structure, /haipipe-application-lifecycle."
+description: "Orchestrator for the intervention structure lifecycle (1-lifecycle). Routes to stage specialists across the venue-free/venue-aligned boundary: seed and the evidence ladder (1a-descriptions, 1b-themes, 1c-claims, 1d-advice) are venue-FREE (don't change on retarget); venue pins the modality and gates stages 3-5; pitch, narrative, display, and section-edit are venue-ALIGNED (rewrite on retarget). The `ladder` verb runs 1a->1d as one sweep with venue-scaled gate batching. Stage skills internally run DRAFT -> PROBE -> REVISE -> CHECK via 2-phase/ workers. Trigger: lifecycle, advance, next stage, ladder, intervention structure, /haipipe-application-lifecycle."
 argument-hint: "[stage-verb|ladder] [intervention-path]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "4.0.0"
+  version: "4.1.0"
   last_updated: "2026-07-09"
-  summary: "Ladder restage (SOP-ladder-restage.md): stage 1 split into the venue-FREE evidence ladder 1a-descriptions -> 1b-themes -> 1c-claims -> 1d-principles (echoes D->I->K->W); composite `ladder` sweep verb; gate batching per venue depth. Spine: seed (0), ladder (1a-1d) [venue-FREE] -> venue (pin) -> pitch (2), narrative (3), display (4), section-edit (5) [venue-ALIGNED, gated]. Never routes users to phase skills."
+  summary: "Ladder restage (SOP-ladder-restage.md): stage 1 split into the venue-FREE evidence ladder 1a-descriptions -> 1b-themes -> 1c-claims -> 1d-advice (echoes D->I->K->W); composite `ladder` sweep verb; gate batching per venue depth. Spine: seed (0), ladder (1a-1d) [venue-FREE] -> venue (pin) -> pitch (2), narrative (3), display (4), section-edit (5) [venue-ALIGNED, gated]. Never routes users to phase skills."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -24,7 +24,7 @@ The lifecycle has a **venue-free / venue-aligned boundary**. Seed and the eviden
 /haipipe-application-lifecycle descriptions <args>   -> 0-lifecycle/1a-descriptions/1a-descriptions.md (venue-FREE anchored data profile)
 /haipipe-application-lifecycle themes <args>         -> 0-lifecycle/1b-themes/1b-themes.md (venue-FREE grounded themes)
 /haipipe-application-lifecycle claims <args>         -> 0-lifecycle/1c-claims/1c-claims.md (venue-FREE claim ledger + campaign)
-/haipipe-application-lifecycle principles <args>     -> 0-lifecycle/1d-principles/1d-principles.md (venue-FREE design directives -- the ladder's deliverable)
+/haipipe-application-lifecycle advice <args>         -> 0-lifecycle/1d-advice/1d-advice.md (venue-FREE design advice -- the ladder's deliverable)
 /haipipe-application-lifecycle venue <args>          -> 0-lifecycle/2-venue/2-venue.md (choice + Artifact Principles) + STATUS.md venue pin (venue + stages_skipped + claims_settlement) (decision gate)
 /haipipe-application-lifecycle pitch <args>          -> 0-lifecycle/2-pitch/2-pitch.md (venue-ALIGNED goal + theory of change)
 /haipipe-application-lifecycle narrative <args>      -> 0-lifecycle/3-narrative/3-narrative.md (venue-gated)
@@ -58,7 +58,7 @@ Natural Pipeline Order
       ↓
   claims (1c)         what generalizes: supported / weak / GAP, theme-tagged, evidence campaign
       ↓
-  principles (1d)     what to do: design directives derived from claims -- the ladder's DELIVERABLE
+  advice (1d)         what to do: design advice derived from claims -- the ladder's DELIVERABLE
                       venue-neutral throughout; no slot-mapping, no channel framing
 
   VENUE DECISION
@@ -85,7 +85,7 @@ After the lifecycle spine, delivery tooling lives under `3-build-deploy/` (`haip
 
 **Retarget rule:** when the venue changes, seed and the ladder stay unchanged (venue-FREE); the new venue may demand deeper claims SETTLEMENT (more GAPs resolved, deeper 1d derivations), which is gate work, not content invalidation. Pitch, narrative, display, and section-edit rewrite for the new venue.
 
-**Ladder sweep (`ladder` verb):** dispatch the four rung skills in order (descriptions -> themes -> claims -> principles), each running its own DPRC. Gate batching per the venue's depth (wiki/08-stage-gate.md): light = ONE combined inline gate at 1d (one approval writes four ledger rows); medium = combined gate at 1c + gate at 1d; full = four individual gates. A rung that hits a blocker stops the sweep at its own CHECK.
+**Ladder sweep (`ladder` verb):** dispatch the four rung skills in order (descriptions -> themes -> claims -> advice), each running its own DPRC. Gate batching per the venue's depth (wiki/08-stage-gate.md): light = ONE combined inline gate at 1d (one approval writes four ledger rows); medium = combined gate at 1c + gate at 1d; full = four individual gates. A rung that hits a blocker stops the sweep at its own CHECK. Rungs loop internally (multi-round DPRC, loop-until-dry; wiki/08 Rounds) and may back-route mid-phase (`[ROUTE -> <rung>]` in `_LOG`); the sweep re-enters the routed-to rung, then resumes order -- the ladder is a flywheel, not a one-way climb (README).
 
 Venue-Gated Dispatch
 ---------------------
@@ -105,7 +105,7 @@ Auto-Detect Frontier (no verb given)
 ```
 1. Read STATUS.md: venue, stages_skipped, Gate Ledger, current_layer.
 2. Build the ordered stage list [0-seed, 1a-descriptions, 1b-themes, 1c-claims,
-   1d-principles, venue, 2-pitch, 3-narrative, 4-display, 5-section-edit],
+   1d-advice, venue, 2-pitch, 3-narrative, 4-display, 5-section-edit],
    dropping stages in stages_skipped.
 3. Frontier = earliest stage without a gate-confirmed artifact
    (disk predicate first, ledger second; drift -> trust disk).
@@ -124,7 +124,7 @@ symptom                                  → loop back to
 data profile stale / number unanchored   → descriptions (1a)
 theme ungrounded / pattern space wrong   → themes (1b)
 evidence missing for claim               → claims (1c)
-principle doesn't follow from its claims → principles (1d)
+advice entry does not follow from its claims → advice (1d)
 theory of change wrong                   → pitch
 output structure wrong                   → narrative (or venue)
 content element doesn't carry its claim  → display
@@ -154,7 +154,7 @@ haipipe-application-lifecycle (this orchestrator)
   |     |-- descriptions (1a)   anchored data profile
   |     |-- themes (1b)         grounded patterns
   |     |-- claims (1c)         ledger + campaign
-  |     +-- principles (1d)     design directives (deliverable)
+  |     +-- advice (1d)         design advice (deliverable)
   VENUE DECISION:
   |-- venue              (pin modality + stages_skipped + claims_settlement in STATUS.md; write 2-venue/2-venue.md Artifact Principles)
   VENUE-ALIGNED (° = venue-gated):

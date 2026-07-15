@@ -20,6 +20,7 @@ No inline study design -- the thinking lives in the Probes section.
 **C1 (T1, primary) - <title> - <status>**
 
 <Claim statement, one sentence per line.>
+Rival: <the strongest alternative explanation the probe must rule out>.
 Evidence: -> PP<nn> (<short description>).
 
 **C2 (T1, enabling) - <title> - <status>**
@@ -31,6 +32,15 @@ Evidence: -> PP<nn> (<short description>).
 
 <Claim statement.>
 Evidence: -> PP<nn> (<short description>).
+
+
+Declined hooks
+--------------
+
+Theme hooks considered and not committed as claims, one line each with a why; the reservoir the next round's DRAFT re-mines.
+(May be empty.)
+
+- T<n> hook "<clause>" -- <why declined, e.g. not testable with current data / superseded by C<n>>
 
 
 Probes
@@ -49,6 +59,7 @@ Status: <planned | dispatched | read | verdicted>.
 <Dependencies, if any.>
 
 <Full evidence plan, one sentence per line.>
+Refutes-if: <the result that would FLIP the claim(s) this probe settles>.
 Detail: `_PROBE/PP01_<slug>.md`
 
 ---

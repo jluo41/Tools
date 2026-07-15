@@ -23,3 +23,13 @@ Changed (round-2 paper-alignment SOP §4 rows 1-3, resolutions R1 + R5; port of 
 ## [1.0.0] — 2026-07-06
 
 - NEW phase worker (paper-alignment refactor, SOP archived in haipipe-application/CHANGELOG.md §5.0.0; full-DPRC ruling R4).
+
+## [2.1.0] — 2026-07-09
+
+- BENCH RULINGS (Test-Haipipe-Application): STEP 1.5 RELEASE GATE — planned cards dispatch only on the user's explicit release (`probe run PPNN` / "release PP02" / "release all"); stage handoffs and bare from-buffer sweeps present the planned roster and STOP (PROOF 1.5). No exception for cheap probes.
+- PHI-adjacent task dispatches pin the MINIMAL aggregate-safe column allow-list in the prompt by default (aggregates-only outputs); restricted-vs-full is never asked mid-flow; org PHI gates apply on top.
+- (Earlier same day, logged under family 6.1.1: two-level _PROBE glob fix in check-probe-cards.sh.)
+
+## [2.2.0] — 2026-07-09
+
+- GROW-loop support: the values lane REDIRECTS for rung 1a — descriptions-stage probes land their harvest in `_DESCRIPTIONS/DS<n>_<name>.md` (per-dataset profile sheet: field inventory + Field Disposition + readable landed profile; quoted-only, anchored + dated). Same OWED/accepted debt bookkeeping; the 1a doc keeps one-line D entries.

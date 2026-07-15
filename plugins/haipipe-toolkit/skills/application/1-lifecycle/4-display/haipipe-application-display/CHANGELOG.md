@@ -23,3 +23,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 ## [4.1.0] — 2026-07-06
 
 - 765696f port: visible Probes section + reads 2-venue.md Artifact Principles + ascii artifact formatting.
+
+## [4.2.0] — 2026-07-09
+
+- ladder restage + review sweep (family 6.0.0-6.1.1): display units renamed D<nn> -> U<nn> (1a owns the D namespace); primary input is 1d-advice with 1c backstop; inline schema blocks converted to ascii; id examples unpadded (C1); example task refs renamed T<nn> -> X<nn>_<slug> (T is the theme namespace).

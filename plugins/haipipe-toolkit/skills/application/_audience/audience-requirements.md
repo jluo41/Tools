@@ -34,12 +34,12 @@ Per-audience constraints
 audience       tone               jargon            length            citations
 ─────────      ──────────         ──────────        ──────────        ──────────
 patient        warm, plain        avoid             ≤ 200 words       inline (plain ref)
-clinician      precise, clinical  expected          ≤ 400 words       inline (K-id)
+clinician      precise, clinical  expected          ≤ 400 words       inline (C-id)
 designer       visual, concrete   minimal           ≤ 300 words +     in caption
                                                     + sketch
 dev            precise, terse     expected          ≤ 500 words +     code-fence cites
                                                     + interface
-regulator      formal, neutral    spelled out       ≤ 1500 words      footnote + K-id
+regulator      formal, neutral    spelled out       ≤ 1500 words      footnote + C-id
 executive      direct, outcome-   minimal           ≤ 600 words       endnote
                oriented
 partner        professional       moderate          ≤ 800 words       inline
@@ -53,15 +53,15 @@ Every claim that comes from project K/W MUST cite the entry id. Format
 depends on audience but the id must appear somewhere traceable:
 
 ```
-inline (K-id)        "(K03)"  or  "(see K03)"
-footnote + K-id      "¹ K03_lhm_film_overfit"
-endnote              "See knowledge entry K03."
-inline (plain ref)   "Based on our research..."  (NO K-id visible to patient;
+inline (C-id)        "(C3)"  or  "(see C3)"
+footnote + C-id      "¹ C3: timing sensitivity"
+endnote              "See claim C3."
+inline (plain ref)   "Based on our research..."  (NO C-id visible to patient;
                                                    but artifact frontmatter
-                                                   MUST list cited_K / cited_W)
+                                                   MUST list adopted_A / declined_A)
 ```
 
-**Always** record `cited_K` / `cited_W` in the artifact's frontmatter,
+**Always** record `adopted_A` / `declined_A` in the artifact's frontmatter,
 regardless of audience-facing format. The frontmatter is the
 machine-traversable trail.
 
@@ -77,8 +77,8 @@ kind:         message | ui | report
 audience:     <one of taxonomy above>
 intent:       "<one-line restatement of the request>"
 created:      YYYY-MM-DD
-cited_K:      [K01, K03]
-cited_W:      [W02]
+adopted_A:    [A1, A3]
+declined_A:   [A2]   # one-line why
 triggered:    [probe_refs if any]   # insight sessions / probes spawned during creation
 status:       draft | reviewed | shipped | superseded
 ---
@@ -95,7 +95,7 @@ The kind-specialist runs through this before write:
 
 ```
 [ ] Audience matches declared audience (tone / jargon / length within range)
-[ ] Every factual claim has a cited_K or cited_W in frontmatter
+[ ] Every factual claim traces to an adopted A in frontmatter (A -> C -> anchor)
 [ ] No K/W cited as "confirmed" if its insight status is `contested` or `superseded`
 [ ] No code, no Python, no plots embedded (kind=ui may have ASCII sketches only)
 [ ] If gap was identified but unresolved (Phase 3 skipped or insight-session blocked),

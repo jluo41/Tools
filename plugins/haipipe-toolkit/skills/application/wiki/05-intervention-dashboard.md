@@ -11,7 +11,7 @@ Stage frontier detection
 ==========================
 
 ```python
-spine = ["0-seed", "1a-descriptions", "1b-themes", "1c-claims", "1d-principles", "venue", "2-pitch", "3-narrative", "4-display", "5-section-edit"]
+spine = ["0-seed", "1a-descriptions", "1b-themes", "1c-claims", "1d-advice", "venue", "2-pitch", "3-narrative", "4-display", "5-section-edit"]
 skipped = read_status_row("stages_skipped")          # written at venue pin
 for stage in spine:
     if stage in skipped: continue                    # venue-skipped: passed over, never a gap
@@ -33,7 +33,7 @@ Source                                        Need type
 1b-themes: theme without grounding            ungrounded theme → ground or park
 1c-claims: status=GAP below settlement bar    claim gap → probe card
 1c-claims: status=weak (load-bearing)         weak claim → optional probe
-1d-principles: P below settlement bar         under-derived principle → settle its claims
+1d-advice: A below settlement bar         under-derived advice → settle its claims
 any ladder doc: unresolved [STALE] tag        staleness → re-confirm or revise the entry
 1-probe-plans/README.md: planned              unstarted probe card
 1-probe-plans/README.md: dispatched           in-progress probe (await TRANSLATE)
@@ -53,7 +53,7 @@ Intervention: 03_refill_reminder
 Venue:        sms · audience: patient · settlement: light
 Theory:       <one sentence from 2-pitch, or "(pitch not yet written)">
 
-stage:   seed ✅  claims 🔥🚀  venue ⬜  pitch ⬜  narrative --  display --  section-edit --  →  draft ⬜  →  review ⬜  →  deploy ⬜
+stage:   seed ✅  descriptions ✅  themes ✅  claims 🔥🚀  advice ⬜  venue ⬜  pitch ⬜  narrative --  display --  section-edit --  →  draft ⬜  →  review ⬜  →  deploy ⬜
 phase:   draft ✅  │  probe 🔥🚀  │  revise ⬜  │  check ⬜
 
 Claims:     5 total: 2 supported, 1 weak, 2 GAP (bar: light — 1 load-bearing GAP open)
@@ -62,7 +62,7 @@ Artifacts:  0 drafted, 0 reviewed, 0 deployed
 Round:      v260620 (open, 2 todo remaining)
 
 Open needs:
-  C02  GAP   "timing matters for refill"  → probe PP01 (dispatched)
+  C2   GAP   "timing matters for refill"  → probe PP01 (dispatched)
 
 Next:
   /haipipe-application probe run PP01

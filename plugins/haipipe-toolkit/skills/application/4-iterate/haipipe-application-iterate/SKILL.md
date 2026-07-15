@@ -50,7 +50,7 @@ Step 3: Compare to the seed's expected impact + kill criteria (0-seed) and
 Step 4: BACKFILL THE LADDER FIRST -- fresh A/B numbers are new data:
         - land each metric as a dated, anchored D entry in
           0-lifecycle/1a-descriptions/1a-descriptions.md (--refresh path);
-          the 1a skill stamps [STALE] tags on downstream P/C/T entries that
+          the 1a skill stamps [STALE] tags on downstream T/C/A entries that
           cite the refreshed ids -- this is what re-opens exactly the
           affected rungs and nothing else
         Then extract decisions:
@@ -62,9 +62,9 @@ Step 4: BACKFILL THE LADDER FIRST -- fresh A/B numbers are new data:
 Step 5: Triage decisions to lifecycle stages:
         - "v2 outperformed v1"          → artifact (promote v2, re-draft losers)
         - "48h too early, 24h better"   → pitch (theory of change) or display (element spec)
-        - "click rate validates C02"    → claims (GAP → supported, cite the A/B result now anchored in 1a)
+        - "click rate validates C2"    → claims (GAP → supported, cite the A/B result now anchored in 1a)
         - "no effect on adherence"      → pitch (re-examine theory) or claims
-        - "principle P<n> refuted live"  → principles (revise or move to Rejected with the refuting evidence)
+        - "advice A<n> refuted live"  → advice (revise or move to Rejected with the refuting evidence)
         - "opt-out rate too high"       → artifact (frequency/tone re-compose)
 
 Step 6: Route to /haipipe-application round triage.

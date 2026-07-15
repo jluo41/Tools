@@ -1,10 +1,10 @@
 ---
 name: haipipe-application-check
 description: "CHECK phase worker (internal) -- the only human-involved phase, run by every application stage skill after REVISE. Opens with a mechanical Run step (./checks.sh markdown checks + the probe-card checker) whose ❌/FAIL blocks the gate green, seeds > CHECK: comments in stage docs (0-artifacts/*.md stay clean; artifact findings go to the Gate Ledger notes), presents the stage's exit criteria with per-item marks, proposes approve / revise / done, and on explicit approval writes the Gate Ledger row in STATUS.md and advances current_layer. Venue-scaled depth: simple venues confirm inline, complex venues get a full CHECK report. Persona presets + attendance modes let a stand-in approve ONLY in unattended runs. Renamed from haipipe-application-gate (paper-alignment 2026-07-06). Trigger: check, gate, approve stage, exit criteria, /haipipe-application check."
-argument-hint: "[stage: seed|descriptions|themes|claims|principles|pitch|narrative|display|section-edit|draft] [--persona strict|balanced|creative|lenient] [--unattended[=Ns]]"
+argument-hint: "[stage: seed|descriptions|themes|claims|advice|pitch|narrative|display|section-edit|draft] [--persona strict|balanced|creative|lenient] [--unattended[=Ns]]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.0.0"
+  version: "4.1.0"
   last_updated: "2026-07-07"
   summary: "Paper-check 1.7.0 enforcement port (alignment round 2, R2): step 1 Run executes ./checks.sh (markdown-safe subset) + the probe-card checker, any ❌/FAIL blocks the gate green; > CHECK: comments seeded in 0-lifecycle stage docs ONLY (R2c RULED: artifacts stay clean, artifact findings → Gate Ledger notes); revise reads the threads + > USER: replies. Persona/attendance, venue-scaled depth, and the Gate Ledger row format unchanged."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
@@ -17,6 +17,12 @@ CHECK phase worker -- the 🧑 phase. Reviews the artifacts produced during one 
 
 ```
 approve   → Gate Ledger row + advance current_layer to the next non-skipped stage
+grow      → GROW-loop rungs (1a-1d) only (JL 2026-07-09: "after the check, they
+            can think about adding more probes in the draft"): the gate ASKS
+            "which data topics / probes are still missing?" -- the user's
+            questions are the strongest lens; grow converts them to new slots
+            + planned probe skeletons and re-opens DRAFT as [ROUND n+1].
+            Approve at these rungs means: saturated AND the user added nothing.
 revise    → loop back with feedback (same stage; the restarted phase reads the
             stage-doc > CHECK: threads + > USER: replies; upstream problems are
             named as loopback suggestions, the user decides)
@@ -93,7 +99,7 @@ claims:        every claim a **C<n>** line with theme tag + role + status + → 
                Campaign complete (dispatch order + deps, no load-bearing GAP without a
                row)? settlement bar met against the campaign for the pinned depth
                (light/medium/full — claims skill §Settlement Gate)? no [STALE] tags?
-principles:    every **P<n>** derived from >=1 resolving C id at/above the settlement
+advice:        every **A<n>** derived from >=1 resolving C id at/above the settlement
                bar? W-actionability passed? Rejected section honest? no [STALE] tags?
                (the LADDER GATE lands here for light/medium venues — batching per
                wiki/08; one approval writes the batched rungs' ledger rows)
@@ -105,7 +111,7 @@ display:       every primary claim has a content element? every element has a jo
 section-edit:  every section's prose does its assigned job? flagged NEEDs resolved
                or explicitly parked?
 draft:         venue self-review checklist passes? audience constraints met? artifact
-               cites only ledger-backed claims (cited_K/W resolve)?
+               cites only adopted advice entries (adopted_A resolve: A -> C -> anchor)?
 ```
 
 Persona presets (unattended stand-in ONLY)

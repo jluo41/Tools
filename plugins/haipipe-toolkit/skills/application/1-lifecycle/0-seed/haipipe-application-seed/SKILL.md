@@ -41,49 +41,41 @@ Seed artifact schema
 
 Canonical template (source of truth for section order + placeholders): `ref/seed-template.md`.
 
-> CC: 🎨 PRIMARY THREAD (one ruling covers seed / pitch / narrative / display): the inline schema blocks use `#`/`##` headings while each skill's formatting rule + its ref/<stage>-template.md are ascii (`=====`/`-----`).
->
->             SKILL.md                        ref/<stage>-template.md
->     +------------------------+            +------------------------+
->     | 📄 inline schema block |            | 📄 canonical template  |
->     |    #/## headings ⚡    |     vs     |    ascii =====/-----   |
->     |    full placeholders   |            |    full placeholders   |
->     +------------------------+            +------------------------+
->          └── ⑥ 复述漂移: same format stated 2×, edits WILL diverge ──┘
->
->     A    rewrite the 4 illustration blocks to ascii (consistent, keeps the duplication)
->     B    bless as "example-only" with a one-line note (cheapest, drift stays possible)
->     C ✅ shrink each inline schema to a section-NAME skeleton + "full form: ref/<stage>-template.md" (single source of truth — kills the drift class the skillset reviews hunt as ⑥)
->
-> CC: my rec = C. Reply `> USER:` below; I will apply the same ruling to all four files.
-
 ```markdown
-# Intervention Seed: <name>
+0-seed: <intervention name>
+===========================
 
-## Opportunity
+Opportunity
+-----------
 <2-3 sentences: what gap exists, what behavior we want to change>
 
-## Expected impact
+Expected impact
+---------------
 <directional estimate: "increase refill adherence by 5-15pp">
 
-## Audience
+Audience
+--------
 <who receives this intervention: patient subset, clinician type>
 
-## Channel hunch
+Channel hunch
+-------------
 <SMS, push, in-app UI, provider dashboard, email — a HUNCH, not a pin;
 the venue decision happens after the evidence ladder (1a-1d) via
 /haipipe-application venue>
 
-## Mechanism hypothesis
+Mechanism hypothesis
+--------------------
 <one sentence: why this audience + this content might respond>
 
-## Kill criteria
+Kill criteria
+-------------
 <conditions under which we abandon this intervention>
 - <criterion 1: e.g., "no HTE detected in cohort data">
 - <criterion 2: e.g., "click rate < 2% in pilot">
 - <criterion 3: e.g., "clinician review rejects tone/content">
 
-## Probes
+Probes
+------
 <seed-level FEASIBILITY probes, INLINE and visible: novelty landscape, prior
 interventions, external-data obtainability — one line per PP with status;
 cards in _PROBE/; internal-data needs are [FORWARD -> CLAIMS] pointer lines

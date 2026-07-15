@@ -4,7 +4,7 @@
 Date: YYYY-MM-DD
 Status: PINNED <venue> (STATUS.md rows written: venue / stages_skipped / claims_settlement)
 The decision gate between venue-FREE (seed + the 1a-1d ladder) and venue-ALIGNED (pitch onward).
-Artifact Principles here are channel-HOW -- distinct from 1d-principles (content-WHAT).
+Artifact Principles here are channel-HOW -- distinct from 1d-advice (content-WHAT).
 How to use: copy to `<intervention>/0-lifecycle/2-venue/2-venue.md`, replace every `<...>`, delete unused sub-items (the DRAFT worker does this during the stage's DPRC).
 
 

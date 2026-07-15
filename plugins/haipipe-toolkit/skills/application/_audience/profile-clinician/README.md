@@ -7,7 +7,7 @@ Precise, clinical. Professional but not formal. Evidence-forward.
 - Length: ≤ 400 words
 - Jargon: expected and appropriate
 - Reading level: professional
-- Citations: inline K-id mandatory — "(K03)" or "(see K03)"
+- Citations: inline C-id mandatory — "(C3)" or "(see C3)"
 
 ## Lifecycle mappings
 

@@ -15,7 +15,7 @@ Panel 1: Summary KPIs (top row, 3 cards)
 │ ▲ +2.1pp     │ │ ▼ -2 vs last │ │ ▲ +12%       │
 │ target: 80%  │ │ threshold: 5 │ │              │
 └──────────────┘ └──────────────┘ └──────────────┘
-  claim: C01       claim: C02       claim: C03
+  claim: C1        claim: C2        claim: C3
   source: T01      source: T02      source: T01
 ```
 
@@ -36,5 +36,5 @@ Panel 1: Summary KPIs (top row, 3 cards)
 [ ] KPI cards have current, trend, target
 [ ] Drill-down paths specified
 [ ] Refresh cadence noted
-[ ] cited_K / cited_W in frontmatter
+[ ] adopted_A / declined_A in frontmatter
 ```

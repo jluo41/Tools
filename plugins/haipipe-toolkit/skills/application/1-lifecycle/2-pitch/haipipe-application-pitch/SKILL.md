@@ -23,8 +23,8 @@ Question answered
 Input
 ======
 
-- `0-lifecycle/1d-principles/1d-principles.md` (required -- the ladder's deliverable feeds the story)
-- `0-lifecycle/1c-claims/1c-claims.md` (the evidence backstop behind each principle)
+- `0-lifecycle/1d-advice/1d-advice.md` (required -- the ladder's deliverable feeds the story)
+- `0-lifecycle/1c-claims/1c-claims.md` (the evidence backstop behind each advice entry)
 - `0-lifecycle/0-seed/0-seed.md`
 - `STATUS.md` -> pinned venue + audience (required; if venue unpinned -> BLOCK: "run /haipipe-application venue first")
 - `_venue/venue-<name>/` + `_audience/profile-<name>/` (framing expectations)
@@ -42,31 +42,36 @@ Pitch artifact schema
 
 Canonical template (source of truth for section order + placeholders): `ref/pitch-template.md`.
 
-> CC: 🎨 heading-style thread — the schema block below uses `#`/`##` vs the declared ascii rule; ONE ruling covers seed/pitch/narrative/display. Full options + diagram live in `1-lifecycle/0-seed/haipipe-application-seed/SKILL.md` (reply there).
-
 ```markdown
-# Pitch: <intervention name>
+2-pitch: <intervention name>
+============================
 
-## One-sentence goal
+One-sentence goal
+-----------------
 <what this intervention does, for whom, through the pinned channel>
 Example: "A timing-aware refill SMS that increases adherence by
 8-12pp among patients whose prescriptions are about to expire."
 
-## Theory of change
+Theory of change
+----------------
 <why this should work — the causal chain from message to behavior,
-anchored in the ledger's supported claims (cite C-ids)>
+anchored in 1d advice (A-ids) and the ledger's supported claims (C-ids)>
 
-## Audience frame
+Audience frame
+--------------
 <how the pinned audience profile shapes the register and ask>
 
-## Primary claim
+Primary claim
+-------------
 <which ledger claim carries the value proposition ([primary] designation
 lives HERE, venue-aligned — not in the venue-free ledger)>
 
-## Why now
+Why now
+-------
 <what makes this timely>
 
-## Probes
+Probes
+------
 <pitch-level investigation needs, INLINE: channel fit, framing risk,
 competing programs — one line per PP with status; cards in _PROBE/>
 ```

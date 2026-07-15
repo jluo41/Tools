@@ -10,3 +10,18 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 - Consumes seed's `[FORWARD -> CLAIMS]` pointers (token unchanged; consumer moved here from claims per R5): data-profile needs -> own _PROBE/ plans; verdict-shaped needs -> planned PP skeletons in 1c's Probes section. Unconsumed pointer fails CHECK.
 - Owns the staleness stamp duty (R3): a refreshed D entry stamps `[STALE D<n> refreshed <date>]` onto citing entries in 1b/1c/1d; downstream CHECKs fail on unresolved tags. Iterate's backfill lands here.
 - ref/<stage>-template.md added (canonical artifact template, paper convention; JL follow-up 2026-07-09) + SKILL.md pointer line; draft worker 1.2.0 registry reads it at WRITE.
+
+## [1.1.0] — 2026-07-09
+
+- Stage doc gains a Probes roster section, uniform across all rungs (bench finding, 01_sms_young_male: the user could not see 1a's probes in the stage doc while 0-seed.md listed its roster; only seed + 1c-claims had one). One line per PP -- question + status -- matching _PROBE/ on disk; done-criteria now require roster-matches-disk. Section placed between Descriptions and Refresh Log; D-slots reference roster entries via [AWAITING PP<nn>].
+
+## [1.2.0] — 2026-07-09
+
+- BREADTH ROUND (JL flywheel discussion, same day as the bench run): the ladder is a flywheel, not a one-way climb (README). This rung gains: a Coverage section — six facets (cohort, arms/treatments, outcomes, time window, data quality, benchmark), each filled with D ids or waived with a why; waived facets are the rung's reservoir, re-mined at every DRAFT open.
+- Multi-round DPRC: REVISE ends with a self-assessment; new slots/facets/gaps trigger another DRAFT->PROBE->REVISE lap ([ROUND n] in _LOG); CHECK fires only when a round comes up dry (venue-scaled, wiki/08 Rounds). Mid-phase back-routing legal ([ROUTE -> seed]).
+
+## [1.3.0] — 2026-07-09
+
+- GROW LOOP (JL: "iterate to build and grow up until you have more and more probes to better understand the data... then go to the next stage"): rounds become a saturation engine — per-round question storms with rotating lenses (new ref/interrogation-battery.md: schema / distribution / crossing / surprise / field / USER-at-gate), answerable-filter (new question -> D slot + probe skeleton), blind self-test (answer the battery from D entries only), dry-stop (venue-scaled). Landed numbers feed the next round's questions, so the probe roster GROWS lap by lap.
+- Field Disposition: 100% of each dataset's schema dispositioned (profiled | waived | excluded), column names only (PHI rail). Home = new `_DESCRIPTIONS/DS<n>_<name>.md` per-dataset profile sheets (field inventory + readable landed profile; probe worker 2.2.0 values-lane redirect).
+- CHECK is part of the loop (JL: "after the check, they can think about adding more probes in the draft"): the gate asks which topics are missing; `grow` verdict (check worker 4.1.0) re-opens DRAFT as [ROUND n+1]; approve = saturated AND user added nothing.

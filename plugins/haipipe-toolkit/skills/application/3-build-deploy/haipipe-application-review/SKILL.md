@@ -27,12 +27,12 @@ Per artifact in `0-artifacts/`:
     (per _audience/profile-<audience>/ and ref/audience-requirements.md)
 
 [ ] Claim traceability: every factual claim in the artifact traces
-    to a cited_K or cited_W in frontmatter
+    to an adopted A id in frontmatter (artifact -> adopted A -> C -> anchor)
 
-[ ] No contested/superseded K/W cited as settled evidence
+[ ] No refuted C or [STALE]-tagged A cited as settled evidence
 
 [ ] Citation format matches audience rules
-    (patient: no K-id in body; clinician: inline K-id; etc.)
+    (patient: no C-id in body; clinician: inline C-id; etc.)
 
 [ ] Element specs from 0-lifecycle/4-display/4-display.md (when present)
     and the venue style-profile followed
@@ -64,7 +64,7 @@ For each reviewed artifact:
 
 ## Checklist
 - [x] Audience match
-- [ ] Claim traceability — C02 not cited but claim present in body
+- [ ] Claim traceability — C2 not cited but claim present in body
 - [x] Citation format
 ...
 
@@ -81,7 +81,7 @@ Workflow
 
 ```
 Step 1: Read 0-artifacts/ for drafted artifacts.
-Step 2: Read the audience profile, 0-lifecycle/1d-principles/1d-principles.md,
+Step 2: Read the audience profile, 0-lifecycle/1d-advice/1d-advice.md,
         0-lifecycle/1c-claims/1c-claims.md, and
         0-lifecycle/4-display/4-display.md (if the venue required it).
 Step 3: Run checklist per artifact.

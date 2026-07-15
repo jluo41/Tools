@@ -108,8 +108,8 @@ themes, theme, T entry                  -> haipipe-application-themes
 pitch                                   -> haipipe-application-pitch
 venue, modality, channel pick           -> haipipe-application-venue
 claims, claim, settlement               -> haipipe-application-claims
-principles, principle, P entry,
-  design principle, W deposit           -> haipipe-application-principles
+advice, advise, A entry, recommendation,
+  design advice, W deposit, principles (legacy) -> haipipe-application-advice
 ladder, ladder sweep, gate batching     -> haipipe-application-lifecycle
 narrative                               -> haipipe-application-narrative
 display, panel, widget, content elem,
@@ -174,7 +174,7 @@ haipipe-application-seed          1-lifecycle/0-seed/haipipe-application-seed/fe
 haipipe-application-descriptions  1-lifecycle/1a-descriptions/haipipe-application-descriptions/feedback/
 haipipe-application-themes        1-lifecycle/1b-themes/haipipe-application-themes/feedback/
 haipipe-application-claims        1-lifecycle/1c-claims/haipipe-application-claims/feedback/
-haipipe-application-principles    1-lifecycle/1d-principles/haipipe-application-principles/feedback/
+haipipe-application-advice    1-lifecycle/1d-advice/haipipe-application-advice/feedback/
 haipipe-application-pitch         1-lifecycle/2-pitch/haipipe-application-pitch/feedback/
 haipipe-application-narrative     1-lifecycle/3-narrative/haipipe-application-narrative/feedback/
 haipipe-application-display       1-lifecycle/4-display/haipipe-application-display/feedback/

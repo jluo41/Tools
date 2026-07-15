@@ -4,9 +4,9 @@ description: "PROBE phase worker (internal). Called by application stage skills 
 argument-hint: "[from-buffer <intervention-root> [PPNN] | stage <stage-name>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 metadata:
-  version: "2.0.0"
-  last_updated: "2026-07-07"
-  summary: "Round-2 paper-alignment (SOP R1+R5; port of paper probe 3.1.0): 4-step procedure (BOOKKEEP -> DISPATCH -> TRANSLATE -> VERIFY), each step ending in a mandatory PROOF shown in the reply; deterministic checker (check-probe-cards.sh, family-local fork) run at VERIFY and re-run by the stage gate; lane debts `harvest: OWED` written before transcription; harvester vocabulary (ACQUIRE via gateway is the only door -> HARVEST follows pointers). Application deltas kept: no sub-worker skills -- venue-scaled lane hooks (_VALUES_ always; _CITATION_ sectioned venues; _DISPLAY_ display-unit venues) bound to paper's 2.0.0 sub-worker contract; claims C-line + Evidence Campaign flip at TRANSLATE."
+  version: "2.4.0"
+  last_updated: "2026-07-09"
+  summary: "2.4.0: task_landing adds the config-variant rule (segment/dataset-agnostic task names; slice + input path = config keys; new subgroup = new config, not a new folder). 2.3.0: dispatch prompt carries task_landing (granularity ladder: config > task > group; one need = one task/config). 2.2.0 (GROW loop): values lane redirects to _DESCRIPTIONS/DS<n> profile sheets for rung 1a (same debt bookkeeping). 2.1.0 (bench rulings 2026-07-09): STEP 1.5 RELEASE GATE -- planned cards dispatch only on the user's explicit release (roster presented + stop otherwise); PHI-adjacent task dispatches pin the minimal aggregate-safe column allow-list by default (no operator ask). 2.0.0 Round-2 paper-alignment (SOP R1+R5; port of paper probe 3.1.0): 4-step procedure (BOOKKEEP -> DISPATCH -> TRANSLATE -> VERIFY), each step ending in a mandatory PROOF shown in the reply; deterministic checker (check-probe-cards.sh, family-local fork) run at VERIFY and re-run by the stage gate; lane debts `harvest: OWED` written before transcription; harvester vocabulary (ACQUIRE via gateway is the only door -> HARVEST follows pointers). Application deltas kept: no sub-worker skills -- venue-scaled lane hooks (_VALUES_ always; _CITATION_ sectioned venues; _DISPLAY_ display-unit venues) bound to paper's 2.0.0 sub-worker contract; claims C-line + Evidence Campaign flip at TRANSLATE."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -53,6 +53,11 @@ Every PROBE phase invokes this skill fresh via the Skill tool, even when its tex
 
 PROOF 1: print `project_root=<path>` + the output of `ls <project_root>/discoveries/`.
 
+**STEP 1.5 -- RELEASE GATE (JL bench ruling 2026-07-09: "stop after the draft... I would like to review the probes to be released").**
+Planned cards are RELEASED by the user, never auto-dispatched. A user-issued `probe run PPNN` (or "release PP02" / "release all") IS the approval for the named card(s). A stage's DRAFT->PROBE handoff, or a bare `from-buffer` sweep with no user-named card, must STOP here: present the planned roster (PP id -- question -- mode -- route), end the turn, and await the user's pick. Record each release in the stage `_LOG` (`[RELEASE] PPNN approved <date>`). No exception for "cheap" probes -- discovery scans are releases too. Normally the user already picked from the RELEASE MENU the DRAFT worker presented at its close (draft step 5); this gate is the backstop for paths that skip DRAFT (--refresh, backfill, direct probe run).
+
+PROOF 1.5: either the user's release words quoted (which card, where they said it) or the presented roster + stop.
+
 **STEP 2 -- DISPATCH.**
 One call per PP card (batch independent cards in one turn):
 
@@ -60,6 +65,14 @@ One call per PP card (batch independent cards in one turn):
 Agent(haipipe-probe-orchestrator-agent, run_in_background=<true for fresh>, prompt="
   project_root: <from STEP 1 -- the dir with discoveries/>
   mode: light            # 'full' only for claims committed verdicts
+  task_landing: config variant on an existing task > new task in the existing
+                group > new group (last resort). One need = ONE task/config --
+                never a fan of sibling scaffolds for related queries. Task
+                names are SEGMENT/DATASET-AGNOSTIC (arm_engagement, never
+                young_male_arm_engagement): the slice + input dataset are
+                config keys -- configs/<variant>.yaml + runs/run_<variant>.sh
+                (one config = one run, results name-paired); a new subgroup
+                or same-shape dataset = a new config, not a new folder.
   plan: |
     <the PP card's Need + Why + Route, verbatim>
 ")
@@ -67,6 +80,7 @@ Agent(haipipe-probe-orchestrator-agent, run_in_background=<true for fresh>, prom
 
 - This dispatch is the ONLY door -- audit-shaped scopes ("re-verify the set", "double-check the refs") included; the agent's SWEEP answers those from the ledger. Never invent a side-channel worker (generic web-search agents etc.).
 - The agent decides reused|enriched|fresh in its own SWEEP, clean context -- never pre-chew the shape, never paste discoveries into the prompt.
+- PHI-adjacent task plans (row-level health data input): the dispatch prompt pins the MINIMAL aggregate-safe column allow-list the Need requires and states that outputs must be aggregates only. Restricted-by-default is NOT a question for the operator (bench ruling 2026-07-09: the restricted-vs-full ask was noise mid-flow); org PHI gates apply on top and are never overridden from here.
 - Likely-fresh plans (new searches / landscape / task run) dispatch `run_in_background=true`; sync on a fresh run froze a paper session 25 minutes. When unsure, go background; TRANSLATE runs when it returns. RULE OF THUMB: if `<project_root>/discoveries/` is empty (or holds only `.gitkeep`), EVERY plan is fresh -- set `run_in_background=true` on all of them, and do not report a dispatch as "background" unless the call actually carried the flag (the label must match the call).
 - Card `status: dispatched`; update the index row.
 
@@ -77,7 +91,7 @@ PROOF 2: the literal Agent(...) call(s) visible in the transcript -- one per PP 
 - `refs:` = EXACTLY the paths the return names (discoveries/.../sources.md, tasks/...); verify each with `ls <project_root>/<ref>`. A return with NO refs means the evidence never landed project-side: the card goes `status: failed (no project-side evidence)` and the phase is NOT green. Takeaways with empty `refs:` are the exact shortcut this contract prevents.
 - **LANE OBLIGATIONS -- write the debt into the card FIRST, then pay it.** When the return carries harvestable content for a lane the venue fires (see "Venue-hook contract" below), IMMEDIATELY record it on the card as a lane line (this is what makes a skipped harvest checkable):
   ```
-  - value_refs: tasks/T03/results/summary.csv · harvest: OWED    (values lane, always)
+  - value_refs: tasks/X03_cohort_summary/results/summary.csv · harvest: OWED    (values lane, always)
   - pick_list:  S01,S02,S03 · harvest: OWED                      (citation lane, sectioned venues)
   - unit_refs:  0-artifacts/fig-overview · harvest: OWED         (display lane, display-unit venues)
   ```
@@ -104,7 +118,7 @@ Venue-hook contract (application delta: hooks, not sub-worker skills)
 
 Application keeps NO probe sub-worker skills; the three HARVEST lanes are venue-scaled hooks inside this worker. Which lanes fire is decided at lane CREATION (TRANSLATE), from the pinned venue -- the checker stays presence-driven and needs no venue lookup:
 
-- `_VALUES_` lane -- ALWAYS eligible: any venue's artifact quotes numbers, and claims-rung verified values land in `_VALUES_1c-claims.md` regardless of venue (1a-descriptions needs no satellite: its doc IS the anchored-numbers doc).
+- `_VALUES_` lane -- ALWAYS eligible: any venue's artifact quotes numbers, and claims-rung verified values land in `_VALUES_1c-claims.md` regardless of venue. RUNG 1a REDIRECT (GROW loop, 2026-07-09): descriptions-stage probes land this lane in `_DESCRIPTIONS/DS<n>_<name>.md` (per-dataset profile sheet: field inventory + Field Disposition + readable landed profile; quoted-only, every line anchored + dated) -- same OWED/accepted debt bookkeeping, different home; the 1a doc itself stays one-line D entries.
 - `_CITATION_` lane -- SECTIONED venues only (report/dashboard-like, per the venue profile). Pre-pin stages (seed and the 1a-1d ladder are venue-FREE) keep source anchors in the card takeaways; no _CITATION_ doc exists before a sectioned venue is pinned.
 - `_DISPLAY_` lane -- only if the venue's artifact has display units (panels, charts, figures). Simple venues (sms/push/reminder) have no document lanes at all: their PROBE phase is claims-evidence only.
 

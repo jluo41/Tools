@@ -21,12 +21,12 @@ application/
 │     1a-descriptions/haipipe-application-descriptions (venue-FREE, ladder rung: anchored data profile)
 │     1b-themes/haipipe-application-themes           (venue-FREE, ladder rung: grounded patterns)
 │     1c-claims/haipipe-application-claims           (venue-FREE, ladder rung: ledger + campaign)
-│     1d-principles/haipipe-application-principles   (venue-FREE, ladder rung: design directives — deliverable)
+│     1d-advice/haipipe-application-advice           (venue-FREE, ladder rung: design advice — deliverable)
 │     2-pitch/haipipe-application-pitch              (venue-ALIGNED)
 │     3-narrative/haipipe-application-narrative      (venue-GATED)
 │     4-display/haipipe-application-display          (venue-GATED; owns per-unit jobs)
 │     5-section-edit/haipipe-application-section-edit (sectioned venues)
-│     + haipipe-application-venue (pin modality + stages_skipped + claims_settlement; writes 2-venue/2-venue.md Artifact Principles; after claims, before pitch)
+│     + haipipe-application-venue (pin modality + stages_skipped + claims_settlement; writes 2-venue/2-venue.md Artifact Principles; after the ladder (1d gate), before pitch)
 │     + haipipe-application-lifecycle (orchestrator)
 ├── 2-phase/               PHASE workers (internal; driven by stage skills)
 │     README.md + USAGE.md + WIRING.md    (bucket-root docs: architecture, recipes, wiring)
@@ -50,7 +50,7 @@ ladder (sweep)    -> haipipe-application-lifecycle ladder (runs 1a->1d; venue-sc
 1a-descriptions   -> 1-lifecycle/1a-descriptions/haipipe-application-descriptions
 1b-themes         -> 1-lifecycle/1b-themes/haipipe-application-themes
 1c-claims         -> 1-lifecycle/1c-claims/haipipe-application-claims
-1d-principles     -> 1-lifecycle/1d-principles/haipipe-application-principles
+1d-advice         -> 1-lifecycle/1d-advice/haipipe-application-advice
 venue (pin)       -> 1-lifecycle/haipipe-application-venue (after the ladder, before pitch; the ladder is venue-free; writes 0-lifecycle/2-venue/2-venue.md)
 2-pitch           -> 1-lifecycle/2-pitch/haipipe-application-pitch
 3-narrative       -> 1-lifecycle/3-narrative/haipipe-application-narrative      (venue-gated)
@@ -79,7 +79,7 @@ CHECK  -> 2-phase/3-check/haipipe-application-check   (the only human-involved p
 ```text
 status / enter / preload                    -> 0-enter
 seed / ladder / descriptions / themes
-  / claims / principles / venue / pitch
+  / claims / advice / venue / pitch
   / narrative / display / section-edit      -> 1-lifecycle
 round / todo / decisions                    -> 0-enter/haipipe-application-round
 draft / write / make the <venue>            -> 3-build-deploy/haipipe-application-artifact
@@ -95,19 +95,8 @@ venue / which channel                       -> 1-lifecycle/haipipe-application-v
 Every application-aware response should report both:
 
 ```text
-current_layer: 0-seed | 1a-descriptions | 1b-themes | 1c-claims | 1d-principles | venue | 2-pitch | 3-narrative | 4-display | 5-section-edit | draft | review | deploy
-maturity: prospect | data-described | claim-ledger | principled | venue-pinned | pitched | narrated | display-mapped | section-edit | drafted | reviewed | deployed | iterating | retired
+current_layer: 0-seed | 1a-descriptions | 1b-themes | 1c-claims | 1d-advice | venue | 2-pitch | 3-narrative | 4-display | 5-section-edit | draft | review | deploy
+maturity: prospect | data-described | claim-ledger | advised | venue-pinned | pitched | narrated | display-mapped | section-edit | drafted | reviewed | deployed | iterating | retired
 ```
 
 Layer answers "where is the active work?" Maturity answers "how real is the intervention?"
-
-> CC: 📶 maturity values `data-described` and `principled` are CC-invented names for the new ladder rungs (also in wiki/03 + the enter console) — confirm or rename.
->
->     📶 prospect → data-described → claim-ledger → principled → venue-pinned → ...
->                   ▲ CC-invented ▲                ▲ CC-invented ▲
->
->     A ✅ keep both (finer console diagnosis; application already diverges from paper intentionally)
->     B    mechanical names (1a-done / 1d-done): self-explanatory but ugly
->     C    drop both, keep only claim-ledger (leanest — the strip already shows rung progress; defensible if you feel vocabulary creep)
->
-> CC: my rec = A, with C as the lean alternative. Reply `> USER:` below.
