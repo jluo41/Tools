@@ -147,3 +147,39 @@ decides, then moves here too. Newest block at the bottom.
   #6 MOVED the full keyword table → ref/type-inference.md (nothing lost); SKILL.md keeps a
      quick-map + pointer. NO info lost, NO behavior change; verified fences balanced,
      no dangling refs, no blank-runs.
+
+
+LESSONS — skill-doc authoring craft, harvested this session
+===========================================================
+(Portable behavioral PREFERENCES from this session live in haipipe-task/PREFERENCES.md:
+ description ≤55w · SKILL-routes-don't-re-derive · verify-before-trusting ·
+ one-sentence-per-line · reply-then-move-thread-to-_LOG.)
+
+L1  TOKEN-IDENTITY ≠ STRUCTURE-SAFE. A reflow whose `original.split()==new.split()`
+    PASSED still mangled feedback.md's YAML frontmatter (joined name:/description:).
+    → a whitespace reflow MUST explicitly protect the `--- … ---` frontmatter + code
+    fences; the token check alone does not catch structural breakage.
+
+L2  A REGEX SWEEP MISSES PHRASING VARIANTS. The dead-safe Stage→Phase pattern
+    ("Stage N: PLAN") missed "Stage 2/3 of the lifecycle" in 2 stata fn files.
+    → after a pattern sweep, grep the CONCEPT in other phrasings or stragglers survive
+    (the 1..9 audit caught these).
+
+L3  NAMESPACE OVERLOAD IS EXPENSIVE. "workflow" carried 5 meanings; "phase/stage/
+    process" collided across 3 concepts. → reserve ONE word per concept; when 3 fight
+    for 2 words, rename to the STANDARD term (IPO's P → "Process"). See R1/R8/R9.
+
+L4  SINGLE-SOURCING THE SCHEMA ≠ SINGLE-SOURCING THE PROSE. A correct pointer to a
+    shared schema reads as "no drift possible" — but the WORDS around it drift
+    (stage-report's evidence table diverged from the real results/ contract). See R5.
+
+L5  DOC COMMENTS ACCRETE INTO BLOAT. Answering `> JL:` inline told the QA story 4× and
+    grew SKILL.md. → consolidate to ONE telling + pointer, migrate resolved threads to
+    _LOG (503→381 lines, no info lost).
+
+L6  ALWAYS-LOADED TEXT MUST BE BUDGETED. `description:` is paid every session × ~90
+    skills; 6+ specialists ran 60-88 words. → ≤55w, purpose + trigger keywords only.
+
+L7  FAN-OUT AUDIT + FIX SCALES. Parallel read-only agents (1 per folder) gave a clean
+    ~40-skill fleet audit; parallel fix-agents then applied the approved fixes.
+    → for broad multi-folder sweeps, delegate per-folder and synthesize/commit centrally.
