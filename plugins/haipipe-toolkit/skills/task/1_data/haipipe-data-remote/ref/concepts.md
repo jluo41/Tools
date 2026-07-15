@@ -1,9 +1,8 @@
 haipipe-data-remote: Concepts
 ==============================
 
-Cross-stage transport over the LOCAL_/REMOTE_ pair model. The skill
-is a thin wrapper over `hai-remote-sync`; this doc explains the
-underlying model so the wrapper's verbs make sense.
+Cross-stage transport over the LOCAL_/REMOTE_ pair model.
+The skill is a thin wrapper over `hai-remote-sync`; this doc explains the underlying model so the wrapper's verbs make sense.
 
 ---
 
@@ -25,19 +24,19 @@ LOCAL_EXTERNAL_STORE         REMOTE_EXTERNAL_STORE
 LOCAL_REFERENCE_STORE        REMOTE_REFERENCE_STORE
 ```
 
-`REMOTE_ROOT` is the prefix shared by all `REMOTE_*` paths. Shape:
+`REMOTE_ROOT` is the prefix shared by all `REMOTE_*` paths.
+Shape:
 
 ```
 s3://<bucket>/<repo-prefix>/workspace_local_dev
 ```
 
-The concrete value is EXTERNAL CONFIGURATION: it lives in the workspace's
-gitignored `env.sh` (exported as `$REMOTE_ROOT`), never in skill docs.
+The concrete value is EXTERNAL CONFIGURATION: it lives in the workspace's gitignored `env.sh` (exported as `$REMOTE_ROOT`), never in skill docs.
 
 Each `REMOTE_*_STORE = ${REMOTE_ROOT}/<store-folder>/`.
 
-The asset path under each store is `{name}/...` -- the same shape on
-both sides. So pulling `1-SourceStore/WellDoc2025CVS` means transferring:
+The asset path under each store is `{name}/...` -- the same shape on both sides.
+So pulling `1-SourceStore/WellDoc2025CVS` means transferring:
 
 ```
 s3://.../1-SourceStore/WellDoc2025CVS/   <-->   _WorkSpace/1-SourceStore/WellDoc2025CVS/
@@ -48,8 +47,7 @@ s3://.../1-SourceStore/WellDoc2025CVS/   <-->   _WorkSpace/1-SourceStore/WellDoc
 Supported Backends
 ===================
 
-The wrapped `hai-remote-sync` autodetects the backend from the
-`REMOTE_ROOT` URL prefix and dispatches to the right CLI:
+The wrapped `hai-remote-sync` autodetects the backend from the `REMOTE_ROOT` URL prefix and dispatches to the right CLI:
 
 ```
 prefix         backend           tool
@@ -61,15 +59,15 @@ gdrive:        Google Drive      rclone
 <remote>:      Custom rclone     rclone
 ```
 
-Tool availability is checked at first use; missing tools surface an
-install URL.
+Tool availability is checked at first use; missing tools surface an install URL.
 
 ---
 
 Copy-Only Contract
 ===================
 
-This skill ALWAYS uses copy semantics. Concretely:
+This skill ALWAYS uses copy semantics.
+Concretely:
 
   - `pull`: adds remote files to local; never deletes local files
             even if they no longer exist on remote.
@@ -78,22 +76,19 @@ This skill ALWAYS uses copy semantics. Concretely:
   - hai-remote-sync's `--sync` flag (mirror mode, deletes) is
     DISALLOWED. The skill never passes it.
 
-If the user wants to delete out-of-band files on either side, they do
-that themselves with full eyes-on context. The skill's `prune` verb
-surfaces such asymmetries but never acts on them.
+If the user wants to delete out-of-band files on either side, they do that themselves with full eyes-on context.
+The skill's `prune` verb surfaces such asymmetries but never acts on them.
 
-This is a deliberate safety choice. CLAUDE.md's "destructive
-operations" rule applies hard here -- a one-character wrong flag can
-wipe a remote.
+This is a deliberate safety choice.
+CLAUDE.md's "destructive operations" rule applies hard here -- a one-character wrong flag can wipe a remote.
 
 ---
 
 Discovery via --dry-run (no aws s3 ls)
 =======================================
 
-`hai-remote-sync` has no `list` verb, but its `--dry-run` mode prints
-every file the underlying tool *would* transfer. We use this for
-discovery:
+`hai-remote-sync` has no `list` verb, but its `--dry-run` mode prints every file the underlying tool *would* transfer.
+We use this for discovery:
 
 ```
 --pull --dry-run on local against remote   ->  remote-only OR remote-newer
@@ -101,12 +96,12 @@ discovery:
 neither path lists the file                ->  in sync
 ```
 
-Two dry-runs per store covers all four diff buckets. The skill
-NEVER calls `aws s3 ls` / `gsutil ls` directly -- everything goes
-through hai-remote-sync, which keeps the backend abstraction intact.
+Two dry-runs per store covers all four diff buckets.
+The skill NEVER calls `aws s3 ls` / `gsutil ls` directly -- everything goes through hai-remote-sync, which keeps the backend abstraction intact.
 
-Cost: each dry-run hits the bucket. Always live (no caching). On a
-large bucket this can take 10-30s per store.
+Cost: each dry-run hits the bucket.
+Always live (no caching).
+On a large bucket this can take 10-30s per store.
 
 ---
 
@@ -130,19 +125,16 @@ hai-remote-sync --pull --source --name WellDoc2025CVS
 hai-remote-sync --push --record --name MyRecordSet
 ```
 
-Store flags available:
-`--rawdata --source --record --case --aidata --model --endpoint --external`
+Store flags available: `--rawdata --source --record --case --aidata --model --endpoint --external`
 
-The skill prefers path mode for status / diff / plan because it's
-unambiguous; named-store mode is fine for explicit pull / push.
+The skill prefers path mode for status / diff / plan because it's unambiguous; named-store mode is fine for explicit pull / push.
 
 ---
 
 Credentials
 ============
 
-Credential handling is BACKEND-CONDITIONAL — read the REMOTE_ROOT prefix
-first and give the matching guidance:
+Credential handling is BACKEND-CONDITIONAL — read the REMOTE_ROOT prefix first and give the matching guidance:
 
   gdrive: (rclone / Google Drive — the default in this workspace)
     - Auth failures usually mean an expired rclone token:
@@ -156,9 +148,8 @@ first and give the matching guidance:
       `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`;
       re-source env.sh.
 
-The skill does NOT actively check credentials. When a transfer fails
-with an auth error, surface the backend-appropriate hint above and exit
-cleanly.
+The skill does NOT actively check credentials.
+When a transfer fails with an auth error, surface the backend-appropriate hint above and exit cleanly.
 
 ---
 
@@ -172,9 +163,8 @@ What This Skill Adds Over Calling hai-remote-sync Directly
   prune    visibility into local-only / remote-only asymmetries
            that direct hai-remote-sync calls do not show
 
-For one-shot single-asset pulls/pushes, calling hai-remote-sync
-directly is fine and equivalent. The skill exists for the workflows
-above where N+1 calls and parsing would otherwise be required.
+For one-shot single-asset pulls/pushes, calling hai-remote-sync directly is fine and equivalent.
+The skill exists for the workflows above where N+1 calls and parsing would otherwise be required.
 
 ---
 

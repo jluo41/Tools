@@ -1,8 +1,8 @@
 fn-review: Schema, coverage, and staleness audit
 =================================================
 
-Read-only audit of one asset (or all assets in the active release if
-no asset name given). Reports:
+Read-only audit of one asset (or all assets in the active release if no asset name given).
+Reports:
 
   schema:     mandatory files present, column contract satisfied
   coverage:   primary-key uniqueness, null rates, vocab sizes
@@ -31,7 +31,8 @@ For each asset, verify:
              README.md
   optional:  df_{asset}_raw.parquet (engagement only)
 
-Read the parquet's columns and the pkl's keys. Verify:
+Read the parquet's columns and the pkl's keys.
+Verify:
 
   - `{PRIMARY_KEY}_original` column exists in the parquet
   - `{PRIMARY_KEY}` column exists (the integer ID)
@@ -67,10 +68,7 @@ vocab sizes per column:
   ...
 ```
 
-A primary-key uniqueness rate < 100% means the asset has duplicate
-keys -- flag as a warning unless the README explicitly documents
-multi-row-per-key (e.g. an asset that emits one row per (NPI, year)
-would have <100% uniqueness on NPI alone).
+A primary-key uniqueness rate < 100% means the asset has duplicate keys -- flag as a warning unless the README explicitly documents multi-row-per-key (e.g. an asset that emits one row per (NPI, year) would have <100% uniqueness on NPI alone).
 
 ---
 

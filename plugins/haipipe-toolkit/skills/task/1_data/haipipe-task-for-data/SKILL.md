@@ -13,9 +13,8 @@ metadata:
 Skill: haipipe-task-for-data
 =================================
 
-Scaffolds AND executes **data-pipeline task-folders** — runnable examples
-that invoke Stage 1-4 builders. Heavy outputs land in `_WorkSpace/{1..4}-*Store/`;
-the task-folder keeps light pointers and a notebook of the run.
+Scaffolds AND executes **data-pipeline task-folders** — runnable examples that invoke Stage 1-4 builders.
+Heavy outputs land in `_WorkSpace/{1..4}-*Store/`; the task-folder keeps light pointers and a notebook of the run.
 
 **Two modes:**
 - **Scaffold** (new task): creates skeleton from notebook template
@@ -44,8 +43,8 @@ Heavy outputs land in: `_WorkSpace/{1..4}-*Store/`.
 Notebook template pattern
 --------------------------
 
-The task `.py` is an **instantiation** of a generic template from
-`code/scripts/haistepnb/`. Only the CONFIG default and docstring change.
+The task `.py` is an **instantiation** of a generic template from `code/scripts/haistepnb/`.
+Only the CONFIG default and docstring change.
 The `.ipynb` is auto-generated at runtime — it is NOT source.
 
 ```
@@ -57,7 +56,8 @@ code/scripts/haistepnb/a3_case_nb.py   →   {task}/3_case_<project>.py
 code/scripts/haistepnb/a4_aidata_nb.py →   {task}/4_aidata_<project>.py
 ```
 
-Scaffold step: exact copy of template → rename file. CONFIG overridden at runtime by papermill.
+Scaffold step: exact copy of template → rename file.
+CONFIG overridden at runtime by papermill.
 See `ref/notebook-templates.md` for the full mapping and conventions.
 
 
@@ -106,8 +106,8 @@ Stage    Partitions     CLI flags                                    Notebook pa
 The 00_develop pattern
 -----------------------
 
-Each pipeline stage has a paired develop task: `NN_<stage>_fn_develop_mimic/`
-builds the Fns, `NN_<stage>_mimiciv/` runs the pipeline. Same number = same stage.
+Each pipeline stage has a paired develop task: `NN_<stage>_fn_develop_mimic/` builds the Fns, `NN_<stage>_mimiciv/` runs the pipeline.
+Same number = same stage.
 
 ```
 A01_data_pipeline_mimic/
@@ -155,7 +155,8 @@ Commands
 Scaffold flow
 -------------
 
-See `fn/scaffold.md` for the detailed step-by-step. Summary:
+See `fn/scaffold.md` for the detailed step-by-step.
+Summary:
 
   1. Identify project + task-group.
   2. Collect metadata (NN, name, stage, _meta block).
@@ -169,7 +170,8 @@ See `fn/scaffold.md` for the detailed step-by-step. Summary:
 Execute flow
 -------------
 
-See `fn/execute.md` for the detailed step-by-step. Summary:
+See `fn/execute.md` for the detailed step-by-step.
+Summary:
 
   1. Detect stage from script imports (SourceSet/RecordSet/CaseSet/AIData).
   2. Read config for partition_number and stage-specific args.

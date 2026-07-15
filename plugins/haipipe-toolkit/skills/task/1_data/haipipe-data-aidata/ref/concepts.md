@@ -3,9 +3,7 @@ Layer 4: AIData
 
 Layer 4 of the 6-stage data pipeline: AIData (ML-Ready Dataset).
 
-Takes a CaseSet (flat Parquet of extracted features) and transforms it
-into an AIDataSet -- a HuggingFace DatasetDict with vocabularies, split
-labels, and transform metadata that Layer 5 (Model) can train on directly.
+Takes a CaseSet (flat Parquet of extracted features) and transforms it into an AIDataSet -- a HuggingFace DatasetDict with vocabularies, split labels, and transform metadata that Layer 5 (Model) can train on directly.
 
 ---
 
@@ -44,7 +42,8 @@ Academy  = Builder scripts             (tasks/<pipe-group>/04_aidata_fn_develop_
 What Is an AIDataSet
 ====================
 
-Output of Layer 4. Wraps a HuggingFace DatasetDict with vocab files.
+Output of Layer 4.
+Wraps a HuggingFace DatasetDict with vocab files.
 
 **Core attributes:**
 
@@ -75,8 +74,8 @@ _WorkSpace/4-AIDataStore/{ParentSetName}/@v{N}AIData-{aidata_name}/
 +-- manifest.json
 ```
 
-**CRITICAL:** Vocab files (`cf_to_cfvocab.json` and `feat_vocab.json`)
-live at the ROOT of the version directory. There is NO `vocab/` subdirectory.
+**CRITICAL:** Vocab files (`cf_to_cfvocab.json` and `feat_vocab.json`) live at the ROOT of the version directory.
+There is NO `vocab/` subdirectory.
 
 ---
 
@@ -85,7 +84,8 @@ Three-Part Config Pattern
 
 Every AIData YAML config has up to three sections:
 
-**1. SplitArgs (optional) -- how to split cases into train/val/test:**
+**1.
+SplitArgs (optional) -- how to split cases into train/val/test:**
 
 ```yaml
 SplitArgs:
@@ -100,7 +100,8 @@ SplitArgs:
       Op: 'AND'
 ```
 
-**2. InputArgs -- how to transform features into model inputs:**
+**2.
+InputArgs -- how to transform features into model inputs:**
 
 ```yaml
 InputArgs:
@@ -122,11 +123,11 @@ InputArgs:
 | `InputMultiCF` | Per-CaseFn columns | Custom models, exploration |
 | Project-specific (e.g. `InputXxxTabular`) | Flat named columns | Direct analysis, NOT mlpredictor |
 
-**For tree-model training (mlpredictor), use `CatInputMultiCFSparse`.**
-It concatenates `--tid`/`--wgt` from all CaseFns into a global sparse vector.
+**For tree-model training (mlpredictor), use `CatInputMultiCFSparse`.** It concatenates `--tid`/`--wgt` from all CaseFns into a global sparse vector.
 Requires CaseFns to return `--tid`/`--wgt` (see haipipe-data-case concepts).
 
-**3. OutputArgs (optional) -- how to extract labels:**
+**3.
+OutputArgs (optional) -- how to extract labels:**
 
 ```yaml
 OutputArgs:
@@ -263,8 +264,7 @@ MUST DO
 =======
 
 **NOTE:** `source .venv/bin/activate` does NOT persist across Bash tool calls.
-Always chain: `source .venv/bin/activate && source env.sh && python <script>`
-Or call venv python directly: `.venv/bin/python script.py`
+Always chain: `source .venv/bin/activate && source env.sh && python <script>` Or call venv python directly: `.venv/bin/python script.py`
 
 1. Activate .venv: `source .venv/bin/activate && source env.sh`
 2. Remember: output of Layer 4 = input of Model training (Layer 5)

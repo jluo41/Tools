@@ -1,19 +1,19 @@
 fn-status: Cross-store local↔remote drift
 ==========================================
 
-Default verb (no-arg). Probes every store via two `hai-remote-sync`
-dry-runs and renders a one-screen drift summary.
+Default verb (no-arg).
+Probes every store via two `hai-remote-sync` dry-runs and renders a one-screen drift summary.
 
-Always live. Always thin (uses only hai-remote-sync, never direct
-aws / gsutil / etc commands).
+Always live.
+Always thin (uses only hai-remote-sync, never direct aws / gsutil / etc commands).
 
 ---
 
 Step 0: Resolve scope
 ----------------------
 
-Read env.sh to find every (LOCAL_*, REMOTE_*) pair. Also accept an
-optional filter:
+Read env.sh to find every (LOCAL_*, REMOTE_*) pair.
+Also accept an optional filter:
 
   /haipipe-data-remote status                -> all stores
   /haipipe-data-remote status 1-SourceStore  -> just that one
@@ -48,16 +48,15 @@ hai-remote-sync --pull --path {store} --dry-run 2>&1 | tee /tmp/pull_{store}.log
 hai-remote-sync --push --path {store} --dry-run 2>&1 | tee /tmp/push_{store}.log
 ```
 
-Parse the output. The `aws` / `rclone` dry-run lines look like:
+Parse the output.
+The `aws` / `rclone` dry-run lines look like:
 
 ```
 (dryrun) download: s3://.../1-SourceStore/WellDoc2025CVS/Ptt.parquet to ...
 (dryrun) upload:   ./_WorkSpace/1-SourceStore/MyCohort/manifest.json to s3://...
 ```
 
-Group by top-level asset name (the first path component under the
-store) so the summary collapses many-files-per-asset into per-asset
-counts.
+Group by top-level asset name (the first path component under the store) so the summary collapses many-files-per-asset into per-asset counts.
 
 ---
 
@@ -73,9 +72,10 @@ local_only    assets only the --push dry-run mentioned
 out_of_sync   assets BOTH dry-runs mentioned (drift in both directions)
 ```
 
-Note: `--pull --dry-run` does NOT distinguish "remote-only" from
-"remote-newer". Either way, pulling would copy. Same for push. For
-the headline summary, grouping them as "would copy" is enough.
+Note: `--pull --dry-run` does NOT distinguish "remote-only" from "remote-newer".
+Either way, pulling would copy.
+Same for push.
+For the headline summary, grouping them as "would copy" is enough.
 
 ---
 
@@ -100,8 +100,7 @@ Hints (no automatic action):
   - Newer ExternalStore release on remote: review with /haipipe-data-external
 ```
 
-If a store probe fails with an auth error, mark that row as `auth?`
-and append the SSO URL hint at the bottom.
+If a store probe fails with an auth error, mark that row as `auth?` and append the SSO URL hint at the bottom.
 
 ---
 

@@ -13,13 +13,12 @@ metadata:
 Skill: haipipe-data-external
 =============================
 
-Stage 0 specialist. Owns all ExternalFn work and the ExternalStore layer.
+Stage 0 specialist.
+Owns all ExternalFn work and the ExternalStore layer.
 
-Externals are reference assets (dimension lookups + engagement aggregates)
-that any cohort-scoped Stage 1-4 chef can pull from. They are NOT a layer
-in series with Stages 1-4 -- they are a sideways pantry. RecordFn and
-CaseFn declare external dependencies by primary key (NPI, NDC, NCPDP,
-zip3, zip5, patient_id).
+Externals are reference assets (dimension lookups + engagement aggregates) that any cohort-scoped Stage 1-4 chef can pull from.
+They are NOT a layer in series with Stages 1-4 -- they are a sideways pantry.
+RecordFn and CaseFn declare external dependencies by primary key (NPI, NDC, NCPDP, zip3, zip5, patient_id).
 
 Two asset families live under ExternalStore:
 
@@ -83,9 +82,7 @@ refresh        ref/concepts.md                   fn/fn-refresh.md
 (no fn arg)    ref/concepts.md                   (ref-only mode)
 ```
 
-Why `design-chef` and `join` also read Source's ref: ExternalFn outputs
-are consumed downstream by SourceFn/RecordFn -- you need both schemas
-to design the asset or preview a join.
+Why `design-chef` and `join` also read Source's ref: ExternalFn outputs are consumed downstream by SourceFn/RecordFn -- you need both schemas to design the asset or preview a join.
 
 ---
 
@@ -97,7 +94,8 @@ Step 0: Read the cross-stage overview FIRST:
         Stage-0 rung in the 6-layer diagram -- they are sideways inputs.
         Mandatory.
 
-Step 1: Parse args after `/haipipe-data-external`. Extract:
+Step 1: Parse args after `/haipipe-data-external`.
+Extract:
           function  in { dashboard, load, cook, design-chef, review,
                           join, refresh, (none) }
           extras    asset name, --to <set>, --version <release>
@@ -134,10 +132,9 @@ _WorkSpace/ExternalStore/
         +-- df_{asset}_raw.parquet       <- (engagement only) pre-ID-mapped raw
 ```
 
-Versioning: latest release wins by default. Pin with `--version @{tag}`.
-Current builders live in `code-dev/0-EXTERNAL/e{N}_build_external_*.py`
-(WellDoc-SPACE; workspaces without `code-dev/0-EXTERNAL/` host external builders in a
-project task folder instead — same `e{N}_build_external_*` naming).
+Versioning: latest release wins by default.
+Pin with `--version @{tag}`.
+Current builders live in `code-dev/0-EXTERNAL/e{N}_build_external_*.py` (WellDoc-SPACE; workspaces without `code-dev/0-EXTERNAL/` host external builders in a project task folder instead — same `e{N}_build_external_*` naming).
 
 ---
 

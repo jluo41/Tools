@@ -1,12 +1,11 @@
 fn-plan: Dependency-aware multi-asset plan
 ===========================================
 
-Composes a sequence of `pull` operations to bring a cohort up to a
-specified pipeline stage. Resolves dependencies (Source -> Record ->
-Case -> AIData), plus any external assets the cohort references.
+Composes a sequence of `pull` operations to bring a cohort up to a specified pipeline stage.
+Resolves dependencies (Source -> Record -> Case -> AIData), plus any external assets the cohort references.
 
-Phase 1 implementation: best-effort dependency resolution by name
-matching. Always shows the proposed plan; never executes silently.
+Phase 1 implementation: best-effort dependency resolution by name matching.
+Always shows the proposed plan; never executes silently.
 
 ---
 
@@ -25,8 +24,7 @@ Optional:
 Step 2: Resolve dependencies (best-effort)
 -------------------------------------------
 
-Use `hai-remote-sync --pull --dry-run --path` against each candidate
-store to check what exists on remote that matches the cohort name.
+Use `hai-remote-sync --pull --dry-run --path` against each candidate store to check what exists on remote that matches the cohort name.
 
 ```bash
 # Source: look for {cohort}/...
@@ -53,12 +51,10 @@ Build the dependency list:
 ]
 ```
 
-If multiple matches at a stage (e.g. v1RecSet AND v2RecSet), ask the
-user which to include.
+If multiple matches at a stage (e.g. v1RecSet AND v2RecSet), ask the user which to include.
 
-For externals: read the README of each Source/Record asset to find
-external dependencies declared in the manifest. (If no manifest
-declares them, ask the user explicitly.)
+For externals: read the README of each Source/Record asset to find external dependencies declared in the manifest.
+(If no manifest declares them, ask the user explicitly.)
 
 ---
 
@@ -73,8 +69,7 @@ Plan size estimate: {N_files} files, {total_size}.
 At assumed throughput, this will take ~{minutes} min.
 ```
 
-(Throughput estimate is informational only -- actual time depends on
-network and remote-side concurrency.)
+(Throughput estimate is informational only -- actual time depends on network and remote-side concurrency.)
 
 ---
 
@@ -110,10 +105,8 @@ Proceed? (yes / dry-run-only / cancel)
 Step 5: Execute the plan
 -------------------------
 
-For each step, delegate to `fn-pull.md` (which does its own per-step
-dry-run + confirm). If the user does not want to confirm each step
-separately, accept `--yes` upfront to skip per-step confirms (but
-keep per-step dry-run logs).
+For each step, delegate to `fn-pull.md` (which does its own per-step dry-run + confirm).
+If the user does not want to confirm each step separately, accept `--yes` upfront to skip per-step confirms (but keep per-step dry-run logs).
 
 If any step fails, pause and ask:
 

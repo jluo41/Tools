@@ -1,8 +1,8 @@
 fn-diff: Per-file local↔remote diff for one asset
 ==================================================
 
-Read-only verb. Runs both `--pull --dry-run` and `--push --dry-run`
-for a single asset path; renders the bidirectional diff.
+Read-only verb.
+Runs both `--pull --dry-run` and `--push --dry-run` for a single asset path; renders the bidirectional diff.
 
 ---
 
@@ -36,7 +36,8 @@ hai-remote-sync --push --path {store}/{name} --dry-run > /tmp/push.log 2>&1
 Step 4: Render
 ---------------
 
-Parse each dry-run log into per-file lines. Bucket them:
+Parse each dry-run log into per-file lines.
+Bucket them:
 
 ```
 {store}/{name}  diff:
@@ -54,16 +55,14 @@ In sync: {M} files (not listed)
 
 If both lists are empty: print "Asset is in sync." and return.
 
-If a file appears in BOTH lists, it has drifted on both sides --
-flag this prominently:
+If a file appears in BOTH lists, it has drifted on both sides -- flag this prominently:
 
 ```
 WARNING: divergent files (changed on both sides):
   {file}   local mtime / remote mtime  (manual reconciliation needed)
 ```
 
-The user resolves divergent files manually -- the skill cannot pick
-a winner.
+The user resolves divergent files manually -- the skill cannot pick a winner.
 
 ---
 

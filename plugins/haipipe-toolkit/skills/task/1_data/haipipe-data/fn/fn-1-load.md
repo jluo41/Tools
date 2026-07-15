@@ -1,9 +1,9 @@
 fn-load: Load and Inspect a Set Asset at Any Pipeline Stage
 ============================================================
 
-This file is stage-agnostic. Stage-specific details are in the Per-Stage Reference
-section below. When a dispatch table loads this file alongside a stage ref file,
-the ref file provides the active stage context (store path, API, key checks).
+This file is stage-agnostic.
+Stage-specific details are in the Per-Stage Reference section below.
+When a dispatch table loads this file alongside a stage ref file, the ref file provides the active stage context (store path, API, key checks).
 
 Use this file to: load an existing Set from disk and inspect its contents.
 
@@ -19,9 +19,8 @@ Every pipeline stage produces a Set asset saved to _WorkSpace/:
   3-case    -> CaseSet    -> _WorkSpace/3-CaseStore/
   4-aidata  -> AIDataSet  -> _WorkSpace/4-AIDataStore/
 
-All load APIs require SPACE (workspace root path). None of them accept
-set_name= or store_key= arguments -- always use path= with the full
-relative or absolute path to the asset directory.
+All load APIs require SPACE (workspace root path).
+None of them accept set_name= or store_key= arguments -- always use path= with the full relative or absolute path to the asset directory.
 
 ---
 

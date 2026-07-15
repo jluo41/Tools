@@ -2,7 +2,8 @@ fn-scaffold: Scaffold a raw extraction task-folder
 ===================================================
 
 Extracts source tables from a Databricks catalog as wide parquet files.
-Group letter default: **R**. Output: `tasks/R{NN}_<cohort>/{NN}_stage{S}_<desc>/`.
+Group letter default: **R**.
+Output: `tasks/R{NN}_<cohort>/{NN}_stage{S}_<desc>/`.
 
 
 Step 0 — Pick the pattern (governance gate)
@@ -16,10 +17,8 @@ PHI      →  Pattern 2  server-resident              (Steps 1-7 with the P2 del
                                                      marked ⚡ below)
 ```
 
-Pattern 2 in one line: nothing comes local — all stages are Spark on the
-cluster, output goes to `<VOLUME_BASE>/0-RawDataStore/<cohort-slug>/`, and
-the group carries an orchestrator + `_databricks/` bundle. Full contract:
-`../SKILL.md` "Pattern 2" + `../../../haipipe-task/ref/databricks-execution.md`.
+Pattern 2 in one line: nothing comes local — all stages are Spark on the cluster, output goes to `<VOLUME_BASE>/0-RawDataStore/<cohort-slug>/`, and the group carries an orchestrator + `_databricks/` bundle.
+Full contract: `../SKILL.md` "Pattern 2" + `../../../haipipe-task/ref/databricks-execution.md`.
 Live example: `examples/Project-REACH-ADHD/tasks/A00_rawstore_reachadhd/`.
 
 
@@ -99,8 +98,7 @@ Set `TASK_NAME="{NN}_stage{S}_{desc}"`.
 
 This template converts `.py` → `.ipynb` only — no papermill execute.
 The notebook is meant for Databricks upload.
-⚡ P2: place the converted .ipynb in the group's `_databricks/` as well;
-ignore the template's "sync to local" hint (Pattern 1 only).
+⚡ P2: place the converted .ipynb in the group's `_databricks/` as well; ignore the template's "sync to local" hint (Pattern 1 only).
 
 
 Step 6 — Cross-skill link

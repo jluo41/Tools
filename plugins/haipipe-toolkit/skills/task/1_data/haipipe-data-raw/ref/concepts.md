@@ -12,12 +12,7 @@ Architecture Position
   (this skill)
 ```
 
-A raw cohort lives at `_WorkSpace/0-RawDataStore/<cohort_name>/` as a single
-extract from upstream — vendor delivery, internal ETL run, partner
-data drop, device export, registry pull, etc. The skill is
-domain-agnostic: a cohort can be a CGM stream, an EHR encounter table,
-a claims line file, a sensor / wearable session log, a messaging or
-engagement extract, a survey panel, etc. Typical contents:
+A raw cohort lives at `_WorkSpace/0-RawDataStore/<cohort_name>/` as a single extract from upstream — vendor delivery, internal ETL run, partner data drop, device export, registry pull, etc. The skill is domain-agnostic: a cohort can be a CGM stream, an EHR encounter table, a claims line file, a sensor / wearable session log, a messaging or engagement extract, a survey panel, etc. Typical contents:
 
 ```
 _WorkSpace/0-RawDataStore/<cohort>/
@@ -51,13 +46,11 @@ A column-level data dictionary doesn't tell you:
   - what derived fields you must compute (because the upstream
     extract surfaces a *concept* without storing it as a column)
 
-Without this, downstream analyses confuse content for timing, treat
-eligibility cohort selection as engagement effect, etc.
+Without this, downstream analyses confuse content for timing, treat eligibility cohort selection as engagement effect, etc.
 
-The timeline forces a writer-reader to reason at the **business**
-level (one patient, one event, one row), not at the **engineering**
-level (which column writes what). Two distinct deliverables. This
-skill produces the business one.
+The timeline forces a writer-reader to reason at the **business** level (one patient, one event, one row), not at the **engineering** level (which column writes what).
+Two distinct deliverables.
+This skill produces the business one.
 
 
 The 5-Zone Timeline Shape
@@ -91,11 +84,11 @@ For each zone capture:
 The understand Procedure (iterative dialogue)
 ----------------------------------------------
 
-This is the centerpiece function. The user is not just asking for a doc;
-they are working out a mental model. Don't rush to produce the timeline.
-Mistake the agent must avoid: writing a comprehensive draft on round 1,
-then defending it. Each round, the user reveals nuance — restate, confirm,
-THEN draft.
+This is the centerpiece function.
+The user is not just asking for a doc; they are working out a mental model.
+Don't rush to produce the timeline.
+Mistake the agent must avoid: writing a comprehensive draft on round 1, then defending it.
+Each round, the user reveals nuance — restate, confirm, THEN draft.
 
 ```
 Step 4a: List cohort folder. Read every descriptive .txt.
@@ -207,16 +200,15 @@ Step 4d: Emit a checklist:
   • Notes for downstream Record / Case design
 ```
 
-The output is a checklist file or chat report — NOT actual SourceFn
-code. Hand off to `haipipe-data-source design-chef` for the code.
+The output is a checklist file or chat report — NOT actual SourceFn code.
+Hand off to `haipipe-data-source design-chef` for the code.
 
 
 Three Classic Traps (worth concrete illustration)
 --------------------------------------------------
 
-These three traps motivated formalising this skill — each silently
-corrupts downstream analysis if the timeline isn't drawn first. They
-recur across domains; the patterns matter more than any one example.
+These three traps motivated formalising this skill — each silently corrupts downstream analysis if the timeline isn't drawn first.
+They recur across domains; the patterns matter more than any one example.
 
   1. **Eligibility-vs-drop-off mixing**:
      A binary 0/1 column that conflates "individual was never eligible"
@@ -259,8 +251,5 @@ recur across domains; the patterns matter more than any one example.
 Reference Cohorts
 ------------------
 
-Cohorts already living under `_WorkSpace/0-RawDataStore/` with a complete
-`datapoint-timeline.txt` are the best worked examples — read whichever
-matches your domain (CGM, EHR, claims, messaging, sensor, etc.). Each
-one will illustrate the 5 zones plus a subset of the three traps above
-in concrete column terms for that domain.
+Cohorts already living under `_WorkSpace/0-RawDataStore/` with a complete `datapoint-timeline.txt` are the best worked examples — read whichever matches your domain (CGM, EHR, claims, messaging, sensor, etc.).
+Each one will illustrate the 5 zones plus a subset of the three traps above in concrete column terms for that domain.

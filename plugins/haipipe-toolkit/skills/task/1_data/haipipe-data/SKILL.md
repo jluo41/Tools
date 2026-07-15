@@ -13,8 +13,9 @@ metadata:
 Skill: haipipe-data (orchestrator)
 ===================================
 
-User-facing entry for Stages 1-4. Parses intent, dispatches to the right
-specialist via `Skill()`. The user types one of:
+User-facing entry for Stages 1-4.
+Parses intent, dispatches to the right specialist via `Skill()`.
+The user types one of:
 
 ```
 /haipipe-data                       -> cross-stage dashboard
@@ -46,9 +47,8 @@ haipipe-data-remote     Remote storage sync (rclone/GDrive): status/pull/push, a
 ★ Notebook Templates (Databricks / papermill)  ── code/scripts/haistepnb/
 --------------------------------------------------------------------------
 
-Per-stage parameterized notebooks. Each is a cell-based `.py` that converts
-to `.ipynb` and runs three ways: **Databricks** (widgets), **papermill**
-(`-p CONFIG ...`), and plain `python`.
+Per-stage parameterized notebooks.
+Each is a cell-based `.py` that converts to `.ipynb` and runs three ways: **Databricks** (widgets), **papermill** (`-p CONFIG ...`), and plain `python`.
 
 ```
 code/scripts/haistepnb/
@@ -76,8 +76,8 @@ Recipe — create a task-folder instance:
 4. bash runs/<RUN>.sh   # auto-converts .py → .ipynb, runs papermill
 ```
 
-The `.py` is source of truth. The `.ipynb` is auto-generated at runtime
-by `convert_to_notebooks.py` — it is intermediate output, not source.
+The `.py` is source of truth.
+The `.ipynb` is auto-generated at runtime by `convert_to_notebooks.py` — it is intermediate output, not source.
 
 CLI alternative (supports `--num-workers` for parallel execution):
 ```
@@ -173,8 +173,7 @@ Step 5: Capture the specialist's structured tail (status / summary /
 Cross-Stage Dashboard (no-arg case)
 ------------------------------------
 
-When invoked with no arguments, fan out to every specialist's dashboard
-in a single message (parallel) and concatenate their summary tails:
+When invoked with no arguments, fan out to every specialist's dashboard in a single message (parallel) and concatenate their summary tails:
 
 ```
 Skill("haipipe-data-raw",     args="dashboard")
@@ -184,22 +183,17 @@ Skill("haipipe-data-case",    args="dashboard")
 Skill("haipipe-data-aidata",  args="dashboard")
 ```
 
-Then emit a 5-line summary (one per stage) plus an overall header that
-points the user at their next likely command.
+Then emit a 5-line summary (one per stage) plus an overall header that points the user at their next likely command.
 
-DELIBERATE EXCLUSION: external and remote are NOT fanned into the
-dashboard — they are sideways/transport specialists, not pipeline stages,
-and the remote probe needs network round-trips that would slow the default
-no-arg path. Inspect them explicitly: `/haipipe-data external` /
-`/haipipe-data remote`.
+DELIBERATE EXCLUSION: external and remote are NOT fanned into the dashboard — they are sideways/transport specialists, not pipeline stages, and the remote probe needs network round-trips that would slow the default no-arg path.
+Inspect them explicitly: `/haipipe-data external` / `/haipipe-data remote`.
 
 ---
 
 Explain Mode (inline)
 ----------------------
 
-`/haipipe-data explain [question]` is handled inline (NOT dispatched), since
-explanations often span stages.
+`/haipipe-data explain [question]` is handled inline (NOT dispatched), since explanations often span stages.
 
   1. Read `ref/0-overview.md` (cross-stage explainer kept in this umbrella).
   2. If the question references a specific stage, also Read that
@@ -232,8 +226,7 @@ artifacts: [paths created, read, or modified]
 next:      suggested next command
 ```
 
-If `status != ok`, surface the specialist's `summary` and stop — do not
-chain into the next stage automatically.
+If `status != ok`, surface the specialist's `summary` and stop — do not chain into the next stage automatically.
 
 ---
 
@@ -251,5 +244,5 @@ fn/fn-explain.md        explain procedure (used inline by this skill)
 fn/fn-review.md         review procedure
 ```
 
-These fn docs are SHARED across specialists. Each specialist reads its own
-`ref/concepts.md` plus the relevant umbrella fn doc.
+These fn docs are SHARED across specialists.
+Each specialist reads its own `ref/concepts.md` plus the relevant umbrella fn doc.

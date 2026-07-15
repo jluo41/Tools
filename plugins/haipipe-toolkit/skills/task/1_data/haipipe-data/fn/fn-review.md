@@ -1,13 +1,11 @@
 fn-review: Structural Code Review for haipipe-data Pipeline Functions
 ======================================================================
 
-**Purpose**: Read a haipipe-data file (generated Fn, builder script, or YAML
-config) and check it against the haipipe-data structural contract. Reports
-PASS / WARN / FAIL per criterion. Read-only: does NOT modify any files.
+**Purpose**: Read a haipipe-data file (generated Fn, builder script, or YAML config) and check it against the haipipe-data structural contract.
+Reports PASS / WARN / FAIL per criterion.
+Read-only: does NOT modify any files.
 
-**Scope**: Generated Fns in code/haifn/, builder scripts in the project's
-`*_fn_develop_*` task folders (legacy: code-dev/1-PIPELINE/), and YAML
-pipeline configs.
+**Scope**: Generated Fns in code/haifn/, builder scripts in the project's `*_fn_develop_*` task folders (legacy: code-dev/1-PIPELINE/), and YAML pipeline configs.
 
 ---
 
@@ -29,8 +27,7 @@ Step R1-A: Targeted -- detect file type from path
 --------------------------------------------------
 
 Map the given path to a Fn type using the table below.
-If the path does not match any pattern, go to Step R1-B and ask the user
-to clarify which type it is.
+If the path does not match any pattern, go to Step R1-B and ask the user to clarify which type it is.
 
   Path pattern                               Fn type
   -----------------------------------------  -------------------
@@ -120,7 +117,8 @@ For each criterion:
   FAIL  -- criterion violated (show the offending line/value)
   N/A   -- criterion does not apply to this specific Fn
 
-Apply ALL criteria in the checklist. Do NOT skip any criterion.
+Apply ALL criteria in the checklist.
+Do NOT skip any criterion.
 Show the evidence (quoted file content) for FAIL and WARN items.
 
 ---
