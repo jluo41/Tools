@@ -39,6 +39,7 @@ Both layers use the SAME schema shape from plan-schema.md:
 
 
 > JL: one line one sentences.
+>> CC 23:17: [SOLVED] Done — this file is authored one sentence per line (verified: reflow is a no-op). Now a standing convention in haipipe-task/PREFERENCES.md.
 
 The config layer (configs/<run>.yaml) is an input FILE, not a separate plan layer.
 It appears in `input.files_in`.

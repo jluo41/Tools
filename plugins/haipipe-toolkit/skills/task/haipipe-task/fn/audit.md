@@ -6,6 +6,7 @@ Read-only scan that reports what's aligned and what's broken.
 
 
 > JL: One line one sentence. 
+>> CC 23:17: [SOLVED] Done — this file is authored one sentence per line (verified: reflow is a no-op). Now a standing convention in haipipe-task/PREFERENCES.md.
 
 
 When to call

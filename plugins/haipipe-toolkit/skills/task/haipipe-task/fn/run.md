@@ -3,6 +3,7 @@ fn-run: Scaffold a New Run
 
 
 > JL: do not break the sentences. One line one sentence.
+>> CC 23:17: [SOLVED] Done — this file is authored one sentence per line (verified: reflow is a no-op). Now a standing convention in haipipe-task/PREFERENCES.md.
 
 A run is the unit of execution within a task-folder.
 The four sister files share one NAME token:

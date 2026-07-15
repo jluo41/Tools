@@ -119,3 +119,13 @@ decides, then moves here too. Newest block at the bottom.
   > JL: for QA, we might also want to include P-B-E-R, when we need to do it.
   >> CC: yes — that IS gate ③ (qa enters P→B→E→R at the shallowest depth when ①/② can't
      answer, then completes the QA file at Report).
+
+[2026-07-14 23:17 · SOLVED] leftover > JL threads swept across task/ skills
+  > JL: check all the skills for remaining > JL, fixed + logged?
+  >> CC: Swept task/. haipipe-task/SKILL.md's 6 JL threads were already >> CC [SOLVED].
+     Two leftovers closed now: (1) CHANGELOG.md 6.2.0 "what is R19?" -- replied +
+     added a self-contained inline gloss (R19 = the QA-file state-line claim, ticket->
+     receipt). (2) fn/audit,run,stage-plan,stage-report "one line one sentence" -- all
+     4 verified compliant (reflow no-op) and tagged >> CC [SOLVED]. Zero untagged > JL
+     now remain under task/ (SKILLSET_REVIEW.md + PREFERENCES.md mentions are the
+     convention itself, not threads).
