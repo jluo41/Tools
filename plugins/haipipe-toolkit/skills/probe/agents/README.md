@@ -51,7 +51,7 @@ Agents are THIN — every rule lives in its canonical home:
 the constitution (probe file anatomy, path binding,   → ../haipipe-probe/SKILL.md
 the QA/ contract, the qa verb, the two LAWS,             ⭐ START HERE
 status derivation, the writer table)
-the claim's status + claim_type overclaim check       → ../../<consumer>/1-lifecycle/1-claims/
+the claim's status + claim_type overclaim check       → ../../<consumer>/1-lifecycle/1b-claims/
 (authored by the consumer, from the answered QA file)   haipipe-{paper,application}-claims/SKILL.md
 the qa verb's executor-side flow     → ../../task/haipipe-task/fn/qa.md  ·  the discovery twin
 ```

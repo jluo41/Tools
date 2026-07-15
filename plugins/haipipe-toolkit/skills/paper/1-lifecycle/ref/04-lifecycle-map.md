@@ -104,8 +104,8 @@ Every stage now has a dedicated procedure:
 
 ```text
 0-seed         haipipe-paper-seed         (built)
-1-resource     haipipe-paper-resource     (built 2026-07-14; venue-FREE; shares the number 1 with claims)
-1-claims       haipipe-paper-claims       (built)
+1-resource     haipipe-paper-resource     (built 2026-07-14; venue-FREE; stage 1a)
+1-claims       haipipe-paper-claims       (built; stage 1b)
 5-section-edit haipipe-paper-section-edit (built; per-section DRAFT/PROBE/REVISE/CHECK)
 round          haipipe-paper-round        (built; verbs enter/new/triage/apply/close)
 ```

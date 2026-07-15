@@ -18,7 +18,7 @@ editing rules. This doc defines the folder those files live in.
 ├── 0-lifecycle/                          paper maturation spine (markdown-early; stage folders absent until their stage runs)
 │   ├── 0-seed/
 │   │   └── 0-seed.md                     why this paper might exist (venue-FREE)
-│   ├── 1-resource/                       (shares the number 1 with claims, as 2-venue/ and 2-pitch/ share 2)
+│   ├── 1-resource/                       (is stage 1a, just before claims (1b), as 2-venue/ and 2-pitch/ share 2)
 │   │   └── 1-resource.md                 what must EXIST for the paper to be testable (venue-FREE)
 │   ├── 1-claims/
 │   │   └── 1-claims.md                   claim ledger, support/GAP status (venue-FREE)
