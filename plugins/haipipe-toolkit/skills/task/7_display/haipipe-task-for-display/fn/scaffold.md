@@ -46,7 +46,8 @@ C{NN}_<group>/
 Step 4 — Seed config
 ---------------------
 
-Copy `ref/config-seed.yaml` to `configs/<kind>_<name>.yaml`. Fill in:
+Copy `ref/config-seed.yaml` to `configs/<kind>_<name>.yaml`.
+Fill in:
 - `_meta:` block.
 - `kind:` (figure | table).
 - `source_runs:` — list of upstream result paths.
@@ -63,9 +64,8 @@ Set `TASK_NAME="{NN}_{task_name}"`.
 Step 6 — Next step
 -------------------
 
-After scaffolding, suggest running the task (`bash runs/<run>.sh`). Figure
-crafting standards (axes, palette, legend layout) live with whatever document
-layer consumes the output; this skill only guarantees the results/ contract.
+After scaffolding, suggest running the task (`bash runs/<run>.sh`).
+Figure crafting standards (axes, palette, legend layout) live with whatever document layer consumes the output; this skill only guarantees the results/ contract.
 
 
 Step 7 — Report
@@ -91,8 +91,7 @@ MUST NOT
 First-run gate
 ---------------
 
-`runs/<RUN>.sh` blocks execution if `CODE_REVIEW.md` is missing or
-stale (gate inherited from `../../../haipipe-task/ref/run-sh-template.sh`).
+`runs/<RUN>.sh` blocks execution if `CODE_REVIEW.md` is missing or stale (gate inherited from `../../../haipipe-task/ref/run-sh-template.sh`).
 For the first run after this scaffold, do ONE of:
 
   1. **Recommended** — run the haipipe-task-reviewer-agent (Gate 1) on this
@@ -110,5 +109,4 @@ For the first run after this scaffold, do ONE of:
      ```
      (Only appropriate for throwaway / disposable runs.)
 
-Surface this to the user in the orchestrator's `next:` line so they
-know **before** trying to launch.
+Surface this to the user in the orchestrator's `next:` line so they know **before** trying to launch.
