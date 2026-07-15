@@ -118,6 +118,32 @@ JL comments (`> JL:`) that land in 01-04 move HERE once their edit is applied, v
      FILE'S — it is the constitution's". −1063 lines across the two.
 
 
+[2026-07-15 00:50 · SHIPPED] 3 JL comments on the rewritten constitution
+  > JL: what does the "commission" mean? I don't understand it, could we have some
+        simple version?
+    >> CC [SOLVED]: added a plain-language block to "What a probe is" — YOUR question
+       carries the stake ("C6 dies if…"); the executor must not see it; so the probe
+       writes a COMMISSION = the same question in general language, stake stripped =
+       the executor-facing question, the only thing that crosses to the bank.
+  > JL: where is the part for convert the Q-consumer to Q-executor? and the probe should
+        scan the existing ones, try not to create a new Q-executor if one is already in
+        the BANK. Have you mentioned this?
+    >> CC [SOLVED]: made both explicit in the five-step loop. ① ORGANIZE now says "write
+       each question's COMMISSION — translate it to the executor-facing form" (the
+       conversion); ② MATCH now says "SCAN the bank FIRST; if one already answers it,
+       REUSE it (skip ③); only an unanswered question creates new work" — ② always
+       precedes ③.
+  > JL: [harvest lanes] probe just needs the PROBE file ready + the QA complete, and
+        later revise harvests? I don't understand it. After probes are done, revise
+        will help this.
+    >> CC [SOLVED for the constitution; DESIGN Q flagged]: you're right the probe's core
+       is "probe file ready + QA files complete". Harvest (pulling a value/citation/figure
+       OUT of the answer into _VALUES_/.bib/0-displays) is NOT the model — removed the
+       HARVEST-LANES paragraph from the constitution; it lives in the WORKERS (their ⑤).
+       WHERE it should run — the probe worker's ⑤ (today) vs the REVISE phase (your
+       instinct) — is a real lifecycle question I did NOT decide. Flagged below.
+
+
 ⏳ STILL OWED
 =============
 
@@ -129,4 +155,8 @@ JL comments (`> JL:`) that land in 01-04 move HERE once their edit is applied, v
      or leave it as the one line added this session. JL to decide.
   3. Optional: the two workers are near-identical twins — the shared runbook could move
      to one ref both cite. Not done (they live in separate consumer trees); flag only.
+  4. HARVEST PLACEMENT (JL raised): should the harvest lanes run in the probe worker's ⑤
+     (today) or in the REVISE phase (JL's instinct — probe just completes the Q&A, revise
+     pulls values/cites/figures out of it)? A lifecycle decision touching the workers +
+     revise; not decided. JL to rule.
 ```

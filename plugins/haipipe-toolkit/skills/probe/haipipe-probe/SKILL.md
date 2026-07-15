@@ -42,6 +42,13 @@ The bank never learns probes exist: no mailbox, no back-reference, no probe id u
 The answer comes back as a QA file the executor wrote for its own reasons — readable, general, with no consumer in it.
 That asymmetry is the whole design: the same answer is reusable, because two consumers read the same file differently.
 
+YOUR QUESTION AND THE EXECUTOR'S QUESTION ARE NOT THE SAME QUESTION.
+Yours carries the STAKE — "does WellDoc have a cycle column? (my claim C6 dies if it does)".
+The executor must never see that stake, or it shapes the answer around your hypothesis.
+So the probe writes a COMMISSION: the SAME question in plain, general language — "scan the WellDoc tables for a cycle column; report present or absent" — with the stake stripped out.
+The commission is the executor-facing question, and the ONLY thing that crosses to the bank.
+Writing it — your question → the commission — is the probe's core act.
+
 The probe does NOT judge.
 It carries the answer's interpretation (`reading`) back to the consumer; whether that settles a claim is the consumer's own business, in its own `1-claims.md`, and never the probe's.
 
@@ -53,7 +60,7 @@ The probe file
 One file per TOPIC; each question is one SECTION.
 PP numbers are consumer-local footnote numbers — two consumers may both carry a PP04, and nothing collides because no PP id ever crosses to the bank.
 
-⛔ The words "card", "row", and "table" are BANNED here; it is a probe file holding question SECTIONS, and no markdown tables live inside one.
+It is a probe file holding question SECTIONS, and no markdown tables live inside one.
 
 ```text
    # PP03 — WellDoc data feasibility
@@ -76,14 +83,13 @@ The section fields:
 - `serves:` — which stage or claim of the consumer this question is for; the affinity a stage gate greps.
 - `target:` — a PATH to the answering FILE; `NEW <task-folder-path>` while the task-folder does not exist yet. Point at the FILE, never the folder.
 - `state:` — `planned | commissioned | answered | read | answered-local | failed`; derived from disk, never asserted.
-- `commission:` — the question in general language, frozen once written; this is the dispatch payload and nothing else.
+- `commission:` — the executor-facing question (plain, general, no stake), frozen once written; the ONLY thing dispatched to the bank.
 - `reading:` — the answer in the consumer's own words, written at harvest; empty until answered.
 
 `## Why` is the stake, in consumer vocabulary; it NEVER leaves the file and is NEVER handed to an executor.
 
-HARVEST LANES.
-`values:` / `sources:` / `displays:` carry pointers that feed the consumer's own `_VALUES_` map, `.bib`/`_CITATION_` docs, and `0-displays/` units.
-They are paid by the citation/values/display harvesters, and omitted when a return carries nothing for them.
+(A section may also carry optional `values:` / `sources:` / `displays:` pointers. Those are HARVEST-LANE fields — how the consumer later pulls a number, a citation, or a figure out of the answer — and they belong to the probe WORKERS, not to this model. See the workers.)
+
 
 BUILD-LANE FIELDS.
 A section whose answer legitimately takes DAYS-TO-WEEKS additionally carries, and ONLY at `state: commissioned`:
@@ -101,12 +107,19 @@ The five-step loop
 ==================
 
 ```text
-   ① ORGANIZE   collect the DRAFT's questions into probe files, grouped by TOPIC
-   ② MATCH      grep the bank's QA files; READ each state line; a HIT literally answers THIS question
-   ③ DISPATCH   hand the commission VERBATIM to the executor orchestrator → it returns a QA-file PATH
+   ① ORGANIZE   collect the DRAFT's questions into probe files (grouped by TOPIC), and
+                write each one's COMMISSION — translate your question into the executor-facing
+                form, stripping the stake out. This is the consumer→executor conversion.
+   ② MATCH      SCAN the bank's existing QA files FIRST (grep + READ each state line).
+                If one already answers this question, REUSE it (point at it, skip ③) —
+                never make the bank re-do work it already did. Only an unanswered question goes on.
+   ③ DISPATCH   only when ② found nothing: hand the commission VERBATIM to the executor
+                orchestrator → it returns a QA-file PATH (a new answer, written by the executor).
    ④ POINT      set the section's target: at the answering QA file
    ⑤ INTERPRET  write the reading (the answer in the consumer's own words)
 ```
+
+The order is the point: ② always precedes ③, so an existing answer is REUSED and only a genuinely new question ever creates new bank work.
 
 THE COST LADDER — cheap doors first; only T3/T4 summon an agent.
 
