@@ -79,7 +79,8 @@ File Map
 Use Cases
 ---------
 
-**1. Morning status check -- what data is ready?**
+**1.
+Morning status check -- what data is ready?**
 
   Situation:  You sit down to work and want to know which pipeline stages have
               cached assets and which are missing.
@@ -87,7 +88,8 @@ Use Cases
   What it does: Scans all 4 _WorkSpace store directories, lists available
                 assets, versions, and row counts at a glance.
 
-**2. Debug a missing or empty asset**
+**2.
+Debug a missing or empty asset**
 
   Situation:  Training failed because the AIDataSet is empty or a CaseSet
               has fewer rows than expected.
@@ -95,7 +97,8 @@ Use Cases
   What it does: Loads the Set, prints shape, split sizes, feature columns,
                 and flags any obvious issues (zero rows, missing splits, etc.)
 
-**3. Run a pipeline stage with a config**
+**3.
+Run a pipeline stage with a config**
 
   Situation:  You have a YAML config and want to execute one stage
               (e.g., regenerate the CaseSet after fixing a CaseFn).
@@ -103,7 +106,8 @@ Use Cases
   What it does: Walks through environment setup, config validation,
                 pipeline.run() call, and output verification.
 
-**4. Onboard a new raw dataset (new cohort)**
+**4.
+Onboard a new raw dataset (new cohort)**
 
   Situation:  A new CSV/XML data dump has arrived and you need to build
               a SourceFn so the pipeline can ingest it. (For business-level
@@ -115,7 +119,8 @@ Use Cases
                 in the project's NN_source_fn_develop_<cohort>/ task folder
                 that generates the SourceFn in code/haifn/fn_source/.
 
-**5. Add a new patient record type (new sensor / new data stream)**
+**5.
+Add a new patient record type (new sensor / new data stream)**
 
   Situation:  A new data stream (e.g., CGM from a new device, a new lab table)
               needs to be wired into the RecordSet.
@@ -124,7 +129,8 @@ Use Cases
                 guides through the 9-step processing skeleton, schema
                 consistency rules, and builder execution.
 
-**6. Engineer a new feature for model training**
+**6.
+Engineer a new feature for model training**
 
   Situation:  You want to add a new time-window feature (e.g., CGM variance
               in the 2h before a trigger) to the CaseSet.
@@ -133,7 +139,8 @@ Use Cases
                 config, fn_CaseFn signature, suffix-only return keys,
                 MetaDict, and builder execution.
 
-**7. Build a new ML-ready transform for a new model architecture**
+**7.
+Build a new ML-ready transform for a new model architecture**
 
   Situation:  A new model needs a different input format (e.g., a tensor
               sequence instead of flat tabular features).
@@ -141,7 +148,8 @@ Use Cases
   What it does: Guides InputTfmFn / OutputTfmFn / SplitFn construction
                 with correct signatures, vocab building, and config wiring.
 
-**8. Inspect a Set before using it in model training**
+**8.
+Inspect a Set before using it in model training**
 
   Situation:  You're about to hand an AIDataSet to a model trainer and want
               to verify splits, vocab size, feature columns, and row counts.
@@ -149,7 +157,8 @@ Use Cases
   What it does: Loads AIDataSet, prints DatasetDict splits, feat_vocab,
                 cf_to_cfvocab, and flags structural issues.
 
-**9. Understand a pipeline concept or API**
+**9.
+Understand a pipeline concept or API**
 
   Situation:  You forgot how SplitFn works, or what ROName means, or how
               the train/val/test split labeling works.
@@ -159,7 +168,8 @@ Use Cases
   What it does: Draws on all 4 stage refs to explain the concept accurately
                 with code examples.
 
-**10. Review a file before committing**
+**10.
+Review a file before committing**
 
   Situation:  You've written a new CaseFn or RecordFn builder and want to
               check it for structural issues before running it.
@@ -170,7 +180,8 @@ Use Cases
                 (70+ criteria across all Fn types), and reports
                 PASS / WARN / FAIL per criterion with a score.
 
-**11. Review a YAML config for correctness**
+**11.
+Review a YAML config for correctness**
 
   Situation:  A pipeline run failed with a cryptic error. You suspect the
               YAML config has a wrong key name or missing required section.
@@ -178,7 +189,8 @@ Use Cases
   What it does: Checks SplitArgs structure, InputArgs/OutputArgs keys,
                 method names, casefn_list entries, and split_ai values.
 
-**12. Modify pipeline infrastructure**
+**12.
+Modify pipeline infrastructure**
 
   Situation:  You need to change how the pipeline caches data, add a new
               pipeline mode, or fix a bug in the base Pipeline class.
@@ -187,7 +199,8 @@ Use Cases
                 explains the impact on downstream stages, and guides the
                 change safely (no builder regeneration needed).
 
-**13. Re-run a specific stage after a bug fix**
+**13.
+Re-run a specific stage after a bug fix**
 
   Situation:  You fixed a bug in a CaseFn builder and re-generated it.
               Now you need to re-run the Case pipeline to refresh the CaseSet.
@@ -195,7 +208,8 @@ Use Cases
   What it does: Walks through cache invalidation (use_cache=False), config
                 validation, run call, and output row count verification.
 
-**14. Explore the full pipeline architecture**
+**14.
+Explore the full pipeline architecture**
 
   Situation:  You are new to the codebase and want to understand how all
               4 stages connect, what the cooking metaphor means, and how
@@ -206,7 +220,8 @@ Use Cases
                 layout, and design principles. Explain mode then lets you
                 drill into any specific concept.
 
-**15. Validate a new cohort end-to-end**
+**15.
+Validate a new cohort end-to-end**
 
   Situation:  You have added a new cohort (e.g., OhioT1DM) and want to
               walk through all 4 stages to confirm the data flows correctly
@@ -216,7 +231,8 @@ Use Cases
   What it does: Runs each stage sequentially, checking output at each step
                 before proceeding to the next.
 
-**16. Understand a new raw cohort BEFORE pipeline-building**
+**16.
+Understand a new raw cohort BEFORE pipeline-building**
 
   Situation:  A new raw extract just landed in _WorkSpace/0-RawDataStore/<cohort>/
               (parquet/csv + description .txts). The extract can be from any
@@ -243,8 +259,8 @@ Use Cases
 How to Request Changes to This Skill
 --------------------------------------
 
-You do not need to edit the skill files manually. Describe what you want
-in plain language -- Claude will assess feasibility and make the changes.
+You do not need to edit the skill files manually.
+Describe what you want in plain language -- Claude will assess feasibility and make the changes.
 
 Workflow:
 

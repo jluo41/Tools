@@ -1,9 +1,9 @@
 fn-cook: Run a Pipeline with a YAML Config at Any Pipeline Stage
 ================================================================
 
-This file is stage-agnostic. Stage-specific details are in the Per-Stage Reference
-section below. When a dispatch table loads this file alongside a stage ref file,
-the ref file provides the active stage context (CLI command, config keys, output path).
+This file is stage-agnostic.
+Stage-specific details are in the Per-Stage Reference section below.
+When a dispatch table loads this file alongside a stage ref file, the ref file provides the active stage context (CLI command, config keys, output path).
 
 Use this file to: write or find a YAML config and execute a pipeline stage.
 
@@ -12,15 +12,17 @@ Use this file to: write or find a YAML config and execute a pipeline stage.
 Overview
 --------
 
-The Kitchen is already built. Your job is to write the Recipe (YAML config) and
-execute it. Each pipeline stage has:
+The Kitchen is already built.
+Your job is to write the Recipe (YAML config) and execute it.
+Each pipeline stage has:
 
   - A registered set of Fn modules (SourceFns, RecordFns, CaseFns, etc.)
   - A CLI command (haistep-<stage>) that runs the stage end-to-end
   - A Python API for programmatic control
   - A config template at ../../haipipe-data-<stage>/templates/config.yaml
 
-Stages run sequentially. Each stage consumes the output of the previous stage:
+Stages run sequentially.
+Each stage consumes the output of the previous stage:
 
   1-source -> SourceSet
       |

@@ -13,11 +13,9 @@ metadata:
 Skill: haipipe-data-remote
 ==========================
 
-Cross-stage transport specialist. Operates on every store
-(0-RawDataStore, 1-SourceStore, 2-RecStore, 3-CaseStore, 4-AIDataStore,
-5-ModelInstanceStore, 6-EndpointStore, 7-AgentWorkspace,
-ExternalStore, ExternalStore/@inference). Wraps the
-`hai-remote-sync` CLI; does not implement transfer logic itself.
+Cross-stage transport specialist.
+Operates on every store (0-RawDataStore, 1-SourceStore, 2-RecStore, 3-CaseStore, 4-AIDataStore, 5-ModelInstanceStore, 6-EndpointStore, 7-AgentWorkspace, ExternalStore, ExternalStore/@inference).
+Wraps the `hai-remote-sync` CLI; does not implement transfer logic itself.
 
   Function axis:  status | pull | push | diff | plan | prune
 
@@ -84,7 +82,8 @@ Step 0: Read this skill's `ref/concepts.md` for the LOCAL_/REMOTE_
 Step 1: Read `ref/store-map.md` to resolve which env var corresponds
         to the requested store and the typical asset-name pattern.
 
-Step 2: Parse args. Verbs require:
+Step 2: Parse args.
+Verbs require:
           status:  no required args (optional store filter)
           pull:    <store>/<name>
           push:    <store>/<name>

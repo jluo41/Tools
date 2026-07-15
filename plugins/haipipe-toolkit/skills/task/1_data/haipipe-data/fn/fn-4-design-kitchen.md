@@ -1,13 +1,12 @@
 fn-design-kitchen: Modify the Pipeline Infrastructure (Base Classes)
 =====================================================================
 
-**Purpose**: Edit the `code/haipipe/` framework itself — base classes,
-pipeline orchestrators, Asset I/O, and Fn loaders. This is an advanced
-operation. Most users do NOT need this file.
+**Purpose**: Edit the `code/haipipe/` framework itself — base classes, pipeline orchestrators, Asset I/O, and Fn loaders.
+This is an advanced operation.
+Most users do NOT need this file.
 
-**When to use this file**: Only when the framework behavior needs to change
-(new caching strategy, new serialization format, new remote backend, new
-windowing logic). For adding new feature functions, use `fn-design-chef.md`.
+**When to use this file**: Only when the framework behavior needs to change (new caching strategy, new serialization format, new remote backend, new windowing logic).
+For adding new feature functions, use `fn-design-chef.md`.
 
 ---
 
@@ -27,8 +26,7 @@ code/haipipe/
 ```
 
 Unlike `code/haifn/` (generated), everything in `code/haipipe/` is editable.
-But changes here affect ALL Fns and ALL pipelines simultaneously, so
-backward compatibility is critical.
+But changes here affect ALL Fns and ALL pipelines simultaneously, so backward compatibility is critical.
 
 ---
 
@@ -52,7 +50,8 @@ source .venv/bin/activate
 source env.sh
 ```
 
-Both required. Tests and pipelines need SPACE paths.
+Both required.
+Tests and pipelines need SPACE paths.
 
 **Step 3: Edit the Relevant Base Class File**
 
@@ -60,9 +59,8 @@ Both required. Tests and pipelines need SPACE paths.
 code/haipipe/<layer>_base/<specific_file>.py
 ```
 
-Work within the three-class pattern for the stage (see per-stage reference
-below). Keep the same class and function signatures unless you have a strong
-reason to change them and have user approval.
+Work within the three-class pattern for the stage (see per-stage reference below).
+Keep the same class and function signatures unless you have a strong reason to change them and have user approval.
 
 **Step 4: Run Existing Tests to Verify Backward Compatibility**
 
@@ -71,8 +69,8 @@ pytest test/ -m unit -v
 pytest test/ -m integration -v
 ```
 
-All existing tests must continue to pass. If a test fails, fix the
-regression before proceeding.
+All existing tests must continue to pass.
+If a test fails, fix the regression before proceeding.
 
 **Step 5: Test End-to-End with Real Data**
 
@@ -83,8 +81,7 @@ python -m scripts.haistepcli.case   --config <task>/configs/<run>.yaml
 python -m scripts.haistepcli.aidata --config <task>/configs/<run>.yaml
 ```
 
-Use an existing pipeline task's configs/ as the end-to-end validation path
-(e.g. examples/Project-EHR-Mimic/tasks/A01_data_pipeline_mimic/*/configs/).
+Use an existing pipeline task's configs/ as the end-to-end validation path (e.g. examples/Project-EHR-Mimic/tasks/A01_data_pipeline_mimic/*/configs/).
 
 ---
 

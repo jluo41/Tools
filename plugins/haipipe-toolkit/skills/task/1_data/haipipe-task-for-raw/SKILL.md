@@ -13,19 +13,13 @@ metadata:
 Skill: haipipe-task-for-raw
 =================================
 
-Scaffolds a **raw extraction task-folder** — a runnable example that
-extracts source tables from a Databricks catalog as wide parquet files.
-In **Pattern 1** (non-PHI) the parquet is then processed locally with
-Python (pandas) and heavy outputs land in `_WorkSpace/0-RawDataStore/<cohort>/`;
-in **Pattern 2** (PHI, server-resident — see below) everything stays on the
-catalog volume. The task-folder keeps scripts, configs, and convert-only
-notebooks either way.
+Scaffolds a **raw extraction task-folder** — a runnable example that extracts source tables from a Databricks catalog as wide parquet files.
+In **Pattern 1** (non-PHI) the parquet is then processed locally with Python (pandas) and heavy outputs land in `_WorkSpace/0-RawDataStore/<cohort>/`; in **Pattern 2** (PHI, server-resident — see below) everything stays on the catalog volume.
+The task-folder keeps scripts, configs, and convert-only notebooks either way.
 
-**Invocation modes (see `../../haipipe-task/ref/invocation-modes.md`):**
-interactive (a human steers; missing fields get ASKed) OR headless (a full
-spec → run silently, no ASK). `haipipe-task-creator-agent` calls this skill
-headless during fan-out, then authors the `<TASK>.py` body. Always end with
-the structured return block (status / task_folder / run_name / files).
+**Invocation modes (see `../../haipipe-task/ref/invocation-modes.md`):** interactive (a human steers; missing fields get ASKed) OR headless (a full spec → run silently, no ASK).
+`haipipe-task-creator-agent` calls this skill headless during fan-out, then authors the `<TASK>.py` body.
+Always end with the structured return block (status / task_folder / run_name / files).
 
 
 Position in the series
@@ -59,12 +53,9 @@ tasks/R{NN}_<cohort_name>/                   ← group (R-series)
     └── notebooks/                           .ipynb for Databricks upload (convert-only)
 ```
 
-Group letter default: **R** (raw extraction). When raw extraction is
-embedded in a cohort project as pipeline stage 0, the group is commonly
-named `A00_rawstore_<cohort>/` (e.g. Project-REACH-ADHD) — the letter is
-project-specific either way.
-Heavy outputs land in: `_WorkSpace/0-RawDataStore/<cohort>/` (or the
-catalog-volume equivalent for server-resident cohorts — see Pattern 2).
+Group letter default: **R** (raw extraction).
+When raw extraction is embedded in a cohort project as pipeline stage 0, the group is commonly named `A00_rawstore_<cohort>/` (e.g. Project-REACH-ADHD) — the letter is project-specific either way.
+Heavy outputs land in: `_WorkSpace/0-RawDataStore/<cohort>/` (or the catalog-volume equivalent for server-resident cohorts — see Pattern 2).
 
 
 Two patterns — pick by data-governance
@@ -79,7 +70,8 @@ Two patterns — pick by data-governance
 Pattern 1: Extract-Wide-Process-Local Doctrine
 -----------------------------------------------
 
-The default for non-PHI cohorts. Every such task MUST follow it:
+The default for non-PHI cohorts.
+Every such task MUST follow it:
 
   1. **One SQL query per source table → one large parquet file.**
      Keep SQL simple: `SELECT columns FROM single_table WHERE filters`.
@@ -101,10 +93,9 @@ The default for non-PHI cohorts. Every such task MUST follow it:
 Pattern 2: Server-resident rawstore (PHI cohorts)
 --------------------------------------------------
 
-When the cohort is PHI, step 3 above is FORBIDDEN — raw data never leaves
-the server. The whole extraction pipeline runs on Databricks and writes to
-the catalog volume. Live example: Project-REACH-ADHD
-`tasks/A00_rawstore_reachadhd/`.
+When the cohort is PHI, step 3 above is FORBIDDEN — raw data never leaves the server.
+The whole extraction pipeline runs on Databricks and writes to the catalog volume.
+Live example: Project-REACH-ADHD `tasks/A00_rawstore_reachadhd/`.
 
 Shape:
 
@@ -135,9 +126,8 @@ Rules:
 Execution model — Databricks notebooks
 ---------------------------------------
 
-Unlike other task-types that use papermill for local execution, raw
-extraction tasks run on **Databricks**. The run script only converts
-the `.py` to `.ipynb` — it does NOT execute locally.
+Unlike other task-types that use papermill for local execution, raw extraction tasks run on **Databricks**.
+The run script only converts the `.py` to `.ipynb` — it does NOT execute locally.
 
 Workflow:
   1. `runs/<RUN>.sh` converts `.py` → `.ipynb` and writes `runtime.yaml`
@@ -152,8 +142,7 @@ Workflow:
      `_WorkSpace/0-RawDataStore/<cohort>/` (Pattern 2 skips this — PHI
      stays on the volume and Stage 1 reads it there)
 
-The run-script template is `ref/run-databricks-sh-template.sh` —
-convert-only, no papermill execute.
+The run-script template is `ref/run-databricks-sh-template.sh` — convert-only, no papermill execute.
 
 
 Stage naming within a cohort group
@@ -177,17 +166,15 @@ Convention (Pattern 2, all stages on Databricks — see A00 shape above):
   - `stage1` = cohort universe, `stage2` = phenotype, `stage3` = features;
     stage meaning is cohort-specific, ordering is what matters.
 
-Stage numbering is cohort-specific. Different cohorts may have different
-numbers of stages depending on complexity.
+Stage numbering is cohort-specific.
+Different cohorts may have different numbers of stages depending on complexity.
 
 
 Cross-reference to pipeline skill
 ----------------------------------
 
-`/haipipe-data-raw` owns the understanding of raw cohort data —
-the datapoint-timeline lifecycle documentation. After extraction,
-suggest `/haipipe-data-raw understand <cohort>` to document what
-was extracted, then `/haipipe-data-source` to wrap into Stage 1.
+`/haipipe-data-raw` owns the understanding of raw cohort data — the datapoint-timeline lifecycle documentation.
+After extraction, suggest `/haipipe-data-raw understand <cohort>` to document what was extracted, then `/haipipe-data-source` to wrap into Stage 1.
 
 
 Commands
@@ -202,7 +189,8 @@ Commands
 Scaffold flow
 -------------
 
-See `fn/scaffold.md` for the detailed step-by-step. Summary:
+See `fn/scaffold.md` for the detailed step-by-step.
+Summary:
 
   1. Identify project + task-group.
   2. Collect metadata (NN, name, stage number, _meta block).
@@ -244,7 +232,4 @@ First-run gate
 ---------------
 
 `runs/<RUN>.sh` does NOT execute the notebook — it only converts.
-The code-review gate is still present (inherited from the base
-template pattern) but uses `skip_review: true` by default for
-initial scaffolding since the notebook will be reviewed manually
-before Databricks upload.
+The code-review gate is still present (inherited from the base template pattern) but uses `skip_review: true` by default for initial scaffolding since the notebook will be reviewed manually before Databricks upload.

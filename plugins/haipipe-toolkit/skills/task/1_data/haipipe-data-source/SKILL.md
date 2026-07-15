@@ -13,9 +13,9 @@ metadata:
 Skill: haipipe-data-source
 ==========================
 
-Stage 1 specialist. Owns all SourceFn work and the 1-SourceStore
-layer of the pipeline. Called by the `/haipipe-data` orchestrator; can also
-be invoked directly.
+Stage 1 specialist.
+Owns all SourceFn work and the 1-SourceStore layer of the pipeline.
+Called by the `/haipipe-data` orchestrator; can also be invoked directly.
 
   Function axis:  dashboard | load | cook | design-chef | design-kitchen | review
 
@@ -57,8 +57,8 @@ review                 ref/concepts.md             ../haipipe-data/fn/fn-review.
 (no fn arg)            ref/concepts.md             (ref-only mode)
 ```
 
-Why `design-chef` reads the next stage's ref: a SourceFn contract is satisfied
-by what RecordFn downstream expects. You need both ref docs to design correctly.
+Why `design-chef` reads the next stage's ref: a SourceFn contract is satisfied by what RecordFn downstream expects.
+You need both ref docs to design correctly.
 
 ---
 
@@ -68,7 +68,8 @@ Step-by-Step Protocol
 Step 0: Read the cross-stage overview FIRST (it has the 6-layer map and
         cooking metaphor): `../haipipe-data/ref/0-overview.md`. Mandatory.
 
-Step 1: Parse args after `/haipipe-data-source`. Extract:
+Step 1: Parse args after `/haipipe-data-source`.
+Extract:
           function  in { dashboard, load, cook, design-chef, design-kitchen, review, (none) }
           extras    e.g. `rawdata` for dashboard, file_path for review
         If no args -> dashboard.
@@ -97,9 +98,8 @@ next:      suggested next command (often a /haipipe-data-record action)
 D-prefix dictionary tables
 ---------------------------
 
-SourceFn defines D-prefix lookup tables (`DRGCode`, `DLabItems`,
-`DIcdDiagnoses`, `DIcdProcedures`, `DHcpcs`, `DItems`) as part of
-`ProcName_List`. Key rules:
+SourceFn defines D-prefix lookup tables (`DRGCode`, `DLabItems`, `DIcdDiagnoses`, `DIcdProcedures`, `DHcpcs`, `DItems`) as part of `ProcName_List`.
+Key rules:
 
 - These are **full-database dictionary tables**, NOT patient-specific data.
 - They flow through Source -> Record pipeline but are **NEVER read by any CaseFn**.

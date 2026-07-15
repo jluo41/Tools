@@ -13,8 +13,9 @@ metadata:
 Skill: haipipe-data-case
 ========================
 
-Stage 3 specialist. Owns CaseFn work and the 3-CaseStore layer. Called by
-the `/haipipe-data` orchestrator; can also be invoked directly.
+Stage 3 specialist.
+Owns CaseFn work and the 3-CaseStore layer.
+Called by the `/haipipe-data` orchestrator; can also be invoked directly.
 
   Function axis:  dashboard | load | cook | design-chef | design-kitchen | review
 
@@ -52,15 +53,15 @@ review           ref/concepts.md             ../haipipe-data/fn/fn-review.md
 (no fn arg)      ref/concepts.md             (ref-only mode)
 ```
 
-`design-chef` reads `../haipipe-data-aidata/ref/concepts.md` because a
-CaseFn must produce keys/shapes that TfmFn / SplitFn can consume.
+`design-chef` reads `../haipipe-data-aidata/ref/concepts.md` because a CaseFn must produce keys/shapes that TfmFn / SplitFn can consume.
 
 ---
 
 Step-by-Step Protocol
 ----------------------
 
-Step 0: Read `../haipipe-data/ref/0-overview.md`. Mandatory.
+Step 0: Read `../haipipe-data/ref/0-overview.md`.
+Mandatory.
 Step 1: Parse args after `/haipipe-data-case`.
 Step 2: Read this skill's `ref/concepts.md` for stage-3 specifics.
 Step 3: Read the umbrella fn doc.
@@ -91,9 +92,9 @@ Hand-off contract (Stage 3 -> 4):
 Partition Support
 ------------------
 
-Case follows RecordSet partitions. Each RecordSet partition (@i{i}n{n})
-produces one independent CaseSet. **Embarrassingly parallel** — each
-partition loads a small RecordSet (~100MB), no shared state.
+Case follows RecordSet partitions.
+Each RecordSet partition (@i{i}n{n}) produces one independent CaseSet.
+**Embarrassingly parallel** — each partition loads a small RecordSet (~100MB), no shared state.
 
 **CLI:**
 ```bash

@@ -2,7 +2,9 @@
 
 Date: 2026-07-08 · Reviewer: haipipe-skill-diagnose (6 parallel auditors, all trust-gated ≥3 spot-checks) · Scope: 10 skills, 65 files, every file read line by line.
 
-STATUS: ✅ FIXED + RESOLVED 2026-07-08. All 23 findings + P1 addressed; all 6 [J] threads ruled by blanket approval (JL: "ok, go ahead and fix all of them" — recommended option A applied to each) and removed from files. Per-skill details: each skill's CHANGELOG (all 10 bumped).
+STATUS: ✅ FIXED + RESOLVED 2026-07-08.
+All 23 findings + P1 addressed; all 6 [J] threads ruled by blanket approval (JL: "ok, go ahead and fix all of them" — recommended option A applied to each) and removed from files.
+Per-skill details: each skill's CHANGELOG (all 10 bumped).
 
 ---
 
@@ -15,7 +17,8 @@ STATUS: ✅ FIXED + RESOLVED 2026-07-08. All 23 findings + P1 addressed; all 6 [
 | ③ | ⚔️ 内部矛盾 (internal contradictions) | 8 | HumanFn double-owned; aidata store layout wrong vs disk; **yesterday's Pattern-2 update didn't propagate into task-for-raw's own fn/ref files**; CHANGELOG "newest first" violated ×4 |
 | ④ | 🪝 substrate assumptions | 3 | raw = local-only (PHI volume cohorts invisible); remote = AWS-SSO framing on a gdrive default; store-map lists stores that don't exist |
 
-Biggest single item: **A1** — every `python -m scripts.haistep.*` invocation AND every `haistep-*` console script in the bucket crashes (`ModuleNotFoundError`; verified by import test, not just inspection). The rot originates in `code/` (pyproject + docstrings) and the bucket inherited it.
+Biggest single item: **A1** — every `python -m scripts.haistep.*` invocation AND every `haistep-*` console script in the bucket crashes (`ModuleNotFoundError`; verified by import test, not just inspection).
+The rot originates in `code/` (pyproject + docstrings) and the bucket inherited it.
 
 ---
 
@@ -65,11 +68,8 @@ Biggest single item: **A1** — every `python -m scripts.haistep.*` invocation A
 
 ## [J] resolutions
 
-All 6 threads were ruled by the blanket approval (JL 2026-07-08: "ok, go
-ahead and fix all of them"); the recommended option A was applied to each
-(B1 exclusion note; C3 Pattern-2 propagation; C8 MIMIC rebase; D1 volume
-note; D2 backend-conditional; D3 optional-store annotation). Verbatim quote
-archived in each owning skill's CHANGELOG; all in-file threads removed.
+All 6 threads were ruled by the blanket approval (JL 2026-07-08: "ok, go ahead and fix all of them"); the recommended option A was applied to each (B1 exclusion note; C3 Pattern-2 propagation; C8 MIMIC rebase; D1 volume note; D2 backend-conditional; D3 optional-store annotation).
+Verbatim quote archived in each owning skill's CHANGELOG; all in-file threads removed.
 
 ---
 

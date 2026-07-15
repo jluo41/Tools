@@ -1,8 +1,9 @@
 fn-join: Preview joining an external asset into a cohort set
 =============================================================
 
-NEVER materializes a join. Always preview-only. Outputs match-rate
-diagnostics + a config snippet to paste into the consuming layer.
+NEVER materializes a join.
+Always preview-only.
+Outputs match-rate diagnostics + a config snippet to paste into the consuming layer.
 
 ---
 
@@ -32,8 +33,7 @@ Args:
 --version @{tag}   optional: pin external release
 ```
 
-If `--table` is omitted, scan the set's parquets for one that contains
-a column matching the asset's expected join key (per catalog table).
+If `--table` is omitted, scan the set's parquets for one that contains a column matching the asset's expected join key (per catalog table).
 If multiple tables match, ask the user.
 
 ---
@@ -52,8 +52,8 @@ ext_df    = pd.read_parquet(f'{ext_dir}/df_{asset}_id.parquet')
 right_col = f'{PRIMARY_KEY}_original'
 ```
 
-NEVER write the loaded data anywhere. Both DataFrames stay in-memory
-for the duration of the preview.
+NEVER write the loaded data anywhere.
+Both DataFrames stay in-memory for the duration of the preview.
 
 ---
 
@@ -75,9 +75,7 @@ freq          = cohort_df[left_col].astype(str).value_counts()
 top_unmatched = [k for k in freq.index if k in unmatched][:20]
 ```
 
-If `match_rate < 0.70`: emit a format-mismatch warning and sample
-5 matched + 5 unmatched keys side-by-side so the user can eyeball
-length / leading-zero / dtype issues.
+If `match_rate < 0.70`: emit a format-mismatch warning and sample 5 matched + 5 unmatched keys side-by-side so the user can eyeball length / leading-zero / dtype issues.
 
 ---
 
@@ -90,9 +88,7 @@ ext_cols = [c for c in ext_df.columns
 join_cols = filter_by_columns_arg(ext_cols)   # honor --columns flag
 ```
 
-If the README has logical column groups (e.g. NPI -> Demographics,
-Geographic, Reviews/Personality), preserve them in the rendered
-preview.
+If the README has logical column groups (e.g. NPI -> Demographics, Geographic, Reviews/Personality), preserve them in the rendered preview.
 
 ---
 
@@ -120,8 +116,7 @@ Join preview: {asset} (release {version}) -> {set_path}/{table}.parquet
     -> Possible cause: float vs str dtype, missing leading zero
 ```
 
-Then emit the YAML config snippet from `ref/join-contract.md`,
-filled with the resolved values.
+Then emit the YAML config snippet from `ref/join-contract.md`, filled with the resolved values.
 
 ---
 

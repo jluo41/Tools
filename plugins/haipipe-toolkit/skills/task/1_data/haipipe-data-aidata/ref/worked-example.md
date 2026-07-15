@@ -1,9 +1,8 @@
 Worked example: MIMIC-IV mortality datapoint description
 ==========================================================
 
-The canonical "good" instance of SKILL.md's mandatory datapoint
-description. Based on a REAL asset in this repo — every claim below can be
-checked on disk:
+The canonical "good" instance of SKILL.md's mandatory datapoint description.
+Based on a REAL asset in this repo — every claim below can be checked on disk:
 
 ```
 config: examples/Project-EHR-Mimic/tasks/A01_data_pipeline_mimic/
