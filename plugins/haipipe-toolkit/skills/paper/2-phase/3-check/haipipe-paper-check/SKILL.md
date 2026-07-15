@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent
 metadata:
   version: "2.1.0"
   last_updated: "2026-07-14"
-  summary: "CHECK phase worker (internal). The ONLY human-involved phase. Runs sub-checkers (./checks.sh for the deterministic ones), seeds > CHECK: comments in-file at every flag site, and gates human review. v2.1 (probe-redesign residue sweep): the CHECK gate's probe invariants are stated over SECTIONS (`state: planned`, unresolvable `target:`, owed lanes); a `> USER:` new-candidate request becomes a question SECTION, never a 'probe plan -> gateway'."
+  summary: "CHECK phase worker (internal) -- the ONLY human-involved phase: runs the deterministic sub-checkers (./checks.sh), seeds `> CHECK:` comments in-file at every flag site, and gates human review. Its probe invariants are stated over SECTIONS (`state: planned`, unresolvable `target:`, owed lanes). History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

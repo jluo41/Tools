@@ -5,7 +5,7 @@ allowed-tools: Bash, Read, Write, Edit, Glob, Skill
 metadata:
   version: "1.1.0"
   last_updated: "2026-07-14"
-  summary: "Guide authors through the full rebuttal process for ML conference/journal reviews. v1.1: LAW 1 — the rebuttal session is a CONSUMER. fn/fn-task Step 5 no longer AUTHORS task folders under the project's tasks/ (that planted rebuttal ids C10/B7 into the reusable bank — the A03 C6/C7 contamination verbatim); it DISPATCHES each point to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent) as ONE question in general language, and the EXECUTOR scaffolds and names the task-folder. The return is a QA file path, whose `- state:` line is READ (answered → quote · working → in progress, do not re-dispatch · superseded-by → follow the chain) and NEVER written."
+  summary: "Guide authors through the full rebuttal process for ML conference/journal reviews. LAW 1: the rebuttal session is a CONSUMER -- it DISPATCHES each point to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent) as ONE general-language question (the executor scaffolds + names the task-folder), then READS the returned QA file's `- state:` line (answered → quote · working → in progress, do not re-dispatch · superseded-by → follow the chain) and NEVER writes in the bank. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

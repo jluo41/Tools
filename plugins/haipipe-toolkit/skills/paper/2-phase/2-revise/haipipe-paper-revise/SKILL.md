@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "1.5.1"
   last_updated: "2026-07-09"
-  summary: "REVISE phase worker (internal). v1.5: proof-carrying — stage hubs MUST reach REVISE through this skill (never hand-edit inline); the [REVISE] _LOG entry MUST carry a workers: line; .md-first then sync to tex. Rewrite draft prose to venue-quality: change directly, leave why-comments. Dispatches content/humanizer/results workers."
+  summary: "REVISE phase worker (internal): rewrite draft prose to venue-quality -- change directly, leave why-comments, then sync .md -> tex. Proof-carrying: stage hubs MUST reach REVISE through this skill (never hand-edit inline) and the [REVISE] _LOG entry MUST carry a `workers:` line. Dispatches content/humanizer/results workers. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
