@@ -69,21 +69,48 @@ JL comments (`> JL:`) that land in 01-04 move HERE once their edit is applied, v
 [2026-07-15 00:11 · SHIPPED] one-sentence-per-line saved as a rule
   > JL: another important thing — one sentence one line, no break lines.
   >> CC: saved to PREFERENCES.md (mirrors haipipe-task). Held all NEW prose to it.
-     A full one-sentence-per-line REFLOW of the existing probe bodies (517/700/670
-     lines, diagram-heavy) is still OWED — see below.
+
+[2026-07-15 00:40 · SHIPPED] haipipe-probe/SKILL.md — COMPLETE REWRITE to an operational skill
+  > JL: I feel this is not the real skill, what there are so many R1, R2, .... It is not
+        the real skill file. Please think about how to rewrite it completely.
+  >> CC: right — it was a RULING LEDGER (R1-R21, PART 0-9, "where the closure could be
+     wrong"), not a skill. The rulings + rationale already live in the spec of record,
+     diagram/260714-probe-qa/. Rewrote the SKILL as an OPERATIONAL file (JL chose full
+     rewrite): what a probe is · probe-file anatomy · the five-step loop + cost ladder ·
+     the QA state-line contract · the two LAWS · derived state + checker codes · verbs ·
+     pointers. 517 → 228 lines. 0 R-numbers, one sentence per line, consumer-level
+     throughout, no claims/verdict machinery. Repointed 5 dangling "PART n" refs
+     (fn/probes ×2, check-probe-cards ×2, _archive README) to durable section names.
+
+  The FOUR inline JL comments the rewrite subsumed (moved here verbatim):
+  > JL: not just paper, can also be application, so it will be Consumer level document.
+    >> CC [SOLVED]: the rewrite says "consumer" (paper OR application) throughout.
+  > JL: is this rule worth to put here? If dead, remove them, don't need to put them here.
+    >> CC [SOLVED]: R7 (the Verdict ruling) is gone; every R-number was dropped.
+  > JL: I think probe should have the ability to collect the Q-paper from draft.md, and then
+        make group them, and then make them into the Q-task, and then send to the executor
+        side, do we have it?
+    >> CC [SOLVED]: YES — that IS the five-step loop. ① ORGANIZE collects the DRAFT's
+       questions and groups them by topic; the `commission` is the "Q-task" (the question in
+       general language); ③ DISPATCH sends it to the executor orchestrator. It runs in the
+       PROBE-phase worker (haipipe-paper-probe / haipipe-application-probe), and the rewrite
+       states it plainly under "The five-step loop".
+  > JL: delete it. Not even mention it. So in probes, there are not claims. Just the
+        comminucations.
+    >> CC [SOLVED]: the rewrite never mentions the claim ledger / verdict / judgment; it
+       states the boundary positively — "a probe is communication, not judgment".
 
 
 ⏳ STILL OWED
 =============
 
 ```text
-  1. REFLOW the probe-family bodies to one-sentence-per-line (token-safe pass,
-     fence/diagram-protected), like the haipipe-task fn/ + specialist sweep.
-  2. The BODY bloat proper: haipipe-probe 517 L, paper-probe ~700 L, application-probe
-     ~670 L still re-derive what probe-qa/ owns. A conciseness pass (the haipipe-task
-     levers) after the reflow.
-  3. The audit's other defects (03): the dated spec path cited by 86 files
-     (rename → diagram/probe/), the R21↔R18 + version 8.3↔6.0 drift.
-  4. Q1 (02): fold the claim_type overclaim reminder deeper into the claims skills,
+  1. THE SAME OPERATIONAL REWRITE for the two WORKERS: paper-probe (~700 L) and
+     application-probe (~670 L) are still ruling-flavored and long. Give them the
+     haipipe-probe treatment (operational, one-sentence-per-line, no R-numbers).
+  2. The audit's other defects (03): the dated spec path cited by ~86 files
+     (rename → diagram/probe/), the R21↔R18 + version drift (the constitution is now
+     9.0.0, which resets that particular drift).
+  3. Q1 (02): fold the claim_type overclaim reminder deeper into the claims skills,
      or leave it as the one line added this session. JL to decide.
 ```

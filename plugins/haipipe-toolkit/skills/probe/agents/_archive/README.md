@@ -39,4 +39,4 @@ RETIRED 2026-07-14 (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, r
 
 De-registered from `~/.claude/agents/` and `<repo>/.claude/agents/` at retirement. Do not
 re-symlink: the file's instructions describe `_ASK/` stubs, `answers:` returns and PP ids
-crossing to the bank — all three are now spec violations (haipipe-probe/SKILL.md PART 9).
+crossing to the bank — all three are now spec violations (the probe constitution).
