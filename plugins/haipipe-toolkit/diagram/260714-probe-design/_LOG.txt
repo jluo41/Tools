@@ -200,9 +200,9 @@ JL comments (`> JL:`) that land in 01-04 move HERE once their edit is applied, v
      A blanket sweep would corrupt the verbs, so these need per-occurrence review. The
      PROBE-LAYER core (fields, both checkers, constitution, workers, descriptions) is fully
      q-executor/a-consumer and checker-verified; the residual is cosmetic drift in prose.
-  4. WIRE THE PROBE AGENT IN: haipipe-probe-worker-agent EXISTS + is registered, but nothing
+  4. WIRE THE PROBE AGENT IN: haipipe-probe-q-executor-agent EXISTS + is registered, but nothing
      dispatches it yet — the two worker skills still run ②③④ inline. To USE it, their ②③④
-     steps delegate to Agent(haipipe-probe-worker-agent) (the stage keeps ① + ⑤). Mechanical
+     steps delegate to Agent(haipipe-probe-q-executor-agent) (the stage keeps ① + ⑤). Mechanical
      follow-up across the 2 workers. JL to say go.
   (nothing structural owed on harvest — resolved below.)
 ```
@@ -226,3 +226,17 @@ JL comments (`> JL:`) that land in 01-04 move HERE once their edit is applied, v
       "════ COLLECTION (①–④) ends here — the answer is banked. HARVEST (⑤) begins ════"
       divider before ⑤, whose heading now reads "…and HARVEST (the <consumer>'s own,
       not the constitution's)".
+
+
+[2026-07-15 02:30 · SHIPPED] agent renamed: haipipe-probe-worker-agent → haipipe-probe-q-executor-agent
+  JL: "could we have a better name? like haipipe-probe-Qexecutor-agent?"
+  CC: yes — but lowercase-hyphenated, not camelCase, so it matches BOTH the kebab
+  convention every other agent uses AND the freshly-settled field name `q-executor:`.
+  camelCase `Qexecutor` would be the tree's only mixed-case agent name and would not
+  visually tie back to the field. Final: haipipe-probe-q-executor-agent.
+  The name fixes on the INPUT (q-executors in) — accurate: the agent owns the executor
+  column's collect (Q-executor → A-executor path), stake-free; ① and ⑤ (stake-aware)
+  stay with the stage. Renamed: the file (git mv), its `name:` frontmatter + title, the
+  constitution Pointers line, agents/README line 4. Historical birth entry (above, under
+  the old name) left as-is — it was true when written. No symlink to update (this plugin
+  discovers agents from its own agents/ folder; `name:` is the registration).

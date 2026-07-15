@@ -1,7 +1,7 @@
 probe — Agent Roster
 ======================
 
-The probe layer owns **ONE agent** — `haipipe-probe-worker-agent`, a stake-free, family-agnostic
+The probe layer owns **ONE agent** — `haipipe-probe-q-executor-agent`, a stake-free, family-agnostic
 QUESTION-LEVEL collector. Given a batch of q-executors it runs the stake-free middle of the loop
 (② MATCH → ③ DISPATCH → ④ POINT) in an isolated context and returns the answered QA paths; the
 stake-aware halves (① writing the q-executor, ⑤ harvest) stay with the consumer/stage. A probe is

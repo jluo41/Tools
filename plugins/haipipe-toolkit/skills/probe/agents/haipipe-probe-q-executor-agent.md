@@ -1,5 +1,5 @@
 ---
-name: haipipe-probe-worker-agent
+name: haipipe-probe-q-executor-agent
 description: "QUESTION-LEVEL collector for the probe layer — SHARED across paper + application. Given a SET of q-executors (executor-facing questions, stake already stripped: no ## Why, no claim ids), it runs the stake-FREE middle of the five-step loop in ONE isolated clean context — ② MATCH each against the bank's QA corpus (reuse + dedup), ③ DISPATCH only the unmatched to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent), ④ POINT each section's target: at its answering QA file — and returns {q-executor → answered QA-file path}. Does NOT do ① ORGANIZE's stake translation (T1) or ⑤ INTERPRET/harvest (T2): both are STAKE-AWARE and stay with the consumer/stage. Its clean context IS the wall — it never sees the stake, and it never judges. Trigger: probe collect, match and dispatch q-executors, run probe questions, probe worker, collect answers."
 tools:
   - Read
@@ -18,7 +18,7 @@ metadata:
   # changelog: ./CHANGELOG.md (agent-scoped, never loaded at invocation)
 ---
 
-# Probe Worker (question-level collector)
+# Probe Q-executor collector (question-level)
 
 > *"Hand me a batch of q-executors. I get them answered by the bank and hand the paths back. I never learn who is asking, or why."*
 
