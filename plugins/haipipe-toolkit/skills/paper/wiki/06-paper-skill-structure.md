@@ -32,7 +32,7 @@ paper/
 │     3-narrative/haipipe-paper-narrative
 │     4-display/haipipe-paper-display + renderers
 │       -display-{table,figure,diagram,illustration}
-│       (illustration default = Codex; -display-illustration-gemini = fallback;
+│       (illustration = Codex bridge;
 │        framework candidate rounds inside display)
 │     5-section-edit/haipipe-paper-section-edit + section-type/ norms
 │     + haipipe-paper-venue (recommend + pin the best-fit journal, before pitch;

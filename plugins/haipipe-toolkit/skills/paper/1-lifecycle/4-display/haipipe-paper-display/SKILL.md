@@ -195,7 +195,7 @@ numbers not yet materialized           -> /haipipe-task-for-display <need>
 | data plot (forest, dose-response, panel ...) | `/haipipe-paper-display-figure` — reads the task's `source_data.csv` / `metrics.json` ONLY |
 | LaTeX table | `/haipipe-paper-display-table` — reads the task's aggregated CSV/JSON ONLY |
 | editable vector diagram (research model, design, flow) | `/haipipe-paper-display-diagram` (FigureSpec JSON; elbow connectors + icons per CHECKLIST) |
-| AI concept illustration (richest Figure 1) | `/haipipe-paper-display-illustration` (Codex bridge; fallback `/haipipe-paper-display-illustration-gemini`) |
+| AI concept illustration (richest Figure 1) | `/haipipe-paper-display-illustration` (Codex bridge) |
 
 The hard line survives: **numbers come from a task, never from the agent.** A data candidate whose source is not a task output is a defect; concept figures (no data) skip the evidence lane but a schematic/flow diagram is annotated with REAL Ns pulled from the data description.
 

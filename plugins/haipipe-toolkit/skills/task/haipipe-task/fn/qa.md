@@ -46,7 +46,7 @@ It is a FREE pass by definition.
 It must never fall through to ③ and spawn an unbudgeted run.
 
 THREE CALLERS, one door.
-The verb behaves identically for all three and cannot tell them apart: a human exploring, the orchestrator self-directed, or a consumer's commission relayed.
+The verb behaves identically for all three and cannot tell them apart: a human exploring, the orchestrator self-directed, or a consumer's question relayed.
 No caller gets a special path or a special field.
 
 

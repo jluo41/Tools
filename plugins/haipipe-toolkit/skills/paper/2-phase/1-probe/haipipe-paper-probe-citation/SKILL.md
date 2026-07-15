@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-probe-citation
-description: "citation HARVESTER (probe lane worker). One skill, one working doc (_CITATION_). Transcribes the answering QA file's source anchors into _CITATION_{stage}.md — it NEVER searches (acquisition is the probe SECTION → commission → Agent(haipipe-discovery-orchestrator-agent) → QA file). Plus AUDIT (gap → a new question SECTION), PLACE (auto-place keys already in .bib, flag 🔍 for CHECK), REVIEW (pre-submission 3-axis walk). Fully automatic. Hard boundary: NEVER generates bibtex, NEVER adds to .bib. Trigger: citation, cite, probe citations, harvest citations, check references, audit references, citation review, manual review citations."
+description: "citation HARVESTER (probe lane worker). One skill, one working doc (_CITATION_). Transcribes the answering QA file's source anchors into _CITATION_{stage}.md — it NEVER searches (acquisition is the probe SECTION → q-executor → Agent(haipipe-discovery-orchestrator-agent) → QA file). Plus AUDIT (gap → a new question SECTION), PLACE (auto-place keys already in .bib, flag 🔍 for CHECK), REVIEW (pre-submission 3-axis walk). Fully automatic. Hard boundary: NEVER generates bibtex, NEVER adds to .bib. Trigger: citation, cite, probe citations, harvest citations, check references, audit references, citation review, manual review citations."
 argument-hint: "[verb] [section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, WebFetch
 # WebFetch = pointer-following ONLY (fetch a KNOWN DOI/publisher URL to verify an
@@ -155,20 +155,8 @@ The paper session never reads sources.md in either role; content-level quality i
 Procedure (inside the subagent):
 
 1. Establish the source set from the QA file's `## Answer` anchors; open the task-folder's `sources.md` and read ONLY the anchored entries.
-2. Write/extend `_CITATION_{stage}.md`: NEVER tables. Group by literature/theme (`##` sections); one paper per `###` subsection with FULL title in the heading and bullet fields transcribed from the manifest:
-
-```
-### <Full Title>
-- <authors> (<year>). <venue>. [status: VERIFIED-by-discovery | 🔍 NEEDS-VERIFICATION]
-- summary: <2-3 lines: what the paper does/shows>
-- finding: <1-2 lines: the result that matters here, numbers kept>
-- relevance: <one line: why it matters to this stage's need>
-- Scholar: <link>   (unverified also get `> SEARCH: <string>`)
-- source_ref: <discovery folder> (sources.md S##)
-```
-
-An entry with only identity fields (title/year/venue + one relevance clause) is a DEFECTIVE harvest -- the user must be able to eyeball WHAT each paper found without opening the discovery. Numbered one-line entries remain acceptable ONLY for bare reference lists in the demand-pull phases, never for harvest cards.
-3. Status carries provenance -- two levels, never flattened: `status: VERIFIED-by-discovery (<method>, <date>) · 🔍 awaiting JL Scholar+bibtex` for sources the discovery reviewer verified; `status: 🔍 NEEDS-VERIFICATION` only for sources nobody has checked. These strings are VERBATIM, not templates to reword: acceptance greps them literally, so a semantically-equivalent rendering (`retrieved ✅ (discovery, ...)`, `confirmed at discovery`, `JL bibtex ⬜`) is a DEFECTIVE card even though it carries the same information (test-123333333: harvest synonymized the canonical string; a literal grep would have rejected all 7 cards). Writing bare "unverified" on a discovery-verified source DISCARDS earned provenance and is a defective card (test-2-2222: all 5 cards said "🔍 candidate (unverified)" while sources.md held 15/15 VERIFIED-with-method). The 🔍 half never auto-clears: Scholar confirmation + bibtex are HUMAN-ONLY (house rule -- discovery verification is arXiv-level, not bibtex-level).
+2. Write/extend `_CITATION_{stage}.md`: NEVER tables. Group by literature/theme (`##`); one paper per `###` subsection, FULL title in the heading, bullet fields transcribed from the manifest. Harvest-card template: `ref/citation-format.md`. An entry with only identity fields (title/year/venue + one relevance clause) is a DEFECTIVE harvest — the user must be able to eyeball WHAT each paper found without opening the discovery.
+3. Status carries provenance in the card's VERBATIM strings — acceptance greps them LITERALLY, so a semantically-equal synonym (`retrieved ✅ (discovery, ...)`, `confirmed at discovery`) is a DEFECTIVE card, and writing bare "unverified" on a discovery-verified source DISCARDS earned provenance. Exact strings + the two provenance levels: `ref/citation-format.md`. The 🔍 half never auto-clears: Scholar confirmation + bibtex are HUMAN-ONLY (discovery verification is arXiv-level, not bibtex-level).
 4. Do NOT search for new papers in harvest mode -- harvest only what the probe brought back. Gaps noticed while harvesting become probe-plan suggestions, not fresh WebSearch calls.
 5. No placement: early stages are markdown; PLACE only applies when a tex section exists.
 
@@ -291,97 +279,12 @@ curated indexes.
 
 Write harvested results (from the answering QA file's source anchors, via HARVEST above) as 🔍 CANDIDATE entries in `_CITATION_N-section.md`.
 
-### Candidate entry format (agent-found, NOT in .bib yet)
+Entry formats — **candidate** · **placed** · **pre-existing** · **citation-issue** — plus the status-emoji legend and the `> SEARCH:` markers: **`ref/citation-format.md`**.
 
-```markdown
-### 🔍 CANDIDATE for P#.S# -- Full Author List (Year). Full Paper Title.
-
-- **Journal:** Full Journal Name Vol(Num), Pages
-- **Assertion:** the specific claim this citation would support
-- **Status:** 🔍 candidate
-- **Source:** 🤖 agent-found (YYYY-MM-DD)
-- **Target sentence:** "the sentence text where this would be placed"
-- **Placement:** cite alongside "phrase" in P#.S#
-
-> SEARCH: [Scholar](https://scholar.google.com/scholar?q=search+terms+here)
-- **Summary:** 2-3 sentences: what the paper did (method, data, scale), key finding relevant to the assertion, why it matters for this manuscript.
-```
-
-Rules for the candidate entry:
-
-- **Full paper title** in the heading (not a short description)
-- **Full author list** in the heading (not "et al.")
-- **Journal with volume/number/pages** when known
-- **Scholar link** as a clickable markdown link (not bare URL)
-- **2-3 sentence summary** with method + finding + relevance (not one-liner)
-- **NO Key field on candidates** (the bibtex key is determined by whatever Scholar generates when the human copies bibtex; the agent discovers it later by grepping .bib)
-- **NO bibtex block** (plain-text description only; bibtex lives exclusively in .bib)
-- **NO .bib edit** (never add to .bib)
-- **NO .tex edit** (never place \citep{})
-- **Placement recommendation** so the human knows where to cite after verifying
-
-### Placed entry format (verified, in .bib, placed in tex)
-
-```markdown
-### ✅ P#.S# -- Full Author List (Year). Full Paper Title.
-
-- **Key:** `bibtex_key` (learned from .bib after human added it)
-- **Journal:** Full Journal Name Vol(Num), Pages
-- **Assertion:** the specific claim this citation supports
-- **Status:** ✅ placed
-- **Source:** 🧑 scholar-copied by USER (YYYY-MM-DD)
-
-> ✅ SEARCH: [Scholar](https://scholar.google.com/scholar?q=...)
-- **Summary:** 2-3 sentences.
-```
-
-The **Key** field appears ONLY on placed entries, and is LEARNED from .bib (grep for the paper title after the human adds it), never proposed by the agent.
-
-### Pre-existing entry format (was in .bib before _CITATION_ existed)
-
-```markdown
-### 📋 P#.S# -- Full Author List (Year). Full Paper Title.
-
-- **Key:** `bibtex_key` (from .bib)
-- **Journal:** Full Journal Name Vol(Num), Pages
-- **Assertion:** the specific claim this citation supports
-- **Status:** ✅ placed
-- **Source:** 📋 pre-existing (provenance unknown)
-- **Verified:** ⬜ not yet verified / ✅ DOI resolves, metadata matches
-
-> SEARCH: [Scholar](https://scholar.google.com/scholar?q=...)
-```
-
-Pre-existing entries are created during AUDIT reconciliation when the agent finds `\citep{key}` in tex that isn't tracked in _CITATION_ yet. They need verification (Phase 5 REVIEW) to confirm the paper actually exists with correct metadata.
-
-### Status emoji legend (place in file header)
-
-```
-✅ = in bib + placed in tex + verified on Scholar
-📌 = in bib, not yet placed in this section's tex
-⚠️ = in bib but needs fix (wrong paper, metadata drift, wrong context)
-🔍 = NOT in bib, candidate found by CC, needs user verification
-```
-
-### SEARCH markers
-
-Every entry ends with one of:
-- `> SEARCH: [Scholar](url)` -- NOT verified. User needs to click, verify, copy bibtex → .bib
-- `> ✅ SEARCH: [Scholar](url)` -- verified by user. In .bib and ready to place.
-
-### Citation issue entries
-
-When Phase 1 finds a problem with an EXISTING citation (wrong context, metadata drift, citation doesn't hold), write it as:
-
-```markdown
-### ⚠️ P#.S# -- Citation issue: key may not support claim
-
-- **Current claim:** "the sentence text"
-- **Current cite:** bibtex_key
-- **Problem:** description of what's wrong
-- **Recommendation:** keep / replace / soften claim
-- **Alternative candidates:** (if applicable)
-```
+Load-bearing rules (kept here because PLACE and CHECK depend on them):
+- A candidate carries NO bibtex block and NO Key field — the key is LEARNED from .bib later, never proposed by the agent.
+- NO .bib edit and NO `\citep{}` placement on a candidate — that is PLACE's job, and only for a key already in .bib.
+- The Key field appears ONLY on a placed entry.
 
 
 ## Phase 4: PLACE (automatic)
@@ -471,79 +374,18 @@ High-risk patterns to actively hunt:
 
 ## _CITATION_ file organization
 
-```markdown
-# §N Section-Name: Citation Map
-
-Density: K unique keys / S sentences = D keys/sentence.
-M/S sentences carry at least one cite (R).
-
-Venue norm: [venue-specific sentence-with-cite ratio]
-
-[Status emoji legend from above]
-
----
-
-## P1. Paragraph headline (N sentences)
-
-### [emoji] P1.S2 -- Author List (Year). Paper Title.
-[entry fields as defined above]
-
-### [emoji] P1.S3 -- Author List (Year). Paper Title.
-[entry fields as defined above]
-
----
-
-## P2. Paragraph headline (N sentences)
-...
-
----
-
-## Density by paragraph
-
-(bullet lines, one per paragraph — NEVER a markdown table; the harvest
-acceptance grep `grep -c '^|' == 0` runs on this whole file)
-
-- P1: 7 sentences · 4 cited · 5 keys · density 0.71 — <note>
-- P2: 5 sentences · 1 cited · 2 keys · density 0.40 — <note>
-
-## Open items
-
-- [describe any remaining gaps, open question SECTIONS, or issues]
-```
-
-Organization rules:
-- Group by paragraph (P1, P2, ...) matching the section outline structure
-- Preserve `> USER:` comments verbatim with `> CC:` responses below
-- Keep density table and open items updated after each phase
+Group by paragraph (P1, P2, …) matching the section outline; a Density block at the end (bullet lines, NEVER a markdown table — the acceptance grep `grep -c '^|' == 0` runs on the whole file); an Open items block; `> USER:` comments preserved verbatim with `> CC:` responses below.
+Full file template: **`ref/citation-format.md`**.
 
 
 ## Relation to sibling skills
 
-```
-1-probe/
-  haipipe-paper-probe-citation     ← THIS (citation, _CITATION_.md)
-  haipipe-paper-probe-values       ← values, _VALUES_.md
-  haipipe-paper-probe-display      ← display, 0-displays/ units
-```
+Three HARVESTERS in `1-probe/`, one working-doc each, all fully automatic (human review in CHECK only) — they follow pointers the answering QA file names, never find things:
+- `haipipe-paper-probe-citation` (THIS) — _CITATION_.md — AUDIT → ROUTE → CANDIDATE(harvest) → PLACE → REVIEW
+- `haipipe-paper-probe-values` — _VALUES_.md — same lifecycle
+- `haipipe-paper-probe-display` — 0-displays/ units — AUDIT → PLAN(route) → LINK(harvest) → REVIEW
 
-All three are HARVESTERS (the harvest step of the one probe pipeline — they
-follow pointers the answering QA file names, never find things), each with its
-own document lifecycle:
-- citation: AUDIT → ROUTE → CANDIDATE(harvest) → PLACE → REVIEW
-- values:   AUDIT → ROUTE → CANDIDATE(harvest) → PLACE → REVIEW
-- display:  AUDIT → PLAN(route via probe) → LINK(harvest) → REVIEW
-
-Each owns one working-doc type. All three are fully automatic (human review happens in CHECK only).
-
-
-## Relation to other skills
-
-| If the author wants ... | Use |
-|---|---|
-| Probe citations for a section (audit + route + harvest + place) | **this skill**, Phase 1-4 (automatic) |
-| Pre-submission citation walk | **this skill**, Phase 5 |
-| ANY citation acquisition (single lookup, topic, landscape, claim) | the PROBE hub → DISPATCH to Agent(haipipe-discovery-orchestrator-agent) (the only door) |
-| Quick bib hygiene (placeholders, duplicates) | **this skill**, AUDIT verb |
+ANY citation acquisition (single lookup, topic, landscape, claim) goes through the PROBE hub → DISPATCH to Agent(haipipe-discovery-orchestrator-agent) — the only door.
 
 
 ## Done criteria
@@ -559,64 +401,9 @@ citation is done when:
 - [ ] _LOG updated with citation probe summary
 
 
-## Tips for the user (during CHECK phase)
+## User guide + lifecycle rounds
 
-The agent runs PROBE automatically and leaves 🔍 CANDIDATE entries in _CITATION_. You handle these during CHECK:
-
-**Verifying a candidate (during CHECK):**
-1. Click the `> SEARCH: [Scholar](url)` link in _CITATION_
-2. Find the paper on Scholar, read the abstract, confirm it supports the assertion
-3. Click the `"` cite icon on Scholar, select BibTeX, copy the bibtex block
-4. Paste the bibtex into your `.bib` file
-5. In _CITATION_, change `> SEARCH:` to `> ✅ SEARCH:`
-6. If CHECK restarts PROBE, the agent auto-places the newly verified keys
-
-**Rejecting a candidate:**
-- Change `> SEARCH:` to `> ❌ SEARCH: reason` (e.g., "wrong paper, about nursing not physicians")
-- The agent marks it ❌ and keeps it as audit trail (prevents re-searching the same wrong paper in a later round)
-
-**Adding a citation the agent missed:**
-- Add bibtex to .bib yourself
-- Add `> USER: cite [key] at P#.S# for [reason]` in _CITATION_ or the outline
-- The agent picks it up when PROBE restarts (Phase 1a reconciliation)
-
-**Checking what is pending:**
-- Grep _CITATION_ for 🔍 to see unverified candidates
-- Grep _CITATION_ for ⚠️ to see issues needing attention
-- The density table at the bottom shows overall coverage
-
-
-## Citation rounds across the lifecycle
-
-Citations are not one-shot. _CITATION_ accumulates across multiple rounds:
-
-```
-Round 0  DRAFT       author cites from memory, some placeholders
-Round 1  PROBE       automatic: audit + search + candidate + place (for keys in .bib)
-                     🔍 entries flagged for CHECK (not blocking)
-
-Round 2  post-REVISE re-audit (MANDATORY after every revise round)
-                     revise rewrites can drift citations:
-                     sentence split → cite lands on wrong half
-                     sentence merged → cite lost
-                     claim reworded → cite context changed
-                     agent re-runs Phase 1 AUDIT, flags drift
-
-Round 3  CHECK       human reviews 🔍 entries, verifies on Scholar,
-                     copies bibtex → .bib, adds > USER: comments
-                     (CHECK is the ONLY human-involved phase)
-
-Round 4+  RESTART    if CHECK restarts PROBE, agent reads > USER: comments
-                     and responds; re-runs audit + search + place
-                     each round appends to _CITATION_
-```
-
-Best practices:
-- _CITATION_ accumulates, never resets. Each round adds entries, updates statuses.
-- Rejected entries (❌) stay. Prevents re-searching the same wrong paper.
-- Post-revise re-audit is mandatory. Rewriting can move/lose citations.
-- Density table updates after every round. Track coverage trend.
-- _LOG records each citation round with date, action count, density change.
+The CHECK-phase user guide (verify / reject / add a candidate; check what's pending) and the multi-round accumulation model (DRAFT → PROBE → mandatory post-REVISE re-audit → CHECK → RESTART; _CITATION_ accumulates and never resets, rejected ❌ entries stay): **`ref/citation-format.md`**.
 
 
 ## Anti-patterns

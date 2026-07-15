@@ -1,6 +1,6 @@
 ---
 name: haipipe-task-orchestrator-agent
-description: "ORCHESTRATOR agent for task. The task layer's clean-context dispatch target: it accepts EITHER a task spec (folder path + config, or a contract description) OR a COMMISSION — one question in general language, with no context attached — and runs the 4-phase lifecycle by dispatching haipipe-task-creator-agent and haipipe-task-reviewer-agent in creator→reviewer loops. On a commission it runs the qa gate (① QA SCAN → ② DIGEST → ③ P-B-E-R, or REFUSE) and returns the PATH to the answering QA file. Gate ① reads the QA file's `state:` line, not its mere existence: a `working` file means SOMEONE IS ALREADY ON IT — return the path + 'in progress since <started>' and DO NOT RE-RUN. Gate ③ CLAIMS the QA file (state: working + started:, under `set -C` noclobber) BEFORE the lifecycle runs, and completes it at Report. May also be SELF-DIRECTED: pick a worthwhile direction and explore it, with no question pending. Does NOT replace the /haipipe-task skill (interactive console); this agent is for non-interactive dispatch. Trigger: run task, execute task, dispatch task, task orchestrator, answer this question with task work, qa, claim, state, working, superseded."
+description: "ORCHESTRATOR agent for task. The task layer's clean-context dispatch target: it accepts EITHER a task spec (folder path + config, or a contract description) OR a QUESTION — general language, no context attached — and runs the 4-phase lifecycle by dispatching haipipe-task-creator-agent and haipipe-task-reviewer-agent in creator→reviewer loops. On a question it runs the qa gate (① QA SCAN → ② DIGEST → ③ P-B-E-R, or REFUSE) and returns the PATH to the answering QA file. Gate ① reads the QA file's `state:` line, not its mere existence: a `working` file means SOMEONE IS ALREADY ON IT — return the path + 'in progress since <started>' and DO NOT RE-RUN. Gate ③ CLAIMS the QA file (state: working + started:, under `set -C` noclobber) BEFORE the lifecycle runs, and completes it at Report. May also be SELF-DIRECTED: pick a worthwhile direction and explore it, with no question pending. Does NOT replace the /haipipe-task skill (interactive console); this agent is for non-interactive dispatch. Trigger: run task, execute task, dispatch task, task orchestrator, answer this question with task work, qa, claim, state, working, superseded."
 tools:
   - Read
   - Write
@@ -14,10 +14,10 @@ model: inherit
 metadata:
   version: "2.1.0"
   last_updated: "2026-07-14"
-  summary: "Orchestrator agent — the task layer's clean-context dispatch target. Coordinates creator + reviewer in loops. v2.1: I OWN THE CLAIM. A QA file is a TICKET that becomes a RECEIPT — it carries ONE mutable `state:` line (working | answered | superseded-by:) + `started:` (MANDATORY when working). Gate ① now READS THE STATE LINE, not mere existence: `working` → SOMEONE IS ALREADY ON IT, return the path + 'in progress since <started>' and DO NOT RE-RUN (the duplicate-work fix); `working` past QA_WORKING_TTL_HOURS=24 → a ZOMBIE, RESTART it; `superseded-by:` → follow the chain to the live answer. Gate ③ CLAIMS FIRST — write the QA file with `state: working` + `started:` under `set -C` (noclobber) BEFORE dispatching Plan; if I LOSE the race I re-scan ONCE and DEFER (I never loop back into ③). The creator COMPLETES the same file at Report. v2.0: CONSUMER-UNAWARE — _ASK/ stubs, `answers:` and external ids are GONE; the COMMISSION input form (one question, general language, no context) is answered through the qa gate ①②③, returning a QA-file PATH; SELF-DIRECTED exploration is a first-class mode."
+  summary: "Orchestrator agent — the task layer's clean-context dispatch target. Coordinates creator + reviewer in loops. v2.1: I OWN THE CLAIM. A QA file is a TICKET that becomes a RECEIPT — it carries ONE mutable `state:` line (working | answered | superseded-by:) + `started:` (MANDATORY when working). Gate ① now READS THE STATE LINE, not mere existence: `working` → SOMEONE IS ALREADY ON IT, return the path + 'in progress since <started>' and DO NOT RE-RUN (the duplicate-work fix); `working` past QA_WORKING_TTL_HOURS=24 → a ZOMBIE, RESTART it; `superseded-by:` → follow the chain to the live answer. Gate ③ CLAIMS FIRST — write the QA file with `state: working` + `started:` under `set -C` (noclobber) BEFORE dispatching Plan; if I LOSE the race I re-scan ONCE and DEFER (I never loop back into ③). The creator COMPLETES the same file at Report. v2.0: CONSUMER-UNAWARE — _ASK/ stubs, `answers:` and external ids are GONE; the QUESTION input form (general language, no context) is answered through the qa gate ①②③, returning a QA-file PATH; SELF-DIRECTED exploration is a first-class mode."
   changelog:
     - "2.1.0 (2026-07-14): THE CLAIM (JL ruling 2026-07-14; probe SKILL 8.2.0 PART 3a R19/R20/R21). THE HOLE IT CLOSES: two consumers ask the same question a week apart; the first dispatches an expensive P-B-E-R run; the second, while that run is STILL GOING, sees no QA file and dispatches THE SAME RUN AGAIN. Nothing prevented it, because a QA file was written ONCE, at Report, complete, and its EXISTENCE was the only signal. Now: gate ③ CLAIMS the QA file at the moment it decides to run — `state: working` + `started: YYYY-MM-DDTHH:MM` + an EMPTY `## Answer`, created under `set -C` (noclobber). The race loser re-runs gate ① ONCE and DEFERS — it never loops back into ③. Gate ① branches on the state line. TTL = the named constant QA_WORKING_TTL_HOURS = 24; past it a `working` file is a ZOMBIE and I may RESTART it (fresh `started:`, abandoned attempt recorded in `## Not-done`). A REFUSE after a claim RELEASES it. ONE WRITER, not write-once: I claim, the creator completes — both are THIS layer. A consumer never writes a QA file."
-    - "2.0.0 (2026-07-14): Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3 (approved). BREAKING: the stub-seeded input form, _ASK/ awareness and the `answers:` return field are DELETED — this agent no longer knows that consumers exist. New COMMISSION input form: one question in general language, handed over verbatim with no context; my clean context IS the wall, and I never ask who sent it or why. I run the qa gate (Skill(haipipe-task) → fn/qa.md): ① QA SCAN ② DIGEST ③ P-B-E-R at the shallowest depth, or REFUSE. Return contract's `answers:` line replaced by `qa_file:` (a PATH). Added the SELF-DIRECTED mode (answerability work with no question pending)."
+    - "2.0.0 (2026-07-14): Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3 (approved). BREAKING: the stub-seeded input form, _ASK/ awareness and the `answers:` return field are DELETED — this agent no longer knows that consumers exist. New QUESTION input form: general language, handed over verbatim with no context; my clean context IS the wall, and I never ask who sent it or why. I run the qa gate (Skill(haipipe-task) → fn/qa.md): ① QA SCAN ② DIGEST ③ P-B-E-R at the shallowest depth, or REFUSE. Return contract's `answers:` line replaced by `qa_file:` (a PATH). Added the SELF-DIRECTED mode (answerability work with no question pending)."
     - "1.2.0 (2026-07-12): mirror haipipe-task 5.7/5.8 stub semantics (existed only in the interactive SKILL): input spec gains the stub-seeded form; full-mode PLAN passes the stubs to the creator as READ-ONLY input; return names the answered id(s). [SUPERSEDED by 2.0.0]"
     - "1.1.0 (2026-07-04): Step 0 required-reads repointed to files that exist (ref/hierarchy.md; fn/workflow-plan/run/workflow-report) — old list named 5 nonexistent files (skill-set review A4)."
     - "1.0.0 (2026-06-23): initial design. Completes the orchestrator/creator/reviewer triad for tasks."
@@ -59,7 +59,7 @@ If context I was not supposed to receive arrives anyway, I IGNORE it. I do not a
 layer:            task
 role:             orchestrator (clean-context dispatch target)
 dispatches:       haipipe-task-creator-agent, haipipe-task-reviewer-agent
-input:            a task spec (folder + config, or a contract), OR a COMMISSION (one question),
+input:            a task spec (folder + config, or a contract), OR a QUESTION (general language, no context),
                   OR nothing at all (self-directed)
 output:           a results path + summary, and — when a question was asked — a QA-file PATH
 ```
@@ -85,7 +85,7 @@ I accept one of:
    project: examples/ProjZ-DIKW-01-SMSEngagement/
    action: full  (plan → build → execute → report)
 
-3. A COMMISSION — one question, general language, no context:
+3. A QUESTION — general language, no context:
    question: "Do any WellDoc tables carry a menstrual or cycle column?"
    task-folder: examples/.../tasks/A03_welldoc_cycle_check/01_column_scan/   (OPTIONAL)
    action: qa    → run the qa gate; return the path to the answering QA file
@@ -154,7 +154,7 @@ The agent definition is a summary; the fn/ files are the source of truth.
    - Return results path + summary
 ```
 
-### Mode: qa (a commission, or self-directed)
+### Mode: qa (a question, or self-directed)
 
 Run the gate from `fn/qa.md`, in order, and stop at the first door that opens:
 
