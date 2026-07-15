@@ -101,16 +101,32 @@ JL comments (`> JL:`) that land in 01-04 move HERE once their edit is applied, v
        states the boundary positively — "a probe is communication, not judgment".
 
 
+[2026-07-15 01:05 · SHIPPED] the two WORKERS rewritten to CALL the constitution
+  > JL: yes, please do it. So they are more like to call the haipipe-probe, right?
+        Please try to remove the duplicates.
+  >> CC: right — the workers were ~50% duplicated constitution (a full copy of PART 2
+     the QA file, PART 3 the qa verb, PART 5 the state table, plus the cost-ladder and
+     state-line tables and the two LAWS). Rewrote both to POINT at the constitution for
+     the model and carry ONLY the worker-side deltas + the operational runbook:
+       haipipe-paper-probe        702 → 156 L  (paper deltas: paper_root · the RESOURCE
+                                  intake + write-back · 3 harvest lanes as SUB-SKILLS)
+       haipipe-application-probe  670 → 153 L  (app deltas: intervention_root · no
+                                  resource stage · venue-scaled harvest HOOKS)
+     Both keep: the five-step loop as the worker runs it, the PROOF-per-step discipline,
+     project_root resolution, the T1 local whitelist, the dispatch spelling, the async
+     path, the checker invocation. 0 R-numbers; each opens with "⭐ THE MODEL IS NOT THIS
+     FILE'S — it is the constitution's". −1063 lines across the two.
+
+
 ⏳ STILL OWED
 =============
 
 ```text
-  1. THE SAME OPERATIONAL REWRITE for the two WORKERS: paper-probe (~700 L) and
-     application-probe (~670 L) are still ruling-flavored and long. Give them the
-     haipipe-probe treatment (operational, one-sentence-per-line, no R-numbers).
-  2. The audit's other defects (03): the dated spec path cited by ~86 files
+  1. The audit's other defects (03): the dated spec path cited by ~86 files
      (rename → diagram/probe/), the R21↔R18 + version drift (the constitution is now
      9.0.0, which resets that particular drift).
-  3. Q1 (02): fold the claim_type overclaim reminder deeper into the claims skills,
+  2. Q1 (02): fold the claim_type overclaim reminder deeper into the claims skills,
      or leave it as the one line added this session. JL to decide.
+  3. Optional: the two workers are near-identical twins — the shared runbook could move
+     to one ref both cite. Not done (they live in separate consumer trees); flag only.
 ```
