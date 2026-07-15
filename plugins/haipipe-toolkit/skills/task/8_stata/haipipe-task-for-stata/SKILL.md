@@ -1,6 +1,6 @@
 ---
 name: haipipe-task-for-stata
-description: "Unified Stata-engine task-folder specialist: handles all 4 stages internally (cms/case/data/reg), owns the Stata engine contract, the {LNN} stage-letter alphabet, and stage disambiguation. Also a SERVER CHECK mode -- three-gate migration checklist for the CMS secure server. Called by /haipipe-task when engine=Stata; direct invocation works for any Stata scaffold. Engine = Stata + PowerShell + logs (not Python/papermill)."
+description: "Unified Stata-engine task-folder specialist: handles all 4 stages internally (cms/case/data/reg), owns the Stata engine contract, the {LNN} stage-letter alphabet, and stage disambiguation. Also a SERVER CHECK mode for the CMS secure server. Called by /haipipe-task when engine=Stata. Engine = Stata + PowerShell + logs (not Python/papermill)."
 argument-hint: "[stage] [project_id] [group] [task-name]  OR  [server-check] [task-folder]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
@@ -348,7 +348,7 @@ Each fn/ procedure reads its ref/ inputs:
 fn/audit-stata.md    reads: (task folder .do/.ps1 files)
 fn/plan-stata.md     reads: ref/workflow-plan-sample-<stage>.yaml
                             ../../haipipe-task/ref/workflow-template.yaml
-                            task/haipipe-workflow/ref/plan-schema.md
+                            ../../../haipipe-workflow/ref/plan-schema.md
 fn/build-stata.md    reads: ref/config-seed-<stage>.do (+ ref/config-seed-reg-run.do for reg)
                             ref/dispatcher-do-template.do (cms/case/data)
                             ref/run-ps1-template.ps1 (cms/case) OR ref/run-ps1-reg-template.ps1 (reg)

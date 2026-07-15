@@ -2,13 +2,13 @@ fn/build-stata — Author Stata pipeline code
 =============================================
 
 Extends `fn/scaffold.md` (which creates the skeleton) into full authoring: write dispatcher branches, worker scripts, configs, and orchestrator logic.
-This is what the creator agent does during Stage 2 of the lifecycle.
+This is what the creator agent does during Phase 2 (Build).
 
 
 When to call
 ------------
 
-As Stage 2 of the `/haipipe-task` lifecycle on a Stata task folder.
+As Phase 2: Build of the `/haipipe-task` lifecycle on a Stata task folder.
 Also callable standalone: `/haipipe-task-for-stata build <task-folder-path>`
 
 Prerequisite: `fn/plan-stata.md` has been run (plan.yaml exists).

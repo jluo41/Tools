@@ -40,9 +40,11 @@ Then check:
   [ ] model_tuner_name value exactly matches the Tuner class name
       [BLOCK if typo -- Instance registry lookup will KeyError]
   [ ] Required top-level keys present:
-        ModelInstanceClass, ModelArgs, TrainingArgs, InferenceArgs,
-        EvaluationArgs, aidata_name, aidata_version,
-        modelinstance_name, modelinstance_version
+        ModelInstanceClass, ModelArgs, TrainingArgs
+        [BLOCK if any missing]
+  [ ] Optional top-level keys, if present, are well-formed:
+        EvaluationArgs, InferenceArgs, ExampleConfig
+        [do NOT block on their absence -- Eval/Inference are optional]
   [ ] No unresolved @ YAML references left in the file
 
 ```bash

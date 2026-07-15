@@ -1,19 +1,19 @@
 ---
 name: haipipe-data-external
-description: "Stage 0 (External) specialist: builds/runs/reviews ExternalFn (e_build_external_*.py), inspects ExternalStore, loads dimension + engagement assets, previews joins into Source/Record sets. Called by /haipipe-data (recommended entry); direct invocation works stage-scoped. Trigger: external, ExternalFn, dimension, lookup, reference, NPPES, ADI, MHI, NPI lookup, NDC lookup, NCPDP, zip5, zip3, engagement features, vendor data."
+description: "External-reference specialist: builds/runs/reviews ExternalFn (e_build_external_*.py), inspects ExternalStore, loads dimension + engagement assets, previews joins into Source/Record sets. Called by /haipipe-data (recommended entry); direct invocation works stage-scoped. Trigger: external, ExternalFn, dimension, lookup, reference, NPPES, ADI, MHI, NPI lookup, NDC lookup, NCPDP, zip5, zip3, engagement features, vendor data."
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
   version: "1.2.0"
   last_updated: "2026-07-08"
-  summary: "Stage 0 (External) specialist."
+  summary: "External-reference specialist."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-data-external
 =============================
 
-Stage 0 specialist.
+External-reference specialist.
 Owns all ExternalFn work and the ExternalStore layer.
 
 Externals are reference assets (dimension lookups + engagement aggregates) that any cohort-scoped Stage 1-4 chef can pull from.

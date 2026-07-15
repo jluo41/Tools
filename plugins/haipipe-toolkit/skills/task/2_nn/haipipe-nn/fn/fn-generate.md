@@ -223,7 +223,7 @@ code/hainn/tuner/<family>/test-modeling-<name>/
 **WHAT each test script must contain:**
 
 All 4 scripts share the same 7-step structure.
-See ref/layer-N.md for the exact step list, display rules, and key_metric requirements.
+See ../../haipipe-nn-{tuner,instance,modelset}/ref/concepts.md for the exact step list, display rules, and key_metric requirements.
 
 Critical for test scripts:
   - ALWAYS use real AIData (load from _WorkSpace/4-AIDataStore/)

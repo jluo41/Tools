@@ -14,7 +14,7 @@ Skill: haipipe-task-for-eval
 =================================
 
 Scaffolds an **evaluation task-folder**.
-Consumes a trained ModelInstance + an AIData split; produces metrics + diagnostic plots under `results/<run>/`.
+Consumes a trained ModelInstance + an AIData split; produces metrics + optional diagnostic plots under `results/<run>/`.
 
 **Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Phase 2: Build, then authors the `<TASK>.py` body).
 Always end with the structured return block (status / task_folder / run_name / files).
@@ -33,7 +33,7 @@ tasks/B{NN}_<group_name>/                    ← B-series group (evaluation)
     ├── runs/
     │   └── eval_<target>.sh
     ├── results/
-    │   └── <run>/                           metrics.json, plots/, source_data.csv
+    │   └── <run>/                           metrics.json, eval_log.txt (+ optional plots/, source_data.csv)
     └── notebooks/
 ```
 

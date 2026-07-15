@@ -92,4 +92,4 @@ ref/workflow-plan-sample.yaml     ← script-level phases for this type
 ```
 
 Schema source of truth:
-  task/haipipe-workflow/ref/plan-schema.md
+  ../../haipipe-workflow/ref/plan-schema.md

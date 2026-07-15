@@ -1,6 +1,6 @@
 ---
 name: haipipe-data-raw
-description: "Stage 0' (raw cohort) specialist: builds a business-readable picture of how one data point in a raw cohort extract is generated, BEFORE it enters Stage 1 (Source). Domain-agnostic (CGM, EHR, claims, sensor, messaging). Owns _WorkSpace/0-RawDataStore/<cohort>/; output is a datapoint-timeline.txt of one row's lifecycle: pre-data background, in-data events, fog of war, late-visible signals, cross-cutting events. Distinct from haipipe-data-external (lookup pantry) and haipipe-data-source (Stage 1 wrapping). Trigger: raw, rawstore, 0-rawstore, raw cohort, data point generation, datapoint timeline, lifecycle, fog of war, /haipipe-data-raw."
+description: "Stage 0' (raw cohort) specialist: builds a business-readable picture of how one data point in a raw cohort extract is generated, BEFORE it enters Stage 1 (Source). Trigger: raw, rawstore, 0-rawstore, raw cohort, data point generation, datapoint timeline, lifecycle, fog of war, /haipipe-data-raw."
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:

@@ -88,8 +88,7 @@ Step 0: Read `ref/concepts.md` — Input2SrcFn semantics, schema validation, dec
 Step 1: For `design`, also read `../haipipe-end/fn/fn-design.md` + `../haipipe-end/ref/0-overview.md`.
          For `review`, also read `../haipipe-end-endpointset/fn/fn-review.md`.
 Step 2: Execute the procedure scoped to Input2SrcFn.
-Must stay in sync with its
-         inverse pair `/haipipe-end-src2input`.
+         Must stay in sync with its inverse pair `/haipipe-end-src2input`.
 Step 3: Emit the structured tail.
 
 ---

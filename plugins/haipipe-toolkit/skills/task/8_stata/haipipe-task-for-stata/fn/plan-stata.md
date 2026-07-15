@@ -19,7 +19,7 @@ Procedure
 
 Read (in order):
 1. `ref/stata-dialect.md` — engine contract
-2. `task/haipipe-workflow/ref/plan-schema.md` — canonical IPO shape
+2. `../../../haipipe-workflow/ref/plan-schema.md` — canonical IPO shape
 3. `../../../haipipe-task/ref/workflow-template.yaml` — task-level template (Run/Gate1/Gate2)
 
 ### Step 1 — Detect stage

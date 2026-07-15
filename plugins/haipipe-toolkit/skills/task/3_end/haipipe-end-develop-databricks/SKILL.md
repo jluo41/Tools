@@ -1,6 +1,6 @@
 ---
 name: haipipe-end-develop-databricks
-description: "Databricks develop specialist for haipipe-end. STATUS: DEFERRED -- backing repo platforms/platform-databrick-training/ exists but this skill isn't wired to it yet, and the job-based design must be reconciled with jobs-blocked clusters (learn-databricks Lesson 15). Would run Stage 5 training as a Databricks Job with model logged to Unity Catalog and exported as an Endpoint_Set. The umbrella's no-args dashboard skips it while deferred."
+description: "Databricks develop specialist for haipipe-end. STATUS: DEFERRED -- backing repo platforms/platform-databrick-training/ exists but this skill isn't wired to it yet. Would run Stage 5 training as a Databricks Job with model logged to Unity Catalog and exported as an Endpoint_Set. The umbrella's no-args dashboard skips it while deferred."
 argument-hint: "[verb] [config_or_run_id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
@@ -121,8 +121,8 @@ Does NOT own:
 Why deferred
 -------------
 
-The `platforms/platform-databrick-training/` repo doesn't exist yet.
-When it does, the expected pattern is the same 3-stage testing ladder used for SageMaker:
+The `platforms/platform-databrick-training/` repo EXISTS, but this skill's verbs aren't wired to its scripts yet, and the job-based design below must be reconciled with jobs-blocked clusters (learn-databricks Lesson 15).
+Once wired, the expected pattern is the same 3-stage testing ladder used for SageMaker:
 
 ```
 local-system  →  attached-cluster  →  managed-Job
@@ -130,4 +130,4 @@ local-system  →  attached-cluster  →  managed-Job
 
 with the final stage equivalent to SageMaker's RegisterModel (UC version registration via `mlflow.set_registry_uri("databricks-uc")`).
 
-Until that repo lands, the umbrella surfaces this skill in routing-axis listings but reports `status: deferred` if invoked, with a pointer to `-develop-sagemaker` as the active alternative.
+Until that wiring lands, the umbrella surfaces this skill in routing-axis listings but reports `status: deferred` if invoked, with a pointer to `-develop-sagemaker` as the active alternative.

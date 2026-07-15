@@ -98,5 +98,5 @@ code/scripts/haibuilder/6-endpoint/b1_build_trigfn_weightdayentry.py   ← WellD
 
 Project-specific builders live in the task folder:
 ```
-examples/<project>/tasks/C01_*/00_endpoint_set_fn_develop_<cohort>/b1_build_trigfn*.py
+examples/<project>/tasks/C01_*/00_endpoint_set_fn_develop/b1_build_trigfn*.py
 ```
