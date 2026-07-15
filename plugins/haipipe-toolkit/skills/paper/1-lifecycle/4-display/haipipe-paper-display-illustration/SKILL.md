@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-display-illustration
-description: "Default AI-illustration renderer of the display family: generate publication-quality academic concept figures (architecture/method/pipeline/taxonomy) through a local Codex app-server bridge that uses Codex native image generation. Use when user says \"画架构图\", \"method illustration\", \"concept figure\", \"AI 配图\", or needs an AI-rendered concept figure. If the codex-image2 bridge is unavailable, fall back to haipipe-paper-display-illustration-gemini (Gemini backend)."
+description: "AI-illustration renderer of the display family: generate publication-quality academic concept figures (architecture/method/pipeline/taxonomy) through a local Codex app-server bridge that uses Codex native image generation. Use when user says \"画架构图\", \"method illustration\", \"concept figure\", \"AI 配图\", or needs an AI-rendered concept figure."
 argument-hint: "[description-or-method-file]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Agent, WebSearch, mcp__codex-image2__generate, mcp__codex-image2__generate_start, mcp__codex-image2__generate_status, mcp__codex__codex, mcp__codex__codex-reply
 metadata:
   version: "1.3.0"
   last_updated: "2026-06-22"
-  summary: "Default AI-illustration renderer of the display family (Codex native image generation); Gemini backend lives in -gemini."
+  summary: "AI-illustration renderer of the display family (Codex native image generation)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

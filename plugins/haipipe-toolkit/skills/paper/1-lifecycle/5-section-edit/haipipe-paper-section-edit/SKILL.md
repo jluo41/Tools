@@ -466,7 +466,7 @@ haipipe-paper-lifecycle                  0-draft/
   ├─► display                              haipipe-paper-probe-values     → _VALUES_
   └─► section-edit (THIS)                  haipipe-paper-probe-display    → 0-displays/
         │                                    ↓ escalation
-        │   DRAFT → PROBE → REVISE → CHECK   1-probes/ → commission → /haipipe-task qa | /haipipe-discovery qa
+        │   DRAFT → PROBE → REVISE → CHECK   1-probes/ → q-executor → /haipipe-task qa | /haipipe-discovery qa
         │
         │   hub dispatches to              2-revise/ (agent-only, .md + .tex)
         │   2-phase/ workers                 haipipe-paper-revise-content (WHAT)

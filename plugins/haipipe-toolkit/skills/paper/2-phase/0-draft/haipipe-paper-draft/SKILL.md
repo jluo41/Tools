@@ -112,7 +112,7 @@ exactly two legal destinations:
    topic's probe file at `1-probes/PPNN_<topic>.md` + a Status board row, per
    `../../../haipipe-paper/fn/probes.md`. Write the `q-executor:` (the question
    in GENERAL language — no claim ids, no stake, no hint of which answer is
-   wanted); NEVER write the `## Why` into a commission — the stake never leaves
+   wanted); NEVER write the `## Why` into a q-executor — the stake never leaves
    the probe file. This HANDS the gap to the PROBE phase; it does not answer it.
 
 FORBIDDEN in DRAFT: writing a `a-consumer:`, a `target:`, or any finding INTO a

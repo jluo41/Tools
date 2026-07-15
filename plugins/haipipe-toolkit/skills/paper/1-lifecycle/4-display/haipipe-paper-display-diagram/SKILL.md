@@ -36,7 +36,7 @@ fallback only when there is no paper.
 
 **Do NOT use for:**
 - Data plots (bar/line/scatter) — use `/haipipe-paper-display-figure`
-- Natural/qualitative illustrations — use `/haipipe-paper-display-illustration-gemini`
+- Natural/qualitative illustrations — use `/haipipe-paper-display-illustration`
 - Quick state-machine / flowchart — use `/mermaid-diagram` (lighter syntax)
 
 ## Core Properties
@@ -229,7 +229,7 @@ Three-stage horizontal cascade with inputs feeding in from top, outputs exiting 
 
 - **`/paper-writing`** (Workflow 3): when `illustration: figurespec` (default for architecture figures), this skill handles Phase 2b
 - **`/haipipe-paper-display-figure`**: handles data plots; they complement each other (data + architecture = complete figure set)
-- **`/haipipe-paper-display-illustration-gemini`**: fallback for figures that need natural/qualitative style (method illustrations with photos, qualitative result grids)
+- **`/haipipe-paper-display-illustration`**: for figures that need natural/qualitative style (method illustrations with photos, qualitative result grids)
 - **`/mermaid-diagram`**: lighter alternative for simple flowcharts
 
 ## Review Tracing

@@ -110,7 +110,6 @@ display, gallery, float, figure plan    -> haipipe-paper-display
   figure, plot                          -> haipipe-paper-display-figure
   diagram, vector, elbow, connector     -> haipipe-paper-display-diagram
   illustration, ai-img, concept art     -> haipipe-paper-display-illustration
-  gemini                                -> haipipe-paper-display-illustration-gemini
 enter, console, dashboard, status view  -> haipipe-paper-enter
 round, rounds                           -> haipipe-paper-round
 write, draft, scaffold prose            -> haipipe-paper-edit-write

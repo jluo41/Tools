@@ -33,8 +33,7 @@ The orchestrator owns routing only. Each stage specialist owns its own workflow,
 /haipipe-paper-lifecycle table <args>                   -> data-driven LaTeX tables (haipipe-paper-display-table)
 /haipipe-paper-lifecycle figure <args>                  -> data-driven plots (haipipe-paper-display-figure)
 /haipipe-paper-lifecycle diagram <args>                 -> deterministic vector diagrams / SVG (haipipe-paper-display-diagram)
-/haipipe-paper-lifecycle illustration <args>            -> AI concept illustration, DEFAULT Codex bridge (haipipe-paper-display-illustration)
-/haipipe-paper-lifecycle illustration-gemini <args>     -> AI concept illustration, Gemini fallback (haipipe-paper-display-illustration-gemini)
+/haipipe-paper-lifecycle illustration <args>            -> AI concept illustration, Codex bridge (haipipe-paper-display-illustration)
 /haipipe-paper-lifecycle framework <args>               -> display framework mode (candidate rounds, selection, handoff)
 /haipipe-paper-lifecycle "<natural language>"           -> infer function, dispatch
 ```
@@ -102,9 +101,7 @@ haipipe-paper-display-figure          PLOT:    data-driven publication plots fro
 
 haipipe-paper-display-diagram         VECTOR:  deterministic architecture/workflow/pipeline diagrams from structured JSON -> editable SVG
 
-haipipe-paper-display-illustration    AI-IMG:  DEFAULT AI concept illustration via the local Codex app-server bridge (native image gen)
-
-haipipe-paper-display-illustration-gemini  AI-IMG (fallback):  Gemini backend with Claude-supervised refinement; use if the Codex bridge is unavailable or the user asks for Gemini
+haipipe-paper-display-illustration    AI-IMG:  AI concept illustration via the local Codex app-server bridge (native image gen)
 ```
 
 ---
@@ -206,8 +203,7 @@ Step 3: Dispatch:
     function = "table"          -> Skill("haipipe-paper-display-table", args)
     function = "figure"         -> Skill("haipipe-paper-display-figure", args)
     function = "diagram"        -> Skill("haipipe-paper-display-diagram", args)
-    function = "illustration"   -> Skill("haipipe-paper-display-illustration", args)        # DEFAULT (Codex bridge)
-    function = "illustration-gemini" -> Skill("haipipe-paper-display-illustration-gemini", args)  # fallback
+    function = "illustration"   -> Skill("haipipe-paper-display-illustration", args)        # Codex bridge
 
     # Lifecycle stages keep the plain haipipe-paper-<stage> name:
     function = else        -> Skill("haipipe-paper-<function>", args)
@@ -280,10 +276,7 @@ diagram, figure-spec, vector, SVG, pipeline diagram,
 
 illustration, AI illustration, concept figure, method
   illustration, codex illustration, AI 配图, AI绘图,
-  生成图表                                              -> illustration   (DEFAULT, Codex bridge)
-
-illustration-gemini, gemini illustration, gemini,
-  nano banana, 用 gemini 画                            -> illustration-gemini
+  生成图表                                              -> illustration   (Codex bridge)
 ```
 
 Function aliases (positional):
@@ -302,8 +295,7 @@ framework, figureone, fig1                        -> framework
 table, tbl, tab                                  -> table
 figure, fig, plot                                -> figure
 diagram, figure-spec, spec, vector, svg          -> diagram
-illustration, illust, ai-img, image2, codex      -> illustration          (DEFAULT)
-illustration-gemini, gemini, illust-g, ai-img-g  -> illustration-gemini
+illustration, illust, ai-img, image2, codex      -> illustration
 ```
 
 ---
@@ -338,8 +330,7 @@ When invoked with no arguments, emit a compact specialist chooser:
 
   Display renderers (concept):
     diagram        Deterministic vector diagrams (JSON -> SVG)
-    illustration   AI concept illustration -- DEFAULT, Codex bridge
-    illustration-gemini  AI concept illustration -- Gemini fallback
+    illustration   AI concept illustration -- Codex bridge
     framework      Candidate framework/architecture figure planning (Figure 1 style)
 
   Pipeline: folder -> seed (FREE) -> resource (FREE) -> claims (FREE) -> [venue] -> pitch (ALIGNED) -> narrative (ALIGNED) -> display (ALIGNED, + table/figure/diagram/illustration) -> section-edit (ALIGNED)
@@ -386,8 +377,8 @@ haipipe-paper-lifecycle (this orchestrator)
   VENUE-ALIGNED:
   |-- pitch (2)          (cover letter: Editor's Chair, [primary], RQ framing)
   |-- narrative (3)
-  |-- display (4)        (only compiled stage; renders via table / figure / diagram / illustration
-  |                       + illustration-gemini fallback; planning in its ref/figure-logic.md)
+  |-- display (4)        (only compiled stage; renders via table / figure / diagram / illustration;
+  |                       planning in its ref/figure-logic.md)
   +-- section-edit (5)   (per-section hub in 0-lifecycle/5-section-edit/; internally dispatches
                           2-phase/ DRAFT->PROBE->REVISE->CHECK workers)
 

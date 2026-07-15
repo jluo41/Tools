@@ -9,7 +9,7 @@ things.
 ```
 haipipe-paper-probe (hub)   ① ORGANIZE → ② MATCH → ③ DISPATCH → ④ POINT → ⑤ INTERPRET
   ② MATCH      grep the bank's QA corpus ({tasks,discoveries}/**/QA/*.md), and READ the hits.
-               Most sections close HERE (T2 REUSE) — a commission is the EXCEPTION.
+               Most sections close HERE (T2 REUSE) — a q-executor is the EXCEPTION.
   ③ DISPATCH   only what MATCH could not close. The section's `q-executor:` block, VERBATIM:
                  Agent(haipipe-task-orchestrator-agent)         internal work
                  Agent(haipipe-discovery-orchestrator-agent)    external evidence

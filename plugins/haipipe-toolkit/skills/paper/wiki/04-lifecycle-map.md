@@ -87,8 +87,7 @@ file resolves on disk with real content (see `paper-dashboard.md`).
 /haipipe-paper table            -> haipipe-paper-display-table        (data CSV -> LaTeX table)
 /haipipe-paper figure           -> haipipe-paper-display-figure       (data CSV -> plot; SINGULAR = plots)
 /haipipe-paper diagram          -> haipipe-paper-display-diagram      (concept -> deterministic vector SVG)
-/haipipe-paper illustration     -> haipipe-paper-display-illustration (concept -> AI raster, DEFAULT Codex bridge)
-/haipipe-paper illustration-gemini -> haipipe-paper-display-illustration-gemini (Gemini fallback)
+/haipipe-paper illustration     -> haipipe-paper-display-illustration (concept -> AI raster, Codex bridge)
 /haipipe-paper write|edit       -> 5-section-edit (per-section prose work)
 /haipipe-paper review           -> review
 /haipipe-paper round            -> round
