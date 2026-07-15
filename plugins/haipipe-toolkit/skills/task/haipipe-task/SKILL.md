@@ -1,12 +1,12 @@
 ---
 name: haipipe-task
-description: "Internal-execution EXECUTOR: runs the 4-stage lifecycle (Plan → Build → Execute → Report) on a task-folder, iterates it over a task-group, or dispatches to a type specialist to scaffold; the `qa` verb is its one question door (fn/qa.md). Trigger: task, task folder, task group, plan, build, execute, report, run, scan-status, qa, QA file, state, /haipipe-task."
+description: "Internal-execution EXECUTOR: runs the 4-phase lifecycle (Plan → Build → Execute → Report) on a task-folder, iterates it over a task-group, or dispatches to a type specialist to scaffold; the `qa` verb is its one question door (fn/qa.md). Trigger: task, task folder, task group, plan, build, execute, report, run, scan-status, qa, QA file, state, /haipipe-task."
 argument-hint: "[scope] [args...] | qa \"<question>\" [<task-folder>] [--check-only]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
   version: "6.2.0"
   last_updated: "2026-07-14"
-  summary: "Build orchestrator: the 4-stage code lifecycle (Plan → Build → Execute → Report) for task-folders and task-groups, plus the `qa` question door. v6.x — the task layer is CONSUMER-UNAWARE, and a QA file is a TICKET that becomes a RECEIPT: it carries ONE mutable `state:` line (working | answered | superseded-by), claimed at the qa gate's ③ decision and completed at Report. THE LOAD-BEARING INVARIANT IS *ONE WRITER*, NOT *WRITE-ONCE*. Full contract: fn/qa.md."
+  summary: "Build orchestrator: the 4-phase code lifecycle (Plan → Build → Execute → Report) for task-folders and task-groups, plus the `qa` question door. v6.x — the task layer is CONSUMER-UNAWARE, and a QA file is a TICKET that becomes a RECEIPT: it carries ONE mutable `state:` line (working | answered | superseded-by), claimed at the qa gate's ③ decision and completed at Report. THE LOAD-BEARING INVARIANT IS *ONE WRITER*, NOT *WRITE-ONCE*. Full contract: fn/qa.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -17,17 +17,19 @@ Build orchestrator organized around the **task hierarchy**:
 
 
 > JL: I think we can also add the QA folder. but QA folder is optional, only when we have haipipe-task qa is called. 
+>> CC 22:40: [SOLVED] Added QA/ to the structure, marked OPTIONAL (appears only once `qa` writes a digest).
 ```
 project           examples/Proj{...}/
   └── task-group  tasks/{G}{NN}_{name}/
         └── task-folder  <name>/{*.py, configs/, runs/, results/, notebooks/}
+              QA/                              OPTIONAL — appears only when `qa` is called
               `{NN}_<name>` is the RECOMMENDED name for a NEW folder — match the siblings
               in this group. It is NOT a filter: real task-folders include B4_fit_scaling_law
               and C3-Visual-ForecastScaling. Detect a task-folder by STRUCTURE, never by name.
 ```
 
 This skill owns **task-folder** and **task-group** scope. 
-For a task-folder, it runs the 4-stage code lifecycle (Plan → Build → Execute → Report) or dispatches to a type specialist for scaffolding. 
+For a task-folder, it runs the 4-phase code lifecycle (Plan → Build → Execute → Report) or dispatches to a type specialist for scaffolding. 
 For a task-group, it iterates over each child task-folder and runs the lifecycle on each one. Type specialists (one per type):
 
 ```
@@ -63,10 +65,10 @@ Commands
 --------
 
 ```
-/haipipe-task plan <task-folder-path>                Stage 1: design the IPO contract
-/haipipe-task build <task-folder-path>               Stage 2: implement the contract as code
-/haipipe-task execute <task-folder-path>              Stage 3: run the code (or human runs manually)
-/haipipe-task report <task-folder-path>               Stage 4: summarize results vs plan
+/haipipe-task plan <task-folder-path>                Phase 1: design the IPO contract
+/haipipe-task build <task-folder-path>               Phase 2: implement the contract as code
+/haipipe-task execute <task-folder-path>              Phase 3: run the code (or human runs manually)
+/haipipe-task report <task-folder-path>               Phase 4: summarize results vs plan
 
 /haipipe-task <existing-task-folder-path>             full lifecycle (all 4 stages)
 /haipipe-task <existing-task-group-path>              iterate: full lifecycle on each child task-folder
@@ -89,20 +91,20 @@ Commands
 
 ---
 
-Four Stages (code lifecycle)
+Four Phases (code lifecycle)
 ------------------------------
 
-All four stages answer one question: **"is the implementation right?"**
+All four phases answer one question: **"is the implementation right?"**
 
 ```
-Stage 1: PLAN — the contract (what the script SHOULD do)
+Phase 1: PLAN — the contract (what the script SHOULD do)
   creates:   workflow/plan.yaml              task-level IPO (Run/Gate1/Gate2)
              workflow/plan-script-<name>.yaml script-level IPO (type-specific phases)
   reads:     *.py (if exists),
              **/haipipe-task-for-<type>/ref/workflow-plan-sample.yaml (nested under its domain folder)
   agents:    creator drafts plan → reviewer checks IPO compliance → ↺ revise
 
-Stage 2: BUILD — the implementation (code that matches the plan)
+Phase 2: BUILD — the implementation (code that matches the plan)
   creates:   {NN}_{task_name}.py             main script (or fixes existing)
              configs/<run>.yaml              frozen parameters
              runs/<run>.sh                   papermill wrapper
@@ -112,7 +114,7 @@ Stage 2: BUILD — the implementation (code that matches the plan)
   agents:    creator writes code → reviewer does Gate 1 code review → ↺ revise
   after:     human can run directly: bash runs/<run>.sh
 
-Stage 3: EXECUTE — just run (no creation, no modification)
+Phase 3: EXECUTE — just run (no creation, no modification)
   generates: results/<run>/metrics.json      output metrics
              results/<run>/runtime.yaml      run status/timing
              results/<run>/*.md, *.csv       other outputs
@@ -120,7 +122,7 @@ Stage 3: EXECUTE — just run (no creation, no modification)
   runs:      bash runs/<run>.sh (human or autoExecute)
   agents:    none — this is a run, not an agent task
 
-Stage 4: REPORT — summarize (what actually happened vs the plan)
+Phase 4: REPORT — summarize (what actually happened vs the plan)
   creates:   workflow/report.yaml            task-level report mirroring plan
              workflow/report-script-<name>.yaml script-level report
              RUN_AUDIT.md                    Gate 2 review (reviewer creates)
@@ -140,18 +142,21 @@ Build touches only code/configs/runs.
 Execute touches only `results/` and `notebooks/`. 
 Report touches only `workflow/report*.yaml`, `RUN_AUDIT.md`, and — when one is due — `QA/`.
 
-**QA is NOT a 5th stage — it is the ONE exception to file-ownership, and it spans the whole lifecycle.** 
-On a gate-③ question, this layer writes the QA file TWICE: a `state: working` CLAIM at the very start (before Plan), then the completed `state: answered` answer at Report. 
-Two writes, same owner, in its own folder — it does not break file-ownership; it is what ownership MEANS. See `fn/qa.md`.
+**QA is the DIRECTION-POINTER above the four phases — it WRAPS them and decides whether to enter them at all.** 
+A `qa` question hits a 3-way gate: ① an existing `QA/` answer → return it; ② the answer already sits in `results/` → digest it, no run; ③ neither → ENTER Plan → Build → Execute → Report at the shallowest depth that answers it. 
+So QA sits ONE LEVEL ABOVE the lifecycle: ①/② read what already exists, ③ enters the phases (writing a `working` claim before Plan, the answer at Report). See `fn/qa.md`.
 > JL: 我觉得这 QA 的描述不是很准确，你更应该说它是一个指明方向的东西。 就是说，QA 可以去“要不要进入 Plan、Build、Execution、Report”的东西，当然也可以直接去读现有 Task Folder 内部的结果。
 所以它更像是 workflow 上面一层的东西，包裹这个phase。你想想这个 logic。
+>> CC 22:40: [SOLVED] Agreed — your framing is better; rewrote it above. QA is NOT a 5th phase; it is the ENTRY-DECISION layer that WRAPS the four phases and points the direction — ①/② read what already exists, ③ decides whether (and how deep) to enter Plan→Build→Execute→Report. Exactly fn/qa.md's gate.
 > JL: I still have a question: for Plan, Build, Execute, Report, do we call them "Stage" or call them "Phase"? I prefer to use Phase. 
+>> CC 22:40: [DONE in this file · specialist sweep PENDING] Phase — it reads right with "QA wraps the phases" above. THE LOGIC (one snag): three things want two words — (a) the lifecycle P/B/E/R, (b) the IPO chunks inside a plan.yaml (Run/Gate1/Gate2), (c) the 6-stage DATA pipeline (0-RawDataStore…6-EndpointStore). haipipe-workflow already reserves "Phase" for (b) and "Stage" for (c). RESOLUTION: P/B/E/R = PHASE (your call); "Stage" stays for the 6-stage data pipeline ONLY; Run/Gate1/Gate2 remain the plan's internal IPO detail. Renamed P/B/E/R Stage→Phase in THIS file; the /haipipe-task-for-* scaffold docs still say "Stage 1: PLAN" — that careful cross-file sweep (must NOT touch data-pipeline Stage 0-6) is the next step. NOTE: the dispatch machinery + the workflow.js `stages:` PARAM stay `stages:` for now — that's CODE, renamed only in the deeper sweep. (haipipe-workflow calls P/B/E/R "acts" — cross-skill alignment left for R1.)
 
 The `workflow/` folder is the task's observability surface: Plan = intent, Report = evidence, same IPO shape at both levels (schema: `task/haipipe-workflow/ref/plan-schema.md`).
 
 A task ends at Report: it produces `results/` and stops. 
 
 > JL: for the following, saying: if QA is called, it will use results to answer the QA-task.md.
+>> CC 22:40: [SOLVED] Yes — that's gate ②: when `qa` is called and `results/` already hold the answer, it READS results/ and writes the readable `QA/<n>-<slug>.md` digest (no run). That digest IS the answer a consumer reads — never `results/` directly.
 The readable answer to any question about those results is the `QA/` digest this layer writes; a consumer reads THAT, never `results/` directly. This layer tracks no consumers.
 
 ---
@@ -172,7 +177,9 @@ A task session may legitimately:
 
 It does not know WHICH questions will come. 
 It makes the bank EASIER TO ASK. 
-That is task work, not anyone else's. ## > JL: 这句话有点奇怪，你怎么理解这句话呀？要删掉吗？
+That is task work, not anyone else's. 
+> JL: That is task work, not anyone else's.  这句话有点奇怪，你怎么理解这句话呀？要删掉吗？
+> JL: for QA, we might also want to include P-B-E-R, when we need to do it.
 
 
 **THE SIDE DOOR — the `qa` verb.** 
