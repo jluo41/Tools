@@ -13,10 +13,9 @@ metadata:
 Skill: haipipe-nn-modelset
 ===========================
 
-Layer 4 specialist. Owns ModelSet (pipeline) composition — combining
-multiple ModelInstances into a registry-backed serving pipeline (e.g. an
-ensemble, a router, a multi-stage forecast). Called by the `/haipipe-nn`
-orchestrator; can also be invoked directly.
+Layer 4 specialist.
+Owns ModelSet (pipeline) composition — combining multiple ModelInstances into a registry-backed serving pipeline (e.g. an ensemble, a router, a multi-stage forecast).
+Called by the `/haipipe-nn` orchestrator; can also be invoked directly.
 
   Function axis:  dashboard | review | generate | test
 
@@ -48,15 +47,16 @@ test          ref/concepts.md        ../haipipe-nn/fn/fn-test.md
 (no fn arg)   ref/concepts.md        (ref-only mode)
 ```
 
-L4 is the terminal layer of haipipe-nn — `generate` does NOT need a
-downstream layer ref. The next consumer is `/haipipe-end` (Stage 6).
+L4 is the terminal layer of haipipe-nn — `generate` does NOT need a downstream layer ref.
+The next consumer is `/haipipe-end` (Stage 6).
 
 ---
 
 Step-by-Step Protocol
 ----------------------
 
-Step 0: Read `../haipipe-nn/ref/overview.md`. Mandatory.
+Step 0: Read `../haipipe-nn/ref/overview.md`.
+Mandatory.
 Step 1: Parse args. Function vocabulary: dashboard | review | generate | test.
 Step 2: Read this skill's `ref/concepts.md` for L4 specifics.
 Step 3: Read the umbrella fn doc.

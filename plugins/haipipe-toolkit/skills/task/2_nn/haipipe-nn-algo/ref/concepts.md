@@ -6,10 +6,10 @@ Layer 1 of the 4-layer NN pipeline.
 An algorithm is any external ML library that does the actual computation.
 We don't write algorithms -- we wrap them in Tuners (Layer 2).
 
-**Scope:** Framework patterns only. Does not catalog project-specific state
-(which algorithms are installed, which models have been trained). Concrete
-code examples are illustrative. This reference applies equally to any domain
-or algorithm type.
+**Scope:** Framework patterns only.
+Does not catalog project-specific state (which algorithms are installed, which models have been trained).
+Concrete code examples are illustrative.
+This reference applies equally to any domain or algorithm type.
 
 ---
 
@@ -38,20 +38,18 @@ An algorithm is a third-party library installed via pip/conda that provides:
 - A prediction method (e.g., .predict(), .generate(), .forward())
 - A serialization method (e.g., .save_model(), .save_pretrained(), pickle)
 
-**For pure external libraries (XGBoost, sklearn, Nixtla), you never write
-Layer 1 code.** You install the library and wrap it in a Tuner (Layer 2).
+**For pure external libraries (XGBoost, sklearn, Nixtla), you never write Layer 1 code.** You install the library and wrap it in a Tuner (Layer 2).
 
-**When you need a custom nn.Module** (e.g., to add embeddings or fusion layers
-on top of a HuggingFace model), you DO write Layer 1 code in an
-`algorithm_<name>.py` file. See "When You Write Custom Layer 1 Code" below.
+**When you need a custom nn.Module** (e.g., to add embeddings or fusion layers on top of a HuggingFace model), you DO write Layer 1 code in an `algorithm_<name>.py` file.
+See "When You Write Custom Layer 1 Code" below.
 
 ---
 
 Algorithm Diversity
 ===================
 
-Algorithms vary across every dimension. The Tuner layer absorbs all
-this diversity and presents a uniform interface upward.
+Algorithms vary across every dimension.
+The Tuner layer absorbs all this diversity and presents a uniform interface upward.
 
 ```
 Dimension           Examples                           Tuner Handles Via
@@ -97,8 +95,8 @@ LLM API               openai/anthropic  JSON              N/A (stateless)
 Domain Formats
 ==============
 
-Each algorithm family expects data in a specific format. We call this
-the "domain format." The Tuner's transform_fn() handles the conversion.
+Each algorithm family expects data in a specific format.
+We call this the "domain format." The Tuner's transform_fn() handles the conversion.
 
 ```
 domain_format     What it means                   Used by
@@ -124,8 +122,8 @@ domain_format     What it means                   Used by
                   needs -- you define it
 ```
 
-When creating a new Tuner, pick the domain_format that matches your
-algorithm. If none fit, define a new one.
+When creating a new Tuner, pick the domain_format that matches your algorithm.
+If none fit, define a new one.
 
 ---
 
@@ -195,7 +193,8 @@ How to Add a New Algorithm
 
 **Case A: Pure external library (XGBoost, sklearn, Nixtla, etc.)**
 
-You do NOT write code at Layer 1. Install the library and wrap it in a Tuner.
+You do NOT write code at Layer 1.
+Install the library and wrap it in a Tuner.
 
 ```
 1. Install the library:
@@ -213,7 +212,8 @@ You do NOT write code at Layer 1. Install the library and wrap it in a Tuner.
 
 **Case B: Custom nn.Module (adds embeddings, fusion, or custom forward pass)**
 
-You DO write Layer 1 code. Create an algorithm file alongside the Tuner.
+You DO write Layer 1 code.
+Create an algorithm file alongside the Tuner.
 
 ```
 1. Create the Algorithm file (Layer 1):
@@ -237,8 +237,8 @@ You DO write Layer 1 code. Create an algorithm file alongside the Tuner.
 When You Write Custom Layer 1 Code (algorithm_*.py)
 ====================================================
 
-Some model families write their own nn.Module classes rather than wrapping
-a pure external library. These live in `algorithm_*.py` files.
+Some model families write their own nn.Module classes rather than wrapping a pure external library.
+These live in `algorithm_*.py` files.
 
 **When to create algorithm_*.py:**
 - Adding custom embedding layers on top of a HuggingFace model
@@ -277,8 +277,8 @@ class TECLMAlgorithm(TSCLMWithToDAlgorithm):
         self.event_embedding = nn.Embedding(event_num_types, hidden_size, padding_idx=0)
 ```
 
-Algorithm classes can form an inheritance chain when building capabilities
-incrementally. Each subclass adds one concern (ToD, events, etc.).
+Algorithm classes can form an inheritance chain when building capabilities incrementally.
+Each subclass adds one concern (ToD, events, etc.).
 
 **Rules for algorithm_*.py:**
 
@@ -350,9 +350,8 @@ Test Notebook: What Layer 1 Tests
 The algorithm test exercises the raw library in isolation (NO Tuner wrapper).
 It verifies the external API works before wrapping it.
 
-**ALWAYS use real AIData — no synthetic data at any layer.**
-Step 2 loads real AIData from disk (same source as L2–L4). This is where
-shape mismatches, dtype errors, and vocab size bugs surface before wrapping.
+**ALWAYS use real AIData — no synthetic data at any layer.** Step 2 loads real AIData from disk (same source as L2–L4).
+This is where shape mismatches, dtype errors, and vocab size bugs surface before wrapping.
 
 **Unified 7-step structure (L1 uses layer-appropriate labels for Steps 5-6):**
 

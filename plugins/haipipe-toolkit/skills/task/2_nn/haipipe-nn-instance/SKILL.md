@@ -13,11 +13,10 @@ metadata:
 Skill: haipipe-nn-instance
 ===========================
 
-Layer 3 specialist. Owns the ModelInstance materialization in
-`code/hainn/instance/` and the `5-ModelInstanceStore`. A ModelInstance is
-the trained-weights artifact paired with its config — the thing endpoints
-will consume. Called by the `/haipipe-nn` orchestrator; can also be invoked
-directly.
+Layer 3 specialist.
+Owns the ModelInstance materialization in `code/hainn/instance/` and the `5-ModelInstanceStore`.
+A ModelInstance is the trained-weights artifact paired with its config — the thing endpoints will consume.
+Called by the `/haipipe-nn` orchestrator; can also be invoked directly.
 
   Function axis:  dashboard | review | generate | test
 
@@ -51,15 +50,15 @@ test          ref/concepts.md        ../haipipe-nn/fn/fn-test.md
 (no fn arg)   ref/concepts.md        (ref-only mode)
 ```
 
-`generate` reads the L4 (modelset) ref because a ModelInstance is the unit
-that gets registered into a ModelSet pipeline downstream.
+`generate` reads the L4 (modelset) ref because a ModelInstance is the unit that gets registered into a ModelSet pipeline downstream.
 
 ---
 
 Step-by-Step Protocol
 ----------------------
 
-Step 0: Read `../haipipe-nn/ref/overview.md`. Mandatory.
+Step 0: Read `../haipipe-nn/ref/overview.md`.
+Mandatory.
 Step 1: Parse args. Function vocabulary: dashboard | review | generate | test.
 Step 2: Read this skill's `ref/concepts.md` for L3 specifics.
 Step 3: Read the umbrella fn doc.

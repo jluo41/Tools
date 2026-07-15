@@ -3,9 +3,9 @@ Layer 4: ModelSet & Pipeline
 
 Layer 4 of the 4-layer NN pipeline.
 
-Packages a trained Instance into a complete asset with training results,
-evaluation, examples, and lineage tracking. Provides run versioning,
-remote sync, and YAML-driven configuration. Model-type agnostic.
+Packages a trained Instance into a complete asset with training results, evaluation, examples, and lineage tracking.
+Provides run versioning, remote sync, and YAML-driven configuration.
+Model-type agnostic.
 
 ---
 
@@ -57,8 +57,8 @@ Evaluate flow (_run_evaluation):
      c. Returns evaluation_results
 ```
 
-**IMPORTANT:** _run_training() RETURNS the ModelInstance_Set without
-calling save_to_disk(). The caller must save explicitly:
+**IMPORTANT:** _run_training() RETURNS the ModelInstance_Set without calling save_to_disk().
+The caller must save explicitly:
 
 ```python
 modelinstance_set = pipeline.run(aidata_set, mode='fit', ...)
@@ -88,8 +88,8 @@ Also overrides save_to_disk() for run versioning (@run-v000X).
 YAML Configuration
 ==================
 
-The YAML config drives ModelInstance_Pipeline. This is the primary
-user-facing interface for training models.
+The YAML config drives ModelInstance_Pipeline.
+This is the primary user-facing interface for training models.
 
 **Required top-level keys:**
 
@@ -264,8 +264,8 @@ with open(os.path.join(save_path, 'manifest.json')) as f:
 loaded_modelset._load_data_from_disk(save_path, manifest)
 ```
 
-Use `_load_data_from_disk()` only in L4 tests that need to verify the
-directory structure explicitly. For production inference, always use `load_asset()`.
+Use `_load_data_from_disk()` only in L4 tests that need to verify the directory structure explicitly.
+For production inference, always use `load_asset()`.
 
 ---
 
@@ -499,8 +499,7 @@ Model registry:          code/hainn/model_registry.py
 Test Notebook: What Layer 4 Tests
 ==================================
 
-The modelset test exercises the full packaging pipeline: train an Instance,
-package into ModelInstance_Set, save/load to disk, inference from loaded model.
+The modelset test exercises the full packaging pipeline: train an Instance, package into ModelInstance_Set, save/load to disk, inference from loaded model.
 
 **Expected steps (unified 7-step structure with sub-steps):**
 

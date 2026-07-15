@@ -4,12 +4,13 @@ Architecture Overview (L0)
 Architecture map, decision guide, and model registry for the NN pipeline.
 Read this FIRST before any layer-specific reference.
 
-**Scope:** Framework patterns only. Does not catalog project-specific state
-(which datasets are available, which experiments have been run). Model registry
-snapshots are labeled as such -- always discover current state at runtime.
+**Scope:** Framework patterns only.
+Does not catalog project-specific state (which datasets are available, which experiments have been run).
+Model registry snapshots are labeled as such -- always discover current state at runtime.
 This reference applies equally to any domain or model family.
 
-**Workspace note:** code paths in this bucket (`code/hainn/{algo,tuner,instance}/`, `model_registry.py`) follow the hainn layout of the SPACE-HAI-Pipe / WellDoc-class workspaces. Workspaces with a family-first hainn (e.g. Physician-SPACE: `mlpredictor/ tsforecast/ bandit/ tsfm/`, no registry file) will not resolve these paths — discover the local layout first.
+**Workspace note:** code paths in this bucket (`code/hainn/{algo,tuner,instance}/`, `model_registry.py`) follow the hainn layout of the SPACE-HAI-Pipe / WellDoc-class workspaces.
+Workspaces with a family-first hainn (e.g. Physician-SPACE: `mlpredictor/ tsforecast/ bandit/ tsfm/`, no registry file) will not resolve these paths — discover the local layout first.
 
 ---
 
@@ -48,11 +49,10 @@ Every model in this pipeline follows the same 4-layer separation:
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-**Layer numbering note:** Skills use bottom-up numbering (1=Algorithm,
-2=Tuner, 3=Instance, 4=ModelSet). Source code docstrings use INVERTED
-numbering: model_instance.py calls Instance "Layer 2" and model_tuner.py
-calls Tuner "Layer 3". Both describe the same architecture stack -- the
-numbering direction is simply reversed. Skills are the canonical reference.
+**Layer numbering note:** Skills use bottom-up numbering (1=Algorithm, 2=Tuner, 3=Instance, 4=ModelSet).
+Source code docstrings use INVERTED numbering: model_instance.py calls Instance "Layer 2" and model_tuner.py calls Tuner "Layer 3".
+Both describe the same architecture stack -- the numbering direction is simply reversed.
+Skills are the canonical reference.
 
 ---
 
@@ -191,8 +191,7 @@ cat code/hainn/model_registry.py
 ls code/hainn/
 ```
 
-Snapshot (as of 2026-03-06 -- always verify with commands above):
-(file: code/hainn/model_registry.py)
+Snapshot (as of 2026-03-06 -- always verify with commands above): (file: code/hainn/model_registry.py)
 
 ```
 Type String(s)                          Instance Class                  Config Class              Family
@@ -217,21 +216,21 @@ Type String(s)                          Instance Class                  Config C
   alias: 'TSDecoder'              *** NON-FUNCTIONAL: import path stale ***
 ```
 
-**When writing YAML configs:** Use any of the type strings listed above as
-the value for ModelInstanceClass. The registry resolves aliases automatically.
+**When writing YAML configs:** Use any of the type strings listed above as the value for ModelInstanceClass.
+The registry resolves aliases automatically.
 
-**ACTION REQUIRED -- NON-FUNCTIONAL entry:** TSDecoderInstance is registered
-but its import path (`hainn.tsfm.tsdecoder.*`) does not exist in the new structure.
-It will throw ImportError at runtime. Before removing: verify no production config
-references 'TSDecoder' or 'TSDecoderInstance' as ModelInstanceClass. Then delete
-the corresponding elif block from code/hainn/model_registry.py.
+**ACTION REQUIRED -- NON-FUNCTIONAL entry:** TSDecoderInstance is registered but its import path (`hainn.tsfm.tsdecoder.*`) does not exist in the new structure.
+It will throw ImportError at runtime.
+Before removing: verify no production config references 'TSDecoder' or 'TSDecoderInstance' as ModelInstanceClass.
+Then delete the corresponding elif block from code/hainn/model_registry.py.
 
 ---
 
 YAML Config Templates
 =====================
 
-The YAML config drives ModelInstance_Pipeline. The required top-level keys:
+The YAML config drives ModelInstance_Pipeline.
+The required top-level keys:
 
 ```yaml
 # Required
@@ -252,7 +251,8 @@ ExampleConfig:
 ```
 
 **modelinstance_set_name format:** `f"{name}/{version}"` where version includes the `@` prefix.
-Standard: `"MyModel/@v0001-demo"`. Always write `modelinstance_version: '@v0001-...'` in YAML.
+Standard: `"MyModel/@v0001-demo"`.
+Always write `modelinstance_version: '@v0001-...'` in YAML.
 
 **Template A: Time-Series Forecasting (TSForecast)**
 
@@ -406,9 +406,7 @@ Snapshot (as of 2026-03-06 -- verify with ls above):
 
 **Compliance with canonical pattern:**
 
-The canonical interface requires: inherit base class, call super().__init__(),
-use model_base dict, implement all 5 abstract methods (init, fit, infer,
-_save_model_base, _load_model_base), use model_tuner_name in config.
+The canonical interface requires: inherit base class, call super().__init__(), use model_base dict, implement all 5 abstract methods (init, fit, infer, _save_model_base, _load_model_base), use model_tuner_name in config.
 
 ```
                  Canonical?   Notes
@@ -422,8 +420,8 @@ bandit           NO           No super().__init__(), no config class, different 
 tsfm/tsdecoder   N/A          Registry entry exists but import targets missing.
 ```
 
-**For new models:** Follow the tsforecast pattern. Existing non-canonical code
-should be migrated toward the standard over time.
+**For new models:** Follow the tsforecast pattern.
+Existing non-canonical code should be migrated toward the standard over time.
 
 ---
 
@@ -459,8 +457,7 @@ Existing families (split across algo/tuner/instance):
 Test Notebook Conventions
 =========================
 
-Every model family has a `test-modeling-<name>/` directory with test scripts
-(one per applicable layer) that double as reviewable notebooks.
+Every model family has a `test-modeling-<name>/` directory with test scripts (one per applicable layer) that double as reviewable notebooks.
 
 **Base model: full 4-layer test suite**
 
@@ -512,8 +509,8 @@ External-only algorithm (XGBoost etc.) L2 + L3 + L4 (no L1 — library is L1)
 Real-data-only testing                 L3 may use real AIData (no synthetic step)
 ```
 
-**Core display principle:** At every step, the reviewer should see the actual
-data -- what goes IN and what comes OUT. Not just computed summaries.
+**Core display principle:** At every step, the reviewer should see the actual data -- what goes IN and what comes OUT.
+Not just computed summaries.
 
 Two display mechanisms used together:
 
@@ -595,9 +592,7 @@ Nixtla Neural       time=12s, val_loss=0.041
 - Step 6: "Gradient flow verify" — not "Infer"
 - L2–L4 use the standard "Fit" / "Infer" labels
 
-**Save path:** Step 7 artifact MUST use the proper workspace location:
-`_WorkSpace/5-ModelInstanceStore/{modelinstance_name}/{modelinstance_version}/`
-Never /tmp/.
+**Save path:** Step 7 artifact MUST use the proper workspace location: `_WorkSpace/5-ModelInstanceStore/{modelinstance_name}/{modelinstance_version}/` Never /tmp/.
 
 **Notebook regeneration** (after any script change):
 
