@@ -76,10 +76,11 @@ The `Q-consumer` section lives at the END of every stage doc — the DRAFT-time 
 ```
 
 DRAFT writes only that: the title and the intent. It does NOT pick the route or who answers — unknown yet.
-At APPROVE, ① ORGANIZE turns each `Q<n>` into a question SECTION in a probe file (below), organizing it into three:
+APPROVE is a HUMAN gate: after DRAFT the consumer (a person) reviews the raised questions and approves which ones to pursue — the agent never self-advances. Only APPROVED `Q<n>` go on.
+At APPROVE, ① ORGANIZE turns each approved `Q<n>` into a question SECTION in a probe file (below), organizing it into three:
 - `Q`        → the `q-executor:` (the stake stripped out)
 - `executor` → the route, `task | discovery`
-- `approver` → the `serves:` / `a-consumer` owner — which claim/beat/section will read + APPROVE the answer
+- `approver` → the `serves:` / `a-consumer` owner — which claim/beat/section will later read + APPROVE the *answer* (a SEPARATE approval, at harvest — not the human gate above)
 
 The `Q<n>` line then gains a `→ 1-probes/PPnn` pointer, and its state is DERIVED from that file.
 The structured trio lives in the PROBE FILE, never copied back — the stage doc keeps only the human question + the pointer.

@@ -27,41 +27,28 @@ Row order = narrative order = gallery order; each display's `@<paper section>` m
 
 
 Q-consumer
-------
+----------
 
-Each probe is its own sub-item, numbered within its lane: `S` sweep (coverage first), `E` evidence (numbers come from tasks/probes, never typed by the agent), `R` render (candidates land in the unit's `candidates/`; `assets/` untouched until REVISE).
-DRAFT proposes; PROBE executes on the user's verb -- nothing here runs until approved at the gate.
-Status: `▶ ready` (runs at `probe`) · `✋ gated` (blocked until the user rules the named thread) · `done` (Outcome written in).
-The user strikes entries at the gate ("skip En/Rn"); PROBE executes only what survives, then writes each Outcome.
-Separated by `---` horizontal rules.
+The evidence questions this stage raises — one `##` per question: id, title, what it wants.
+Numbers come from tasks/probes, never typed by the agent. Route + approver are organized at APPROVE (into the probe file); the human strikes any question at the gate first.
 
-### S0 -- cross-stage coverage sweep -- ▶ ready
+## Q1 · <evidence title>
+<what evidence/numbers this display needs, one sentence per line; which Fig/Tab it serves.>
+<gated on: the display thread that must be ruled first, if any.>
 
-Lane: sweep.
-Route: display PROBE step 0 -- read 3-narrative + every section md (+ its `_DISPLAY_` registry, `\input`/`\ref` uses).
-Serves: map + inbox completeness.
-Outcome: <PROBE writes the DR rows filed on each section's behalf>.
+## Q2 · <evidence title>
+<...>
 
----
+<APPROVE adds each `→ 1-probes/PPNN_<topic>.md` pointer + derived state.>
 
-### E1 -- <title> -- <▶ ready | ✋ gated | done>
 
-Lane: evidence.
-Route: <a question SECTION in 1-probes/ (the PROBE phase dispatches it) or /haipipe-task-for-display>.
-Serves: <Fig/Tab N (displayNN-slug)>.
-Gated on: <omit when ready; else the gating display subsection thread>.
-Outcome: <PROBE writes the artifact path + one-line takeaway>.
-Detail: `1-probes/PPNN_<topic>.md` (the question's SECTION)
+Render & sweep — display mechanics (NOT bank questions)
+-------------------------------------------------------
 
----
+These are the display stage's OWN steps, not questions to the bank; PROBE runs them on the user's verb, and the user may strike any at the gate. Status: `▶ ready` · `✋ gated` · `done`.
 
-### R1 -- <title> -- <▶ ready | ✋ gated | done>
-
-Lane: render.
-Route: </haipipe-paper-display-figure | -table | -diagram | -illustration>.
-Serves: <Fig/Tab N (displayNN-slug)>, candidate <letter>.
-Gated on: <omit when ready; else the gating display subsection thread>.
-Outcome: <PROBE writes candidates/<letter>-<form>.<ext> + one-line self-assessment>.
+- **S0 · cross-stage coverage sweep** — display PROBE step 0: read 3-narrative + every section md (+ its `_DISPLAY_` registry, `\input`/`\ref` uses). Outcome: the DR rows filed on each section's behalf.
+- **R<n> · render dispatch** — a candidate goes to a renderer skill (`/haipipe-paper-display-figure | -table | -diagram | -illustration`); candidates land in the unit's `candidates/` (`assets/` untouched until REVISE). Serves Fig/Tab N, candidate `<letter>`. Not dispatched to the bank.
 
 
 <Paper Section, e.g. Intro & Theory>

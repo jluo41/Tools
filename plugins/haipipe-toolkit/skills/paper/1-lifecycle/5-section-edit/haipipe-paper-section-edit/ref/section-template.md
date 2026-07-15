@@ -50,7 +50,7 @@ total: <p> ¶ · <s> sentences · ~<w> words   (venue budget for this section: <
 
 ## Q-consumer proposed by this draft
 
-<tpl: derived FROM the prose — every {VAL:?} and \cite{TOADD} above appears here with its EXPECTED source. Pointer-following first: if the draft already sees the pointer in the paper's own registries, say `-> paper-local: <file>` and PROBE closes it `answered-local` — nothing is dispatched.>
+<tpl: HEAVIER needs (a NEW task run, a discovery sweep) become `## Q<n>` question subsections — id + title + what they want; the route + approver are organized at APPROVE. Every other {VAL:?}/\cite{TOADD} rolls up with its EXPECTED source; pointer-following first — if the draft already sees the pointer in the paper's own registries, say `-> paper-local: <file>` and PROBE closes it `answered-local`, nothing dispatched.>
 
 values:    {VAL:? <what>}                       -> <expected source: paper-local _VALUES_/metrics.json | tasks/ run>
 citation:  \cite{TOADD} @ P<n>.S<n> (<topic>)   -> <check prior stages' _CITATION_ / .bib first | discovery sweep (buffered: PP<NN>)>
