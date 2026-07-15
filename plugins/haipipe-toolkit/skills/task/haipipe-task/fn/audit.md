@@ -1,5 +1,5 @@
-fn/workflow-audit — four-sister consistency check
-===================================================
+fn/audit — four-sister consistency check
+=========================================
 
 Called by `/haipipe-task` as the first step on any existing task folder.
 Read-only scan that reports what's aligned and what's broken.
@@ -11,8 +11,8 @@ Read-only scan that reports what's aligned and what's broken.
 When to call
 ------------
 
-Automatically when `/haipipe-task` targets an existing task folder
-(not scaffolding a new one). Also callable standalone:
+Automatically when `/haipipe-task` targets an existing task folder (not scaffolding a new one).
+Also callable standalone:
 
 ```
 /haipipe-task audit <task-folder-path>
@@ -24,8 +24,8 @@ Procedure
 
 ### Step 1 — Discover run names
 
-Scan directories and collect all unique run names. The exact directories
-depend on the task engine:
+Scan directories and collect all unique run names.
+The exact directories depend on the task engine:
 
 **Python/papermill tasks:**
 ```
@@ -52,18 +52,15 @@ ALL_NAMES = union of all sets
 
 Stata tasks may not have notebooks/ at all -- that's expected, not an issue.
 
-**Stata config matching rule:** for a run named `run_case_VisitLBP_synth_2015`,
-the matching config is `configs/VisitLBP_synth_2015.do` (strip the `run_case_`
-prefix). Shared configs (`VisitLBP.do`, `_source_synth.do`) are NOT per-run
-configs -- they are the base layer that per-run configs load via `do` include.
+**Stata config matching rule:** for a run named `run_case_VisitLBP_synth_2015`, the matching config is `configs/VisitLBP_synth_2015.do` (strip the `run_case_` prefix).
+Shared configs (`VisitLBP.do`, `_source_synth.do`) are NOT per-run configs -- they are the base layer that per-run configs load via `do` include.
 A run without a matching per-run config is flagged `missing_config: FIXABLE`.
-The fix: generate a thin `.do` wrapper that loads the source selector + shared
-config + pins the year (see `8_stata/haipipe-task-for-stata/ref/config-seed-run.do`).
+The fix: generate a thin `.do` wrapper that loads the source selector + shared config + pins the year (see `8_stata/haipipe-task-for-stata/ref/config-seed-run.do`).
 
 ### Step 2 — Check four-sister pairing
 
-For each name in ALL_NAMES, check sisters exist. The "four sisters" vary
-by engine:
+For each name in ALL_NAMES, check sisters exist.
+The "four sisters" vary by engine:
 
 **Python:** configs/<NAME>.yaml + runs/<NAME>.sh + results/<NAME>/ + notebooks/<NAME>.ipynb
 **Stata:**  configs/<NAME>.{yaml|do} + runs/<NAME>.ps1 + results/<NAME>/ + (log optional)
@@ -113,7 +110,7 @@ Group letters are project-specific organizational prefixes.
 workflow/ exists?
   ├── YES → read plan.yaml, check it matches current task state
   │         (new runs added since plan was written? files moved?)
-  └── NO  → flag as "plan missing, will generate in workflow-plan step"
+  └── NO  → flag as "plan missing, will generate in stage-plan step"
 ```
 
 ### Step 6 — Report

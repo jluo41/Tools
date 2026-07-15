@@ -7,22 +7,17 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 
 # Digest (condense the session into routed feedback)
 
-Most feedback is given conversationally and never filed. `digest` is the bulk
-harvester: it reads a session's transcript, distills the discrete pieces of
-TOOL/SKILL feedback you gave, dedups them, and (after you confirm) routes each
-into the right domain-folder inbox. A digest is, by definition, deduped and
-condensed -- the same discipline as the merge-or-create capture.
+Most feedback is given conversationally and never filed.
+`digest` is the bulk harvester: it reads a session's transcript, distills the discrete pieces of TOOL/SKILL feedback you gave, dedups them, and (after you confirm) routes each into the right domain-folder inbox.
+A digest is, by definition, deduped and condensed -- the same discipline as the merge-or-create capture.
 
-Typical usage: from a FRESH session (clean context), name the PAST session to
-harvest -- `/haipipe-task digest "Display-for-Opioid-MISQ"`. With no argument it
-digests the CURRENT session instead. Running from a fresh session is what keeps
-the digest's judgment uncontaminated by the work it is reviewing.
+Typical usage: from a FRESH session (clean context), name the PAST session to harvest -- `/haipipe-task digest "Display-for-Opioid-MISQ"`.
+With no argument it digests the CURRENT session instead.
+Running from a fresh session is what keeps the digest's judgment uncontaminated by the work it is reviewing.
 
-Relation to `feedback`. `digest` HARVESTS; `feedback` ROUTES + MERGES. digest
-REUSES `fn/feedback.md` for everything downstream of distillation: the
-keyword->unit map, the cross-cutting guard, and the merge-or-create capture. No
-routing or merge logic is duplicated here. digest's only new job is turning a
-session into a clean candidate list and gating it.
+Relation to `feedback`.
+`digest` HARVESTS; `feedback` ROUTES + MERGES. digest REUSES `fn/feedback.md` for everything downstream of distillation: the keyword->unit map, the cross-cutting guard, and the merge-or-create capture.
+No routing or merge logic is duplicated here. digest's only new job is turning a session into a clean candidate list and gating it.
 
 ## Run: `/haipipe-task digest ["<session-name|id>"] [--dry-run]`
 
@@ -89,8 +84,7 @@ session into a clean candidate list and gating it.
 
 ## Resolving the target session (the argument)
 
-The transcript store for THIS repo is the matching dir under `~/.claude/projects/`
-(slug = the launch cwd with every `/` replaced by `-`); inside it, one
+The transcript store for THIS repo is the matching dir under `~/.claude/projects/` (slug = the launch cwd with every `/` replaced by `-`); inside it, one
 `<uuid>.jsonl` per session.
 
 ```
@@ -109,11 +103,8 @@ jq -r 'select(.type=="user") | .message.content | select(type=="string")' "$FILE
   | sed -E 's#<command-args>(.*)</command-args>#[CMD] \1#'
 ```
 
-This is the extraction PATTERN (adapt to the transcript format); the goal is a
-short list of the user's actual utterances, which becomes step 1's input. For a
-very large session, run the extraction inline (it shrinks MBs to a few KB) and
-digest the result; no subagent is needed because the fresh session is already
-clean context.
+This is the extraction PATTERN (adapt to the transcript format); the goal is a short list of the user's actual utterances, which becomes step 1's input.
+For a very large session, run the extraction inline (it shrinks MBs to a few KB) and digest the result; no subagent is needed because the fresh session is already clean context.
 
 ## Scope: skill feedback only (flag, don't file, global prefs -> /remember)
 

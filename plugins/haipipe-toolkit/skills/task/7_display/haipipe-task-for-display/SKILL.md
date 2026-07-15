@@ -1,6 +1,6 @@
 ---
 name: haipipe-task-for-display
-description: "display task-folder build specialist. Scaffolds {NN}_<name>/ task-folders in the project's display task-group (default C-series; letters are project-specific) that produce paper figures and tables — outputs to results/<run>/{*.pdf, *.png, *.tex, source_data.csv}. Called by /haipipe-task orchestrator when task-type=display."
+description: "display task-folder specialist: scaffolds {NN}_<name>/ task-folders in the display task-group (default C-series) that produce paper figures and tables -> results/<run>/{*.pdf, *.png, *.tex, source_data.csv}. Called by /haipipe-task when task-type=display."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:

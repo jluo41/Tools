@@ -222,7 +222,8 @@ examples/Project-REACH-ADHD/tasks/
 ```
 
 Each fn_develop folder is a standard task folder (configs/ runs/ results/ notebooks/) whose .py builders regenerate the corresponding `code/haifn/` files.
-Legacy workspaces (e.g. WellDoc-SPACE) may still keep builders in a central `code-dev/1-PIPELINE/<N>-<Stage>-WorkSpace/` — same builder pattern, different home.
+Legacy workspaces (e.g.
+WellDoc-SPACE) may still keep builders in a central `code-dev/1-PIPELINE/<N>-<Stage>-WorkSpace/` — same builder pattern, different home.
 
 ---
 

@@ -112,7 +112,7 @@ Required reads (in order):
    - Tools/plugins/haipipe-toolkit/skills/task/haipipe-task/ref/hierarchy.md
 
 2. Then read the procedure for the current stage:
-   - Plan: fn/workflow-plan.md · Execute: fn/run.md · Report: fn/workflow-report.md
+   - Plan: fn/stage-plan.md · Execute: fn/run.md · Report: fn/stage-report.md
    - Build has no fn/ file: follow SKILL.md Stage 2 + ref/authoring-conventions.md
 
 3. For action=qa (forms 3 and 4): fn/qa.md — the gate, the depth ladder, the QA/ anatomy.

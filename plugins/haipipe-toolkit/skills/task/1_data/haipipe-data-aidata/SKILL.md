@@ -1,6 +1,6 @@
 ---
 name: haipipe-data-aidata
-description: "Stage 4 (AIData) specialist. Builds, runs, and reviews TfmFn / SplitFn; inspects 4-AIDataStore; loads AIData-layer assets and tensors. Supports multi-partition CaseSet merge via streaming HF Dataset. Called by /haipipe-data orchestrator. Direct invocation works for stage-scoped work."
+description: "Stage 4 (AIData) specialist: builds/runs/reviews TfmFn / SplitFn, inspects 4-AIDataStore, loads AIData-layer assets + tensors, merges multi-partition CaseSets via streaming HF Dataset. Called by /haipipe-data; direct invocation works stage-scoped."
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:

@@ -10,7 +10,8 @@ Model registry snapshots are labeled as such -- always discover current state at
 This reference applies equally to any domain or model family.
 
 **Workspace note:** code paths in this bucket (`code/hainn/{algo,tuner,instance}/`, `model_registry.py`) follow the hainn layout of the SPACE-HAI-Pipe / WellDoc-class workspaces.
-Workspaces with a family-first hainn (e.g. Physician-SPACE: `mlpredictor/ tsforecast/ bandit/ tsfm/`, no registry file) will not resolve these paths — discover the local layout first.
+Workspaces with a family-first hainn (e.g.
+Physician-SPACE: `mlpredictor/ tsforecast/ bandit/ tsfm/`, no registry file) will not resolve these paths — discover the local layout first.
 
 ---
 

@@ -10,7 +10,8 @@ Copy-only.
 Step 1: Parse args
 -------------------
 
-Required: `<store>/<name>` (e.g. `1-SourceStore/WellDoc2025CVS`).
+Required: `<store>/<name>` (e.g.
+`1-SourceStore/WellDoc2025CVS`).
 
 Resolve via `ref/store-map.md`:
 

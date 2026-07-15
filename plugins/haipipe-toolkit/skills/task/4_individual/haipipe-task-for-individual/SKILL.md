@@ -1,6 +1,6 @@
 ---
 name: haipipe-task-for-individual
-description: "individual-query task-folder build specialist. Scaffolds {NN}_<name>/ task-folders in the project's individual task-group (default E-series; letters are project-specific) that query / visualize ONE individual's data (CGM trace, meal timeline, treatment events) — outputs to results/<run>/{plot.pdf, table.csv}. Called by /haipipe-task orchestrator when task-type=individual. Cross-references /haipipe-individual."
+description: "individual-query task-folder specialist: scaffolds {NN}_<name>/ task-folders in the individual task-group (default E-series) that query/visualize ONE individual's data (CGM trace, meal timeline, treatment events) -> results/<run>/{plot.pdf, table.csv}. Called by /haipipe-task when task-type=individual. Cross-references /haipipe-individual."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:

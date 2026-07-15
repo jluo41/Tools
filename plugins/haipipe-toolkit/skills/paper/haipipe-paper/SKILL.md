@@ -6,14 +6,14 @@ allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
   version: "3.1.0"
   last_updated: "2026-07-14"
-  summary: "Front door for the paper lifecycle: one verbs block, one routing pass, closing block, pointers to owners. v3.0 (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14 — R1-R18): the `probe` verb is re-pointed at the PROBE-FILE POOL. Evidence questions live as SECTIONS (serves/target/state/commission/reading) in `1-probes/PPNN_<topic>.md`, one file per TOPIC, with one `## Why` per file holding the stake — `1-probe-plans/`, the PPNN card, the `_ASK/` stub, `## Verdict` and the `verdicted`/`dispatched` states are ALL DELETED. State is DERIVED from disk (planned | commissioned | answered | read | answered-local | failed): resolve the section's `target:` and `ls` its QA file. `run` executes the FIVE-STEP LOOP (ORGANIZE -> MATCH -> DISPATCH -> POINT -> INTERPRET) via haipipe-paper-probe, and MATCH comes BEFORE dispatch — most sections should close on T2 REUSE against the bank's QA corpus, so a commission is the EXCEPTION, not the norm. DISPATCH hands the `commission:` block VERBATIM to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent); the probe GATEWAY agent is RETIRED. A claim's STATUS lives ONLY in 0-lifecycle/1-claims/1-claims.md. PRESERVED: RESOURCE as a venue-FREE stage between seed and claims (the stage ASKS Q<n>, the PROBE worker opens the section and writes the `-> PP<NN>` backlink); the `probe plan` campaign pass (merge duplicates to one-section-many-serves, ROUTE every section's target:, author the dispatch DAG — a dependent section now waits until its upstream's QA file EXISTS on disk, not on a deleted `answers:` field); the README as Campaign (authored) + Status board (generated), with the probe FILES as the single source of truth. v3.1 (probe-redesign residue sweep): the `probe` verb's backing doc is `fn/probes.md` (renamed from the retired `fn/probe-plans.md`); the dispatch note no longer says 'Verdicts backfill' — an answer lands as a section's `reading:` and a CLAIM's status flips ONLY in 0-lifecycle/1-claims/1-claims.md."
+  summary: "Front door for the paper lifecycle: one verbs block, one routing pass, closing block, pointers to owners. Parses intent (venue + stage) and dispatches to stage specialists; evidence questions live as sections in 1-probes/PPNN_<topic>.md and route to the task/discovery orchestrators. See CHANGELOG.md for version history."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-paper (orchestrator)
 ====================================
 
-User-facing entry for the paper lifecycle. The paper lifecycle is a delivery owner: it owns this paper's angle, claims, narrative, section map, displays, maturity, and dated work rounds. Project-level evidence lives outside the paper in tasks and discoveries; when the paper hits a gap, record a delivery need (`../wiki/11-delivery-need.md`) and route to the evidence worker.
+User-facing entry for the paper lifecycle. The paper lifecycle is a delivery owner: it owns this paper's angle, resources, claims, narrative, section map, displays, maturity, and dated work rounds. Project-level evidence lives outside the paper in tasks and discoveries; when the paper hits a gap, record a delivery need (`../wiki/11-delivery-need.md`) and route to the evidence worker.
 
 This orchestrator parses intent and dispatches to stage/specialist skills via `Skill()`. Stage skills internally drive the DPRC phase workers (`2-phase/`); users and this router never invoke phase skills directly. Canonical structure: `README.md` at the paper skill root + `../wiki/06-paper-skill-structure.md`.
 
@@ -124,6 +124,9 @@ probe     Four sub-modes -- "<text>" RAISE a question as a SECTION in the right 
 discover  Resolve the project root, Skill("haipipe-discovery", args="<args> --project <project_root>").
 task      Resolve the project root, Skill("haipipe-task", args="<args> --project <project_root>").
 ```
+
+> JL: maybe we don't call the discover and task from the paper side. It is the probe's task. 
+> JL: what we want are more like the stages' four phases. 
 
 After dispatch, capture the specialist's structured tail (status / summary / artifacts / next) and present it.
 

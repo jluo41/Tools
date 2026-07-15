@@ -1,6 +1,6 @@
 ---
 name: haipipe-individual
-description: "Per-individual data contract skill. Builds and manages a single-individual slice of the pipeline at stages 0-2 (RawDataStore, SourceStore, RecStore) under _WorkSpace/A-User-Store/UserGroup-{dataset}/Subject-{id}. Use when the user asks to create, inspect, or clean per-individual folders, build individual samples from a dataset, or prepare data for endpoint inference. Trigger: individual, per-individual, single-individual, UserGroup, Subject-ID, A-User-Store, inference data, endpoint data, sample patient."
+description: "Per-individual data contract skill: builds/manages a single-individual slice of the pipeline at stages 0-2 (RawDataStore, SourceStore, RecStore) under _WorkSpace/A-User-Store/UserGroup-{dataset}/Subject-{id}. Use to create, inspect, or clean per-individual folders, build individual samples, or prepare data for endpoint inference. Trigger: individual, per-individual, single-individual, UserGroup, Subject-ID, A-User-Store, inference data, endpoint data, sample patient."
 argument-hint: "[command] [args...]"
 metadata:
   version: "1.1.0"
@@ -34,7 +34,7 @@ A deployed endpoint reads the individual's 2-RecStore, runs inference, and retur
 It does NOT need 3-6.
 
 
-Folder Layout  (FLAT — no dataset-name or partition wrappers nested inside)
+Folder Layout (FLAT — no dataset-name or partition wrappers nested inside)
 -------------
 
   _WorkSpace/A-User-Store/

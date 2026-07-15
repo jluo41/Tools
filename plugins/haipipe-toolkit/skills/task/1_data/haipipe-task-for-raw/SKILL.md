@@ -1,6 +1,6 @@
 ---
 name: haipipe-task-for-raw
-description: "Raw extraction task-folder build specialist. Scaffolds {NN}_<name>/ task-folders in the project's raw-extraction task-group (default R-series; letters are project-specific). Two patterns: extract-wide-process-local (Databricks → parquet → local Python; non-PHI) and server-resident (all-Spark multi-stage pipeline that stays on the catalog volume; PHI cohorts, e.g. A00_rawstore_* groups). Called by /haipipe-task orchestrator when task-type=raw. Direct invocation works for scoped scaffolding. Cross-references /haipipe-data-raw."
+description: "Raw extraction task-folder specialist: scaffolds {NN}_<name>/ task-folders in the raw-extraction task-group (default R-series). Two patterns: extract-wide-process-local (Databricks -> parquet -> local Python; non-PHI) and server-resident (all-Spark pipeline staying on the catalog volume; PHI cohorts, e.g. A00_rawstore_*). Called by /haipipe-task when task-type=raw. Cross-references /haipipe-data-raw."
 argument-hint: "[project_id] [group] [task-name]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
@@ -54,7 +54,8 @@ tasks/R{NN}_<cohort_name>/                   ← group (R-series)
 ```
 
 Group letter default: **R** (raw extraction).
-When raw extraction is embedded in a cohort project as pipeline stage 0, the group is commonly named `A00_rawstore_<cohort>/` (e.g. Project-REACH-ADHD) — the letter is project-specific either way.
+When raw extraction is embedded in a cohort project as pipeline stage 0, the group is commonly named `A00_rawstore_<cohort>/` (e.g.
+Project-REACH-ADHD) — the letter is project-specific either way.
 Heavy outputs land in: `_WorkSpace/0-RawDataStore/<cohort>/` (or the catalog-volume equivalent for server-resident cohorts — see Pattern 2).
 
 

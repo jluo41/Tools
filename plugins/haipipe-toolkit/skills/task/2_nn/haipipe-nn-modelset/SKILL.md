@@ -1,6 +1,6 @@
 ---
 name: haipipe-nn-modelset
-description: "Layer 4 (ModelSet / Pipeline) specialist of haipipe-nn. Composes multiple ModelInstances into a registry-backed pipeline. Called by /haipipe-nn orchestrator. Direct invocation works for layer-scoped work."
+description: "Layer 4 (ModelSet / Pipeline) specialist of haipipe-nn: composes multiple ModelInstances into a registry-backed pipeline. Called by /haipipe-nn; direct invocation works layer-scoped."
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
@@ -57,7 +57,8 @@ Step-by-Step Protocol
 
 Step 0: Read `../haipipe-nn/ref/overview.md`.
 Mandatory.
-Step 1: Parse args. Function vocabulary: dashboard | review | generate | test.
+Step 1: Parse args.
+Function vocabulary: dashboard | review | generate | test.
 Step 2: Read this skill's `ref/concepts.md` for L4 specifics.
 Step 3: Read the umbrella fn doc.
 Step 4: Execute, scoped to L4 (composition only — no instance retraining).

@@ -91,10 +91,10 @@ task/                                 <- task-scope skills (THIS SECTION)
 |   |   |-- task-structure.md          group/task-folder layout contract (from project, 2026-07-03)
 |   |   |-- scan_status/               status-scan scripts (from project, 2026-07-03)
 |   |-- fn/
-|   |   |-- workflow-plan.md           procedure for Plan stage
-|   |   |-- workflow-report.md         procedure for Report stage
+|   |   |-- stage-plan.md              procedure for Plan stage
+|   |   |-- stage-report.md            procedure for Report stage
 |   |   |-- run.md                     procedure for run scaffolding
-|   |   |-- workflow-audit.md          procedure for auditing
+|   |   |-- audit.md                   procedure for auditing
 |   |   |-- task-group.md              task-group scaffold (from project, 2026-07-03)
 |   |   |-- scan-status.md             cross-group status scan (from project, 2026-07-03)
 |   |   |-- feedback.md + digest.md    feedback capture + session harvest

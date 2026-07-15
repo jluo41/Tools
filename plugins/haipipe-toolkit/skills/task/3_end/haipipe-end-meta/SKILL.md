@@ -1,6 +1,6 @@
 ---
 name: haipipe-end-meta
-description: "MetaFn specialist — design and review of the model-metadata-lookup function in an Endpoint_Set. One of 5 inference Fn-types. Called by /haipipe-end orchestrator when intent references MetaFn, model metadata, model card, or `meta` keyword. Reads own ref/concepts.md plus umbrella's fn/fn-design.md and endpointset's fn/fn-review.md."
+description: "MetaFn specialist -- designs/reviews the model-metadata-lookup function in an Endpoint_Set. One of 5 inference Fn-types. Called by /haipipe-end when intent references MetaFn, model metadata, model card, or `meta`."
 argument-hint: "[verb] [use_case] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
@@ -78,11 +78,11 @@ concepts   ref/concepts.md  (only)
 Step-by-Step Protocol
 ----------------------
 
-Step 0:  Read `ref/concepts.md` — MetaFn semantics, expected I/O, registry pointers.
-Step 1:  For `design`, also read `../haipipe-end/fn/fn-design.md` + `../haipipe-end/ref/0-overview.md`.
+Step 0: Read `ref/concepts.md` — MetaFn semantics, expected I/O, registry pointers.
+Step 1: For `design`, also read `../haipipe-end/fn/fn-design.md` + `../haipipe-end/ref/0-overview.md`.
          For `review`, also read `../haipipe-end-endpointset/fn/fn-review.md`.
-Step 2:  Execute the procedure scoped to MetaFn (do NOT touch other Fn-types).
-Step 3:  Emit the structured tail (umbrella parses this):
+Step 2: Execute the procedure scoped to MetaFn (do NOT touch other Fn-types).
+Step 3: Emit the structured tail (umbrella parses this):
 
 ```
 status:    ok | blocked | failed

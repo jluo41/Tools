@@ -10,7 +10,8 @@ Copy-only.
 Step 1: Parse args
 -------------------
 
-Required: `<store>/<name>` (e.g. `1-SourceStore/MyCohort`).
+Required: `<store>/<name>` (e.g.
+`1-SourceStore/MyCohort`).
 
 Resolve via `ref/store-map.md`:
 

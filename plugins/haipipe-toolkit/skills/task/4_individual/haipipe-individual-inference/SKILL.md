@@ -1,6 +1,6 @@
 ---
 name: haipipe-individual-inference
-description: "Per-individual endpoint inference test. Loads one individual from _WorkSpace/A-User-Store, builds an Endpoint_Set dataframe_records payload, POSTs it to a deployed endpoint URL (local FastAPI / Databricks / SageMaker — same wire contract), and prints the forecast response. Sibling of haipipe-individual (which builds the Subject-* data folders). Use to smoke-test that a deployed endpoint accepts individual data correctly. Trigger: individual inference, test endpoint with individual, /haipipe-individual-inference."
+description: "Per-individual endpoint inference test: loads one individual from _WorkSpace/A-User-Store, builds an Endpoint_Set dataframe_records payload, POSTs it to a deployed endpoint (local FastAPI / Databricks / SageMaker -- same wire contract), and prints the forecast. Sibling of haipipe-individual (which builds the Subject-* folders). Use to smoke-test that a deployed endpoint accepts individual data. Trigger: individual inference, test endpoint with individual, /haipipe-individual-inference."
 argument-hint: "--individual <id_or_path> [--endpoint-url URL] [--json]"
 allowed-tools: Bash, Read
 metadata:

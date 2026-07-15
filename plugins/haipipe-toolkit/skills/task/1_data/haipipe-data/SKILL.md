@@ -1,6 +1,6 @@
 ---
 name: haipipe-data
-description: "Run any Stage 1-4 data pipeline work. Parses intent (stage + function) and dispatches to the right specialist (haipipe-data-source/-record/-case/-aidata, plus raw/external/remote). Use for SourceFn/RecordFn/CaseFn/TfmFn/SplitFn builds, pipeline runs, dashboards, reviews, or any natural-language data-pipeline question. Trigger: data pipeline, source, record, case, aidata, fn build, cook, /haipipe-data."
+description: "Run any Stage 1-4 data pipeline work: parses intent (stage + function) and dispatches to the right specialist (source/record/case/aidata, plus raw/external/remote). Use for SourceFn/RecordFn/CaseFn/TfmFn/SplitFn builds, runs, dashboards, reviews, or any data-pipeline question. Trigger: data pipeline, source, record, case, aidata, fn build, cook, /haipipe-data."
 argument-hint: "[stage] [function] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
@@ -44,7 +44,7 @@ haipipe-data-remote     Remote storage sync (rclone/GDrive): status/pull/push, a
 
 ---
 
-★ Notebook Templates (Databricks / papermill)  ── code/scripts/haistepnb/
+★ Notebook Templates (Databricks / papermill) ── code/scripts/haistepnb/
 --------------------------------------------------------------------------
 
 Per-stage parameterized notebooks.

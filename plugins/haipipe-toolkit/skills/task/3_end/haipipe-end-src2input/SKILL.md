@@ -1,6 +1,6 @@
 ---
 name: haipipe-end-src2input
-description: "Src2InputFn specialist — design and review of the record-to-wire-payload function in an Endpoint_Set (serializes a ProcessedDF record into JSON the model can ingest). One of 5 inference Fn-types. PLATFORM-SPECIFIC by owner decision 2026-07-05 (supersedes LESSON L16): ONE Src2InputFn per deploy platform per use-case — SageMaker payload gets a SageMaker impl (flat JSON), Databricks its own (dataframe_records envelope); --platform selects which platform's Fn to design/review (default sagemaker). Called by /haipipe-end orchestrator when intent references Src2InputFn, record-to-payload serialization, or `src2input` keyword."
+description: "Src2InputFn specialist -- designs/reviews the record->wire-payload function in an Endpoint_Set (serializes a ProcessedDF record into JSON the model can ingest). Platform-specific: one impl per deploy platform (SageMaker flat JSON vs Databricks dataframe_records); --platform picks (default sagemaker). Called by /haipipe-end when intent references Src2InputFn, record-to-payload serialization, or `src2input`."
 argument-hint: "[verb] [use_case] [--platform sagemaker|databricks] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
@@ -84,13 +84,13 @@ concepts   ref/concepts.md  (only)
 Step-by-Step Protocol
 ----------------------
 
-Step 0:  Read `ref/concepts.md` — Src2InputFn semantics, payload schema, encoding rules.
-Step 1:  For `design`, also read `../haipipe-end/fn/fn-design.md` + `../haipipe-end/ref/0-overview.md`.
+Step 0: Read `ref/concepts.md` — Src2InputFn semantics, payload schema, encoding rules.
+Step 1: For `design`, also read `../haipipe-end/fn/fn-design.md` + `../haipipe-end/ref/0-overview.md`.
          For `review`, also read `../haipipe-end-endpointset/fn/fn-review.md`.
-Step 2:  Execute the procedure scoped to Src2InputFn.
+Step 2: Execute the procedure scoped to Src2InputFn.
 Should stay in sync with its
          inverse pair `/haipipe-end-input2src` — the two must round-trip.
-Step 3:  Emit the structured tail.
+Step 3: Emit the structured tail.
 
 ---
 

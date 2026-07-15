@@ -1,6 +1,6 @@
 ---
 name: haipipe-nn-instance
-description: "Layer 3 (Instance) specialist of haipipe-nn. Materializes a trained ModelInstance by driving its Tuners (registry create -> fit -> save_model). Called by /haipipe-nn orchestrator. Direct invocation works for layer-scoped work."
+description: "Layer 3 (Instance) specialist of haipipe-nn: materializes a trained ModelInstance by driving its Tuners (registry create -> fit -> save_model). Called by /haipipe-nn; direct invocation works layer-scoped."
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
@@ -59,7 +59,8 @@ Step-by-Step Protocol
 
 Step 0: Read `../haipipe-nn/ref/overview.md`.
 Mandatory.
-Step 1: Parse args. Function vocabulary: dashboard | review | generate | test.
+Step 1: Parse args.
+Function vocabulary: dashboard | review | generate | test.
 Step 2: Read this skill's `ref/concepts.md` for L3 specifics.
 Step 3: Read the umbrella fn doc.
 Step 4: For `generate`, also read `../haipipe-nn-modelset/ref/concepts.md`.

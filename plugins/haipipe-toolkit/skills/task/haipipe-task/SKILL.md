@@ -1,6 +1,6 @@
 ---
 name: haipipe-task
-description: "Internal-execution layer, and one of the two EXECUTORS (discovery is the other — same shape, same rules). Task-folder and task-group orchestrator: for a task-folder it runs the 4-stage code lifecycle (Plan → Build → Execute → Report) or dispatches to type specialists for scaffolding; for a task-group it iterates the lifecycle over each child. PRIMARY mode is autonomous P-B-E-R — no question pending. CONSUMER-UNAWARE but not question-deaf: the `qa` verb is the one question door — ONE question in general language in, a QA-file PATH out (full contract: fn/qa.md). Trigger: task, task folder, task group, plan, build, execute, report, run, scan-status, qa, QA file, question, state, working, superseded, /haipipe-task."
+description: "Internal-execution EXECUTOR: runs the 4-stage lifecycle (Plan → Build → Execute → Report) on a task-folder, iterates it over a task-group, or dispatches to a type specialist to scaffold; the `qa` verb is its one question door (fn/qa.md). Trigger: task, task folder, task group, plan, build, execute, report, run, scan-status, qa, QA file, state, /haipipe-task."
 argument-hint: "[scope] [args...] | qa \"<question>\" [<task-folder>] [--check-only]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
@@ -15,6 +15,8 @@ Skill: haipipe-task (orchestrator)
 
 Build orchestrator organized around the **task hierarchy**:
 
+
+> JL: I think we can also add the QA folder. but QA folder is optional, only when we have haipipe-task qa is called. 
 ```
 project           examples/Proj{...}/
   └── task-group  tasks/{G}{NN}_{name}/
@@ -24,7 +26,9 @@ project           examples/Proj{...}/
               and C3-Visual-ForecastScaling. Detect a task-folder by STRUCTURE, never by name.
 ```
 
-This skill owns **task-folder** and **task-group** scope. For a task-folder, it runs the 4-stage code lifecycle (Plan → Build → Execute → Report) or dispatches to a type specialist for scaffolding. For a task-group, it iterates over each child task-folder and runs the lifecycle on each one. Type specialists (one per type):
+This skill owns **task-folder** and **task-group** scope. 
+For a task-folder, it runs the 4-stage code lifecycle (Plan → Build → Execute → Report) or dispatches to a type specialist for scaffolding. 
+For a task-group, it iterates over each child task-folder and runs the lifecycle on each one. Type specialists (one per type):
 
 ```
 task-type     Specialist                              Cross-skill
@@ -40,19 +44,18 @@ agent         /haipipe-task-for-agent             /haipipe-task-llm-engine (LLM 
 endpoint      /haipipe-task-for-endpoint          /haipipe-end (package + deploy)
 ```
 
-NOTE: group letters (A01_, B01_, C01_) are project-specific organizational prefixes, NOT type indicators. Each project defines its own letter scheme. Type is detected from script content, not from group letters. Specialists carry a DEFAULT letter for projects with no scheme (data D, fit A, eval B, display C, individual E, agent F, raw R, algo group X_algo); the project's existing scheme always wins.
+NOTE: group letters (A01_, B01_) are project-specific, NOT type indicators — detect type from script content, never the letter. Per-type default letters + the "project scheme wins" rule: `ref/hierarchy.md`.
 
-Stata specialist (engine = Stata + PowerShell + logs, NOT papermill):
+Stata specialist (engine = Stata, NOT papermill):
+`engine = Stata → /haipipe-task-for-stata` — on detection, hand off WHOLESALE; the specialist owns cms/case/data/reg, its `{LNN}` stage-letter alphabet, and the engine contract in its own `ref/`.
 
-```
-engine = Stata   →  /haipipe-task-for-stata   (unified — handles cms/case/data/reg internally)
-```
 
-This skill does NOT route stata stages itself — once the engine is detected as Stata it hands off wholesale; the specialist owns the `{LNN}` stage-letter alphabet and the engine contract in its own `ref/` (`stata-dialect.md` + templates).
+Routing principle: this skill is the HIGH-LEVEL router. 
+It owns only the engine-agnostic invariants (`ref/hierarchy.md`, `ref/task-structure.md` for task-group / task-folder / diagram / run-script layout, authoring conventions). 
+Each `/haipipe-task-for-<engine>` child owns its OWN `ref/` (templates + dialect); route to the child and read the child's `ref/`, never keep engine specifics here.
 
-Routing principle: this skill is the HIGH-LEVEL router. It owns only the engine-agnostic invariants (`ref/hierarchy.md`, `ref/task-structure.md` for task-group / task-folder / diagram / run-script layout, authoring conventions). Each `/haipipe-task-for-<engine>` child owns its OWN `ref/` (templates + dialect); route to the child and read the child's `ref/`, never keep engine specifics here.
+Project setup (Project-*/ProjX-* containers) lives in `/haipipe-project`. 
 
-Project setup (Project-*/ProjX-* containers) lives in `/haipipe-project`. This skill received fn/task-group.md and fn/scan-status.md (+ ref/scan_status/ scripts) from the project layer 2026-07-03.
 
 ---
 
@@ -64,15 +67,20 @@ Commands
 /haipipe-task build <task-folder-path>               Stage 2: implement the contract as code
 /haipipe-task execute <task-folder-path>              Stage 3: run the code (or human runs manually)
 /haipipe-task report <task-folder-path>               Stage 4: summarize results vs plan
+
 /haipipe-task <existing-task-folder-path>             full lifecycle (all 4 stages)
 /haipipe-task <existing-task-group-path>              iterate: full lifecycle on each child task-folder
 /haipipe-task <stage> <existing-task-group-path>      iterate: that stage on each child task-folder
+
 /haipipe-task task-folder <type> [args...]            scaffold a NEW task-folder via type specialist
 /haipipe-task task-group <group-path|name>            scaffold a NEW task-group (fn/task-group.md)
+
 /haipipe-task run <task-folder-path> [run-name]       execute one runs/*.sh with logging conventions (fn/run.md)
-/haipipe-task audit <task-group-or-folder-path>       structural audit vs the four-sister contract (fn/workflow-audit.md)
+/haipipe-task audit <task-group-or-folder-path>       structural audit vs the four-sister contract (fn/audit.md)
 /haipipe-task scan-status [project-path]              status scan across task-groups (fn/scan-status.md)
-/haipipe-task qa "<question>" [<task-folder>]                THE QUESTION DOOR: one general question in, a QA-file PATH out (fn/qa.md)
+
+/haipipe-task qa "<question>" [<task-folder>]         THE QUESTION DOOR: one general question in, a QA-file PATH out (fn/qa.md)
+
 /haipipe-task feedback "<text>"                       capture skill feedback (merge-or-create), ROUTED to the domain folder it concerns
 /haipipe-task feedback list [unit]                    aggregate open feedback across ALL inboxes (grouped by unit)
 /haipipe-task feedback move <file> <unit>             re-route a mis-filed feedback item
@@ -125,29 +133,54 @@ Stage 4: REPORT — summarize (what actually happened vs the plan)
   agents:    creator drafts report → reviewer checks accuracy → ↺ revise
 ```
 
-File ownership is strict: Plan touches only `workflow/plan*.yaml`. Build touches only code/configs/runs. Execute touches only `results/` and `notebooks/`. Report touches only `workflow/report*.yaml`, `RUN_AUDIT.md`, and — when one is due — `QA/`.
 
-**The ONE exception, and it is the qa gate's:** on gate ③ the QA file is CLAIMED before Plan runs — `state: working` + `started:`, an empty `## Answer` — and COMPLETED at Report. That is TWO writes, by the SAME owner (this layer), to a file in its OWN folder. It does not break file ownership; it is what file ownership MEANS. See `fn/qa.md` (Step 3a).
+File ownership is strict: 
+Plan touches only `workflow/plan*.yaml`. 
+Build touches only code/configs/runs. 
+Execute touches only `results/` and `notebooks/`. 
+Report touches only `workflow/report*.yaml`, `RUN_AUDIT.md`, and — when one is due — `QA/`.
+
+**QA is NOT a 5th stage — it is the ONE exception to file-ownership, and it spans the whole lifecycle.** 
+On a gate-③ question, this layer writes the QA file TWICE: a `state: working` CLAIM at the very start (before Plan), then the completed `state: answered` answer at Report. 
+Two writes, same owner, in its own folder — it does not break file-ownership; it is what ownership MEANS. See `fn/qa.md`.
+> JL: 我觉得这 QA 的描述不是很准确，你更应该说它是一个指明方向的东西。 就是说，QA 可以去“要不要进入 Plan、Build、Execution、Report”的东西，当然也可以直接去读现有 Task Folder 内部的结果。
+所以它更像是 workflow 上面一层的东西，包裹这个phase。你想想这个 logic。
+> JL: I still have a question: for Plan, Build, Execute, Report, do we call them "Stage" or call them "Phase"? I prefer to use Phase. 
 
 The `workflow/` folder is the task's observability surface: Plan = intent, Report = evidence, same IPO shape at both levels (schema: `task/haipipe-workflow/ref/plan-schema.md`).
 
-A task ends at Report: it produces `results/` and stops. Whoever consumes those results records the link on THEIR side — this layer tracks no consumers.
+A task ends at Report: it produces `results/` and stops. 
+
+> JL: for the following, saying: if QA is called, it will use results to answer the QA-task.md.
+The readable answer to any question about those results is the `QA/` digest this layer writes; a consumer reads THAT, never `results/` directly. This layer tracks no consumers.
 
 ---
 
 The task session's two modes
 -----------------------------
 
-**PRIMARY — autonomous P-B-E-R.** The task session runs Plan → Build → Execute → Report for its own sake: train, sweep, profile, scan. No question is pending. No one asked. This IS the project's research, and the bank grows here, autonomously.
+**PRIMARY — autonomous P-B-E-R.** 
+The task session runs Plan → Build → Execute → Report for its own sake: 
+train, sweep, profile, scan. No question is pending. 
+No one asked. 
+This IS the project's research, and the bank grows here, autonomously.
 
-**ANSWERABILITY WORK — also task-native, also with no question pending.** A task session may legitimately:
-
+**ANSWERABILITY WORK — also task-native, also with no question pending.** 
+A task session may legitimately:
 - write a `QA/` digest for a finding worth digesting, and
 - build or refactor code so that FUTURE questions are cheap to answer.
 
-It does not know WHICH questions will come. It makes the bank EASIER TO ASK. That is task work, not anyone else's.
+It does not know WHICH questions will come. 
+It makes the bank EASIER TO ASK. 
+That is task work, not anyone else's. ## > JL: 这句话有点奇怪，你怎么理解这句话呀？要删掉吗？
 
-**THE SIDE DOOR — the `qa` verb.** Questions arrive through exactly one door, `fn/qa.md`, and they arrive as ONE QUESTION IN GENERAL LANGUAGE — never an id, never a stake, never a reference to whoever asked. The verb answers it or REFUSES it, and returns a path. It never learns who asked, or why, and must not try to find out.
+
+**THE SIDE DOOR — the `qa` verb.** 
+Questions arrive through exactly one door, `fn/qa.md`, 
+and they arrive as ONE QUESTION IN GENERAL LANGUAGE — never an id, never a stake, never a reference to whoever asked. 
+The verb answers it or REFUSES it, and returns a path. 
+It never learns who asked, or why, and must not try to find out.
+
 
 ```
 /haipipe-task qa "<question>" [<task-folder>]
@@ -156,7 +189,7 @@ It does not know WHICH questions will come. It makes the bank EASIER TO ASK. Tha
                  state: answered  → return the PATH
                  state: working   → SOMEONE IS ALREADY ON IT. Return the path +
                                     "in progress since <started>". DO NOT RE-RUN.
-                 working, EXPIRED past QA_WORKING_TTL_HOURS → 🧟 zombie: RESTART it
+                 working, EXPIRED past QA_WORKING_TTL_HOURS → zombie: RESTART it
                  superseded-by: X → follow the chain, return the LIVE answer
   ② DIGEST     results/ answer it, no readable digest? → write QA/<n>-<slug>.md cheap
                ONCE, COMPLETE, `state: answered`, from EXISTING artifacts; run no code
@@ -168,7 +201,8 @@ It does not know WHICH questions will come. It makes the bank EASIER TO ASK. Tha
                RELEASE any claim; the caller re-routes
 ```
 
-Three callers, one identical door: a human steering an exploration, the orchestrator agent self-directed, or a relayed question from elsewhere. None of them gets a special path.
+Three callers, one identical door: a human steering an exploration, the orchestrator agent self-directed, or a relayed question from elsewhere. 
+None of them gets a special path.
 
 Full contract: `fn/qa.md`.
 
@@ -186,30 +220,10 @@ tasks/<group>/<NN>_<name>/
         └── 2-female-cgm-volume.md
 ```
 
-**A QA file is a TICKET that becomes a RECEIPT.** It carries exactly ONE mutable field — the **state line** — and everything below it is written once and never touched again:
-
-```markdown
-# Q — <the question, restated by the executor in its own words>
-- state:   working | answered | superseded-by: QA/<m>-<slug>.md
-- started: 2026-07-14T09:12          ← MANDATORY when state: working
-- by:      <run id | agent | human>  ← optional provenance
-
-## Answer     EMPTY while state: working. Filled at REPORT.
-## Caveats
-## Not-done
-```
-
-- `QA/<n>-<slug>.md`, `<n>` = creation order. **The numbering IS the index** — `ls QA/` is the index; there is no INDEX file. `QA/` now reads as a menu of BOTH: what this task-folder has established, **and what it is establishing right now**.
-- **SLUG ONLY.** No external id ever appears in a bank filename.
-- **⚠️ THE LOAD-BEARING INVARIANT IS *ONE WRITER*, NOT *WRITE-ONCE*.** This layer writes the file TWICE — the CLAIM at the qa gate's ③ decision, the COMPLETION at Report. Two writes by the same owner is fine. **A CONSUMER (probe/paper/application) must NEVER create, claim, edit, complete, or supersede a QA file** — a consumer-planted `working` file is the retired `_ASK/` stub wearing a `QA/` costume, and it is FORBIDDEN.
-- **WRITER: this layer.** Only gate ③ ever produces a `working` file, and only transiently. Gate ① writes nothing; gate ② writes once, complete.
-- **THE MECHANICS live in `fn/qa.md` — read it before touching a QA file.** The claim MUST expire (`started:` is mandatory; TTL = `QA_WORKING_TTL_HOURS`); the race guard is `set -C` and nothing more; supersession writes `QA/<n+1>` and appends `superseded-by:` to the old state line — by this layer, never by a consumer. A QA file's BODY is never edited.
-- **THREE REASONS a QA file may exist, and no fourth:** a question arrived · a digest was missing though `results/` already answered it · a task session judged a finding worth digesting. A `QA/` that mirrors every result file is noise, not an index.
-- **NO CONSUMER VOCABULARY.** A QA file carries no claim ids, no hypothesis ids, no "the paper". This layer never saw one and cannot honestly write one.
-
-STATUS is derived from the STATE LINE, not from mere existence: no file = not answered · `working` = IN PROGRESS since `<started>` · `answered` = answered · `superseded-by: X` = answered but STALE, the live answer is X.
-
-The checker (`check-probe-cards.sh`) HARD-FAILs three defects this layer can write: `qa-working-no-started` (unexpirable `working` file) · `qa-working-expired` (zombie past `QA_WORKING_TTL_HOURS`) · `qa-answered-empty` (a lying receipt).
+**A QA file is a TICKET that becomes a RECEIPT** — ONE mutable `state:` line (`working | answered | superseded-by:`) that this layer CLAIMS at the qa gate's ③ decision and COMPLETES at Report; the body below it is written once.
+⚠️ ONE WRITER = this layer. A CONSUMER (probe/paper/application) must NEVER create, claim, edit, or supersede a QA file — a consumer-planted `working` file is the retired `_ASK/` stub in a `QA/` costume, and is FORBIDDEN.
+It is the HUMAN-readable answer: plain prose + `[→ results/…]` anchors, and NO consumer vocabulary (no claim ids, no "the paper").
+Everything mechanical — the file template, `<n>`-numbering (the index), the `set -C` race guard, `started:`/TTL expiry, supersession, the three reasons a QA file may exist, status derivation, the checker codes — lives in `fn/qa.md`. Read it before touching a QA file.
 
 Not every task-folder has a `QA/`. That is fine and normal.
 
@@ -218,7 +232,8 @@ Not every task-folder has a `QA/`. That is fine and normal.
 Agents
 ------
 
-Three agents in `task/agents/` form the orchestrator/creator/reviewer triad. Creator and reviewer always work as a pair — creator produces, reviewer evaluates, loop if revise; the orchestrator agent is the non-interactive dispatch target that coordinates them.
+Three agents in `task/agents/` form the orchestrator/creator/reviewer triad. 
+Creator and reviewer always work as a pair — creator produces, reviewer evaluates, loop if revise; the orchestrator agent is the non-interactive dispatch target that coordinates them.
 
 ```
 task/agents/
@@ -236,7 +251,8 @@ The lifecycle workflow (`ref/task-lifecycle.workflow.js`) orchestrates the loop:
 
 The creator never reviews its own work. The reviewer never produces artifacts. This separation is the core invariant.
 
-The reviewer catches **intent-vs-implementation mismatches** — silent semantic bugs where the code runs but doesn't measure what the writer intended. Independence comes from fresh-agent reasoning: the reviewer starts with clean context, never the creator's (Codex two-stage was removed in reviewer v1.1.0).
+The reviewer catches **intent-vs-implementation mismatches** — silent semantic bugs where the code runs but doesn't measure what the writer intended. 
+Independence comes from fresh-agent reasoning: the reviewer starts with clean context, never the creator's 
 
 Author convention: `<TASK_NAME>.py` MUST have an `Intent` section in its docstring (template: `ref/intent-docstring-template.py`). Skip mechanisms for the run.sh pre-flight gate: `_meta.skip_review: true` in config, or `HAIPIPE_SKIP_REVIEW=1` env var.
 
@@ -257,9 +273,9 @@ task-group (scaffold)  this skill                             fn/task-group.md
 qa                     this skill                             fn/qa.md
 scan-status            this skill                             fn/scan-status.md
 run                    this skill                             fn/run.md
-audit                  this skill                             fn/workflow-audit.md
-plan                   this skill                             fn/workflow-plan.md
-report                 this skill                             fn/workflow-report.md
+audit                  this skill                             fn/audit.md
+plan                   this skill                             fn/stage-plan.md
+report                 this skill                             fn/stage-report.md
 ```
 
 ---
@@ -267,19 +283,20 @@ report                 this skill                             fn/workflow-report
 Step-by-Step Protocol
 ----------------------
 
-Step 0: Read `ref/hierarchy.md` first. It's the conceptual model for the task hierarchy (project → task-group → task-folder → run).
+Step 0: Read `ref/hierarchy.md` first. 
+It's the conceptual model for the task hierarchy (project → task-group → task-folder → run).
 
-Step 1: Detect AUTO_MODE. Any of these flips it on: `--auto` anywhere in args, env var `CLAUDE_AUTO_HANDOFF=1` or `AUTO_MODE=1`, parent skill passed `--auto`. AUTO_MODE changes "ASK" steps into "accept best inference or return blocked"; it never changes what gets written.
+Step 1: Detect AUTO_MODE. 
+Any of these flips it on: `--auto` anywhere in args, env var `CLAUDE_AUTO_HANDOFF=1` or `AUTO_MODE=1`, parent skill passed `--auto`. 
+AUTO_MODE changes "ASK" steps into "accept best inference or return blocked"; it never changes what gets written.
 
 Step 2: Resolve scope. Cascade:
   (0) UTILITY VERB — first positional is `feedback` or `digest` (route this BEFORE any other parsing; neither is a lifecycle scope, so do not continue to Step 3).
       `feedback` → read `fn/feedback.md` and run it inline (capture / list / move; routing rules, merge-or-create, inbox paths all live THERE). Stop.
       `digest` → read `fn/digest.md` and run it inline (resolve the target session first; mandatory confirm gate before filing). Stop.
   (0.5) UTILITY VERB `scan-status` — first positional is `scan-status` → read `fn/scan-status.md` and run it inline. Stop.
-  (0.6) QUESTION DOOR `qa` — first positional is `qa` → read `fn/qa.md` and run it inline (the ①②③ gate; the remaining args are the question, an OPTIONAL task-folder path, and the OPTIONAL flag `--check-only`). It is not a lifecycle scope: do not continue to Step 3. Stop.
-        `--check-only` runs ① and ② DETECTION only: report which path the question would take, execute nothing, write nothing — including NO CLAIM — and NEVER fall through to ③. This is the door the probe's MATCH step calls, and MATCH is defined as a FREE detection pass — a qa call that fell through to ③ there would spawn an unbudgeted P-B-E-R run, plant a claim, and write into the bank during a step whose whole purpose was to cost nothing. The discovery twin spells the flag IDENTICALLY; keep them in step.
-        On gate ① the STATE LINE decides, not the file's existence — the four branches are spelled out under "The task session's two modes" above.
-        If the question arrives carrying an external id, a claim reference, or a stake, IGNORE those tokens — answer the question on its own terms or REFUSE. This layer does not know what they mean and must not try to find out.
+  (0.6) QUESTION DOOR `qa` — first positional is `qa` → read `fn/qa.md` and run it inline (the ①②③ gate; remaining args = the question, an OPTIONAL task-folder, OPTIONAL `--check-only`). Not a lifecycle scope: do not continue to Step 3. Stop.
+        `--check-only` = DETECTION only (report the path, write nothing incl. NO CLAIM, never fall through to ③) — the probe MATCH step's free pass. Gate ①'s state-line branches, the strip-any-external-id rule, and the identical discovery-twin spelling all live in `fn/qa.md`.
   (1) explicit stage command (`plan` / `build` / `execute` / `report`) as first positional → check the path argument:
       - path is an existing task-folder → scope=single-stage on that folder (Step 3c).
       - path is an existing task-group → scope=task-group-iterate with stages=[that stage] (Step 3d).
@@ -474,19 +491,3 @@ Risk Profile
 CREATES files under `examples/{PROJECT_ID}/`. Refuse to overwrite existing names — abort and recommend `-organize`.
 
 When dispatching to a task-type specialist, the same blast radius applies — specialists also CREATE files under `examples/`.
-
----
-
-## Feedback
-
-`/haipipe-task feedback "<text>"` captures a complaint / confusion / wish about THIS skill, not the work it produces.
-Each item is routed at capture time into the `feedback/` inbox of the domain folder it concerns (9 domains + `agents/`; the folder IS the record), with the orchestrator's own `feedback/` as the cross-cutting fallback.
-`feedback list [unit]` aggregates open items across all inboxes; `feedback move <file> <unit>` re-routes a mis-filed one.
-`/haipipe-task digest ["<session-name|id>"] [--dry-run]` is the bulk harvester: it scans a session transcript for conversational feedback and routes each confirmed item through the same capture.
-ALL mechanics (cross-cutting guard, keyword→unit map, merge-or-create, lazy inboxes, session resolution, confirm gate) live in `fn/feedback.md` and `fn/digest.md` — read those, do not re-derive from here.
-
-## Behavioral Preferences (portable)
-
-ALWAYS read and honor `PREFERENCES.md` in this skill's own folder.
-It holds git-tracked global behavioral preferences (e.g. communicate via ASCII diagrams) that survive a machine change, unlike the machine-local `~/.claude` auto-memory.
-Global prefs are kept in sync across all orchestrators by the toolkit-wide digest global-pref fan-out (merge-or-create; one entry per topic).

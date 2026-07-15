@@ -96,7 +96,8 @@ Domain Formats
 ==============
 
 Each algorithm family expects data in a specific format.
-We call this the "domain format." The Tuner's transform_fn() handles the conversion.
+We call this the "domain format."
+The Tuner's transform_fn() handles the conversion.
 
 ```
 domain_format     What it means                   Used by

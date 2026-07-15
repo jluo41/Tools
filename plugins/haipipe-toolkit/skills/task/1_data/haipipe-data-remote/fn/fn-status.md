@@ -38,7 +38,8 @@ If `REMOTE_ROOT` is unset, abort with an env.sh hint.
 Step 2: Probe each store with two dry-runs
 -------------------------------------------
 
-For each store path (e.g. `1-SourceStore`):
+For each store path (e.g.
+`1-SourceStore`):
 
 ```bash
 # Pull dry-run = remote-only OR remote-newer
