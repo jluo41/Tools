@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "3.3.0"
   last_updated: "2026-07-14"
-  summary: "Venue stage orchestrator. Recommends + pins the best-fit venue, produces 2-venue.md (skeleton: ref/venue-template.md) with venue choice, structural blueprint (per-section quantitative norms transcribed from pack Micro-norms), writing principles, fit assessment, and probes. 2-venue.md is the intended single consumption point for the venue-aligned stages (pitch, narrative, display, section-edit). v3.3 (probe-redesign residue sweep): venue questions are SECTIONS in 1-probes/PPNN_<topic>.md; 'PPNN cards' and 'probe plans' retired."
+  summary: "Venue stage orchestrator: recommends + pins the best-fit venue and produces 2-venue.md (template ref/venue-template.md) -- venue choice, structural blueprint (per-section quantitative norms transcribed from pack Micro-norms), writing principles, fit assessment, and a Probes section. 2-venue.md is the single consumption point for the venue-ALIGNED stages (pitch, narrative, display, section-edit). Venue questions are SECTIONS in 1-probes/. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -14,11 +14,15 @@ metadata:
 
 ## Overview
 
-Venue selection is the FIRST venue-coupled design decision. Pitch (the cover letter), narrative, displays, and prose all couple to the venue, so the venue must be chosen before pitch. Resource and claims are venue-FREE and do NOT need a venue (what a paper NEEDS to exist does not depend on where you send it). The lifecycle order is: seed (FREE) -> resource (FREE) -> claims (FREE) -> [venue pinned here] -> pitch (ALIGNED) -> narrative (ALIGNED) -> display (ALIGNED) -> section-edit (ALIGNED).
+Venue selection is the FIRST venue-coupled design decision.
+Pitch (the cover letter), narrative, displays, and prose all couple to the venue, so the venue must be chosen before pitch.
+Resource and claims are venue-FREE and do NOT need a venue (what a paper NEEDS to exist does not depend on where you send it).
+The lifecycle order is: seed (FREE) -> resource (FREE) -> claims (FREE) -> [venue pinned here] -> pitch (ALIGNED) -> narrative (ALIGNED) -> display (ALIGNED) -> section-edit (ALIGNED).
 
 This skill analyzes a paper or a bare topic against every venue pack in `../../_venue/playbook-*`, recommends a ranked shortlist, pins the choice in `STATUS.md`, and produces a stage document (`2-venue.md`) with the venue profile, writing principles, and probes.
 
-The venue packs are knowledge, not skills; this skill is the READER that turns them into a recommendation. It never edits a pack.
+The venue packs are knowledge, not skills; this skill is the READER that turns them into a recommendation.
+It never edits a pack.
 
 ## Artifact Spec
 
@@ -47,10 +51,12 @@ Probes                  venue-level investigation needs (one SECTION per questio
 
 One block per manuscript section, fields per the template: subsections, paragraphs, sentences/paragraph, avg sentence length, citation density, results reported + detail, display units, this-paper adaptation, and a `[source: ...]` tag naming the guide each number came from.
 
-This section is the design contract for paper structure: the venue-aligned stages (pitch for framing, narrative for beat allocation, display for exhibit budgets, section-edit for paragraph counts) read it here rather than re-deriving from the packs. The provenance header makes staleness detectable: if `_venue` has moved past the recorded commit, re-derive the blueprint without changing the pin.
+This section is the design contract for paper structure: the venue-aligned stages (pitch for framing, narrative for beat allocation, display for exhibit budgets, section-edit for paragraph counts) read it here rather than re-deriving from the packs.
+The provenance header makes staleness detectable: if `_venue` has moved past the recorded commit, re-derive the blueprint without changing the pin.
 
 **How to derive the blueprint (source priority):**
-1. Read the pinned outlet's per-section guides (`../../_venue/playbook-<venue>/<journal>/<journal>-<section>/style.md`). Each carries word budget, arc, paragraph-structure table, and a measured `## Micro-norms` block (paragraphs, sentences per paragraph, words per sentence, citation density) -- TRANSCRIBE these into the spec above; do not re-mine what is already measured.
+1. Read the pinned outlet's per-section guides (`../../_venue/playbook-<venue>/<journal>/<journal>-<section>/style.md`).
+   Each carries word budget, arc, paragraph-structure table, and a measured `## Micro-norms` block (paragraphs, sentences per paragraph, words per sentence, citation density) -- TRANSCRIBE these into the spec above; do not re-mine what is already measured.
 2. Read `<journal>/taste.md` (desk signals) and the pack `style-profile.md` for the Writing Principles side.
 3. ONLY if the outlet has no section guides (or a section is missing): count 2-3 stored exemplars from `<journal>/examples/` yourself (sections, paragraphs, sentences, sentence length, citations per sentence, where results appear), or search published papers as a last resort.
 4. Adapt the generic blueprint to THIS paper's claim structure (e.g., H1/H2/H3 map to specific theory subsections).
@@ -65,7 +71,8 @@ The blueprint is venue-ALIGNED: retargeting to a different venue rewrites the bl
 - Display limits: max figures, max tables, format requirements
 - Abstract conventions: word limit, structure (prose vs labeled), arc
 
-Writing Principles is the prose companion to the Structural Blueprint. The blueprint says HOW MANY sentences; Writing Principles says HOW TO WRITE them.
+Writing Principles is the prose companion to the Structural Blueprint.
+The blueprint says HOW MANY sentences; Writing Principles says HOW TO WRITE them.
 
 **Formatting:** per `ref/venue-template.md` (`=====` title, `-----` sections, no `#` headings, one sentence per line).
 
@@ -110,13 +117,24 @@ venue index        ../../_venue/README.md              (family map + IS selectio
 
 ## Procedure
 
-1. **Build the paper's contribution profile.** From the seed/claims (or the topic text), extract: the central contribution, the method, the topic/domain, the evidence strength, and the intended audience. If these are unclear, ask one round of questions before scoring.
-2. **Read the candidate packs.** For each `../../_venue/playbook-<venue>/README.md`, read the `-> Claims` mapping (what it rewards, contribution vs enabler) and the fit signals; read `../../_venue/README.md` for the family map and IS selection table. A pack is family-granular; to pick the OUTLET inside a family, read each candidate `<journal>/taste.md` and score the paper against its desk-accept/desk-reject signals and one-sentence test.
-3. **Score each venue** on five dimensions, each High/Med/Low with a one-line reason: contribution-type match, method match, topic/domain match, evidence-bar match, audience match. Record any hard disqualifier (e.g. "design science -> not ISR").
-4. **Rank and shortlist** the top 3. For each: a fit rationale, what to emphasize for that venue, and the main why-not / risk.
-5. **Recommend ONE primary** + 1-2 backups. The primary is the one whose rewards the paper's strongest claim most directly satisfies.
-6. **Pin it (unless `--no-pin`).** In default mode, ASK the user, then write `venue: <pack-slug>` (plus an optional `venue_outlet:` for the concrete journal) into `STATUS.md`. With `--no-pin`, stop after step 5 and write nothing. Pinning is the handoff to pitch (the cover letter), which re-runs its [primary] claim designation, RQ framing, and Editor's Chair Test for the new venue.
-7. **Derive the structural blueprint.** After pinning, build the per-section quantitative spec:
+1. **Build the paper's contribution profile.**
+   From the seed/claims (or the topic text), extract: the central contribution, the method, the topic/domain, the evidence strength, and the intended audience.
+   If these are unclear, ask one round of questions before scoring.
+2. **Read the candidate packs.**
+   For each `../../_venue/playbook-<venue>/README.md`, read the `-> Claims` mapping (what it rewards, contribution vs enabler) and the fit signals; read `../../_venue/README.md` for the family map and IS selection table.
+   A pack is family-granular; to pick the OUTLET inside a family, read each candidate `<journal>/taste.md` and score the paper against its desk-accept/desk-reject signals and one-sentence test.
+3. **Score each venue** on five dimensions, each High/Med/Low with a one-line reason: contribution-type match, method match, topic/domain match, evidence-bar match, audience match.
+   Record any hard disqualifier (e.g. "design science -> not ISR").
+4. **Rank and shortlist** the top 3.
+   For each: a fit rationale, what to emphasize for that venue, and the main why-not / risk.
+5. **Recommend ONE primary** + 1-2 backups.
+   The primary is the one whose rewards the paper's strongest claim most directly satisfies.
+6. **Pin it (unless `--no-pin`).**
+   In default mode, ASK the user, then write `venue: <pack-slug>` (plus an optional `venue_outlet:` for the concrete journal) into `STATUS.md`.
+   With `--no-pin`, stop after step 5 and write nothing.
+   Pinning is the handoff to pitch (the cover letter), which re-runs its [primary] claim designation, RQ framing, and Editor's Chair Test for the new venue.
+7. **Derive the structural blueprint.**
+   After pinning, build the per-section quantitative spec:
    a. Read the pinned outlet's `<journal>-<section>/style.md` guides; transcribe each guide's word budget, paragraph-structure table, and measured Micro-norms block (paragraphs, sentences/paragraph, words/sentence, citation density) into the per-section spec.
    b. Read `<journal>/taste.md` + the pack `style-profile.md` for Writing Principles (tone, citation style, abstract conventions).
    c. ONLY where section guides are missing: count 2-3 stored exemplars in `<journal>/examples/` yourself, or search published papers at this venue in the same contribution type, and measure the same metrics.
@@ -147,7 +165,8 @@ predicts higher opioid prescribing; observational, CMS Medicare 2015-2020" --no-
 
 ## Venue label -> pack resolution
 
-A human venue name maps to one pack (family granularity; the concrete outlet is a delta inside the pack). This skill owns the map:
+A human venue name maps to one pack (family granularity; the concrete outlet is a delta inside the pack).
+This skill owns the map:
 
 ```text
 MISQ / ISR / MS-IS / MS-Marketing [UTD-IS]     -> playbook-utd-is          (journals: MISQ, ISR, MS-IS, MS-Marketing)
@@ -161,7 +180,8 @@ patent (CNIPA / USPTO / EPO)                   -> playbook-patent          (juri
 
 A named venue with no pack (NEJM, Lancet, ICLR, NeurIPS, ...) stays a bare `venue_outlet:` formatting target: recommend honestly, note no pack exists, and the lifecycle wiring no-ops.
 
-When `STATUS.md venue:` is a human label, every stage resolves it through this map to find `../../_venue/playbook-<slug>`. Prefer writing the pack slug into STATUS directly.
+When `STATUS.md venue:` is a human label, every stage resolves it through this map to find `../../_venue/playbook-<slug>`.
+Prefer writing the pack slug into STATUS directly.
 
 ## Boundaries
 
@@ -175,9 +195,11 @@ section-edit venue-ALIGNED prose; reads the blueprint's per-section paragraph/se
 _venue/*     knowledge packs, read-only here
 ```
 
-It recommends and pins; it does not write claims, pitch, or prose. Venue-first.
+It recommends and pins; it does not write claims, pitch, or prose.
+Venue-first.
 After pinning, the next step is pitch (not claims -- claims is venue-free).
 
 ## Gate
 
-Ask before overwriting an existing `STATUS.md venue:` (a venue change re-runs the pitch's [primary] designation and RQ framing, and reshapes narrative, displays, section-edit, and prose). Claims stays unchanged because it is venue-free.
+Ask before overwriting an existing `STATUS.md venue:` (a venue change re-runs the pitch's [primary] designation and RQ framing, and reshapes narrative, displays, section-edit, and prose).
+Claims stays unchanged because it is venue-free.

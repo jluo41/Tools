@@ -1,0 +1,83 @@
+Change log — what shipped for the paper/application front-door ruling
+=====================================================================
+Part of: diagram/260714-paper-design/  ·  files 01-04 are the ruling (one door · four
+phases · before-after · edit set), approved JL 2026-07-14. THIS is the ledger of the edits.
+
+How it works: 01-04 hold the DESIGN. This file records each CHANGE as it SHIPPED —
+timestamped, JL ruling behind it, one-line note of what moved. Newest at the bottom.
+JL `> JL:` comments move here verbatim once their edit lands.
+
+
+✅ SHIPPED — 2026-07-15
+======================
+
+[2026-07-15 · SHIPPED] the ruling, executed on BOTH twins
+  > JL: maybe we don't call the discover and task from the paper side. It is the probe's task.
+  > JL: what we want are more like the stages' four phases.
+  >> CC: applied the 260714-paper-design ruling (files 01-04) to paper AND application.
+     ① A consumer (paper/application) may call ONLY the probe — the `discover` and `task`
+        front-door verbs are DELETED (they were the paved road to the C6/C7 leak: a
+        consumer session, stake in context, driving the bank itself).
+     ② The front door exposes STAGES; each stage runs the four phases DRAFT → PROBE →
+        REVISE → CHECK, and PROBE is the ONLY phase that touches the bank — through a
+        probe file + a clean-context agent, never inline. Added a "stages × four phases"
+        model block to the paper umbrella stating this positively.
+     A standalone utility question a HUMAN wants goes to the bank's OWN door
+     (/haipipe-task qa · /haipipe-discovery qa) — that line STAYS; it is a person at the
+     counter, not the consumer reaching over it.
+
+[2026-07-15 · SHIPPED] the surfaces, swept on both twins
+  Removed every trace of the two verbs so the greppable keyword index stops advertising a
+  dead door (design file 03/04). Per twin: frontmatter description + summary, the two verb
+  rows, the `discover` example, the No-Arg chooser line, the Dispatch notes rows, the
+  Delivery-Need routing row, the closing "direct discover/task…" line, the Composing diagram.
+  Also swept the prose that TAUGHT the verbs: README.md, PHILOSOPHY.md (×2 each),
+  fn/probes.md ("Relation to the direct task/discover verbs" → "A standalone question"),
+  application/wiki/11-delivery-need.md.
+  Proof (design file 04) on both SKILL.md: `grep '^(discover|task) '` empty · `grep
+  'non-claim utility'` empty · no `Skill("haipipe-(discovery|task)")` proxy call remains.
+
+[2026-07-15 · SHIPPED] cleanliness pass (same logic as the probe rewrite)
+  >> CC: paper description 905 → 576 ch (trim + drop discover/task triggers); paper summary
+     reworded (the paper RAISES, the PROBE phase dispatches). application `summary:` was a
+     ~1.5 KB changelog blob with two tombstones (GATEWAY RETIRED, verdict DELETED) — deflated
+     to one line + History pointer. Deleted the umbrella tombstones (paper _ASK/verdict/
+     gateway; app gateway/verdict). Collapsed the paper `probe` Dispatch note (~30 lines
+     re-deriving the campaign) to a pointer at fn/probes.md.
+
+[2026-07-15 · SHIPPED] file 05-how-probe-works.txt added (JL asked for it)
+  >> CC: documents how probe actually works in the paper — ONE flat by-topic pool
+     (1-probes/, stage affinity is the section's `serves:`, never the path), ONE worker
+     (haipipe-paper-probe, running the haipipe-probe CONSTITUTION — doctrine it reads, not
+     a runtime call; COLLECT ①–④ shared, HARVEST ⑤ paper-side), and TWO scopes that trigger
+     it: a stage's PROBE phase (its own `serves:` slice) and the paper-level `probe` verb
+     (whole pool: board / plan the cross-stage campaign / batch-run). Neither scope touches
+     the bank — only the worker crosses, via a probe file + clean agent. Resolves the wrinkle
+     that file 02's "each stage has a PROBE phase" framing read as if there were N probes.
+
+[2026-07-15 · SHIPPED] skills/paper quality-audit cleanup (JL: line count · one-sentence-one-line · meta sizes)
+  >> CC: (a) purged skills/paper/_archive (160 files) + the nested haipipe-paper-folder/_archive
+     — NOTE: these were stale WORKING-TREE cruft already absent from committed HEAD (an earlier
+     commit had dropped them); recoverable from history (commit 7aadb90). Not the "44% win" first
+     billed; housekeeping. (b) resource/SKILL.md 534→476: summary changelog blob, the "why this
+     exists (receipt)" paragraph, the 50-line CGMtoAge worked example, and the dated JL quotes
+     all removed → they already live in diagram/260714-resource-stage/. (c) 2-phase/SKILLSET_REVIEW.md
+     (a dated audit ledger) → diagram/260707-2phase-review/. (d) 8 bloated descriptions trimmed
+     toward ~55 words; probe-citation summary changelog deflated. (e) umbrella one-sentence-one-line
+     pass. Left UNCOMMITTED — JL mid-refactor (commission: → q-executor:).
+
+
+⏳ STILL OWED
+=============
+
+```text
+  1. THE OLD GATEWAY TOMBSTONES — PAPER SIDE DONE (2026-07-15): all "💀 …GATEWAY…RETIRED"
+     clauses swept from skills/paper (fn/probes, resource, section-edit, probe-citation ×2,
+     2-phase READMEs, per-stage-dispatch, wiki/08); `grep '💀…GATEWAY'` = 0. The live
+     "clean context IS the wall / dispatch goes direct" statement was kept next to each.
+     STILL OWED: the APPLICATION side (app fn/probes, wikis) — same uniform sweep.
+     (Also flagged but out of scope: 4 separate `💀 verdicted/answers/## Verdict DELETED`
+     tombstones remain in paper — a different retired-state family, JL to say.)
+  2. application umbrella description still 1027 ch (only the design-mandated sentence was
+     removed). A full ~55-word trim like the paper twin is optional — JL to say.
+```

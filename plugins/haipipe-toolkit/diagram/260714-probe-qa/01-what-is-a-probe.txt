@@ -10,12 +10,15 @@
 A probe is a file in your paper.
 --------------------------------
 
-That is the whole idea. It does not live in tasks/. There is no probes/ folder.
+That is the whole idea.
+It does not live in tasks/.
+There is no probes/ folder.
 It lives here:
 
     papers/Paper-X/1-probes/PP03_welldoc-feasibility.md
 
-One file per TOPIC. Inside it, one SECTION per question.
+One file per TOPIC.
+Inside it, one SECTION per question.
 
 
 Why it exists
@@ -46,18 +49,20 @@ The one thing that makes this work
 
 The bank NEVER LEARNS THAT PROBES EXIST.
 
-No _ASK/ folders. No probe ids. No back-references. Nothing in tasks/ or
-discoveries/ mentions a paper, ever.
+No _ASK/ folders.
+No probe ids.
+No back-references.
+Nothing in tasks/ or discoveries/ mentions a paper, ever.
 
 So how does a question get across?
 
     It travels as a STRING, in an agent's prompt. Not as a file.
     Nothing is planted on disk.
 
-And the answer comes back as a file the executor wrote for its OWN reasons —
-readable, general, with no paper in it.
+And the answer comes back as a file the executor wrote for its OWN reasons — readable, general, with no paper in it.
 
-That asymmetry is the whole design. Everything else follows from it.
+That asymmetry is the whole design.
+Everything else follows from it.
 
 
 Why we care so much
@@ -77,9 +82,9 @@ Because we already broke it once, and the broken file is still on disk:
 
 A paper session, holding the stake in its head, went and did the task work itself.
 
-The damage is not that a rule was broken. It is that this evidence — a genuinely
-reusable fact about the WellDoc corpus — came back SHAPED AROUND ONE PAPER'S
-HYPOTHESES. The next paper that reads it inherits a frame it never chose.
+The damage is not that a rule was broken.
+It is that this evidence — a genuinely reusable fact about the WellDoc corpus — came back SHAPED AROUND ONE PAPER'S HYPOTHESES.
+The next paper that reads it inherits a frame it never chose.
 
 Contaminating the bank costs more than the probe did.
 
@@ -115,15 +120,14 @@ This is the piece people get wrong.
                                        the answer ALREADY EXISTS
 ```
 
-The executor also does what we call ANSWERABILITY WORK: writing readable digests,
-refactoring code so future questions become cheap — without knowing which questions
-are coming.
+The executor also does what we call ANSWERABILITY WORK: writing readable digests, refactoring code so future questions become cheap — without knowing which questions are coming.
 
-So in a healthy project, most probe questions should hit an answer that is already
-sitting there. Commissioning new work is the EXCEPTION, not the norm.
+So in a healthy project, most probe questions should hit an answer that is already sitting there.
+Commissioning new work is the EXCEPTION, not the norm.
 
 
-Two people can explore a task. Neither of them is a probe.
+Two people can explore a task.
+Neither of them is a probe.
 -----------------------------------------------------------
 
 ```text
@@ -138,7 +142,8 @@ Two people can explore a task. Neither of them is a probe.
 
 `ls QA/` then reads like a menu: here is what this task has established, and where.
 
-A probe does not get a special door. It reuses the door humans already walk through.
+A probe does not get a special door.
+It reuses the door humans already walk through.
 
 
 The translation, in one picture
@@ -161,9 +166,12 @@ The translation, in one picture
    └──────────────────────────┘        └──────────────────────────┘
 ```
 
-THE PAPER DOES BOTH TRANSLATIONS. The executor does neither.
+THE PAPER DOES BOTH TRANSLATIONS.
+The executor does neither.
 
-That is exactly why the answer stays reusable: Paper-A reads "α = 0.34" and calls H2
-supported. Paper-B reads THE SAME FILE and calls C4 inconclusive.
+That is exactly why the answer stays reusable: Paper-A reads "α = 0.34" and calls H2 supported.
+Paper-B reads THE SAME FILE and calls C4 inconclusive.
 
-Same fact. Different readings. Not a contradiction — the correct behavior.
+Same fact.
+Different readings.
+Not a contradiction — the correct behavior.

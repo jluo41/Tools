@@ -1,6 +1,6 @@
 ---
 name: haipipe-data-record
-description: "Stage 2 (Record) specialist. Builds, runs, and reviews HumanFn / RecordFn; inspects 2-RecStore; loads record-layer assets. Supports multi-partition via patient_ids predicate pushdown. Called by /haipipe-data orchestrator. Direct invocation works for stage-scoped work."
+description: "Stage 2 (Record) specialist: builds/runs/reviews HumanFn / RecordFn, inspects 2-RecStore, loads record-layer assets, supports multi-partition via patient_ids predicate pushdown. Called by /haipipe-data; direct invocation works stage-scoped."
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
@@ -13,9 +13,9 @@ metadata:
 Skill: haipipe-data-record
 ==========================
 
-Stage 2 specialist. Owns all HumanFn / RecordFn work and the 2-RecStore
-layer. Called by the `/haipipe-data` orchestrator; can also be invoked
-directly.
+Stage 2 specialist.
+Owns all HumanFn / RecordFn work and the 2-RecStore layer.
+Called by the `/haipipe-data` orchestrator; can also be invoked directly.
 
   Function axis:  dashboard | load | cook | design-chef | design-kitchen | review
 
@@ -53,16 +53,17 @@ review           ref/concepts.md             ../haipipe-data/fn/fn-review.md
 (no fn arg)      ref/concepts.md             (ref-only mode)
 ```
 
-`design-chef` reads `../haipipe-data-case/ref/concepts.md` because a
-RecordFn's output schema must satisfy what CaseFn expects downstream.
+`design-chef` reads `../haipipe-data-case/ref/concepts.md` because a RecordFn's output schema must satisfy what CaseFn expects downstream.
 
 ---
 
 Step-by-Step Protocol
 ----------------------
 
-Step 0: Read `../haipipe-data/ref/0-overview.md` for cross-stage context. Mandatory.
-Step 1: Parse args after `/haipipe-data-record`. Same vocabulary as the source
+Step 0: Read `../haipipe-data/ref/0-overview.md` for cross-stage context.
+Mandatory.
+Step 1: Parse args after `/haipipe-data-record`.
+Same vocabulary as the source
         specialist — see its dispatch table.
 Step 2: Read this skill's `ref/concepts.md` for stage-2 specifics.
 Step 3: Read the umbrella fn doc.
@@ -93,8 +94,8 @@ Hand-off contract (Stage 2 -> 3):
 Partition Support
 ------------------
 
-Record supports multi-partition processing for large datasets. Each partition
-processes a subset of patients, reducing peak memory.
+Record supports multi-partition processing for large datasets.
+Each partition processes a subset of patients, reducing peak memory.
 
 **CLI:**
 ```bash

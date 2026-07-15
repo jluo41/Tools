@@ -93,20 +93,27 @@ The draft ENDS by proposing the probe work it just created. DRAFT proposes; PROB
 ```markdown
 ---
 
-## Probes proposed by this draft
+## Q-consumer proposed by this draft
 
-values:    {VAL:? cross-model MAE}            -> expected source: npjDM Table 2 / tasks/ run
-           {VAL:? mean agreeableness}         -> paper-local: 0-displays/table1-.../source/metrics.json
-citation:  \citep{authors2025npjdm}           -> key in .bib, verify placement only
-           \cite{TOADD} @ P2.S1 (ML trait-measurement priors) -> _CITATION_ row #4; needs discovery sweep (buffered: PP12)
-display:   P2 wants the trait-distribution figure -> 0-displays/ unit exists? LINK : DR request (4-display inbox)
-heavier:   case-mix robustness needs a NEW task run (buffered: PP13)
+The bank questions this draft raises — one `##` per question: id, title, what it wants.
+Only needs HEAVIER than pointer-following land here (a NEW task run, a discovery sweep); the paper-local rollup below is NOT questions.
+
+### Q1 · case-mix robustness
+Needs a NEW task run; will fill {VAL:? case-mix robustness}.
+
+### Q2 · ML trait-measurement priors
+Needs a discovery sweep; will fill \cite{TOADD} @ P2.S1.
+
+Placeholder rollup (pointer-following — resolves paper-local, NOT bank questions):
+values:    {VAL:? mean agreeableness}  -> paper-local: 0-displays/table1-.../source/metrics.json
+citation:  \citep{authors2025npjdm}    -> key in .bib, verify placement only
+display:   P2 wants the trait-distribution figure -> LINK 0-displays/ unit : DR request (4-display inbox)
 ```
 
 Rules:
 - Derived from the prose: every `{VAL:?}` and `\cite{TOADD}` placeholder appears here with its EXPECTED source (pointer-following first); `\citep{key}` citations appear only if placement needs verifying. When the draft already SEES the pointer in the paper's own registries, say so — `-> paper-local: _VALUES_6-results.md` / `0-displays/<unit>/source/metrics.json` — and PROBE closes it with nothing dispatched (`answered-local`).
 - Display needs are stated per paragraph.
-- Anything heavier than pointer-following (a new task run, a lit sweep) is RAISED as a `state: planned` question SECTION in `1-probes/PP<NN>_<topic>.md` (one file per TOPIC) + a Status board row. The section carries serves: / target: / state: / commission: (the question in GENERAL language — no claim ids, no stake), and an EMPTY reading: — DRAFT proposes, it never executes.
+- Anything heavier than pointer-following (a new task run, a lit sweep) is RAISED as a `state: planned` question SECTION in `1-probes/PP<NN>_<topic>.md` (one file per TOPIC) + a Status board row. The section carries serves: / target: / state: / q-executor: (the question in GENERAL language — no claim ids, no stake), and an EMPTY a-consumer: — DRAFT proposes, it never executes.
 - **Board rows are bullet lines, never markdown tables** (JL standing rule — no tables in probe documents; the checker enforces it inside probe files). Append one line per probe file to `1-probes/README.md`:
   `- PP<NN> · <stage/section> · <state> · <one-line need> · file: <path>` EXCEPTION: a missing DISPLAY UNIT never becomes a question SECTION — it becomes a DR row in `0-lifecycle/4-display/_DISPLAY_REQUEST.md` (section-edit never creates displays; the display stage solves requests).
 - The ⛔ STOP presentation shows this block, so the user reviews the STRUCTURE and the QUESTIONS RAISED at the same gate.
@@ -138,7 +145,7 @@ This is a BACKWARD FILL: tex -> .md, done ONCE at scaffold time. From then on th
 - [ ] Every paragraph has a heading, preview, and real prose sentences
 - [ ] Structure overview matches the paragraph blocks
 - [ ] Every unverified number is a `{VAL:?}`; every citation gap a `\cite{TOADD}` + `_CITATION_` row; every `\citep{key}` greps to a real .bib entry (nothing invented)
-- [ ] "Probes proposed by this draft" block at the end covers every placeholder + display need; heavier needs buffered as planned PP skeletons in `1-probes/` + Status board row
+- [ ] "Q-consumer proposed by this draft" block at the end covers every placeholder + display need; heavier needs buffered as planned PP skeletons in `1-probes/` + Status board row
 - [ ] ⛔ The user has reviewed the STRUCTURE + the QUESTIONS RAISED and approved (no open structural `> USER:` questions)
 - [ ] _LOG has a `[GATE] draft-review: approved` entry quoting the user
 

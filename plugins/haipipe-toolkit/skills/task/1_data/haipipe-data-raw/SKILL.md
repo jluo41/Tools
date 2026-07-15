@@ -1,6 +1,6 @@
 ---
 name: haipipe-data-raw
-description: "Stage 0' (raw cohort) specialist. Helps researchers and presenters build a clear, business-readable understanding of how a single data point in a raw cohort extract is generated — BEFORE the data enters Stage 1 (Source). Domain-agnostic: works for CGM streams, EHR encounter tables, claims lines, sensor logs, messaging extracts, etc. Owns _WorkSpace/0-RawDataStore/<cohort>/. Output is a datapoint-timeline.txt describing one row's lifecycle: pre-data background, in-data events, fog of war, late-visible signals, cross-cutting events. Distinct from haipipe-data-external (sideways dimension/lookup pantry) and haipipe-data-source (Stage 1 wrapping). Trigger: raw, rawstore, 0-rawstore, raw cohort, data point generation, datapoint timeline, lifecycle, fog of war, /haipipe-data-raw."
+description: "Stage 0' (raw cohort) specialist: builds a business-readable picture of how one data point in a raw cohort extract is generated, BEFORE it enters Stage 1 (Source). Trigger: raw, rawstore, 0-rawstore, raw cohort, data point generation, datapoint timeline, lifecycle, fog of war, /haipipe-data-raw."
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
@@ -13,22 +13,15 @@ metadata:
 Skill: haipipe-data-raw
 =======================
 
-Stage 0' (raw cohort) specialist. Owns the raw-extract folders under
-`_WorkSpace/0-RawDataStore/<cohort>/` and the practice of writing a
-single-data-point lifecycle diagram BEFORE the cohort is wrapped into
-SourceFn (Stage 1).
+Stage 0' (raw cohort) specialist.
+Owns the raw-extract folders under `_WorkSpace/0-RawDataStore/<cohort>/` and the practice of writing a single-data-point lifecycle diagram BEFORE the cohort is wrapped into SourceFn (Stage 1).
 
-Domain-agnostic: a "raw cohort" can be a CGM stream, an EHR encounter
-table, a claims/billing line, a sensor session log, a messaging /
-engagement extract, or any vendor delivery. The 5-zone timeline shape
-applies equally to all.
+Domain-agnostic: a "raw cohort" can be a CGM stream, an EHR encounter table, a claims/billing line, a sensor session log, a messaging / engagement extract, or any vendor delivery.
+The 5-zone timeline shape applies equally to all.
 
   Function axis:  dashboard | load | understand | review | hand-off
 
-Distinct from `haipipe-data-external` (sideways pantry of dimension
-lookups, e.g. NPI / NDC / zip3 in US-healthcare contexts, station /
-device-model lookups in IoT contexts) — raw is the cohort-specific
-event extract that becomes the spine of Stages 1+.
+Distinct from `haipipe-data-external` (sideways pantry of dimension lookups, e.g. NPI / NDC / zip3 in US-healthcare contexts, station / device-model lookups in IoT contexts) — raw is the cohort-specific event extract that becomes the spine of Stages 1+.
 
 ---
 
@@ -71,8 +64,7 @@ hand-off       ref/concepts.md +
 (no fn arg)    ref/concepts.md                           (ref-only mode)
 ```
 
-`hand-off` reads Stage-1 Source's ref because the timeline directly
-drives the SourceFn schema downstream.
+`hand-off` reads Stage-1 Source's ref because the timeline directly drives the SourceFn schema downstream.
 
 ---
 
@@ -90,29 +82,21 @@ Step 4: Execute, scoped to _WorkSpace/0-RawDataStore/<cohort>/.
 Step 5: Emit the structured tail (status / summary / artifacts / next).
 ```
 
-For `understand` specifically: do NOT write the datapoint-timeline.txt
-up front. The procedure is *iterative dialogue* — see ref/concepts.md
-"The understand Procedure" for the conversation pattern (restate user's
-framing → confirm/challenge → draft → validate against parquet →
-write only after alignment).
+For `understand` specifically: do NOT write the datapoint-timeline.txt up front.
+The procedure is *iterative dialogue* — see ref/concepts.md "The understand Procedure" for the conversation pattern (restate user's framing → confirm/challenge → draft → validate against parquet → write only after alignment).
 
-For `hand-off`: the output is a checklist, not a code change. Stage 1
-(SourceFn) work is owned by `haipipe-data-source` — this skill stops
-at "here's what SourceFn must do for this cohort."
+For `hand-off`: the output is a checklist, not a code change.
+Stage 1 (SourceFn) work is owned by `haipipe-data-source` — this skill stops at "here's what SourceFn must do for this cohort."
 
 ---
 
 Stage Scope
 ------------
 
-VOLUME-RESIDENT COHORTS (PHI): some raw cohorts never exist under the
-local `_WorkSpace/` — PHI raw data lives ONLY on a Databricks catalog
-volume (`<VOLUME_BASE>/0-RawDataStore/<cohort-slug>/`, e.g. REACH's
-`reach-adhd`). For those cohorts, `dashboard`/`load` must look at the
-volume path (run on the Databricks side, or work from schema docs) —
-a missing local folder does NOT mean the cohort doesn't exist. Only
-aggregated/derived summaries may come local. See
-`../haipipe-task-for-raw/SKILL.md` "Pattern 2".
+VOLUME-RESIDENT COHORTS (PHI): some raw cohorts never exist under the local `_WorkSpace/` — PHI raw data lives ONLY on a Databricks catalog volume (`<VOLUME_BASE>/0-RawDataStore/<cohort-slug>/`, e.g. REACH's `reach-adhd`).
+For those cohorts, `dashboard`/`load` must look at the volume path (run on the Databricks side, or work from schema docs) — a missing local folder does NOT mean the cohort doesn't exist.
+Only aggregated/derived summaries may come local.
+See `../haipipe-task-for-raw/SKILL.md` "Pattern 2".
 
 Owns:
   - `_WorkSpace/0-RawDataStore/<cohort>/` folders (and their

@@ -2,7 +2,7 @@
 
 A paper is a delivery contract, not a writing folder.
 
-Tasks run code. Discoveries inspect outside evidence. Both are EXECUTORS, and both answer a plain question through their own `qa` verb, returning `<leaf>/QA/<n>-<slug>.md`. A PROBE is a PAPER-LEVEL document (`1-probes/PPNN_<topic>.md`) that binds each of the paper's questions to one of those answers BY PATH; the settled CLAIM STATUS lands in the paper's own `0-lifecycle/1-claims/1-claims.md`. The paper sits downstream and asks: which judged evidence does this paper select, and how does it become a submittable manuscript?
+Tasks run code. Discoveries inspect outside evidence. Both are EXECUTORS, and both answer a plain question through their own `qa` verb, returning `<task-folder>/QA/<n>-<slug>.md`. A PROBE is a PAPER-LEVEL document (`1-probes/PPNN_<topic>.md`) that binds each of the paper's questions to one of those answers BY PATH; the settled CLAIM STATUS lands in the paper's own `0-lifecycle/1-claims/1-claims.md`. The paper sits downstream and asks: which judged evidence does this paper select, and how does it become a submittable manuscript?
 
 ## Lifecycle
 
@@ -31,7 +31,7 @@ Two axes stay orthogonal: **layer/frontier** (which stage has the active work) a
 
 ## Evidence routing
 
-For claim-related evidence, the paper always routes through the PROBE phase. It raises its questions as SECTIONS in `1-probes/`, MATCHes each against the bank's QA corpus (most close there, for free), and dispatches only what MATCH cannot close — handing the section's `commission:` block, VERBATIM, to the task/discovery orchestrators. 💀 The probe GATEWAY agent is RETIRED. Direct task/discover for non-claim utility work only.
+For claim-related evidence, the paper always routes through the PROBE phase. It raises its questions as SECTIONS in `1-probes/`, MATCHes each against the bank's QA corpus (most close there, for free), and dispatches only what MATCH cannot close — handing the section's `q-executor:` block, VERBATIM, to the task/discovery orchestrators. A standalone utility question a human wants goes to the bank's own `/haipipe-task qa` door, never proxied by the paper.
 
 The paper does not execute code, search literature directly, or store raw results.
 
@@ -93,8 +93,8 @@ STATUS.md, 0-lifecycle/<stage>/<stage>.tex, 0-sections/,
 1-rounds/vYYMMDD/{README,discussion,decisions,todo,applied}.md.
 
 Preserve boundaries:
-- for claim-related evidence, paper routes through probe (which calls
-  task/discover during Gather); direct task/discover for non-claim only
+- for claim-related evidence, paper routes through a stage's PROBE phase; there
+  is no direct task/discover — a standalone utility question uses the bank's own door
 - paper raises questions as sections in 1-probes/, MATCHes, then dispatches
 - paper does not execute code, search literature, or store raw results
 ```

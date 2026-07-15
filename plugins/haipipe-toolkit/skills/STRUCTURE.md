@@ -34,7 +34,7 @@ The probe, in five lines
 ```
 A PROBE IS A PAPER-LEVEL DOCUMENT. Nothing else.
     papers/<P>/1-probes/PPNN_<topic>.md    ·    applications/<A>/1-probes/PPNN_<topic>.md
-One file per TOPIC; each question is one SECTION: serves / target / state / commission / reading.
+One file per TOPIC; each question is one SECTION: serves / target / state / q-executor/a-consumer.
 Plus one '## Why' per file — the STAKE. It NEVER leaves the file.
 Binding is by PATH, never by id: `target:` points at a QA file in the bank.
 ```
@@ -42,11 +42,11 @@ Binding is by PATH, never by id: `target:` points at a QA file in the bank.
 The bank (`tasks/` + `discoveries/`) is **PROBE-UNAWARE**: no `_ASK/`, no `_ANS/`,
 no `answers:` field, no PP id anywhere. It answers plain questions through its own
 `qa` verb — `/haipipe-task qa`, `/haipipe-discovery qa` — which returns
-`<leaf>/QA/<n>-<slug>.md`: the executor's READABLE digest, numbered so that
+`<task-folder>/QA/<n>-<slug>.md`: the executor's READABLE digest, numbered so that
 `ls QA/` IS the index.
 
 **The probe CAUSES a QA file; the EXECUTOR AUTHORS it.** A consumer session never
-executes bank work inline (LAW 1) — it hands the `commission` block, verbatim, to
+executes bank work inline (LAW 1) — it hands the `q-executor` block, verbatim, to
 `Agent(haipipe-task-orchestrator-agent)` or
 `Agent(haipipe-discovery-orchestrator-agent)`, and their clean context is the wall.
 There is NO probe gateway agent (retired 2026-07-14).
@@ -101,12 +101,12 @@ paper        academic deliverables (stages × DPRC phases)
 application  report / message / UI deliverables
 ```
 
-The `probe` bucket holds NO folder in the execution tree and no live gateway. It
-holds two skills — `haipipe-probe` (the constitution: probe-file anatomy, path
-binding, the QA/ contract, the qa verb, the five-step loop, the cost ladder, the
-two LAWS, status derivation, the writer table) and `haipipe-probe-review` (the
-G1/G2/G3 claim-judging rulebook) — plus one live agent,
-`haipipe-probe-reviewer-agent`.
+The `probe` bucket holds NO folder in the execution tree, no live gateway, and no
+agents. It holds ONE skill — `haipipe-probe` (the constitution: probe-file anatomy,
+path binding, the QA/ contract, the qa verb, the five-step loop, the cost ladder, the
+two LAWS, status derivation, the writer table). A probe is communication between a
+consumer and an executor; the claim's status is authored by the consumer, in its own
+`1-claims.md`, from the answered QA file.
 
 There is no `narrative` bucket — narrative is a paper STAGE
 (`paper/1-lifecycle/3-narrative/`), not a layer. The bucket is `discovery`,

@@ -13,14 +13,14 @@ No message bus, no shared contract file. Two channels carry it, and the agent
 1. Command   paper hits a claim gap -> the agent runs
              /haipipe-paper probe "<question>" (opens a SECTION in the topic's probe
              file). The PROBE worker MATCHes it against the bank's QA corpus first, and
-             dispatches the `commission:` block only if MATCH cannot close it.
+             dispatches the `q-executor:` block only if MATCH cannot close it.
 2. Disk      paper writes the need (in 0-lifecycle/1-claims / STATUS); the executor
-   (async)   writes the answer as <leaf>/QA/<n>-<slug>.md; the section's `target:`
-             points at that FILE and its `reading:` interprets it. No handshake —
+   (async)   writes the answer as <task-folder>/QA/<n>-<slug>.md; the section's `target:`
+             points at that FILE and its `a-consumer:` interprets it. No handshake —
              binding is by PATH, and the file on disk IS the state.
 ```
 
-Who owns which format: the paper owns the NEED (loose) and the `reading:` (its own
+Who owns which format: the paper owns the NEED (loose) and the `a-consumer:` (its own
 vocabulary). The EXECUTOR owns the ANSWER (the QA file: `# Q` / `## Answer` /
 `## Caveats` / `## Not-done`, general language, anatomy in
 `probe/haipipe-probe/SKILL.md`). A CLAIM's status is the paper's alone, and lives in
@@ -36,7 +36,7 @@ back inside the paper lifecycle (1-claims / 2-pitch / 3-narrative / 4-display
 ```
 paper GAP -> a question SECTION in 1-probes/ -> the PROBE phase MATCHes it ->
 DISPATCH only what MATCH cannot close -> the answering QA file -> the section's
-`reading:` -> the paper backfills (the claim's status flips in 1-claims.md)
+`a-consumer:` -> the paper backfills (the claim's status flips in 1-claims.md)
 ```
 
 Do NOT route through a project-level narrative layer (there isn't one).
@@ -49,12 +49,12 @@ claim needs outside literature / context      -> /haipipe-discovery <question>
 claim or display needs a run / data artifact  -> /haipipe-task <contract>
 settled claim status (supported|refuted|      -> 0-lifecycle/1-claims/1-claims.md (the ONLY home of a
   inconclusive + confidence + claim_type)         claim's status; the probe section carries only its
-                                                  `reading:`. `## Verdict`/`verdicted` are DELETED)
+                                                  `a-consumer:`. `## Verdict`/`verdicted` are DELETED)
 ```
 
 The entry is `/haipipe-paper probe "<need>"`: it opens a question SECTION in the
 right topic's probe file. The PROBE phase then runs the five-step loop — ORGANIZE →
-MATCH (reuse an existing QA file if one answers it) → DISPATCH (the `commission:`
+MATCH (reuse an existing QA file if one answers it) → DISPATCH (the `q-executor:`
 block, verbatim, to the task/discovery orchestrator) → POINT → INTERPRET.
 
 Two entry rules (who the delivery calls):
@@ -78,13 +78,13 @@ backfill     the slot/display to update when the worker returns
 
 ## Backfill (the return direction)
 
-The answer is a FILE: the executor's `<leaf>/QA/<n>-<slug>.md`. The probe
-section's `target:` points at it, and its `reading:` says what it MEANS for
+The answer is a FILE: the executor's `<task-folder>/QA/<n>-<slug>.md`. The probe
+section's `target:` points at it, and its `a-consumer:` says what it MEANS for
 this paper. On backfill:
 
 ```
 - write the claim's status in 0-lifecycle/1-claims/1-claims.md — supported |
-  refuted | inconclusive, + confidence + claim_type + G1/G2/G3. THAT ledger is
+  refuted | inconclusive, + confidence + claim_type. THAT ledger is
   the only home of a claim's status.
 - if the evidence narrows the claim, narrow the claim wording in 1-claims
 - the executor NEVER edits paper prose: it returns a FACT, and the paper decides
@@ -92,7 +92,7 @@ this paper. On backfill:
 ```
 
 Multiple papers can cite the SAME QA file in discoveries/ + tasks/, each through
-its own section and its own `reading:` — the FACT is shared, the JUDGMENT is not.
+its own section and its own `a-consumer:` — the FACT is shared, the JUDGMENT is not.
 
 ## Autonomous drain (the "keep going" loop)
 

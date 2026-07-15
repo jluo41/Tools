@@ -14,20 +14,25 @@ metadata:
 
 Render the LaTeX table(s) for a paper based on: **$ARGUMENTS**
 
-This is the **data-table renderer** of the display family. Its sibling
+This is the **data-table renderer** of the display family.
+Its sibling
 `haipipe-paper-display-figure` renders data *plots*; this skill renders data
-*tables*. Both read an aggregated data file and emit a reproducible asset; neither
+*tables*.
+Both read an aggregated data file and emit a reproducible asset; neither
 recomputes from raw evidence (that is a `haipipe-task-for-display` task).
 
 ## Output: write into a display unit (not flat figures/)
 
 When the target is a paper (a folder with `0-displays/`), the table goes into a
-`0-displays/displayNN-<slug>/` unit. Follow the shared contract:
+`0-displays/displayNN-<slug>/` unit.
+Follow the shared contract:
 `../haipipe-paper-display/ref/display-unit-output-contract.md`. For THIS renderer:
 asset -> `assets/table-body.tex` (the `tabular`/`threeparttable` block), and
 `float.tex` is the wrapper that `\input`s it with caption + label; rebuild spec ->
-`source/gen_*.py` + the aggregated CSV path. Compile `preview.pdf`, set README
-status. A self-contained `float.tex` is acceptable only as a no-paper fallback.
+`source/gen_*.py` + the aggregated CSV path.
+Compile `preview.pdf`, set README
+status.
+A self-contained `float.tex` is acceptable only as a no-paper fallback.
 
 ## Scope: What This Skill Can and Cannot Do
 
@@ -42,16 +47,20 @@ status. A self-contained `float.tex` is acceptable only as a no-paper fallback.
 | **Computing the numbers** | ❌ No | The aggregated CSV/JSON must already exist (from a task/probe) |
 
 **Boundary with the figure renderer:** if the asset is a chart, use
-`haipipe-paper-display-figure`. If it is a typeset table, use this skill. Tables
+`haipipe-paper-display-figure`.
+If it is a typeset table, use this skill.
+Tables
 were previously a side-feature of the figure renderer; they now live here so the
 table-specific concerns (column alignment, decimal places, significance stars, SE
 rows, panels, table notes) can be done properly.
 
 ## Constants
 
-- **STYLE = `booktabs`** — Table rule style. Always three-line (top/mid/bottom rule), never vertical rules.
+- **STYLE = `booktabs`** — Table rule style.
+  Always three-line (top/mid/bottom rule), never vertical rules.
 - **NUMBER_ALIGN = `siunitx`** — Align numeric columns on the decimal point via `S[table-format=...]`; fall back to `r` if siunitx is unavailable.
-- **STARS = `* p<0.05, ** p<0.01, *** p<0.001`** — Default significance thresholds. State the exact mapping in the table note.
+- **STARS = `* p<0.05, ** p<0.01, *** p<0.001`** — Default significance thresholds.
+  State the exact mapping in the table note.
 - **SE_STYLE = `paren-below`** — Standard errors in parentheses on the line below each coefficient.
 - **DECIMALS = 3** — Default decimal places for coefficients; 0-2 for counts/N.
 - **NOTES = `threeparttable`** — Table notes go in a `threeparttable` `tablenotes` block, not in `\caption{}`.
@@ -61,7 +70,8 @@ rows, panels, table notes) can be done properly.
 ## Inputs
 
 1. **Display contract** — the unit's `README.md` (claim, caption intent, section, source) under `0-displays/displayNN-<slug>/`
-2. **Aggregated data file** — a CSV/JSON of *already-computed* results (e.g. a regression export from a `Z0N_Display` task). Never raw PHI data.
+2. **Aggregated data file** — a CSV/JSON of *already-computed* results (e.g. a regression export from a `Z0N_Display` task).
+   Never raw PHI data.
 3. **Optional table spec** — column order, which models, star thresholds, decimals, transpose (variables-as-rows vs models-as-columns), rows to bold
 
 If no display contract exists, scan for aggregated data files and ask which table to render.
@@ -71,8 +81,10 @@ If no display contract exists, scan for aggregated data files and ask which tabl
 ### Step 1: Read the Display Contract and Locate Data
 
 Read `0-displays/displayNN-<slug>/README.md` for the claim this table must defend,
-the target section, and the caption intent. Locate the aggregated data file it
-cites. Confirm the file holds *aggregated* results, not row-level PHI.
+the target section, and the caption intent.
+Locate the aggregated data file it
+cites.
+Confirm the file holds *aggregated* results, not row-level PHI.
 
 ### Step 2: Infer the Table Type
 
@@ -144,13 +156,16 @@ python gen_table*.py
 ```
 
 Confirm `float.tex` exists, compiles standalone, and the numbers match the source
-file by spot-check. Then write the one-line `latex_include.tex` (`\input{...float.tex}`)
+file by spot-check.
+Then write the one-line `latex_include.tex` (`\input{...float.tex}`)
 for the master shell.
 
-**float.tex convention:** match the display unit. If the unit's scaffold splits
+**float.tex convention:** match the display unit.
+If the unit's scaffold splits
 the float into a caption/label wrapper (`float.tex`) that `\input`s a body asset
 (`assets/table-body.tex`), emit the `tabular`/`threeparttable` block into the body
-asset and leave the wrapper alone. If the unit has no such split, a self-contained
+asset and leave the wrapper alone.
+If the unit has no such split, a self-contained
 `float.tex` (the example above) is correct.
 
 ### Step 6: Table Quality Review with REVIEWER_MODEL
@@ -197,7 +212,8 @@ mcp__codex__codex:
 ## Key Rules
 
 - **Every table must be reproducible** — save the generation script alongside `float.tex`.
-- **Do NOT hardcode numbers** — always read from the aggregated CSV/JSON. A hand-typed coefficient is a defect.
+- **Do NOT hardcode numbers** — always read from the aggregated CSV/JSON.
+  A hand-typed coefficient is a defect.
 - **Aggregated input only** — never read raw row-level / PHI data here; that computation is a `haipipe-task-for-display` task.
 - **booktabs, no vertical rules, no chart junk.**
 - **Stars and SE rows follow one stated convention**, defined in a `threeparttable` note.
@@ -212,8 +228,10 @@ Z0N_Display task (server, PHI)  --aggregated CSV-->  this skill (laptop-safe)  -
 ```
 
 The heavy computation (regression, descriptives) is a `haipipe-task-for-display`
-task that runs against secure data and exports a movable aggregated CSV. This
-skill turns that CSV into the publication table. Same split as
+task that runs against secure data and exports a movable aggregated CSV.
+This
+skill turns that CSV into the publication table.
+Same split as
 `haipipe-paper-display-figure`: the task owns the data, the renderer owns the
 typesetting.
 

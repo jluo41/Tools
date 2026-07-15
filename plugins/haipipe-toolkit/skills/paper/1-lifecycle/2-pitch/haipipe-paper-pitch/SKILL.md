@@ -6,18 +6,21 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "4.3.1"
   last_updated: "2026-07-14"
-  summary: "Pitch stage orchestrator. Defines WHAT (cover letter sections + probes) and drives phases (draft -> probe -> revise -> check) internally. User invokes pitch, not phases. v4.3 (probe-redesign residue sweep): pitch questions are SECTIONS in 1-probes/; a semantic shift cites a landed QA file or a `read` section, not a 'card'. v4.3.1: every shared-convention pointer was off by one `../` — `../../PHILOSOPHY.md` / `../../wiki/<page>.md` resolved to 1-lifecycle/, which holds neither. The stage skills sit TWO levels under skills/paper/ (1-lifecycle/<N>-<stage>/<skill>/), so the correct depth is `../../../`. Every required-read at the top of this skill silently failed. Repointed."
+  summary: "Pitch stage orchestrator (stage 2, venue-ALIGNED): the cover-letter sections + a Probes section, driving DRAFT -> PROBE -> REVISE -> CHECK internally (the user invokes pitch, not the phases). Pitch questions are SECTIONS in 1-probes/; a semantic shift cites a landed QA file or a `read` section. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-paper-pitch
 ====================================
 
-Stage orchestrator for the **pitch** stage (stage 2, venue-ALIGNED). The user invokes this skill; it drives the phases internally.
+Stage orchestrator for the **pitch** stage (stage 2, venue-ALIGNED).
+The user invokes this skill; it drives the phases internally.
 
-The pitch is the **cover letter**: the venue-ALIGNED document that tells THIS editor why THIS paper fits THEIR journal. It can be sent to an editor as-is.
+The pitch is the **cover letter**: the venue-ALIGNED document that tells THIS editor why THIS paper fits THEIR journal.
+It can be sent to an editor as-is.
 
-The pitch is not a paper plan, outline, or claim matrix. It is the version a person can understand in one minute:
+The pitch is not a paper plan, outline, or claim matrix.
+It is the version a person can understand in one minute:
 
 ```
 What is this paper about?
@@ -33,7 +36,7 @@ What is still fragile?
 How did the story get here?
 ```
 
-Read first: `../../../PHILOSOPHY.md`, `../../../wiki/04-lifecycle-map.md`.
+Read first: `../../../PHILOSOPHY.md`, `../../ref/04-lifecycle-map.md`.
 
 ## Artifact Spec
 
@@ -57,8 +60,10 @@ Read first: `../../../PHILOSOPHY.md`, `../../../wiki/04-lifecycle-map.md`.
 - Probes -- pitch-level investigation needs (venue fit, framing risk, competing papers)
 
 **Formatting:**
-- Heading style: `=====` for the document title, `-----` for sections. No `#`/`##`/`###`.
-- One sentence per line (semantic line breaks). No dense multi-sentence paragraphs.
+- Heading style: `=====` for the document title, `-----` for sections.
+  No `#`/`##`/`###`.
+- One sentence per line (semantic line breaks).
+  No dense multi-sentence paragraphs.
 
 **Done-criteria:**
 - [ ] Editor's Chair Test passes (venue question answered)
@@ -74,7 +79,8 @@ Illustration:
 
 ## Phase Orchestration
 
-When the user invokes `/haipipe-paper pitch`, this skill drives the phases in order. The user does not call phase skills directly — but steers them with VERBS on this stage:
+When the user invokes `/haipipe-paper pitch`, this skill drives the phases in order.
+The user does not call phase skills directly — but steers them with VERBS on this stage:
 
 ```
 /haipipe-paper pitch <paper-dir>            -> open: status + frontier; advance ONLY on the user's verb
@@ -84,9 +90,16 @@ When the user invokes `/haipipe-paper pitch`, this skill drives the phases in or
 /haipipe-paper pitch <paper-dir> check      -> open the CHECK gate
 ```
 
-**Hard gates (binding).** After DRAFT: ⛔ STOP — present the draft for review and end the turn; the user's verb/"go" advances, logged as `[GATE] draft-review: approved` quoting the user. Each phase runs via its `Skill()` dispatch — a phase executed inline did not happen; the `[REVISE]` _LOG entry carries its `workers:` proof line. Never commit or conclude the stage before CHECK opens with its report. The agent never self-advances past a gate.
+**Hard gates (binding).**
+After DRAFT: ⛔ STOP — present the draft for review and end the turn; the user's verb/"go" advances, logged as `[GATE] draft-review: approved` quoting the user.
+Each phase runs via its `Skill()` dispatch — a phase executed inline did not happen; the `[REVISE]` _LOG entry carries its `workers:` proof line.
+Never commit or conclude the stage before CHECK opens with its report.
+The agent never self-advances past a gate.
 
-**Comment rules (binding).** The agent NEVER deletes, rewords, or relocates a `> USER:` comment; it replies `> CC:` underneath; only the user resolves a thread; resolved threads MOVE to `_LOG` verbatim. Working files are edited surgically — no full-file rewrite of a file carrying `> USER:` comments. Background: `../../../wiki/02-comment-lifecycle.md`.
+**Comment rules (binding).**
+The agent NEVER deletes, rewords, or relocates a `> USER:` comment; it replies `> CC:` underneath; only the user resolves a thread; resolved threads MOVE to `_LOG` verbatim.
+Working files are edited surgically — no full-file rewrite of a file carrying `> USER:` comments.
+Background: `../../../wiki/02-comment-lifecycle.md`.
 
 ```
 pitch invoked
@@ -115,14 +128,14 @@ REVISE ─→ refine prose, apply 8 readability rules from ref/pitch-readability
           (internally calls /haipipe-paper-revise; [REVISE] _LOG entry carries workers: proof)
   │
   ▼
-CHECK ──→ present exit gate per ../../../wiki/08-stage-gate.md:
+CHECK ──→ present exit gate per ../../ref/08-stage-gate.md:
           quality gate checklist (see below), template enforcement,
           Editor's Chair Test passes, readability rules pass
           user confirms → advance to narrative
           (internally calls /haipipe-paper-check)
 ```
 
-Phase visibility per the Phase Transition Contract in `../../../wiki/08-stage-gate.md`: announce every phase boundary (reply line + `[PHASE]` entry in `_LOG` + phase-line 🔥 moves); skip a phase only by an explicit logged verdict (`[PROBE] skipped -- <reason>`, phase line shows `--`); CHECK is never implicit -- it opens by presenting the exit-criteria report and the approval ask.
+Phase visibility per the Phase Transition Contract in `../../ref/08-stage-gate.md`: announce every phase boundary (reply line + `[PHASE]` entry in `_LOG` + phase-line 🔥 moves); skip a phase only by an explicit logged verdict (`[PROBE] skipped -- <reason>`, phase line shows `--`); CHECK is never implicit -- it opens by presenting the exit-criteria report and the approval ask.
 
 Comment lifecycle per `../../../wiki/02-comment-lifecycle.md`: comments live in 2-pitch.md while active, move to _LOG on resolve, each phase starts clean.
 
@@ -168,9 +181,16 @@ Reading order:
 11. Next Evidence Move         ← verb + artifact
 ```
 
-**Template enforcement:** A pitch is NOT complete unless it contains, as labeled sections: Title, One-Minute Pitch, Hook (with >=2 candidates), Surprise, Implication, Editor's Chair Test, Primary Claim + RQ Framing, Audience/Venue Fit, Why Believe, Still Fragile. A pitch that is one flat paragraph missing these sections must be flagged and restructured before it can pass any gate.
+**Template enforcement:** A pitch is NOT complete unless it contains, as labeled sections: Title, One-Minute Pitch, Hook (with >=2 candidates), Surprise, Implication, Editor's Chair Test, Primary Claim + RQ Framing, Audience/Venue Fit, Why Believe, Still Fragile.
+A pitch that is one flat paragraph missing these sections must be flagged and restructured before it can pass any gate.
 
-The pitch is venue-ALIGNED: it reads STATUS `venue` and the paper's `0-lifecycle/2-venue/2-venue.md` (Venue Profile + Fit Assessment blocks) to shape the Editor's Chair Test, the [primary] claim designation, the RQ framing, and the Audience section. `2-venue.md` is the compiled venue contract; read it FIRST. Fall back to reading `_venue/playbook-<venue>` directly only when `2-venue.md` does not exist (venue stage not yet run, or a pack-less venue); if no pack exists either, proceed without venue inputs. Deep dives follow the `[source: ...]` tags recorded in `2-venue.md` into `_venue/playbook-<slug>/<journal>/...`. If the provenance commit in `2-venue.md` is older than the current `_venue` HEAD, note "venue contract stale -- consider /haipipe-paper-venue refresh" but still use `2-venue.md` (never silently re-read packs). A venue change means the pitch rewrites. (Claims stays unchanged because it is venue-free.)
+The pitch is venue-ALIGNED: it reads STATUS `venue` and the paper's `0-lifecycle/2-venue/2-venue.md` (Venue Profile + Fit Assessment blocks) to shape the Editor's Chair Test, the [primary] claim designation, the RQ framing, and the Audience section.
+`2-venue.md` is the compiled venue contract; read it FIRST.
+Fall back to reading `_venue/playbook-<venue>` directly only when `2-venue.md` does not exist (venue stage not yet run, or a pack-less venue); if no pack exists either, proceed without venue inputs.
+Deep dives follow the `[source: ...]` tags recorded in `2-venue.md` into `_venue/playbook-<slug>/<journal>/...`.
+If the provenance commit in `2-venue.md` is older than the current `_venue` HEAD, note "venue contract stale -- consider /haipipe-paper-venue refresh" but still use `2-venue.md` (never silently re-read packs).
+A venue change means the pitch rewrites.
+(Claims stays unchanged because it is venue-free.)
 
 ### Pitch Log template (_LOG_2-pitch.md)
 
@@ -225,17 +245,46 @@ Next:
 
 ## Principles
 
-1. **One minute or it failed.** `2-pitch.md` should be readable in one minute. Keep it short enough to fit on one screen.
-2. **Pitch can start as intuition.** A seed pitch may cite author judgment, a research review, or a rough direction.
-3. **Later shifts need sources.** Every semantic shift after the seed should cite a source: a landed QA file in `discoveries/` or `tasks/`, a `read` section in `1-probes/`, reviewer feedback, venue strategy, or an explicit author decision.
-4. **Archive semantic versions only.** Archive when the story state changes (`seed -> discovery-shift`, `accuracy -> robustness`, `method-first -> application-first`), not for typo edits.
-5. **Do not write the paper here.** Abstract, intro, section plan, and LaTeX belong downstream. This skill only maintains the story kernel.
-5b. **Pitch is the cover letter.** The pitch IS the venue-ALIGNED cover letter. It can be sent to the editor as-is. It tells THIS editor why THIS paper fits THEIR journal. Venue pinning (STATUS `venue`) must happen before or during pitch. If no venue is pinned, run `/haipipe-paper venue` first.
-5c. **Editor's Chair Test lives here.** Read the Venue Profile block of `0-lifecycle/2-venue/2-venue.md` (its one-sentence test) for the editor's chair question; fall back to `_venue/playbook-<venue>` only if `2-venue.md` is absent. Every primary claim must have a one-sentence answer. This test was migrated from claims (v3.0.0) because it is a venue question, not an evidence question.
-5d. **[primary] claim designation lives here.** Read the claims ledger (venue-neutral H1, H2, H3) and designate ONE PRIMARY claim aligned to what THIS venue rewards. A result that is novel elsewhere but already established for this venue's readers is an enabler (Methods), not a primary claim. A venue change re-runs this designation.
-5e. **RQ framing lives here.** Venue-neutral hypotheses (H1, H2, H3) live in claims. The pitch reframes them as venue-specific RQs: H1 -> RQ1 worded for what the editor rewards. Include an explicit H->RQ mapping with a "why this RQ for this venue" column.
-6. **Each hook candidate is one move, not a stack of questions.** Each candidate hook should commit to ONE narrative move (not a stacked enumeration): a vivid concrete scene, a surprising or counterintuitive fact, a paradox tied to stakes, or one sharp question. Do not stack multiple rhetorical questions within a single candidate, which dilutes the punch and reads as undecided. The final artifact keeps all candidate hooks visible (>=2 candidates, one marked as recommended lead). A flat statement of background is not a hook. See `ref/pitch-readability.md`.
-7. **Read it in one minute or rewrite it.** The pitch must be fast and easy to read; if a reader slows down to parse a sentence, rewrite that sentence. Follow the readability rules and per-section cues in `ref/pitch-readability.md`: short sentences, lead with the point, one idea per sentence, plain words, concrete numbers, no AI voice. Readability is part of the pitch done-gate.
+1. **One minute or it failed.**
+   `2-pitch.md` should be readable in one minute.
+   Keep it short enough to fit on one screen.
+2. **Pitch can start as intuition.**
+   A seed pitch may cite author judgment, a research review, or a rough direction.
+3. **Later shifts need sources.**
+   Every semantic shift after the seed should cite a source: a landed QA file in `discoveries/` or `tasks/`, a `read` section in `1-probes/`, reviewer feedback, venue strategy, or an explicit author decision.
+4. **Archive semantic versions only.**
+   Archive when the story state changes (`seed -> discovery-shift`, `accuracy -> robustness`, `method-first -> application-first`), not for typo edits.
+5. **Do not write the paper here.**
+   Abstract, intro, section plan, and LaTeX belong downstream.
+   This skill only maintains the story kernel.
+5b. **Pitch is the cover letter.**
+    The pitch IS the venue-ALIGNED cover letter.
+    It can be sent to the editor as-is.
+    It tells THIS editor why THIS paper fits THEIR journal.
+    Venue pinning (STATUS `venue`) must happen before or during pitch.
+    If no venue is pinned, run `/haipipe-paper venue` first.
+5c. **Editor's Chair Test lives here.**
+    Read the Venue Profile block of `0-lifecycle/2-venue/2-venue.md` (its one-sentence test) for the editor's chair question; fall back to `_venue/playbook-<venue>` only if `2-venue.md` is absent.
+    Every primary claim must have a one-sentence answer.
+    This test was migrated from claims (v3.0.0) because it is a venue question, not an evidence question.
+5d. **[primary] claim designation lives here.**
+    Read the claims ledger (venue-neutral H1, H2, H3) and designate ONE PRIMARY claim aligned to what THIS venue rewards.
+    A result that is novel elsewhere but already established for this venue's readers is an enabler (Methods), not a primary claim.
+    A venue change re-runs this designation.
+5e. **RQ framing lives here.**
+    Venue-neutral hypotheses (H1, H2, H3) live in claims.
+    The pitch reframes them as venue-specific RQs: H1 -> RQ1 worded for what the editor rewards.
+    Include an explicit H->RQ mapping with a "why this RQ for this venue" column.
+6. **Each hook candidate is one move, not a stack of questions.**
+   Each candidate hook should commit to ONE narrative move (not a stacked enumeration): a vivid concrete scene, a surprising or counterintuitive fact, a paradox tied to stakes, or one sharp question.
+   Do not stack multiple rhetorical questions within a single candidate, which dilutes the punch and reads as undecided.
+   The final artifact keeps all candidate hooks visible (>=2 candidates, one marked as recommended lead).
+   A flat statement of background is not a hook.
+   See `ref/pitch-readability.md`.
+7. **Read it in one minute or rewrite it.**
+   The pitch must be fast and easy to read; if a reader slows down to parse a sentence, rewrite that sentence.
+   Follow the readability rules and per-section cues in `ref/pitch-readability.md`: short sentences, lead with the point, one idea per sentence, plain words, concrete numbers, no AI voice.
+   Readability is part of the pitch done-gate.
 
 ## Relationship to other structure skills
 
@@ -255,9 +304,12 @@ Next:
 4-display.tex    display contract (venue-HEAVY)
 ```
 
-Upstream: claims (0-lifecycle/1-claims/) provides the venue-neutral hypotheses (H1, H2, H3) and evidence status. Pitch reframes them for the target venue.
+Upstream: claims (0-lifecycle/1-claims/) provides the venue-neutral hypotheses (H1, H2, H3) and evidence status.
+Pitch reframes them for the target venue.
 
-Downstream: narrative expands the pitch into a full section-mirrored arc. If a downstream stage disagrees with the pitch, either update the pitch with a logged reason or revise the downstream stage. Do not let abstract, introduction, hero figure, and discussion carry different stories.
+Downstream: narrative expands the pitch into a full section-mirrored arc.
+If a downstream stage disagrees with the pitch, either update the pitch with a logged reason or revise the downstream stage.
+Do not let abstract, introduction, hero figure, and discussion carry different stories.
 
 ## Handoff
 

@@ -1,13 +1,11 @@
 fn-review: Structural Code Review for haipipe-data Pipeline Functions
 ======================================================================
 
-**Purpose**: Read a haipipe-data file (generated Fn, builder script, or YAML
-config) and check it against the haipipe-data structural contract. Reports
-PASS / WARN / FAIL per criterion. Read-only: does NOT modify any files.
+**Purpose**: Read a haipipe-data file (generated Fn, builder script, or YAML config) and check it against the haipipe-data structural contract.
+Reports PASS / WARN / FAIL per criterion.
+Read-only: does NOT modify any files.
 
-**Scope**: Generated Fns in code/haifn/, builder scripts in the project's
-`*_fn_develop_*` task folders (legacy: code-dev/1-PIPELINE/), and YAML
-pipeline configs.
+**Scope**: Generated Fns in code/haifn/, builder scripts in the project's `*_fn_develop_*` task folders (legacy: code-dev/1-PIPELINE/), and YAML pipeline configs.
 
 ---
 
@@ -29,8 +27,7 @@ Step R1-A: Targeted -- detect file type from path
 --------------------------------------------------
 
 Map the given path to a Fn type using the table below.
-If the path does not match any pattern, go to Step R1-B and ask the user
-to clarify which type it is.
+If the path does not match any pattern, go to Step R1-B and ask the user to clarify which type it is.
 
   Path pattern                               Fn type
   -----------------------------------------  -------------------
@@ -120,7 +117,8 @@ For each criterion:
   FAIL  -- criterion violated (show the offending line/value)
   N/A   -- criterion does not apply to this specific Fn
 
-Apply ALL criteria in the checklist. Do NOT skip any criterion.
+Apply ALL criteria in the checklist.
+Do NOT skip any criterion.
 Show the evidence (quoted file content) for FAIL and WARN items.
 
 ---
@@ -184,9 +182,7 @@ Each checklist criterion has:
   Check  -- what to look for in the file
   Rule   -- the haipipe-data contract rule being checked
 
-___________________________________________________________________________
-CHECKLIST: SourceFn   (code/haifn/fn_source/*.py)
-___________________________________________________________________________
+___________________________________________________________________________ CHECKLIST: SourceFn (code/haifn/fn_source/*.py) ___________________________________________________________________________
 
   ID     Check                                           Rule
   ------+-----------------------------------------------+---------------------
@@ -211,9 +207,7 @@ ___________________________________________________________________________
   NOTE SF-8/9/10: Only check if the SourceFn handles CGM/diabetes data.
   For other domains, check that ProcName_to_columns is consistent within the domain.
 
-___________________________________________________________________________
-CHECKLIST: HumanFn   (code/haifn/fn_record/human/*.py)
-___________________________________________________________________________
+___________________________________________________________________________ CHECKLIST: HumanFn (code/haifn/fn_record/human/*.py) ___________________________________________________________________________
 
   ID     Check                                           Rule
   ------+-----------------------------------------------+---------------------
@@ -226,9 +220,7 @@ ___________________________________________________________________________
   HF-6   Function body includes a None return path      entity ID detection;
          for tables that don't contain the entity ID    missing = pipeline crash
 
-___________________________________________________________________________
-CHECKLIST: RecordFn   (code/haifn/fn_record/record/*.py)
-___________________________________________________________________________
+___________________________________________________________________________ CHECKLIST: RecordFn (code/haifn/fn_record/record/*.py) ___________________________________________________________________________
 
   ID     Check                                           Rule
   ------+-----------------------------------------------+---------------------
@@ -253,9 +245,7 @@ ___________________________________________________________________________
   RF-13  timezone filter present (abs < threshold)       processing invariant 1
   RF-14  value range filter present for numeric col      processing invariant 3
 
-___________________________________________________________________________
-CHECKLIST: TriggerFn   (code/haifn/fn_case/fn_trigger/*.py)
-___________________________________________________________________________
+___________________________________________________________________________ CHECKLIST: TriggerFn (code/haifn/fn_case/fn_trigger/*.py) ___________________________________________________________________________
 
   ID     Check                                           Rule
   ------+-----------------------------------------------+---------------------
@@ -268,9 +258,7 @@ ___________________________________________________________________________
   TF-5   Function returns a dict (not a DataFrame)       return contract
   TF-6   Return dict contains 'df_case' key              required output key
 
-___________________________________________________________________________
-CHECKLIST: CaseFn   (code/haifn/fn_case/case_casefn/*.py)
-___________________________________________________________________________
+___________________________________________________________________________ CHECKLIST: CaseFn (code/haifn/fn_case/case_casefn/*.py) ___________________________________________________________________________
 
   ID     Check                                           Rule
   ------+-----------------------------------------------+---------------------
@@ -297,9 +285,7 @@ ___________________________________________________________________________
          (--tid, --wgt, --val, --str, or no suffix)       keys break pipeline
          Does NOT return keys containing CaseFnName
 
-___________________________________________________________________________
-CHECKLIST: InputTfmFn   (code/haifn/fn_aidata/entryinput/*.py)
-___________________________________________________________________________
+___________________________________________________________________________ CHECKLIST: InputTfmFn (code/haifn/fn_aidata/entryinput/*.py) ___________________________________________________________________________
 
   ID     Check                                           Rule
   ------+-----------------------------------------------+---------------------
@@ -313,9 +299,7 @@ ___________________________________________________________________________
   IT-5   Does NOT contain a 2-param tfm_fn               would indicate OutputTfmFn
          (that signature belongs to OutputTfmFn)          pattern in wrong file
 
-___________________________________________________________________________
-CHECKLIST: OutputTfmFn   (code/haifn/fn_aidata/entryoutput/*.py)
-___________________________________________________________________________
+___________________________________________________________________________ CHECKLIST: OutputTfmFn (code/haifn/fn_aidata/entryoutput/*.py) ___________________________________________________________________________
 
   ID     Check                                           Rule
   ------+-----------------------------------------------+---------------------
@@ -325,9 +309,7 @@ ___________________________________________________________________________
   OT-3   Does NOT take 4 params                          4-param = InputTfmFn;
          (that is InputTfmFn's signature)                 wrong type in file
 
-___________________________________________________________________________
-CHECKLIST: SplitFn   (code/haifn/fn_aidata/split/*.py)
-___________________________________________________________________________
+___________________________________________________________________________ CHECKLIST: SplitFn (code/haifn/fn_aidata/split/*.py) ___________________________________________________________________________
 
   ID     Check                                           Rule
   ------+-----------------------------------------------+---------------------
@@ -341,9 +323,7 @@ ___________________________________________________________________________
   SP-5   Function returns the modified df_tag            return contract
          (NOT a dict of split DataFrames)
 
-___________________________________________________________________________
-CHECKLIST: Builder script   (*_fn_develop_*/ or legacy code-dev/1-PIPELINE/)
-___________________________________________________________________________
+___________________________________________________________________________ CHECKLIST: Builder script (*_fn_develop_*/ or legacy code-dev/1-PIPELINE/) ___________________________________________________________________________
 
   ID     Check                                           Rule
   ------+-----------------------------------------------+---------------------
@@ -356,9 +336,7 @@ ___________________________________________________________________________
   BS-6   Builder does NOT hardcode production paths      safety: generated code
          (no _WorkSpace/ absolute paths)                  should be portable
 
-___________________________________________________________________________
-CHECKLIST: Source YAML config   (**/configs/**/*.yaml with SourceArgs)
-___________________________________________________________________________
+___________________________________________________________________________ CHECKLIST: Source YAML config (**/configs/**/*.yaml with SourceArgs) ___________________________________________________________________________
 
   ID     Check                                           Rule
   ------+-----------------------------------------------+---------------------
@@ -366,9 +344,7 @@ ___________________________________________________________________________
   YS-2   SourceArgs.raw_data_name present and non-empty  required key
   YS-3   SourceArgs.SourceFnName present and non-empty   required key
 
-___________________________________________________________________________
-CHECKLIST: Record YAML config   (**/configs/**/*.yaml with HumanRecords)
-___________________________________________________________________________
+___________________________________________________________________________ CHECKLIST: Record YAML config (**/configs/**/*.yaml with HumanRecords) ___________________________________________________________________________
 
   ID     Check                                           Rule
   ------+-----------------------------------------------+---------------------
@@ -379,9 +355,7 @@ ___________________________________________________________________________
          under RecordArgs)
   YR-4   HumanRecords values are lists                   format requirement
 
-___________________________________________________________________________
-CHECKLIST: Case YAML config   (**/configs/**/*.yaml with CaseArgs)
-___________________________________________________________________________
+___________________________________________________________________________ CHECKLIST: Case YAML config (**/configs/**/*.yaml with CaseArgs) ___________________________________________________________________________
 
   ID     Check                                           Rule
   ------+-----------------------------------------------+---------------------
@@ -391,9 +365,7 @@ ___________________________________________________________________________
   YC-4   Each Case_Args entry has TriggerName            required key
   YC-5   Each Case_Args entry has CaseFnList (a list)    required key
 
-___________________________________________________________________________
-CHECKLIST: AIData YAML config   (**/configs/**/*.yaml with InputArgs)
-___________________________________________________________________________
+___________________________________________________________________________ CHECKLIST: AIData YAML config (**/configs/**/*.yaml with InputArgs) ___________________________________________________________________________
 
   ID     Check                                           Rule
   ------+-----------------------------------------------+---------------------

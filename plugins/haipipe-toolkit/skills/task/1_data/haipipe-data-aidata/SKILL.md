@@ -1,6 +1,6 @@
 ---
 name: haipipe-data-aidata
-description: "Stage 4 (AIData) specialist. Builds, runs, and reviews TfmFn / SplitFn; inspects 4-AIDataStore; loads AIData-layer assets and tensors. Supports multi-partition CaseSet merge via streaming HF Dataset. Called by /haipipe-data orchestrator. Direct invocation works for stage-scoped work."
+description: "Stage 4 (AIData) specialist: builds/runs/reviews TfmFn / SplitFn, inspects 4-AIDataStore, loads AIData-layer assets + tensors, merges multi-partition CaseSets via streaming HF Dataset. Called by /haipipe-data; direct invocation works stage-scoped."
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
@@ -13,9 +13,9 @@ metadata:
 Skill: haipipe-data-aidata
 ==========================
 
-Stage 4 specialist. Owns TfmFn / SplitFn work and the 4-AIDataStore layer
-(model-ready tensors and splits). Called by the `/haipipe-data` orchestrator;
-can also be invoked directly.
+Stage 4 specialist.
+Owns TfmFn / SplitFn work and the 4-AIDataStore layer (model-ready tensors and splits).
+Called by the `/haipipe-data` orchestrator; can also be invoked directly.
 
   Function axis:  dashboard | load | cook | design-chef | design-kitchen | review
 
@@ -34,10 +34,9 @@ Commands
 /haipipe-data-aidata review [file_path]     -> structural review of an AIData-layer file
 ```
 
-Notebook / Databricks run: use `code/scripts/haistepnb/a4_aidata_nb.py`
-as the template. Supports multi-partition CaseSet discovery via
-`NUM_PARTITIONS` parameter. See the ★ Notebook Templates section in the
-`haipipe-data` umbrella SKILL.
+Notebook / Databricks run: use `code/scripts/haistepnb/a4_aidata_nb.py` as the template.
+Supports multi-partition CaseSet discovery via `NUM_PARTITIONS` parameter.
+See the ★ Notebook Templates section in the `haipipe-data` umbrella SKILL.
 
 ---
 
@@ -56,15 +55,15 @@ review           ref/concepts.md             ../haipipe-data/fn/fn-review.md
 (no fn arg)      ref/concepts.md             (ref-only mode)
 ```
 
-Stage 4 is the terminal data stage — `design-chef` does NOT need a downstream
-ref because the next stage (`/haipipe-nn`) consumes whatever AIData produces.
+Stage 4 is the terminal data stage — `design-chef` does NOT need a downstream ref because the next stage (`/haipipe-nn`) consumes whatever AIData produces.
 
 ---
 
 Step-by-Step Protocol
 ----------------------
 
-Step 0: Read `../haipipe-data/ref/0-overview.md`. Mandatory.
+Step 0: Read `../haipipe-data/ref/0-overview.md`.
+Mandatory.
 Step 1: Parse args after `/haipipe-data-aidata`.
 Step 2: Read this skill's `ref/concepts.md` for stage-4 specifics.
 Step 3: Read the umbrella fn doc.
@@ -95,8 +94,7 @@ Hand-off contract (Stage 4 -> 5):
 Multi-partition Mode
 ---------------------
 
-When upstream RecordSet is partitioned (@i{i}n{n}), AIData auto-discovers
-all CaseSet partitions and merges them into a single AIDataSet.
+When upstream RecordSet is partitioned (@i{i}n{n}), AIData auto-discovers all CaseSet partitions and merges them into a single AIDataSet.
 
 **CLI:**
 ```bash
@@ -134,10 +132,8 @@ case_set_name: "mimiciv-3.1_v3RecSet/@v0CaseSet-MimicAdmissionEntry"
 Mandatory: describe the datapoint with selection criteria
 ----------------------------------------------------------
 
-For ANY AIData (new build OR review of an existing one), the specialist
-MUST produce a written description of what a single row in the dataset
-represents, including ALL the following pieces. Vague descriptions like
-"clicks dataset" or "patient features" are not acceptable.
+For ANY AIData (new build OR review of an existing one), the specialist MUST produce a written description of what a single row in the dataset represents, including ALL the following pieces.
+Vague descriptions like "clicks dataset" or "patient features" are not acceptable.
 
 Required elements (blank template at the end of this file; full worked instance: `ref/worked-example.md`):
 
@@ -202,14 +198,9 @@ Required elements (blank template at the end of this file; full worked instance:
 Worked example — see ref/worked-example.md
 -------------------------------------------
 
-A full "good" instance of this contract lives in `ref/worked-example.md`:
-an SMS follow-up send-time RCT with 20 uniform arms, 12 CaseFn feature
-groups (one of them THE TREATMENT slot, S-Learner pattern), a 1,995-dim
-sparse X, a binary 7-day-click label, and a RandomByStratum 80/20 split.
-It fills in every required element above, including named selection
-filters with reasons and an intentionally-NOT-filtered-on column (a
-correlated-outcome trap). Read it before writing your first datapoint
-description.
+A full "good" instance of this contract lives in `ref/worked-example.md`: an SMS follow-up send-time RCT with 20 uniform arms, 12 CaseFn feature groups (one of them THE TREATMENT slot, S-Learner pattern), a 1,995-dim sparse X, a binary 7-day-click label, and a RandomByStratum 80/20 split.
+It fills in every required element above, including named selection filters with reasons and an intentionally-NOT-filtered-on column (a correlated-outcome trap).
+Read it before writing your first datapoint description.
 
 
 Template — drop in `examples/{project}/tasks/{task}/diagram/datapoint.txt`

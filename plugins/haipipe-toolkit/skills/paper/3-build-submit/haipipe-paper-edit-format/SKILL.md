@@ -10,7 +10,9 @@ metadata:
 
 # haipipe-paper-edit-format  (stub)
 
-CHECK-phase whole-paper format pass in the build-submit layer. Runs **after** per-section editing (DRAFT/PROBE/REVISE/CHECK) is complete and the substance is settled. Self-contained: carries its own style checks.
+CHECK-phase whole-paper format pass in the build-submit layer.
+Runs **after** per-section editing (DRAFT/PROBE/REVISE/CHECK) is complete and the substance is settled.
+Self-contained: carries its own style checks.
 
 Like every build-submit sub-skill it is **comment-first**: Round 1 inserts `%% {CC-format-vMMDD}: finding | suggestion ========>` and changes no text; apply waits for the human `========> {XX}:` reply.
 

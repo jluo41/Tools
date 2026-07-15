@@ -5,8 +5,7 @@ fn-2-cook: Run an external builder script
 > without it (e.g. REACH-SPACE — zero external builders on disk) host any new
 > external builder in a project task folder, same `e{N}_build_external_*` naming.
 
-Executes one `e{N}_build_external_<asset>.py` to produce or refresh
-the asset triplet under the active release.
+Executes one `e{N}_build_external_<asset>.py` to produce or refresh the asset triplet under the active release.
 
 ---
 
@@ -17,7 +16,8 @@ Step 1: Locate the builder
 ls code-dev/0-EXTERNAL/e*_build_external_{asset}.py
 ```
 
-If multiple match (unlikely), ask the user which to run. If none match:
+If multiple match (unlikely), ask the user which to run.
+If none match:
 
   "No builder for {asset}. Available builders:
    $(ls code-dev/0-EXTERNAL/e*_build_external_*.py)
@@ -40,16 +40,15 @@ if [ -d "_WorkSpace/ExternalStore/${EXTERNAL_VERSION}/{asset}" ]; then
 fi
 ```
 
-NEVER overwrite without explicit user confirmation -- releases are
-reproducibility anchors.
+NEVER overwrite without explicit user confirmation -- releases are reproducibility anchors.
 
 ---
 
 Step 3: Verify raw inputs are present
 --------------------------------------
 
-Read the builder header to find input files. Look for top-level path
-constants:
+Read the builder header to find input files.
+Look for top-level path constants:
 
 ```bash
 grep -E '_PATH\s*=' code-dev/0-EXTERNAL/e*_build_external_{asset}.py
@@ -61,9 +60,7 @@ Confirm each exists:
 ls _WorkSpace/ExternalStore/@raw/<file>
 ```
 
-If a raw input is missing, surface the path and the install hint
-embedded in the builder (builders typically print a download URL,
-e.g. "Download NPPES from https://download.cms.gov/nppes/NPI_Files.html").
+If a raw input is missing, surface the path and the install hint embedded in the builder (builders typically print a download URL, e.g. "Download NPPES from https://download.cms.gov/nppes/NPI_Files.html").
 
 ---
 
@@ -75,8 +72,8 @@ source .venv/bin/activate && source env.sh && \
     python code-dev/0-EXTERNAL/e{N}_build_external_{asset}.py
 ```
 
-Stream output to the user. Builders print progress and a verification
-block at the end; capture both.
+Stream output to the user.
+Builders print progress and a verification block at the end; capture both.
 
 ---
 
@@ -93,10 +90,8 @@ Expect at minimum:
   column_to_{asset}_li.pkl
   README.md
 
-Engagement assets also produce `df_{asset}_raw.parquet`. Some assets
-have additional auxiliary parquets (e.g. npi has df_npi_to_zip5info,
-df_npi_review_id) -- read the builder's save section to see what's
-expected.
+Engagement assets also produce `df_{asset}_raw.parquet`.
+Some assets have additional auxiliary parquets (e.g. npi has df_npi_to_zip5info, df_npi_review_id) -- read the builder's save section to see what's expected.
 
 ---
 

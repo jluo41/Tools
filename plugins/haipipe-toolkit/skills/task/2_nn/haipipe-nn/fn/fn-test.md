@@ -117,8 +117,7 @@ test_<model_name>_4_modelset.py    -- Layer 4
 The number in the filename is what fn-dashboard's Signal 1 detects with:
   Glob: `PATH/*_[1234]_*.py`
 
-If you name a file `test_foo_instance.py` (no number), it won't appear
-in Signal 1 and the directory will look like "L1/L2 ONLY".
+If you name a file `test_foo_instance.py` (no number), it won't appear in Signal 1 and the directory will look like "L1/L2 ONLY".
 
 ---
 
@@ -138,8 +137,7 @@ code/hainn/tuner/<family>/test-modeling-<name>/
   test_<name>_4_modelset.ipynb
 ```
 
-For config path: use a relative path or env-var-based path so the test
-can be run from any working directory after `source env.sh`.
+For config path: use a relative path or env-var-based path so the test can be run from any working directory after `source env.sh`.
 
 ---
 
@@ -153,8 +151,7 @@ source .venv/bin/activate && source env.sh
 ```
 
 NOTE: source .venv/bin/activate does NOT persist across Bash tool calls.
-Always chain: source .venv/bin/activate && source env.sh && python <script>
-Or call venv Python directly: .venv/bin/python script.py
+Always chain: source .venv/bin/activate && source env.sh && python <script> Or call venv Python directly: .venv/bin/python script.py
 
 ```bash
 # Run a single layer
@@ -166,7 +163,8 @@ source .venv/bin/activate && source env.sh && python code/hainn/tuner/<family>/t
 source .venv/bin/activate && source env.sh && python code/hainn/tuner/<family>/test-modeling-<name>/test_<name>_4_modelset.py
 ```
 
-Fix L2 failures before running L3. Fix L3 failures before running L4.
+Fix L2 failures before running L3.
+Fix L3 failures before running L4.
 
 ---
 
@@ -206,7 +204,8 @@ Layer-Specific Notes
 AIData Source
 ==============
 
-ALWAYS use real AIData from _WorkSpace/4-AIDataStore/. Never use synthetic data.
+ALWAYS use real AIData from _WorkSpace/4-AIDataStore/.
+Never use synthetic data.
 
 ```python
 import os
@@ -266,7 +265,7 @@ If fn-dashboard shows "NEEDS UPDATE" (2-col format), the fix is:
 4. Re-run the script to confirm it passes
 5. Re-run fn-dashboard to confirm the signal changes to 4-col
 
-The actual result values (loss, rmse, etc.) should already be computed
-by the script -- just capture them and put them in the table.
+The actual result values (loss, rmse, etc.) should already be computed by the script -- just capture them and put them in the table.
 
-Do NOT change the test logic. Only update the summary display.
+Do NOT change the test logic.
+Only update the summary display.

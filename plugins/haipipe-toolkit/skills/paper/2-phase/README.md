@@ -63,9 +63,9 @@ The user drives phases with VERBS on the stage skill (`/haipipe-paper-section-ed
 ## The probe phase (ONE pipeline: MATCH first, dispatch what is left, harvest paper-side)
 
 ALL acquisition goes: probe SECTION → ② MATCH against the bank's QA corpus → and only what MATCH
-cannot close → ③ DISPATCH the section's `commission:` block, VERBATIM, to
+cannot close → ③ DISPATCH the section's `q-executor:` block, VERBATIM, to
 `Agent(haipipe-task-orchestrator-agent)` / `Agent(haipipe-discovery-orchestrator-agent)`.
-(💀 the probe GATEWAY agent is RETIRED; the reuse decision IS the paper-side MATCH.) The three
+(The reuse decision IS the paper-side MATCH.) The three
 lane workers are HARVESTERS that transcribe what landed — they never search, grep-discover, or
 dispatch tasks themselves (JL 2026-07-07 ruling):
 

@@ -2,7 +2,7 @@
 
 Owner: `haipipe-paper-display`. Every display **renderer**
 (`-display-table`, `-display-figure`, `-display-diagram`,
-`-display-illustration`, `-display-illustration-gemini`) writes its output into a
+`-display-illustration`) writes its output into a
 `0-displays/displayNN-<slug>/` unit, NOT into a flat `figures/` directory. The
 unit is the contract; the renderer fills `assets/`, `source/`, and `float.tex`,
 then compiles `preview.pdf` and updates `README.md`.

@@ -1,8 +1,12 @@
 fn-run: Scaffold a New Run
 ============================
 
-A run is the unit of execution within a task-folder. The four sister files
-share one NAME token:
+
+> JL: do not break the sentences. One line one sentence.
+>> CC 23:17: [SOLVED] Done — this file is authored one sentence per line (verified: reflow is a no-op). Now a standing convention in haipipe-task/PREFERENCES.md.
+
+A run is the unit of execution within a task-folder.
+The four sister files share one NAME token:
 
 ```
 configs/<NAME>.yaml             📥 frozen input (_meta + params)
@@ -17,16 +21,17 @@ Plus the shared daily file:
 runlogs/<DATE>-runlog.md        📝 daily index + narrative (run.sh appends)
 ```
 
-This scaffold creates the **pre-run** half (config + run.sh); the rest is
-auto-created by `runs/<NAME>.sh` at execution.
+This scaffold creates the **pre-run** half (config + run.sh); the rest is auto-created by `runs/<NAME>.sh` at execution.
 
 
 Step 1 — Resolve task-folder + NAME
 ------------------------------------
 
-Auto-detect task-folder from cwd. If cwd is not a task-folder, ASK.
+Auto-detect task-folder from cwd.
+If cwd is not a task-folder, ASK.
 
-ASK for `<NAME>` if not given. Constraints:
+ASK for `<NAME>` if not given.
+Constraints:
   - Convention: prefix with `run_` (e.g. `run_seed42_baseline`)
   - Descriptive — encodes the variant (seed/arch/data slice)
   - Unique within this task-folder (refuse on collision)
@@ -36,13 +41,12 @@ ASK for `<NAME>` if not given. Constraints:
 Step 2 — Collect _meta fields (4 questions)
 --------------------------------------------
 
-**Dual-mode (see `../ref/invocation-modes.md`):** if the spec already carries
-these fields (agent / headless path), DO NOT ASK — use them verbatim and run
-silently. Only ASK for fields genuinely missing AND when a user is present. If
-`purpose` is missing and there is no user (agent path), return
-`status: blocked, missing: [purpose]` — never invent it.
+**Dual-mode (see `../ref/invocation-modes.md`):** if the spec already carries these fields (agent / headless path), DO NOT ASK — use them verbatim and run silently.
+Only ASK for fields genuinely missing AND when a user is present.
+If `purpose` is missing and there is no user (agent path), return `status: blocked, missing: [purpose]` — never invent it.
 
-ASK (interactive path only) in this order. `purpose` is REQUIRED:
+ASK (interactive path only) in this order.
+`purpose` is REQUIRED:
 
 ```
 1. purpose  — One sentence: why does this run exist?
@@ -52,9 +56,7 @@ ASK (interactive path only) in this order. `purpose` is REQUIRED:
 4. output   — Expected artifacts + headline guess
 ```
 
-End every invocation with the structured return block from
-`../ref/invocation-modes.md` (status / task_folder / run_name / files), so an
-agent caller can locate the scaffolded folder to author into.
+End every invocation with the structured return block from `../ref/invocation-modes.md` (status / task_folder / run_name / files), so an agent caller can locate the scaffolded folder to author into.
 
 
 Step 3 — Create files
@@ -111,8 +113,9 @@ Next:
 Risk profile
 -------------
 
-CREATES files under existing task-folder. Refuses to overwrite. For
-moving / renaming an existing run, see `-organize` specialist.
+CREATES files under existing task-folder.
+Refuses to overwrite.
+For moving / renaming an existing run, see `-organize` specialist.
 
 
 MUST NOT

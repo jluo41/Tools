@@ -3,13 +3,11 @@ Src2InputFn: ProcessedDF to Payload
 
 One of the 5 inference function types at Stage 6.
 
-Src2InputFn is the INVERSE of Input2SrcFn. It converts ProcessedDF tables
-(the source data format used internally during training) into JSON payloads
-(the format external clients send at inference time).
+Src2InputFn is the INVERSE of Input2SrcFn.
+It converts ProcessedDF tables (the source data format used internally during training) into JSON payloads (the format external clients send at inference time).
 
-Src2InputFn is called during PACKAGING (Endpoint_Pipeline.run()), not during
-inference. It generates the test payload.json files stored in each example
-directory.
+Src2InputFn is called during PACKAGING (Endpoint_Pipeline.run()), not during inference.
+It generates the test payload.json files stored in each example directory.
 
 ---
 
@@ -137,8 +135,7 @@ Training data side:   ProcName_to_ProcDf
 ```
 
 If you round-trip through both Fns, the tables should approximately reconstruct.
-They don't need to be perfect (some fields may be dropped), but the key fields
-used by the model (all fields that feed into CaseFns) MUST survive the round-trip.
+They don't need to be perfect (some fields may be dropped), but the key fields used by the model (all fields that feed into CaseFns) MUST survive the round-trip.
 
 **Validate the round-trip:**
 
@@ -185,9 +182,7 @@ Builder Pattern
 <builder-dir>/d1_build_src2inputfn_{description}.py
 ```
 
-<builder-dir> = the project's endpoint fn_develop task folder
-(tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/; legacy
-workspaces: code-dev/1-PIPELINE/6-Endpoint-WorkSpace/).
+<builder-dir> = the project's endpoint fn_develop task folder (tasks/<endpoint-group>/NN_endpoint_set_fn_develop_<cohort>/; legacy workspaces: code-dev/1-PIPELINE/6-Endpoint-WorkSpace/).
 
 **Step 2: Configure at top:**
 

@@ -4,7 +4,7 @@ IPO — the shape of every workflow
 Every workflow in haipipe-toolkit has exactly one shape:
 
 ```
-I  →  P₁[S₁,S₂,...] → P₂[S₁,S₂,...] → ... → Pₙ[...]  →  O
+I  →  Process[ S₁, S₂, ... Sₙ ]  →  O
 ```
 
 Four letters, four concerns:
@@ -12,18 +12,21 @@ Four letters, four concerns:
 | Letter | Name    | What it holds |
 |--------|---------|---------------|
 | **I**  | Input   | What goes in — specs, configs, flags, files |
-| **P**  | Phase   | A coarse-grained chunk of work |
-| **S**  | Step    | An atomic action inside a phase (may be optional) |
+| **P**  | Process | The transformation between Input and Output — the workflow's ordered Steps |
+| **S**  | Step    | An atomic action inside the Process (an `agent()` call; may be optional) |
 | **O**  | Output  | What comes out — results, artifacts, verdicts |
 
 
 Why these names
 ---------------
 
-**Phase, not Process.**
-Process = the entire middle of IPO (everything between Input and Output).
-Phase = one chunk within the process. The Workflow tool already uses
-`phase()` — we match it.
+**Process, not Phase (for the IPO's "P").**
+The classic shape is Input → Process → Output, so the "P" is the **Process** —
+the whole transformation between Input and Output. We reserve **"Phase"** for the
+LIFECYCLE (Plan → Build → Execute → Report), so it is NOT reused for the IPO's P.
+(Code detail: the Workflow tool still groups a Process's Steps with `phase()`, and
+a plan.yaml still lists them under the `phases:` key — those names are kept as
+code, not the IPO concept.)
 
 **Step, not Stage.**
 Stage = the 6-stage data pipeline (0-RawDataStore through 6-EndpointStore).
@@ -34,7 +37,7 @@ unit of work, an `agent()` call.
 Lifecycle: Plan → Build → Execute → Report
 =============================================
 
-Every workflow goes through four acts:
+Every workflow goes through four phases:
 
 ```
 ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐
@@ -50,7 +53,7 @@ Every workflow goes through four acts:
                                               structured record
 ```
 
-| Act | Question | Input | Output |
+| Phase | Question | Input | Output |
 |-----|----------|-------|--------|
 | **Plan** | What will we do? | Purpose + constraints | `plan.yaml` (frozen IPO) |
 | **Build** | How to execute it? | Frozen plan | `.workflow.js` (executable script) |
@@ -64,7 +67,7 @@ plan.yaml ──▶ .workflow.js ──▶ results ──▶ report.yaml
 
 ### Plan (iterate until frozen)
 
-The Plan act designs the IPO. It may take several rounds:
+The Plan phase designs the IPO. It may take several rounds:
 
 ```
 round 1: draft phases and steps
@@ -85,7 +88,7 @@ You read and edit the `plan.yaml`. The `.workflow.js` is generated. You should r
 Run the `.workflow.js` via the Workflow engine:
 `Workflow({ scriptPath: "..." }, args)`.
 
-Each Step calls a subagent (or a sub-workflow skill). The execute act follows the frozen plan — if something unexpected arises, it records the deviation, it doesn't re-plan.
+Each Step calls a subagent (or a sub-workflow skill). The execute phase follows the frozen plan — if something unexpected arises, it records the deviation, it doesn't re-plan.
 
 For manual mode (CMS server, GPU jobs), the `plan.yaml` serves as the checklist. The human follows the phases/steps and records results.
 
@@ -125,7 +128,7 @@ TEMPLATE (in the skill):              SPECIFIC (a real instance):
   prompt: "Create {{type}} script"     prompt: "Create data pipeline for LBP cohort"
 ```
 
-The skill owns the template. Each specific workflow fills in the blanks with concrete file paths, concrete field values, concrete prompts. The Plan act is where template → specific happens.
+The skill owns the template. Each specific workflow fills in the blanks with concrete file paths, concrete field values, concrete prompts. The Plan phase is where template → specific happens.
 
 
 File tracking
@@ -176,7 +179,7 @@ Workflow
 │   ├── files_in: input files the workflow starts with
 │   └── example: a concrete args value
 │
-├── P (Phases) — ordered sequence
+├── P (Process) — ordered phase-groups (the plan's `phases:`)
 │   ├── P1: "Author"
 │   │   ├── S1: "write script"                    (required)
 │   │   │   ├── files_in:  [template.py, config.yaml]
@@ -222,7 +225,7 @@ When a Step calls a sub-workflow (type = skill or workflow):
 ```
 caller's Plan says:                 callee internally:
   S1: scaffold arm-A                  has its OWN Plan → Execute → Report
-    calls: haipipe-task               has its OWN Phases and Steps
+    calls: haipipe-task               has its OWN Process and Steps
     sub_I: { type: data, name: ... }  has its OWN file tracking
     sub_O: { status, folder, files }
     files_in: [arm spec]              caller doesn't see callee's files_in
@@ -249,10 +252,10 @@ declares sub_I  ──── I ────▶  receives I
 expects  sub_O  ◀─── O ────  returns O
 sees summary    ◀── report ──  returns report summary (one line)
 
-NOT visible: callee's internal Phases, Steps, or file details
+NOT visible: callee's internal Process, Steps, or file details
 ```
 
-The rule: **own your Phases, hide your Phases from your caller.**
+The rule: **own your Process, hide your Process from your caller.**
 
 
 Naming cheat sheet

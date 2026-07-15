@@ -2,8 +2,7 @@ fn-test: Inference Test Protocol
 ==================================
 
 Tests Endpoint_Set.inference() with real payloads and profiling.
-Always run this after packaging (/haipipe-end package) and before
-deployment (/haipipe-end deploy).
+Always run this after packaging (/haipipe-end package) and before deployment (/haipipe-end deploy).
 
 ---
 
@@ -15,8 +14,7 @@ source .venv/bin/activate && source env.sh
 ```
 
 NOTE: source .venv/bin/activate does NOT persist across Bash tool calls.
-Always chain: source .venv/bin/activate && source env.sh && python <script>
-Or call venv Python directly: .venv/bin/python script.py
+Always chain: source .venv/bin/activate && source env.sh && python <script> Or call venv Python directly: .venv/bin/python script.py
 
 Verify the endpoint was packaged:
 ```bash
@@ -47,8 +45,8 @@ print("Loaded endpoint:", endpoint_set.endpoint_name)
 Step 3: Warmup
 ===============
 
-Always warmup before running inference. Warmup pre-loads all components
-to eliminate cold-start latency on the first real request.
+Always warmup before running inference.
+Warmup pre-loads all components to eliminate cold-start latency on the first real request.
 
 ```python
 import time

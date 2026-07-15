@@ -22,14 +22,16 @@ subdirs under `1-diff/`.
 ## Why This Exists
 
 Co-authors and editors don't want to read a full new draft and a full old
-draft side-by-side. They want one PDF where additions are blue and
+draft side-by-side.
+They want one PDF where additions are blue and
 deletions are struck through — like Word's track-changes — so they can
 focus reviewer attention on what actually changed.
 
 `latexdiff` does this in principle, but the official `latexdiff-vc` wrapper
 breaks on every modern paper class (DVI-mode bbl preprocessing fails on
 PDF graphics; multi-file inputs need flattening; class-specific title
-macros overrun page layout). This skill provides a class-aware driver that
+macros overrun page layout).
+This skill provides a class-aware driver that
 handles those cases, plus a noise filter that silences audit-fix
 arithmetic without hiding substantive changes in the abstract or title.
 
@@ -48,23 +50,29 @@ skill *visualizes the changes* for someone else to review.
 
 ## Constants
 
-- **DIFF_TYPE = `UNDERLINE`** — latexdiff markup style. Additions blue with
-  wavy underline, deletions red with strikethrough. Override via
+- **DIFF_TYPE = `UNDERLINE`** — latexdiff markup style.
+  Additions blue with
+  wavy underline, deletions red with strikethrough.
+  Override via
   `LATEXDIFF_TYPE` in `1-diff/<sub>/config.sh`. Other choices: `CFONT` (color
   only), `BOLD`, `CHANGEBAR`, `TRADITIONAL`.
 - **OUTPUT_DIR = `1-diff/vs-<tag>-<sha>/`** — relative to the paper root.
   One subdir per (baseline, target) pair; old subdirs stay around for
   historical reference.
 - **SNAPSHOT_RETENTION = `keep`** — `old/` and `new/` snapshots stay in the
-  subdir after compile (gitignored). Regenerate from git on demand by
+  subdir after compile (gitignored).
+  Regenerate from git on demand by
   re-running the driver.
 
 ## Inputs
 
 1. **Baseline commit-or-tag** (positional arg 1, required) — `a362838`,
-   `v0429-tag`, `HEAD~5`, etc. Anything `git rev-parse` accepts.
+   `v0429-tag`, `HEAD~5`, etc.
+   Anything `git rev-parse` accepts.
 2. **Tag name** (positional arg 2, optional) — human-friendly slug for the
-   subdir name. `v0503` → produces `vs-v0503-a362838/`. Defaults to
+   subdir name.
+   `v0503` → produces `vs-v0503-a362838/`.
+   Defaults to
    `vs-<sha>/` if omitted.
 3. **Main tex** (positional arg 3, optional) — explicit master tex file.
    Auto-detected by default (prefers `0-*Submission*.tex`, then any
@@ -82,13 +90,16 @@ skill *visualizes the changes* for someone else to review.
 
 Before running the driver:
 
-1. Decide on the baseline commit. Look at `git log --oneline` for tagged
-   submissions or natural milestones. Common baselines:
+1. Decide on the baseline commit.
+   Look at `git log --oneline` for tagged
+   submissions or natural milestones.
+   Common baselines:
    - the last submission to a venue (label `v<MMDD>` or `submission`)
    - the last version reviewed by a specific co-author (label by name)
    - the last "consistency-pass" commit before the current revision
 2. Confirm with the user which sections are in scope (default: all).
-3. Identify the master tex. Default heuristic: `0-*Submission*.tex` first,
+3. Identify the master tex.
+   Default heuristic: `0-*Submission*.tex` first,
    else `0-*.tex`. Override if the paper uses a non-`0-` prefix.
 
 ### Phase 1: Run the driver
@@ -98,16 +109,19 @@ Before running the driver:
 ```
 
 The script walks UP from `$(pwd)` to find the paper root (no need to be
-IN the paper root). It performs six steps, all on the `1-diff/<sub>/`
+IN the paper root).
+It performs six steps, all on the `1-diff/<sub>/`
 sandbox:
 
 1. Extract baseline tree via `git archive` (read-only, no checkout).
 2. Copy current working tree to `new/`.
 3. Auto-detect document class via `detect-paper-class.sh`; load preset
-   latexdiff flags. Source `config.sh` if present (overrides).
+   latexdiff flags.
+   Source `config.sh` if present (overrides).
 4. Run `latexdiff --flatten` between `old/master.tex` and `new/master.tex`,
    producing `<main>-DIFF.tex`.
-   - 4b. If `silenced-changes.txt` exists, run `silence-minor-changes.pl`
+   - 4b.
+     If `silenced-changes.txt` exists, run `silence-minor-changes.pl`
         to silently accept matching (old, new) pairs outside protected
         blocks.
 5. Stage support files (.bib, .cls, .sty) and create the `0-displays`
@@ -119,15 +133,19 @@ sandbox:
 
 Open `1-diff/<sub>/<main>-DIFF.pdf`. Check:
 
-- **Page 1 starts with the title block** (no leading blank page). If page
+- **Page 1 starts with the title block** (no leading blank page).
+  If page
   1 is blank, see known-bugs.md sections 1–2.
 - **Title** renders cleanly (no struck-through text inside the title
-  macro). If the old title is visible inside the title block and the
+  macro).
+  If the old title is visible inside the title block and the
   result overruns, see known-bugs.md section 1.
-- **Abstract** shows the changes you expect. If the abstract is wholly
+- **Abstract** shows the changes you expect.
+  If the abstract is wholly
   replaced (one big delete + one big add) instead of word-level tracked,
   see known-bugs.md section 3.
-- **Body markup** is at the level you want. If 30+ small numerical
+- **Body markup** is at the level you want.
+  If 30+ small numerical
   changes drown out the prose changes, populate
   `silenced-changes.txt` and re-run.
 
@@ -158,13 +176,15 @@ In the diff subdir, commit only:
 - ✅ `README.md` if you added narrative about why this baseline / what to
   look at first
 
-Don't commit `old/`, `new/`, or any build aux. The provided `.gitignore`
+Don't commit `old/`, `new/`, or any build aux.
+The provided `.gitignore`
 template handles this — copy it to `1-diff/.gitignore` once.
 
 ## Class auto-detection
 
 `detect-paper-class.sh` greps `\documentclass` in the master tex and emits
-recommended latexdiff flags. Recognized classes:
+recommended latexdiff flags.
+Recognized classes:
 
 | Class | Venues |
 |---|---|
@@ -177,7 +197,8 @@ recommended latexdiff flags. Recognized classes:
 | `article` / `amsart` / `book` / `report` / `memoir` / unknown | Generic LaTeX (fallback) |
 
 See `references/class-presets.md` for the per-class flag presets and the
-reasoning. To add a new class: add a `case` arm to `detect-paper-class.sh`,
+reasoning.
+To add a new class: add a `case` arm to `detect-paper-class.sh`,
 add a section to `class-presets.md`, test on a real paper of that class.
 
 ## Verification recipes
@@ -197,7 +218,8 @@ start of the abstract — all on page 1.
 grep -c "DIFaddbegin\|DIFdelbegin" 1-diff/<sub>/<main>-DIFF.tex
 ```
 
-Roughly equals the number of insertion + deletion blocks. Spot-check a few
+Roughly equals the number of insertion + deletion blocks.
+Spot-check a few
 that you remember adding by name:
 
 ```bash
@@ -210,7 +232,8 @@ grep -B1 -A1 "DIFadd.*<key phrase>" 1-diff/<sub>/<main>-DIFF.tex
 head -3 1-diff/<sub>/<main>-DIFF.tex
 ```
 
-Should start with `%DIF LATEXDIFF DIFFERENCE FILE`. If you see plain text
+Should start with `%DIF LATEXDIFF DIFFERENCE FILE`.
+If you see plain text
 like `Protected blocks: ...`, see known-bugs.md section 2 — the perl call
 in the driver has a stderr redirect bug.
 
@@ -220,7 +243,8 @@ in the driver has a stderr redirect bug.
 git status --short
 ```
 
-Should be unchanged from before the run. If new files appeared at the
+Should be unchanged from before the run.
+If new files appeared at the
 paper root (e.g., a stray `.dvi` or `.aux`), the script regressed; see
 known-bugs.md section 6.
 
@@ -230,10 +254,12 @@ known-bugs.md section 6.
   modern papers (DVI-mode bbl preprocessing doesn't handle PDF graphics).
   See known-bugs.md section 6.
 - ❌ "I'll edit the working tree to make the diff cleaner." The whole point
-  of the sandbox is that the working tree is unchanged. Edit `old/` in the
+  of the sandbox is that the working tree is unchanged.
+  Edit `old/` in the
   diff subdir if you need a synthetic baseline.
 - ❌ "I'll silence everything I don't want to discuss." Silence only
-  changes that have already been audited and approved. Silencing
+  changes that have already been audited and approved.
+  Silencing
   unverified changes hides bugs.
 - ❌ "I'll silence in the abstract too." The abstract is the highest-value
   block for reviewer attention; every change there must remain visible.
@@ -244,8 +270,10 @@ known-bugs.md section 6.
   the subdir's README so co-authors know the diff isn't a strict
   "vs commit X".
 - ❌ "I'll commit `old/` and `new/` so the diff is reproducible." They're
-  byte-perfect re-extractable from git. Committing them inflates the repo
-  for no benefit. Use `.gitignore.tpl` from this skill.
+  byte-perfect re-extractable from git.
+  Committing them inflates the repo
+  for no benefit.
+  Use `.gitignore.tpl` from this skill.
 
 ## Output contract
 
@@ -282,13 +310,15 @@ Do not run this skill:
 
 - During early drafting (changes churn too fast; the diff is meaningless).
 - Before the values audit (`haipipe-paper-edit-manual-review-values`) — the diff will
-  be cluttered with unaudited arithmetic. Run the audit first, accept its
+  be cluttered with unaudited arithmetic.
+  Run the audit first, accept its
   fixes, then build the diff with those fixes silenced.
 
 ## Notes for the agent running this skill
 
 - The driver hardcodes a 4-pass compile (`pdflatex` × 1, `bibtex` × 1,
-  `pdflatex` × 2). If page numbers don't settle after that, run a fifth
+  `pdflatex` × 2).
+  If page numbers don't settle after that, run a fifth
   manual `pdflatex` pass in the subdir.
 - When the user asks to "regenerate" a diff, just re-run the driver with
   the same baseline — `old/` is overwritten, `silenced-changes.txt` is
@@ -297,13 +327,17 @@ Do not run this skill:
   modern submission build (`0-*Submission*.tex`), pass the working master
   tex explicitly: `make-diff.sh <commit> <tag> 0-MainPaper.tex`.
 - The silencer's stderr summary is a useful sanity check ("Total silenced:
-  N"). Keep it visible to the user — don't redirect to /dev/null. The
+  N").
+  Keep it visible to the user — don't redirect to /dev/null.
+  The
   driver pipes it through `sed 's/^/    /'` for indented display.
 - Synthetic baselines (editing `old/` after extraction) are a legitimate
-  technique. Document them in a README inside the diff subdir so co-authors
+  technique.
+  Document them in a README inside the diff subdir so co-authors
   understand what they're looking at.
 - For figure-heavy papers, the `0-displays → new/0-displays` symlink is
-  load-bearing. If you see "missing graphics" errors, the symlink is broken.
+  load-bearing.
+  If you see "missing graphics" errors, the symlink is broken.
 
 ## See Also
 

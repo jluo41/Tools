@@ -1,0 +1,110 @@
+3 — BEFORE / AFTER
+===================
+
+  The verb table, concretely, for both twins. What a line looks like
+  today and what it becomes.
+
+
+PAPER — the verb block
+----------------------
+
+```text
+   BEFORE  (haipipe-paper SKILL.md, lines 42-43)
+
+     discover ["<question>"]   -> /haipipe-discovery (non-claim utility; ...)
+     task ["<contract>"]       -> /haipipe-task (non-claim utility; ...)
+
+   AFTER
+
+     (both lines deleted)
+
+     probe stays as the single evidence verb; stages reach the bank
+     only through their PROBE phase.
+```
+
+
+APPLICATION — the verb block
+----------------------------
+
+```text
+   BEFORE  (haipipe-application SKILL.md, lines 43-44)
+
+     discover ["<question>"]   -> /haipipe-discovery (non-claim utility; ...)
+     task ["<contract>"]       -> /haipipe-task (non-claim utility; ...)
+
+   AFTER
+
+     (both lines deleted)
+```
+
+
+The other surfaces that name the two verbs
+-------------------------------------------
+
+Deleting the verb rows is not enough — the same two words are woven
+through both skills. Every one of these must move in the same pass, or
+the checker's keyword index keeps advertising a door that no longer
+opens.
+
+```text
+   SURFACE                        BEFORE                          AFTER
+   ────────────────────────────   ─────────────────────────────   ──────────────────
+   frontmatter description        "... discover, task, evidence"   drop discover/task
+                                  (trigger keyword list)           from the trigger list
+
+   frontmatter summary            "... dispatched straight to      "the paper RAISES;
+   (paper, edited today)           the task/discovery orchestr."    the PROBE dispatches"
+
+   examples block                 /haipipe-paper discover "..."    delete the example
+                                  /haipipe-application discover    (or reframe as a probe)
+
+   Dispatch notes                 discover -> Skill(haipipe-        delete both note rows
+                                  discovery ...); task -> Skill(
+                                  haipipe-task ...)
+
+   Composing / routing table      non-claim utility work           delete the row; if it
+                                  -> /haipipe-paper discover|task   MUST exist, point at
+                                                                    the bank's own qa door
+
+   closing line                   "direct discover/task verbs       delete; replace with
+                                  remain ONLY for non-claim ..."    "the PROBE phase is the
+                                                                    only bank contact"
+
+   phase-verb pass-through list   draft | probe | discover | task   draft | probe
+   (app line 130, paper 164)                                        (drop discover|task)
+```
+
+The application description carries an extra offender:
+
+    "Direct task/discover verbs available for non-claim utility work."
+
+That sentence is now false. It comes out.
+
+
+The line that STAYS (do not delete by reflex)
+----------------------------------------------
+
+Application SKILL.md, line 153 — this is the BANK's own door, not a
+paper-proxy verb:
+
+    a question with no intervention behind it
+      -> /haipipe-task qa "<q>" | /haipipe-discovery qa "<q>"
+         (the QA file IS the receipt; no probe file needed)
+
+Keep it. It is a human/orchestrator using the bank directly, which
+260714-probe-qa explicitly allows. It is NOT the application "calling"
+the bank — there is no intervention in the loop. (See file 01, "What
+does NOT change.")
+
+The tell: this row has NO probe file and NO intervention. The deleted
+rows had an intervention/paper in context reaching past the wall.
+
+
+Rename residue (already noted in the app summary)
+-------------------------------------------------
+
+`fn/probe-plans.md` is now `fn/probes.md` in both twins. Any "PPNN card"
+routing key in fn/feedback.md keys instead on "probe file / question
+section / commission." This is bookkeeping from the probe redesign, not
+this ruling — but touch it in the same commit so the vocabulary is
+consistent when the checker runs.

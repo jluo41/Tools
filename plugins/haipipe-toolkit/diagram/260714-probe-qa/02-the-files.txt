@@ -4,10 +4,11 @@
   What is on disk, exactly. Two files matter: the probe, and the QA file.
 
 
-THE PROBE FILE  (paper side)
+THE PROBE FILE (paper side)
 =============================
 
-One file per TOPIC. One SECTION per question.
+One file per TOPIC.
+One SECTION per question.
 
 ```text
    papers/Paper-CGMtoCyclePhase/1-probes/PP03_welldoc-feasibility.md
@@ -43,9 +44,7 @@ One file per TOPIC. One SECTION per question.
    - reading:          ← empty until answered
 ```
 
-Read the section top to bottom and you get the whole life of one question:
-what it serves, where the answer is, how far along it is, what we asked, what
-we concluded.
+Read the section top to bottom and you get the whole life of one question: what it serves, where the answer is, how far along it is, what we asked, what we concluded.
 
 
 The five fields
@@ -57,7 +56,8 @@ The five fields
     commission   the question, translated. This is what crosses. Frozen once written.
     reading      what the answer MEANS for my claims. Written when the answer lands.
 
-Plus, once per file: `## Why` — the stake. It is the one thing that must never cross.
+Plus, once per file: `## Why` — the stake.
+It is the one thing that must never cross.
 
 
 The commission is the memory
@@ -65,8 +65,9 @@ The commission is the memory
 
 A paper session writes a probe on Monday and dies.
 
-Two weeks later, nothing is running. Nobody remembers. But the commission text is
-sitting in the section, ready to hand to an agent verbatim.
+Two weeks later, nothing is running.
+Nobody remembers.
+But the commission text is sitting in the section, ready to hand to an agent verbatim.
 
     The paper is the memory. That is why the commission lives in the section
     and not in some agent's head.
@@ -75,7 +76,8 @@ sitting in the section, ready to hand to an agent verbatim.
 The BUILD lane — the price of "commissioned" is a DATE
 -------------------------------------------------------
 
-Some questions need real build work, not just an answer. Those sections carry:
+Some questions need real build work, not just an answer.
+Those sections carry:
 
 ```text
    - state: commissioned
@@ -109,11 +111,11 @@ But there is a second, different way to be `commissioned`, and it owes no date:
 ```
 
 
-THE QA FILE  (executor side)
+THE QA FILE (executor side)
 =============================
 
-The executor's readable answer. It lives in the executor's own folder, and the
-executor is the only thing that ever writes it.
+The executor's readable answer.
+It lives in the executor's own folder, and the executor is the only thing that ever writes it.
 
 ```text
    tasks/A03_welldoc_cycle_check/01_scan/          discoveries/L03_cycle/01_prior_art/
@@ -124,10 +126,14 @@ executor is the only thing that ever writes it.
        └── 2-female-cgm-volume.md                      └── 1-cycle-prior-art.md
 ```
 
-Both banks. Same shape. Task and discovery are both executors.
+Both banks.
+Same shape.
+Task and discovery are both executors.
 
-The numbering IS the index. `ls QA/` gives you an ordered menu of what this leaf has
-established. No separate index file until a leaf earns one.
+The numbering IS the index.
+`ls QA/` gives you an ordered menu of what this task-folder has
+established.
+No separate index file until a task-folder earns one.
 
 
 What's inside one
@@ -150,19 +156,20 @@ What's inside one
      Female-with-CGM count — needs the Patient↔User join.
 ```
 
-The slug names the question. There is no probe id in here, ever. The executor has
-never heard of a paper and cannot honestly write one down.
+The slug names the question.
+There is no probe id in here, ever.
+The executor has never heard of a paper and cannot honestly write one down.
 
 `## Not-done` earns its place: an executor once wrote *"Not resolved (NOT NEEDED FOR
-THE GATE): exact female-with-CGM count needs the Patient↔User join"* — it declined to
-compute the one number a second paper's claim would have turned on. A future reader
-must be able to see that hole without reading the code.
+THE GATE): exact female-with-CGM count needs the Patient↔User join"* — it declined to compute the one number a second paper's claim would have turned on.
+A future reader must be able to see that hole without reading the code.
 
 
 A ticket that becomes a receipt
 --------------------------------
 
-The `state:` line is the ONE mutable field in the file. Everything else is frozen.
+The `state:` line is the ONE mutable field in the file.
+Everything else is frozen.
 
 ```text
    ③ the executor decides it must actually run something
@@ -175,10 +182,13 @@ The `state:` line is the ONE mutable field in the file. Everything else is froze
      QA/3-foo.md    state: answered   ## Answer is filled in
 ```
 
-Why claim it early? So a second consumer, asking the same question next week, sees
+Why claim it early?
+So a second consumer, asking the same question next week, sees
 `state: working` and does not pay for the same run twice.
 
-Two writes. But ONE WRITER — the executor, both times. That distinction is load-bearing:
+Two writes.
+But ONE WRITER — the executor, both times.
+That distinction is load-bearing:
 
 ```text
    ✅ the EXECUTOR claims its own file, in its own folder      one writer
@@ -187,19 +197,20 @@ Two writes. But ONE WRITER — the executor, both times. That distinction is loa
                                                                  wearing a new costume
 ```
 
-"Write-once" was never the real rule. ONE WRITER was.
+"Write-once" was never the real rule.
+ONE WRITER was.
 
 
 Two things that can go wrong, and what stops them
 --------------------------------------------------
 
 ```text
-   🧟 A ZOMBIE CLAIM
+   🧟 A EXPIRED `working` FILE
       A run crashes. `state: working` sits there forever and every future reader
       politely defers to a dead process.
       ⇒ `started:` is MANDATORY, and a claim EXPIRES (24h). Past that, the next
-        qa call reclaims it and notes the abandoned attempt in ## Not-done.
-        A claim with no `started:` can never expire — the checker fails it.
+        qa call restarts it and notes the abandoned attempt in ## Not-done.
+        A `working` file with no `started:` can never expire — the checker fails it.
 
    🏁 A RACE
       Two qa calls decide to run at the same instant; both pick QA/3-.
@@ -213,15 +224,19 @@ Two things that can go wrong, and what stops them
 When the answer changes later
 ------------------------------
 
-A re-run lands new data. The old answer is now wrong.
+A re-run lands new data.
+The old answer is now wrong.
 
-We do NOT edit the old file's body. The executor writes QA/<n+1> and APPENDS to the old
-file's state line — `answered` stays; the pointer is added beside it:
+We do NOT edit the old file's body.
+The executor writes QA/<n+1> and APPENDS to the old file's state line — `answered` stays; the pointer is added beside it:
 
     - state:   answered · superseded-by: QA/4-cycle-v2.md
 
-Now a paper still pointing at the old file is MACHINE-DETECTABLE. The checker fails it.
+Now a paper still pointing at the old file is MACHINE-DETECTABLE.
+The checker fails it.
 
-Without this, you get the silent bug: on day 1 the paper reads "no cycle column" and
-writes "C6 supported". On day 40 the truth changes. Every file on disk stays internally
-consistent. The paper's claim is false. Nothing fires.
+Without this, you get the silent bug: on day 1 the paper reads "no cycle column" and writes "C6 supported".
+On day 40 the truth changes.
+Every file on disk stays internally consistent.
+The paper's claim is false.
+Nothing fires.

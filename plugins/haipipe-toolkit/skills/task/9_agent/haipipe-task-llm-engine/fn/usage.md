@@ -7,11 +7,8 @@ description: "How to wire the LLM engine into a task .py script"
 
 ## Getting the engine
 
-The engine ships with this skill: if `code/haiutils/llm_engine/` is missing,
-CREATE it from `../ref/engine/` (the skill's reference implementation — see
-SKILL.md CHECK/CREATE flow). Do NOT hand-copy transport code from project
-PoCs; the PoC at examples/ProjC-LLMRecPhysicain/.../00_llm_engine_test.py is
-historical only.
+The engine ships with this skill: if `code/haiutils/llm_engine/` is missing, CREATE it from `../ref/engine/` (the skill's reference implementation — see SKILL.md CHECK/CREATE flow).
+Do NOT hand-copy transport code from project PoCs; the PoC at examples/ProjC-LLMRecPhysicain/.../00_llm_engine_test.py is historical only.
 
 Key patterns to follow:
 
@@ -43,10 +40,10 @@ def _write_call_artifacts(call_dir, input_data, response_data, meta):
 ```
 
 ### 4. Task results/ holds only summaries
-The raw per-call data lives in LLMCallStore. Task `results/<run>/` holds only
-aggregated outputs (summary.json, tables, scores).
+The raw per-call data lives in LLMCallStore.
+Task `results/<run>/` holds only aggregated outputs (summary.json, tables, scores).
 
-## After code/haiutils/llm_engine/ exists (future state)
+## Once code/haiutils/llm_engine/ is deployed
 
 ```python
 from haiutils.llm_engine import llm_call, LLMResult
@@ -60,5 +57,5 @@ result = await llm_call(
 # result.text, result.meta, result.cost_usd, result.transport
 ```
 
-The engine handles transport selection, auth, artifact writing, and SDK session
-isolation internally. Task scripts just call `llm_call()`.
+The engine handles transport selection, auth, artifact writing, and SDK session isolation internally.
+Task scripts just call `llm_call()`.

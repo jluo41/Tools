@@ -3,8 +3,8 @@
 How `Tools/plugins/haipipe-toolkit/skills/paper` is organized. The reconstruction
 to this layout is complete.
 
-The skill tree mirrors the lifecycle spine (`03-paper-lifecycle.md`,
-`04-lifecycle-map.md`) on two axes: `1-lifecycle/` holds the STAGE orchestrators
+The skill tree mirrors the lifecycle spine (`../1-lifecycle/ref/03-paper-lifecycle.md`,
+`../1-lifecycle/ref/04-lifecycle-map.md`) on two axes: `1-lifecycle/` holds the STAGE orchestrators
 (user-facing; define WHAT each stage delivers) and `2-phase/` holds the PHASE
 workers (internal; define HOW: DRAFT -> PROBE -> REVISE -> CHECK). Inside those
 two groups each numbered stage/phase folder holds its skills
@@ -16,15 +16,14 @@ paper/
 ├── haipipe-paper/        router + Paper Console front door
 ├── PHILOSOPHY.md         design philosophy
 ├── README.md             canonical structure pointer
-├── wiki/
-│   ├── 03-paper-lifecycle.md      stage spine + maturity
-│   ├── 04-lifecycle-map.md        stage -> procedure/reads/writes/calls/gate
+├── wiki/               shared references (dashboard, rounds, delivery-need, structure)
 │   ├── 05-paper-dashboard.md      derive-from-disk frontier
 │   ├── 07-paper-rounds.md         1-rounds/ contract
 │   ├── 11-delivery-need.md        paper <-> probe/evidence interface
 │   └── 06-paper-skill-structure.md
 ├── 0-enter/             haipipe-paper-enter (Console) + haipipe-paper-round
 ├── 1-lifecycle/         STAGE orchestrators, one numbered folder per stage
+│     ref/               lifecycle references (03-paper-lifecycle, 04-lifecycle-map, 08-stage-gate, 09-stage-illuminate)
 │     0-seed/haipipe-paper-seed
 │     1-resource/haipipe-paper-resource      (venue-FREE; shares the number 1 with claims)
 │     1-claims/haipipe-paper-claims          (venue-FREE)
@@ -32,7 +31,7 @@ paper/
 │     3-narrative/haipipe-paper-narrative
 │     4-display/haipipe-paper-display + renderers
 │       -display-{table,figure,diagram,illustration}
-│       (illustration default = Codex; -display-illustration-gemini = fallback;
+│       (illustration = Codex bridge;
 │        framework candidate rounds inside display)
 │     5-section-edit/haipipe-paper-section-edit + section-type/ norms
 │     + haipipe-paper-venue (recommend + pin the best-fit journal, before pitch;
@@ -60,7 +59,7 @@ verbs. The old flat `paper/_venue/` was reshaped into `_venue/`. See
 
 ## Stage to Procedure
 
-Lifecycle stages map 1:1 to skills (full table in `04-lifecycle-map.md`):
+Lifecycle stages map 1:1 to skills (full table in `../1-lifecycle/ref/04-lifecycle-map.md`):
 
 ```text
 enter             -> 0-enter/haipipe-paper-enter

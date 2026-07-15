@@ -1,8 +1,7 @@
 fn-review: Endpoint Review Protocol
 =====================================
 
-Reviews Fn files in code/haifn/fn_endpoint/ for correctness,
-schema consistency, and cross-compatibility.
+Reviews Fn files in code/haifn/fn_endpoint/ for correctness, schema consistency, and cross-compatibility.
 
 ---
 
@@ -56,9 +55,7 @@ Step 2: Per-Fn Checklist
 
 For each Fn file, apply the checklist specific to its type.
 
-_______________________________________________
-METAFN CHECK
-_______________________________________________
+_______________________________________________ METAFN CHECK _______________________________________________
 
 File: code/haifn/fn_endpoint/fn_meta/{MetaFnName}.py
 
@@ -76,9 +73,7 @@ File: code/haifn/fn_endpoint/fn_meta/{MetaFnName}.py
 Cross-check:
   modelName must match the value in Src2InputFn's `"models"` JSON field
 
-_______________________________________________
-TRIGFN CHECK
-_______________________________________________
+_______________________________________________ TRIGFN CHECK _______________________________________________
 
 File: code/haifn/fn_endpoint/fn_trig/{TrigFnName}.py
 
@@ -96,9 +91,7 @@ Cross-check:
   TriggerName value in returned DataFrame should match the trigger
   configured in the PreFnPipeline inside the endpoint
 
-_______________________________________________
-POSTFN CHECK
-_______________________________________________
+_______________________________________________ POSTFN CHECK _______________________________________________
 
 File: code/haifn/fn_endpoint/fn_post/{PostFnName}.py
 
@@ -119,9 +112,7 @@ File: code/haifn/fn_endpoint/fn_post/{PostFnName}.py
 Cross-check:
   Action names in predictions must match MetaFn's predictions list
 
-_______________________________________________
-SRC2INPUTFN CHECK
-_______________________________________________
+_______________________________________________ SRC2INPUTFN CHECK _______________________________________________
 
 File: code/haifn/fn_endpoint/fn_src2input/{Src2InputFnName}.py
 
@@ -139,9 +130,7 @@ Cross-check:
   Run round-trip validation: Src2InputFn(Input2SrcFn(payload)) ≈ payload
   Key fields must survive the round-trip without data loss
 
-_______________________________________________
-INPUT2SRCFN CHECK
-_______________________________________________
+_______________________________________________ INPUT2SRCFN CHECK _______________________________________________
 
 File: code/haifn/fn_endpoint/fn_input2src/{Input2SrcFnName}.py
 

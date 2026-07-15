@@ -1,7 +1,7 @@
 task — Task-Type Specialist Series (DESIGN)
 ==============================================
 
-Status: v5.1.0 (2026-06-21). 4-stage code lifecycle (Plan/Build/Execute/Report); 13 type specialists aligned; three-axes mental model documented.
+Status: v5.1.0 (2026-06-21). 4-phase code lifecycle (Plan/Build/Execute/Report); 13 type specialists aligned; three-axes mental model documented.
 Owner:  jluo41
 Scope:  task-folder lifecycle (Plan/Build/Execute/Report) + per-type scaffolding,
         mirroring the /haipipe-data and /haipipe-nn pattern.
@@ -76,9 +76,9 @@ task/                                 <- task-scope skills (THIS SECTION)
 |   |-- README.md
 |
 |-- haipipe-task/                       🧭 task orchestrator (v5.3.0)
-|   |-- SKILL.md                        scope resolution + 4-stage code lifecycle dispatch
+|   |-- SKILL.md                        scope resolution + 4-phase code lifecycle dispatch
 |   |-- ref/
-|   |   |-- task-lifecycle.workflow.js  Workflow tool script for the 4-stage loop
+|   |   |-- task-lifecycle.workflow.js  Workflow tool script for the 4-phase loop
 |   |   |-- hierarchy.md               project -> task-group -> task-folder -> run
 |   |   |-- authoring-conventions.md   cell markers, Intent docstring, config-driven
 |   |   |-- workflow-template.yaml     task-level IPO template (Run/Gate1/Gate2)
@@ -91,10 +91,10 @@ task/                                 <- task-scope skills (THIS SECTION)
 |   |   |-- task-structure.md          group/task-folder layout contract (from project, 2026-07-03)
 |   |   |-- scan_status/               status-scan scripts (from project, 2026-07-03)
 |   |-- fn/
-|   |   |-- workflow-plan.md           procedure for Plan stage
-|   |   |-- workflow-report.md         procedure for Report stage
+|   |   |-- stage-plan.md              procedure for Plan stage
+|   |   |-- stage-report.md            procedure for Report stage
 |   |   |-- run.md                     procedure for run scaffolding
-|   |   |-- workflow-audit.md          procedure for auditing
+|   |   |-- audit.md                   procedure for auditing
 |   |   |-- task-group.md              task-group scaffold (from project, 2026-07-03)
 |   |   |-- scan-status.md             cross-group status scan (from project, 2026-07-03)
 |   |   |-- feedback.md + digest.md    feedback capture + session harvest
@@ -321,7 +321,7 @@ The relationship is **hub-and-spoke** — haipipe-task is the hub, specialists a
 
 **haipipe-task (hub)** owns everything that is type-agnostic:
 
-- The 4-stage code lifecycle (Plan / Build / Execute / Report)
+- The 4-phase code lifecycle (Plan / Build / Execute / Report)
 - The creator-reviewer agent loop (`task-lifecycle.workflow.js`)
 - The IPO workflow schema (`ref/workflow-template.yaml`)
 - Scope resolution, routing, AUTO_MODE detection
@@ -340,7 +340,7 @@ The arrows go **both ways**. The hub reads spokes for type knowledge; spokes rea
                    +------------------------------------------+
                    |         haipipe-task (hub)                |
                    |                                          |
-                   |  4-stage lifecycle engine                |
+                   |  4-phase lifecycle engine                |
                    |  creator-reviewer agent loop             |
                    |  scope resolution + routing              |
                    |  shared ref/ (templates, conventions)    |
@@ -360,7 +360,7 @@ Three ways to enter
 
 ```
 Path 1 — Via hub (lifecycle):   /haipipe-task <existing-path>
-  hub detects type -> reads spoke's ref/ as reference -> runs 4-stage lifecycle
+  hub detects type -> reads spoke's ref/ as reference -> runs 4-phase lifecycle
 
 Path 2 — Via hub (scaffold):    /haipipe-task task-folder eval
   hub resolves type -> Skill("haipipe-task-for-eval") -> spoke runs fn/scaffold.md
@@ -434,14 +434,14 @@ TWO SESSION MODES:
 THE ONE DOOR IN — the `qa` verb (`haipipe-task/fn/qa.md`). A question arrives as ONE
 QUESTION IN GENERAL LANGUAGE and nothing else. The verb answers it (① QA SCAN → ② DIGEST →
 ③ P-B-E-R at the shallowest depth) or REFUSES it, and returns a path to
-`<leaf>/QA/<n>-<slug>.md`. It never learns who asked or why, and must not try to find out.
+`<task-folder>/QA/<n>-<slug>.md`. It never learns who asked or why, and must not try to find out.
 
 The pen never leaves this layer: WE write the QA file. A file in this bank authored by an
 outsider carries the outsider's vocabulary — that is exactly how a task result on disk
 today ended up asserting a consumer's claim ids.
 
 
-The 4-Stage Lifecycle
+The 4-Phase Lifecycle
 ======================
 
 Every existing task folder goes through up to 4 stages. These stages care
@@ -450,21 +450,21 @@ What the numbers MEAN for some downstream argument is not decided here, and
 never has been.
 
 ```
-Stage 1: PLAN — the contract (what the script SHOULD do)
+Phase 1: PLAN — the contract (what the script SHOULD do)
   creates:   workflow/plan.yaml, workflow/plan-script-<name>.yaml
   reads:     specialist's ref/workflow-plan-sample.yaml for type-specific phases
   agents:    creator drafts -> reviewer checks IPO compliance -> loop if revise
 
-Stage 2: BUILD — the implementation (code that matches the plan)
+Phase 2: BUILD — the implementation (code that matches the plan)
   creates:   {NN}_{task}.py, configs/<run>.yaml, runs/<run>.sh, CODE_REVIEW.md
   reads:     specialist's SKILL.md for type constraints + MUST NOT rules
   agents:    creator writes code -> reviewer does Gate 1 code review -> loop if revise
 
-Stage 3: EXECUTE — just run (no creation, no modification)
+Phase 3: EXECUTE — just run (no creation, no modification)
   generates: results/<run>/metrics.json, runtime.yaml, notebooks/<run>.ipynb
   runs:      bash runs/<run>.sh (human or autoExecute)
 
-Stage 4: REPORT — summarize (what happened vs the plan)
+Phase 4: REPORT — summarize (what happened vs the plan)
   creates:   workflow/report.yaml, workflow/report-script-<name>.yaml, RUN_AUDIT.md
   reads:     workflow/plan*.yaml to mirror structure
   agents:    creator drafts -> reviewer checks accuracy -> loop if revise
@@ -486,7 +486,7 @@ required:
   RUN_AUDIT.md                    reviewer pass/warn unless explicitly exempt
 
 optional:
-  QA/<n>-<slug>.md                the READABLE digest of a direction this leaf explored.
+  QA/<n>-<slug>.md                the READABLE digest of a direction this task-folder explored.
                                   Three reasons only: a question arrived · results/ already
                                   answered one but no digest existed · we judged a finding
                                   worth digesting. A QA/ mirroring every result is noise.
@@ -598,7 +598,7 @@ Phase 3 — Per-type content (scaffold + config-seed)           DONE (2026-05-24
 Phase 4 — Cleanup                                             DONE (2026-06-08)
   - removed legacy fn/task-folder.md from orchestrator
   - moved fn/project.md + fn/task-group.md to project/haipipe-project/fn/
-Phase 5 — 4-stage lifecycle                                   DONE (2026-06-09)
+Phase 5 — 4-phase lifecycle                                   DONE (2026-06-09)
   - task-lifecycle.workflow.js with creator-reviewer loop
   - workflow-plan-sample.yaml in all 13 specialists
   - haipipe-task-batch removed (batch = multiple configs in one Build)
@@ -656,7 +656,7 @@ Decision Log
 ============
 
 2026-05-24  Approved: split into 7 type specialists; group letters A-F + X.
-2026-06-08  Approved: 4-stage lifecycle (Plan/Build/Execute/Report) with creator-reviewer agents.
+2026-06-08  Approved: 4-phase lifecycle (Plan/Build/Execute/Report) with creator-reviewer agents.
 2026-06-08  Approved: move project/task-group scope to project/haipipe-project.
 2026-06-09  Approved: remove haipipe-task-batch (batch = multiple configs in one Build, not a separate skill).
 2026-06-09  Approved: remove haipipe-task-logging (superseded by Report stage).
@@ -667,6 +667,6 @@ Decision Log
 2026-06-19  Superseded: Stage 5 removed from task. Sandwich model adopted: probe open dispatches discoveries/tasks, discover and task do their own work, probe post resumes and judges the claim. Insights deferred while focusing on Narrative/Probe/Discovery/Task.
 2026-06-21  Documented: three orthogonal axes (lifecycle / task domains / type spokes). Type spokes stay an unnumbered enum by design; only lifecycle stages and pipeline domains are numbered, because only they are sequenced.
 2026-06-21  Approved (supersedes the line above): dissolve C (for-xxx spokes) into B. B becomes a single flat NUMBERED domain family of 9 domains; every task kind gets a stable domain id. Coverage over clean boundaries: overlap is fine, every task type must fall into exactly one domain. nn and fit split but share /haipipe-nn. stata and agent are their own domains. Migration staged: Phase 1 folder move with skill names unchanged, Phase 2 optional rename. See "Target Architecture" section.
-2026-07-14  Approved (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, rulings R1-R18): the task layer is CONSUMER-UNAWARE, but not question-deaf. DELETED: _ASK/ stubs, _ANS/, the `answers:` report field, external ids anywhere under tasks/, and the probe-aware `asks` verb. ADDED: the `qa` verb (fn/qa.md) — one question in general language in, a path to <leaf>/QA/<n>-<slug>.md out; gate ① QA SCAN ② DIGEST ③ P-B-E-R at the shallowest depth (read | new run | new script | new leaf), or REFUSE. ADDED: the OPTIONAL QA/ folder — the leaf's readable, numbered map of the directions it has explored; authored by THIS layer at Report; three reasons only; no consumer vocabulary. AFFIRMED: the task session's PRIMARY mode is autonomous P-B-E-R with no question pending, and answerability work (digests + code that makes future questions cheap) is task-native. Supersedes the "sandwich model" (2026-06-19) and the "Downstream Consumer Contract" (2026-06-11) entries below.
+2026-07-14  Approved (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, rulings R1-R18): the task layer is CONSUMER-UNAWARE, but not question-deaf. DELETED: _ASK/ stubs, _ANS/, the `answers:` report field, external ids anywhere under tasks/, and the probe-aware `asks` verb. ADDED: the `qa` verb (fn/qa.md) — one question in general language in, a path to <task-folder>/QA/<n>-<slug>.md out; gate ① QA SCAN ② DIGEST ③ P-B-E-R at the shallowest depth (read | new run | new script | new task-folder), or REFUSE. ADDED: the OPTIONAL QA/ folder — the task-folder's readable, numbered map of the directions it has explored; authored by THIS layer at Report; three reasons only; no consumer vocabulary. AFFIRMED: the task session's PRIMARY mode is autonomous P-B-E-R with no question pending, and answerability work (digests + code that makes future questions cheap) is task-native. Supersedes the "sandwich model" (2026-06-19) and the "Downstream Consumer Contract" (2026-06-11) entries below.
 2026-06-21  Decided: Phase 2 (rename for-xxx skills) REJECTED. Names stay haipipe-task-for-xxx by design; the haipipe-task- prefix keeps each specialist clearly inside the haipipe-task family. Migration is complete at Phase 1 (folder nesting). No skill rename.
 2026-06-21  Refined (per "we will keep adding domains"): numbering is APPEND-ONLY, never renumbered. id = creation order, permanent; pipeline-flow order is a separate documented attribute, not the id. Founding assignment keeps existing folders fixed (data=1, nn=2, endpoint=3, individual=4) and appends fit=5, eval=6, display=7, stata=8, agent=9. New domains take the next integer; Phase 1 touches zero existing folders. Rejected the one-time tidy renumber as inconsistent with append-only.

@@ -15,7 +15,7 @@ metadata:
   summary: "Unified reviewer — quality gates for all discovery lifecycle stages, v3.0 contract. Adds the QA-file gate (standalone question, real anchors, LAW-2 clean, no new conclusions in a digest-only run), the STATE-LINE gate (a QA file is a TICKET that becomes a RECEIPT), and the probe-unawareness gate (an _ASK/, an answers: field or a PP id anywhere under discoveries/ is a REVISE)."
   changelog:
     - "1.4.0 (2026-07-14): R19/R20 (DESIGN-probe-qa PART 3b, JL). WRITE-ONCE is RETIRED — it forbade the two edits the claim mechanism MANDATES, and would have REVISEd every gate-③ Report on day 1 (the completion `working` → `answered`, and the supersession append). Replaced by BODY FROZEN, which freezes the BODY (# Q — / ## Answer / ## Caveats / ## Not-done) and names the `state:` line as the ONE mutable field, editable only by this layer, exactly twice. NEW: the STATE LINE check (state: is MANDATORY; a `working` file needs `started:`; `state: answered` with an EMPTY ## Answer is a LYING RECEIPT). SECTIONS reworded so the mandatory state-line header block above the three ## headings is not read as a violation. FILENAME gains the CLAIM-RACE exemption: a duplicate <n> from a same-instant race is NON-FATAL by ruling and must not be REVISEd. The task twin (haipipe-task-reviewer-agent) carries this block token-identical."
-    - "1.3.0 (2026-07-14): PROBE-UNAWARE (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, R2/R9/R10; probe SKILL 8.0.0). The 'Bridge check — the answers: field' section is DELETED; the bridge it checked no longer exists. Replaced by the QA-file gate: filename is slug-only and correctly numbered, the # Q line stands alone, every ## Answer claim anchors into a real artifact, Caveats + Not-done are present, LAW 2 holds (no C\\d / H\\d / 'claims-stage' / 'the paper'), a digest-only run reached no conclusion its terminal did not, and the leaf has one of the three legal reasons for the file to exist. Plus a bank-purity check: any _ASK/, _ANS/, answers:, or PP id under discoveries/ is a REVISE. The anti-contamination check (artifacts organized around the QUESTION, never a consumer's framing) survives verbatim — it is now the layer's core discipline."
+    - "1.3.0 (2026-07-14): PROBE-UNAWARE (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, R2/R9/R10; probe SKILL 8.0.0). The 'Bridge check — the answers: field' section is DELETED; the bridge it checked no longer exists. Replaced by the QA-file gate: filename is slug-only and correctly numbered, the # Q line stands alone, every ## Answer claim anchors into a real artifact, Caveats + Not-done are present, LAW 2 holds (no C\\d / H\\d / 'claims-stage' / 'the paper'), a digest-only run reached no conclusion its terminal did not, and the discovery-folder has one of the three legal reasons for the file to exist. Plus a bank-purity check: any _ASK/, _ANS/, answers:, or PP id under discoveries/ is a REVISE. The anti-contamination check (artifacts organized around the QUESTION, never a consumer's framing) survives verbatim — it is now the layer's core discipline."
     - "1.0.0 (2026-06-23): initial design. Mirrors haipipe-probe-reviewer-agent for the discovery layer."
     - "1.1.0 (2026-07-03): types de-CJK'd to Search/Review/Idea (matches skill v2.1.0+); citation spot-checks now via the /arxiv and /semantic-scholar skills (the research-toolkit script paths were dangling)."
     - "1.2.0 (2026-07-03): v2.6 checks added — self-contained folder (no parent/consumed_by), report: appended-at-Report, no status.yaml/site.md, source-format.md compliance (never a table), S/L/P letters."
@@ -118,11 +118,11 @@ Verdict: `pass` | `revise`
 
 ## QA-file review (whenever `QA/<n>-<slug>.md` was written or touched)
 
-The QA file is the leaf's READABLE digest of a direction it explored — the file a future
+The QA file is the discovery-folder's READABLE digest of a direction it explored — the file a future
 reader with a different stake, or none, will actually open. Gate it like a terminal.
 
 ```
-[ ] FILENAME    QA/<n>-<slug>.md — <n> continues the leaf's numbering (no gap, no reuse),
+[ ] FILENAME    QA/<n>-<slug>.md — <n> continues the discovery-folder's numbering (no gap, no reuse),
                 SLUG ONLY: no PP id, no claim id, no paper name. A PP id in a bank
                 filename is an instant REVISE.
                 EXEMPTION — THE CLAIM RACE. A DUPLICATE <n> left by a same-instant claim

@@ -1,24 +1,19 @@
 fn-3-profile: Latency breakdown of an Endpoint_Set's inference
 ==============================================================
 
-The `profile` verb answers "where does the inference wall-clock go?" — a
-per-step timing breakdown + a decomposition of the arm-dependent step. This
-is distinct from `test` (which asks "does inference work?").
+The `profile` verb answers "where does the inference wall-clock go?" — a per-step timing breakdown + a decomposition of the arm-dependent step.
+This is distinct from `test` (which asks "does inference work?").
 
-Two ways to run it; same instrumentation underneath
-(`endpoint_set.inference(payload, profile=True)`):
+Two ways to run it; same instrumentation underneath (`endpoint_set.inference(payload, profile=True)`):
 
   1. LOCAL (this verb)          — load the Endpoint_Set from disk, profile here.
   2. LOCAL DOCKER               — set `ENABLE_PROFILING=true` on the container;
                                   app_predictor logs the timing summary per request.
 
-For a DURABLE, versioned profile (tracked across model releases, or to A/B a
-vectorization fix), scaffold a durable task instead via `/haipipe-task-for-endpoint` (profiling folded into the endpoint domain)
-(task) — same breakdown, recorded as `results/<run>/latency.json`. Preferred
-placement: co-locate it in the project's ENDPOINT group as a sibling of the
-endpoint-build task (e.g. `tasks/C_endpoint/C2_inference_profile/` next to
-`C1_endpoint/`), so the group owns build → profile. Real example:
-`<project>/tasks/<endpoint-group>/NN_inference_profile/ (illustrative — original lived in a retired WellDoc project)`.
+For a DURABLE, versioned profile (tracked across model releases, or to A/B a vectorization fix), scaffold a durable task instead via `/haipipe-task-for-endpoint` (profiling folded into the endpoint domain) (task) — same breakdown, recorded as `results/<run>/latency.json`.
+Preferred placement: co-locate it in the project's ENDPOINT group as a sibling of the endpoint-build task (e.g.
+`tasks/C_endpoint/C2_inference_profile/` next to `C1_endpoint/`), so the group owns build → profile.
+Real example: `<project>/tasks/<endpoint-group>/NN_inference_profile/ (illustrative — original lived in a retired WellDoc project)`.
 
 
 Procedure (local)
@@ -68,30 +63,21 @@ print(f"  model_inference split → add_treatment_cols {acc['add']:.0f} ms | tun
 mi._add_treatment_columns, mi.model_tuner.infer = oa, oi              # restore
 ```
 
-Local docker variant: run the container with `-e ENABLE_PROFILING=true`,
-hit `/invocations`, then read the timing summary from the container logs
-(`app_predictor` logs `timing['summary']` per request).
+Local docker variant: run the container with `-e ENABLE_PROFILING=true`, hit `/invocations`, then read the timing summary from the container logs (`app_predictor` logs `timing['summary']` per request).
 
 
 Anti-patterns to flag (the reason this verb exists)
 ---------------------------------------------------
 
-If the breakdown shows `model_inference` dominating AND its
-`add_treatment_cols` component dwarfing `tuner.infer`, you have hit the
-**HuggingFace-Dataset-in-the-per-arm-loop** trap — `_add_treatment_columns`
-calls `Dataset.add_column` per arm, O(arms²) Arrow copies. Measured on the
-40-arm SMS ClickPred endpoint (2026-06-01): model_inference 3692 ms, of which
-3005 ms (80% of total) was the HF-Dataset ops, only 602 ms was XGBoost.
+If the breakdown shows `model_inference` dominating AND its `add_treatment_cols` component dwarfing `tuner.infer`, you have hit the **HuggingFace-Dataset-in-the-per-arm-loop** trap — `_add_treatment_columns` calls `Dataset.add_column` per arm, O(arms²) Arrow copies.
+Measured on the 40-arm SMS ClickPred endpoint (2026-06-01): model_inference 3692 ms, of which 3005 ms (80% of total) was the HF-Dataset ops, only 602 ms was XGBoost.
 
-Fix (NOT in this skill — it is a `hainn` change): replace the HF-Dataset loop
-with scipy.sparse — build the base feature matrix ONCE, append the N one-hot
-variants as a single sparse identity block, run ONE batched `predict_proba`.
-~80-150× faster, all arms kept. Full sketch + numbers:
-`skills/task/3_end/haipipe-task-for-endpoint/ref/inference-perf-notes.md`.
+Fix (NOT in this skill — it is a `hainn` change): replace the HF-Dataset loop with scipy.sparse — build the base feature matrix ONCE, append the N one-hot variants as a single sparse identity block, run ONE batched `predict_proba`.
+~80-150× faster, all arms kept.
+Full sketch + numbers: `skills/task/3_end/haipipe-task-for-endpoint/ref/inference-perf-notes.md`.
 The code site is `code/hainn/instance/mlpredictor/instance_slearner._compute_scores`.
 
-Other flags: cold-call reported as steady-state (always warm up); per-request
-external-index rebuilds in prefn_pipeline (warm them at load).
+Other flags: cold-call reported as steady-state (always warm up); per-request external-index rebuilds in prefn_pipeline (warm them at load).
 
 
 Return contract

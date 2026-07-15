@@ -1,6 +1,6 @@
 ---
 name: haipipe-individual-inference
-description: "Per-individual endpoint inference test. Loads one individual from _WorkSpace/A-User-Store, builds an Endpoint_Set dataframe_records payload, POSTs it to a deployed endpoint URL (local FastAPI / Databricks / SageMaker — same wire contract), and prints the forecast response. Sibling of haipipe-individual (which builds the Subject-* data folders). Use to smoke-test that a deployed endpoint accepts individual data correctly. Trigger: individual inference, test endpoint with individual, /haipipe-individual-inference."
+description: "Per-individual endpoint inference test: loads one individual from _WorkSpace/A-User-Store, builds an Endpoint_Set dataframe_records payload, POSTs it to a deployed endpoint (local FastAPI / Databricks / SageMaker -- same wire contract), and prints the forecast. Use to smoke-test that a deployed endpoint accepts individual data. Trigger: individual inference, test endpoint with individual, /haipipe-individual-inference."
 argument-hint: "--individual <id_or_path> [--endpoint-url URL] [--json]"
 allowed-tools: Bash, Read
 metadata:
@@ -32,9 +32,8 @@ Pipeline:
        forecast JSON
 ```
 
-The wire payload matches the Endpoint_Set's documented `Input2SrcFn`
-contract (Format 1 — dataframe_records). Same payload Databricks Model
-Serving and SageMaker would consume; only `endpoint_url` differs.
+The wire payload matches the Endpoint_Set's documented `Input2SrcFn` contract (Format 1 — dataframe_records).
+Same payload Databricks Model Serving and SageMaker would consume; only `endpoint_url` differs.
 
 ---
 
@@ -48,7 +47,7 @@ src/
   client.py          POST dataframe_records → forecast (auth + retry-friendly)
 
 scripts/
-  show_ctx_cli.py            inspect a individual's loaded context
+  show_ctx_cli.py            inspect an individual's loaded context
   test_individual_predict.py    end-to-end: individual id → POST → forecast
 ```
 
@@ -64,7 +63,7 @@ ENDPOINT_PATH=_WorkSpace/6-EndpointStore/<endpoint_name> \
     python Tools/plugins/haipipe-toolkit/skills/task/3_end/haipipe-end-deploy-local/scripts/serve_local.py
 ```
 
-In another shell, hit it with a individual:
+In another shell, hit it with an individual:
 
 ```
 python Tools/plugins/haipipe-toolkit/skills/task/4_individual/haipipe-individual-inference/scripts/test_individual_predict.py \

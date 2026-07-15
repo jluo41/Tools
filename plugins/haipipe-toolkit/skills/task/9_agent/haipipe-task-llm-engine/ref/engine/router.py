@@ -4,8 +4,8 @@ from __future__ import annotations
 
 CLAUDE_KEYWORDS = {
     "haiku": "claude-haiku-4-5-20251001",
-    "sonnet": "claude-sonnet-4-6",
-    "opus": "claude-opus-4-7",
+    "sonnet": "claude-sonnet-5",
+    "opus": "claude-opus-4-8",
 }
 
 
@@ -14,9 +14,9 @@ def resolve_transport(model: str, transport: str = "auto") -> tuple[str, str]:
 
     Model string conventions:
       "opus" / "sonnet" / "haiku"   -> claude_sdk, expanded model id
-      "claude-opus-4-7"             -> claude_sdk, as-is
+      "claude-opus-4-8"             -> claude_sdk, as-is
       "codex/gpt-5.5"              -> codex_oauth, strip prefix
-      "api:claude-opus-4-7"        -> claude_api, strip prefix
+      "api:claude-opus-4-8"        -> claude_api, strip prefix
     """
     if transport != "auto":
         resolved_model = CLAUDE_KEYWORDS.get(model, model)

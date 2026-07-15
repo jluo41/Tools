@@ -5,9 +5,8 @@ ExternalStore Asset Catalog
 > without it (e.g. REACH-SPACE — zero external builders on disk) host any new
 > external builder in a project task folder, same `e{N}_build_external_*` naming.
 
-Lightweight index of the externally-built assets. Schemas live in each
-asset's auto-generated README; this file carries only what the skill
-needs to dispatch (slug, family, primary key, builder).
+Lightweight index of the externally-built assets.
+Schemas live in each asset's auto-generated README; this file carries only what the skill needs to dispatch (slug, family, primary key, builder).
 
 Always discover the active release at runtime:
 
@@ -28,9 +27,8 @@ cat _WorkSpace/ExternalStore/$EXTERNAL_VERSION/{asset}/README.md
 Current Builders (WellDoc-SPACE snapshot; code-dev/0-EXTERNAL/)
 ========================================
 
-Discovered via `ls code-dev/0-EXTERNAL/e*.py`. The 11 entries below are
-the snapshot at the time of this skill's first draft; rerun ls for the
-current list.
+Discovered via `ls code-dev/0-EXTERNAL/e*.py`.
+The 11 entries below are the snapshot at the time of this skill's first draft; rerun ls for the current list.
 
 ```
 slug                  family       primary_key   builder
@@ -48,9 +46,8 @@ ndc_engagement        engagement   ndc           e10_build_external_ndc_engageme
 patient_engagement    engagement   patient_id    e11_build_external_patient_engagement.py
 ```
 
-Primary keys are case-sensitive in the data: `NPI` is uppercase as
-NPPES uses it; `ndc` / `ncpdp` / `zip3` / `zip5` / `patient_id` are
-lowercase. Match the case in any join.
+Primary keys are case-sensitive in the data: `NPI` is uppercase as NPPES uses it; `ndc` / `ncpdp` / `zip3` / `zip5` / `patient_id` are lowercase.
+Match the case in any join.
 
 ---
 
@@ -60,19 +57,15 @@ Family rules (recap from concepts.md)
   dimension   -- vendor-sourced; refresh on vendor cadence
   engagement  -- cohort-aggregated; refresh on cohort change
 
-The skill's `review` and `refresh` verbs treat them differently:
-dimension staleness compares `@raw/<vendor file>` mtime vs the asset's
-mtime; engagement staleness compares the source cohort SourceSet mtime
-vs the asset's mtime.
+The skill's `review` and `refresh` verbs treat them differently: dimension staleness compares `@raw/<vendor file>` mtime vs the asset's mtime; engagement staleness compares the source cohort SourceSet mtime vs the asset's mtime.
 
 ---
 
 Common cohort columns that join to each primary key
 ====================================================
 
-When previewing a join (`/haipipe-data-external join <asset> --to <set>`),
-look for these source-side columns. The right-side join key is always
-`{PRIMARY_KEY}_original` in the external's `df_{asset}_id.parquet`.
+When previewing a join (`/haipipe-data-external join <asset> --to <set>`), look for these source-side columns.
+The right-side join key is always `{PRIMARY_KEY}_original` in the external's `df_{asset}_id.parquet`.
 
 ```
 asset slug          cohort columns commonly used as left-side join key
@@ -85,9 +78,7 @@ zip5                patient_zip5, patient_zipcode, zipcode5, zip5, npi_zip5
 patient_id          patient_id_encoded (join key; external column becomes patient_id_original)
 ```
 
-The engagement variants share the same join columns as their
-dimension counterparts (npi_engagement joins on the same NPI key as
-npi).
+The engagement variants share the same join columns as their dimension counterparts (npi_engagement joins on the same NPI key as npi).
 
 ---
 

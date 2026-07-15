@@ -23,7 +23,7 @@ Use it inline wherever the gap lives:
 
 The red flag renders in the compiled PDF so the gap is obvious to every
 coauthor. Remove it when the answer lands (the section's `target:` resolves and its
-`reading:` is written) and the claim is backfilled with supported text.
+`a-consumer:` is written) and the claim is backfilled with supported text.
 
 
 Handoff protocol
@@ -45,7 +45,7 @@ investigating the data yourself:
      MATCH cannot close. The paper TRIGGERS; it never runs the analysis (LAW 1).
 
   e. **Backfill**: when the answering QA file lands, write the section's
-     `reading:`, flip the claim's status in 1-claims.md, and remove the
+     `a-consumer:`, flip the claim's status in 1-claims.md, and remove the
      \needprobe{} flag.
 
 
@@ -57,7 +57,7 @@ The `probe` verb in the paper orchestrator
 opens a question SECTION in the right topic's probe file at `1-probes/`. The stage's
 PROBE phase (haipipe-paper-probe) is what dispatches it — to
 `Agent(haipipe-task-orchestrator-agent)` or `Agent(haipipe-discovery-orchestrator-agent)`,
-carrying the section's `commission:` block and nothing else. The paper stays a story
+carrying the section's `q-executor:` block and nothing else. The paper stays a story
 layer; the executor does the work.
 
 
@@ -72,7 +72,7 @@ session keeps doing paper work:
      construction"), marked \needprobe{} until the report lands.
 
   b. Raise the question SECTION (/haipipe-paper probe "<need>"), then let the
-     PROBE phase dispatch its `commission:` with run_in_background=true.
+     PROBE phase dispatch its `q-executor:` with run_in_background=true.
 
   c. When the subagent report returns, fold it into Methods + Table 1 and
      flip the beat from \needprobe{} to supported.

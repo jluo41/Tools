@@ -1,0 +1,134 @@
+Rulings — the append-only ledger, and what is still open
+========================================================
+Part of: diagram/260714-task-design/  ·  6 files, one theme each, no index.
+STATUS: 🟡 DRAFT   ·   flip to → SPEC OF RECORD — R1-Rn closed JL <date>. SHIPPED.
+Theme: every decision this topic ever made. 🔒 MANDATORY — never delete, never split.
+
+
+  🔒 APPEND-ONLY. Never rewrite a ruling, never renumber, never delete one. A
+     superseded ruling gets a NEW ruling under it saying so — the old text STAYS.
+       $ grep -rn '>> CC0714' diagram/260714-task-design/    ← trace ONE session
+       $ grep -n 'R[0-9]'    05-rulings.txt                  ← trace EVERY decision
+
+
+✅ JL RULED — 2026-07-14
+========================
+
+  NONE THIS SESSION. JL asked two questions (the workflow↔task relationship, and
+  "what are your thoughts") and asked to RECORD the analysis. No decision was
+  made. R1-R3 below are OPEN and wait on JL.
+
+
+✅ JL RULED — 2026-07-14 (session 2 · the rename)
+=================================================
+
+  R7  RENAME   JL ruled: rename the three fn files to DROP the `workflow-` prefix.
+               fn/workflow-plan.md → fn/stage-plan.md, workflow-report.md →
+               stage-report.md, workflow-audit.md → audit.md.
+               🎯 WHY: the `workflow-` prefix collided with the haipipe-workflow
+                  SKILL and overloaded the word (R1); `stage-` names task's OWN
+                  "Four Stages" vocabulary, and audit — which mirrors no workflow
+                  verb — takes a bare `audit.md` (NOT the earlier-floated
+                  `task-structure-audit`).
+               ✅ CLOSES R2 (audit-name). ↘ PARTIALLY addresses R1: the fn/workflow-*
+                  meaning is gone; the other 4 senses (skill · workflow/ folder ·
+                  *.workflow.js · Workflow tool) remain — R1 stays OPEN as a tax.
+               📦 SHIPPED on disk this session — git mv + all live refs repointed.
+                  See 06 · "SHIPPED — session 2". `workflow-plan-sample.yaml` is a
+                  DIFFERENT file and was deliberately NOT renamed.
+
+
+✅ JL RULED — 2026-07-14 (session 3 · Stage→Phase, IPO→Process)
+==============================================================
+
+  R8  PHASE      The executor lifecycle P/B/E/R is "PHASE" (mirrors DPRC on the
+                 paper/consumer side). Renamed "Stage"→"Phase" across the DOCS of
+                 both executors + the pattern (task, discovery, haipipe-workflow).
+                 KEPT "Stage": the 6-stage data pipeline, stata's cms/case/data/reg,
+                 the 3-stage testing ladder; KEPT the workflow.js `stages:` code param.
+                 📦 SHIPPED (commit c9abb4e).
+
+  R9  PROCESS    The IPO's "P" is "PROCESS" (classic Input→Process→Output), NOT
+                 "Phase" — so "Phase" is now the LIFECYCLE only. Docs updated in
+                 haipipe-workflow (concepts.md + SKILL.md). KEPT as code: the plan.yaml
+                 `phases:` key + the tool `phase()` grouping.
+                 📦 SHIPPED (commit b98305d). ⬅ this is what freed "Phase" for R8.
+
+
+⚙️  CC OBSERVED — analysis this session, not yet ruled, nothing shipped
+=======================================================================
+
+  R4  SCHEMA-SoT     The instance→pattern link is single-sourced and SOUND.
+                     fn/workflow-plan.md:10 + workflow-report.md:9 name
+                     plan-schema.md as the schema's one writer; they read it and
+                     never fork it. This is the strong part of the design.
+                     📌 keep it — it is the mechanism that makes the pattern reusable.
+
+  R5  PROSE-DRIFT    Single-sourcing the SCHEMA does NOT single-source the PROSE.
+                     The fn files restate ~150 lines of example YAML + their own
+                     evidence tables inline; that un-sourced prose is where drift
+                     enters (the H1 defect: workflow-report.md scans manifest.json/
+                     config_snapshot.yaml, but disk truth is metrics.json/runtime.yaml).
+                     ⚠️  WHY it matters: a correct schema pointer reads as "no drift
+                        possible" — and the drift is in the words next to the pointer.
+
+
+👀 WHERE THE CLOSURE COULD STILL BE WRONG
+=========================================
+
+  1. ⚠️  R3 — maybe the bypass is CORRECT and should just be documented.
+        Task plan.yaml as an observability record (not a compile input) may be the
+        RIGHT call; forcing task through `build` could be ceremony for no gain.
+        ❓ Sure? The alternative: bless "Plan + Report are the only live acts for
+        task; Build/Execute are vocabulary" as the documented contract, and stop
+        advertising a build→execute flow the task instance never runs.
+
+  2. ⚠️  R1 — the "workflow" overload may not be worth a rename.
+        Five meanings is a real tax on a new reader, but a rename ripples across
+        task/discovery/paper/application. ❓ Worth it? Counter: concepts.md already
+        pays the disambiguation cost once ("Phase not Process, Step not Stage") and
+        it reads fine in a terminal. Maybe a glossary line beats a rename.
+
+  3. ⚠️  this folder itself could be the thing nobody fills.
+        📌 the honest precedent: 260714-task-design/ was scaffolded (empty) at
+        19:38 and sat unfilled until this session filled it at CC0714. A pre-claimed
+        empty topic folder is a real failure mode — it now has content; keep it fed.
+
+
+🔴 THE OPEN RULINGS — wait on JL
+================================
+
+```text
+   R1  NAMESPACE   "workflow" means 5 things (skill · workflow/ folder ·
+                   *.workflow.js · fn/workflow-* verbs · the Workflow tool).
+                   👤 owner: JL   📄 status: OPEN   ⛔ blocks: nothing; it is a tax.
+                   ↳ 2026-07-14: R7 removed the "fn/workflow-* verbs" sense (→stage-*/
+                     audit); the SEPARATE phase/stage/process overlap is resolved by
+                     R8 (lifecycle=Phase) + R9 (IPO=Process). Remaining "workflow"
+                     senses (skill name · workflow/ folder · *.workflow.js · the
+                     Workflow tool) still coexist — code/proper-noun, low harm.
+
+   R2  AUDIT-NAME  fn/workflow-audit.md instances NO haipipe-workflow verb (its
+                   cousin is `inspect`, never cited). Rename to task-structure-audit?
+                   👤 owner: JL   📄 status: OPEN
+                   ↳ CLOSED 2026-07-14 by R7 — renamed to `audit.md` (bare, mirrors
+                     nothing), NOT `task-structure-audit`. Old text above STAYS.
+
+   R3  LIFECYCLE   build + execute are bypassed for task (the .workflow.js is
+                   hand-shipped; plan.yaml is a record, not a compile input).
+                   Document the bypass, or route task through `build`?
+                   👤 owner: JL   📄 status: OPEN
+
+   R6  DESC-BUDGET description: is ALWAYS-LOADED trigger text (paid every session
+                   × ~90 skills). haipipe-task's is ~110 words and leaks mechanics
+                   (P-B-E-R, consumer-unaware, the QA door) that belong in the body.
+                   Proposed budget: ≤ ~55 words = purpose sentence + trigger keywords.
+                   PICK the number (55? 40?) and CC cuts to it.
+                   ⬅ JL raised in SKILL.md L13; answered CC 21:50, description NOT
+                     yet rewritten (waiting on the number).
+                   👤 owner: JL   📄 status: OPEN
+                   ↳ CLOSED 2026-07-14: JL approved the budget; description rewritten
+                     to EXACTLY 55 words. Standard for other skills: ≤ ~55 words.
+```
+
+  👉 JL: ____________________________________________________________________

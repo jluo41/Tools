@@ -16,14 +16,14 @@ Orchestrator dispatches creator + reviewer in loops. Creator never
 reviews. Reviewer never creates. They loop until reviewer says pass.
 
 
-The 4-stage lifecycle
+The 4-phase lifecycle
 ---------------------
 
 ```
-Stage 1: PLAN      creator drafts plan.yaml        → reviewer checks plan     → loop if revise
-Stage 2: BUILD     creator writes/fixes code+config → reviewer checks code     → loop if revise
-Stage 3: EXECUTE   (run, not creator)               → reviewer checks results  → loop if fail
-Stage 4: REPORT    creator drafts report.yaml       → reviewer checks report   → loop if revise
+Phase 1: PLAN      creator drafts plan.yaml        → reviewer checks plan     → loop if revise
+Phase 2: BUILD     creator writes/fixes code+config → reviewer checks code     → loop if revise
+Phase 3: EXECUTE   (run, not creator)               → reviewer checks results  → loop if fail
+Phase 4: REPORT    creator drafts report.yaml       → reviewer checks report   → loop if revise
 ```
 
 

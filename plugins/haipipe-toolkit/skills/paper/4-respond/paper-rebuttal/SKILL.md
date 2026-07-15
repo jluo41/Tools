@@ -5,21 +5,18 @@ allowed-tools: Bash, Read, Write, Edit, Glob, Skill
 metadata:
   version: "1.1.0"
   last_updated: "2026-07-14"
-  summary: "Guide authors through the full rebuttal process for ML conference/journal reviews. v1.1: LAW 1 — the rebuttal session is a CONSUMER. fn/fn-task Step 5 no longer AUTHORS task folders under the project's tasks/ (that planted rebuttal ids C10/B7 into the reusable bank — the A03 C6/C7 contamination verbatim); it DISPATCHES each point to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent) as ONE question in general language, and the EXECUTOR scaffolds and names the leaf. The return is a QA file path, whose `- state:` line is READ (answered → quote · working → in progress, do not re-dispatch · superseded-by → follow the chain) and NEVER written."
+  summary: "Guide authors through the full rebuttal process for ML conference/journal reviews. v1.1: LAW 1 — the rebuttal session is a CONSUMER. fn/fn-task Step 5 no longer AUTHORS task folders under the project's tasks/ (that planted rebuttal ids C10/B7 into the reusable bank — the A03 C6/C7 contamination verbatim); it DISPATCHES each point to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent) as ONE question in general language, and the EXECUTOR scaffolds and names the task-folder. The return is a QA file path, whose `- state:` line is READ (answered → quote · working → in progress, do not re-dispatch · superseded-by → follow the chain) and NEVER written."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: paper-rebuttal
 =====================
 
-Guide authors through the full rebuttal process for ML conference and journal
-paper reviews. Four phases from reading reviews to revising the paper, designed
-for multi-author collaboration.
+Guide authors through the full rebuttal process for ML conference and journal paper reviews.
+Four phases from reading reviews to revising the paper, designed for multi-author collaboration.
 
-Use this skill when the user has received peer reviews and needs to write
-rebuttal responses, plan experiments to address reviewer concerns, or prepare
-a revised manuscript. Also use when the user mentions rebuttal, reviewer
-response, author response, review feedback, or camera-ready revision.
+Use this skill when the user has received peer reviews and needs to write rebuttal responses, plan experiments to address reviewer concerns, or prepare a revised manuscript.
+Also use when the user mentions rebuttal, reviewer response, author response, review feedback, or camera-ready revision.
 
 ---
 
@@ -95,7 +92,8 @@ Step 1: Read ref files FIRST (mandatory before proceeding).
   rebuttal/audit:   ref/principles.md + ref/formats.md
   revise:           ref/principles.md
 
-  Confirm: "Loaded: [ref files]. Executing: [subcommand]."
+  Confirm: "Loaded: [ref files].
+  Executing: [subcommand]."
 
 Step 2: Read and follow the function file exactly.
   understand     ->  fn/fn-understand.md
@@ -110,8 +108,7 @@ Step 2: Read and follow the function file exactly.
 Review Directory Structure
 ---------------------------
 
-  The skill produces artifacts in a 4-folder structure inside the
-  paper's review directory (e.g., paper/1-review/):
+  The skill produces artifacts in a 4-folder structure inside the paper's review directory (e.g., paper/1-review/):
 
     1-review/
     +-- README.md                       <- Overview + status

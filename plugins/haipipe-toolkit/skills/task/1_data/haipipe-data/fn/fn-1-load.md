@@ -1,9 +1,9 @@
 fn-load: Load and Inspect a Set Asset at Any Pipeline Stage
 ============================================================
 
-This file is stage-agnostic. Stage-specific details are in the Per-Stage Reference
-section below. When a dispatch table loads this file alongside a stage ref file,
-the ref file provides the active stage context (store path, API, key checks).
+This file is stage-agnostic.
+Stage-specific details are in the Per-Stage Reference section below.
+When a dispatch table loads this file alongside a stage ref file, the ref file provides the active stage context (store path, API, key checks).
 
 Use this file to: load an existing Set from disk and inspect its contents.
 
@@ -19,9 +19,8 @@ Every pipeline stage produces a Set asset saved to _WorkSpace/:
   3-case    -> CaseSet    -> _WorkSpace/3-CaseStore/
   4-aidata  -> AIDataSet  -> _WorkSpace/4-AIDataStore/
 
-All load APIs require SPACE (workspace root path). None of them accept
-set_name= or store_key= arguments -- always use path= with the full
-relative or absolute path to the asset directory.
+All load APIs require SPACE (workspace root path).
+None of them accept set_name= or store_key= arguments -- always use path= with the full relative or absolute path to the asset directory.
 
 ---
 
@@ -95,9 +94,7 @@ Stage-Independent Protocol
 Per-Stage Reference
 -------------------
 
-_______________________________________________
-STAGE 1-source
-_______________________________________________
+_______________________________________________ STAGE 1-source _______________________________________________
 
 **Store path:**
   _WorkSpace/1-SourceStore/{CohortName}/@{SourceFnName}/
@@ -142,9 +139,7 @@ _______________________________________________
   - The @ prefix in the directory name (@{SourceFnName}) is literal -- include it in path
   - ProcName_to_ProcDf is a dict; iterate .items() not .keys() alone
 
-_______________________________________________
-STAGE 2-record
-_______________________________________________
+_______________________________________________ STAGE 2-record _______________________________________________
 
 **Store path:**
   _WorkSpace/2-RecStore/{CohortName}_v{N}RecSet/
@@ -202,9 +197,7 @@ _______________________________________________
   - String keys vs tuple keys: Human uses string, Record uses 2-tuple
   - load_from_disk takes path=, NOT set_name= or store_key=
 
-_______________________________________________
-STAGE 3-case
-_______________________________________________
+_______________________________________________ STAGE 3-case _______________________________________________
 
 **Store path:**
   _WorkSpace/3-CaseStore/{RecSetName}/@v{N}CaseSet-{TriggerFolder}/
@@ -265,9 +258,7 @@ _______________________________________________
   - load_from_disk takes path=, NOT set_name= or store_key=
   - CaseFn_list for selective loading uses CaseFn names WITHOUT the @ prefix
 
-_______________________________________________
-STAGE 4-aidata
-_______________________________________________
+_______________________________________________ STAGE 4-aidata _______________________________________________
 
 **Store path:**
   _WorkSpace/4-AIDataStore/{aidata_name}/@{aidata_version}/

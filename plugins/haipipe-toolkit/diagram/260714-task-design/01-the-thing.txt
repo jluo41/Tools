@@ -1,0 +1,88 @@
+The thing — haipipe-workflow (the pattern) vs task's workflow-* verbs
+=====================================================================
+Part of: diagram/260714-task-design/  ·  6 files, one theme each, no index.
+STATUS: 🟡 DRAFT   ·   flip to → SPEC OF RECORD — R1-Rn closed JL <date>. SHIPPED.
+Format: JL comments are `> JL:` · CC replies are `>> CC{MMDD}:` + a diagram.
+
+
+THE THING IN ONE LINE
+=====================
+
+  haipipe-workflow owns the SHAPE + the SCHEMA; haipipe-task/fn/workflow-* is
+  the task-domain INSTANCE that fills that shape and points at that schema.
+
+  ❓ the ONE question this folder answers:
+       "How does the task layer reuse the shared IPO workflow, and where — on
+        purpose or by accident — does it diverge from it?"
+
+  owner: CC review, 2026-07-14  ·  governs: skills/task/haipipe-workflow/ +
+  skills/task/haipipe-task/fn/{audit,stage-plan,stage-report}.md
+
+
+① WHAT IT IS
+============
+
+  Four artifacts, two layers. One is the PATTERN; three are its INSTANCE.
+
+     ┌──────────────────────────────────────────────────────────────────────┐
+     │ haipipe-workflow   the PATTERN                                        │
+     │   shape:     I → P[S] → O   (Input → Process[Steps] → Output)          │
+     │   schema:    ref/plan-schema.md · ref/concepts.md   (source of truth) │
+     │   lifecycle: Plan → Build → Execute → Report                          │
+     │   verbs:     plan build execute report inspect template   (GENERIC)   │
+     │                                                                        │
+     │ haipipe-task/fn/                the task-domain INSTANCE               │
+     │   stage-plan.md       ← instance of `plan`   (writes plan.yaml)       │
+     │   stage-report.md     ← instance of `report` (writes report.yaml)     │
+     │   audit.md            ← instance of NOTHING  (task four-sister check)  │
+     └──────────────────────────────────────────────────────────────────────┘
+
+  🔑 The pattern owns the SHAPE and the SCHEMA. The instance owns the concrete
+     files and the task-only structure (two layers, Run/Gate1/Gate2). Neither
+     redefines the other's job — that is the whole discipline.
+
+  ✂️  CUT (CC, 07-14): a task-local copy of the plan/report schema. The fn files
+     POINT at plan-schema.md; they do not fork it. Good — see 04.
+
+
+② THE WIRE — end to end
+=======================
+
+```text
+   🧩 haipipe-workflow        defines the shape + schema + lifecycle
+        │   template → specific
+        ▼
+   📁 haipipe-task/fn/stage-plan.md
+        │  Step 1: run audit.md   (four-sister structural check)
+        │  Step 5-6: read plan-schema.md → write the TWO plan layers
+        ▼
+   📄 workflow/plan.yaml               task-level IPO (Run/Gate1/Gate2)
+   📄 workflow/plan-script-<name>.yaml script-level IPO (internal phases)
+        │
+        │  (NOT via `build` — the .workflow.js is hand-shipped in ref/)
+        ▼
+   ▶️  runs/<run>.sh   →   results/<run>/{metrics.json, runtime.yaml}
+        │
+        ▼
+   📁 haipipe-task/fn/stage-report.md
+        read plan*.yaml + results/ → write report.yaml mirroring the plan
+        ▼
+   📄 workflow/report.yaml + report-script-<name>.yaml   (intent → evidence)
+```
+
+
+③ WHO WRITES WHAT
+=================
+
+```text
+   ✏️  haipipe-workflow     writes the SCHEMA + template (never a task's files)
+   ✏️  fn/stage-plan        writes workflow/plan*.yaml   (reads schema, never edits it)
+   ✏️  fn/stage-report      writes workflow/report*.yaml (mirrors the plan)
+   ✏️  fn/audit             writes NOTHING — read-only four-sister scan
+   ⇒ they do not collide: the pattern owns the contract, the instance owns the
+     artifacts on disk. The one shared file (plan-schema.md) has ONE writer
+     (haipipe-workflow) and three readers (the three fn verbs).
+```
+
+  ⇒ this folder is the task layer's view of a CONSUMER→PROVIDER link: task
+    CONSUMES haipipe-workflow's schema. It redefines nothing there.

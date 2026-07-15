@@ -1,9 +1,8 @@
 Store Map
 ==========
 
-Maps store name <-> env var <-> typical asset-name pattern. Used by
-verbs that need to translate "1-SourceStore" into a path or identify
-which asset name format to expect.
+Maps store name <-> env var <-> typical asset-name pattern.
+Used by verbs that need to translate "1-SourceStore" into a path or identify which asset name format to expect.
 
 ---
 
@@ -25,16 +24,11 @@ ExternalStore           LOCAL_EXTERNAL_STORE          REMOTE_EXTERNAL_STORE     
 ExternalStore/@inference ⚙opt LOCAL_REFERENCE_STORE   REMOTE_REFERENCE_STORE          {payload_*.json}
 ```
 
-⚙opt = OPTIONAL store: listed for addressing, but not exported by every
-workspace's env.sh and often absent on disk. `status` probes only the
-stores whose env vars are actually exported — do not report an un-exported
-optional store as "missing". Also on disk but DELIBERATELY NOT SYNCED
-(no store-map row, no env pair): `_WorkSpace/LearnStore/`,
-`_WorkSpace/0-REACH-RAW-Store/`.
+⚙opt = OPTIONAL store: listed for addressing, but not exported by every workspace's env.sh and often absent on disk.
+`status` probes only the stores whose env vars are actually exported — do not report an un-exported optional store as "missing".
+Also on disk but DELIBERATELY NOT SYNCED (no store-map row, no env pair): `_WorkSpace/LearnStore/`, `_WorkSpace/0-REACH-RAW-Store/`.
 
-`LOCAL_RAW_STORE` resolves to `_WorkSpace/0-RawDataStore`, but
-hai-remote-sync's `--rawdata` flag uses `REMOTE_RAWDATA_STORE` --
-note the name asymmetry (RAW vs RAWDATA).
+`LOCAL_RAW_STORE` resolves to `_WorkSpace/0-RawDataStore`, but hai-remote-sync's `--rawdata` flag uses `REMOTE_RAWDATA_STORE` -- note the name asymmetry (RAW vs RAWDATA).
 
 ---
 
@@ -50,9 +44,8 @@ source/WellDoc2025CVS                 same
 WellDoc2025CVS (no store)             ASK which store -- do not guess
 ```
 
-When the user gives a bare cohort name without a store, ask rather
-than guess. If the same cohort name appears in multiple stores, list
-them and ask.
+When the user gives a bare cohort name without a store, ask rather than guess.
+If the same cohort name appears in multiple stores, list them and ask.
 
 ---
 
@@ -83,12 +76,11 @@ For stores without a flag, use `--path` form.
 Discovery
 ==========
 
-To see what stores exist on a given system, the source of truth is
-env.sh. Read it directly:
+To see what stores exist on a given system, the source of truth is env.sh.
+Read it directly:
 
 ```bash
 grep -E "^export (LOCAL|REMOTE)_" env.sh
 ```
 
-This catches the case where env.sh has been customized or extended
-with stores not listed in this map.
+This catches the case where env.sh has been customized or extended with stores not listed in this map.

@@ -1,15 +1,17 @@
 fn-pull: Copy remote -> local for one asset
 ============================================
 
-Wraps `hai-remote-sync --pull` for a single asset path. Always
-dry-runs first, then asks confirm, then runs. Copy-only.
+Wraps `hai-remote-sync --pull` for a single asset path.
+Always dry-runs first, then asks confirm, then runs.
+Copy-only.
 
 ---
 
 Step 1: Parse args
 -------------------
 
-Required: `<store>/<name>` (e.g. `1-SourceStore/WellDoc2025CVS`).
+Required: `<store>/<name>` (e.g.
+`1-SourceStore/WellDoc2025CVS`).
 
 Resolve via `ref/store-map.md`:
 
@@ -57,7 +59,8 @@ they no longer exist on remote.
 Proceed? (yes / cancel)
 ```
 
-`yes` -> Step 5. Anything else -> exit, no transfer.
+`yes` -> Step 5.
+Anything else -> exit, no transfer.
 
 ---
 
@@ -68,7 +71,8 @@ Step 5: Real run
 hai-remote-sync --pull --path {store}/{name}
 ```
 
-Stream output. NEVER add `--sync`.
+Stream output.
+NEVER add `--sync`.
 
 ---
 

@@ -1,7 +1,9 @@
 fn-scaffold: Scaffold a model-training task-folder
 ====================================================
 
-Train a real model with full hyperparameters; checkpoint to `_WorkSpace/5-ModelInstanceStore/`. Group letter default: **A** (model-run). For smoke-testing an algorithm, use `/haipipe-task-for-algo` instead.
+Train a real model with full hyperparameters; checkpoint to `_WorkSpace/5-ModelInstanceStore/`.
+Group letter default: **A** (model-run).
+For smoke-testing an algorithm, use `/haipipe-task-for-algo` instead.
 
 Output: `tasks/A{NN}_<group>/{NN}_<task_name>/`.
 
@@ -46,7 +48,8 @@ A{NN}_<group>/
 Step 4 — Seed config
 ---------------------
 
-Copy `ref/config-seed.yaml` to `configs/5_model_<name>.yaml`. Fill in:
+Copy `ref/config-seed.yaml` to `configs/5_model_<name>.yaml`.
+Fill in:
 - `_meta:` block.
 - `ModelInstanceClass:`, `modelinstance_name`, `modelinstance_version`.
 - `model_tuner_name:` (from /haipipe-nn-tuner).
@@ -58,8 +61,8 @@ Step 5 — Run-script
 --------------------
 
 Copy `../../../haipipe-task/ref/run-sh-template.sh` for each variant.
-Set `TASK_NAME="{NN}_{task_name}"`. Variant differences go via
-papermill `-p key value` overrides in the run script.
+Set `TASK_NAME="{NN}_{task_name}"`.
+Variant differences go via papermill `-p key value` overrides in the run script.
 
 
 Step 6 — Cross-skill link
@@ -94,8 +97,7 @@ MUST NOT
 First-run gate
 ---------------
 
-`runs/<RUN>.sh` blocks execution if `CODE_REVIEW.md` is missing or
-stale (gate inherited from `../../../haipipe-task/ref/run-sh-template.sh`).
+`runs/<RUN>.sh` blocks execution if `CODE_REVIEW.md` is missing or stale (gate inherited from `../../../haipipe-task/ref/run-sh-template.sh`).
 For the first run after this scaffold, do ONE of:
 
   1. **Recommended** — run the haipipe-task-reviewer-agent (Gate 1) on this
@@ -113,5 +115,4 @@ For the first run after this scaffold, do ONE of:
      ```
      (Only appropriate for throwaway / disposable runs.)
 
-Surface this to the user in the orchestrator's `next:` line so they
-know **before** trying to launch.
+Surface this to the user in the orchestrator's `next:` line so they know **before** trying to launch.

@@ -1,9 +1,8 @@
 fn-1-load: Load and inspect a built ExternalAsset
 ==================================================
 
-Read-only inspection of one asset under the active (or pinned)
-release. Prints shape, schema, vocabulary sizes, primary-key
-uniqueness, and a sample row.
+Read-only inspection of one asset under the active (or pinned) release.
+Prints shape, schema, vocabulary sizes, primary-key uniqueness, and a sample row.
 
 ---
 
@@ -16,8 +15,7 @@ ASSET_DIR="_WorkSpace/ExternalStore/${EXTERNAL_VERSION}/{asset}"
 ls "$ASSET_DIR"
 ```
 
-If `--version @{tag}` was passed, override `EXTERNAL_VERSION` for
-this load only:
+If `--version @{tag}` was passed, override `EXTERNAL_VERSION` for this load only:
 
 ```bash
 ASSET_DIR="_WorkSpace/ExternalStore/{tag}/{asset}"
@@ -39,8 +37,7 @@ head -40 "$ASSET_DIR/README.md"
 ```
 
 The README exposes the documented schema, primary key, and source.
-Surface the title, generated date, primary key, and stats block to
-the user.
+Surface the title, generated date, primary key, and stats block to the user.
 
 ---
 
@@ -64,8 +61,8 @@ with open(pkl_path, 'rb') as f:
     vocabs = pickle.load(f)
 ```
 
-Some assets ship multiple parquets (e.g. npi has demo + review +
-zip5info). List them first with `ls "$ASSET_DIR"` and load each.
+Some assets ship multiple parquets (e.g. npi has demo + review + zip5info).
+List them first with `ls "$ASSET_DIR"` and load each.
 
 ---
 
@@ -86,8 +83,7 @@ Step 4: Print the inspection block
     ...
 ```
 
-Compute primary-key uniqueness on the `{PRIMARY_KEY}_original`
-column, NOT the integer ID column.
+Compute primary-key uniqueness on the `{PRIMARY_KEY}_original` column, NOT the integer ID column.
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: haipipe-nn-instance
-description: "Layer 3 (Instance) specialist of haipipe-nn. Materializes a trained ModelInstance by driving its Tuners (registry create -> fit -> save_model). Called by /haipipe-nn orchestrator. Direct invocation works for layer-scoped work."
+description: "Layer 3 (Instance) specialist of haipipe-nn: materializes a trained ModelInstance by driving its Tuners (registry create -> fit -> save_model). Called by /haipipe-nn; direct invocation works layer-scoped."
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
@@ -13,11 +13,10 @@ metadata:
 Skill: haipipe-nn-instance
 ===========================
 
-Layer 3 specialist. Owns the ModelInstance materialization in
-`code/hainn/instance/` and the `5-ModelInstanceStore`. A ModelInstance is
-the trained-weights artifact paired with its config — the thing endpoints
-will consume. Called by the `/haipipe-nn` orchestrator; can also be invoked
-directly.
+Layer 3 specialist.
+Owns the ModelInstance materialization in `code/hainn/instance/` and the `5-ModelInstanceStore`.
+A ModelInstance is the trained-weights artifact paired with its config — the thing endpoints will consume.
+Called by the `/haipipe-nn` orchestrator; can also be invoked directly.
 
   Function axis:  dashboard | review | generate | test
 
@@ -51,16 +50,17 @@ test          ref/concepts.md        ../haipipe-nn/fn/fn-test.md
 (no fn arg)   ref/concepts.md        (ref-only mode)
 ```
 
-`generate` reads the L4 (modelset) ref because a ModelInstance is the unit
-that gets registered into a ModelSet pipeline downstream.
+`generate` reads the L4 (modelset) ref because a ModelInstance is the unit that gets registered into a ModelSet pipeline downstream.
 
 ---
 
 Step-by-Step Protocol
 ----------------------
 
-Step 0: Read `../haipipe-nn/ref/overview.md`. Mandatory.
-Step 1: Parse args. Function vocabulary: dashboard | review | generate | test.
+Step 0: Read `../haipipe-nn/ref/overview.md`.
+Mandatory.
+Step 1: Parse args.
+Function vocabulary: dashboard | review | generate | test.
 Step 2: Read this skill's `ref/concepts.md` for L3 specifics.
 Step 3: Read the umbrella fn doc.
 Step 4: For `generate`, also read `../haipipe-nn-modelset/ref/concepts.md`.

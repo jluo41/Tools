@@ -1,0 +1,185 @@
+Comment log — JL review annotations on the task skill, moved out of the body
+=============================================================================
+Part of: diagram/260714-task-design/  ·  the comment ledger for the SKILL.md review.
+
+How it works: JL leaves `> JL:` comments in a doc body; CC answers inline with
+`>> CC HH:MM:`; the moment the body edit is APPLIED, the whole thread is moved
+HERE — the `> JL:` line VERBATIM (never paraphrased), stamped, tagged SOLVED, with
+a one-line note of what changed. A PENDING thread stays inline in the doc until JL
+decides, then moves here too. Newest block at the bottom.
+
+
+⏳ OPEN — still inline in SKILL.md, waiting on JL
+=================================================
+
+  NOTHING OPEN — all three were approved by JL and applied 2026-07-14; the threads
+  moved to the MOVED section below. (The only OPEN items left are RULINGS R1 + R3,
+  tracked in 05-rulings.txt — those are rulings, not inline comments.)
+
+
+✅ MOVED — 2026-07-14, edit applied in SKILL.md
+===============================================
+
+[2026-07-14 21:50 · SOLVED] type-table — group-letter NOTE
+  > JL: 这个没有必要说太多吧，感觉不是很重要，有必要说这么多吗？
+  >> CC: Rule is load-bearing (never infer type from letter), but the defaults list
+     duplicates ref/hierarchy.md — trimmed to the rule + a pointer.
+
+[2026-07-14 21:50 · SOLVED] Stata specialist block
+  > JL: How to make this to be concise? Don't need to mention too much here.
+  >> CC: Cut to one line — only "detect Stata → hand off WHOLESALE" is load-bearing;
+     the {LNN} alphabet + dialect are the specialist's.
+
+[2026-07-14 21:50 · SOLVED] process — reply-and-mark protocol
+  > JL: 以后每一次，比如说我的问题解决了之后，你都要在我的这个上面回复啊，一定要回复。 然后 mark 一下，说这个是 solved，要不然还以为我们下一次以为是没有 solved
+  >> CC: Adopted — reply under every `> JL:` with `>> CC HH:MM:` + [SOLVED]/[PENDING],
+     never delete the JL line. Saved to PREFERENCES.md (survives sessions).
+
+[2026-07-14 21:50 · SOLVED] routing-principle — migration breadcrumb
+  > JL: 这句话啥意思？感觉很突兀，要不然删掉吧
+  >> CC: Agreed — dated 2026-07-03 migration note, CHANGELOG material. Sentence deleted
+     from the body; the fact stays in CHANGELOG.
+
+[2026-07-14 21:50 · SOLVED] authoring convention — one sentence per line
+  > JL: 在正文中，我们做到每一句话是一行.
+  >> CC: Noted as standing convention (body already mostly follows it). Saved to
+     PREFERENCES.md; I hold new prose to it and fix stragglers on touch.
+
+[2026-07-14 21:50 · SOLVED] Stage-4 — QA "the ONE exception" sentence
+  > JL: 这句话不知道啥意思，我感觉比较奇怪。那 QA 跟这四个 stage 什么关系呢？
+  >> CC: Rewrote it. QA is NOT a 5th stage — it rides ON TOP: this layer writes the QA
+     file a `working` CLAIM at entry (before Plan) and the answer at Report. Dropped a
+     dangling "Step 3a" ref.
+
+[2026-07-14 21:50 · SOLVED] Stage-4 — "a task ends at Report" line
+  > JL: 这里的话是不是有点老旧了？其实我们就是从 QA 来做 consume，对吧？我觉得这个 QA 是来 consume 这个 result 的？
+  >> CC: Right, it was stale. Fixed: the qa verb consumes results/ → writes QA/<n>.md;
+     a consumer reads THAT digest, never results/ directly (probe LAW 1).
+
+[2026-07-14 21:50 · SOLVED] qa-verb — QA readability
+  > JL: 然后还有一个问题：一定要把 Q&A 写的 readable，就是要让 human 容易去读它，不要写得非常难读
+  >> CC: Affirmed as a hard requirement — QA/<n>.md is the HUMAN answer: plain prose +
+     [→ results/…] anchors, no YAML/jargon. Enforced in fn/qa.md (reviewer lints it).
+
+[2026-07-14 22:05 · SOLVED] fn/ docs — one sentence per line
+  > JL: fn 里面的 skills 都换成一行、一句话的，不要有 line break。
+  >> CC 22:10: Done — 5 files (qa, run, workflow-audit/plan/report) were ALREADY
+     one-per-line (your pass); CC reflowed the remaining 4 (feedback, digest,
+     scan-status, task-group). Caught + fixed a bug on the way: the first pass
+     mangled feedback.md's YAML frontmatter (the token check passed but structure
+     broke) — added frontmatter protection, re-ran. Verified per file: token stream
+     identical to HEAD, code fences balanced, ASCII/frontmatter intact.
+
+[2026-07-14 22:20 · SOLVED] type-specialist docs — one sentence per line (sweep)
+  > JL: 1_data..9_agent 这些 folder 里面是不是也有同样的问题?都统一一下吧。
+  >> CC 22:30: Done, with the REAL numbers (the "176" above was optimistic): SCANNED
+     177 .md across the 9 folders, REFLOWED the 35 that had wrapped prose, 142 were
+     ALREADY one-per-line, 0 skipped. Same script + safety gates as the fn/ pass
+     (frontmatter-protected; per-file `original.split()==new.split()` + fence-count
+     preserved). Independently re-verified all 35 token-identical to HEAD (0 drift);
+     specialist SKILL.md frontmatter confirmed intact. Code/YAML/trees/`> JL:` untouched.
+
+[2026-07-14 21:50 · SOLVED] frontmatter — description too long (R6)
+  > JL: 我感觉这个 meta description 还是太长了 … 要不要定个标准？
+  >> CC 22:30: JL approved the budget. Rewrote the description to EXACTLY 55 words
+     (was ~110) — one purpose sentence + trigger keywords, mechanics dropped to the
+     body. R6 CLOSED. (Standard for other skills: ≤ ~55 words.)
+
+[2026-07-14 21:50 · SOLVED] "The QA/ folder" section — too complex
+  > JL: 我觉得这里写 QA 是不是太多了？… 下面这些东西都可以去删掉了吧？
+  >> CC 22:30: JL approved. Collapsed ~24 lines → 5: kept the load-bearing guardrails
+     inline (ONE WRITER = this layer; a consumer NEVER writes; readable + no consumer
+     vocabulary); pushed the template, TTL, race guard, supersession, checker codes to
+     fn/qa.md. Removed the stale "three defects"/QA_WORKING_TTL_HOURS restatement.
+
+[2026-07-14 21:50 · SOLVED] "Step-by-Step Protocol" — routing block too long
+  > JL: 这一块是不是都要简写一下？（担心太短会丢信息）
+  >> CC 22:30: JL approved, cautiously. Deduped CONSERVATIVELY: shortened only the
+     `--check-only` paragraph (its probe-MATCH rationale lives in fn/qa.md) — ~2 lines.
+     KEPT the numbered (0)–(7) cascade and the structure-not-name block with its
+     examples + 31% stat INTACT (that's the info you worried about losing). A 20-line
+     cut would have removed real routing info, so I stopped short — as you flagged.
+
+[2026-07-14 22:40 · SOLVED] QA reframe + adopt "Phase" + optional QA/ + gate-②  (SKILL.md L19/146/148/154, still inline)
+  >> CC: QA reframed as the DIRECTION-POINTER that WRAPS the 4 phases — ①/② read what
+     exists, ③ ENTERS Plan→Build→Execute→Report. Adopted "Phase" for P/B/E/R. Added
+     optional QA/ to the task-folder structure. gate-② clarified (qa reads results/ →
+     writes the readable QA/<n>). commit 3759e60.
+
+[2026-07-14 22:30 · SHIPPED] executor-wide Phase sweep + IPO "P" = Process
+  Stage→Phase across task + discovery + haipipe-workflow DOCS (05-rulings R8, commit
+  c9abb4e); IPO "P" renamed Phase→Process, freeing "Phase" for the lifecycle (R9, commit
+  b98305d). KEPT as code: data-pipeline Stage 0-6, stata's four stages, the workflow.js
+  `stages:` param, the plan.yaml `phases:` key, the tool `phase()`.
+
+[2026-07-14 23:12 · SOLVED] two more QA notes  (SKILL.md L181/182, still inline)
+  > JL: "That is task work, not anyone else's." 这句话有点奇怪…要删掉吗？
+  >> CC: reworded to "making the bank easy to query is the executor's OWN work — a
+     consumer never does it" (kept, not deleted).
+  > JL: for QA, we might also want to include P-B-E-R, when we need to do it.
+  >> CC: yes — that IS gate ③ (qa enters P→B→E→R at the shallowest depth when ①/② can't
+     answer, then completes the QA file at Report).
+
+[2026-07-14 23:17 · SOLVED] leftover > JL threads swept across task/ skills
+  > JL: check all the skills for remaining > JL, fixed + logged?
+  >> CC: Swept task/. haipipe-task/SKILL.md's 6 JL threads were already >> CC [SOLVED].
+     Two leftovers closed now: (1) CHANGELOG.md 6.2.0 "what is R19?" -- replied +
+     added a self-contained inline gloss (R19 = the QA-file state-line claim, ticket->
+     receipt). (2) fn/audit,run,stage-plan,stage-report "one line one sentence" -- all
+     4 verified compliant (reflow no-op) and tagged >> CC [SOLVED]. Zero untagged > JL
+     now remain under task/ (SKILLSET_REVIEW.md + PREFERENCES.md mentions are the
+     convention itself, not threads).
+
+[2026-07-14 23:26 · SHIPPED] SKILL.md conciseness pass #1+#2 (of the 6-lever plan)
+  #1 moved the 6 inline > JL/>> CC threads OUT of the body (recorded above; body now
+     has 0 inline comments). #2 collapsed QA from 4 tellings → 1: kept the reframe
+     block's ①②③ summary, shortened THE SIDE DOOR, trimmed the QA/-folder body; the
+     full gate/state-line/TTL/checker live in fn/qa.md. 503 → 452 lines. #3-#6
+     (merge routing tables · compress Four-Phases manifest · dedup Workflow() blocks ·
+     keyword table → ref/) still PENDING JL.
+
+[2026-07-14 23:35 · SHIPPED] SKILL.md conciseness pass #3-#6 — 452 → 381 lines (503 → 381 total)
+  #3 merged the Dispatch Table into Commands (added the "contract lives in fn/" line +
+     plan→fn/stage-plan.md, report→fn/stage-report.md; deleted the duplicate table).
+  #4 Four-Phases manifest → compact table (kept every creates/agent/gate/QA fact; folded
+     per-phase "reads" into one line + pointer to fn/stage-*).
+  #5 deduped the two identical Workflow() blocks (Step 3d now points to Step 3c's).
+  #6 MOVED the full keyword table → ref/type-inference.md (nothing lost); SKILL.md keeps a
+     quick-map + pointer. NO info lost, NO behavior change; verified fences balanced,
+     no dangling refs, no blank-runs.
+
+
+LESSONS — skill-doc authoring craft, harvested this session
+===========================================================
+(Portable behavioral PREFERENCES from this session live in haipipe-task/PREFERENCES.md:
+ description ≤55w · SKILL-routes-don't-re-derive · verify-before-trusting ·
+ one-sentence-per-line · reply-then-move-thread-to-_LOG.)
+
+L1  TOKEN-IDENTITY ≠ STRUCTURE-SAFE. A reflow whose `original.split()==new.split()`
+    PASSED still mangled feedback.md's YAML frontmatter (joined name:/description:).
+    → a whitespace reflow MUST explicitly protect the `--- … ---` frontmatter + code
+    fences; the token check alone does not catch structural breakage.
+
+L2  A REGEX SWEEP MISSES PHRASING VARIANTS. The dead-safe Stage→Phase pattern
+    ("Stage N: PLAN") missed "Stage 2/3 of the lifecycle" in 2 stata fn files.
+    → after a pattern sweep, grep the CONCEPT in other phrasings or stragglers survive
+    (the 1..9 audit caught these).
+
+L3  NAMESPACE OVERLOAD IS EXPENSIVE. "workflow" carried 5 meanings; "phase/stage/
+    process" collided across 3 concepts. → reserve ONE word per concept; when 3 fight
+    for 2 words, rename to the STANDARD term (IPO's P → "Process"). See R1/R8/R9.
+
+L4  SINGLE-SOURCING THE SCHEMA ≠ SINGLE-SOURCING THE PROSE. A correct pointer to a
+    shared schema reads as "no drift possible" — but the WORDS around it drift
+    (stage-report's evidence table diverged from the real results/ contract). See R5.
+
+L5  DOC COMMENTS ACCRETE INTO BLOAT. Answering `> JL:` inline told the QA story 4× and
+    grew SKILL.md. → consolidate to ONE telling + pointer, migrate resolved threads to
+    _LOG (503→381 lines, no info lost).
+
+L6  ALWAYS-LOADED TEXT MUST BE BUDGETED. `description:` is paid every session × ~90
+    skills; 6+ specialists ran 60-88 words. → ≤55w, purpose + trigger keywords only.
+
+L7  FAN-OUT AUDIT + FIX SCALES. Parallel read-only agents (1 per folder) gave a clean
+    ~40-skill fleet audit; parallel fix-agents then applied the approved fixes.
+    → for broad multi-folder sweeps, delegate per-folder and synthesize/commit centrally.

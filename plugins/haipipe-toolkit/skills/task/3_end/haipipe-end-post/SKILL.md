@@ -1,6 +1,6 @@
 ---
 name: haipipe-end-post
-description: "PostFn specialist — design and review of the response-formatting function in an Endpoint_Set. One of 5 inference Fn-types. Called by /haipipe-end orchestrator when intent references PostFn, response formatting, post-processing, or `post` keyword. Reads own ref/concepts.md plus umbrella's fn/fn-design.md and endpointset's fn/fn-review.md."
+description: "PostFn specialist -- designs/reviews the response-formatting function in an Endpoint_Set. One of 5 inference Fn-types. Called by /haipipe-end when intent references PostFn, response formatting, post-processing, or `post`."
 argument-hint: "[verb] [use_case] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
@@ -13,10 +13,9 @@ metadata:
 Skill: haipipe-end-post
 ========================
 
-Per-Fn-type specialist for **PostFn** — the inference function that
-formats the model's raw prediction into the wire response shape
-returned to the caller. One of the 5 inference Fn-types inside an
-Endpoint_Set. See `ref/concepts.md` for PostFn semantics.
+Per-Fn-type specialist for **PostFn** — the inference function that formats the model's raw prediction into the wire response shape returned to the caller.
+One of the 5 inference Fn-types inside an Endpoint_Set.
+See `ref/concepts.md` for PostFn semantics.
 
   Verb axis:    design | review | list | concepts
   Use case:     each PostFn impl is scoped to ONE response shape (CGM forecast, optimal-
@@ -56,8 +55,7 @@ WeightLossMultiLabel_v3_PostFn_v260316           weight-loss v3
 XgboostMultiModels_PostFn_v0610                  xgboost multi-model ensemble
 ```
 
-If `<use_case>` is omitted, the skill should `Bash("ls code/haifn/fn_endpoint/fn_post/")`
-and ask the user to pick.
+If `<use_case>` is omitted, the skill should `Bash("ls code/haifn/fn_endpoint/fn_post/")` and ask the user to pick.
 
 ---
 
@@ -80,11 +78,11 @@ concepts   ref/concepts.md  (only)
 Step-by-Step Protocol
 ----------------------
 
-Step 0:  Read `ref/concepts.md` — PostFn semantics, response schema, formatting rules.
-Step 1:  For `design`, also read `../haipipe-end/fn/fn-design.md` + `../haipipe-end/ref/0-overview.md`.
+Step 0: Read `ref/concepts.md` — PostFn semantics, response schema, formatting rules.
+Step 1: For `design`, also read `../haipipe-end/fn/fn-design.md` + `../haipipe-end/ref/0-overview.md`.
          For `review`, also read `../haipipe-end-endpointset/fn/fn-review.md`.
-Step 2:  Execute the procedure scoped to PostFn.
-Step 3:  Emit the structured tail.
+Step 2: Execute the procedure scoped to PostFn.
+Step 3: Emit the structured tail.
 
 ---
 

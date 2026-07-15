@@ -23,7 +23,8 @@ Academy  = Builder scripts            (tasks/<pipe-group>/03_case_fn_develop_<co
 What Is a CaseSet
 -----------------
 
-Output of Layer 3. Contains `df_case.parquet` + one `@`-prefixed parquet per CaseFn at ROOT level.
+Output of Layer 3.
+Contains `df_case.parquet` + one `@`-prefixed parquet per CaseFn at ROOT level.
 
 ```
 _WorkSpace/3-CaseStore/{RecSetName}/[@i{i}n{n}/]@v{N}CaseSet-{TriggerFolder}/
@@ -38,7 +39,8 @@ _WorkSpace/3-CaseStore/{RecSetName}/[@i{i}n{n}/]@v{N}CaseSet-{TriggerFolder}/
 +-- manifest.json
 ```
 
-**CRITICAL:** `df_case.parquet` NOT `case_data.parquet`. `@CaseFn.parquet` at ROOT, NOT in subdirectory.
+**CRITICAL:** `df_case.parquet` NOT `case_data.parquet`.
+`@CaseFn.parquet` at ROOT, NOT in subdirectory.
 
 
 Feature Naming Convention
@@ -178,7 +180,8 @@ CaseFn Output Suffixes
 COVocab Naming Convention
 --------------------------
 
-**MANDATORY:** Use `tid2tkn` / `tkn2tid` for vocabulary key names. Never use `idx2tkn` / `tkn2idx`.
+**MANDATORY:** Use `tid2tkn` / `tkn2tid` for vocabulary key names.
+Never use `idx2tkn` / `tkn2idx`.
 
 ```python
 # CORRECT:
@@ -228,8 +231,7 @@ MUST DO
 -------
 
 **NOTE:** `source .venv/bin/activate` does NOT persist across Bash tool calls.
-Always chain: `source .venv/bin/activate && source env.sh && python <script>`
-Or call venv python directly: `.venv/bin/python script.py`
+Always chain: `source .venv/bin/activate && source env.sh && python <script>` Or call venv python directly: `.venv/bin/python script.py`
 
 1.  Activate `.venv` and `source env.sh`
 2.  Remember: output of Layer 3 = input of Layer 4 (AIData)
@@ -305,8 +307,7 @@ grep -c "\-\-tid" code/haifn/fn_case/case_casefn/<CaseFnName>.py
    return {'--tid': [], '--wgt': [], '--val': empty_dict}
    ```
 
-**NEVER return only `--val`** — even if the feature is "just a number", the
-downstream sparse pipeline needs `--tid`/`--wgt` to function.
+**NEVER return only `--val`** — even if the feature is "just a number", the downstream sparse pipeline needs `--tid`/`--wgt` to function.
 
 
 MUST NOT

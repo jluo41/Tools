@@ -1,6 +1,6 @@
 ---
 name: haipipe-project
-description: "Quick project setup: create the container folders and stop. Two kinds by name: Project-* = repo-backed (gh repo under a user-chosen org, never assumed; submodule at examples/<name>; if the repo already exists, adopt and pull it) and ProjX-* = plain directory under examples/. Owns ONLY the container layout (tasks/ discoveries/ papers/ applications/ diagram/; probes/ retired 2026-07-05 and insights/ retired 2026-07-12 — a paper's evidence questions live in its own 1-probes/ PPNN probe files, and the bank answers them in <leaf>/QA/<n>-<slug>.md); each subfolder's internals belong to its owning skill family. Task/run scaffolding lives in /haipipe-task. Trigger: new project, project scaffold, repo project, project submodule, /haipipe-project."
+description: "Quick project setup: create the container folders and stop. Two kinds by name: Project-* = repo-backed (gh repo under a user-chosen org, never assumed; submodule at examples/<name>; if the repo already exists, adopt and pull it) and ProjX-* = plain directory under examples/. Owns ONLY the container layout (tasks/ discoveries/ papers/ applications/ diagram/; probes/ retired 2026-07-05 and insights/ retired 2026-07-12 — a paper's evidence questions live in its own 1-probes/ PPNN probe files, and the bank answers them in <task-folder>/QA/<n>-<slug>.md); each subfolder's internals belong to its owning skill family. Task/run scaffolding lives in /haipipe-task. Trigger: new project, project scaffold, repo project, project submodule, /haipipe-project."
 argument-hint: "[repo|new|feedback|digest] [Project-Name|args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
@@ -67,11 +67,11 @@ This skill owns ONLY the top-level container. Each subfolder's INTERNAL structur
 `/haipipe-probe`; full detail in `skills/probe/haipipe-probe/SKILL.md`):
 
 ```
-   ⚙️ THE BANK is PROBE-UNAWARE.  tasks/<leaf>/ and discoveries/<leaf>/ carry NO _ASK/,
+   ⚙️ THE BANK is PROBE-UNAWARE.  tasks/<task-group>/<task-folder>/ and discoveries/<discovery-group>/<discovery-folder>/ carry NO _ASK/,
       NO _ANS/, NO `answers:` field, NO PP id -- ever. THIS SKILL NEVER MINTS ONE.
       A leaf MAY carry an OPTIONAL QA/ folder: QA/<n>-<slug>.md, the executor's readable
       digest, written by the EXECUTOR at its Report stage. Numbering IS the index.
-      Not scaffolded at setup -- it appears when the leaf has something to say.
+      Not scaffolded at setup -- it appears when the task-folder has something to say.
 
    📄 THE CONSUMER holds the questions.  papers|applications/<X>/1-probes/PPNN_<topic>.md
       (renamed from 1-probe-plans/ on 2026-07-14). One file per TOPIC, one SECTION per

@@ -1,9 +1,9 @@
 fn-scaffold: Scaffold a data-pipeline task-folder
 ==================================================
 
-Invokes one of the Stage 1-4 builders (Source / Record / Case / AIData)
-to produce data artifacts under `_WorkSpace/{1..4}-*Store/`.
-Group letter default: **D**. Output: `tasks/D{NN}_<group>/{NN}_<task_name>/`.
+Invokes one of the Stage 1-4 builders (Source / Record / Case / AIData) to produce data artifacts under `_WorkSpace/{1..4}-*Store/`.
+Group letter default: **D**.
+Output: `tasks/D{NN}_<group>/{NN}_<task_name>/`.
 
 
 Step 1 — Identify project + task-group
@@ -28,9 +28,8 @@ Step 2 — Collect metadata
 Step 3 — Create skeleton (from notebook template)
 ---------------------------------------------------
 
-The `.py` is an instantiation of a generic template. Copy the right
-template from `code/scripts/haistepnb/`, then change only the CONFIG
-default and docstring:
+The `.py` is an instantiation of a generic template.
+Copy the right template from `code/scripts/haistepnb/`, then change only the CONFIG default and docstring:
 
 ```
 Stage A1 → cp code/scripts/haistepnb/a1_source_nb.py → {task}/{NN}_{task_name}.py
@@ -56,9 +55,8 @@ Result:
     └── notebooks/
 ```
 
-The `.ipynb` is NOT created at scaffold time — `run.sh` auto-generates it
-via `convert_to_notebooks.py` at execution time. It is an intermediate
-output, not source.
+The `.ipynb` is NOT created at scaffold time — `run.sh` auto-generates it via `convert_to_notebooks.py` at execution time.
+It is an intermediate output, not source.
 
 
 Step 4 — Seed config
@@ -75,8 +73,8 @@ Fill in:
 Step 5 — Run-script
 --------------------
 
-Copy `../../../haipipe-task/ref/run-sh-template.sh` to
-`runs/run_<task_name>.sh`. Set `TASK_NAME="{NN}_{task_name}"`.
+Copy `../../../haipipe-task/ref/run-sh-template.sh` to `runs/run_<task_name>.sh`.
+Set `TASK_NAME="{NN}_{task_name}"`.
 
 
 Step 6 — Cross-skill link
@@ -88,8 +86,7 @@ After scaffolding, suggest one of:
 - `/haipipe-data-case`     (stage 3)
 - `/haipipe-data-aidata`   (stage 4)
 
-These specialists author the actual builder logic in the group's paired
-`NN_<stage>_fn_develop_<cohort>/` task folder.
+These specialists author the actual builder logic in the group's paired `NN_<stage>_fn_develop_<cohort>/` task folder.
 
 
 Step 7 — Report
@@ -116,8 +113,7 @@ MUST NOT
 First-run gate
 ---------------
 
-`runs/<RUN>.sh` blocks execution if `CODE_REVIEW.md` is missing or
-stale (gate inherited from `../../../haipipe-task/ref/run-sh-template.sh`).
+`runs/<RUN>.sh` blocks execution if `CODE_REVIEW.md` is missing or stale (gate inherited from `../../../haipipe-task/ref/run-sh-template.sh`).
 For the first run after this scaffold, do ONE of:
 
   1. **Recommended** — run the haipipe-task-reviewer-agent (Gate 1) on this
@@ -135,5 +131,4 @@ For the first run after this scaffold, do ONE of:
      ```
      (Only appropriate for throwaway / disposable runs.)
 
-Surface this to the user in the orchestrator's `next:` line so they
-know **before** trying to launch.
+Surface this to the user in the orchestrator's `next:` line so they know **before** trying to launch.

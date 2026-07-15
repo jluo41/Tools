@@ -1,6 +1,6 @@
 ---
 name: haipipe-nn-modelset
-description: "Layer 4 (ModelSet / Pipeline) specialist of haipipe-nn. Composes multiple ModelInstances into a registry-backed pipeline. Called by /haipipe-nn orchestrator. Direct invocation works for layer-scoped work."
+description: "Layer 4 (ModelSet / Pipeline) specialist of haipipe-nn: composes multiple ModelInstances into a registry-backed pipeline. Called by /haipipe-nn; direct invocation works layer-scoped."
 argument-hint: "[function] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
@@ -13,10 +13,9 @@ metadata:
 Skill: haipipe-nn-modelset
 ===========================
 
-Layer 4 specialist. Owns ModelSet (pipeline) composition — combining
-multiple ModelInstances into a registry-backed serving pipeline (e.g. an
-ensemble, a router, a multi-stage forecast). Called by the `/haipipe-nn`
-orchestrator; can also be invoked directly.
+Layer 4 specialist.
+Owns ModelSet (pipeline) composition — combining multiple ModelInstances into a registry-backed serving pipeline (e.g. an ensemble, a router, a multi-stage forecast).
+Called by the `/haipipe-nn` orchestrator; can also be invoked directly.
 
   Function axis:  dashboard | review | generate | test
 
@@ -48,16 +47,18 @@ test          ref/concepts.md        ../haipipe-nn/fn/fn-test.md
 (no fn arg)   ref/concepts.md        (ref-only mode)
 ```
 
-L4 is the terminal layer of haipipe-nn — `generate` does NOT need a
-downstream layer ref. The next consumer is `/haipipe-end` (Stage 6).
+L4 is the terminal layer of haipipe-nn — `generate` does NOT need a downstream layer ref.
+The next consumer is `/haipipe-end` (Stage 6).
 
 ---
 
 Step-by-Step Protocol
 ----------------------
 
-Step 0: Read `../haipipe-nn/ref/overview.md`. Mandatory.
-Step 1: Parse args. Function vocabulary: dashboard | review | generate | test.
+Step 0: Read `../haipipe-nn/ref/overview.md`.
+Mandatory.
+Step 1: Parse args.
+Function vocabulary: dashboard | review | generate | test.
 Step 2: Read this skill's `ref/concepts.md` for L4 specifics.
 Step 3: Read the umbrella fn doc.
 Step 4: Execute, scoped to L4 (composition only — no instance retraining).

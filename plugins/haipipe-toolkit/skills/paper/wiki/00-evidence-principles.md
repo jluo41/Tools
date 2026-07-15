@@ -78,16 +78,16 @@ Where the principles are enforced
 ---------------------------------
 
 ```
-③  wiki/08-stage-gate.md Phase Transition Contract rule 4 (stage/worker);
+③  ../1-lifecycle/ref/08-stage-gate.md Phase Transition Contract rule 4 (stage/worker);
    the executor orchestrators' clean context IS the wall (agent level)
 ①  haipipe-task-orchestrator-agent / haipipe-discovery-orchestrator-agent
-   "fresh evidence must land" — the answer is a FILE: <leaf>/QA/<n>-<slug>.md,
+   "fresh evidence must land" — the answer is a FILE: <task-folder>/QA/<n>-<slug>.md,
    which the section's `target:` then points at;
    a CLAIM's status lands in 0-lifecycle/1-claims/1-claims.md — per-claim,
    per-paper, private. 💀 `## Verdict` and `verdicted` are DELETED (R7); the
-   probe section carries only its `reading:`.
+   probe section carries only its `a-consumer:`.
 ②  discovery creator/reviewer loops (full) + reviewer quick-pass (ENRICH);
-   probe Judge gates G1/G2/G3; paper-probe worker mechanical acceptance
+   author writes the claim status from the QA file; paper-probe worker mechanical acceptance
 ④  probe light reuse (zero-write => zero ceremony);
    discovery ENRICH (no new folder, creator folded, one review pass)
 ```

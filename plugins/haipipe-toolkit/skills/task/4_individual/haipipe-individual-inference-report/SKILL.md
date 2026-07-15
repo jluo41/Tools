@@ -1,6 +1,6 @@
 ---
 name: haipipe-individual-inference-report
-description: "Per-individual prediction-interpretation report. Loads one individual's data + recent CGM, hits the deployed prediction endpoint, then asks Claude (via claude_agent_sdk) to compose a dual-layer Report — structured JSON + natural-language text — for a specified audience persona (patient / clinician / etc.). Builds on haipipe-individual-inference (which provides the load+predict). The persona library (system prompt, schema, safety rules, tone) is pluggable: name a shipped persona or pass an absolute path to your own. Use to test how a deployed endpoint's prediction reads to a real audience, or to generate reports for downstream LLM-judge / doctor evaluation. Trigger: individual report, prediction interpretation, generate patient message, /haipipe-individual-inference-report."
+description: "Per-individual prediction-interpretation report: loads one individual's data + recent CGM, hits the deployed prediction endpoint, then asks Claude (via claude_agent_sdk) to compose a dual-layer Report -- structured JSON + natural-language text -- for an audience persona (patient / clinician / etc.). Trigger: individual report, prediction interpretation, generate patient message, /haipipe-individual-inference-report."
 argument-hint: "--individual <id> --persona <name_or_path> [--endpoint-url URL] [--model X]"
 allowed-tools: Bash, Read
 metadata:
@@ -41,7 +41,7 @@ Layout
 
 ```
 src/
-  compose_report.py     SDK call (cribbed from physician judge), XML extract, parse
+  compose_report.py     SDK call, XML extract, parse
   report_schema.py      pydantic Report model
   persona_loader.py     resolve --persona name | path → system_prompt + meta
 
@@ -108,29 +108,23 @@ A persona is a **folder** with three files:
 | `patient-friendly` | `personas/patient-friendly/` (shipped) |
 | `/abs/path/to/cardiologist/` | that exact folder |
 
-This lets external persona libraries (Samsung-internal, IRB-approved
-templates, etc.) live **outside** haipipe-toolkit and still be invoked
-without forking the skill.
+This lets external persona libraries (Samsung-internal, IRB-approved templates, etc.) live **outside** haipipe-toolkit and still be invoked without forking the skill.
 
 Required fields in `persona.yaml`:
 - `audience`  (e.g. patient, clinician, parent)
 - `tone`
-Optional: `model`, `language`, `safety_rules`, anything else the persona
-author wants to track (logged into report `meta.json`).
+Optional: `model`, `language`, `safety_rules`, anything else the persona author wants to track (logged into report `meta.json`).
 
 ---
 
 LLM call mechanics
 -------------------
 
-Uses `claude_agent_sdk` (subprocess to local `claude` CLI). Auth flows
-through `~/.claude` OAuth — same login the user did in this Claude Code
-session. **Cost is reported (`cost_usd_equiv` in telemetry) but not
-billed when subscription auth is active.**
+Uses `claude_agent_sdk` (subprocess to local `claude` CLI).
+Auth flows through `~/.claude` OAuth — same login the user did in this Claude Code session.
+**Cost is reported (`cost_usd_equiv` in telemetry) but not billed when subscription auth is active.**
 
-The script `unset`s `ANTHROPIC_AUTH_TOKEN` and `ANTHROPIC_BASE_URL`
-before the SDK call to avoid the project's CRS proxy diverting the
-request away from OAuth (see repo memory `reference_crs_proxy_gotcha`).
+The script `unset`s `ANTHROPIC_AUTH_TOKEN` and `ANTHROPIC_BASE_URL` before the SDK call to avoid the project's CRS proxy diverting the request away from OAuth (see repo memory `reference_crs_proxy_gotcha`).
 
 ---
 

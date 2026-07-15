@@ -16,9 +16,13 @@ metadata:
 Skill: haipipe-paper-section-edit
 ==================================
 
-Combined per-section editing hub. Owns the full per-section lifecycle from scaffold creation through final checklist. Each section the user wants to work on gets a folder under `0-lifecycle/5-section-edit/` with four files.
+Combined per-section editing hub.
+Owns the full per-section lifecycle from scaffold creation through final checklist.
+Each section the user wants to work on gets a folder under `0-lifecycle/5-section-edit/` with four files.
 
-**This skill is a STAGE CONTRACT.** It provides the AIM (what this section must argue), the TEMPLATE (`ref/section-template.md` — the copy-and-fill skeleton; `ref/outline-format.md` is its rulebook), and the RULES (binding invariants below). The `2-phase/` workers (draft → probe → revise → check) are generic engines that execute AGAINST this contract: each phase runs via `Skill()` dispatch and reads this contract as its step 1. The hub NEVER re-implements a phase inline — a phase executed without its `Skill()` dispatch did not happen.
+**This skill is a STAGE CONTRACT.** It provides the AIM (what this section must argue), the TEMPLATE (`ref/section-template.md` — the copy-and-fill skeleton; `ref/outline-format.md` is its rulebook), and the RULES (binding invariants below).
+The `2-phase/` workers (draft → probe → revise → check) are generic engines that execute AGAINST this contract: each phase runs via `Skill()` dispatch and reads this contract as its step 1.
+The hub NEVER re-implements a phase inline — a phase executed without its `Skill()` dispatch did not happen.
 
 ```
 /haipipe-paper-section-edit                       -> dashboard (all sections + phase status)
@@ -33,27 +37,37 @@ Combined per-section editing hub. Owns the full per-section lifecycle from scaff
 /haipipe-paper-section-edit feedback [section]    -> SUBAGENT: capture corrections as memory files
 ```
 
-Bare `<section>` (no verb) shows where the section stands and proposes the next phase — it does NOT run it. The user's verb (or an explicit "go") is the gate approval.
+Bare `<section>` (no verb) shows where the section stands and proposes the next phase — it does NOT run it.
+The user's verb (or an explicit "go") is the gate approval.
 
 ## Binding rules (read before touching any working file)
 
 **Hard gates — the agent never self-advances.**
-- After DRAFT: STOP. Present the draft for structure review and end the turn. No probe, no revise, no commit until the user's verb.
-- After REVISE: open CHECK by presenting the report. Never commit, never conclude, never roll forward on your own.
+- After DRAFT: STOP.
+  Present the draft for structure review and end the turn.
+  No probe, no revise, no commit until the user's verb.
+- After REVISE: open CHECK by presenting the report.
+  Never commit, never conclude, never roll forward on your own.
 - Every gate crossing is logged: `## YYYY-MM-DD #N ~HH:MM [GATE] <phase>-review: approved` + the user's words quoted.
 - A phase may be SKIPPED only by an explicit logged verdict (`[PROBE] skipped -- <reason>`).
 
 **Proof-carrying dispatch.**
 - DRAFT runs via `Skill(haipipe-paper-draft)`, PROBE via `Skill(haipipe-paper-probe)`, REVISE via `Skill(haipipe-paper-revise)`, CHECK via `Skill(haipipe-paper-check)`.
-- The `[REVISE]` _LOG entry MUST carry a `workers:` line (`workers: content ✓ humanizer ✓ results --`). A `[REVISE]` entry without it is a protocol violation and fails `checks.sh --log` (locate the checker layout-agnostically — installed skills flatten the tree: `CHK=$(find ~/.claude/skills "$CLAUDE_PLUGIN_ROOT" -name checks.sh -path '*haipipe-paper-check*' 2>/dev/null | head -1)`).
+- The `[REVISE]` _LOG entry MUST carry a `workers:` line (`workers: content ✓ humanizer ✓ results --`).
+  A `[REVISE]` entry without it is a protocol violation and fails `checks.sh --log` (locate the checker layout-agnostically — installed skills flatten the tree: `CHK=$(find ~/.claude/skills "$CLAUDE_PLUGIN_ROOT" -name checks.sh -path '*haipipe-paper-check*' 2>/dev/null | head -1)`).
 
 **Comment rules (working files).**
-- The agent NEVER deletes, rewords, or relocates a `> USER:` comment. It replies on the line below as `> CC:`. Only the user declares a thread resolved; resolved threads MOVE to `_LOG` verbatim.
-- Working files are edited SURGICALLY (Edit on the specific lines). A full-file rewrite of a file carrying `> USER:` comments is forbidden.
+- The agent NEVER deletes, rewords, or relocates a `> USER:` comment.
+  It replies on the line below as `> CC:`.
+  Only the user declares a thread resolved; resolved threads MOVE to `_LOG` verbatim.
+- Working files are edited SURGICALLY (Edit on the specific lines).
+  A full-file rewrite of a file carrying `> USER:` comments is forbidden.
 - Decisions made in chat are written into the file as `> USER:` quotes so they enter the same lifecycle.
 
 **One working document.**
-- The section `.md` holds the REAL prose. The `.tex` is GENERATED from it by sync — never hand-edit tex prose. (Pure LaTeX mechanics — labels, floats, `\input` wiring — live in tex and are preserved by sync.)
+- The section `.md` holds the REAL prose.
+  The `.tex` is GENERATED from it by sync — never hand-edit tex prose.
+  (Pure LaTeX mechanics — labels, floats, `\input` wiring — live in tex and are preserved by sync.)
 
 ## Artifact Spec
 
@@ -92,7 +106,8 @@ Bare `<section>` (no verb) shows where the section stands and proposes the next 
 
 ## Four phases (DRAFT → PROBE → REVISE → CHECK)
 
-Each section progresses through four phases. Not all probe tracks are needed for every section (e.g., pure theory may skip values/display).
+Each section progresses through four phases.
+Not all probe tracks are needed for every section (e.g., pure theory may skip values/display).
 
 ```
 Phase    What it does                              Where it lives
@@ -124,22 +139,36 @@ REVISE = how to say it well (dispatched workers rewrite the draft prose to venue
 CHECK = did we get it right (verification)
 
 Progression gates (each crossing = a `[GATE]` line in _LOG quoting the user):
-- Draft written? → ⛔ STOP, present for structure review. User's verb/go → PROBE.
+- Draft written? → ⛔ STOP, present for structure review.
+  User's verb/go → PROBE.
 - Probed (all tracks flagged)? → REVISE (dispatched workers revise .md, sync to .tex).
-- Revised (workers line logged)? → CHECK opens with the report. Never commit before CHECK.
-- All 6 axes PASS + user approves? → section done. FAIL? → route back to failing phase.
+- Revised (workers line logged)? → CHECK opens with the report.
+  Never commit before CHECK.
+- All 6 axes PASS + user approves? → section done.
+  FAIL? → route back to failing phase.
 
-Phase visibility per the Phase Transition Contract in `../../../wiki/08-stage-gate.md`: announce every phase boundary (reply line + `[PHASE]` entry in `_LOG` + phase-line 🔥 moves); skip a phase only by an explicit logged verdict (`[PROBE] skipped -- <reason>`, phase line shows `--`); CHECK is never implicit -- it opens by presenting the exit-criteria report and the approval ask.
+Phase visibility per the Phase Transition Contract in `../../ref/08-stage-gate.md`: announce every phase boundary (reply line + `[PHASE]` entry in `_LOG` + phase-line 🔥 moves); skip a phase only by an explicit logged verdict (`[PROBE] skipped -- <reason>`, phase line shows `--`); CHECK is never implicit -- it opens by presenting the exit-criteria report and the approval ask.
 
-Discovery and task are the two EXECUTORS the PROBE phase dispatches into: discovery finds citations, task produces figures and numbers. The paper's `1-probes/` sections bind to their answers BY PATH. PROBE runs ② MATCH against the bank's QA corpus FIRST, and dispatches ONLY what MATCH cannot close.
+Discovery and task are the two EXECUTORS the PROBE phase dispatches into: discovery finds citations, task produces figures and numbers.
+The paper's `1-probes/` sections bind to their answers BY PATH.
+PROBE runs ② MATCH against the bank's QA corpus FIRST, and dispatches ONLY what MATCH cannot close.
 
-**Format rule**: paper-level argument documents (seed, claims, pitch, narrative) are markdown + _LOG only. The display stage is the ONLY paper-level stage that compiles to .tex + PDF (you need to SEE rendered figures/tables). Section-level outline stays in .md throughout; tex is synced from revised outline during REVISE and updated during CHECK. Rule of thumb: if you need to SEE it rendered, .tex. If you need to READ and edit it, .md.
+**Format rule**: paper-level argument documents (seed, claims, pitch, narrative) are markdown + _LOG only.
+The display stage is the ONLY paper-level stage that compiles to .tex + PDF (you need to SEE rendered figures/tables).
+Section-level outline stays in .md throughout; tex is synced from revised outline during REVISE and updated during CHECK.
+Rule of thumb: if you need to SEE it rendered, .tex.
+If you need to READ and edit it, .md.
 
-**The outline .md is the primary working document.** DRAFT creates it. PROBE annotates its tracking files. REVISE updates its sentences and syncs to tex. CHECK verifies everything matches. The outline is never "frozen after draft" -- it stays alive through all phases.
+**The outline .md is the primary working document.** DRAFT creates it.
+PROBE annotates its tracking files.
+REVISE updates its sentences and syncs to tex.
+CHECK verifies everything matches.
+The outline is never "frozen after draft" -- it stays alive through all phases.
 
 ## Closing block (section-aware)
 
-Every reply ends with the closing block defined in `../../../haipipe-paper/SKILL.md` (Closing Block section, the single source of truth). In section-edit the header and phase line carry the active section:
+Every reply ends with the closing block defined in `../../../haipipe-paper/SKILL.md` (Closing Block section, the single source of truth).
+In section-edit the header and phase line carry the active section:
 
 ```
 ── 📄 paper · section-edit · §3-theory 🔥 ────────
@@ -150,7 +179,8 @@ stage:   seed ✅  resource ✅  claims ✅  venue ✅  pitch ✅  narrative ✅
 phase:   §3 draft ✅  │  probe: cite 🔥🚀  val --  disp --  │  revise ⬜  │  check ⬜
 ```
 
-Markers and rendering rules live in the umbrella spec (stage line via `stage-strip.sh`, never hand-typed). Section-edit adds one local marker: ⚠️ = done but needs re-sync (outline changed after tex sync).
+Markers and rendering rules live in the umbrella spec (stage line via `stage-strip.sh`, never hand-typed).
+Section-edit adds one local marker: ⚠️ = done but needs re-sync (outline changed after tex sync).
 
 How to derive status from disk:
 - draft ✅ if the .md has structure block + prose sentences AND _LOG has `[GATE] draft-review: approved`
@@ -233,11 +263,15 @@ Summary table -- which tracking files each stage uses:
 
 Tracking files are created lazily when the phase activates for that stage.
 
-**Probe convention**: ALL probe files live FLAT in `1-probes/` — `PP<NN>_<topic>.md`, ONE FILE PER TOPIC, beside the campaign `README.md`. Each question is one SECTION inside it (`serves:` / `target:` / `state:` / `commission:` / `reading:`), plus ONE `## Why` per file holding the stake. Stage/section affinity is the SECTION's `serves:` field, never the file's path. When raising a new question: add a SECTION to the right topic's probe file (creating `1-probes/PP<NN>_<topic>.md` if the topic is new) AND regenerate its Status board row in the README — `- PP<NN> · serves: <stage/section> · <state> · <question>` — never a markdown table (JL standing rule: no tables in probe documents), and never a `card`, `row` or `table` (retired vocabulary).
+**Probe convention**: ALL probe files live FLAT in `1-probes/` — `PP<NN>_<topic>.md`, ONE FILE PER TOPIC, beside the campaign `README.md`. Each question is one SECTION inside it (`serves:` / `target:` / `state:` / `q-executor:` / `a-consumer:`), plus ONE `## Why` per file holding the stake.
+Stage/section affinity is the SECTION's `serves:` field, never the file's path.
+When raising a new question: add a SECTION to the right topic's probe file (creating `1-probes/PP<NN>_<topic>.md` if the topic is new) AND regenerate its Status board row in the README — `- PP<NN> · serves: <stage/section> · <state> · <question>` — never a markdown table (JL standing rule: no tables in probe documents), and never a `card`, `row` or `table` (retired vocabulary).
 
 ## Two-axis architecture: stages x phases
 
-This skill is a STAGE (the WHAT: per-section editing). It dispatches to PHASE workers (the HOW) that live in `2-phase/`. Phases are shared across all lifecycle stages.
+This skill is a STAGE (the WHAT: per-section editing).
+It dispatches to PHASE workers (the HOW) that live in `2-phase/`.
+Phases are shared across all lifecycle stages.
 
 ```
 1-lifecycle/                          STAGES (the WHAT)
@@ -265,11 +299,13 @@ This skill is a STAGE (the WHAT: per-section editing). It dispatches to PHASE wo
 3-build-submit/                       whole-paper tools (haipipe-paper-edit-*)
 ```
 
-The phase workers use the pattern `haipipe-paper-{phase}-{what}` (e.g. `haipipe-paper-probe-citation`, `haipipe-paper-revise-content`). The phase name is the primary axis since these workers are shared across lifecycle stages, not just section-edit.
+The phase workers use the pattern `haipipe-paper-{phase}-{what}` (e.g. `haipipe-paper-probe-citation`, `haipipe-paper-revise-content`).
+The phase name is the primary axis since these workers are shared across lifecycle stages, not just section-edit.
 
 ## The section .md (working document)
 
-The working document for one section: structure + REAL prose. Full spec: `ref/outline-format.md`.
+The working document for one section: structure + REAL prose.
+Full spec: `ref/outline-format.md`.
 
 ```markdown
 # Section N: Title — Structure
@@ -302,10 +338,14 @@ Rules:
 - Structure overview at top (update whenever structure changes; recount `~words` + `total:` at draft and after REVISE).
 - `##` for subsections, `###` for paragraphs.
 - Each paragraph: headline (job), one-line preview, then prose sentences.
-- **Preview must be ONE SHORT LINE (~80-120 chars)**, not a mini-abstract. The preview is a scan hook: concept name + one distinguishing phrase.
-- **Sentences are REAL prose** — complete academic sentences close to submission register, not telegraphic notes. Content-complete; verification and polish come later.
-- **One sentence per line, blank line between sentences** (→ `Pn.Sn` markers in tex). Never number sentences in the .md (no `S1.` prefixes — Pn.Sn lives only in tex).
-- **Citations real, placeholders greppable**: `\citep{key}` ONLY for keys grep-verified in the paper's .bib; `{VAL:? <what>}` = number PROBE must trace; `\cite{TOADD}` (+ `_CITATION_` row naming the topic) = citation slot PROBE must fill. Never invent a key or a number to avoid a placeholder.
+- **Preview must be ONE SHORT LINE (~80-120 chars)**, not a mini-abstract.
+  The preview is a scan hook: concept name + one distinguishing phrase.
+- **Sentences are REAL prose** — complete academic sentences close to submission register, not telegraphic notes.
+  Content-complete; verification and polish come later.
+- **One sentence per line, blank line between sentences** (→ `Pn.Sn` markers in tex).
+  Never number sentences in the .md (no `S1.` prefixes — Pn.Sn lives only in tex).
+- **Citations real, placeholders greppable**: `\citep{key}` ONLY for keys grep-verified in the paper's .bib; `{VAL:? <what>}` = number PROBE must trace; `\cite{TOADD}` (+ `_CITATION_` row naming the topic) = citation slot PROBE must fill.
+  Never invent a key or a number to avoid a placeholder.
 - Target 5-6 sentences per paragraph (MISQ/ISR norm).
 - User inline comments as `> USER: comment text` under the sentence they discuss — see Binding rules for handling.
 - The .md ENDS with the "Probes proposed by this draft" block (see `ref/outline-format.md`) — DRAFT proposes the evidence work; PROBE executes it after the gate.
@@ -313,7 +353,13 @@ Rules:
 
 ## _CITATION_ and _VALUES_ specs
 
-**_CITATION_ is plain text only. No bibtex blocks.** _CITATION_ is the MAP (what to cite, where, why). .bib is the DATA (actual bibtex). Agent writes to _CITATION_; human writes to .bib (by copying from Google Scholar). Agent discovers the bibtex key by grepping .bib after the human adds it. See `2-phase/1-probe/haipipe-paper-probe-citation/SKILL.md` for the full format spec, provenance tracking, and sync protocol.
+**_CITATION_ is plain text only.
+No bibtex blocks.**
+_CITATION_ is the MAP (what to cite, where, why).
+.bib is the DATA (actual bibtex).
+Agent writes to _CITATION_; human writes to .bib (by copying from Google Scholar).
+Agent discovers the bibtex key by grepping .bib after the human adds it.
+See `2-phase/1-probe/haipipe-paper-probe-citation/SKILL.md` for the full format spec, provenance tracking, and sync protocol.
 
 Status emoji:
 - _CITATION_: `✅ placed` (in bib + tex), `📌 in bib` (not yet placed), `🔍 candidate` (not in bib, needs verification), `⚠️ issue` (wrong paper, drift), `❌ rejected` (kept as audit trail), `📋 pre-existing` (provenance unknown)
@@ -323,7 +369,8 @@ Provenance source: `🧑 scholar-copied` (human added), `🤖 harvested` (came v
 
 ## _LOG changelog
 
-Newest entry at top. Every entry carries a **[PHASE]** tag so you can grep by phase.
+Newest entry at top.
+Every entry carries a **[PHASE]** tag so you can grep by phase.
 
 Format: `## YYYY-MM-DD #N ~HH:MM [PHASE]` + trigger quote + bullet changes.
 
@@ -363,50 +410,90 @@ Grep shortcuts:
 
 ### DRAFT
 
-1. **Consult venue**: read the paper's `0-lifecycle/2-venue/2-venue.md` FIRST -- this section's Structural Blueprint block (subsections, paragraphs per subsection, sentences per paragraph, sentence length, citation density, results detail, display units) plus the Writing Principles block (tone, citation style, results presentation). If `2-venue.md`'s recorded pack commit is behind the current `_venue` HEAD, note "venue contract stale -- consider /haipipe-paper-venue refresh" but still use it (never silently re-read packs).
+1. **Consult venue**: read the paper's `0-lifecycle/2-venue/2-venue.md` FIRST -- this section's Structural Blueprint block (subsections, paragraphs per subsection, sentences per paragraph, sentence length, citation density, results detail, display units) plus the Writing Principles block (tone, citation style, results presentation).
+   If `2-venue.md`'s recorded pack commit is behind the current `_venue` HEAD, note "venue contract stale -- consider /haipipe-paper-venue refresh" but still use it (never silently re-read packs).
    - Deep dive: follow the block's `[source: ...]` tag to `_venue/playbook-<pack>/<outlet>/<outlet>-<section>/style.md` for what the blueprint does not transcribe (arc, signature moves, exemplar sentences, anti-patterns).
    - Fallback (ONLY if `2-venue.md` is absent -- venue stage not yet run, or a pack-less venue): read `_venue/playbook-<pack>/style-profile.md` for general venue norms, then resolve the per-section style guide:
      - From `STATUS.md venue:` extract the outlet (e.g., "MISQ 2026" → outlet "MISQ", pack "playbook-utd-is")
      - Map the current section type to the outlet dir suffix (abstract→abstract, introduction→introduction, theory→theory, methods→methods, results→results, discussion→discussion, related-work→related-work, theory-model→theory-model)
      - Read `_venue/playbook-<pack>/<outlet>/<outlet>-<section>/style.md` if it exists
-     - This file contains word budget, arc, signature moves, exemplar sentences, anti-patterns, and paragraph structure mined from real papers. It OVERRIDES the general style-profile.md for this specific section.
+     - This file contains word budget, arc, signature moves, exemplar sentences, anti-patterns, and paragraph structure mined from real papers.
+       It OVERRIDES the general style-profile.md for this specific section.
      - Example: editing MISQ theory → read `_venue/playbook-utd-is/MISQ/MISQ-theory/style.md`
      - Example: editing NMI results → read `_venue/playbook-nature-portfolio/NMI/NMI-results/style.md`
      - If no pack exists either, proceed without venue inputs.
 
-2. **Create scaffold**: folder + _LOG; the section .md starts as a COPY of `ref/section-template.md` — fill every `<slot>`, DELETE every `<tpl:` guidance line as you go (`grep -c '<tpl' {section}.md` must be 0 before the STOP gate; a surviving `<tpl` line = the scaffold is unfinished). Write the VENUE HEADER under the H1 (`venue:` pin · `section-type:` mapping · `blueprint:` the 2-venue.md block · `style:` the deep-dive pack file resolved from the blueprint's `[source:]` tag — resolve `_venue/` layout-agnostically via find over `~/.claude/skills` + `$CLAUDE_PLUGIN_ROOT`, record the RESOLVED path; absent pack → `style: (pack missing — blueprint only)` + flag for CHECK; hybrid sections may list more than one style file). The blueprint is BINDING; style file(s) are REFERENCE ONLY (advisory — deviation is never a CHECK failure). Later phases follow this recorded link instead of re-deriving it. Populate from existing tex if available (backward fill per `ref/outline-format.md`).
+2. **Create scaffold**: folder + _LOG; the section .md starts as a COPY of `ref/section-template.md` — fill every `<slot>`, DELETE every `<tpl:` guidance line as you go (`grep -c '<tpl' {section}.md` must be 0 before the STOP gate; a surviving `<tpl` line = the scaffold is unfinished).
+   Write the VENUE HEADER under the H1 (`venue:` pin · `section-type:` mapping · `blueprint:` the 2-venue.md block · `style:` the deep-dive pack file resolved from the blueprint's `[source:]` tag — resolve `_venue/` layout-agnostically via find over `~/.claude/skills` + `$CLAUDE_PLUGIN_ROOT`, record the RESOLVED path; absent pack → `style: (pack missing — blueprint only)` + flag for CHECK; hybrid sections may list more than one style file).
+   The blueprint is BINDING; style file(s) are REFERENCE ONLY (advisory — deviation is never a CHECK failure).
+   Later phases follow this recorded link instead of re-deriving it.
+   Populate from existing tex if available (backward fill per `ref/outline-format.md`).
 
 3. **Settle structure**: subsections, paragraph count, hypothesis placement.
 
-4. **Write the real draft**: paragraph headlines, previews, and REAL prose sentences — complete academic sentences the user can judge as a paper, with real `\citep{key}` for keys already in .bib and `{VAL:?}` / `\cite{TOADD}` placeholders for everything unverified. Content-complete, unpolished, unverified. Run via `Skill(haipipe-paper-draft)`.
+4. **Write the real draft**: paragraph headlines, previews, and REAL prose sentences — complete academic sentences the user can judge as a paper, with real `\citep{key}` for keys already in .bib and `{VAL:?}` / `\cite{TOADD}` placeholders for everything unverified.
+   Content-complete, unpolished, unverified.
+   Run via `Skill(haipipe-paper-draft)`.
 
-5. **Raise the questions**: end the .md with the "Questions raised by this draft" block (per `ref/outline-format.md`): every placeholder rolled up with its expected source, display needs per paragraph, and anything heavier than pointer-following (new task run, lit sweep) RAISED as a `state: planned` question SECTION in `1-probes/PP<NN>_<topic>.md` + a Status board row. EXCEPTION: a missing display unit is never a probe section — propose it as a DR request for the 4-display inbox (PROBE files the row). DRAFT proposes; PROBE binds each question to an answer after the gate.
+5. **Raise the questions**: end the .md with the "Questions raised by this draft" block (per `ref/outline-format.md`): every placeholder rolled up with its expected source, display needs per paragraph, and anything heavier than pointer-following (new task run, lit sweep) RAISED as a `state: planned` question SECTION in `1-probes/PP<NN>_<topic>.md` + a Status board row.
+   EXCEPTION: a missing display unit is never a probe section — propose it as a DR request for the 4-display inbox (PROBE files the row).
+   DRAFT proposes; PROBE binds each question to an answer after the gate.
 
-6. **⛔ STOP — structure review gate**: present the draft AND the questions it raises, end the turn. The user reviews structure (¶ jobs, order, coverage) and the questions, flags sentences inline. Iterate here until the user advances (verb or "go"); log `[GATE] draft-review: approved` with the user's words.
+6. **⛔ STOP — structure review gate**: present the draft AND the questions it raises, end the turn.
+   The user reviews structure (¶ jobs, order, coverage) and the questions, flags sentences inline.
+   Iterate here until the user advances (verb or "go"); log `[GATE] draft-review: approved` with the user's words.
 
 ### PROBE (agent-only -- probe aggressively, flag issues)
 
-The agent consumes the draft's probe proposal (placeholders + buffered PP skeletons) and does all three tracks without waiting for human. Flag everything that needs human attention. Do NOT place \citep{} or weave values into tex during PROBE. Placement happens in CHECK after human verification.
+The agent consumes the draft's probe proposal (placeholders + buffered PP skeletons) and does all three tracks without waiting for human.
+Flag everything that needs human attention.
+Do NOT place \citep{} or weave values into tex during PROBE.
+Placement happens in CHECK after human verification.
 
-7. **Citation**: create `_CITATION_` file. Audit `\cite{TOADD}` slots (each must have a `_CITATION_` row) and existing `\citep{}` keys in the .md. Paper-local sweep first: the .bib and prior stages' `_CITATION_` maps (adopt matches; only surviving gaps become questions). Write 🔍 entries with Scholar links. Flag everything. Count density vs venue norm. Surviving gaps → a question SECTION in `1-probes/` (the PROBE phase's DISPATCH to Agent(haipipe-discovery-orchestrator-agent) is the ONLY search door — no inline search at any depth; 💀 the probe GATEWAY agent is RETIRED). Do NOT wait for human, do NOT place \citep{}.
+7. **Citation**: create `_CITATION_` file.
+   Audit `\cite{TOADD}` slots (each must have a `_CITATION_` row) and existing `\citep{}` keys in the .md.
+   Paper-local sweep first: the .bib and prior stages' `_CITATION_` maps (adopt matches; only surviving gaps become questions).
+   Write 🔍 entries with Scholar links.
+   Flag everything.
+   Count density vs venue norm.
+   Surviving gaps → a question SECTION in `1-probes/` (the PROBE phase's DISPATCH to Agent(haipipe-discovery-orchestrator-agent) is the ONLY search door — no inline search at any depth).
+   Do NOT wait for human, do NOT place \citep{}.
 
-8. **Values**: create `_VALUES_` file. Scan every `{VAL:?}` placeholder and every number in the .md. Trace each to a source (task output, display CSV, script). Flag ⚠️ mismatches and 🔍 unknown sources. If source not found → raise a question SECTION in `1-probes/`. Do NOT wait for human.
+8. **Values**: create `_VALUES_` file.
+   Scan every `{VAL:?}` placeholder and every number in the .md.
+   Trace each to a source (task output, display CSV, script).
+   Flag ⚠️ mismatches and 🔍 unknown sources.
+   If source not found → raise a question SECTION in `1-probes/`.
+   Do NOT wait for human.
 
-9. **Display**: audit what displays this section needs. Sweep existing `0-displays/` units first (paper-local). Plan which unit serves which claim. Unit doesn't exist → file a DR row in `0-lifecycle/4-display/_DISPLAY_REQUEST.md` (the display stage's inbox) and mark it 📨 — section-edit NEVER creates displays (no `/haipipe-task`, no commissioning of any kind; JL 2026-07-10). Do NOT wait for approval.
+9. **Display**: audit what displays this section needs.
+   Sweep existing `0-displays/` units first (paper-local).
+   Plan which unit serves which claim.
+   Unit doesn't exist → file a DR row in `0-lifecycle/4-display/_DISPLAY_REQUEST.md` (the display stage's inbox) and mark it 📨 — section-edit NEVER creates displays (no `/haipipe-task`, no commissioning of any kind; JL 2026-07-10).
+   Do NOT wait for approval.
 
-**Probe escalation**: PROBE checks existing evidence FIRST, and dispatches ONLY what nothing already answers. The flow is: sweep paper-local (registries, .bib, `read` probe sections, 0-displays/) → audit the surviving gaps → raise a question SECTION for each → ② MATCH the bank's QA corpus → ③ DISPATCH only what MATCH cannot close. No inline-search tier exists at any depth.
+**Probe escalation**: PROBE checks existing evidence FIRST, and dispatches ONLY what nothing already answers.
+The flow is: sweep paper-local (registries, .bib, `read` probe sections, 0-displays/) → audit the surviving gaps → raise a question SECTION for each → ② MATCH the bank's QA corpus → ③ DISPATCH only what MATCH cannot close.
+No inline-search tier exists at any depth.
 
 ### REVISE (agent-only -- .md first, then sync to tex)
 
-10. **Dispatch the revise workers**: `Skill(haipipe-paper-revise)` — MANDATORY, never hand-edit the prose inline. The workers (content → humanizer, + results where applicable) revise the section .md directly: venue-quality wording, split long/multi-clause sentences, strip AI voice, weave in verified values and resolve `\cite{TOADD}` slots whose keys have landed in .bib (TOADD stays for still-unverified candidates; `{VAL:?}` stays for unverified values). Non-trivial changes carry `%% {CC-<worker>-vMMDD}:` why-comments for CHECK. Log the proof: `[REVISE]` entry in _LOG with `workers: content ✓ humanizer ✓ results --`.
+10. **Dispatch the revise workers**: `Skill(haipipe-paper-revise)` — MANDATORY, never hand-edit the prose inline.
+    The workers (content → humanizer, + results where applicable) revise the section .md directly: venue-quality wording, split long/multi-clause sentences, strip AI voice, weave in verified values and resolve `\cite{TOADD}` slots whose keys have landed in .bib (TOADD stays for still-unverified candidates; `{VAL:?}` stays for unverified values).
+    Non-trivial changes carry `%% {CC-<worker>-vMMDD}:` why-comments for CHECK.
+    Log the proof: `[REVISE]` entry in _LOG with `workers: content ✓ humanizer ✓ results --`.
 
-11. **Sync to tex**: sync revised sentences from the .md → `0-sections/*.tex` with `Pn.Sn` markers. Place `\citep{key}` only for keys already in `.bib`. The .md is the source; tex prose is never edited directly.
+11. **Sync to tex**: sync revised sentences from the .md → `0-sections/*.tex` with `Pn.Sn` markers.
+    Place `\citep{key}` only for keys already in `.bib`.
+    The .md is the source; tex prose is never edited directly.
 
 REVISE changes prose directly and explains itself with why-comments — there is NO comment-first pause (the human reviews in CHECK and restarts REVISE with `> USER:` preferences if needed).
 
 ### CHECK (human + agent -- the GATE)
 
-12. **Human reviews all flags**: present all 🔍 and ⚠️ entries from _CITATION_, _VALUES_, and display plans, plus the `%% {CC-*}` why-comments from REVISE. Never commit or conclude the section before this gate opens. The human:
+12. **Human reviews all flags**: present all 🔍 and ⚠️ entries from _CITATION_, _VALUES_, and display plans, plus the `%% {CC-*}` why-comments from REVISE.
+    Never commit or conclude the section before this gate opens.
+    The human:
     - Clicks Scholar links, verifies citations, copies bibtex → .bib, marks `> ✅ SEARCH`
     - Checks values against sources, confirms or corrects numbers
     - Reviews generated displays, approves or requests revision
@@ -427,7 +514,8 @@ REVISE changes prose directly and explains itself with why-comments — there is
     - ✅ venue: word budget, style, formatting
     - ✅ proof: (if applicable) math proofs verified
 
-    PASS → section done (check ✅). Log checklist entry in _LOG.
+    PASS → section done (check ✅).
+    Log checklist entry in _LOG.
     FAIL → report which axis failed → route BACK to the failing phase.
 
 15. **Compile**: run `./1-compile.sh`.
@@ -439,12 +527,15 @@ Section-type norms learned during editing flow into the venue pack:
 1. Captured in `_LOG` during editing.
 2. `lesson` subagent harvests norms → per-section `style.md` at `_venue/playbook-<pack>/<outlet>/<outlet>-<section>/style.md`.
 3. Each outlet accumulates its own section-level style guides across papers (e.g., `MISQ/MISQ-theory/style.md`, `NMI/NMI-results/style.md`).
-4. Future sessions reach the per-section style guide via the `[source: ...]` tags in `2-venue.md` (or directly, when no `2-venue.md` exists). A harvest that changes the pack leaves existing `2-venue.md` contracts stale -- refresh via `/haipipe-paper-venue refresh`.
-5. The per-section files are mined from real exemplar PDFs stored in `_WorkSpace/HAIToolLib/1-ExemplarLib/<family>/<outlet>/`. See `_venue/_SCHEMA.md` for the full resolution path and section-type mapping.
+4. Future sessions reach the per-section style guide via the `[source: ...]` tags in `2-venue.md` (or directly, when no `2-venue.md` exists).
+   A harvest that changes the pack leaves existing `2-venue.md` contracts stale -- refresh via `/haipipe-paper-venue refresh`.
+5. The per-section files are mined from real exemplar PDFs stored in `_WorkSpace/HAIToolLib/1-ExemplarLib/<family>/<outlet>/`.
+   See `_venue/_SCHEMA.md` for the full resolution path and section-type mapping.
 
 ## Subagent verbs: lesson, digest, feedback
 
-Dispatch to background subagents via the Agent tool. Never run inline.
+Dispatch to background subagents via the Agent tool.
+Never run inline.
 
 - **lesson**: harvest venue norms and structural decisions from _LOG → venue pack.
 - **digest**: summarize session changes into _LOG from outline + tex + git diff.
@@ -466,7 +557,7 @@ haipipe-paper-lifecycle                  0-draft/
   ├─► display                              haipipe-paper-probe-values     → _VALUES_
   └─► section-edit (THIS)                  haipipe-paper-probe-display    → 0-displays/
         │                                    ↓ escalation
-        │   DRAFT → PROBE → REVISE → CHECK   1-probes/ → commission → /haipipe-task qa | /haipipe-discovery qa
+        │   DRAFT → PROBE → REVISE → CHECK   1-probes/ → q-executor → /haipipe-task qa | /haipipe-discovery qa
         │
         │   hub dispatches to              2-revise/ (agent-only, .md + .tex)
         │   2-phase/ workers                 haipipe-paper-revise-content (WHAT)

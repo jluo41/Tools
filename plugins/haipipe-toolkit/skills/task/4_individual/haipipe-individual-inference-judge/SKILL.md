@@ -1,6 +1,6 @@
 ---
 name: haipipe-individual-inference-judge
-description: "LLM-as-judge evaluator for prediction-interpretation Reports. Consumes the report.json produced by haipipe-individual-inference-report and scores it against a rubric persona (e.g. patient-comprehension, safety-review) via claude_agent_sdk. Each judge persona defines its own rubric dimensions, scoring rules, and verdict thresholds — pluggable, can live outside the plugin. Builds on haipipe-individual-inference-report. Use to score reports in CI batches, doctor pre-review, persona ablation studies, or red-team safety checks. Trigger: judge a report, score interpretation, evaluate report, /haipipe-individual-inference-judge."
+description: "LLM-as-judge evaluator for prediction-interpretation Reports: consumes the report.json from haipipe-individual-inference-report and scores it against a rubric persona via claude_agent_sdk. Each persona defines its own rubric dimensions, scoring rules, and thresholds -- pluggable. Use for CI batches, doctor pre-review, persona ablation, or red-team safety checks. Trigger: judge a report, score interpretation, evaluate report, /haipipe-individual-inference-judge."
 argument-hint: "--report-dir <path> --persona <name_or_path> [--model X]"
 allowed-tools: Bash, Read
 metadata:
@@ -13,9 +13,8 @@ metadata:
 Skill: haipipe-individual-inference-judge
 =======================================
 
-LLM-as-judge for the dual-layer Reports produced by
-`haipipe-individual-inference-report`. Same SDK + persona pattern, applied
-to evaluation instead of generation.
+LLM-as-judge for the dual-layer Reports produced by `haipipe-individual-inference-report`.
+Same SDK + persona pattern, applied to evaluation instead of generation.
 
 ```
   📨 Report          ⚖️  judge persona       🤖 Claude SDK
@@ -78,15 +77,15 @@ response.xml     raw <judgment> block from the LLM
 meta.json        telemetry: judge_persona, model, cost, session_id
 ```
 
-You can run multiple judges against the same report — each writes into
-its own `judge_<persona>/` subfolder so no clobbering.
+You can run multiple judges against the same report — each writes into its own `judge_<persona>/` subfolder so no clobbering.
 
 ---
 
 Judge persona system
 ---------------------
 
-Same convention as report personas. Folder with three files:
+Same convention as report personas.
+Folder with three files:
 
 ```
 <judge-persona>/
@@ -95,16 +94,13 @@ Same convention as report personas. Folder with three files:
 └── schema.md         <judgment> XML schema spec
 ```
 
-`--persona` accepts a name (resolved under shipped/) or an absolute path
-to any folder on disk. External judge libraries (clinical IRB rubrics,
-Samsung-internal red-team panels, ablation rubrics for research) live
-outside the plugin.
+`--persona` accepts a name (resolved under shipped/) or an absolute path to any folder on disk.
+External judge libraries (clinical IRB rubrics, Samsung-internal red-team panels, ablation rubrics for research) live outside the plugin.
 
 Required fields in `persona.yaml`:
 - `rubric`            (label, e.g. `safety-review`, `patient-comprehension`)
 - `target_audience`   (who the report under judgment was written for)
-Optional: `model`, `dimensions` (advisory list of dimension names),
-`weights`, anything else.
+Optional: `model`, `dimensions` (advisory list of dimension names), `weights`, anything else.
 
 ---
 

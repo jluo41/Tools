@@ -23,7 +23,8 @@ Academy  = Builder scripts            (tasks/<pipe-group>/02_record_fn_develop_<
 What Is a RecordSet
 -------------------
 
-Container with `Name_to_HRF` dict. Keys: string (Human) or tuple (Record).
+Container with `Name_to_HRF` dict.
+Keys: string (Human) or tuple (Record).
 
 ```python
 record_set.Name_to_HRF = {
@@ -45,7 +46,8 @@ _WorkSpace/2-RecStore/{RecordSetName}/
 +-- manifest.json, _cache/
 ```
 
-**5-Minute Alignment (CGM domain):** `DT_s` column with 5-min intervals. Domain-specific.
+**5-Minute Alignment (CGM domain):** `DT_s` column with 5-min intervals.
+Domain-specific.
 
 
 Concrete Code
@@ -131,9 +133,8 @@ def get_RawRecProc_for_HumanGroup(df_RawRec_for_HumanGroup, OneRecord_Args, df_H
 
 **RecordFn Naming Convention:**
 
-RecordFn names MUST include a time-frequency suffix that reflects the temporal
-resolution of the underlying data. This keeps RecordFn names self-documenting and
-consistent with the CGM-domain convention (e.g., `CGM5Min`, `BPDay`).
+RecordFn names MUST include a time-frequency suffix that reflects the temporal resolution of the underlying data.
+This keeps RecordFn names self-documenting and consistent with the CGM-domain convention (e.g., `CGM5Min`, `BPDay`).
 
 ```
 Suffix   Meaning              Examples
@@ -150,9 +151,11 @@ Never use a bare name like `MimicAdmission` — always `MimicAdmissionMin`.
 Fn Type Overview
 ----------------
 
-**HumanFn** -- defines the entity (who is tracked). One per entity type per project.
+**HumanFn** -- defines the entity (who is tracked).
+One per entity type per project.
 
-**RecordFn** -- processes one data table into time-aligned records. Falls into 4 signal patterns:
+**RecordFn** -- processes one data table into time-aligned records.
+Falls into 4 signal patterns:
 
 ```
 Pattern A: Dense/Continuous   regular-interval sensor    aggregation: FIRST
@@ -181,8 +184,7 @@ source .venv/bin/activate && source env.sh
 ```
 
 **NOTE:** `source .venv/bin/activate` does NOT persist across Bash tool calls.
-Always chain: `source .venv/bin/activate && source env.sh && python <script>`
-Or call venv python directly: `.venv/bin/python script.py`
+Always chain: `source .venv/bin/activate && source env.sh && python <script>` Or call venv python directly: `.venv/bin/python script.py`
 
 
 MUST DO

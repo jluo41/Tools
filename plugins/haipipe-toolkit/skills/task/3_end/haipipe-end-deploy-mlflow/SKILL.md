@@ -1,6 +1,6 @@
 ---
 name: haipipe-end-deploy-mlflow
-description: "MLflow deploy specialist for haipipe-end. STATUS: DEFERRED — no platform-mlflow-inference repo backs this yet; SKILL.md kept as a placeholder. Would register an Endpoint_Set into an MLflow Model Registry and serve via `mlflow models serve`. Reads Endpoint_Sets produced by haipipe-end-endpointset; never modifies them. The umbrella's no-args dashboard skips this skill while deferred."
+description: "MLflow deploy specialist for haipipe-end. STATUS: DEFERRED -- no platform-mlflow-inference repo backs it yet; placeholder. Would register an Endpoint_Set into an MLflow Model Registry and serve via `mlflow models serve`. Reads (never modifies) Endpoint_Sets from haipipe-end-endpointset; the umbrella's no-args dashboard skips it while deferred."
 argument-hint: "[function] [endpoint_set_or_id] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
@@ -13,10 +13,9 @@ metadata:
 Skill: haipipe-end-deploy-mlflow
 ==========================
 
-MLflow registry + serving specialist. Wraps an Endpoint_Set into an
-MLflow `pyfunc` model, logs and registers it, and (optionally) serves it
-via `mlflow models serve`. The registered model can also be the input
-artifact for downstream MLflow-aware deployers.
+MLflow registry + serving specialist.
+Wraps an Endpoint_Set into an MLflow `pyfunc` model, logs and registers it, and (optionally) serves it via `mlflow models serve`.
+The registered model can also be the input artifact for downstream MLflow-aware deployers.
 
 > Status: DEFERRED — SKILL.md scaffolded as a placeholder; not yet exercised (no backing repo). Tracking server URI, registry name, and stage
 > transition policy below are placeholders for the project to fill in.
@@ -65,7 +64,8 @@ Step-by-Step Protocol
 Step 0: Read `../haipipe-end/ref/deploy-overview.md` for MLflow tracking URI, registry conventions,
         and stage transition policy.
 
-Step 1: Parse args. Required arg per function:
+Step 1: Parse args.
+Required arg per function:
           deploy: <endpoint_set_name> [--register-only] [--port N]
           test/monitor/teardown/review: <endpoint_id> (model name + version)
 
@@ -125,5 +125,4 @@ Does NOT own:
     `/haipipe-end-deploy-databricks` even though it consumes MLflow registry under
     the hood — keep concerns split for clarity)
 
-If a deploy fails because of an Endpoint_Set issue, escalate to
-`/haipipe-end-endpointset review`.
+If a deploy fails because of an Endpoint_Set issue, escalate to `/haipipe-end-endpointset review`.

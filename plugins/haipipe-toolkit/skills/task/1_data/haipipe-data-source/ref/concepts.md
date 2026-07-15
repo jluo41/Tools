@@ -3,13 +3,12 @@ haipipe Layer 1: Source
 
 Stage reference for Layer 1 of the 6-layer data pipeline.
 
-Converts raw data files (CSV, XML, Parquet, JSON) into a standardized
-SourceSet -- a dictionary of DataFrames keyed by table name.
+Converts raw data files (CSV, XML, Parquet, JSON) into a standardized SourceSet -- a dictionary of DataFrames keyed by table name.
 
-**Scope:** Framework patterns only. Does not catalog project-specific state
-(which SourceFns are registered, column names, cohort names). That state is
-always discovered at runtime from the filesystem. This reference applies
-equally to any domain: CGM, EHR, genomics, wearables, etc.
+**Scope:** Framework patterns only.
+Does not catalog project-specific state (which SourceFns are registered, column names, cohort names).
+That state is always discovered at runtime from the filesystem.
+This reference applies equally to any domain: CGM, EHR, genomics, wearables, etc.
 
 ---
 
@@ -45,18 +44,18 @@ Dish       SourceSet asset            _WorkSpace/1-SourceStore/
 Academy    Builder scripts            tasks/<pipe-group>/01_source_fn_develop_<cohort>/  (in the project)
 ```
 
-The Kitchen (Source_Pipeline) orchestrates execution. The Chef (SourceFn) does
-the actual data transformation. The Recipe (YAML config) tells the Kitchen
-which Chef to use and where to find raw data. The Dish (SourceSet) is the
-output. The Academy (builder scripts) is where you train new Chefs.
+The Kitchen (Source_Pipeline) orchestrates execution.
+The Chef (SourceFn) does the actual data transformation.
+The Recipe (YAML config) tells the Kitchen which Chef to use and where to find raw data.
+The Dish (SourceSet) is the output.
+The Academy (builder scripts) is where you train new Chefs.
 
 ---
 
 What Is a SourceSet
 ===================
 
-A SourceSet is an Asset that holds **ProcName_to_ProcDf** -- a dictionary
-mapping table names to pandas DataFrames.
+A SourceSet is an Asset that holds **ProcName_to_ProcDf** -- a dictionary mapping table names to pandas DataFrames.
 
 ```python
 # Example (illustrative -- actual ProcNames depend on domain and dataset):
@@ -67,8 +66,9 @@ source_set.ProcName_to_ProcDf = {
 }
 ```
 
-Each key is a **ProcName** (processed table name). Which ProcNames exist
-depends on the domain and dataset. Typical patterns:
+Each key is a **ProcName** (processed table name).
+Which ProcNames exist depends on the domain and dataset.
+Typical patterns:
 
 ```
 Domain            Typical ProcNames
@@ -93,14 +93,13 @@ head -20 code/haifn/fn_source/<SourceFnName>.py  # see its ProcName_List
 Schema Consistency
 ==================
 
-Within a domain, all SourceFns MUST produce identical column sets for shared
-table types. This is what makes Layer 2 (Record) work -- it expects the same
-columns regardless of which dataset produced them.
+Within a domain, all SourceFns MUST produce identical column sets for shared table types.
+This is what makes Layer 2 (Record) work -- it expects the same columns regardless of which dataset produced them.
 
 **CGM/Diabetes domain standard schemas (illustrative)**
 
-These are real schemas used in the CGM domain. Other domains will define their
-own schemas following the same Core + Extended Fields Pattern.
+These are real schemas used in the CGM domain.
+Other domains will define their own schemas following the same Core + Extended Fields Pattern.
 
 Medication (11 columns):
 
@@ -260,22 +259,19 @@ source .venv/bin/activate && source env.sh
 ```
 
 Run both commands together in a single call.
-Never run Python without .venv activated. Never skip env.sh.
+Never run Python without .venv activated.
+Never skip env.sh.
 
 **NOTE:** `source .venv/bin/activate` does NOT persist across Bash tool calls.
-Always chain: `source .venv/bin/activate && source env.sh && python <script>`
-Or call venv python directly: `.venv/bin/python script.py`
+Always chain: `source .venv/bin/activate && source env.sh && python <script>` Or call venv python directly: `.venv/bin/python script.py`
 
 ---
 
 Large Tables That Don't Fit in RAM
 ===================================
 
-When a raw table is bigger than available memory (hundreds of millions of
-rows; typical on small Databricks nodes with 16 GB), the SourceFn must
-stream it instead of loading it wholesale. Canonical reference
-implementation: Project-EHR-Mimic
-`.../01_source_fn_develop_mimic/c7_build_source_mimiciv31.py`.
+When a raw table is bigger than available memory (hundreds of millions of rows; typical on small Databricks nodes with 16 GB), the SourceFn must stream it instead of loading it wholesale.
+Canonical reference implementation: Project-EHR-Mimic `.../01_source_fn_develop_mimic/c7_build_source_mimiciv31.py`.
 
 The pattern:
 
