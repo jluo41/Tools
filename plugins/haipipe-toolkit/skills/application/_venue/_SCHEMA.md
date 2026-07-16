@@ -54,9 +54,9 @@ the SETTLEMENT BAR its CHECK gate applies before artifact work
 - **light**: every claim the artifact leans on tied to a named K/W or
   "common knowledge"; GAPs allowed if not load-bearing
 - **medium**: primary claims supported or weak-with-caveat; load-bearing
-  GAPs have probe cards
-- **full**: primary claims supported by judged verdicts; load-bearing
-  GAPs verdicted
+  GAPs have a campaign row (an open question in 1-probes/)
+- **full**: primary claims supported by judged answers; load-bearing
+  GAPs settled
 
 
 Venue template (in README.md)

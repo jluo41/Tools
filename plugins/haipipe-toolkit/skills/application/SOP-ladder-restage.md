@@ -1,6 +1,8 @@
 SOP — Application Ladder Restage (stage 1 → 1a/1b/1c/1d), 2026-07-09
 ======================================================================
 
+> SUPERSEDED IN PART (2026-07-15): the probe layer was later redesigned — per-stage _PROBE/ folders, the 1-probe-plans/ index, the _PROBE card `## Verdict`/G1-G2-G3, and the `dispatched`/`verdicted` states described below are RETIRED; the current model is the flat pool 1-probes/ + the five-step loop. See probe/haipipe-probe/SKILL.md and haipipe-application/fn/probes.md.
+
 Status: EXECUTED same-session (JL approved "please go ahead and don't stop until you have a very clean results", 2026-07-09). Remaining: live bench exam (§8) on the next real intervention + archive this SOP into haipipe-application/CHANGELOG.md and delete (round-1/2 convention).
 Owner: JL. Executor: CC.
 Baseline: application @ paper-alignment round 2 (SOP archived pending; family 5.1.0). Paper untouched except a claims-stage preamble note (§4 row P).
@@ -62,7 +64,7 @@ JL rulings absorbed (2026-07-09 session): each stage is a mission controller for
 5. Phase 2 — periphery sweep
 -----------------------------
 
-PHILOSOPHY.md (lifecycle, stage table, boundaries, design prompt) · README.md (layouts, delta table, retired names) · wiki/03 (folder contract, stage table, maturity, loopback, comparison) · wiki/05 (spine, open-needs rows) · wiki/06 (tree, stage map, router rule, current_layer vocab) · enter SKILL (stage docs, handoff, needs, loopback) · pitch/narrative/display/section-edit/venue/artifact/review/claim-audit reads (R9 paths) · iterate (backfill-1a wiring) · 2-phase README/USAGE/WIRING + draft/revise/check stage enumerations · fn/probe-plans.md + fn/feedback.md paths · PREFERENCES.md (alignment-watch: stage-1 divergence is intentional, ports must not re-converge it) · probe SKILL `_VALUES_` path · CHANGELOG rollups + family 6.0.0.
+PHILOSOPHY.md (lifecycle, stage table, boundaries, design prompt) · README.md (layouts, delta table, retired names) · wiki/03 (folder contract, stage table, maturity, loopback, comparison) · wiki/05 (spine, open-needs rows) · wiki/06 (tree, stage map, router rule, current_layer vocab) · enter SKILL (stage docs, handoff, needs, loopback) · pitch/narrative/display/section-edit/venue/artifact/review/claim-audit reads (R9 paths) · iterate (backfill-1a wiring) · 2-phase README/USAGE/WIRING + draft/revise/check stage enumerations · fn/probes.md + fn/feedback.md paths · PREFERENCES.md (alignment-watch: stage-1 divergence is intentional, ports must not re-converge it) · probe SKILL `_VALUES_` path · CHANGELOG rollups + family 6.0.0.
 
 6. What deliberately does NOT change
 -------------------------------------

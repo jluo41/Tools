@@ -4,98 +4,95 @@ description: "Stage 5 of the intervention lifecycle (venue-gated: sectioned venu
 argument-hint: "[section-name-or-§N] [intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.0.0"
-  last_updated: "2026-07-06"
-  summary: "Generalized: section list comes from the pinned venue profile (was: hardcoded 01-subgroup-profile..06-gate-check report sections, now in _venue/venue-report). Runs per-section DPRC via the 2-phase/ workers; keeps the comment->reply->apply convention and the six edit topics as REVISE/CHECK lenses."
-  changelog:
-    - "4.0.0 (2026-07-06): paper-alignment — renamed section-edit; venue-profile-driven section list; DPRC via shared 2-phase workers; stage folder 0-lifecycle/5-section-edit/."
-    - "3.0.0 (2026-07-02): replaced minimap with section-editing; per-section comment->reply->apply cycle adapted from paper's write-edit."
-    - "2.0.0 (2026-06-23): renamed from delivery to minimap; match paper vocabulary; venue-gated."
-    - "1.0.0 (2026-06-22): initial version as haipipe-application-delivery."
+  version: "5.0.0"
+  last_updated: "2026-07-15"
+  summary: "Section-edit stage (stage 5, venue-ALIGNED; sectioned venues only — report/dashboard spec): each section the VENUE PROFILE declares runs DRAFT → PROBE → REVISE → CHECK, editing prose in 0-sections/ with per-section scaffolds under 0-lifecycle/5-section-edit/{section}/. Its PROBE is a full-document probe — values + citation lanes per section, display lane where a section references units — raising gaps as sections in the flat pool 1-probes/PPNN_<topic>.md. Keeps the comment→reply→apply convention and the six edit topics as REVISE/CHECK lenses. History: ./CHANGELOG.md."
 ---
 
 Skill: haipipe-application-section-edit
 ========================================
 
-Stage 5 of the intervention lifecycle, for **sectioned venues only** (the pinned venue's profile declares whether this stage fires and which sections exist). Runs per-section DRAFT-PROBE-REVISE-CHECK on the venue's section list, syncing prose to `0-sections/`.
+The **section-edit** stage (stage 5, venue-ALIGNED) turns each section into venue-quality prose, one section at a time — for **sectioned venues only** (report, dashboard spec).
+It answers: does each section's prose do its assigned job?
+Each section runs its own DRAFT → PROBE → REVISE → CHECK, with the edited prose living in `0-sections/`.
 
-Question answered
-==================
+Read first: `../../../PHILOSOPHY.md`, `../../../wiki/08-stage-gate.md`, `../../../wiki/11-delivery-need.md`.
 
-"Does each section's prose do its assigned job?"
 
-Where the section list comes from
-==================================
+## What's special
 
-The VENUE PROFILE, never this skill. `_venue/venue-<name>/README.md` declares the section structure (e.g. `venue-report` carries the report section list; a venue without a `sections:` block skips this stage entirely — check `STATUS.md | stages_skipped |`). The display stage's per-unit jobs say what each section must carry; this stage makes the prose deliver it.
+**1. The section list comes from the VENUE PROFILE, never this skill.**
+`_venue/venue-<name>/README.md` declares the section structure (e.g. `venue-report` carries the report section list); a venue with no `sections:` block skips this stage entirely (check `STATUS.md | stages_skipped |`, and BLOCK if skipped).
+The display stage's per-unit jobs say what each section must carry; this stage makes the prose deliver it.
 
-Input
-======
+**2. Venue-ALIGNED, so it rewrites on retarget.**
+The pinned venue sets the style-profile and length limits each section conforms to; a new venue re-sections and re-writes, while the evidence ladder (1a–1d) underneath stays put.
 
-- `STATUS.md` → venue, stages_skipped (BLOCK if this stage is skipped)
-- `_venue/venue-<name>/README.md` → section list + per-section jobs
-- `0-lifecycle/4-display/4-display.md` → element-to-section mapping
-- `0-lifecycle/1c-claims/1c-claims.md` → the ledger (claims language must not outrun it)
-- `0-lifecycle/1d-advice/1d-advice.md` → the advice entries each section executes
-- `0-sections/*` → the prose under edit
+**3. Its PROBE is a full-document probe.**
+values + citation lanes fire per section, and a display lane fires where the section references units.
+The per-lane wording is the probe layer's — see `../../../2-phase/1-probe/haipipe-application-probe/ref/per-stage-dispatch.md`, "Section-edit worker logic".
 
-Output
-=======
 
-- Edited `0-sections/*` files (in place)
-- Per-section scaffolds + logs in `0-lifecycle/5-section-edit/{section}/` (outline `.md`, `_LOG`, `_PROBE/` when the section spawns evidence needs)
+## The four phases, in section-edit
 
-Per-section DPRC
-=================
-
-Each section runs the shared phase cycle via the `2-phase/` workers (users invoke this stage; it dispatches):
-
-```
-DRAFT   settle the section's outline + draft sentences against its job
-        (haipipe-application-draft)
-PROBE   trace numbers to task results, claims to ledger/K-W anchors; buffer
-        _PROBE/ cards for real evidence gaps (haipipe-application-probe)
-REVISE  the comment -> reply -> apply cycle (below) + venue style-profile +
-        audience conformance (haipipe-application-revise rules)
-CHECK   per-section exit: prose does its job, no open comments, flags resolved
-        or parked (haipipe-application-check; section rows in the stage _LOG,
-        stage-level Gate Ledger row when ALL sections pass)
+```text
+DRAFT   settle the section's outline + draft sentences against its assigned job, and end the outline with
+        the evidence gaps it raises (haipipe-application-draft).  ⛔ STOP for the user's structure review.
+PROBE   trace numbers to task results and claims to the 1c ledger / K-W anchors; raise each real gap as a
+        SECTION in the flat pool 1-probes/PPNN_<topic>.md (values + citation lanes per section, display lane
+        where units are referenced), MATCH the bank, dispatch only what MATCH cannot close
+        (haipipe-application-probe; routing is the probe layer's).
+REVISE  the comment → reply → apply cycle (below) + venue style-profile + audience conformance
+        (haipipe-application-revise).
+CHECK   ⛔ per-section exit: prose does its job, no open comments, flags resolved or parked
+        (haipipe-application-check); section rows land in the stage _LOG, the stage Gate Ledger row is
+        written when ALL sections pass.
 ```
 
-The comment -> reply -> apply cycle (REVISE convention)
-========================================================
+Users invoke this stage; it dispatches the `2-phase/` workers.
+Only DRAFT and CHECK involve the human; PROBE and REVISE are agent-only.
 
-Same convention as the paper family:
 
-```
-1. Annotate     insert `%% {CC-<topic>-v<DATE>}: <finding>` comments inline,
-                one per finding
+## The comment → reply → apply cycle (REVISE convention)
+
+```text
+1. Annotate     insert `%% {CC-<topic>-v<DATE>}: <finding>` comments inline, one per finding
 2. Human reply  `========> {JL v<DATE>}: accept | reject | revise <instructions>`
 3. Apply        apply accepted comments, remove resolved comment blocks
 4. Clean+diff   strip leftover scaffolding, write a diff summary to the _LOG
 ```
 
-Edit topics (lenses for REVISE/CHECK)
-======================================
+Six edit topics are the lenses REVISE writes against and CHECK verifies:
+**tone** (voice matches the audience register — clinician / pharmacist / patient) · **length** (respects the venue profile's limits) ·
+**citations** (claims trace to the 1c ledger anchors or K/W insight cards; flag unsupported assertions) ·
+**reading-level** (patient-facing content at the audience's target grade) · **distinctiveness** (parallel elements — message variants, panels — actually differ) ·
+**consistency** (terms, labels, metric names, cohort definitions agree across sections).
 
-**tone** -- voice matches the audience profile (clinician / pharmacist / patient register).
-**length** -- element/message text respects the venue profile's limits.
-**citations** -- claims trace to K/W insight cards or ledger anchors; flag unsupported assertions.
-**reading-level** -- patient-facing content at the audience profile's target grade level.
-**distinctiveness** -- parallel elements (message variants, panels) actually differ; flag near-duplicates.
-**consistency** -- terms, labels, metric names, cohort definitions consistent across sections.
 
-Definition of done
-===================
+## The artifact
 
-```
-[ ] Every venue-declared section has prose that does its job (per display's mapping)
-[ ] No open (unreplied) comments in any section
-[ ] Format check passes (renders/compiles where applicable, labels resolve)
-[ ] Section rows logged; stage Gate Ledger row written on CHECK approve
+Per section, a folder `0-lifecycle/5-section-edit/{section}/`:
+
+```text
+{section}.md         the section outline + its assigned job — the per-section scaffold
+_LOG_{section}.md    phase journal, one [PHASE]-tagged entry per round (newest on top)
 ```
 
-Risk profile
-=============
+There is no single stage template — each section's scaffold IS its outline, and the display stage's per-unit job spec is the map of what each section must carry.
+Evidence gaps do NOT buffer here: they are raised as sections in the flat probe pool `1-probes/PPNN_<topic>.md`, whose fields are `serves: / target: / state: / q-executor: / a-consumer:` + a `## Why` block, states `planned | commissioned | answered | read | answered-local | failed` (a legacy per-stage `_PROBE/` folder is migrate-from only).
 
-WRITES edits to `0-sections/*` and scaffolds under `0-lifecycle/5-section-edit/`. Does not modify upstream lifecycle docs (claims, narrative, display) -- upstream problems are loopback suggestions.
+Inputs read: `STATUS.md` (venue, stages_skipped) · `_venue/venue-<name>/README.md` (section list + jobs) · `0-lifecycle/4-display/4-display.md` (element→section map) · `0-lifecycle/1c-claims/1c-claims.md` (the ledger; claims language must not outrun it) · `0-lifecycle/1d-advice/1d-advice.md` (the advice entries each section executes) · `0-sections/*` (the prose under edit).
+Output: edited `0-sections/*` in place, plus the per-section scaffolds above; this stage does not modify upstream lifecycle docs — upstream problems become loopback suggestions.
+
+
+## Exits
+
+```text
+[ ] every venue-declared section has prose that does its job (per display's mapping)
+[ ] no open (unreplied) comments in any section
+[ ] format check passes (renders/compiles where applicable, labels resolve)
+[ ] section rows logged; stage Gate Ledger row written on CHECK approve
+promote -> /haipipe-application draft   compose the artifact from the settled sections
+```
+
+End every reply with the closing block (stage line via `../../../haipipe-application/stage-strip.sh`).

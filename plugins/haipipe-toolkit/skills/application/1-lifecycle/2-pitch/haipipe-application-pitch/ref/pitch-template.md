@@ -44,6 +44,9 @@ Why now
 Probes
 ------
 
-<Pitch-level investigation needs, one line per PP with status; cards in _PROBE/: channel fit, framing risk, competing programs.>
+<Rare for pitch — a citation lane only: anchor evidence for a theory-of-change link the ledger lacks.
+One index line per PP with its state; the question lives as a SECTION in the flat pool
+`<intervention>/1-probes/PPNN_<topic>.md` (serves/target/state/q-executor/a-consumer + a `## Why` that never leaves).
+States: planned | commissioned | answered | read | answered-local | failed. Usually empty.>
 
-- PP<nn> - <question> - <status>
+- PP<nn> (<topic>) - <question> - <state>

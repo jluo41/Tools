@@ -1,6 +1,8 @@
 SOP — Application Paper-Alignment, Round 2 (2026-07-07)
 =========================================================
 
+> SUPERSEDED IN PART (2026-07-15): the probe layer was later redesigned — per-stage _PROBE/ folders, the 1-probe-plans/ index, the _PROBE card `## Verdict`/G1-G2-G3, and the `dispatched`/`verdicted` states described below are RETIRED; the current model is the flat pool 1-probes/ + the five-step loop. See probe/haipipe-probe/SKILL.md and haipipe-application/fn/probes.md.
+
 Status: PHASES 1+2 EXECUTED (JL approved "can we apply it now", 2026-07-07). Remaining: full DPRC bench exams (§8; mechanical validation done) + archive this SOP into haipipe-application/CHANGELOG.md and delete (round-1 convention).
 Owner: JL. Executor: CC.
 Baseline: application = paper@765696f port (round 1, exams passed 2026-07-06; SOP archived in haipipe-application/CHANGELOG.md §5.0.0). Paper has since moved to b2c5a23 (2026-07-07): probe 3.0.0→3.1.0 mechanical enforcement, check 1.6.0/1.7.0 checks.sh, draft 3.4.0/3.5.0 WebSearch rule, seed 3.5.0 + claims 4.1.0 FORWARD handoff, weaving merged into revise-content, sub-workers 2.0.0 pointer-following recast. Application's 2-phase workers were written against the pre-3.0.0 probe and pre-1.6.0 check contracts and now lag.

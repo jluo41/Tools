@@ -38,7 +38,7 @@ Seed and the evidence ladder are venue-FREE: data truth, patterns, claims, and c
 
 ## Evidence routing
 
-For claim-related evidence, the application always routes through probe (the universal evidence gateway). The probe calls task/discover during Gather. Stages buffer probe plans in their `_PROBE/` folders (indexed in `1-probe-plans/README.md`) and batch-dispatch via the PROBE phase worker. Direct task/discover for non-claim utility work only.
+For claim-related evidence, the application always routes through probe (the single evidence door). Stages RAISE questions as sections in the flat pool `1-probes/PPNN_<topic>.md`, and each stage's PROBE phase worker binds every section to a bank answer through the stake-free collector agent — never calling task/discover directly. Direct task/discover for non-claim utility work only.
 
 The application does not execute code, search literature directly, or store raw results.
 
@@ -47,10 +47,10 @@ The application does not execute code, search literature directly, or store raw 
 ```text
 task        executes internal work
 discovery   checks outside evidence
-probe       judges claim-level verdicts (universal evidence gateway)
+probe       binds each claim question to a bank answer (the single evidence door)
 insight     optional deposit layer for cross-intervention knowledge (ladder restage R7:
-            judgment lives in PP-card verdicts; the ladder docs are the primary record;
-            1d deposits W cards on-request)
+            judgment lives in the ladder docs (1c-claims status); the probe file carries
+            only the answer's meaning; 1d deposits W cards on-request)
 application selects evidence, climbs it to design advice (the ladder), shapes it
             for a venue + audience, delivers, iterates
 ```
@@ -63,14 +63,14 @@ application selects evidence, climbs it to design advice (the ladder), shapes it
 
 Auto: read files, summarize status, classify input, draft stage docs, detect open needs.
 
-Ask first: costly task/PHI work, claim verdicts, deploy to a live channel, opening/closing rounds, filing insight memory.
+Ask first: costly task/PHI work, claim status changes, deploy to a live channel, opening/closing rounds, filing insight memory.
 
 ## Folder model
 
 ```text
 STATUS.md                     0-lifecycle/{0..5}/
 0-sections/ (sectioned venues) 0-artifacts/<slug>-v{N}.md
-1-probe-plans/README.md       1-rounds/vYYMMDD/
+1-probes/                     1-rounds/vYYMMDD/
 data/contract.yaml
 ```
 
@@ -99,15 +99,16 @@ task/probe/discovery/insight, what artifact it produces, what machine state
 it updates, and when it must stop and ask the user.
 
 Keep the intervention folder fixed:
-STATUS.md, 0-lifecycle/<stage>/<stage>.md (+ _LOG + _PROBE/; ladder rungs
+STATUS.md, 0-lifecycle/<stage>/<stage>.md (+ _LOG; ladder rungs
 1a-descriptions/ 1b-themes/ 1c-claims/ 1d-advice/ are stage folders like
 any other), 0-sections/, 0-artifacts/<slug>-v{N}.md,
-1-probe-plans/README.md,
+1-probes/,
 1-rounds/vYYMMDD/{README,discussion,decisions,todo,applied}.md.
 
 Preserve boundaries:
 - for claim-related evidence, the application routes through probe (which
   calls task/discover during Gather); direct task/discover for non-claim only
-- stages buffer probe plans in _PROBE/ and batch-dispatch via the PROBE worker
+- stages RAISE questions as sections in the flat pool 1-probes/, and the PROBE
+  worker binds each to a bank answer via the stake-free collector agent
 - the application does not execute code, search literature, or store raw results
 ```

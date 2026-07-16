@@ -7,7 +7,7 @@ Venue: <pinned venue>
 Fires only if the pinned venue requires it (STATUS.md stages_skipped).
 Every unit carries FOUR required fields -- Type, Claim, Job, Data source.
 The Job field is the minimap absorption: one sentence on what this unit must make the reader see/do.
-Unit GENERATION is commissioned through the probe (PP card -> gateway -> task); this doc plans and links.
+Unit materialization is raised as a SECTION in the flat probe pool `1-probes/PPNN_<topic>.md` and, uniquely among stages, commissioned by this stage through the PROBE phase to a task; this doc plans and links.
 How to use: copy to `<intervention>/0-lifecycle/4-display/4-display.md`, replace every `<...>`, delete unused sub-items (the DRAFT worker does this during the stage's DPRC).
 
 
@@ -44,6 +44,6 @@ Unit -> section mapping (sectioned venues)
 Probes
 ------
 
-<Materialization needs: one line per PP with status; cards in _PROBE/. The _DISPLAY_ lane links what landed.>
+<Materialization needs: one line per PP with status; sections in 1-probes/PPNN_<topic>.md. The display lane LINKs what landed.>
 
 - PP<nn> - materialize U<nn> - <status>

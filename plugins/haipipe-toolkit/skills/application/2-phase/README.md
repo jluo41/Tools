@@ -17,9 +17,9 @@ phase:   draft ✅  │  probe 🔥🚀  │  revise ⬜  │  check ⬜
 ├── USAGE.md                             ← recipes, effort dial, phase restart
 ├── WIRING.md                            ← routing and dispatch
 ├── 0-draft/haipipe-application-draft        settle stage-doc structure + sentences
-├── 1-probe/haipipe-application-probe        the ONLY evidence door: BOOKKEEP → DISPATCH
-│                                            (Agent(haipipe-probe-orchestrator-agent)) → TRANSLATE → VERIFY
-│                                            (+ check-probe-cards.sh, ref/)
+├── 1-probe/haipipe-application-probe        the ONLY evidence door: the five-step loop
+│                                            ORGANIZE → MATCH → DISPATCH → POINT → INTERPRET
+│                                            (thin deltas over the probe constitution; + check-probe-cards.sh, ref/)
 ├── 2-revise/haipipe-application-revise      venue+audience-quality text pass (single worker)
 └── 3-check/haipipe-application-check        human gate: approve/revise/done + Gate Ledger
                                              (persona + attendance machinery; + checks.sh)
@@ -32,22 +32,22 @@ phase:   draft ✅  │  probe 🔥🚀  │  revise ⬜  │  check ⬜
 - **REVISE** 🤖: agent-only (change the text directly, leave why-comments, no comment-first)
 - **CHECK** 🧑: human + agent (auto-checkers report, human decides; venue-scaled depth -- simple venues confirm inline, complex venues get full CHECK reports; personas stand in only in unattended mode)
 
-## The probe phase (ONE pipeline: acquire via gateway → harvest application-side)
+## The probe phase (COLLECT from the bank → HARVEST application-side)
 
-ALL acquisition goes PP card → gateway (`Agent(haipipe-probe-orchestrator-agent)`) → discovery/task orchestrators; ACQUIRE via the gateway is the ONLY door for evidence. HARVEST is transcription of pointers the gateway landed (JL 2026-07-07 ruling, ported from paper): the harvest hooks never search, grep-discover, or dispatch tasks themselves.
+Every open question is a SECTION in the flat pool `1-probes/`; its `q-executor` (the stake stripped out) is handed to `Agent(haipipe-probe-q-executor-agent)`, the stake-free collector that runs MATCH → DISPATCH → POINT over the task/discovery bank in clean context. That collector is the ONLY door for evidence. HARVEST is transcription of the pointers the answer landed (JL 2026-07-07 ruling, ported from paper): the harvest hooks never search, grep-discover, or dispatch tasks themselves.
 
 Lanes are venue-scaled, and there are NO sub-worker skills — the lanes are hooks inside the one probe worker:
 
 ```
 PROBE lanes (fire per pinned venue):
-  values    → always                                     → harvest value_refs → _VALUES_
-  citation  → sectioned venues only                      → harvest pick_list  → _CITATION_ → 🔍 for CHECK
+  values    → always                                     → harvest values:  → _VALUES_
+  citation  → sectioned venues only                      → harvest sources: → _CITATION_ → 🔍 for CHECK
   display   → only when the venue's artifact has display units → link landed units → _DISPLAY_
 ```
 
-Every firing lane's obligation is written into the PP card (`harvest: OWED → accepted`); `check-probe-cards.sh` FAILs an OWED lane or a planned card at VERIFY and again at the CHECK gate.
+Every firing lane's obligation is written into the section (`harvest: OWED → accepted`); `check-probe-cards.sh` FAILs an OWED lane or a `state: planned` section at VERIFY and again at the CHECK gate.
 
-Hard boundary: the gateway finds, the harvest hooks follow pointers, the human verifies in CHECK. The agent NEVER fabricates numbers, NEVER creates ad-hoc display units, NEVER searches inline during PROBE — "DRAFT may search; PROBE must dispatch".
+Hard boundary: the collector finds, the harvest hooks follow pointers, the human verifies in CHECK. The agent NEVER fabricates numbers, NEVER creates ad-hoc display units, NEVER searches inline during PROBE — "DRAFT may search; PROBE must dispatch".
 
 ## Deltas vs paper's 2-phase/
 

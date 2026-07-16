@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Grep, Glob, Write, Skill
 metadata:
   version: "2.2.0"
   last_updated: "2026-07-06"
-  summary: "2.2.0 (feedback inbox item 2026-07-09): dashboard gains a dedicated Releasable Probes block -- every planned+unblocked PPNN with stage/mode/deps + exact release command, never buried in Recommended Next. 2.1.0 (bench rulings 2026-07-09): get-or-create scaffolds the venue-FREE spine EAGERLY (0-seed + 1a-1d rung folders; venue-aligned stages stay lazy); legacy pre-ladder layouts (0-lifecycle/1-claims/) get a confirm-gated one-shot migration offer at enter. 2.0.0: Intervention Console rewritten on the paper-enter model: paper-aligned spine (claims before venue), Gate Ledger awareness, get-or-create, closing block inheritance. Replaces the pre-v4 maturity ladder (rationale/design/variants/delivery-plan)."
+  summary: "Intervention Console (mirrors the Paper Console): resolve the intervention root, derive state from disk (not stored status), render an open-needs dashboard (frontier + maturity + venue/audience + claim/display/round gaps + releasable probes + loopback), record session state in .intervention-console.yaml, and route free-form follow-up through the lifecycle in copilot mode. Get-or-create scaffolds a missing path (confirm-gated). History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -34,12 +34,13 @@ There is no separate create verb. When the given path does not exist, do NOT fai
    STATUS.md (venue unpinned, current_layer 0-seed, empty Gate Ledger).
    0-lifecycle/ with the venue-FREE spine EAGER (bench ruling 2026-07-09:
    "why don't we have the correct folders at the beginning?"):
-   0-seed/ 1a-descriptions/ 1b-themes/ 1c-claims/ 1d-advice/, each with an
-   empty _PROBE/ -- folders only, NO stub .md (the console judges progress
-   by real doc content, so an empty rung reads as not-started, never done).
+   0-seed/ 1a-descriptions/ 1b-themes/ 1c-claims/ 1d-advice/ -- folders only,
+   NO stub .md (the console judges progress by real doc content, so an empty
+   rung reads as not-started, never done).
    Venue-ALIGNED stages (2-venue/2-pitch/3-narrative/4-display/5-section-edit)
    stay absent-until-written: which exist depends on the pinned venue.
-   Also: 0-artifacts/, 1-rounds/, 1-probe-plans/README.md (empty index).
+   Also: 0-artifacts/, 1-rounds/, and 1-probes/ (the flat probe pool; its
+   README board is created on the first probe).
    Default home: <project>/applications/interventions/<NN>_<slug>/.
 3. Continue straight into the console (steps 1-5 above) -- one command from
    nothing to dashboard.
@@ -83,7 +84,7 @@ Read only files that exist, in this order:
 2. `0-lifecycle/2-pitch/2-pitch.md` -- HIGH PRIORITY for the dashboard header: extract the goal/theory-of-change paragraph as the 2-3 sentence "what this intervention is about" summary. If absent, the dashboard says "pitch not yet written".
 3. Remaining stage docs: `0-lifecycle/0-seed/0-seed.md`, the ladder (`1a-descriptions/1a-descriptions.md`, `1b-themes/1b-themes.md`, `1c-claims/1c-claims.md`, `1d-advice/1d-advice.md`), `3-narrative/3-narrative.md`, `4-display/4-display.md`
 4. Section-edit scaffolds (sectioned venues): scan `0-lifecycle/5-section-edit/` for per-section outline `.md`, `_LOG*` files; derive per-section DPRC status from disk.
-5. Probe state: `1-probe-plans/README.md` index + per-stage `_PROBE/*.md` card statuses (planned/dispatched/read/verdicted).
+5. Probe state: the flat pool `1-probes/PPNN_<topic>.md` -- section states (planned/commissioned/answered/read) derived from disk; the README board regenerates from the files.
 6. Explicit need records: search stage docs for `NEED`, `GAP`, `TODO`, `blocked`, `missing`, `open`.
 7. `0-artifacts/` -- artifact versions, `REVIEW-*`, `CLAIM_AUDIT.md`; deployed markers.
 8. `1-rounds/latest.md`, then the referenced round README, `discussion.md`, `decisions.md`, `todo.md`, `applied.md` if they exist.
@@ -100,11 +101,12 @@ Pre-ladder interventions (scaffolded before 2026-07-09) show `0-lifecycle/1-clai
 ```text
 1. rename 0-lifecycle/1-claims/ -> 0-lifecycle/1c-claims/
    (inside: 1-claims.md -> 1c-claims.md, _LOG_1-claims.md -> _LOG_1c-claims.md)
-2. scaffold the missing rungs 1a-descriptions/ 1b-themes/ 1d-advice/ (+ empty _PROBE/)
-3. re-file probes by SHAPE: data-profile cards (cohort size, engagement summary,
-   field coverage) move to 1a-descriptions/_PROBE/ with stage: descriptions and
-   settle D ids, not C ids; verdict-shaped cards stay in 1c-claims/_PROBE/
-4. update every touched index row in 1-probe-plans/README.md (stage, settles, path)
+2. scaffold the missing rungs 1a-descriptions/ 1b-themes/ 1d-advice/
+3. migrate any legacy per-stage `_PROBE/` cards into the flat pool `1-probes/`
+   in the new section shape; a section's `serves:` sets its rung affinity
+   (data-profile questions serve 1a-descriptions, settling D ids; claim
+   questions serve 1c-claims) -- the path no longer carries the stage
+4. the board regenerates from 1-probes/ on disk (no separate index to update)
 5. consume seed [FORWARD -> CLAIMS] pointers per the 1a contract; log the migration
    in each touched rung's _LOG (worked example: designs/Project-Application-SMSDesign/
    applications/01_sms_young_male, _LOG_1a-descriptions.md v260709)
@@ -227,17 +229,17 @@ source of truth). Venue-skipped stages render `--` and never carry 🔥/🚀.>
 
 ## Releasable Probes
 
-<from the probe state read (index + per-stage `_PROBE/` cards). Releasable =
-`status: planned` AND dependencies met -- these are held for the user's go
-(release gate, probe worker STEP 1.5). One row per card; never bury this in
-Recommended Next (feedback 2026-07-09: "you should let me know what probes
-to release"). Omit the section only when zero cards exist anywhere.>
+<from the probe pool read (1-probes/ section states). Releasable =
+`state: planned` AND dependencies met -- these are held for the user's APPROVE
+(the probe worker's ORGANIZE advances only approved questions). One row per
+section; never bury this in Recommended Next (feedback 2026-07-09: "you should
+let me know what probes to release"). Omit the section only when zero questions exist.>
 
 | PP | Stage | Mode | Need (one line) | Deps | Release |
 |---|---|---|---|---|---|
 | PPNN | ... | light/full | ... | met / blocked on <what> | `/haipipe-application probe run PPNN` |
 
-<then one summary line for the rest of the roster: `dispatched: PPNN ... · read: PPNN ... · verdicted: PPNN ...`>
+<then one summary line for the rest of the roster: `commissioned: PPNN ... · read: PPNN ...`>
 
 ## Loopback Diagnosis
 
@@ -291,7 +293,7 @@ It must ask before:
 
 ```text
 calling costly task/PHI/full-data work
-committing a claim verdict or downgrading a claim
+committing or downgrading a claim's status in 1c-claims.md
 deploying to a live channel
 opening or closing a revision round destructively
 filing insight memory as accepted knowledge

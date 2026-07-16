@@ -19,7 +19,7 @@ REVISE phase worker. Runs after PROBE, before CHECK. Agent-only: change the text
 
 ```
 1. WEAVE      fold PROBE's landed evidence into the text: replace flagged
-              NEEDs with the anchored takeaway or verdict-backed statement;
+              NEEDs with the section's a-consumer or an evidence-backed statement;
               a NEED that PROBE could not fill stays flagged for CHECK
 2. TIGHTEN    one job per paragraph/element; cut filler; concrete over vague
 3. CONFORM    venue style-profile (_venue/venue-<name>/style-profile.md):

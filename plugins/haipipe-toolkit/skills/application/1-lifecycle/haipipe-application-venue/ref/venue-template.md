@@ -42,4 +42,4 @@ What pitch, display, section-edit, and artifact all read. Concrete, from the ven
 Probes
 ------
 
-<Venue-level investigation needs: channel capability, compliance constraints, prior sends on this channel; one line per PP with status; cards in _PROBE/.>
+<Venue-level investigation needs: channel capability, compliance constraints, prior sends on this channel; one line per question with state; the questions are SECTIONS in the flat probe pool 1-probes/PPNN_<topic>.md (serves: 2-venue), never a per-stage _PROBE/ folder.>

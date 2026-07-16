@@ -67,7 +67,7 @@ Every stage drives its phases through the `2-phase/` workers (never user-invoked
 
 ```text
 DRAFT  -> 2-phase/0-draft/haipipe-application-draft
-PROBE  -> 2-phase/1-probe/haipipe-application-probe   (dispatches into the project-side /haipipe-probe gateway)
+PROBE  -> 2-phase/1-probe/haipipe-application-probe   (runs the five-step loop; the collector agent is the only door to the bank)
 REVISE -> 2-phase/2-revise/haipipe-application-revise
 CHECK  -> 2-phase/3-check/haipipe-application-check   (the only human-involved phase; writes the Gate Ledger)
 ```
@@ -85,7 +85,7 @@ round / todo / decisions                    -> 0-enter/haipipe-application-round
 draft / write / make the <venue>            -> 3-build-deploy/haipipe-application-artifact
 review / claim-audit / deploy               -> 3-build-deploy
 iterate / A/B                               -> 4-iterate
-probe / evidence gap                        -> per-stage _PROBE/ buffer; `run` -> 2-phase/1-probe worker
+probe / evidence gap                        -> a section in the flat pool 1-probes/; `run` -> 2-phase/1-probe worker
 venue / which channel                       -> 1-lifecycle/haipipe-application-venue
   (the pinned venue's pack                  -> _venue/venue-<name>, consulted by each aligned stage)
 ```

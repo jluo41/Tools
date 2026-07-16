@@ -4,115 +4,87 @@ description: "Stage 3 of the intervention lifecycle (venue-GATED: fires per STAT
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.2.0"
-  last_updated: "2026-07-06"
-  summary: "Paper-aligned: stage FOLDER paths (1c-claims/, 3-narrative/), gating read from STATUS.md stages_skipped (not venue profile directly), DPRC phases via 2-phase/ workers, precondition restated against the settlement bar."
-  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
+  version: "5.0.0"
+  last_updated: "2026-07-15"
+  summary: "Narrative stage (stage 3, venue-GATED + venue-ALIGNED): maps the settled claim/advice flow onto the venue's arc; it composes, never gathers — a beat exposing a NEW evidence gap raises a question SECTION in 1-probes/PPNN_<topic>.md (serves: 3-narrative) routed back to 1c-claims. History: ./CHANGELOG.md."
 ---
 
 Skill: haipipe-application-narrative
 ======================================
 
-Stage 3 of the intervention lifecycle (venue-GATED, venue-ALIGNED). How claims compose into a coherent output structure -- the evidence-backed arc that determines the flow of the final deliverable. Same role as paper's narrative.
+Stage **3** of the intervention lifecycle, venue-GATED and venue-ALIGNED.
+It decides one thing: how the settled claims and advice compose into a coherent arc — the flow of the final deliverable.
+Same role as paper's narrative.
 
-Question answered
-==================
-
-"How do claims compose into a coherent message/experience?"
-
-When this stage fires
-======================
-
-Read `STATUS.md | stages_skipped |`: if `narrative` is listed, this stage is skipped (simple venues -- the venue template defines a fixed arc). `optional` venues (checklist) pull it in on user request. If invoked while skipped: say so and offer the frontier.
-
-Input
-======
-
-- `0-lifecycle/1d-advice/1d-advice.md` (always -- the advice entries the arc composes)
-- `0-lifecycle/1c-claims/1c-claims.md` (the evidence backstop)
-- `0-lifecycle/2-pitch/2-pitch.md` (the primary claim + theory of change anchor the arc)
-- `_venue/venue-<name>/` (arc structure rules) + `_audience/profile-<name>/` (register)
-
-Output
-=======
-
-```
-<intervention-root>/0-lifecycle/3-narrative/3-narrative.md
-<intervention-root>/0-lifecycle/3-narrative/_LOG_3-narrative.md
+```text
+[ladder] -> 2-pitch -> 3-narrative -> 4-display -> 5-section-edit
+                       ^ THIS STAGE (venue-gated)
 ```
 
-Narrative artifact schema (venue-dependent)
-=============================================
+Read first: `../../../PHILOSOPHY.md`, and the probe layer's `../../../2-phase/1-probe/haipipe-application-probe/ref/per-stage-dispatch.md`.
 
-Canonical template (source of truth for section order + placeholders): `ref/narrative-template.md`.
 
-**venue-email:**
-```markdown
-3-narrative: <intervention name>
-================================
+## What's special: three things frame the arc
 
-Arc structure
--------------
-1. Context paragraph     ← C1 (why this matters now)
-2. Finding paragraph     ← C2, C3 (what the evidence shows)
-3. Recommendation        ← A1 (what to do)
-4. Next steps            ← (standard)
+**1. It is venue-GATED — it may not fire at all.**
+Read `STATUS.md | stages_skipped |`: required for email/dashboard/ui-card/report, optional for checklist (pulled in on user request), skipped for sms/push/reminder (the venue template already defines a fixed arc).
+Invoked while skipped: say so and offer the frontier.
 
-Claim → arc mapping
--------------------
-C1 → Section 1 (context)
-C2 → Section 2 (finding, lead)
-C3 → Section 2 (finding, support)
-A1 → Section 3 (recommendation)
-```
+**2. It is venue-ALIGNED — the arc shape comes from the pinned venue.**
+Arc rules come from `2-venue.md`'s Artifact Principles: sectioned venues (email/report) get a linear arc, drill-down venues (dashboard/ui-card) get levels.
+Register comes from `_audience/profile-<name>/`.
+Retargeting rewrites the arc; the ladder underneath survives.
 
-**venue-dashboard:**
-```markdown
-3-narrative: <intervention name>
-================================
+**3. It composes, it does not gather.**
+The arc maps the 1d advice (A entries) and their backing claims onto positions — it produces no new evidence.
+A beat exposing a NEW evidence gap routes BACK to 1c-claims (raises a question SECTION there), never gathers here.
 
-Arc structure (drill-down)
---------------------------
-Level 1: Summary KPIs      ← C1, C2 (headline metrics)
-Level 2: Detail panels      ← C3, C4 (supporting evidence)
-Level 3: Action items       ← A1 (recommendations)
 
-Probes
-------
-<narrative-level needs (rare): a beat exposing a NEW evidence gap routes
-back to claims; one line per PP with status if any exist>
-```
+## The four phases, in narrative
 
-Artifact formatting: `=====` title / `-----` sections (no `#` headings); one sentence per line. Narrative reads the venue stage doc's Artifact Principles (2-venue.md) for arc rules.
-
-Precondition
-=============
-
-The arc leans only on claims that meet the venue's settlement bar (STATUS.md `claims_settlement`): a load-bearing GAP claim cannot anchor a beat. If one does → BLOCK with a loopback suggestion to claims.
-
-Phases
-=======
-
-```
-DRAFT   map claims to arc positions per venue rules (haipipe-application-draft)
-PROBE   rarely fires; a beat exposing a NEW evidence gap routes it back to
-        claims as a _PROBE/ card, never gathers here (haipipe-application-probe)
+```text
+DRAFT   read 1d-advice.md (the A entries the arc composes), 1c-claims.md (the evidence backstop),
+        2-pitch.md (primary claim + theory of change anchor), 2-venue.md Artifact Principles;
+        map each load-bearing claim/advice to an arc position per the venue's arc rules (haipipe-application-draft)
+PROBE   rarely fires; a beat exposing a NEW evidence gap raises it as a question SECTION in
+        1-probes/PPNN_<topic>.md (serves: 3-narrative), routed back to claims — never gathered here
+        (haipipe-application-probe)
 REVISE  arc coherence + register pass (haipipe-application-revise)
-CHECK   exit criteria below → Gate Ledger row (haipipe-application-check)
+CHECK   3-narrative.md exists (when the venue requires it); every load-bearing claim mapped to an arc
+        position; no beat anchored on a GAP claim; arc follows the venue's rules -> Gate Ledger row in
+        STATUS.md (haipipe-application-check)
 ```
 
-Definition of done
-===================
+Precondition (before DRAFT commits): the arc leans only on claims meeting the venue's settlement bar (`STATUS.md claims_settlement`) — a load-bearing GAP claim cannot anchor a beat.
+If one does, BLOCK with a loopback suggestion to claims.
 
+Probe model: questions live in the FLAT cross-stage pool `1-probes/PPNN_<topic>.md` (not a per-stage `_PROBE/`, not `1-probe-plans/README.md` — both retired; legacy `_PROBE/` is migrate-from only).
+A section carries `serves`/`target`/`state`/`q-executor`/`a-consumer` + a `## Why`; states are `planned|commissioned|answered|read|answered-local|failed` (no `dispatched`, no `verdicted`; no `## Verdict`, no G1/G2/G3).
+Dispatch is `Agent(haipipe-probe-q-executor-agent)`, not a gateway.
+Mechanics: the probe layer's `ref/per-stage-dispatch.md`.
+
+
+## The artifact
+
+`0-lifecycle/3-narrative/3-narrative.md` — full skeleton, with the per-venue templates, in `ref/narrative-template.md`:
+
+```text
+Arc structure       one numbered position per beat, each anchored to a C/A id; venue-shaped
+                    (linear positions for sectioned venues, levels for drill-down venues)
+Claim -> arc mapping one line per load-bearing claim/advice: where it lands + its job there
+Probes              rare narrative-level needs: a beat's NEW gap, routed back to claims
 ```
-[ ] 0-lifecycle/3-narrative/3-narrative.md exists (when the venue requires it)
-[ ] Every load-bearing claim mapped to an arc position; no beat on a GAP claim
-[ ] Arc structure follows the venue pack's rules
+
+Sidecar: `_LOG_3-narrative.md` (phase journal).
+Formatting: `=====` title / `-----` sections (no `#` headings); one sentence per line.
+Markdown only (argument documents need no compilation).
+
+
+## Exits
+
+```text
+promote -> /haipipe-application display   what content element carries each claim
 ```
 
-Handoff: `promote -> /haipipe-application display`. End the reply with the closing block (stage line via `../../../haipipe-application/stage-strip.sh`).
-
-Risk profile
-=============
-
-WRITES the 3-narrative/ stage folder only.
+WRITES the `3-narrative/` stage folder only.
+End every reply with the closing block (stage line via `../../../haipipe-application/stage-strip.sh`).

@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, WebSearch, WebFetch
 metadata:
   version: "1.3.0"
   last_updated: "2026-07-09"
-  summary: "1.3 (JL bench ruling 2026-07-09): DRAFT step 5 PRESENT -- every draft ends with the RELEASE MENU (buffered planned cards, one line each) and stops for the user's release picks; return contract gains the probes: line. NEW thin DRAFT worker (paper parity). Settles stage-doc structure + sentences; the calling stage supplies the artifact spec. The old artifact-generator of this name moved to 3-build-deploy/haipipe-application-artifact. v1.1: DRAFT MAY use inline WebSearch for orientation -- but its output is drafting fuel (stage-doc prose + buffered planned PPNN skeletons) only, NEVER durable evidence (no refs/findings into PP cards). Real evidence is the PROBE phase's job. v1.2 (ladder restage follow-up): template registry added -- every stage skill now carries ref/<stage>-template.md (paper draft parity); WRITE reads the template, this worker carries none of its own."
+  summary: "DRAFT phase worker (internal): settle the stage doc's structure + sentences with the user (illuminate → elicit → write per the stage's template), and RAISE what the draft cannot answer as `state: planned` question SECTIONS in 1-probes/ — never an answer or a target. Inline WebSearch is drafting fuel only, never durable evidence. The calling stage supplies the artifact spec + template; this worker carries neither. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -25,14 +25,17 @@ DRAFT phase worker. Every stage skill calls this first. The calling stage passes
                 emphasis, scope); mechanical structure is autonomous
 3. WRITE        the stage artifact per the calling stage's spec:
                 0-lifecycle/<N-stage>/<N-stage>.md + a [DRAFT] entry in _LOG
-4. FLAG         every spot where the draft needs evidence it does not have
-                ("NEED: ...") -- these become PROBE's work list
-5. PRESENT      end the phase reply with the RELEASE MENU (JL 2026-07-09):
-                every buffered planned card, one line each --
-                PP id -- question -- mode -- route -- what it fills/settles --
-                then STOP and ask which to release. Dispatch is the user's
-                call; the probe worker's STEP 1.5 gate enforces the same rule
-                as backstop. No buffered cards -> say "release menu: none".
+4. RAISE        every spot where the draft needs evidence it does not have
+                becomes a QUESTION -- a `state: planned` SECTION in the right
+                topic's probe file (1-probes/PPNN_<topic>.md), per
+                ../../../haipipe-application/fn/probes.md; write its q-executor
+                (general language, the stake stripped out), never an answer or
+                a target
+5. PRESENT      end the phase reply with the raised questions, one line each --
+                PP id -- question -- mode -- what it fills/settles -- then STOP
+                and ask which to pursue. APPROVE is the user's gate; the probe
+                worker's ORGANIZE only advances approved questions. No open
+                questions -> say "questions raised: none".
 ```
 
 DRAFT settles WHAT the doc says. It does NOT collect evidence (PROBE), polish prose (REVISE), or approve anything (CHECK).
@@ -60,7 +63,7 @@ At WRITE, read TWO things from `1-lifecycle/`: the calling stage's SKILL.md arti
 
 - Venue-FREE stages (seed + the 1a-1d ladder: descriptions, themes, claims, advice): do not read venue packs; the doc must survive retargeting.
 - Venue-ALIGNED stages (pitch, narrative, display, section-edit): read `_venue/venue-<name>` + `_audience/profile-<name>` for structure and tone expectations.
-- Never invent evidence: an unbacked statement is written as a flagged NEED, not asserted.
+- Never invent evidence: an unbacked statement is written as a raised question, not asserted.
 - Stage docs are markdown, one physical line per paragraph/bullet.
 
 ## DRAFT may search; PROBE must dispatch
@@ -69,12 +72,12 @@ Inline WebSearch/WebFetch is ALLOWED in DRAFT -- as drafting fuel, NOT as eviden
 
 DRAFT may search the web to orient (is this intervention space crowded? what response rates do comparable programs report? what are the channel's framing norms?) and to sharpen the stage doc. What that search produces has exactly two legal destinations:
 
-1. **PROSE** in the stage doc (Opportunity, Mechanism hypothesis, beat text, ...) -- phrased as orientation, never as settled fact; anything load-bearing stays a flagged NEED.
-2. **BUFFERED probe skeletons** -- when the search reveals something the intervention must later verify, write it as a PPNN card SKELETON (Need / Why / Route, `status: planned`, EMPTY `refs:`) in the calling stage's `_PROBE/` + an index row in `1-probe-plans/README.md`, per the buffer convention `../../../haipipe-application/fn/probe-plans.md`. This HANDS the gap to the PROBE phase; it does not answer it.
+1. **PROSE** in the stage doc (Opportunity, Mechanism hypothesis, beat text, ...) -- phrased as orientation, never as settled fact; anything load-bearing stays a raised question.
+2. **RAISED QUESTIONS** -- when the search reveals something the intervention must later verify, RAISE IT AS A QUESTION: a SECTION (`state: planned`, EMPTY `target:`) in the right topic's probe file at `1-probes/PPNN_<topic>.md`, per `../../../haipipe-application/fn/probes.md`. Write the `q-executor:` (general language — no claim ids, no stake, no hint of which answer is wanted); the `## Why` (the stake) stays in the file and never crosses. This HANDS the gap to the PROBE phase; it does not answer it.
 
-FORBIDDEN in DRAFT: writing findings, `refs:`, or takeaways INTO a PP card, or treating an inline result as a landed probe. Real evidence lands ONLY via the PROBE phase dispatching `haipipe-application-probe` (the single door to the /haipipe-probe gateway); inline search results have no project-side ledger -- per the probe contract, evidence gathered any other way means "the PROBE phase did not happen."
+FORBIDDEN in DRAFT: writing an `a-consumer:`, a `target:`, or any finding INTO a probe section, or treating an inline result as landed evidence. Real evidence lands ONLY via the PROBE phase dispatching `haipipe-application-probe` (the single door); inline search results bind to nothing -- evidence gathered any other way means "the PROBE phase did not happen."
 
-The line is CARD STATE: DRAFT leaves `status: planned` skeletons; only PROBE flips them to `read` with resolving `discoveries/` / `tasks/` refs. `check-probe-cards.sh` enforces this mechanically at the probe worker's VERIFY step and again at the CHECK gate -- planned/empty-ref cards block green, so DRAFT search can never masquerade as evidence.
+The line is the SECTION STATE: DRAFT leaves sections at `state: planned` with an empty `target:`; only PROBE reaches `read`, with a `target:` that RESOLVES to a QA file on disk. `check-probe-cards.sh` enforces this mechanically at the probe worker's VERIFY step and again at the CHECK gate -- a `planned` section blocks green, so DRAFT search can never masquerade as evidence.
 
 ## Return contract
 
@@ -82,7 +85,7 @@ The line is CARD STATE: DRAFT leaves `status: planned` skeletons; only PROBE fli
 status:    ok | blocked
 stage:     <stage-name>
 artifact:  <path written>
-needs:     <count of flagged NEEDs for PROBE>
-probes:    <RELEASE MENU: each buffered planned PPNN -- question -- mode -- fills/settles; or "none">
-next:      PROBE (dispatches only the user's release picks)
+needs:     <count of questions raised for PROBE>
+probes:    <each raised question: PPNN -- question -- mode -- fills/settles; or "none">
+next:      PROBE (ORGANIZE advances only the approved questions)
 ```

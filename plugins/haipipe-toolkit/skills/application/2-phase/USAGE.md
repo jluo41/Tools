@@ -23,10 +23,10 @@ Same engine behind every stage: `seed | descriptions | themes | claims | advice 
 A. Run a stage (the normal path)
 ---------------------------------
 
-- **DRAFT** 🤖 — `haipipe-application-draft` settles structure + sentences in the stage doc (`$INT/0-lifecycle/<stage>/<stage>.md`); it may WebSearch as DRAFT-only scoping fuel and buffers `status: planned` PPNN skeletons in the stage's `_PROBE/` ("DRAFT may search; PROBE must dispatch"). Content decisions are negotiated with you here.
-- **PROBE** 🤖 — `haipipe-application-probe` consumes the buffer: BOOKKEEP → DISPATCH (`Agent(haipipe-probe-orchestrator-agent)` per card) → TRANSLATE (venue-scaled harvest lanes, see `README.md`) → VERIFY (`check-probe-cards.sh`). Agent-only; nothing gates on you.
+- **DRAFT** 🤖 — `haipipe-application-draft` settles structure + sentences in the stage doc (`$INT/0-lifecycle/<stage>/<stage>.md`); it may WebSearch as DRAFT-only scoping fuel and RAISES what it cannot answer as `state: planned` question SECTIONS in the flat pool `1-probes/` ("DRAFT may search; PROBE must dispatch"). Content decisions are negotiated with you here.
+- **PROBE** 🤖 — `haipipe-application-probe` runs the five-step loop over those sections: ORGANIZE → MATCH → DISPATCH (`Agent(haipipe-probe-q-executor-agent)`, the stake-free collector) → POINT → INTERPRET (venue-scaled harvest lanes, see `README.md`), then VERIFY (`check-probe-cards.sh`). Agent-only; nothing gates on you.
 - **REVISE** 🤖 — `haipipe-application-revise` changes the text directly for venue + audience fit, leaving why-comments. No comment-first pause.
-- **CHECK** 🧑 — `haipipe-application-check` re-runs the card checker + runs `checks.sh`, seeds `> CHECK:` threads in the STAGE DOC (artifact findings go to Gate Ledger notes), and presents the gate. This is where you come in.
+- **CHECK** 🧑 — `haipipe-application-check` re-runs the probe-file checker + runs `checks.sh`, seeds `> CHECK:` threads in the STAGE DOC (artifact findings go to Gate Ledger notes), and presents the gate. This is where you come in.
 
 B. Review a CHECK report
 -------------------------
@@ -56,6 +56,6 @@ E. Boundaries (always true)
 ----------------------------
 
 - DRAFT is the only phase that negotiates content with you; PROBE and REVISE never wait on a human.
-- No number is invented and no inline search happens in PROBE — evidence dispatches through the gateway per PP card, and you verify in CHECK.
+- No number is invented and no inline search happens in PROBE — evidence dispatches through the collector per section, and you verify in CHECK.
 - Unresolved `> USER:` threads keep a stage open; silence is not consent.
 - `> CHECK:` threads live in stage docs only; `0-artifacts/*.md` stay clean — artifact findings land in the Gate Ledger notes column.

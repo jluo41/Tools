@@ -50,10 +50,12 @@ DS2:
 Probes
 ------
 
-<This rung's probe roster (cards in _PROBE/, index row in 1-probe-plans/README.md): one line per PP with status.
-D-slots reference these via [AWAITING PP<nn>] until the probe lands. Roster must match disk.>
+<This rung's probe roster: one line per PP for the `1-probes/PPNN_<topic>.md` sections that serve this rung.
+Each question is one SECTION in the flat pool (fields serves/target/state/q-executor/a-consumer + `## Why`);
+state is one of `planned | commissioned | answered | read | answered-local | failed`.
+D-slots reference these via [AWAITING PP<nn>] until the answer lands. Roster must match the sections on disk.>
 
-- PP<nn> - <data-profile question> - <status>
+- PP<nn> - <data-profile question> - <state>
 
 
 Refresh Log

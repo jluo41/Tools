@@ -8,19 +8,19 @@ The application lifecycle is a delivery lifecycle. It owns the intervention-spec
 <intervention-root>/
 ├── STATUS.md                 venue, stages_skipped, claims_settlement, current_layer, maturity, Gate Ledger
 ├── 0-lifecycle/
-│   ├── 0-seed/           venue: FREE      0-seed.md + _LOG + _PROBE/
-│   ├── 1a-descriptions/  venue: FREE      1a-descriptions.md (anchored data summaries + as-of dates) + _LOG + _PROBE/
-│   ├── 1b-themes/        venue: FREE      1b-themes.md (grounded themes T←D) + _LOG + _PROBE/
-│   ├── 1c-claims/        venue: FREE      1c-claims.md (Claims/Probes/Campaign, C←T) + _LOG + _VALUES_ + _PROBE/ (+ _CITATION_ sectioned venues)
-│   ├── 1d-advice/        venue: FREE      1d-advice.md (design advice A←C — the ladder's deliverable) + _LOG + _PROBE/
-│   ├── 2-venue/          venue: PIN       2-venue.md (choice + Artifact Principles) + _LOG + _PROBE/
-│   ├── 2-pitch/          venue: ALIGNED   2-pitch.md + _LOG + _PROBE/
+│   ├── 0-seed/           venue: FREE      0-seed.md + _LOG
+│   ├── 1a-descriptions/  venue: FREE      1a-descriptions.md (anchored data summaries + as-of dates) + _LOG
+│   ├── 1b-themes/        venue: FREE      1b-themes.md (grounded themes T←D) + _LOG
+│   ├── 1c-claims/        venue: FREE      1c-claims.md (Claims/Campaign, C←T + claim STATUS) + _LOG + _VALUES_ (+ _CITATION_ sectioned venues)
+│   ├── 1d-advice/        venue: FREE      1d-advice.md (design advice A←C — the ladder's deliverable) + _LOG
+│   ├── 2-venue/          venue: PIN       2-venue.md (choice + Artifact Principles) + _LOG
+│   ├── 2-pitch/          venue: ALIGNED   2-pitch.md + _LOG
 │   ├── 3-narrative/      venue: GATED     3-narrative.md + _LOG          (if venue requires)
 │   ├── 4-display/        venue: GATED     4-display.md + _LOG            (if venue requires)
 │   └── 5-section-edit/   venue: GATED     per-section scaffolds + _LOG   (sectioned venues)
 ├── 0-sections/               sectioned-venue prose
 ├── 0-artifacts/              <slug>-v{N}.md · REVIEW-* · CLAIM_AUDIT.md
-├── 1-probe-plans/README.md   cross-stage INDEX (plans live per-stage in _PROBE/)
+├── 1-probes/                 the flat probe pool (one file per TOPIC, PPNN_<topic>.md)
 ├── 1-rounds/vYYMMDD/         work rounds
 └── data/contract.yaml        input-data contract (data-consuming venues)
 ```
@@ -78,7 +78,7 @@ Seed and the evidence ladder (1a-1d) are venue-FREE: written before the pin, unc
 
 ## Phase Dimension
 
-Stages × phases is a two-axis model. Each stage skill in `1-lifecycle/` defines WHAT the stage delivers; the `2-phase/` workers define HOW: DRAFT → PROBE → REVISE → CHECK (`haipipe-application-{draft,probe,revise,check}`). The PROBE phase dispatches evidence needs through `/haipipe-probe` (the project-side evidence gateway) via the `haipipe-application-probe` worker — the ONLY door — and ends with a VERIFY step: `check-probe-cards.sh` FAILs cards left `planned|dispatched|failed`, dangling refs, and `harvest: OWED` lane debts. The CHECK gate re-runs the same checker (its teeth) and runs `checks.sh` (markdown-safe deterministic checks); `> CHECK:` threads are seeded in stage docs only, and artifact-level findings go to the Gate Ledger notes. CHECK is the only human-involved phase, venue-scaled (inline for simple venues, full reports for complex). Users invoke stage skills only, never phases.
+Stages × phases is a two-axis model. Each stage skill in `1-lifecycle/` defines WHAT the stage delivers; the `2-phase/` workers define HOW: DRAFT → PROBE → REVISE → CHECK (`haipipe-application-{draft,probe,revise,check}`). The PROBE phase runs the probe layer's five-step loop — ORGANIZE → MATCH → DISPATCH → POINT → INTERPRET — through the `haipipe-application-probe` worker, the ONLY door. DISPATCH goes through the stake-free collector `Agent(haipipe-probe-q-executor-agent)`, which calls the task/discovery orchestrators in clean context; the stage never calls them itself. A probe is COMMUNICATION, not judgment: it carries a question out and an answer back, and a claim's STATUS is written by the author into `1c-claims.md`, never in the probe file. PROBE ends with a VERIFY step: `check-probe-cards.sh` FAILs `state: planned` sections, dangling refs, `harvest: OWED` lane debts, and dead vocabulary. The CHECK gate re-runs the same checker (its teeth) and runs `checks.sh` (markdown-safe deterministic checks); `> CHECK:` threads are seeded in stage docs only, and artifact-level findings go to the Gate Ledger notes. CHECK is the only human-involved phase, venue-scaled (inline for simple venues, full reports for complex). Users invoke stage skills only, never phases.
 
 ## Maturity Ladder
 
@@ -124,28 +124,29 @@ The lifecycle is not linear. When work fails, return to the earliest stage that 
 | venue wrong for audience | `venue` (re-pin; pitch+ re-couple; the ladder SURVIVES) |
 | kill criterion met | STATUS.md → `retired` |
 
-## Evidence Flow (folderless probe)
+## Evidence Flow (flat probe pool)
 
 ```text
-stage DRAFT flags a NEED
+stage DRAFT raises the questions (a Q-consumer list); APPROVE (human) picks which to pursue
     ↓
-buffer: _PROBE/PPNN_<slug>.md in the owning stage (+ index row in 1-probe-plans/README.md)
+① ORGANIZE  each approved question → a SECTION in 1-probes/PPNN_<topic>.md (one file per TOPIC),
+            with serves / target / state / q-executor (stake stripped) / a-consumer + one ## Why per file
     ↓
-/haipipe-application probe run [PPNN]  →  haipipe-application-probe (BOOKKEEP → DISPATCH → TRANSLATE → VERIFY)
+② MATCH     scan the bank's QA corpus FIRST — most sections REUSE an existing answer and stop here
     ↓
-Agent(haipipe-probe-orchestrator-agent)   — clean context, bg for fresh work
-    SWEEP insights/ + discoveries/ + tasks/ → shape: reused | enriched | fresh
-    → discovery/task orchestrators for missing evidence
-    → probe-reviewer (full mode: G1/G2/G3 judgment)
+③ DISPATCH  only the misses, via Agent(haipipe-probe-q-executor-agent) — the stake-free collector,
+            which calls the task/discovery orchestrators in clean context (that context IS the wall)
     ↓
-TRANSLATE: takeaways → card (status: read); full verdict → card ## Verdict
-(supported | refuted | inconclusive) + claims-ledger flip; sections/rounds backfill from the card
+④ POINT     target: → the answering QA FILE (verify with ls + the state line)
     ↓
-VERIFY: check-probe-cards.sh — planned/dispatched cards, dangling refs, and OWED lane debts FAIL;
+⑤ INTERPRET write the a-consumer; if it serves a claim, the AUTHOR flips that claim's STATUS
+            (supported | weak | GAP) in 1c-claims.md — never in the probe file; harvest lanes pay out
+    ↓
+VERIFY: check-probe-cards.sh — planned sections, dangling refs, OWED lane debts, and dead vocabulary FAIL;
 the stage CHECK gate re-runs the same script before it can go green
 ```
 
-Light settlement venues rarely dispatch — they select from the existing KB; full venues run the whole chain. There is NO probes/ folder and NO `plan from-need` verb (folderless probe, 2026-07-05).
+Light settlement venues rarely dispatch — they REUSE from the bank's existing QA corpus; full venues run the whole chain. Probe files live in the flat `1-probes/` pool (one file per TOPIC, one SECTION per question); the per-stage `_PROBE/` folders and the `1-probe-plans/README.md` index are RETIRED — a legacy file is migrated into `1-probes/` on first touch only.
 
 ## Paper ↔ Application Comparison
 
@@ -158,7 +159,7 @@ same spine order                     stage 1 differs by design: paper = single 1
                                      application = the 1a-1d evidence ladder — delivers W
 _venue/ = journal playbooks          _venue/ = output modalities + _audience/ axis
 all stages fire; claims fully settle venue gates stages 3-5 + sets settlement depth + batches ladder gates
-insights = first-class deposit       insights = optional deposit (judgment in PP verdicts)
+insights = first-class deposit       insights = optional deposit (judgment in 1c-claims status)
 0-sections/ TeX → compile → submit   0-artifacts/ markdown → draft → review → deploy
 respond (rebuttal) / present         iterate (A/B results → refine; backfills 1a, staleness A←C←T←D)
 Paper Console                        Intervention Console
