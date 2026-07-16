@@ -1,5 +1,5 @@
 ---
-name: prober
+name: prober-agent
 description: "Boundary Prober. Two modes: (init) generate edge-case probe questions to bootstrap the guideline, (select) pick the most informative batch of items from the sample pool given the current gallery. Designed to maximize information gain per researcher-minute."
 tools:
   - Read

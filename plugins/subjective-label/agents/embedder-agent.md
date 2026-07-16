@@ -1,5 +1,5 @@
 ---
-name: embedder
+name: embedder-agent
 description: "Thin wrapper over lib/embed.py. Provides embedding / indexing / nearest-neighbor / clustering / stratified-sampling services to other agents (Prober, Gallery Keeper, Labeler Panel, Validator). The only component in the system that talks to Hugging Face / OpenAI / sentence-transformers. Never makes labeling decisions — judgment stays with the panel."
 tools:
   - Read

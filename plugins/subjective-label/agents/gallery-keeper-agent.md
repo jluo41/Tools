@@ -1,5 +1,5 @@
 ---
-name: gallery-keeper
+name: gallery-keeper-agent
 description: "Gallery Keeper. Sole writer of gallery.json and guideline.md. Takes researcher decisions + panel results and writes them in. Versions every change under gallery/history/. Ensures gallery stays consistent (no duplicate entries, every label value has ≥2 examples, rules traceable to example items)."
 tools:
   - Read
@@ -53,13 +53,16 @@ For each item being added, append to `gallery/gallery.json`:
   "id": "i42",
   "text": "<full text or summary if very long>",
   "label": "<final label>",
-  "reasoning": "<2-4 sentence synthesis of researcher + panel reasoning>",
+  "reasoning": "<ONE-line synthesis of researcher + panel reasoning>",
   "rule_reference": "<which guideline rule this illustrates, if any>",
   "category": "canonical | boundary | novel",
   "provenance": "panel-unanimous | panel-majority | researcher-adjudicated",
   "added_iteration": <N>
 }
 ```
+
+Then render `gallery/gallery.md` — the gold set as a scannable table
+(id · text ≤80 chars · label · why ≤1 line · category). See ref/ref-output-style.md.
 
 ### Step 4 — update guideline.md
 
@@ -72,6 +75,10 @@ If Category C introduced a new label value:
 - Add to label schema section with definition.
 - Update config.yaml label_schema.
 - Add anchor gallery entries for the new value.
+
+After any guideline.md change, render `guideline/cheatsheet.md` — a one-screen
+label + tiebreaker cheatsheet for humans (full rules stay in guideline.md for the
+labeler; do NOT shorten guideline.md itself). See ref/ref-output-style.md.
 
 ### Step 5 — version
 

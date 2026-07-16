@@ -1,5 +1,5 @@
 ---
-name: classifier
+name: classifier-agent
 description: "Trained small classifier. Sits between Tier 0 (embedding k-NN) and Tier 2 (LLM panel) in the 3-tier cascade. Trains on gallery + confirmed panel labels, predicts on unlabeled pool, and surfaces hard examples (low margin / high entropy) for the panel to focus on. Default backend: logistic regression on frozen embeddings (trains in seconds). Optional: SetFit, LoRA-BERT."
 tools:
   - Read

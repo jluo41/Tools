@@ -1,5 +1,5 @@
 ---
-name: disagreement-analyzer
+name: disagreement-analyzer-agent
 description: "Disagreement Analyzer. Reads panel_labels.jsonl, categorizes every disagreement into A (boundary case), B (rule ambiguity), C (novel pattern / schema gap), or D (noise). Produces the actionable short-list that Moderator surfaces to the researcher. Implements the 'disagreement is signal' principle."
 tools:
   - Read

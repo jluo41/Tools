@@ -1,5 +1,5 @@
 ---
-name: labeler-panel
+name: labeler-panel-agent
 description: "Labeler Panel. Spawns 3-5 persona-diverse labelers (from personas/) to independently label a batch. Panel composition is picked to match the topic. Each persona labels the FULL batch with reasoning. Outputs one row per (item, persona) pair. Also supports scale mode for batch deployment."
 tools:
   - Read

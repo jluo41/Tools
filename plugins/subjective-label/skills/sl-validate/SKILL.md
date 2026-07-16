@@ -13,7 +13,7 @@ Protocol
 --------
 
 Step 1. Load context.
-  Read: ref/ref-datasets.md, ref/ref-architecture.md
+  Read: ref/ref-datasets.md, ref/ref-architecture.md, ref/ref-output-style.md
   Read {project_dir}/.state.json, config.yaml, gallery/
   If no gallery entries yet: tell researcher to run /sl-iterate first. Stop.
 
@@ -27,7 +27,7 @@ Step 2. Choose validation dataset.
   Default: whichever dataset is closest to current project's topic
   (see ref-datasets.md mapping).
 
-Step 3. Invoke Validator (subagent_type: validator).
+Step 3. Invoke Validator (subagent_type: validator-agent).
   Pass:
     project_dir: <path>
     dataset: <dataset_name>
@@ -47,9 +47,11 @@ Step 3. Invoke Validator (subagent_type: validator).
     (e) Compare against dataset's published human-κ ceiling.
 
 Step 4. Write report.
-  {project_dir}/validation/{dataset}_{iter}_report.md
+  {project_dir}/validation/{dataset}_{iter}_report.md  (result-first, ≤1 screen)
   Append row to {project_dir}/validation/trajectory.jsonl
   (iteration, dataset, κ, α, F1, gap-to-ceiling)
+  Refresh REPORT.md: update the validate row (agent κ vs ceiling → converged/below).
+  Record construct-validity verdict (is the dataset a valid analog?) — see ref/ref-datasets.md.
 
 Step 5. Report to researcher.
   "Iteration {N} validation:
