@@ -65,7 +65,7 @@ symptom in todo                          → route to
 "timing should be 24h not 48h"          → pitch (theory of change) or display (element spec)
 "SMS too long"                          → draft/artifact (re-compose per venue limits)
 "click rate below threshold"            → iterate → pitch or claims (re-evaluate)
-"need evidence for X"                   → claims (GAP + _PROBE/ card)
+"need evidence for X"                   → claims (GAP → a question in 1-probes/)
 "channel wrong for this audience"       → venue (re-pin; pitch+ re-couple; the ladder survives)
 ```
 

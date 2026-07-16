@@ -1,125 +1,99 @@
 ---
 name: haipipe-application-display
-description: "Stage 4 of the intervention lifecycle (venue-GATED: required for dashboard/ui-card/report, optional for email, skipped for sms/push/reminder/checklist — per STATUS.md stages_skipped). Answers 'what content element carries each claim, and what job does each unit do?' Maps claims to display units (panels, widgets, charts, sections) with per-unit jobs and evidence anchors — the retired minimap stage's concern lives here. Output: 0-lifecycle/4-display/4-display.md + _LOG + _PROBE/. Trigger: display, content elements, panels, widgets, unit jobs, /haipipe-application display."
+description: "Stage 4 of the intervention lifecycle (venue-GATED: required for dashboard/ui-card/report, optional for email, skipped for sms/push/reminder/checklist — per STATUS.md stages_skipped). Answers 'what content element carries each claim, and what job does each unit do?' Maps claims to display units (panels, widgets, charts, sections) with per-unit jobs and evidence anchors — the retired minimap stage's concern lives here. Output: 0-lifecycle/4-display/4-display.md + _LOG + 1-probes/. Trigger: display, content elements, panels, widgets, unit jobs, /haipipe-application display."
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.2.0"
-  last_updated: "2026-07-06"
-  summary: "Paper-aligned: absorbs minimap (per-unit Job field is now required on every display unit); stage FOLDER paths; gating via STATUS.md stages_skipped; materialization routes through the PROBE worker to /haipipe-task; DPRC phases."
-  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
+  version: "4.3.0"
+  last_updated: "2026-07-15"
+  summary: "Display stage (stage 4, venue-GATED + venue-ALIGNED) — maps each claim to a display UNIT with a required per-unit Job (minimap absorbed); materialization raised as a section in the flat probe pool 1-probes/, uniquely commissioned by this stage. History: ./CHANGELOG.md."
 ---
 
 Skill: haipipe-application-display
-=====================================
+===================================
 
-Stage 4 of the intervention lifecycle (venue-GATED, venue-ALIGNED). What specific content element carries each claim, and what JOB each unit does for the reader. Same role as paper's display; the retired `minimap` stage's job-assignment concern is folded in per-unit.
+Stage **4** of the intervention lifecycle — venue-ALIGNED and venue-GATED.
+It answers: what content element carries each claim, and what job does each unit do for the reader?
 
-Question answered
-==================
-
-"What content element carries each claim, and what job does each unit do?"
-
-When this stage fires
-======================
-
-Read `STATUS.md | stages_skipped |`: if `display` is listed, this stage is skipped (the venue template already fixes the elements). `optional` venues (email) pull it in on user request.
-
-Input
-======
-
-- `0-lifecycle/3-narrative/3-narrative.md` (required if narrative fired)
-- `0-lifecycle/1d-advice/1d-advice.md` (always -- elements carry advice)
-- `0-lifecycle/1c-claims/1c-claims.md` (always -- the evidence anchor behind each element)
-- Venue profile (available display element types)
-
-Output
-=======
-
-```
-<intervention-root>/0-lifecycle/4-display/4-display.md
-<intervention-root>/0-lifecycle/4-display/_LOG_4-display.md
-<intervention-root>/0-lifecycle/4-display/_PROBE/       (materialization needs)
+```text
+2-pitch         what this intervention sells
+3-narrative     how claims compose into the output's arc
+4-display       what element carries each claim + its job   <- THIS STAGE
+5-section-edit  does each section's prose do its job
 ```
 
-Display artifact schema (venue-dependent)
-==========================================
+Read first: `../../../PHILOSOPHY.md`, the probe layer's `../../../2-phase/1-probe/haipipe-application-probe/ref/per-stage-dispatch.md` (the 4-display lane wording).
 
-Canonical template (source of truth for section order + placeholders): `ref/display-template.md`.
 
-Every unit carries FOUR required fields -- type, claim, JOB, data source. The Job field is the minimap absorption: one sentence on what this unit must make the reader see/do.
+## What's special: three things make a display a display
 
-**venue-dashboard:**
-```markdown
-Display Map: <intervention name>
-=================================
+**1. Claims become UNITS, each carrying a required Job — the minimap absorption.**
+Every display unit carries FOUR fields: Type, Claim, Job, Data source.
+The Job is one sentence on what this unit must make the reader see or do — the retired `minimap` stage's job-assignment concern, folded in per-unit.
+Same role as paper's display; here a unit is a panel, widget, chart, or section rather than a figure or table.
 
-Display units
--------------
+**2. Venue-GATED and venue-ALIGNED.**
+Read `STATUS.md | stages_skipped |`: `display` is skipped for sms/push/reminder/checklist (the venue template already fixes the elements), required for dashboard/ui-card/report, and `optional` venues (email) pull it in on user request.
+The available element types come from the venue stage doc's Artifact Principles (`0-lifecycle/2-venue/2-venue.md`); a venue change re-runs the display set.
 
-**U01 - KPI Card: Refill Rate**
+**3. Display is the ONE stage that commissions its own units.**
+A missing unit raised from narrative or a section is NOT commissioned there — it becomes a request row this stage later fulfills, and that section closes `answered-local`.
+Only THIS stage commissions render/materialization work for its own accepted units; every other stage's display lane merely LINKs what landed.
+A unit whose data source does not exist yet is an evidence need: it is raised as a question SECTION in the flat probe pool `1-probes/PPNN_<topic>.md` and dispatched through PROBE — display never runs `/haipipe-task` or renders inline (LAW 1).
+The rendered output lands task-side; the unit's Data source field points at it.
 
-Type: metric-card.
-Claim: C1.
-Job: show current vs target at a glance; alert color when below.
-Content: current rate, trend arrow, target.
-Data source: task X01_refill_rate.
 
-**U02 - Panel: Timing Analysis**
+## The four phases, in display
 
-Type: line-chart.
-Claim: C3.
-Job: make the timing window visible (rate by hours-before-expiry).
-Data source: task X02_timing_curve.
+```text
+DRAFT   read 3-narrative.md (the arc, if it fired), 1d-advice.md (what each element carries), 1c-claims.md
+        (the evidence anchor behind each element), and the venue profile's element types; map every
+        primary claim to >=1 display UNIT, each with Type / Claim / Job / Content / Data source
+PROBE   one worker call; an unmaterialized data source is raised as a SECTION in 1-probes/ and, uniquely,
+        commissioned by this stage; the display lane LINKs landed units. Routing is the probe layer's:
+        ../../../2-phase/1-probe/haipipe-application-probe/SKILL.md (4-display lane in ref/per-stage-dispatch.md)
+REVISE  unit-set coherence: one job per unit, no orphan units, types match the venue's element set
+CHECK   the done list below vs the unit set -> Gate Ledger row in STATUS.md
 ```
 
-**venue-report:**
-```markdown
-**U01 - Table 1: Summary Statistics**
+Display PLANS and LINKs units; it never computes, renders, or hand-authors an asset (LAW 1) — materialization is task work reached through the PROBE phase, which binds each question to a QA file in the task/discovery bank.
 
-Type: table.
-Claim: C1, C2.
-Job: establish the cohort so later effects are credible.
-Content: cohort descriptives.
-Data source: task X03_cohort_summary.
 
-Probes
-------
-<materialization needs, INLINE and visible: one line per PP with status
-(unit → task route); cards in _PROBE/>
+## The artifact
+
+`0-lifecycle/4-display/4-display.md` — full skeleton in `ref/display-template.md` (the per-venue dashboard/report unit templates live there, not inline):
+
+```text
+Display units      one U<nn>: Type + Claim (via A<n> where an advice entry drives it) + Job + Content
+                   + Data source · Status: planned | commissioned (PP<nn>) | landed
+Unit -> section    (sectioned venues) which unit goes in which section, and why
+  mapping
+Probes             materialization needs, one line per PP with status; the display lane LINKs what landed
 ```
 
-Artifact formatting: `=====` title / `-----` sections (no `#` headings); one sentence per line. Display reads the venue stage doc's Artifact Principles (2-venue.md) for available element types.
+Sidecar: `_LOG_4-display.md` (phase journal).
+Evidence questions live in the flat probe pool `1-probes/PPNN_<topic>.md` (sections carry `serves` / `target` / `state` / `q-executor` / `a-consumer` + one `## Why`; states `planned | commissioned | answered | read | answered-local | failed`); a legacy per-stage `_PROBE/` folder is migrated into the pool on first touch.
+Formatting: `=====` title / `-----` sections, one sentence per line; the doc reads `2-venue.md`'s Artifact Principles for the available element types.
 
-Materialization
-================
 
-A unit whose data source does not exist yet is an evidence need: buffer a `_PROBE/` card (kind: artifact, route: task) and dispatch via the PROBE worker -- display never runs `/haipipe-task` or computes inline. Rendered outputs land task-side; the unit's Data source field points at them.
+## Definition of done (read at CHECK)
 
-Phases
-=======
-
-```
-DRAFT   map claims to unit types + jobs per venue rules (haipipe-application-draft)
-PROBE   materialization needs → _PROBE/ cards → task routing (haipipe-application-probe)
-REVISE  unit set coherence: one job per unit, no orphan units (haipipe-application-revise)
-CHECK   exit criteria below → Gate Ledger row (haipipe-application-check)
+```text
+[ ] 4-display.md exists (when the venue requires it)
+[ ] every primary claim has at least one display unit
+[ ] every unit has all four fields — Type, Claim, Job, Data source
+[ ] unmaterialized data sources have 1-probes/ sections (task-routed, commissioned by this stage)
+[ ] display types match the venue's available element types
 ```
 
-Definition of done
-===================
 
-```
-[ ] 0-lifecycle/4-display/4-display.md exists (when the venue requires it)
-[ ] Every primary claim has at least one display unit
-[ ] Every unit has all four fields — type, claim, JOB, data source
-[ ] Unmaterialized data sources have _PROBE/ cards (task-routed)
-[ ] Display types match the venue's available element types
+## Exits
+
+```text
+promote -> /haipipe-application section-edit   (sectioned venues)
+       or -> /haipipe-application draft         (compose the artifact)
 ```
 
-Handoff: `promote -> /haipipe-application section-edit` (sectioned venues) or `-> /haipipe-application draft`. End the reply with the closing block (stage line via `../../../haipipe-application/stage-strip.sh`).
-
-Risk profile
-=============
-
-WRITES the 4-display/ stage folder only. Never computes or renders inline.
+End every reply with the closing block (stage line via `../../../haipipe-application/stage-strip.sh`).
+</content>
+</invoke>

@@ -1,12 +1,12 @@
 ---
 name: haipipe-application
-description: "Run any intervention-lifecycle work (the application umbrella). Use `/haipipe-application enter <intervention-path>` or `status` to preload an open-needs dashboard from STATUS.md, 0-lifecycle, 0-artifacts, 1-rounds, and git state. Application lifecycle owns intervention-specific story, the stage-1 evidence ladder (1a-descriptions -> 1b-themes -> 1c-claims -> 1d-advice), narrative, displays, artifact text, maturity, and dated work rounds; the venue (sms/email/dashboard/report/...) gates which stages fire and how deep claims must settle; open GAP/NEED items accumulate as probe plans in per-stage _PROBE/ folders (1-probe-plans/README.md = index), consumed by haipipe-application-probe (each stage's PROBE phase worker), which dispatches to /haipipe-probe (the universal evidence gateway; probe calls task/discover during Gather). Direct task/discover verbs available for non-claim utility work. Trigger: application, intervention, enter, status, seed, ladder, descriptions, themes, claims, advice, venue, pitch, narrative, display, section-edit, draft, sms, message, email, dashboard, report, review, deploy, iterate, round, probe, /haipipe-application."
+description: "Run any intervention-lifecycle work (the application umbrella). Use `/haipipe-application enter <intervention-path>` or `status` to preload an open-needs dashboard from STATUS.md, 0-lifecycle, 0-artifacts, 1-rounds, and git state. Application lifecycle owns intervention-specific story, the stage-1 evidence ladder (1a-descriptions -> 1b-themes -> 1c-claims -> 1d-advice), narrative, displays, artifact text, maturity, and dated work rounds; the venue (sms/email/dashboard/report/...) gates which stages fire and how deep claims must settle; open evidence questions are RAISED as sections in the flat probe pool 1-probes/PPNN_<topic>.md, and each stage's PROBE phase (haipipe-application-probe) binds them to answers in the task/discovery bank through a clean collector agent — never calling the bank directly. Direct task/discover verbs remain for non-claim utility work. Trigger: application, intervention, enter, status, seed, ladder, descriptions, themes, claims, advice, venue, pitch, narrative, display, section-edit, draft, sms, message, email, dashboard, report, review, deploy, iterate, round, probe, /haipipe-application."
 argument-hint: "[enter|status|venue|stage|draft] [intervention-path-or-args...]"
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
   version: "6.4.0"
   last_updated: "2026-07-09"
-  summary: "Front door for the intervention lifecycle. 6.4.0 (GROW loop): 1a rounds = saturation engine (lens-rotating question storms, blind self-test, dry-stop), Field Disposition + _DESCRIPTIONS sheets, `grow` verdict at CHECK. 6.3.0 (round-2 close-out): eager spine scaffold + legacy migration at enter; probe RELEASE GATE + PHI restricted-columns default. 6.2.0 (breadth round): the ladder runs as a FLYWHEEL -- multi-round DPRC (loop-until-dry), coverage lenses + reservoirs per rung, mid-phase back-routing, 1d explore|exploit role tags. 6.0.0 (ladder restage, SOP-ladder-restage.md): stage 1 split into the venue-FREE evidence ladder 1a-descriptions -> 1b-themes -> 1c-claims -> 1d-advice (echoes D->I->K->W; paper delivers K, application delivers W); new verbs descriptions/themes/advice + composite ladder; venue-scaled gate batching. 5.1.0 (round 2): probe VERIFY + mechanical check gate. Alignment record: ./CHANGELOG.md."
+  summary: "Front door for the intervention lifecycle: parse intent (venue + stage), route to the stage specialists. Each stage runs four phases (draft → probe → revise → check); the intervention RAISES evidence questions as sections in the flat pool 1-probes/, and each stage's PROBE phase binds them to answers in the task/discovery bank through a clean agent — never calling the bank directly. The venue gates which stages fire and how deep claims settle; the 1a–1d ladder (D→I→K→W) is the venue-free evidence spine. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -15,7 +15,7 @@ Skill: haipipe-application (orchestrator)
 
 User-facing entry for the intervention lifecycle. The application lifecycle is a delivery owner: it owns this intervention's story, claims, narrative, displays, artifact text, maturity, and dated work rounds. Project-level evidence lives outside the intervention in discoveries, tasks, and insights; when a stage hits a gap, record a delivery need (`../wiki/11-delivery-need.md`) and route to the evidence worker.
 
-This orchestrator parses intent and dispatches to stage/specialist skills via `Skill()`. Stage skills internally drive the DPRC phase workers (`2-phase/`); users and this router never invoke phase skills directly. PROBE ends with a VERIFY step (the probe worker's deterministic card checker), and CHECK runs `checks.sh` plus re-runs the card checker as the gate's teeth. Canonical structure: `README.md` at the application skill root + `../wiki/06-application-skill-structure.md`.
+This orchestrator parses intent and dispatches to stage/specialist skills via `Skill()`. Stage skills internally drive the DPRC phase workers (`2-phase/`); users and this router never invoke phase skills directly. PROBE ends with a VERIFY step (the probe worker's deterministic probe-file checker), and CHECK runs `checks.sh` plus re-runs the probe-file checker as the gate's teeth. Canonical structure: `README.md` at the application skill root + `../wiki/06-application-skill-structure.md`.
 
 ALWAYS read and honor `PREFERENCES.md` (this skill's own folder): portable, git-tracked global behavioral preferences that survive a machine change. `digest` / `feedback` append flagged global prefs there (merge-or-create).
 
@@ -43,7 +43,7 @@ claim-audit | verify claims                  -> haipipe-application-claim-audit
 deploy | ship | go live                      -> haipipe-application-deploy
 round | rounds                               -> haipipe-application-round (dated work rounds; also "todo", "decisions", "applied")
 iterate | A/B | performance                  -> haipipe-application-iterate
-probe ["<need>"] | probe | probe run [PPNN]  -> probe-plan buffer: per-stage _PROBE/ + 1-probe-plans/README.md index (BUFFER / SHOW; "run" hands the buffer to haipipe-application-probe; also "evidence gap", "verify claim", "hypothesis")
+probe ["<question>"] | probe | probe run [PPNN]  -> the flat probe pool 1-probes/PPNN_<topic>.md, one file per TOPIC, one SECTION per question (RAISE a question / SHOW the board / RUN the five-step loop; "run" hands the pool to haipipe-application-probe, the single door to the bank; also "evidence gap", "verify claim", "hypothesis")
 discover ["<question>"]                      -> /haipipe-discovery (non-claim utility; also "lit review", "benchmarks", "field norms")
 task ["<contract>"]                          -> /haipipe-task (non-claim utility; also "run analysis", "compute", "pull data")
 feedback "<text>" | feedback list|move       -> fn/feedback.md (resolve BEFORE other parsing)
@@ -86,17 +86,19 @@ Dispatch notes (only where non-obvious; everything else is `Skill("haipipe-appli
 ```
 enter     Path exists -> Skill("haipipe-application-enter", args="<path>"). Path MISSING -> get-or-create:
           CONFIRM FIRST (never create off a typo). Interventions are plain folders (no repo backing):
-          scaffold STATUS.md + 0-lifecycle/ + 0-artifacts/ + 1-rounds/ + 1-probe-plans/README.md under
+          scaffold STATUS.md + 0-lifecycle/ + 0-artifacts/ + 1-rounds/ + 1-probes/ under
           the project's applications/interventions/<NN>_<slug>/, then continue straight into the console.
 claims    Ladder-virgin guard (JL-agreed thread B, 2026-07-09): if 1a/1b docs are absent, do not
           silently dispatch 1c -- offer the choice: "1a/1b are empty; run `ladder` for the sweep,
           or 1c anyway?" A non-virgin ladder dispatches 1c directly.
-probe     Three sub-modes -- "<text>" BUFFER a plan card in the active stage's _PROBE/ (+ index row
-          in 1-probe-plans/README.md), no args SHOW the buffer (from the index),
-          "run [PPNN]" -> Skill("haipipe-application-probe", args="from-buffer <intervention_root> [PPNN]").
-          This umbrella NEVER calls /haipipe-probe directly: all probe calling happens inside a stage's
-          PROBE phase via haipipe-application-probe, which consumes the buffer and dispatches onward.
-          Verdicts backfill into 1c-claims / sections / round logs. Buffer convention: fn/probe-plans.md.
+probe     Operates on the flat cross-stage pool (1-probes/PPNN_<topic>.md; the README board is derived
+          from it). "<text>" RAISES a question as a SECTION in the right topic's file, no args SHOWS the
+          board, "run [PPNN]" -> Skill("haipipe-application-probe", args="from-buffer <intervention_root> [PPNN]").
+          It is the SAME operation at two scopes: this umbrella verb works the WHOLE pool, while a stage's
+          PROBE phase works only its own slice -- the sections whose serves: names that stage. Both go
+          through the one worker, haipipe-application-probe, which runs the five-step loop MATCH-before-
+          DISPATCH and is the ONLY thing that touches the bank. A claim's status lands in 1c-claims.md,
+          never in a probe file. Anatomy + model: fn/probes.md.
 discover  Resolve the project root, Skill("haipipe-discovery", args="<args> --project <project_root>").
 task      Resolve the project root, Skill("haipipe-task", args="<args> --project <project_root>").
 ```
@@ -153,7 +155,7 @@ Delivery Need Routing
 Application work is demand-driven: a claim, content element, artifact slot, or round todo may reveal that the next action is evidence work. The enter/status path surfaces those needs before recommending more drafting. Need record schema + boundary: `../wiki/11-delivery-need.md`.
 
 ```
-claim needs a verdict / robustness / literature / data artifact  -> /haipipe-application probe "<need>"  (buffer first; probe gathers via task+discover, deposits verdicts)
+claim needs evidence / robustness / literature / a data artifact  -> /haipipe-application probe "<question>"  (a SECTION in 1-probes/; MATCH first, dispatch only what MATCH cannot close)
 display element needs materialized output (not claim-gated)      -> /haipipe-task-for-display <need>
 closed evidence needs reusable meaning/caveat                    -> /haipipe-insight <artifact>
 wording/structure/tone                                           -> the owning lifecycle stage skill (audience profile shapes tone)
@@ -186,9 +188,9 @@ Composing with Evidence Workers
         ├─► /haipipe-application-artifact    (draft the deliverable from the venue profile + lifecycle stages)
         │
         │   evidence path (a claim hits a gap):
-        └─► per-stage _PROBE/ plans (1-probe-plans/README.md index)  ─►  haipipe-application-probe (the PROBE phase worker, run inside a stage's PROBE phase)
-                                            └─► /haipipe-probe  (evidence gateway; its Gather calls /haipipe-task + /haipipe-discovery, deposits to /haipipe-insight)
-                                                 └── verdicts/artifacts backfill into 1a-descriptions/1c-claims, sections, round logs
+        └─► questions RAISED as sections in 1-probes/PPNN_<topic>.md  ─►  haipipe-application-probe (the PROBE phase worker)
+                                            └─► Agent(haipipe-probe-q-executor-agent)  (stake-free collector; dispatches /haipipe-task + /haipipe-discovery)
+                                                 └── answers land as QA files; the a-consumer + 1c-claims status backfill into the ladder, sections, round logs
 
         direct discover/task verbs remain ONLY for non-claim utility work (lit scan, data check)
 ```

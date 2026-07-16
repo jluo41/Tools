@@ -42,7 +42,8 @@ Also holds context-only D ids (described but not thematic) and the counter-hunt 
 Probes
 ------
 
-<This rung's probe roster (cards in _PROBE/, index row in 1-probe-plans/README.md): one line per PP with status.
+<This rung's probe roster (sections live in the flat pool 1-probes/PPNN_<topic>.md): one line per PP with status
+(planned | commissioned | answered | read | answered-local | failed).
 Mostly discovery probes for field patterns; task probes only for quick in-data confirmations. Roster must match disk.>
 
 - PP<nn> - <field-pattern question> - <status>

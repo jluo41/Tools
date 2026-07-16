@@ -55,12 +55,12 @@ Separated by `---` horizontal rules.
 Mode: <light | full>.
 Route: <task | discovery>.
 Claims: <which claims this settles>.
-Status: <planned | dispatched | read | verdicted>.
+State: <planned | commissioned | answered | read | answered-local | failed>.
 <Dependencies, if any.>
 
 <Full evidence plan, one sentence per line.>
 Refutes-if: <the result that would FLIP the claim(s) this probe settles>.
-Detail: `_PROBE/PP01_<slug>.md`
+Detail: the section serving this claim in `1-probes/PPNN_<topic>.md`
 
 ---
 
@@ -72,7 +72,7 @@ Claims: <which claims>.
 Status: <status>.
 
 <Evidence plan.>
-Detail: `_PROBE/PP02_<slug>.md`
+Detail: the section serving these claims in `1-probes/PPNN_<topic>.md`
 
 
 Evidence Campaign

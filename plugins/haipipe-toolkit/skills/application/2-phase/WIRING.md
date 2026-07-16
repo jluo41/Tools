@@ -30,10 +30,10 @@ user → /haipipe-application <stage>            stage skills live in 1-lifecycl
         (seed | descriptions | themes | claims | advice | venue | pitch | narrative° | display° | section-edit°)    ° = venue-gated
              │
              ▼  the stage skill drives the phase engine, in order:
-       haipipe-application-draft    → drafts the stage doc from the stage's template (may WebSearch; buffers planned PPNN skeletons)
-       haipipe-application-probe    → BOOKKEEP → DISPATCH (Agent(haipipe-probe-orchestrator-agent) per card) → TRANSLATE → VERIFY (check-probe-cards.sh)
+       haipipe-application-draft    → drafts the stage doc from the stage's template (may WebSearch; raises planned question SECTIONS in 1-probes/)
+       haipipe-application-probe    → ORGANIZE → MATCH → DISPATCH (Agent(haipipe-probe-q-executor-agent)) → POINT → INTERPRET → VERIFY (check-probe-cards.sh)
        haipipe-application-revise   → venue+audience text pass
-       haipipe-application-check    → re-runs the card checker + runs checks.sh, seeds > CHECK: threads in stage docs, gates the human (CHECK 🧑)
+       haipipe-application-check    → re-runs the probe-file checker + runs checks.sh, seeds > CHECK: threads in stage docs, gates the human (CHECK 🧑)
 ```
 
 DRAFT/PROBE/REVISE run automatic; CHECK is the only human gate (venue-scaled depth, `../wiki/08-stage-gate.md`). The probe worker is the ONLY exit for evidence work; stage skills never call `/haipipe-probe`, discovery agents, or task agents directly.

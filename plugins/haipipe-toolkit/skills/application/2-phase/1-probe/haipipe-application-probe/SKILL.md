@@ -1,160 +1,207 @@
 ---
 name: haipipe-application-probe
-description: "PROBE phase worker (internal). Called by application stage skills after DRAFT to collect what the draft needs but does not have -- evidence for claims, context for the seed, materialized outputs for displays. ONE pipeline: ACQUIRE through Agent(haipipe-probe-orchestrator-agent) (the project-side evidence gateway) is the only door; HARVEST transcribes the return's pointers through venue-scaled lane hooks (values always; citation for sectioned venues; display for display-unit venues -- hooks, not sub-skills). Fully automatic, human review in CHECK only. Users invoke stage skills (seed, claims, ...), not this skill directly."
-argument-hint: "[from-buffer <intervention-root> [PPNN] | stage <stage-name>]"
+description: "PROBE-phase worker (internal). After DRAFT, collects the questions the draft raised into probe files — applications/<A>/1-probes/PPNN_<topic>.md, one file per topic, each question one SECTION (serves/target/state/q-executor/a-consumer) + a '## Why' that never leaves. Runs the five-step loop ORGANIZE → MATCH → DISPATCH → POINT → INTERPRET; binds by PATH to a QA file in the task/discovery bank; dispatches the q-executor verbatim, never running bank work inline. The three harvest lanes (values/citation/display) are venue-scaled HOOKS, not sub-skills. Users invoke stage skills (seed, claims…), not this directly."
+argument-hint: "[from-buffer <intervention_root> [PPNN] | stage <stage-name>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 metadata:
-  version: "2.4.0"
-  last_updated: "2026-07-09"
-  summary: "2.4.0: task_landing adds the config-variant rule (segment/dataset-agnostic task names; slice + input path = config keys; new subgroup = new config, not a new folder). 2.3.0: dispatch prompt carries task_landing (granularity ladder: config > task > group; one need = one task/config). 2.2.0 (GROW loop): values lane redirects to _DESCRIPTIONS/DS<n> profile sheets for rung 1a (same debt bookkeeping). 2.1.0 (bench rulings 2026-07-09): STEP 1.5 RELEASE GATE -- planned cards dispatch only on the user's explicit release (roster presented + stop otherwise); PHI-adjacent task dispatches pin the minimal aggregate-safe column allow-list by default (no operator ask). 2.0.0 Round-2 paper-alignment (SOP R1+R5; port of paper probe 3.1.0): 4-step procedure (BOOKKEEP -> DISPATCH -> TRANSLATE -> VERIFY), each step ending in a mandatory PROOF shown in the reply; deterministic checker (check-probe-cards.sh, family-local fork) run at VERIFY and re-run by the stage gate; lane debts `harvest: OWED` written before transcription; harvester vocabulary (ACQUIRE via gateway is the only door -> HARVEST follows pointers). Application deltas kept: no sub-worker skills -- venue-scaled lane hooks (_VALUES_ always; _CITATION_ sectioned venues; _DISPLAY_ display-unit venues) bound to paper's 2.0.0 sub-worker contract; claims C-line + Evidence Campaign flip at TRANSLATE."
-  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
+  version: "3.0.0"
+  last_updated: "2026-07-15"
+  summary: "The intervention's PROBE-phase worker — runs the five-step loop for an application. The model (anatomy, QA contract, cost ladder, LAWS, states, checker codes) is the constitution's: ../../../../probe/haipipe-probe/SKILL.md. This file is only the application-side deltas: intervention_root, the DIKW-ladder rungs, and the venue-scaled harvest hooks. History: ./CHANGELOG.md."
 ---
 
-Skill: haipipe-application-probe (PROBE phase worker, internal)
-================================================================
+Skill: haipipe-application-probe — the PROBE-phase worker for an application
+============================================================================
 
-Called by stage skills (seed, claims, venue, pitch, narrative, display, section-edit) after DRAFT to collect what the draft needs but does not have.
-The stage defines WHAT needs collecting; this skill defines HOW.
-ONE pipeline (JL 2026-07-07 harvester ruling, ported from paper: the workers "are the harvester agents... they don't restart the whole probe process, they are just one step within the whole probe"):
+Called by application stage skills (seed, descriptions, themes, claims, venue, pitch, narrative, display, section-edit) after DRAFT.
+It runs the probe layer's five-step loop for an intervention: collect the DRAFT's questions, bind each to an answer in the bank, harvest what comes back.
 
-```
-ACQUIRE (project-side, the ONLY door)   Agent(haipipe-probe-orchestrator-agent)
-                                        -> gateway SWEEP (reuse|enrich|fresh)
-                                        -> discovery/task orchestrators
-                                        -> evidence LANDS in discoveries/ tasks/ insights/
-HARVEST (intervention-side, pointer-following; venue-scaled HOOKS, not sub-skills)
-  values    value refs -> _VALUES_{stage}.md                     (always)
-  citation  pick_list  -> _CITATION_{stage}.md                   (sectioned venues only)
-  display   unit refs  -> _DISPLAY_{stage}.md + artifact links   (display-unit venues only)
-```
+⭐ THE MODEL IS NOT THIS FILE'S — it is the constitution's: `../../../../probe/haipipe-probe/SKILL.md`.
+Read it for the probe-file anatomy, the QA state-line contract, the cost ladder, the two LAWS, the derived states, and the checker's FAIL codes.
+This file is ONLY how an application runs the loop, plus the application-side deltas the constitution does not cover.
 
-Intervention-side may FOLLOW pointers the return names; only the gateway may FIND things.
-A hook that notices a gap reports it as a probe-plan suggestion, never fills it itself.
+Not user-facing: users invoke stage skills; a stage calls `Skill("haipipe-application-probe", args="from-buffer <intervention_root> [PPNN]")`.
+Which rung runs which mode and lanes, seed/claims specifics, and section-edit logic: `ref/per-stage-dispatch.md`.
 
-Not user-facing: users invoke stage skills; stages call this. `/haipipe-application probe run [PPNN]` reaches it via the router's `from-buffer` dispatch.
-Which stage runs which mode, seed/claims/venue specifics, venue-scaled lane rules, phase-status strip forms: `ref/per-stage-dispatch.md`.
+The application-side deltas:
+- `intervention_root` vocabulary, and the intervention's OWN registries (the T1 whitelist).
+- the DIKW ladder rungs raise the questions (there is no resource stage; that is paper-only).
+- the three harvest lanes as venue-scaled HOOKS (values / citation / display), not sub-worker skills.
 
-The Procedure (from-buffer entry)
-----------------------------------
 
-`Skill("haipipe-application-probe", args="from-buffer <intervention_root> [PPNN]")` -- the ONLY path that dispatches probe plans.
-Stage skills and the umbrella NEVER call /haipipe-probe or evidence agents directly.
+The five-step loop, application-side
+====================================
 
-Four steps. **Each ends with a PROOF the worker MUST show in its reply. A step whose proof is absent did not happen, no matter what the prose claims.**
-This worker does NO evidence work of its own: never searches, never sweeps discoveries/tasks/insights inline, never writes findings into a PP card from its own context. Findings enter cards ONLY from the orchestrator's return.
+Each step ends with a PROOF this worker MUST show in its reply; an absent proof means the step did not happen.
+STEP 0 — re-invoke this skill fresh every run, even when its text is already in context (a probe once ran a 3-hour-old contract).
 
-**STEP 0 -- RE-INVOKE PER RUN.**
-Every PROBE phase invokes this skill fresh via the Skill tool, even when its text is already in context from an earlier stage of the same session (paper-side stale-copy incident: a PP card ran a 3-hour-old contract).
+TWO HALVES.
+①–④ COLLECT the answer from the bank — the shared probe mechanism, per the constitution (question → answered QA file).
+⑤ HARVESTS it — files the answer's artifacts into the intervention's OWN registries, scaled by the pinned venue.
+Collection is the constitution's model; harvest is this worker's, and the constitution says nothing about it.
 
-**STEP 1 -- BOOKKEEP.**
-- Read the index `<intervention_root>/1-probe-plans/README.md`; resolve each planned item to its `0-lifecycle/<stage>/_PROBE/PPNN_*.md` card (or the named PPNN).
-- Resolve `project_root`: walk UP from intervention_root to the FIRST ancestor containing `discoveries/`. Do NOT use `git rev-parse --show-toplevel` -- repo-backed projects make it return the wrong root. (`check-probe-cards.sh` resolves the same way; when in doubt run it.)
-- Ensure each PP card exists with the anatomy from `../../../../probe/haipipe-probe/SKILL.md` ("PPNN card anatomy") -- READ that section, never re-derive from memory. At BOOKKEEP a card carries stage/mode/status/claim + Need/Why/Route, an EMPTY `refs:`, and NO tables. A card with findings already in it at BOOKKEEP is a shortcut -- reset it.
 
-PROOF 1: print `project_root=<path>` + the output of `ls <project_root>/discoveries/`.
+① ORGANIZE — collect the DRAFT's questions into probe files, grouped by TOPIC
+----------------------------------------------------------------------------
 
-**STEP 1.5 -- RELEASE GATE (JL bench ruling 2026-07-09: "stop after the draft... I would like to review the probes to be released").**
-Planned cards are RELEASED by the user, never auto-dispatched. A user-issued `probe run PPNN` (or "release PP02" / "release all") IS the approval for the named card(s). A stage's DRAFT->PROBE handoff, or a bare `from-buffer` sweep with no user-named card, must STOP here: present the planned roster (PP id -- question -- mode -- route), end the turn, and await the user's pick. Record each release in the stage `_LOG` (`[RELEASE] PPNN approved <date>`). No exception for "cheap" probes -- discovery scans are releases too. Normally the user already picked from the RELEASE MENU the DRAFT worker presented at its close (draft step 5); this gate is the backstop for paths that skip DRAFT (--refresh, backfill, direct probe run).
+- The stage's DRAFT wrote a `Q-consumer` section (the questions the stage raises); APPROVE is the human gate that picks which ones to pursue (constitution).
+  A user-issued `probe run PPNN` (or "release PP02" / "release all") IS that approval for the named card(s); a bare `from-buffer` sweep with no named card STOPS, presents the approved-question roster, and awaits the pick.
+- Only APPROVED questions go on: for each, open ONE SECTION under `1-probes/` with `serves: <stage/claim>` · `state: planned` · a `target:` still `NEW ?`, and write its `q-executor:` — the same question in general language, with the STAKE stripped out.
+- Resolve `project_root`: walk UP from `intervention_root` to the first ancestor containing `discoveries/`.
+  Do NOT use `git rev-parse` — a repo-backed project is its own git repo.
+  (The checker resolves the same way.)
+- Read the DRAFT's open questions: `{VAL:?}` slots, `GAP` markers, the rung's explicit questions (for claims: every GAP/weak claim).
+- Group by TOPIC; write ONE probe file per topic at `<intervention_root>/1-probes/PPNN_<topic>.md`, one SECTION per question, one `## Why` per file.
+  Next free PP number is intervention-local; `ls 1-probes/` is the authority.
+- The `q-executor:` is a SEMANTIC strip — no claim/campaign labels, no stage words, no `## Why`, no hint of which answer is wanted.
+  What crosses is a self-contained evidence question a stranger could answer, frozen once written.
+- Migrate a legacy per-stage `_PROBE/` card or a `1-probe-plans/` entry into `1-probes/` in the new shape on first touch only.
 
-PROOF 1.5: either the user's release words quoted (which card, where they said it) or the presented roster + stop.
+PROOF 1: `project_root=<path>` + `ls <project_root>/discoveries/` + `ls <intervention_root>/1-probes/`.
 
-**STEP 2 -- DISPATCH.**
-One call per PP card (batch independent cards in one turn):
 
-```
-Agent(haipipe-probe-orchestrator-agent, run_in_background=<true for fresh>, prompt="
-  project_root: <from STEP 1 -- the dir with discoveries/>
-  mode: light            # 'full' only for claims committed verdicts
-  task_landing: config variant on an existing task > new task in the existing
-                group > new group (last resort). One need = ONE task/config --
-                never a fan of sibling scaffolds for related queries. Task
-                names are SEGMENT/DATASET-AGNOSTIC (arm_engagement, never
-                young_male_arm_engagement): the slice + input dataset are
-                config keys -- configs/<variant>.yaml + runs/run_<variant>.sh
-                (one config = one run, results name-paired); a new subgroup
-                or same-shape dataset = a new config, not a new folder.
-  plan: |
-    <the PP card's Need + Why + Route, verbatim>
-")
-```
+② MATCH — LOCAL first (inline), then hand the BANK to the q-executor agent
+-------------------------------------------------------------------------
 
-- This dispatch is the ONLY door -- audit-shaped scopes ("re-verify the set", "double-check the refs") included; the agent's SWEEP answers those from the ledger. Never invent a side-channel worker (generic web-search agents etc.).
-- The agent decides reused|enriched|fresh in its own SWEEP, clean context -- never pre-chew the shape, never paste discoveries into the prompt.
-- PHI-adjacent task plans (row-level health data input): the dispatch prompt pins the MINIMAL aggregate-safe column allow-list the Need requires and states that outputs must be aggregates only. Restricted-by-default is NOT a question for the operator (bench ruling 2026-07-09: the restricted-vs-full ask was noise mid-flow); org PHI gates apply on top and are never overridden from here.
-- Likely-fresh plans (new searches / landscape / task run) dispatch `run_in_background=true`; sync on a fresh run froze a paper session 25 minutes. When unsure, go background; TRANSLATE runs when it returns. RULE OF THUMB: if `<project_root>/discoveries/` is empty (or holds only `.gitkeep`), EVERY plan is fresh -- set `run_in_background=true` on all of them, and do not report a dispatch as "background" unless the call actually carried the flag (the label must match the call).
-- Card `status: dispatched`; update the index row.
+The cost ladder T0–T4 is the constitution's. Split it by WHO can run each door — the intervention's LOCAL doors stay here; the bank doors go to the shared agent.
 
-PROOF 2: the literal Agent(...) call(s) visible in the transcript -- one per PP card.
+LOCAL (inline — intervention-specific, only the stage can run it):
+- T1 LOCAL — a CLOSED whitelist of the intervention's OWN registries: sibling/prior `_CITATION_*.md` · `_VALUES_*.md` · `_DESCRIPTIONS/DS*.md` · sections already `read` · `0-artifacts/` display units · `1c-claims.md` campaign rows.
+  Fully answered → write the `a-consumer`, set `answered-local`, do NOT hand to the agent.
+  Partially → narrow the q-executor to the remaining gap; only the gap goes to the agent.
+  Adopt the POINTER, never the verdict: a reused value re-verifies against its ORIGINAL source at harvest.
+- DISPLAY-shaped needs are REROUTED, not collected: a question asking for a display unit that does not exist becomes a request row for the display stage; close the section `answered-local` with the `a-consumer` "rerouted to display stage".
 
-**STEP 3 -- TRANSLATE** (probe is application-unaware; this worker is the bilingual layer).
-- Light return: <=5 anchored takeaway lines into the card; `status: read`.
-- `refs:` = EXACTLY the paths the return names (discoveries/.../sources.md, tasks/...); verify each with `ls <project_root>/<ref>`. A return with NO refs means the evidence never landed project-side: the card goes `status: failed (no project-side evidence)` and the phase is NOT green. Takeaways with empty `refs:` are the exact shortcut this contract prevents.
-- **LANE OBLIGATIONS -- write the debt into the card FIRST, then pay it.** When the return carries harvestable content for a lane the venue fires (see "Venue-hook contract" below), IMMEDIATELY record it on the card as a lane line (this is what makes a skipped harvest checkable):
+THE BANK (delegated — T2 REUSE + ③ DISPATCH + ④ POINT run in the agent's clean context):
+- Collect the STILL-COLLECTING sections — state `planned` or `commissioned`, that LOCAL did not resolve — tag each with a route hint (`task | discovery`), and hand the SET to the collector:
+
+  ```text
+  Agent(haipipe-probe-q-executor-agent, prompt="
+    project_root: <from ①>
+    probe_files:  <the PPNN files touched this run>
+    collect:      <section ids still planned/commissioned>, each with route: task|discovery
+  ")
   ```
-  - value_refs: tasks/X03_cohort_summary/results/summary.csv · harvest: OWED    (values lane, always)
-  - pick_list:  S01,S02,S03 · harvest: OWED                      (citation lane, sectioned venues)
-  - unit_refs:  0-artifacts/fig-overview · harvest: OWED         (display lane, display-unit venues)
+
+  The agent runs the stake-free middle in ITS OWN context and returns `{ section → tier, target: QA-path | in-flight | failed }`, having already written each `target:`.
+  It NEVER reads the intervention's registries, the `## Why`, or the stake — its clean context IS the wall; and it never authors a fresh folder (the executor orchestrator picks it, LAW 1).
+  The stage NEVER calls `haipipe-task-orchestrator-agent` / `haipipe-discovery-orchestrator-agent` ITSELF — the collector owns dispatch; a stage that dispatches inline lands results nowhere reviewable.
+
+MOST SECTIONS SHOULD LAND ON T2 — the bank fills autonomously, so most answers exist before anyone asks.
+A batch the agent returns as all-T3/T4 is a SMELL (lazy MATCH, or a starving bank) — say which, in the reply.
+Reading anything BEYOND the QA corpus (opening `results/`, a plan.yaml, the code) is bank work and breaks LAW 1.
+
+PROOF 2: the LOCAL hits (per T1-resolved section, the literal grep/ls line), and the agent's return block (per delegated section: tier + `target:`).
+
+
+③ DISPATCH — owned by the collector agent, not the stage
+--------------------------------------------------------
+
+The agent you called in ② owns dispatch: it sends each MISS to `Agent(haipipe-task-orchestrator-agent)` / `Agent(haipipe-discovery-orchestrator-agent)`, the `q-executor` VERBATIM, `run_in_background` for fresh work, and omits the leaf for fresh (the orchestrator picks the folder and returns the path).
+The stage NEVER calls an orchestrator itself — doing so bypasses this contract (results die with the reply).
+
+DEFERRED / ASYNC is the agent's too: a section it cannot land synchronously comes back `in-flight` and stays `commissioned`; the NEXT PROBE run re-hands it to the agent, whose ② re-matches the now-`working`/`answered` QA file.
+This worker writes NOTHING under `tasks/` or `discoveries/`, ever — no stub, no mailbox.
+
+PROOF 3: the agent's per-section dispatch / in-flight lines (from its return); NO orchestrator call appears in THIS worker's own transcript.
+
+
+④ POINT — the agent wrote `target:`; the stage VERIFIES it on disk
+------------------------------------------------------------------
+
+The agent already wrote each resolved section's `target:` (the FILE, never the folder).
+Before harvesting, VERIFY — do not trust the return blind (the state is the TARGET's state line, not the target's existence — open the file):
+- `ls <project_root>/<target>` resolves, and `grep '^- state:' <target>` reads `answered` → ⑤.
+- `working` → stays `commissioned`, report IN PROGRESS since `<started>` (dead past `QA_WORKING_TTL_HOURS` → re-hand to the agent next run).
+- no QA-file path returned → `state: failed`, phase not green.
+- a `commissioned` target that has since gone `answered` is a HARD FAIL (`commissioned-target-answered`) — harvest it now.
+
+PROOF 4: per section the `target:` line, the `ls` that resolves it, and `grep '^- state:' <target>`.
+
+════════ COLLECTION (①–④) ends here — the answer is banked.
+HARVEST (⑤) begins. ════════
+
+⑤ INTERPRET — the a-consumer, the claim status, and HARVEST (venue-scaled)
+--------------------------------------------------------------------------
+
+- Write the `a-consumer` (translate the general answer UP into the intervention's words).
+  ONLY against an `answered`, non-superseded target (constitution).
+- `mode: full` → the AUTHOR writes the claim status (`supported | refuted | inconclusive` + confidence) into `0-lifecycle/1c-claims/1c-claims.md`, flipping the C-line AND its Evidence Campaign row in the same pass — never in the probe file.
+  A probe is communication, not judgment — there is no review gate; keep the overclaim check (never causal from associational evidence).
+  The venue gate later reads THIS campaign against its settlement bar (light | medium | full).
+- LANE OBLIGATIONS — record the debt in the section FIRST, then pay it.
+  Which lanes fire is decided HERE, from the pinned venue (Venue-hook contract below):
+  ```text
+  - values:   tasks/X03_cohort_summary/results/summary.csv · harvest: OWED   (values lane, always)
+  - sources:  S01,S02,S03 · harvest: OWED                                    (citation lane, sectioned venues)
+  - displays: 0-artifacts/fig-overview · harvest: OWED                       (display lane, display-unit venues)
   ```
-  Then dispatch the lane's harvester hook as a subagent (cheap tier, pointer-following only -- see the venue-hook contract) and accept MECHANICALLY per `ref/harvest-acceptance.md` (run the greps, never eyeball). On acceptance flip the line: `harvest: accepted (<n> entries, <doc>)`. A lane line still saying `OWED` at VERIFY is a checker FAIL -- the phase cannot go green over a skipped harvest (paper seed-incident rule, JL 2026-07-07).
-- Full return: verdict block (G1/G2/G3 + verdict + reasoning + judged-by + date) lands in the card's `## Verdict`; `status: verdicted`; the claims ledger's C-line AND its Evidence Campaign row flip in the same pass (enum: `supported | refuted | inconclusive`).
-- This worker reads no project files; `ls` for existence only, never content. Sections / round logs backfill from the card, never from memory. Buffer + index convention: `../../../haipipe-application/fn/probe-plans.md`.
+  Then dispatch the lane's HARVESTER HOOK as a cheap subagent (pointer-following only) and accept MECHANICALLY per `ref/harvest-acceptance.md` (run the greps, never eyeball).
+  Flip to `harvest: accepted (<n>, <doc>)`.
+  An `OWED` line at the gate FAILs.
+- RUNG 1a REDIRECT (GROW loop): a descriptions-stage `values:` lane lands in `_DESCRIPTIONS/DS<n>_<name>.md` (per-dataset profile sheet), not `_VALUES_`; same OWED/accepted bookkeeping, different home — the 1a doc itself keeps one-line D entries.
 
-PROOF 3: per-card `refs:` line + the `ls` results, PLUS -- for every lane line written -- the harvester Agent(...) call and its acceptance-grep output. A card with a lane line and no harvest proof means STEP 3 did not finish.
+PROOF 5: per section the `a-consumer` line, the claim-ledger diff (if it serves a claim), and each harvester `Agent(...)` call + its acceptance-grep output.
 
-**STEP 4 -- VERIFY** (deterministic; the stage CHECK gate re-runs the same script).
+
+VERIFY — the checker (the stage CHECK gate re-runs the same script)
+------------------------------------------------------------------
 
 ```
 sh <this-skill-dir>/check-probe-cards.sh <intervention_root> [<project_root>]
 ```
 
-Checks: read/verdicted cards have resolving refs; planned/dispatched cards FAIL (probe-not-run); `harvest: OWED` lane lines FAIL (harvest skipped); no markdown tables in any card; no card over 80 lines; `status: failed` surfaced; working docs (_CITATION_/_VALUES_/_DISPLAY_) carry no bibtex, _CITATION_ no tables.
-Any FAIL -> fix or surface it; NEVER report a green PROBE over a FAIL.
-The stage CHECK gate re-runs this same script (wired in haipipe-application-check).
+Checks: read sections have resolving, non-`working`, non-superseded targets; planned sections FAIL (probe-not-run); commissioned sections carry owner/eta/blocks/cross-project with a future eta; `harvest: OWED` lane lines FAIL; dead vocabulary (`verdicted`, `## Verdict`) FAILs; no markdown tables in any probe file; the bank carries no consumer vocabulary (LAW 2).
+The FAIL codes are the constitution's.
+Never report a green PROBE over a FAIL.
 
-PROOF 4: the checker output pasted in the reply.
+PROOF 6: the checker output, pasted.
+
 
 Venue-hook contract (application delta: hooks, not sub-worker skills)
-----------------------------------------------------------------------
+=====================================================================
 
-Application keeps NO probe sub-worker skills; the three HARVEST lanes are venue-scaled hooks inside this worker. Which lanes fire is decided at lane CREATION (TRANSLATE), from the pinned venue -- the checker stays presence-driven and needs no venue lookup:
+Application keeps NO probe sub-worker skills; the three HARVEST lanes are venue-scaled hooks inside this worker.
+Which lanes fire is decided at lane CREATION (⑤ INTERPRET), from the pinned venue — the checker stays presence-driven and needs no venue lookup:
 
-- `_VALUES_` lane -- ALWAYS eligible: any venue's artifact quotes numbers, and claims-rung verified values land in `_VALUES_1c-claims.md` regardless of venue. RUNG 1a REDIRECT (GROW loop, 2026-07-09): descriptions-stage probes land this lane in `_DESCRIPTIONS/DS<n>_<name>.md` (per-dataset profile sheet: field inventory + Field Disposition + readable landed profile; quoted-only, every line anchored + dated) -- same OWED/accepted debt bookkeeping, different home; the 1a doc itself stays one-line D entries.
-- `_CITATION_` lane -- SECTIONED venues only (report/dashboard-like, per the venue profile). Pre-pin stages (seed and the 1a-1d ladder are venue-FREE) keep source anchors in the card takeaways; no _CITATION_ doc exists before a sectioned venue is pinned.
-- `_DISPLAY_` lane -- only if the venue's artifact has display units (panels, charts, figures). Simple venues (sms/push/reminder) have no document lanes at all: their PROBE phase is claims-evidence only.
+- `values:` — ALWAYS eligible: any venue's artifact quotes numbers, and claims-rung verified values land regardless of venue.
+- `sources:` — SECTIONED venues only (report/dashboard-like). Pre-pin stages (seed and the venue-FREE 1a–1d ladder) keep source anchors in the section's `a-consumer`; no `_CITATION_` doc exists before a sectioned venue is pinned.
+- `displays:` — only if the venue's artifact has display units (panels, charts, figures). Simple venues (sms/push/reminder) have no document lanes: their PROBE phase is claims-evidence only.
 
-When a hook fires it MUST follow paper's 2.0.0 sub-worker contract (haipipe-paper-probe-citation/-values/-display): pointer-following + gateway dispatch only, mechanical acceptance greps, no inline search -- the hook NEVER searches (no WebSearch, no Semantic Scholar; finding is the gateway's monopoly), transcribes only what the gateway's return points at, and is accepted by the LITERAL greps in `ref/harvest-acceptance.md`. Card format specs are read from their single source of truth, never paraphrased into the dispatch prompt.
+When a hook fires it follows paper's sub-worker contract (`haipipe-paper-probe-citation` / `-values` / `-display`): pointer-following + collector dispatch only, mechanical acceptance greps, no inline search.
+The hook transcribes only what the return points at; finding is the bank's monopoly.
+Card format specs are read from their single source of truth, never paraphrased into the dispatch prompt.
 
-Hard boundaries (inherited by all stages)
--------------------------------------------
-- NEVER generate bibtex; _CITATION_ is plain text only
-- NEVER fabricate numbers; NEVER create ad-hoc plots inline; NEVER write insight cards (deposits belong to the probe/insight side)
-- NO markdown tables in PP cards, _CITATION_, or any probe/discovery document (JL standing rule) -- bullet lines only, one per source
-- NO inline search in the PROBE phase -- durability is the whole point here; the orchestrator dispatch is the only door. (DRAFT may WebSearch to orient; the difference is card durability, not the search verb. DRAFT search feeds prose + `status: planned` skeletons; PROBE lands `read` cards with refs.)
-- Never dispatch discovery/task orchestrator agents directly from a stage skill -- this worker is the ONLY door: stage -> this worker -> gateway -> discovery/task during probe's own Gather. A stage that calls `Agent(haipipe-discovery-orchestrator-agent)` or `/haipipe-probe` itself is bypassing the evidence contract (results land nowhere reviewable and die with the reply).
-- All flags (uncertain values, unverified sources) resolve in CHECK, not here
+
+Hard boundaries (application-specific; the wall + ONE-WRITER are the constitution's)
+====================================================================================
+
+- `_CITATION_` is plain text only; no bibtex, ever.
+- Numbers trace to a source; plots come from the display/task side, never inline.
+- Probe files and working docs hold bullet SECTIONS, no markdown tables.
+- The dispatch is the only door — a stage that calls an evidence agent itself lands results nowhere reviewable and dies with the reply.
+
 
 Return contract
----------------
+===============
 
 ```
 status:    ok | blocked
 stage:     <stage-name>
-lanes:     val <status> [· cite <status> · disp <status> -- only lanes the venue fires]
-cards:     PPNN <status> · refs <n>/<n> resolved
+probes:    PPNN <n> sections · T0/T1 <n> · T2 <n> · T3/T4 <n> dispatched
+lanes:     val <status> [· cite <status> · disp <status> — only lanes the venue fires]
 next:      <suggested command>
 ```
 
+
 Reference
----------
+=========
 
 ```
-ref/per-stage-dispatch.md   stage->mode map · seed/claims/venue specifics ·
-                            venue-scaled lane rules · phase-status strip forms
-ref/harvest-acceptance.md   lane-hook dispatch + the LITERAL acceptance greps
-check-probe-cards.sh        the STEP 4 / stage-gate verifier (family-local fork)
-../../../../probe/haipipe-probe/SKILL.md         PPNN card anatomy (single source of truth)
-../../../haipipe-application/fn/probe-plans.md   buffer + index convention
+../../../../probe/haipipe-probe/SKILL.md   THE CONSTITUTION — the model. Read it.
+ref/per-stage-dispatch.md                  rung→mode map · seed/claims specifics · venue-scaled lanes
+ref/harvest-acceptance.md                  lane dispatch + the LITERAL acceptance greps
+check-probe-cards.sh                       the VERIFY / stage-gate verifier (family-local fork)
+../../../haipipe-application/fn/probes.md   buffer + release convention
 ```
 
-Siblings: DRAFT (haipipe-application-draft) -> PROBE (this) -> REVISE (haipipe-application-revise) -> CHECK (haipipe-application-check).
-PROBE reads the DRAFT outline; REVISE weaves PROBE outputs into the artifact; CHECK verifies all PROBE flags.
+Siblings: DRAFT (haipipe-application-draft) → PROBE (this) → REVISE (haipipe-application-revise) → CHECK (haipipe-application-check).

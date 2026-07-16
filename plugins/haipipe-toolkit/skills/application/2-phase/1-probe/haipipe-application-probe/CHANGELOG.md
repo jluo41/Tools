@@ -4,6 +4,18 @@ haipipe-application-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [3.0.0] — 2026-07-15
+
+Changed (probe-redesign port; application catches up to paper probe 5.0.0 + the constitution haipipe-probe 9.0.0)
+- Rebuilt as THIN DELTAS over the probe constitution (`../../../../probe/haipipe-probe/SKILL.md`): the model — probe-file anatomy, QA state-line contract, cost ladder T0–T4, the two LAWS, derived states, checker FAIL codes — is the constitution's; this file is only the application-side deltas.
+- Loop: the 4-step BOOKKEEP→DISPATCH→TRANSLATE→VERIFY becomes the constitution's five-step ORGANIZE → MATCH → DISPATCH → POINT → INTERPRET (⑤ = HARVEST, the worker's own).
+- Probe files: per-stage `0-lifecycle/<stage>/_PROBE/PPNN_*.md` cards + the `1-probe-plans/README.md` index RETIRED → flat `1-probes/PPNN_<topic>.md`, one file per TOPIC, each question a SECTION (serves/target/state/q-executor/a-consumer + `## Why`). ORGANIZE migrates a legacy card on first touch.
+- Dispatch: the `haipipe-probe-orchestrator-agent` "gateway" framing → the shared `haipipe-probe-q-executor-agent` collector, which runs ②③④ (MATCH/DISPATCH/POINT) in stake-free clean context and writes each `target:`.
+- Claim settling: `## Verdict` block, the `verdicted` state, and the G1/G2/G3 review gate DELETED — a probe is communication, not judgment; a full-mode answer's status is written by the author into `0-lifecycle/1c-claims/1c-claims.md` (C-line + Evidence Campaign row), never in the probe file. States drop `dispatched` for the constitution's set.
+- Harvest lanes renamed to the constitution's field names — `values:` / `sources:` / `displays:` (were value_refs / pick_list / unit_refs); still venue-scaled HOOKS (application delta), not sub-worker skills.
+- `check-probe-cards.sh` replaced by a faithful fork of paper's redesigned 784-line checker (intervention_root vocab, LAW-2 leak lint retuned to intervention vocab, dead-vocab FAIL for `verdicted`/`## Verdict`), minus the paper-only resource-stage pass.
+- `ref/per-stage-dispatch.md` and `ref/harvest-acceptance.md` rewritten to the new vocabulary and the collector-dispatch model.
+
 ## [2.0.0] — 2026-07-07
 
 Changed (round-2 paper-alignment SOP §4 rows 1-3, resolutions R1 + R5; port of paper probe 3.1.0 enforcement)

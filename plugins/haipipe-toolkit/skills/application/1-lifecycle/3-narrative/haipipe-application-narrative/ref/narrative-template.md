@@ -42,4 +42,4 @@ One line per load-bearing claim/advice: where it lands and what job it does ther
 Probes
 ------
 
-<Narrative-level needs (rare): a beat exposing a NEW evidence gap routes back to 1c-claims as a _PROBE/ card, never gathers here. One line per PP with status if any exist.>
+<Narrative-level needs (rare): a beat exposing a NEW evidence gap raises a question SECTION in the flat pool 1-probes/PPNN_<topic>.md (serves: 3-narrative), routed back to 1c-claims, never gathers here. One line per PP with its state (planned|commissioned|answered|read|answered-local|failed) if any exist.>

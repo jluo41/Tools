@@ -4,106 +4,97 @@ description: "Stage 2 of the intervention lifecycle (venue-ALIGNED, first stage 
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.1.0"
-  last_updated: "2026-07-06"
-  summary: "Paper-aligned renumber: pitch moves from stage 1 to stage 2 (AFTER claims + venue pin; was before claims in v3). Now venue-ALIGNED: reads the pinned venue + audience packs, re-couples on retarget. Stage folder 0-lifecycle/2-pitch/. 4.1.0 (765696f port): visible Probes section + reads 2-venue.md Artifact Principles + ascii formatting."
-  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
+  version: "5.0.0"
+  last_updated: "2026-07-15"
+  summary: "Pitch stage (stage 2, venue-ALIGNED, the FIRST stage after the venue pin) — the one-minute goal + theory of change told FOR the pinned venue + audience, and the home of the [primary] claim designation. Rewrites on retarget; the venue-FREE ladder it cites does not. History: ./CHANGELOG.md."
 ---
 
 Skill: haipipe-application-pitch
 ==================================
 
-Stage 2 of the intervention lifecycle -- the first venue-ALIGNED stage. The one-minute story of what this intervention achieves and why it should work, told FOR the pinned venue and audience. Rewrites on retarget (claims does not).
+Stage **2** of the intervention lifecycle, and the FIRST venue-ALIGNED stage.
+It answers: what is this intervention selling, to whom, through this channel?
 
-Question answered
-==================
-
-"What is this intervention selling, to whom, through this channel?"
-
-Input
-======
-
-- `0-lifecycle/1d-advice/1d-advice.md` (required -- the ladder's deliverable feeds the story)
-- `0-lifecycle/1c-claims/1c-claims.md` (the evidence backstop behind each advice entry)
-- `0-lifecycle/0-seed/0-seed.md`
-- `STATUS.md` -> pinned venue + audience (required; if venue unpinned -> BLOCK: "run /haipipe-application venue first")
-- `_venue/venue-<name>/` + `_audience/profile-<name>/` (framing expectations)
-
-Output
-=======
-
-```
-<intervention-root>/0-lifecycle/2-pitch/2-pitch.md
-<intervention-root>/0-lifecycle/2-pitch/_LOG_2-pitch.md
+```text
+1d-advice   what the evidence advises (the ladder's deliverable, venue-FREE)
+[venue]     pins the modality in STATUS.md
+2-pitch     the one-minute story, told FOR the pinned venue + audience   <- THIS STAGE
+3-narrative how the claims compose into the output's arc (venue-ALIGNED)
 ```
 
-Pitch artifact schema
-======================
+Read first: `../../../PHILOSOPHY.md`, `../../../wiki/03-intervention-lifecycle.md`.
 
-Canonical template (source of truth for section order + placeholders): `ref/pitch-template.md`.
 
-```markdown
-2-pitch: <intervention name>
-============================
+## What's special: three things make the pitch the pitch
 
-One-sentence goal
------------------
-<what this intervention does, for whom, through the pinned channel>
-Example: "A timing-aware refill SMS that increases adherence by
-8-12pp among patients whose prescriptions are about to expire."
+**1. First venue-ALIGNED stage — it rewrites on retarget.**
+The pitch sits immediately after the venue pin; a venue re-pin REWRITES it (new framing, possibly a new primary claim) while the venue-FREE ladder it cites stays untouched.
+It reads the pinned venue's Artifact Principles (`0-lifecycle/2-venue/2-venue.md`) + the audience profile, not the raw packs.
+It NEEDS a pinned venue: STATUS.md with no venue → BLOCK, "run /haipipe-application venue first".
 
-Theory of change
-----------------
-<why this should work — the causal chain from message to behavior,
-anchored in 1d advice (A-ids) and the ledger's supported claims (C-ids)>
+**2. It designates the [primary] claim.**
+The claims ledger is venue-free and ranks nothing; the pitch names the ONE claim that carries the value proposition FOR this venue.
+A result novel elsewhere but already assumed by this audience is an enabler, not the primary.
+This designation lives HERE, not in the ledger, and a venue change re-runs it.
 
-Audience frame
---------------
-<how the pinned audience profile shapes the register and ask>
+**3. One minute or it failed — it sells, it does not re-derive.**
+The pitch is the one-minute story of what the intervention achieves and why it should work.
+Its theory of change is a causal chain from message to behavior, each link anchored in a 1d advice entry (`A<n>`) or a supported ledger claim (`C<n>`) — no unanchored assertions.
+Evidence is RECEIVED here, never produced (LAW 1): the ladder settled it upstream.
 
-Primary claim
--------------
-<which ledger claim carries the value proposition ([primary] designation
-lives HERE, venue-aligned — not in the venue-free ledger)>
 
-Why now
--------
-<what makes this timely>
+## The four phases, in pitch
 
-Probes
-------
-<pitch-level investigation needs, INLINE: channel fit, framing risk,
-competing programs — one line per PP with status; cards in _PROBE/>
+```text
+DRAFT   read 1d-advice.md (the entries it sells), 1c-claims.md (the evidence backstop), 0-seed.md,
+        the pinned 2-venue.md Artifact Principles + the audience profile; settle the one-minute goal
+        + theory of change with the user; designate the [primary] claim for THIS venue; write the pitch
+PROBE   rare, mode light — a CITATION LANE only: anchor evidence for a theory-of-change link the ledger
+        lacks, raised as a SECTION in 1-probes/PPNN_<topic>.md. Most pitches skip it (logged in _LOG).
+REVISE  venue + audience framing pass — register, the ask, one-minute readability
+CHECK   exit criteria below → Gate Ledger row
 ```
 
-Artifact formatting: `=====` title / `-----` sections (no `#` headings); one sentence per line. Pitch reads the venue stage doc's Artifact Principles (0-lifecycle/2-venue/2-venue.md) rather than re-deriving from the pack.
+Pitch RECEIVES evidence, never produces it inline: a PROBE section binds through `haipipe-application-probe`, which hands the stake-stripped `q-executor:` to `Agent(haipipe-probe-q-executor-agent)` and points the section's `target:` at an answering QA file — there is no gateway skill and no per-stage `_PROBE/` folder.
+Routing mechanics are the probe layer's: `../../../2-phase/1-probe/haipipe-application-probe/SKILL.md` (see its `ref/per-stage-dispatch.md`, the "2-pitch" rung).
+A beat that exposes a NEW evidence gap routes back to `1c-claims`, never gathers here.
 
-Phases
-=======
 
+## The artifact
+
+`0-lifecycle/2-pitch/2-pitch.md` — full skeleton in `ref/pitch-template.md`:
+
+```text
+One-sentence goal   what this intervention does, for whom, through the pinned channel; specific + testable
+Theory of change    the causal chain from message to behavior; each link anchored in a 1d advice entry
+                    (A<n>) or a supported ledger claim (C<n>)
+Audience frame      how the pinned audience profile shapes the register and the ask
+Primary claim       which ledger claim carries the value proposition — the [primary] designation lives
+                    HERE, venue-aligned, NOT in the venue-free ledger
+Why now             what makes this timely
+Probes              pitch-level evidence needs, one line per PP with its state (usually empty)
 ```
-DRAFT   settle goal + theory of change with the user (haipipe-application-draft)
-PROBE   rare; anchor evidence for the theory of change if the ledger lacks it,
-        mode light (haipipe-application-probe)
-REVISE  venue + audience framing pass (haipipe-application-revise)
-CHECK   exit criteria below → Gate Ledger row (haipipe-application-check)
-```
 
-Definition of done
-===================
+Sidecar: `_LOG_2-pitch.md` (phase journal + semantic-version provenance).
+Formatting: `=====` title / `-----` sections (no `#` headings); one sentence per line.
 
-```
+
+## Definition of done (read at CHECK)
+
+```text
 [ ] 0-lifecycle/2-pitch/2-pitch.md exists
-[ ] One-sentence goal is specific and testable
-[ ] Theory of change cites ledger claims (C-ids), no unanchored assertions
-[ ] Primary claim designated; audience frame matches the profile
+[ ] one-sentence goal is specific and testable
+[ ] theory of change cites 1d advice (A<n>) and/or supported ledger claims (C<n>) — no unanchored assertions
+[ ] [primary] claim designated for THIS venue; audience frame matches the profile
 ```
 
-Retarget rule: a venue re-pin rewrites this stage (new framing, possibly a new primary claim); the claims ledger it cites stays unchanged.
 
-Handoff: `promote -> /haipipe-application narrative` (or straight to `draft` for simple venues -- check STATUS.md stages_skipped). End the reply with the closing block (stage line via `../../../haipipe-application/stage-strip.sh`).
+## Exits
 
-Risk profile
-=============
+```text
+promote -> /haipipe-application narrative   (or straight to draft for simple venues — check STATUS.md stages_skipped)
+```
 
-WRITES the 2-pitch/ stage folder only.
+A venue re-pin rewrites this stage; the claims ledger it cites stays unchanged.
+WRITES the `2-pitch/` stage folder only.
+End every reply with the closing block (stage line via `../../../haipipe-application/stage-strip.sh`).

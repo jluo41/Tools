@@ -43,14 +43,14 @@ Negative wisdom is first-class: this saves the next round from re-deriving it.
 **R1 - <short name>**
 
 <The dropped guidance in one sentence.>
-Reason: <refuting C<n> verdict, or why it fails actionability/scope>.
+Reason: <refuting C<n> status, or why it fails actionability/scope>.
 
 
 Probes
 ------
 
-<This rung's probe roster (cards in _PROBE/, index row in 1-probe-plans/README.md): one line per PP with status.
-Rare on this rung: derivation is in-stage work, and a NEW evidence gap routes back to 1c-claims' probes. Roster must match disk.>
+<This rung's probe roster, mirroring the sections in 1-probes/ (flat pool, PPNN_<topic>.md) that serve 1d: one line per PP with status.
+Rare on this rung: derivation is in-stage work, and a NEW evidence gap routes back to 1c-claims (raised there as a question section in 1-probes/). Roster must match the pool.>
 (May be empty.)
 
 - PP<nn> - <question> - <status>

@@ -40,7 +40,7 @@ Stage skills are the USER-FACING surface. Internally, each stage skill drives th
 
 **This router routes users to STAGE skills only -- never to phase skills.** If a request sounds like a phase ("gather evidence for claims", "polish the pitch"), route to the owning stage skill and let it dispatch.
 
-Stage artifacts are markdown (`N-<stage>.md` + `_LOG_` + `_PROBE/` in a stage FOLDER). Stage gates: `../../wiki/08-stage-gate.md`.
+Stage artifacts are markdown (`N-<stage>.md` + `_LOG_` in a stage FOLDER); the questions a stage raises live in the flat pool `1-probes/`, keyed back by each section's `serves:`. Stage gates: `../../wiki/08-stage-gate.md`.
 
 Natural Pipeline Order
 ----------------------

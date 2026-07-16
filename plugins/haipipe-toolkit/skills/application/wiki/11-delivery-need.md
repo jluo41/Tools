@@ -1,69 +1,75 @@
 # Delivery Need (application side)
 
-How an intervention (message / checklist / dashboard / report) records a gap as a need and routes it to the right evidence worker, then backfills when the verdict/artifact returns. Application-owned; the paper skill keeps its own copy (`../../paper/wiki/11-delivery-need.md`). There is no cross-skill shared file.
+How an intervention (message / checklist / dashboard / report) records an evidence gap as a QUESTION, routes it to the bank, and backfills when the answer returns. Application-owned; the paper skill keeps its own copy (`../../paper/wiki/11-delivery-need.md`). There is no cross-skill shared file. The model itself is the probe constitution's (`../../probe/haipipe-probe/SKILL.md`); this file is the application-side routing.
 
-## How the application talks to probe
+## How the application talks to the bank
 
-No message bus, no shared contract file. Two channels carry it, and the agent (this session) is the medium:
-
-```
-1. Command   a stage hits an evidence gap -> the stage's PROBE phase buffers a
-             _PROBE/PPNN card; `/haipipe-application probe run` hands the buffer
-             to haipipe-application-probe (the PROBE phase worker), which
-             dispatches Agent(haipipe-probe-orchestrator-agent). Stages never
-             call /haipipe-probe or the discovery/task agents directly.
-2. Disk      the need lives in the stage's _PROBE/PPNN_*.md card (+ index row in
-   (async)   1-probe-plans/README.md); the returned takeaways and (full-mode)
-             verdict land IN that card at TRANSLATE; the application reads the
-             card to backfill. No handshake, just read/write the same card in turn.
-```
-
-Who owns which format: the application owns the NEED (the card's Need/Why/Route, loose; probe only reads the gap). Probe owns the VERDICT (strict; the PPNN card's `## Verdict` anatomy in `probe/haipipe-probe/SKILL.md`, enum `supported | refuted | inconclusive`). That is why no shared interface file is needed: each artifact's shape belongs to the skill that produces it.
-
-## When to record a need
-
-Only when the deliverable requires EVIDENCE the project does not yet have. A framing/format/tone problem stays inside the application lifecycle. A need leaves the application for an evidence worker.
+A need is a QUESTION the intervention cannot answer itself, RAISED as a SECTION in the flat probe pool `1-probes/PPNN_<topic>.md`. No message bus, no shared contract file. Two channels carry it, and the agent (this session) is the medium:
 
 ```
-stage gap -> _PROBE/PPNN card -> probe worker -> gateway -> verdict/artifact -> card -> backfill
+1. Command   a stage's DRAFT raises the questions (a Q-consumer list); APPROVE (human)
+             picks which to pursue. `/haipipe-application probe run [PPNN]` hands the
+             approved set to haipipe-application-probe (the PROBE phase worker), which
+             runs the five-step loop. DISPATCH goes through the stake-free collector
+             Agent(haipipe-probe-q-executor-agent) — it calls the task/discovery
+             orchestrators in clean context. Stages never call an orchestrator directly.
+2. Disk      the question lives as a SECTION in 1-probes/PPNN_<topic>.md; its target:
+   (async)   binds by PATH to a QA file the executor wrote in the bank. The section's
+             a-consumer holds the answer in the intervention's words; the application
+             reads it to backfill. No handshake, just read/write the same section in turn.
+```
+
+Who owns which format: the application owns the QUESTION (the section's `## Why` stake + the `q-executor`; the bank only ever sees the stake-free `q-executor`). The bank owns the ANSWER (the QA file's `## Answer`, in general language). A probe is COMMUNICATION, not judgment — it carries a question out and an answer back, and nothing else. A CLAIM's status is written by the author into `1c-claims.md`, never in the probe file.
+
+## When to raise a question
+
+Only when the deliverable requires EVIDENCE the project does not yet have. A framing/format/tone problem stays inside the application lifecycle. An evidence gap becomes a question bound to the bank.
+
+```
+stage gap -> a section in 1-probes/ -> haipipe-application-probe five-step loop
+          -> collector -> QA file answer -> a-consumer + 1c-claims status backfill
 ```
 
 ## Routes (v5 verbs)
 
 ```
-claim needs a verdict / robustness            -> /haipipe-application probe "<need>"   (buffer; run dispatches)
+claim-related evidence / robustness           -> /haipipe-application probe "<question>"  (a SECTION; run dispatches)
 outside context / benchmark (non-claim)       -> /haipipe-application discover "<question>"
 run / data artifact / display materialization -> /haipipe-application task "<contract>"  (or /haipipe-task-for-display)
 finished evidence needs reusable K/W meaning  -> /haipipe-insight <artifact>
 ```
 
-The retired verb `/haipipe-probe plan from-need` no longer exists (folderless probe, 2026-07-05): needs are cards, and the PROBE phase worker is the single dispatch point.
+Claim-related evidence goes through a stage's PROBE phase — the section preserves the claim-evidence chain and makes the backlog visible. Non-claim utility work goes straight to the task/discovery door; if the answer later matters, open a section whose `target:` points at the already-written QA file (a T2 REUSE — nothing re-runs).
 
-## Need record
+## Question record
 
-Each open need is one `_PROBE/PPNN_<slug>.md` card (anatomy + statuses: `haipipe-application/fn/probe-plans.md`), indexed in `1-probe-plans/README.md`:
+Each open question is one SECTION in `1-probes/PPNN_<topic>.md` (anatomy + states: `haipipe-application/fn/probes.md` and the probe constitution). One `## Why` per FILE, one SECTION per question:
 
 ```
-id           PPNN (numbering authority = the index)
-stage        which lifecycle stage owns the card
-claim/gap    which claim / element / section has the gap
-kind         verdict | context | artifact | meaning
-mode         light | full
-status       planned | dispatched | read | verdicted
-backfill     the ledger row / section / round slot to update on return
+serves       which stage / claim the question is FOR
+target       a PATH to the answering QA file in the bank (`NEW <path>` while it does not exist)
+state        planned | commissioned | answered | read | answered-local | failed  (DERIVED from disk)
+q-executor   the question in general language, stake stripped — the ONLY thing sent to the bank, FROZEN
+a-consumer   the answer in the intervention's own words, written at harvest
+## Why       the STAKE, in intervention vocabulary — NEVER sent to an executor, NEVER copied anywhere
 ```
+
+There is NO `## Verdict` block and NO G1/G2/G3 review gate. BUILD-lane sections (days-to-weeks work) additionally carry `owner:` · `eta:` · `blocks:` · `cross-project:`, present only at `state: commissioned`.
 
 ## Backfill (the return direction)
 
-When the gateway returns, TRANSLATE lands everything in the card; backfill flows FROM the card:
+When the QA file lands, ⑤ INTERPRET writes the `a-consumer`; backfill flows FROM the section:
 
 ```
-- update the claim / element / section with the verdict or takeaway, citing the card + its refs
-- verdict enum: supported -> claim supported; refuted -> drop or reword (never ship a
-  refuted claim); inconclusive -> stays weak/GAP with the caveat recorded
-- if support is partial, state the supported scope and the caveat
-- the probe side NEVER edits application files; it returns, the worker lands, the
-  application decides how to phrase it for its audience
+- write the a-consumer (the answer in the intervention's own words), ONLY against an
+  answered, non-superseded target
+- if the section serves a claim, the AUTHOR flips that claim's STATUS in 1c-claims.md
+  (supported | weak | GAP), flipping the C-line AND its Evidence Campaign row — never in
+  the probe file; keep the overclaim check (never causal from associational evidence)
+- refuted / GAP evidence: drop or reword (never ship an unsupported claim); a weak/GAP
+  claim stays with the caveat recorded, and the venue gate reads the campaign against its bar
+- the bank NEVER edits application files; the executor writes the QA file, the worker
+  harvests it, the application decides how to phrase it for its audience
 ```
 
-The same landed evidence can serve both a paper and an application; each frames it for its own audience.
+The same landed QA answer can serve both a paper and an application; each reads the same file differently and frames it for its own audience.

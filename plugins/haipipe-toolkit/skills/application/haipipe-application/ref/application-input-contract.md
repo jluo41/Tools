@@ -101,19 +101,19 @@ Triggering evidence work on a gap
 ==================================
 
 When a K/W gap is detected, buffer a probe card and dispatch through the
-PROBE worker (ask retired 2026-07-06; the probe buffer is the door):
+PROBE worker (the flat probe pool 1-probes/ is the door):
 
 ```
 /haipipe-application probe "<Q>"      then: /haipipe-application probe run
 
 Q should be:
-  - specific:    "Does K03 (FiLM overfit) hold for elderly patient subset?"
-                 NOT "What about FiLM?"
+  - specific:    "Does the refill-timing effect hold for the elderly subset?"
+                 NOT "What about timing?"
   - load-bearing: tied to a concrete claim the artifact needs
-  - bounded:     one card per question; mode full only for committed verdicts
+  - bounded:     one SECTION per question; mode full only for committed claim status
 
-Return contract: TRANSLATE lands takeaways/verdict in the PPNN card;
-re-read insights/INDEX.md afterwards to pick up new K/W cards.
+Return contract: INTERPRET writes the section's a-consumer; a full-mode answer
+flips the claim status in 1c-claims.md. There is no verdict block in the probe file.
 ```
 
 

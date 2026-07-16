@@ -3,6 +3,12 @@ haipipe-application-themes — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`.
 
+## [2.0.0] — 2026-07-15
+
+- Stage-skeleton reshape (paper-alignment, matching the 1c-claims exemplar): SKILL.md rebuilt on the 5-part skeleton — one-line decision + ladder, "What's special" (3 themes-unique items: extracted-not-invented/grounding, question-space-not-claim/hooks feed 1c, full D-consumption + counter-hunt), "The four phases, in themes", "The artifact" (section list + ref/themes-template.md pointer), "Exits". One sentence per line; prohibition walls cut. No load-bearing fact dropped (all 8 done-criteria + 5 principles folded into What's-special / CHECK line / phase notes).
+- `summary:` deflated to one line + "History: ./CHANGELOG.md" (was a ~605-char version blob); redundant version-history comment line removed.
+- PROBE-MODEL repoint to the flat pool: probe questions are SECTIONS in `1-probes/PPNN_<topic>.md` (one file per topic), NOT per-stage `_PROBE/` cards and NOT `1-probe-plans/README.md` (both RETIRED). PROBE runs the five-step loop via `haipipe-application-probe` (mode light → discovery; task for quick in-data confirmations); the section's `a-consumer:` lands grounding refs onto T entries. Dead vocabulary removed (`verdicted`, `dispatched`); claim status stays in 1c only. `ref/themes-template.md` Probes section repointed with the flat-pool path + the six-state enum (planned|commissioned|answered|read|answered-local|failed).
+
 ## [1.0.0] — 2026-07-09
 
 - NEW skill, born in the ladder restage (SOP-ladder-restage.md, JL 2026-07-09): rung 1b = the I rung of the venue-FREE evidence ladder (1a-descriptions -> 1b-themes -> 1c-claims -> 1d-principles).

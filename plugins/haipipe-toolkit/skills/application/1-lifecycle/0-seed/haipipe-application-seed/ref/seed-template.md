@@ -51,7 +51,8 @@ Kill criteria
 Probes
 ------
 
-<Seed-level FEASIBILITY probes only (novelty + external-data obtainability), one line per PP with status; cards in _PROBE/.
+<Seed-level FEASIBILITY probes only (novelty + external-data obtainability), one line per PP with status.
+Each question is a SECTION in the flat pool 1-probes/PPNN_<topic>.md (serves/target/state/q-executor/a-consumer + ## Why); states planned|commissioned|answered|read|answered-local|failed.
 Internal-data needs are [FORWARD -> CLAIMS] pointer lines in _LOG_0-seed.md, NOT probes here.>
 
 - PP<nn> - <feasibility question> - <status>

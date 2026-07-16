@@ -16,4 +16,4 @@ Single source of truth for application skill conventions, architecture, and prot
 8. [Stage Gate](08-stage-gate.md) — Gate Ledger protocol + venue-scaled gate depth
 11. [Delivery Need](11-delivery-need.md) — need record schema + probe interface + backfill
 
-Focus strip + closing block: `../haipipe-application/SKILL.md` Closing Block section (the single source of truth), rendered by `../haipipe-application/stage-strip.sh`. Probe-plan buffer convention: `../haipipe-application/fn/probe-plans.md`. Rounds contract: `../0-enter/haipipe-application-round/SKILL.md`.
+Focus strip + closing block: `../haipipe-application/SKILL.md` Closing Block section (the single source of truth), rendered by `../haipipe-application/stage-strip.sh`. Probe-plan buffer convention: `../haipipe-application/fn/probes.md`. Rounds contract: `../0-enter/haipipe-application-round/SKILL.md`.
