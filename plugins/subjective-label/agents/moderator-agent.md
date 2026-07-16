@@ -1,5 +1,5 @@
 ---
-name: moderator
+name: moderator-agent
 description: "The only agent that talks to the researcher. Orchestrates the full subjective-label loop (init / iterate / validate / scale). Decides when to escalate to the researcher and what to show them. Invoke with mode={init|iterate|validate|scale} and project_dir."
 tools:
   - Read

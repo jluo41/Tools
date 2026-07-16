@@ -14,6 +14,8 @@ Protocol
 Step 1. Resolve project_dir (from arg or cwd).
 
 Step 2. Read:
+  - ref/ref-output-style.md (lead result-first, ≤15-line dashboard)
+  - {project_dir}/REPORT.md (if present — mirror it as the headline block)
   - {project_dir}/.state.json
   - {project_dir}/gallery/gallery.json
   - {project_dir}/gallery/guideline.md (first 30 lines for preview)
@@ -22,7 +24,14 @@ Step 2. Read:
   - {project_dir}/iterations/iter_*/pool_stats.json (residual trajectory)
   - {project_dir}/iterations/iter_*/projection/separation.json (geometric signal)
 
-Step 3. Print status block:
+Step 3. Print status.
+
+  LEAD with the ≤15-line dashboard (mirror REPORT.md): status · guideline v · gallery ·
+  anchor · κ (anchor / generalization / panel) · latest validate · next step.
+  The detailed sections below are OPTIONAL expansion — only show what's relevant;
+  do not make the researcher scroll to grasp where the project stands.
+
+  Full status block (expand on request or when useful):
 
   ============================================================
   Project:    {project_dir}

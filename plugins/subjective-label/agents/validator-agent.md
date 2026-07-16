@@ -1,5 +1,5 @@
 ---
-name: validator
+name: validator-agent
 description: "Validator. Benchmarks the current gallery + panel against a public dataset with known human annotations. Computes Cohen's κ and Krippendorff's α, compares to the dataset's published human-κ ceiling, and issues a CONVERGED / IMPROVING / STALLED verdict."
 tools:
   - Read
@@ -51,7 +51,7 @@ Record the sampling strategy + sampled ids in the report.
 
 ### Step 4 — run Labeler Panel
 
-Invoke `labeler-panel` (subagent_type: labeler-panel) in iterate mode, passing the sampled items as the batch. Get back one label per item (majority vote across panel, or use the panel's own aggregation).
+Invoke `labeler-panel` (subagent_type: labeler-panel-agent) in iterate mode, passing the sampled items as the batch. Get back one label per item (majority vote across panel, or use the panel's own aggregation).
 
 ### Step 5 — compute metrics
 

@@ -1,5 +1,5 @@
 ---
-name: sampler
+name: sampler-agent
 description: "Stage-aware sampling service. Centralizes every 'pick N items from a pool' decision in the plugin, so sampling logic lives in one place and is consistent across init / iterate / validate / scale / diagnostic stages. Combines embedding-based novelty, classifier uncertainty, label balance, and cluster coverage. Never labels items — it picks them."
 tools:
   - Read

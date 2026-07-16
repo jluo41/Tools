@@ -42,12 +42,14 @@ Protocol
 
   Read: ref/ref-architecture.md, ref/ref-assets.md, ref/ref-schema.md
   Read: skills/subjective-label/INIT.md (the design doc)
+  Read: ref/ref-output-style.md (BINDING output contract — all files must be
+    scannable in one glance; render a .md twin for every human-read artifact)
   If arg provided, use as project_dir. Otherwise ask.
   Create directory scaffold (all folders above).
 
 ### Step 2. Seed — accept the vague idea
 
-  Invoke Moderator (subagent_type: moderator, mode: "init_seed").
+  Invoke Moderator (subagent_type: moderator-agent, mode: "init_seed").
 
   Moderator asks the researcher:
     "What subjective dimension do you want to label?"
@@ -66,7 +68,7 @@ Protocol
 
 ### Step 3. Expose — show diverse examples from the corpus
 
-  Invoke Sampler (subagent_type: sampler, mode: "init_map").
+  Invoke Sampler (subagent_type: sampler-agent, mode: "init_map").
     Sampler calls Embedder to cluster the corpus (12-20 clusters).
     Picks ~30-40 items: centroid + edge from each cluster.
     Output: cache/sampler/init_map.jsonl
@@ -113,6 +115,7 @@ Protocol
     Prompt LLM Labeler: guideline_v01 (as system prompt) → label anchor set
     Record: eval/trajectory.jsonl ← {version: "v01", kappa: X, f1: Y, ...}
     Write: eval/per_version/v01_results.jsonl
+    Render: eval/trajectory.md (table + sparkline; refresh on every measurement — ref/ref-output-style.md)
 
 ### Step 6. Challenge — find cases that break the draft
 
@@ -176,6 +179,8 @@ Protocol
 
      Next: /sl-iterate for panel-based refinement, or
            /sl-validate for public dataset benchmarking."
+
+  Write REPORT.md: one-page project dashboard, ≤15 lines (ref/ref-output-style.md).
 
   Update .state.json:
     status: "initialized"

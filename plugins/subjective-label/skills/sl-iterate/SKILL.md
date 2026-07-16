@@ -12,11 +12,11 @@ Protocol
 --------
 
 Step 1. Load context.
-  Read: ref/ref-architecture.md, ref/ref-assets.md
+  Read: ref/ref-architecture.md, ref/ref-assets.md, ref/ref-output-style.md
   Read {project_dir}/.state.json, config.yaml, gallery/guideline.md, gallery/gallery.json
   If .state.json missing: tell researcher to run /sl-init first. Stop.
 
-Step 2. Invoke Moderator (subagent_type: moderator).
+Step 2. Invoke Moderator (subagent_type: moderator-agent).
   Pass:
     mode: "iterate"
     project_dir: <path>
@@ -24,7 +24,7 @@ Step 2. Invoke Moderator (subagent_type: moderator).
 
   Moderator runs the iteration in 6 steps:
 
-    (a) Sampler (subagent_type: sampler, mode=iterate_batch,
+    (a) Sampler (subagent_type: sampler-agent, mode=iterate_batch,
         pool_strategy=auto) calls embedder (cluster + nearest) and
         classifier (uncertainty / residual filter, if a classifier
         exists from a prior iteration) to produce a candidate pool of
@@ -36,17 +36,17 @@ Step 2. Invoke Moderator (subagent_type: moderator).
         candidate_pool.jsonl + pool_stats.json (records the pool
         strategy used and the residual size).
 
-        Boundary Prober (subagent_type: prober) then applies LLM judgment
+        Boundary Prober (subagent_type: prober-agent) then applies LLM judgment
         on the candidate pool to pick the final 20-30 items. Outputs:
         batch.jsonl.
 
-    (b) Labeler Panel (subagent_type: labeler-panel) reads
+    (b) Labeler Panel (subagent_type: labeler-panel-agent) reads
         personas/ directory, picks 3-5 personas matching the topic,
         spawns each persona as a labeling pass. Each persona labels
         all items in batch.jsonl with reasoning. Outputs: panel_labels.jsonl
         (one row per {item, persona} pair).
 
-    (c) Disagreement Analyzer (subagent_type: disagreement-analyzer)
+    (c) Disagreement Analyzer (subagent_type: disagreement-analyzer-agent)
         reads panel_labels.jsonl. For each item where personas
         disagreed, categorizes:
            A = boundary case (genuine subjective edge)
@@ -61,13 +61,18 @@ Step 2. Invoke Moderator (subagent_type: moderator).
            C → show the novel pattern, ask "new label? or existing?"
            D → do not surface (auto-resolved via majority vote)
 
-    (e) Gallery Keeper (subagent_type: gallery-keeper) writes the
+    (e) Gallery Keeper (subagent_type: gallery-keeper-agent) writes the
         researcher's decisions into gallery.json (new entries) and
-        guideline.md (new rules / tie-breakers). Bumps
-        .state.json.iteration and writes a diff log under gallery/history/.
+        guideline.md (new rules / tie-breakers), and renders their .md twins
+        gallery/gallery.md + guideline/cheatsheet.md (ref/ref-output-style.md).
+        Bumps .state.json.iteration and writes a diff log under gallery/history/.
 
-    (f) Classifier (subagent_type: classifier, mode=train) retrains the
+    (f) Classifier (subagent_type: classifier-agent, mode=train) retrains the
         small model on the updated gallery + confirmed panel labels.
+
+    (g) Refresh rendered views (ref/ref-output-style.md): append this
+        iteration to eval/trajectory.md (table row + sparkline) and rewrite
+        the top-level REPORT.md dashboard with the new κ / gallery size / next.
         Outputs model + CV F1 to cache/classifier/iter_N/.
         If CV F1 dropped > 0.05 from prior iteration, flag possible drift
         to Moderator, who surfaces to researcher.
