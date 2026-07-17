@@ -4,9 +4,9 @@ description: "CHECK phase worker (internal) -- the only human-involved phase, ru
 argument-hint: "[stage: seed|descriptions|themes|claims|advice|pitch|narrative|display|section-edit|draft] [--persona strict|balanced|creative|lenient] [--unattended[=Ns]]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.1.0"
-  last_updated: "2026-07-07"
-  summary: "Paper-check 1.7.0 enforcement port (alignment round 2, R2): step 1 Run executes ./checks.sh (markdown-safe subset) + the probe-file checker, any ❌/FAIL blocks the gate green; > CHECK: comments seeded in 0-lifecycle stage docs ONLY (R2c RULED: artifacts stay clean, artifact findings → Gate Ledger notes); revise reads the threads + > USER: replies. Persona/attendance, venue-scaled depth, and the Gate Ledger row format unchanged."
+  version: "4.2.0"
+  last_updated: "2026-07-17"
+  summary: "The intervention's CHECK-phase worker and the only human gate — runs ./checks.sh + the probe-file checker (any ❌/FAIL blocks green), seeds > CHECK: threads in stage docs, writes the Gate Ledger row on approval. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -41,9 +41,25 @@ Two checkers open every CHECK, before the judgment ask. They fire at EVERY venue
 
 1. Deterministic markdown checks -- `./checks.sh <artifact-or-dir> [--md <working-doc>] ...` (this folder; `--md` repeatable, `--depth N` widens the dir scan). Em-dash (❌, house rule), AI-voice tells (⚠️), TODO/FIXME (❌), bibtex-in-markdown (❌). Paste its ✅/⚠️/❌ lines into the CHECK report verbatim; exit 0 = no ❌. Paper's tex checks (`\cite`/`\ref`/`\label`, Pn.Sn, `--compile`) are deliberately absent -- application artifacts are markdown.
 
-2. Probe-file invariants -- `sh ../../1-probe/haipipe-application-probe/check-probe-cards.sh <intervention_root>`. Any FAIL line (a `state: planned` section, a dangling ref, a `harvest: OWED` lane, dead vocabulary) means the gate CANNOT go green: a planned section surviving to CHECK is a probe that never ran.
+2. Probe-file invariants -- `sh "$CHK" <intervention_root>` (resolve `$CHK` per *Locating the probe-file checker* below). Any FAIL line (a `state: planned` section, a dangling ref, a `harvest: OWED` lane, dead vocabulary) means the gate CANNOT go green: a planned section surviving to CHECK is a probe that never ran.
 
 A mechanical ❌/FAIL is not a judgment call: no persona preset, no `--unattended` timeout, and no venue-profile override can approve over it. Fix (revise), re-run, then proceed to the judgment ask.
+
+Locating the probe-file checker
+================================
+
+Installed skills flatten the tree, so the hard-coded relative path (`../../1-probe/...`) is NOT reliable, and TWO files named `check-probe-cards.sh` exist on disk (paper's under `haipipe-paper-probe/`, application's under `haipipe-application-probe/`). Glob for it, FILTER on the path so it cannot resolve to the paper family, and FAIL LOUDLY when nothing matches:
+
+```sh
+CHK=$(find ~/.claude/skills "$CLAUDE_PLUGIN_ROOT" "$CLAUDE_SKILL_DIR/../../../.." \
+        -path "*haipipe-application-probe*" -name check-probe-cards.sh 2>/dev/null | head -1)
+[ -n "$CHK" ] || { echo "FAIL: application probe-file checker not found"; exit 1; }
+
+sh "$CHK" <intervention_root>    # whole-pool section pass
+```
+
+A missing checker is a FAIL, never a silent skip: a gate that cannot run its checker has not checked anything.
+
 
 `> CHECK:` comment seeding (stage docs ONLY)
 =============================================

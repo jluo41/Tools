@@ -4,9 +4,9 @@ description: "Post-deploy iteration for the intervention lifecycle. Ingests A/B 
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-07-06"
-  summary: "Post-deploy iteration — A/B results, performance, refinement. Paper-alignment sweep: re-homed to 4-iterate/; triage targets on the new spine (design/variants/rationale words retired); ask-kind reference removed."
+  version: "2.0.0"
+  last_updated: "2026-07-17"
+  summary: "Post-deploy iteration — ingests A/B results and engagement metrics, opens a round, triages findings back into the lifecycle. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -74,27 +74,8 @@ Step 7: If kill criterion met:
 ```
 
 
-Integration with insight
-==========================
-
-Performance results from real-world deployment can feed back into
-the project's KB:
-
-```
-A/B results confirm a claim   → file K card via /haipipe-insight
-Real-world effect size         → file D card
-Unexpected pattern             → file I card
-New recommendation             → file W card
-```
-
-This is the application → insight write-back path. The iterate skill is
-authorized to trigger `/haipipe-insight-*` to file cards from deployment
-evidence (ask-gated per the copilot policy).
-
-
 Risk profile
 =============
 
-WRITES round files. May trigger /haipipe-insight-* to file KB cards
-from deployment evidence. READ-ONLY on lifecycle artifacts (changes
+WRITES round files. READ-ONLY on lifecycle artifacts (changes
 routed through lifecycle skills).

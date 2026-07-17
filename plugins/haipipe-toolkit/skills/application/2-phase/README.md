@@ -1,6 +1,6 @@
 # 2-phase -- DRAFT-PROBE-REVISE-CHECK (shared across lifecycle stages)
 
-The **phase dimension** of the application skill architecture, mirroring `../../paper/2-phase/`. Phase workers are shared across all lifecycle stages (seed, the 1a-1d evidence ladder: descriptions/themes/claims/advice, pitch, narrative, display, section-edit) and by the artifact composition in `3-build-deploy/`. Users never invoke phase workers directly -- stage skills drive them.
+The **phase dimension** of the application skill architecture, mirroring `../../paper/2-phase/`. Phase workers are shared across all lifecycle stages (seed, the 1a-1d evidence ladder: descriptions/themes/claims/advice, pitch, narrative, display, section-edit) and by the artifact composition in `3-deliver/`. Users never invoke phase workers directly -- stage skills drive them.
 
 ```
 Per-stage lifecycle:  DRAFT 🤖 → PROBE 🤖 → REVISE 🤖 → CHECK 🧑

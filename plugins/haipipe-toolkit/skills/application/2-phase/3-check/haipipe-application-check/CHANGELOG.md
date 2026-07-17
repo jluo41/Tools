@@ -4,6 +4,10 @@ haipipe-application-check — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [4.2.0] — 2026-07-17
+
+- Back-port paper-check's checker hardening: replace the fragile hard-coded `../../1-probe/...check-probe-cards.sh` path with a layout-agnostic `find … -path "*haipipe-application-probe*" -name check-probe-cards.sh` glob (path-filtered so it cannot resolve to the paper family's checker) + a not-found FAIL. A missing checker is a FAIL, never a silent skip.
+
 ## [1.0.0] — 2026-05-31
 
 - baseline.

@@ -31,7 +31,7 @@ Citation lane acceptance (the section's sources: lane -> _CITATION_{stage}.md; s
 
 Mechanical acceptance -- RUN the commands, never eyeball (paper run-3: acceptance claimed "each has anchor + finding" while `grep -c 'finding:'` returned 0).
 
-- **count**: new `^### ` card headings == pick_list length.
+- **count**: new `^### ` card headings == the sources named in the return.
 - **identity**: every new card block greps an identity bullet -- a `^- ` line containing a `(YYYY)` year (authors (year). venue · id). Title-only cards are REJECTS.
 - **fields**: every new card block greps a `- summary:` AND a `- finding:` line.
 - **provenance**: a card whose S## is VERIFIED in sources.md must say `VERIFIED-by-discovery` on its status line (plus 🔍 for the human verification pass, which never auto-clears). The grep is LITERAL: `grep -c 'VERIFIED-by-discovery'` == discovery-verified pick count. Semantically-equivalent wording is a REJECT -- meaning-judgment is exactly what mechanical acceptance exists to remove. Canonical strings live in the paper citation skill's spec (VERBATIM rule there).
