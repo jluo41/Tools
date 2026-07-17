@@ -62,7 +62,7 @@ At WRITE, read TWO things from `1-lifecycle/`: the calling stage's SKILL.md arti
 ## Boundaries
 
 - Venue-FREE stages (seed + the 1a-1d ladder: descriptions, themes, claims, advice): do not read venue packs; the doc must survive retargeting.
-- Venue-ALIGNED stages (pitch, narrative, display, section-edit): read `_venue/venue-<name>` + `_audience/profile-<name>` for structure and tone expectations.
+- Venue-ALIGNED stages (pitch, narrative, display, section-edit): read `venue/venue-<name>` for structure and tone expectations (the pack carries tone-by-audience).
 - Never invent evidence: an unbacked statement is written as a raised question, not asserted.
 - Stage docs are markdown, one physical line per paragraph/bullet.
 

@@ -41,6 +41,6 @@ DRAFT/PROBE/REVISE run automatic; CHECK is the only human gate (venue-scaled dep
 Related, but not in 2-phase/
 -----------------------------
 
-- Artifact composition, review, claim-audit, and deploy live in `3-build-deploy/`; post-deploy A/B refinement in `4-iterate/` — same discovery convention, different scope.
+- Artifact composition, review, claim-audit, and deploy live in `3-deliver/`; post-deploy A/B refinement in `4-iterate/` — same discovery convention, different scope.
 - The section-edit stage hub is `1-lifecycle/5-section-edit/haipipe-application-section-edit/`; its per-intervention working files land in the intervention's `0-lifecycle/5-section-edit/`.
 - The venue pin (`1-lifecycle/haipipe-application-venue`) writes `0-lifecycle/2-venue/2-venue.md` plus the STATUS.md venue rows that scale probe lanes and gate depth for every phase worker.
