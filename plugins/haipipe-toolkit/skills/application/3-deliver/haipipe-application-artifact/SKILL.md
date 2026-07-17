@@ -4,9 +4,9 @@ description: "Artifact composer for the intervention lifecycle (the `draft` verb
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.0.0"
-  last_updated: "2026-07-06"
-  summary: "Renamed draft->artifact, re-homed 3-draft/ -> 3-build-deploy/. Keeps v2's venue-profile-is-the-instruction-set core; adds: DPRC composition pass (compose -> probe values/claim-refs -> revise per style/audience -> check via the CHECK worker), new spine paths (1c-claims folder, no minimap), Gate Ledger row on approve."
+  version: "3.1.0"
+  last_updated: "2026-07-17"
+  summary: "Composes 0-artifacts/<slug>-v{N}.md through a DPRC pass — one skill for every venue, because the pinned venue profile IS the instruction set. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -24,11 +24,10 @@ How it works
    If the venue's required lifecycle stages are not gate-approved → WARN and
    ask (compose-anyway is allowed but recorded in the artifact's Review notes).
 2. Load venue profile:
-     _venue/venue-<name>/README.md          constraints + template
-     _venue/venue-<name>/style-profile.md   voice + drafting rules + self-review checklist
-     _venue/venue-<name>/exemplars/         real artifacts to imitate (when present)
-3. Load audience profile:
-     _audience/profile-<audience>/README.md tone + citation rules
+     venue/venue-<name>/README.md          constraints + template
+     venue/venue-<name>/style-profile.md   voice + drafting rules + self-review checklist
+     venue/venue-<name>/exemplars/         real artifacts to imitate (when present)
+3. Tone-by-audience: the venue style-profile (step 2) carries the per-audience tone + citation rules.
 4. Load lifecycle inputs:
      0-lifecycle/2-venue/2-venue.md         Artifact Principles (template/slots, limits, tone, element types, section structure, gate depth) — the venue contract, not re-derived from the pack
      0-lifecycle/1d-advice/1d-advice.md  design advice (always -- content-WHAT; each move traces A<-C)
@@ -67,8 +66,7 @@ DPRC composition pass
 
 ```
 COMPOSE (draft)   fill the template/assembly from lifecycle inputs
-PROBE             trace every number to its task-result/card anchor; verify every
-                  cited K/W id resolves in insights/; flag what does not
+PROBE             trace every number to its task-result/card anchor; flag what does not
 REVISE            style-profile + audience pass (length limits, tone, reading level)
                   via the shared revise worker's rules
 CHECK             run the venue self-review checklist; then hand to
