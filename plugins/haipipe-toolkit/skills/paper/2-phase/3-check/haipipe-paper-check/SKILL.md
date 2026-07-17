@@ -26,33 +26,11 @@ Users invoke stage skills:
 /haipipe-paper section-edit §3  → section-edit skill calls this internally
 ```
 
-The check has three parts: (1) **MECHANICAL** -- run automated sub-checkers, produce a pass/fail report; (2) **SEED `> CHECK:` COMMENTS** -- plant every flagged item at its exact spot in the working doc so the human's in-file pass is guided by the file itself; (3) **HUMAN** -- walk the `> CHECK:` comments, answer with `> USER:` comments, decide (proceed / restart / new round / accept / park -- see What Each Decision Does).
+The check has three parts: (1) **MECHANICAL** -- run automated sub-checkers, produce a pass/fail report; (2) **SEED `> CHECK:` COMMENTS** -- plant every flagged item at its exact spot in the working doc so the human's in-file pass is guided by the file itself; (3) **HUMAN** -- walk the `> CHECK:` comments, answer with `> USER:` comments, decide (proceed / restart / new round / accept / park -- see the 🧑 Decision menu in Report Format).
 On restart, the restarted phase reads the `> CHECK:` comments + their `> USER:` replies and responds to them.
 
 
 ## How It Works
-
-```
-┌──────────┐   ┌──────────────┐   ┌───────────────┐   ┌──────────────────────────┐
-│ 🤖 RUN   │──▶│ 📋 REPORT    │──▶│ 📌 SEED       │──▶│ 🧑 HUMAN REVIEW          │
-│ CHECKERS │   │ pass/fail    │   │ > CHECK: at   │   │ (walks > CHECK: in-file) │
-└──────────┘   └──────────────┘   │ each flag site│   │ 1. verify 🔍 citations   │
-                                  └───────────────┘   │ 2. copy bibtex → .bib    │
-                                                      │ 3. confirm flagged values │
-                                                      │ 4. review displays        │
-                                                      │ 5. reply > USER: per item │
-                                                      │ 6. decide                 │
-                                                      └──────────┬───────────────┘
-                                                                 │
-                                      ┌──────────────────────────┼──────────────┐
-                                      ▼                          ▼              ▼
-                                ✅ ALL PASS                ♻️ RESTART        🤷 ACCEPT
-                                section done               agent re-runs     with known
-                                                           phase, reads      issues
-                                                           threads + replies
-        (diagram shows the 3 common branches; 🆕 NEW ROUND and ⏸️ PARK
-         complete the 5 outcomes -- see What Each Decision Does)
-```
 
 1. **Run**: execute all applicable sub-checkers.
    For the deterministic text-match checks (em-dash, AI-voice tells, TODO, bibtex-in-markdown, broken `\cite`, broken/orphan `\label`↔`\ref`, Pn.Sn sequence) run `./checks.sh <tex-or-dir> [--md <working-doc>] [--depth N] [--compile]` and paste its ✅/⚠️/❌ lines (`--compile` wraps `./1-compile.sh`; `--depth` widens the tex/bib scan for deep layouts).
@@ -263,40 +241,9 @@ PASSED: 14   FAILED: 1   WARNING: 1   SKIPPED: 4
 - [ ] 🤷 ACCEPT with known issues (log what's deferred)
 - [ ] ⏸️ PARK this section (switch to another section, come back later)
 
-(resource stage ONLY -- add these two, per the Stage Exit Invariant AMENDMENT:)
-- [ ] 🔥 RESEED [LOOPBACK -> SEED] (every demand row is UNOBTAINABLE: the paper cannot be written as seeded)
-- [ ] 🅿️ PARK -> maturity: resource-blocked (the demand is real; the resource is in flight or behind a DUA)
+(resource stage adds THREE exits, not two -- see the Stage Exit Invariant AMENDMENT below)
 ```
 
-
-## What Each Decision Does
-
-```
-✅ PROCEED         this stage is done → advance to the next lifecycle stage
-                   section-edit: check done → section complete, move to next section or build-submit
-                   claims: check done → pin venue → pitch
-                   pitch: check done → narrative
-
-♻️ RESTART         a specific phase has failures → loop back to fix
-                   "restart from PROBE" = re-run probe workers, then re-check
-                   "restart from DRAFT" = revise outline, then re-probe, re-revise, re-check
-                   the restart target determines how much rework happens
-
-🔄 NEW ROUND       artifacts are OK but could be deeper → run another full DPRC cycle
-                   keeps all existing artifacts, adds a new round of refinement
-                   e.g., first round drafted 5 sentences per ¶ → new round adds detail
-                   logged as round N+1 in _LOG
-
-🤷 ACCEPT          some checks failed but the human decides they're not blocking
-                   failures are logged as "accepted issues" in _LOG
-                   the section can proceed but the issues travel with it
-
-⏸️ PARK            this section needs something that isn't ready yet
-                   e.g., waiting for a probe to return, or a co-author decision
-                   switch to another section, come back when the blocker resolves
-```
-
-The decision is recorded in the _LOG with the check report, so future sessions know what was decided and why.
 
 **Stage Exit Invariant: CHECK is the ONLY door out of a stage.**
 For every stage EXCEPT `resource`, its verdicts move in exactly two directions: ♻️ restart re-opens a PHASE within the SAME stage (DRAFT / PROBE / REVISE -- never another stage); ✅ proceed (or 🤷 accept) crosses the gate to the NEXT stage.
@@ -405,7 +352,7 @@ a demand with NO resource                             -> NOT A FAILURE. It is a 
 The card-status rulings (eta, owner, cross-project) are already enforced mechanically by the checker — RUN it and SHOW its output, never eyeball the cards.
 The fitness ruling and the scope cut are judgment items: seed them as `> CHECK:` comments and let the human answer.
 
-Resource's decision menu carries THREE exits, not two — see the AMENDMENT under **Stage Exit Invariant**: ✅ proceed -> claims · 🔥 reseed -> [LOOPBACK -> SEED] · 🅿️ park -> `maturity: resource-blocked`.
+Resource's decision menu carries THREE exits, not two — see the AMENDMENT under **Stage Exit Invariant**.
 
 
 ## Relation to sibling
@@ -433,19 +380,6 @@ CHECK phase is done when:
 - [ ] Human has decided: proceed / restart / new round / accept / park
 - [ ] If restart: agent re-runs the phase reading the `> CHECK:` threads + free `> USER:` comments, then re-checks
 - [ ] _LOG updated with check result + human actions taken
-
-
-## Anti-patterns
-
-- ❌ Skipping the report and declaring "checks pass" without running them
-- ❌ Running only one sub-checker and calling it done
-- ❌ Handing over with a clean file and a chat-only report (flagged items must land in-file as `> CHECK:` comments — test-123333333)
-- ❌ Auto-proceeding without a human (or, in autopilot, a reviewer) decision on failures
-- ❌ Treating warnings as failures (warnings are informational)
-- ❌ Using the proof-checker as the general checker (it's one sub-check)
-- ❌ Stopping for human input during DRAFT, PROBE, or REVISE (those are fully automatic; CHECK is the ONLY human gate)
-- ❌ Generating bibtex, or putting bibtex anywhere but `.bib` (human copies from Scholar; bibtex lives ONLY in .bib)
-- ❌ Ignoring `> CHECK:` / `> USER:` comments on restart (the restarted phase must read and respond; an unanswered `> CHECK:` comment is surfaced back, never silently dropped)
 
 
 ## Who calls this skill

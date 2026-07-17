@@ -15,19 +15,13 @@ metadata:
 Generate publication-quality paper figures using **Claude as the planner/reviewer**
 and a **local Codex app-server MCP bridge** as the raster renderer.
 
-## Output: write into a display unit (not flat figures/)
+## Output: write into a display unit
 
-When the target is a paper (a folder with `0-displays/`), the output goes into a
-`0-displays/displayNN-<slug>/` unit, NOT `figures/ai_generated/`.
-Follow the
-shared contract: `../haipipe-paper-display/ref/display-unit-output-contract.md`
-(resolve/scaffold the unit, write `assets/` + `source/` + `float.tex`, compile
-`preview.pdf`, set README status).
-For THIS renderer: asset ->
-`assets/figure.png`; rebuild spec -> `source/prompt.md` (final prompt + bridge
-job + score) + `source/review_log.json`. Finalize with `--display-unit <unit-dir>`
-(Step 7).
-`figures/ai_generated/` is a fallback only when there is no paper.
+Output goes into a `0-displays/displayNN-<slug>/` unit per the shared contract:
+`../haipipe-paper-display/ref/display-unit-output-contract.md`.
+THIS renderer's row: asset -> `assets/figure.png`; rebuild spec -> `source/prompt.md`
+(final prompt + bridge job + score) + `source/review_log.json`; finalize with
+`--display-unit <unit-dir>` (Step 7).
 
 ## Fit & Readiness (haipipe)
 
@@ -52,61 +46,6 @@ signed in and the `codex` CLI on PATH.
 If `mcp__codex-image2__*` tools are not
 present, the bridge is not registered in this session — report that honestly
 rather than falling back to a shell/Python bitmap.
-
-## Core Design Philosophy
-
-```text
-┌──────────────────────────────────────────────────────────────────────────┐
-│                    MULTI-STAGE ITERATIVE WORKFLOW                        │
-├──────────────────────────────────────────────────────────────────────────┤
-│                                                                          │
-│   User Request                                                           │
-│       │                                                                  │
-│       ▼                                                                  │
-│   ┌─────────────┐                                                        │
-│   │   Claude    │ ◄─── Step 1: Parse request, create initial prompt     │
-│   │  (Planner)  │      - Extract components, labels, and data flow       │
-│   │             │      - Write a paper-ready figure brief                │
-│   └──────┬──────┘                                                        │
-│          │                                                               │
-│          ▼                                                               │
-│   ┌─────────────┐                                                        │
-│   │Claude/Codex │ ◄─── Step 2: Optimize layout description               │
-│   │   Layout    │      - Refine component positioning                    │
-│   │   Review    │      - Optimize spacing and grouping                   │
-│   └──────┬──────┘                                                        │
-│          │                                                               │
-│          ▼                                                               │
-│   ┌─────────────┐                                                        │
-│   │Claude/Codex │ ◄─── Step 3: CVPR/NeurIPS style verification           │
-│   │   Style     │      - Check palette, arrows, and label standards      │
-│   │   Check     │      - Tighten the prompt before rendering             │
-│   └──────┬──────┘                                                        │
-│          │                                                               │
-│          ▼                                                               │
-│   ┌─────────────┐                                                        │
-│   │ codex-image2│ ◄─── Step 4: Native image generation via bridge        │
-│   │ MCP bridge  │      - Call generate_start / generate_status           │
-│   │ + app-server│      - Accept only native imageGeneration output       │
-│   └──────┬──────┘                                                        │
-│          │                                                               │
-│          ▼                                                               │
-│   ┌─────────────┐                                                        │
-│   │   Claude    │ ◄─── Step 5: STRICT visual review + SCORE (1-10)      │
-│   │  (Reviewer) │      - Verify logic, labels, arrows, and aesthetics    │
-│   │   STRICT!   │      - Reject unclear or non-paper-ready figures       │
-│   └──────┬──────┘                                                        │
-│          │                                                               │
-│          ▼                                                               │
-│   Score ≥ 9? ──YES──► Accept & Output                                    │
-│          │                                                               │
-│          NO                                                              │
-│          │                                                               │
-│          ▼                                                               │
-│   Generate SPECIFIC improvement feedback ──► Loop back to Step 2        │
-│                                                                          │
-└──────────────────────────────────────────────────────────────────────────┘
-```
 
 ## Constants
 
@@ -147,7 +86,7 @@ rather than falling back to a shell/Python bitmap.
 
 ### Visual Appeal (Academic Professional Style)
 
-**目标：既不保守也不花哨，找到平衡点**
+Aim for the balance point: neither overly conservative nor flashy.
 
 #### ✅ Should have
 - **Subtle gradients** — Gentle same-family gradients are acceptable
@@ -186,7 +125,7 @@ rather than falling back to a shell/Python bitmap.
 | **Method illustrations** | Excellent | Conceptual diagrams, algorithm flowcharts |
 | **Conceptual figures** | Good | Comparison diagrams, taxonomy trees |
 
-**Not for:** Statistical plots (use `/haipipe-paper-display-figure`), deterministic vector topology figures (prefer `/haipipe-paper-display-diagram`), photo-realistic scenes
+**Not for:** photo-realistic scenes, or any display better served by a sibling renderer — see the sibling-routing table in `../haipipe-paper-display/ref/display-unit-output-contract.md`.
 
 ## Workflow: MUST EXECUTE ALL STEPS
 
@@ -356,22 +295,6 @@ flat `figures/ai_generated/{figure_final.png,latex_include.tex,review_log.json}`
 The unit's `float.tex` is `\input` by `0-lifecycle/4-display/4-display.tex`, so a
 correctly filed unit appears in the combined gallery automatically.
 
-## Key Rules
-
-1. Never skip Step 2 or Step 3; layout and style checks are required.
-2. Never skip the final visual review.
-3. Never accept a figure that is logically wrong just because it looks attractive.
-4. Use the `codex-image2` bridge only for **native image generation**.
-5. If the bridge says native image generation is unavailable, surface that honestly.
-6. Reject any shell/Python/manual bitmap fallback masquerading as image generation.
-7. Keep figure text in English unless the user requested another language.
-8. Prefer 1-3 strong refinement rounds over many shallow ones.
-9. Use specific, actionable refinement feedback instead of vague comments.
-10. Review arrow direction, label clarity, and visual hierarchy every round.
-11. Accept only figures that look paper-ready, not slide-ready.
-12. Always use `"$CLAUDE_SKILL_DIR/scripts/paper_illustration_image2.py" finalize --display-unit <unit>` to emit the final artifacts into the display unit.
-13. Always use `"$CLAUDE_SKILL_DIR/scripts/paper_illustration_image2.py" verify --display-unit <unit>` before claiming success.
-
 ## Repair Path
 
 If rendering succeeded but final artifacts were skipped, repair the integration
@@ -393,39 +316,6 @@ python3 "$CLAUDE_SKILL_DIR/scripts/paper_illustration_image2.py" verify \
 
 ## Output Structure
 
-Paper target (DEFAULT) — a display unit:
-
-```text
-0-displays/displayNN-slug/
-├── README.md              # claim / kind / caption-job / status: rendered
-├── float.tex              # caption + \label + \includegraphics{assets/figure.png}
-├── preview.tex            # standalone wrapper
-├── preview.pdf            # compiled from the paper root
-├── assets/figure.png      # accepted image (score >= 9)
-└── source/
-    ├── prompt.md          # rebuild spec: final prompt + bridge job + score
-    ├── review_log.json    # review notes / refinement history
-    └── verify.json        # helper verification diagnostic
-```
-
-Fallback (no paper / scratch) — flat:
-
-```text
-figures/ai_generated/
-├── figure_v1.png … figure_final.png   # iterations + accepted copy
-├── latex_include.tex                  # LaTeX snippet
-├── review_log.json
-└── verify.json
-```
-
-## Model Summary
-
-| Stage | Agent / Tool | Purpose |
-|-------|--------------|---------|
-| Step 0 | `python3 "$CLAUDE_SKILL_DIR/scripts/paper_illustration_image2.py" preflight` | Observable activation predicate and preflight receipt |
-| Step 1 | Claude | Parse request and create the initial figure prompt |
-| Step 2 | Claude (+ optional Codex critique) | Refine layout, grouping, spacing, and arrow routing |
-| Step 3 | Claude (+ optional Codex critique) | Verify academic visual style before rendering |
-| Step 4 | `mcp__codex-image2__generate_start` + `generate_status` | Native raster image generation through Codex app-server |
-| Step 5 | Claude | Strict visual review and scoring |
-| Step 7 | `python3 "$CLAUDE_SKILL_DIR/scripts/paper_illustration_image2.py" finalize --display-unit` + `verify` | Emit canonical artifacts into the display unit + verification receipt |
+The display unit layout (asset -> `assets/figure.png`, rebuild spec -> `source/prompt.md`
++ `source/review_log.json` + `source/verify.json`) and the no-paper flat fallback are
+the shared contract: `../haipipe-paper-display/ref/display-unit-output-contract.md`.

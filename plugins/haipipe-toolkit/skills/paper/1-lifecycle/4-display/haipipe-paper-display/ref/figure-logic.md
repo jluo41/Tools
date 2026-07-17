@@ -12,7 +12,7 @@
 
 Use this skill when the bottleneck is no longer sentence writing but figure logic. The goal is to make each figure carry a defensible scientific job, keep the panel set coherent, and ensure that the legend and Results text tell the same story.
 
-This reference is narrower than `haipipe-paper-edit-optimizer`. Use `haipipe-paper-edit-optimizer` when the whole paper structure is unstable. Use this figure-logic reference (under `haipipe-paper-display`) when the central issue is what each figure should prove and how each panel should function.
+This reference is narrower than `haipipe-paper-optimizer`. Use `haipipe-paper-optimizer` when the whole paper structure is unstable. Use this figure-logic reference (under `haipipe-paper-display`) when the central issue is what each figure should prove and how each panel should function.
 
 ## When To Use
 

@@ -21,18 +21,13 @@ Its sibling
 Both read an aggregated data file and emit a reproducible asset; neither
 recomputes from raw evidence (that is a `haipipe-task-for-display` task).
 
-## Output: write into a display unit (not flat figures/)
+## Output: write into a display unit
 
-When the target is a paper (a folder with `0-displays/`), the table goes into a
-`0-displays/displayNN-<slug>/` unit.
-Follow the shared contract:
-`../haipipe-paper-display/ref/display-unit-output-contract.md`. For THIS renderer:
-asset -> `assets/table-body.tex` (the `tabular`/`threeparttable` block), and
-`float.tex` is the wrapper that `\input`s it with caption + label; rebuild spec ->
-`source/gen_*.py` + the aggregated CSV path.
-Compile `preview.pdf`, set README
-status.
-A self-contained `float.tex` is acceptable only as a no-paper fallback.
+The table goes into a `0-displays/displayNN-<slug>/` unit per the shared contract:
+`../haipipe-paper-display/ref/display-unit-output-contract.md`.
+THIS renderer's row: asset -> `assets/table-body.tex` (the `tabular`/`threeparttable`
+block), with `float.tex` the wrapper that `\input`s it (caption + label); rebuild spec
+-> `source/gen_*.py` + the aggregated CSV path.
 
 ## Scope: What This Skill Can and Cannot Do
 
@@ -200,25 +195,9 @@ mcp__codex__codex:
 
 ## Output
 
-```
-0-displays/displayNN-<slug>/
-├── source/
-│   └── reg_main.csv               # aggregated data (from a task; movable, not PHI)
-├── gen_table2_main_regression.py  # reproducible CSV -> tex script
-├── float.tex                      # the typeset table, \input-able
-└── latex_include.tex              # \input snippet for the master
-```
-
-## Key Rules
-
-- **Every table must be reproducible** — save the generation script alongside `float.tex`.
-- **Do NOT hardcode numbers** — always read from the aggregated CSV/JSON.
-  A hand-typed coefficient is a defect.
-- **Aggregated input only** — never read raw row-level / PHI data here; that computation is a `haipipe-task-for-display` task.
-- **booktabs, no vertical rules, no chart junk.**
-- **Stars and SE rows follow one stated convention**, defined in a `threeparttable` note.
-- **One script per table** — re-run a single table when its data changes.
-- **No titles inside tables** — captions are in LaTeX only.
+The display unit layout (asset -> `assets/table-body.tex` wrapped by `float.tex`,
+rebuild spec -> `source/gen_table*.py` + the aggregated CSV) is the shared contract:
+`../haipipe-paper-display/ref/display-unit-output-contract.md`.
 
 ## Relation to the Display Stage and Tasks
 

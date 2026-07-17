@@ -84,6 +84,32 @@ typed directly into `float.tex` are a defect (data must live in `assets/`).
 6. Update `README.md` (`## Status` -> `rendered`; fill Evidence Source).
 7. Return the unit path; do NOT leave assets in a flat `figures/` dir.
 
+## Invariants (all renderers)
+
+- **Numbers come from a task, never the agent.** A data display's asset is RENDERED
+  from task-produced evidence (a probe verdict, a parser's `metrics.json`,
+  `source_data.csv`); the rebuild spec in `source/` points at that task output.
+  A hand-typed coefficient — or a number typed straight into `float.tex` — is a
+  placeholder, not a display: route it through PROBE. Concept figures carry no data
+  and skip this, but a schematic/flow diagram is still annotated with REAL Ns from
+  the data description, never invented ones.
+- **Publication display hygiene.** Every rendered display must read in grayscale and
+  be colorblind-safe — encode the key contrast with position/shape/bolding, not hue
+  alone. No title baked inside the figure/table image; the title lives only in the
+  `float.tex` `\caption{}`.
+
+## Sibling renderers (which one to use)
+
+| Display kind | Renderer |
+|---|---|
+| data plot (line/bar/scatter/heatmap/box) | `haipipe-paper-display-figure` |
+| typeset LaTeX table (booktabs) | `haipipe-paper-display-table` |
+| deterministic editable vector diagram (architecture/workflow/pipeline/topology) | `haipipe-paper-display-diagram` |
+| AI concept illustration (richest Figure 1) | `haipipe-paper-display-illustration` |
+
+The two data renderers (figure/table) read a task's aggregated output only; the two
+concept renderers take no data (a schematic still carries real Ns).
+
 ## Notes
 
 - Scaffold template + `float.tex`/`preview.tex`/`README.md` templates live in the

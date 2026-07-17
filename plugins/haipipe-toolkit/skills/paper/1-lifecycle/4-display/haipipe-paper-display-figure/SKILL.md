@@ -14,19 +14,16 @@ metadata:
 
 Generate the data plots for a paper based on: **$ARGUMENTS**
 
-> **Boundary:** this skill renders **plots only**. For typeset LaTeX tables
-> (coefficient/descriptive/comparison/ablation), use
-> `haipipe-paper-display-table`. For architecture/pipeline diagrams use
-> `haipipe-paper-display-diagram`; for AI concept art use
-> `haipipe-paper-display-illustration`.
+> **Boundary:** this skill renders **plots only**. For any other display kind
+> (tables, diagrams, AI concept art), see the sibling-routing table in
+> `../haipipe-paper-display/ref/display-unit-output-contract.md`.
 
-## Output: write into a display unit (not flat figures/)
+## Output: write into a display unit
 
-When the target is a paper (a folder with `0-displays/`), the plot goes into a `0-displays/displayNN-<slug>/` unit, NOT a flat `figures/` directory.
-Follow the shared contract: `../haipipe-paper-display/ref/display-unit-output-contract.md`.
-For THIS renderer: asset -> `assets/figure.pdf`; rebuild spec -> `source/gen_*.py` (+ `source/paper_plot_style.py`).
-Wire `float.tex`, compile `preview.pdf`, set README status.
-Flat `figures/` is a fallback only when there is no paper.
+The plot goes into a `0-displays/displayNN-<slug>/` unit per the shared contract:
+`../haipipe-paper-display/ref/display-unit-output-contract.md`.
+THIS renderer's row: asset -> `assets/figure.pdf`; rebuild spec -> `source/gen_*.py`
+(+ `source/paper_plot_style.py`).
 
 ## Scope: What This Skill Can and Cannot Do
 
@@ -40,7 +37,7 @@ Flat `figures/` is a fallback only when there is no paper.
 | **Photographs / screenshots** | ❌ No — manual | Real-world images, UI screenshots, qualitative examples |
 
 **In practice:** For a typical ML paper, this skill handles the data plots (a large share of the figure set).
-Tables go to `haipipe-paper-display-table`; the hero figure / architecture diagram / qualitative results are created via the diagram/illustration skills or manually and placed in `figures/` before running `/haipipe-paper-edit-write`.
+Tables go to `haipipe-paper-display-table`; the hero figure / architecture diagram / qualitative results are created via the diagram/illustration skills or manually and placed in `figures/` before running `/haipipe-paper section-edit`.
 The skill will detect manually-made figures as "existing figures" and preserve them.
 
 ## Constants
@@ -246,40 +243,9 @@ Before finishing, verify each figure (from pedrohcgs/claude-code-my-workflow):
 
 ## Output
 
-Paper target (DEFAULT) — into the display unit (see the contract):
-
-```
-0-displays/displayNN-slug/
-├── float.tex                    # caption + \label + \includegraphics{assets/figure.pdf}
-├── preview.tex / preview.pdf
-├── assets/figure.pdf            # the rendered plot
-└── source/
-    ├── gen_figNN_*.py           # per-figure script (reproducible)
-    └── paper_plot_style.py      # shared style config
-```
-
-Fallback (no paper / scratch) — flat:
-
-```
-figures/
-├── paper_plot_style.py
-├── gen_figNN_*.py
-├── figNN_*.pdf
-└── latex_includes.tex
-```
-(Tables are produced by `haipipe-paper-display-table`, not here.)
-
-## Key Rules
-
-- **Every figure must be reproducible** — save the generation script alongside the output
-- **Do NOT hardcode data** — always read from JSON/CSV files
-- **Use vector format (PDF)** for all plots — PNG only as fallback
-- **No decorative elements** — no background colors, no 3D effects, no chart junk
-- **Consistent style across all figures** — same fonts, colors, line widths
-- **Colorblind-safe** — verify with https://davidmathlogic.com/colorblind/ if needed
-- **One script per figure** — easy to re-run individual figures when data changes
-- **No titles inside figures** — captions are in LaTeX only
-- **Tables are not figures** — route any LaTeX table to `haipipe-paper-display-table`
+The display unit layout (asset -> `assets/figure.pdf`, rebuild spec -> `source/gen_figNN_*.py`
++ `source/paper_plot_style.py`) and the no-paper flat fallback are the shared contract:
+`../haipipe-paper-display/ref/display-unit-output-contract.md`.
 
 ## Figure Type Reference
 
@@ -293,9 +259,3 @@ figures/
 | Box/violin | Distribution comparison | 0.48\textwidth |
 | Architecture | System overview | 0.95\textwidth |
 | Multi-panel | Combined results (subfigures) | 0.95\textwidth |
-
-## Acknowledgements
-
-Design pattern (type × style matrix) inspired by [baoyu-skills](https://github.com/jimliu/baoyu-skills).
-Publication style defaults and figure rules from [pedrohcgs/claude-code-my-workflow](https://github.com/pedrohcgs/claude-code-my-workflow).
-Visualization decision tree from [Imbad0202/academic-research-skills](https://github.com/Imbad0202/academic-research-skills).
