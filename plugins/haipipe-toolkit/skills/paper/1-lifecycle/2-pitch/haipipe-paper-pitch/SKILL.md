@@ -110,14 +110,14 @@ DRAFT ──→ illuminate existing content, elicit taste,
           read STATUS venue + the paper's 0-lifecycle/2-venue/2-venue.md
           (Venue Profile + Fit Assessment blocks) to shape
           Editor's Chair Test, [primary] designation, RQ framing, Audience
-          (fallback: _venue/playbook-<venue> only if 2-venue.md is absent);
+          (fallback: venue/playbook-<venue> only if 2-venue.md is absent);
           read claims ledger for venue-neutral H1/H2/H3
           (internally calls /haipipe-paper-draft with this artifact spec)
           Ends at ⛔ STOP: user reviews, iterates, approves ([GATE] logged).
   │
   ▼
 PROBE ──→ citation audit for anchor papers cited in Evidence-Why Believe;
-          verify 2-venue.md provenance (if its recorded _venue commit is behind
+          verify 2-venue.md provenance (if its recorded venue commit is behind
           HEAD, note "venue contract stale -- consider /haipipe-paper-venue refresh");
           confirm H-to-RQ mapping against claims ledger
           (internally calls /haipipe-paper-probe)
@@ -186,9 +186,9 @@ A pitch that is one flat paragraph missing these sections must be flagged and re
 
 The pitch is venue-ALIGNED: it reads STATUS `venue` and the paper's `0-lifecycle/2-venue/2-venue.md` (Venue Profile + Fit Assessment blocks) to shape the Editor's Chair Test, the [primary] claim designation, the RQ framing, and the Audience section.
 `2-venue.md` is the compiled venue contract; read it FIRST.
-Fall back to reading `_venue/playbook-<venue>` directly only when `2-venue.md` does not exist (venue stage not yet run, or a pack-less venue); if no pack exists either, proceed without venue inputs.
-Deep dives follow the `[source: ...]` tags recorded in `2-venue.md` into `_venue/playbook-<slug>/<journal>/...`.
-If the provenance commit in `2-venue.md` is older than the current `_venue` HEAD, note "venue contract stale -- consider /haipipe-paper-venue refresh" but still use `2-venue.md` (never silently re-read packs).
+Fall back to reading `venue/playbook-<venue>` directly only when `2-venue.md` does not exist (venue stage not yet run, or a pack-less venue); if no pack exists either, proceed without venue inputs.
+Deep dives follow the `[source: ...]` tags recorded in `2-venue.md` into `venue/playbook-<slug>/<journal>/...`.
+If the provenance commit in `2-venue.md` is older than the current `venue` HEAD, note "venue contract stale -- consider /haipipe-paper-venue refresh" but still use `2-venue.md` (never silently re-read packs).
 A venue change means the pitch rewrites.
 (Claims stays unchanged because it is venue-free.)
 
@@ -264,7 +264,7 @@ Next:
     Venue pinning (STATUS `venue`) must happen before or during pitch.
     If no venue is pinned, run `/haipipe-paper venue` first.
 5c. **Editor's Chair Test lives here.**
-    Read the Venue Profile block of `0-lifecycle/2-venue/2-venue.md` (its one-sentence test) for the editor's chair question; fall back to `_venue/playbook-<venue>` only if `2-venue.md` is absent.
+    Read the Venue Profile block of `0-lifecycle/2-venue/2-venue.md` (its one-sentence test) for the editor's chair question; fall back to `venue/playbook-<venue>` only if `2-venue.md` is absent.
     Every primary claim must have a one-sentence answer.
     This test was migrated from claims (v3.0.0) because it is a venue question, not an evidence question.
 5d. **[primary] claim designation lives here.**

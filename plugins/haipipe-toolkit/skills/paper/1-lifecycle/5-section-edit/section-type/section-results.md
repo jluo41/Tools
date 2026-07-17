@@ -47,5 +47,5 @@ Common failure modes
 TODO
 ----
 
-- Link to `components/figure/` for figure ↔ claim alignment audit
-- Link to `3-build-submit/haipipe-paper-edit-claim-audit/` — every claim cross-checked
+- Link to `1-lifecycle/4-display/` (figure renderers) for figure ↔ claim alignment audit
+- Link to `3-deliver/2-audit/haipipe-paper-claim-audit/` — every claim cross-checked

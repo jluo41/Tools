@@ -71,7 +71,7 @@ Every todo item points to one target, per `../../wiki/07-paper-rounds.md`:
 ```text
 claim unsupported / too strong   -> 0-lifecycle/2-claims or probe
 display missing / stale          -> 0-lifecycle/4-display or display task
-paragraph placement unclear      -> 0-lifecycle/5-minimap
+paragraph placement unclear      -> 0-lifecycle/5-section-edit
 wording / flow / style           -> 0-sections/*.tex or edit skill
 citation needed / wrong          -> discover or citation component
 reviewer response                -> respond/rebuttal skill

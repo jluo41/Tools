@@ -10,7 +10,7 @@ Every number in the Structural Blueprint is TRANSCRIBED from the pinned outlet's
 
 Date: YYYY-MM-DD
 Status: DRAFT | pinned (<outlet>, <year>)
-Pack: playbook-<slug> @ <_venue commit short-hash>
+Pack: playbook-<slug> @ <venue commit short-hash>
 Outlet: <journal-dir>   (the directory name under the pack, e.g. jama-im -- downstream resolves section guides from this)
 Blueprint derived: YYYY-MM-DD from <journal>-*/style.md (Micro-norms measured <date>)
 
@@ -94,5 +94,5 @@ The venue-fit questions this stage raises — one ## per question: id, title, wh
 - **Transcribe, don't invent.** Blueprint numbers come from the outlet's section guides; if a guide is missing, measure 2-3 stored exemplars in `<journal>/examples/` and say so in the source tag.
 - **Hard caps stay caps.** Journal-imposed limits (word caps, display caps) are rules; measured exemplar deviations are annotations, never a new budget.
 - **Carry caveats.** A guide's measured-vs-budget clash or "to verify" marker transfers into the blueprint block verbatim intent; do not silently pick one number.
-- **Staleness check.** If `_venue` has moved past the recorded pack commit, re-derive the blueprint (re-transcribe Micro-norms); the venue pin itself does not change unless the user retargets.
+- **Staleness check.** If `venue` has moved past the recorded pack commit, re-derive the blueprint (re-transcribe Micro-norms); the venue pin itself does not change unless the user retargets.
 - **Retarget = full rewrite.** A new outlet rewrites this whole file; claims is venue-free and survives.

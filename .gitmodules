@@ -145,6 +145,6 @@
 [submodule "references/academic-humanizer"]
 	path = references/academic-humanizer
 	url = https://github.com/AIScientists-Dev/academic-humanizer
-[submodule "plugins/haipipe-toolkit/skills/paper/_venue"]
-	path = plugins/haipipe-toolkit/skills/paper/_venue
+[submodule "plugins/haipipe-toolkit/skills/paper/venue"]
+	path = plugins/haipipe-toolkit/skills/paper/venue
 	url = git@github.com:jluo41/Venue-Paper.git

@@ -267,7 +267,7 @@ Copy it to `<paper>/0-lifecycle/3-narrative/3-narrative.md` and replace the plac
 
 1. **Claim-evidence is non-negotiable.**
    Every quantitative line in the narrative must have a traceable file path.
-   Numbers without sources will fail `/haipipe-paper-edit-claim-audit` later anyway, so catch them here.
+   Numbers without sources will fail `/haipipe-paper-claim-audit` later anyway, so catch them here.
 2. **Every beat carries a readiness tag.**
    No beat is untagged.
    `[PENDING]` and `[GAP]` beats are the paper's live evidence worklist: surface them and route them to `/haipipe-probe`; never quietly upgrade a beat to `[READY]` without the evidence in hand.
@@ -282,9 +282,9 @@ Copy it to `<paper>/0-lifecycle/3-narrative/3-narrative.md` and replace the plac
 7. **Venue-ALIGNED arc.**
    The narrative is explicitly venue-aligned: read STATUS `venue` and the paper's `0-lifecycle/2-venue/2-venue.md` FIRST -- the Structural Blueprint blocks (section roles, beat allocation, paragraph budgets) plus Writing Principles -- for what the venue rewards in terms of narrative arc and argument structure.
    This contract shapes which beats are expanded (theory-forward for MISQ, clinical-impact-forward for JAMA) and which are condensed.
-   Fall back to `_venue/playbook-<venue>` directly only when `2-venue.md` is absent (venue stage not yet run, or a pack-less venue); if no pack exists either, proceed without venue inputs.
-   Deep dives follow the `[source: ...]` tags in `2-venue.md` into `_venue/playbook-<slug>/<journal>/...`.
-   If `2-venue.md`'s recorded pack commit is behind the current `_venue` HEAD, note "venue contract stale -- consider /haipipe-paper-venue refresh" but still use `2-venue.md` (never silently re-read packs).
+   Fall back to `venue/playbook-<venue>` directly only when `2-venue.md` is absent (venue stage not yet run, or a pack-less venue); if no pack exists either, proceed without venue inputs.
+   Deep dives follow the `[source: ...]` tags in `2-venue.md` into `venue/playbook-<slug>/<journal>/...`.
+   If `2-venue.md`'s recorded pack commit is behind the current `venue` HEAD, note "venue contract stale -- consider /haipipe-paper-venue refresh" but still use `2-venue.md` (never silently re-read packs).
 8. **Comment text is short and plain.**
    All comment text (interrogation, external comments, footer ledger lines) uses short declarative sentences, one idea each.
    No run-on lines chained by semicolons, no stacked parentheticals; compress rather than nest, split rather than join.

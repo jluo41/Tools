@@ -42,13 +42,13 @@ phase:   draft ✅  │  probe: cite 🔥🚀  val --  disp --  │  revise ⬜ 
 templates — live in the paper-root `_archive/`, not under 2-phase/)
 ```
 
-Whole-paper skills (consistency, format, typeset, claim-audit, submission-audit, diffpdf, optimizer, improve-loop, to-overleaf, reviewer) live in `3-build-submit/` as `haipipe-paper-edit-*`.
+Whole-paper skills (consistency, format, typeset, claim-audit, submission-audit, diffpdf, optimizer, improve-loop, to-overleaf, reviewer) live in `3-deliver/` as `haipipe-paper-edit-*`.
 
 ## Naming convention
 
 ```
 haipipe-paper-{phase}-{what}    phase workers (this directory)
-haipipe-paper-edit-*            whole-paper (3-build-submit/)
+haipipe-paper-edit-*            whole-paper (3-deliver/)
 ```
 
 ## Phase automation

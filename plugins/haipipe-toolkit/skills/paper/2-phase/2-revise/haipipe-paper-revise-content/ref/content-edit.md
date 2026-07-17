@@ -1,7 +1,7 @@
 # paper-edit-content — section / paragraph / sentence checklists
 
 The full content pass at three granularities. Work top-down. See the parent
-`SKILL.md` for scope and `../../_shared/` for file anatomy and the banner format.
+`SKILL.md` for scope and `2-phase/REF/` for file anatomy and the banner format.
 
 > **Read these as a Round-1 review lens, not an edit list.** In Round 1 each
 > failed checkbox becomes one `%% {CC-content-vMMDD}: <finding> | <suggestion>

@@ -32,7 +32,7 @@ W6   Conference Talk      ->   present (reads pitch first)
 | `IDEA_REPORT.md` | seed, upstream discoveries, pitch seed | Candidate pools stay upstream |
 | `EXPERIMENT_PLAN/LOG.md` | tasks/discoveries feeding narrative | Paper cites evidence summaries, not run logs |
 | `NARRATIVE_REPORT.md` | `0-lifecycle/3-narrative/3-narrative.tex` | Strong overlap; HAI-Pipe adds pitch upstream |
-| `PAPER_PLAN.md` | `0-lifecycle/5-minimap/5-minimap.tex` | In HAI-Pipe, downstream of pitch + narrative |
+| `PAPER_PLAN.md` | `0-lifecycle/5-section-edit/5-section-edit.tex` | In HAI-Pipe, downstream of pitch + narrative |
 | `figures/`, `latex_includes.tex` | `0-displays/displayNN-*/` | Display units with claim, caption, preview |
 | `AUTO_REVIEW.md` / `REVIEW_STATE.json` | review reports, `1-rounds/` | HAI-Pipe routes findings by layer |
 | `research-wiki/` | project KB: tasks/ + discoveries/ | HAI-Pipe path: discovery > PPNN verdict > claims > narrative |
@@ -55,7 +55,7 @@ ARIS-like research work (idea, experiment, review, wiki)
         |
         v
 HAI-Pipe paper folder
-  0-lifecycle/{0-seed..5-minimap}/
+  0-lifecycle/{0-seed..5-section-edit}/
   0-sections/*.tex
   0-displays/displayNN-*/
   1-probes/PPNN_<topic>.md <- the paper's questions (one SECTION each), bound by PATH to the bank

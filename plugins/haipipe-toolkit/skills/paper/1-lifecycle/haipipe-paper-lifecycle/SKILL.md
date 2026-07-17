@@ -85,7 +85,7 @@ haipipe-paper-claims        CLAIMS (1b):  maintain 0-lifecycle/1-claims/1-claims
 
 --- VENUE DECISION (pins target journal in STATUS.md) ---
 
-haipipe-paper-venue         VENUE:       recommend + pin the best-fit venue; compiles pack knowledge into 0-lifecycle/2-venue/2-venue.md (Venue Profile + Structural Blueprint + Writing Principles + Fit Assessment, provenance header naming pack + outlet + _venue commit) -- the venue contract the aligned stages read FIRST; gate between venue-free and venue-aligned stages.
+haipipe-paper-venue         VENUE:       recommend + pin the best-fit venue; compiles pack knowledge into 0-lifecycle/2-venue/2-venue.md (Venue Profile + Structural Blueprint + Writing Principles + Fit Assessment, provenance header naming pack + outlet + venue commit) -- the venue contract the aligned stages read FIRST; gate between venue-free and venue-aligned stages.
 
 --- VENUE-ALIGNED (rewrite on retarget) ---
 
@@ -160,7 +160,7 @@ The typical first-pass order:
                     syncing venue-quality prose to 0-sections/*.tex
 ```
 
-After the lifecycle spine, whole-paper build/submit tooling lives under `3-build-submit/` (`haipipe-paper-folder`, `haipipe-paper-build-*`, `haipipe-paper-edit-*` for compile checks, restructuring, submission audits).
+After the lifecycle spine, whole-paper delivery tooling lives under `3-deliver/`, routed by its own umbrella `haipipe-paper-deliver` (1-build: scaffold/restructure/conform/folder · 2-audit · 3-polish · 4-ship).
 
 Global-pass mode (breadth-first — the whole-paper cycle)
 ---------------------------------------------------------
@@ -200,8 +200,8 @@ Campaign rules live in the probe layer: `probe/haipipe-probe/SKILL.md` "Campaign
 Pitch, narrative, display, and section-edit all rewrite for the new venue.
 
 **Venue consumption rule:** the venue-aligned stages read the paper's `0-lifecycle/2-venue/2-venue.md` FIRST -- pitch: Venue Profile + Fit Assessment; narrative: Structural Blueprint beats + Writing Principles; display: Structural Blueprint display units + Writing Principles display limits; section-edit: the per-section Structural Blueprint block + Writing Principles.
-Direct `_venue/` pack reads are (a) the fallback when `2-venue.md` is absent (venue stage not yet run, or a pack-less venue; no pack at all = no venue inputs) and (b) deep dives following the `[source: ...]` tags recorded in `2-venue.md` into `_venue/playbook-<slug>/<journal>/...`.
-If `2-venue.md`'s recorded pack commit is behind the current `_venue` HEAD, stages note "venue contract stale -- consider /haipipe-paper-venue refresh" but still use `2-venue.md` (never silently re-read packs).
+Direct `venue/` pack reads are (a) the fallback when `2-venue.md` is absent (venue stage not yet run, or a pack-less venue; no pack at all = no venue inputs) and (b) deep dives following the `[source: ...]` tags recorded in `2-venue.md` into `venue/playbook-<slug>/<journal>/...`.
+If `2-venue.md`'s recorded pack commit is behind the current `venue` HEAD, stages note "venue contract stale -- consider /haipipe-paper-venue refresh" but still use `2-venue.md` (never silently re-read packs).
 
 ---
 
@@ -380,7 +380,7 @@ Relation to Parent Orchestrator
 --------------------------------
 
 `haipipe-paper` (in `paper/haipipe-paper/`) is the top-level paper router + Console.
-It resolves status and consults the paper's `0-lifecycle/2-venue/2-venue.md` for venue fit (falling back to the target's profile in `_venue/playbook-<venue>` only when no venue contract exists yet).
+It resolves status and consults the paper's `0-lifecycle/2-venue/2-venue.md` for venue fit (falling back to the target's profile in `venue/playbook-<venue>` only when no venue contract exists yet).
 This orchestrator (`haipipe-paper-lifecycle`) is the direct entry for structural work -- either routed from the Console or invoked by the user directly.
 
 ```
@@ -389,7 +389,7 @@ haipipe-paper (router)  -- consults 2-venue.md for venue fit (pack fallback pre-
             v
 haipipe-paper-lifecycle (this orchestrator)
   VENUE-FREE:
-  |-- folder             (lives in 3-build-submit/, routed from here)
+  |-- folder             (lives in 3-deliver/, routed from here)
   |-- seed (0)
   |-- resource (1a)       (prerequisite contract: Demand + Questions; stage 1a, claims is 1b,
   |                       as 2-venue/ and 2-pitch/ split stage 2)
@@ -406,5 +406,5 @@ haipipe-paper-lifecycle (this orchestrator)
 
 Every stage skill runs its phases through the shared 2-phase/ workers
 (haipipe-paper-draft / -probe / -revise / -checker); users never invoke those directly.
-Whole-paper build/submit tools (haipipe-paper-build-*, haipipe-paper-edit-*) live in 3-build-submit/.
+Whole-paper delivery tools live in 3-deliver/ (umbrella: haipipe-paper-deliver).
 ```

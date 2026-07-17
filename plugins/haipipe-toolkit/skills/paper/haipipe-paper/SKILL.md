@@ -58,6 +58,10 @@ display | figures | figures-tables           -> haipipe-paper-lifecycle display 
 section-edit | section | sec | §N            -> haipipe-paper-lifecycle section-edit (per-section prose work)
 table | figure | plot | diagram |
   illustration | figure1 | framework         -> haipipe-paper-lifecycle <renderer verb> (display renderer family; 做表/画图/架构图)
+build | scaffold | restructure | check | folder |
+  audit | review | claim-audit | submission-audit | reviewer | optimizer |
+  polish | format | typeset | consistency | improve-loop |
+  compile | diffpdf | overleaf | ship | deliver  -> haipipe-paper-deliver (artifact side; forwards the leaf verb to 1-build/2-audit/3-polish/4-ship; also "make submission-ready", "conformance", "produce the PDF")
 round | rounds                               -> haipipe-paper-round (dated work rounds; also "todo", "decisions", "applied")
 probe ["<question>"] | probe | probe plan | probe run [PPNN]  -> the probe-file pool: 1-probes/PPNN_<topic>.md, one file per TOPIC, one SECTION per question (RAISE / SHOW the board / PLAN the cross-stage campaign / RUN the five-step loop; the probe FILES are the source of truth — the README's Status board regenerates from them, its Campaign section is authored by "plan"; "run" hands the pool to haipipe-paper-probe; also "evidence gap", "verify claim", "hypothesis", "probe campaign", "consolidate probes")
 rebuttal                                     -> haipipe-paper-rebuttal (also "reply to reviewers", "reviewer comments", "OpenReview response", "R1 revision")
@@ -97,7 +101,7 @@ Resolution order (first match wins):
 
 A paper root is any directory upward containing `STATUS.md`, `0-lifecycle/`, `0-*.tex` + `0-sections/`, or `1-compile.sh` + `0-sections/`.
 
-Venue coupling (drives two routing rules): seed + resource + claims are venue-FREE; venue pins the journal in STATUS.md between claims and pitch AND compiles the pack into the paper's `0-lifecycle/2-venue/2-venue.md`; pitch/narrative/display/section-edit are venue-ALIGNED and consult 2-venue.md (direct `_venue/playbook-<venue>` reads = fallback when 2-venue.md is absent, or deep dives via its `[source: ...]` tags).
+Venue coupling (drives two routing rules): seed + resource + claims are venue-FREE; venue pins the journal in STATUS.md between claims and pitch AND compiles the pack into the paper's `0-lifecycle/2-venue/2-venue.md`; pitch/narrative/display/section-edit are venue-ALIGNED and consult 2-venue.md (direct `venue/playbook-<venue>` reads = fallback when 2-venue.md is absent, or deep dives via its `[source: ...]` tags).
 So: "paper" with claims done but no venue pinned -> run `venue` before pitch.
 Re-targeting ("move to another journal") -> re-run `venue`; pitch re-couples (new [primary], new RQ framing); resource and claims stay unchanged (what a paper NEEDS to exist does not depend on where you send it).
 
@@ -201,12 +205,12 @@ Structure Pointers
 Each area's internal contract lives with its owner; consult, never restate:
 
 ```
-skill tree (0-enter / 1-lifecycle / 2-phase / 3-build-submit / 4-respond / 5-present / components / wiki)
+skill tree (0-enter / 1-lifecycle / 2-phase / 3-deliver / 4-respond / 5-present / venue / wiki)
                                    -> README.md (skill root) + ../wiki/06-paper-skill-structure.md
-paper-folder layout                -> ../3-build-submit/_shared/paper-folder-anatomy.md (canonical tree, prefix semantics, maturity ladder)
+paper-folder layout                -> ../2-phase/REF/paper-folder-anatomy.md (canonical tree, prefix semantics, maturity ladder)
 lifecycle stages + venue coupling  -> ../1-lifecycle/ref/03-paper-lifecycle.md + ../1-lifecycle/ref/04-lifecycle-map.md
 rounds                             -> ../wiki/07-paper-rounds.md
-venue knowledge                    -> ../_venue/playbook-<venue> packs (venue is knowledge, not a pipeline)
+venue knowledge                    -> ../venue/playbook-<venue> packs (venue is knowledge, not a pipeline)
 ```
 
 Composing with Evidence Workers
@@ -214,7 +218,8 @@ Composing with Evidence Workers
 
 ```
 /haipipe-paper (router)
-        ├─► /haipipe-paper-lifecycle    (seed -> resource -> claims -> [venue] -> pitch -> narrative -> display -> section-edit)
+        ├─► /haipipe-paper-lifecycle    (the ARGUMENT: seed -> resource -> claims -> [venue] -> pitch -> narrative -> display -> section-edit)
+        ├─► /haipipe-paper-deliver      (the ARTIFACT: build -> audit -> polish -> ship; mirror of lifecycle)
         ├─► /haipipe-paper-rebuttal     (any venue, post-review)
         │
         │   evidence path (a claim hits a gap):

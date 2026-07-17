@@ -11,7 +11,7 @@ The section `.md` is the primary working document for section-edit. **Scaffold i
 
 venue: MISQ 2026 · section-type: methods (+results flavor)
 blueprint: 0-lifecycle/2-venue/2-venue.md (methods block)   <- BINDING: budget, structure, density
-style: _venue/playbook-utd-is/MISQ/MISQ-methods/style.md · MISQ-results/style.md   (reference only)
+style: venue/playbook-utd-is/MISQ/MISQ-methods/style.md · MISQ-results/style.md   (reference only)
 
 \```
 §N.1 Subsection Title (K paragraphs)
@@ -61,7 +61,7 @@ Second real sentence, citing prior work as \citep{wang2022reviews} when the key 
 
 ## Rules
 
-- **Venue header under the H1** (written ONCE at scaffold by DRAFT): `venue:` (the pin from STATUS.md), `section-type:` (this section's mapping, e.g. 4-llmtrait → methods), `blueprint:` (the paper's 2-venue.md block — the authoritative digest), `style:` (the deep-dive pack file, resolved from the blueprint's `[source:]` tag). Resolve the pack path layout-agnostically — installed skills flatten the tree: `VEN=$(find ~/.claude/skills "$CLAUDE_PLUGIN_ROOT" -type d -path '*skills/paper/_venue' 2>/dev/null | head -1)` — and record the RESOLVED path so later phases (and the user) follow the link instead of re-deriving it. Pack file absent → write `style: (pack missing — blueprint only)` and flag for CHECK. **The blueprint is BINDING** (word budget, ¶ structure, citation density, display limits); **the style file(s) are REFERENCE ONLY** — mine them for arc, signature moves, and exemplar sentences, but deviation is fine and never a CHECK failure. A hybrid section (e.g., a methods section that reports validation results) lists MORE THAN ONE style reference, `·`-separated.
+- **Venue header under the H1** (written ONCE at scaffold by DRAFT): `venue:` (the pin from STATUS.md), `section-type:` (this section's mapping, e.g. 4-llmtrait → methods), `blueprint:` (the paper's 2-venue.md block — the authoritative digest), `style:` (the deep-dive pack file, resolved from the blueprint's `[source:]` tag). Resolve the pack path layout-agnostically — installed skills flatten the tree: `VEN=$(find ~/.claude/skills "$CLAUDE_PLUGIN_ROOT" -type d -path '*skills/paper/venue' 2>/dev/null | head -1)` — and record the RESOLVED path so later phases (and the user) follow the link instead of re-deriving it. Pack file absent → write `style: (pack missing — blueprint only)` and flag for CHECK. **The blueprint is BINDING** (word budget, ¶ structure, citation density, display limits); **the style file(s) are REFERENCE ONLY** — mine them for arc, signature moves, and exemplar sentences, but deviation is fine and never a CHECK failure. A hybrid section (e.g., a methods section that reports validation results) lists MORE THAN ONE style reference, `·`-separated.
 - **Structure overview at top** (update whenever structure changes)
 - **Counts in the overview**: each `Pn` line carries `N sentences · ~M words` (approximate, `~`); a `total:` line closes the block with ¶ / sentence / word totals against the venue budget from `2-venue.md`. Recount whenever the block is updated (draft, and after REVISE); over budget → flag it, don't silently trim.
 - `##` for subsections, `###` for paragraphs
@@ -136,7 +136,7 @@ This is a BACKWARD FILL: tex -> .md, done ONCE at scaffold time. From then on th
 2. **Narrative**: `0-lifecycle/3-narrative/3-narrative.md` (the story beats)
 3. **Existing tex**: `0-sections/NN_section.tex` (if the section already has prose)
 4. **Section-type**: `section-type/section-{type}/SKILL.md` (structure norms for this section type)
-5. **Venue contract**: `0-lifecycle/2-venue/2-venue.md` (blueprint + writing principles; `_venue/` packs = fallback / deep dive)
+5. **Venue contract**: `0-lifecycle/2-venue/2-venue.md` (blueprint + writing principles; `venue/` packs = fallback / deep dive)
 6. **Claims**: `0-lifecycle/1-claims/1-claims.md` (what claims this section needs to support)
 
 ## Done-criteria for section DRAFT

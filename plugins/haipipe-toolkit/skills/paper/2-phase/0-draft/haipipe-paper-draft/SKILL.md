@@ -86,9 +86,9 @@ For venue-ALIGNED stages (pitch, narrative, display, section), resolve the venue
    Report `status: blocked` and tell the user to run `/haipipe-paper venue` first.
    Never draft a venue-ALIGNED artifact against an invented venue.
 2. Venue pinned and the paper's `0-lifecycle/2-venue/2-venue.md` exists -> **read it FIRST** (the venue stage's compiled doc): Writing Principles + the Structural Blueprint block for the artifact being drafted.
-   Direct `_venue/` pack reads are deep dives only, following the `[source: ...]` tags recorded there.
+   Direct `venue/` pack reads are deep dives only, following the `[source: ...]` tags recorded there.
 3. `2-venue.md` absent (venue stage not run) -> fall back to the pinned pack directly.
-   No matching `_venue/playbook-*` pack either -> **STOP with an error**.
+   No matching `venue/playbook-*` pack either -> **STOP with an error**.
    Name the pinned venue, list available packs, ask the user to fix the pin, add a pack, or run `/haipipe-paper venue`.
 4. Fallback pack exists but lacks the per-section style file -> **proceed with a visible warning**: use the pack's general style-profile, flag the missing file in the draft output and `_LOG`, and surface it again in the CHECK report.
    Never silently invent word budgets or structure norms.
@@ -219,11 +219,11 @@ Style inputs come from elsewhere:
 
 | Guidance | Lives in | Used by |
 |---|---|---|
-| Venue style, word budget, arc | `0-lifecycle/2-venue/2-venue.md` (compiled from `_venue/playbook-<pack>/`; pack = fallback / deep dive) | DRAFT reads budget; REVISE applies style |
+| Venue style, word budget, arc | `0-lifecycle/2-venue/2-venue.md` (compiled from `venue/playbook-<pack>/`; pack = fallback / deep dive) | DRAFT reads budget; REVISE applies style |
 | Per-section structure norms | `1-lifecycle/5-section-edit/section-type/` | DRAFT (structure) |
 | Prose quality rules | `2-phase/REF/prose-quality.md` | REVISE |
 
-Old venue LaTeX templates and the write-conference/scientific/systems style skills were archived to the paper-root `_archive/` (venue knowledge belongs in `_venue/` packs).
+Old venue LaTeX templates and the write-conference/scientific/systems style skills were archived to the paper-root `_archive/` (venue knowledge belongs in `venue/` packs).
 
 
 ## Relation to other phases
