@@ -4,8 +4,8 @@ description: "Stage orchestrator for the intervention's 0-lifecycle/1a-descripti
 argument-hint: "[intervention-path] [--refresh <Dnn>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.0.0"
-  last_updated: "2026-07-15"
+  version: "2.2.0"
+  last_updated: "2026-07-17"
   summary: "Descriptions stage (rung 1a of the venue-FREE 1a–1d evidence ladder; the D rung) — the anchored data profile: each D entry is statistic + pointer + as-of date, one line, quoting what task-profile probes landed (rich landed detail redirects into _DESCRIPTIONS/DS<n> profile sheets). Rounds are a GROW saturation loop (lens-rotating question storms, blind self-test, dry-stop); the rung consumes seed's [FORWARD -> CLAIMS] pointers and owns the downstream staleness stamp. History: ./CHANGELOG.md."
 ---
 
@@ -32,7 +32,7 @@ Interventions live on DYNAMIC data (iterate keeps refreshing it) and the artifac
 One D entry is one line, three parts: `**D3** - median engagement gap 41d -> tasks/A_message_design/results/summary.csv (as-of 2026-07-08)`.
 Every number carries a pointer to a project-side artifact (task result, discovery source) and an as-of date; no raw data, no tables of rows, no inline computation or estimation.
 There is no `_VALUES_` sidecar here: the D lines ARE the anchored one-liners, and the rich landed detail (arm-by-arm rates, distributions, the field inventory) lives in `_DESCRIPTIONS/DS<n>_<name>.md` — the PROBE `values:` lane REDIRECTS into those per-dataset sheets.
-Ids `D<n>` are ladder-local (1b cites them as `T1 (D3)`, 1c as `C2 (T1; D3)`); they are unrelated to insight-KB card ids and PP numbers.
+Ids `D<n>` are ladder-local (1b cites them as `T1 (D3)`, 1c as `C2 (T1; D3)`); they are unrelated to PP numbers.
 
 **2. Rounds are the GROW saturation engine, not a formality.**
 The roster GROWS because LANDED numbers feed the next round's questions — round 2's best questions cannot be asked until round 1's numbers exist.

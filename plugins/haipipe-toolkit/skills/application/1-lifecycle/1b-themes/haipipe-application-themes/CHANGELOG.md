@@ -3,6 +3,14 @@ haipipe-application-themes — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`.
 
+## [2.2.0] — 2026-07-17
+
+- Q-consumer migration: template `Probes` tail -> `Q-consumer` (`## Q` blocks).
+
+## [2.1.0] — 2026-07-17
+
+- Template D3: probe roster placeholder + label `status` -> `state`.
+
 ## [2.0.0] — 2026-07-15
 
 - Stage-skeleton reshape (paper-alignment, matching the 1c-claims exemplar): SKILL.md rebuilt on the 5-part skeleton — one-line decision + ladder, "What's special" (3 themes-unique items: extracted-not-invented/grounding, question-space-not-claim/hooks feed 1c, full D-consumption + counter-hunt), "The four phases, in themes", "The artifact" (section list + ref/themes-template.md pointer), "Exits". One sentence per line; prohibition walls cut. No load-bearing fact dropped (all 8 done-criteria + 5 principles folded into What's-special / CHECK line / phase notes).

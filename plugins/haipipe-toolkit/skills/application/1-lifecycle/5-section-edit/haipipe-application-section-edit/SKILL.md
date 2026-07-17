@@ -1,11 +1,11 @@
 ---
 name: haipipe-application-section-edit
-description: "Stage 5 of the intervention lifecycle (venue-gated: sectioned venues only — report, dashboard spec; skipped for sms/push/reminder/checklist/email unless the venue profile says otherwise). Per-section DRAFT-PROBE-REVISE-CHECK on the sections the VENUE PROFILE declares, syncing prose to 0-sections/. Renamed from haipipe-application-section-editing; the hardcoded 6-section report list moved to _venue/venue-report (venue knowledge, not skill logic). Trigger: section-edit, section, §N, edit sections, refine sections, /haipipe-application section-edit."
+description: "Stage 5 of the intervention lifecycle (venue-gated: sectioned venues only — report, dashboard spec; skipped for sms/push/reminder/checklist/email unless the venue profile says otherwise). Per-section DRAFT-PROBE-REVISE-CHECK on the sections the VENUE PROFILE declares, syncing prose to 0-sections/. Renamed from haipipe-application-section-editing; the hardcoded 6-section report list moved to venue/venue-report (venue knowledge, not skill logic). Trigger: section-edit, section, §N, edit sections, refine sections, /haipipe-application section-edit."
 argument-hint: "[section-name-or-§N] [intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "5.0.0"
-  last_updated: "2026-07-15"
+  version: "5.1.0"
+  last_updated: "2026-07-17"
   summary: "Section-edit stage (stage 5, venue-ALIGNED; sectioned venues only — report/dashboard spec): each section the VENUE PROFILE declares runs DRAFT → PROBE → REVISE → CHECK, editing prose in 0-sections/ with per-section scaffolds under 0-lifecycle/5-section-edit/{section}/. Its PROBE is a full-document probe — values + citation lanes per section, display lane where a section references units — raising gaps as sections in the flat pool 1-probes/PPNN_<topic>.md. Keeps the comment→reply→apply convention and the six edit topics as REVISE/CHECK lenses. History: ./CHANGELOG.md."
 ---
 
@@ -22,7 +22,7 @@ Read first: `../../../PHILOSOPHY.md`, `../../../wiki/08-stage-gate.md`, `../../.
 ## What's special
 
 **1. The section list comes from the VENUE PROFILE, never this skill.**
-`_venue/venue-<name>/README.md` declares the section structure (e.g. `venue-report` carries the report section list); a venue with no `sections:` block skips this stage entirely (check `STATUS.md | stages_skipped |`, and BLOCK if skipped).
+`venue/venue-<name>/README.md` declares the section structure (e.g. `venue-report` carries the report section list); a venue with no `sections:` block skips this stage entirely (check `STATUS.md | stages_skipped |`, and BLOCK if skipped).
 The display stage's per-unit jobs say what each section must carry; this stage makes the prose deliver it.
 
 **2. Venue-ALIGNED, so it rewrites on retarget.**
@@ -64,7 +64,7 @@ Only DRAFT and CHECK involve the human; PROBE and REVISE are agent-only.
 
 Six edit topics are the lenses REVISE writes against and CHECK verifies:
 **tone** (voice matches the audience register — clinician / pharmacist / patient) · **length** (respects the venue profile's limits) ·
-**citations** (claims trace to the 1c ledger anchors or K/W insight cards; flag unsupported assertions) ·
+**citations** (claims trace to the 1c ledger anchors; flag unsupported assertions) ·
 **reading-level** (patient-facing content at the audience's target grade) · **distinctiveness** (parallel elements — message variants, panels — actually differ) ·
 **consistency** (terms, labels, metric names, cohort definitions agree across sections).
 
@@ -81,7 +81,7 @@ _LOG_{section}.md    phase journal, one [PHASE]-tagged entry per round (newest o
 There is no single stage template — each section's scaffold IS its outline, and the display stage's per-unit job spec is the map of what each section must carry.
 Evidence gaps do NOT buffer here: they are raised as sections in the flat probe pool `1-probes/PPNN_<topic>.md`, whose fields are `serves: / target: / state: / q-executor: / a-consumer:` + a `## Why` block, states `planned | commissioned | answered | read | answered-local | failed` (a legacy per-stage `_PROBE/` folder is migrate-from only).
 
-Inputs read: `STATUS.md` (venue, stages_skipped) · `_venue/venue-<name>/README.md` (section list + jobs) · `0-lifecycle/4-display/4-display.md` (element→section map) · `0-lifecycle/1c-claims/1c-claims.md` (the ledger; claims language must not outrun it) · `0-lifecycle/1d-advice/1d-advice.md` (the advice entries each section executes) · `0-sections/*` (the prose under edit).
+Inputs read: `STATUS.md` (venue, stages_skipped) · `venue/venue-<name>/README.md` (section list + jobs) · `0-lifecycle/4-display/4-display.md` (element→section map) · `0-lifecycle/1c-claims/1c-claims.md` (the ledger; claims language must not outrun it) · `0-lifecycle/1d-advice/1d-advice.md` (the advice entries each section executes) · `0-sections/*` (the prose under edit).
 Output: edited `0-sections/*` in place, plus the per-section scaffolds above; this stage does not modify upstream lifecycle docs — upstream problems become loopback suggestions.
 
 

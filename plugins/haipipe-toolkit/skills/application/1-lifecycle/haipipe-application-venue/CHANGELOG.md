@@ -4,6 +4,14 @@ haipipe-application-venue — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [3.2.0] — 2026-07-17
+
+- Q-consumer migration: template + SKILL `Probes` -> `Q-consumer` (`## Q` blocks; venue-level investigation questions).
+
+## [3.1.0] — 2026-07-17
+
+- Template D2: Artifact Principles tone now sourced from the venue pack's tone-by-audience, not a separate `audience profile` (post the _audience -> venue merge).
+
 ## [1.0.0] — 2026-06-23
 
 - initial version modeled on paper-venue.

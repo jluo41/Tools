@@ -4,8 +4,8 @@ description: "Stage 3 of the intervention lifecycle (venue-GATED: fires per STAT
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "5.0.0"
-  last_updated: "2026-07-15"
+  version: "5.1.0"
+  last_updated: "2026-07-17"
   summary: "Narrative stage (stage 3, venue-GATED + venue-ALIGNED): maps the settled claim/advice flow onto the venue's arc; it composes, never gathers — a beat exposing a NEW evidence gap raises a question SECTION in 1-probes/PPNN_<topic>.md (serves: 3-narrative) routed back to 1c-claims. History: ./CHANGELOG.md."
 ---
 
@@ -32,7 +32,7 @@ Invoked while skipped: say so and offer the frontier.
 
 **2. It is venue-ALIGNED — the arc shape comes from the pinned venue.**
 Arc rules come from `2-venue.md`'s Artifact Principles: sectioned venues (email/report) get a linear arc, drill-down venues (dashboard/ui-card) get levels.
-Register comes from `_audience/profile-<name>/`.
+Register comes from the pinned venue pack (tone-by-audience).
 Retargeting rewrites the arc; the ladder underneath survives.
 
 **3. It composes, it does not gather.**
@@ -72,7 +72,7 @@ Mechanics: the probe layer's `ref/per-stage-dispatch.md`.
 Arc structure       one numbered position per beat, each anchored to a C/A id; venue-shaped
                     (linear positions for sectioned venues, levels for drill-down venues)
 Claim -> arc mapping one line per load-bearing claim/advice: where it lands + its job there
-Probes              rare narrative-level needs: a beat's NEW gap, routed back to claims
+Q-consumer          rare narrative-level questions: a beat's NEW gap, routed back to claims
 ```
 
 Sidecar: `_LOG_3-narrative.md` (phase journal).

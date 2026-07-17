@@ -46,11 +46,14 @@ Negative wisdom is first-class: this saves the next round from re-deriving it.
 Reason: <refuting C<n> status, or why it fails actionability/scope>.
 
 
-Probes
-------
+Q-consumer
+----------
 
-<This rung's probe roster, mirroring the sections in 1-probes/ (flat pool, PPNN_<topic>.md) that serve 1d: one line per PP with status.
-Rare on this rung: derivation is in-stage work, and a NEW evidence gap routes back to 1c-claims (raised there as a question section in 1-probes/). Roster must match the pool.>
+The questions this rung raises — one `##` per question: id, title, what it wants.
+Rare on this rung: derivation is in-stage work, and a NEW evidence gap routes back to 1c-claims (raised there). The route and approver are organized at APPROVE, into the probe file — not here.
 (May be empty.)
 
-- PP<nn> - <question> - <status>
+## Q1 · <question title>
+<what it wants.>
+
+<APPROVE adds each `→ 1-probes/PPNN_<topic>.md` pointer + derived state.>

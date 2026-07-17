@@ -4,10 +4,9 @@ description: "Orchestrator for the intervention structure lifecycle (1-lifecycle
 argument-hint: "[stage-verb|ladder] [intervention-path]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "4.1.0"
-  last_updated: "2026-07-09"
-  summary: "Ladder restage (SOP-ladder-restage.md): stage 1 split into the venue-FREE evidence ladder 1a-descriptions -> 1b-themes -> 1c-claims -> 1d-advice (echoes D->I->K->W); composite `ladder` sweep verb; gate batching per venue depth. Spine: seed (0), ladder (1a-1d) [venue-FREE] -> venue (pin) -> pitch (2), narrative (3), display (4), section-edit (5) [venue-ALIGNED, gated]. Never routes users to phase skills."
-  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
+  version: "4.3.0"
+  last_updated: "2026-07-17"
+  summary: "Routes intervention structural work across the venue-free/venue-aligned boundary: seed + the ladder (1a-1d) are venue-FREE, the venue pin gates stages 3-5, and pitch/narrative/display/section-edit rewrite on retarget. History: ./CHANGELOG.md."
 ---
 
 Skill: haipipe-application-lifecycle (orchestrator)
@@ -81,7 +80,7 @@ Natural Pipeline Order
                      syncing prose to 0-sections/
 ```
 
-After the lifecycle spine, delivery tooling lives under `3-build-deploy/` (`haipipe-application-artifact` = the `draft` verb, then review, claim-audit, deploy) and `4-iterate/`.
+After the lifecycle spine, delivery tooling lives under `3-deliver/` (`haipipe-application-artifact` = the `draft` verb, then review, claim-audit, deploy) and `4-iterate/`.
 
 **Retarget rule:** when the venue changes, seed and the ladder stay unchanged (venue-FREE); the new venue may demand deeper claims SETTLEMENT (more GAPs resolved, deeper 1d derivations), which is gate work, not content invalidation. Pitch, narrative, display, and section-edit rewrite for the new venue.
 
@@ -90,7 +89,7 @@ After the lifecycle spine, delivery tooling lives under `3-build-deploy/` (`haip
 Venue-Gated Dispatch
 ---------------------
 
-Before dispatching stages 3-5, read STATUS.md `stages_skipped`. Dispatching a skipped stage is a routing error: tell the user the pinned venue skips it and offer the frontier instead. Venue examples (authoritative table: each `_venue/venue-<name>/README.md`):
+Before dispatching stages 3-5, read STATUS.md `stages_skipped`. Dispatching a skipped stage is a routing error: tell the user the pinned venue skips it and offer the frontier instead. Venue examples (authoritative table: each `venue/venue-<name>/README.md`):
 
 ```
 sms / push / reminder    skip narrative, display, section-edit   (claims_settlement: light)
@@ -144,7 +143,7 @@ Relation to Parent Orchestrator
 --------------------------------
 
 ```
-haipipe-application (router + Console)  -- consults _venue/venue-<name> + _audience/profile-<name>
+haipipe-application (router + Console)  -- consults venue/venue-<name>
             |
             v
 haipipe-application-lifecycle (this orchestrator)
@@ -165,7 +164,7 @@ haipipe-application-lifecycle (this orchestrator)
 
 Every stage skill runs its phases through the shared 2-phase/ workers
 (haipipe-application-draft / -probe / -revise / -check); users never invoke those directly.
-Delivery tooling (artifact/review/claim-audit/deploy) lives in 3-build-deploy/; post-deploy in 4-iterate/.
+Delivery tooling (artifact/review/claim-audit/deploy) lives in 3-deliver/; post-deploy in 4-iterate/.
 ```
 
 Risk profile

@@ -4,6 +4,14 @@ haipipe-application-display — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [4.5.0] — 2026-07-17
+
+- Q-consumer migration: template + SKILL `Probes` -> `Q-consumer` (`## Q` per unit to materialize).
+
+## [4.4.0] — 2026-07-17
+
+- Template D3+D4: probe roster placeholder `<status>` -> `<state>`; U02 data-source Status enum now matches U01 (`planned | commissioned (PP<nn>) | landed`).
+
 ## [1.0.0] — 2026-06-22
 
 - initial version as haipipe-application-variants.

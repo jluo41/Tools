@@ -4,8 +4,8 @@ description: "Stage 4 of the intervention lifecycle (venue-GATED: required for d
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.3.0"
-  last_updated: "2026-07-15"
+  version: "4.5.0"
+  last_updated: "2026-07-17"
   summary: "Display stage (stage 4, venue-GATED + venue-ALIGNED) — maps each claim to a display UNIT with a required per-unit Job (minimap absorbed); materialization raised as a section in the flat probe pool 1-probes/, uniquely commissioned by this stage. History: ./CHANGELOG.md."
 ---
 
@@ -68,7 +68,7 @@ Display units      one U<nn>: Type + Claim (via A<n> where an advice entry drive
                    + Data source · Status: planned | commissioned (PP<nn>) | landed
 Unit -> section    (sectioned venues) which unit goes in which section, and why
   mapping
-Probes             materialization needs, one line per PP with status; the display lane LINKs what landed
+Q-consumer         materialization questions, one `## Q` per unit; the display lane LINKs what landed
 ```
 
 Sidecar: `_LOG_4-display.md` (phase journal).

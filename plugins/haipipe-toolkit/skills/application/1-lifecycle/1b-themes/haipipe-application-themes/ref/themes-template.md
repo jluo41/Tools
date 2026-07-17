@@ -39,11 +39,16 @@ Also holds context-only D ids (described but not thematic) and the counter-hunt 
 - counter-hunt: <pattern found AGAINST the seed hypothesis | "none found (lens ran YYYY-MM-DD)">
 
 
-Probes
-------
+Q-consumer
+----------
 
-<This rung's probe roster (sections live in the flat pool 1-probes/PPNN_<topic>.md): one line per PP with status
-(planned | commissioned | answered | read | answered-local | failed).
-Mostly discovery probes for field patterns; task probes only for quick in-data confirmations. Roster must match disk.>
+The field-pattern questions this rung raises — one `##` per question: id, title, what it wants.
+The route (mostly discovery for field patterns; task only for quick in-data confirmations) and the approver are organized at APPROVE, into the probe file — not here.
 
-- PP<nn> - <field-pattern question> - <status>
+## Q1 · <question title>
+<what this question wants to know, one sentence per line.>
+
+## Q2 · <question title>
+<what it wants.>
+
+<APPROVE adds each `→ 1-probes/PPNN_<topic>.md` pointer + derived state.>

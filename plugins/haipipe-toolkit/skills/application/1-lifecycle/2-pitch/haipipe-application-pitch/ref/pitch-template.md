@@ -3,7 +3,7 @@
 
 Date: YYYY-MM-DD
 Status: DRAFT
-Venue: <pinned venue> · Audience: <audience profile>
+Venue: <pinned venue> · Audience: <target audience>
 Rewrites on retarget. Reads 2-venue.md Artifact Principles + 1d-advice (the advice entries it sells).
 How to use: copy to `<intervention>/0-lifecycle/2-pitch/2-pitch.md`, replace every `<...>`, delete unused sub-items (the DRAFT worker does this during the stage's DPRC).
 
@@ -26,7 +26,7 @@ Anchor each link in a 1d advice entry (A<n>) or a supported ledger claim (C<n>).
 Audience frame
 --------------
 
-<How the pinned audience profile shapes the register and ask.>
+<How the target audience shapes the register and ask (per the venue pack's tone-by-audience).>
 
 
 Primary claim
@@ -41,12 +41,13 @@ Why now
 <What makes this timely.>
 
 
-Probes
-------
+Q-consumer
+----------
 
-<Rare for pitch — a citation lane only: anchor evidence for a theory-of-change link the ledger lacks.
-One index line per PP with its state; the question lives as a SECTION in the flat pool
-`<intervention>/1-probes/PPNN_<topic>.md` (serves/target/state/q-executor/a-consumer + a `## Why` that never leaves).
-States: planned | commissioned | answered | read | answered-local | failed. Usually empty.>
+Rare for pitch — a citation need only: anchor evidence for a theory-of-change link the ledger lacks.
+One `##` per question: id, title, what it wants. The route and approver are organized at APPROVE, into the probe file — not here. Usually empty.
 
-- PP<nn> (<topic>) - <question> - <state>
+## Q1 · <question title>
+<what it wants.>
+
+<APPROVE adds each `→ 1-probes/PPNN_<topic>.md` pointer + derived state.>

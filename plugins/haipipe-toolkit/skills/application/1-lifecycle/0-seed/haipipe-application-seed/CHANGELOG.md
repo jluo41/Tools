@@ -4,6 +4,14 @@ haipipe-application-seed — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [4.2.0] — 2026-07-17
+
+- Q-consumer migration: the stage doc's `Probes` tail section is renamed + reshaped to `Q-consumer` (`## Q` question blocks, matching the constitution's `q-executor:`/`a-consumer:` fields); the stage RAISES questions, the PP-id/route/state organize into 1-probes/ at APPROVE. Template + SKILL (artifact list, REVISE line, Done gate) updated.
+
+## [4.1.0] — 2026-07-17
+
+- Template D3: probe roster placeholder + label `status` -> `state` (canonical field name).
+
 ## [1.0.0] — 2026-06-22
 
 - initial version modeled on paper-seed.

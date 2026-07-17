@@ -3,6 +3,18 @@ haipipe-application-advice — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`.
 
+## [1.6.0] — 2026-07-17
+
+- Q-consumer migration: template `Probes` tail -> `Q-consumer` (`## Q` blocks; rare on this rung).
+
+## [1.5.0] — 2026-07-17
+
+- Template D3: probe roster placeholder + label `status` -> `state`.
+
+## [1.4.0] — 2026-07-17
+
+- Removed the optional insight-KB deposit (`--deposit`); the ladder doc `1d-advice.md` is the sole record of W (insight KB retired as a deposit target).
+
 ## [1.0.0] — 2026-07-09
 
 - NEW skill, born in the ladder restage (SOP-ladder-restage.md, JL 2026-07-09): rung 1d = the W rung and the ladder's DELIVERABLE. Paper delivers K, application delivers W (JL framing, 2026-07-09): principles are actionable directives derived from >=1 claim in the 1c ledger.

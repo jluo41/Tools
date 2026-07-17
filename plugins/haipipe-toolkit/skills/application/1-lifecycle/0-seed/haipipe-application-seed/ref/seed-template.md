@@ -48,11 +48,17 @@ Kill criteria
 - <criterion 2, e.g. "click rate < 2% in pilot">
 
 
-Probes
-------
+Q-consumer
+----------
 
-<Seed-level FEASIBILITY probes only (novelty + external-data obtainability), one line per PP with status.
-Each question is a SECTION in the flat pool 1-probes/PPNN_<topic>.md (serves/target/state/q-executor/a-consumer + ## Why); states planned|commissioned|answered|read|answered-local|failed.
-Internal-data needs are [FORWARD -> CLAIMS] pointer lines in _LOG_0-seed.md, NOT probes here.>
+The seed-level FEASIBILITY questions this stage raises (novelty + external-data obtainability) — one `##` per question: id, title, what it wants.
+The route and who answers are organized at APPROVE, into the probe file — not here.
+Internal-data needs are [FORWARD -> CLAIMS] pointer lines in _LOG_0-seed.md, NOT questions here.
 
-- PP<nn> - <feasibility question> - <status>
+## Q1 · <question title — typically "is this new?" or "is the external data obtainable?">
+<what this question wants to know, one sentence per line.>
+
+## Q2 · <question title>
+<what it wants.>
+
+<APPROVE adds each `→ 1-probes/PPNN_<topic>.md` pointer + derived state.>
