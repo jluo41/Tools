@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "1.1.0"
   last_updated: "2026-07-06"
-  summary: "Artifact review — audience fit, claim traceability, compliance. Paper-alignment sweep: old-spine paths (3-design/4-variants/2-claims.md) replaced; retired verdict word removed."
+  summary: "Artifact review — audience fit, claim traceability, compliance. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -24,7 +24,7 @@ Per artifact in `0-artifacts/`:
 
 ```
 [ ] Audience match: tone, jargon level, length within budget
-    (per _audience/profile-<audience>/ and ref/audience-requirements.md)
+    (per the venue pack's tone-by-audience style-profile)
 
 [ ] Claim traceability: every factual claim in the artifact traces
     to an adopted A id in frontmatter (artifact -> adopted A -> C -> anchor)

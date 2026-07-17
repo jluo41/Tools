@@ -1,7 +1,7 @@
 # Venue Profile Schema
 
 Every venue profile is a uniform pack (modeled on paper's venue
-packs under `paper/_venue/_SCHEMA.md`).
+packs under `paper/venue/_SCHEMA.md`).
 
 ```
 venue-<name>/
@@ -129,15 +129,12 @@ venue-report            stakeholder report, formal (full claims)
 ```
 
 
-Relation to _audience/
-========================
+Audience (folded into the venue pack)
+======================================
 
-Venue and audience are orthogonal but coupled:
-- **Venue** determines structure, constraints, delivery mechanism
-- **Audience** determines tone, language, evidence depth, citation format
-
-Both are consulted. Venue is primary (structure), audience is
-secondary (style within structure). A patient can receive an SMS
-or a push notification; a clinician can receive a dashboard or
-an email. The venue profile says WHAT the output looks like;
-the audience profile says HOW it sounds.
+Venue and audience are orthogonal but coupled, and both now live in this
+pack: the venue determines structure (WHAT the output looks like); the
+audience determines tone, language, evidence depth, citation format (HOW it
+sounds). The style-profile's tone-by-audience rows ARE the audience axis --
+there is no separate audience directory. A patient can receive an SMS or a
+push; a clinician can receive a dashboard or an email.

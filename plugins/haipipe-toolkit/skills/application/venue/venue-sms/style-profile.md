@@ -60,7 +60,7 @@ audience=patient     → warm, plain, 6th grade, no C-id in body
 audience=clinician   → precise, clinical, inline C-id
 ```
 
-Read `_audience/profile-<audience>/README.md` for full tone rules.
+The tone-by-audience rows above are the full tone rules for this venue.
 
 
 ## Self-review checklist
