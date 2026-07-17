@@ -6,7 +6,7 @@ allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "1.1.0"
   last_updated: "2026-07-06"
-  summary: "Round management — feedback, triage, iteration cycles. Re-homed to 0-enter/ (paper pattern); triage targets updated to the paper-aligned spine (design/variants words retired)."
+  summary: "Round management — dated work rounds: feedback intake, triage to the owning stage, iteration cycles. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

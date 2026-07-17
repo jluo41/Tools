@@ -34,10 +34,9 @@ application/
 │     1-probe/haipipe-application-probe   (the ONLY evidence door; + check-probe-cards.sh, ref/)
 │     2-revise/haipipe-application-revise
 │     3-check/haipipe-application-check   (+ checks.sh, gate-persona.md, attendance-modes.md)
-├── 3-build-deploy/        haipipe-application-artifact (the `draft` verb) + review + claim-audit + deploy
+├── 3-deliver/        haipipe-application-artifact (the `draft` verb) + review + claim-audit + deploy
 ├── 4-iterate/             haipipe-application-iterate (post-deploy A/B refinement)
-├── _venue/                venue packs (knowledge, not stages; README + style-profile [+ exemplars])
-├── _audience/             audience packs (knowledge) + audience-requirements.md
+├── venue/                venue packs (knowledge, not stages; README + style-profile [+ exemplars])
 └── _archive/              retired: haipipe-application-ask (+ its refs), haipipe-application-minimap
 ```
 
@@ -56,9 +55,9 @@ venue (pin)       -> 1-lifecycle/haipipe-application-venue (after the ladder, be
 3-narrative       -> 1-lifecycle/3-narrative/haipipe-application-narrative      (venue-gated)
 4-display         -> 1-lifecycle/4-display/haipipe-application-display          (venue-gated)
 5-section-edit    -> 1-lifecycle/5-section-edit/haipipe-application-section-edit (sectioned venues)
-draft (artifact)  -> 3-build-deploy/haipipe-application-artifact
-review / audit    -> 3-build-deploy/haipipe-application-{review,claim-audit}
-deploy            -> 3-build-deploy/haipipe-application-deploy
+draft (artifact)  -> 3-deliver/haipipe-application-artifact
+review / audit    -> 3-deliver/haipipe-application-{review,claim-audit}
+deploy            -> 3-deliver/haipipe-application-deploy
 round             -> 0-enter/haipipe-application-round
 iterate           -> 4-iterate/haipipe-application-iterate
 ```
@@ -82,12 +81,12 @@ seed / ladder / descriptions / themes
   / claims / advice / venue / pitch
   / narrative / display / section-edit      -> 1-lifecycle
 round / todo / decisions                    -> 0-enter/haipipe-application-round
-draft / write / make the <venue>            -> 3-build-deploy/haipipe-application-artifact
-review / claim-audit / deploy               -> 3-build-deploy
+draft / write / make the <venue>            -> 3-deliver/haipipe-application-artifact
+review / claim-audit / deploy               -> 3-deliver
 iterate / A/B                               -> 4-iterate
 probe / evidence gap                        -> a section in the flat pool 1-probes/; `run` -> 2-phase/1-probe worker
 venue / which channel                       -> 1-lifecycle/haipipe-application-venue
-  (the pinned venue's pack                  -> _venue/venue-<name>, consulted by each aligned stage)
+  (the pinned venue's pack                  -> venue/venue-<name>, consulted by each aligned stage)
 ```
 
 ## Maturity Rule

@@ -26,7 +26,7 @@ All stages are markdown (argument documents need no compilation). Each stage ans
 | 4-display | What content element carries each claim, and what job does each unit do? |
 | 5-section-edit | Does each section's prose do its job? (per-section DRAFT-PROBE-REVISE-CHECK) |
 
-Stage 1 is the **evidence ladder** — Descriptions/Themes/Claims/Advice echo D→I→K→W without reusing the insight-KB letter names. The manuscript form carries D/I in its own Methods/Results sections, so paper stops its stage 1 at claims (paper delivers K); an intervention artifact carries none of the ladder in its body and lives on dynamic data, so the application climbs one more rung to advice (application delivers W). Each rung is independently re-runnable: iterate's fresh A/B data backfills 1a, staleness tags propagate down the citation chain (A ← C ← T ← D), and only affected rungs reopen.
+Stage 1 is the **evidence ladder** — Descriptions/Themes/Claims/Advice echo D→I→K→W. The manuscript form carries D/I in its own Methods/Results sections, so paper stops its stage 1 at claims (paper delivers K); an intervention artifact carries none of the ladder in its body and lives on dynamic data, so the application climbs one more rung to advice (application delivers W). Each rung is independently re-runnable: iterate's fresh A/B data backfills 1a, staleness tags propagate down the citation chain (A ← C ← T ← D), and only affected rungs reopen.
 
 Two axes stay orthogonal: **layer/frontier** (which stage has the active work) and **maturity** (how real the intervention is: prospect, drafted, deployed, iterating, retired).
 
@@ -48,9 +48,6 @@ The application does not execute code, search literature directly, or store raw 
 task        executes internal work
 discovery   checks outside evidence
 probe       binds each claim question to a bank answer (the single evidence door)
-insight     optional deposit layer for cross-intervention knowledge (ladder restage R7:
-            judgment lives in the ladder docs (1c-claims status); the probe file carries
-            only the answer's meaning; 1d deposits W cards on-request)
 application selects evidence, climbs it to design advice (the ladder), shapes it
             for a venue + audience, delivers, iterates
 ```
@@ -63,7 +60,7 @@ application selects evidence, climbs it to design advice (the ladder), shapes it
 
 Auto: read files, summarize status, classify input, draft stage docs, detect open needs.
 
-Ask first: costly task/PHI work, claim status changes, deploy to a live channel, opening/closing rounds, filing insight memory.
+Ask first: costly task/PHI work, claim status changes, deploy to a live channel, opening/closing rounds.
 
 ## Folder model
 
@@ -95,7 +92,7 @@ ladder are venue-FREE and survive retargeting.
 
 For each lifecycle stage, specify: what question it answers, which skill
 procedure owns it, which files it reads/writes, whether it calls
-task/probe/discovery/insight, what artifact it produces, what machine state
+task/probe/discovery, what artifact it produces, what machine state
 it updates, and when it must stop and ask the user.
 
 Keep the intervention folder fixed:

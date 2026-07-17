@@ -185,10 +185,10 @@ haipipe-application-draft         2-phase/0-draft/haipipe-application-draft/feed
 haipipe-application-probe         2-phase/1-probe/haipipe-application-probe/feedback/
 haipipe-application-revise        2-phase/2-revise/haipipe-application-revise/feedback/
 haipipe-application-check         2-phase/3-check/haipipe-application-check/feedback/
-haipipe-application-artifact      3-build-deploy/haipipe-application-artifact/feedback/
-haipipe-application-review        3-build-deploy/haipipe-application-review/feedback/
-haipipe-application-claim-audit   3-build-deploy/haipipe-application-claim-audit/feedback/
-haipipe-application-deploy        3-build-deploy/haipipe-application-deploy/feedback/
+haipipe-application-artifact      3-deliver/haipipe-application-artifact/feedback/
+haipipe-application-review        3-deliver/haipipe-application-review/feedback/
+haipipe-application-claim-audit   3-deliver/haipipe-application-claim-audit/feedback/
+haipipe-application-deploy        3-deliver/haipipe-application-deploy/feedback/
 haipipe-application-iterate       4-iterate/haipipe-application-iterate/feedback/
 haipipe-application-round         0-enter/haipipe-application-round/feedback/
 haipipe-application-enter         0-enter/haipipe-application-enter/feedback/

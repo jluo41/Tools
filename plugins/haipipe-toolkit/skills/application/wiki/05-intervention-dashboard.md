@@ -16,7 +16,7 @@ skipped = read_status_row("stages_skipped")          # written at venue pin
 for stage in spine:
     if stage in skipped: continue                    # venue-skipped: passed over, never a gap
     if stage == "venue":
-        if not status_has_venue(): frontier = "venue"; break
+        if not status_hasvenue(): frontier = "venue"; break
     elif not stage_doc_has_content(f"0-lifecycle/{stage}/{stage}.md") or not gate_confirmed(stage):
         frontier = stage; break
 else:
@@ -29,9 +29,9 @@ Open needs detection
 ```
 Source                                        Need type
 ───────────────────────                       ──────────────
-1a-descriptions: entry stale or undated       data refresh → 1a probe card
+1a-descriptions: entry stale or undated       data refresh → raise a 1a section
 1b-themes: theme without grounding            ungrounded theme → ground or park
-1c-claims: status=GAP below settlement bar    claim gap → probe card
+1c-claims: status=GAP below settlement bar    claim gap → raise a probe section
 1c-claims: status=weak (load-bearing)         weak claim → optional probe
 1d-advice: A below settlement bar         under-derived advice → settle its claims
 any ladder doc: unresolved [STALE] tag        staleness → re-confirm or revise the entry

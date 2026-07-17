@@ -4,8 +4,8 @@ description: "Open the Intervention Console for an intervention folder. Use for 
 argument-hint: "[intervention-path] [free-form input]"
 allowed-tools: Bash, Read, Grep, Glob, Write, Skill
 metadata:
-  version: "2.2.0"
-  last_updated: "2026-07-06"
+  version: "2.3.0"
+  last_updated: "2026-07-17"
   summary: "Intervention Console (mirrors the Paper Console): resolve the intervention root, derive state from disk (not stored status), render an open-needs dashboard (frontier + maturity + venue/audience + claim/display/round gaps + releasable probes + loopback), record session state in .intervention-console.yaml, and route free-form follow-up through the lifecycle in copilot mode. Get-or-create scaffolds a missing path (confirm-gated). History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -46,11 +46,11 @@ There is no separate create verb. When the given path does not exist, do NOT fai
    nothing to dashboard.
 ```
 
-The main job is to expose the intervention's current debt board: open claim gaps, display/element gaps, artifact/review gaps, round todo gaps, and evidence needs that may require probe/discover/task/insight work. The user often does not know the next stage in advance; the dashboard makes the next need visible.
+The main job is to expose the intervention's current debt board: open claim gaps, display/element gaps, artifact/review gaps, round todo gaps, and evidence needs that may require probe/discover/task work. The user often does not know the next stage in advance; the dashboard makes the next need visible.
 
 Follow-up actions in the same session must treat that dashboard, especially `current_layer`, `next_layer`, venue gating, and open needs/gates, as the working context. A fresh session should run `enter` again.
 
-Story ownership rule: this intervention owns its own story, claim wording, narrative, displays, and artifact text. Shared evidence lives in project-level discoveries, tasks, and insights.
+Story ownership rule: this intervention owns its own story, claim wording, narrative, displays, and artifact text. Shared evidence lives in project-level discoveries and tasks.
 
 Read first:
 
@@ -160,7 +160,7 @@ Need diagnosis is separate from lifecycle layer. Extract open needs from:
 | artifact review flags / claim-audit failures | revise or loop back |
 | round `todo.md` unresolved items | edit, probe, display, deploy |
 
-Classify each open item using the delivery-need interface: `probe | discovery | task | display | insight | edit`.
+Classify each open item using the delivery-need interface: `probe | discovery | task | display | edit`.
 
 Loopback diagnosis:
 
@@ -225,7 +225,7 @@ source of truth). Venue-skipped stages render `--` and never carry 🔥/🚀.>
 
 | Need | Type | Source | Suggested route |
 |---|---|---|---|
-| ... | probe/display/discovery/task/insight/edit | ... | ... |
+| ... | probe/display/discovery/task/edit | ... | ... |
 
 ## Releasable Probes
 
@@ -296,7 +296,6 @@ calling costly task/PHI/full-data work
 committing or downgrading a claim's status in 1c-claims.md
 deploying to a live channel
 opening or closing a revision round destructively
-filing insight memory as accepted knowledge
 ```
 
 ## Session State

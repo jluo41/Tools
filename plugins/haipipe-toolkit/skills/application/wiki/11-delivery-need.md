@@ -34,9 +34,8 @@ stage gap -> a section in 1-probes/ -> haipipe-application-probe five-step loop
 
 ```
 claim-related evidence / robustness           -> /haipipe-application probe "<question>"  (a SECTION; run dispatches)
-outside context / benchmark (non-claim)       -> /haipipe-application discover "<question>"
-run / data artifact / display materialization -> /haipipe-application task "<contract>"  (or /haipipe-task-for-display)
-finished evidence needs reusable K/W meaning  -> /haipipe-insight <artifact>
+outside context / benchmark (non-claim)       -> /haipipe-discovery <question>
+run / data artifact / display materialization -> /haipipe-task <contract>  (or /haipipe-task-for-display)
 ```
 
 Claim-related evidence goes through a stage's PROBE phase — the section preserves the claim-evidence chain and makes the backlog visible. Non-claim utility work goes straight to the task/discovery door; if the answer later matters, open a section whose `target:` points at the already-written QA file (a T2 REUSE — nothing re-runs).

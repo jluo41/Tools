@@ -283,3 +283,22 @@ Parked at user request before the bench run; NO ruling yet on either. Both decis
 - Follow-up (JL, same day: "some probes can just be the task folder, no need to have a new task group folder"): granularity ladder encoded at three points -- task-orchestrator agent 1.1.0 gains the LAND rung (config variant > new task in group > new group last-resort, one need = one task/config), probe worker 2.3.0 dispatch prompt carries task_landing, battery rails note GROW grows probes not folders. Trigger: SMSDesign tasks/ grew 7 full scaffolds for 7 profile queries on one parquet.
 - Feedback-inbox loop goes live (bench-invented convention, adopted): skills carry a `feedback/` inbox (`<YYYY-MM-DD>_<slug>.md`, `status: open|fixed`, filed via `/haipipe-application feedback` at capture-time routing); the skill-dev session processes items and records `fixed_in`. First item processed: enter 2.2.0 Releasable Probes dashboard block.
 - Follow-up (JL, same day: "different config and different run.sh can mean different subgroups... tasks should be flexible with config.yaml and run.sh"): the ladder's rung (a) gets its mechanism, grounded in /haipipe-task ref/task-structure.md (one config = one run.sh, results name-paired). Task-orchestrator agent 1.2.0: LAND naming rule -- task folders segment/dataset-agnostic (`01_arm_engagement`, never `01_young_male_arm_engagement`); segment filters + input dataset paths are config keys; hardcoded slices get externalized in a BUILD touch-up, not cloned. Probe worker 2.4.0: task_landing dispatch line carries the same rule. Battery rail: a new cohort re-runs the whole battery by adding configs, never by re-scaffolding.
+
+## [6.5.0] — 2026-07-17
+
+- Match paper's "no proxy verb" style (paper 3.1.0, 2026-07-14 — application predated it by 5 days): DROP the `discover` and `task` verbs from the umbrella. Reaching the bank is the PROBE phase's job, not the intervention's; a human doing standalone utility (a lit scan, a data check) types the bank's OWN door `/haipipe-task qa` | `/haipipe-discovery qa`, never proxied by the intervention.
+- Removed: the two verb rows, their Dispatch-notes rows, the discover Example line, the "Direct task/discover verbs remain…" description clause, `discover|task` from the No-Arg Chooser.
+- Added / rerouted to mirror paper verbatim: the intro no-proxy principle paragraph; Delivery Need Routing "standalone utility (a HUMAN…) -> /haipipe-task qa | /haipipe-discovery qa (the bank's own door)"; the Composing tail "a stage reaches the bank ONLY through its PROBE phase — no direct discover/task verb".
+- Scope: discover/task only; insights cleanup and the "stages × four phases" teaching block deliberately NOT bundled in.
+
+## [6.6.0] — 2026-07-17
+
+- Family insight-KB sweep: the insight KB is retired as an evidence layer (evidence lives in the probe -> task/discovery bank; the deliverable W lives in `1d-advice.md`). This file drops `and insights` from the intro and removes the `/haipipe-insight` delivery-need route. Paired removals across enter/claim-audit/artifact/section-edit/1a/1d/iterate + wiki/README/PHILOSOPHY; the retired `ref/application-input-contract.md` deleted.
+
+## [6.7.0] — 2026-07-17
+
+- Align dir naming to paper + fold audience into venue. `_venue/` -> `venue/` (no underscore, matching `paper/venue/`) across every live reference (~12 files). `_audience/` DELETED: the separate audience-profile packs are gone; the venue pack's style-profile carries tone-by-audience (the audience axis), per JL ("audience should be with venue"). Dead `_audience/` path pointers removed/redirected in umbrella/lifecycle/draft/revise/narrative/artifact/review + venue/_SCHEMA + venue-sms + README/wiki. Audience remains a targeting + tone axis; only the standalone directory is retired.
+
+## [6.8.0] — 2026-07-17
+
+- Delivery layer renamed `3-build-deploy` -> `3-deliver` to match `paper/3-deliver` (paper reshaped its build/submit layer into a 4-substage pipeline; application adopts the NAME + verb-intent but stays FLAT — markdown/channel artifacts have no LaTeX build/polish/ship sub-stages to fill, per option B). Added `3-deliver/README.md` (intent gradient: compose -> audit -> ship). All live path references updated; SOP history left as-is.
