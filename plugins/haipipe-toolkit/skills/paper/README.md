@@ -32,10 +32,10 @@ paper/
 │                     + display renderers (-table, -figure, -diagram, -illustration)
 ├── 2-phase/          shared phase workers: DRAFT-PROBE-REVISE-CHECK (DPRC)
 │                     haipipe-paper-{draft,probe,revise,checker} + sub-workers
-├── 3-build-submit/   scaffold, restructure, check, compile, edit family
+├── 3-deliver/   1-build · 2-audit · 3-polish · 4-ship (build the folder, then finish & ship)
 ├── 4-respond/        rebuttal, response
 ├── 5-present/        slides, poster
-├── _venue/           venue profiles (knowledge, not verbs) — see _venue/README.md
+├── venue/           venue profiles (knowledge, not verbs) — see venue/README.md
 └── wiki/             lifecycle, rounds, skill-structure, lifecycle-map
 ```
 
@@ -47,14 +47,16 @@ paper/
 | `wiki/07-paper-rounds.md` | `1-rounds/` contract, file semantics, triage targets |
 | `wiki/06-paper-skill-structure.md` | skill-tree target, router rule, maturity rule |
 | `1-lifecycle/ref/04-lifecycle-map.md` | stage-to-procedure map with reads/writes/calls |
+| `EVALUATION.md` | how to judge the skill: the top-down umbrella → phase → stage review |
+| `PHILOSOPHY.md` | design philosophy: paper as a delivery contract |
 
 ## Retired names
 
 | Retired | Use instead |
 |---|---|
 | `1-feedback/` | `1-rounds/` |
-| `architecture-minimap`, `paper-plan`, `display-contract` | `2-claims`, `3-narrative`, `4-display`, `5-minimap` |
+| `architecture-minimap`, `paper-plan`, `display-contract`, `5-minimap` | `1b-claims`, `3-narrative`, `4-display`, `5-section-edit` |
 | `0-displays/Figures/` `Tables/` buckets | `0-displays/displayNN-<slug>/` |
 | project-level narrative coordination | paper owns its story; gaps route to probe |
-| `haipipe-paper-{conference,journal,is}` | `_venue/playbook-<venue>` + lifecycle verbs |
-| `haipipe-paper-{create,revise}` | `3-write-edit/haipipe-paper-edit-{write,weaving}` |
+| `haipipe-paper-{conference,journal,is}` | `venue/playbook-<venue>` + lifecycle verbs |
+| `haipipe-paper-{create,revise}` | `5-section-edit/haipipe-paper-section-edit` (drives the DRAFT/REVISE phases) |

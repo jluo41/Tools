@@ -90,7 +90,7 @@ resolve:
        Rule of thumb: "would this complaint be equally true at the seed stage,
        the claims stage, AND the display stage?" If yes, it is cross-cutting.
        Contrast: "every stage must recompile its PDF" -> fallback (spine rule);
-       "the compile script crashed on bibtex" -> paper-compile (one bug).
+       "the compile script crashed on bibtex" -> haipipe-paper-compile (one bug).
   1. else keyword match in TEXT -> that skill (most specific wins)
   2. else active-stage skill
   3. else orchestrator fallback
@@ -103,7 +103,7 @@ pitch                                   -> haipipe-paper-pitch
 seed                                    -> haipipe-paper-seed
 claim, claims, ledger                   -> haipipe-paper-claims
 narrative, beat, story arc              -> haipipe-paper-narrative
-minimap, paragraph job, evidence anchor -> haipipe-paper-minimap
+section-edit, paragraph job, evidence anchor -> haipipe-paper-section-edit
 venue, journal, playbook                -> haipipe-paper-venue
 display, gallery, float, figure plan    -> haipipe-paper-display
   table                                 -> haipipe-paper-display-table
@@ -112,13 +112,13 @@ display, gallery, float, figure plan    -> haipipe-paper-display
   illustration, ai-img, concept art     -> haipipe-paper-display-illustration
 enter, console, dashboard, status view  -> haipipe-paper-enter
 round, rounds                           -> haipipe-paper-round
-write, draft, scaffold prose            -> haipipe-paper-edit-write
-edit, polish, weave, walk sections      -> haipipe-paper-edit-weaving
+write, draft, scaffold prose            -> haipipe-paper-section-edit
+edit, polish, weave, walk sections      -> haipipe-paper-section-edit
 rebuttal, reply, reviewers, response    -> haipipe-paper-rebuttal
-compile this paper, build broke         -> paper-compile
+compile this paper, build broke         -> haipipe-paper-compile
 citation, bibtex, references            -> haipipe-paper-probe-citation
   (NB: "every/each stage must compile a PDF" is the cross-cutting guard,
-   not a paper-compile bug -> fallback, per resolve step 0)
+   not a haipipe-paper-compile bug -> fallback, per resolve step 0)
 --------------------------------------------------------------------------
 NO MATCH  (cross-cutting discipline: stage strip, illuminate-every-stage,
           compile-pdf-every-stage, stage gate / user-confirm, status tail,
@@ -161,19 +161,22 @@ so the root is one level ABOVE the orchestrator folder, i.e. `…/skills/paper`,
 mapped folder not existing yet is expected, not an error.
 
 ```
-haipipe-paper-pitch                 1-lifecycle/haipipe-paper-pitch/feedback/
-haipipe-paper-seed                  1-lifecycle/haipipe-paper-seed/feedback/
-haipipe-paper-claims                1-lifecycle/haipipe-paper-claims/feedback/
-haipipe-paper-narrative             1-lifecycle/haipipe-paper-narrative/feedback/
-haipipe-paper-minimap               1-lifecycle/haipipe-paper-minimap/feedback/
+haipipe-paper-seed                  1-lifecycle/0-seed/haipipe-paper-seed/feedback/
+haipipe-paper-resource              1-lifecycle/1a-resource/haipipe-paper-resource/feedback/
+haipipe-paper-claims                1-lifecycle/1b-claims/haipipe-paper-claims/feedback/
 haipipe-paper-venue                 1-lifecycle/haipipe-paper-venue/feedback/
-haipipe-paper-display[-*]           1-lifecycle/haipipe-paper-display[-*]/feedback/
+haipipe-paper-pitch                 1-lifecycle/2-pitch/haipipe-paper-pitch/feedback/
+haipipe-paper-narrative             1-lifecycle/3-narrative/haipipe-paper-narrative/feedback/
+haipipe-paper-display[-*]           1-lifecycle/4-display/haipipe-paper-display[-*]/feedback/
+haipipe-paper-section-edit          1-lifecycle/5-section-edit/haipipe-paper-section-edit/feedback/
 haipipe-paper-lifecycle             1-lifecycle/haipipe-paper-lifecycle/feedback/
 haipipe-paper-enter                 0-enter/haipipe-paper-enter/feedback/
-haipipe-paper-round                 2-rounds/haipipe-paper-round/feedback/
-haipipe-paper-edit-*                3-write-edit/haipipe-paper-edit-*/feedback/
-haipipe-paper-rebuttal              5-respond/haipipe-paper-rebuttal/feedback/
-components/{compile,citation}       components/{compile,citation}/feedback/
+haipipe-paper-round                 0-enter/haipipe-paper-round/feedback/
+haipipe-paper-{scaffold,restructure,check,folder}        3-deliver/1-build/<skill>/feedback/
+haipipe-paper-{claim-audit,submission-audit,reviewer,optimizer}  3-deliver/2-audit/<skill>/feedback/
+haipipe-paper-{consistency,format,typeset,improve-loop}  3-deliver/3-polish/<skill>/feedback/
+haipipe-paper-{compile,diffpdf,to-overleaf}              3-deliver/4-ship/<skill>/feedback/
+haipipe-paper-rebuttal              4-respond/haipipe-paper-rebuttal/feedback/
 ORCHESTRATOR FALLBACK               haipipe-paper/feedback/   (this skill's own folder)
 ```
 

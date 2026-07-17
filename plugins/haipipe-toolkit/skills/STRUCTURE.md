@@ -149,7 +149,7 @@ skills/**/_archive/**/SKILL.md     💀 NOT a skill. History. Do not follow it,
 ```
 
 Live archive roots: `application/_archive`, `paper/_archive`,
-`paper/3-build-submit/haipipe-paper-folder/_archive`, `probe/agents/_archive`,
+`paper/3-deliver/1-build/haipipe-paper-folder/_archive`, `probe/agents/_archive`,
 `project/_archive`, `insight/_archive` (the whole retired layer).
 
 So: **exclude `_archive/` from every sweep** unless you are deliberately reading

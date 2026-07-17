@@ -19,7 +19,7 @@ Pitch (the cover letter), narrative, displays, and prose all couple to the venue
 Resource and claims are venue-FREE and do NOT need a venue (what a paper NEEDS to exist does not depend on where you send it).
 The lifecycle order is: seed (FREE) -> resource (FREE) -> claims (FREE) -> [venue pinned here] -> pitch (ALIGNED) -> narrative (ALIGNED) -> display (ALIGNED) -> section-edit (ALIGNED).
 
-This skill analyzes a paper or a bare topic against every venue pack in `../../_venue/playbook-*`, recommends a ranked shortlist, pins the choice in `STATUS.md`, and produces a stage document (`2-venue.md`) with the venue profile, writing principles, and probes.
+This skill analyzes a paper or a bare topic against every venue pack in `../../venue/playbook-*`, recommends a ranked shortlist, pins the choice in `STATUS.md`, and produces a stage document (`2-venue.md`) with the venue profile, writing principles, and probes.
 
 The venue packs are knowledge, not skills; this skill is the READER that turns them into a recommendation.
 It never edits a pack.
@@ -37,7 +37,7 @@ It never edits a pack.
 ```text
 2-venue: <paper title>
 =======================
-Provenance header       pack slug @ _venue commit, outlet dir, blueprint-derived date
+Provenance header       pack slug @ venue commit, outlet dir, blueprint-derived date
 
 Venue Choice            which venue, one-line why, backup options, nearest rejected
 Venue Profile           audience, rewards, desk-reject risks, one-sentence test (from taste.md)
@@ -52,10 +52,10 @@ Probes                  venue-level investigation needs (one SECTION per questio
 One block per manuscript section, fields per the template: subsections, paragraphs, sentences/paragraph, avg sentence length, citation density, results reported + detail, display units, this-paper adaptation, and a `[source: ...]` tag naming the guide each number came from.
 
 This section is the design contract for paper structure: the venue-aligned stages (pitch for framing, narrative for beat allocation, display for exhibit budgets, section-edit for paragraph counts) read it here rather than re-deriving from the packs.
-The provenance header makes staleness detectable: if `_venue` has moved past the recorded commit, re-derive the blueprint without changing the pin.
+The provenance header makes staleness detectable: if `venue` has moved past the recorded commit, re-derive the blueprint without changing the pin.
 
 **How to derive the blueprint (source priority):**
-1. Read the pinned outlet's per-section guides (`../../_venue/playbook-<venue>/<journal>/<journal>-<section>/style.md`).
+1. Read the pinned outlet's per-section guides (`../../venue/playbook-<venue>/<journal>/<journal>-<section>/style.md`).
    Each carries word budget, arc, paragraph-structure table, and a measured `## Micro-norms` block (paragraphs, sentences per paragraph, words per sentence, citation density) -- TRANSCRIBE these into the spec above; do not re-mine what is already measured.
 2. Read `<journal>/taste.md` (desk signals) and the pack `style-profile.md` for the Writing Principles side.
 3. ONLY if the outlet has no section guides (or a section is missing): count 2-3 stored exemplars from `<journal>/examples/` yourself (sections, paragraphs, sentences, sentence length, citations per sentence, where results appear), or search published papers as a last resort.
@@ -92,8 +92,8 @@ default     recommend a shortlist, then ASK before writing STATUS venue (you con
             (for "just tell me which journal" / a bare topic with no folder)
 refresh     re-derive ONLY: keep the existing pin, re-transcribe the Structural Blueprint +
             Writing Principles from the current pack state, update the provenance header
-            (new _venue commit + derived date), and log the delta in _LOG_2-venue.md.
-            Use when _venue has moved past the recorded commit (pack norms improved) or
+            (new venue commit + derived date), and log the delta in _LOG_2-venue.md.
+            Use when venue has moved past the recorded commit (pack norms improved) or
             when 2-venue.md predates the provenance header. Never re-opens the venue choice.
 ```
 
@@ -109,10 +109,10 @@ refresh     re-derive ONLY: keep the existing pin, re-transcribe the Structural 
 ```text
 paper root         reads 0-lifecycle/{0-seed,1-claims,2-pitch} for the contribution profile
    or topic text   a free-text topic / abstract when there is no folder yet
-venue packs        ../../_venue/playbook-*/README.md   ("-> Claims" rewards + fit signals)
-outlet taste       ../../_venue/playbook-*/<journal>/taste.md   (desk-accept/reject signals + one-sentence test)
-section norms      ../../_venue/playbook-*/<journal>/<journal>-<section>/style.md   (quantitative norms + Micro-norms)
-venue index        ../../_venue/README.md              (family map + IS selection table)
+venue packs        ../../venue/playbook-*/README.md   ("-> Claims" rewards + fit signals)
+outlet taste       ../../venue/playbook-*/<journal>/taste.md   (desk-accept/reject signals + one-sentence test)
+section norms      ../../venue/playbook-*/<journal>/<journal>-<section>/style.md   (quantitative norms + Micro-norms)
+venue index        ../../venue/README.md              (family map + IS selection table)
 ```
 
 ## Procedure
@@ -121,7 +121,7 @@ venue index        ../../_venue/README.md              (family map + IS selectio
    From the seed/claims (or the topic text), extract: the central contribution, the method, the topic/domain, the evidence strength, and the intended audience.
    If these are unclear, ask one round of questions before scoring.
 2. **Read the candidate packs.**
-   For each `../../_venue/playbook-<venue>/README.md`, read the `-> Claims` mapping (what it rewards, contribution vs enabler) and the fit signals; read `../../_venue/README.md` for the family map and IS selection table.
+   For each `../../venue/playbook-<venue>/README.md`, read the `-> Claims` mapping (what it rewards, contribution vs enabler) and the fit signals; read `../../venue/README.md` for the family map and IS selection table.
    A pack is family-granular; to pick the OUTLET inside a family, read each candidate `<journal>/taste.md` and score the paper against its desk-accept/desk-reject signals and one-sentence test.
 3. **Score each venue** on five dimensions, each High/Med/Low with a one-line reason: contribution-type match, method match, topic/domain match, evidence-bar match, audience match.
    Record any hard disqualifier (e.g. "design science -> not ISR").
@@ -180,7 +180,7 @@ patent (CNIPA / USPTO / EPO)                   -> playbook-patent          (juri
 
 A named venue with no pack (NEJM, Lancet, ICLR, NeurIPS, ...) stays a bare `venue_outlet:` formatting target: recommend honestly, note no pack exists, and the lifecycle wiring no-ops.
 
-When `STATUS.md venue:` is a human label, every stage resolves it through this map to find `../../_venue/playbook-<slug>`.
+When `STATUS.md venue:` is a human label, every stage resolves it through this map to find `../../venue/playbook-<slug>`.
 Prefer writing the pack slug into STATUS directly.
 
 ## Boundaries
@@ -192,7 +192,7 @@ pitch        venue-ALIGNED cover letter; couples to the pinned venue (Editor's C
 narrative    venue-ALIGNED arc; expands the pitch for this venue
 display      venue-ALIGNED exhibit set; reads the blueprint's display units and limits
 section-edit venue-ALIGNED prose; reads the blueprint's per-section paragraph/sentence spec
-_venue/*     knowledge packs, read-only here
+venue/*     knowledge packs, read-only here
 ```
 
 It recommends and pins; it does not write claims, pitch, or prose.

@@ -2,7 +2,7 @@
 
 Date: <YYYY-MM-DD>
 
-Venue-ALIGNED cover letter. Read STATUS `venue` and `_venue/playbook-<venue>` before filling this in. Claims holds venue-neutral hypotheses (H1, H2, H3); this pitch reframes them as venue-specific RQs for the target editor. Readability rules, per-section cues, and worked examples: `ref/pitch-readability.md`.
+Venue-ALIGNED cover letter. Read STATUS `venue` and `venue/playbook-<venue>` before filling this in. Claims holds venue-neutral hypotheses (H1, H2, H3); this pitch reframes them as venue-specific RQs for the target editor. Readability rules, per-section cues, and worked examples: `ref/pitch-readability.md`.
 
 ## Title
 
@@ -46,9 +46,9 @@ Name what changes and who can act in the first two sentences.
 
 ## Editor's Chair Test
 
-Read `_venue/playbook-<venue>` for the editor's chair question. Every primary claim must have a one-sentence answer. This is a venue question, not an evidence question (migrated from claims in v3.0.0).
+Read `venue/playbook-<venue>` for the editor's chair question. Every primary claim must have a one-sentence answer. This is a venue question, not an evidence question (migrated from claims in v3.0.0).
 
-**<Venue>:** "<editor's chair question from _venue/playbook>"
+**<Venue>:** "<editor's chair question from venue/playbook>"
 
 <One-sentence answer from the primary claim.>
 

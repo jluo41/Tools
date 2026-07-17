@@ -42,20 +42,21 @@ paper/
 │     1-probe/haipipe-paper-probe (+ -probe-{citation,display,values})
 │     2-revise/haipipe-paper-revise (+ -revise-{content,humanizer,results,weaving})
 │     3-check/haipipe-paper-check (+ haipipe-paper-proof-checker)
-├── 3-build-submit/      haipipe-paper-folder + build-{scaffold,restructure,check}
-│     + paper-compile (LaTeX -> PDF)
-│     + edit family / review cluster: edit-{claim-audit,reviewer,submission-audit,
-│       consistency,diffpdf,format,improve-loop,optimizer,typeset,to-overleaf}
+├── 3-deliver/      downstream of the argument, grouped by verb-intent:
+│     1-build/   haipipe-paper-{scaffold,restructure,check,folder}   (structure the folder)
+│     2-audit/   haipipe-paper-{claim-audit,submission-audit,reviewer,optimizer}   (read-only findings)
+│     3-polish/  haipipe-paper-{consistency,format,typeset,improve-loop}   (mutate the draft)
+│     4-ship/    haipipe-paper-{compile,diffpdf,to-overleaf}   (produce & move the artifact)
 ├── 4-respond/           haipipe-paper-rebuttal + paper-rebuttal + rebuttal-response
 ├── 5-present/           paper-slides + paper-poster
-└── _venue/             venue playbook packs (knowledge, not stages; consulted)
+└── venue/             venue playbook packs (knowledge, not stages; consulted)
 ```
 
-`_venue/` is a paper-internal area, not a standalone layer. It is the venue
+`venue/` is a paper-internal area, not a standalone layer. It is the venue
 knowledge the lifecycle consults at pitch/narrative/display/section-edit/
-submit/respond (`_venue/playbook-<venue>`). Venues hold knowledge, never lifecycle
-verbs. The old flat `paper/_venue/` was reshaped into `_venue/`. See
-`_venue/README.md` and `_venue/_SCHEMA.md`.
+submit/respond (`venue/playbook-<venue>`). Venues hold knowledge, never lifecycle
+verbs. The old flat `paper/venue/` was reshaped into `venue/`. See
+`venue/README.md` and `venue/_SCHEMA.md`.
 
 ## Stage to Procedure
 
@@ -71,7 +72,7 @@ venue (choose+pin)-> 1-lifecycle/haipipe-paper-venue (recommend journal, write S
 3-narrative       -> 1-lifecycle/3-narrative/haipipe-paper-narrative
 4-display         -> 1-lifecycle/4-display/haipipe-paper-display (+ render skills -display-{table,figure,diagram,illustration}[-gemini])
 5-section-edit    -> 1-lifecycle/5-section-edit/haipipe-paper-section-edit (per-section DRAFT/PROBE/REVISE/CHECK)
-review            -> 3-build-submit/ (the edit-* audit cluster)
+review            -> 3-deliver/2-audit/ (claim-audit, submission-audit, reviewer, optimizer)
 round             -> 0-enter/haipipe-paper-round
 respond           -> 4-respond/*
 present           -> 5-present/*
@@ -101,12 +102,14 @@ seed / resource / claims / venue / pitch
   / narrative / figures / section-edit -> 1-lifecycle
 round / todo / decisions              -> 0-enter/haipipe-paper-round
 write / edit / revise (prose)         -> 1-lifecycle/5-section-edit (drives 2-phase/ workers)
-review / audits                       -> 3-build-submit (edit-* cluster)
-scaffold / build / check / compile    -> 3-build-submit
+review / audits                       -> 3-deliver/2-audit
+scaffold / build / check              -> 3-deliver/1-build
+polish / format / typeset             -> 3-deliver/3-polish
+compile / diff / overleaf / ship      -> 3-deliver/4-ship
 rebuttal / response                   -> 4-respond
 slides / poster                       -> 5-present
 venue / which journal / where submit  -> 1-lifecycle/haipipe-paper-venue  (recommend + pin STATUS venue)
-  (the pinned venue's pack             -> _venue/playbook-<venue>, consulted by each stage)
+  (the pinned venue's pack             -> venue/playbook-<venue>, consulted by each stage)
 ```
 
 ## Maturity Rule

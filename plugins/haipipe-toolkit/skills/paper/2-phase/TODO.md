@@ -17,5 +17,5 @@ Logged 2026-07-02 after the skill restructure session. Updated 2026-07-03.
 
 - [x] Update USAGE.md and WIRING.md to match new paths (done with the DPRC rename pass)
 - [ ] Verify `description:` fields in all SKILL.md mention the new name pattern
-- [ ] 3-build-submit/README.md doesn't list the 10 moved skills
+- [ ] 3-deliver/README.md doesn't list the 10 moved skills
 - [ ] Display renderer skills (5 in 4-display/) need content unwrap

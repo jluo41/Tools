@@ -50,5 +50,5 @@ TODO
 ----
 
 - Per-venue: which journals allow unlimited SI vs strict page limits
-- Cross-link to `components/figure/`: appendix figures go in
+- Cross-link to `1-lifecycle/4-display/` (figure renderers): appendix figures go in
   `0-displays/AppendixFigure/`, not `0-displays/Figure/`

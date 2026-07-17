@@ -6,7 +6,7 @@
 
 venue: <MISQ 2026> · section-type: <methods (+results flavor)>
 blueprint: 0-lifecycle/2-venue/2-venue.md (<methods> block)   <- BINDING: budget, structure, density
-style: <resolved _venue path, e.g. _venue/playbook-utd-is/MISQ/MISQ-methods/style.md · MISQ-results/style.md>   (reference only)
+style: <resolved venue path, e.g. venue/playbook-utd-is/MISQ/MISQ-methods/style.md · MISQ-results/style.md>   (reference only)
 <tpl: resolve the pack path layout-agnostically (find over ~/.claude/skills + $CLAUDE_PLUGIN_ROOT), record the RESOLVED path; pack absent -> `style: (pack missing — blueprint only)` + flag for CHECK. Hybrid sections list multiple style files ·-separated.>
 
 ```

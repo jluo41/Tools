@@ -1,6 +1,6 @@
 # Prose Quality Rules (Universal)
 
-Rules that apply to ALL prose artifacts in the paper lifecycle: seed, resource, claims, pitch, narrative, display captions, section prose. Any phase worker that touches prose reads this file. Venue-specific norms (word budget, tone, section arc) live in `_venue/playbook-*/style-profile.md` and override these where they conflict.
+Rules that apply to ALL prose artifacts in the paper lifecycle: seed, resource, claims, pitch, narrative, display captions, section prose. Any phase worker that touches prose reads this file. Venue-specific norms (word budget, tone, section arc) live in `venue/playbook-*/style-profile.md` and override these where they conflict.
 
 Sourced from user feedback across multiple sessions. These are non-negotiable preferences, not suggestions.
 
