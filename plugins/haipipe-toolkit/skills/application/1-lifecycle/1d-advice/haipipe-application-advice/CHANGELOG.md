@@ -3,6 +3,10 @@ haipipe-application-advice — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`.
 
+## [1.7.0] — 2026-07-17
+
+- Q-consumer migration follow-up: the SKILL's artifact-section list still named the section `Probes` (a roster) — renamed to `Q-consumer` (## Q questions; APPROVE adds the 1-probes/ pointer + state), matching the template. (The earlier pass's grep missed these lines because they co-mention `1-probes/`.)
+
 ## [1.6.0] — 2026-07-17
 
 - Q-consumer migration: template `Probes` tail -> `Q-consumer` (`## Q` blocks; rare on this rung).

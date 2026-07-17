@@ -4,7 +4,7 @@ description: "Stage orchestrator for the intervention's 0-lifecycle/1b-themes/1b
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.2.0"
+  version: "2.3.0"
   last_updated: "2026-07-17"
   summary: "Themes stage (rung 1b of the venue-FREE 1a–1d evidence ladder; the I rung) — grounded pattern-clusters extracted from 1a D ids + discovery sources, each theme carrying candidate-claim hooks that rung 1c consumes; ungrounded patterns go to Parked. Full D-consumption + counter-hunt; light discovery PROBE via 1-probes/. History: ./CHANGELOG.md."
 ---
@@ -71,11 +71,11 @@ CHECK may be BATCHED into the ladder gate per the venue; announce every phase bo
 `0-lifecycle/1b-themes/1b-themes.md` — full skeleton in `ref/themes-template.md`:
 
 ```text
-Themes   one **T<n>**: name, the pattern in one sentence, grounding (D ids and/or discovery sources),
-         candidate-claim hooks (or an explicit "context-only" note)
-Parked   patterns noticed but not pursued (one line + why); context-only D ids; the counter-hunt record;
-         the reservoir the next DRAFT re-mines
-Probes   this rung's roster: one line per PP (question + status), matching 1-probes/ on disk
+Themes      one **T<n>**: name, the pattern in one sentence, grounding (D ids and/or discovery sources),
+            candidate-claim hooks (or an explicit "context-only" note)
+Parked      patterns noticed but not pursued (one line + why); context-only D ids; the counter-hunt record;
+            the reservoir the next DRAFT re-mines
+Q-consumer  the questions this rung raises (one ## Q each); APPROVE adds each -> 1-probes/ pointer + state
 ```
 
 Sidecar: `_LOG_1b-themes.md` (phase journal).

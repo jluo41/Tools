@@ -4,7 +4,7 @@ description: "Stage orchestrator for the intervention's 0-lifecycle/1d-advice/1d
 argument-hint: "[intervention-path] [--deposit <Ann>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.6.0"
+  version: "1.7.0"
   last_updated: "2026-07-17"
   summary: "Advice stage (rung 1d of the venue-FREE 1a–1d evidence ladder; the W rung and the ladder's DELIVERABLE) — design advice, one A<n> per entry (exploit|explore role) derived from >=1 claim in the 1c ledger; counsel not mandate (venue-ALIGNED stages adopt or decline downstream); content-WHAT, distinct from the venue's channel-HOW Artifact Principles. History: ./CHANGELOG.md."
 ---
@@ -75,11 +75,11 @@ The ladder doc (`1d-advice.md`) is the record; adopted/declined A-ids with a why
 `0-lifecycle/1d-advice/1d-advice.md` — full skeleton in `ref/advice-template.md`:
 
 ```text
-Advice     one A<n>: guidance in one sentence + role (exploit|explore) + derivation (>=1 C id) + scope/boundary
-           + status; close with a No-action line (every supported/weak C consumed by no entry, each with a why)
-Rejected   entries considered and dropped, one sub-item each with the refuting C id or reason (the reservoir; may be empty)
-Probes     this rung's roster: one line per PP (question + status), mirroring the sections in 1-probes/ that serve 1d
-           (rare here — derivation is in-stage work; may be empty)
+Advice      one A<n>: guidance in one sentence + role (exploit|explore) + derivation (>=1 C id) + scope/boundary
+            + status; close with a No-action line (every supported/weak C consumed by no entry, each with a why)
+Rejected    entries considered and dropped, one sub-item each with the refuting C id or reason (the reservoir; may be empty)
+Q-consumer  the questions this rung raises (one ## Q each; rare — derivation is in-stage work; may be empty);
+            APPROVE adds each -> 1-probes/ pointer + state
 ```
 
 One entry, one sub-item: `**A1 - majority framing where compliance is high - exploit - active**` / `Use descriptive-norm framing only where cohort compliance > 50%.` / `Derivation: C1 (supported), C2 (weak - boundary caveat).` / `Scope: adult cohort; revisit if C2 settles.`
