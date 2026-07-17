@@ -4,6 +4,10 @@ haipipe-application-enter — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [2.3.0] — 2026-07-17
+
+- Insight-KB retired as an evidence layer: dropped `insight` from the delivery-need type enumerations, the `filing insight memory` ask-first item, and `and insights` from the shared-evidence location.
+
 ## [1.0.0] — 2026-06-22
 
 - initial version modeled on paper-enter.

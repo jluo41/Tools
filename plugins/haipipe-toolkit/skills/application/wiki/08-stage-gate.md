@@ -71,7 +71,7 @@ Autonomy Policy
 ---------------
 
 - **Stage TRANSITION** = always PAUSE (ask before advancing).
-- **Work WITHIN a stage** = can be autonomous (read, draft, buffer probe cards, backfill).
+- **Work WITHIN a stage** = can be autonomous (read, draft, raise `state: planned` probe sections, backfill).
 - **Taste-bearing choices** (framing, emphasis, scope, venue pick) = PAUSE to elicit.
 - **Mechanical formatting** = autonomous.
 - **Evidence dispatch** = the PROBE phase worker is the only door; a stage never reads discoveries/, tasks/, or legacy probes/ inline, and never dispatches discovery/task orchestrator agents itself.

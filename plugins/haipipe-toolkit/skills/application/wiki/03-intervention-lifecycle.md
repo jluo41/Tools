@@ -1,6 +1,6 @@
 # Intervention Lifecycle
 
-The application lifecycle is a delivery lifecycle. It owns the intervention-specific story, the stage-1 evidence ladder, content elements, and artifact text. Project-level evidence lives in discoveries and tasks (insights = optional deposit). Same spine ORDER as paper (`../../paper/wiki/03-paper-lifecycle.md`) with one intentional delta: paper's single `1-claims` stage is here the four-rung ladder `1a-1d` (SOP-ladder-restage.md); the venue profile gates which stages fire.
+The application lifecycle is a delivery lifecycle. It owns the intervention-specific story, the stage-1 evidence ladder, content elements, and artifact text. Project-level evidence lives in discoveries and tasks. Same spine ORDER as paper (`../../paper/wiki/03-paper-lifecycle.md`) with one intentional delta: paper's single `1-claims` stage is here the four-rung ladder `1a-1d` (SOP-ladder-restage.md); the venue profile gates which stages fire.
 
 ## Folder Contract
 
@@ -70,7 +70,7 @@ venue-ui-card    req         req       optional       full                report
 venue-report     req         req       req            full                report
 ```
 
-Authoritative per-venue table: each `_venue/venue-<name>/README.md`. Simple venues: seed → ladder → venue → pitch → draft. Complex venues: all stages before draft. The venue also batches the LADDER's gates (light: one combined gate at 1d; medium: 1c + 1d; full: four) — see `08-stage-gate.md`.
+Authoritative per-venue table: each `venue/venue-<name>/README.md`. Simple venues: seed → ladder → venue → pitch → draft. Complex venues: all stages before draft. The venue also batches the LADDER's gates (light: one combined gate at 1d; medium: 1c + 1d; full: four) — see `08-stage-gate.md`.
 
 ## Venue-FREE / Venue-ALIGNED Boundary
 
@@ -157,9 +157,8 @@ same spine order                     stage 1 differs by design: paper = single 1
                                      (Hypotheses play the theme role; the manuscript's own
                                      Methods/Results carry D/I) — paper delivers K;
                                      application = the 1a-1d evidence ladder — delivers W
-_venue/ = journal playbooks          _venue/ = output modalities + _audience/ axis
+venue/ = journal playbooks          venue/ = output modalities (tone-by-audience folded in)
 all stages fire; claims fully settle venue gates stages 3-5 + sets settlement depth + batches ladder gates
-insights = first-class deposit       insights = optional deposit (judgment in 1c-claims status)
 0-sections/ TeX → compile → submit   0-artifacts/ markdown → draft → review → deploy
 respond (rebuttal) / present         iterate (A/B results → refine; backfills 1a, staleness A←C←T←D)
 Paper Console                        Intervention Console

@@ -2,9 +2,9 @@
 
 Canonical reference. This file + `wiki/` win over anything elsewhere. Structural twin of `../paper/` (same spine, same phases, same probe door); deltas listed at the bottom.
 
-An intervention is a delivery contract, not a drafting folder. It owns one deliverable's story, the stage-1 evidence ladder (1a-descriptions → 1b-themes → 1c-claims → 1d-advice, echoing D→I→K→W: paper delivers K, application delivers W), displays, and artifact text. Evidence lives in tasks/discoveries at the project level (insights = optional deposit layer); open questions accumulate in the flat probe pool `1-probes/PPNN_<topic>.md` (one file per TOPIC), each a SECTION carrying the question + its bound bank answer. Claim status lives in `0-lifecycle/1c-claims/1c-claims.md`, not in the probe file. Each stage's PROBE phase binds every section to an answer through the stake-free collector agent (never calling task/discover directly). Direct task/discover for non-claim utility work only.
+An intervention is a delivery contract, not a drafting folder. It owns one deliverable's story, the stage-1 evidence ladder (1a-descriptions → 1b-themes → 1c-claims → 1d-advice, echoing D→I→K→W: paper delivers K, application delivers W), displays, and artifact text. Evidence lives in tasks/discoveries at the project level; open questions accumulate in the flat probe pool `1-probes/PPNN_<topic>.md` (one file per TOPIC), each a SECTION carrying the question + its bound bank answer. Claim status lives in `0-lifecycle/1c-claims/1c-claims.md`, not in the probe file. Each stage's PROBE phase binds every section to an answer through the stake-free collector agent (never calling task/discover directly). Standalone utility goes to the bank's own door (`/haipipe-task qa` | `/haipipe-discovery qa`), never proxied by the intervention.
 
-## The ladder is a flywheel (insight discovery, not a one-way climb)
+## The ladder is a flywheel (a growth loop, not a one-way climb)
 
 The ladder is drawn 1a→1d but RUNS as routing rounds: downstream work keeps exposing what upstream didn't know to look for, and every back-edge is a discovery event, not a failure. Deploy itself is a probe — A/B results flow back into 1a as fresh data.
 
@@ -51,7 +51,7 @@ Contract (encoded in each rung skill): REVISE ends with a self-assessment; a rou
 ├── 0-lifecycle/              maturation spine (md + _LOG)
 │   ├── 0-seed/
 │   ├── 1a-descriptions/  1b-themes/  1c-claims/  1d-advice/   ← the evidence ladder (venue-FREE)
-│   │   (1a: anchored data summaries + _DESCRIPTIONS/ DS profile sheets; 1b: grounded themes; 1c: Claims/Probes/Campaign
+│   │   (1a: anchored data summaries + _DESCRIPTIONS/ DS profile sheets; 1b: grounded themes; 1c: Claims/Q-consumer/Campaign
 │   │    + _VALUES_; 1d: design advice A←C — the ladder's deliverable)
 │   ├── 2-venue/  2-pitch/  3-narrative/  4-display/  5-section-edit/
 │   │   (2-venue: choice + Artifact Principles = channel-HOW, vs 1d content-WHAT)
@@ -75,10 +75,9 @@ application/
 │                          · venue · 2-pitch / 3-narrative / 4-display / 5-section-edit [venue-ALIGNED]
 ├── 2-phase/               shared phase workers: DRAFT-PROBE-REVISE-CHECK (DPRC)
 │                          haipipe-application-{draft,probe,revise,check}
-├── 3-build-deploy/        haipipe-application-{artifact,review,claim-audit,deploy}
+├── 3-deliver/        haipipe-application-{artifact,review,claim-audit,deploy}
 ├── 4-iterate/             post-deploy refinement (A/B results -> refine)
-├── _venue/                venue profiles (knowledge, not verbs) — output modality
-├── _audience/             audience profiles (knowledge) — tone within structure
+├── venue/                venue profiles (knowledge, not verbs) — output modality
 └── wiki/                  lifecycle, dashboard, skill-structure, stage-gate, delivery-need
 ```
 
@@ -97,9 +96,8 @@ application/
 | paper | application |
 |---|---|
 | stage 1 = single claims ledger (Hypotheses play the theme role; the manuscript's Methods/Results carry D/I) — paper delivers K | stage 1 = the evidence ladder 1a-descriptions/1b-themes/1c-claims/1d-advice (the artifact carries no D/I body; data is dynamic) — application delivers W |
-| venue = journal playbook | venue = output modality (sms/email/dashboard/report/...) + `_audience/` axis |
+| venue = journal playbook | venue = output modality (sms/email/dashboard/report/...) + tone-by-audience |
 | all stages always fire; claims always fully settled | venue gates stages 3-5, sets claims SETTLEMENT depth (light/medium/full), and batches the ladder's gates |
-| insights = first-class deposit | insights = optional deposit (judgment lives in 1c-claims status; 1d deposits W on-request) |
 | 0-sections/ TeX -> compile -> submit | 0-artifacts/ markdown -> draft(artifact) -> review -> deploy |
 | respond (rebuttal) / present | iterate (A/B results -> refine; fresh data backfills 1a, staleness propagates A←C←T←D) |
 | papers repo-backed inside Project-* repos | interventions are plain in-project folders |
@@ -111,7 +109,7 @@ application/
 | `haipipe-application-ask` (+ SESSION_STATE machinery) | `/haipipe-application enter` console; ad-hoc questions -> `/haipipe-probe "<question>"` |
 | `haipipe-application-minimap` (stage 5) | unit jobs live in `4-display` per-unit contracts |
 | `haipipe-application-gate` | `2-phase/3-check/haipipe-application-check` (the CHECK phase) |
-| `haipipe-application-draft` as artifact generator | `3-build-deploy/haipipe-application-artifact` (verb stays `draft`) |
+| `haipipe-application-draft` as artifact generator | `3-deliver/haipipe-application-artifact` (verb stays `draft`) |
 | spine `seed → pitch → [venue] → claims → ... → minimap` | `seed → 1a-1d ladder → [venue] → pitch → narrative → display → section-edit` |
 | flat `0-lifecycle/N-stage.md` files | stage FOLDERS `0-lifecycle/N-stage/` (md + _LOG) |
 | per-stage `_PROBE/PPNN_*.md` cards; `1-probe-plans/README.md` index; `/haipipe-probe plan from-need` | flat pool `1-probes/PPNN_<topic>.md` (one file per TOPIC, one SECTION per question, states `planned\|commissioned\|answered\|read\|answered-local\|failed`); `/haipipe-application probe "<q>"` raises a section + `probe run` |
