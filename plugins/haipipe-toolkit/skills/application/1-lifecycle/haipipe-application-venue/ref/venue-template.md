@@ -29,17 +29,23 @@ Fit Assessment
 Artifact Principles (the downstream contract)
 ---------------------------------------------
 
-What pitch, display, section-edit, and artifact all read. Concrete, from the venue pack + audience profile -- never re-derived per stage.
+What pitch, display, section-edit, and artifact all read. Concrete, from the venue pack (structure + tone-by-audience) -- never re-derived per stage.
 
 - Template/slots or section structure: <the output's fixed shape>
 - Length limits: <char/word budgets per slot/section/segment>
-- Tone: <register from the audience profile: reading level, jargon rules, citation visibility>
+- Tone: <register from the venue pack's tone-by-audience: reading level, jargon rules, citation visibility>
 - Element types: <which display elements the venue supports (sectioned venues)>
 - Settlement + gate depth: <claims bar + inline vs report CHECK>
 - Compliance rails: <opt-out, PHI, program guardrails>
 
 
-Probes
-------
+Q-consumer
+----------
 
-<Venue-level investigation needs: channel capability, compliance constraints, prior sends on this channel; one line per question with state; the questions are SECTIONS in the flat probe pool 1-probes/PPNN_<topic>.md (serves: 2-venue), never a per-stage _PROBE/ folder.>
+Venue-level investigation needs: channel capability, compliance constraints, prior sends on this channel.
+One `##` per question: id, title, what it wants. The route and approver are organized at APPROVE, into the probe file — not here.
+
+## Q1 · <question title>
+<what it wants.>
+
+<APPROVE adds each `→ 1-probes/PPNN_<topic>.md` pointer + derived state.>

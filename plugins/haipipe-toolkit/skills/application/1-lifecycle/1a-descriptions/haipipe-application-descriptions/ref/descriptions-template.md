@@ -47,21 +47,17 @@ DS2:
 - **D3** - <statistic> -> `<pointer>` (as-of YYYY-MM-DD)
 
 
-Probes
-------
+Q-consumer
+----------
 
-<This rung's probe roster: one line per PP for the `1-probes/PPNN_<topic>.md` sections that serve this rung.
-Each question is one SECTION in the flat pool (fields serves/target/state/q-executor/a-consumer + `## Why`);
-state is one of `planned | commissioned | answered | read | answered-local | failed`.
-D-slots reference these via [AWAITING PP<nn>] until the answer lands. Roster must match the sections on disk.>
+The data-profile questions this rung raises — one `##` per question: id, title, what it wants.
+The route (task/discovery) and the approver (which D-slot reads the answer) are organized at APPROVE, into the probe file — not here.
+D-slots reference the landed answer via [AWAITING PP<nn>] until it lands.
 
-- PP<nn> - <data-profile question> - <state>
+## Q1 · <question title>
+<what this question wants to know, one sentence per line.>
 
+## Q2 · <question title>
+<what it wants.>
 
-Refresh Log
------------
-
-One dated line per refresh pass: which D ids changed, which downstream entries were stamped `[STALE ...]`.
-(May be empty on first pass.)
-
-- YYYY-MM-DD: refreshed D<n> (<why, e.g. iterate backfill vYYMMDD>); stamped <ids or "none">
+<APPROVE adds each `→ 1-probes/PPNN_<topic>.md` pointer + derived state.>

@@ -31,7 +31,7 @@ Type: <type>.
 Claim: C<n>.
 Job: <job sentence>.
 Content: <content>.
-Data source: <ref> · Status: <status>.
+Data source: <ref> · Status: <planned | commissioned (PP<nn>) | landed>.
 
 
 Unit -> section mapping (sectioned venues)
@@ -41,9 +41,13 @@ Unit -> section mapping (sectioned venues)
 - U02 -> <section>
 
 
-Probes
-------
+Q-consumer
+----------
 
-<Materialization needs: one line per PP with status; sections in 1-probes/PPNN_<topic>.md. The display lane LINKs what landed.>
+Materialization needs — one `##` per question: id, which unit it materializes, what it needs.
+Uniquely, this stage commissions these to a task through its PROBE phase; the display lane LINKs what landed. The route and approver are organized at APPROVE, into the probe file — not here.
 
-- PP<nn> - materialize U<nn> - <status>
+## Q1 · materialize U<nn> — <what the unit needs>
+<what it wants.>
+
+<APPROVE adds each `→ 1-probes/PPNN_<topic>.md` pointer + derived state.>

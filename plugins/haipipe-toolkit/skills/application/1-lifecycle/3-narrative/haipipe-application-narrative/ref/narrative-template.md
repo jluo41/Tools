@@ -39,7 +39,13 @@ One line per load-bearing claim/advice: where it lands and what job it does ther
 - A<n> -> <position> (<job>)
 
 
-Probes
-------
+Q-consumer
+----------
 
-<Narrative-level needs (rare): a beat exposing a NEW evidence gap raises a question SECTION in the flat pool 1-probes/PPNN_<topic>.md (serves: 3-narrative), routed back to 1c-claims, never gathers here. One line per PP with its state (planned|commissioned|answered|read|answered-local|failed) if any exist.>
+Narrative-level needs (rare): a beat exposing a NEW evidence gap raises a question here, routed back to 1c-claims — never gathered here.
+One `##` per question: id, title, what it wants. The route and approver are organized at APPROVE, into the probe file — not here.
+
+## Q1 · <question title>
+<what it wants.>
+
+<APPROVE adds each `→ 1-probes/PPNN_<topic>.md` pointer + derived state.>

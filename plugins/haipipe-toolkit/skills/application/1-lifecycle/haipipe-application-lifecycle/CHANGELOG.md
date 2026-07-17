@@ -23,3 +23,12 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 ## [4.1.0] — 2026-07-09
 
 - BREADTH ROUND: ladder sweep acknowledges the flywheel — rungs loop internally (multi-round DPRC, loop-until-dry per wiki/08 Rounds) and may back-route mid-phase ([ROUTE -> <rung>]); the sweep re-enters the routed-to rung, then resumes order.
+
+## [4.2.0] — 2026-07-15
+
+- probe redesign port (family alignment with paper): the stage-skill line now describes the flat probe pool `1-probes/PPNN_<topic>.md` instead of per-stage `_PROBE/` folders; phase engine reads DRAFT -> PROBE -> REVISE -> CHECK with PROBE running the five-step loop through `haipipe-application-probe`.
+- metadata hygiene: `summary:` deflated from a changelog blob to one line + `History: ./CHANGELOG.md`; dropped the redundant history comment line.
+
+## [4.3.0] — 2026-07-17
+
+- Delivery-tooling path references updated `3-build-deploy/` -> `3-deliver/` (layer renamed to match paper).

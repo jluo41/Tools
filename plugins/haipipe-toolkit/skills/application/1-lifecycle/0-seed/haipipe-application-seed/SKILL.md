@@ -4,8 +4,8 @@ description: "Stage 0 of the intervention lifecycle (venue-FREE). Answers 'why m
 argument-hint: "[intervention-path] [intent...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.0.0"
-  last_updated: "2026-07-15"
+  version: "4.2.0"
+  last_updated: "2026-07-17"
   summary: "Seed stage (stage 0, venue-FREE ROOT of the DIKW ladder) — states why this intervention might work before evidence is mature: opportunity, impact, audience, channel hunch, mechanism, kill criteria. DRAFT may WebSearch to orient; PROBE is FEASIBILITY-light (novelty + external-data obtainable); internal-data needs FORWARD to the ladder as [FORWARD -> CLAIMS] pointers. History: ./CHANGELOG.md."
 ---
 
@@ -54,7 +54,7 @@ DRAFT   settle the six content sections with the user (haipipe-application-draft
 PROBE   one worker call — mode LIGHT, feasibility only (novelty + external-data obtainable); the five-step
         loop raises each question as a SECTION in 1-probes/ and COLLECTS. Inline search is FORBIDDEN here.
         Routing mechanics + seed specifics: ../../../2-phase/1-probe/haipipe-application-probe/SKILL.md
-REVISE  tighten wording; weave probe takeaways into the Probes section (haipipe-application-revise)
+REVISE  tighten wording; weave probe takeaways into Opportunity/Mechanism; the Q-consumer section holds the questions (haipipe-application-revise)
 CHECK   exit criteria below → Gate Ledger row; the gate RUNS the probe checker (haipipe-application-check)
 ```
 
@@ -74,14 +74,14 @@ Audience               who receives it — a specific subset, not "everyone"
 Channel hunch          sms | push | in-app | dashboard | email — a HUNCH, not the venue pin
 Mechanism hypothesis   one sentence: why this audience + this content might respond
 Kill criteria          conditions to abandon; at least 2 concrete
-Probes                 feasibility takeaways inline (novelty + external-data), one line per PP
+Q-consumer             the feasibility questions raised (novelty + external-data), one `## Q` per question
 ```
 
 Sidecar: `_LOG_0-seed.md` (phase journal + the `[FORWARD -> CLAIMS]` pointers).
 Formatting: `=====` title / `-----` sections (no `#`); one sentence per line.
 Venue-FREE: the seed survives retargeting; the channel hunch is context, not a commitment.
 
-Done: all six content sections carry real content (not placeholders); Kill criteria has at least 2 concrete conditions; Audience and channel hunch are specific; the Probes section carries at least the novelty/landscape takeaway, with internal-data needs appearing only as `[FORWARD -> CLAIMS]` pointers; the probe checker exits clean at the gate.
+Done: all six content sections carry real content (not placeholders); Kill criteria has at least 2 concrete conditions; Audience and channel hunch are specific; the Q-consumer section raises at least the novelty/landscape question, with internal-data needs appearing only as `[FORWARD -> CLAIMS]` pointers; the probe checker exits clean at the gate.
 
 
 ## Exits

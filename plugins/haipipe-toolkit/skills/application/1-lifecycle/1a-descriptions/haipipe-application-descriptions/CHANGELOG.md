@@ -3,6 +3,14 @@ haipipe-application-descriptions — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`.
 
+## [2.2.0] — 2026-07-17
+
+- Q-consumer migration: template `Probes` tail -> `Q-consumer` (`## Q` blocks); D-slots reference the landed answer via [AWAITING PP<nn>].
+
+## [2.1.0] — 2026-07-17
+
+- Id disambiguation note no longer references insight-KB card ids (retired); `D<n>` ids are unrelated to PP numbers.
+
 ## [1.0.0] — 2026-07-09
 
 - NEW skill, born in the ladder restage (SOP-ladder-restage.md, JL 2026-07-09): stage 1 split into the venue-FREE evidence ladder 1a-descriptions -> 1b-themes -> 1c-claims -> 1d-principles, echoing D->I->K->W without reusing the insight-KB letter names.

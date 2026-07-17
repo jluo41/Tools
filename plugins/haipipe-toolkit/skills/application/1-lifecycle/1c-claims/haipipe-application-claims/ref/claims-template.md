@@ -15,7 +15,7 @@ Claims
 
 Each claim is a short sub-item: the testable statement, theme tag, role, status, and which probe settles it.
 Status vocabulary: `supported` / `weak` / `GAP`.
-No inline study design -- the thinking lives in the Probes section.
+No inline study design -- the thinking lives in the Q-consumer section.
 
 **C1 (T1, primary) - <title> - <status>**
 
@@ -43,36 +43,20 @@ Theme hooks considered and not committed as claims, one line each with a why; th
 - T<n> hook "<clause>" -- <why declined, e.g. not testable with current data / superseded by C<n>>
 
 
-Probes
-------
+Q-consumer
+----------
 
-Each probe is its own sub-item organized by PP number.
-Full evidence plan: mode, route, claims, status, dependencies, what work to do.
-Separated by `---` horizontal rules.
+The evidence questions this stage raises — one `##` per question: id, title, what it wants.
+The route (task/discovery), the mode (light/full), the approver (which claim reads the answer), and the Refutes-if all get organized at APPROVE, into the probe file `1-probes/PPNN_<topic>.md` — not here.
 
-**PP01 - <title> - <status>**
+## Q1 · <question title>
+<what this question wants to know, one sentence per line.>
+<which claim(s) it is meant to settle, if that helps frame it.>
 
-Mode: <light | full>.
-Route: <task | discovery>.
-Claims: <which claims this settles>.
-State: <planned | commissioned | answered | read | answered-local | failed>.
-<Dependencies, if any.>
+## Q2 · <question title>
+<what it wants.>
 
-<Full evidence plan, one sentence per line.>
-Refutes-if: <the result that would FLIP the claim(s) this probe settles>.
-Detail: the section serving this claim in `1-probes/PPNN_<topic>.md`
-
----
-
-**PP02 - <title> - <status>**
-
-Mode: <mode>.
-Route: <route>.
-Claims: <which claims>.
-Status: <status>.
-
-<Evidence plan.>
-Detail: the section serving these claims in `1-probes/PPNN_<topic>.md`
+<APPROVE adds each `→ 1-probes/PPNN_<topic>.md` pointer + derived state.>
 
 
 Evidence Campaign

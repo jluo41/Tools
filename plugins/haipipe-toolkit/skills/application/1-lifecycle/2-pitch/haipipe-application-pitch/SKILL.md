@@ -4,8 +4,8 @@ description: "Stage 2 of the intervention lifecycle (venue-ALIGNED, first stage 
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "5.0.0"
-  last_updated: "2026-07-15"
+  version: "5.2.0"
+  last_updated: "2026-07-17"
   summary: "Pitch stage (stage 2, venue-ALIGNED, the FIRST stage after the venue pin) — the one-minute goal + theory of change told FOR the pinned venue + audience, and the home of the [primary] claim designation. Rewrites on retarget; the venue-FREE ladder it cites does not. History: ./CHANGELOG.md."
 ---
 
@@ -72,7 +72,7 @@ Audience frame      how the pinned audience profile shapes the register and the 
 Primary claim       which ledger claim carries the value proposition — the [primary] designation lives
                     HERE, venue-aligned, NOT in the venue-free ledger
 Why now             what makes this timely
-Probes              pitch-level evidence needs, one line per PP with its state (usually empty)
+Q-consumer          pitch-level evidence questions, one `## Q` per question (usually empty)
 ```
 
 Sidecar: `_LOG_2-pitch.md` (phase journal + semantic-version provenance).

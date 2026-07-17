@@ -4,8 +4,8 @@ description: "Stage orchestrator for the intervention's 0-lifecycle/1d-advice/1d
 argument-hint: "[intervention-path] [--deposit <Ann>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.3.0"
-  last_updated: "2026-07-15"
+  version: "1.6.0"
+  last_updated: "2026-07-17"
   summary: "Advice stage (rung 1d of the venue-FREE 1a–1d evidence ladder; the W rung and the ladder's DELIVERABLE) — design advice, one A<n> per entry (exploit|explore role) derived from >=1 claim in the 1c ledger; counsel not mandate (venue-ALIGNED stages adopt or decline downstream); content-WHAT, distinct from the venue's channel-HOW Artifact Principles. History: ./CHANGELOG.md."
 ---
 
@@ -67,7 +67,7 @@ CHECK   the LADDER GATE for light/medium venues (batched per wiki/08): every exp
 Advice RARELY probes: a new evidence gap is not gathered here but routed back to 1c-claims, whose PROBE phase binds it.
 Each phase runs its worker (`haipipe-application-draft` / `-probe` / `-revise` / `-check`); announce every phase boundary and never let CHECK go implicit.
 Rounds + back-routing (loop-until-dry for medium+ venues, `[ROUND n]` / `[ROUTE -> claims]` in `_LOG`) follow `../../../wiki/08-stage-gate.md`.
-Deposit to the insight KB is ON-REQUEST only (`--deposit <Ann>` files a W card via the insight door); the ladder doc is the primary record.
+The ladder doc (`1d-advice.md`) is the record; adopted/declined A-ids with a why live there.
 
 
 ## The artifact

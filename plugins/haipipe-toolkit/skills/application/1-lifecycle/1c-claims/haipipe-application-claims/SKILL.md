@@ -1,11 +1,11 @@
 ---
 name: haipipe-application-claims
-description: "Stage orchestrator for rung 1c of the venue-FREE evidence ladder (1a-descriptions -> 1b-themes -> 1c-claims -> 1d-advice): the claim ledger + evidence campaign brain — what generalizes, with status + anchor. THE ONLY home of a claim's status (supported | weak | GAP). Three sections: Claims (theme-tagged, status + PP reference), Probes (the evidence plan, one per PP), Evidence Campaign (dispatch order + dependencies). The pinned venue sets how much of the campaign must SETTLE (light/medium/full). Markdown only. Trigger: claims, claim ledger, what must be true, what generalizes, evidence plan, probes, supported, GAP, /haipipe-application claims."
+description: "Stage orchestrator for rung 1c of the venue-FREE evidence ladder (1a-descriptions -> 1b-themes -> 1c-claims -> 1d-advice): the claim ledger + evidence campaign brain — what generalizes, with status + anchor. THE ONLY home of a claim's status (supported | weak | GAP). Three sections: Claims (theme-tagged, status + PP reference), Q-consumer (the evidence questions raised, one `## Q` per Q), Evidence Campaign (dispatch order + dependencies). The pinned venue sets how much of the campaign must SETTLE (light/medium/full). Markdown only. Trigger: claims, claim ledger, what must be true, what generalizes, evidence plan, probes, supported, GAP, /haipipe-application claims."
 argument-hint: "[intervention-path] [--backfill <PPNN>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "7.0.0"
-  last_updated: "2026-07-15"
+  version: "7.2.0"
+  last_updated: "2026-07-17"
   summary: "Claims stage (rung 1c of the venue-FREE 1a–1d evidence ladder; the K rung) — the ONLY home of a claim's status (supported | weak | GAP, from a judged artifact, never intuition; no verdict block). Consumes 1b theme hooks into a claim ledger + evidence campaign, gives each primary a Rival + refute-capable probe, and reaches for evidence via the PROBE phase (questions raised as sections in 1-probes/). The pinned venue sets how much of the campaign must SETTLE (light/medium/full). History: ./CHANGELOG.md."
 ---
 
@@ -48,7 +48,7 @@ There is NO Hypotheses section (application delta vs paper): the mechanism lives
 ```text
 DRAFT   re-mine last round's Declined reservoir, read 1b-themes.md (hooks = claim candidates)
         and 1a-descriptions.md (the grounding floor); CONSUME every hook; give every primary a
-        Rival; write Claims (short, theme-tagged), Probes (full plans, refute-capable), Evidence Campaign
+        Rival; write Claims (short, theme-tagged), Q-consumer (the evidence questions), Evidence Campaign
 PROBE   one worker call; the five-step loop raises each GAP/weak claim as a SECTION in 1-probes/
         and COLLECTS — the claim status FLIPS at INTERPRET, numbers land in _VALUES_. Mode FULL is
         the norm here. Routing mechanics are the probe layer's: ../../../2-phase/1-probe/haipipe-application-probe/SKILL.md
@@ -69,10 +69,10 @@ Seed's `[FORWARD -> CLAIMS]` pointers are consumed by rung 1a, which seeds this 
 
 ```text
 Claims             one C<n>: statement + theme tag (T<n>) + role (primary|enabling|assumption)
-                   + status + -> PP reference; primaries carry a Rival line (short; the thinking is in Probes)
+                   + status + -> PP reference; primaries carry a Rival line (short; the question is in Q-consumer)
 Declined hooks     theme hooks considered and not committed, one line + why (the reservoir)
-Probes             one PP<nn>: the evidence plan (mode, route task|discovery, which claims it settles,
-                   deps, the work); a primary's plan states its Refutes-if
+Q-consumer         one `## Q` per evidence question this stage raises; the mode, route,
+                   approver, and Refutes-if organize into 1-probes/ at APPROVE, not here
 Evidence Campaign  dispatch order + a compact summary table (the gate reads this)
 ```
 

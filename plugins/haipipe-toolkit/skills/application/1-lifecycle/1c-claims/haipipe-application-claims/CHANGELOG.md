@@ -4,6 +4,14 @@ haipipe-application-claims — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [7.2.0] — 2026-07-17
+
+- Q-consumer migration (full, option A): the rich in-doc `Probes` PP evidence-plans move OUT to 1-probes/ (where they already live); the stage doc keeps a lean `Q-consumer` (`## Q` question blocks) + the Evidence Campaign. mode/route/Refutes-if organize into the probe file at APPROVE. Template + SKILL (description, DRAFT line, artifact block) updated.
+
+## [7.1.0] — 2026-07-17
+
+- Template D1 (silent-defect fix): the Probes section's PP02 used `Status: <status>` with no Refutes-if while PP01 used `State: <full enum>` + Refutes-if — PP02 now mirrors PP01. This lives in 1c-claims.md, which the probe-file checker does not scan, so the drift was silent and would have propagated the retired `Status` field to every intervention copying PP02.
+
 ## [1.0.0] — 2026-06-22
 
 - initial version modeled on paper-claims.
