@@ -14,13 +14,12 @@ metadata:
 
 Generate publication-quality **architecture diagrams**, **workflow pipelines**, **audit cascades**, and **system topology** figures as editable SVG vector graphics using a deterministic JSON → SVG renderer.
 
-## Output: write into a display unit (not flat figures/)
+## Output: write into a display unit
 
-When the target is a paper (a folder with `0-displays/`), the diagram goes into a `0-displays/displayNN-<slug>/` unit, NOT a flat `figures/` directory.
-Follow the shared contract: `../haipipe-paper-display/ref/display-unit-output-contract.md`.
-For THIS renderer: asset -> `assets/figure.svg` (plus `assets/figure.pdf` if you rasterize/convert for LaTeX); rebuild spec -> `source/<name>.json` (the FigureSpec).
-Wire `float.tex`, compile `preview.pdf`, set README status.
-Flat `figures/` is a fallback only when there is no paper.
+The diagram goes into a `0-displays/displayNN-<slug>/` unit per the shared contract:
+`../haipipe-paper-display/ref/display-unit-output-contract.md`.
+THIS renderer's row: asset -> `assets/figure.svg` (plus `assets/figure.pdf` if you
+rasterize/convert for LaTeX); rebuild spec -> `source/<name>.json` (the FigureSpec).
 
 ## When to Use This Skill
 
@@ -117,14 +116,14 @@ Start from a template based on the diagram type:
 ### Step 3: Render and Validate
 
 ```bash
-# Validate first
-python3 "$CLAUDE_SKILL_DIR/scripts/figure_renderer.py" validate /tmp/spec.json
+# Validate first (spec lives in the unit's source/)
+python3 "$CLAUDE_SKILL_DIR/scripts/figure_renderer.py" validate 0-displays/displayNN-slug/source/spec.json
 
-# Render to SVG
-python3 "$CLAUDE_SKILL_DIR/scripts/figure_renderer.py" render /tmp/spec.json --output figures/fig_arch.svg
+# Render to SVG (into the unit's assets/)
+python3 "$CLAUDE_SKILL_DIR/scripts/figure_renderer.py" render 0-displays/displayNN-slug/source/spec.json --output 0-displays/displayNN-slug/assets/figure.svg
 
 # Convert to PDF for LaTeX inclusion
-rsvg-convert -f pdf figures/fig_arch.svg -o figures/fig_arch.pdf
+rsvg-convert -f pdf 0-displays/displayNN-slug/assets/figure.svg -o 0-displays/displayNN-slug/assets/figure.pdf
 ```
 
 If validation fails, inspect the error (missing field, duplicate ID, overlap warning, invalid hex color) and fix the JSON.
@@ -222,16 +221,17 @@ Three-stage horizontal cascade with inputs feeding in from top, outputs exiting 
 
 ## Output Contract
 
-- SVG file in `figures/` (vector, editable, hand-tweakable)
-- Source FigureSpec JSON saved in `figures/specs/` for reproducibility
-- PDF version via `rsvg-convert` for LaTeX inclusion
+Write into the display unit per the shared contract
+(`../haipipe-paper-display/ref/display-unit-output-contract.md`): the editable SVG ->
+`assets/figure.svg`, the `rsvg-convert` PDF -> `assets/figure.pdf`, and the source
+FigureSpec JSON -> `source/<name>.json` for reproducibility.
 
 ## Integration with Other Skills
 
-- **`/paper-writing`** (Workflow 3): when `illustration: figurespec` (default for architecture figures), this skill handles Phase 2b
-- **`/haipipe-paper-display-figure`**: handles data plots; they complement each other (data + architecture = complete figure set)
-- **`/haipipe-paper-display-illustration`**: for figures that need natural/qualitative style (method illustrations with photos, qualitative result grids)
-- **`/mermaid-diagram`**: lighter alternative for simple flowcharts
+Sibling display renderers and when to use each: see the sibling-routing table in the
+contract (`../haipipe-paper-display/ref/display-unit-output-contract.md`).
+`/mermaid-diagram` is a lighter alternative for simple flowcharts; in the ARIS
+`/paper-writing` Workflow 3, this skill handles Phase 2b when `illustration: figurespec`.
 
 ## Review Tracing
 

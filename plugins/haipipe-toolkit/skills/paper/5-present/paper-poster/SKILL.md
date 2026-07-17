@@ -119,7 +119,7 @@ Otherwise → fresh start.
 
 > ⚠️ **The #1 cause of poster failures is content overflow.** tcbposter uses a fixed grid — content that exceeds the box is **silently clipped** with no compilation error. You will NOT see any warning; the poster will simply be cut off.
 
-> ⚠️ **The #2 cause is large whitespace gaps.** Using too few rows (e.g., `rows=5`) creates ~168mm per row on A0 landscape. If title text only needs 120mm, the remaining 48mm is wasted whitespace. Solution: use `rows=20` for fine-grained control (~42mm per row).
+> ⚠️ **The #2 cause is large whitespace gaps.** Using too few rows (e.g., `rows=5`) creates ~168mm per row on A0 landscape. If title text only needs 120mm, the remaining 48mm is wasted whitespace. Solution: use `rows=20` for fine-grained control (~42mm per row). Adjust row distribution to match content density: after trimming text, reduce row allocation proportionally, since cards with `valign=top` show all whitespace at the bottom.
 
 ### Grid System: `rows=20` (Critical)
 
@@ -338,45 +338,7 @@ Similarly, `\rowcolor` in tables should use 15% intensity: `\rowcolor{primary!15
    which pdflatex && which latexmk
    ```
 
-   **If LaTeX is NOT installed**, try in order:
-   ```bash
-   # Option 1: brew cask (requires sudo — may fail in non-interactive shells)
-   brew install --cask mactex-no-gui
-
-   # Option 2: BasicTeX (smaller, may still need sudo)
-   brew install --cask basictex
-
-   # Option 3: User-directory install (NO sudo needed — always works)
-   curl -L https://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz | tar xz
-   cd install-tl-*
-   cat > texlive.profile << 'PROF'
-   selected_scheme scheme-basic
-   TEXDIR ~/texlive/YYYY
-   TEXMFLOCAL ~/texlive/texmf-local
-   TEXMFSYSCONFIG ~/texlive/YYYY/texmf-config
-   TEXMFSYSVAR ~/texlive/YYYY/texmf-var
-   TEXMFHOME ~/texmf
-   binary_x86_64-darwin 1
-   instopt_adjustpath 0
-   instopt_adjustrepo 1
-   instopt_write18_restricted 1
-   tlpdbopt_autobackup 1
-   tlpdbopt_install_docfiles 0
-   tlpdbopt_install_srcfiles 0
-   PROF
-   ./install-tl --profile=texlive.profile
-   export PATH="$HOME/texlive/YYYY/bin/universal-darwin:$PATH"
-   ```
-
-   After installation, install required packages:
-   ```bash
-   tlmgr install tcolorbox pgf etoolbox environ trimspaces \
-     type1cm pdfcol tikzfill latexmk lm enumitem geometry
-   ```
-
-   > ⚠️ **Lesson learned**: `brew install --cask mactex-no-gui` often fails in non-interactive shells because the macOS installer requires sudo password. The user-directory TeX Live install (Option 3) always works without sudo.
-
-   > ⚠️ **Do NOT install or use `beamerposter`**. The article class approach does not need it.
+   **If LaTeX is NOT installed**, follow the install recipe in [`ref/texlive-setup.md`](ref/texlive-setup.md) — Homebrew options, the no-sudo user-directory TeX Live install, and the required `tlmgr` packages — then re-run the check above.
 
 2. **Verify paper exists**:
    ```bash
@@ -431,9 +393,14 @@ Read each section from `paper/sections/*.tex` and extract poster-appropriate con
 | Conclusion | 3-4 key findings + 2-3 next steps | 60-80 words |
 | Related Work | **Skip entirely** — no space on poster | 0 |
 
-**Total target: 400-700 words** (excluding figure captions and stat callout numbers).
+**Total target: 300-500 words** (excluding figure captions and stat callout numbers).
 
 > ⚠️ **No abstract paragraph on poster.** Replace with a stat banner: 3-4 large-number callout boxes showing headline results. This is the single highest-impact change for 60-second comprehension.
+
+**Content-authoring rules**:
+- **Do NOT hallucinate citations.** Use only references from the paper's bibliography.
+- **Include a QR code placeholder** or code link for the paper/code repository.
+- **De-AI polish**: remove watch words (delve, pivotal, underscore, noteworthy, leverage, facilitate, harness).
 
 **Output**: `poster/POSTER_CONTENT_PLAN.md` — structured markdown showing exactly what goes where, with word counts per box.
 
@@ -469,7 +436,7 @@ Proceed with this layout? Or adjust content selection?
 
 3. **Select top 3-5 figures** that fit the 4-column layout
 
-4. **Copy figures** to poster directory (NOT symlinks) + **convert PDF→PNG** for PPTX
+4. **Copy figures** to poster directory + **convert PDF→PNG** for PPTX
 
 5. **Design column layout** — 4-column IMRAD:
    - **Col 1**: Background & Motivation + Contributions + References & QR
@@ -481,139 +448,9 @@ Proceed with this layout? Or adjust content selection?
 
 Create `poster/main.tex` using **article class + geometry + tcbposter**.
 
-**Template structure** (validated through testing):
+> ⚠️ **Large file handling**: if the Write tool fails on `main.tex` due to file size, use Bash (`cat << 'EOF' > file`) silently.
 
-```latex
-\documentclass{article}
-\usepackage[paperwidth=1189mm,paperheight=841mm,margin=0mm]{geometry}
-\usepackage{tcolorbox}
-\tcbuselibrary{poster,skins,fitting}
-\usepackage{graphicx}
-\usepackage{amsmath,amssymb}
-\usepackage{enumitem}
-\usepackage[table]{xcolor}
-\usepackage{lmodern}
-\usepackage[T1]{fontenc}
-\pagestyle{empty}
-
-% ── Venue Color Theme ──
-\definecolor{primary}{HTML}{VENUE_PRIMARY}     % deep, saturated
-\definecolor{secondary}{HTML}{VENUE_SECONDARY} % medium
-\definecolor{accent}{HTML}{VENUE_ACCENT}       % contrast
-\definecolor{bgposter}{HTML}{VENUE_BG_DEEP}    % poster background (NOT white, use tinted)
-\definecolor{redbg}{HTML}{FFF5F3}              % card backgrounds (tinted, NOT white)
-\definecolor{bluebg}{HTML}{F0F4FF}
-\definecolor{darkbg}{HTML}{FDF6F3}
-\definecolor{redtitlebg}{HTML}{FDEAE8}         % card title bar backgrounds
-\definecolor{bluetitlebg}{HTML}{E4ECFF}
-\definecolor{darktitlebg}{HTML}{F5E8E2}
-\definecolor{textdark}{HTML}{111827}
-\definecolor{textgray}{HTML}{4B5563}
-\definecolor{stathighlight}{HTML}{FEE8E8}
-
-\pagecolor{bgposter}
-\color{textdark}
-
-% ── List styling ──
-\setlist[itemize]{leftmargin=24pt, itemsep=6pt, parsep=2pt, topsep=2pt,
-  label={\color{secondary}$\blacktriangleright$}}
-\setlist[enumerate]{leftmargin=24pt, itemsep=6pt, parsep=2pt, topsep=2pt,
-  label={\color{primary}\bfseries\arabic*.}}
-
-% ── Figure+caption macro (ensures uniform spacing) ──
-\newcommand{\posterfig}[3]{%
-  \centering\includegraphics[width=#1\linewidth]{#2}\\[3mm]
-  {\fontsize{26}{32}\selectfont\color{textgray}\textit{#3}}\vspace{2mm}%
-}
-
-% ── Card styles (left accent stripe design) ──
-\tcbset{
-  redcard/.style={
-    enhanced, arc=0pt, boxrule=0pt, colback=redbg,
-    borderline west={5pt}{0pt}{secondary},
-    left=16pt, right=14pt, top=4pt, bottom=4pt,
-    fonttitle=\fontsize{40}{48}\selectfont\bfseries\color{secondary},
-    coltitle=secondary, colbacktitle=redtitlebg,
-    toptitle=6pt, bottomtitle=6pt,
-    titlerule=2pt, titlerule style={secondary!50},
-    valign=top, drop shadow={opacity=0.18},
-  },
-  bluecard/.style={
-    enhanced, arc=0pt, boxrule=0pt, colback=bluebg,
-    borderline west={5pt}{0pt}{accent},
-    left=16pt, right=14pt, top=4pt, bottom=4pt,
-    fonttitle=\fontsize{40}{48}\selectfont\bfseries\color{accent},
-    coltitle=accent, colbacktitle=bluetitlebg,
-    toptitle=6pt, bottomtitle=6pt,
-    titlerule=2pt, titlerule style={accent!50},
-    valign=top, drop shadow={opacity=0.18},
-  },
-  darkcard/.style={
-    enhanced, arc=0pt, boxrule=0pt, colback=darkbg,
-    borderline west={5pt}{0pt}{primary},
-    left=16pt, right=14pt, top=4pt, bottom=4pt,
-    fonttitle=\fontsize{40}{48}\selectfont\bfseries\color{primary},
-    coltitle=primary, colbacktitle=darktitlebg,
-    toptitle=6pt, bottomtitle=6pt,
-    titlerule=2pt, titlerule style={primary!50},
-    valign=top, drop shadow={opacity=0.18},
-  },
-  highlightcard/.style={
-    enhanced, arc=0pt, boxrule=0pt, colback=primary!18!white,
-    borderline west={6pt}{0pt}{primary},
-    left=16pt, right=14pt, top=4pt, bottom=4pt,
-    fonttitle=\fontsize{40}{48}\selectfont\bfseries\color{white},
-    coltitle=white, colbacktitle=primary,
-    toptitle=6pt, bottomtitle=6pt,
-    valign=top, drop shadow={opacity=0.22},
-  },
-}
-
-\begin{document}
-\begin{tcbposter}[
-  coverage={spread},
-  poster={columns=4, rows=20, spacing=0mm},  % Use columns=3 for portrait A0
-]
-
-% ══ TITLE BAR ══
-\posterbox[
-  enhanced, colback=primary, colframe=primary, colupper=white,
-  arc=0pt, boxrule=0pt,
-  left=40pt, right=40pt, top=12pt, bottom=8pt,
-  halign=center, valign=center,
-  drop shadow={opacity=0.3}
-]{name=title, column=1, span=4, between=top and row4}{
-  {\fontsize{84}{100}\selectfont\bfseries PAPER TITLE}\\[12pt]
-  {\fontsize{36}{44}\selectfont Authors}\\[8pt]
-  {\fontsize{30}{38}\selectfont\color{white!70} Affiliations | VENUE YEAR | github.com/...}
-}
-
-% ══ STATS BANNER ══
-\posterbox[
-  enhanced, colback=primary!15!white, boxrule=0pt, arc=0pt,
-  left=12pt, right=12pt, top=6pt, bottom=6pt,
-  valign=center, borderline south={3pt}{0pt}{primary!35},
-]{name=stats, column=1, span=4, between=row4 and row6}{
-  \centering
-  \begin{minipage}[c]{0.235\linewidth}\centering
-    \fcolorbox{primary!40}{stathighlight}{\parbox{0.88\linewidth}{%
-      \centering\vspace{6pt}%
-      {\fontsize{66}{80}\selectfont\bfseries\color{primary} STAT1}\\[4pt]
-      {\fontsize{26}{32}\selectfont\color{textdark} Label 1}\vspace{6pt}%
-    }}
-  \end{minipage}\hfill
-  % ... 3 more stat callouts in same pattern
-}
-
-% ══ CONTENT CARDS ══
-% Use card styles: \posterbox[redcard, title={...}]{...}{...}
-% Body text: \fontsize{34}{44}\selectfont
-% Figures: \posterfig{0.96}{figures/name.png}{Caption.}
-% Colorboxes: \colorbox{primary!20}{\parbox{0.94\linewidth}{...}}
-
-\end{tcbposter}
-\end{document}
-```
+**Template structure** (validated through testing): start from [`ref/poster-template.tex`](ref/poster-template.tex) — copy it to `poster/main.tex`, substitute the `VENUE_*` color HEX placeholders from the venue table, and fill the content cards (title bar + stats banner scaffold and the card-style/`\posterfig`/colorbox usage hints are all in the template).
 
 **Key formatting rules**:
 - Title: 84pt, bold, primary background, white text
@@ -797,7 +634,7 @@ mcp__codex__codex:
     Evaluate using these criteria (score 1-5 each):
 
     1. **Information hierarchy** — Can someone understand the contribution in 60 seconds?
-    2. **Text density** — Is it concise enough? (Target: 400-700 words total, bullet points only, NO abstract paragraph)
+    2. **Text density** — Is it concise enough? (Target: 300-500 words total, bullet points only, NO abstract paragraph)
     3. **Figure prominence** — Are key results visually dominant? (Target: figures occupy 40-50% of area)
     4. **Column balance** — Are columns roughly equal height?
     5. **Readability** — Font sizes appropriate for 1.5m distance? (Title ≥90pt, body ≥34pt)
@@ -820,13 +657,13 @@ Apply CRITICAL and MAJOR fixes to `poster/main.tex`. Recompile if changes were m
 
 Save review to `poster/POSTER_REVIEW.md`.
 
-> ⚠️ **Important**: After applying review fixes, proceed to Phase 6 only when the poster is finalized. PPTX and SVG must be generated from the **final** LaTeX/PDF — never from an intermediate version.
+> ⚠️ **Important**: After applying review fixes, proceed to Phase 7 only when the poster is finalized. PPTX and SVG must be generated from the **final** LaTeX/PDF — never from an intermediate version.
 
 ### Phase 7: Editable Format Export
 
 > ⚠️ **Generate PPTX and SVG only AFTER all revisions are complete.** This phase runs last (after review fixes) to ensure all formats contain identical content.
 
-#### 6.1 PowerPoint (.pptx)
+#### 7.1 PowerPoint (.pptx)
 
 Generate a native PPTX using `python-pptx` (not pandoc — pandoc conversion is lossy):
 
@@ -837,7 +674,7 @@ python3 -c "import pptx" 2>/dev/null || pip install python-pptx
 Write a Python script `poster/generate_pptx.py` that:
 1. Creates a single-slide PPTX with poster dimensions (A0 landscape: 1189mm x 841mm)
 2. Replicates the 4-column layout using positioned text boxes
-3. **Embeds PNG figures** (from poster/figures/*.png — NOT PDFs, python-pptx cannot embed PDFs)
+3. **Embeds PNG figures** (from poster/figures/*.png)
 4. Applies venue color scheme (primary/secondary/accent) to title bar and section headers
 5. Keeps all text editable (not images of text)
 6. Uses large font sizes matching the PDF (title 86pt, body 34pt, headers 42pt, stats 68pt)
@@ -863,7 +700,7 @@ cd poster && python3 generate_pptx.py
 # Output: poster/poster.pptx
 ```
 
-#### 6.2 SVG (for Adobe Illustrator)
+#### 7.2 SVG (for Adobe Illustrator)
 
 Convert the compiled PDF to editable SVG. **Preferred method: PyMuPDF** (always available via pip, no brew/system install needed):
 
@@ -898,87 +735,14 @@ which inkscape && inkscape poster/main.pdf --export-type=svg --export-filename=p
 > pix.save('poster/poster_preview.png')
 > ```
 
-#### 6.3 Component-based PPTX (Recommended — PDF→independent shapes)
+#### 7.3 Component-based PPTX (Recommended — PDF→independent shapes)
 
 > ⚠️ **This is the recommended PPTX export method.** It produces pixel-perfect output (from PDF) while keeping each poster card as an independent, movable/resizable shape in PowerPoint. The python-pptx rebuild (6.1) loses card styles, shadows, and colorboxes; the full-page image (single PNG) cannot be manipulated at all. This method is the best of both worlds.
 
 **How it works**: Crop each posterbox region from the compiled PDF at 300 DPI, then embed each crop as a separate picture shape in PPTX at its exact grid position.
 Result: 10-15 independent shapes that can be individually selected, moved, resized, or deleted in PowerPoint.
 
-```python
-import fitz, os, tempfile, shutil
-from pptx import Presentation
-from pptx.util import Mm
-from pptx.dml.color import RGBColor
-
-doc = fitz.open('poster/main.pdf')
-page = doc[0]
-pw, ph = page.rect.width, page.rect.height
-
-# A0 dimensions in mm (adjust for portrait/A1)
-W_mm, H_mm = 1189, 841  # landscape
-# W_mm, H_mm = 841, 1189  # portrait
-
-def pts_to_mm(x, y):
-    return x / pw * W_mm, y / ph * H_mm
-
-# ── Define regions from tcbposter grid ──
-# Format: name → (col_0based, row_start, col_span, row_end)
-# rows=20, columns=4 for landscape (3 for portrait)
-COLS = 4
-row_h = ph / 20
-col_w = pw / COLS
-
-regions = {
-    "title":        (0, 0, COLS, 4),
-    "stats":        (0, 4, COLS, 6),
-    # ... add one entry per posterbox, matching between=rowN and rowM
-    # Example for 4-column landscape:
-    "background":   (0, 6, 1, 11),
-    "contributions":(0, 11, 1, 16),
-    "references":   (0, 16, 1, 20),
-    "paradigms":    (1, 6, 1, 11),
-    "models":       (1, 11, 1, 20),
-    "architecture": (2, 6, 1, 10),
-    "results1":     (2, 10, 1, 20),
-    "hallucination":(3, 6, 1, 11),
-    "ablation":     (3, 11, 1, 15),
-    "takeaways":    (3, 15, 1, 20),
-}
-
-# ── Create PPTX ──
-prs = Presentation()
-prs.slide_width = Mm(W_mm)
-prs.slide_height = Mm(H_mm)
-slide = prs.slides.add_slide(prs.slide_layouts[6])
-
-# Set background
-bg = slide.background
-bg.fill.solid()
-bg.fill.fore_color.rgb = RGBColor(0xF5, 0xF3, 0xFF)  # venue bg color
-
-tmpdir = tempfile.mkdtemp()
-mat = fitz.Matrix(300/72, 300/72)  # 300 DPI
-
-for name, (col, r0, span, r1) in regions.items():
-    # Clip rectangle in PDF points
-    clip = fitz.Rect(col * col_w, r0 * row_h,
-                     (col + span) * col_w, r1 * row_h)
-    pix = page.get_pixmap(matrix=mat, clip=clip)
-    img_path = os.path.join(tmpdir, f"{name}.png")
-    pix.save(img_path)
-
-    # Position in mm
-    left, top = pts_to_mm(clip.x0, clip.y0)
-    right, bottom = pts_to_mm(clip.x1, clip.y1)
-
-    slide.shapes.add_picture(img_path, Mm(left), Mm(top),
-                             Mm(right - left), Mm(bottom - top))
-
-prs.save('poster/poster_components.pptx')
-doc.close()
-shutil.rmtree(tmpdir)
-```
+Run [`scripts/poster_components_pptx.py`](scripts/poster_components_pptx.py) (crops each posterbox region from the PDF at 300 DPI and embeds it at its grid position → `poster/poster_components.pptx`) — edit its `regions` dict to match your `main.tex` grid before running.
 
 > ⚠️ **The `regions` dict must match your `main.tex` posterbox grid exactly.** Parse the `between=rowN and rowM` values from each `\posterbox` to build this dict. If you add/remove cards in LaTeX, update the regions accordingly.
 
@@ -1057,63 +821,7 @@ Next steps:
 4. Print at A0 (300 DPI recommended)
 ```
 
-## Key Rules
-
-### Architecture
-- **MUST use article class, NEVER beamer.** Beamer + tcbposter with 8+ enhanced boxes triggers `grouping levels=255` overflow.
-  This is an architectural constraint, not fixable by style tweaks.
-- **NEVER use adjustbox package.** Use plain `\includegraphics[width=...]` only.
-- **NEVER use `\usepackage[most]{tcolorbox}`.** It pulls `listingsutf8.sty` which may not be installed.
-  Use `\tcbuselibrary{poster,skins,fitting}` explicitly.
-- **Use `[table]{xcolor}`** not `{xcolor}` — needed for `\rowcolor` in tables.
-
-### Layout
-- **`rows=20` and `spacing=0mm`** for tight layout.
-  Card separation via left accent stripe + drop shadow, not grid spacing.
-- **Use `between=rowN and rowM` positioning.** Not `below=name` which leaves auto-sized gaps.
-- **All columns in a row band share identical row boundaries.** Never mix `row6-row11` in col 1 with `row6-row10` in col 2.
-- **Adjust row distribution to match content density.** After trimming text, reduce row allocation proportionally.
-  Cards with `valign=top` show all whitespace at the bottom.
-
-### Content
-- **Less text is more.** Target 300-500 words total.
-  Each bullet: 5-8 words max.
-  If it reads like a sentence, it's too long.
-- **Do NOT fabricate data.** All numbers must come from `paper/sections/*.tex`.
-- **No abstract paragraph.** Replace with stat banner (3-4 big-number callout boxes).
-- **Figures should occupy 40-50% of poster area.** Posters are visual-first.
-- **Use `\posterfig` macro** for all figures to ensure consistent spacing.
-- **References: author (year).
-  Short title. *Venue*** — no full titles.
-- **De-AI polish**: Remove watch words (delve, pivotal, underscore, noteworthy, leverage, facilitate, harness).
-
-### Color & Design
-- **Card backgrounds must NOT be pure white.** Use subtle tints (e.g., `#FFF5F3`, `#F0F4FF`) that match each card's color family.
-- **Poster background should be tinted** (e.g., `#EDD5D5` for ICML red theme), not white or near-white.
-- **Colorbox intensity: 18-25%**, not 8-12%.
-  Faint colorboxes are invisible on print.
-- **Left accent stripe card design** (`borderline west={5pt}{0pt}{color}`) — cleaner than rounded colored boxes.
-- **4 card styles** (redcard/bluecard/darkcard/highlightcard) create visual rhythm across the poster.
-
-### Equations
-- **Use `$\displaystyle ...$` inside colorboxes**, NOT `\[...\]`. Display math adds margins causing overfull hbox.
-- **Reduce equation font to 26-28pt** inside narrow colorboxes.
-- **Wrap equations in `\centering` + `\parbox{0.92\linewidth}`** for proper alignment.
-
-### Export
-- **Copy figures, never symlink.** `cp` not `ln -sf`. pdflatex can't follow symlinks.
-- **Convert PDF figures to PNG for PPTX.** python-pptx cannot embed PDFs.
-  Use `pdf2image` at 300 DPI.
-- **SVG via PyMuPDF** (`fitz.Page.get_svg_image()`) — works everywhere, no system deps needed.
-- **PPTX/SVG last.** Generate editable exports only after ALL LaTeX revisions are finalized.
-- **Large file handling**: If the Write tool fails due to file size, use Bash (`cat << 'EOF' > file`) silently.
-
-### Misc
-- **Do NOT hallucinate citations.** Use only references from the paper's bibliography.
-- **Include QR code placeholder** or code link for paper/code repository.
-- **Font size minimums (article class)**: Title ≥84pt, section headers ≥40pt, body ≥34pt, captions ≥26pt, references ≥30pt, stat numbers ≥66pt.
-- **Feishu notifications are optional.** If `~/.claude/feishu.json` exists, send notifications.
-  Otherwise skip.
+> 💡 **Feishu notifications are optional.** If `~/.claude/feishu.json` exists, send a notification on completion; otherwise skip.
 
 ## Parameter Pass-Through
 

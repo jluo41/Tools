@@ -39,46 +39,7 @@ The proof passes when ALL of the following hold:
 
 ## Issue Taxonomy (20 categories, 4 groups)
 
-### Group A: Logic & Proof Structure
-
-| Category | Description | Example |
-|----------|-------------|---------|
-| **UNJUSTIFIED_ASSERTION** | Claim stated without proof or reference | "The Hessian splits into Gram blocks" |
-| **UNPROVEN_SUBCLAIM** | "Clearly" / "it follows" hides a nontrivial lemma | "By symmetry, the cross-terms vanish" without checking |
-| **QUANTIFIER_ERROR** | Wrong order ∀/∃, missing "for sufficiently small κ" | "For all π, there exists ε" vs "there exists ε for all π" |
-| **IMPLICATION_REVERSAL** | Uses (A⇒B) as (B⇒A), or claims equivalence with only one direction | |
-| **CASE_INCOMPLETE** | Misses boundary/degenerate cases | Singular covariance, zero weight, non-unique argmin |
-| **CIRCULAR_DEPENDENCY** | Lemma uses theorem that depends on it | |
-| **LOGICAL_GAP** | A step is not justified by what precedes it | B=Θ(1) → β_K=0 without analyzing W |
-
-### Group B: Analysis & Measure Theory
-
-| Category | Description | Example |
-|----------|-------------|---------|
-| **ILLEGAL_INTERCHANGE** | Swaps limit/expectation/derivative/integral without DCT/MCT/Fubini | Differentiating under E without domination |
-| **NONUNIFORM_CONVERGENCE** | Pointwise convergence used as uniform | sup and limit swapped |
-| **MISSING_DOMINATION** | DCT cited but no dominating function given | |
-| **INTEGRABILITY_GAP** | Uses E|X|^p without proving/assuming finite moments | |
-| **REGULARITY_GAP** | Differentiability/Lipschitz/convexity used but not established | |
-| **STOCHASTIC_MODE_CONFUSION** | Mixes a.s./in prob./in L²/in expectation | |
-
-### Group C: Model & Parameter Tracking
-
-| Category | Description | Example |
-|----------|-------------|---------|
-| **MISSING_DERIVATION** | A quantity is used but never derived from the model | Risk functional with undefined B, W |
-| **HIDDEN_ASSUMPTION** | Proof silently uses a condition not in the theorem | Gaussianity assumed but not stated |
-| **INSUFFICIENT_ASSUMPTION** | Hypotheses too weak for proof (counterexample exists) | Moment conditions admitting 2-point distributions |
-| **DIMENSION_TRACKING** | Parameter dependence (d, n, K, ...) not explicit | d enters only through κ |
-| **NORMALIZATION_MISMATCH** | Coordinate/scaling conventions inconsistent | Rescaled vs raw coordinates |
-| **CONSTANT_DEPENDENCE_HIDDEN** | "C" depends on d,n,K but treated as universal | |
-
-### Group D: Scope & Claims
-
-| Category | Description | Example |
-|----------|-------------|---------|
-| **SCOPE_OVERCLAIM** | Conclusion stated more broadly than proof supports | "β_K=0" with only generic overlap |
-| **REFERENCE_MISMATCH** | Cited theorem's hypotheses not verified at point of use | |
+The 20 categories in 4 groups -- A Logic & Proof Structure, B Analysis & Measure Theory, C Model & Parameter Tracking, D Scope & Claims -- live in `ref/issue-taxonomy.md`.
 
 ## Two-Axis Severity System
 
@@ -111,21 +72,7 @@ The proof passes when ALL of the following hold:
 
 ## Side-Condition Checklists for Common Theorems
 
-When the proof invokes any of the following, require explicit verification of ALL listed conditions:
-
-| Theorem | Required Conditions |
-|---------|-------------------|
-| **DCT** (Dominated Convergence) | Pointwise a.e. convergence + integrable dominating function |
-| **MCT** (Monotone Convergence) | Monotone increasing + non-negative |
-| **Fubini/Tonelli** | Product measurability + integrability (Fubini) or non-negative (Tonelli) |
-| **Leibniz integral rule** | Continuity of integrand + dominating function for derivative |
-| **Implicit Function Theorem** | Continuous differentiability + non-singular Jacobian |
-| **Taylor with remainder** | Sufficient differentiability + remainder form (Lagrange/integral) |
-| **Jensen's inequality** | Convexity of function + integrability |
-| **Cauchy-Schwarz** | Correct inner product space + integrability of both factors |
-| **Weyl/Davis-Kahan** | Symmetry/Hermiticity + perturbation bound conditions |
-| **Analytic continuation** | Domain connectivity + identity theorem conditions |
-| **WLOG reduction** | Invariance under claimed symmetry + reduction is reversible |
+The required-conditions cheat-sheet (DCT, MCT, Fubini/Tonelli, Leibniz integral rule, Implicit Function Theorem, Taylor with remainder, Jensen, Cauchy-Schwarz, Weyl/Davis-Kahan, analytic continuation, WLOG reduction) lives in `ref/side-conditions.md` -- when the proof invokes any of them, require explicit verification of ALL its listed conditions.
 
 ## Workflow
 
@@ -191,47 +138,7 @@ Flag any statement where limit order is ambiguous or uniformity is unclear.
 
 Submit the **complete proof content** with the following **mandatory reviewer checklist** in the prompt:
 
-```
-mcp__codex__codex:
-  config: {"model_reasoning_effort": "xhigh"}
-  prompt: |
-    You are performing a rigorous mathematical proof review. For EVERY theorem,
-    lemma, and proposition, check ALL of the following:
-
-    ## MANDATORY CHECKS
-
-    A. DEFINITIONS: List any symbol whose meaning is ambiguous or changes.
-    B. HYPOTHESIS DISCHARGE: For each lemma/theorem APPLICATION (not statement),
-       list each hypothesis and whether it was verified, with location.
-    C. INEQUALITY AUDIT: For each inequality chain, verify direction, missing
-       absolute values, missing conditions (convexity, PSD, integrability).
-    D. INTERCHANGE AUDIT: Flag every limit/derivative/expectation/integral
-       interchange. State which theorem justifies it (DCT/MCT/Fubini/Leibniz)
-       and which conditions are verified/missing.
-    E. PROBABILITY MODE: Track whether claims are a.s./in prob./in expectation/
-       w.h.p. Ensure transitions are justified.
-    F. UNIFORMITY & CONSTANTS: For every O(·), o(·), Θ(·), ≲, state whether
-       it is uniform over all parameters. List hidden parameter dependence.
-    G. EDGE/DEGENERATE CASES: Attempt to break each key lemma with a 1D,
-       low-rank, or extreme-parameter construction.
-    H. DEPENDENCY CONSISTENCY: Detect cycles or forward references to unproven
-       results.
-
-    ## OUTPUT FORMAT (per issue)
-    For each issue found, provide:
-    - id: sequential number
-    - status: INVALID / UNJUSTIFIED / UNDERSTATED / OVERSTATED / UNCLEAR
-    - impact: GLOBAL / LOCAL / COSMETIC
-    - category: [from taxonomy]
-    - location: section/equation/line
-    - statement: what the proof claims
-    - why_invalid: why this is wrong or unjustified
-    - counterexample: YES (describe) / NO / CANDIDATE (describe attempt)
-    - affects: which downstream results break if this is wrong
-    - minimal_fix: how to fix it
-
-    [FULL PROOF CONTENT HERE]
-```
+The mandatory reviewer-checklist prompt -- checks A (definitions) through H (dependency consistency) plus the per-issue output format -- is in `ref/reviewer-prompt.md` (Phase 1 prompt). Dispatch it verbatim as a fresh `mcp__codex__codex` xhigh thread with the **complete proof content** appended.
 
 **Save the threadId.**
 Parse into structured issue list.
@@ -328,15 +235,7 @@ After all fixes, verify the proof as a whole:
 #### Independent second review for FATAL/CRITICAL fixes
 For any fix that resolved a FATAL or CRITICAL issue, submit the **fixed section alone** (without showing the previous critique) to a **fresh Codex thread**:
 
-```
-mcp__codex__codex:
-  config: {"model_reasoning_effort": "xhigh"}
-  prompt: |
-    Blind review of the following proof section. You have NOT seen any prior
-    review or discussion. Check every step for correctness, hidden assumptions,
-    illegal interchanges, and counterexamples.
-    [FIXED SECTION ONLY]
-```
+The blind-review prompt is in `ref/reviewer-prompt.md` (Phase 3.5 prompt) -- dispatch the **fixed section alone** (no prior critique shown) as a fresh `mcp__codex__codex` xhigh thread.
 
 If the blind reviewer finds new issues, re-enter Phase 2.
 
@@ -388,43 +287,6 @@ Write `PROOF_CHECK_STATE.json`:
   "timestamp": "..."
 }
 ```
-
-## Key Rules
-
-### Mathematical rigor
-- **Never accept a proof step on faith**.
-  "Clearly" / "it follows" / "by standard arguments" are red flags — each must spawn a micro-claim.
-- **Hypothesis discharge**: Every time a lemma is APPLIED, verify EACH of its hypotheses at that point.
-  Use the side-condition checklists above.
-- **Interchange discipline**: Every swap of limit/expectation/derivative/integral must cite a theorem (DCT/MCT/Fubini/Leibniz) and verify its conditions with explicit dominating function or integrability proof.
-- **Uniformity discipline**: Every O(·)/Θ(·) must declare what parameters it is uniform over.
-  "O(1)" that secretly depends on d,n,K is a CONSTANT_DEPENDENCE_HIDDEN issue.
-- **Quantifier discipline**: Check ∀/∃ order.
-  "For sufficiently small κ" must specify: does κ₀ depend on K?
-  On π?
-  On d?
-- **Counterexample-first**: Before trying to fix a gap, first try to break it.
-- **WLOG prohibition**: Every "without loss of generality" must have an explicit micro-claim proving the reduction.
-  No free WLOGs.
-- **No silent assumption strengthening**: Any fix that adds conditions must propagate to the theorem statement.
-
-### Cross-model protocol
-- **Claude analyzes, Codex reviews**: Claude reads proof, formulates questions, implements fixes.
-  Codex provides adversarial review.
-- **Codex reasoning always xhigh**: Never downgrade.
-- **Send full content**: Don't summarize — send actual math for line-by-line checking.
-- **Preserve threadId**: Use `codex-reply` for follow-up rounds.
-
-### Fix quality
-- **Minimal fixes**: Fix exactly what's broken, nothing more.
-- **Full derivation**: Every fix includes complete mathematical argument.
-- **Explicit scope decisions**: Each fix is tagged ADD_DERIVATION / STRENGTHEN_ASSUMPTION / WEAKEN_CLAIM / ADD_REFERENCE.
-- **Compile after each fix**: LaTeX must compile cleanly.
-
-### Scope honesty
-- **Don't overclaim**: If a fix makes a result conditional, say so.
-- **Separate "proven" from "assumed"**: The audit report has an explicit section for this.
-- **Log open problems**: Issues requiring future work are listed, not hidden.
 
 ## Output Files
 

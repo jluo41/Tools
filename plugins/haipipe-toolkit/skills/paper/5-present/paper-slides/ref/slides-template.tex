@@ -1,0 +1,71 @@
+\documentclass[aspectratio=169]{beamer}
+
+% Venue theme
+\usepackage{xcolor}
+\definecolor{primary}{HTML}{VENUE_PRIMARY}
+\definecolor{accent}{HTML}{VENUE_ACCENT}
+
+% Clean theme
+\usetheme{default}
+\usecolortheme{default}
+\setbeamercolor{frametitle}{fg=primary}
+\setbeamercolor{title}{fg=primary}
+\setbeamercolor{structure}{fg=accent}
+\setbeamercolor{itemize item}{fg=primary}
+\setbeamercolor{itemize subitem}{fg=accent}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}{
+  \hfill\insertframenumber/\inserttotalframenumber\hspace{2mm}\vspace{2mm}
+}
+
+% Packages
+\usepackage{graphicx,amsmath,booktabs}
+\graphicspath{{figures/}}
+
+% Speaker notes (if enabled)
+% \setbeameroption{show notes on second screen=right}
+
+% Metadata
+\title{PAPER TITLE}
+\author{Author 1 \and Author 2}
+\institute{Affiliation}
+\date{VENUE YEAR}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+% Content slides follow...
+
+\begin{frame}{Motivation}
+\begin{itemize}
+  \item Bullet point 1
+  \item Bullet point 2
+  \item \textbf{Key insight in bold}
+\end{itemize}
+\note{Speaker note: explain the motivation...}
+\end{frame}
+
+% Figure slide example
+\begin{frame}{Method Overview}
+\centering
+\includegraphics[width=0.85\textwidth]{method_overview.pdf}
+\vspace{0.5em}
+\begin{itemize}
+  \item Key annotation about the figure
+\end{itemize}
+\note{Walk through the figure left to right...}
+\end{frame}
+
+% ... more slides ...
+
+\begin{frame}{Thank You}
+\centering
+{\Large Questions?}\\[2em]
+Paper: [URL or QR placeholder]\\
+Code: [URL or QR placeholder]
+\end{frame}
+
+\end{document}

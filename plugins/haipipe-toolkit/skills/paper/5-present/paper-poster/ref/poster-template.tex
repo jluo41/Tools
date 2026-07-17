@@ -1,0 +1,129 @@
+\documentclass{article}
+\usepackage[paperwidth=1189mm,paperheight=841mm,margin=0mm]{geometry}
+\usepackage{tcolorbox}
+\tcbuselibrary{poster,skins,fitting}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\usepackage[table]{xcolor}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\pagestyle{empty}
+
+% ── Venue Color Theme ──
+\definecolor{primary}{HTML}{VENUE_PRIMARY}     % deep, saturated
+\definecolor{secondary}{HTML}{VENUE_SECONDARY} % medium
+\definecolor{accent}{HTML}{VENUE_ACCENT}       % contrast
+\definecolor{bgposter}{HTML}{VENUE_BG_DEEP}    % poster background (NOT white, use tinted)
+\definecolor{redbg}{HTML}{FFF5F3}              % card backgrounds (tinted, NOT white)
+\definecolor{bluebg}{HTML}{F0F4FF}
+\definecolor{darkbg}{HTML}{FDF6F3}
+\definecolor{redtitlebg}{HTML}{FDEAE8}         % card title bar backgrounds
+\definecolor{bluetitlebg}{HTML}{E4ECFF}
+\definecolor{darktitlebg}{HTML}{F5E8E2}
+\definecolor{textdark}{HTML}{111827}
+\definecolor{textgray}{HTML}{4B5563}
+\definecolor{stathighlight}{HTML}{FEE8E8}
+
+\pagecolor{bgposter}
+\color{textdark}
+
+% ── List styling ──
+\setlist[itemize]{leftmargin=24pt, itemsep=6pt, parsep=2pt, topsep=2pt,
+  label={\color{secondary}$\blacktriangleright$}}
+\setlist[enumerate]{leftmargin=24pt, itemsep=6pt, parsep=2pt, topsep=2pt,
+  label={\color{primary}\bfseries\arabic*.}}
+
+% ── Figure+caption macro (ensures uniform spacing) ──
+\newcommand{\posterfig}[3]{%
+  \centering\includegraphics[width=#1\linewidth]{#2}\\[3mm]
+  {\fontsize{26}{32}\selectfont\color{textgray}\textit{#3}}\vspace{2mm}%
+}
+
+% ── Card styles (left accent stripe design) ──
+\tcbset{
+  redcard/.style={
+    enhanced, arc=0pt, boxrule=0pt, colback=redbg,
+    borderline west={5pt}{0pt}{secondary},
+    left=16pt, right=14pt, top=4pt, bottom=4pt,
+    fonttitle=\fontsize{40}{48}\selectfont\bfseries\color{secondary},
+    coltitle=secondary, colbacktitle=redtitlebg,
+    toptitle=6pt, bottomtitle=6pt,
+    titlerule=2pt, titlerule style={secondary!50},
+    valign=top, drop shadow={opacity=0.18},
+  },
+  bluecard/.style={
+    enhanced, arc=0pt, boxrule=0pt, colback=bluebg,
+    borderline west={5pt}{0pt}{accent},
+    left=16pt, right=14pt, top=4pt, bottom=4pt,
+    fonttitle=\fontsize{40}{48}\selectfont\bfseries\color{accent},
+    coltitle=accent, colbacktitle=bluetitlebg,
+    toptitle=6pt, bottomtitle=6pt,
+    titlerule=2pt, titlerule style={accent!50},
+    valign=top, drop shadow={opacity=0.18},
+  },
+  darkcard/.style={
+    enhanced, arc=0pt, boxrule=0pt, colback=darkbg,
+    borderline west={5pt}{0pt}{primary},
+    left=16pt, right=14pt, top=4pt, bottom=4pt,
+    fonttitle=\fontsize{40}{48}\selectfont\bfseries\color{primary},
+    coltitle=primary, colbacktitle=darktitlebg,
+    toptitle=6pt, bottomtitle=6pt,
+    titlerule=2pt, titlerule style={primary!50},
+    valign=top, drop shadow={opacity=0.18},
+  },
+  highlightcard/.style={
+    enhanced, arc=0pt, boxrule=0pt, colback=primary!18!white,
+    borderline west={6pt}{0pt}{primary},
+    left=16pt, right=14pt, top=4pt, bottom=4pt,
+    fonttitle=\fontsize{40}{48}\selectfont\bfseries\color{white},
+    coltitle=white, colbacktitle=primary,
+    toptitle=6pt, bottomtitle=6pt,
+    valign=top, drop shadow={opacity=0.22},
+  },
+}
+
+\begin{document}
+\begin{tcbposter}[
+  coverage={spread},
+  poster={columns=4, rows=20, spacing=0mm},  % Use columns=3 for portrait A0
+]
+
+% ══ TITLE BAR ══
+\posterbox[
+  enhanced, colback=primary, colframe=primary, colupper=white,
+  arc=0pt, boxrule=0pt,
+  left=40pt, right=40pt, top=12pt, bottom=8pt,
+  halign=center, valign=center,
+  drop shadow={opacity=0.3}
+]{name=title, column=1, span=4, between=top and row4}{
+  {\fontsize{84}{100}\selectfont\bfseries PAPER TITLE}\\[12pt]
+  {\fontsize{36}{44}\selectfont Authors}\\[8pt]
+  {\fontsize{30}{38}\selectfont\color{white!70} Affiliations | VENUE YEAR | github.com/...}
+}
+
+% ══ STATS BANNER ══
+\posterbox[
+  enhanced, colback=primary!15!white, boxrule=0pt, arc=0pt,
+  left=12pt, right=12pt, top=6pt, bottom=6pt,
+  valign=center, borderline south={3pt}{0pt}{primary!35},
+]{name=stats, column=1, span=4, between=row4 and row6}{
+  \centering
+  \begin{minipage}[c]{0.235\linewidth}\centering
+    \fcolorbox{primary!40}{stathighlight}{\parbox{0.88\linewidth}{%
+      \centering\vspace{6pt}%
+      {\fontsize{66}{80}\selectfont\bfseries\color{primary} STAT1}\\[4pt]
+      {\fontsize{26}{32}\selectfont\color{textdark} Label 1}\vspace{6pt}%
+    }}
+  \end{minipage}\hfill
+  % ... 3 more stat callouts in same pattern
+}
+
+% ══ CONTENT CARDS ══
+% Use card styles: \posterbox[redcard, title={...}]{...}{...}
+% Body text: \fontsize{34}{44}\selectfont
+% Figures: \posterfig{0.96}{figures/name.png}{Caption.}
+% Colorboxes: \colorbox{primary!20}{\parbox{0.94\linewidth}{...}}
+
+\end{tcbposter}
+\end{document}

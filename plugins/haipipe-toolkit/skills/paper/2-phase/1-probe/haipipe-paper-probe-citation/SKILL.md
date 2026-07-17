@@ -67,26 +67,6 @@ Every agent invoking this skill must obey them.
    The comment itself stays.
 
 
-## The .bib ↔ _CITATION_ separation
-
-```
-_CITATION_.md  = the MAP     agent writes    plain text (title, authors, year, link)
-.bib           = the DATA    human writes    bibtex (@article{key, ...})
-tex            = the OUTPUT  agent writes    \citep{key} (only for verified keys)
-```
-
-Data flow is one-directional for writes:
-- Agent → _CITATION_ (candidates, status, provenance, Scholar links)
-- Human → .bib (copies bibtex from Google Scholar)
-- Agent → tex (places \citep{} only after human verifies AND key exists in .bib)
-
-The agent reads .bib (to check key existence) and tex (to audit what's cited), but writes to neither .bib nor tex until verification conditions are met.
-
-Why this matters: you can always tell where an entry came from.
-If bibtex is ONLY in .bib and the agent NEVER writes .bib, then every .bib entry was human-added from a publisher source.
-The _CITATION_ map tracks which papers were agent-found vs pre-existing, so provenance is always clear.
-
-
 ## Provenance tracking
 
 Every _CITATION_ entry carries a **Source** field recording how the paper was found:
@@ -429,19 +409,3 @@ citation is done when:
 ## User guide + lifecycle rounds
 
 The CHECK-phase user guide (verify / reject / add a candidate; check what's pending) and the multi-round accumulation model (DRAFT → PROBE → mandatory post-REVISE re-audit → CHECK → RESTART; _CITATION_ accumulates and never resets, rejected ❌ entries stay): **`ref/citation-format.md`**.
-
-
-## Anti-patterns
-
-- ❌ Putting bibtex blocks in _CITATION_ (bibtex lives ONLY in .bib)
-- ❌ Proposing a bibtex key on candidate entries (the key is determined by Scholar when the human copies; the agent discovers it later by grepping .bib)
-- ❌ Adding entries to .bib directly (human-only operation)
-- ❌ Placing \citep{} for papers whose key is not in .bib (agent checks with grep)
-- ❌ Writing one-line summaries ("Evaluates the effect of X") instead of method + finding + relevance
-- ❌ Using "et al." shorthand in entry headings instead of full author list
-- ❌ Removing USER comments after resolving them (preserve with CC response)
-- ❌ Trusting bib metadata over the publisher page (publisher page decides)
-- ❌ Skipping the abstract-read for "obvious" cites (obvious ≠ verified)
-- ❌ Batching fixes in Phase 5 REVIEW (one cite, one approval, no batching)
-- ❌ Resetting _CITATION_ between rounds (accumulate, never reset)
-- ❌ Skipping post-revise re-audit (revise drift is the #1 citation regression)
