@@ -173,8 +173,8 @@ haipipe-paper-lifecycle             1-lifecycle/haipipe-paper-lifecycle/feedback
 haipipe-paper-enter                 0-enter/haipipe-paper-enter/feedback/
 haipipe-paper-round                 0-enter/haipipe-paper-round/feedback/
 haipipe-paper-{scaffold,restructure,check,folder}        3-deliver/1-build/<skill>/feedback/
-haipipe-paper-{claim-audit,submission-audit,reviewer,optimizer}  3-deliver/2-audit/<skill>/feedback/
-haipipe-paper-{consistency,format,typeset,improve-loop}  3-deliver/3-polish/<skill>/feedback/
+haipipe-paper-{claim-audit,reviewer,optimizer}           3-deliver/2-audit/<skill>/feedback/
+haipipe-paper-polish                                     3-deliver/3-polish/haipipe-paper-polish/feedback/
 haipipe-paper-{compile,diffpdf,to-overleaf}              3-deliver/4-ship/<skill>/feedback/
 haipipe-paper-rebuttal              4-respond/haipipe-paper-rebuttal/feedback/
 ORCHESTRATOR FALLBACK               haipipe-paper/feedback/   (this skill's own folder)

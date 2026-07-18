@@ -311,6 +311,16 @@ Symptom:
 Fix:
 - return to macro and structural levels first
 
+## Submission Preflight (late-stage)
+
+When the manuscript is near submission/resubmission, run this preflight after the Five-Level Audit. The claim/figure/terminology checks above already cover front-half alignment, panel coverage, and drift; this adds the venue-facing gate:
+
+- **Venue reporting requirements** (e.g. Nature Portfolio): reporting-summary inputs ready; data and code availability statements present; accession IDs / repositories / sharing-restriction disclosures in place; image-integrity and raw-data materials ready; AI-use disclosure; preprint, related-manuscript, and conference-proceedings disclosure.
+- **Submission-form ↔ manuscript sync**: if a portal draft exists, title / abstract / keywords / availability statements / related metadata still match the manuscript exactly.
+- **Reviewer-side rejection pass**: pressure-test against the main rejection dimensions — contribution sufficiency, clarity/reproducibility, empirical strength, evaluation completeness, design soundness. For a full peer-review write-up, hand off to `haipipe-paper-reviewer`.
+
+Readiness gate: treat none of these as done until they are actually ready, not merely planned.
+
 ## Output Standard
 
 When reporting findings, prefer this order:

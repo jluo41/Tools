@@ -18,15 +18,11 @@ Everything downstream of the written argument. `1-lifecycle` decides what the pa
 │
 ├── 2-audit/     ── read-only, produce findings (no mutation)
 │   ├── haipipe-paper-claim-audit         every number/claim traces to raw results
-│   ├── haipipe-paper-submission-audit    preflight: claim support, panel coverage, legends
 │   ├── haipipe-paper-reviewer            formal reviewer-side evaluation
-│   └── haipipe-paper-optimizer           claim/evidence/terminology drift review
+│   └── haipipe-paper-optimizer           claim/evidence/terminology drift review + late-stage venue preflight
 │
 ├── 3-polish/    ── mutate the draft, whole-paper passes
-│   ├── haipipe-paper-consistency         terminology / notation / \label-\ref consistency
-│   ├── haipipe-paper-format              venue formatting & style conventions
-│   ├── haipipe-paper-typeset             widows / orphans / overfull boxes / bad breaks
-│   └── haipipe-paper-improve-loop        autonomous LLM review → fix → recompile loop
+│   └── haipipe-paper-polish              consistency → format → typeset, in order
 │
 └── 4-ship/      ── produce & move the artifact
     ├── haipipe-paper-compile             LaTeX → PDF, diagnose & fix errors

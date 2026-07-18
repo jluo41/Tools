@@ -50,6 +50,6 @@ Two human gates: after DRAFT (structure) and at CHECK (quality). PROBE/REVISE ru
 
 ## Related, but not in 2-phase/
 
-- Whole-paper passes (`haipipe-paper-consistency`, `-format`, `-typeset`, `-diffpdf`, …) live in `3-deliver/` -- same discovery convention, different scope.
+- Whole-paper passes (`haipipe-paper-polish`, `-diffpdf`, …) live in `3-deliver/` -- same discovery convention, different scope.
 - The section-edit stage hub is `1-lifecycle/5-section-edit/haipipe-paper-section-edit/`; its per-paper working files land in the manuscript's `0-lifecycle/5-section-edit/`.
 - Comment threads produced during CHECK follow `../wiki/02-comment-lifecycle.md`.

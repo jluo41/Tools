@@ -15,7 +15,7 @@ metadata:
 Bridge a local paper directory with an Overleaf project so that:
 
 - **You** can keep editing in the Overleaf web UI (or share editing access with collaborators)
-- **ARIS** can read your changes, run audits (`/haipipe-paper-claim-audit`, `/haipipe-paper-probe-citation`, `/haipipe-paper-improve-loop`), and push fixes back
+- **ARIS** can read your changes, run audits (`/haipipe-paper-claim-audit`, `/haipipe-paper-probe-citation`) and polish passes (`/haipipe-paper-polish`), and push fixes back
 
 This uses the official **Overleaf Git bridge** (Premium feature).
 The agent **never sees your authentication token** — you do the one-time auth manually so the token lives in macOS Keychain, not in chat history or `.git/config`.
@@ -221,7 +221,7 @@ Behavioral rules (still apply, but secondary):
 The single biggest source of pain in two-way sync is **simultaneous editing on both sides**.
 
 - If the user is in an active Overleaf editing session, ARIS skills should **read-only** access `paper/` until the user runs `/haipipe-paper-to-overleaf pull`.
-- If ARIS is in the middle of `/haipipe-paper-improve-loop` or `/haipipe-paper section-edit`, the user should pause Overleaf editing until the loop finishes and `/haipipe-paper-to-overleaf push` is run.
+- If ARIS is in the middle of `/haipipe-paper-polish` or `/haipipe-paper section-edit`, the user should pause Overleaf editing until the pass finishes and `/haipipe-paper-to-overleaf push` is run.
 
 When in doubt, run `status` first.
 
