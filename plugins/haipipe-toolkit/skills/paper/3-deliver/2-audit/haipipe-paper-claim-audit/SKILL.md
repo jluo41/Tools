@@ -146,19 +146,11 @@ Also write `PAPER_CLAIM_AUDIT.json` for machine consumption.
 
 ## When to Run
 
-1. **After `/haipipe-paper section-edit`** — first check before improvement loop
-2. **After `/haipipe-paper-improve-loop`** — recheck if improvement loop changed numbers
+1. **After `/haipipe-paper section-edit`** — first check once prose is drafted
+2. **After a revise/polish pass** — recheck if edits changed any numbers
 3. **Before submission** — final verification
 
 ## Integration with Other Skills
-
-### Read by `/haipipe-paper-improve-loop` (if exists)
-
-```
-if PAPER_CLAIM_AUDIT.json exists:
-    read mismatched claims
-    fix them as priority items in the improvement round
-```
 
 ### Advisory, Never Blocking
 

@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-deliver
-description: "Orchestrator for the paper delivery group (3-deliver) — everything downstream of the written argument. Routes the four verb-intent sub-groups to their leaf skills: build (structure the folder), audit (read-only findings), polish (mutate the draft), ship (produce & move the artifact). The artifact-side mirror of haipipe-paper-lifecycle (which owns the argument). Routing only; each leaf owns its own workflow. Trigger: build, scaffold, restructure, conform, audit, review, claim-audit, submission-audit, reviewer, optimizer, polish, consistency, format, typeset, improve-loop, ship, compile, diffpdf, overleaf, deliver, /haipipe-paper-deliver."
+description: "Orchestrator for the paper delivery group (3-deliver) — everything downstream of the written argument. Routes the four verb-intent sub-groups to their leaf skills: build (structure the folder), audit (read-only findings), polish (mutate the draft), ship (produce & move the artifact). The artifact-side mirror of haipipe-paper-lifecycle (which owns the argument). Routing only; each leaf owns its own workflow. Trigger: build, scaffold, restructure, conform, audit, review, claim-audit, reviewer, optimizer, submission preflight, polish, consistency, format, typeset, ship, compile, diffpdf, overleaf, deliver, /haipipe-paper-deliver."
 argument-hint: "[build|audit|polish|ship | <leaf-verb>] [paper-path-or-args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
   version: "1.0.0"
   last_updated: "2026-07-17"
-  summary: "Router for 3-deliver, the artifact side of the paper. Four sub-groups by verb-intent: 1-build (scaffold/restructure/conform/folder — structure, zero prose), 2-audit (claim-audit/submission-audit/reviewer/optimizer — read-only findings), 3-polish (consistency/format/typeset/improve-loop — mutate the draft), 4-ship (compile/diffpdf/to-overleaf — produce & move). Mirror of haipipe-paper-lifecycle; the top router delegates delivery intents here. History: ./CHANGELOG.md."
+  summary: "Router for 3-deliver, the artifact side of the paper. Four sub-groups by verb-intent: 1-build (scaffold/restructure/conform/folder — structure, zero prose), 2-audit (claim-audit/reviewer/optimizer — read-only findings), 3-polish (polish: consistency→format→typeset — mutate the draft), 4-ship (compile/diffpdf/to-overleaf — produce & move). Mirror of haipipe-paper-lifecycle; the top router delegates delivery intents here. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -32,15 +32,11 @@ The four sub-groups (by verb-intent)
 
 2-audit/    read-only, produce findings (no mutation)
    claim-audit         every number/claim traces to raw results
-   submission-audit    preflight: claim support, panel coverage, legends
    reviewer            formal reviewer-side evaluation
-   optimizer           claim/evidence/terminology drift review
+   optimizer           claim/evidence/terminology drift review + late-stage venue preflight
 
 3-polish/   mutate the draft, whole-paper passes
-   consistency     terminology / notation / \label-\ref consistency
-   format          venue formatting & style conventions
-   typeset         widows / orphans / overfull boxes / bad breaks
-   improve-loop    autonomous LLM review → fix → recompile loop
+   polish          one skill, three ordered passes: consistency → format → typeset
 
 4-ship/     produce & move the artifact
    compile         LaTeX → PDF, diagnose & fix errors
@@ -56,12 +52,12 @@ Group verb (no leaf) opens that sub-group's chooser; a leaf verb dispatches stra
 ```
 /haipipe-paper-deliver                                 -> dashboard (the four groups + their leaves)
 /haipipe-paper-deliver build [<leaf>] <args>           -> 1-build/*   (leaf: scaffold | restructure | conform | folder)
-/haipipe-paper-deliver audit [<leaf>] <args>           -> 2-audit/*   (leaf: claim-audit | submission-audit | reviewer | optimizer)
-/haipipe-paper-deliver polish [<leaf>] <args>          -> 3-polish/*  (leaf: consistency | format | typeset | improve-loop)
+/haipipe-paper-deliver audit [<leaf>] <args>           -> 2-audit/*   (leaf: claim-audit | reviewer | optimizer)
+/haipipe-paper-deliver polish <args>                   -> 3-polish/haipipe-paper-polish (consistency → format → typeset)
 /haipipe-paper-deliver ship [<leaf>] <args>            -> 4-ship/*    (leaf: compile | diffpdf | to-overleaf)
 /haipipe-paper-deliver scaffold|restructure|conform|folder <args>       -> the named 1-build leaf
-/haipipe-paper-deliver claim-audit|submission-audit|reviewer|optimizer <args>  -> the named 2-audit leaf
-/haipipe-paper-deliver consistency|format|typeset|improve-loop <args> -> the named 3-polish leaf
+/haipipe-paper-deliver claim-audit|reviewer|optimizer <args>          -> the named 2-audit leaf
+/haipipe-paper-deliver polish <args>                                 -> haipipe-paper-polish
 /haipipe-paper-deliver compile|diffpdf|to-overleaf <args>             -> the named 4-ship leaf
 /haipipe-paper-deliver "<natural language>"            -> infer the leaf, dispatch
 ```
@@ -78,7 +74,7 @@ Resolution order (first match wins):
 2. first positional is a GROUP verb (build|audit|polish|ship) -> if a second token names a leaf in that group, that leaf; else the group chooser
 3. keyword scan over the phrase                               -> the most-specific leaf (a named skill wins over its group)
 4. no args                                                    -> dashboard
-5. input but target unclear                                   -> ASK; never guess a mutating leaf (restructure, polish-*, improve-loop change files)
+5. input but target unclear                                   -> ASK; never guess a mutating leaf (restructure, polish change files)
 ```
 
 Invariants (state them, do not re-implement — the leaves enforce them)

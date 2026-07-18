@@ -58,10 +58,10 @@ display | figures | figures-tables           -> haipipe-paper-lifecycle display 
 section-edit | section | sec | §N            -> haipipe-paper-lifecycle section-edit (per-section prose work)
 table | figure | plot | diagram |
   illustration | figure1 | framework         -> haipipe-paper-lifecycle <renderer verb> (display renderer family; 做表/画图/架构图)
-build | scaffold | restructure | check | folder |
-  audit | review | claim-audit | submission-audit | reviewer | optimizer |
-  polish | format | typeset | consistency | improve-loop |
-  compile | diffpdf | overleaf | ship | deliver  -> haipipe-paper-deliver (artifact side; forwards the leaf verb to 1-build/2-audit/3-polish/4-ship; also "make submission-ready", "conformance", "produce the PDF")
+build | scaffold | restructure | conform | folder |
+  audit | review | claim-audit | reviewer | optimizer |
+  polish | consistency | format | typeset |
+  compile | diffpdf | overleaf | ship | deliver  -> haipipe-paper-deliver (artifact side; forwards the leaf verb to 1-build/2-audit/3-polish/4-ship; polish runs consistency→format→typeset; also "make submission-ready", "conformance", "produce the PDF")
 round | rounds                               -> haipipe-paper-round (dated work rounds; also "todo", "decisions", "applied")
 probe ["<question>"] | probe | probe plan | probe run [PPNN]  -> the probe-file pool: 1-probes/PPNN_<topic>.md, one file per TOPIC, one SECTION per question (RAISE / SHOW the board / PLAN the cross-stage campaign / RUN the five-step loop; the probe FILES are the source of truth — the README's Status board regenerates from them, its Campaign section is authored by "plan"; "run" hands the pool to haipipe-paper-probe; also "evidence gap", "verify claim", "hypothesis", "probe campaign", "consolidate probes")
 rebuttal                                     -> haipipe-paper-rebuttal (also "reply to reviewers", "reviewer comments", "OpenReview response", "R1 revision")
