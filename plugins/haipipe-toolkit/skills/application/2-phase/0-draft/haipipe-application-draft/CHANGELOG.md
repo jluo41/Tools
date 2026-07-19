@@ -4,6 +4,13 @@ haipipe-application-draft — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [1.3.1] — 2026-07-19
+
+- Probe constitution v9.5.0 sync (Q-executor-entry probe-file format), mirroring the paper family. RAISE becomes RAISE+PLAN: DRAFT authors the WHOLE probe plan (①ORGANIZE + ②MATCH) — a `Q-<Stage>-<n>` in the stage doc's Q-consumer plus a `## QX<n>` ENTRY carrying `### q-executor` (+ Deliverable/Accepted), a `### q-consumer` bullet, and `### bank binding` (route · bank · target) — instead of a bare `state: planned` section with an empty `target:`.
+- FORBIDDEN narrows to writing `### a-executor` (the ANSWER, PROBE's ⑤ harvest); DRAFT now legitimately writes `target:`, so the DRAFT/PROBE line is `### a-executor` / `state` (planned or answered, never read), not an empty target.
+- Updated: frontmatter summary, "What DRAFT means" steps 4–5, "DRAFT may search; PROBE must dispatch", return contract (`next:` = PROBE runs ③DISPATCH → ④POINT → ⑤INTERPRET).
+- Archaeology strip: ruling citations and dates removed from the normative text.
+
 ## [1.1.0] — 2026-07-07
 
 - Port of paper draft 3.4.0/3.5.0 (paper-alignment round 2, SOP §4 row 6, R3): allowed-tools gains WebSearch, WebFetch; new "DRAFT may search; PROBE must dispatch" section -- inline search is DRAFT-only orientation fuel with two legal destinations (stage-doc prose; buffered `status: planned` PPNN skeletons), never refs/findings into cards; real evidence lands only via haipipe-application-probe; the line is card state, mechanically enforced by check-probe-cards.sh at VERIFY/CHECK.

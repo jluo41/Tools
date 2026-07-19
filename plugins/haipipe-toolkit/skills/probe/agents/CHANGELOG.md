@@ -7,6 +7,24 @@ Never loaded at invocation; read on demand.
 Versions match each agent's frontmatter `version:`. Newest first, grouped per agent.
 
 
+## [1.0.1] — 2026-07-19  (haipipe-probe-q-executor-agent) — sync to constitution v9.5.0
+
+Follows the probe constitution to v9.5.0 (the Q-executor-entry probe-file format). Two model
+shifts land here:
+
+- **② MATCH moved to DRAFT.** DRAFT now authors `route` / `bank` (reuse | run | code | new) /
+  `target`, and they are AUTHORITATIVE. This collector no longer decides reuse-vs-new; it
+  receives only the entries the bank still OWES (`run` / `code` / `new`) and EXECUTES the plan.
+  Its role narrows from ②③④ to the stake-free TAIL ③ DISPATCH → ④ POINT (cross-batch T0-JOIN
+  dedup stays, as a dispatch safety, not a verdict).
+- **Anatomy rename.** A probe file holds `## QX<n>` ENTRIES with four `###` subsections, not
+  `- field:` sections. `### q-executor` is the dispatch payload; `### a-executor` (the answer
+  copy) is HARVEST, the stage's job, never this agent's. `section` → `entry`; the stake now lives
+  in the stage-doc Q-consumer (there is no `## Why`), which this agent still never sees.
+
+Wall unchanged: stake-free, isolated, LAW 1 (dispatch verbatim, never write in the bank).
+
+
 ## [RETIREMENT] — 2026-07-14 — haipipe-probe-orchestrator-agent (the EVIDENCE GATEWAY) is DEAD
 
 Ruling: `Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/` v3 (APPROVED by JL 2026-07-14), CC-6 + JL-13. Companion to

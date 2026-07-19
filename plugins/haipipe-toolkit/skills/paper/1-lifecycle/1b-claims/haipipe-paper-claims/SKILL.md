@@ -18,7 +18,7 @@ The **claims** stage is venue-FREE, and it settles the paper's argument.
 It answers: which claims are supported, refuted, or inconclusive?
 And it is the ONLY home of that status.
 
-Read first: `../../../PHILOSOPHY.md`, `../../ref/04-lifecycle-map.md`, `../../../wiki/11-delivery-need.md`.
+Read first: `../../../PHILOSOPHY.md`, `../../ref/04-lifecycle-map.md`, `../../../haipipe-paper/SKILL.md` (Delivery Need Routing).
 
 
 ## What's special: two things make claims claims
@@ -84,4 +84,4 @@ promote -> /haipipe-paper venue    pin the target journal (claims is venue-free;
 promote -> /haipipe-paper pitch    if the venue is already pinned
 ```
 
-End every reply with the stage strip (`../../../haipipe-paper/stage-strip.sh`); comment threads follow `../../../wiki/02-comment-lifecycle.md`.
+End every reply with the stage strip (`../../../haipipe-paper/stage-strip.sh`); comment threads follow the Comment lifecycle section in `../../../haipipe-paper/SKILL.md`.

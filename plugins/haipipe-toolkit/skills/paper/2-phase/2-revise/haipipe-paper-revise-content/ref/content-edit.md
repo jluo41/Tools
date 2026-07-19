@@ -7,7 +7,7 @@ The full content pass at three granularities. Work top-down. See the parent
 > failed checkbox becomes one `%% {CC-content-vMMDD}: <finding> | <suggestion>
 > ========>` comment anchored to the target — you change no prose. The fixes
 > described below happen only in Round 2, after the human replies `accept` /
-> `modify`. See `../../../../wiki/02-comment-lifecycle.md`.
+> `modify`. See `../../../../haipipe-paper/SKILL.md`, Comment lifecycle.
 
 ---
 

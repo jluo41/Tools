@@ -35,7 +35,7 @@ W6   Conference Talk      ->   present (reads pitch first)
 | `PAPER_PLAN.md` | `0-lifecycle/5-section-edit/5-section-edit.tex` | In HAI-Pipe, downstream of pitch + narrative |
 | `figures/`, `latex_includes.tex` | `0-displays/displayNN-*/` | Display units with claim, caption, preview |
 | `AUTO_REVIEW.md` / `REVIEW_STATE.json` | review reports, `1-rounds/` | HAI-Pipe routes findings by layer |
-| `research-wiki/` | project KB: tasks/ + discoveries/ | HAI-Pipe path: discovery > PPNN verdict > claims > narrative |
+| `research-wiki` | project KB: tasks/ + discoveries/ | HAI-Pipe path: discovery > PPNN verdict > claims > narrative |
 
 ## Review routing (the key difference)
 

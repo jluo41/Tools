@@ -30,7 +30,7 @@ done      → early exit: jump to draft (artifact) with remaining stages waived
             (recorded in the ledger notes)
 ```
 
-A stage is only "done" when this approval is EXPLICIT. The system never auto-advances. Full protocol: `../../../wiki/08-stage-gate.md`.
+A stage is only "done" when this approval is EXPLICIT. The system never auto-advances. Full protocol: `../../../haipipe-application/SKILL.md` (Stage Gate Protocol section).
 
 Before any of that, CHECK opens with a MECHANICAL Run step (next section): a ❌ from `./checks.sh` or a FAIL from the probe-file checker means the gate CANNOT go green -- at any venue depth, under any persona.
 
@@ -118,7 +118,7 @@ claims:        every claim a **C<n>** line with theme tag + role + status + → 
 advice:        every **A<n>** derived from >=1 resolving C id at/above the settlement
                bar? W-actionability passed? Rejected section honest? no [STALE] tags?
                (the LADDER GATE lands here for light/medium venues — batching per
-               wiki/08; one approval writes the batched rungs' ledger rows)
+               Stage Gate Protocol; one approval writes the batched rungs' ledger rows)
 pitch:         one-sentence goal testable? mechanism (theory of change) plausible?
                venue + audience named?
 narrative:     arc follows venue rules? all load-bearing claims mapped to beats?

@@ -22,7 +22,7 @@ It answers: what is this intervention selling, to whom, through this channel?
 3-narrative how the claims compose into the output's arc (venue-ALIGNED)
 ```
 
-Read first: `../../../PHILOSOPHY.md`, `../../../wiki/03-intervention-lifecycle.md`.
+Read first: `../../../PHILOSOPHY.md`, `../../haipipe-application-lifecycle/SKILL.md` (Intervention Lifecycle Contract).
 
 
 ## What's special: three things make the pitch the pitch

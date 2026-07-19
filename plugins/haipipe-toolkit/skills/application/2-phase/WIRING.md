@@ -36,7 +36,7 @@ user → /haipipe-application <stage>            stage skills live in 1-lifecycl
        haipipe-application-check    → re-runs the probe-file checker + runs checks.sh, seeds > CHECK: threads in stage docs, gates the human (CHECK 🧑)
 ```
 
-DRAFT/PROBE/REVISE run automatic; CHECK is the only human gate (venue-scaled depth, `../wiki/08-stage-gate.md`). The probe worker is the ONLY exit for evidence work; stage skills never call `/haipipe-probe`, discovery agents, or task agents directly.
+DRAFT/PROBE/REVISE run automatic; CHECK is the only human gate (venue-scaled depth, `../haipipe-application/SKILL.md` Stage Gate Protocol). The probe worker is the ONLY exit for evidence work; stage skills never call `/haipipe-probe`, discovery agents, or task agents directly.
 
 Related, but not in 2-phase/
 -----------------------------

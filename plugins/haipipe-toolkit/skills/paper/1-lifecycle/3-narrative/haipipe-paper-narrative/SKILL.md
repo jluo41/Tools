@@ -37,7 +37,7 @@ Read first: `../../../PHILOSOPHY.md`, `../../ref/04-lifecycle-map.md`.
 
 **Files produced:**
 - `0-lifecycle/3-narrative/3-narrative.md` -- the design contract (venue-ALIGNED)
-- `0-lifecycle/3-narrative/_LOG_3-narrative.md` -- phase progress journal (per `../../../wiki/02-comment-lifecycle.md`)
+- `0-lifecycle/3-narrative/_LOG_3-narrative.md` -- phase progress journal (per the Comment lifecycle section in `../../../haipipe-paper/SKILL.md`)
 - `0-lifecycle/3-narrative/_DISPLAY_3-narrative.md` -- which display unit serves each beat
 - `1-probes/PPNN_<topic>.md` -- the probe FILES; a narrative need becomes a question SECTION (flat cross-stage pool; `serves: 3-narrative`)
 
@@ -95,7 +95,7 @@ The agent never self-advances past a gate.
 **Comment rules (binding).**
 The agent NEVER deletes, rewords, or relocates a `> USER:` comment; it replies `> CC:` underneath; only the user resolves a thread; resolved threads MOVE to `_LOG` verbatim.
 Working files are edited surgically — no full-file rewrite of a file carrying `> USER:` comments.
-Background: `../../../wiki/02-comment-lifecycle.md`.
+Background: `../../../haipipe-paper/SKILL.md`, Comment lifecycle.
 
 ```
 narrative invoked
@@ -132,7 +132,7 @@ CHECK --> present exit gate per ../../ref/08-stage-gate.md
 
 Phase visibility per the Phase Transition Contract in `../../ref/08-stage-gate.md`: announce every phase boundary (reply line + `[PHASE]` entry in `_LOG` + phase-line 🔥 moves); skip a phase only by an explicit logged verdict (`[PROBE] skipped -- <reason>`, phase line shows `--`); CHECK is never implicit -- it opens by presenting the exit-criteria report and the approval ask.
 
-Comment lifecycle per `../../../wiki/02-comment-lifecycle.md`: comments live in 3-narrative.md while active, move to _LOG on resolve, each phase starts clean.
+Comment lifecycle per `../../../haipipe-paper/SKILL.md` (Comment lifecycle section): comments live in 3-narrative.md while active, move to _LOG on resolve, each phase starts clean.
 
 ## Context: $ARGUMENTS
 

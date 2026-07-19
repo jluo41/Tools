@@ -16,7 +16,7 @@ The **section-edit** stage (stage 5, venue-ALIGNED) turns each section into venu
 It answers: does each section's prose do its assigned job?
 Each section runs its own DRAFT → PROBE → REVISE → CHECK, with the edited prose living in `0-sections/`.
 
-Read first: `../../../PHILOSOPHY.md`, `../../../wiki/08-stage-gate.md`, `../../../wiki/11-delivery-need.md`.
+Read first: `../../../PHILOSOPHY.md`, `../../../haipipe-application/SKILL.md` (Stage Gate Protocol + Delivery Need Routing sections).
 
 
 ## What's special

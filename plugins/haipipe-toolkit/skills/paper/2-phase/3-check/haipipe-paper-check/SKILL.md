@@ -42,7 +42,7 @@ The chat report is the map; the in-file `> CHECK:` comments are what the human a
 A CHECK that hands over with a clean file and a chat-only report is DEFECTIVE (test-123333333: JL entered 0-seed.md to review and found nothing to guide the pass).
 3. **Human review**: the human walks the `> CHECK:` comments and replies `> USER:` under each (see Human Actions During CHECK for the per-track steps).
 4. **Decide**: proceed / restart / new round / accept / park.
-5. **On restart**: the restarted phase (DRAFT/PROBE/REVISE) reads the `> CHECK:` comments and their `> USER:` replies and responds to each; resolved threads archive to `_LOG` per `../../../wiki/02-comment-lifecycle.md`.
+5. **On restart**: the restarted phase (DRAFT/PROBE/REVISE) reads the `> CHECK:` comments and their `> USER:` replies and responds to each; resolved threads archive to `_LOG` per the Comment lifecycle section in `../../../haipipe-paper/SKILL.md`.
 
 
 ## Locating the card checker

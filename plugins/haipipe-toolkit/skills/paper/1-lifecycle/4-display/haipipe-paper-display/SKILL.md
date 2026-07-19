@@ -120,7 +120,7 @@ The agent never self-advances past a gate.
 **Comment rules (binding).** All display commentary lives in `4-display.md`: the agent NEVER deletes, rewords, or relocates a `> USER:` line; it replies `> CC:` underneath; only the user resolves a thread; resolved threads MOVE to `_LOG` verbatim.
 `4-display.md` is edited surgically — no full-file rewrite while it carries `> USER:` comments.
 The generated `4-display.tex` and the unit files stay comment-free (portable).
-Background: `../../../wiki/02-comment-lifecycle.md`.
+Background: `../../../haipipe-paper/SKILL.md`, Comment lifecycle.
 
 ```
 display invoked
@@ -208,7 +208,7 @@ Their verb advances ([GATE] logged quoting the user; struck entries logged as sk
 Agent-only.
 Execute the `Probes` plan as the user approved it at the gate: a `✋` entry whose gating thread is still unruled stays blocked and is REPORTED at the end of the phase — never silently run, never silently dropped.
 After each entry, fill its `Outcome:` field (artifact path + one-line takeaway / self-assessment) and flip its status to `done`.
-Routing per `../../../wiki/11-delivery-need.md`; commissioning here is THIS stage's authority — the probe-display worker's no-commissioning ban binds section/narrative context, not the display stage acting on its own accepted units.
+Routing per Delivery Need Routing in `../../../haipipe-paper/SKILL.md`; commissioning here is THIS stage's authority — the probe-display worker's no-commissioning ban binds section/narrative context, not the display stage acting on its own accepted units.
 This phase never hand-authors a figure or pastes numbers into `float.tex`.
 
 **Step 0 — coverage sweep (S0).** Before the lanes, ask what the REST of the paper needs: read `3-narrative.md` beat display mentions, every `0-lifecycle/5-section-edit/*/<section>.md` (+ its `_DISPLAY_<section>.md` registry where present), and `\input{0-displays/...}` / `\ref{fig:...|tab:...}` uses in section files.

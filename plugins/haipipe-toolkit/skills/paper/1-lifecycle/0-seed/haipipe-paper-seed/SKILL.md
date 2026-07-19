@@ -4,8 +4,8 @@ description: "Create or update the paper folder's 0-lifecycle/0-seed/0-seed.md +
 argument-hint: "[paper-dir] [--source <path-or-note>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.2.0"
-  last_updated: "2026-07-18"
+  version: "4.4.0"
+  last_updated: "2026-07-19"
   summary: "Seed stage orchestrator (stage 0, venue-FREE): 5 sections -- Seed Question, Motivations, Landscape, Tentative Claim Shape, Q-consumer -- driving DRAFT -> PROBE -> REVISE -> CHECK internally (the user invokes seed, not the phases). Seed probes are FEASIBILITY only (novelty + is external data obtainable); DRAFT may WebSearch as orientation fuel, but PROBE is exactly one real worker call and never does evidence itself. Seed hands forward to RESOURCE (which hands to claims); prerequisite/internal-data work forward-points to RESOURCE via a _LOG pointer. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -31,9 +31,9 @@ Read first: `../../../PHILOSOPHY.md`, `../../ref/04-lifecycle-map.md`.
 
 **Files produced:**
 - `0-lifecycle/0-seed/0-seed.md` -- the seed contract
-- `0-lifecycle/0-seed/_LOG_0-seed.md` -- phase progress journal (per `../../../wiki/02-comment-lifecycle.md`)
-- `1-probes/PPNN_<topic>.md` -- the probe files this stage's questions land in (one file per TOPIC, one SECTION per question: serves/target/state/q-executor/a-consumer, plus ONE `## Why` per file; flat cross-stage pool at the paper root, the SECTION's `serves:` carries the stage; Status board in `1-probes/README.md`)
-- `0-lifecycle/0-seed/_CITATION_0-seed.md` -- citation candidates HARVESTed from what the probe brought back (only when the probe returns literature; candidates 🔍, no bibtex)
+- `0-lifecycle/0-seed/_LOG_0-seed.md` -- phase progress journal (per the Comment lifecycle section in `../../../haipipe-paper/SKILL.md`)
+- `1-probes/PPNN_<topic>.md` -- the probe files this stage's questions land in (one file per TOPIC, one ENTRY per q-executor: `## QX<n>` with `### q-executor` / `### q-consumer` / `### bank binding` (route/bank/target/state) / `### a-executor`; no `## Why` -- the stake lives in each stage-doc Q-consumer; flat cross-stage pool at the paper root, the `### q-consumer` bullets carry the stage via their `Q-Seed-<n>` ids; Status board in `1-probes/README.md`)
+NO SIDECARS: no `_CITATION_0-seed.md`, no `_VALUES_`, no `_DISCOVERY_`. Retired 2026-07-19 and enforced by `check-probe-cards.sh` PASS 2 — `1-probes/` is the only consumer-side source of truth, and `_LOG_0-seed.md` is the ONLY kept sidecar. A `\cite{TOADD}` in 0-seed.md records what it is owed in `_LOG_0-seed.md`. Do NOT hang it on a probe entry's `**sources**:` lane instead: a `harvest: OWED` lane is a checker FAIL (rule 7), because that lane is written at PROBE harvest, never at DRAFT.
 
 **Content structure (0-seed.md).**
 The FILL rules for every section live INLINE in `ref/seed-template.md` as `<!-- RULE: … -->` comments -- follow them, then delete them (a RULE comment never ships in the seed). The template is the single source of truth; do NOT restate the fill rules here.
@@ -42,7 +42,7 @@ The DPRC loop that binds Q-consumer to the content is phase behavior (see Phase 
 
 **Formatting:**
 - Heading style: `=====` for the document title, `-----` for sections.
-  No `#`/`##`/`###`.
+  No `#`/`##`/`###` — EXCEPT the Q-consumer question blocks, which `ref/seed-template.md` defines as `## Q-Seed-<n> · <title>`. That is the one sanctioned `##` in the file; the template is the source of truth and wins here.
 - One sentence per line (semantic line breaks).
   No dense multi-sentence paragraphs.
 
@@ -56,7 +56,7 @@ The DPRC loop that binds Q-consumer to the content is phase behavior (see Phase 
       [ -n "$CHK" ] || { echo 'FAIL: paper probe checker not found'; exit 1; }
       sh "$CHK" <paper_root>
       ```
-      exits 0 (every section's `target:` resolves on disk, no `planned` survivors, no markdown tables, LAW 2 clean on both surfaces -- the gate RUNS the checker and shows its output; it never eyeballs probe files)
+      exits 0 (every entry's `target` resolves on disk, no `planned` survivors, no markdown tables, LAW 2 clean on both surfaces -- the gate RUNS the checker and shows its output; it never eyeballs probe files)
 
 ## Phase Orchestration
 
@@ -80,7 +80,7 @@ The agent never self-advances past a gate.
 **Comment rules (binding).**
 The agent NEVER deletes, rewords, or relocates a `> USER:` comment; it replies `> CC:` underneath; only the user resolves a thread; resolved threads MOVE to `_LOG` verbatim.
 Working files are edited surgically — no full-file rewrite of a file carrying `> USER:` comments.
-Background: `../../../wiki/02-comment-lifecycle.md`.
+Background: `../../../haipipe-paper/SKILL.md`, Comment lifecycle.
 
 ```
 seed invoked
@@ -92,14 +92,16 @@ DRAFT ──→ illuminate existing content, elicit taste,
           MAY WebSearch inline to ORIENT the angle (crowded field? dataset
           exist? anchor names?) -- the result is drafting fuel: weave it into
           the prose (as orientation, `\cite{TOADD}` slots — never invented keys) AND raise
-          the feasibility questions as SECTIONS in 1-probes/, give each raised question a
+          the feasibility questions as ENTRIES in 1-probes/, give each raised question a
           `## Q-Seed-<n>` block in Q-consumer, and CITE its id inline -- `[Q-Seed-<n>]` in
-          the sentence(s) it hangs on (the forward link). Then PLAN each section (DRAFT runs
-          the loop's ①ORGANIZE + ②MATCH): write its `q-executor:`, `route:`, `match:` (root
-          to a SPECIFIC bank folder — a read-only grep, LAW 1), and `target:` (an EXISTS path
-          or `NEW <path>`). NEVER write an `a-consumer:` here — the ANSWER is PROBE's ⑤ harvest
-          (the seed may be intuition; PROBE makes it evidence). SECTION STATE after DRAFT:
-          `planned` (a NEW target) or `answered` (an EXISTS target already answered), never `read`.
+          the sentence(s) it hangs on (the forward link). Then PLAN each entry (DRAFT runs
+          the loop's ①ORGANIZE + ②MATCH): write its `### q-executor`, `### q-consumer` (the
+          Q-Seed-<n> id + original question), and `### bank binding` -- `route` (task |
+          discovery), `bank` (root to a SPECIFIC bank folder — a read-only grep, LAW 1:
+          reuse | run | code | new), and `target` (an existing QA path or `NEW <path>`). NEVER
+          write a `### a-executor` here — the ANSWER is PROBE's ⑤ harvest (the seed may be
+          intuition; PROBE makes it evidence). ENTRY STATE after DRAFT: `planned` (a NEW target)
+          or `answered` (an existing target already answered), never `read`.
           (internally calls /haipipe-paper-draft with this artifact spec)
   │
   ▼
@@ -113,8 +115,8 @@ PROBE ──→ DEFAULT RUN for a new seed: FEASIBILITY probes (mode light) --
           ALWAYS run the real probes -- this stage does EXACTLY ONE thing here:
               Skill("haipipe-paper-probe", args="from-buffer <paper_root>")
           The worker RUNS THE DRAFT-AUTHORED PLAN FORWARD (①ORGANIZE + ②MATCH already
-          happened at DRAFT): project-root resolution, ③ DISPATCH the `NEW` sections,
-          ④ POINT each `target:`, ⑤ harvest the `a-consumer:`.
+          happened at DRAFT): project-root resolution, ③ DISPATCH the `NEW` entries,
+          ④ POINT each `target`, ⑤ harvest the `### a-executor`.
           THIS STAGE NEVER does evidence work itself -- never searches, never
           launches search/discovery/task agents, never writes findings into PP
           cards. (Inline WebSearch was fine in DRAFT as orientation fuel; here
@@ -122,9 +124,9 @@ PROBE ──→ DEFAULT RUN for a new seed: FEASIBILITY probes (mode light) --
           produced any other way than the worker call above has no project-side
           ledger and is void: the PROBE phase did not happen.
           After the worker returns: takeaways appear in the PP plan files in
-          1-probes/ (with target: resolving to a QA file in discoveries/ or tasks/) AND land in the
+          1-probes/ (with `target` resolving to a QA file in discoveries/ or tasks/) AND land in the
           matching Q-consumer question's `Answer` field in 0-seed.md; sources harvest into
-          _CITATION_0-seed.md; full evidence stays project-side.
+          the ENTRY's own `**sources**:` lane; full evidence stays project-side.
           PROBE STOPS at the `Answer` field -- it is EVIDENCE, not prose. Weaving that
           answer back into the main content (Motivations, Claim Shape, the anchored
           sentence) is REVISE's job, not PROBE's.
@@ -144,15 +146,15 @@ CHECK ──→ present exit gate per ../../ref/08-stage-gate.md
 
 Phase visibility per the Phase Transition Contract in `../../ref/08-stage-gate.md`: announce every phase boundary (reply line + `[PHASE]` entry in `_LOG` + phase-line 🔥 moves); PROBE/REVISE may be skipped only on re-entry or minor edits, and only by an explicit logged verdict (`[PROBE] skipped -- <reason>`, phase line shows `--`); CHECK is never implicit -- it opens by presenting the exit-criteria report and the approval ask.
 
-Comment lifecycle per `../../../wiki/02-comment-lifecycle.md`: comments live in 0-seed.md while active, move to _LOG on resolve, each phase starts clean.
+Comment lifecycle per `../../../haipipe-paper/SKILL.md` (Comment lifecycle section): comments live in 0-seed.md while active, move to _LOG on resolve, each phase starts clean.
 
 ## Location
 
 ```text
 <paper>/0-lifecycle/0-seed/0-seed.md              seed contract
 <paper>/0-lifecycle/0-seed/_LOG_0-seed.md          phase progress journal
-<paper>/1-probes/PPNN_<topic>.md              probe files; one SECTION per question, `a-consumer:` written at harvest
-<paper>/0-lifecycle/0-seed/_CITATION_0-seed.md     harvested citation candidates (when probe returns lit)
+<paper>/1-probes/PPNN_<topic>.md              probe files; one ENTRY per q-executor, `### a-executor` written at harvest,
+                                              citation candidates on the ENTRY's `**sources**:` lane (no stage sidecar)
 ```
 
 Markdown only (argument documents don't need compilation).
@@ -183,9 +185,9 @@ Do NOT restate its rules here or anywhere else (one home; duplication is how thi
     When DRAFT surfaces an internal-data or other prerequisite question, DO NOT open a seed probe for it -- record a forward pointer line in `_LOG_0-seed.md` (need + why, no dispatch); it fires when resource opens.
     This keeps the seed's cost bounded to the feasibility question and stops the seed from doing resource-stage evidence work early.
 5b. **DRAFT may search; PROBE must bind.**
-    Inline WebSearch is legitimate DRAFT fuel (orientation -> prose + `state: planned` question SECTIONS), but it is NEVER evidence.
+    Inline WebSearch is legitimate DRAFT fuel (orientation -> prose + `state: planned` q-executor ENTRIES), but it is NEVER evidence.
     The PROBE phase must ALWAYS run the real worker (`Skill(haipipe-paper-probe, from-buffer ...)`); an inline result binds to nothing, so the PROBE phase did not happen.
-    The invariant that separates the two is SECTION STATE: DRAFT leaves a section `planned` (a `NEW` target) or `answered` (an EXISTS target), with NO `a-consumer:` yet; only PROBE's ⑤ harvest writes the `a-consumer:` and reaches `read` (its `target:` resolving to a QA file on disk), mechanically enforced by `check-probe-cards.sh` at the CHECK gate.
+    The invariant that separates the two is ENTRY STATE: DRAFT leaves an entry `planned` (a `NEW` target) or `answered` (an existing target), with NO `### a-executor` yet; only PROBE's ⑤ harvest writes the `### a-executor` and reaches `read` (its `target` resolving to a QA file on disk), mechanically enforced by `check-probe-cards.sh` at the CHECK gate.
 5c. **The forward pointer has ONE emitted form.**
     Seed emits, in `_LOG_0-seed.md`, ASCII arrow, destination RESOURCE:
 
@@ -201,7 +203,8 @@ Do NOT restate its rules here or anywhere else (one home; duplication is how thi
    No dense multi-sentence paragraphs.
 7. **Heading style.**
    `=====` for the document title, `-----` for sections.
-   No `#`/`##`/`###`.
+   No `#`/`##`/`###` — EXCEPT the Q-consumer question blocks (`## Q-Seed-<n> · <title>`), per the Formatting clause above and `ref/seed-template.md`.
+   Do not strip those: the `[Q-Seed-<n>]` anchor loop hangs on them.
 
 ## Handoff
 

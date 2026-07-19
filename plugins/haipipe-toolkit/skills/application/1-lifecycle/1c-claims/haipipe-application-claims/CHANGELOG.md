@@ -53,4 +53,4 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 ## [6.1.0] — 2026-07-09
 
 - BREADTH ROUND (JL flywheel discussion): full hook consumption — every 1b hook becomes a C entry or a line in the new Declined-hooks section (the rung's reservoir, re-mined at every DRAFT open). Every primary claim carries a Rival line (the strongest alternative explanation); its probe plan must be refute-capable (Refutes-if: states the result that would FLIP the claim, not only confirm it).
-- Multi-round DPRC (self-assess -> [ROUND n] -> CHECK when dry; medium+ venues loop-until-dry on THIS rung) + mid-phase back-routing ([ROUTE -> themes], [ROUTE -> descriptions]) per wiki/08 Rounds.
+- Multi-round DPRC (self-assess -> [ROUND n] -> CHECK when dry; medium+ venues loop-until-dry on THIS rung) + mid-phase back-routing ([ROUTE -> themes], [ROUTE -> descriptions]) per the Stage Gate Protocol Rounds contract.

@@ -36,7 +36,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 ## [1.2.0] — 2026-07-09
 
 - BREADTH ROUND (JL flywheel discussion, same day as the bench run): the ladder is a flywheel, not a one-way climb (README). This rung gains: a Coverage section — six facets (cohort, arms/treatments, outcomes, time window, data quality, benchmark), each filled with D ids or waived with a why; waived facets are the rung's reservoir, re-mined at every DRAFT open.
-- Multi-round DPRC: REVISE ends with a self-assessment; new slots/facets/gaps trigger another DRAFT->PROBE->REVISE lap ([ROUND n] in _LOG); CHECK fires only when a round comes up dry (venue-scaled, wiki/08 Rounds). Mid-phase back-routing legal ([ROUTE -> seed]).
+- Multi-round DPRC: REVISE ends with a self-assessment; new slots/facets/gaps trigger another DRAFT->PROBE->REVISE lap ([ROUND n] in _LOG); CHECK fires only when a round comes up dry (venue-scaled, the Stage Gate Protocol Rounds contract). Mid-phase back-routing legal ([ROUTE -> seed]).
 
 ## [1.3.0] — 2026-07-09
 

@@ -1,5 +1,5 @@
 # Comment Protocol
 
-Canonical source: `../../wiki/02-comment-lifecycle.md`
+Canonical source: `../../haipipe-paper/SKILL.md`, Comment lifecycle
 
-This file is a pointer. All comment convention rules (actor ids, marks, anchoring, lifecycle, round invariants) live in the wiki as a unified rule shared across all paper skills.
+This file is a pointer. All comment convention rules (actor ids, marks, anchoring, lifecycle, `_LOG` format, round invariants) live in the umbrella skill's Comment lifecycle section as a unified rule shared across all paper skills.

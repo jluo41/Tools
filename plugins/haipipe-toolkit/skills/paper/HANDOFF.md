@@ -26,7 +26,7 @@ Also binding: **no pipe tables in filled stage docs** (use record lines); **pros
 
 | Area | Change |
 |---|---|
-| **charter** | new `1-lifecycle/TEMPLATES.md` (C1–C6 + prefix table + live adoption matrix + per-stage notes). Retired `wiki/14-template-skill-split.md` (interim; JL: rules live in templates, not wiki). |
+| **charter** | new `1-lifecycle/TEMPLATES.md` (C1–C6 + prefix table + live adoption matrix + per-stage notes). Retired the interim template-skill-split doc (JL: rules live in templates, not a wiki). |
 | **seed** (v4.2.0) | template → `<!-- RULE -->` comments; `Probes` → `Q-consumer` (`## Q-Seed-<n>`); NEW `Landscape` section (seed-only); inline `[Q-Seed-1]` citation; PROBE-vs-REVISE loop boundary clarified. |
 | **resource** (v2.3.0) | **description-first reframe**: `Demand` (N-per-hypothesis) → `Resource Description` (`## Resource <n>` + `### topics` + `### Serves & carries`); existence/fitness/**KILLS** discipline kept as RULE; CGM worked-example cut. |
 | **claims** (v5.2.0) | uniform `## Q-Claim-<n>`; **M:N** claim↔question; **answerable+specific** rule (decompose a claim into small typed questions — fit/eval/robustness/placebo); **`Evidence Campaign` section DELETED** (redundant); each claim's `Evidence: [Q-Claim-1 …]` lists its questions; status aggregates. |

@@ -4,9 +4,10 @@ description: "Manage the paper's 1-rounds/ working-memory layer: dated work roun
 argument-hint: "[enter|new|triage|apply|close] [paper-dir] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-06-22"
-  summary: "Rounds layer: enter/new/triage/apply/close over 1-rounds/vYYMMDD/."
+  version: "1.0.1"
+  last_updated: "2026-07-19"
+  summary: "Rounds layer: enter/new/triage/apply/close over 1-rounds/vYYMMDD/. Owns the 1-rounds/ contract — folder shape, file semantics, round lifecycle, triage targets, dashboard rule. History: ./CHANGELOG.md."
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
 Skill: haipipe-paper-round
@@ -14,14 +15,20 @@ Skill: haipipe-paper-round
 
 Manage `1-rounds/`, the paper's working-memory layer.
 A round is a dated cycle of author/agent discussion, coauthor or reviewer comments, decisions, todo items, and what was applied.
-The contract is in `../../wiki/07-paper-rounds.md`.
+This skill OWNS the `1-rounds/` contract — the Rounds contract section below is its single source of truth.
 
 Use `round`, not `feedback`: the contents are broader than external feedback.
 
-Read first: `../../PHILOSOPHY.md`, `../../wiki/07-paper-rounds.md`, `../../1-lifecycle/ref/04-lifecycle-map.md`.
+Read first: `../../PHILOSOPHY.md`, `../../1-lifecycle/ref/04-lifecycle-map.md`.
 
-Folder contract
+Rounds contract
 ---------------
+
+`1-rounds/` is the paper working-memory layer. It stores dated work rounds: author/agent
+discussions, coauthor comments, reviewer comments, decisions, todo items, and what was
+applied.
+
+### Folder contract
 
 ```text
 1-rounds/
@@ -35,7 +42,53 @@ Folder contract
 ```
 
 The round id is the date, `vYYMMDD` (e.g. `v260621`).
-Do not nest a branch level above it.
+The round id is the branch/round name — do not nest another branch level above it:
+
+```text
+good: 1-rounds/v260621/
+bad:  1-rounds/<branch-name>/v260621/
+```
+
+### File semantics
+
+| File | Purpose |
+|---|---|
+| `latest.md` | Points to the active round id and optional summary |
+| `README.md` | Round header: source, date, purpose, maturity, status |
+| `discussion.md` | Raw discussion / review text / meeting notes |
+| `decisions.md` | Decisions accepted as paper intent |
+| `todo.md` | Open needs, edits, probes, displays, citations |
+| `applied.md` | Backfill log: what changed where |
+
+### Round lifecycle
+
+```text
+open round
+  -> collect discussion
+  -> extract decisions
+  -> triage todo/open needs
+  -> route each item to lifecycle/evidence worker
+  -> record applied backfills
+  -> close or keep active
+```
+
+### Triage targets
+
+Every `todo.md` item should point to one target:
+
+| Todo type | Target |
+|---|---|
+| claim unsupported / too strong | `0-lifecycle/1b-claims` or probe |
+| display missing / stale | `0-lifecycle/4-display` or display task |
+| paragraph placement unclear | `0-lifecycle/5-section-edit` |
+| wording / flow / style | `0-sections/*.tex` or edit skill |
+| citation needed / wrong citation | discover or citation component |
+| reviewer response | respond/rebuttal skill |
+
+### Dashboard rule
+
+`/haipipe-paper enter` must surface open round items alongside lifecycle status.
+Round todo items are first-class open needs, not afterthoughts.
 
 Subcommands
 -----------
@@ -66,16 +119,7 @@ Do not pre-create rebuttal/submission subtrees; `haipipe-paper-rebuttal` adds th
 
 Read `discussion.md` (raw review/meeting text).
 Extract decisions into `decisions.md` and open needs into `todo.md`.
-Every todo item points to one target, per `../../wiki/07-paper-rounds.md`:
-
-```text
-claim unsupported / too strong   -> 0-lifecycle/2-claims or probe
-display missing / stale          -> 0-lifecycle/4-display or display task
-paragraph placement unclear      -> 0-lifecycle/5-section-edit
-wording / flow / style           -> 0-sections/*.tex or edit skill
-citation needed / wrong          -> discover or citation component
-reviewer response                -> respond/rebuttal skill
-```
+Every todo item points to one target, per the Triage targets table in the Rounds contract above.
 
 ### apply
 

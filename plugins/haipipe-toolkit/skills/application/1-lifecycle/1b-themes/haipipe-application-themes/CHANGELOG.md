@@ -39,4 +39,4 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 ## [1.2.0] — 2026-07-09
 
 - BREADTH ROUND (JL flywheel discussion): DRAFT sweeps three lenses — data patterns (from D entries), field patterns (discovery), counter-hunt (patterns AGAINST the seed hypothesis; a null result is recorded in Parked, not omitted). Full D-consumption rule: every 1a D id is cited by >=1 theme or listed in Parked as context-only.
-- Parked is the rung's reservoir, re-mined at every DRAFT open. Multi-round DPRC (self-assess -> [ROUND n] -> CHECK when dry) + mid-phase back-routing ([ROUTE -> descriptions]) per wiki/08 Rounds.
+- Parked is the rung's reservoir, re-mined at every DRAFT open. Multi-round DPRC (self-assess -> [ROUND n] -> CHECK when dry) + mid-phase back-routing ([ROUTE -> descriptions]) per the Stage Gate Protocol Rounds contract.

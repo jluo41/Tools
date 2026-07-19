@@ -22,7 +22,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 ## [4.1.0] — 2026-07-09
 
-- BREADTH ROUND: ladder sweep acknowledges the flywheel — rungs loop internally (multi-round DPRC, loop-until-dry per wiki/08 Rounds) and may back-route mid-phase ([ROUTE -> <rung>]); the sweep re-enters the routed-to rung, then resumes order.
+- BREADTH ROUND: ladder sweep acknowledges the flywheel — rungs loop internally (multi-round DPRC, loop-until-dry per the Stage Gate Protocol Rounds contract) and may back-route mid-phase ([ROUTE -> <rung>]); the sweep re-enters the routed-to rung, then resumes order.
 
 ## [4.2.0] — 2026-07-15
 
@@ -32,3 +32,9 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 ## [4.3.0] — 2026-07-17
 
 - Delivery-tooling path references updated `3-build-deploy/` -> `3-deliver/` (layer renamed to match paper).
+
+## [4.3.1] — 2026-07-19
+
+- Absorbed the retired wiki doc `03-intervention-lifecycle.md` as the **Intervention Lifecycle Contract** section — this skill is now the single home of the intervention folder contract, the lifecycle stage table (job / main question / venue class / typical handoff), venue gating (the three STATUS.md rows + the 8-venue gating table), the venue-FREE/ALIGNED boundary, the phase dimension, the maturity ladder, the evidence flow through the flat probe pool, and the paper↔application comparison.
+- The doc's Loopback Rule was NOT re-added: this file's existing Loopback Rule section already covers every row. One home, one copy.
+- Stage-gate pointers rewired to `../../haipipe-application/SKILL.md` (Stage Gate Protocol section) in the `ladder` verb line, the stage-artifacts line, and the ladder-sweep paragraph.

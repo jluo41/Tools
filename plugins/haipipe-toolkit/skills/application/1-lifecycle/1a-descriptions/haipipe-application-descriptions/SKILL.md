@@ -22,7 +22,7 @@ It answers: what does the data look like, right now, with every number anchored 
 1d-advice         what the evidence advises (the deliverable)
 ```
 
-Read first: `../../../PHILOSOPHY.md`, `../../../wiki/03-intervention-lifecycle.md`, `../../../wiki/08-stage-gate.md`.
+Read first: `../../../PHILOSOPHY.md`, `../../haipipe-application-lifecycle/SKILL.md` (Intervention Lifecycle Contract), `../../../haipipe-application/SKILL.md` (Stage Gate Protocol).
 Interventions live on DYNAMIC data (iterate keeps refreshing it) and the artifact carries no Methods/Results body of its own — so the data description needs an explicit, dated, re-runnable home, and that home is this rung.
 
 
@@ -38,7 +38,7 @@ Each Description carries a short id (Description 3 -> `D3`) that is ladder-local
 The roster GROWS because LANDED numbers feed the next round's questions — round 2's best questions cannot be asked until round 1's numbers exist.
 Each round: GENERATE (a question storm per `ref/interrogation-battery.md`, the lens ROTATED per round) -> FILTER (answerable from existing D entries? discard : new D slot + a probe question) -> RELEASE MENU (user picks; PROBE dispatches picks) -> LAND (numbers land as D entries + DS sheets) -> REVISE -> SELF-TEST (answer the blind battery from D entries ONLY, one D id per answer; any stumble is next round's topic).
 The lens rotates: round 1 SCHEMA, round 2 DISTRIBUTION ("click 1.9% — concentrated where? missing how?"), round 3 CROSSING / SURPRISE, until a DRY storm + a passed self-test says SATURATED.
-Log every lap `[ROUND n]` in `_LOG`; the dry-stop bar is venue-scaled (`wiki/08`: light = one clean round, medium = one dry round, full = two consecutive dry rounds).
+Log every lap `[ROUND n]` in `_LOG`; the dry-stop bar is venue-scaled (Stage Gate Protocol: light = one clean round, medium = one dry round, full = two consecutive dry rounds).
 
 **3. It owns the downstream staleness stamp (the dynamic-data contract).**
 `--refresh <Dnn>` (or iterate's backfill) re-runs the entry's probe and updates the line + its as-of date.
@@ -62,7 +62,7 @@ PROBE   dispatch via haipipe-application-probe (mode light, task-profile: "profi
         detail stays in the task result the entry points to (no sidecar). Routing mechanics are the probe layer's:
         ../../../2-phase/1-probe/haipipe-application-probe/SKILL.md
 REVISE  tighten entry wording, group by dataset, dedupe
-CHECK   exit gate (may be BATCHED into the ladder gate per the venue, wiki/08): every entry anchored +
+CHECK   exit gate (may be BATCHED into the ladder gate per the venue, Stage Gate Protocol): every entry anchored +
         dated, pointers resolve, no unconsumed FORWARD pointer, no unresolved STALE tag, the last [ROUND n]
         DRY + self-test passed
 ```

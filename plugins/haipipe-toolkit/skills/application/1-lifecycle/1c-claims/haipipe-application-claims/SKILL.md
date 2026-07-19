@@ -22,7 +22,7 @@ It answers: which claims generalize — supported, weak, or GAP — and what evi
 1d-advice         what the evidence advises (the deliverable)
 ```
 
-Read first: `../../../PHILOSOPHY.md`, `../../../wiki/03-intervention-lifecycle.md`, `../../../wiki/11-delivery-need.md`.
+Read first: `../../../PHILOSOPHY.md`, `../../haipipe-application-lifecycle/SKILL.md` (Intervention Lifecycle Contract), `../../../haipipe-application/SKILL.md` (Delivery Need Routing).
 
 
 ## What's special: three things make claims claims
@@ -59,7 +59,7 @@ CHECK   settlement bar vs the campaign table; every hook consumed; every primary
 
 Claims RECEIVES evidence, never PRODUCES it inline (LAW 1): it raises questions; `haipipe-application-probe` binds them.
 `--backfill <PPNN>` flips a claim from a landed answer: `supported` -> supported · `refuted` -> drop or reword · `inconclusive` -> stays weak/GAP with the caveat recorded.
-Rounds + back-routing (loop-until-dry for medium+ venues, `[ROUND n]` / `[ROUTE -> themes|descriptions]` in `_LOG`) follow `../../../wiki/08-stage-gate.md`.
+Rounds + back-routing (loop-until-dry for medium+ venues, `[ROUND n]` / `[ROUTE -> themes|descriptions]` in `_LOG`) follow `../../../haipipe-application/SKILL.md` (Stage Gate Protocol).
 Seed's `[FORWARD -> CLAIMS]` pointers are consumed by rung 1a, which seeds this doc's questions; this rung no longer greps seed's `_LOG` itself.
 
 

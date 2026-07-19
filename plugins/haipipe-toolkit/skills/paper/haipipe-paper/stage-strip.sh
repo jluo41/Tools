@@ -11,7 +11,7 @@
 #   🔥🚀 = collapsed when the session works AT the frontier
 #   ✅ = user-confirmed in the Gate Ledger (preferred) or stage sits BEFORE
 #        current_layer (fallback when no ledger exists)
-#   ⬜ = not started / not confirmed. Gate rules: wiki/08-stage-gate.md.
+#   ⬜ = not started / not confirmed. Gate rules: ../1-lifecycle/ref/08-stage-gate.md.
 #
 # Usage: sh stage-strip.sh [paper-dir] [session-stage]   (paper-dir defaults to
 # cwd; looks upward for STATUS.md so it works from inside the paper folder.

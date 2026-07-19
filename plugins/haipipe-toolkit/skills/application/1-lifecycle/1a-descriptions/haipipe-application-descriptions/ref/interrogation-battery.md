@@ -11,7 +11,7 @@ The round engine
 3. RELEASE    end the lap with the release menu (draft worker step 5); the user picks; only picks dispatch (probe worker STEP 1.5).
 4. LAND       released probes return; TRANSLATE writes Description entries inline (+ resolving pointer to the task result) — no sidecar.
 5. SELF-TEST  answer the blind battery (below) from D entries ONLY, one resolving D id per answer. Any stumble = a new topic; the loop continues.
-6. DRY RULE   a full round whose storm + self-test add ZERO new topics = saturated. Venue-scaled (wiki/08): light = one clean round; medium = one dry round; full = two consecutive. Log every lap as `[ROUND n]` in `_LOG`.
+6. DRY RULE   a full round whose storm + self-test add ZERO new topics = saturated. Venue-scaled (Stage Gate Protocol): light = one clean round; medium = one dry round; full = two consecutive. Log every lap as `[ROUND n]` in `_LOG`.
 7. GATE LENS  at CHECK the user is asked "which data topics are still missing?" (JL: "after the check, they can think about adding more probes in the draft"). A `grow` verdict converts the answers to new slots + probes and re-opens DRAFT as `[ROUND n+1]`. Approve = saturated AND the user added nothing.
 
 Lens schedule (rotate; wrap around if rounds outlast lenses)

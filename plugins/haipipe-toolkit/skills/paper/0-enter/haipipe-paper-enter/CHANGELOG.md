@@ -4,6 +4,13 @@ haipipe-paper-enter — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 4.0.2 — 2026-07-19
+
+- WIKI RETIREMENT — the retired wiki folder's `05-paper-dashboard.md` absorbed here as the **Dashboard Spec** section (inserted between Read Order and Diagnosis Rules, where the console actually uses it). It IS this skill's dashboard spec, so this skill is its ONE home.
+  - Carried intact: the Golden Rule (never report a stage done because STATUS.md says so; disk wins, the gap is DRIFT), the lifecycle-frontier spine + per-stage done-predicate table + next-action commands, the note that `1-resource`/`1-claims` share the number 1 on purpose (`stage-strip.sh` strips the digit), the OK/ACTIVE/TODO/DRIFT/BLOCKED glyphs, the 5-step shallow check, the render skeleton (paper header → Story line → 进度 spine) with its per-stage glyph legend and the worked MedJournal example, the field-source table, and the Open needs block.
+  - Deduped rather than duplicated, since this file already restated parts of the spec: the resource exemption keeps its single full statement in Diagnosis Rules (the spec's frontier table points there), and the maturity ladder is MERGED into the existing evidence→maturity table, which gains the rungs the wiki carried and this file lacked (`scaffold`, `display-map`, `submitted`, `accepted/published`) plus the fuller `resource` / `resource-blocked` definitions.
+- Reference rewiring after the wiki retirement: `Read first:` drops the dashboard entry (the spec is in this file now) and repoints rounds -> `../haipipe-paper-round/SKILL.md`, skill structure -> `../../README.md`, delivery need -> `../../haipipe-paper/SKILL.md`; the stale-deliverable flag now cites the Lifecycle TeX Quality Standard in `../../3-deliver/haipipe-paper-deliver/SKILL.md`.
+
 ## 4.0.1 — 2026-07-14
 
 - Need-diagnosis table: "a BUILD card whose eta: has passed" -> "a BUILD section"; "the gateway mints the PP and picks the type" -> "the PROBE worker opens the SECTION and routes it".
@@ -45,7 +52,7 @@ Fixed
 
 ## [3.1.0] — 2026-07-03
 
-- focus strip dual markers -- 🔥 (active now) + 🚀 (frontier reached); both appear on stage and phase lines, collapse to 🔥🚀 when coincident; convention codified in ../../wiki/01-focus-strip-markers.md; added wiki/ folder parallel to feedback/.
+- focus strip dual markers -- 🔥 (active now) + 🚀 (frontier reached); both appear on stage and phase lines, collapse to 🔥🚀 when coincident; convention codified in 01-focus-strip-markers.md; added a shared-reference folder parallel to feedback/.
 
 ## [3.0.0] — 2026-07-02
 
@@ -53,7 +60,7 @@ Fixed
 
 ## [2.1.0] — 2026-06-22
 
-- dashboard leads with pitch summary + stage strip before operational details; read order prioritizes 1-pitch.tex; return contract enforces structured tail + failed status; stale-deliverable flag from ../../wiki/13-tex-quality.md.
+- dashboard leads with pitch summary + stage strip before operational details; read order prioritizes 1-pitch.tex; return contract enforces structured tail + failed status; stale-deliverable flag from 13-tex-quality.md.
 
 ## [2.0.0] — 2026-06-22
 

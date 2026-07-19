@@ -5,6 +5,64 @@ Layer-scoped changelog for the paper (DELIVERY) layer. Newest first.
 Rollup lives in the plugin-level CHANGELOG.md.
 
 
+[2.2.0] -- 2026-07-19
+-----------------------
+
+The `wiki` folder is RETIRED. The shared-reference folder is gone; each doc moved into the ONE
+skill that owns its subject, and every inbound reference now points at that
+section. Nothing was duplicated -- a doc with 18 referrers got ONE home and 18
+pointers, never 18 copies.
+
+### Moved (doc -> new home, as a titled section)
+
+| Retired doc | New home | Section |
+|---|---|---|
+| `02-comment-lifecycle.md` (18 refs) | `haipipe-paper/SKILL.md` | Comment lifecycle |
+| `11-delivery-need.md` (11 refs) | `haipipe-paper/SKILL.md` | Delivery Need Routing (merged into the existing section) |
+| `12-evidence-routing.md` (4 refs) | `haipipe-paper/SKILL.md` | Evidence Routing Protocol |
+| `13-tex-quality.md` (8 refs) | `3-deliver/haipipe-paper-deliver/SKILL.md` | Lifecycle TeX Quality Standard |
+| `07-paper-rounds.md` (5 refs) | `0-enter/haipipe-paper-round/SKILL.md` | Rounds contract |
+| `06-paper-skill-structure.md` (4 refs) | `README.md` | Skill-tree layout · Stage to Procedure · Router Rule · Maturity Rule |
+| `05-paper-dashboard.md` (1 ref) | `0-enter/haipipe-paper-enter/SKILL.md` | Dashboard Spec |
+| `00-evidence-principles.md` (1 ref) | `1-lifecycle/ref/08-stage-gate.md` | Evidence Principles (总纲) |
+| `README.md` (wiki index) | -- | dropped; its one referrer (`ref/03-paper-lifecycle.md`) now describes `1-probes/` directly |
+
+Placement follows ownership, not convenience: the three family-wide conventions
+land in the umbrella (which already owned the Closing Block), the tex standard
+lands in the group that produces compiled artifacts, the rounds contract and the
+dashboard spec land in the skills that ARE those things, and the evidence
+principles land in the stage-gate rule that cited them as its general statement.
+
+### Changed
+
+- Binding protocol preserved verbatim where it matters: the `> USER:` / `> CC:`
+  comment lifecycle (including the loaded-context rule that every skill still
+  INLINES its binding subset) and the dashboard's derive-from-disk behavior spec.
+- De-duplicated on absorption rather than pasted twice: delivery-need merged into
+  the umbrella's existing Delivery Need Routing section; the dashboard's maturity
+  ladder merged into enter's existing evidence→maturity table; the resource
+  exemption keeps its single statement in enter's Diagnosis Rules.
+- Historical `wiki`-folder paths in CHANGELOG prose reduced to bare doc names so
+  no dangling path survives the folder deletion; the reasoning is untouched.
+- Citation cruft stripped from every touched passage (`JL ruling C8-i`, `R7`,
+  `run-3`, bare ruling dates) while keeping the REASON each rule exists.
+
+### Fixed
+
+- `haipipe-paper/stage-strip.sh` cited the stage-gate doc as a wiki page; the file has lived
+  at `1-lifecycle/ref/08-stage-gate.md` for some time. Repointed.
+- `ref/03-paper-lifecycle.md` described `1-probes/` as holding the wiki README.
+- `haipipe-paper-round` corrected a stale triage target (`0-lifecycle/2-claims`
+  -> `0-lifecycle/1b-claims`).
+- `README.md` flags `venue/` as a TARGET layout: the folder does not exist on
+  disk, so every `venue/playbook-<venue>` citation in the stage skills currently
+  resolves to nothing. Pre-existing; recorded, not silently asserted as real.
+
+### Added
+
+- First CHANGELOGs for `haipipe-paper-round` and `haipipe-paper-deliver`.
+
+
 [2.1.0] -- 2026-07-14
 -----------------------
 
@@ -27,7 +85,7 @@ components/ retired (was already half-migrated: figure/ had moved to
 - **paper-diff-folder** -- orphan; no inbound references
   (haipipe-paper-edit-diffpdf covers the diff need).
 - **components/README.md** and the components/ container itself; structure
-  docs updated (paper README, wiki/04, wiki/06).
+  docs updated (paper README, 04-lifecycle-map.md, 06-paper-skill-structure.md).
 
 
 [2.0.0] -- 2026-06-22
@@ -45,11 +103,11 @@ Paper-Personality-Opioid-MedJournal walkthrough. Four implementation waves.
 - **1-lifecycle/ref/09-stage-illuminate.md** -- Illuminate + Elicit protocol. Socratic
   teach-then-elicit-then-draft loop before every stage draft. Per-stage
   taste-bearing decision examples. Re-walks diff-and-ask, not overwrite.
-- **wiki/13-tex-quality.md** -- Lifecycle TeX Quality Standard. Three rules:
+- **13-tex-quality.md** -- Lifecycle TeX Quality Standard. Three rules:
   SELF-CONTAINED (standalone compilable), REAL PROSE (not comment blocks),
   SENTENCE-INDEXED (Pn.Sm tags from birth). Compile rule: pdflatex after every
   edit, clean aux, stale PDF is a defect.
-- **wiki/12-evidence-routing.md** -- Evidence Routing Protocol. Paper/evidence
+- **12-evidence-routing.md** -- Evidence Routing Protocol. Paper/evidence
   boundary: paper owns story, probe owns evidence. The \\needprobe{} LaTeX
   macro marks claims lacking evidence with a red flag in the compiled PDF.
   Handoff protocol (stop, mark, record, route, backfill). Heavy probes
@@ -80,7 +138,7 @@ Paper-Personality-Opioid-MedJournal walkthrough. Four implementation waves.
 ### Changed (orchestrator + enter)
 
 - **haipipe-paper v2.0.0** -- version bump, cross-reference to
-  wiki/12-evidence-routing.md in Delivery Need Routing section. Probe/discover/task
+  12-evidence-routing.md in Delivery Need Routing section. Probe/discover/task
   verbs already existed from v1.4.0-1.5.0.
 - **haipipe-paper-enter v2.1.0** -- restructured dashboard output: pitch summary
   first (what the paper is about), then stage strip, then compact operational
@@ -95,7 +153,7 @@ Paper-Personality-Opioid-MedJournal walkthrough. Four implementation waves.
 
 ### Changed (infrastructure)
 
-- **wiki/10-stage-strip.sh** -- reads Gate Ledger from STATUS.md when present.
+- **10-stage-strip.sh** -- reads Gate Ledger from STATUS.md when present.
   Checkmark = ledger-confirmed (preferred) or before-current (fallback).
 
 ### Feedback items resolved (22)

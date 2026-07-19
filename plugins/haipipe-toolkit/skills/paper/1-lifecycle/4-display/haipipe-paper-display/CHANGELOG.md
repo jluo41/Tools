@@ -13,7 +13,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 ## [4.1.1] — 2026-07-14 — the required-reads were off by one `../`
 
 Fixed
-- **The first instruction in this skill pointed at nothing.** `Read first: ../../PHILOSOPHY.md, ../../wiki/04-lifecycle-map.md` — but this skill lives at `skills/paper/1-lifecycle/<N>-<stage>/<skill>/`, so `../../` is `1-lifecycle/`, which holds neither `PHILOSOPHY.md` nor `wiki/`. Both live one level further up, at `skills/paper/`. Every in-body citation (`../../wiki/08-stage-gate.md`, `../../wiki/02-comment-lifecycle.md`, `../../wiki/09-stage-illuminate.md`, `../../wiki/11-delivery-need.md`, `../../_venue/playbook-<venue>`) failed the same way, silently — an agent loading the philosophy and the stage-gate rules got file-not-found and proceeded without them. All repointed to `../../../`; every target verified to resolve on disk.
+- **The first instruction in this skill pointed at nothing.** `Read first: ../../PHILOSOPHY.md, ../../<shared-refs>/04-lifecycle-map.md` — but this skill lives at `skills/paper/1-lifecycle/<N>-<stage>/<skill>/`, so `../../` is `1-lifecycle/`, which holds neither `PHILOSOPHY.md` nor the shared-reference folder. Both live one level further up, at `skills/paper/`. Every in-body citation (stage-gate, comment-lifecycle, stage-illuminate, delivery-need, `../../_venue/playbook-<venue>`) failed the same way, silently — an agent loading the philosophy and the stage-gate rules got file-not-found and proceeded without them. All repointed to `../../../`; every target verified to resolve on disk.
 
 ## [3.4.0] -- 2026-07-10
 ## 4.0.0 — 2026-07-14
@@ -83,7 +83,7 @@ Changed
 ## [1.6.2] — 2026-07-03
 
 Changed
-- Added the Phase Transition Contract pointer (wiki/08): announce every phase boundary, no silent phase skips (explicit logged verdict only), CHECK never implicit.
+- Added the Phase Transition Contract pointer (08-stage-gate.md): announce every phase boundary, no silent phase skips (explicit logged verdict only), CHECK never implicit.
 
 ## [1.6.1] — 2026-07-03
 
@@ -91,7 +91,7 @@ Changed
 
 ## [1.6.0] — 2026-07-03
 
-- display becomes stage orchestrator that drives its own phases (DRAFT/GATHER/POLISH/CHECK). Phase skills are internal workers called by this skill, not user-facing. Subcommands (plan/scaffold/framework/materialize/build/audit/insert) reorganized as internal operations within phases. Comment lifecycle wired in (wiki/02). Removed shared-protocols listing. Handoff updated to promote to section-edit.
+- display becomes stage orchestrator that drives its own phases (DRAFT/GATHER/POLISH/CHECK). Phase skills are internal workers called by this skill, not user-facing. Subcommands (plan/scaffold/framework/materialize/build/audit/insert) reorganized as internal operations within phases. Comment lifecycle wired in. Removed shared-protocols listing. Handoff updated to promote to section-edit.
 
 ## [unversioned]
 

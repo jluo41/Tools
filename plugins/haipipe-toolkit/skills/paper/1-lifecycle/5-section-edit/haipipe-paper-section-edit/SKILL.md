@@ -64,7 +64,7 @@ CHECK   ⛔ the human verifies the flags; the agent then places verified \citep{
 
 Only DRAFT and CHECK involve the human; PROBE and REVISE are agent-only.
 The agent never self-advances a gate: every crossing logs `[GATE] <phase>-review: approved` quoting the user, and a phase is skipped only by an explicit logged verdict (`[PROBE] skipped -- <reason>`).
-Comment handling (`> USER:` never rewritten, only replied to) and phase-visibility follow `../../../wiki/02-comment-lifecycle.md` and `../../ref/08-stage-gate.md`.
+Comment handling (`> USER:` never rewritten, only replied to) and phase-visibility follow the Comment lifecycle section in `../../../haipipe-paper/SKILL.md` and `../../ref/08-stage-gate.md`.
 
 
 ## The artifact

@@ -11,7 +11,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 ## [4.1.1] — 2026-07-14 — the required-reads were off by one `../`
 
 Fixed
-- **The first instruction in this skill pointed at nothing.** `Read first: ../../PHILOSOPHY.md, ../../wiki/04-lifecycle-map.md` — but this skill lives at `skills/paper/1-lifecycle/<N>-<stage>/<skill>/`, so `../../` is `1-lifecycle/`, which holds neither `PHILOSOPHY.md` nor `wiki/`. Both live one level further up, at `skills/paper/`. Every in-body citation (`../../wiki/08-stage-gate.md`, `../../wiki/02-comment-lifecycle.md`, `../../wiki/09-stage-illuminate.md`, `../../wiki/11-delivery-need.md`, `../../_venue/playbook-<venue>`) failed the same way, silently — an agent loading the philosophy and the stage-gate rules got file-not-found and proceeded without them. All repointed to `../../../`; every target verified to resolve on disk.
+- **The first instruction in this skill pointed at nothing.** `Read first: ../../PHILOSOPHY.md, ../../<shared-refs>/04-lifecycle-map.md` — but this skill lives at `skills/paper/1-lifecycle/<N>-<stage>/<skill>/`, so `../../` is `1-lifecycle/`, which holds neither `PHILOSOPHY.md` nor the shared-reference folder. Both live one level further up, at `skills/paper/`. Every in-body citation (stage-gate, comment-lifecycle, stage-illuminate, delivery-need, `../../_venue/playbook-<venue>`) failed the same way, silently — an agent loading the philosophy and the stage-gate rules got file-not-found and proceeded without them. All repointed to `../../../`; every target verified to resolve on disk.
 
 ## [3.2.0] -- 2026-07-09
 ## 4.0.0 — 2026-07-14
@@ -30,7 +30,7 @@ Changed
 ## [2.2.3] — 2026-07-03
 
 Changed
-- Added the Phase Transition Contract pointer (wiki/08): announce every phase boundary, no silent phase skips (explicit logged verdict only), CHECK never implicit.
+- Added the Phase Transition Contract pointer (08-stage-gate.md): announce every phase boundary, no silent phase skips (explicit logged verdict only), CHECK never implicit.
 
 ## [2.2.2] — 2026-07-03
 
@@ -42,7 +42,7 @@ Changed
 
 ## [2.2.0] — 2026-07-03
 
-- narrative becomes stage orchestrator that drives its own phases. Phase skills (draft/gather/polish/check) are internal workers called by this skill, not user-facing. Comment lifecycle wired in (wiki/02). Shared Protocols section removed (protocols now accessed via phase skills). Handoff points to display.
+- narrative becomes stage orchestrator that drives its own phases. Phase skills (draft/gather/polish/check) are internal workers called by this skill, not user-facing. Comment lifecycle wired in. Shared Protocols section removed (protocols now accessed via phase skills). Handoff points to display.
 
 ## [2.1.0] — 2026-07-01
 
@@ -70,7 +70,7 @@ Changed
 
 ## [1.2.0] — 2026-06-22
 
-- added illuminate+gate+compile protocol (../../wiki/08-stage-gate.md, ../../wiki/09-stage-illuminate.md, ../../wiki/13-tex-quality.md)
+- added illuminate+gate+compile protocol (08-stage-gate.md, 09-stage-illuminate.md, 13-tex-quality.md)
 
 ## [1.1.0] — 2026-06-05
 
