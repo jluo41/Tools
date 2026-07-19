@@ -92,12 +92,14 @@ DRAFT ──→ illuminate existing content, elicit taste,
           MAY WebSearch inline to ORIENT the angle (crowded field? dataset
           exist? anchor names?) -- the result is drafting fuel: weave it into
           the prose (as orientation, `\cite{TOADD}` slots — never invented keys) AND raise
-          the feasibility questions as `state: planned` SECTIONS in 1-probes/
-          (empty `target:`), give each raised question a `## Q-Seed-<n>` block in
-          Q-consumer, and CITE its id inline -- `[Q-Seed-<n>]` in the sentence(s) it
-          hangs on (the forward link). NEVER write a `a-consumer:` or a `target:` into a section
-          here -- that is the PROBE phase's job (the seed is allowed to be intuition;
-          PROBE makes it evidence). The line is SECTION STATE: DRAFT leaves `planned`.
+          the feasibility questions as SECTIONS in 1-probes/, give each raised question a
+          `## Q-Seed-<n>` block in Q-consumer, and CITE its id inline -- `[Q-Seed-<n>]` in
+          the sentence(s) it hangs on (the forward link). Then PLAN each section (DRAFT runs
+          the loop's ①ORGANIZE + ②MATCH): write its `q-executor:`, `route:`, `match:` (root
+          to a SPECIFIC bank folder — a read-only grep, LAW 1), and `target:` (an EXISTS path
+          or `NEW <path>`). NEVER write an `a-consumer:` here — the ANSWER is PROBE's ⑤ harvest
+          (the seed may be intuition; PROBE makes it evidence). SECTION STATE after DRAFT:
+          `planned` (a NEW target) or `answered` (an EXISTS target already answered), never `read`.
           (internally calls /haipipe-paper-draft with this artifact spec)
   │
   ▼
@@ -110,9 +112,9 @@ PROBE ──→ DEFAULT RUN for a new seed: FEASIBILITY probes (mode light) --
           DRAFT, NOT dispatched here.
           ALWAYS run the real probes -- this stage does EXACTLY ONE thing here:
               Skill("haipipe-paper-probe", args="from-buffer <paper_root>")
-          The worker owns everything downstream: the probe file + its sections,
-          project-root resolution, MATCH against the bank, dispatch, and the
-          `target:`/`a-consumer:` backfill.
+          The worker RUNS THE DRAFT-AUTHORED PLAN FORWARD (①ORGANIZE + ②MATCH already
+          happened at DRAFT): project-root resolution, ③ DISPATCH the `NEW` sections,
+          ④ POINT each `target:`, ⑤ harvest the `a-consumer:`.
           THIS STAGE NEVER does evidence work itself -- never searches, never
           launches search/discovery/task agents, never writes findings into PP
           cards. (Inline WebSearch was fine in DRAFT as orientation fuel; here
@@ -183,7 +185,7 @@ Do NOT restate its rules here or anywhere else (one home; duplication is how thi
 5b. **DRAFT may search; PROBE must bind.**
     Inline WebSearch is legitimate DRAFT fuel (orientation -> prose + `state: planned` question SECTIONS), but it is NEVER evidence.
     The PROBE phase must ALWAYS run the real worker (`Skill(haipipe-paper-probe, from-buffer ...)`); an inline result binds to nothing, so the PROBE phase did not happen.
-    The invariant that separates the two is SECTION STATE: `planned` with an empty `target:` (DRAFT) vs `read` with a `target:` that RESOLVES to a QA file on disk (PROBE), mechanically enforced by `check-probe-cards.sh` at the CHECK gate.
+    The invariant that separates the two is SECTION STATE: DRAFT leaves a section `planned` (a `NEW` target) or `answered` (an EXISTS target), with NO `a-consumer:` yet; only PROBE's ⑤ harvest writes the `a-consumer:` and reaches `read` (its `target:` resolving to a QA file on disk), mechanically enforced by `check-probe-cards.sh` at the CHECK gate.
 5c. **The forward pointer has ONE emitted form.**
     Seed emits, in `_LOG_0-seed.md`, ASCII arrow, destination RESOURCE:
 

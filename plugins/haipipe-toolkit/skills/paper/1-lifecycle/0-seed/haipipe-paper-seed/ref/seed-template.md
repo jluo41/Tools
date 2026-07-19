@@ -54,4 +54,4 @@ Q-consumer
 ## Q-Seed-<n> · <question title>
 Description: <what the question wants to know — one sentence per line>
 Reason: <which Motivations / Landscape / H-line(s) above cite this id, and why each matters if that assertion is wrong>
-Answer: <empty in DRAFT — PROBE fills it from the answering QA file; on a loopback redo, prior-cycle resolution + source path>
+Answer: <empty in DRAFT — PROBE fills it from the answering QA file, anchored [source: PPnn]; on a loopback redo, prior-cycle resolution + source>

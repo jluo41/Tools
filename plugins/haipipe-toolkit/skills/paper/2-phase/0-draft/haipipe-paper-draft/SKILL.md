@@ -2,11 +2,11 @@
 name: haipipe-paper-draft
 description: "DRAFT phase worker (internal). Called by stage skills to produce the first-pass artifact. Reads the stage's artifact spec (from 1-lifecycle/) to know WHAT the result should look like, then runs the generic drafting process: consult upstream → settle structure → draft content → iterate with user → confirm. Users invoke stage skills (seed, claims, pitch...), not this skill directly."
 argument-hint: "[stage-or-section] [paper-path]"
-allowed-tools: Bash, Read, Write, Edit, Grep, Glob, WebSearch, WebFetch
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, Agent
 metadata:
-  version: "4.1.0"
-  last_updated: "2026-07-14"
-  summary: "DRAFT phase worker (internal): produce the first-pass artifact for any stage -- consult upstream, settle structure, draft real prose per the stage's template ({VAL:?} placeholders, real \\citep{} keys from the .bib), iterate with the user, STOP at the structure-review gate. Inline WebSearch is drafting fuel only, never durable evidence. Raises what it cannot answer as `state: planned` question SECTIONS in 1-probes/; never writes an answer or a target into one. History: ./CHANGELOG.md."
+  version: "4.3.0"
+  last_updated: "2026-07-19"
+  summary: "DRAFT phase worker (internal): produce the first-pass artifact for any stage -- consult upstream, settle structure, draft real prose per the stage's template ({VAL:?} placeholders, real \\citep{} keys from the .bib), iterate with the user, then SELF-REVIEW the draft + probe plan via a fresh-context sub-agent before the STOP gate. Inline WebSearch is drafting fuel only, never durable evidence. Raises what it cannot answer as question SECTIONS in 1-probes/ AND authors their probe plan (q-executor + route + match + target — DRAFT runs the loop's ①ORGANIZE + ②MATCH); never writes an answer (a-consumer) into one. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -26,6 +26,16 @@ Users invoke stage skills:
 /haipipe-paper section-edit §3  → section-edit skill calls this internally
 ```
 
+
+## Rules (follow these — the model is haipipe-probe's)
+
+The DRAFT-phase rules live in the constitution: `../../../../probe/haipipe-probe/SKILL.md` → **Phase rules · DRAFT phase** + **The DRAFT self-review checklist**. Follow those; on conflict, that file wins. Paper-specific additions:
+- **Citations**: grep the paper's `.bib` (+ `_CITATION_`) FIRST — real `\citep{key}` for hits, `\cite{TOADD}` (+ a `_CITATION_` row) where none fits, `{VAL:? <what>}` for unverified numbers. A key that does not grep is invented.
+- **T1 LOCAL**: a question answered by the paper's OWN registries (`_CITATION_*` / `_VALUES_*` / `_EVIDENCE_*` / `read` sections / `0-displays/` / `.bib`) roots `match:` there, marked `answered-local` (no bank dispatch). A display-shaped need reroutes to `0-lifecycle/4-display/_DISPLAY_REQUEST.md`.
+- **RESOURCE stage**: read `1a-resource.md`'s GATE-1-approved `Q<n>`, open one `serves: resource` section each, and write the `-> PP<NN>` backlink into `1a-resource.md`.
+- One sentence per line; no markdown tables in probe files.
+
+The steps below are the HOW-TO for these rules.
 
 ## What DRAFT means
 
@@ -121,16 +131,48 @@ Fill in the structure with first-pass content:
 DRAFT may search the web to orient (is this field crowded? does a dataset exist? who are the anchor names?) and to sharpen the draft.
 But a seed is allowed to be intuition (seed principle 1), so what that search produces has exactly two legal destinations:
 1. **PROSE** in the stage artifact (Motivations, Claim Shape, ...) -- phrased as orientation, with `\cite{TOADD}` slots, never as settled fact.
-2. **RAISED QUESTIONS** -- when the search reveals a gap the paper must later verify, RAISE IT AS A QUESTION.
-   **DRAFT is where the questions are born.**
-   Write each one as a SECTION (`state: planned`, EMPTY `target:`) in the right topic's probe file at `1-probes/PPNN_<topic>.md` + a Status board row, per `../../../haipipe-paper/fn/probes.md`.
-   Write the `q-executor:` (the question in GENERAL language — no claim ids, no stake, no hint of which answer is wanted); NEVER write the `## Why` into a q-executor — the stake never leaves the probe file.
-   This HANDS the gap to the PROBE phase; it does not answer it.
+2. **RAISED QUESTIONS + THEIR PLAN** -- when the search reveals a gap the paper must later verify, RAISE IT AS A QUESTION and PLAN it.
+   **DRAFT is where the questions are born AND planned** — the probe plan is authored here, beside the draft, so ONE gate reviews both (see the probe constitution's PHASE MAP: ①ORGANIZE + ②MATCH run at DRAFT).
+   For each one, write a SECTION in the right topic's probe file at `1-probes/PPNN_<topic>.md` + a Status board row, per `../../../haipipe-paper/fn/probes.md`, carrying the full plan:
+   - `q-executor:` — the question in GENERAL language (no claim ids, no stake, no hint of which answer is wanted); NEVER write the `## Why` into a q-executor — the stake never leaves the probe file.
+   - `route:` — the dispatch door, `task | discovery` (AUTHORITATIVE).
+   - `match:` — root it to a SPECIFIC bank folder (a read-only bank grep is legal — LAW 1 bans the pen and the run, not the eye): `EXISTS · <folder>` (→ link) or `NONE → propose NEW <folder>`.
+   - `target:` — the existing QA path (EXISTS) or `NEW <path>` (NONE).
+   This HANDS the plan to the PROBE phase, which RUNS IT FORWARD (③ dispatch the `NEW` ones, ⑤ harvest); it does not answer it here.
 
-FORBIDDEN in DRAFT: writing a `a-consumer:`, a `target:`, or any finding INTO a probe section, or treating an inline result as landed evidence.
+FORBIDDEN in DRAFT: writing an `a-consumer:` (the ANSWER — that is PROBE's ⑤ harvest), or treating an inline result as landed evidence.
 Inline search results bind to nothing -- evidence gathered any way other than the PROBE phase's dispatch means "the PROBE phase did not happen."
-The line is the SECTION STATE: DRAFT leaves sections at `state: planned` with an empty `target:`; only PROBE reaches `read`, with a `target:` that RESOLVES to a QA file on disk.
+The DRAFT/PROBE line is no longer an empty `target:` (DRAFT now writes the `target:` plan) — it is `a-consumer:` / `state:`: DRAFT leaves a section at `planned` (a `NEW` target awaiting dispatch) or `answered` (an EXISTS target already answered, awaiting harvest), never `read`; only PROBE's harvest writes `a-consumer:` and reaches `read`.
 The CHECK gate runs `check-probe-cards.sh` and cannot go green over a `planned` section -- so DRAFT search can never masquerade as evidence.
+
+### Step 4b. 🤖 SELF-REVIEW — check the draft + probe plan before the gate
+
+Before the STOP gate, self-review the DRAFT output — a CREATOR/REVIEWER split, so the drafter does not grade its own work. Dispatch a review sub-agent in a FRESH context (report-only; the drafter applies the fixes):
+
+```text
+Agent(general-purpose, prompt="
+  Review this DRAFT phase output against the checklist. Report PASS or a numbered issue list
+  (file + line + what's wrong + the fix). Do NOT edit anything — only report.
+
+  READ:
+    - the stage draft (the stage doc this run wrote/updated)
+    - the probe plan (the 1-probes/PPNN_*.md files touched this run)
+    - the calling stage's artifact spec, and the probe constitution's
+      'The DRAFT self-review checklist' (../../../../probe/haipipe-probe/SKILL.md)
+
+  Surface A — the draft, vs the stage's artifact spec:
+    - every section filled with REAL content (no unmarked placeholders)
+    - one sentence per line; every \citep{} key is REAL (grep the .bib); gaps use {VAL:?} / \cite{TOADD}
+    - every Q-<Stage>-<n> is cited inline [Q-<Stage>-<n>] on the sentence it hangs on
+
+  Surface B — the probe plan (run the constitution's 'DRAFT self-review checklist' verbatim):
+    LAW-2-clean q-executor · answerable+specific · route set · match ROOTED to a specific folder
+    (candidate READ + judged on the answer) · target agrees with match · heading id = Q-consumer id ·
+    one ## Why per file, stake never leaked into a q-executor
+")
+```
+
+Issues → FIX them, then re-run the review (bounded: at most 2 rounds; a 3rd-round residual is SURFACED to the human at the gate, never hidden). The self-review PRECEDES the human gate — it never replaces it; its verdict is presented at Step 5.
 
 ### Step 5. ⛔ STOP — present for review, then iterate
 
