@@ -4,6 +4,14 @@ haipipe-application-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [3.1.1] — 2026-07-19
+
+- Probe constitution v9.5.0 sync (Q-executor-entry probe-file format), mirroring the paper family. A question is now a `## QX<n>` ENTRY (topic-local) with four `###` subsections: `### q-executor` (was `q-executor:`; carries Deliverable/Accepted), `### q-consumer` (was `serves:`; one bullet per stage-doc Q-consumer id + that consumer's ORIGINAL question), `### bank binding` (`route` · `bank` — was `match: EXISTS/NONE` — · `target` · `state`), and `### a-executor` (was the probe-file `a-consumer:`; a COPY of the answering QA file's answer). `## Why` DROPPED: the stake lives in the stage-doc Q-consumer. `a-consumer` SURVIVES as the stage-doc concept (station ②), anchored `[source: PP<NN>]` back to the `### a-executor` copy.
+- Model A phase split adopted: DRAFT authors ①ORGANIZE + ②MATCH; this worker runs ③DISPATCH → ④POINT → ⑤INTERPRET and does NOT re-match (`route`/`bank` are AUTHORITATIVE). ①+② became a documented PRECONDITION section; the collector agent runs ③④ (was ②③④). Added a "Rules" pointer block to the constitution's PROBE-phase rules, mirroring haipipe-paper-probe.
+- Harvest (the application no-sidecar delta, unchanged in substance) folds into `### a-executor` rather than the probe-file `a-consumer:`; numbers/citations stay inline with their `[→ target QA]` anchor.
+- Archaeology strip: `PASS 1 R19/R20`, the `2026-07-18` date tags, and the retired `_VALUES_`/`_CITATION_`/`_DISPLAY_`/`_DESCRIPTIONS/` sidecar enumerations removed — reason kept, citation cut. `1-probes/` is the only consumer-side source of truth; `_LOG` is the only kept sidecar.
+- `ref/per-stage-dispatch.md` and `ref/harvest-acceptance.md` synced to the same anatomy and stripped (both are unversioned refs in this skill dir).
+
 ## [3.1.0] — 2026-07-18
 
 - No-sidecar harvest (JL, application-only; paper handled separately). Retired the `values:`/`sources:`/`displays:` harvest LANES and the `_VALUES_`/`_CITATION_`/`_DISPLAY_`/`_DESCRIPTIONS/` sidecar docs. ⑤ INTERPRET now writes the answer's numbers/citations INLINE in the section's `a-consumer:`, each anchored `[→ target QA]`; the already-verified `target:` (PASS 1 R19/R20) is the fabrication anchor. Updated: ⑤, the venue-hook section → "Harvest — no sidecar", T1 whitelist, VERIFY, return contract, frontmatter. Checker PASS 2 removed; `harvest-acceptance.md` rewritten.

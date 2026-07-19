@@ -4,6 +4,26 @@ haipipe-paper-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 5.3.1 — 2026-07-19 — ref/per-stage-dispatch.md: seed's `_CITATION_0-seed.md` sidecar retired (satellite of haipipe-paper-seed 4.4.0)
+
+Satellite fix for the JL ruling recorded in `haipipe-paper-seed` 4.4.0 ("we should delete it. do not use it"). `ref/per-stage-dispatch.md` carried the retired sidecar in TWO places a seed-only edit would have missed — the per-stage table's **seed** row (line 34) and the seed-specifics paragraph (line 80). Both now route seed's returned sources onto the ENTRY's own `**sources**: harvest: OWED` lane and state that seed keeps no `_CITATION_` sidecar. Doc-only; no worker behavior changed. This is the 2026-07-10 lesson applied on purpose: after a ruling, sweep the satellites — a grep for the retired filename, not just an edit to the owning skill.
+
+## 5.3.0 — 2026-07-19 — synced to constitution v9.5.0 (QX-entry probe format: serves→### q-consumer, match→bank, a-consumer→### a-executor, ## Q→## QX, dropped ## Why) + stripped ruling archaeology
+
+Reconciled the probe-file anatomy to the constitution's new Q-executor-entry format (`../../../../probe/haipipe-probe/SKILL.md` v9.5.0). Every probe-file reference updated: a probe ENTRY heading `## Q<n>` → `## QX<n>` (topic-local q-executor id); `- serves:` → a `### q-consumer` bullet; `- route:` / `- match:` / `- target:` / `- state:` → the four `**field**:` lines under `### bank binding` (`match` verdicts EXISTS/NONE → `bank` = reuse | run | code | new); `- q-executor:` → `### q-executor`; the probe-file `- a-consumer:` (the copied answer) → `### a-executor`; `## Why` DROPPED (the stake stays in the stage-doc Q-consumer). "section" → "entry" throughout where it means a probe-file entry. ⑤ INTERPRET now names both writes: the probe-file `### a-executor` copy AND the stage-doc a-consumer (station ②). Harvest-lane fields moved under `### bank binding` (`**values**:` / `**sources**:` / `**displays**:`). Preserved: model A (route/bank AUTHORITATIVE, this worker runs ③④⑤ and does NOT re-match), the QA state-line contract, the two LAWS, the harvest lanes, the RESOURCE intake + write-back, PROOF-per-step. Stripped ruling-archaeology citations (`(JL)`, `(JL 2026-07-10)`, version tags) from the prose; changelog history untouched.
+
+## 5.2.0 — 2026-07-19 — RULES block (points at haipipe-probe's PROBE phase rules + paper deltas)
+
+New "Rules (follow these)" section after the intro: a short followable checklist that POINTS at the constitution's **Phase rules · PROBE phase** (+ **The QA file**, **The two LAWS**), then lists ONLY the paper deltas (collector-agent dispatch, harvest lanes + mechanical acceptance, RESOURCE write-back, claim status in 1b-claims, no bibtex/plots/tables). The loop below remains the HOW-TO. Points, not restates. Follows constitution v9.4.0 (Phase rules).
+
+## 5.1.0 — 2026-07-19 — ①② MOVE TO DRAFT: this worker now runs ③④⑤ only (constitution v9.2.0, model A)
+
+Follows the constitution's v9.2.0 phase split (`../../../../probe/haipipe-probe/SKILL.md`): the DRAFT phase now authors the whole probe plan — each SECTION's `q-executor:`, `route:`, `match:` (rooted to a SPECIFIC bank folder), and `target:` — so ① ORGANIZE + ② MATCH happen at DRAFT, reviewed at the one DRAFT gate. This worker no longer organizes or matches; it EXECUTES the plan: ③ DISPATCH the `target: NEW` sections, ④ POINT, ⑤ INTERPRET/harvest.
+
+JL ruled model **A** (2026-07-19): the DRAFT `route:`/`match:` are AUTHORITATIVE — the collector agent DISPATCHES and does NOT re-match (the executor orchestrator's own QA-gate still dedups against an existing answer). The `②` section became the `① + ② — DONE AT DRAFT` precondition (read the plan, resolve project_root, run T1 LOCAL inline, route by `match:` EXISTS→harvest / NONE→dispatch). PROOF 2 retired (this worker has no step ②; PROOF N now maps 1:1 to step N). RESOURCE intake reframed: the resource stage's DRAFT opens the `serves: resource` sections + writes the `-> PP<NN>` backlink; this worker only opens missing sections on legacy-transition first touch.
+
+⚠️ STILL OWED (coordinated, cross-family): the SHARED collector agent `haipipe-probe-q-executor-agent` still describes running ②MATCH — under model A it should DISPATCH only. That agent is shared with the application family; its update belongs in a joint pass. Until then it may do a harmless confirming match (leans B). Also `ref/per-stage-dispatch.md` may reference the old ① authoring.
+
 ## 4.2.0 — 2026-07-14 — R19 hardening (consumer side)
 
 Mirrors constitution `haipipe-probe` 8.3.0; IDENTICAL to `haipipe-application-probe` 4.3.0.

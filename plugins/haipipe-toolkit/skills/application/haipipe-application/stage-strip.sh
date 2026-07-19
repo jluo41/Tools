@@ -14,7 +14,7 @@
 #   ⬜ = not started / not confirmed
 #   -- = skipped by the pinned venue (STATUS.md `| stages_skipped |`, written at
 #        venue pin time); a skipped stage can never carry 🔥 or 🚀.
-#   Gate rules: wiki/08-stage-gate.md.
+#   Gate rules: SKILL.md, Stage Gate Protocol section (this folder).
 #
 # Usage: sh stage-strip.sh [intervention-dir] [session-stage]   (dir defaults to
 # cwd; looks upward for STATUS.md so it works from inside the intervention.

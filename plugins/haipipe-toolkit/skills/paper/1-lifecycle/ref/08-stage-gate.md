@@ -33,9 +33,9 @@ Gate Protocol (per-stage loop)
    (see 09-stage-illuminate.md).
 1. **Produce** the stage artifact (markdown `<stage>.md` + `_LOG`; display
    produces `4-display.tex`).
-2. **Review** the artifact content. Display only: compile the PDF (see
-   ../../wiki/13-tex-quality.md). Markdown stages have no compile step; their gate is
-   content review.
+2. **Review** the artifact content. Display only: compile the PDF (Lifecycle TeX
+   Quality Standard, ../../3-deliver/haipipe-paper-deliver/SKILL.md). Markdown stages
+   have no compile step; their gate is content review.
 3. **Present exit criteria** with per-item check/fail marks (see table below).
 4. **APPROVAL** -- copilot: ASK "Stage <X> looks ready -- confirm to close and
    move to <next>?" and WAIT. autopilot: dispatch the reviewer subagent and
@@ -84,7 +84,98 @@ The gate governs stage EXITS; this contract governs phase VISIBILITY inside the 
 1. **Announce every boundary.** Entering a phase = one line in the reply ("PROBE: dispatching seed landscape...") + a `[PHASE]` entry in the stage `_LOG` + the phase line of the closing block moves 🔥.
 2. **No silent skips.** A phase may be skipped only by an EXPLICIT logged verdict: one reply line with the reason, `[PROBE] skipped -- <reason>` in `_LOG`, and `--` on the phase line. "The draft looks fine" is a verdict to record, not a license to say nothing. Defaults: a NEW stage artifact runs all four phases; skip is for re-entries and minor edits.
 3. **CHECK is never implicit.** Entering CHECK means presenting the exit-criteria report and the approval ask (Steps 3-4 above). An elicitation reply does not become CHECK because the user responds to it; if the user starts giving CHECK-style feedback early, say so and open CHECK properly.
-4. **PROBE dispatches through the probe worker only, and the worker dispatches the EXECUTOR ORCHESTRATORS directly.** A stage's evidence needs go `Skill("haipipe-paper-probe", ...)` -> its five-step loop -> `Agent(haipipe-task-orchestrator-agent)` / `Agent(haipipe-discovery-orchestrator-agent)`, carrying the section's `q-executor:` block VERBATIM and nothing else. The SWEEP is the paper-side MATCH (② of the loop), which greps the bank's QA corpus and READS the hits — so the reuse decision belongs to the worker, and a question that MATCH closes is never dispatched at all. The worker is the ONLY exit for evidence work -- a stage never dispatches ANY agent for evidence (general-purpose included), and no scope label creates an exception: "audit", "re-verify", "quick check" are evidence work and take the same door. (Live Paper-Probe-Test: an elicited AUDIT scope had no named route, so the stage hand-rolled a general-purpose web auditor -- 18 redundant verifications of ledger entries already marked VERIFIED, with results that had no landing path.) Stage skills never call `/haipipe-probe`, discovery agents, or task agents directly; the worker reads the bank's QA corpus (a READABLE index the executor published FOR readers) and NOTHING ELSE inline -- opening `results/`, reading a plan.yaml, grepping the code is bank work and breaks LAW 1; the DEPTH of any dispatched work is the executor's private business, decided in its own clean context. STAGES are bound the same way: a stage never reads project evidence (discoveries/, task results, legacy probes/) inline -- it knows WHAT is missing from its own DRAFT content, and the agent's anchored return (takeaways + sources manifest) is the paper side's only evidence window. Evidence scope is PROJECT-LOCAL at every layer: neither stages nor agents scan or read sibling projects' ledgers -- cross-project reuse is a USER decision (JL 2026-07-05); a plausible other-project source is named as an unread hypothesis, never consumed. The same discipline continues below the paper side: the probe agent never runs searches inline -- fresh external evidence goes through discovery (ENRICH or full) and LANDS in sources.md before any return (wiki/00-evidence-principles.md is the general statement).
+4. **PROBE dispatches through the probe worker only, and the worker dispatches the EXECUTOR ORCHESTRATORS directly.** A stage's evidence needs go `Skill("haipipe-paper-probe", ...)` -> its five-step loop -> `Agent(haipipe-task-orchestrator-agent)` / `Agent(haipipe-discovery-orchestrator-agent)`, carrying the section's `q-executor:` block VERBATIM and nothing else. The SWEEP is the paper-side MATCH (② of the loop), which greps the bank's QA corpus and READS the hits — so the reuse decision belongs to the worker, and a question that MATCH closes is never dispatched at all. The worker is the ONLY exit for evidence work -- a stage never dispatches ANY agent for evidence (general-purpose included), and no scope label creates an exception: "audit", "re-verify", "quick check" are evidence work and take the same door. (Live Paper-Probe-Test: an elicited AUDIT scope had no named route, so the stage hand-rolled a general-purpose web auditor -- 18 redundant verifications of ledger entries already marked VERIFIED, with results that had no landing path.) Stage skills never call `/haipipe-probe`, discovery agents, or task agents directly; the worker reads the bank's QA corpus (a READABLE index the executor published FOR readers) and NOTHING ELSE inline -- opening `results/`, reading a plan.yaml, grepping the code is bank work and breaks LAW 1; the DEPTH of any dispatched work is the executor's private business, decided in its own clean context. STAGES are bound the same way: a stage never reads project evidence (discoveries/, task results, legacy probes/) inline -- it knows WHAT is missing from its own DRAFT content, and the agent's anchored return (takeaways + sources manifest) is the paper side's only evidence window. Evidence scope is PROJECT-LOCAL at every layer: neither stages nor agents scan or read sibling projects' ledgers -- cross-project reuse is a USER decision (JL 2026-07-05); a plausible other-project source is named as an unread hypothesis, never consumed. The same discipline continues below the paper side: the probe agent never runs searches inline -- fresh external evidence goes through discovery (ENRICH or full) and LANDS in sources.md before any return (the Evidence Principles below are the general statement).
+
+
+Evidence Principles (总纲)
+--------------------------
+
+The root design goal behind every evidence rule in this skill family, and the four principles everything else derives from. When a new design question comes up, do not hunt for a matching sub-rule -- ask the four questions at the bottom.
+
+Distilled from three live replication runs, each of which exposed one layer of the same disease.
+
+
+The root goal:
+
+```
+❌ enemy:  work that lives only in ONE conversation
+           an agent says "I checked, it's fine" -> the session ends -> it evaporates
+           the next session re-does the work, and nobody can trust the last conclusion
+
+✅ goal:   a TRUSTWORTHY SHARED MEMORY on disk
+           any fresh session or agent can open the tree and continue
+           a ledger entry can be USED without re-verifying it
+```
+
+The system's real product is not any single paper -- it is a disk state a stranger agent can trust.
+
+
+The four principles:
+
+```
+① 🏠 EVERYTHING LANDS, in its HOME layer
+    external lit lives in discovery's sources.md (S## ids); internal data in task results
+    the paper side holds only transcriptions + anchors pointing home
+    -- without this, memory does not exist
+       (the probe agent's search results died in its reply text)
+
+② 🔍 EVERY LEDGER WRITE gets a second pair of eyes (produce != approve)
+    whoever writes an entry does not approve it; the REVIEWER FOLLOWS WRITES
+    -- without this, memory exists but cannot be trusted, so readers re-verify
+       anyway and the ledger is worthless
+       (the agent self-passed its own output; hollow cards cleared "acceptance")
+
+③ 🧱 EACH LAYER does only ITS OWN work; other layers' work is ORDERED, not done
+    client says WHAT, contractor decides HOW; never reach past your contractor
+    -- without this, work bypasses the pipes that enforce ① and ②
+       (four live bypasses: stage->discovery direct; worker inline consumption;
+        stage pre-reading the project tree; agent inline searching)
+
+④ ⚖️ economy may trim CEREMONY, never PRINCIPLE
+    light modes MAY: skip folder creation, fold creator into orchestrator,
+    run a single review pass -- the CREATOR FOLLOWS WORKLOAD
+    light modes may NOT: skip landing, skip review-on-write, cross layers
+    -- without this, ①②③ cost too much and everyone routes around them
+```
+
+They chain, they are not parallel:
+
+```
+③ layered orders   --ensures-->  work flows through the right pipe
+① land-at-home     --ensures-->  the pipe's outlet is DISK, not chat
+② review-on-write  --ensures-->  what is on disk can be TRUSTED
+④ trim ceremony    --ensures-->  the above stays cheap enough that nobody bypasses it
+                                       |
+                          🏆 trustworthy shared memory
+```
+
+
+The four questions -- for any new evidence-design decision:
+
+```
+1. Whose layer is this work? (③ -> order it, don't do it)
+2. Where does the result live? (① -> its home ledger, with an id)
+3. Who reviews the write? (② -> someone other than the writer)
+4. Which ceremony can be trimmed? (④ -> folders/loops yes, landing/review no)
+```
+
+
+Where the principles are enforced:
+
+```
+③  the Phase Transition Contract rule 4 above (stage/worker);
+   the executor orchestrators' clean context IS the wall (agent level)
+①  haipipe-task-orchestrator-agent / haipipe-discovery-orchestrator-agent
+   "fresh evidence must land" — the answer is a FILE: <task-folder>/QA/<n>-<slug>.md,
+   which the section's `target:` then points at;
+   a CLAIM's status lands in 0-lifecycle/1b-claims/1b-claims.md — per-claim,
+   per-paper, private. 💀 `## Verdict` and `verdicted` are DELETED; the
+   probe section carries only its `a-consumer:`.
+②  discovery creator/reviewer loops (full) + reviewer quick-pass (ENRICH);
+   author writes the claim status from the QA file; paper-probe worker mechanical acceptance
+④  probe light reuse (zero-write => zero ceremony);
+   discovery ENRICH (no new folder, creator folded, one review pass)
+```
 
 
 Per-Stage Exit Criteria

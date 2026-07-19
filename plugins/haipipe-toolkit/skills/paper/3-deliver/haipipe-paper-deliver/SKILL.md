@@ -4,9 +4,9 @@ description: "Orchestrator for the paper delivery group (3-deliver) — everythi
 argument-hint: "[build|audit|polish|ship | <leaf-verb>] [paper-path-or-args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "1.0.0"
-  last_updated: "2026-07-17"
-  summary: "Router for 3-deliver, the artifact side of the paper. Four sub-groups by verb-intent: 1-build (scaffold/restructure/conform/folder — structure, zero prose), 2-audit (claim-audit/reviewer/optimizer — read-only findings), 3-polish (polish: consistency→format→typeset — mutate the draft), 4-ship (compile/diffpdf/to-overleaf — produce & move). Mirror of haipipe-paper-lifecycle; the top router delegates delivery intents here. History: ./CHANGELOG.md."
+  version: "1.0.1"
+  last_updated: "2026-07-19"
+  summary: "Router for 3-deliver, the artifact side of the paper. Four sub-groups by verb-intent: 1-build (scaffold/restructure/conform/folder — structure, zero prose), 2-audit (claim-audit/reviewer/optimizer — read-only findings), 3-polish (polish: consistency→format→typeset — mutate the draft), 4-ship (compile/diffpdf/to-overleaf — produce & move). Also THE home of the Lifecycle TeX Quality Standard (self-contained preamble, real prose, Pn.Sm tags, compile-after-every-mutation). Mirror of haipipe-paper-lifecycle; the top router delegates delivery intents here. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -84,6 +84,71 @@ Invariants (state them, do not re-implement — the leaves enforce them)
 - `2-audit/` is **read-only** — it reports, never edits.
 - `3-polish/` is where the draft is mutated; `4-ship/` produces and moves artifacts.
 - Prose itself is written upstream, in `1-lifecycle/5-section-edit` (DRAFT/REVISE) — never here.
+
+Lifecycle TeX Quality Standard
+-------------------------------
+
+THE single source of truth for the quality bar every compiled paper `.tex` must meet. Any skill that WRITES or EDITS one of those files — inside this group or upstream in `1-lifecycle/` — meets it at write time and edit time.
+
+Scope: this standard applies to the DISPLAY stage (`0-lifecycle/4-display/4-display.tex`) and the section files (`0-sections/*.tex`) ONLY. All other lifecycle stages are markdown (`<stage>.md` + `_LOG_<stage>.md`) and do not compile.
+
+Every compiled paper `.tex` (the display stage `4-display.tex` and `0-sections/*.tex`) is a **deliverable**, not a fragment or draft.
+
+### Rules
+
+**SELF-CONTAINED** -- every `.tex` has its own preamble and compiles directly to a same-name `.pdf`. No shell wrappers, no `\input`-fragment indirection.
+
+Minimal preamble:
+
+```latex
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{parskip}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\newcommand{\needprobe}[1]{\textcolor{red}{\textbf{[NEED PROBE]} #1}}
+\title{N-stage: PaperName (Venue)}
+\date{}
+\begin{document}
+\maketitle
+...
+\end{document}
+```
+
+The `\needprobe{}` macro marks claims lacking evidence with a visible red flag in the compiled PDF (see the Evidence Routing Protocol in `../../haipipe-paper/SKILL.md`). Remove it when the probe returns a verdict.
+
+**REAL PROSE** -- content is rendered LaTeX prose with `\section*` headers, not `%%` comment blocks. A `.tex` that compiles to a blank page is a defect.
+
+**SENTENCE-INDEXED** -- every sentence carries `%% ---- Pn.Sm ----` tags per `../../2-phase/REF/sentence-format.md`. Paragraph banners use the 3-line format:
+
+```latex
+% =========
+% Para [file-slug.para-slug] Role -- point
+% =========
+```
+
+`Pn` restarts per file, `Sm` restarts per paragraph. Tables (tabularx) get a banner but no per-sentence tags.
+
+### Compile rule
+
+After writing or editing a display or section `.tex`, compile it:
+
+```sh
+pdflatex -interaction=nonstopmode -output-directory <stage-dir> <stage.tex>
+```
+
+Run twice when cross-references or citations are present. Then clean aux:
+
+```sh
+rm -f <stage-dir>/*.aux <stage-dir>/*.log <stage-dir>/*.out
+```
+
+A stale PDF (tex newer than pdf) is a defect. The skill -- not the user -- is responsible for compiling after every tex mutation.
+
+### .gitignore note
+
+The display PDF is a **tracked deliverable**. `0-lifecycle/**/*.pdf` is NOT gitignored. Committing the refreshed PDF after a tex change is expected.
 
 Return Contract
 ---------------

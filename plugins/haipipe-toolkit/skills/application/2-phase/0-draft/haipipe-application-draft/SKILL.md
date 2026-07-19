@@ -4,9 +4,9 @@ description: "DRAFT phase worker (internal). Called first by every application s
 argument-hint: "[stage <stage-name>] [intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, WebSearch, WebFetch
 metadata:
-  version: "1.3.0"
-  last_updated: "2026-07-09"
-  summary: "DRAFT phase worker (internal): settle the stage doc's structure + sentences with the user (illuminate → elicit → write per the stage's template), and RAISE what the draft cannot answer as `state: planned` question SECTIONS in 1-probes/ — never an answer or a target. Inline WebSearch is drafting fuel only, never durable evidence. The calling stage supplies the artifact spec + template; this worker carries neither. History: ./CHANGELOG.md."
+  version: "1.3.1"
+  last_updated: "2026-07-19"
+  summary: "DRAFT phase worker (internal): settle the stage doc's structure + sentences with the user (illuminate → elicit → write per the stage's template), and RAISE what the draft cannot answer as `## QX<n>` question ENTRIES in 1-probes/ AND author their probe plan (`### q-executor` + route + bank + target — DRAFT runs the loop's ①ORGANIZE + ②MATCH); never writes an answer (`### a-executor`). Inline WebSearch is drafting fuel only, never durable evidence. The calling stage supplies the artifact spec + template; this worker carries neither. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -25,17 +25,20 @@ DRAFT phase worker. Every stage skill calls this first. The calling stage passes
                 emphasis, scope); mechanical structure is autonomous
 3. WRITE        the stage artifact per the calling stage's spec:
                 0-lifecycle/<N-stage>/<N-stage>.md + a [DRAFT] entry in _LOG
-4. RAISE        every spot where the draft needs evidence it does not have
-                becomes a QUESTION -- a `state: planned` SECTION in the right
-                topic's probe file (1-probes/PPNN_<topic>.md), per
-                ../../../haipipe-application/fn/probes.md; write its q-executor
-                (general language, the stake stripped out), never an answer or
-                a target
+4. RAISE+PLAN   every spot where the draft needs evidence it does not have
+                becomes a QUESTION -- a `Q-<Stage>-<n>` in the stage doc's
+                Q-consumer AND a `## QX<n>` ENTRY in the right topic's probe file
+                (1-probes/PPNN_<topic>.md), per
+                ../../../haipipe-application/fn/probes.md. DRAFT runs the loop's
+                ①ORGANIZE + ②MATCH: write `### q-executor` (general language,
+                stake stripped, + Deliverable/Accepted) + a `### q-consumer`
+                bullet + `### bank binding` (route · bank · target — an existing
+                path or `NEW <path>`). NEVER write `### a-executor` (the answer).
 5. PRESENT      end the phase reply with the raised questions, one line each --
-                PP id -- question -- mode -- what it fills/settles -- then STOP
-                and ask which to pursue. APPROVE is the user's gate; the probe
-                worker's ORGANIZE only advances approved questions. No open
-                questions -> say "questions raised: none".
+                PP id -- question -- mode -- bank -- what it fills/settles -- then
+                STOP and ask which to pursue. APPROVE is the user's gate; PROBE
+                only runs the approved entries forward. No open questions ->
+                say "questions raised: none".
 ```
 
 DRAFT settles WHAT the doc says. It does NOT collect evidence (PROBE), polish prose (REVISE), or approve anything (CHECK).
@@ -73,11 +76,11 @@ Inline WebSearch/WebFetch is ALLOWED in DRAFT -- as drafting fuel, NOT as eviden
 DRAFT may search the web to orient (is this intervention space crowded? what response rates do comparable programs report? what are the channel's framing norms?) and to sharpen the stage doc. What that search produces has exactly two legal destinations:
 
 1. **PROSE** in the stage doc (Opportunity, Mechanism hypothesis, beat text, ...) -- phrased as orientation, never as settled fact; anything load-bearing stays a raised question.
-2. **RAISED QUESTIONS** -- when the search reveals something the intervention must later verify, RAISE IT AS A QUESTION: a SECTION (`state: planned`, EMPTY `target:`) in the right topic's probe file at `1-probes/PPNN_<topic>.md`, per `../../../haipipe-application/fn/probes.md`. Write the `q-executor:` (general language — no claim ids, no stake, no hint of which answer is wanted); the `## Why` (the stake) stays in the file and never crosses. This HANDS the gap to the PROBE phase; it does not answer it.
+2. **RAISED QUESTIONS + THEIR PLAN** -- when the search reveals something the intervention must later verify, RAISE IT AS A QUESTION and PLAN it: a `Q-<Stage>-<n>` in the stage doc's Q-consumer + a `## QX<n>` ENTRY in the right topic's probe file at `1-probes/PPNN_<topic>.md`, per `../../../haipipe-application/fn/probes.md`. DRAFT is where the questions are born AND planned (the constitution's PHASE MAP: ①ORGANIZE + ②MATCH run at DRAFT), so ONE gate reviews draft + plan together. Write `### q-executor` (general language — no claim ids, no stake, no hint of which answer is wanted, + Deliverable/Accepted), a `### q-consumer` bullet, `route` (task | discovery), `bank` (reuse | run | code | new — a read-only bank grep is legal), and `target` (an existing QA path, or `NEW <path>`). The stake stays in the stage-doc Q-consumer and never crosses. This HANDS the plan to the PROBE phase; it does not answer it.
 
-FORBIDDEN in DRAFT: writing an `a-consumer:`, a `target:`, or any finding INTO a probe section, or treating an inline result as landed evidence. Real evidence lands ONLY via the PROBE phase dispatching `haipipe-application-probe` (the single door); inline search results bind to nothing -- evidence gathered any other way means "the PROBE phase did not happen."
+FORBIDDEN in DRAFT: writing an `### a-executor` (the ANSWER -- that is PROBE's ⑤ harvest), or treating an inline result as landed evidence. Real evidence lands ONLY via the PROBE phase dispatching `haipipe-application-probe` (the single door); inline search results bind to nothing -- evidence gathered any other way means "the PROBE phase did not happen."
 
-The line is the SECTION STATE: DRAFT leaves sections at `state: planned` with an empty `target:`; only PROBE reaches `read`, with a `target:` that RESOLVES to a QA file on disk. `check-probe-cards.sh` enforces this mechanically at the probe worker's VERIFY step and again at the CHECK gate -- a `planned` section blocks green, so DRAFT search can never masquerade as evidence.
+The line is no longer an empty `target:` (DRAFT now writes the `target:` plan) -- it is `### a-executor` / `state`: DRAFT leaves an entry at `planned` (a `NEW` target awaiting dispatch) or `answered` (an existing target already answered, awaiting harvest), never `read`; only PROBE's harvest writes `### a-executor` and reaches `read`. `check-probe-cards.sh` enforces this at the probe worker's VERIFY step and again at the CHECK gate -- a `planned` entry blocks green, so DRAFT search can never masquerade as evidence.
 
 ## Return contract
 
@@ -86,6 +89,6 @@ status:    ok | blocked
 stage:     <stage-name>
 artifact:  <path written>
 needs:     <count of questions raised for PROBE>
-probes:    <each raised question: PPNN -- question -- mode -- fills/settles; or "none">
-next:      PROBE (ORGANIZE advances only the approved questions)
+probes:    <each raised question: PPNN -- question -- mode -- bank -- fills/settles; or "none">
+next:      PROBE (runs the approved entries forward: ③DISPATCH → ④POINT → ⑤INTERPRET)
 ```

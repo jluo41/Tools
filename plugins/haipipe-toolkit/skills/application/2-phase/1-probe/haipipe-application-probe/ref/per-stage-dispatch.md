@@ -11,39 +11,40 @@ This worker owns the intervention side of the question.
 The collector agent owns the middle; the EXECUTOR owns the work:
 
 ```
-the section's `q-executor:` block, VERBATIM
+the entry's `### q-executor` block, VERBATIM
         |
-        +-- Agent(haipipe-probe-q-executor-agent)   runs ②③④ in clean context:
+        +-- Agent(haipipe-probe-q-executor-agent)   runs ③④ in clean context (DRAFT already MATCHed):
         |       +-- Agent(haipipe-task-orchestrator-agent)        internal work (data, eval, display, stata, …)
         |       +-- Agent(haipipe-discovery-orchestrator-agent)   external evidence: search + read, judge, idea
-        |     it returns { section → tier, target: QA-path }, having written each target:.
+        |     it returns { entry → target: QA-path }, having written each target:.
         |
         +-- on return, this worker writes NOTHING project-side:
-              the section's `a-consumer:` is the intervention's record of what the answer MEANS;
-              a CLAIM's status lives in 0-lifecycle/1c-claims/1c-claims.md, never in the probe file.
+              the entry's `### a-executor` is the copy of the answer, and each Q-consumer writes
+              its own a-consumer in its stage doc; a CLAIM's status lives in
+              0-lifecycle/1c-claims/1c-claims.md, never in the probe file.
               The reusable artifact is the EXECUTOR's <task-folder>/QA/<n>-<slug>.md,
               which any consumer's MATCH can find and read (T2 REUSE).
 ```
 
-Per-rung list (lane hooks = HARVESTERS: they transcribe landed evidence, never acquire; acquisition is always a question SECTION → its q-executor → the collector → the answering QA file)
+Per-rung list (harvest is TRANSCRIPTION: landed evidence folds into the entry's `### a-executor`, never acquired; acquisition is always a question ENTRY → its `### q-executor` → the collector → the answering QA file)
 ----------------
 Spine folder names are the intervention's `0-lifecycle/` stage folders (dual-2 numbering mirrors paper: 2-venue + 2-pitch).
 
-- **0-seed** (venue-FREE) — mode light (→ discovery), DEFAULT RUN for a new seed: landscape / prior interventions / benchmarks / cohort sanity to sharpen the seed question. No venue pinned yet, so source anchors stay in the section's a-consumer; no citation/display lanes.
-- **1a-descriptions** (venue-FREE, ladder rung) — mode light (→ task): data-profile questions ("profile the cohort", "pull engagement summary"). The answer's numbers land INLINE in the section's `a-consumer:` (anchored to target:); the 1a doc keeps one-line Description entries. Consumes seed's FORWARD pointers at DRAFT.
-- **1b-themes** (venue-FREE, ladder rung) — mode light (→ discovery; task for quick in-data confirmations): field-pattern questions ("what messaging levers does the literature name?"); the a-consumer lands grounding refs onto T entries.
-- **1c-claims** (venue-FREE, ladder rung) — mode FULL (→ task + discovery): the core evidence rung; one question SECTION per GAP claim. A full-mode section's answer is read by the author, who writes the claim status into `0-lifecycle/1c-claims/1c-claims.md` — the ONLY home of a claim's status, flipping the C-line AND the Evidence Campaign row in the same pass. Verified numbers land INLINE in the section's `a-consumer:` (anchored to target:), even pre-pin.
-- **1d-advice** (venue-FREE, ladder rung) — rarely fires: derivation is in-stage work; an advice entry exposing a NEW evidence gap routes back as a `1c-claims` question SECTION, never gathers here.
+- **0-seed** (venue-FREE) — mode light (→ discovery), DEFAULT RUN for a new seed: landscape / prior interventions / benchmarks / cohort sanity to sharpen the seed question. No venue pinned yet, so source anchors stay in the entry's `### a-executor`; no citation/display lanes.
+- **1a-descriptions** (venue-FREE, ladder rung) — mode light (→ task): data-profile questions ("profile the cohort", "pull engagement summary"). The answer's numbers land INLINE in the entry's `### a-executor` (anchored to target:); the 1a doc keeps one-line Description entries. Consumes seed's FORWARD pointers at DRAFT.
+- **1b-themes** (venue-FREE, ladder rung) — mode light (→ discovery; task for quick in-data confirmations): field-pattern questions ("what messaging levers does the literature name?"); the answer's grounding refs land in the entry's `### a-executor`, feeding the T entries.
+- **1c-claims** (venue-FREE, ladder rung) — mode FULL (→ task + discovery): the core evidence rung; one question ENTRY per GAP claim. A full-mode entry's answer is read by the author, who writes the claim status into `0-lifecycle/1c-claims/1c-claims.md` — the ONLY home of a claim's status, flipping the C-line AND the Evidence Campaign row in the same pass. Verified numbers land INLINE in the entry's `### a-executor` (anchored to target:), even pre-pin.
+- **1d-advice** (venue-FREE, ladder rung) — rarely fires: derivation is in-stage work; an advice entry exposing a NEW evidence gap routes back as a `1c-claims` question ENTRY, never gathers here.
 - **2-venue** — mode light: venue-level questions — channel capability, compliance constraints, prior sends on this channel.
 - **2-pitch** — light, rare: anchor evidence for the theory of change if the ledger lacks it.
 - **3-narrative** — rarely fires; a beat exposing a NEW evidence gap routes back to claims, never gathers here.
-- **4-display** (venue-GATED: dashboard/ui-card/report; optional email; skipped sms/push/reminder/checklist) — display lane. A missing unit is NEVER commissioned from narrative/section context: it becomes a request row in the display stage's inbox and the section closes `answered-local`. Only the DISPLAY STAGE itself commissions render work for its accepted units; the hook LINKs what landed.
-- **5-section-edit** (sectioned venues only) — full document probe: values + citation lanes per section, display lane where the section references units.
+- **4-display** (venue-GATED: dashboard/ui-card/report; optional email; skipped sms/push/reminder/checklist) — display needs. A missing unit is NEVER commissioned from narrative/section context: it becomes a request row in the display stage's inbox and the entry closes `answered-local`. Only the DISPLAY STAGE itself commissions render work for its accepted units; the harvest LINKs what landed.
+- **5-section-edit** (sectioned venues only) — full document probe: one ENTRY per evidence need; the answer's numbers/citations fold INLINE into its `### a-executor`, and a referenced display unit that does not exist reroutes to the display stage.
 
 Dispatch rules (both apply to every dispatch)
 ----------------------------------------------
 1. **Mode: light by default; full for claims.** A light probe stops at Read and returns evidence to the caller — right for context questions (seed landscape, venue capability, section-edit lookups). Request `mode: full` only when the intervention needs a COMMITTED claim status that flips a campaign row (claims rung's normal case). Light can escalate to full later; never start heavy for a question that only needs orientation.
-2. **Reuse-before-create — the MATCH is the WORKER's, the DEPTH is the EXECUTOR's.** The worker runs ② MATCH over the bank's READABLE QA corpus (`{tasks,discoveries}/**/QA/*.md`) and READS the hits — match ON THE ANSWER, never on the topic. A hit is a T2 REUSE (point the section's `target:` at that QA file; nothing runs). Only what MATCH cannot close is dispatched, and then the EXECUTOR picks the shallowest depth in its own clean context. MOST SECTIONS SHOULD LAND ON T2: the bank fills autonomously from the executor side, so a fresh q-executor is the EXCEPTION.
+2. **Reuse-before-create — the MATCH is DRAFT's, the DEPTH is the EXECUTOR's.** DRAFT runs ② MATCH over the bank's READABLE QA corpus (`{tasks,discoveries}/**/QA/*.md`) and READS the hits — match ON THE ANSWER, never on the topic. A hit is a T2 REUSE (`bank: reuse`; point the entry's `target:` at that QA file; nothing runs). Only what MATCH cannot close carries a `NEW` target into ③ DISPATCH, and then the EXECUTOR picks the shallowest depth in its own clean context. MOST ENTRIES SHOULD LAND ON T2: the bank fills autonomously from the executor side, so a fresh q-executor is the EXCEPTION.
 
 Seed specifics (mode light; DEFAULT RUN for a new seed)
 --------------------------------------------------------
@@ -61,30 +62,29 @@ Full evidence stays executor-side, reusable by claims.
 
 Claims specifics (rung 1c, mode full)
 --------------------------------------
-Every GAP/weak claim raises one question SECTION — MATCH first (reuse-before-create), then the unmatched ones fan out by shape:
+Every GAP/weak claim raises one question ENTRY — MATCH first at DRAFT (reuse-before-create), then the unmatched ones fan out by shape:
 
 ```
-claim needs its status settled     → a SECTION whose q-executor is task-shaped → route: task
+claim needs its status settled     → an ENTRY whose q-executor is task-shaped → route: task
 question needs a run / artifact     → same door (the executor picks the depth)
 question needs outside context      → route: discovery
 settled claim status                → 0-lifecycle/1c-claims/1c-claims.md (the ONLY home of a claim's
-                                       status; the probe section carries only its `a-consumer:`)
+                                       status; the probe entry carries only its `### a-executor`)
 ```
 
-At ⑤ INTERPRET the section's `a-consumer:` lands, and the CLAIM's status is written in 1c-claims.md (supported | refuted | inconclusive + confidence), flipping the C-line and the Evidence Campaign row, citing the section's `target:` QA file.
+At ⑤ INTERPRET the answer lands in the entry's `### a-executor` (and each Q-consumer's a-consumer in its stage doc), and the CLAIM's status is written in 1c-claims.md (supported | refuted | inconclusive + confidence), flipping the C-line and the Evidence Campaign row, citing the entry's `target:` QA file.
 The intervention owns the NEED and the JUDGMENT; the executor owns the FACT.
 The venue gate later evaluates its settlement bar (light | medium | full) against the campaign table and through 1d's derivations.
 
-Harvest — no sidecar (2026-07-18)
+Harvest — no sidecar
 ----------------------------------------------------------------------
-Every answer's numbers/citations land INLINE in the section's `a-consumer:`, anchored to `target:`
-(the answering QA file, already verified) — any venue. No `values:`/`sources:`/`displays:` lanes and
-no `_VALUES_`/`_CITATION_`/`_DISPLAY_`/`_DESCRIPTIONS/` docs. The checker verifies `target:` is
-`answered` + non-superseded (PASS 1 R19/R20); there is nothing else to harvest-check.
+Every answer's numbers/citations land INLINE in the entry's `### a-executor`, anchored to `target:`
+(the answering QA file, already verified) — any venue. No harvest lanes and no sidecar docs.
+The checker verifies `target:` is `answered` + non-superseded; there is nothing else to harvest-check.
 
 Section-edit worker logic
 --------------------------
-Read the section outline; for each evidence need raise a question SECTION whose answer's numbers/citations land inline in its `a-consumer:` (anchored to target:). No lanes.
+Read the section outline; for each evidence need raise a question ENTRY whose answer's numbers/citations land inline in its `### a-executor` (anchored to target:). No lanes.
 
 Phase status (derive from disk)
 --------------------------------
@@ -97,4 +97,4 @@ probe --    skipped (stage had no evidence needs; logged in _LOG)
 
 Strip form: `phase:   draft ✅  │  probe 🔥🚀  │  revise ⬜  │  check ⬜`.
 
-GATE RULE: the probe phase may NOT show ✅ while any section is `planned` or has an unresolved `target:` — run check-probe-cards.sh, it FAILs.
+GATE RULE: the probe phase may NOT show ✅ while any entry is `planned` or has an unresolved `target:` — run check-probe-cards.sh, it FAILs.

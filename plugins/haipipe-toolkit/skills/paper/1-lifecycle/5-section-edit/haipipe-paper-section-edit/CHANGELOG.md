@@ -81,7 +81,7 @@ Changed (JL ruling 2026-07-09 (LLMTrait-Section session postmortem): normalize t
 - Hard gates: DRAFT ends at a STOP for structure review ([GATE] draft-review logged, user quoted); CHECK never implicit; never commit before CHECK opens. Agent never self-advances.
 - Proof-carrying dispatch: every phase via Skill(); [REVISE] _LOG entry must carry `workers: content/humanizer/results` line (checks.sh --log FAILs without it).
 - Binding comment rules inlined in the hub (never delete/reword `> USER:`; reply `> CC:` underneath; only user resolves; surgical edits only, no full-file rewrites of commented files) -- no longer wiki-only.
-- Stale comment-first REVISE block (Round 1 change-NO-prose) DELETED -- contradicted wiki/02 + revise hub ("no comment-first; change directly + why-comments"); leftover from the retired edit-cycle (missed by A17).
+- Stale comment-first REVISE block (Round 1 change-NO-prose) DELETED -- contradicted the comment lifecycle + revise hub ("no comment-first; change directly + why-comments"); leftover from the retired edit-cycle (missed by A17).
 
 ## [3.2.0] -- 2026-07-08
 
@@ -96,7 +96,7 @@ Fixed
 ## [3.1.3] — 2026-07-03
 
 Changed
-- Added the Phase Transition Contract pointer (wiki/08): announce every phase boundary, no silent phase skips (explicit logged verdict only), CHECK never implicit.
+- Added the Phase Transition Contract pointer (08-stage-gate.md): announce every phase boundary, no silent phase skips (explicit logged verdict only), CHECK never implicit.
 
 ## [3.1.2] — 2026-07-03
 

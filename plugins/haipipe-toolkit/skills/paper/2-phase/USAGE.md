@@ -53,7 +53,7 @@ Feedback lives as blockquote threads in the working `.md`, directly under the te
 > CC: agreed; moved it to P1.S2 and demoted the old opener to P2
 ```
 
-Rules: the agent replies in one line under your comment; the thread stays in place until you confirm; on resolve it moves to `_LOG_1-introduction.md`. Full convention: `../wiki/02-comment-lifecycle.md`.
+Rules: the agent replies in one line under your comment; the thread stays in place until you confirm; on resolve it moves to `_LOG_1-introduction.md`. Full convention: `../haipipe-paper/SKILL.md`, Comment lifecycle.
 
 ## D. Restart a phase after CHECK feedback
 

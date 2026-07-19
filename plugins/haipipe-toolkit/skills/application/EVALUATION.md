@@ -19,7 +19,7 @@ The umbrella routes; the phase workers execute; the stages define the contract e
 The umbrella is `haipipe-application` (router) + `haipipe-application-enter` (Console) + `haipipe-application-lifecycle` (spine orchestrator). It should ROUTE, never do stage work itself.
 
 - Intent: a free-form request resolves to the right `(venue, stage)` pair.
-- Routing: every lifecycle object reaches its owning skill (the Router Rule in `wiki/06-application-skill-structure.md`).
+- Routing: every lifecycle object reaches its owning skill (the Router Rule in `README.md` Router Rule).
 - Frontier: the Console derives state from disk, not stored status, and reports both `current_layer` and `maturity` (the Maturity Rule).
 - Coverage: every stage in the spine is reachable; no orphan verb, no dead route.
 - Boundary: the umbrella dispatches and summarizes; it never drafts prose, judges a claim, or calls the bank inline (there is no `discover`/`task` proxy verb — the bank has its own door).
@@ -32,8 +32,8 @@ The phase engine is `2-phase/`: DRAFT → PROBE → REVISE → CHECK, shared acr
 
 - Order: the four phases fire in sequence; no phase is skipped or reordered.
 - Internal: phases are never user-invoked directly — a stage drives them.
-- Evidence door: PROBE is the ONLY way evidence enters; it raises questions as sections in `1-probes/` and dispatches the `q-executor:` block verbatim through the clean collector agent (`wiki/03-intervention-lifecycle.md`).
-- Gates: DRAFT review and CHECK are the two human gates; the agent never self-advances past them (`wiki/08-stage-gate.md`). CHECK's mechanical teeth are `checks.sh` + the probe-file checker — a ❌/FAIL blocks the gate green at any venue depth.
+- Evidence door: PROBE is the ONLY way evidence enters; it raises questions as sections in `1-probes/` and dispatches the `q-executor:` block verbatim through the clean collector agent (`1-lifecycle/haipipe-application-lifecycle/SKILL.md` Intervention Lifecycle Contract).
+- Gates: DRAFT review and CHECK are the two human gates; the agent never self-advances past them (`haipipe-application/SKILL.md` Stage Gate Protocol). CHECK's mechanical teeth are `checks.sh` + the probe-file checker — a ❌/FAIL blocks the gate green at any venue depth.
 - Stage-agnostic: the workers carry no stage-specific logic; the stage supplies the contract, the phase supplies the process.
 
 If a phase leaks (evidence entering outside PROBE, an auto-advance past CHECK), stop — the stage's output is unearned.
@@ -43,7 +43,7 @@ If a phase leaks (evidence entering outside PROBE, an auto-advance past CHECK), 
 Each stage in `1-lifecycle/` (seed, the 1a–1d ladder: descriptions/themes/claims/advice, then venue, pitch, narrative, display, section-edit) is judged against its own contract.
 
 - One question: the stage answers exactly one question (the table in `PHILOSOPHY.md`), nothing more.
-- 1:1 mapping: one stage, one skill, with reads/writes/calls declared (`wiki/06-application-skill-structure.md`).
+- 1:1 mapping: one stage, one skill, with reads/writes/calls declared (`README.md` Router Rule).
 - Ladder cite-chain: each DIKW rung anchors in the one above it (`T1 (D3)`, `C2 (T1; D3)`, `A ← C`); the ladder climbs to W (the deliverable), where paper stops at K.
 - Venue boundary: venue-FREE stages (seed + the 1a–1d ladder) don't change on retarget; venue-ALIGNED stages (pitch onward) do. The pinned venue gates WHICH stages fire (`stages_skipped`) and HOW DEEP claims must settle (`claims_settlement`).
 - **Template**: the stage's `ref/<stage>-template.md` is the contract mold — every real intervention's stage doc is stamped from it, so a bad template propagates everywhere. It must be concrete (real example values, not bare `<...>`), its sections must match what the SKILL declares, and its field vocabulary must be current (`state`, not the retired `status`/`dispatched`/`verdicted`; the six-value state enum spelled in full). This is the single highest-leverage thing to check.

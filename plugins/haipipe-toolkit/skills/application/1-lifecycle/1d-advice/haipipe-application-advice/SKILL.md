@@ -22,7 +22,7 @@ It answers: what does the evidence advise this intervention to do, and which cla
 1d-advice         what the evidence advises (the deliverable)   <- THIS RUNG
 ```
 
-Read first: `../../../PHILOSOPHY.md`, `../../../wiki/08-stage-gate.md`.
+Read first: `../../../PHILOSOPHY.md`, `../../../haipipe-application/SKILL.md` (Stage Gate Protocol).
 
 
 ## What's special: advice is the ladder's deliverable
@@ -59,14 +59,14 @@ PROBE   rarely fires: derivation is in-stage work. An entry exposing a NEW evide
         (raised there as a question SECTION in 1-probes/), never gathers here. Mechanics:
         ../../../2-phase/1-probe/haipipe-application-probe/SKILL.md
 REVISE  actionability pass (every A survives the test), scope tightening, caveat wording
-CHECK   the LADDER GATE for light/medium venues (batched per wiki/08): every exploit A meets the venue's
+CHECK   the LADDER GATE for light/medium venues (batched per the Stage Gate Protocol): every exploit A meets the venue's
         settlement bar, every explore A is tagged + names its settling C + states rails, actionability passed,
         every supported/weak C consumed, no unresolved STALE tags; user confirms -> Gate Ledger row(s) -> advance
 ```
 
 Advice RARELY probes: a new evidence gap is not gathered here but routed back to 1c-claims, whose PROBE phase binds it.
 Each phase runs its worker (`haipipe-application-draft` / `-probe` / `-revise` / `-check`); announce every phase boundary and never let CHECK go implicit.
-Rounds + back-routing (loop-until-dry for medium+ venues, `[ROUND n]` / `[ROUTE -> claims]` in `_LOG`) follow `../../../wiki/08-stage-gate.md`.
+Rounds + back-routing (loop-until-dry for medium+ venues, `[ROUND n]` / `[ROUTE -> claims]` in `_LOG`) follow `../../../haipipe-application/SKILL.md` (Stage Gate Protocol).
 The ladder doc (`1d-advice.md`) is the record; adopted/declined A-ids with a why live there.
 
 

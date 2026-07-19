@@ -4,6 +4,30 @@ haipipe-paper-seed — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 4.4.0 — 2026-07-19 — BREAKING: `_CITATION_0-seed.md` sidecar RETIRED; Formatting/`##` contradiction fixed
+
+JL ruling, 2026-07-19 (Paper-Personality2Opioid seed redo): "we should delete it. do not use it." The 4.3.0 sync had deliberately left the `_CITATION_0-seed.md` harvest rule untouched; that is now reversed — seed keeps NO stage-local sidecars at all, matching the rule resource already had (`haipipe-paper-draft/SKILL.md` "NO SIDECARS"). Found the hard way: an agent drafting a seed read the artifact-spec bullet and regenerated the file, and it did so BEFORE any probe had run — the bullet's own "only when the probe returns literature" condition was unenforceable because nothing checked it.
+
+- Artifact spec bullet (SKILL.md:36) — `_CITATION_0-seed.md` line REPLACED by an explicit NO SIDECARS prohibition naming the retired file, so the next reader sees a ban rather than an absence.
+- Location block — the `_CITATION_0-seed.md` row dropped; the probe-file row now says where candidates actually live.
+- PROBE phase description — "sources harvest into _CITATION_0-seed.md" → "sources harvest into the ENTRY's own `**sources**:` lane".
+- NEW HOME for citation candidates: the probe ENTRY's `**sources**: harvest: OWED` lane in `1-probes/PPNN_<topic>.md` (already in `probe/haipipe-probe/ref/probe-template.md` under "Harvest lanes"). No new mechanism was invented; the sidecar was redundant with one the probe template already had.
+- SATELLITE SWEEP, ROUND 1 (incomplete — see round 2) — `paper/2-phase/1-probe/haipipe-paper-probe/ref/per-stage-dispatch.md` carried the SAME rule in TWO more places (lines 34, 80); both rewritten.
+- Formatting clause (SKILL.md) — fixed a self-contradiction a fresh-context reviewer caught: it said "No `#`/`##`/`###`" while `ref/seed-template.md` mandates `## Q-Seed-<n> · <title>` for Q-consumer blocks. Now carves out that one sanctioned exception and states the template wins.
+
+### ROUND 2 — the same-day fresh-context validation caught round 1 short (recorded because the failure mode matters more than the fix)
+
+A naive-reader validation agent, given only the revised skill and asked "what files would you create", found round 1 had missed the file that actually EXECUTES the phase. Three corrections, plus a retracted claim:
+
+- ❌ RETRACTED: round 1 claimed "live references to `_CITATION_0-seed.md` are now zero outside CHANGELOG history." FALSE when written. The round-1 grep searched the literal filename `_CITATION_0-seed`, but `haipipe-paper-draft/SKILL.md` says `_CITATION_` generically — so the two lines that MANDATE the sidecar (:33, :125) survived, in the one file seed's DRAFT phase dispatches to. Worse, that file's only NO-SIDECARS line sat under `### resource`, so *expressio unius* actively told a reader that seed DOES get one. Lesson: sweep the CONCEPT, not the filename.
+- WRONG DESTINATION, fixed: round 1 rehomed owed citations onto the probe ENTRY's `**sources**: harvest: OWED` lane. That lane is a checker FAIL (`check-probe-cards.sh` rule 7: "harvest: OWED -> FAIL on any lane line") and is written at PROBE harvest, never at DRAFT. The checker's PASS 2 header states the real rule and was authoritative all along: "`1-probes/` is the only consumer-side source of truth; `_LOG` is the only kept sidecar." Owed `\cite{TOADD}` now goes to `_LOG_0-seed.md`, in this skill, in per-stage-dispatch.md, and in the draft worker.
+- Principle 7 restated "No `#`/`##`/`###`" WITHOUT the carve-out added to the Formatting clause, 160 lines below it — so an agent reading top-to-bottom would strip the `## Q-Seed-<n>` blocks the `[Q-Seed-<n>]` anchor loop depends on. Both statements now carry the exception.
+- Cross-skill contradiction fixed in `haipipe-paper-draft`: it described 0-seed.md as THREE sections in three places, omitting Landscape and Q-consumer — the second of which is where every `[Q-Seed-<n>]` anchor lives. An agent following the worker's Step 3 would present a 3-section plan and fail this skill's own done-criterion 1.
+
+## 4.3.0 — 2026-07-19 — sync to probe constitution v9.5.0 (Q-executor-entry probe-file format)
+
+Synced the probe-file-anatomy references to the new v9.5.0 shape across the artifact-spec bullets, the Location block, the DRAFT/PROBE phase descriptions, principle 5b, and the done-criteria: a probe entry is now `## QX<n>` with `### q-executor` / `### q-consumer` / `### bank binding` (`route` / `bank` / `target` / `state`) / `### a-executor`. Field renames: `serves:`→a `### q-consumer` bullet (the `Q-Seed-<n>` id + original question), `match:` (`EXISTS`/`NONE→NEW`)→`bank: reuse | run | code | new`, the probe-file `a-consumer:`→`### a-executor`, "SECTION"→"ENTRY", and the per-file `## Why` DROPPED — the stake lives in each stage-doc Q-consumer. Unchanged (deliberately): the stage-doc `## Q-Seed-<n>` Q-consumer block and its `Answer:` (station ②) — only the probe-file entry moved; the `_CITATION_0-seed.md` harvest and `\cite{TOADD}`/`{VAL:?}` citation rules are untouched. No archaeology tags were present in this SKILL.md to strip.
+
 ## 4.2.0 — 2026-07-18 — rules inline in the template; Q-consumer with linked+cited questions; +Landscape
 
 A live co-design session with JL (2026-07-18) reshaped the seed. Net design (after one reversal — see below): `ref/seed-template.md` is the SINGLE source of truth and holds BOTH the skeleton (`<placeholders>`) AND the fill rules, the rules carried as `<!-- RULE: … -->` comments the author follows then DELETES (they never ship in 0-seed.md). No wiki doc; the skill never restates the rules, only phase behavior.
@@ -22,7 +46,7 @@ SKILL.md
 - Clarified the PROBE-vs-REVISE boundary (JL question): the loop closes at REVISE, not PROBE — born from content (DRAFT drops the bracket), dies into content (REVISE discharges it).
 
 Reversal (recorded per decision-register discipline)
-- An interim step this same session extracted the rules OUT to the skill's Artifact Spec and added `wiki/14-template-skill-split.md`. JL reversed it: "I don't want the wiki things … keep the rules in the template markdown file." The wiki doc was deleted and the rules returned to the template as `<!-- RULE -->` comments. Final state is above.
+- An interim step this same session extracted the rules OUT to the skill's Artifact Spec and added an interim template-skill-split doc. JL reversed it: "I don't want the wiki things … keep the rules in the template markdown file." That doc was deleted and the rules returned to the template as `<!-- RULE -->` comments. Final state is above.
 
 JL design comments (verbatim, resolved out of the template into this record):
 > JL: So the question should be also I don't know used to spot your content in this draft. You know, we don't want to ask questions like it's detached from the drought to do gather lemming. So we want to make it consistent.
@@ -37,7 +61,7 @@ JL design comments (verbatim, resolved out of the template into this record):
 ## [4.1.1] — 2026-07-14 — the required-reads were off by one `../`
 
 Fixed
-- **The first instruction in this skill pointed at nothing.** `Read first: ../../PHILOSOPHY.md, ../../wiki/04-lifecycle-map.md` — but this skill lives at `skills/paper/1-lifecycle/<N>-<stage>/<skill>/`, so `../../` is `1-lifecycle/`, which holds neither `PHILOSOPHY.md` nor `wiki/`. Both live one level further up, at `skills/paper/`. Every in-body citation (`../../wiki/08-stage-gate.md`, `../../wiki/02-comment-lifecycle.md`, `../../wiki/09-stage-illuminate.md`, `../../wiki/11-delivery-need.md`, `../../_venue/playbook-<venue>`) failed the same way, silently — an agent loading the philosophy and the stage-gate rules got file-not-found and proceeded without them. All repointed to `../../../`; every target verified to resolve on disk.
+- **The first instruction in this skill pointed at nothing.** `Read first: ../../PHILOSOPHY.md, ../../<shared-refs>/04-lifecycle-map.md` — but this skill lives at `skills/paper/1-lifecycle/<N>-<stage>/<skill>/`, so `../../` is `1-lifecycle/`, which holds neither `PHILOSOPHY.md` nor the shared-reference folder. Both live one level further up, at `skills/paper/`. Every in-body citation (stage-gate, comment-lifecycle, stage-illuminate, delivery-need, `../../_venue/playbook-<venue>`) failed the same way, silently — an agent loading the philosophy and the stage-gate rules got file-not-found and proceeded without them. All repointed to `../../../`; every target verified to resolve on disk.
 
 ## [3.7.0] -- 2026-07-14
 ## 4.0.0 — 2026-07-14
@@ -95,7 +119,7 @@ Changed (live seed run silently skipped PROBE+REVISE and drifted into CHECK)
 - frontmatter summary listed phases as draft -> revise -> check; PROBE restored to the spine.
 - PROBE no longer "optional": DEFAULT RUN for a new seed (landscape/related-work/novelty, mode light -- it answers the gate's "who cares?" / "is this new?"); skip only on re-entry/minor edits by explicit logged verdict. Direct dispatch of discovery/task agents or /haipipe-probe from the stage is forbidden.
 - REVISE now explicitly weaves probe takeaways into Motivations.
-- Phase visibility pointer added (Phase Transition Contract, wiki/08): announce every boundary, no silent skips, CHECK opens with the exit-criteria report + approval ask.
+- Phase visibility pointer added (Phase Transition Contract, 08-stage-gate.md): announce every boundary, no silent skips, CHECK opens with the exit-criteria report + approval ask.
 
 ## [3.0.1] — 2026-07-03
 
@@ -103,7 +127,7 @@ Changed (live seed run silently skipped PROBE+REVISE and drifted into CHECK)
 
 ## [3.0.0] — 2026-07-03
 
-- seed becomes stage orchestrator that drives its own phases. Phase skills (draft/polish/check) are internal workers called by this skill, not user-facing. Simplified to 3 sections (question/motivations/claim-shape). Comment lifecycle wired in (wiki/02). All ref/ moved to wiki/.
+- seed becomes stage orchestrator that drives its own phases. Phase skills (draft/polish/check) are internal workers called by this skill, not user-facing. Simplified to 3 sections (question/motivations/claim-shape). Comment lifecycle wired in. All ref/ docs re-homed.
 
 ## [2.1.0] — 2026-07-03
 
@@ -119,7 +143,7 @@ Changed (live seed run silently skipped PROBE+REVISE and drifted into CHECK)
 
 ## [1.1.0] — 2026-06-22
 
-- added illuminate+gate+compile protocol (../../wiki/08-stage-gate.md, ../../wiki/09-stage-illuminate.md, ../../wiki/13-tex-quality.md)
+- added illuminate+gate+compile protocol (08-stage-gate.md, 09-stage-illuminate.md, 13-tex-quality.md)
 
 ## [1.0.0] — 2026-06-22
 

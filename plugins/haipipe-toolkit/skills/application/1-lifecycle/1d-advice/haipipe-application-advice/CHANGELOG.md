@@ -29,7 +29,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 - W-actionability test on every P ("could the artifact stage write the exact move from this line?"); claim-restatements push back to 1c. Rejected section holds negative wisdom with the refuting claim.
 - Settlement coupling: the venue's claims_settlement bar applies through derivations (light: weak-with-caveat ok, GAP-derived forbidden; full: supported only).
 - Explicitly distinct from venue Artifact Principles: this doc is content-WHAT (venue-FREE, survives retarget); 2-venue.md is channel-HOW (venue-ALIGNED, rewrites).
-- The ladder gate (batched CHECK for light/medium venues per wiki/08) lands at this rung. Insight-KB W deposits are ON-REQUEST only via `--deposit <Pnn>` (R7).
+- The ladder gate (batched CHECK for light/medium venues per the Stage Gate Protocol) lands at this rung. Insight-KB W deposits are ON-REQUEST only via `--deposit <Pnn>` (R7).
 - ref/<stage>-template.md added (canonical artifact template, paper convention; JL follow-up 2026-07-09) + SKILL.md pointer line; draft worker 1.2.0 registry reads it at WRITE.
 
 ## [1.1.0] — 2026-07-09
@@ -46,4 +46,4 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 
 - EXPLORE|EXPLOIT ADOPTED (JL, breadth/flywheel discussion 2026-07-09 — resolves the parked derivation-bars + role-tag thread archived in ../../../haipipe-application/CHANGELOG.md): every A entry carries a role. Exploit entries take the settlement bars (bars now scope to exploit). An explore entry is a deliberate test-to-learn bet: it may derive from weak/GAP claims PROVIDED the tag is visible, it names the C its deployed arm will settle (Settles: C<n> via iterate), and it states its compliance rails — failing that contract fails CHECK regardless of venue. A/B results flow back (iterate -> 1a backfill -> C flips); the entry graduates to exploit or moves to Rejected. Adopted explore entries keep the tag downstream (artifact frontmatter, e.g. A3 (explore)).
 - Full C-consumption: every supported/weak C is cited by an A, refuted into Rejected, or closed with a No-action line + why. Negative advice ("avoid X", derived from a refuted C) is first-class and exploit-role. Rejected is the rung's reservoir, re-mined at every DRAFT open.
-- Multi-round DPRC (self-assess -> [ROUND n] -> CHECK when dry) + mid-phase back-routing ([ROUTE -> claims]) per wiki/08 Rounds. New principle 7: explore is a strategy, not a loophole.
+- Multi-round DPRC (self-assess -> [ROUND n] -> CHECK when dry) + mid-phase back-routing ([ROUTE -> claims]) per the Stage Gate Protocol Rounds contract. New principle 7: explore is a strategy, not a loophole.

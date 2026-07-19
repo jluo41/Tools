@@ -38,7 +38,7 @@ B. Review a CHECK report
 | accept with edits | reply in `> USER:` threads under the flagged lines, then ask to apply |
 | park | leave the stage as-is, flags stay open |
 
-Gate depth is venue-scaled (`../wiki/08-stage-gate.md`): simple venues (sms/push/reminder) confirm inline, complex venues (dashboard/report) get the full report — the explicit-approval rule never changes.
+Gate depth is venue-scaled (`../haipipe-application/SKILL.md` Stage Gate Protocol): simple venues (sms/push/reminder) confirm inline, complex venues (dashboard/report) get the full report — the explicit-approval rule never changes.
 
 C. Restart a phase after CHECK feedback
 ----------------------------------------

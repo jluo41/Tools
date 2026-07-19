@@ -80,4 +80,4 @@ reseed   -> /haipipe-paper seed          every hypothesis's resource is unobtain
 park     -> maturity: resource-blocked   real, but in flight / behind a DUA
 ```
 
-End every reply with the stage strip (`../../../haipipe-paper/stage-strip.sh`); comment threads follow `../../../wiki/02-comment-lifecycle.md`.
+End every reply with the stage strip (`../../../haipipe-paper/stage-strip.sh`); comment threads follow the Comment lifecycle section in `../../../haipipe-paper/SKILL.md`.

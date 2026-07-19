@@ -1,0 +1,163 @@
+v9.3.0 完整 workflow — probe plan 挪进 DRAFT + DRAFT 自查
+========================================================
+
+一句话：DRAFT 写两样（draft 散文 + probe plan）→ 🤖 自查 → 🧑 闸1 一起审
+        → PROBE 只往前跑 ③④⑤ → REVISE 织回散文 → 🧑 闸2 CHECK。
+
+权威文件：skills/probe/haipipe-probe/SKILL.md  (constitution, v9.3.0)
+配套    ：haipipe-paper-draft v4.2.0 · haipipe-paper-probe v5.1.0 · fn/probes.md
+例子    ：seed 阶段，论文《Physician Big-Five → Opioid Prescribing》，跟着 Q-Seed-1 走全程。
+
+
+─§ 1. 整体形状：4 phase + 2 人闸 + 1 自查 ────────────────────
+
+  DRAFT ──▶ 🤖 SELF-REVIEW ──▶ 🧑 闸1 ──▶ PROBE ──▶ REVISE ──▶ 🧑 闸2
+  写 draft   fresh-context     APPROVE     ③④⑤      织入答案     CHECK
+  + probe    的 reviewer 自查   审 draft              (station③)   跑 checker
+    plan     (面A draft         + probe
+    (①②)      面B plan)          plan
+
+  · 自查在闸1 之前：机械/质量问题先挡掉，人只做判断。
+  · 闸1 = 旧的 DRAFT 闸 + 本来要单设的 plan 闸，合成一道（两闸并一闸）。
+  · PROBE 是 milestone，不是第二道人闸；往前跑，不重新规划。
+
+
+─§ 2. 五步 loop 落在哪个 phase（v9.2.0 起）────────────────────
+
+    ┌─ DRAFT ─────────────────┐   ┌─ PROBE（往前跑）──────────┐
+    ① ORGANIZE    ② MATCH          ③ DISPATCH  ④ POINT  ⑤ INTERPRET
+    写 q-executor  root 到 folder    发 NEW 的   指 target   harvest
+    + route        (只读 grep bank)             a-consumer
+
+  · consumer 在 DRAFT 做 ② MATCH = 只读 grep bank，LAW 1 明确合法（禁笔禁跑，不禁眼）。
+  · route / match 权威（模型 A）：PROBE 的 agent 执行，不重判。
+
+
+─§ 3. DRAFT 产出两个文件（具体例子）─────────────────────────
+
+  文件 A：0-lifecycle/0-seed/0-seed.md   （stage doc，人读的散文）
+  ┌───────────────────────────────────────────────────────────┐
+  │ Motivations                                                 │
+  │   要检验人格是否预测开药，先得有带标签的数据。[Q-Seed-1]        │← 句子挂 id
+  │                                                             │
+  │ Q-consumer                                                  │
+  │   ## Q-Seed-1 · 有没有 trait→开药 的带标签数据？              │
+  │   Description: 是否存在把医生大五人格和阿片开药连起来的数据     │
+  │   Reason: Motivations 那句挂了它；没数据 → 整篇没法测          │
+  │   Answer: <空 —— PROBE 才填（station②）>                     │
+  └───────────────────────────────────────────────────────────┘
+
+  文件 B：1-probes/PP01_data-feasibility.md   （probe file）
+  ┌───────────────────────────────────────────────────────────┐
+  │ ## Why   🔒 没有外部带标签数据 → H1 死（stake，只此一处）       │
+  │                                                             │
+  │ ## Q-Seed-1 — trait-prescribing data   ← id 与 stage doc 同  │
+  │ - serves: 0-seed                                            │
+  │ - route:  discovery                    ← 哪个 bank（权威）    │
+  │ - match:  NONE → propose NEW discoveries/data-landscape/     │
+  │           trait-rx-datasets/           ← 已 grep bank，没有   │
+  │ - q-executor: |                        ← 剥掉 stake 的中性问题 │
+  │     有没有公开数据把医生人格和阿片/管制药开药连起来？           │
+  │     列出数据集、可获取程度、N。  Accepted: exists | none       │
+  │ - target: NEW ?                                             │
+  │ - state:  planned                                          │
+  │ - a-consumer: <空>                     ← station① ，PROBE 填  │
+  └───────────────────────────────────────────────────────────┘
+
+  重点：route + match + target 都在 DRAFT 写好了（= 计划做完了）。
+        DRAFT 绝不写 a-consumer（答案）—— 那是 PROBE ⑤ 的活。
+
+
+─§ 4. Step 4b 🤖 自查（DRAFT 后、闸1 前）────────────────────
+
+  fresh-context 的 review sub-agent，report-only（creator/reviewer 分工，
+  drafter 不给自己打分）。查两面：
+
+  面 A  draft 散文  ←→ stage 的 artifact spec
+     · 每节真内容，无占位
+     · 每句一行；\citep{key} 真（grep .bib）；缺的用 {VAL:?}/\cite{TOADD}
+     · 每个 Q-Seed-n 都在挂它的句子里 inline 引了 [Q-Seed-n]
+
+  面 B  probe plan  ←→ constitution 的「DRAFT self-review checklist」
+     · q-executor 干净（LAW 2）：无 stake、无 claim id、无 our/this paper、无答案暗示
+     · 问题可答 + 具体
+     · route 选了
+     · match 根到「具体 folder」，且真读过候选、按答案判（不是话题像）
+     · target 与 match 一致（EXISTS 路径 / NONE→NEW）
+     · heading id = stage doc 的 Q-consumer id（1:1）
+     · 每文件一个 ## Why，stake 没漏进 q-executor
+
+  有问题 → drafter 改 → 再查（最多 2 轮；第 3 轮还剩的，摆到人面前，不藏）。
+  自查 vs checker：自查读内容做判断、在源头挡；check-probe-cards.sh 正则兜底、在 CHECK 跑。互补。
+
+
+─§ 5. 🧑 闸1：draft + probe plan + 自查结论 一起审 ──────────────
+
+  人一次看：散文对不对 · 问题对不对（Q-Seed-1）· 计划对不对（去 discovery、没现成、要新建）
+            · 自查报告（PASS 还是残留问题）
+  批准 → 往下。没批的问题不往下走。自查不替代人闸，只是前置过滤。
+
+
+─§ 6. PROBE：往前跑 ③④⑤ + 答案的三站 ────────────────────────
+
+  ③ DISPATCH   match=NONE/target=NEW → q-executor 原样发给
+               Agent(haipipe-discovery-orchestrator-agent)
+               （模型 A：agent 只发，不再自己 match；executor 自己的 QA-gate 仍去重）
+                     │
+                     ▼   bank 那边写出 QA 文件：
+  🏦 discoveries/data-landscape/trait-rx-datasets/QA/1-trait-rx-datasets.md
+       ## Answer: 没有直接数据集；最接近 CMS Part D（开药）＋需从 reviews 抽人格标签
+                     │
+  ④ POINT      target: → 上面那个 QA 路径；state: answered
+                     │
+  ⑤ INTERPRET  把答案翻回 consumer 的话，落三站的前两站 ↓
+
+     🏦 QA ── station① ──────── station② ────────────── station③
+              probe file          stage doc               （REVISE 才写）
+              a-consumer:          Q-Seed-1 Answer:
+              "没直接数据，          "没直接数据…
+               靠 CMS+reviews"       [source: PP01]"    ← 锚点指回 station①
+
+
+─§ 7. REVISE 织入（station③）+ 🧑 闸2 CHECK ──────────────────
+
+  REVISE：把答案织回 Motivations 里挂 [Q-Seed-1] 的那句，去掉方括号：
+     改前： …先得有带标签的数据。[Q-Seed-1]
+     改后： …而现成数据并不存在，得从 CMS Part D 加 review 抽取的人格标签拼。
+
+  🧑 闸2 CHECK：人审最终结果 + 跑 check-probe-cards.sh
+     （无 planned 残留、target 落盘、LAW-2 干净 → 绿）
+
+
+─§ 8. 谁写哪个文件（记这张就够）────────────────────────────
+
+  文件 / 字段                                    谁写              什么时候
+  ───────────────────────────────────────────  ─────────────    ──────────
+  0-seed.md 散文 + Q-consumer（问题）             DRAFT            闸1 前
+  0-seed.md Q-Seed-1 Answer（station②）           PROBE ⑤          跑完
+  0-seed.md 散文织入答案（station③）              REVISE           闸2 前
+  PP01 的 q-executor/route/match/target（计划）    DRAFT            闸1 前
+  PP01 的 a-consumer（station①）                  PROBE ⑤          跑完
+  QA 文件的 ## Answer                            bank 的 executor  agent 那边写
+
+
+─§ 9. 关键文件 + 版本 ───────────────────────────────────────
+
+  skills/probe/haipipe-probe/SKILL.md               constitution  v9.3.0
+     · 「The answer's three stations」
+     · 「The DRAFT self-review checklist」（面 B）
+     · anatomy: serves/route/match/q-executor/target/state/a-consumer
+  skills/probe/haipipe-probe/ref/probe-template.md  probe 文件骨架
+  skills/paper/2-phase/0-draft/haipipe-paper-draft/SKILL.md        v4.2.0（Step 4b 自查）
+  skills/paper/2-phase/1-probe/haipipe-paper-probe/SKILL.md        v5.1.0（只跑 ③④⑤）
+  skills/paper/haipipe-paper/fn/probes.md                          loop 图
+
+  还欠（共享/并行会话）：
+  · skills/probe/agents/haipipe-probe-q-executor-agent.md —— 还写着做 ②MATCH，模型 A 下应只 DISPATCH（要 paper+app 一起改）
+  · application 侧 draft/probe worker + umbrella + fn —— mirror paper
+
+
+─§ 10. 模型 A（一句）───────────────────────────────────────
+
+  route / match 权威。PROBE 的 collector agent 执行、不重判（②MATCH 在 DRAFT 做过了）。
+  没选 B（agent 在干净上下文再 match 一遍）。

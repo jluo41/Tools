@@ -19,7 +19,7 @@ The umbrella routes; the phase workers execute; the stages define the contract e
 The umbrella is `haipipe-paper` (router) + `haipipe-paper-enter` (Console) + `haipipe-paper-lifecycle` (spine orchestrator). It should ROUTE, never do stage work itself.
 
 - Intent: a free-form request resolves to the right `(venue, stage)` pair.
-- Routing: every lifecycle object reaches its owning skill (the Router Rule in `wiki/06-paper-skill-structure.md`).
+- Routing: every lifecycle object reaches its owning skill (the Router Rule in `README.md`).
 - Frontier: the Console derives state from disk, not stored status, and reports both `current_layer` and `maturity` (the Maturity Rule).
 - Coverage: every stage in the spine is reachable; no orphan verb, no dead route.
 - Boundary: the umbrella dispatches and summarizes; it never drafts prose or judges a claim.

@@ -22,7 +22,7 @@ It answers: which patterns/topics emerge from the described data and the field, 
 1d-advice         what the evidence advises (the deliverable)
 ```
 
-Read first: `../../../PHILOSOPHY.md`, `../../../wiki/03-intervention-lifecycle.md`.
+Read first: `../../../PHILOSOPHY.md`, `../../haipipe-application-lifecycle/SKILL.md` (Intervention Lifecycle Contract).
 
 
 ## What's special: three things make themes themes
@@ -62,7 +62,7 @@ CHECK   every theme grounded (>=1 resolving D id or source) + carries a hook (or
 Themes RECEIVES grounding, never PRODUCES it inline (LAW 1): it raises questions; `haipipe-application-probe` binds them.
 When a theme's grounding refreshes (a `[STALE ...]` tag from 1a), re-confirm or revise the theme before CHECK.
 A theme needing a number files the 1a D slot immediately and logs `[ROUTE -> descriptions]` — never wait for a gate to report it.
-Rounds + back-routing (loop-until-dry for medium+ venues; `[ROUND n]` / `[ROUTE -> descriptions]` in `_LOG`) follow `../../../wiki/08-stage-gate.md`.
+Rounds + back-routing (loop-until-dry for medium+ venues; `[ROUND n]` / `[ROUTE -> descriptions]` in `_LOG`) follow `../../../haipipe-application/SKILL.md` (Stage Gate Protocol).
 CHECK may be BATCHED into the ladder gate per the venue; announce every phase boundary in `_LOG`; CHECK is never implicit.
 
 

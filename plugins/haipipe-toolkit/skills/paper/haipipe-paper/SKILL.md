@@ -4,9 +4,9 @@ description: "Run any paper-lifecycle work: parse intent (venue + stage) and rou
 argument-hint: "[enter|status|venue|stage] [paper-path-or-args...]"
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "3.1.0"
-  last_updated: "2026-07-14"
-  summary: "Front door for the paper lifecycle: parse intent (venue + stage), route to the stage specialists. Each stage runs four phases (draft → probe → revise → check); the paper RAISES evidence questions as sections in 1-probes/, and each stage's PROBE phase dispatches them through a clean agent — the paper never calls the bank directly. History: ./CHANGELOG.md."
+  version: "3.1.1"
+  last_updated: "2026-07-19"
+  summary: "Front door for the paper lifecycle: parse intent (venue + stage), route to the stage specialists. Each stage runs four phases (draft → probe → revise → check); the paper RAISES evidence questions as sections in 1-probes/, and each stage's PROBE phase dispatches them through a clean agent — the paper never calls the bank directly. Also THE home of three family-wide conventions: the Closing Block, the Comment lifecycle, and Delivery Need Routing + the Evidence Routing Protocol. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -15,11 +15,11 @@ Skill: haipipe-paper (orchestrator)
 
 User-facing entry for the paper lifecycle.
 The paper lifecycle is a delivery owner: it owns this paper's angle, resources, claims, narrative, section map, displays, maturity, and dated work rounds.
-Project-level evidence lives outside the paper in tasks and discoveries; when the paper hits a gap, record a delivery need (`../wiki/11-delivery-need.md`) and route to the evidence worker.
+Project-level evidence lives outside the paper in tasks and discoveries; when the paper hits a gap, record a delivery need (see "Delivery Need Routing" below) and route to the evidence worker.
 
 This orchestrator parses intent and dispatches to stage/specialist skills via `Skill()`.
 Stage skills internally drive the DPRC phase workers (`2-phase/`); users and this router never invoke phase skills directly.
-Canonical structure: `README.md` at the paper skill root + `../wiki/06-paper-skill-structure.md`.
+Canonical structure: `../README.md` at the paper skill root (skill-tree layout, Stage to Procedure, Router Rule, Maturity Rule).
 
 ALWAYS read and honor `PREFERENCES.md` (this skill's own folder): portable, git-tracked global behavioral preferences that survive a machine change.
 `digest` / `feedback` append flagged global prefs there (merge-or-create).
@@ -132,7 +132,7 @@ After dispatch, capture the specialist's structured tail (status / summary / art
 Closing Block (end every reply)
 --------------------------------
 
-THE single source of truth for the closing block and the focus strip (absorbed wiki/01-focus-strip-markers 2026-07-03; every stage / enter skill inherits this section).
+THE single source of truth for the closing block and the focus strip (every stage / enter skill inherits this section).
 In a paper session, END every reply with ONE fenced `text` block: a titled top rule carrying `📄 paper · <active-stage> 🔥`, a two-line simplified tail, a plain bottom rule, then the TWO-LINE focus strip (stage + phase):
 
 ```text
@@ -153,6 +153,144 @@ The phase line is rendered by the 🔥 stage's skill from its own DPRC progress.
 
 
 Gate-aware: advancing `current_layer` requires an EXPLICIT approval action that the current stage is done (Stage Gate, `../1-lifecycle/ref/08-stage-gate.md`) -- by the human (copilot mode) or by a reviewer subagent standing in for the human (autopilot mode); once STATUS.md carries the gate ledger, ✅ means "approved", and the ledger records who approved (human or agent).
+
+
+Comment lifecycle
+------------------
+
+THE single source of truth for inline comments across ALL paper skills. Every phase worker, lifecycle stage, and orchestrator follows this convention.
+
+**Loaded-context rule.** This section is not in context at every skill invocation, so it cannot bind behavior by itself. Every skill that touches working files must INLINE its binding subset (never delete/reword `> USER:`; reply `> CC:` underneath; only the user resolves; resolved threads move to `_LOG` verbatim; surgical edits only). The stage hubs carry that block as "Comment rules (binding)"; this section remains the full reference for the long tail (actor ids, marks, anchoring, `_LOG` format).
+
+### Actor ids
+
+The `{...}` token names **who** authored that line. Keep it short. One flat namespace:
+
+| Kind | Examples | Note |
+|------|----------|------|
+| AI tool / agent | `CC` (Claude Code), `GPT`, `GEM` (Gemini), `CDX` (Codex) | reviewing tools; append `-<topic>` on findings |
+| Person | initials (`AU`, `CO1`, etc.) | authors / coauthors |
+| Role | `R1`, `R2`, `AC`, `ED` | numbered reviewers, area chair, editor |
+
+**The human actor id is asked, never assumed.** At the start of a cycle the skill asks the user for their initials (and the pass date `vMMDD`). Never default to any specific initials.
+
+### Two comment formats
+
+In outline `.md` files, blockquote style:
+
+```markdown
+> USER: comment about this paragraph
+> CC: response to the comment
+```
+
+Used in: section outlines, seed, claims, pitch, narrative, `_CITATION_`, `_VALUES_`.
+
+In `.tex` files, LaTeX comment style:
+
+```latex
+%% {CC-content-v0531}: finding | suggestion ========>
+```
+
+Used in: `0-sections/*.tex`, `4-display.tex`, rebuttal files.
+
+### The two marks (tex format)
+
+Finding (the comment):
+
+```
+%% {<actor>-<topic>-vMMDD}: <one-line finding> | <one-line suggestion>
+```
+
+- `<actor>` -- who wrote it. A reviewing AI appends the topic for traceability: `CC-content`, `CC-values`, `GPT-cite`.
+- `vMMDD` -- the pass date (e.g. `v0531`). New round = new date.
+- `<finding> | <suggestion>` -- what's wrong, then what to do. One line each.
+
+Reply (same line, after the separator):
+
+```
+%% {CC-content-v0531}: claim stated as causal. | Soften to "associated with". ========> {AU v0531}: accept
+```
+
+- `========>` -- the reply separator (literal, eight `=` then `>`).
+- Reply verb vocabulary: `accept` / `reject` / `modify: <how>` / `discuss: <q>` / `done`.
+
+### Anchoring (tex files)
+
+A comment sits on its **own line, directly below the text it refers to**:
+
+```latex
+Agreeableness showed the strongest positive correlation ($r = 0.62$).
+%% {CC-values-v0531}: 0.62 here vs 0.747 in the table. | Reconcile. ========>
+```
+
+For wrapped paragraphs, use `@"quote"` to anchor: `%% {CC-content-v0531}: @"we next examined" opener is throat-clearing. | Start with the finding.`
+
+### The lifecycle
+
+Comments come from three places:
+
+1. **Inline in the working file**: `> USER:` comments (outline) or `%% {USER}:` comments (tex)
+2. **Session (chat)**: direction, reasoning, taste decisions -- agent writes these into the file as `> USER:` (quoting what the user said)
+3. **`> CHECK:` comments**: seeded by the CHECK worker at every flagged report item's exact spot (issue + judgment needed, concrete values), so the human's in-file pass is guided by the file itself. The human replies `> USER:` under each; the threads then follow the same lifecycle below (restart responds, user confirms, thread moves to `_LOG`). Direction is the reverse of `> USER:` -- agent asks, human rules.
+
+```
+1. User adds comment in the .md file (or says it in session, agent writes it in)
+2. CC responds underneath
+3. Work happens, content changes
+4. User confirms resolved
+5. Comment thread MOVES to _LOG (with -> applied / -> rejected / -> deferred)
+6. Working file stays clean
+```
+
+Rules:
+
+1. **Comments live in the working document while active.** They sit next to the content they discuss.
+2. **Agent never removes a comment.** Only the user confirming resolution triggers the move.
+3. **Resolved comments move to `_LOG`**, grouped by phase and date. The comment thread is preserved verbatim.
+4. **Session comments that represent decisions** are written into the working document so they enter the same lifecycle. Ephemeral chat that is not a decision disappears with the session.
+5. **Each phase starts with a clean file.** When draft closes and probe begins, all draft-phase comments have been resolved and moved to `_LOG`.
+
+### `_LOG` format
+
+**Ordering: newest entry at the TOP.** A `_LOG` is read to answer "what just happened", so new phase/date blocks are INSERTED directly under the file's H1 title, not appended at the bottom (reverse-chronological, like a changelog). Within one block, lines stay in writing order. When touching a legacy bottom-appended `_LOG`, reorder its blocks newest-first in the same edit.
+
+**Insertion is non-destructive.** The previous top entry keeps its `## <date> — <phase>` heading and body byte-intact; the new block slots BETWEEN the H1 and that heading. An insert that eats the prior entry's heading is a defect.
+
+**Block headings carry date + HH:MM** (`## 2026-07-05 13:29 — [PHASE] PROBE — START`), so the `_LOG` doubles as a coarse on-disk timeline of the run (fine-grained view = `0_utils/haipipe-run-timeline` over the transcripts). Legacy undated/time-less headings stay as-is; only new blocks get stamped.
+
+```markdown
+## draft  2026-07-03
+
+### Seed Question
+> USER: don't use "discretion", too academic
+> CC: reframed to "room for judgment"
+-> applied
+
+### Motivations
+> USER: lead the first motivation with a puzzle
+> CC: done, led with "the puzzle is..."
+-> applied
+```
+
+Why move, not copy:
+
+- The working document stays readable as content, not buried in old discussion.
+- Each phase gets a clean slate.
+- `_LOG` preserves the full reasoning chain for future reference.
+- If a comment is reopened, it is written fresh (new `> USER:` comment), not resurrected from `_LOG`.
+
+### REVISE phase: no comment-first
+
+REVISE is the exception. REVISE workers apply changes directly (no comment-first round). They leave `%% {CC-<worker>}: <why>` comments explaining non-trivial changes. These comments are for CHECK to review, not for a human reply cycle. The human reviews in CHECK and can add `> USER:` comments to restart REVISE.
+
+### Round invariants (tex comment-first, when used)
+
+| Round | A skill MAY | A skill MUST NOT |
+|-------|-------------|------------------|
+| **1 -- review** | insert `%% {CC-...}:` comment lines | change any body text, banner, label, or value |
+| **2 -- apply** | apply changes for `accept` / `modify` replies | touch any `OPEN` comment; apply a `reject` |
+
+Round 1 diff adds only comment lines. If any non-comment line changed, the pass violated the protocol.
 
 
 No-Arg Chooser
@@ -183,21 +321,197 @@ next:      suggested next command
 Delivery Need Routing
 ----------------------
 
+THE single source of truth for how the paper records a gap as a need, routes it to the right evidence worker, and backfills when the answer returns. Paper-owned; the application skill keeps its own copy. There is no cross-skill shared file.
+
+Core rule: the paper owns the STORY and the JUDGMENT; the EXECUTORS (task and discovery) own the EVIDENCE, and the probe is the map between them.
 Paper work is demand-driven: a paragraph, claim, figure, or round todo may reveal that the next action is evidence work.
 The enter/status path surfaces those needs before recommending more writing.
-Need record schema: `../wiki/11-delivery-need.md`; paper/evidence boundary + `\needprobe{}`: `../wiki/12-evidence-routing.md`.
+
+### How paper talks to probe
+
+No message bus, no shared contract file. Two channels carry it, and the agent (this session) is the medium:
+
+```
+1. Command   paper hits a claim gap -> the agent runs
+             /haipipe-paper probe "<question>" (opens a `## QX<n>` ENTRY in the topic's
+             probe file). DRAFT authors the plan — ① ORGANIZE the `### q-executor`,
+             ② MATCH it against the bank's QA corpus and set `**bank**:` / `**target**:`.
+             The PROBE worker then RUNS THAT PLAN FORWARD, dispatching the
+             `### q-executor` block only for the entries MATCH left as run | code | new.
+2. Disk      paper writes the need (in 0-lifecycle/1b-claims / STATUS); the executor
+   (async)   writes the answer as <task-folder>/QA/<n>-<slug>.md; the entry's
+             `**target**:` points at that FILE, its `### a-executor` copies the answer
+             in, and each Q-consumer's a-consumer (in the stage doc) interprets it. No
+             handshake — binding is by PATH, and the file on disk IS the state.
+```
+
+Who owns which format: the paper owns the NEED (loose) and the a-consumer in its stage doc (its own vocabulary). The EXECUTOR owns the ANSWER (the QA file: `# Q` / `## Answer` / `## Caveats` / `## Not-done`, general language, anatomy in `probe/haipipe-probe/SKILL.md`). A CLAIM's status is the paper's alone, and lives in `0-lifecycle/1b-claims/1b-claims.md`. That is why no shared interface file is needed: each artifact's shape belongs to the layer that produces it.
+
+### When to record a need
+
+Only when the problem is EVIDENCE, not wording. A wording/structure problem loops back inside the paper lifecycle (1-claims / 2-pitch / 3-narrative / 4-display / 5-section-edit). A need leaves the paper for an evidence worker.
+
+```
+paper GAP -> a Q-consumer in the stage doc + a question ENTRY in 1-probes/ (DRAFT
+MATCHes it) -> the PROBE phase DISPATCHes only what MATCH could not close -> the
+answering QA file -> the entry's `### a-executor` -> each Q-consumer's a-consumer ->
+the paper backfills (the claim's status flips in 1b-claims.md)
+```
+
+Do NOT route through a project-level narrative layer (there isn't one).
+
+### Routes
 
 ```
 claim needs evidence / robustness / literature / a data artifact -> /haipipe-paper probe "<question>"  (a SECTION in 1-probes/; MATCH first, dispatch only what MATCH cannot close)
 figure/table needs materialized output (not claim-gated)         -> /haipipe-task-for-display <need>
-settled claim status (supported|refuted|inconclusive)            -> 0-lifecycle/1b-claims/1b-claims.md (the ONLY home of a claim's status; the probe section carries only its `a-consumer:`)
+settled claim status (supported|refuted|inconclusive             -> 0-lifecycle/1b-claims/1b-claims.md (the ONLY home of a claim's status; the
+  + confidence + claim_type)                                        probe entry carries only the `### a-executor` copy of the bank's answer.
+                                                                    `## Verdict`/`verdicted` are DELETED)
 wording/section placement                                        -> the owning lifecycle stage skill
 standalone utility (a HUMAN, not the paper: lit scan, data check) -> /haipipe-task qa | /haipipe-discovery qa (the bank's own door)
 ```
 
+The entry is `/haipipe-paper probe "<need>"`: it opens a question ENTRY (`## QX<n>`) in the right topic's probe file. The five-step loop is split across two phases — DRAFT authors ① ORGANIZE (write the `### q-executor`, copy the Q-consumer under `### q-consumer`) and ② MATCH (reuse an existing QA file if one answers it; set `**bank**:` + `**target**:`); the PROBE phase then runs ③ DISPATCH (the `### q-executor` block, verbatim, to the task/discovery orchestrator) → ④ POINT → ⑤ INTERPRET, without re-matching.
+
+Two entry rules (who the delivery calls):
+
+- a CLAIM need (a claim's status is at stake) -> raise a question ENTRY and let the PROBE phase route it. The paper never calls a raw compute agent for a claim-bearing need, and never executes bank work inline (LAW 1).
+- a pure ARTIFACT / render need (no claim at stake, e.g. re-render a figure) -> call `/haipipe-task-for-display` directly; the display references the rendered asset.
+
 ALL evidence enters through a stage's PROBE phase; the paper never calls the bank directly.
 Resolved evidence backfills into `1-claims`, `4-display`, sections, or round logs.
 Evidence workers never own the paper story.
+
+### Need record
+
+Each open need is one row in `0-lifecycle/1b-claims/` (the claim ledger) or the paper STATUS dashboard:
+
+```
+need_id      stable handle (e.g. N1, tied to a claim slot C2 or a display)
+gap          which claim slot / display / section has the gap
+kind         evidence | context | artifact | meaning
+route        the command above
+state        open | commissioned | returned      (mirrors the probe entry's derived state)
+backfill     the slot/display to update when the worker returns
+```
+
+### Backfill (the return direction)
+
+The answer is a FILE: the executor's `<task-folder>/QA/<n>-<slug>.md`. The probe entry's `**target**:` points at it, `### a-executor` copies its answer in (the consumer-side single source of truth), and each Q-consumer's a-consumer — its `Answer:` line in the stage doc, anchored `[source: PP<NN>]` — says what it MEANS for this paper. On backfill:
+
+```
+- write the claim's status in 0-lifecycle/1b-claims/1b-claims.md — supported |
+  refuted | inconclusive, + confidence + claim_type. THAT ledger is
+  the only home of a claim's status.
+- if the evidence narrows the claim, narrow the claim wording in 1-claims
+- the executor NEVER edits paper prose: it returns a FACT, and the paper decides
+  what the fact means and how to phrase it
+```
+
+Multiple papers can cite the SAME QA file in discoveries/ + tasks/, each through its own entry and its own a-consumer — the FACT is shared, the JUDGMENT is not.
+
+### Autonomous drain (the "keep going" loop)
+
+The console is a derive-from-disk, resumable loop body. To drive a delivery to done:
+
+```
+LOOP until (no open needs) OR (gate hit) OR (only server-blocked left):
+  1. enter    derive frontier + open needs from disk (the queue)
+  2. pick     the next actionable need (skip server-blocked)
+  3. route    claim -> a question ENTRY (the PROBE phase dispatches it) ;
+              artifact -> task-for-display ; prose -> edit
+  4. execute  write the artifact locally, or wait for the dispatched QA file
+  5. backfill update the slot/display/entry; mark the need returned
+  6. -> 1
+```
+
+State lives on disk (the need ledger + STATUS), so a fresh session re-enters and continues.
+
+Server vs local: a local need (render, parse, draft, backfill) drains immediately. A need that requires a NEW server run (Stata on PHI depositing to `Report-From-CMS-Server`) is server-blocked: schedule a poll and resume when results land. A figure renders locally; it blocks only if its underlying regression is not back yet.
+
+Autonomy policy:
+
+```
+AUTO (no asking):  local render/parse, backfill claims/displays, draft a stage tex,
+                   compile previews, parse logs, status/ledger updates
+PAUSE + surface:   trigger a server/PHI run; declare a final yes/no answer;
+                   settle a claim's status in 1b-claims.md; compile-to-submit;
+                   destructive round / git ops
+```
+
+The loop runs AUTO unattended and stops at the first PAUSE gate, reporting what it hit.
+
+
+Evidence Routing Protocol
+--------------------------
+
+When paper-lifecycle work hits a claim or wording whose support needs NEW evidence, data/variable inspection, or an analysis that does not exist yet, the paper layer must NOT dig into data, scripts, do-files, logs, or variable definitions. Stop. Hand off. Mark the gap. Keep writing.
+
+### The `\needprobe{}` macro
+
+When a claim lacks evidence, mark it in the `.tex` with a visible red caveat:
+
+```latex
+\newcommand{\needprobe}[1]{\textcolor{red}{\textbf{[NEED PROBE]} #1}}
+```
+
+Add this macro to the lifecycle preamble (or the paper's shared command file). Use it inline wherever the gap lives:
+
+```latex
+\needprobe{Is the intensive margin about patients already on opioids?}
+```
+
+The red flag renders in the compiled PDF so the gap is obvious to every coauthor. Remove it when the answer lands (the section's `target:` resolves and its `a-consumer:` is written) and the claim is backfilled with supported text.
+
+### Handoff protocol
+
+When paper work surfaces an evidence gap, do the following INSTEAD of investigating the data yourself:
+
+```
+a. STOP investigating the data. Do not grep do-files, re-derive variables, or
+   design the estimation.
+b. MARK the claim with \needprobe{description of what needs settling}.
+c. RECORD a delivery NEED (per Delivery Need Routing above): the claim under test
+   and what an answer would have to establish.
+d. RAISE it as a question SECTION (/haipipe-paper probe "<need>"). The stage's
+   PROBE phase MATCHes it against the bank, and dispatches only what MATCH cannot
+   close. The paper TRIGGERS; it never runs the analysis (LAW 1).
+e. BACKFILL: when the answering QA file lands, write the section's `a-consumer:`,
+   flip the claim's status in 1b-claims.md, and remove the \needprobe{} flag.
+```
+
+### The `probe` verb
+
+```
+/haipipe-paper probe <need-description>
+```
+
+opens a question SECTION in the right topic's probe file at `1-probes/`. The stage's PROBE phase (`haipipe-paper-probe`) is what dispatches it — to `Agent(haipipe-task-orchestrator-agent)` or `Agent(haipipe-discovery-orchestrator-agent)`, carrying the section's `q-executor:` block and nothing else. The paper stays a story layer; the executor does the work.
+
+### Heavy probes and subagent dispatch
+
+When a probe requires reading a lot of code/logs (e.g. cohort construction from Stata do-files), dispatch it to a BACKGROUND SUBAGENT so the main paper session keeps doing paper work:
+
+```
+a. Add a beat to narrative/Methods for the topic (e.g. "Cohort construction"),
+   marked \needprobe{} until the report lands.
+b. Raise the question SECTION (/haipipe-paper probe "<need>"), then let the PROBE
+   phase dispatch its `q-executor:` with run_in_background=true.
+c. When the subagent report returns, fold it into Methods + Table 1 and flip the
+   beat from \needprobe{} to supported.
+```
+
+### Construction as a first-class beat
+
+Dataset/cohort CONSTRUCTION is a first-class narrative/Methods beat, not a one-line "Setting" aside. The narrative must account for:
+
+- inclusion/exclusion funnel
+- unit definition (what is one observation)
+- exposure -> outcome linkage
+- how each outcome, flag, and control variable is computed
+
+Each of these may trigger its own `\needprobe{}` if the paper layer has no answering QA file covering it. The EXECUTOR (not the paper) reads the do-files, inspects the data, and returns the description.
 
 Structure Pointers
 -------------------
@@ -205,11 +519,11 @@ Structure Pointers
 Each area's internal contract lives with its owner; consult, never restate:
 
 ```
-skill tree (0-enter / 1-lifecycle / 2-phase / 3-deliver / 4-respond / 5-present / venue / wiki)
-                                   -> README.md (skill root) + ../wiki/06-paper-skill-structure.md
+skill tree (0-enter / 1-lifecycle / 2-phase / 3-deliver / 4-respond / 5-present / venue)
+                                   -> ../README.md (skill root: Skill-tree layout, Stage to Procedure, Router Rule, Maturity Rule)
 paper-folder layout                -> ../2-phase/REF/paper-folder-anatomy.md (canonical tree, prefix semantics, maturity ladder)
 lifecycle stages + venue coupling  -> ../1-lifecycle/ref/03-paper-lifecycle.md + ../1-lifecycle/ref/04-lifecycle-map.md
-rounds                             -> ../wiki/07-paper-rounds.md
+rounds                             -> ../0-enter/haipipe-paper-round/SKILL.md ("Rounds contract")
 venue knowledge                    -> ../venue/playbook-<venue> packs (venue is knowledge, not a pipeline)
 ```
 

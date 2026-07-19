@@ -4,6 +4,11 @@ haipipe-application-enter — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [2.3.1] — 2026-07-19
+
+- Absorbed the retired wiki doc `05-intervention-dashboard.md` as the **Dashboard Contract (derive from disk)** section — this Console skill is now the single home of the derive-from-disk rule (disk wins; STATUS.md drift is flagged), the stage-frontier detection algorithm, the open-needs detection table, the compact dashboard shape, and the strip-symbol convention.
+- Read-first list rewired: lifecycle reference -> `../../1-lifecycle/haipipe-application-lifecycle/SKILL.md` (Intervention Lifecycle Contract); need records -> `../../haipipe-application/SKILL.md` (Delivery Need Routing section).
+
 ## [2.3.0] — 2026-07-17
 
 - Insight-KB retired as an evidence layer: dropped `insight` from the delivery-need type enumerations, the `filing insight memory` ask-first item, and `and insights` from the shared-evidence location.

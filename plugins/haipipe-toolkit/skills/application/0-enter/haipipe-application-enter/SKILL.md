@@ -4,8 +4,8 @@ description: "Open the Intervention Console for an intervention folder. Use for 
 argument-hint: "[intervention-path] [free-form input]"
 allowed-tools: Bash, Read, Grep, Glob, Write, Skill
 metadata:
-  version: "2.3.0"
-  last_updated: "2026-07-17"
+  version: "2.3.1"
+  last_updated: "2026-07-19"
   summary: "Intervention Console (mirrors the Paper Console): resolve the intervention root, derive state from disk (not stored status), render an open-needs dashboard (frontier + maturity + venue/audience + claim/display/round gaps + releasable probes + loopback), record session state in .intervention-console.yaml, and route free-form follow-up through the lifecycle in copilot mode. Get-or-create scaffolds a missing path (confirm-gated). History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -56,11 +56,80 @@ Read first:
 
 ```text
 ../../PHILOSOPHY.md
-../../wiki/03-intervention-lifecycle.md
-../../wiki/05-intervention-dashboard.md
+../../1-lifecycle/haipipe-application-lifecycle/SKILL.md   (Intervention Lifecycle Contract)
 ```
 
-When creating or interpreting explicit need records: `../../wiki/11-delivery-need.md`.
+When creating or interpreting explicit need records: `../../haipipe-application/SKILL.md` (Delivery Need Routing section).
+
+## Dashboard Contract (derive from disk)
+
+THE single source of truth for what the Console reads and how the dashboard is rendered. The Console reads the intervention folder and derives state. It NEVER trusts STATUS.md alone — disk wins; STATUS.md drift is flagged.
+
+**Stage frontier detection**
+
+```python
+spine = ["0-seed", "1a-descriptions", "1b-themes", "1c-claims", "1d-advice", "venue", "2-pitch", "3-narrative", "4-display", "5-section-edit"]
+skipped = read_status_row("stages_skipped")          # written at venue pin
+for stage in spine:
+    if stage in skipped: continue                    # venue-skipped: passed over, never a gap
+    if stage == "venue":
+        if not status_hasvenue(): frontier = "venue"; break
+    elif not stage_doc_has_content(f"0-lifecycle/{stage}/{stage}.md") or not gate_confirmed(stage):
+        frontier = stage; break
+else:
+    frontier = "draft" if no_artifact() else "review" if not_reviewed() else "deploy"
+```
+
+**Open needs detection**
+
+```
+Source                                        Need type
+───────────────────────                       ──────────────
+1a-descriptions: entry stale or undated       data refresh → raise a 1a section
+1b-themes: theme without grounding            ungrounded theme → ground or park
+1c-claims: status=GAP below settlement bar    claim gap → raise a probe section
+1c-claims: status=weak (load-bearing)         weak claim → optional probe
+1d-advice: A below settlement bar             under-derived advice → settle its claims
+any ladder doc: unresolved [STALE] tag        staleness → re-confirm or revise the entry
+1-probes/ section: state=planned              unstarted probe section
+1-probes/ section: state=commissioned         in-progress probe (await the QA answer)
+4-display: element without task ref           unmaterialized element
+5-section-edit: DPRC phase incomplete         section work
+0-artifacts/REVIEW-*: verdict=revise          artifact needs revision
+1-rounds/latest: status=open                  open round with todo
+```
+
+**Dashboard rendering**
+
+Body order per the Output Format section below (Identity → About → Focus Strip → Current State → Stable → Open Needs → Loopback → Next → Artifacts Read). Compact shape:
+
+```
+Intervention: 03_refill_reminder
+Venue:        sms · audience: patient · settlement: light
+Theory:       <one sentence from 2-pitch, or "(pitch not yet written)">
+
+stage:   seed ✅  descriptions ✅  themes ✅  claims 🔥🚀  advice ⬜  venue ⬜  pitch ⬜  narrative --  display --  section-edit --  →  draft ⬜  →  review ⬜  →  deploy ⬜
+phase:   draft ✅  │  probe 🔥🚀  │  revise ⬜  │  check ⬜
+
+Claims:     5 total: 2 supported, 1 weak, 2 GAP (bar: light — 1 load-bearing GAP open)
+Probes:     2 planned, 1 commissioned, 0 answered, 0 read
+Artifacts:  0 drafted, 0 reviewed, 0 deployed
+Round:      v260620 (open, 2 todo remaining)
+
+Open needs:
+  C2   GAP   "timing matters for refill"  → probe PP01 (commissioned)
+
+Next:
+  /haipipe-application probe run PP01
+```
+
+**Strip symbols**
+
+The stage line is rendered ONLY by `../../haipipe-application/stage-strip.sh` (🔥 active · 🚀 frontier · ✅ ledger-confirmed · ⬜ not started · `--` venue-skipped). Marker convention: `../../haipipe-application/SKILL.md` Closing Block, the single source of truth. The old ▶️ frontier symbol is retired.
+
+**Session state file (.intervention-console.yaml)**
+
+Written by the Console on entry; a fresh session re-derives everything from disk. Schema: see the Session State section below.
 
 ## Input
 

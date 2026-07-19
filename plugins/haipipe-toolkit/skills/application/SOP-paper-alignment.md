@@ -68,7 +68,7 @@ PREFERENCES: "always run the REAL probe" entry       PREFERENCES: entry absent (
 ----------------------------------------------------
 
 - 2-phase/USAGE.md + WIRING.md: NEW thin application versions (recipes, effort dial, phase-restart, routing) mirroring paper's; SKILLSET_REVIEW.md is a paper process artifact — NOT ported.
-- wiki/03 + wiki/08: probe mechanics paragraphs updated (VERIFY step, OWED, checker as the gate's teeth); wiki/06 skill-tree table gains the two new scripts + ref/ folder.
+- the Intervention Lifecycle Contract + the Stage Gate Protocol: probe mechanics paragraphs updated (VERIFY step, OWED, checker as the gate's teeth); the README Skill Structure section skill-tree table gains the two new scripts + ref/ folder.
 - Router SKILL.md + lifecycle orchestrator: one-line mentions of the VERIFY step and checks.sh where the DPRC loop is described; enter console unaffected (Gate Ledger contract unchanged).
 - CHANGELOG rollups per touched skill + family rollup (5.1.0).
 - Registration check in a fresh session (no renames this round, so expected no-op).

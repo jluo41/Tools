@@ -4,9 +4,9 @@ description: "DRAFT phase worker (internal). Called by stage skills to produce t
 argument-hint: "[stage-or-section] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, Agent
 metadata:
-  version: "4.3.0"
+  version: "4.4.0"
   last_updated: "2026-07-19"
-  summary: "DRAFT phase worker (internal): produce the first-pass artifact for any stage -- consult upstream, settle structure, draft real prose per the stage's template ({VAL:?} placeholders, real \\citep{} keys from the .bib), iterate with the user, then SELF-REVIEW the draft + probe plan via a fresh-context sub-agent before the STOP gate. Inline WebSearch is drafting fuel only, never durable evidence. Raises what it cannot answer as question SECTIONS in 1-probes/ AND authors their probe plan (q-executor + route + match + target — DRAFT runs the loop's ①ORGANIZE + ②MATCH); never writes an answer (a-consumer) into one. History: ./CHANGELOG.md."
+  summary: "DRAFT phase worker (internal): produce the first-pass artifact for any stage -- consult upstream, settle structure, draft real prose per the stage's template ({VAL:?} placeholders, real \\citep{} keys from the .bib), iterate with the user, then SELF-REVIEW the draft + probe plan via a fresh-context sub-agent before the STOP gate. Inline WebSearch is drafting fuel only, never durable evidence. Raises what it cannot answer as q-executor ENTRIES in 1-probes/ AND authors their probe plan (q-executor + route + bank + target — DRAFT runs the loop's ①ORGANIZE + ②MATCH); never writes an answer (a-executor) into one. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -30,9 +30,10 @@ Users invoke stage skills:
 ## Rules (follow these — the model is haipipe-probe's)
 
 The DRAFT-phase rules live in the constitution: `../../../../probe/haipipe-probe/SKILL.md` → **Phase rules · DRAFT phase** + **The DRAFT self-review checklist**. Follow those; on conflict, that file wins. Paper-specific additions:
-- **Citations**: grep the paper's `.bib` (+ `_CITATION_`) FIRST — real `\citep{key}` for hits, `\cite{TOADD}` (+ a `_CITATION_` row) where none fits, `{VAL:? <what>}` for unverified numbers. A key that does not grep is invented.
-- **T1 LOCAL**: a question answered by the paper's OWN registries (`_CITATION_*` / `_VALUES_*` / `_EVIDENCE_*` / `read` sections / `0-displays/` / `.bib`) roots `match:` there, marked `answered-local` (no bank dispatch). A display-shaped need reroutes to `0-lifecycle/4-display/_DISPLAY_REQUEST.md`.
-- **RESOURCE stage**: read `1a-resource.md`'s GATE-1-approved `Q<n>`, open one `serves: resource` section each, and write the `-> PP<NN>` backlink into `1a-resource.md`.
+- **NO SIDECARS, EVERY STAGE** (retired 2026-07-19, enforced by `check-probe-cards.sh` PASS 2): never create `_CITATION_*`, `_VALUES_*`, `_DISCOVERY_*`, or `_EVIDENCE_*`. `1-probes/` is the ONLY consumer-side source of truth and `_LOG_<stage>.md` is the ONLY kept sidecar. This is global — it is NOT a resource-stage rule, and the absence of a restatement under a given stage below does NOT re-permit sidecars there.
+- **Citations**: grep the paper's `.bib` FIRST — real `\citep{key}` for hits, `\cite{TOADD}` where none fits, `{VAL:? <what>}` for unverified numbers. A key that does not grep is invented. Record what each `\cite{TOADD}` is owed in `_LOG_<stage>.md`; do NOT open a `_CITATION_` file for it, and do NOT hang it on a probe entry's `**sources**:` lane (a `harvest: OWED` lane is a checker FAIL, rule 7 — that lane is written at PROBE harvest, never at DRAFT).
+- **T1 LOCAL**: a question answered by the paper's OWN registries (`_EVIDENCE_*` / `read` sections / `0-displays/` / `.bib`) roots its `### bank binding` there — `target` into the registry, `state: answered-local` (no bank dispatch). A display-shaped need reroutes to `0-lifecycle/4-display/_DISPLAY_REQUEST.md`.
+- **RESOURCE stage**: read `1a-resource.md`'s GATE-1-approved `Q<n>`, open one q-executor ENTRY per question (its `### q-consumer` bullet carries the `Q<n>` id), and write the `-> PP<NN>` backlink into `1a-resource.md`.
 - One sentence per line; no markdown tables in probe files.
 
 The steps below are the HOW-TO for these rules.
@@ -108,7 +109,7 @@ Venue-FREE stages (seed, resource and claims) skip this guard entirely.
 ### Step 3. Settle structure
 
 Present the structural plan to the user before writing content:
-- **seed**: the three sections (question, motivations, claim shape)
+- **seed**: the five sections (Seed Question, Motivations, Landscape, Tentative Claim Shape, Q-consumer)
 - **resource**: the two sections — the Demand rows (one `N<n>` per hypothesis) and the Questions (`Q<n>` + its `A`); nothing else
 - **claims**: the hypothesis list and claim matrix layout
 - **pitch**: the cover letter sections (hook, finding, so-what, editor's chair)
@@ -122,8 +123,9 @@ Fill in the structure with first-pass content:
 - Write to settle WHAT is being said, not HOW it sounds
 - Argument docs: working prose.
   Sections: REAL prose per the stage's template (`ref/outline-format.md`) — complete sentences, one per line, blank line between
-- Citations real, never guessed: grep the paper's .bib (and `_CITATION_`) FIRST and write `\citep{key}` for keys that exist; `\cite{TOADD}` (+ a `_CITATION_` row naming the topic) where no key fits; `{VAL:? <what>}` for unverified numbers.
-  A key that does not grep in .bib is an invented citation
+- Citations real, never guessed: grep the paper's .bib FIRST and write `\citep{key}` for keys that exist; `\cite{TOADD}` where no key fits, naming what it is owed in `_LOG_<stage>.md`; `{VAL:? <what>}` for unverified numbers.
+  A key that does not grep in .bib is an invented citation.
+  No `_CITATION_` file — see NO SIDECARS in the Rules block above
 - Never invent a number or citation to avoid a placeholder
 - One idea per sentence
 
@@ -133,16 +135,15 @@ But a seed is allowed to be intuition (seed principle 1), so what that search pr
 1. **PROSE** in the stage artifact (Motivations, Claim Shape, ...) -- phrased as orientation, with `\cite{TOADD}` slots, never as settled fact.
 2. **RAISED QUESTIONS + THEIR PLAN** -- when the search reveals a gap the paper must later verify, RAISE IT AS A QUESTION and PLAN it.
    **DRAFT is where the questions are born AND planned** — the probe plan is authored here, beside the draft, so ONE gate reviews both (see the probe constitution's PHASE MAP: ①ORGANIZE + ②MATCH run at DRAFT).
-   For each one, write a SECTION in the right topic's probe file at `1-probes/PPNN_<topic>.md` + a Status board row, per `../../../haipipe-paper/fn/probes.md`, carrying the full plan:
-   - `q-executor:` — the question in GENERAL language (no claim ids, no stake, no hint of which answer is wanted); NEVER write the `## Why` into a q-executor — the stake never leaves the probe file.
-   - `route:` — the dispatch door, `task | discovery` (AUTHORITATIVE).
-   - `match:` — root it to a SPECIFIC bank folder (a read-only bank grep is legal — LAW 1 bans the pen and the run, not the eye): `EXISTS · <folder>` (→ link) or `NONE → propose NEW <folder>`.
-   - `target:` — the existing QA path (EXISTS) or `NEW <path>` (NONE).
+   For each one, author its q-executor ENTRY in the right topic's probe file at `1-probes/PPNN_<topic>.md` + a Status board row, per `../../../haipipe-paper/fn/probes.md`, carrying the full plan:
+   - `### q-executor` — the question in GENERAL language (no claim ids, no stake, no hint of which answer is wanted), plus its `Deliverable:` and `Accepted: a | b` lines; the stake never leaves the stage-doc Q-consumer.
+   - `### q-consumer` — one bullet per Q-consumer this q-executor serves — the stage-doc id + that consumer's ORIGINAL question, copied in.
+   - `### bank binding` — `route` (the dispatch door, `task | discovery`, AUTHORITATIVE); `bank` (the verdict from READING a SPECIFIC candidate folder — a read-only bank grep is legal, LAW 1 bans the pen and the run, not the eye — `reuse` a results folder already answers it · `run` folder+code exist, needs a run · `code` code needs a change first · `new` nothing exists); `target` (an existing QA path or `NEW <path>`); `state` (left `planned`).
    This HANDS the plan to the PROBE phase, which RUNS IT FORWARD (③ dispatch the `NEW` ones, ⑤ harvest); it does not answer it here.
 
-FORBIDDEN in DRAFT: writing an `a-consumer:` (the ANSWER — that is PROBE's ⑤ harvest), or treating an inline result as landed evidence.
+FORBIDDEN in DRAFT: writing a `### a-executor` (the ANSWER — that is PROBE's ⑤ harvest), or treating an inline result as landed evidence.
 Inline search results bind to nothing -- evidence gathered any way other than the PROBE phase's dispatch means "the PROBE phase did not happen."
-The DRAFT/PROBE line is no longer an empty `target:` (DRAFT now writes the `target:` plan) — it is `a-consumer:` / `state:`: DRAFT leaves a section at `planned` (a `NEW` target awaiting dispatch) or `answered` (an EXISTS target already answered, awaiting harvest), never `read`; only PROBE's harvest writes `a-consumer:` and reaches `read`.
+The DRAFT/PROBE line is no longer an empty `target` (DRAFT now writes the `target` plan) — it is `### a-executor` / `state`: DRAFT leaves an entry at `planned` (a `NEW` target awaiting dispatch) or `answered` (an existing target already answered, awaiting harvest), never `read`; only PROBE's harvest writes `### a-executor` and reaches `read`.
 The CHECK gate runs `check-probe-cards.sh` and cannot go green over a `planned` section -- so DRAFT search can never masquerade as evidence.
 
 ### Step 4b. 🤖 SELF-REVIEW — check the draft + probe plan before the gate
@@ -166,9 +167,9 @@ Agent(general-purpose, prompt="
     - every Q-<Stage>-<n> is cited inline [Q-<Stage>-<n>] on the sentence it hangs on
 
   Surface B — the probe plan (run the constitution's 'DRAFT self-review checklist' verbatim):
-    LAW-2-clean q-executor · answerable+specific · route set · match ROOTED to a specific folder
-    (candidate READ + judged on the answer) · target agrees with match · heading id = Q-consumer id ·
-    one ## Why per file, stake never leaked into a q-executor
+    LAW-2-clean q-executor · answerable+specific · route set · bank ROOTED to a specific folder
+    (candidate READ + judged on the answer) · target agrees with bank · each ### q-consumer bullet
+    copies a real stage-doc Q-consumer id · no ## Why and no stake leaked into a q-executor
 ")
 ```
 
@@ -199,14 +200,14 @@ When the user approves:
 - PROBE (seed): FEASIBILITY only -- "can this paper exist at all?" (is it novel? does the external labeled data exist?).
   Profiling OUR OWN data is RESOURCE-stage task work; register it as a `[FORWARD -> RESOURCE]` pointer in `_LOG`, do not dispatch it in seed.
   The RESOURCE stage is the SOLE CONSUMER of these pointers and takes them at its open (reader clause in haipipe-paper-resource SKILL) -- an unconsumed pointer fails the RESOURCE done-criteria, not claims'.
-- Short document: seed question + motivations + tentative claim shape
+- Short document, FIVE sections: Seed Question + Motivations + Landscape + Tentative Claim Shape + Q-consumer (Landscape and Q-consumer are not optional — the `[Q-Seed-<n>]` anchor loop hangs on Q-consumer)
 
 ### resource
 - Output: `0-lifecycle/1a-resource/1a-resource.md`; template `ref/resource-template.md`
 - Venue-FREE, and it sits BETWEEN seed and claims — it is stage 1a, just before claims (1b) on disk (precedented by `2a-venue/` + `2b-pitch/`).
   Nothing renumbers.
 - EXACTLY TWO SECTIONS: **Demand** (one `**N<n> (H<n>)**` per prerequisite the seed's Tentative Claim Shape implies -- keyed on H, never C) and **Questions** (one `**Q<n> (N<n>)**`, its `-> PP<NN>` backlink once the PROBE worker opens the section, and its `A:` when the answer lands).
-  NO Kill Conditions, NO Setup Contract, NO Resource Ledger, NO Binding table — JL cut them 2026-07-14.
+  NO Kill Conditions, NO Setup Contract, NO Resource Ledger, NO Binding table (cut).
 - On open: consume the seed's forward pointers out of `_LOG_0-seed.md`.
   The grep MUST be GLYPH- AND LEGACY-TOLERANT — the live pointers on disk all say "CLAIMS" (this stage did not exist when they were written) and at least one uses a UNICODE arrow.
   Match `grep -E "\[FORWARD (->|→) (RESOURCE|CLAIMS)\]"`.
@@ -216,7 +217,7 @@ When the user approves:
 - PROBE (resource): EXACTLY ONE worker call per pass — `Skill("haipipe-paper-probe", args="from-buffer <paper_root>")`, never evidence inline.
   The worker picks up the human-approved Q's, opens a SECTION for each in the right topic's probe file, writes the `-> PP<NN>` backlink into the Q, MATCHes, dispatches only what MATCH cannot close, and lands the answer back as the Q's `A`.
   It runs in TWO passes (SCAN, then — after the stage's GATE 1b spend authorization — BUILD); the pass split is the stage's business, not DRAFT's.
-- NO SIDECARS: no `_VALUES_`, no `_CITATION_`, no `_RESOURCE_` satellite.
+- NO SIDECARS (the global rule in the Rules block, restated here only because resource additionally forbids a `_RESOURCE_` satellite): no `_VALUES_`, no `_CITATION_`, no `_RESOURCE_`.
 - Ends at the hard STOP: GATE 1, where the human approves the DEMAND, the QUESTIONS (which Q's are worth asking) and the SCOPE CUTS.
   Asking is cheap, so GATE 1 approves the QUESTIONS, not the SPEND — spend is authorized later, at the stage's GATE 1b, once the SCAN answers have landed.
 
@@ -288,7 +289,7 @@ Stage skills call this as their DRAFT phase:
 
 | Stage skill | What this skill drafts |
 |---|---|
-| haipipe-paper-seed | 0-seed.md (3 sections) |
+| haipipe-paper-seed | 0-seed.md (5 sections) |
 | haipipe-paper-resource | 1a-resource.md (2 sections: Demand N\<n\> + Questions Q\<n\> with their A) |
 | haipipe-paper-claims | 1b-claims.md (hypothesis list + evidence matrix) |
 | haipipe-paper-pitch | 2b-pitch.md (cover letter) |

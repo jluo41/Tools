@@ -121,7 +121,7 @@ Not this skill's job
 ```
 repo + submodule wiring        -> /haipipe-paper enter (get-or-create branch)
 stage files (0-seed.md, ...)   -> each stage skill, on first run
-rounds (1-rounds/vYYMMDD/)     -> haipipe-paper-round (contract: ../../../wiki/07-paper-rounds.md)
+rounds (1-rounds/vYYMMDD/)     -> haipipe-paper-round (contract: ../../../0-enter/haipipe-paper-round/SKILL.md)
 probe files (PPNN_<topic>.md)  -> /haipipe-paper probe verbs (fn/probes.md)
 display units                  -> display stage + renderer family
 venue knowledge                -> venue/playbook-<venue> packs

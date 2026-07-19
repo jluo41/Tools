@@ -15,12 +15,13 @@
 #
 # WHAT IT CHECKS -- three passes (the paper checker's resource pass is dropped).
 #
-# PASS 1: every <intervention_root>/1-probes/PP*.md probe file, SECTION BY SECTION
-#   (a section = a `## Q<n>` heading + its serves:/target:/state:/q-executor:/a-consumer:)
+# PASS 1: every <intervention_root>/1-probes/PP*.md probe file, ENTRY BY ENTRY
+#   (an entry = a `## QX<n>` heading + its ### q-executor / ### q-consumer / ### bank binding
+#    (**route**/**bank**/**target**/**state**) / ### a-executor subsections)
 #   1. state read           -> target: non-empty, no placeholder, resolves under
 #                              project_root (or intervention_root for answered-local:
 #                              those cite the paper's OWN registries)
-#   2. state answered       -> the target QA file exists but a-consumer: is still empty
+#   2. state answered       -> the target QA file exists but ### a-executor is still empty
 #                              = the harvest never happened. FAIL (answered-not-read).
 #   3. state planned        -> FAIL probe-not-run. A buffered section must not survive
 #                              to VERIFY or the CHECK gate.
@@ -57,7 +58,7 @@
 #                              the checker OPENS it.
 #
 # PASS 2: REMOVED (2026-07-18, no-sidecar). Harvest folds into the probe section's
-#   a-consumer:, anchored to target:. No _VALUES_/_CITATION_/_DISPLAY_ docs to check.
+#   ### a-executor, anchored to target. No sidecar docs to check.
 #
 # PASS 3: THE BANK -- two rules on the same files, <project_root>/{tasks,discoveries}/**/QA/*.md.
 #   (a) LAW 2 (surface 2): a QA file must carry NO consumer vocabulary. A QA file written in
@@ -86,8 +87,8 @@
 #   at which point ORGANIZE rewrites them into 1-probes/ in the new shape. A legacy file is
 #   NOT silently passed: it is surfaced, so nobody mistakes "not checked" for "fine".
 #
-# --stage <key>  Assert only the sections that SERVE this stage (per their serves: field).
-#   Sections with no serves: always assert. Without it, ONE in-flight build reds the gate of
+# --stage <key>  Assert only the entries that SERVE this stage (a `### q-consumer` id names it,
+#   e.g. `Q-Seed-1` -> seed). Entries with no `### q-consumer` always assert. Without it, ONE
 #   EVERY downstream stage for as long as the build runs -- because every stage's CHECK
 #   invokes this same whole-paper glob. (JL ruling C8-i)
 #
@@ -241,7 +242,7 @@ function stake_leak(s,   low) {
 # (the constitution, "The QA file" section). The first cut of this file mapped a stateless QA file to the kind
 # `legacy` and EXEMPTED it from every claim check -- so an executor could defeat the whole
 # lying-receipt tooth BY OMISSION: drop one line, ship an empty `## Answer`, and the gate
-# goes green while a consumer publishes a `a-consumer:` derived from nothing. The grandfather
+# goes green while a consumer publishes an `### a-executor` derived from nothing. The grandfather
 # clause had ZERO beneficiaries (no QA file predates the field on disk). It is CLOSED:
 # `qa-no-state` (bank side) / `read-target-no-state` + `commissioned-target-no-state`
 # (consumer side). The file's OWNER -- the executor, never a consumer -- adds the line.
@@ -341,10 +342,10 @@ for probe in "$intervention_root"/1-probes/PP*.md; do
   dead=$(grep -cEi '(^|[^a-z])verdicted([^a-z]|$)|^##[[:space:]]*Verdict|^##[[:space:]]*Takeaways|^[-[:space:]]*answers:|_ASK|_ANS[^A-Za-z]' "$probe")
   [ "$dead" -gt 0 ] && fprob="$fprob dead-vocab(${dead}-lines: verdicted/Verdict/Takeaways/answers:/_ASK/_ANS are DELETED);"
 
-  # Exactly one `## Why` per file -- the stake has ONE home, and it is this one.
-  whys=$(grep -c '^##[[:space:]]*Why' "$probe")
-  [ "$whys" -eq 0 ] && fprob="$fprob no-why-section(the stake must be stated, and stated HERE);"
-  [ "$whys" -gt 1 ] && fprob="$fprob multiple-why-sections($whys);"
+  # RETIRED old-format strings must not appear (constitution v9.5.0+). The stake now lives
+  # in the stage-doc Q-consumer; the anatomy is `## QX<n>` entries with `###` subsections.
+  stale=$(grep -cE '^[[:space:]]*-[[:space:]]*(serves|match|a-consumer):|^##[[:space:]]*Why([[:space:]]|$)' "$probe")
+  [ "$stale" -gt 0 ] && fprob="$fprob stale-old-format(${stale}-lines: serves/match/a-consumer/## Why are RETIRED -- rewrite to the QX-entry format);"
 
   if [ -n "$fprob" ]; then
     echo "FAIL  $name  --$fprob"
@@ -355,83 +356,85 @@ for probe in "$intervention_root"/1-probes/PP*.md; do
   awk -v FN="$name" -v SEP="$(printf '\037')" "$LEAK_AWK"'
     function flush(   leak) {
       if (qname == "") return
-      leak = comm_claimid + comm_stage + comm_stake
+      leak = qx_claimid + qx_stage + qx_stake
       # US (\037) as the field separator, NOT tab: tab is IFS-WHITESPACE, so the shell
       # collapses consecutive tabs into one delimiter and every empty field (an absent
-      # owner:, an empty a-consumer:) silently SHIFTS the rest of the record. That shift is
+      # owner, an empty a-executor) silently SHIFTS the rest of the record. That shift is
       # invisible -- it produces confident wrong answers, not errors.
       printf "SEC%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n", \
-        SEP, FN, SEP, qname, SEP, state, SEP, target, SEP, serves, SEP, owner, SEP, eta, \
+        SEP, FN, SEP, qname, SEP, state, SEP, target, SEP, qconsumer, SEP, owner, SEP, eta, \
         SEP, blocks, SEP, xproj, SEP, (reading_nonempty ? "1" : "0"), SEP, owed+0, \
-        SEP, leak+0, SEP, (has_commission ? "1" : "0")
-      qname=""; state=""; target=""; serves=""; owner=""; eta=""; blocks=""; xproj=""
-      reading_nonempty=0; owed=0; comm_claimid=0; comm_stage=0; comm_stake=0
-      in_comm=0; in_reading=0; has_commission=0
+        SEP, leak+0, SEP, (has_qexec ? "1" : "0")
+      qname=""; state=""; target=""; qconsumer=""; owner=""; eta=""; blocks=""; xproj=""
+      reading_nonempty=0; owed=0; qx_claimid=0; qx_stage=0; qx_stake=0
+      in_qexec=0; in_qcons=0; in_bank=0; in_aexec=0; has_qexec=0
     }
-    /^##[[:space:]]*Q/ { flush(); qname=$0; sub(/^##[[:space:]]*/, "", qname); next }
+    # A new ENTRY: `## QX<n>` (the probe file is a list of q-executors).
+    /^##[[:space:]]*QX/ { flush(); qname=$0; sub(/^##[[:space:]]*/, "", qname); next }
     qname == "" { next }
 
-    # A KNOWN top-level field bullet closes any open block scalar. Deliberately a
-    # CLOSED list: a commission legitimately contains its own nested bullets
-    # ("- Accepted: present | absent"), and closing the block on those would hide
-    # every leak written below them -- the lint would pass by not looking.
-    /^[[:space:]]*-[[:space:]]*(serves|target|state|q-executor|a-consumer|owner|eta|blocks|cross-project|values|sources|displays|mode):/ {
-      in_comm=0; in_reading=0
+    # The four `###` subsections. Each switches context (and the `next` keeps the generic
+    # `/^#/` closer below from immediately clobbering the flag we just set).
+    /^###[[:space:]]*q-executor([[:space:]]|$)/            { in_qexec=1; in_qcons=0; in_bank=0; in_aexec=0; has_qexec=1; next }
+    /^###[[:space:]]*q-consumer([[:space:]]|$)/            { in_qexec=0; in_qcons=1; in_bank=0; in_aexec=0; next }
+    /^###[[:space:]]*bank[[:space:]]+binding([[:space:]]|$)/ { in_qexec=0; in_qcons=0; in_bank=1; in_aexec=0; next }
+    /^###[[:space:]]*a-executor([[:space:]]|$)/            { in_qexec=0; in_qcons=0; in_bank=0; in_aexec=1; next }
+    # any other heading closes every subsection.
+    /^#/ { in_qexec=0; in_qcons=0; in_bank=0; in_aexec=0 }
+
+    # `### bank binding` fields, written `**field**: value`.
+    in_bank && /^[[:space:]]*\*\*state\*\*:/  { state=$0;  sub(/^.*\*\*state\*\*:[[:space:]]*/, "", state);  gsub(/[[:space:]].*$/, "", state) }
+    in_bank && /^[[:space:]]*\*\*target\*\*:/ { target=$0; sub(/^.*\*\*target\*\*:[[:space:]]*/, "", target); sub(/[[:space:]]*$/, "", target) }
+    in_bank && /\*\*owner\*\*:/ { owner=$0; sub(/^.*\*\*owner\*\*:[[:space:]]*/, "", owner); sub(/[[:space:]]*·.*$/, "", owner); sub(/[[:space:]]*$/, "", owner) }
+    # No {n} intervals: mawk does not enable them by default, so spell the date out.
+    in_bank && /\*\*eta\*\*:[[:space:]]*[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]/ {
+      e=$0; sub(/^.*\*\*eta\*\*:[[:space:]]*/, "", e); sub(/[^0-9-].*$/, "", e); eta=e
     }
-    /^[[:space:]]*-[[:space:]]*serves:/  { serves=$0; sub(/^[^:]*:[[:space:]]*/, "", serves) }
-    /^[[:space:]]*-[[:space:]]*target:/  { target=$0; sub(/^[^:]*:[[:space:]]*/, "", target) }
-    /^[[:space:]]*-[[:space:]]*state:/   { state=$0;  sub(/^[^:]*:[[:space:]]*/, "", state); gsub(/[[:space:]].*$/, "", state) }
-    /^[[:space:]]*-[[:space:]]*owner:/   { owner=$0;  sub(/^.*owner:[[:space:]]*/, "", owner); sub(/[[:space:]]*·.*$/, "", owner) }
-    # No {n} intervals: mawk does not enable them by default, so `[0-9]{4}` matches
-    # NOTHING there and every eta reads as absent -- an overdue build would report as
-    # "no eta" instead of "OVERDUE", which is the one failure this gate exists to catch.
-    /eta:[[:space:]]*[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]/ {
-      e=$0; sub(/^.*eta:[[:space:]]*/, "", e); sub(/[^0-9-].*$/, "", e); eta=e
-    }
-    /blocks:/ { blocks="y" }
-    /cross-project:/ {
-      x=$0; sub(/^.*cross-project:[[:space:]]*/, "", x); sub(/[[:space:]]*·.*$/, "", x)
+    in_bank && /\*\*blocks\*\*:/ { blocks="y" }
+    in_bank && /\*\*cross-project\*\*:/ {
+      x=$0; sub(/^.*\*\*cross-project\*\*:[[:space:]]*/, "", x); sub(/[[:space:]]*·.*$/, "", x)
       sub(/[[:space:]]*$/, "", x); xproj=x
     }
-    /^[[:space:]]*-[[:space:]]*q-executor:/ { in_comm=1; has_commission=1; next }
-    /^[[:space:]]*-[[:space:]]*a-consumer:/ {
-      in_reading=1
-      r=$0; sub(/^[^:]*:[[:space:]]*/, "", r); gsub(/[[:space:]]|\|/, "", r)
-      if (r != "") reading_nonempty=1
-      next
-    }
-    /harvest:[[:space:]]*OWED/ { owed++ }
+    in_bank && /harvest:[[:space:]]*OWED/ { owed++ }
 
-    # LAW 2, surface 1: the commission block is the ONLY thing that crosses the wall.
-    # Shared pattern set (LEAK_AWK) -- identical to the bank lint in PASS 3.
-    in_comm {
-      if (claim_leak($0))       comm_claimid++
-      if (stage_leak($0, "comm")) comm_stage++
-      if (stake_leak($0))       comm_stake++
-      next
+    # `### q-consumer` bullets: the served stage-doc ids (+ each consumer'"'"'s copied
+    # original question). The --stage gate greps these. They LEGITIMATELY carry claim ids
+    # (the copied originals), so they are NEVER leak-scanned.
+    in_qcons { qconsumer = qconsumer " " $0 }
+
+    # LAW 2, surface 1: ONLY the `### q-executor` body crosses the wall -- scan it, and
+    # nothing else. Shared pattern set (LEAK_AWK), identical to the bank lint in PASS 3.
+    in_qexec {
+      if (claim_leak($0))         qx_claimid++
+      if (stage_leak($0, "comm")) qx_stage++
+      if (stake_leak($0))         qx_stake++
     }
-    in_reading {
+
+    # `### a-executor` body: non-empty iff the harvest happened (=> state read).
+    in_aexec {
       r=$0; gsub(/[[:space:]]/, "", r)
       if (r != "" && r !~ /^#/) reading_nonempty=1
     }
     END { flush() }
   ' "$probe" > /tmp/.probe_sections.$$ 2>/dev/null
 
-  while IFS="$(printf '\037')" read -r tag f qname state target serves owner eta blocks xproj reading owed leak hascomm; do
+  while IFS="$(printf '\037')" read -r tag f qname state target qconsumer owner eta blocks xproj reading owed leak has_qexec; do
     [ "$tag" = "SEC" ] || continue
     owed=${owed:-0}; leak=${leak:-0}
 
-    # --stage: a section asserts at stage X's gate only if it SERVES stage X.
-    if [ -n "$stage_filter" ] && [ -n "$serves" ]; then
-      if ! printf '%s' "$serves" | grep -qiE "(^|[^a-z])${stage_filter}([^a-z]|$)"; then
+    # --stage: an entry asserts at stage X's gate only if one of its `### q-consumer`
+    # ids names stage X (e.g. `Q-Seed-1` -> seed). Trailing-s tolerant (claims -> Q-Claim).
+    if [ -n "$stage_filter" ] && [ -n "$qconsumer" ]; then
+      _stem=${stage_filter%s}
+      if ! printf '%s' "$qconsumer" | grep -qiE "q-${_stem}"; then
         continue
       fi
     fi
 
     problems=""
     [ -z "$state" ] && problems="$problems no-state-field;"
-    [ "$hascomm" = "0" ] && [ "$state" != "answered-local" ] \
-      && problems="$problems no-commission(the dispatch payload is missing);"
+    [ "$has_qexec" = "0" ] && [ "$state" != "answered-local" ] \
+      && problems="$problems no-q-executor(the ### q-executor subsection is missing);"
     [ "$leak" -gt 0 ] && problems="$problems LAW2-q-executor-leak(${leak}: consumer vocab or stake disclosed);"
     [ "$owed" -gt 0 ] && problems="$problems harvest-owed(${owed}-lane);"
 
@@ -478,11 +481,11 @@ for probe in "$intervention_root"/1-probes/PP*.md; do
           esac
         fi
         [ "$state" = "read" ] && [ "$reading" = "0" ] \
-          && problems="$problems read-with-empty-a-consumer;"
+          && problems="$problems read-with-empty-a-executor;"
         ;;
       answered)
         # The QA file landed but nobody interpreted it. The loop is not closed.
-        problems="$problems answered-not-read(the QA file exists; write the a-consumer);"
+        problems="$problems answered-not-read(the QA file exists; copy it into the ### a-executor);"
         ;;
       commissioned)
         # THE BUILD-LANE FIELDS BELONG TO WHOEVER COMMISSIONED THE WORK -- NOT TO A SECTION
@@ -510,7 +513,7 @@ for probe in "$intervention_root"/1-probes/PP*.md; do
         esac
         case "$ckind" in
           answered)
-            problems="$problems commissioned-target-answered(the answer LANDED at $target -- HARVEST IT: write the a-consumer: and flip the section to state: read);" ;;
+            problems="$problems commissioned-target-answered(the answer LANDED at $target -- HARVEST IT: copy it into the ### a-executor and flip the entry to state: read);" ;;
           superseded)
             problems="$problems commissioned-target-superseded(target QA state line reads '$(qa_state "$ctgt")' -- re-point target: at the LIVE QA file);" ;;
           no-state)
@@ -601,7 +604,7 @@ fi
 # ---------------------------------------------------------------------------
 # PASS 2 -- REMOVED (2026-07-18, no-sidecar workflow). Harvest no longer lands in
 # _VALUES_/_CITATION_/_DISPLAY_ sidecar docs; the answer + its numbers live in the
-# probe section's a-consumer:, anchored to target: (already checked, PASS 1 R19/R20).
+# probe entry's ### a-executor, anchored to target (already checked in PASS 1).
 # Nothing to verify here.
 # ---------------------------------------------------------------------------
 

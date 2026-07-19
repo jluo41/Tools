@@ -23,7 +23,7 @@ Added (BLOCKER 10 repair -- the worker that RUNS Gate 2 did not know the resourc
 
 Changed
 
-- **Stage Exit Invariant AMENDED: two directions for every stage EXCEPT `resource`, which has THREE** (JL ruling C7, 2026-07-14; spec in `wiki/08-stage-gate.md`, which already carried the amendment while the EXECUTING worker did not -- so `reseed` and `park` were UNREACHABLE in practice). ✅ proceed -> claims · 🔥 reseed -> [LOOPBACK -> SEED] · 🅿️ park -> `maturity: resource-blocked`. Rationale: a stage whose PURPOSE is discovering the paper CANNOT BE WRITTEN must be able to SAY SO -- without these it could only `promote -> claims`, mechanically handing a DEAD PAPER FORWARD. The Report Format decision menu gains the two resource-only checkboxes. Does NOT generalize.
+- **Stage Exit Invariant AMENDED: two directions for every stage EXCEPT `resource`, which has THREE** (JL ruling C7, 2026-07-14; spec in `08-stage-gate.md`, which already carried the amendment while the EXECUTING worker did not -- so `reseed` and `park` were UNREACHABLE in practice). ✅ proceed -> claims · 🔥 reseed -> [LOOPBACK -> SEED] · 🅿️ park -> `maturity: resource-blocked`. Rationale: a stage whose PURPOSE is discovering the paper CANNOT BE WRITTEN must be able to SAY SO -- without these it could only `promote -> claims`, mechanically handing a DEAD PAPER FORWARD. The Report Format decision menu gains the two resource-only checkboxes. Does NOT generalize.
 - **seed row's exit fixed**: seed now advances to **resource**, not claims.
 
 Fixed
@@ -75,7 +75,7 @@ Fixed (audit of 1.5.0: pin contract landed in the front half, back half still sp
 ## [1.5.0] — 2026-07-05
 
 Added (test-123333333: JL entered 0-seed.md for the CHECK pass and found a clean file — flags lived only in the chat report; JL: "check的时候我需要进去仔细看，然后你加comments 之类的，这些你有做吗")
-- SEED THE PINS (step 2.5, mode-independent): every flagged/🔍/⚠️ report item is planted as ONE `> CHECK:` comment at its exact spot in the working doc (issue + judgment needed, concrete values). Chat report = map, in-file pins = what the human walks; clean-file handover is DEFECTIVE. Human replies `> USER:` per pin; restart reads pins + replies; resolved pins archive to _LOG per wiki/02. Autopilot reviewer reads the pins too.
+- SEED THE PINS (step 2.5, mode-independent): every flagged/🔍/⚠️ report item is planted as ONE `> CHECK:` comment at its exact spot in the working doc (issue + judgment needed, concrete values). Chat report = map, in-file pins = what the human walks; clean-file handover is DEFECTIVE. Human replies `> USER:` per pin; restart reads pins + replies; resolved pins archive to _LOG per the comment lifecycle. Autopilot reviewer reads the pins too.
 
 ## [1.4.1] — 2026-07-04
 
@@ -84,7 +84,7 @@ Fixed
 
 ## [1.4.0] — 2026-07-03
 
-- Gate Modes section added (JL: copilot 人给 comments / autopilot 派 subagent 给 comments，必须有 approval 动作): mode spec owned by wiki/08-stage-gate.md; autopilot dispatches ONE fresh-context reviewer subagent that leaves > REVIEWER: comments + returns proceed|restart|accept; HUMAN-ONLY items (Scholar bibtex verification) are marked DEFERRED into a human queue, never silently passed; humans can reopen agent-approved gates.
+- Gate Modes section added (JL: copilot 人给 comments / autopilot 派 subagent 给 comments，必须有 approval 动作): mode spec owned by 08-stage-gate.md; autopilot dispatches ONE fresh-context reviewer subagent that leaves > REVIEWER: comments + returns proceed|restart|accept; HUMAN-ONLY items (Scholar bibtex verification) are marked DEFERRED into a human queue, never silently passed; humans can reopen agent-approved gates.
 - Stage Exit Invariant added under What Each Decision Does (JL: only check can jump out the current stage): restart re-opens a phase WITHIN the same stage; proceed/accept is the only cross-stage move; cross-stage loopback is a lifecycle re-entry, not a CHECK outcome.
 
 ## [1.3.0] — 2026-07-03
