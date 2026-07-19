@@ -14,7 +14,7 @@ No message bus, no shared contract file. Two channels carry it, and the agent
              /haipipe-paper probe "<question>" (opens a SECTION in the topic's probe
              file). The PROBE worker MATCHes it against the bank's QA corpus first, and
              dispatches the `q-executor:` block only if MATCH cannot close it.
-2. Disk      paper writes the need (in 0-lifecycle/1-claims / STATUS); the executor
+2. Disk      paper writes the need (in 0-lifecycle/1b-claims / STATUS); the executor
    (async)   writes the answer as <task-folder>/QA/<n>-<slug>.md; the section's `target:`
              points at that FILE and its `a-consumer:` interprets it. No handshake —
              binding is by PATH, and the file on disk IS the state.
@@ -24,7 +24,7 @@ Who owns which format: the paper owns the NEED (loose) and the `a-consumer:` (it
 vocabulary). The EXECUTOR owns the ANSWER (the QA file: `# Q` / `## Answer` /
 `## Caveats` / `## Not-done`, general language, anatomy in
 `probe/haipipe-probe/SKILL.md`). A CLAIM's status is the paper's alone, and lives in
-`0-lifecycle/1-claims/1-claims.md`. That is why no shared interface file is needed:
+`0-lifecycle/1b-claims/1b-claims.md`. That is why no shared interface file is needed:
 each artifact's shape belongs to the layer that produces it.
 
 ## When to record a need
@@ -36,7 +36,7 @@ back inside the paper lifecycle (1-claims / 2-pitch / 3-narrative / 4-display
 ```
 paper GAP -> a question SECTION in 1-probes/ -> the PROBE phase MATCHes it ->
 DISPATCH only what MATCH cannot close -> the answering QA file -> the section's
-`a-consumer:` -> the paper backfills (the claim's status flips in 1-claims.md)
+`a-consumer:` -> the paper backfills (the claim's status flips in 1b-claims.md)
 ```
 
 Do NOT route through a project-level narrative layer (there isn't one).
@@ -47,7 +47,7 @@ Do NOT route through a project-level narrative layer (there isn't one).
 claim needs its status settled                -> /haipipe-paper probe "<need>"  (a question SECTION)
 claim needs outside literature / context      -> /haipipe-discovery <question>
 claim or display needs a run / data artifact  -> /haipipe-task <contract>
-settled claim status (supported|refuted|      -> 0-lifecycle/1-claims/1-claims.md (the ONLY home of a
+settled claim status (supported|refuted|      -> 0-lifecycle/1b-claims/1b-claims.md (the ONLY home of a
   inconclusive + confidence + claim_type)         claim's status; the probe section carries only its
                                                   `a-consumer:`. `## Verdict`/`verdicted` are DELETED)
 ```
@@ -64,7 +64,7 @@ Two entry rules (who the delivery calls):
 
 ## Need record
 
-Each open need is one row in `0-lifecycle/1-claims/` (the claim ledger) or the
+Each open need is one row in `0-lifecycle/1b-claims/` (the claim ledger) or the
 paper STATUS dashboard:
 
 ```
@@ -83,7 +83,7 @@ section's `target:` points at it, and its `a-consumer:` says what it MEANS for
 this paper. On backfill:
 
 ```
-- write the claim's status in 0-lifecycle/1-claims/1-claims.md — supported |
+- write the claim's status in 0-lifecycle/1b-claims/1b-claims.md — supported |
   refuted | inconclusive, + confidence + claim_type. THAT ledger is
   the only home of a claim's status.
 - if the evidence narrows the claim, narrow the claim wording in 1-claims
@@ -121,7 +121,7 @@ A local need (render, parse, draft, backfill) drains immediately. A need that re
 AUTO (no asking):  local render/parse, backfill claims/displays, draft a stage tex,
                    compile previews, parse logs, status/ledger updates
 PAUSE + surface:   trigger a server/PHI run; declare a final yes/no answer;
-                   settle a claim's status in 1-claims.md; compile-to-submit;
+                   settle a claim's status in 1b-claims.md; compile-to-submit;
                    destructive round / git ops
 ```
 

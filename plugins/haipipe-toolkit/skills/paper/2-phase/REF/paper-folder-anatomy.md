@@ -18,12 +18,12 @@ editing rules. This doc defines the folder those files live in.
 ├── 0-lifecycle/                          paper maturation spine (markdown-early; stage folders absent until their stage runs)
 │   ├── 0-seed/
 │   │   └── 0-seed.md                     why this paper might exist (venue-FREE)
-│   ├── 1-resource/                       (is stage 1a, just before claims (1b), as 2-venue/ and 2-pitch/ share 2)
-│   │   └── 1-resource.md                 what must EXIST for the paper to be testable (venue-FREE)
-│   ├── 1-claims/
-│   │   └── 1-claims.md                   claim ledger, support/GAP status (venue-FREE)
-│   ├── 2-pitch/
-│   │   └── 2-pitch.md                    cover letter / one-minute story (venue-ALIGNED)
+│   ├── 1a-resource/                       (is stage 1a, just before claims (1b), as 2a-venue/ and 2b-pitch/ share 2)
+│   │   └── 1a-resource.md                 what must EXIST for the paper to be testable (venue-FREE)
+│   ├── 1b-claims/
+│   │   └── 1b-claims.md                   claim ledger, support/GAP status (venue-FREE)
+│   ├── 2b-pitch/
+│   │   └── 2b-pitch.md                    cover letter / one-minute story (venue-ALIGNED)
 │   ├── 3-narrative/
 │   │   └── 3-narrative.md                paper-owned story arc (venue-ALIGNED)
 │   ├── 4-display/

@@ -27,9 +27,9 @@ It is the **design contract** (stage 3, venue-ALIGNED) that the paper writes fro
 Every claim, figure, and citation in the final PDF should trace back to a line in this file.
 If something is not in the narrative, the downstream pipeline (`/haipipe-paper-display -> /haipipe-paper-section-edit`) will not invent it.
 
-If the paper folder has `0-lifecycle/2-pitch/2-pitch.md`, read it before composing the narrative.
+If the paper folder has `0-lifecycle/2b-pitch/2b-pitch.md`, read it before composing the narrative.
 The pitch is the one-minute public-facing story for this concrete paper; this narrative expands it into evidence-backed claims, figures, and limitations.
-If the evidence forces a different pitch, update `0-lifecycle/2-pitch/2-pitch.md` through `/haipipe-paper-lifecycle pitch` and log the shift instead of silently diverging.
+If the evidence forces a different pitch, update `0-lifecycle/2b-pitch/2b-pitch.md` through `/haipipe-paper-lifecycle pitch` and log the shift instead of silently diverging.
 
 Read first: `../../../PHILOSOPHY.md`, `../../ref/04-lifecycle-map.md`.
 
@@ -62,7 +62,7 @@ Read first: `../../../PHILOSOPHY.md`, `../../ref/04-lifecycle-map.md`.
 - [ ] Per-beat interrogation complete (subagent reviewed every beat)
 - [ ] Spine throughline present
 - [ ] Probes section present with all [GAP]/[LIT] needs surfaced
-- [ ] Venue contract (2-venue.md; pack fallback if absent) consulted for arc shaping
+- [ ] Venue contract (2a-venue.md; pack fallback if absent) consulted for arc shaping
 - [ ] _LOG entry records the current state
 
 **DPRC applicability:**
@@ -121,7 +121,7 @@ PROBE --> identify citation needs per beat ([LIT] tags),
 REVISE -> refine prose clarity across all beats,
           sharpen arc and flow between sections,
           apply short-plain-sentence rule to all comments,
-          ensure venue-contract (2-venue.md) arc shaping is applied
+          ensure venue-contract (2a-venue.md) arc shaping is applied
           (internally calls /haipipe-paper-revise; [REVISE] _LOG entry carries workers: proof)
   |
   v
@@ -152,9 +152,9 @@ Do **not** use when:
 
 The skill discovers whichever of these exist in the project tree:
 
-0. **`0-lifecycle/2-pitch/2-pitch.md`** (paper folder, if present) -- current one-minute paper story.
+0. **`0-lifecycle/2b-pitch/2b-pitch.md`** (paper folder, if present) -- current one-minute paper story.
    Use it as the reader-facing framing constraint, not as evidence.
-1. **`0-lifecycle/1-claims/1-claims.md`** (best) -- the claim ledger.
+1. **`0-lifecycle/1b-claims/1b-claims.md`** (best) -- the claim ledger.
    It is the ONLY home of a claim's status (`supported | refuted | inconclusive` + confidence + claim_type): a probe section carries only its `a-consumer:`, and `## Verdict`/`verdicted` are DELETED.
    If present, use the ledger as the spine of the narrative; every supported claim becomes a section in the report.
 2. **`IDEA_REPORT.md`** -- chosen idea, hypothesis, novelty justification (from `/idea-discovery`).
@@ -184,7 +184,7 @@ The narrative mirrors the paper's REAL sections, in reading order, and has five 
    - `[GAP]` (red): no evidence yet, needs a probe.
 
    The tag is not decoration: `[PENDING]` and `[GAP]` beats ARE the open evidence needs, and they route to `/haipipe-probe`.
-   The narrative is venue-ALIGNED -- it reads STATUS `venue` and consults the venue contract (2-venue.md) to shape the arc.
+   The narrative is venue-ALIGNED -- it reads STATUS `venue` and consults the venue contract (2a-venue.md) to shape the arc.
 
 2. **Spine (throughline).**
    One paragraph, an arrow chain, the whole paper in one breath: problem, the move this paper makes, the core finding, the so-what.
@@ -208,7 +208,7 @@ The narrative mirrors the paper's REAL sections, in reading order, and has five 
 5. **Footer ledger.**
    Lines: **Reviewer-flagged gaps** (each known reviewer concern and which section beat now threads it, or marked Remaining and routed to a probe), **Arc** (one line: what each section lands on after demotions/parks/folds, and how the spine's peak claim is defended), **Awaiting review** (beats authored since the last interrogation pass that still need a verdict), and, when an external review has been threaded, an **External review (`<name>, <date>`)** line that points to the comments above and carries any comment with no home beat plus the source file path.
 
-This form absorbs the old markdown buckets: the claim-evidence matrix becomes the readiness-tagged beats; the figure/table inventory becomes Methods/Results beats (a Table 1 beat, a STROBE-flow beat); limitations become Discussion beats; the pitch alignment stays a constraint read from `0-lifecycle/2-pitch/2-pitch.md` (venue-ALIGNED), not a printed section.
+This form absorbs the old markdown buckets: the claim-evidence matrix becomes the readiness-tagged beats; the figure/table inventory becomes Methods/Results beats (a Table 1 beat, a STROBE-flow beat); limitations become Discussion beats; the pitch alignment stays a constraint read from `0-lifecycle/2b-pitch/2b-pitch.md` (venue-ALIGNED), not a printed section.
 
 ## Per-Beat Interrogation (subagent review)
 
@@ -280,11 +280,11 @@ Copy it to `<paper>/0-lifecycle/3-narrative/3-narrative.md` and replace the plac
 6. **One narrative per paper**, not per probe.
    Multi-probe projects collapse into one story or split into separate papers; don't try to fit two stories into one narrative.
 7. **Venue-ALIGNED arc.**
-   The narrative is explicitly venue-aligned: read STATUS `venue` and the paper's `0-lifecycle/2-venue/2-venue.md` FIRST -- the Structural Blueprint blocks (section roles, beat allocation, paragraph budgets) plus Writing Principles -- for what the venue rewards in terms of narrative arc and argument structure.
+   The narrative is explicitly venue-aligned: read STATUS `venue` and the paper's `0-lifecycle/2a-venue/2a-venue.md` FIRST -- the Structural Blueprint blocks (section roles, beat allocation, paragraph budgets) plus Writing Principles -- for what the venue rewards in terms of narrative arc and argument structure.
    This contract shapes which beats are expanded (theory-forward for MISQ, clinical-impact-forward for JAMA) and which are condensed.
-   Fall back to `venue/playbook-<venue>` directly only when `2-venue.md` is absent (venue stage not yet run, or a pack-less venue); if no pack exists either, proceed without venue inputs.
-   Deep dives follow the `[source: ...]` tags in `2-venue.md` into `venue/playbook-<slug>/<journal>/...`.
-   If `2-venue.md`'s recorded pack commit is behind the current `venue` HEAD, note "venue contract stale -- consider /haipipe-paper-venue refresh" but still use `2-venue.md` (never silently re-read packs).
+   Fall back to `venue/playbook-<venue>` directly only when `2a-venue.md` is absent (venue stage not yet run, or a pack-less venue); if no pack exists either, proceed without venue inputs.
+   Deep dives follow the `[source: ...]` tags in `2a-venue.md` into `venue/playbook-<slug>/<journal>/...`.
+   If `2a-venue.md`'s recorded pack commit is behind the current `venue` HEAD, note "venue contract stale -- consider /haipipe-paper-venue refresh" but still use `2a-venue.md` (never silently re-read packs).
 8. **Comment text is short and plain.**
    All comment text (interrogation, external comments, footer ledger lines) uses short declarative sentences, one idea each.
    No run-on lines chained by semicolons, no stacked parentheticals; compress rather than nest, split rather than join.

@@ -11,7 +11,7 @@ Done-gate for the **display** stage (`haipipe-paper-display`). The stage is comp
 - [ ] `4-display.tex` is REGENERATED from the md by sync — never hand-edited: `\section*{<paper section>}` banner at each section change, a named `\subsection*{Figure N. <name>}` / `Table N. <name>` per display, small-font interrogation verdicts, `\input` per unit, Parking section last (parked units never `\input` into the manuscript).
 - [ ] Gallery sizing knobs (width cap, float pinning, spacing) live in the md's gallery config and are emitted into the generated tex preamble — never pushed into a unit's `float.tex` or source spec.
 - [ ] `4-display.pdf` recompiled and current (a stale PDF is a defect; recompile after every edit, from the paper root so `0-displays/` paths resolve).
-- [ ] Shaped to the VENUE display set (read STATUS `venue`; consult the paper's `0-lifecycle/2-venue/2-venue.md` Structural Blueprint display units + Writing Principles display limits; fall back to `../../../venue/playbook-<venue>` `-> Display` only if 2-venue.md is absent). For UTD-IS (MISQ/ISR/MS-IS): research-model figure as the hero, a research-design figure, a hypothesis-test table, descriptives.
+- [ ] Shaped to the VENUE display set (read STATUS `venue`; consult the paper's `0-lifecycle/2a-venue/2a-venue.md` Structural Blueprint display units + Writing Principles display limits; fall back to `../../../venue/playbook-<venue>` `-> Display` only if 2a-venue.md is absent). For UTD-IS (MISQ/ISR/MS-IS): research-model figure as the hero, a research-design figure, a hypothesis-test table, descriptives.
 - [ ] The `[primary]` claim's display is the HERO (first figure).
 - [ ] Figures/tables numbered by order of appearance.
 

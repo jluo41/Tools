@@ -164,8 +164,8 @@ mapped folder not existing yet is expected, not an error.
 haipipe-paper-seed                  1-lifecycle/0-seed/haipipe-paper-seed/feedback/
 haipipe-paper-resource              1-lifecycle/1a-resource/haipipe-paper-resource/feedback/
 haipipe-paper-claims                1-lifecycle/1b-claims/haipipe-paper-claims/feedback/
-haipipe-paper-venue                 1-lifecycle/haipipe-paper-venue/feedback/
-haipipe-paper-pitch                 1-lifecycle/2-pitch/haipipe-paper-pitch/feedback/
+haipipe-paper-venue                 1-lifecycle/2a-venue/haipipe-paper-venue/feedback/
+haipipe-paper-pitch                 1-lifecycle/2b-pitch/haipipe-paper-pitch/feedback/
 haipipe-paper-narrative             1-lifecycle/3-narrative/haipipe-paper-narrative/feedback/
 haipipe-paper-display[-*]           1-lifecycle/4-display/haipipe-paper-display[-*]/feedback/
 haipipe-paper-section-edit          1-lifecycle/5-section-edit/haipipe-paper-section-edit/feedback/

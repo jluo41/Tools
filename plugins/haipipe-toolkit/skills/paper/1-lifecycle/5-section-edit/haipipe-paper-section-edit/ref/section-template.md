@@ -1,11 +1,11 @@
 <tpl: THIS FILE IS A TEMPLATE. DRAFT copies it to 0-lifecycle/5-section-edit/{section}/{section}.md and fills it in.>
 <tpl: Fill every <angle-bracket> slot. DELETE every line starting with "<tpl:" as you fill — a finished .md contains ZERO of them. Mechanical gate: `grep -c '<tpl' {section}.md` must print 0 before the ⛔ STOP presentation.>
-<tpl: Rules live in ref/outline-format.md (read it once per session). This file is only the SHAPE. Content norms come from the venue blueprint (2-venue.md block, BINDING) + section-type/section-<type>/SKILL.md (structure norms) + the style pack file(s) (REFERENCE ONLY).>
+<tpl: Rules live in ref/outline-format.md (read it once per session). This file is only the SHAPE. Content norms come from the venue blueprint (2a-venue.md block, BINDING) + section-type/section-<type>/SKILL.md (structure norms) + the style pack file(s) (REFERENCE ONLY).>
 
 # Section <N>: <Title> -- Structure
 
 venue: <MISQ 2026> · section-type: <methods (+results flavor)>
-blueprint: 0-lifecycle/2-venue/2-venue.md (<methods> block)   <- BINDING: budget, structure, density
+blueprint: 0-lifecycle/2a-venue/2a-venue.md (<methods> block)   <- BINDING: budget, structure, density
 style: <resolved venue path, e.g. venue/playbook-utd-is/MISQ/MISQ-methods/style.md · MISQ-results/style.md>   (reference only)
 <tpl: resolve the pack path layout-agnostically (find over ~/.claude/skills + $CLAUDE_PLUGIN_ROOT), record the RESOLVED path; pack absent -> `style: (pack missing — blueprint only)` + flag for CHECK. Hybrid sections list multiple style files ·-separated.>
 
@@ -48,15 +48,32 @@ total: <p> ¶ · <s> sentences · ~<w> words   (venue budget for this section: <
 
 ---
 
-## Q-consumer proposed by this draft
+## Questions Raised by This Draft
 
-<tpl: HEAVIER needs (a NEW task run, a discovery sweep) become `## Q<n>` question subsections — id + title + what they want; the route + approver are organized at APPROVE. Every other {VAL:?}/\cite{TOADD} rolls up with its EXPECTED source; pointer-following first — if the draft already sees the pointer in the paper's own registries, say `-> paper-local: <file>` and PROBE closes it `answered-local`, nothing dispatched.>
+<tpl: MANDATORY last block (JL 2026-07-18, BINDING — full spec in ref/outline-format.md). One `###` subsection PER question, each with all four labelled fields. EVERY {VAL:?}/\cite{TOADD}/display-need/heavier-need becomes a numbered question. Bullet lines, never tables. Then a Settled Flags section, then a user-owned notes section.>
 
-values:    {VAL:? <what>}                       -> <expected source: paper-local _VALUES_/metrics.json | tasks/ run>
-citation:  \cite{TOADD} @ P<n>.S<n> (<topic>)   -> <check prior stages' _CITATION_ / .bib first | discovery sweep (buffered: PP<NN>)>
-display:   P<n> wants <display>                 -> 0-displays/ unit exists? LINK : DR request (4-display inbox)
-heavier:   <need requiring a new task run / lit sweep>  (raised: PP<NN>, state: planned)
-<tpl: heavier needs -> a `state: planned` question SECTION in `1-probes/PP<NN>_<topic>.md` (one file per TOPIC; the section carries serves:/target:/state:/q-executor:, with an EMPTY a-consumer:) + its Status board row in `1-probes/README.md`. EXCEPTION: a missing display unit is never a probe section — it is a DR row for the 4-display inbox (PROBE files it; section-edit never creates displays).>
-<tpl: index row = a BULLET LINE, never a markdown table (JL standing rule: no tables in probe documents). Shape — append verbatim, one per PP:>
-<tpl: - PP<NN> · <stage/section> · <status> · <one-line need> · card: <path>              >
+Each question is a Q_consume: it links back to the sentence that raised it, and its Answer is filled later by the probe group (the bank).
+
+### §<N>-Q1 · <short title>
+<tpl: index = the stage/section TAG + Q<n> so it is globally unique — `§<N>-Q<n>` for a manuscript section (§1-Q1, §6-Q2; §0 = abstract), `<stage>-Q<n>` for a lifecycle stage (seed-Q1, claims-Q1).>
+- **Question.** <one clear line — the consumer question>
+- **Links to.** §<N> P<x>.S<y>  ·  serves: <claim id / stage>  ·  track: <citation | values | display | discovery | decision | wording>
+- **Description.** <2-4 short sentences: what is uncertain, why it matters, what a good answer looks like>
+- **Answer (from the group).** _pending — filled by PROBE_
+
+<tpl: repeat ### Q<n> for EVERY placeholder / display need / heavier need. At PROBE-run time, heavier bank questions are DISPATCHED via `1-probes/PP<NN>_<topic>.md` (executor-facing q-executor:, no stake) + a `1-probes/README.md` bullet row (`- PP<NN> · <stage/section> · <state> · <one-line need> · file: <path>`); the harvested answer flows BACK into that question's Answer field. A missing display unit is never a question — it is a DR row for the 4-display inbox (section-edit never creates displays).>
+
+---
+
+## Settled Flags (not open questions — logged, no action)
+
+- <accepted deviations / already-ruled items / placeholder rollups that resolve paper-local (e.g. `{VAL:? x} -> paper-local: _VALUES_...`) — bullet lines, never a table>
+
+---
+
+## My Notes & Feedback — JL
+<!-- Yours. Agents never overwrite below this line. Add rulings, priorities, extra questions, corrections. -->
+
+_(empty — add your notes here)_
+
 <tpl: after filling: verify `grep -c '<tpl' {section}.md` -> 0, then present structure + the questions raised and ⛔ STOP for the user's review. Do not advance without the user's verb.>

@@ -63,13 +63,13 @@ One brain, one file.
 
 **Content structure of `4-display.md`** (canonical template: **`ref/display-template.md`** — the same stage-template convention as seed/claims/pitch/narrative):
 
-- **Venue Set** — the venue's standard display set + limits from `2-venue.md` (principle 9); plus the **gallery config** block (sizing knobs sync emits into the generated tex preamble).
+- **Venue Set** — the venue's standard display set + limits from `2a-venue.md` (principle 9); plus the **gallery config** block (sizing knobs sync emits into the generated tex preamble).
 - **Display Map** — one record line per display; row order = narrative order = gallery order.
 - **Probes** — the phase plan, shaped like the seed/claims `Probes` section: each probe is a `###` sub-item `<ID> -- <title> -- <status>` with `Lane:` / `Route:` / `Serves:` / `Gated on:` / `Outcome:` field lines (evidence entries also carry the family's `Detail: 1-probes/PPNN_<slug>.md` pointer), separated by `---`.
   IDs number within lane: `S` sweep, `E` evidence, `R` render.
   Status is `▶ ready`, `✋ gated` (on a named display-subsection thread), or `done` (Outcome written in).
   DRAFT proposes; the user strikes entries at the gate; PROBE executes only what survives and writes each Outcome back.
-- **Paper-section groups** — one `-----` section per PAPER SECTION, in narrative order, opening with a `venue expects:` line (that section's display units from the 2-venue.md blueprint, so a mandated-but-missing unit is a visible GAP in place); **each display is a `###` subsection** inside its group: claim/status line, takeaway, evidence source, **lettered method-candidate lines** (the try-different-methods surface), ASCII sketch (real numbers when known), caption job, fragility, `> USER:` / `> CC:` threads.
+- **Paper-section groups** — one `-----` section per PAPER SECTION, in narrative order, opening with a `venue expects:` line (that section's display units from the 2a-venue.md blueprint, so a mandated-but-missing unit is a visible GAP in place); **each display is a `###` subsection** inside its group: claim/status line, takeaway, evidence source, **lettered method-candidate lines** (the try-different-methods surface), ASCII sketch (real numbers when known), caption job, fragility, `> USER:` / `> CC:` threads.
   Group membership mirrors the map's `section` column (mismatch = defect); the md grouping mirrors the generated gallery's `\section*`/`\subsection*` structure one-to-one.
 - **Parking** — kept-but-unused displays; listed here, never `\input` into the manuscript.
 
@@ -177,7 +177,7 @@ When a requested unit reaches `rendered`/`input-ready`, flip its row `done (unit
 Only THIS stage advances DR statuses.
 
 **Plan.** Author or refresh `4-display.md` from the paper state.
-Group displays by PAPER SECTION in narrative order (one `-----` group per section, each display a `###` subsection inside it); open every group with its `venue expects:` line from the 2-venue.md blueprint, and state a GAP right there when a mandated unit has no subsection yet.
+Group displays by PAPER SECTION in narrative order (one `-----` group per section, each display a `###` subsection inside it); open every group with its `venue expects:` line from the 2a-venue.md blueprint, and state a GAP right there when a mandated unit has no subsection yet.
 
 Illuminate first (per `../../ref/09-stage-illuminate.md`): present the current display set and ask -- which display is the hero figure?
 Which are main vs supplement?
@@ -185,7 +185,7 @@ What visual forms (forest plot, panel, flow diagram, table)?
 Elicit taste before rendering anything.
 In a non-interactive run, never block on illuminate: record each unasked taste question as an explicit DRAFT ASSUMPTION in the md and present those assumptions at the gate alongside the open threads (the user overturns any of them with a ruling).
 
-Inputs to read when present: `0-lifecycle/2-venue/2-venue.md` (FIRST — it fixes the display set, principle 9), `2-pitch/2-pitch.md`, `3-narrative/3-narrative.md`, existing `0-displays/`, upstream result paths the user names.
+Inputs to read when present: `0-lifecycle/2a-venue/2a-venue.md` (FIRST — it fixes the display set, principle 9), `2b-pitch/2b-pitch.md`, `3-narrative/3-narrative.md`, existing `0-displays/`, upstream result paths the user names.
 
 For each display, the block records **method candidates** — 2–3 genuinely different ways to make this display, each a lettered record line: form (forest / dot-whisker / panel / vector diagram / AI illustration / table), route (which renderer or task), and an empty output/verdict slot for PROBE to fill.
 A settled form needs only one row; for the hero/architecture figure, offer 3–5 framework options (pipeline chain, hub-and-spoke, layered stack, audit loop, feedback cycle) with pros/cons and expected reviewer friction.
@@ -371,11 +371,11 @@ planned / data-ready / candidates / rendered / input-ready / inserted / reviewed
    Compile from the paper ROOT so `0-displays/` paths resolve.
 8. **Try different methods before committing.** Every non-trivial display carries 2–3 candidate rows (different forms/routes, including the illustration and diagram skills); PROBE renders them into `candidates/`, REVISE picks with a recorded why, losers keep history in `versions/`.
    Both display kinds follow the same rule: data-driven (parser → `metrics.json` → render; robust parser: factor-variable rows, leading-dot numbers, SE/CIs) and schematic/flow (study-flow, data-provenance, CONSORT — drawn by a diagram render annotated with REAL Ns, never hand-drawn).
-9. **Venue-ALIGNED: couple to venue.** Read STATUS `venue`, then the paper's `0-lifecycle/2-venue/2-venue.md` FIRST: the Structural Blueprint's per-section `Display units` rows give the venue's standard display set and hero rule (e.g. Table 1 + STROBE cohort-flow for clinical, the research-model figure for MISQ, the main-result multi-panel for Nature/PNAS), and Writing Principles gives the display limits (figure count caps, table format, color guidelines).
+9. **Venue-ALIGNED: couple to venue.** Read STATUS `venue`, then the paper's `0-lifecycle/2a-venue/2a-venue.md` FIRST: the Structural Blueprint's per-section `Display units` rows give the venue's standard display set and hero rule (e.g. Table 1 + STROBE cohort-flow for clinical, the research-model figure for MISQ, the main-result multi-panel for Nature/PNAS), and Writing Principles gives the display limits (figure count caps, table format, color guidelines).
    The `[primary]` claim's display is the hero.
    A venue change re-runs the display set.
-   Fall back to the pack only when `2-venue.md` is absent (venue stage not yet run, or a pack-less venue): if `../../../venue/playbook-<venue>` exists, consult its `README.md` section `-> Display`; if no pack exists either, proceed without venue inputs.
-   Deep dives follow the `[source: ...]` tags in `2-venue.md` into `venue/playbook-<slug>/<journal>/...`. If `2-venue.md`'s recorded pack commit is behind the current `venue` HEAD, note "venue contract stale -- consider /haipipe-paper-venue refresh" but still use `2-venue.md` (never silently re-read packs).
+   Fall back to the pack only when `2a-venue.md` is absent (venue stage not yet run, or a pack-less venue): if `../../../venue/playbook-<venue>` exists, consult its `README.md` section `-> Display`; if no pack exists either, proceed without venue inputs.
+   Deep dives follow the `[source: ...]` tags in `2a-venue.md` into `venue/playbook-<slug>/<journal>/...`. If `2a-venue.md`'s recorded pack commit is behind the current `venue` HEAD, note "venue contract stale -- consider /haipipe-paper-venue refresh" but still use `2a-venue.md` (never silently re-read packs).
 10. **Commentary lives in 4-display.md; the gallery owns sizing.** Author/reviewer comments on a figure/table (preferences, "too thin," "park this," ordering) go ONLY into `4-display.md` as `> USER:` thread lines in that display's block, kept verbatim across iterations — never into a unit's files, never into the generated tex (units stay portable and comment-free).
     Gallery presentation knobs (width caps, float pinning, spacing) live in the md's gallery config and are emitted into the generated tex preamble — never pushed into a unit's `float.tex` or its source spec (units keep native size for the manuscript).
 

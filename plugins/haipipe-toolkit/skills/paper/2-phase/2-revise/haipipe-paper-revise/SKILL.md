@@ -63,11 +63,11 @@ The rules:
 - <=6 sentences per paragraph
 - Pn.Sn markers on every sentence
 
-Venue-specific norms (word budget, tone, section arc) come from the paper's `0-lifecycle/2-venue/2-venue.md` (Writing Principles + the relevant Structural Blueprint block) and override where they conflict.
-Read `venue/playbook-*/style-profile.md` directly only as fallback when 2-venue.md is absent, or as a deep dive via its `[source: ...]` tags.
+Venue-specific norms (word budget, tone, section arc) come from the paper's `0-lifecycle/2a-venue/2a-venue.md` (Writing Principles + the relevant Structural Blueprint block) and override where they conflict.
+Read `venue/playbook-*/style-profile.md` directly only as fallback when 2a-venue.md is absent, or as a deep dive via its `[source: ...]` tags.
 
 **Venue guard** (same rule as DRAFT): when revising a venue-ALIGNED artifact, no `venue:` pinned in STATUS.md -> STOP with `status: blocked` and point the user to `/haipipe-paper venue`.
-Venue pinned -> read the paper's `0-lifecycle/2-venue/2-venue.md` FIRST; fall back to the pinned `venue/playbook-*` pack only when it is absent (no matching pack either -> STOP the same way).
+Venue pinned -> read the paper's `0-lifecycle/2a-venue/2a-venue.md` FIRST; fall back to the pinned `venue/playbook-*` pack only when it is absent (no matching pack either -> STOP the same way).
 Fallback pack present but per-section style file missing -> revise with the general style-profile and flag the gap in `_LOG` + the CHECK report.
 Never silently invent venue norms.
 

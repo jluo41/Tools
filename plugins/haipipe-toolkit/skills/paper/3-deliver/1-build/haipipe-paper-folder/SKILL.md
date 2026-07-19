@@ -34,7 +34,7 @@ Paper-<Name>/
 ```
 
 Absent-until-written: `0-lifecycle/` starts empty.
-`/haipipe-paper seed` creates `0-seed/`, resource creates `1-resource/`, claims creates `1-claims/`, and so on down the spine (`0-seed, 1-resource, 1-claims, 2-pitch, 3-narrative, 4-display, 5-section-edit` -- resource and claims SHARE the number 1, as `2-venue/` and `2-pitch/` already do; the number is decoration and nothing renumbers).
+`/haipipe-paper seed` creates `0-seed/`, resource creates `1a-resource/`, claims creates `1b-claims/`, and so on down the spine (`0-seed, 1-resource, 1-claims, 2-pitch, 3-narrative, 4-display, 5-section-edit` -- resource and claims SHARE the number 1, as `2a-venue/` and `2b-pitch/` already do; the number is decoration and nothing renumbers).
 Early stages are markdown, so a fresh paper contains no tex and needs no compiler.
 
 STATUS.md template (the stage strip and the enter console parse this; keep the shape):
@@ -101,7 +101,7 @@ Typically requested once, at the display or section-edit frontier:
 1-config.yaml                  # optional: figure/table paths
 ```
 
-Section format follows the pinned venue (consult the paper's `0-lifecycle/2-venue/2-venue.md` Structural Blueprint first; fallback: `venue/playbook-<venue>` when 2-venue.md is absent):
+Section format follows the pinned venue (consult the paper's `0-lifecycle/2a-venue/2a-venue.md` Structural Blueprint first; fallback: `venue/playbook-<venue>` when 2a-venue.md is absent):
 
 | Venue format | Sections (in order) |
 |---|---|

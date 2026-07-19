@@ -29,10 +29,10 @@ The orchestrator never generates narrative, outlines, figures, or diagrams itsel
 /haipipe-paper-lifecycle                                -> dashboard (list specialists + pipeline)
 /haipipe-paper-lifecycle folder <args>                  -> scaffold paper directory (haipipe-paper-folder)
 /haipipe-paper-lifecycle seed <args>                    -> 0-lifecycle/0-seed/0-seed.md (venue-FREE)
-/haipipe-paper-lifecycle resource <args>                -> 0-lifecycle/1-resource/1-resource.md (venue-FREE prerequisite contract)
-/haipipe-paper-lifecycle claims <args>                  -> 0-lifecycle/1-claims/1-claims.md (venue-FREE claim ledger)
-/haipipe-paper-lifecycle venue <args>                   -> STATUS.md venue pin + 0-lifecycle/2-venue/2-venue.md venue contract (decision gate)
-/haipipe-paper-lifecycle pitch <args>                   -> 0-lifecycle/2-pitch/2-pitch.md (venue-ALIGNED cover letter)
+/haipipe-paper-lifecycle resource <args>                -> 0-lifecycle/1a-resource/1a-resource.md (venue-FREE prerequisite contract)
+/haipipe-paper-lifecycle claims <args>                  -> 0-lifecycle/1b-claims/1b-claims.md (venue-FREE claim ledger)
+/haipipe-paper-lifecycle venue <args>                   -> STATUS.md venue pin + 0-lifecycle/2a-venue/2a-venue.md venue contract (decision gate)
+/haipipe-paper-lifecycle pitch <args>                   -> 0-lifecycle/2b-pitch/2b-pitch.md (venue-ALIGNED cover letter)
 /haipipe-paper-lifecycle narrative <args>               -> 0-lifecycle/3-narrative/3-narrative.md (venue-ALIGNED design contract)
 /haipipe-paper-lifecycle display <args>                 -> 0-lifecycle/4-display/4-display.tex + 0-displays/ units (the only compiled stage)
 /haipipe-paper-lifecycle section-edit <args>            -> 0-lifecycle/5-section-edit/{section}/ per-section editing hub
@@ -79,17 +79,17 @@ haipipe-paper-folder                  SCAFFOLD:  minimal quick scaffold (README 
 
 haipipe-paper-seed          SEED (0):    maintain 0-lifecycle/0-seed/0-seed.md: 3 sections (Seed Question, Motivations, Tentative Claim Shape); the venue-FREE contract that keeps a paper possibility alive before evidence matures.
 
-haipipe-paper-resource      RESOURCE (1a): maintain 0-lifecycle/1-resource/1-resource.md, the venue-FREE prerequisite contract: what must EXIST for this paper to be testable, does it exist, and can it CARRY the claim? Two sections only -- Demand (one N<n> per hypothesis, keyed on H<n>) and Questions (one Q<n>, and its A when the answer lands). Scope is DATA + MODELS + PRODUCING-CODE (data is the bulk, not the boundary). The stage ASKS; the probe layer ROUTES -- it mints no PP ids and picks no probe types. Cleavage: task-for-data / task-for-algo (ingredients) belong HERE; task-for-fit (train the model) + task-for-eval (evaluate) are CLAIMS'. Stage 1a; claims is 1b. Exits: proceed / reseed / park.
+haipipe-paper-resource      RESOURCE (1a): maintain 0-lifecycle/1a-resource/1a-resource.md, the venue-FREE prerequisite contract: what must EXIST for this paper to be testable, does it exist, and can it CARRY the claim? Two sections only -- Demand (one N<n> per hypothesis, keyed on H<n>) and Questions (one Q<n>, and its A when the answer lands). Scope is DATA + MODELS + PRODUCING-CODE (data is the bulk, not the boundary). The stage ASKS; the probe layer ROUTES -- it mints no PP ids and picks no probe types. Cleavage: task-for-data / task-for-algo (ingredients) belong HERE; task-for-fit (train the model) + task-for-eval (evaluate) are CLAIMS'. Stage 1a; claims is 1b. Exits: proceed / reseed / park.
 
-haipipe-paper-claims        CLAIMS (1b):  maintain 0-lifecycle/1-claims/1-claims.md, the venue-FREE claim ledger AND the home of each claim's status (supported | refuted | inconclusive); venue-neutral H1/H2/H3, each claim tied to a probe section's answering QA file. Claims RUNS THE EXPERIMENT (train the model + evaluate); it reads the section's `a-consumer:`, not a probe verdict.
+haipipe-paper-claims        CLAIMS (1b):  maintain 0-lifecycle/1b-claims/1b-claims.md, the venue-FREE claim ledger AND the home of each claim's status (supported | refuted | inconclusive); venue-neutral H1/H2/H3, each claim tied to a probe section's answering QA file. Claims RUNS THE EXPERIMENT (train the model + evaluate); it reads the section's `a-consumer:`, not a probe verdict.
 
 --- VENUE DECISION (pins target journal in STATUS.md) ---
 
-haipipe-paper-venue         VENUE:       recommend + pin the best-fit venue; compiles pack knowledge into 0-lifecycle/2-venue/2-venue.md (Venue Profile + Structural Blueprint + Writing Principles + Fit Assessment, provenance header naming pack + outlet + venue commit) -- the venue contract the aligned stages read FIRST; gate between venue-free and venue-aligned stages.
+haipipe-paper-venue         VENUE:       recommend + pin the best-fit venue; compiles pack knowledge into 0-lifecycle/2a-venue/2a-venue.md (Venue Profile + Structural Blueprint + Writing Principles + Fit Assessment, provenance header naming pack + outlet + venue commit) -- the venue contract the aligned stages read FIRST; gate between venue-free and venue-aligned stages.
 
 --- VENUE-ALIGNED (rewrite on retarget) ---
 
-haipipe-paper-pitch         PITCH (2):   maintain 0-lifecycle/2-pitch/2-pitch.md, the venue-ALIGNED cover letter and one-minute story; owns Editor's Chair Test, [primary] claim designation, venue-specific RQ framing.
+haipipe-paper-pitch         PITCH (2):   maintain 0-lifecycle/2b-pitch/2b-pitch.md, the venue-ALIGNED cover letter and one-minute story; owns Editor's Chair Test, [primary] claim designation, venue-specific RQ framing.
 
 haipipe-paper-narrative     NARRATIVE (3): maintain 0-lifecycle/3-narrative/3-narrative.md, the venue-ALIGNED, section-mirrored, evidence-tracked story built from the claim ledger; every beat carries a readiness tag.
 ```
@@ -97,7 +97,7 @@ haipipe-paper-narrative     NARRATIVE (3): maintain 0-lifecycle/3-narrative/3-na
 ### Display -- what the reader sees (venue-ALIGNED)
 
 ```
-haipipe-paper-display       DISPLAY (4): 0-lifecycle/4-display/4-display.tex + PDF (the gallery, the ONLY compiled stage) plus per-unit README.md, float.tex, and preview.pdf under 0-displays/displayNN-<slug>/. Keeps display items tied to claim, evidence source, section, and caption. Consults 2-venue.md for the display set and hero rule (Structural Blueprint display units + Writing Principles display limits; pack fallback when 2-venue.md is absent). Figure-inventory planning (one claim per figure, panel roles, main vs supplement) is folded in as its ref/figure-logic.md. Framework/architecture mode handles Figure 1 candidate rounds before final rendering.
+haipipe-paper-display       DISPLAY (4): 0-lifecycle/4-display/4-display.tex + PDF (the gallery, the ONLY compiled stage) plus per-unit README.md, float.tex, and preview.pdf under 0-displays/displayNN-<slug>/. Keeps display items tied to claim, evidence source, section, and caption. Consults 2a-venue.md for the display set and hero rule (Structural Blueprint display units + Writing Principles display limits; pack fallback when 2a-venue.md is absent). Figure-inventory planning (one claim per figure, panel roles, main vs supplement) is folded in as its ref/figure-logic.md. Framework/architecture mode handles Figure 1 candidate rounds before final rendering.
 ```
 
 ### Section editing -- per-section prose work (venue-ALIGNED)
@@ -144,7 +144,7 @@ The typical first-pass order:
   ──────────────────────────────────────
       ↓
   venue          pin target journal in STATUS.md (gate between FREE and ALIGNED)
-                 + compile 0-lifecycle/2-venue/2-venue.md, the venue contract the ALIGNED stages read first
+                 + compile 0-lifecycle/2a-venue/2a-venue.md, the venue contract the ALIGNED stages read first
 
   VENUE-ALIGNED (rewrite on retarget)
   ──────────────────────────────────────
@@ -188,7 +188,7 @@ For a whole paper, prefer the GLOBAL-PASS order (JL ruling 2026-07-11): probes p
                   and it survives a dead session with zero files bank-side)
 ⑤ HARVEST         a PROBE re-run re-resolves each `commissioned` section's
                   target:, `ls` its QA file, and lands the `a-consumer:` +
-                  the 1-claims.md flip + the harvest lanes
+                  the 1b-claims.md flip + the harvest lanes
                   (query-once: landed answers are read from registries, never
                   re-queried) → then REVISE + CHECK stage by stage
 ```
@@ -199,9 +199,9 @@ Campaign rules live in the probe layer: `probe/haipipe-probe/SKILL.md` "Campaign
 **Retarget rule:** when the venue changes, seed, resource and claims stay unchanged (venue-FREE).
 Pitch, narrative, display, and section-edit all rewrite for the new venue.
 
-**Venue consumption rule:** the venue-aligned stages read the paper's `0-lifecycle/2-venue/2-venue.md` FIRST -- pitch: Venue Profile + Fit Assessment; narrative: Structural Blueprint beats + Writing Principles; display: Structural Blueprint display units + Writing Principles display limits; section-edit: the per-section Structural Blueprint block + Writing Principles.
-Direct `venue/` pack reads are (a) the fallback when `2-venue.md` is absent (venue stage not yet run, or a pack-less venue; no pack at all = no venue inputs) and (b) deep dives following the `[source: ...]` tags recorded in `2-venue.md` into `venue/playbook-<slug>/<journal>/...`.
-If `2-venue.md`'s recorded pack commit is behind the current `venue` HEAD, stages note "venue contract stale -- consider /haipipe-paper-venue refresh" but still use `2-venue.md` (never silently re-read packs).
+**Venue consumption rule:** the venue-aligned stages read the paper's `0-lifecycle/2a-venue/2a-venue.md` FIRST -- pitch: Venue Profile + Fit Assessment; narrative: Structural Blueprint beats + Writing Principles; display: Structural Blueprint display units + Writing Principles display limits; section-edit: the per-section Structural Blueprint block + Writing Principles.
+Direct `venue/` pack reads are (a) the fallback when `2a-venue.md` is absent (venue stage not yet run, or a pack-less venue; no pack at all = no venue inputs) and (b) deep dives following the `[source: ...]` tags recorded in `2a-venue.md` into `venue/playbook-<slug>/<journal>/...`.
+If `2a-venue.md`'s recorded pack commit is behind the current `venue` HEAD, stages note "venue contract stale -- consider /haipipe-paper-venue refresh" but still use `2a-venue.md` (never silently re-read packs).
 
 ---
 
@@ -380,11 +380,11 @@ Relation to Parent Orchestrator
 --------------------------------
 
 `haipipe-paper` (in `paper/haipipe-paper/`) is the top-level paper router + Console.
-It resolves status and consults the paper's `0-lifecycle/2-venue/2-venue.md` for venue fit (falling back to the target's profile in `venue/playbook-<venue>` only when no venue contract exists yet).
+It resolves status and consults the paper's `0-lifecycle/2a-venue/2a-venue.md` for venue fit (falling back to the target's profile in `venue/playbook-<venue>` only when no venue contract exists yet).
 This orchestrator (`haipipe-paper-lifecycle`) is the direct entry for structural work -- either routed from the Console or invoked by the user directly.
 
 ```
-haipipe-paper (router)  -- consults 2-venue.md for venue fit (pack fallback pre-pin)
+haipipe-paper (router)  -- consults 2a-venue.md for venue fit (pack fallback pre-pin)
             |                (utd-is: misq/isr/ms-is; pnas; nature-portfolio; jama; clinical; grant; patent)
             v
 haipipe-paper-lifecycle (this orchestrator)
@@ -392,7 +392,7 @@ haipipe-paper-lifecycle (this orchestrator)
   |-- folder             (lives in 3-deliver/, routed from here)
   |-- seed (0)
   |-- resource (1a)       (prerequisite contract: Demand + Questions; stage 1a, claims is 1b,
-  |                       as 2-venue/ and 2-pitch/ split stage 2)
+  |                       as 2a-venue/ and 2b-pitch/ split stage 2)
   |-- claims (1b)
   VENUE DECISION:
   |-- venue              (pin target journal in STATUS.md)

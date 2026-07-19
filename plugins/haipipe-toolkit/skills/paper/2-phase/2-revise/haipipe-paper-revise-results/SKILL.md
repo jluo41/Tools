@@ -19,10 +19,10 @@ It is narrower than `haipipe-paper-draft` and `haipipe-paper-optimizer`: the job
 
 Before you start, read the shared prose rules: `../../REF/prose-quality.md` (one idea per sentence, no em-dash, compress not split, no AI voice, <=6 sentences/paragraph, Pn.Sn markers) — all revise workers enforce them; the checks below are results-specific ADDITIONS, not replacements.
 
-Also read the venue's results conventions from the paper's `0-lifecycle/2-venue/2-venue.md`: the Structural Blueprint's Results block (results reported + detail, display units) and the Writing Principles (statistical reporting, effect sizes, tables vs figures).
-Fall back to the pinned `venue/playbook-*` pack only when 2-venue.md is absent; no pack -> skip venue norms (the results-specific checks below still apply).
+Also read the venue's results conventions from the paper's `0-lifecycle/2a-venue/2a-venue.md`: the Structural Blueprint's Results block (results reported + detail, display units) and the Writing Principles (statistical reporting, effect sizes, tables vs figures).
+Fall back to the pinned `venue/playbook-*` pack only when 2a-venue.md is absent; no pack -> skip venue norms (the results-specific checks below still apply).
 
-Use `haipipe-paper-draft` for general prose drafting or rewriting (venue style comes from the paper's `0-lifecycle/2-venue/2-venue.md`, with the pinned `venue/playbook-*` pack as fallback).
+Use `haipipe-paper-draft` for general prose drafting or rewriting (venue style comes from the paper's `0-lifecycle/2a-venue/2a-venue.md`, with the pinned `venue/playbook-*` pack as fallback).
 Use `haipipe-paper-optimizer` when the claim hierarchy, evidence chain, or figure logic is still unstable.
 Use this skill when the section is largely right but still reads like stitched figure captions rather than a controlled argument.
 

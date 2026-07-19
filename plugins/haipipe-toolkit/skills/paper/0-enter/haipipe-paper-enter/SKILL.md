@@ -109,14 +109,14 @@ Read only files that exist, in this order:
 1. `STATUS.md`
 2. `0-lifecycle/README.md`
 2b.
-`0-lifecycle/2-pitch/2-pitch.tex` (or `.md`) -- HIGH PRIORITY for dashboard header.
+`0-lifecycle/2b-pitch/2b-pitch.tex` (or `.md`) -- HIGH PRIORITY for dashboard header.
 Extract the `\section*{One-Minute Pitch}` paragraph and the `\section*{Hook}` paragraph.
 These become the 2-3 sentence "what this paper is about" summary at the top of the dashboard.
 If the file does not exist or lacks these sections, the dashboard says "pitch not yet written".
 3. Stage TeX/MD files (remaining):
    - `0-lifecycle/0-seed/0-seed.tex`
-   - `0-lifecycle/1-resource/1-resource.md` (venue-FREE prerequisite contract; absent on every pre-2026-07-14 paper -- see the resource exemption below)
-   - `0-lifecycle/1-claims/1-claims.tex` (or `.md`)
+   - `0-lifecycle/1a-resource/1a-resource.md` (venue-FREE prerequisite contract; absent on every pre-2026-07-14 paper -- see the resource exemption below)
+   - `0-lifecycle/1b-claims/1b-claims.tex` (or `.md`)
    - `0-lifecycle/3-narrative/3-narrative.tex`
    - `0-lifecycle/4-display/4-display.tex`
 4. Section-edit outlines: scan `0-lifecycle/5-section-edit/` for per-section outline `.md` files, `_CITATION_*`, `_VALUES_*`, and `_LOG*` files.
@@ -155,10 +155,10 @@ Per-stage inference when disk is the source of truth:
 
 **Resource exemption -- `n/a` COUNTS AS PASS (binding).**
 Full rule in `../../wiki/05-paper-dashboard.md`.
-The resource stage shipped 2026-07-14; every paper already on disk predates it and none will get a `1-resource.md` written retroactively.
+The resource stage shipped 2026-07-14; every paper already on disk predates it and none will get a `1a-resource.md` written retroactively.
 So for the resource predicate, `n/a` is an ACCEPTED PASS: a paper whose seed gate closed BEFORE the stage existed passes by exemption and the frontier walks straight past it to claims.
 Without this, every live paper's frontier REGRESSES to `resource` and the console reports DRIFT on seeds JL personally approved.
-The exemption is per-paper and backwards-only -- a paper seeded after 2026-07-14 gets no exemption, and an absent `1-resource.md` is a real frontier.
+The exemption is per-paper and backwards-only -- a paper seeded after 2026-07-14 gets no exemption, and an absent `1a-resource.md` is a real frontier.
 
 (The stage strip renders such a paper `resource ⬜` -- that is the strip's artifact-on-disk test, not a frontier claim.
 `⬜` on an exempt paper is NOT drift; do not flag it.)
@@ -248,7 +248,7 @@ Body order -- sections MUST appear in this sequence:
 ## What This Paper Is About
 
 <2-3 sentence summary distilled from the \section*{One-Minute Pitch} paragraph
-and the \section*{Hook} paragraph of 0-lifecycle/2-pitch/2-pitch.tex.
+and the \section*{Hook} paragraph of 0-lifecycle/2b-pitch/2b-pitch.tex.
 If no pitch exists, print: "Pitch not yet written -- run /haipipe-paper pitch.">
 
 ## Focus Strip (two lines)
@@ -398,7 +398,7 @@ committing a claim verdict or downgrading a claim
 editing prose across many sections at once
 compiling-to-submit or packaging a submission
 opening or closing a revision round destructively
-landing a settled claim status in 0-lifecycle/1-claims/1-claims.md
+landing a settled claim status in 0-lifecycle/1b-claims/1b-claims.md
 ```
 
 ## Session State

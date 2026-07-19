@@ -18,7 +18,7 @@ Fixed
 ## [3.4.0] -- 2026-07-10
 ## 4.0.0 — 2026-07-14
 
-- PROBE REDESIGN (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14 — R1-R18). 1-probe-plans/ -> 1-probes/ (PPNN_<topic>.md, one file per TOPIC, one SECTION per question: serves/target/state/commission/reading + ONE `## Why` per file holding the stake). Binding is by PATH: a section's `target:` points at the answering `<leaf>/QA/<n>-<slug>.md` in the bank. DELETED: `## Verdict`, the `verdicted` and `dispatched` states, `_ASK/`/`_ANS/` stubs, `answers:`, and Agent(haipipe-probe-orchestrator-agent) (the GATEWAY — archived + de-registered). A claim's STATUS now lives ONLY in 0-lifecycle/1-claims/1-claims.md. Dispatch is now DIRECT: the section's `commission:` block, VERBATIM, to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent).
+- PROBE REDESIGN (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14 — R1-R18). 1-probe-plans/ -> 1-probes/ (PPNN_<topic>.md, one file per TOPIC, one SECTION per question: serves/target/state/commission/reading + ONE `## Why` per file holding the stake). Binding is by PATH: a section's `target:` points at the answering `<leaf>/QA/<n>-<slug>.md` in the bank. DELETED: `## Verdict`, the `verdicted` and `dispatched` states, `_ASK/`/`_ANS/` stubs, `answers:`, and Agent(haipipe-probe-orchestrator-agent) (the GATEWAY — archived + de-registered). A claim's STATUS now lives ONLY in 0-lifecycle/1b-claims/1b-claims.md. Dispatch is now DIRECT: the section's `commission:` block, VERBATIM, to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent).
 - Display's `Detail:` pointers and the probe-buffer route move to 1-probes/PPNN_<topic>.md sections.
 
 Changed (JL ruling 2026-07-10: "the probe plan should be like the subsection, and like others, just like seed-template.md -- could we make things consistent?")
@@ -36,7 +36,7 @@ Changed (JL ruling 2026-07-10: "never never using tables")
 
 Changed (JL ruling 2026-07-10: "organize each display with the venue section, and each display itself is a subsection")
 - `4-display.md` display blocks are no longer flat: one `-----` group per PAPER SECTION (narrative order), each display a `###` subsection inside its group — the md now mirrors the generated gallery's `\section*`/`\subsection*` structure one-to-one (sync walks the groups; group membership must match the map's `section` column).
-- Every group opens with a `venue expects:` line (that section's display units from the 2-venue.md Structural Blueprint), so a venue-mandated unit with no subsection is a visible GAP in place, not just an audit finding.
+- Every group opens with a `venue expects:` line (that section's display units from the 2a-venue.md Structural Blueprint), so a venue-mandated unit with no subsection is a visible GAP in place, not just an audit finding.
 - `ref/display-template.md` restructured accordingly; formatting rule updated (`###` is the only ATX level used; a display's section is stated once, by its group header); SKILL.md content-structure/Plan/sync/flow + CHECKLIST updated.
 
 ## [3.1.0] -- 2026-07-10
@@ -78,7 +78,7 @@ Changed (JL ruling 2026-07-09 (LLMTrait-Section session postmortem): normalize t
 ## [2.1.0] -- 2026-07-08
 
 Changed
-- Venue consumption rewired to lockfile semantics (SKILL.md principle 9 + Venue Constraints + CHECKLIST.md venue-set item): read the paper's 0-lifecycle/2-venue/2-venue.md (Structural Blueprint display units + Writing Principles display limits) FIRST; pack README -> Display only as fallback when 2-venue.md is absent or as deep dives via its [source] tags; stale provenance -> note "venue contract stale", never silent pack re-reads.
+- Venue consumption rewired to lockfile semantics (SKILL.md principle 9 + Venue Constraints + CHECKLIST.md venue-set item): read the paper's 0-lifecycle/2a-venue/2a-venue.md (Structural Blueprint display units + Writing Principles display limits) FIRST; pack README -> Display only as fallback when 2a-venue.md is absent or as deep dives via its [source] tags; stale provenance -> note "venue contract stale", never silent pack re-reads.
 
 ## [1.6.2] — 2026-07-03
 

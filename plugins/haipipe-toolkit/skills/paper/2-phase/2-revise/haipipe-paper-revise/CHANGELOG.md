@@ -19,7 +19,7 @@ Changed (JL ruling 2026-07-09 (LLMTrait-Section session postmortem): normalize t
 ## [1.4.0] — 2026-07-08
 
 Changed (venue lockfile wiring)
-- Venue norms + venue guard repointed: primary read = the paper's `0-lifecycle/2-venue/2-venue.md` (Writing Principles + Structural Blueprint block); direct `_venue/playbook-*` reads demoted to fallback (2-venue.md absent) or deep dives via its `[source: ...]` tags; STOP/warning semantics unchanged.
+- Venue norms + venue guard repointed: primary read = the paper's `0-lifecycle/2a-venue/2a-venue.md` (Writing Principles + Structural Blueprint block); direct `_venue/playbook-*` reads demoted to fallback (2a-venue.md absent) or deep dives via its `[source: ...]` tags; STOP/warning semantics unchanged.
 
 ## [1.3.0] — 2026-07-07
 

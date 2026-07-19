@@ -58,7 +58,7 @@ This skill carries NO templates of its own -- the stage owns its format.
 | seed | `1-lifecycle/0-seed/haipipe-paper-seed/SKILL.md` | `ref/seed-template.md` |
 | resource | `1-lifecycle/1a-resource/haipipe-paper-resource/SKILL.md` | `ref/resource-template.md` |
 | claims | `1-lifecycle/1b-claims/haipipe-paper-claims/SKILL.md` | `ref/claims-template.md` |
-| pitch | `1-lifecycle/2-pitch/haipipe-paper-pitch/SKILL.md` | `ref/pitch-template.md` |
+| pitch | `1-lifecycle/2b-pitch/haipipe-paper-pitch/SKILL.md` | `ref/pitch-template.md` |
 | narrative | `1-lifecycle/3-narrative/haipipe-paper-narrative/SKILL.md` | `ref/narrative-template.md` |
 | display | `1-lifecycle/4-display/haipipe-paper-display/SKILL.md` | `ref/display-template.md` (unit contracts live in the same `ref/`) |
 | section name (e.g. `introduction`) | `1-lifecycle/5-section-edit/haipipe-paper-section-edit/SKILL.md` | `ref/outline-format.md` |
@@ -77,7 +77,7 @@ Each stage reads from its predecessors:
 | pitch | seed + claims + venue |
 | narrative | seed + claims + pitch |
 | display | narrative + claims |
-| section | z-structure + narrative + claims + section-type + venue (2-venue.md) |
+| section | z-structure + narrative + claims + section-type + venue (2a-venue.md) |
 
 **Venue guard.**
 For venue-ALIGNED stages (pitch, narrative, display, section), resolve the venue before drafting:
@@ -85,9 +85,9 @@ For venue-ALIGNED stages (pitch, narrative, display, section), resolve the venue
 1. No `venue:` pinned in STATUS.md -> **STOP with an error**.
    Report `status: blocked` and tell the user to run `/haipipe-paper venue` first.
    Never draft a venue-ALIGNED artifact against an invented venue.
-2. Venue pinned and the paper's `0-lifecycle/2-venue/2-venue.md` exists -> **read it FIRST** (the venue stage's compiled doc): Writing Principles + the Structural Blueprint block for the artifact being drafted.
+2. Venue pinned and the paper's `0-lifecycle/2a-venue/2a-venue.md` exists -> **read it FIRST** (the venue stage's compiled doc): Writing Principles + the Structural Blueprint block for the artifact being drafted.
    Direct `venue/` pack reads are deep dives only, following the `[source: ...]` tags recorded there.
-3. `2-venue.md` absent (venue stage not run) -> fall back to the pinned pack directly.
+3. `2a-venue.md` absent (venue stage not run) -> fall back to the pinned pack directly.
    No matching `venue/playbook-*` pack either -> **STOP with an error**.
    Name the pinned venue, list available packs, ask the user to fix the pin, add a pack, or run `/haipipe-paper venue`.
 4. Fallback pack exists but lacks the per-section style file -> **proceed with a visible warning**: use the pack's general style-profile, flag the missing file in the draft output and `_LOG`, and surface it again in the CHECK report.
@@ -160,8 +160,8 @@ When the user approves:
 - Short document: seed question + motivations + tentative claim shape
 
 ### resource
-- Output: `0-lifecycle/1-resource/1-resource.md`; template `ref/resource-template.md`
-- Venue-FREE, and it sits BETWEEN seed and claims — it is stage 1a, just before claims (1b) on disk (precedented by `2-venue/` + `2-pitch/`).
+- Output: `0-lifecycle/1a-resource/1a-resource.md`; template `ref/resource-template.md`
+- Venue-FREE, and it sits BETWEEN seed and claims — it is stage 1a, just before claims (1b) on disk (precedented by `2a-venue/` + `2b-pitch/`).
   Nothing renumbers.
 - EXACTLY TWO SECTIONS: **Demand** (one `**N<n> (H<n>)**` per prerequisite the seed's Tentative Claim Shape implies -- keyed on H, never C) and **Questions** (one `**Q<n> (N<n>)**`, its `-> PP<NN>` backlink once the PROBE worker opens the section, and its `A:` when the answer lands).
   NO Kill Conditions, NO Setup Contract, NO Resource Ledger, NO Binding table — JL cut them 2026-07-14.
@@ -179,17 +179,17 @@ When the user approves:
   Asking is cheap, so GATE 1 approves the QUESTIONS, not the SPEND — spend is authorized later, at the stage's GATE 1b, once the SCAN answers have landed.
 
 ### claims
-- Output: `0-lifecycle/1-claims/1-claims.md`
+- Output: `0-lifecycle/1b-claims/1b-claims.md`
 - On open: do NOT grep seed's `_LOG` for forward pointers — RESOURCE is their sole consumer, and re-consuming one it already took DOUBLE-DISPATCHES the same build.
-  Read `_LOG_1-resource.md` instead: only the pointers resource explicitly DECLINED to claims become PP entries in the Probes section (or are declined again in `_LOG`)
-- Reads the resource stage's `1-resource.md`: the ingredients (data / reusable model / code) are settled there, but training this paper's model (fit) + eval are claims' own experiment; a claim whose ingredients are missing is marked BLOCKED-ON-RESOURCE, not re-asked
+  Read `_LOG_1a-resource.md` instead: only the pointers resource explicitly DECLINED to claims become PP entries in the Probes section (or are declined again in `_LOG`)
+- Reads the resource stage's `1a-resource.md`: the ingredients (data / reusable model / code) are settled there, but training this paper's model (fit) + eval are claims' own experiment; a claim whose ingredients are missing is marked BLOCKED-ON-RESOURCE, not re-asked
 - PROBE: link evidence sources, spawn probes for GAPs
 - Hypotheses are venue-neutral (H1, H2, H3)
 
 ### pitch
-- Output: `0-lifecycle/2-pitch/2-pitch.md`
+- Output: `0-lifecycle/2b-pitch/2b-pitch.md`
 - PROBE: citation audit for anchor papers
-- Venue-ALIGNED: reads the venue stage's 2-venue.md (pack fallback per the venue guard)
+- Venue-ALIGNED: reads the venue stage's 2a-venue.md (pack fallback per the venue guard)
 
 ### narrative
 - Output: `0-lifecycle/3-narrative/3-narrative.md`
@@ -209,7 +209,7 @@ When the user approves:
   DRAFT proposes; PROBE binds each one to an answer after the gate.
   The STOP presentation includes this block.
 - PROBE: citation + values + display (three parallel tracks)
-- Reads section-type norms and 2-venue.md's per-section blueprint block for style (pack fallback per the venue guard)
+- Reads section-type norms and 2a-venue.md's per-section blueprint block for style (pack fallback per the venue guard)
 
 
 ## Where style guidance lives (NOT here)
@@ -219,7 +219,7 @@ Style inputs come from elsewhere:
 
 | Guidance | Lives in | Used by |
 |---|---|---|
-| Venue style, word budget, arc | `0-lifecycle/2-venue/2-venue.md` (compiled from `venue/playbook-<pack>/`; pack = fallback / deep dive) | DRAFT reads budget; REVISE applies style |
+| Venue style, word budget, arc | `0-lifecycle/2a-venue/2a-venue.md` (compiled from `venue/playbook-<pack>/`; pack = fallback / deep dive) | DRAFT reads budget; REVISE applies style |
 | Per-section structure norms | `1-lifecycle/5-section-edit/section-type/` | DRAFT (structure) |
 | Prose quality rules | `2-phase/REF/prose-quality.md` | REVISE |
 
@@ -247,9 +247,9 @@ Stage skills call this as their DRAFT phase:
 | Stage skill | What this skill drafts |
 |---|---|
 | haipipe-paper-seed | 0-seed.md (3 sections) |
-| haipipe-paper-resource | 1-resource.md (2 sections: Demand N\<n\> + Questions Q\<n\> with their A) |
-| haipipe-paper-claims | 1-claims.md (hypothesis list + evidence matrix) |
-| haipipe-paper-pitch | 2-pitch.md (cover letter) |
+| haipipe-paper-resource | 1a-resource.md (2 sections: Demand N\<n\> + Questions Q\<n\> with their A) |
+| haipipe-paper-claims | 1b-claims.md (hypothesis list + evidence matrix) |
+| haipipe-paper-pitch | 2b-pitch.md (cover letter) |
 | haipipe-paper-narrative | 3-narrative.md (story beats) |
 | haipipe-paper-display | 4-display.md (display map + Probes section + per-display blocks with candidates) |
 | haipipe-paper-section-edit | {section}.md (paragraph outline) |

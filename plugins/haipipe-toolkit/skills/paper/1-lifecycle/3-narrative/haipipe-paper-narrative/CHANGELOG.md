@@ -16,7 +16,7 @@ Fixed
 ## [3.2.0] -- 2026-07-09
 ## 4.0.0 — 2026-07-14
 
-- PROBE REDESIGN (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14 — R1-R18). 1-probe-plans/ -> 1-probes/ (PPNN_<topic>.md, one file per TOPIC, one SECTION per question: serves/target/state/commission/reading + ONE `## Why` per file holding the stake). Binding is by PATH: a section's `target:` points at the answering `<leaf>/QA/<n>-<slug>.md` in the bank. DELETED: `## Verdict`, the `verdicted` and `dispatched` states, `_ASK/`/`_ANS/` stubs, `answers:`, and Agent(haipipe-probe-orchestrator-agent) (the GATEWAY — archived + de-registered). A claim's STATUS now lives ONLY in 0-lifecycle/1-claims/1-claims.md. Dispatch is now DIRECT: the section's `commission:` block, VERBATIM, to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent).
+- PROBE REDESIGN (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14 — R1-R18). 1-probe-plans/ -> 1-probes/ (PPNN_<topic>.md, one file per TOPIC, one SECTION per question: serves/target/state/commission/reading + ONE `## Why` per file holding the stake). Binding is by PATH: a section's `target:` points at the answering `<leaf>/QA/<n>-<slug>.md` in the bank. DELETED: `## Verdict`, the `verdicted` and `dispatched` states, `_ASK/`/`_ANS/` stubs, `answers:`, and Agent(haipipe-probe-orchestrator-agent) (the GATEWAY — archived + de-registered). A claim's STATUS now lives ONLY in 0-lifecycle/1b-claims/1b-claims.md. Dispatch is now DIRECT: the section's `commission:` block, VERBATIM, to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent).
 - Stops reading 'verdicted PP cards'. The claim ledger is the ONLY home of a claim's status; a probe section carries only its `reading:`.
 
 Changed (JL ruling 2026-07-09 (LLMTrait-Section session postmortem): normalize the writing process)
@@ -25,7 +25,7 @@ Changed (JL ruling 2026-07-09 (LLMTrait-Section session postmortem): normalize t
 ## [3.1.0] -- 2026-07-08
 
 Changed
-- Venue consumption rewired to lockfile semantics: read the paper's 0-lifecycle/2-venue/2-venue.md (Structural Blueprint beats + Writing Principles) FIRST; _venue/ packs only as fallback when 2-venue.md is absent or as deep dives via its [source] tags; stale provenance -> note "venue contract stale", never silent pack re-reads.
+- Venue consumption rewired to lockfile semantics: read the paper's 0-lifecycle/2a-venue/2a-venue.md (Structural Blueprint beats + Writing Principles) FIRST; _venue/ packs only as fallback when 2a-venue.md is absent or as deep dives via its [source] tags; stale provenance -> note "venue contract stale", never silent pack re-reads.
 
 ## [2.2.3] — 2026-07-03
 

@@ -21,7 +21,7 @@ HARVEST now reads `sed -n 's/^- state:[[:space:]]*//p' <file> | head -1` first: 
 ## [2.1.2] -- 2026-07-10
 ## 3.0.0 — 2026-07-14
 
-- PROBE REDESIGN (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14 — R1-R18). 1-probe-plans/ -> 1-probes/ (PPNN_<topic>.md, one file per TOPIC, one SECTION per question: serves/target/state/commission/reading + ONE `## Why` per file holding the stake). Binding is by PATH: a section's `target:` points at the answering `<leaf>/QA/<n>-<slug>.md` in the bank. DELETED: `## Verdict`, the `verdicted` and `dispatched` states, `_ASK/`/`_ANS/` stubs, `answers:`, and Agent(haipipe-probe-orchestrator-agent) (the GATEWAY — archived + de-registered). A claim's STATUS now lives ONLY in 0-lifecycle/1-claims/1-claims.md. Dispatch is now DIRECT: the section's `commission:` block, VERBATIM, to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent).
+- PROBE REDESIGN (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14 — R1-R18). 1-probe-plans/ -> 1-probes/ (PPNN_<topic>.md, one file per TOPIC, one SECTION per question: serves/target/state/commission/reading + ONE `## Why` per file holding the stake). Binding is by PATH: a section's `target:` points at the answering `<leaf>/QA/<n>-<slug>.md` in the bank. DELETED: `## Verdict`, the `verdicted` and `dispatched` states, `_ASK/`/`_ANS/` stubs, `answers:`, and Agent(haipipe-probe-orchestrator-agent) (the GATEWAY — archived + de-registered). A claim's STATUS now lives ONLY in 0-lifecycle/1b-claims/1b-claims.md. Dispatch is now DIRECT: the section's `commission:` block, VERBATIM, to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent).
 - The PAPER-LOCAL SWEEP's dead `read|verdicted` PP-card predicate becomes `answered | read | answered-local` probe SECTIONS, reading the `values:` lane / `target:` QA file.
 
 Fixed (fresh-agent audit, C10)
@@ -35,7 +35,7 @@ Changed (JL: "we prefer to probe previous stages' outcome")
 ## [2.1.0] -- 2026-07-10
 
 Changed (JL: "will it search the previous lifecycle stages's content and display as well?")
-- ROUTE gains the PAPER-LOCAL SWEEP tier between named-source and probe-plan: sibling/prior _VALUES_*.md, read|verdicted PP cards' value_refs, 0-displays/*/source/ (metrics.json, source_data.csv), _EVIDENCE_1-claims.md. Exempt from the trace-as-grep ban: these are the paper's own curated indexes.
+- ROUTE gains the PAPER-LOCAL SWEEP tier between named-source and probe-plan: sibling/prior _VALUES_*.md, read|verdicted PP cards' value_refs, 0-displays/*/source/ (metrics.json, source_data.csv), _EVIDENCE_1b-claims.md. Exempt from the trace-as-grep ban: these are the paper's own curated indexes.
 - Adopt the pointer, never the verdict: reused entries enter ⬜ with `Note: pointer via <file>` and PLACE re-verifies against the ORIGINAL source (Hard Boundary 4 untouched).
 
 ## [2.0.0] — 2026-07-07

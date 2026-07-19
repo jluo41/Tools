@@ -266,7 +266,7 @@ Phase-1 gap  →  a question SECTION in 1-probes/PPNN_<topic>.md (serves / targe
 ```
 
 Phase 2 therefore produces question SECTIONS, not papers: for each Phase-1 gap write the one-line Need (+ Why + Route hint: single-lookup → ENRICH; landscape → discovery Review; claim question → mode full) and hand the list to the hub.
-"light"/"full" are the PROBE FILE's `mode:` (light = the answer is read and interpreted; full = the author additionally writes the claim status into 1-claims.md from the answer) — never an inline shortcut tier.
+"light"/"full" are the PROBE FILE's `mode:` (light = the answer is read and interpreted; full = the author additionally writes the claim status into 1b-claims.md from the answer) — never an inline shortcut tier.
 
 **Paper-local sweep BEFORE raising any question** (JL 2026-07-10: "you can check previous stage's _CITATION instead of do the heavy one").
 A gap is only a gap if the paper hasn't already solved it: before opening a new question SECTION, grep the OTHER stages' `_CITATION_*.md` maps (pitch, narrative, sibling sections), the .bib, AND prior stages' `answered | read | answered-local` probe SECTIONS for the topic — their `target:` / `sources:` lanes point at an already-reviewed `discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md` and the `sources.md` it anchors (pointer-following: the section names the path, so reading it is legal here).

@@ -2,7 +2,7 @@
 
 A paper is a delivery contract, not a writing folder.
 
-Tasks run code. Discoveries inspect outside evidence. Both are EXECUTORS, and both answer a plain question through their own `qa` verb, returning `<task-folder>/QA/<n>-<slug>.md`. A PROBE is a PAPER-LEVEL document (`1-probes/PPNN_<topic>.md`) that binds each of the paper's questions to one of those answers BY PATH; the settled CLAIM STATUS lands in the paper's own `0-lifecycle/1-claims/1-claims.md`. The paper sits downstream and asks: which judged evidence does this paper select, and how does it become a submittable manuscript?
+Tasks run code. Discoveries inspect outside evidence. Both are EXECUTORS, and both answer a plain question through their own `qa` verb, returning `<task-folder>/QA/<n>-<slug>.md`. A PROBE is a PAPER-LEVEL document (`1-probes/PPNN_<topic>.md`) that binds each of the paper's questions to one of those answers BY PATH; the settled CLAIM STATUS lands in the paper's own `0-lifecycle/1b-claims/1b-claims.md`. The paper sits downstream and asks: which judged evidence does this paper select, and how does it become a submittable manuscript?
 
 ## Lifecycle
 
@@ -42,7 +42,7 @@ task       executes internal work
 discovery  checks outside evidence
 probe      the paper's Q/A map: one SECTION per question, bound BY PATH to the
            executor's answering QA file. It does not judge — the claim's status
-           lands in the paper's 0-lifecycle/1-claims/1-claims.md
+           lands in the paper's 0-lifecycle/1b-claims/1b-claims.md
 paper      selects evidence, writes prose, delivers
 ```
 

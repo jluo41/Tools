@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-resource
-description: "The venue-FREE prerequisite stage (0-lifecycle/1-resource/): does what this paper needs EXIST, and can it CARRY the claim? Two sections -- Demand (N per hypothesis) + Questions (Q + its A) -- covering data, checkpoints, and producing-code. Use for resource, prerequisite, do we have the data, does the checkpoint exist, can this corpus carry the claim, 1-resource."
+description: "The venue-FREE prerequisite stage (0-lifecycle/1a-resource/): does what this paper needs EXIST, and can it CARRY the claim? Two sections -- Resource Description (each resource described, keyed to H) + Q-consumer (uniform Q-Resource-<n>) -- covering data, checkpoints, and producing-code. Use for resource, prerequisite, do we have the data, does the checkpoint exist, can this corpus carry the claim, 1-resource."
 argument-hint: "[paper-dir] [draft|probe|revise|check]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "2.1.1"
-  last_updated: "2026-07-14"
-  summary: "Resource stage (stage 1a, venue-FREE): do the paper's prerequisites EXIST and can they CARRY the claim? It is INVENTORY + FEASIBILITY, not the experiment -- training this paper's model and evaluating it is the CLAIMS stage's job. Two sections -- Demand + Questions. The stage ASKS; the probe layer ROUTES. History: ./CHANGELOG.md."
+  version: "2.3.0"
+  last_updated: "2026-07-18"
+  summary: "Resource stage (stage 1a, venue-FREE): do the paper's prerequisites EXIST and can they CARRY the claim? It is INVENTORY + FEASIBILITY, not the experiment -- training this paper's model and evaluating it is the CLAIMS stage's job. Two sections -- Resource Description + Q-consumer. The stage ASKS; the probe layer ROUTES. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -43,8 +43,10 @@ This is also what keeps a null interpretable: resource rules out "this corpus ca
 ## The four phases, in resource
 
 ```text
-DRAFT   derive one Demand row (N per hypothesis) from the seed's claim shape, then write the
-        Questions (Q) -- does each need EXIST, and can it CARRY the claim?
+DRAFT   describe each resource the paper HAS -- one `## Resource <n>` (with `### topics` + a
+        `### Serves & carries` naming its H<n> and whether it carries them) -- then write the
+        Q-consumer (`## Q-Resource-<n>`) -- does each EXIST, and can it CARRY the claim it serves?
+        cite each question inline in the `Serves & carries` line it tests, e.g. [Q-Resource-1].
 PROBE   one worker call; each Q runs a lane --
           SCAN   minutes: a store scan / capability grep / access-rung check
           BUILD  a data acquisition (a DUA / pipeline, calendar-cost), behind the SPEND gate
@@ -59,22 +61,22 @@ Two human gates: **GATE 1** approves which questions to ask (cheap -- a SCAN is 
 
 ## The artifact
 
-`0-lifecycle/1-resource/1-resource.md`, two sections -- full skeleton in `ref/resource-template.md`:
+`0-lifecycle/1a-resource/1a-resource.md`, two sections -- full skeleton + fill rules (inline `<!-- RULE -->` comments) in `ref/resource-template.md`; cross-stage template charter in `../../TEMPLATES.md`:
 
 ```text
-Demand      one N<n> per hypothesis (keyed on H<n>) -- what the paper might need
-Questions   one Q<n> + its A -- does it exist, and can it carry the claim?
+Resource Description  one `## Resource <n>` (+ `### topics` + `### Serves & carries`, keyed on H<n>) -- what the paper HAS
+Q-consumer            one `## Q-Resource-<n>` (Description/Reason/Answer) -- does it exist, and can it CARRY the claim?
 ```
 
-An **A** answers both halves at once; a resource that exists but cannot carry the claim is a Q whose A says so in one sentence, naming what it KILLS.
+A resource that exists but cannot carry the claim says so in its `### Serves & carries` (and in the answering Q's Answer), in one sentence naming what it KILLS.
 Keyed on H<n>, not C<n> -- claim ids do not exist yet at resource time.
 
 
 ## Exits
 
 ```text
-proceed  -> /haipipe-paper claims        every demand is met or cut
-reseed   -> /haipipe-paper seed          every demand is unobtainable -- can't be written as seeded
+proceed  -> /haipipe-paper claims        every hypothesis has a fit resource, or a cut
+reseed   -> /haipipe-paper seed          every hypothesis's resource is unobtainable -- can't be written as seeded
 park     -> maturity: resource-blocked   real, but in flight / behind a DUA
 ```
 

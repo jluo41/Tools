@@ -45,7 +45,7 @@ investigating the data yourself:
      MATCH cannot close. The paper TRIGGERS; it never runs the analysis (LAW 1).
 
   e. **Backfill**: when the answering QA file lands, write the section's
-     `a-consumer:`, flip the claim's status in 1-claims.md, and remove the
+     `a-consumer:`, flip the claim's status in 1b-claims.md, and remove the
      \needprobe{} flag.
 
 
