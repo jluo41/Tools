@@ -4,6 +4,14 @@ haipipe-paper-draft — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 4.3.0 — 2026-07-19 — RULES block (points at haipipe-probe's DRAFT phase rules + paper deltas)
+
+New "## Rules (follow these)" section near the top: a short followable checklist that POINTS at the constitution's **Phase rules · DRAFT phase** + **DRAFT self-review checklist** (single source), then lists ONLY the paper-specific rules (citations/.bib, T1 LOCAL registries, RESOURCE intake, one-sentence-per-line). The detailed steps below remain the HOW-TO. No content duplicated from haipipe-probe — the worker points, not restates. Follows constitution v9.4.0 (Phase rules).
+
+## 4.2.0 — 2026-07-19 — DRAFT SELF-REVIEW before the gate (Step 4b)
+
+New Step 4b: before the STOP gate, DRAFT dispatches a review sub-agent (`Agent(general-purpose)`, fresh context, report-only) to self-check its output — Surface A the draft vs the stage's artifact spec (real content, one sentence per line, real \citep keys, every Q-<Stage>-<n> cited inline), Surface B the probe plan vs the constitution's DRAFT self-review checklist (q-executor LAW-2-clean, answerable+specific, route set, match rooted to a specific folder, target agrees, heading id = Q-consumer id, one ## Why). Issues → the drafter fixes → re-review (bounded 2 rounds; a residual is surfaced to the human, not hidden). Creator/reviewer split: the drafter never grades its own work. `Agent` added to allowed-tools. Follows constitution v9.3.0.
+
 ## 4.1.0 — 2026-07-14
 
 - The RAISED-QUESTIONS destination points at `haipipe-paper/fn/probes.md` (renamed from fn/probe-plans.md).

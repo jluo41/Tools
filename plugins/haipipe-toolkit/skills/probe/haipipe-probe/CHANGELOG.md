@@ -3,6 +3,41 @@ haipipe-probe — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [9.5.0] — 2026-07-19 — PROBE FILE REDESIGN: Q-executor-oriented, many-to-one, a-executor copy (matches ref/probe-template.md)
+
+JL co-design 2026-07-19 (branch "C-P-E-Skill-Update-Probe-Template"). The probe file is redesigned to be Q-EXECUTOR-oriented, and the constitution anatomy is synced to `ref/probe-template.md`. Full record: `HANDOFF.md`.
+
+- ENTRY = one Q-executor, id `QX<n>` (topic-local). Three id layers, none crosses the wall: `Q-<Stage>-<n>` (stage doc) · `QX<n>` (probe) · `QA/<n>-<slug>.md` (bank); they bind by PATH, never a shared id.
+- MANY-TO-ONE: one q-executor may serve SEVERAL Q-consumers (reuse, structurally). `### q-consumer` lists them and COPIES IN each consumer's original question (review-only, never dispatched).
+- `## Why` DROPPED. The stake lives in each Q-consumer, in the stage doc — never in a probe file.
+- ANSWER: `### a-executor` = a COPY of the QA answer, the consumer-side single source of truth; the a-consumer (per-consumer interpretation) moves to each stage doc (station ②). The three-station chain is copy-then-anchor at each hop (QA → a-executor → a-consumer `[source: PP<NN>]` → content) — self-contained AND traceable.
+- `serves:` → `### q-consumer`; `match:` → `bank` (a four-value verdict `reuse | run | code | new`, richer than EXISTS/NONE); `a-consumer:` (in the probe file) → `### a-executor`.
+- FORMAT: entry `## QX<n>` + four `###` subsections (q-executor / q-consumer / bank binding / a-executor); short scalars are `**field**: value` under `### bank binding`; no `- field:` lines, no `|` block scalars, no indentation.
+
+PENDING (see HANDOFF.md): `check-probe-cards.sh` ×2 not yet rewritten to this format — do NOT run the old checker on a new-format file. The DRAFT self-review checklist (9.3.0) is already updated for the new fields; stage skills + the application family still need the field-name sweep.
+
+## [9.4.0] — 2026-07-19 — PHASE RULES: two followable checklists (DRAFT / PROBE) distilled from the loop
+
+JL 2026-07-19: give each phase a CLEAN, followable rules checklist so a worker can act without wading through the whole model. New **Phase rules** section — a terse DO-THIS list per phase (DRAFT: author the plan → self-review → stop; PROBE: read the plan → dispatch NEW → point → harvest → verify), distilled from the five-step loop + the two LAWS + the self-review checklist. The family workers (`haipipe-paper-draft`, `haipipe-paper-probe`) POINT here for the shared rules and add only their family-specific rules; on conflict the model sections above win. No new files/skills — `ref/*.md` was considered and rejected as a redundant middle layer that would split the cohesive loop.
+
+## [9.3.0] — 2026-07-19 — DRAFT SELF-REVIEW: a fresh-context reviewer checks draft + probe plan before the gate
+
+JL addition 2026-07-19. Before the DRAFT human gate, a review sub-agent (fresh context — a creator/reviewer split) checks the phase's output: the draft against the stage's artifact spec, and the probe plan against the new **DRAFT self-review checklist** (q-executor LAW-2-clean · answerable+specific · route set · match ROOTED to a specific folder, read + judged on the answer · target agrees with match · heading id = Q-consumer id · one ## Why, stake never leaked). It reports; the drafter fixes and re-reviews (bounded); the verdict rides to the human gate. It PRECEDES the gate, never replaces it, and complements `check-probe-cards.sh` (which still runs at CHECK as the mechanical backstop — the reviewer judges what a regex cannot). The paper DRAFT worker (`haipipe-paper-draft` v4.2.0) implements it and adds the draft-prose checks; the application twin should mirror it.
+
+## [9.2.0] — 2026-07-19 — PROBE PLAN MOVES INTO DRAFT: ①② at DRAFT, ③④⑤ at PROBE; two gates → one
+
+JL ruling 2026-07-19 (paper co-design). The probe PLAN is authored during DRAFT, beside the stage draft, so ONE human gate reviews draft + probe plan together — the plan-review gate is MERGED into the DRAFT gate, not added as a second gate. The five-step loop is re-assigned to phases: ① ORGANIZE + ② MATCH run at DRAFT (the consumer organizes each Q-consumer into a probe section and ROOTS it to a SPECIFIC bank folder — a read-only bank grep, LAW 1), and ③ DISPATCH + ④ POINT + ⑤ INTERPRET run at PROBE, which RUNS FORWARD with no second gate (PROBE stays a milestone). Reverses the old "DRAFT writes only title+intent, does NOT pick route/answerer — unknown yet" and moves ORGANIZE from APPROVE to DRAFT.
+
+Two new section fields, part of the DRAFT-authored plan: `route:` (the dispatch door `task | discovery`, AUTHORITATIVE — the executor executes it, not re-decides) and `match:` (the ② MATCH result rooted to a SPECIFIC folder: `EXISTS · <folder>` → link, or `NONE → propose NEW <folder>`). The consumer's route + folder are authoritative because at plan time it already knows which bank/partition holds the answer.
+
+Heading id = the stage-doc Q-consumer id, CONSUMER-LOCAL (`Q-Seed-1`, `Q-Claim-6`; each family owns its scheme, ids never collide because a Q-consumer id never crosses the wall — only `q-executor` is shared). Dissolves the cross-family token question.
+
+Mechanical change: the old "empty `target:` = not yet probed" DRAFT/PROBE discriminator retires (DRAFT now writes `target:`); `state:` is the sole marker of planned-but-unrun. Ripples: `ref/probe-template.md` already carries route/match + the `Q-<Stage>-<n>` heading; each stage skill's DRAFT/PROBE description and any "DRAFT never writes target:/a-consumer:" invariant must be re-swept.
+
+## [9.1.0] — 2026-07-18 — the answer's THREE STATIONS (station ② restored, anchored)
+
+JL ruling (cross-family, paper co-design): the harvested answer is SELF-CONTAINED in the stage doc, not probe-file-only. New section **"The answer's three stations"**: ① probe file `a-consumer:` (evidence) → ② Q-consumer `Answer:` in the stage doc, anchored `[source: PPnn]` (self-contained Q&A + review checkpoint) → ③ stage content (woven at REVISE). Replaces the old "the stage doc keeps only the human question + the pointer / never copied back": station ② IS a copy-back, but ANCHORED (the anchor points at ①, which points at the QA file — traceable, not fabricable). Applies to paper AND application; the concurrent application `qconsumer-nosidecar` session had dropped station ② and must re-add it (see `diagram/260718-qconsumer-nosidecar/PAPER-3STATION-AMENDMENT.md`). No-sidecar (application D6) is compatible — ② is one anchored `Answer:` line, not a `_VALUES_`/`_CITATION_` doc.
+
 ## [8.3.0] — 2026-07-14 — R19 HARDENING: four holes the v8.2 rollout left open
 
 Follow-up to 8.2.0 (the state line). Each item below was a live runtime failure, not a style nit.
