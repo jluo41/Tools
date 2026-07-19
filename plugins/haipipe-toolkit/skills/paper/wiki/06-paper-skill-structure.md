@@ -27,15 +27,14 @@ paper/
 │     0-seed/haipipe-paper-seed
 │     1a-resource/haipipe-paper-resource     (venue-FREE; stage 1a)
 │     1b-claims/haipipe-paper-claims         (venue-FREE; stage 1b)
-│     2-pitch/haipipe-paper-pitch            (venue-ALIGNED cover letter)
+│     2a-venue/haipipe-paper-venue           (venue pin; venue-ALIGNED boundary; stage 2a)
+│     2b-pitch/haipipe-paper-pitch            (venue-ALIGNED cover letter; stage 2b)
 │     3-narrative/haipipe-paper-narrative
 │     4-display/haipipe-paper-display + renderers
 │       -display-{table,figure,diagram,illustration}
 │       (illustration = Codex bridge;
 │        framework candidate rounds inside display)
 │     5-section-edit/haipipe-paper-section-edit + section-type/ norms
-│     + haipipe-paper-venue (recommend + pin the best-fit journal, before pitch;
-│       claims is venue-free)
 │     + haipipe-paper-lifecycle (orchestrator)
 ├── 2-phase/             PHASE workers (internal; driven by stage skills)
 │     0-draft/haipipe-paper-draft  (retired write-* style skills live in 2-phase/_archive/)
@@ -67,8 +66,8 @@ enter             -> 0-enter/haipipe-paper-enter
 0-seed            -> 1-lifecycle/0-seed/haipipe-paper-seed
 1-resource        -> 1-lifecycle/1a-resource/haipipe-paper-resource (venue-FREE; what must EXIST for the paper to be testable; is stage 1a, just before claims (1b))
 1-claims          -> 1-lifecycle/1b-claims/haipipe-paper-claims
-venue (choose+pin)-> 1-lifecycle/haipipe-paper-venue (recommend journal, write STATUS venue; after claims, before pitch; claims is venue-free)
-2-pitch           -> 1-lifecycle/2-pitch/haipipe-paper-pitch
+venue (choose+pin)-> 1-lifecycle/2a-venue/haipipe-paper-venue (recommend journal, write STATUS venue; after claims, before pitch; claims is venue-free)
+2-pitch           -> 1-lifecycle/2b-pitch/haipipe-paper-pitch
 3-narrative       -> 1-lifecycle/3-narrative/haipipe-paper-narrative
 4-display         -> 1-lifecycle/4-display/haipipe-paper-display (+ render skills -display-{table,figure,diagram,illustration}[-gemini])
 5-section-edit    -> 1-lifecycle/5-section-edit/haipipe-paper-section-edit (per-section DRAFT/PROBE/REVISE/CHECK)
@@ -108,7 +107,7 @@ polish / format / typeset             -> 3-deliver/3-polish
 compile / diff / overleaf / ship      -> 3-deliver/4-ship
 rebuttal / response                   -> 4-respond
 slides / poster                       -> 5-present
-venue / which journal / where submit  -> 1-lifecycle/haipipe-paper-venue  (recommend + pin STATUS venue)
+venue / which journal / where submit  -> 1-lifecycle/2a-venue/haipipe-paper-venue  (recommend + pin STATUS venue)
   (the pinned venue's pack             -> venue/playbook-<venue>, consulted by each stage)
 ```
 

@@ -83,7 +83,7 @@ Where the principles are enforced
 ①  haipipe-task-orchestrator-agent / haipipe-discovery-orchestrator-agent
    "fresh evidence must land" — the answer is a FILE: <task-folder>/QA/<n>-<slug>.md,
    which the section's `target:` then points at;
-   a CLAIM's status lands in 0-lifecycle/1-claims/1-claims.md — per-claim,
+   a CLAIM's status lands in 0-lifecycle/1b-claims/1b-claims.md — per-claim,
    per-paper, private. 💀 `## Verdict` and `verdicted` are DELETED (R7); the
    probe section carries only its `a-consumer:`.
 ②  discovery creator/reviewer loops (full) + reviewer quick-pass (ENRICH);

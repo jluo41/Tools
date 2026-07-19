@@ -7,7 +7,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 ## 3.1.0 — 2026-07-14
 
 - `fn/probe-plans.md` RENAMED to `fn/probes.md` ("plans" is retired vocabulary); the verb table and Dispatch notes re-point at it.
-- Dispatch notes: "Verdicts backfill into 1-claims / sections / round logs" -> the answer lands as a section's `reading:`, and the CLAIM's status flips in `0-lifecycle/1-claims/1-claims.md` (the only home of a claim's status). "Buffer convention" -> "Probe-file convention".
+- Dispatch notes: "Verdicts backfill into 1-claims / sections / round logs" -> the answer lands as a section's `reading:`, and the CLAIM's status flips in `0-lifecycle/1b-claims/1b-claims.md` (the only home of a claim's status). "Buffer convention" -> "Probe-file convention".
 
 ## [2.11.0] -- 2026-07-14
 ## 3.0.0 — 2026-07-14
@@ -15,9 +15,9 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 - The `probe` verb is re-pointed at the PROBE-FILE POOL (`1-probes/PPNN_<topic>.md`, one file per TOPIC, one SECTION per question). Before this, every `/haipipe-paper probe` invocation was routed into the dead card/stub model: the routing table sent it to `1-probe-plans/` cards, the `no args SHOW` mode derived statuses from `_ASK/` stubs (which R2 forbids from ever existing, so it would always report zero dispatches even with commissions in flight), and the diagram routed the verdict to the retired gateway.
 - `fn/probe-plans.md` REWRITTEN (legacy filename kept, same precedent as check-probe-cards.sh). It was fully pre-v8: cards in `1-probe-plans/`, the status set `planned | dispatched | verdicted` (two of which are DELETED states), and `dispatch Agent(haipipe-probe-orchestrator-agent) -- ALWAYS, no matter how small the need` — the exact opposite of R13. It now carries the 1-probes/ convention, MATCH-before-DISPATCH, and direct dispatch to the two executor orchestrators.
 - PREFERENCES.md — the highest-authority text in the bucket, loaded on every paper session — re-stated in v8 terms. It MANDATED the retired 4-step procedure and named the archived gateway agent, so a session would obey it, dispatch a nonexistent agent, fail, and (because the preference explicitly forbids substituting an inline scan) have no legal fallback. The INTENT is preserved verbatim: never fake a probe with a web scan.
-- The evidence-routing table's `settled judgment -> the PP card's ## Verdict` route now points at `0-lifecycle/1-claims/1-claims.md`, the ONLY home of a claim's status (R7).
+- The evidence-routing table's `settled judgment -> the PP card's ## Verdict` route now points at `0-lifecycle/1b-claims/1b-claims.md`, the ONLY home of a claim's status (R7).
 
-JL resource ruling (pairs with haipipe-paper-resource 1.0.0 + haipipe-paper-lifecycle 2.4.0): RESOURCE registered as a venue-FREE stage between seed and claims. New verb `resource | prereq | prerequisite | need` -> `haipipe-paper-lifecycle resource` -> `0-lifecycle/1-resource/1-resource.md`: what must EXIST for this paper to be testable, does it exist, and can it CARRY the claim (data, model checkpoints, and producing-code alike). The stage ASKS (Q<n>) and the probe gateway ROUTES (mints the PP, picks the type) -- so no new probe lane and no new namespace. Venue-coupling prose now reads seed + resource + claims as venue-FREE and unchanged on retarget; the closing-block stage-strip example and the Composing diagram both carry `resource`. resource SHARES the number 1 with claims (precedented: 2-venue/ and 2-pitch/ already share 2); nothing renumbers.
+JL resource ruling (pairs with haipipe-paper-resource 1.0.0 + haipipe-paper-lifecycle 2.4.0): RESOURCE registered as a venue-FREE stage between seed and claims. New verb `resource | prereq | prerequisite | need` -> `haipipe-paper-lifecycle resource` -> `0-lifecycle/1a-resource/1a-resource.md`: what must EXIST for this paper to be testable, does it exist, and can it CARRY the claim (data, model checkpoints, and producing-code alike). The stage ASKS (Q<n>) and the probe gateway ROUTES (mints the PP, picks the type) -- so no new probe lane and no new namespace. Venue-coupling prose now reads seed + resource + claims as venue-FREE and unchanged on retarget; the closing-block stage-strip example and the Composing diagram both carry `resource`. resource SHARES the number 1 with claims (precedented: 2a-venue/ and 2b-pitch/ already share 2); nothing renumbers.
 
 
 ## [2.10.0] -- 2026-07-12
@@ -51,7 +51,7 @@ Changed (JL ruling 2026-07-09 (LLMTrait-Section session postmortem): normalize t
 ## [2.6.0] — 2026-07-08
 
 Changed (venue lockfile wiring)
-- Venue coupling rule updated: venue stage compiles the pack into `0-lifecycle/2-venue/2-venue.md`; the venue-ALIGNED stages consult 2-venue.md first, with direct `_venue/playbook-<venue>` reads demoted to fallback (2-venue.md absent) or deep dives via its `[source: ...]` tags.
+- Venue coupling rule updated: venue stage compiles the pack into `0-lifecycle/2a-venue/2a-venue.md`; the venue-ALIGNED stages consult 2a-venue.md first, with direct `_venue/playbook-<venue>` reads demoted to fallback (2a-venue.md absent) or deep dives via its `[source: ...]` tags.
 
 ## [2.5.0] — 2026-07-04
 

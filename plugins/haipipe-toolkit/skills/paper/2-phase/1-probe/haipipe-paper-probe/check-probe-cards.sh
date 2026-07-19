@@ -585,18 +585,18 @@ done
 
 # ---------------------------------------------------------------------------
 # RESOURCE-STAGE PASS (paper-only; JL Q-not-PP ruling, 2026-07-14). Fires ONLY for
-# `--stage resource`, and only on a paper that HAS a 1-resource.md.
+# `--stage resource`, and only on a paper that HAS a 1a-resource.md.
 #
 # The resource stage writes Q's and is FORBIDDEN to mint a PP id: the PROBE worker's
 # ORGANIZE step opens one SECTION per GATE-1-approved Q, in a probe file under
-# 1-probes/, and writes a `-> PP<NN>` backlink into 1-resource.md. That backlink is
+# 1-probes/, and writes a `-> PP<NN>` backlink into 1a-resource.md. That backlink is
 # the ONLY mechanical proof the question was ever ASKED -- so this is where it gets
 # tested. Per Q<n> (its header line through the line before the next Q header)
 # require exactly one of:
 #
 #   A:           the answer LANDED (answered | answered-local | scope-cut)
 #   -> PP<NN>    ASKED; the probe file exists and its sections assert in PASS 1
-#   DECLINED     the human said no at GATE 1 (logged in _LOG_1-resource.md)
+#   DECLINED     the human said no at GATE 1 (logged in _LOG_1a-resource.md)
 #
 # A Q with NONE of the three is an UNASKED QUESTION: nothing was opened, nothing was
 # dispatched -- and before this pass the gate went GREEN over it, because no section
@@ -604,8 +604,8 @@ done
 # backlink to a probe file that is not on disk is not proof either: it FAILs as a
 # dangling backlink.
 # ---------------------------------------------------------------------------
-res_md="$paper_root/0-lifecycle/1-resource/1-resource.md"
-res_log="$paper_root/0-lifecycle/1-resource/_LOG_1-resource.md"
+res_md="$paper_root/0-lifecycle/1a-resource/1a-resource.md"
+res_log="$paper_root/0-lifecycle/1a-resource/_LOG_1a-resource.md"
 res_open=0
 if [ "$stage_filter" = "resource" ] && [ -f "$res_md" ]; then
   rname=${res_md#"$paper_root"/}

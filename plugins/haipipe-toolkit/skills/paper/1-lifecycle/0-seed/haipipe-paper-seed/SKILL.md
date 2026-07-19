@@ -4,9 +4,9 @@ description: "Create or update the paper folder's 0-lifecycle/0-seed/0-seed.md +
 argument-hint: "[paper-dir] [--source <path-or-note>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.1.1"
-  last_updated: "2026-07-14"
-  summary: "Seed stage orchestrator (stage 0, venue-FREE): 4 sections -- Seed Question, Motivations, Tentative Claim Shape, Probes -- driving DRAFT -> PROBE -> REVISE -> CHECK internally (the user invokes seed, not the phases). Seed probes are FEASIBILITY only (novelty + is external data obtainable); DRAFT may WebSearch as orientation fuel, but PROBE is exactly one real worker call and never does evidence itself. Seed hands forward to RESOURCE (which hands to claims); prerequisite/internal-data work forward-points to RESOURCE via a _LOG pointer. History: ./CHANGELOG.md."
+  version: "4.2.0"
+  last_updated: "2026-07-18"
+  summary: "Seed stage orchestrator (stage 0, venue-FREE): 5 sections -- Seed Question, Motivations, Landscape, Tentative Claim Shape, Q-consumer -- driving DRAFT -> PROBE -> REVISE -> CHECK internally (the user invokes seed, not the phases). Seed probes are FEASIBILITY only (novelty + is external data obtainable); DRAFT may WebSearch as orientation fuel, but PROBE is exactly one real worker call and never does evidence itself. Seed hands forward to RESOURCE (which hands to claims); prerequisite/internal-data work forward-points to RESOURCE via a _LOG pointer. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -35,11 +35,10 @@ Read first: `../../../PHILOSOPHY.md`, `../../ref/04-lifecycle-map.md`.
 - `1-probes/PPNN_<topic>.md` -- the probe files this stage's questions land in (one file per TOPIC, one SECTION per question: serves/target/state/q-executor/a-consumer, plus ONE `## Why` per file; flat cross-stage pool at the paper root, the SECTION's `serves:` carries the stage; Status board in `1-probes/README.md`)
 - `0-lifecycle/0-seed/_CITATION_0-seed.md` -- citation candidates HARVESTed from what the probe brought back (only when the probe returns literature; candidates 🔍, no bibtex)
 
-**Content structure (0-seed.md):**
-- Seed Question -- the one paper-shaped question this seed exists to answer
-- Motivations -- why this is interesting, what makes the angle novel, to whom
-- Tentative Claim Shape -- what the paper may eventually argue, phrased as a hypothesis
-- Probes -- landscape/novelty probes that answer "is this new?" and "who cares?", with takeaways inline
+**Content structure (0-seed.md).**
+The FILL rules for every section live INLINE in `ref/seed-template.md` as `<!-- RULE: … -->` comments -- follow them, then delete them (a RULE comment never ships in the seed). The template is the single source of truth; do NOT restate the fill rules here.
+Sections, in order: Seed Question, Motivations, Landscape, Tentative Claim Shape, Q-consumer.
+The DPRC loop that binds Q-consumer to the content is phase behavior (see Phase Orchestration): DRAFT raises a `Q-Seed-<n>` and cites it inline as `[Q-Seed-<n>]` in the sentence(s) it hangs on; PROBE fills its `Answer`; REVISE weaves the answer back into every citing sentence and discharges the bracket.
 
 **Formatting:**
 - Heading style: `=====` for the document title, `-----` for sections.
@@ -48,8 +47,8 @@ Read first: `../../../PHILOSOPHY.md`, `../../ref/04-lifecycle-map.md`.
   No dense multi-sentence paragraphs.
 
 **Done-criteria:**
-- [ ] All four sections filled with real content (not placeholders)
-- [ ] Probes section carries at least the novelty/landscape probe result
+- [ ] All five sections filled with real content (not placeholders); every `<!-- RULE -->` comment deleted from 0-seed.md
+- [ ] Q-consumer carries the feasibility questions (novelty + external-data), each ANCHORED to a draft assertion; answers land at PROBE, not DRAFT
 - [ ] _LOG entry records the current state
 - [ ] Probe files verify clean: locate the checker layout-agnostically (installed skills flatten the tree, so the `../../../2-phase/...` relative path is NOT reliable) AND filter on the FAMILY -- TWO files named `check-probe-cards.sh` exist on disk (paper + application), and a bare `-name` find resolves to whichever the filesystem hands back first, silently asserting a paper against application invariants:
       ```sh
@@ -88,13 +87,15 @@ seed invoked
   │
   ▼
 DRAFT ──→ illuminate existing content, elicit taste,
-          write/iterate the 4 sections with > USER: / > CC: comments.
+          write/iterate the 5 sections with > USER: / > CC: comments.
           Ends at ⛔ STOP: user reviews, iterates, approves ([GATE] logged).
           MAY WebSearch inline to ORIENT the angle (crowded field? dataset
           exist? anchor names?) -- the result is drafting fuel: weave it into
           the prose (as orientation, `\cite{TOADD}` slots — never invented keys) AND raise
           the feasibility questions as `state: planned` SECTIONS in 1-probes/
-          (empty `target:`). NEVER write a `a-consumer:` or a `target:` into a section
+          (empty `target:`), give each raised question a `## Q-Seed-<n>` block in
+          Q-consumer, and CITE its id inline -- `[Q-Seed-<n>]` in the sentence(s) it
+          hangs on (the forward link). NEVER write a `a-consumer:` or a `target:` into a section
           here -- that is the PROBE phase's job (the seed is allowed to be intuition;
           PROBE makes it evidence). The line is SECTION STATE: DRAFT leaves `planned`.
           (internally calls /haipipe-paper-draft with this artifact spec)
@@ -119,13 +120,18 @@ PROBE ──→ DEFAULT RUN for a new seed: FEASIBILITY probes (mode light) --
           produced any other way than the worker call above has no project-side
           ledger and is void: the PROBE phase did not happen.
           After the worker returns: takeaways appear in the PP plan files in
-          1-probes/ (with target: resolving to a QA file in discoveries/ or tasks/) AND get woven
-          into the Probes section in 0-seed.md; sources harvest into
+          1-probes/ (with target: resolving to a QA file in discoveries/ or tasks/) AND land in the
+          matching Q-consumer question's `Answer` field in 0-seed.md; sources harvest into
           _CITATION_0-seed.md; full evidence stays project-side.
+          PROBE STOPS at the `Answer` field -- it is EVIDENCE, not prose. Weaving that
+          answer back into the main content (Motivations, Claim Shape, the anchored
+          sentence) is REVISE's job, not PROBE's.
   │
   ▼
-REVISE ─→ refine prose clarity of the 4 sections, weave probe takeaways into Motivations
-          AND into the Probes section
+REVISE ─→ refine prose clarity of the 5 sections, and CLOSE THE LOOP: weave each answered
+          question's takeaway FROM its `Answer` field back INTO every sentence that cites its
+          `[Q-Seed-<n>]` (Motivations, Landscape, Claim Shape) AND DISCHARGE the bracket
+          -- content -> question -> answer -> content
           (internally calls /haipipe-paper-revise; [REVISE] _LOG entry carries workers: proof)
   │
   ▼
@@ -151,34 +157,9 @@ Markdown only (argument documents don't need compilation).
 
 ## Template
 
-The canonical template is the source of truth for section order: `ref/seed-template.md`
-
-```markdown
-0-seed: <working title>
-========================
-
-Date: YYYY-MM-DD
-Status: DRAFT
-
-Seed Question
--------------
-The one paper-shaped question this seed exists to answer.
-
-Motivations
------------
-Why this is interesting (puzzle / gap / surprise).
-What makes the angle novel or feasible now.
-To whom it is interesting (name the audiences and why each cares).
-
-Tentative Claim Shape
----------------------
-What the paper may eventually argue, phrased as a hypothesis, not a finding.
-
-Probes
-------
-Landscape/novelty probes that answer "is this new?" and "who cares?"
-Each probe as a **bold** sub-item with type, status, and takeaways inline.
-```
+`ref/seed-template.md` is the single source of truth -- BOTH the skeleton and the fill rules.
+Open that file. It carries `<placeholders>` you replace and `<!-- RULE: … -->` comments you follow then delete; the finished seed keeps neither.
+Do NOT restate its rules here or anywhere else (one home; duplication is how things drift, e.g. the old `Probes` -> `Q-consumer` rename).
 
 ## Principles
 
@@ -190,8 +171,8 @@ Each probe as a **bold** sub-item with type, status, and takeaways inline.
    Venue selection happens after claims (seed -> resource -> claims -> [venue] -> pitch).
    Do not reference a target venue here.
 4. Evidence inventory, routing, and gap analysis belong in the claims stage, not here.
-5. **Probes are explicit.**
-   The Probes section makes the landscape/novelty check visible in the seed document itself, not buried in a satellite file.
+5. **Q-consumer is explicit.**
+   The Q-consumer section makes the feasibility QUESTIONS visible in the seed document itself; their ANSWERS arrive at PROBE, not DRAFT.
    The `1-probes/` probe files carry the question SECTIONS and their bindings.
 5a. **Seed probes are FEASIBILITY only.**
     A seed probe answers "can this paper exist at all?" -- novelty (is the angle new?) and external-data-obtainability (does the labeled data the paper needs exist and is it accessible?).

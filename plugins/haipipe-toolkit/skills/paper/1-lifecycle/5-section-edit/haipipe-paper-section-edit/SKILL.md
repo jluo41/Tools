@@ -41,7 +41,7 @@ PROBE runs citation / values / display in parallel, agent-only, flagging (not pl
 A missing display unit is NEVER created here -- it becomes a DR row in the display stage's inbox (`0-lifecycle/4-display/_DISPLAY_REQUEST.md`), and the section's display axis cannot pass CHECK until that row is `done` and the unit linked.
 
 **4. Venue-bound, playbook-guided.**
-DRAFT reads the paper's `0-lifecycle/2-venue/2-venue.md` -- the Structural Blueprint block is BINDING (subsections, ¶ per subsection, sentences per ¶, density, word budget); Writing Principles are advisory; `venue/` packs are the fallback when 2-venue.md is absent.
+DRAFT reads the paper's `0-lifecycle/2a-venue/2a-venue.md` -- the Structural Blueprint block is BINDING (subsections, ¶ per subsection, sentences per ¶, density, word budget); Writing Principles are advisory; `venue/` packs are the fallback when 2a-venue.md is absent.
 Per-section-type playbooks (hooks, framings, failure modes) are reference at `../section-type/section-<type>.md`.
 
 

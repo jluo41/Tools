@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-pitch
-description: "Create or update the paper folder's 0-lifecycle/2-pitch/2-pitch.md + _LOG_2-pitch.md: the venue-ALIGNED cover letter and one-minute story for this concrete manuscript. Absorbs the Editor's Chair Test, [primary] claim designation, and venue-specific RQ framing. Includes a Probes section for pitch-level investigation (venue fit, framing risk, competing papers). Archives semantic old versions in _LOG when the pitch shifts. Markdown only. Use for paper pitch, cover letter, one-minute story, hook/surprise/so-what, audience/venue fit, editor's chair, primary claim, RQ framing, story trajectory, pitch provenance."
+description: "Create or update the paper folder's 0-lifecycle/2b-pitch/2b-pitch.md + _LOG_2b-pitch.md: the venue-ALIGNED cover letter and one-minute story for this concrete manuscript. Absorbs the Editor's Chair Test, [primary] claim designation, and venue-specific RQ framing. Includes a Q-consumer for pitch-level questions (venue fit, framing risk, competing papers). Archives semantic old versions in _LOG when the pitch shifts. Markdown only. Use for paper pitch, cover letter, one-minute story, hook/surprise/so-what, audience/venue fit, editor's chair, primary claim, RQ framing, story trajectory, pitch provenance."
 argument-hint: "[paper-dir] [--reason <slug>] [--source <path-or-note>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.3.1"
-  last_updated: "2026-07-14"
-  summary: "Pitch stage orchestrator (stage 2, venue-ALIGNED): the cover-letter sections + a Probes section, driving DRAFT -> PROBE -> REVISE -> CHECK internally (the user invokes pitch, not the phases). Pitch questions are SECTIONS in 1-probes/; a semantic shift cites a landed QA file or a `read` section. History: ./CHANGELOG.md."
+  version: "4.4.0"
+  last_updated: "2026-07-18"
+  summary: "Pitch stage orchestrator (stage 2, venue-ALIGNED): the cover-letter sections + a Q-consumer (## Q-Pitch-<n>), driving DRAFT -> PROBE -> REVISE -> CHECK internally (the user invokes pitch, not the phases). Pitch questions are SECTIONS in 1-probes/; a semantic shift cites a landed QA file or a `read` section. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -18,6 +18,8 @@ The user invokes this skill; it drives the phases internally.
 
 The pitch is the **cover letter**: the venue-ALIGNED document that tells THIS editor why THIS paper fits THEIR journal.
 It can be sent to an editor as-is.
+
+It answers one question: **why would THIS venue's editor send this paper out for review?**
 
 The pitch is not a paper plan, outline, or claim matrix.
 It is the version a person can understand in one minute:
@@ -41,23 +43,23 @@ Read first: `../../../PHILOSOPHY.md`, `../../ref/04-lifecycle-map.md`.
 ## Artifact Spec
 
 **Files produced:**
-- `0-lifecycle/2-pitch/2-pitch.md` -- the cover letter (venue-ALIGNED)
-- `0-lifecycle/2-pitch/_LOG_2-pitch.md` -- changelog with provenance
+- `0-lifecycle/2b-pitch/2b-pitch.md` -- the cover letter (venue-ALIGNED)
+- `0-lifecycle/2b-pitch/_LOG_2b-pitch.md` -- changelog with provenance
 - `1-probes/PPNN_<topic>.md` -- the probe FILES; a pitch-level question becomes a SECTION (flat cross-stage pool; `serves: 2-pitch`)
 
-**Content structure (2-pitch.md):**
+**Content structure (2b-pitch.md):**
 - Title -- <=15 words, specific, evocative
 - One-Minute Pitch -- 4-6 sentences for a newcomer
 - Hook -- >=2 candidate methods, one recommended lead
 - Finding-Surprise -- the non-obvious turn
 - Implication-So What -- what changes and who can act
-- Editor's Chair Test -- venue question from the 2-venue.md Venue Profile, one-sentence answer per primary claim
+- Editor's Chair Test -- venue question from the 2a-venue.md Venue Decision (desk test), one-sentence answer per primary claim
 - Primary Claim + RQ Framing -- [primary] designation, H-to-RQ mapping for THIS venue
 - Audience and Venue Fit -- who reads this journal, why they care
 - Evidence-Why Believe -- source per claim
 - Limitation-Still Fragile -- top 3 risks
 - Next Evidence Move -- verb + artifact
-- Probes -- pitch-level investigation needs (venue fit, framing risk, competing papers)
+- Q-consumer -- pitch-level questions (`## Q-Pitch-<n>`: venue fit, framing risk, competing papers)
 
 **Formatting:**
 - Heading style: `=====` for the document title, `-----` for sections.
@@ -71,7 +73,7 @@ Read first: `../../../PHILOSOPHY.md`, `../../ref/04-lifecycle-map.md`.
 - [ ] [primary] claim designated for THIS venue
 - [ ] RQ framing complete (H-to-RQ mapping with venue rationale)
 - [ ] All labeled sections present (Title, Hook with >=2 candidates, Surprise, Implication, etc.)
-- [ ] Probes section present with pitch-level investigation results
+- [ ] Q-consumer present (`## Q-Pitch-<n>`); every `<!-- RULE -->` comment deleted from the filled 2b-pitch.md
 - [ ] Readable in one minute
 
 Illustration:
@@ -107,17 +109,17 @@ pitch invoked
   ▼
 DRAFT ──→ illuminate existing content, elicit taste,
           write/iterate the cover letter sections with > JL: / > CC: comments;
-          read STATUS venue + the paper's 0-lifecycle/2-venue/2-venue.md
+          read STATUS venue + the paper's 0-lifecycle/2a-venue/2a-venue.md
           (Venue Profile + Fit Assessment blocks) to shape
           Editor's Chair Test, [primary] designation, RQ framing, Audience
-          (fallback: venue/playbook-<venue> only if 2-venue.md is absent);
+          (fallback: venue/playbook-<venue> only if 2a-venue.md is absent);
           read claims ledger for venue-neutral H1/H2/H3
           (internally calls /haipipe-paper-draft with this artifact spec)
           Ends at ⛔ STOP: user reviews, iterates, approves ([GATE] logged).
   │
   ▼
 PROBE ──→ citation audit for anchor papers cited in Evidence-Why Believe;
-          verify 2-venue.md provenance (if its recorded venue commit is behind
+          verify 2a-venue.md provenance (if its recorded venue commit is behind
           HEAD, note "venue contract stale -- consider /haipipe-paper-venue refresh");
           confirm H-to-RQ mapping against claims ledger
           (internally calls /haipipe-paper-probe)
@@ -137,7 +139,7 @@ CHECK ──→ present exit gate per ../../ref/08-stage-gate.md:
 
 Phase visibility per the Phase Transition Contract in `../../ref/08-stage-gate.md`: announce every phase boundary (reply line + `[PHASE]` entry in `_LOG` + phase-line 🔥 moves); skip a phase only by an explicit logged verdict (`[PROBE] skipped -- <reason>`, phase line shows `--`); CHECK is never implicit -- it opens by presenting the exit-criteria report and the approval ask.
 
-Comment lifecycle per `../../../wiki/02-comment-lifecycle.md`: comments live in 2-pitch.md while active, move to _LOG on resolve, each phase starts clean.
+Comment lifecycle per `../../../wiki/02-comment-lifecycle.md`: comments live in 2b-pitch.md while active, move to _LOG on resolve, each phase starts clean.
 
 ### Quality gate checklist (CHECK phase)
 
@@ -154,9 +156,9 @@ Comment lifecycle per `../../../wiki/02-comment-lifecycle.md`: comments live in 
 ## Location
 
 ```text
-<paper>/0-lifecycle/2-pitch/2-pitch.md       cover letter (venue-ALIGNED)
-<paper>/0-lifecycle/2-pitch/_LOG_2-pitch.md   changelog with provenance
-<paper>/0-lifecycle/2-pitch/archive/          older semantic pitch snapshots (vNN_<reason>.md)
+<paper>/0-lifecycle/2b-pitch/2b-pitch.md       cover letter (venue-ALIGNED)
+<paper>/0-lifecycle/2b-pitch/_LOG_2b-pitch.md   changelog with provenance
+<paper>/0-lifecycle/2b-pitch/archive/          older semantic pitch snapshots (vNN_<reason>.md)
 ```
 
 Markdown only (argument documents don't need compilation).
@@ -173,7 +175,7 @@ Reading order:
 3. Hook                        ← >=2 candidates, one recommended lead
 4. Finding - Surprise          ← the non-obvious turn
 5. Implication - So What       ← what changes and who can act
-6. Editor's Chair Test         ← venue question from 2-venue.md Venue Profile; one-sentence answer per primary claim
+6. Editor's Chair Test         ← venue question from 2a-venue.md Venue Decision; one-sentence answer per primary claim
 7. Primary Claim + RQ Framing  ← [primary] designation + H→RQ mapping for THIS venue
 8. Audience and Venue Fit      ← venue-ALIGNED: who reads this journal, why they care
 9. Evidence - Why Believe      ← source per claim
@@ -184,15 +186,15 @@ Reading order:
 **Template enforcement:** A pitch is NOT complete unless it contains, as labeled sections: Title, One-Minute Pitch, Hook (with >=2 candidates), Surprise, Implication, Editor's Chair Test, Primary Claim + RQ Framing, Audience/Venue Fit, Why Believe, Still Fragile.
 A pitch that is one flat paragraph missing these sections must be flagged and restructured before it can pass any gate.
 
-The pitch is venue-ALIGNED: it reads STATUS `venue` and the paper's `0-lifecycle/2-venue/2-venue.md` (Venue Profile + Fit Assessment blocks) to shape the Editor's Chair Test, the [primary] claim designation, the RQ framing, and the Audience section.
-`2-venue.md` is the compiled venue contract; read it FIRST.
-Fall back to reading `venue/playbook-<venue>` directly only when `2-venue.md` does not exist (venue stage not yet run, or a pack-less venue); if no pack exists either, proceed without venue inputs.
-Deep dives follow the `[source: ...]` tags recorded in `2-venue.md` into `venue/playbook-<slug>/<journal>/...`.
-If the provenance commit in `2-venue.md` is older than the current `venue` HEAD, note "venue contract stale -- consider /haipipe-paper-venue refresh" but still use `2-venue.md` (never silently re-read packs).
+The pitch is venue-ALIGNED: it reads STATUS `venue` and the paper's `0-lifecycle/2a-venue/2a-venue.md` (Venue Decision + Requirements) to shape the Editor's Chair Test, the [primary] claim designation, the RQ framing, and the Audience section.
+`2a-venue.md` is the compiled venue contract; read it FIRST.
+Fall back to reading `venue/playbook-<venue>` directly only when `2a-venue.md` does not exist (venue stage not yet run, or a pack-less venue); if no pack exists either, proceed without venue inputs.
+Deep dives follow the `[source: ...]` tags recorded in `2a-venue.md` into `venue/playbook-<slug>/<journal>/...`.
+If the provenance commit in `2a-venue.md` is older than the current `venue` HEAD, note "venue contract stale -- consider /haipipe-paper-venue refresh" but still use `2a-venue.md` (never silently re-read packs).
 A venue change means the pitch rewrites.
 (Claims stays unchanged because it is venue-free.)
 
-### Pitch Log template (_LOG_2-pitch.md)
+### Pitch Log template (_LOG_2b-pitch.md)
 
 ```markdown
 # Pitch Log
@@ -206,7 +208,7 @@ Source:
 - Author intuition / initial review / early project direction.
 
 Pitch:
-- See `2-pitch.md`.
+- See `2b-pitch.md`.
 
 Why this version:
 - Initial public-facing story before the evidence base is stable.
@@ -246,7 +248,7 @@ Next:
 ## Principles
 
 1. **One minute or it failed.**
-   `2-pitch.md` should be readable in one minute.
+   `2b-pitch.md` should be readable in one minute.
    Keep it short enough to fit on one screen.
 2. **Pitch can start as intuition.**
    A seed pitch may cite author judgment, a research review, or a rough direction.
@@ -264,7 +266,7 @@ Next:
     Venue pinning (STATUS `venue`) must happen before or during pitch.
     If no venue is pinned, run `/haipipe-paper venue` first.
 5c. **Editor's Chair Test lives here.**
-    Read the Venue Profile block of `0-lifecycle/2-venue/2-venue.md` (its one-sentence test) for the editor's chair question; fall back to `venue/playbook-<venue>` only if `2-venue.md` is absent.
+    Read the Venue Profile block of `0-lifecycle/2a-venue/2a-venue.md` (its one-sentence test) for the editor's chair question; fall back to `venue/playbook-<venue>` only if `2a-venue.md` is absent.
     Every primary claim must have a one-sentence answer.
     This test was migrated from claims (v3.0.0) because it is a venue question, not an evidence question.
 5d. **[primary] claim designation lives here.**
@@ -288,23 +290,23 @@ Next:
 
 ## Relationship to other structure skills
 
-`0-lifecycle/2-pitch/2-pitch.md` is one stage of the lifecycle spine:
+`0-lifecycle/2b-pitch/2b-pitch.md` is one stage of the lifecycle spine:
 
 ```
 0-seed.md        why this paper might exist (venue-FREE)
     ↓
-1-resource.md    what must EXIST for this paper to be testable (venue-FREE)
+1a-resource.md    what must EXIST for this paper to be testable (venue-FREE)
     ↓
-1-claims.md      claim/evidence inventory (venue-FREE)
+1b-claims.md      claim/evidence inventory (venue-FREE)
     ↓
-2-pitch.md       cover letter + one-minute story (venue-ALIGNED, this skill)
+2b-pitch.md       cover letter + one-minute story (venue-ALIGNED, this skill)
     ↓
 3-narrative.md   evidence-backed arc (venue-ALIGNED)
     ↓
 4-display.tex    display contract (venue-HEAVY)
 ```
 
-Upstream: claims (0-lifecycle/1-claims/) provides the venue-neutral hypotheses (H1, H2, H3) and evidence status.
+Upstream: claims (0-lifecycle/1b-claims/) provides the venue-neutral hypotheses (H1, H2, H3) and evidence status.
 Pitch reframes them for the target venue.
 
 Downstream: narrative expands the pitch into a full section-mirrored arc.

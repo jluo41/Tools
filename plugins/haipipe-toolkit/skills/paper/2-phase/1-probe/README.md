@@ -16,7 +16,7 @@ haipipe-paper-probe (hub)   ① ORGANIZE → ② MATCH → ③ DISPATCH → ④ 
                Their CLEAN CONTEXT is the wall. The SWEEP is ② MATCH, and dispatch
                goes direct.
   ④ POINT      the section's `target:` → the answering QA file <task-folder>/QA/<n>-<slug>.md
-  ⑤ INTERPRET  the section's `a-consumer:` → 1-claims.md flips → the lanes pay out:
+  ⑤ INTERPRET  the section's `a-consumer:` → 1b-claims.md flips → the lanes pay out:
      haipipe-paper-probe-citation   source anchors → _CITATION_{stage}.md
      haipipe-paper-probe-values     value anchors  → _VALUES_{stage}.md
      haipipe-paper-probe-display    unit links     → _DISPLAY_{stage}.md + tex links
@@ -25,7 +25,7 @@ haipipe-paper-probe (hub)   ① ORGANIZE → ② MATCH → ③ DISPATCH → ④ 
 The probe FILE (`1-probes/PPNN_<topic>.md`, one file per TOPIC, one SECTION per question;
 anatomy owned by `../../../probe/haipipe-probe/SKILL.md`) is the single source of truth: its
 `q-executor:` at ORGANIZE, its `target:` at POINT, its `a-consumer:` + lane lines at INTERPRET.
-A CLAIM's status is not in it — that lives in `0-lifecycle/1-claims/1-claims.md`.
+A CLAIM's status is not in it — that lives in `0-lifecycle/1b-claims/1b-claims.md`.
 
 Enforcement is mechanical (`check-probe-cards.sh`, run at VERIFY and re-run by the CHECK gate):
 a `planned` section FAILs (probe-not-run), a `harvest: OWED` lane line FAILs (harvest skipped),

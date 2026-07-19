@@ -100,7 +100,7 @@ For each Phase-1 number:
 | Situation | Action |
 |---|---|
 | A named source covers it (a probe section's values:/target: / a _DISPLAY_ row / _CITATION_ / an inline derivation) | record the pointer; proceed to Phase 3 |
-| PAPER-LOCAL SWEEP hits — the number appears in a sibling/prior `_VALUES_*.md`, ANY stage's `answered \| read \| answered-local` probe SECTION's `values:` lane / `target:` QA file (seed, claims, display included), `0-displays/*/source/` (metrics.json, source_data.csv), or `_EVIDENCE_1-claims.md` | ADOPT THE POINTER, NOT THE VERDICT: copy the `Source:` path, add `Note: pointer via <file> (<status> <date>)`; the entry enters ⬜ and PLACE re-verifies against the ORIGINAL source (Hard Boundary 4 untouched) |
+| PAPER-LOCAL SWEEP hits — the number appears in a sibling/prior `_VALUES_*.md`, ANY stage's `answered \| read \| answered-local` probe SECTION's `values:` lane / `target:` QA file (seed, claims, display included), `0-displays/*/source/` (metrics.json, source_data.csv), or `_EVIDENCE_1b-claims.md` | ADOPT THE POINTER, NOT THE VERDICT: copy the `Source:` path, add `Note: pointer via <file> (<status> <date>)`; the entry enters ⬜ and PLACE re-verifies against the ORIGINAL source (Hard Boundary 4 untouched) |
 | No named source and no paper-local hit | raise a question SECTION in 1-probes/ (q-executor: "where does the number for <phrase> come from?") and hand it to the PROBE hub — MATCH greps the bank's QA corpus, and only an unmatched question is DISPATCHED |
 
 Method claims ("Holm-Bonferroni corrected", "cluster-robust SEs") route the same way: unverifiable-from-named-sources → a question SECTION, not a codebase grep.

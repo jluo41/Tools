@@ -11,11 +11,11 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 ## [3.1.0] — 2026-07-08
 ## 4.0.0 — 2026-07-14
 
-- PROBE REDESIGN (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14 — R1-R18). 1-probe-plans/ -> 1-probes/ (PPNN_<topic>.md, one file per TOPIC, one SECTION per question: serves/target/state/commission/reading + ONE `## Why` per file holding the stake). Binding is by PATH: a section's `target:` points at the answering `<leaf>/QA/<n>-<slug>.md` in the bank. DELETED: `## Verdict`, the `verdicted` and `dispatched` states, `_ASK/`/`_ANS/` stubs, `answers:`, and Agent(haipipe-probe-orchestrator-agent) (the GATEWAY — archived + de-registered). A claim's STATUS now lives ONLY in 0-lifecycle/1-claims/1-claims.md. Dispatch is now DIRECT: the section's `commission:` block, VERBATIM, to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent).
+- PROBE REDESIGN (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14 — R1-R18). 1-probe-plans/ -> 1-probes/ (PPNN_<topic>.md, one file per TOPIC, one SECTION per question: serves/target/state/commission/reading + ONE `## Why` per file holding the stake). Binding is by PATH: a section's `target:` points at the answering `<leaf>/QA/<n>-<slug>.md` in the bank. DELETED: `## Verdict`, the `verdicted` and `dispatched` states, `_ASK/`/`_ANS/` stubs, `answers:`, and Agent(haipipe-probe-orchestrator-agent) (the GATEWAY — archived + de-registered). A claim's STATUS now lives ONLY in 0-lifecycle/1b-claims/1b-claims.md. Dispatch is now DIRECT: the section's `commission:` block, VERBATIM, to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent).
 - THE SCAFFOLDER NO LONGER CREATES A RETIRED FOLDER. It scaffolded `1-probe-plans/`, so every NEW paper was born in the migration-needed state — the v8 probe worker and checker look in `1-probes/` and would find nothing. Now scaffolds `1-probes/`.
 
 Changed (venue lockfile wiring)
-- Manuscript Upgrade section format now consults the paper's `0-lifecycle/2-venue/2-venue.md` Structural Blueprint first; direct `_venue/playbook-<venue>` read demoted to fallback when 2-venue.md is absent.
+- Manuscript Upgrade section format now consults the paper's `0-lifecycle/2a-venue/2a-venue.md` Structural Blueprint first; direct `_venue/playbook-<venue>` read demoted to fallback when 2a-venue.md is absent.
 
 ## [3.0.1] — 2026-07-04
 

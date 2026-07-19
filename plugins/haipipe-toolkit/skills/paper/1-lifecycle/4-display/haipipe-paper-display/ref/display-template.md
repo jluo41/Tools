@@ -10,7 +10,7 @@ Status: DRAFT
 Venue Set
 ---------
 
-venue: <venue> (2-venue.md @ <commit>) -- <the venue's standard display set + hero rule>.
+venue: <venue> (2a-venue.md @ <commit>) -- <the venue's standard display set + hero rule>.
 limits: <figure/table caps, color, format>
 gallery config: width_cap=<0.6\textwidth> | float=<H> | <spacing knobs> | caption=<small>
 
@@ -54,7 +54,7 @@ These are the display stage's OWN steps, not questions to the bank; PROBE runs t
 <Paper Section, e.g. Intro & Theory>
 ------------------------------------
 
-venue expects: <this paper section's display units from the 2-venue.md Structural Blueprint; a mandated unit with no subsection below is a GAP -- say so here>
+venue expects: <this paper section's display units from the 2a-venue.md Structural Blueprint; a mandated unit with no subsection below is a GAP -- say so here>
 
 ### Figure 1 -- display01-<slug>
 

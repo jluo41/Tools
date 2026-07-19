@@ -11,7 +11,7 @@ A paper is a delivery contract, not a writing folder. It owns one manuscript's s
 ├── STATUS.md                current layer, maturity, active round
 ├── 0-<paper>.tex/.bib       main manuscript shell
 ├── 0-lifecycle/              maturation spine (md + _LOG; display = tex + pdf)
-│   ├── 0-seed/  1-resource/  1-claims/  2-pitch/  3-narrative/  4-display/  5-editing/
+│   ├── 0-seed/  1a-resource/  1b-claims/  2b-pitch/  3-narrative/  4-display/  5-editing/
 ├── 0-sections/               manuscript prose .tex
 ├── 0-displays/displayNN-*/   figure/table units
 ├── 1-probes/PPNN_<topic>.md   the paper's questions, one SECTION each -> bound BY PATH to a QA file

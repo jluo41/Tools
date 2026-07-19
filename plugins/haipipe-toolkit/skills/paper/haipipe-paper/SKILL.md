@@ -101,7 +101,7 @@ Resolution order (first match wins):
 
 A paper root is any directory upward containing `STATUS.md`, `0-lifecycle/`, `0-*.tex` + `0-sections/`, or `1-compile.sh` + `0-sections/`.
 
-Venue coupling (drives two routing rules): seed + resource + claims are venue-FREE; venue pins the journal in STATUS.md between claims and pitch AND compiles the pack into the paper's `0-lifecycle/2-venue/2-venue.md`; pitch/narrative/display/section-edit are venue-ALIGNED and consult 2-venue.md (direct `venue/playbook-<venue>` reads = fallback when 2-venue.md is absent, or deep dives via its `[source: ...]` tags).
+Venue coupling (drives two routing rules): seed + resource + claims are venue-FREE; venue pins the journal in STATUS.md between claims and pitch AND compiles the pack into the paper's `0-lifecycle/2a-venue/2a-venue.md`; pitch/narrative/display/section-edit are venue-ALIGNED and consult 2a-venue.md (direct `venue/playbook-<venue>` reads = fallback when 2a-venue.md is absent, or deep dives via its `[source: ...]` tags).
 So: "paper" with claims done but no venue pinned -> run `venue` before pitch.
 Re-targeting ("move to another journal") -> re-run `venue`; pitch re-couples (new [primary], new RQ framing); resource and claims stay unchanged (what a paper NEEDS to exist does not depend on where you send it).
 
@@ -190,7 +190,7 @@ Need record schema: `../wiki/11-delivery-need.md`; paper/evidence boundary + `\n
 ```
 claim needs evidence / robustness / literature / a data artifact -> /haipipe-paper probe "<question>"  (a SECTION in 1-probes/; MATCH first, dispatch only what MATCH cannot close)
 figure/table needs materialized output (not claim-gated)         -> /haipipe-task-for-display <need>
-settled claim status (supported|refuted|inconclusive)            -> 0-lifecycle/1-claims/1-claims.md (the ONLY home of a claim's status; the probe section carries only its `a-consumer:`)
+settled claim status (supported|refuted|inconclusive)            -> 0-lifecycle/1b-claims/1b-claims.md (the ONLY home of a claim's status; the probe section carries only its `a-consumer:`)
 wording/section placement                                        -> the owning lifecycle stage skill
 standalone utility (a HUMAN, not the paper: lit scan, data check) -> /haipipe-task qa | /haipipe-discovery qa (the bank's own door)
 ```

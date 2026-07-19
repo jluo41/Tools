@@ -44,9 +44,9 @@ Collection is the constitution's model; harvest is this worker's, and the consti
 ----------------------------------------------------------------------------
 
 - RESOURCE INTAKE (paper only; runs FIRST, and ONLY when the invoking stage is RESOURCE).
-  Read `<paper_root>/0-lifecycle/1-resource/1-resource.md`.
-  For every `Q<n>` that GATE 1 approved (present, not DECLINED in `_LOG_1-resource.md`) and carries NEITHER an `A:` NOR a `-> PP<NN>` backlink, open ONE section under `1-probes/` with `serves: resource` · `blocks: N<n>` (the Q's demand link, verbatim) · `target: NEW ?` · `state: planned`, and a `q-executor:` that re-poses the Q as a self-contained evidence question.
-  Then write the backlink into 1-resource.md: `**Q<n> (N<n>) -> PP<NN>**` — that backlink is the mechanical proof the question was asked, and what `check-probe-cards.sh --stage resource` tests.
+  Read `<paper_root>/0-lifecycle/1a-resource/1a-resource.md`.
+  For every `Q<n>` that GATE 1 approved (present, not DECLINED in `_LOG_1a-resource.md`) and carries NEITHER an `A:` NOR a `-> PP<NN>` backlink, open ONE section under `1-probes/` with `serves: resource` · `blocks: N<n>` (the Q's demand link, verbatim) · `target: NEW ?` · `state: planned`, and a `q-executor:` that re-poses the Q as a self-contained evidence question.
+  Then write the backlink into 1a-resource.md: `**Q<n> (N<n>) -> PP<NN>**` — that backlink is the mechanical proof the question was asked, and what `check-probe-cards.sh --stage resource` tests.
   The ownership chain: the STAGE asks (Q<n>) → the HUMAN approves at GATE 1 → this worker opens the section → ② resolves or ③ commissions it → the answer lands → ⑤ writes the A back into the Q.
   The stage never mints a PP id.
 - Resolve `project_root`: walk UP from `paper_root` to the first ancestor containing `discoveries/`.
@@ -127,16 +127,16 @@ HARVEST (⑤) begins. ════════
 
 - Write the `a-consumer` (translate the general answer UP into the paper's words).
   ONLY against an `answered`, non-superseded target (constitution).
-- `mode: full` → the AUTHOR writes the claim status (`supported | refuted | inconclusive` + confidence + claim_type) into `0-lifecycle/1-claims/1-claims.md`, never in the probe file.
+- `mode: full` → the AUTHOR writes the claim status (`supported | refuted | inconclusive` + confidence + claim_type) into `0-lifecycle/1b-claims/1b-claims.md`, never in the probe file.
   A probe is communication, not judgment — there is no review gate; keep the `claim_type` overclaim check (never causal from associational evidence).
-- RESOURCE WRITE-BACK (`serves: resource`): write the landed reading BACK into `1-resource.md` as the Q's `A:` line — existence AND fitness AND what it KILLS ("probably fine" is a DEFECT, not an answer).
+- RESOURCE WRITE-BACK (`serves: resource`): write the landed reading BACK into `1a-resource.md` as the Q's `A:` line — existence AND fitness AND what it KILLS ("probably fine" is a DEFECT, not an answer).
   A BUILD-lane section writes `A: COMMISSIONED · owner <who> · eta YYYY-MM-DD · blocks N<n> · cross-project: <path|none-found>` at booking; the async path overwrites it on landing.
   Both receipts: the section is the probe-layer one, the Q's `A:` is what the human reads at GATE 2.
 - LANE OBLIGATIONS — record the debt in the section FIRST (`values:`/`sources:`/`displays:` … `harvest: OWED`), then dispatch the lane's SUB-WORKER (`haipipe-paper-probe-citation` / `-values` / `-display`; cheap, pointer-following) and accept MECHANICALLY per `ref/harvest-acceptance.md` (run the greps, never eyeball).
   Flip to `harvest: accepted (<n>, <doc>)`.
   An `OWED` line at the gate FAILs.
 
-PROOF 5: per section the `a-consumer` line, the claim-ledger diff (if it serves a claim), the `grep -A2 'Q<n>' 1-resource.md` for a resource write-back, and each harvester `Agent(...)` call + its acceptance-grep output.
+PROOF 5: per section the `a-consumer` line, the claim-ledger diff (if it serves a claim), the `grep -A2 'Q<n>' 1a-resource.md` for a resource write-back, and each harvester `Agent(...)` call + its acceptance-grep output.
 
 
 VERIFY — the checker (the stage CHECK gate re-runs the same script)
@@ -146,7 +146,7 @@ VERIFY — the checker (the stage CHECK gate re-runs the same script)
 sh <this-skill-dir>/check-probe-cards.sh <paper_root> [<project_root>] [--stage <key>]
 ```
 
-`--stage resource` also runs the resource pass over 1-resource.md: every `Q<n>` must carry an `A:`, a `-> PP<NN>` backlink (to a probe file that EXISTS), or a DECLINED line — none of the three FAILs as `unasked-question`, and "no section serves stage resource" while questions are open FAILs as the VACUOUS GREEN.
+`--stage resource` also runs the resource pass over 1a-resource.md: every `Q<n>` must carry an `A:`, a `-> PP<NN>` backlink (to a probe file that EXISTS), or a DECLINED line — none of the three FAILs as `unasked-question`, and "no section serves stage resource" while questions are open FAILs as the VACUOUS GREEN.
 The FAIL codes are the constitution's.
 Never report a green PROBE over a FAIL.
 

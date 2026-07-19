@@ -76,14 +76,14 @@ States (DERIVED from disk — never asserted)
 planned          the section exists · the target leaf is missing (or `NEW …`)
 commissioned     the task-folder + its plan.yaml exist · the QA file is absent
 answered         the target QA FILE exists
-read             the section's a-consumer: is non-empty (+ 1-claims.md flipped, if it serves a claim)
+read             the section's a-consumer: is non-empty (+ 1b-claims.md flipped, if it serves a claim)
 answered-local   target points into the paper's OWN registries; no dispatch happened
 failed           a reading with a dead target · the task-folder was deleted · the qa verb REFUSEd
 ```
 
 💀 `verdicted` is DELETED. 💀 `dispatched` is DELETED (say `commissioned`).
 A claim's STATUS (`supported | refuted | inconclusive` + confidence + claim_type)
-lives in `0-lifecycle/1-claims/1-claims.md`. It is not a probe field. There is no `## Verdict`.
+lives in `0-lifecycle/1b-claims/1b-claims.md`. It is not a probe field. There is no `## Verdict`.
 
 Binding is by PATH, never by id
 --------------------------------
@@ -130,7 +130,7 @@ DRAFT raises the questions
                  Agent(haipipe-discovery-orchestrator-agent)
                their clean context IS the wall; dispatch goes direct.
   ④ POINT      target: → the answering QA FILE (verify with ls)
-  ⑤ INTERPRET  a-consumer: → 1-claims.md flips → the harvest lanes pay out
+  ⑤ INTERPRET  a-consumer: → 1b-claims.md flips → the harvest lanes pay out
 ```
 
 ⛔ **MATCH BEFORE DISPATCH.** The pre-v8 rule was "dispatch every planned probe, ALWAYS, no
@@ -145,7 +145,7 @@ Lifecycle Integration
 Any lifecycle stage can raise a question:
 - 0-seed: "NEED-1 (probe): expand ex ante audit" -> a section in the matching topic's probe file
 - 1-resource: each GATE-1-approved `Q<n>` -> a section, plus a `-> PP<NN>` backlink written back
-  into 1-resource.md (that backlink is the mechanical proof the question was ASKED, and the
+  into 1a-resource.md (that backlink is the mechanical proof the question was ASKED, and the
   CHECK gate tests it)
 - 2-claims: every GAP / weak claim -> a section
 

@@ -4,6 +4,23 @@ haipipe-paper-pitch — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 4.4.0 — 2026-07-18 — charter conformance: RULE comments · Q-Pitch-<n> · no pipe table · 2b-pitch
+
+Adopted the stage-template charter (`../../TEMPLATES.md`, JL 2026-07-18) + the Option A `2-pitch` → `2b-pitch` rename.
+
+Changed (`ref/pitch-template.md`)
+- Converted from the markdown `#`/`##`-header style to the sibling `=====`/`-----` convention (frees `##` for the Q-consumer). Title → `2b-pitch: <paper title>`.
+- Fill rules → `<!-- RULE -->` comments (follow then delete); top TEMPLATE marker; Hook candidates `### Candidate` → bold sub-items.
+- Added a `Q-consumer` section: `## Q-Pitch-<n>` + Description/Reason/Answer, ANSWERABLE + specific (framing risk, competing paper, does-the-editor's-chair-answer-hold), inline `[Q-Pitch-1]` citation.
+- The H-to-RQ mapping PIPE TABLE → RECORD LINES (`H1 → RQ1: … — why`).
+
+SKILL.md
+- CORE QUESTION added (charter C6): "why would THIS venue's editor send this paper out for review?".
+- description / summary / Content structure / done-criteria: `Probes` → `Q-consumer` (`## Q-Pitch-<n>`); RULE-comments-deleted criterion.
+- venue-doc reads repointed to the reshaped venue: `Venue Profile` / `Fit Assessment` → `Venue Decision` / `Requirements`.
+- v4.3.1 → 4.4.0.
+
+
 ## 4.3.0 — 2026-07-14
 
 - "probe plans" -> the probe FILES; "`1-probes/` cards" -> a `read` section / a landed QA file in tasks|discoveries.
@@ -21,7 +38,7 @@ Changed (JL ruling 2026-07-09 (LLMTrait-Section session postmortem): normalize t
 ## [4.1.0] -- 2026-07-08
 
 Changed
-- Venue consumption rewired to lockfile semantics: read the paper's 0-lifecycle/2-venue/2-venue.md (Venue Profile + Fit Assessment) FIRST; _venue/ packs only as fallback when 2-venue.md is absent or as deep dives via its [source] tags; stale provenance -> note "venue contract stale", never silent pack re-reads.
+- Venue consumption rewired to lockfile semantics: read the paper's 0-lifecycle/2a-venue/2a-venue.md (Venue Profile + Fit Assessment) FIRST; _venue/ packs only as fallback when 2a-venue.md is absent or as deep dives via its [source] tags; stale provenance -> note "venue contract stale", never silent pack re-reads.
 
 ## [3.1.3] — 2026-07-03
 
@@ -46,7 +63,7 @@ Changed
 
 ## [2.0.0] — 2026-06-29
 
-- switched from .tex to .md + _LOG. PITCH_LOG.md merged into _LOG_2-pitch.md. Argument documents are markdown; only display compiles to PDF.
+- switched from .tex to .md + _LOG. PITCH_LOG.md merged into _LOG_2b-pitch.md. Argument documents are markdown; only display compiles to PDF.
 
 ## [unversioned]
 

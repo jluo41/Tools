@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-claims
-description: "The venue-FREE claim ledger (0-lifecycle/1-claims/) -- THE ONLY home of a claim's status (supported | refuted | inconclusive + confidence + claim_type). It also RUNS THE EXPERIMENT: training this paper's model (fit) + evaluating it (eval) settles each claim; resource supplies the ingredients. Three sections -- Hypotheses, Claims, Probes. Use for claim ledger, claims, supported/weak/GAP, blocked-on-resource, evidence plan, probes, model training, evaluate, 1-claims."
+description: "The venue-FREE claim ledger (0-lifecycle/1b-claims/) -- THE ONLY home of a claim's status (supported | refuted | inconclusive + confidence + claim_type). It also RUNS THE EXPERIMENT: training this paper's model (fit) + evaluating it (eval) settles each claim; resource supplies the ingredients. Three sections -- Hypotheses, Claims, Q-consumer. Use for claim ledger, claims, supported/weak/GAP, blocked-on-resource, evidence plan, probes, model training, evaluate, 1-claims."
 argument-hint: "[paper-dir] [--backfill <PPNN>] [--source <path>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "5.1.1"
-  last_updated: "2026-07-14"
-  summary: "Claims stage (stage 1b, venue-FREE) -- the ONLY home of a claim's status (supported|refuted|inconclusive + confidence + claim_type, per-claim, private; no '## Verdict', no 'verdicted' state). It OWNS the experiment: train this paper's model (fit) + evaluate (eval) -> the verdict; resource supplies the ingredients (data/models/code), and a claim without them is BLOCKED-ON-RESOURCE. Three sections -- Hypotheses, Claims, Probes + Evidence Campaign. The PROBE phase raises questions as SECTIONS in 1-probes/ and runs the five-step loop; a section's a-consumer FEEDS this ledger. History: ./CHANGELOG.md."
+  version: "5.2.0"
+  last_updated: "2026-07-18"
+  summary: "Claims stage (stage 1b, venue-FREE) -- the ONLY home of a claim's status (supported|refuted|inconclusive + confidence + claim_type, per-claim, private; no '## Verdict', no 'verdicted' state). It OWNS the experiment: train this paper's model (fit) + evaluate (eval) -> the verdict; resource supplies the ingredients (data/models/code), and a claim without them is BLOCKED-ON-RESOURCE. Three sections -- Hypotheses, Claims, Q-consumer. The PROBE phase raises questions as SECTIONS in 1-probes/ and runs the five-step loop; a section's a-consumer FEEDS this ledger. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -38,19 +38,20 @@ train THIS paper's model (fit) + evaluate it (eval)         -> CLAIMS (the exper
 
 Decompose the experiment -- one probe per task type, never a bundled fit+eval -- so a null is interpretable (a stalled fit does not force a rebuild; a null eval means the effect is absent, not that training failed).
 The GPU-weeks SPEND gate lives here now.
-A claim whose ingredients are not ready is `BLOCKED-ON-RESOURCE`: it cites the resource row it waits on (`-> N<n>` in 1-resource.md) and gets no build probe here.
+A claim whose ingredients are not ready is `BLOCKED-ON-RESOURCE`: it cites the resource row it waits on (`-> N<n>` in 1a-resource.md) and gets no build probe here.
 
 
 ## The four phases, in claims
 
 ```text
-DRAFT   read 1-resource.md (what exists / what's BLOCKED-ON-RESOURCE), then list the hypotheses
-        (H1, H2, H3), write the claims (short: statement + status + -> PP), and the evidence plan
-        (Probes: fit + eval, decomposed, one task type each)
+DRAFT   read 1a-resource.md (what exists / what's BLOCKED-ON-RESOURCE), then list the hypotheses
+        (H1, H2, H3), write the claims (short: statement + status + `Evidence: [Q-Claim-<n> …]`, the
+        list that settles it), and the Q-consumer (each Q-Claim-<n> a SPECIFIC, answerable check;
+        decompose a claim into several angles — fit/eval/robustness/placebo; a question may settle several claims)
 PROBE   one worker call; the five-step loop dispatches the experiment (fit -> eval) to the
         task/discovery executors and COLLECTS -- the claim's status FLIPS here, numbers -> _VALUES_.
         Routing mechanics are the probe layer's: see ../../../2-phase/1-probe/haipipe-paper-probe/SKILL.md
-REVISE  refine claim statements, evidence-plan clarity, and campaign order
+REVISE  refine claim statements and evidence-plan clarity; each Answer feeds the status of every claim it settles
 CHECK   every claim backed? every GAP has a plan and a question SECTION? every settled claim
         traced to a RESOLVING QA file? no aspirational anchors cited as evidence?
 ```
@@ -61,20 +62,19 @@ Task settles an internal experimental claim; discovery supplies external cohorts
 
 ## The artifact
 
-`0-lifecycle/1-claims/1-claims.md`, three sections + a campaign summary -- full skeleton in `ref/claims-template.md`:
+`0-lifecycle/1b-claims/1b-claims.md`, three sections -- full skeleton + fill rules (inline `<!-- RULE -->` comments) in `ref/claims-template.md`; cross-stage charter in `../../TEMPLATES.md`:
 
 ```text
-Hypotheses         what we test (H1, H2, H3), venue-neutral
-Claims             one C<n>: statement + status + -> PP reference (short; the thinking is in Probes)
-Probes             one PP<nn>: the evidence plan (task|discovery, which claims it settles, the work)
-Evidence Campaign  dispatch order + a compact summary
+Hypotheses  what we test (H1, H2, H3), venue-neutral
+Claims      one C<n>: statement + status + `Evidence: [Q-Claim-<n> …]` (the questions that settle it; thinking in Q-consumer)
+Q-consumer  one `## Q-Claim-<n>` (Description/Reason/Answer): a SPECIFIC answerable check + which C<n>(s) it settles
 ```
 
 Status is settled by the judgment fields, written at INTERPRET when a probe section's `a-consumer:` lands:
 `status: supported | refuted | inconclusive` · `confidence` · `claim_type: associational | causal | in-sample | generalizing` (the author's own overclaim check -- never say "causes" from associational evidence, and keep in-sample-only evidence `weak` if the claim generalizes).
 
 A claim is `supported` only via BOTH: stage 1, the cited file exists and the number appears in it; and stage 2, a probe section whose `target:` QA file RESOLVES on disk and whose `a-consumer:` says that number carries the claim.
-Verified numbers live in `_VALUES_1-claims.md`; citation candidates in `_CITATION_1-claims.md`.
+Verified numbers live in `_VALUES_1b-claims.md`; citation candidates in `_CITATION_1b-claims.md`.
 
 
 ## Exits

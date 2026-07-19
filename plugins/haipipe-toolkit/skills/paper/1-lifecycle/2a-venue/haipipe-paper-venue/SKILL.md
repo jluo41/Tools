@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-venue
-description: "Recommend the best-fit venue for a paper or topic, then pin it. Produces 0-lifecycle/2-venue/2-venue.md with venue choice, writing principles (section structure, length norms, citation density, results conventions, display limits), fit assessment, and probes. Writes the choice into STATUS.md. This is the venue-first front door: run it before pitch (claims is venue-free). Trigger: venue, which journal, where to submit, venue fit, recommend journal, journal selection, pick venue, 投哪个期刊, 选刊, 期刊推荐, /haipipe-paper-venue."
+description: "Recommend the best-fit venue for a paper or topic, then pin it. Produces 0-lifecycle/2a-venue/2a-venue.md with the venue decision, relevant files, and requirements (structural blueprint + writing principles: section structure, length norms, citation density, results conventions, display limits), plus a Q-consumer. Writes the choice into STATUS.md. This is the venue-first front door: run it before pitch (claims is venue-free). Trigger: venue, which journal, where to submit, venue fit, recommend journal, journal selection, pick venue, 投哪个期刊, 选刊, 期刊推荐, /haipipe-paper-venue."
 argument-hint: "[paper-path | free-text topic/abstract] [--no-pin]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.3.0"
-  last_updated: "2026-07-14"
-  summary: "Venue stage orchestrator: recommends + pins the best-fit venue and produces 2-venue.md (template ref/venue-template.md) -- venue choice, structural blueprint (per-section quantitative norms transcribed from pack Micro-norms), writing principles, fit assessment, and a Probes section. 2-venue.md is the single consumption point for the venue-ALIGNED stages (pitch, narrative, display, section-edit). Venue questions are SECTIONS in 1-probes/. History: ./CHANGELOG.md."
+  version: "3.4.0"
+  last_updated: "2026-07-18"
+  summary: "Venue stage orchestrator: recommends + pins the best-fit venue and produces 2a-venue.md (template ref/venue-template.md) -- the venue decision, relevant files, and requirements (structural blueprint transcribed from pack Micro-norms + writing principles), plus a Q-consumer. 2a-venue.md is the single consumption point for the venue-ALIGNED stages (pitch, narrative, display, section-edit). Venue questions are SECTIONS in 1-probes/. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -14,12 +14,14 @@ metadata:
 
 ## Overview
 
+It answers one question: **which venue does this paper target, and what does that venue REQUIRE of the final paper?**
+
 Venue selection is the FIRST venue-coupled design decision.
 Pitch (the cover letter), narrative, displays, and prose all couple to the venue, so the venue must be chosen before pitch.
 Resource and claims are venue-FREE and do NOT need a venue (what a paper NEEDS to exist does not depend on where you send it).
 The lifecycle order is: seed (FREE) -> resource (FREE) -> claims (FREE) -> [venue pinned here] -> pitch (ALIGNED) -> narrative (ALIGNED) -> display (ALIGNED) -> section-edit (ALIGNED).
 
-This skill analyzes a paper or a bare topic against every venue pack in `../../venue/playbook-*`, recommends a ranked shortlist, pins the choice in `STATUS.md`, and produces a stage document (`2-venue.md`) with the venue profile, writing principles, and probes.
+This skill analyzes a paper or a bare topic against every venue pack in `../../../venue/playbook-*`, recommends a ranked shortlist, pins the choice in `STATUS.md`, and produces a stage document (`2a-venue.md`) with the venue decision, relevant files, requirements (blueprint + writing principles), and a Q-consumer.
 
 The venue packs are knowledge, not skills; this skill is the READER that turns them into a recommendation.
 It never edits a pack.
@@ -27,24 +29,25 @@ It never edits a pack.
 ## Artifact Spec
 
 **Files produced:**
-- `0-lifecycle/2-venue/2-venue.md` -- venue stage document; full fill-in skeleton: `ref/venue-template.md`
-- `0-lifecycle/2-venue/_LOG_2-venue.md` -- phase progress journal
-- `1-probes/PPNN_<topic>.md` -- the probe FILES; a venue question becomes a SECTION (recent publications, editor, competing papers; `serves: 2-venue`)
+- `0-lifecycle/2a-venue/2a-venue.md` -- venue stage document; full fill-in skeleton: `ref/venue-template.md`
+- `0-lifecycle/2a-venue/_LOG_2a-venue.md` -- phase progress journal
+- `1-probes/PPNN_<topic>.md` -- the probe FILES; a venue question becomes a SECTION (recent publications, editor, competing papers; `serves: 2a-venue`)
 - `STATUS.md` -- `venue:` field pinned
 
-**Content structure (2-venue.md)** -- six blocks, per `ref/venue-template.md`:
+**Content structure (2a-venue.md)** -- four sections; full skeleton + fill rules (inline `<!-- RULE -->` comments) in `ref/venue-template.md`; cross-stage charter in `../../TEMPLATES.md`:
 
 ```text
-2-venue: <paper title>
-=======================
-Provenance header       pack slug @ venue commit, outlet dir, blueprint-derived date
+2a-venue: <paper title>
+========================
+Provenance header       pack slug @ venue commit, outlet dir
 
-Venue Choice            which venue, one-line why, backup options, nearest rejected
-Venue Profile           audience, rewards, desk-reject risks, one-sentence test (from taste.md)
-Structural Blueprint    per-section quantitative norms (THE construction spec)
-Writing Principles      prose-level specs (tone, citation style, language)
-Fit Assessment          how H1/H2/H3 match the venue's scope
-Probes                  venue-level investigation needs (one SECTION per question)
+Venue Decision          which venue + WHY, ranked suggestion (backups, nearest rejected), audience,
+                        desk test + this paper's answer, desk-reject risks, and which claim hits
+                        which reward -- as RECORD LINES, never a pipe table
+Relevant Files          the packs/guides this rests on (taste.md, section style.md, exemplars)
+Requirements            what the final paper MUST do -- Structural Blueprint (per-section norms,
+                        transcribed + source-tagged) + Writing Principles (tone, citation, results, hard caps)
+Q-consumer              venue-fit questions, uniform ## Q-Venue-<n> (Description/Reason/Answer)
 ```
 
 **Structural Blueprint section (the key downstream contract):**
@@ -55,7 +58,7 @@ This section is the design contract for paper structure: the venue-aligned stage
 The provenance header makes staleness detectable: if `venue` has moved past the recorded commit, re-derive the blueprint without changing the pin.
 
 **How to derive the blueprint (source priority):**
-1. Read the pinned outlet's per-section guides (`../../venue/playbook-<venue>/<journal>/<journal>-<section>/style.md`).
+1. Read the pinned outlet's per-section guides (`../../../venue/playbook-<venue>/<journal>/<journal>-<section>/style.md`).
    Each carries word budget, arc, paragraph-structure table, and a measured `## Micro-norms` block (paragraphs, sentences per paragraph, words per sentence, citation density) -- TRANSCRIBE these into the spec above; do not re-mine what is already measured.
 2. Read `<journal>/taste.md` (desk signals) and the pack `style-profile.md` for the Writing Principles side.
 3. ONLY if the outlet has no section guides (or a section is missing): count 2-3 stored exemplars from `<journal>/examples/` yourself (sections, paragraphs, sentences, sentence length, citations per sentence, where results appear), or search published papers as a last resort.
@@ -80,8 +83,9 @@ The blueprint says HOW MANY sentences; Writing Principles says HOW TO WRITE them
 - [ ] Venue pinned in STATUS.md
 - [ ] Structural Blueprint section filled with per-section quantitative norms (every section has: subsection count, paragraphs, sentences/paragraph, sentence length, citation density, results reported, display units)
 - [ ] Writing Principles section filled with prose-level specs (tone, citation style, abstract conventions)
-- [ ] Fit Assessment maps H/claims to venue scope
-- [ ] At least one question SECTION raised or answered (recent publications check)
+- [ ] Venue Decision's Fit record-lines map H/claims to venue scope (no pipe table)
+- [ ] At least one Q-Venue-<n> question raised or answered (recent publications check)
+- [ ] Every `<!-- RULE -->` comment deleted from the filled 2a-venue.md
 - [ ] Blueprint adapted to THIS paper's claim structure (H1/H2/H3 mapped to specific sections/subsections)
 
 ## Modes
@@ -92,9 +96,9 @@ default     recommend a shortlist, then ASK before writing STATUS venue (you con
             (for "just tell me which journal" / a bare topic with no folder)
 refresh     re-derive ONLY: keep the existing pin, re-transcribe the Structural Blueprint +
             Writing Principles from the current pack state, update the provenance header
-            (new venue commit + derived date), and log the delta in _LOG_2-venue.md.
+            (new venue commit + derived date), and log the delta in _LOG_2a-venue.md.
             Use when venue has moved past the recorded commit (pack norms improved) or
-            when 2-venue.md predates the provenance header. Never re-opens the venue choice.
+            when 2a-venue.md predates the provenance header. Never re-opens the venue choice.
 ```
 
 ## When to use
@@ -109,10 +113,10 @@ refresh     re-derive ONLY: keep the existing pin, re-transcribe the Structural 
 ```text
 paper root         reads 0-lifecycle/{0-seed,1-claims,2-pitch} for the contribution profile
    or topic text   a free-text topic / abstract when there is no folder yet
-venue packs        ../../venue/playbook-*/README.md   ("-> Claims" rewards + fit signals)
-outlet taste       ../../venue/playbook-*/<journal>/taste.md   (desk-accept/reject signals + one-sentence test)
-section norms      ../../venue/playbook-*/<journal>/<journal>-<section>/style.md   (quantitative norms + Micro-norms)
-venue index        ../../venue/README.md              (family map + IS selection table)
+venue packs        ../../../venue/playbook-*/README.md   ("-> Claims" rewards + fit signals)
+outlet taste       ../../../venue/playbook-*/<journal>/taste.md   (desk-accept/reject signals + one-sentence test)
+section norms      ../../../venue/playbook-*/<journal>/<journal>-<section>/style.md   (quantitative norms + Micro-norms)
+venue index        ../../../venue/README.md              (family map + IS selection table)
 ```
 
 ## Procedure
@@ -121,7 +125,7 @@ venue index        ../../venue/README.md              (family map + IS selection
    From the seed/claims (or the topic text), extract: the central contribution, the method, the topic/domain, the evidence strength, and the intended audience.
    If these are unclear, ask one round of questions before scoring.
 2. **Read the candidate packs.**
-   For each `../../venue/playbook-<venue>/README.md`, read the `-> Claims` mapping (what it rewards, contribution vs enabler) and the fit signals; read `../../venue/README.md` for the family map and IS selection table.
+   For each `../../../venue/playbook-<venue>/README.md`, read the `-> Claims` mapping (what it rewards, contribution vs enabler) and the fit signals; read `../../../venue/README.md` for the family map and IS selection table.
    A pack is family-granular; to pick the OUTLET inside a family, read each candidate `<journal>/taste.md` and score the paper against its desk-accept/desk-reject signals and one-sentence test.
 3. **Score each venue** on five dimensions, each High/Med/Low with a one-line reason: contribution-type match, method match, topic/domain match, evidence-bar match, audience match.
    Record any hard disqualifier (e.g. "design science -> not ISR").
@@ -138,7 +142,7 @@ venue index        ../../venue/README.md              (family map + IS selection
    a. Read the pinned outlet's `<journal>-<section>/style.md` guides; transcribe each guide's word budget, paragraph-structure table, and measured Micro-norms block (paragraphs, sentences/paragraph, words/sentence, citation density) into the per-section spec.
    b. Read `<journal>/taste.md` + the pack `style-profile.md` for Writing Principles (tone, citation style, abstract conventions).
    c. ONLY where section guides are missing: count 2-3 stored exemplars in `<journal>/examples/` yourself, or search published papers at this venue in the same contribution type, and measure the same metrics.
-   d. Synthesize into the Structural Blueprint section of 2-venue.md: one block per section, adapted to THIS paper's claim structure; carry over any measured-vs-budget clash or "to verify" caveat the guides flag.
+   d. Synthesize into the Structural Blueprint section of 2a-venue.md: one block per section, adapted to THIS paper's claim structure; carry over any measured-vs-budget clash or "to verify" caveat the guides flag.
    e. The blueprint must be concrete enough that section-edit can use it without further guessing: "Introduction has 4 subsections, each 2 paragraphs, each 5-6 sentences" not "Introduction should be well-structured."
 
 ## Output contract
@@ -180,7 +184,7 @@ patent (CNIPA / USPTO / EPO)                   -> playbook-patent          (juri
 
 A named venue with no pack (NEJM, Lancet, ICLR, NeurIPS, ...) stays a bare `venue_outlet:` formatting target: recommend honestly, note no pack exists, and the lifecycle wiring no-ops.
 
-When `STATUS.md venue:` is a human label, every stage resolves it through this map to find `../../venue/playbook-<slug>`.
+When `STATUS.md venue:` is a human label, every stage resolves it through this map to find `../../../venue/playbook-<slug>`.
 Prefer writing the pack slug into STATUS directly.
 
 ## Boundaries

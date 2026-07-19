@@ -43,7 +43,7 @@ W6   Conference Talk      ->   present (reads pitch first)
 |---|---|---|
 | Unclear intro | Rewrite intro | Check pitch first; if pitch unclear, fix pitch then intro |
 | Claim too strong | Soften text | Update claims/narrative, then edit |
-| Need more ablation | Run experiment | Raise a question SECTION > MATCH > dispatch what MATCH cannot close > the claim's status flips in 1-claims.md |
+| Need more ablation | Run experiment | Raise a question SECTION > MATCH > dispatch what MATCH cannot close > the claim's status flips in 1b-claims.md |
 | Lacks contribution focus | Rewrite abstract | Reopen pitch and narrative |
 
 ## Integration model

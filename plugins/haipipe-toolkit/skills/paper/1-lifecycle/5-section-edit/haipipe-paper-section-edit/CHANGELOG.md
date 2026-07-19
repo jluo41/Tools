@@ -14,7 +14,7 @@ Skill-scoped changelog (never loaded at invocation; read on demand). Versions ma
 ## [4.5.1] -- 2026-07-10
 ## 5.0.0 — 2026-07-14
 
-- PROBE REDESIGN (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14 — R1-R18). 1-probe-plans/ -> 1-probes/ (PPNN_<topic>.md, one file per TOPIC, one SECTION per question: serves/target/state/commission/reading + ONE `## Why` per file holding the stake). Binding is by PATH: a section's `target:` points at the answering `<leaf>/QA/<n>-<slug>.md` in the bank. DELETED: `## Verdict`, the `verdicted` and `dispatched` states, `_ASK/`/`_ANS/` stubs, `answers:`, and Agent(haipipe-probe-orchestrator-agent) (the GATEWAY — archived + de-registered). A claim's STATUS now lives ONLY in 0-lifecycle/1-claims/1-claims.md. Dispatch is now DIRECT: the section's `commission:` block, VERBATIM, to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent).
+- PROBE REDESIGN (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14 — R1-R18). 1-probe-plans/ -> 1-probes/ (PPNN_<topic>.md, one file per TOPIC, one SECTION per question: serves/target/state/commission/reading + ONE `## Why` per file holding the stake). Binding is by PATH: a section's `target:` points at the answering `<leaf>/QA/<n>-<slug>.md` in the bank. DELETED: `## Verdict`, the `verdicted` and `dispatched` states, `_ASK/`/`_ANS/` stubs, `answers:`, and Agent(haipipe-probe-orchestrator-agent) (the GATEWAY — archived + de-registered). A claim's STATUS now lives ONLY in 0-lifecycle/1b-claims/1b-claims.md. Dispatch is now DIRECT: the section's `commission:` block, VERBATIM, to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent).
 - The probe convention block, the 'Probes proposed by this draft' block, and the citation/values gap routes all move to question SECTIONS in 1-probes/. The search door is now the PROBE phase's dispatch to Agent(haipipe-discovery-orchestrator-agent), not the retired gateway.
 
 Fixed (fresh-agent template DRAFT test, fix5 fixture)
@@ -55,17 +55,17 @@ Changed (JL: "could we have the real citation from the .bib file as well? if it 
 ## [4.2.1] -- 2026-07-09
 
 Changed (JL: "style are just the style for the references, don't need to strictly follow them")
-- Venue header semantics pinned: blueprint (2-venue.md block) = BINDING (budget, structure, density); style file(s) = REFERENCE ONLY (advisory -- arc/moves/exemplars; deviation never fails CHECK). Hybrid sections (methods + results flavor) may list multiple style refs, dot-separated.
+- Venue header semantics pinned: blueprint (2a-venue.md block) = BINDING (budget, structure, density); style file(s) = REFERENCE ONLY (advisory -- arc/moves/exemplars; deviation never fails CHECK). Hybrid sections (methods + results flavor) may list multiple style refs, dot-separated.
 
 ## [4.2.0] -- 2026-07-09
 
 Changed (JL: "make the section aware of the venue-specific requirement -- give them the link")
-- Section .md gains a VENUE HEADER under the H1: venue pin, section-type mapping, blueprint pointer (2-venue.md block -- stays authoritative), and the deep-dive style link (the [source:] tag RESOLVED to a real pack path at scaffold, layout-agnostic find; pack absent -> "(pack missing -- blueprint only)" + CHECK flag). Later phases follow the recorded link instead of re-deriving the 3-hop tag chain. Mirrored in ref/outline-format.md.
+- Section .md gains a VENUE HEADER under the H1: venue pin, section-type mapping, blueprint pointer (2a-venue.md block -- stays authoritative), and the deep-dive style link (the [source:] tag RESOLVED to a real pack path at scaffold, layout-agnostic find; pack absent -> "(pack missing -- blueprint only)" + CHECK flag). Later phases follow the recorded link instead of re-deriving the 3-hop tag chain. Mirrored in ref/outline-format.md.
 
 ## [4.1.1] -- 2026-07-09
 
 Changed (JL: "add the numbers of total words to it as well")
-- Structure overview block now carries per-paragraph `N sentences · ~M words` and a closing `total:` line (¶ / sentences / ~words) checked against the venue budget from 2-venue.md; recount at draft and after REVISE; over budget -> flag, never silently trim. Mirrored in ref/outline-format.md.
+- Structure overview block now carries per-paragraph `N sentences · ~M words` and a closing `total:` line (¶ / sentences / ~words) checked against the venue budget from 2a-venue.md; recount at draft and after REVISE; over budget -> flag, never silently trim. Mirrored in ref/outline-format.md.
 
 ## [4.1.0] -- 2026-07-09
 
@@ -86,7 +86,7 @@ Changed (JL ruling 2026-07-09 (LLMTrait-Section session postmortem): normalize t
 ## [3.2.0] -- 2026-07-08
 
 Changed
-- Venue consumption rewired to lockfile semantics: DRAFT step 1 reads the paper's 0-lifecycle/2-venue/2-venue.md FIRST (this section's Structural Blueprint block + Writing Principles); pack style-profile/per-section style.md resolution demoted to fallback when 2-venue.md is absent, or reached as deep dives via its [source] tags; stale provenance -> note "venue contract stale", never silent pack re-reads (norm-digestion harvest noted as a staleness source).
+- Venue consumption rewired to lockfile semantics: DRAFT step 1 reads the paper's 0-lifecycle/2a-venue/2a-venue.md FIRST (this section's Structural Blueprint block + Writing Principles); pack style-profile/per-section style.md resolution demoted to fallback when 2a-venue.md is absent, or reached as deep dives via its [source] tags; stale provenance -> note "venue contract stale", never silent pack re-reads (norm-digestion harvest noted as a staleness source).
 
 ## [3.1.4] — 2026-07-04
 

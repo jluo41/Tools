@@ -4,6 +4,22 @@ haipipe-paper-claims — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 5.2.0 — 2026-07-18 — Q-consumer under the charter; M:N claims↔questions; Evidence Campaign cut
+
+Adopted the stage-template charter (`../../TEMPLATES.md`, JL 2026-07-18). The claims ledger keeps Hypotheses + Claims; the question section is standardized and made many-to-many; the Evidence Campaign scoreboard was deleted.
+
+Changed (`ref/claims-template.md`)
+- `Probes` → `Q-consumer`, uniform shape: `## Q-Claim-<n> · <title>` + `Description` / `Reason` / `Answer` (was `## Q<n>` + free-text). STAGE-PREFIXED ids `Q-Claim-<n>`.
+- ANSWERABLE + SPECIFIC rule (JL): each question is a concrete check a task/discovery can answer with a definite result; decompose a big claim into several small questions, each a different ANGLE (fit/eval/robustness/placebo/IV/external), named in the title; never a broad "is the effect real?".
+- M:N (was implicitly 1:1): a claim is settled by SEVERAL questions, and a question may settle SEVERAL claims. Each claim's `Evidence:` line LISTS its questions — `Evidence: [Q-Claim-1] [Q-Claim-2] …` (was `-> PP<nn>`, one); `Reason` names the `C<n>`(s) it settles. AGGREGATION rule: `supported` only when the claim's required angles CONVERGE; a shared question feeds every claim it settles; the PP source lives in the Q's `Answer` as `[source: PP<nn>]`.
+- DELETED the `Evidence Campaign` section (dispatch order + PP ledger table): its status/claims columns duplicated the Claims section + the citations, its dispatch/PP tracking is the probe layer's. Nothing lost (JL 2026-07-18).
+- Fill rules moved INTO the template as `<!-- RULE -->` comments (follow then delete); top TEMPLATE marker added.
+- The loop closes at REVISE: each Answer feeds the status of every claim it settles.
+
+SKILL.md
+- `Probes` → `Q-consumer` (description, summary, DRAFT, artifact list); `-> PP` claim ref → `Evidence: [Q-Claim-<n> …]`; DRAFT gained the answerable / decompose / M:N note; artifact list dropped Evidence Campaign ("three sections + a campaign summary" → "three sections"); v5.1.1 → 5.2.0.
+
+
 ## 5.1.0 — 2026-07-14
 
 Probe redesign (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14). Mirrors haipipe-application-claims 5.2.0.
@@ -24,24 +40,24 @@ Fixed
 ## [4.5.0] — 2026-07-14
 ## 5.0.0 — 2026-07-14
 
-- PROBE REDESIGN (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14 — R1-R18). 1-probe-plans/ -> 1-probes/ (PPNN_<topic>.md, one file per TOPIC, one SECTION per question: serves/target/state/commission/reading + ONE `## Why` per file holding the stake). Binding is by PATH: a section's `target:` points at the answering `<leaf>/QA/<n>-<slug>.md` in the bank. DELETED: `## Verdict`, the `verdicted` and `dispatched` states, `_ASK/`/`_ANS/` stubs, `answers:`, and Agent(haipipe-probe-orchestrator-agent) (the GATEWAY — archived + de-registered). A claim's STATUS now lives ONLY in 0-lifecycle/1-claims/1-claims.md. Dispatch is now DIRECT: the section's `commission:` block, VERBATIM, to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent).
+- PROBE REDESIGN (Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ v3, approved JL 2026-07-14 — R1-R18). 1-probe-plans/ -> 1-probes/ (PPNN_<topic>.md, one file per TOPIC, one SECTION per question: serves/target/state/commission/reading + ONE `## Why` per file holding the stake). Binding is by PATH: a section's `target:` points at the answering `<leaf>/QA/<n>-<slug>.md` in the bank. DELETED: `## Verdict`, the `verdicted` and `dispatched` states, `_ASK/`/`_ANS/` stubs, `answers:`, and Agent(haipipe-probe-orchestrator-agent) (the GATEWAY — archived + de-registered). A claim's STATUS now lives ONLY in 0-lifecycle/1b-claims/1b-claims.md. Dispatch is now DIRECT: the section's `commission:` block, VERBATIM, to Agent(haipipe-task-orchestrator-agent) / Agent(haipipe-discovery-orchestrator-agent).
 - `--backfill` no longer reads a probe VERDICT (there is none — R7 deleted it). It reads the probe SECTION's `reading:` (+ the Agent(haipipe-probe-reviewer-agent) judgment for a `mode: full` section) and writes supported|refuted|inconclusive + confidence + claim_type + G1/G2/G3 HERE. The evidence pointer is the section's `target:` QA-file path, which must RESOLVE on disk.
 
 Fixed (forward-pointer DOUBLE CONSUMPTION -> permanent claims deadlock)
 - **RESOURCE is now the SOLE consumer of seed's FORWARD pointers.** 4.4.0 landed the resource stage with its own DRAFT consume-grep (`\[FORWARD (->|→) (RESOURCE|CLAIMS)\]`, glyph- and legacy-tolerant) but left claims' 4.1.0 reader clause standing. Both stages then owned the same 7 live pointers on disk (4 in Paper-ScalingGlucose, 2 in Paper-PersonalizedGlucoseModel, 1 unicode-arrow in Paper-CGMtoCyclePhase — every one says `CLAIMS`, because they were written before the resource stage existed). Resource consumes them at its DRAFT; claims' done-criterion demanded no unconsumed `[FORWARD -> CLAIMS]` pointer remain — a bar claims could never clear, since the pointer LINE stays in `_LOG_0-seed.md` after resource takes it. Result: a PERMANENT DEADLOCK at the claims CHECK gate, or a double-dispatch of the same build if the agent "consumed" it again as a PP entry.
-- **DRAFT consume clause DELETED.** Claims DRAFT no longer greps `_LOG_0-seed.md`. It opens on `1-resource.md` (the N demand rows and their Q/A) and reads `_LOG_1-resource.md` for the pointers resource explicitly DECLINED to claims — those, and only those, become PP entries in Probes.
-- **Done-criterion REWRITTEN**, from "no unconsumed `[FORWARD -> CLAIMS]` pointer in seed's `_LOG_0-seed.md`" to "no pointer that RESOURCE explicitly DECLINED to claims (per `_LOG_1-resource.md`) is left unconsumed here". A pointer resource re-routes to claims is still caught; a pointer resource consumed is DONE and is not double-counted. The 4.1.0 writer-without-reader gap (A5/B9) stays closed — the reader simply moved one stage upstream.
+- **DRAFT consume clause DELETED.** Claims DRAFT no longer greps `_LOG_0-seed.md`. It opens on `1a-resource.md` (the N demand rows and their Q/A) and reads `_LOG_1a-resource.md` for the pointers resource explicitly DECLINED to claims — those, and only those, become PP entries in Probes.
+- **Done-criterion REWRITTEN**, from "no unconsumed `[FORWARD -> CLAIMS]` pointer in seed's `_LOG_0-seed.md`" to "no pointer that RESOURCE explicitly DECLINED to claims (per `_LOG_1a-resource.md`) is left unconsumed here". A pointer resource re-routes to claims is still caught; a pointer resource consumed is DONE and is not double-counted. The 4.1.0 writer-without-reader gap (A5/B9) stays closed — the reader simply moved one stage upstream.
 - Companion edit: `2-phase/1-probe/haipipe-paper-probe/ref/per-stage-dispatch.md` claims row no longer says it consumes seed's pointers; `2-phase/0-draft/haipipe-paper-draft/SKILL.md` seed + claims stage-notes now name RESOURCE as the consumer.
 
 ## [4.4.0] — 2026-07-14
 
 Changed (JL ruling 2026-07-14: the RESOURCE stage lands between seed and claims)
-- **Boundary moved.** The probe-type table now leaves claims with exactly ONE row — `evaluate` / `task-for-eval`, the probe that produces the VERDICT. `input` / `task-for-data`, `method` / `task-for-algo` and `fit` / `task-for-fit` MOVE OUT to the new venue-free RESOURCE stage (`0-lifecycle/1-resource/1-resource.md`, skill `haipipe-paper-resource`). Cleavage rule stated in place: a question that CHANGES what exists on disk -> RESOURCE; a question that READS what exists and MOVES A CLAIM'S STATUS -> CLAIMS. A claim CITES the resource answer (its `N<n>` row and that row's Q/A) instead of re-planning the build inside the argument document. Claims' own two rules ("the evaluation probe settles the claim"; "task settles claims, discovery is reserved for method-investigation + external data/context") are UNCHANGED, verbatim.
+- **Boundary moved.** The probe-type table now leaves claims with exactly ONE row — `evaluate` / `task-for-eval`, the probe that produces the VERDICT. `input` / `task-for-data`, `method` / `task-for-algo` and `fit` / `task-for-fit` MOVE OUT to the new venue-free RESOURCE stage (`0-lifecycle/1a-resource/1a-resource.md`, skill `haipipe-paper-resource`). Cleavage rule stated in place: a question that CHANGES what exists on disk -> RESOURCE; a question that READS what exists and MOVES A CLAIM'S STATUS -> CLAIMS. A claim CITES the resource answer (its `N<n>` row and that row's Q/A) instead of re-planning the build inside the argument document. Claims' own two rules ("the evaluation probe settles the claim"; "task settles claims, discovery is reserved for method-investigation + external data/context") are UNCHANGED, verbatim.
 - Ledger Maintenance route block follows the same cut: dataset / model / new-method routes are no longer claims probes — they are DEMANDS owned by resource, and the claim waits as `BLOCKED-ON-RESOURCE`.
 
 Added
 - **Claim status `BLOCKED-ON-RESOURCE`** (status vocabulary, Evidence Gate, done-criteria, Artifact Spec). A claim whose resource is UNOBTAINABLE or not yet built is NOT a "GAP with a plan" — it is UNFALSIFIABLE, it carries no probe entry here, and it names the `N<n>` demand row it waits on. Live case: Paper-CGMtoAge's H2 and H3 both depend on a dataset whose access application has not been filed.
-- **Inputs (binding) clause** after Read-first, and a read step in the DRAFT phase block: claims READS `0-lifecycle/1-resource/1-resource.md` before writing, and may not assert a claim whose demand row has no resource. Retires the "Feasibility & constraints (preconditions, not claims)" material that used to squat in live claim ledgers (`1-claims.md:48`) — preconditions are resource's business now.
+- **Inputs (binding) clause** after Read-first, and a read step in the DRAFT phase block: claims READS `0-lifecycle/1a-resource/1a-resource.md` before writing, and may not assert a claim whose demand row has no resource. Retires the "Feasibility & constraints (preconditions, not claims)" material that used to squat in live claim ledgers (`1b-claims.md:48`) — preconditions are resource's business now.
 
 ## [4.3.0] — 2026-07-10
 
