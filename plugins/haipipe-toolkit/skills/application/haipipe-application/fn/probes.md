@@ -25,7 +25,7 @@ Location — one FLAT pool, one file per TOPIC
   There is no ledger, and no PP id ever crosses to the task/discovery bank — so two interventions may both carry a PP03 with nothing to reconcile, the way two books both carry a footnote 4.
 - **Legacy migration (on first touch):** a file found in `1-probe-plans/` or `0-lifecycle/<stage>/_PROBE/` is rewritten into `1-probes/` in the new shape by whatever verb touched it.
   Log the move in the stage `_LOG`. Do not migrate what you did not touch.
-  Stage-owned working docs (`_CITATION_`, `_VALUES_`, `_DISPLAY_`, `_DESCRIPTIONS/`) do NOT move — they stay with their stage.
+  There are NO stage-owned sidecar docs (`_VALUES_`/`_CITATION_`/`_DISPLAY_`/`_DESCRIPTIONS/` retired 2026-07-18) — the answer + its numbers live in the section's `a-consumer:`, anchored to `target:`.
 
 Probe file anatomy
 -------------------
@@ -128,7 +128,7 @@ Lifecycle Integration
 
 Any lifecycle stage can raise a question:
 - 0-seed: "landscape / prior interventions" -> a section in the matching topic's probe file
-- 1a-descriptions: a data-profile question -> a section (its `values:` lane lands in `_DESCRIPTIONS/DS<n>`)
+- 1a-descriptions: a data-profile question -> a section (the answer's numbers land in the section's `a-consumer:`, anchored to target:)
 - 1c-claims: every GAP / weak claim -> a section
 
 The section captures the question immediately; the MATCH may close it for free, and only a T3/T4 section is ever dispatched.

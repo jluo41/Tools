@@ -7,7 +7,6 @@ Ladder rung 1d, the DELIVERABLE: actionable advice, each entry derived from >=1 
 Advice is counsel, not mandate: downstream venue-ALIGNED stages adopt or decline entries (recorded there, not here).
 Content-WHAT (survives retarget) -- distinct from 2-venue.md Artifact Principles (channel-HOW).
 Every entry must pass the W-actionability test: could the artifact stage write the exact move from this line?
-How to use: copy to `<intervention>/0-lifecycle/1d-advice/1d-advice.md`, replace every `<...>`, delete unused sub-items (the DRAFT worker does this during the stage's DPRC).
 
 
 Advice
@@ -49,11 +48,10 @@ Reason: <refuting C<n> status, or why it fails actionability/scope>.
 Q-consumer
 ----------
 
-The questions this rung raises — one `##` per question: id, title, what it wants.
-Rare on this rung: derivation is in-stage work, and a NEW evidence gap routes back to 1c-claims (raised there). The route and approver are organized at APPROVE, into the probe file — not here.
-(May be empty.)
+<Questions this rung raises (rare — derivation is in-stage; a NEW gap routes back to 1c-claims). May be empty. One ## Q-Advice-<n> block each.>
 
-## Q1 · <question title>
-<what it wants.>
+## Q-Advice-1 · <question title>
 
-<APPROVE adds each `→ 1-probes/PPNN_<topic>.md` pointer + derived state.>
+Ask: <what it wants.>
+
+Why: <which advice entry needs it, and what breaks if it stays open.>

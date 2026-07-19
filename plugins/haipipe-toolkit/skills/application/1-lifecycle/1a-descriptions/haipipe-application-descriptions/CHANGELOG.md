@@ -3,6 +3,12 @@ haipipe-application-descriptions — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`.
 
+## [2.4.0] — 2026-07-18
+
+- Template alignment sweep: Q-consumer questions renamed `## Q<n>` -> `## Q-Desc-<n>` (id carries the origin stage) and reshaped to the fixed 3-field form Description / Why / Answer (`__TO_BE_FILLED__` == OPEN, else ANSWERED — the doc's only state). Dropped the template's "How to use:" header line (copy/replace mechanic is the DRAFT worker's job). SKILL skeleton + formatting line synced.
+- Descriptions restructure: `Datasets`/`DS<n>` -> a single `Dataset` list (one source, several files, or a folder — not limited to one); each Description is now its own subsection `## Description <n> · <topic>` (spelled out; cited downstream by the short id `D<n>`) instead of a `**D<n>**` bullet; per-source profile sheet `_DESCRIPTIONS/<source>.md`. SKILL synced (What's-special, skeleton, sidecar, formatting, Done gate).
+- Q-field renamed `Description:` -> `Ask:` (reserve "Description" for the entries); dropped the `_DESCRIPTIONS/<source>.md` sidecar (policy: content.md + _LOG only) — rich detail stays in the task result the entry points to; schema-sweep PHI rail (column names only) kept as a principle.
+
 ## [2.3.0] — 2026-07-17
 
 - Q-consumer migration follow-up: the SKILL's artifact-section list still named the section `Probes` (a roster) — renamed to `Q-consumer` (## Q questions; APPROVE adds the 1-probes/ pointer + state), matching the template. (The earlier pass's grep missed these lines because they co-mention `1-probes/`.)

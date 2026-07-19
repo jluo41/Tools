@@ -11,7 +11,7 @@ The application lifecycle is a delivery lifecycle. It owns the intervention-spec
 │   ├── 0-seed/           venue: FREE      0-seed.md + _LOG
 │   ├── 1a-descriptions/  venue: FREE      1a-descriptions.md (anchored data summaries + as-of dates) + _LOG
 │   ├── 1b-themes/        venue: FREE      1b-themes.md (grounded themes T←D) + _LOG
-│   ├── 1c-claims/        venue: FREE      1c-claims.md (Claims/Campaign, C←T + claim STATUS) + _LOG + _VALUES_ (+ _CITATION_ sectioned venues)
+│   ├── 1c-claims/        venue: FREE      1c-claims.md (Claims/Campaign, C←T + claim STATUS) + _LOG
 │   ├── 1d-advice/        venue: FREE      1d-advice.md (design advice A←C — the ladder's deliverable) + _LOG
 │   ├── 2-venue/          venue: PIN       2-venue.md (choice + Artifact Principles) + _LOG
 │   ├── 2-pitch/          venue: ALIGNED   2-pitch.md + _LOG

@@ -4,7 +4,6 @@
 Date: YYYY-MM-DD
 Status: DRAFT
 The earliest-stage contract: keeps the intervention possibility alive before evidence is mature.
-How to use: copy to `<intervention>/0-lifecycle/0-seed/0-seed.md`, replace every `<...>`, delete unused sub-items (the DRAFT worker does this during the stage's DPRC).
 
 
 
@@ -39,26 +38,18 @@ Mechanism hypothesis
 <One sentence: why this audience + this content might respond.>
 
 
-Kill criteria
--------------
-
-<Conditions under which we abandon this intervention; at least 2 concrete.>
-
-- <criterion 1, e.g. "no HTE detected in cohort data">
-- <criterion 2, e.g. "click rate < 2% in pilot">
-
-
 Q-consumer
 ----------
 
-The seed-level FEASIBILITY questions this stage raises (novelty + external-data obtainability) — one `##` per question: id, title, what it wants.
-The route and who answers are organized at APPROVE, into the probe file — not here.
-Internal-data needs are [FORWARD -> CLAIMS] pointer lines in _LOG_0-seed.md, NOT questions here.
+<Feasibility questions this stage raises (novelty + external-data). One ## Q-Seed-<n> block each.>
 
-## Q1 · <question title — typically "is this new?" or "is the external data obtainable?">
-<what this question wants to know, one sentence per line.>
+## Q-Seed-1 · <question title, e.g. "is this new?" or "is the external data obtainable?">
 
-## Q2 · <question title>
-<what it wants.>
+Ask: <what this question wants to know; one sentence per line.>
 
-<APPROVE adds each `→ 1-probes/PPNN_<topic>.md` pointer + derived state.>
+Why: <which content section above raised it, and what breaks if the answer is "no".>
+## Q-Seed-2 · <question title>
+
+Ask: <what it wants.>
+
+Why: <which content section raised it, and what depends on the answer.>

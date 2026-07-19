@@ -36,16 +36,9 @@ phase:   draft ✅  │  probe 🔥🚀  │  revise ⬜  │  check ⬜
 
 Every open question is a SECTION in the flat pool `1-probes/`; its `q-executor` (the stake stripped out) is handed to `Agent(haipipe-probe-q-executor-agent)`, the stake-free collector that runs MATCH → DISPATCH → POINT over the task/discovery bank in clean context. That collector is the ONLY door for evidence. HARVEST is transcription of the pointers the answer landed (JL 2026-07-07 ruling, ported from paper): the harvest hooks never search, grep-discover, or dispatch tasks themselves.
 
-Lanes are venue-scaled, and there are NO sub-worker skills — the lanes are hooks inside the one probe worker:
+No sidecar docs (2026-07-18): the answer's numbers/citations land INLINE in the section's `a-consumer:`, anchored to `target:` (the answering QA file). There are no `values:`/`sources:`/`displays:` lanes and no `_VALUES_`/`_CITATION_`/`_DISPLAY_`/`_DESCRIPTIONS/` docs.
 
-```
-PROBE lanes (fire per pinned venue):
-  values    → always                                     → harvest values:  → _VALUES_
-  citation  → sectioned venues only                      → harvest sources: → _CITATION_ → 🔍 for CHECK
-  display   → only when the venue's artifact has display units → link landed units → _DISPLAY_
-```
-
-Every firing lane's obligation is written into the section (`harvest: OWED → accepted`); `check-probe-cards.sh` FAILs an OWED lane or a `state: planned` section at VERIFY and again at the CHECK gate.
+`check-probe-cards.sh` FAILs a `state: planned` section at VERIFY and again at the CHECK gate; the `target:` it points at is verified `answered` + non-superseded.
 
 Hard boundary: the collector finds, the harvest hooks follow pointers, the human verifies in CHECK. The agent NEVER fabricates numbers, NEVER creates ad-hoc display units, NEVER searches inline during PROBE — "DRAFT may search; PROBE must dispatch".
 

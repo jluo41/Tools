@@ -7,7 +7,6 @@ Venue: <pinned venue>
 Fires only if the pinned venue requires it (STATUS.md stages_skipped).
 The arc leans only on claims meeting the venue's settlement bar; a load-bearing GAP claim cannot anchor a beat.
 Arc rules come from 2-venue.md Artifact Principles; the beats compose the 1d advice (A entries).
-How to use: copy to `<intervention>/0-lifecycle/3-narrative/3-narrative.md`, replace every `<...>`, delete unused sub-items (the DRAFT worker does this during the stage's DPRC).
 
 
 
@@ -42,10 +41,10 @@ One line per load-bearing claim/advice: where it lands and what job it does ther
 Q-consumer
 ----------
 
-Narrative-level needs (rare): a beat exposing a NEW evidence gap raises a question here, routed back to 1c-claims — never gathered here.
-One `##` per question: id, title, what it wants. The route and approver are organized at APPROVE, into the probe file — not here.
+<Rare — a beat exposing a NEW gap, routed back to 1c-claims (never gathered here). One ## Q-Narr-<n> block each.>
 
-## Q1 · <question title>
-<what it wants.>
+## Q-Narr-1 · <question title>
 
-<APPROVE adds each `→ 1-probes/PPNN_<topic>.md` pointer + derived state.>
+Ask: <what it wants.>
+
+Why: <which beat exposes the gap, and what breaks if it stays open.>

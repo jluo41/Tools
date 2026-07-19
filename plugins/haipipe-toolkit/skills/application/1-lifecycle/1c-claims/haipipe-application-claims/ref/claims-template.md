@@ -6,7 +6,6 @@ Status: DRAFT
 Ladder rung 1c: which claims generalize -- supported / weak / GAP -- and what evidence settles each.
 This ledger plans what evidence to collect, commissions the work, and tracks results as they return.
 (No Hypotheses section -- mechanism lives in seed/pitch; the theme space lives in 1b.)
-How to use: copy to `<intervention>/0-lifecycle/1c-claims/1c-claims.md`, replace every `<...>`, delete unused sub-items (the DRAFT worker does this during the stage's DPRC).
 
 
 
@@ -46,18 +45,18 @@ Theme hooks considered and not committed as claims, one line each with a why; th
 Q-consumer
 ----------
 
-The evidence questions this stage raises — one `##` per question: id, title, what it wants.
-The route (task/discovery), the mode (light/full), the approver (which claim reads the answer), and the Refutes-if all get organized at APPROVE, into the probe file `1-probes/PPNN_<topic>.md` — not here.
+<Evidence questions this stage raises. One ## Q-Claim-<n> block each.>
 
-## Q1 · <question title>
-<what this question wants to know, one sentence per line.>
-<which claim(s) it is meant to settle, if that helps frame it.>
+## Q-Claim-1 · <question title>
 
-## Q2 · <question title>
-<what it wants.>
+Ask: <what this question wants to know; one sentence per line.>
 
-<APPROVE adds each `→ 1-probes/PPNN_<topic>.md` pointer + derived state.>
+Why: <which claim(s) it settles, and the Refutes-if that would FLIP the claim.>
+## Q-Claim-2 · <question title>
 
+Ask: <what it wants.>
+
+Why: <which claim it settles.>
 
 Evidence Campaign
 -----------------

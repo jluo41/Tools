@@ -56,8 +56,8 @@
 #                              is MANDATORY). EXISTENCE OF THE TARGET IS NO LONGER ENOUGH --
 #                              the checker OPENS it.
 #
-# PASS 2: the working docs (_CITATION_/_VALUES_/_DISPLAY_) carry no bibtex entries;
-#   _CITATION_ carries no markdown tables (a durable mirror of harvest acceptance).
+# PASS 2: REMOVED (2026-07-18, no-sidecar). Harvest folds into the probe section's
+#   a-consumer:, anchored to target:. No _VALUES_/_CITATION_/_DISPLAY_ docs to check.
 #
 # PASS 3: THE BANK -- two rules on the same files, <project_root>/{tasks,discoveries}/**/QA/*.md.
 #   (a) LAW 2 (surface 2): a QA file must carry NO consumer vocabulary. A QA file written in
@@ -599,25 +599,11 @@ fi
 
 
 # ---------------------------------------------------------------------------
-# PASS 2 -- working docs. The no-bibtex / no-tables rules must hold DURABLY, not
-# only during a harvest run. Mirrors the harvest-acceptance greps.
+# PASS 2 -- REMOVED (2026-07-18, no-sidecar workflow). Harvest no longer lands in
+# _VALUES_/_CITATION_/_DISPLAY_ sidecar docs; the answer + its numbers live in the
+# probe section's a-consumer:, anchored to target: (already checked, PASS 1 R19/R20).
+# Nothing to verify here.
 # ---------------------------------------------------------------------------
-for doc in "$intervention_root"/0-lifecycle/*/_CITATION_*.md "$intervention_root"/0-lifecycle/*/_VALUES_*.md "$intervention_root"/0-lifecycle/*/_DISPLAY_*.md \
-           "$intervention_root"/0-lifecycle/*/*/_CITATION_*.md "$intervention_root"/0-lifecycle/*/*/_VALUES_*.md "$intervention_root"/0-lifecycle/*/*/_DISPLAY_*.md; do
-  [ -e "$doc" ] || continue
-  dname=${doc#"$intervention_root"/}
-  dprob=""
-  bib=$(grep -cE '^[[:space:]]*@[A-Za-z]+\{[^,}]+,' "$doc")
-  [ "$bib" -gt 0 ] && dprob="$dprob bibtex-entry(${bib});"
-  case "$doc" in *_CITATION_*)
-    dtab=$(grep -c '^|' "$doc")
-    [ "$dtab" -gt 0 ] && dprob="$dprob markdown-table(${dtab}-lines);"
-  ;; esac
-  if [ -n "$dprob" ]; then
-    echo "FAIL  $dname  --$dprob"
-    fail=1
-  fi
-done
 
 # ---------------------------------------------------------------------------
 # PASS 3 -- THE BANK: LAW 2 (surface 2) + THE CLAIM'S OWN VALIDITY (R19).

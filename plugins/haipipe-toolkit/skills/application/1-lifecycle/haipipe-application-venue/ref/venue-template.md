@@ -5,7 +5,6 @@ Date: YYYY-MM-DD
 Status: PINNED <venue> (STATUS.md rows written: venue / stages_skipped / claims_settlement)
 The decision gate between venue-FREE (seed + the 1a-1d ladder) and venue-ALIGNED (pitch onward).
 Artifact Principles here are channel-HOW -- distinct from 1d-advice (content-WHAT).
-How to use: copy to `<intervention>/0-lifecycle/2-venue/2-venue.md`, replace every `<...>`, delete unused sub-items (the DRAFT worker does this during the stage's DPRC).
 
 
 
@@ -42,10 +41,10 @@ What pitch, display, section-edit, and artifact all read. Concrete, from the ven
 Q-consumer
 ----------
 
-Venue-level investigation needs: channel capability, compliance constraints, prior sends on this channel.
-One `##` per question: id, title, what it wants. The route and approver are organized at APPROVE, into the probe file — not here.
+<Venue-level needs: channel capability, compliance, prior sends. One ## Q-Venue-<n> block each.>
 
-## Q1 · <question title>
-<what it wants.>
+## Q-Venue-1 · <question title>
 
-<APPROVE adds each `→ 1-probes/PPNN_<topic>.md` pointer + derived state.>
+Ask: <what it wants.>
+
+Why: <which venue decision / Artifact Principle needs it.>

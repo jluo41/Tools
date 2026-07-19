@@ -8,7 +8,6 @@ Fires only if the pinned venue requires it (STATUS.md stages_skipped).
 Every unit carries FOUR required fields -- Type, Claim, Job, Data source.
 The Job field is the minimap absorption: one sentence on what this unit must make the reader see/do.
 Unit materialization is raised as a SECTION in the flat probe pool `1-probes/PPNN_<topic>.md` and, uniquely among stages, commissioned by this stage through the PROBE phase to a task; this doc plans and links.
-How to use: copy to `<intervention>/0-lifecycle/4-display/4-display.md`, replace every `<...>`, delete unused sub-items (the DRAFT worker does this during the stage's DPRC).
 
 
 
@@ -44,10 +43,10 @@ Unit -> section mapping (sectioned venues)
 Q-consumer
 ----------
 
-Materialization needs — one `##` per question: id, which unit it materializes, what it needs.
-Uniquely, this stage commissions these to a task through its PROBE phase; the display lane LINKs what landed. The route and approver are organized at APPROVE, into the probe file — not here.
+<Materialization needs — uniquely, this stage commissions these to a task via PROBE; the display lane LINKs what landed. One ## Q-Disp-<n> block each.>
 
-## Q1 · materialize U<nn> — <what the unit needs>
-<what it wants.>
+## Q-Disp-1 · materialize U<nn>
 
-<APPROVE adds each `→ 1-probes/PPNN_<topic>.md` pointer + derived state.>
+Ask: <what the unit needs materialized.>
+
+Why: <which unit (U<nn>) it feeds, and what the reader can't see without it.>
