@@ -47,7 +47,7 @@ Each stage in `1-lifecycle/` (seed, the 1a–1d ladder: descriptions/themes/clai
 - Ladder cite-chain: each DIKW rung anchors in the one above it (`T1 (D3)`, `C2 (T1; D3)`, `A ← C`); the ladder climbs to W (the deliverable), where paper stops at K.
 - Venue boundary: venue-FREE stages (seed + the 1a–1d ladder) don't change on retarget; venue-ALIGNED stages (pitch onward) do. The pinned venue gates WHICH stages fire (`stages_skipped`) and HOW DEEP claims must settle (`claims_settlement`).
 - **Template**: the stage's `ref/<stage>-template.md` is the contract mold — every real intervention's stage doc is stamped from it, so a bad template propagates everywhere. It must be concrete (real example values, not bare `<...>`), its sections must match what the SKILL declares, and its field vocabulary must be current (`state`, not the retired `status`/`dispatched`/`verdicted`; the six-value state enum spelled in full). This is the single highest-leverage thing to check.
-- Reservoir: the stage captures what it considered-and-dropped (seed Kill criteria, 1a Waivers, 1b Parked, 1c Declined hooks, 1d Rejected + No-action) — negative wisdom is first-class, so the next round does not re-derive it.
+- Reservoir: the stage captures what it considered-and-dropped (1a Waivers, 1b Parked, 1c Declined hooks, 1d Rejected + No-action) — negative wisdom is first-class, so the next round does not re-derive it. (Seed has none: it is too early for considered-and-dropped wisdom; that accrues on the ladder rungs.)
 - Artifact: produces its stage doc + `_LOG`, and updates `STATUS.md current_layer`.
 
 A stage that answers two questions, ships a vague or stale template, skips its `_LOG`, or decides on the user's behalf is not good, however clean its prose.

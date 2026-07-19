@@ -4,8 +4,8 @@ description: "Stage 4 of the intervention lifecycle (venue-GATED: required for d
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.5.0"
-  last_updated: "2026-07-17"
+  version: "4.6.0"
+  last_updated: "2026-07-18"
   summary: "Display stage (stage 4, venue-GATED + venue-ALIGNED) — maps each claim to a display UNIT with a required per-unit Job (minimap absorbed); materialization raised as a section in the flat probe pool 1-probes/, uniquely commissioned by this stage. History: ./CHANGELOG.md."
 ---
 
@@ -68,12 +68,12 @@ Display units      one U<nn>: Type + Claim (via A<n> where an advice entry drive
                    + Data source · Status: planned | commissioned (PP<nn>) | landed
 Unit -> section    (sectioned venues) which unit goes in which section, and why
   mapping
-Q-consumer         materialization questions, one `## Q` per unit; the display lane LINKs what landed
+Q-consumer         materialization questions, one `## Q-Disp-<n>` block each (Ask / Why / Answer); the display lane LINKs what landed
 ```
 
 Sidecar: `_LOG_4-display.md` (phase journal).
 Evidence questions live in the flat probe pool `1-probes/PPNN_<topic>.md` (sections carry `serves` / `target` / `state` / `q-executor` / `a-consumer` + one `## Why`; states `planned | commissioned | answered | read | answered-local | failed`); a legacy per-stage `_PROBE/` folder is migrated into the pool on first touch.
-Formatting: `=====` title / `-----` sections, one sentence per line; the doc reads `2-venue.md`'s Artifact Principles for the available element types.
+Formatting: `=====` title / `-----` sections; content uses no `#`, Q-consumer questions use `## Q-Disp-<n>`; one sentence per line; the doc reads `2-venue.md`'s Artifact Principles for the available element types.
 
 
 ## Definition of done (read at CHECK)
@@ -95,5 +95,3 @@ promote -> /haipipe-application section-edit   (sectioned venues)
 ```
 
 End every reply with the closing block (stage line via `../../../haipipe-application/stage-strip.sh`).
-</content>
-</invoke>

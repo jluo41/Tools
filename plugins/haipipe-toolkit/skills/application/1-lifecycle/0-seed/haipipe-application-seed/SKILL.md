@@ -1,12 +1,12 @@
 ---
 name: haipipe-application-seed
-description: "Stage 0 of the intervention lifecycle (venue-FREE). Answers 'why might this intervention work?' Documents the opportunity, expected impact, audience, channel hunch, mechanism hypothesis, and kill criteria. Output: 0-lifecycle/0-seed/0-seed.md + _LOG_0-seed.md (+ 1-probes/ feasibility questions). Markdown only. Modeled on haipipe-paper-seed. Trigger: seed, opportunity, why this intervention, kill criteria, /haipipe-application seed."
+description: "Stage 0 of the intervention lifecycle (venue-FREE). Answers 'why might this intervention work?' Documents the opportunity, expected impact, audience, channel hunch, mechanism hypothesis. Output: 0-lifecycle/0-seed/0-seed.md + _LOG_0-seed.md (+ 1-probes/ feasibility questions). Markdown only. Modeled on haipipe-paper-seed. Trigger: seed, opportunity, why this intervention, /haipipe-application seed."
 argument-hint: "[intervention-path] [intent...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.2.0"
-  last_updated: "2026-07-17"
-  summary: "Seed stage (stage 0, venue-FREE ROOT of the DIKW ladder) — states why this intervention might work before evidence is mature: opportunity, impact, audience, channel hunch, mechanism, kill criteria. DRAFT may WebSearch to orient; PROBE is FEASIBILITY-light (novelty + external-data obtainable); internal-data needs FORWARD to the ladder as [FORWARD -> CLAIMS] pointers. History: ./CHANGELOG.md."
+  version: "4.3.0"
+  last_updated: "2026-07-18"
+  summary: "Seed stage (stage 0, venue-FREE ROOT of the DIKW ladder) — states why this intervention might work before evidence is mature: opportunity, impact, audience, channel hunch, mechanism. DRAFT may WebSearch to orient; PROBE is FEASIBILITY-light (novelty + external-data obtainable); internal-data needs FORWARD to the ladder as [FORWARD -> CLAIMS] pointers. History: ./CHANGELOG.md."
 ---
 
 Skill: haipipe-application-seed
@@ -47,7 +47,7 @@ The invariant is section STATE: `planned` (DRAFT) vs `read` with a resolving `ta
 ## The four phases, in seed
 
 ```text
-DRAFT   settle the six content sections with the user (haipipe-application-draft); MAY WebSearch to
+DRAFT   settle the five content sections with the user (haipipe-application-draft); MAY WebSearch to
         ORIENT (crowded space? prior interventions? benchmark rates?) — weave the result into prose AND
         buffer the feasibility questions as `state: planned` sections; register internal-data needs as
         [FORWARD -> CLAIMS] pointers in _LOG_0-seed.md
@@ -73,15 +73,16 @@ Expected impact        directional estimate ("increase refill adherence by 5-15p
 Audience               who receives it — a specific subset, not "everyone"
 Channel hunch          sms | push | in-app | dashboard | email — a HUNCH, not the venue pin
 Mechanism hypothesis   one sentence: why this audience + this content might respond
-Kill criteria          conditions to abandon; at least 2 concrete
-Q-consumer             the feasibility questions raised (novelty + external-data), one `## Q` per question
+Q-consumer             feasibility questions raised (novelty + external-data), one `## Q-Seed-<n>` block each
 ```
 
+Each Q-consumer question is one `## Q-Seed-<n>` block with the same three fields, in order: `Ask` (what it asks), `Why` (which content section above raised it + what breaks if the answer is "no"), `Answer` (`__TO_BE_FILLED__` until the probe resolves; at INTERPRET, the one-line takeaway + the QA-file path). The id carries the stage name (`Seed-`) so the flat probe pool shows which stage raised the question. State is deliberately minimal — a question is OPEN while `Answer` reads `__TO_BE_FILLED__`, ANSWERED once it does not; no `state:` field lives in the seed doc (that machinery belongs to the `1-probes/` file, written at APPROVE).
+
 Sidecar: `_LOG_0-seed.md` (phase journal + the `[FORWARD -> CLAIMS]` pointers).
-Formatting: `=====` title / `-----` sections (no `#`); one sentence per line.
+Formatting: `=====` title / `-----` section rules; content sections use no `#`, Q-consumer questions use `## Q-Seed-<n>`; one sentence per line.
 Venue-FREE: the seed survives retargeting; the channel hunch is context, not a commitment.
 
-Done: all six content sections carry real content (not placeholders); Kill criteria has at least 2 concrete conditions; Audience and channel hunch are specific; the Q-consumer section raises at least the novelty/landscape question, with internal-data needs appearing only as `[FORWARD -> CLAIMS]` pointers; the probe checker exits clean at the gate.
+Done: all five content sections carry real content (not placeholders); Audience and channel hunch are specific; the Q-consumer section raises at least the novelty/landscape question as a `## Q-Seed-<n>` block (Ask/Why/Answer), with internal-data needs appearing only as `[FORWARD -> CLAIMS]` pointers; the probe checker exits clean at the gate.
 
 
 ## Exits

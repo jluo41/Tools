@@ -4,6 +4,10 @@ haipipe-application-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [3.1.0] — 2026-07-18
+
+- No-sidecar harvest (JL, application-only; paper handled separately). Retired the `values:`/`sources:`/`displays:` harvest LANES and the `_VALUES_`/`_CITATION_`/`_DISPLAY_`/`_DESCRIPTIONS/` sidecar docs. ⑤ INTERPRET now writes the answer's numbers/citations INLINE in the section's `a-consumer:`, each anchored `[→ target QA]`; the already-verified `target:` (PASS 1 R19/R20) is the fabrication anchor. Updated: ⑤, the venue-hook section → "Harvest — no sidecar", T1 whitelist, VERIFY, return contract, frontmatter. Checker PASS 2 removed; `harvest-acceptance.md` rewritten.
+
 ## [3.0.0] — 2026-07-15
 
 Changed (probe-redesign port; application catches up to paper probe 5.0.0 + the constitution haipipe-probe 9.0.0)

@@ -4,6 +4,10 @@ haipipe-application-seed — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [4.3.0] — 2026-07-18
+
+- Kill criteria section removed from the seed doc (unhelpful at seed stage; six content sections -> five). Q-consumer question blocks renamed `## Q<n>` -> `## Q-Seed-<n>` (id carries the origin stage) and reshaped to a fixed 3-field, human-readable form: `Ask` / `Why` (carries the content-section link + failure consequence) / `Answer` (`__TO_BE_FILLED__` == OPEN, else ANSWERED — the only state the seed doc tracks). Rule prose moved out of the template into SKILL (template = skeleton, SKILL = rules). Template + SKILL (frontmatter, skeleton, Done gate, formatting) updated.
+
 ## [4.2.0] — 2026-07-17
 
 - Q-consumer migration: the stage doc's `Probes` tail section is renamed + reshaped to `Q-consumer` (`## Q` question blocks, matching the constitution's `q-executor:`/`a-consumer:` fields); the stage RAISES questions, the PP-id/route/state organize into 1-probes/ at APPROVE. Template + SKILL (artifact list, REVISE line, Done gate) updated.

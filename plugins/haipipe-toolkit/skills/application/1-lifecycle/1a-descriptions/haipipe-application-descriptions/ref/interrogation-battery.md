@@ -9,7 +9,7 @@ The round engine
 1. GENERATE   run this round's lens (schedule below) as a question storm: >=10 questions about the data. Fresh-eyes option: spawn a cheap read-only subagent that sees ONLY the schema + the current 1a doc -- it asks what the incumbent stopped asking.
 2. FILTER     each question -> answerable from existing D entries (cite the id)? discard. Not answerable -> a new D slot + a planned probe skeleton.
 3. RELEASE    end the lap with the release menu (draft worker step 5); the user picks; only picks dispatch (probe worker STEP 1.5).
-4. LAND       released probes return; TRANSLATE writes D entries + the `_DESCRIPTIONS/DS<n>` sheet (values-lane redirect).
+4. LAND       released probes return; TRANSLATE writes Description entries inline (+ resolving pointer to the task result) — no sidecar.
 5. SELF-TEST  answer the blind battery (below) from D entries ONLY, one resolving D id per answer. Any stumble = a new topic; the loop continues.
 6. DRY RULE   a full round whose storm + self-test add ZERO new topics = saturated. Venue-scaled (wiki/08): light = one clean round; medium = one dry round; full = two consecutive. Log every lap as `[ROUND n]` in `_LOG`.
 7. GATE LENS  at CHECK the user is asked "which data topics are still missing?" (JL: "after the check, they can think about adding more probes in the draft"). A `grow` verdict converts the answers to new slots + probes and re-opens DRAFT as `[ROUND n+1]`. Approve = saturated AND the user added nothing.
@@ -17,7 +17,7 @@ The round engine
 Lens schedule (rotate; wrap around if rounds outlast lenses)
 --------------------------------------------------------------
 
-- round 1  SCHEMA lens        which fields/groups have no D entry and no waiver? (drives Field Disposition to 100%)
+- round 1  SCHEMA lens        which fields/groups have no Description and no waiver? (drives schema coverage to 100%)
 - round 2  DISTRIBUTION lens  for every profiled stat: spread, extremes, missingness, concentration -- not just the mean
 - round 3  CROSSING lens      outcome x time, outcome x geography, arm x demographic, outcome x clinical context
 - round 4  SURPRISE lens      what result would surprise us? check it; what would fire the seed's kill criteria early?

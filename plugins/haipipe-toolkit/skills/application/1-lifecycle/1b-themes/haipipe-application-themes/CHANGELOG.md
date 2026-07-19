@@ -3,6 +3,10 @@ haipipe-application-themes — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`.
 
+## [2.4.0] — 2026-07-18
+
+- Template alignment sweep: dropped the template's "How to use:" header line; Q-consumer questions renamed `## Q<n>` -> `## Q-Theme-<n>` (id carries the origin stage) + reshaped to the fixed 3-field form Ask / Why / Answer (`__TO_BE_FILLED__` == OPEN, else ANSWERED — the doc's only state). SKILL skeleton + formatting synced.
+
 ## [2.3.0] — 2026-07-17
 
 - Q-consumer migration follow-up: the SKILL's artifact-section list still named the section `Probes` (a roster) — renamed to `Q-consumer` (## Q questions; APPROVE adds the 1-probes/ pointer + state), matching the template. (The earlier pass's grep missed these lines because they co-mention `1-probes/`.)

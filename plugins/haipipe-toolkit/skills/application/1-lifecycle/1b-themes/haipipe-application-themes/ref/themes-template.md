@@ -5,7 +5,6 @@ Date: YYYY-MM-DD
 Status: DRAFT
 Ladder rung 1b: which patterns/topics emerge from the described data and the field.
 Every theme cites >=1 D id from 1a or a project-side discovery source; ungrounded patterns go to Parked.
-How to use: copy to `<intervention>/0-lifecycle/1b-themes/1b-themes.md`, replace every `<...>`, delete unused sub-items (the DRAFT worker does this during the stage's DPRC).
 
 
 
@@ -42,13 +41,15 @@ Also holds context-only D ids (described but not thematic) and the counter-hunt 
 Q-consumer
 ----------
 
-The field-pattern questions this rung raises — one `##` per question: id, title, what it wants.
-The route (mostly discovery for field patterns; task only for quick in-data confirmations) and the approver are organized at APPROVE, into the probe file — not here.
+<Field-pattern questions this rung raises. One ## Q-Theme-<n> block each.>
 
-## Q1 · <question title>
-<what this question wants to know, one sentence per line.>
+## Q-Theme-1 · <question title>
 
-## Q2 · <question title>
-<what it wants.>
+Ask: <what this question wants to know; one sentence per line.>
 
-<APPROVE adds each `→ 1-probes/PPNN_<topic>.md` pointer + derived state.>
+Why: <which theme / grounding gap needs it, and what breaks if it stays open.>
+## Q-Theme-2 · <question title>
+
+Ask: <what it wants.>
+
+Why: <which theme needs it.>

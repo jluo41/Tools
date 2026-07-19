@@ -5,7 +5,6 @@ Date: YYYY-MM-DD
 Status: DRAFT
 Venue: <pinned venue> · Audience: <target audience>
 Rewrites on retarget. Reads 2-venue.md Artifact Principles + 1d-advice (the advice entries it sells).
-How to use: copy to `<intervention>/0-lifecycle/2-pitch/2-pitch.md`, replace every `<...>`, delete unused sub-items (the DRAFT worker does this during the stage's DPRC).
 
 
 
@@ -44,10 +43,10 @@ Why now
 Q-consumer
 ----------
 
-Rare for pitch — a citation need only: anchor evidence for a theory-of-change link the ledger lacks.
-One `##` per question: id, title, what it wants. The route and approver are organized at APPROVE, into the probe file — not here. Usually empty.
+<Rare — a citation need only: anchor a theory-of-change link the ledger lacks. Usually empty. One ## Q-Pitch-<n> block each.>
 
-## Q1 · <question title>
-<what it wants.>
+## Q-Pitch-1 · <question title>
 
-<APPROVE adds each `→ 1-probes/PPNN_<topic>.md` pointer + derived state.>
+Ask: <what it wants.>
+
+Why: <which theory-of-change link needs the anchor.>

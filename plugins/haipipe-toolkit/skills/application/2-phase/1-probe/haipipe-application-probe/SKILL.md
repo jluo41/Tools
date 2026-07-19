@@ -1,12 +1,12 @@
 ---
 name: haipipe-application-probe
-description: "PROBE-phase worker (internal). After DRAFT, collects the questions the draft raised into probe files — applications/<A>/1-probes/PPNN_<topic>.md, one file per topic, each question one SECTION (serves/target/state/q-executor/a-consumer) + a '## Why' that never leaves. Runs the five-step loop ORGANIZE → MATCH → DISPATCH → POINT → INTERPRET; binds by PATH to a QA file in the task/discovery bank; dispatches the q-executor verbatim, never running bank work inline. The three harvest lanes (values/citation/display) are venue-scaled HOOKS, not sub-skills. Users invoke stage skills (seed, claims…), not this directly."
+description: "PROBE-phase worker (internal). After DRAFT, collects the questions the draft raised into probe files — applications/<A>/1-probes/PPNN_<topic>.md, one file per topic, each question one SECTION (serves/target/state/q-executor/a-consumer) + a '## Why' that never leaves. Runs the five-step loop ORGANIZE → MATCH → DISPATCH → POINT → INTERPRET; binds by PATH to a QA file in the task/discovery bank; dispatches the q-executor verbatim, never running bank work inline. Harvest folds INTO the section's a-consumer (anchored to target:) — no sidecar docs. Users invoke stage skills (seed, claims…), not this directly."
 argument-hint: "[from-buffer <intervention_root> [PPNN] | stage <stage-name>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 metadata:
-  version: "3.0.0"
-  last_updated: "2026-07-15"
-  summary: "The intervention's PROBE-phase worker — runs the five-step loop for an application. The model (anatomy, QA contract, cost ladder, LAWS, states, checker codes) is the constitution's: ../../../../probe/haipipe-probe/SKILL.md. This file is only the application-side deltas: intervention_root, the DIKW-ladder rungs, and the venue-scaled harvest hooks. History: ./CHANGELOG.md."
+  version: "3.1.0"
+  last_updated: "2026-07-18"
+  summary: "The intervention's PROBE-phase worker — runs the five-step loop for an application. The model (anatomy, QA contract, cost ladder, LAWS, states, checker codes) is the constitution's: ../../../../probe/haipipe-probe/SKILL.md. This file is only the application-side deltas: intervention_root, the DIKW-ladder rungs, and no-sidecar harvest (folds into a-consumer). History: ./CHANGELOG.md."
 ---
 
 Skill: haipipe-application-probe — the PROBE-phase worker for an application
@@ -25,7 +25,7 @@ Which rung runs which mode and lanes, seed/claims specifics, and section-edit lo
 The application-side deltas:
 - `intervention_root` vocabulary, and the intervention's OWN registries (the T1 whitelist).
 - the DIKW ladder rungs raise the questions (there is no resource stage; that is paper-only).
-- the three harvest lanes as venue-scaled HOOKS (values / citation / display), not sub-worker skills.
+- harvest folds into the section's a-consumer — no sidecar docs, no lanes (application delta, 2026-07-18).
 
 
 The five-step loop, application-side
@@ -36,7 +36,7 @@ STEP 0 — re-invoke this skill fresh every run, even when its text is already i
 
 TWO HALVES.
 ①–④ COLLECT the answer from the bank — the shared probe mechanism, per the constitution (question → answered QA file).
-⑤ HARVESTS it — files the answer's artifacts into the intervention's OWN registries, scaled by the pinned venue.
+⑤ HARVESTS it — writes the answer + its numbers into the section's a-consumer, anchored to target: (no sidecar).
 Collection is the constitution's model; harvest is this worker's, and the constitution says nothing about it.
 
 
@@ -65,7 +65,7 @@ PROOF 1: `project_root=<path>` + `ls <project_root>/discoveries/` + `ls <interve
 The cost ladder T0–T4 is the constitution's. Split it by WHO can run each door — the intervention's LOCAL doors stay here; the bank doors go to the shared agent.
 
 LOCAL (inline — intervention-specific, only the stage can run it):
-- T1 LOCAL — a CLOSED whitelist of the intervention's OWN registries: sibling/prior `_CITATION_*.md` · `_VALUES_*.md` · `_DESCRIPTIONS/DS*.md` · sections already `read` · `0-artifacts/` display units · `1c-claims.md` campaign rows.
+- T1 LOCAL — a CLOSED whitelist of the intervention's OWN registries: sections already `read` (their a-consumer) · `0-artifacts/` display units · `1c-claims.md` campaign rows.
   Fully answered → write the `a-consumer`, set `answered-local`, do NOT hand to the agent.
   Partially → narrow the q-executor to the remaining gap; only the gap goes to the agent.
   Adopt the POINTER, never the verdict: a reused value re-verifies against its ORIGINAL source at harvest.
@@ -128,19 +128,14 @@ HARVEST (⑤) begins. ════════
 - `mode: full` → the AUTHOR writes the claim status (`supported | refuted | inconclusive` + confidence) into `0-lifecycle/1c-claims/1c-claims.md`, flipping the C-line AND its Evidence Campaign row in the same pass — never in the probe file.
   A probe is communication, not judgment — there is no review gate; keep the overclaim check (never causal from associational evidence).
   The venue gate later reads THIS campaign against its settlement bar (light | medium | full).
-- LANE OBLIGATIONS — record the debt in the section FIRST, then pay it.
-  Which lanes fire is decided HERE, from the pinned venue (Venue-hook contract below):
-  ```text
-  - values:   tasks/X03_cohort_summary/results/summary.csv · harvest: OWED   (values lane, always)
-  - sources:  S01,S02,S03 · harvest: OWED                                    (citation lane, sectioned venues)
-  - displays: 0-artifacts/fig-overview · harvest: OWED                       (display lane, display-unit venues)
-  ```
-  Then dispatch the lane's HARVESTER HOOK as a cheap subagent (pointer-following only) and accept MECHANICALLY per `ref/harvest-acceptance.md` (run the greps, never eyeball).
-  Flip to `harvest: accepted (<n>, <doc>)`.
-  An `OWED` line at the gate FAILs.
-- RUNG 1a REDIRECT (GROW loop): a descriptions-stage `values:` lane lands in `_DESCRIPTIONS/DS<n>_<name>.md` (per-dataset profile sheet), not `_VALUES_`; same OWED/accepted bookkeeping, different home — the 1a doc itself keeps one-line D entries.
+- HARVEST — no sidecar (2026-07-18). Write the answer's numbers / citations INLINE in the
+  `a-consumer:`, each with its anchor: `<value>  [→ <the section's target QA file>]`.
+  `target:` is already verified `answered` + non-superseded (PASS 1 R19/R20) — that IS the
+  fabrication anchor. No second transcription, no `values:`/`sources:`/`displays:` lane, no sidecar doc.
+  A display unit a question needs but that does not exist REROUTES to the display stage (a request row).
+  Details: `ref/harvest-acceptance.md`.
 
-PROOF 5: per section the `a-consumer` line, the claim-ledger diff (if it serves a claim), and each harvester `Agent(...)` call + its acceptance-grep output.
+PROOF 5: per section the `a-consumer` line (with its inline `[→ target]` anchor) + the claim-ledger diff (if it serves a claim).
 
 
 VERIFY — the checker (the stage CHECK gate re-runs the same script)
@@ -150,32 +145,27 @@ VERIFY — the checker (the stage CHECK gate re-runs the same script)
 sh <this-skill-dir>/check-probe-cards.sh <intervention_root> [<project_root>]
 ```
 
-Checks: read sections have resolving, non-`working`, non-superseded targets; planned sections FAIL (probe-not-run); commissioned sections carry owner/eta/blocks/cross-project with a future eta; `harvest: OWED` lane lines FAIL; dead vocabulary (`verdicted`, `## Verdict`) FAILs; no markdown tables in any probe file; the bank carries no consumer vocabulary (LAW 2).
+Checks: read sections have resolving, non-`working`, non-superseded targets; planned sections FAIL (probe-not-run); commissioned sections carry owner/eta/blocks/cross-project with a future eta; dead vocabulary (`verdicted`, `## Verdict`) FAILs; no markdown tables in any probe file; the bank carries no consumer vocabulary (LAW 2).
 The FAIL codes are the constitution's.
 Never report a green PROBE over a FAIL.
 
 PROOF 6: the checker output, pasted.
 
 
-Venue-hook contract (application delta: hooks, not sub-worker skills)
-=====================================================================
+Harvest — no sidecar (application delta)
+========================================
 
-Application keeps NO probe sub-worker skills; the three HARVEST lanes are venue-scaled hooks inside this worker.
-Which lanes fire is decided at lane CREATION (⑤ INTERPRET), from the pinned venue — the checker stays presence-driven and needs no venue lookup:
-
-- `values:` — ALWAYS eligible: any venue's artifact quotes numbers, and claims-rung verified values land regardless of venue.
-- `sources:` — SECTIONED venues only (report/dashboard-like). Pre-pin stages (seed and the venue-FREE 1a–1d ladder) keep source anchors in the section's `a-consumer`; no `_CITATION_` doc exists before a sectioned venue is pinned.
-- `displays:` — only if the venue's artifact has display units (panels, charts, figures). Simple venues (sms/push/reminder) have no document lanes: their PROBE phase is claims-evidence only.
-
-When a hook fires it follows paper's sub-worker contract (`haipipe-paper-probe-citation` / `-values` / `-display`): pointer-following + collector dispatch only, mechanical acceptance greps, no inline search.
-The hook transcribes only what the return points at; finding is the bank's monopoly.
-Card format specs are read from their single source of truth, never paraphrased into the dispatch prompt.
+Application keeps NO probe sub-worker skills and NO harvest sidecar docs.
+Every answer's numbers / citations land INLINE in the section's `a-consumer:`, anchored to `target:`
+(the answering QA file, already verified). No `values:`/`sources:`/`displays:` lanes, and no
+`_VALUES_`/`_CITATION_`/`_DISPLAY_`/`_DESCRIPTIONS/` docs. Finding stays the bank's monopoly; this
+worker transcribes only what the section's `target:` already points at. Details: `ref/harvest-acceptance.md`.
 
 
 Hard boundaries (application-specific; the wall + ONE-WRITER are the constitution's)
 ====================================================================================
 
-- `_CITATION_` is plain text only; no bibtex, ever.
+- Citations land inline in `a-consumer:` — plain text, no bibtex, anchored to the source.
 - Numbers trace to a source; plots come from the display/task side, never inline.
 - Probe files and working docs hold bullet SECTIONS, no markdown tables.
 - The dispatch is the only door — a stage that calls an evidence agent itself lands results nowhere reviewable and dies with the reply.
@@ -188,7 +178,6 @@ Return contract
 status:    ok | blocked
 stage:     <stage-name>
 probes:    PPNN <n> sections · T0/T1 <n> · T2 <n> · T3/T4 <n> dispatched
-lanes:     val <status> [· cite <status> · disp <status> — only lanes the venue fires]
 next:      <suggested command>
 ```
 
@@ -199,7 +188,7 @@ Reference
 ```
 ../../../../probe/haipipe-probe/SKILL.md   THE CONSTITUTION — the model. Read it.
 ref/per-stage-dispatch.md                  rung→mode map · seed/claims specifics · venue-scaled lanes
-ref/harvest-acceptance.md                  lane dispatch + the LITERAL acceptance greps
+ref/harvest-acceptance.md                  no-sidecar harvest: write into a-consumer, anchored to target
 check-probe-cards.sh                       the VERIFY / stage-gate verifier (family-local fork)
 ../../../haipipe-application/fn/probes.md   buffer + release convention
 ```

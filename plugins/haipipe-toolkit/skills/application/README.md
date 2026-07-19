@@ -51,8 +51,8 @@ Contract (encoded in each rung skill): REVISE ends with a self-assessment; a rou
 ├── 0-lifecycle/              maturation spine (md + _LOG)
 │   ├── 0-seed/
 │   ├── 1a-descriptions/  1b-themes/  1c-claims/  1d-advice/   ← the evidence ladder (venue-FREE)
-│   │   (1a: anchored data summaries + _DESCRIPTIONS/ DS profile sheets; 1b: grounded themes; 1c: Claims/Q-consumer/Campaign
-│   │    + _VALUES_; 1d: design advice A←C — the ladder's deliverable)
+│   │   (1a: anchored data summaries; 1b: grounded themes; 1c: Claims/Q-consumer/Campaign;
+│   │    1d: design advice A←C — the ladder's deliverable)
 │   ├── 2-venue/  2-pitch/  3-narrative/  4-display/  5-section-edit/
 │   │   (2-venue: choice + Artifact Principles = channel-HOW, vs 1d content-WHAT)
 ├── 0-sections/               sectioned-venue prose (report/dashboard-like venues only)

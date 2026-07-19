@@ -30,9 +30,9 @@ Per-rung list (lane hooks = HARVESTERS: they transcribe landed evidence, never a
 Spine folder names are the intervention's `0-lifecycle/` stage folders (dual-2 numbering mirrors paper: 2-venue + 2-pitch).
 
 - **0-seed** (venue-FREE) — mode light (→ discovery), DEFAULT RUN for a new seed: landscape / prior interventions / benchmarks / cohort sanity to sharpen the seed question. No venue pinned yet, so source anchors stay in the section's a-consumer; no citation/display lanes.
-- **1a-descriptions** (venue-FREE, ladder rung) — mode light (→ task): data-profile questions ("profile the cohort", "pull engagement summary"). The `values:` lane REDIRECTS here into `_DESCRIPTIONS/DS<n>_<name>.md` profile sheets (statistic + pointer + as-of date); the 1a doc itself keeps one-line D entries. Consumes seed's FORWARD pointers at DRAFT.
+- **1a-descriptions** (venue-FREE, ladder rung) — mode light (→ task): data-profile questions ("profile the cohort", "pull engagement summary"). The answer's numbers land INLINE in the section's `a-consumer:` (anchored to target:); the 1a doc keeps one-line Description entries. Consumes seed's FORWARD pointers at DRAFT.
 - **1b-themes** (venue-FREE, ladder rung) — mode light (→ discovery; task for quick in-data confirmations): field-pattern questions ("what messaging levers does the literature name?"); the a-consumer lands grounding refs onto T entries.
-- **1c-claims** (venue-FREE, ladder rung) — mode FULL (→ task + discovery): the core evidence rung; one question SECTION per GAP claim. A full-mode section's answer is read by the author, who writes the claim status into `0-lifecycle/1c-claims/1c-claims.md` — the ONLY home of a claim's status, flipping the C-line AND the Evidence Campaign row in the same pass. The `values:` lane fires here even pre-pin (verified numbers land in `_VALUES_1c-claims.md`).
+- **1c-claims** (venue-FREE, ladder rung) — mode FULL (→ task + discovery): the core evidence rung; one question SECTION per GAP claim. A full-mode section's answer is read by the author, who writes the claim status into `0-lifecycle/1c-claims/1c-claims.md` — the ONLY home of a claim's status, flipping the C-line AND the Evidence Campaign row in the same pass. Verified numbers land INLINE in the section's `a-consumer:` (anchored to target:), even pre-pin.
 - **1d-advice** (venue-FREE, ladder rung) — rarely fires: derivation is in-stage work; an advice entry exposing a NEW evidence gap routes back as a `1c-claims` question SECTION, never gathers here.
 - **2-venue** — mode light: venue-level questions — channel capability, compliance constraints, prior sends on this channel.
 - **2-pitch** — light, rare: anchor evidence for the theory of change if the ledger lacks it.
@@ -75,37 +75,26 @@ At ⑤ INTERPRET the section's `a-consumer:` lands, and the CLAIM's status is wr
 The intervention owns the NEED and the JUDGMENT; the executor owns the FACT.
 The venue gate later evaluates its settlement bar (light | medium | full) against the campaign table and through 1d's derivations.
 
-Venue-scaled lane rules (which lanes exist, decided at lane CREATION)
+Harvest — no sidecar (2026-07-18)
 ----------------------------------------------------------------------
-- `values:` — always eligible, every venue: quoted numbers trace to task results. (Rung 1a redirects this lane into `_DESCRIPTIONS/DS<n>` sheets.)
-- `sources:` — sectioned venues only (report/dashboard-like, per the venue profile); never before a sectioned venue is pinned.
-- `displays:` — only if the venue's artifact has display units (panels, charts, figures).
-- Simple venues (sms/push/reminder): no document lanes; PROBE is claims-evidence only.
-- The checker (`check-probe-cards.sh`) is presence-driven — it FAILs OWED lane lines and scans the working docs that exist; venue-scaling lives here, at creation, not in the checker.
+Every answer's numbers/citations land INLINE in the section's `a-consumer:`, anchored to `target:`
+(the answering QA file, already verified) — any venue. No `values:`/`sources:`/`displays:` lanes and
+no `_VALUES_`/`_CITATION_`/`_DISPLAY_`/`_DESCRIPTIONS/` docs. The checker verifies `target:` is
+`answered` + non-superseded (PASS 1 R19/R20); there is nothing else to harvest-check.
 
 Section-edit worker logic
 --------------------------
-Read the section outline and decide which lanes fire:
-- **citation** — always (every section cites).
-- **values** — when the outline contains numbers, statistics, or data references; skip for pure argumentative sections.
-- **display** — when the outline references figures/tables/visuals; skip otherwise.
+Read the section outline; for each evidence need raise a question SECTION whose answer's numbers/citations land inline in its `a-consumer:` (anchored to target:). No lanes.
 
 Phase status (derive from disk)
 --------------------------------
 ```
-probe ✅    all sections for the 🔥 stage are read, ledger backfilled, no OWED lanes
+probe ✅    all sections for the 🔥 stage are read, ledger backfilled
 probe 🚀    sections dispatched, returns pending
 probe ⬜    questions recorded, nothing dispatched
 probe --    skipped (stage had no evidence needs; logged in _LOG)
 ```
 
 Strip form: `phase:   draft ✅  │  probe 🔥🚀  │  revise ⬜  │  check ⬜`.
-Sectioned venues may split the fired lanes when section-edit runs them:
 
-```
-phase:   draft ✅  │  probe: val 🚀  cite ⬜  disp --  │  revise ⬜  │  check ⬜
-```
-
-GATE RULE (paper seed incident, JL 2026-07-07): the probe phase may NOT show ✅ while any lane is OWED.
-A lane is OWED when a section carries its lane line with `harvest: OWED`, or when a return named harvestable content for a fired lane whose doc (⬜) does not exist.
-`probe ✅ (cite ⬜ …)` on a sectioned venue is a contradiction: run check-probe-cards.sh, it FAILs.
+GATE RULE: the probe phase may NOT show ✅ while any section is `planned` or has an unresolved `target:` — run check-probe-cards.sh, it FAILs.

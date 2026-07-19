@@ -4,8 +4,8 @@ description: "Venue selection for the intervention lifecycle — the decision ga
 argument-hint: "[venue-name] [intervention-path] [--no-pin]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "3.2.0"
-  last_updated: "2026-07-17"
+  version: "3.3.0"
+  last_updated: "2026-07-18"
   summary: "Venue stage: recommends + pins the output modality and produces 2-venue.md (template ref/venue-template.md) — the decision gate between the venue-FREE ladder and the venue-ALIGNED stages; writes the three STATUS rows (venue / stages_skipped / claims_settlement) and Artifact Principles as the downstream channel-HOW contract. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -90,11 +90,11 @@ Fit Assessment      the pinned venue's settlement bar vs the current Evidence Ca
                     what meets the bar, what must settle before draft
 Artifact Principles the downstream contract — template/slots or section structure, length limits,
                     tone, element types, settlement + gate depth, compliance rails
-Q-consumer          venue-level investigation questions (channel capability, compliance, prior sends)
+Q-consumer          venue-level investigation questions (channel capability, compliance, prior sends), one `## Q-Venue-<n>` block each (Ask / Why / Answer)
 ```
 
 Sidecar: `_LOG_2-venue.md` (phase journal).
-Formatting per the template: `=====` title, `-----` sections, no `#` headings, one sentence per line.
+Formatting per the template: `=====` title, `-----` sections; content uses no `#`, Q-consumer questions use `## Q-Venue-<n>`; one sentence per line.
 
 
 ## Exits

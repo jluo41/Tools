@@ -4,8 +4,8 @@ description: "Stage orchestrator for the intervention's 0-lifecycle/1d-advice/1d
 argument-hint: "[intervention-path] [--deposit <Ann>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "1.7.0"
-  last_updated: "2026-07-17"
+  version: "1.8.0"
+  last_updated: "2026-07-18"
   summary: "Advice stage (rung 1d of the venue-FREE 1a–1d evidence ladder; the W rung and the ladder's DELIVERABLE) — design advice, one A<n> per entry (exploit|explore role) derived from >=1 claim in the 1c ledger; counsel not mandate (venue-ALIGNED stages adopt or decline downstream); content-WHAT, distinct from the venue's channel-HOW Artifact Principles. History: ./CHANGELOG.md."
 ---
 
@@ -78,7 +78,7 @@ The ladder doc (`1d-advice.md`) is the record; adopted/declined A-ids with a why
 Advice      one A<n>: guidance in one sentence + role (exploit|explore) + derivation (>=1 C id) + scope/boundary
             + status; close with a No-action line (every supported/weak C consumed by no entry, each with a why)
 Rejected    entries considered and dropped, one sub-item each with the refuting C id or reason (the reservoir; may be empty)
-Q-consumer  the questions this rung raises (one ## Q each; rare — derivation is in-stage work; may be empty);
+Q-consumer  the questions this rung raises, one `## Q-Advice-<n>` block each (Ask / Why / Answer; rare — derivation is in-stage work; may be empty);
             APPROVE adds each -> 1-probes/ pointer + state
 ```
 
@@ -86,7 +86,7 @@ One entry, one sub-item: `**A1 - majority framing where compliance is high - exp
 An entry citing only weak claims carries the caveat inline; whether that passes the gate is venue-scaled (below).
 Sidecar: `_LOG_1d-advice.md` (phase journal).
 Ids `A<n>` are ladder-local; artifact and claim-audit trace artifact -> adopted A -> C -> anchor.
-Formatting: `=====` title, `-----` sections, `**bold**` sub-items, one sentence per line, no `#`/`##`/`###`.
+Formatting: `=====` title, `-----` sections, `**bold**` sub-items, one sentence per line; content sections use no `#`, Q-consumer questions use `## Q-Advice-<n>`.
 
 
 ## Settlement coupling (venue-scaled, read at CHECK)
