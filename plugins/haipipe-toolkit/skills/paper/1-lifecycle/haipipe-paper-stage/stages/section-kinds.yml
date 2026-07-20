@@ -6,6 +6,14 @@
 # Read by: venue (resolves the per-kind pack paths into 2a-venue.md) and section-edit (picks
 # its section's kind). narrative/display do NOT read it despite an earlier claim they did.
 #
+# PRINCIPLE (JL 2026-07-20): every (venue, section-kind) is its OWN thing, summarized from that
+# venue's published exemplars — a MISQ introduction and a Nature introduction differ in SHAPE, not
+# only in word budget. So each (outlet, kind) pack dir carries TWO files:
+#   style.md     how that venue's section READS   (arc, budget, signature moves — reference)
+#   template.md  the fillable SKELETON to draft into, extracted from the same exemplars
+# section-edit resolves BOTH per section. There is no venue-generic template for a pack-having
+# venue; the stage's own section-edit/template.md is the fallback ONLY for a venue with NO pack.
+#
 # WHY THIS FILE EXISTS — two things measured on disk 2026-07-20 across 95 style.md files:
 #
 #   1. THE SLUG PREFIX IS NOT COMPUTABLE. A pack file is <outlet>/<slug>-<kind>/style.md and
@@ -28,12 +36,16 @@ resolution:
   #      VEN=$(find -L ~/.claude/skills ./.claude/skills "${CLAUDE_PLUGIN_ROOT:-/nonexistent}" \
   #             -type d -path '*skills/paper/venue' 2>/dev/null | head -1)
   # 3. glob, do not concatenate:
-  #      "$VEN/<pack>/<outlet>"/*-<kind>/style.md
+  #      "$VEN/<pack>/<outlet>"/*-<kind>/{style,template}.md
   # 4. 0 hits  -> `style: (pack missing — blueprint only)` + flag for CHECK. Never invent a path.
   #    >1 hits -> FAIL. Do not pick one.
   # The BLUEPRINT in 2a-venue.md is BINDING and is sufficient to draft without any pack;
   # the pack is the REFERENCE deep-dive only.
-  glob: "<VEN>/<pack>/<outlet>/*-<kind>/style.md"
+  glob_style:    "<VEN>/<pack>/<outlet>/*-<kind>/style.md"
+  glob_template: "<VEN>/<pack>/<outlet>/*-<kind>/template.md"
+  # SAME glob, two filenames. A pack dir has style.md (always) and template.md (as venues are
+  # built out — authored from that outlet's exemplars, like the style files were). 0 template
+  # hits -> section-edit falls back to its own generic scaffold; 0 style hits -> blueprint only.
 
 kinds:                       # the closed set. A section maps to exactly one.
   - abstract

@@ -57,14 +57,18 @@ exit_when: "no clear fit; venue change re-runs pitch"
 sections:                  # in order; all five must carry real content
   - Venue Decision         #   (a provenance header sits above them: pack @ commit, outlet dir)
   - Relevant Files
-  - Section Styles         #   the RESOLVED per-kind pack paths — see owns_resolution
+  - Section Styles         #   the RESOLVED per-kind pack paths (style + template) — see owns_resolution
   - Requirements           #   two blocks: Structural Blueprint, then Writing Principles
   - Q-consumer
 
 owns_resolution: |         # THIS stage resolves, ONCE, what every downstream stage would
                            # otherwise re-derive per section:
   · venue label -> pack slug         (the map in the craft body)
-  · pack + outlet -> section styles  (the Section Styles table in the artifact)
+  · pack + outlet -> section styles + templates  (the Section Styles table in the artifact)
+  Each kind row resolves TWO pack paths by the same glob: `*-<kind>/style.md` (how it reads,
+  reference) and `*-<kind>/template.md` (the skeleton section-edit drafts into, authored from
+  this outlet's exemplars — the PRINCIPLE, see ../section-kinds.yml). Both, or an explicit
+  `— none` per file, so a missing template is distinguishable from an unchecked one.
   Downstream NEVER globs, finds, or spells a pack path. section-edit reads its row and stops.
   The kind vocabulary and which kinds each outlet actually has: ../section-kinds.yml
   Resolution is a GLOB (`*-<kind>`), never concatenation — the per-journal slug is arbitrary
@@ -100,8 +104,10 @@ done_criteria:
      sentence length, citation density, results reported, display units — each [source: ...]-tagged"
   - "blueprint adapted to THIS paper's claim structure (H1/H2/H3 mapped to sections/subsections)"
   - "Writing Principles filled: tone, citation style, results presentation, display limits, abstract"
-  - "Section Styles carries ONE record line per kind in ../section-kinds.yml — a resolved path, or
-     an explicit `— blueprint-only` / `— n/a`, so 'no pack' is distinguishable from 'not checked'"
+  - "Section Styles carries ONE record line per kind (kinds from ../section-kinds.yml), each line
+     giving BOTH its resolved style: path and its resolved template: path — or an explicit
+     `style: — blueprint-only` / `template: — generic-fallback` when the pack lacks that file, so
+     'no pack file' is distinguishable from 'not checked'"
   - "at least one Q-Venue-<n> raised or answered (the recent-publications check)"
   - "every <!-- RULE --> comment deleted from the filled 2a-venue.md"
 
