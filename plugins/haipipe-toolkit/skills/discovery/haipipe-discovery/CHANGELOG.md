@@ -9,6 +9,21 @@ the plugin-level `CHANGELOG.md`. The type specialists keep their own
 `CHANGELOG.md` in their own folders.
 
 
+## [3.4.0] — 2026-07-19
+
+- ⑨ TOMBSTONES erased. Owner ruling (JL): "不需要留退役告示,直接抹除任何痕迹" — a doc states the CURRENT contract and never names the dead thing.
+  `SKILL.md:78` and `ref/discovery-yaml-schema.md`'s `## 💀 DELETED:` section head both restated positively
+  ("The bank is probe-unaware").
+- ⑩ probe files hold `## QX<n>` ENTRIES, not "sections" — wording corrected; the schema's `q-executor:` field notation corrected to `### q-executor`.
+
+
+## [3.3.0] — 2026-07-19
+
+- Owner ruling, 2026-07-19 (JL): "宪法 don't use this name, just use `probe`." The nickname
+  "THE CONSTITUTION" / "the constitution" for `probe/haipipe-probe/SKILL.md` is dropped everywhere;
+  each site now names either `probe` or the actual path.
+  Touched: `fn/qa.md` (the QA-file anatomy pointer), `ref/discovery-yaml-schema.md`, and `../DESIGN.md`.
+
 ## [3.2.0] — 2026-07-14 — R19 hardening: the state line is read FIRST
 
 - **Gate ① reads the STATE LINE *before* the literally-answers test.** The order is load-bearing. A `working` file's `## Answer` is EMPTY BY CONSTRUCTION, so the answer test is a guaranteed miss on it — the caller falls through to ③, allocates a NEW `<n>`, `set -C` never fires (different path), and RUNS THE SAME EXPENSIVE JOB a second time next to the one already in flight. A `working` file is matched on its `# Q —` LINE: same question ⇒ return the path + "in progress since <started>", run nothing.

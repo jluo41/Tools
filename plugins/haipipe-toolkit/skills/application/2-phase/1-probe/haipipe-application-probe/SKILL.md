@@ -4,9 +4,9 @@ description: "PROBE-phase worker (internal). After DRAFT authored the probe plan
 argument-hint: "[from-buffer <intervention_root> [PPNN] | stage <stage-name>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 metadata:
-  version: "3.1.1"
+  version: "3.2.0"
   last_updated: "2026-07-19"
-  summary: "The intervention's PROBE-phase worker — runs ③DISPATCH→④POINT→⑤INTERPRET for an application (DRAFT authored ①ORGANIZE+②MATCH; the plan is executed, not re-matched). The model (anatomy, QA contract, cost ladder, LAWS, states, checker codes) is the constitution's: ../../../../probe/haipipe-probe/SKILL.md. This file is only the application-side deltas: intervention_root, the DIKW-ladder rungs, and no-sidecar harvest (folds into a-executor). History: ./CHANGELOG.md."
+  summary: "The intervention's PROBE-phase worker — runs ③DISPATCH→④POINT→⑤INTERPRET for an application (DRAFT authored ①ORGANIZE+②MATCH; the plan is executed, not re-matched). The model (anatomy, QA contract, cost ladder, LAWS, states, checker codes) belongs to probe: ../../../../probe/haipipe-probe/SKILL.md. This file is only the application-side deltas: intervention_root, the DIKW-ladder rungs, and no-sidecar harvest (folds into a-executor). History: ./CHANGELOG.md."
 ---
 
 Skill: haipipe-application-probe — the PROBE-phase worker for an application
@@ -15,12 +15,12 @@ Skill: haipipe-application-probe — the PROBE-phase worker for an application
 Called by application stage skills (seed, descriptions, themes, claims, venue, pitch, narrative, display, section-edit) after DRAFT.
 DRAFT authored the probe plan (①ORGANIZE + ②MATCH); this worker runs it FORWARD (③DISPATCH → ④POINT → ⑤INTERPRET): dispatch the NEW entries, point each target, harvest what comes back.
 
-⭐ THE MODEL IS NOT THIS FILE'S — it is the constitution's: `../../../../probe/haipipe-probe/SKILL.md`.
+⭐ THE MODEL IS NOT THIS FILE'S — it is `probe`'s: `../../../../probe/haipipe-probe/SKILL.md`.
 Read it for the probe-file anatomy, the QA state-line contract, the cost ladder, the two LAWS, the derived states, and the checker's FAIL codes.
-This file is ONLY how an application runs the loop, plus the application-side deltas the constitution does not cover.
+This file is ONLY how an application runs the loop, plus the application-side deltas `probe` does not cover.
 
 Not user-facing: users invoke stage skills; a stage calls `Skill("haipipe-application-probe", args="from-buffer <intervention_root> [PPNN]")`.
-Which rung runs which mode and lanes, seed/claims specifics, and section-edit logic: `ref/per-stage-dispatch.md`.
+Which rung runs which lanes, seed/claims specifics, and section-edit logic: `ref/per-stage-dispatch.md`.
 
 The application-side deltas:
 - `intervention_root` vocabulary, and the intervention's OWN registries (the T1 whitelist).
@@ -28,13 +28,13 @@ The application-side deltas:
 - harvest folds into the entry's `### a-executor` — no sidecar docs, no lanes (application delta).
 
 
-Rules (follow these — the model is the constitution's)
-======================================================
+Rules (follow these — the model is `probe`'s)
+==============================================
 
 The PROBE-phase rules live in `../../../../probe/haipipe-probe/SKILL.md` → **Phase rules · PROBE phase** (+ **The QA file**, **The two LAWS**). Follow those; on conflict, that file wins. Application-specific additions:
 - Dispatch goes through the collector agent (`haipipe-probe-q-executor-agent`), NEVER an orchestrator called inline by this worker — results would die with the reply.
 - Harvest folds into the entry's `### a-executor` — the answer's numbers/citations land INLINE there, anchored to `target:`; no sidecar docs, no `values:`/`sources:`/`displays:` lanes (application delta). See `ref/harvest-acceptance.md`.
-- `mode: full` → the claim STATUS goes in `0-lifecycle/1c-claims/1c-claims.md`, NEVER in the probe file.
+- A claim's STATUS goes in `0-lifecycle/1c-claims/1c-claims.md`, written by the AUTHOR, NEVER in the probe file.
 - No bibtex; no ad-hoc plots; no markdown tables in any probe document.
 
 The loop below is the HOW-TO for these rules.
@@ -46,9 +46,9 @@ The loop, application-side — DRAFT authored ①②; this worker runs ③④⑤
 Each step ends with a PROOF this worker MUST show in its reply; an absent proof means the step did not happen.
 STEP 0 — re-invoke this skill fresh every run, even when its text is already in context (a probe once ran a 3-hour-old contract).
 
-CONSTITUTION PHASE SPLIT.
+THE PHASE SPLIT (`probe`).
 ①ORGANIZE + ②MATCH happen at DRAFT: the stage's DRAFT authored each probe ENTRY with its `### q-executor` (FROZEN, + Deliverable/Accepted), its `### q-consumer` bullets, and its `### bank binding` (`route`, `bank`, `target` — an existing path or `NEW <path>`). The plan is AUTHORITATIVE — this worker EXECUTES it, it does NOT re-match.
-This worker runs ③DISPATCH + ④POINT (COLLECT the answer from the bank, per the constitution) + ⑤INTERPRET (HARVEST it — write `### a-executor` and the stage-doc a-consumer). Collection is the constitution's model; harvest is this worker's, and the constitution says nothing about it.
+This worker runs ③DISPATCH + ④POINT (COLLECT the answer from the bank, per `probe`) + ⑤INTERPRET (HARVEST it — write `### a-executor` and the stage-doc a-consumer). Collection is `probe`'s model; harvest is this worker's, and `probe` says nothing about it.
 
 
 ① + ② — DONE AT DRAFT (this worker's PRECONDITION)
@@ -104,11 +104,11 @@ HARVEST (⑤) begins. ════════
 ⑤ INTERPRET — the a-executor, the stage-doc a-consumer, and the claim status
 ----------------------------------------------------------------------------
 
-- Write `### a-executor` — a COPY of the answering QA file's answer, ONLY against an `answered`, non-superseded target (constitution).
+- Write `### a-executor` — a COPY of the answering QA file's answer, ONLY against an `answered`, non-superseded target (`probe`).
   HARVEST folds in here: write the answer's numbers / citations INLINE, each with its anchor `<value>  [→ <the entry's target QA file>]`.
   `target:` is already verified `answered` + non-superseded — that IS the fabrication anchor. No second transcription, no `values:`/`sources:`/`displays:` lane, no sidecar doc.
 - Each Q-consumer this entry serves then writes its OWN a-consumer in its stage doc (station ②), anchored `[source: PP<NN>]` back to the `### a-executor` copy — the per-consumer interpretation UP into the intervention's words.
-- `mode: full` → the AUTHOR writes the claim status (`supported | refuted | inconclusive` + confidence) into `0-lifecycle/1c-claims/1c-claims.md`, flipping the C-line AND its Evidence Campaign row in the same pass — never in the probe file.
+- The AUTHOR writes the claim status (`supported | refuted | inconclusive` + confidence) into `0-lifecycle/1c-claims/1c-claims.md`, flipping the C-line AND its Evidence Campaign row in the same pass — never in the probe file.
   A probe is communication, not judgment — there is no review gate; keep the overclaim check (never causal from associational evidence).
   The venue gate later reads THIS campaign against its settlement bar (light | medium | full).
 - A display unit a question needs but that does not exist REROUTES to the display stage (a request row); do not invent an artifact here.
@@ -125,7 +125,7 @@ sh <this-skill-dir>/check-probe-cards.sh <intervention_root> [<project_root>]
 ```
 
 Checks: `read` entries have resolving, non-`working`, non-superseded targets; `planned` entries FAIL (probe-not-run); `commissioned` entries carry owner/eta/blocks/cross-project with a future eta; dead vocabulary FAILs; no markdown tables in any probe file; the bank carries no consumer vocabulary (LAW 2).
-The FAIL codes are the constitution's.
+The FAIL codes are `probe`'s.
 Never report a green PROBE over a FAIL.
 
 PROOF 6: the checker output, pasted.
@@ -140,7 +140,7 @@ Every answer's numbers / citations land INLINE in the entry's `### a-executor`, 
 Finding stays the bank's monopoly; this worker transcribes only what the entry's `target:` already points at. Details: `ref/harvest-acceptance.md`.
 
 
-Hard boundaries (application-specific; the wall + ONE-WRITER are the constitution's)
+Hard boundaries (application-specific; the wall + ONE-WRITER belong to `probe`)
 ====================================================================================
 
 - Citations land inline in `### a-executor` — plain text, no bibtex, anchored to the source.
@@ -164,8 +164,8 @@ Reference
 =========
 
 ```
-../../../../probe/haipipe-probe/SKILL.md   THE CONSTITUTION — the model. Read it.
-ref/per-stage-dispatch.md                  rung→mode map · seed/claims specifics · venue-scaled lanes
+../../../../probe/haipipe-probe/SKILL.md   probe — the model. Read it.
+ref/per-stage-dispatch.md                  rung→lane map · seed/claims specifics · venue-scaled lanes
 ref/harvest-acceptance.md                  no-sidecar harvest: write into a-executor, anchored to target
 check-probe-cards.sh                       the VERIFY / stage-gate verifier (family-local fork)
 ../../../haipipe-application/fn/probes.md   buffer + release convention

@@ -160,13 +160,15 @@ Rules for paragraph blocks:
 Three placeholder forms, and nothing guessed:
 
 ```
-{VAL:? <what the number is>}   a number PROBE/values must trace to a source
-\citep{key} / \citet{key}      a REAL citation — the key must already EXIST in the .bib
-\cite{TOADD}                   a citation slot with no suitable .bib key yet
+{VAL:? <what>} [Q-<Stage>-<n>]  a number PROBE must trace to a source, + the question that will produce it
+\citep{key} / \citet{key}       a REAL citation — the key must already EXIST in the .bib
+\cite{TOADD} [Q-<Stage>-<n>]    a citation slot with no suitable .bib key yet, + the question that will produce it
 ```
 
-- **`\citep{key}`** — grep the `.bib` (and `_CITATION_`) **first**. Writing a key that does not grep in the `.bib` is **inventing a citation**.
-- **`\cite{TOADD}`** — every one is paired with a `_CITATION_` row naming the topic + expected source (the prose stays clean; the map carries the topic). `grep -c TOADD` counts open slots; a `TOADD` that survives into compiled tex **fails CHECK**.
+The placeholder and its anchor bracket are **two markers side by side, never fused**. The bracket names the `1-probes/` question that owes the answer; without it the placeholder is a defect.
+
+- **`\citep{key}`** — grep the `.bib` **first**. Writing a key that does not grep in the `.bib` is **inventing a citation**.
+- **`\cite{TOADD} [Q-<Stage>-<n>]`** — every `TOADD` carries the bracket of the question that will produce the key, side by side, **never fused into one marker**. A bare `\cite{TOADD}` with no bracket is a defect: a hole no question will ever fill. `grep -c TOADD` counts open slots; a `TOADD` that survives into compiled tex **fails CHECK**.
 - **`{VAL:?}`** — the `<what the number is>` text is what PROBE traces.
 
 Citation commands (`\citep` / `\citet` / `\cite{TOADD}`) are the **only** LaTeX allowed in the `.md` — they sync to tex verbatim. No other markup.
@@ -286,7 +288,7 @@ claims          0-lifecycle/1b-claims/1b-claims.md                        what c
 - [ ] `grep -c '<tpl' {section}.md` = 0 (template fully instantiated, no guidance residue)
 - [ ] Every paragraph has a heading, preview, and real prose sentences
 - [ ] Structure overview matches the paragraph blocks
-- [ ] Every unverified number is a `{VAL:?}`; every citation gap a `\cite{TOADD}` + `_CITATION_` row; every `\citep{key}` greps to a real .bib entry (nothing invented)
+- [ ] Every unverified number is a `{VAL:? <what>} [Q-<Stage>-<n>]`; every citation gap a `\cite{TOADD} [Q-<Stage>-<n>]`; every `\citep{key}` greps to a real .bib entry (nothing invented); no placeholder is left without its bracket
 - [ ] **MANDATORY** "Questions Raised by This Draft" block is the `.md`'s LAST content, in the fixed structure: one `###` Q-subsection per question (Question · Links to · Description · Answer from the group), then a Settled Flags section, then a user-owned "My Notes & Feedback — JL" section. A DRAFT missing this block, or writing it as freeform prose, FAILS the gate.
 - [ ] Every placeholder + display need + heavier question appears as a numbered Q with a `Links to` back-reference and a `_pending_` Answer slot
 - [ ] ⛔ The user has reviewed the STRUCTURE + the QUESTIONS and approved (no open structural `> USER:` questions)

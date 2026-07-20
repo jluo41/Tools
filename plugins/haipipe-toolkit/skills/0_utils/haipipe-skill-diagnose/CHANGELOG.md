@@ -3,6 +3,19 @@ haipipe-skill-diagnose — Changelog
 
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
+## [1.3.0] — 2026-07-19 — the review ledger moves to `_console/`
+
+### Changed (JL: "haipipe-skill-diagnose/SKILL.md:46 please also change this, and make SKILLS to save things to a _console folder?")
+
+- **The review no longer ships inside the bucket it reviews.** Phase 3 REPORT wrote `SKILLSET_REVIEW.md` at the bucket root, so a process artifact went out to every consumer of the reviewed skills and drifted the moment either side changed. It is now written to `skills/_console/<YYMMDD>-<slug>.md` — date = day of BIRTH, never re-dated; one file per TOPIC, later sessions APPEND. The folder's contract is `skills/_console/README.md` (new).
+- Everything that pointed at the old location follows it: the [J] thread MIRROR target (Phase 3), RESOLVE's reply sweep (Phase 5 — the console file is now explicitly non-optional in the grep, since it is where the owner actually types), the COMMIT gate and `git add` scope (Phase 6 — bucket path PLUS the one console file this review owns), the `artifacts:` return contract, `ref/thread-protocol.md`, and `ref/finding-taxonomy.md`.
+- New MUST NOT: never write the review ledger beside its subject.
+
+### Changed (JL: "only add it or assign the new tags until we really have the final version, not everytime, we have a new tag")
+
+- **Versioning is per BODY OF WORK, not per pass.** Phase 4 had said "Every fixed skill gets a version bump + CHANGELOG entry in the same pass", which fragmented a single multi-round review across several tags — the 260719 DRAFT round had already produced 5.0.2 and 5.1.0 on one skill, and three 1.0.1s on its lanes, before the ruling landed; all were collapsed back into one. The rule is now: one tag, assigned at the END, marked `⚠️ IN PROGRESS` and appended to while the round is open. The matching MUST NOT flipped from "no bump" to "fragmenting one round across several tags".
+- Closed reviews predating this (`0_connect/`, `task/`, `task/1_data/`, `task/3_end/SKILLSET_REVIEW.md`) stay where they are — CHANGELOG entries cite those paths. Only new reviews go to `_console/`.
+
 ## [1.2.1] — 2026-07-14 — probe-redesign residue sweep
 
 Fixed

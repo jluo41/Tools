@@ -2,7 +2,7 @@ Thread protocol: `> {CC->JL}:` judgment-point comments
 =======================================================
 
 How [J] findings get decided: the agent applies its best reading, then opens ONE thread AT the judgment point in the file, and the user replies inline with `> JL:`.
-Threads open AT REPORT TIME (Phase 3), together with SKILLSET_REVIEW.md, not deferred to FIX: the user answers them in the same pass as the report eyeball (JL 2026-07-05: "我觉得这个comment 必须要先生成好"). Each finding records its thread's `path:line`, and the FULL block is MIRRORED under the finding in SKILLSET_REVIEW.md so the user replies in one file without hopping (JL: "我在哪里加入我的comments呀"). Either copy's `> JL:` slot counts, first reply wins; the RESOLVE sweep greps BOTH places and removes both copies together. Opening a thread is a question, not a fix; nothing else changes before the go.
+Threads open AT REPORT TIME (Phase 3), together with the console file `skills/_console/<YYMMDD>-<slug>.md`, not deferred to FIX: the user answers them in the same pass as the report eyeball (JL 2026-07-05: "我觉得这个comment 必须要先生成好"). Each finding records its thread's `path:line`, and the FULL block is MIRRORED under the finding in the console file so the user replies in one file without hopping (JL: "我在哪里加入我的comments呀"). Either copy's `> JL:` slot counts, first reply wins; the RESOLVE sweep greps BOTH places and removes both copies together. Opening a thread is a question, not a fix; nothing else changes before the go.
 This protocol exists because terse threads failed twice in the field: JL replied "I think I need more context here" (2026-07-05, src2input) and later "inline 的你的每个comments 都很难understand，try to provide more information and examples" (2026-07-05).
 Write every thread for a reader who has NOT followed the session.
 
@@ -68,7 +68,7 @@ Placement and scale
 
 - ONE thread per judgment point, placed AT the point in the file (next to the changed block), not collected at the top.
 - A file-wide rewrite gets one thread at the top summarizing what changed and what to read first.
-- Threads in the review ledger (SKILLSET_REVIEW.md) follow the same format, indented to match the item.
+- Threads in the review ledger (the console file) follow the same format, indented to match the item.
 
 
 Lifecycle

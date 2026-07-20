@@ -4,8 +4,8 @@ description: "Generate 0-lifecycle/3-narrative/3-narrative.md + _LOG_3-narrative
 argument-hint: "[paper-dir-or-topic]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.1.1"
-  last_updated: "2026-07-14"
+  version: "4.2.2"
+  last_updated: "2026-07-19"
   summary: "Narrative stage orchestrator (stage 3, venue-ALIGNED): the section-mirrored, readiness-tagged design contract with an explicit Probes section, driving DRAFT -> PROBE -> REVISE -> CHECK internally (the user invokes narrative, not the phases). A [GAP] beat raises a question SECTION in 1-probes/PPNN_<topic>.md. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -38,8 +38,12 @@ Read first: `../../../PHILOSOPHY.md`, `../../ref/04-lifecycle-map.md`.
 **Files produced:**
 - `0-lifecycle/3-narrative/3-narrative.md` -- the design contract (venue-ALIGNED)
 - `0-lifecycle/3-narrative/_LOG_3-narrative.md` -- phase progress journal (per the Comment lifecycle section in `../../../haipipe-paper/SKILL.md`)
-- `0-lifecycle/3-narrative/_DISPLAY_3-narrative.md` -- which display unit serves each beat
-- `1-probes/PPNN_<topic>.md` -- the probe FILES; a narrative need becomes a question SECTION (flat cross-stage pool; `serves: 3-narrative`)
+- `0-lifecycle/4-display/_DISPLAY_REQUEST.md` -- one DR row per beat that needs a display unit, filed on this stage's behalf (the display stage owns the file and advances its statuses)
+- `1-probes/PPNN_<topic>.md` -- the probe FILES; a narrative need becomes a question ENTRY (flat cross-stage pool), its `### q-consumer` bullet naming the `Q-Narrative-<n>` it serves
+
+`1-probes/` is the only consumer-side source of truth; `_LOG_3-narrative.md` is the only sidecar.
+An owed citation is written `\cite{TOADD} [Q-Narrative-<n>]` and an owed number `{VAL:? <what>} [Q-Narrative-<n>]` -- the marker and the anchor bracket sit side by side, never fused -- where the bracket names the question that will produce it.
+A placeholder with no bracket is a defect: it is a hole no question will ever fill.
 
 **Content structure (3-narrative.md):**
 - Readiness legend -- five tags: [READY], [PENDING], [INFER], [LIT], [GAP]
@@ -58,7 +62,7 @@ Read first: `../../../PHILOSOPHY.md`, `../../ref/04-lifecycle-map.md`.
 **Done-criteria:**
 - [ ] All beats have readiness tags (no untagged beats)
 - [ ] No [GAP] beat without an entry in the Probes section and a question SECTION in 1-probes/
-- [ ] Display needs identified in _DISPLAY_3-narrative.md
+- [ ] Every beat needing a display carries a DR row in `0-lifecycle/4-display/_DISPLAY_REQUEST.md`
 - [ ] Per-beat interrogation complete (subagent reviewed every beat)
 - [ ] Spine throughline present
 - [ ] Probes section present with all [GAP]/[LIT] needs surfaced
@@ -66,12 +70,12 @@ Read first: `../../../PHILOSOPHY.md`, `../../ref/04-lifecycle-map.md`.
 - [ ] _LOG entry records the current state
 
 **DPRC applicability:**
-- DRAFT: design contract with section blocks and tagged beats
-- PROBE: link claims to beats, check readiness, identify display needs, citation needs per beat
+- DRAFT: design contract with section blocks and tagged beats; each beat's display need filed as a DR row
+- PROBE: link claims to beats, check readiness, citation needs per beat
 - REVISE: sharpen arc and flow, refine beat prose
 - CHECK: all beats [READY]?
   Interrogation complete?
-  Display needs met?
+  Every DR row ruled by the display stage?
 
 ## Phase Orchestration
 
@@ -106,13 +110,16 @@ DRAFT --> discover inputs (pitch, claims, experiment results, repo source),
           build claim-evidence map, write the section-mirrored story
           with readiness-tagged beats and spine throughline,
           run per-beat interrogation (subagent reviewed every beat),
-          integrate interrogation comments
+          integrate interrogation comments,
+          raise each beat's display need as a DR row in
+          0-lifecycle/4-display/_DISPLAY_REQUEST.md (via /haipipe-paper-draft-display)
           (internally calls /haipipe-paper-draft with this artifact spec)
           Ends at ⛔ STOP: user reviews, iterates, approves ([GATE] logged).
   |
   v
 PROBE --> identify citation needs per beat ([LIT] tags),
-          identify display needs per beat (-> _DISPLAY_3-narrative.md),
+          check each beat's DR row against the display stage's ruling
+          (accepted / declined-with-reason / done),
           raise [GAP]/[PENDING] beats as question SECTIONS (-> 1-probes/),
           thread external reviewer comments (\fb) onto beats
           (internally calls /haipipe-paper-probe)
@@ -155,7 +162,7 @@ The skill discovers whichever of these exist in the project tree:
 0. **`0-lifecycle/2b-pitch/2b-pitch.md`** (paper folder, if present) -- current one-minute paper story.
    Use it as the reader-facing framing constraint, not as evidence.
 1. **`0-lifecycle/1b-claims/1b-claims.md`** (best) -- the claim ledger.
-   It is the ONLY home of a claim's status (`supported | refuted | inconclusive` + confidence + claim_type): a probe section carries only its `a-consumer:`, and `## Verdict`/`verdicted` are DELETED.
+   It is the ONLY home of a claim's status (`supported | refuted | inconclusive` + confidence + claim_type): a probe entry carries only its `### a-executor`.
    If present, use the ledger as the spine of the narrative; every supported claim becomes a section in the report.
 2. **`IDEA_REPORT.md`** -- chosen idea, hypothesis, novelty justification (from `/idea-discovery`).
    Supplies the problem statement and intended contribution.
@@ -251,7 +258,7 @@ Keep the footer label exactly `External review (...)` so it is not confused with
 ```text
 <paper>/0-lifecycle/3-narrative/3-narrative.md          design contract
 <paper>/0-lifecycle/3-narrative/_LOG_3-narrative.md      phase progress journal
-<paper>/0-lifecycle/3-narrative/_DISPLAY_3-narrative.md  display needs per beat
+<paper>/0-lifecycle/4-display/_DISPLAY_REQUEST.md       DR rows this stage files for the beats' display needs
 <paper>/1-probes/PPNN_<topic>.md                    probe files; one SECTION per [GAP] beat's question
 ```
 
@@ -295,6 +302,21 @@ Copy it to `<paper>/0-lifecycle/3-narrative/3-narrative.md` and replace the plac
    When a named reviewer comments on the paper, attach each comment to the beat it concerns; do not collapse them into one footer paragraph.
    Internal = interrogation; external = named reviewer.
    A comment with no home beat stays in the footer.
+
+## Questions this stage typically raises
+
+DRAFT's Step 4b raises what the draft cannot answer. Narrative asks per BEAT — a beat that cannot be sourced is a beat that cannot be written.
+
+```
+⚓ beat anchor      This beat asserts something about the field. Which source carries it?
+                    Every [LIT] tag is this question, not yet asked.
+🕳️ gap beat        A [GAP] beat has no evidence at all. What would produce it, and is it
+                    worth producing? Every [GAP] is a question or a cut — never a maybe.
+🖼️ display need    Does this beat need the reader to SEE something? Then it owes a DR row
+                    in 0-lifecycle/4-display/_DISPLAY_REQUEST.md, not a promise.
+🧵 arc break       Does the throughline actually survive this beat order, or does the
+                    argument need a fact we have not established to get from here to there?
+```
 
 ## Handoff
 

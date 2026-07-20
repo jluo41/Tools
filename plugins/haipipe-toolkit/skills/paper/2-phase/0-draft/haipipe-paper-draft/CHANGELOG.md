@@ -4,6 +4,73 @@ haipipe-paper-draft — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 5.1.0 — 2026-07-19 — question-raising promoted to a step of its own
+
+⚠️ IN PROGRESS — this tag covers the whole 260719 DRAFT-raise round and is still being written to. One tag for one body of work (JL: "only add it or assign the new tags until we really have the final version, not everytime, we have a new tag").
+
+From `_console/260719-DRAFT-RAISE-QUESTIONS.md`, findings B1 B2 B4 B5 B6 · A4 A5 A8 A9 A10 · C1 C3 C4 · D1 D3 · N3 N4. JL's opening question was "把 draft 的 raise 问题's ability，也提得更重要一些" — this is that.
+
+**N1 — `Skill` was never declared.** `Step 4a. 🕳️ SWEEP THE HOLES` consists of exactly three `Skill()` calls — `haipipe-paper-draft-{citation,values,display}` — but `allowed-tools` listed `Bash, Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, Agent` and never `Skill`. Every dispatch on the step's only path was undeclared. `Skill` appended. The same gap had an older, quieter instance: the `Skill("haipipe-paper-probe", …)` call in the resource stage note. That one sat in a per-stage aside; Step 4a is on the mandatory path, which is why this surfaced now.
+
+**B1 — RAISE + PLAN is now `Step 4b`, a top-level step.** It had been the second "legal destination" of a bulleted aside inside `**Inline WebSearch is ALLOWED here**` — nesting depth 3, scoped by its parent to "when the search reveals a gap". A question born from reading upstream, or from a `{VAL:?}` the prose could not fill, had no instructed home; the file even said so ("see Step 4 (the one normative home)"). The step is now UNCONDITIONAL and names its four origins. The WebSearch block keeps one line pointing at it.
+
+**B2 — the consumer-side half was never instructed.** DRAFT rule 2 in `probe` is a conjunction: raise a `## Q-<Stage>-<n>` in the stage doc's Q-consumer AND author its probe ENTRY. This file only ever taught the ENTRY, then assumed the id existed — its own self-review checked that the id was cited inline, an id nothing had told it to create. Step 4b now states both halves as ① and ②.
+
+**B5 — find-or-open, and T0 JOIN.** "author its ENTRY" dropped `probe`'s find-or-open, and the cost ladder's cheapest rung appeared nowhere, so a drafter opened a duplicate entry instead of adding a `### q-consumer` bullet to the one already asking.
+
+**N2 (applied reading) — the hub holds the pen.** Step 4a's three lanes REPORT holes; they do not author Q-consumers or probe entries. The lanes' own SKILL.md files said they raised; the hub said it folded them in. Three writers on one `1-probes/PPNN_<topic>.md` is a write race, and the one-writer rule that governs a bank QA file governs this one. ⚠️ This is a judgment call taken on evidence, not an owner ruling — flagged for JL.
+
+**D1 / R1 — per-stage question types moved OUT.** JL: "是不是我们给每个stage写上，我们这里要写什么东西，一般会问到什么类型的问题？" The `PROBE:` lines in Stage-specific notes were assigning question ELICITATION to the PROBE phase, against `probe`'s PROBE rule 1 and this file's own "DRAFT is where the questions are born AND planned". Each stage skill now owns a **Questions this stage typically raises** section; this worker points at it and never restates it (one home). The display note keeps only its genuine PROBE work — the evidence and render lanes.
+
+**N3 — the file violated its own headline rule** in four places, writing bare `\cite{TOADD}` / `{VAL:?}` while the Rules block says "A placeholder with no bracket is a defect". Worst instance was inside the self-review checklist, where it taught the reviewer to accept them.
+
+**B6 — the self-review gained a COMPLETENESS surface.** It checked Q → sentence and never sentence → Q, so the headline rule had no checker.
+
+**A5 — the merged gate now presents all three things** it exists to review: draft, probe plan (one line per question), self-review verdict. It had presented only the draft, though the file itself says "ONE gate reviews both".
+
+**A4** return contract added (`status: blocked` was instructed with nothing defining it) · **A8** the single door named in FORBIDDEN · **A9** WebFetch named; load-bearing clause added · **A10** both checker run sites named · **C1** the hand-written "Status board row" dropped (it is GENERATED, and the `fn/probes.md` citation was dangling) · **C3** the self-review sub-agent gets a repo-root-relative path, since a fresh agent cannot resolve `../../../../` · **C4** "buffer rule" / "buffered probes" retired (`args="from-buffer …"` is NOT debris — it is the live argument-hint) · **D3** Q-consumer restored to the five stages missing it in Step 3 · **N4** "Probes section" → "Q-consumer".
+
+## 5.0.1 — 2026-07-19 — vocabulary: `probe`, not "the constitution"
+
+Two vocabulary rulings from JL, both dated 2026-07-19, applied across `paper/`.
+
+**Ruling A — the `probe` nickname.** JL: "宪法 don't use this name, just use `probe`." Every "THE CONSTITUTION" / "the constitution" / "the probe constitution" naming `probe/haipipe-probe/SKILL.md` is replaced by `probe` or by the actual path, whichever reads better at the site. A nickname already in the repo is still a nickname.
+
+**Ruling B — the `a-consumer:` probe-file field.** `- a-consumer:` as a FIELD IN A PROBE FILE was replaced by the entry's `### a-executor`; `check-probe-cards.sh` HARD FAILs it under the `stale-old-format` rule. The a-consumer CONCEPT is untouched and still named a-consumer: it is the per-consumer interpretation written in the STAGE DOC (station ②), anchored `[source: PP<NN>]`. Prose that said "the probe section carries its `a-consumer:`" was wrong twice over — probe files hold ENTRIES, not sections, and what an entry carries is `### a-executor`.
+
+Current model, for reference:
+```
+QA file (bank)  ->  the ENTRY's `### a-executor`  (probe file: the copy, single source of truth)
+                ->  each Q-consumer's a-consumer  (STAGE DOC: what it MEANS for this consumer)
+                ->  stage content                 (REVISE weaves it in, discharges the bracket)
+```
+
+Written under JL's NO TOMBSTONES rule (2026-07-19): "不需要留退役告示,直接抹除任何痕迹" then "follow this rule to do all the following changes." The docs state only the current contract; this CHANGELOG carries the history.
+
+### Changed (ruling A) — four sites
+- Rules header: "The DRAFT-phase rules live in the constitution: `../../../../probe/haipipe-probe/SKILL.md`" -> "The DRAFT-phase rules live in `../../../../probe/haipipe-probe/SKILL.md`".
+- Web-search destinations: "see the probe constitution's PHASE MAP" -> "see probe's PHASE MAP".
+- Self-review READ list: "the probe constitution's 'The DRAFT self-review checklist'" -> "probe's 'The DRAFT self-review checklist'".
+- Self-review Surface B: "run the constitution's 'DRAFT self-review checklist' verbatim" -> "run probe's ... verbatim".
+
+No `a-consumer` sites in this skill; ruling B did not touch it.
+
+## 5.0.0 — 2026-07-19 — BREAKING: the three lanes join DRAFT; every hole is FILLED or OWNED
+
+From the `paper/2-phase` skillset review.
+
+### Changed (JL: "在 draft 的时候,就应该尽量把东西都 draft 好。比如说,如果有些东西没写出来,那就应该有一个对应的 question 或者 concern")
+DRAFT's done-state is restated: a hole is either FILLED or OWNED, and there is no third state. An OWNED hole is a placeholder carrying the id of the question that will settle it — `\cite{TOADD} [Q-<Stage>-<n>]`, `{VAL:? <what>} [Q-<Stage>-<n>]` — two markers side by side, never fused (JL: "\\cite{TOADD} [Q-XXX-N] So I want something like this."). A placeholder with no bracket is a defect: nobody owns it, so nobody will ever fill it. When no existing question would produce what the prose owes, DRAFT RAISES one — JL: "feel free to add more questions … the Q-consumer is as many as possible … if there's no one here, I think you should propose a new question."
+
+### Changed — NEW Step 4a, the hole sweep
+Three lane skills join this phase and are dispatched together after the prose is written: `haipipe-paper-draft-citation` / `-values` / `-display`. They were the DRAFT halves of three skills that lived under `1-probe/` and were named probe lane workers despite containing no ③④⑤ work at all. Each lane knows its own kind of hole and its own way of checking for it (JL: "For each topic, they should be aware how to check the values and citations and displays, and raise the questions") — which is why they stay three skills rather than folding into this hub.
+
+### Changed — the Rules block
+The citation rule and the sidecar rule collapse into one: EVERY HOLE IS FILLED OR OWNED, EVERY STAGE. `1-probes/` is the only consumer-side source of truth; `_LOG_<stage>.md` is the only sidecar.
+
+### Changed — the seed artifact is FIVE sections, not three
+This file described `0-seed.md` as three sections in three places (Step 3, the seed stage note, and the caller table), omitting Landscape and Q-consumer. Q-consumer is where every `[Q-Seed-<n>]` anchor lives, so an agent following the old Step 3 would present a 3-section plan and fail the seed skill's own done-criterion 1.
+
 ## 4.4.0 — 2026-07-19 — sync to probe constitution v9.5.0 (Q-executor-entry probe-file format) + archaeology strip
 
 Rewrote every probe-file-anatomy reference to the new v9.5.0 shape: a probe entry is now `## QX<n>` (topic-local) with four `###` subsections — `### q-executor` (+ `Deliverable:` / `Accepted:` lines), `### q-consumer` (one bullet per Q-consumer, its stage-doc id + original question), `### bank binding` (`route` / `bank` / `target` / `state`), and `### a-executor` (the harvested copy of the QA answer). Field renames applied across the Rules block, Step 4 (probe plan), Step 4b self-review Surface B, the summary, and the frontmatter: `route:`→`route`, `match: EXISTS·<f> / NONE→NEW`→`bank: reuse | run | code | new`, `target:`→`target`, `state:`→`state`, and the probe-file `a-consumer:` (the answer copied INTO the probe file)→`### a-executor`; the `## Why` field is DROPPED — the stake stays in the stage-doc Q-consumer. Unchanged (deliberately): the stage-doc `Q-<Stage>-<n>` Q-consumer id and its `Answer:`/a-consumer (station ②) — only the probe-file entry heading and fields moved. Retired the `_VALUES_*`/`_CITATION_*` consumer-side sidecars from the T1 LOCAL registry list (1-probes/ is the only consumer-side source of truth; `_LOG` is the only kept sidecar); the `.bib`/`\citep{}`/`\cite{TOADD}`/`{VAL:?}` citation rules are untouched. Archaeology strip: dropped the dated ruling citation from the resource-stage "cut" note.

@@ -4,7 +4,7 @@ description: "The probe layer: a consumer-level Q/A map (papers/<P>/ or applicat
 argument-hint: "[contract | anatomy | status | \"<question>\"]"
 allowed-tools: Bash, Read, Grep, Glob, Agent, Skill
 metadata:
-  version: "9.5.0"
+  version: "9.6.0"
   last_updated: "2026-07-19"
   summary: "The probe layer, operational form. A probe maps a question to a QA file in the probe-unaware bank — communication, not judgment. Spec + rationale: ../../../diagram/260714-probe-qa/. History: ./CHANGELOG.md."
 ---
@@ -101,7 +101,7 @@ Per SECTION:
 - `target` agrees with `bank` (an existing QA path for reuse/run/code, or `NEW <path>` for new).
 - each `### q-consumer` bullet copies in a real stage-doc Q-consumer (id + its original question); the strip lost nothing and leaked no stake.
 Per FILE:
-- no `## Why` and no stake anywhere — the stake stays in the stage-doc Q-consumers; only `### q-executor` text is dispatch-bound.
+- no stake anywhere — it stays in the stage-doc Q-consumers; only `### q-executor` text is dispatch-bound.
 
 The stage's DRAFT worker adds the draft-PROSE checks (its own artifact spec). Issues → the drafter fixes → re-review (bounded); the verdict rides to the human gate.
 
@@ -131,13 +131,12 @@ The probe file
 `papers/<P>/1-probes/PPNN_<topic>.md`, or identically `applications/<A>/1-probes/PPNN_<topic>.md`.
 One file per TOPIC; each ENTRY is one Q-EXECUTOR (the file is Q-executor-oriented — the consumers hang off it).
 PP numbers are consumer-local footnote numbers — two consumers may both carry a PP04, and nothing collides because no PP id ever crosses to the bank.
-There is no `## Why` in a probe file: the stake lives in each Q-consumer, in the stage doc, not here.
+The stake lives in each Q-consumer, in the stage doc, not here.
 
 Fillable form + rules: `ref/probe-template.md`. An entry is `## QX<n>` + four `###` subsections; no markdown tables.
 
 ```text
    # PP03 — WellDoc data feasibility
-   **mode**: light | full
 
    ## QX1 — cycle indicator          ← topic-local q-executor id (QX1, QX2 … within this file)
 

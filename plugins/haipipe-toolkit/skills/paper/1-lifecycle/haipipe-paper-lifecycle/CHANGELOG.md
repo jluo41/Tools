@@ -4,6 +4,51 @@ haipipe-paper-lifecycle — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 3.1.0 — 2026-07-19 — the claims router line and ⑤ HARVEST now name the real probe artifacts
+
+Two vocabulary rulings from JL, both dated 2026-07-19, applied across `paper/`.
+
+**Ruling A — the `probe` nickname.** JL: "宪法 don't use this name, just use `probe`." Every "THE CONSTITUTION" / "the constitution" / "the probe constitution" naming `probe/haipipe-probe/SKILL.md` is replaced by `probe` or by the actual path, whichever reads better at the site. A nickname already in the repo is still a nickname.
+
+**Ruling B — the `a-consumer:` probe-file field.** `- a-consumer:` as a FIELD IN A PROBE FILE was replaced by the entry's `### a-executor`; `check-probe-cards.sh` HARD FAILs it under the `stale-old-format` rule. The a-consumer CONCEPT is untouched and still named a-consumer: it is the per-consumer interpretation written in the STAGE DOC (station ②), anchored `[source: PP<NN>]`. Prose that said "the probe section carries its `a-consumer:`" was wrong twice over — probe files hold ENTRIES, not sections, and what an entry carries is `### a-executor`.
+
+Current model, for reference:
+```
+QA file (bank)  ->  the ENTRY's `### a-executor`  (probe file: the copy, single source of truth)
+                ->  each Q-consumer's a-consumer  (STAGE DOC: what it MEANS for this consumer)
+                ->  stage content                 (REVISE weaves it in, discharges the bracket)
+```
+
+Written under JL's NO TOMBSTONES rule (2026-07-19): "不需要留退役告示,直接抹除任何痕迹" then "follow this rule to do all the following changes." The docs state only the current contract; this CHANGELOG carries the history.
+
+### Changed — the claims router line (ruling B)
+"each claim tied to a probe section's answering QA file ... it reads the section's `a-consumer:`, not a probe verdict" -> "each claim tied to a probe entry's answering QA file ... it reads the entry's `### a-executor` and writes its own a-consumer in the stage doc". The trailing "not a probe verdict" was a ban-list naming a dead thing and is gone per the NO TOMBSTONES rule; the checker owns that enforcement.
+
+### Changed — the global-pass ⑤ HARVEST step (ruling B)
+The step said a PROBE re-run "re-resolves each `commissioned` section's target:, `ls` its QA file, and lands the `a-consumer:`". It now re-resolves each `commissioned` **entry's** `**target**:` and lands the `### a-executor` **plus** each Q-consumer's a-consumer in its stage doc. Both sinks are now named, which is the contract clarification behind the minor bump: an agent following the old line would have written the answer into the probe file under a field the checker HARD FAILs.
+Also in that block: "the q-executor block in the section is the bridge" -> "the `### q-executor` block in the entry is the bridge".
+
+## 3.0.1 — 2026-07-19 — retired sidecars erased from the router and the shared `ref/` docs
+
+This skill owns the shared `1-lifecycle/ref/` reference docs, and both of the load-bearing ones still described the retired sidecar model as the current contract — so an agent consulting the lifecycle map or the stage-gate table would scaffold files nothing reads, and would gate on their existence.
+
+JL ruling on the removal style, 2026-07-19: "不需要留退役告示，直接抹除任何痕迹" / "follow this rule to do all the following changes."
+
+Changed (SKILL.md)
+- The section-edit specialist line described the per-section folder as "outline .md, _LOG changelog, _CITATION_ map, _VALUES_ registry" → "outline .md and _LOG changelog".
+
+Changed (`../ref/04-lifecycle-map.md`)
+- `1-claims` Writes — `+ _LOG + _EVIDENCE_` → `+ _LOG`.
+- `3-narrative` Writes — `+ _LOG + _DISPLAY_` → `+ _LOG`, plus the DR rows it files in `0-lifecycle/4-display/_DISPLAY_REQUEST.md` (the display stage owns that file and its statuses).
+- `5-section-edit` Writes — `(outline .md, _LOG, _CITATION_, _VALUES_)` → `(outline .md, _LOG)`.
+
+Changed (`../ref/08-stage-gate.md`)
+- The section-edit exit question no longer requires a scaffold containing `_CITATION_ + _VALUES_`; it asks for `outline + _LOG`, and adds the check that actually matters now — every `\cite{TOADD}` / `{VAL:?}` carries its `[Q-<Stage>-<n>]` anchor bracket.
+
+Untouched (deliberately)
+- Every `mode: light | full` reference — deferred to a separate review.
+- `_DISPLAY_REQUEST.md` — alive.
+
 ## [2.4.0] -- 2026-07-14
 ## 3.0.0 — 2026-07-14
 

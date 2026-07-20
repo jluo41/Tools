@@ -4,6 +4,19 @@ haipipe-application-section-edit — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [5.3.0] — 2026-07-19
+
+- ⑩ probe files hold `## QX<n>` ENTRIES, not "sections" — wording corrected in the frontmatter summary.
+
+
+## [5.2.0] — 2026-07-19
+
+- Evidence-gap line restated: gaps are raised as ENTRIES in the flat probe pool, in the current
+  `## QX<n>` + four-`###` anatomy. Vocabulary: `a-consumer:` as a PROBE-FILE FIELD is gone — the probe entry's answer subsection is
+  `### a-executor` (the copy of the answering QA file's answer, the consumer-side single source of truth).
+  The a-consumer CONCEPT is untouched: it remains the per-consumer interpretation written in the STAGE DOC
+  (station 2, anchored `[source: PP<NN>]`).
+
 ## [5.1.0] — 2026-07-17
 
 - Citations lens traces to the 1c ledger anchors only (dropped `or K/W insight cards`).

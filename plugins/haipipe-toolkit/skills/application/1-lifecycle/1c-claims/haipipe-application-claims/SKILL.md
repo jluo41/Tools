@@ -4,9 +4,9 @@ description: "Stage orchestrator for rung 1c of the venue-FREE evidence ladder (
 argument-hint: "[intervention-path] [--backfill <PPNN>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "7.3.0"
-  last_updated: "2026-07-18"
-  summary: "Claims stage (rung 1c of the venue-FREE 1a–1d evidence ladder; the K rung) — the ONLY home of a claim's status (supported | weak | GAP, from a judged artifact, never intuition; no verdict block). Consumes 1b theme hooks into a claim ledger + evidence campaign, gives each primary a Rival + refute-capable probe, and reaches for evidence via the PROBE phase (questions raised as sections in 1-probes/). The pinned venue sets how much of the campaign must SETTLE (light/medium/full). History: ./CHANGELOG.md."
+  version: "7.5.0"
+  last_updated: "2026-07-19"
+  summary: "Claims stage (rung 1c of the venue-FREE 1a–1d evidence ladder; the K rung) — the ONLY home of a claim's status (supported | weak | GAP, from a judged artifact, never intuition; Consumes 1b theme hooks into a claim ledger + evidence campaign, gives each primary a Rival + refute-capable probe, and reaches for evidence via the PROBE phase (questions raised as entries in 1-probes/). The pinned venue sets how much of the campaign must SETTLE (light/medium/full). History: ./CHANGELOG.md."
 ---
 
 Skill: haipipe-application-claims
@@ -28,9 +28,9 @@ Read first: `../../../PHILOSOPHY.md`, `../../haipipe-application-lifecycle/SKILL
 ## What's special: three things make claims claims
 
 **1. It is the ONLY home of a claim's status.**
-`supported | weak | GAP` lives HERE, per-claim, private to this intervention — never in a probe file (there is no `## Verdict`, no `verdicted` state).
-A probe section carries the evidence's MEANING (its `a-consumer:`); the judgment is ours to write.
-A claim is `supported` only when it traces to a JUDGED artifact (a full-mode probe answer, or an equivalently reviewed result) — never from intuition, never from a raw unjudged number.
+`supported | weak | GAP` lives HERE, per-claim, private to this intervention — never in a probe file.
+A probe entry carries the evidence (its `### a-executor`, a copy of the answering QA file's answer); the judgment is ours to write.
+A claim is `supported` only when it traces to a JUDGED artifact (a probe answer, or an equivalently reviewed result) — never from intuition, never from a raw unjudged number.
 
 **2. The venue sets the settlement bar, read at the gate.**
 Venue-FREE: retargeting changes the required settlement, never the ledger's truth.
@@ -50,8 +50,8 @@ DRAFT   re-mine last round's Declined reservoir, read 1b-themes.md (hooks = clai
         and 1a-descriptions.md (the grounding floor); CONSUME every hook; give every primary a
         Rival; write Claims (short, theme-tagged), Q-consumer (the evidence questions), Evidence Campaign
 PROBE   one worker call; the five-step loop raises each GAP/weak claim as a SECTION in 1-probes/
-        and COLLECTS — the claim status FLIPS at INTERPRET, numbers land INLINE on the claim (+ resolving pointer). Mode FULL is
-        the norm here. Routing mechanics are the probe layer's: ../../../2-phase/1-probe/haipipe-application-probe/SKILL.md
+        and COLLECTS — the claim status FLIPS at INTERPRET, numbers land INLINE on the claim (+ resolving pointer).
+        Routing mechanics are the probe layer's: ../../../2-phase/1-probe/haipipe-application-probe/SKILL.md
 REVISE  refine claim statements, probe-plan clarity, campaign ordering
 CHECK   settlement bar vs the campaign table; every hook consumed; every primary has a Rival +
         Refutes-if; every settled claim traced to a RESOLVING QA file; no aspirational anchors; no STALE tags
@@ -71,7 +71,7 @@ Seed's `[FORWARD -> CLAIMS]` pointers are consumed by rung 1a, which seeds this 
 Claims             one C<n>: statement + theme tag (T<n>) + role (primary|enabling|assumption)
                    + status + -> PP reference; primaries carry a Rival line (short; the question is in Q-consumer)
 Declined hooks     theme hooks considered and not committed, one line + why (the reservoir)
-Q-consumer         one `## Q-Claim-<n>` block (Ask / Why / Answer=__TO_BE_FILLED__) per evidence question this stage raises; the mode, route,
+Q-consumer         one `## Q-Claim-<n>` block (Ask / Why / Answer=__TO_BE_FILLED__) per evidence question this stage raises; the route,
                    approver, and Refutes-if organize into 1-probes/ at APPROVE, not here
 Evidence Campaign  dispatch order + a compact summary table (the gate reads this)
 ```

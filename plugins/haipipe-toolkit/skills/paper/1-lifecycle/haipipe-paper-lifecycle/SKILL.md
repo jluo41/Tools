@@ -4,8 +4,8 @@ description: "Orchestrator for the paper structure lifecycle (1-lifecycle). Rout
 argument-hint: "[function] [paper-path-or-input] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill
 metadata:
-  version: "3.0.0"
-  last_updated: "2026-07-14"
+  version: "3.1.1"
+  last_updated: "2026-07-19"
   summary: "Router for the 1-lifecycle stage spine: folder, seed (0), resource (1a), claims (1b) [venue-FREE] -> venue (gate) -> pitch (2), narrative (3), display (4), section-edit (5) [venue-ALIGNED], plus the display renderer family. Stage skills run DRAFT -> PROBE -> REVISE -> CHECK internally via 2-phase/ workers; this router never routes users to phase skills. Two modes: depth-first per-stage cycles for single-stage work, and GLOBAL-PASS (draft all stages breadth-first, consolidate probes once via `probe plan`, batch the handoff, harvest, then REVISE/CHECK per stage). Resource is stage 1a and claims is 1b (like 2-venue then 2-pitch within stage 2); nothing renumbers. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -81,7 +81,7 @@ haipipe-paper-seed          SEED (0):    maintain 0-lifecycle/0-seed/0-seed.md: 
 
 haipipe-paper-resource      RESOURCE (1a): maintain 0-lifecycle/1a-resource/1a-resource.md, the venue-FREE prerequisite contract: what must EXIST for this paper to be testable, does it exist, and can it CARRY the claim? Two sections only -- Demand (one N<n> per hypothesis, keyed on H<n>) and Questions (one Q<n>, and its A when the answer lands). Scope is DATA + MODELS + PRODUCING-CODE (data is the bulk, not the boundary). The stage ASKS; the probe layer ROUTES -- it mints no PP ids and picks no probe types. Cleavage: task-for-data / task-for-algo (ingredients) belong HERE; task-for-fit (train the model) + task-for-eval (evaluate) are CLAIMS'. Stage 1a; claims is 1b. Exits: proceed / reseed / park.
 
-haipipe-paper-claims        CLAIMS (1b):  maintain 0-lifecycle/1b-claims/1b-claims.md, the venue-FREE claim ledger AND the home of each claim's status (supported | refuted | inconclusive); venue-neutral H1/H2/H3, each claim tied to a probe section's answering QA file. Claims RUNS THE EXPERIMENT (train the model + evaluate); it reads the section's `a-consumer:`, not a probe verdict.
+haipipe-paper-claims        CLAIMS (1b):  maintain 0-lifecycle/1b-claims/1b-claims.md, the venue-FREE claim ledger AND the home of each claim's status (supported | refuted | inconclusive); venue-neutral H1/H2/H3, each claim tied to a probe entry's answering QA file. Claims RUNS THE EXPERIMENT (train the model + evaluate); it reads the entry's `### a-executor` and writes its own a-consumer in the stage doc.
 
 --- VENUE DECISION (pins target journal in STATUS.md) ---
 
@@ -103,7 +103,7 @@ haipipe-paper-display       DISPLAY (4): 0-lifecycle/4-display/4-display.tex + P
 ### Section editing -- per-section prose work (venue-ALIGNED)
 
 ```
-haipipe-paper-section-edit  SECTION-EDIT (5): per-section editing hub under 0-lifecycle/5-section-edit/. One folder per section with outline .md, _LOG changelog, _CITATION_ map, _VALUES_ registry; runs the full DRAFT -> PROBE -> REVISE -> CHECK cycle per section and syncs revised prose to 0-sections/*.tex.
+haipipe-paper-section-edit  SECTION-EDIT (5): per-section editing hub under 0-lifecycle/5-section-edit/. One folder per section with outline .md and _LOG changelog; runs the full DRAFT -> PROBE -> REVISE -> CHECK cycle per section and syncs revised prose to 0-sections/*.tex.
 ```
 
 ### Display renderers -- visual assets
@@ -173,22 +173,23 @@ For a whole paper, prefer the GLOBAL-PASS order (JL ruling 2026-07-11): probes p
                   ({VAL:?} placeholders + GAP markers + `planned` PP skeletons fine;
                   venue still pins BEFORE the venue-ALIGNED drafts)
 ② PROBE-PLAN      /haipipe-paper probe plan — the cross-stage consolidation:
-                  merge duplicate questions (one SECTION, many serves:), author
+                  merge duplicate questions (one ENTRY, many `### q-consumer` bullets), author
                   the dispatch DAG into 1-probes/README.md Campaign section
                   [HUMAN GATE — present the campaign, stop]
 ③ DISPATCH BATCH  probe run — MATCH first (most sections close on T2 REUSE, for
                   free); only what MATCH cannot close is dispatched, per the DAG
                   (gating sections first). A DEPENDENT section waits until its
                   upstream section's `target:` QA FILE EXISTS ON DISK — i.e. the
-                  upstream reached `state: answered`. 💀 `answers:` is DELETED
-                  from both banks; a DAG that waits on it waits forever.
+                  upstream reached `state: answered`. the QA file on disk
+                  is the only signal a DAG may wait on.
 ④ RUN             the task/discovery orchestrators run their own qa gate and
                   write <task-folder>/QA/<n>-<slug>.md (often a SEPARATE concurrent
-                  session — the q-executor block in the section is the bridge,
+                  session — the `### q-executor` block in the entry is the bridge,
                   and it survives a dead session with zero files bank-side)
-⑤ HARVEST         a PROBE re-run re-resolves each `commissioned` section's
-                  target:, `ls` its QA file, and lands the `a-consumer:` +
-                  the 1b-claims.md flip + the harvest lanes
+⑤ HARVEST         a PROBE re-run re-resolves each `commissioned` entry's
+                  `**target**:`, `ls` its QA file, and lands the `### a-executor`
+                  + each Q-consumer's a-consumer in its stage doc
+                  + the 1b-claims.md flip + the harvest lanes
                   (query-once: landed answers are read from registries, never
                   re-queried) → then REVISE + CHECK stage by stage
 ```

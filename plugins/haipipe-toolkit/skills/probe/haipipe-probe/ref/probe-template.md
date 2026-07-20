@@ -40,7 +40,6 @@ The filled section
 Copy this shape. One `## QX<n>` entry per q-executor, four `###` subsections each.
 
 # PP<NN> — <topic>
-**mode**: light | full
 
 ## QX<n> — <short q-executor title>
 

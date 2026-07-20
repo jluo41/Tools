@@ -4,8 +4,8 @@ description: "Plan, materialize (via task + renderer skills), audit, and insert 
 argument-hint: "[paper-dir] [draft|probe|revise|check] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 metadata:
-  version: "4.1.1"
-  last_updated: "2026-07-14"
+  version: "4.2.0"
+  last_updated: "2026-07-19"
   summary: "Md-first display stage orchestrator (stage 4, venue-ALIGNED): 4-display.md is the brain, 4-display.tex is synced from it and compiles the gallery; DRAFT -> PROBE -> REVISE -> CHECK. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -144,7 +144,7 @@ PROBE ----> agent-only. Step 0: cross-stage coverage sweep (narrative +
             RENDER lane   -> renderer skills (illustration / diagram /
                              figure / table), one dispatch per candidate
                              row, outputs into the unit's candidates/
-            (internally calls /haipipe-paper-probe-display)
+            (internally calls /haipipe-paper-probe)
   |
   v
 REVISE ---> pick winners (rationale into the md block), promote to assets/,
@@ -208,10 +208,10 @@ Their verb advances ([GATE] logged quoting the user; struck entries logged as sk
 Agent-only.
 Execute the `Probes` plan as the user approved it at the gate: a `✋` entry whose gating thread is still unruled stays blocked and is REPORTED at the end of the phase — never silently run, never silently dropped.
 After each entry, fill its `Outcome:` field (artifact path + one-line takeaway / self-assessment) and flip its status to `done`.
-Routing per Delivery Need Routing in `../../../haipipe-paper/SKILL.md`; commissioning here is THIS stage's authority — the probe-display worker's no-commissioning ban binds section/narrative context, not the display stage acting on its own accepted units.
+Routing per Delivery Need Routing in `../../../haipipe-paper/SKILL.md`; commissioning a display unit is THIS stage's authority alone — every other stage FILES a DR row and waits for this stage's ruling.
 This phase never hand-authors a figure or pastes numbers into `float.tex`.
 
-**Step 0 — coverage sweep (S0).** Before the lanes, ask what the REST of the paper needs: read `3-narrative.md` beat display mentions, every `0-lifecycle/5-section-edit/*/<section>.md` (+ its `_DISPLAY_<section>.md` registry where present), and `\input{0-displays/...}` / `\ref{fig:...|tab:...}` uses in section files.
+**Step 0 — coverage sweep (S0).** Before the lanes, ask what the REST of the paper needs: read `3-narrative.md` beat display mentions, every `0-lifecycle/5-section-edit/*/<section>.md`, and `\input{0-displays/...}` / `\ref{fig:...|tab:...}` uses in section files.
 Cross-check against the Display Map + inbox.
 Each unfiled need becomes a DR row in `_DISPLAY_REQUEST.md` filed on the section's behalf (`filed-by: display-probe sweep`), surfaced to the user via a `> CC:` note — accepting it into the map stays a DRAFT/user decision (only this stage advances DR statuses).
 
@@ -395,6 +395,23 @@ pitch -> narrative -> display -> section-edit
 
 The difference matters.
 A display can fail because the plot is ugly, but it can also fail because the paper's claim, section role, or one-minute pitch changed.
+
+## Questions this stage typically raises
+
+DRAFT's Step 4b raises what the draft cannot answer. Display asks what can actually be RENDERED — the paper layer plans, it does not plot.
+
+```
+📤 evidence exists   Does a task-produced result exist that this display would render?
+                     A display with no producing task cannot be regenerated when the
+                     numbers change, so it cannot be drafted.
+🧭 coverage sweep    Across every stage, which claims still have no display and no DR row?
+                     This is a DRAFT sweep, not PROBE work.
+🎨 form choice       Figure, table, or diagram — which one does this claim need? Ask when
+                     the venue's display budget makes it a real trade, not by default.
+📐 venue budget      How many displays does this venue allow, and what is being cut?
+```
+
+NOT here: making the display. Data displays are RENDERED from task-produced evidence by the renderer skills; concept figures go through the diagram/illustration skills.
 
 ## Handoff
 

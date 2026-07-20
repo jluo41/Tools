@@ -302,7 +302,7 @@ Decision Log
             reads; deleted the stray haipipe-discovery self-symlink.
 2026-07-14  PROBE-UNAWARE, AND THE QA VERB (v3.0.0). Spec of record:
             Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/ (v3, approved JL
-            2026-07-14, R1-R18); constitution: probe/haipipe-probe/SKILL.md 8.0.0.
+            2026-07-14, R1-R18); the probe layer: probe/haipipe-probe/SKILL.md 8.0.0.
             (1) DELETED the probe handoff bridge whole — `_ASK/` stub folders, the
             `answers: [PPNN]` return field, and every PP id under discoveries/.
             v2.7/2.8/2.8.1 built a two-footed bridge into this layer; R2 rules the

@@ -47,7 +47,7 @@ Render & sweep — display mechanics (NOT bank questions)
 
 These are the display stage's OWN steps, not questions to the bank; PROBE runs them on the user's verb, and the user may strike any at the gate. Status: `▶ ready` · `✋ gated` · `done`.
 
-- **S0 · cross-stage coverage sweep** — display PROBE step 0: read 3-narrative + every section md (+ its `_DISPLAY_` registry, `\input`/`\ref` uses). Outcome: the DR rows filed on each section's behalf.
+- **S0 · cross-stage coverage sweep** — display PROBE step 0: read 3-narrative + every section md (its `\input`/`\ref` uses included). Outcome: the DR rows filed on each section's behalf.
 - **R<n> · render dispatch** — a candidate goes to a renderer skill (`/haipipe-paper-display-figure | -table | -diagram | -illustration`); candidates land in the unit's `candidates/` (`assets/` untouched until REVISE). Serves Fig/Tab N, candidate `<letter>`. Not dispatched to the bank.
 
 

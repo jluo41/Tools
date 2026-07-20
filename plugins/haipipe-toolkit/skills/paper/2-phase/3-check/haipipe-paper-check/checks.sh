@@ -14,8 +14,9 @@
 #   checks.sh <tex-file-or-paper-dir> [--md <file> ...] [--log <file>] [--depth N] [--compile]
 #
 #   <tex-file-or-paper-dir>  a single .tex, OR a paper dir (all *.tex scanned)
-#   --md <file>              a markdown working doc (_CITATION_/_VALUES_/outline)
-#                            to scan for bibtex leakage; repeatable
+#   --md <file>              a markdown working doc — a stage doc (0-lifecycle/<stage>/*.md),
+#                            a section .md, or a 1-probes/PP*.md entry file — to scan for
+#                            bibtex leakage; repeatable
 #   --log <file>             a _LOG_*.md changelog: verify the newest [REVISE]
 #                            entry carries its `workers:` proof line, and warn
 #                            if REVISE ran with no [GATE] draft-review on record
@@ -105,8 +106,8 @@ else
 fi
 
 # ── META: TODO markers ───────────────────────────────────────────────────────
-#    Comments deliberately NOT stripped: legacy % TODO[values] / % TODO[cite] flags are
-#    planted in comments by DRAFT and MUST block the gate until PROBE fills them.
+#    Comments deliberately NOT stripped: a TODO/FIXME parked in a % comment is still
+#    unfinished work, and a comment is exactly where it hides from the compiled PDF.
 #    XXX deliberately EXCLUDED: it collides with double-blind anonymization
 #    placeholders (\author{XXX}, "XXX University") that are legitimate at submission.
 todos=$(for f in "${TEX_FILES[@]}"; do grep -nHE '\b(TODO|FIXME)\b' "$f" 2>/dev/null; done)

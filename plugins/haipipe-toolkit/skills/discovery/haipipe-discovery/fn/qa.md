@@ -13,7 +13,7 @@ A consumer is just one caller among three.
 The discovery session's PRIMARY mode is autonomous Plan → Build → Execute → Report, with no question pending at all.
 Most questions should already have an answer sitting in the bank before anyone asks.
 
-QA-file anatomy, the canonical field names and the state values live in the CONSTITUTION: `probe/haipipe-probe/SKILL.md` PART 3a.
+QA-file anatomy, the canonical field names and the state values live in `probe/haipipe-probe/SKILL.md` PART 3a.
 Read them there — they are not restated here.
 This file is the VERB.
 

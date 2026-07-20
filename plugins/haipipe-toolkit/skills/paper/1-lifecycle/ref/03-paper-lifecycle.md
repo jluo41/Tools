@@ -87,8 +87,9 @@ wording.
 
 ```text
 paper GAP -> question SECTION (1-probes/) -> the PROBE phase's MATCH ->
-DISPATCH what MATCH cannot close -> the answering QA file -> the section's
-`a-consumer:` -> the paper backfills (a claim's status flips in 1b-claims.md)
+DISPATCH what MATCH cannot close -> the answering QA file -> the entry's
+`### a-executor` -> each Q-consumer's a-consumer in its stage doc -> the paper
+backfills (a claim's status flips in 1b-claims.md)
 ```
 
 Common routes:
@@ -100,7 +101,6 @@ claim needs its status settled       -> /haipipe-paper probe "<need>"  (raises a
 claim needs outside context/citation -> /haipipe-discovery <question>
 display needs materialized result    -> /haipipe-task-for-display <need>
 settled claim status                 -> 0-lifecycle/1b-claims/1b-claims.md (the ONLY
-                                        home of a claim's status; `## Verdict` and
-                                        `verdicted` are DELETED — the probe section
-                                        carries only its `a-consumer:`)
+                                        home of a claim's status; the probe entry
+                                        carries only its `### a-executor`)
 ```

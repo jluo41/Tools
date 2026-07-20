@@ -4,8 +4,8 @@ description: "Review and edit prose CONTENT at section → paragraph → weave �
 argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
-  version: "1.3.0"
-  last_updated: "2026-07-10"
+  version: "1.4.0"
+  last_updated: "2026-07-19"
   summary: "REVISE worker: edit prose CONTENT at section->¶->weave->sentence, change directly + leave why-comments. Absorbs the retired revise-weaving skill (¶-flow: arc/hinges/rhythm, ref/weaving.md). Fully automatic."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -16,7 +16,7 @@ REVISE phase worker: editing the **prose content** of a draft that already exist
 This skill changes *what the prose says and how it is built*.
 Fully automatic -- applies changes directly, no human gate.
 
-It does **not** verify numbers or citations against their sources (that is `haipipe-paper-probe-values` and `haipipe-paper-probe-citation`) -- but it **does flag** a missing number or citation so those PROBE-phase passes have a target.
+It does **not** verify numbers or citations against their sources (that is `haipipe-paper-check-evidence`), and it does **not** substitute a landed answer into a placeholder (that is `haipipe-paper-revise-place`, which has already run) -- but it **does flag** a number or citation the prose still needs, so the next DRAFT pass has a target.
 
 ## Before you start
 
@@ -60,17 +60,17 @@ When the content needs a number or citation that is not here yet, drop a marker 
 
 ```latex
 The model achieved {VAL:? held-out accuracy} accuracy on the held-out set.
-This aligns with prior work \cite{TOADD} on trait extraction.   % + _CITATION_ row
+This aligns with prior work \cite{TOADD} [Q-<Stage>-<n>] on trait extraction.
 ```
 
-These are grep targets for the PROBE phase (values and citation workers).
+The bracket names the question that will settle it; a placeholder without one is a hole nobody owns.
 Leaving a flag is correct; guessing a value or a citation is not.
 
 ## Done means
 
 - [ ] Every paragraph has one clear job matching its banner
 - [ ] One idea per sentence, no filler, concrete over vague
-- [ ] Every missing number is `{VAL:? <what>}`, every missing citation `\cite{TOADD}` (+ `_CITATION_` row); none invented
+- [ ] Every missing number is `{VAL:? <what>} [Q-<Stage>-<n>]`, every missing citation `\cite{TOADD} [Q-<Stage>-<n>]`; none invented
 - [ ] Non-trivial changes have `%% {CC-content}: <why>` comments for CHECK
 - [ ] Banners present with ids preserved
 - [ ] prose-quality.md rules all applied

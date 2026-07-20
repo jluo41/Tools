@@ -4,6 +4,55 @@ haipipe-paper-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 6.0.1 — 2026-07-19 — vocabulary: `probe`, not "the constitution"; the display reroute a-consumer is sited in the stage doc
+
+Two vocabulary rulings from JL, both dated 2026-07-19, applied across `paper/`.
+
+**Ruling A — the `probe` nickname.** JL: "宪法 don't use this name, just use `probe`." Every "THE CONSTITUTION" / "the constitution" / "the probe constitution" naming `probe/haipipe-probe/SKILL.md` is replaced by `probe` or by the actual path, whichever reads better at the site. A nickname already in the repo is still a nickname.
+
+**Ruling B — the `a-consumer:` probe-file field.** `- a-consumer:` as a FIELD IN A PROBE FILE was replaced by the entry's `### a-executor`; `check-probe-cards.sh` HARD FAILs it under the `stale-old-format` rule. The a-consumer CONCEPT is untouched and still named a-consumer: it is the per-consumer interpretation written in the STAGE DOC (station ②), anchored `[source: PP<NN>]`. Prose that said "the probe section carries its `a-consumer:`" was wrong twice over — probe files hold ENTRIES, not sections, and what an entry carries is `### a-executor`.
+
+Current model, for reference:
+```
+QA file (bank)  ->  the ENTRY's `### a-executor`  (probe file: the copy, single source of truth)
+                ->  each Q-consumer's a-consumer  (STAGE DOC: what it MEANS for this consumer)
+                ->  stage content                 (REVISE weaves it in, discharges the bracket)
+```
+
+Written under JL's NO TOMBSTONES rule (2026-07-19): "不需要留退役告示,直接抹除任何痕迹" then "follow this rule to do all the following changes." The docs state only the current contract; this CHANGELOG carries the history.
+
+### Changed (ruling A) — SKILL.md, 11 sites
+The frontmatter `description` and `summary`, the ⭐ model banner, the Rules header, the "CONSTITUTION v9.5.0 PHASE SPLIT" heading (now "PROBE v9.5.0 PHASE SPLIT"), the collection/harvest split sentence, the ⑤ INTERPRET heading, the `answered` target note, the FAIL-codes line, the Hard-boundaries heading, and the Reference block ("THE CONSTITUTION — the model. Read it." -> "probe — the model. Read it."). The three "not the constitution's" / "the constitution says nothing about it" phrasings now name `probe`.
+
+### Changed (ruling A) — check-probe-cards.sh, 2 comment sites
+The QA-file state-line rationale comment ("the constitution, \"The QA file\" section" -> "probe/haipipe-probe/SKILL.md, \"The QA file\" section") and the `stale-old-format` rule comment ("constitution v9.5.0+" -> "probe v9.5.0+"). Comments only; no rule, regex, or FAIL code changed, and `bash -n` still passes.
+
+### Changed (ruling B) — ref/per-stage-dispatch.md, the display row
+"the ENTRY closes `answered-local` with the a-consumer `rerouted to display stage: DRNN`" -> "the ENTRY closes `answered-local`, with each Q-consumer's a-consumer in its stage doc reading `rerouted to display stage: DRNN`." The concept is live but it was sited on the ENTRY; the a-consumer lives in the stage doc.
+
+### Unchanged (verified LIVE, ruling B)
+The other 6 `a-consumer` sites (SKILL.md 3, ref/per-stage-dispatch.md 3) already name the stage doc explicitly — including `ref/per-stage-dispatch.md`'s "The **a-consumer** (in 0-seed.md)".
+
+## 6.0.0 — 2026-07-19 — BREAKING: harvest lanes RETIRED; `### a-executor` is the sole sink; the three lane sub-workers fold in
+
+From the `paper/2-phase` skillset review (118 findings, 5 parallel auditors, 22/22 spot-checks passed). JL rulings D1/D3/D4, verbatim:
+
+### Changed (JL: "do A.") — D1, the harvest sink
+`### a-executor` is ratified as the ONLY harvest sink. This was BROKEN ON DISK before the refactor, not by it: `ref/per-stage-dispatch.md:34` said the anchors stay in `### a-executor` while `SKILL.md:116` and `ref/harvest-acceptance.md:60,91` still wrote `_CITATION_{stage}.md`. Observable symptom: `ref/per-stage-dispatch.md:174-183` rendered `cite ⬜ / val ⬜ / disp ⬜` for every stage forever, because the files those forms test for can never exist again.
+
+### Changed (JL: "A. the principle is everything now in the Questions of 1-probes and the stages's Q-consumer.") — D4, the lanes
+The `**values**:` / `**sources**:` / `**displays**:` lane lines and their `harvest: OWED` debt tokens are RETIRED, and `ref/harvest-acceptance.md` is DELETED. The mechanism had no destination left: its first instruction (`harvest-acceptance.md:11` — write `harvest: OWED` FIRST) triggers checker rule 7 (`harvest: OWED -> FAIL`), and the only legal exit was a sub-worker writing a sidecar retired on 2026-07-19. Following it as written reddened the gate with no way to clear it — which happened live in this session on `Paper-Personality2Opioid/1-probes/PP01`.
+SALVAGED, not dropped: the fabrication guard from `harvest-acceptance.md:30-32` (`grep -F '<value>' <source>`; a value with no hit in its named source is REJECTED) is now inline in ⑤ INTERPRET. It was the only mechanical anti-fabrication tooth in the bucket and losing it inside a cleanup would have been a real regression.
+
+### Changed (JL: "A.") — D3, the three ⑤ residues
+`haipipe-paper-probe-citation` / `-values` / `-display` are dissolved; their genuine ⑤ INTERPRET content folds into this worker. My premise to the auditors ("none of the five phases is PROBE work") was CONFIRMED for the numbered phases and REFUTED for the skills — each hid ⑤ work where the phase numbering did not reach: citation's `## Harvest mode` (a sixth section, 85 lines, self-describing as "Called by haipipe-paper-probe at ⑤ INTERPRET"), values' Phase-3 PRECONDITION (17 lines, the QA state-line gate), display's Phase-3 LINK body (12 lines, tex links, enforced by checker rule 7). ⑤ INTERPRET now carries the surviving rules for all three payload types: source anchors (two-level provenance, never flattened; `VERIFIED-by-discovery` is arXiv-level not bibtex-level; an identity-fields-only entry is a DEFECTIVE harvest), values (the fabrication guard), and display units (LINK ONLY UNITS THAT EXIST — never pre-place a `\ref` for a pending DR row, or the tex compiles to `??`).
+The values state-line gate did NOT need porting: it existed to guard the lane skill's published DIRECT invocation form, which disappears with the skill; this worker's ④ POINT already opens the target and reads its `state:` line.
+
+### Changed — the `mode: full` conditional (2 of 20 paper sites; the rest deferred per JL D5 "Leave it")
+`SKILL.md:38` and `:111` gated on `mode: full` a rule that is unconditional — the claim status lives in `1b-claims.md` in every mode. Gating an always-true rule implied `light` permitted the opposite. Restated unconditionally. This is a correctness fix that holds whether or not `mode` itself survives; the remaining 18 paper sites + 23 application sites + the 2 constitution declarations are untouched, pending the sequenced retirement (constitution → paper → application).
+
+Also: T1 LOCAL reassigned to DRAFT (it was claimed by both phases — `0-draft/haipipe-paper-draft/SKILL.md:35` and this file's `:62`); this worker now only writes the `### a-executor` of an `answered-local` entry. Hard boundaries gain "NEVER edit manuscript prose" (placement is `haipipe-paper-revise-place`'s). Return contract's `lanes:` line replaced by `harvest:`.
+
 ## 5.3.1 — 2026-07-19 — ref/per-stage-dispatch.md: seed's `_CITATION_0-seed.md` sidecar retired (satellite of haipipe-paper-seed 4.4.0)
 
 Satellite fix for the JL ruling recorded in `haipipe-paper-seed` 4.4.0 ("we should delete it. do not use it"). `ref/per-stage-dispatch.md` carried the retired sidecar in TWO places a seed-only edit would have missed — the per-stage table's **seed** row (line 34) and the seed-specifics paragraph (line 80). Both now route seed's returned sources onto the ENTRY's own `**sources**: harvest: OWED` lane and state that seed keeps no `_CITATION_` sidecar. Doc-only; no worker behavior changed. This is the 2026-07-10 lesson applied on purpose: after a ruling, sweep the satellites — a grep for the retired filename, not just an edit to the owning skill.

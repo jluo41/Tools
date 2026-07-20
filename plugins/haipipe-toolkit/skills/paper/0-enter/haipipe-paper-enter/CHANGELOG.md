@@ -4,6 +4,14 @@ haipipe-paper-enter — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 4.1.0 — 2026-07-19
+
+Changed (JL 2026-07-19, paper/2-phase refactor — the sidecar model is retired: `1-probes/` is the only consumer-side source of truth)
+
+- **The console no longer SCORES a document nobody writes.** The phase-derivation rules read `cite ✅ if _CITATION_ all placed and density >= venue norm` and `val ✅ if _VALUES_ all verified` — a metric the Console could not compute, over files that are not created. Re-rooted onto what exists on disk: `draft` now checks that every hole is FILLED or OWNED (each `\cite{TOADD}` / `{VAL:?` carries a `[Q-<Stage>-<n>]` id; `🕳️ N` counts unowned holes), and `probe` reads the paper's `1-probes/` entries (`**state**` + whether `### a-executor` is filled; `📨 N` counts entries still open).
+- **The phase strip is FOUR glyphs, one per phase, at every stage** — `draft │ probe │ revise │ check`. The `probe: cite X val X disp X` sub-track split is gone from the Line-2 spec and from both rendered examples; it mirrored three lane workers that no longer exist, and it made section-edit render a different strip shape than every other stage.
+- **Read Order step 4** re-rooted: scan `5-section-edit/` for section `.md` + `_LOG_*` files (was: + `_CITATION_*`, `_VALUES_*`). New step **4b** reads `1-probes/PP*.md` — named as the source the `probe` glyph derives from, so the Console reads the questions before it reports on them.
+
 ## 4.0.2 — 2026-07-19
 
 - WIKI RETIREMENT — the retired wiki folder's `05-paper-dashboard.md` absorbed here as the **Dashboard Spec** section (inserted between Read Order and Diagnosis Rules, where the console actually uses it). It IS this skill's dashboard spec, so this skill is its ONE home.

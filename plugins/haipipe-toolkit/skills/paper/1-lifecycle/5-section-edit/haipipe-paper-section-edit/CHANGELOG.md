@@ -4,6 +4,36 @@ haipipe-paper-section-edit — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 5.2.0 — 2026-07-19 — `_CITATION_{section}` / `_VALUES_{section}` sidecars RETIRED; the anchor bracket becomes the contract
+
+Section-edit was the densest surviving pocket of the retired sidecar model: the per-section artifact tree still LISTED `_CITATION_{section}.md` and `_VALUES_{section}.md` as files to create, the PROBE line still routed its tracks INTO them (`citation → _CITATION_, values → _VALUES_`), the phase-line derivation read "the tracking file", and one line pointed at `2-phase/1-probe/haipipe-paper-probe-citation/SKILL.md` — a skill being dissolved. A section scaffolded from this contract would have produced two files nothing downstream reads.
+
+JL ruling on the removal style, 2026-07-19: "不需要留退役告示，直接抹除任何痕迹" / "follow this rule to do all the following changes." No ban-list naming the dead files is left in the skill; the history is here.
+
+Changed (SKILL.md)
+- "Real or greppable, never invented" now states the placeholder contract in its current form: `{VAL:? <what>} [Q-<Stage>-<n>]` and `\cite{TOADD} [Q-<Stage>-<n>]` — the marker and the anchor bracket side by side, **never fused**; the bracket names the `1-probes/` question that will produce the key or the number, and a placeholder without one is a defect. `1-probes/` is the only consumer-side source of truth; `_LOG_{section}.md` is the only sidecar. `.bib` stays human-only, learned by grep.
+- PROBE phase line — the three tracks no longer write to registries: citation and values run their `[Q-<Stage>-<n>]` entries in `1-probes/` to an answer; display links a `0-displays/` unit or checks its DR row.
+- The artifact tree drops both sidecar rows, and a following line says where the needs actually live (`1-probes/` entries; a needed unit = a DR row in `0-lifecycle/4-display/_DISPLAY_REQUEST.md`).
+- Phase-line derivation — **cite/val/disp** ✅ is now defined against the `.md` itself (no `\cite{TOADD}` / `{VAL:?}` / unlinked display bracket left open), not against a tracking file.
+
+Changed (`ref/outline-format.md`)
+- The "three placeholder forms" block shows the bracketed forms, plus the never-fused rule.
+- `\citep{key}` rule: grep the `.bib` (only).
+- `\cite{TOADD}` rule: paired with its question bracket, not a `_CITATION_` row.
+- DRAFT done-criterion updated to the bracketed forms + "no placeholder left without its bracket".
+
+Changed (`ref/section-template.md`)
+- The prose example cites `\cite{TOADD} [Q-<Stage>-<n>]` and `{VAL:? <what>} [Q-<Stage>-<n>]`.
+- The Settled Flags example no longer resolves a placeholder "paper-local" into a `_VALUES_` file.
+
+Changed (`../section-type/section-related-work.md`)
+- The TODO's citation-lane pointer repointed from the dissolved `/haipipe-paper-probe-citation` to `/haipipe-paper-draft-citation`.
+
+Untouched (deliberately)
+- Every `mode: light | full` reference — deferred to a separate review.
+- `0-lifecycle/4-display/_DISPLAY_REQUEST.md` — ALIVE; the DR-row route for a missing display unit is the current contract, not a retired sidecar.
+- `feedback/*.md` — dated records of JL's own words at the time; history, left verbatim.
+
 ## 5.1.0 — 2026-07-14
 
 - "Probe escalation": sweep paper-local -> raise a question SECTION -> ② MATCH -> ③ DISPATCH only what MATCH cannot close. The "gateway probe" tier is gone; no inline-search tier exists at any depth.

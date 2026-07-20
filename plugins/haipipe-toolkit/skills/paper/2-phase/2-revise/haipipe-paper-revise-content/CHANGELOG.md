@@ -4,6 +4,20 @@ haipipe-paper-revise-content — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 1.4.0 — 2026-07-19 — placeholder contract updated; comment-first residue removed from ref/
+
+From the `paper/2-phase` review (`../../../_console/260719-PHASE-BOUNDARY-REFACTOR.md`).
+
+### Changed (JL: "\\cite{TOADD} [Q-XXX-N] So I want something like this.")
+Every placeholder this worker leaves or checks now carries the id of the question that will settle it — `{VAL:? <what>} [Q-<Stage>-<n>]`, `\cite{TOADD} [Q-<Stage>-<n>]` — two markers side by side, never fused. A placeholder without a bracket is a hole nobody owns.
+
+### Changed — scope boundary restated
+The skill said it defers verification to two workers that no longer exist. It now points at `haipipe-paper-check-evidence` for verification and notes that `haipipe-paper-revise-place` has ALREADY run, so any placeholder still standing when this worker sees it is genuinely still owed — leave it, and leave its bracket intact.
+
+### Fixed — 🔴 `ref/content-edit.md` instructed the opposite of the skill
+The ref opened with "In Round 1 each failed checkbox becomes one comment … **you change no prose**. The fixes described below happen only in Round 2, after the human replies `accept` / `modify`" — pre-DPRC residue contradicting this skill's own "REVISE is fully automatic … applies changes directly, no human gate". A worker loading that ref would refuse to edit anything. Rewritten as an edit list.
+
+
 ## [1.3.0] -- 2026-07-10
 
 Changed (fresh-agent audit, C8 -- R1 alignment)

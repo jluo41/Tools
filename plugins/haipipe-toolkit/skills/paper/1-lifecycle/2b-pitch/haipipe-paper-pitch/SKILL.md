@@ -4,8 +4,8 @@ description: "Create or update the paper folder's 0-lifecycle/2b-pitch/2b-pitch.
 argument-hint: "[paper-dir] [--reason <slug>] [--source <path-or-note>...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "4.4.0"
-  last_updated: "2026-07-18"
+  version: "4.4.1"
+  last_updated: "2026-07-19"
   summary: "Pitch stage orchestrator (stage 2, venue-ALIGNED): the cover-letter sections + a Q-consumer (## Q-Pitch-<n>), driving DRAFT -> PROBE -> REVISE -> CHECK internally (the user invokes pitch, not the phases). Pitch questions are SECTIONS in 1-probes/; a semantic shift cites a landed QA file or a `read` section. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -45,7 +45,7 @@ Read first: `../../../PHILOSOPHY.md`, `../../ref/04-lifecycle-map.md`.
 **Files produced:**
 - `0-lifecycle/2b-pitch/2b-pitch.md` -- the cover letter (venue-ALIGNED)
 - `0-lifecycle/2b-pitch/_LOG_2b-pitch.md` -- changelog with provenance
-- `1-probes/PPNN_<topic>.md` -- the probe FILES; a pitch-level question becomes a SECTION (flat cross-stage pool; `serves: 2-pitch`)
+- `1-probes/PPNN_<topic>.md` -- the probe FILES; a pitch-level question becomes an ENTRY (flat cross-stage pool), its `### q-consumer` bullet naming the `Q-Pitch-<n>` it serves
 
 **Content structure (2b-pitch.md):**
 - Title -- <=15 words, specific, evocative
@@ -312,6 +312,23 @@ Pitch reframes them for the target venue.
 Downstream: narrative expands the pitch into a full section-mirrored arc.
 If a downstream stage disagrees with the pitch, either update the pitch with a logged reason or revise the downstream stage.
 Do not let abstract, introduction, hero figure, and discussion carry different stories.
+
+## Questions this stage typically raises
+
+DRAFT's Step 4b raises what the draft cannot answer. Pitch asks whether this story lands AT THIS VENUE.
+
+```
+🎯 venue fit          Has this venue published work of this shape recently? What did it
+                      look like? An Editor's Chair answer needs a precedent, not a hope.
+🏁 competing paper    Is someone else telling this story right now — a preprint, a
+                      conference version, a group known to be on it?
+⚓ anchor source      The hook and the surprise each lean on a claim about the field.
+                      Which source anchors it? A pitch anchored to nothing is a guess.
+⚠️ framing risk       Which framing would an editor read as overclaiming, and what
+                      evidence would we need to keep it?
+```
+
+NOT here: whether the claim is true. That is settled in claims, venue-free, before the pitch is written.
 
 ## Handoff
 

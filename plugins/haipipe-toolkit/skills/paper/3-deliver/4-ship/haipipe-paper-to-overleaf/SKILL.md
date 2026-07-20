@@ -4,8 +4,8 @@ description: "Two-way sync between a local paper directory and an Overleaf proje
 argument-hint: "[setup <project-id> | pull | push | status]"
 allowed-tools: Bash(*), Read, Grep, Glob, Edit, Write
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-05-31"
+  version: "1.1.1"
+  last_updated: "2026-07-19"
   summary: "Two-way sync between a local paper directory and an Overleaf project via the Overleaf Git bridge (Premium feature)."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -15,7 +15,7 @@ metadata:
 Bridge a local paper directory with an Overleaf project so that:
 
 - **You** can keep editing in the Overleaf web UI (or share editing access with collaborators)
-- **ARIS** can read your changes, run audits (`/haipipe-paper-claim-audit`, `/haipipe-paper-probe-citation`) and polish passes (`/haipipe-paper-polish`), and push fixes back
+- **ARIS** can read your changes, run audits (`/haipipe-paper-claim-audit`, `/haipipe-paper-check-evidence`) and polish passes (`/haipipe-paper-polish`), and push fixes back
 
 This uses the official **Overleaf Git bridge** (Premium feature).
 The agent **never sees your authentication token** — you do the one-time auth manually so the token lives in macOS Keychain, not in chat history or `.git/config`.
@@ -104,7 +104,7 @@ Overleaf edits frequently include:
 - **Typos** that aren't in canonical references (`Lrage` for `Large`)
 - **Commented-out blocks** that may be intentional or may be a stash
 - **Number changes** that should re-trigger `/haipipe-paper-claim-audit`
-- **Cite key changes** that should re-trigger `/haipipe-paper-probe-citation`
+- **Cite key changes** that should re-trigger `/haipipe-paper-check-evidence`
 
 For each diff hunk, decide one of:
 
@@ -112,7 +112,7 @@ For each diff hunk, decide one of:
 |----------------|--------|
 | Clean editorial improvement | Sync into `paper/`, no audit needed |
 | Numerical / claim change | Sync, then re-run `/haipipe-paper-claim-audit` |
-| New `\cite{...}` | Sync, then re-run `/haipipe-paper-probe-citation` |
+| New `\cite{...}` | Sync, then re-run `/haipipe-paper-check-evidence` |
 | Half-sentence / obvious typo | Flag to user, do NOT auto-sync |
 | New section / restructure | Stop, ask user before syncing |
 
@@ -234,6 +234,6 @@ When in doubt, run `status` first.
 ## See Also
 
 - `/haipipe-paper-claim-audit` — re-run after pulling Overleaf changes that touch numbers
-- `/haipipe-paper-probe-citation` — re-run after pulling Overleaf changes that add/edit `\cite{...}`
+- `/haipipe-paper-check-evidence` — re-run after pulling Overleaf changes that add/edit `\cite{...}`
 - `/haipipe-paper-compile` — local LaTeX build; Overleaf compiles independently in the cloud
 - Overleaf Git bridge docs: https://www.overleaf.com/learn/how-to/Using_Git_and_GitHub

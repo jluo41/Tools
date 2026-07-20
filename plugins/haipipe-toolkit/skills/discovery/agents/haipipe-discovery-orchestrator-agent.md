@@ -111,9 +111,8 @@ I do NOT:
    action: qa, question: <a direction I judged worth exploring>
    Same gate, same files. Nobody asked. This is normal and it is how the bank grows.
 
-💀 GONE: the stub-seeded zeroth state. `_ASK/PP*.md`, `_ANS/`, `answers: [PPNN]` and every
-   PP id are DELETED from this layer (R2). A discovery folder never again contains a trace
-   of who asked.
+A discovery folder never contains a trace of who asked (R2): no consumer ids, no
+   back-references — only the question, and the file that answers it.
 ```
 
 ## QA mode — the question door (fn/qa.md is the contract)

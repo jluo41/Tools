@@ -4,8 +4,8 @@ description: "Audit a paper folder against the gold-standard layout contract (np
 argument-hint: "[paper-dir]"
 allowed-tools: Bash, Read, Grep, Glob
 metadata:
-  version: "1.1.0"
-  last_updated: "2026-06-04"
+  version: "1.1.1"
+  last_updated: "2026-07-19"
   summary: "Conformance audit for the gold-standard paper folder layout; report-only."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -65,7 +65,7 @@ Present findings as a table, severity-ranked (✗ before ⚠), each row with its
 | Numbering gap, orphan, wrapper prose, stray asset | `/haipipe-paper-restructure --repair` |
 | Missing folder/driver/compile script (skeleton incomplete) | `/haipipe-paper-scaffold` (or restructure if content exists) |
 | Broken `\includegraphics` (figure was never produced) | `1-lifecycle` figure skills (`haipipe-paper-display-figure`, `haipipe-paper-display-diagram`) |
-| Broken `\cite` / bib content problems | `/haipipe-paper-probe-citation` (out of scope here; only the `.bib` file's existence is checked) |
+| Broken `\cite` / bib content problems | `/haipipe-paper-check-evidence` (out of scope here; only the `.bib` file's existence is checked) |
 | Prose problems noticed in passing | `1-lifecycle/5-section-edit` (mention, do not expand) |
 
 Clean run = say so in one line and stop; do not invent findings.

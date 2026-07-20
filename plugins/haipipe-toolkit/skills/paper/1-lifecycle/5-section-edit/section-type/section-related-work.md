@@ -42,5 +42,5 @@ Common failure modes
 TODO
 ----
 
-- Auto-suggest anchor papers from the citation probe lane (`/haipipe-paper-probe-citation`)
+- Auto-suggest anchor papers from the citation lane (`/haipipe-paper-draft-citation`)
 - Add per-venue expectation: how long, separate section or merged

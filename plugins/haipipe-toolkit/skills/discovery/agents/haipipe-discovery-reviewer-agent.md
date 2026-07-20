@@ -171,7 +171,7 @@ This layer is **probe-UNAWARE**. Nothing under `discoveries/` may carry a trace 
 
 ```
 [ ] no _ASK/ or _ANS/ folder anywhere in the discovery
-[ ] no `answers:` field in discovery.yaml (the field is DELETED, not optional)
+[ ] discovery.yaml carries no `answers:` field
 [ ] no PP id (PP\d\d) in any filename or file content
 [ ] discovery.yaml / verdict.md / sources.md / landscape.md / QA files are organized
     around the EVIDENCE QUESTION — never around a consumer's hypotheses, claim ids, or
@@ -201,9 +201,3 @@ feedback:  specific issues for creator to fix (if revise)
 artifacts: [review notes if written]
 next:      "creator fix X" or "proceed to next stage"
 ```
-
-💀 RETIRED (2026-07-14): the "Bridge check — the `answers:` field" gate. The bridge it
-policed (`_ASK/` stubs → `answers: [PPNN]`) is DELETED. Its two live concerns did not die
-with it — they moved: the QA-file review above (is the answer readable and reusable?) and
-the bank-purity check above (is this layer still probe-unaware?). Do not resurrect the
-`answers:` field; a missing one is now correct.

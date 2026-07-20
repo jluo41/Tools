@@ -71,12 +71,10 @@ The orchestrator's **clean context IS the mechanism**. It is not told who asked
 or why, so it cannot shape the evidence around anyone's story — which is exactly
 what makes the answer reusable by the next consumer, with a different stake.
 
-💀 RETIRED 2026-07-14: `haipipe-probe-orchestrator-agent` (the probe GATEWAY). It
-no longer exists. Its SWEEP became the paper-side MATCH; its dispatch became the
-direct `Agent(haipipe-discovery-orchestrator-agent)` call drawn above. And the
-`_ASK/` stub bridge went with it: no stub folders, no `answers:` field, no PP ids
-anywhere under `discoveries/`. The probe CAUSES a QA file; **the executor AUTHORS
-it**. Constitution: `probe/haipipe-probe/SKILL.md` (v8.0.0).
+A consumer runs its own MATCH on its own side, then dispatches through the direct
+`Agent(haipipe-discovery-orchestrator-agent)` call drawn above. Nothing under
+`discoveries/` carries a trace of who asked. The probe CAUSES a QA file; **the
+executor AUTHORS it**. The probe layer: `probe/haipipe-probe/SKILL.md` (v8.0.0).
 
 
 Registration

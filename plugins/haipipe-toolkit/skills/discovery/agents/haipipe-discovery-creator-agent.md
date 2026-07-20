@@ -12,8 +12,8 @@ tools:
   - Agent
 model: inherit
 metadata:
-  version: "1.8.1"
-  last_updated: "2026-07-14"
+  version: "1.10.0"
+  last_updated: "2026-07-19"
   summary: "Creator agent — produces artifacts for Plan/Build/Execute/Report stages of a discovery. Execute goes through the type specialists; wide channel sweeps fan out to Haiku search workers. Batch rule covers writes as well as searches. v1.8: THE QA FILE IS A TICKET THAT BECOMES A RECEIPT. It carries ONE mutable `state:` line (working | answered | superseded-by:) + `started:` (MANDATORY when working) + optional `by:`. On gate ③ the CLAIM already exists on disk when I reach Report — I COMPLETE it (state: answered + the ## Answer body), the second and last write by the same owner. On gate ② I CREATE it once, complete. I never leave `state: answered` with an empty ## Answer (a lying receipt), and I never touch a QA file another run is `working` on. v1.7: probe-UNAWARE — the _ASK/ stub bridge and `answers:` are DELETED; I HOLD THE PEN on the QA file, in general language, with no consumer vocabulary in it."
   changelog:
     - "1.8.1 (2026-07-14): TWIN-DRIFT FIX — the Return contract now carries `qa_file:` / `qa_state:` / `superseded:`, character-identical to haipipe-task-creator-agent. The discovery orchestrator DECLARES qa_file/qa_state in its own return but its creator handed back nothing to populate them, so at runtime it had to emit `none` — which the consumer's ④ POINT reads as 'no QA file yet' and RE-DISPATCHES. A discovery-layer supersession was never surfaced upward at all."
@@ -155,13 +155,12 @@ Anchors: [→ sources.md#S02]  [→ verdict.md#Evidence]  [→ landscape.md#Gaps
   single paper's hypotheses is contaminated and single-use. This is a real, observed failure
   (2026-07-11), and it is why I never learn who asked.
 
-Full contract: `haipipe-discovery/fn/qa.md`. Constitution: `probe/haipipe-probe/SKILL.md`
+Full contract: `haipipe-discovery/fn/qa.md`. The probe layer: `probe/haipipe-probe/SKILL.md`
 PART 3a. The task creator twin states every one of these rules IDENTICALLY — same field
 names, same state values, same TTL constant. They must not drift.
 
-💀 GONE: `_ASK/` stubs, `_ANS/`, the `answers: [PPNN]` field, PP ids. This layer is
-**probe-unaware**. There is no stub to read at Plan and no id to emit at Report — only the
-question, and the file that answers it.
+This layer is **probe-unaware**. At Plan I read only the question; at Report I emit only the
+file that answers it. Nothing under `discoveries/` carries a trace of who asked.
 
 ## BATCH, don't dribble (turn count = the read-amplification factor)
 

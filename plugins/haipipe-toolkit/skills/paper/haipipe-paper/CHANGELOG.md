@@ -4,6 +4,43 @@ haipipe-paper — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 3.2.1 — 2026-07-19 — vocabulary: `probe` (not "the constitution"); entry/`### a-executor` naming
+
+Two vocabulary rulings from JL, both dated 2026-07-19, applied across `paper/`.
+
+**Ruling A — the `probe` nickname.** JL: "宪法 don't use this name, just use `probe`." Every "THE CONSTITUTION" / "the constitution" / "the probe constitution" naming `probe/haipipe-probe/SKILL.md` is replaced by `probe` or by the actual path, whichever reads better at the site. A nickname already in the repo is still a nickname.
+
+**Ruling B — the `a-consumer:` probe-file field.** `- a-consumer:` as a FIELD IN A PROBE FILE was replaced by the entry's `### a-executor`; `check-probe-cards.sh` HARD FAILs it under the `stale-old-format` rule. The a-consumer CONCEPT is untouched and still named a-consumer: it is the per-consumer interpretation written in the STAGE DOC (station ②), anchored `[source: PP<NN>]`. Prose that said "the probe section carries its `a-consumer:`" was wrong twice over — probe files hold ENTRIES, not sections, and what an entry carries is `### a-executor`.
+
+Current model, for reference:
+```
+QA file (bank)  ->  the ENTRY's `### a-executor`  (probe file: the copy, single source of truth)
+                ->  each Q-consumer's a-consumer  (STAGE DOC: what it MEANS for this consumer)
+                ->  stage content                 (REVISE weaves it in, discharges the bracket)
+```
+
+Written under JL's NO TOMBSTONES rule (2026-07-19): "不需要留退役告示,直接抹除任何痕迹" then "follow this rule to do all the following changes." The docs state only the current contract; this CHANGELOG carries the history.
+
+### Changed — SKILL.md
+- The `probe` verb block: "That worker follows the shared probe model (the constitution)" -> "...the shared probe model owned by `probe/haipipe-probe/SKILL.md`".
+- Same block: a stage's PROBE phase works "the sections whose `serves:` names that stage" -> "the entries whose `### q-consumer` bullets name that stage". `serves:` is one of the three strings `check-probe-cards.sh` HARD FAILs (`stale-old-format`), so the umbrella was describing a slice the checker rejects. Found during this pass, not on the reported list.
+
+### Changed — fn/probes.md
+- Three "constitution" references retitled: the model owner line ("v9.5.0, the constitution" -> "v9.5.0"), the anatomy pointer ("the constitution's \"The probe file\" section" -> "`probe/haipipe-probe/SKILL.md` -> \"The probe file\""), and the loop header ("constitution v9.5.0" -> "probe v9.5.0").
+
+### Unchanged (verified LIVE, ruling B)
+Every `a-consumer` in SKILL.md (7 sites) and fn/probes.md (2 sites) already named the stage-doc concept — "each Q-consumer's a-consumer (in the stage doc)", "each stage doc's a-consumer", "a-consumer in its stage doc (station ②)". This file was already on the current model; nothing was rewritten.
+
+## 3.2.0 — 2026-07-19
+
+Changed (JL 2026-07-19, paper/2-phase refactor — the sidecar model is retired: `1-probes/` is the only consumer-side source of truth, `_LOG_<stage>.md` the only sidecar)
+
+- **Retired sidecars swept out of the router.** `Used in: … _CITATION_, _VALUES_` (the two-comment-formats section) → section `.md` files and `1-probes/PP*.md` entries. `fn/probes.md` legacy-migration rule: the "Stage-owned working docs (`_CITATION_`, `_VALUES_`, `_EVIDENCE_`, `_DISPLAY_`) do NOT move" clause named four documents nobody writes; replaced with the live statement of what IS the source of truth.
+- **Dissolved lane skills swept out.** `fn/feedback.md` routed `citation, bibtex, references` to `haipipe-paper-probe-citation`; now `haipipe-paper-draft-citation` — citation holes are DRAFT's to open, not PROBE's. `fn/probes.md` step ⑤ said "the harvest lanes pay out"; harvest is INLINE in ⑤ and `### a-executor` is its only sink, so it now names what actually rides along (source anchors, values, display-unit paths).
+- **Composing with Evidence Workers diagram** redrawn to the current phase split: DRAFT authored ①ORGANIZE + ②MATCH (most entries close at MATCH, T2 REUSE); PROBE runs ③④⑤ and dispatches through `Agent(haipipe-probe-q-executor-agent)`, which fans out to the task/discovery orchestrators — the router previously showed PROBE calling those orchestrators directly, which is precisely the inline dispatch the collector exists to prevent.
+- **Evidence Routing Protocol** re-rooted: `\needprobe{}` comes out when the entry's `**target**` resolves and its `### a-executor` is written (was `target:` + `a-consumer:` — and `a-consumer:` as a probe-file field is a format `check-probe-cards.sh` HARD FAILs). Handoff step (d) attributes MATCH to DRAFT; step (e) states the real backfill chain: PROBE writes `### a-executor` → each Q-consumer writes its a-consumer in the stage doc → 1b-claims.md flips → the flag comes out.
+- **Vocabulary**: probe `SECTION` → `## QX<n>` ENTRY across the description, summary, verb line, Delivery Need Routing, and the `probe` verb; `fn/probes.md`'s no-tables rule now says a probe file holds ENTRIES.
+
 ## 3.1.1 — 2026-07-19
 
 - WIKI RETIREMENT — three shared docs absorbed here, each now with exactly ONE home (the wiki folder is deleted; every referrer points at the section, nothing is duplicated):

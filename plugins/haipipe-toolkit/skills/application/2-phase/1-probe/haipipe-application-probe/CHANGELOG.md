@@ -4,6 +4,21 @@ haipipe-application-probe — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first.
 
 
+## [3.2.0] — 2026-07-19
+
+- Owner ruling, 2026-07-19 (JL): "宪法 don't use this name, just use `probe`." The nickname
+  "THE CONSTITUTION" / "the constitution" for `probe/haipipe-probe/SKILL.md` is dropped everywhere;
+  each site now names either `probe` or the actual path.
+  Touched: SKILL.md (frontmatter summary, model pointer, Rules header, PHASE SPLIT header, ⑤ INTERPRET,
+  the checker note, Hard-boundaries header, Reference block), `ref/per-stage-dispatch.md`,
+  `ref/harvest-acceptance.md`, and two `check-probe-cards.sh` comments.
+- `ref/per-stage-dispatch.md` seed section: dropped the retired FIELD notation `a-consumer:` while keeping the
+  live concept — the a-consumer (in 0-seed.md) feeds the opportunity, mechanism hypothesis, and kill criteria.
+  Matches the paper twin (`paper/2-phase/1-probe/haipipe-paper-probe/ref/per-stage-dispatch.md`). Vocabulary: `a-consumer:` as a PROBE-FILE FIELD is gone — the probe entry's answer subsection is
+  `### a-executor` (the copy of the answering QA file's answer, the consumer-side single source of truth).
+  The a-consumer CONCEPT is untouched: it remains the per-consumer interpretation written in the STAGE DOC
+  (station 2, anchored `[source: PP<NN>]`).
+
 ## [3.1.1] — 2026-07-19
 
 - Probe constitution v9.5.0 sync (Q-executor-entry probe-file format), mirroring the paper family. A question is now a `## QX<n>` ENTRY (topic-local) with four `###` subsections: `### q-executor` (was `q-executor:`; carries Deliverable/Accepted), `### q-consumer` (was `serves:`; one bullet per stage-doc Q-consumer id + that consumer's ORIGINAL question), `### bank binding` (`route` · `bank` — was `match: EXISTS/NONE` — · `target` · `state`), and `### a-executor` (was the probe-file `a-consumer:`; a COPY of the answering QA file's answer). `## Why` DROPPED: the stake lives in the stage-doc Q-consumer. `a-consumer` SURVIVES as the stage-doc concept (station ②), anchored `[source: PP<NN>]` back to the `### a-executor` copy.

@@ -6,7 +6,7 @@ resource, claims, pitch, narrative, display, section-edit). The DRAFT phase RAIS
 AND authors their probe plan (① ORGANIZE + ② MATCH: q-executor / route / bank / target); the
 PROBE phase runs the plan forward (③ DISPATCH → ④ POINT → ⑤ INTERPRET) and binds each to an answer.
 
-The MODEL itself is owned by `../../../probe/haipipe-probe/SKILL.md` (v9.5.0, the constitution).
+The MODEL itself is owned by `../../../probe/haipipe-probe/SKILL.md` (v9.5.0).
 Read that; this file only carries the paper-side paths and verbs. The application twin is the
 same document with application paths.
 
@@ -29,20 +29,18 @@ Location — one FLAT pool, one file per TOPIC
 - **Legacy migration (on first touch):** a file found in `1-probe-plans/` or
   `0-lifecycle/<stage>/_PROBE/` is rewritten into `1-probes/` in the new shape by whatever verb
   touched it. Log the move in the stage `_LOG`. Do not migrate what you did not touch.
-  Stage-owned working docs (`_CITATION_`, `_VALUES_`, `_EVIDENCE_`, `_DISPLAY_`) do NOT move —
-  they stay with their stage.
+  `1-probes/` is the only consumer-side source of truth; `_LOG_<stage>.md` is the only sidecar.
 
 Probe file anatomy
 -------------------
 
-Full spec: the constitution's "The probe file" section. In brief — there is NO `## Why` (the stake
+Full spec: `probe/haipipe-probe/SKILL.md` → "The probe file". In brief — there is NO `## Why` (the stake
 lives in each Q-consumer, in the stage doc, not here); one file per TOPIC; one `## QX<n>` ENTRY per
 Q-EXECUTOR, each with four `###` subsections. The file is Q-executor-oriented — the consumers hang
 off it.
 
 ```markdown
 # PP01 — WellDoc data feasibility
-**mode**: light | full
 
 ## QX1 — cycle indicator
 
@@ -80,7 +78,7 @@ No cycle column in 40 tables.
 
 The STAKE never appears in a probe file — it lives in each Q-consumer, in the stage doc.
 
-⛔ No markdown tables in a probe file. It holds SECTIONS. The words "card", "row" and "table"
+⛔ No markdown tables in a probe file. It holds ENTRIES. The words "card", "row" and "table"
 are not part of this vocabulary.
 
 **BUILD-lane fields** — present ONLY at `state: commissioned`, on work that takes days to weeks
@@ -105,9 +103,9 @@ answered-local   target points into the paper's OWN registries; no dispatch happ
 failed           a reading with a dead target · the task-folder was deleted · the qa verb REFUSEd
 ```
 
-💀 `verdicted` is DELETED. 💀 `dispatched` is DELETED (say `commissioned`).
+An entry in flight is `commissioned`.
 A claim's STATUS (`supported | refuted | inconclusive` + confidence + claim_type)
-lives in `0-lifecycle/1b-claims/1b-claims.md`. It is not a probe field. There is no `## Verdict`.
+lives in `0-lifecycle/1b-claims/1b-claims.md`. It is not a probe field.
 
 Binding is by PATH, never by id
 --------------------------------
@@ -145,7 +143,7 @@ The loop — DRAFT authors ①②; haipipe-paper-probe runs ③④⑤
 ----------------------------------------------------------
 
 ```
-DRAFT authors the plan (constitution v9.5.0):
+DRAFT authors the plan (probe v9.5.0):
   ① ORGANIZE   collect the questions into 1-probes/, grouped by topic; find-or-open each
                `## QX<n>`, write its `### q-executor` (stake stripped), copy the Q-consumer
                under `### q-consumer`, and choose its `route`:
@@ -160,8 +158,9 @@ PROBE runs the plan forward (route/bank are AUTHORITATIVE — executed, not re-d
                  Agent(haipipe-discovery-orchestrator-agent)
                their clean context IS the wall; dispatch goes direct.
   ④ POINT      target: → the answering QA FILE (open it, read the state: line)
-  ⑤ INTERPRET  `### a-executor` (copy the QA answer) → each consumer's a-consumer +
-                 1b-claims.md flips → the harvest lanes pay out
+  ⑤ INTERPRET  `### a-executor` (copy the QA answer, HARVEST inline: source anchors,
+                 values, display-unit paths) → each consumer's a-consumer in its stage
+                 doc → 1b-claims.md flips
 ```
 
 ⛔ **MATCH (at DRAFT) BEFORE DISPATCH (at PROBE).** The bank fills AUTONOMOUSLY from the executor

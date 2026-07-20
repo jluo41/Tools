@@ -4,6 +4,24 @@ haipipe-paper-display — Changelog
 Skill-scoped changelog (never loaded at invocation; read on demand). Versions match SKILL.md frontmatter `version:`. Newest first. Rollup: layer-level `paper/CHANGELOG.md`.
 
 
+## 4.2.0 — 2026-07-19 — `_DISPLAY_<section>` registries RETIRED; PROBE repointed off the dissolved lane worker
+
+Three lines pointed at things that no longer exist. The PROBE phase dispatched `/haipipe-paper-probe-display` (a lane skill being dissolved — display holes are now raised by the DRAFT-phase `haipipe-paper-draft-display`, and PROBE work runs through the single `haipipe-paper-probe` worker). The S0 coverage sweep told the agent to read each section's `_DISPLAY_<section>.md` registry, one of the retired sidecars. And the commissioning-authority sentence defined this stage's authority by quoting a ban that belonged to that dissolved worker — a rule stated as the negative space of a dead skill.
+
+JL ruling on the removal style, 2026-07-19: "不需要留退役告示，直接抹除任何痕迹" / "follow this rule to do all the following changes."
+
+Changed (SKILL.md)
+- PROBE phase block — `(internally calls /haipipe-paper-probe-display)` → `(internally calls /haipipe-paper-probe)`.
+- Commissioning authority now stated positively and self-containedly: commissioning a display unit is THIS stage's authority alone; every other stage FILES a DR row and waits for this stage's ruling. No reference to any other worker's ban.
+- Step 0 (S0) coverage sweep — the `_DISPLAY_<section>.md` registry clause dropped; the sweep reads 3-narrative, the section mds, and their `\input`/`\ref` uses.
+
+Changed (`ref/display-template.md`)
+- The S0 row's sweep inputs likewise drop the `_DISPLAY_` registry.
+
+Untouched (deliberately)
+- `_DISPLAY_REQUEST.md` — this stage's request INBOX, ALIVE and unchanged. It is a different artifact from the retired `_DISPLAY_{stage}` registries and must never be swept with them.
+- Every `mode: light | full` reference — deferred to a separate review.
+
 ## 4.1.0 — 2026-07-14
 
 - Evidence lane: "claim has no confirmed verdict yet -> buffer a PP card" -> "claim's status not settled yet -> raise a question SECTION"; the stage never dispatches an evidence agent itself.

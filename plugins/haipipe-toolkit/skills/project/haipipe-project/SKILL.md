@@ -41,7 +41,7 @@ eval status scanning (scan-status)           -> /haipipe-task   (task/)
 workflow plan/report schema                  -> task/haipipe-workflow
 paper folders inside a project               -> /haipipe-paper-lifecycle folder
 project audits / reorganization              -> retired; originals in project/_archive
-claims / evidence questions                  -> /haipipe-probe (the CONSTITUTION; a probe is a
+claims / evidence questions                  -> /haipipe-probe (a probe is a
                                                 paper-level file, papers/<P>/1-probes/PPNN_<topic>.md
                                                 -- it owns NO folder in the execution tree)
 asking the bank a question                   -> /haipipe-task qa · /haipipe-discovery qa

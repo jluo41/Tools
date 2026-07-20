@@ -120,22 +120,20 @@ Idea-novelty       novel | partial | preempted | inconclusive
 
 Common fields: `outcome`, `summary`, `confidence` (high/medium/low). Judge roles (prior_art/counterevidence/novelty) add `supports_claim` / `contradicts_claim`.
 
-## 💀 DELETED: the `answers:` field and the `_ASK/` bridge (v3.0, 2026-07-14)
+## The bank is probe-unaware
 
-`answers: [PPNN]` is **gone**, and so is everything it connected to: `_ASK/` stub folders, `_ANS/`, and every PP id under `discoveries/`. **The bank is probe-unaware** (R2). A discovery no longer carries any trace of who asked.
-
-Do not resurrect them, and do not write them into a new discovery.yaml. What replaced them:
+**The bank is probe-unaware** (R2): a discovery carries no trace of who asked — no consumer ids anywhere under `discoveries/`, and none in a new discovery.yaml. How a question reaches us:
 
 ```
   the CONSUMER keeps the question + the stake in ITS OWN probe file
-     papers/<P>/1-probes/PPNN_<topic>.md — a `q-executor:` block per question
+     papers/<P>/1-probes/PPNN_<topic>.md — a `### q-executor` block per entry
   it hands us that block, VERBATIM, and nothing else
   we answer it through the `qa` verb (fn/qa.md) and return ONE PATH:
      discoveries/<discovery-group>/<discovery-folder>/QA/<n>-<slug>.md
-  the consumer's section points at that path. Nothing points back.
+  the consumer's entry points at that path. Nothing points back.
 ```
 
-There is no disk signal to grep for, because there is no id: the answer IS a file, and the caller's `target:` is the pointer to it. Constitution: `probe/haipipe-probe/SKILL.md`.
+There is no disk signal to grep for, because there is no id: the answer IS a file, and the caller's `target:` is the pointer to it. The probe layer: `probe/haipipe-probe/SKILL.md`.
 
 
 ## Terminal templates

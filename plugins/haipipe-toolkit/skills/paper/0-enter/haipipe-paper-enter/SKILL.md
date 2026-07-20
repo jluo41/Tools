@@ -4,9 +4,9 @@ description: "Open the Paper Console for a paper repo. Use for `/haipipe-paper`,
 argument-hint: "[paper-path] [--org <owner>] [free-form input]"
 allowed-tools: Bash, Read, Grep, Glob, Write, Skill
 metadata:
-  version: "4.0.2"
+  version: "4.1.0"
   last_updated: "2026-07-19"
-  summary: "Paper Console: a derive-from-disk dashboard + lifecycle router, and THE home of the dashboard spec (golden rule, frontier predicates, glyphs, shallow check, render skeleton). Renders the 9-stage spine (seed · resource · claims · venue · pitch · narrative · display · section-edit · review); the resource predicate honours the `n/a` exemption for pre-2026-07-14 papers. History: ./CHANGELOG.md."
+  summary: "Paper Console: a derive-from-disk dashboard + lifecycle router, and THE home of the dashboard spec (golden rule, frontier predicates, glyphs, shallow check, render skeleton). Renders the 9-stage spine (seed · resource · claims · venue · pitch · narrative · display · section-edit · review) and a four-glyph DPRC phase strip; the resource predicate honours the `n/a` exemption for pre-2026-07-14 papers. History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -116,8 +116,9 @@ If the file does not exist or lacks these sections, the dashboard says "pitch no
    - `0-lifecycle/1b-claims/1b-claims.tex` (or `.md`)
    - `0-lifecycle/3-narrative/3-narrative.tex`
    - `0-lifecycle/4-display/4-display.tex`
-4. Section-edit outlines: scan `0-lifecycle/5-section-edit/` for per-section outline `.md` files, `_CITATION_*`, `_VALUES_*`, and `_LOG*` files.
+4. Section-edit sections: scan `0-lifecycle/5-section-edit/` for per-section `.md` files and their `_LOG_*` files.
    Derive per-section DPRC status from what exists on disk.
+4b. `1-probes/PP*.md`: the paper's open questions. Per entry read its `**state**` and whether `### a-executor` is filled — this is what the phase strip's `probe` glyph is derived from.
 5. Explicit need records in lifecycle TeX comments or markdown tables.
    Search for `NEED`, `GAP`, `TODO`, `blocked`, `missing`, and `open`.
 6. `0-displays/README.md`
@@ -391,7 +392,7 @@ Every line carries EXACTLY one 🔥 and EXACTLY one 🚀, never zero. "Reached" 
 
 **Line 1 (stage):** all lifecycle stages. 🔥 marks the active stage, 🚀 marks the frontier. If the active stage is section-edit, append the specific section name in parentheses.
 
-**Line 2 (phase):** the DPRC phase status within the 🔥 stage. 🔥 marks the active phase, 🚀 marks the farthest phase reached at the frontier stage. The probe phase carries its three sub-tracks as `probe: cite X  val X  disp X` when the stage has them (section-edit); stages without sub-tracks show just `probe ⬜` / `probe --`.
+**Line 2 (phase):** the DPRC phase status within the 🔥 stage. 🔥 marks the active phase, 🚀 marks the farthest phase reached at the frontier stage. Four glyphs, one per phase, the same at every stage.
 
 Examples:
 
@@ -410,7 +411,7 @@ phase:   draft 🔥🚀  │  probe ⬜  │  revise ⬜  │  check ⬜
 Frontier at section-edit (section name appended; probe shows sub-tracks). `resource ⬜` here is the EXEMPTION -- this paper predates the stage, and that is a PASS, not drift:
 ```
 stage:   seed ✅  resource ⬜  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  →  section-edit (§1 introduction) 🔥🚀  →  review ⬜
-phase:   draft 🔥🚀  │  probe: cite ⬜  val --  disp --  │  revise ⬜  │  check ⬜
+phase:   draft 🔥🚀  │  probe ⬜  │  revise ⬜  │  check ⬜
 ```
 
 Loopback: redoing seed while paper has reached section-edit (🚀 stays at the frontier; seed has no probe sub-tracks):
@@ -430,13 +431,11 @@ How to derive:
 - 🚀 stage = the lifecycle frontier (farthest stage whose disk predicate passed). If the user specifies a section ("work on §3"), the section name appears in parentheses after the stage.
 - The section name comes from the outline file name (e.g., `1-introduction.md` -> `§1 introduction`, `3-theory.md` -> `§3 theory`).
 - Phase status is derived from disk (same rules as before):
-  - draft ✅ if outline .md has structure block + draft sentences
-  - cite ✅ if _CITATION_ all placed and density >= venue norm; 🔍 N if N candidates unverified
-  - val ✅ if _VALUES_ all verified; -- if skipped (section has no numbers)
-  - disp ✅ if all displays linked; -- if skipped (section has no displays)
-  - revise ✅ if prose revised (tex synced from outline)
+  - draft ✅ if the stage doc / section .md has its structure block + real prose, and every hole is FILLED or OWNED (each `\cite{TOADD}` / `{VAL:?` carries a `[Q-<Stage>-<n>]` id); 🕳️ N if N holes are unowned
+  - probe ✅ if every entry serving this stage has a resolving `**target**` and a non-empty `### a-executor`; 📨 N if N are still open (`planned` / `commissioned` / `answered`-but-unharvested); -- if the stage raised no questions
+  - revise ✅ if prose revised (tex synced from the .md)
   - check ✅ if _LOG has a check entry
-- For non-section-edit stages (seed, claims, pitch, etc.), phase status is derived from the stage's artifact spec done-criteria; their phase line shows just `probe ⬜` / `probe --` (no cite/val/disp sub-tracks).
+- Every stage reads the same four glyphs. `probe` is ONE track: the phase strip never splits it.
 
 DPRC phase automation:
 - DRAFT, PROBE, REVISE are automatic (🤖) -- agent runs without stopping for human input
@@ -563,7 +562,7 @@ status:  ok · seed
 next:    <single recommended command>
 ──────────────────────────────────────────────
 stage:   seed 🔥  resource ✅  claims ✅  venue ✅  pitch ✅  narrative ✅  display ✅  →  section-edit 🚀  →  review ⬜
-phase:   draft 🔥🚀  │  probe: cite ⬜  val --  disp --  │  revise ⬜  │  check ⬜
+phase:   draft 🔥🚀  │  probe ⬜  │  revise ⬜  │  check ⬜
 ```
 
 `status` merges the state and the active stage on one line: `ok` (dashboard rendered, session ready) · `blocked` (missing paper root or unresolvable state) · `failed` (read error or inconsistent disk state).

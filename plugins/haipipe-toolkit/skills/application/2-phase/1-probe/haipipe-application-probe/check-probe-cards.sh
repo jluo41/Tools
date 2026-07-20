@@ -239,7 +239,7 @@ function stake_leak(s,   low) {
 # (staleness is the thing the reader must act on).
 #
 # A QA file with NO state line is MALFORMED, not "legacy". `state:` is MANDATORY, ALWAYS
-# (the constitution, "The QA file" section). The first cut of this file mapped a stateless QA file to the kind
+# (probe/haipipe-probe/SKILL.md, "The QA file" section). The first cut of this file mapped a stateless QA file to the kind
 # `legacy` and EXEMPTED it from every claim check -- so an executor could defeat the whole
 # lying-receipt tooth BY OMISSION: drop one line, ship an empty `## Answer`, and the gate
 # goes green while a consumer publishes an `### a-executor` derived from nothing. The grandfather
@@ -342,7 +342,7 @@ for probe in "$intervention_root"/1-probes/PP*.md; do
   dead=$(grep -cEi '(^|[^a-z])verdicted([^a-z]|$)|^##[[:space:]]*Verdict|^##[[:space:]]*Takeaways|^[-[:space:]]*answers:|_ASK|_ANS[^A-Za-z]' "$probe")
   [ "$dead" -gt 0 ] && fprob="$fprob dead-vocab(${dead}-lines: verdicted/Verdict/Takeaways/answers:/_ASK/_ANS are DELETED);"
 
-  # RETIRED old-format strings must not appear (constitution v9.5.0+). The stake now lives
+  # Old-format strings must not appear (probe/haipipe-probe/SKILL.md v9.5.0+). The stake lives
   # in the stage-doc Q-consumer; the anatomy is `## QX<n>` entries with `###` subsections.
   stale=$(grep -cE '^[[:space:]]*-[[:space:]]*(serves|match|a-consumer):|^##[[:space:]]*Why([[:space:]]|$)' "$probe")
   [ "$stale" -gt 0 ] && fprob="$fprob stale-old-format(${stale}-lines: serves/match/a-consumer/## Why are RETIRED -- rewrite to the QX-entry format);"

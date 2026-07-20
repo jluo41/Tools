@@ -4,8 +4,8 @@ description: "Stage 3 of the intervention lifecycle (venue-GATED: fires per STAT
 argument-hint: "[intervention-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "5.2.0"
-  last_updated: "2026-07-18"
+  version: "5.3.0"
+  last_updated: "2026-07-19"
   summary: "Narrative stage (stage 3, venue-GATED + venue-ALIGNED): maps the settled claim/advice flow onto the venue's arc; it composes, never gathers — a beat exposing a NEW evidence gap raises a question SECTION in 1-probes/PPNN_<topic>.md (serves: 3-narrative) routed back to 1c-claims. History: ./CHANGELOG.md."
 ---
 
@@ -58,8 +58,8 @@ CHECK   3-narrative.md exists (when the venue requires it); every load-bearing c
 Precondition (before DRAFT commits): the arc leans only on claims meeting the venue's settlement bar (`STATUS.md claims_settlement`) — a load-bearing GAP claim cannot anchor a beat.
 If one does, BLOCK with a loopback suggestion to claims.
 
-Probe model: questions live in the FLAT cross-stage pool `1-probes/PPNN_<topic>.md` (not a per-stage `_PROBE/`, not `1-probe-plans/README.md` — both retired; legacy `_PROBE/` is migrate-from only).
-A section carries `serves`/`target`/`state`/`q-executor`/`a-consumer` + a `## Why`; states are `planned|commissioned|answered|read|answered-local|failed` (no `dispatched`, no `verdicted`; no `## Verdict`, no G1/G2/G3).
+Probe model: questions live in the FLAT cross-stage pool `1-probes/PPNN_<topic>.md`, one file per TOPIC.
+Each ENTRY is one `## QX<n>` q-executor carrying `### q-executor` / `### q-consumer` / `### bank binding` / `### a-executor`; states are `planned|commissioned|answered|read|answered-local|failed`, and the stake stays in this doc's Q-consumer.
 Dispatch is `Agent(haipipe-probe-q-executor-agent)`, not a gateway.
 Mechanics: the probe layer's `ref/per-stage-dispatch.md`.
 
