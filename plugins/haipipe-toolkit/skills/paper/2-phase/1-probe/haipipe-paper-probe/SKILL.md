@@ -1,19 +1,19 @@
 ---
 name: haipipe-paper-probe
-description: "PROBE-phase worker (internal). After DRAFT authored the probe plan, runs it forward — papers/<P>/1-probes/PPNN_<topic>.md, one file per topic, each q-executor one ENTRY (`## QX<n>` + `### q-executor` / `### q-consumer` / `### bank binding` / `### a-executor`); no `## Why` — the stake stays in the stage-doc Q-consumer. DRAFT did ①ORGANIZE + ②MATCH; this worker runs ③DISPATCH → ④POINT → ⑤INTERPRET (executes the plan, does not re-match — probe v9.5.0); binds by PATH to a QA file in the task/discovery bank; dispatches the q-executor verbatim, never running bank work inline. Users invoke stage skills (seed, claims, pitch…), not this directly."
+description: "PROBE-phase worker (internal). Owns the WHOLE five-step loop: reads the stage doc's Q-consumer and ①ORGANIZEs each question into an ENTRY in papers/<P>/1-probes/PPNN_<topic>.md (`## QX<n>` + `### q-executor` / `### q-consumer` / `### bank binding` / `### a-executor`; the stake stays behind in the stage-doc Q-consumer), ②MATCHes it against the bank with a read-only grep, ③DISPATCHes only what the stage's probe_depth ceiling allows, ④POINTs each target, ⑤INTERPRETs the answer back. ①② moved here from DRAFT on 2026-07-20, when the DRAFT gate they had been merged into was removed; DRAFT now raises questions and nothing else. Binds by PATH to a QA file in the probe-unaware task/discovery bank; dispatches the q-executor verbatim, never running bank work inline. Users invoke stage skills (seed, claims, pitch…), not this directly."
 argument-hint: "[from-buffer <paper_root> [PPNN] | stage <stage-name>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 metadata:
-  version: "6.0.1"
+  version: "6.1.0"
   last_updated: "2026-07-19"
-  summary: "The paper's PROBE-phase worker — runs ③DISPATCH→④POINT→⑤INTERPRET for a paper (DRAFT authored ①ORGANIZE+②MATCH; the plan is executed, not re-matched — probe v9.5.0). The model (anatomy, QA contract, cost ladder, LAWS, states, checker codes) is owned by ../../../../probe/haipipe-probe/SKILL.md. This file is only the paper-side deltas. History: ./CHANGELOG.md."
+  summary: "The paper's PROBE-phase worker — runs ①ORGANIZE→②MATCH→③DISPATCH→④POINT→⑤INTERPRET for a paper (all five; ①② came back here from DRAFT on 2026-07-20). The model (anatomy, QA contract, cost ladder, LAWS, states, checker codes) is owned by ../../../../probe/haipipe-probe/SKILL.md. This file is only the paper-side deltas. History: ./CHANGELOG.md."
 ---
 
 Skill: haipipe-paper-probe — the PROBE-phase worker for a paper
 ==============================================================
 
 Called by paper stage skills (seed, resource, claims, pitch, narrative, display, section-edit) after DRAFT.
-DRAFT authored the probe plan (①ORGANIZE + ②MATCH); this worker runs it FORWARD (③DISPATCH → ④POINT → ⑤INTERPRET): dispatch the NEW entries, point each target, harvest what comes back.
+DRAFT raised the Q-consumer questions in the stage doc and stopped there. THIS worker owns everything probe-shaped: ①ORGANIZE each Q-consumer into an ENTRY, ②MATCH it against the bank (read-only grep), ③DISPATCH only what the ceiling allows, ④POINT, ⑤INTERPRET.
 
 ⭐ THE MODEL IS NOT THIS FILE'S — it is owned by `../../../../probe/haipipe-probe/SKILL.md`.
 Read it for the probe-file anatomy, the QA state-line contract, the cost ladder, the two LAWS, the derived states, and the checker's FAIL codes.
@@ -48,23 +48,72 @@ Each step ends with a PROOF this worker MUST show in its reply; an absent proof 
 STEP 0 — re-invoke this skill fresh every run, even when its text is already in context (a probe once ran a 3-hour-old contract).
 
 PROBE v9.5.0 PHASE SPLIT.
-①ORGANIZE + ②MATCH happen at DRAFT: the stage's DRAFT authored each probe ENTRY with its `### q-executor` (FROZEN), its `### bank binding` (`route` + the `bank` verdict, rooted to a SPECIFIC bank folder), and its `target` (an EXISTS path, or `NEW <path>`). The plan is AUTHORITATIVE — this worker EXECUTES it, it does NOT re-match.
+①ORGANIZE + ②MATCH happen HERE. Read the stage doc's Q-consumer, and for each question author its ENTRY: the `### q-executor` (stake stripped, then FROZEN), the `### q-consumer` bullet copying the original wording, and the `### bank binding` — `route`, the `bank` verdict rooted to a SPECIFIC bank folder by READING it, and `target` (an existing path, or `NEW <path>`). DRAFT authors none of this; it never opens `1-probes/`.
 This worker runs ③DISPATCH + ④POINT (COLLECT the answer from the bank, per `probe/haipipe-probe/SKILL.md`) + ⑤INTERPRET (HARVEST it into the paper's OWN registries). Collection is probe's model; harvest is this worker's, and probe says nothing about it.
 
 
-① + ② — DONE AT DRAFT (this worker's PRECONDITION)
--------------------------------------------------
+① + ② — THIS WORKER AUTHORS THEM
+---------------------------------
 
-The entries already exist under `<paper_root>/1-probes/PPNN_<topic>.md`, each carrying the DRAFT-authored plan. This worker READS them; it does not author or re-match them.
+The stage doc's Q-consumer is the input. For each `## Q-<Stage>-<n>` block, find-or-open its ENTRY under `<paper_root>/1-probes/PPNN_<topic>.md` and author it. DRAFT wrote none of this and never opened `1-probes/`; if an entry is already there from a previous PROBE run, read it and do not re-author it.
 - Resolve `project_root`: walk UP from `paper_root` to the first ancestor containing `discoveries/`.
   Do NOT use `git rev-parse` — a repo-backed paper is its own git repo. (The checker resolves the same way.)
-- Read each entry's `bank` verdict + `target` to route it: `reuse` (a real `target` path, the answer already banked) → go to ④/⑤ (verify then harvest); `new` / `run` / `code` (`target: NEW`) → ③ DISPATCH.
-- T1 LOCAL is DRAFT's, not this worker's: DRAFT roots the question against the paper's OWN registries and sets `target` + `state: answered-local`. This worker only writes that entry's `### a-executor`. The CLOSED whitelist: entries already `read` or `answered-local` in `1-probes/` · `0-displays/` units + index · the `.bib` · `_LOG_<stage>.md`.
+- Route on the TARGET, not on the verdict. They answer different questions: `bank` says what the
+  bank would have to DO, `target` says whether the readable answer EXISTS yet.
+
+```text
+  target: <an existing QA path>   → ④/⑤ : verify the state line, then harvest
+  target: NEW <path>              → ③   : dispatch, whatever the bank verdict says
+```
+
+  ⚠️ `bank: reuse` + `target: NEW` IS THE COMMON CASE, not a contradiction. It means the results
+  ALREADY answer the question but nobody has written the readable digest yet. It still requires
+  ③ DISPATCH, because LAW 1 forbids a consumer authoring a bank file — the executor writes it, at
+  its qa gate's ② DIGEST, from artifacts already on disk. That is depth 0: cheap, nothing runs, and
+  it passes any ceiling. Do not mistake it for `answered` and skip the dispatch; do not mistake it
+  for expensive and defer it.
+- T1 LOCAL is this worker's, at ②: root the question against the paper's OWN registries and set `target` + `state: answered-local`, then write the entry's `### a-executor`. The CLOSED whitelist: entries already `read` or `answered-local` in `1-probes/` · `0-displays/` units + index · the `.bib` · `_LOG_<stage>.md`.
   Fully answered there → write the `### a-executor`, set `answered-local`, do NOT dispatch. Adopt the POINTER, never the verdict (a reused value re-verifies against its ORIGINAL source at PLACE).
 - DISPLAY-shaped needs are REROUTED, not collected: a question asking for a display unit that does not exist becomes a DR row in `0-lifecycle/4-display/_DISPLAY_REQUEST.md`; close the entry `answered-local` with the `### a-executor` "rerouted to display stage: DRNN".
-- RESOURCE (paper only): the resource stage's DRAFT opened one probe ENTRY per GATE-1-approved `Q<n>` (present, not DECLINED in `_LOG_1a-resource.md`) — its `### q-consumer` names that resource `Q<n>`, `**blocks**: N<n>` under `### bank binding` — and wrote the `**Q<n> (N<n>) -> PP<NN>**` backlink into `1a-resource.md`, the mechanical proof `check-probe-cards.sh --stage resource` tests. The ownership chain: the STAGE DRAFT asks (Q<n>) + opens the entry → the HUMAN approves at GATE 1 (the DRAFT gate) → this worker ③ dispatches / ④ points → ⑤ writes the A back. The stage never mints a PP id. If a legacy DRAFT left the intake undone, this worker opens the missing entries on first touch (transition only).
+- RESOURCE (paper only): the resource stage's DRAFT opened one probe ENTRY per `Q<n>` it drafted, and the human then APPROVED that set at GATE 1 — so by the time this worker runs, every entry it sees is GATE-1-approved (present, not DECLINED in `_LOG_1a-resource.md`) — its `### q-consumer` names that resource `Q<n>`, `**blocks**: N<n>` under `### bank binding` — and wrote the `**Q<n> (N<n>) -> PP<NN>**` backlink into `1a-resource.md`, the mechanical proof `check-probe-cards.sh --stage resource` tests. The ownership chain: the STAGE DRAFT asks (Q<n>) + opens the entry → the HUMAN approves at GATE 1 (the DRAFT gate) → this worker ③ dispatches / ④ points → ⑤ writes the A back. The stage never mints a PP id. If a legacy DRAFT left the intake undone, this worker opens the missing entries on first touch (transition only).
 
-PROOF 1: `project_root=<path>` + `ls <project_root>/discoveries/` + `ls <paper_root>/1-probes/`, and per entry its `bank` verdict + `target` (EXISTS→④/⑤ or NEW→③).
+③ — THE CEILING GATE, run BEFORE any dispatch
+----------------------------------------------
+
+⛔ NO ENTRY IS DISPATCHED WITHOUT PASSING THIS. Read `probe_depth:` from the stage's contract
+(`../../../1-lifecycle/haipipe-paper-stage/stages/<order>-<key>/stage.md`), or take the value the
+invocation passed as `probe --depth N`, whichever is HIGHER — the invocation may raise the
+contract's default, never lower it silently.
+
+Map each entry's `bank` verdict onto the bank's own depth ladder, then compare:
+
+```text
+bank: reuse  = depth 0   results already answer it       free, nothing runs
+bank: run    = depth 1   old script, new config          costs
+bank: code   = depth 2   must write new code first       costs
+bank: new    = depth 3   open a new task-folder          costs most
+
+    depth(bank) <= probe_depth   →  ③ DISPATCH it
+    depth(bank) >  probe_depth   →  DEFER it, and STOP for that entry
+```
+
+DEFERRING IS A CORRECT OUTCOME, NOT A FAILURE. Write it as a DECLARATION on the entry, never as
+silence:
+
+```text
+**state**: deferred
+**deferred**: depth-2 · needs a new script to join review text to the claims panel; nobody has
+              authorized that spend. Raise with `probe --depth 2` to release it.
+```
+
+A `deferred` entry with no `**deferred**: depth-<n>` line is a bare `planned` entry in a costume,
+and `check-probe-cards.sh` FAILs it as `deferred-undeclared`.
+
+⚠️ NEVER raise the ceiling on your own initiative. `--depth` is the human act that authorizes
+spend; a stage that removed its DRAFT gate has no other one. Report in the `[PROBE]` _LOG entry
+which ceiling was in force, how many entries dispatched, and how many deferred at what depth.
+
+PROOF 1: `project_root=<path>` + `ls <project_root>/discoveries/` + `ls <paper_root>/1-probes/`, the `probe_depth` in force, and per entry its `bank` verdict + resolved depth + `target` (dispatched / deferred).
 
 
 ③ DISPATCH — hand the NEW entries to the collector agent
@@ -81,7 +130,7 @@ For each STILL-COLLECTING entry (`target: NEW` — `bank: new | run | code` — 
   ```
 
 The agent runs in ITS OWN clean context: it sends each `q-executor` VERBATIM to `Agent(haipipe-task-orchestrator-agent)` / `Agent(haipipe-discovery-orchestrator-agent)` (`run_in_background` for fresh work; omit the leaf for fresh — the orchestrator picks the folder and returns the path), and returns `{ entry → target: QA-path | in-flight | failed }`, having written each `target`.
-Under model A the agent does NOT re-run ②MATCH — the DRAFT `bank` verdict already rooted each question; the agent DISPATCHES (the executor orchestrator's OWN QA-gate still dedups against an existing answer). It NEVER reads the paper's registries, the `### q-consumer` copies, or the stake — its clean context IS the wall; and it never authors a fresh folder (LAW 1).
+Under model A the agent does NOT re-run ②MATCH — THIS worker rooted each question at ② just above; the agent DISPATCHES (the executor orchestrator's OWN QA-gate still dedups against an existing answer). It NEVER reads the paper's registries, the `### q-consumer` copies, or the stake — its clean context IS the wall; and it never authors a fresh folder (LAW 1).
 The stage NEVER calls `haipipe-task-orchestrator-agent` / `haipipe-discovery-orchestrator-agent` ITSELF — the collector owns dispatch; a stage that dispatches inline lands results nowhere reviewable.
 
 DEFERRED / ASYNC is the agent's too: an entry it cannot land synchronously comes back `in-flight` and stays `commissioned`; the NEXT PROBE run re-hands it. This worker writes NOTHING under `tasks/` or `discoveries/`, ever — no stub, no mailbox.

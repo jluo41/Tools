@@ -1,6 +1,6 @@
 ---
 name: haipipe-application-probe
-description: "PROBE-phase worker (internal). After DRAFT authored the probe plan, runs it forward — applications/<A>/1-probes/PPNN_<topic>.md, one file per topic, each question one ENTRY (## QX<n> · q-executor / q-consumer / bank binding / a-executor). DRAFT did ①ORGANIZE + ②MATCH; this worker runs ③DISPATCH → ④POINT → ⑤INTERPRET (executes the plan, does not re-match); binds by PATH to a QA file in the task/discovery bank; dispatches the q-executor verbatim, never running bank work inline. Harvest folds INTO the entry's a-executor (anchored to target) — no sidecar docs. Users invoke stage skills (seed, claims…), not this directly."
+description: "PROBE-phase worker (internal). Owns the WHOLE five-step loop: reads the stage doc's Q-consumer and ①ORGANIZEs each question into an ENTRY in applications/<A>/1-probes/PPNN_<topic>.md (## QX<n> · q-executor / q-consumer / bank binding / a-executor), ②MATCHes it against the bank with a read-only grep, ③DISPATCHes what the ceiling allows, ④POINTs, ⑤INTERPRETs. ①② moved here from DRAFT on 2026-07-20 with the removal of the DRAFT gate; DRAFT now raises questions and nothing else. Binds by PATH to a QA file in the task/discovery bank; dispatches the q-executor verbatim, never running bank work inline. Harvest folds INTO the entry's a-executor (anchored to target) — no sidecar docs. Users invoke stage skills (seed, claims…), not this directly."
 argument-hint: "[from-buffer <intervention_root> [PPNN] | stage <stage-name>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent
 metadata:
@@ -13,7 +13,7 @@ Skill: haipipe-application-probe — the PROBE-phase worker for an application
 ============================================================================
 
 Called by application stage skills (seed, descriptions, themes, claims, venue, pitch, narrative, display, section-edit) after DRAFT.
-DRAFT authored the probe plan (①ORGANIZE + ②MATCH); this worker runs it FORWARD (③DISPATCH → ④POINT → ⑤INTERPRET): dispatch the NEW entries, point each target, harvest what comes back.
+DRAFT raised the Q-consumer questions in the stage doc and stopped there. THIS worker owns everything probe-shaped: ①ORGANIZE each Q-consumer into an ENTRY, ②MATCH it against the bank (read-only grep), ③DISPATCH only what the ceiling allows, ④POINT, ⑤INTERPRET.
 
 ⭐ THE MODEL IS NOT THIS FILE'S — it is `probe`'s: `../../../../probe/haipipe-probe/SKILL.md`.
 Read it for the probe-file anatomy, the QA state-line contract, the cost ladder, the two LAWS, the derived states, and the checker's FAIL codes.
@@ -47,7 +47,7 @@ Each step ends with a PROOF this worker MUST show in its reply; an absent proof 
 STEP 0 — re-invoke this skill fresh every run, even when its text is already in context (a probe once ran a 3-hour-old contract).
 
 THE PHASE SPLIT (`probe`).
-①ORGANIZE + ②MATCH happen at DRAFT: the stage's DRAFT authored each probe ENTRY with its `### q-executor` (FROZEN, + Deliverable/Accepted), its `### q-consumer` bullets, and its `### bank binding` (`route`, `bank`, `target` — an existing path or `NEW <path>`). The plan is AUTHORITATIVE — this worker EXECUTES it, it does NOT re-match.
+①ORGANIZE + ②MATCH happen HERE. Read the stage doc's Q-consumer and author each ENTRY: `### q-executor` (stake stripped, then FROZEN, + Deliverable/Accepted), `### q-consumer` bullets, `### bank binding` (`route`, `bank`, `target` — an existing path or `NEW <path>`). DRAFT authors none of it and never opens `1-probes/`.
 This worker runs ③DISPATCH + ④POINT (COLLECT the answer from the bank, per `probe`) + ⑤INTERPRET (HARVEST it — write `### a-executor` and the stage-doc a-consumer). Collection is `probe`'s model; harvest is this worker's, and `probe` says nothing about it.
 
 

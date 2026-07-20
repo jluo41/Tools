@@ -31,7 +31,7 @@ Per-rung list (harvest is TRANSCRIPTION: landed evidence folds into the entry's 
 Spine folder names are the intervention's `0-lifecycle/` stage folders (dual-2 numbering mirrors paper: 2-venue + 2-pitch).
 
 - **0-seed** (venue-FREE) — (→ discovery), DEFAULT RUN for a new seed: landscape / prior interventions / benchmarks / cohort sanity to sharpen the seed question. No venue pinned yet, so source anchors stay in the entry's `### a-executor`; no citation/display lanes.
-- **1a-descriptions** (venue-FREE, ladder rung) — (→ task): data-profile questions ("profile the cohort", "pull engagement summary"). The answer's numbers land INLINE in the entry's `### a-executor` (anchored to target:); the 1a doc keeps one-line Description entries. Consumes seed's FORWARD pointers at DRAFT.
+- **1a-descriptions** (venue-FREE, ladder rung) — (→ task): data-profile questions ("profile the cohort", "pull engagement summary"). The answer's numbers land INLINE in the entry's `### a-executor` (anchored to target:); the 1a doc keeps one-line Description entries. Consumes seed's FORWARD pointers when its own DRAFT opens.
 - **1b-themes** (venue-FREE, ladder rung) — (→ discovery; task for quick in-data confirmations): field-pattern questions ("what messaging levers does the literature name?"); the answer's grounding refs land in the entry's `### a-executor`, feeding the T entries.
 - **1c-claims** (venue-FREE, ladder rung) — (→ task + discovery): the core evidence rung; one question ENTRY per GAP claim. An entry's answer is read by the author, who writes the claim status into `0-lifecycle/1c-claims/1c-claims.md` — the ONLY home of a claim's status, flipping the C-line AND the Evidence Campaign row in the same pass. Verified numbers land INLINE in the entry's `### a-executor` (anchored to target:), even pre-pin.
 - **1d-advice** (venue-FREE, ladder rung) — rarely fires: derivation is in-stage work; an advice entry exposing a NEW evidence gap routes back as a `1c-claims` question ENTRY, never gathers here.
@@ -43,7 +43,7 @@ Spine folder names are the intervention's `0-lifecycle/` stage folders (dual-2 n
 
 Dispatch rules (apply to every dispatch)
 ----------------------------------------------
-1. **Reuse-before-create — the MATCH is DRAFT's, the DEPTH is the EXECUTOR's.** DRAFT runs ② MATCH over the bank's READABLE QA corpus (`{tasks,discoveries}/**/QA/*.md`) and READS the hits — match ON THE ANSWER, never on the topic. A hit is a T2 REUSE (`bank: reuse`; point the entry's `target:` at that QA file; nothing runs). Only what MATCH cannot close carries a `NEW` target into ③ DISPATCH, and then the EXECUTOR picks the shallowest depth in its own clean context. MOST ENTRIES SHOULD LAND ON T2: the bank fills autonomously from the executor side, so a fresh q-executor is the EXCEPTION.
+1. **Reuse-before-create — the MATCH is PROBE's, the DEPTH is the EXECUTOR's.** PROBE runs ② MATCH over the bank's READABLE QA corpus (`{tasks,discoveries}/**/QA/*.md`) and READS the hits — match ON THE ANSWER, never on the topic. A hit is a T2 REUSE (`bank: reuse`; point the entry's `target:` at that QA file; nothing runs). Only what MATCH cannot close carries a `NEW` target into ③ DISPATCH, and then the EXECUTOR picks the shallowest depth in its own clean context. MOST ENTRIES SHOULD LAND ON T2: the bank fills autonomously from the executor side, so a fresh q-executor is the EXCEPTION.
 
 Seed specifics (DEFAULT RUN for a new seed)
 ---------------------------------------------
@@ -61,7 +61,7 @@ Full evidence stays executor-side, reusable by claims.
 
 Claims specifics (rung 1c)
 ---------------------------
-Every GAP/weak claim raises one question ENTRY — MATCH first at DRAFT (reuse-before-create), then the unmatched ones fan out by shape:
+Every GAP/weak claim raises one question — PROBE runs MATCH first (reuse-before-create), then the unmatched ones fan out by shape:
 
 ```
 claim needs its status settled     → an ENTRY whose q-executor is task-shaped → route: task

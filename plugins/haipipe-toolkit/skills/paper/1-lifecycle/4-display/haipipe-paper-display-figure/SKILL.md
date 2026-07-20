@@ -16,12 +16,12 @@ Generate the data plots for a paper based on: **$ARGUMENTS**
 
 > **Boundary:** this skill renders **plots only**. For any other display kind
 > (tables, diagrams, AI concept art), see the sibling-routing table in
-> `../haipipe-paper-display/ref/display-unit-output-contract.md`.
+> `../ref/display-unit-output-contract.md`.
 
 ## Output: write into a display unit
 
 The plot goes into a `0-displays/displayNN-<slug>/` unit per the shared contract:
-`../haipipe-paper-display/ref/display-unit-output-contract.md`.
+`../ref/display-unit-output-contract.md`.
 THIS renderer's row: asset -> `assets/figure.pdf`; rebuild spec -> `source/gen_*.py`
 (+ `source/paper_plot_style.py`).
 
@@ -56,7 +56,7 @@ The skill will detect manually-made figures as "existing figures" and preserve t
 
 ## Inputs
 
-1. **PAPER_PLAN.md** — figure plan table (figure-inventory planning now lives in the display stage: `/haipipe-paper-display`, see its `ref/figure-logic.md`; lifecycle spine: narrative -> display -> section-edit)
+1. **PAPER_PLAN.md** — figure plan table (figure-inventory planning now lives in the display stage: `/haipipe-paper-stage display`, see its `figure-logic.md`; lifecycle spine: narrative -> display -> section-edit)
 2. **Experiment data** — JSON files, CSV files, or screen logs in `figures/` or project root
 3. **Existing figures** — any manually created figures to preserve
 
@@ -245,7 +245,7 @@ Before finishing, verify each figure (from pedrohcgs/claude-code-my-workflow):
 
 The display unit layout (asset -> `assets/figure.pdf`, rebuild spec -> `source/gen_figNN_*.py`
 + `source/paper_plot_style.py`) and the no-paper flat fallback are the shared contract:
-`../haipipe-paper-display/ref/display-unit-output-contract.md`.
+`../ref/display-unit-output-contract.md`.
 
 ## Figure Type Reference
 

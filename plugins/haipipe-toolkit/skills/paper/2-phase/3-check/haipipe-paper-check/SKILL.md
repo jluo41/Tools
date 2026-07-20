@@ -1,12 +1,12 @@
 ---
 name: haipipe-paper-check
-description: "CHECK phase worker (internal). Called by stage skills as the FINAL human gate in the DPRC lifecycle (the other gate is the stage's DRAFT structure review). PROBE and REVISE run fully automatic; CHECK is where the human reviews quality, flags, and REVISE why-comments at once. Runs automated sub-checkers, produces a unified pass/fail report, then the human verifies and decides. Users invoke stage skills (seed, claims, pitch...), not this skill directly."
+description: "CHECK phase worker (internal). Called by stage skills as the human gate in the DPRC lifecycle. How many gates a stage opens is declared by its own contract's `gates:` field; the default is ONE, here at CHECK, with DRAFT/PROBE/REVISE unattended. PROBE and REVISE run fully automatic; CHECK is where the human reviews quality, flags, and REVISE why-comments at once. Runs automated sub-checkers, produces a unified pass/fail report, then the human verifies and decides. Users invoke stage skills (seed, claims, pitch...), not this skill directly."
 argument-hint: "[section-name-or-number] [paper-path]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent
 metadata:
   version: "3.0.0"
   last_updated: "2026-07-19"
-  summary: "CHECK phase worker (internal) -- the ONLY human-involved phase: runs the deterministic sub-checkers (./checks.sh), seeds `> CHECK:` comments in-file at every flag site, and gates human review. What it walks is the stage doc + the paper's `1-probes/` entries; its probe invariants are stated over ENTRIES (`state: planned`, unresolvable `**target**`, an `answered` target with an empty `### a-executor`). History: ./CHANGELOG.md."
+  summary: "CHECK phase worker (internal) -- the LAST human gate of a stage, and by default its ONLY one: runs the deterministic sub-checkers (./checks.sh), seeds `> CHECK:` comments in-file at every flag site, and gates human review. What it walks is the stage doc + the paper's `1-probes/` entries; its probe invariants are stated over ENTRIES (`state: planned`, unresolvable `**target**`, an `answered` target with an empty `### a-executor`). History: ./CHANGELOG.md."
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -15,7 +15,20 @@ Skill: haipipe-paper-check (internal phase worker)
 
 CHECK phase worker.
 Called by stage skills as the auto-gate for the DPRC lifecycle.
-**CHECK is the ONLY judgment-involved phase** -- DRAFT, PROBE, and REVISE run fully automatic without stopping for input.
+**HOW MANY GATES A STAGE OPENS IS THE STAGE'S OWN DECLARATION, not this file's.** Read `gates:` in the stage's contract at `../../../1-lifecycle/haipipe-paper-stage/stages/<order>-<key>/stage.md` before you open anything:
+
+```text
+gates: [check]           the default, and what 7 of 8 stages declare.
+                         DRAFT, PROBE and REVISE run unattended; THIS is the only stop.
+                         Safe because probe_depth caps PROBE at free work — an unattended
+                         run cannot spend, so there is nothing earlier to authorize.
+gates: [draft, check]    what `1a-resource` declares, per a standing ruling: its GATE 1
+                         approves the QUESTIONS and the SPEND before any of it goes out.
+```
+
+⛔ Never open a gate the contract did not declare, and never skip one it did. If `gates:` is
+absent from a contract, treat it as `[check]` and say so in the report — a missing declaration is
+a contract defect worth surfacing, not a licence to invent a gate.
 CHECK is where everything is reviewed at once: by the human (copilot mode, default) or by a reviewer subagent standing in (autopilot mode; see Gate Modes below).
 
 **Not user-facing.**
@@ -53,7 +66,7 @@ A bare `find ... -name check-probe-cards.sh | head -1` can resolve to the WRONG 
 Filter on the path, and fail LOUDLY when nothing matches:
 
 ```sh
-CHK=$(find ~/.claude/skills "$CLAUDE_PLUGIN_ROOT" "$CLAUDE_SKILL_DIR/../../../.." \
+CHK=$(find -L ~/.claude/skills ./.claude/skills "${CLAUDE_PLUGIN_ROOT:-/nonexistent}" -maxdepth 4 \
         -path "*haipipe-paper-probe*" -name check-probe-cards.sh 2>/dev/null | head -1)
 [ -n "$CHK" ] || { echo "FAIL: paper checker not found"; exit 1; }
 
@@ -357,7 +370,7 @@ For non-section-edit stages:
 
 When invoked for a non-section-edit stage, the checker reads the stage's SKILL.md to discover its done-gate criteria, then checks those criteria mechanically.
 
-**Resource gate — the pass/fail rulings the load-bearing sentence implies** (spec: `../../../1-lifecycle/1a-resource/haipipe-paper-resource/SKILL.md`, GATE 2):
+**Resource gate — the pass/fail rulings the load-bearing sentence implies** (spec: `../../../1-lifecycle/haipipe-paper-stage/stages/1a-resource/stage.md`, GATE 2):
 
 ```text
 commissioned + owner: + eta: in the FUTURE            -> PASS   (a build in flight must not red the gate)
@@ -411,13 +424,13 @@ Stage skills call this as their CHECK phase:
 
 | Stage skill | What this skill checks |
 |---|---|
-| haipipe-paper-seed | seed.md done-gate (promotion criteria) |
-| haipipe-paper-resource | Demand + Questions (the load-bearing sentence; `--stage resource` entry pass; 3 exits) |
-| haipipe-paper-claims | hypothesis list + evidence linkage |
-| haipipe-paper-pitch | cover letter (Editor's Chair Test, readability) |
-| haipipe-paper-narrative | story beats (all [READY], arc/flow coherence) |
-| haipipe-paper-display | display plan (all units generated, linked in tex) |
-| haipipe-paper-section-edit | section outline + tex (full DPRC check: draft + probe + revise + meta + proof) |
+| seed | seed.md done-gate (promotion criteria) |
+| resource | Demand + Questions (the load-bearing sentence; `--stage resource` entry pass; 3 exits) |
+| claims | hypothesis list + evidence linkage |
+| pitch | cover letter (Editor's Chair Test, readability) |
+| narrative | story beats (all [READY], arc/flow coherence) |
+| display | display plan (all units generated, linked in tex) |
+| section-edit | section outline + tex (full DPRC check: draft + probe + revise + meta + proof) |
 
 ## Sibling phase workers
 

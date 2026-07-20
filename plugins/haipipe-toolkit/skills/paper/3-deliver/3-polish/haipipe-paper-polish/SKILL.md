@@ -5,7 +5,7 @@ metadata:
   version: "1.0.0"
   last_updated: "2026-07-17"
   stage: deliver
-  summary: "3-polish worker. One skill, three ordered whole-paper passes (consistency -> format -> typeset). Absorbs the retired haipipe-paper-{consistency,format,typeset} stubs. Comment-first like every deliver sub-skill. History: ./CHANGELOG.md."
+  summary: "3-polish worker. One skill, three ordered whole-paper passes (consistency -> format -> typeset). Comment-first like every deliver sub-skill. History: ./CHANGELOG.md."
 ---
 
 # haipipe-paper-polish

@@ -86,7 +86,7 @@ Handoff to probe/discover/task only when the problem is evidence, not
 wording.
 
 ```text
-paper GAP -> question SECTION (1-probes/) -> the PROBE phase's MATCH ->
+paper GAP -> question ENTRY (1-probes/) -> the PROBE phase's MATCH ->
 DISPATCH what MATCH cannot close -> the answering QA file -> the entry's
 `### a-executor` -> each Q-consumer's a-consumer in its stage doc -> the paper
 backfills (a claim's status flips in 1b-claims.md)
@@ -95,7 +95,7 @@ backfills (a claim's status flips in 1b-claims.md)
 Common routes:
 
 ```text
-claim needs its status settled       -> /haipipe-paper probe "<need>"  (raises a question SECTION in
+claim needs its status settled       -> /haipipe-paper probe "<need>"  (raises a question ENTRY in
                                         1-probes/; the stage's PROBE phase MATCHes it, and dispatches
                                         only what MATCH cannot close)
 claim needs outside context/citation -> /haipipe-discovery <question>

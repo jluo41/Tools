@@ -1,9 +1,12 @@
 # 2-phase -- DRAFT-PROBE-REVISE-CHECK (shared across lifecycle stages)
 
-The **phase dimension** of the paper skill architecture. Phase workers are shared across all lifecycle stages (seed, claims, pitch, narrative, display, section-edit). The hub for section-edit lives in `1-lifecycle/5-section-edit/haipipe-paper-section-edit/`.
+The **phase dimension** of the paper skill architecture. Phase workers are shared across all lifecycle stages (seed, claims, pitch, narrative, display, section-edit). The hub for section-edit lives in `1-lifecycle/haipipe-paper-stage/stages/5-section-edit//`.
 
 ```
-Per-stage lifecycle:  DRAFT 🤖 → PROBE 🤖 → REVISE 🤖 → CHECK 🧑
+Per-stage lifecycle:  DRAFT 🤖→🧑 → PROBE 🤖 → REVISE 🤖 → CHECK 🧑
+                      ⛔ two gates: the DRAFT structure review and CHECK.
+                      Unattended? a fresh-context reviewer subagent stands in
+                      at each gate — the gate is delegated, never skipped.
 
 Status strip:
 phase:   draft ✅  │  probe 🔥🚀  │  revise ⬜  │  check ⬜
@@ -56,7 +59,7 @@ haipipe-paper-{phase}-{what}    phase workers (this directory)
 - **REVISE** 🤖: agent-only and PROOF-CARRYING — reached only via `Skill(haipipe-paper-revise)` (never inline); changes the prose directly per prose-quality.md on the .md FIRST then syncs to tex; leaves why-comments; `[REVISE]` _LOG entry carries `workers: content ✓ humanizer ✓ …`
 - **CHECK** 🧑: human + agent (auto-checkers report, human decides: proceed/restart/accept/park). Never commit before CHECK opens.
 
-The user drives phases with VERBS on the stage skill (`/haipipe-paper-section-edit <section> [draft|probe|revise|check]`); a bare invocation shows status and proposes — never runs — the next phase. The agent never self-advances past a human gate.
+The user drives phases with VERBS on the stage skill (`/haipipe-paper-stage section-edit <section> [draft|probe|revise|check]`); a bare invocation shows status and proposes — never runs — the next phase. The agent never self-advances past a human gate.
 
 ## Holes: FILLED or OWNED
 

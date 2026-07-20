@@ -73,8 +73,8 @@ what makes the answer reusable by the next consumer, with a different stake.
 
 A consumer runs its own MATCH on its own side, then dispatches through the direct
 `Agent(haipipe-discovery-orchestrator-agent)` call drawn above. Nothing under
-`discoveries/` carries a trace of who asked. The probe CAUSES a QA file; **the
-executor AUTHORS it**. The probe layer: `probe/haipipe-probe/SKILL.md` (v8.0.0).
+`discoveries/` carries a trace of who asked. A caller CAUSES a QA file; **the
+executor AUTHORS it**.
 
 
 Registration

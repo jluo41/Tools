@@ -4,7 +4,7 @@ description: "The probe layer: a consumer-level Q/A map (papers/<P>/ or applicat
 argument-hint: "[contract | anatomy | status | \"<question>\"]"
 allowed-tools: Bash, Read, Grep, Glob, Agent, Skill
 metadata:
-  version: "9.6.0"
+  version: "9.7.0"
   last_updated: "2026-07-19"
   summary: "The probe layer, operational form. A probe maps a question to a QA file in the probe-unaware bank — communication, not judgment. Spec + rationale: ../../../diagram/260714-probe-qa/. History: ./CHANGELOG.md."
 ---
@@ -78,7 +78,11 @@ The `Q-consumer` section lives at the END of every stage doc — the DRAFT-time 
 
 The Q-consumer id is CONSUMER-LOCAL — `Q-Seed-1`, `Q-Claim-6` (paper); each family owns its own scheme and the ids never collide across consumers, because a Q-consumer id (like a PP number) never crosses the wall. Only the `q-executor` is shared vocabulary. (The `resource` stage already numbers this way.)
 
-DRAFT WRITES THE WHOLE PLAN — the draft prose, the Q-consumer questions, AND their probe plan — so ONE human gate reviews draft + probe plan together (the plan-review gate is MERGED into the DRAFT gate, never a second gate). For each question DRAFT runs the loop's first two steps:
+DRAFT RAISES; PROBE PLANS AND RUNS. DRAFT writes the stage's prose and the Q-consumer questions it cannot answer — and stops there. It authors no probe entry, chooses no route, judges no bank, and never opens `1-probes/`. Everything probe-shaped, all five steps, belongs to PROBE.
+
+⚠️ ①② USED TO RUN AT DRAFT. The stated reason was to let ONE human gate review draft + probe plan together. That gate is GONE — stages now declare `gates: [check]` — so the reason evaporated and the steps went back where they belong. A DRAFT that writes a `### q-executor` is doing PROBE's job.
+
+For each Q-consumer, PROBE runs the loop in order:
 - ① ORGANIZE — turn the Q-consumer into a probe ENTRY (below): find-or-open its `## QX<n>`, write its `### q-executor` (the stake stripped out, plus the Deliverable / Accepted lines), copy the Q-consumer's original wording under `### q-consumer`, and choose its `route` (`task | discovery`). If an existing q-executor already asks it, just add a `### q-consumer` bullet — no new entry.
 - ② MATCH — root the question to a SPECIFIC bank folder (a read-only grep of `QA/*.md` is legal — LAW 1 bans the pen and the run, not the eye): `bank` records the verdict (`reuse | run | code | new`), and `target` is set to the existing QA path or `NEW <path>`.
 
@@ -86,14 +90,14 @@ DRAFT WRITES THE WHOLE PLAN — the draft prose, the Q-consumer questions, AND t
 Before the gate, DRAFT SELF-REVIEWS its output: a review sub-agent in a FRESH context (a creator/reviewer split — the drafter does not grade its own work) checks the draft against the stage's artifact spec and the probe plan against **The DRAFT self-review checklist** below, and returns PASS or an issue list; the drafter fixes and re-reviews (bounded) so what reaches the human is already clean of mechanical defects. The self-review PRECEDES the human gate; it never replaces it.
 APPROVE is the HUMAN gate at the DRAFT│PROBE boundary: the consumer (a person) reviews the draft AND the probe plan and approves which questions to pursue — the agent never self-advances. Only APPROVED sections go on.
 PROBE then RUNS FORWARD (no re-planning, no second gate; it stays a milestone): ③ DISPATCH the `new`/`run`/`code` entries (`target: NEW`), ④ POINT their `target`, ⑤ INTERPRET (copy the QA answer into `### a-executor`).
-Ids: three LOCAL layers, none crossing the wall — `Q-<Stage>-<n>` in the stage doc (consumer-local), `QX<n>` in the probe file (topic-local), `QA/<n>-<slug>.md` in the bank (task-folder-local). They bind by PATH (`target`), never by a shared id. Each stage-doc `Q-<Stage>-<n>` gains a `→ 1-probes/PPnn · QX<n>` pointer, and its `state` is DERIVED — that state, not an empty `target`, marks a planned-but-unrun entry, because DRAFT now writes `target`.
+Ids: three LOCAL layers, none crossing the wall — `Q-<Stage>-<n>` in the stage doc (consumer-local), `QX<n>` in the probe file (topic-local), `QA/<n>-<slug>.md` in the bank (task-folder-local). They bind by PATH (`target`), never by a shared id. Each stage-doc `Q-<Stage>-<n>` gains a `→ 1-probes/PPnn · QX<n>` pointer, and its `state` is DERIVED — that state, not an empty `target`, marks a planned-but-unrun entry, because PROBE writes `target`.
 
 The DRAFT self-review checklist
 -------------------------------
 
-The pre-gate self-review reads and judges what `check-probe-cards.sh` cannot; the checker still runs at CHECK as the mechanical backstop, and the two are complementary. A review sub-agent (fresh context) runs it per question SECTION, plus per file:
+The pre-gate self-review reads and judges what `check-probe-cards.sh` cannot; the checker still runs at CHECK as the mechanical backstop, and the two are complementary. A review sub-agent (fresh context) runs it per question ENTRY, plus per file:
 
-Per SECTION:
+Per ENTRY:
 - `q-executor:` is CLEAN (LAW 2) — no claim ids, no "our / this paper", no stake, no hint of the wanted answer; a stranger could answer it.
 - the question is ANSWERABLE + SPECIFIC — a concrete check with a definite result, not broad or ambiguous.
 - `route` is set (`task | discovery`).
@@ -149,8 +153,8 @@ Fillable form + rules: `ref/probe-template.md`. An entry is `## QX<n>` + four `#
    * Q-Seed-1 — is menstrual-cycle-labelled external data obtainable?
 
    ### bank binding
-   **route**: task                   ← the dispatch door (AUTHORITATIVE), chosen at DRAFT
-   **bank**: reuse                   ← reuse | run | code | new — what the bank needs (the DRAFT verdict)
+   **route**: task                   ← the dispatch door (AUTHORITATIVE), chosen at PROBE
+   **bank**: reuse                   ← reuse | run | code | new — what the bank needs (the PROBE ② verdict)
    **target**: tasks/A03_welldoc_cycle_check/01_column_scan/QA/1-cycle-indicator.md
    **state**: read                   ← DERIVED from disk, never asserted
 
@@ -158,14 +162,15 @@ Fillable form + rules: `ref/probe-template.md`. An entry is `## QX<n>` + four `#
    No cycle column in 40 tables.
 ```
 
-An entry's parts (`## QX<n>` + four `###` subsections), all but `### a-executor` authored at DRAFT:
+An entry's parts (`## QX<n>` + four `###` subsections), all but `### a-executor` authored at PROBE:
 - `### q-executor` — the executor-facing question (plain, general, no stake), frozen once written; the ONLY thing dispatched, and the ONLY shared (cross-consumer) form. Carries its own `Deliverable:` and `Accepted: a | b` lines.
 - `### q-consumer` — one bullet per Q-consumer this q-executor serves: the stage-doc id + that consumer's ORIGINAL question, copied in (review-only, never dispatched). One q-executor may serve several — that is reuse, structurally. A stage gate greps these ids for its stage token (Q-Seed-1 → seed).
 - `### bank binding` — four `**field**:` lines:
-  - `route` — the dispatch door, `task | discovery`, chosen at DRAFT; AUTHORITATIVE (the executor executes it, not re-decides).
-  - `bank` — the DRAFT verdict, read-only-grep judged: `reuse` (a results folder already answers it), `run` (folder + code exist, needs a run), `code` (folder exists, code needs a change first), `new` (nothing exists, create a folder). The plan; `state` is where it is now.
+  - `route` — the dispatch door, `task | discovery`, chosen at PROBE; AUTHORITATIVE (the executor executes it, not re-decides).
+  - `bank` — the PROBE ② verdict, read-only-grep judged: `reuse` (a results folder already answers it), `run` (folder + code exist, needs a run), `code` (folder exists, code needs a change first), `new` (nothing exists, create a folder). The plan; `state` is where it is now.
   - `target` — a PATH to the answering QA FILE; `NEW <path>` while it does not exist yet, `NEW ?` while even the folder is undecided. Point at the FILE, never the folder.
-  - `state` — `planned | commissioned | answered | read | answered-local | failed`; derived from disk, never asserted. This — not an empty `target` — marks a planned-but-unrun entry.
+  - `state` — `planned | commissioned | answered | read | answered-local | deferred | failed`; derived from disk, never asserted. This — not an empty `target` — marks a planned-but-unrun entry.
+    `deferred` is the landing state for the PROBE CEILING: the entry's `bank` verdict sits ABOVE `probe_depth`, so answering it would cost money nobody has authorized. It is a CORRECT outcome, not a failure, and it must be DECLARED, never inferred — a `deferred` entry additionally carries `**deferred**: depth-<n> · <one line: what it would take>`. Without that line it is a bare `planned` and FAILs as `probe-not-run`. The distinction is the whole point: "nobody has paid for this yet" and "PROBE was skipped" must not look the same on disk.
 - `### a-executor` — a COPY of the answering QA file's answer, written at harvest (PROBE); empty until answered. The consumer-side single source of truth. Each Q-consumer then writes its own a-consumer in its stage doc (station ②), anchored `[source: PP<NN>]` back to this copy.
 
 The STAKE never appears in a probe file — it lives in each Q-consumer, in the stage doc.
@@ -174,14 +179,14 @@ The STAKE never appears in a probe file — it lives in each Q-consumer, in the 
 
 
 BUILD-LANE FIELDS.
-A section whose answer legitimately takes DAYS-TO-WEEKS additionally carries, and ONLY at `state: commissioned`:
+An ENTRY whose answer legitimately takes DAYS-TO-WEEKS additionally carries, and ONLY at `state: commissioned`:
 
 ```text
    **owner**: <who> · **eta**: YYYY-MM-DD · **blocks**: <the claim/demand ids it gates>
    **cross-project**: <sibling-project path NAMED as a reuse candidate, or `none-found`>
 ```
 
-A section still `commissioned` when a gate runs is build-lane by definition, so these four fields are unconditional there.
+An ENTRY still `commissioned` when a gate runs is build-lane by definition, so these four fields are unconditional there.
 `cross-project:` is how a named sibling-source candidate reaches the one human gate that authorizes SPEND — the MATCH may NAME it but never CONSUME it.
 
 
@@ -189,7 +194,7 @@ The five-step loop
 ==================
 
 ```text
-   ① ORGANIZE   collect the DRAFT's questions into probe files (grouped by TOPIC), and
+   ① ORGANIZE   collect the stage doc's Q-consumer questions into probe files (grouped by TOPIC), and
                 write each one's `### q-executor` — translate your question into the executor-
                 facing form, stripping the stake out; copy the Q-consumer under `### q-consumer`.
    ② MATCH      SCAN the bank's existing QA files FIRST (grep + READ each state line), and set
@@ -203,19 +208,19 @@ The five-step loop
 ```
 
 The order is the point: ② always precedes ③, so an existing answer is REUSED and only a genuinely new question ever creates new bank work.
-PHASE MAP: ①② run at DRAFT (the consumer organizes + roots each of its own questions — a read-only bank grep, LAW 1), so ONE human gate reviews draft + probe plan together; ③④⑤ run at PROBE, which RUNS FORWARD with no second gate.
+PHASE MAP: ALL FIVE STEPS RUN AT PROBE. DRAFT's only probe-facing output is the Q-consumer list in the stage doc — plain questions in the consumer's own words, with the stake attached. PROBE turns each into a `### q-executor` (①), roots it against the bank with a read-only grep (②, LAW 1: the eye is allowed, the pen and the run are not), dispatches only what its ceiling allows (③), points (④) and harvests (⑤).
 
 THE COST LADDER — cheap doors first; only T3/T4 summon an agent.
 
 ```text
    T0 JOIN    another q-executor already asks this        → add a q-consumer bullet   ~0
    T1 LOCAL   my own registries answer it                 → answered-local      ~0
-   T2 REUSE   an existing QA file answers it              → point the section   1 grep + 1 read
-   T3 ENRICH  the task-folder exists, never asked this    → new section → ③     agent
-   T4 FRESH   no task-folder                              → new section → ③     agent
+   T2 REUSE   an existing QA file answers it              → point the entry     1 grep + 1 read
+   T3 ENRICH  the task-folder exists, never asked this    → new entry   → ③     agent
+   T4 FRESH   no task-folder                              → new entry   → ③     agent
 ```
 
-MOST sections should land on T2: in a healthy project the bank fills on its own, so most answers already exist before anyone asks.
+MOST entries should land on T2: in a healthy project the bank fills on its own, so most answers already exist before anyone asks.
 MATCH ON THE ANSWER, NEVER ON THE TOPIC: a HIT counts only if the QA file LITERALLY ANSWERS the question — read it; topic similarity is not evidence.
 
 THE DISPATCH PAYLOAD — copy this block; do not invent variants:
@@ -225,8 +230,8 @@ Agent(haipipe-task-orchestrator-agent, prompt="
   action: qa
   project: <project_root>
   question: |
-    <the section's q-executor block, VERBATIM. Nothing else.>
-  task-folder: <the section's target: — an existing path, `NEW <path>`, or omit if unknown>
+    <the ENTRY's q-executor block, VERBATIM. Nothing else.>
+  task-folder: <the ENTRY's target: — an existing path, `NEW <path>`, or omit if unknown>
 ")
 ```
 
@@ -241,7 +246,7 @@ The sections above are the MODEL; these are the DO-THIS rules a phase worker fol
 
 DRAFT phase — author the plan, self-review, stop:
 1. Write the stage artifact per the STAGE's own spec (real content; the spec is the stage skill's, not this file's).
-2. For each open question: raise a `## Q-<Stage>-<n>` in the stage doc's Q-consumer AND author its probe ENTRY — ① find-or-open `## QX<n>`, write `### q-executor` (stake stripped) + copy the Q-consumer under `### q-consumer` + choose `route`; ② judge `bank` against a SPECIFIC folder (read the candidate, ON THE ANSWER) + set `target` (an existing path, or `NEW <path>`).
+2. FIND the questions first — a draft that does not know what it does not know is not a draft. Each stage skill owns a **Questions this stage typically raises** section naming the kinds it is prone to (seed: is the ground occupied, is the data obtainable; resource: what we HAVE / can GET / must BUILD, on the data and algorithm axes; claims: sufficiency and the rival explanation; and so on). Read it, walk the draft against it, and add whatever the mechanical sweeps returned unowned. Then, for each open question: raise a `## Q-<Stage>-<n>` in the stage doc's Q-consumer AND author its probe ENTRY — ① find-or-open `## QX<n>`, write `### q-executor` (stake stripped) + copy the Q-consumer under `### q-consumer` + choose `route`; ② judge `bank` against a SPECIFIC folder (read the candidate, ON THE ANSWER) + set `target` (an existing path, or `NEW <path>`).
 3. NEVER write `### a-executor` — that is PROBE's ⑤ harvest. An entry is left `planned` (a `NEW` target) or `answered` (an existing target), never `read`.
 4. Before the gate, SELF-REVIEW the draft + plan (fresh-context sub-agent; see **The DRAFT self-review checklist**); fix + re-review, bounded.
 5. STOP at the human gate; never self-advance.
@@ -276,7 +281,7 @@ A QA file is a TICKET that becomes a RECEIPT: exactly ONE mutable field, the `st
 
 ONE WRITER — the EXECUTOR, for the whole life of the file.
 It writes twice: the CLAIM (`state: working` + `started:`) when it starts, and the COMPLETION (`state: answered` + the body) at its Report.
-⛔ A CONSUMER never creates, claims, edits, completes, or supersedes a QA file — a probe that finds a stale target re-points its OWN section, never the file.
+⛔ A CONSUMER never creates, claims, edits, completes, or supersedes a QA file — a probe that finds a stale target re-points its OWN entry, never the file.
 
 THE CLAIM MUST EXPIRE.
 `QA_WORKING_TTL_HOURS = 24` — a `working` file whose `started:` is older is STALE and restartable.
@@ -309,7 +314,7 @@ Section state, derived from disk
 State is never a claim about an agent; it is checkable on disk, and the reader OPENS the file — an `ls` is not enough.
 
 ```text
-   planned         the section exists; the target task-folder is missing (or `NEW …`)
+   planned         the entry exists; the target task-folder is missing (or `NEW …`)
    commissioned    the task-folder exists with no answered QA file yet, OR the target QA file is `working`
    answered        the target QA file exists AND is `state: answered`
    read            the entry's `### a-executor` is non-empty — LEGAL ONLY against an `answered`, non-superseded target

@@ -378,6 +378,11 @@ qa_claim_problems() {
 
 fail=0
 found=0
+# `found` means A PROBE FILE EXISTS. `served` means AN ENTRY SERVES THE FILTERED
+# STAGE. They are not the same thing, and PASS 1's vacuous-green test needs the
+# second: on any mature paper `found` is always 1, so keying the test on it made
+# the test unreachable for EVERY stage -- resource included.
+served=0
 
 # ---------------------------------------------------------------------------
 # PASS 1 -- probe files, section by section.
@@ -492,6 +497,7 @@ for probe in "$paper_root"/1-probes/PP*.md; do
       if ! printf '%s' "$qconsumer" | grep -qiE "q-${_stem}"; then
         continue
       fi
+      served=$((served + 1))
     fi
 
     problems=""
@@ -658,6 +664,15 @@ for probe in "$paper_root"/1-probes/PP*.md; do
         # A planned section at VERIFY or the CHECK gate means the probe was never run.
         problems="$problems state-planned(probe-not-run);"
         ;;
+      deferred)
+        # THE PROBE CEILING landed here: the entry's cost sits above probe_depth, so
+        # nobody has authorized paying for it. That is a CORRECT outcome -- but it must be
+        # DECLARED, never inferred, or it is indistinguishable from a skipped PROBE.
+        # The declaration is a `**deferred**: depth-<n> · <what it would take>` line.
+        if ! grep -qiE '^\*\*deferred\*\*:[[:space:]]*depth-[0-9]' "$f"; then
+          problems="$problems deferred-undeclared(state: deferred needs a '**deferred**: depth-<n> - <what it would take>' line; without it this is a bare planned entry wearing a costume);"
+        fi
+        ;;
     esac
 
     if [ -n "$problems" ]; then
@@ -775,19 +790,74 @@ if [ "$stage_filter" = "resource" ] && [ -f "$res_md" ]; then
   fi
 fi
 
-if [ "$found" -eq 0 ]; then
-  if [ -n "$stage_filter" ]; then
-    if [ "$res_open" -gt 0 ]; then
+
+# ---------------------------------------------------------------------------
+# GENERIC open-question count -- the OTHER SEVEN stage keys.
+# `resource` keeps its own richer Q<n>/A:/-> PP<NN> parser above; every other
+# stage uses the uniform Q-consumer shape (`## Q-<Stage>-<n>` + `Answer:`), so
+# one counter covers them all. Without this, PASS 1's vacuous-green test was
+# reachable ONLY for --stage resource: the other seven printed OK and exited 0
+# on a zero match, which is the exact failure this pass exists to catch.
+# ---------------------------------------------------------------------------
+gen_open=0
+if [ -n "$stage_filter" ] && [ "$stage_filter" != "resource" ]; then
+  case "$stage_filter" in
+    seed)         _sdirs="$paper_root/0-lifecycle/0-seed" ;;
+    claims)       _sdirs="$paper_root/0-lifecycle/1b-claims" ;;
+    venue)        _sdirs="$paper_root/0-lifecycle/2a-venue" ;;
+    pitch)        _sdirs="$paper_root/0-lifecycle/2b-pitch" ;;
+    narrative)    _sdirs="$paper_root/0-lifecycle/3-narrative" ;;
+    display)      _sdirs="$paper_root/0-lifecycle/4-display" ;;
+    section-edit) _sdirs=$(find "$paper_root/0-lifecycle/5-section-edit" -mindepth 1 -maxdepth 1 -type d 2>/dev/null) ;;
+    *)            _sdirs="" ;;
+  esac
+  for _sd in $_sdirs; do
+    [ -d "$_sd" ] || continue
+    for _sf in "$_sd"/*.md; do
+      [ -f "$_sf" ] || continue
+      case "$_sf" in *_LOG_*) continue ;; esac
+      _o=$(awk '
+        # An Answer field is CLOSED only if it carries a real finding, or says
+        # `deferred`. Every template ships a placeholder there -- `<empty in
+        # DRAFT ...>`, `_(empty at DRAFT ...)_`, `_pending -- filled by PROBE_`
+        # -- and a detector that treats a placeholder as an answer reports a
+        # stage with zero open questions, which is the vacuous green again.
+        /^#{2,3}[ \t]+(Q-[A-Za-z]+-[0-9]+|Q[0-9]+|§[0-9]+-Q[0-9]+)/ {
+          if (inq && !ans) o++
+          inq=1; ans=0; next
+        }
+        inq && $0 ~ /^[ \t]*(-[ \t]*)?(\*\*)?Answer/ {
+          v=$0; sub(/^[^:]*:[ \t]*/, "", v)
+          gsub(/[*_]/, "", v); gsub(/^[ \t()]+|[ \t()]+$/, "", v)
+          lv=tolower(v)
+          if (lv ~ /deferred/)                       ans=1   # closed on purpose
+          else if (v == "")                          ans=0
+          else if (lv ~ /^</ || lv ~ /^empty/ || lv ~ /^pending/)            ans=0
+          else if (lv ~ /empty (at|in) draft/)                              ans=0
+          else if (lv ~ /probe (fills|organizes)|filled( later)? by probe/) ans=0
+          else                                       ans=1
+        }
+        END { if (inq && !ans) o++; print o+0 }
+      ' "$_sf")
+      gen_open=$((gen_open + _o))
+    done
+  done
+fi
+
+if [ -n "$stage_filter" ] && [ "$served" -eq 0 ]; then
+  if true; then
+    _open_total=$((res_open + gen_open))
+    if [ "$_open_total" -gt 0 ]; then
       # THE VACUOUS GREEN, named. "No sections serve stage resource" is reassuring
       # and WRONG when the stage has open questions: it means nothing was opened.
-      echo "FAIL  1-probes/  -- no entry serves stage 'resource' while ${res_open} question(s) are still open (vacuous green)"
+      echo "FAIL  1-probes/  -- no entry serves stage '$stage_filter' while ${_open_total} question(s) are still open (vacuous green)"
       fail=1
     else
-      echo "OK    no sections serve stage '$stage_filter' (other stages' probes were skipped, not failed)"
+      echo "OK    no entry serves stage '$stage_filter', and that stage has no open questions either"
     fi
-  else
-    echo "WARN  no PP*.md probe files under $paper_root/1-probes/"
   fi
+elif [ "$found" -eq 0 ]; then
+  echo "WARN  no PP*.md probe files under $paper_root/1-probes/"
 fi
 
 # ---------------------------------------------------------------------------
@@ -916,9 +986,27 @@ for docdir in "$paper_root"/0-lifecycle/*/ "$paper_root"/0-lifecycle/5-section-e
   # --stage: a stage doc asserts at its OWN stage's gate. Without this, one section's unowned
   # placeholders would red every other stage's CHECK -- the same whole-paper-glob problem
   # ruling C8-i carved out for PASS 1, and the same fix (shared stage_stem).
+  #
+  # A DOC HAS TWO STAGE NAMES, AND BOTH MUST MATCH. Its BASENAME names it (`6-results` ->
+  # `results`), and for every top-level stage that IS its stage. But a SECTION doc lives at
+  # 0-lifecycle/5-section-edit/<section>/<section>.md and is named for the SECTION, never for
+  # its owning stage -- so a basename-only derivation makes `--stage section-edit` match
+  # NOTHING. Not "fail loudly": match nothing, print nothing, EXIT 0. That is the VACUOUS
+  # GREEN this file names elsewhere, sitting on the stage that accumulates the most
+  # placeholders in a mature paper. (Measured 2026-07-19 on Paper-Personality2Opioid-MISQ2026:
+  # `--stage section-edit` printed zero lines and exited 0 while 19 unowned placeholders sat
+  # in four section docs -- every one of them invisible to the gate that owns them.)
+  # So derive BOTH and accept either: the OWNER (path) keeps `--stage section-edit` honest,
+  # the BASENAME keeps per-section runs (`--stage results`) working.
   if [ -n "$stage_filter" ]; then
     _dstage=$(printf '%s' "$dbase" | sed 's/^[0-9]*[a-z]*-//')
-    [ "$(stage_stem "$_dstage")" = "$(stage_stem "$stage_filter")" ] || continue
+    _downer=""
+    case "$docdir" in */0-lifecycle/5-section-edit/*/) _downer="section-edit" ;; esac
+    _want=$(stage_stem "$stage_filter")
+    _hit=0
+    [ "$(stage_stem "$_dstage")" = "$_want" ] && _hit=1
+    [ -n "$_downer" ] && [ "$(stage_stem "$_downer")" = "$_want" ] && _hit=1
+    [ "$_hit" -eq 1 ] || continue
   fi
 
   dprob=$(awk '

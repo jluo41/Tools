@@ -1,0 +1,34 @@
+# The index. One row per stage: just enough to RESOLVE which stage is meant.
+# Everything else about a stage — phases, artifact paths, sections, done-criteria,
+# craft — lives in stages/<dir>/stage.md and is loaded ONLY for the stage picked.
+# Keep this file small. It is the one file read on every invocation.
+#
+# migrated: false -> the router hands off to legacy_skill and stops.
+
+stages:
+  - {key: seed,         order: "0",  dir: 0-seed,         migrated: true,
+     triggers: [seed, 立项, 研究问题, why this paper, 0-seed]}
+
+  - {key: resource,     order: 1a,   dir: 1a-resource,    migrated: true,
+     triggers: [resource, 数据, 我们有什么, obtainable]}
+
+  - {key: claims,       order: 1b,   dir: 1b-claims,      migrated: true,
+     triggers: [claims, 主张, H1, supported, refuted, GAP, claim ledger]}
+
+  - {key: venue,        order: 2a,   dir: 2a-venue,       migrated: true,
+     triggers: [venue, 选刊, 投哪个期刊, 期刊推荐, which journal, desk-reject]}
+
+  - {key: pitch,        order: 2b,   dir: 2b-pitch,       migrated: true,
+     triggers: [pitch, 卖点, hook, 一分钟]}
+
+  - {key: narrative,    order: "3",  dir: 3-narrative,    migrated: true,
+     triggers: [narrative, 叙事, 大纲, arc, beats, outline]}
+
+  - {key: display,      order: "4",  dir: 4-display,      migrated: true,
+     triggers: [display, 图表, figure, table, diagram, gallery, caption]}
+
+  - {key: section-edit, order: "5",  dir: 5-section-edit, migrated: true,
+     triggers: [section, section edit, 写某一节, 编辑某节]}
+     # ⚠️ runs per-unit; on cutover the argument order changes —
+     #    old: /haipipe-paper-section-edit <section> <phase>
+     #    new: /haipipe-paper-stage section-edit <section> <phase>

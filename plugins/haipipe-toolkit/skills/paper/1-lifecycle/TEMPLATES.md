@@ -42,7 +42,7 @@ Per-stage notes
 ---------------
 seed          Landscape section is SEED-ONLY (JL 2026-07-18). Reference instance for C1–C5.
 resource      Description-first: `Resource Description` (## Resource N + ### topics + ### Serves & carries), NOT a Demand/needs list (JL 2026-07-18). Feasibility gate lives in Serves & carries + the Q-consumer.
-claims        M:N claims↔questions — a claim = several small TYPED questions (fit/eval/robustness/placebo…); a question may settle several claims. Evidence Campaign scoreboard DELETED (JL 2026-07-18, redundant). Answerable+specific questions only.
+claims        M:N claims↔questions — a claim = several small TYPED questions (fit/eval/robustness/placebo…); a question may settle several claims. Answerable+specific questions only.
 section-edit  per-section; prefix may need section scoping (Q-Section-<n> vs Q-<Section>-<n>).
 
 Rollout (spine order)

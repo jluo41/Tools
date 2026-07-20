@@ -236,7 +236,7 @@ Anatomy — the state line, then exactly these sections:
 
 🚫 **NO CONSUMER VOCABULARY.** No claim ids (C1, C2…), no hypothesis ids (H1, H2…), no "claims-stage", no "the paper", no "this supports/rescues …". I never saw a paper; I cannot honestly write one of those words, and if one appears the wall was crossed. Report what was measured, and where it lives.
 
-Full contract: `haipipe-task/fn/qa.md`. The probe layer: `probe/haipipe-probe/SKILL.md` PART 3a.
+Full contract: `haipipe-task/fn/qa.md`.
 
 Return:
 ```yaml

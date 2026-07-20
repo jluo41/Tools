@@ -45,7 +45,7 @@ which skill it concerns; there is no separate `skill:` field.
       or new?" rather than guess. (Under digest, the confirm gate decides.)
 5. CONFIRM where it landed, whether it was MERGED (into <file>) or NEW, and how
    it matched; offer the one-line correction:
-   "filed -> haipipe-paper-pitch/feedback/ NEW (matched keyword 'pitch').
+   "filed -> haipipe-paper-stage pitch/feedback/ NEW (matched keyword 'pitch').
     wrong target? /haipipe-paper feedback move <file> <skill>"
    (When invoked in BATCH by digest, SKIP this per-item confirm: digest's gate
    already approved and its step-6 report is the single confirmation.)
@@ -99,21 +99,21 @@ resolve:
 Keyword -> skill map (first/most-specific match wins):
 
 ```
-pitch                                   -> haipipe-paper-pitch
-seed                                    -> haipipe-paper-seed
-claim, claims, ledger                   -> haipipe-paper-claims
-narrative, beat, story arc              -> haipipe-paper-narrative
-section-edit, paragraph job, evidence anchor -> haipipe-paper-section-edit
-venue, journal, playbook                -> haipipe-paper-venue
-display, gallery, float, figure plan    -> haipipe-paper-display
+pitch                                   -> haipipe-paper-stage pitch
+seed                                    -> haipipe-paper-stage seed
+claim, claims, ledger                   -> haipipe-paper-stage claims
+narrative, beat, story arc              -> haipipe-paper-stage narrative
+section-edit, paragraph job, evidence anchor -> haipipe-paper-stage section-edit
+venue, journal, playbook                -> haipipe-paper-stage venue
+display, gallery, float, figure plan    -> haipipe-paper-stage display
   table                                 -> haipipe-paper-display-table
   figure, plot                          -> haipipe-paper-display-figure
   diagram, vector, elbow, connector     -> haipipe-paper-display-diagram
   illustration, ai-img, concept art     -> haipipe-paper-display-illustration
 enter, console, dashboard, status view  -> haipipe-paper-enter
 round, rounds                           -> haipipe-paper-round
-write, draft, scaffold prose            -> haipipe-paper-section-edit
-edit, polish, weave, walk sections      -> haipipe-paper-section-edit
+write, draft, scaffold prose            -> haipipe-paper-stage section-edit
+edit, polish, weave, walk sections      -> haipipe-paper-stage section-edit
 rebuttal, reply, reviewers, response    -> haipipe-paper-rebuttal
 compile this paper, build broke         -> haipipe-paper-compile
 citation, bibtex, references            -> haipipe-paper-draft-citation
@@ -161,14 +161,22 @@ so the root is one level ABOVE the orchestrator folder, i.e. `…/skills/paper`,
 mapped folder not existing yet is expected, not an error.
 
 ```
-haipipe-paper-seed                  1-lifecycle/0-seed/haipipe-paper-seed/feedback/
-haipipe-paper-resource              1-lifecycle/1a-resource/haipipe-paper-resource/feedback/
-haipipe-paper-claims                1-lifecycle/1b-claims/haipipe-paper-claims/feedback/
-haipipe-paper-venue                 1-lifecycle/2a-venue/haipipe-paper-venue/feedback/
-haipipe-paper-pitch                 1-lifecycle/2b-pitch/haipipe-paper-pitch/feedback/
-haipipe-paper-narrative             1-lifecycle/3-narrative/haipipe-paper-narrative/feedback/
-haipipe-paper-display[-*]           1-lifecycle/4-display/haipipe-paper-display[-*]/feedback/
-haipipe-paper-section-edit          1-lifecycle/5-section-edit/haipipe-paper-section-edit/feedback/
+# The 8 lifecycle STAGES are one skill now. File by STAGE KEY, not skill name:
+seed                                1-lifecycle/haipipe-paper-stage/feedback/seed/
+resource                            1-lifecycle/haipipe-paper-stage/feedback/resource/
+claims                              1-lifecycle/haipipe-paper-stage/feedback/claims/
+venue                               1-lifecycle/haipipe-paper-stage/feedback/venue/
+pitch                               1-lifecycle/haipipe-paper-stage/feedback/pitch/
+narrative                           1-lifecycle/haipipe-paper-stage/feedback/narrative/
+display                             1-lifecycle/haipipe-paper-stage/feedback/display/
+section-edit                        1-lifecycle/haipipe-paper-stage/feedback/section-edit/
+
+# The four display RENDERERS are still their own skills and keep their own inboxes:
+display-[table|figure|diagram|illustration]
+                                    1-lifecycle/4-display/haipipe-paper-display-*/feedback/
+
+# Feedback filed before the 2026-07-20 cutover stayed with the retired skills:
+#   1-lifecycle/_old/<stage-dir>/haipipe-paper-<stage>/feedback/   (68 files; 19 still `status: open`)
 haipipe-paper-lifecycle             1-lifecycle/haipipe-paper-lifecycle/feedback/
 haipipe-paper-enter                 0-enter/haipipe-paper-enter/feedback/
 haipipe-paper-round                 0-enter/haipipe-paper-round/feedback/

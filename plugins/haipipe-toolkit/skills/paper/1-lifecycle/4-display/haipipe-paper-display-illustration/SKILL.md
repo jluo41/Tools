@@ -18,7 +18,7 @@ and a **local Codex app-server MCP bridge** as the raster renderer.
 ## Output: write into a display unit
 
 Output goes into a `0-displays/displayNN-<slug>/` unit per the shared contract:
-`../haipipe-paper-display/ref/display-unit-output-contract.md`.
+`../ref/display-unit-output-contract.md`.
 THIS renderer's row: asset -> `assets/figure.png`; rebuild spec -> `source/prompt.md`
 (final prompt + bridge job + score) + `source/review_log.json`; finalize with
 `--display-unit <unit-dir>` (Step 7).
@@ -57,7 +57,7 @@ rather than falling back to a shell/Python bitmap.
   Only with no paper: the flat fallback `figures/ai_generated/`.
 - **TEXT_LANGUAGE = `English`** — Default figure text language unless the user requests otherwise
 - **NATIVE_IMAGE_REQUIREMENT = `strict`** — Accept only native `imageGeneration` output; reject shell/Python fallbacks
-- **CANONICAL_HELPER = `python3 "$CLAUDE_SKILL_DIR/scripts/paper_illustration_image2.py"`** — Preflight, finalize (`--display-unit`), verify, repair
+- **CANONICAL_HELPER = `python3 "${CLAUDE_SKILL_DIR:-.}/scripts/paper_illustration_image2.py"`** — Preflight, finalize (`--display-unit`), verify, repair
 
 ## CVPR/ICLR/NeurIPS Top-Tier Conference Style Guide
 
@@ -125,7 +125,7 @@ Aim for the balance point: neither overly conservative nor flashy.
 | **Method illustrations** | Excellent | Conceptual diagrams, algorithm flowcharts |
 | **Conceptual figures** | Good | Comparison diagrams, taxonomy trees |
 
-**Not for:** photo-realistic scenes, or any display better served by a sibling renderer — see the sibling-routing table in `../haipipe-paper-display/ref/display-unit-output-contract.md`.
+**Not for:** photo-realistic scenes, or any display better served by a sibling renderer — see the sibling-routing table in `../ref/display-unit-output-contract.md`.
 
 ## Workflow: MUST EXECUTE ALL STEPS
 
@@ -144,7 +144,7 @@ Render this checklist explicitly before starting:
 ```
 
 1. Resolve the target display unit (`0-displays/displayNN-slug/`); scaffold it via
-   `Skill("haipipe-paper-display", "scaffold ...")` if it does not exist.
+   `Skill("haipipe-paper-stage", "display scaffold ...")` if it does not exist.
    Only when
    there is no paper, fall back to creating `figures/ai_generated/`.
 2. Confirm the request is suitable for a raster illustration:
@@ -155,7 +155,7 @@ Render this checklist explicitly before starting:
 4. Run preflight (receipt into the unit's `source/`):
 
 ```bash
-python3 "$CLAUDE_SKILL_DIR/scripts/paper_illustration_image2.py" preflight \
+python3 "${CLAUDE_SKILL_DIR:-.}/scripts/paper_illustration_image2.py" preflight \
   --workspace <paper-root> \
   --json-out 0-displays/displayNN-slug/source/preflight.json
 ```
@@ -263,14 +263,14 @@ Keep refinement feedback concrete:
 
 When accepted, finalize INTO THE DISPLAY UNIT (the contract path; see the "Output:
 write into a display unit" section above and
-`../haipipe-paper-display/ref/display-unit-output-contract.md`). Pass
+`../ref/display-unit-output-contract.md`). Pass
 `--display-unit <0-displays/displayNN-slug>` so the helper writes
 `assets/figure.png` + `float.tex` (with your caption + label) + `source/review_log.json`,
 then compile `preview.pdf` from the paper root.
 
 ```bash
 # Paper target — write into the display unit (DEFAULT for a paper):
-python3 "$CLAUDE_SKILL_DIR/scripts/paper_illustration_image2.py" finalize \
+python3 "${CLAUDE_SKILL_DIR:-.}/scripts/paper_illustration_image2.py" finalize \
   --workspace <paper-root> \
   --display-unit <paper-root>/0-displays/displayNN-slug \
   --best-image <paper-root>/0-displays/displayNN-slug/figure_vN.png \
@@ -284,7 +284,7 @@ python3 "$CLAUDE_SKILL_DIR/scripts/paper_illustration_image2.py" finalize \
 pdflatex -interaction=nonstopmode -output-directory 0-displays/displayNN-slug \
   0-displays/displayNN-slug/preview.tex
 
-python3 "$CLAUDE_SKILL_DIR/scripts/paper_illustration_image2.py" verify \
+python3 "${CLAUDE_SKILL_DIR:-.}/scripts/paper_illustration_image2.py" verify \
   --workspace <paper-root> --display-unit <paper-root>/0-displays/displayNN-slug \
   --json-out <paper-root>/0-displays/displayNN-slug/source/verify.json
 ```
@@ -303,12 +303,12 @@ For a paper, pass `--display-unit` so repair lands in the unit (an
 existing hand-edited `float.tex` is preserved, not clobbered):
 
 ```bash
-python3 "$CLAUDE_SKILL_DIR/scripts/paper_illustration_image2.py" finalize \
+python3 "${CLAUDE_SKILL_DIR:-.}/scripts/paper_illustration_image2.py" finalize \
   --workspace <paper-root> --display-unit <paper-root>/0-displays/displayNN-slug \
   --best-image <paper-root>/0-displays/displayNN-slug/assets/figure.png \
   --caption "..." --label "fig:slug"
 
-python3 "$CLAUDE_SKILL_DIR/scripts/paper_illustration_image2.py" verify \
+python3 "${CLAUDE_SKILL_DIR:-.}/scripts/paper_illustration_image2.py" verify \
   --workspace <paper-root> --display-unit <paper-root>/0-displays/displayNN-slug
 ```
 
@@ -318,4 +318,4 @@ python3 "$CLAUDE_SKILL_DIR/scripts/paper_illustration_image2.py" verify \
 
 The display unit layout (asset -> `assets/figure.png`, rebuild spec -> `source/prompt.md`
 + `source/review_log.json` + `source/verify.json`) and the no-paper flat fallback are
-the shared contract: `../haipipe-paper-display/ref/display-unit-output-contract.md`.
+the shared contract: `../ref/display-unit-output-contract.md`.

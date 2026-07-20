@@ -57,7 +57,7 @@ active_round: none
 ```
 
 Do NOT include a `| venue |` row at creation.
-`/haipipe-paper-venue` ADDS it when pinning; the stage strip reads the row's absence as venue-unpinned.
+`/haipipe-paper-stage venue` ADDS it when pinning; the stage strip reads the row's absence as venue-unpinned.
 
 .gitignore contract:
 

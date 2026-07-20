@@ -21,7 +21,7 @@ Location — one FLAT pool, one file per TOPIC
     └── README.md                     a GENERATED board (see below); the files win
 ```
 
-- `1-probes/` — NOT `1-probe-plans/`, NOT a per-stage `_PROBE/` folder. Both are RETIRED.
+- `1-probes/` — a single flat pool at the paper root. Never a per-stage folder.
 - Stage affinity is an ENTRY's `### q-consumer` bullet, never the file's path. One flat cross-stage pool.
 - PP numbers are **paper-local footnote numbers**. `ls 1-probes/` is the numbering authority.
   There is no ledger, and no PP id ever crosses to the task/discovery bank — so two papers may
@@ -69,7 +69,7 @@ No cycle column in 40 tables.
   serving several Q-consumers IS reuse, structurally. A stage gate greps these ids for its stage
   token (Q-Seed-1 → seed).
 - `### bank binding` — four `**field**:` lines: `route` (task | discovery, the dispatch door,
-  AUTHORITATIVE), `bank` (reuse | run | code | new — the DRAFT verdict, judged by a read-only grep
+  AUTHORITATIVE), `bank` (reuse | run | code | new — the PROBE ② verdict, judged by a read-only grep
   ON THE ANSWER), `target` (a PATH to the answering QA FILE, `NEW <path>` while unwritten, `NEW ?`
   while even the folder is undecided), `state` (DERIVED from disk, never asserted).
 - `### a-executor` — a COPY of the answering QA file's answer, written at HARVEST (PROBE ⑤); empty
@@ -163,7 +163,7 @@ PROBE runs the plan forward (route/bank are AUTHORITATIVE — executed, not re-d
                  doc → 1b-claims.md flips
 ```
 
-⛔ **MATCH (at DRAFT) BEFORE DISPATCH (at PROBE).** The bank fills AUTONOMOUSLY from the executor
+⛔ **MATCH BEFORE DISPATCH — both at PROBE, in that order.** The bank fills AUTONOMOUSLY from the executor
 side, so in a healthy project most answers already exist before anyone asks. A probe file whose
 every entry is NEW-to-dispatch is a SMELL — either the MATCH was lazy, or the bank is starving.
 Say which, in the reply.
