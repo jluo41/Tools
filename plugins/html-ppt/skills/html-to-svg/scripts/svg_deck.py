@@ -76,26 +76,27 @@ class Svg:
                  f'text-anchor="{anchor}" {style}>{esc(s)}</text>')
 
     def bullets(self, x, y, items, max_px, fs=13, fill=SUB, lh=None, gap=5, indent=16):
-        """Each item = one sentence = one bullet line (the core style rule).
-
-        items: str, or (text, color), or (text, color, weight).
-        Returns the next free baseline y.
-        """
+        """Each item = one sentence = one bullet, as ONE <text> with <tspan>
+        lines — PowerPoint's Convert-to-Shape then yields one text box per
+        bullet (loose per-line <text> elements become colliding boxes)."""
         lh = lh or fs * 1.4
         yy = y
         for it in items:
             color, weight, txt = fill, "normal", it
-            if isinstance(it, tuple):
+            if isinstance(it, tuple):  # (text, color) or (text, color, weight)
                 txt, color = it[0], it[1]
                 weight = it[2] if len(it) > 2 else "normal"
             lines = wrap(txt, max_px - indent, fs)
-            self.text(x, yy, "•", fs=fs, fill=color, weight="bold")
+            spans = [f'<tspan x="{x}" y="{yy}" font-weight="bold">•</tspan>']
             for k, ln in enumerate(lines):
-                self.text(x + indent, yy, ln, fs=fs, fill=color, weight=weight)
-                if k < len(lines) - 1:
-                    yy += lh
-            yy += lh + gap
-        return yy
+                dy = f' dy="{lh}"' if k else ""
+                w_attr = "" if weight == "normal" else f' font-weight="{weight}"'
+                first_y = "" if k else f' y="{yy}"'
+                spans.append(f'<tspan x="{x + indent}"{first_y}{dy}{w_attr}>{esc(ln)}</tspan>')
+            self.add(f'<text font-size="{fs}" fill="{color}" font-family="{FONT}">'
+                     + "".join(spans) + "</text>")
+            yy += lh * len(lines) + gap
+        return yy  # next baseline
 
     def render(self, title):
         body = "\n".join(self.el)
