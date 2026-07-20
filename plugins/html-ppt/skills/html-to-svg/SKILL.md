@@ -72,6 +72,12 @@ Fill the `NOTES` dict to write speaker notes into each slide's notes pane.
 Requires `pip install python-pptx cairosvg`. Full loop after edits:
 `python3 generate_svgs.py && python3 build_pptx.py`.
 
+## PDF export (`scripts/build_pdf.py`)
+
+`python3 build_pdf.py` merges the display-variant SVGs into one vector PDF
+(cairosvg per page + pypdf concat) — for email/review distribution where a
+.pptx is overkill. Requires `pip install cairosvg pypdf`.
+
 ## Library (`scripts/svg_deck.py`)
 
 - `Svg` — element buffer: `.rect .line .circle .text .bullets .render`
