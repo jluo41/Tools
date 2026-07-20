@@ -1,7 +1,10 @@
 # section-kinds.yml — the CLOSED vocabulary of section kinds, and which outlet has which.
 #
-# Owned by the VENUE stage, because venue already owns the other resolution map
-# (human venue label -> pack slug). Read by section-edit, narrative, and display.
+# SHARED reference data at the stages/ root, sibling to index.yml — static, measured, read
+# by more than one stage, owned by none of them. (It was born under 2a-venue/ on 2026-07-20
+# and moved here 2026-07-20 so no stage reaches into another stage's folder to read it.)
+# Read by: venue (resolves the per-kind pack paths into 2a-venue.md) and section-edit (picks
+# its section's kind). narrative/display do NOT read it despite an earlier claim they did.
 #
 # WHY THIS FILE EXISTS — two things measured on disk 2026-07-20 across 95 style.md files:
 #

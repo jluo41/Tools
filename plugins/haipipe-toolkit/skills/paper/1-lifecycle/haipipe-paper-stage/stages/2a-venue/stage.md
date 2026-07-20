@@ -66,11 +66,11 @@ owns_resolution: |         # THIS stage resolves, ONCE, what every downstream st
   · venue label -> pack slug         (the map in the craft body)
   · pack + outlet -> section styles  (the Section Styles table in the artifact)
   Downstream NEVER globs, finds, or spells a pack path. section-edit reads its row and stops.
-  The kind vocabulary and which kinds each outlet actually has: ./section-kinds.yml
+  The kind vocabulary and which kinds each outlet actually has: ../section-kinds.yml
   Resolution is a GLOB (`*-<kind>`), never concatenation — the per-journal slug is arbitrary
   and sometimes multi-token (jno- · diabcare- · npjdm- · MS-IS-); concatenation works for
   MISQ and fails on six other outlets.
-kinds_file: section-kinds.yml
+kinds_file: ../section-kinds.yml
 
 formatting:
   title_rule: "====="
@@ -100,7 +100,7 @@ done_criteria:
      sentence length, citation density, results reported, display units — each [source: ...]-tagged"
   - "blueprint adapted to THIS paper's claim structure (H1/H2/H3 mapped to sections/subsections)"
   - "Writing Principles filled: tone, citation style, results presentation, display limits, abstract"
-  - "Section Styles carries ONE record line per kind in section-kinds.yml — a resolved path, or
+  - "Section Styles carries ONE record line per kind in ../section-kinds.yml — a resolved path, or
      an explicit `— blueprint-only` / `— n/a`, so 'no pack' is distinguishable from 'not checked'"
   - "at least one Q-Venue-<n> raised or answered (the recent-publications check)"
   - "every <!-- RULE --> comment deleted from the filled 2a-venue.md"

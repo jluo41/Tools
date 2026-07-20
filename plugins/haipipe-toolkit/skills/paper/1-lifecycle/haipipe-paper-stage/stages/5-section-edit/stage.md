@@ -60,7 +60,7 @@ venue_read_first:         # DRAFT opens these BEFORE writing a sentence
   - "Structural Blueprint, THIS section's block — BINDING: subsections, ¶ per subsection,
      sentences per ¶, citation density, word budget, display limits"
   - "Writing Principles — advisory"
-section_kind: <one of the closed set in ../2a-venue/section-kinds.yml>
+section_kind: <one of the closed set in ../section-kinds.yml>
                                    # THIS section's kind: abstract · introduction · theory ·
                                    # related-work · methods · results · discussion · appendix ·
                                    # letter · significance. Which kinds EXIST is per-outlet —
