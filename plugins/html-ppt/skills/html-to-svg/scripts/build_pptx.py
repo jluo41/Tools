@@ -61,10 +61,18 @@ def add_svg_picture(slide, prs, svg_path, png_path, next_media_idx):
 
 
 def main():
+    import sys
+    global OUT_PPTX
+    src_dir = HERE
+    if "--editable" in sys.argv:
+        # one-line variant (generate_svgs.py --ppt): unwrapped sentences,
+        # meant for Convert to Shape + manual re-wrap (figure-to-svg Lesson 16)
+        src_dir = HERE / "ppt-editable"
+        OUT_PPTX = HERE / (OUT_PPTX.stem + "-editable.pptx")
     PNG_DIR.mkdir(exist_ok=True)
-    svgs = sorted(HERE.glob("[0-9][0-9]-*.svg"))
+    svgs = sorted(src_dir.glob("[0-9][0-9]-*.svg"))
     if not svgs:
-        raise SystemExit("no NN-*.svg files found")
+        raise SystemExit(f"no NN-*.svg files found in {src_dir}")
 
     prs = Presentation()
     prs.slide_width = Inches(13.333)

@@ -23,6 +23,7 @@ BG, SURF, SURF2 = "#ffffff", "#ffffff", "#f2f2f0"
 INK, SUB, MUT = "#1c1c1c", "#3f3f46", "#8a8a8a"
 ACC, WARN, GOOD, BORDER = "#1f5aa8", "#b45309", "#15803d", "#d4d4d0"
 FONT = "'Times New Roman', Times, serif"
+ONELINE = False  # set True for the PPT-editable variant: one unwrapped <text> per sentence
 
 
 def esc(s):
@@ -76,9 +77,14 @@ class Svg:
                  f'text-anchor="{anchor}" {style}>{esc(s)}</text>')
 
     def bullets(self, x, y, items, max_px, fs=13, fill=SUB, lh=None, gap=5, indent=16):
-        """Each item = one sentence = one bullet, as ONE <text> with <tspan>
-        lines — PowerPoint's Convert-to-Shape then yields one text box per
-        bullet (loose per-line <text> elements become colliding boxes)."""
+        """Each item = one sentence = one bullet.
+
+        Display mode (default): sentence wraps to fit max_px, one <text> per
+        line (absolute y each — PPT-safe, never tspans; figure-to-svg
+        Lesson 16: Convert-to-Shape ignores tspan dy).
+        ONELINE mode (--ppt): NO wrapping — one single-line <text> per
+        sentence that may overflow its column; you re-wrap by dragging the
+        text box in PowerPoint after Convert to Shape."""
         lh = lh or fs * 1.4
         yy = y
         for it in items:
@@ -86,16 +92,13 @@ class Svg:
             if isinstance(it, tuple):  # (text, color) or (text, color, weight)
                 txt, color = it[0], it[1]
                 weight = it[2] if len(it) > 2 else "normal"
-            lines = wrap(txt, max_px - indent, fs)
-            spans = [f'<tspan x="{x}" y="{yy}" font-weight="bold">•</tspan>']
+            lines = [txt] if ONELINE else wrap(txt, max_px - indent, fs)
+            self.text(x, yy, "•", fs=fs, fill=color, weight="bold")
             for k, ln in enumerate(lines):
-                dy = f' dy="{lh}"' if k else ""
-                w_attr = "" if weight == "normal" else f' font-weight="{weight}"'
-                first_y = "" if k else f' y="{yy}"'
-                spans.append(f'<tspan x="{x + indent}"{first_y}{dy}{w_attr}>{esc(ln)}</tspan>')
-            self.add(f'<text font-size="{fs}" fill="{color}" font-family="{FONT}">'
-                     + "".join(spans) + "</text>")
-            yy += lh * len(lines) + gap
+                self.text(x + indent, yy, ln, fs=fs, fill=color, weight=weight)
+                if k < len(lines) - 1:
+                    yy += lh
+            yy += lh + gap
         return yy  # next baseline
 
     def render(self, title):
